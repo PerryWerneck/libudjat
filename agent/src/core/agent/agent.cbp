@@ -56,6 +56,7 @@
 		<Unit filename="../tools/xml.cc" />
 		<Unit filename="agent.cc" />
 		<Unit filename="controller.cc" />
+		<Unit filename="factory.cc" />
 		<Unit filename="load.cc" />
 		<Unit filename="private.h" />
 		<Unit filename="test.xml" />

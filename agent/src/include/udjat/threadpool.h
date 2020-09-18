@@ -22,7 +22,7 @@
 
 	namespace Udjat {
 
-		class DLL_PUBLIC ThreadPool {
+		class UDJAT_API ThreadPool {
 		private:
 
 			/// @brief Lock guard to prevent multiple accesses to the queue.

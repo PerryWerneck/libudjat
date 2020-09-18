@@ -101,18 +101,18 @@
 	// Declara símbolos exportados pela biblioteca.
 	#if defined(_WIN32)
 
-		#define DLL_PUBLIC	__declspec (dllexport)
-		#define DLL_PRIVATE
+		#define UDJAT_API	__declspec (dllexport)
+		#define UDJAT_PRIVATE
 
 	#elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 
-		#define DLL_PUBLIC
-		#define DLL_PRIVATE
+		#define UDJAT_API
+		#define UDJAT_PRIVATE
 
 	#else
 
-		#define DLL_PUBLIC	__attribute__((visibility("default")))
-		#define DLL_PRIVATE	__attribute__((visibility("hidden")))
+		#define UDJAT_API	__attribute__((visibility("default")))
+		#define UDJAT_PRIVATE	__attribute__((visibility("hidden")))
 
 	#endif
 

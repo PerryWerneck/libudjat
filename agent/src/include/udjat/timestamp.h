@@ -9,7 +9,7 @@
 	namespace Udjat {
 
 		/// @brief A time value (in seconds)
-		class DLL_PUBLIC TimeStamp {
+		class UDJAT_API TimeStamp {
 		public:
 
 			time_t value;

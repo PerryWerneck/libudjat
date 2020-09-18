@@ -27,7 +27,6 @@
  */
 
  #include <udjat/threadpool.h>
- #include <udjat/string.h>
  #include <unistd.h>
  #include <semaphore.h>
  #include <cstring>

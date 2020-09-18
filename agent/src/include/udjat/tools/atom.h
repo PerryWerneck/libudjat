@@ -9,7 +9,7 @@
 	namespace Udjat {
 
 		/// @brief Single instance string.
-		class DLL_PUBLIC Atom {
+		class UDJAT_API Atom {
 		private:
 			class Controller;
 			friend class Controller;
@@ -57,6 +57,13 @@
 	}
 
 	namespace std {
+
+		template <>
+		struct hash<Udjat::Atom> {
+			inline size_t operator() (const Udjat::Atom &atom) const {
+				return std::hash<std::string>{}(atom.c_str());
+			}
+		};
 
 		inline const string & to_string(const Udjat::Atom atom) {
 			return atom.to_string();

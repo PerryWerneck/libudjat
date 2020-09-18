@@ -28,7 +28,7 @@
 
 			class Agent;
 
-			class DLL_PUBLIC State {
+			class UDJAT_API State {
 			public:
 				enum Level : uint8_t {
 						unimportant,
@@ -69,8 +69,11 @@
 
 			};
 
-			class DLL_PUBLIC Agent {
+			class UDJAT_API Agent {
 			private:
+
+				class Factory;
+				friend class Factory;
 
 				class Controller;
 				friend class Controller;
@@ -115,6 +118,9 @@
 			public:
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
+
+				/// @brief Register an agent factory.
+				void setFactory(const char *name, std::function<std::shared_ptr<Agent> ()> method);
 
 				/// @brief Get Agent name
 				const char * getName() const noexcept {
