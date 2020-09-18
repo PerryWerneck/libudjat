@@ -51,4 +51,8 @@ doxyfile
 *.layout
 .bin
 .obj
+*.depend
+*.bak
+
+
 
