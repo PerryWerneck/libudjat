@@ -30,3 +30,25 @@
 *.exe
 *.out
 *.app
+
+# Autoconf
+Makefile
+aclocal.m4
+autom4te.cache
+configure
+config.h
+stamp-h1
+scripts
+
+# Log files
+*.log
+*.status
+
+# Misc
+doxyfile
+
+# CodeBlocks
+*.layout
+.bin
+.obj
+

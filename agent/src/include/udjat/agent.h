@@ -60,7 +60,7 @@
 					return summary.c_str();
 				}
 
-				inline const Level getLevel() const {
+				inline Level getLevel() const {
 					return this->level;
 				}
 
