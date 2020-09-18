@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Core Library" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".bin/Debug/test" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DDEBUG=1" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="../../.bin/Release/Core Library" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG=1" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`pkg-config --cflags pugixml jsoncpp libeconf`" />
+			<Add option="-pthread" />
+			<Add directory="../include" />
+		</Compiler>
+		<Linker>
+			<Add option="`pkg-config --libs pugixml jsoncpp libeconf`" />
+			<Add option="-pthread" />
+		</Linker>
+		<Unit filename="../include/udjat/agent.h" />
+		<Unit filename="../include/udjat/configuration.h" />
+		<Unit filename="../include/udjat/defs.h" />
+		<Unit filename="../include/udjat/threadpool.h" />
+		<Unit filename="../include/udjat/timestamp.h" />
+		<Unit filename="agent/agent.cc" />
+		<Unit filename="agent/controller.cc" />
+		<Unit filename="agent/load.cc" />
+		<Unit filename="agent/private.h" />
+		<Unit filename="agent/state.cc" />
+		<Unit filename="private.h" />
+		<Unit filename="testprogram/testprogram.cc" />
+		<Unit filename="tools/linux/configuration/file.cc" />
+		<Unit filename="tools/linux/threadpool.cc" />
+		<Unit filename="tools/service/controller.cc" />
+		<Unit filename="tools/service/eventlistener.cc" />
+		<Unit filename="tools/service/linux/mainloop.cc" />
+		<Unit filename="tools/service/linux/run.cc" />
+		<Unit filename="tools/service/linux/timer.cc" />
+		<Unit filename="tools/service/windows/timer.cc" />
+		<Unit filename="tools/string.cc" />
+		<Unit filename="tools/timestamp.cc" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

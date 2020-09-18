@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Agent &amp; Controller" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".bin/Debug/test" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DDEBUG=1" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="../../.bin/Release/Agent &amp; Controller" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG=1" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="`pkg-config --cflags pugixml jsoncpp`" />
+			<Add option="-pthread" />
+			<Add directory="../../include" />
+		</Compiler>
+		<Linker>
+			<Add option="`pkg-config --libs pugixml jsoncpp`" />
+			<Add option="-pthread" />
+		</Linker>
+		<Unit filename="../../include/udjat/agent.h" />
+		<Unit filename="../../include/udjat/dbus.h" />
+		<Unit filename="../../include/udjat/defs.h" />
+		<Unit filename="../../include/udjat/request.h" />
+		<Unit filename="../../include/udjat/threadpool.h" />
+		<Unit filename="../../include/udjat/timestamp.h" />
+		<Unit filename="../../include/udjat/tools/atom.h" />
+		<Unit filename="../../include/udjat/tools/xml.h" />
+		<Unit filename="../private.h" />
+		<Unit filename="../state/private.h" />
+		<Unit filename="../state/state.cc" />
+		<Unit filename="../tools/atom.cc" />
+		<Unit filename="../tools/linux/threadpool.cc" />
+		<Unit filename="../tools/xml.cc" />
+		<Unit filename="agent.cc" />
+		<Unit filename="controller.cc" />
+		<Unit filename="load.cc" />
+		<Unit filename="private.h" />
+		<Unit filename="test.xml" />
+		<Unit filename="testprogram/testprogram.cc" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

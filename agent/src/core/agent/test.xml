@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<config>
+
+	<agent name='intvalue' type='integer' value='0'>
+
+		<agent name='subkey' type='integer' value='0' update-timer='10' />
+		<agent name='text' type='string' value='test-value' />
+
+		<state name='sample' value='0' summary='The intvalue is 0' />
+
+	</agent>
+
+</config>

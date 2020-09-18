@@ -1,0 +1,233 @@
+#
+# "Software pw3270, desenvolvido com base nos códigos fontes do WC3270  e X3270
+# (Paul Mattes Paul.Mattes@usa.net), de emulação de terminal 3270 para acesso a
+# aplicativos mainframe. Registro no INPI sob o nome G3270.
+#
+# Copyright (C) <2008> <Banco do Brasil S.A.>
+#
+# Este programa é software livre. Você pode redistribuí-lo e/ou modificá-lo sob
+# os termos da GPL v.2 - Licença Pública Geral  GNU,  conforme  publicado  pela
+# Free Software Foundation.
+#
+# Este programa é distribuído na expectativa de  ser  útil,  mas  SEM  QUALQUER
+# GARANTIA; sem mesmo a garantia implícita de COMERCIALIZAÇÃO ou  de  ADEQUAÇÃO
+# A QUALQUER PROPÓSITO EM PARTICULAR. Consulte a Licença Pública Geral GNU para
+# obter mais detalhes.
+#
+# Você deve ter recebido uma cópia da Licença Pública Geral GNU junto com este
+# programa;  se  não, escreva para a Free Software Foundation, Inc., 59 Temple
+# Place, Suite 330, Boston, MA, 02111-1307, USA
+#
+# Contatos:
+#
+# perry.werneck@gmail.com	(Alexandre Perry de Souza Werneck)
+# erico.mendonca@gmail.com	(Erico Mascarenhas de Mendonça)
+#
+
+#---[ Library configuration ]------------------------------------------------------------
+
+SONAME=@SONAME@
+PACKAGE_NAME=@PACKAGE_NAME@
+
+SOURCES= \
+	$(wildcard src/core/*.cc) \
+	$(wildcard src/core/agent/*.cc) \
+	$(wildcard src/core/state/*.cc) \
+	$(wildcard src/core/tools/*.cc) \
+	$(wildcard src/core/tools/@OSNAME@/*.cc)
+
+TEST_SOURCES= \
+	$(wildcard src/testprogram/*.cc)
+
+#---[ Tools ]----------------------------------------------------------------------------
+
+CC=@CXX@
+LD=@CXX@
+LN_S=@LN_S@
+MKDIR=@MKDIR_P@
+INSTALL=@INSTALL@
+INSTALL_DATA=@INSTALL_DATA@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+XGETTEXT=@XGETTEXT@
+MSGCAT=@MSGCAT@
+WINDRES=@WINDRES@
+AR=@AR@
+VALGRIND=@VALGRIND@
+GENMARSHAL=@GENMARSHAL@
+CONVERT=@CONVERT@
+OPTIPNG=@OPTIPNG@
+ZIP=@ZIP@
+DOXYGEN=@DOXYGEN@
+DLLTOOL=@DLLTOOL@
+
+#---[ Paths ]----------------------------------------------------------------------------
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+sbindir=@sbindir@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+localedir=@localedir@
+docdir=@docdir@
+sysconfdir=@sysconfdir@
+
+BASEDIR=@BASEDIR@
+
+OBJDIR=$(BASEDIR)/.obj/$(PACKAGE_NAME)
+OBJDBG=$(OBJDIR)/Debug
+OBJRLS=$(OBJDIR)/Release
+
+BINDIR=$(BASEDIR)/.bin
+BINDBG=$(BINDIR)/Debug
+BINRLS=$(BINDIR)/Release
+
+#---[ Rules ]----------------------------------------------------------------------------
+
+DEPENDS= \
+	Makefile \
+	src/include/*.h \
+	src/include/$(PACKAGE_NAME)/*.h
+
+CFLAGS= \
+	@CFLAGS@ \
+	-g \
+	-I$(BASEDIR)/src/include \
+	@PUGIXML_CFLAGS@ \
+	@JSONCPP_CFLAGS@
+
+LIBS= \
+	@LIBS@ \
+	@PUGIXML_LIBS@ \
+	@JSONCPP_LIBS@
+
+#---[ Debug Rules ]----------------------------------------------------------------------
+
+$(OBJDBG)/%.o: \
+	%.cc \
+	$(DEPENDS)
+
+	@echo $< ...
+	@$(MKDIR) $(dir $@)
+
+	@$(CC) \
+		$(CFLAGS) \
+		-Wall -Wextra -fstack-check \
+		-DDEBUG=1 \
+		-DCONFDIR="$(BASEDIR)" \
+		-o $@ -c $<
+
+
+#---[ Release Rules ]--------------------------------------------------------------------
+
+$(OBJRLS)/%.o: \
+	%.cc \
+	$(DEPENDS)
+
+	@echo $< ...
+	@$(MKDIR) $(dir $@)
+	@$(CC) \
+		$(CFLAGS) \
+		-DNDEBUG=1 \
+		-o $@ -c $<
+
+#---[ Release Targets ]------------------------------------------------------------------
+
+all: \
+	$(BINRLS)/$(SONAME)
+
+Release: \
+	$(BINRLS)/$(SONAME)
+
+$(BINRLS)/$(SONAME): \
+	$(foreach SRC, $(basename $(SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@$(MKDIR) $(dir $@)
+	@echo $< ...
+	@$(LD) \
+		-shared -Wl,-soname,\$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$(foreach SRC, $(basename $(SOURCES)), $(OBJRLS)/$(SRC).o) \
+		-L$(BINRLS) \
+		$(LIBS)
+
+#---[ Install Targets ]------------------------------------------------------------------
+
+
+#---[ Misc Targets ]---------------------------------------------------------------------
+
+doc:
+	@$(DOXYGEN) ./doxygen/doxyfile
+
+#---[ Debug Targets ]--------------------------------------------------------------------
+
+Debug: \
+	$(BINDBG)/@PACKAGE_NAME@@EXEEXT@
+
+$(BINDBG)/@PACKAGE_NAME@@EXEEXT@: \
+	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/$(SONAME)
+
+	@$(MKDIR) $(dir $@)
+	@echo $< ...
+	$(LD) \
+		-o $@ \
+		$^ \
+		-pthread \
+		-Wl,-rpath,$(BINDBG) \
+		-DCONFDIR="$(BASEDIR)" \
+		$(LDFLAGS) \
+		$(LIBS)
+
+run: \
+	$(BINDBG)/@PACKAGE_NAME@@EXEEXT@
+
+ifeq ($(VALGRIND),no)
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(BINDBG)/@PACKAGE_NAME@@EXEEXT@
+
+else
+	@touch valgrind.suppression
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(VALGRIND) --leak-check=full --track-origins=yes --gen-suppressions=all --suppressions=valgrind.suppression \
+			$(BINDBG)/@PACKAGE_NAME@@EXEEXT@
+endif
+
+$(BINDBG)/$(SONAME): \
+	$(foreach SRC, $(basename $(SOURCES)), $(OBJDBG)/$(SRC).o)
+
+	@$(MKDIR) $(dir $@)
+	@echo $< ...
+	@$(LD) \
+		-shared -Wl,-soname,\$(@F) \
+		-o $@ \
+		-L$(BINDBG) \
+		$(LDFLAGS) \
+		$(foreach SRC, $(basename $(SOURCES)), $(OBJDBG)/$(SRC).o) \
+		$(LIBS)
+
+#---[ Clean Targets ]--------------------------------------------------------------------
+
+clean: \
+	cleanDebug \
+	cleanRelease
+
+cleanDebug:
+
+	@rm -fr $(OBJDBG)
+	@rm -fr $(BINDBG)
+
+cleanRelease:
+
+	@rm -fr $(OBJRLS)
+	@rm -fr $(BINRLS)
+
+clean: \
+	cleanDebug \
+	cleanRelease
+
+

@@ -1,0 +1,43 @@
+///
+/// @file config.h
+///
+/// @brief Configuração para o aplicativo.
+///
+/// Gerado automaticamente pelo processo ./configure esse arquivo descreve
+/// as configurações de ambiente detectadas automaticamente.
+///
+/// @author perry.werneck@gmail.com
+///
+///
+
+#ifndef CONFIG_H_INCLUDED
+
+	#define CONFIG_H_INCLUDED 1
+
+	/// @brief Nome do pacote.
+	#undef PACKAGE_NAME @PACKAGE_NAME@
+
+	/// @brief Package title
+	#undef PACKAGE_TITLE
+
+	/// @brief Package description
+	#undef PACKAGE_DESCRIPTION
+
+	/// @brief Versão atual.
+	#undef PACKAGE_VERSION
+
+	/// @brief Indica se o compilador atual possui suporte a "visibility"
+	#undef HAVE_GNUC_VISIBILITY
+
+	/// @brief Define to 1 if the system has getopt()
+	#undef HAVE_GETOPT
+
+	/// @brief Does the system have systemd?
+	#undef HAVE_SYSTEMD
+
+	/// @brief Defined on most unixes
+	#undef HAVE_UNISTD_H
+
+#endif // CONFIG_H_INCLUDED
+
+

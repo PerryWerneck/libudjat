@@ -1,0 +1,76 @@
+///
+/// @file config.h
+///
+/// @brief Configuração para o aplicativo.
+///
+/// Gerado automaticamente pelo processo ./configure esse arquivo descreve
+/// as configurações de ambiente detectadas automaticamente.
+///
+/// @author perry.werneck@gmail.com
+///
+///
+
+#ifndef CONFIG_H_INCLUDED
+
+	#define CONFIG_H_INCLUDED 1
+
+	/// @brief Nome do pacote.
+	#undef PACKAGE_NAME @PACKAGE_NAME@
+
+	/// @brief Versão atual.
+	#undef PACKAGE_VERSION @PACKAGE_VERSION@
+
+	/// @brief Utiliza a libpam?
+	#undef HAVE_PAM
+
+	/// @brief Utiliza a libldap?
+	#undef HAVE_LDAP
+
+	/// @brief Tenho ICONV?
+	#undef HAVE_ICONV
+
+	/// @brief Indica se a LIBSSL está disponível.
+	#undef HAVE_LIBSSL
+
+	/// @brief Indica se é possível usar traduções
+	#undef HAVE_LIBINTL
+
+	/// @brief Indica se o compilador atual possui suporte a "visibility"
+	#undef HAVE_GNUC_VISIBILITY
+
+	/// @brief Indica se as funções para gravação no log do sistema estão disponíveis.
+ 	#undef HAVE_SYSLOG
+
+	/// @brief Indica se o recurso inotify está disponível no kernel atual.
+	#undef HAVE_INOTIFY
+
+	/// @brief Indica se o pugixml está disponível
+	#undef HAVE_PUGIXML
+
+	/// @brief Define to 1 if the system has getopt()
+	#undef HAVE_GETOPT
+
+	/// @brief Does the system have systemd?
+	#undef HAVE_SYSTEMD
+
+	/// @brief Defined on most unixes
+	#undef HAVE_UNISTD_H
+
+	/// @brief Is kernel sendfile available?
+	#undef HAVE_SENDFILE
+
+	/// @brief Define to 1 if you have the SNMP support.
+	#undef HAVE_NET_SNMP
+
+	/// @brief Tem suporte para captura de logs do net-snmp?
+	#undef HAVE_SNMP_LOG_HANDLER
+
+	/// @brief NET-SNMP Agent-X TCP port
+	#undef SNMP_TCP_PORT
+
+	/// @brief NET-SNMP Agent-X UDP port
+	#undef SNMP_UDP_PORT
+
+#endif // CONFIG_H_INCLUDED
+
+

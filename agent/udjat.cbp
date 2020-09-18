@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Teste para sistema de monitoração" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".bin/Debug/test" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-std=c++1z" />
+					<Add option="-g" />
+					<Add option="-DDEBUG=1" />
+					<Add option="-DCONFDIR=." />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output=".bin/Release/Teste para sistema de monitoração" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG=1" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-pedantic" />
+			<Add option="-Wextra" />
+			<Add option="-Wall" />
+			<Add option="-std=c++14" />
+			<Add option="`pkg-config --cflags pugixml`" />
+			<Add option="-pthread" />
+			<Add directory="src/include" />
+		</Compiler>
+		<Linker>
+			<Add option="`pkg-config --libs pugixml`" />
+			<Add option="-pthread" />
+			<Add library="dl" />
+		</Linker>
+		<Unit filename="sample/src/sample.cc" />
+		<Unit filename="src/core/agent/agent.cc" />
+		<Unit filename="src/core/agent/controller.cc" />
+		<Unit filename="src/core/agent/controller/private.h" />
+		<Unit filename="src/core/agent/load.cc" />
+		<Unit filename="src/core/agent/private.h" />
+		<Unit filename="src/core/agent/state.cc" />
+		<Unit filename="src/core/common/linux/threadpool.cc" />
+		<Unit filename="src/core/common/service/controller.cc" />
+		<Unit filename="src/core/common/service/eventlistener.cc" />
+		<Unit filename="src/core/common/service/linux/mainloop.cc" />
+		<Unit filename="src/core/common/service/linux/run.cc" />
+		<Unit filename="src/core/common/service/linux/timer.cc" />
+		<Unit filename="src/core/common/service/private.h" />
+		<Unit filename="src/core/common/string.cc" />
+		<Unit filename="src/core/controller/private.h" />
+		<Unit filename="src/core/private.h" />
+		<Unit filename="src/core/state/private.h" />
+		<Unit filename="src/core/state/state.cc" />
+		<Unit filename="src/core/tools/atom.cc" />
+		<Unit filename="src/core/tools/xml.cc" />
+		<Unit filename="src/include/udjat.h" />
+		<Unit filename="src/include/udjat/agent.h" />
+		<Unit filename="src/include/udjat/defs.h" />
+		<Unit filename="src/include/udjat/request.h" />
+		<Unit filename="src/include/udjat/service.h" />
+		<Unit filename="src/include/udjat/string.h" />
+		<Unit filename="src/include/udjat/threadpool.h" />
+		<Unit filename="src/include/udjat/tools/atom.h" />
+		<Unit filename="src/include/udjat/tools/xml.h" />
+		<Unit filename="src/testprogram/testprogram.cc" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
