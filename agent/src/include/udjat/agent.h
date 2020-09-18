@@ -72,11 +72,10 @@
 			class UDJAT_API Agent {
 			private:
 
+				class Controller;
+
 				class Factory;
 				friend class Factory;
-
-				class Controller;
-				friend class Controller;
 
 				static std::recursive_mutex guard;
 
@@ -109,7 +108,7 @@
 				void chk4refresh();
 
 				/// @brief Insert State.
-				virtual void append_state(const pugi::xml_node &node);
+				virtual void append_state(const pugi::xml_node &node) = 0;
 
 				/// @brief Get state from agent value.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
@@ -161,7 +160,7 @@
 		}
 
 		/// @brief Wrapper for XML attribute
-		class Attribute : public pugi::xml_attribute {
+		class UDJAT_API Attribute : public pugi::xml_attribute {
 		public:
 			Attribute(const pugi::xml_node &node, const char *name) : pugi::xml_attribute(node.attribute(name)) {
 			}
@@ -181,7 +180,7 @@
 		};
 
 		template <typename T>
-		class Agent : public Abstract::Agent {
+		class UDJAT_API Agent : public Abstract::Agent {
 		private:
 
 			/// @brief Agent state

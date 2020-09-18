@@ -62,7 +62,8 @@ namespace Udjat {
 #ifdef DEBUG
 				cout << "Agent " << node.attribute("name").as_string() << " is default" << endl;
 #endif // DEBUG
-				return make_shared<Abstract::Agent>(&parent,node);
+//				return make_shared<Abstract::Agent>(&parent,node);
+				return make_shared<Udjat::Agent<uint32_t>>(&parent,node);
 		});
 
 	}
@@ -98,13 +99,22 @@ namespace Udjat {
 				name = node.attribute("type").as_string("default");
 			}
 
+			// Create agent.
+			std::shared_ptr<Abstract::Agent> agent;
 			{
 				lock_guard<recursive_mutex> lock(guard);
 				auto factory = methods.find(name);
-				if(factory != methods.end()) {
-					parent.children.push_back(factory->second.create(parent,node));
-				}
+				if(factory != methods.end())
+					agent = factory->second.create(parent,node);
 
+			}
+
+			if(agent) {
+				// Load children.
+				agent->load(node);
+
+				// And add it to the parent.
+				parent.children.push_back(agent);
 			}
 
 		}

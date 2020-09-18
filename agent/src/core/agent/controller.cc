@@ -30,6 +30,10 @@ namespace Udjat {
 
 	}
 
+	void Abstract::Agent::Controller::append_state(const pugi::xml_node &node) {
+		throw std::runtime_error("Can't add states to the root agent.");
+	}
+
 	void Abstract::Agent::Controller::refresh() {
 
 		time_t now = time(nullptr);

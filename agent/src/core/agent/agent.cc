@@ -36,8 +36,6 @@ namespace Udjat {
 		this->update.next = time(nullptr) + node.attribute("delay-on-startup").as_uint(this->update.timer);
 		this->update.on_demand = node.attribute("update-on-demand").as_bool(this->update.timer == 0);
 
-		// Load child.
-		load(node);
 	}
 
 	Abstract::Agent::~Agent() {
@@ -285,7 +283,10 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
-		throw runtime_error("Can't append state in this agent");
+		string str("Can't append state on agent \"");
+		str += this->name.c_str();
+		str += "\": It's a non-typed agent";
+		throw runtime_error(str);
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {

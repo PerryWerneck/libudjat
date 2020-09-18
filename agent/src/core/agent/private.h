@@ -23,6 +23,7 @@
 			~Controller();
 
 			void refresh() override;
+			void append_state(const pugi::xml_node &node) override;
 
 		};
 

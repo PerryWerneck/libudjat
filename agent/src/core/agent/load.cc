@@ -21,13 +21,12 @@ namespace Udjat {
 		// Load children.
 		Agent::Factory::getInstance().load(*this,node);
 
-		/*
 		cout << "Loading states for " << *this << endl;
 		// Load states.
 		for(pugi::xml_node state = node.child("state"); state; state = state.next_sibling("state")) {
 			append_state(state);
 		}
-		*/
+
 	}
 
 	static int xmlFilter(const struct dirent *entry) {
