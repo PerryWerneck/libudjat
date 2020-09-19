@@ -74,9 +74,6 @@
 
 				class Controller;
 
-				class Factory;
-				friend class Factory;
-
 				static std::recursive_mutex guard;
 
 				Atom name;
@@ -115,11 +112,11 @@
 
 
 			public:
+				class Factory;
+				friend class Factory;
+
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
-
-				/// @brief Register an agent factory.
-				void setFactory(const char *name, std::function<std::shared_ptr<Agent> ()> method);
 
 				/// @brief Get Agent name
 				const char * getName() const noexcept {
@@ -143,7 +140,7 @@
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
 
-				Json::Value as_json();
+				virtual Json::Value as_json();
 
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() {
@@ -158,6 +155,9 @@
 
 
 		}
+
+		/// @brief Register an agent factory.
+		void UDJAT_API set_factory_method(const char *name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> factory);
 
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {
@@ -225,7 +225,7 @@
 
 			/// @brief Add value to JSON.
 			void get(Json::Value &value) override {
-				chk4refresh();
+				Abstract::Agent::get(value);
 				value["value"] = this->value;
 			}
 
@@ -294,7 +294,7 @@
 
 			/// @brief Add value to JSON.
 			void get(Json::Value &value) override {
-				chk4refresh();
+				Abstract::Agent::get(value);
 				value["value"] = this->value;
 			}
 

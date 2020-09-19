@@ -17,6 +17,8 @@
 
 	namespace Udjat {
 
+		const char * check_for_reserved_name(const char *);
+
 		class Abstract::Agent::Controller : public Abstract::Agent {
 		public:
 			Controller();

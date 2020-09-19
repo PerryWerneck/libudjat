@@ -20,11 +20,34 @@ namespace Udjat {
 	Abstract::Agent::Agent() {
 	}
 
+	const char * check_for_reserved_name(const char *name) {
+
+		if(!(name && *name))
+			throw runtime_error("Can't use empty name");
+
+		// Check for reserved names.
+		static const char *reserved_names[] = {
+			"state",
+			"agent",
+			"action"
+		};
+
+		for(size_t ix = 0; ix < (sizeof(reserved_names)/sizeof(reserved_names[0])); ix++) {
+			if(!strcasecmp(name,reserved_names[ix])) {
+				string message("Can't use reserved name \'");
+				message += name;
+				message += "\'";
+				throw std::runtime_error(message);
+			}
+		}
+
+		return name;
+
+	}
+
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent() {
 
-		this->name = getAttribute(node,"name");
-		if(!this->name)
-			throw runtime_error("\"name\" attribute is required");
+		this->name = check_for_reserved_name(node.attribute("name").as_string());
 
 #ifdef DEBUG
 		cout << "Creating " << this->name << endl;
@@ -260,6 +283,23 @@ namespace Udjat {
 
 	Json::Value Abstract::Agent::as_json() {
 
+		Json::Value node;
+
+		lock_guard<std::recursive_mutex> lock(guard);
+
+		if(children.empty()) {
+			get(node);
+		} else {
+
+			for(auto child : children) {
+				node[child->getName()] = child->as_json();
+			}
+
+		}
+
+		return node;
+
+		/*
 		Json::Value value;
 
 		lock_guard<std::recursive_mutex> lock(guard);
@@ -277,8 +317,9 @@ namespace Udjat {
 			}
 
 		}
-
 		return value;
+		*/
+
 
 	}
 
