@@ -67,6 +67,7 @@
 		<Unit filename="src/core/state/private.h" />
 		<Unit filename="src/core/state/state.cc" />
 		<Unit filename="src/core/tools/atom.cc" />
+		<Unit filename="src/core/tools/linux/dmi.cc" />
 		<Unit filename="src/core/tools/xml.cc" />
 		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />

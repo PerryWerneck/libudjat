@@ -3,7 +3,9 @@
 	#define UDJAT_DMI_H_INCLUDED
 
 	#include <udjat/defs.h>
+	#include <cstdint>
 	#include <string.h>
+	#include <functional>
 
 	namespace Udjat {
 
@@ -52,7 +54,23 @@
 										// 39 "Power Supply"
 			};
 
+			struct Header {
+				uint8_t		  type;
+				uint8_t		  length;
+				uint16_t	  handle;
+				uint8_t		* data;
+			};
+
+			int UDJAT_API query(Dmi::Type type, std::function<void(const Header &, uint8_t *)> response);
+
 			class UDJAT_API Value {
+			private:
+#ifdef _WIN32
+
+#else
+
+#endif // _WIN32
+
 			public:
 				Value(Type type, int offset);
 
