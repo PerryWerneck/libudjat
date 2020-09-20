@@ -76,6 +76,7 @@
 		<Unit filename="src/include/udjat/string.h" />
 		<Unit filename="src/include/udjat/threadpool.h" />
 		<Unit filename="src/include/udjat/tools/atom.h" />
+		<Unit filename="src/include/udjat/tools/dmi.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Extensions>
