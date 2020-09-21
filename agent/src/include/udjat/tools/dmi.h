@@ -65,14 +65,12 @@
 
 			class UDJAT_API Value {
 			private:
-#ifdef _WIN32
-
-#else
-
-#endif // _WIN32
+				Type type;
+				uint16_t offset;
 
 			public:
-				Value(Type type, int offset);
+				Value(const char *type, const uint16_t offset);
+				Value(const Type t, const uint16_t o) : type(t), offset(o) { }
 
 				std::string as_string();
 

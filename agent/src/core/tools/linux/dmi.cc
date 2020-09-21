@@ -86,40 +86,50 @@ namespace Udjat {
 
 		data=buf;
 
-		// 4 is the length of an SMBIOS structure header
-		while(i<num && data+4<=buf+len) {
-			uint8_t *next;
-			Dmi::Header h;
+		try {
 
-			{
-				h.type=data[0];
-				h.length=data[1];
-				h.handle=WORD(data+2);
-				h.data=data;
-			};
+			// 4 is the length of an SMBIOS structure header
+			while(i<num && data+4<=buf+len) {
+				uint8_t *next;
+				Dmi::Header h;
 
-			if(h.length<4) {
-				clog << "Invalid entry length " << ((int) h.length) << " DMI table is broken!" << endl;
-				break;
-			}
+				{
+					h.type=data[0];
+					h.length=data[1];
+					h.handle=WORD(data+2);
+					h.data=data;
+				};
 
-			// look for the next handle
-			next=data+h.length;
-			while(next-buf+1<len && (next[0]!=0 || next[1]!=0))
-				next++;
-
-			next+=2;
-
-			if(h.type == type) {
-				if(next-buf<=len) {
-					response(h,data);
-				} else {
-					clog << "DMI: <TRUNCATED>" << endl;
+				if(h.length<4) {
+					clog << "Invalid entry length " << ((int) h.length) << " DMI table is broken!" << endl;
+					break;
 				}
+
+				// look for the next handle
+				next=data+h.length;
+				while(next-buf+1<len && (next[0]!=0 || next[1]!=0))
+					next++;
+
+				next+=2;
+
+				if(h.type == type) {
+					if(next-buf<=len) {
+						response(h,data);
+					} else {
+						clog << "DMI: <TRUNCATED>" << endl;
+					}
+				}
+				data=next;
+				i++;
 			}
-			data=next;
-			i++;
+
+		} catch(...) {
+
+			free(buf);
+			throw;
+
 		}
+
 		free(buf);
 	}
 
