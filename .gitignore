@@ -46,6 +46,7 @@ scripts
 
 # Misc
 doxyfile
+*.[0-9]
 
 # CodeBlocks
 *.layout

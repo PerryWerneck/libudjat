@@ -37,8 +37,10 @@
 			<Add directory="../../include" />
 		</Compiler>
 		<Unit filename="../../include/udjat/tools/dmi.h" />
+		<Unit filename="../../include/udjat/tools/file.h" />
 		<Unit filename="dmi.cc" />
 		<Unit filename="linux/dmi.cc" />
+		<Unit filename="memorymappedfile.cc" />
 		<Unit filename="testprogram/testprogram.cc" />
 		<Extensions />
 	</Project>

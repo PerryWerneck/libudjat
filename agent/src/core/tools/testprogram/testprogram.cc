@@ -9,6 +9,7 @@
 
  #include <iostream>
  #include <udjat/tools/dmi.h>
+ #include <udjat/tools/file.h>
 
  using namespace std;
  using namespace Udjat;
