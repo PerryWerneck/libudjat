@@ -10,7 +10,7 @@
 
 		namespace Config {
 
-			class DLL_PUBLIC File {
+			class UDJAT_API File {
 			private:
 
 				static std::recursive_mutex guard;

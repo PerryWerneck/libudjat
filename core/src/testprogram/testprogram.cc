@@ -19,7 +19,7 @@
 
 int main(int argc, char **argv) {
 
-	auto controller = Udjat::Abstract::Agent::load("./agent");
+	auto controller = Udjat::Abstract::Agent::load("./src/agent");
 
 	controller->start();
 

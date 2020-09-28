@@ -32,6 +32,7 @@
 
 	#define PRIVATE_H_INCLUDED
 
+	/*
 	#include <udjat/defs.h>
 	#include <udjat/string.h>
 	#include <udjat/service.h>
@@ -103,5 +104,6 @@
 
 
 	}
+	*/
 
 #endif // PRIVATE_H_INCLUDED
