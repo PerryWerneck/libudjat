@@ -21,7 +21,7 @@
 int main(int argc, char **argv) {
 
 	/// @brief Root agent.
-	Abstract::Agent root;
+	std::shared_ptr<Abstract::Agent> root = make_shared<Abstract::Agent>();
 
 	// Load XML
 	{
@@ -35,13 +35,16 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	root.start();
+	root->start();
 
-	root.foreach([](Udjat::Abstract::Agent &agent) {
+	root->foreach([](Udjat::Abstract::Agent &agent) {
 		cout << "Agent: " << agent.getName() << endl;
 	});
 
-	root.stop();
+	cout << endl << root->as_json().toStyledString() << endl;
+
+
+	root->stop();
 
 	/*
 	auto controller = Udjat::Abstract::Agent::load("./main/agent");

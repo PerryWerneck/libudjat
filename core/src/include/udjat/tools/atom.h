@@ -30,7 +30,7 @@
 			Atom & operator=(const pugi::xml_attribute &attribute);
 
 			const char * c_str() const {
-				return value->c_str();
+				return value ? value->c_str() : "";
 			}
 
 			const std::string & to_string() const {
@@ -38,7 +38,7 @@
 			}
 
 			operator bool() const {
-				return !(this->value && this->value->empty());
+				return (this->value && !this->value->empty());
 			}
 
 			bool operator==(const Atom &src) const {

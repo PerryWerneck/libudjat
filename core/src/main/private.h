@@ -33,6 +33,22 @@
 
 			std::unordered_map<Udjat::Atom, Agent> agents;
 
+
+			class Node {
+			private:
+				std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> value;
+
+			public:
+				Node(std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> m) : value(m) {}
+
+				void apply(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node) {
+					this->value(agent,node);
+				}
+
+			};
+
+			std::unordered_map<Udjat::Atom, Node> nodes;
+
 			static std::recursive_mutex guard;
 
 			Controller();
@@ -44,8 +60,11 @@
 			/// @brief Insert agent factory method.
 			void insert(const char *name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method);
 
+			/// @brief Insert Node factory method.
+			void insert(const char *name, std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> factory);
+
 			/// @brief Load agent children from xml definition.
-			void load(Abstract::Agent &parent, const pugi::xml_node &node);
+			void load(std::shared_ptr<Abstract::Agent> parent, const pugi::xml_node &node);
 
 		};
 

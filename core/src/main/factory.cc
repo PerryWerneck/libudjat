@@ -72,11 +72,14 @@ namespace Udjat {
 
 	}
 
-	void Factory::Controller::load(Abstract::Agent &parent, const pugi::xml_node &node) {
+	void Factory::Controller::load(std::shared_ptr<Abstract::Agent> parent, const pugi::xml_node &node) {
 
-		// First load children.
+		// First load sub nodes
 		for(auto child : node.children()) {
 
+			//
+			// Load agents.
+			//
 			const char *name = child.name();
 			if(strcasecmp(name,"agent") == 0) {
 				name = child.attribute("type").as_string();
@@ -89,9 +92,9 @@ namespace Udjat {
 				lock_guard<recursive_mutex> lock(guard);
 				auto factory = agents.find(name);
 				if(factory != agents.end()) {
-					auto agent = factory->second.create(parent,child);
-					this->load(*agent,child);
-					parent.children.push_back(agent);
+					auto agent = factory->second.create(*parent,child);
+					this->load(agent,child);
+					parent->children.push_back(agent);
 				}
 			} catch(const std::exception &e) {
 
@@ -99,9 +102,25 @@ namespace Udjat {
 
 			}
 
+			//
+			// Load other nodes.
+			//
+			{
+				lock_guard<recursive_mutex> lock(guard);
+				auto factory = nodes.find(name);
+				if(factory != nodes.end()) {
+					factory->second.apply(parent,child);
+				}
+
+			}
+
 		}
 
-		// Then load other elements.
+		// And then, load states.
+		for(pugi::xml_node state = node.child("state"); state; state = state.next_sibling("state")) {
+			parent->append_state(state);
+		}
+
 
 	}
 
