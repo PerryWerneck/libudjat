@@ -16,6 +16,8 @@
 
 namespace Udjat {
 
+	/*
+
 	Abstract::Agent::Controller::Controller() : Abstract::Agent::Agent() {
 
 		this->name = "";
@@ -86,6 +88,6 @@ namespace Udjat {
 
 	}
 
-
+	*/
 }
 

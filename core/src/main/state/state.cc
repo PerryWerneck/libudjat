@@ -50,6 +50,8 @@ namespace Udjat {
 	Abstract::State::State(const pugi::xml_node &node) :
 		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[0])),getAttribute(node,"summary").as_string()) {
 
+		this->href = Udjat::getAttribute(node,"href").as_string();
+
 	}
 
 	void Abstract::State::activate(Agent &agent) {

@@ -10,6 +10,7 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
+ #include <udjat/factory.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -20,34 +21,9 @@ namespace Udjat {
 	Abstract::Agent::Agent() {
 	}
 
-	const char * check_for_reserved_name(const char *name) {
-
-		if(!(name && *name))
-			throw runtime_error("Can't use empty name");
-
-		// Check for reserved names.
-		static const char *reserved_names[] = {
-			"state",
-			"agent",
-			"action"
-		};
-
-		for(size_t ix = 0; ix < (sizeof(reserved_names)/sizeof(reserved_names[0])); ix++) {
-			if(!strcasecmp(name,reserved_names[ix])) {
-				string message("Can't use reserved name \'");
-				message += name;
-				message += "\'";
-				throw std::runtime_error(message);
-			}
-		}
-
-		return name;
-
-	}
-
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent() {
 
-		this->name = check_for_reserved_name(node.attribute("name").as_string());
+		this->name = Factory::validate_name(node.attribute("name").as_string());
 
 #ifdef DEBUG
 		cout << "Creating " << this->name << endl;
@@ -58,6 +34,8 @@ namespace Udjat {
 		this->update.timer = node.attribute("update-timer").as_uint(this->update.timer);
 		this->update.next = time(nullptr) + node.attribute("delay-on-startup").as_uint(this->update.timer);
 		this->update.on_demand = node.attribute("update-on-demand").as_bool(this->update.timer == 0);
+
+		this->href = Udjat::getAttribute(node,"href").as_string();
 
 	}
 

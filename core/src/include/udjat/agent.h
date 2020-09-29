@@ -26,8 +26,6 @@
 
 		namespace Abstract {
 
-			class Agent;
-
 			class UDJAT_API State {
 			public:
 				enum Level : uint8_t {
@@ -45,6 +43,7 @@
 
 				Level level;
 				Atom summary;
+				Atom href;			///< @brief Web link to this state (Usually used for http exporter).
 
 				static Level getLevelFromName(const char *name);
 
@@ -72,13 +71,12 @@
 			class UDJAT_API Agent {
 			private:
 
-				class Controller;
+				friend class Factory::Controller;
 
 				static std::recursive_mutex guard;
 
 				Atom name;
 
-				Agent();
 				Agent *parent = nullptr;
 
 				struct {
@@ -91,12 +89,13 @@
 
 				std::vector<std::shared_ptr<Agent>> children;
 
-				void load(const pugi::xml_node &toplevel);
-
 			protected:
 
 				/// @brief Current state.
 				std::shared_ptr<State> state;
+
+				/// @brief Web link for this agent (Usually used for http exporter).
+				Atom href;
 
 				/// @brief Value was updated, compute new state.
 				void revalidate();
@@ -105,16 +104,13 @@
 				void chk4refresh();
 
 				/// @brief Insert State.
-				virtual void append_state(const pugi::xml_node &node) = 0;
+				virtual void append_state(const pugi::xml_node &node);
 
 				/// @brief Get state from agent value.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
-
 			public:
-				class Factory;
-				friend class Factory;
-
+				Agent();
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
 
@@ -122,8 +118,6 @@
 				const char * getName() const noexcept {
 					return this->name.c_str();
 				}
-
-				static std::shared_ptr<Agent> load(const char *path = nullptr);
 
 				/// @brief Start agent.
 				virtual void start();
@@ -155,9 +149,6 @@
 
 
 		}
-
-		/// @brief Register an agent factory.
-		void UDJAT_API set_factory_method(const char *name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> factory);
 
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {

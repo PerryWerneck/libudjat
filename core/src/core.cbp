@@ -34,7 +34,7 @@
 			<Add option="-Wall" />
 			<Add option="`pkg-config --cflags pugixml jsoncpp libeconf`" />
 			<Add option="-pthread" />
-			<Add directory="../include" />
+			<Add directory="include" />
 		</Compiler>
 		<Linker>
 			<Add option="`pkg-config --libs pugixml jsoncpp libeconf`" />
@@ -45,23 +45,42 @@
 		<Unit filename="../include/udjat/defs.h" />
 		<Unit filename="../include/udjat/threadpool.h" />
 		<Unit filename="../include/udjat/timestamp.h" />
-		<Unit filename="agent/agent.cc" />
-		<Unit filename="agent/controller.cc" />
-		<Unit filename="agent/load.cc" />
 		<Unit filename="agent/private.h" />
-		<Unit filename="agent/state.cc" />
+		<Unit filename="include/config.h" />
+		<Unit filename="include/udjat.h" />
+		<Unit filename="include/udjat/agent.h" />
+		<Unit filename="include/udjat/configuration.h" />
+		<Unit filename="include/udjat/dbus.h" />
+		<Unit filename="include/udjat/defs.h" />
+		<Unit filename="include/udjat/request.h" />
+		<Unit filename="include/udjat/service.h" />
+		<Unit filename="include/udjat/threadpool.h" />
+		<Unit filename="include/udjat/timestamp.h" />
+		<Unit filename="include/udjat/tools/atom.h" />
+		<Unit filename="include/udjat/tools/dmi.h" />
+		<Unit filename="include/udjat/tools/file.h" />
+		<Unit filename="include/udjat/tools/virtualmachine.h" />
+		<Unit filename="include/udjat/tools/xml.h" />
+		<Unit filename="include/udjat/type.h" />
+		<Unit filename="main/agent/agent.cc" />
+		<Unit filename="main/agent/controller.cc" />
+		<Unit filename="main/agent/factory.cc" />
+		<Unit filename="main/agent/load.cc" />
+		<Unit filename="main/agent/private.h" />
+		<Unit filename="main/state/private.h" />
+		<Unit filename="main/state/state.cc" />
 		<Unit filename="private.h" />
 		<Unit filename="testprogram/testprogram.cc" />
-		<Unit filename="tools/linux/configuration/file.cc" />
-		<Unit filename="tools/linux/threadpool.cc" />
-		<Unit filename="tools/service/controller.cc" />
-		<Unit filename="tools/service/eventlistener.cc" />
-		<Unit filename="tools/service/linux/mainloop.cc" />
-		<Unit filename="tools/service/linux/run.cc" />
-		<Unit filename="tools/service/linux/timer.cc" />
-		<Unit filename="tools/service/windows/timer.cc" />
-		<Unit filename="tools/string.cc" />
+		<Unit filename="tools/atom.cc" />
+		<Unit filename="tools/dmi.cc" />
+		<Unit filename="tools/memorymappedfile.cc" />
+		<Unit filename="tools/os/linux/configuration/file.cc" />
+		<Unit filename="tools/os/linux/dmi.cc" />
+		<Unit filename="tools/os/linux/threadpool.cc" />
+		<Unit filename="tools/service/private.h" />
 		<Unit filename="tools/timestamp.cc" />
+		<Unit filename="tools/virtualmachine.cc" />
+		<Unit filename="tools/xml.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

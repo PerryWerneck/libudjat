@@ -133,5 +133,21 @@
 	/// @brief Obtém o número de elementos de um array.
 	#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
+	namespace Udjat {
+
+		namespace Abstract {
+
+			class Agent;
+
+		}
+
+		namespace Factory {
+
+			class Controller;
+
+		}
+
+	}
+
 #endif // COMPONENTS_DEFS_H_INCLUDED
 

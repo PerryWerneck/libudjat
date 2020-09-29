@@ -11,6 +11,7 @@
  #include <vector>
  #include <string>
  #include <iostream>
+ #include "../main/private.h"
 
  using namespace std;
  using namespace Udjat;
@@ -19,7 +20,31 @@
 
 int main(int argc, char **argv) {
 
-	auto controller = Udjat::Abstract::Agent::load("./src/agent");
+	/// @brief Root agent.
+	Abstract::Agent root;
+
+	// Load XML
+	{
+		pugi::xml_document doc;
+		doc.load_file("./src/main/agent/test.xml");
+
+		auto factory = Factory::Controller::getInstance();
+
+		for(pugi::xml_node node = doc.child("config"); node; node = node.next_sibling("config")) {
+			factory.load(root,node);
+		}
+	}
+
+	root.start();
+
+	root.foreach([](Udjat::Abstract::Agent &agent) {
+		cout << "Agent: " << agent.getName() << endl;
+	});
+
+	root.stop();
+
+	/*
+	auto controller = Udjat::Abstract::Agent::load("./main/agent");
 
 	controller->start();
 
@@ -32,6 +57,8 @@ int main(int argc, char **argv) {
 	cout << controller->find("intvalue")->as_json().toStyledString() << endl;
 
 	controller->stop();
+
+	*/
 
 	return 0;
 }
