@@ -14,6 +14,8 @@ MAIN_SOURCES= \
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 
+TARGETS=@OSNAME@-lib devel
+
 #---[ Tools ]----------------------------------------------------------------------------
 
 CXX=@CXX@
@@ -151,22 +153,24 @@ $(POTDIR)/$(PACKAGE_NAME)/%.pot: \
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+	$(BINRLS)/@SONAME@
 
 Release: \
-	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+	$(BINRLS)/@SONAME@
 
-$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@: \
+$(BINRLS)/@SONAME@: \
 	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
 	@$(LD) \
+		-shared \
 		-Wl,-soname,$(@F) \
 		-o $@ \
 		$(LDFLAGS) \
 		$^ \
 		$(LIBS)
+
 
 #---[ Install Targets ]------------------------------------------------------------------
 
@@ -174,17 +178,17 @@ install: \
        $(foreach TARGET, $(TARGETS), install-$(TARGET))
 
 install-linux-lib: \
-	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+	$(BINRLS)/@SONAME@
 
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
 
 	@$(INSTALL_PROGRAM) \
-		$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@ \
-		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+		$(BINRLS)/@SONAME@ \
+		$(DESTDIR)$(libdir)/@SONAME@
 		
 	@$(LN_S) \
-		lib$(PACKAGE_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
+		@SONAME@ \
 		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@
 
 install-windows-lib: \
@@ -203,7 +207,7 @@ install-windows-lib: \
 	@$(DLLTOOL) \
 		--input-def $(BINRLS)/lib$(PACKAGE_NAME).def \
 		--dllname lib$(PACKAGE_NAME).dll \
-		--output-lib $(DESTDIR)$(libdir)/lib$(PACKAGE_NAME).dll.a
+		--output-lib $(DESTDIR)$(libdir)/@SONAME@.a
 
 	@$(MKDIR) \
 		$(DESTDIR)$(datarootdir)/$(PACKAGE_NAME)/def
@@ -215,14 +219,14 @@ install-windows-lib: \
 install-devel:
 
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/@PACKAGE_NAME@
+		$(DESTDIR)$(includedir)/udjat
 
 	@$(INSTALL_DATA) \
-		src/include/@PACKAGE_NAME@/*.h \
-		$(DESTDIR)$(includedir)/@PACKAGE_NAME@
+		src/include/udjat/*.h \
+		$(DESTDIR)$(includedir)/udjat
 
 	@$(INSTALL_DATA) \
-		src/include/@PACKAGE_NAME@.h \
+		src/include/udjat.h \
 		$(DESTDIR)$(includedir)
 
 	# Install PKG-CONFIG files
@@ -232,6 +236,40 @@ install-devel:
 #	@$(INSTALL_DATA) \
 #		sdk/pkg-config.pc \
 #		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
+#---[ Uninstall Targets ]----------------------------------------------------------------
+
+uninstall: \
+       $(foreach TARGET, $(TARGETS), uninstall-$(TARGET))
+
+uninstall-linux-lib:
+
+	@rm -f \
+		$(DESTDIR)$(libdir)/@SONAME@
+		
+	@rm -f \
+		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@
+
+uninstall-windows-lib:
+
+	@rm -f \
+		$(DESTDIR)$(bindir)/@SONAME@
+		
+	@rm -f \
+		$(DESTDIR)$(libdir)/@SONAME@.a
+
+uninstall-devel:
+
+	@rm -fr \
+		$(DESTDIR)$(includedir)/udjat
+
+	@rm -f \
+		$(DESTDIR)$(includedir)/udjat.h
+
+	# Uninstall PKG-CONFIG files
+	@rm -f \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 
