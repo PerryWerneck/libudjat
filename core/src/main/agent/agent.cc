@@ -18,19 +18,16 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent() {
-		this->state = Abstract::Agent::find_state();
+	Abstract::Agent::Agent(Agent *p) : parent(p), state(Abstract::Agent::find_state()) {
 	}
 
-	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent() {
+	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent) {
 
 		this->name = Factory::validate_name(node.attribute("name").as_string());
 
 #ifdef DEBUG
 		cout << "Creating " << this->name << endl;
 #endif // DEBUG
-
-		this->parent = parent;
 
 		this->update.timer = node.attribute("update-timer").as_uint(this->update.timer);
 		this->update.next = time(nullptr) + node.attribute("delay-on-startup").as_uint(this->update.timer);
@@ -318,7 +315,7 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 
-		// No override; return a common default state.
+		// Default method should return a common "undefined" state.
 
 		static std::shared_ptr<Abstract::State> state;
 

@@ -1,6 +1,6 @@
-#ifndef UDJAT_FILE_H_INCLUDED
+#ifndef UDJAT_MMAP_H_INCLUDED
 
-	#define UDJAT_FILE_H_INCLUDED
+	#define UDJAT_MMAP_H_INCLUDED
 
 	#include <udjat/defs.h>
 
@@ -17,7 +17,7 @@
 			MemoryMappedFile(const char *path);
 			~MemoryMappedFile();
 
-			inline const size_t size() const noexcept {
+			inline size_t size() const noexcept {
 				return this->length;
 			}
 
@@ -25,8 +25,12 @@
 				return contents;
 			}
 
+			inline const char * c_str() const noexcept {
+				return (const char *) contents;
+			}
+
 		};
 
 	}
 
-#endif // UDJAT_FILE_H_INCLUDED
+#endif // UDJAT_MMAP_H_INCLUDED

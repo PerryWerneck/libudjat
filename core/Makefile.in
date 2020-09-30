@@ -1,0 +1,306 @@
+
+#---[ Library configuration ]------------------------------------------------------------
+
+PACKAGE_NAME=@PACKAGE_NAME@
+
+MAIN_SOURCES= \
+	$(wildcard src/tools/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
+	$(wildcard src/main/*.cc) \
+	$(wildcard src/main/agent/*.cc) \
+	$(wildcard src/main/state/*.cc)
+
+TEST_SOURCES= \
+	$(wildcard src/testprogram/*.cc)
+
+#---[ Tools ]----------------------------------------------------------------------------
+
+CXX=@CXX@
+LD=@CXX@
+LN_S=@LN_S@
+MKDIR=@MKDIR_P@
+INSTALL=@INSTALL@
+INSTALL_DATA=@INSTALL_DATA@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+XGETTEXT=@XGETTEXT@
+MSGCAT=@MSGCAT@
+WINDRES=@WINDRES@
+AR=@AR@
+VALGRIND=@VALGRIND@
+DLLTOOL=@DLLTOOL@
+
+#---[ Paths ]----------------------------------------------------------------------------
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+sbindir=@sbindir@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+localedir=@localedir@
+docdir=@docdir@
+sysconfdir=@sysconfdir@
+
+BASEDIR=@BASEDIR@
+
+OBJDIR=.obj/core
+OBJDBG=$(OBJDIR)/Debug
+OBJRLS=$(OBJDIR)/Release
+
+BINDIR=$(BASEDIR)/.bin
+BINDBG=$(BINDIR)/Debug
+BINRLS=$(BINDIR)/Release
+
+#---[ Rules ]----------------------------------------------------------------------------
+
+DEPENDS= \
+	Makefile \
+	src/include/*.h \
+	src/include/udjat/*.h
+
+CFLAGS= \
+	@CXXFLAGS@ \
+	-fPIC \
+	-Isrc/include \
+	-DBUILD_DATE=`date +%Y%m%d` \
+	@ECONF_CFLAGS@ \
+	@DBUS_CFLAGS@ \
+	@PUGIXML_CFLAGS@ \
+	@JSONCPP_CFLAGS@
+
+LDFLAGS=\
+	@LDFLAGS@
+
+LIBS= \
+	@LIBS@ \
+	@LIBICONV@ \
+	@ECONF_LIBS@ \
+	@DBUS_LIBS@ \
+	@PUGIXML_LIBS@ \
+	@JSONCPP_LIBS@
+
+#---[ Debug Rules ]----------------------------------------------------------------------
+
+$(OBJDBG)/%.o: \
+	%.cc \
+	$(DEPENDS)
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-Wall -Wextra -fstack-check \
+		-DDEBUG=1 \
+		-o $@ \
+		-c $<
+
+$(OBJDBG)/%.o: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@$(WINDRES) $< -O coff -o $@
+
+#---[ Release Rules ]--------------------------------------------------------------------
+
+$(OBJRLS)/%.o: \
+	%.cc \
+	$(DEPENDS)
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@$(CXX) \
+		$(CFLAGS) \
+		-DNDEBUG=1 \
+		-o $@ \
+		-c $<
+
+$(OBJRLS)/%.o: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@$(WINDRES) $< -O coff -o $@
+
+#---[ Misc Rules ]-----------------------------------------------------------------------
+
+$(POTDIR)/$(PACKAGE_NAME)/%.pot: \
+	%.cc
+
+	@echo $(notdir $@) ...
+	@$(MKDIR) $(@D)
+	@$(XGETTEXT) \
+		--language=C \
+		--keyword=_ \
+		--keyword=N_ \
+		--keyword=MSG_:2 \
+		--output=$@ \
+		$<
+	@touch $@
+
+$(POTDIR)/$(PACKAGE_NAME)/%.pot: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@touch $@
+
+#---[ Release Targets ]------------------------------------------------------------------
+
+all: \
+	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+
+Release: \
+	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+
+$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+#---[ Install Targets ]------------------------------------------------------------------
+
+install: \
+       $(foreach TARGET, $(TARGETS), install-$(TARGET))
+
+install-linux-lib: \
+	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@ \
+		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+		
+	@$(LN_S) \
+		lib$(PACKAGE_NAME)@DLLEXT@.@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@ \
+		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@
+
+install-windows-lib: \
+	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+
+	@$(MKDIR) \
+		$(DESTDIR)$(bindir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@ \
+		$(DESTDIR)$(bindir)/lib$(PACKAGE_NAME)@LIBEXT@
+		
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(DLLTOOL) \
+		--input-def $(BINRLS)/lib$(PACKAGE_NAME).def \
+		--dllname lib$(PACKAGE_NAME).dll \
+		--output-lib $(DESTDIR)$(libdir)/lib$(PACKAGE_NAME).dll.a
+
+	@$(MKDIR) \
+		$(DESTDIR)$(datarootdir)/$(PACKAGE_NAME)/def
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/lib$(PACKAGE_NAME).def \
+		$(DESTDIR)$(datarootdir)/$(PACKAGE_NAME)/def
+
+install-devel:
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/@PACKAGE_NAME@
+
+	@$(INSTALL_DATA) \
+		src/include/@PACKAGE_NAME@/*.h \
+		$(DESTDIR)$(includedir)/@PACKAGE_NAME@
+
+	@$(INSTALL_DATA) \
+		src/include/@PACKAGE_NAME@.h \
+		$(DESTDIR)$(includedir)
+
+	# Install PKG-CONFIG files
+#	@$(MKDIR) \
+#		$(DESTDIR)$(libdir)/pkgconfig
+#
+#	@$(INSTALL_DATA) \
+#		sdk/pkg-config.pc \
+#		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
+#---[ Debug Targets ]--------------------------------------------------------------------
+
+Debug: \
+	$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+
+$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@: \
+	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/@SONAME@
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-o $@ \
+		$^ \
+		-L$(BINDBG) \
+		-Wl,-rpath,$(BINDBG) \
+		$(LDFLAGS) \
+		$(LIBS)
+
+
+$(BINDBG)/@SONAME@: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-shared \
+		-Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+
+run: \
+	$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+
+ifeq ($(VALGRIND),no)
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+
+else
+	@touch valgrind.suppression
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(VALGRIND) --leak-check=full --track-origins=yes --gen-suppressions=all --suppressions=valgrind.suppression \
+		$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+endif
+
+#---[ Clean Targets ]--------------------------------------------------------------------
+
+clean: \
+	cleanDebug \
+	cleanRelease
+
+cleanDebug:
+
+	@rm -fr $(OBJDBG)
+	@rm -fr $(BINDBG)
+
+cleanRelease:
+
+	@rm -fr $(OBJRLS)
+	@rm -fr $(BINRLS)
+
+clean: \
+	cleanDebug \
+	cleanRelease
+
+

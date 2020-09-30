@@ -58,6 +58,8 @@ case "$host" in
 	*-mingw32)
 		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
 		LDFLAGS="$LDFLAGS -pthread"
+		AC_SUBST(LIBEXT,.dll)
+		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
 		AC_SUBST(OSNAME,windows)
 		;;
@@ -65,6 +67,8 @@ case "$host" in
  	*)
 		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread"
+		AC_SUBST(LIBEXT)
+		AC_SUBST(EXEEXT)
 		AC_SUBST(SONAME,libudjat.so.$app_vrs_major.$app_vrs_minor)
 		AC_SUBST(OSNAME,linux)
 		LIBS="$LIBS -ldl"
@@ -231,6 +235,12 @@ AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
+dnl Test for civetweb
+dnl ---------------------------------------------------------------------------
+
+AC_CHECK_HEADER(civetweb.h, AC_DEFINE(HAVE_CIVETWEB))
+
+dnl ---------------------------------------------------------------------------
 dnl Test for jsoncpp
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES( [JSONCPP], [jsoncpp], AC_DEFINE(HAVE_JSONCPP), AC_MSG_ERROR([libjsoncpp not present.]) )
@@ -258,7 +268,7 @@ dnl ac_configure_args="UDJAT_CFLAGS=-I$ac_pwd/src/include UDJAT_LIBS=-L$ac_pwd/.
 dnl AC_CONFIG_SUBDIRS([sample])
 
 AC_CONFIG_FILES(doxygen/doxyfile)
-dnl AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(Makefile)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

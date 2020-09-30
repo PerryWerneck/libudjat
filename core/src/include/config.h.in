@@ -38,6 +38,10 @@
 	/// @brief Defined on most unixes
 	#undef HAVE_UNISTD_H
 
+	/// @brief Does the system have the civetweb http server library?
+	#undef HAVE_CIVETWEB
+
+
 #endif // CONFIG_H_INCLUDED
 
 

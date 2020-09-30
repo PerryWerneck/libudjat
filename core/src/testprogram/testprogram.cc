@@ -12,6 +12,7 @@
  #include <string>
  #include <iostream>
  #include "../main/private.h"
+ #include <civetweb.h>
 
  using namespace std;
  using namespace Udjat;
@@ -50,22 +51,6 @@ int main(int argc, char **argv) {
 
 	root->stop();
 
-	/*
-	auto controller = Udjat::Abstract::Agent::load("./main/agent");
-
-	controller->start();
-
-	auto agent = controller->find({"intvalue","subkey"});
-
-	controller->foreach([](Udjat::Abstract::Agent &agent) {
-		cout << "Agent: " << agent.getName() << endl;
-	});
-
-	cout << controller->find("intvalue")->as_json().toStyledString() << endl;
-
-	controller->stop();
-
-	*/
 
 	return 0;
 }

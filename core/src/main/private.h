@@ -10,6 +10,7 @@
 	#include <pugixml.hpp>
 	#include <mutex>
 	#include <iostream>
+	#include <unordered_map>
 
 	using namespace std;
 

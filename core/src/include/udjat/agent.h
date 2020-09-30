@@ -119,7 +119,7 @@
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
 			public:
-				Agent();
+				Agent(Agent *parent = nullptr);
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
 
