@@ -19,6 +19,7 @@
 namespace Udjat {
 
 	const char * Abstract::State::levelNames[] = {
+		"undefined",
 		"unimportant",
 		"ready",
 		"warning",
@@ -48,7 +49,7 @@ namespace Udjat {
 	}
 
 	Abstract::State::State(const pugi::xml_node &node) :
-		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[0])),getAttribute(node,"summary").as_string()) {
+		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[unimportant])),getAttribute(node,"summary").as_string()) {
 
 		this->href = Udjat::getAttribute(node,"href").as_string();
 
@@ -71,10 +72,10 @@ namespace Udjat {
 	}
 
 
-	void Abstract::State::activate(Agent &agent) {
+	void Abstract::State::activate(const Agent &agent) {
 	}
 
-	void Abstract::State::deactivate(Agent &agent) {
+	void Abstract::State::deactivate(const Agent &agent) {
 	}
 
 }

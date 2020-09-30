@@ -29,6 +29,7 @@
 			class UDJAT_API State {
 			public:
 				enum Level : uint8_t {
+						undefined,
 						unimportant,
 						ready,
 						warning,
@@ -67,8 +68,8 @@
 
 				Json::Value as_json() const;
 
-				void activate(Agent &agent);
-				void deactivate(Agent &agent);
+				void activate(const Agent &agent);
+				void deactivate(const Agent &agent);
 
 
 			};
@@ -94,10 +95,13 @@
 
 				std::vector<std::shared_ptr<Agent>> children;
 
-			protected:
-
 				/// @brief Current state.
 				std::shared_ptr<State> state;
+
+			protected:
+
+				/// @brief Activate a new state.
+				void activate(std::shared_ptr<State> state) noexcept;
 
 				/// @brief Web link for this agent (Usually used for http exporter).
 				Atom href;
@@ -111,7 +115,7 @@
 				/// @brief Insert State.
 				virtual void append_state(const pugi::xml_node &node);
 
-				/// @brief Get state from agent value.
+				/// @brief Find state from agent value.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
 			public:

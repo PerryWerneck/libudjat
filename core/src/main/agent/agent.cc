@@ -18,20 +18,8 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	static std::shared_ptr<Abstract::State> getDefaultState() {
-
-		std::shared_ptr<Abstract::State> state;
-
-		if(!state) {
-			state = std::make_shared<Abstract::State>(Abstract::State::unimportant,"Undefined");
-		}
-
-		return state;
-
-	}
-
 	Abstract::Agent::Agent() {
-		this->state = getDefaultState();
+		this->state = Abstract::Agent::find_state();
 	}
 
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent() {
@@ -64,6 +52,43 @@ namespace Udjat {
 	void Abstract::Agent::refresh() {
 	}
 
+	void Abstract::Agent::activate(std::shared_ptr<State> state) noexcept {
+
+		// It's an empty state? If yes replaces with the default one.
+		if(!state)
+			state = Abstract::Agent::find_state();
+
+		// Return if it's the same.
+		if(state == this->state)
+			return;
+
+		cout 	<< (this->name ? this->name.c_str() : "Application")
+				<< " state changes from \""
+				<< this->state->getSummary()
+				<< "\" to \"" << state->getSummary()
+				<< "\"" << endl;
+
+		try {
+
+			this->state->deactivate(*this);
+			this->state = state;
+			this->state->activate(*this);
+
+		} catch(const std::exception &e) {
+
+			cerr << "Error \"" << e.what() << "\" when activating the new state" << endl;
+			this->state = make_shared<State>(State::critical,e.what());
+
+		} catch(...) {
+
+			this->state = state;
+			cerr << "Unexpected error activating the new state" << endl;
+			this->state = make_shared<State>(State::critical,"Unexpected error on state change");
+
+		}
+
+	}
+
 	void Abstract::Agent::revalidate() {
 
 #ifdef DEBUG
@@ -73,6 +98,7 @@ namespace Udjat {
 		// Compute new state
 		try {
 
+			// First get state for current agent value.
 			auto new_state = find_state();
 
 			// Does any children has worst state? if yes; use-it.
@@ -82,7 +108,7 @@ namespace Udjat {
 
 					auto child_state = child->find_state();
 
-					if(child_state && (!new_state || child_state->getLevel() > new_state->getLevel())) {
+					if(child_state && child_state->getLevel() > new_state->getLevel()) {
 						new_state = child_state;
 					}
 
@@ -90,32 +116,17 @@ namespace Udjat {
 
 			}
 
-			if(new_state != this->state) {
-
-				if(this->state) {
-					this->state->deactivate(*this);
-				}
-
-				this->state = new_state;
-
-				if(this->state) {
-					cout << "State of " << *this << " is now " << this->state << endl;
-					this->state->activate(*this);
-				} else {
-					cout << "State of " << *this << " is now undefined" << endl;
-				}
-
-			}
+			activate(new_state);
 
 		} catch(const exception &e) {
 
 			cerr << "Çan't update state of \"" << this->name << "\": " << e.what() << endl;
-			this->state = make_shared<State>(State::critical,e.what());
+			activate(make_shared<State>(State::critical,e.what()));
 
 		} catch(...) {
 
 			cerr << "Çan't update state of \"" << this->name << "\": Unexpected error" << endl;
-			this->state = make_shared<State>(State::critical,"Unexpected error");
+			activate(make_shared<State>(State::critical,"Unexpected error"));
 
 		}
 
@@ -132,26 +143,32 @@ namespace Udjat {
 		}
 
 		// Update state.
-		this->state = find_state();
+		auto new_state = find_state();
 
 		// Check for children state
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
 			for(auto child : children) {
 
-				auto child_state = child->find_state();
+				auto child_state = child->getState();
 
-				if(child_state && (!this->state || child_state->getLevel() > this->state->getLevel())) {
-					this->state = child_state;
+				/*
+#ifdef DEBUG
+				cout	<< "Child state is \""
+						<< child_state->getSummary() << "\" (" << child_state->getLevel() << ")"
+						<< " My level is \"" << this->state->getSummary() << "\" (" << this->state->getLevel() << ")" << endl;
+#endif // DEBUG
+				*/
+
+				if(child_state && child_state->getLevel() > new_state->getLevel()) {
+					new_state = child_state;
 				}
 
 			}
 
 		}
 
-		if(this->state && this->name) {
-			clog << this->name << " starts with state \"" << this->state << "\"" << endl;
-		}
+		activate(new_state);
 
 	}
 
@@ -290,28 +307,6 @@ namespace Udjat {
 
 		return node;
 
-		/*
-		Json::Value value;
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		if(children.empty()) {
-
-			// Single value.
-			this->get(value[this->name.c_str()]);
-
-		} else {
-
-			// Multiple values.
-			for(auto child : children) {
-				value[this->name.c_str()] = child->as_json();
-			}
-
-		}
-		return value;
-		*/
-
-
 	}
 
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
@@ -322,9 +317,17 @@ namespace Udjat {
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
-		// TODO: Search for childs.
-		static std::shared_ptr<Abstract::State> st;
-		return st;
+
+		// No override; return a common default state.
+
+		static std::shared_ptr<Abstract::State> state;
+
+		if(!state) {
+			state = std::make_shared<Abstract::State>(Abstract::State::undefined,"");
+		}
+
+		return state;
+
 	}
 
 }
