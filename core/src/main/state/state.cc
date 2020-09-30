@@ -54,6 +54,23 @@ namespace Udjat {
 
 	}
 
+	void Abstract::State::get(Json::Value &value) const {
+
+		value["summary"] = summary.c_str();
+		value["href"] = href.c_str();
+		value["level"] = levelNames[level];
+
+	}
+
+	Json::Value Abstract::State::as_json() const {
+
+		Json::Value node;
+		get(node);
+		return node;
+
+	}
+
+
 	void Abstract::State::activate(Agent &agent) {
 	}
 

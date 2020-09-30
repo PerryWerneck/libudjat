@@ -41,7 +41,11 @@ int main(int argc, char **argv) {
 		cout << "Agent: " << agent.getName() << endl;
 	});
 
-	cout << endl << root->as_json().toStyledString() << endl;
+	cout 	<< endl
+			<< root->as_json().toStyledString()
+			<< endl << endl
+			<< root->getState()->as_json().toStyledString()
+			<< endl << endl;
 
 
 	root->stop();

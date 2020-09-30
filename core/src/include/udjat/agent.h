@@ -63,8 +63,13 @@
 					return this->level;
 				}
 
+				virtual void get(Json::Value &value) const;
+
+				Json::Value as_json() const;
+
 				void activate(Agent &agent);
 				void deactivate(Agent &agent);
+
 
 			};
 

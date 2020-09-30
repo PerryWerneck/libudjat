@@ -18,7 +18,20 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
+	static std::shared_ptr<Abstract::State> getDefaultState() {
+
+		std::shared_ptr<Abstract::State> state;
+
+		if(!state) {
+			state = std::make_shared<Abstract::State>(Abstract::State::unimportant,"Undefined");
+		}
+
+		return state;
+
+	}
+
 	Abstract::Agent::Agent() {
+		this->state = getDefaultState();
 	}
 
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent() {
