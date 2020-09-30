@@ -7,49 +7,50 @@
  *
  */
 
+ #include "private.h"
  #include <udjat/agent.h>
+ #include <udjat/factory.h>
  #include <vector>
  #include <string>
- #include <iostream>
- #include "../main/private.h"
- #include <civetweb.h>
+
 
  using namespace std;
  using namespace Udjat;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
+std::shared_ptr<Abstract::Agent> root_agent = make_shared<Abstract::Agent>();
+
+
 int main(int argc, char **argv) {
 
-	/// @brief Root agent.
-	std::shared_ptr<Abstract::Agent> root = make_shared<Abstract::Agent>();
+	const char * xml_filename = "./src/main/agent/test.xml";
 
-	// Load XML
 	{
 		pugi::xml_document doc;
-		doc.load_file("./src/main/agent/test.xml");
-
-		auto factory = Factory::Controller::getInstance();
-
-		for(pugi::xml_node node = doc.child("config"); node; node = node.next_sibling("config")) {
-			factory.load(root,node);
-		}
+		doc.load_file(xml_filename);
+		Factory::load(root_agent,doc);
 	}
 
-	root->start();
+	root_agent->start();
 
-	root->foreach([](Udjat::Abstract::Agent &agent) {
+
+	run_civetweb();
+
+	/*
+	root_agent->foreach([](Udjat::Abstract::Agent &agent) {
 		cout << "Agent: " << agent.getName() << endl;
 	});
 
 	cout 	<< endl
-			<< root->as_json().toStyledString()
+			<< root_agent->as_json().toStyledString()
 			<< endl << endl
-			<< root->getState()->as_json().toStyledString()
+			<< root_agent->getState()->as_json().toStyledString()
 			<< endl << endl;
+	*/
 
 
-	root->stop();
+	root_agent->stop();
 
 
 	return 0;

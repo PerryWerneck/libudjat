@@ -134,5 +134,14 @@ namespace Udjat {
 		Factory::Controller::getInstance().insert(name,method);
 	}
 
+	void Factory::load(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_document &doc) {
+
+		auto factory = Factory::Controller::getInstance();
+
+		for(pugi::xml_node node = doc.child("config"); node; node = node.next_sibling("config")) {
+			factory.load(agent,node);
+		}
+
+	}
 
 }

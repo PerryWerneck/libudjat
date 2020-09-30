@@ -72,6 +72,8 @@
 		<Unit filename="src/main/state/state.cc" />
 		<Unit filename="src/private.h" />
 		<Unit filename="src/state/private.h" />
+		<Unit filename="src/testprogram/civetweb.cc" />
+		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/atom.cc" />
 		<Unit filename="src/tools/mmap.cc" />

@@ -238,7 +238,10 @@ dnl ---------------------------------------------------------------------------
 dnl Test for civetweb
 dnl ---------------------------------------------------------------------------
 
-AC_CHECK_HEADER(civetweb.h, AC_DEFINE(HAVE_CIVETWEB))
+AC_CHECK_HEADER(civetweb.h, [
+	AC_DEFINE(HAVE_CIVETWEB)
+	LIBS="$LIBS -lcivetweb"
+])
 
 dnl ---------------------------------------------------------------------------
 dnl Test for jsoncpp

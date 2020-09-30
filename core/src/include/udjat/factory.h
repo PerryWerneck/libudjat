@@ -10,6 +10,9 @@
 
 			class Controller;
 
+			/// @brief Load xml document.
+			void load(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_document &doc);
+
 			/// @brief Verify if the name is a valid factory name.
 			const char * validate_name(const char *name);
 
