@@ -22,6 +22,21 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 		return 405;
 	}
 
+	const char * uri = (ri->local_uri + 7);
+
+	if(!strncasecmp(uri,"state/",5)) {
+
+		cout << "State: " << (uri+5) << endl;
+
+	} else if(!strncasecmp(uri,"agent",5)) {
+
+		cout << "Agent: " << (uri+5) << endl;
+
+	} else {
+
+		cout << "Unknown: " << uri << endl;
+
+	}
 
 	mg_send_http_error(conn, 404, "Unknown request");
 	return 404;
@@ -52,6 +67,10 @@ void run_civetweb() {
 	if (ctx == NULL) {
 		throw runtime_error("Cannot start CivetWeb - mg_start failed.");
 	}
+
+	// http://127.0.0.1:8990/udjat/state
+
+	mg_set_request_handler(ctx, "/udjat/", WebHandler, 0);
 
 	while(enabled) {
 		sleep(1);
