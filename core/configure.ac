@@ -67,7 +67,7 @@ case "$host" in
  	*)
 		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread"
-		AC_SUBST(LIBEXT)
+		AC_SUBST(LIBEXT,.so)
 		AC_SUBST(EXEEXT)
 		AC_SUBST(SONAME,libudjat.so.$app_vrs_major.$app_vrs_minor)
 		AC_SUBST(OSNAME,linux)
@@ -269,6 +269,7 @@ dnl AC_CONFIG_SUBDIRS([sample])
 
 AC_CONFIG_FILES(doxygen/doxyfile)
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(sdk/pkg-config.pc)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
