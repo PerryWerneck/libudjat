@@ -54,6 +54,7 @@
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/service.h" />
+		<Unit filename="src/include/udjat/state.h" />
 		<Unit filename="src/include/udjat/threadpool.h" />
 		<Unit filename="src/include/udjat/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/atom.h" />

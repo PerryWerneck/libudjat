@@ -11,6 +11,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/factory.h>
+ #include <udjat/tools/xml.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -271,7 +272,7 @@ namespace Udjat {
 		chk4refresh();
 	}
 
-	Request & Abstract::Agent::get(Request &request) {
+	Request & Abstract::Agent::setup(Request &request) {
 
 		chk4refresh();
 
@@ -280,6 +281,22 @@ namespace Udjat {
 
 		if(update.last)
 			request.setModificationTimestamp(update.last);
+
+		return request;
+	}
+
+	Request & Abstract::Agent::get(const char *name, Request &request) {
+		setup(request);
+
+	}
+
+	Request & Abstract::Agent::get(Request &request) {
+
+		setup(request);
+
+		for(auto child : children) {
+			child->get(child->getName(),request);
+		}
 
 		return request;
 	}

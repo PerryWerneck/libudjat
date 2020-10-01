@@ -19,7 +19,10 @@ namespace Udjat {
 
 		insert("state",[](Request &request) {
 
-			find_agent(request.getPath())->getState()->get(request);
+			auto agent = find_agent(request.getPath());
+
+			agent->getState()->get(request);
+			agent->get("value",request);
 
 		});
 

@@ -18,63 +18,16 @@
 	#include <mutex>
 	#include <functional>
 	#include <udjat/defs.h>
+	#include <udjat/state.h>
 	#include <udjat/tools/atom.h>
 	#include <udjat/request.h>
+	#include <udjat/tools/xml.h>
 	#include <json/value.h>
 	#include <cstring>
 
 	namespace Udjat {
 
 		namespace Abstract {
-
-			class UDJAT_API State {
-			public:
-				enum Level : uint8_t {
-						undefined,
-						unimportant,
-						ready,
-						warning,
-						error,
-						critical		///< @brief Critical level (allways the last one)
-				};
-
-				/// @brief Strings com os nomes dos níveis de estado.
-				static const char * levelNames[];
-
-			private:
-
-				Level level;
-				Atom summary;
-				Atom href;			///< @brief Web link to this state (Usually used for http exporter).
-
-				static Level getLevelFromName(const char *name);
-
-			public:
-				State(const Level l, const char *m);
-
-				State(const pugi::xml_node &node);
-
-				State(const std::exception &e) : State(critical, e.what()) {
-				}
-
-				inline const char * getSummary() const {
-					return summary.c_str();
-				}
-
-				inline Level getLevel() const {
-					return this->level;
-				}
-
-				virtual void get(Json::Value &value) const;
-				virtual Request & get(Request &request);
-
-				Json::Value as_json() const;
-
-				void activate(const Agent &agent);
-				void deactivate(const Agent &agent);
-
-
-			};
 
 			class UDJAT_API Agent {
 			private:
@@ -120,6 +73,9 @@
 				/// @brief Find state from agent value.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
+				/// @brief Setup (adds cache and update information)
+				Request & setup(Request &request);
+
 			public:
 				Agent(Agent *parent = nullptr);
 				Agent(Agent *parent, const pugi::xml_node &node);
@@ -146,6 +102,8 @@
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
 
 				virtual Json::Value as_json();
+
+				virtual Request & get(const char *name, Request &request);
 				virtual Request & get(Request &request);
 
 				/// @brief Get current state
@@ -168,26 +126,6 @@
 
 		/// @brief Get Agent from path
 		std::shared_ptr<Abstract::Agent> find_agent(const char *path);
-
-		/// @brief Wrapper for XML attribute
-		class UDJAT_API Attribute : public pugi::xml_attribute {
-		public:
-			Attribute(const pugi::xml_node &node, const char *name) : pugi::xml_attribute(node.attribute(name)) {
-			}
-
-			operator uint32_t() const {
-				return as_uint();
-			}
-
-			operator int32_t() const {
-				return as_int();
-			}
-
-			operator bool() const {
-				return as_bool();
-			}
-
-		};
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
@@ -231,17 +169,10 @@
 				return Abstract::Agent::find_state();
 			}
 
-			/// @brief Select state by value.
-
 			/// @brief Add value to JSON.
 			void get(Json::Value &value) override {
 				Abstract::Agent::get(value);
 				value["value"] = this->value;
-			}
-
-			/// @brief Add value to request.
-			Request & get(Request &request) override {
-				return Agent::get(request).push(this->getName(),this->value);
 			}
 
 		public:
@@ -259,6 +190,15 @@
 
 			T get() const noexcept {
 				return value;
+			}
+
+			/// @brief Add value to request.
+			Request & get(const char *name, Request &request) override {
+				return setup(request).push(name,this->value);
+			}
+
+			Request & get(Request &request) override {
+				return setup(request).push("value",this->value);
 			}
 
 		};
@@ -305,16 +245,10 @@
 				return Abstract::Agent::find_state();
 			}
 
-			/// @brief Select state by value.
-
 			/// @brief Add value to JSON.
 			void get(Json::Value &value) override {
 				Abstract::Agent::get(value);
 				value["value"] = this->value;
-			}
-
-			Request & get(Request &request) override {
-				return Agent::get(request).push(this->getName(),this->value);
 			}
 
 		public:
@@ -332,6 +266,14 @@
 
 			std::string get() const noexcept {
 				return value;
+			}
+
+			Request & get(Request &request) override {
+				return setup(request).push("value",this->value);
+			}
+
+			Request & get(const char *name, Request &request) override {
+				return setup(request).push(name,this->value);
 			}
 
 		};
@@ -354,14 +296,6 @@
 
 		inline ostream& operator<< (ostream& os, const std::shared_ptr<Udjat::Abstract::Agent> agent) {
 			return os << agent->getName();
-		}
-
-		inline string to_string(const std::shared_ptr<Udjat::Abstract::State> state) {
-			return state->getSummary();
-		}
-
-		inline ostream& operator<< (ostream& os, const std::shared_ptr<Udjat::Abstract::State> state) {
-			return os << state->getSummary();
 		}
 
 	}

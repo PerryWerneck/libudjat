@@ -25,6 +25,31 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 
 	string response;
 
+	class Request : public Udjat::Request {
+	public:
+		Json::Value response;
+
+		Request(const char *path) : Udjat::Request(path) {
+		}
+
+		string toString() const {
+			return response.toStyledString();
+		}
+
+		Udjat::Request & push(const char *name, const int32_t value) override {
+			response[name] = value;
+		}
+
+		Udjat::Request & push(const char *name, const uint32_t value) {
+			response[name] = value;
+		}
+
+		Udjat::Request & push(const char *name, const char *value) {
+			response[name] = value;
+		}
+
+	};
+
 	try {
 
 		const char * uri = (ri->local_uri + 6);
@@ -32,17 +57,14 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 
 		cout << "Request name: \"" << request.getName() << "\" Path: \"" << request.getPath() << "\"" << endl;
 
-		if(request == "state") {
-
-			response = find_agent(request.getPath())->getState()->as_json().toStyledString();
-
-		} else if(request == "agent") {
+		if(request == "agent") {
 
 			response = find_agent(request.getPath())->as_json().toStyledString();
 
 		} else {
 
-			throw runtime_error("Unexpected URI");
+			request.call();
+			response = request.toString();
 
 		}
 
