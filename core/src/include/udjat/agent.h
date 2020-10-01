@@ -19,6 +19,7 @@
 	#include <functional>
 	#include <udjat/defs.h>
 	#include <udjat/tools/atom.h>
+	#include <udjat/request.h>
 	#include <json/value.h>
 	#include <cstring>
 
@@ -65,6 +66,7 @@
 				}
 
 				virtual void get(Json::Value &value) const;
+				virtual Abstract::Request & get(Abstract::Request &request);
 
 				Json::Value as_json() const;
 
@@ -144,6 +146,7 @@
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
 
 				virtual Json::Value as_json();
+				virtual Abstract::Request & get(Abstract::Request &request);
 
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() {
@@ -236,6 +239,11 @@
 				value["value"] = this->value;
 			}
 
+			/// @brief Add value to request.
+			Abstract::Request & get(Abstract::Request &request) override {
+				return Abstract::Agent::get(request).push(this->getName(),this->value);
+			}
+
 		public:
 			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value((T) Attribute(node,"value")) {
 			}
@@ -303,6 +311,10 @@
 			void get(Json::Value &value) override {
 				Abstract::Agent::get(value);
 				value["value"] = this->value;
+			}
+
+			Abstract::Request & get(Abstract::Request &request) override {
+				return Abstract::Agent::get(request).push(this->getName(),this->value);
 			}
 
 		public:

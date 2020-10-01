@@ -34,7 +34,6 @@
 
 			std::unordered_map<Udjat::Atom, Agent> agents;
 
-
 			class Node {
 			private:
 				std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> value;

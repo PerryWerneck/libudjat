@@ -62,14 +62,12 @@ void run_civetweb() {
 
 	cout << "Starting civetweb server" << endl;
 
+	// https://github.com/civetweb/civetweb/blob/master/docs/UserManual.md
 	static const char *options[] = {
-		"listening_ports", "8989",
-		"request_timeout_ms",
-		"10000",
-		"error_log_file",
-		"error.log",
-		"enable_auth_domain_check",
-		"no",
+		"listening_ports", 			"8989",
+		"request_timeout_ms",		"10000",
+		"error_log_file",			"error.log",
+		"enable_auth_domain_check",	"no",
 		NULL
 	};
 

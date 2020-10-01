@@ -63,6 +63,15 @@ namespace Udjat {
 
 	}
 
+	Abstract::Request & Abstract::State::get(Abstract::Request &request) {
+
+		request.push("summary",summary.c_str());
+		request.push("level",levelNames[level]);
+
+		return request;
+
+	}
+
 	Json::Value Abstract::State::as_json() const {
 
 		Json::Value node;

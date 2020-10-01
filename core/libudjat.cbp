@@ -68,6 +68,9 @@
 		<Unit filename="src/main/agent/test.xml" />
 		<Unit filename="src/main/factory.cc" />
 		<Unit filename="src/main/private.h" />
+		<Unit filename="src/main/request/controller.cc" />
+		<Unit filename="src/main/request/private.h" />
+		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/state/private.h" />
 		<Unit filename="src/main/state/state.cc" />
 		<Unit filename="src/private.h" />

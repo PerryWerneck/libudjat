@@ -9,7 +9,8 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
 	$(wildcard src/main/*.cc) \
 	$(wildcard src/main/agent/*.cc) \
-	$(wildcard src/main/state/*.cc)
+	$(wildcard src/main/state/*.cc) \
+	$(wildcard src/main/request/*.cc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)

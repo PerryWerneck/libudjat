@@ -271,6 +271,19 @@ namespace Udjat {
 		chk4refresh();
 	}
 
+	Abstract::Request & Abstract::Agent::get(Abstract::Request &request) {
+
+		chk4refresh();
+
+		if(!update.on_demand && update.next > time(nullptr))
+			request.setExpirationTimestamp(update.next);
+
+		if(update.last)
+			request.setModificationTimestamp(update.last);
+
+		return request;
+	}
+
 	void Abstract::Agent::chk4refresh() {
 
 		// Return if update is running.
