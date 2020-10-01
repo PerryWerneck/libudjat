@@ -159,6 +159,13 @@
 
 		}
 
+
+		/// @brief Set root agent
+		void set_root_agent(std::shared_ptr<Abstract::Agent> agent);
+
+		/// @brief Get Agent from path
+		std::shared_ptr<Abstract::Agent> find_agent(const char *path);
+
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {
 		public:

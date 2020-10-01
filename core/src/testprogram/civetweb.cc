@@ -1,6 +1,7 @@
 
 #include "private.h"
 #include <udjat/configuration.h>
+#include <udjat/agent.h>
 #include <cstring>
 #include <civetweb.h>
 
@@ -18,28 +19,43 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 	const struct mg_request_info *ri = mg_get_request_info(conn);
 
 	if(strcasecmp(ri->request_method,"get")) {
-		mg_send_http_error(conn, 404, "Invalid request method");
+		mg_send_http_error(conn, 405, "Invalid request method");
 		return 405;
 	}
 
 	const char * uri = (ri->local_uri + 7);
+	string response;
 
-	if(!strncasecmp(uri,"state/",5)) {
+	try {
 
-		cout << "State: " << (uri+5) << endl;
+		if(!strncasecmp(uri,"state/",5)) {
 
-	} else if(!strncasecmp(uri,"agent",5)) {
+			response = find_agent(uri+5)->getState()->as_json().toStyledString();
 
-		cout << "Agent: " << (uri+5) << endl;
+		} else if(!strncasecmp(uri,"agent",5)) {
 
-	} else {
+			response = find_agent(uri+5)->as_json().toStyledString();
 
-		cout << "Unknown: " << uri << endl;
+		} else {
+
+			cout << "Unknown: " << uri << endl;
+
+		}
+
+	} catch(const exception &e) {
+
+		mg_send_http_error(conn, 500, e.what());
+		return 500;
 
 	}
 
-	mg_send_http_error(conn, 404, "Unknown request");
-	return 404;
+	cout << "Response:" << endl << response << endl;
+
+	mg_send_http_ok(conn, "application/json; charset=utf-8", response.size());
+	mg_write(conn, response.c_str(), response.size());
+
+	return 200;
+
 }
 
 void run_civetweb() {
@@ -47,7 +63,7 @@ void run_civetweb() {
 	cout << "Starting civetweb server" << endl;
 
 	static const char *options[] = {
-		"listening_ports", "8990",
+		"listening_ports", "8989",
 		"request_timeout_ms",
 		"10000",
 		"error_log_file",

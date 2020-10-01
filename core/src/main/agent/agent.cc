@@ -18,6 +18,12 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
+	static std::shared_ptr<Abstract::Agent> root_agent;
+
+	void set_root_agent(std::shared_ptr<Abstract::Agent> agent) {
+		root_agent = agent;
+	}
+
 	Abstract::Agent::Agent(Agent *p) : parent(p), state(Abstract::Agent::find_state()) {
 	}
 
@@ -177,21 +183,40 @@ namespace Udjat {
 		}
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *name) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path) {
 
-		lock_guard<std::recursive_mutex> lock(guard);
-
-#ifdef DEBUG
-		cout << "Searching for agent " << name << endl;
-#endif // DEBUG
-
-		for(auto child : children) {
-			if(!strcasecmp(child->name.c_str(),name)) {
-				return child;
-			}
+		if(!(path && *path)) {
+			throw runtime_error("Invalid request");
 		}
 
-		throw runtime_error("Can't find agent");
+		if(*path == '/')
+			path++;
+
+		size_t length;
+		const char *ptr = strchr(path,'/');
+		if(!ptr) {
+			length = strlen(path);
+		} else {
+			length = (ptr - path);
+		}
+
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+
+			for(auto child : children) {
+				if(strncasecmp(child->name.c_str(),path,length))
+					continue;
+
+				if(ptr) {
+					return child->find(ptr+1);
+				}
+
+				return child;
+			}
+
+		}
+
+		throw system_error(ENOENT,system_category(),"Agent search has failed");
 
 	}
 
@@ -326,5 +351,14 @@ namespace Udjat {
 		return state;
 
 	}
+
+	std::shared_ptr<Abstract::Agent> find_agent(const char *path) {
+
+		if(root_agent && path && *path)
+			return root_agent->find(path);
+
+		return root_agent;
+	}
+
 
 }

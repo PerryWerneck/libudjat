@@ -19,10 +19,11 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
-std::shared_ptr<Abstract::Agent> root_agent = make_shared<Abstract::Agent>();
-
-
 int main(int argc, char **argv) {
+
+	auto root_agent = make_shared<Abstract::Agent>();
+
+	set_root_agent(root_agent);
 
 	const char * xml_filename = "./src/main/agent/test.xml";
 
@@ -33,6 +34,8 @@ int main(int argc, char **argv) {
 	}
 
 	root_agent->start();
+
+	root_agent->find("/intvalue/subkey");
 
 
 	run_civetweb();

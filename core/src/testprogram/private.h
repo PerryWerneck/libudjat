@@ -15,9 +15,6 @@
 	using namespace std;
 	using namespace Udjat;
 
-	/// @brief Root agent.
-	extern std::shared_ptr<Abstract::Agent> root_agent;
-
 	#ifdef HAVE_CIVETWEB
 
 		void run_civetweb();
