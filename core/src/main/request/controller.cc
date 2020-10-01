@@ -7,17 +7,17 @@
 
 namespace Udjat {
 
-	recursive_mutex Abstract::Request::Controller::guard;
+	recursive_mutex Request::Controller::guard;
 
-	Abstract::Request::Controller::Controller() {
+	Request::Controller::Controller() {
 
-		insert("value",[](Abstract::Request &request) {
+		insert("value",[](Request &request) {
 
 			find_agent(request.getPath())->get(request);
 
 		});
 
-		insert("state",[](Abstract::Request &request) {
+		insert("state",[](Request &request) {
 
 			find_agent(request.getPath())->getState()->get(request);
 
@@ -25,28 +25,28 @@ namespace Udjat {
 
 	}
 
-	Abstract::Request::Controller::~Controller() {
+	Request::Controller::~Controller() {
 	}
 
-	Abstract::Request::Controller & Abstract::Request::Controller::getInstance() {
+	Request::Controller & Request::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
 		static Controller controller;
 		return controller;
 	}
 
-	void insert(const char *name, std::function<void(Abstract::Request &request)> method) {
-		Abstract::Request::Controller::getInstance().insert(name,method);
+	void Request::insert(const char *name, std::function<void(Request &request)> method) {
+		Request::Controller::getInstance().insert(name,method);
 	}
 
-	void Abstract::Request::Controller::insert(const char *name, std::function<void(Abstract::Request &request)> method) {
+	void Request::Controller::insert(const char *name, std::function<void(Request &request)> method) {
 		lock_guard<recursive_mutex> lock(guard);
 		methods.insert(std::make_pair(Atom(name),Method(method)));
 	}
 
-	void Abstract::Request::Controller::call(Abstract::Request &request) {
+	void Request::Controller::call(Request &request) {
 
 		Atom name(request.name.c_str());
-		std::function<void(Abstract::Request &request)> method;
+		std::function<void(Request &request)> method;
 
 		{
 			lock_guard<recursive_mutex> lock(guard);

@@ -66,7 +66,7 @@
 				}
 
 				virtual void get(Json::Value &value) const;
-				virtual Abstract::Request & get(Abstract::Request &request);
+				virtual Request & get(Request &request);
 
 				Json::Value as_json() const;
 
@@ -146,7 +146,7 @@
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
 
 				virtual Json::Value as_json();
-				virtual Abstract::Request & get(Abstract::Request &request);
+				virtual Request & get(Request &request);
 
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() {
@@ -240,8 +240,8 @@
 			}
 
 			/// @brief Add value to request.
-			Abstract::Request & get(Abstract::Request &request) override {
-				return Abstract::Agent::get(request).push(this->getName(),this->value);
+			Request & get(Request &request) override {
+				return Agent::get(request).push(this->getName(),this->value);
 			}
 
 		public:
@@ -313,8 +313,8 @@
 				value["value"] = this->value;
 			}
 
-			Abstract::Request & get(Abstract::Request &request) override {
-				return Abstract::Agent::get(request).push(this->getName(),this->value);
+			Request & get(Request &request) override {
+				return Agent::get(request).push(this->getName(),this->value);
 			}
 
 		public:

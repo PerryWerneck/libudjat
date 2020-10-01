@@ -271,7 +271,7 @@ namespace Udjat {
 		chk4refresh();
 	}
 
-	Abstract::Request & Abstract::Agent::get(Abstract::Request &request) {
+	Request & Abstract::Agent::get(Request &request) {
 
 		chk4refresh();
 

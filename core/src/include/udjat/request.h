@@ -4,80 +4,87 @@
 
 	#include <udjat/defs.h>
 	#include <string>
+	#include <cstring>
 	#include <functional>
 
 	namespace Udjat {
 
-		namespace Abstract {
+		class UDJAT_API Request {
+		protected:
 
-			class UDJAT_API Request {
-			protected:
+			class Controller;
 
-				/// @brief Request name (command)
-				std::string name;
+			/// @brief Request name (command)
+			std::string name;
 
-				/// @brief Object path.
-				std::string path;
+			/// @brief Object path.
+			std::string path;
 
-				/// @brief Expiration timestamp (For cache headers)
-				time_t expiration;
+			/// @brief Expiration timestamp (For cache headers)
+			time_t expiration;
 
-				/// @brief Timestamp of data.
-				time_t modification;
+			/// @brief Timestamp of data.
+			time_t modification;
 
-				Request();
-				Request(const char *name, const char *path);
+		public:
+			Request();
+			Request(const char *path);
+			Request(const char *name, const char *path);
 
-			public:
-				class Controller;
+			/// @brief Register a request processor.
+			static void insert(const char *name, std::function<void(Request &request)> method);
 
-				virtual ~Request();
+			virtual ~Request();
 
-				/// @brief Get Agent path.
-				inline const char * getPath() const noexcept {
-					return path.c_str();
-				}
+			/// @brief Get Request name.
+			inline const char * getName() const noexcept {
+				return name.c_str();
+			}
 
-				/// @brief Execute request.
-				void call();
+			bool operator==(const char *name) const noexcept {
+				return strcasecmp(this->name.c_str(),name) == 0;
+			}
 
-				/// @brief Set timestamp for cache the response.
-				void setExpirationTimestamp(time_t time);
+			/// @brief Get Request path.
+			inline const char * getPath() const noexcept {
+				return path.c_str();
+			}
 
-				/// @brief Set timestamp for data.
-				void setModificationTimestamp(time_t time);
+			/// @brief Execute request.
+			void call();
 
-				virtual Request & pop(int32_t &value) = 0;
-				virtual Request & pop(uint32_t &value) = 0;
-				virtual Request & pop(std::string &value) = 0;
+			/// @brief Set timestamp for cache the response.
+			void setExpirationTimestamp(time_t time);
 
-				virtual Request & push(const int32_t value) = 0;
-				virtual Request & push(const uint32_t value) = 0;
-				virtual Request & push(const char *value) = 0;
+			/// @brief Set timestamp for data.
+			void setModificationTimestamp(time_t time);
 
-				inline Request & push(const std::string &value) {
-					return push(value.c_str());
-				}
+			virtual Request & pop(int32_t &value);
+			virtual Request & pop(uint32_t &value);
+			virtual Request & pop(std::string &value);
 
-				virtual Request & pop(const char *name, int32_t &value);
-				virtual Request & pop(const char *name, uint32_t &value);
-				virtual Request & pop(const char *name, std::string &value);
+			virtual Request & push(const int32_t value);
+			virtual Request & push(const uint32_t value);
+			virtual Request & push(const char *value);
 
-				virtual Request & push(const char *name, const int32_t value);
-				virtual Request & push(const char *name, const uint32_t value);
-				virtual Request & push(const char *name, const char *value);
+			inline Request & push(const std::string &value) {
+				return push(value.c_str());
+			}
 
-				inline Request & push(const char *name, const std::string &value) {
-					return push(name, value.c_str());
-				}
+			virtual Request & pop(const char *name, int32_t &value);
+			virtual Request & pop(const char *name, uint32_t &value);
+			virtual Request & pop(const char *name, std::string &value);
+
+			virtual Request & push(const char *name, const int32_t value);
+			virtual Request & push(const char *name, const uint32_t value);
+			virtual Request & push(const char *name, const char *value);
+
+			inline Request & push(const char *name, const std::string &value) {
+				return push(name, value.c_str());
+			}
 
 
-			};
-
-		}
-
-		/// @brief Register a request processor.
-		void insert(const char *name, std::function<void(Abstract::Request &request)> method);
+		};
 
 	}
 

@@ -1,6 +1,6 @@
 
 #include "private.h"
-#include <udjat/configuration.h>
+#include <udjat/request.h>
 #include <udjat/agent.h>
 #include <cstring>
 #include <civetweb.h>
@@ -23,22 +23,26 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 		return 405;
 	}
 
-	const char * uri = (ri->local_uri + 7);
 	string response;
 
 	try {
 
-		if(!strncasecmp(uri,"state/",5)) {
+		const char * uri = (ri->local_uri + 6);
+		Request request(uri);
 
-			response = find_agent(uri+5)->getState()->as_json().toStyledString();
+		cout << "Request name: \"" << request.getName() << "\" Path: \"" << request.getPath() << "\"" << endl;
 
-		} else if(!strncasecmp(uri,"agent",5)) {
+		if(request == "state") {
 
-			response = find_agent(uri+5)->as_json().toStyledString();
+			response = find_agent(request.getPath())->getState()->as_json().toStyledString();
+
+		} else if(request == "agent") {
+
+			response = find_agent(request.getPath())->as_json().toStyledString();
 
 		} else {
 
-			cout << "Unknown: " << uri << endl;
+			throw runtime_error("Unexpected URI");
 
 		}
 

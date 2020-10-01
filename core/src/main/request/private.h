@@ -12,7 +12,7 @@
 
 	namespace Udjat {
 
-		class Abstract::Request::Controller {
+		class Request::Controller {
 		private:
 
 			static std::recursive_mutex guard;
@@ -21,12 +21,12 @@
 
 			class Method {
 			private:
-				std::function<void(Abstract::Request &request)> method;
+				std::function<void(Request &request)> method;
 
 			public:
-				Method(std::function<void(Abstract::Request &request)> m) : method(m) {}
+				Method(std::function<void(Request &request)> m) : method(m) {}
 
-				std::function<void(Abstract::Request &request)> get() const noexcept {
+				std::function<void(Request &request)> get() const noexcept {
 					return this->method;
 				}
 
@@ -38,9 +38,9 @@
 			static Controller & getInstance();
 			~Controller();
 
-			void insert(const char *name, std::function<void(Abstract::Request &request)> method);
+			void insert(const char *name, std::function<void(Request &request)> method);
 
-			void call(Abstract::Request &request);
+			void call(Request &request);
 
 		};
 

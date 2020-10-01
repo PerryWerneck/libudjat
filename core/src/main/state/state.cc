@@ -63,7 +63,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::Request & Abstract::State::get(Abstract::Request &request) {
+	Request & Abstract::State::get(Request &request) {
 
 		request.push("summary",summary.c_str());
 		request.push("level",levelNames[level]);
