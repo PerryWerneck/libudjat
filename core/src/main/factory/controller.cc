@@ -9,28 +9,27 @@ namespace Udjat {
 
 	Factory::Controller::Controller() {
 
-		insert("integer",[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom("integer"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<int>>(&parent,node);
 		});
 
-		insert("int32",[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom("int32"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<int32_t>>(&parent,node);
 		});
 
-		insert("uint32",[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom("uint32"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<uint32_t>>(&parent,node);
 		});
 
-		insert("boolean",[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom("boolean"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<bool>>(&parent,node);
 		});
 
-		insert("string",[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom("string"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<std::string>>(&parent,node);
 		});
 
-		insert("default",[](Abstract::Agent &parent, const pugi::xml_node &node){
-//				return make_shared<Abstract::Agent>(&parent,node);
+		insert(Atom("default"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<uint32_t>>(&parent,node);
 		});
 
@@ -124,14 +123,24 @@ namespace Udjat {
 
 	}
 
-	void Factory::Controller::insert(const char *name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method) {
+	void Factory::Controller::insert(const Atom &name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method) {
 		lock_guard<recursive_mutex> lock(guard);
-		agents.insert(std::make_pair(Atom(name),Agent(method)));
+		Factory::validate_name(name.c_str());
+		agents.insert(std::make_pair(name.c_str(),Agent(method)));
 	}
 
-	void Factory::insert(const char *name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method) {
-		Factory::validate_name(name);
+	void Factory::Controller::insert(const Atom &name, std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> factory) {
+		lock_guard<recursive_mutex> lock(guard);
+		Factory::validate_name(name.c_str());
+		nodes.insert(std::make_pair(name.c_str(),Node(factory)));
+	}
+
+	void Factory::insert(const Atom &name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method) {
 		Factory::Controller::getInstance().insert(name,method);
+	}
+
+	void Factory::insert(const Atom &name, std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> factory) {
+		Factory::Controller::getInstance().insert(name,factory);
 	}
 
 	void Factory::load(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_document &doc) {

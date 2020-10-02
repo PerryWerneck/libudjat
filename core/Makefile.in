@@ -10,6 +10,7 @@ MAIN_SOURCES= \
 	$(wildcard src/main/*.cc) \
 	$(wildcard src/main/agent/*.cc) \
 	$(wildcard src/main/state/*.cc) \
+	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/request/*.cc)
 
 TEST_SOURCES= \
@@ -61,7 +62,8 @@ BINRLS=$(BINDIR)/Release
 DEPENDS= \
 	Makefile \
 	src/include/*.h \
-	src/include/udjat/*.h
+	src/include/udjat/*.h \
+	src/include/udjat/tools/*.h
 
 CFLAGS= \
 	@CXXFLAGS@ \
