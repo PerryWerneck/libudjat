@@ -5,9 +5,9 @@
 #include <mutex>
 #include <unordered_set>
 
-#ifdef DEBUG
-	#undef DEBUG // Disable debug messages
-#endif // DEBUG
+//#ifdef DEBUG
+//	#undef DEBUG // Disable debug messages
+//#endif // DEBUG
 
 using namespace std;
 
@@ -19,57 +19,95 @@ namespace Udjat {
 
 		class Hash {
 		public:
-			inline size_t operator() (const string *str) const {
-				return std::hash<std::string>{}(*str);
+			inline size_t operator() (const char *a) const {
+
+				// https://stackoverflow.com/questions/7666509/hash-function-for-string
+				size_t value = 5381;
+
+				for(const char *ptr = a; *ptr; ptr++) {
+					value = ((value << 5) + value) + *ptr;
+				}
+
+				return value;
 			}
 		};
 
 		class Equal {
 		public:
-			inline bool operator() (const string *a, const string *b) const {
-				return a->compare(*b) == 0;
+			inline bool operator() (const char *a, const char *b) const {
+				return strcmp(a,b) == 0;
 			}
 		};
 
-		std::unordered_set<std::string *, Hash, Equal> contents;
+		/// @brief Dynamic allocated strings.
+		std::unordered_set<const char *, Hash, Equal> allocated;
+
+		/// @brief Internal (static) allocated strings (just stored).
+		std::unordered_set<const char *, Hash, Equal> stored;
 
 	public:
 
 		Controller() {
-
 		}
 
 		~Controller() {
 
-			for(auto item : contents) {
-				delete item;
+			for(auto item : allocated) {
+				delete[] item;
 			}
 
 		}
 
 		static Controller & getInstance();
 
-		template <typename T>
-		std::string * find(T value) {
+		const char * find(const char *value, bool copy) {
 
 			lock_guard<recursive_mutex> lock(guard);
 
-			std::string *str = new std::string(value);
+			// Search on stored strings.
+			{
+				auto it = stored.find(value);
 
-			auto it = contents.find(str);
-
-			if(it != contents.end()) {
+				if(it != stored.end()) {
 #ifdef DEBUG
-				cout << "Found " << (*it)->c_str() << " (searching for " << str->c_str() << endl;
+					cout << "Found stored " << (*it) << " (searching for " << value << "\")" << endl;
 #endif // DEBUG
-				delete str;
-				return *it;
+					return *it;
+				}
 			}
 
-			auto result = contents.insert(str);
+			// Search on allocated strings.
+			{
+				auto it = allocated.find(value);
 
+				if(it != allocated.end()) {
 #ifdef DEBUG
-			cout << "Inserting " << (*result.first)->c_str() << endl;
+					cout << "Found " << (*it) << " (searching for " << value << "\")" << endl;
+#endif // DEBUG
+					return *it;
+				}
+			}
+
+			if(copy) {
+
+				// Copy string to internal storage.
+				size_t sz = strlen(value);
+				char *str = new char[sz+1];
+				memset(str,0,sz+1);
+				strncpy(str,value,sz+1);
+
+				auto result = allocated.insert(str);
+#ifdef DEBUG
+				cout << "Inserting new string \"" << (*result.first) << "\"" << endl;
+#endif // DEBUG
+
+				return * result.first;
+
+			}
+
+			auto result = stored.insert(value);
+#ifdef DEBUG
+			cout << "Storing string \"" << (*result.first) << "\"" << endl;
 #endif // DEBUG
 
 			return *result.first;
@@ -88,11 +126,17 @@ namespace Udjat {
 	}
 
 	Atom::Atom(const char *str) {
-		this->value = Controller::getInstance().find(str);
+		this->value = Controller::getInstance().find(str,true);
 	}
 
-	Atom::Atom(const std::string &str) {
-		this->value = Controller::getInstance().find(str);
+	Atom Atom::getFromStatic(const char *str) {
+		Atom atom;
+		atom.value = Controller::getInstance().find(str,false);
+		return atom;
+	}
+
+
+	Atom::Atom(const std::string &str) : Atom(str.c_str()) {
 	}
 
 	Atom::Atom(const Atom &src) {
@@ -104,18 +148,22 @@ namespace Udjat {
 	}
 
 	Atom & Atom::operator=(const char *str) {
-		this->value = Controller::getInstance().find(str);
+		this->value = Controller::getInstance().find(str,true);
 		return *this;
 	}
 
 	Atom & Atom::operator=(const std::string &str) {
-		this->value = Controller::getInstance().find(str);
+		this->value = Controller::getInstance().find(str.c_str(),true);
 		return *this;
 	}
 
 	Atom & Atom::operator=(const pugi::xml_attribute &attribute) {
-		this->value = Controller::getInstance().find(attribute.as_string());
+		this->value = Controller::getInstance().find(attribute.as_string(),true);
 		return *this;
+	}
+
+	const char * Atom::c_str() const {
+		return value ? value : "";
 	}
 
 

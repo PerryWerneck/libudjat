@@ -5,6 +5,7 @@
 	#include <udjat/defs.h>
 	#include <pugixml.hpp>
 	#include <udjat/tools/atom.h>
+	#include <cstring>
 
 	namespace Udjat {
 
@@ -14,9 +15,11 @@
 			class Controller;
 			friend class Controller;
 
-			std::string *value;
+			const char *value;
 
 		public:
+
+			static Atom getFromStatic(const char *str);
 
 			Atom() : value(nullptr) {}
 
@@ -29,28 +32,22 @@
 			Atom & operator=(const std::string &str);
 			Atom & operator=(const pugi::xml_attribute &attribute);
 
-			const char * c_str() const {
-				return value ? value->c_str() : "";
-			}
-
-			const std::string & to_string() const {
-				return *value;
-			}
+			const char * c_str() const;
 
 			operator bool() const {
-				return (this->value && !this->value->empty());
+				return value != nullptr && *value;
 			}
 
 			bool operator==(const Atom &src) const {
 				return this->value == src.value;
 			}
 
-			int compare(const char *str) const {
-				return this->value->compare(str);
+			bool operator==(const char *str) const {
+				return compare(str);
 			}
 
-			int compare(const std::string &str) const {
-				return this->value->compare(str);
+			int compare(const char *str) const {
+				return strcmp(c_str(),str);
 			}
 
 		};
@@ -65,12 +62,8 @@
 			}
 		};
 
-		inline const string & to_string(const Udjat::Atom atom) {
-			return atom.to_string();
-		}
-
 		inline ostream& operator<< (ostream& os, const Udjat::Atom &atom ) {
-			return os << atom.to_string();
+			return os << atom.c_str();
 		}
 
 	}

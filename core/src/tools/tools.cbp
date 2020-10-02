@@ -34,17 +34,14 @@
 			<Add option="-Wall" />
 			<Add option="-std=gnu++11" />
 			<Add option="-DPROJECT_NAME=udjat" />
-			<Add directory="../../include" />
+			<Add directory="../include" />
 		</Compiler>
-		<Unit filename="../../include/udjat/defs.h" />
-		<Unit filename="../../include/udjat/tools/dmi.h" />
-		<Unit filename="../../include/udjat/tools/file.h" />
-		<Unit filename="../../include/udjat/tools/virtualmachine.h" />
-		<Unit filename="dmi.cc" />
-		<Unit filename="linux/dmi.cc" />
-		<Unit filename="memorymappedfile.cc" />
+		<Linker>
+			<Add library="pugixml" />
+		</Linker>
+		<Unit filename="../include/udjat/tools/atom.h" />
+		<Unit filename="atom.cc" />
 		<Unit filename="testprogram/testprogram.cc" />
-		<Unit filename="virtualmachine.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
