@@ -28,27 +28,7 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 
 	try {
 
-
 		Request::call(ri->local_uri + 6, response);
-
-		/*
-		const char * uri = (ri->local_uri + 6);
-
-		Request request(uri);
-
-		cout << "Request name: \"" << request.getName() << "\" Path: \"" << request.getPath() << "\"" << endl;
-
-		if(request == "agent") {
-
-			response = find_agent(request.getPath())->as_json().toStyledString();
-
-		} else {
-
-			request.call();
-			response = request.toString();
-
-		}
-		*/
 
 	} catch(const exception &e) {
 

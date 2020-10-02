@@ -105,8 +105,6 @@ namespace Udjat {
 		string name = getNameFrompath(p);
 		string path = getPathWithoutName(p);
 
-		cout << "Searching \"" << name << "\"" << endl;
-
 		guard.lock();
 		auto entry = jmethods.find(name.c_str());
 		guard.unlock();
