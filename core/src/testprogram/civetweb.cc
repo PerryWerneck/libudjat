@@ -53,8 +53,9 @@ void run_civetweb() {
 	cout << "Starting civetweb server" << endl;
 
 	// https://github.com/civetweb/civetweb/blob/master/docs/UserManual.md
+	static const char *port = "8989";
 	static const char *options[] = {
-		"listening_ports", 			"8989",
+		"listening_ports", 			port,
 		"request_timeout_ms",		"10000",
 		"error_log_file",			"error.log",
 		"enable_auth_domain_check",	"no",
@@ -73,9 +74,11 @@ void run_civetweb() {
 		throw runtime_error("Cannot start CivetWeb - mg_start failed.");
 	}
 
-	// http://127.0.0.1:8990/udjat/state
-
 	mg_set_request_handler(ctx, "/udjat/", WebHandler, 0);
+
+	cout	<< "http://127.0.0.1:" << port << "/udjat/state" << endl
+			<< "http://127.0.0.1:" << port << "/udjat/value" << endl
+			<< "http://127.0.0.1:" << port << "/udjat/detailed" << endl;
 
 	while(enabled) {
 		sleep(1);
