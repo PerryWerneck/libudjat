@@ -12,6 +12,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/factory.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/configuration.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -26,6 +27,21 @@ namespace Udjat {
 	}
 
 	Abstract::Agent::Agent(Agent *p) : parent(p), state(Abstract::Agent::find_state()) {
+
+		try {
+
+			Config::File & config = Config::File::getInstance();
+
+			update.on_demand	= config.get("agent_defaults","update-on-demand",update.on_demand);
+			update.timer		= config.get("agent_defaults","update-timer",update.timer);
+			update.next			= time(nullptr) + config.get("agent_defaults","delay-on-startup",update.timer);
+
+		} catch(const exception &e) {
+
+			cerr << e.what() << endl;
+
+		}
+
 	}
 
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent) {
@@ -50,92 +66,6 @@ namespace Udjat {
 		for(auto child : children) {
 			child->parent = nullptr;
 		}
-
-	}
-
-	void Abstract::Agent::refresh() {
-	}
-
-	void Abstract::Agent::activate(std::shared_ptr<State> state) noexcept {
-
-		// It's an empty state? If yes replaces with the default one.
-		if(!state)
-			state = Abstract::Agent::find_state();
-
-		// Return if it's the same.
-		if(state == this->state)
-			return;
-
-		cout 	<< (this->name ? this->name.c_str() : "Application")
-				<< " state changes from \""
-				<< this->state->getSummary()
-				<< "\" to \"" << state->getSummary()
-				<< "\"" << endl;
-
-		try {
-
-			this->state->deactivate(*this);
-			this->state = state;
-			this->state->activate(*this);
-
-		} catch(const std::exception &e) {
-
-			cerr << "Error \"" << e.what() << "\" when activating the new state" << endl;
-			this->state = make_shared<State>(State::critical,e.what());
-
-		} catch(...) {
-
-			this->state = state;
-			cerr << "Unexpected error activating the new state" << endl;
-			this->state = make_shared<State>(State::critical,"Unexpected error on state change");
-
-		}
-
-	}
-
-	void Abstract::Agent::revalidate() {
-
-#ifdef DEBUG
-		cerr << "Revalidating \"" << this->name << "\"" << endl;
-#endif // DEBUG
-
-		// Compute new state
-		try {
-
-			// First get state for current agent value.
-			auto new_state = find_state();
-
-			// Does any children has worst state? if yes; use-it.
-			{
-				lock_guard<std::recursive_mutex> lock(guard);
-				for(auto child : children) {
-
-					auto child_state = child->find_state();
-
-					if(child_state && child_state->getLevel() > new_state->getLevel()) {
-						new_state = child_state;
-					}
-
-				}
-
-			}
-
-			activate(new_state);
-
-		} catch(const exception &e) {
-
-			cerr << "Çan't update state of \"" << this->name << "\": " << e.what() << endl;
-			activate(make_shared<State>(State::critical,e.what()));
-
-		} catch(...) {
-
-			cerr << "Çan't update state of \"" << this->name << "\": Unexpected error" << endl;
-			activate(make_shared<State>(State::critical,"Unexpected error"));
-
-		}
-
-		if(parent)
-			parent->revalidate();
 
 	}
 
@@ -274,10 +204,10 @@ namespace Udjat {
 
 	Request & Abstract::Agent::setup(Request &request) {
 
-		chk4refresh();
+		chk4refresh(true);
 
-		if(!update.on_demand && update.next > time(nullptr))
-			request.setExpirationTimestamp(update.next);
+		if(update.expires && update.expires > time(nullptr))
+			request.setExpirationTimestamp(update.expires);
 
 		if(update.last)
 			request.setModificationTimestamp(update.last);
@@ -300,49 +230,11 @@ namespace Udjat {
 		return request;
 	}
 
-	void Abstract::Agent::chk4refresh() {
-
-		// Return if update is running.
-		if(update.running)
-			return;
-
-		if(!update.on_demand) {
-
-			// It's not on-demand, check for timer
-
-			// Return if have update time in the future.
-			if(update.next && update.next > time(nullptr))
-				return;
-
-		}
-
-		update.running = time(nullptr);
-
-		if(update.timer)
-			update.next = update.running + update.timer;
-		else
-			update.next = 0;
-
-		try {
-
-			refresh();
-
-			update.last = time(nullptr);
-
-		} catch(...) {
-
-			update.running = 0;
-			throw;
-
-		}
-
-		update.running = 0;
-
-	}
-
 	Json::Value Abstract::Agent::as_json() {
 
 		Json::Value node;
+
+		chk4refresh(true);
 
 		lock_guard<std::recursive_mutex> lock(guard);
 

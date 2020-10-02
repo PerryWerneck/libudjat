@@ -42,6 +42,7 @@
 
 				struct {
 					time_t last = 0;		///< @brief Timestamp of the last update.
+					time_t expires = 0;		///< @brief Is the current state valid?
 					time_t next = 0;		///< @brief Timestamp of the next update.
 					time_t running = 0;		///< @brief Non zero if the update is running.
 					time_t timer = 0;		///< @brief Update time (0=No update).
@@ -53,19 +54,30 @@
 				/// @brief Current state.
 				std::shared_ptr<State> state;
 
+				/// @brief Child state has changed; compute my new state.
+				void onChildStateChange() noexcept;
+
 			protected:
 
 				/// @brief Activate a new state.
 				void activate(std::shared_ptr<State> state) noexcept;
 
+				/// @brief Set failed state from known exception
+				void failed(const std::exception &e, const char *message) noexcept;
+
+				/// @brief Set unexpected failed state.
+				void failed(const char *message) noexcept;
+
 				/// @brief Web link for this agent (Usually used for http exporter).
 				Atom href;
 
-				/// @brief Value was updated, compute new state.
-				void revalidate();
+				/// @brief Value has changed, compute my new state.
+				void onValueChange() noexcept;
 
 				/// @brief Run update if required.
-				void chk4refresh();
+				/// @param forward	If true forward update to children.
+				/// @return true if the state was refreshed.
+				bool chk4refresh(bool forward = false);
 
 				/// @brief Insert State.
 				virtual void append_state(const pugi::xml_node &node);
@@ -184,7 +196,7 @@
 				if(value == this->value)
 					return false;
 
-				revalidate();
+				onValueChange();
 				return true;
 			}
 
@@ -260,7 +272,7 @@
 				if(value == this->value)
 					return false;
 
-				revalidate();
+				onValueChange();
 				return true;
 			}
 

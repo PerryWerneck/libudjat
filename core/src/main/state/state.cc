@@ -40,7 +40,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const Level l, const char *m) : level(l), summary(m) {
+	Abstract::State::State(const Level l, const char *m, const char *d) : level(l), summary(m), detailed(d) {
 
 #ifdef DEBUG
 		cout << "Creating state \"" << this->summary << "\" " << levelNames[this->level] << endl;
@@ -49,7 +49,8 @@ namespace Udjat {
 	}
 
 	Abstract::State::State(const pugi::xml_node &node) :
-		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[unimportant])),getAttribute(node,"summary").as_string()) {
+		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[unimportant])),
+		getAttribute(node,"summary").as_string()) {
 
 		this->href = Udjat::getAttribute(node,"href").as_string();
 
@@ -66,6 +67,7 @@ namespace Udjat {
 	Request & Abstract::State::get(Request &request) {
 
 		request.push("summary",summary.c_str());
+		request.push("detailed",detailed.c_str());
 		request.push("level",levelNames[level]);
 
 		return request;

@@ -43,14 +43,15 @@
 
 			private:
 
-				Level level;
-				Atom summary;
+				Level level;		///< @brief State level.
+				Atom summary;		///< @brief State summary.
+				Atom detailed;		///< @brief Detailed message.
 				Atom href;			///< @brief Web link to this state (Usually used for http exporter).
 
 				static Level getLevelFromName(const char *name);
 
 			public:
-				State(const Level l, const char *m);
+				State(const Level l, const char *m, const char *d = "");
 
 				State(const pugi::xml_node &node);
 
@@ -63,6 +64,10 @@
 
 				inline Level getLevel() const {
 					return this->level;
+				}
+
+				inline bool isCritical() const noexcept {
+					return this->level >= critical;
 				}
 
 				virtual void get(Json::Value &value) const;

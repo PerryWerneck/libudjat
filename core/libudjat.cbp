@@ -58,6 +58,7 @@
 		<Unit filename="src/include/udjat/threadpool.h" />
 		<Unit filename="src/include/udjat/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/atom.h" />
+		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/dmi.h" />
 		<Unit filename="src/include/udjat/tools/mmap.h" />
 		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
@@ -66,7 +67,9 @@
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/private.h" />
+		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
+		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/factory.cc" />
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/controller.cc" />
