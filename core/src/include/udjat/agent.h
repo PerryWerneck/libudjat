@@ -143,34 +143,17 @@
 		class UDJAT_API Agent : public Abstract::Agent {
 		private:
 
-			/// @brief Agent state
-			class State : public Abstract::State {
-			private:
-
-				/// @brief State value;
-				T value;
-
-			public:
-				State(const pugi::xml_node &node) : Abstract::State(node), value((T) Attribute(node,"value")) {
-				}
-
-				bool compare(T value) {
-					return this->value == value;
-				}
-
-			};
-
 			/// @brief Agent value.
 			T value;
 
 			/// @brief Agent states.
-			std::vector<std::shared_ptr<State>> states;
+			std::vector<std::shared_ptr<State<T>>> states;
 
 		protected:
 
 			/// @brief Insert State.
 			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State>(node));
+				states.push_back(std::make_shared<State<T>>(node));
 			}
 
 			std::shared_ptr<Abstract::State> find_state() const override {
@@ -219,34 +202,17 @@
 		class UDJAT_API Agent<std::string> : public Abstract::Agent {
 		private:
 
-			/// @brief Agent state
-			class State : public Abstract::State {
-			private:
-
-				/// @brief State value;
-				std::string value;
-
-			public:
-				State(const pugi::xml_node &node) : Abstract::State(node), value(Attribute(node,"value").as_string()) {
-				}
-
-				bool compare(const std::string &value) {
-					return strcasecmp(this->value.c_str(),value.c_str()) == 0;
-				}
-
-			};
-
 			/// @brief Agent value.
 			std::string value;
 
 			/// @brief Agent states.
-			std::vector<std::shared_ptr<State>> states;
+			std::vector<std::shared_ptr<State<std::string>>> states;
 
 		protected:
 
 			/// @brief Insert State.
 			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State>(node));
+				states.push_back(std::make_shared<State<std::string>>(node));
 			}
 
 			std::shared_ptr<Abstract::State> find_state() const override {
@@ -272,11 +238,72 @@
 				if(value == this->value)
 					return false;
 
+				this->value = value;
 				onValueChange();
 				return true;
 			}
 
 			std::string get() const noexcept {
+				return value;
+			}
+
+			Request & get(Request &request) override {
+				return setup(request).push("value",this->value);
+			}
+
+			Request & get(const char *name, Request &request) override {
+				return setup(request).push(name,this->value);
+			}
+
+		};
+
+		///
+		template <>
+		class UDJAT_API Agent<bool> : public Abstract::Agent {
+		private:
+
+			/// @brief Agent value.
+			bool value;
+
+			/// @brief Agent states.
+			std::vector<std::shared_ptr<State<bool>>> states;
+
+		protected:
+
+			/// @brief Insert State.
+			void append_state(const pugi::xml_node &node) override {
+				states.push_back(std::make_shared<State<bool>>(node));
+			}
+
+			std::shared_ptr<Abstract::State> find_state() const override {
+				for(auto state : states) {
+					if(state->compare(this->value))
+						return state;
+				}
+				return Abstract::Agent::find_state();
+			}
+
+			/// @brief Add value to JSON.
+			void get(Json::Value &value) override {
+				Abstract::Agent::get(value);
+				value["value"] = this->value;
+			}
+
+		public:
+			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value(Attribute(node,"value").as_bool(false)) {
+			}
+
+			bool set(const bool value) {
+
+				if(value == this->value)
+					return false;
+
+				this->value = value;
+				onValueChange();
+				return true;
+			}
+
+			bool get() const noexcept {
 				return value;
 			}
 

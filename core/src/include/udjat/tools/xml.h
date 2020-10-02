@@ -11,18 +11,9 @@
 
 	#define UDJAT_TOOLS_XML_H_INCLUDED
 
-	#include <string>
 	#include <pugixml.hpp>
-	#include <memory>
-	#include <vector>
-	#include <mutex>
-	#include <functional>
 	#include <udjat/defs.h>
-	#include <udjat/state.h>
-	#include <udjat/tools/atom.h>
-	#include <udjat/request.h>
-	#include <json/value.h>
-	#include <cstring>
+	#include <udjat/tools/xml.h>
 
 	namespace Udjat {
 

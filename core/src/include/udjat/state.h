@@ -19,11 +19,15 @@
 	#include <functional>
 	#include <udjat/defs.h>
 	#include <udjat/tools/atom.h>
+	#include <udjat/tools/xml.h>
 	#include <udjat/request.h>
 	#include <json/value.h>
 	#include <cstring>
 
 	namespace Udjat {
+
+		void parse_range(const pugi::xml_node &node, int &from, int &to);
+		void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to);
 
 		namespace Abstract {
 
@@ -82,6 +86,59 @@
 			};
 
 		}
+
+
+		template <typename T>
+		class UDJAT_API State : public Abstract::State {
+		private:
+
+			/// @brief State value;
+			T from;
+			T to;
+
+		public:
+			State(const pugi::xml_node &node) : Abstract::State(node) {
+				parse_range(node,from,to);
+			}
+
+			bool compare(T value) {
+				return value >= from && value <= to;
+			}
+
+		};
+
+
+		template <>
+		class UDJAT_API State<std::string> : public Abstract::State {
+		private:
+
+			/// @brief State value;
+			std::string value;
+
+		public:
+			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::getAttribute(node,"value").as_string()) {
+			}
+
+			bool compare(const std::string &value) {
+				return strcasecmp(this->value.c_str(),value.c_str()) == 0;
+			}
+		};
+
+		template <>
+		class UDJAT_API State<bool> : public Abstract::State {
+		private:
+
+			/// @brief State value;
+			bool value;
+
+		public:
+			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::getAttribute(node,"value").as_bool()) {
+			}
+
+			bool compare(const bool value) {
+				return this->value == value;
+			}
+		};
 
 	}
 
