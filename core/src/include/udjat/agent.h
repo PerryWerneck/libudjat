@@ -107,8 +107,8 @@
 				/// @brief Stop agent.
 				virtual void stop();
 
-				std::shared_ptr<Agent> find(const char *name);
-				std::shared_ptr<Agent> find(const std::vector<std::string> &path);
+				std::shared_ptr<Agent> find(const char *path);
+				//std::shared_ptr<Agent> find(const std::vector<std::string> &path);
 
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -134,10 +134,10 @@
 
 
 		/// @brief Set root agent
-		void set_root_agent(std::shared_ptr<Abstract::Agent> agent);
+		void UDJAT_API set_root_agent(std::shared_ptr<Abstract::Agent> agent);
 
 		/// @brief Get Agent from path
-		std::shared_ptr<Abstract::Agent> find_agent(const char *path);
+		std::shared_ptr<Abstract::Agent> UDJAT_API find_agent(const char *path);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
@@ -216,7 +216,7 @@
 		};
 
 		template <>
-		class Agent<std::string> : public Abstract::Agent {
+		class UDJAT_API Agent<std::string> : public Abstract::Agent {
 		private:
 
 			/// @brief Agent state

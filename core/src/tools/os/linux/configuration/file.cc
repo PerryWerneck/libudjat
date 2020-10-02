@@ -24,7 +24,7 @@
  */
 
  #include <config.h>
- #include <udjat/configuration.h>
+ #include <udjat/tools/configuration.h>
  #include <signal.h>
  #include <iostream>
  #include <cstring>

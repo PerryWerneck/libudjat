@@ -32,12 +32,13 @@ namespace Udjat {
 
 			Config::File & config = Config::File::getInstance();
 
-			update.on_demand	= config.get("agent_defaults","update-on-demand",update.on_demand);
-			update.timer		= config.get("agent_defaults","update-timer",update.timer);
-			update.next			= time(nullptr) + config.get("agent_defaults","delay-on-startup",update.timer);
+			update.timer		= config.get("agent-defaults","update-timer",update.timer);
+			update.on_demand	= config.get("agent-defaults","update-on-demand",update.timer == 0);
+			update.next			= time(nullptr) + config.get("agent-defaults","delay-on-startup",update.timer);
 
 		} catch(const exception &e) {
 
+			update.next	= time(nullptr) + update.timer;
 			cerr << e.what() << endl;
 
 		}
@@ -53,8 +54,12 @@ namespace Udjat {
 #endif // DEBUG
 
 		this->update.timer = node.attribute("update-timer").as_uint(this->update.timer);
-		this->update.next = time(nullptr) + node.attribute("delay-on-startup").as_uint(this->update.timer);
+
 		this->update.on_demand = node.attribute("update-on-demand").as_bool(this->update.timer == 0);
+
+		time_t delay = node.attribute("delay-on-startup").as_uint(0);
+		if(delay)
+			this->update.next = time(nullptr) + delay;
 
 		this->href = Udjat::getAttribute(node,"href").as_string();
 
@@ -71,9 +76,21 @@ namespace Udjat {
 
 	void Abstract::Agent::start() {
 
-		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto child : children) {
-			child->start();
+		// Start children
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto child : children) {
+
+				try {
+
+					child->start();
+
+				} catch(const std::exception &e) {
+
+					child->failed(e,"Agent startup has failed");
+
+				}
+			}
 		}
 
 		// Update state.
@@ -83,23 +100,10 @@ namespace Udjat {
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
 			for(auto child : children) {
-
-				auto child_state = child->getState();
-
-				/*
-#ifdef DEBUG
-				cout	<< "Child state is \""
-						<< child_state->getSummary() << "\" (" << child_state->getLevel() << ")"
-						<< " My level is \"" << this->state->getSummary() << "\" (" << this->state->getLevel() << ")" << endl;
-#endif // DEBUG
-				*/
-
-				if(child_state && child_state->getLevel() > new_state->getLevel()) {
-					new_state = child_state;
+				if(child->state && child->state->getLevel() > new_state->getLevel()) {
+					new_state = child->state;
 				}
-
 			}
-
 		}
 
 		activate(new_state);
@@ -110,7 +114,16 @@ namespace Udjat {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : children) {
-			child->stop();
+
+			try {
+
+				child->stop();
+
+			} catch(const exception &e) {
+
+				child->failed(e,"Agent stop has failed");
+
+			}
 		}
 	}
 
@@ -138,7 +151,7 @@ namespace Udjat {
 				if(strncasecmp(child->name.c_str(),path,length))
 					continue;
 
-				if(ptr) {
+				if(ptr && ptr[1]) {
 					return child->find(ptr+1);
 				}
 
@@ -151,6 +164,7 @@ namespace Udjat {
 
 	}
 
+	/*
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const std::vector<std::string> &path) {
 
 		std::shared_ptr<Abstract::Agent> agent;
@@ -168,6 +182,7 @@ namespace Udjat {
 		return agent;
 
 	}
+	*/
 
 	void Abstract::Agent::foreach(std::function<void(Abstract::Agent &agent)> method) {
 
@@ -177,8 +192,7 @@ namespace Udjat {
 			child->foreach(method);
 		}
 
-		if(parent)
-			method(*this);
+		method(*this);
 
 	}
 
