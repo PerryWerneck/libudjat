@@ -4,6 +4,7 @@
 #include <udjat/agent.h>
 #include <cstring>
 #include <civetweb.h>
+#include <json/value.h>
 
 #ifdef HAVE_CIVETWEB
 
@@ -23,36 +24,16 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 		return 405;
 	}
 
-	string response;
-
-	class Request : public Udjat::Request {
-	public:
-		Json::Value response;
-
-		Request(const char *path) : Udjat::Request(path) {
-		}
-
-		string toString() const {
-			return response.toStyledString();
-		}
-
-		Udjat::Request & push(const char *name, const int32_t value) override {
-			response[name] = value;
-		}
-
-		Udjat::Request & push(const char *name, const uint32_t value) {
-			response[name] = value;
-		}
-
-		Udjat::Request & push(const char *name, const char *value) {
-			response[name] = value;
-		}
-
-	};
+	Json::Value response;
 
 	try {
 
+
+		Request::call(ri->local_uri + 6, response);
+
+		/*
 		const char * uri = (ri->local_uri + 6);
+
 		Request request(uri);
 
 		cout << "Request name: \"" << request.getName() << "\" Path: \"" << request.getPath() << "\"" << endl;
@@ -67,6 +48,7 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 			response = request.toString();
 
 		}
+		*/
 
 	} catch(const exception &e) {
 
@@ -75,10 +57,12 @@ static int WebHandler(struct mg_connection *conn, void *cbdata) {
 
 	}
 
-	cout << "Response:" << endl << response << endl;
+	string rsp = response.toStyledString();
 
-	mg_send_http_ok(conn, "application/json; charset=utf-8", response.size());
-	mg_write(conn, response.c_str(), response.size());
+//	cout << "Response:" << endl << response << endl;
+
+	mg_send_http_ok(conn, "application/json; charset=utf-8", rsp.size());
+	mg_write(conn, rsp.c_str(), rsp.size());
 
 	return 200;
 
@@ -99,6 +83,7 @@ void run_civetweb() {
 
 	struct mg_callbacks callbacks;
 	memset(&callbacks,0,sizeof(callbacks));
+	callbacks.log_message = log_message;
 
 	mg_init_library(0);
 

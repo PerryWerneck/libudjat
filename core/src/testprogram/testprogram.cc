@@ -12,7 +12,9 @@
  #include <udjat/factory.h>
  #include <vector>
  #include <string>
-
+ #include <udjat/request.h>
+ #include <json/value.h>
+ #include <unordered_map>
 
  using namespace std;
  using namespace Udjat;
@@ -34,27 +36,8 @@ int main(int argc, char **argv) {
 	}
 
 	root_agent->start();
-
-	root_agent->find("/intvalue/subkey");
-
-
 	run_civetweb();
-
-	/*
-	root_agent->foreach([](Udjat::Abstract::Agent &agent) {
-		cout << "Agent: " << agent.getName() << endl;
-	});
-
-	cout 	<< endl
-			<< root_agent->as_json().toStyledString()
-			<< endl << endl
-			<< root_agent->getState()->as_json().toStyledString()
-			<< endl << endl;
-	*/
-
-
 	root_agent->stop();
-
 
 	return 0;
 }

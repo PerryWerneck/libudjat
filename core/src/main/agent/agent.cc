@@ -286,8 +286,7 @@ namespace Udjat {
 	}
 
 	Request & Abstract::Agent::get(const char *name, Request &request) {
-		setup(request);
-
+		return setup(request);
 	}
 
 	Request & Abstract::Agent::get(Request &request) {
@@ -384,10 +383,14 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::Agent> find_agent(const char *path) {
 
-		if(root_agent && path && *path)
+		if(!root_agent)
+			throw runtime_error("Agent controller is non existant or inactive");
+
+		if(path && *path)
 			return root_agent->find(path);
 
 		return root_agent;
+
 	}
 
 

@@ -6,6 +6,7 @@
 	#include <string>
 	#include <cstring>
 	#include <functional>
+	#include <json/value.h>
 
 	namespace Udjat {
 
@@ -33,6 +34,7 @@
 
 			/// @brief Register a request processor.
 			static void insert(const char *name, std::function<void(Request &request)> method);
+			static void insert(const char *name, std::function<void(const char *path, Json::Value &value)> method);
 
 			virtual ~Request();
 
@@ -52,6 +54,9 @@
 
 			/// @brief Execute request.
 			void call();
+
+			/// @brief Execute JSON specific request.
+			static void call(const char *path, Json::Value &value);
 
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(time_t time);

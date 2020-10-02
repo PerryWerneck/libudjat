@@ -7,6 +7,7 @@
 	#include <udjat/tools/atom.h>
 	#include <mutex>
 	#include <unordered_map>
+	#include <iostream>
 
 	using namespace std;
 
@@ -17,30 +18,74 @@
 
 			static std::recursive_mutex guard;
 
+			// Hash method
+			class Hash {
+			public:
+				inline size_t operator() (const char *a) const {
+
+					// https://stackoverflow.com/questions/7666509/hash-function-for-string
+					size_t value = 5381;
+
+					for(const char *ptr = a; *ptr; ptr++) {
+						value = ((value << 5) + value) + tolower(*ptr);
+					}
+
+					return value;
+				}
+			};
+
+			// Equal method
+			class Equal {
+			public:
+				inline bool operator() (const char * a, const char * b) const {
+					return strcasecmp(a,b) == 0;
+				}
+			};
+
 			Controller();
 
 			class Method {
 			private:
-				std::function<void(Request &request)> method;
+				const std::function<void(Request &request)> method;
 
 			public:
-				Method(std::function<void(Request &request)> m) : method(m) {}
+				Method(const std::function<void(Request &request)> m) : method(m) {}
 
-				std::function<void(Request &request)> get() const noexcept {
-					return this->method;
+				void call(Request &request) {
+					method(request);
 				}
 
 			};
 
-			std::unordered_map<Udjat::Atom, Method> methods;
+			std::unordered_map<const char *, Method, Hash, Equal> methods;
+
+			class JMethod {
+			private:
+				const std::function<void(const char *path, Json::Value &value)> method;
+
+			public:
+				JMethod(const std::function<void(const char *path, Json::Value &value)> m) : method(m) {}
+
+				void call(const char *path, Json::Value &value) {
+					method(path,value);
+				}
+
+			};
+
+			std::unordered_map<const char *, JMethod, Hash, Equal> jmethods;
 
 		public:
 			static Controller & getInstance();
 			~Controller();
 
+			static string getNameFrompath(const char *path);
+			static string getPathWithoutName(const char *path);
+
 			void insert(const char *name, std::function<void(Request &request)> method);
+			void insert(const char *name, std::function<void(const char *path, Json::Value &value)> method);
 
 			void call(Request &request);
+			void call(const char *path, Json::Value &value);
 
 		};
 

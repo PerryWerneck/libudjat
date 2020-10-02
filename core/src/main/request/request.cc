@@ -10,27 +10,7 @@ namespace Udjat {
 	Request::Request(const char *n, const char *p) : name(n), path(p), expiration(0), modification(0) {
 	}
 
-	static const char * getSeparator(const char *path) {
-
-		const char * ptr = strrchr(path,'/');
-		if(!ptr)
-			throw runtime_error("Object path should be in format /[identifier]/[request]");
-
-		if(!(ptr+1))
-			throw runtime_error("Object path should not end in \'/\'");
-
-		return ptr;
-	}
-
-	static string getNameFrompath(const char *path) {
-		return string(getSeparator(path)+1);
-	}
-
-	static string getPathWithoutName(const char *path) {
-		return string(path,getSeparator(path)-path);
-	}
-
-	Request::Request(const char *path) : Request(getNameFrompath(path).c_str(),getPathWithoutName(path).c_str()) {
+	Request::Request(const char *path) : Request(Controller::getNameFrompath(path).c_str(),Controller::getPathWithoutName(path).c_str()) {
 	}
 
 	Request::Request() : Request("","") {
@@ -108,6 +88,10 @@ namespace Udjat {
 
 	void Request::call() {
 		Controller::getInstance().call(*this);
+	}
+
+	void Request::call(const char *path, Json::Value &value) {
+		Controller::getInstance().call(path,value);
 	}
 
 }
