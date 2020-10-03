@@ -9,27 +9,27 @@ namespace Udjat {
 
 	Factory::Controller::Controller() {
 
-		insert(Atom("integer"),[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom::getFromStatic("integer"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<int>>(&parent,node);
 		});
 
-		insert(Atom("int32"),[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom::getFromStatic("int32"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<int32_t>>(&parent,node);
 		});
 
-		insert(Atom("uint32"),[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom::getFromStatic("uint32"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<uint32_t>>(&parent,node);
 		});
 
-		insert(Atom("boolean"),[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom::getFromStatic("boolean"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<bool>>(&parent,node);
 		});
 
-		insert(Atom("string"),[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom::getFromStatic("string"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<std::string>>(&parent,node);
 		});
 
-		insert(Atom("default"),[](Abstract::Agent &parent, const pugi::xml_node &node){
+		insert(Atom::getFromStatic("default"),[](Abstract::Agent &parent, const pugi::xml_node &node){
 				return make_shared<Udjat::Agent<uint32_t>>(&parent,node);
 		});
 

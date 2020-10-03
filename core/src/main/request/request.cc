@@ -38,51 +38,51 @@ namespace Udjat {
 
 	}
 
-	Request & Request::pop(const char *name, int32_t &value) {
+	Request & Request::pop(const char UDJAT_UNUSED(*name), int32_t &value) {
 		return pop(value);
 	}
 
-	Request & Request::pop(const char *name, uint32_t &value) {
+	Request & Request::pop(const char UDJAT_UNUSED(*name), uint32_t &value) {
 		return pop(value);
 	}
 
-	Request & Request::pop(const char *name, std::string &value) {
+	Request & Request::pop(const char UDJAT_UNUSED(*name), std::string &value) {
 		return pop(value);
 	}
 
-	Request & Request::push(const char *name, const int32_t value) {
+	Request & Request::push(const char UDJAT_UNUSED(*name), const int32_t value) {
 		return push(value);
 	}
 
-	Request & Request::push(const char *name, const uint32_t value) {
+	Request & Request::push(const char UDJAT_UNUSED(*name), const uint32_t value) {
 		return push(value);
 	}
 
-	Request & Request::push(const char *name, const char *value) {
+	Request & Request::push(const char UDJAT_UNUSED(*name), const char *value) {
 		return push(value);
 	}
 
-	Request & Request::pop(int32_t &value) {
+	Request & Request::pop(int32_t UDJAT_UNUSED(&value)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 
-	Request & Request::pop(uint32_t &value) {
+	Request & Request::pop(uint32_t UDJAT_UNUSED(&value)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 
-	Request & Request::pop(std::string &value) {
+	Request & Request::pop(std::string UDJAT_UNUSED(&value)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 
-	Request & Request::push(const int32_t value) {
+	Request & Request::push(const int32_t UDJAT_UNUSED(value)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 
-	Request & Request::push(const uint32_t value) {
+	Request & Request::push(const uint32_t UDJAT_UNUSED(value)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 
-	Request & Request::push(const char *value) {
+	Request & Request::push(const char UDJAT_UNUSED(*value)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 

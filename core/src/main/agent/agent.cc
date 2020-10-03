@@ -212,7 +212,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::get(Json::Value &value) {
+	void Abstract::Agent::get(Json::Value UDJAT_UNUSED(&value)) {
 		chk4refresh();
 	}
 
@@ -229,7 +229,7 @@ namespace Udjat {
 		return request;
 	}
 
-	Request & Abstract::Agent::get(const char *name, Request &request) {
+	Request & Abstract::Agent::get(const char UDJAT_UNUSED(*name), Request &request) {
 		return setup(request);
 	}
 
@@ -266,7 +266,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::append_state(const pugi::xml_node &node) {
+	void Abstract::Agent::append_state(const pugi::xml_node UDJAT_UNUSED(&node)) {
 		string str("Can't append state on agent \"");
 		str += this->name.c_str();
 		str += "\": It's a non-typed agent";

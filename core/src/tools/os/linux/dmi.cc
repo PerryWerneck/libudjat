@@ -1,5 +1,5 @@
 
-
+#include <udjat/defs.h>
 #include <udjat/tools/dmi.h>
 #include <stdexcept>
 #include <cstring>
@@ -74,7 +74,7 @@ namespace Udjat {
 
 	}
 
-	static void dmi_table(uint32_t base, uint16_t len, uint16_t num, uint16_t ver, const char *mem_dev, uint8_t type, function<void(const Dmi::Header &, uint8_t *)> response) {
+	static void dmi_table(uint32_t base, uint16_t len, uint16_t num, uint16_t UDJAT_UNUSED(ver), const char *mem_dev, uint8_t type, function<void(const Dmi::Header &, uint8_t *)> response) {
 
 		uint8_t *buf;
 		uint8_t *data;

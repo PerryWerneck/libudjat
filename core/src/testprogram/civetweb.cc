@@ -15,7 +15,7 @@ static int log_message(const struct mg_connection *conn, const char *message) {
 	return 1;
 }
 
-static int WebHandler(struct mg_connection *conn, void *cbdata) {
+static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 	const struct mg_request_info *ri = mg_get_request_info(conn);
 

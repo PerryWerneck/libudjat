@@ -79,22 +79,23 @@
 
 	#elif defined(__GNUC__)
 
-		#define UNUSED(x) __attribute__((unused)) x
-		#define DEPRECATED(func) func __attribute__ ((deprecated))
+		#define UDJAT_UNUSED(x) __attribute__((unused)) x
+		#define UDJAT_DEPRECATED(func) func __attribute__ ((deprecated))
 
 	#elif defined(_WIN32)
 
-		#define DEPRECATED(func) __declspec(deprecated) func
+		#define UDJAT_UNUSED(x) x
+		#define UDJAT_DEPRECATED(func) __declspec(deprecated) func
 
 	#elif defined(__LCLINT__)
 
-		#define UNUSED(x) /*@unused@*/ x
-		#define DEPRECATED(func) func
+		#define UDJAT_UNUSED(x) /*@unused@*/ x
+		#define UDJAT_DEPRECATED(func) func
 
 	#else
 
-		#define UNUSED(x) x
-		#define DEPRECATED(func) func
+		#define UDJAT_UNUSED(x) x
+		#define UDJAT_DEPRECATED(func) func
 
 	#endif
 
@@ -135,12 +136,14 @@
 
 	namespace Udjat {
 
+		/// @brief Abstract objects.
 		namespace Abstract {
 
 			class Agent;
 
 		}
 
+		/// @brief Factory objects.
 		namespace Factory {
 
 			class Controller;
