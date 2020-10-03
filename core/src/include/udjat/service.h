@@ -3,6 +3,9 @@
 	#define SERVICE_H_INCLUDED
 
 	#include <udjat/defs.h>
+	#include <udjat/tools/atom.h>
+	#include <ctime>
+	#include <functional>
 
 #ifndef _WIN32
 	#include <poll.h>
@@ -34,19 +37,25 @@
 			private:
 				friend class Udjat::Service::Controller;
 
+				/// @brief Module name.
+				Atom name;
+
 				/// @brief Is the module active?
 				bool active;
 
 			protected:
 
-				void setTimer(const time_t seconds, bool fire = false);
-				void setEvent(int fd, const Event event);
-
 				virtual void onTimer(const time_t now);
 				virtual void onEvent(const Event event);
 
+				/// @brief Convenience method to associate timer with module.
+				void setTimer(const time_t seconds, bool fire = false);
+
+				/// @brief Convenience method to associate file/socket handler with this module.
+				void setHandle(int fd, const Event event);
+
 			public:
-				Module();
+				Module(const Atom &name);
 				virtual ~Module();
 
 				virtual void start();
@@ -57,6 +66,18 @@
 
 			/// @brief Run service main loop.
 			UDJAT_API void run();
+
+			/// @brief Reload modules.
+			UDJAT_API void reload();
+
+			/// @brief Insert socket/file in the list of event sources.
+			UDJAT_API void insert(void *id, int fd, const Event event, const std::function<void(const Event event)> call);
+
+			/// @brief Insert timer in the list of event sources.
+			UDJAT_API void insert(void *id, int seconds, const std::function<void(const time_t)> call);
+
+			/// @brief Remove socket/file/timer/module from the list of event sources.
+			UDJAT_API void remove(void *id);
 
 		}
 

@@ -2,6 +2,14 @@
 
 	#define PRIVATE_H_INCLUDED
 
-	#include <udjat/agent.h>
+	#include <config.h>
+	#include <udjat/defs.h>
+
+	using namespace std;
+
+	namespace Udjat {
+
+
+	}
 
 #endif // PRIVATE_H_INCLUDED

@@ -11,7 +11,9 @@ MAIN_SOURCES= \
 	$(wildcard src/main/agent/*.cc) \
 	$(wildcard src/main/state/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
-	$(wildcard src/main/request/*.cc)
+	$(wildcard src/main/request/*.cc) \
+	$(wildcard src/main/service/*.cc) \
+	$(wildcard src/main/service/@OSNAME@/*.cc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
