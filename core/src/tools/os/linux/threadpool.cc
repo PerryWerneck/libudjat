@@ -112,14 +112,12 @@
 			throw std::runtime_error("Can't add new task, the queue has reached the limit");
 		}
 
-		if(threads.active < limits.threads) {
-			std::thread(worker, this).detach();
-		}
-
 		tasks.push(callback);
 
 		if(threads.waiting) {
 			wakeup();
+		} else if(threads.active < limits.threads) {
+			std::thread(worker, this).detach();
 		}
 
 		return tasks.size();
