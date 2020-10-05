@@ -9,6 +9,7 @@
 	#include <list>
 	#include <mutex>
 	#include <iostream>
+	#include <system_error>
 
 	using namespace std;
 	using Udjat::Service::Module;
@@ -17,22 +18,28 @@
 
 		class Service::Controller {
 		private:
+
+#ifdef HAVE_EVENTFD
+			int efd;
+#endif // HAVE_EVENTFD
+
+			bool enabled;
+
 			recursive_mutex guard;
 
 			Controller();
-			void wakeup();
+			void wakeup() noexcept;
 
 			list<Service::Module *> modules;
 
 			struct Timer {
 				void *id;
-				time_t seconds;		///< @brief Timer interval.
-				time_t next;		///< @brief Next Fire.
+				time_t seconds;			///< @brief Timer interval.
+				time_t next;			///< @brief Next Fire.
 
-				const function<void(const time_t)> call;
+				const function<bool(const time_t)> call;
 
-				Timer(void *id, time_t seconds);
-				~Timer();
+				Timer(void *id, time_t seconds, const function<bool(const time_t)> call);
 
 			};
 
@@ -41,11 +48,10 @@
 			struct Handle {
 				void *id;
 				int fd;
-				Event event;
-				const function<void(const Event event)> call;
+				Event events;
+				const function<bool(const Event event)> call;
 
-				Handle(void *id, int fd, const Event event);
-				~Handle();
+				Handle(void *id, int fd, const Event event, const function<bool(const Event event)> call);
 
 			};
 
@@ -61,10 +67,10 @@
 			void remove(void *id);
 
 			/// @brief Insert socket/file in the list of event sources.
-			void insert(void *id, int fd, const Event event, const std::function<void(const Event event)> call);
+			void insert(void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 			/// @brief Insert timer in the list of event sources.
-			void insert(void *id, int seconds, const std::function<void(const time_t)> call);
+			void insert(void *id, int seconds, const std::function<bool(const time_t)> call);
 
 		};
 

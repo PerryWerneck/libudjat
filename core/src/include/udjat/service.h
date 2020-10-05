@@ -65,16 +65,16 @@
 			};
 
 			/// @brief Run service main loop.
-			UDJAT_API void run();
+			UDJAT_API void run() noexcept;
 
 			/// @brief Reload modules.
 			UDJAT_API void reload();
 
 			/// @brief Insert socket/file in the list of event sources.
-			UDJAT_API void insert(void *id, int fd, const Event event, const std::function<void(const Event event)> call);
+			UDJAT_API void insert(void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 			/// @brief Insert timer in the list of event sources.
-			UDJAT_API void insert(void *id, int seconds, const std::function<void(const time_t)> call);
+			UDJAT_API void insert(void *id, int seconds, const std::function<bool(const time_t)> call);
 
 			/// @brief Remove socket/file/timer/module from the list of event sources.
 			UDJAT_API void remove(void *id);

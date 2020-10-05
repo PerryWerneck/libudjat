@@ -73,6 +73,14 @@
 			void stop();
 			void set(const pugi::xml_node &node);
 
+			inline void setMaxThreads(size_t maxthreads) {
+				limits.threads = maxthreads;
+			}
+
+			bool empty() const noexcept {
+				return (threads.active + threads.waiting) == 0;
+			}
+
 			inline operator bool() const noexcept {
 				return threads.active > 0;
 			}

@@ -41,6 +41,14 @@
 	/// @brief Does the system have the civetweb http server library?
 	#undef HAVE_CIVETWEB
 
+	/// @brief Is kernel sendfile available?
+	#undef HAVE_SENDFILE
+
+	/// @brief Define if poll is available in <poll.h>.
+	#undef HAVE_POLL
+
+	/// @brief Define to 1 if you have the `eventfd' function.
+	#undef HAVE_EVENTFD
 
 #endif // CONFIG_H_INCLUDED
 
