@@ -36,6 +36,7 @@
 				void *id;
 				time_t seconds;			///< @brief Timer interval.
 				time_t next;			///< @brief Next Fire.
+				time_t running;			///< @brief Is timer running?
 
 				const function<bool(const time_t)> call;
 
@@ -48,6 +49,7 @@
 			struct Handle {
 				void *id;
 				int fd;
+				time_t running;			///< @brief Is the callback running?
 				Event events;
 				const function<bool(const Event event)> call;
 

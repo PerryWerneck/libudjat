@@ -63,21 +63,28 @@
 			}
 #endif // HAVE_EVENTFD
 
-			{
+			try {
+
 				time_t now = time(nullptr);
 				lock_guard<recursive_mutex> lock(guard);
 
 				// Get wait time, update timers.
 				timers.remove_if([now,&wait,&threads](Timer &timer) {
 
+					// Do I still active? If not return true *only* if not running.
 					if(!timer.seconds)
-						return threads.empty();
+						return (timer.running != 0);
+
+					// Still have pending events? Ignore it but keep me the list.
+					if(timer.running)
+						return false;
 
 					if(timer.next <= now) {
 
 						// Timer has expired, update value and enqueue method.
 						timer.next = (now + timer.seconds);
 
+						timer.running = now;
 						threads.push([&timer,now]() {
 
 							try {
@@ -94,6 +101,9 @@
 								cerr << "Unexpected error on timer" << endl;
 
 							}
+
+							timer.running = 0;
+
 						});
 
 					}
@@ -107,8 +117,13 @@
 				// Get waiting sockets.
 				handlers.remove_if([&szPoll,&fds,&nfds,&threads](Handle &handle) {
 
+					// Are we active? If not return true *only* if theres no pending event.
 					if(handle.fd <= 0)
-						return threads.empty();
+						return handle.running == 0;
+
+					// Am I running? If yes don't pool for me, but keep me in the list.
+					if(handle.running)
+						return false;
 
 					if(nfds >= szPoll) {
 						szPoll += 2;
@@ -120,6 +135,18 @@
 					nfds++;
 					return false;
 				});
+
+			} catch(const std::exception &e) {
+
+				cerr << "Mainloop processing has failed: " << e.what() << endl;
+				this->enabled = false;
+				continue;
+
+			} catch(...) {
+
+				cerr << "Unexpected error on mainloop" << endl;
+				this->enabled = false;
+				continue;
 
 			}
 
@@ -150,6 +177,7 @@
 
 					if(handle.fd == fds[sock].fd && (handle.events & fds[sock].events) != 0) {
 
+						handle.running = time(nullptr);
 						threads.push([&handle,event]() {
 
 							try {
@@ -166,6 +194,8 @@
 								cerr << "Unexpected file/socket event error" << endl;
 
 							}
+
+							handle.running = 0;
 
 						});
 

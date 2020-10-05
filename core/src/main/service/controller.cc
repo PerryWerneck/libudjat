@@ -90,13 +90,20 @@ namespace Udjat {
 
 		});
 
-		timers.remove_if([id](Timer &t){
-			return t.id == id;
-		});
+		//
+		// We can't simple remove the handlers when running.
+		//
+		for(auto timer : timers) {
+			if(timer.id == id) {
+				timer.seconds = 0;	// When set to '0' the timer will be removed when possible.
+			}
+		}
 
-		handlers.remove_if([id](Handle &h){
-			return h.id == id;
-		});
+		for(auto handler : handlers) {
+			if(handler.id == id) {
+				handler.fd = -1;	// When set to '-1' the handle will be removed when possible.
+			}
+		}
 
 		wakeup();
 	}
