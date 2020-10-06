@@ -49,8 +49,9 @@
 			struct Handle {
 				void *id;
 				int fd;
-				time_t running;			///< @brief Is the callback running?
 				Event events;
+				time_t running;			///< @brief Is the callback running?
+
 				const function<bool(const Event event)> call;
 
 				Handle(void *id, int fd, const Event event, const function<bool(const Event event)> call);

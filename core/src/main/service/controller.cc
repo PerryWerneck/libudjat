@@ -22,11 +22,11 @@ namespace Udjat {
 	}
 
 	Service::Controller::Timer::Timer(void *i, time_t s, const function<bool(const time_t)> c)
-		: id(i), seconds(s), next(time(nullptr)+s), call(c) {
+		: id(i), seconds(s), next(time(nullptr)+s), running(0), call(c) {
 	}
 
 	Service::Controller::Handle::Handle(void *i, int f, const Event e, const function<bool(const Event event)> c)
-		: id(i), fd(f), events(e), call(c) {
+		: id(i), fd(f), events(e), running(0), call(c) {
 	}
 
 	Service::Controller::~Controller() {
