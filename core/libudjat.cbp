@@ -44,7 +44,6 @@
 			<Add option="-pthread" />
 			<Add library="dl" />
 		</Linker>
-		<Unit filename="src/agent/private.h" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />

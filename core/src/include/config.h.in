@@ -50,6 +50,9 @@
 	/// @brief Define to 1 if you have the `eventfd' function.
 	#undef HAVE_EVENTFD
 
+	/// @brief Define to 1 if signal is available
+	#undef HAVE_SIGNAL
+
 #endif // CONFIG_H_INCLUDED
 
 

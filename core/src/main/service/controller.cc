@@ -91,7 +91,7 @@ namespace Udjat {
 		});
 
 		//
-		// We can't simple remove the handlers when running.
+		// We can't simple remove the handlers; they can be waiting for a slot to run.
 		//
 		for(auto timer : timers) {
 			if(timer.id == id) {
@@ -123,6 +123,37 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 		timers.emplace_back(id,seconds,call);
 		wakeup();
+	}
+
+	time_t Service::Controller::reset(void *id, int seconds, time_t time) {
+
+		lock_guard<recursive_mutex> lock(guard);
+		for(auto timer : timers) {
+
+			if(timer.id == id && timer.seconds) {
+
+				if(seconds > 0)
+					timer.seconds = seconds;
+
+				if(!time) {
+					time = ::time(nullptr)+timer.seconds;
+				}
+
+				time_t current = timer.next;
+				timer.next = time;
+
+				if(timer.next < current)	// If the new timer is lower than the last one wake up main loop to adjust.
+					wakeup();
+
+				return current;
+			}
+
+		}
+		return 0;
+	}
+
+	void Service::reset(void *id, int seconds, time_t value) {
+		Service::Controller::getInstance().reset(id,seconds,value);
 	}
 
 	/// @brief Insert socket/file in the list of event sources.

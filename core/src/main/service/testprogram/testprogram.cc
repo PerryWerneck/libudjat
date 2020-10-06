@@ -26,5 +26,6 @@ int main(int argc, char **argv) {
 
 	Service::run();
 
+	cout << "Test program ends normally" << endl;
 	return 0;
 }

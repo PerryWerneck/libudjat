@@ -12,6 +12,11 @@
  #include <udjat/tools/threadpool.h>
  #include <poll.h>
  #include <malloc.h>
+ #include <cstring>
+
+ #ifdef HAVE_SIGNAL
+	#include <csignal>
+ #endif // HAVE_SIGNAL
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -30,6 +35,27 @@
 #endif // HAVE_EVENTFD
  }
 
+#ifdef HAVE_SIGNAL
+ void Udjat::Service::Controller::onInterruptSignal(int signal) noexcept {
+
+ 	clog << "Stopping by " << strsignal(signal) << " signal" << endl;
+
+#ifdef HAVE_SYSTEMD
+	{
+		string msg = "STOPPING=1\nSTATUS=Stopping by ";
+		msg += strsignal(signal);
+		msg += " signal";
+		sd_notify(0,msg.c_str());
+	}
+#endif // HAVE_SYSTEMD
+
+ 	Controller &controller = getInstance();
+ 	controller.enabled = false;
+ 	controller.wakeup();
+
+ }
+#endif // HAVE_SIGNAL
+
  void Udjat::Service::Controller::run() noexcept {
 
 	/// Poll.
@@ -40,6 +66,15 @@
  	ThreadPool threads;
  	threads.setMaxThreads(2);
 
+#ifdef HAVE_SIGNAL
+ 	// Intercept signals
+ 	sighandler_t sigterm = signal(SIGTERM,onInterruptSignal);
+ 	sighandler_t sigint = signal(SIGINT,onInterruptSignal);
+#endif // HAVE_SIGNAL
+
+ 	//
+ 	// Main event loop
+ 	//
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"READY=1\nSTATUS=Service loop is running\nMAINPID=%lu",(unsigned long) getpid());
 #endif // HAVE_SYSTEMD
@@ -75,11 +110,13 @@
 					if(!timer.seconds)
 						return (timer.running != 0);
 
-					// Still have pending events? Ignore it but keep me the list.
-					if(timer.running)
-						return false;
-
 					if(timer.next <= now) {
+
+						// Still have pending events? Ignore it but keep me the list.
+						if(timer.running) {
+							clog << "Timer call is taking too long" << endl;
+							return false;
+						}
 
 						// Timer has expired, update value and enqueue method.
 						timer.next = (now + timer.seconds);
@@ -209,6 +246,12 @@
  	}
 
  	free(fds);
+
+#ifdef HAVE_SIGNAL
+ 	// Restore signals
+	signal(SIGTERM,sigterm);
+	signal(SIGINT,sigint);
+#endif // HAVE_SIGNAL
 
 #ifdef HAVE_SYSTEMD
 	sd_notify(0,"STATUS=Service loop was ended");

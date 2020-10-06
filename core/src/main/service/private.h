@@ -59,6 +59,10 @@
 
 			list <Handle> handlers;
 
+#ifdef HAVE_SIGNAL
+			static void onInterruptSignal(int signal) noexcept;
+#endif // HAVE_SIGNAL
+
 		public:
 			static Controller & getInstance();
 			~Controller();
@@ -73,6 +77,12 @@
 
 			/// @brief Insert timer in the list of event sources.
 			void insert(void *id, int seconds, const std::function<bool(const time_t)> call);
+
+			/// @brief Set timer.
+			/// @param id	Timer ID.
+			/// @param time	New alarm time.
+			/// @return Old alarm time.
+			time_t reset(void *id, int seconds, time_t time = 0);
 
 		};
 

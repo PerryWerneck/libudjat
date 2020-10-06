@@ -136,6 +136,9 @@
 		/// @brief Set root agent
 		void UDJAT_API set_root_agent(std::shared_ptr<Abstract::Agent> agent);
 
+		/// @brief Get root agent
+		std::shared_ptr<Abstract::Agent> UDJAT_API get_root_agent();
+
 		/// @brief Get Agent from path
 		std::shared_ptr<Abstract::Agent> UDJAT_API find_agent(const char *path);
 

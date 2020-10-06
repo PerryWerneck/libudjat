@@ -2,13 +2,12 @@
 #include "private.h"
 #include <udjat/request.h>
 #include <udjat/agent.h>
+#include <udjat/service.h>
 #include <cstring>
 #include <civetweb.h>
 #include <json/value.h>
 
 #ifdef HAVE_CIVETWEB
-
-static bool enabled = true;
 
 static int log_message(const struct mg_connection *conn, const char *message) {
 	clog << message << endl;
@@ -80,9 +79,8 @@ void run_civetweb() {
 			<< "http://127.0.0.1:" << port << "/udjat/value" << endl
 			<< "http://127.0.0.1:" << port << "/udjat/detailed" << endl;
 
-	while(enabled) {
-		sleep(1);
-	}
+
+	Service::run();
 
 	mg_stop(ctx);
 
