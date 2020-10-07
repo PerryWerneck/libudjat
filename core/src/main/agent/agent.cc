@@ -11,6 +11,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/factory.h>
+ #include <udjat/event.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
 
@@ -64,6 +65,11 @@ namespace Udjat {
 		// Deleted! My children are now orphans.
 		for(auto child : children) {
 			child->parent = nullptr;
+		}
+
+		// Delete my events.
+		for(auto event : events) {
+			delete event;
 		}
 
 	}

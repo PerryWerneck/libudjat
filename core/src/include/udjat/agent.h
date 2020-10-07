@@ -55,7 +55,7 @@
 				std::shared_ptr<State> state;
 
 				/// @brief Agent events.
-				std::vector<std::shared_ptr<Abstract::Event>> events;
+				std::vector<Abstract::Event *> events;
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
@@ -102,8 +102,9 @@
 					return this->name.c_str();
 				}
 
-				/// @brief Insert event.
-				inline void push_back(std::shared_ptr<Abstract::Event> event) {
+				/// @brief Insert and take control of an event.
+				/// The event pointer will be deleted with the agent.
+				inline void push_back(Abstract::Event *event) {
 					events.push_back(event);
 				}
 

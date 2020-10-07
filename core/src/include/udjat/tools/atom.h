@@ -27,6 +27,7 @@
 			Atom(const std::string &str);
 			Atom(const Atom &src);
 			Atom(const Atom *src);
+			Atom(const pugi::xml_attribute &attribute);
 
 			Atom & operator=(const char *str);
 			Atom & operator=(const std::string &str);

@@ -13,7 +13,8 @@ MAIN_SOURCES= \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/request/*.cc) \
 	$(wildcard src/main/service/*.cc) \
-	$(wildcard src/main/service/@OSNAME@/*.cc)
+	$(wildcard src/main/service/@OSNAME@/*.cc) \
+	$(wildcard src/main/event/*.cc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)

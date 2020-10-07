@@ -57,6 +57,15 @@ namespace Udjat {
 
 	}
 
+	Abstract::State::~State() {
+
+		// Delete my events.
+		for(auto event : events) {
+			delete event;
+		}
+
+	}
+
 	void Abstract::State::get(Json::Value &value) const {
 
 		value["summary"] = summary.c_str();

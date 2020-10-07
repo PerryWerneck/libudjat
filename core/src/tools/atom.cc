@@ -129,6 +129,10 @@ namespace Udjat {
 		this->value = Controller::getInstance().find(str,true);
 	}
 
+	Atom::Atom(const pugi::xml_attribute &attribute) {
+		this->value = Controller::getInstance().find(attribute.as_string(),true);
+	}
+
 	Atom Atom::getFromStatic(const char *str) {
 		Atom atom;
 		atom.value = Controller::getInstance().find(str,false);

@@ -13,10 +13,23 @@
 			/// @brief Abstract class for events.
 			class UDJAT_API Event {
 			private:
+				class Controller;
+				friend class Controller;
+
 				Atom name;
+
+				struct {
+					size_t count	= 0;		///< @brief How many retries in the current cycle?
+					time_t last		= 0;		///< @brief Timestamp of last retry.
+					time_t next		= 0;		///< @brief Timestamp of next retry.
+					time_t first	= 0;		///< @brief Time for first retry.
+					time_t interval	= 0;		///< @brief Time for next retries.
+					size_t limit	= 0;		///< @brief Maximum number of retries.
+				} retry;
 
 			public:
 				Event(const Atom &name);
+				Event(const char *name);
 				Event(const pugi::xml_node &node);
 
 				inline const char * c_str() const noexcept {
@@ -26,10 +39,12 @@
 				virtual ~Event();
 
 				/// @brief Signal emitted when agent value changes.
-				virtual void emit(const Abstract::Agent &agent, bool level_has_changed);
+				/// @return true if the event was processed, false to retry.
+				virtual bool emit(const Abstract::Agent &agent, bool level_has_changed);
 
 				/// @brief Signal emitted on state activation/deactivation
-				virtual void emit(const Abstract::Agent &agent, const Abstract::State &state, bool active);
+				/// @return true if the event was processed, false to retry.
+				virtual bool emit(const Abstract::Agent &agent, const Abstract::State &state, bool active);
 
 			};
 
