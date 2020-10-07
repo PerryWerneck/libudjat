@@ -128,22 +128,24 @@ namespace Udjat {
 	time_t Service::Controller::reset(void *id, int seconds, time_t time) {
 
 		lock_guard<recursive_mutex> lock(guard);
-		for(auto timer : timers) {
+		for(auto timer = timers.begin(); timer != timers.end(); timer++) {
 
-			if(timer.id == id && timer.seconds) {
+			if(timer->id == id && timer->seconds) {
 
 				if(seconds > 0)
-					timer.seconds = seconds;
+					timer->seconds = seconds;
 
 				if(!time) {
-					time = ::time(nullptr)+timer.seconds;
+					time = ::time(nullptr)+timer->seconds;
 				}
 
-				time_t current = timer.next;
-				timer.next = time;
+				time_t current = timer->next;
+				timer->next = time;
 
-				if(timer.next < current)	// If the new timer is lower than the last one wake up main loop to adjust.
+				// If the new timer is lower than the last one wake up main loop to adjust.
+				if(timer->next < current) {
 					wakeup();
+				}
 
 				return current;
 			}

@@ -22,17 +22,9 @@ namespace Udjat {
 
 	Abstract::Event::Controller::Controller() {
 
-#ifdef DEBUG
-		cout << "Event controler starts" << endl;
-#endif // DEBUG
-
-		Udjat::Service::insert((void *) this, 5, [this](const time_t now) {
+		Udjat::Service::insert((void *) this, 600, [this](const time_t now) {
 
 			lock_guard<recursive_mutex> lock(guard);
-
-#ifdef DEBUG
-			cout << "Checking pending events (" << actions.size() << ")" << endl;
-#endif // DEBUG
 
 			time_t interval = 60;
 			time_t next = now + interval;
@@ -40,9 +32,10 @@ namespace Udjat {
 			actions.remove_if([now,&interval,&next](Action &action) {
 
 				if(!action.event) {
-#ifdef DEBUG
-					cout << "Event " << *action.event << " ends" << endl;
-#endif // DEBUG
+					return true;
+				}
+
+				if(++action.count > action.event->retry.limit) {
 					return true;
 				}
 
@@ -50,14 +43,10 @@ namespace Udjat {
 
 					action.last = now;
 					action.next = now + action.event->retry.interval;
-					action.count++;
 
 					try {
 
-						action.call(
-							*action.agent,
-							*(action.state ? action.state : action.agent->getState().get())
-						);
+						action.call(*action.agent, action.getState());
 
 					} catch(const std::exception &e) {
 
@@ -75,10 +64,6 @@ namespace Udjat {
 
 				next = min(next,action.next);
 				interval = min(interval,action.event->retry.interval);
-
-#ifdef DEBUG
-				cout << "Interval: " << interval << " On event: " << action.event->retry.interval << endl;
-#endif // DEBUG
 
 				return false;
 
@@ -115,12 +100,10 @@ namespace Udjat {
 		cout << "Inserting event " << ((void *) event) << endl;
 #endif // DEBUG
 
-		actions.emplace_back(event,agent,state,callback);
-
-		cout << "*************** " << this << " " << actions.size() << endl;
+		actions.emplace_back(event,agent,state,event->retry.first,callback);
 
 		// Reset timer.
-		Service::reset(this,1);
+		Service::reset(this,0,time(nullptr)+event->retry.first);
 
 	}
 
@@ -134,8 +117,23 @@ namespace Udjat {
 		actions.remove_if([event](Action &action) {
 			return action.event == event;
 		});
+
 	}
 
-	void Abstract::Event::Controller::emit(Abstract::Event::Controller::Action &action) noexcept {
+	void Abstract::Event::Controller::forEach(const std::function<void(const Abstract::Event &event, const Abstract::Agent &agent, const Abstract::State &state, time_t last, time_t next, size_t count)> call) {
+
+		lock_guard<recursive_mutex> lock(guard);
+
+		for(auto action : actions) {
+			if(action.event)
+				call(*action.event, *action.agent, action.getState(), action.last, action.next, action.count);
+		}
+
 	}
+
+	void Abstract::Event::forEach(const std::function<void(const Abstract::Event &event, const Abstract::Agent &agent, const Abstract::State &state, time_t last, time_t next, size_t count)> call) {
+		Controller::getInstance().forEach(call);
+	}
+
+
 }

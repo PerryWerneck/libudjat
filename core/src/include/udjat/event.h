@@ -42,6 +42,9 @@
 				Event(const char *name);
 				Event(const pugi::xml_node &node);
 
+				/// @brief Call method on every active event.
+				static void forEach(const std::function<void(const Abstract::Event &event, const Abstract::Agent &agent, const Abstract::State &state, time_t last, time_t next, size_t count)> call);
+
 				inline const char * c_str() const noexcept {
 					return name.c_str();
 				}

@@ -5,6 +5,7 @@
 	#include <config.h>
 	#include <udjat/defs.h>
 	#include <udjat/event.h>
+	#include <udjat/agent.h>
 	#include <iostream>
 	#include <mutex>
 	#include <list>
@@ -30,15 +31,16 @@
 				const Abstract::State *state;
 				const std::function<void(const Abstract::Agent &agent, const Abstract::State &state)> call;
 
-				Action(Abstract::Event *e,const Abstract::Agent *a,const Abstract::State *s,const std::function<void(const Abstract::Agent &agent, const Abstract::State &state)> c)
-					: event(e), agent(a), state(s), call(c) {
+				Action(Abstract::Event *e,const Abstract::Agent *a,const Abstract::State *s,const time_t seconds,const std::function<void(const Abstract::Agent &agent, const Abstract::State &state)> c)
+					: next(time(nullptr) + seconds), event(e), agent(a), state(s), call(c) {
 				}
 
+				const Abstract::State & getState() const noexcept {
+					return *(this->state ? this->state : this->agent->getState().get());
+				}
 			};
 
 			list<Action> actions;
-
-			void emit(Action &action) noexcept;
 
 		public:
 			static Controller & getInstance();
@@ -46,6 +48,8 @@
 
 			void insert(Abstract::Event *event, const Abstract::Agent *agent, const Abstract::State *state, const std::function<void(const Abstract::Agent &agent, const Abstract::State &state)> callback);
 			void remove(Abstract::Event *event);
+
+			void forEach(const std::function<void(const Abstract::Event &event, const Abstract::Agent &agent, const Abstract::State &state, time_t last, time_t next, size_t count)> call);
 
 		};
 
