@@ -134,6 +134,10 @@
 					return this->state;
 				}
 
+				inline std::shared_ptr<State> getState() const {
+					return this->state;
+				}
+
 				/// @brief Get agent value.
 				virtual void get(Json::Value &value);
 

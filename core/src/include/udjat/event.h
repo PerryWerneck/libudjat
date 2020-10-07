@@ -22,8 +22,8 @@
 
 				struct {
 					time_t first	= 0;		///< @brief Time for first retry.
-					time_t interval	= 0;		///< @brief Time for next retries.
-					size_t limit	= 0;		///< @brief Maximum number of retries.
+					time_t interval	= 60;		///< @brief Time for next retries.
+					size_t limit	= 3;		///< @brief Maximum number of retries.
 				} retry;
 
 			protected:

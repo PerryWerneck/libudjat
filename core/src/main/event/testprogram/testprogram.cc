@@ -29,7 +29,7 @@ int main(int argc, char **argv) {
 	};
 
 	Abstract::Agent agent;
-	vector<Event> events;
+	vector<std::shared_ptr<Event>> events;
 
 	{
 		pugi::xml_document doc;
@@ -38,7 +38,7 @@ int main(int argc, char **argv) {
 		for(auto top : doc.children()) {
 
 			for(pugi::xml_node node = top.child("event"); node; node = node.next_sibling("event")) {
-				events.emplace_back(node);
+				events.emplace_back(make_shared<Event>(node));
 			}
 
 		}
@@ -47,7 +47,7 @@ int main(int argc, char **argv) {
 
 	{
 		for(auto event : events) {
-			event.set(agent);
+			event->set(agent);
 		}
 	}
 
