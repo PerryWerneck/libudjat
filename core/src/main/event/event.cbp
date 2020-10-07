@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="UDJat Event Machine" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output=".bin/Debug/test" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+					<Add option="-DDEBUG=1" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="../../.bin/Release/UDJat Event Machine" prefix_auto="1" extension_auto="1" />
+				<Option object_output=".obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+					<Add option="-DNDEBUG=1" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-std=c++17" />
+			<Add option="`pkg-config --cflags pugixml`" />
+			<Add directory="../../include" />
+		</Compiler>
+		<Linker>
+			<Add option="`pkg-config --libs pugixml jsoncpp`" />
+			<Add library="econf" />
+		</Linker>
+		<Unit filename="../../include/udjat/event.h" />
+		<Unit filename="../../tools/atom.cc" />
+		<Unit filename="../../tools/os/linux/configuration/file.cc" />
+		<Unit filename="../../tools/xml.cc" />
+		<Unit filename="../agent/agent.cc" />
+		<Unit filename="../agent/controller.cc" />
+		<Unit filename="../agent/private.h" />
+		<Unit filename="../agent/state.cc" />
+		<Unit filename="../agent/update.cc" />
+		<Unit filename="../factory/controller.cc" />
+		<Unit filename="../request/controller.cc" />
+		<Unit filename="../request/request.cc" />
+		<Unit filename="../state/parse.cc" />
+		<Unit filename="../state/state.cc" />
+		<Unit filename="event.cc" />
+		<Unit filename="test.xml" />
+		<Unit filename="testprogram/testprogram.cc" />
+		<Extensions />
+	</Project>
+</CodeBlocks_project_file>

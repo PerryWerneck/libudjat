@@ -4,6 +4,7 @@
 
 	#include <udjat/defs.h>
 	#include <pugixml.hpp>
+	#include <udjat/tools/atom.h>
 	#include <memory>
 
 	namespace Udjat {
@@ -40,7 +41,7 @@
 
 				/// @brief Signal emitted when agent value changes.
 				/// @return true if the event was processed, false to retry.
-				virtual bool emit(const Abstract::Agent &agent, bool level_has_changed);
+				virtual bool emit(const Abstract::Agent &agent, bool level_has_changed = false);
 
 				/// @brief Signal emitted on state activation/deactivation
 				/// @return true if the event was processed, false to retry.
