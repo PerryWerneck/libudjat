@@ -104,7 +104,7 @@ namespace Udjat {
 		for(auto event:events) {
 			try {
 
-				event->emit(agent, *this, true);
+				event->set(agent, *this, true);
 
 			} catch(const std::exception &e) {
 
@@ -124,7 +124,7 @@ namespace Udjat {
 
 			try {
 
-				event->emit(agent, *this, false);
+				event->set(agent, *this, false);
 
 			} catch(const std::exception &e) {
 

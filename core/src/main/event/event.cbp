@@ -33,16 +33,21 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-std=c++17" />
-			<Add option="`pkg-config --cflags pugixml`" />
+			<Add option="`pkg-config --cflags pugixml libsystemd`" />
+			<Add option="-pthread" />
 			<Add directory="../../include" />
 		</Compiler>
 		<Linker>
-			<Add option="`pkg-config --libs pugixml jsoncpp`" />
+			<Add option="`pkg-config --libs pugixml jsoncpp libsystemd`" />
+			<Add option="-pthread" />
 			<Add library="econf" />
 		</Linker>
+		<Unit filename="../../include/udjat/agent.h" />
 		<Unit filename="../../include/udjat/event.h" />
+		<Unit filename="../../include/udjat/service.h" />
 		<Unit filename="../../tools/atom.cc" />
 		<Unit filename="../../tools/os/linux/configuration/file.cc" />
+		<Unit filename="../../tools/os/linux/threadpool.cc" />
 		<Unit filename="../../tools/xml.cc" />
 		<Unit filename="../agent/agent.cc" />
 		<Unit filename="../agent/controller.cc" />
@@ -52,9 +57,14 @@
 		<Unit filename="../factory/controller.cc" />
 		<Unit filename="../request/controller.cc" />
 		<Unit filename="../request/request.cc" />
+		<Unit filename="../service/controller.cc" />
+		<Unit filename="../service/linux/controller.cc" />
+		<Unit filename="../service/private.h" />
 		<Unit filename="../state/parse.cc" />
 		<Unit filename="../state/state.cc" />
+		<Unit filename="controller.cc" />
 		<Unit filename="event.cc" />
+		<Unit filename="private.h" />
 		<Unit filename="test.xml" />
 		<Unit filename="testprogram/testprogram.cc" />
 		<Extensions />

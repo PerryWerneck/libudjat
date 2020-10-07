@@ -112,7 +112,7 @@ namespace Udjat {
 
 			try {
 
-				event->emit(*this,level_has_changed);
+				event->set(*this,level_has_changed);
 
 			} catch(const std::exception &e) {
 

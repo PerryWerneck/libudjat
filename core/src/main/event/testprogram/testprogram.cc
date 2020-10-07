@@ -9,6 +9,7 @@
 
  #include <udjat/event.h>
  #include <udjat/agent.h>
+ #include <udjat/service.h>
  #include <iostream>
  #include <pugixml.hpp>
  #include <vector>
@@ -23,11 +24,6 @@ int main(int argc, char **argv) {
 	class Event : public Abstract::Event {
 	public:
 		Event(const pugi::xml_node &node) : Abstract::Event(node) {
-		}
-
-		bool emit(const Abstract::Agent UDJAT_UNUSED(&agent), bool UDJAT_UNUSED(level_has_changed) = false) override {
-			cout << "Emiting event \"" << *this << "\"" << endl;
-			return false;
 		}
 
 	};
@@ -51,10 +47,11 @@ int main(int argc, char **argv) {
 
 	{
 		for(auto event : events) {
-			event.emit(agent);
+			event.set(agent);
 		}
 	}
 
+	Service::run();
 
 	return 0;
 }

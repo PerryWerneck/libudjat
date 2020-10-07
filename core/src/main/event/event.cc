@@ -7,10 +7,8 @@
  *
  */
 
- #include <config.h>
- #include <udjat/defs.h>
+ #include "private.h"
  #include <udjat/tools/atom.h>
- #include <udjat/event.h>
 
  using namespace std;
 
@@ -28,14 +26,40 @@ namespace Udjat {
 	}
 
 	Abstract::Event::~Event() {
+		clear();
 	}
 
-	bool Abstract::Event::emit(const Abstract::Agent UDJAT_UNUSED(&agent), bool UDJAT_UNUSED(level_has_changed)) {
-		return true;
+	void Abstract::Event::clear() {
+		Controller::getInstance().remove(this);
 	}
 
-	bool Abstract::Event::emit(const Abstract::Agent UDJAT_UNUSED(&agent), const Abstract::State UDJAT_UNUSED(&state), bool UDJAT_UNUSED(active)) {
-		return true;
+	void Abstract::Event::set(const Abstract::Agent &agent, bool level_has_changed) {
+		Controller::getInstance().insert(this,&agent,nullptr,[this](const Abstract::Agent &agent, const Abstract::State &state) {
+			emit(agent,state);
+		});
+	}
+
+	void Abstract::Event::set(const Abstract::Agent &agent, const Abstract::State &state, bool active) {
+
+		if(active) {
+			Controller::getInstance().insert(this,&agent,&state,[this](const Abstract::Agent &agent, const Abstract::State &state) {
+				emit(agent,state);
+			});
+		} else {
+			clear();
+		}
+
+	}
+
+	/// @brief Fire event for agent/state.
+	void Abstract::Event::emit(const Abstract::Agent UDJAT_UNUSED(&agent), const Abstract::State UDJAT_UNUSED(&state)) {
+		emit();
+	}
+
+	void Abstract::Event::emit() {
+#ifdef DEBUG
+		cout << "Emiting event \"" << *this << "\"" << endl;
+#endif // DEBUG
 	}
 
 }
