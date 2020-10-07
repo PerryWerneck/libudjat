@@ -21,6 +21,10 @@ namespace Udjat {
 #endif // HAVE_EVENTFD
 	}
 
+	Service::Controller::Timer::Timer(void *i, const function<bool(const time_t)> c)
+		: id(i), seconds(600), next(0), running(0), call(c) {
+	}
+
 	Service::Controller::Timer::Timer(void *i, time_t s, const function<bool(const time_t)> c)
 		: id(i), seconds(s), next(time(nullptr)+s), running(0), call(c) {
 	}
@@ -119,13 +123,24 @@ namespace Udjat {
 		wakeup();
 	}
 
-	void Service::Controller::insert(void *id, int seconds, const function<bool(const time_t)> call) {
+	void Service::Controller::insert(void *id, time_t seconds, const function<bool(const time_t)> call) {
 		lock_guard<recursive_mutex> lock(guard);
 		timers.emplace_back(id,seconds,call);
 		wakeup();
 	}
 
-	time_t Service::Controller::reset(void *id, int seconds, time_t time) {
+	void Service::Controller::insert(void *id, const std::function<bool(const time_t)> call) {
+
+		lock_guard<recursive_mutex> lock(guard);
+
+		Timer tm(id,call);
+		tm.next = time(nullptr);
+		timers.push_back(tm);
+		wakeup();
+
+	}
+
+	time_t Service::Controller::reset(void *id, time_t seconds, time_t time) {
 
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto timer = timers.begin(); timer != timers.end(); timer++) {
@@ -154,7 +169,7 @@ namespace Udjat {
 		return 0;
 	}
 
-	void Service::reset(void *id, int seconds, time_t value) {
+	void Service::reset(void *id, time_t seconds, time_t value) {
 		Service::Controller::getInstance().reset(id,seconds,value);
 	}
 
@@ -164,8 +179,12 @@ namespace Udjat {
 	}
 
 	/// @brief Insert timer in the list of event sources.
-	void Service::insert(void *id, int seconds, const function<bool(const time_t)> call) {
+	void Service::insert(void *id, time_t seconds, const function<bool(const time_t)> call) {
 		Service::Controller::getInstance().insert(id,seconds,call);
+	}
+
+	void Service::insert(void *id, const std::function<bool(const time_t)> call) {
+		Service::Controller::getInstance().insert(id,call);
 	}
 
 	/// @brief Remove socket/file/timer from the list of event sources.

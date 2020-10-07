@@ -42,6 +42,8 @@
 
 			list<Action> actions;
 
+			bool onTimer(const time_t now);
+
 		public:
 			static Controller & getInstance();
 			~Controller();

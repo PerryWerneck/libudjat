@@ -74,10 +74,13 @@
 			UDJAT_API void insert(void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 			/// @brief Insert timer in the list of event sources.
-			UDJAT_API void insert(void *id, int seconds, const std::function<bool(const time_t)> call);
+			UDJAT_API void insert(void *id, time_t seconds, const std::function<bool(const time_t)> call);
+
+			/// @brief Insert and emit a timer.
+			UDJAT_API void insert(void *id, const std::function<bool(const time_t)> call);
 
 			/// @brief Reset timer to a new value.
-			UDJAT_API void reset(void *id, int seconds = 0, time_t value = 0);
+			UDJAT_API void reset(void *id, time_t seconds = 0, time_t value = 0);
 
 			/// @brief Remove socket/file/timer/module from the list of event sources.
 			UDJAT_API void remove(void *id);
