@@ -140,6 +140,8 @@
 		namespace Abstract {
 
 			class Agent;
+			class State;
+			class Event;
 
 		}
 

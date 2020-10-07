@@ -54,13 +54,17 @@
 				/// @brief Current state.
 				std::shared_ptr<State> state;
 
+				/// @brief Agent events.
+				std::vector<std::shared_ptr<Abstract::Event>> events;
+
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
 
 			protected:
 
 				/// @brief Activate a new state.
-				void activate(std::shared_ptr<State> state) noexcept;
+				/// @return true if the level has changed.
+				bool activate(std::shared_ptr<State> state) noexcept;
 
 				/// @brief Set failed state from known exception
 				void failed(const std::exception &e, const char *message) noexcept;
@@ -96,6 +100,11 @@
 				/// @brief Get Agent name
 				const char * getName() const noexcept {
 					return this->name.c_str();
+				}
+
+				/// @brief Insert event.
+				inline void push_back(std::shared_ptr<Abstract::Event> event) {
+					events.push_back(event);
 				}
 
 				/// @brief Start agent.

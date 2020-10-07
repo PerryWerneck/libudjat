@@ -8,6 +8,7 @@
  */
 
  #include "private.h"
+ #include <udjat/event.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -75,6 +76,8 @@ namespace Udjat {
 
 	void Abstract::Agent::onValueChange() noexcept {
 
+		bool level_has_changed = false;
+
 		// Compute new state
 		try {
 
@@ -92,7 +95,7 @@ namespace Udjat {
 				}
 			}
 
-			activate(new_state);
+			level_has_changed = activate(new_state);
 
 		} catch(const exception &e) {
 
@@ -101,6 +104,25 @@ namespace Udjat {
 		} catch(...) {
 
 			failed("Unexpected error switching state");
+
+		}
+
+		// Fire events
+		for(auto event : events) {
+
+			try {
+
+				event->emit(*this,level_has_changed);
+
+			} catch(const std::exception &e) {
+
+				cerr << "Error firing event \"" << *event << "\": " << e.what() << endl;
+
+			} catch(...) {
+
+				cerr << "Unexpected error firing event \"" << *event << "\"" << endl;
+
+			}
 
 		}
 

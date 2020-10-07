@@ -49,6 +49,7 @@
 		<Unit filename="src/include/udjat/agent.h" />
 		<Unit filename="src/include/udjat/dbus.h" />
 		<Unit filename="src/include/udjat/defs.h" />
+		<Unit filename="src/include/udjat/event.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/service.h" />

@@ -10,6 +10,7 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
+ #include <udjat/event.h>
  #include <iostream>
 
  using namespace std;
@@ -82,11 +83,51 @@ namespace Udjat {
 
 	}
 
+	const char * Abstract::State::to_string(const Abstract::State::Level level) {
 
-	void Abstract::State::activate(const Agent &agent) {
+		if(level > (sizeof(Abstract::State::levelNames) / sizeof(Abstract::State::levelNames[0])))
+			return "Invalid";
+		return levelNames[level];
 	}
 
-	void Abstract::State::deactivate(const Agent &agent) {
+	void Abstract::State::activate(const Agent &agent) noexcept {
+
+		for(auto event:events) {
+			try {
+
+				event->emit(agent, *this, true);
+
+			} catch(const std::exception &e) {
+
+				cerr << "Error firing event \"" << *event << "\": " << e.what() << endl;
+
+			} catch(...) {
+
+				cerr << "Unexpected error firing event \"" << *event << "\"" << endl;
+
+			}
+
+		}
+	}
+
+	void Abstract::State::deactivate(const Agent &agent) noexcept {
+		for(auto event:events) {
+
+			try {
+
+				event->emit(agent, *this, false);
+
+			} catch(const std::exception &e) {
+
+				cerr << "Error firing event \"" << *event << "\": " << e.what() << endl;
+
+			} catch(...) {
+
+				cerr << "Unexpected error firing event \"" << *event << "\"" << endl;
+
+			}
+
+		}
 	}
 
 }

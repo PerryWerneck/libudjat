@@ -87,7 +87,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::activate(std::shared_ptr<State> state) noexcept {
+	bool Abstract::Agent::activate(std::shared_ptr<State> state) noexcept {
 
 		// It's an empty state? If yes replaces with the default one.
 		if(!state)
@@ -95,13 +95,15 @@ namespace Udjat {
 
 		// Return if it's the same.
 		if(state == this->state)
-			return;
+			return false;
 
 		cout 	<< (this->name ? this->name.c_str() : "Application")
 				<< " state changes from \""
 				<< this->state->getSummary()
 				<< "\" to \"" << state->getSummary()
 				<< "\"" << endl;
+
+		State::Level saved_state = this->state->getLevel();
 
 		try {
 
@@ -122,6 +124,14 @@ namespace Udjat {
 
 		}
 
+#ifdef DEBUG
+		if(saved_state != this->state->getLevel()) {
+			cout << "State of " << *this << " has changed from " << saved_state << " to " << this->state->getLevel() << endl;
+		}
+
+#endif // DEBUG
+
+		return (saved_state != this->state->getLevel());
 	}
 
 }

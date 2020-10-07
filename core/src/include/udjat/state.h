@@ -54,6 +54,9 @@
 
 				static Level getLevelFromName(const char *name);
 
+				/// @brief State events.
+				std::vector<std::shared_ptr<Abstract::Event>> events;
+
 			public:
 				State(const Level l, const char *m, const char *d = "");
 
@@ -62,8 +65,15 @@
 				State(const std::exception &e) : State(critical, e.what()) {
 				}
 
+				static const char * to_string(const Level level);
+
 				inline const char * getSummary() const {
 					return summary.c_str();
+				}
+
+				/// @brief Insert event.
+				inline void push_back(std::shared_ptr<Abstract::Event> event) {
+					events.push_back(event);
 				}
 
 				inline Level getLevel() const {
@@ -79,8 +89,8 @@
 
 				Json::Value as_json() const;
 
-				void activate(const Agent &agent);
-				void deactivate(const Agent &agent);
+				void activate(const Agent &agent) noexcept;
+				void deactivate(const Agent &agent) noexcept;
 
 
 			};
@@ -150,6 +160,10 @@
 
 		inline ostream& operator<< (ostream& os, const std::shared_ptr<Udjat::Abstract::State> state) {
 			return os << state->getSummary();
+		}
+
+		inline ostream& operator<< (ostream& os, const Udjat::Abstract::State::Level level) {
+			return os << Udjat::Abstract::State::to_string(level);
 		}
 
 	}
