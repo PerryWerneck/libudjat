@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 	{
 		Logger logger{"sample"};
 
-		logger.info("The first value is \"{}\"",string("First value"));
+		logger.info("The first value is '{}'","First value");
 
 	}
 

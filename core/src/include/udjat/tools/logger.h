@@ -6,6 +6,7 @@
 	#include <udjat/tools/atom.h>
 	#include <vector>
 	#include <string>
+	#include <iostream>
 
 	namespace Udjat {
 
@@ -20,18 +21,32 @@
 				Debug
 			};
 
-		private:
+			class UDJAT_API Writer {
+			private:
+				std::vector<std::string> args;
+				std::string format;
 
-			class Writer : public std::string {
 			public:
 				template<typename T, typename... Targs>
-				Writer(Type type, const char *format, T &value, Targs... Fargs) {
+				Writer(const char *format, T &value, Targs... Fargs) {
+					this->format = format;
 					add(value);
 					add(Fargs...);
 				}
 
 				Writer & add(const char *value);
+				Writer & add(const std::string &value);
+
 				Writer & add();
+
+				Writer & add(const std::exception &e) {
+					return add(e.what());
+				}
+
+				template<typename T>
+				Writer & add(const T &value) {
+					return add(std::to_string(value));
+				}
 
 				template<typename T, typename... Targs>
 				Writer & add(T &value, Targs... Fargs) {
@@ -39,12 +54,9 @@
 					return add(Fargs...);
 				}
 
+				std::string to_string() const;
 
 			};
-
-			/// @brief Write log line
-			/// @param format String with placeholders ( '{}', '{0}', etc. )
-			//void write(Type type, const char *format, const ArgList &args) const noexcept;
 
 		protected:
 			Atom name;	///< @brief Object name.
@@ -65,9 +77,25 @@
 				return this->name.c_str();
 			}
 
+			/// @brief Write informational message.
+			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void info(const char *format, const Targs... args) const noexcept {
-				std::cout << Writer(Info, format, args...).c_str() << std::endl;
+				std::cout << name << "\t" << Writer(format, args...).to_string() << std::endl;
+			}
+
+			/// @brief Write warning message.
+			/// @param format String with '{}' placeholders
+			template<typename... Targs>
+			void warning(const char *format, const Targs... args) const noexcept {
+				std::clog << name << "\t" << Writer(format, args...).to_string() << std::endl;
+			}
+
+			/// @brief Write error message.
+			/// @param format String with '{}' placeholders
+			template<typename... Targs>
+			void error(const char *format, const Targs... args) const noexcept {
+				std::cerr << name << "\t" << Writer(format, args...).to_string() << std::endl;
 			}
 
 		};
