@@ -34,7 +34,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			update.next	= time(nullptr) + update.timer;
-			error("Can't get agent defaults: {}",e.what());
+			cerr << "Agent\tError '" << e.what() << "' loading defaults" << endl;
 
 		}
 

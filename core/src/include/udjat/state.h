@@ -50,7 +50,7 @@
 				Level level;		///< @brief State level.
 				Atom summary;		///< @brief State summary.
 				Atom detailed;		///< @brief Detailed message.
-				Atom href;			///< @brief Web link to this state (Usually used for http exporter).
+				Atom href;			///< @brief Web link to this state (Usually used for http exporters).
 
 				static Level getLevelFromName(const char *name);
 
