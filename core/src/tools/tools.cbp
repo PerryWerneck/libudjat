@@ -40,6 +40,7 @@
 			<Add library="pugixml" />
 		</Linker>
 		<Unit filename="../include/udjat/tools/atom.h" />
+		<Unit filename="../include/udjat/tools/logger.h" />
 		<Unit filename="atom.cc" />
 		<Unit filename="testprogram/testprogram.cc" />
 		<Extensions />

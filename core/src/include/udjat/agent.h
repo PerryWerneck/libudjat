@@ -191,11 +191,15 @@
 			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value((T) Attribute(node,"value")) {
 			}
 
+			Agent(T v) : Abstract::Agent(), value(v) {
+			}
+
 			bool set(const T &value) {
 
 				if(value == this->value)
 					return false;
 
+				this->value = value;
 				onValueChange();
 				return true;
 			}

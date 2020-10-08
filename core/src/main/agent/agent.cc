@@ -34,7 +34,7 @@ namespace Udjat {
 		} catch(const exception &e) {
 
 			update.next	= time(nullptr) + update.timer;
-			cerr << e.what() << endl;
+			cerr << "Can't get agent defaults: " << e.what() << endl;
 
 		}
 

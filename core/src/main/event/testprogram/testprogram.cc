@@ -16,6 +16,7 @@
  #include <pugixml.hpp>
  #include <vector>
  #include <civetweb.h>
+ #include <sstream>
 
  using namespace std;
  using namespace Udjat;
@@ -24,6 +25,9 @@
 
  class Event : public Abstract::Event {
  public:
+ 	Event(const char *name) : Abstract::Event(name) {
+ 	}
+
 	Event(const pugi::xml_node &node) : Abstract::Event(node) {
 	}
 
@@ -35,7 +39,7 @@
  };
 
  static vector<shared_ptr<Event>> events;
- static Abstract::Agent agent;
+ static shared_ptr<Agent<uint32_t>> agent;
 
 #ifdef HAVE_CIVETWEB
 static int civet_log(const struct mg_connection *conn, const char *message) {
@@ -52,7 +56,8 @@ static int civet_handler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata))
 		return 405;
 	}
 
-	string response("");
+	stringstream response;
+	response << "<html><body><pre>";
 
 	try {
 
@@ -65,9 +70,15 @@ static int civet_handler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata))
 			if(id < 0 || id > (int) events.size())
 				throw runtime_error("Invalid event id");
 
-			events[id]->set(agent);
+			events[id]->set(agent.get());
 
-			cout << "Starting event " << id << endl;
+			response << "Starting event " << id << endl;
+
+		} else if(!strncasecmp(cmd,"/set/",5)) {
+
+			agent->set(atoi(cmd+5));
+			response << "Agent value set to " << agent->get() << " (" << atoi(cmd+5) << ")" << endl;
+
 		}
 
 
@@ -78,8 +89,11 @@ static int civet_handler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata))
 
 	}
 
-	mg_send_http_ok(conn, "application/json; charset=utf-8", response.size());
-	mg_write(conn, response.c_str(), response.size());
+	response << "</pre></body></html>";
+
+	auto str = response.str();
+	mg_send_http_ok(conn, "text/html; charset=utf-8", str.size());
+	mg_write(conn, str.c_str(), str.size());
 
 	return 200;
 
@@ -87,6 +101,8 @@ static int civet_handler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata))
 #endif // HAVE_CIVETWEB
 
 int main(int argc, char **argv) {
+
+	agent = make_shared<Agent<uint32_t>>(0);
 
 	{
 		pugi::xml_document doc;
@@ -100,8 +116,11 @@ int main(int argc, char **argv) {
 
 		}
 
+		agent->push_back(new Event("test-on-agent"));
+
 	}
 
+	/*
 	{
 		for(auto event : events) {
 			cout << endl << "Starting event " << event << endl;
@@ -109,6 +128,7 @@ int main(int argc, char **argv) {
 			cout << "Event " << event << "started" << endl;
 		}
 	}
+	*/
 
 #ifdef HAVE_CIVETWEB
 	// https://github.com/civetweb/civetweb/blob/master/docs/UserManual.md
@@ -134,6 +154,7 @@ int main(int argc, char **argv) {
 	mg_set_request_handler(ctx, "/udjat/", civet_handler, 0);
 
 	cout	<< endl << "http://127.0.0.1:" << port << "/udjat/start/1"
+			<< endl << "http://127.0.0.1:" << port << "/udjat/set/value"
 			<< endl;
 
 #endif // HAVE_CIVETWEB
@@ -145,6 +166,7 @@ int main(int argc, char **argv) {
 #endif // HAVE_CIVETWEB
 
 	events.clear();
+	agent.reset();
 
 	return 0;
 }

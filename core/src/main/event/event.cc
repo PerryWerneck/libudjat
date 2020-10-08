@@ -35,12 +35,21 @@ namespace Udjat {
 	}
 
 	void Abstract::Event::set(const Abstract::Agent &agent, bool level_has_changed) {
+
+#ifdef DEBUG
+		cout << "Event " << *this << " fired by agent " << (level_has_changed ? "level" : "value") << " change" << endl;
+#endif // DEBUG
+
 		Controller::getInstance().insert(this,&agent,nullptr,[this](const Abstract::Agent &agent, const Abstract::State &state) {
 			emit(agent,state);
 		});
 	}
 
 	void Abstract::Event::set(const Abstract::Agent &agent, const Abstract::State &state, bool active) {
+
+#ifdef DEBUG
+		cout << "Event " << *this << " fired by state " << (active ? "activation" : "deactivation") << endl;
+#endif // DEBUG
 
 		if(active) {
 			Controller::getInstance().insert(this,&agent,&state,[this](const Abstract::Agent &agent, const Abstract::State &state) {
