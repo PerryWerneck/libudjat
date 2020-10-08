@@ -13,6 +13,11 @@
 namespace Udjat {
 
 	Service::Controller::Controller() {
+
+#ifdef DEBUG
+		cout << "Constructing service controller" << endl;
+#endif // DEBUG
+
 #ifdef HAVE_EVENTFD
 		efd = eventfd(0,0);
 		if(efd < 0) {
@@ -34,6 +39,10 @@ namespace Udjat {
 	}
 
 	Service::Controller::~Controller() {
+
+#ifdef DEBUG
+		cout << "Destroying service controller" << endl;
+#endif // DEBUG
 
 		enabled = false;
 		wakeup();
@@ -64,6 +73,10 @@ namespace Udjat {
 	Service::Controller & Service::Controller::getInstance() {
 		static Service::Controller controller;
 		return controller;
+	}
+
+	void Service::start() noexcept {
+		Service::Controller::getInstance();
 	}
 
 	void Service::Controller::insert(Service::Module *module) {

@@ -151,6 +151,12 @@
 
 				});
 
+#ifdef DEBUG
+				if(timers.empty()) {
+					cout << "No timers!" << endl;
+				}
+#endif // DEBUG
+
 				// Get waiting sockets.
 				handlers.remove_if([&szPoll,&fds,&nfds,&threads](Handle &handle) {
 

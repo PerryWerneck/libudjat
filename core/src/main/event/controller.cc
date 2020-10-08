@@ -21,14 +21,19 @@ namespace Udjat {
 	recursive_mutex Abstract::Event::Controller::guard;
 
 	Abstract::Event::Controller::Controller() {
+#ifdef DEBUG
+		cout << "Constructing event controller" << endl;
+#endif // DEBUG
 
-		Udjat::Service::insert((void *) this, [this](const time_t now) {
-			return onTimer(now);
-		});
+		// Construct the service controller
+		Service::start();
 
 	}
 
 	Abstract::Event::Controller::~Controller() {
+#ifdef DEBUG
+		cout << "Destroying event controller" << endl;
+#endif // DEBUG
 		Service::remove(this);
 	}
 
@@ -67,10 +72,25 @@ namespace Udjat {
 		cout << "Inserting event " << ((void *) event) << endl;
 #endif // DEBUG
 
+		bool start = actions.empty();
 		actions.emplace_back(event,agent,state,event->retry.first,callback);
 
-		// Reset timer.
-		Service::reset(this,0,time(nullptr)+event->retry.first);
+		if(start) {
+
+#ifdef DEBUG
+			cout << "Starting event timer" << endl;
+#endif // DEBUG
+
+			Udjat::Service::insert((void *) this, [this](const time_t now) {
+				return onTimer(now);
+			});
+
+		} else {
+
+			// Reset timer.
+			Service::reset(this,0,time(nullptr)+event->retry.first);
+
+		}
 
 	}
 
@@ -137,6 +157,13 @@ namespace Udjat {
 			return false;
 
 		});
+
+		if(actions.empty()) {
+#ifdef DEBUG
+			cout << "Event timer stops" << endl;
+#endif // DEBUG
+			return false;
+		}
 
 		Service::reset((void *) this, interval, next);
 

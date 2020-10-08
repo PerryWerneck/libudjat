@@ -41,6 +41,7 @@
 			<Add option="`pkg-config --libs pugixml jsoncpp libsystemd`" />
 			<Add option="-pthread" />
 			<Add library="econf" />
+			<Add library="civetweb" />
 		</Linker>
 		<Unit filename="../../include/udjat/agent.h" />
 		<Unit filename="../../include/udjat/event.h" />

@@ -64,6 +64,9 @@
 
 			};
 
+			/// @brief Start/init the service controller; does nothing if it's already started.
+			UDJAT_API void start() noexcept;
+
 			/// @brief Run service main loop.
 			UDJAT_API void run() noexcept;
 
