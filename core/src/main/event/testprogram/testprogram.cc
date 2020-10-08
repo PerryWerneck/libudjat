@@ -11,6 +11,7 @@
  #include <udjat/event.h>
  #include <udjat/agent.h>
  #include <udjat/service.h>
+ #include <udjat/tools/timestamp.h>
  #include <iostream>
  #include <pugixml.hpp>
  #include <vector>
@@ -26,9 +27,14 @@
 	Event(const pugi::xml_node &node) : Abstract::Event(node) {
 	}
 
+	void emit() override {
+		cout << "---> " << TimeStamp() << " Event " << *this << endl;
+	}
+
+
  };
 
- static vector<std::shared_ptr<Event>> events;
+ static vector<shared_ptr<Event>> events;
  static Abstract::Agent agent;
 
 #ifdef HAVE_CIVETWEB
@@ -89,7 +95,7 @@ int main(int argc, char **argv) {
 		for(auto top : doc.children()) {
 
 			for(pugi::xml_node node = top.child("event"); node; node = node.next_sibling("event")) {
-				events.emplace_back(make_shared<Event>(node));
+				events.push_back(make_shared<Event>(node));
 			}
 
 		}
@@ -98,7 +104,9 @@ int main(int argc, char **argv) {
 
 	{
 		for(auto event : events) {
+			cout << endl << "Starting event " << event << endl;
 			event->set(agent);
+			cout << "Event " << event << "started" << endl;
 		}
 	}
 
@@ -125,7 +133,8 @@ int main(int argc, char **argv) {
 	}
 	mg_set_request_handler(ctx, "/udjat/", civet_handler, 0);
 
-	cout	<< "http://127.0.0.1:" << port << "/udjat/start/1" << endl;
+	cout	<< endl << "http://127.0.0.1:" << port << "/udjat/start/1"
+			<< endl;
 
 #endif // HAVE_CIVETWEB
 
@@ -134,6 +143,8 @@ int main(int argc, char **argv) {
 #ifdef HAVE_CIVETWEB
 	mg_stop(ctx);
 #endif // HAVE_CIVETWEB
+
+	events.clear();
 
 	return 0;
 }

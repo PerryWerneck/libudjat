@@ -17,6 +17,7 @@
 namespace Udjat {
 
 	Abstract::Event::Event(const Atom &n) : name(n) {
+		Controller::getInstance();
 	}
 
 	Abstract::Event::Event(const char *n) : Event(Atom(n)) {
@@ -57,9 +58,7 @@ namespace Udjat {
 	}
 
 	void Abstract::Event::emit() {
-#ifdef DEBUG
-		cout << "Emiting event \"" << *this << "\"" << endl;
-#endif // DEBUG
+		cerr << "Event \"" << *this << "\" don't do anything" << endl;
 	}
 
 }

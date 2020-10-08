@@ -49,6 +49,7 @@
 		<Unit filename="../../tools/atom.cc" />
 		<Unit filename="../../tools/os/linux/configuration/file.cc" />
 		<Unit filename="../../tools/os/linux/threadpool.cc" />
+		<Unit filename="../../tools/timestamp.cc" />
 		<Unit filename="../../tools/xml.cc" />
 		<Unit filename="../agent/agent.cc" />
 		<Unit filename="../agent/controller.cc" />
