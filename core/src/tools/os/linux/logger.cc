@@ -27,12 +27,12 @@ namespace Udjat {
 
 	}
 
-	Logger::Writer & Logger::Writer::add(const char *value) {
+	Logger::Writer & Logger::Writer::append(const char *value) {
 		args.emplace_back(value);
 		return *this;
 	}
 
-	Logger::Writer & Logger::Writer::add(const std::string &value) {
+	Logger::Writer & Logger::Writer::append(const std::string &value) {
 		args.push_back(value);
 		return *this;
 	}

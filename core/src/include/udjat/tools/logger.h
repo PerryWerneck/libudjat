@@ -26,29 +26,30 @@
 				std::vector<std::string> args;
 				std::string format;
 
-			public:
-				template<typename T, typename... Targs>
-				Writer(const char *format, T &value, Targs... Fargs) {
-					this->format = format;
-					add(value);
-					add(Fargs...);
-				}
-
-				Writer & add(const char *value);
-				Writer & add(const std::string &value);
+				Writer & append(const char *value);
+				Writer & append(const std::string &value);
 
 				Writer & add();
 
 				template<typename T>
-				Writer & add(const T &value) {
-					return add(std::to_string(value));
+				Writer & append(const T &value) {
+					return append(std::to_string(value));
 				}
 
 				template<typename T, typename... Targs>
 				Writer & add(T &value, Targs... Fargs) {
-					add(value);
+					append(value);
 					return add(Fargs...);
 				}
+
+			public:
+				template<typename T, typename... Targs>
+				Writer(const char *format, T &value, Targs... Fargs) {
+					this->format = format;
+					append(value);
+					add(Fargs...);
+				}
+
 
 				std::string to_string() const;
 
