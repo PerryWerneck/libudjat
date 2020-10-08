@@ -69,6 +69,30 @@
 
 	namespace std {
 
+	/*
+		inline string to_string(const Udjat::Abstract::Event &event) {
+			return event.c_str();
+		}
+
+		inline string to_string(const Udjat::Abstract::Event *event) {
+			return event->c_str();
+		}
+
+		inline ostream& operator<< (ostream& os, const Udjat::Abstract::Event &event) {
+			return os << event.c_str();
+		}
+	*/
+
+		inline string to_string(const Udjat::Abstract::Event *event) {
+			return event->c_str();
+		}
+
+		/*
+		inline string to_string(const Udjat::Abstract::Event &event) {
+			return event.c_str();
+		}
+		*/
+
 		inline ostream& operator<< (ostream& os, const Udjat::Abstract::Event &event) {
 			return os << event.c_str();
 		}

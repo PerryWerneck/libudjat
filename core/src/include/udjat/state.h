@@ -161,6 +161,10 @@
 			return state->getSummary();
 		}
 
+		inline string to_string(const Udjat::Abstract::State::Level level) {
+			return Udjat::Abstract::State::to_string(level);
+		}
+
 		inline ostream& operator<< (ostream& os, const std::shared_ptr<Udjat::Abstract::State> state) {
 			return os << state->getSummary();
 		}

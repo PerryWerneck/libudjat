@@ -10,6 +10,8 @@
  #include "private.h"
  #include <udjat/event.h>
 
+ using namespace std;
+
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
@@ -116,11 +118,13 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				cerr << "Error firing event \"" << *event << "\": " << e.what() << endl;
+				error("Error '{}' firing event '{}'",e.what(),event->c_str());
+//				cerr << *this << "\tError firing event '" << event << "': " << e.what() << endl;
 
 			} catch(...) {
 
-				cerr << "Unexpected error firing event \"" << *event << "\"" << endl;
+				error("Unexpected error firing event '{}'",event->c_str());
+//				cerr << *this << "\tUnexpected error firing event '" << event << "'" << endl;
 
 			}
 

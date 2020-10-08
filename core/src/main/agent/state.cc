@@ -22,7 +22,7 @@ namespace Udjat {
 
 		} catch(const exception &e) {
 
-			cerr << e.what() << endl;
+			cerr << PACKAGE_NAME << "\t" << e.what() << endl;
 
 		}
 
@@ -32,8 +32,7 @@ namespace Udjat {
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const std::exception &e, const char *message) noexcept {
 
-
-		cerr << *this << ": " << message << " - " << e.what() << endl;
+		cerr << *this << "\t" << message << ": " << e.what() << endl;
 		this->state = make_shared<State>(State::critical,message,e.what());
 		this->update.next = time(nullptr) + getDelayAfterException();
 
@@ -45,7 +44,7 @@ namespace Udjat {
 	/// @brief Set failed state from known exception
 	void Abstract::Agent::failed(const char *message) noexcept {
 
-		cerr << *this << ": " << message << endl;
+		cerr << *this << "\t" << message << endl;
 		this->state = make_shared<State>(State::critical,message);
 		this->update.next = time(nullptr) + getDelayAfterException();
 
@@ -132,7 +131,7 @@ namespace Udjat {
 
 #ifdef DEBUG
 		if(saved_state != this->state->getLevel()) {
-			cout << *this << "\tState has changed from '" << saved_state << "' to '" << this->state->getLevel() << "'" << endl;
+			info("State has changed from '{}' to '{}'",saved_state,this->state->getLevel());
 		}
 #endif // DEBUG
 

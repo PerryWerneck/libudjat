@@ -108,11 +108,11 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				cerr << "Error firing event \"" << *event << "\": " << e.what() << endl;
+				cerr << "Error firing event \"" << event << "\": " << e.what() << endl;
 
 			} catch(...) {
 
-				cerr << "Unexpected error firing event \"" << *event << "\"" << endl;
+				cerr << "Unexpected error firing event \"" << event << "\"" << endl;
 
 			}
 
@@ -128,11 +128,11 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				cerr << "Error firing event \"" << *event << "\": " << e.what() << endl;
+				cerr << "Error firing event \"" << event << "\": " << e.what() << endl;
 
 			} catch(...) {
 
-				cerr << "Unexpected error firing event \"" << *event << "\"" << endl;
+				cerr << "Unexpected error firing event \"" << event << "\"" << endl;
 
 			}
 
