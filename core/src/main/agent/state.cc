@@ -97,11 +97,17 @@ namespace Udjat {
 		if(state == this->state)
 			return false;
 
+		info("Current state changes from '{}' to '{}'",
+				this->state->getSummary(),
+				state->getSummary()
+			);
+		/*
 		cout 	<< (this->name ? this->name.c_str() : "Application")
 				<< " state changes from \""
 				<< this->state->getSummary()
 				<< "\" to \"" << state->getSummary()
 				<< "\"" << endl;
+		*/
 
 		State::Level saved_state = this->state->getLevel();
 
@@ -126,9 +132,8 @@ namespace Udjat {
 
 #ifdef DEBUG
 		if(saved_state != this->state->getLevel()) {
-			cout << "State of " << *this << " has changed from " << saved_state << " to " << this->state->getLevel() << endl;
+			cout << *this << "\tState has changed from '" << saved_state << "' to '" << this->state->getLevel() << "'" << endl;
 		}
-
 #endif // DEBUG
 
 		return (saved_state != this->state->getLevel());

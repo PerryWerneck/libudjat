@@ -20,6 +20,7 @@
 	#include <udjat/defs.h>
 	#include <udjat/state.h>
 	#include <udjat/tools/atom.h>
+	#include <udjat/tools/logger.h>
 	#include <udjat/request.h>
 	#include <udjat/tools/xml.h>
 	#include <json/value.h>
@@ -29,14 +30,12 @@
 
 		namespace Abstract {
 
-			class UDJAT_API Agent {
+			class UDJAT_API Agent : public Logger {
 			private:
 
 				friend class Factory::Controller;
 
 				static std::recursive_mutex guard;
-
-				Atom name;
 
 				Agent *parent = nullptr;
 
@@ -96,11 +95,6 @@
 				Agent(Agent *parent = nullptr);
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
-
-				/// @brief Get Agent name
-				const char * getName() const noexcept {
-					return this->name.c_str();
-				}
 
 				/// @brief Insert and take control of an event.
 				/// The event pointer will be deleted with the agent.

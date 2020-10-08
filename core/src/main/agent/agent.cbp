@@ -39,6 +39,7 @@
 		<Linker>
 			<Add option="`pkg-config --libs pugixml jsoncpp`" />
 			<Add option="-pthread" />
+			<Add library="econf" />
 		</Linker>
 		<Unit filename="../../include/udjat/agent.h" />
 		<Unit filename="../../include/udjat/dbus.h" />
@@ -48,19 +49,24 @@
 		<Unit filename="../../include/udjat/timestamp.h" />
 		<Unit filename="../../include/udjat/tools/atom.h" />
 		<Unit filename="../../include/udjat/tools/xml.h" />
+		<Unit filename="../../tools/atom.cc" />
+		<Unit filename="../../tools/os/linux/configuration/file.cc" />
+		<Unit filename="../../tools/os/linux/logger.cc" />
+		<Unit filename="../../tools/xml.cc" />
+		<Unit filename="../factory/controller.cc" />
 		<Unit filename="../private.h" />
+		<Unit filename="../request/controller.cc" />
+		<Unit filename="../request/request.cc" />
+		<Unit filename="../state/parse.cc" />
 		<Unit filename="../state/private.h" />
 		<Unit filename="../state/state.cc" />
-		<Unit filename="../tools/atom.cc" />
-		<Unit filename="../tools/linux/threadpool.cc" />
-		<Unit filename="../tools/xml.cc" />
 		<Unit filename="agent.cc" />
 		<Unit filename="controller.cc" />
-		<Unit filename="factory.cc" />
-		<Unit filename="load.cc" />
 		<Unit filename="private.h" />
+		<Unit filename="state.cc" />
 		<Unit filename="test.xml" />
 		<Unit filename="testprogram/testprogram.cc" />
+		<Unit filename="update.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

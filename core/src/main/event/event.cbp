@@ -49,8 +49,10 @@
 		<Unit filename="../../include/udjat/notification.h" />
 		<Unit filename="../../include/udjat/service.h" />
 		<Unit filename="../../include/udjat/state.h" />
+		<Unit filename="../../include/udjat/tools/logger.h" />
 		<Unit filename="../../tools/atom.cc" />
 		<Unit filename="../../tools/os/linux/configuration/file.cc" />
+		<Unit filename="../../tools/os/linux/logger.cc" />
 		<Unit filename="../../tools/os/linux/threadpool.cc" />
 		<Unit filename="../../tools/timestamp.cc" />
 		<Unit filename="../../tools/xml.cc" />

@@ -8,6 +8,7 @@
  */
 
  #include <udjat/agent.h>
+ #include <udjat/factory.h>
  #include <vector>
  #include <string>
  #include <iostream>
@@ -20,21 +21,23 @@
 
 int main(int argc, char **argv) {
 
-	auto controller = Udjat::Abstract::Agent::load();
+	auto root_agent = make_shared<Abstract::Agent>();
 
-	controller->start();
+	set_root_agent(root_agent);
 
-	auto agent = controller->find({"intvalue","subkey"});
+	const char * xml_filename = "./test.xml";
 
-	controller->foreach([](Udjat::Abstract::Agent &agent) {
-		cout << "Agent: " << agent.getName() << endl;
-	});
+	{
+		pugi::xml_document doc;
+		doc.load_file(xml_filename);
+		Factory::load(root_agent,doc);
+	}
 
-	cout << controller->find("intvalue")->as_json().toStyledString() << endl;
+	root_agent->start();
 
-
-	controller->refresh();
 	sleep(5);
+
+	root_agent->stop();
 
 	return 0;
 }

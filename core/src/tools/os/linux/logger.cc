@@ -7,6 +7,9 @@ using namespace std;
 
 namespace Udjat {
 
+	Logger::Logger() : name(PACKAGE_NAME) {
+	}
+
 	Logger::Logger(const char *n) : name(n) {
 	}
 

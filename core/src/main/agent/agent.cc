@@ -31,10 +31,10 @@ namespace Udjat {
 			update.on_demand	= config.get("agent-defaults","update-on-demand",update.timer == 0);
 			update.next			= time(nullptr) + config.get("agent-defaults","delay-on-startup",update.timer);
 
-		} catch(const exception &e) {
+		} catch(const std::exception &e) {
 
 			update.next	= time(nullptr) + update.timer;
-			cerr << "Can't get agent defaults: " << e.what() << endl;
+			error("Can't get agent defaults: {}",e.what());
 
 		}
 
@@ -163,26 +163,6 @@ namespace Udjat {
 		throw system_error(ENOENT,system_category(),"Agent search has failed");
 
 	}
-
-	/*
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const std::vector<std::string> &path) {
-
-		std::shared_ptr<Abstract::Agent> agent;
-
-		for(auto node : path) {
-
-			if(!agent) {
-				agent = this->find(node.c_str());
-			} else {
-				agent = agent->find(node.c_str());
-			}
-
-		}
-
-		return agent;
-
-	}
-	*/
 
 	void Abstract::Agent::foreach(std::function<void(Abstract::Agent &agent)> method) {
 

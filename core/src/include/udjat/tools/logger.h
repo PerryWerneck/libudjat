@@ -39,10 +39,6 @@
 
 				Writer & add();
 
-				Writer & add(const std::exception &e) {
-					return add(e.what());
-				}
-
 				template<typename T>
 				Writer & add(const T &value) {
 					return add(std::to_string(value));
@@ -60,6 +56,8 @@
 
 		protected:
 			Atom name;	///< @brief Object name.
+
+			Logger();
 
 		public:
 
