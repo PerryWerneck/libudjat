@@ -65,7 +65,11 @@
 			/// @brief Redirect std::cout, std::clog and std::cerr to log file.
 			/// @param filename The log file name.
 			/// @param console If true send log output to standard out.
+#ifdef DEBUG
+			static void redirect(const char *filename = nullptr, bool console = true);
+#else
 			static void redirect(const char *filename = nullptr, bool console = false);
+#endif // DEBUG
 
 			Logger(const char *name);
 			Logger(const Atom &name);

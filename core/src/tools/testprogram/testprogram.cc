@@ -33,6 +33,8 @@ int main(int argc, char **argv) {
 	*/
 
 	{
+		Logger::redirect();
+
 		Logger logger{"sample"};
 
 		logger.info("The first value is '{}' and the second value is '{}'",
