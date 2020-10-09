@@ -72,7 +72,7 @@
 	}
 
 	void Config::File::handle_reload(int sig) noexcept {
-		clog << "Reloading configuration by signal \"" << strsignal(sig) << "\"" << endl;
+		clog << "config\tReloading configuration by signal '" << strsignal(sig) << "'" << endl;
 
 		try {
 
@@ -80,11 +80,11 @@
 
 		} catch(const std::exception &e) {
 
-			cerr << "Can't reload configuration: " << e.what() << endl;
+			cerr << "config\tError '" << e.what() << "' reloading configuration" << endl;
 
 		} catch(...) {
 
-			cerr << "Unexpected error reloading configuration" << endl;
+			cerr << "config\tUnexpected error reloading configuration" << endl;
 
 		}
 
@@ -100,7 +100,11 @@
 				(econf_file **) &hFile,
 				"/usr/etc",
 				"/etc",
+#ifdef PRODUCT_NAME
+				STRINGIZE_VALUE_OF(PRODUCT_NAME),
+#else
 				PACKAGE_NAME,
+#endif // PRODUCT_NAME
 				".conf",
 				"=",
 				"#"

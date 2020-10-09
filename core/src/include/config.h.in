@@ -17,6 +17,9 @@
 	/// @brief Nome do pacote.
 	#undef PACKAGE_NAME @PACKAGE_NAME@
 
+	/// @brief The product name
+	#define PRODUCT_NAME "udjat"
+
 	/// @brief Package title
 	#undef PACKAGE_TITLE
 
