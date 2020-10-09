@@ -18,7 +18,8 @@
 
 namespace Udjat {
 
-	Abstract::Event::Event(const Atom &n) : name(n) {
+	Abstract::Event::Event(const Atom &n) : Logger(n) {
+
 		Controller::getInstance();
 
 		try {
@@ -92,7 +93,7 @@ namespace Udjat {
 	}
 
 	void Abstract::Event::emit() {
-		cerr << PACKAGE_NAME << "\tEvent '" << *this << "' is useless" << endl;
+		cerr << *this << "\tEvent is useless" << endl;
 	}
 
 }

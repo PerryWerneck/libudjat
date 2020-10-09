@@ -110,6 +110,10 @@
 			return logger.getName();
 		}
 
+		inline string to_string(const Udjat::Logger *logger) {
+			return logger->getName();
+		}
+
 		inline ostream& operator<< (ostream& os, const Udjat::Logger &logger) {
 			return os << logger.getName();
 		}

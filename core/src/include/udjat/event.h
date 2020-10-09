@@ -5,6 +5,7 @@
 	#include <udjat/defs.h>
 	#include <pugixml.hpp>
 	#include <udjat/tools/atom.h>
+	#include <udjat/tools/logger.h>
 	#include <memory>
 	#include <functional>
 
@@ -13,12 +14,10 @@
 		namespace Abstract {
 
 			/// @brief Abstract class for events.
-			class UDJAT_API Event {
+			class UDJAT_API Event : public Logger {
 			private:
 				class Controller;
 				friend class Controller;
-
-				Atom name;
 
 				struct {
 					time_t first	= 0;		///< @brief Time for first retry.
@@ -63,38 +62,6 @@
 
 			};
 
-		}
-
-	}
-
-	namespace std {
-
-	/*
-		inline string to_string(const Udjat::Abstract::Event &event) {
-			return event.c_str();
-		}
-
-		inline string to_string(const Udjat::Abstract::Event *event) {
-			return event->c_str();
-		}
-
-		inline ostream& operator<< (ostream& os, const Udjat::Abstract::Event &event) {
-			return os << event.c_str();
-		}
-	*/
-
-		inline string to_string(const Udjat::Abstract::Event *event) {
-			return event->c_str();
-		}
-
-		/*
-		inline string to_string(const Udjat::Abstract::Event &event) {
-			return event.c_str();
-		}
-		*/
-
-		inline ostream& operator<< (ostream& os, const Udjat::Abstract::Event &event) {
-			return os << event.c_str();
 		}
 
 	}

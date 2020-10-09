@@ -194,6 +194,9 @@
 					return false;
 
 				this->value = value;
+#ifdef DEBUG
+				info("Value set to {}",this->value);
+#endif // DEBUG
 				onValueChange();
 				return true;
 			}
@@ -331,26 +334,6 @@
 			}
 
 		};
-
-	}
-
-	namespace std {
-
-		inline string to_string(const Udjat::Abstract::Agent &agent) {
-			return agent.getName();
-		}
-
-		inline ostream& operator<< (ostream& os, const Udjat::Abstract::Agent &agent) {
-			return os << agent.getName();
-		}
-
-		inline string to_string(const std::shared_ptr<Udjat::Abstract::Agent> agent) {
-			return agent->getName();
-		}
-
-		inline ostream& operator<< (ostream& os, const std::shared_ptr<Udjat::Abstract::Agent> agent) {
-			return os << agent->getName();
-		}
 
 	}
 

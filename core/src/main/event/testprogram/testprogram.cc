@@ -12,6 +12,7 @@
  #include <udjat/agent.h>
  #include <udjat/service.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <pugixml.hpp>
  #include <vector>
@@ -101,6 +102,8 @@ static int civet_handler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata))
 #endif // HAVE_CIVETWEB
 
 int main(int argc, char **argv) {
+
+	Logger::redirect();
 
 	agent = make_shared<Agent<uint32_t>>(0);
 

@@ -5,9 +5,9 @@
 #include <mutex>
 #include <unordered_set>
 
-//#ifdef DEBUG
-//	#undef DEBUG // Disable debug messages
-//#endif // DEBUG
+#ifdef DEBUG
+	#undef DEBUG // Disable debug messages
+#endif // DEBUG
 
 using namespace std;
 
