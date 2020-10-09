@@ -34,14 +34,15 @@
 
 			struct Timer {
 				void *id;
+				const char *name;		///< @brief Timer name.
 				time_t seconds;			///< @brief Timer interval.
 				time_t next;			///< @brief Next Fire.
 				time_t running;			///< @brief Is timer running?
 
 				const function<bool(const time_t)> call;
 
-				Timer(void *id, const function<bool(const time_t)> call);
-				Timer(void *id, time_t seconds, const function<bool(const time_t)> call);
+				Timer(void *id, const char *name, const function<bool(const time_t)> call);
+				Timer(void *id, const char *name, time_t seconds, const function<bool(const time_t)> call);
 
 			};
 
@@ -49,13 +50,14 @@
 
 			struct Handle {
 				void *id;
+				const char *name;
 				int fd;
 				Event events;
 				time_t running;			///< @brief Is the callback running?
 
 				const function<bool(const Event event)> call;
 
-				Handle(void *id, int fd, const Event event, const function<bool(const Event event)> call);
+				Handle(void *id, const char *name, int fd, const Event event, const function<bool(const Event event)> call);
 
 			};
 
@@ -75,13 +77,13 @@
 			void remove(void *id);
 
 			/// @brief Insert socket/file in the list of event sources.
-			void insert(void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
+			void insert(void *id, const char *name, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 			/// @brief Insert timer in the list of event sources.
-			void insert(void *id, time_t seconds, const std::function<bool(const time_t)> call);
+			void insert(void *id, const char *name, time_t seconds, const std::function<bool(const time_t)> call);
 
 			/// @brief Insert and emit a timer.
-			void insert(void *id, const std::function<bool(const time_t)> call);
+			void insert(void *id, const char *name, const std::function<bool(const time_t)> call);
 
 			/// @brief Set timer.
 			/// @param id	Timer ID.

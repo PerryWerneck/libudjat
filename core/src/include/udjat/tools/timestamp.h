@@ -16,7 +16,7 @@
 
 			TimeStamp(time_t t = time(nullptr)) : value(t) { }
 
-			std::string to_string(const char *format = "%d/%m/%Y %H:%M:%S") const noexcept;
+			std::string to_string(const char *format = "%x %X") const noexcept;
 
 			/// @brief Reseta valor com atraso.
 			///

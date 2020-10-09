@@ -51,6 +51,7 @@
 		<Unit filename="../../include/udjat/state.h" />
 		<Unit filename="../../include/udjat/tools/configuration.h" />
 		<Unit filename="../../include/udjat/tools/logger.h" />
+		<Unit filename="../../include/udjat/tools/threadpool.h" />
 		<Unit filename="../../include/udjat/tools/xml.h" />
 		<Unit filename="../../tools/atom.cc" />
 		<Unit filename="../../tools/os/linux/configuration/file.cc" />

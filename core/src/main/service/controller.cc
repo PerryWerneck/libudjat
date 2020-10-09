@@ -26,16 +26,16 @@ namespace Udjat {
 #endif // HAVE_EVENTFD
 	}
 
-	Service::Controller::Timer::Timer(void *i, const function<bool(const time_t)> c)
-		: id(i), seconds(600), next(0), running(0), call(c) {
+	Service::Controller::Timer::Timer(void *i, const char *n, const function<bool(const time_t)> c)
+		: id(i), name(n), seconds(600), next(0), running(0), call(c) {
 	}
 
-	Service::Controller::Timer::Timer(void *i, time_t s, const function<bool(const time_t)> c)
-		: id(i), seconds(s), next(time(nullptr)+s), running(0), call(c) {
+	Service::Controller::Timer::Timer(void *i, const char *n, time_t s, const function<bool(const time_t)> c)
+		: id(i), name(n), seconds(s), next(time(nullptr)+s), running(0), call(c) {
 	}
 
-	Service::Controller::Handle::Handle(void *i, int f, const Event e, const function<bool(const Event event)> c)
-		: id(i), fd(f), events(e), running(0), call(c) {
+	Service::Controller::Handle::Handle(void *i, const char *n, int f, const Event e, const function<bool(const Event event)> c)
+		: id(i), name(n), fd(f), events(e), running(0), call(c) {
 	}
 
 	Service::Controller::~Controller() {
@@ -130,23 +130,23 @@ namespace Udjat {
 		Service::Controller::getInstance().run();
 	}
 
-	void Service::Controller::insert(void *id, int fd, const Event event, const function<bool(const Event event)> call) {
+	void Service::Controller::insert(void *id, const char *name, int fd, const Event event, const function<bool(const Event event)> call) {
 		lock_guard<recursive_mutex> lock(guard);
-		handlers.emplace_back(id,fd,event,call);
+		handlers.emplace_back(id,name,fd,event,call);
 		wakeup();
 	}
 
-	void Service::Controller::insert(void *id, time_t seconds, const function<bool(const time_t)> call) {
+	void Service::Controller::insert(void *id, const char *name, time_t seconds, const function<bool(const time_t)> call) {
 		lock_guard<recursive_mutex> lock(guard);
-		timers.emplace_back(id,seconds,call);
+		timers.emplace_back(id,name,seconds,call);
 		wakeup();
 	}
 
-	void Service::Controller::insert(void *id, const std::function<bool(const time_t)> call) {
+	void Service::Controller::insert(void *id, const char *name, const std::function<bool(const time_t)> call) {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		Timer tm(id,call);
+		Timer tm(id,name,call);
 		tm.next = time(nullptr);
 		timers.push_back(tm);
 		wakeup();
@@ -187,17 +187,29 @@ namespace Udjat {
 	}
 
 	/// @brief Insert socket/file in the list of event sources.
+	void Service::insert(void *id, const char *name, int fd, const Event event, const function<bool(const Event event)> call) {
+		Service::Controller::getInstance().insert(id,name,fd,event,call);
+	}
+
 	void Service::insert(void *id, int fd, const Event event, const function<bool(const Event event)> call) {
-		Service::Controller::getInstance().insert(id,fd,event,call);
+		insert(id,"fd",fd,event,call);
 	}
 
 	/// @brief Insert timer in the list of event sources.
+	void Service::insert(void *id, const char *name, time_t seconds, const function<bool(const time_t)> call) {
+		Service::Controller::getInstance().insert(id,name,seconds,call);
+	}
+
 	void Service::insert(void *id, time_t seconds, const function<bool(const time_t)> call) {
-		Service::Controller::getInstance().insert(id,seconds,call);
+		insert(id,"timer",seconds,call);
+	}
+
+	void Service::insert(void *id, const char *name, const std::function<bool(const time_t)> call) {
+		Service::Controller::getInstance().insert(id,name,call);
 	}
 
 	void Service::insert(void *id, const std::function<bool(const time_t)> call) {
-		Service::Controller::getInstance().insert(id,call);
+		insert(id,"timer",call);
 	}
 
 	/// @brief Remove socket/file/timer from the list of event sources.

@@ -27,12 +27,14 @@
  */
 
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/configuration.h>
  #include <unistd.h>
  #include <semaphore.h>
  #include <cstring>
  #include <chrono>
  #include <unistd.h>
  #include <iostream>
+ #include <pthread.h>
 
  using namespace std;
 
@@ -41,26 +43,35 @@
  namespace Udjat {
 
 	ThreadPool & ThreadPool::getInstance() {
-		static ThreadPool threadpool;
+		static ThreadPool threadpool("defaults");
 		return threadpool;
 	}
 
-	ThreadPool::ThreadPool() {
+	ThreadPool::ThreadPool(const char *n) : name(n)  {
 
-		threads.active	= 0;
-		threads.waiting	= 0;
+		try {
 
-		limits.threads	= 3;
-		limits.tasks	= 1000;
-		limits.idle		= 5;
+			Config::File &config = Config::File::getInstance();
+
+			limits.threads	= config.get(name,"max-threads",limits.threads);
+			limits.tasks	= config.get(name,"max-tasks",limits.tasks);
+			limits.idle		= config.get(name,"max-idle",limits.idle);
+
+		} catch(const std::exception &e) {
+
+			cerr << name << "\tError '" << e.what() << "' loading threadpool settings" << endl;
+
+		}
 
 	}
 
+	/*
 	ThreadPool::ThreadPool(const pugi::xml_node &node) : ThreadPool() {
 
 		set(node);
 
 	}
+	*/
 
 	ThreadPool::~ThreadPool() {
 		stop();
@@ -105,6 +116,10 @@
 	}
 
 	size_t ThreadPool::push(std::function<void()> callback) {
+		return push(this->name,callback);
+	}
+
+	size_t ThreadPool::push(const char *name, std::function<void()> callback) {
 
 		std::lock_guard<std::mutex> lock(this->guard);
 
@@ -112,7 +127,7 @@
 			throw std::runtime_error("Can't add new task, the queue has reached the limit");
 		}
 
-		tasks.push(callback);
+		tasks.emplace(name,callback);
 
 		if(threads.waiting) {
 			wakeup();
@@ -123,7 +138,7 @@
 		return tasks.size();
 	}
 
-	bool ThreadPool::pop(std::function<void()> &cbk) noexcept {
+	bool ThreadPool::pop(Task &task) noexcept {
 
 		std::lock_guard<std::mutex> lock(this->guard);
 
@@ -131,7 +146,7 @@
 			return false;
 		}
 
-		cbk = tasks.front();
+		task = tasks.front();
 
 		tasks.pop();
 
@@ -148,28 +163,44 @@
 		pool->threads.active++;
 
 #ifdef DEBUG
-		cout << "MainLoop starts (ActiveThreads: " << pool->threads.active.load() << "/" << endl;
+		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
 		while(pool->threads.active <= pool->limits.threads) {
 
-			std::function<void()> cbk;
+			Task task;
 
 			while(pool->limits.threads) {
 
-				if(pool->pop(cbk)) {
+				if(pool->pop(task)) {
 
 					try {
 
-						cbk();
+						if(task.name && task.name != pool->name) {
+							pthread_setname_np(pthread_self(),task.name);
+						}
+
+#ifdef DEBUG
+						cout << pool->name << "\tRunning worker '" << task.name << "'" << endl;
+#endif // DEBUG
+
+						task.callback();
+
+#ifdef DEBUG
+						cout << pool->name << "\tWorker '" << task.name << "' is complete" << endl;
+#endif // DEBUG
+
+						if(task.name && task.name != pool->name) {
+							pthread_setname_np(pthread_self(),pool->name);
+						}
 
 					} catch(const std::exception &e) {
 
-						cerr << e.what() << endl;
+						cerr << task.name << "\t" << e.what() << endl;
 
 					} catch(...) {
 
-						cerr << "Unexpected error when running background task" << endl;
+						cerr << task.name << "\tUnexpected error running delayed task" << endl;
 
 					}
 
@@ -182,7 +213,8 @@
 			}
 
 #ifdef DEBUG
-			cout	<< "MainLoop is waiting (ActiveThreads: "
+			cout	<< pool->name
+					<< "\tMainLoop is waiting - ActiveThreads: "
 					<< pool->threads.active.load() << "/" << pool->limits.threads
 					<< " delay=" << pool->limits.idle << endl;
 #endif // DEBUG
@@ -196,13 +228,13 @@
 
 			if(rc == std::cv_status::timeout) {
 #ifdef DEBUG
-				cout << "Timeout waiting for tasks" << endl;
+				cout << pool->name << "\tTimeout waiting for tasks" << endl;
 #endif // DEBUG
 				break;
 			}
 
 #ifdef DEBUG
-			cout << "MainLoop is waking up (ActiveThreads: " << pool->threads.active.load() << ")" << endl;
+			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->threads.active.load() << endl;
 #endif // DEBUG
 
 		}
@@ -210,7 +242,7 @@
 		pool->threads.active--;
 
 #ifdef DEBUG
-		cout << "MainLoop ends (ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop ends - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
 	}

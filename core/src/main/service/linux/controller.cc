@@ -63,7 +63,7 @@
 	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
 
 	/// @brief Threads to run callback methods.
- 	ThreadPool threads;
+ 	ThreadPool threads{"service-events"};
  	threads.setMaxThreads(2);
 
 #ifdef HAVE_SIGNAL
@@ -122,7 +122,7 @@
 					timer.next = (now + timer.seconds);
 
 					timer.running = now;
-					threads.push([&timer,now]() {
+					threads.push(timer.name,[&timer,now]() {
 
 						try {
 
