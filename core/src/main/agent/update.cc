@@ -9,6 +9,8 @@
 
  #include "private.h"
  #include <udjat/event.h>
+ #include <udjat/notification.h>
+ #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
@@ -119,14 +121,57 @@ namespace Udjat {
 			} catch(const std::exception &e) {
 
 				error("Error '{}' firing event '{}'",e.what(),event->c_str());
-//				cerr << *this << "\tError firing event '" << event << "': " << e.what() << endl;
 
 			} catch(...) {
 
 				error("Unexpected error firing event '{}'",event->c_str());
-//				cerr << *this << "\tUnexpected error firing event '" << event << "'" << endl;
 
 			}
+
+		}
+
+		// Anyone looking for notifications?
+		if(update.notify && Notification::hasListeners()) {
+
+			class Notification : public Udjat::Notification {
+			public:
+				Notification(const Agent &agent) {
+
+					label = agent.label;
+					if(agent.state) {
+
+						level = agent.state->getLevel();
+						summary = agent.state->getSummary();
+						message = agent.state->getMessage();
+						href = agent.state->getHRef();
+						if(!href)
+							href = agent.href;
+
+					} else {
+
+						static const Atom msg = Atom::getFromStatic("Agent value has changed");
+						summary = msg;
+						href = agent.href;
+
+					}
+
+				}
+			};
+
+			try {
+
+				Notification(*this).emit();
+
+			} catch(const std::exception &e) {
+
+				error("Error '{}' emiting notification",e.what());
+
+			} catch(...) {
+
+				error("Error '{}' emiting notification","unexpected");
+
+			}
+
 
 		}
 

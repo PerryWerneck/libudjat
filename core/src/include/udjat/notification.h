@@ -10,16 +10,14 @@
 	namespace Udjat {
 
 		class UDJAT_API Notification {
-		private:
+		protected:
 			Abstract::State::Level 	level;
+			Atom					label;			///< @brief Notification label (Agent label).
 			Atom					summary;		///< @brief Notification summary.
 			Atom					message;		///< @brief Notification message.
 			Atom					href;			///< @brief Web link to this notification (if available).
 
 		public:
-			Notification(const Abstract::State &state);
-			Notification(const Abstract::Agent &agent);
-			~Notification();
 
 			inline const char * getSummary() const {
 				return summary.c_str();
@@ -33,12 +31,15 @@
 				return href.c_str();
 			}
 
+			/// @brief true if there's someone listening for notifications.
+			static bool hasListeners() noexcept;
+
 			void emit() const noexcept;
 
 		};
 
 		/// @brief Insert notification listener.
-		insert(std::function<void(const Notification &)> method);
+		//insert(std::function<void(const Notification &)> method);
 
 	}
 

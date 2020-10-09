@@ -45,6 +45,9 @@
 				/// @brief Strings com os nomes dos níveis de estado.
 				static const char * levelNames[];
 
+				/// @brief Notify on state activation?
+				bool notify = false;
+
 			private:
 
 				Level level;		///< @brief State level.
@@ -69,8 +72,16 @@
 
 				static const char * to_string(const Level level);
 
-				inline const char * getSummary() const {
-					return summary.c_str();
+				inline const Atom & getSummary() const {
+					return summary;
+				}
+
+				inline const Atom & getMessage() const {
+					return summary;
+				}
+
+				inline const Atom & getHRef() const {
+					return summary;
 				}
 
 				/// @brief Insert and take control of an event.
@@ -158,7 +169,7 @@
 	namespace std {
 
 		inline string to_string(const std::shared_ptr<Udjat::Abstract::State> state) {
-			return state->getSummary();
+			return state->getSummary().c_str();
 		}
 
 		inline string to_string(const Udjat::Abstract::State::Level level) {

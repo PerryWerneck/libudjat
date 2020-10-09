@@ -12,6 +12,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/event.h>
  #include <iostream>
+ #include <udjat/notification.h>
 
  using namespace std;
 
@@ -117,6 +118,40 @@ namespace Udjat {
 			}
 
 		}
+
+		if(notify && Notification::hasListeners()) {
+
+			class Notification : public Udjat::Notification {
+			public:
+				Notification(const Abstract::Agent &agent, const Abstract::State &state) {
+
+					// label = agent.getLabel();
+					level = state.getLevel();
+					summary = state.getSummary();
+					message = state.getMessage();
+					href = state.getHRef();
+//					if(!href)
+//						href = agent.getHRef();
+
+				}
+			};
+
+			try {
+
+				Notification(agent, *this).emit();
+
+			} catch(const std::exception &e) {
+
+				cerr << agent << "\tError '" << e.what() << "' emitting notification" << endl;
+
+			} catch(...) {
+
+				cerr << agent << "\tUnexpected error emitting notification" << endl;
+
+			}
+
+		}
+
 	}
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {

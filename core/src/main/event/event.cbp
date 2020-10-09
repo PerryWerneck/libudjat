@@ -74,6 +74,7 @@
 		<Unit filename="../state/state.cc" />
 		<Unit filename="controller.cc" />
 		<Unit filename="event.cc" />
+		<Unit filename="notification.cc" />
 		<Unit filename="private.h" />
 		<Unit filename="test.xml" />
 		<Unit filename="testprogram/testprogram.cc" />

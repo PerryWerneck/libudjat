@@ -100,13 +100,6 @@ namespace Udjat {
 				this->state->getSummary(),
 				state->getSummary()
 			);
-		/*
-		cout 	<< (this->name ? this->name.c_str() : "Application")
-				<< " state changes from \""
-				<< this->state->getSummary()
-				<< "\" to \"" << state->getSummary()
-				<< "\"" << endl;
-		*/
 
 		State::Level saved_state = this->state->getLevel();
 

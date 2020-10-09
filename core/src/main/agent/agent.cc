@@ -30,6 +30,7 @@ namespace Udjat {
 			update.timer		= config.get("agent-defaults","update-timer",update.timer);
 			update.on_demand	= config.get("agent-defaults","update-on-demand",update.timer == 0);
 			update.next			= time(nullptr) + config.get("agent-defaults","delay-on-startup",update.timer);
+			update.notify 		= config.get("agent-defaults","notify-on-value-change",update.notify);
 
 		} catch(const std::exception &e) {
 
@@ -43,6 +44,7 @@ namespace Udjat {
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent) {
 
 		this->name = Factory::validate_name(node.attribute("name").as_string());
+		this->update.notify = node.attribute("notify").as_bool(this->update.notify);
 
 #ifdef DEBUG
 		cout << "Creating " << this->name << endl;
