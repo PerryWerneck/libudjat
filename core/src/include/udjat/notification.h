@@ -10,6 +10,10 @@
 	namespace Udjat {
 
 		class UDJAT_API Notification {
+		private:
+			class Controller;
+			friend class Controller;
+
 		protected:
 			Abstract::State::Level 	level;
 			Atom					label;			///< @brief Notification label (Agent label).
@@ -36,10 +40,11 @@
 
 			void emit() const noexcept;
 
+			/// @brief Insert notification listener.
+			static void insert(const std::function<void(const Notification &)> method);
+
 		};
 
-		/// @brief Insert notification listener.
-		//insert(std::function<void(const Notification &)> method);
 
 	}
 

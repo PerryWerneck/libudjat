@@ -6,9 +6,11 @@
 	#include <udjat/defs.h>
 	#include <udjat/event.h>
 	#include <udjat/agent.h>
+	#include <udjat/notification.h>
 	#include <iostream>
 	#include <mutex>
 	#include <list>
+	#include <vector>
 
 	using namespace std;
 
@@ -55,6 +57,26 @@
 
 		};
 
+
+		class Notification::Controller {
+		private:
+			recursive_mutex guard;
+			vector<std::function<void(const Notification &)>> methods;
+
+			Controller();
+
+		public:
+			static Controller & getInstance();
+			~Controller();
+
+			void insert(std::function<void(const Notification &)> method);
+			void emit(const Notification & notification) noexcept;
+
+			bool empty() const {
+				return methods.empty();
+			}
+
+		};
 	}
 
 #endif // PRIVATE_H_INCLUDED
