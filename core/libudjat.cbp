@@ -89,6 +89,7 @@
 		<Unit filename="src/tools/atom.cc" />
 		<Unit filename="src/tools/mmap.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
+		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/service/private.h" />
 		<Unit filename="src/tools/timestamp.cc" />

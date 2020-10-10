@@ -12,7 +12,7 @@ using namespace std;
 
 namespace Udjat {
 
-	Logger::Logger() : name(PACKAGE_NAME) {
+	Logger::Logger() : name(STRINGIZE_VALUE_OF(PRODUCT_NAME)) {
 	}
 
 	Logger::Logger(const char *n) : name(n) {
@@ -87,7 +87,7 @@ namespace Udjat {
 
 				while(bytes > 0) {
 
-					ssize_t sz = ::write(1,ptr,bytes);
+					ssize_t sz = ::write(fd,ptr,bytes);
 					if(sz < 0)
 						return;
 					bytes -= sz;

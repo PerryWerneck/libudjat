@@ -2,6 +2,7 @@
 #---[ Library configuration ]------------------------------------------------------------
 
 PACKAGE_NAME=@PACKAGE_NAME@
+PRODUCT_NAME=@PRODUCT_NAME@
 
 MAIN_SOURCES= \
 	$(wildcard src/tools/*.cc) \
@@ -19,7 +20,7 @@ MAIN_SOURCES= \
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 
-TARGETS=@OSNAME@-lib devel
+TARGETS=@OSNAME@-lib devel conf
 
 #---[ Tools ]----------------------------------------------------------------------------
 
@@ -48,7 +49,7 @@ includedir=@includedir@
 datarootdir=@datarootdir@
 localedir=@localedir@
 docdir=@docdir@
-sysconfdir=@sysconfdir@
+sysconfdir=/etc
 
 BASEDIR=@BASEDIR@
 
@@ -243,6 +244,15 @@ install-devel:
 		sdk/pkg-config.pc \
 		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
 
+install-conf:
+
+	@$(MKDIR) \
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).d
+
+	@$(INSTALL_DATA) \
+		conf.d/00-defaults.conf \
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).d/00-$(PACKAGE_NAME)-defaults.conf
+
 #---[ Uninstall Targets ]----------------------------------------------------------------
 
 uninstall: \
@@ -276,6 +286,10 @@ uninstall-devel:
 	@rm -f \
 		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
 
+uninstall-conf:
+
+	@rm -f \
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).d/00-$(PACKAGE_NAME)-defaults.conf
 
 #---[ Debug Targets ]--------------------------------------------------------------------
 

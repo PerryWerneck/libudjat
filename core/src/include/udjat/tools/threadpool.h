@@ -43,8 +43,8 @@
 			std::queue<Task> tasks;
 
 			struct {
-				std::atomic<size_t>	  active	= 0;		///< @brief Number of active threads.
-				std::atomic<size_t>	  waiting	= 0;		///< @brief Número of idle threads.
+				std::atomic<size_t>	  active;		///< @brief Number of active threads.
+				std::atomic<size_t>	  waiting;		///< @brief Número of idle threads.
 			} threads;
 
 			static void worker(ThreadPool *pool) noexcept;

@@ -3,10 +3,11 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-product_name=udjat
+product_name=@PRODUCT_NAME@
+product_title=@PRODUCT_TITLE@
 
 Name: @PACKAGE_NAME@
-Description: @PACKAGE_TITLE@
+Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
 Libs: -ludjat
 Libs.private: @LIBS@ @ECONF_LIBS@ @DBUS_LIBS@ @PUGIXML_LIBS@ @JSONCPP_LIBS@

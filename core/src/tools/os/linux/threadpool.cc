@@ -43,11 +43,13 @@
  namespace Udjat {
 
 	ThreadPool & ThreadPool::getInstance() {
-		static ThreadPool threadpool("defaults");
+		static ThreadPool threadpool("DefPool");
 		return threadpool;
 	}
 
 	ThreadPool::ThreadPool(const char *n) : name(n)  {
+
+		threads.active = threads.waiting = 0;
 
 		try {
 

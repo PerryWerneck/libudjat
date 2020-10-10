@@ -8,10 +8,6 @@ dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
 AC_INIT([libudjat], [0.1], [perry.werneck@gmail.com])
 
-app_cv_title="The Eye of Horus"
-AC_DEFINE_UNQUOTED(PACKAGE_TITLE,"$app_cv_title")
-AC_SUBST(PACKAGE_TITLE,"$app_cv_title")
-
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
 
@@ -47,6 +43,15 @@ AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor)
 
 AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
+
+AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
+
+AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product)
+AC_SUBST(PRODUCT_NAME,$app_cv_product)
+
+app_cv_title="The Eye of Horus"
+AC_DEFINE_UNQUOTED(PRODUCT_TITLE,"$app_cv_title")
+AC_SUBST(PRODUCT_TITLE,"$app_cv_title")
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics

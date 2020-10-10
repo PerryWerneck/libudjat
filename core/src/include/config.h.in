@@ -18,13 +18,10 @@
 	#undef PACKAGE_NAME @PACKAGE_NAME@
 
 	/// @brief The product name
-	#define PRODUCT_NAME "udjat"
+	#undef PRODUCT_NAME
 
-	/// @brief Package title
-	#undef PACKAGE_TITLE
-
-	/// @brief Package description
-	#undef PACKAGE_DESCRIPTION
+	/// @brief Product title
+	#undef PRODUCT_TITLE
 
 	/// @brief Versão atual.
 	#undef PACKAGE_VERSION
