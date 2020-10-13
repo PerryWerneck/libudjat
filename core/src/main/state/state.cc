@@ -13,6 +13,7 @@
  #include <udjat/event.h>
  #include <iostream>
  #include <udjat/notification.h>
+ #include <udjat/tools/timestamp.h>
 
  using namespace std;
 
@@ -20,7 +21,7 @@
 
 namespace Udjat {
 
-	const char * Abstract::State::levelNames[] = {
+	static const char * levelNames[] = {
 		"undefined",
 		"unimportant",
 		"ready",
@@ -33,8 +34,8 @@ namespace Udjat {
 
 	Abstract::State::Level Abstract::State::getLevelFromName(const char *name) {
 
-		for(size_t ix=0; Abstract::State::levelNames[ix]; ix++) {
-			if(!strcasecmp(name,Abstract::State::levelNames[ix]))
+		for(size_t ix=0; levelNames[ix]; ix++) {
+			if(!strcasecmp(name,levelNames[ix]))
 				return (Abstract::State::Level) ix;
 		}
 
@@ -42,7 +43,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const Level l, const char *m, const char *d) : level(l), summary(m), detailed(d) {
+	Abstract::State::State(const Level l, const char *m, const char *b) : level(l), summary(m), body(b),activation(0) {
 
 #ifdef DEBUG
 		cout << "Creating state \"" << this->summary << "\" " << levelNames[this->level] << endl;
@@ -70,15 +71,32 @@ namespace Udjat {
 	void Abstract::State::get(Json::Value &value) const {
 
 		value["summary"] = summary.c_str();
+		value["body"] = body.c_str();
 		value["href"] = href.c_str();
-		value["level"] = levelNames[level];
 
+		if(this->activation)
+			value["activation"] = TimeStamp(this->activation).to_string(TIMESTAMP_FORMAT_JSON);
+		else
+			value["activation"] = 0;
+
+		// Set level information
+		{
+			Json::Value level;
+			level["value"] = (uint32_t) this->level;
+			level["label"] = levelNames[this->level];
+			value["level"] = level;
+		}
+
+	}
+
+	void Abstract::State::getValue(Json::Value &value) const {
+		value["value"] = false;
 	}
 
 	Request & Abstract::State::get(Request &request) {
 
 		request.push("summary",summary.c_str());
-		request.push("detailed",detailed.c_str());
+		request.push("body",body.c_str());
 		request.push("level",levelNames[level]);
 
 		return request;
@@ -95,12 +113,14 @@ namespace Udjat {
 
 	const char * Abstract::State::to_string(const Abstract::State::Level level) {
 
-		if(level > (sizeof(Abstract::State::levelNames) / sizeof(Abstract::State::levelNames[0])))
+		if(level > (sizeof(levelNames) / sizeof(levelNames[0])))
 			return "Invalid";
 		return levelNames[level];
 	}
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
+
+		this->activation = time(nullptr);
 
 		for(auto event:events) {
 			try {

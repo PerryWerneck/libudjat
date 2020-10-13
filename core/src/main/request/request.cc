@@ -10,9 +10,6 @@ namespace Udjat {
 	Request::Request(const char *n, const char *p) : name(n), path(p), expiration(0), modification(0) {
 	}
 
-	Request::Request(const char *path) : Request(Controller::getNameFrompath(path).c_str(),Controller::getPathWithoutName(path).c_str()) {
-	}
-
 	Request::Request() : Request("","") {
 	}
 
@@ -90,8 +87,8 @@ namespace Udjat {
 		Controller::getInstance().call(*this);
 	}
 
-	void Request::call(const char *path, Json::Value &value) {
-		Controller::getInstance().call(path,value);
+	void Request::call(const char *cmd, const char *path, Json::Value &value) {
+		Controller::getInstance().call(cmd, path,value);
 	}
 
 }

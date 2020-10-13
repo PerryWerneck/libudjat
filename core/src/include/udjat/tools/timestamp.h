@@ -8,6 +8,8 @@
 
 	namespace Udjat {
 
+		#define TIMESTAMP_FORMAT_JSON "%Y/%m/%d %H:%M:%S"
+
 		/// @brief A time value (in seconds)
 		class UDJAT_API TimeStamp {
 		public:

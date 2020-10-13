@@ -27,7 +27,25 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 	try {
 
-		Request::call(ri->local_uri + 6, response);
+		cout << "URI: '" << (ri->local_uri + 5) << "'" << endl;
+
+		const char * ptr = (ri->local_uri + 5);
+		const char * path = strchr(ptr,'/');
+		string cmd;
+
+		if(!path)
+			path = strchr(ptr,'?');
+
+		if(path) {
+			cmd.assign(ptr,path-ptr);
+		} else {
+			path = "";
+			cmd.assign(ptr);
+		}
+
+		cout << "CMD: '" << cmd << "' path: '" << path << "'" << endl;
+
+		Request::call(cmd.c_str(), path, response);
 
 	} catch(const exception &e) {
 
@@ -73,12 +91,11 @@ void run_civetweb() {
 		throw runtime_error("Cannot start CivetWeb - mg_start failed.");
 	}
 
-	mg_set_request_handler(ctx, "/udjat/", WebHandler, 0);
+	mg_set_request_handler(ctx, "/api/", WebHandler, 0);
 
-	cout	<< "http://127.0.0.1:" << port << "/udjat/state" << endl
-			<< "http://127.0.0.1:" << port << "/udjat/value" << endl
-			<< "http://127.0.0.1:" << port << "/udjat/detailed" << endl;
-
+	cout	<< "http://127.0.0.1:" << port << "/api/agent" << endl
+			<< "http://127.0.0.1:" << port << "/api/agent/intvalue" << endl
+			<< endl;
 
 	Service::run();
 

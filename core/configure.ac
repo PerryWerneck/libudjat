@@ -58,6 +58,7 @@ dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
 
 CFLAGS="$CFLAGS -I$ac_pwd/src/include"
+OPTIONAL_MODULES=""
 
 case "$host" in
 	*-mingw32)
@@ -126,14 +127,33 @@ dnl ---------------------------------------------------------------------------
 dnl Check for libintl
 dnl ---------------------------------------------------------------------------
 
-AC_PATH_TOOL([XGETTEXT], [xgettext], [no])
-AC_PATH_TOOL([MSGCAT], [msgcat], [no])
-AC_PATH_TOOL([MSGINIT], [msginit], [no])
-AC_PATH_TOOL([MSGMERGE], [msgmerge], [no])
-AC_PATH_TOOL([MSGFMT], [msgfmt], [no])
+AC_PATH_TOOL([XGETTEXT], [xgettext], [true])
+AC_PATH_TOOL([MSGCAT], [msgcat], [true])
+AC_PATH_TOOL([MSGINIT], [msginit], [true])
+AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
+AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
 
 AC_CHECK_HEADER(libintl.h, [
-	AC_DEFINE(HAVE_LIBINTL, 1)
+        AC_DEFINE(HAVE_LIBINTL, 1)
+
+        case "$host" in
+        *-mingw32|*-pc-msys)
+                INTL_LIBS="-lintl"
+                ;;
+
+        *-apple-darwin*)
+                INTL_LIBS="-lintl"
+                ;;
+
+        *)
+                INTL_LIBS=""
+
+        esac
+
+	OPTIONAL_MODULES="${OPTIONAL_MODULES} locale"
+
+], [
+        AC_MSG_ERROR([Can't find required file libintl.h])
 ])
 
 dnl ---------------------------------------------------------------------------
@@ -266,6 +286,7 @@ dnl ---------------------------------------------------------------------------
 dnl Output config
 dnl ---------------------------------------------------------------------------
 
+AC_SUBST(OPTIONAL_MODULES)
 AC_SUBST(BASEDIR,$ac_pwd)
 
 dnl ---------------------------------------------------------------------------

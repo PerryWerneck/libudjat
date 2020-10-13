@@ -32,6 +32,9 @@
 	/// @brief Define to 1 if the system has getopt()
 	#undef HAVE_GETOPT
 
+	/// @brief Does the system have intl?
+	#undef HAVE_INTL
+
 	/// @brief Does the system have systemd?
 	#undef HAVE_SYSTEMD
 

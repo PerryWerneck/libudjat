@@ -194,8 +194,9 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::get(Json::Value UDJAT_UNUSED(&value)) {
+	void Abstract::Agent::get(Json::Value &value) {
 		chk4refresh();
+		this->state->getValue(value);
 	}
 
 	Request & Abstract::Agent::setup(Request &request) {
@@ -234,15 +235,10 @@ namespace Udjat {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
-		if(children.empty()) {
-			get(node);
-		} else {
-
-			for(auto child : children) {
-				node[child->getName()] = child->as_json();
-			}
-
-		}
+		get(node);
+		node["state"] = this->state->as_json();
+		node["label"] = this->label.c_str();
+		node["href"] = this->href.c_str();
 
 		return node;
 

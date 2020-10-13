@@ -55,7 +55,7 @@ namespace Udjat {
 		static const char *reserved_names[] = {
 			"state",
 			"agent",
-			"action"
+			"attribute"
 		};
 
 		for(size_t ix = 0; ix < (sizeof(reserved_names)/sizeof(reserved_names[0])); ix++) {

@@ -13,6 +13,7 @@
  #include <vector>
  #include <string>
  #include <udjat/request.h>
+ #include <udjat/tools/logger.h>
  #include <json/value.h>
  #include <unordered_map>
 
@@ -22,6 +23,8 @@
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 int main(int argc, char **argv) {
+
+	Logger::redirect();
 
 	auto root_agent = make_shared<Abstract::Agent>();
 

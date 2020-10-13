@@ -42,18 +42,16 @@
 						critical		///< @brief Critical level (allways the last one)
 				};
 
-				/// @brief Strings com os nomes dos níveis de estado.
-				static const char * levelNames[];
-
 				/// @brief Notify on state activation?
 				bool notify = false;
 
 			private:
 
 				Level level;		///< @brief State level.
-				Atom summary;		///< @brief State summary.
-				Atom detailed;		///< @brief Detailed message.
+				Atom summary;		///< @brief Message summary.
+				Atom body;			///< @brief Message body.
 				Atom href;			///< @brief Web link to this state (Usually used for http exporters).
+				time_t activation;	///< @brief Timestamp of the last state activation.
 
 				static Level getLevelFromName(const char *name);
 
@@ -61,7 +59,7 @@
 				std::vector<Abstract::Event *> events;
 
 			public:
-				State(const Level l, const char *m, const char *d = "");
+				State(const Level l, const char *m, const char *b = "");
 
 				State(const pugi::xml_node &node);
 
@@ -99,6 +97,7 @@
 				}
 
 				virtual void get(Json::Value &value) const;
+				virtual void getValue(Json::Value &value) const;
 				virtual Request & get(Request &request);
 
 				Json::Value as_json() const;
@@ -127,6 +126,10 @@
 
 			bool compare(T value) {
 				return value >= from && value <= to;
+			}
+
+			void getValue(Json::Value &value) const override {
+				value["value"] = this->from;
 			}
 
 		};

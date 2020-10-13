@@ -20,7 +20,7 @@ MAIN_SOURCES= \
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
 
-TARGETS=@OSNAME@-lib devel conf
+TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@
 
 #---[ Tools ]----------------------------------------------------------------------------
 

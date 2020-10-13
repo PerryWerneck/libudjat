@@ -14,22 +14,7 @@ namespace Udjat {
 
 	Request::Controller::Controller() {
 
-		insert("value",[](Request &request) {
-
-			find_agent(request.getPath())->get(request);
-
-		});
-
-		insert("state",[](Request &request) {
-
-			auto agent = find_agent(request.getPath());
-
-			agent->getState()->get(request);
-			agent->get("value",request);
-
-		});
-
-		insert("detailed",[](const char *path, Json::Value &value) {
+		insert("agent",[](const char *path, Json::Value &value) {
 
 			value = find_agent(path)->as_json();
 
@@ -38,26 +23,6 @@ namespace Udjat {
 	}
 
 	Request::Controller::~Controller() {
-	}
-
-	static const char * getSeparator(const char *path) {
-
-		const char * ptr = strrchr(path,'/');
-		if(!ptr)
-			throw runtime_error("Object path should be in format /[identifier]/[command]");
-
-		if(!(ptr+1))
-			throw runtime_error("Object path should not end in \'/\'");
-
-		return ptr;
-	}
-
-	string Request::Controller::getNameFrompath(const char *path) {
-		return string(getSeparator(path)+1);
-	}
-
-	string Request::Controller::getPathWithoutName(const char *path) {
-		return string(path,getSeparator(path)-path);
 	}
 
 	Request::Controller & Request::Controller::getInstance() {
@@ -100,13 +65,14 @@ namespace Udjat {
 
 	}
 
-	void Request::Controller::call(const char *p, Json::Value &value) {
+	void Request::Controller::call(const char *name, const char *path, Json::Value &value) {
 
-		string name = getNameFrompath(p);
-		string path = getPathWithoutName(p);
+		const char * ptr = strrchr(path,'/');
+		if(ptr && !(ptr+1))
+			throw runtime_error("Object path should not end in \'/\'");
 
 		guard.lock();
-		auto entry = jmethods.find(name.c_str());
+		auto entry = jmethods.find(name);
 		guard.unlock();
 
 		if(entry == jmethods.end()) {
@@ -148,7 +114,7 @@ namespace Udjat {
 
 		}
 
-		entry->second.call(path.c_str(),value);
+		entry->second.call(path,value);
 
 	}
 

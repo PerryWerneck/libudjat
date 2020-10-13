@@ -56,7 +56,7 @@
 			void call();
 
 			/// @brief Execute JSON specific request.
-			static void call(const char *path, Json::Value &value);
+			static void call(const char *cmd, const char *path, Json::Value &value);
 
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(time_t time);

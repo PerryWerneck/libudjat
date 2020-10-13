@@ -78,14 +78,11 @@
 			static Controller & getInstance();
 			~Controller();
 
-			static string getNameFrompath(const char *path);
-			static string getPathWithoutName(const char *path);
-
 			void insert(const char *name, std::function<void(Request &request)> method);
 			void insert(const char *name, std::function<void(const char *path, Json::Value &value)> method);
 
 			void call(Request &request);
-			void call(const char *path, Json::Value &value);
+			void call(const char *name, const char *path, Json::Value &value);
 
 		};
 

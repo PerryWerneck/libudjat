@@ -61,6 +61,7 @@
 		<Unit filename="src/include/udjat/tools/dmi.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mmap.h" />
+		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/type.h" />
