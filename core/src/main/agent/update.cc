@@ -145,13 +145,13 @@ namespace Udjat {
 						message = agent.state->getMessage();
 						href = agent.state->getHRef();
 						if(!href)
-							href = agent.href;
+							href = agent.uri;
 
 					} else {
 
 						static const Atom msg = Atom::getFromStatic("Agent value has changed");
 						summary = msg;
-						href = agent.href;
+						href = agent.uri;
 
 					}
 

@@ -75,8 +75,14 @@
 				/// @brief Agent label.
 				Atom label;
 
-				/// @brief Web link for this agent (Usually used for http exporter).
-				Atom href;
+				/// @brief Agent summary.
+				Atom summary;
+
+				/// @brief Web link for this agent (HTTP API).
+				Atom uri;
+
+				/// @brief URL for an agent icon (HTTP API)
+				Atom icon;
 
 				/// @brief Value has changed, compute my new state.
 				void onValueChange() noexcept;

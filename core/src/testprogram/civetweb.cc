@@ -29,7 +29,12 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 		cout << "URI: '" << (ri->local_uri + 5) << "'" << endl;
 
-		const char * ptr = (ri->local_uri + 5);
+		const char * ptr = strchr(ri->local_uri + 5,'/');
+		if(!ptr)
+			throw system_error(ENOENT,system_category(),"Invalid request");
+
+		ptr++;
+
 		const char * path = strchr(ptr,'/');
 		string cmd;
 
@@ -93,8 +98,8 @@ void run_civetweb() {
 
 	mg_set_request_handler(ctx, "/api/", WebHandler, 0);
 
-	cout	<< "http://127.0.0.1:" << port << "/api/agent" << endl
-			<< "http://127.0.0.1:" << port << "/api/agent/intvalue" << endl
+	cout	<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION ".0" << "/agent" << endl
+			<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION ".0" << "/agent/intvalue" << endl
 			<< endl;
 
 	Service::run();

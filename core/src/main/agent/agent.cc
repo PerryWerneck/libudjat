@@ -43,12 +43,17 @@ namespace Udjat {
 
 	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent) {
 
-		this->name = Factory::validate_name(node.attribute("name").as_string());
-		this->update.notify = node.attribute("notify").as_bool(this->update.notify);
-
 #ifdef DEBUG
 		cout << "Creating " << this->name << endl;
 #endif // DEBUG
+
+		this->name = Factory::validate_name(node.attribute("name").as_string());
+		this->update.notify = node.attribute("notify").as_bool(this->update.notify);
+
+		this->icon = Udjat::getAttribute(node,"icon").as_string();
+		this->label = Udjat::getAttribute(node,"label").as_string();
+		this->uri = Udjat::getAttribute(node,"uri").as_string();
+		this->summary = Udjat::getAttribute(node,"summary").as_string();
 
 		this->update.timer = node.attribute("update-timer").as_uint(this->update.timer);
 
@@ -58,7 +63,6 @@ namespace Udjat {
 		if(delay)
 			this->update.next = time(nullptr) + delay;
 
-		this->href = Udjat::getAttribute(node,"href").as_string();
 
 	}
 
@@ -236,9 +240,12 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 
 		get(node);
+		node["name"] = this->getName();
+		node["summary"] = this->summary.c_str();
 		node["state"] = this->state->as_json();
 		node["label"] = this->label.c_str();
-		node["href"] = this->href.c_str();
+		node["uri"] = this->uri.c_str();
+		node["icon"] = this->icon.c_str();
 
 		return node;
 
