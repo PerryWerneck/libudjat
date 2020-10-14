@@ -100,6 +100,7 @@ void run_civetweb() {
 
 	cout	<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION "." PACKAGE_RELEASE << "/agent" << endl
 			<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION "." PACKAGE_RELEASE << "/agent/intvalue" << endl
+			<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION "." PACKAGE_RELEASE << "/states" << endl
 			<< endl;
 
 	Service::run();

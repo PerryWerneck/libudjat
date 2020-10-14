@@ -14,11 +14,12 @@ namespace Udjat {
 
 	Request::Controller::Controller() {
 
-		insert("agent",[](const char *path, Json::Value &value) {
+		insert(I_("agent"),[](const char *path, const Json::Value &request, Json::Value &response) {
 
-			value = find_agent(path)->as_json();
+			response = find_agent(path)->as_json();
 
 		});
+
 
 	}
 
@@ -31,20 +32,20 @@ namespace Udjat {
 		return controller;
 	}
 
-	void Request::insert(const char *name, std::function<void(Request &request)> method) {
+	void Request::insert(const Quark &name, std::function<void(Request &request)> method) {
 		Request::Controller::getInstance().insert(name,method);
 	}
 
-	void Request::Controller::insert(const char *name, std::function<void(Request &request)> method) {
+	void Request::Controller::insert(const Quark &name, std::function<void(Request &request)> method) {
 		lock_guard<recursive_mutex> lock(guard);
-		methods.insert(std::make_pair(Quark(name).c_str(),Method(method)));
+		methods.insert(std::make_pair(name.c_str(),Method(method)));
 	}
 
-	void Request::insert(const char *name, std::function<void(const char *path, Json::Value &value)> method) {
+	void Request::insert(const Quark &name, std::function<void(const char *path, const Json::Value &request, Json::Value &response)> method) {
 		Request::Controller::getInstance().insert(name,method);
 	}
 
-	void Request::Controller::insert(const char *name, std::function<void(const char *path, Json::Value &value)> method) {
+	void Request::Controller::insert(const Quark &name, std::function<void(const char *path, const Json::Value &request, Json::Value &response)> method) {
 		lock_guard<recursive_mutex> lock(guard);
 		jmethods.insert(std::make_pair(Quark(name).c_str(),JMethod(method)));
 	}
@@ -65,7 +66,7 @@ namespace Udjat {
 
 	}
 
-	void Request::Controller::call(const char *name, const char *path, Json::Value &value) {
+	void Request::Controller::call(const char *name, const char *path, const Json::Value &request, Json::Value &response) {
 
 		const char * ptr = strrchr(path,'/');
 		if(ptr && !(ptr+1))
@@ -109,12 +110,12 @@ namespace Udjat {
 
 			Request r(name,path);
 			r.call();
-			value = r.get();
+			response = r.get();
 			return;
 
 		}
 
-		entry->second.call(path,value);
+		entry->second.call(path,request,response);
 
 	}
 

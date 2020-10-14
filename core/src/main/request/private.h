@@ -61,13 +61,13 @@
 
 			class JMethod {
 			private:
-				const std::function<void(const char *path, Json::Value &value)> method;
+				const std::function<void(const char *path, const Json::Value &request, Json::Value &response)> method;
 
 			public:
-				JMethod(const std::function<void(const char *path, Json::Value &value)> m) : method(m) {}
+				JMethod(const std::function<void(const char *path, const Json::Value &request, Json::Value &response)> m) : method(m) {}
 
-				void call(const char *path, Json::Value &value) {
-					method(path,value);
+				void call(const char *path, const Json::Value &request, Json::Value &response) {
+					this->method(path,request,response);
 				}
 
 			};
@@ -78,11 +78,11 @@
 			static Controller & getInstance();
 			~Controller();
 
-			void insert(const char *name, std::function<void(Request &request)> method);
-			void insert(const char *name, std::function<void(const char *path, Json::Value &value)> method);
+			void insert(const Quark &name, std::function<void(Request &request)> method);
+			void insert(const Quark &name, std::function<void(const char *path, const Json::Value &request, Json::Value &response)> method);
 
 			void call(Request &request);
-			void call(const char *name, const char *path, Json::Value &value);
+			void call(const char *name, const char *path, const Json::Value &request, Json::Value &response);
 
 		};
 

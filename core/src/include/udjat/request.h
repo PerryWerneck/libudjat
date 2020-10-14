@@ -3,6 +3,7 @@
 	#define UDJAT_REQUEST_H_INCLUDED
 
 	#include <udjat/defs.h>
+	#include <udjat/tools/quark.h>
 	#include <string>
 	#include <cstring>
 	#include <functional>
@@ -33,8 +34,8 @@
 			Request(const char *name, const char *path);
 
 			/// @brief Register a request processor.
-			static void insert(const char *name, std::function<void(Request &request)> method);
-			static void insert(const char *name, std::function<void(const char *path, Json::Value &value)> method);
+			static void insert(const Quark &name, std::function<void(Request &request)> method);
+			static void insert(const Quark &name, std::function<void(const char *path, const Json::Value &request, Json::Value &response)> method);
 
 			virtual ~Request();
 
@@ -56,7 +57,8 @@
 			void call();
 
 			/// @brief Execute JSON specific request.
-			static void call(const char *cmd, const char *path, Json::Value &value);
+			static void call(const char *cmd, const char *path, Json::Value &response);
+			static void call(const char *cmd, const char *path, const Json::Value &request, Json::Value &response);
 
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(time_t time);

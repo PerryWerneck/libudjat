@@ -87,8 +87,13 @@ namespace Udjat {
 		Controller::getInstance().call(*this);
 	}
 
-	void Request::call(const char *cmd, const char *path, Json::Value &value) {
-		Controller::getInstance().call(cmd, path,value);
+	void Request::call(const char *cmd, const char *path, Json::Value &response) {
+		auto request = Json::Value();
+		call(cmd,path,request,response);
+	}
+
+	void Request::call(const char *cmd, const char *path, const Json::Value &request, Json::Value &response) {
+		Controller::getInstance().call(cmd, path, request, response);
 	}
 
 }
