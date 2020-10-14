@@ -1,7 +1,7 @@
 
 #include <config.h>
 #include <iostream>
-#include <udjat/tools/atom.h>
+#include <udjat/tools/quark.h>
 #include <mutex>
 #include <unordered_set>
 
@@ -13,7 +13,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Atom::Controller {
+	class Quark::Controller {
 	private:
 		static recursive_mutex guard;
 
@@ -117,56 +117,56 @@ namespace Udjat {
 
 	};
 
-	recursive_mutex Atom::Controller::guard;
+	recursive_mutex Quark::Controller::guard;
 
-	Atom::Controller & Atom::Controller::getInstance() {
+	Quark::Controller & Quark::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
-		static Atom::Controller controller;
+		static Controller controller;
 		return controller;
 	}
 
-	Atom::Atom(const char *str) {
+	Quark::Quark(const char *str) {
 		this->value = Controller::getInstance().find(str,true);
 	}
 
-	Atom::Atom(const pugi::xml_attribute &attribute) {
+	Quark::Quark(const pugi::xml_attribute &attribute) {
 		this->value = Controller::getInstance().find(attribute.as_string(),true);
 	}
 
-	Atom Atom::getFromStatic(const char *str) {
-		Atom atom;
-		atom.value = Controller::getInstance().find(str,false);
-		return atom;
+	Quark Quark::getFromStatic(const char *str) {
+		Quark q;
+		q.value = Controller::getInstance().find(str,false);
+		return q;
 	}
 
 
-	Atom::Atom(const std::string &str) : Atom(str.c_str()) {
+	Quark::Quark(const std::string &str) : Quark(str.c_str()) {
 	}
 
-	Atom::Atom(const Atom &src) {
+	Quark::Quark(const Quark &src) {
 		this->value = src.value;
 	}
 
-	Atom::Atom(const Atom *src) {
+	Quark::Quark(const Quark *src) {
 		this->value = src->value;
 	}
 
-	Atom & Atom::operator=(const char *str) {
+	Quark & Quark::operator=(const char *str) {
 		this->value = Controller::getInstance().find(str,true);
 		return *this;
 	}
 
-	Atom & Atom::operator=(const std::string &str) {
+	Quark & Quark::operator=(const std::string &str) {
 		this->value = Controller::getInstance().find(str.c_str(),true);
 		return *this;
 	}
 
-	Atom & Atom::operator=(const pugi::xml_attribute &attribute) {
+	Quark & Quark::operator=(const pugi::xml_attribute &attribute) {
 		this->value = Controller::getInstance().find(attribute.as_string(),true);
 		return *this;
 	}
 
-	const char * Atom::c_str() const {
+	const char * Quark::c_str() const {
 		return value ? value : "";
 	}
 

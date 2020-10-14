@@ -98,8 +98,8 @@ void run_civetweb() {
 
 	mg_set_request_handler(ctx, "/api/", WebHandler, 0);
 
-	cout	<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION ".0" << "/agent" << endl
-			<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION ".0" << "/agent/intvalue" << endl
+	cout	<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION "." PACKAGE_RELEASE << "/agent" << endl
+			<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION "." PACKAGE_RELEASE << "/agent/intvalue" << endl
 			<< endl;
 
 	Service::run();

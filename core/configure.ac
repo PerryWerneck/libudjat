@@ -6,7 +6,7 @@ AC_PREREQ(2.59)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat], [0.1], [perry.werneck@gmail.com])
+AC_INIT([libudjat], [1.0], [perry.werneck@gmail.com])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -52,6 +52,15 @@ AC_SUBST(PRODUCT_NAME,$app_cv_product)
 app_cv_title="The Eye of Horus"
 AC_DEFINE_UNQUOTED(PRODUCT_TITLE,"$app_cv_title")
 AC_SUBST(PRODUCT_TITLE,"$app_cv_title")
+
+AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="0.0" ])
+
+app_rls_major=$(echo $app_cv_release.0.0 | cut -d. -f1)
+app_rls_minor=$(echo $app_cv_release.0.0 | cut -d. -f2)
+
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major)
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor)
+AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, "$app_cv_release")
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics

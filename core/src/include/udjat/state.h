@@ -18,7 +18,7 @@
 	#include <mutex>
 	#include <functional>
 	#include <udjat/defs.h>
-	#include <udjat/tools/atom.h>
+	#include <udjat/tools/quark.h>
 	#include <udjat/tools/xml.h>
 	#include <udjat/request.h>
 	#include <json/value.h>
@@ -48,9 +48,9 @@
 			private:
 
 				Level level;		///< @brief State level.
-				Atom summary;		///< @brief Message summary.
-				Atom body;			///< @brief Message body.
-				Atom href;			///< @brief Web link to this state (Usually used for http exporters).
+				Quark summary;		///< @brief Message summary.
+				Quark body;			///< @brief Message body.
+				Quark uri;			///< @brief Web link to this state (Usually used for http exporters).
 				time_t activation;	///< @brief Timestamp of the last state activation.
 
 				static Level getLevelFromName(const char *name);
@@ -70,16 +70,16 @@
 
 				static const char * to_string(const Level level);
 
-				inline const Atom & getSummary() const {
+				inline const Quark & getSummary() const {
 					return summary;
 				}
 
-				inline const Atom & getMessage() const {
-					return summary;
+				inline const Quark & getBody() const {
+					return body;
 				}
 
-				inline const Atom & getHRef() const {
-					return summary;
+				inline const Quark & getUri() const {
+					return uri;
 				}
 
 				/// @brief Insert and take control of an event.

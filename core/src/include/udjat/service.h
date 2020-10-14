@@ -3,7 +3,7 @@
 	#define SERVICE_H_INCLUDED
 
 	#include <udjat/defs.h>
-	#include <udjat/tools/atom.h>
+	#include <udjat/tools/quark.h>
 	#include <ctime>
 	#include <functional>
 
@@ -38,7 +38,7 @@
 				friend class Udjat::Service::Controller;
 
 				/// @brief Module name.
-				Atom name;
+				Quark name;
 
 				/// @brief Is the module active?
 				bool active;
@@ -55,7 +55,7 @@
 				void setHandle(int fd, const Event event);
 
 			public:
-				Module(const Atom &name);
+				Module(const Quark &name);
 				virtual ~Module();
 
 				virtual void start();

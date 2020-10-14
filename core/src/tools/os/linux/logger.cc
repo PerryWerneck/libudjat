@@ -18,7 +18,7 @@ namespace Udjat {
 	Logger::Logger(const char *n) : name(n) {
 	}
 
-	Logger::Logger(const Atom &n) : name(n) {
+	Logger::Logger(const Quark &n) : name(n) {
 	}
 
 	Logger::~Logger() {

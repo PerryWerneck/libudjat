@@ -19,7 +19,7 @@
 	#include <functional>
 	#include <udjat/defs.h>
 	#include <udjat/state.h>
-	#include <udjat/tools/atom.h>
+	#include <udjat/tools/quark.h>
 	#include <udjat/tools/logger.h>
 	#include <udjat/request.h>
 	#include <udjat/tools/xml.h>
@@ -73,16 +73,16 @@
 				void failed(const char *message) noexcept;
 
 				/// @brief Agent label.
-				Atom label;
+				Quark label;
 
 				/// @brief Agent summary.
-				Atom summary;
+				Quark summary;
 
 				/// @brief Web link for this agent (HTTP API).
-				Atom uri;
+				Quark uri;
 
 				/// @brief URL for an agent icon (HTTP API)
-				Atom icon;
+				Quark icon;
 
 				/// @brief Value has changed, compute my new state.
 				void onValueChange() noexcept;
@@ -110,6 +110,10 @@
 				/// The event pointer will be deleted with the agent.
 				inline void push_back(Abstract::Event *event) {
 					events.push_back(event);
+				}
+
+				inline const Quark & getUri() const noexcept {
+					return uri;
 				}
 
 				/// @brief Start agent.

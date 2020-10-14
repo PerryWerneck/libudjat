@@ -37,7 +37,7 @@ namespace Udjat {
 
 	void Request::Controller::insert(const char *name, std::function<void(Request &request)> method) {
 		lock_guard<recursive_mutex> lock(guard);
-		methods.insert(std::make_pair(Atom(name).c_str(),Method(method)));
+		methods.insert(std::make_pair(Quark(name).c_str(),Method(method)));
 	}
 
 	void Request::insert(const char *name, std::function<void(const char *path, Json::Value &value)> method) {
@@ -46,7 +46,7 @@ namespace Udjat {
 
 	void Request::Controller::insert(const char *name, std::function<void(const char *path, Json::Value &value)> method) {
 		lock_guard<recursive_mutex> lock(guard);
-		jmethods.insert(std::make_pair(Atom(name).c_str(),JMethod(method)));
+		jmethods.insert(std::make_pair(Quark(name).c_str(),JMethod(method)));
 	}
 
 	void Request::Controller::call(Request &request) {

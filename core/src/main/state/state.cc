@@ -55,7 +55,7 @@ namespace Udjat {
 		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[unimportant])),
 		getAttribute(node,"summary").as_string()) {
 
-		this->href = Udjat::getAttribute(node,"href").as_string();
+		this->uri = Udjat::getAttribute(node,"uri").as_string();
 
 	}
 
@@ -72,7 +72,7 @@ namespace Udjat {
 
 		value["summary"] = summary.c_str();
 		value["body"] = body.c_str();
-		value["href"] = href.c_str();
+		value["uri"] = uri.c_str();
 
 		if(this->activation)
 			value["activation"] = TimeStamp(this->activation).to_string(TIMESTAMP_FORMAT_JSON);
@@ -148,10 +148,10 @@ namespace Udjat {
 					// label = agent.getLabel();
 					level = state.getLevel();
 					summary = state.getSummary();
-					message = state.getMessage();
-					href = state.getHRef();
-//					if(!href)
-//						href = agent.getHRef();
+					message = state.getBody();
+					uri = state.getUri();
+					if(!uri)
+						uri = agent.getUri();
 
 				}
 			};

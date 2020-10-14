@@ -3,7 +3,7 @@
 	#define UDJAT_LOGGER_H_INCLUDED
 
 	#include <udjat/defs.h>
-	#include <udjat/tools/atom.h>
+	#include <udjat/tools/quark.h>
 	#include <vector>
 	#include <string>
 	#include <iostream>
@@ -56,7 +56,7 @@
 			};
 
 		protected:
-			Atom name;	///< @brief Object name.
+			Quark name;	///< @brief Object name.
 
 			Logger();
 
@@ -72,7 +72,7 @@
 #endif // DEBUG
 
 			Logger(const char *name);
-			Logger(const Atom &name);
+			Logger(const Quark &name);
 			~Logger();
 
 			/// @brief Get Agent name

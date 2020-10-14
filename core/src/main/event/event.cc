@@ -8,7 +8,7 @@
  */
 
  #include "private.h"
- #include <udjat/tools/atom.h>
+ #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/xml.h>
 
@@ -18,7 +18,7 @@
 
 namespace Udjat {
 
-	Abstract::Event::Event(const Atom &n) : Logger(n) {
+	Abstract::Event::Event(const Quark &n) : Logger(n) {
 
 		Controller::getInstance();
 
@@ -41,10 +41,10 @@ namespace Udjat {
 		}
 	}
 
-	Abstract::Event::Event(const char *n) : Event(Atom(n)) {
+	Abstract::Event::Event(const char *n) : Event(Quark(n)) {
 	}
 
-	Abstract::Event::Event(const pugi::xml_node &node) : Event(Atom(node.attribute("name"))) {
+	Abstract::Event::Event(const pugi::xml_node &node) : Event(Quark(node.attribute("name"))) {
 
 		retry.first = getAttribute(node,"delay-before-start").as_uint(retry.first);
 		retry.interval = getAttribute(node,"delay-before-retry").as_uint(retry.interval);

@@ -26,6 +26,10 @@
 	/// @brief Versão atual.
 	#undef PACKAGE_VERSION
 
+	#undef PACKAGE_MAJOR_RELEASE
+	#undef PACKAGE_MINOR_RELEASE
+	#undef PACKAGE_RELEASE
+
 	/// @brief Indica se o compilador atual possui suporte a "visibility"
 	#undef HAVE_GNUC_VISIBILITY
 

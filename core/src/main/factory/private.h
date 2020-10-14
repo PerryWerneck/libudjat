@@ -6,7 +6,7 @@
 	#include <config.h>
 	#include <udjat/defs.h>
 	#include <udjat/agent.h>
-	#include <udjat/tools/atom.h>
+	#include <udjat/tools/quark.h>
 	#include <udjat/factory.h>
 	#include <mutex>
 	#include <iostream>
@@ -82,10 +82,10 @@
 			static Controller & getInstance();
 
 			/// @brief Insert agent factory method.
-			void insert(const Atom &name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method);
+			void insert(const Quark &name, std::function<std::shared_ptr<Abstract::Agent>(Abstract::Agent &parent, const pugi::xml_node &node)> method);
 
 			/// @brief Insert Node factory method.
-			void insert(const Atom &name, std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> factory);
+			void insert(const Quark &name, std::function<void(std::shared_ptr<Abstract::Agent> agent, const pugi::xml_node &node)> factory);
 
 			/// @brief Load agent children from xml definition.
 			void load(std::shared_ptr<Abstract::Agent> parent, const pugi::xml_node &node);

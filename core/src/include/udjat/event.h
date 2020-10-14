@@ -4,7 +4,7 @@
 
 	#include <udjat/defs.h>
 	#include <pugixml.hpp>
-	#include <udjat/tools/atom.h>
+	#include <udjat/tools/quark.h>
 	#include <udjat/tools/logger.h>
 	#include <memory>
 	#include <functional>
@@ -37,7 +37,7 @@
 				void set(const Abstract::Agent *agent, const Abstract::State *state, const std::function<void(const Abstract::Agent &agent, const Abstract::State &state)> callback);
 
 			public:
-				Event(const Atom &name);
+				Event(const Quark &name);
 				Event(const char *name);
 				Event(const pugi::xml_node &node);
 

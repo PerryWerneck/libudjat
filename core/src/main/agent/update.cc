@@ -142,16 +142,16 @@ namespace Udjat {
 
 						level = agent.state->getLevel();
 						summary = agent.state->getSummary();
-						message = agent.state->getMessage();
-						href = agent.state->getHRef();
-						if(!href)
-							href = agent.uri;
+						message = agent.state->getBody();
+						uri = agent.state->getUri();
+						if(!uri)
+							uri = agent.uri;
 
 					} else {
 
-						static const Atom msg = Atom::getFromStatic("Agent value has changed");
+						static const Quark msg = Quark::getFromStatic("Agent value has changed");
 						summary = msg;
-						href = agent.uri;
+						uri = agent.uri;
 
 					}
 

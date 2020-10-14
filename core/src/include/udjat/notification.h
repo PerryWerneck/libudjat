@@ -16,10 +16,10 @@
 
 		protected:
 			Abstract::State::Level 	level;
-			Atom					label;			///< @brief Notification label (Agent label).
-			Atom					summary;		///< @brief Notification summary.
-			Atom					message;		///< @brief Notification message.
-			Atom					href;			///< @brief Web link to this notification (if available).
+			Quark					label;			///< @brief Notification label (Agent label).
+			Quark					summary;		///< @brief Notification summary.
+			Quark					message;		///< @brief Notification message.
+			Quark					uri;			///< @brief Web link to this notification (if available).
 
 		public:
 
@@ -31,8 +31,8 @@
 				return message.c_str();
 			}
 
-			inline const char * getHref() const {
-				return href.c_str();
+			inline const char * getUri() const {
+				return uri.c_str();
 			}
 
 			/// @brief true if there's someone listening for notifications.
