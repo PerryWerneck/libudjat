@@ -82,6 +82,10 @@
 					return uri;
 				}
 
+				inline time_t getActivationTime() const noexcept {
+					return activation;
+				}
+
 				/// @brief Insert and take control of an event.
 				/// The event pointer will be deleted with the state.
 				inline void push_back(Abstract::Event *event) {
@@ -91,6 +95,8 @@
 				inline Level getLevel() const {
 					return this->level;
 				}
+
+				void getLevel(Json::Value &value) const;
 
 				inline bool isCritical() const noexcept {
 					return this->level >= critical;

@@ -78,6 +78,10 @@ namespace Udjat {
 
 	}
 
+	bool Abstract::Agent::hasOwnStates() const noexcept {
+		return false;
+	}
+
 	void Abstract::Agent::onValueChange() noexcept {
 
 		bool level_has_changed = false;

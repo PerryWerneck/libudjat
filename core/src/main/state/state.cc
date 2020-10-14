@@ -80,13 +80,15 @@ namespace Udjat {
 			value["activation"] = 0;
 
 		// Set level information
-		{
-			Json::Value level;
-			level["value"] = (uint32_t) this->level;
-			level["label"] = levelNames[this->level];
-			value["level"] = level;
-		}
+		getLevel(value);
 
+	}
+
+	void Abstract::State::getLevel(Json::Value &value) const {
+		Json::Value level;
+		level["value"] = (uint32_t) this->level;
+		level["label"] = levelNames[this->level];
+		value["level"] = level;
 	}
 
 	void Abstract::State::getValue(Json::Value &value) const {

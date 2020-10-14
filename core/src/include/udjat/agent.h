@@ -106,6 +106,9 @@
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
 
+				/// @brief true if the agent has states.
+				virtual bool hasOwnStates() const noexcept;
+
 				/// @brief Insert and take control of an event.
 				/// The event pointer will be deleted with the agent.
 				inline void push_back(Abstract::Event *event) {
@@ -114,6 +117,14 @@
 
 				inline const Quark & getUri() const noexcept {
 					return uri;
+				}
+
+				inline const Quark & getIcon() const noexcept {
+					return icon;
+				}
+
+				inline const Quark & getLabel() const noexcept {
+					return label;
 				}
 
 				/// @brief Start agent.
@@ -228,6 +239,10 @@
 				return setup(request).push("value",this->value);
 			}
 
+			bool hasOwnStates() const noexcept override {
+				return !states.empty();
+			}
+
 		};
 
 		template <>
@@ -285,6 +300,10 @@
 
 			Request & get(const char *name, Request &request) override {
 				return setup(request).push(name,this->value);
+			}
+
+			bool hasOwnStates() const noexcept override {
+				return !states.empty();
 			}
 
 		};

@@ -3,6 +3,7 @@
 #include "private.h"
 #include <iostream>
 #include <udjat/agent.h>
+#include <udjat/tools/timestamp.h>
 
 using namespace std;
 
@@ -20,6 +21,37 @@ namespace Udjat {
 
 		});
 
+		insert(I_("states"),[](const char *path, const Json::Value &request, Json::Value &response) {
+
+			response = Json::Value(Json::arrayValue);
+
+			find_agent(path)->foreach([&response](Abstract::Agent &agent){
+
+				if(!agent.hasOwnStates())
+					return;
+
+				Json::Value row;
+				row["name"] = agent.getName();
+				row["icon"] = agent.getIcon().c_str();
+				row["label"] = agent.getLabel().c_str();
+
+				auto state = agent.getState();
+				row["summary"] = state->getSummary().c_str();
+				row["body"] = state->getBody().c_str();
+				state->getLevel(row);
+
+				auto activation_time = state->getActivationTime();
+
+				if(activation_time)
+					row["timestamp"] = TimeStamp(activation_time).to_string(TIMESTAMP_FORMAT_JSON);
+				else
+					row["timestamp"] = 0;
+
+				response.append(row);
+			});
+
+
+		});
 
 	}
 
