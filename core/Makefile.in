@@ -258,11 +258,11 @@ install-devel:
 install-conf:
 
 	@$(MKDIR) \
-		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).d
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).conf.d
 
 	@$(INSTALL_DATA) \
 		conf.d/00-defaults.conf \
-		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).d/00-$(PACKAGE_NAME)-defaults.conf
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).conf.d/00-$(PACKAGE_NAME)-defaults.conf
 
 #---[ Uninstall Targets ]----------------------------------------------------------------
 
