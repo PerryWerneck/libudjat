@@ -23,7 +23,8 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 		return 405;
 	}
 
-	Json::Value response;
+	Request		request;
+	Response	response;
 
 	try {
 
@@ -50,7 +51,7 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 		cout << "CMD: '" << cmd << "' path: '" << path << "'" << endl;
 
-		Request::call(cmd.c_str(), path, response);
+		// Request::call(cmd.c_str(), path, response);
 
 	} catch(const exception &e) {
 

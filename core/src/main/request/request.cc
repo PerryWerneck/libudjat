@@ -7,6 +7,7 @@
 
 namespace Udjat {
 
+	/*
 	Request::Request(const char *n, const char *p) : name(n), path(p), expiration(0), modification(0) {
 	}
 
@@ -95,6 +96,7 @@ namespace Udjat {
 	void Request::call(const char *cmd, const char *path, const Json::Value &request, Json::Value &response) {
 		Controller::getInstance().call(cmd, path, request, response);
 	}
+	*/
 
 }
 

@@ -203,32 +203,27 @@ namespace Udjat {
 		this->state->getValue(value);
 	}
 
-	Request & Abstract::Agent::setup(Request &request) {
+	Json::Value & Abstract::Agent::setup(const Request &request, Response &response) {
 
 		chk4refresh(true);
 
 		if(update.expires && update.expires > time(nullptr))
-			request.setExpirationTimestamp(update.expires);
+			response.setExpirationTimestamp(update.expires);
 
 		if(update.last)
-			request.setModificationTimestamp(update.last);
+			response.setModificationTimestamp(update.last);
 
-		return request;
+		return response;
 	}
 
-	Request & Abstract::Agent::get(const char UDJAT_UNUSED(*name), Request &request) {
-		return setup(request);
-	}
+	void Abstract::Agent::get(const Request &request, Response &response) {
 
-	Request & Abstract::Agent::get(Request &request) {
-
-		setup(request);
+		auto value = setup(request,response);
 
 		for(auto child : children) {
-			child->get(child->getName(),request);
+			child->get(value[child->getName()]);
 		}
 
-		return request;
 	}
 
 	Json::Value Abstract::Agent::as_json() {

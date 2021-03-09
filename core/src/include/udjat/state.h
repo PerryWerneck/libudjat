@@ -103,8 +103,8 @@
 				}
 
 				virtual void get(Json::Value &value) const;
+				virtual void get(const Request &request, Response &response) const;
 				virtual void getValue(Json::Value &value) const;
-				virtual Request & get(Request &request);
 
 				Json::Value as_json() const;
 

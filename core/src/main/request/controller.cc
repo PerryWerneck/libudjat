@@ -11,6 +11,7 @@ using namespace std;
 
 namespace Udjat {
 
+	/*
 	recursive_mutex Request::Controller::guard;
 
 	Request::Controller::Controller() {
@@ -150,7 +151,7 @@ namespace Udjat {
 		entry->second.call(path,request,response);
 
 	}
-
+	*/
 
 }
 

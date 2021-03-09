@@ -13,6 +13,7 @@
 
 	namespace Udjat {
 
+		/*
 		class Request::Controller {
 		private:
 
@@ -85,7 +86,7 @@
 			void call(const char *name, const char *path, const Json::Value &request, Json::Value &response);
 
 		};
-
+		*/
 
 	}
 

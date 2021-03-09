@@ -55,8 +55,6 @@
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/service.h" />
 		<Unit filename="src/include/udjat/state.h" />
-		<Unit filename="src/include/udjat/threadpool.h" />
-		<Unit filename="src/include/udjat/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/dmi.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
@@ -79,6 +77,7 @@
 		<Unit filename="src/main/request/controller.cc" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/request.cc" />
+		<Unit filename="src/main/request/response.cc" />
 		<Unit filename="src/main/service/private.h" />
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />

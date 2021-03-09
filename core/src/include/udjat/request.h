@@ -11,16 +11,9 @@
 
 	namespace Udjat {
 
-		class UDJAT_API Request {
+		class UDJAT_API Response : public Json::Value {
+
 		protected:
-
-			class Controller;
-
-			/// @brief Request name (command)
-			std::string name;
-
-			/// @brief Object path.
-			std::string path;
 
 			/// @brief Expiration timestamp (For cache headers)
 			time_t expiration;
@@ -28,68 +21,22 @@
 			/// @brief Timestamp of data.
 			time_t modification;
 
+			Response(const time_t expiration, const time_t modification);
+
 		public:
-			Request();
-			Request(const char *path);
-			Request(const char *name, const char *path);
-
-			/// @brief Register a request processor.
-			static void insert(const Quark &name, std::function<void(Request &request)> method);
-			static void insert(const Quark &name, std::function<void(const char *path, const Json::Value &request, Json::Value &response)> method);
-
-			virtual ~Request();
-
-			/// @brief Get Request name.
-			inline const char * getName() const noexcept {
-				return name.c_str();
-			}
-
-			bool operator==(const char *name) const noexcept {
-				return strcasecmp(this->name.c_str(),name) == 0;
-			}
-
-			/// @brief Get Request path.
-			inline const char * getPath() const noexcept {
-				return path.c_str();
-			}
-
-			/// @brief Execute request.
-			void call();
-
-			/// @brief Execute JSON specific request.
-			static void call(const char *cmd, const char *path, Json::Value &response);
-			static void call(const char *cmd, const char *path, const Json::Value &request, Json::Value &response);
+			Response();
 
 			/// @brief Set timestamp for cache the response.
-			void setExpirationTimestamp(time_t time);
+			void setExpirationTimestamp(const time_t time);
 
 			/// @brief Set timestamp for data.
-			void setModificationTimestamp(time_t time);
+			void setModificationTimestamp(const time_t time);
 
-			virtual Request & pop(int32_t &value);
-			virtual Request & pop(uint32_t &value);
-			virtual Request & pop(std::string &value);
+		};
 
-			virtual Request & push(const int32_t value);
-			virtual Request & push(const uint32_t value);
-			virtual Request & push(const char *value);
-
-			inline Request & push(const std::string &value) {
-				return push(value.c_str());
-			}
-
-			virtual Request & pop(const char *name, int32_t &value);
-			virtual Request & pop(const char *name, uint32_t &value);
-			virtual Request & pop(const char *name, std::string &value);
-
-			virtual Request & push(const char *name, const int32_t value);
-			virtual Request & push(const char *name, const uint32_t value);
-			virtual Request & push(const char *name, const char *value);
-
-			inline Request & push(const char *name, const std::string &value) {
-				return push(name, value.c_str());
-			}
-
+		class UDJAT_API Request : public Json::Value {
+		public:
+			Request() : Json::Value() { }
 
 		};
 

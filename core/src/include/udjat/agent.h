@@ -99,7 +99,10 @@
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
 				/// @brief Setup (adds cache and update information)
-				Request & setup(Request &request);
+				/// @return Node for value.
+				Json::Value & setup(const Request &request, Response &response);
+
+			protected:
 
 			public:
 				Agent(Agent *parent = nullptr);
@@ -144,8 +147,7 @@
 
 				virtual Json::Value as_json();
 
-				virtual Request & get(const char *name, Request &request);
-				virtual Request & get(Request &request);
+				virtual void get(const Request &request, Response &response);
 
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() {
@@ -231,12 +233,8 @@
 			}
 
 			/// @brief Add value to request.
-			Request & get(const char *name, Request &request) override {
-				return setup(request).push(name,this->value);
-			}
-
-			Request & get(Request &request) override {
-				return setup(request).push("value",this->value);
+			void get(const Request &request, Response &response) override {
+				this->setup(request,response)["value"] = this->value;
 			}
 
 			bool hasOwnStates() const noexcept override {
@@ -294,12 +292,8 @@
 				return value;
 			}
 
-			Request & get(Request &request) override {
-				return setup(request).push("value",this->value);
-			}
-
-			Request & get(const char *name, Request &request) override {
-				return setup(request).push(name,this->value);
+			void get(const Request &request, Response &response) override {
+				this->setup(request,response)["value"] = this->value;
 			}
 
 			bool hasOwnStates() const noexcept override {
@@ -356,14 +350,6 @@
 
 			bool get() const noexcept {
 				return value;
-			}
-
-			Request & get(Request &request) override {
-				return setup(request).push("value",this->value);
-			}
-
-			Request & get(const char *name, Request &request) override {
-				return setup(request).push(name,this->value);
 			}
 
 		};

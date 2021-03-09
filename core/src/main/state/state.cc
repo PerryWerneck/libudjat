@@ -84,6 +84,10 @@ namespace Udjat {
 
 	}
 
+	void Abstract::State::get(const Request &request, Response &response) const {
+		this->get(response);
+	}
+
 	void Abstract::State::getLevel(Json::Value &value) const {
 		Json::Value level;
 		level["value"] = (uint32_t) this->level;
@@ -93,16 +97,6 @@ namespace Udjat {
 
 	void Abstract::State::getValue(Json::Value &value) const {
 		value["value"] = false;
-	}
-
-	Request & Abstract::State::get(Request &request) {
-
-		request.push("summary",summary.c_str());
-		request.push("body",body.c_str());
-		request.push("level",levelNames[level]);
-
-		return request;
-
 	}
 
 	Json::Value Abstract::State::as_json() const {
