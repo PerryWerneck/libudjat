@@ -64,6 +64,7 @@
 		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/type.h" />
+		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/private.h" />
@@ -74,7 +75,6 @@
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/private.h" />
-		<Unit filename="src/main/request/controller.cc" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
@@ -82,6 +82,8 @@
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />
 		<Unit filename="src/main/state/state.cc" />
+		<Unit filename="src/main/worker/controller.cc" />
+		<Unit filename="src/main/worker/private.h" />
 		<Unit filename="src/private.h" />
 		<Unit filename="src/state/private.h" />
 		<Unit filename="src/testprogram/civetweb.cc" />

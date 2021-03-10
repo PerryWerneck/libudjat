@@ -35,6 +35,8 @@
 
 			const char * c_str() const;
 
+			size_t hash() const;
+
 			operator bool() const {
 				return value != nullptr && *value;
 			}

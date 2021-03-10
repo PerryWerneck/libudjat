@@ -170,5 +170,16 @@ namespace Udjat {
 		return value ? value : "";
 	}
 
+	size_t Quark::hash() const {
+
+		// https://stackoverflow.com/questions/7666509/hash-function-for-string
+		size_t value = 5381;
+
+		for(const char *ptr = c_str(); *ptr; ptr++) {
+			value = ((value << 5) + value) + tolower(*ptr);
+		}
+
+		return value;
+	}
 
 }

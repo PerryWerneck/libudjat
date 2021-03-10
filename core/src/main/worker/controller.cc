@@ -1,9 +1,6 @@
 
 
 #include "private.h"
-#include <iostream>
-#include <udjat/agent.h>
-#include <udjat/tools/timestamp.h>
 
 using namespace std;
 
@@ -11,8 +8,35 @@ using namespace std;
 
 namespace Udjat {
 
+	recursive_mutex Worker::Controller::guard;
+
+	Worker::Controller & Worker::Controller::getInstance() {
+		lock_guard<recursive_mutex> lock(guard);
+		static Controller controller;
+		return controller;
+	}
+
+	Worker::Controller::Controller() {
+
+
+	}
+
+	Worker::Controller::~Controller() {
+
+	}
+
+	void Worker::Controller::insert(Worker *worker) {
+		lock_guard<recursive_mutex> lock(guard);
+
+
+	}
+
+	void Worker::Controller::remove(Worker *worker) {
+		lock_guard<recursive_mutex> lock(guard);
+
+	}
+
 	/*
-	recursive_mutex Request::Controller::guard;
 
 	Request::Controller::Controller() {
 
@@ -59,11 +83,6 @@ namespace Udjat {
 	Request::Controller::~Controller() {
 	}
 
-	Request::Controller & Request::Controller::getInstance() {
-		lock_guard<recursive_mutex> lock(guard);
-		static Controller controller;
-		return controller;
-	}
 
 	void Request::insert(const Quark &name, std::function<void(Request &request)> method) {
 		Request::Controller::getInstance().insert(name,method);
