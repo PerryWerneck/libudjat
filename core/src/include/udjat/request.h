@@ -35,8 +35,16 @@
 		};
 
 		class UDJAT_API Request : public Json::Value {
+		private:
+			std::string path;
+
 		public:
-			Request() : Json::Value() { }
+			Request(const char *path);
+			Request(const std::string &path);
+
+			const char *c_str() const {
+				return path.c_str();
+			}
 
 		};
 

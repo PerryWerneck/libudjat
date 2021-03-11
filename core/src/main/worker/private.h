@@ -7,6 +7,7 @@
 	#include <udjat/request.h>
 	#include <mutex>
 	#include <unordered_map>
+	#include <iostream>
 
 	using namespace std;
 
@@ -39,7 +40,7 @@
 			class Equal {
 			public:
 				inline bool operator() (const char *a, const char *b) const {
-					return strcasecmp(a,b);
+					return strcasecmp(a,b) == 0;
 				}
 			};
 

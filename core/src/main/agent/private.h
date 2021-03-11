@@ -33,7 +33,7 @@ namespace Udjat {
 		std::shared_ptr<Abstract::Agent> get() const;
 		std::shared_ptr<Abstract::Agent> find(const char *path) const;
 
-		void work(const char *path, const Request &request, Response &response) const override;
+		void work(const Request &request, Response &response) const override;
 
 	};
 

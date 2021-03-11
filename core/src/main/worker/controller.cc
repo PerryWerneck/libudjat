@@ -28,15 +28,22 @@ namespace Udjat {
 	const Worker * Worker::Controller::find(const char *name) const {
 
 		lock_guard<recursive_mutex> lock(guard);
+
 		auto entry = workers.find(name);
 
 		if(entry == workers.end()) {
-			throw system_error(ENOENT,system_category(),"Can't find requested action");
+			clog << "Can't find worker '" << name << "'" << endl;
+			throw system_error(ENOENT,system_category(),"Unknown action");
 		}
 
 		if(!entry->second->active) {
-			throw system_error(ENOENT,system_category(),"Requested action is not available");
+			clog << "Worker '" << name << "' is inactive" << endl;
+			throw system_error(ENOENT,system_category(),"Action is not available");
 		}
+
+#ifdef DEBUG
+		cout << "Found worker '" << entry->second->c_str() << "'" << endl;
+#endif // DEBUG
 
 		return entry->second;
 	}
@@ -44,7 +51,9 @@ namespace Udjat {
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 
+		cout << "Inserting worker '" << worker->c_str() << "'" << endl;
 		workers.insert(make_pair(worker->c_str(),worker));
+
 	}
 
 	void Worker::Controller::remove(const Worker *worker) {
@@ -57,6 +66,7 @@ namespace Udjat {
 		if(entry->second != worker)
 			return;
 
+		cout << "Removing worker '" << worker->c_str() << "'" << endl;
 		workers.erase(entry);
 
 	}

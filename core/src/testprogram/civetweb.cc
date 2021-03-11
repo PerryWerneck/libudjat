@@ -24,7 +24,6 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 		return 405;
 	}
 
-	Request		request;
 	Response	response;
 
 	try {
@@ -52,7 +51,7 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 		cout << "CMD: '" << cmd << "' path: '" << path << "'" << endl;
 
-		Worker::work(cmd.c_str(),path,request,response);
+		Worker::work(cmd.c_str(),Request(path),response);
 
 	} catch(const exception &e) {
 
