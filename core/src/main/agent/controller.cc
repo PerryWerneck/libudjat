@@ -9,7 +9,6 @@
 
  #include "private.h"
  #include <udjat/tools/threadpool.h>
- #include <udjat/worker.h>
 
  using namespace std;
 
@@ -17,61 +16,57 @@
 
 namespace Udjat {
 
-	class AgentController : public Worker {
-	private:
-		std::shared_ptr<Abstract::Agent> root;
-
-	public:
-
-		AgentController() : Worker(I_("agent")) {
-			this->active = true;
-		}
-
-		void set(std::shared_ptr<Abstract::Agent> root) {
-			this->root = root;
-			this->active = this->root.get();
-		}
-
-		std::shared_ptr<Abstract::Agent> get() {
-
-			if(this->root)
-				return this->root;
-
-			throw runtime_error("Agent subsystem is inactive");
-
-		}
-
-		static AgentController & getInstance() {
-			static AgentController controller;
-			return controller;
-		}
-
-		void work(const char *path, const Request &request, Response &response) {
-
-			throw runtime_error("Not implemented");
-
-		}
-
-	};
-
-
-	void set_root_agent(std::shared_ptr<Abstract::Agent> agent) {
-		AgentController::getInstance().set(agent);
+	Abstract::Agent::Controller::Controller() : Worker(I_("agent")) {
 	}
 
-	std::shared_ptr<Abstract::Agent> get_root_agent() {
-		return AgentController::getInstance().get();
+	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
+		this->root = root;
+		this->active = this->root.get();
 	}
 
-	std::shared_ptr<Abstract::Agent> find_agent(const char *path) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() {
 
-		auto root = get_root_agent();
+		if(this->root)
+			return this->root;
+
+		throw runtime_error("Agent subsystem is inactive");
+
+	}
+
+	Abstract::Agent::Controller & Abstract::Agent::Controller::getInstance() {
+		static Controller controller;
+		return controller;
+	}
+
+	void Abstract::Agent::Controller::work(const char *path, const Request &request, Response &response) {
+
+		auto agent = find(path);
+		if(!agent) {
+			throw system_error(ENOENT,system_category(),"Can't find requested agent");
+		}
+
+		agent->get(request,response);
+
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) {
+
+		auto root = get();
 
 		if(path && *path)
 			return root->find(path);
 
 		return root;
 
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::set_root(std::shared_ptr<Abstract::Agent> agent) {
+		Abstract::Agent::Controller::getInstance().set(agent);
+		return agent;
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {
+		return Abstract::Agent::Controller::getInstance().get();
 	}
 
 }

@@ -33,6 +33,8 @@
 			class UDJAT_API Agent : public Logger {
 			private:
 
+				class Controller;
+
 				friend class Factory::Controller;
 
 				static std::recursive_mutex guard;
@@ -109,6 +111,12 @@
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
 
+				/// @brief Get root agent.
+				static std::shared_ptr<Abstract::Agent> get_root();
+
+				/// @brief Set root agent.
+				static std::shared_ptr<Abstract::Agent> set_root(std::shared_ptr<Abstract::Agent> agent);
+
 				/// @brief true if the agent has states.
 				virtual bool hasOwnStates() const noexcept;
 
@@ -167,15 +175,6 @@
 
 		}
 
-
-		/// @brief Set root agent
-		void UDJAT_API set_root_agent(std::shared_ptr<Abstract::Agent> agent);
-
-		/// @brief Get root agent
-		std::shared_ptr<Abstract::Agent> UDJAT_API get_root_agent();
-
-		/// @brief Get Agent from path
-		std::shared_ptr<Abstract::Agent> UDJAT_API find_agent(const char *path);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {

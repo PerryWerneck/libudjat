@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <udjat/tools/quark.h>
 #include <pugixml.hpp>
+#include <udjat/worker.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -16,5 +17,24 @@ using namespace std;
 namespace Udjat {
 
 	const char * check_for_reserved_name(const char *);
+
+	class Abstract::Agent::Controller : private Worker {
+	private:
+
+		std::shared_ptr<Abstract::Agent> root;
+
+		Controller();
+
+	public:
+		static Controller & getInstance();
+
+		void set(std::shared_ptr<Abstract::Agent> root);
+
+		std::shared_ptr<Abstract::Agent> get();
+		std::shared_ptr<Abstract::Agent> find(const char *path);
+
+		void work(const char *path, const Request &request, Response &response) override;
+
+	};
 
 }
