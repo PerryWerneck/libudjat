@@ -11,6 +11,10 @@ namespace Udjat {
 	private:
 		Quark name;
 		class Controller;
+		friend class Controller;
+
+	protected:
+		bool active;	///< @brief True if the worker is active.
 
 	public:
 		Worker(const Quark &name);
@@ -25,7 +29,7 @@ namespace Udjat {
 
 		virtual ~Worker();
 
-		virtual void work(const Request &request, Response &response) = 0;
+		virtual void work(const char *path, const Request &request, Response &response) = 0;
 
 	};
 

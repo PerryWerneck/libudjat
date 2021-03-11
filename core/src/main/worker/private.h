@@ -6,7 +6,7 @@
 	#include <udjat/worker.h>
 	#include <udjat/request.h>
 	#include <mutex>
-	#include <unordered_set>
+	#include <unordered_map>
 
 	using namespace std;
 
@@ -23,27 +23,35 @@
 			// Hash method
 			class Hash {
 			public:
-				inline size_t operator() (const Worker * worker) const {
-					return worker->hash();
+				inline size_t operator() (const char * str) const {
+					// https://stackoverflow.com/questions/7666509/hash-function-for-string
+					size_t value = 5381;
+
+					for(const char *ptr = str; *ptr; ptr++) {
+						value = ((value << 5) + value) + tolower(*ptr);
+					}
+
+					return value;
 				}
 			};
 
 			// Equal method
 			class Equal {
 			public:
-				inline bool operator() (const Worker *a, const Worker *b) const {
-					return strcasecmp(a->c_str(),b->c_str());
+				inline bool operator() (const char *a, const char *b) const {
+					return strcasecmp(a,b);
 				}
 			};
 
-			std::unordered_set<Worker *, Hash, Equal> workers;
+			std::unordered_map<const char *, const Worker *, Hash, Equal> workers;
 
 		public:
 			static Controller & getInstance();
 
-			void insert(Worker *worker);
-			void remove(Worker *worker);
+			void insert(const Worker *worker);
+			void remove(const Worker *worker);
 
+			const Worker * find(const char *name) const;
 		};
 
 	}
