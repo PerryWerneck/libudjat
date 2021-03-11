@@ -155,20 +155,14 @@
 
 				virtual Json::Value as_json();
 
+				virtual void get(Json::Value &value);
+				virtual void get(const char *name, Json::Value &value);
 				virtual void get(const Request &request, Response &response);
 
 				/// @brief Get current state
-				inline std::shared_ptr<State> getState() {
-					chk4refresh();
-					return this->state;
-				}
-
 				inline std::shared_ptr<State> getState() const {
 					return this->state;
 				}
-
-				/// @brief Get agent value.
-				virtual void get(Json::Value &value);
 
 			};
 
@@ -201,10 +195,8 @@
 				return Abstract::Agent::find_state();
 			}
 
-			/// @brief Add value to JSON.
-			void get(Json::Value &value) override {
-				Abstract::Agent::get(value);
-				value["value"] = this->value;
+			void get(const char *name, Json::Value &value) override {
+				value[name] = this->value;
 			}
 
 		public:
@@ -233,8 +225,11 @@
 
 			/// @brief Add value to request.
 			void get(const Request &request, Response &response) override {
-				this->setup(request,response)["value"] = this->value;
+				auto value = setup(request,response);
+				value["value"] = this->value;
+				this->getState()->get(value["state"]);
 			}
+
 
 			bool hasOwnStates() const noexcept override {
 				return !states.empty();
@@ -267,10 +262,8 @@
 				return Abstract::Agent::find_state();
 			}
 
-			/// @brief Add value to JSON.
-			void get(Json::Value &value) override {
-				Abstract::Agent::get(value);
-				value["value"] = this->value;
+			void get(const char *name, Json::Value &value) override {
+				value[name] = this->value;
 			}
 
 		public:
@@ -292,7 +285,9 @@
 			}
 
 			void get(const Request &request, Response &response) override {
-				this->setup(request,response)["value"] = this->value;
+				auto value = setup(request,response);
+				value["value"] = this->value;
+				this->getState()->get(value["state"]);
 			}
 
 			bool hasOwnStates() const noexcept override {

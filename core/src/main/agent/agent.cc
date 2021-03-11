@@ -198,11 +198,6 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::get(Json::Value &value) {
-		chk4refresh();
-		this->state->getValue(value);
-	}
-
 	Json::Value & Abstract::Agent::setup(const Request &request, Response &response) {
 
 		chk4refresh(true);
@@ -216,13 +211,24 @@ namespace Udjat {
 		return response;
 	}
 
+	void Abstract::Agent::get(const char *name, Json::Value &value) {
+		// It's just a placeholder here. Don't set any value.
+	}
+
+	void Abstract::Agent::get(Json::Value &value) {
+		this->get(this->getName(),value);
+	}
+
 	void Abstract::Agent::get(const Request &request, Response &response) {
 
 		auto value = setup(request,response);
 
+		auto values = value["values"];
 		for(auto child : children) {
-			child->get(value[child->getName()]);
+			child->get(child->getName(),values);
 		}
+
+		this->state->get(value["state"]);
 
 	}
 

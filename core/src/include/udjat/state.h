@@ -104,7 +104,6 @@
 
 				virtual void get(Json::Value &value) const;
 				virtual void get(const Request &request, Response &response) const;
-				virtual void getValue(Json::Value &value) const;
 
 				Json::Value as_json() const;
 
@@ -134,7 +133,8 @@
 				return value >= from && value <= to;
 			}
 
-			void getValue(Json::Value &value) const override {
+			void get(Json::Value &value) const override {
+				Abstract::State::get(value);
 				value["value"] = this->from;
 			}
 
@@ -155,6 +155,12 @@
 			bool compare(const std::string &value) {
 				return strcasecmp(this->value.c_str(),value.c_str()) == 0;
 			}
+
+			void get(Json::Value &value) const override {
+				Abstract::State::get(value);
+				value["value"] = this->value;
+			}
+
 		};
 
 		template <>
@@ -171,6 +177,12 @@
 			bool compare(const bool value) {
 				return this->value == value;
 			}
+
+			void get(Json::Value &value) const override {
+				Abstract::State::get(value);
+				value["value"] = this->value;
+			}
+
 		};
 
 	}

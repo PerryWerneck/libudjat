@@ -95,10 +95,6 @@ namespace Udjat {
 		value["level"] = level;
 	}
 
-	void Abstract::State::getValue(Json::Value &value) const {
-		value["value"] = false;
-	}
-
 	Json::Value Abstract::State::as_json() const {
 
 		Json::Value node;
