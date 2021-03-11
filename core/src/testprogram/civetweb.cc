@@ -6,6 +6,7 @@
 #include <cstring>
 #include <civetweb.h>
 #include <json/value.h>
+#include <udjat/worker.h>
 
 #ifdef HAVE_CIVETWEB
 
@@ -51,7 +52,7 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 		cout << "CMD: '" << cmd << "' path: '" << path << "'" << endl;
 
-		// Request::call(cmd.c_str(), path, response);
+		Worker::work(cmd.c_str(),path,request,response);
 
 	} catch(const exception &e) {
 
@@ -62,7 +63,7 @@ static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 
 	string rsp = response.toStyledString();
 
-//	cout << "Response:" << endl << response << endl;
+	cout << "Response:" << endl << rsp << endl;
 
 	mg_send_http_ok(conn, "application/json; charset=utf-8", rsp.size());
 	mg_write(conn, rsp.c_str(), rsp.size());

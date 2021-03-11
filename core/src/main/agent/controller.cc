@@ -24,7 +24,7 @@ namespace Udjat {
 		this->active = this->root.get();
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() const {
 
 		if(this->root)
 			return this->root;
@@ -38,7 +38,7 @@ namespace Udjat {
 		return controller;
 	}
 
-	void Abstract::Agent::Controller::work(const char *path, const Request &request, Response &response) {
+	void Abstract::Agent::Controller::work(const char *path, const Request &request, Response &response) const {
 
 		auto agent = find(path);
 		if(!agent) {
@@ -49,7 +49,7 @@ namespace Udjat {
 
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) const {
 
 		auto root = get();
 
