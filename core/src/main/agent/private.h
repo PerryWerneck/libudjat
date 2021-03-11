@@ -1,26 +1,20 @@
-#ifndef PRIVATE_H_INCLUDED
+#pragma once
 
-	#define PRIVATE_H_INCLUDED
+#include <config.h>
+#include <iostream>
+#include <udjat/agent.h>
+#include <unordered_map>
+#include <udjat/tools/quark.h>
+#include <pugixml.hpp>
 
-	#include <config.h>
-	#include <iostream>
-	#include <udjat/agent.h>
-	#include <unordered_map>
-	#include <udjat/tools/quark.h>
-	#include <pugixml.hpp>
+#ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+#endif // HAVE_UNISTD_H
 
-	#ifdef HAVE_UNISTD_H
-		#include <unistd.h>
-	#endif // HAVE_UNISTD_H
+using namespace std;
 
-	using namespace std;
+namespace Udjat {
 
-	namespace Udjat {
+	const char * check_for_reserved_name(const char *);
 
-		const char * check_for_reserved_name(const char *);
-
-	}
-
-
-
-#endif // PRIVATE_H_INCLUDED
+}

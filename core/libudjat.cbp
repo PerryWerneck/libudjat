@@ -84,6 +84,7 @@
 		<Unit filename="src/main/state/state.cc" />
 		<Unit filename="src/main/worker/controller.cc" />
 		<Unit filename="src/main/worker/private.h" />
+		<Unit filename="src/main/worker/worker.cc" />
 		<Unit filename="src/private.h" />
 		<Unit filename="src/state/private.h" />
 		<Unit filename="src/testprogram/civetweb.cc" />
