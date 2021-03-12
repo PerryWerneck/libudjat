@@ -24,6 +24,7 @@
 			Response(const time_t expiration, const time_t modification);
 
 		public:
+
 			Response();
 
 			/// @brief Set timestamp for cache the response.

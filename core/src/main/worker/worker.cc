@@ -17,7 +17,13 @@ namespace Udjat {
 	}
 
 	void Worker::work(const char *name,const Request &request, Response &response) {
+
 		Worker::Controller::getInstance().find(name)->work(request,response);
+
+		if(response.isNull()) {
+			throw system_error(ENODATA,system_category(),"Empty response");
+		}
+
 	}
 
 

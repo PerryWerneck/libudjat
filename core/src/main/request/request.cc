@@ -7,10 +7,10 @@
 
 namespace Udjat {
 
-	Request::Request(const char *p) : Json::Value(), path(p) {
+	Request::Request(const char *p) : Json::Value(Json::objectValue), path(p) {
 	}
 
-	Request::Request(const std::string &p) : Json::Value(), path(p) {
+	Request::Request(const std::string &p) : Json::Value(Json::objectValue), path(p) {
 	}
 
 

@@ -15,7 +15,7 @@
  #include <udjat/request.h>
  #include <udjat/tools/logger.h>
  #include <json/value.h>
- #include <unordered_map>
+ #include <udjat/worker.h>
 
  using namespace std;
  using namespace Udjat;
@@ -36,9 +36,17 @@ int main(int argc, char **argv) {
 		Factory::load(root_agent,doc);
 	}
 
+	/*
 	root_agent->start();
 	run_civetweb();
 	root_agent->stop();
+	*/
+
+	Request request("");
+	Response response;
+
+	Worker::work("agent",request,response);
+	cout << response.toStyledString() << endl;
 
 	return 0;
 }

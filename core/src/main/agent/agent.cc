@@ -213,22 +213,47 @@ namespace Udjat {
 
 	void Abstract::Agent::get(const char *name, Json::Value &value) {
 		// It's just a placeholder here. Don't set any value.
+		// clog << "Trying to get value of an empty agent '" << getName() << "'" << endl;
+		value[name] = Json::Value("teste");
 	}
 
 	void Abstract::Agent::get(Json::Value &value) {
+#ifdef DEBUG
+		cout << "Getting value of agent '" << getName() << "'" << endl;
+#endif // DEBUG
 		this->get(this->getName(),value);
 	}
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
 
-		auto value = setup(request,response);
+#ifdef DEBUG
+		cout << "Getting agent '" << getName() << "'" << endl;
+#endif // DEBUG
 
-		auto values = value["values"];
-		for(auto child : children) {
-			child->get(child->getName(),values);
+		setup(request,response);
+
+		// Get agent value
+		get("value",response);
+
+		/*
+		// Get children values
+		{
+			auto values = Json::Value(Json::objectValue);
+			for(auto child : children) {
+				child->get(child->getName(),values);
+			}
+			response["values"] = values;
+		}
+		*/
+
+		// Get State values
+		{
+			auto state = Json::Value(Json::objectValue);
+			this->state->get(state);
+			response["state"] = state;
 		}
 
-		this->state->get(value["state"]);
+
 
 	}
 

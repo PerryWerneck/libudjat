@@ -8,7 +8,7 @@
 
 namespace Udjat {
 
-	Response::Response(const time_t e, const time_t m) : Json::Value(), expiration(e), modification(m) { }
+	Response::Response(const time_t e, const time_t m) : Json::Value(Json::objectValue), expiration(e), modification(m) { }
 
 	Response::Response() : Response(0,0) { }
 

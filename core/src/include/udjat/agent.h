@@ -169,7 +169,6 @@
 
 		}
 
-
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
 		private:
@@ -196,7 +195,7 @@
 			}
 
 			void get(const char *name, Json::Value &value) override {
-				value[name] = this->value;
+				value[name] = Json::Value(this->value);
 			}
 
 		public:
@@ -263,7 +262,7 @@
 			}
 
 			void get(const char *name, Json::Value &value) override {
-				value[name] = this->value;
+				value[name] = Json::Value(this->value);
 			}
 
 		public:
@@ -322,12 +321,6 @@
 				return Abstract::Agent::find_state();
 			}
 
-			/// @brief Add value to JSON.
-			void get(Json::Value &value) override {
-				Abstract::Agent::get(value);
-				value["value"] = this->value;
-			}
-
 		public:
 			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value(Attribute(node,"value").as_bool(false)) {
 			}
@@ -344,6 +337,10 @@
 
 			bool get() const noexcept {
 				return value;
+			}
+
+			void get(const char *name, Json::Value &value) override {
+				value[name] = Json::Value(this->value);
 			}
 
 		};
