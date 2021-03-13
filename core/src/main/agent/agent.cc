@@ -20,7 +20,7 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(Agent *p) : parent(p), state(Abstract::Agent::find_state()) {
+	Abstract::Agent::Agent() : state(Abstract::Agent::find_state()) {
 
 		try {
 
@@ -40,7 +40,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent) {
+	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent() {
 
 #ifdef DEBUG
 		cout << "Creating " << this->name << endl;
@@ -75,6 +75,17 @@ namespace Udjat {
 		for(auto event : events) {
 			delete event;
 		}
+
+	}
+
+	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		if(child->parent) {
+			throw runtime_error("Agent already has a parent");
+		}
+
+		child->parent = this;
+		children.push_back(child);
 
 	}
 

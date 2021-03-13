@@ -105,7 +105,8 @@
 				/// @return Node for value.
 				Json::Value & setup(const Request &request, Response &response);
 
-			protected:
+				/// @brief Insert child agent.
+				void insert(std::shared_ptr<Agent> child);
 
 			public:
 
@@ -132,8 +133,8 @@
 				/// @brief Load agents from xml.file
 				void load(const pugi::xml_document &doc);
 
-				Agent(Agent *parent = nullptr);
-				Agent(Agent *parent, const pugi::xml_node &node);
+				Agent();
+				Agent(const pugi::xml_node &node);
 				virtual ~Agent();
 
 				/// @brief Get root agent.
@@ -173,7 +174,6 @@
 				virtual void stop();
 
 				std::shared_ptr<Agent> find(const char *path);
-				//std::shared_ptr<Agent> find(const std::vector<std::string> &path);
 
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -222,7 +222,7 @@
 			}
 
 		public:
-			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value((T) Attribute(node,"value")) {
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value((T) Attribute(node,"value")) {
 			}
 
 			Agent(T v) : Abstract::Agent(), value(v) {
@@ -289,7 +289,7 @@
 			}
 
 		public:
-			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value(Attribute(node,"value").as_string()) {
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(Attribute(node,"value").as_string()) {
 			}
 
 			bool set(const std::string &value) {
@@ -345,7 +345,7 @@
 			}
 
 		public:
-			Agent(Abstract::Agent *parent, const pugi::xml_node &node) : Abstract::Agent(parent,node), value(Attribute(node,"value").as_bool(false)) {
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(Attribute(node,"value").as_bool(false)) {
 			}
 
 			bool set(const bool value) {

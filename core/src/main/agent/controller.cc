@@ -71,7 +71,52 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 
-		cout << "****** PARSE AGENT" << endl;
+		static const struct
+		{
+			const char *name;
+			function<void(Abstract::Agent &parent, const pugi::xml_node &node)> worker;
+		} builder[] = {
+
+			{
+				"integer",
+				[](Abstract::Agent &parent, const pugi::xml_node &node) {
+					parent.insert(make_shared<Udjat::Agent<int>>(node));
+				}
+
+			},
+			{
+				"int32",
+				[](Abstract::Agent &parent, const pugi::xml_node &node) {
+					parent.insert(make_shared<Udjat::Agent<int32_t>>(node));
+				}
+			},
+
+			{
+				"uint32",
+				[](Abstract::Agent &parent, const pugi::xml_node &node) {
+					parent.insert(make_shared<Udjat::Agent<uint32_t>>(node));
+				}
+			},
+
+			{
+				"boolean",
+				[](Abstract::Agent &parent, const pugi::xml_node &node) {
+					parent.insert(make_shared<Udjat::Agent<bool>>(node));
+				}
+			},
+
+						{
+				"string",
+				[](Abstract::Agent &parent, const pugi::xml_node &node) {
+					parent.insert(make_shared<Udjat::Agent<std::string>>(node));
+				}
+			},
+
+		};
+
+		const char *type = node.attribute("type").as_string("int32");
+
+		cout << "****** PARSE AGENT TYPE " << type << endl;
 
 	}
 
