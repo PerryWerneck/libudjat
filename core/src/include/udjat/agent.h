@@ -124,7 +124,7 @@
 						return name.c_str();
 					}
 
-					static bool parse(const char *name,Abstract::Agent &parent, const pugi::xml_node &node);
+					static bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node);
 
 					virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const = 0;
 
@@ -133,7 +133,7 @@
 				/// @brief Load agents from xml.file
 				void load(const pugi::xml_document &doc);
 
-				Agent();
+				Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr);
 				Agent(const pugi::xml_node &node);
 				virtual ~Agent();
 

@@ -20,7 +20,16 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent() : state(Abstract::Agent::find_state()) {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : state(Abstract::Agent::find_state()) {
+
+		if(name && *name) {
+			this->name = name;
+			this->label = (label ? label : name);
+		}
+
+		if(summary && *summary) {
+			this->summary = summary;
+		}
 
 		try {
 
@@ -42,25 +51,11 @@ namespace Udjat {
 
 	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent() {
 
+		this->load(node);
+
 #ifdef DEBUG
-		cout << "Creating " << this->name << endl;
+		cout << "Agent '" << this->name << "' created" << endl;
 #endif // DEBUG
-
-		this->name = node.attribute("name").as_string();
-		this->update.notify = node.attribute("notify").as_bool(this->update.notify);
-
-		this->icon = Udjat::getAttribute(node,"icon").as_string();
-		this->label = Udjat::getAttribute(node,"label").as_string();
-		this->uri = Udjat::getAttribute(node,"uri").as_string();
-		this->summary = Udjat::getAttribute(node,"summary").as_string();
-
-		this->update.timer = node.attribute("update-timer").as_uint(this->update.timer);
-
-		this->update.on_demand = node.attribute("update-on-demand").as_bool(this->update.timer == 0);
-
-		time_t delay = node.attribute("delay-on-startup").as_uint(0);
-		if(delay)
-			this->update.next = time(nullptr) + delay;
 
 	}
 
@@ -80,9 +75,14 @@ namespace Udjat {
 
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
 		lock_guard<std::recursive_mutex> lock(guard);
+
 		if(child->parent) {
 			throw runtime_error("Agent already has a parent");
 		}
+
+#ifdef DEBUG
+		cout << "Inserting agent '" << child->getName() << "' in parent '" << this->getName() << endl;
+#endif // DEBUG
 
 		child->parent = this;
 		children.push_back(child);
@@ -240,7 +240,7 @@ namespace Udjat {
 		setup(request,response);
 
 		// Get agent value
-		get("value",response);
+		get("value",(Json::Value &) response);
 
 		response["name"] = this->getName();
 		response["summary"] = this->summary.c_str();

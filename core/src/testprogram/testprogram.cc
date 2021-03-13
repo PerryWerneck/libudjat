@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
 	Logger::redirect();
 
-	auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>());
+	auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Global system state"));
 
 	const char * xml_filename = "./src/main/agent/test.xml";
 
@@ -36,9 +36,8 @@ int main(int argc, char **argv) {
 	}
 
 	root_agent->start();
-	/*
-	run_civetweb();
-	*/
+
+//	run_civetweb();
 
 	{
 		Request request("");
@@ -47,8 +46,9 @@ int main(int argc, char **argv) {
 		Worker::work("agent",request,response);
 		cout << response.toStyledString() << endl;
 
-		root_agent->stop();
 	}
+
+	root_agent->stop();
 
 	return 0;
 }

@@ -7,6 +7,10 @@
 	#include <udjat/tools/quark.h>
 	#include <cstring>
 
+#ifdef HAVE_PUGIXML
+	#include <pugixml.hpp>
+#endif // HAVE_PUGIXML
+
 	namespace Udjat {
 
 		/// @brief Single instance string.
@@ -49,9 +53,15 @@
 				return compare(str);
 			}
 
-			int compare(const char *str) const {
+			bool compare(const char *str) const {
 				return strcmp(c_str(),str);
 			}
+
+			void set(const char *str);
+
+#ifdef HAVE_PUGIXML
+			bool set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch = false);
+#endif // HAVE_PUGIXML
 
 		};
 	}

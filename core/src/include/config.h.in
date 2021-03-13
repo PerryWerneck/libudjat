@@ -60,6 +60,10 @@
 	/// @brief Define to 1 if signal is available
 	#undef HAVE_SIGNAL
 
+    /// @brief Define to 1 if pugixml is available.
+    #undef HAVE_PUGIXML
+
+
 #endif // CONFIG_H_INCLUDED
 
 

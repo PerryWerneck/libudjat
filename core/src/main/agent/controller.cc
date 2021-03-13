@@ -73,9 +73,9 @@ namespace Udjat {
 
 		static const struct
 		{
-			const char *name;
-			function<void(Abstract::Agent &parent, const pugi::xml_node &node)> worker;
-		} builder[] = {
+			const char *type;
+			function<void(Abstract::Agent &parent, const pugi::xml_node &node)> build;
+		} builders[] = {
 
 			{
 				"integer",
@@ -117,6 +117,15 @@ namespace Udjat {
 		const char *type = node.attribute("type").as_string("int32");
 
 		cout << "****** PARSE AGENT TYPE " << type << endl;
+
+		for(auto builder : builders) {
+
+			if(!strcasecmp(type,builder.type)) {
+				builder.build(parent,node);
+				break;
+			}
+
+		}
 
 	}
 

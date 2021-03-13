@@ -156,6 +156,10 @@ namespace Udjat {
 		return *this;
 	}
 
+	void Quark::set(const char *str) {
+		this->value = Controller::getInstance().find(str,true);
+	}
+
 	Quark & Quark::operator=(const std::string &str) {
 		this->value = Controller::getInstance().find(str.c_str(),true);
 		return *this;
@@ -181,5 +185,38 @@ namespace Udjat {
 
 		return value;
 	}
+
+#ifdef HAVE_PUGIXML
+	bool Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch) {
+
+		if(!node)
+			return false;
+
+		auto attribute = node.attribute(xml_attribute);
+
+		if(attribute) {
+			set(attribute.as_string());
+			return true;
+		}
+
+		// Check children for <attribute name=>
+		for(pugi::xml_node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+
+			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
+				set(child.attribute("value").as_string());
+				return true;
+			}
+
+		}
+
+		// If upsearch is true repeat the query on parent node.
+		if(upsearch) {
+			return set(node.parent(),xml_attribute,true);
+		}
+
+		return false;
+
+	}
+#endif // HAVE_PUGIXML
 
 }
