@@ -178,7 +178,7 @@
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
 
-				virtual void get(Json::Value &value);
+				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
 				virtual void get(const char *name, Json::Value &value);
 				virtual void get(const Request &request, Response &response);
 

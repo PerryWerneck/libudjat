@@ -224,11 +224,35 @@ namespace Udjat {
 		// It's just a placeholder here. Don't set any value.
 	}
 
-	void Abstract::Agent::get(Json::Value &value) {
-#ifdef DEBUG
-		cout << "Getting value of agent '" << getName() << "'" << endl;
-#endif // DEBUG
-		this->get(this->getName(),value);
+	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
+
+		get("value",value);
+
+		value["name"] = this->getName();
+		value["summary"] = this->summary.c_str();
+		value["label"] = this->label.c_str();
+		value["uri"] = this->uri.c_str();
+		value["icon"] = this->icon.c_str();
+
+		// Get state
+		if(state) {
+			auto state = Json::Value(Json::objectValue);
+			this->state->get(state);
+			value["state"] = state;
+		}
+
+		// Get children values
+		{
+			auto cvalues = Json::Value(Json::objectValue);
+			for(auto child : this->children) {
+				auto values = Json::Value(Json::objectValue);
+				values["teste"] = child->getName();
+				child->get(values,false,true);
+				cvalues[child->getName()] = values;
+			}
+			value["children"] = cvalues;
+		}
+
 	}
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
@@ -241,23 +265,6 @@ namespace Udjat {
 
 		// Get agent value
 		get("value",(Json::Value &) response);
-
-		response["name"] = this->getName();
-		response["summary"] = this->summary.c_str();
-		response["label"] = this->label.c_str();
-		response["uri"] = this->uri.c_str();
-		response["icon"] = this->icon.c_str();
-
-		/*
-		// Get children values
-		{
-			auto values = Json::Value(Json::objectValue);
-			for(auto child : children) {
-				child->get(child->getName(),values);
-			}
-			response["values"] = values;
-		}
-		*/
 
 		// Get State values
 		{

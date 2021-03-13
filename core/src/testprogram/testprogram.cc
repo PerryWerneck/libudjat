@@ -40,10 +40,13 @@ int main(int argc, char **argv) {
 //	run_civetweb();
 
 	{
-		Request request("");
-		Response response;
+		//Request request("");
+		//Response response;
+		//Worker::work("agent",request,response);
 
-		Worker::work("agent",request,response);
+		Json::Value response(Json::objectValue);
+		root_agent->get(response,true,true);
+
 		cout << response.toStyledString() << endl;
 
 	}
