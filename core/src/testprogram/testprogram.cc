@@ -9,7 +9,6 @@
 
  #include "private.h"
  #include <udjat/agent.h>
- #include <udjat/factory.h>
  #include <vector>
  #include <string>
  #include <udjat/request.h>
@@ -33,20 +32,23 @@ int main(int argc, char **argv) {
 	{
 		pugi::xml_document doc;
 		doc.load_file(xml_filename);
-		Factory::load(root_agent,doc);
+		root_agent->load(doc);
 	}
 
-	/*
 	root_agent->start();
+	/*
 	run_civetweb();
-	root_agent->stop();
 	*/
 
-	Request request("");
-	Response response;
+	{
+		Request request("");
+		Response response;
 
-	Worker::work("agent",request,response);
-	cout << response.toStyledString() << endl;
+		Worker::work("agent",request,response);
+		cout << response.toStyledString() << endl;
+
+		root_agent->stop();
+	}
 
 	return 0;
 }

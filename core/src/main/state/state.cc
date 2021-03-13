@@ -77,7 +77,7 @@ namespace Udjat {
 		if(this->activation)
 			value["activation"] = TimeStamp(this->activation).to_string(TIMESTAMP_FORMAT_JSON);
 		else
-			value["activation"] = 0;
+			value["activation"] = this->activation;
 
 		// Set level information
 		getLevel(value);
@@ -93,14 +93,6 @@ namespace Udjat {
 		level["value"] = (uint32_t) this->level;
 		level["label"] = levelNames[this->level];
 		value["level"] = level;
-	}
-
-	Json::Value Abstract::State::as_json() const {
-
-		Json::Value node;
-		get(node);
-		return node;
-
 	}
 
 	const char * Abstract::State::to_string(const Abstract::State::Level level) {

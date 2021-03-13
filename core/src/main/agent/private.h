@@ -16,9 +16,9 @@ using namespace std;
 
 namespace Udjat {
 
-	const char * check_for_reserved_name(const char *);
+	//const char * check_for_reserved_name(const char *);
 
-	class Abstract::Agent::Controller : private Worker {
+	class Abstract::Agent::Controller : private Worker, Agent::Factory {
 	private:
 
 		std::shared_ptr<Abstract::Agent> root;
@@ -34,6 +34,8 @@ namespace Udjat {
 		std::shared_ptr<Abstract::Agent> find(const char *path) const;
 
 		void work(const Request &request, Response &response) const override;
+		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+
 
 	};
 

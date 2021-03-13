@@ -105,8 +105,6 @@
 				virtual void get(Json::Value &value) const;
 				virtual void get(const Request &request, Response &response) const;
 
-				Json::Value as_json() const;
-
 				void activate(const Agent &agent) noexcept;
 				void deactivate(const Agent &agent) noexcept;
 

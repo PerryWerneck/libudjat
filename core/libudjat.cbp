@@ -67,12 +67,13 @@
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
+		<Unit filename="src/main/agent/factory.cc" />
+		<Unit filename="src/main/agent/load.cc" />
 		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/event/event.cc" />
-		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/private.h" />

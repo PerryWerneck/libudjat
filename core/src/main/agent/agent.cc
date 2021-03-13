@@ -10,7 +10,6 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
- #include <udjat/factory.h>
  #include <udjat/event.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
@@ -47,7 +46,7 @@ namespace Udjat {
 		cout << "Creating " << this->name << endl;
 #endif // DEBUG
 
-		this->name = Factory::validate_name(node.attribute("name").as_string());
+		this->name = node.attribute("name").as_string();
 		this->update.notify = node.attribute("notify").as_bool(this->update.notify);
 
 		this->icon = Udjat::getAttribute(node,"icon").as_string();
@@ -62,7 +61,6 @@ namespace Udjat {
 		time_t delay = node.attribute("delay-on-startup").as_uint(0);
 		if(delay)
 			this->update.next = time(nullptr) + delay;
-
 
 	}
 
@@ -213,8 +211,6 @@ namespace Udjat {
 
 	void Abstract::Agent::get(const char *name, Json::Value &value) {
 		// It's just a placeholder here. Don't set any value.
-		// clog << "Trying to get value of an empty agent '" << getName() << "'" << endl;
-		value[name] = Json::Value("teste");
 	}
 
 	void Abstract::Agent::get(Json::Value &value) {
@@ -235,6 +231,12 @@ namespace Udjat {
 		// Get agent value
 		get("value",response);
 
+		response["name"] = this->getName();
+		response["summary"] = this->summary.c_str();
+		response["label"] = this->label.c_str();
+		response["uri"] = this->uri.c_str();
+		response["icon"] = this->icon.c_str();
+
 		/*
 		// Get children values
 		{
@@ -254,26 +256,6 @@ namespace Udjat {
 		}
 
 
-
-	}
-
-	Json::Value Abstract::Agent::as_json() {
-
-		Json::Value node;
-
-		chk4refresh(true);
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		get(node);
-		node["name"] = this->getName();
-		node["summary"] = this->summary.c_str();
-		node["state"] = this->state->as_json();
-		node["label"] = this->label.c_str();
-		node["uri"] = this->uri.c_str();
-		node["icon"] = this->icon.c_str();
-
-		return node;
 
 	}
 

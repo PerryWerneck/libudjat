@@ -35,8 +35,6 @@
 
 				class Controller;
 
-				friend class Factory::Controller;
-
 				static std::recursive_mutex guard;
 
 				Agent *parent = nullptr;
@@ -61,6 +59,9 @@
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
+
+				/// @brief Load child from xml node.
+				void load(const pugi::xml_node &node);
 
 			protected:
 
@@ -107,6 +108,30 @@
 			protected:
 
 			public:
+
+				/// @brief Agent factory
+				class UDJAT_API Factory {
+				private:
+					Quark name;
+					class Controller;
+
+				public:
+					Factory(const Quark &name);
+					virtual ~Factory();
+
+					const char * c_str() const {
+						return name.c_str();
+					}
+
+					static bool parse(const char *name,Abstract::Agent &parent, const pugi::xml_node &node);
+
+					virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const = 0;
+
+				};
+
+				/// @brief Load agents from xml.file
+				void load(const pugi::xml_document &doc);
+
 				Agent(Agent *parent = nullptr);
 				Agent(Agent *parent, const pugi::xml_node &node);
 				virtual ~Agent();
@@ -152,8 +177,6 @@
 
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
-
-				virtual Json::Value as_json();
 
 				virtual void get(Json::Value &value);
 				virtual void get(const char *name, Json::Value &value);
