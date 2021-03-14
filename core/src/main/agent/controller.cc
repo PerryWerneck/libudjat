@@ -116,8 +116,6 @@ namespace Udjat {
 
 		const char *type = node.attribute("type").as_string("int32");
 
-		cout << "****** PARSE AGENT TYPE " << type << endl;
-
 		for(auto builder : builders) {
 
 			if(!strcasecmp(type,builder.type)) {

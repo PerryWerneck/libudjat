@@ -242,7 +242,7 @@ namespace Udjat {
 		}
 
 		// Get children values
-		{
+		if(children) {
 			auto cvalues = Json::Value(Json::objectValue);
 			for(auto child : this->children) {
 				auto values = Json::Value(Json::objectValue);
@@ -264,16 +264,7 @@ namespace Udjat {
 		setup(request,response);
 
 		// Get agent value
-		get("value",(Json::Value &) response);
-
-		// Get State values
-		{
-			auto state = Json::Value(Json::objectValue);
-			this->state->get(state);
-			response["state"] = state;
-		}
-
-
+		get( (Json::Value &) response, false, true);
 
 	}
 
