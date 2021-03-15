@@ -16,7 +16,7 @@ using namespace std;
 
 namespace Udjat {
 
-	//const char * check_for_reserved_name(const char *);
+	std::shared_ptr<Abstract::State> get_default_state();
 
 	class Abstract::Agent::Controller : private Worker, Agent::Factory {
 	private:

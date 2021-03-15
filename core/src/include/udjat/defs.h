@@ -145,12 +145,6 @@
 
 		}
 
-		/// @brief Factory objects.
-		namespace Factory {
-
-			class Controller;
-
-		}
 
 	}
 

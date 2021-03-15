@@ -20,7 +20,7 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : state(Abstract::Agent::find_state()) {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : state(get_default_state()) {
 
 		if(name && *name) {
 			this->name = name;
@@ -91,6 +91,10 @@ namespace Udjat {
 
 	void Abstract::Agent::start() {
 
+#ifdef DEBUG
+		cout << "Starting agent '" << name << "'" << endl;
+#endif // DEBUG
+
 		// Start children
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
@@ -108,20 +112,22 @@ namespace Udjat {
 			}
 		}
 
-		// Update state.
-		auto new_state = find_state();
-
-		// Check for children state
+		// Update agent state.
 		{
-			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto child : children) {
-				if(child->state && child->state->getLevel() > new_state->getLevel()) {
-					new_state = child->state;
+			auto new_state = find_state();
+
+			// Check for children state
+			{
+				lock_guard<std::recursive_mutex> lock(guard);
+				for(auto child : children) {
+					if(child->state && child->state->getLevel() > new_state->getLevel()) {
+						new_state = child->state;
+					}
 				}
 			}
-		}
 
-		activate(new_state);
+			activate(new_state);
+		}
 
 	}
 
@@ -220,9 +226,12 @@ namespace Udjat {
 		return response;
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::get(const char *name, Json::Value &value) {
 		// It's just a placeholder here. Don't set any value.
 	}
+	#pragma GCC diagnostic pop
 
 	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
 
@@ -277,15 +286,8 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 
-		// Default method should return a common "undefined" state.
-
-		static std::shared_ptr<Abstract::State> state;
-
-		if(!state) {
-			state = std::make_shared<Abstract::State>(Abstract::State::undefined,"");
-		}
-
-		return state;
+		// Default method should return the current state with no change.
+		return this->state;
 
 	}
 

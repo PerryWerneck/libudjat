@@ -14,6 +14,36 @@
 
 namespace Udjat {
 
+	std::shared_ptr<Abstract::State> get_default_state() {
+
+		class DefaultState : public Abstract::State, Abstract::Agent::Factory {
+		public:
+			DefaultState() : Abstract::State(Abstract::State::undefined,""), Abstract::Agent::Factory(I_("state")) {
+#ifdef DEBUG
+				cout << "Default state was created" << endl;
+#endif // DEBUG
+			}
+
+			~DefaultState() {
+#ifdef DEBUG
+				cout << "Default state was destroyed" << endl;
+#endif // DEBUG
+			}
+
+			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const {
+
+#ifdef DEBUG
+				cout << "Parsing state '" << "' for agent '" << agent.getName() << "'" << endl;
+#endif // DEBUG
+			}
+
+		};
+
+		static shared_ptr<Abstract::State> state(new DefaultState());
+		return state;
+
+	}
+
 	static time_t getDelayAfterException() noexcept {
 
 		try {

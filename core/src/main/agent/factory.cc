@@ -48,11 +48,20 @@ namespace Udjat {
 
 		void insert(const Factory *factory) {
 			lock_guard<recursive_mutex> lock(guard);
+#ifdef DEBUG
+			cout << "Insering factory '" << factory->c_str() << "'" << endl;
+#endif // DEBUG
+
 			methods.insert(make_pair(factory->c_str(),factory));
+
 		}
 
 		void remove(const Factory *factory) {
 			lock_guard<recursive_mutex> lock(guard);
+
+#ifdef DEBUG
+			cout << "Removing factory '" << factory->c_str() << "'" << endl;
+#endif // DEBUG
 
 			auto entry = methods.find(factory->c_str());
 			if(entry == methods.end())
@@ -69,8 +78,12 @@ namespace Udjat {
 
 			auto entry = methods.find(name);
 
-			if(entry == methods.end())
+			if(entry == methods.end()) {
+#ifdef DEBUG
+				cout << "Cant find factory for element '" << name << "'" << endl;
+#endif // DEBUG
 				return false;
+			}
 
 			entry->second->parse(parent,node);
 
