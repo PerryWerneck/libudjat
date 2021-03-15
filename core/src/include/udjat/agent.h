@@ -183,12 +183,11 @@
 					return this->state;
 				}
 
-				std::shared_ptr<Abstract::State> insert(std::shared_ptr<Abstract::State> state) {
-					return state;
-				}
+				/// @brief Insert state.
+				std::shared_ptr<Abstract::State> push_back(std::shared_ptr<Abstract::State> state);
 
 				/// @brief Insert State.
-				virtual std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) = 0;
+				virtual void append_state(const pugi::xml_node &node);
 
 			};
 
@@ -253,8 +252,8 @@
 			}
 
 			/// @brief Insert State.
-			std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) override {
-				return insert(std::make_shared<State<T>>(node));
+			void append_state(const pugi::xml_node &node) override {
+				states.push_back(std::make_shared<State<T>>(node));
 			}
 
 		};
@@ -312,8 +311,8 @@
 			}
 
 			/// @brief Insert State.
-			std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) override {
-				return insert(std::make_shared<State<std::string>>(node));
+			void append_state(const pugi::xml_node &node) override {
+				states.push_back(std::make_shared<State<std::string>>(node));
 			}
 
 		};
@@ -362,8 +361,8 @@
 			}
 
 			/// @brief Insert State.
-			std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) override {
-				return insert(std::make_shared<State<bool>>(node));
+			void append_state(const pugi::xml_node &node) override {
+				states.push_back(std::make_shared<State<bool>>(node));
 			}
 
 		};

@@ -9,6 +9,7 @@
 
  #include "private.h"
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/timestamp.h>
 
  using namespace std;
 
@@ -111,6 +112,15 @@ namespace Udjat {
 					return make_shared<Udjat::Agent<std::string>>();
 				}
 			},
+
+			/*
+			{
+				"timestamp",
+				[]() {
+					return make_shared<Udjat::Agent<TimeStamp>>();
+				}
+			},
+			*/
 
 		};
 
