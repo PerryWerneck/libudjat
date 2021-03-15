@@ -95,9 +95,6 @@
 				/// @return true if the state was refreshed.
 				bool chk4refresh(bool forward = false);
 
-				/// @brief Insert State.
-				virtual void append_state(const pugi::xml_node &node);
-
 				/// @brief Find state from agent value.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
@@ -187,6 +184,13 @@
 					return this->state;
 				}
 
+				std::shared_ptr<Abstract::State> insert(std::shared_ptr<Abstract::State> state) {
+					return state;
+				}
+
+				/// @brief Insert State.
+				virtual std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node);
+
 			};
 
 
@@ -203,11 +207,6 @@
 			std::vector<std::shared_ptr<State<T>>> states;
 
 		protected:
-
-			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State<T>>(node));
-			}
 
 			std::shared_ptr<Abstract::State> find_state() const override {
 				for(auto state : states) {
@@ -257,6 +256,11 @@
 				return !states.empty();
 			}
 
+			/// @brief Insert State.
+			std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) override {
+				return insert(std::make_shared<State<T>>(node));
+			}
+
 		};
 
 		template <>
@@ -270,11 +274,6 @@
 			std::vector<std::shared_ptr<State<std::string>>> states;
 
 		protected:
-
-			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State<std::string>>(node));
-			}
 
 			std::shared_ptr<Abstract::State> find_state() const override {
 				for(auto state : states) {
@@ -316,6 +315,11 @@
 				return !states.empty();
 			}
 
+			/// @brief Insert State.
+			std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) override {
+				return insert(std::make_shared<State<std::string>>(node));
+			}
+
 		};
 
 		///
@@ -330,11 +334,6 @@
 			std::vector<std::shared_ptr<State<bool>>> states;
 
 		protected:
-
-			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State<bool>>(node));
-			}
 
 			std::shared_ptr<Abstract::State> find_state() const override {
 				for(auto state : states) {
@@ -364,6 +363,11 @@
 
 			void get(const char *name, Json::Value &value) override {
 				value[name] = Json::Value(this->value);
+			}
+
+			/// @brief Insert State.
+			std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) override {
+				return insert(std::make_shared<State<bool>>(node));
 			}
 
 		};

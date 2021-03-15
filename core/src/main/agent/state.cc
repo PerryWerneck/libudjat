@@ -35,6 +35,9 @@ namespace Udjat {
 #ifdef DEBUG
 				cout << "Parsing state '" << "' for agent '" << agent.getName() << "'" << endl;
 #endif // DEBUG
+
+				agent.append_state(node);
+
 			}
 
 		};

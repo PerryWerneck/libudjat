@@ -277,10 +277,10 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::append_state(const pugi::xml_node UDJAT_UNUSED(&node)) {
-		string str("Can't append state on agent \"");
+	std::shared_ptr<Abstract::State> Abstract::Agent::append_state(const pugi::xml_node &node) {
+		string str("Can't append state on agent '");
 		str += this->name.c_str();
-		str += "\": It's a non-typed agent";
+		str += "'";
 		throw runtime_error(str);
 	}
 
