@@ -49,16 +49,6 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent() {
-
-		this->load(node);
-
-#ifdef DEBUG
-		cout << "Agent '" << this->name << "' created" << endl;
-#endif // DEBUG
-
-	}
-
 	Abstract::Agent::~Agent() {
 
 		// Deleted! My children are now orphans.
@@ -277,12 +267,14 @@ namespace Udjat {
 
 	}
 
+	/*
 	std::shared_ptr<Abstract::State> Abstract::Agent::append_state(const pugi::xml_node &node) {
 		string str("Can't append state on agent '");
 		str += this->name.c_str();
 		str += "'";
 		throw runtime_error(str);
 	}
+	*/
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 

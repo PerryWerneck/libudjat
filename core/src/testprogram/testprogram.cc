@@ -25,7 +25,7 @@ int main(int argc, char **argv) {
 
 	Logger::redirect();
 
-	auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Global system state"));
+	auto root_agent = Abstract::Agent::set_root(make_shared<Agent<int>>("root","System","Global system state"));
 
 	const char * xml_filename = "./src/main/agent/test.xml";
 

@@ -74,41 +74,41 @@ namespace Udjat {
 		static const struct
 		{
 			const char *type;
-			function<void(Abstract::Agent &parent, const pugi::xml_node &node)> build;
+			function< std::shared_ptr<Abstract::Agent>()> build;
 		} builders[] = {
 
 			{
 				"integer",
-				[](Abstract::Agent &parent, const pugi::xml_node &node) {
-					parent.insert(make_shared<Udjat::Agent<int>>(node));
+				[]() {
+					return make_shared<Udjat::Agent<int>>();
 				}
 
 			},
 			{
 				"int32",
-				[](Abstract::Agent &parent, const pugi::xml_node &node) {
-					parent.insert(make_shared<Udjat::Agent<int32_t>>(node));
+				[]() {
+					return make_shared<Udjat::Agent<int32_t>>();
 				}
 			},
 
 			{
 				"uint32",
-				[](Abstract::Agent &parent, const pugi::xml_node &node) {
-					parent.insert(make_shared<Udjat::Agent<uint32_t>>(node));
+				[]() {
+					return make_shared<Udjat::Agent<uint32_t>>();
 				}
 			},
 
 			{
 				"boolean",
-				[](Abstract::Agent &parent, const pugi::xml_node &node) {
-					parent.insert(make_shared<Udjat::Agent<bool>>(node));
+				[]() {
+					return make_shared<Udjat::Agent<bool>>();
 				}
 			},
 
-						{
+			{
 				"string",
-				[](Abstract::Agent &parent, const pugi::xml_node &node) {
-					parent.insert(make_shared<Udjat::Agent<std::string>>(node));
+				[]() {
+					return make_shared<Udjat::Agent<std::string>>();
 				}
 			},
 
@@ -119,7 +119,9 @@ namespace Udjat {
 		for(auto builder : builders) {
 
 			if(!strcasecmp(type,builder.type)) {
-				builder.build(parent,node);
+				auto agent = builder.build();
+				agent->load(node);
+				parent.insert(agent);
 				break;
 			}
 

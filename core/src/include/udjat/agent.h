@@ -131,7 +131,6 @@
 				void load(const pugi::xml_document &doc);
 
 				Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr);
-				Agent(const pugi::xml_node &node);
 				virtual ~Agent();
 
 				/// @brief Get root agent.
@@ -189,7 +188,7 @@
 				}
 
 				/// @brief Insert State.
-				virtual std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node);
+				virtual std::shared_ptr<Abstract::State> append_state(const pugi::xml_node &node) = 0;
 
 			};
 
@@ -221,10 +220,7 @@
 			}
 
 		public:
-			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value((T) Attribute(node,"value")) {
-			}
-
-			Agent(T v) : Abstract::Agent(), value(v) {
+			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary), value(0) {
 			}
 
 			bool set(const T &value) {
@@ -288,7 +284,7 @@
 			}
 
 		public:
-			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(Attribute(node,"value").as_string()) {
+			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary) {
 			}
 
 			bool set(const std::string &value) {
@@ -344,7 +340,7 @@
 			}
 
 		public:
-			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(Attribute(node,"value").as_bool(false)) {
+			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary), value(false) {
 			}
 
 			bool set(const bool value) {
