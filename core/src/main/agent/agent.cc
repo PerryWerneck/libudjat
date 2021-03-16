@@ -159,6 +159,7 @@ namespace Udjat {
 			lock_guard<std::recursive_mutex> lock(guard);
 
 			for(auto child : children) {
+
 				if(strncasecmp(child->name.c_str(),path,length))
 					continue;
 

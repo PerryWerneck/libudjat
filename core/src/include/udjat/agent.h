@@ -176,7 +176,7 @@
 
 				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
 				virtual void get(const char *name, Json::Value &value);
-				virtual void get(const Request &request, Response &response);
+				void get(const Request &request, Response &response);
 
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() const {
@@ -239,14 +239,6 @@
 				return value;
 			}
 
-			/// @brief Add value to request.
-			void get(const Request &request, Response &response) override {
-				auto value = setup(request,response);
-				value["value"] = this->value;
-				this->getState()->get(value["state"]);
-			}
-
-
 			bool hasOwnStates() const noexcept override {
 				return !states.empty();
 			}
@@ -298,12 +290,6 @@
 
 			std::string get() const noexcept {
 				return value;
-			}
-
-			void get(const Request &request, Response &response) override {
-				auto value = setup(request,response);
-				value["value"] = this->value;
-				this->getState()->get(value["state"]);
 			}
 
 			bool hasOwnStates() const noexcept override {

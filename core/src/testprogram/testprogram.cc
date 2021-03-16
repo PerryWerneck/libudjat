@@ -39,23 +39,23 @@ int main(int argc, char **argv) {
 
 //	run_civetweb();
 
-	/*
-
 	{
 		Response response;
-		Worker::work("agent",Request(""),response);
+		//Worker::work("agent",Request(""),response);
+		Worker::work("agent",Request("/intvalue"),response);
 
 
 		cout << response.toStyledString() << endl;
 
 	}
-	*/
 
+	/*
 	{
 		Json::Value response(Json::objectValue);
 		root_agent->get(response,true,true);
 		cout << response.toStyledString() << endl;
 	}
+	*/
 
 	root_agent->stop();
 

@@ -42,9 +42,14 @@ namespace Udjat {
 	void Abstract::Agent::Controller::work(const Request &request, Response &response) const {
 
 		auto agent = find(request.c_str());
+
 		if(!agent) {
 			throw system_error(ENOENT,system_category(),"Can't find requested agent");
 		}
+
+#ifdef DEBUG
+		cout << "Getting response for agent '" << agent->getName() << "'" << endl;
+#endif // DEBUG
 
 		agent->get(request,response);
 
