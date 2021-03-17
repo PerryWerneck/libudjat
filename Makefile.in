@@ -145,29 +145,6 @@ $(OBJRLS)/%.o: \
 	@$(MKDIR) $(@D)
 	@$(WINDRES) $< -O coff -o $@
 
-#---[ Misc Rules ]-----------------------------------------------------------------------
-
-$(POTDIR)/$(PACKAGE_NAME)/%.pot: \
-	%.cc
-
-	@echo $(notdir $@) ...
-	@$(MKDIR) $(@D)
-	@$(XGETTEXT) \
-		--language=C \
-		--keyword=_ \
-		--keyword=N_ \
-		--keyword=MSG_:2 \
-		--output=$@ \
-		$<
-	@touch $@
-
-$(POTDIR)/$(PACKAGE_NAME)/%.pot: \
-	%.rc
-
-	@echo $< ...
-	@$(MKDIR) $(@D)
-	@touch $@
-
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \

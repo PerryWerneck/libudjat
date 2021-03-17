@@ -142,29 +142,6 @@ AC_PATH_TOOL([MSGINIT], [msginit], [true])
 AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
 AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
 
-AC_CHECK_HEADER(libintl.h, [
-        AC_DEFINE(HAVE_LIBINTL, 1)
-
-        case "$host" in
-        *-mingw32|*-pc-msys)
-                INTL_LIBS="-lintl"
-                ;;
-
-        *-apple-darwin*)
-                INTL_LIBS="-lintl"
-                ;;
-
-        *)
-                INTL_LIBS=""
-
-        esac
-
-	OPTIONAL_MODULES="${OPTIONAL_MODULES} locale"
-
-], [
-        AC_MSG_ERROR([Can't find required file libintl.h])
-])
-
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
 dnl ---------------------------------------------------------------------------
