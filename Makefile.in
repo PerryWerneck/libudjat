@@ -184,7 +184,7 @@ install-linux-lib: \
 		
 	@$(LN_S) \
 		@SONAME@ \
-		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@
+		$(DESTDIR)$(libdir)/$(PACKAGE_NAME)@LIBEXT@
 
 install-windows-lib: \
 	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
