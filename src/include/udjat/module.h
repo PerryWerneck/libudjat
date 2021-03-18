@@ -11,17 +11,16 @@
 		class UDJAT_API Module {
 		private:
 			class Controller;
-			friend class Controller;
 
-			int handle;
+			void *handle;
 			Quark name;
 
 		public:
-			Module();
-			virtual ~Module();
 
-			/// @brief Root agent is changing.
-			virtual void set(std::shared_ptr<Abstract::Agent> agent);
+			static Module * load(const char *filename);
+
+			Module(const Quark &name, void *handle = nullptr);
+			virtual ~Module();
 
 			/// @brief Start module.
 			virtual void start();
@@ -40,6 +39,6 @@
 
 		/// @brief Initialize module.
 		/// @return Module controller.
-		Module * UDJAT_API udjat_module_init(void);
+		Module * UDJAT_API udjat_module_init(void *handle);
 
 	}

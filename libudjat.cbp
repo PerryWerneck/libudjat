@@ -75,6 +75,8 @@
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/event/event.cc" />
 		<Unit filename="src/main/factory/private.h" />
+		<Unit filename="src/main/module/module.cc" />
+		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/request.cc" />

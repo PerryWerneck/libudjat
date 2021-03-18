@@ -49,6 +49,7 @@ doxyfile
 *.[0-9]
 pkg-config.pc
 vgcore.*
+*~
 
 # CodeBlocks
 *.layout
@@ -56,6 +57,7 @@ vgcore.*
 .obj
 *.depend
 *.bak
+
 
 
 
