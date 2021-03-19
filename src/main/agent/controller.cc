@@ -17,7 +17,7 @@
 
 namespace Udjat {
 
-	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")) {
+	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), Module(I_("agent")) {
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
@@ -73,6 +73,18 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {
 		return Abstract::Agent::Controller::getInstance().get();
+	}
+
+	void Abstract::Agent::Controller::start() {
+		if(root) {
+			root->start();
+		}
+	}
+
+	void Abstract::Agent::Controller::stop() {
+		if(root) {
+			root->stop();
+		}
 	}
 
 	void Abstract::Agent::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {

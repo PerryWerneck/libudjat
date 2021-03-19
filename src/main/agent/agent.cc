@@ -82,7 +82,7 @@ namespace Udjat {
 	void Abstract::Agent::start() {
 
 #ifdef DEBUG
-		cout << "Starting agent '" << name << "'" << endl;
+		cout << name << "\tStarting agent" << endl;
 #endif // DEBUG
 
 		// Start children

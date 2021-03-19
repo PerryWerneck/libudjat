@@ -7,10 +7,16 @@
 
 namespace Udjat {
 
-	Module::Module(const Quark &n, int h) : name(n), handle(h) {
+	Module::Module(const Quark &n, void *h) : name(n), handle(h) {
+		Controller::getInstance().insert(this);
+	}
+
+	Module::Controller & Module::getController() {
+		return Controller::getInstance();
 	}
 
 	Module::~Module() {
+		Controller::getInstance().remove(this);
 		if(handle)
 			dlclose(handle);
 	}
@@ -30,7 +36,7 @@ namespace Udjat {
 		 try {
 
 			init = (Module * (*)(void *)) dlsym(handle,"udjat_module_init");
-			err = dlerror();
+			auto err = dlerror();
 			if(err)
 				throw runtime_error(err);
 
@@ -39,9 +45,9 @@ namespace Udjat {
 				throw runtime_error("Can't initialize module");
 			}
 
-			if(!module.handle) {
+			if(!module->handle) {
 				clog << "Strange module initialization on '" << filename << "'" << endl;
-				module.handle = handle;
+				module->handle = handle;
 			}
 
 		 } catch(const exception &e) {

@@ -8,6 +8,7 @@
  */
 
  #include "private.h"
+ #include <udjat.h>
  #include <udjat/agent.h>
  #include <vector>
  #include <string>
@@ -35,7 +36,7 @@ int main(int argc, char **argv) {
 		root_agent->load(doc);
 	}
 
-	root_agent->start();
+	Udjat::start();
 
 //	run_civetweb();
 
@@ -57,7 +58,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	root_agent->stop();
+	Udjat::stop();
 
 	return 0;
 }

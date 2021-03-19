@@ -12,8 +12,8 @@
 		private:
 			class Controller;
 
-			void *handle;
 			Quark name;
+			void *handle;
 
 		public:
 
@@ -21,6 +21,8 @@
 
 			Module(const Quark &name, void *handle = nullptr);
 			virtual ~Module();
+
+			static Module::Controller & getController();
 
 			/// @brief Start module.
 			virtual void start();
@@ -39,6 +41,6 @@
 
 		/// @brief Initialize module.
 		/// @return Module controller.
-		Module * UDJAT_API udjat_module_init(void *handle);
+		UDJAT_API Udjat::Module * udjat_module_init(void *handle);
 
 	}
