@@ -17,6 +17,10 @@
 
 		public:
 
+			/// @brief Load all modules.
+			static void load();
+
+			/// @brief Load a single module.
 			static Module * load(const char *filename);
 
 			Module(const Quark &name, void *handle = nullptr);

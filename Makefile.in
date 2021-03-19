@@ -75,6 +75,7 @@ CFLAGS= \
 	-fPIC \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
+	-DPLUGIN_DIR=$(libdir)/$(PRODUCT_NAME)-modules \
 	@ECONF_CFLAGS@ \
 	@DBUS_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \

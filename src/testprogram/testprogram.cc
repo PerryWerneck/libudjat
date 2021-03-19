@@ -14,6 +14,7 @@
  #include <string>
  #include <udjat/request.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/module.h>
  #include <json/value.h>
  #include <udjat/worker.h>
 
@@ -36,6 +37,7 @@ int main(int argc, char **argv) {
 		root_agent->load(doc);
 	}
 
+//	Module::load();
 	Udjat::start();
 
 //	run_civetweb();
