@@ -6,10 +6,10 @@ includedir=@includedir@
 product_name=@PRODUCT_NAME@
 product_title=@PRODUCT_TITLE@
 
-Name: @PACKAGE_NAME@
+Name: udjat
 Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
-Libs: -ludjat
-Libs.private: @LIBS@ @ECONF_LIBS@ @DBUS_LIBS@ @PUGIXML_LIBS@ @JSONCPP_LIBS@
-Cflags: -I@includedir@
+Libs: -ludjat @PUGIXML_LIBS@ @JSONCPP_LIBS@
+Libs.private: @LIBS@ @ECONF_LIBS@ @DBUS_LIBS@ 
+Cflags: -I@includedir@ @PUGIXML_CFLAGS@ @JSONCPP_CFLAGS@
 
