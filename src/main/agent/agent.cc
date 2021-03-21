@@ -267,12 +267,15 @@ namespace Udjat {
 
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
 		string str("Can't append state on agent '");
 		str += this->name.c_str();
 		str += "'";
 		throw runtime_error(str);
 	}
+	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 

@@ -51,8 +51,6 @@ namespace Udjat {
 
 	void Abstract::Agent::load(const pugi::xml_document &doc) {
 
-		auto agent = this;
-
 		for(pugi::xml_node root = doc.child("config"); root; root = root.next_sibling("config")) {
 			load(root);
 		}

@@ -60,6 +60,8 @@ namespace Udjat {
 		return str;
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Logger::redirect(const char *filename, bool console) {
 
 		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
@@ -161,6 +163,7 @@ namespace Udjat {
 		std::cerr.rdbuf(new Writer(console));
 
 	}
+	#pragma GCC diagnostic pop
 
 }
 

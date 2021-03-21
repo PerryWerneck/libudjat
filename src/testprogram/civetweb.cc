@@ -10,10 +10,13 @@
 
 #ifdef HAVE_CIVETWEB
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 static int log_message(const struct mg_connection *conn, const char *message) {
 	clog << message << endl;
 	return 1;
 }
+#pragma GCC diagnostic pop
 
 static int WebHandler(struct mg_connection *conn, void UDJAT_UNUSED(*cbdata)) {
 

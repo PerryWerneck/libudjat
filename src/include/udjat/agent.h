@@ -60,10 +60,10 @@
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
 
-				/// @brief Load child from xml node.
-				void load(const pugi::xml_node &node);
-
 			protected:
+
+				/// @brief Load children from xml node.
+				void load(const pugi::xml_node &node);
 
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.

@@ -84,9 +84,12 @@ namespace Udjat {
 
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::State::get(const Request &request, Response &response) const {
 		this->get(response);
 	}
+	#pragma GCC diagnostic pop
 
 	void Abstract::State::getLevel(Json::Value &value) const {
 		Json::Value level;
