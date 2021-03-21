@@ -107,4 +107,9 @@ namespace Udjat {
 		return Controller::getInstance().parse(name,parent,node);
 	}
 
+	void Abstract::Agent::Factory::setup(Abstract::Agent &parent, const pugi::xml_node &node, std::shared_ptr<Abstract::Agent> agent) const {
+		agent->load(node);
+		parent.insert(agent);
+	}
+
 }

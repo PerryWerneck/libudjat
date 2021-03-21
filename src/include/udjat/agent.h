@@ -60,10 +60,10 @@
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
 
-			protected:
-
 				/// @brief Load children from xml node.
 				void load(const pugi::xml_node &node);
+
+			protected:
 
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.
@@ -113,6 +113,11 @@
 					Quark name;
 					class Controller;
 
+				protected:
+
+					/// @brief Load agent settings from xml node, insert on parent.
+					void setup(Abstract::Agent &parent, const pugi::xml_node &node, std::shared_ptr<Abstract::Agent> agent) const;
+
 				public:
 					Factory(const Quark &name);
 					virtual ~Factory();
@@ -126,6 +131,8 @@
 					virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const = 0;
 
 				};
+
+				friend class Factory;
 
 				/// @brief Load agents from xml.file
 				void load(const pugi::xml_document &doc);

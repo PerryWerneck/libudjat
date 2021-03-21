@@ -146,9 +146,7 @@ namespace Udjat {
 		for(auto builder : builders) {
 
 			if(!strcasecmp(type,builder.type)) {
-				auto agent = builder.build();
-				agent->load(node);
-				parent.insert(agent);
+				setup(parent,node,builder.build());
 				break;
 			}
 
