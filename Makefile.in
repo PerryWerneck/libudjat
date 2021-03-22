@@ -180,6 +180,9 @@ install-linux-lib: \
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
 
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/@PRODUCT_NAME@-modules
+
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/@SONAME@ \
 		$(DESTDIR)$(libdir)/@SONAME@
