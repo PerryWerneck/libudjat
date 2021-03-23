@@ -94,8 +94,10 @@ make all
 %files -n udjat-devel
 %defattr(-,root,root)
 %dir %{_includedir}/udjat
+%dir %{_includedir}/udjat/tools
 %{_includedir}/udjat.h
 %{_includedir}/udjat/*.h
+%{_includedir}/udjat/tools/*.h
 %{_libdir}/%{name}.so
 %{_libdir}/pkgconfig/*.pc
 
