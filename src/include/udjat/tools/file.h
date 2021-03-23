@@ -30,6 +30,9 @@ namespace Udjat {
 		class Controller;
 		friend class Controller;
 
+		/// @brief Path to file.
+		Quark name;
+
 	protected:
 		/// @brief Load file and call loaded() with the contents.
 		void load();

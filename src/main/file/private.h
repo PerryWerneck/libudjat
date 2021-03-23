@@ -5,13 +5,14 @@
 #include <udjat/module.h>
 #include <udjat/tools/file.h>
 #include <udjat/tools/quark.h>
+#include <unistd.h>
 #include <list>
 
 using namespace std;
 
 namespace Udjat {
 
-	class File::Controller : public Module {
+	class File::Controller {
 	private:
 
 		/// @brief Mutex to prevent multiple access to file list.
@@ -22,24 +23,29 @@ namespace Udjat {
 
 		struct Watch {
 
-			/// @brief Inotify file handle
+			/// @brief File path
+			Quark name;
+
+			/// @brief Inotify watch descriptor.
 			int wd;
 
-			/// @brief The full filename.
-			Quark path;
+			/// @brief Files
+			list<File *> files;
 
 		};
 
-	public:
+		/// @brief Active watches
+		list<Watch> watches;
+
 		Controller();
+
+	public:
 		~Controller();
 
 		static Controller & getInstance();
 
-		void insert(const Quark &path, File *file);
-		void remove(const Quark &path, File *file);
-
-		void reload() override;
+		void insert(File *file);
+		void remove(File *file);
 
 	};
 
