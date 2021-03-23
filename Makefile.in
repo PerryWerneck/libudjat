@@ -15,6 +15,7 @@ MAIN_SOURCES= \
 	$(wildcard src/main/service/*.cc) \
 	$(wildcard src/main/worker/*.cc) \
 	$(wildcard src/main/module/*.cc) \
+	$(wildcard src/main/file/*.cc) \
 	$(wildcard src/main/service/@OSNAME@/*.cc) \
 	$(wildcard src/main/event/*.cc)
 
