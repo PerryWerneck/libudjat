@@ -17,40 +17,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
-
-#include <udjat/defs.h>
-#include <udjat/tools/quark.h>
+ #include "private.h"
 
 namespace Udjat {
 
-	/// @brief Generic text file object (Don't use for large files).
-	class UDJAT_API File {
-	private:
-		class Controller;
-		friend class Controller;
+	File::File(const Quark &n) : name(n) {
+		Controller::getInstance().insert(this);
+	}
 
-		/// @brief Path to file.
-		Quark name;
+	File::~File() {
+		Controller::getInstance().remove(this);
+	}
 
-	protected:
+	File::File(const char *name) : File(Quark(name)) { }
 
-		/// @brief File has changed.
-		virtual void changed() noexcept;
+	void File::changed() noexcept {
 
-		/// @brief Load file and call loaded() with the contents.
-		void load();
+		try {
 
-	public:
-		File(const char *name);
-		File(const Quark &name);
+			load();
 
-		virtual ~File();
+		} catch(const exception &e) {
 
-		/// @brief Called when file is loaded by call to load() or content changed.
-		/// @param The file contents.
-		virtual void loaded(const char *contents);
+			cerr << name << ": " << e.what() << endl;
+		}
 
-	};
+	}
+
+	void File::load() {
+		cout << "Load file " << name << endl;
+	}
+
+	void File::loaded(const char *contents) {
+
+	}
 
 }

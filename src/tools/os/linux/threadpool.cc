@@ -126,7 +126,10 @@
 		std::lock_guard<std::mutex> lock(this->guard);
 
 		if(limits.tasks && tasks.size() >= limits.tasks) {
-			throw std::runtime_error("Can't add new task, the queue has reached the limit");
+			string message{"Can't add new task, the queue has reached the limit of "};
+			message += to_string(limits.tasks);
+			message += " tasks";
+			throw std::runtime_error(message);
 		}
 
 		tasks.emplace(name,callback);

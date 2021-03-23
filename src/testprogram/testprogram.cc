@@ -17,6 +17,8 @@
  #include <udjat/module.h>
  #include <json/value.h>
  #include <udjat/worker.h>
+ #include <udjat/tools/file.h>
+ #include <udjat/service.h>
 
  using namespace std;
  using namespace Udjat;
@@ -42,6 +44,7 @@ int main(int argc, char **argv) {
 
 //	run_civetweb();
 
+	/*
 	{
 		Response response;
 		//Worker::work("agent",Request(""),response);
@@ -50,6 +53,12 @@ int main(int argc, char **argv) {
 
 		cout << response.toStyledString() << endl;
 
+	}
+	*/
+
+	{
+		Udjat::File file("x.txt");
+		Udjat::Service::run();
 	}
 
 	/*

@@ -19,19 +19,59 @@
 
  #include "private.h"
  #include <sys/inotify.h>
+ #include <udjat/service.h>
+
+ #define INOTIFY_EVENT_SIZE ( sizeof (struct inotify_event) )
+ #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
 
  recursive_mutex Udjat::File::Controller::guard;
 
  Udjat::File::Controller::Controller() {
+
+	cout << "inotify\tStarting service" << endl;
 
 	instance = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
 	if(instance == -1) {
 		throw system_error(errno,system_category(),"Cant initialize inotify");
 	}
 
+	Service::insert( (void *) this, instance, (Service::Event) Service::oninput, [this](const Service::Event event){
+
+		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
+		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
+
+		ssize_t bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
+
+		cout << "Got " << bytes << " bytes from inotify" << endl;
+
+		while(bytes > 0) {
+
+			ssize_t	bufPtr	= 0;
+
+			while(bufPtr < bytes) {
+
+				struct inotify_event * pevent = (struct inotify_event *) &buffer[bufPtr];
+
+				cout << "Inotify: wd=" << pevent->wd << " name: '" << pevent->name << "'" << endl;
+
+				bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
+			}
+
+			bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
+		}
+
+		delete[] buffer;
+
+		return true;
+	});
+
  }
 
  Udjat::File::Controller::~Controller() {
+
+	cout << "inotify\tStopping service" << endl;
+
+ 	Service::remove((void *) this);
 	::close(instance);
  }
 
@@ -46,16 +86,13 @@
 	// Do we already have this file?
 	for(auto watch : watches) {
 		if(watch.name == file->name) {
-#ifdef DEBUG
-			cout << "inotify\tInserting file " << file->name << endl;
-#endif // DEBUG
 			watch.files.push_back(file);
 			return;
 		}
 	}
 
 	// Create new watch.
-	Watch watch{file->name};
+	Watch watch;
 
 	watch.name = file->name;
 	watch.files.push_back(file);
@@ -64,6 +101,7 @@
 	watch.wd = inotify_add_watch(instance,watch.name.c_str(),IN_CLOSE_WRITE|IN_MODIFY);
 	if(watch.wd != -1) {
 		watches.push_back(watch);
+		cout << "inotify\tWatching file '" << file->name << "'" << endl;
 		return;
 	}
 

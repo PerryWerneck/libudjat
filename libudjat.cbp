@@ -76,6 +76,7 @@
 		<Unit filename="src/main/event/event.cc" />
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/file/controller.cc" />
+		<Unit filename="src/main/file/file.cc" />
 		<Unit filename="src/main/file/private.h" />
 		<Unit filename="src/main/module/controller.cc" />
 		<Unit filename="src/main/module/load.cc" />
@@ -85,6 +86,8 @@
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
+		<Unit filename="src/main/service/controller.cc" />
+		<Unit filename="src/main/service/linux/controller.cc" />
 		<Unit filename="src/main/service/private.h" />
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />
