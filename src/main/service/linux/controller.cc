@@ -62,10 +62,6 @@
 	nfds_t szPoll = 2;
 	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
 
-	/// @brief Threads to run callback methods.
- 	ThreadPool threads{"service-events"};
- 	threads.setMaxThreads(2);
-
 #ifdef HAVE_SIGNAL
  	// Intercept signals
  	sighandler_t sigterm = signal(SIGTERM,onInterruptSignal);
@@ -104,7 +100,7 @@
 			lock_guard<recursive_mutex> lock(guard);
 
 			// Get wait time, update timers.
-			timers.remove_if([now,&wait,&threads](Timer &timer) {
+			timers.remove_if([now,&wait](Timer &timer) {
 
 				// Do I still active? If not return true *only* if not running.
 				if(!timer.seconds)
@@ -120,28 +116,24 @@
 
 					// Timer has expired, update value and enqueue method.
 					timer.next = (now + timer.seconds);
-
 					timer.running = now;
-					threads.push(timer.name,[&timer,now]() {
 
-						try {
+					try {
 
-							if(timer.seconds && !timer.call(now))
-								timer.seconds = 0;
+						if(timer.seconds && !timer.call(now))
+							timer.seconds = 0;
 
-						} catch(const exception &e) {
+					} catch(const exception &e) {
 
-							cerr << "MainLoop\tTimer error '" << e.what() << "'" << endl;
+						cerr << "MainLoop\tTimer error '" << e.what() << "'" << endl;
 
-						} catch(...) {
+					} catch(...) {
 
-							cerr << "MainLoop\tUnexpected error on timer" << endl;
+						cerr << "MainLoop\tUnexpected error on timer" << endl;
 
-						}
+					}
 
-						timer.running = 0;
-
-					});
+					timer.running = 0;
 
 				}
 
@@ -152,7 +144,7 @@
 			});
 
 			// Get waiting sockets.
-			handlers.remove_if([&szPoll,&fds,&nfds,&threads](Handle &handle) {
+			handlers.remove_if([&szPoll,&fds,&nfds](Handle &handle) {
 
 				// Are we active? If not return true *only* if theres no pending event.
 				if(handle.fd <= 0)
@@ -210,33 +202,30 @@
 			}
 #endif // HAVE_EVENTFD
 
-			for(auto handle : handlers) {
+			for(auto handle = handlers.begin(); handle != handlers.end(); handle++) {
 
-				if(handle.fd == fds[sock].fd && (handle.events & fds[sock].events) != 0) {
+				if(handle->fd == fds[sock].fd && (handle->events & fds[sock].events) != 0 && !handle->running) {
 
-					handle.running = time(nullptr);
-					threads.push([&handle,event]() {
+					handle->running = time(nullptr);
 
-						try {
+					try {
 
-							if(handle.fd > 0 && !handle.call((const Event) event))
-								handle.fd = -1;
+						if(handle->fd > 0 && !handle->call((const Event) event))
+							handle->fd = -1;
 
-						} catch(const exception &e) {
+					} catch(const exception &e) {
 
-							cerr << "MainLoop\tError '" << e.what() << "' processing file/socket event" << endl;
+						cerr << "MainLoop\tError '" << e.what() << "' processing event" << endl;
 
-						} catch(...) {
+					} catch(...) {
 
-							cerr << "MainLoop\tUnexpected error processing file/socket event" << endl;
+						cerr << "MainLoop\tUnexpected error processing event" << endl;
 
-						}
+					}
 
-						handle.running = 0;
-
-					});
-
+					handle->running = 0;
 					break;
+
 				}
 
 			}
