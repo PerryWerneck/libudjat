@@ -35,11 +35,12 @@ namespace Udjat {
 
 	protected:
 
-		/// @brief File has changed.
-		virtual void changed() noexcept;
-
 		/// @brief Load file and call loaded() with the contents.
 		void load();
+
+		/// @brief Called when file is loaded by call to load() or content changed.
+		/// @param The file contents.
+		virtual void loaded(const char *contents);
 
 	public:
 		File(const char *name);
@@ -47,9 +48,6 @@ namespace Udjat {
 
 		virtual ~File();
 
-		/// @brief Called when file is loaded by call to load() or content changed.
-		/// @param The file contents.
-		virtual void loaded(const char *contents);
 
 	};
 

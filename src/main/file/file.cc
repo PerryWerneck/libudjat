@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/mmap.h>
 
 namespace Udjat {
 
@@ -31,25 +32,13 @@ namespace Udjat {
 
 	File::File(const char *name) : File(Quark(name)) { }
 
-	void File::changed() noexcept {
-
-		try {
-
-			load();
-
-		} catch(const exception &e) {
-
-			cerr << name << ": " << e.what() << endl;
-		}
-
-	}
-
 	void File::load() {
-		cout << "Load file " << name << endl;
+		loaded(MemoryMappedFile(name.c_str()).c_str());
 	}
 
 	void File::loaded(const char *contents) {
 
+		cout << "--- " << name << " ---" << endl << contents << endl << "---" << endl;
 	}
 
 }

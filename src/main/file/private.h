@@ -7,6 +7,7 @@
 #include <udjat/tools/quark.h>
 #include <unistd.h>
 #include <list>
+#include <sys/inotify.h>
 
 using namespace std;
 
@@ -29,8 +30,14 @@ namespace Udjat {
 			/// @brief Inotify watch descriptor.
 			int wd;
 
+			/// @brief The files was modified?
+			int modified;
+
 			/// @brief Files
 			list<File *> files;
+
+			/// @brief Watch has event.
+			void onEvent(uint32_t mask) noexcept;
 
 		};
 
@@ -38,6 +45,8 @@ namespace Udjat {
 		list<Watch> watches;
 
 		Controller();
+
+		void onEvent(struct inotify_event *event) noexcept;
 
 	public:
 		~Controller();

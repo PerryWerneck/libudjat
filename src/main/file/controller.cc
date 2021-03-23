@@ -18,8 +18,8 @@
  */
 
  #include "private.h"
- #include <sys/inotify.h>
  #include <udjat/service.h>
+ #include <udjat/tools/mmap.h>
 
  #define INOTIFY_EVENT_SIZE ( sizeof (struct inotify_event) )
  #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
@@ -42,18 +42,13 @@
 
 		ssize_t bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
 
-		cout << "Got " << bytes << " bytes from inotify" << endl;
-
 		while(bytes > 0) {
 
 			ssize_t	bufPtr	= 0;
 
 			while(bufPtr < bytes) {
-
-				struct inotify_event * pevent = (struct inotify_event *) &buffer[bufPtr];
-
-				cout << "Inotify: wd=" << pevent->wd << " name: '" << pevent->name << "'" << endl;
-
+				auto pevent = (struct inotify_event *) &buffer[bufPtr];
+				onEvent(pevent);
 				bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
 			}
 
@@ -95,6 +90,7 @@
 	Watch watch;
 
 	watch.name = file->name;
+	watch.modified = false;
 	watch.files.push_back(file);
 
 	// First, just try to add a new watch.
@@ -119,3 +115,53 @@
 	lock_guard<std::recursive_mutex> lock(guard);
  }
 
+ void Udjat::File::Controller::onEvent(struct inotify_event *event) noexcept {
+
+	for(auto watch = watches.begin(); watch != watches.end(); watch++) {
+
+		if(watch->wd == event->wd) {
+			watch->onEvent(event->mask);
+			return;
+		}
+
+	}
+
+ }
+
+ void Udjat::File::Controller::Watch::onEvent(uint32_t mask) noexcept {
+
+	if(mask & IN_MODIFY) {
+		modified = true;
+	}
+
+	if(mask & IN_CLOSE_WRITE) {
+
+		if(modified) {
+
+			modified = false;
+			cout << "inotify\tFile '" << name << "' has changes" << endl;
+
+			try {
+
+				MemoryMappedFile text(name.c_str());
+
+				for(auto file : files) {
+
+					try {
+						file->loaded(text.c_str());
+					} catch(const exception &e) {
+						cerr << "inotify\t" << name << ": " << e.what() << endl;
+					}
+
+				}
+
+			} catch(const exception &e) {
+
+				cerr << "inotify\t" << name << ": " << e.what() << endl;
+
+			}
+
+		}
+	}
+
+ }
