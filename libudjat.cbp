@@ -54,11 +54,11 @@
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/notification.h" />
 		<Unit filename="src/include/udjat/request.h" />
-		<Unit filename="src/include/udjat/service.h" />
 		<Unit filename="src/include/udjat/state.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
+		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/mmap.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
@@ -100,6 +100,10 @@
 		<Unit filename="src/testprogram/civetweb.cc" />
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
+		<Unit filename="src/tools/mainloop/controller.cc" />
+		<Unit filename="src/tools/mainloop/linux/controller.cc" />
+		<Unit filename="src/tools/mainloop/private.h" />
+		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mmap.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />

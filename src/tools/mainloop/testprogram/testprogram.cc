@@ -8,7 +8,7 @@
  */
 
 #include <iostream>
-#include <udjat/service.h>
+#include <udjat/tools/mainloop.h>
 
 using namespace std;
 using namespace Udjat;
@@ -17,15 +17,18 @@ using namespace Udjat;
 
 int main(int argc, char **argv) {
 
-	Service::insert(nullptr, 1, [](const time_t now) {
+	MainLoop mainloop;
+
+	mainloop.insert(nullptr, 1, [](const time_t now) {
 
 		cout << "Timer!" << endl;
 
 		return true;
 	});
 
-	Service::run();
+	mainloop.run();
 
 	cout << "Test program ends normally" << endl;
 	return 0;
+
 }

@@ -18,7 +18,7 @@
  #include <json/value.h>
  #include <udjat/worker.h>
  #include <udjat/tools/file.h>
- #include <udjat/service.h>
+ #include <udjat/tools/mainloop.h>
 
  using namespace std;
  using namespace Udjat;
@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
 	{
 		Udjat::File file("x.txt");
-		Udjat::Service::run();
+		MainLoop::getDefault().run();
 	}
 
 	/*

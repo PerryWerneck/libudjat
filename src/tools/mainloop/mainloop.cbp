@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Udjat Service Manager" />
+		<Option title="Udjat MainLoop" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -41,14 +41,14 @@
 			<Add option="-pthread" />
 			<Add option="`pkg-config --libs libsystemd systemd pugixml`" />
 		</Linker>
-		<Unit filename="../../include/udjat/service.h" />
-		<Unit filename="../../include/udjat/tools/atom.h" />
-		<Unit filename="../../include/udjat/tools/threadpool.h" />
-		<Unit filename="../../tools/os/linux/threadpool.cc" />
-		<Unit filename="controller.cc" />
-		<Unit filename="linux/controller.cc" />
+		<Unit filename="../../include/udjat/tools/mainloop.h" />
+		<Unit filename="handler.cc" />
+		<Unit filename="linux/mainloop.cc" />
+		<Unit filename="linux/run.cc" />
+		<Unit filename="mainloop.cc" />
 		<Unit filename="private.h" />
 		<Unit filename="testprogram/testprogram.cc" />
+		<Unit filename="timer.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
