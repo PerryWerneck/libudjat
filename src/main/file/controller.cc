@@ -18,7 +18,7 @@
  */
 
  #include "private.h"
- #include <udjat/service.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/tools/mmap.h>
  #include <udjat/tools/mainloop.h>
 
