@@ -42,6 +42,7 @@
 			<Add option="`pkg-config --libs libsystemd systemd pugixml`" />
 		</Linker>
 		<Unit filename="../../include/udjat/tools/mainloop.h" />
+		<Unit filename="default.cc" />
 		<Unit filename="handler.cc" />
 		<Unit filename="linux/mainloop.cc" />
 		<Unit filename="linux/run.cc" />

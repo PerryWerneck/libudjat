@@ -92,6 +92,9 @@ namespace Udjat {
 		/// @brief Run mainloop.
 		void run();
 
+		/// @brief Quit mainloop.
+		void quit();
+
 		/// @brief Wakeup main loop.
 		void wakeup() noexcept;
 

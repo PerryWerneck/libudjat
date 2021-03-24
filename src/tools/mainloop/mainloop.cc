@@ -25,11 +25,6 @@
 
  namespace Udjat {
 
-	MainLoop & MainLoop::getInstance() {
-		static MainLoop mainloop;
-		return mainloop;
-	}
-
 	MainLoop::MainLoop() {
 
 #ifdef HAVE_EVENTFD
@@ -52,6 +47,11 @@
 #endif // HAVE_EVENTFD
 		}
 
+	}
+
+	void MainLoop::quit() {
+		enabled = false;
+		wakeup();
 	}
 
 	void MainLoop::remove(void *id) {
