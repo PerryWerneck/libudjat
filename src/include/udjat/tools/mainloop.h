@@ -86,6 +86,9 @@ namespace Udjat {
 		MainLoop();
 		~MainLoop();
 
+		/// @brief Get default mainloop.
+		static MainLoop & getInstance();
+
 		/// @brief Run mainloop.
 		void run();
 

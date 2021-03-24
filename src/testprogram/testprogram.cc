@@ -58,7 +58,7 @@ int main(int argc, char **argv) {
 
 	{
 		Udjat::File file("x.txt");
-		MainLoop::getDefault().run();
+		MainLoop::getInstance().run();
 	}
 
 	/*

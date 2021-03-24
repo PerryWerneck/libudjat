@@ -73,6 +73,7 @@
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
 		<Unit filename="src/main/agent/update.cc" />
+		<Unit filename="src/main/event/controller.cc" />
 		<Unit filename="src/main/event/event.cc" />
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/file/controller.cc" />

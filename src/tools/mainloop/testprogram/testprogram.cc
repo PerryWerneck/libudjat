@@ -17,16 +17,14 @@ using namespace Udjat;
 
 int main(int argc, char **argv) {
 
-	MainLoop mainloop;
-
-	mainloop.insert(nullptr, 1, [](const time_t now) {
+	MainLoop::getInstance().insert(nullptr, 1, [](const time_t now) {
 
 		cout << "Timer!" << endl;
 
 		return true;
 	});
 
-	mainloop.run();
+	MainLoop::getInstance().run();
 
 	cout << "Test program ends normally" << endl;
 	return 0;

@@ -25,6 +25,11 @@
 
  namespace Udjat {
 
+	MainLoop & MainLoop::getInstance() {
+		static MainLoop mainloop;
+		return mainloop;
+	}
+
 	MainLoop::MainLoop() {
 
 #ifdef HAVE_EVENTFD

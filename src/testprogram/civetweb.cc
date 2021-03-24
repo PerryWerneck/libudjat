@@ -7,6 +7,7 @@
 #include <civetweb.h>
 #include <json/value.h>
 #include <udjat/worker.h>
+#include <udjat/tools/mainloop.h>
 
 #ifdef HAVE_CIVETWEB
 
@@ -107,7 +108,7 @@ void run_civetweb() {
 			<< "http://127.0.0.1:" << port << "/api/" << PACKAGE_VERSION "." PACKAGE_RELEASE << "/states" << endl
 			<< endl;
 
-	Service::run();
+	MainLoop::getInstance().run();
 
 	mg_stop(ctx);
 

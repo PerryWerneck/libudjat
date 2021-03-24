@@ -20,6 +20,7 @@
  #include "private.h"
  #include <udjat/service.h>
  #include <udjat/tools/mmap.h>
+ #include <udjat/tools/mainloop.h>
 
  #define INOTIFY_EVENT_SIZE ( sizeof (struct inotify_event) )
  #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
@@ -35,7 +36,7 @@
 		throw system_error(errno,system_category(),"Cant initialize inotify");
 	}
 
-	Service::insert( (void *) this, instance, (Service::Event) Service::oninput, [this](const Service::Event event){
+	MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event event){
 
 		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
 		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
@@ -66,7 +67,7 @@
 
 	cout << "inotify\tStopping service" << endl;
 
- 	Service::remove((void *) this);
+ 	MainLoop::getInstance().remove((void *) this);
 	::close(instance);
  }
 

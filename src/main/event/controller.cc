@@ -8,7 +8,7 @@
  */
 
  #include "private.h"
- #include <udjat/service.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/agent.h>
  #include <udjat/state.h>
 
@@ -24,17 +24,12 @@ namespace Udjat {
 #ifdef DEBUG
 		cout << "Constructing event controller" << endl;
 #endif // DEBUG
-
-		// Construct the service controller
-		Service::start();
-
 	}
 
 	Abstract::Event::Controller::~Controller() {
 #ifdef DEBUG
 		cout << "Destroying event controller" << endl;
 #endif // DEBUG
-		Service::remove(this);
 	}
 
 	Abstract::Event::Controller & Abstract::Event::Controller::getInstance() {
@@ -81,14 +76,14 @@ namespace Udjat {
 			cout << "Starting event timer" << endl;
 #endif // DEBUG
 
-			Udjat::Service::insert((void *) this, [this](const time_t now) {
+			MainLoop::getInstance().insert((void *) this, [this](const time_t now) {
 				return onTimer(now);
 			});
 
 		} else {
 
 			// Reset timer.
-			Service::reset(this,0,time(nullptr)+event->retry.first);
+			MainLoop::getInstance().reset(this,0,time(nullptr)+event->retry.first);
 
 		}
 
@@ -165,7 +160,7 @@ namespace Udjat {
 			return false;
 		}
 
-		Service::reset((void *) this, interval, next);
+		MainLoop::getInstance().reset((void *) this, interval, next);
 
 		return true;
 
