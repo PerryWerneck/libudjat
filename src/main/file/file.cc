@@ -26,11 +26,15 @@ namespace Udjat {
 		Controller::getInstance().insert(this);
 	}
 
+	File::File(const char *name) : File(Quark(name)) { }
+
+	File::File(const pugi::xml_node &node) : File(Quark(node.attribute("path"))) { }
+
+	File::File(const pugi::xml_attribute &attribute) : File(Quark(attribute)) { }
+
 	File::~File() {
 		Controller::getInstance().remove(this);
 	}
-
-	File::File(const char *name) : File(Quark(name)) { }
 
 	void File::load() {
 		loaded(MemoryMappedFile(name.c_str()).c_str());

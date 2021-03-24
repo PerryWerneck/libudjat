@@ -45,6 +45,8 @@ namespace Udjat {
 	public:
 		File(const char *name);
 		File(const Quark &name);
+		File(const pugi::xml_node &node);
+		File(const pugi::xml_attribute &attribute);
 
 		virtual ~File();
 
