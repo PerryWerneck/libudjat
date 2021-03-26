@@ -186,7 +186,56 @@ namespace Udjat {
 		return value;
 	}
 
+	void Quark::set(const char *str, const std::function<const char * (const char *key)> translate) {
+
+		string text(str);
+
+		auto from = text.find("${");
+		while(from != string::npos) {
+			auto to = text.find("}",from+3);
+			if(to == string::npos) {
+				throw runtime_error("Invalid ${} usage");
+			}
+			string key(text.c_str()+from+2,(to-from)-2);
+			text.replace(from,(to-from)+1,translate(key.c_str()));
+			from = text.find("${",from+2);
+		}
+
+		set(text.c_str());
+	}
+
 #ifdef HAVE_PUGIXML
+	bool Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
+
+		if(!node)
+			return false;
+
+		auto attribute = node.attribute(xml_attribute);
+
+		if(attribute) {
+			set(attribute.as_string(),translate);
+			return true;
+		}
+
+		// Check children for <attribute name=>
+		for(pugi::xml_node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+
+			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
+				set(child.attribute("value").as_string(),translate);
+				return true;
+			}
+
+		}
+
+		// If upsearch is true repeat the query on parent node.
+		if(upsearch) {
+			return set(node.parent(),xml_attribute,true,translate);
+		}
+
+		return false;
+
+	}
+
 	bool Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch) {
 
 		if(!node)

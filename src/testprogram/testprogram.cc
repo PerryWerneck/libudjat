@@ -44,23 +44,18 @@ int main(int argc, char **argv) {
 
 //	run_civetweb();
 
-	/*
 	{
 		Response response;
-		//Worker::work("agent",Request(""),response);
 		Worker::work("agent",Request("/intvalue"),response);
-
-
 		cout << response.toStyledString() << endl;
-
 	}
-	*/
 
+	/*
 	{
 		Udjat::File file("x.txt");
 		MainLoop::getInstance().run();
 	}
-
+	*/
 	/*
 	{
 		Json::Value response(Json::objectValue);

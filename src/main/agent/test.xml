@@ -4,6 +4,8 @@
 
 	<agent name='intvalue' type='integer' value='0'>
 
+		<attribute name='summary' value='Summary of agent ${name}' />
+		
 		<agent name='subkey' type='integer' value='0' update-timer='10' />
 		<agent name='text' type='string' value='test-value' />
 
