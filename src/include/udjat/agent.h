@@ -63,6 +63,9 @@
 				/// @brief Load children from xml node.
 				void load(const pugi::xml_node &node);
 
+				/// @brief Search for attribute.
+				static const pugi::xml_attribute & attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
+
 			protected:
 
 				/// @brief Activate a new state.

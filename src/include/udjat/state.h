@@ -147,7 +147,7 @@
 			std::string value;
 
 		public:
-			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::getAttribute(node,"value").as_string()) {
+			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_string()) {
 			}
 
 			bool compare(const std::string &value) {
@@ -169,7 +169,7 @@
 			bool value;
 
 		public:
-			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::getAttribute(node,"value").as_bool()) {
+			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_bool()) {
 			}
 
 			bool compare(const bool value) {

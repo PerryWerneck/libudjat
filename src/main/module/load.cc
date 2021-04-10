@@ -13,6 +13,9 @@ namespace Udjat {
 
 		static const char *path = STRINGIZE_VALUE_OF(PLUGIN_DIR);
 
+		// TODO: Refactory using 'glob' and a global object.
+
+		/*
 		DIR *dir = opendir(path);
 		if(!dir) {
 			cerr << "modules\tCan't open '" << path << "': " << strerror(errno) << endl;
@@ -25,6 +28,8 @@ namespace Udjat {
 		int qtdFiles = scandirat(dirfd(dir), ".", &namelist, 0, alphasort);
 
 		for(int file = 0; file < qtdFiles; file++) {
+
+			#error Memory leak!!!
 
 			if(*namelist[file]->d_name == '.')
 				continue;
@@ -51,6 +56,7 @@ namespace Udjat {
 		}
 
 		closedir(dir);
+		*/
 
 	}
 

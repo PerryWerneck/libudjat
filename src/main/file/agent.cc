@@ -18,29 +18,24 @@
  */
 
  #include "private.h"
- #include <udjat/tools/mmap.h>
 
 namespace Udjat {
 
-	File::File(const Quark &n) : name(n) {
+	File::Agent::Agent(const Quark &n) : name(n) {
 		Controller::getInstance().insert(this);
 	}
 
-	File::File(const char *name) : File(Quark(name)) { }
+	File::Agent::Agent(const char *name) : Agent(Quark(name)) { }
 
-	File::File(const pugi::xml_node &node) : File(Quark(node.attribute("path"))) { }
+	File::Agent::Agent(const pugi::xml_node &node) : Agent(Quark(node.attribute("path"))) { }
 
-	File::File(const pugi::xml_attribute &attribute) : File(Quark(attribute)) { }
+	File::Agent::Agent(const pugi::xml_attribute &attribute) : Agent(Quark(attribute)) { }
 
-	File::~File() {
+	File::Agent::~Agent() {
 		Controller::getInstance().remove(this);
 	}
 
-	void File::load() {
-		loaded(MemoryMappedFile(name.c_str()).c_str());
-	}
-
-	void File::loaded(const char *contents) {
+	void File::Agent::set(const char *contents) {
 
 		cout << "--- " << name << " ---" << endl << contents << endl << "---" << endl;
 	}

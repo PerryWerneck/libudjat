@@ -52,10 +52,11 @@ namespace Udjat {
 	}
 
 	Abstract::State::State(const pugi::xml_node &node) :
-		Abstract::State(getLevelFromName(getAttribute(node,"level").as_string(levelNames[unimportant])),
-		getAttribute(node,"summary").as_string()) {
+		Abstract::State(
+			getLevelFromName(Attribute(node,"level",false).as_string(levelNames[unimportant])),
+			Attribute(node,"summary",true).as_string()) {
 
-		this->uri = Udjat::getAttribute(node,"uri").as_string();
+		this->uri = Udjat::Attribute(node,"uri").as_string();
 
 	}
 

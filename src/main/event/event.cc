@@ -46,9 +46,9 @@ namespace Udjat {
 
 	Abstract::Event::Event(const pugi::xml_node &node) : Event(Quark(node.attribute("name"))) {
 
-		retry.first = getAttribute(node,"delay-before-start").as_uint(retry.first);
-		retry.interval = getAttribute(node,"delay-before-retry").as_uint(retry.interval);
-		retry.limit	= getAttribute(node,"max-retries").as_uint(retry.limit);
+		retry.first = Attribute(node,"delay-before-start").as_uint(retry.first);
+		retry.interval = Attribute(node,"delay-before-retry").as_uint(retry.interval);
+		retry.limit	= Attribute(node,"max-retries").as_uint(retry.limit);
 
 	}
 

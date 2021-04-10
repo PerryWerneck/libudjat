@@ -18,22 +18,21 @@
  */
 
  #include "private.h"
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/mmap.h>
+ #include <cstring>
  #include <udjat/tools/mainloop.h>
 
  #define INOTIFY_EVENT_SIZE ( sizeof (struct inotify_event) )
  #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
 
- recursive_mutex Udjat::File::Controller::guard;
+ recursive_mutex Udjat::File::Agent::Controller::guard;
 
- Udjat::File::Controller::Controller() {
+ Udjat::File::Agent::Controller::Controller() {
 
 	cout << "inotify\tStarting service" << endl;
 
 	instance = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
 	if(instance == -1) {
-		throw system_error(errno,system_category(),"Cant initialize inotify");
+		throw system_error(errno,system_category(),"Can't initialize inotify");
 	}
 
 	MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event event){
@@ -63,7 +62,7 @@
 
  }
 
- Udjat::File::Controller::~Controller() {
+ Udjat::File::Agent::Controller::~Controller() {
 
 	cout << "inotify\tStopping service" << endl;
 
@@ -71,17 +70,20 @@
 	::close(instance);
  }
 
- Udjat::File::Controller & Udjat::File::Controller::getInstance() {
+ Udjat::File::Agent::Controller & Udjat::File::Agent::Controller::getInstance() {
 	static Controller instance;
 	return instance;
  }
 
- void  Udjat::File::Controller::insert(File *file) {
+ void  Udjat::File::Agent::Controller::insert(File::Agent *file) {
 	lock_guard<std::recursive_mutex> lock(guard);
 
 	// Do we already have this file?
 	for(auto watch : watches) {
 		if(watch.name == file->name) {
+#ifdef DEBUG
+			cout << "Already watching '" << file->name << "'" << endl;
+#endif // DEBUG
 			watch.files.push_back(file);
 			return;
 		}
@@ -96,27 +98,41 @@
 
 	// First, just try to add a new watch.
 	watch.wd = inotify_add_watch(instance,watch.name.c_str(),IN_CLOSE_WRITE|IN_MODIFY);
-	if(watch.wd != -1) {
-		watches.push_back(watch);
-		cout << "inotify\tWatching file '" << file->name << "'" << endl;
-		return;
+	if(watch.wd == -1) {
+		throw system_error(errno,system_category(),string{"Can't add watch for '"} + watch.name.c_str() + "'");
 	}
 
-	if(errno != ENOENT) {
-		throw system_error(errno,system_category(),watch.name.c_str());
-	}
-
-	// File not found, watch path.
-	cerr << "inotify\tWatching file creation is not supported" << endl;
-	throw system_error(ENOENT,system_category(),watch.name.c_str());
+	watches.push_back(watch);
+	cout << "inotify\tWatching file '" << file->getName() << "'" << endl;
 
  }
 
- void  Udjat::File::Controller::remove(File *file) {
+ void Udjat::File::Agent::Controller::remove(File::Agent *file) {
 	lock_guard<std::recursive_mutex> lock(guard);
+
+	watches.remove_if([this, file](Watch &watch){
+
+		watch.files.remove_if([file](File::Agent *agent){
+			return agent == file;
+		});
+
+		if(!watch.files.empty()) {
+			return false;
+		}
+
+		// Watch is empty, remove it.
+		if(inotify_rm_watch(instance, watch.wd) == -1) {
+			cerr << "inotify\tError '" << strerror(errno) << "' unwatching file '" << watch.name << "'" << endl;
+		} else {
+			cerr << "inotify\tUnwatching '" << watch.name << "'" << endl;
+		}
+
+		return true;
+	});
+
  }
 
- void Udjat::File::Controller::onEvent(struct inotify_event *event) noexcept {
+ void Udjat::File::Agent::Controller::onEvent(struct inotify_event *event) noexcept {
 
 	for(auto watch = watches.begin(); watch != watches.end(); watch++) {
 
@@ -129,7 +145,7 @@
 
  }
 
- void Udjat::File::Controller::Watch::onEvent(uint32_t mask) noexcept {
+ void Udjat::File::Agent::Controller::Watch::onEvent(uint32_t mask) noexcept {
 
 	if(mask & IN_MODIFY) {
 		modified = true;
@@ -144,12 +160,12 @@
 
 			try {
 
-				MemoryMappedFile text(name.c_str());
+				File::Local text(name.c_str());
 
 				for(auto file : files) {
 
 					try {
-						file->loaded(text.c_str());
+						file->set(text.c_str());
 					} catch(const exception &e) {
 						cerr << "inotify\t" << name << ": " << e.what() << endl;
 					}

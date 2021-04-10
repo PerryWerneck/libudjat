@@ -24,33 +24,62 @@
 
 namespace Udjat {
 
-	/// @brief Generic text file object (Don't use for large files).
-	class UDJAT_API File {
-	private:
-		class Controller;
-		friend class Controller;
+	namespace File {
 
-		/// @brief Path to file.
-		Quark name;
+		/// @brief Text file agent.
+		///
+		/// Monitor a local file and call 'load' method when it changes.
+		///
+		class UDJAT_API Agent {
+		private:
+			class Controller;
+			friend class Controller;
 
-	protected:
+			/// @brief Path to file.
+			Quark name;
 
-		/// @brief Load file and call loaded() with the contents.
-		void load();
+		protected:
 
-		/// @brief Called when file is loaded by call to load() or content changed.
-		/// @param The file contents.
-		virtual void loaded(const char *contents);
+			/// @brief Called when the file changes.
+			/// @param The file contents.
+			virtual void set(const char *contents);
 
-	public:
-		File(const char *name);
-		File(const Quark &name);
-		File(const pugi::xml_node &node);
-		File(const pugi::xml_attribute &attribute);
+		public:
+			Agent(const char *name);
+			Agent(const Quark &name);
+			Agent(const pugi::xml_node &node);
+			Agent(const pugi::xml_attribute &attribute);
 
-		virtual ~File();
+			inline const char * getName() const {
+				return name.c_str();
+			}
+
+			virtual ~Agent();
 
 
-	};
+		};
+
+		/// @brief Generic text file object (Don't use for large files).
+		class UDJAT_API Local {
+		private:
+			void * contents;	///< @brief File contents.
+			size_t length;		///< @brief File length.
+
+		public:
+			Local(const char *filename);
+			Local(const File::Agent &agent);
+			~Local();
+
+			inline size_t size() const noexcept {
+				return this->length;
+			}
+
+			inline const char * c_str() const noexcept {
+				return (const char *) contents;
+			}
+
+		};
+
+	}
 
 }

@@ -25,9 +25,12 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
-int main(int argc, char **argv) {
+static void test_file_agent() {
+	Udjat::File::Agent file("x.txt");
+	MainLoop::getInstance().run();
+}
 
-	Logger::redirect();
+static void test_agent_parser() {
 
 	auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
 
@@ -44,18 +47,17 @@ int main(int argc, char **argv) {
 
 //	run_civetweb();
 
+	/*
 	{
 		Response response;
 		Worker::work("agent",Request("/intvalue"),response);
 		cout << response.toStyledString() << endl;
 	}
-
-	/*
-	{
-		Udjat::File file("x.txt");
-		MainLoop::getInstance().run();
-	}
 	*/
+
+	{
+	}
+
 	/*
 	{
 		Json::Value response(Json::objectValue);
@@ -65,6 +67,14 @@ int main(int argc, char **argv) {
 	*/
 
 	Udjat::stop();
+
+}
+
+int main(int argc, char **argv) {
+
+	Logger::redirect();
+
+	test_file_agent();
 
 	return 0;
 }

@@ -66,6 +66,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
+		<Unit filename="src/main/agent/attribute.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/factory.cc" />
 		<Unit filename="src/main/agent/load.cc" />
@@ -76,8 +77,9 @@
 		<Unit filename="src/main/event/controller.cc" />
 		<Unit filename="src/main/event/event.cc" />
 		<Unit filename="src/main/factory/private.h" />
-		<Unit filename="src/main/file/controller.cc" />
-		<Unit filename="src/main/file/file.cc" />
+		<Unit filename="src/main/file/agent.cc" />
+		<Unit filename="src/main/file/agent_controller.cc" />
+		<Unit filename="src/main/file/local.cc" />
 		<Unit filename="src/main/file/private.h" />
 		<Unit filename="src/main/module/controller.cc" />
 		<Unit filename="src/main/module/load.cc" />
