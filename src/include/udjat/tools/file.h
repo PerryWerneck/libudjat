@@ -21,10 +21,21 @@
 
 #include <udjat/defs.h>
 #include <udjat/tools/quark.h>
+#include <list>
+#include <algorithm>
+#include <string>
 
 namespace Udjat {
 
 	namespace File {
+
+		/// @brief Directory contents.
+		class UDJAT_API List : public std::list<std::string> {
+		public:
+			List(const char *pattern);
+			~List();
+			void forEach(std::function<void (const char *filename)> call);
+		};
 
 		/// @brief Text file agent.
 		///
@@ -55,7 +66,6 @@ namespace Udjat {
 			}
 
 			virtual ~Agent();
-
 
 		};
 

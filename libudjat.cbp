@@ -79,6 +79,7 @@
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/file/agent.cc" />
 		<Unit filename="src/main/file/agent_controller.cc" />
+		<Unit filename="src/main/file/list.cc" />
 		<Unit filename="src/main/file/local.cc" />
 		<Unit filename="src/main/file/private.h" />
 		<Unit filename="src/main/module/controller.cc" />
