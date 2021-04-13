@@ -17,8 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /**
+  * @brief Declares URL object.
+  *
+  * References:
+  *
+  * <https://www.algosome.com/articles/anatomy-of-website-url.html>
+  *
+  */
+
  #pragma once
+
  #include <udjat/defs.h>
+ #include <udjat/request.h>
  #include <udjat/tools/quark.h>
  #include <memory>
  #include <string>
@@ -27,28 +38,7 @@
  namespace Udjat {
 
 	class UDJAT_API URL {
-	private:
-		class Controller;
-
-		class Protocol;
-		frient class Protocol;
-
-		/// @brief The URL protocol.
-		std::shared_ptr<Protocol> protocol;
-
-		/// @brief The URL Domain name.
-		std::string domain;
-
-		/// @brief The URL port.
-		std::string port;
-
-		/// @brief The URL filename.
-		std::string filename;
-
 	public:
-
-		/// @brief Unescape URL
-		static string unescape(const string &src);
 
 		/// @brief URL module worker.
 		class UDJAT_API Protocol {
@@ -72,18 +62,71 @@
 				return portname;
 			}
 
-			/// @brief Load URL.
-			virtual void get(const URL &url, std::function<void(const char *block, size_t len)> reader);
+			/// @brief Get URL
+			virtual void get(const URL &url, time_t timeout, std::function<void(const char *block, size_t len)> reader);
 
-			/// @brief Connect to URL, return socket.
-			virtual int connect(const URL &url, time_t timeout = 0);
+			/// @brief Get URL
+			virtual void get(const URL &url, time_t timeout, Response &response);
+
+			/// @brief Connect to URL.
+			/// @return Socket connected to host.
+			virtual int connect(const URL &url, time_t timeout);
 
 		};
 
+
+	private:
+		class Controller;
+
+		friend class Protocol;
+
+		/// @brief The URL protocol.
+		std::shared_ptr<Protocol> protocol;
+
+		/// @brief The URL Domain name.
+		std::string domain;
+
+		/// @brief The URL port.
+		std::string port;
+
+		/// @brief The URL filename.
+		std::string filename;
+
+	public:
+
+		/// @brief Unescape URL
+		static std::string unescape(const char *src);
+
+		URL();
 		URL(const char *url);
 		~URL();
+
+		/// @brief Assign value to URL
+		URL & assign(const char *url);
+
+		/// @brief get string from URL.
+		/// @return String with URL response.
+		std::string get(time_t timeout = 0) const;
+
+		/// @brief get URL.
+		/// @param response Objecto for URL response.
+		void get(Response &response, time_t timeout = 0) const;
+
+		/// @brief Connect to host.
+		/// @return Socket connected to host.
+		int connect(time_t timeout = 0) const;
 
 	};
 
 
  }
+
+ /*
+ namespace std {
+
+	inline string to_string(const Udjat::URL &url) {
+		return url.get();
+	}
+
+ }
+ */

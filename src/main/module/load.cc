@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 #include <dlfcn.h>
+#include <udjat/tools/file.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -11,32 +12,7 @@ namespace Udjat {
 
 	void Module::load() {
 
-		static const char *path = STRINGIZE_VALUE_OF(PLUGIN_DIR);
-
-		// TODO: Refactory using 'glob' and a global object.
-
-		/*
-		DIR *dir = opendir(path);
-		if(!dir) {
-			cerr << "modules\tCan't open '" << path << "': " << strerror(errno) << endl;
-			return;
-		}
-
-		cout << "modules\tLoading from '" << path << "'" << endl;
-
-		struct dirent **namelist;
-		int qtdFiles = scandirat(dirfd(dir), ".", &namelist, 0, alphasort);
-
-		for(int file = 0; file < qtdFiles; file++) {
-
-			#error Memory leak!!!
-
-			if(*namelist[file]->d_name == '.')
-				continue;
-
-			string filename(path);
-			filename += '/';
-			filename += namelist[file]->d_name;
+		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*.so").forEach([](const char *filename){
 
 			try {
 
@@ -44,7 +20,7 @@ namespace Udjat {
 				cout << "Loading '" << filename << "'" << endl;
 #endif // DEBUG
 
-				load(filename.c_str());
+				load(filename);
 
 			} catch(const exception &e) {
 
@@ -52,11 +28,8 @@ namespace Udjat {
 
 			}
 
+		});
 
-		}
-
-		closedir(dir);
-		*/
 
 	}
 

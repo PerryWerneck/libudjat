@@ -8,7 +8,7 @@
 		<Option compiler="gcc" />
 		<Build>
 			<Target title="Debug">
-				<Option output=".bin/Debug/test" prefix_auto="1" extension_auto="1" />
+				<Option output=".bin/Debug/libudjat-test" prefix_auto="1" extension_auto="1" />
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
@@ -64,6 +64,7 @@
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
+		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/attribute.cc" />
@@ -96,6 +97,8 @@
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />
 		<Unit filename="src/main/state/state.cc" />
+		<Unit filename="src/main/url/private.h" />
+		<Unit filename="src/main/url/url.cc" />
 		<Unit filename="src/main/worker/controller.cc" />
 		<Unit filename="src/main/worker/private.h" />
 		<Unit filename="src/main/worker/worker.cc" />

@@ -19,6 +19,7 @@
  #include <udjat/worker.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/url.h>
 
  using namespace std;
  using namespace Udjat;
@@ -76,7 +77,13 @@ int main(int argc, char **argv) {
 	Logger::redirect();
 
 	// test_file_agent();
-	test_agent_parser();
+	//test_agent_parser();
+
+	{
+		Udjat::URL url;
+
+		url.assign("http://www.google.com/udjaturl/test?xxx");
+	}
 
 	return 0;
 }
