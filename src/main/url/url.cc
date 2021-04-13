@@ -38,8 +38,6 @@
 		string url = unescape(u);
 		size_t from, to;
 
-		cout << "url '" << url << "'" << endl;
-
 		// Get scheme and find associated protocol manager.
 		from = url.find("://");
 		if(from == string::npos) {

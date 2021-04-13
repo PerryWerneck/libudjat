@@ -17,28 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
- #include <udjat/url.h>
- #include <iostream>
- #include <memory>
- #include <list>
-
- using namespace std;
+ #include "private.h"
 
  namespace Udjat {
 
-	class URL::Controller {
-		Controller();
+	URL::Controller::Controller() {
 
-		list<shared_ptr<Protocol>> protocols;
+	}
 
-	public:
-		~Controller();
-		static Controller & getInstance();
+	URL::Controller::~Controller() {
 
-		void insert(URL::Protocol *protocol);
-		void remove(URL::Protocol *protocol);
+	}
 
-	};
+	URL::Controller & URL::Controller::getInstance() {
+		static Controller instance;
+		return instance;
+	}
+
+	void URL::Controller::insert(URL::Protocol *protocol) {
+		protocols.emplace_back(protocol);
+	}
+
+	void URL::Controller::remove(URL::Protocol *protocol) {
+
+		protocols.remove_if([protocol](shared_ptr<Protocol> p){
+			return p.get() == protocol;
+		});
+
+	}
 
  }
