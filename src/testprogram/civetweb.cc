@@ -21,6 +21,7 @@
  #include <udjat/request.h>
  #include <udjat/agent.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/configuration.h>
  #include <cstring>
  #include <civetweb.h>
  #include <json/value.h>
@@ -97,15 +98,16 @@ void run_civetweb() {
 	cout << "Starting civetweb server" << endl;
 
 	// https://github.com/civetweb/civetweb/blob/master/docs/UserManual.md
-	static const char *port = "8989";
-	static const char *options[] = {
-		"listening_ports", 			port,
-		"request_timeout_ms",		"10000",
-		"error_log_file",			"error.log",
-		"enable_auth_domain_check",	"no",
+	Config::Value<std::string> port("civetweb","listening_ports","8989");
+	const char *options[] = {
+		"listening_ports", 			port.c_str(),
+		"request_timeout_ms",		Config::Value<std::string>("civetweb","request_timeout_ms","10000").c_str(),
+		"error_log_file",			Config::Value<std::string>("civetweb","error_log_file","error.log").c_str(),
+		"enable_auth_domain_check",	Config::Value<std::string>("civetweb","enable_auth_domain_check","no").c_str(),
 		NULL
 	};
 
+	// https://github.com/civetweb/civetweb/blob/master/docs/api/mg_start.md
 	struct mg_callbacks callbacks;
 	memset(&callbacks,0,sizeof(callbacks));
 	callbacks.log_message = log_message;
