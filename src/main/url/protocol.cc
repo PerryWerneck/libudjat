@@ -22,12 +22,16 @@
 
  namespace Udjat {
 
-	URL::Protocol::Protocol(const Quark &protocol) : name(protocol), portname("") {
-		Controller::getInstance().insert(this);
+	URL::Protocol::Protocol(const Quark &protocol, const char *pn) : name(protocol), portname(pn) {
+#ifdef DEBUG
+		cout << "Protocol '" << name << "' created using port '" << portname << "'" << endl;
+#endif // DEBUG
 	}
 
 	URL::Protocol::~Protocol() {
-		Controller::getInstance().remove(this);
+#ifdef DEBUG
+		cout << "Protocol '" << name << "' destroyed" << endl;
+#endif // DEBUG
 	}
 
 	void URL::Protocol::get(const URL &url, time_t timeout, std::function<void(const char *block, size_t len)> reader) {

@@ -25,9 +25,11 @@
 	}
 
 	URL::URL(const char *url) : URL() {
-
 		assign(url);
+	}
 
+	void URL::insert(std::shared_ptr<Protocol> protocol) {
+		Controller::getInstance().insert(protocol);
 	}
 
 	URL::~URL() {
@@ -45,9 +47,7 @@
 		}
 		from += 3;
 
-		string scheme(url.c_str(),from-3);
-
-		cout << "scheme '" << scheme << "'" << endl;
+		this->protocol = Controller::getInstance().find(string(url.c_str(),from-3).c_str());
 
 		// Get hostname and port.
 		string domain;
@@ -178,6 +178,7 @@
 		return rc;
 
 	}
+
 
  }
 

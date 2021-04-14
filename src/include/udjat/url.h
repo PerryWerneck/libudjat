@@ -52,10 +52,13 @@
 			/// @brief The default port name.
 			const char *portname;
 
-			Protocol(const Quark &protocol);
-
 		public:
+			Protocol(const Quark &protocol, const char *portname = "");
 			virtual ~Protocol();
+
+			inline const char * c_str() const {
+				return name.c_str();
+			}
 
 			/// @brief Get default port name;
 			inline const char * getDefaultPortName() const noexcept {
@@ -96,6 +99,9 @@
 
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
+
+		/// @brief Insert protocol back-end.
+		static void insert(std::shared_ptr<Protocol> p);
 
 		URL();
 		URL(const char *url);

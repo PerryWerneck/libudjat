@@ -34,16 +34,20 @@
 		return instance;
 	}
 
-	void URL::Controller::insert(URL::Protocol *protocol) {
-		protocols.emplace_back(protocol);
+	void URL::Controller::insert(std::shared_ptr<Protocol> protocol) {
+		protocols.push_back(protocol);
 	}
 
-	void URL::Controller::remove(URL::Protocol *protocol) {
+	shared_ptr<URL::Protocol> URL::Controller::find(const char *name) {
 
-		protocols.remove_if([protocol](shared_ptr<Protocol> p){
-			return p.get() == protocol;
-		});
+		for(auto protocol : protocols) {
+			if(!strcmp(name,protocol->c_str())) {
+				return protocol;
+			}
+		}
 
+		throw runtime_error(string{"No back-end for scheme '"} + name + "'");
 	}
+
 
  }

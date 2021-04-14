@@ -36,8 +36,9 @@
 		~Controller();
 		static Controller & getInstance();
 
-		void insert(URL::Protocol *protocol);
-		void remove(URL::Protocol *protocol);
+		void insert(std::shared_ptr<Protocol> protocol);
+
+		shared_ptr<Protocol> find(const char *name);
 
 	};
 

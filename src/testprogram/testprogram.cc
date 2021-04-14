@@ -80,8 +80,9 @@ int main(int argc, char **argv) {
 	//test_agent_parser();
 
 	{
-		Udjat::URL url;
+		URL::insert(make_shared<URL::Protocol>("http","80"));
 
+		Udjat::URL url;
 		url.assign("http://www.google.com/udjaturl/test?xxx");
 	}
 
