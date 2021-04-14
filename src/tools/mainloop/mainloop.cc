@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <udjat.h>
  #include "private.h"
 
 #ifdef HAVE_EVENTFD
@@ -24,6 +25,16 @@
 #endif // HAVE_EVENTFD
 
  namespace Udjat {
+
+	void run() noexcept {
+
+		start();
+
+		MainLoop::getInstance().run();
+
+		stop();
+
+	}
 
 	MainLoop::MainLoop() {
 

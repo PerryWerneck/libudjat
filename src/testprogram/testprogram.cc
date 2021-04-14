@@ -44,10 +44,10 @@ static void test_agent_parser() {
 
 	});
 
-//	Module::load();
+	Module::load();
 	Udjat::start();
 
-//	run_civetweb();
+	run_civetweb();
 
 	/*
 	{

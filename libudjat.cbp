@@ -109,11 +109,14 @@
 		<Unit filename="src/testprogram/civetweb.cc" />
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
-		<Unit filename="src/tools/mainloop/controller.cc" />
-		<Unit filename="src/tools/mainloop/linux/controller.cc" />
+		<Unit filename="src/tools/mainloop/default.cc" />
+		<Unit filename="src/tools/mainloop/handler.cc" />
+		<Unit filename="src/tools/mainloop/linux/mainloop.cc" />
+		<Unit filename="src/tools/mainloop/linux/run.cc" />
+		<Unit filename="src/tools/mainloop/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/private.h" />
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
-		<Unit filename="src/tools/mmap.cc" />
+		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
