@@ -8,6 +8,11 @@
 namespace Udjat {
 
 	Module::Module(const Quark &n, void *h) : name(n), handle(h) {
+		package.name 		= name.c_str();
+		package.description	= "";
+		package.version		= "";
+		package.bugreport	= "";
+		package.url			= "";
 		Controller::getInstance().insert(this);
 	}
 
