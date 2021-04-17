@@ -49,5 +49,10 @@ namespace Udjat {
 	void Module::stop() {
 	}
 
+	void Module::getInfo(Response &response) {
+		Controller::getInstance().getInfo(response);
+	}
+
+
 }
 

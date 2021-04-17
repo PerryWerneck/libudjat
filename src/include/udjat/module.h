@@ -4,6 +4,7 @@
 	#include <udjat/defs.h>
 	#include <udjat/tools/quark.h>
 	#include <udjat/agent.h>
+	#include <udjat/request.h>
 
 	namespace Udjat {
 
@@ -36,6 +37,9 @@
 
 			/// @brief Load a single module.
 			static Module * load(const char *filename);
+
+			/// @brief List modules.
+			static void getInfo(Response &response);
 
 			Module(const Quark &name, void *handle = nullptr);
 			virtual ~Module();

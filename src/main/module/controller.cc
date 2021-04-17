@@ -53,15 +53,15 @@ namespace Udjat {
 			if(module->started)
 				continue;
 
-			cout << module->name << "\tStarting " << module->info->description << endl;
+			cout << "module\tStarting " << module->info->description << endl;
 
 			try {
 				module->start();
 				module->started = true;
 			} catch (const exception &e) {
-				cerr << module->name << "\tError '" << e.what() << "' on start method" << endl;
+				cerr << "module\tError '" << e.what() << "' on start method" << endl;
 			} catch(...) {
-				cerr << module->name << "\tUnexpected error on start method" << endl;
+				cerr << "module\tUnexpected error on start method" << endl;
 			}
 
 		}
@@ -74,15 +74,15 @@ namespace Udjat {
 			if(!module->started)
 				continue;
 
-			cout << module->name << "\tStopping " << module->info->description << endl;
+			cout << "module\tStopping " << module->info->description << endl;
 
 			try {
 				module->stop();
 				module->started = false;
 			} catch (const exception &e) {
-				cerr << module->name << "\tError '" << e.what() << "' on stop method" << endl;
+				cerr << "module\tError '" << e.what() << "' on stop method" << endl;
 			} catch(...) {
-				cerr << module->name << "\tUnexpected error on stop method" << endl;
+				cerr << "module\tUnexpected error on stop method" << endl;
 			}
 
 		}
@@ -92,16 +92,41 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto module : modules) {
 
-			cout << module->name << "\tReloading" << endl;
+			cout << "module\tReloading " << module->info->description << endl;
 
 			try {
 				module->reload();
 			} catch (const exception &e) {
-				cerr << module->name << "\tCan't reload: " << e.what() << endl;
+				cerr << "module\tError '" << e.what() << "' on reload method" << endl;
+			} catch(...) {
+				cerr << "module\tUnexpected error on reload method" << endl;
 			}
 
 		}
 	}
+
+	void Module::Controller::getInfo(Response &response) {
+
+		Json::Value modules(Json::arrayValue);
+
+		for(auto module : this->modules) {
+
+			Json::Value value(Json::objectValue);
+
+			value["id"] = module->name.c_str();
+			value["name"] = module->info->name;
+			value["description"] = module->info->description;
+			value["version"] = module->info->version;
+			value["bugreport"] = module->info->bugreport;
+			value["url"] = module->info->url;
+			value["started"] = module->started;
+
+			modules.append(value);
+		}
+
+		response["modules"] = modules;
+	}
+
 
 }
 

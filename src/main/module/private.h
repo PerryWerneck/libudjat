@@ -28,6 +28,8 @@ namespace Udjat {
 		void stop() noexcept;
 		void reload() noexcept;
 
+		void getInfo(Response &response);
+
 	};
 
 

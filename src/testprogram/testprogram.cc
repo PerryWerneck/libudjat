@@ -79,7 +79,14 @@ int main(int argc, char **argv) {
 	// test_file_agent();
 	//test_agent_parser();
 
-	Udjat::run();
+	// Udjat::run();
+
+	{
+		Response rsp;
+		Module::getInfo(rsp);
+
+		cout << rsp.toStyledString() << endl;
+	}
 
 	/*
 	{
