@@ -50,12 +50,18 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto module : modules) {
 
-			cout << module->name << "\tStarting" << endl;
+			if(module->started)
+				continue;
+
+			cout << module->name << "\tStarting " << module->info->description << endl;
 
 			try {
 				module->start();
+				module->started = true;
 			} catch (const exception &e) {
-				cerr << module->name << "\tCan't start: " << e.what() << endl;
+				cerr << module->name << "\tError '" << e.what() << "' on start method" << endl;
+			} catch(...) {
+				cerr << module->name << "\tUnexpected error on start method" << endl;
 			}
 
 		}
@@ -65,12 +71,18 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto module : modules) {
 
-			cout << module->name << "\tStopping" << endl;
+			if(!module->started)
+				continue;
+
+			cout << module->name << "\tStopping " << module->info->description << endl;
 
 			try {
 				module->stop();
+				module->started = false;
 			} catch (const exception &e) {
-				cerr << module->name << "\tCan't stop: " << e.what() << endl;
+				cerr << module->name << "\tError '" << e.what() << "' on stop method" << endl;
+			} catch(...) {
+				cerr << module->name << "\tUnexpected error on stop method" << endl;
 			}
 
 		}

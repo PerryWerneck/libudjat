@@ -10,13 +10,23 @@
 		/// @brief Udjat module.
 		class UDJAT_API Module {
 		private:
-			class Controller;
 
-			Quark name;
+			/// @brief The module controller.
+			class Controller;
+			friend class Controller;
+
+			/// @brief True if the module was started.
+			bool 	started;
+
+			/// @brief The module name.
+			Quark	name;
+
+			/// @brief The module handle.
 			void *handle;
 
 		protected:
 
+			/// @brief Module information.
 			const ModuleInfo *info;
 
 		public:

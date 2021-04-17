@@ -7,7 +7,7 @@
 
 namespace Udjat {
 
-	Module::Module(const Quark &n, void *h) : name(n), handle(h) {
+	Module::Module(const Quark &n, void *h) : started(false), name(n), handle(h) {
 
 		static const ModuleInfo info = {
 

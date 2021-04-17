@@ -118,6 +118,9 @@
 
 				protected:
 
+					/// @brief Factory module info.
+					const ModuleInfo *info;
+
 					/// @brief Load agent settings from xml node, insert on parent.
 					void setup(Abstract::Agent &parent, const pugi::xml_node &node, std::shared_ptr<Abstract::Agent> agent) const;
 

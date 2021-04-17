@@ -96,6 +96,19 @@ namespace Udjat {
 	recursive_mutex Abstract::Agent::Factory::Controller::guard;
 
 	Abstract::Agent::Factory::Factory(const Quark &n) : name(n) {
+
+		static const ModuleInfo info = {
+
+			"",	// The module name.
+			"", // The module description.
+			"", // The module version.
+			"", // The bugreport address.
+			"", // The package URL.
+
+		};
+
+		this->info = &info;
+
 		Controller::getInstance().insert(this);
 	}
 
