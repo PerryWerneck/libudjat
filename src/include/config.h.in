@@ -23,6 +23,9 @@
 	/// @brief Product title
 	#undef PRODUCT_TITLE
 
+	/// @brief Bug Report
+	#undef PACKAGE_BUG_REPORT
+
 	/// @brief Versão atual.
 	#undef PACKAGE_VERSION
 

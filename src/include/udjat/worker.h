@@ -25,6 +25,7 @@ namespace Udjat {
 		Worker(const Quark &name);
 
 		static void work(const char *name, const Request &request, Response &response);
+		static void getInfo(Response &response);
 
 		inline size_t hash() const {
 			return name.hash();

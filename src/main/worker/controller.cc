@@ -71,5 +71,27 @@ namespace Udjat {
 
 	}
 
+	void Worker::Controller::getInfo(Response &response) {
+
+		Json::Value report(Json::arrayValue);
+
+		for(auto worker : workers) {
+
+			Json::Value value(Json::objectValue);
+
+			value["id"] = worker.second->name.c_str();
+			value["name"] = worker.second->info->name;
+			value["description"] = worker.second->info->description;
+			value["version"] = worker.second->info->version;
+			value["bugreport"] = worker.second->info->bugreport;
+			value["url"] = worker.second->info->url;
+
+			report.append(value);
+		}
+
+		response["workers"] = report;
+
+	}
+
 }
 

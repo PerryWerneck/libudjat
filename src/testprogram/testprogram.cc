@@ -83,7 +83,10 @@ int main(int argc, char **argv) {
 
 	{
 		Response rsp;
-		Module::getInfo(rsp);
+
+		auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
+
+		Worker::getInfo(rsp);
 
 		cout << rsp.toStyledString() << endl;
 	}

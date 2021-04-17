@@ -29,6 +29,10 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
+	void Worker::getInfo(Response &response) {
+		Controller::getInstance().getInfo(response);
+	}
+
 	void Worker::work(const char *name,const Request &request, Response &response) {
 
 		Worker::Controller::getInstance().find(name)->work(request,response);

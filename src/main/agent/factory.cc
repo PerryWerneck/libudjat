@@ -46,6 +46,29 @@ namespace Udjat {
 			return instance;
 		}
 
+		/// @brief List modules.
+		void getInfo(Response &response) {
+
+			Json::Value report(Json::arrayValue);
+
+			for(auto method : methods) {
+
+				Json::Value value(Json::objectValue);
+
+				value["id"] = method.second->name.c_str();
+				value["name"] = method.second->info->name;
+				value["description"] = method.second->info->description;
+				value["version"] = method.second->info->version;
+				value["bugreport"] = method.second->info->bugreport;
+				value["url"] = method.second->info->url;
+
+				report.append(value);
+			}
+
+			response["agenttypes"] = report;
+
+		}
+
 		void insert(const Factory *factory) {
 			lock_guard<recursive_mutex> lock(guard);
 #ifdef DEBUG
@@ -114,6 +137,10 @@ namespace Udjat {
 
 	Abstract::Agent::Factory::~Factory() {
 		Controller::getInstance().remove(this);
+	}
+
+	void Abstract::Agent::Factory::getInfo(Response &response) {
+		Controller::getInstance().getInfo(response);
 	}
 
 	bool Abstract::Agent::Factory::parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) {

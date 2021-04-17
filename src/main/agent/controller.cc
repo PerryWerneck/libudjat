@@ -7,6 +7,7 @@
  *
  */
 
+ #include <config.h>
  #include "private.h"
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
@@ -18,6 +19,29 @@
 namespace Udjat {
 
 	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), Module(I_("agent")) {
+
+		static const Udjat::ModuleInfo info = {
+
+			PACKAGE_NAME,							// The module name.
+			PRODUCT_TITLE, 							// The module description.
+			PACKAGE_VERSION "." PACKAGE_RELEASE, 	// The module version.
+#ifdef PACKAGE_BUG_REPORT
+			PACKAGE_BUG_REPORT,						// The bugreport address.
+#else
+			"", 									// The bugreport address.
+#endif // PACKAGE_BUG_REPORT
+#ifdef PACKAGE_URL
+			PACKAGE_URL, 							// The package URL.
+#else
+			"", 									// The package URL.
+#endif // PACKAGE_URL
+
+		};
+
+		Worker::info = &info;
+		Factory::info = &info;
+		Module::info = &info;
+
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {

@@ -128,6 +128,9 @@
 					Factory(const Quark &name);
 					virtual ~Factory();
 
+					/// @brief List modules.
+					static void getInfo(Response &response);
+
 					const char * c_str() const {
 						return name.c_str();
 					}
