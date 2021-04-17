@@ -156,7 +156,9 @@ namespace Udjat {
 		}
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path, bool required, bool autoins) {
+
+		lock_guard<std::recursive_mutex> lock(guard);
 
 		if(!(path && *path)) {
 			throw runtime_error("Invalid request");
@@ -165,6 +167,7 @@ namespace Udjat {
 		if(*path == '/')
 			path++;
 
+		// Get name length.
 		size_t length;
 		const char *ptr = strchr(path,'/');
 		if(!ptr) {
@@ -174,15 +177,13 @@ namespace Udjat {
 		}
 
 		{
-			lock_guard<std::recursive_mutex> lock(guard);
-
 			for(auto child : children) {
 
 				if(strncasecmp(child->name.c_str(),path,length))
 					continue;
 
 				if(ptr && ptr[1]) {
-					return child->find(ptr+1);
+					return child->find(ptr+1,required,autoins);
 				}
 
 				return child;
@@ -190,7 +191,23 @@ namespace Udjat {
 
 		}
 
-		throw system_error(ENOENT,system_category(),"Agent search has failed");
+		if(autoins) {
+			string name{path,length};
+			auto child = make_shared<Abstract::Agent>(string(path,length).c_str());
+			insert(child);
+
+			if(ptr && ptr[1]) {
+				return child->find(ptr+1,required,autoins);
+			}
+
+			return child;
+		}
+
+		if(required) {
+			throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
+		}
+
+		return make_shared<Abstract::Agent>();
 
 	}
 

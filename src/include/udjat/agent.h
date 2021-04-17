@@ -185,7 +185,12 @@
 				/// @brief Stop agent.
 				virtual void stop();
 
-				std::shared_ptr<Agent> find(const char *path);
+				/// @brief Find child by path.
+				/// @param path	Child path.
+				/// @param required Launch exception when search fails.
+				/// @param autoins Insert default child if not found.
+				/// @return Agent pointer.
+				virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);

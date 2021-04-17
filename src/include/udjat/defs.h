@@ -139,7 +139,7 @@
 	namespace Udjat {
 
 		/// @brief Module information data.
-		struct ModuleInfo {
+		struct UDJAT_API ModuleInfo {
 
 			/// @brief The module name.
 			const char *name;
@@ -160,10 +160,11 @@
 			const char *path;
 
 			ModuleInfo();
+			ModuleInfo(const char *args, ...) __attribute__ ((sentinel));
+
 			Json::Value & get(Json::Value &value) const;
 
 		};
-
 
 		/// @brief Abstract objects.
 		namespace Abstract {

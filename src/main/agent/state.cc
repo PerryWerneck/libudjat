@@ -19,15 +19,30 @@ namespace Udjat {
 		class DefaultState : public Abstract::State, Abstract::Agent::Factory {
 		public:
 			DefaultState() : Abstract::State(Abstract::State::undefined,""), Abstract::Agent::Factory(I_("state")) {
-#ifdef DEBUG
-				cout << "Default state was created" << endl;
-#endif // DEBUG
+
+				static const Udjat::ModuleInfo info{
+					PACKAGE_NAME,
+					PRODUCT_TITLE,
+					PACKAGE_VERSION "." PACKAGE_RELEASE,
+#ifdef PACKAGE_URL
+					PACKAGE_URL,
+#else
+					"",
+#endif // PACKAGE_URL
+#ifdef PACKAGE_BUG_REPORT
+					PACKAGE_BUG_REPORT,
+#else
+					"",
+#endif // PACKAGE_BUG_REPORT
+
+					nullptr
+				};
+
+				Factory::info = &info;
+
 			}
 
 			~DefaultState() {
-#ifdef DEBUG
-				cout << "Default state was destroyed" << endl;
-#endif // DEBUG
 			}
 
 			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const {
