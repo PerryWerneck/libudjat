@@ -67,7 +67,6 @@
 		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
-		<Unit filename="src/main/agent/attribute.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/factory.cc" />
 		<Unit filename="src/main/agent/load.cc" />
@@ -91,8 +90,6 @@
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
-		<Unit filename="src/main/service/controller.cc" />
-		<Unit filename="src/main/service/linux/controller.cc" />
 		<Unit filename="src/main/service/private.h" />
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />

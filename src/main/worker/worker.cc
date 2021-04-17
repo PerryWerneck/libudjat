@@ -9,6 +9,19 @@ using namespace std;
 namespace Udjat {
 
 	Worker::Worker(const Quark &n) : name(n), active(false) {
+
+		static const ModuleInfo info = {
+
+			"",	// The module name.
+			"", // The module description.
+			"", // The module version.
+			"", // The bugreport address.
+			"", // The package URL.
+
+		};
+
+		this->info = &info;
+
 		Controller::getInstance().insert(this);
 	}
 

@@ -136,6 +136,27 @@
 
 	namespace Udjat {
 
+		/// @brief Module information data.
+		struct ModuleInfo {
+
+			/// @brief The module name.
+			const char *name;
+
+			/// @brief The module description.
+			const char *description;
+
+			/// @brief The module version.
+			const char *version;
+
+			/// @brief The bugreport address.
+			const char *bugreport;
+
+			/// @brief The package URL.
+			const char *url;
+
+		};
+
+
 		/// @brief Abstract objects.
 		namespace Abstract {
 

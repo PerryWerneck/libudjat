@@ -14,7 +14,12 @@ namespace Udjat {
 		friend class Controller;
 
 	protected:
-		bool active;	///< @brief True if the worker is active.
+
+		/// @brief True if the worker is active.
+		bool active;
+
+		/// @brief Information about the worker module.
+		const ModuleInfo *info;
 
 	public:
 		Worker(const Quark &name);

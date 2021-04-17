@@ -8,12 +8,21 @@
 namespace Udjat {
 
 	Module::Module(const Quark &n, void *h) : name(n), handle(h) {
-		package.name 		= name.c_str();
-		package.description	= "";
-		package.version		= "";
-		package.bugreport	= "";
-		package.url			= "";
+
+		static const ModuleInfo info = {
+
+			"",	// The module name.
+			"", // The module description.
+			"", // The module version.
+			"", // The bugreport address.
+			"", // The package URL.
+
+		};
+
+		this->info = &info;
+
 		Controller::getInstance().insert(this);
+
 	}
 
 	Module::Controller & Module::getController() {
