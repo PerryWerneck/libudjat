@@ -20,23 +20,19 @@ namespace Udjat {
 
 	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), Module(I_("agent")) {
 
-		static const Udjat::ModuleInfo info = {
+		static Udjat::ModuleInfo info;
 
-			PACKAGE_NAME,							// The module name.
-			PRODUCT_TITLE, 							// The module description.
-			PACKAGE_VERSION "." PACKAGE_RELEASE, 	// The module version.
+		info.name =	PACKAGE_NAME,								// The module name.
+		info.description = PRODUCT_TITLE, 						// The module description.
+		info.version = PACKAGE_VERSION "." PACKAGE_RELEASE, 	// The module version.
+
 #ifdef PACKAGE_BUG_REPORT
-			PACKAGE_BUG_REPORT,						// The bugreport address.
-#else
-			"", 									// The bugreport address.
+		info.bugreport = PACKAGE_BUG_REPORT,					// The bugreport address.
 #endif // PACKAGE_BUG_REPORT
-#ifdef PACKAGE_URL
-			PACKAGE_URL, 							// The package URL.
-#else
-			"", 									// The package URL.
-#endif // PACKAGE_URL
 
-		};
+#ifdef PACKAGE_URL
+		info.url = PACKAGE_URL, 								// The package URL.
+#endif // PACKAGE_URL
 
 		Worker::info = &info;
 		Factory::info = &info;

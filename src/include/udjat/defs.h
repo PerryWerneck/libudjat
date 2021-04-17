@@ -31,6 +31,8 @@
 
 	#define UDJAT_DEFS_H_INCLUDED 1
 
+	#include <json/value.h>
+
 #ifdef _WIN32
 
 	#pragma GCC diagnostic ignored "-Wpedantic"
@@ -153,6 +155,12 @@
 
 			/// @brief The package URL.
 			const char *url;
+
+			/// @brief The file path.
+			const char *path;
+
+			ModuleInfo();
+			Json::Value & get(Json::Value &value) const;
 
 		};
 

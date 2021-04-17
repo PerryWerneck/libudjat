@@ -56,11 +56,7 @@ namespace Udjat {
 				Json::Value value(Json::objectValue);
 
 				value["id"] = method.second->name.c_str();
-				value["name"] = method.second->info->name;
-				value["description"] = method.second->info->description;
-				value["version"] = method.second->info->version;
-				value["bugreport"] = method.second->info->bugreport;
-				value["url"] = method.second->info->url;
+				method.second->info->get(value);
 
 				report.append(value);
 			}
@@ -120,15 +116,7 @@ namespace Udjat {
 
 	Abstract::Agent::Factory::Factory(const Quark &n) : name(n) {
 
-		static const ModuleInfo info = {
-
-			"",	// The module name.
-			"", // The module description.
-			"", // The module version.
-			"", // The bugreport address.
-			"", // The package URL.
-
-		};
+		static const ModuleInfo info;
 
 		this->info = &info;
 
