@@ -7,6 +7,8 @@
  *
  */
 
+ #include <config.h>
+ #include <cstring>
  #include "../private.h"
 
  void Udjat::MainLoop::run() {
@@ -47,7 +49,6 @@
 
 			nSocks--;
 
-#ifdef HAVE_EVENTFD
 			if(fds[sock].fd == efd) {
 
 				uint64_t evNum;
@@ -57,7 +58,6 @@
 
 				continue;
 			}
-#endif // HAVE_EVENTFD
 
 			for(auto handle = handlers.begin(); handle != handlers.end(); handle++) {
 

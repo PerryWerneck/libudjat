@@ -74,17 +74,21 @@ static void test_agent_parser() {
 
 int main(int argc, char **argv) {
 
-	Logger::redirect();
+	// Logger::redirect();
 
 	// test_file_agent();
 	//test_agent_parser();
 
+	Udjat::run();
+
+	/*
 	{
 		URL::insert(make_shared<URL::Protocol>("http","80"));
 
 		Udjat::URL url;
 		url.assign("http://www.google.com/udjaturl/test?xxx");
 	}
+	*/
 
 	return 0;
 }

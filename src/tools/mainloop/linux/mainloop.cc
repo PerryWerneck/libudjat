@@ -17,17 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <cstring>
  #include "../private.h"
 
  namespace Udjat {
 
 	void MainLoop::wakeup() noexcept {
-#ifdef HAVE_EVENTFD
 		static uint64_t evNum = 1;
 		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
 		}
-#endif // HAVE_EVENTFD
 	}
 
  }

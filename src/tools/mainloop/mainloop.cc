@@ -17,12 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <udjat.h>
  #include "private.h"
-
-#ifdef HAVE_EVENTFD
  #include <sys/eventfd.h>
-#endif // HAVE_EVENTFD
 
  namespace Udjat {
 
@@ -38,11 +36,11 @@
 
 	MainLoop::MainLoop() {
 
-#ifdef HAVE_EVENTFD
+		this->wait = 60;
+
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
-#endif // HAVE_EVENTFD
 
 	}
 
@@ -53,9 +51,7 @@
 
 		{
 			lock_guard<mutex> lock(guard);
-#ifdef HAVE_EVENTFD
 			::close(efd);
-#endif // HAVE_EVENTFD
 		}
 
 	}
