@@ -44,6 +44,8 @@
 
 			if(upsearch && node.attribute("allow-upsearch").as_bool(true))
 				node = node.parent();
+			else
+				break;
 		}
 
 		return xml_attribute();

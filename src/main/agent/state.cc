@@ -48,7 +48,7 @@ namespace Udjat {
 			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const {
 
 #ifdef DEBUG
-				cout << "Parsing state '" << "' for agent '" << agent.getName() << "'" << endl;
+				cout << "Parsing state 'default' for agent '" << agent.getName() << "'" << endl;
 #endif // DEBUG
 
 				agent.append_state(node);

@@ -44,36 +44,20 @@ static void test_agent_parser() {
 
 	});
 
-	Module::load();
-	Udjat::start();
+	cout << endl << "Starting service" << endl;
 
-	run_civetweb();
+	Udjat::run();
 
-	/*
-	{
-		Response response;
-		Worker::work("agent",Request("/intvalue"),response);
-		cout << response.toStyledString() << endl;
-	}
-	*/
-
-	{
-	}
-
-	/*
-	{
-		Json::Value response(Json::objectValue);
-		root_agent->get(response,true,true);
-		cout << response.toStyledString() << endl;
-	}
-	*/
-
-	Udjat::stop();
 
 }
 
 int main(int argc, char **argv) {
 
+	Module::load();
+
+	test_agent_parser();
+
+	/*
 	// Logger::redirect();
 
 	// test_file_agent();
@@ -90,6 +74,7 @@ int main(int argc, char **argv) {
 
 		cout << rsp.toStyledString() << endl;
 	}
+	*/
 
 	/*
 	{
