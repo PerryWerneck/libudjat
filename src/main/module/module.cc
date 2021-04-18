@@ -22,8 +22,6 @@ namespace Udjat {
 
 	Module::~Module() {
 		Controller::getInstance().remove(this);
-		if(handle)
-			dlclose(handle);
 	}
 
 	/// @brief Start module.

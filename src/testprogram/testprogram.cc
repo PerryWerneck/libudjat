@@ -44,16 +44,17 @@ static void test_agent_parser() {
 
 	});
 
-	cout << endl << "Starting service" << endl;
-
 	Udjat::run();
-
 
 }
 
 int main(int argc, char **argv) {
 
 	Module::load();
+
+	{
+		new Module(Quark::getFromStatic("sample"));
+	}
 
 	test_agent_parser();
 

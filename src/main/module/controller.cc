@@ -1,6 +1,7 @@
 
 
 #include "private.h"
+#include <dlfcn.h>
 
 using namespace std;
 
@@ -32,6 +33,18 @@ namespace Udjat {
 	}
 
 	Module::Controller::~Controller() {
+
+		while(modules.size()) {
+
+			Module * module = *modules.begin();
+			void *handle = module->handle;
+			delete module;
+
+			if(handle)
+				dlclose(handle);
+
+		}
+
 	}
 
 	void Module::Controller::insert(Module *module) {
@@ -41,6 +54,11 @@ namespace Udjat {
 
 	void Module::Controller::remove(Module *module) {
 		lock_guard<recursive_mutex> lock(guard);
+
+#ifdef DEBUG
+		cout << "Removing module '" << module->name << "'" << endl;
+#endif // DEBUG
+
 		modules.remove_if([module](Module *entry) {
 			return entry == module;
 		});
