@@ -35,6 +35,10 @@
 	URL::~URL() {
 	}
 
+	void URL::getInfo(Response &response) {
+		Controller::getInstance().getInfo(response);
+	}
+
 	URL & URL::assign(const char *u) {
 
 		string url = unescape(u);

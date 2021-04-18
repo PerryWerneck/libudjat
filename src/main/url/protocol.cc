@@ -23,6 +23,10 @@
  namespace Udjat {
 
 	URL::Protocol::Protocol(const Quark &protocol, const char *pn) : name(protocol), portname(pn) {
+
+		static const ModuleInfo info;
+		this->info = &info;
+
 #ifdef DEBUG
 		cout << "Protocol '" << name << "' created using port '" << portname << "'" << endl;
 #endif // DEBUG

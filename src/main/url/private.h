@@ -36,6 +36,7 @@
 		~Controller();
 		static Controller & getInstance();
 
+		void getInfo(Response &response);
 		void insert(std::shared_ptr<Protocol> protocol);
 
 		shared_ptr<Protocol> find(const char *name);

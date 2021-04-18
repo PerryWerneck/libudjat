@@ -38,6 +38,25 @@
 		protocols.push_back(protocol);
 	}
 
+	void URL::Controller::getInfo(Response &response) {
+
+		Json::Value protocols(Json::arrayValue);
+
+		for(auto protocol : this->protocols) {
+
+			Json::Value value(Json::objectValue);
+
+			value["id"] = protocol->c_str();
+			value["portname"] = protocol->getDefaultPortName();
+			protocol->getModuleInfo()->get(value);
+
+			protocols.append(value);
+		}
+
+		response["protocols"] = protocols;
+
+	}
+
 	shared_ptr<URL::Protocol> URL::Controller::find(const char *name) {
 
 		for(auto protocol : protocols) {
