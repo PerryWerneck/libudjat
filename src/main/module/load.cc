@@ -57,10 +57,7 @@ namespace Udjat {
 				throw runtime_error("Can't initialize module");
 			}
 
-			if(!module->handle) {
-				clog << "Strange module initialization on '" << filename << "'" << endl;
-				module->handle = handle;
-			}
+			module->handle = handle;
 
 		 } catch(const exception &e) {
 

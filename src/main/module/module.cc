@@ -7,11 +7,10 @@
 
 namespace Udjat {
 
-	Module::Module(const Quark &n, void *h) : started(false), name(n), handle(h) {
+	Module::Module(const Quark &n) : started(false), name(n), handle(nullptr) {
 
 		static const ModuleInfo info;
 		this->info = &info;
-
 		Controller::getInstance().insert(this);
 
 	}

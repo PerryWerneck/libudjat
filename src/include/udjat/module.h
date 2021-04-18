@@ -41,7 +41,7 @@
 			/// @brief List modules.
 			static void getInfo(Response &response);
 
-			Module(const Quark &name, void *handle = nullptr);
+			Module(const Quark &name);
 			virtual ~Module();
 
 			static Module::Controller & getController();
@@ -63,6 +63,6 @@
 
 		/// @brief Initialize module.
 		/// @return Module controller.
-		UDJAT_API Udjat::Module * udjat_module_init(void *handle);
+		UDJAT_API Udjat::Module * udjat_module_init();
 
 	}
