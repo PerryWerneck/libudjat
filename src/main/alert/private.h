@@ -24,6 +24,7 @@
  #include <udjat/agent.h>
  #include <udjat/state.h>
  #include <udjat/alert.h>
+ #include <udjat/worker.h>
  #include <list>
  #include <mutex>
 
@@ -31,7 +32,7 @@
 
  namespace Udjat {
 
-	class Alert::Controller {
+	class Alert::Controller : private Worker {
 	private:
 		Controller();
 
@@ -54,6 +55,8 @@
 	public:
 		static Controller & getInstance();
 		~Controller();
+
+		void work(const Request &request, Response &response) const override;
 
 		/// @brief Agent value has changed.
 		void deactivate(std::shared_ptr<Alert> alert);
