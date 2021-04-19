@@ -12,9 +12,4 @@
 		<state name='sample' value='0' summary='The intvalue is 0' />
 
 	</agent>
-
-	<random name='random'>
-
-	</random>
-
 </config>

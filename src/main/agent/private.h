@@ -8,6 +8,7 @@
 #include <pugixml.hpp>
 #include <udjat/worker.h>
 #include <udjat/module.h>
+#include <udjat/factory.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -19,7 +20,7 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> get_default_state();
 
-	class Abstract::Agent::Controller : private Worker, Agent::Factory, Module {
+	class Abstract::Agent::Controller : private Worker, Factory, Module {
 	private:
 
 		std::shared_ptr<Abstract::Agent> root;

@@ -40,7 +40,7 @@ namespace Udjat {
 		// Load children
 		for(pugi::xml_node node : root) {
 
-			// Skype reserved names.
+			// Skip reserved names.
 			if(!strcasecmp(node.name(),"attribute")) {
 				continue;
 			}
@@ -48,11 +48,15 @@ namespace Udjat {
 			// Process factory methods.
 			try {
 
-				Abstract::Agent::Factory::parse(node.name(), *this, node);
+				Factory::parse(node.name(), *this, node);
 
 			} catch(const std::exception &e) {
 
-				cerr << "Erro loading node '" << node.name() << "': " << e.what() << endl;
+				error("Error '{}' loading node '{}'",e.what(),node.name());
+
+			} catch(...) {
+
+				error("Unexpected error loading node '{}'",node.name());
 
 			}
 

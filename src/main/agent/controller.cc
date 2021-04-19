@@ -170,7 +170,9 @@ namespace Udjat {
 		for(auto builder : builders) {
 
 			if(!strcasecmp(type,builder.type)) {
-				setup(parent,node,builder.build());
+				auto agent = builder.build();
+				agent->load(node);
+				parent.insert(agent);
 				break;
 			}
 

@@ -16,9 +16,9 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> get_default_state() {
 
-		class DefaultState : public Abstract::State, Abstract::Agent::Factory {
+		class DefaultState : public Abstract::State, Factory {
 		public:
-			DefaultState() : Abstract::State(Abstract::State::undefined,""), Abstract::Agent::Factory(I_("state")) {
+			DefaultState() : Abstract::State(Abstract::State::undefined,""), Factory(I_("state")) {
 
 				static const Udjat::ModuleInfo info{
 					PACKAGE_NAME,
@@ -45,7 +45,7 @@ namespace Udjat {
 			~DefaultState() {
 			}
 
-			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const {
+			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
 
 #ifdef DEBUG
 				cout << "Parsing state 'default' for agent '" << agent.getName() << "'" << endl;

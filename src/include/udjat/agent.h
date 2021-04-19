@@ -60,13 +60,13 @@
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
 
-				/// @brief Load children from xml node.
-				void load(const pugi::xml_node &node);
-
 				/// @brief Search for attribute.
 				static const pugi::xml_attribute & attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
 
 			protected:
+
+				/// @brief Load children from xml node.
+				void load(const pugi::xml_node &node);
 
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.
@@ -105,46 +105,13 @@
 				/// @return Node for value.
 				Json::Value & setup(const Request &request, Response &response);
 
-				/// @brief Insert child agent.
-				void insert(std::shared_ptr<Agent> child);
-
 			public:
-
-				/// @brief Agent factory
-				class UDJAT_API Factory {
-				private:
-					Quark name;
-					class Controller;
-
-				protected:
-
-					/// @brief Factory module info.
-					const ModuleInfo *info;
-
-					/// @brief Load agent settings from xml node, insert on parent.
-					void setup(Abstract::Agent &parent, const pugi::xml_node &node, std::shared_ptr<Abstract::Agent> agent) const;
-
-				public:
-					Factory(const Quark &name);
-					virtual ~Factory();
-
-					/// @brief List modules.
-					static void getInfo(Response &response);
-
-					const char * c_str() const {
-						return name.c_str();
-					}
-
-					static bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node);
-
-					virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const = 0;
-
-				};
-
-				friend class Factory;
 
 				/// @brief Load agents from xml.file
 				void load(const pugi::xml_document &doc);
+
+				/// @brief Insert child agent.
+				void insert(std::shared_ptr<Agent> child);
 
 				Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr);
 				virtual ~Agent();

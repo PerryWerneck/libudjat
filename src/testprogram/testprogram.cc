@@ -19,6 +19,7 @@
  #include <udjat/worker.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <random>
  #include <ctime>
@@ -36,10 +37,10 @@ static void test_file_agent() {
 
 static void test_agent_parser() {
 
-	class Factory : public Abstract::Agent::Factory {
+	class Factory : public Udjat::Factory {
 	public:
-		Factory() : Abstract::Agent::Factory(Quark::getFromStatic("random")) {
-			cout << "Random agent factory was created" << endl;
+		Factory() : Udjat::Factory(Quark::getFromStatic("random")) {
+			cout << "random agent factory was created" << endl;
 			srand(time(NULL));
 		}
 
@@ -47,8 +48,9 @@ static void test_agent_parser() {
 
 			class RandomAgent : public Agent<unsigned int> {
 			public:
-				RandomAgent() : Agent<unsigned int>() {
+				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>() {
 					cout << "Creating random Agent" << endl;
+					load(node);
 				}
 
 				void refresh() override {
@@ -58,7 +60,7 @@ static void test_agent_parser() {
 
 			};
 
-			setup(parent, node, make_shared<RandomAgent>());
+			parent.insert(make_shared<RandomAgent>(node));
 
 		}
 

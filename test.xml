@@ -13,4 +13,9 @@
 
 	</agent>
 
+	<random name='random'>
+
+	</random>
+
+
 </config>
