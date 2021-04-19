@@ -22,7 +22,7 @@ namespace Udjat {
 
 		static const Udjat::ModuleInfo info{
 			PACKAGE_NAME,								// The module name.
-			PRODUCT_TITLE,								// The module description.
+			"Agent Controller",							// The module description.
 			PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
 			PACKAGE_URL,

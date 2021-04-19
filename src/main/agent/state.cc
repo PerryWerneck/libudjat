@@ -22,7 +22,7 @@ namespace Udjat {
 
 				static const Udjat::ModuleInfo info{
 					PACKAGE_NAME,
-					PRODUCT_TITLE,
+					"Basic agent state builder",
 					PACKAGE_VERSION "." PACKAGE_RELEASE,
 #ifdef PACKAGE_URL
 					PACKAGE_URL,

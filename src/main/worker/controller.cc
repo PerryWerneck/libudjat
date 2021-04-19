@@ -79,7 +79,7 @@ namespace Udjat {
 
 			Json::Value value(Json::objectValue);
 
-			value["id"] = worker.second->name.c_str();
+			value["name"] = worker.second->name.c_str();
 			worker.second->info->get(value);
 
 			report.append(value);

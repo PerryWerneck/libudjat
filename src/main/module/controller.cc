@@ -131,7 +131,7 @@ namespace Udjat {
 
 			Json::Value value(Json::objectValue);
 
-			value["id"] = module->name.c_str();
+			value["name"] = module->name.c_str();
 			value["started"] = module->started;
 			module->info->get(value);
 

@@ -53,28 +53,27 @@
 
 	Json::Value & ModuleInfo::get(Json::Value &value) const {
 
-		value["name"] = name;
+		value["module"] = name;
 		value["description"] = description;
 		value["version"] = version;
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 
-		if(!path) {
-			string path;
-
-			Dl_info info;
-			if(dladdr(this, &info) != 0) {
-
-				if(info.dli_fname && info.dli_fname[0]) {
-					path = info.dli_fname;
-				}
-			}
+		if(path) {
 
 			value["path"] = path;
 
 		} else {
 
-			value["path"] = path;
+			Dl_info info;
+			if(dladdr(this, &info) != 0) {
+
+				if(info.dli_fname && info.dli_fname[0]) {
+					value["path"] = info.dli_fname;
+				} else {
+					value["path"] = "";
+				}
+			}
 
 		}
 

@@ -53,7 +53,7 @@ int main(int argc, char **argv) {
 	Module::load();
 
 	{
-		new Module(Quark::getFromStatic("sample"));
+		static auto module = new Module(Quark::getFromStatic("sample"));
 	}
 
 	test_agent_parser();
