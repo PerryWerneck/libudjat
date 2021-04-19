@@ -55,8 +55,8 @@
 
 				static Level getLevelFromName(const char *name);
 
-				/// @brief State events.
-				std::vector<Abstract::Event *> events;
+				/// @brief State alerts.
+				std::vector<std::shared_ptr<Alert>> alerts;
 
 			public:
 				State(const Level l, const char *m, const char *b = "");
@@ -86,10 +86,8 @@
 					return activation;
 				}
 
-				/// @brief Insert and take control of an event.
-				/// The event pointer will be deleted with the state.
-				inline void push_back(Abstract::Event *event) {
-					events.push_back(event);
+				inline void push_back(std::shared_ptr<Alert> alert) {
+					alerts.push_back(alert);
 				}
 
 				inline Level getLevel() const {

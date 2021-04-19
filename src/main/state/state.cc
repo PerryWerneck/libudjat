@@ -10,9 +10,8 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
- #include <udjat/event.h>
+ #include <udjat/alert.h>
  #include <iostream>
- #include <udjat/notification.h>
  #include <udjat/tools/timestamp.h>
 
  using namespace std;
@@ -62,11 +61,6 @@ namespace Udjat {
 
 	Abstract::State::~State() {
 
-		// Delete my events.
-		for(auto event : events) {
-			delete event;
-		}
-
 	}
 
 	void Abstract::State::get(Json::Value &value) const {
@@ -110,51 +104,18 @@ namespace Udjat {
 
 		this->activation = time(nullptr);
 
-		for(auto event:events) {
+		for(auto alert : alerts) {
 			try {
 
-				event->set(agent, *this, true);
+				Alert::set(alert, agent, *this, true);
 
 			} catch(const std::exception &e) {
 
-				cerr << "Error firing event \"" << event << "\": " << e.what() << endl;
+				cerr << agent << "\tError '" << e.what() << "' activating alert '" << alert->c_str() << "'" << endl;
 
 			} catch(...) {
 
-				cerr << "Unexpected error firing event \"" << event << "\"" << endl;
-
-			}
-
-		}
-
-		if(notify && Notification::hasListeners()) {
-
-			class Notification : public Udjat::Notification {
-			public:
-				Notification(const Abstract::Agent &agent, const Abstract::State &state) {
-
-					// label = agent.getLabel();
-					level = state.getLevel();
-					summary = state.getSummary();
-					message = state.getBody();
-					uri = state.getUri();
-					if(!uri)
-						uri = agent.getUri();
-
-				}
-			};
-
-			try {
-
-				Notification(agent, *this).emit();
-
-			} catch(const std::exception &e) {
-
-				cerr << agent << "\tError '" << e.what() << "' emitting notification" << endl;
-
-			} catch(...) {
-
-				cerr << agent << "\tUnexpected error emitting notification" << endl;
+				cerr << agent << "\tUnexpected error activating alert '" << alert->c_str() << "'" << endl;
 
 			}
 
@@ -163,19 +124,20 @@ namespace Udjat {
 	}
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
-		for(auto event:events) {
+
+		for(auto alert : alerts) {
 
 			try {
 
-				event->set(agent, *this, false);
+				Alert::set(alert, agent, *this, false);
 
 			} catch(const std::exception &e) {
 
-				cerr << "Error firing event \"" << event << "\": " << e.what() << endl;
+				cerr << agent << "\tError '" << e.what() << "' deactivating alert '" << alert->c_str() << "'" << endl;
 
 			} catch(...) {
 
-				cerr << "Unexpected error firing event \"" << event << "\"" << endl;
+				cerr << agent << "\tUnexpected error activating alert '" << alert->c_str() << "'" << endl;
 
 			}
 

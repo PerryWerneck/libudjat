@@ -171,10 +171,10 @@
 
 			class Agent;
 			class State;
-			class Event;
 
 		}
 
+		class Alert;
 
 	}
 

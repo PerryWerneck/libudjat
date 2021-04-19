@@ -8,8 +8,7 @@
  */
 
  #include "private.h"
- #include <udjat/event.h>
- #include <udjat/notification.h>
+ #include <udjat/alert.h>
  #include <udjat/tools/threadpool.h>
 
  using namespace std;
@@ -115,67 +114,22 @@ namespace Udjat {
 
 		}
 
-		// Fire events
-		for(auto event : events) {
+		// Notify alerts.
+		for(auto alert : alerts) {
 
 			try {
 
-				event->set(*this,level_has_changed);
+				Alert::set(alert, *this,level_has_changed);
 
 			} catch(const std::exception &e) {
 
-				error("Error '{}' firing event '{}'",e.what(),event->c_str());
+				error("Error '{}' firing alert '{}'",e.what(),alert->c_str());
 
 			} catch(...) {
 
-				error("Unexpected error firing event '{}'",event->c_str());
+				error("Unexpected error firing alert '{}'",alert->c_str());
 
 			}
-
-		}
-
-		// Anyone looking for notifications?
-		if(update.notify && Notification::hasListeners()) {
-
-			class Notification : public Udjat::Notification {
-			public:
-				Notification(const Agent &agent) {
-
-					label = agent.label;
-					if(agent.state) {
-
-						level = agent.state->getLevel();
-						summary = agent.state->getSummary();
-						message = agent.state->getBody();
-						uri = agent.state->getUri();
-						if(!uri)
-							uri = agent.uri;
-
-					} else {
-
-						static const Quark msg = Quark::getFromStatic("Agent value has changed");
-						summary = msg;
-						uri = agent.uri;
-
-					}
-
-				}
-			};
-
-			try {
-
-				Notification(*this).emit();
-
-			} catch(const std::exception &e) {
-
-				error("Error '{}' emiting notification",e.what());
-
-			} catch(...) {
-
-				error("Error '{}' emiting notification","unexpected");
-
-			}
-
 
 		}
 

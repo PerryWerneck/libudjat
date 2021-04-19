@@ -54,8 +54,8 @@
 				/// @brief Current state.
 				std::shared_ptr<State> state;
 
-				/// @brief Agent events.
-				std::vector<Abstract::Event *> events;
+				/// @brief Agent alerts.
+				std::vector<std::shared_ptr<Alert>> alerts;
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
@@ -158,10 +158,8 @@
 				/// @brief true if the agent has states.
 				virtual bool hasOwnStates() const noexcept;
 
-				/// @brief Insert and take control of an event.
-				/// The event pointer will be deleted with the agent.
-				inline void push_back(Abstract::Event *event) {
-					events.push_back(event);
+				inline void push_back(std::shared_ptr<Alert> alert) {
+					alerts.push_back(alert);
 				}
 
 				inline const Quark & getUri() const noexcept {

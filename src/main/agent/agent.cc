@@ -74,11 +74,6 @@ namespace Udjat {
 			child->parent = nullptr;
 		}
 
-		// Delete my events.
-		for(auto event : events) {
-			delete event;
-		}
-
 	}
 
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {

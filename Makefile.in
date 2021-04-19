@@ -18,7 +18,7 @@ MAIN_SOURCES= \
 	$(wildcard src/main/module/*.cc) \
 	$(wildcard src/main/file/*.cc) \
 	$(wildcard src/main/url/*.cc) \
-	$(wildcard src/main/event/*.cc)
+	$(wildcard src/main/alert/*.cc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc)
