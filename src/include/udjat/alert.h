@@ -37,14 +37,25 @@
 		class Controller;
 		friend class Controller;
 
-		/// @brief How many retrys?
-		size_t retry = 3;
+		bool active = false;
+		bool disable_when_failed = false;
+		bool reset_when_activated = true;
 
-		/// @brief Alert timers.
 		struct {
-			time_t start = 0;	///< @brief Seconds to wait before first activation.
-			time_t retry = 60;	///< @brief Seconds for retry.
-		} timers;
+			size_t limit = 3;		///< @brief How many retries for activation?
+			time_t start = 0;		///< @brief Seconds to wait before first activation.
+			time_t interval = 60;	///< @brief Seconds to wait on every try.
+			time_t restart = 86400;	///< @brief Seconds to wait for reactivate after maximum tries.
+
+			size_t current = 0;		///< @brief How many retries I did in the current activation?
+			time_t last = 0;		///< @brief Last try.
+			time_t next = 0;		///< @brief Next try.
+		} retry;
+
+	protected:
+
+		/// @brief Get configuration file section for default values.
+		static std::string getConfigSection(const pugi::xml_node &node);
 
 	public:
 
