@@ -51,7 +51,7 @@
 				Put,		///< @brief Replaces all current representations of the target resource with the request payload.
 				Delete,		///< @brief Deletes the specified resource.
 				Connect,	///< @brief Establishes a tunnel to the server identified by the target resource.
-				Options,	///< @brief Describe the communication options for the target resourc
+				Options,	///< @brief Describe the communication options for the target resource.
 				Trace,		///< @brief Performs a message loop-back test along the path to the target resource.
 				Patch,		///< @brief Apply partial modifications to a resource.
 			} value;

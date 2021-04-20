@@ -51,10 +51,8 @@
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/dbus.h" />
 		<Unit filename="src/include/udjat/defs.h" />
-		<Unit filename="src/include/udjat/event.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
-		<Unit filename="src/include/udjat/notification.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/state.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
@@ -104,6 +102,7 @@
 		<Unit filename="src/main/state/private.h" />
 		<Unit filename="src/main/state/state.cc" />
 		<Unit filename="src/main/url/controller.cc" />
+		<Unit filename="src/main/url/method.cc" />
 		<Unit filename="src/main/url/private.h" />
 		<Unit filename="src/main/url/protocol.cc" />
 		<Unit filename="src/main/url/url.cc" />

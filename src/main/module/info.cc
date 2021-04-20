@@ -27,10 +27,8 @@
 
  namespace Udjat {
 
-	ModuleInfo::ModuleInfo() : name(""), description(""), version(""), bugreport(""), url(""), path(nullptr) {
-	}
-
-	ModuleInfo::ModuleInfo(const char *str, ...) : ModuleInfo() {
+	/*
+	ModuleInfo::ModuleInfo(const char *str, ...) : name(""), description(""), version(""), bugreport(""), url(""), path(nullptr) {
 
 		const char **arg[] = {
 			&this->name,
@@ -49,7 +47,7 @@
 		}
 
 	}
-
+	*/
 
 	Json::Value & ModuleInfo::get(Json::Value &value) const {
 

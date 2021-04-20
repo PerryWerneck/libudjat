@@ -37,12 +37,10 @@
 			"",
 #endif // PACKAGE_URL
 #ifdef PACKAGE_BUG_REPORT
-			PACKAGE_BUG_REPORT,
+			PACKAGE_BUG_REPORT
 #else
-			"",
+			""
 #endif // PACKAGE_BUG_REPORT
-
-			nullptr
 		};
 
 		Worker::info = &info;
