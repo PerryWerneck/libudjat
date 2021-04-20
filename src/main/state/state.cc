@@ -107,7 +107,7 @@ namespace Udjat {
 		for(auto alert : alerts) {
 			try {
 
-				Alert::set(alert, agent, *this, true);
+				alert->set(agent, *this, true);
 
 			} catch(const std::exception &e) {
 
@@ -129,7 +129,7 @@ namespace Udjat {
 
 			try {
 
-				Alert::set(alert, agent, *this, false);
+				alert->set(agent, *this, false);
 
 			} catch(const std::exception &e) {
 

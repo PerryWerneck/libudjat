@@ -92,6 +92,7 @@
 	}
 
 	Alert::~Alert() {
+		deactivate();
 	}
 
 	std::string Alert::getConfigSection(const pugi::xml_node &node) {
@@ -113,23 +114,25 @@
 
 	}
 
-	void Alert::set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, bool level_has_changed) {
-		if(alert->activate_on_value_change || level_has_changed) {
-			set(alert,agent,*agent.getState(),true);
+	void Alert::deactivate() const {
+		Controller::getInstance().remove(this);
+	}
+
+	void Alert::set(const Abstract::Agent &agent, bool level_has_changed) {
+		if(activate_on_value_change || level_has_changed) {
+			deactivate();
+			activate(agent,*agent.getState());
 		}
 	}
 
-	void Alert::set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state, bool active) {
+	void Alert::set(const Abstract::Agent &agent, const Abstract::State &state, bool active) {
+
+		deactivate();
 
 		if(active) {
-
-			Controller::getInstance().activate(alert,agent,state);
-
-		} else {
-
-			Controller::getInstance().deactivate(alert);
-
+			activate(agent,state);
 		}
+
 	}
 
  }

@@ -41,18 +41,8 @@
 		/// @brief Mutex for serialization.
 		static mutex guard;
 
-		/// @brief Alert description.
-		struct ActiveAlert {
-			shared_ptr<Alert>		alert;		///< @brief Pointer to the associated alert.
-			Abstract::State::Level	level;		///< @brief Alert level.
-			string					value;		///< @brief Agent value.
-			Quark					summary;	///< @brief Message summary.
-			Quark					body;		///< @brief Message body.
-			Quark					uri;		///< @brief Web link to this state (Usually used for http exporters).
-		};
-
 		/// @brief List of active alerts.
-		list<ActiveAlert> alerts;
+		list<std::shared_ptr<Alert::Event>> events;
 
 		/// @brief Build alert from XML
 		shared_ptr<Alert> build(const pugi::xml_node &node);
@@ -73,11 +63,8 @@
 		/// @brief Create State alert.
 		void parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 
-		/// @brief Agent value has changed.
-		void deactivate(std::shared_ptr<Alert> alert);
-
-		/// @brief Activate alert.
-		void activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state);
+		/// @brief Deactivate alert.
+		void remove(const Alert *alert);
 
 	};
 

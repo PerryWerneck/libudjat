@@ -55,6 +55,35 @@
 			time_t next = 0;		///< @brief Next try.
 		} retry;
 
+	protected:
+
+		/// @brief Formatted data for sending.
+		class UDJAT_API Event {
+		private:
+			friend class Alert::Controller;
+
+			/// @brief The event alert.
+			Alert *alert;
+
+		public:
+			Event(Alert *alert);
+			virtual ~Event();
+
+			/// @brief Emit alert.
+			virtual void fire() = 0;
+
+		};
+
+		/// @brief Activate alert.
+		virtual void activate(const Abstract::Agent &agent, const Abstract::State &state) = 0;
+
+		/// @brief Activate alert event.
+		/// Register the supplied event to be 'fired' from alert controller.
+		void activate(std::shared_ptr<Event> event) const;
+
+		/// @brief Deactivate alert; remove all active events from this alert.
+		void deactivate() const;
+
 	public:
 
 		/// @brief Get configuration file section for default values.
@@ -73,10 +102,10 @@
 		}
 
 		/// @brief Agent value has changed.
-		static void set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, bool level_has_changed);
+		virtual void set(const Abstract::Agent &agent, bool level_has_changed);
 
 		/// @brief State state has changed.
-		static void set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state, bool active);
+		virtual void set(const Abstract::Agent &agent, const Abstract::State &state, bool active);
 
 	};
 

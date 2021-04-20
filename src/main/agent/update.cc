@@ -137,7 +137,7 @@ namespace Udjat {
 
 			try {
 
-				Alert::set(alert, *this,level_has_changed);
+				alert->set(*this,level_has_changed);
 
 			} catch(const std::exception &e) {
 

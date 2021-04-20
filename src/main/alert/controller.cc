@@ -56,26 +56,18 @@
 		return instance;
 	}
 
-	/// @brief Agent value has changed.
-	void Alert::Controller::deactivate(std::shared_ptr<Alert> alert) {
-
-		lock_guard<mutex> lock(guard);
-
-	}
-
-	/// @brief Activate alert.
-	void Alert::Controller::activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state) {
-
-		lock_guard<mutex> lock(guard);
-
-	}
-
 	void Alert::Controller::work(const Request &request, Response &response) const {
 
 		lock_guard<mutex> lock(guard);
 
 
 		throw runtime_error("Not implemented");
+	}
+
+	void Alert::Controller::remove(const Alert *alert) {
+		events.remove_if([alert](std::shared_ptr<Alert::Event> event){
+			return event->alert == alert;
+		});
 	}
 
 	string Alert::Controller::getType(const pugi::xml_node &node) {
