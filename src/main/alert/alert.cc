@@ -47,6 +47,13 @@
 					Config::Value<uint32_t>(section.c_str(),"max-retries",retry.limit)
 				);
 
+		// activate-on-value-change
+		activate_on_value_change =
+			Attribute(node,"activate-on-value-change")
+				.as_bool(
+					Config::Value<bool>(section.c_str(),"activate-on-value-change",activate_on_value_change)
+				);
+
 		// delay-before-start
 		retry.start =
 			Attribute(node,"delay-before-start")
@@ -107,7 +114,9 @@
 	}
 
 	void Alert::set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, bool level_has_changed) {
-		Controller::getInstance().activate(alert,agent,*agent.getState());
+		if(alert->activate_on_value_change || level_has_changed) {
+			set(alert,agent,*agent.getState(),true);
+		}
 	}
 
 	void Alert::set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state, bool active) {

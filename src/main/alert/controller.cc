@@ -29,7 +29,7 @@
 
 		static const Udjat::ModuleInfo info{
 			PACKAGE_NAME,								// The module name.
-			"Alert Controller & builder",				// The module description.
+			"Alert Controller",							// The module description.
 			PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
 			PACKAGE_URL,
@@ -92,24 +92,32 @@
 
 	}
 
-	void Alert::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+	const string Alert::Controller::getFactoryNameByType(const pugi::xml_node &node) {
 
-		Factory::parse(
-			(string{"alert-"} + getType(node)).c_str(),
-			parent,
-			node
-		);
+		return string{"alert-"}
+			+ Attribute(node,"type")
+				.as_string(
+					Config::Value<string>(
+						Alert::getConfigSection(node).c_str(),
+						"type","url").c_str()
+				);
 
 	}
 
-	void Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-
+	void Alert::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 		Factory::parse(
-			(string{"alert-"} + getType(node)).c_str(),
+			getFactoryNameByType(node).c_str(),
 			parent,
 			node
 		);
+	}
 
+	void Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
+		Factory::parse(
+			getFactoryNameByType(node).c_str(),
+			parent,
+			node
+		);
 	}
 
 

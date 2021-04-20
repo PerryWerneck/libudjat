@@ -41,6 +41,9 @@
 		bool disable_when_failed = false;
 		bool reset_when_activated = true;
 
+		/// @brief Activates on every value change.
+		bool activate_on_value_change = true;
+
 		struct {
 			size_t limit = 3;		///< @brief How many retries for activation?
 			time_t start = 0;		///< @brief Seconds to wait before first activation.

@@ -26,6 +26,7 @@
  #include <udjat/alert.h>
  #include <udjat/worker.h>
  #include <udjat/factory.h>
+ #include <udjat/url.h>
  #include <list>
  #include <mutex>
 
@@ -56,6 +57,8 @@
 		/// @brief Build alert from XML
 		shared_ptr<Alert> build(const pugi::xml_node &node);
 
+		static const string getFactoryNameByType(const pugi::xml_node &node);
+
 	public:
 		static Controller & getInstance();
 		~Controller();
@@ -77,6 +80,29 @@
 		void activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state);
 
 	};
+
+	class URLAlert : public Udjat::Alert {
+	private:
+
+		/// @brief The URL request method.
+		URL::Method method;
+
+		/// @brief The URL.
+		Quark url;
+
+		/// @brief Connection timeout.
+		time_t timeout = 60;
+
+		/// @brief Mimetype.
+		string mimetype = "application/json; charset=utf-8";
+
+	public:
+
+		URLAlert(const pugi::xml_node &node);
+		virtual ~URLAlert();
+
+	};
+
 
  }
 
