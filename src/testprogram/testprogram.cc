@@ -19,6 +19,7 @@
  #include <udjat/worker.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/timestamp.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <random>
@@ -54,8 +55,8 @@ static void test_agent_parser() {
 				}
 
 				void refresh() override {
+					cout << TimeStamp().to_string() << endl;
 					set((unsigned int) rand());
-					cout << "Value changes to " << get() << endl;
 				}
 
 			};

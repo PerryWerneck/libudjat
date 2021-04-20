@@ -63,6 +63,12 @@
 				/// @brief Search for attribute.
 				static const pugi::xml_attribute & attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
 
+				/// @brief Update timer, set update as running.
+				void updating();
+
+				/// @brief Update complete (success or failure).
+				void updated();
+
 			protected:
 
 				/// @brief Load children from xml node.

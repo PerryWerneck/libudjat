@@ -17,6 +17,31 @@
 
 namespace Udjat {
 
+	void Abstract::Agent::updating() {
+
+		update.running = time(nullptr);
+
+		if(update.timer) {
+			update.next = update.expires = (update.running + update.timer);
+		} else {
+			update.next = 0;
+			update.expires = update.running + 10;	// TODO: Make it configurable.
+		}
+
+	}
+
+	void Abstract::Agent::updated() {
+
+		update.last = time(nullptr);
+
+		if(update.timer) {
+			update.next = update.last + update.timer;
+		}
+
+		update.running = 0;
+
+	}
+
 	bool Abstract::Agent::chk4refresh(bool forward) {
 
 		// Return if update is running.
@@ -31,29 +56,22 @@ namespace Udjat {
 
 		}
 
-		update.running = time(nullptr);
-
-		if(update.timer) {
-			update.next = update.expires = (update.running + update.timer);
-		} else {
-			update.next = 0;
-			update.expires = update.running + 10;	// TODO: Make it configurable.
-		}
+		updating();
 
 		try {
 
 			refresh();
-			update.last = time(nullptr);
+			updated();
 
 		} catch(const std::exception &e) {
 
-			update.running = 0;
+			updated();
 			failed(e,"Error updating agent");
 			throw;
 
 		} catch(...) {
 
-			update.running = 0;
+			updated();
 			failed("Unexpected error updating agent");
 			throw;
 

@@ -13,6 +13,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/configuration.h>
 
  using namespace std;
 
@@ -193,31 +194,50 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::onTimer(time_t now) noexcept {
 
-		if(root) {
+		if(!root) {
+			return;
+		}
 
-			root->foreach([now](std::shared_ptr<Agent> agent){
+		// Check for updates on another thread; we'll change the
+		// timer and it has a mutex lock while running the callback.
+		ThreadPool::getInstance().push([this,now]() {
 
-				if(agent->update.on_demand)
+			time_t delay = Config::Value<time_t>("agent","max-update-time",600);
+
+			root->foreach([now,&delay](std::shared_ptr<Agent> agent){
+
+				// Return if no update timer.
+				if(!agent->update.next)
 					return;
 
-				if(agent->update.running) {
-					// TODO: Check if the update time.
+				// If the update is the future, adjust delay and return.
+				if(agent->update.next > now) {
+					delay = std::min(delay,(agent->update.next - now));
 					return;
 				}
 
-				if(!agent->update.next || agent->update.next > now)
+				if(agent->update.running) {
+
+					agent->warning(
+						"Update is active since {}",
+						TimeStamp(agent->update.running).to_string()
+					);
+
+					if(agent->update.timer) {
+						agent->update.next = now + agent->update.timer;
+					} else {
+						agent->update.next = now + 60;
+					}
+
 					return;
+				}
 
 				cout << agent->getName() << " " << TimeStamp(agent->update.next) << endl;
 
 				// Agent requires update.
-				agent->update.running = now;
-
+				agent->updating();
 				if(agent->update.timer) {
-					agent->update.next = agent->update.expires = (agent->update.running + agent->update.timer);
-				} else {
-					agent->update.next = 0;
-					agent->update.expires = agent->update.running + 10;	// TODO: Make it configurable.
+					delay = std::min(delay,agent->update.timer);
 				}
 
 				ThreadPool::getInstance().push([agent]() {
@@ -225,7 +245,6 @@ namespace Udjat {
 					try {
 
 						agent->refresh();
-						agent->update.last = time(nullptr);
 
 					} catch(const exception &e) {
 
@@ -237,17 +256,15 @@ namespace Udjat {
 
 					}
 
-					if(agent->update.timer) {
-						agent->update.next = time(0) + agent->update.timer;
-					}
-
-					agent->update.running = 0;
+					agent->updated();
 
 				});
 
 			});
-		}
 
+			MainLoop::getInstance().reset(this,delay);
+
+		});
 	}
 
 }
