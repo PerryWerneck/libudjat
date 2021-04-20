@@ -38,7 +38,7 @@
 		Factory(const Quark &name);
 		virtual ~Factory();
 
-		void getInfo(Response &response);
+		static void getInfo(Response &response);
 
 		static bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node);
 
