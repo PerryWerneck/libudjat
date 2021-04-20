@@ -27,7 +27,11 @@ namespace Udjat {
 
 		Controller();
 
+		void onTimer(time_t tm) noexcept;
+
 	public:
+		~Controller();
+
 		static Controller & getInstance();
 
 		void set(std::shared_ptr<Abstract::Agent> root);

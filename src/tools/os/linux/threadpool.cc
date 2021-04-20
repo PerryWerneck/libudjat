@@ -36,6 +36,10 @@
  #include <iostream>
  #include <pthread.h>
 
+ #ifdef DEBUG
+	#undef DEBUG
+ #endif // DEBUG
+
  using namespace std;
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/

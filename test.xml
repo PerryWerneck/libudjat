@@ -13,7 +13,7 @@
 
 	</agent>
 
-	<random name='random'>
+	<random name='random' update-timer='5'>
 
 	</random>
 

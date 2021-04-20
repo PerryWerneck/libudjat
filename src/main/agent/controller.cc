@@ -11,6 +11,8 @@
  #include "private.h"
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
@@ -42,6 +44,10 @@ namespace Udjat {
 		Factory::info = &info;
 		Module::info = &info;
 
+	}
+
+	Abstract::Agent::Controller::~Controller() {
+	//	MainLoop::getInstance().remove(this);
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
@@ -102,12 +108,17 @@ namespace Udjat {
 	void Abstract::Agent::Controller::start() {
 		if(root) {
 			root->start();
+			MainLoop::getInstance().insert(this,1,[this](time_t now) {
+				onTimer(now);
+				return true;
+			});
 		}
 	}
 
 	void Abstract::Agent::Controller::stop() {
 		if(root) {
 			root->stop();
+			MainLoop::getInstance().remove(this);
 		}
 	}
 
@@ -176,6 +187,65 @@ namespace Udjat {
 				break;
 			}
 
+		}
+
+	}
+
+	void Abstract::Agent::Controller::onTimer(time_t now) noexcept {
+
+		if(root) {
+
+			root->foreach([now](std::shared_ptr<Agent> agent){
+
+				if(agent->update.on_demand)
+					return;
+
+				if(agent->update.running) {
+					// TODO: Check if the update time.
+					return;
+				}
+
+				if(!agent->update.next || agent->update.next > now)
+					return;
+
+				cout << agent->getName() << " " << TimeStamp(agent->update.next) << endl;
+
+				// Agent requires update.
+				agent->update.running = now;
+
+				if(agent->update.timer) {
+					agent->update.next = agent->update.expires = (agent->update.running + agent->update.timer);
+				} else {
+					agent->update.next = 0;
+					agent->update.expires = agent->update.running + 10;	// TODO: Make it configurable.
+				}
+
+				ThreadPool::getInstance().push([agent]() {
+
+					try {
+
+						agent->refresh();
+						agent->update.last = time(nullptr);
+
+					} catch(const exception &e) {
+
+						agent->failed(e,"Update failed");
+
+					} catch(...) {
+
+						agent->failed("Unexpected error when updating");
+
+					}
+
+					if(agent->update.timer) {
+						agent->update.next = time(0) + agent->update.timer;
+					}
+
+					agent->update.running = 0;
+
+				});
+
+			});
 		}
 
 	}
