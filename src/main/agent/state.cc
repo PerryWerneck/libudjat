@@ -62,6 +62,7 @@ namespace Udjat {
 
 	}
 
+	/*
 	static time_t getDelayAfterException() noexcept {
 
 		try {
@@ -76,13 +77,18 @@ namespace Udjat {
 
 		return 10;
 	}
+	*/
 
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const std::exception &e, const char *message) noexcept {
 
-		cerr << *this << "\t" << message << ": " << e.what() << endl;
+		error("{}: {}",message,e.what());
+
 		this->state = make_shared<State>(State::critical,message,e.what());
-		this->update.next = time(nullptr) + getDelayAfterException();
+
+		if(update.failed) {
+			this->update.next = time(nullptr) + update.failed;
+		}
 
 		if(parent)
 			parent->onChildStateChange();
@@ -92,9 +98,12 @@ namespace Udjat {
 	/// @brief Set failed state from known exception
 	void Abstract::Agent::failed(const char *message) noexcept {
 
-		cerr << *this << "\t" << message << endl;
+		error("{}",message);
 		this->state = make_shared<State>(State::critical,message);
-		this->update.next = time(nullptr) + getDelayAfterException();
+
+		if(update.failed) {
+			this->update.next = time(nullptr) + update.failed;
+		}
 
 		if(parent)
 			parent->onChildStateChange();

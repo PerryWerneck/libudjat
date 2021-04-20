@@ -25,7 +25,7 @@ namespace Udjat {
 		this->summary.set(root,"summary",false,translate);
 		this->label.set(root,"label",false,translate);
 
-		this->update.notify = root.attribute("notify").as_bool(this->update.notify);
+//		this->update.notify = root.attribute("notify").as_bool(this->update.notify);
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
 

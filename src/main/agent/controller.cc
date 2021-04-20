@@ -204,7 +204,7 @@ namespace Udjat {
 
 			time_t delay = Config::Value<time_t>("agent","max-update-time",600);
 
-			root->foreach([now,&delay](std::shared_ptr<Agent> agent){
+			root->foreach([now,this,&delay](std::shared_ptr<Agent> agent){
 
 				// Return if no update timer.
 				if(!agent->update.next)
@@ -243,7 +243,7 @@ namespace Udjat {
 				}
 
 				// Enqueue agent update.
-				ThreadPool::getInstance().push([agent]() {
+				ThreadPool::getInstance().push([this,agent]() {
 
 					try {
 
@@ -252,10 +252,12 @@ namespace Udjat {
 					} catch(const exception &e) {
 
 						agent->failed(e,"Update failed");
+						MainLoop::getInstance().reset(this,1);	// The refresh time was changed, force refresh;
 
 					} catch(...) {
 
 						agent->failed("Unexpected error when updating");
+						MainLoop::getInstance().reset(this,1);	// The refresh time was changed, force refresh;
 
 					}
 

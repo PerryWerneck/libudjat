@@ -54,7 +54,8 @@ namespace Udjat {
 			update.timer		= config.get("agent-defaults","update-timer",update.timer);
 			update.on_demand	= config.get("agent-defaults","update-on-demand",update.timer == 0);
 			update.next			= time(nullptr) + config.get("agent-defaults","delay-on-startup",update.timer);
-			update.notify 		= config.get("agent-defaults","notify-on-value-change",update.notify);
+//			update.notify 		= config.get("agent-defaults","notify-on-value-change",update.notify);
+			update.failed 		= config.get("agent-defaults","delay-when-failed",update.failed);
 
 		} catch(const std::exception &e) {
 
