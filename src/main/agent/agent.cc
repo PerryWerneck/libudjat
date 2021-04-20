@@ -28,8 +28,6 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
- #include <udjat/event.h>
- #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------

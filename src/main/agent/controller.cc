@@ -210,7 +210,7 @@ namespace Udjat {
 				if(!agent->update.next)
 					return;
 
-				// If the update is the future, adjust delay and return.
+				// If the update is in the future, adjust delay and return.
 				if(agent->update.next > now) {
 					delay = std::min(delay,(agent->update.next - now));
 					return;
@@ -232,7 +232,9 @@ namespace Udjat {
 					return;
 				}
 
+#ifdef DEBUG
 				cout << agent->getName() << " " << TimeStamp(agent->update.next) << endl;
+#endif // DEBUG
 
 				// Agent requires update.
 				agent->updating();
@@ -240,6 +242,7 @@ namespace Udjat {
 					delay = std::min(delay,agent->update.timer);
 				}
 
+				// Enqueue agent update.
 				ThreadPool::getInstance().push([agent]() {
 
 					try {
