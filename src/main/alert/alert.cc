@@ -89,13 +89,20 @@
 
 	std::string Alert::getConfigSection(const pugi::xml_node &node) {
 
-		string def = node.name();
-		auto type = Attribute(node,"type",false);
-		if(type) {
-			def = string{"alert"} + "-" + type.as_string("default");
+		// First check for configuration attribute
+		auto attribute = Attribute(node,"configuration-from");
+		if(attribute) {
+			return attribute.as_string("alert-default");
 		}
 
-		return Attribute(node,"configuration-from").as_string(def.c_str());
+		// Then for the node name in the format alert-${type}
+		const char *name = node.name();
+		if(!strncasecmp(name,"alert-",6) && name[7]) {
+			return name;
+		}
+
+		// And, last, for the alert type.
+		return string{"alert-"} + Controller::getType(node);
 
 	}
 

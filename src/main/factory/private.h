@@ -66,6 +66,7 @@
 		static Controller & getInstance();
 
 		bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const;
+		bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const;
 
 		void getInfo(Response &response);
 

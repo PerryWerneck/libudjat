@@ -59,17 +59,6 @@
 
 	public:
 
-		/// @brief The Alert factory.
-		class UDJAT_API Factory {
-		public:
-			Factory(const Quark &name);
-			virtual ~Factory();
-
-			virtual void parse(Abstract::Agent &agent, const pugi::xml_node &node) const;
-			virtual void parse(Abstract::State &state, const pugi::xml_node &node) const;
-
-		};
-
 		Alert(const Quark &name);
 		Alert(const char *name);
 		Alert(const pugi::xml_node &node);

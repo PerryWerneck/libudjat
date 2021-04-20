@@ -18,16 +18,18 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/configuration.h>
+ #include <udjat/factory.h>
 
  namespace Udjat {
 
 	mutex Alert::Controller::guard;
 
-	Alert::Controller::Controller() : Worker(Quark::getFromStatic("alerts")) {
+	Alert::Controller::Controller() : Worker(Quark::getFromStatic("alerts")), Factory(Quark::getFromStatic("alert")) {
 
 		static const Udjat::ModuleInfo info{
 			PACKAGE_NAME,								// The module name.
-			"Alert Controller",							// The module description.
+			"Alert Controller & builder",				// The module description.
 			PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
 			PACKAGE_URL,
@@ -77,5 +79,38 @@
 
 		throw runtime_error("Not implemented");
 	}
+
+	string Alert::Controller::getType(const pugi::xml_node &node) {
+
+		string type =
+			Attribute(node,"type",false)
+				.as_string(
+					Config::Value<string>("alert-default","type","default").c_str()
+				);
+
+		return type;
+
+	}
+
+	void Alert::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+
+		Factory::parse(
+			(string{"alert-"} + getType(node)).c_str(),
+			parent,
+			node
+		);
+
+	}
+
+	void Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
+
+		Factory::parse(
+			(string{"alert-"} + getType(node)).c_str(),
+			parent,
+			node
+		);
+
+	}
+
 
  }

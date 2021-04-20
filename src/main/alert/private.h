@@ -25,6 +25,7 @@
  #include <udjat/state.h>
  #include <udjat/alert.h>
  #include <udjat/worker.h>
+ #include <udjat/factory.h>
  #include <list>
  #include <mutex>
 
@@ -32,7 +33,7 @@
 
  namespace Udjat {
 
-	class Alert::Controller : private Worker {
+	class Alert::Controller : private Worker, private Factory {
 	private:
 		Controller();
 
@@ -52,11 +53,22 @@
 		/// @brief List of active alerts.
 		list<ActiveAlert> alerts;
 
+		/// @brief Build alert from XML
+		shared_ptr<Alert> build(const pugi::xml_node &node);
+
 	public:
 		static Controller & getInstance();
 		~Controller();
 
+		static string getType(const pugi::xml_node &node);
+
 		void work(const Request &request, Response &response) const override;
+
+		/// @brief Create Agent alert.
+		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+
+		/// @brief Create State alert.
+		void parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 
 		/// @brief Agent value has changed.
 		void deactivate(std::shared_ptr<Alert> alert);

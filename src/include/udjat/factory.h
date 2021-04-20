@@ -41,8 +41,13 @@
 		static void getInfo(Response &response);
 
 		static bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node);
+		static bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node);
 
-		virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const = 0;
+		/// @brief Create Agent child.
+		virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
+
+		/// @brief Create State child.
+		virtual void parse(Abstract::State &parent, const pugi::xml_node &node) const;
 
 	};
 

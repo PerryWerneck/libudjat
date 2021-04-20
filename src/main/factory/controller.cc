@@ -76,4 +76,21 @@ namespace Udjat {
 		return true;
 	}
 
+	bool Factory::Controller::parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const {
+
+		auto entry = methods.find(name);
+
+		if(entry == methods.end()) {
+#ifdef DEBUG
+			cout << "Cant find factory for element '" << name << "'" << endl;
+#endif // DEBUG
+			return false;
+		}
+
+		entry->second->parse(parent,node);
+
+		return true;
+	}
+
+
 }
