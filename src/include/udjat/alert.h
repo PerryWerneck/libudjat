@@ -52,17 +52,18 @@
 			time_t next = 0;		///< @brief Next try.
 		} retry;
 
-	protected:
+	public:
 
 		/// @brief Get configuration file section for default values.
 		static std::string getConfigSection(const pugi::xml_node &node);
-
-	public:
 
 		Alert(const Quark &name);
 		Alert(const char *name);
 		Alert(const pugi::xml_node &node);
 		virtual ~Alert();
+
+		/// @brief Initialize alert subsystem.
+		static void init();
 
 		inline const char * c_str() const noexcept {
 			return name.c_str();

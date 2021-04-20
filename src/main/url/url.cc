@@ -89,20 +89,6 @@
 		return *this;
 	}
 
-	std::string URL::get(time_t timeout) const {
-		string response;
-
-		protocol->get(*this, timeout, [&response](const char *block, size_t len) {
-			response.append(block,len);
-		});
-
-		return response;
-	}
-
-	void URL::get(Response &response, time_t timeout) const {
-		protocol->get(*this,timeout,response);
-	}
-
 	/// @brief Connect to host.
 	/// @return Socket connected to host.
 	int URL::connect(time_t timeout) const {
@@ -183,6 +169,32 @@
 
 	}
 
+	std::string URL::get(const char *mimetype) {
+		return protocol->call(*this,URL::Method::Get,mimetype);
+	}
+
+	std::string URL::post(const char *payload, const char *mimetype) {
+		return protocol->call(*this,URL::Method::Post,mimetype,payload);
+	}
+
+	std::string URL::to_string() const {
+
+		string rc{protocol->c_str()};
+
+		if(!port.empty()) {
+			rc += ":";
+			rc += port;
+		}
+
+		rc += domain;
+
+		if(!filename.empty()) {
+			rc += "/";
+			rc += filename;
+		}
+
+		return rc;
+	}
 
  }
 

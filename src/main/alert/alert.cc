@@ -107,13 +107,12 @@
 	}
 
 	void Alert::set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, bool level_has_changed) {
+		Controller::getInstance().activate(alert,agent,*agent.getState());
 	}
 
 	void Alert::set(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state, bool active) {
 
 		if(active) {
-
-			// TODO: Check activation conditions.
 
 			Controller::getInstance().activate(alert,agent,state);
 

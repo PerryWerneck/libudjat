@@ -38,29 +38,28 @@
 #endif // DEBUG
 	}
 
-	void URL::Protocol::get(const URL &url, time_t timeout, std::function<void(const char *block, size_t len)> reader) {
-		throw runtime_error("No back-end protocol for 'get'");
+	std::string URL::Protocol::call(const URL &url, const URL::Method method, const char *mimetype, const char *payload) {
+		throw runtime_error(string{"No back-end protocol for '"} + url.to_string() + "'");
 	}
 
 	int URL::Protocol::connect(const URL &url, time_t timeout) {
-		throw runtime_error("No back-end protocol for 'connect'");
+		throw runtime_error(string{"No back-end protocol for connect('"} + url.to_string() + "')");
 	}
 
-	void URL::Protocol::get(const URL &url, time_t timeout, Response &response) {
 
-		string text;
+	Response URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
 
-		this->get(url,timeout,[&text](const char *block, size_t len){
-			text.append(block,len);
-		});
+		Response response;
+
+		string text = call(url,method,"application/json; charset=utf-8",payload.c_str());
 
 		// https://stackoverflow.com/questions/31121378/json-cpp-how-to-initialize-from-string-and-get-string-value
-
 		Json::Reader reader;
 		if(!reader.parse(text.c_str(), response)) {
 			throw runtime_error(reader.getFormattedErrorMessages());
 		}
 
+		return response;
 	}
 
  }
