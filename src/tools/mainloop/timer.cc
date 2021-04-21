@@ -27,27 +27,40 @@
 
 	MainLoop::Timer::Timer(const void *i, const function<bool(const time_t)> c) : Timer(i,1,c) { }
 
-	time_t MainLoop::runTimers(time_t wait) {
+	time_t MainLoop::Timers::run() noexcept {
 
 		lock_guard<mutex> lock(guard);
 
 		time_t now = time(0);
-		timers.remove_if([now,&wait](Timer &timer) {
+		next = now + def; // Reset to default value.
 
-			// Do I still active? If not return true *only* if not running.
-			if(!timer.seconds)
+		active.remove_if([this,now](Timer &timer) {
+
+			// No seconds or timestamp; looks like the timer was deactivated.
+			// Do I still active? Return true *only* if not running.
+			if(!(timer.seconds && timer.next))
 				return (timer.running != 0);
 
-			if(timer.next <= now) {
+			if(timer.next > now) {
+
+				// Timer is not expired.
+				next = std::min(next,timer.next);
+
+			} else {
+
+				// Timer has expired.
 
 				// Still have pending events? Ignore it but keep me the list.
 				if(timer.running) {
 					clog << "MainLoop\tTimer call is taking too long" << endl;
+					timer.next = (now + timer.seconds);
+					next = std::min(next,timer.next);
 					return false;
 				}
 
 				// Timer has expired, update value and enqueue method.
 				timer.next = (now + timer.seconds);
+				next = std::min(next,timer.next);
 				timer.running = now;
 
 				try {
@@ -69,15 +82,15 @@
 
 			}
 
-			wait = std::min(wait, (timer.next - now));
-
 			return false;
 
 		});
 
-		return wait;
+#ifdef DEBUG
+		cout << "Timers: delay=" << (next - now) << " count=" << active.size() << endl;
+#endif // DEBUG
+		return next - now;
 	}
-
 
  }
 

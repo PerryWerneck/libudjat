@@ -34,11 +34,12 @@
 		}
 
 		// Get wait time, update timers.
-		time_t wait = runTimers(this->wait);
+		time_t wait = timers.run();
 		nfds += getHandlers(&fds, &szPoll);
 
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait * 1000);
+		cout << "** nSocks=" << nSocks << " wait=" << wait << endl;
 
 		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
 
@@ -56,6 +57,7 @@
 					cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
 				}
 
+				cout << "Event " << evNum << endl;
 				continue;
 			}
 

@@ -68,10 +68,9 @@
 
 	void Alert::Controller::onTimer(time_t now) noexcept {
 
-		/*
 		lock_guard<mutex> lock(guard);
 #ifdef DEBUG
-		cout << "Checking for events" << endl;
+		cout << "***************** Checking for events" << endl;
 #endif // DEBUG
 
 		time_t timer_value = 600;
@@ -80,9 +79,12 @@
 			if(!event->next)
 				return true;
 
+			if(!event->alert)
+				return false;
+
 			if(event->next < now) {
 
-				timer_value = std::min(timer_value,event->next);
+				timer_value = std::min(timer_value,now - event->next);
 
 			} else {
 
@@ -104,6 +106,7 @@
 
 				if(interval) {
 					event->next = now + interval;
+					timer_value = std::min(timer_value,interval);
 				} else {
 					event->next = 0;
 				}
@@ -112,6 +115,7 @@
 				event->current++;
 
 				// Fire event.
+				/*
 				ThreadPool::getInstance().push([event]() {
 
 					try {
@@ -137,6 +141,7 @@
 
 					}
 				});
+				*/
 
 			}
 
@@ -149,7 +154,6 @@
 #endif // DEBUG
 
 		MainLoop::getInstance().reset(this,timer_value,now+timer_value);
-		*/
 
 	}
 

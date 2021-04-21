@@ -38,11 +38,8 @@ namespace Udjat {
 		/// @brief Event FD.
 		int efd;
 
-		/// @brief Default wait
-		time_t wait;
-
 		/// @brief Mutex
-		std::mutex guard;
+		static std::mutex guard;
 
 		/// @brief Is the mainloop enabled.
 		bool enabled;
@@ -51,10 +48,13 @@ namespace Udjat {
 		// Timers.
 		//
 		class Timer;
-		std::list<Timer> timers;
 
-		/// @brief Run timers.
-		time_t runTimers(time_t wait);
+		struct Timers {
+			time_t def = 600;			///< @brief Default timer value.
+			time_t next = 0;			///< @brief Timestap for next timer.
+			std::list<Timer> active;	///< @brief List of active timers.
+			time_t run() noexcept;
+		} timers;
 
 		/// @brief get FDs.
 		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);

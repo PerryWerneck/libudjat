@@ -200,9 +200,9 @@ namespace Udjat {
 		// timer and it has a mutex lock while running the callback.
 		ThreadPool::getInstance().push([this,now]() {
 
-			time_t delay = Config::Value<time_t>("agent","max-update-time",600);
+			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
 
-			root->foreach([now,this,&delay](std::shared_ptr<Agent> agent){
+			root->foreach([now,this,&next](std::shared_ptr<Agent> agent){
 
 				// Return if no update timer.
 				if(!agent->update.next)
@@ -210,7 +210,7 @@ namespace Udjat {
 
 				// If the update is in the future, adjust delay and return.
 				if(agent->update.next > now) {
-					delay = std::min(delay,(agent->update.next - now));
+					next = std::min(next,agent->update.next);
 					return;
 				}
 
@@ -237,7 +237,8 @@ namespace Udjat {
 				// Agent requires update.
 				agent->updating();
 				if(agent->update.timer) {
-					delay = std::min(delay,agent->update.timer);
+					agent->update.next = time(0) + agent->update.timer;
+					next = std::min(next,agent->update.next);
 				}
 
 				// Enqueue agent update.
@@ -265,7 +266,9 @@ namespace Udjat {
 
 			});
 
-			MainLoop::getInstance().reset(this,delay);
+			cout << "Wait " << (next - time(0)) << endl;
+
+			// MainLoop::getInstance().reset(this,(next - time(0)));
 
 		});
 	}

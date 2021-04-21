@@ -24,10 +24,17 @@
  namespace Udjat {
 
 	void MainLoop::wakeup() noexcept {
-		static uint64_t evNum = 1;
+		static uint64_t evNum = 0;
+#ifdef DEBUG
+			cout << "efd\tWakeUP evNum=" << evNum << endl;
+			if(evNum > 10) {
+				throw runtime_error("ERROR");
+			}
+#endif // DEBUG
 		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
 		}
+		evNum++;
 	}
 
  }

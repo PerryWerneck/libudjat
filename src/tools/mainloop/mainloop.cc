@@ -24,6 +24,8 @@
 
  namespace Udjat {
 
+	std::mutex MainLoop::guard;
+
 	void run() noexcept {
 
 		start();
@@ -35,9 +37,6 @@
 	}
 
 	MainLoop::MainLoop() {
-
-		this->wait = 60;
-
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
@@ -68,7 +67,7 @@
 		//
 		// We can't simple remove the handlers; they can be waiting for a slot to run.
 		//
-		for(auto timer : timers) {
+		for(auto timer : timers.active) {
 			if(timer.id == id) {
 				timer.seconds = 0;	// When set to '0' the timer will be removed when possible.
 			}
@@ -91,8 +90,13 @@
 
 	void MainLoop::insert(const void *id, time_t seconds, const function<bool(const time_t)> call) {
 		lock_guard<mutex> lock(guard);
-		timers.emplace_back(id,seconds,call);
-		wakeup();
+		timers.active.emplace_back(id,seconds,call);
+		if(timers.next == 0 || (time(0)+seconds) < timers.next) {
+#ifdef DEBUG
+			cout << "Resetting next timer" << endl;
+#endif // DEBUG
+			wakeup();
+		}
 	}
 
 	void MainLoop::insert(const void *id, const std::function<bool(const time_t)> call) {
@@ -101,19 +105,24 @@
 
 		Timer tm(id,call);
 		tm.next = time(nullptr);
-		timers.push_back(tm);
+		timers.active.push_back(tm);
 		wakeup();
 
 	}
 
 	void MainLoop::reset(const void *id) {
 
+#ifdef DEBUG
+		cout << "Resetting timer to 'now'" << endl;
+#endif // DEBUG
+
 		lock_guard<mutex> lock(guard);
-		for(auto timer = timers.begin(); timer != timers.end(); timer++) {
+
+		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
 			if(timer->id == id) {
 				timer->next = time(nullptr);
 				wakeup();
-				break;
+				return;
 			}
 		}
 
@@ -122,7 +131,7 @@
 	time_t MainLoop::reset(const void *id, time_t seconds, time_t time) {
 
 		lock_guard<mutex> lock(guard);
-		for(auto timer = timers.begin(); timer != timers.end(); timer++) {
+		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
 
 			if(timer->id == id && timer->seconds) {
 
@@ -133,7 +142,7 @@
 				timer->next = time;
 
 				// If the new timer is lower than the last one wake up main loop to adjust.
-				if(timer->next <= current) {
+				if(timer->next <= timers.next) {
 					wakeup();
 				}
 
