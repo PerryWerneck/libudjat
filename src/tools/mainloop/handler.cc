@@ -21,7 +21,7 @@
 
  namespace Udjat {
 
-	MainLoop::Handler::Handler(void *i, int f, const Event e, const function<bool(const Event event)> c)
+	MainLoop::Handler::Handler(const void *i, int f, const Event e, const function<bool(const Event event)> c)
 		: id(i),fd(f),events(e),running(0),call(c) { }
 
 	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {

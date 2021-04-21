@@ -33,29 +33,29 @@
 	class MainLoop::Timer {
 	public:
 
-		void *id;
+		const void *id;
 		time_t running;			///< @brief Is timer running?
 		time_t seconds;			///< @brief Timer interval.
 		time_t next;			///< @brief Next Fire.
 
 		const function<bool(const time_t)> call;
 
-		Timer(void *id, const function<bool(const time_t)> call);
-		Timer(void *id, time_t seconds, const function<bool(const time_t)> call);
+		Timer(const void *id, const function<bool(const time_t)> call);
+		Timer(const void *id, time_t seconds, const function<bool(const time_t)> call);
 
 	};
 
 	class MainLoop::Handler {
 	public:
 
-		void *id;
+		const void *id;
 		int fd;
 		Event events;
 		time_t running;			///< @brief Is the callback running?
 
 		const function<bool(const Event event)> call;
 
-		Handler(void *id, int fd, const Event event, const function<bool(const Event event)> call);
+		Handler(const void *id, int fd, const Event event, const function<bool(const Event event)> call);
 
 	};
 

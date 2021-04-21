@@ -56,7 +56,7 @@
 
 		void init() const {
 			cout << "alert\t" << "The default alert type is '"
-					<< Config::Value<string>("alert-default","type","default")
+					<< Config::Value<string>("alert-default","type","url")
 					<< "'" << endl;
 		}
 
@@ -119,15 +119,11 @@
 		}
 
 		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
-
-			cout << "********** URL ALERT" << endl;
-
+			parent.push_back(make_shared<URLAlert>(node));
 		}
 
 		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
-
-			cout << "********** URL ALERT" << endl;
-
+			parent.push_back(make_shared<URLAlert>(node));
 		}
 
 	};

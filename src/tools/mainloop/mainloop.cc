@@ -61,7 +61,7 @@
 		wakeup();
 	}
 
-	void MainLoop::remove(void *id) {
+	void MainLoop::remove(const void *id) {
 
 		lock_guard<mutex> lock(guard);
 
@@ -83,19 +83,19 @@
 		wakeup();
 	}
 
-	void MainLoop::insert(void *id, int fd, const Event event, const function<bool(const Event event)> call) {
+	void MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
 		lock_guard<mutex> lock(guard);
 		handlers.emplace_back(id,fd,event,call);
 		wakeup();
 	}
 
-	void MainLoop::insert(void *id, time_t seconds, const function<bool(const time_t)> call) {
+	void MainLoop::insert(const void *id, time_t seconds, const function<bool(const time_t)> call) {
 		lock_guard<mutex> lock(guard);
 		timers.emplace_back(id,seconds,call);
 		wakeup();
 	}
 
-	void MainLoop::insert(void *id, const std::function<bool(const time_t)> call) {
+	void MainLoop::insert(const void *id, const std::function<bool(const time_t)> call) {
 
 		lock_guard<mutex> lock(guard);
 
@@ -106,7 +106,7 @@
 
 	}
 
-	void MainLoop::reset(void *id) {
+	void MainLoop::reset(const void *id) {
 
 		lock_guard<mutex> lock(guard);
 		for(auto timer = timers.begin(); timer != timers.end(); timer++) {
@@ -119,7 +119,7 @@
 
 	}
 
-	time_t MainLoop::reset(void *id, time_t seconds, time_t time) {
+	time_t MainLoop::reset(const void *id, time_t seconds, time_t time) {
 
 		lock_guard<mutex> lock(guard);
 		for(auto timer = timers.begin(); timer != timers.end(); timer++) {

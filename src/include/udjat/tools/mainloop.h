@@ -99,22 +99,22 @@ namespace Udjat {
 		void wakeup() noexcept;
 
 		/// @brief Insert socket/file in the list of event sources.
-		void insert(void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
+		void insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 		/// @brief Insert timer in the list of event sources.
-		void insert(void *id, time_t seconds, const std::function<bool(const time_t)> call);
+		void insert(const void *id, time_t seconds, const std::function<bool(const time_t)> call);
 
 		/// @brief Insert and emit a timer.
-		void insert(void *id, const std::function<bool(const time_t)> call);
+		void insert(const void *id, const std::function<bool(const time_t)> call);
 
 		/// @brief Reset time to 'now'.
-		void reset(void *id);
+		void reset(const void *id);
 
 		/// @brief Reset timer to a new value.
-		time_t reset(void *id, time_t seconds, time_t value = time(0));
+		time_t reset(const void *id, time_t seconds, time_t value = time(0));
 
 		/// @brief Remove socket/file/timer/module from the list of event sources.
-		void remove(void *id);
+		void remove(const void *id);
 
 	};
 

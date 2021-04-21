@@ -82,6 +82,11 @@ static void test_agent_parser() {
 
 	});
 
+	MainLoop::getInstance().insert("none",10,[](const time_t now) {
+		MainLoop::getInstance().quit();
+		return false;
+	});
+
 	Udjat::run();
 
 }

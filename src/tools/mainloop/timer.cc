@@ -21,11 +21,11 @@
 
  namespace Udjat {
 
-	MainLoop::Timer::Timer(void *i, time_t s, const function<bool(const time_t)> c) :
+	MainLoop::Timer::Timer(const void *i, time_t s, const function<bool(const time_t)> c) :
 		id(i),running(0),seconds(s),next(time(0)+s),call(c) { }
 
 
-	MainLoop::Timer::Timer(void *i, const function<bool(const time_t)> c) : Timer(i,1,c) { }
+	MainLoop::Timer::Timer(const void *i, const function<bool(const time_t)> c) : Timer(i,1,c) { }
 
 	time_t MainLoop::runTimers(time_t wait) {
 

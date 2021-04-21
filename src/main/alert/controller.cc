@@ -58,11 +58,15 @@
 	}
 
 	Alert::Controller::~Controller() {
+#ifdef DEBUG
+		cout << "Alert controller was destroyed" << endl;
+#endif // DEBUG
 		MainLoop::getInstance().remove(this);
 	}
 
 	void Alert::Controller::onTimer(time_t now) noexcept {
 
+		/*
 		lock_guard<mutex> lock(guard);
 #ifdef DEBUG
 		cout << "Checking for events" << endl;
@@ -143,6 +147,7 @@
 #endif // DEBUG
 
 		MainLoop::getInstance().reset(this,timer_value,now+timer_value);
+		*/
 
 	}
 
