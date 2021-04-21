@@ -26,6 +26,7 @@
 
  namespace Udjat {
 
+	/// @brief Default Alert Factory.
 	class AlertFactory : public Factory {
 	public:
 		AlertFactory() : Factory(Quark::getFromStatic("alert")) {
@@ -53,7 +54,7 @@
 		virtual ~AlertFactory() {
 		}
 
-		void init() {
+		void init() const {
 			cout << "alert\t" << "The default alert type is '"
 					<< Config::Value<string>("alert-default","type","default")
 					<< "'" << endl;
@@ -89,10 +90,53 @@
 
 	};
 
+	/// @brief URL Alert Factory.
+	class URLAlertFactory : public Factory {
+	public:
+		URLAlertFactory() : Factory(Quark::getFromStatic("alert-url")) {
+
+			static const Udjat::ModuleInfo info{
+				PACKAGE_NAME,								// The module name.
+				"URL Based alert Factory",					// The module description.
+				PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+#ifdef PACKAGE_URL
+				PACKAGE_URL,
+#else
+				"",
+#endif // PACKAGE_URL
+#ifdef PACKAGE_BUG_REPORT
+				PACKAGE_BUG_REPORT
+#else
+				""
+#endif // PACKAGE_BUG_REPORT
+			};
+
+			this->info = &info;
+
+		}
+
+		virtual ~URLAlertFactory() {
+		}
+
+		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+
+			cout << "********** URL ALERT" << endl;
+
+		}
+
+		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
+
+			cout << "********** URL ALERT" << endl;
+
+		}
+
+	};
+
 	void Alert::init() {
 
-		static struct {
+		static const struct {
 			AlertFactory def;
+			URLAlertFactory url;
 		} factories;
 
 		factories.def.init();
