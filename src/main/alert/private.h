@@ -34,7 +34,7 @@
 
  namespace Udjat {
 
-	class Alert::Controller : private Worker, private Factory {
+	class Alert::Controller : private Worker {
 	private:
 		Controller();
 
@@ -58,12 +58,6 @@
 		static string getType(const pugi::xml_node &node);
 
 		void work(const Request &request, Response &response) const override;
-
-		/// @brief Create Agent alert.
-		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
-
-		/// @brief Create State alert.
-		void parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 
 		/// @brief Activate alert;
 		void insert(Alert *alert, std::shared_ptr<Alert::Event> event);
@@ -95,6 +89,8 @@
 
 		URLAlert(const pugi::xml_node &node);
 		virtual ~URLAlert();
+
+		void activate(const Abstract::Agent &agent, const Abstract::State &state) override;
 
 	};
 

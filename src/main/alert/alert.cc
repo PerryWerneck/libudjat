@@ -31,10 +31,10 @@
 	Alert::Alert(const char *name) : Alert(Quark(name)) {
 	}
 
-	Alert::Alert(const pugi::xml_node &node) : Alert(Attribute(node,"name",false).as_string("alert")) {
+	Alert::Alert(const pugi::xml_node &node, const char *type) : Alert(Attribute(node,"name",false).as_string("alert")) {
 
 		// Get configuration file section.
-		string section = getConfigSection(node);
+		string section = getConfigSection(node,type);
 
 #ifdef DEBUG
 		cout << "Loading configuration from '" << section << "'" << endl;
@@ -95,12 +95,17 @@
 		deactivate();
 	}
 
-	std::string Alert::getConfigSection(const pugi::xml_node &node) {
+	std::string Alert::getConfigSection(const pugi::xml_node &node,const char *type) {
 
 		// First check for configuration attribute
 		auto attribute = Attribute(node,"configuration-from");
 		if(attribute) {
 			return attribute.as_string("alert-default");
+		}
+
+		// Then type (if available)
+		if(type) {
+			return string{"alert-"} + type;
 		}
 
 		// Then for the node name in the format alert-${type}
@@ -109,7 +114,6 @@
 			return name;
 		}
 
-		// And, last, for the alert type.
 		return string{"alert-"} + Controller::getType(node);
 
 	}

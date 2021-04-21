@@ -27,7 +27,7 @@
 
 	URLAlert::URLAlert(const pugi::xml_node &node) : Alert(node) {
 
-		string section = getConfigSection(node);
+		string section = getConfigSection(node,"url");
 
 		method =
 			Attribute(node,"method",false)
@@ -56,6 +56,28 @@
 	}
 
 	URLAlert::~URLAlert() {
+	}
+
+	void URLAlert::activate(const Abstract::Agent &agent, const Abstract::State &state) {
+
+		class Event : public Alert::Event {
+		public:
+			Event() {
+				cout << "Event was created" << endl;
+			}
+
+			virtual ~Event() {
+				cout << "Event was destroyed" << endl;
+			}
+
+			void fire() override {
+				cout << "URL Event was fired" << endl;
+			}
+
+		};
+
+		Alert::activate(make_shared<Event>());
+
 	}
 
 

@@ -22,7 +22,7 @@
 
  namespace Udjat {
 
-	Alert::Event::Event() : alert(nullptr), next(time(0)) {
+	Alert::Event::Event() {
 	}
 
 	Alert::Event::~Event() {

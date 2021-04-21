@@ -22,6 +22,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
+ #include <udjat/alert.h>
  #include <random>
  #include <ctime>
  #include <cstdlib>
@@ -68,8 +69,9 @@ static void test_agent_parser() {
 	};
 
 	static Factory factory;
-
 	auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
+
+	Alert::init();
 
 	File::List("${PWD}/*.xml").forEach([root_agent](const char *filename){
 

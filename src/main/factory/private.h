@@ -57,7 +57,8 @@
 			}
 		};
 
-		std::unordered_map<const char *, const Factory *, Hash, Equal> methods;
+		/// @brief The list of active factories.
+		std::unordered_map<const char *, const Factory *, Hash, Equal> factories;
 
 		Controller() {
 		}

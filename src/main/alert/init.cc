@@ -22,100 +22,62 @@
  #include <udjat/factory.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
+ #include <iostream>
 
  namespace Udjat {
 
-	/*
-	class URLAlert : public Udjat::Alert {
-	private:
-
-		/// @brief The URL request method.
-		URL::Method method;
-
-		/// @brief The URL.
-		Quark url;
-
-		/// @brief Connection timeout.
-		time_t timeout = 60;
-
-		/// @brief Mimetype.
-		string mimetype = "application/json; charset=utf-8";
-
-	public:
-
-		URLAlert(const pugi::xml_node &node) : Alert(node) {
-
-			string section = getConfigSection(node);
-
-			method =
-				Attribute(node,"method",false)
-					.as_string(
-						Config::Value<string>(section.c_str(),"method",method.c_str()).c_str()
-					);
-
-			url =
-				Attribute(node,"url",false)
-					.as_string(
-						Config::Value<string>(section.c_str(),"url",url.c_str()).c_str()
-					);
-
-			timeout =
-				Attribute(node,"timeout")
-					.as_uint(
-						Config::Value<unsigned int>(section.c_str(),"timeout",timeout)
-					);
-
-			mimetype =
-				Attribute(node,"mime-type",false)
-					.as_string(
-						Config::Value<string>(section.c_str(),"mime-type",mimetype.c_str()).c_str()
-					);
-
-		}
-
-		virtual ~URLAlert() {
-		}
-
-	};
-
-	class URLAlertFactory : public Factory {
-	public:
-
-		URLAlertFactory() : Factory(Quark::getFromStatic("alert-url")) {
-			this->info = &module_info;
-		}
-
-		virtual ~URLAlertFactory() {
-		}
-
- 		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
- 			parent.push_back(make_shared<URLAlert>(node));
- 		}
-
-		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
- 			parent.push_back(make_shared<URLAlert>(node));
- 		}
-
-	};
-
 	class AlertFactory : public Factory {
-	private:
-
 	public:
 		AlertFactory() : Factory(Quark::getFromStatic("alert")) {
-			this->info = &module_info;
+
+			static const Udjat::ModuleInfo info{
+				PACKAGE_NAME,								// The module name.
+				"Default alert Factory",					// The module description.
+				PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+#ifdef PACKAGE_URL
+				PACKAGE_URL,
+#else
+				"",
+#endif // PACKAGE_URL
+#ifdef PACKAGE_BUG_REPORT
+				PACKAGE_BUG_REPORT
+#else
+				""
+#endif // PACKAGE_BUG_REPORT
+			};
+
+			this->info = &info;
+
 		}
 
 		virtual ~AlertFactory() {
 		}
 
- 		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
- 			Factory::parse(
+		void init() {
+			cout << "alert\t" << "The default alert type is '"
+					<< Config::Value<string>("alert-default","type","default")
+					<< "'" << endl;
+		}
+
+		const string getFactoryNameByType(const pugi::xml_node &node) const {
+
+			return string{"alert-"}
+				+ Attribute(node,"type")
+					.as_string(
+						Config::Value<string>(
+							Alert::getConfigSection(node).c_str(),
+							"type","url").c_str()
+					);
+
+		}
+
+		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+			Factory::parse(
 				getFactoryNameByType(node).c_str(),
 				parent,
 				node
 			);
- 		}
+		}
 
 		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
 			Factory::parse(
@@ -123,12 +85,17 @@
 				parent,
 				node
 			);
- 		}
+		}
 
 	};
-	*/
 
 	void Alert::init() {
+
+		static struct {
+			AlertFactory def;
+		} factories;
+
+		factories.def.init();
 	}
 
  }

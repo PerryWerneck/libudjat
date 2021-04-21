@@ -27,7 +27,7 @@
 
 	mutex Alert::Controller::guard;
 
-	Alert::Controller::Controller() : Worker(Quark::getFromStatic("alerts")), Factory(Quark::getFromStatic("alert")) {
+	Alert::Controller::Controller() : Worker(Quark::getFromStatic("alerts")) {
 
 		static const Udjat::ModuleInfo info{
 			PACKAGE_NAME,								// The module name.
@@ -80,11 +80,18 @@
 
 			} else {
 
-				time_t interval = 0;
+				// Is a restart?
+				if(event->restarting) {
+					event->alert->warning("{}","Restarting event");
+					event->current = 0;
+					event->restarting = false;
+				}
 
 				// Get interval for next try.
-				if(event->alert->retry.current > event->alert->retry.limit) {
+				time_t interval = 0;
+				if(event->current > event->alert->retry.limit) {
 					interval = event->alert->retry.restart;
+					event->restarting = true;
 				} else {
 					interval = event->alert->retry.interval;
 				}
@@ -95,9 +102,8 @@
 					event->next = 0;
 				}
 
-				event->alert->retry.next = event->next;
-				event->alert->retry.last = now;
-				event->alert->retry.current++;
+				event->last = now;
+				event->current++;
 
 				// Fire event.
 				ThreadPool::getInstance().push([event]() {
@@ -157,8 +163,7 @@
 
 		event->alert = alert;
 		alert->active = true;
-		alert->retry.current = 0;
-		alert->retry.next = event->next = (time(nullptr) + alert->retry.start);
+		event->next = (time(nullptr) + alert->retry.start);
 
 		events.push_back(event);
 		MainLoop::getInstance().reset(this);
@@ -190,33 +195,6 @@
 
 	}
 
-	const string Alert::Controller::getFactoryNameByType(const pugi::xml_node &node) {
-
-		return string{"alert-"}
-			+ Attribute(node,"type")
-				.as_string(
-					Config::Value<string>(
-						Alert::getConfigSection(node).c_str(),
-						"type","url").c_str()
-				);
-
-	}
-
-	void Alert::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
-		Factory::parse(
-			getFactoryNameByType(node).c_str(),
-			parent,
-			node
-		);
-	}
-
-	void Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-		Factory::parse(
-			getFactoryNameByType(node).c_str(),
-			parent,
-			node
-		);
-	}
 
 
  }

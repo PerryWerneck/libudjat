@@ -15,6 +15,8 @@
 
 	<random name='random5' update-timer='5'>
 
+		<alert />
+		
 	</random>
 
 	<random name='random10' update-timer='10'>

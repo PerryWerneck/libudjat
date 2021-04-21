@@ -55,10 +55,6 @@
 			time_t start = 0;		///< @brief Seconds to wait before first activation.
 			time_t interval = 60;	///< @brief Seconds to wait on every try.
 			time_t restart = 86400;	///< @brief Seconds to wait for reactivate after maximum tries.
-
-			size_t current = 0;		///< @brief How many retries I did in the current activation?
-			time_t last = 0;		///< @brief Last try.
-			time_t next = 0;		///< @brief Next try.
 		} retry;
 
 	protected:
@@ -69,10 +65,14 @@
 			friend class Alert::Controller;
 
 			/// @brief The event alert.
-			Alert *alert;
+			Alert *alert = nullptr;
 
-			/// @brief The event timer.
-			time_t next;
+			/// @brief Is the event waiting for restart?
+			bool restarting = false;
+
+			size_t current = 0;		///< @brief How many retries I did in the current activation?
+			time_t last = 0;		///< @brief Last try.
+			time_t next = 0;		///< @brief Next try (0 = disabled).
 
 		public:
 			Event();
@@ -99,12 +99,13 @@
 	public:
 
 		/// @brief Get configuration file section for default values.
-		static std::string getConfigSection(const pugi::xml_node &node);
+		static std::string getConfigSection(const pugi::xml_node &node, const char *type = nullptr);
 
 		Alert(const Quark &name);
 		Alert(const char *name);
-		Alert(const pugi::xml_node &node);
+		Alert(const pugi::xml_node &node, const char *type = nullptr);
 		virtual ~Alert();
+
 
 		/// @brief Initialize alert subsystem.
 		static void init();

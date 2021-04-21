@@ -18,17 +18,17 @@ namespace Udjat {
 
 		Json::Value report(Json::arrayValue);
 
-		for(auto method : methods) {
+		for(auto factory : factories) {
 
 			Json::Value value(Json::objectValue);
 
-			value["name"] = method.second->name.c_str();
-			method.second->info->get(value);
+			value["name"] = factory.second->name.c_str();
+			factory.second->info->get(value);
 
 			report.append(value);
 		}
 
-		response["factory"] = report;
+		response["factories"] = report;
 
 	}
 
@@ -38,7 +38,7 @@ namespace Udjat {
 		cout << "Insering factory '" << factory->name << "'" << endl;
 #endif // DEBUG
 
-		methods.insert(make_pair(factory->name.c_str(),factory));
+		factories.insert(make_pair(factory->name.c_str(),factory));
 
 	}
 
@@ -49,22 +49,22 @@ namespace Udjat {
 		cout << "Removing factory '" << factory->name << "'" << endl;
 #endif // DEBUG
 
-		auto entry = methods.find(factory->name.c_str());
-		if(entry == methods.end())
+		auto entry = factories.find(factory->name.c_str());
+		if(entry == factories.end())
 			return;
 
 		if(entry->second != factory)
 			return;
 
-		methods.erase(entry);
+		factories.erase(entry);
 
 	}
 
 	bool Factory::Controller::parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const {
 
-		auto entry = methods.find(name);
+		auto entry = factories.find(name);
 
-		if(entry == methods.end()) {
+		if(entry == factories.end()) {
 #ifdef DEBUG
 			cout << "Cant find factory for element '" << name << "'" << endl;
 #endif // DEBUG
@@ -78,9 +78,9 @@ namespace Udjat {
 
 	bool Factory::Controller::parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const {
 
-		auto entry = methods.find(name);
+		auto entry = factories.find(name);
 
-		if(entry == methods.end()) {
+		if(entry == factories.end()) {
 #ifdef DEBUG
 			cout << "Cant find factory for element '" << name << "'" << endl;
 #endif // DEBUG
