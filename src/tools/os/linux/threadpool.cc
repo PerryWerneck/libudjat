@@ -28,6 +28,7 @@
 
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
  #include <unistd.h>
  #include <semaphore.h>
  #include <cstring>
@@ -47,7 +48,14 @@
  namespace Udjat {
 
 	ThreadPool & ThreadPool::getInstance() {
-		static ThreadPool threadpool("DefPool");
+		class Pool : public ThreadPool {
+		public:
+			Pool() : ThreadPool("ThreadPool") {
+				Logger(name).info("Creating standard pool with {} threads",limits.threads);
+			}
+		};
+
+		static Pool threadpool;
 		return threadpool;
 	}
 
@@ -93,8 +101,10 @@
 
 	void ThreadPool::stop() {
 
+		Logger logger(name);
+
 		if(tasks.size()) {
-			cout << "Stopping thread pool with " << tasks.size() << " pending tasks" << endl;
+			logger.warning("Stopping pool with {} tasks",tasks.size());
 		}
 
 		// Wait for tasks
@@ -102,7 +112,7 @@
 
 		if(threads.active) {
 
-			cout << "Waiting for " << threads.active.load() << " threads on pool" << endl;
+			logger.info("Waiting for {} threads on pool",threads.active.load());
 
 			for(size_t f=0; f < 1000 && (threads.active || threads.waiting); f++) {
 
@@ -116,7 +126,28 @@
 		}
 
 		if(threads.active) {
-			cerr << "Timeout waiting for " << threads.active.load() << " threads" << endl;
+			logger.error("Timeout waiting for {} threads on pool",threads.active.load());
+		}
+
+	}
+
+	void ThreadPool::wait() {
+
+		Logger logger(name);
+
+		std::lock_guard<std::mutex> lock(this->guard);
+
+		if(tasks.size()) {
+			logger.warning("Waiting for {} tasks on pool",tasks.size());
+
+			for(size_t f=0; f < 1000 && tasks.size() > 0; f++) {
+				usleep(100);
+			}
+
+			if(tasks.size()) {
+				logger.error("Timeout waiting for {} tasks on pool",tasks.size());
+			}
+
 		}
 
 	}

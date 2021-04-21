@@ -92,7 +92,9 @@
 	}
 
 	Alert::~Alert() {
-		deactivate();
+		if(events) {
+			Controller::getInstance().remove(this);
+		}
 	}
 
 	std::string Alert::getConfigSection(const pugi::xml_node &node,const char *type) {
@@ -124,6 +126,27 @@
 
 	void Alert::deactivate() const {
 		Controller::getInstance().remove(this);
+	}
+
+	void Alert::insert(Event *event) {
+		if(event->alert) {
+			event->alert->warning("Moving event to alert '{}'",getName());
+		}
+		event->alert = this;
+		events++;
+#ifdef DEBUG
+		info("There are {} active event(s)",events);
+#endif // DEBUG
+	}
+
+	void Alert::remove(Event *event) {
+		if(event->alert == this) {
+			event->alert = nullptr;
+			events--;
+#ifdef DEBUG
+			info("There are {} active event(s)",events);
+#endif // DEBUG
+		}
 	}
 
 	void Alert::set(const Abstract::Agent &agent, bool level_has_changed) {

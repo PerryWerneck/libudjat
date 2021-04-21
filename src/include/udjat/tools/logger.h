@@ -4,6 +4,7 @@
 
 	#include <udjat/defs.h>
 	#include <udjat/tools/quark.h>
+	#include <udjat/tools/logger.h>
 	#include <vector>
 	#include <string>
 	#include <iostream>

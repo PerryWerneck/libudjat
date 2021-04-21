@@ -99,6 +99,9 @@
 				return threads.active > 0;
 			}
 
+			/// @brief Wait for pool cleanup.
+			void wait();
+
 			/// @brief Push a named task.
 			/// @param name	Task name (Should be a static string).
 			/// @param callback Task method.

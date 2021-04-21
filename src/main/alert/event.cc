@@ -27,7 +27,7 @@
 
 	Alert::Event::~Event() {
 		if(alert) {
-			alert->active = false;
+			alert->remove(this);
 		}
 	}
 

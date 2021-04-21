@@ -58,10 +58,12 @@
 	}
 
 	Alert::Controller::~Controller() {
-#ifdef DEBUG
-		cout << "Alert controller was destroyed" << endl;
-#endif // DEBUG
 		MainLoop::getInstance().remove(this);
+
+		// Clear events and wait for all tasks to complete.
+		events.clear();
+		ThreadPool::getInstance().wait();
+
 	}
 
 	void Alert::Controller::onTimer(time_t now) noexcept {
@@ -166,8 +168,7 @@
 	void Alert::Controller::insert(Alert *alert, std::shared_ptr<Alert::Event> event) {
 		lock_guard<mutex> lock(guard);
 
-		event->alert = alert;
-		alert->active = true;
+		alert->insert(event.get());
 		event->next = (time(nullptr) + alert->retry.start);
 
 		events.push_back(event);

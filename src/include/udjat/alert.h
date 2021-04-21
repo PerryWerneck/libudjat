@@ -37,7 +37,7 @@
 		class Controller;
 		friend class Controller;
 
-		bool active = false;
+		size_t events = 0;
 
 		/// @brief Disable alert when it fails to send.
 		bool disable_when_failed = false;
@@ -62,7 +62,7 @@
 		/// @brief Formatted data for sending.
 		class UDJAT_API Event {
 		private:
-			friend class Alert::Controller;
+			friend class Alert;
 
 			/// @brief The event alert.
 			Alert *alert = nullptr;
@@ -106,6 +106,8 @@
 		Alert(const pugi::xml_node &node, const char *type = nullptr);
 		virtual ~Alert();
 
+		void insert(Event *event);
+		void remove(Event *event);
 
 		/// @brief Initialize alert subsystem.
 		static void init();
