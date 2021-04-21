@@ -114,6 +114,10 @@
 
 	}
 
+	void Alert::activate(std::shared_ptr<Alert::Event> event) {
+		Controller::getInstance().insert(this,event);
+	}
+
 	void Alert::deactivate() const {
 		Controller::getInstance().remove(this);
 	}

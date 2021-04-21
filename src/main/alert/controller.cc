@@ -19,6 +19,8 @@
 
  #include "private.h"
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
  #include <udjat/factory.h>
 
  namespace Udjat {
@@ -45,9 +47,97 @@
 
 		Worker::info = &info;
 
+		MainLoop::getInstance().insert(this, 600, [this](const time_t now){
+			ThreadPool::getInstance().push([this,now]() {
+				onTimer(now);
+			});
+			return true;
+		});
+
+
 	}
 
 	Alert::Controller::~Controller() {
+		MainLoop::getInstance().remove(this);
+	}
+
+	void Alert::Controller::onTimer(time_t now) noexcept {
+
+		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "Checking for events" << endl;
+#endif // DEBUG
+
+		time_t timer_value = 600;
+		events.remove_if([now,&timer_value](std::shared_ptr<Alert::Event> event){
+
+			if(!event->next)
+				return true;
+
+			if(event->next < now) {
+
+				timer_value = std::min(timer_value,event->next);
+
+			} else {
+
+				time_t interval = 0;
+
+				// Get interval for next try.
+				if(event->alert->retry.current > event->alert->retry.limit) {
+					interval = event->alert->retry.restart;
+				} else {
+					interval = event->alert->retry.interval;
+				}
+
+				if(interval) {
+					event->next = now + interval;
+				} else {
+					event->next = 0;
+				}
+
+				event->alert->retry.next = event->next;
+				event->alert->retry.last = now;
+				event->alert->retry.current++;
+
+				// Fire event.
+				ThreadPool::getInstance().push([event]() {
+
+					try {
+
+						event->fire();
+						if(event->alert->disable_on_success) {
+							event->disable();
+						}
+
+					} catch(const std::exception &e) {
+
+						event->alert->error("Error '{}' firing event",e.what());
+						if(event->alert->disable_when_failed) {
+							event->disable();
+						}
+
+					} catch(...) {
+
+						event->alert->error("Error '{}' firing event","unexpected");
+						if(event->alert->disable_when_failed) {
+							event->disable();
+						}
+
+					}
+				});
+
+			}
+
+			return event->next == 0;
+
+		});
+
+#ifdef DEBUG
+		cout << "Event timer set to " << to_string(timer_value) << endl;
+#endif // DEBUG
+
+		MainLoop::getInstance().reset(this,timer_value,now+timer_value);
+
 	}
 
 	Alert::Controller & Alert::Controller::getInstance() {
@@ -58,15 +148,33 @@
 
 	void Alert::Controller::work(const Request &request, Response &response) const {
 
-		lock_guard<mutex> lock(guard);
-
 
 		throw runtime_error("Not implemented");
 	}
 
+	void Alert::Controller::insert(Alert *alert, std::shared_ptr<Alert::Event> event) {
+		lock_guard<mutex> lock(guard);
+
+		event->alert = alert;
+		alert->active = true;
+		alert->retry.current = 0;
+		alert->retry.next = event->next = (time(nullptr) + alert->retry.start);
+
+		events.push_back(event);
+		MainLoop::getInstance().reset(this);
+	}
+
 	void Alert::Controller::remove(const Alert *alert) {
+		lock_guard<mutex> lock(guard);
 		events.remove_if([alert](std::shared_ptr<Alert::Event> event){
 			return event->alert == alert;
+		});
+	}
+
+	void Alert::Controller::remove(const Alert::Event *ev) {
+		lock_guard<mutex> lock(guard);
+		events.remove_if([ev](std::shared_ptr<Alert::Event> event){
+			return event.get() == ev;
 		});
 	}
 

@@ -107,8 +107,11 @@ namespace Udjat {
 		/// @brief Insert and emit a timer.
 		void insert(void *id, const std::function<bool(const time_t)> call);
 
+		/// @brief Reset time to 'now'.
+		void reset(void *id);
+
 		/// @brief Reset timer to a new value.
-		time_t reset(void *id, time_t seconds = 0, time_t value = 0);
+		time_t reset(void *id, time_t seconds, time_t value = time(0));
 
 		/// @brief Remove socket/file/timer/module from the list of event sources.
 		void remove(void *id);

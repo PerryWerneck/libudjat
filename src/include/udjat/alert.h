@@ -38,7 +38,13 @@
 		friend class Controller;
 
 		bool active = false;
+
+		/// @brief Disable alert when it fails to send.
 		bool disable_when_failed = false;
+
+		/// @brief Disable alert on sucess fire.
+		bool disable_on_success = false;
+
 		bool reset_when_activated = true;
 
 		/// @brief Activates on every value change.
@@ -65,9 +71,15 @@
 			/// @brief The event alert.
 			Alert *alert;
 
+			/// @brief The event timer.
+			time_t next;
+
 		public:
-			Event(Alert *alert);
+			Event();
 			virtual ~Event();
+
+			/// @brief Disable event.
+			void disable();
 
 			/// @brief Emit alert.
 			virtual void fire() = 0;
@@ -79,7 +91,7 @@
 
 		/// @brief Activate alert event.
 		/// Register the supplied event to be 'fired' from alert controller.
-		void activate(std::shared_ptr<Event> event) const;
+		void activate(std::shared_ptr<Event> event);
 
 		/// @brief Deactivate alert; remove all active events from this alert.
 		void deactivate() const;

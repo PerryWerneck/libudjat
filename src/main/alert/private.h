@@ -49,6 +49,8 @@
 
 		static const string getFactoryNameByType(const pugi::xml_node &node);
 
+		void onTimer(time_t now) noexcept;
+
 	public:
 		static Controller & getInstance();
 		~Controller();
@@ -63,8 +65,14 @@
 		/// @brief Create State alert.
 		void parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 
+		/// @brief Activate alert;
+		void insert(Alert *alert, std::shared_ptr<Alert::Event> event);
+
 		/// @brief Deactivate alert.
 		void remove(const Alert *alert);
+
+		/// @brief Remove event.
+		void remove(const Alert::Event *event);
 
 	};
 

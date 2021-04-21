@@ -106,6 +106,19 @@
 
 	}
 
+	void MainLoop::reset(void *id) {
+
+		lock_guard<mutex> lock(guard);
+		for(auto timer = timers.begin(); timer != timers.end(); timer++) {
+			if(timer->id == id) {
+				timer->next = time(nullptr);
+				wakeup();
+				break;
+			}
+		}
+
+	}
+
 	time_t MainLoop::reset(void *id, time_t seconds, time_t time) {
 
 		lock_guard<mutex> lock(guard);
@@ -116,15 +129,11 @@
 				if(seconds > 0)
 					timer->seconds = seconds;
 
-				if(!time) {
-					time = ::time(nullptr)+timer->seconds;
-				}
-
 				time_t current = timer->next;
 				timer->next = time;
 
 				// If the new timer is lower than the last one wake up main loop to adjust.
-				if(timer->next < current) {
+				if(timer->next <= current) {
 					wakeup();
 				}
 

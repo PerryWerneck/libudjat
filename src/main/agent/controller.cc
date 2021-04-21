@@ -250,12 +250,12 @@ namespace Udjat {
 					} catch(const exception &e) {
 
 						agent->failed(e,"Update failed");
-						MainLoop::getInstance().reset(this,1);	// The refresh time was changed, force refresh;
+						MainLoop::getInstance().reset(this);
 
 					} catch(...) {
 
 						agent->failed("Unexpected error when updating");
-						MainLoop::getInstance().reset(this,1);	// The refresh time was changed, force refresh;
+						MainLoop::getInstance().reset(this);
 
 					}
 
