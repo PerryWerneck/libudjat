@@ -110,6 +110,7 @@
 
 	}
 
+	/*
 	void MainLoop::reset(const void *id) {
 
 #ifdef DEBUG
@@ -127,31 +128,7 @@
 		}
 
 	}
-
-	time_t MainLoop::reset(const void *id, time_t seconds, time_t time) {
-
-		lock_guard<mutex> lock(guard);
-		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
-
-			if(timer->id == id && timer->seconds) {
-
-				if(seconds > 0)
-					timer->seconds = seconds;
-
-				time_t current = timer->next;
-				timer->next = time;
-
-				// If the new timer is lower than the last one wake up main loop to adjust.
-				if(timer->next <= timers.next) {
-					wakeup();
-				}
-
-				return current;
-			}
-
-		}
-		return 0;
-	}
+	*/
 
 
  }

@@ -111,37 +111,7 @@
 					event->next = 0;
 				}
 
-				event->last = now;
-				event->current++;
-
-				// Fire event.
-				/*
-				ThreadPool::getInstance().push([event]() {
-
-					try {
-
-						event->fire();
-						if(event->alert->disable_on_success) {
-							event->disable();
-						}
-
-					} catch(const std::exception &e) {
-
-						event->alert->error("Error '{}' firing event",e.what());
-						if(event->alert->disable_when_failed) {
-							event->disable();
-						}
-
-					} catch(...) {
-
-						event->alert->error("Error '{}' firing event","unexpected");
-						if(event->alert->disable_when_failed) {
-							event->disable();
-						}
-
-					}
-				});
-				*/
+				event->enqueue((event));
 
 			}
 
@@ -170,13 +140,21 @@
 	}
 
 	void Alert::Controller::insert(Alert *alert, std::shared_ptr<Alert::Event> event) {
-		lock_guard<mutex> lock(guard);
 
 		alert->insert(event.get());
-		event->next = (time(nullptr) + alert->retry.start);
 
-		events.push_back(event);
-		MainLoop::getInstance().reset(this);
+		if(alert->retry.start) {
+			event->next = (time(nullptr) + alert->retry.start);
+		} else {
+			Event::enqueue(event);
+		}
+
+		{
+			lock_guard<mutex> lock(guard);
+			events.push_back(event);
+			MainLoop::getInstance().reset(this,alert->retry.start,event->next);
+		}
+
 	}
 
 	void Alert::Controller::remove(const Alert *alert) {

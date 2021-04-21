@@ -251,12 +251,10 @@ namespace Udjat {
 					} catch(const exception &e) {
 
 						agent->failed(e,"Update failed");
-						MainLoop::getInstance().reset(this);
 
 					} catch(...) {
 
 						agent->failed("Unexpected error when updating");
-						MainLoop::getInstance().reset(this);
 
 					}
 
@@ -266,9 +264,7 @@ namespace Udjat {
 
 			});
 
-			cout << "Wait " << (next - time(0)) << endl;
-
-			// MainLoop::getInstance().reset(this,(next - time(0)));
+			MainLoop::getInstance().reset(this,1,next);
 
 		});
 	}

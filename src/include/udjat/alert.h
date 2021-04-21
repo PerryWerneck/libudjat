@@ -74,6 +74,9 @@
 			time_t last = 0;		///< @brief Last try.
 			time_t next = 0;		///< @brief Next try (0 = disabled).
 
+			/// @brief Enqueue event.
+			static void enqueue(std::shared_ptr<Alert::Event> event);
+
 		public:
 			Event();
 			virtual ~Event();

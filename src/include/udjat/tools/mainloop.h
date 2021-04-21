@@ -108,7 +108,7 @@ namespace Udjat {
 		void insert(const void *id, const std::function<bool(const time_t)> call);
 
 		/// @brief Reset time to 'now'.
-		void reset(const void *id);
+		// void reset(const void *id);
 
 		/// @brief Reset timer to a new value.
 		time_t reset(const void *id, time_t seconds, time_t value = time(0));

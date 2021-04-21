@@ -25,6 +25,34 @@
 		id(i),running(0),seconds(s),next(time(0)+s),call(c) { }
 
 
+	time_t MainLoop::reset(const void *id, time_t seconds, time_t time) {
+
+		lock_guard<mutex> lock(guard);
+		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
+
+			if(timer->id == id && timer->seconds) {
+
+				if(seconds > 0)
+					timer->seconds = seconds;
+
+				if(!time)
+					time = ::time(0) + timer->seconds;
+
+				time_t current = timer->next;
+				timer->next = time;
+
+				// If the new timer is lower than the last one wake up main loop to adjust.
+				if(timer->next <= timers.next) {
+					wakeup();
+				}
+
+				return current;
+			}
+
+		}
+		return 0;
+	}
+
 	MainLoop::Timer::Timer(const void *i, const function<bool(const time_t)> c) : Timer(i,1,c) { }
 
 	time_t MainLoop::Timers::run() noexcept {

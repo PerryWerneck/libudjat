@@ -35,6 +35,7 @@
 
 		// Get wait time, update timers.
 		time_t wait = timers.run();
+
 		nfds += getHandlers(&fds, &szPoll);
 
 		// Wait for event.

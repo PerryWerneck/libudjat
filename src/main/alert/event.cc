@@ -36,4 +36,40 @@
 		Alert::Controller::getInstance().remove(this);
 	}
 
+	void Alert::Event::enqueue(std::shared_ptr<Alert::Event> event) {
+
+		event->last = time(0);
+		event->next = event->last + event->alert->retry.interval;
+		event->current++;
+
+		// Fire event.
+		/*
+		ThreadPool::getInstance().push([event]() {
+
+			try {
+
+				event->fire();
+				if(event->alert->disable_on_success) {
+					event->disable();
+				}
+
+			} catch(const std::exception &e) {
+
+				event->alert->error("Error '{}' firing event",e.what());
+				if(event->alert->disable_when_failed) {
+					event->disable();
+				}
+
+			} catch(...) {
+
+				event->alert->error("Error '{}' firing event","unexpected");
+				if(event->alert->disable_when_failed) {
+					event->disable();
+				}
+
+			}
+		});
+		*/
+	}
+
  }
