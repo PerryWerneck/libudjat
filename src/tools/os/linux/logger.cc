@@ -124,11 +124,33 @@ namespace Udjat {
 				TimeStamp tm;
 
 				if(console) {
+					char module[12];
+					memset(module,' ',sizeof(module));
+
 					write(1,tm.to_string());
 					write(1," ");
-					write(1,buffer);
-					write(1,"\n");
 
+					auto pos = buffer.find("\t");
+					if(pos == string::npos) {
+						module[sizeof(module)-1] = 0;
+						write(1,module);
+						write(1," ");
+						write(1,buffer);
+					} else {
+
+						strncpy(module,buffer.c_str(),min(sizeof(module),pos));
+						for(size_t ix = 0; ix < sizeof(module); ix++) {
+							if(module[ix] < ' ') {
+								module[ix] = ' ';
+							}
+						}
+						module[sizeof(module)-1] = 0;
+						write(1,module);
+						write(1," ");
+						write(1,buffer.c_str()+pos+1);
+					}
+
+					write(1,"\n");
 					fsync(1);
 				}
 

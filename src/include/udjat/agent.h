@@ -47,7 +47,6 @@
 					time_t timer = 0;		///< @brief Update time (0=No update).
 					time_t failed = 300;	///< @brief Delay when the agent fails to update.
 					bool on_demand = false;	///< @brief True if agent should update on request.
-//					bool notify = false;	///< @brief Notify when updated?
 				} update;
 
 				std::vector<std::shared_ptr<Agent>> children;
