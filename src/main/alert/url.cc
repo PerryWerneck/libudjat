@@ -62,7 +62,7 @@
 
 		class Event : public Alert::Event {
 		public:
-			Event() {
+			Event() : Alert::Event(Quark::getFromStatic("fix-me")) {
 				cout << "Event was created" << endl;
 			}
 

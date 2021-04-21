@@ -114,9 +114,6 @@
 
 		});
 
-#ifdef DEBUG
-		cout << "Timers: delay=" << (next - now) << " count=" << active.size() << endl;
-#endif // DEBUG
 		return next - now;
 	}
 

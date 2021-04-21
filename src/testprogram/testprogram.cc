@@ -56,7 +56,6 @@ static void test_agent_parser() {
 				}
 
 				void refresh() override {
-					cout << TimeStamp().to_string() << endl;
 					set((unsigned int) rand());
 				}
 
@@ -95,6 +94,7 @@ static void test_agent_parser() {
 
 int main(int argc, char **argv) {
 
+	Logger::redirect();
 	Module::load();
 
 	{
@@ -104,7 +104,6 @@ int main(int argc, char **argv) {
 	test_agent_parser();
 
 	/*
-	// Logger::redirect();
 
 	// test_file_agent();
 	//test_agent_parser();

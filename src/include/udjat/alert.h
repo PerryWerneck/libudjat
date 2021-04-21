@@ -64,6 +64,9 @@
 		private:
 			friend class Alert;
 
+			/// @brief The event name.
+			Quark name;
+
 			/// @brief The event alert.
 			Alert *alert = nullptr;
 
@@ -74,11 +77,11 @@
 			time_t last = 0;		///< @brief Last try.
 			time_t next = 0;		///< @brief Next try (0 = disabled).
 
-			/// @brief Enqueue event.
+			/// @brief Enqueue event, update counter and timestamp for next.
 			static void enqueue(std::shared_ptr<Alert::Event> event);
 
 		public:
-			Event();
+			Event(const Quark &name);
 			virtual ~Event();
 
 			/// @brief Disable event.

@@ -69,49 +69,33 @@
 	void Alert::Controller::onTimer(time_t now) noexcept {
 
 		lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-		cout << "***************** Checking for events" << endl;
-#endif // DEBUG
 
-		time_t timer_value = 600;
-		events.remove_if([now,&timer_value](std::shared_ptr<Alert::Event> event){
+		time_t next = now+600;
+		events.remove_if([now,&next](std::shared_ptr<Alert::Event> event){
 
-			if(!event->next)
+			// No next? That's unexpected; ignore.
+			if(!event->next) {
+				cerr << "Unexpected event '" << event->name << "' whit empty timer, disabling it" << endl;
 				return true;
+			}
 
-			if(!event->alert)
-				return false;
+			if(!event->alert) {
+				clog << "Event '" << event->name << "' has lost his alert, disabling it" << endl;
+				return true;
+			}
 
 			if(event->next < now) {
 
-				timer_value = std::min(timer_value,now - event->next);
+				next = std::min(next,event->next);
 
 			} else {
 
-				// Is a restart?
-				if(event->restarting) {
-					event->alert->warning("{}","Restarting event");
-					event->current = 0;
-					event->restarting = false;
-				}
+				// Enqueue event.
+				Event::enqueue((event));
 
-				// Get interval for next try.
-				time_t interval = 0;
-				if(event->current > event->alert->retry.limit) {
-					interval = event->alert->retry.restart;
-					event->restarting = true;
-				} else {
-					interval = event->alert->retry.interval;
+				if(event->next) {
+					next = std::min(next,event->next);
 				}
-
-				if(interval) {
-					event->next = now + interval;
-					timer_value = std::min(timer_value,interval);
-				} else {
-					event->next = 0;
-				}
-
-				event->enqueue((event));
 
 			}
 
@@ -119,11 +103,7 @@
 
 		});
 
-#ifdef DEBUG
-		cout << "Event timer set to " << to_string(timer_value) << endl;
-#endif // DEBUG
-
-		MainLoop::getInstance().reset(this,timer_value,now+timer_value);
+		MainLoop::getInstance().reset(this,1,next);
 
 	}
 

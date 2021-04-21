@@ -13,9 +13,9 @@
 
 	</agent>
 
-	<random name='random5' update-timer='5'>
+	<random name='random5' update-timer='600'>
 
-		<!-- alert / -->
+		<alert delay-before-retry='3'/>
 		
 	</random>
 

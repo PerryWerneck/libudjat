@@ -40,7 +40,6 @@
 
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait * 1000);
-		cout << "** nSocks=" << nSocks << " wait=" << wait << endl;
 
 		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
 

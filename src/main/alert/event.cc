@@ -19,10 +19,11 @@
 
  #include "private.h"
  #include <ctime>
+ #include <udjat/tools/threadpool.h>
 
  namespace Udjat {
 
-	Alert::Event::Event() {
+	Alert::Event::Event(const Quark &n) : name(n) {
 	}
 
 	Alert::Event::~Event() {
@@ -39,37 +40,76 @@
 	void Alert::Event::enqueue(std::shared_ptr<Alert::Event> event) {
 
 		event->last = time(0);
-		event->next = event->last + event->alert->retry.interval;
 		event->current++;
 
+		// Is an event restart?
+		if(event->restarting) {
+			event->alert->warning("{}","Restarting event");
+			event->current = 1;
+			event->restarting = false;
+		}
+
+		// Set timer for next event
+		{
+			if(event->current >= event->alert->retry.limit) {
+
+				// More than the maximum tries, reset.
+				if(event->alert->retry.restart) {
+					event->next = event->last + event->alert->retry.restart;
+					event->restarting = true;
+				} else {
+					event->next = 0;
+				}
+
+			} else {
+
+				event->next = event->last + event->alert->retry.interval;
+
+			}
+
+		}
+
 		// Fire event.
-		/*
 		ThreadPool::getInstance().push([event]() {
 
 			try {
 
-				event->fire();
-				if(event->alert->disable_on_success) {
-					event->disable();
+				if(event->alert) {
+
+					event->alert->info(
+						"Firing event '{}' ({}/{})",
+						event->name.c_str(),
+						event->current,
+						event->alert->retry.limit
+					);
+
+					event->fire();
+					if(event->alert->disable_on_success) {
+						event->disable();
+						event->alert->info("Event '{}' complete",event->name.c_str());
+					}
+
+				} else {
+					event->next = 0;
 				}
 
 			} catch(const std::exception &e) {
 
-				event->alert->error("Error '{}' firing event",e.what());
+				event->alert->error("Error '{}' firing event '{}'",e.what(),event->name.c_str());
 				if(event->alert->disable_when_failed) {
 					event->disable();
 				}
 
 			} catch(...) {
 
-				event->alert->error("Error '{}' firing event","unexpected");
+				event->alert->error("Unexpected erro firing event '{}'",event->name.c_str());
 				if(event->alert->disable_when_failed) {
 					event->disable();
 				}
 
 			}
 		});
-		*/
+
 	}
 
  }
