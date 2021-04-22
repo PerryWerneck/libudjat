@@ -20,7 +20,9 @@
  #include <config.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
+ #include <iostream>
 
+ using namespace std;
  using namespace pugi;
 
  namespace Udjat {
@@ -51,7 +53,47 @@
 		return xml_attribute();
 	}
 
-	Attribute::Attribute(const xml_node &node, const char *name, bool upsearch) : xml_attribute(find(node, name, upsearch)) {
+	Attribute::Attribute(const xml_node &n, const char *name, bool upsearch) : xml_attribute(find(n, name, upsearch)), node(n) {
+	}
+
+	std::string Attribute::to_string() const {
+		throw runtime_error("Incomplete");
+		return expand(this->node,this->as_string(""));
+	}
+
+	std::string expand(const pugi::xml_node &node, const char *str) {
+
+		string text(str);
+
+		auto from = text.find("${");
+		while(from != string::npos) {
+			auto to = text.find("}",from+3);
+			if(to == string::npos) {
+				throw runtime_error("Invalid ${} usage");
+			}
+
+			Attribute attribute(node,string(text.c_str()+from+2,(to-from)-2).c_str());
+
+			if(attribute) {
+				// Found, replace contents.
+				text.replace(
+					from,
+					(to-from)+1,
+					attribute.as_string()
+				);
+
+				from = text.find("${",from);
+
+			} else {
+
+				// Not found, search next value.
+				from = text.find("${",to);
+			}
+
+			// text.replace(from,(to-from)+1,getTextAttribute(node,string(text.c_str()+from+2,(to-from)-2).c_str()));
+		}
+
+		return text;
 	}
 
  };

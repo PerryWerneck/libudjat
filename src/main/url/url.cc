@@ -35,7 +35,7 @@
 	URL::~URL() {
 	}
 
-	void URL::getInfo(Response &response) {
+	void URL::getInfo(Udjat::Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
 
@@ -169,11 +169,11 @@
 
 	}
 
-	std::string URL::get(const char *mimetype) {
+	std::shared_ptr<URL::Response> URL::get(const char *mimetype) {
 		return protocol->call(*this,URL::Method::Get,mimetype);
 	}
 
-	std::string URL::post(const char *payload, const char *mimetype) {
+	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) {
 		return protocol->call(*this,URL::Method::Post,mimetype,payload);
 	}
 

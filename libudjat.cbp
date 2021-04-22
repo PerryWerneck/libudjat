@@ -106,6 +106,7 @@
 		<Unit filename="src/main/url/method.cc" />
 		<Unit filename="src/main/url/private.h" />
 		<Unit filename="src/main/url/protocol.cc" />
+		<Unit filename="src/main/url/response.cc" />
 		<Unit filename="src/main/url/url.cc" />
 		<Unit filename="src/main/worker/controller.cc" />
 		<Unit filename="src/main/worker/private.h" />
@@ -129,6 +130,7 @@
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/service/private.h" />
 		<Unit filename="src/tools/timestamp.cc" />
+		<Unit filename="src/tools/versions.cc" />
 		<Unit filename="src/tools/virtualmachine.cc" />
 		<Unit filename="src/tools/xml.cc" />
 		<Extensions />

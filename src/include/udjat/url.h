@@ -40,6 +40,38 @@
 	class UDJAT_API URL {
 	public:
 
+		/// @brief URL response
+		class UDJAT_API Response {
+
+			struct {
+				int code = 0;
+				std::string text;
+			} status;
+
+			struct {
+				size_t length = 0;
+				char * payload = nullptr;
+			} response;
+
+		public:
+			Response() = default;
+			virtual ~Response();
+
+			/// @brief Get status code.
+			inline int getStatusCode() const noexcept {
+				return status.code;
+			}
+
+			/// @brief Get status message.
+			inline const char * getStatusMessage() const noexcept {
+				return status.text.c_str();
+			}
+
+			/// @brief Get response payload as string.
+			const char * c_str();
+
+		};
+
 		/// HTTP Request methods.
 		/// <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>
 		class UDJAT_API Method {
@@ -129,14 +161,14 @@
 			/// @param Mimetype
 			/// @param payload URL payload.
 			/// @return String with the host response.
-			virtual std::string call(const URL &url, const Method method, const char *mimetype, const char *payload = nullptr);
+			virtual std::shared_ptr<URL::Response> call(const URL &url, const Method method, const char *mimetype, const char *payload = nullptr);
 
 			/// @brief Call protocol method.
 			/// @param url The URL to call.
 			/// @param method Required method.
 			/// @param payload URL payload.
 			/// @return Host response.
-			Response call(const URL &url, const Method method, const Request &payload);
+			Udjat::Response call(const URL &url, const Method method, const Request &payload);
 
 		};
 
@@ -167,7 +199,7 @@
 		static void insert(std::shared_ptr<Protocol> p);
 
 		/// @brief get list of installed protocols.
-		static void getInfo(Response &response);
+		static void getInfo(Udjat::Response &response);
 
 		URL();
 		URL(const char *url);
@@ -184,10 +216,10 @@
 		int connect(time_t timeout = 0) const;
 
 		/// @brief Get
-		std::string get(const char *mimetype = "");
+		std::shared_ptr<URL::Response> get(const char *mimetype = "");
 
 		/// @brief Post
-		std::string post(const char *payload, const char *mimetype = "");
+		std::shared_ptr<URL::Response> post(const char *payload, const char *mimetype = "");
 
 	};
 

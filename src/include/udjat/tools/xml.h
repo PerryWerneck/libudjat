@@ -33,11 +33,18 @@
 	#include <pugixml.hpp>
 	#include <udjat/defs.h>
 	#include <udjat/tools/xml.h>
+	#include <string>
 
 	namespace Udjat {
 
+		/// @brief Expand, if possible, values ${} from str.
+		std::string expand(const pugi::xml_node &node, const char *str);
+
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {
+		private:
+			const pugi::xml_node &node;
+
 		public:
 			Attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
 
@@ -52,6 +59,8 @@
 			operator bool() const {
 				return as_bool();
 			}
+
+			std::string to_string() const;
 
 		};
 

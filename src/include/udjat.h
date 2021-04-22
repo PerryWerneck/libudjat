@@ -13,6 +13,7 @@
 		void UDJAT_API start() noexcept;
 		void UDJAT_API stop() noexcept;
 		void UDJAT_API reload() noexcept;
+
 	}
 
 #endif // UDJAT_H_INCLUDED

@@ -38,7 +38,7 @@
 #endif // DEBUG
 	}
 
-	std::string URL::Protocol::call(const URL &url, const URL::Method method, const char *mimetype, const char *payload) {
+	std::shared_ptr<URL::Response> URL::Protocol::call(const URL &url, const URL::Method method, const char *mimetype, const char *payload) {
 		throw runtime_error(string{"No back-end protocol for '"} + url.to_string() + "'");
 	}
 
@@ -47,15 +47,18 @@
 	}
 
 
-	Response URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
+	Udjat::Response URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
 
-		Response response;
+		Udjat::Response response;
 
-		string text = call(url,method,"application/json; charset=utf-8",payload.c_str());
+		auto rsp = call(url,method,"application/json; charset=utf-8",payload.c_str());
+		if(rsp->getStatusCode() != 200) {
+			throw runtime_error(rsp->getStatusMessage());
+		}
 
 		// https://stackoverflow.com/questions/31121378/json-cpp-how-to-initialize-from-string-and-get-string-value
 		Json::Reader reader;
-		if(!reader.parse(text.c_str(), response)) {
+		if(!reader.parse(rsp->c_str(), response)) {
 			throw runtime_error(reader.getFormattedErrorMessages());
 		}
 

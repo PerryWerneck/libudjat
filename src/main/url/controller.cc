@@ -38,7 +38,7 @@
 		protocols.push_back(protocol);
 	}
 
-	void URL::Controller::getInfo(Response &response) {
+	void URL::Controller::getInfo(Udjat::Response &response) {
 
 		Json::Value protocols(Json::arrayValue);
 

@@ -17,30 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
- #include <udjat/url.h>
- #include <iostream>
- #include <memory>
- #include <list>
-
- using namespace std;
+ #include "private.h"
 
  namespace Udjat {
 
-	class URL::Controller {
-		Controller();
+	URL::Response::~Response() {
+	}
 
-		list<shared_ptr<Protocol>> protocols;
-
-	public:
-		~Controller();
-		static Controller & getInstance();
-
-		void getInfo(Udjat::Response &response);
-		void insert(std::shared_ptr<Protocol> protocol);
-
-		shared_ptr<Protocol> find(const char *name);
-
-	};
+	const char * URL::Response::c_str() {
+		return response.payload;
+	}
 
  }
