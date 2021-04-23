@@ -63,7 +63,9 @@
 
 	std::string expand(const pugi::xml_node &node, const char *str) {
 
-		return Udjat::expand(str,[node](const char *key){
+		string text(str);
+
+		expand(text,[node](const char *key){
 
 			Attribute attribute(node,key);
 			if(attribute) {
@@ -74,38 +76,7 @@
 
 		});
 
-		/*
-		string text(str);
-
-		auto from = text.find("${");
-		while(from != string::npos) {
-			auto to = text.find("}",from+3);
-			if(to == string::npos) {
-				throw runtime_error("Invalid ${} usage");
-			}
-
-			Attribute attribute(node,string(text.c_str()+from+2,(to-from)-2).c_str());
-
-			if(attribute) {
-				// Found, replace contents.
-				text.replace(
-					from,
-					(to-from)+1,
-					attribute.as_string()
-				);
-
-				from = text.find("${",from);
-
-			} else {
-
-				// Not found, search next value.
-				from = text.find("${",to);
-			}
-
-			// text.replace(from,(to-from)+1,getTextAttribute(node,string(text.c_str()+from+2,(to-from)-2).c_str()));
-		}
 		return text;
-		*/
 
 	}
 

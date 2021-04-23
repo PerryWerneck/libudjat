@@ -25,9 +25,7 @@
 
  namespace Udjat {
 
-	std::string UDJAT_API expand(const char *str, std::function<std::string (const char *key)> exec) {
-
-		string text(str);
+	void UDJAT_API expand(string &text, std::function<std::string (const char *key)> exec) {
 
 		auto from = text.find("${");
 		while(from != string::npos) {
@@ -59,8 +57,6 @@
 			}
 
 		}
-
-		return text;
 
 	}
 

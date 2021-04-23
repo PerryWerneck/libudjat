@@ -24,7 +24,7 @@
 		/// @brief Expands ${key} tags.
 		/// @param str	String to expand.
 		/// @param exec Method to expand (Returns "${}" to disable expansion).
-		std::string UDJAT_API expand(const char *str, std::function<std::string (const char *key)> exec);
+		void UDJAT_API expand(std::string &str, std::function<std::string (const char *key)> exec);
 
 	}
 
