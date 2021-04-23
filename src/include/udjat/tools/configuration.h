@@ -10,6 +10,8 @@
 
 		namespace Config {
 
+			bool hasGroup(const std::string &group);
+
 			class UDJAT_API File {
 			private:
 
@@ -35,6 +37,8 @@
 				~File();
 
 				void reload();
+
+				bool hasGroup(const std::string &group);
 
 				int32_t get(const std::string &group, const std::string &name, const int32_t def) const;
 				int64_t get(const std::string &group, const std::string &name, const int64_t def) const;

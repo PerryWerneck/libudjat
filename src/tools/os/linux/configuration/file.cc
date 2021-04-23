@@ -47,6 +47,10 @@
 		return file;
 	}
 
+	bool Config::hasGroup(const std::string &group) {
+		return Config::File::getInstance().hasGroup(group);
+	}
+
 	Config::File::File() : hFile(nullptr) {
 
 		open();
@@ -130,6 +134,31 @@
 
 		}
 
+	}
+
+	bool Config::File::hasGroup(const std::string &group) {
+
+		size_t length = 0;
+		char **groups;
+
+		std::lock_guard<std::recursive_mutex> lock(guard);
+
+		econf_err err = econf_getGroups((econf_file *) hFile, &length, &groups);
+
+		if(err != ECONF_SUCCESS)
+			throw std::runtime_error(econf_errString(err));
+
+		bool rc = false;
+		for(size_t ix = 0; ix < length; ix++) {
+			if(!strcasecmp(groups[ix],group.c_str())) {
+				rc = true;
+				break;
+			}
+		}
+
+		econf_freeArray(groups);
+
+		return rc;
 	}
 
 	int32_t Config::File::get(const std::string &group, const std::string &name, const int32_t def) const {

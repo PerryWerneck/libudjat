@@ -107,16 +107,26 @@
 
 		// Then type (if available)
 		if(type) {
-			return string{"alert-"} + type;
+			string section = string{"alert-"} + type;
+			if(Config::hasGroup(section))
+				return section;
 		}
 
 		// Then for the node name in the format alert-${type}
 		const char *name = node.name();
 		if(!strncasecmp(name,"alert-",6) && name[7]) {
-			return name;
+			if(Config::hasGroup(name))
+				return name;
 		}
 
-		return string{"alert-"} + Controller::getType(node);
+		// Check for type
+		{
+			string section = string{"alert-"} + Controller::getType(node);
+			if(Config::hasGroup(section))
+				return section;
+		}
+
+		return "alert-default";
 
 	}
 
