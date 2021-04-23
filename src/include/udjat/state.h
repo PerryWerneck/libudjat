@@ -106,6 +106,8 @@
 				void activate(const Agent &agent) noexcept;
 				void deactivate(const Agent &agent) noexcept;
 
+				/// @brief Expand ${} tags on string.
+				virtual void expand(std::string &text);
 
 			};
 

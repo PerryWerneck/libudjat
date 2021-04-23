@@ -13,6 +13,7 @@
  #include <udjat/alert.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
+ #include <udjat.h>
 
  using namespace std;
 
@@ -142,6 +143,39 @@ namespace Udjat {
 			}
 
 		}
+	}
+
+
+	void Abstract::State::expand(std::string &text) {
+
+		Udjat::expand(text,[this](const char *key) {
+
+			if(!strcasecmp(key,"level")) {
+				return string(to_string(this->level));
+			}
+
+			struct {
+				const char *key;
+				const Quark &value;
+			} values[] = {
+//				{ "state.name",		this->name		},	// FIXME: Why not give the state a name?
+				{ "state.summary",	this->summary	},
+				{ "state.body",		this->body		},
+				{ "state.uri", 		this->uri		},
+			};
+
+			for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
+
+				if(!strcasecmp(values[ix].key,key)) {
+					return string(values[ix].value.c_str());
+				}
+
+			}
+
+			return string{"{}"};
+
+		});
+
 	}
 
 }

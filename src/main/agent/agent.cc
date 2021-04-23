@@ -27,6 +27,7 @@
 
  #include "private.h"
  #include <cstring>
+ #include <udjat.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
 
@@ -310,6 +311,73 @@ namespace Udjat {
 
 		// Default method should return the current state with no change.
 		return this->state;
+
+	}
+
+	void Abstract::Agent::expand(std::string &text) {
+
+		Udjat::expand(text,[this](const char *key) {
+
+			// Agent properties.
+			{
+				struct {
+					const char *key;
+					const Quark &value;
+				} values[] = {
+					{ "agent.name",		this->name		},
+					{ "agent.label",	this->label		},
+					{ "agent.summary",	this->summary	},
+					{ "agent.uri", 		this->uri		},
+					{ "agent.icon", 	this->icon		}
+				};
+
+				for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
+
+					if(!strcasecmp(values[ix].key,key)) {
+						return string(values[ix].value.c_str());
+					}
+
+				}
+			}
+
+			if(this->state) {
+
+				struct {
+					const char *key;
+					const Quark &agent;
+					const Quark &state;
+				} values[] = {
+					{
+						"summary",
+						this->summary,
+						this->state->getSummary()
+					},
+					{
+						"uri",
+						this->uri,
+						this->state->getUri()
+					}
+				};
+
+				for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
+
+					if(!strcasecmp(values[ix].key,key)) {
+
+						if(values[ix].state) {
+							return string(values[ix].state.c_str());
+						}
+
+						return string(values[ix].agent.c_str());
+
+					}
+
+				}
+
+			}
+
+			return string{"{}"};
+
+		});
 
 	}
 

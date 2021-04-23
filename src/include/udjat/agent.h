@@ -181,6 +181,9 @@
 				/// @brief Insert State.
 				virtual void append_state(const pugi::xml_node &node);
 
+				/// @brief Expand ${} tags on string.
+				virtual void expand(std::string &text);
+
 			};
 
 
