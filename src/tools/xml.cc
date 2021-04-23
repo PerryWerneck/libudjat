@@ -21,6 +21,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <iostream>
+ #include <udjat.h>
 
  using namespace std;
  using namespace pugi;
@@ -57,12 +58,23 @@
 	}
 
 	std::string Attribute::to_string() const {
-		throw runtime_error("Incomplete");
 		return expand(this->node,this->as_string(""));
 	}
 
 	std::string expand(const pugi::xml_node &node, const char *str) {
 
+		return Udjat::expand(str,[node](const char *key){
+
+			Attribute attribute(node,key);
+			if(attribute) {
+				return attribute.as_string();
+			}
+
+			return "${}";
+
+		});
+
+		/*
 		string text(str);
 
 		auto from = text.find("${");
@@ -92,8 +104,9 @@
 
 			// text.replace(from,(to-from)+1,getTextAttribute(node,string(text.c_str()+from+2,(to-from)-2).c_str()));
 		}
-
 		return text;
+		*/
+
 	}
 
  };

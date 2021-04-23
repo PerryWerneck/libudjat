@@ -101,7 +101,23 @@ int main(int argc, char **argv) {
 		static auto module = new Module(Quark::getFromStatic("sample"));
 	}
 
-	test_agent_parser();
+	{
+		cout 	<< "Expand= '"
+				<< Udjat::expand("v1=${v1} v2=${v2} v3=${v3}",
+					[](const char *key){
+
+						if(strcasecmp(key,"v1") == 0) {
+							return string{"Value of V1"};
+						} else if(strcasecmp(key,"v2") == 0) {
+							return string{"Value of V2"};
+						}
+						return string{"${}"};
+					})
+				<< "'" << endl;
+
+	}
+
+	// test_agent_parser();
 
 	/*
 
