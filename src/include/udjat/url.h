@@ -42,6 +42,7 @@
 
 		/// @brief URL response
 		class UDJAT_API Response {
+		protected:
 
 			struct {
 				int code = 0;
@@ -129,13 +130,13 @@
 		protected:
 
 			/// @brief The default port name.
-			const char *portname;
+			Quark portname;
 
 			/// @brief Module information.
 			const ModuleInfo *info;
 
 		public:
-			Protocol(const Quark &protocol, const char *portname = "");
+			Protocol(const Quark &protocol, const Quark &portname);
 			virtual ~Protocol();
 
 			inline const char * c_str() const {
@@ -148,7 +149,7 @@
 
 			/// @brief Get default port name;
 			inline const char * getDefaultPortName() const noexcept {
-				return portname;
+				return portname.c_str();
 			}
 
 			/// @brief Connect to URL.
@@ -207,6 +208,17 @@
 
 		/// @brief Assign value to URL
 		URL & assign(const char *url);
+
+		/// @brief Get Domain Name
+		inline const char * getDomainName() const noexcept {
+			return domain.c_str();
+		}
+
+		/// @brief Get Port Number
+		int getPortNumber() const;
+
+		/// @brief Get File name.
+		const char * getFileName() const;
 
 		/// @brief Get URL as string
 		std::string to_string() const;

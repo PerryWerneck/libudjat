@@ -39,6 +39,14 @@
 		Controller::getInstance().getInfo(response);
 	}
 
+	int URL::getPortNumber() const {
+		return ::atoi(port.c_str());
+	}
+
+	const char * URL::getFileName() const {
+		return filename.c_str();
+	}
+
 	URL & URL::assign(const char *u) {
 
 		string url = unescape(u);
