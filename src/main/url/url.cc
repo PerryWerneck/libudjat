@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <netdb.h>
 
  namespace Udjat {
 
@@ -39,8 +40,34 @@
 		Controller::getInstance().getInfo(response);
 	}
 
+	const char * URL::getPortName() const {
+		if(port.empty()) {
+			const char *portname = protocol->getDefaultPortName();
+			if(!(portname && *portname)) {
+				portname = protocol->c_str();
+			}
+			return portname;
+		}
+		return port.c_str();
+	}
+
 	int URL::getPortNumber() const {
-		return ::atoi(port.c_str());
+
+		const char * portname = getPortName();
+
+		// Convert numeric ports direct.
+		int port = atoi(portname);
+		if(port)
+			return port;
+
+		// Can't convert numeric, search by port name.
+		struct servent *se = getservbyname(portname,NULL);
+		if(!se) {
+			throw runtime_error(string{"Can't find port number for service '"} + portname + "'");
+		}
+
+		return htons(se->s_port);
+
 	}
 
 	const char * URL::getFileName() const {

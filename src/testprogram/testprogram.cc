@@ -26,6 +26,7 @@
  #include <random>
  #include <ctime>
  #include <cstdlib>
+ #include <netdb.h>
 
  using namespace std;
  using namespace Udjat;

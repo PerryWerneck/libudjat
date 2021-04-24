@@ -214,6 +214,9 @@
 			return domain.c_str();
 		}
 
+		/// @brief Get Port name.
+		const char * getPortName() const;
+
 		/// @brief Get Port Number
 		int getPortNumber() const;
 
