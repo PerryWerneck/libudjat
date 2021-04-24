@@ -20,94 +20,140 @@
  #include "private.h"
  #include <ctime>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
+
+	std::mutex Alert::Event::guard;
 
 	Alert::Event::Event(const Quark &n) : name(n) {
 	}
 
 	Alert::Event::~Event() {
-		if(alert) {
-			alert->remove(this);
+		if(parent) {
+			parent->remove(this);
 		}
 	}
 
 	void Alert::Event::disable() {
-		next = 0;
+		alerts.next = 0;
 		Alert::Controller::getInstance().remove(this);
+	}
+
+	void Alert::Event::success() {
+		alerts.success++;
+		next();
+	}
+
+	void Alert::Event::failed() {
+		alerts.failed++;
+		next();
+	}
+
+	void Alert::Event::next() {
+
+		if(!parent) {
+			alerts.next = 0;
+			cout << "Event '" << name << "' lost his parent" << endl;
+		}
+
+		if( (alerts.success + alerts.failed) >= parent->retry.limit ) {
+
+			if(parent->retry.restart) {
+				restarting = true;
+				alerts.next = time(0) + parent->retry.restart;
+				parent->info("Alert '{}' reached the maximum number of emissions, sleeping until {}",
+								name.c_str(),TimeStamp(alerts.next).to_string());
+
+			} else {
+				parent->info("Alert '{}' reached the maximum number of emissions, stopping",name.c_str());
+				alerts.next = 0;
+			}
+		} else {
+
+			alerts.next = time(0) + parent->retry.interval;
+
+		}
+
 	}
 
 	void Alert::Event::enqueue(std::shared_ptr<Alert::Event> event) {
 
-		event->last = time(0);
-		event->current++;
+		lock_guard<mutex> lock(guard);
+
+		if(!event->parent) {
+			event->alerts.next = 0;
+			cout << "Event '" << event->name << "' lost his parent" << endl;
+			return;
+		}
+
+		if(event->running) {
+			event->parent->warning(
+				"Event '{}' is active since {}",
+					event->name.c_str(),
+					TimeStamp(event->running).to_string()
+			);
+			event->alerts.next = time(0) + event->parent->retry.interval;
+			return;
+		}
+
+		if(event->restarting) {
+			event->restarting = false;
+			event->parent->info(
+				"Restarting event '{}'",
+					event->name.c_str()
+			);
+			event->reset();
+		}
+
+		event->running = time(0);
+		event->alerts.next = event->running + event->parent->retry.interval;
 
 		// Is an event restart?
 		if(event->restarting) {
-			event->alert->warning("{}","Restarting event");
-			event->current = 1;
 			event->restarting = false;
+			event->reset();
 		}
 
-		// Set timer for next event
-		{
-			if(event->current >= event->alert->retry.limit) {
-
-				// More than the maximum tries, reset.
-				if(event->alert->retry.restart) {
-					event->next = event->last + event->alert->retry.restart;
-					event->restarting = true;
-				} else {
-					event->next = 0;
-				}
-
-			} else {
-
-				event->next = event->last + event->alert->retry.interval;
-
-			}
-
-		}
-
-		// Fire event.
+		// Enqueue alert emission.
 		ThreadPool::getInstance().push([event]() {
 
 			try {
 
-				if(event->alert) {
+				if(event->parent) {
 
-					event->alert->info(
-						"Firing event '{}' ({}/{})",
+					event->parent->info(
+						"Emitting alert '{}' ({}/{})",
 						event->name.c_str(),
-						event->current,
-						event->alert->retry.limit
+						(event->alerts.success + event->alerts.failed + 1),
+						event->parent->retry.limit
 					);
 
-					event->fire();
-					if(event->alert->disable_on_success) {
-						event->disable();
-						event->alert->info("Event '{}' complete",event->name.c_str());
-					}
+					event->alert();
+					event->success();
 
 				} else {
-					event->next = 0;
+					event->alerts.next = 0;
 				}
 
 			} catch(const std::exception &e) {
 
-				event->alert->error("Error '{}' firing event '{}'",e.what(),event->name.c_str());
-				if(event->alert->disable_when_failed) {
-					event->disable();
-				}
+				event->parent->error("Error '{}' firing event '{}'",e.what(),event->name.c_str());
+				event->failed();
 
 			} catch(...) {
 
-				event->alert->error("Unexpected erro firing event '{}'",event->name.c_str());
-				if(event->alert->disable_when_failed) {
-					event->disable();
-				}
+				event->parent->error("Unexpected error firing event '{}'",event->name.c_str());
+				event->failed();
 
 			}
+
+			// Reset 'running' flag.
+			{
+				lock_guard<mutex> lock(guard);
+				event->running = 0;
+			}
+
 		});
 
 	}

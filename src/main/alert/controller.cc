@@ -73,33 +73,35 @@
 		time_t next = now+600;
 		events.remove_if([now,&next](std::shared_ptr<Alert::Event> event){
 
-			// No next? That's unexpected; ignore.
-			if(!event->next) {
-				cerr << "Unexpected event '" << event->name << "' whit empty timer, disabling it" << endl;
-				return true;
-			}
+			// Event was disable, remove it.
 
-			if(!event->alert) {
+			if(!event->parent) {
 				clog << "Event '" << event->name << "' has lost his alert, disabling it" << endl;
 				return true;
 			}
 
-			if(event->next < now) {
+			if(event->alerts.next) {
 
-				next = std::min(next,event->next);
+				// Event is active.
 
-			} else {
+				if(event->alerts.next > now) {
 
-				// Enqueue event.
-				Event::enqueue((event));
+					next = std::min(next,event->alerts.next);
 
-				if(event->next) {
-					next = std::min(next,event->next);
+				} else {
+
+					// Enqueue event.
+					Event::enqueue(event);
+
+					if(event->alerts.next) {
+						next = std::min(next,event->alerts.next);
+					}
+
 				}
 
 			}
 
-			return event->next == 0;
+			return event->alerts.next == 0;
 
 		});
 
@@ -124,7 +126,7 @@
 		alert->insert(event.get());
 
 		if(alert->retry.start) {
-			event->next = (time(nullptr) + alert->retry.start);
+			event->alerts.next = (time(0) + alert->retry.start);
 		} else {
 			Event::enqueue(event);
 		}
@@ -132,7 +134,7 @@
 		{
 			lock_guard<mutex> lock(guard);
 			events.push_back(event);
-			MainLoop::getInstance().reset(this,alert->retry.start,event->next);
+			MainLoop::getInstance().reset(this,1,event->alerts.next);
 		}
 
 	}
@@ -140,7 +142,7 @@
 	void Alert::Controller::remove(const Alert *alert) {
 		lock_guard<mutex> lock(guard);
 		events.remove_if([alert](std::shared_ptr<Alert::Event> event){
-			return event->alert == alert;
+			return event->parent == alert;
 		});
 	}
 

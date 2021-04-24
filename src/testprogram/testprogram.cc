@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
 		static auto module = new Module(Quark::getFromStatic("sample"));
 	}
 
+	/*
 	{
 		string text{"v1=${v1} v2=${v2} v3=${v3}"};
 
@@ -122,9 +123,10 @@ int main(int argc, char **argv) {
 				<< "'" << endl;
 
 	}
+	*/
 
 
-	// test_agent_parser();
+	test_agent_parser();
 
 	/*
 

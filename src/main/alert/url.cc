@@ -70,8 +70,8 @@
 				cout << "Event was destroyed" << endl;
 			}
 
-			void fire() override {
-				cout << "URL Event was fired" << endl;
+			void alert() override {
+				cout << "Emitting URL Alert" << endl;
 			}
 
 		};

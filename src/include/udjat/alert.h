@@ -64,21 +64,45 @@
 		private:
 			friend class Alert;
 
+			/// @brief Mutex for serialization.
+			static std::mutex guard;
+
 			/// @brief The event name.
 			Quark name;
 
-			/// @brief The event alert.
-			Alert *alert = nullptr;
+			/// @brief The alert description.
+			Alert *parent = nullptr;
 
-			/// @brief Is the event waiting for restart?
+			/// @brief Is the event running?
+			time_t running = 0;
+
+			/// @brief Is the event restarting?
 			bool restarting = false;
 
-			size_t current = 0;		///< @brief How many retries I did in the current activation?
-			time_t last = 0;		///< @brief Last try.
-			time_t next = 0;		///< @brief Next try (0 = disabled).
+			/// @brief Control of alerts.
+			struct {
+				size_t success = 0;		///< @brief How many successful sends in the current cycle.
+				size_t failed = 0;		/// @brief How many failed sends in the current cycle.
+				time_t last = 0;		///< @brief Last try.
+				time_t next = 0;		///< @brief Next try (0 = disabled).
+			} alerts;
+
+			/// @brief Restart cicle.
+			void reset() {
+				alerts.success = alerts.failed = 0;
+			}
+
+			/// @brief Update timer to next event.
+			void next();
 
 			/// @brief Enqueue event, update counter and timestamp for next.
 			static void enqueue(std::shared_ptr<Alert::Event> event);
+
+			/// @brief Alert was emitted.
+			void success();
+
+			/// @brief Alert was failed.
+			void failed();
 
 		public:
 			Event(const Quark &name);
@@ -88,7 +112,7 @@
 			void disable();
 
 			/// @brief Emit alert.
-			virtual void fire() = 0;
+			virtual void alert() = 0;
 
 		};
 

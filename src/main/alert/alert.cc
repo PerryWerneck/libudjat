@@ -139,10 +139,11 @@
 	}
 
 	void Alert::insert(Event *event) {
-		if(event->alert) {
-			event->alert->warning("Moving event to alert '{}'",getName());
+		if(event->parent) {
+			event->parent->events--;
+			event->parent->warning("Moving event to alert '{}'",getName());
 		}
-		event->alert = this;
+		event->parent = this;
 		events++;
 #ifdef DEBUG
 		info("There are {} active event(s)",events);
@@ -150,8 +151,8 @@
 	}
 
 	void Alert::remove(Event *event) {
-		if(event->alert == this) {
-			event->alert = nullptr;
+		if(event->parent == this) {
+			event->parent = nullptr;
 			events--;
 #ifdef DEBUG
 			info("There are {} active event(s)",events);
