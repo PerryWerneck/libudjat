@@ -32,13 +32,7 @@
 	Alert::Event::Event(const Quark &name) : Logger(name) {
 	}
 
-	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event() {
-
-		if( (Quark) state) {
-			name = (Quark) state;
-		} else {
-			name = (Quark) agent;
-		}
+	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event((Quark) agent) {
 
 	}
 
