@@ -105,7 +105,9 @@
 			void failed();
 
 		public:
+			Event();
 			Event(const Quark &name);
+			Event(const Abstract::Agent &agent, const Abstract::State &state);
 			virtual ~Event();
 
 			/// @brief Disable event.

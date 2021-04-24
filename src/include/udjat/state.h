@@ -45,6 +45,9 @@
 				/// @brief Notify on state activation?
 				bool notify = false;
 
+				/// @brief State name
+				Quark name;
+
 			private:
 
 				Level level;		///< @brief State level.
@@ -67,6 +70,10 @@
 				}
 
 				virtual ~State();
+
+				operator Quark() const {
+					return name;
+				}
 
 				static const char * to_string(const Level level);
 
@@ -107,7 +114,7 @@
 				void deactivate(const Agent &agent) noexcept;
 
 				/// @brief Expand ${} tags on string.
-				virtual void expand(std::string &text);
+				virtual void expand(std::string &text) const;
 
 			};
 

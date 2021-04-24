@@ -35,10 +35,11 @@
 					Config::Value<string>(section.c_str(),"method",method.c_str()).c_str()
 				);
 
+		// Use 'to_string' to expand macros.
 		url =
 			Attribute(node,"url",false)
-				.as_string(
-					Config::Value<string>(section.c_str(),"url",url.c_str()).c_str()
+				.to_string(
+					Config::Value<string>(section.c_str(),"url",url.c_str())
 				);
 
 		timeout =
@@ -62,22 +63,37 @@
 
 		class Event : public Alert::Event {
 		public:
-			Event() : Alert::Event(Quark::getFromStatic("fix-me")) {
-				cout << "Event was created" << endl;
+
+			string url;
+			string payload;
+
+			Event(const Abstract::Agent &agent, const Abstract::State &state,string &u) : Alert::Event(agent, state),url(u) {
+				cout << "Event '" << url << "' created" << endl;
 			}
 
 			virtual ~Event() {
-				cout << "Event was destroyed" << endl;
+				cout << "Event '" << url << "' destroyed" << endl;
 			}
 
 			void alert() override {
-				cout << "Emitting URL Alert" << endl;
+				cout << "Emitting '" << url << "'" << endl;
 			}
 
 		};
 
-		Alert::activate(make_shared<Event>());
+		// Expand URL.
+		string url = this->url.c_str();
+		agent.expand(url);
+		state.expand(url);
 
+		// Create event.
+		auto event = make_shared<Event>(agent,state,url);
+
+		// Setup event.
+
+
+		// Activate event.
+		Alert::activate(event);
 	}
 
 

@@ -60,7 +60,7 @@
 				return as_bool();
 			}
 
-			std::string to_string() const;
+			std::string to_string(const std::string &def) const;
 
 		};
 

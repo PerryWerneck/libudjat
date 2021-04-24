@@ -79,8 +79,6 @@
 		<Unit filename="src/main/alert/init.cc" />
 		<Unit filename="src/main/alert/private.h" />
 		<Unit filename="src/main/alert/url.cc" />
-		<Unit filename="src/main/event/controller.cc" />
-		<Unit filename="src/main/event/event.cc" />
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />

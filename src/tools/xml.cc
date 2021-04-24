@@ -57,8 +57,8 @@
 	Attribute::Attribute(const xml_node &n, const char *name, bool upsearch) : xml_attribute(find(n, name, upsearch)), node(n) {
 	}
 
-	std::string Attribute::to_string() const {
-		return expand(this->node,this->as_string(""));
+	std::string Attribute::to_string(const string &def) const {
+		return expand(this->node,this->as_string(def.c_str()));
 	}
 
 	std::string expand(const pugi::xml_node &node, const char *str) {

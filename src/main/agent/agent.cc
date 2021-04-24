@@ -314,7 +314,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::expand(std::string &text) {
+	void Abstract::Agent::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key) {
 
@@ -375,7 +375,10 @@ namespace Udjat {
 
 			}
 
-			return string{"{}"};
+#ifdef DEBUG
+			cout << "Can't find key '" << key << "'" << endl;
+#endif // DEBUG
+			return string{"${}"};
 
 		});
 

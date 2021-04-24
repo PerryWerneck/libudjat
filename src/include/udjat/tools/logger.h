@@ -76,7 +76,12 @@
 			Logger(const Quark &name);
 			~Logger();
 
-			/// @brief Get Agent name
+			/// @brief Convert to quark (Logger name)
+			operator Quark() const {
+				return this->name;
+			}
+
+			/// @brief Get Logger name
 			const char * getName() const noexcept {
 				return this->name.c_str();
 			}

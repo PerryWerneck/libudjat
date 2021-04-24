@@ -20,6 +20,7 @@
  #include <udjat/defs.h>
  #include <udjat.h>
  #include <cstring>
+ #include <iostream>
 
  using namespace std;
 
@@ -52,7 +53,7 @@
 			} else {
 
 				// Value was not expanded, ignore it.
-				from = text.find("${",to);
+				from = text.find("${",to+1);
 
 			}
 

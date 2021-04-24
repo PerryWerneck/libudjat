@@ -56,6 +56,7 @@ namespace Udjat {
 			getLevelFromName(Attribute(node,"level",false).as_string(levelNames[unimportant])),
 			Attribute(node,"summary",true).as_string()) {
 
+		this->name = Udjat::Attribute(node,"name").as_string();
 		this->uri = Udjat::Attribute(node,"uri").as_string();
 
 	}
@@ -145,8 +146,7 @@ namespace Udjat {
 		}
 	}
 
-
-	void Abstract::State::expand(std::string &text) {
+	void Abstract::State::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key) {
 
@@ -158,7 +158,7 @@ namespace Udjat {
 				const char *key;
 				const Quark &value;
 			} values[] = {
-//				{ "state.name",		this->name		},	// FIXME: Why not give the state a name?
+				{ "state.name",		this->name		},
 				{ "state.summary",	this->summary	},
 				{ "state.body",		this->body		},
 				{ "state.uri", 		this->uri		},
@@ -172,7 +172,7 @@ namespace Udjat {
 
 			}
 
-			return string{"{}"};
+			return string{"${}"};
 
 		});
 

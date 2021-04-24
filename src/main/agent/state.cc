@@ -60,23 +60,6 @@ namespace Udjat {
 
 	}
 
-	/*
-	static time_t getDelayAfterException() noexcept {
-
-		try {
-
-			return Config::File::getInstance().get("delay","after_exception",10);
-
-		} catch(const exception &e) {
-
-			cerr << PACKAGE_NAME << "\t" << e.what() << endl;
-
-		}
-
-		return 10;
-	}
-	*/
-
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const std::exception &e, const char *message) noexcept {
 
