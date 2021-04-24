@@ -18,14 +18,45 @@
  */
 
  #include "private.h"
+ #include <json/json.h>
 
  namespace Udjat {
 
 	URL::Response::~Response() {
 	}
 
-	const char * URL::Response::c_str() {
-		return response.payload;
+	const char * URL::Response::c_str() const {
+		if(response.payload)
+			return response.payload;
+		throw system_error(ENODATA,system_category(),(status.text.empty() ? "Empty response" : status.text.c_str()));
+	}
+
+	URL::Response::operator Json::Value() const {
+
+		Json::Value value;
+		Json::CharReaderBuilder builder;
+		JSONCPP_STRING err;
+
+		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+		if(response.payload) {
+
+			if (!reader->parse(response.payload, response.payload+response.length, &value, &err)) {
+				throw runtime_error(err);
+			}
+
+		} else {
+
+			// TODO: Create json.
+			Json::Value error(Json::objectValue);
+			error["code"] = status.code;
+			error["message"] = status.text;
+			value["error"] = error;
+
+		}
+
+		return value;
+
 	}
 
  }

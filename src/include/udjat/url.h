@@ -69,7 +69,14 @@
 			}
 
 			/// @brief Get response payload as string.
-			const char * c_str();
+			const char * c_str() const;
+
+			inline operator const char *() const {
+				return c_str();
+			}
+
+			/// @brief Get response payload as json.
+			operator Json::Value() const;
 
 		};
 
@@ -191,6 +198,11 @@
 		/// @brief The URL filename.
 		std::string filename;
 
+		/// @brief Cache information.
+		struct {
+			time_t	maxage = 0;		///< @brief Max age (for http header)
+		} cache;
+
 	public:
 
 		/// @brief Unescape URL
@@ -205,6 +217,11 @@
 		URL();
 		URL(const char *url);
 		~URL();
+
+		/// @brief get URL max-age.
+		inline time_t getMaxAge() const noexcept {
+			return this->cache.maxage;
+		}
 
 		/// @brief Assign value to URL
 		URL & assign(const char *url);
@@ -230,11 +247,14 @@
 		/// @return Socket connected to host.
 		int connect(time_t timeout = 0) const;
 
+		/// @brief do a 'get' request, return response as json.
+		operator Json::Value() const;
+
 		/// @brief Get
-		std::shared_ptr<URL::Response> get(const char *mimetype = "");
+		std::shared_ptr<URL::Response> get(const char *mimetype = "") const;
 
 		/// @brief Post
-		std::shared_ptr<URL::Response> post(const char *payload, const char *mimetype = "");
+		std::shared_ptr<URL::Response> post(const char *payload, const char *mimetype = "") const;
 
 	};
 

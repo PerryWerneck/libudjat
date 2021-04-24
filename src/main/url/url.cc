@@ -204,11 +204,11 @@
 
 	}
 
-	std::shared_ptr<URL::Response> URL::get(const char *mimetype) {
+	std::shared_ptr<URL::Response> URL::get(const char *mimetype) const {
 		return protocol->call(*this,URL::Method::Get,mimetype);
 	}
 
-	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) {
+	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) const {
 		return protocol->call(*this,URL::Method::Post,mimetype,payload);
 	}
 
@@ -230,6 +230,11 @@
 
 		return rc;
 	}
+
+	URL::operator Json::Value() const {
+		return (Json::Value) this->get("application/json; charset=utf-8").get();
+	}
+
 
  }
 
