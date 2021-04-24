@@ -60,15 +60,12 @@
 	protected:
 
 		/// @brief Formatted data for sending.
-		class UDJAT_API Event {
+		class UDJAT_API Event : public Logger {
 		private:
 			friend class Alert;
 
 			/// @brief Mutex for serialization.
 			static std::mutex guard;
-
-			/// @brief The event name.
-			Quark name;
 
 			/// @brief The alert description.
 			Alert *parent = nullptr;
@@ -110,11 +107,14 @@
 			Event(const Abstract::Agent &agent, const Abstract::State &state);
 			virtual ~Event();
 
+			/// @brief Get event description.
+			virtual const char * getDescription() const = 0;
+
 			/// @brief Disable event.
 			void disable();
 
 			/// @brief Emit alert.
-			virtual void alert() = 0;
+			virtual void alert(size_t current, size_t total) = 0;
 
 		};
 

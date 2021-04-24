@@ -68,15 +68,19 @@
 			string payload;
 
 			Event(const Abstract::Agent &agent, const Abstract::State &state,string &u) : Alert::Event(agent, state),url(u) {
-				cout << "Event '" << url << "' created" << endl;
+				info("Event '{}' created",url);
 			}
 
 			virtual ~Event() {
-				cout << "Event '" << url << "' destroyed" << endl;
+				info("Event '{}' destroyed",url);
 			}
 
-			void alert() override {
-				cout << "Emitting '" << url << "'" << endl;
+			const char * getDescription() const override {
+				return url.c_str();
+			}
+
+			void alert(size_t current, size_t total) override {
+				info("Emitting '{}' ({}/{})",url,current,total);
 			}
 
 		};

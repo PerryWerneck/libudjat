@@ -59,8 +59,6 @@
 		protected:
 			Quark name;	///< @brief Object name.
 
-			Logger();
-
 		public:
 
 			/// @brief Redirect std::cout, std::clog and std::cerr to log file.
@@ -72,6 +70,7 @@
 			static void redirect(const char *filename = nullptr, bool console = false);
 #endif // DEBUG
 
+			Logger();
 			Logger(const char *name);
 			Logger(const Quark &name);
 			~Logger();

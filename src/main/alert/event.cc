@@ -26,10 +26,10 @@
 
 	std::mutex Alert::Event::guard;
 
-	Alert::Event::Event() : name("") {
+	Alert::Event::Event() {
 	}
 
-	Alert::Event::Event(const Quark &n) : name(n) {
+	Alert::Event::Event(const Quark &name) : Logger(name) {
 	}
 
 	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event() {
@@ -67,7 +67,8 @@
 
 		if(!parent) {
 			alerts.next = 0;
-			cout << "Event '" << name << "' lost his parent" << endl;
+			warning("'{}' lost his parent",getDescription());
+			return;
 		}
 
 		if( (alerts.success + alerts.failed) >= parent->retry.limit ) {
@@ -75,11 +76,11 @@
 			if(parent->retry.restart) {
 				restarting = true;
 				alerts.next = time(0) + parent->retry.restart;
-				parent->info("Alert '{}' reached the maximum number of emissions, sleeping until {}",
-								name.c_str(),TimeStamp(alerts.next).to_string());
+				info("'{}' reached the maximum number of emissions, sleeping until {}",
+								getDescription(),TimeStamp(alerts.next).to_string());
 
 			} else {
-				parent->info("Alert '{}' reached the maximum number of emissions, stopping",name.c_str());
+				info("'{}' reached the maximum number of emissions, stopping",getDescription());
 				alerts.next = 0;
 			}
 		} else {
@@ -96,14 +97,14 @@
 
 		if(!event->parent) {
 			event->alerts.next = 0;
-			cout << "Event '" << event->name << "' lost his parent" << endl;
+			event->error("'{}' lost hist parent",event->getDescription());
 			return;
 		}
 
 		if(event->running) {
-			event->parent->warning(
-				"Event '{}' is active since {}",
-					event->name.c_str(),
+			event->warning(
+				"'{}' is active since {}",
+					event->getDescription(),
 					TimeStamp(event->running).to_string()
 			);
 			event->alerts.next = time(0) + event->parent->retry.interval;
@@ -112,9 +113,9 @@
 
 		if(event->restarting) {
 			event->restarting = false;
-			event->parent->info(
-				"Restarting event '{}'",
-					event->name.c_str()
+			event->info(
+				"Restarting '{}'",
+					event->getDescription()
 			);
 			event->reset();
 		}
@@ -135,14 +136,11 @@
 
 				if(event->parent) {
 
-					event->parent->info(
-						"Emitting alert '{}' ({}/{})",
-						event->name.c_str(),
-						(event->alerts.success + event->alerts.failed + 1),
-						event->parent->retry.limit
+					event->alert(
+							event->alerts.success + event->alerts.failed + 1,
+							event->parent->retry.limit
 					);
 
-					event->alert();
 					event->success();
 
 				} else {
@@ -151,12 +149,12 @@
 
 			} catch(const std::exception &e) {
 
-				event->parent->error("Error '{}' firing event '{}'",e.what(),event->name.c_str());
+				event->error("Error '{}' firing event",e.what());
 				event->failed();
 
 			} catch(...) {
 
-				event->parent->error("Unexpected error firing event '{}'",event->name.c_str());
+				event->error("Error '{}' firing event","Unexpected");
 				event->failed();
 
 			}
