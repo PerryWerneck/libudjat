@@ -232,7 +232,7 @@
 	}
 
 	URL::operator Json::Value() const {
-		return (Json::Value) this->get("application/json; charset=utf-8").get();
+		return this->get("application/json; charset=utf-8")->as_json();
 	}
 
 

@@ -76,7 +76,7 @@
 			}
 
 			/// @brief Get response payload as json.
-			operator Json::Value() const;
+			Json::Value as_json() const;
 
 		};
 

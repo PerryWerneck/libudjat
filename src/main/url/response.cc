@@ -31,13 +31,17 @@
 		throw system_error(ENODATA,system_category(),(status.text.empty() ? "Empty response" : status.text.c_str()));
 	}
 
-	URL::Response::operator Json::Value() const {
+	Json::Value URL::Response::as_json() const {
+
+		cout << "ENTREI - convert" << endl;
 
 		Json::Value value;
 		Json::CharReaderBuilder builder;
 		JSONCPP_STRING err;
 
 		const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
+
+		cout << "Payload:" << endl << response.payload << endl;
 
 		if(response.payload) {
 

@@ -126,8 +126,16 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	{
 
-	test_agent_parser();
+		Udjat::URL url("http://localhost");
+		auto response = url.get();
+		cout << "Response was: " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
+		cout << response->c_str() << endl;
+
+	}
+
+	// test_agent_parser();
 
 	/*
 

@@ -64,5 +64,6 @@
 		/// @brief Initialize module.
 		/// @return Module controller.
 		UDJAT_API Udjat::Module * udjat_module_init();
+		UDJAT_API Udjat::Module * udjat_module_deinit();
 
 	}

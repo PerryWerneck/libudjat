@@ -20,6 +20,17 @@ namespace Udjat {
 	}
 
 	Module::~Module() {
+
+		if(this->handle) {
+			void (*deinit)(void) = (void (*)(void)) dlsym(handle,"udjat_module_deinit");
+			auto err = dlerror();
+			if(err) {
+				cerr << err << endl;
+			} else {
+				deinit();
+			}
+		}
+
 		Controller::getInstance().remove(this);
 	}
 

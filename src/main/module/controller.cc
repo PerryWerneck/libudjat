@@ -40,8 +40,11 @@ namespace Udjat {
 			void *handle = module->handle;
 			delete module;
 
+			// FIX-ME: Cant close module because of the protocol handlers.
+			/*
 			if(handle)
 				dlclose(handle);
+			*/
 
 		}
 

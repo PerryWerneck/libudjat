@@ -42,17 +42,17 @@ namespace Udjat {
 			throw runtime_error(dlerror());
 		}
 
-		 Module * (*init)(void *);
+		 Module * (*init)(void);
 
 		 Module * module = nullptr;
 		 try {
 
-			init = (Module * (*)(void *)) dlsym(handle,"udjat_module_init");
+			init = (Module * (*)(void)) dlsym(handle,"udjat_module_init");
 			auto err = dlerror();
 			if(err)
 				throw runtime_error(err);
 
-			module = init(handle);
+			module = init();
 			if(!module) {
 				throw runtime_error("Can't initialize module");
 			}
