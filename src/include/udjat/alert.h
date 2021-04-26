@@ -47,7 +47,13 @@
 			size_t max = 3;			///< @brief How many retries (success+fails) after deactivation or sleep?
 			time_t start = 0;		///< @brief Seconds to wait before first activation.
 			time_t interval = 60;	///< @brief Seconds to wait on every try.
-			time_t restart = 86400;	///< @brief Seconds to wait for reactivate after maximum tries.
+
+			/// @brief Restart timers.
+			struct {
+				time_t failed = 14400;	///< @brief Seconds to wait for reactivate after a failed activation.
+				time_t success = 86400;	///< @brief Seconds to wait for reactivate after a successfull activation.
+			} restart;
+
 		} retry;
 
 	protected:

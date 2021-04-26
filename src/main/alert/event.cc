@@ -59,23 +59,26 @@
 
 	void Alert::Event::checkForSleep(const char *msg) {
 
-		if(parent->retry.restart) {
+		time_t restart = (alerts.success ? parent->retry.restart.success : parent->retry.restart.failed);
+
+		if(restart) {
 			restarting = true;
-			alerts.next = time(0) + parent->retry.restart;
+			alerts.next = time(0) + restart;
 
-			info(
-				"'{}' {}, stopping",
-					getDescription(),
-					msg
-			);
-
-		} else {
-			alerts.next = 0;
 			info(
 				"'{}' {}, sleeping until {}",
 					getDescription(),
 					msg,
 					TimeStamp(alerts.next).to_string()
+			);
+
+		} else {
+			alerts.next = 0;
+
+			info(
+				"'{}' {}, stopping",
+					getDescription(),
+					msg
 			);
 		}
 

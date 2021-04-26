@@ -75,28 +75,21 @@
 					Config::Value<uint32_t>(section.c_str(),"delay-before-retry",retry.interval)
 				);
 
-		// delay-when-failed
-		retry.restart =
-			Attribute(node,"delay-when-failed")
+		// How many seconds to restart when failed?
+		retry.restart.failed =
+			Attribute(node,"restart-when-failed")
 				.as_uint(
-					Config::Value<uint32_t>(section.c_str(),"delay-when-failed",retry.restart)
+					Config::Value<uint32_t>(section.c_str(),"delay-when-failed",retry.restart.failed)
 				);
 
-		/*
-		// disable-when-failed
-		disable_when_failed =
-			Attribute(node,"disable-when-failed")
-				.as_bool(
-					Config::Value<bool>(section.c_str(),"disable-when-failed",disable_when_failed)
+
+		// How many seconds to restart when suceeded?
+		retry.restart.success =
+			Attribute(node,"restart-when-succeeded")
+				.as_uint(
+					Config::Value<uint32_t>(section.c_str(),"restart-when-succeeded",retry.restart.success)
 				);
 
-		// reset-when-activated
-		reset_when_activated =
-			Attribute(node,"reset-when-activated")
-				.as_bool(
-					Config::Value<bool>(section.c_str(),"reset-when-activated",reset_when_activated)
-				);
-		*/
 
 	}
 
