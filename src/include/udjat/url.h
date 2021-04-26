@@ -55,6 +55,11 @@
 			} response;
 
 		public:
+
+			// Can't copy object. The payload is a custom pointer.
+			Response(const Response *src) = delete;
+			Response(const Response &src) = delete;
+
 			Response() = default;
 			virtual ~Response();
 
