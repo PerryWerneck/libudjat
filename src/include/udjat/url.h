@@ -58,6 +58,20 @@
 			Response() = default;
 			virtual ~Response();
 
+			/// @brief Check if the response is valid.
+			/// @return true is the response is valid.
+			virtual bool isValid() const noexcept;
+
+			/// @brief Is the response valid?
+			operator bool() const noexcept {
+				return isValid();
+			}
+
+			/// @brief Get Response length.
+			inline size_t size() const noexcept {
+				return response.length;
+			}
+
 			/// @brief Get status code.
 			inline int getStatusCode() const noexcept {
 				return status.code;

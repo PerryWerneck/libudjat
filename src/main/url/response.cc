@@ -25,6 +25,10 @@
 	URL::Response::~Response() {
 	}
 
+	bool URL::Response::isValid() const noexcept {
+		return this->response.payload && this->response.payload[0];
+	}
+
 	const char * URL::Response::c_str() const {
 		if(response.payload)
 			return response.payload;

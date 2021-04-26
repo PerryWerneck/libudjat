@@ -80,7 +80,18 @@
 			}
 
 			void alert(size_t current, size_t total) override {
-				info("Emitting '{}' ({}/{})",url,current,total);
+				info("Emitting '{}' ({}/{})",this->url,current,total);
+				auto response = URL(this->url.c_str()).get();
+
+
+				if(!response->isValid()) {
+					throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
+				}
+
+				if(response->size()) {
+					cout << response->c_str() << endl;
+				}
+
 			}
 
 		};
