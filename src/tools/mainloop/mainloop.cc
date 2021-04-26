@@ -92,9 +92,6 @@
 		lock_guard<mutex> lock(guard);
 		timers.active.emplace_back(id,seconds,call);
 		if(timers.next == 0 || (time(0)+seconds) < timers.next) {
-#ifdef DEBUG
-			cout << "Resetting next timer" << endl;
-#endif // DEBUG
 			wakeup();
 		}
 	}

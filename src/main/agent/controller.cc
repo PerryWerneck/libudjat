@@ -230,10 +230,6 @@ namespace Udjat {
 					return;
 				}
 
-#ifdef DEBUG
-				cout << agent->getName() << " " << TimeStamp(agent->update.next) << endl;
-#endif // DEBUG
-
 				// Agent requires update.
 				agent->updating();
 				if(agent->update.timer) {

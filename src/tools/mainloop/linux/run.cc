@@ -57,7 +57,6 @@
 					cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
 				}
 
-				cout << "Event " << evNum << endl;
 				continue;
 			}
 

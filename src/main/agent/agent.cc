@@ -254,6 +254,10 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
+	std::string Abstract::Agent::to_string() const {
+		throw system_error(ENOTSUP,system_category(),string{"Can't get value for agent'"} + getName() + "'");;
+	}
+
 	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
 
 		get("value",value);
@@ -317,6 +321,11 @@ namespace Udjat {
 	void Abstract::Agent::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key) {
+
+			// Agent value
+			if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
+				return to_string();
+			}
 
 			// Agent properties.
 			{

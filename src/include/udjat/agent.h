@@ -170,6 +170,9 @@
 				virtual void get(const char *name, Json::Value &value);
 				void get(const Request &request, Response &response);
 
+				/// @brief Get value as string.
+				virtual std::string to_string() const;
+
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() const {
 					return this->state;
@@ -243,6 +246,10 @@
 				states.push_back(std::make_shared<State<T>>(node));
 			}
 
+			std::string to_string() const override {
+				return std::to_string(value);
+			}
+
 		};
 
 		template <>
@@ -296,6 +303,10 @@
 				states.push_back(std::make_shared<State<std::string>>(node));
 			}
 
+			std::string to_string() const override {
+				return value;
+			}
+
 		};
 
 		///
@@ -346,8 +357,24 @@
 				states.push_back(std::make_shared<State<bool>>(node));
 			}
 
+			std::string to_string() const override {
+				return (value ? "yes" : "no");
+			}
+
 		};
 
 	}
+
+namespace std {
+
+	inline string to_string(const Udjat::Abstract::Agent &agent) {
+			return agent.to_string();
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::Abstract::Agent &agent) {
+			return os << agent.to_string();
+	}
+
+}
 
 #endif // UDJAT_AGENT_H_INCLUDED
