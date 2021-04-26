@@ -37,14 +37,38 @@ namespace Udjat {
 		while(modules.size()) {
 
 			Module * module = *modules.begin();
-			void *handle = module->handle;
-			delete module;
+			Quark name = module->name;
 
-			// FIX-ME: Cant close module because of the protocol handlers.
-			/*
-			if(handle)
-				dlclose(handle);
-			*/
+			void *handle = module->handle;
+
+			try {
+
+				// First delete module
+				delete module;
+
+				// FIX-ME: Cant close module because of the protocol handlers.
+				if(handle) {
+					bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
+					auto err = dlerror();
+					if(err) {
+						cerr << err << endl;
+					} else {
+
+						if(!deinit()) {
+							cout << "module\tKeeping module '" << name << "' open" << endl;
+						} else if(dlclose(handle)) {
+							cerr << "module\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
+						}
+
+					}
+				}
+
+
+			} catch(const exception &e) {
+				cerr << "module\tError '" << e.what() << "' deinitializing module '" << name << "'" << endl;
+			} catch(...) {
+				cerr << "module\tUnexpected error deinitializing module '" << name << "'" << endl;
+			}
 
 		}
 
