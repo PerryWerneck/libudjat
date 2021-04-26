@@ -188,7 +188,7 @@
 			/// @param Mimetype
 			/// @param payload URL payload.
 			/// @return String with the host response.
-			virtual std::shared_ptr<URL::Response> call(const URL &url, const Method method, const char *mimetype, const char *payload = nullptr);
+			virtual std::shared_ptr<URL::Response> call(const URL &url, const Method method = URL::Method::Get, const char *mimetype = nullptr, const char *payload = nullptr);
 
 			/// @brief Call protocol method.
 			/// @param url The URL to call.
@@ -269,23 +269,31 @@
 		/// @brief do a 'get' request, return response as json.
 		operator Json::Value() const;
 
+		/// @brief Call URL.
+		/// @param method Required method.
+		/// @param Mimetype Response mimetype
+		/// @param payload URL payload.
+		/// @return The host response.
+		std::shared_ptr<URL::Response> call(const Method method = URL::Method::Get, const char *mimetype = nullptr, const char *payload = nullptr);
+
 		/// @brief Get
-		std::shared_ptr<URL::Response> get(const char *mimetype = "") const;
+		std::shared_ptr<URL::Response> get(const char *mimetype = nullptr) const;
 
 		/// @brief Post
-		std::shared_ptr<URL::Response> post(const char *payload, const char *mimetype = "") const;
+		std::shared_ptr<URL::Response> post(const char *payload, const char *mimetype = nullptr) const;
 
 	};
 
-
  }
 
- /*
  namespace std {
 
 	inline string to_string(const Udjat::URL &url) {
-		return url.get();
+		return url.to_string();
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::URL &url) {
+		return os << url.to_string();
 	}
 
  }
- */
