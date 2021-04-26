@@ -57,6 +57,30 @@
 		next();
 	}
 
+	void Alert::Event::checkForSleep(const char *msg) {
+
+		if(parent->retry.restart) {
+			restarting = true;
+			alerts.next = time(0) + parent->retry.restart;
+
+			info(
+				"'{}' {}, stopping",
+					getDescription(),
+					msg
+			);
+
+		} else {
+			alerts.next = 0;
+			info(
+				"'{}' {}, sleeping until {}",
+					getDescription(),
+					msg,
+					TimeStamp(alerts.next).to_string()
+			);
+		}
+
+	}
+
 	void Alert::Event::next() {
 
 		if(!parent) {
@@ -65,18 +89,14 @@
 			return;
 		}
 
-		if( (alerts.success + alerts.failed) >= parent->retry.limit ) {
+		if(alerts.success >= parent->retry.min) {
 
-			if(parent->retry.restart) {
-				restarting = true;
-				alerts.next = time(0) + parent->retry.restart;
-				info("'{}' reached the maximum number of emissions, sleeping until {}",
-								getDescription(),TimeStamp(alerts.next).to_string());
+			checkForSleep("was sucessfull");
 
-			} else {
-				info("'{}' reached the maximum number of emissions, stopping",getDescription());
-				alerts.next = 0;
-			}
+		} else if( (alerts.success + alerts.failed) >= parent->retry.max ) {
+
+			checkForSleep("reached the maximum number of emissions");
+
 		} else {
 
 			alerts.next = time(0) + parent->retry.interval;
@@ -132,7 +152,7 @@
 
 					event->alert(
 							event->alerts.success + event->alerts.failed + 1,
-							event->parent->retry.limit
+							event->parent->retry.max
 					);
 
 					event->success();

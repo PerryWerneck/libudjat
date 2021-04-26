@@ -40,11 +40,18 @@
 		cout << "Loading configuration from '" << section << "'" << endl;
 #endif // DEBUG
 
+		// min-retries
+		retry.min =
+			Attribute(node,"min-retries")
+				.as_uint(
+					Config::Value<uint32_t>(section.c_str(),"min-retries",retry.min)
+				);
+
 		// max-retries
-		retry.limit =
+		retry.max =
 			Attribute(node,"max-retries")
 				.as_uint(
-					Config::Value<uint32_t>(section.c_str(),"max-retries",retry.limit)
+					Config::Value<uint32_t>(section.c_str(),"max-retries",retry.max)
 				);
 
 		// activate-on-value-change
@@ -75,6 +82,7 @@
 					Config::Value<uint32_t>(section.c_str(),"delay-when-failed",retry.restart)
 				);
 
+		/*
 		// disable-when-failed
 		disable_when_failed =
 			Attribute(node,"disable-when-failed")
@@ -88,6 +96,7 @@
 				.as_bool(
 					Config::Value<bool>(section.c_str(),"reset-when-activated",reset_when_activated)
 				);
+		*/
 
 	}
 

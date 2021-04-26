@@ -39,19 +39,12 @@
 
 		size_t events = 0;
 
-		/// @brief Disable alert when it fails to send.
-		bool disable_when_failed = false;
-
-		/// @brief Disable alert on sucess fire.
-		bool disable_on_success = false;
-
-		bool reset_when_activated = true;
-
 		/// @brief Activates on every value change.
 		bool activate_on_value_change = true;
 
 		struct {
-			size_t limit = 3;		///< @brief How many retries for activation?
+			size_t min = 1;			///< @brief How many success activations after deactivation or sleep?
+			size_t max = 3;			///< @brief How many retries (success+fails) after deactivation or sleep?
 			time_t start = 0;		///< @brief Seconds to wait before first activation.
 			time_t interval = 60;	///< @brief Seconds to wait on every try.
 			time_t restart = 86400;	///< @brief Seconds to wait for reactivate after maximum tries.
@@ -94,6 +87,9 @@
 
 			/// @brief Enqueue event, update counter and timestamp for next.
 			static void enqueue(std::shared_ptr<Alert::Event> event);
+
+			/// @brief The maximum number of activation was reached.
+			void checkForSleep(const char *msg);
 
 			/// @brief Alert was emitted.
 			void success();

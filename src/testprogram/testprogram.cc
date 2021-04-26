@@ -126,6 +126,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 
 		Udjat::URL url("http://localhost");
@@ -134,8 +135,9 @@ int main(int argc, char **argv) {
 		cout << response->c_str() << endl;
 
 	}
+	*/
 
-	// test_agent_parser();
+	test_agent_parser();
 
 	/*
 

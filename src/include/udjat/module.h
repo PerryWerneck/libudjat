@@ -64,6 +64,9 @@
 		/// @brief Initialize module.
 		/// @return Module controller.
 		UDJAT_API Udjat::Module * udjat_module_init();
-		UDJAT_API Udjat::Module * udjat_module_deinit();
+
+		/// @brief Deinitialize the module.
+		/// @return true if the module can be unloaded.
+		UDJAT_API bool udjat_module_deinit();
 
 	}
