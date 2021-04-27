@@ -94,6 +94,21 @@
 
 	};
 
+	class ScriptAlert : public Udjat::Alert {
+	private:
+
+		/// @brief The command line
+		std::string command;
+
+	public:
+
+		ScriptAlert(const pugi::xml_node &node);
+		virtual ~ScriptAlert();
+
+		void activate(const Abstract::Agent &agent, const Abstract::State &state) override;
+
+	};
+
 
  }
 

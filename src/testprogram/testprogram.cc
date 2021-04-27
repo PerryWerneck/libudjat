@@ -146,8 +146,8 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	// test_agent_parser();
-	test_sub_process();
+	test_agent_parser();
+	// test_sub_process();
 
 	/*
 

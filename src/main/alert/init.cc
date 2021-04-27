@@ -128,11 +128,50 @@
 
 	};
 
+	/// @brief Script Alert Factory
+	class ScriptAlertFactory : public Factory {
+	public:
+		ScriptAlertFactory() : Factory(Quark::getFromStatic("alert-script")) {
+
+			static const Udjat::ModuleInfo info{
+				PACKAGE_NAME,								// The module name.
+				"Script Based alert Factory",				// The module description.
+				PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+#ifdef PACKAGE_URL
+				PACKAGE_URL,
+#else
+				"",
+#endif // PACKAGE_URL
+#ifdef PACKAGE_BUG_REPORT
+				PACKAGE_BUG_REPORT
+#else
+				""
+#endif // PACKAGE_BUG_REPORT
+			};
+
+			this->info = &info;
+
+		}
+
+		virtual ~ScriptAlertFactory() {
+		}
+
+		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+			parent.push_back(make_shared<ScriptAlert>(node));
+		}
+
+		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
+			parent.push_back(make_shared<ScriptAlert>(node));
+		}
+
+	};
+
 	void Alert::init() {
 
 		static const struct {
-			AlertFactory def;
-			URLAlertFactory url;
+			AlertFactory		def;
+			URLAlertFactory		url;
+			ScriptAlertFactory	script;
 		} factories;
 
 		factories.def.init();
