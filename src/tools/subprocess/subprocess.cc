@@ -72,41 +72,67 @@
 
 			if(process->pid == pid) {
 
-				// Remove FD from mainloop.
-				MainLoop::getInstance().remove(process);
-
-				// Read pending data.
-				int nfds = 0;
-				do {
-
-					struct pollfd pfd[2];
-
-					for(size_t ix = 0; ix < 2; ix++) {
-						pfd[ix].fd = process->pipes[ix].fd;
-						pfd[ix].events = POLLIN;
-					}
-
-					nfds = poll(pfd,2,10);
-
-					for(size_t ix = 0; ix < 2; ix++) {
-						if(pfd[ix].revents & POLLIN) {
-							process->read(ix);
-						}
-					}
-
-				} while(nfds > 0);
-
-				// Process exit codes.
-
 				if(WIFEXITED(status)) {
-					process->onExit(WEXITSTATUS(status));
+					process->status.exit = WEXITSTATUS(status);
 				}
 
 				if(WIFSIGNALED(status)) {
-					process->onSignal(WTERMSIG(status));
+					process->status.failed = true;
+					process->status.termsig = WTERMSIG(status);
 				}
 
+				MainLoop::getInstance().remove(process);
+
+				// Delay reading to avoid timing problems.
+				MainLoop::getInstance().insert(NULL,[process](const time_t now) {
+
+					// cleanup and delete process on another thread to avoid dead-locks.
+					ThreadPool::getInstance().push([process](){
+
+						// Read pending data.
+						int nfds = 0;
+						do {
+
+							struct pollfd pfd[2];
+
+							for(size_t ix = 0; ix < 2; ix++) {
+								pfd[ix].fd = process->pipes[ix].fd;
+								pfd[ix].events = POLLIN;
+							}
+
+							nfds = poll(pfd,2,10);
+
+							for(size_t ix = 0; ix < 2; ix++) {
+								if(pfd[ix].revents & POLLIN) {
+									process->read(ix);
+								}
+							}
+
+						} while(nfds > 0);
+
+						if(process->status.failed) {
+							process->onSignal(process->status.termsig);
+						} else {
+							process->onExit(process->status.exit);
+						}
+
+						delete process;
+					});
+
+					return false;
+
+				});
+
+				/*
+				// Remove FD from mainloop.
+				lock_guard<mutex> lock(Controller::getInstance().guard);
+
+
+				// Process exit codes.
+
+
 				delete process;
+				*/
 				break;
 
 			}
@@ -116,6 +142,8 @@
 	}
 
 	SubProcess::SubProcess(const char *c) : command(c) {
+		memset(pipes[0].buffer,0,sizeof(pipes[0].buffer));
+		memset(pipes[1].buffer,0,sizeof(pipes[1].buffer));
 		Controller::getInstance().insert(this);
 	}
 
@@ -303,21 +331,51 @@
 
 	void SubProcess::read(int id) {
 
-		char buffer[512];
-
-		ssize_t szRead = ::read(pipes[id].fd,buffer,sizeof(buffer)-1);
+		ssize_t szRead =
+			::read(
+				pipes[id].fd,
+				pipes[id].buffer+pipes[id].length,
+				sizeof(pipes[id].buffer) - (pipes[id].length+1)
+			);
 
 		if(szRead < 0) {
 			onStdErr((string{"Error '"} + strerror(errno) + "' reading from pipe").c_str());
 			return;
 		}
 
-		if(szRead > 0) {
-			buffer[szRead] = 0;
-
-			// TODO: Process input.
-			cout << buffer;
+		if(szRead == 0) {
+			onStdErr("Unexpected 'EOF' reading from pipe");
+			return;
 		}
+
+		pipes[id].buffer[pipes[id].length+szRead] = 0;
+
+		char *from = pipes[id].buffer;
+		char *to = strchr(from,'\n');
+		while(to) {
+
+			*to = 0;
+
+			if(id) {
+				onStdErr(from);
+			} else {
+				onStdOut(from);
+			}
+
+			from = to+1;
+			to = strchr(from,'\n');
+		}
+
+		if(from && from != pipes[id].buffer) {
+			pipes[id].length = strlen(from);
+			char *to = pipes[id].buffer;
+			while(*from) {
+				*(to++) = *(from++);
+			}
+			*to = 0;
+		}
+
+		pipes[id].length = strlen(pipes[id].buffer);
 
 	}
 

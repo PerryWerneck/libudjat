@@ -23,6 +23,7 @@
  #include <udjat/tools/subprocess.h>
  #include <mutex>
  #include <list>
+ #include <mutex>
 
  using namespace std;
 
@@ -37,6 +38,7 @@
 		static void handle_signal(int sig) noexcept;
 
 	public:
+
 		~Controller();
 		static Controller & getInstance();
 

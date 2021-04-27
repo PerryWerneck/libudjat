@@ -35,7 +35,15 @@
 		pid_t pid = -1;
 
 		struct {
+			bool failed = false;
+			int exit = 0;
+			int termsig = 0;
+		} status;
+
+		struct {
 			int fd = -1;
+			size_t length = 0;
+			char buffer[256];
 		} pipes[2];
 
 		/// @brief Read from pipe.
