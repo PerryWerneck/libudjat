@@ -55,6 +55,7 @@
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/state.h" />
+		<Unit filename="src/include/udjat/subprocess.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
