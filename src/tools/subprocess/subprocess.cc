@@ -172,13 +172,23 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		onStdOut((string{"Process terminated with rc="} + to_string(rc)).c_str());
+		string msg = string{"Process '"} + command + "' finishes with rc=" + to_string(rc);
+
+		if(rc) {
+			onStdOut(msg.c_str());
+		} else {
+			onStdErr(msg.c_str());
+		}
+
 	}
 
 	/// @brief Called on subprocess abnormal exit.
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void SubProcess::onSignal(int sig) {
-		onStdOut((string{"Process terminated with signal "} + to_string(sig)).c_str());
+		onStdErr((string{"Process '" + command + "' finishes with signal "} + to_string(sig)).c_str());
 	}
+	#pragma GCC diagnostic pop
 
 	void SubProcess::start() {
 

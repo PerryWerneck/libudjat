@@ -55,9 +55,9 @@ namespace Udjat {
 					} else {
 
 						if(!deinit()) {
-							cout << "module\tKeeping module '" << name << "' open" << endl;
+							cout << name << "\tKeeping module open" << endl;
 						} else if(dlclose(handle)) {
-							cerr << "module\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
+							cerr << name << "\tError '" << dlerror() << "' closing module" << endl;
 						}
 
 					}
@@ -65,9 +65,9 @@ namespace Udjat {
 
 
 			} catch(const exception &e) {
-				cerr << "module\tError '" << e.what() << "' deinitializing module '" << name << "'" << endl;
+				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;
 			} catch(...) {
-				cerr << "module\tUnexpected error deinitializing module '" << name << "'" << endl;
+				cerr << name << "\tUnexpected error deinitializing module" << endl;
 			}
 
 		}
@@ -98,15 +98,15 @@ namespace Udjat {
 			if(module->started)
 				continue;
 
-			cout << "module\tStarting " << module->info->description << endl;
+			cout << module->name << "\tStarting " << module->info->description << endl;
 
 			try {
 				module->start();
 				module->started = true;
 			} catch (const exception &e) {
-				cerr << "module\tError '" << e.what() << "' on start method" << endl;
+				cerr << module->name << "\tError '" << e.what() << "' on start method" << endl;
 			} catch(...) {
-				cerr << "module\tUnexpected error on start method" << endl;
+				cerr << module->name << "\tUnexpected error on start method" << endl;
 			}
 
 		}
@@ -119,15 +119,15 @@ namespace Udjat {
 			if(!module->started)
 				continue;
 
-			cout << "module\tStopping " << module->info->description << endl;
+			cout << module-> name << "\tStopping " << module->info->description << endl;
 
 			try {
 				module->stop();
 				module->started = false;
 			} catch (const exception &e) {
-				cerr << "module\tError '" << e.what() << "' on stop method" << endl;
+				cerr << module->name << "\tError '" << e.what() << "' on stop method" << endl;
 			} catch(...) {
-				cerr << "module\tUnexpected error on stop method" << endl;
+				cerr << module->name << "\tUnexpected error on stop method" << endl;
 			}
 
 		}
@@ -137,14 +137,14 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto module : modules) {
 
-			cout << "module\tReloading " << module->info->description << endl;
+			cout << module->name << "\tReloading " << module->info->description << endl;
 
 			try {
 				module->reload();
 			} catch (const exception &e) {
-				cerr << "module\tError '" << e.what() << "' on reload method" << endl;
+				cerr << module->name << "\tError '" << e.what() << "' on reload method" << endl;
 			} catch(...) {
-				cerr << "module\tUnexpected error on reload method" << endl;
+				cerr << module->name << "\tUnexpected error on reload method" << endl;
 			}
 
 		}

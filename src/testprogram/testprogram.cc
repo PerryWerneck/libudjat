@@ -104,7 +104,10 @@ static void test_url() {
 
 static void test_sub_process() {
 
-	SubProcess::start("ls -ltr");
+	MainLoop::getInstance().insert(0,1,[](const time_t now){
+		SubProcess::start("ls -ltr");
+		return false;
+	});
 
 	Udjat::run();
 
