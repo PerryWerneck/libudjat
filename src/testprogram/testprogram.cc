@@ -20,6 +20,7 @@
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/threadpool.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -27,6 +28,7 @@
  #include <ctime>
  #include <cstdlib>
  #include <netdb.h>
+ #include <udjat/tools/subprocess.h>
 
  using namespace std;
  using namespace Udjat;
@@ -93,6 +95,21 @@ static void test_agent_parser() {
 
 }
 
+static void test_url() {
+	Udjat::URL url("http://localhost");
+	auto response = url.get();
+	cout << "Response was: " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
+	cout << response->c_str() << endl;
+}
+
+static void test_sub_process() {
+
+	SubProcess::start("ls -ltr");
+
+	Udjat::run();
+
+}
+
 int main(int argc, char **argv) {
 
 	Logger::redirect();
@@ -126,18 +143,8 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	/*
-	{
-
-		Udjat::URL url("http://localhost");
-		auto response = url.get();
-		cout << "Response was: " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
-		cout << response->c_str() << endl;
-
-	}
-	*/
-
-	test_agent_parser();
+	// test_agent_parser();
+	test_sub_process();
 
 	/*
 

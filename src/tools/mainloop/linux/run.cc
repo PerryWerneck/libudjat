@@ -16,6 +16,7 @@
 	/// Poll.
 	nfds_t szPoll = 2;
 	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
+	memset(fds,0,sizeof(struct pollfd) *szPoll);
 
  	//
  	// Main event loop

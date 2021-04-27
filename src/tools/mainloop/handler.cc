@@ -41,13 +41,19 @@
 			if(handle.running)
 				return false;
 
-			if(nfds >= *length) {
+			if(nfds >= (*length-1)) {
 				*length += 2;
 				*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+				for(size_t ix = nfds; ix < *length; ix++) {
+					(*fds)[ix].fd = -1;
+					(*fds)[ix].events = 0;
+					(*fds)[ix].revents = 0;
+				}
 			}
 
 			(*fds)[nfds].fd = handle.fd;
 			(*fds)[nfds].events = handle.events;
+			(*fds)[nfds].revents = 0;
 			nfds++;
 			return false;
 		});

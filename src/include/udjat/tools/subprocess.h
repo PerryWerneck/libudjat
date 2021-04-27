@@ -17,18 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /***
-  * @brief Implement the SubProcess object.
-  *
-  * References:
-  *
-  * <https://opensource.apple.com/source/Libc/Libc-167/gen.subproj/popen.c.auto.html>
-  *
-  */
-
  #pragma once
  #include <udjat/defs.h>
- #include <sys/types.h>
  #include <string>
 
  namespace Udjat {
@@ -41,35 +31,53 @@
 		class Controller;
 		friend class Controller;
 
+		/// @brief Pid of the subprocess.
+		pid_t pid = -1;
+
+		struct {
+			int fd = -1;
+		} pipes[2];
+
+		/// @brief Read from pipe.
+		void read(int id);
+
 		/// @brief The command line to start.
 		std::string command;
 
 	protected:
 
-		/// @brief Destroy subprocess (automatic called by controller).
+		/// @brief Destroy subprocess (automatic when the subprocess finishes).
 		virtual ~SubProcess();
 
-		/// @brief Called on subprocess stdout.
+		/// @brief Called on subprocess output.
 		virtual void onStdOut(const char *line);
 
-		/// @brief Called on subprocess stderr.
+		/// @brief Called on subprocess stderr (redirects to onStdOut if not overrided).
 		virtual void onStdErr(const char *line);
 
-		/// @brief Called on subprocess normal exit.
-		virtual void onTerminate(int rc);
+		/// @brief Called on subprocess normal exit (redirects to onStdOut if not overrided).
+		virtual void onExit(int rc);
 
-		/// @brief Called on subprocess abnormal exit.
+		/// @brief Called on subprocess abnormal exit (redirects to onStdOut if not overrided).
 		virtual void onSignal(int sig);
 
 	public:
 		SubProcess(const SubProcess &) = delete;
 		SubProcess(const SubProcess *) = delete;
 
-		/// @brief Create a sub-process (Allways use with 'new' since the controller keeps a reference to it).
+		/// @brief Create a sub-process.
 		SubProcess(const char *command);
+
+		/// @brief Get command line
+		inline const char * c_str() const noexcept {
+			return command.c_str();
+		}
 
 		/// @brief Start sub process; this object will be removed when it exits.
 		void start();
+
+		/// @brief Start sub process using the default object.
+		static void start(const char *command);
 
 	};
 
