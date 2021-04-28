@@ -37,8 +37,8 @@ namespace Udjat {
 		}
 
 		if(!entry->second->active) {
-			clog << "Worker '" << name << "' is inactive" << endl;
-			throw system_error(ENOENT,system_category(),"Action is not available");
+			clog << name << "\tWorker is inactive" << endl;
+			throw system_error(ENODATA,system_category(),"The requested worker is not active");
 		}
 
 #ifdef DEBUG

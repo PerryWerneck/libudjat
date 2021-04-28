@@ -54,6 +54,7 @@
 			return true;
 		});
 
+		Worker::active = true;
 
 	}
 
@@ -117,8 +118,19 @@
 
 	void Alert::Controller::work(const Request &request, Response &response) const {
 
+		Json::Value report(Json::arrayValue);
 
-		throw runtime_error("Not implemented");
+		for(auto event : events) {
+
+			Json::Value value(Json::objectValue);
+			event->get(value);
+			report.append(value);
+
+		}
+
+
+		response["alerts"] = report;
+
 	}
 
 	void Alert::Controller::insert(Alert *alert, std::shared_ptr<Alert::Event> event) {

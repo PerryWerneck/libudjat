@@ -34,6 +34,30 @@
 
 	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event((Quark) agent) {
 
+		struct {
+			Quark &value;
+			const Quark &agent;
+			const Quark &state;
+		} values[] = {
+			{ summary,	agent.getSummary(),	state.getSummary()	},
+			{ uri,		agent.getUri(),		state.getUri()		},
+		};
+
+		label = agent.getLabel();
+		icon =  agent.getIcon();
+		level = state.getLevel();
+		body = state.getBody();
+
+		for(size_t ix = 0;ix < (sizeof(values)/sizeof(values[0]));ix++) {
+
+			if(values[ix].state) {
+				values[ix].value = values[ix].state;
+			} else {
+				values[ix].value = values[ix].agent;
+			}
+
+		}
+
 	}
 
 	Alert::Event::~Event() {
@@ -49,11 +73,13 @@
 
 	void Alert::Event::success() {
 		alerts.success++;
+		alerts.last = time(0);
 		next();
 	}
 
 	void Alert::Event::failed() {
 		alerts.failed++;
+		alerts.last = time(0);
 		next();
 	}
 
@@ -183,6 +209,33 @@
 			}
 
 		});
+
+	}
+
+	void Alert::Event::get(Json::Value &value) const {
+
+		value["name"] = getName();
+		value["sleeping"] = restarting;
+
+		if(running)
+			value["running"] = TimeStamp(running).to_string(TIMESTAMP_FORMAT_JSON);
+		else
+			value["running"] = false;
+
+		value["label"] = label.c_str();
+		value["summary"] = summary.c_str();
+		value["body"] = body.c_str();
+		value["uri"] = uri.c_str();
+		value["icon"] = icon.c_str();
+		value["level"] = Abstract::State::to_string(level);
+
+		value["description"] = getDescription();
+
+		// Alerts
+		value["last"] = TimeStamp(alerts.last).to_string(TIMESTAMP_FORMAT_JSON);
+		value["next"] = TimeStamp(alerts.next).to_string(TIMESTAMP_FORMAT_JSON);
+		value["success"] = alerts.success;
+		value["fail"] = alerts.failed;
 
 	}
 

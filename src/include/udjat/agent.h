@@ -147,6 +147,10 @@
 					return label;
 				}
 
+				inline const Quark & getSummary() const noexcept {
+					return summary;
+				}
+
 				/// @brief Start agent.
 				virtual void start();
 

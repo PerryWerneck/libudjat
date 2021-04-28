@@ -69,6 +69,24 @@
 			/// @brief The alert description.
 			Alert *parent = nullptr;
 
+			/// @brief Event label.
+			Quark label;
+
+			/// @brief Event summary.
+			Quark summary;
+
+			/// @brief Event body.
+			Quark body;
+
+			/// @brief Web link for this event.
+			Quark uri;
+
+			/// @brief URL for this event.
+			Quark icon;
+
+			/// @brief Level for this event.
+			Abstract::State::Level level;
+
 			/// @brief Is the event running?
 			time_t running = 0;
 
@@ -117,6 +135,9 @@
 
 			/// @brief Emit alert.
 			virtual void alert(size_t current, size_t total) = 0;
+
+			/// @brief Get information about the event.
+			virtual void get(Json::Value &value) const;
 
 		};
 

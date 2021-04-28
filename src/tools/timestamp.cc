@@ -6,6 +6,10 @@
 using namespace std;
 
 std::string Udjat::TimeStamp::to_string(const char *format) const noexcept {
+
+	if(!value)
+		return "";
+
 	char timestamp[80];
 	memset(timestamp,0,sizeof(timestamp));
 
