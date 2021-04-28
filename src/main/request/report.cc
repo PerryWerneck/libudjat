@@ -38,11 +38,21 @@
 		open();
 	}
 
-	void Response::Report::open() {
+	bool Response::Report::open() {
+
+		if(columns.current == columns.names.begin()) {
+			return false;
+		}
+
 		columns.current = columns.names.begin();
+		return true;
 	}
 
-	void Response::Report::close() {
+	bool Response::Report::close() {
+		if(columns.current == columns.names.begin()) {
+			return false;
+		}
+		return true;
 	}
 
 	std::string Response::Report::next() {

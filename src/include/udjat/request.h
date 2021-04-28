@@ -42,10 +42,12 @@
 				} columns;
 
 				/// @brief Start a new row.
-				virtual void open();
+				/// @return true if the row was open.
+				virtual bool open();
 
 				/// @brief End row.
-				virtual void close();
+				/// @return true if the row have columns.
+				virtual bool close();
 
 				/// @brief Get next column title (close and open row if needed).
 				std::string next();
