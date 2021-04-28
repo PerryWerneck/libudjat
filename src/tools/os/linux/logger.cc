@@ -127,7 +127,7 @@ namespace Udjat {
 					char module[12];
 					memset(module,' ',sizeof(module));
 
-					write(1,tm.to_string());
+					write(1,tm.to_string("%x %X"));
 					write(1," ");
 
 					auto pos = buffer.find("\t");

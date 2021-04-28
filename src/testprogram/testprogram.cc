@@ -33,6 +33,9 @@
  using namespace std;
  using namespace Udjat;
 
+ #pragma GCC diagnostic ignored "-Wunused-parameter"
+ #pragma GCC diagnostic ignored "-Wunused-function"
+
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 static void test_file_agent() {
@@ -121,12 +124,18 @@ static void test_sub_process() {
 
 int main(int argc, char **argv) {
 
+	// Setup locale
+	setlocale( LC_ALL, "" );
+
+	// Redirect output to log file
 	Logger::redirect();
 	Module::load();
 
+	/*
 	{
 		static auto module = new Module(Quark::getFromStatic("sample"));
 	}
+	*/
 
 	/*
 	{

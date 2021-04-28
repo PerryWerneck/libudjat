@@ -70,27 +70,27 @@
 	}
 
 	Response::Report & Response::Report::push_back(const int8_t value) {
-		return push_back(to_string(value));
+		return push_back(std::to_string(value));
 	}
 
 	Response::Report & Response::Report::push_back(const int16_t value) {
-		return push_back(to_string(value));
+		return push_back(std::to_string(value));
 	}
 
 	Response::Report & Response::Report::push_back(const int32_t value) {
-		return push_back(to_string(value));
+		return push_back(std::to_string(value));
 	}
 
 	Response::Report & Response::Report::push_back(const uint8_t value) {
-		return push_back(to_string(value));
+		return push_back(std::to_string(value));
 	}
 
 	Response::Report & Response::Report::push_back(const uint16_t value) {
-		return push_back(to_string(value));
+		return push_back(std::to_string(value));
 	}
 
 	Response::Report & Response::Report::push_back(const uint32_t value) {
-		return push_back(to_string(value));
+		return push_back(std::to_string(value));
 	}
 
  }

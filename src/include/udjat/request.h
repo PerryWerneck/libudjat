@@ -60,6 +60,7 @@
 				virtual ~Report();
 
 				virtual Report & push_back(const char *str) = 0;
+				virtual std::string to_string() = 0;
 
 				virtual Report & push_back(const std::string &str);
 				virtual Report & push_back(const bool value);
