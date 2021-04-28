@@ -228,14 +228,13 @@
 		value["uri"] = uri.c_str();
 		value["icon"] = icon.c_str();
 		value["level"] = Abstract::State::to_string(level);
-
 		value["description"] = getDescription();
 
-		// Alerts
+		// Activation
 		value["last"] = TimeStamp(alerts.last).to_string(TIMESTAMP_FORMAT_JSON);
 		value["next"] = TimeStamp(alerts.next).to_string(TIMESTAMP_FORMAT_JSON);
 		value["success"] = alerts.success;
-		value["fail"] = alerts.failed;
+		value["fails"] = alerts.failed;
 
 	}
 
