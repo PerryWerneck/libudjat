@@ -258,6 +258,13 @@ namespace Udjat {
 		throw system_error(ENOTSUP,system_category(),string{"Can't get value for agent'"} + getName() + "'");;
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
+	bool Abstract::Agent::assign(const char *value) {
+		throw system_error(ENOTSUP,system_category(),string{"Agent '"} + getName() + "' doesnt allow assign method");;
+	}
+	#pragma GCC diagnostic pop
+
 	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
 
 		get("value",value);

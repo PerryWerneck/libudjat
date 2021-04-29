@@ -23,6 +23,7 @@
 	#include <udjat/tools/logger.h>
 	#include <udjat/request.h>
 	#include <udjat/tools/xml.h>
+	#include <udjat/tools/converters.h>
 	#include <json/value.h>
 	#include <cstring>
 
@@ -177,6 +178,9 @@
 				/// @brief Get value as string.
 				virtual std::string to_string() const;
 
+				/// @brief Assign value from string.
+				virtual bool assign(const char *value);
+
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() const {
 					return this->state;
@@ -241,6 +245,11 @@
 				return value;
 			}
 
+			bool assign(const char *value) override {
+				T new_value;
+				return set(convert(new_value,value));
+			}
+
 			bool hasOwnStates() const noexcept override {
 				return !states.empty();
 			}
@@ -296,6 +305,17 @@
 
 			std::string get() const noexcept {
 				return value;
+			}
+
+			bool assign(const char *value) override {
+
+				if(::strcmp(value,this->value.c_str()))
+					return false;
+
+				this->value = value;
+				onValueChange();
+				return true;
+
 			}
 
 			bool hasOwnStates() const noexcept override {

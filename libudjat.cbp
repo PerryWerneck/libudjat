@@ -56,6 +56,7 @@
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/state.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
+		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
