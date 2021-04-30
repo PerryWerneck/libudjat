@@ -66,4 +66,20 @@
 		munmap(contents,length);
 	}
 
+	void File::Local::forEach(std::function<void (const string &line)> call) {
+
+		const char *from = this->c_str();
+		while(from) {
+			const char *to = strchr(from,'\n');
+			if(to) {
+				call(string(from,to-from));
+				from = to+1;
+			} else {
+				call(string(from));
+				break;
+			}
+		}
+
+	}
+
  }
