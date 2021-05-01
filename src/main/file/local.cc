@@ -67,8 +67,10 @@
 	}
 
 	void File::Local::forEach(std::function<void (const string &line)> call) {
+		forEach(c_str(),call);
+	}
 
-		const char *from = this->c_str();
+	void File::Local::forEach(const char *from, std::function<void (const string &line)> call) {
 		while(from) {
 			const char *to = strchr(from,'\n');
 			if(to) {

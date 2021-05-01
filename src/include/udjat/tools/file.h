@@ -88,6 +88,7 @@ namespace Udjat {
 				return (const char *) contents;
 			}
 
+			static void forEach(const char *text, std::function<void (const std::string &line)> call);
 			void forEach(std::function<void (const std::string &line)> call);
 
 		};
