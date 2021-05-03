@@ -30,8 +30,9 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::updated() {
+	void Abstract::Agent::updated(time_t timestamp) {
 
+		update.value = timestamp;
 		update.last = time(nullptr);
 
 		if(update.timer) {
