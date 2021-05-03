@@ -41,7 +41,6 @@
 				Agent *parent = nullptr;
 
 				struct {
-					time_t value = 0;		///< @brief Timestamp of the agent update (for file related agents should be the last write time).
 					time_t last = 0;		///< @brief Timestamp of the last update.
 					time_t expires = 0;		///< @brief Is the current state valid?
 					time_t next = 0;		///< @brief Timestamp of the next update.
@@ -69,8 +68,7 @@
 				void updating();
 
 				/// @brief Update complete (success or failure).
-				/// @param timestamp Timestamp of the update (usually = now).
-				void updated(time_t timestamp = time(0));
+				void updated();
 
 			protected:
 
