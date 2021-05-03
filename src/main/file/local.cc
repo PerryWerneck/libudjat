@@ -39,16 +39,56 @@
 			}
 
 			length = st.st_size;
-			this->contents = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
 
-			if(contents == MAP_FAILED) {
 
-				if(errno == ENODEV) {
-					throw runtime_error("The underlying filesystem of the specified file does not support memory mapping.");
+			if(length) {
+
+				// Can't get the file length, use mmap.
+				this->mapped = true;
+				this->contents = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+
+				if(contents == MAP_FAILED) {
+
+					if(errno == ENODEV) {
+						throw runtime_error("The underlying filesystem of the specified file does not support memory mapping.");
+					}
+
+					throw system_error(errno, system_category(), (string{"Can't map '"} + path + "'"));
 				}
 
-				throw system_error(errno, system_category(), (string{"Can't map '"} + path + "'"));
+			} else {
+
+				// No file length, uses the 'normal way'.
+				mapped = false;
+				ssize_t in;
+				size_t szBuffer = 4096;
+				length = 0;
+				contents = malloc(szBuffer);
+
+				char * ptr = (char *) contents;
+				while( (in = read(fd,ptr,szBuffer - length)) != 0) {
+
+					if(in < 0) {
+						throw system_error(errno, system_category(), (string{"Can't read '"} + path + "'"));
+					}
+
+					if(in > 0) {
+						ptr += in;
+						length += in;
+						if(length >= (szBuffer - 20)) {
+							szBuffer += 4096;
+							contents = realloc(contents,szBuffer);
+							ptr = (char *) contents+length;
+						}
+					}
+
+				}
+
+				contents = (char *) realloc(contents,length+1);
+				((char *) contents)[length] = 0;
+
 			}
+
 
 		} catch(...) {
 
@@ -63,7 +103,11 @@
 	}
 
 	File::Local::~Local() {
-		munmap(contents,length);
+		if(mapped) {
+			munmap(contents,length);
+		} else {
+			free(contents);
+		}
 	}
 
 	void File::Local::forEach(std::function<void (const string &line)> call) {

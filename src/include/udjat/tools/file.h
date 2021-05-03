@@ -73,6 +73,7 @@ namespace Udjat {
 		class UDJAT_API Local {
 		private:
 			void * contents;	///< @brief File contents.
+			bool mapped;		///< @brief Is the file mmapped?
 			size_t length;		///< @brief File length.
 
 		public:
