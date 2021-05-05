@@ -202,7 +202,7 @@ namespace Udjat {
 			throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
 		}
 
-		return make_shared<Abstract::Agent>();
+		return shared_ptr<Abstract::Agent>();
 
 	}
 
