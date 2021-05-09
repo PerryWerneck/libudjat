@@ -171,6 +171,14 @@
 				void foreach(std::function<void(Agent &agent)> method);
 				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
 
+				inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
+					return children.begin();
+				}
+
+				inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
+					return children.end();
+				}
+
 				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
 				virtual void get(const char *name, Json::Value &value);
 				void get(const Request &request, Response &response);
@@ -196,7 +204,6 @@
 				virtual void expand(std::string &text) const;
 
 			};
-
 
 		}
 

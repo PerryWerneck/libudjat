@@ -108,6 +108,10 @@ static void test_agent_parser() {
 	cout << "http://localhost:8989/api/1.0/agent" << endl;
 	cout << "http://localhost:8989/api/1.0/alerts" << endl;
 
+	for(auto agent : *root_agent) {
+		cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << endl;
+	}
+
 	Udjat::run();
 
 }
@@ -170,8 +174,8 @@ int main(int argc, char **argv) {
 	*/
 
 
-	test_file_load();
-	// test_agent_parser();
+	// test_file_load();
+	test_agent_parser();
 	// test_sub_process();
 
 	/*
