@@ -59,6 +59,7 @@ namespace Udjat {
 			Agent(const char *name);
 			Agent(const Quark &name);
 			Agent(const pugi::xml_node &node);
+			Agent(const pugi::xml_node &node, const char *attribute);
 			Agent(const pugi::xml_attribute &attribute);
 
 			inline const char * getName() const {

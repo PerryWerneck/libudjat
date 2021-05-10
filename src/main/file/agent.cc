@@ -27,7 +27,9 @@ namespace Udjat {
 
 	File::Agent::Agent(const char *name) : Agent(Quark(name)) { }
 
-	File::Agent::Agent(const pugi::xml_node &node) : Agent(Quark(node.attribute("path"))) { }
+	File::Agent::Agent(const pugi::xml_node &node, const char *name) : Agent(Quark(node.attribute(name))) { }
+
+	File::Agent::Agent(const pugi::xml_node &node) : Agent(Quark(node.attribute("filename"))) { }
 
 	File::Agent::Agent(const pugi::xml_attribute &attribute) : Agent(Quark(attribute)) { }
 
