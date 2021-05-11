@@ -82,18 +82,34 @@ static void test_agent_parser() {
 	};
 
 	static Factory factory;
-	auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
+
+	// Load agent descriptions.
+	{
+		auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
+
+		File::List("${PWD}/*.xml").forEach([root_agent](const char *filename){
+
+			cout << endl << "Loading '" << filename << "'" << endl;
+			pugi::xml_document doc;
+			doc.load_file(filename);
+			root_agent->load(doc);
+
+		});
+
+		cout << "http://localhost:8989/info/1.0/modules" << endl;
+		cout << "http://localhost:8989/info/1.0/workers" << endl;
+		cout << "http://localhost:8989/info/1.0/factory" << endl;
+		cout << "http://localhost:8989/api/1.0/agent" << endl;
+		cout << "http://localhost:8989/api/1.0/alerts" << endl;
+
+		for(auto agent : *root_agent) {
+			cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << endl;
+		}
+
+	}
 
 	Alert::init();
 
-	File::List("${PWD}/*.xml").forEach([root_agent](const char *filename){
-
-		cout << endl << "Loading '" << filename << "'" << endl;
-		pugi::xml_document doc;
-		doc.load_file(filename);
-		root_agent->load(doc);
-
-	});
 
 	/*
 	MainLoop::getInstance().insert("none",10,[](const time_t now) {
@@ -102,15 +118,6 @@ static void test_agent_parser() {
 	});
 	*/
 
-	cout << "http://localhost:8989/info/1.0/modules" << endl;
-	cout << "http://localhost:8989/info/1.0/workers" << endl;
-	cout << "http://localhost:8989/info/1.0/factory" << endl;
-	cout << "http://localhost:8989/api/1.0/agent" << endl;
-	cout << "http://localhost:8989/api/1.0/alerts" << endl;
-
-	for(auto agent : *root_agent) {
-		cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << endl;
-	}
 
 	Udjat::run();
 
