@@ -40,8 +40,10 @@
 			auto root = Abstract::Agent::get_root();
 			if(root) {
 				Abstract::Agent::set_root(std::shared_ptr<Abstract::Agent>());
-				int rc = root.use_count();
-				cout << "mainloop\tAgent root has " << std::to_string(rc) << " instances" << endl;
+				for(size_t ix = 0; ix < 10 && root.use_count() > 1; ix++) {
+					cerr << "cleanup\t" << "Waiting for " << root.use_count() << " instances of root agent" << endl;
+					sleep(1);
+				}
 			}
 
 		}
