@@ -21,6 +21,7 @@
  #include <udjat.h>
  #include "private.h"
  #include <sys/eventfd.h>
+ #include <udjat/agent.h>
 
  namespace Udjat {
 
@@ -33,6 +34,17 @@
 		MainLoop::getInstance().run();
 
 		stop();
+
+		// Check for agent cleanup
+		{
+			auto root = Abstract::Agent::get_root();
+			if(root) {
+				Abstract::Agent::set_root(std::shared_ptr<Abstract::Agent>());
+				int rc = root.use_count();
+				cout << "mainloop\tAgent root has " << std::to_string(rc) << " instances" << endl;
+			}
+
+		}
 
 	}
 

@@ -136,6 +136,10 @@ namespace Udjat {
 
 	void Abstract::Agent::stop() {
 
+#ifdef DEBUG
+		cout << name << "\tStopping agent" << endl;
+#endif // DEBUG
+
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : children) {
 

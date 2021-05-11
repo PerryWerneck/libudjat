@@ -108,13 +108,22 @@
  }
 
  void Udjat::File::Agent::Controller::remove(File::Agent *file) {
+
 	lock_guard<std::recursive_mutex> lock(guard);
+
+#ifdef DEBUG
+	cout << "Removing file '" << file->getName() << "'" << endl;
+#endif // DEBUG
 
 	watches.remove_if([this, file](Watch &watch){
 
 		watch.files.remove_if([file](File::Agent *agent){
 			return agent == file;
 		});
+
+#ifdef DEBUG
+		cout << "inotify\t" << watch.name << " agents: " << watch.files.size() << endl;
+#endif // DEBUG
 
 		if(!watch.files.empty()) {
 			return false;
