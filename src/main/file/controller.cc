@@ -124,14 +124,18 @@
 
 	void File::Watcher::Controller::insert(Watcher *watcher) {
 
-		watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
-		if(watcher->wd == -1) {
-			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->name.c_str() + "'");
+		if(watcher->wd < 0) {
+
+			watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
+			if(watcher->wd == -1) {
+				throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->name.c_str() + "'");
+			}
+
+			cout << "inotify\tWatching '" << watcher->name.c_str() << "'" << endl;
+
+			watchers.push_back(watcher);
+
 		}
-
-		cout << "inotify\tWatching '" << watcher->name.c_str() << "'" << endl;
-
-		watchers.push_back(watcher);
 
 	}
 

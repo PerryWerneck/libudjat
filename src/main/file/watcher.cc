@@ -22,6 +22,12 @@
  #include <cstring>
  #include <udjat/tools/threadpool.h>
  #include <sched.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <unistd.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
 
  using namespace std;
 
@@ -86,21 +92,52 @@
 			cout << "Inotify\tLoading '" << name.c_str() << "' for " << files.size() << " file(s)" << endl;
 #endif // DEBUG
 
-			Udjat::File::Local file(name.c_str());
+			// Open file
+			int fd = open(name.c_str(),O_RDONLY);
+			if(fd < 0) {
+				throw system_error(errno, system_category(), (string{"Can't open '"} + name.c_str() + "'"));
+			}
 
-			for(auto f = files.begin(); f != files.end(); f++) {
+			try {
 
-				try {
+				struct stat st;
+				if(fstat(fd, &st)) {
+					throw system_error(errno, system_category(), (string{"Can't get stats of '"} + name.c_str() + "'"));
+				}
 
-					f->callback(file.c_str());
+				if(st.st_mtime == this->mtime) {
+#ifdef DEBUG
+					cout << "File was not modified" << endl;
+#endif // DEBUG
+					::close(fd);
+					return false;
+				}
 
-				} catch(const exception &e) {
+				this->mtime = st.st_mtime;
 
-					cerr << "inotify\tError '" << e.what() << "' updating file '" << this->name.c_str() << "'" << endl;
+				Udjat::File::Local file(fd,st.st_size);
+
+				for(auto f = files.begin(); f != files.end(); f++) {
+
+					try {
+
+						f->callback(file.c_str());
+
+					} catch(const exception &e) {
+
+						cerr << "inotify\tError '" << e.what() << "' updating file '" << this->name.c_str() << "'" << endl;
+
+					}
 
 				}
 
+			} catch(...) {
+
+				::close(fd);
+				throw;
 			}
+
+			::close(fd);
 
 		} catch(const exception &e) {
 

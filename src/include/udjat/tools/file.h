@@ -39,6 +39,9 @@ namespace Udjat {
 			int wd = -1;
 			Quark name;
 
+			/// @brief Time of last modification.
+			time_t mtime = 0;
+
 			/// @brief True if all the children were updated.
 			bool updated = false;
 
@@ -127,11 +130,14 @@ namespace Udjat {
 		/// @brief Generic text file object (Don't use for large files).
 		class UDJAT_API Local {
 		private:
-			void * contents;	///< @brief File contents.
-			bool mapped;		///< @brief Is the file mmapped?
-			size_t length;		///< @brief File length.
+			void * contents = nullptr;	///< @brief File contents.
+			bool mapped = false;		///< @brief Is the file mmapped?
+			size_t length = 0;			///< @brief File length.
+
+			void load(int fd);
 
 		public:
+			Local(int fd, ssize_t length = -1);
 			Local(const char *filename);
 			Local(const File::Agent &agent);
 			~Local();
