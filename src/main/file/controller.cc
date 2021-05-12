@@ -72,6 +72,17 @@
 
 		cout << "inotify\tStopping service" << endl;
 
+		std::lock_guard<std::mutex> lock(Watcher::guard);
+
+		for(auto watcher : watchers) {
+
+			if(watcher->wd != -1) {
+				inotify_rm_watch(instance, watcher->wd);
+				watcher->wd = -1;
+			}
+
+		}
+
 		MainLoop::getInstance().remove((void *) this);
 		::close(instance);
 
@@ -113,14 +124,12 @@
 
 	void File::Watcher::Controller::insert(Watcher *watcher) {
 
-		watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_MODIFY);
+		watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
 		if(watcher->wd == -1) {
 			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->name.c_str() + "'");
 		}
 
-#ifdef DEBUG
-		cout << "Inotify\tWatching '" << watcher->name.c_str() << "'" << endl;
-#endif // DEBUG
+		cout << "inotify\tWatching '" << watcher->name.c_str() << "'" << endl;
 
 		watchers.push_back(watcher);
 
@@ -130,7 +139,8 @@
 
 		if(watcher->wd > 0) {
 			if(inotify_rm_watch(instance, watcher->wd) == -1) {
-				cerr << "inotify\tError '" << strerror(errno) << "' unwatching file '" << watcher->name << "'" << endl;
+				cerr << "inotify\tError '" << strerror(errno) << "' unwatching file '"
+						<< watcher->name << "' (wd=" << watcher->wd << " instance=" << instance << ")" << endl;
 			} else {
 				cerr << "inotify\tUnwatching '" << watcher->name << "'" << endl;
 			}
@@ -152,15 +162,9 @@
 			if(watcher->wd == event->wd) {
 
 				// Got event!
-				auto mask = event->mask;
-				ThreadPool::getInstance().push([watcher,mask]() {
-#ifdef DEBUG
-					cout << "Inotify\tEvent on '" << watcher->name.c_str() << "'" << endl;
-#endif // DEBUG
-					watcher->onEvent(mask);
-				});
-
+				watcher->onEvent(event->mask);
 				break;
+
 			}
 
 		}

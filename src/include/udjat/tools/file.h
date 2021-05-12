@@ -38,6 +38,9 @@ namespace Udjat {
 			int wd = -1;
 			Quark name;
 
+			/// @brief True if all the children were updated.
+			bool updated = false;
+
 			class Controller;
 			friend class Controller;
 
@@ -55,11 +58,16 @@ namespace Udjat {
 
 			std::list<Child> children;
 
-			int onEvent(const uint32_t event) noexcept;
+			void onEvent(const uint32_t event) noexcept;
+			void onChanged() noexcept;
 
 		public:
 			static Watcher * insert(void *id, const Quark &name, std::function<void (const char *)> callback);
 			static Watcher * insert(void *id, const char *name, std::function<void (const char *)> callback);
+
+			/// @brief Update all children (if necessary).
+			/// @return true if the update was done.
+			bool update(bool force = false);
 
 			void remove(void *id);
 

@@ -50,7 +50,7 @@ namespace Udjat {
 	void File::Agent::set(const char *contents) {
 
 #ifdef DEBUG
-//		cout << "--- " << name << " ---" << endl << contents << endl << "---" << endl;
+		cout << "--- " << c_str() << " ---" << endl << contents << endl << "---" << endl;
 #endif // DEBUG
 
 	}

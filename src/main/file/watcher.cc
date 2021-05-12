@@ -18,6 +18,10 @@
  */
 
  #include "private.h"
+ #include <unistd.h>
+ #include <cstring>
+ #include <udjat/tools/threadpool.h>
+ #include <sched.h>
 
  using namespace std;
 
@@ -51,6 +55,7 @@
 
 		Child child(id,callback);
 		watcher->children.push_back(child);
+		watcher->updated = false;
 
 		return watcher;
 	}
@@ -68,9 +73,94 @@
 		delete this;
 	}
 
-	int File::Watcher::onEvent(const uint32_t event) noexcept {
+	bool File::Watcher::update(bool force) {
 
+		if(updated && !force) {
+			return false;
+		}
 
+		try {
+
+#ifdef DEBUG
+			cout << "Inotify\tLoading '" << name.c_str() << "' for " << children.size() << " children" << endl;
+#endif // DEBUG
+
+			File::Local file(name.c_str());
+
+			for(auto child = children.begin(); child != children.end(); child++) {
+
+				try {
+
+					child->callback(file.c_str());
+
+				} catch(const exception &e) {
+
+					cerr << "inotify\tError '" << e.what() << "' updating file '" << this->name.c_str() << "'" << endl;
+
+				}
+
+			}
+
+		} catch(const exception &e) {
+
+			cerr << "inotify\tError '" << e.what() << "' loading '" << this->name.c_str() << "'" << endl;
+
+		}
+
+		return updated = true;
+
+	}
+
+	void File::Watcher::onChanged() noexcept {
+
+		Controller::getInstance().remove(this);
+
+		ThreadPool::getInstance().push([this]() {
+
+			sched_yield();
+
+			if(::access(this->name.c_str(),F_OK) == -1) {
+
+				cerr << "inotify\tFile '" << name.c_str() << "': " << strerror(errno) << endl;
+
+			} else {
+
+				update(true);
+				Controller::getInstance().insert(this);
+
+			}
+
+		});
+
+	}
+
+	void File::Watcher::onEvent(const uint32_t event) noexcept {
+
+		if(event & IN_IGNORED) {
+
+			// Watch  was  removed  explicitly or automatically (file  was  deleted, or filesystem was unmounted)
+			cout << "inotify\tFile '" << this->name.c_str() << "' was ignored" << endl;
+			this->wd = -1;
+			onChanged();
+		}
+
+		if(event & IN_CLOSE_WRITE) {
+			cout << "inotify\tFile '" << this->name.c_str() << "' was changed" << endl;
+			ThreadPool::getInstance().push([this]() {
+				sched_yield();
+				update(true);
+				Controller::getInstance().insert(this);
+			});
+		}
+
+		if(event & IN_DELETE_SELF) {
+			cout << "inotify\tFile '" << this->name.c_str() << "' was deleted" << endl;
+		}
+
+		if(event & IN_MOVE_SELF) {
+			cout << "inotify\tFile '" << this->name.c_str() << "' was moved" << endl;
+			onChanged();
+		}
 
 	}
 
