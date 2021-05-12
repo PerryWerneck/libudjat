@@ -55,6 +55,8 @@ namespace Udjat {
 
 			std::list<Child> children;
 
+			int onEvent(const uint32_t event) noexcept;
+
 		public:
 			static Watcher * insert(void *id, const Quark &name, std::function<void (const char *)> callback);
 			static Watcher * insert(void *id, const char *name, std::function<void (const char *)> callback);

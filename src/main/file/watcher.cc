@@ -55,7 +55,6 @@
 		return watcher;
 	}
 
-
 	void File::Watcher::remove(void *id) {
 		std::lock_guard<std::mutex> lock(guard);
 
@@ -67,6 +66,12 @@
 			return;
 
 		delete this;
+	}
+
+	int File::Watcher::onEvent(const uint32_t event) noexcept {
+
+
+
 	}
 
  }

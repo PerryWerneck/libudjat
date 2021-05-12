@@ -48,6 +48,7 @@ namespace Udjat {
 		~Controller();
 
 		Watcher * find(const char *name);
+		Watcher * find(const Quark &name);
 
 		void insert(Watcher *watcher);
 		void remove(Watcher *watcher);

@@ -29,11 +29,17 @@ namespace Udjat {
 
 	}
 
-	File::Agent::Agent(const char *name) : Agent(Quark(name)) { }
+	File::Agent::Agent(const char *name) {
 
-	File::Agent::Agent(const pugi::xml_node &node, const char *name) : Agent(Quark(node.attribute(name))) { }
+		watcher = Watcher::insert(this, name, [this](const char *contents) {
+			this->set(contents);
+		});
 
-	File::Agent::Agent(const pugi::xml_node &node) : Agent(Quark(Udjat::Attribute(node,"filename").as_string())) { }
+	}
+
+	File::Agent::Agent(const pugi::xml_node &node, const char *name) : Agent(Udjat::Attribute(node,name).as_string()) { }
+
+	File::Agent::Agent(const pugi::xml_node &node) : Agent(Udjat::Attribute(node,"filename").as_string()) { }
 
 	File::Agent::Agent(const pugi::xml_attribute &attribute) : Agent(Quark(attribute)) { }
 

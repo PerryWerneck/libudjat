@@ -20,6 +20,7 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
 
  #define INOTIFY_EVENT_SIZE ( sizeof (struct inotify_event) )
  #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
@@ -27,7 +28,7 @@
  namespace Udjat {
 
  	File::Watcher::Controller & File::Watcher::Controller::getInstance() {
-		Controller instance;
+		static Controller instance;
 		return instance;
  	}
 
@@ -78,6 +79,10 @@
 
 	File::Watcher * File::Watcher::Controller::find(const char *name) {
 
+		if(!*name) {
+			throw system_error(EBUSY,system_category(),"Empty filename");
+		}
+
 		for(auto watcher : watchers) {
 			if(!strcmp(watcher->name.c_str(),name)) {
 				return watcher;
@@ -89,12 +94,33 @@
 
 	}
 
+	File::Watcher * File::Watcher::Controller::find(const Quark &name) {
+
+		if(!name) {
+			throw system_error(EBUSY,system_category(),"Empty filename");
+		}
+
+		for(auto watcher : watchers) {
+			if(watcher->name == name) {
+				return watcher;
+			}
+		}
+
+		// Create a new watcher
+		return new Watcher(name);
+
+	}
+
 	void File::Watcher::Controller::insert(Watcher *watcher) {
 
 		watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_MODIFY);
 		if(watcher->wd == -1) {
 			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->name.c_str() + "'");
 		}
+
+#ifdef DEBUG
+		cout << "Inotify\tWatching '" << watcher->name.c_str() << "'" << endl;
+#endif // DEBUG
 
 		watchers.push_back(watcher);
 
@@ -114,6 +140,30 @@
 		watchers.remove_if([watcher](const Watcher *w) {
 			return watcher == w;
 		});
+
+	}
+
+	void File::Watcher::Controller::onEvent(struct inotify_event *event) noexcept {
+
+		std::lock_guard<std::mutex> lock(Watcher::guard);
+
+		for(auto watcher : watchers) {
+
+			if(watcher->wd == event->wd) {
+
+				// Got event!
+				auto mask = event->mask;
+				ThreadPool::getInstance().push([watcher,mask]() {
+#ifdef DEBUG
+					cout << "Inotify\tEvent on '" << watcher->name.c_str() << "'" << endl;
+#endif // DEBUG
+					watcher->onEvent(mask);
+				});
+
+				break;
+			}
+
+		}
 
 	}
 
