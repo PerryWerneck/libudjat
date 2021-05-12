@@ -24,51 +24,98 @@
  #define INOTIFY_EVENT_SIZE ( sizeof (struct inotify_event) )
  #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
 
- recursive_mutex Udjat::File::Agent::Controller::guard;
+ namespace Udjat {
 
- Udjat::File::Agent::Controller::Controller() {
+	File::Watcher::Controller::Controller() {
 
-	cout << "inotify\tStarting service" << endl;
+		cout << "inotify\tStarting service" << endl;
 
-	instance = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
-	if(instance == -1) {
-		throw system_error(errno,system_category(),"Can't initialize inotify");
-	}
-
-	MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event event){
-
-		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
-		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
-
-		ssize_t bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
-
-		while(bytes > 0) {
-
-			ssize_t	bufPtr	= 0;
-
-			while(bufPtr < bytes) {
-				auto pevent = (struct inotify_event *) &buffer[bufPtr];
-				onEvent(pevent);
-				bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
-			}
-
-			bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
+		instance = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
+		if(instance == -1) {
+			throw system_error(errno,system_category(),"Can't initialize inotify");
 		}
 
-		delete[] buffer;
+		MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event event){
 
-		return true;
-	});
+			char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
+			memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
+
+			ssize_t bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
+
+			while(bytes > 0) {
+
+				ssize_t	bufPtr	= 0;
+
+				while(bufPtr < bytes) {
+					auto pevent = (struct inotify_event *) &buffer[bufPtr];
+					onEvent(pevent);
+					bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
+				}
+
+				bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
+			}
+
+			delete[] buffer;
+
+			return true;
+		});
+
+	}
+
+	File::Watcher::Controller::~Controller() {
+
+		cout << "inotify\tStopping service" << endl;
+
+		MainLoop::getInstance().remove((void *) this);
+		::close(instance);
+
+	}
+
+	File::Watcher * File::Watcher::Controller::find(const char *name) {
+
+		for(auto watcher : watchers) {
+			if(!strcmp(watcher->name.c_str(),name)) {
+				return watcher;
+			}
+		}
+
+		// Create a new watcher
+		return new Watcher(Quark(name));
+
+	}
+
+	void File::Watcher::Controller::insert(Watcher *watcher) {
+
+		watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_MODIFY);
+		if(watcher->wd == -1) {
+			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->name.c_str() + "'");
+		}
+
+		watchers.push_back(watcher);
+
+	}
+
+	void File::Watcher::Controller::remove(Watcher *watcher) {
+
+		if(watcher->wd > 0) {
+			if(inotify_rm_watch(instance, watcher->wd) == -1) {
+				cerr << "inotify\tError '" << strerror(errno) << "' unwatching file '" << watcher->name << "'" << endl;
+			} else {
+				cerr << "inotify\tUnwatching '" << watcher->name << "'" << endl;
+			}
+			watcher->wd = -1;
+		}
+
+		watchers.remove_if([watcher](const Watcher *w) {
+			return watcher == w;
+		});
+
+	}
 
  }
 
- Udjat::File::Agent::Controller::~Controller() {
 
-	cout << "inotify\tStopping service" << endl;
-
- 	MainLoop::getInstance().remove((void *) this);
-	::close(instance);
- }
+ /*
 
  Udjat::File::Agent::Controller & Udjat::File::Agent::Controller::getInstance() {
 	static Controller instance;
@@ -190,4 +237,4 @@
 		}
 	}
 
- }
+ }*/

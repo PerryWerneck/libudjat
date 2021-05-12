@@ -19,30 +19,42 @@
 
  #include "private.h"
 
-namespace Udjat {
+ using namespace std;
 
-	File::Agent::Agent(const Quark &n) {
-		// Controller::getInstance().insert(this);
+ namespace Udjat {
+
+	std::mutex File::Watcher::guard;
+
+	File::Watcher::Watcher(const Quark &n) : name(n) {
+		Controller::getInstance().insert(this);
 	}
 
-	File::Agent::Agent(const char *name) : Agent(Quark(name)) { }
-
-	File::Agent::Agent(const pugi::xml_node &node, const char *name) : Agent(Quark(node.attribute(name))) { }
-
-	File::Agent::Agent(const pugi::xml_node &node) : Agent(Quark(Udjat::Attribute(node,"filename").as_string())) { }
-
-	File::Agent::Agent(const pugi::xml_attribute &attribute) : Agent(Quark(attribute)) { }
-
-	File::Agent::~Agent() {
-		// Controller::getInstance().remove(this);
+	File::Watcher::~Watcher() {
+		Controller::getInstance().remove(this);
 	}
 
-	void File::Agent::set(const char *contents) {
+	File::Watcher * File::Watcher::insert(void *id, const char *name, std::function<void (const char *)> callback) {
+		std::lock_guard<std::mutex> lock(guard);
 
-#ifdef DEBUG
-//		cout << "--- " << name << " ---" << endl << contents << endl << "---" << endl;
-#endif // DEBUG
+		Watcher * watcher =  Controller::getInstance().find(name);
 
+		Child child(id,callback);
+		watcher->children.push_back(child);
+
+		return watcher;
 	}
 
-}
+	void File::Watcher::remove(void *id) {
+		std::lock_guard<std::mutex> lock(guard);
+
+		children.remove_if([id](const Child &child) {
+			return child.id == id;
+		});
+
+		if(children.size())
+			return;
+
+		delete this;
+	}
+
+ }

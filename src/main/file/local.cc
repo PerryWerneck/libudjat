@@ -99,7 +99,7 @@
 
 	}
 
-	File::Local::Local(const File::Agent &agent) : Local(agent.getName()) {
+	File::Local::Local(const File::Agent &agent) : Local(agent.c_str()) {
 	}
 
 	File::Local::~Local() {

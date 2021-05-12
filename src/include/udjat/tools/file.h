@@ -29,6 +29,38 @@ namespace Udjat {
 
 	namespace File {
 
+		/// @brief File watcher.
+		class UDJAT_API Watcher {
+		private:
+
+			static std::mutex guard;
+
+			int wd = -1;
+			Quark name;
+
+			class Controller;
+			friend class Controller;
+
+			Watcher(const Quark &name);
+			~Watcher();
+
+			struct Child {
+				void *id;
+				std::function<void (const char *)> callback;
+
+				Child(void *i, std::function<void (const char *)> c) : id(i), callback(c) {
+				}
+
+			};
+
+			std::list<Child> children;
+
+		public:
+			static Watcher * insert(void *id, const char *name, std::function<void (const char *)> callback);
+			void remove(void *id);
+
+		};
+
 		/// @brief Directory contents.
 		class UDJAT_API List : public std::list<std::string> {
 		public:
@@ -43,11 +75,9 @@ namespace Udjat {
 		///
 		class UDJAT_API Agent {
 		private:
-			class Controller;
-			friend class Controller;
 
-			/// @brief Path to file.
-			Quark name;
+			/// @brief The file watcher
+			Watcher * watcher = nullptr;
 
 		protected:
 
@@ -62,9 +92,13 @@ namespace Udjat {
 			Agent(const pugi::xml_node &node, const char *attribute);
 			Agent(const pugi::xml_attribute &attribute);
 
+			const char * c_str() const;
+
+			/*
 			inline const char * getName() const {
 				return name.c_str();
 			}
+			*/
 
 			virtual ~Agent();
 

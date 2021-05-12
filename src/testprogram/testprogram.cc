@@ -39,7 +39,7 @@
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 static void test_file_agent() {
-	Udjat::File::Agent file("x.txt");
+	Udjat::File::Agent file("test.xml");
 	MainLoop::getInstance().run();
 }
 
@@ -182,12 +182,13 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	test_agent_parser();
+	// test_agent_parser();
 	// test_sub_process();
+
+	test_file_agent();
 
 	/*
 
-	// test_file_agent();
 	//test_agent_parser();
 
 	// Udjat::run();

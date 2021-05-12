@@ -31,6 +31,30 @@ using namespace std;
 
 namespace Udjat {
 
+	class File::Watcher::Controller {
+	private:
+		Controller();
+
+		/// @brief Inotify instance.
+		int instance;
+
+		/// @brief Active watches
+		list<Watcher *> watchers;
+
+		void onEvent(struct inotify_event *event) noexcept;
+
+	public:
+		static Controller & getInstance();
+		~Controller();
+
+		Watcher * find(const char *name);
+
+		void insert(Watcher *watcher);
+		void remove(Watcher *watcher);
+
+	};
+
+	/*
 	class File::Agent::Controller {
 	private:
 
@@ -75,5 +99,6 @@ namespace Udjat {
 		void remove(File::Agent *file);
 
 	};
+	*/
 
 }
