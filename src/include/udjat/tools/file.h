@@ -23,6 +23,7 @@
 #include <udjat/tools/quark.h>
 #include <list>
 #include <algorithm>
+#include <mutex>
 #include <string>
 
 namespace Udjat {
@@ -47,16 +48,18 @@ namespace Udjat {
 			Watcher(const Quark &name);
 			~Watcher();
 
-			struct Child {
+			/// @brief Text file watcher.
+			struct File {
 				void *id;
 				std::function<void (const char *)> callback;
 
-				Child(void *i, std::function<void (const char *)> c) : id(i), callback(c) {
+				File(void *i, std::function<void (const char *)> c) : id(i), callback(c) {
 				}
 
 			};
 
-			std::list<Child> children;
+			/// @brief Text file watchers.
+			std::list<File> files;
 
 			void onEvent(const uint32_t event) noexcept;
 			void onChanged() noexcept;

@@ -128,7 +128,6 @@
 
 		}
 
-
 		response["alerts"] = report;
 
 	}

@@ -42,8 +42,9 @@
 
 		Watcher * watcher =  Controller::getInstance().find(name);
 
-		Child child(id,callback);
-		watcher->children.push_back(child);
+		File file(id,callback);
+		watcher->files.push_back(file);
+		watcher->updated = false;
 
 		return watcher;
 	}
@@ -53,8 +54,8 @@
 
 		Watcher * watcher =  Controller::getInstance().find(name.c_str());
 
-		Child child(id,callback);
-		watcher->children.push_back(child);
+		File file(id,callback);
+		watcher->files.push_back(file);
 		watcher->updated = false;
 
 		return watcher;
@@ -63,11 +64,11 @@
 	void File::Watcher::remove(void *id) {
 		std::lock_guard<std::mutex> lock(guard);
 
-		children.remove_if([id](const Child &child) {
-			return child.id == id;
+		files.remove_if([id](const File &file) {
+			return file.id == id;
 		});
 
-		if(children.size())
+		if(files.size())
 			return;
 
 		delete this;
@@ -82,16 +83,16 @@
 		try {
 
 #ifdef DEBUG
-			cout << "Inotify\tLoading '" << name.c_str() << "' for " << children.size() << " children" << endl;
+			cout << "Inotify\tLoading '" << name.c_str() << "' for " << files.size() << " file(s)" << endl;
 #endif // DEBUG
 
-			File::Local file(name.c_str());
+			Udjat::File::Local file(name.c_str());
 
-			for(auto child = children.begin(); child != children.end(); child++) {
+			for(auto f = files.begin(); f != files.end(); f++) {
 
 				try {
 
-					child->callback(file.c_str());
+					f->callback(file.c_str());
 
 				} catch(const exception &e) {
 

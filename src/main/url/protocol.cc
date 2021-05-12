@@ -38,14 +38,19 @@
 #endif // DEBUG
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	std::shared_ptr<URL::Response> URL::Protocol::call(const URL &url, const URL::Method method, const char *mimetype, const char *payload) {
 		throw runtime_error(string{"No back-end protocol for '"} + url.to_string() + "'");
 	}
+	#pragma GCC diagnostic pop
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	int URL::Protocol::connect(const URL &url, time_t timeout) {
 		throw runtime_error(string{"No back-end protocol for connect('"} + url.to_string() + "')");
 	}
-
+	#pragma GCC diagnostic pop
 
 	Udjat::Response URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
 
