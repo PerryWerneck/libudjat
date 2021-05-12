@@ -21,8 +21,12 @@
 
 namespace Udjat {
 
-	File::Agent::Agent(const Quark &n) {
-		// Controller::getInstance().insert(this);
+	File::Agent::Agent(const Quark &name) {
+
+		watcher = Watcher::insert(this, name, [this](const char *contents) {
+			this->set(contents);
+		});
+
 	}
 
 	File::Agent::Agent(const char *name) : Agent(Quark(name)) { }
@@ -34,7 +38,7 @@ namespace Udjat {
 	File::Agent::Agent(const pugi::xml_attribute &attribute) : Agent(Quark(attribute)) { }
 
 	File::Agent::~Agent() {
-		// Controller::getInstance().remove(this);
+		watcher->remove(this);
 	}
 
 	void File::Agent::set(const char *contents) {

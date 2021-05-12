@@ -44,6 +44,18 @@
 		return watcher;
 	}
 
+	File::Watcher * File::Watcher::insert(void *id, const Quark &name, std::function<void (const char *)> callback) {
+		std::lock_guard<std::mutex> lock(guard);
+
+		Watcher * watcher =  Controller::getInstance().find(name.c_str());
+
+		Child child(id,callback);
+		watcher->children.push_back(child);
+
+		return watcher;
+	}
+
+
 	void File::Watcher::remove(void *id) {
 		std::lock_guard<std::mutex> lock(guard);
 

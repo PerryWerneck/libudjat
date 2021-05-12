@@ -56,8 +56,14 @@ namespace Udjat {
 			std::list<Child> children;
 
 		public:
+			static Watcher * insert(void *id, const Quark &name, std::function<void (const char *)> callback);
 			static Watcher * insert(void *id, const char *name, std::function<void (const char *)> callback);
+
 			void remove(void *id);
+
+			inline const char * c_str() const {
+				return name.c_str();
+			}
 
 		};
 
@@ -92,13 +98,9 @@ namespace Udjat {
 			Agent(const pugi::xml_node &node, const char *attribute);
 			Agent(const pugi::xml_attribute &attribute);
 
-			const char * c_str() const;
-
-			/*
-			inline const char * getName() const {
-				return name.c_str();
+			inline const char * c_str() const {
+				return watcher->c_str();
 			}
-			*/
 
 			virtual ~Agent();
 

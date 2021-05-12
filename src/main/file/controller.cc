@@ -26,6 +26,11 @@
 
  namespace Udjat {
 
+ 	File::Watcher::Controller & File::Watcher::Controller::getInstance() {
+		Controller instance;
+		return instance;
+ 	}
+
 	File::Watcher::Controller::Controller() {
 
 		cout << "inotify\tStarting service" << endl;
