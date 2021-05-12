@@ -64,13 +64,13 @@
 				/// @brief Search for attribute.
 				static const pugi::xml_attribute & attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
 
-				/// @brief Update timer, set update as running.
-				void updating();
-
-				/// @brief Update complete (success or failure).
-				void updated();
+				/// @brief Enable disable 'running updates' flag.
+				void updating(bool running);
 
 			protected:
+
+				/// @brief Update complete (success or failure).
+				void updated() noexcept;
 
 				/// @brief Load children from xml node.
 				void load(const pugi::xml_node &node);

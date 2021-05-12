@@ -17,28 +17,49 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::updating() {
+	void Abstract::Agent::updating(bool running) {
 
-		update.running = time(nullptr);
+		if(running) {
 
-		if(update.timer) {
-			update.next = update.expires = (update.running + update.timer);
+			// Update is running.
+			update.running = time(nullptr);
+
+			if(update.timer) {
+				update.next = update.expires = (update.running + update.timer);
+			} else {
+				update.next = 0;
+				update.expires = update.running + 10;	// TODO: Make it configurable.
+			}
+
 		} else {
-			update.next = 0;
-			update.expires = update.running + 10;	// TODO: Make it configurable.
+
+			// Update is complete.
+			update.running = 0;
+			updated();
+
 		}
 
 	}
 
-	void Abstract::Agent::updated() {
+	void Abstract::Agent::updated() noexcept {
 
 		update.last = time(nullptr);
-
 		if(update.timer) {
-			update.next = update.last + update.timer;
-		}
 
-		update.running = 0;
+			// Has timer, use it
+			update.next = update.expires = (update.last + update.timer);
+
+		} else if(update.next > update.last) {
+
+			// No timer, but next is set
+			update.expires = update.next;
+
+		} else {
+
+			// No timer, no next update, use default expiration time.
+			update.expires = update.running + 60;	// TODO: Make it configurable.
+
+		}
 
 	}
 
@@ -56,22 +77,21 @@ namespace Udjat {
 
 		}
 
-		updating();
+		updating(true);
 
 		try {
 
 			refresh();
-			updated();
 
 		} catch(const std::exception &e) {
 
-			updated();
+			updating(false);
 			failed(e,"Error updating agent");
 			throw;
 
 		} catch(...) {
 
-			updated();
+			updating(false);
 			failed("Unexpected error updating agent");
 			throw;
 
@@ -85,7 +105,7 @@ namespace Udjat {
 			}
 		}
 
-		update.running = 0;
+		updating(false);
 
 		return true;
 

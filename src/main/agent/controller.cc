@@ -231,7 +231,7 @@ namespace Udjat {
 				}
 
 				// Agent requires update.
-				agent->updating();
+				agent->updating(true);
 				if(agent->update.timer) {
 					agent->update.next = time(0) + agent->update.timer;
 					next = std::min(next,agent->update.next);
@@ -254,7 +254,7 @@ namespace Udjat {
 
 					}
 
-					agent->updated();
+					agent->updating(false);
 
 				});
 

@@ -104,6 +104,11 @@ namespace Udjat {
 			/// @param The file contents.
 			virtual void set(const char *contents);
 
+			/// @brief Reload file contents (if necessary).
+			inline bool update(bool force = false) {
+				return watcher->update(force);
+			}
+
 		public:
 			Agent(const char *name);
 			Agent(const Quark &name);
