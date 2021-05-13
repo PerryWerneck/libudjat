@@ -159,10 +159,10 @@ namespace Udjat {
 			Json::Value value(Json::objectValue);
 
 			value["name"] = module->name.c_str();
-			value["started"] = module->started;
+			value["active"] = module->started;
 			module->info->get(value);
-
 			modules.append(value);
+
 		}
 
 		response["modules"] = modules;
