@@ -57,7 +57,7 @@
 
 		static string getType(const pugi::xml_node &node);
 
-		void work(const Request &request, Response &response) const override;
+		void work(Request &request, Response &response) const override;
 
 		/// @brief Activate alert;
 		void insert(Alert *alert, std::shared_ptr<Alert::Event> event);

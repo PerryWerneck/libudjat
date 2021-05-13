@@ -24,7 +24,7 @@ namespace Udjat {
 	public:
 		Worker(const Quark &name);
 
-		static void work(const char *name, const Request &request, Response &response);
+		static void work(const char *name, Request &request, Response &response);
 		static void getInfo(Response &response);
 
 		inline size_t hash() const {
@@ -37,7 +37,7 @@ namespace Udjat {
 
 		virtual ~Worker();
 
-		virtual void work(const Request &request, Response &response) const = 0;
+		virtual void work(Request &request, Response &response) const = 0;
 
 	};
 

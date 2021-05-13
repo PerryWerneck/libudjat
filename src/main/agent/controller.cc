@@ -68,7 +68,7 @@ namespace Udjat {
 		return controller;
 	}
 
-	void Abstract::Agent::Controller::work(const Request &request, Response &response) const {
+	void Abstract::Agent::Controller::work(Request &request, Response &response) const {
 
 		auto agent = find(request.c_str());
 

@@ -116,7 +116,7 @@
 		return instance;
 	}
 
-	void Alert::Controller::work(const Request &request, Response &response) const {
+	void Alert::Controller::work(Request &request, Response &response) const {
 
 		Json::Value report(Json::arrayValue);
 
