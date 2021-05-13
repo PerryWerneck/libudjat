@@ -106,6 +106,15 @@
 				return path.c_str();
 			}
 
+			bool operator ==(const char *key) const noexcept;
+
+			/// @brief Pop one element from path.
+			std::string pop();
+
+			/// @brief Pop one element from path, scan the list.
+			/// @return Index of the 'popped' element.
+			size_t pop(const char *name, ...) __attribute__ ((sentinel));
+
 		};
 
 	}
