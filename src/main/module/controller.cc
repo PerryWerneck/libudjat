@@ -53,7 +53,7 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 
 #ifdef DEBUG
-		cout << "Removing module '" << module->name << "'" << endl;
+		cout << module->name << "\tRemoving module" << endl;
 #endif // DEBUG
 
 		modules.remove_if([module](Module *entry) {

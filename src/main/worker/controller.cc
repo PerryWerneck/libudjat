@@ -55,7 +55,7 @@ namespace Udjat {
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << "Inserting worker '" << worker->c_str() << "'" << endl;
+		cout << worker->c_str() << "\tInserting worker" << endl;
 		workers.insert(make_pair(worker->c_str(),worker));
 
 	}
@@ -70,7 +70,7 @@ namespace Udjat {
 		if(entry->second != worker)
 			return;
 
-		cout << "Removing worker '" << worker->c_str() << "'" << endl;
+		cout << worker->c_str() << "\tRemoving worker" << endl;
 		workers.erase(entry);
 
 	}

@@ -23,19 +23,13 @@
  namespace Udjat {
 
 	URL::Protocol::Protocol(const Quark &protocol, const Quark &pn) : name(protocol), portname(pn) {
-
 		static const ModuleInfo info;
 		this->info = &info;
-
-#ifdef DEBUG
-		cout << "Protocol '" << name << "' created using port '" << portname << "'" << endl;
-#endif // DEBUG
+		cout << name << "\tProtocol registered using service '" << portname << "'" << endl;
 	}
 
 	URL::Protocol::~Protocol() {
-#ifdef DEBUG
-		cout << "Protocol '" << name << "' destroyed" << endl;
-#endif // DEBUG
+		cout << name << "\tProtocol unregistered" << endl;
 	}
 
 	#pragma GCC diagnostic push
