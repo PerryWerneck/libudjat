@@ -11,14 +11,16 @@
 namespace Udjat {
 
 	void Module::load() {
+		Module::Controller::getInstance().load();
+	}
 
-		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*.so").forEach([](const char *filename){
+	void Module::Controller::load() {
+
+		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*.so").forEach([this](const char *filename){
 
 			try {
 
-#ifdef DEBUG
-				cout << "Loading '" << filename << "'" << endl;
-#endif // DEBUG
+				cout << "module\tLoading '" << filename << "'" << endl;
 
 				load(filename);
 
@@ -33,7 +35,7 @@ namespace Udjat {
 
 	}
 
-	Module * Module::load(const char *filename) {
+	Module * Module::Controller::load(const char *filename) {
 
 		dlerror();
 

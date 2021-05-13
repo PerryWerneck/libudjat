@@ -17,34 +17,35 @@
 			friend class Controller;
 
 			/// @brief True if the module was started.
-			bool 	started;
+			bool started;
 
 			/// @brief The module name.
-			Quark	name;
+			Quark name;
 
 			/// @brief The module handle.
 			void *handle;
 
 		protected:
 
-			/// @brief Module information.
+			/// @brief Information about the module.
 			const ModuleInfo *info;
 
 		public:
 
-			/// @brief Load all modules.
+			/// @brief Get module controller.
+			static Controller & controller();
+
+			/// @brief Load modules.
 			static void load();
 
-			/// @brief Load a single module.
-			static Module * load(const char *filename);
+			/// @brief Unload modules.
+			static void unload();
 
 			/// @brief List modules.
 			static void getInfo(Response &response);
 
 			Module(const Quark &name);
 			virtual ~Module();
-
-			static Module::Controller & getController();
 
 			/// @brief Start module.
 			virtual void start();

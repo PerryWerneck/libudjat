@@ -15,10 +15,6 @@ namespace Udjat {
 
 	}
 
-	Module::Controller & Module::getController() {
-		return Controller::getInstance();
-	}
-
 	Module::~Module() {
 		Controller::getInstance().remove(this);
 	}

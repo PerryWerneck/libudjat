@@ -12,15 +12,19 @@ namespace Udjat {
 	recursive_mutex Module::Controller::guard;
 
 	void start() noexcept {
-		Module::getController().start();
+		Module::controller().start();
 	}
 
 	void stop() noexcept {
-		Module::getController().stop();
+		Module::controller().stop();
 	}
 
 	void reload() noexcept {
-		Module::getController().reload();
+		Module::controller().reload();
+	}
+
+	Module::Controller & Module::controller() {
+		return Controller::getInstance();
 	}
 
 	Module::Controller & Module::Controller::getInstance() {
@@ -30,47 +34,13 @@ namespace Udjat {
 	}
 
 	Module::Controller::Controller() {
+		cout << "module\tStarting controller" << endl;
 	}
 
 	Module::Controller::~Controller() {
 
-		while(modules.size()) {
-
-			Module * module = *modules.begin();
-			Quark name = module->name;
-
-			void *handle = module->handle;
-
-			try {
-
-				// First delete module
-				delete module;
-
-				// FIX-ME: Cant close module because of the protocol handlers.
-				if(handle) {
-					bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
-					auto err = dlerror();
-					if(err) {
-						cerr << err << endl;
-					} else {
-
-						if(!deinit()) {
-							cout << name << "\tKeeping module open" << endl;
-						} else if(dlclose(handle)) {
-							cerr << name << "\tError '" << dlerror() << "' closing module" << endl;
-						}
-
-					}
-				}
-
-
-			} catch(const exception &e) {
-				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;
-			} catch(...) {
-				cerr << name << "\tUnexpected error deinitializing module" << endl;
-			}
-
-		}
+		cout << "module\tStopping controller" << endl;
+		unload();
 
 	}
 
