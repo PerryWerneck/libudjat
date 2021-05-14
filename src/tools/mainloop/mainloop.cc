@@ -28,11 +28,7 @@
 	std::mutex MainLoop::guard;
 
 	void run() noexcept {
-
-		start();
 		MainLoop::getInstance().run();
-		stop();
-
 	}
 
 	MainLoop::MainLoop() {

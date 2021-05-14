@@ -32,10 +32,6 @@ namespace Udjat {
 
 		void unload();
 
-		void start() noexcept;
-		void stop() noexcept;
-		void reload() noexcept;
-
 		void getInfo(Response &response);
 
 	};

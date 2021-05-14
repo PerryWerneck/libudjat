@@ -32,9 +32,6 @@
 
 		public:
 
-			/// @brief Get module controller.
-			static Controller & controller();
-
 			/// @brief Load modules.
 			static void load();
 
@@ -50,15 +47,6 @@
 
 			Module(const Quark &name);
 			virtual ~Module();
-
-			/// @brief Start module.
-			virtual void start();
-
-			/// @brief Reload module.
-			virtual void reload();
-
-			/// @brief Stop module.
-			virtual void stop();
 
 		};
 

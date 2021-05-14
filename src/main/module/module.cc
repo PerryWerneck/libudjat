@@ -19,20 +19,6 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
-	/// @brief Start module.
-	void Module::start() {
-	}
-
-	/// @brief Reload module.
-	void Module::reload() {
-		stop();
-		start();
-	}
-
-	/// @brief Stop module.
-	void Module::stop() {
-	}
-
 	void Module::getInfo(Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
