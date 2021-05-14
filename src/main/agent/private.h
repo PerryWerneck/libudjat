@@ -9,6 +9,7 @@
 #include <udjat/worker.h>
 #include <udjat/module.h>
 #include <udjat/factory.h>
+#include <udjat/tools/mainloop.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -20,7 +21,7 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> get_default_state();
 
-	class Abstract::Agent::Controller : private Worker, Factory, Module {
+	class Abstract::Agent::Controller : private Worker, Factory, MainLoop::Service {
 	private:
 
 		std::shared_ptr<Abstract::Agent> root;
@@ -42,8 +43,8 @@ namespace Udjat {
 		void work(Request &request, Response &response) const override;
 		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
 
-		void start() override;
-		void stop() override;
+		void start() noexcept override;
+		void stop() noexcept override;
 
 	};
 

@@ -127,6 +127,7 @@
 		<Unit filename="src/tools/mainloop/linux/run.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/private.h" />
+		<Unit filename="src/tools/mainloop/service.cc" />
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />

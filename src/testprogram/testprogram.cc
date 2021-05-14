@@ -182,18 +182,10 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	// test_agent_parser();
+	test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 
-	{
-		Request request("value1/value2/value3");
-
-		cout << "v1='" << request.pop("aaa","bbb","value1","xxx",nullptr) << "'" << endl;
-		cout << "v2='" << request.pop() << "'" << endl;
-		cout << "Request is " << (request == "value3" ? "equal" : "not equal") << " value3" << endl;
-
-	}
 
 	/*
 

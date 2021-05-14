@@ -38,6 +38,10 @@
 			/// @brief Load modules.
 			static void load();
 
+			/// @brief Load module by name.
+			/// @param name Module name without path or extension (ex: "udjat-module-civetweb").
+			static void load(const char *name);
+
 			/// @brief Unload modules.
 			static void unload();
 

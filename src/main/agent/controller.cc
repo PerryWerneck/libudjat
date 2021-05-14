@@ -21,7 +21,7 @@
 
 namespace Udjat {
 
-	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), Module(I_("agent")) {
+	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), MainLoop::Service() {
 
 		static const Udjat::ModuleInfo info{
 			PACKAGE_NAME,								// The module name.
@@ -41,12 +41,11 @@ namespace Udjat {
 
 		Worker::info = &info;
 		Factory::info = &info;
-		Module::info = &info;
 
 	}
 
 	Abstract::Agent::Controller::~Controller() {
-	//	MainLoop::getInstance().remove(this);
+		MainLoop::getInstance().remove(this);
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
@@ -104,20 +103,37 @@ namespace Udjat {
 		return Abstract::Agent::Controller::getInstance().get();
 	}
 
-	void Abstract::Agent::Controller::start() {
+	void Abstract::Agent::Controller::start() noexcept {
 		if(root) {
-			root->start();
+
+			try {
+				root->start();
+			} catch(const std::exception &e) {
+				cerr << "agent\tError '" << e.what() << "' starting agent subsystem" << endl;
+				return;
+			}
+
 			MainLoop::getInstance().insert(this,1,[this](time_t now) {
 				onTimer(now);
 				return true;
 			});
+
 		}
 	}
 
-	void Abstract::Agent::Controller::stop() {
+	void Abstract::Agent::Controller::stop() noexcept {
 		if(root) {
-			root->stop();
+
 			MainLoop::getInstance().remove(this);
+
+			try {
+
+				root->stop();
+
+			} catch(const std::exception &e) {
+				cerr << "agent\tError '" << e.what() << "' stopping agent subsystem" << endl;
+			}
+
 		}
 	}
 

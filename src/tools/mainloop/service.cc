@@ -18,37 +18,29 @@
  */
 
  #include "private.h"
- #include <csignal>
- #include <cstring>
+
+ using namespace std;
 
  namespace Udjat {
 
-	class ServiceController : public MainLoop {
-	private:
-
-		static void onInterruptSignal(int signal) noexcept {
-			cout << "MainLoop\tInterrupting service loop by '" << strsignal(signal) << "' signal" << endl;
-			MainLoop::getInstance().quit();
-		}
-
-
-	public:
-		ServiceController() : MainLoop() {
-			signal(SIGTERM,onInterruptSignal);
-			signal(SIGINT,onInterruptSignal);
-		}
-
-		~ServiceController() {
-			signal(SIGTERM,SIG_DFL);
-			signal(SIGINT,SIG_DFL);
-		}
-
-	};
-
- 	MainLoop & MainLoop::getInstance() {
-		static ServiceController instance;
-		return instance;
+	MainLoop::Service::Service() {
+		MainLoop & controller = MainLoop::getInstance();
+		lock_guard<mutex> lock(controller.guard);
+		controller.services.push_back(this);
 	}
 
+	MainLoop::Service::~Service() {
+		MainLoop & controller = MainLoop::getInstance();
+		lock_guard<mutex> lock(controller.guard);
+		controller.services.remove_if([this](Service *s) {
+			return s == this;
+		});
+	}
+
+	void MainLoop::Service::start() noexcept {
+	}
+
+	void MainLoop::Service::stop() noexcept {
+	}
 
  }

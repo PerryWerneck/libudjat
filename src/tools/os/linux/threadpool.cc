@@ -103,48 +103,48 @@
 
 		Logger logger(name);
 
-		if(tasks.size()) {
-			logger.warning("Stopping pool with {} tasks",tasks.size());
-		}
+		wait();
 
 		// Wait for tasks
 		limits.threads = 0;
 
-		if(threads.active) {
+		if(threads.active.load()) {
 
 			logger.info("Waiting for {} threads on pool",threads.active.load());
 
-			for(size_t f=0; f < 1000 && (threads.active || threads.waiting); f++) {
+			for(size_t f=0; f < 10000 && threads.active.load() > 0; f++) {
 
 				if(threads.waiting.load()) {
 					wakeup();
 				}
 
-				usleep(100);
+				usleep(20000);
 			}
 
+			logger.error("Stopping with {} threads on pool",threads.active.load());
+
 		}
 
-		if(threads.active) {
-			logger.error("Timeout waiting for {} threads on pool",threads.active.load());
-		}
+	}
 
+	size_t ThreadPool::size() {
+		std::lock_guard<std::mutex> lock(this->guard);
+		return tasks.size();
 	}
 
 	void ThreadPool::wait() {
 
 		Logger logger(name);
 
-		std::lock_guard<std::mutex> lock(this->guard);
+		if(size()) {
 
-		if(tasks.size()) {
 			logger.warning("Waiting for {} tasks on pool",tasks.size());
 
-			for(size_t f=0; f < 1000 && tasks.size() > 0; f++) {
+			for(size_t f=0; f < 100000 && size() > 0; f++) {
 				usleep(100);
 			}
 
-			if(tasks.size()) {
+			if(size()) {
 				logger.error("Timeout waiting for {} tasks on pool",tasks.size());
 			}
 

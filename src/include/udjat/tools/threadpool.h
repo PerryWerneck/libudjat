@@ -99,6 +99,8 @@
 				return threads.active > 0;
 			}
 
+			size_t size();
+
 			/// @brief Wait for pool cleanup.
 			void wait();
 

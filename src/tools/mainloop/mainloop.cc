@@ -30,27 +30,13 @@
 	void run() noexcept {
 
 		start();
-
 		MainLoop::getInstance().run();
-
 		stop();
-
-		// Check for agent cleanup
-		{
-			auto root = Abstract::Agent::get_root();
-			if(root) {
-				Abstract::Agent::set_root(std::shared_ptr<Abstract::Agent>());
-				for(size_t ix = 0; ix < 10 && root.use_count() > 1; ix++) {
-					cerr << "cleanup\t" << "Waiting for " << root.use_count() << " instances of root agent" << endl;
-					sleep(1);
-				}
-			}
-
-		}
 
 	}
 
 	MainLoop::MainLoop() {
+		cout << "MainLoop\tStarting service loop" << endl;
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
@@ -58,6 +44,8 @@
 	}
 
 	MainLoop::~MainLoop() {
+
+		cout << "MainLoop\tStopping service loop" << endl;
 
 		enabled = false;
 		wakeup();
@@ -120,26 +108,6 @@
 		wakeup();
 
 	}
-
-	/*
-	void MainLoop::reset(const void *id) {
-
-#ifdef DEBUG
-		cout << "Resetting timer to 'now'" << endl;
-#endif // DEBUG
-
-		lock_guard<mutex> lock(guard);
-
-		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
-			if(timer->id == id) {
-				timer->next = time(nullptr);
-				wakeup();
-				return;
-			}
-		}
-
-	}
-	*/
 
 
  }

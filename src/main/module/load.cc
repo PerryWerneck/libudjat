@@ -14,6 +14,10 @@ namespace Udjat {
 		Module::Controller::getInstance().load();
 	}
 
+	void Module::load(const char *name) {
+		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + name + ".so").c_str());
+	}
+
 	void Module::Controller::load() {
 
 		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*.so").forEach([this](const char *filename){

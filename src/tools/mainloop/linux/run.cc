@@ -10,6 +10,7 @@
  #include <config.h>
  #include <cstring>
  #include "../private.h"
+ #include <udjat/tools/threadpool.h>
 
  void Udjat::MainLoop::run() {
 
@@ -17,6 +18,18 @@
 	nfds_t szPoll = 2;
 	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
 	memset(fds,0,sizeof(struct pollfd) *szPoll);
+
+	//
+	// Start services
+	//
+	{
+		lock_guard<mutex> lock(guard);
+		for(auto service : services) {
+			ThreadPool::getInstance().push([service]() {
+				service->start();
+			});
+		}
+	}
 
  	//
  	// Main event loop
@@ -94,6 +107,21 @@
  	}
 
  	free(fds);
+
+ 	//
+	// Stop services
+	//
+	{
+		lock_guard<mutex> lock(guard);
+		for(auto service : services) {
+			ThreadPool::getInstance().push([service]() {
+				service->stop();
+			});
+		}
+	}
+
+	// Wait for pool
+	ThreadPool::getInstance().wait();
 
  }
 

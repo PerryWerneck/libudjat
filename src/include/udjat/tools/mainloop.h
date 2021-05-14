@@ -31,9 +31,25 @@
 namespace Udjat {
 
 	class UDJAT_API MainLoop {
+	public:
+
+		/// @brief Service who can be started/stopped.
+		class Service {
+		public:
+			Service();
+			virtual ~Service();
+
+			virtual void start() noexcept;
+			virtual void stop() noexcept;
+
+		};
+
 	private:
 
-		class Controller;
+		friend class Service;
+
+		/// @brief Services
+		std::list<Service *> services;
 
 		/// @brief Event FD.
 		int efd;
@@ -68,6 +84,7 @@ namespace Udjat {
 		std::list<Handler> handlers;
 
 	public:
+
 		enum Event : short {
 #ifdef _WIN32
 			// https://msdn.microsoft.com/en-us/library/windows/desktop/ms740094(v=vs.85).aspx
@@ -83,14 +100,14 @@ namespace Udjat {
 #endif // WIN32
 		};
 
+		MainLoop(const MainLoop &src) = delete;
+		MainLoop(const MainLoop *src) = delete;
+
 		MainLoop();
 		~MainLoop();
 
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
-
-		/// @brief Start modules.
-		void start();
 
 		/// @brief Run mainloop.
 		void run();
