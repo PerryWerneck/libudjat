@@ -96,9 +96,9 @@ static void test_agent_parser() {
 
 		});
 
-		cout << "http://localhost:8989/info/1.0/modules" << endl;
-		cout << "http://localhost:8989/info/1.0/workers" << endl;
-		cout << "http://localhost:8989/info/1.0/factory" << endl;
+		cout << "http://localhost:8989/api/1.0/info/modules" << endl;
+		cout << "http://localhost:8989/api/1.0/info/workers" << endl;
+		cout << "http://localhost:8989/api/1.0/info/factory" << endl;
 		cout << "http://localhost:8989/api/1.0/agent" << endl;
 		cout << "http://localhost:8989/api/1.0/alerts" << endl;
 
@@ -149,6 +149,7 @@ int main(int argc, char **argv) {
 	// Redirect output to log file
 	Logger::redirect();
 	Module::load();
+	Alert::init();
 
 	/*
 	{

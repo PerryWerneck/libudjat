@@ -35,9 +35,19 @@ namespace Udjat {
 
 		/// @brief Service who can be started/stopped.
 		class Service {
+		private:
+			friend class MainLoop;
+
+			/// @brief Is the service active?
+			bool active = false;
+
 		public:
 			Service();
 			virtual ~Service();
+
+			inline bool isActive() const noexcept {
+				return active;
+			}
 
 			virtual void start() noexcept;
 			virtual void stop() noexcept;

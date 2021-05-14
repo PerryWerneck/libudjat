@@ -8,7 +8,7 @@ using namespace std;
 
 namespace Udjat {
 
-	Worker::Worker(const Quark &n) : name(n), active(false) {
+	Worker::Worker(const Quark &n) : name(n) {
 
 		static ModuleInfo info;
 		this->info = &info;

@@ -15,9 +15,6 @@ namespace Udjat {
 
 	protected:
 
-		/// @brief True if the worker is active.
-		bool active;
-
 		/// @brief Information about the worker module.
 		const ModuleInfo *info;
 

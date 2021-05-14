@@ -27,6 +27,7 @@
 		for(auto service : services) {
 			ThreadPool::getInstance().push([service]() {
 				service->start();
+				service->active = true;
 			});
 		}
 	}
@@ -116,6 +117,7 @@
 		for(auto service : services) {
 			ThreadPool::getInstance().push([service]() {
 				service->stop();
+				service->active = false;
 			});
 		}
 	}

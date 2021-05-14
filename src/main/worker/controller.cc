@@ -40,11 +40,6 @@ namespace Udjat {
 			throw system_error(ENOENT,system_category(),"Unknown action");
 		}
 
-		if(!entry->second->active) {
-			clog << name << "\tWorker is inactive" << endl;
-			throw system_error(ENODATA,system_category(),"The requested worker is not active");
-		}
-
 #ifdef DEBUG
 		cout << "Found worker '" << entry->second->c_str() << "'" << endl;
 #endif // DEBUG

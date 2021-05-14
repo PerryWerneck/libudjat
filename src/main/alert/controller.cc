@@ -54,8 +54,6 @@
 			return true;
 		});
 
-		Worker::active = true;
-
 	}
 
 	Alert::Controller::~Controller() {

@@ -42,15 +42,24 @@ namespace Udjat {
 		Worker::info = &info;
 		Factory::info = &info;
 
+		cout << "agent\tStarting controller" << endl;
+
+		MainLoop::getInstance().insert(this,1,[this](time_t now) {
+			if(isActive()) {
+				onTimer(now);
+			}
+			return true;
+		});
+
 	}
 
 	Abstract::Agent::Controller::~Controller() {
+		cout << "agent\tStopping controller" << endl;
 		MainLoop::getInstance().remove(this);
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
 		this->root = root;
-		this->active = this->root.get();
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() const {
@@ -104,37 +113,44 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::Controller::start() noexcept {
+
+		cout << "agent\tStarting service" << endl;
+
 		if(root) {
 
 			try {
 				root->start();
 			} catch(const std::exception &e) {
-				cerr << "agent\tError '" << e.what() << "' starting agent subsystem" << endl;
+				root->error("Error '{}' starting root agent",e.what());;
 				return;
 			}
 
-			MainLoop::getInstance().insert(this,1,[this](time_t now) {
-				onTimer(now);
-				return true;
-			});
+		} else {
+
+			clog << "agent\tStarting controller without root agent" << endl;
 
 		}
+
 	}
 
 	void Abstract::Agent::Controller::stop() noexcept {
+
+		cout << "agent\tStopping service" << endl;
+
 		if(root) {
 
-			MainLoop::getInstance().remove(this);
-
 			try {
-
 				root->stop();
-
 			} catch(const std::exception &e) {
-				cerr << "agent\tError '" << e.what() << "' stopping agent subsystem" << endl;
+				root->error("Error '{}' stopping root agent",e.what());
 			}
 
+		} else {
+
+			clog << "agent\tStopping controller without root agent" << endl;
+
 		}
+
 	}
 
 	void Abstract::Agent::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
