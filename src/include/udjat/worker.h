@@ -19,6 +19,7 @@ namespace Udjat {
 		const ModuleInfo *info;
 
 	public:
+		Worker(const Quark &name, const ModuleInfo *info);
 		Worker(const Quark &name);
 
 		static void work(const char *name, Request &request, Response &response);

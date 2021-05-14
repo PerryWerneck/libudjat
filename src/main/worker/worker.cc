@@ -8,12 +8,13 @@ using namespace std;
 
 namespace Udjat {
 
-	Worker::Worker(const Quark &n) : name(n) {
+	static ModuleInfo moduleinfo;
 
-		static ModuleInfo info;
-		this->info = &info;
-
+	Worker::Worker(const Quark &n, const ModuleInfo *i) : name(n), info(i) {
 		Controller::getInstance().insert(this);
+	}
+
+	Worker::Worker(const Quark &n) : Worker(n,&moduleinfo) {
 	}
 
 	Worker::~Worker() {

@@ -1,4 +1,5 @@
 
+#include <udjat/defs.h>
 #include "private.h"
 #include <udjat/agent.h>
 #include <udjat/state.h>
@@ -7,12 +8,13 @@ using namespace std;
 
 namespace Udjat {
 
-	Factory::Factory(const Quark &n) : name(n) {
+	static const ModuleInfo moduleinfo;
 
-		static const ModuleInfo info;
-		this->info = &info;
+	Factory::Factory(const Quark &n, const ModuleInfo *i) : name(n), info(i) {
 		Controller::getInstance().insert(this);
+	}
 
+	Factory::Factory(const Quark &n) : Factory(n,&moduleinfo) {
 	}
 
 	Factory::~Factory() {

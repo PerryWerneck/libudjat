@@ -25,13 +25,14 @@
 
 	mutex MainLoop::Service::guard;
 
-	MainLoop::Service::Service() {
+	static const ModuleInfo moduleinfo{"service"};
 
-		static const ModuleInfo info{"service"};
-		this->info = &info;
-
+	MainLoop::Service::Service(const ModuleInfo *i) : info(i) {
 		lock_guard<mutex> lock(guard);
 		MainLoop::getInstance().services.push_back(this);
+	}
+
+	MainLoop::Service::Service() : Service(&moduleinfo) {
 	}
 
 	MainLoop::Service::~Service() {

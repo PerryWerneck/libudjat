@@ -27,25 +27,23 @@
 
 	mutex Alert::Controller::guard;
 
-	Alert::Controller::Controller() : Worker(Quark::getFromStatic("alerts")) {
-
-		static const Udjat::ModuleInfo info{
-			PACKAGE_NAME,								// The module name.
-			"Alert Controller",							// The module description.
-			PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+	static const Udjat::ModuleInfo moduleinfo {
+		PACKAGE_NAME,								// The module name.
+		"Alert Controller",							// The module description.
+		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
-			PACKAGE_URL,
+		PACKAGE_URL,
 #else
-			"",
+		"",
 #endif // PACKAGE_URL
 #ifdef PACKAGE_BUG_REPORT
-			PACKAGE_BUG_REPORT
+		PACKAGE_BUG_REPORT
 #else
-			""
+		""
 #endif // PACKAGE_BUG_REPORT
-		};
+	};
 
-		Worker::info = &info;
+	Alert::Controller::Controller() : Worker(I_("alerts"),&moduleinfo) {
 
 		MainLoop::getInstance().insert(this, 600, [this](const time_t now){
 			ThreadPool::getInstance().push([this,now]() {

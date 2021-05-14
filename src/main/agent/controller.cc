@@ -21,27 +21,27 @@
 
 namespace Udjat {
 
-	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), MainLoop::Service() {
-
-		static const Udjat::ModuleInfo info{
-			"agent",									// The module name.
-			"Agent Controller",							// The module description.
-			PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+	static const Udjat::ModuleInfo moduleinfo{
+		"agent",									// The module name.
+		"Agent Controller",							// The module description.
+		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
-			PACKAGE_URL,
+		PACKAGE_URL,
 #else
-			"",
+		"",
 #endif // PACKAGE_URL
 #ifdef PACKAGE_BUG_REPORT
-			PACKAGE_BUG_REPORT
+		PACKAGE_BUG_REPORT
 #else
-			""
+		""
 #endif // PACKAGE_BUG_REPORT
-		};
+	};
 
-		Worker::info = &info;
-		Factory::info = &info;
-		Service::info = &info;
+	Abstract::Agent::Controller::Controller() : Worker(I_("agent"),&moduleinfo), Factory(I_("agent"),&moduleinfo), MainLoop::Service(&moduleinfo) {
+
+		// Worker::info = &info;
+		// Factory::info = &info;
+		// Service::info = &info;
 
 		cout << "agent\tStarting controller" << endl;
 

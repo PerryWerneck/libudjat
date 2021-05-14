@@ -35,6 +35,7 @@
 		const ModuleInfo *info;
 
 	public:
+		Factory(const Quark &name, const ModuleInfo *info);
 		Factory(const Quark &name);
 		virtual ~Factory();
 

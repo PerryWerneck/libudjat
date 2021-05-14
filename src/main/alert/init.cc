@@ -27,28 +27,25 @@
  namespace Udjat {
 
 	/// @brief Default Alert Factory.
-	class AlertFactory : public Factory {
-	public:
-		AlertFactory() : Factory(Quark::getFromStatic("alert")) {
-
-			static const Udjat::ModuleInfo info{
-				PACKAGE_NAME,								// The module name.
-				"Default alert Factory",					// The module description.
-				PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+	static const Udjat::ModuleInfo alertmoduleinfo {
+		PACKAGE_NAME,								// The module name.
+		"Default alert Factory",					// The module description.
+		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
-				PACKAGE_URL,
+		PACKAGE_URL,
 #else
-				"",
+		"",
 #endif // PACKAGE_URL
 #ifdef PACKAGE_BUG_REPORT
-				PACKAGE_BUG_REPORT
+		PACKAGE_BUG_REPORT
 #else
-				""
+		""
 #endif // PACKAGE_BUG_REPORT
-			};
+	};
 
-			this->info = &info;
-
+	class AlertFactory : public Factory {
+	public:
+		AlertFactory() : Factory(I_("alert"),&alertmoduleinfo) {
 		}
 
 		virtual ~AlertFactory() {
@@ -91,28 +88,25 @@
 	};
 
 	/// @brief URL Alert Factory.
-	class URLAlertFactory : public Factory {
-	public:
-		URLAlertFactory() : Factory(Quark::getFromStatic("alert-url")) {
-
-			static const Udjat::ModuleInfo info{
-				PACKAGE_NAME,								// The module name.
-				"URL Based alert Factory",					// The module description.
-				PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+	static const Udjat::ModuleInfo urlmoduleinfo {
+		PACKAGE_NAME,								// The module name.
+		"URL Based alert Factory",					// The module description.
+		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
-				PACKAGE_URL,
+		PACKAGE_URL,
 #else
-				"",
+		"",
 #endif // PACKAGE_URL
 #ifdef PACKAGE_BUG_REPORT
-				PACKAGE_BUG_REPORT
+		PACKAGE_BUG_REPORT
 #else
-				""
+		""
 #endif // PACKAGE_BUG_REPORT
-			};
+	};
 
-			this->info = &info;
-
+	class URLAlertFactory : public Factory {
+	public:
+		URLAlertFactory() : Factory(I_("alert-url"),&urlmoduleinfo) {
 		}
 
 		virtual ~URLAlertFactory() {
@@ -129,28 +123,25 @@
 	};
 
 	/// @brief Script Alert Factory
-	class ScriptAlertFactory : public Factory {
-	public:
-		ScriptAlertFactory() : Factory(Quark::getFromStatic("alert-script")) {
-
-			static const Udjat::ModuleInfo info{
-				PACKAGE_NAME,								// The module name.
-				"Script Based alert Factory",				// The module description.
-				PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
+	static const Udjat::ModuleInfo scriptmoduleinfo{
+		PACKAGE_NAME,								// The module name.
+		"Script Based alert Factory",				// The module description.
+		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
-				PACKAGE_URL,
+		PACKAGE_URL,
 #else
-				"",
+		"",
 #endif // PACKAGE_URL
 #ifdef PACKAGE_BUG_REPORT
-				PACKAGE_BUG_REPORT
+		PACKAGE_BUG_REPORT
 #else
-				""
+		""
 #endif // PACKAGE_BUG_REPORT
-			};
+	};
 
-			this->info = &info;
-
+	class ScriptAlertFactory : public Factory {
+	public:
+		ScriptAlertFactory() : Factory(I_("alert-script"),&scriptmoduleinfo) {
 		}
 
 		virtual ~ScriptAlertFactory() {

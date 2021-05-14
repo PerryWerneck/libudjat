@@ -14,30 +14,27 @@
 
 namespace Udjat {
 
+	static const Udjat::ModuleInfo moduleinfo {
+		PACKAGE_NAME,
+		"Basic agent state builder",
+		PACKAGE_VERSION "." PACKAGE_RELEASE,
+#ifdef PACKAGE_URL
+		PACKAGE_URL,
+#else
+		"",
+#endif // PACKAGE_URL
+#ifdef PACKAGE_BUG_REPORT
+		PACKAGE_BUG_REPORT
+#else
+		""
+#endif // PACKAGE_BUG_REPORT
+	};
+
 	std::shared_ptr<Abstract::State> get_default_state() {
 
 		class DefaultState : public Abstract::State, Factory {
 		public:
-			DefaultState() : Abstract::State(Abstract::State::undefined,""), Factory(I_("state")) {
-
-				static const Udjat::ModuleInfo info{
-					PACKAGE_NAME,
-					"Basic agent state builder",
-					PACKAGE_VERSION "." PACKAGE_RELEASE,
-#ifdef PACKAGE_URL
-					PACKAGE_URL,
-#else
-					"",
-#endif // PACKAGE_URL
-#ifdef PACKAGE_BUG_REPORT
-					PACKAGE_BUG_REPORT
-#else
-					""
-#endif // PACKAGE_BUG_REPORT
-				};
-
-				Factory::info = &info;
-
+			DefaultState() : Abstract::State(Abstract::State::undefined,""), Factory(I_("state"), &moduleinfo) {
 			}
 
 			~DefaultState() {

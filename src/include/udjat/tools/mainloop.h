@@ -49,6 +49,7 @@ namespace Udjat {
 			const ModuleInfo *info;
 
 		public:
+			Service(const ModuleInfo *info);
 			Service();
 			virtual ~Service();
 

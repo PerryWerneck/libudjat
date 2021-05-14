@@ -45,6 +45,7 @@
 			/// @brief List modules.
 			static void getInfo(Response &response);
 
+			Module(const Quark &name, const ModuleInfo *info);
 			Module(const Quark &name);
 			virtual ~Module();
 
