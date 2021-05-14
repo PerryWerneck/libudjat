@@ -24,7 +24,7 @@ namespace Udjat {
 	Abstract::Agent::Controller::Controller() : Worker(I_("agent")), Factory(I_("agent")), MainLoop::Service() {
 
 		static const Udjat::ModuleInfo info{
-			PACKAGE_NAME,								// The module name.
+			"agent",									// The module name.
 			"Agent Controller",							// The module description.
 			PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
 #ifdef PACKAGE_URL
@@ -41,6 +41,7 @@ namespace Udjat {
 
 		Worker::info = &info;
 		Factory::info = &info;
+		Service::info = &info;
 
 		cout << "agent\tStarting controller" << endl;
 
@@ -114,8 +115,6 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::start() noexcept {
 
-		cout << "agent\tStarting service" << endl;
-
 		if(root) {
 
 			try {
@@ -134,8 +133,6 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::Controller::stop() noexcept {
-
-		cout << "agent\tStopping service" << endl;
 
 		if(root) {
 

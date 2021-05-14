@@ -44,7 +44,7 @@ namespace Udjat {
 	void Factory::Controller::remove(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << factory->name << "Factory unregistered" << endl;
+		cout << factory->name << "\tFactory unregistered" << endl;
 
 		auto entry = factories.find(factory->name.c_str());
 		if(entry == factories.end())

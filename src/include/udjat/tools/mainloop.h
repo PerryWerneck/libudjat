@@ -23,6 +23,7 @@
 #include <list>
 #include <functional>
 #include <mutex>
+#include <udjat.h>
 
 #ifndef _WIN32
 	#include <poll.h>
@@ -38,8 +39,14 @@ namespace Udjat {
 		private:
 			friend class MainLoop;
 
+			/// @brief Mainloop control semaphore
+			static std::mutex guard;
+
 			/// @brief Is the service active?
 			bool active = false;
+
+		protected:
+			const ModuleInfo *info;
 
 		public:
 			Service();
@@ -49,14 +56,12 @@ namespace Udjat {
 				return active;
 			}
 
-			virtual void start() noexcept;
-			virtual void stop() noexcept;
+			virtual void start();
+			virtual void stop();
 
 		};
 
 	private:
-
-		friend class Service;
 
 		/// @brief Services
 		std::list<Service *> services;

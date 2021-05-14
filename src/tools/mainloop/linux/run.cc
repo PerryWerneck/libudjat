@@ -23,12 +23,18 @@
 	// Start services
 	//
 	{
-		lock_guard<mutex> lock(guard);
+		lock_guard<mutex> lock(Service::guard);
+		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
 		for(auto service : services) {
-			ThreadPool::getInstance().push([service]() {
-				service->start();
-				service->active = true;
-			});
+			if(!service->active) {
+				try {
+					cout << service->info->name << "\tStarting service" << endl;
+					service->start();
+					service->active = true;
+				} catch(const std::exception &e) {
+					cerr << service->info->name << "\tError '" << e.what() << "' starting service" << endl;
+				}
+			}
 		}
 	}
 
@@ -113,12 +119,18 @@
 	// Stop services
 	//
 	{
-		lock_guard<mutex> lock(guard);
+		lock_guard<mutex> lock(Service::guard);
+		cout << "mainloop\tStopping " << services.size() << " service(s)" << endl;
 		for(auto service : services) {
-			ThreadPool::getInstance().push([service]() {
-				service->stop();
+			if(service->active) {
+				try {
+					cout << service->info->name << "\tStopping service" << endl;
+					service->stop();
+				} catch(const std::exception &e) {
+					cerr << service->info->name << "\tError '" << e.what() << "' stopping service" << endl;
+				}
 				service->active = false;
-			});
+			}
 		}
 	}
 

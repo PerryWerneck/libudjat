@@ -23,24 +23,28 @@
 
  namespace Udjat {
 
+	mutex MainLoop::Service::guard;
+
 	MainLoop::Service::Service() {
-		MainLoop & controller = MainLoop::getInstance();
-		lock_guard<mutex> lock(controller.guard);
-		controller.services.push_back(this);
+
+		static const ModuleInfo info{"service"};
+		this->info = &info;
+
+		lock_guard<mutex> lock(guard);
+		MainLoop::getInstance().services.push_back(this);
 	}
 
 	MainLoop::Service::~Service() {
-		MainLoop & controller = MainLoop::getInstance();
-		lock_guard<mutex> lock(controller.guard);
-		controller.services.remove_if([this](Service *s) {
+		lock_guard<mutex> lock(guard);
+		MainLoop::getInstance().services.remove_if([this](Service *s) {
 			return s == this;
 		});
 	}
 
-	void MainLoop::Service::start() noexcept {
+	void MainLoop::Service::start() {
 	}
 
-	void MainLoop::Service::stop() noexcept {
+	void MainLoop::Service::stop() {
 	}
 
  }
