@@ -28,7 +28,7 @@
 		for(auto service : services) {
 			if(!service->active) {
 				try {
-					cout << service->info->name << "\tStarting service" << endl;
+					cout << "service\tStarting '" << service->info->description << " " << service->info->version << "'" << endl;
 					service->start();
 					service->active = true;
 				} catch(const std::exception &e) {
@@ -124,7 +124,7 @@
 		for(auto service : services) {
 			if(service->active) {
 				try {
-					cout << service->info->name << "\tStopping service" << endl;
+					cout << "service\tStopping '" << service->info->description << " " << service->info->version << "'" << endl;
 					service->stop();
 				} catch(const std::exception &e) {
 					cerr << service->info->name << "\tError '" << e.what() << "' stopping service" << endl;

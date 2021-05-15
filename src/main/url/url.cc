@@ -77,12 +77,17 @@
 	URL & URL::assign(const char *u) {
 
 		string url = unescape(u);
+
+		if(url.empty()) {
+			throw runtime_error("URL value can't be empty");
+		}
+
 		size_t from, to;
 
 		// Get scheme and find associated protocol manager.
 		from = url.find("://");
 		if(from == string::npos) {
-			throw runtime_error("Can't decode URL scheme");
+			throw runtime_error(string{"Can't decode URL scheme on '"} + url + "'");
 		}
 		from += 3;
 

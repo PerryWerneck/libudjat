@@ -27,28 +27,6 @@
 
  namespace Udjat {
 
-	/*
-	ModuleInfo::ModuleInfo(const char *str, ...) : name(""), description(""), version(""), bugreport(""), url(""), path(nullptr) {
-
-		const char **arg[] = {
-			&this->name,
-			&this->description,
-			&this->version,
-			&this->url,
-			&this->bugreport
-		};
-
-		va_list args;
-		va_start (args, str);
-
-		for(size_t ix = 0; ix < (sizeof(arg)/sizeof(arg[0])) && str; ix++) {
-			*arg[ix] = str;
-			str = va_arg(args, const char *);
-		}
-
-	}
-	*/
-
 	Json::Value & ModuleInfo::get(Json::Value &value) const {
 
 		value["module"] = name;

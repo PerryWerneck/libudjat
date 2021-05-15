@@ -100,9 +100,9 @@
 
 		if(!hFile) {
 
-#ifdef DEBUG
-			cout << "config\tLoading default configuration" << endl;
-#endif // DEBUG
+//#ifdef DEBUG
+//			cout << "config\tLoading default configuration" << endl;
+//#endif // DEBUG
 
 			econf_err err = econf_readDirs(
 				(econf_file **) &hFile,		// key_file
@@ -347,7 +347,7 @@
 			}
 
 			if(err == ECONF_NOKEY) {
-				cout << "config\tNo configuration for '" << group << "." << name << "'" << endl;
+//				cout << "config\tNo configuration for '" << group << "." << name << "'" << endl;
 				return def;
 			}
 
