@@ -128,8 +128,22 @@
 				/// @brief Get root agent.
 				static std::shared_ptr<Abstract::Agent> get_root();
 
-				/// @brief Set root agent.
-				static std::shared_ptr<Abstract::Agent> set_root(std::shared_ptr<Abstract::Agent> agent);
+				/// @brief Initialize agent subsystem.
+				/// @param agent Root agent.
+				/// @return root agent.
+				static std::shared_ptr<Abstract::Agent> init(std::shared_ptr<Abstract::Agent> agent);
+
+				/// @brief Initialize agent subsystem.
+				/// @return root agent.
+				static std::shared_ptr<Abstract::Agent> init();
+
+				/// @brief Initialize agent subsystem, load agent descriptors.
+				/// @param path Path to agent descriptions.
+				/// @return root agent.
+				static std::shared_ptr<Abstract::Agent> init(const char *path);
+
+				/// @brief Deinitialize agent subsystem.
+				static void deinit();
 
 				/// @brief true if the agent has states.
 				virtual bool hasOwnStates() const noexcept;

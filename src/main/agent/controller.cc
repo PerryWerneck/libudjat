@@ -14,6 +14,8 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/file.h>
+ #include <unistd.h>
 
  using namespace std;
 
@@ -60,6 +62,21 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
+
+		if(root && root->parent) {
+			throw system_error(ENOENT,system_category(),"Child agent cant be set as root");
+		}
+
+		if(!root) {
+
+			if(this->root) {
+				cout << "agent\tRemoving root agent '" << this->root->getName() << "'" << endl;
+				this->root.reset();
+			}
+			return;
+		}
+
+		cout << "agent\tDefining '" << root->getName() << "' as root agent" << endl;
 		this->root = root;
 	}
 
@@ -104,9 +121,60 @@ namespace Udjat {
 
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::set_root(std::shared_ptr<Abstract::Agent> agent) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(std::shared_ptr<Abstract::Agent> agent) {
 		Abstract::Agent::Controller::getInstance().set(agent);
 		return agent;
+	}
+
+	static std::shared_ptr<Abstract::Agent> getDefaultRootAgent() {
+
+		class Agent : public Abstract::Agent {
+		public:
+			Agent(const char *name) : Abstract::Agent(name) {
+				info("root agent was {}","created");
+			}
+
+			virtual ~Agent() {
+				info("root agent was {}","destroyed");
+			}
+
+		};
+
+		char hostname[255];
+		if(gethostname(hostname, 255)) {
+			cerr << "Error '" << strerror(errno) << "' getting hostname" << endl;
+			strncpy(hostname,PACKAGE_NAME,255);
+		}
+
+		return make_shared<Agent>(hostname);
+
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::init() {
+		return init(getDefaultRootAgent());
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(const char *path) {
+
+		Abstract::Agent::Controller &controller = Abstract::Agent::Controller::getInstance();
+		auto root = getDefaultRootAgent();
+
+		File::List(path).forEach([root](const char *filename){
+
+			cout << endl << "agent\tLoading '" << filename << "'" << endl;
+			pugi::xml_document doc;
+			doc.load_file(filename);
+			root->load(doc);
+
+		});
+
+		controller.set(root);
+		return root;
+
+	}
+
+	void Abstract::Agent::deinit() {
+		Abstract::Agent::Controller::getInstance().set(std::shared_ptr<Abstract::Agent>());
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {

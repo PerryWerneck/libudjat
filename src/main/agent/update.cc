@@ -123,7 +123,7 @@ namespace Udjat {
 			return false;
 
 		//
-		// Value has changed, recalculate
+		// Value has changed, compute new state, emit alerts
 		//
 		bool level_has_changed = false;
 

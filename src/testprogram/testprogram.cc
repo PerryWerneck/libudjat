@@ -85,16 +85,7 @@ static void test_agent_parser() {
 
 	// Load agent descriptions.
 	{
-		auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
-
-		File::List("${PWD}/*.xml").forEach([root_agent](const char *filename){
-
-			cout << endl << "Loading '" << filename << "'" << endl;
-			pugi::xml_document doc;
-			doc.load_file(filename);
-			root_agent->load(doc);
-
-		});
+		auto root_agent = Abstract::Agent::init("${PWD}/*.xml");
 
 		cout << "http://localhost:8989/api/1.0/info/modules" << endl;
 		cout << "http://localhost:8989/api/1.0/info/workers" << endl;
@@ -110,7 +101,6 @@ static void test_agent_parser() {
 
 	Alert::init();
 
-
 	/*
 	MainLoop::getInstance().insert("none",10,[](const time_t now) {
 		MainLoop::getInstance().quit();
@@ -118,8 +108,10 @@ static void test_agent_parser() {
 	});
 	*/
 
-
 	Udjat::run();
+
+	// Force agent cleanup
+	Abstract::Agent::deinit();
 
 }
 

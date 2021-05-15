@@ -26,6 +26,8 @@ namespace Udjat {
 
 		std::shared_ptr<Abstract::Agent> root;
 
+		Controller(const Controller &) = delete;
+		Controller(const Controller *) = delete;
 		Controller();
 
 		void onTimer(time_t tm) noexcept;

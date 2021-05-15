@@ -84,7 +84,7 @@ namespace Udjat {
 		}
 
 #ifdef DEBUG
-		cout << "Inserting agent '" << child->getName() << "' in parent '" << this->getName() << endl;
+		cout << getName() << "\tInserting child '" << child->getName() << endl;
 #endif // DEBUG
 
 		child->parent = this;
