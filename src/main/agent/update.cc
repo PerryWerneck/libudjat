@@ -35,29 +35,7 @@ namespace Udjat {
 
 			// Update is complete.
 			update.running = 0;
-			updated();
-
-		}
-
-	}
-
-	void Abstract::Agent::updated() noexcept {
-
-		update.last = time(nullptr);
-		if(update.timer) {
-
-			// Has timer, use it
-			update.next = update.expires = (update.last + update.timer);
-
-		} else if(update.next > update.last) {
-
-			// No timer, but next is set
-			update.expires = update.next;
-
-		} else {
-
-			// No timer, no next update, use default expiration time.
-			update.expires = update.running + 60;	// TODO: Make it configurable.
+			updated(false);
 
 		}
 
@@ -119,8 +97,34 @@ namespace Udjat {
 		return false;
 	}
 
-	void Abstract::Agent::onValueChange() noexcept {
+	bool Abstract::Agent::updated(bool changed) noexcept {
 
+		update.last = time(nullptr);
+
+		if(update.timer) {
+
+			// Has timer, use it
+			update.next = update.expires = (update.last + update.timer);
+
+		} else if(update.next > update.last) {
+
+			// No timer, but next is set and valid
+			update.expires = update.next;
+
+		} else {
+
+			// No timer, no next update, use default expiration time.
+			update.expires = update.running + 60;	// TODO: Make it configurable.
+			update.next = 0;
+
+		}
+
+		if(!changed)
+			return false;
+
+		//
+		// Value has changed, recalculate
+		//
 		bool level_has_changed = false;
 
 		// Compute new state
@@ -170,6 +174,8 @@ namespace Udjat {
 			}
 
 		}
+
+		return true;
 
 	}
 

@@ -70,7 +70,9 @@
 			protected:
 
 				/// @brief Update complete (success or failure).
-				void updated() noexcept;
+				/// @param changed true if the value has changed.
+				/// @return Value of 'changed'.
+				bool updated(bool changed) noexcept;
 
 				/// @brief Load children from xml node.
 				void load(const pugi::xml_node &node);
@@ -98,7 +100,7 @@
 				Quark icon;
 
 				/// @brief Value has changed, compute my new state.
-				void onValueChange() noexcept;
+				//void onValueChange() noexcept;
 
 				/// @brief Run update if required.
 				/// @param forward	If true forward update to children.
@@ -238,14 +240,13 @@
 			bool set(const T &value) {
 
 				if(value == this->value)
-					return false;
+					return updated(false);
 
 				this->value = value;
 #ifdef DEBUG
 				info("Value set to {}",this->value);
 #endif // DEBUG
-				onValueChange();
-				return true;
+				return updated(true);
 			}
 
 			T get() const noexcept {
@@ -303,11 +304,10 @@
 			bool set(const std::string &value) {
 
 				if(value == this->value)
-					return false;
+					return updated(false);
 
 				this->value = value;
-				onValueChange();
-				return true;
+				return updated(true);
 			}
 
 			std::string get() const noexcept {
@@ -317,11 +317,10 @@
 			bool assign(const char *value) override {
 
 				if(::strcmp(value,this->value.c_str()))
-					return false;
+					return updated(false);
 
 				this->value = value;
-				onValueChange();
-				return true;
+				return updated(true);
 
 			}
 
@@ -368,11 +367,10 @@
 			bool set(const bool value) {
 
 				if(value == this->value)
-					return false;
+					return updated(false);
 
 				this->value = value;
-				onValueChange();
-				return true;
+				return updated(true);
 			}
 
 			bool get() const noexcept {
