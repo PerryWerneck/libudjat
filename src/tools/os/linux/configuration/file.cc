@@ -100,18 +100,18 @@
 
 		if(!hFile) {
 
+#ifdef DEBUG
+			cout << "config\tLoading default configuration" << endl;
+#endif // DEBUG
+
 			econf_err err = econf_readDirs(
-				(econf_file **) &hFile,
-				"/usr/etc",
-				"/etc",
-#ifdef PRODUCT_NAME
-				STRINGIZE_VALUE_OF(PRODUCT_NAME),
-#else
-				PACKAGE_NAME,
-#endif // PRODUCT_NAME
-				".conf",
-				"=",
-				"#"
+				(econf_file **) &hFile,		// key_file
+				"/usr/etc",					// usr_conf_dir
+				"/etc",						// etc_conf_dir
+				"udjat",					// project_name
+				".conf",					// config_suffis
+				"=",						// delim
+				"#"							// comment
 			);
 
 			if(err != ECONF_SUCCESS) {
@@ -341,21 +341,28 @@
 						);
 
 
-		if(err != ECONF_SUCCESS && err != ECONF_NOKEY) {
+		if(err != ECONF_SUCCESS) {
 			if(result) {
 				free(result);
 			}
-			throw std::runtime_error(econf_errString(err));
-		}
 
-		std::string rc;
+			if(err == ECONF_NOKEY) {
+				cout << "config\tNo configuration for '" << group << "." << name << "'" << endl;
+				return def;
+			}
+
+			throw std::runtime_error(econf_errString(err));
+
+		}
 
 		if(result) {
-			rc.assign(result);
+			string rc{result};
 			free(result);
+			return rc;
 		}
 
-		return rc;
+		cout << "config\tEmpty value for '" << group << "." << name << "'" << endl;
+		return def;
 
 	}
 

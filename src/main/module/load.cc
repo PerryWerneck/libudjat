@@ -17,7 +17,11 @@ namespace Udjat {
 
 	void Module::load(const char *name) {
 
-		Config::Value<string> configured("modules","name",name);
+		Config::Value<string> configured("modules",name,name);
+
+#ifdef DEBUG
+		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
+#endif // DEBUG
 
 		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + configured + ".so").c_str());
 	}
