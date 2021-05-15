@@ -16,9 +16,6 @@
 			class Controller;
 			friend class Controller;
 
-			/// @brief True if the module was started.
-			bool started;
-
 			/// @brief The module name.
 			Quark name;
 
@@ -35,8 +32,8 @@
 			/// @brief Load modules.
 			static void load();
 
-			/// @brief Load module by name.
-			/// @param name Module name without path or extension (ex: "udjat-module-civetweb").
+			/// @brief Load module by name or alias
+			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
 			static void load(const char *name);
 
 			/// @brief Unload modules.

@@ -5,6 +5,7 @@
 #include <dirent.h>
 #include <dlfcn.h>
 #include <udjat/tools/file.h>
+#include <udjat/tools/configuration.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -15,7 +16,10 @@ namespace Udjat {
 	}
 
 	void Module::load(const char *name) {
-		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + name + ".so").c_str());
+
+		Config::Value<string> configured("modules","name",name);
+
+		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + configured + ".so").c_str());
 	}
 
 	void Module::Controller::load() {
