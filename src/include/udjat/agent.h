@@ -72,7 +72,7 @@
 				/// @brief Update complete (success or failure).
 				/// @param changed true if the value has changed.
 				/// @return Value of 'changed'.
-				bool updated(bool changed) noexcept;
+				virtual bool updated(bool changed) noexcept;
 
 				/// @brief Load children from xml node.
 				void load(const pugi::xml_node &node);
@@ -96,11 +96,8 @@
 				/// @brief Web link for this agent (HTTP API).
 				Quark uri;
 
-				/// @brief URL for an agent icon (HTTP API)
+				/// @brief Name of the agent icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
 				Quark icon;
-
-				/// @brief Value has changed, compute my new state.
-				//void onValueChange() noexcept;
 
 				/// @brief Run update if required.
 				/// @param forward	If true forward update to children.
@@ -146,7 +143,7 @@
 				static void deinit();
 
 				/// @brief true if the agent has states.
-				virtual bool hasOwnStates() const noexcept;
+				virtual bool hasStates() const noexcept;
 
 				inline void push_back(std::shared_ptr<Alert> alert) {
 					alerts.push_back(alert);
@@ -166,6 +163,11 @@
 
 				inline const Quark & getSummary() const noexcept {
 					return summary;
+				}
+
+				/// @brief The agent has children?
+				bool hasChildren() const noexcept {
+					return ! this->children.empty();
 				}
 
 				/// @brief Start agent.
@@ -272,7 +274,7 @@
 				return set(convert(new_value,value));
 			}
 
-			bool hasOwnStates() const noexcept override {
+			bool hasStates() const noexcept override {
 				return !states.empty();
 			}
 
@@ -338,7 +340,7 @@
 
 			}
 
-			bool hasOwnStates() const noexcept override {
+			bool hasStates() const noexcept override {
 				return !states.empty();
 			}
 

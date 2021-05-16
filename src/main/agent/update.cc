@@ -93,7 +93,7 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::Agent::hasOwnStates() const noexcept {
+	bool Abstract::Agent::hasStates() const noexcept {
 		return false;
 	}
 
