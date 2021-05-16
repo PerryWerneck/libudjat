@@ -43,7 +43,7 @@
 		Controller::getInstance().remove(this);
 	}
 
-	File::Watcher * File::Watcher::insert(void *id, const char *name, std::function<void (const char *)> callback) {
+	File::Watcher * File::Watcher::insert(void *id, const char *name, std::function<void (const Udjat::File::Local &)> callback) {
 		std::lock_guard<std::mutex> lock(guard);
 
 		Watcher * watcher =  Controller::getInstance().find(name);
@@ -55,7 +55,7 @@
 		return watcher;
 	}
 
-	File::Watcher * File::Watcher::insert(void *id, const Quark &name, std::function<void (const char *)> callback) {
+	File::Watcher * File::Watcher::insert(void *id, const Quark &name, std::function<void (const Udjat::File::Local &)> callback) {
 		std::lock_guard<std::mutex> lock(guard);
 
 		Watcher * watcher =  Controller::getInstance().find(name.c_str());
@@ -121,7 +121,7 @@
 
 					try {
 
-						f->callback(file.c_str());
+						f->callback(file);
 
 					} catch(const exception &e) {
 
