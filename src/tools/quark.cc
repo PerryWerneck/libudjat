@@ -156,10 +156,6 @@ namespace Udjat {
 		return *this;
 	}
 
-	void Quark::set(const char *str) {
-		this->value = Controller::getInstance().find(str,true);
-	}
-
 	Quark & Quark::operator=(const std::string &str) {
 		this->value = Controller::getInstance().find(str.c_str(),true);
 		return *this;
@@ -186,7 +182,12 @@ namespace Udjat {
 		return value;
 	}
 
-	void Quark::set(const char *str, const std::function<const char * (const char *key)> translate) {
+	const Quark & Quark::set(const char *str) {
+		this->value = Controller::getInstance().find(str,true);
+		return *this;
+	}
+
+	const Quark & Quark::set(const char *str, const std::function<const char * (const char *key)> translate) {
 
 		string text(str);
 
@@ -202,19 +203,20 @@ namespace Udjat {
 		}
 
 		set(text.c_str());
+		return *this;
 	}
 
 #ifdef HAVE_PUGIXML
-	bool Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
+	const Quark & Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
 
 		if(!node)
-			return false;
+			return *this;
 
 		auto attribute = node.attribute(xml_attribute);
 
 		if(attribute) {
 			set(attribute.as_string(),translate);
-			return true;
+			return *this;
 		}
 
 		// Check children for <attribute name=>
@@ -222,7 +224,7 @@ namespace Udjat {
 
 			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
 				set(child.attribute("value").as_string(),translate);
-				return true;
+				return *this;
 			}
 
 		}
@@ -232,20 +234,20 @@ namespace Udjat {
 			return set(node.parent(),xml_attribute,true,translate);
 		}
 
-		return false;
+		return *this;
 
 	}
 
-	bool Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch) {
+	const Quark & Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch) {
 
 		if(!node)
-			return false;
+			return *this;
 
 		auto attribute = node.attribute(xml_attribute);
 
 		if(attribute) {
 			set(attribute.as_string());
-			return true;
+			return *this;
 		}
 
 		// Check children for <attribute name=>
@@ -253,7 +255,7 @@ namespace Udjat {
 
 			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
 				set(child.attribute("value").as_string());
-				return true;
+				return *this;
 			}
 
 		}
@@ -263,7 +265,7 @@ namespace Udjat {
 			return set(node.parent(),xml_attribute,true);
 		}
 
-		return false;
+		return *this;
 
 	}
 #endif // HAVE_PUGIXML

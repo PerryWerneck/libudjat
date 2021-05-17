@@ -69,6 +69,18 @@
 
 			protected:
 
+				/// @brief Agent label.
+				const char * label = "";
+
+				/// @brief Agent summary.
+				const char * summary = "";
+
+				/// @brief Web link for this agent (HTTP API).
+				const char * uri = "";
+
+				/// @brief Name of the agent icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
+				const char * icon = "";
+
 				/// @brief Update complete (success or failure).
 				/// @param changed true if the value has changed.
 				/// @return Value of 'changed'.
@@ -86,18 +98,6 @@
 
 				/// @brief Set unexpected failed state.
 				void failed(const char *message) noexcept;
-
-				/// @brief Agent label.
-				Quark label;
-
-				/// @brief Agent summary.
-				Quark summary;
-
-				/// @brief Web link for this agent (HTTP API).
-				Quark uri;
-
-				/// @brief Name of the agent icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-				Quark icon;
 
 				/// @brief Run update if required.
 				/// @param forward	If true forward update to children.
@@ -119,7 +119,10 @@
 				/// @brief Insert child agent.
 				void insert(std::shared_ptr<Agent> child);
 
-				Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr);
+				/// @brief Create an unnamed agent.
+				Agent();
+
+				Agent(const char *name, const char *label = "", const char *summary = "");
 				virtual ~Agent();
 
 				/// @brief Get root agent.
@@ -149,19 +152,19 @@
 					alerts.push_back(alert);
 				}
 
-				inline const Quark & getUri() const noexcept {
+				inline const char * getUri() const noexcept {
 					return uri;
 				}
 
-				inline const Quark & getIcon() const noexcept {
+				inline const char * getIcon() const noexcept {
 					return icon;
 				}
 
-				inline const Quark & getLabel() const noexcept {
+				inline const char * getLabel() const noexcept {
 					return label;
 				}
 
-				inline const Quark & getSummary() const noexcept {
+				inline const char * getSummary() const noexcept {
 					return summary;
 				}
 

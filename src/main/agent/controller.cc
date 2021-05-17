@@ -133,7 +133,7 @@ namespace Udjat {
 			Agent(const char *name) : Abstract::Agent(name) {
 				info("root agent was {}","created");
 				this->icon = "computer";
-				this->uri = string{"http://"} + name;
+				this->uri = Quark(string{"http://"} + name).c_str();
 
 			}
 

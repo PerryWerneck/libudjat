@@ -58,12 +58,12 @@
 				return strcmp(c_str(),str);
 			}
 
-			void set(const char *str);
-			void set(const char *str, const std::function<const char * (const char *key)> translate);
+			const Quark & set(const char *str);
+			const Quark & set(const char *str, const std::function<const char * (const char *key)> translate);
 
 #ifdef HAVE_PUGIXML
-			bool set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch = false);
-			bool set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
+			const Quark & set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch = false);
+			const Quark & set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
 #endif // HAVE_PUGIXML
 
 		};

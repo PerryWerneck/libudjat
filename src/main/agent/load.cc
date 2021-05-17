@@ -22,16 +22,15 @@ namespace Udjat {
 
 		// Load my attributes
 		this->name.set(root,"name",false);
-		this->summary.set(root,"summary",false,translate);
-		this->label.set(root,"label",false,translate);
+		this->summary = Quark().set(root,"summary",false,translate).c_str();
+		this->label = Quark().set(root,"label",false,translate).c_str();
 
-//		this->update.notify = root.attribute("notify").as_bool(this->update.notify);
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
 
 		bool upsearch = root.attribute("upsearch").as_bool(true);
-		this->icon.set(root,"icon",upsearch,translate);
-		this->uri.set(root,"uri",upsearch,translate);
+		this->icon = Quark().set(root,"icon",upsearch,translate).c_str();
+		this->uri = Quark().set(root,"uri",upsearch,translate).c_str();
 
 		time_t delay = root.attribute("delay-on-startup").as_uint(0);
 		if(delay)
