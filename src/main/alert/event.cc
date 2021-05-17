@@ -34,6 +34,10 @@
 
 	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event((Quark) agent) {
 
+		#ifndef DEBUG
+			#error Refactory needed
+		#endif // DEBUG
+
 		struct {
 			Quark &value;
 			const Quark &agent;

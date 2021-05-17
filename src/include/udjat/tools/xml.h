@@ -33,6 +33,7 @@
 	#include <pugixml.hpp>
 	#include <udjat/defs.h>
 	#include <udjat/tools/xml.h>
+	#include <udjat/tools/quark.h>
 	#include <string>
 
 	namespace Udjat {
@@ -59,6 +60,13 @@
 			operator bool() const {
 				return as_bool();
 			}
+
+			/// @brief Return string value as quark.
+			Quark as_quark(const char *def = "") const;
+
+			/// @brief Convert string value to quark and return the stored value.
+			const char * c_str(const char *def = "") const;
+
 
 			std::string to_string(const std::string &def) const;
 

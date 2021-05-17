@@ -46,24 +46,53 @@
 				bool notify = false;
 
 				/// @brief State name
-				Quark name;
+				const char * name = "";
+
+				static const char *levelnames[];
 
 			private:
 
-				Level level;		///< @brief State level.
-				Quark summary;		///< @brief Message summary.
-				Quark body;			///< @brief Message body.
-				Quark uri;			///< @brief Web link to this state (Usually used for http exporters).
-				time_t activation;	///< @brief Timestamp of the last state activation.
+				/// @brief State level.
+				Level level = unimportant;
 
+				/// @brief Message summary.
+				const char * summary = "";
+
+				/// @brief Message body.
+				const char * body = "";
+
+				/// @brief Web link to this state (Usually used for http exporters).
+				const char * uri = "";
+
+				/// @brief Timestamp of the last state activation.
+				time_t activation = 0;
+
+				/// @brief Translate level from string.
 				static Level getLevelFromName(const char *name);
 
 				/// @brief State alerts.
-				std::vector<std::shared_ptr<Alert>> alerts;
+				// std::vector<std::shared_ptr<Alert>> alerts;
+
+				/// @brief Parse XML node
+				void set(const pugi::xml_node &node);
+
+			protected:
+
+				virtual void activate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept;
+				virtual void deactivate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept;
 
 			public:
-				State(const Level l, const char *m, const char *b = "");
 
+				/// @brief Create state using the strings without conversion.
+				constexpr State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
+
+				/// @brief Create state (convert strings to Quarks).
+				State(const Level l, const Quark &summary, const Quark &body = "");
+
+				/// @brief Create state (convert strings to Quarks).
+				State(const Level l, const char *summary, const char *body = "");
+
+				/// @brief Create state from xml node)
 				State(const pugi::xml_node &node);
 
 				State(const std::exception &e) : State(critical, e.what()) {
@@ -77,15 +106,15 @@
 
 				static const char * to_string(const Level level);
 
-				inline const Quark & getSummary() const {
+				inline const char * getSummary() const {
 					return summary;
 				}
 
-				inline const Quark & getBody() const {
+				inline const char * getBody() const {
 					return body;
 				}
 
-				inline const Quark & getUri() const {
+				inline const char * getUri() const {
 					return uri;
 				}
 
@@ -93,9 +122,11 @@
 					return activation;
 				}
 
-				inline void push_back(std::shared_ptr<Alert> alert) {
-					alerts.push_back(alert);
-				}
+				virtual void push_back(std::shared_ptr<Alert> alert);
+
+				//inline void push_back(std::shared_ptr<Alert> alert) {
+				//	alerts.push_back(alert);
+				//}
 
 				inline Level getLevel() const {
 					return this->level;
@@ -110,8 +141,8 @@
 				virtual void get(Json::Value &value) const;
 				virtual void get(const Request &request, Response &response) const;
 
-				void activate(const Agent &agent) noexcept;
-				void deactivate(const Agent &agent) noexcept;
+				virtual void activate(const Agent &agent) noexcept;
+				virtual void deactivate(const Agent &agent) noexcept;
 
 				/// @brief Expand ${} tags on string.
 				virtual void expand(std::string &text) const;
@@ -129,6 +160,8 @@
 			T from;
 			T to;
 
+			std::vector<std::shared_ptr<Alert>> alerts;
+
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node) {
 				parse_range(node,from,to);
@@ -143,6 +176,18 @@
 				value["value"] = this->from;
 			}
 
+			void push_back(std::shared_ptr<Alert> alert) {
+				alerts.push_back(alert);
+			}
+
+			void activate(const Abstract::Agent &agent) noexcept override {
+				Abstract::State::activate(agent,alerts);
+			}
+
+			void deactivate(const Abstract::Agent &agent) noexcept override {
+				Abstract::State::activate(agent,alerts);
+			}
+
 		};
 
 
@@ -152,6 +197,8 @@
 
 			/// @brief State value;
 			std::string value;
+
+			std::vector<std::shared_ptr<Alert>> alerts;
 
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_string()) {
@@ -166,6 +213,18 @@
 				value["value"] = this->value;
 			}
 
+			void push_back(std::shared_ptr<Alert> alert) {
+				alerts.push_back(alert);
+			}
+
+			void activate(const Abstract::Agent &agent) noexcept override {
+				Abstract::State::activate(agent,alerts);
+			}
+
+			void deactivate(const Abstract::Agent &agent) noexcept override {
+				Abstract::State::deactivate(agent,alerts);
+			}
+
 		};
 
 		template <>
@@ -174,6 +233,8 @@
 
 			/// @brief State value;
 			bool value;
+
+			std::vector<std::shared_ptr<Alert>> alerts;
 
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_bool()) {
@@ -188,6 +249,17 @@
 				value["value"] = this->value;
 			}
 
+			void push_back(std::shared_ptr<Alert> alert) {
+				alerts.push_back(alert);
+			}
+
+			void activate(const Abstract::Agent &agent) noexcept override {
+				Abstract::State::activate(agent,alerts);
+			}
+
+			void deactivate(const Abstract::Agent &agent) noexcept override {
+				Abstract::State::activate(agent,alerts);
+			}
 		};
 
 	}
@@ -195,7 +267,7 @@
 	namespace std {
 
 		inline string to_string(const std::shared_ptr<Udjat::Abstract::State> state) {
-			return state->getSummary().c_str();
+			return state->getSummary();
 		}
 
 		inline string to_string(const Udjat::Abstract::State::Level level) {

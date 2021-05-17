@@ -1,3 +1,22 @@
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 /**
  * @file src/core/state/state.cc
  *
@@ -21,44 +40,36 @@
 
 namespace Udjat {
 
-	static const char * levelNames[] = {
-		"undefined",
-		"unimportant",
-		"ready",
-		"warning",
-		"error",
-		"critical",
+	constexpr Abstract::State::State(const char *n, const Level l, const char *s, const char *b)
+		: name(n), level(l), summary(s), body(b) { }
 
-		nullptr
-	};
+	Abstract::State::State(const Level l, const Quark &summary, const Quark &body)
+		:  State(levelnames[level],level,summary.c_str(),body.c_str()) { }
 
-	Abstract::State::Level Abstract::State::getLevelFromName(const char *name) {
+	Abstract::State::State(const Level level, const char *summary, const char *body)
+		:  State(levelnames[level],level,Quark(summary).c_str(),Quark(body).c_str()) { }
 
-		for(size_t ix=0; levelNames[ix]; ix++) {
-			if(!strcasecmp(name,levelNames[ix]))
-				return (Abstract::State::Level) ix;
+	Abstract::State::State(const pugi::xml_node &node) : State(Attribute(node,"name",false).c_str()) {
+		set(node);
+	}
+
+	void Abstract::State::set(const pugi::xml_node &node) {
+
+		auto level = Attribute(node,"level",false);
+
+		if(!(name && *name)) {
+			name = level.c_str();
 		}
 
-		throw runtime_error("Unknown level");
+		this->level = getLevelFromName(level.as_string(levelnames[unimportant])),
+		this->summary = Attribute(node,"summary",true).c_str();
+		this->name = Udjat::Attribute(node,"name").c_str();
+		this->uri = Udjat::Attribute(node,"uri").c_str();
 
 	}
 
-	Abstract::State::State(const Level l, const char *m, const char *b) : level(l), summary(m), body(b),activation(0) {
-
-#ifdef DEBUG
-		cout << "Creating state \"" << this->summary << "\" " << levelNames[this->level] << endl;
-#endif // DEBUG
-
-	}
-
-	Abstract::State::State(const pugi::xml_node &node) :
-		Abstract::State(
-			getLevelFromName(Attribute(node,"level",false).as_string(levelNames[unimportant])),
-			Attribute(node,"summary",true).as_string()) {
-
-		this->name = Udjat::Attribute(node,"name").as_string();
-		this->uri = Udjat::Attribute(node,"uri").as_string();
-
+	void Abstract::State::push_back(std::shared_ptr<Alert> alert) {
+		throw system_error(EINVAL,system_category(),string{"State '"} + name + "' is unable to manage agents");
 	}
 
 	Abstract::State::~State() {
@@ -67,9 +78,9 @@ namespace Udjat {
 
 	void Abstract::State::get(Json::Value &value) const {
 
-		value["summary"] = summary.c_str();
-		value["body"] = body.c_str();
-		value["uri"] = uri.c_str();
+		value["summary"] = summary;
+		value["body"] = body;
+		value["uri"] = uri;
 
 		if(this->activation)
 			value["activation"] = TimeStamp(this->activation).to_string(TIMESTAMP_FORMAT_JSON);
@@ -88,23 +99,9 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::State::getLevel(Json::Value &value) const {
-		Json::Value level;
-		level["value"] = (uint32_t) this->level;
-		level["label"] = levelNames[this->level];
-		value["level"] = level;
-	}
+	void Abstract::State::activate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept {
 
-	const char * Abstract::State::to_string(const Abstract::State::Level level) {
-
-		if(level > (sizeof(levelNames) / sizeof(levelNames[0])))
-			return "Invalid";
-		return levelNames[level];
-	}
-
-	void Abstract::State::activate(const Agent &agent) noexcept {
-
-		this->activation = time(nullptr);
+		Abstract::State::activate(agent);
 
 		for(auto alert : alerts) {
 			try {
@@ -122,10 +119,11 @@ namespace Udjat {
 			}
 
 		}
-
 	}
 
-	void Abstract::State::deactivate(const Agent &agent) noexcept {
+	void Abstract::State::deactivate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept {
+
+		Abstract::State::deactivate(agent);
 
 		for(auto alert : alerts) {
 
@@ -144,6 +142,20 @@ namespace Udjat {
 			}
 
 		}
+
+	}
+
+	void Abstract::State::activate(const Agent &agent) noexcept {
+#ifdef DEBUG
+		agent.info("State '{}' was activated",name);
+#endif // DEBUG
+		this->activation = time(nullptr);
+	}
+
+	void Abstract::State::deactivate(const Agent &agent) noexcept {
+#ifdef DEBUG
+		agent.info("State '{}' was deactivated",name);
+#endif // DEBUG
 	}
 
 	void Abstract::State::expand(std::string &text) const {

@@ -61,6 +61,14 @@
 		return expand(this->node,this->as_string(def.c_str()));
 	}
 
+	Quark Attribute::as_quark(const char *def) const {
+		return Quark(as_string(def));
+	}
+
+	const char * Attribute::c_str(const char *def) const {
+		return as_quark(def).c_str();
+	}
+
 	std::string expand(const pugi::xml_node &node, const char *str) {
 
 		string text(str);
