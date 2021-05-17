@@ -40,12 +40,6 @@
 
 namespace Udjat {
 
-	constexpr Abstract::State::State(const char *n, const Level l, const char *s, const char *b)
-		: name(n), level(l), summary(s), body(b) { }
-
-	Abstract::State::State(const Level l, const Quark &summary, const Quark &body)
-		:  State(levelnames[level],level,summary.c_str(),body.c_str()) { }
-
 	Abstract::State::State(const Level level, const char *summary, const char *body)
 		:  State(levelnames[level],level,Quark(summary).c_str(),Quark(body).c_str()) { }
 

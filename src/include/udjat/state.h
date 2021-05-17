@@ -84,7 +84,10 @@
 			public:
 
 				/// @brief Create state using the strings without conversion.
-				constexpr State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
+				constexpr State(const char *n, const Level l = Level::unimportant, const char *s = "", const char *b = "")
+					: name(n), level(l), summary(s), body(b) { }
+
+				// constexpr State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
 				/// @brief Create state (convert strings to Quarks).
 				State(const Level l, const Quark &summary, const Quark &body = "");

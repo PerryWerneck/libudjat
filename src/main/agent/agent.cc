@@ -279,7 +279,7 @@ namespace Udjat {
 		value["uri"] = this->uri.c_str();
 		value["icon"] = this->icon.c_str();
 
-		// Get state
+		// Get
 		if(state) {
 			auto state = Json::Value(Json::objectValue);
 			this->state->get(state);
