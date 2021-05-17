@@ -21,16 +21,31 @@ namespace Udjat {
 		};
 
 		// Load my attributes
+		struct Attr {
+			/// @brief The attribute name.
+			const char *name;
+			const char **value;
+		} attributes[] = {
+			{ "summary",	&this->summary	},
+			{ "label",		&this->label	},
+			{ "icon",		&this->icon		},
+			{ "uri",		&this->uri		}
+		};
+
+		for(size_t ix = 0; ix < (sizeof(attributes)/sizeof(attributes[0])); ix++) {
+			const char * value = Quark().set(root,attributes[ix].name,false,translate).c_str();
+			if(value && *value) {
+				*attributes[ix].value = value;
+			}
+		}
+
 		this->name.set(root,"name",false);
-		this->summary = Quark().set(root,"summary",false,translate).c_str();
-		this->label = Quark().set(root,"label",false,translate).c_str();
 
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
 
 		bool upsearch = root.attribute("upsearch").as_bool(true);
-		this->icon = Quark().set(root,"icon",upsearch,translate).c_str();
-		this->uri = Quark().set(root,"uri",upsearch,translate).c_str();
+
 
 		time_t delay = root.attribute("delay-on-startup").as_uint(0);
 		if(delay)

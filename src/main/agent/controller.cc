@@ -134,7 +134,6 @@ namespace Udjat {
 				info("root agent was {}","created");
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
-
 			}
 
 			virtual ~Agent() {
@@ -162,6 +161,13 @@ namespace Udjat {
 		Abstract::Agent::Controller &controller = Abstract::Agent::Controller::getInstance();
 		auto root = getDefaultRootAgent();
 
+#ifdef DEBUG
+		cout << endl << "Root agent (BEFORE):" << endl
+			<< "\tIcon:\t" << root->icon << endl
+			<< "\tURI:\t" << root->uri << endl
+			<< endl;
+#endif
+
 		File::List(path).forEach([root](const char *filename){
 
 			cout << endl << "agent\tLoading '" << filename << "'" << endl;
@@ -172,6 +178,14 @@ namespace Udjat {
 		});
 
 		controller.set(root);
+
+#ifdef DEBUG
+		cout << endl << "Root agent (AFTER):" << endl
+			<< "\tIcon:\t" << root->icon << endl
+			<< "\tURI:\t" << root->uri << endl
+			<< endl;
+#endif
+
 		return root;
 
 	}
