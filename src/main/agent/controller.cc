@@ -15,6 +15,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/sysconfig.h>
  #include <unistd.h>
 
  using namespace std;
@@ -134,6 +135,18 @@ namespace Udjat {
 				info("root agent was {}","created");
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
+
+				try {
+
+					SysConfig::File osrelease("/etc/os-release","=");
+
+					this->label = Quark(osrelease["PRETTY_NAME"]).c_str();
+
+				} catch(const std::exception &e) {
+
+					cerr << "agent\tCan't read system release file: " << e.what() << endl;
+
+				}
 			}
 
 			virtual ~Agent() {

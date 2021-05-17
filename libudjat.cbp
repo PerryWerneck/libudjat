@@ -55,6 +55,7 @@
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/state.h" />
+		<Unit filename="src/include/udjat/sysconfig.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
@@ -63,6 +64,7 @@
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />
+		<Unit filename="src/include/udjat/tools/sysconfig.h" />
 		<Unit filename="src/include/udjat/tools/threadpool.h" />
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
@@ -91,6 +93,8 @@
 		<Unit filename="src/main/file/list.cc" />
 		<Unit filename="src/main/file/local.cc" />
 		<Unit filename="src/main/file/private.h" />
+		<Unit filename="src/main/file/sysconfig.cc" />
+		<Unit filename="src/main/file/sysconfig_value.cc" />
 		<Unit filename="src/main/file/watcher.cc" />
 		<Unit filename="src/main/module/controller.cc" />
 		<Unit filename="src/main/module/info.cc" />
