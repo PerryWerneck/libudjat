@@ -20,6 +20,8 @@ namespace Udjat {
 			return (const char *) root.attribute(key).as_string();
 		};
 
+		bool upsearch = root.attribute("upsearch").as_bool(true);
+
 		// Load my attributes
 		struct Attr {
 			/// @brief The attribute name.
@@ -43,9 +45,6 @@ namespace Udjat {
 
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
-
-		bool upsearch = root.attribute("upsearch").as_bool(true);
-
 
 		time_t delay = root.attribute("delay-on-startup").as_uint(0);
 		if(delay)

@@ -34,14 +34,10 @@
 
 	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event((Quark) agent) {
 
-		#ifndef DEBUG
-			#error Refactory needed
-		#endif // DEBUG
-
 		struct {
 			Quark &value;
-			const Quark &agent;
-			const Quark &state;
+			const char *agent;
+			const char *state;
 		} values[] = {
 			{ summary,	agent.getSummary(),	state.getSummary()	},
 			{ uri,		agent.getUri(),		state.getUri()		},
@@ -54,7 +50,7 @@
 
 		for(size_t ix = 0;ix < (sizeof(values)/sizeof(values[0]));ix++) {
 
-			if(values[ix].state) {
+			if(values[ix].state && *values[ix].state) {
 				values[ix].value = values[ix].state;
 			} else {
 				values[ix].value = values[ix].agent;
