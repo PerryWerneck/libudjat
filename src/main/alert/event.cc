@@ -61,9 +61,6 @@
 	}
 
 	Alert::Event::~Event() {
-		if(parent) {
-			parent->remove(this);
-		}
 	}
 
 	void Alert::Event::disable() {

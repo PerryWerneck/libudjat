@@ -63,7 +63,7 @@
 		private:
 			friend class Alert;
 
-			/// @brief Mutex for serialization.
+			/// @brief Mutex for serialization
 			static std::mutex guard;
 
 			/// @brief The alert description.
@@ -161,8 +161,8 @@
 		Alert(const pugi::xml_node &node, const char *type = nullptr);
 		virtual ~Alert();
 
-		void insert(Event *event);
-		void remove(Event *event);
+		// void insert(Event *event);
+		// void remove(Event *event);
 
 		/// @brief Initialize alert subsystem.
 		static void init();

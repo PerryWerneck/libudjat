@@ -61,7 +61,7 @@
 				std::string name;
 
 			public:
-				Value(const char *g, const char *n, const T d) : def(d),group(g),name(n) {
+				constexpr Value(const char *g, const char *n, const T d) : def(d),group(g),name(n) {
 				}
 
 				const T get() const {

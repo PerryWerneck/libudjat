@@ -130,7 +130,7 @@
 
 	void Alert::Controller::insert(Alert *alert, std::shared_ptr<Alert::Event> event) {
 
-		alert->insert(event.get());
+		event->parent = alert;
 
 		if(alert->retry.start) {
 			event->alerts.next = (time(0) + alert->retry.start);

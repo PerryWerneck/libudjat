@@ -157,6 +157,10 @@ namespace Udjat {
 				return watcher->c_str();
 			}
 
+			inline const char * getPath() const {
+				return watcher->c_str();
+			}
+
 			virtual ~Agent();
 
 		};
