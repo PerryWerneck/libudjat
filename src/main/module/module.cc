@@ -1,19 +1,18 @@
 
 
 #include "private.h"
-#include <dlfcn.h>
+
+using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
-	static const ModuleInfo moduleinfo;
-
-	Module::Module(const Quark &n, const ModuleInfo *i) : name(n), handle(nullptr), info(i) {
+	Module::Module(const char *n, const ModuleInfo *i) : name(n),handle(nullptr),info(i) {
+		if(!(info && name)) {
+			throw system_error(EINVAL,system_category(),"Module info and name cant be null");
+		}
 		Controller::getInstance().insert(this);
-	}
-
-	Module::Module(const Quark &n) : Module(n,&moduleinfo) {
 	}
 
 	Module::~Module() {

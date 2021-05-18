@@ -12,12 +12,12 @@
 		class UDJAT_API Module {
 		private:
 
+			/// @brief The module name.
+			const char *name;
+
 			/// @brief The module controller.
 			class Controller;
 			friend class Controller;
-
-			/// @brief The module name.
-			Quark name;
 
 			/// @brief The module handle.
 			void *handle;
@@ -42,8 +42,11 @@
 			/// @brief List modules.
 			static void getInfo(Response &response);
 
-			Module(const Quark &name, const ModuleInfo *info);
-			Module(const Quark &name);
+			Module(const char *name, const ModuleInfo *info);
+
+			Module(const Quark &name, const ModuleInfo *info) : Module(name.c_str(),info) {
+			}
+
 			virtual ~Module();
 
 		};

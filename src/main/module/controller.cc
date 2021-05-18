@@ -53,7 +53,7 @@ namespace Udjat {
 
 			Json::Value value(Json::objectValue);
 
-			value["name"] = module->name.c_str();
+			value["name"] = module->name;
 			module->info->get(value);
 			modules.append(value);
 
