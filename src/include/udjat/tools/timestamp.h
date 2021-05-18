@@ -1,3 +1,22 @@
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
 #ifndef TIMESTAMP_H_INCLUDED
 
 	#define TIMESTAMP_H_INCLUDED
@@ -16,7 +35,7 @@
 
 			time_t value;
 
-			TimeStamp(time_t t = time(nullptr)) : value(t) { }
+			constexpr TimeStamp(time_t t = time(nullptr)) : value(t) { }
 
 			std::string to_string(const char *format = "%x %X") const noexcept;
 
@@ -33,12 +52,24 @@
 				return *this;
 			}
 
+			bool operator==(time_t value) const noexcept {
+				return this->value == value;
+			}
+
 			bool operator<(time_t value) const noexcept {
 				return this->value < value;
 			}
 
+			bool operator>(time_t value) const noexcept {
+				return this->value > value;
+			}
+
 			time_t operator-(time_t value) const noexcept {
 				return this->value - value;
+			}
+
+			time_t operator+(time_t value) const noexcept {
+				return this->value + value;
 			}
 
 		};
