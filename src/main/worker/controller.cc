@@ -78,7 +78,7 @@ namespace Udjat {
 
 			Json::Value value(Json::objectValue);
 
-			value["name"] = worker.second->name.c_str();
+			value["name"] = worker.second->name;
 			worker.second->info->get(value);
 
 			report.append(value);

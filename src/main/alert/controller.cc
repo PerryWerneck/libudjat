@@ -43,7 +43,7 @@
 #endif // PACKAGE_BUG_REPORT
 	};
 
-	Alert::Controller::Controller() : Worker(I_("alerts"),&moduleinfo) {
+	Alert::Controller::Controller() : Worker("alerts",&moduleinfo) {
 
 		MainLoop::getInstance().insert(this, 600, [this](const time_t now){
 			ThreadPool::getInstance().push([this,now]() {

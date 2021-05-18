@@ -35,7 +35,7 @@ namespace Udjat {
 		class DefaultState : public Abstract::State, Factory {
 		public:
 
-			DefaultState() : Abstract::State(""), Factory(I_("state"), &moduleinfo) {
+			DefaultState() : Abstract::State(""), Factory("state", &moduleinfo) {
 			}
 
 			~DefaultState() {
