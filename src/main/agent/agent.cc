@@ -60,7 +60,7 @@ namespace Udjat {
 	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Agent() {
 
 		if(name && *name) {
-			this->name = Quark(name);
+			this->name = Quark(name).c_str();
 			this->label = Quark((label ? label : name)).c_str();
 		}
 
@@ -183,7 +183,7 @@ namespace Udjat {
 		{
 			for(auto child : children) {
 
-				if(strncasecmp(child->name.c_str(),path,length))
+				if(strncasecmp(child->name,path,length))
 					continue;
 
 				if(ptr && ptr[1]) {
@@ -320,10 +320,7 @@ namespace Udjat {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
-		string str{"Can't append state on agent '"};
-		str += this->name.c_str();
-		str += "'";
-		throw runtime_error(str);
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
 

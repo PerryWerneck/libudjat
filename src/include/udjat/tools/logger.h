@@ -57,7 +57,7 @@
 			};
 
 		protected:
-			Quark name;	///< @brief Object name.
+			  const char * name;	///< @brief Object name.
 
 		public:
 
@@ -70,19 +70,19 @@
 			static void redirect(const char *filename = nullptr, bool console = false);
 #endif // DEBUG
 
-			Logger();
-			Logger(const char *name);
+			constexpr Logger(const char *n = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : name(n) {
+			}
+
 			Logger(const Quark &name);
 			~Logger();
 
-			/// @brief Convert to quark (Logger name)
-			operator Quark() const {
+			operator const char *() const noexcept {
 				return this->name;
 			}
 
 			/// @brief Get Logger name
 			const char * getName() const noexcept {
-				return this->name.c_str();
+				return this->name;
 			}
 
 			/// @brief Write informational message.

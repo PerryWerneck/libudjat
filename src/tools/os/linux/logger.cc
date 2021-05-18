@@ -12,13 +12,7 @@ using namespace std;
 
 namespace Udjat {
 
-	Logger::Logger() : name(STRINGIZE_VALUE_OF(PRODUCT_NAME)) {
-	}
-
-	Logger::Logger(const char *n) : name(n) {
-	}
-
-	Logger::Logger(const Quark &n) : name(n) {
+	Logger::Logger(const Quark &name) : Logger(name.c_str()) {
 	}
 
 	Logger::~Logger() {

@@ -171,7 +171,7 @@
 		static void init();
 
 		inline const char * c_str() const noexcept {
-			return name.c_str();
+			return name;
 		}
 
 		/// @brief Agent value has changed.

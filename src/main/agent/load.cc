@@ -41,7 +41,7 @@ namespace Udjat {
 			}
 		}
 
-		this->name.set(root,"name",false);
+		this->name = (Quark().set(root,"name",false)).c_str();
 
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
