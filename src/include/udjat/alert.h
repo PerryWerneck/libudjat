@@ -161,6 +161,9 @@
 		Alert(const pugi::xml_node &node, const char *type = nullptr);
 		virtual ~Alert();
 
+		/// @brief List alerts.
+		static void getInfo(Response &response);
+
 		// void insert(Event *event);
 		// void remove(Event *event);
 

@@ -97,6 +97,10 @@
 		Controller::getInstance().remove(this);
 	}
 
+	void Alert::getInfo(Response &response) {
+		Controller::getInstance().getInfo(response);
+	}
+
 	std::string Alert::getConfigSection(const pugi::xml_node &node,const char *type) {
 
 		// First check for configuration attribute

@@ -59,6 +59,8 @@
 
 		void work(Request &request, Response &response) const override;
 
+		void getInfo(Response &response);
+
 		/// @brief Activate alert;
 		void insert(Alert *alert, std::shared_ptr<Alert::Event> event);
 

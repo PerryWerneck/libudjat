@@ -172,6 +172,21 @@
 
 	}
 
+	void Alert::Controller::getInfo(Response &response) {
+		lock_guard<mutex> lock(guard);
 
+		Json::Value alerts(Json::arrayValue);
+
+		for(auto event : this->events) {
+
+			Json::Value value(Json::objectValue);
+			event->get(value);
+			alerts.append(value);
+
+		}
+
+		response["alerts"] = alerts;
+
+	}
 
  }
