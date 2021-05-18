@@ -45,7 +45,7 @@
 
 	class AlertFactory : public Factory {
 	public:
-		AlertFactory() : Factory(I_("alert"),&alertmoduleinfo) {
+		AlertFactory() : Factory("alert",&alertmoduleinfo) {
 		}
 
 		virtual ~AlertFactory() {
@@ -106,7 +106,7 @@
 
 	class URLAlertFactory : public Factory {
 	public:
-		URLAlertFactory() : Factory(I_("alert-url"),&urlmoduleinfo) {
+		URLAlertFactory() : Factory("alert-url",&urlmoduleinfo) {
 		}
 
 		virtual ~URLAlertFactory() {
@@ -141,7 +141,7 @@
 
 	class ScriptAlertFactory : public Factory {
 	public:
-		ScriptAlertFactory() : Factory(I_("alert-script"),&scriptmoduleinfo) {
+		ScriptAlertFactory() : Factory("alert-script",&scriptmoduleinfo) {
 		}
 
 		virtual ~ScriptAlertFactory() {

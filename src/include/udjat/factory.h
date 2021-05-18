@@ -27,7 +27,7 @@
 	class UDJAT_API Factory {
 	private:
 		class Controller;
-		Quark name;
+		const char *name;
 
 	protected:
 
@@ -35,8 +35,12 @@
 		const ModuleInfo *info;
 
 	public:
-		Factory(const Quark &name, const ModuleInfo *info);
-		Factory(const Quark &name);
+		Factory(const char *name);
+		Factory(const char *name, const ModuleInfo *info);
+
+		Factory(const Quark &name, const ModuleInfo *info) : Factory(name.c_str(),info) {
+		}
+
 		virtual ~Factory();
 
 		static void getInfo(Response &response);

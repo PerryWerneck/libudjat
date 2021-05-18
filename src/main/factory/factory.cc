@@ -10,11 +10,11 @@ namespace Udjat {
 
 	static const ModuleInfo moduleinfo;
 
-	Factory::Factory(const Quark &n, const ModuleInfo *i) : name(n), info(i) {
-		Controller::getInstance().insert(this);
+	Factory::Factory(const char *name) : Factory(name,&moduleinfo) {
 	}
 
-	Factory::Factory(const Quark &n) : Factory(n,&moduleinfo) {
+	Factory::Factory(const char *n, const ModuleInfo *i) : name(n), info(i) {
+		Controller::getInstance().insert(this);
 	}
 
 	Factory::~Factory() {

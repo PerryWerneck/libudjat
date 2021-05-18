@@ -40,7 +40,7 @@ namespace Udjat {
 #endif // PACKAGE_BUG_REPORT
 	};
 
-	Abstract::Agent::Controller::Controller() : Worker(I_("agent"),&moduleinfo), Factory(I_("agent"),&moduleinfo), MainLoop::Service(&moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker(I_("agent"),&moduleinfo), Factory("agent",&moduleinfo), MainLoop::Service(&moduleinfo) {
 
 		// Worker::info = &info;
 		// Factory::info = &info;

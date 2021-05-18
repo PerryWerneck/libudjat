@@ -55,7 +55,7 @@ static void test_agent_parser() {
 
 	class Factory : public Udjat::Factory {
 	public:
-		Factory() : Udjat::Factory(Quark::getFromStatic("random")) {
+		Factory() : Udjat::Factory("random") {
 			cout << "random agent factory was created" << endl;
 			srand(time(NULL));
 		}

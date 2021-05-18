@@ -22,7 +22,7 @@ namespace Udjat {
 
 			Json::Value value(Json::objectValue);
 
-			value["name"] = factory.second->name.c_str();
+			value["name"] = factory.second->name;
 			factory.second->info->get(value);
 
 			report.append(value);
@@ -37,7 +37,7 @@ namespace Udjat {
 
 		cout << factory->name << "\tFactory registered" << endl;
 
-		factories.insert(make_pair(factory->name.c_str(),factory));
+		factories.insert(make_pair(factory->name,factory));
 
 	}
 
@@ -46,7 +46,7 @@ namespace Udjat {
 
 		cout << factory->name << "\tFactory unregistered" << endl;
 
-		auto entry = factories.find(factory->name.c_str());
+		auto entry = factories.find(factory->name);
 		if(entry == factories.end())
 			return;
 
