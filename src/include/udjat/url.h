@@ -151,22 +151,28 @@
 		private:
 
 			/// @brief The protocol name.
-			Quark name;
-
-		protected:
+			const char * name;
 
 			/// @brief The default port name.
-			Quark portname;
+			const char * portname;
+
+		protected:
 
 			/// @brief Module information.
 			const ModuleInfo *info;
 
 		public:
-			Protocol(const Quark &protocol, const Quark &portname);
+
+			constexpr Protocol(const char *n, const char *p, const ModuleInfo *i) : name(n),portname(p),info(i) {
+			}
+
+			Protocol(const Quark &name, const Quark &port, const ModuleInfo *i) : Protocol(name.c_str(),port.c_str(),i) {
+			}
+
 			virtual ~Protocol();
 
 			inline const char * c_str() const {
-				return name.c_str();
+				return name;
 			}
 
 			inline const ModuleInfo * getModuleInfo() const noexcept {
@@ -175,7 +181,7 @@
 
 			/// @brief Get default port name;
 			inline const char * getDefaultPortName() const noexcept {
-				return portname.c_str();
+				return portname;
 			}
 
 			/// @brief Connect to URL.
@@ -198,7 +204,6 @@
 			Udjat::Response call(const URL &url, const Method method, const Request &payload);
 
 		};
-
 
 	private:
 		class Controller;
