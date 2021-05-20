@@ -169,6 +169,9 @@
 			std::vector<std::shared_ptr<Alert>> alerts;
 
 		public:
+			State(const char *name, const T value, const Level level, const char *summary, const char *bobdy = "")
+					: Abstract::State(name,level,summary,body), from(value),to(value) { }
+
 			State(const pugi::xml_node &node) : Abstract::State(node) {
 				parse_range(node,from,to);
 			}
