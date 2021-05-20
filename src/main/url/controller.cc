@@ -22,7 +22,7 @@
  namespace Udjat {
 
 	URL::Controller::Controller() {
-
+		insert(make_shared<FileProtocol>());
 	}
 
 	URL::Controller::~Controller() {

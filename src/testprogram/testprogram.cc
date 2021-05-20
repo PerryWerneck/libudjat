@@ -116,7 +116,8 @@ static void test_agent_parser() {
 }
 
 static void test_url() {
-	Udjat::URL url("http://localhost");
+	// Udjat::URL url("http://localhost");
+	Udjat::URL url("file://test.xml");
 	auto response = url.get();
 	cout << "Response was: " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
 	cout << response->c_str() << endl;
@@ -145,7 +146,7 @@ int main(int argc, char **argv) {
 
 	/*
 	{
-		static auto module = new Module(Quark::getFromStatic("sample"));
+		static auto module = new Module("sample");
 	}
 	*/
 
@@ -175,10 +176,10 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	test_agent_parser();
+	// test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
-
+	test_url();
 
 	/*
 

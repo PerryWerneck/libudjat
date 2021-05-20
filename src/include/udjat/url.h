@@ -51,7 +51,7 @@
 
 			struct {
 				size_t length = 0;
-				char * payload = nullptr;
+				const char * payload = nullptr;
 			} response;
 
 		public:

@@ -30,6 +30,16 @@
 	class URL::Controller {
 		Controller();
 
+		class FileProtocol : public URL::Protocol {
+		public:
+
+			FileProtocol();
+
+			virtual ~FileProtocol();
+			virtual std::shared_ptr<URL::Response> call(const URL &url, const Method method, const char *mimetype, const char *payload) override;
+
+		};
+
 		list<shared_ptr<Protocol>> protocols;
 
 	public:
