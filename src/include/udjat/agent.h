@@ -94,10 +94,10 @@
 				bool activate(std::shared_ptr<State> state) noexcept;
 
 				/// @brief Set failed state from known exception
-				void failed(const std::exception &e, const char *message) noexcept;
+				void failed(const char *summary, const std::exception &e) noexcept;
 
 				/// @brief Set unexpected failed state.
-				void failed(const char *message) noexcept;
+				void failed(const char *summary, const char *body = "") noexcept;
 
 				/// @brief Run update if required.
 				/// @param forward	If true forward update to children.

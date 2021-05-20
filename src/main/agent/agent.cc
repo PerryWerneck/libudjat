@@ -98,7 +98,7 @@ namespace Udjat {
 
 				} catch(const std::exception &e) {
 
-					child->failed(e,"Agent startup has failed");
+					child->failed("Agent startup has failed",e);
 
 				}
 			}
@@ -138,7 +138,7 @@ namespace Udjat {
 
 			} catch(const exception &e) {
 
-				child->failed(e,"Agent stop has failed");
+				child->failed("Agent stop has failed",e);
 
 			}
 		}

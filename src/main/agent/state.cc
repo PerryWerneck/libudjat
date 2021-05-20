@@ -59,33 +59,28 @@ namespace Udjat {
 	}
 
 	/// @brief Activate an error state.
-	void Abstract::Agent::failed(const std::exception &e, const char *message) noexcept {
+	void Abstract::Agent::failed(const char *summary, const std::exception &e) noexcept {
 
-		error("{}: {}",message,e.what());
-
-		this->state = make_shared<State>(State::critical,message,e.what());
+		error("{}: {}",summary,e.what());
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		if(parent)
-			parent->onChildStateChange();
+		activate(make_shared<Abstract::State>(summary,e));
 
 	}
 
 	/// @brief Set failed state from known exception
-	void Abstract::Agent::failed(const char *message) noexcept {
+	void Abstract::Agent::failed(const char *summary, const char *body) noexcept {
 
-		error("{}",message);
-		this->state = make_shared<State>(State::critical,message);
+		error("{}",summary);
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		if(parent)
-			parent->onChildStateChange();
+		activate(make_shared<Abstract::State>("error",State::critical,summary,body));
 
 	}
 
@@ -111,11 +106,13 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			failed(e,"Error switching state");
+			error("Error '{}' switching state",e.what());
+			this->state = make_shared<Abstract::State>("Error switching state",e);
 
 		} catch(...) {
 
-			failed("Unexpected error switching state");
+			error("Error '{}' switching state","unexpected");
+			this->state = make_shared<Abstract::State>("error",State::critical,"Unexpected error switching state");
 
 		}
 
@@ -150,11 +147,13 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			failed(e,"Error switching state");
+			error("Error '{}' switching state",e.what());
+			this->state = make_shared<Abstract::State>("Error switching state",e);
 
 		} catch(...) {
 
-			failed("Unexpected error switching state");
+			error("Error '{}' switching state","unexpected");
+			this->state = make_shared<Abstract::State>("error",State::critical,"Unexpected error switching state");
 
 		}
 

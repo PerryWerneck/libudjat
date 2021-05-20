@@ -64,7 +64,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			updating(false);
-			failed(e,"Error updating agent");
+			failed("Error updating agent",e);
 			throw;
 
 		} catch(...) {
@@ -148,11 +148,13 @@ namespace Udjat {
 
 		} catch(const exception &e) {
 
-			failed(e,"Error switching state");
+			error("Error '{}' switching state",e.what());
+			this->state = make_shared<Abstract::State>("Error switching state",e);
 
 		} catch(...) {
 
-			failed("Unexpected error switching state");
+			error("Error '{}' switching state","unexpected");
+			this->state = make_shared<Abstract::State>("error",State::critical,"Unexpected error switching state");
 
 		}
 

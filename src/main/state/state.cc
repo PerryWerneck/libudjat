@@ -40,6 +40,9 @@
 
 namespace Udjat {
 
+	Abstract::State::State(const char *summary, const std::exception &e, const Level level)
+		: State("error",level,summary,e.what()) { }
+
 	Abstract::State::State(const Level level, const char *summary, const char *body)
 		:  State(levelnames[level],level,Quark(summary).c_str(),Quark(body).c_str()) { }
 

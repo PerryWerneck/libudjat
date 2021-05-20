@@ -359,7 +359,7 @@ namespace Udjat {
 
 					} catch(const exception &e) {
 
-						agent->failed(e,"Update failed");
+						agent->failed("Agent update failed",e);
 
 					} catch(...) {
 
@@ -376,6 +376,7 @@ namespace Udjat {
 			MainLoop::getInstance().reset(this,1,next);
 
 		});
+
 	}
 
 }

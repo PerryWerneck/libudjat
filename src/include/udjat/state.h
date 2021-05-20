@@ -89,6 +89,9 @@
 
 				// constexpr State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
+				/// @brief Create state from exception.
+				State(const char *summary, const std::exception &e, const Level level = State::critical);
+
 				/// @brief Create state (convert strings to Quarks).
 				State(const Level l, const Quark &summary, const Quark &body = "");
 
