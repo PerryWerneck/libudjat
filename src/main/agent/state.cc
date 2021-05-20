@@ -71,6 +71,18 @@ namespace Udjat {
 
 	}
 
+	void Abstract::Agent::failed(const char *summary, int code) noexcept {
+
+		error("{}: {}",summary,string(strerror(code)));
+
+		if(update.failed) {
+			this->update.next = time(nullptr) + update.failed;
+		}
+
+		activate(make_shared<Abstract::State>("error",State::critical,summary,strerror(errno)));
+
+	}
+
 	/// @brief Set failed state from known exception
 	void Abstract::Agent::failed(const char *summary, const char *body) noexcept {
 

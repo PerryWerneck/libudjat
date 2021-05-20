@@ -96,6 +96,9 @@
 				/// @brief Set failed state from known exception
 				void failed(const char *summary, const std::exception &e) noexcept;
 
+				/// @brief Set failed state from errno.
+				void failed(const char *summary, int code) noexcept;
+
 				/// @brief Set unexpected failed state.
 				void failed(const char *summary, const char *body = "") noexcept;
 
