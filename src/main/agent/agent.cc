@@ -81,22 +81,6 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		if(child->parent) {
-			throw runtime_error("Agent already has a parent");
-		}
-
-#ifdef DEBUG
-		cout << getName() << "\tInserting child '" << child->getName() << endl;
-#endif // DEBUG
-
-		child->parent = this;
-		children.push_back(child);
-
-	}
-
 	void Abstract::Agent::start() {
 
 #ifdef DEBUG
@@ -160,89 +144,6 @@ namespace Udjat {
 		}
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path, bool required, bool autoins) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		if(!(path && *path)) {
-			throw runtime_error("Invalid request");
-		}
-
-		if(*path == '/')
-			path++;
-
-		// Get name length.
-		size_t length;
-		const char *ptr = strchr(path,'/');
-		if(!ptr) {
-			length = strlen(path);
-		} else {
-			length = (ptr - path);
-		}
-
-		{
-			for(auto child : children) {
-
-				if(strncasecmp(child->name,path,length))
-					continue;
-
-				if(ptr && ptr[1]) {
-					return child->find(ptr+1,required,autoins);
-				}
-
-				return child;
-			}
-
-		}
-
-		if(autoins) {
-			string name{path,length};
-			auto child = make_shared<Abstract::Agent>(string(path,length).c_str());
-			insert(child);
-
-			if(ptr && ptr[1]) {
-				return child->find(ptr+1,required,autoins);
-			}
-
-			return child;
-		}
-
-		if(required) {
-			throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
-		}
-
-		return shared_ptr<Abstract::Agent>();
-
-	}
-
-	void Abstract::Agent::foreach(std::function<void(Abstract::Agent &agent)> method) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		for(auto child : children) {
-			child->foreach(method);
-		}
-
-		method(*this);
-
-	}
-
-	void Abstract::Agent::foreach(std::function<void(std::shared_ptr<Abstract::Agent> agent)> method) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		for(auto child : children) {
-
-			if(!child->children.empty()) {
-				child->foreach(method);
-			}
-
-			method(child);
-
-		}
-
-	}
-
 	Json::Value & Abstract::Agent::setup(const Request &request, Response &response) {
 
 		chk4refresh(true);
@@ -258,67 +159,6 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::get(const char *name, Json::Value &value) {
-		// It's just a placeholder here. Don't set any value.
-	}
-	#pragma GCC diagnostic pop
-
-	std::string Abstract::Agent::to_string() const {
-		throw system_error(ENOTSUP,system_category(),string{"Can't get value for agent'"} + getName() + "'");;
-	}
-
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	bool Abstract::Agent::assign(const char *value) {
-		throw system_error(ENOTSUP,system_category(),string{"Agent '"} + getName() + "' doesnt allow assign method");;
-	}
-	#pragma GCC diagnostic pop
-
-	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
-
-		get("value",value);
-
-		value["name"] = this->getName();
-		value["summary"] = this->summary;
-		value["label"] = this->label;
-		value["uri"] = this->uri;
-		value["icon"] = this->icon;
-
-		// Get
-		if(state) {
-			auto state = Json::Value(Json::objectValue);
-			this->state->get(state);
-			value["state"] = state;
-		}
-
-		// Get children values
-		if(children) {
-			auto cvalues = Json::Value(Json::objectValue);
-			for(auto child : this->children) {
-				auto values = Json::Value(Json::objectValue);
-				child->get(values,false,true);
-				cvalues[child->getName()] = values;
-			}
-			value["children"] = cvalues;
-		}
-
-	}
-
-	void Abstract::Agent::get(const Request &request, Response &response) {
-
-#ifdef DEBUG
-		cout << "Getting agent '" << getName() << "'" << endl;
-#endif // DEBUG
-
-		setup(request,response);
-
-		// Get agent value
-		get( (Json::Value &) response, false, true);
-
-	}
-
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name + "' doesnt allow states");
 	}
@@ -328,81 +168,6 @@ namespace Udjat {
 
 		// Default method should return the current state with no change.
 		return this->state;
-
-	}
-
-	void Abstract::Agent::expand(std::string &text) const {
-
-		Udjat::expand(text,[this](const char *key) {
-
-			// Agent value
-			if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
-				return to_string();
-			}
-
-			// Agent properties.
-			{
-				struct {
-					const char *key;
-					const Quark &value;
-				} values[] = {
-					{ "agent.name",		this->name		},
-					{ "agent.label",	this->label		},
-					{ "agent.summary",	this->summary	},
-					{ "agent.uri", 		this->uri		},
-					{ "agent.icon", 	this->icon		}
-				};
-
-				for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
-
-					if(!strcasecmp(values[ix].key,key)) {
-						return string(values[ix].value.c_str());
-					}
-
-				}
-			}
-
-			if(this->state) {
-
-				struct {
-					const char *key;
-					const Quark &agent;
-					const Quark &state;
-				} values[] = {
-					{
-						"summary",
-						this->summary,
-						this->state->getSummary()
-					},
-					{
-						"uri",
-						this->uri,
-						this->state->getUri()
-					}
-				};
-
-				for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
-
-					if(!strcasecmp(values[ix].key,key)) {
-
-						if(values[ix].state) {
-							return string(values[ix].state.c_str());
-						}
-
-						return string(values[ix].agent.c_str());
-
-					}
-
-				}
-
-			}
-
-#ifdef DEBUG
-			cout << "Can't find key '" << key << "'" << endl;
-#endif // DEBUG
-			return string{"${}"};
-
-		});
 
 	}
 

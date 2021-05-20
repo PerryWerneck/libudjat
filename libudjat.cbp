@@ -71,11 +71,14 @@
 		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
+		<Unit filename="src/main/agent/child.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/load.cc" />
 		<Unit filename="src/main/agent/private.h" />
+		<Unit filename="src/main/agent/set.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
+		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/alert.cc" />
 		<Unit filename="src/main/alert/controller.cc" />

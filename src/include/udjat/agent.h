@@ -111,6 +111,9 @@
 				/// @return Node for value.
 				Json::Value & setup(const Request &request, Response &response);
 
+				/// @brief Set 'on-demand' option.
+				void setOndemand() noexcept;
+
 			public:
 
 				/// @brief Load agents from xml.file
