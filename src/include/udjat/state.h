@@ -169,7 +169,7 @@
 			std::vector<std::shared_ptr<Alert>> alerts;
 
 		public:
-			State(const char *name, const T value, const Level level, const char *summary, const char *bobdy = "")
+			State(const char *name, const T value, const Level level, const char *summary, const char *body = "")
 					: Abstract::State(name,level,summary,body), from(value),to(value) { }
 
 			State(const pugi::xml_node &node) : Abstract::State(node) {
