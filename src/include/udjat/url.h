@@ -137,11 +137,15 @@
 
 			explicit operator bool() = delete;
 
-			constexpr bool operator==(Method a) const {
+			constexpr bool equal(const Method a) const {
 				return value == a.value;
 			}
 
-			constexpr bool operator!=(Method a) const {
+			constexpr bool operator==(const Method a) const {
+				return value == a.value;
+			}
+
+			constexpr bool operator!=(const Method a) const {
 				return value != a.value;
 			}
 		};
