@@ -80,6 +80,10 @@ namespace Udjat {
 
 		const char * find(const char *value, bool copy) {
 
+			if(!(value && *value)) {
+				return nullptr;
+			}
+
 			lock_guard<recursive_mutex> lock(guard);
 
 			// Search on stored strings.
@@ -161,7 +165,6 @@ namespace Udjat {
 		return q;
 	}
 
-
 	Quark::Quark(const std::string &str) : Quark(str.c_str()) {
 	}
 
@@ -174,7 +177,11 @@ namespace Udjat {
 	}
 
 	Quark & Quark::operator=(const char *str) {
-		this->value = Controller::getInstance().find(str,true);
+		if(str && *str) {
+			this->value = Controller::getInstance().find(str,true);
+		} else {
+			this->value = nullptr;
+		}
 		return *this;
 	}
 
