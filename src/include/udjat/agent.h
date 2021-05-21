@@ -221,9 +221,6 @@
 					return this->state;
 				}
 
-				/// @brief Insert state.
-				std::shared_ptr<Abstract::State> push_back(std::shared_ptr<Abstract::State> state);
-
 				/// @brief Insert State.
 				virtual void append_state(const pugi::xml_node &node);
 
@@ -258,6 +255,11 @@
 				value[name] = Json::Value(this->value);
 			}
 
+			/// @brief Insert state.
+			void push_back(std::shared_ptr<State<T>> state) {
+				states.push_back(state);
+			}
+
 		public:
 			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary), value(0) {
 			}
@@ -289,7 +291,7 @@
 
 			/// @brief Insert State.
 			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State<T>>(node));
+				push_back(std::make_shared<State<T>>(node));
 			}
 
 			std::string to_string() const override {
@@ -320,6 +322,11 @@
 
 			void get(const char *name, Json::Value &value) override {
 				value[name] = Json::Value(this->value);
+			}
+
+			/// @brief Insert state.
+			void push_back(std::shared_ptr<State<std::string>> state) {
+				states.push_back(state);
 			}
 
 		public:
@@ -355,7 +362,7 @@
 
 			/// @brief Insert State.
 			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State<std::string>>(node));
+				push_back(std::make_shared<State<std::string>>(node));
 			}
 
 			std::string to_string() const override {
@@ -385,6 +392,11 @@
 				return Abstract::Agent::find_state();
 			}
 
+			/// @brief Insert state.
+			void push_back(std::shared_ptr<State<bool>> state) {
+				states.push_back(state);
+			}
+
 		public:
 			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary), value(false) {
 			}
@@ -408,7 +420,7 @@
 
 			/// @brief Insert State.
 			void append_state(const pugi::xml_node &node) override {
-				states.push_back(std::make_shared<State<bool>>(node));
+				push_back(std::make_shared<State<bool>>(node));
 			}
 
 			std::string to_string() const override {
