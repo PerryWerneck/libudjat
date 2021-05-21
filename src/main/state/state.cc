@@ -187,4 +187,31 @@ namespace Udjat {
 
 	}
 
+	std::shared_ptr<Abstract::State> Abstract::State::get(const char *summary, const std::exception &e) {
+
+		const std::system_error *syserror = dynamic_cast<const std::system_error *>(&e);
+
+		if(!syserror) {
+
+			// It's regular error
+			return make_shared<Abstract::State>(summary,e);
+
+		}
+
+		/// @brief System Error State
+		class SysError : public Udjat::State<int> {
+		public:
+			SysError(const char *summary, const system_error *err) :
+				Udjat::State<int>("error",err->code().value(),Udjat::critical,summary,err->what()) {
+			}
+
+		};
+
+		// It's a system error, create state from it.
+		// id = code.value()
+		// body = code.message();
+		return make_shared<SysError>(summary,syserror);
+
+	}
+
 }

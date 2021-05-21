@@ -67,7 +67,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>(summary,e));
+		activate(Abstract::State::get(summary,e));
 
 	}
 

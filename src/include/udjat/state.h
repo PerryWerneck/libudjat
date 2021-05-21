@@ -89,11 +89,11 @@
 
 			public:
 
+				static std::shared_ptr<Abstract::State> get(const char *summary, const std::exception &e);
+
 				/// @brief Create state using the strings without conversion.
 				constexpr State(const char *n, const Level l = Level::unimportant, const char *s = "", const char *b = "")
 					: name(n), level(l), summary(s), body(b) { }
-
-				// constexpr State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
 				/// @brief Create state from exception.
 				State(const char *summary, const std::exception &e, const Level level = Udjat::critical);
