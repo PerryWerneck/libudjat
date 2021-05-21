@@ -258,7 +258,10 @@
 			}
 
 		public:
-			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary), value(0) {
+			Agent(const char *name = nullptr) : Abstract::Agent(name), value(0) {
+			}
+
+			Agent(const char *name, T v) : Abstract::Agent(name), value(v) {
 			}
 
 			bool set(const T &value) {
@@ -327,7 +330,10 @@
 			}
 
 		public:
-			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary) {
+			Agent(const char *name = nullptr) : Abstract::Agent(name) {
+			}
+
+			Agent(const char *name, const char *v) : Abstract::Agent(name), value(v) {
 			}
 
 			bool set(const std::string &value) {
@@ -395,7 +401,10 @@
 			}
 
 		public:
-			Agent(const char *name = nullptr, const char *label = nullptr, const char *summary = nullptr) : Abstract::Agent(name,label,summary), value(false) {
+			Agent(const char *name = nullptr) : Abstract::Agent(name), value(false) {
+			}
+
+			Agent(const char *name, bool v) : Abstract::Agent(name), value(v) {
 			}
 
 			bool set(const bool value) {
