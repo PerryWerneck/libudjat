@@ -85,7 +85,7 @@
 			Quark icon;
 
 			/// @brief Level for this event.
-			Abstract::State::Level level;
+			Udjat::Level level;
 
 			/// @brief Is the event running?
 			time_t running = 0;

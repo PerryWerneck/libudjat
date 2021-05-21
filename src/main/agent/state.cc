@@ -79,7 +79,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>("error",State::critical,summary,strerror(errno)));
+		activate(make_shared<Abstract::State>("error",Udjat::critical,summary,strerror(errno)));
 
 	}
 
@@ -92,7 +92,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>("error",State::critical,summary,body));
+		activate(make_shared<Abstract::State>("error",Udjat::critical,summary,body));
 
 	}
 
@@ -124,7 +124,7 @@ namespace Udjat {
 		} catch(...) {
 
 			error("Error '{}' switching state","unexpected");
-			this->state = make_shared<Abstract::State>("error",State::critical,"Unexpected error switching state");
+			this->state = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 
 		}
 
@@ -146,7 +146,7 @@ namespace Udjat {
 				state->getSummary()
 			);
 
-		State::Level saved_state = this->state->getLevel();
+		Udjat::Level saved_state = this->state->getLevel();
 
 		try {
 
@@ -165,7 +165,7 @@ namespace Udjat {
 		} catch(...) {
 
 			error("Error '{}' switching state","unexpected");
-			this->state = make_shared<Abstract::State>("error",State::critical,"Unexpected error switching state");
+			this->state = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 
 		}
 

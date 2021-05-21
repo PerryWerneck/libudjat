@@ -154,7 +154,7 @@ namespace Udjat {
 		} catch(...) {
 
 			error("Error '{}' switching state","unexpected");
-			this->state = make_shared<Abstract::State>("error",State::critical,"Unexpected error switching state");
+			this->state = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 
 		}
 

@@ -29,18 +29,21 @@
 		void parse_range(const pugi::xml_node &node, int &from, int &to);
 		void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to);
 
+		/// @brief Alert/state level.
+		enum Level : uint8_t {
+			undefined,
+			unimportant,
+			ready,
+			warning,
+			error,
+
+			critical		///< @brief Critical level (allways the last one)
+		};
+
 		namespace Abstract {
 
 			class UDJAT_API State {
 			public:
-				enum Level : uint8_t {
-						undefined,
-						unimportant,
-						ready,
-						warning,
-						error,
-						critical		///< @brief Critical level (allways the last one)
-				};
 
 				/// @brief Notify on state activation?
 				bool notify = false;
@@ -90,7 +93,7 @@
 				// constexpr State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
 				/// @brief Create state from exception.
-				State(const char *summary, const std::exception &e, const Level level = State::critical);
+				State(const char *summary, const std::exception &e, const Level level = Udjat::critical);
 
 				/// @brief Create state (convert strings to Quarks).
 				State(const Level l, const Quark &summary, const Quark &body = "");
@@ -279,7 +282,7 @@
 			return state->getSummary();
 		}
 
-		inline string to_string(const Udjat::Abstract::State::Level level) {
+		inline string to_string(const Udjat::Level level) {
 			return Udjat::Abstract::State::to_string(level);
 		}
 
@@ -287,7 +290,7 @@
 			return os << state->getSummary();
 		}
 
-		inline ostream& operator<< (ostream& os, const Udjat::Abstract::State::Level level) {
+		inline ostream& operator<< (ostream& os, const Udjat::Level level) {
 			return os << Udjat::Abstract::State::to_string(level);
 		}
 

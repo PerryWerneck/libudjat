@@ -37,11 +37,11 @@ namespace Udjat {
 		nullptr
 	};
 
-	Abstract::State::Level Abstract::State::getLevelFromName(const char *name) {
+	Udjat::Level Abstract::State::getLevelFromName(const char *name) {
 
 		for(size_t ix=0; levelnames[ix]; ix++) {
 			if(!strcasecmp(name,levelnames[ix]))
-				return (Abstract::State::Level) ix;
+				return (Udjat::Level) ix;
 		}
 
 		throw runtime_error(string{"Unknown level '"} + name + "'");
@@ -55,7 +55,7 @@ namespace Udjat {
 		value["level"] = level;
 	}
 
-	const char * Abstract::State::to_string(const Abstract::State::Level level) {
+	const char * Abstract::State::to_string(const Udjat::Level level) {
 
 		if(level > (sizeof(levelnames) / sizeof(levelnames[0])))
 			return "Invalid";
