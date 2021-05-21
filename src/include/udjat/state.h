@@ -28,8 +28,10 @@
 
 		void parse_range(const pugi::xml_node &node, int &from, int &to);
 		void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to);
+		void parse_range(const pugi::xml_node &node, unsigned short &from, unsigned short &to);
 
 		/// @brief Alert/state level.
+		// TODO: Convert to class.
 		enum Level : uint8_t {
 			undefined,
 			unimportant,
@@ -38,6 +40,7 @@
 			error,
 
 			critical		///< @brief Critical level (allways the last one)
+
 		};
 
 		namespace Abstract {
