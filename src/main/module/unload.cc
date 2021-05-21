@@ -46,10 +46,7 @@ namespace Udjat {
 				if(handle) {
 					bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
 					auto err = dlerror();
-					if(err) {
-						cerr << err << endl;
-					} else {
-
+					if(!err) {
 						if(!deinit()) {
 							cout << name << "\tKeeping module open" << endl;
 						} else if(dlclose(handle)) {
@@ -58,7 +55,6 @@ namespace Udjat {
 
 					}
 				}
-
 
 			} catch(const exception &e) {
 				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;
