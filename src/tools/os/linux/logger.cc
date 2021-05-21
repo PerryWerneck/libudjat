@@ -12,9 +12,6 @@ using namespace std;
 
 namespace Udjat {
 
-	Logger::Logger(const Quark &name) : Logger(name.c_str()) {
-	}
-
 	Logger::~Logger() {
 	}
 
@@ -26,6 +23,12 @@ namespace Udjat {
 	Logger::Writer & Logger::Writer::append(const std::string &value) {
 		args.push_back(value);
 		return *this;
+	}
+
+	void Logger::set(const pugi::xml_node &node) {
+		auto attribute = node.attribute("name");
+		if(attribute)
+			name = Quark(attribute.as_string(this->name)).c_str();
 	}
 
 	Logger::Writer & Logger::Writer::add() {

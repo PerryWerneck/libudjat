@@ -125,9 +125,6 @@
 				/// @brief Insert child agent.
 				void insert(std::shared_ptr<Agent> child);
 
-				/// @brief Create an unnamed agent.
-				Agent();
-
 				Agent(const char *name, const char *label = "", const char *summary = "");
 				virtual ~Agent();
 

@@ -14,6 +14,9 @@
 		/// @brief Manage log files.
 		/// Reference: https://www.youtube.com/watch?v=IdM0Z2a4fjU
 		class UDJAT_API Logger {
+		private:
+			  const char * name;	///< @brief Object name.
+
 		public:
 			enum Type : uint8_t {
 				Info,
@@ -56,9 +59,6 @@
 
 			};
 
-		protected:
-			  const char * name;	///< @brief Object name.
-
 		public:
 
 			/// @brief Redirect std::cout, std::clog and std::cerr to log file.
@@ -73,8 +73,9 @@
 			constexpr Logger(const char *n = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : name(n) {
 			}
 
-			Logger(const Quark &name);
 			~Logger();
+
+			void set(const pugi::xml_node &name);
 
 			operator const char *() const noexcept {
 				return this->name;
@@ -82,6 +83,10 @@
 
 			/// @brief Get Logger name
 			const char * getName() const noexcept {
+				return this->name;
+			}
+
+			inline const char * c_str() const noexcept {
 				return this->name;
 			}
 

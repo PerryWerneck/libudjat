@@ -170,10 +170,6 @@
 		/// @brief Initialize alert subsystem.
 		static void init();
 
-		inline const char * c_str() const noexcept {
-			return name;
-		}
-
 		/// @brief Agent value has changed.
 		virtual void set(const Abstract::Agent &agent, bool level_has_changed);
 

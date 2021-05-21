@@ -37,7 +37,7 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent() : state(get_default_state()) {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name), state(get_default_state()) {
 
 		try {
 
@@ -55,19 +55,8 @@ namespace Udjat {
 
 		}
 
-	}
-
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Agent() {
-
-		if(name && *name) {
-			this->name = Quark(name).c_str();
-			this->label = Quark((label ? label : name)).c_str();
-		}
-
-		if(summary && *summary) {
-			this->summary = Quark(summary).c_str();
-		}
-
+		this->label = Quark((label ? label : name)).c_str();
+		this->summary = Quark(summary).c_str();
 
 	}
 
@@ -84,7 +73,7 @@ namespace Udjat {
 	void Abstract::Agent::start() {
 
 #ifdef DEBUG
-		cout << name << "\tStarting agent" << endl;
+		cout << getName() << "\tStarting agent" << endl;
 #endif // DEBUG
 
 		// Start children
@@ -126,7 +115,7 @@ namespace Udjat {
 	void Abstract::Agent::stop() {
 
 #ifdef DEBUG
-		cout << name << "\tStopping agent" << endl;
+		cout << getName() << "\tStopping agent" << endl;
 #endif // DEBUG
 
 		lock_guard<std::recursive_mutex> lock(guard);
@@ -160,7 +149,7 @@ namespace Udjat {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + name + "' doesnt allow states");
+		throw system_error(EPERM,system_category(),string{"Agent '"} + getName() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
 

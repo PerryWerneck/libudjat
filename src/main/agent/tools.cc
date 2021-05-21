@@ -36,9 +36,9 @@
 			{
 				struct {
 					const char *key;
-					const Quark &value;
+					const char *value;
 				} values[] = {
-					{ "agent.name",		this->name		},
+					{ "agent.name",		this->getName()	},
 					{ "agent.label",	this->label		},
 					{ "agent.summary",	this->summary	},
 					{ "agent.uri", 		this->uri		},
@@ -48,7 +48,7 @@
 				for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
 
 					if(!strcasecmp(values[ix].key,key)) {
-						return string(values[ix].value.c_str());
+						return string(values[ix].value);
 					}
 
 				}

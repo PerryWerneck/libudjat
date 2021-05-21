@@ -29,7 +29,7 @@
 	Alert::Event::Event() {
 	}
 
-	Alert::Event::Event(const Quark &name) : Logger(name) {
+	Alert::Event::Event(const Quark &name) : Logger(name.c_str()) {
 	}
 
 	Alert::Event::Event(const Abstract::Agent &agent, const Abstract::State &state) : Event((Quark) agent) {

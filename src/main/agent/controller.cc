@@ -161,7 +161,7 @@ namespace Udjat {
 			strncpy(hostname,PACKAGE_NAME,255);
 		}
 
-		return make_shared<Agent>(hostname);
+		return make_shared<Agent>(Quark(hostname).c_str());
 
 	}
 

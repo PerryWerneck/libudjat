@@ -73,7 +73,7 @@
 			// Event was disable, remove it.
 
 			if(!event->parent) {
-				clog << "Event '" << event->name << "' has lost his alert, disabling it" << endl;
+				clog << "Event '" << event->getName() << "' has lost his alert, disabling it" << endl;
 				return true;
 			}
 

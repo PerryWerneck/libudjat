@@ -25,7 +25,7 @@
 
  namespace Udjat {
 
-	Alert::Alert(const Quark &name) : Logger(name) {
+	Alert::Alert(const Quark &name) : Logger(name.c_str()) {
 	}
 
 	Alert::Alert(const char *name) : Alert(Quark(name)) {

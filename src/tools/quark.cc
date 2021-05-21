@@ -144,7 +144,11 @@ namespace Udjat {
 	}
 
 	Quark::Quark(const char *str) {
-		this->value = Controller::getInstance().find(str,true);
+		if(str && *str) {
+			this->value = Controller::getInstance().find(str,true);
+		} else {
+			this->value = nullptr;
+		}
 	}
 
 	Quark::Quark(const pugi::xml_attribute &attribute) {
@@ -201,7 +205,11 @@ namespace Udjat {
 	}
 
 	const Quark & Quark::set(const char *str) {
-		this->value = Controller::getInstance().find(str,true);
+		if(str && *str) {
+			this->value = Controller::getInstance().find(str,true);
+		} else {
+			this->value = nullptr;
+		}
 		return *this;
 	}
 
