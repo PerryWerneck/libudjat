@@ -77,6 +77,7 @@
 		<Unit filename="src/main/agent/load.cc" />
 		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/set.cc" />
+		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
 		<Unit filename="src/main/agent/tools.cc" />

@@ -70,47 +70,6 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::start() {
-
-#ifdef DEBUG
-		cout << getName() << "\tStarting agent" << endl;
-#endif // DEBUG
-
-		// Start children
-		{
-			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto child : children) {
-
-				try {
-
-					child->start();
-
-				} catch(const std::exception &e) {
-
-					child->failed("Agent startup has failed",e);
-
-				}
-			}
-		}
-
-		// Update agent state.
-		{
-			auto new_state = find_state();
-
-			// Check for children state
-			{
-				lock_guard<std::recursive_mutex> lock(guard);
-				for(auto child : children) {
-					if(child->state && child->state->getLevel() > new_state->getLevel()) {
-						new_state = child->state;
-					}
-				}
-			}
-
-			activate(new_state);
-		}
-
-	}
 
 	void Abstract::Agent::stop() {
 
@@ -156,9 +115,6 @@ namespace Udjat {
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 
 		// Default method should return the current state with no change.
-#ifdef DEBUG
-		cout << getName() << "\tState hasn't changed" << endl;
-#endif // DEBUG
 		return this->state;
 
 	}

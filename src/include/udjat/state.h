@@ -118,6 +118,10 @@
 
 				static const char * to_string(const Level level);
 
+				inline const char * getName() const {
+					return name;
+				}
+
 				inline const char * getSummary() const {
 					return summary;
 				}
@@ -200,7 +204,7 @@
 			}
 
 			void deactivate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::activate(agent,alerts);
+				Abstract::State::deactivate(agent,alerts);
 			}
 
 		};
@@ -273,7 +277,7 @@
 			}
 
 			void deactivate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::activate(agent,alerts);
+				Abstract::State::deactivate(agent,alerts);
 			}
 		};
 
