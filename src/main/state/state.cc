@@ -40,9 +40,6 @@
 
 namespace Udjat {
 
-	Abstract::State::State(const char *summary, const std::exception &e, const Level level)
-		: State("error",level,summary,e.what()) { }
-
 	Abstract::State::State(const Level level, const char *summary, const char *body)
 		:  State(levelnames[level],level,Quark(summary).c_str(),Quark(body).c_str()) { }
 
@@ -194,15 +191,33 @@ namespace Udjat {
 		if(!syserror) {
 
 			// It's regular error
-			return make_shared<Abstract::State>(summary,e);
+			class Error : public Abstract::State {
+			private:
+				string summary;
+				string body;
+
+			public:
+				Error(const char *s, const exception &e) : Abstract::State("error",Udjat::critical), summary(s), body(e.what()) {
+					Abstract::State::body = this->body.c_str();
+					Abstract::State::summary = this->summary.c_str();
+				}
+
+			};
+
+			return make_shared<Error>(summary,e);
 
 		}
 
 		/// @brief System Error State
 		class SysError : public Udjat::State<int> {
+		private:
+			string summary;
+			string body;
+
 		public:
-			SysError(const char *summary, const system_error *err) :
-				Udjat::State<int>("error",err->code().value(),Udjat::critical,summary,err->what()) {
+			SysError(const char *s, const system_error *e) : Udjat::State<int>("error",e->code().value(),Udjat::critical),summary(s),body(e->what()) {
+				Abstract::State::body = this->body.c_str();
+				Abstract::State::summary = this->summary.c_str();
 			}
 
 		};

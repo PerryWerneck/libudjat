@@ -61,12 +61,6 @@
 				/// @brief State level.
 				Level level = unimportant;
 
-				/// @brief Message summary.
-				const char * summary = "";
-
-				/// @brief Message body.
-				const char * body = "";
-
 				/// @brief Web link to this state (Usually used for http exporters).
 				const char * uri = "";
 
@@ -83,6 +77,13 @@
 				void set(const pugi::xml_node &node);
 
 			protected:
+				/// @brief Message summary.
+				const char * summary = "";
+
+				/// @brief Message body.
+				const char * body = "";
+
+			protected:
 
 				virtual void activate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept;
 				virtual void deactivate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept;
@@ -94,9 +95,6 @@
 				/// @brief Create state using the strings without conversion.
 				constexpr State(const char *n, const Level l = Level::unimportant, const char *s = "", const char *b = "")
 					: name(n), level(l), summary(s), body(b) { }
-
-				/// @brief Create state from exception.
-				State(const char *summary, const std::exception &e, const Level level = Udjat::critical);
 
 				/// @brief Create state (convert strings to Quarks).
 				State(const Level l, const Quark &summary, const Quark &body = "");
@@ -179,7 +177,7 @@
 			std::vector<std::shared_ptr<Alert>> alerts;
 
 		public:
-			State(const char *name, const T value, const Level level, const char *summary, const char *body = "")
+			State(const char *name, const T value, const Level level, const char *summary = "", const char *body = "")
 					: Abstract::State(name,level,summary,body), from(value),to(value) { }
 
 			State(const pugi::xml_node &node) : Abstract::State(node) {

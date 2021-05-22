@@ -119,7 +119,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error("Error '{}' switching state",e.what());
-			this->state = make_shared<Abstract::State>("Error switching state",e);
+			this->state = Abstract::State::get("Error switching state",e);
 
 		} catch(...) {
 
@@ -160,7 +160,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error("Error '{}' switching state",e.what());
-			this->state = make_shared<Abstract::State>("Error switching state",e);
+			this->state = Abstract::State::get("Error switching state",e);
 
 		} catch(...) {
 
