@@ -206,6 +206,7 @@
 				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
 				virtual void get(const char *name, Json::Value &value);
 				virtual void get(const Request &request, Response &response);
+				virtual void get(const Request &request, Response::Report &report);
 
 				/// @brief Get value as string.
 				virtual std::string to_string() const;
@@ -222,7 +223,10 @@
 				virtual void append_state(const pugi::xml_node &node);
 
 				/// @brief Expand ${} tags on string.
-				virtual void expand(std::string &text) const;
+				virtual std::string & expand(std::string &text) const;
+
+				/// @brief Expand ${} tags on string.
+				std::string expand(const char *text) const;
 
 			};
 

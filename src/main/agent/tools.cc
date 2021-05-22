@@ -23,7 +23,13 @@
 
  namespace Udjat {
 
-	void Abstract::Agent::expand(std::string &text) const {
+	string Abstract::Agent::expand(const char *text) const {
+		string rc;
+		expand(rc);
+		return rc;
+	}
+
+	string & Abstract::Agent::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key) {
 
@@ -38,6 +44,7 @@
 					const char *key;
 					const char *value;
 				} values[] = {
+					{ "agent.name",		this->getName()	},
 					{ "agent.name",		this->getName()	},
 					{ "agent.label",	this->label		},
 					{ "agent.summary",	this->summary	},
@@ -96,6 +103,7 @@
 
 		});
 
+		return text;
 	}
 
  }

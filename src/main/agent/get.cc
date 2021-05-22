@@ -64,6 +64,10 @@
 
 	}
 
+	void Abstract::Agent::get(const Request &request, Response::Report &report) {
+		throw system_error(ENOENT,system_category(),"No available reports on this path");
+	}
+
 	void Abstract::Agent::get(const Request &request, Response &response) {
 
 #ifdef DEBUG

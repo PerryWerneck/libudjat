@@ -31,12 +31,5 @@ namespace Udjat {
 
 	}
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	std::shared_ptr<Response::Report> Response::open(const char *name, const char *column_name, ...) {
-		throw runtime_error("This exporter engine doesn't support reports");
-	}
-	#pragma GCC diagnostic pop
-
 }
 

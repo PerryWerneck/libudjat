@@ -28,7 +28,14 @@
 	Response::Report::~Report() {
 	}
 
-	void Response::Report::setColumns(const char *column_name, va_list args) {
+	void Response::Report::start(const char *name, const char *column_name, ...) {
+		va_list args;
+		va_start(args, column_name);
+		set(column_name,args);
+		va_end(args);
+	}
+
+	void Response::Report::set(const char *column_name, va_list args) {
 
 		while(column_name) {
 			columns.names.push_back(column_name);

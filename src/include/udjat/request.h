@@ -27,7 +27,7 @@
 
 		public:
 
-			/// @brief Report with fixed columns.
+			/// @brief Report in the format row/col.
 			class UDJAT_API Report {
 			protected:
 
@@ -53,11 +53,15 @@
 				std::string next();
 
 				Report();
-				void setColumns(const char *column_name, va_list args);
+				void set(const char *column_name, va_list args);
 
 			public:
 
-				// Report(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
+				/// @brief Open report, define column names.
+				/// @param name	Report	name.
+				/// @param column_name	First column name.
+				/// @param ...			Subsequent column names.
+				void start(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
 
 				virtual ~Report();
 
@@ -88,9 +92,6 @@
 
 			/// @brief Set timestamp for data.
 			void setModificationTimestamp(const time_t time);
-
-			/// @brief Open a row/column report.
-			virtual std::shared_ptr<Report> open(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
 
 		};
 
