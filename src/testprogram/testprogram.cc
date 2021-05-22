@@ -63,6 +63,9 @@ static void test_agent_parser() {
 		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
 
 			class RandomAgent : public Agent<unsigned int> {
+			private:
+				unsigned int limit = 5;
+
 			public:
 				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>() {
 					cout << "Creating random Agent" << endl;
@@ -70,7 +73,7 @@ static void test_agent_parser() {
 				}
 
 				void refresh() override {
-					set((unsigned int) rand());
+					set( ((unsigned int) rand()) % limit);
 				}
 
 			};

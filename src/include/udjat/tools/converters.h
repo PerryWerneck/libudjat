@@ -31,6 +31,14 @@
 		return (value = (unsigned int) std::stoul(str));
 	 }
 
+	 inline int convert(short &value, const char *str) {
+		return (value = (short) std::stoi(str));
+	 }
+
+	 inline int convert(unsigned short &value, const char *str) {
+		return (value = (unsigned short) std::stoi(str));
+	 }
+
 	 inline int convert(long &value, const char *str) {
 		return (value = std::stol(str));
 	 }

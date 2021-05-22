@@ -13,13 +13,27 @@
 
 	</agent>
 
-	<random name='random5' update-timer='600'>
+	<random name='random600' update-timer='600'>
 
-		<alert delay-before-retry='3'/>
+		<!-- alert delay-before-retry='3'/ -->
+		<state name='s0' value='0' summary='Random 0' />
+		<state name='s1' value='1' summary='Random 1' />
+		<state name='s2' value='2' summary='Random 2' />
+		<state name='s3' value='3' summary='Random 3' />
+		<state name='s4' value='4' summary='Random 4' />
+		<state name='s5' value='5' summary='Random 5' />
 		
 	</random>
 
 	<random name='random10' update-timer='10'>
+
+		<!-- alert delay-before-retry='3'/ -->
+		<state name='s0' value='0' summary='Random 0' />
+		<state name='s1' value='1' summary='Random 1' />
+		<state name='s2' value='2' summary='Random 2' />
+		<state name='s3' value='3' summary='Random 3' />
+		<state name='s4' value='4' summary='Random 4' />
+		<state name='s5' value='5' summary='Random 5' />
 
 	</random>
 

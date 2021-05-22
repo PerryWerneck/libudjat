@@ -156,6 +156,9 @@ namespace Udjat {
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 
 		// Default method should return the current state with no change.
+#ifdef DEBUG
+		cout << getName() << "\tState hasn't changed" << endl;
+#endif // DEBUG
 		return this->state;
 
 	}
