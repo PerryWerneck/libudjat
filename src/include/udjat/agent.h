@@ -125,7 +125,7 @@
 				/// @brief Insert child agent.
 				void insert(std::shared_ptr<Agent> child);
 
-				Agent(const char *name, const char *label = "", const char *summary = "");
+				Agent(const char *name = "", const char *label = "", const char *summary = "");
 				virtual ~Agent();
 
 				/// @brief Get root agent.
