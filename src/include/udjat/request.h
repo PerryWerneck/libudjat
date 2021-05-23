@@ -14,6 +14,64 @@
 
 	namespace Udjat {
 
+		/// @brief Report in the format row/col.
+		class UDJAT_API Report {
+		protected:
+
+			struct {
+
+				/// @brief Column names.
+				std::vector<std::string> names;
+
+				/// @brief Next column name.
+				std::vector<std::string>::iterator current;
+
+			} columns;
+
+			/// @brief Start a new row.
+			/// @return true if the row was open.
+			virtual bool open();
+
+			/// @brief End row.
+			/// @return true if the row have columns.
+			virtual bool close();
+
+			/// @brief Get next column title (close and open row if needed).
+			std::string next();
+
+			Report();
+			void set(const char *column_name, va_list args);
+
+		public:
+
+			/// @brief Open report, define column names.
+			/// @param name	Report	name.
+			/// @param column_name	First column name.
+			/// @param ...			Subsequent column names.
+			void start(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
+
+			virtual ~Report();
+
+			virtual Report & push_back(const char *str) = 0;
+			virtual std::string to_string() = 0;
+
+			virtual Report & push_back(const std::string &str);
+			virtual Report & push_back(const bool value);
+			virtual Report & push_back(const TimeStamp &timestamp);
+			virtual Report & push_back(const int8_t value);
+			virtual Report & push_back(const int16_t value);
+			virtual Report & push_back(const int32_t value);
+			virtual Report & push_back(const uint8_t value);
+			virtual Report & push_back(const uint16_t value);
+			virtual Report & push_back(const uint32_t value);
+
+			template <typename T>
+			Report & push_back(const T &value) {
+				return this->push_back(std::to_string(value));
+			}
+
+		};
+
 		class UDJAT_API Response : public Json::Value {
 		protected:
 
@@ -26,64 +84,6 @@
 			Response(const time_t expiration, const time_t modification);
 
 		public:
-
-			/// @brief Report in the format row/col.
-			class UDJAT_API Report {
-			protected:
-
-				struct {
-
-					/// @brief Column names.
-					std::vector<std::string> names;
-
-					/// @brief Next column name.
-					std::vector<std::string>::iterator current;
-
-				} columns;
-
-				/// @brief Start a new row.
-				/// @return true if the row was open.
-				virtual bool open();
-
-				/// @brief End row.
-				/// @return true if the row have columns.
-				virtual bool close();
-
-				/// @brief Get next column title (close and open row if needed).
-				std::string next();
-
-				Report();
-				void set(const char *column_name, va_list args);
-
-			public:
-
-				/// @brief Open report, define column names.
-				/// @param name	Report	name.
-				/// @param column_name	First column name.
-				/// @param ...			Subsequent column names.
-				void start(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
-
-				virtual ~Report();
-
-				virtual Report & push_back(const char *str) = 0;
-				virtual std::string to_string() = 0;
-
-				virtual Report & push_back(const std::string &str);
-				virtual Report & push_back(const bool value);
-				virtual Report & push_back(const TimeStamp &timestamp);
-				virtual Report & push_back(const int8_t value);
-				virtual Report & push_back(const int16_t value);
-				virtual Report & push_back(const int32_t value);
-				virtual Report & push_back(const uint8_t value);
-				virtual Report & push_back(const uint16_t value);
-				virtual Report & push_back(const uint32_t value);
-
-				template <typename T>
-				Report & push_back(const T &value) {
-					return this->push_back(std::to_string(value));
-				}
-
-			};
 
 			Response();
 
@@ -121,7 +121,7 @@
 	}
 
 	template <typename T>
-	inline Udjat::Response::Report & operator<<(Udjat::Response::Report &out, T value) {
+	inline Udjat::Report & operator<<(Udjat::Report &out, T value) {
 		return out.push_back(value);
 	}
 

@@ -22,20 +22,24 @@
 
  namespace Udjat {
 
-	Response::Report::Report() {
+	Report::Report() {
 	}
 
-	Response::Report::~Report() {
+	Report::~Report() {
 	}
 
-	void Response::Report::start(const char *name, const char *column_name, ...) {
+	void Report::start(const char *name, const char *column_name, ...) {
 		va_list args;
 		va_start(args, column_name);
 		set(column_name,args);
 		va_end(args);
 	}
 
-	void Response::Report::set(const char *column_name, va_list args) {
+	void Report::set(const char *column_name, va_list args) {
+
+		if(!columns.names.empty()) {
+			throw system_error(EBUSY,system_category(),"Report already started");
+		}
 
 		while(column_name) {
 			columns.names.push_back(column_name);
@@ -45,7 +49,7 @@
 		open();
 	}
 
-	bool Response::Report::open() {
+	bool Report::open() {
 
 		if(columns.current == columns.names.begin()) {
 			return false;
@@ -55,14 +59,14 @@
 		return true;
 	}
 
-	bool Response::Report::close() {
+	bool Report::close() {
 		if(columns.current == columns.names.begin()) {
 			return false;
 		}
 		return true;
 	}
 
-	std::string Response::Report::next() {
+	std::string Report::next() {
 
 		if(columns.current == columns.names.end()) {
 			close();
@@ -73,40 +77,40 @@
 
 	}
 
-	Response::Report & Response::Report::push_back(const std::string &str) {
+	Report & Report::push_back(const std::string &str) {
 		push_back(str.c_str());
 		return *this;
 	}
 
-	Response::Report & Response::Report::push_back(const bool value) {
+	Report & Report::push_back(const bool value) {
 		return push_back(value ? 1 : 0);
 	}
 
-	Response::Report & Response::Report::push_back(const TimeStamp &timestamp) {
+	Report & Report::push_back(const TimeStamp &timestamp) {
 		return push_back(timestamp.to_string(TIMESTAMP_FORMAT_JSON));
 	}
 
-	Response::Report & Response::Report::push_back(const int8_t value) {
+	Report & Report::push_back(const int8_t value) {
 		return push_back(std::to_string(value));
 	}
 
-	Response::Report & Response::Report::push_back(const int16_t value) {
+	Report & Report::push_back(const int16_t value) {
 		return push_back(std::to_string(value));
 	}
 
-	Response::Report & Response::Report::push_back(const int32_t value) {
+	Report & Report::push_back(const int32_t value) {
 		return push_back(std::to_string(value));
 	}
 
-	Response::Report & Response::Report::push_back(const uint8_t value) {
+	Report & Report::push_back(const uint8_t value) {
 		return push_back(std::to_string(value));
 	}
 
-	Response::Report & Response::Report::push_back(const uint16_t value) {
+	Report & Report::push_back(const uint16_t value) {
 		return push_back(std::to_string(value));
 	}
 
-	Response::Report & Response::Report::push_back(const uint32_t value) {
+	Report & Report::push_back(const uint32_t value) {
 		return push_back(std::to_string(value));
 	}
 

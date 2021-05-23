@@ -206,7 +206,7 @@
 				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
 				virtual void get(const char *name, Json::Value &value);
 				virtual void get(const Request &request, Response &response);
-				virtual void get(const Request &request, Response::Report &report);
+				virtual void get(const Request &request, Report &report);
 
 				/// @brief Get value as string.
 				virtual std::string to_string() const;

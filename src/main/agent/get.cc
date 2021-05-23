@@ -64,7 +64,7 @@
 
 	}
 
-	void Abstract::Agent::get(const Request &request, Response::Report &report) {
+	void Abstract::Agent::get(const Request &request, Report &report) {
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
 	}
 
