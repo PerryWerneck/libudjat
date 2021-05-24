@@ -180,6 +180,10 @@
 				virtual void start();
 
 				/// @brief Update agent.
+				/// @param ondemand true if the update was requested by user query.
+				virtual void refresh(bool ondemand);
+
+				/// @brief Update agent.
 				virtual void refresh();
 
 				/// @brief Stop agent.

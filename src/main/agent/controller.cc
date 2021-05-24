@@ -355,7 +355,7 @@ namespace Udjat {
 
 					try {
 
-						agent->refresh();
+						agent->refresh(false);
 
 					} catch(const exception &e) {
 

@@ -59,7 +59,7 @@ namespace Udjat {
 
 		try {
 
-			refresh();
+			refresh(true);
 
 		} catch(const std::exception &e) {
 
@@ -89,8 +89,11 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::refresh() {
+	void Abstract::Agent::refresh(bool od) {
+		refresh();
+	}
 
+	void Abstract::Agent::refresh() {
 	}
 
 	bool Abstract::Agent::hasStates() const noexcept {
