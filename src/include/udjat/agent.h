@@ -87,7 +87,9 @@
 				virtual bool updated(bool changed) noexcept;
 
 				/// @brief Load children from xml node.
-				void load(const pugi::xml_node &node);
+				/// @brief node XML node with agent attributes.
+				/// @brief name Allow parsing of agent name.
+				void load(const pugi::xml_node &node, bool name = true);
 
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.

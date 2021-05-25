@@ -13,14 +13,14 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::load(const pugi::xml_node &root) {
+	void Abstract::Agent::load(const pugi::xml_node &root, bool name) {
 
 		// Translate method
 		auto translate = [root](const char *key) {
 			return (const char *) root.attribute(key).as_string();
 		};
 
-		bool upsearch = root.attribute("upsearch").as_bool(true);
+		//bool upsearch = root.attribute("upsearch").as_bool(true);
 
 		// Load my attributes
 		struct Attr {
@@ -41,7 +41,9 @@ namespace Udjat {
 			}
 		}
 
-		Logger::set(root);
+		if(name) {
+			Logger::set(root);
+		}
 
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
