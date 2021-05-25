@@ -56,6 +56,13 @@ namespace Udjat {
 				return (const char *) contents;
 			}
 
+			/// @brief Set file contents.
+			void set(const char *contents);
+
+			/// @brief Save file.
+			/// @param filename File name.
+			void save(const char *filename = nullptr);
+
 			static void forEach(const char *text, std::function<void (const std::string &line)> call);
 			void forEach(std::function<void (const std::string &line)> call);
 

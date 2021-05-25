@@ -22,6 +22,7 @@
  #include <sys/stat.h>
  #include <fcntl.h>
  #include <unistd.h>
+ #include <libgen.h>
 
  namespace Udjat {
 
@@ -139,6 +140,19 @@
 		forEach(c_str(),call);
 	}
 
+	void File::Local::set(const char *contents) {
+		if(mapped) {
+			munmap(this->contents,length);
+			mapped = false;
+		} else {
+			free(this->contents);
+		}
+
+		this->contents = strdup(contents);
+		this->length = strlen((const char *) this->contents);
+
+	}
+
 	void File::Local::forEach(const char *from, std::function<void (const string &line)> call) {
 		while(from) {
 			const char *to = strchr(from,'\n');
@@ -150,6 +164,118 @@
 				break;
 			}
 		}
+
+	}
+
+	void File::Local::save(const char *filename) {
+
+		// Not implemented.
+		if(!filename) {
+			throw system_error(ENOTSUP,system_category(),"Can't retrieve filename");
+		}
+
+		// Get file information.
+		struct stat st;
+
+		memset(&st,0,sizeof(st));
+		if(stat(filename, &st) == -1) {
+			if(errno != ENOENT) {
+				throw system_error(errno, system_category(), string{"Can't get output stats file when saving '"} + filename + "'");
+			}
+		}
+
+		if(mapped) {
+			// Unmap file; saving it will change contents.
+			munmap(this->contents,length);
+			mapped = false;
+		}
+
+		// Save file
+		string tempfile;
+		int fd;
+
+		{
+
+			static const char *mask = "/FXXXXXX";
+			size_t buflen = strlen(filename) + strlen(mask) + 1;
+			char *buffer = new char[buflen+1];
+
+			strncpy(buffer,filename,buflen);
+			strncat(dirname(buffer),mask,buflen);
+
+			fd = mkostemp(buffer,O_WRONLY|O_APPEND);
+
+			int e = errno;
+
+			tempfile = buffer;
+			delete[] buffer;
+
+			if(fd < 0) {
+				throw system_error(e, system_category(), string{"Can't create output file when saving '"} + filename + "'");
+			}
+
+		}
+
+		try {
+
+			size_t length = strlen((const char *) contents);
+			const char * ptr = (const char *) contents;
+			while(length > 0) {
+
+				auto wrote = write(fd,ptr,length);
+				if(wrote < 0) {
+					throw system_error(errno, system_category(), string{"Error writing to temp when saving '"} + filename + "'");
+				} if(!wrote) {
+					throw system_error(errno, system_category(), string{"Unexpected '0' bytes return code when saving '"} + filename + "'");
+				}
+
+				length -= wrote;
+				ptr += wrote;
+
+			}
+
+		} catch(...) {
+
+			::close(fd);
+			remove(tempfile.c_str());
+			throw;
+		}
+
+		::close(fd);
+
+		// Temp file saved, create backup and rename the new file.
+		try {
+
+			if(::access(filename,F_OK) == 0) {
+				string backup = (string{filename} + "~");
+				if(remove(backup.c_str()) == -1 && errno != ENOENT) {
+					cerr << "Error '" << strerror(errno) << "' removing '" << backup.c_str() << "'" << endl;
+				}
+				if(link(filename,backup.c_str()) == -1) {
+					cerr << "Error '" << strerror(errno) << "' creating backup of '" << filename <<  "'" << endl;
+				}
+			}
+
+			remove(filename);
+			if(link(tempfile.c_str(),filename) == -1) {
+				throw system_error(errno, system_category(), string{"Error saving '"} + filename + "'");
+			}
+
+			// Set permissions.
+			chmod(filename,st.st_mode);
+
+			// Set owner and group.
+			if(chown(filename, st.st_uid, st.st_gid) == -1) {
+				throw system_error(errno, system_category(), string{"Error setting owner & group on '"} + filename + "'");
+			}
+
+			remove(tempfile.c_str());
+
+		} catch(...) {
+			remove(tempfile.c_str());
+			throw;
+		}
+
 
 	}
 
