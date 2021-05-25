@@ -82,7 +82,26 @@ namespace Udjat {
 	void Abstract::Agent::load(const pugi::xml_document &doc) {
 
 		for(pugi::xml_node root = doc.child("config"); root; root = root.next_sibling("config")) {
-			load(root);
+
+			const char *path = root.attribute("path").as_string();
+
+			if(path && *path) {
+
+				// Has defined path, find root agent.
+				Abstract::Agent * agent = this;
+				while(agent->parent) {
+					agent = agent->parent;
+				}
+
+				agent->find(path,true,true)->load(root);
+
+			} else {
+
+				// No path, load here.
+				load(root);
+
+			}
+
 		}
 
 	}

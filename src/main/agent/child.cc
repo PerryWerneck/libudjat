@@ -76,7 +76,7 @@
 
 		if(autoins) {
 			string name{path,length};
-			auto child = make_shared<Abstract::Agent>(string(path,length).c_str());
+			auto child = make_shared<Abstract::Agent>(Quark(string(path,length)).c_str());
 			insert(child);
 
 			if(ptr && ptr[1]) {
