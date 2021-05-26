@@ -26,6 +26,152 @@
 
  namespace Udjat {
 
+	File::Text::Text(int fd, ssize_t length) : Path(fd) {
+		load(fd,length);
+	}
+
+	File::Text::Text(const char *filename) : Path(filename) {
+
+		int fd = open(filename,O_RDONLY);
+		if(fd < 0) {
+			throw system_error(errno, system_category(), "Can't open file");
+		}
+
+		try {
+
+			load(fd);
+
+		} catch(const exception &e) {
+
+			::close(fd);
+			throw;
+		}
+
+		::close(fd);
+	}
+
+	File::Text::~Text() {
+		unload();
+	}
+
+	void File::Text::unload() {
+
+		if(mapped) {
+			munmap(contents,length);
+			mapped = false;
+			contents = nullptr;
+			length = 0;
+		} else {
+			free(contents);
+			contents = nullptr;
+			length = 0;
+		}
+
+	}
+
+	void File::Text::save() const {
+		File::Path::save(contents);
+	}
+
+	void File::Text::set(const char *contents) {
+
+		unload();
+		this->contents = strdup(contents);
+		this->length = strlen(this->contents);
+
+	}
+
+	void File::Text::load(int fd, ssize_t length) {
+
+		if(fd < 0) {
+			throw system_error(errno, system_category(), "Can't load file");
+		}
+
+		if(length < 0) {
+
+			struct stat st;
+			if(fstat(fd, &st)) {
+				throw system_error(errno, system_category(), "Cant get file size");
+			}
+
+			length = st.st_size;
+
+		}
+
+		unload();
+
+		if(length) {
+
+			// Has file length, try to map it.
+			this->contents = (char *) mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+			if(contents != MAP_FAILED) {
+
+				// Mapped!
+				this->mapped = true;
+				this->length = length;
+				return;
+
+			}
+
+			// Failed.
+			if(errno != ENODEV) {
+				cerr << "file\tCant map file contents: " << strerror(errno) << endl;
+			} else {
+				cout << "file\tUndelying filesystem does not support memory mapping." << endl;
+			}
+
+		}
+
+#ifdef DEBUG
+		cout << "file\tLoading file" << endl;
+#endif // DEBUG
+
+		// Try to load the file.
+		mapped = false;
+		ssize_t in;
+		ssize_t szBuffer = 4096;
+		length = 0;
+		contents = (char *) malloc(szBuffer);
+
+		char * ptr = (char *) contents;
+		while( (in = read(fd,ptr,szBuffer - length)) != 0) {
+
+			if(in < 0) {
+				throw system_error(errno, system_category(), "Cant read file");
+			}
+
+			if(in > 0) {
+				ptr += in;
+				length += in;
+				if(length >= (szBuffer - 20)) {
+					szBuffer += 4096;
+					contents = (char *) realloc(contents,szBuffer);
+					ptr = contents+length;
+				}
+			}
+
+		}
+
+		contents = (char *) realloc(contents,length+1);
+		((char *) contents)[length] = 0;
+
+	}
+
+	void File::Text::forEach(const char *from, std::function<void (const string &line)> call) {
+		while(from) {
+			const char *to = strchr(from,'\n');
+			if(to) {
+				call(string(from,to-from));
+				from = to+1;
+			} else {
+				call(string(from));
+				break;
+			}
+		}
+
+	}
+
+ /*
 	File::Local::Local(const char *path)  {
 
 		int fd = open(path,O_RDONLY);
@@ -153,19 +299,6 @@
 
 	}
 
-	void File::Local::forEach(const char *from, std::function<void (const string &line)> call) {
-		while(from) {
-			const char *to = strchr(from,'\n');
-			if(to) {
-				call(string(from,to-from));
-				from = to+1;
-			} else {
-				call(string(from));
-				break;
-			}
-		}
-
-	}
 
 	void File::Local::save(const char *filename) {
 
@@ -174,109 +307,24 @@
 			throw system_error(ENOTSUP,system_category(),"Can't retrieve filename");
 		}
 
-		// Get file information.
-		struct stat st;
 
-		memset(&st,0,sizeof(st));
-		if(stat(filename, &st) == -1) {
-			if(errno != ENOENT) {
-				throw system_error(errno, system_category(), string{"Can't get output stats file when saving '"} + filename + "'");
-			}
-		}
+		save(filename, this->contents);
+
+		// Reload file.
 
 		if(mapped) {
 			// Unmap file; saving it will change contents.
 			munmap(this->contents,length);
 			mapped = false;
+			this->contents = nullptr;
 		}
 
-		// Save file
-		string tempfile;
-		int fd;
+	}
 
-		{
-
-			static const char *mask = "/FXXXXXX";
-			size_t buflen = strlen(filename) + strlen(mask) + 1;
-			char *buffer = new char[buflen+1];
-
-			strncpy(buffer,filename,buflen);
-			strncat(dirname(buffer),mask,buflen);
-
-			fd = mkostemp(buffer,O_WRONLY|O_APPEND);
-
-			int e = errno;
-
-			tempfile = buffer;
-			delete[] buffer;
-
-			if(fd < 0) {
-				throw system_error(e, system_category(), string{"Can't create output file when saving '"} + filename + "'");
-			}
-
-		}
-
-		try {
-
-			size_t length = strlen((const char *) contents);
-			const char * ptr = (const char *) contents;
-			while(length > 0) {
-
-				auto wrote = write(fd,ptr,length);
-				if(wrote < 0) {
-					throw system_error(errno, system_category(), string{"Error writing to temp when saving '"} + filename + "'");
-				} if(!wrote) {
-					throw system_error(errno, system_category(), string{"Unexpected '0' bytes return code when saving '"} + filename + "'");
-				}
-
-				length -= wrote;
-				ptr += wrote;
-
-			}
-
-		} catch(...) {
-
-			::close(fd);
-			remove(tempfile.c_str());
-			throw;
-		}
-
-		::close(fd);
-
-		// Temp file saved, create backup and rename the new file.
-		try {
-
-			if(::access(filename,F_OK) == 0) {
-				string backup = (string{filename} + "~");
-				if(remove(backup.c_str()) == -1 && errno != ENOENT) {
-					cerr << "Error '" << strerror(errno) << "' removing '" << backup.c_str() << "'" << endl;
-				}
-				if(link(filename,backup.c_str()) == -1) {
-					cerr << "Error '" << strerror(errno) << "' creating backup of '" << filename <<  "'" << endl;
-				}
-			}
-
-			remove(filename);
-			if(link(tempfile.c_str(),filename) == -1) {
-				throw system_error(errno, system_category(), string{"Error saving '"} + filename + "'");
-			}
-
-			// Set permissions.
-			chmod(filename,st.st_mode);
-
-			// Set owner and group.
-			if(chown(filename, st.st_uid, st.st_gid) == -1) {
-				throw system_error(errno, system_category(), string{"Error setting owner & group on '"} + filename + "'");
-			}
-
-			remove(tempfile.c_str());
-
-		} catch(...) {
-			remove(tempfile.c_str());
-			throw;
-		}
+	void File::Local::save(const char *filename, const char *contents) {
 
 
 	}
 
+*/
  }

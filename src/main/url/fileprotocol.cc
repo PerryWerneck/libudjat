@@ -51,7 +51,7 @@
 
 		switch(method) {
 		case URL::Method::Get:	// Get method, load the file.
-			response->set(File::Local(url.getDomainName()).c_str());
+			response->set(File::Text(url.getDomainName()).c_str());
 			break;
 
 		case URL::Method::Put:	// Put method, save the payload.

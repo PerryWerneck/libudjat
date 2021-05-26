@@ -43,7 +43,7 @@
 		Controller::getInstance().remove(this);
 	}
 
-	File::Watcher * File::Watcher::insert(void *id, const char *name, std::function<void (const Udjat::File::Local &)> callback) {
+	File::Watcher * File::Watcher::insert(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback) {
 		std::lock_guard<std::mutex> lock(guard);
 
 		Watcher * watcher =  Controller::getInstance().find(name);
@@ -55,7 +55,7 @@
 		return watcher;
 	}
 
-	File::Watcher * File::Watcher::insert(void *id, const Quark &name, std::function<void (const Udjat::File::Local &)> callback) {
+	File::Watcher * File::Watcher::insert(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback) {
 		std::lock_guard<std::mutex> lock(guard);
 
 		Watcher * watcher =  Controller::getInstance().find(name.c_str());
@@ -115,7 +115,7 @@
 
 				this->mtime = st.st_mtime;
 
-				Udjat::File::Local file(fd,st.st_size);
+				Udjat::File::Text file(fd,st.st_size);
 
 				for(auto f = files.begin(); f != files.end(); f++) {
 

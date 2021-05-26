@@ -45,9 +45,11 @@ static void test_file_agent() {
 
 static void test_file_load() {
 	cout << "------" << endl;
-	Udjat::File::Local("/proc/cpuinfo").forEach([](const string &line){
+
+	Udjat::File::Text("/proc/cpuinfo").forEach([](const string &line){
 		cout << line << endl;
 	});
+
 	cout << "------" << endl;
 }
 
@@ -178,8 +180,8 @@ int main(int argc, char **argv) {
 	*/
 
 
-	// test_file_load();
-	test_agent_parser();
+	test_file_load();
+	// test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();

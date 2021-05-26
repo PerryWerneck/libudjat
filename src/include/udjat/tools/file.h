@@ -33,9 +33,62 @@ namespace Udjat {
 
 		class Agent;
 
-		/// @brief Generic text file object (Don't use for large files).
-		class UDJAT_API Local {
+		/// @brief File Path.
+		class UDJAT_API Path {
 		private:
+			std::string value;
+
+		public:
+			Path(const char *v) : value{v} {
+			}
+
+			Path(int fd);
+
+			/// @brief Save file.
+			static void save(const char *filename, const char *contents);
+
+			/// @brief Save file.
+			/// @param filename File name.
+			inline void save(const char *contents) const {
+				save(value.c_str(),contents);
+			}
+
+		};
+
+		/// @brief Generic text file object (Don't use for large files).
+		class UDJAT_API Text : public Path {
+		private:
+			char *contents = nullptr;
+			bool mapped = false;
+			size_t length = 0;
+
+			void unload();
+			void load(int fd, ssize_t length = -1);
+
+		public:
+			Text(int fd, ssize_t length = -1);
+			Text(const char *filename);
+			~Text();
+
+			inline const char * c_str() const noexcept {
+				return this->contents;
+			}
+
+			void set(const char *contents);
+
+			static void forEach(const char *text, std::function<void (const std::string &line)> call);
+
+			inline void forEach(std::function<void (const std::string &line)> call) const {
+				forEach(contents,call);
+			}
+
+			void save() const;
+
+		};
+			/*
+		class UDJAT_API Text {
+		private:
+
 			void * contents = nullptr;	///< @brief File contents.
 			bool mapped = false;		///< @brief Is the file mmapped?
 			size_t length = 0;			///< @brief File length.
@@ -43,6 +96,7 @@ namespace Udjat {
 			void load(int fd);
 
 		public:
+
 			Local(int fd, ssize_t length = -1);
 			Local(const char *filename);
 			Local(const File::Agent &agent);
@@ -59,14 +113,22 @@ namespace Udjat {
 			/// @brief Set file contents.
 			void set(const char *contents);
 
+			/// @brief Load file.
+			void load(const char *filename = nullptr);
+
+			/// @brief Load file.
+			void load(int fd);
+
+			/// @brief Save file.
+			static void save(const char *filename, const char *contents);
+
 			/// @brief Save file.
 			/// @param filename File name.
 			void save(const char *filename = nullptr);
 
-			static void forEach(const char *text, std::function<void (const std::string &line)> call);
-			void forEach(std::function<void (const std::string &line)> call);
 
 		};
+			*/
 
 		/// @brief File watcher.
 		class UDJAT_API Watcher {
@@ -92,9 +154,9 @@ namespace Udjat {
 			/// @brief Text file watcher.
 			struct File {
 				void *id;
-				std::function<void (const Udjat::File::Local &file)> callback;
+				std::function<void (const Udjat::File::Text &file)> callback;
 
-				File(void *i, std::function<void (const Udjat::File::Local &)> c) : id(i), callback(c) {
+				File(void *i, std::function<void (const Udjat::File::Text &)> c) : id(i), callback(c) {
 				}
 
 			};
@@ -106,8 +168,8 @@ namespace Udjat {
 			void onChanged() noexcept;
 
 		public:
-			static Watcher * insert(void *id, const Quark &name, std::function<void (const Udjat::File::Local &)> callback);
-			static Watcher * insert(void *id, const char *name, std::function<void (const Udjat::File::Local &)> callback);
+			static Watcher * insert(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback);
+			static Watcher * insert(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback);
 
 			/// @brief Update all children (if necessary).
 			/// @return true if the update was done.
@@ -142,7 +204,7 @@ namespace Udjat {
 		protected:
 
 			/// @brief Called wihen the file changes.
-			virtual void set(const File::Local &file);
+			virtual void set(const File::Text &file);
 
 			/// @brief Called when the file changes.
 			/// @param The file contents.

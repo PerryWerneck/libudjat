@@ -40,7 +40,7 @@
 			this->separator = '=';
 	 	}
 
-		set(Udjat::File::Local(filename).c_str());
+		set(Udjat::File::Text(filename).c_str());
 	 }
 
 	 SysConfig::Value SysConfig::File::find(const char *key) const noexcept {
@@ -72,7 +72,7 @@
 
 		values.clear();
 
-		Udjat::File::Local::forEach(contents, [this,&value](const string &line) {
+		Udjat::File::Text::forEach(contents, [this,&value](const string &line) {
 
 			if(line[0] == '#') {
 
