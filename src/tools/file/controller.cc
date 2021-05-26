@@ -27,12 +27,12 @@
 
  namespace Udjat {
 
- 	File::Watcher::Controller & File::Watcher::Controller::getInstance() {
+ 	File::Controller & File::Controller::getInstance() {
 		static Controller instance;
 		return instance;
  	}
 
-	File::Watcher::Controller::Controller() {
+	File::Controller::Controller() {
 
 		cout << "inotify\tStarting service" << endl;
 
@@ -68,7 +68,7 @@
 
 	}
 
-	File::Watcher::Controller::~Controller() {
+	File::Controller::~Controller() {
 
 		cout << "inotify\tStopping service" << endl;
 
@@ -88,7 +88,7 @@
 
 	}
 
-	File::Watcher * File::Watcher::Controller::find(const char *name) {
+	File::Watcher * File::Controller::find(const char *name) {
 
 		if(!*name) {
 			throw system_error(EBUSY,system_category(),"Empty filename");
@@ -105,7 +105,7 @@
 
 	}
 
-	File::Watcher * File::Watcher::Controller::find(const Quark &name) {
+	File::Watcher * File::Controller::find(const Quark &name) {
 
 		if(!name) {
 			throw system_error(EBUSY,system_category(),"Empty filename");
@@ -122,7 +122,7 @@
 
 	}
 
-	void File::Watcher::Controller::insert(Watcher *watcher) {
+	void File::Controller::insert(Watcher *watcher) {
 
 		if(watcher->wd < 0) {
 
@@ -139,7 +139,7 @@
 
 	}
 
-	void File::Watcher::Controller::remove(Watcher *watcher) {
+	void File::Controller::remove(Watcher *watcher) {
 
 		if(watcher->wd > 0) {
 			if(inotify_rm_watch(instance, watcher->wd) == -1) {
@@ -157,7 +157,7 @@
 
 	}
 
-	void File::Watcher::Controller::onEvent(struct inotify_event *event) noexcept {
+	void File::Controller::onEvent(struct inotify_event *event) noexcept {
 
 		std::lock_guard<std::mutex> lock(Watcher::guard);
 

@@ -32,6 +32,7 @@ namespace Udjat {
 	namespace File {
 
 		class Agent;
+		class Controller;
 
 		/// @brief File Path.
 		class UDJAT_API Path {
@@ -85,56 +86,13 @@ namespace Udjat {
 			void save() const;
 
 		};
-			/*
-		class UDJAT_API Text {
-		private:
-
-			void * contents = nullptr;	///< @brief File contents.
-			bool mapped = false;		///< @brief Is the file mmapped?
-			size_t length = 0;			///< @brief File length.
-
-			void load(int fd);
-
-		public:
-
-			Local(int fd, ssize_t length = -1);
-			Local(const char *filename);
-			Local(const File::Agent &agent);
-			~Local();
-
-			inline size_t size() const noexcept {
-				return this->length;
-			}
-
-			inline const char * c_str() const noexcept {
-				return (const char *) contents;
-			}
-
-			/// @brief Set file contents.
-			void set(const char *contents);
-
-			/// @brief Load file.
-			void load(const char *filename = nullptr);
-
-			/// @brief Load file.
-			void load(int fd);
-
-			/// @brief Save file.
-			static void save(const char *filename, const char *contents);
-
-			/// @brief Save file.
-			/// @param filename File name.
-			void save(const char *filename = nullptr);
-
-
-		};
-			*/
 
 		/// @brief File watcher.
 		class UDJAT_API Watcher {
 		private:
 
 			static std::mutex guard;
+			friend class File::Controller;
 
 			int wd = -1;
 			Quark name;
@@ -144,9 +102,6 @@ namespace Udjat {
 
 			/// @brief True if all the children were updated.
 			bool updated = false;
-
-			class Controller;
-			friend class Controller;
 
 			Watcher(const Quark &name);
 			~Watcher();
@@ -168,8 +123,6 @@ namespace Udjat {
 			void onChanged() noexcept;
 
 		public:
-			static Watcher * insert(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback);
-			static Watcher * insert(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback);
 
 			/// @brief Update all children (if necessary).
 			/// @return true if the update was done.
@@ -181,7 +134,15 @@ namespace Udjat {
 				return name.c_str();
 			}
 
+			void push_back(void *id, std::function<void (const Udjat::File::Text &)> callback);
+
 		};
+
+		/// @brief Insert a file/folder watcher.
+		UDJAT_API Watcher * watch(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback);
+
+		/// @brief Insert a file/folder watcher.
+		UDJAT_API Watcher * watch(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback);
 
 		/// @brief Directory contents.
 		class UDJAT_API List : public std::list<std::string> {

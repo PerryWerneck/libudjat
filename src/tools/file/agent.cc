@@ -23,7 +23,7 @@ namespace Udjat {
 
 	File::Agent::Agent(const Quark &name) {
 
-		watcher = Watcher::insert(this, name, [this](const Udjat::File::Text &file) {
+		watcher = watch(this, name, [this](const Udjat::File::Text &file) {
 			this->set(file);
 		});
 
@@ -31,7 +31,7 @@ namespace Udjat {
 
 	File::Agent::Agent(const char *name) {
 
-		watcher = Watcher::insert(this, name, [this](const Udjat::File::Text &file) {
+		watcher = watch(this, name, [this](const Udjat::File::Text &file) {
 			this->set(file);
 		});
 

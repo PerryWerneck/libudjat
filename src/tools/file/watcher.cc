@@ -43,28 +43,20 @@
 		Controller::getInstance().remove(this);
 	}
 
-	File::Watcher * File::Watcher::insert(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback) {
-		std::lock_guard<std::mutex> lock(guard);
+	File::Watcher * File::watch(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback) {
 
 		Watcher * watcher =  Controller::getInstance().find(name);
-
-		File file(id,callback);
-		watcher->files.push_back(file);
-		watcher->updated = false;
-
+		watcher->push_back(id,callback);
 		return watcher;
+
 	}
 
-	File::Watcher * File::Watcher::insert(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback) {
-		std::lock_guard<std::mutex> lock(guard);
+	File::Watcher * File::watch(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback) {
 
 		Watcher * watcher =  Controller::getInstance().find(name.c_str());
-
-		File file(id,callback);
-		watcher->files.push_back(file);
-		watcher->updated = false;
-
+		watcher->push_back(id,callback);
 		return watcher;
+
 	}
 
 	void File::Watcher::remove(void *id) {
@@ -115,17 +107,21 @@
 
 				this->mtime = st.st_mtime;
 
-				Udjat::File::Text file(fd,st.st_size);
+				if(files.size()) {
 
-				for(auto f = files.begin(); f != files.end(); f++) {
+					Udjat::File::Text file(fd,st.st_size);
 
-					try {
+					for(auto f = files.begin(); f != files.end(); f++) {
 
-						f->callback(file);
+						try {
 
-					} catch(const exception &e) {
+							f->callback(file);
 
-						cerr << "inotify\tError '" << e.what() << "' updating file '" << this->name.c_str() << "'" << endl;
+						} catch(const exception &e) {
+
+							cerr << "inotify\tError '" << e.what() << "' updating file '" << this->name.c_str() << "'" << endl;
+
+						}
 
 					}
 
@@ -201,5 +197,14 @@
 		}
 
 	}
+
+	void File::Watcher::push_back(void *id, std::function<void (const Udjat::File::Text &)> callback) {
+
+		std::lock_guard<std::mutex> lock(guard);
+		File file(id,callback);
+		files.push_back(file);
+
+	}
+
 
  }

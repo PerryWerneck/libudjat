@@ -31,75 +31,32 @@ using namespace std;
 
 namespace Udjat {
 
-	class File::Watcher::Controller {
-	private:
-		Controller();
+	namespace File {
 
-		/// @brief Inotify instance.
-		int instance;
+		class Controller {
+		private:
+			Controller();
 
-		/// @brief Active watches
-		list<Watcher *> watchers;
+			/// @brief Inotify instance.
+			int instance;
 
-		void onEvent(struct inotify_event *event) noexcept;
+			/// @brief Active watches
+			list<Watcher *> watchers;
 
-	public:
-		static Controller & getInstance();
-		~Controller();
+			void onEvent(struct inotify_event *event) noexcept;
 
-		Watcher * find(const char *name);
-		Watcher * find(const Quark &name);
+		public:
+			static Controller & getInstance();
+			~Controller();
 
-		void insert(Watcher *watcher);
-		void remove(Watcher *watcher);
+			Watcher * find(const char *name);
+			Watcher * find(const Quark &name);
 
-	};
-
-	/*
-	class File::Agent::Controller {
-	private:
-
-		/// @brief Mutex to prevent multiple access to file list.
-		static recursive_mutex guard;
-
-		/// @brief Inotify instance.
-		int instance;
-
-		struct Watch {
-
-			/// @brief File path
-			Quark name;
-
-			/// @brief Inotify watch descriptor.
-			int wd;
-
-			/// @brief The files was modified?
-			int modified;
-
-			/// @brief Files
-			list<File::Agent *> files;
-
-			/// @brief Watch has event.
-			void onEvent(uint32_t mask) noexcept;
+			void insert(Watcher *watcher);
+			void remove(Watcher *watcher);
 
 		};
 
-		/// @brief Active watches
-		list<Watch> watches;
-
-		Controller();
-
-		void onEvent(struct inotify_event *event) noexcept;
-
-	public:
-		~Controller();
-
-		static Controller & getInstance();
-
-		void insert(File::Agent *file);
-		void remove(File::Agent *file);
-
-	};
-	*/
+	}
 
 }
