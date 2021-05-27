@@ -46,9 +46,14 @@ static void test_file_agent() {
 static void test_file_load() {
 	cout << "------" << endl;
 
+	/*
 	Udjat::File::Text("/proc/cpuinfo").forEach([](const string &line){
 		cout << line << endl;
 	});
+	*/
+
+	Udjat::File::Agent file("test.xml");
+	Udjat::run();
 
 	cout << "------" << endl;
 }
