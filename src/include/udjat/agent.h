@@ -292,7 +292,8 @@
 
 			bool assign(const char *value) override {
 				T new_value;
-				return set(convert(new_value,value));
+				to_value(value,new_value);
+				return set(new_value);
 			}
 
 			bool hasStates() const noexcept override {
@@ -384,7 +385,7 @@
 
 		};
 
-		///
+		/// @brief Boolean agent.
 		template <>
 		class UDJAT_API Agent<bool> : public Abstract::Agent {
 		private:

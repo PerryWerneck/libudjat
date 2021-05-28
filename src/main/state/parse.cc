@@ -36,5 +36,16 @@ namespace Udjat {
 		to = (unsigned short) node.attribute("to-value").as_uint(value);
 	}
 
+	void parse_range(const pugi::xml_node &node, float &from, float &to) {
+		float value = node.attribute("value").as_float();
+		from = node.attribute("from-value").as_float(value);
+		to = node.attribute("to-value").as_float(value);
+	}
+
+	void parse_range(const pugi::xml_node &node, double &from, double &to) {
+		double value = node.attribute("value").as_double();
+		from = node.attribute("from-value").as_double(value);
+		to = node.attribute("to-value").as_double(value);
+	}
 
 }

@@ -23,28 +23,36 @@
 
  namespace Udjat {
 
-	 inline int convert(int &value, const char *str) {
+	 inline int to_value(const char *str, int &value) {
 		return (value = std::stoi(str));
 	 }
 
-	 inline int convert(unsigned int &value, const char *str) {
+	 inline unsigned int to_value(const char *str, unsigned int &value) {
 		return (value = (unsigned int) std::stoul(str));
 	 }
 
-	 inline int convert(short &value, const char *str) {
+	 inline short to_value(const char *str, short &value) {
 		return (value = (short) std::stoi(str));
 	 }
 
-	 inline int convert(unsigned short &value, const char *str) {
+	 inline unsigned short to_value(const char *str, unsigned short &value) {
 		return (value = (unsigned short) std::stoi(str));
 	 }
 
-	 inline int convert(long &value, const char *str) {
+	 inline long to_value(const char *str, long &value) {
 		return (value = std::stol(str));
 	 }
 
-	 inline int convert(unsigned long &value, const char *str) {
+	 inline unsigned long to_value(const char *str, unsigned long &value) {
 		return (value = std::stoul(str));
+	 }
+
+	inline float to_value(const char *str, float &value) {
+		return (value = std::stof(str));
+	 }
+
+	inline double to_value(const char *str, double &value) {
+		return (value = std::stod(str));
 	 }
 
  }
