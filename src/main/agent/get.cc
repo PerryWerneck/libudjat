@@ -74,8 +74,6 @@
 		cout << "Getting agent '" << getName() << "'" << endl;
 #endif // DEBUG
 
-		setup(request,response);
-
 		// Get agent value
 		get( (Json::Value &) response, false, true);
 

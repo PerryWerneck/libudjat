@@ -92,6 +92,48 @@ namespace Udjat {
 		}
 	}
 
+	void Abstract::Agent::head(Response &response) {
+
+		chk4refresh(true);
+
+		time_t now = time(nullptr);
+
+		// Gets the minor time for the next update.
+		time_t next = now + Config::Value<time_t>("agent","max-update-time",600);
+
+		// Gets the major time from the last update.
+		time_t updated = 0;
+
+		foreach([&next,&updated](Agent &agent){
+
+			if(agent.update.next) {
+				next = std::min(next,agent.update.next);
+			}
+
+			if(agent.update.last) {
+
+				if(updated) {
+					updated = std::max(updated,agent.update.last);
+				} else {
+					updated = agent.update.last;
+				}
+			}
+
+		});
+
+		if(next > now) {
+			response.setExpirationTimestamp(next);
+		} else {
+			response.setExpirationTimestamp(0);
+		}
+
+		if(updated >= now) {
+			response.setModificationTimestamp(updated);
+		}
+
+	}
+
+	/*
 	Json::Value & Abstract::Agent::setup(const Request &request, Response &response) {
 
 		chk4refresh(true);
@@ -104,6 +146,7 @@ namespace Udjat {
 
 		return response;
 	}
+	*/
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"

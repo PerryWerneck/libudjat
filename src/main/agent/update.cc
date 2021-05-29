@@ -25,10 +25,9 @@ namespace Udjat {
 			update.running = time(nullptr);
 
 			if(update.timer) {
-				update.next = update.expires = (update.running + update.timer);
+				update.next = (update.running + update.timer);
 			} else {
-				update.next = 0;
-				update.expires = update.running + 10;	// TODO: Make it configurable.
+				update.next = update.running + 10;
 			}
 
 		} else {
@@ -44,7 +43,7 @@ namespace Udjat {
 	bool Abstract::Agent::chk4refresh(bool forward) {
 
 		// Return if update is running.
-		if(update.running || (update.expires && update.expires > time(nullptr)))
+		if(update.running)
 			return false;
 
 		if(!update.on_demand) {
@@ -107,18 +106,7 @@ namespace Udjat {
 		if(update.timer) {
 
 			// Has timer, use it
-			update.next = update.expires = (update.last + update.timer);
-
-		} else if(update.next > update.last) {
-
-			// No timer, but next is set and valid
-			update.expires = update.next;
-
-		} else {
-
-			// No timer, no next update, use default expiration time.
-			update.expires = update.running + 60;	// TODO: Make it configurable.
-			update.next = 0;
+			update.next = (update.last + update.timer);
 
 		}
 

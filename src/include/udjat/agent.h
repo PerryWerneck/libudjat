@@ -42,7 +42,7 @@
 
 				struct {
 					time_t last = 0;		///< @brief Timestamp of the last update.
-					time_t expires = 0;		///< @brief Is the current state valid?
+					//time_t expires = 0;		///< @brief Is the current state valid?
 					time_t next = 0;		///< @brief Timestamp of the next update.
 					time_t running = 0;		///< @brief Non zero if the update is running.
 					time_t timer = 0;		///< @brief Update time (0=No update).
@@ -111,10 +111,6 @@
 
 				/// @brief Find state from agent value.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
-
-				/// @brief Setup (adds cache and update information)
-				/// @return Node for value.
-				Json::Value & setup(const Request &request, Response &response);
 
 				/// @brief Set 'on-demand' option.
 				void setOndemand() noexcept;
@@ -208,6 +204,9 @@
 				inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
 					return children.end();
 				}
+
+				/// @brief Adds cache and update information to the response.
+				void head(Response &response);
 
 				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
 				virtual void get(const char *name, Json::Value &value);
