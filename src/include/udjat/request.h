@@ -73,15 +73,16 @@
 		};
 
 		class UDJAT_API Response : public Json::Value {
+		public:
 		protected:
 
 			/// @brief Expiration timestamp (For cache headers)
-			time_t expiration;
+			time_t expiration = 0;
 
 			/// @brief Timestamp of data.
-			time_t modification;
+			time_t modification = 0;
 
-			Response(const time_t expiration, const time_t modification);
+			/// @brief
 
 		public:
 
@@ -96,15 +97,43 @@
 		};
 
 		class UDJAT_API Request : public Json::Value {
+		public:
+			enum Type {
+				Get,		///< @brief Requests a representation of the specified resource; only retrieve data.
+				Head,		///< @brief Asks for a response identical to that of a GET without body.
+				Post,		///< @brief Submit an entity to the specified resource.
+				Put,		///< @brief Replace all current representations of the target resource.
+				Delete,		///< @brief Delete the specified resource.
+				Connect,	///< @brief Establishes a tunnel to the server identified by the target resource.
+				Options,	///< @brief Describe the communication options for the target resource.
+				Trace,		///< @brief Performs a message loop-back test along the path to the target resource.
+				Patch,		///< @brief Apply partial modifications to a resource.
+
+				Count		///< @brief Type count.
+			};
+
+			static const char *typeNames[Type::Count];
+
 		private:
 			std::string path;
+			Type type = Get;
 
 		public:
-			Request(const char *path);
-			Request(const std::string &path);
+			Request(const char *path, Type type = Get);
+			Request(const char *path, const char *type);
 
 			const char *c_str() const {
 				return path.c_str();
+			}
+
+			inline bool operator==(Request::Type) const noexcept {
+				return this->type == type;
+			}
+
+			Type as_type(const char *type);
+
+			inline Type as_type() const noexcept {
+				return type;
 			}
 
 			bool operator ==(const char *key) const noexcept;

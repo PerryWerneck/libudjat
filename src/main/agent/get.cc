@@ -69,14 +69,7 @@
 	}
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
-
-#ifdef DEBUG
-		cout << "Getting agent '" << getName() << "'" << endl;
-#endif // DEBUG
-
-		// Get agent value
 		get( (Json::Value &) response, false, true);
-
 	}
 
  }

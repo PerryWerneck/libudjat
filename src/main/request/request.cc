@@ -26,11 +26,37 @@
 
 namespace Udjat {
 
-	Request::Request(const char *p) : Json::Value(Json::objectValue), path(p) {
+	const char * Request::typeNames[Request::Type::Count] = {
+		"GET",
+		"HEAD",
+		"POST",
+		"PUT",
+		"DELETE",
+		"CONNECT",
+		"OPTIONS",
+		"TRACE",
+		"PATCH"
+	};
+
+	Request::Request(const char *p, Request::Type t) : Json::Value(Json::objectValue), path(p), type(t) {
 	}
 
-	Request::Request(const std::string &p) : Json::Value(Json::objectValue), path(p) {
+	Request::Request(const char *p, const char *t) : Json::Value(Json::objectValue), path(p), type(as_type(t)) {
 	}
+
+	Request::Type Request::as_type(const char *type) {
+
+		for(size_t ix = 0; ix < (sizeof(typeNames)/sizeof(typeNames[0]));ix++) {
+
+			if(!strcasecmp(type,typeNames[ix])) {
+				return (Request::Type) ix;
+			}
+
+		}
+
+		return Request::Get;
+	}
+
 
 	bool Request::operator ==(const char *key) const noexcept {
 

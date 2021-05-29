@@ -8,9 +8,7 @@
 
 namespace Udjat {
 
-	Response::Response(const time_t e, const time_t m) : Json::Value(Json::objectValue), expiration(e), modification(m) { }
-
-	Response::Response() : Response(0,0) { }
+	Response::Response() : Json::Value(Json::objectValue), expiration(0), modification(0) { }
 
 	void Response::setExpirationTimestamp(const time_t time) {
 
