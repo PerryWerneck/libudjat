@@ -36,6 +36,9 @@ namespace Udjat {
 		/// @brief Information about the worker module.
 		const ModuleInfo *info;
 
+		/// @brief Process only the 'get' method.
+		virtual void get(Request &request, Response &response) const;
+
 	public:
 		Worker(const char *name, const ModuleInfo *info);
 		Worker(const char *name);
@@ -59,7 +62,9 @@ namespace Udjat {
 
 		virtual ~Worker();
 
-		virtual bool work(Request &request, Response &response) const = 0;
+		/// @brief Process all methods.
+		/// @return true if the method was allowed.
+		virtual bool work(Request &request, Response &response) const;
 
 	};
 

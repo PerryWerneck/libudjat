@@ -54,6 +54,18 @@ namespace Udjat {
 
 	}
 
+	void Worker::get(Request &request, Response &response) const {
+		throw system_error(ENODATA,system_category(),"No 'get' method on this worker");
+	}
+
+	bool Worker:: work(Request &request, Response &response) const {
+		if(request == Request::Get) {
+			get(request,response);
+			return true;
+		}
+		return false;
+	}
+
 	size_t Worker::hash() const {
 
 		// https://stackoverflow.com/questions/7666509/hash-function-for-string
