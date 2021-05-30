@@ -52,8 +52,14 @@ static void test_file_load() {
 	});
 	*/
 
+	/*
 	Udjat::File::Agent file("test.xml");
 	Udjat::run();
+	*/
+
+	for(auto it : Udjat::File::Text("test.xml")) {
+		cout << it->c_str() << endl;
+	}
 
 	cout << "------" << endl;
 }
@@ -185,8 +191,8 @@ int main(int argc, char **argv) {
 	*/
 
 
-	// test_file_load();
-	test_agent_parser();
+	test_file_load();
+	// test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();

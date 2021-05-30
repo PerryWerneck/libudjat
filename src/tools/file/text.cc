@@ -154,6 +154,7 @@
 
 		contents = (char *) realloc(contents,length+1);
 		((char *) contents)[length] = 0;
+		this->length = length;
 
 	}
 
@@ -171,160 +172,65 @@
 
 	}
 
- /*
-	File::Local::Local(const char *path)  {
+	File::Text::Iterator & File::Text::Iterator::set(size_t offset) {
 
-		int fd = open(path,O_RDONLY);
-		if(fd < 0) {
-			throw system_error(errno, system_category(), (string{"Can't open '"} + path + "'"));
+		this->offset = offset;
+		if(this->offset >= this->length) {
+			this->value = "";
+			return *this;
 		}
 
-		try {
+		const char *from = (this->text + this->offset);
+		const char *to = strchr(from,'\n');
 
-			struct stat st;
-			if(fstat(fd, &st)) {
-				throw system_error(errno, system_category(), "Cant get file size");
-			}
-
-			this->length = st.st_size;
-
-			load(fd);
-
-		} catch(...) {
-
-			::close(fd);
-			throw;
-
-		}
-
-	}
-
-	File::Local::Local(int fd, ssize_t length) {
-
-		if(length < 0) {
-
-			struct stat st;
-			if(fstat(fd, &st)) {
-				throw system_error(errno, system_category(), "Can't get file size");
-			}
-
-			this->length = st.st_size;
-
+		if(to) {
+			value = string(from,to-from);
 		} else {
-
-			this->length = length;
-
+			value = string(from);
 		}
 
-		load(fd);
+		return *this;
+
 	}
 
-	void File::Local::load(int fd) {
+	File::Text::Iterator & File::Text::Iterator::operator++() {
 
-		if(length) {
+		const char * from = strchr((text+offset),'\n');
 
-			// Have the file length, use mmap.
-			this->mapped = true;
-			this->contents = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
-
-			if(contents == MAP_FAILED) {
-
-				if(errno == ENODEV) {
-					throw runtime_error("The underlying filesystem of the specified file does not support memory mapping.");
-				}
-
-				throw system_error(errno, system_category(), "Cant map file contents");
-			}
-
-		} else {
-
-			// No file length, uses the 'normal way'.
-			mapped = false;
-			ssize_t in;
-			size_t szBuffer = 4096;
-			length = 0;
-			contents = malloc(szBuffer);
-
-			char * ptr = (char *) contents;
-			while( (in = read(fd,ptr,szBuffer - length)) != 0) {
-
-				if(in < 0) {
-					throw system_error(errno, system_category(), "Cant read file");
-				}
-
-				if(in > 0) {
-					ptr += in;
-					length += in;
-					if(length >= (szBuffer - 20)) {
-						szBuffer += 4096;
-						contents = realloc(contents,szBuffer);
-						ptr = (char *) contents+length;
-					}
-				}
-
-			}
-
-			contents = (char *) realloc(contents,length+1);
-			((char *) contents)[length] = 0;
-
+		if(from) {
+			from++;
+			return set(from-text);
 		}
 
+		return set(length);
 	}
 
-	File::Local::Local(const File::Agent &agent) : Local(agent.c_str()) {
-	}
-
-	File::Local::~Local() {
-		if(mapped) {
-			munmap(contents,length);
-		} else {
-			free(contents);
-		}
-	}
-
-	void File::Local::forEach(std::function<void (const string &line)> call) {
-		forEach(c_str(),call);
-	}
-
-	void File::Local::set(const char *contents) {
-		if(mapped) {
-			munmap(this->contents,length);
-			mapped = false;
-		} else {
-			free(this->contents);
-		}
-
-		this->contents = strdup(contents);
-		this->length = strlen((const char *) this->contents);
-
+	File::Text::Iterator File::Text::Iterator::operator++(int) {
+		Iterator tmp = *this;
+		++(*this);
+		return tmp;
 	}
 
 
-	void File::Local::save(const char *filename) {
+	const File::Text::Iterator File::Text::begin() const noexcept {
 
-		// Not implemented.
-		if(!filename) {
-			throw system_error(ENOTSUP,system_category(),"Can't retrieve filename");
-		}
+		Iterator it;
+		it.text		= contents;
+		it.length	= length;
+		it.set(0);
 
-
-		save(filename, this->contents);
-
-		// Reload file.
-
-		if(mapped) {
-			// Unmap file; saving it will change contents.
-			munmap(this->contents,length);
-			mapped = false;
-			this->contents = nullptr;
-		}
-
+		return it;
 	}
 
-	void File::Local::save(const char *filename, const char *contents) {
+	const File::Text::Iterator File::Text::end() const noexcept {
 
+		Iterator it;
+		it.text		= contents;
+		it.length	= length;
+		it.set(length);
 
+		return it;
 	}
 
-*/
+
  }

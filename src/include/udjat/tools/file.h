@@ -67,6 +67,53 @@ namespace Udjat {
 			void load(int fd, ssize_t length = -1);
 
 		public:
+
+			class UDJAT_API Iterator {
+			private:
+				friend class Text;
+
+				/// @brief Pointer to text file contents.
+				const char *text;
+
+				/// @brief Text length;
+				size_t length;
+
+				/// @brief Current position in the text.
+				size_t	offset;
+
+				/// @brief Value of the current row;
+				std::string value;
+
+				Iterator & set(size_t offset);
+
+			public:
+				using iterator_category = std::forward_iterator_tag;
+				using value_type        = std::string;
+
+				const std::string * operator*() const {
+					return &value;
+				}
+
+				std::string * operator->() {
+					return &value;
+				}
+
+				// Prefix increment
+				Iterator& operator++();
+
+				// Postfix increment
+				Iterator operator++(int);
+
+				friend bool operator== (const Iterator& a, const Iterator& b) {
+					return a.offset == b.offset && a.text == b.text;
+				};
+
+				friend bool operator!= (const Iterator& a, const Iterator& b) {
+					return a.offset != b.offset || a.text != b.text;
+				};
+
+			};
+
 			Text(int fd, ssize_t length = -1);
 			Text(const char *filename);
 			~Text();
@@ -74,6 +121,9 @@ namespace Udjat {
 			inline const char * c_str() const noexcept {
 				return this->contents;
 			}
+
+			const Iterator begin() const noexcept;
+			const Iterator end() const noexcept;
 
 			void set(const char *contents);
 
