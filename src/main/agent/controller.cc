@@ -95,7 +95,10 @@ namespace Udjat {
 		return controller;
 	}
 
-	void Abstract::Agent::Controller::work(Request &request, Response &response) const {
+	bool Abstract::Agent::Controller::work(Request &request, Response &response) const {
+
+		if(!(request == Request::Get || request == Request::Head))
+			return false;
 
 		auto agent = find(request.c_str());
 
@@ -103,11 +106,14 @@ namespace Udjat {
 			throw system_error(ENOENT,system_category(),"Can't find requested agent");
 		}
 
-#ifdef DEBUG
-		cout << "Getting response for agent '" << agent->getName() << "'" << endl;
-#endif // DEBUG
+		// First get head to check for updates.
+		agent->head(response);
 
-		agent->get(request,response);
+		if(request == Request::Get) {
+			agent->get(request,response);
+		}
+
+		return true;
 
 	}
 

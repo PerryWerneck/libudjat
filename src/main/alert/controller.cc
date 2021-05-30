@@ -112,7 +112,10 @@
 		return instance;
 	}
 
-	void Alert::Controller::work(Request &request, Response &response) const {
+	bool Alert::Controller::work(Request &request, Response &response) const {
+
+		if(request != Request::Get)
+			return false;
 
 		Json::Value report(Json::arrayValue);
 
@@ -125,6 +128,8 @@
 		}
 
 		response["alerts"] = report;
+
+		return true;
 
 	}
 

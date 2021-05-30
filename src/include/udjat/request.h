@@ -82,7 +82,8 @@
 			/// @brief Timestamp of data.
 			time_t modification = 0;
 
-			/// @brief
+			/// @brief is the response valid?
+			bool valid = true;
 
 		public:
 

@@ -57,7 +57,7 @@
 
 		static string getType(const pugi::xml_node &node);
 
-		void work(Request &request, Response &response) const override;
+		bool work(Request &request, Response &response) const override;
 
 		void getInfo(Response &response);
 

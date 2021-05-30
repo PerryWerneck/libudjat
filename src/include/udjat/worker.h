@@ -46,7 +46,9 @@ namespace Udjat {
 		Worker(const Quark &name) : Worker(name.c_str()) {
 		}
 
-		static void work(const char *name, Request &request, Response &response);
+		/// @brief Execute request, update response
+		/// @return false if the request method was not allowed.
+		static bool work(const char *name, Request &request, Response &response);
 		static void getInfo(Response &response);
 
 		size_t hash() const;
@@ -57,7 +59,7 @@ namespace Udjat {
 
 		virtual ~Worker();
 
-		virtual void work(Request &request, Response &response) const = 0;
+		virtual bool work(Request &request, Response &response) const = 0;
 
 	};
 

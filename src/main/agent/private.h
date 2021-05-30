@@ -42,7 +42,7 @@ namespace Udjat {
 		std::shared_ptr<Abstract::Agent> get() const;
 		std::shared_ptr<Abstract::Agent> find(const char *path) const;
 
-		void work(Request &request, Response &response) const override;
+		bool work(Request &request, Response &response) const override;
 		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
 
 		void start() noexcept override;
