@@ -193,11 +193,6 @@
 				return value >= from && value <= to;
 			}
 
-			void get(Json::Value &value) const override {
-				Abstract::State::get(value);
-				value["value"] = this->from;
-			}
-
 			void push_back(std::shared_ptr<Alert> alert) {
 				alerts.push_back(alert);
 			}
@@ -230,11 +225,6 @@
 				return strcasecmp(this->value.c_str(),value.c_str()) == 0;
 			}
 
-			void get(Json::Value &value) const override {
-				Abstract::State::get(value);
-				value["value"] = this->value;
-			}
-
 			void push_back(std::shared_ptr<Alert> alert) {
 				alerts.push_back(alert);
 			}
@@ -264,11 +254,6 @@
 
 			bool compare(const bool value) {
 				return this->value == value;
-			}
-
-			void get(Json::Value &value) const override {
-				Abstract::State::get(value);
-				value["value"] = this->value;
 			}
 
 			void push_back(std::shared_ptr<Alert> alert) {
