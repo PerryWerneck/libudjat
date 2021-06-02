@@ -48,11 +48,15 @@
 		static bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node);
 		static bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node);
 
+		/// @brief Create agent by id.
+		virtual std::shared_ptr<Abstract::Agent> factory(const char *id) const;
+
 		/// @brief Create Agent child.
 		virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
 
 		/// @brief Create State child.
 		virtual void parse(Abstract::State &parent, const pugi::xml_node &node) const;
+
 
 	};
 

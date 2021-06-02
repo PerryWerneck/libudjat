@@ -27,6 +27,13 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
+	std::shared_ptr<Abstract::Agent> Factory::factory(const char *id) const {
+		throw system_error(ENOTSUP,system_category(),string{"Can't create agent '"} + this->name + "." + id + "'");
+	}
+	#pragma GCC diagnostic pop
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 		throw runtime_error(string{"Element '"} + node.name() + "' is invalid at this context");
 	}

@@ -15,7 +15,6 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
- #include <udjat/tools/sysconfig.h>
  #include <unistd.h>
 
  using namespace std;
@@ -131,44 +130,6 @@ namespace Udjat {
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(std::shared_ptr<Abstract::Agent> agent) {
 		Abstract::Agent::Controller::getInstance().set(agent);
 		return agent;
-	}
-
-	static std::shared_ptr<Abstract::Agent> getDefaultRootAgent() {
-
-		class Agent : public Abstract::Agent {
-		public:
-			Agent(const char *name) : Abstract::Agent(name) {
-				info("root agent was {}","created");
-				this->icon = "computer";
-				this->uri = Quark(string{"http://"} + name).c_str();
-
-				try {
-
-					SysConfig::File osrelease("/etc/os-release","=");
-
-					this->label = Quark(osrelease["PRETTY_NAME"]).c_str();
-
-				} catch(const std::exception &e) {
-
-					cerr << "agent\tCan't read system release file: " << e.what() << endl;
-
-				}
-			}
-
-			virtual ~Agent() {
-				info("root agent was {}","destroyed");
-			}
-
-		};
-
-		char hostname[255];
-		if(gethostname(hostname, 255)) {
-			cerr << "Error '" << strerror(errno) << "' getting hostname" << endl;
-			strncpy(hostname,PACKAGE_NAME,255);
-		}
-
-		return make_shared<Agent>(Quark(hostname).c_str());
-
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::init() {

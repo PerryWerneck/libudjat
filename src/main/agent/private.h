@@ -21,6 +21,8 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> get_default_state();
 
+	std::shared_ptr<Abstract::Agent> getDefaultRootAgent();
+
 	class Abstract::Agent::Controller : private Worker, Factory, MainLoop::Service {
 	private:
 

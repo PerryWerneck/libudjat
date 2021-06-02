@@ -146,6 +146,11 @@
 				/// @brief Deinitialize agent subsystem.
 				static void deinit();
 
+				/// @brief Get update timer interval.
+				inline time_t getUpdateInterval() const noexcept {
+					return update.timer;
+				}
+
 				/// @brief true if the agent has states.
 				virtual bool hasStates() const noexcept;
 
