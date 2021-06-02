@@ -18,8 +18,10 @@
  */
 
  #include "private.h"
+ #include <sys/utsname.h>
  #include <udjat/factory.h>
  #include <udjat/tools/sysconfig.h>
+ #include <cstring>
 
  namespace Udjat {
 
@@ -34,13 +36,29 @@
 				this->uri = Quark(string{"http://"} + name).c_str();
 
 				//
+				// Get UNAME
+				//
+				struct utsname uts;
+
+				if(uname(&uts) < 0) {
+					memset(&uts,0,sizeof(uts));
+					clog << getName() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
+				}
+
+				//
 				// Get OS information
 				//
 				try {
 
 					SysConfig::File osrelease("/etc/os-release","=");
 
-					this->label = Quark(osrelease["PRETTY_NAME"]).c_str();
+					string label = osrelease["PRETTY_NAME"].value;
+					if(uts.machine[0]) {
+						label += " ";
+						label += uts.machine;
+					}
+
+					this->label = Quark(label).c_str();
 
 				} catch(const std::exception &e) {
 
@@ -84,6 +102,18 @@
 
 			virtual ~Agent() {
 				info("root agent was {}","destroyed");
+			}
+
+			void get(const Request &request, Response &response) override {
+
+				Abstract::Agent::get(request,response);
+
+				struct utsname uts;
+
+				if(uname(&uts) >= 0) {
+					response["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
+				}
+
 			}
 
 		};
