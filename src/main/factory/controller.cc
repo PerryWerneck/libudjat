@@ -41,6 +41,18 @@ namespace Udjat {
 
 	}
 
+
+	const Factory * Factory::Controller::find(const char *name) {
+		lock_guard<recursive_mutex> lock(guard);
+
+		auto entry = factories.find(name);
+		if(entry == factories.end()) {
+			throw system_error(ENOENT,system_category(),string{"Cant find factory '"} + name + "'");
+		}
+
+		return entry->second;
+	}
+
 	void Factory::Controller::remove(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
 

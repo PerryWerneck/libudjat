@@ -33,6 +33,9 @@
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
 
+				//
+				// Get OS information
+				//
 				try {
 
 					SysConfig::File osrelease("/etc/os-release","=");
@@ -41,9 +44,42 @@
 
 				} catch(const std::exception &e) {
 
-					cerr << "agent\tCan't read system release file: " << e.what() << endl;
+					error("Error '{}' reading system release file",e.what());
 
 				}
+
+				//
+				// Get machine information
+				//
+				try {
+
+					static const char *ids[] = {
+						"dmi.1.0.1",
+						"dmi.1.0.2"
+					};
+
+					string id;
+
+					for(size_t ix = 0; ix < (sizeof(ids)/sizeof(ids[0])); ix++) {
+
+						if(!id.empty()) {
+							id += " ";
+						}
+
+						id += Factory::get(ids[ix])->to_string();
+
+					}
+
+					if(!id.empty()) {
+						this->summary = Quark(id).c_str();
+					}
+
+				} catch(const std::exception &e) {
+
+					warning("Error '{}' getting DMI information",e.what());
+
+				}
+
 			}
 
 			virtual ~Agent() {

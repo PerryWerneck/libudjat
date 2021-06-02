@@ -38,6 +38,10 @@
 		Factory(const char *name);
 		Factory(const char *name, const ModuleInfo *info);
 
+		inline const char * getName() const {
+			return name;
+		}
+
 		Factory(const Quark &name, const ModuleInfo *info) : Factory(name.c_str(),info) {
 		}
 
@@ -50,6 +54,9 @@
 
 		/// @brief Create agent by id.
 		virtual std::shared_ptr<Abstract::Agent> factory(const char *id) const;
+
+		/// @brief Create agent by id.
+		static std::shared_ptr<Abstract::Agent> get(const char *id);
 
 		/// @brief Create Agent child.
 		virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const;

@@ -69,6 +69,8 @@
 		bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const;
 		bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const;
 
+		const Factory * find(const char *name);
+
 		void getInfo(Response &response);
 
 		void insert(const Factory *factory);

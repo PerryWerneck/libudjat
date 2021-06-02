@@ -54,4 +54,17 @@ namespace Udjat {
 		return Controller::getInstance().parse(name,parent,node);
 	}
 
+	std::shared_ptr<Abstract::Agent> Factory::get(const char *id) {
+
+		const char * key = strchr(id,'.');
+
+		if(!key) {
+			throw system_error(EINVAL,system_category(),"Agent identifier should be in the formato [FACTORY].id");
+		}
+
+		auto factory = Controller::getInstance().find(string(id,key-id).c_str());
+		return factory->factory(key+1);
+
+	}
+
 }
