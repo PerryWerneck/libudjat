@@ -157,8 +157,11 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
 
-		// Default method should return the current state with no change.
-		return this->state;
+		// Default method should return the current state, if available, with no change.
+		if(this->state)
+			return this->state;
+
+		return get_default_state();
 
 	}
 

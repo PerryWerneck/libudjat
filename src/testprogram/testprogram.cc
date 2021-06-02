@@ -191,8 +191,8 @@ int main(int argc, char **argv) {
 	*/
 
 
-	test_file_load();
-	// test_agent_parser();
+	// test_file_load();
+	test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();

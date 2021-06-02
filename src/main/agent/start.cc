@@ -47,6 +47,9 @@
 		// Update agent state.
 		{
 			this->state = find_state();
+			if(!this->state) {
+				this->state = get_default_state();
+			}
 
 			// Check for children state
 			{
