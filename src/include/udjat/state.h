@@ -31,6 +31,8 @@
 		void parse_range(const pugi::xml_node &node, unsigned short &from, unsigned short &to);
 		void parse_range(const pugi::xml_node &node, float &from, float &to);
 		void parse_range(const pugi::xml_node &node, double &from, double &to);
+		void parse_range(const pugi::xml_node &node, unsigned long &from, unsigned long &to);
+		void parse_range(const pugi::xml_node &node, long &from, long &to);
 
 		/// @brief Alert/state level.
 		// TODO: Convert to class.
