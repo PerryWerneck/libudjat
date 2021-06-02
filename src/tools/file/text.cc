@@ -122,10 +122,6 @@
 
 		}
 
-#ifdef DEBUG
-		cout << "file\tLoading file" << endl;
-#endif // DEBUG
-
 		// Try to load the file.
 		mapped = false;
 		ssize_t in;
