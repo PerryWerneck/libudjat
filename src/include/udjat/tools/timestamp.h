@@ -47,9 +47,15 @@
 				return *this;
 			}
 
+			TimeStamp & set(const char *time, const char *format = nullptr);
+
 			TimeStamp & operator=(const time_t t) noexcept {
 				value = t;
 				return *this;
+			}
+
+			TimeStamp & operator=(const char *time) {
+				return set(time);
 			}
 
 			bool operator==(time_t value) const noexcept {

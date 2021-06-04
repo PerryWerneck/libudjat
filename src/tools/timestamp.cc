@@ -20,23 +20,71 @@
 
 #include <cstring>
 #include <udjat/tools/timestamp.h>
+#include <iostream>
 
 using namespace std;
 
-std::string Udjat::TimeStamp::to_string(const char *format) const noexcept {
+namespace Udjat {
 
-	if(!value)
-		return "";
+	std::string TimeStamp::to_string(const char *format) const noexcept {
 
-	char timestamp[80];
-	memset(timestamp,0,sizeof(timestamp));
+		if(!value)
+			return "";
 
-	struct tm tm;
+		char timestamp[80];
+		memset(timestamp,0,sizeof(timestamp));
 
-	memcpy(&tm,localtime(&value),sizeof(tm));
-	strftime(timestamp, 79, format, &tm);
+		struct tm tm;
 
-	return std::string(timestamp);
+		memcpy(&tm,localtime(&value),sizeof(tm));
+		strftime(timestamp, 79, format, &tm);
+
+		return std::string(timestamp);
+	}
+
+	TimeStamp & TimeStamp::set(const char *time, const char *format) {
+
+		struct tm t;
+
+		if(format && *format) {
+
+			// Have format, use-it
+
+			if(!strptime(time, format, &t)) {
+				throw runtime_error(string{"Can't parse '"} + time + "' in the requested format");
+			}
+
+		} else {
+
+			// Dont have format, try known ones.
+
+			static const char *formats[] = {
+				"%Y-%m-%d %T",
+				"%y-%m-%d %T",
+				"%x %X",
+			};
+
+			bool found = false;
+			for(size_t ix = 0; ix < (sizeof(formats)/sizeof(formats[0])); ix++) {
+				if(strptime(time,formats[ix],&t)) {
+					found = true;
+					break;
+				}
+			}
+
+			if(!found) {
+				throw runtime_error(string{"Can't parse '"} + time + "' in any known format");
+			}
+
+		}
+
+#ifdef DEBUG
+		cout << "day=" << t.tm_mday << " month=" << t.tm_mon << " Year=" << t.tm_year << endl;
+#endif // DEBUG
+
+		this->value = mktime(&t);
+
+		return *this;
+	}
+
 }
-
-

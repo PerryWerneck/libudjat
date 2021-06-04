@@ -192,27 +192,10 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	test_agent_parser();
+	// test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();
-
-	/*
-
-	//test_agent_parser();
-
-	// Udjat::run();
-
-	{
-		Response rsp;
-
-		auto root_agent = Abstract::Agent::set_root(make_shared<Abstract::Agent>("root","System","Application"));
-
-		Worker::getInfo(rsp);
-
-		cout << rsp.toStyledString() << endl;
-	}
-	*/
 
 	/*
 	{
@@ -222,6 +205,15 @@ int main(int argc, char **argv) {
 		url.assign("http://www.google.com/udjaturl/test?xxx");
 	}
 	*/
+
+	{
+		TimeStamp t;
+
+		t = "2021-01-02 03:04:05";
+
+		cout << "-------------------" << endl << t << endl << "------------------------" << endl;
+
+	}
 
 	Module::unload();
 
