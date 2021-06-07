@@ -15,19 +15,11 @@
 namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,
-		"Basic agent state builder",
-		PACKAGE_VERSION "." PACKAGE_RELEASE,
-#ifdef PACKAGE_URL
-		PACKAGE_URL,
-#else
-		"",
-#endif // PACKAGE_URL
-#ifdef PACKAGE_BUG_REPORT
-		PACKAGE_BUG_REPORT
-#else
-		""
-#endif // PACKAGE_BUG_REPORT
+		PACKAGE_NAME,									// The module name.
+		"State controller",			 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
 
 	std::shared_ptr<Abstract::State> get_default_state() {

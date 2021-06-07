@@ -6,7 +6,7 @@ AC_PREREQ(2.59)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat], [1.0], [perry.werneck@gmail.com])
+AC_INIT([libudjat], [1.0], [perry.werneck@gmail.com], [libudjat], [https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -38,29 +38,26 @@ dnl ---------------------------------------------------------------------------
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
 
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major)
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor)
-
-AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
-AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
-
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
 
-AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product)
+AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product,[The product name])
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
 
 app_cv_title="The Eye of Horus"
-AC_DEFINE_UNQUOTED(PRODUCT_TITLE,"$app_cv_title")
+AC_DEFINE_UNQUOTED(PRODUCT_TITLE,"$app_cv_title",[The product title])
 AC_SUBST(PRODUCT_TITLE,"$app_cv_title")
 
 AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="0.0" ])
 
-app_rls_major=$(echo $app_cv_release.0.0 | cut -d. -f1)
-app_rls_minor=$(echo $app_cv_release.0.0 | cut -d. -f2)
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major, [The module major version])
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor, [The module minor version])
 
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major)
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor)
-AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, "$app_cv_release")
+AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
+AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
+
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major, [The library major version])
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor, [The library minor version])
+AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, "$app_cv_release", [The library release])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
@@ -220,25 +217,16 @@ PKG_CHECK_EXISTS
 dnl ---------------------------------------------------------------------------
 dnl Check for econf
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES( [ECONF], [libeconf], AC_DEFINE(HAVE_ECONF), AC_MSG_NOTICE([libeconf not present.]) )
+PKG_CHECK_MODULES( [ECONF], [libeconf], AC_DEFINE(HAVE_ECONF,[],[Do we have econf?]), AC_MSG_NOTICE([libeconf not present.]) )
 
 AC_SUBST(ECONF_LIBS)
 AC_SUBST(ECONF_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
-dnl Check for D-Bus support
-dnl ---------------------------------------------------------------------------
-
-PKG_CHECK_MODULES( [DBUS], [dbus-1], AC_DEFINE(HAVE_DBUS), AC_MSG_NOTICE([ No DBUS support.]) )
-
-AC_SUBST(DBUS_LIBS)
-AC_SUBST(DBUS_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
 dnl systemd integration
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES( [SYSTEMD], [libsystemd], AC_DEFINE(HAVE_SYSTEMD), AC_MSG_NOTICE([libsystemd not present.]) )
+PKG_CHECK_MODULES( [SYSTEMD], [libsystemd], AC_DEFINE(HAVE_SYSTEMD,[],[Do we have systemd?]), AC_MSG_NOTICE([libsystemd not present.]) )
 AC_SUBST(SYSTEMD_CFLAGS)
 AC_SUBST(SYSTEMD_LIBS)
 
@@ -246,24 +234,15 @@ dnl ---------------------------------------------------------------------------
 dnl test for pugixml
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES(PUGIXML, pugixml, AC_DEFINE(HAVE_PUGIXML),AC_MSG_ERROR(pugixml is required))
+PKG_CHECK_MODULES(PUGIXML, pugixml, AC_DEFINE(HAVE_PUGIXML,[],[Do we have PUGIXML?]),AC_MSG_ERROR(pugixml is required))
 
 AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
-dnl Test for civetweb
-dnl ---------------------------------------------------------------------------
-
-AC_CHECK_HEADER(civetweb.h, [
-	AC_DEFINE(HAVE_CIVETWEB)
-	LIBS="$LIBS -lcivetweb"
-])
-
-dnl ---------------------------------------------------------------------------
 dnl Test for jsoncpp
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES( [JSONCPP], [jsoncpp], AC_DEFINE(HAVE_JSONCPP), AC_MSG_ERROR([libjsoncpp not present.]) )
+PKG_CHECK_MODULES( [JSONCPP], [jsoncpp], AC_DEFINE(HAVE_JSONCPP,[],[Do we have JSONCPP?]), AC_MSG_ERROR([libjsoncpp not present.]) )
 
 AC_SUBST(JSONCPP_LIBS)
 AC_SUBST(JSONCPP_CFLAGS)

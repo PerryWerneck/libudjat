@@ -81,7 +81,6 @@ CFLAGS= \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	-DPLUGIN_DIR=$(libdir)/$(PRODUCT_NAME)-modules \
 	@ECONF_CFLAGS@ \
-	@DBUS_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@JSONCPP_CFLAGS@
 
@@ -92,7 +91,6 @@ LIBS= \
 	@LIBS@ \
 	@LIBICONV@ \
 	@ECONF_LIBS@ \
-	@DBUS_LIBS@ \
 	@PUGIXML_LIBS@ \
 	@JSONCPP_LIBS@
 

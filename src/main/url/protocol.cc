@@ -22,14 +22,6 @@
 
  namespace Udjat {
 
-	/*
-	URL::Protocol::Protocol(const Quark &protocol, const Quark &pn) : name(protocol), portname(pn) {
-		static const ModuleInfo info;
-		this->info = &info;
-		cout << name << "\tProtocol registered using service '" << portname << "'" << endl;
-	}
-	*/
-
 	URL::Protocol::~Protocol() {
 		cout << name << "\tProtocol unregistered" << endl;
 	}

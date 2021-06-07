@@ -22,6 +22,7 @@
  #include <udjat/factory.h>
  #include <udjat/tools/sysconfig.h>
  #include <cstring>
+ #include <unistd.h>
 
  namespace Udjat {
 

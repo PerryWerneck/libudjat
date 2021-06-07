@@ -28,19 +28,11 @@
 
 	/// @brief Default Alert Factory.
 	static const Udjat::ModuleInfo alertmoduleinfo {
-		PACKAGE_NAME,								// The module name.
-		"Default alert Factory",					// The module description.
-		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
-#ifdef PACKAGE_URL
-		PACKAGE_URL,
-#else
-		"",
-#endif // PACKAGE_URL
-#ifdef PACKAGE_BUG_REPORT
-		PACKAGE_BUG_REPORT
-#else
-		""
-#endif // PACKAGE_BUG_REPORT
+		PACKAGE_NAME,									// The module name.
+		"Default alert factory",	 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
 
 	class AlertFactory : public Factory {
@@ -89,19 +81,11 @@
 
 	/// @brief URL Alert Factory.
 	static const Udjat::ModuleInfo urlmoduleinfo {
-		PACKAGE_NAME,								// The module name.
-		"URL Based alert Factory",					// The module description.
-		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
-#ifdef PACKAGE_URL
-		PACKAGE_URL,
-#else
-		"",
-#endif // PACKAGE_URL
-#ifdef PACKAGE_BUG_REPORT
-		PACKAGE_BUG_REPORT
-#else
-		""
-#endif // PACKAGE_BUG_REPORT
+		PACKAGE_NAME,									// The module name.
+		"URL alert factory",	 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
 
 	class URLAlertFactory : public Factory {
@@ -124,19 +108,11 @@
 
 	/// @brief Script Alert Factory
 	static const Udjat::ModuleInfo scriptmoduleinfo{
-		PACKAGE_NAME,								// The module name.
-		"Script Based alert Factory",				// The module description.
-		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
-#ifdef PACKAGE_URL
-		PACKAGE_URL,
-#else
-		"",
-#endif // PACKAGE_URL
-#ifdef PACKAGE_BUG_REPORT
-		PACKAGE_BUG_REPORT
-#else
-		""
-#endif // PACKAGE_BUG_REPORT
+		PACKAGE_NAME,									// The module name.
+		"Script alert factory",	 						// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
 
 	class ScriptAlertFactory : public Factory {

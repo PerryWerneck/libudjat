@@ -1,72 +1,79 @@
-///
-/// @file config.h
-///
-/// @brief Configuração para o aplicativo.
-///
-/// Gerado automaticamente pelo processo ./configure esse arquivo descreve
-/// as configurações de ambiente detectadas automaticamente.
-///
-/// @author perry.werneck@gmail.com
-///
-///
+/* src/include/config.h.in.  Generated from configure.ac by autoheader.  */
 
-#ifndef CONFIG_H_INCLUDED
+/* Do we have econf? */
+#undef HAVE_ECONF
 
-	#define CONFIG_H_INCLUDED 1
+/* Define to 1 if you have the `eventfd' function. */
+#undef HAVE_EVENTFD
 
-	/// @brief Nome do pacote.
-	#undef PACKAGE_NAME @PACKAGE_NAME@
+/* supports GCC visibility attributes */
+#undef HAVE_GNUC_VISIBILITY
 
-	/// @brief The product name
-	#undef PRODUCT_NAME
+/* Define if you have the iconv() function and it works. */
+#undef HAVE_ICONV
 
-	/// @brief Product title
-	#undef PRODUCT_TITLE
+/* Do we have JSONCPP? */
+#undef HAVE_JSONCPP
 
-	/// @brief Bug Report
-	#undef PACKAGE_BUG_REPORT
+/* Define to 1 if you have the `poll' function. */
+#undef HAVE_POLL
 
-	/// @brief Versão atual.
-	#undef PACKAGE_VERSION
+/* Do we have PUGIXML? */
+#undef HAVE_PUGIXML
 
-	#undef PACKAGE_MAJOR_RELEASE
-	#undef PACKAGE_MINOR_RELEASE
-	#undef PACKAGE_RELEASE
+/* Define to 1 if you have the `sendfile' function. */
+#undef HAVE_SENDFILE
 
-	/// @brief Indica se o compilador atual possui suporte a "visibility"
-	#undef HAVE_GNUC_VISIBILITY
+/* Define to 1 if you have the `signal' function. */
+#undef HAVE_SIGNAL
 
-	/// @brief Define to 1 if the system has getopt()
-	#undef HAVE_GETOPT
+/* Do we have systemd? */
+#undef HAVE_SYSTEMD
 
-	/// @brief Does the system have intl?
-	#undef HAVE_INTL
+/* Define as const if the declaration of iconv() needs const. */
+#undef ICONV_CONST
 
-	/// @brief Does the system have systemd?
-	#undef HAVE_SYSTEMD
+/* Name of package */
+#undef PACKAGE
 
-	/// @brief Defined on most unixes
-	#undef HAVE_UNISTD_H
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
 
-	/// @brief Does the system have the civetweb http server library?
-	#undef HAVE_CIVETWEB
+/* The library major version */
+#undef PACKAGE_MAJOR_RELEASE
 
-	/// @brief Is kernel sendfile available?
-	#undef HAVE_SENDFILE
+/* The module major version */
+#undef PACKAGE_MAJOR_VERSION
 
-	/// @brief Define if poll is available in <poll.h>.
-	#undef HAVE_POLL
+/* The library minor version */
+#undef PACKAGE_MINOR_RELEASE
 
-	/// @brief Define to 1 if you have the `eventfd' function.
-	#undef HAVE_EVENTFD
+/* The module minor version */
+#undef PACKAGE_MINOR_VERSION
 
-	/// @brief Define to 1 if signal is available
-	#undef HAVE_SIGNAL
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
 
-    /// @brief Define to 1 if pugixml is available.
-    #undef HAVE_PUGIXML
+/* The library release */
+#undef PACKAGE_RELEASE
 
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
 
-#endif // CONFIG_H_INCLUDED
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
 
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
 
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* The product name */
+#undef PRODUCT_NAME
+
+/* The product title */
+#undef PRODUCT_TITLE
+
+/* Version number of package */
+#undef VERSION

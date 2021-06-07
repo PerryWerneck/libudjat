@@ -17,12 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
  #include <udjat/tools/file.h>
 
  namespace Udjat {
 
-	static const ModuleInfo fileprotocolinfo;
+	static const ModuleInfo fileprotocolinfo {
+		PACKAGE_NAME,									// The module name.
+		"File protocol module",	 						// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
 
 	URL::Controller::FileProtocol::FileProtocol() : URL::Protocol{"file", "", &fileprotocolinfo} {
 	}
