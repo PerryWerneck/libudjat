@@ -14,42 +14,6 @@
 
 namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"State controller",			 					// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
-
-	std::shared_ptr<Abstract::State> get_default_state() {
-
-		class DefaultState : public Abstract::State, Factory {
-		public:
-
-			DefaultState() : Abstract::State(""), Factory("state", &moduleinfo) {
-			}
-
-			~DefaultState() {
-			}
-
-			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
-
-#ifdef DEBUG
-				cout << "Parsing state 'default' for agent '" << agent.getName() << "'" << endl;
-#endif // DEBUG
-
-				agent.append_state(node);
-
-			}
-
-		};
-
-		static shared_ptr<Abstract::State> state(new DefaultState());
-		return state;
-
-	}
-
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const char *summary, const std::exception &e) noexcept {
 
@@ -92,18 +56,14 @@ namespace Udjat {
 
 		try {
 
-			/// @brief State needs activation?
-			bool need_activation = true;
-
 			// Compute my current state based on value.
-			auto state = find_state();
+			auto state = stateFromValue();
 
 			// Then check the children.
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
 					if(child->getLevel() > state->getLevel()) {
-						need_activation = false;	// A child state, was already activated.
 						state = child->getState();
 					}
 				}

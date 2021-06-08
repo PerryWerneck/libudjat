@@ -39,7 +39,7 @@ namespace Udjat {
 
 	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name) {
 
-		state.active = get_default_state();
+		state.active = Abstract::Agent::stateFromValue();
 
 		try {
 
@@ -157,8 +157,35 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
-		return get_default_state();
+	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
+
+		static const Udjat::ModuleInfo moduleinfo {
+			PACKAGE_NAME,									// The module name.
+			"State factory",			 					// The module description.
+			PACKAGE_VERSION, 								// The module version.
+			PACKAGE_URL, 									// The package URL.
+			PACKAGE_BUGREPORT 								// The bugreport address.
+		};
+
+			class DefaultState : public Abstract::State, Factory {
+		public:
+
+			DefaultState() : Abstract::State(""), Factory("state", &moduleinfo) {
+			}
+
+			~DefaultState() {
+			}
+
+			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
+				agent.append_state(node);
+			}
+
+		};
+
+		static shared_ptr<Abstract::State> state(new DefaultState());
+
+		return state;
+
 	}
 
 }

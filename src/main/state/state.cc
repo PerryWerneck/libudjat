@@ -62,9 +62,12 @@ namespace Udjat {
 
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::State::push_back(std::shared_ptr<Alert> alert) {
 		throw system_error(EINVAL,system_category(),string{"State '"} + name + "' is unable to manage agents");
 	}
+	#pragma GCC diagnostic pop
 
 	Abstract::State::~State() {
 

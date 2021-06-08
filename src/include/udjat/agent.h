@@ -117,7 +117,7 @@
 
 				/// @brief Compute state from agent value.
 				/// @return Computed state or the default one if agents has no state table.
-				virtual std::shared_ptr<Abstract::State> find_state() const;
+				virtual std::shared_ptr<Abstract::State> stateFromValue() const;
 
 				/// @brief Set 'on-demand' option.
 				void setOndemand() noexcept;
@@ -266,12 +266,12 @@
 
 		protected:
 
-			std::shared_ptr<Abstract::State> find_state() const override {
+			std::shared_ptr<Abstract::State> stateFromValue() const override {
 				for(auto state : states) {
 					if(state->compare(this->value))
 						return state;
 				}
-				return Abstract::Agent::find_state();
+				return Abstract::Agent::stateFromValue();
 			}
 
 			void get(const char *name, Json::Value &value) override {
@@ -339,12 +339,12 @@
 
 		protected:
 
-			std::shared_ptr<Abstract::State> find_state() const override {
+			std::shared_ptr<Abstract::State> stateFromValue() const override {
 				for(auto state : states) {
 					if(state->compare(this->value))
 						return state;
 				}
-				return Abstract::Agent::find_state();
+				return Abstract::Agent::stateFromValue();
 			}
 
 			void get(const char *name, Json::Value &value) override {
@@ -414,12 +414,12 @@
 
 		protected:
 
-			std::shared_ptr<Abstract::State> find_state() const override {
+			std::shared_ptr<Abstract::State> stateFromValue() const override {
 				for(auto state : states) {
 					if(state->compare(this->value))
 						return state;
 				}
-				return Abstract::Agent::find_state();
+				return Abstract::Agent::stateFromValue();
 			}
 
 			/// @brief Insert state.

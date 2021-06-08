@@ -46,9 +46,10 @@
 
 		// Update agent state.
 		{
-			this->state.active = find_state();
+			this->state.active = stateFromValue();
 			if(!this->state.active) {
-				this->state.active = get_default_state();
+				cerr << getName() << "\tGot an invalid state, switching to the default one" << endl;
+				this->state.active = Abstract::Agent::stateFromValue();
 			}
 
 			// Check for children state

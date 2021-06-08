@@ -122,7 +122,7 @@ namespace Udjat {
 		try {
 
 			// First get state for current agent value.
-			auto new_state = find_state();
+			auto new_state = stateFromValue();
 
 			// Does any children has worst state? if yes; use-it.
 			{

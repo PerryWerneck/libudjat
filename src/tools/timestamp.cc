@@ -45,6 +45,7 @@ namespace Udjat {
 	TimeStamp & TimeStamp::set(const char *time, const char *format) {
 
 		struct tm t;
+		memset(&t,0,sizeof(t));
 
 		if(format && *format) {
 
