@@ -93,7 +93,7 @@
 
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.
-				bool activate(std::shared_ptr<State> state) noexcept;
+				virtual bool activate(std::shared_ptr<State> state) noexcept;
 
 				/// @brief Set failed state from known exception
 				void failed(const char *summary, const std::exception &e) noexcept;

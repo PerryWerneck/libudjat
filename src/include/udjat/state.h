@@ -142,10 +142,6 @@
 
 				virtual void push_back(std::shared_ptr<Alert> alert);
 
-				//inline void push_back(std::shared_ptr<Alert> alert) {
-				//	alerts.push_back(alert);
-				//}
-
 				inline Level getLevel() const {
 					return this->level;
 				}

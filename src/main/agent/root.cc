@@ -140,6 +140,18 @@
 
 			}
 
+			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
+
+				// TODO: Replace state if level <= Udjat::ready
+
+				bool changed = Abstract::Agent::activate(state);
+
+				// Update icon based on state.
+				this->icon = (this->getState()->getLevel() <= Udjat::warning ? "computer" : "computer-fail");
+
+				return changed;
+			}
+
 		};
 
 		char hostname[255];
