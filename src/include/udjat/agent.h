@@ -225,7 +225,7 @@
 				virtual void get(const Request &request, Response &response);
 				virtual void get(const Request &request, Report &report);
 
-				/// @brief Get value as string.
+				/// @brief Get formatted value.
 				virtual std::string to_string() const;
 
 				/// @brief Assign value from string.

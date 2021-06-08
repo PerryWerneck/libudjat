@@ -31,7 +31,7 @@
 	#pragma GCC diagnostic pop
 
 	std::string Abstract::Agent::to_string() const {
-		throw system_error(ENOTSUP,system_category(),string{"Can't get value for agent'"} + getName() + "'");;
+		return "";
 	}
 
 	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {

@@ -65,10 +65,26 @@
 
 			const char * name = this->state.active->getName();
 			if(name && *name) {
-				info("Agent started on state '{}' ('{}')",
-					this->state.active->getName(),
-					std::to_string(this->getLevel())
-				);
+
+				string value = to_string();
+
+				if(value.empty()) {
+
+					info("Starts with state '{}' and level '{}'",
+						this->state.active->getName(),
+						std::to_string(this->getLevel())
+					);
+
+				} else {
+
+					info("Starts with value '{}', state '{}' and level '{}'",
+						value,
+						this->state.active->getName(),
+						std::to_string(this->getLevel())
+					);
+
+				}
+
 			}
 
 		}
