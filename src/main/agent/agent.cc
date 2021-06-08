@@ -37,7 +37,9 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name), state(get_default_state()) {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name) {
+
+		state.active = get_default_state();
 
 		try {
 
@@ -156,13 +158,7 @@ namespace Udjat {
 	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::find_state() const {
-
-		// Default method should return the current state, if available, with no change.
-		if(this->state)
-			return this->state;
-
 		return get_default_state();
-
 	}
 
 }

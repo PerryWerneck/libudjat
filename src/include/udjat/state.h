@@ -68,9 +68,6 @@
 				/// @brief Web link to this state (Usually used for http exporters).
 				const char * uri = "";
 
-				/// @brief Timestamp of the last state activation.
-				time_t activation = 0;
-
 				/// @brief Translate level from string.
 				static Level getLevelFromName(const char *name);
 
@@ -134,10 +131,6 @@
 
 				inline const char * getUri() const {
 					return uri;
-				}
-
-				inline time_t getActivationTime() const noexcept {
-					return activation;
 				}
 
 				virtual void push_back(std::shared_ptr<Alert> alert);

@@ -61,7 +61,7 @@
 				}
 			}
 
-			if(this->state) {
+			if(this->state.active) {
 
 				struct {
 					const char *key;
@@ -71,12 +71,12 @@
 					{
 						"summary",
 						this->summary,
-						this->state->getSummary()
+						this->state.active->getSummary()
 					},
 					{
 						"uri",
 						this->uri,
-						this->state->getUri()
+						this->state.active->getUri()
 					}
 				};
 

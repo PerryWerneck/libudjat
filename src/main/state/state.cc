@@ -76,11 +76,6 @@ namespace Udjat {
 		value["body"] = body;
 		value["uri"] = uri;
 
-		if(this->activation)
-			value["activation"] = TimeStamp(this->activation).to_string(TIMESTAMP_FORMAT_JSON);
-		else
-			value["activation"] = this->activation;
-
 		// Set level information
 		getLevel(value);
 
@@ -143,7 +138,6 @@ namespace Udjat {
 #ifdef DEBUG
 		agent.info("State '{}' was activated",name);
 #endif // DEBUG
-		this->activation = time(nullptr);
 	}
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {

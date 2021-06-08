@@ -46,26 +46,28 @@
 
 		// Update agent state.
 		{
-			this->state = find_state();
-			if(!this->state) {
-				this->state = get_default_state();
+			this->state.active = find_state();
+			if(!this->state.active) {
+				this->state.active = get_default_state();
 			}
 
 			// Check for children state
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
-					if(child->state && child->state->getLevel() > this->state->getLevel()) {
-						this->state = child->state;
+					if(child->getLevel() > this->getLevel()) {
+						this->state.active = child->state.active;
 					}
 				}
 			}
 
-			const char * name = this->state->getName();
+			this->state.activation = time(0);
+
+			const char * name = this->state.active->getName();
 			if(name && *name) {
 				info("Agent started on state '{}' ('{}')",
-					this->state->getName(),
-					std::to_string(this->state->getLevel())
+					this->state.active->getName(),
+					std::to_string(this->getLevel())
 				);
 			}
 

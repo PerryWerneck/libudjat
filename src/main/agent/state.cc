@@ -92,31 +92,36 @@ namespace Udjat {
 
 		try {
 
+			/// @brief State needs activation?
+			bool need_activation = true;
+
 			// Compute my current state based on value.
-			auto new_state = find_state();
+			auto state = find_state();
 
 			// Then check the children.
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
-
-					if(child->state->getLevel() > new_state->getLevel()) {
-						new_state = child->state;
+					if(child->getLevel() > state->getLevel()) {
+						need_activation = false;	// A child state, was already activated.
+						state = child->getState();
 					}
 				}
 			}
 
-			activate(new_state);
+			activate(state);
 
 		} catch(const std::exception &e) {
 
 			error("Error '{}' switching state",e.what());
-			this->state = Abstract::State::get("Error switching state",e);
+			this->state.active = Abstract::State::get("Error switching state",e);
+			this->state.activation = time(0);
 
 		} catch(...) {
 
 			error("Error '{}' switching state","unexpected");
-			this->state = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->state.activation = time(0);
 
 		}
 
@@ -126,25 +131,27 @@ namespace Udjat {
 	bool Abstract::Agent::activate(std::shared_ptr<State> state) noexcept {
 
 		// It's an empty state? If yes replaces with the default one.
-		if(!state)
-			state = Abstract::Agent::find_state();
+		if(!state) {
+			throw runtime_error("Activating an empty state");
+		}
 
 		// Return if it's the same.
-		if(state == this->state)
+		if(state == this->state.active)
 			return false;
 
 		info("Current state changes from '{}' to '{}'",
-				this->state->getSummary(),
+				this->state.active->getSummary(),
 				state->getSummary()
 			);
 
-		Udjat::Level saved_state = this->state->getLevel();
+		Udjat::Level saved_level = this->getLevel();
 
 		try {
 
-			this->state->deactivate(*this);
-			this->state = state;
-			this->state->activate(*this);
+			this->state.active->deactivate(*this);
+			this->state.active = state;
+			this->state.activation = time(0);
+			this->state.active->activate(*this);
 
 			if(parent)
 				parent->onChildStateChange();
@@ -152,22 +159,24 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error("Error '{}' switching state",e.what());
-			this->state = Abstract::State::get("Error switching state",e);
+			this->state.active = Abstract::State::get("Error switching state",e);
+			this->state.activation = time(0);
 
 		} catch(...) {
 
 			error("Error '{}' switching state","unexpected");
-			this->state = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->state.activation = time(0);
 
 		}
 
 #ifdef DEBUG
-		if(saved_state != this->state->getLevel()) {
-			info("State has changed from '{}' to '{}'",saved_state,this->state->getLevel());
+		if(saved_level != this->getLevel()) {
+			info("State has changed from '{}' to '{}'",saved_level,this->getLevel());
 		}
 #endif // DEBUG
 
-		return (saved_state != this->state->getLevel());
+		return (saved_level != this->getLevel());
 	}
 
 }

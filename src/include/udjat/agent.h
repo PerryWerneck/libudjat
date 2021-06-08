@@ -50,10 +50,16 @@
 					bool on_demand = false;	///< @brief True if agent should update on request.
 				} update;
 
-				std::vector<std::shared_ptr<Agent>> children;
+				struct {
+					/// @brief Active state.
+					std::shared_ptr<State> active;
 
-				/// @brief Current state.
-				std::shared_ptr<State> state;
+					/// @brief State activation.
+					time_t activation;
+
+				} state;
+
+				std::vector<std::shared_ptr<Agent>> children;
 
 				/// @brief Agent alerts.
 				std::vector<std::shared_ptr<Alert>> alerts;
@@ -109,7 +115,8 @@
 				/// @return true if the state was refreshed.
 				bool chk4refresh(bool forward = false);
 
-				/// @brief Find state from agent value.
+				/// @brief Compute state from agent value.
+				/// @return Computed state or the default one if agents has no state table.
 				virtual std::shared_ptr<Abstract::State> find_state() const;
 
 				/// @brief Set 'on-demand' option.
@@ -226,7 +233,12 @@
 
 				/// @brief Get current state
 				inline std::shared_ptr<State> getState() const {
-					return this->state;
+					return this->state.active;
+				}
+
+				/// @brief Get current level.
+				inline Level getLevel() const {
+					return this->state.active->getLevel();
 				}
 
 				/// @brief Insert State.

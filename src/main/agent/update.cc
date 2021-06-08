@@ -129,8 +129,8 @@ namespace Udjat {
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
 
-					if(child->state->getLevel() > new_state->getLevel()) {
-						new_state = child->state;
+					if(child->getLevel() > new_state->getLevel()) {
+						new_state = child->getState();
 					}
 				}
 			}
@@ -140,12 +140,14 @@ namespace Udjat {
 		} catch(const exception &e) {
 
 			error("Error '{}' switching state",e.what());
-			this->state = Abstract::State::get("Error switching state",e);
+			this->state.active = Abstract::State::get("Error switching state",e);
+			this->state.activation = time(0);
 
 		} catch(...) {
 
 			error("Error '{}' switching state","unexpected");
-			this->state = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->state.activation = time(0);
 
 		}
 

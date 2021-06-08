@@ -47,9 +47,15 @@
 		// Get
 		if(state) {
 			auto state = Json::Value(Json::objectValue);
-			this->state->get(state);
+			this->state.active->get(state);
 			value["state"] = state;
-		}
+
+			if(this->state.activation) {
+				value["state"]["activation"] = TimeStamp(this->state.activation).to_string(TIMESTAMP_FORMAT_JSON);
+			} else {
+				value["state"]["activation"] = false;
+			}
+ 		}
 
 		// Get children values
 		if(children) {
