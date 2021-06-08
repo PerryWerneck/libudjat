@@ -3,7 +3,7 @@
  *
  * @brief Detect virtual machine.
  *
- * Referênces:
+ * References:
  *
  * <https://www.codeproject.com/Articles/9823/Detect-if-your-program-is-running-inside-a-Virtual>
  * <https://www.ibiblio.org/gferg/ldp/GCC-Inline-Assembly-HOWTO.html>
@@ -11,16 +11,116 @@
  * <http://artemonsecurity.com/vmde.pdf>
  * <http://git.annexia.org/?p=virt-what.git;a=tree>
  *
+ * SystemD References:
+ *
+ * <https://www.freedesktop.org/software/systemd/man/org.freedesktop.systemd1.html>
+
  * @author perry.werneck@gmail.com
  *
  */
 
- #include <udjat/tools/virtualmachine.h>
- #include <cstring>
+#include <config.h>
+#include <udjat/tools/virtualmachine.h>
+#include <cstring>
+#include <string>
+
+using namespace std;
+
+#ifdef HAVE_SYSTEMD
+	#include <systemd/sd-bus.h>
+#endif // HAVE_SYSTEMD
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 
-#if defined(__i386__) || defined(__x86_64__)
+#ifdef HAVE_SYSTEMD
+
+VirtualMachine::operator bool() const {
+	return !to_string().empty();
+}
+
+const std::string VirtualMachine::to_string() const {
+
+	// Reference: (https://www.freedesktop.org/software/systemd/man/org.freedesktop.systemd1.html)
+	string virtualization = "";
+
+	sd_bus * bus = NULL;
+	if(sd_bus_open_system(&bus) < 0) {
+		throw runtime_error("Can't open system bus");
+	}
+
+	try {
+
+		/*
+			dbus-send \
+				--session \
+				--dest=org.freedesktop.systemd1 \
+				--print-reply \
+				"/org/freedesktop/systemd1" \
+				"org.freedesktop.DBus.Properties.Get" \
+				string:"org.freedesktop.systemd1.Manager" \
+				string:"Virtualization"
+		*/
+
+		sd_bus_error error = SD_BUS_ERROR_NULL;
+		sd_bus_message *response = NULL;
+
+		int rc = sd_bus_call_method(
+				bus,                   					// On the System Bus
+				"org.freedesktop.systemd1",				// Service to contact
+				"/org/freedesktop/systemd1", 			// Object path
+				"org.freedesktop.DBus.Properties",		// Interface name
+				"Get",									// Method to be called
+				&error,									// object to return error
+				&response,								// Response message on success
+				"ss",
+				"org.freedesktop.systemd1.Manager",
+				"Virtualization"
+		);
+
+		if(rc < 0) {
+			string err = error.message;
+			sd_bus_error_free(&error);
+			throw runtime_error(err);;
+
+		} else if(response) {
+
+			char *text = NULL;
+
+			if(sd_bus_message_read(response, "v", "s", &text) < 0) {
+				sd_bus_message_unref(response);
+				throw runtime_error("Can't parse systemd virtualization response");
+			} else if(text && *text) {
+				virtualization = text;
+			}
+
+			sd_bus_message_unref(response);
+
+		}
+
+	} catch(...) {
+		sd_bus_flush_close_unref(bus);
+		throw;
+	}
+
+	sd_bus_flush_close_unref(bus);
+
+	return virtualization;
+
+}
+
+#elif defined(__i386__) || defined(__x86_64__)
+
+enum CpuID : uint8_t {
+	BARE_METAL,			///< @brief Running on bare metal
+	VMWARE,				///< @brief Running on VMWare
+	VPC,				///< @brief Running on Virtual PC
+	BHIVE,				///< @brief Running on BHIVE
+	XEN,				///< @brief Running on XEN
+	KVM,				///< @brief Running on KVM
+	QEMU,				///< @brief Running on QEMU
+	LKVM,				///< @brief Running on LKVM
+	VMM					///< @brief Running on VMM
+};
 
 // http://git.annexia.org/?p=virt-what.git;a=tree
 static unsigned int cpuid(unsigned int eax, char *sig) {
@@ -38,20 +138,20 @@ static unsigned int cpuid(unsigned int eax, char *sig) {
 
 }
 
-static VirtualMachine::CpuID translate(const char *sig) {
+static CpuID translate(const char *sig) {
 
 	static const struct Key {
-		VirtualMachine::CpuID	  id;
-		const char				* sig;
+		CpuID		  id;
+		const char	* sig;
 	} keys[] = {
-		{ VirtualMachine::VMWARE,	"VMwareVMware"	},
-		{ VirtualMachine::VPC,		"Microsoft Hv"	},
-		{ VirtualMachine::BHIVE,	"bhyve bhyve"	},
-		{ VirtualMachine::XEN,		"XenVMMXenVMM"	},
-		{ VirtualMachine::KVM,		"KVMKVMKVM"		},
-		{ VirtualMachine::QEMU,		"TCGTCGTCGTCG"	},
-		{ VirtualMachine::LKVM,		"LKVMLKVMLKVM"	},
-		{ VirtualMachine::VMM,		"OpenBSDVMM58"	}
+		{ VMWARE,	"VMwareVMware"	},
+		{ VPC,		"Microsoft Hv"	},
+		{ BHIVE,	"bhyve bhyve"	},
+		{ XEN,		"XenVMMXenVMM"	},
+		{ KVM,		"KVMKVMKVM"		},
+		{ QEMU,		"TCGTCGTCGTCG"	},
+		{ LKVM,		"LKVMLKVMLKVM"	},
+		{ VMM,		"OpenBSDVMM58"	}
 	};
 
 	for(size_t ix = 0; ix < (sizeof(keys)/sizeof(keys[0])); ix++) {
@@ -60,10 +160,10 @@ static VirtualMachine::CpuID translate(const char *sig) {
 		}
 	}
 
-	return VirtualMachine::BARE_METAL;
+	return BARE_METAL;
 }
 
-VirtualMachine::CpuID VirtualMachine::getID() const {
+static CpuID getID() {
 
 	CpuID rc = BARE_METAL;
 	char sig[13];
@@ -94,36 +194,29 @@ VirtualMachine::CpuID VirtualMachine::getID() const {
 
 }
 
-#else // !i386, !x86_64
-
-#endif // !i386, !x86_64
-
-VirtualMachine::VirtualMachine() {
-}
-
 VirtualMachine::operator bool() const {
 	return getID() != BARE_METAL;
 }
 
-const char * VirtualMachine::c_str() const {
+const std::string VirtualMachine::to_string() const {
 
 	static const struct Key {
-		VirtualMachine::CpuID	  id;
-		const char				* name;
+		CpuID	  	  id;
+		const char	* name;
 	} keys[] = {
-		{ VirtualMachine::VMWARE,	"VMware"		},
-		{ VirtualMachine::VPC,		"Microsoft Hv"	},
-		{ VirtualMachine::BHIVE,	"bhyve"			},
-		{ VirtualMachine::XEN,		"Xen"			},
-		{ VirtualMachine::KVM,		"KVM"			},
-		{ VirtualMachine::QEMU,		"QEMU"			},
-		{ VirtualMachine::LKVM,		"LKVM"			},
-		{ VirtualMachine::VMM,		"OpenBSDVMM58"	}
+		{ VMWARE,	"VMware"		},
+		{ VPC,		"Microsoft Hv"	},
+		{ BHIVE,	"bhyve"			},
+		{ XEN,		"Xen"			},
+		{ KVM,		"KVM"			},
+		{ QEMU,		"QEMU"			},
+		{ LKVM,		"LKVM"			},
+		{ VMM,		"OpenBSDVMM58"	}
 	};
 
-	VirtualMachine::CpuID id = getID();
+	CpuID id = getID();
 	if(id == BARE_METAL)
-		return "Bare metal";
+		return "";
 
 	for(size_t ix = 0; ix < (sizeof(keys)/sizeof(keys[0])); ix++) {
 		if(id == keys[ix].id) {
@@ -134,8 +227,18 @@ const char * VirtualMachine::c_str() const {
 	return "Unknown";
 }
 
-const std::string VirtualMachine::to_string() const {
-	return std::string(c_str());
+#else // !i386, !x86_64
+
+VirtualMachine::operator bool() const {
+	return false;
 }
+
+const std::string VirtualMachine::to_string() const {
+	return "";
+}
+
+#endif // !i386, !x86_64
+
+
 
 

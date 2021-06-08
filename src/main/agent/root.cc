@@ -21,12 +21,9 @@
  #include <sys/utsname.h>
  #include <udjat/factory.h>
  #include <udjat/tools/sysconfig.h>
+ #include <udjat/tools/virtualmachine.h>
  #include <cstring>
  #include <unistd.h>
-
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-bus.h>
- #endif // HAVE_SYSTEMD
 
  namespace Udjat {
 
@@ -74,80 +71,16 @@
 				//
 				// Detect virtualization.
 				//
-				string virtualization;
+				VirtualMachine vm;
 
-#ifdef HAVE_SYSTEMD
-				{
-					// Detected virtualization with systemd.
-
-					// Reference: (https://www.freedesktop.org/software/systemd/man/org.freedesktop.systemd1.html)
-					sd_bus * bus = NULL;
-					if(sd_bus_open_system(&bus) < 0) {
-
-						clog << getName() << "\tCant open system bus" << endl;
-
-					} else {
-
-						/*
-							dbus-send \
-								--session \
-								--dest=org.freedesktop.systemd1 \
-								--print-reply \
-								"/org/freedesktop/systemd1" \
-								"org.freedesktop.DBus.Properties.Get" \
-								string:"org.freedesktop.systemd1.Manager" \
-								string:"Virtualization"
-						*/
-
-						sd_bus_error error = SD_BUS_ERROR_NULL;
-						sd_bus_message *response = NULL;
-
-						int rc = sd_bus_call_method(
-								bus,                   					// On the System Bus
-                                "org.freedesktop.systemd1",				// Service to contact
-                                "/org/freedesktop/systemd1", 			// Object path
-                                "org.freedesktop.DBus.Properties",		// Interface name
-                                "Get",									// Method to be called
-                                &error,									// object to return error
-                                &response,								// Response message on success
-                                "ss",
-                                "org.freedesktop.systemd1.Manager",
-                                "Virtualization"
-						);
-
-						if(rc < 0) {
-
-							cerr << getName() << "\t" << error.message << endl;
-							sd_bus_error_free(&error);
-
-						} else if(response) {
-
-							char *text = NULL;
-
-							// It's a variant
-
-							if(sd_bus_message_read(response, "v", "s", &text) < 0) {
-								cerr << getName() << "\tCan't parse systemd virtualization response" << endl;
-							} else if(text && *text) {
-								cout << getName() << "\t Detected '" << text << "' virtualization" << endl;
-								virtualization = text;
-							}
-
-							sd_bus_message_unref(response);
-
-						}
-
-						sd_bus_flush_close_unref(bus);
-
-					}
-
-				}
-#endif // HAVE_SYSTEMD
+#ifdef DEBUG
+				cout << "Detected Virtual machine was '" << vm << "'" << endl;
+#endif // DEBUG
 
 				//
 				// Get machine information
 				//
-				if(virtualization.empty()) {
+				if(!vm) {
 
 					try {
 
@@ -182,7 +115,7 @@
 					string text{"{} virtual machine"};
 					size_t pos = text.find("{}");
 					if(pos != string::npos) {
-						text.replace(pos,2,virtualization);
+						text.replace(pos,2,vm.to_string());
 					}
 
 					this->summary = Quark(text).c_str();
