@@ -99,10 +99,23 @@ namespace Udjat {
 		if(state == this->state.active)
 			return false;
 
-		info("Current state changes from '{}' to '{}'",
-				this->state.active->getSummary(),
-				state->getSummary()
-			);
+		string value = to_string();
+
+		if(value.empty()) {
+			info("Current state changes from '{}' to '{}' ({})",
+					this->state.active->getSummary(),
+					state->getSummary(),
+					std::to_string(state->getLevel())
+				);
+		} else {
+			info("Value '{}' changes state from '{}' to '{}' ({})",
+					value,
+					this->state.active->getSummary(),
+					state->getSummary(),
+					std::to_string(state->getLevel())
+				);
+		}
+
 
 		Udjat::Level saved_level = this->getLevel();
 
