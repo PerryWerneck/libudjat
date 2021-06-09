@@ -25,37 +25,37 @@
 				Debug
 			};
 
-			class UDJAT_API Writer {
-			private:
-				std::vector<std::string> args;
-				std::string format;
-
-				Writer & append(const char *value);
-				Writer & append(const std::string &value);
-
-				Writer & add();
-
-				template<typename T>
-				Writer & append(const T &value) {
-					return append(std::to_string(value));
-				}
-
-				template<typename T, typename... Targs>
-				Writer & add(T &value, Targs... Fargs) {
-					append(value);
-					return add(Fargs...);
-				}
-
+			/// @brief Log message formatter.
+			class UDJAT_API Message : public std::string {
 			public:
 				template<typename T, typename... Targs>
-				Writer(const char *format, T &value, Targs... Fargs) {
-					this->format = format;
+				Message(const char *fmt, T &value, Targs... Fargs) : std::string(fmt) {
 					append(value);
 					add(Fargs...);
 				}
 
+				Message & append(const char *value);
 
-				std::string to_string() const;
+				Message & append(const std::string &value) {
+					return append(value.c_str());
+				}
+
+				Message & append(const std::exception &e);
+
+				Message & add() {
+					return *this;
+				}
+
+				template<typename T>
+				Message & append(const T &value) {
+					return append(std::to_string(value));
+				}
+
+				template<typename T, typename... Targs>
+				Message & add(T &value, Targs... Fargs) {
+					append(value);
+					return add(Fargs...);
+				}
 
 			};
 
@@ -94,21 +94,35 @@
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void info(const char *format, const Targs... args) const noexcept {
-				std::cout << name << "\t" << Writer(format, args...).to_string() << std::endl;
+				std::cout << name << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write warning message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void warning(const char *format, const Targs... args) const noexcept {
-				std::clog << name << "\t" << Writer(format, args...).to_string() << std::endl;
+				std::clog << name << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write error message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void error(const char *format, const Targs... args) const noexcept {
-				std::cerr << name << "\t" << Writer(format, args...).to_string() << std::endl;
+				std::cerr << name << "\t" << Message(format, args...) << std::endl;
+			}
+
+			/// @brief Write Error message.
+			/// @param e exception to write.
+			void error(const std::exception &e) {
+				std::cerr << name << "\t" << e.what() << std::endl;
+			}
+
+			/// @brief Write error message.
+			/// @param e exception to write.
+			/// @param format String with '{}' placeholders (the last one with be the exception message)
+			template<typename... Targs>
+			void error(const std::exception &e, const char *format, const Targs... args) const noexcept {
+				std::cerr << name << "\t" << Message(format, args...).append(e) << std::endl;
 			}
 
 		};

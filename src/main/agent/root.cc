@@ -107,18 +107,12 @@
 
 					} catch(const std::exception &e) {
 
-						warning("Error '{}' getting DMI information",e.what());
+						warning("{}",e.what());
 
 					}
 				} else {
 
-					string text{"{} virtual machine"};
-					size_t pos = text.find("{}");
-					if(pos != string::npos) {
-						text.replace(pos,2,vm.to_string());
-					}
-
-					this->summary = Quark(text).c_str();
+					this->summary = Quark(Logger::Message("{} virtual machine",vm.to_string())).c_str();
 
 				}
 

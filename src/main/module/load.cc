@@ -38,7 +38,7 @@ namespace Udjat {
 
 			} catch(const exception &e) {
 
-				cerr << "Can't load '" << filename << "': " << e.what() << endl;
+				cerr << "module\t" << e.what() << endl;
 
 			}
 

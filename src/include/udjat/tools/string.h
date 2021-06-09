@@ -21,6 +21,8 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <iostream>
+
 
  namespace Udjat {
 

@@ -12,46 +12,31 @@ namespace Udjat {
 	Logger::~Logger() {
 	}
 
-	Logger::Writer & Logger::Writer::append(const char *value) {
-		args.emplace_back(value);
+	Logger::Message & Logger::Message::append(const char *value) {
+
+		size_t from = find("{");
+		if(from == std::string::npos) {
+			throw std::runtime_error("Invalid template string");
+		}
+
+		size_t to = find("}",from);
+		if(to == std::string::npos) {
+			throw std::runtime_error("Invalid template string");
+		}
+
+		replace(from,(to-from)+1,value);
+
 		return *this;
 	}
 
-	Logger::Writer & Logger::Writer::append(const std::string &value) {
-		args.push_back(value);
-		return *this;
+	Logger::Message & Logger::Message::append(const std::exception &e) {
+		return append(e.what());
 	}
 
 	void Logger::set(const pugi::xml_node &node) {
 		auto attribute = node.attribute("name");
 		if(attribute)
 			name = Quark(attribute.as_string(this->name)).c_str();
-	}
-
-	Logger::Writer & Logger::Writer::add() {
-		return *this;
-	}
-
-	std::string Logger::Writer::to_string() const {
-
-		string str(this->format);
-
-		auto arg = args.begin();
-
-		size_t pos = str.find("{");
-		while(pos != string::npos && arg != args.end()) {
-
-			auto p = str.find("}",pos+1);
-			if(p == string::npos)
-				break;
-
-			str.replace(pos,(p-pos)+1,*arg);
-			arg++;
-
-			pos = str.find("{");
-		}
-
-		return str;
 	}
 
 	#pragma GCC diagnostic push

@@ -29,6 +29,7 @@
  #include <cstdlib>
  #include <netdb.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/string.h>
 
  using namespace std;
  using namespace Udjat;
