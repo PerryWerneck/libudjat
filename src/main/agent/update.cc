@@ -88,9 +88,18 @@ namespace Udjat {
 
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::refresh(bool od) {
+#ifdef DEBUG
+		info("{} will call refresh()",__FUNCTION__);
+#endif // DEBUG
 		refresh();
+#ifdef DEBUG
+		info("{} refresh() returned",__FUNCTION__);
+#endif // DEBUG
 	}
+	#pragma GCC diagnostic pop
 
 	void Abstract::Agent::refresh() {
 	}

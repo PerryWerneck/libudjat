@@ -44,7 +44,7 @@ namespace Udjat {
 	void Logger::redirect(const char *filename, bool console) {
 
 		/// @brief Mutex para serialização.
-		static std::recursive_mutex guard;
+		static std::mutex guard;
 
 		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
 		private:
@@ -80,7 +80,7 @@ namespace Udjat {
 
 			void write() {
 
-				lock_guard<std::recursive_mutex> lock(guard);
+				lock_guard<std::mutex> lock(guard);
 
 				// Remove spaces
 				size_t len = buffer.size();
@@ -99,22 +99,41 @@ namespace Udjat {
 					return;
 				}
 
-				// Write Output file.
-				TimeStamp tm;
-
+				// If enable write console output.
 				if(console) {
+
+					// Write current time.
+					{
+						time_t t = time(0);
+						struct tm tm;
+						localtime_r(&t,&tm);
+
+						char buffer[80];
+						memset(buffer,0,sizeof(buffer));
+
+						size_t len = strftime(buffer, 79, "%x %X", &tm);
+
+						if(len) {
+							write(1,buffer);
+						} else {
+							write(1,"--/--/-- --:--:--");
+						}
+
+						write(1," ");
+					}
+
+					// Write module name & message
 					char module[12];
 					memset(module,' ',sizeof(module));
 
-					write(1,tm.to_string("%x %X"));
-					write(1," ");
-
 					auto pos = buffer.find("\t");
 					if(pos == string::npos) {
+
 						module[sizeof(module)-1] = 0;
 						write(1,module);
 						write(1," ");
 						write(1,buffer);
+
 					} else {
 
 						strncpy(module,buffer.c_str(),min(sizeof(module),pos));
@@ -140,12 +159,12 @@ namespace Udjat {
 			/// @brief Writes characters to the associated output sequence from the put area.
 			int overflow(int c) override {
 
-				lock_guard<std::recursive_mutex> lock(guard);
-
-				if(c == EOF || c == '\n' || c == '\r')
+				if(c == EOF || c == '\n' || c == '\r') {
 					write();
-				else
+				} else {
+					lock_guard<std::mutex> lock(guard);
 					buffer += static_cast<char>(c);
+				}
 
 				return c;
 			}

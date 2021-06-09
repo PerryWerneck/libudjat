@@ -20,6 +20,7 @@
 
 #include <cstring>
 #include <udjat/tools/timestamp.h>
+#include <udjat/tools/logger.h>
 #include <iostream>
 
 using namespace std;
@@ -32,14 +33,17 @@ namespace Udjat {
 			return "";
 
 		char timestamp[80];
-		memset(timestamp,0,sizeof(timestamp));
+		memset(timestamp,0,80);
 
 		struct tm tm;
 		localtime_r(&value,&tm);
 
-		strftime(timestamp, 79, format, &tm);
+		size_t len = strftime(timestamp, 79, format, &tm);
+		if(len == 0) {
+			return "";
+		}
 
-		return std::string(timestamp);
+		return std::string(timestamp,len);
 	}
 
 	TimeStamp & TimeStamp::set(const char *time, const char *format) {
