@@ -35,8 +35,8 @@ namespace Udjat {
 		memset(timestamp,0,sizeof(timestamp));
 
 		struct tm tm;
+		localtime_r(&value,&tm);
 
-		memcpy(&tm,localtime(&value),sizeof(tm));
 		strftime(timestamp, 79, format, &tm);
 
 		return std::string(timestamp);
