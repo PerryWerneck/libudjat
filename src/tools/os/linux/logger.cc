@@ -43,6 +43,9 @@ namespace Udjat {
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Logger::redirect(const char *filename, bool console) {
 
+		/// @brief Mutex para serialização.
+		static std::recursive_mutex guard;
+
 		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
 		private:
 
@@ -50,9 +53,6 @@ namespace Udjat {
 			bool console;
 			/// @brief Buffer contendo a linha de log.
 			std::string buffer;
-
-			/// @brief Mutex para serialização.
-			std::recursive_mutex guard;
 
 		protected:
 
