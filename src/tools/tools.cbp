@@ -32,19 +32,45 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
-			<Add option="-std=gnu++11" />
+			<Add option="-std=c++98" />
 			<Add option="-DPROJECT_NAME=udjat" />
 			<Add directory="../include" />
 		</Compiler>
 		<Linker>
 			<Add library="pugixml" />
 		</Linker>
-		<Unit filename="../include/udjat/tools/atom.h" />
+		<Unit filename="../include/udjat/defs.h" />
 		<Unit filename="../include/udjat/tools/logger.h" />
-		<Unit filename="atom.cc" />
+		<Unit filename="expand.cc" />
+		<Unit filename="file/agent.cc" />
+		<Unit filename="file/controller.cc" />
+		<Unit filename="file/list.cc" />
+		<Unit filename="file/path.cc" />
+		<Unit filename="file/private.h" />
+		<Unit filename="file/sysconfig.cc" />
+		<Unit filename="file/sysconfig_value.cc" />
+		<Unit filename="file/text.cc" />
+		<Unit filename="file/watcher.cc" />
+		<Unit filename="mainloop/default.cc" />
+		<Unit filename="mainloop/handler.cc" />
+		<Unit filename="mainloop/linux/mainloop.cc" />
+		<Unit filename="mainloop/linux/run.cc" />
+		<Unit filename="mainloop/mainloop.cc" />
+		<Unit filename="mainloop/private.h" />
+		<Unit filename="mainloop/service.cc" />
+		<Unit filename="mainloop/testprogram/testprogram.cc" />
+		<Unit filename="mainloop/timer.cc" />
+		<Unit filename="os/linux/configuration/file.cc" />
 		<Unit filename="os/linux/logger.cc" />
+		<Unit filename="os/linux/threadpool.cc" />
+		<Unit filename="quark.cc" />
+		<Unit filename="string.cc" />
+		<Unit filename="subprocess/private.h" />
+		<Unit filename="subprocess/subprocess.cc" />
 		<Unit filename="testprogram/testprogram.cc" />
 		<Unit filename="timestamp.cc" />
+		<Unit filename="virtualmachine.cc" />
+		<Unit filename="xml.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

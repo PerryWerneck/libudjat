@@ -1,10 +1,11 @@
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
 /*
- *
- * Copyright (C) <2020> <Perry Werneck>
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,26 +13,21 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 /**
- * @file
- *
- * @brief
+ * @brief LibUdjat common definitions.
  *
  * @author Perry Werneck <perry.werneck@gmail.com>
  *
- *
  */
 
-#ifndef UDJAT_DEFS_H_INCLUDED
+ #pragma once
 
-	#define UDJAT_DEFS_H_INCLUDED 1
 
-	#include <json/value.h>
+#include <json/value.h>
 
 #ifdef _WIN32
 
@@ -48,135 +44,147 @@
 
 #endif // WIN32
 
-	/// @brief Macro para informar uso de argumentos printf.
-	#define AS_PRINTF(a,b) __attribute__((format(printf, a, b)))
+/// @brief Macro para informar uso de argumentos printf.
+#define AS_PRINTF(a,b) __attribute__((format(printf, a, b)))
 
-	// Branch prediction macros
-	//
-	// Referências:
-	//
-	// https://stackoverflow.com/questions/1668013/can-likely-unlikely-macros-be-used-in-user-space-code
-	// http://www.geeksforgeeks.org/branch-prediction-macros-in-gcc/
-	//
-	#ifdef __GNUC__
-		#define likely(x)       __builtin_expect(!!(x), 1)
-		#define unlikely(x)     __builtin_expect(!!(x), 0)
-	#else
-		#define likely(x)       (x)
-		#define unlikely(x)     (x)
-	#endif
+// Branch prediction macros
+//
+// Referências:
+//
+// https://stackoverflow.com/questions/1668013/can-likely-unlikely-macros-be-used-in-user-space-code
+// http://www.geeksforgeeks.org/branch-prediction-macros-in-gcc/
+//
+#ifdef __GNUC__
+	#define likely(x)       __builtin_expect(!!(x), 1)
+	#define unlikely(x)     __builtin_expect(!!(x), 0)
+#else
+	#define likely(x)       (x)
+	#define unlikely(x)     (x)
+#endif
 
-	/**
-	 * @brief Macro para informar que um parâmetro não é utilizado.
-	 *
-	 * Macro que informa ao compilador que um parâmetro passado à função não é usado;
-	 * útil para evitar o warning "unused parameter" em caso de callbacks que possuem
-	 * argumentos pré-definidos.
-	 *
-	 * <http://stackoverflow.com/questions/3417837/what-is-the-best-way-to-supress-unused-variable-x-warning>
-	 * <http://sourcefrog.net/weblog/software/languages/C/unused.html>
-	 *
-	 */
-	#ifdef UNUSED
+/**
+ * @brief Macro para informar que um parâmetro não é utilizado.
+ *
+ * Macro que informa ao compilador que um parâmetro passado à função não é usado;
+ * útil para evitar o warning "unused parameter" em caso de callbacks que possuem
+ * argumentos pré-definidos.
+ *
+ * <http://stackoverflow.com/questions/3417837/what-is-the-best-way-to-supress-unused-variable-x-warning>
+ * <http://sourcefrog.net/weblog/software/languages/C/unused.html>
+ *
+ */
+#ifdef UNUSED
 
-	#elif defined(__GNUC__)
+#elif defined(__GNUC__)
 
-		#define UDJAT_UNUSED(x) __attribute__((unused)) x
-		#define UDJAT_DEPRECATED(func) func __attribute__ ((deprecated))
+	#define UDJAT_UNUSED(x) __attribute__((unused)) x
+	#define UDJAT_DEPRECATED(func) func __attribute__ ((deprecated))
 
-	#elif defined(_WIN32)
+#elif defined(_WIN32)
 
-		#define UDJAT_UNUSED(x) x
-		#define UDJAT_DEPRECATED(func) __declspec(deprecated) func
+	#define UDJAT_UNUSED(x) x
+	#define UDJAT_DEPRECATED(func) __declspec(deprecated) func
 
-	#elif defined(__LCLINT__)
+#elif defined(__LCLINT__)
 
-		#define UDJAT_UNUSED(x) /*@unused@*/ x
-		#define UDJAT_DEPRECATED(func) func
+	#define UDJAT_UNUSED(x) /*@unused@*/ x
+	#define UDJAT_DEPRECATED(func) func
 
-	#else
+#else
 
-		#define UDJAT_UNUSED(x) x
-		#define UDJAT_DEPRECATED(func) func
+	#define UDJAT_UNUSED(x) x
+	#define UDJAT_DEPRECATED(func) func
 
-	#endif
+#endif
 
-	// Declara símbolos exportados pela biblioteca.
-	#if defined(_WIN32)
+// Declara símbolos exportados pela biblioteca.
+#if defined(_WIN32)
 
-		#define UDJAT_API	__declspec (dllexport)
-		#define UDJAT_PRIVATE
+	#define UDJAT_API	__declspec (dllexport)
+	#define UDJAT_PRIVATE
 
-	#elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
+#elif defined(__SUNPRO_C) && (__SUNPRO_C >= 0x550)
 
-		#define UDJAT_API
-		#define UDJAT_PRIVATE
+	#define UDJAT_API
+	#define UDJAT_PRIVATE
 
-	#else
+#else
 
-		#define UDJAT_API	__attribute__((visibility("default")))
-		#define UDJAT_PRIVATE	__attribute__((visibility("hidden")))
+	#define UDJAT_API	__attribute__((visibility("default")))
+	#define UDJAT_PRIVATE	__attribute__((visibility("hidden")))
 
-	#endif
+#endif
 
-	/// @brief Obtém nome de variável como string.
-	#define STRINGIZE(x) #x
+/// @brief Obtém nome de variável como string.
+#define STRINGIZE(x) #x
 
-	/**symbol.c_str()
-	 * @brief Converte valor passado ao gcc via linha de comando em string.
-	 *
-	 * Macro usada para converter valores passados ao gcc via definições de
-	 * linha de comando em uma string. Geralmente usado para converter os
-	 * nomes de diretórios ajustados pelo ./configure.
-	 *
-	 * <http://stackoverflow.com/questions/2410976/how-to-define-a-string-in-gcc-command-line>
-	 */
-	#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
+/**
+ * @brief Converte valor passado ao gcc via linha de comando em string.
+ *
+ * Macro usada para converter valores passados ao gcc via definições de
+ * linha de comando em uma string. Geralmente usado para converter os
+ * nomes de diretórios ajustados pelo ./configure.
+ *
+ * <http://stackoverflow.com/questions/2410976/how-to-define-a-string-in-gcc-command-line>
+ */
+#define STRINGIZE_VALUE_OF(x) STRINGIZE(x)
 
-	/// @brief Obtém o número de elementos de um array.
-	#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
+/// @brief Obtém o número de elementos de um array.
+#define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
-	namespace Udjat {
+#if __cplusplus < 201103L
 
-		/// @brief Module information data.
-		struct UDJAT_API ModuleInfo {
+	// Old C++ compatibility
+	#define noexcept
+	#define nullptr NULL
 
-			/// @brief The module name.
-			const char *name;
+#endif // __cplusplus
 
-			/// @brief The module description.
-			const char *description;
+namespace Udjat {
 
-			/// @brief The module version.
-			const char *version;
+	/// @brief Module information data.
+	struct UDJAT_API ModuleInfo {
 
-			/// @brief The bugreport address.
-			const char *bugreport;
+		/// @brief The module name.
+		const char *name;
 
-			/// @brief The package URL.
-			const char *url;
+		/// @brief The module description.
+		const char *description;
 
-			/// @brief The file path.
-			const char *path = nullptr;
+		/// @brief The module version.
+		const char *version;
 
-			constexpr ModuleInfo(const char *n = "", const char *d = "", const char *v = "", const char *u="", const char *b= "") :
-				name(n), description(d), version(v), bugreport(b), url(u) { }
+		/// @brief The bugreport address.
+		const char *bugreport;
 
-			Json::Value & get(Json::Value &value) const;
+		/// @brief The package URL.
+		const char *url;
 
-		};
+		/// @brief The file path.
+		const char *path = nullptr;
 
-		/// @brief Abstract objects.
-		namespace Abstract {
+// https://isocpp.org/std/standing-documents/sd-6-sg10-feature-test-recommendations
+#ifdef __cpp_constexpr
+		constexpr ModuleInfo(const char *n = "", const char *d = "", const char *v = "", const char *u="", const char *b= "") :
+			name(n), description(d), version(v), bugreport(b), url(u) { }
+#else
+		ModuleInfo(const char *n = "", const char *d = "", const char *v = "", const char *u="", const char *b= "") :
+			name(n), description(d), version(v), bugreport(b), url(u) { }
+#endif
 
-			class Agent;
-			class State;
+		Json::Value & get(Json::Value &value) const;
 
-		}
+	};
 
-		class Alert;
+	/// @brief Abstract objects.
+	namespace Abstract {
+
+		class Agent;
+		class State;
 
 	}
 
-#endif // COMPONENTS_DEFS_H_INCLUDED
+	class Alert;
+
+}
 
