@@ -71,7 +71,7 @@
 
 		const Factory * find(const char *name);
 
-		void getInfo(Response &response);
+		void getInfo(Response &response) noexcept;
 
 		void insert(const Factory *factory);
 		void remove(const Factory *factory);

@@ -32,7 +32,7 @@ namespace Udjat {
 
 		void unload();
 
-		void getInfo(Response &response);
+		void getInfo(Response &response) noexcept;
 
 	};
 

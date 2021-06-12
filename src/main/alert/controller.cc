@@ -21,6 +21,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/request.h>
  #include <udjat/factory.h>
 
  namespace Udjat {
@@ -117,11 +118,12 @@
 		if(request != Request::Get)
 			return false;
 
-		Json::Value report(Json::arrayValue);
+		Value &report = response.getValue(Value::Array);
 
 		for(auto event : events) {
 
-			Json::Value value(Json::objectValue);
+			Value &value = report.getValue(Value::Object);
+
 			event->get(value);
 			report.append(value);
 
@@ -177,14 +179,14 @@
 
 	}
 
-	void Alert::Controller::getInfo(Response &response) {
+	void Alert::Controller::getInfo(Response &response) noexcept {
 		lock_guard<mutex> lock(guard);
 
-		Json::Value alerts(Json::arrayValue);
+		Value &alerts = response.getValue(Value::Array);
 
 		for(auto event : this->events) {
 
-			Json::Value value(Json::objectValue);
+			Value &value = alerts.getValue(Value::Object);
 			event->get(value);
 			alerts.append(value);
 

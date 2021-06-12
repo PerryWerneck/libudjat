@@ -240,10 +240,5 @@
 		return rc;
 	}
 
-	URL::operator Json::Value() const {
-		return this->get("application/json; charset=utf-8")->as_json();
-	}
-
-
  }
 

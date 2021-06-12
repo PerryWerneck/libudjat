@@ -18,7 +18,6 @@
  */
 
  #include "private.h"
- #include <json/reader.h>
 
  namespace Udjat {
 
@@ -40,34 +39,14 @@
 	}
 	#pragma GCC diagnostic pop
 
-	Udjat::Response URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
-
-		Udjat::Response response;
+	std::string URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
 
 		auto rsp = call(url,method,"application/json; charset=utf-8",payload.c_str());
 		if(rsp->getStatusCode() != 200) {
 			throw runtime_error(rsp->getStatusMessage());
 		}
 
-		{
-			const char *text = rsp->c_str();
-			Json::CharReaderBuilder builder;
-			JSONCPP_STRING err;
-			const std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
-			if (!reader->parse(text, text+strlen(text), &response, &err)) {
-				throw runtime_error(err);
-			}
-		}
-
-		/*
-		// https://stackoverflow.com/questions/31121378/json-cpp-how-to-initialize-from-string-and-get-string-value
-		Json::Reader reader;
-		if(!reader.parse(rsp->c_str(), response)) {
-			throw runtime_error(reader.getFormattedErrorMessages());
-		}
-		*/
-
-		return response;
+		return rsp->c_str();
 	}
 
  }

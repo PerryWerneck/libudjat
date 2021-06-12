@@ -88,7 +88,7 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::Agent::activate(std::shared_ptr<State> state) noexcept {
+	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
 
 		// It's an empty state? If yes replaces with the default one.
 		if(!state) {

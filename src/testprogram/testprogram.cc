@@ -15,7 +15,6 @@
  #include <udjat/request.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
- #include <json/value.h>
  #include <udjat/worker.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>

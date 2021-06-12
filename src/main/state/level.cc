@@ -48,11 +48,10 @@ namespace Udjat {
 
 	}
 
-	void Abstract::State::getLevel(Json::Value &value) const {
-		Json::Value level;
-		level["value"] = (uint32_t) this->level;
-		level["label"] = levelnames[this->level];
-		value["level"] = level;
+	Udjat::Value & Abstract::State::getLevel(Udjat::Value &value) const {
+		value["value"] = (uint32_t) this->level;
+		value["label"] = levelnames[this->level];
+		return value;
 	}
 
 	const char * Abstract::State::to_string(const Udjat::Level level) {

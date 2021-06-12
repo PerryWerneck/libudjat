@@ -46,7 +46,7 @@
 		~Controller();
 		static Controller & getInstance();
 
-		void getInfo(Udjat::Response &response);
+		void getInfo(Udjat::Response &response) noexcept;
 		void insert(std::shared_ptr<Protocol> protocol);
 
 		shared_ptr<Protocol> find(const char *name);

@@ -73,7 +73,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::State::get(Json::Value &value) const {
+	void Abstract::State::get(Udjat::Value &value) const {
 
 		value["summary"] = summary;
 		value["body"] = body;
@@ -87,7 +87,7 @@ namespace Udjat {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::State::get(const Request &request, Response &response) const {
-		this->get(response);
+//		this->get(response);
 	}
 	#pragma GCC diagnostic pop
 

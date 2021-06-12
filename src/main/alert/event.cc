@@ -209,13 +209,13 @@
 
 	}
 
-	void Alert::Event::get(Json::Value &value) const {
+	void Alert::Event::get(Udjat::Value &value) const {
 
 		value["name"] = getName();
 		value["sleeping"] = restarting;
 
 		if(running)
-			value["running"] = TimeStamp(running).to_string(TIMESTAMP_FORMAT_JSON);
+			value["running"] = running;
 		else
 			value["running"] = false;
 

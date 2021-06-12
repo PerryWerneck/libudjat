@@ -14,13 +14,13 @@ namespace Udjat {
 		return instance;
 	}
 
-	void Factory::Controller::getInfo(Response &response) {
+	void Factory::Controller::getInfo(Response &response) noexcept {
 
-		Json::Value report(Json::arrayValue);
+		Value &report = response.getValue(Value::Array);
 
 		for(auto factory : factories) {
 
-			Json::Value value(Json::objectValue);
+			Value &value  = report.getValue(Value::Object);
 
 			value["name"] = factory.second->name;
 			factory.second->info->get(value);

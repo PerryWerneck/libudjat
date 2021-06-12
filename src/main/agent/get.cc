@@ -25,8 +25,9 @@
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::get(const char *name, Json::Value &value) {
+	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) {
 		// It's just a placeholder here. Don't set any value.
+		return value;
 	}
 	#pragma GCC diagnostic pop
 
@@ -34,15 +35,9 @@
 		return "";
 	}
 
+	/*
 	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
 
-		get("value",value);
-
-		value["name"] = this->getName();
-		value["summary"] = this->summary;
-		value["label"] = this->label;
-		value["uri"] = this->uri;
-		value["icon"] = this->icon;
 
 		// Get
 		if(state) {
@@ -69,13 +64,38 @@
 		}
 
 	}
+	*/
 
 	void Abstract::Agent::get(const Request &request, Report &report) {
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
 	}
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
-		get( (Json::Value &) response, false, true);
+
+		// Get agent value.
+
+		// get(response["value"]);
+
+		response["name"] = this->getName();
+		response["summary"] = this->summary;
+		response["label"] = this->label;
+		response["uri"] = this->uri;
+		response["icon"] = this->icon;
+
+		// Get agent state
+
+		/*
+		auto state = Json::Value(Json::objectValue);
+		this->state.active->get(state);
+		value["state"] = state;
+
+		if(this->state.activation) {
+			value["state"]["activation"] = TimeStamp(this->state.activation).to_string(TIMESTAMP_FORMAT_JSON);
+		} else {
+			value["state"]["activation"] = false;
+		}
+		*/
+
 	}
 
  }

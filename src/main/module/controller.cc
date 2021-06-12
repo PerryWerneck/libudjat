@@ -45,17 +45,17 @@ namespace Udjat {
 		});
 	}
 
-	void Module::Controller::getInfo(Response &response) {
+	void Module::Controller::getInfo(Response &response) noexcept {
 
-		Json::Value modules(Json::arrayValue);
+		Value &modules = response.getValue(Value::Array);
 
 		for(auto module : this->modules) {
 
-			Json::Value value(Json::objectValue);
+			Value &object = modules.getValue(Value::Object);
 
-			value["name"] = module->name;
-			module->info->get(value);
-			modules.append(value);
+			object["name"] = module->name;
+			module->info->get(object);
+			modules.append(object);
 
 		}
 

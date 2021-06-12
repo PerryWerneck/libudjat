@@ -53,7 +53,7 @@ namespace Udjat {
 			void setType(const char *name);
 
 			/// @brief Convenience method for agent 'get()' method.
-			void get(const char *name, Json::Value &value) const;
+			Udjat::Value & get(Udjat::Value &value) const;
 
 			operator bool() const noexcept {
 				return !value.empty();

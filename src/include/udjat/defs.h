@@ -24,10 +24,7 @@
  *
  */
 
- #pragma once
-
-
-#include <json/value.h>
+#pragma once
 
 #ifdef _WIN32
 
@@ -138,9 +135,21 @@
 	#define noexcept
 	#define nullptr NULL
 
-#endif // __cplusplus
+#endif // !C++11
 
 namespace Udjat {
+
+	/// @brief Abstract objects.
+	namespace Abstract {
+
+		class Agent;
+		class State;
+
+	}
+
+	class Alert;
+	class Value;
+	class TimeStamp;
 
 	/// @brief Module information data.
 	struct UDJAT_API ModuleInfo {
@@ -172,19 +181,9 @@ namespace Udjat {
 			name(n), description(d), version(v), bugreport(b), url(u) { }
 #endif
 
-		Json::Value & get(Json::Value &value) const;
+		Udjat::Value & get(Udjat::Value &value) const;
 
 	};
-
-	/// @brief Abstract objects.
-	namespace Abstract {
-
-		class Agent;
-		class State;
-
-	}
-
-	class Alert;
 
 }
 

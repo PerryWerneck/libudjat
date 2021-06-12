@@ -7,9 +7,9 @@
 	#include <string>
 	#include <cstring>
 	#include <functional>
-	#include <json/value.h>
 	#include <vector>
 	#include <udjat/tools/timestamp.h>
+	#include <udjat/tools/value.h>
 	#include <memory>
 
 	namespace Udjat {
@@ -72,7 +72,7 @@
 
 		};
 
-		class UDJAT_API Response : public Json::Value {
+		class UDJAT_API Response : public Udjat::Value {
 		public:
 		protected:
 
@@ -97,7 +97,7 @@
 
 		};
 
-		class UDJAT_API Request : public Json::Value {
+		class UDJAT_API Request {
 		public:
 			enum Type {
 				Get,		///< @brief Requests a representation of the specified resource; only retrieve data.
@@ -131,6 +131,10 @@
 				return this->type == type;
 			}
 
+			inline bool operator!=(Request::Type) const noexcept {
+				return this->type != type;
+			}
+
 			Type as_type(const char *type);
 
 			inline Type as_type() const noexcept {
@@ -146,6 +150,10 @@
 			/// @return Index of the 'popped' element.
 			size_t pop(const char *name, ...) __attribute__ ((sentinel));
 
+			Request & pop(std::string &value);
+			Request & pop(int &value);
+			Request & pop(unsigned int &value);
+
 		};
 
 	}
@@ -155,5 +163,9 @@
 		return out.push_back(value);
 	}
 
+	template <typename T>
+	inline Udjat::Request & operator>>(Udjat::Request &in, T &value) {
+		return in.pop(value);
+	}
 
 #endif // UDJAT_REQUEST_H_INCLUDED

@@ -70,18 +70,18 @@ namespace Udjat {
 
 	}
 
-	void Worker::Controller::getInfo(Response &response) {
+	void Worker::Controller::getInfo(Response &response) noexcept {
 
-		Json::Value report(Json::arrayValue);
+		Value &report = response.getValue(Value::Array);
 
 		for(auto worker : workers) {
 
-			Json::Value value(Json::objectValue);
+			Value &object = report.getValue(Value::Object);
 
-			value["name"] = worker.second->name;
-			worker.second->info->get(value);
+			object["name"] = worker.second->name;
+			worker.second->info->get(object);
 
-			report.append(value);
+			report.append(object);
 		}
 
 		response["workers"] = report;

@@ -53,7 +53,7 @@
 			void remove(const Worker *worker);
 
 			const Worker * find(const char *name) const;
-			void getInfo(Response &response);
+			void getInfo(Response &response) noexcept;
 
 		};
 

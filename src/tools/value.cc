@@ -24,48 +24,48 @@
 
  namespace Udjat {
 
-	Value & Value::set(const string &value) {
-		return set(value.c_str());
+	Value & Value::set(const string &value, const Type type) {
+		return set(value.c_str(),type);
 	}
 
 	Value & Value::set(const short value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Signed);
 	}
 
 	Value & Value::set(const unsigned short value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Unsigned);
 	}
 
 	Value & Value::set(const int value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Signed);
 	}
 
 	Value & Value::set(const unsigned int value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Unsigned);
 	}
 
 	Value & Value::set(const long value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Signed);
 	}
 
 	Value & Value::set(const unsigned long value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Unsigned);
 	}
 
 	Value & Value::set(const TimeStamp value) {
-		return set(value.to_string());
+		return set(value.to_string(), Timestamp);
 	}
 
 	Value & Value::set(const bool value) {
-		return set(value ? 1 : 0);
+		return set(value ? "1" : "0", Boolean);
 	}
 
 	Value & Value::set(const float value) {
-		return set(std::to_string(value));
+		return set(std::to_string(value), Real);
 	}
 
 	Value & Value::set(const double value) {
-		return Value::set(std::to_string(value));
+		return Value::set(std::to_string(value), Real);
 	}
 
  }

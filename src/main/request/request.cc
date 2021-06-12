@@ -38,10 +38,10 @@ namespace Udjat {
 		"PATCH"
 	};
 
-	Request::Request(const char *p, Request::Type t) : Json::Value(Json::objectValue), path(p), type(t) {
+	Request::Request(const char *p, Request::Type t) : path(p), type(t) {
 	}
 
-	Request::Request(const char *p, const char *t) : Json::Value(Json::objectValue), path(p), type(as_type(t)) {
+	Request::Request(const char *p, const char *t) : path(p), type(as_type(t)) {
 	}
 
 	Request::Type Request::as_type(const char *type) {
@@ -105,6 +105,41 @@ namespace Udjat {
 		va_end(args);
 		throw system_error(ENOENT,system_category(),string{"Cant find '"} + key + "' on request");
 
+	}
+
+	Request & Request::pop(std::string &value) {
+
+		if(path.empty()) {
+			value.clear();
+			return *this;
+		}
+
+		size_t pos = path.find('/');
+		if(pos == string::npos) {
+			value = path;
+			path.clear();
+			return *this;
+		}
+
+		value = string(path.c_str(),pos);
+		path.erase(0,pos+1);
+
+		return *this;
+
+	}
+
+	Request & Request::pop(int &value) {
+		string v;
+		pop(v);
+		value = stoi(v);
+		return *this;
+	}
+
+	Request & Request::pop(unsigned int &value) {
+		string v;
+		pop(v);
+		value = stoi(v);
+		return *this;
 	}
 
 }

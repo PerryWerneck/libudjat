@@ -137,7 +137,7 @@
 			virtual void alert(size_t current, size_t total) = 0;
 
 			/// @brief Get information about the event.
-			virtual void get(Json::Value &value) const;
+			virtual void get(Udjat::Value &value) const;
 
 		};
 

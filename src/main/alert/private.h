@@ -59,7 +59,7 @@
 
 		bool work(Request &request, Response &response) const override;
 
-		void getInfo(Response &response);
+		void getInfo(Response &response) noexcept;
 
 		/// @brief Activate alert;
 		void insert(Alert *alert, std::shared_ptr<Alert::Event> event);

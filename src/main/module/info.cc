@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/value.h>
  #include <dlfcn.h>
  #include <iostream>
  #include <cstdarg>
@@ -27,7 +28,7 @@
 
  namespace Udjat {
 
-	Json::Value & ModuleInfo::get(Json::Value &value) const {
+	Value & ModuleInfo::get(Value &value) const {
 
 		value["module"] = name;
 		value["description"] = description;

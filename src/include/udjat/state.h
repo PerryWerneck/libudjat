@@ -21,7 +21,7 @@
 	#include <udjat/tools/quark.h>
 	#include <udjat/tools/xml.h>
 	#include <udjat/request.h>
-	#include <json/value.h>
+	#include <udjat/tools/value.h>
 	#include <cstring>
 
 	namespace Udjat {
@@ -139,13 +139,13 @@
 					return this->level;
 				}
 
-				void getLevel(Json::Value &value) const;
+				Udjat::Value & getLevel(Udjat::Value &value) const;
 
 				inline bool isCritical() const noexcept {
 					return this->level >= critical;
 				}
 
-				virtual void get(Json::Value &value) const;
+				virtual void get(Udjat::Value &value) const;
 				virtual void get(const Request &request, Response &response) const;
 
 				virtual void activate(const Agent &agent) noexcept;

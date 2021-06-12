@@ -35,6 +35,7 @@
 		throw system_error(ENODATA,system_category(),(status.text.empty() ? "Empty response" : status.text.c_str()));
 	}
 
+	/*
 	Json::Value URL::Response::as_json() const {
 
 		cout << "ENTREI - convert" << endl;
@@ -66,5 +67,6 @@
 		return value;
 
 	}
+	*/
 
  }

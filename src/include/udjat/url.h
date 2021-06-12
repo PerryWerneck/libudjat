@@ -94,9 +94,6 @@
 				return c_str();
 			}
 
-			/// @brief Get response payload as json.
-			Json::Value as_json() const;
-
 		};
 
 		/// HTTP Request methods.
@@ -205,7 +202,7 @@
 			/// @param method Required method.
 			/// @param payload URL payload.
 			/// @return Host response.
-			Udjat::Response call(const URL &url, const Method method, const Request &payload);
+			std::string call(const URL &url, const Method method, const Request &payload);
 
 		};
 
@@ -275,8 +272,8 @@
 		/// @return Socket connected to host.
 		int connect(time_t timeout = 0) const;
 
-		/// @brief do a 'get' request, return response as json.
-		operator Json::Value() const;
+		/// @brief do a 'get' request, return response.
+		operator std::string() const;
 
 		/// @brief Call URL.
 		/// @param method Required method.

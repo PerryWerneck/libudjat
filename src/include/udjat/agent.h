@@ -24,7 +24,7 @@
 	#include <udjat/request.h>
 	#include <udjat/tools/xml.h>
 	#include <udjat/tools/converters.h>
-	#include <json/value.h>
+	#include <udjat/tools/value.h>
 	#include <cstring>
 
 	namespace Udjat {
@@ -99,7 +99,7 @@
 
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.
-				virtual bool activate(std::shared_ptr<State> state) noexcept;
+				virtual bool activate(std::shared_ptr<State> state);
 
 				/// @brief Set failed state from known exception
 				void failed(const char *summary, const std::exception &e) noexcept;
@@ -220,8 +220,7 @@
 				/// @brief Adds cache and update information to the response.
 				void head(Response &response);
 
-				virtual void get(Json::Value &value, const bool children = false, const bool state = true);
-				virtual void get(const char *name, Json::Value &value);
+				virtual Udjat::Value & get(Udjat::Value &value);
 				virtual void get(const Request &request, Response &response);
 				virtual void get(const Request &request, Report &report);
 
@@ -274,8 +273,8 @@
 				return Abstract::Agent::stateFromValue();
 			}
 
-			void get(const char *name, Json::Value &value) override {
-				value[name] = Json::Value(this->value);
+			Udjat::Value & get(Udjat::Value &value) override {
+				return value.set(this->value);
 			}
 
 			/// @brief Insert state.
@@ -347,8 +346,8 @@
 				return Abstract::Agent::stateFromValue();
 			}
 
-			void get(const char *name, Json::Value &value) override {
-				value[name] = Json::Value(this->value);
+			Udjat::Value & get(Udjat::Value &value) override {
+				return value.set(this->value);
 			}
 
 			/// @brief Insert state.
@@ -445,10 +444,6 @@
 
 			bool get() const noexcept {
 				return value;
-			}
-
-			void get(const char *name, Json::Value &value) override {
-				value[name] = Json::Value(this->value);
 			}
 
 			/// @brief Insert State.

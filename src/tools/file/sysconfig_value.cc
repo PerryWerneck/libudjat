@@ -18,6 +18,7 @@
  */
 
  #include <udjat/tools/sysconfig.h>
+ #include <udjat/tools/value.h>
  #include <iostream>
  #include <cstring>
 
@@ -59,19 +60,19 @@
 		type = String;
 	}
 
-	void SysConfig::Value::get(const char *name, Json::Value &value) const {
+	Udjat::Value & SysConfig::Value::get(Udjat::Value &value) const {
 
 		switch(type) {
 		case Value::Boolean:
-			value[name] = this->value;
+			value = this->value;
 			break;
 
 		case Value::Integer:
-			value[name] = ::atoi(this->value.c_str());
+			value = ::atoi(this->value.c_str());
 			break;
 
 		default:
-			value[name] = this->value;
+			value = this->value;
 		}
 
 	}

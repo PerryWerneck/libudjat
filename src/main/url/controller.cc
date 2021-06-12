@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/value.h>
 
  namespace Udjat {
 
@@ -38,19 +39,19 @@
 		protocols.push_back(protocol);
 	}
 
-	void URL::Controller::getInfo(Udjat::Response &response) {
+	void URL::Controller::getInfo(Udjat::Response &response) noexcept {
 
-		Json::Value protocols(Json::arrayValue);
+		Value &protocols = response.getValue(Value::Array);
 
 		for(auto protocol : this->protocols) {
 
-			Json::Value value(Json::objectValue);
+			Value &object = protocols.getValue(Value::Object);
 
-			value["id"] = protocol->c_str();
-			value["portname"] = protocol->getDefaultPortName();
-			protocol->getModuleInfo()->get(value);
+			object["id"] = protocol->c_str();
+			object["portname"] = protocol->getDefaultPortName();
+			protocol->getModuleInfo()->get(object);
 
-			protocols.append(value);
+			protocols.append(object);
 		}
 
 		response["protocols"] = protocols;
