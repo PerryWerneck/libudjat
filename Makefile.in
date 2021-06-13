@@ -82,7 +82,6 @@ CFLAGS= \
 	-DPLUGIN_DIR=$(libdir)/$(PRODUCT_NAME)-modules \
 	@ECONF_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
-	@JSONCPP_CFLAGS@ \
 	@SYSTEMD_CFLAGS@
 
 LDFLAGS=\
@@ -93,7 +92,6 @@ LIBS= \
 	@LIBICONV@ \
 	@ECONF_LIBS@ \
 	@PUGIXML_LIBS@ \
-	@JSONCPP_LIBS@ \
 	@SYSTEMD_LIBS@
 
 #---[ Debug Rules ]----------------------------------------------------------------------

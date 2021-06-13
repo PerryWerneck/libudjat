@@ -12,9 +12,6 @@
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
-/* Do we have JSONCPP? */
-#undef HAVE_JSONCPP
-
 /* Define to 1 if you have the `poll' function. */
 #undef HAVE_POLL
 

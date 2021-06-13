@@ -72,19 +72,16 @@ namespace Udjat {
 
 	void Worker::Controller::getInfo(Response &response) noexcept {
 
-		Value &report = response.getValue(Value::Array);
+		response.reset(Value::Array);
 
 		for(auto worker : workers) {
 
-			Value &object = report.getValue(Value::Object);
+			Value &object = response.append(Value::Object);
 
 			object["name"] = worker.second->name;
 			worker.second->info->get(object);
 
-			report.append(object);
 		}
-
-		response["workers"] = report;
 
 	}
 

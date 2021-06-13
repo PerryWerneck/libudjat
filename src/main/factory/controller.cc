@@ -16,19 +16,16 @@ namespace Udjat {
 
 	void Factory::Controller::getInfo(Response &response) noexcept {
 
-		Value &report = response.getValue(Value::Array);
+		response.reset(Value::Array);
 
 		for(auto factory : factories) {
 
-			Value &value  = report.getValue(Value::Object);
+			Value &value  = response.append(Value::Object);
 
 			value["name"] = factory.second->name;
 			factory.second->info->get(value);
 
-			report.append(value);
 		}
-
-		response["factories"] = report;
 
 	}
 

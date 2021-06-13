@@ -41,20 +41,17 @@
 
 	void URL::Controller::getInfo(Udjat::Response &response) noexcept {
 
-		Value &protocols = response.getValue(Value::Array);
+		response.reset(Value::Array);
 
 		for(auto protocol : this->protocols) {
 
-			Value &object = protocols.getValue(Value::Object);
+			Value &object = response.append(Value::Object);
 
 			object["id"] = protocol->c_str();
 			object["portname"] = protocol->getDefaultPortName();
 			protocol->getModuleInfo()->get(object);
 
-			protocols.append(object);
 		}
-
-		response["protocols"] = protocols;
 
 	}
 

@@ -47,19 +47,17 @@ namespace Udjat {
 
 	void Module::Controller::getInfo(Response &response) noexcept {
 
-		Value &modules = response.getValue(Value::Array);
+		response.reset(Value::Array);
 
 		for(auto module : this->modules) {
 
-			Value &object = modules.getValue(Value::Object);
+			Value &object = response.append(Value::Object);
 
 			object["name"] = module->name;
 			module->info->get(object);
-			modules.append(object);
 
 		}
 
-		response["modules"] = modules;
 	}
 
 

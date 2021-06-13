@@ -60,10 +60,11 @@
 		virtual Value & operator[](const char *name) = 0;
 
 		/// @brief Convert Value to 'array' and insert child.
-		virtual Value & append(Value &value) = 0;
+		/// @return Array entry.
+		virtual Value & append(const Type type = Object) = 0;
 
-		/// @brief Value factory.
-		virtual Value & getValue(const Type type = Undefined) = 0;
+		/// @brief Clear contents, set value type.
+		virtual Value & reset(const Type type) = 0;
 
 		/// @brief Convert value to 'object' and insert child.
 		virtual Value & set(const Value &value) = 0;

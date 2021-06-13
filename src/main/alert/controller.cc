@@ -118,18 +118,11 @@
 		if(request != Request::Get)
 			return false;
 
-		Value &report = response.getValue(Value::Array);
+		response.reset(Value::Array);
 
 		for(auto event : events) {
-
-			Value &value = report.getValue(Value::Object);
-
-			event->get(value);
-			report.append(value);
-
+			event->get(response.append(Value::Object));
 		}
-
-		response["alerts"] = report;
 
 		return true;
 
@@ -182,17 +175,14 @@
 	void Alert::Controller::getInfo(Response &response) noexcept {
 		lock_guard<mutex> lock(guard);
 
-		Value &alerts = response.getValue(Value::Array);
+		response.reset(Value::Array);
 
 		for(auto event : this->events) {
 
-			Value &value = alerts.getValue(Value::Object);
+			Value &value = response.append(Value::Object);
 			event->get(value);
-			alerts.append(value);
 
 		}
-
-		response["alerts"] = alerts;
 
 	}
 
