@@ -10,7 +10,7 @@ module_path=${libdir}/@PRODUCT_NAME@-modules
 Name: udjat
 Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
-Libs: -ludjat @PUGIXML_LIBS@ @JSONCPP_LIBS@
-Libs.private: @LIBS@ @ECONF_LIBS@ @DBUS_LIBS@ 
-Cflags: -I@includedir@ @PUGIXML_CFLAGS@ @JSONCPP_CFLAGS@
+Libs: -ludjat @PUGIXML_LIBS@
+Libs.private: @LIBS@ @ECONF_LIBS@ 
+Cflags: -I@includedir@ @PUGIXML_CFLAGS@
 
