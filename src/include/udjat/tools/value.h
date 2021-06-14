@@ -27,13 +27,7 @@
 
 	/// @brief Abstract value holding untyped data.
 	class UDJAT_API Value {
-	protected:
-		Value() { };
-
 	public:
-
-		Value(const Value &) = delete;
-		Value(const Value *) = delete;
 
 		/// @brief Value type.
 		enum Type : uint8_t {
@@ -50,9 +44,6 @@
 
 		/// @brief Has any value?
 		virtual bool isNull() const = 0;
-
-		/// @brief Convert value to string.
-		virtual std::string to_string() const = 0;
 
 		/// @brief Convert Value to 'object' and insert child.
 		/// @return Null value inserted to object.

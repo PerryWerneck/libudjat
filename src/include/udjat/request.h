@@ -53,17 +53,23 @@
 			virtual ~Report();
 
 			virtual Report & push_back(const char *str) = 0;
-			virtual std::string to_string() = 0;
 
-			virtual Report & push_back(const std::string &str);
+			virtual Report & push_back(const std::string &value);
+
+			virtual Report & push_back(const short value);
+			virtual Report & push_back(const unsigned short value);
+
+			virtual Report & push_back(const int value);
+			virtual Report & push_back(const unsigned int value);
+
+			virtual Report & push_back(const long value);
+			virtual Report & push_back(const unsigned long value);
+
+			virtual Report & push_back(const TimeStamp value);
 			virtual Report & push_back(const bool value);
-			virtual Report & push_back(const TimeStamp &timestamp);
-			virtual Report & push_back(const int8_t value);
-			virtual Report & push_back(const int16_t value);
-			virtual Report & push_back(const int32_t value);
-			virtual Report & push_back(const uint8_t value);
-			virtual Report & push_back(const uint16_t value);
-			virtual Report & push_back(const uint32_t value);
+
+			virtual Report & push_back(const float value);
+			virtual Report & push_back(const double value);
 
 			template <typename T>
 			Report & push_back(const T &value) {

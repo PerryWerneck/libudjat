@@ -82,35 +82,43 @@
 		return *this;
 	}
 
+	Report & Report::push_back(const short value) {
+		return push_back(std::to_string((int) value));
+	}
+
+	Report & Report::push_back(const unsigned short value) {
+		return push_back(std::to_string(value));
+	}
+
+	Report & Report::push_back(const int value) {
+		return push_back(std::to_string(value));
+	}
+
+	Report & Report::push_back(const unsigned int value) {
+		return push_back(std::to_string(value));
+	}
+
+	Report & Report::push_back(const long value) {
+		return push_back(std::to_string(value));
+	}
+
+	Report & Report::push_back(const unsigned long value) {
+		return push_back(std::to_string(value));
+	}
+
+	Report & Report::push_back(const TimeStamp value) {
+		return push_back(value.to_string(TIMESTAMP_FORMAT_JSON));
+	}
+
 	Report & Report::push_back(const bool value) {
 		return push_back(value ? 1 : 0);
 	}
 
-	Report & Report::push_back(const TimeStamp &timestamp) {
-		return push_back(timestamp.to_string(TIMESTAMP_FORMAT_JSON));
-	}
-
-	Report & Report::push_back(const int8_t value) {
+	Report & Report::push_back(const float value) {
 		return push_back(std::to_string(value));
 	}
 
-	Report & Report::push_back(const int16_t value) {
-		return push_back(std::to_string(value));
-	}
-
-	Report & Report::push_back(const int32_t value) {
-		return push_back(std::to_string(value));
-	}
-
-	Report & Report::push_back(const uint8_t value) {
-		return push_back(std::to_string(value));
-	}
-
-	Report & Report::push_back(const uint16_t value) {
-		return push_back(std::to_string(value));
-	}
-
-	Report & Report::push_back(const uint32_t value) {
+	Report & Report::push_back(const double value) {
 		return push_back(std::to_string(value));
 	}
 
