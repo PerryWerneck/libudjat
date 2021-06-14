@@ -18,7 +18,6 @@
  */
 
  #include "private.h"
- #include <json/json.h>
 
  namespace Udjat {
 

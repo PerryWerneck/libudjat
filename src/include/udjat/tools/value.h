@@ -38,15 +38,14 @@
 		/// @brief Value type.
 		enum Type : uint8_t {
 			Undefined,			///< @brief 'null' value.
+			Array,				///< @brief Array value (ordered list).
+			Object,				///< @brief Object value (collection of name/value pairs).
+			String,				///< @brief UTF-8 string value.
+			Timestamp,			///< @brief Timestamp value.
 			Signed,				///< @brief Signed integer value.
 			Unsigned,			///< @brief Unsigned integer value.
 			Real,				///< @brief Double value.
-			Percent,			///< @brief Percent value (Float in range 0.00 to 100.0)
-			Timestamp,			///< @brief Timestamp value.
-			String,				///< @brief UTF-8 string value.
 			Boolean,			///< @brief Bool value.
-			Array,				///< @brief Array value (ordered list).
-			Object				///< @brief Object value (collection of name/value pairs).
 		};
 
 		/// @brief Has any value?
