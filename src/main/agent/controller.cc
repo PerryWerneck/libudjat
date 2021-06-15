@@ -84,7 +84,7 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::work(Request &request, Response &response) const {
 
-		if(!(request == Request::Get || request == Request::Head))
+		if(!(request == Request::Type::Get || request == Request::Type::Head))
 			return false;
 
 		auto agent = find(request.c_str());
@@ -96,7 +96,7 @@ namespace Udjat {
 		// First get head to check for updates.
 		agent->head(response);
 
-		if(request == Request::Get) {
+		if(request == Request::Type::Get) {
 			agent->get(request,response);
 		}
 

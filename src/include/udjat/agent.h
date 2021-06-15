@@ -42,7 +42,6 @@
 
 				struct {
 					time_t last = 0;		///< @brief Timestamp of the last update.
-					//time_t expires = 0;		///< @brief Is the current state valid?
 					time_t next = 0;		///< @brief Timestamp of the next update.
 					time_t running = 0;		///< @brief Non zero if the update is running.
 					time_t timer = 0;		///< @brief Update time (0=No update).

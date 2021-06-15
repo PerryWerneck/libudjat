@@ -44,13 +44,6 @@
 		class UDJAT_API Response {
 		protected:
 
-			enum Type : uint8_t {
-				custom,				///< @brief Response is expecting a custom defined data.
-				json,				///< @brief Response is expecting JSON data.
-				xml,				///< @brief Response is expecting XML data.
-				text				///< @brief Response is expecting Text plain data.
-			} type = custom;
-
 			struct {
 				int code = 0;		///< @brief Response error code.
 				std::string text;	///< @brief Response status.

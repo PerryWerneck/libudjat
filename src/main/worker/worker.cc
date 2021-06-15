@@ -59,7 +59,7 @@ namespace Udjat {
 	}
 
 	bool Worker:: work(Request &request, Response &response) const {
-		if(request == Request::Get) {
+		if(request == Request::Type::Get) {
 			get(request,response);
 			return true;
 		}

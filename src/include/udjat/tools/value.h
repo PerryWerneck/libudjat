@@ -62,6 +62,9 @@
 		/// @brief Set string to value
 		virtual Value & set(const char *value, const Type type = String) = 0;
 
+		/// @brief Set a percentual from 0.0 to 1.0
+		virtual Value & setFraction(const float fraction);
+
 		virtual Value & set(const std::string &value, const Type type = String);
 
 		virtual Value & set(const short value);

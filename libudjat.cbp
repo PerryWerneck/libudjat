@@ -60,6 +60,7 @@
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
+		<Unit filename="src/include/udjat/tools/mimetype.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />
@@ -144,6 +145,7 @@
 		<Unit filename="src/tools/mainloop/service.cc" />
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
+		<Unit filename="src/tools/mimetype.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />

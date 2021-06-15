@@ -26,7 +26,7 @@
 
 namespace Udjat {
 
-	const char * Request::typeNames[Request::Type::Count] = {
+	const char * Request::typeNames[(size_t) Request::Type::Count] = {
 		"GET",
 		"HEAD",
 		"POST",
@@ -54,7 +54,7 @@ namespace Udjat {
 
 		}
 
-		return Request::Get;
+		return Request::Type::Get;
 	}
 
 

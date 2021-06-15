@@ -115,7 +115,7 @@
 
 	bool Alert::Controller::work(Request &request, Response &response) const {
 
-		if(request != Request::Get)
+		if(request != Request::Type::Get)
 			return false;
 
 		response.reset(Value::Array);

@@ -11,6 +11,7 @@
 	#include <udjat/tools/timestamp.h>
 	#include <udjat/tools/value.h>
 	#include <memory>
+	#include <udjat/tools/mimetype.h>
 
 	namespace Udjat {
 
@@ -91,6 +92,9 @@
 			/// @brief is the response valid?
 			bool valid = true;
 
+			/// @brief Response type.
+			MimeType type = MimeType::custom;
+
 		public:
 
 			Response();
@@ -101,11 +105,19 @@
 			/// @brief Set timestamp for data.
 			void setModificationTimestamp(const time_t time);
 
+			inline bool operator ==(const MimeType type) const noexcept {
+				return this->type == type;
+			}
+
+			inline bool operator !=(const MimeType type) const noexcept {
+				return this->type != type;
+			}
+
 		};
 
 		class UDJAT_API Request {
 		public:
-			enum Type {
+			enum class Type : uint8_t {
 				Get,		///< @brief Requests a representation of the specified resource; only retrieve data.
 				Head,		///< @brief Asks for a response identical to that of a GET without body.
 				Post,		///< @brief Submit an entity to the specified resource.
@@ -119,14 +131,14 @@
 				Count		///< @brief Type count.
 			};
 
-			static const char *typeNames[Type::Count];
+			static const char *typeNames[(size_t) Type::Count];
 
 		private:
 			std::string path;
-			Type type = Get;
+			Type type = Type::Get;
 
 		public:
-			Request(const char *path, Type type = Get);
+			Request(const char *path, Type type = Type::Get);
 			Request(const char *path, const char *type);
 
 			const char *c_str() const {

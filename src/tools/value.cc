@@ -19,10 +19,18 @@
 
  #include <udjat/tools/value.h>
  #include <string>
+ #include <sstream>
+ #include <iomanip>
 
  using namespace std;
 
  namespace Udjat {
+
+	Value & Value::setFraction(const float fraction) {
+		std::stringstream out;
+		out << std::fixed << std::setprecision(2) << (fraction *100);
+		return set(out.str(),Value::Real);
+	}
 
 	Value & Value::set(const string &value, const Type type) {
 		return set(value.c_str(),type);

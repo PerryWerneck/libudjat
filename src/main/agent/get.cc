@@ -35,37 +35,6 @@
 		return "";
 	}
 
-	/*
-	void Abstract::Agent::get(Json::Value &value, const bool children, const bool state) {
-
-
-		// Get
-		if(state) {
-			auto state = Json::Value(Json::objectValue);
-			this->state.active->get(state);
-			value["state"] = state;
-
-			if(this->state.activation) {
-				value["state"]["activation"] = TimeStamp(this->state.activation).to_string(TIMESTAMP_FORMAT_JSON);
-			} else {
-				value["state"]["activation"] = false;
-			}
- 		}
-
-		// Get children values
-		if(children) {
-			auto cvalues = Json::Value(Json::objectValue);
-			for(auto child : this->children) {
-				auto values = Json::Value(Json::objectValue);
-				child->get(values,false,true);
-				cvalues[child->getName()] = values;
-			}
-			value["children"] = cvalues;
-		}
-
-	}
-	*/
-
 	void Abstract::Agent::get(const Request &request, Report &report) {
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
 	}
@@ -83,18 +52,14 @@
 		response["icon"] = this->icon;
 
 		// Get agent state
-
-		/*
-		auto state = Json::Value(Json::objectValue);
+		auto &state = response["state"];
 		this->state.active->get(state);
-		value["state"] = state;
 
 		if(this->state.activation) {
-			value["state"]["activation"] = TimeStamp(this->state.activation).to_string(TIMESTAMP_FORMAT_JSON);
+			state["activation"] = TimeStamp(this->state.activation);
 		} else {
-			value["state"]["activation"] = false;
+			state["activation"] = false;
 		}
-		*/
 
 	}
 
