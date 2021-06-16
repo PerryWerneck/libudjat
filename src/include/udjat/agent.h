@@ -74,6 +74,9 @@
 
 			protected:
 
+				/// @brief Allow use of super:: for acessing abstract::agent methods.
+				typedef Abstract::Agent super;
+
 				/// @brief Agent label.
 				const char * label = "";
 
@@ -272,7 +275,7 @@
 					if(state->compare(this->value))
 						return state;
 				}
-				return Abstract::Agent::stateFromValue();
+				return super::stateFromValue();
 			}
 
 			Udjat::Value & get(Udjat::Value &value) override {
@@ -345,7 +348,7 @@
 					if(state->compare(this->value))
 						return state;
 				}
-				return Abstract::Agent::stateFromValue();
+				return super::stateFromValue();
 			}
 
 			Udjat::Value & get(Udjat::Value &value) override {
@@ -420,7 +423,7 @@
 					if(state->compare(this->value))
 						return state;
 				}
-				return Abstract::Agent::stateFromValue();
+				return super::stateFromValue();
 			}
 
 			/// @brief Insert state.

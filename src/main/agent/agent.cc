@@ -39,7 +39,7 @@ namespace Udjat {
 
 	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name) {
 
-		state.active = Abstract::Agent::stateFromValue();
+		state.active = stateFromValue();
 
 		try {
 
