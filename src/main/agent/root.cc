@@ -124,7 +124,7 @@
 
 			void get(const Request &request, Response &response) override {
 
-				Abstract::Agent::get(request,response);
+				getDetails(response);
 
 				struct utsname uts;
 

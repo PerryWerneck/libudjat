@@ -121,6 +121,9 @@
 				/// @brief Set 'on-demand' option.
 				void setOndemand() noexcept;
 
+				/// @brief Set agent details on value.
+				Value & getDetails(Value &response) const;
+
 			public:
 
 				/// @brief Load agents from xml.file
@@ -219,7 +222,7 @@
 				/// @brief Adds cache and update information to the response.
 				void head(Response &response);
 
-				virtual Udjat::Value & get(Udjat::Value &value);
+				virtual Value & get(Value &value);
 				virtual void get(const Request &request, Response &response);
 				virtual void get(const Request &request, Report &report);
 
