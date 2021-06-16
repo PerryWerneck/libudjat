@@ -163,11 +163,15 @@
 		class UDJAT_API State : public Abstract::State {
 		private:
 
-			/// @brief State value;
-			T from;
-			T to;
-
 			std::vector<std::shared_ptr<Alert>> alerts;
+
+		protected:
+
+			/// @brief Minimum value for state activation.
+			T from;
+
+			/// @brief Maximum value for state activation.
+			T to;
 
 		public:
 			State(const char *name, const T f, const T t, const Level level, const char *summary = "", const char *body = "")
