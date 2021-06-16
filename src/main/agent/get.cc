@@ -41,9 +41,7 @@
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
 
-		// Get agent value.
-
-		// get(response["value"]);
+		get(response["value"]);
 
 		response["name"] = this->getName();
 		response["summary"] = this->summary;
