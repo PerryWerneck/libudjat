@@ -39,7 +39,7 @@
 	}
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
-		get(getDetails(response)["value"]);
+		this->get(getDetails(response)["value"]);
 	}
 
 	Value & Abstract::Agent::getDetails(Value &value) const {
