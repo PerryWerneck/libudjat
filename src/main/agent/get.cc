@@ -26,7 +26,7 @@
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) {
-		// It's just a placeholder here. Don't set any value.
+		value = false;
 		return value;
 	}
 	#pragma GCC diagnostic pop
@@ -40,6 +40,8 @@
 	}
 
 	void Abstract::Agent::get(const Request &request, Response &response) {
+
+		// Get agent value.
 
 		get(response["value"]);
 
