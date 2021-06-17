@@ -89,15 +89,16 @@
 			/// @brief Timestamp of data.
 			time_t modification = 0;
 
-			/// @brief is the response valid?
-			bool valid = true;
-
 			/// @brief Response type.
 			MimeType type = MimeType::custom;
 
+			/// @brief is the response valid?
+			bool valid = true;
+
 		public:
 
-			Response();
+			constexpr Response(const MimeType m = MimeType::custom)
+			: expiration(0), modification(0), type(m) { }
 
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(const time_t time);
@@ -111,6 +112,14 @@
 
 			inline bool operator !=(const MimeType type) const noexcept {
 				return this->type != type;
+			}
+
+			inline const MimeType getType() const noexcept {
+				return this->type;
+			}
+
+			inline operator MimeType() const noexcept {
+				return this->type;
 			}
 
 		};

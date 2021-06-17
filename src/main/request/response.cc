@@ -8,8 +8,6 @@
 
 namespace Udjat {
 
-	Response::Response() : expiration(0), modification(0) { }
-
 	void Response::setExpirationTimestamp(const time_t time) {
 
 		if(expiration) {
