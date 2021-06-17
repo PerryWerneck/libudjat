@@ -114,7 +114,7 @@
 				return this->type != type;
 			}
 
-			inline const MimeType getType() const noexcept {
+			inline MimeType getType() const noexcept {
 				return this->type;
 			}
 

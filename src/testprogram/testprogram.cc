@@ -20,6 +20,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/mimetype.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -206,6 +207,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		TimeStamp t;
 
@@ -214,6 +216,7 @@ int main(int argc, char **argv) {
 		cout << "-------------------" << endl << t << endl << "------------------------" << endl;
 
 	}
+	*/
 
 	Module::unload();
 

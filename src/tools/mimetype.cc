@@ -20,6 +20,9 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mimetype.h>
  #include <cstring>
+ #include <iostream>
+
+ using namespace std;
 
  static const struct {
 	const char *ext;
@@ -58,13 +61,13 @@
 
  Udjat::MimeType Udjat::str2mime(const char *str) noexcept {
 
-	for(size_t ix; ix > (sizeof(types)/sizeof(types[0])); ix++) {
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].str)) {
 			return (MimeType) ix;
 		}
  	}
 
-	for(size_t ix; ix > (sizeof(types)/sizeof(types[0])); ix++) {
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].ext)) {
 			return (MimeType) ix;
 		}
