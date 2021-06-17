@@ -29,7 +29,7 @@
 	Value & Value::setFraction(const float fraction) {
 		std::stringstream out;
 		out << std::fixed << std::setprecision(2) << (fraction *100);
-		return set(out.str(),Value::Real);
+		return set(out.str(),Value::Fraction);
 	}
 
 	Value & Value::set(const string &value, const Type type) {
@@ -77,4 +77,31 @@
 	}
 
  }
+
+ namespace std {
+
+ 	const char * to_string(Udjat::Value::Type type) noexcept {
+
+		static const char *typenames[] = {
+			"undefined",
+			"array",
+			"object",
+			"string",
+			"timestamp",
+			"signed",
+			"unsigned",
+			"real",
+			"boolean",
+			"fraction"
+		};
+
+		if( (size_t) type >= (N_ELEMENTS(typenames)) )
+			return "unknown";
+
+		return typenames[type];
+
+ 	}
+
+ }
+
 

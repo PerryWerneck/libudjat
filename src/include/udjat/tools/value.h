@@ -40,6 +40,7 @@
 			Unsigned,			///< @brief Unsigned integer value.
 			Real,				///< @brief Double value.
 			Boolean,			///< @brief Bool value.
+			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
 		};
 
 		/// @brief Has any value?
@@ -93,6 +94,12 @@
 		}
 
 	};
+
+ }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(Udjat::Value::Type type) noexcept;
 
  }
 
