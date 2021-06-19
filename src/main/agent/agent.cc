@@ -167,7 +167,7 @@ namespace Udjat {
 			PACKAGE_BUGREPORT 								// The bugreport address.
 		};
 
-			class DefaultState : public Abstract::State, Factory {
+		class DefaultState : public Abstract::State, Factory {
 		public:
 
 			DefaultState() : Abstract::State(""), Factory("state", &moduleinfo) {

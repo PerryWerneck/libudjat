@@ -118,6 +118,19 @@
 
 			}
 
+			std::shared_ptr<Abstract::State> stateFromValue() const override {
+
+				class ReadyState : public Abstract::State {
+				public:
+					ReadyState() : Abstract::State("ready", ready, "System is ready", "No abnormal state was detected") {
+					}
+
+				};
+
+				return make_shared<ReadyState>();
+
+			}
+
 			virtual ~Agent() {
 				info("root agent was {}","destroyed");
 			}
@@ -136,14 +149,29 @@
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				// TODO: Replace state if level <= Udjat::ready
+				if(!state->isReady()) {
 
-				bool changed = Abstract::Agent::activate(state);
+					// The requested state is not ready, activate it.
 
-				// Update icon based on state.
-				this->icon = (this->getState()->getLevel() <= Udjat::warning ? "computer" : "computer-fail");
+					bool changed = Abstract::Agent::activate(state);
 
-				return changed;
+					// Not ready, update icon.
+					this->icon = "computer-fail";
+
+					return changed;
+
+				}
+
+				if(this->getState()->isReady()) {
+					// Already ok, do not change.
+					return false;
+				}
+
+				super::activate(stateFromValue());
+
+				this->icon = "computer";
+
+				return true;
 			}
 
 		};

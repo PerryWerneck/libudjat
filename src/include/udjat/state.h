@@ -145,6 +145,10 @@
 					return this->level >= critical;
 				}
 
+				inline bool isReady() const noexcept {
+					return this->level <= ready;
+				}
+
 				virtual void get(Udjat::Value &value) const;
 				virtual void get(const Request &request, Response &response) const;
 
