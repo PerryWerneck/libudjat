@@ -55,7 +55,7 @@
 		virtual Value & append(const Type type = Object) = 0;
 
 		/// @brief Clear contents, set value type.
-		virtual Value & reset(const Type type) = 0;
+		virtual Value & reset(const Type type = Undefined) = 0;
 
 		/// @brief Convert value to 'object' and insert child.
 		virtual Value & set(const Value &value) = 0;
