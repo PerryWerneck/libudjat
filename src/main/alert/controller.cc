@@ -103,10 +103,6 @@
 
 		});
 
-#ifndef DEBUG
-		MainLoop::getInstance().reset(this,1,next);
-#endif // DEBUG
-
 	}
 
 	Alert::Controller & Alert::Controller::getInstance() {
@@ -143,9 +139,6 @@
 		{
 			lock_guard<mutex> lock(guard);
 			events.push_back(event);
-#ifndef DEBUG
-			MainLoop::getInstance().reset(this,1,event->alerts.next);
-#endif // DEBUG
 		}
 
 	}

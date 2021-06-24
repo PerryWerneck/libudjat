@@ -328,10 +328,6 @@ namespace Udjat {
 
 			});
 
-#ifndef DEBUG
-			MainLoop::getInstance().reset(this,1,next);
-#endif // DEBUG
-
 		});
 
 	}
