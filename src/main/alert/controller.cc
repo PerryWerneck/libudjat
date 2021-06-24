@@ -46,9 +46,9 @@
 
 	Alert::Controller::Controller() : Worker("alerts",&moduleinfo) {
 
-		MainLoop::getInstance().insert(this, 600, [this](const time_t now){
-			ThreadPool::getInstance().push([this,now]() {
-				onTimer(now);
+		MainLoop::getInstance().insert(this, 600000, [this](){
+			ThreadPool::getInstance().push([this]() {
+				onTimer(time(0));
 			});
 			return true;
 		});
@@ -103,7 +103,9 @@
 
 		});
 
+#ifndef DEBUG
 		MainLoop::getInstance().reset(this,1,next);
+#endif // DEBUG
 
 	}
 
@@ -141,7 +143,9 @@
 		{
 			lock_guard<mutex> lock(guard);
 			events.push_back(event);
+#ifndef DEBUG
 			MainLoop::getInstance().reset(this,1,event->alerts.next);
+#endif // DEBUG
 		}
 
 	}

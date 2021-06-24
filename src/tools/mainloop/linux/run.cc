@@ -55,12 +55,11 @@
 		}
 
 		// Get wait time, update timers.
-		time_t wait = timers.run();
-
+		unsigned long wait = timers.run();
 		nfds += getHandlers(&fds, &szPoll);
 
 		// Wait for event.
-		int nSocks = poll(fds, nfds, wait * 1000);
+		int nSocks = poll(fds, nfds, wait);
 
 		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
 

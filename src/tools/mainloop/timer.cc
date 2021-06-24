@@ -18,9 +18,87 @@
  */
 
  #include "private.h"
+ #include <sys/time.h>
 
  namespace Udjat {
 
+	MainLoop::Timer::Timer(const void *i, unsigned long m, const function<bool()> c)
+		: id(i), interval(m), call(c) {
+
+		next = this->getCurrentTime() + interval;
+
+	}
+
+	unsigned long MainLoop::Timer::getCurrentTime() {
+
+		::timeval tv;
+
+		if(gettimeofday(&tv, NULL) < 0) {
+			throw system_error(errno,system_category(),"Cant get time of day");
+		}
+
+		return (tv.tv_sec * 1000) + (tv.tv_usec /1000);
+
+	}
+
+	unsigned long MainLoop::Timers::run() noexcept {
+
+		lock_guard<mutex> lock(guard);
+
+		unsigned long now = MainLoop::Timer::getCurrentTime();
+		unsigned long next = now + 60000;
+
+		active.remove_if([this,now,&next](Timer &timer) {
+
+			// No interval; looks like the timer was deactivated.
+			// Do I still active? Return true *only* if not running.
+			if(!timer.interval) {
+				return !timer.running;
+			}
+
+			if(timer.next <= now) {
+
+				try {
+
+					if(!timer.call()) {
+						return true;
+					}
+
+				} catch(const std::exception &e) {
+
+					cerr << "MainLoop\tTimer error '" << e.what() << "'" << endl;
+
+				} catch(...) {
+
+					cerr << "MainLoop\tUnexpected error on timer" << endl;
+
+				}
+
+				if(!timer.interval) {
+					return true;
+				}
+
+				timer.next = now + timer.interval;
+
+			}
+
+			next = std::min(next,timer.next);
+
+			return false;
+		});
+
+		return next - now;
+	}
+
+	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
+
+		lock_guard<mutex> lock(guard);
+		timers.active.emplace_back(id,interval,call);
+		wakeup();
+
+	}
+
+	/*
 	MainLoop::Timer::Timer(const void *i, time_t s, const function<bool(const time_t)> c) :
 		id(i),running(0),seconds(s),next(time(0)+s),call(c) { }
 
@@ -116,6 +194,7 @@
 
 		return next - now;
 	}
+	*/
 
  }
 

@@ -84,7 +84,7 @@
 				MainLoop::getInstance().remove(process);
 
 				// Delay reading to avoid timing problems.
-				MainLoop::getInstance().insert(NULL,[process](const time_t now) {
+				MainLoop::getInstance().insert(NULL,100,[process]() {
 
 					// cleanup and delete process on another thread to avoid dead-locks.
 					ThreadPool::getInstance().push([process](){

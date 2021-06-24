@@ -67,7 +67,7 @@
 		//
 		for(auto timer : timers.active) {
 			if(timer.id == id) {
-				timer.seconds = 0;	// When set to '0' the timer will be removed when possible.
+				timer.interval = 0;	// When set to '0' the timer will be removed when possible.
 			}
 		}
 
@@ -86,6 +86,7 @@
 		wakeup();
 	}
 
+	/*
 	void MainLoop::insert(const void *id, time_t seconds, const function<bool(const time_t)> call) {
 		lock_guard<mutex> lock(guard);
 		timers.active.emplace_back(id,seconds,call);
@@ -104,7 +105,7 @@
 		wakeup();
 
 	}
-
+	*/
 
  }
 

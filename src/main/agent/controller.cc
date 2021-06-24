@@ -35,9 +35,9 @@ namespace Udjat {
 
 		cout << "agent\tStarting controller" << endl;
 
-		MainLoop::getInstance().insert(this,1,[this](time_t now) {
+		MainLoop::getInstance().insert(this,1000,[this]() {
 			if(isActive()) {
-				onTimer(now);
+				onTimer(time(0));
 			}
 			return true;
 		});
@@ -328,7 +328,9 @@ namespace Udjat {
 
 			});
 
+#ifndef DEBUG
 			MainLoop::getInstance().reset(this,1,next);
+#endif // DEBUG
 
 		});
 

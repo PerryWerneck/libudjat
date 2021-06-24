@@ -33,15 +33,35 @@
 	class MainLoop::Timer {
 	public:
 
+		/// @brief The timer identifier.
 		const void *id;
+
+		/// @brief Is the timer running.
+		bool running = false;
+
+		/// @brief The interval in milliseconds.
+		unsigned long interval;
+
+		/// @brief The interval in milliseconds.
+		unsigned long next;
+
+		/// @brief The timer method.
+		const function<bool()> call;
+
+		/// @brief Get current timer.
+		static unsigned long getCurrentTime();
+
+		/// @brief Create timer.
+		Timer(const void *id, unsigned long milliseconds, const function<bool()> call);
+
+		/*
 		time_t running;			///< @brief Is timer running?
 		time_t seconds;			///< @brief Timer interval.
 		time_t next;			///< @brief Next Fire.
 
-		const function<bool(const time_t)> call;
 
 		Timer(const void *id, const function<bool(const time_t)> call);
-		Timer(const void *id, time_t seconds, const function<bool(const time_t)> call);
+		*/
 
 	};
 

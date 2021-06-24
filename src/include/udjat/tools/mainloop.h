@@ -82,10 +82,13 @@ namespace Udjat {
 		class Timer;
 
 		struct Timers {
-			time_t def = 600;			///< @brief Default timer value.
-			time_t next = 0;			///< @brief Timestap for next timer.
-			std::list<Timer> active;	///< @brief List of active timers.
-			time_t run() noexcept;
+
+			/// @brief List of active timers.
+			std::list<Timer> active;
+
+			/// @brief Run timers, return miliseconds to next timer.
+			unsigned long run() noexcept;
+
 		} timers;
 
 		/// @brief get FDs.
@@ -138,16 +141,18 @@ namespace Udjat {
 		void insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 		/// @brief Insert timer in the list of event sources.
-		void insert(const void *id, time_t seconds, const std::function<bool(const time_t)> call);
+		/// @param id		Timer id.
+		/// @param interval	Timer interval on miliseconds.
+		void insert(const void *id, unsigned long interval, const std::function<bool()> call);
 
 		/// @brief Insert and emit a timer.
-		void insert(const void *id, const std::function<bool(const time_t)> call);
+		// void insert(const void *id, const std::function<bool(const time_t)> call);
 
 		/// @brief Reset time to 'now'.
 		// void reset(const void *id);
 
 		/// @brief Reset timer to a new value.
-		time_t reset(const void *id, time_t seconds, time_t value = time(0));
+		// time_t reset(const void *id, time_t seconds, time_t value = time(0));
 
 		/// @brief Remove socket/file/timer/module from the list of event sources.
 		void remove(const void *id);

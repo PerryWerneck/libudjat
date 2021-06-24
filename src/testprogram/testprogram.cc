@@ -142,7 +142,7 @@ static void test_url() {
 
 static void test_sub_process() {
 
-	MainLoop::getInstance().insert(0,1,[](const time_t now){
+	MainLoop::getInstance().insert(0,1000,[](){
 		SubProcess::start("ls -ltr");
 		return false;
 	});
