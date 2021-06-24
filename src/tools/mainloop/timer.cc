@@ -29,6 +29,11 @@
 
 	}
 
+	void MainLoop::Timer::reset(unsigned long milliseconds) {
+		interval = milliseconds;
+		next = this->getCurrentTime() + interval;
+	}
+
 	unsigned long MainLoop::Timer::getCurrentTime() {
 
 		::timeval tv;
@@ -98,39 +103,21 @@
 
 	}
 
-	/*
-	MainLoop::Timer::Timer(const void *i, time_t s, const function<bool(const time_t)> c) :
-		id(i),running(0),seconds(s),next(time(0)+s),call(c) { }
-
-
-	time_t MainLoop::reset(const void *id, time_t seconds, time_t time) {
+	void MainLoop::reset(const void *id, unsigned long interval) {
 
 		lock_guard<mutex> lock(guard);
 		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
 
-			if(timer->id == id && timer->seconds) {
-
-				if(seconds > 0)
-					timer->seconds = seconds;
-
-				if(!time)
-					time = ::time(0) + timer->seconds;
-
-				time_t current = timer->next;
-				timer->next = time;
-
-				// If the new timer is lower than the last one wake up main loop to adjust.
-				if(timer->next <= timers.next) {
-					wakeup();
-				}
-
-				return current;
+			if(timer->id == id) {
+				timer->reset(interval);
+				wakeup();
+				break;
 			}
 
 		}
-		return 0;
 	}
 
+	/*
 	MainLoop::Timer::Timer(const void *i, const function<bool(const time_t)> c) : Timer(i,1,c) { }
 
 	time_t MainLoop::Timers::run() noexcept {

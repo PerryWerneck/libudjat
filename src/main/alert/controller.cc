@@ -46,7 +46,7 @@
 
 	Alert::Controller::Controller() : Worker("alerts",&moduleinfo) {
 
-		MainLoop::getInstance().insert(this, 600000, [this](){
+		MainLoop::getInstance().insert(this, 1000, [this](){
 			ThreadPool::getInstance().push([this]() {
 				onTimer(time(0));
 			});

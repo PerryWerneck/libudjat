@@ -145,14 +145,10 @@ namespace Udjat {
 		/// @param interval	Timer interval on miliseconds.
 		void insert(const void *id, unsigned long interval, const std::function<bool()> call);
 
-		/// @brief Insert and emit a timer.
-		// void insert(const void *id, const std::function<bool(const time_t)> call);
-
-		/// @brief Reset time to 'now'.
-		// void reset(const void *id);
-
-		/// @brief Reset timer to a new value.
-		// time_t reset(const void *id, time_t seconds, time_t value = time(0));
+		/// @brief Reset timer to new interval.
+		/// @param id		Timer id.
+		/// @param interval	Timer interval on miliseconds.
+		void reset(const void *id, unsigned long interval);
 
 		/// @brief Remove socket/file/timer/module from the list of event sources.
 		void remove(const void *id);

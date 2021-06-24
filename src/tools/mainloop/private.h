@@ -54,14 +54,8 @@
 		/// @brief Create timer.
 		Timer(const void *id, unsigned long milliseconds, const function<bool()> call);
 
-		/*
-		time_t running;			///< @brief Is timer running?
-		time_t seconds;			///< @brief Timer interval.
-		time_t next;			///< @brief Next Fire.
-
-
-		Timer(const void *id, const function<bool(const time_t)> call);
-		*/
+		/// @brief Reset timer.
+		void reset(unsigned long milliseconds);
 
 	};
 
