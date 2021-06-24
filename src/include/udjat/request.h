@@ -140,18 +140,23 @@
 				Count		///< @brief Type count.
 			};
 
-			static const char *typeNames[(size_t) Type::Count];
-
 		private:
-			std::string path;
 			Type type = Type::Get;
 
-		public:
-			Request(const char *path, Type type = Type::Get);
-			Request(const char *path, const char *type);
+		protected:
 
-			const char *c_str() const {
-				return path.c_str();
+			/// @brief Request name.
+			std::string name;
+
+		public:
+			Request(Type t = Type::Get) : type(t) {
+			}
+
+			Request(const char *t) : type(as_type(t)) {
+			}
+
+			inline const char * c_str() const noexcept {
+				return name.c_str();
 			}
 
 			inline bool operator==(Request::Type) const noexcept {
@@ -162,7 +167,7 @@
 				return this->type != type;
 			}
 
-			Type as_type(const char *type);
+			static Type as_type(const char *type);
 
 			inline Type as_type() const noexcept {
 				return type;
@@ -170,16 +175,16 @@
 
 			bool operator ==(const char *key) const noexcept;
 
-			/// @brief Pop one element from path.
-			std::string pop();
-
 			/// @brief Pop one element from path, scan the list.
 			/// @return Index of the 'popped' element.
 			size_t pop(const char *name, ...) __attribute__ ((sentinel));
 
-			Request & pop(std::string &value);
-			Request & pop(int &value);
-			Request & pop(unsigned int &value);
+			/// @brief Pop one element from path.
+			virtual std::string pop();
+
+			virtual Request & pop(std::string &value);
+			virtual Request & pop(int &value);
+			virtual Request & pop(unsigned int &value);
 
 		};
 

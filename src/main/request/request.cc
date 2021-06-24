@@ -26,25 +26,19 @@
 
 namespace Udjat {
 
-	const char * Request::typeNames[(size_t) Request::Type::Count] = {
-		"GET",
-		"HEAD",
-		"POST",
-		"PUT",
-		"DELETE",
-		"CONNECT",
-		"OPTIONS",
-		"TRACE",
-		"PATCH"
-	};
-
-	Request::Request(const char *p, Request::Type t) : path(p), type(t) {
-	}
-
-	Request::Request(const char *p, const char *t) : path(p), type(as_type(t)) {
-	}
-
 	Request::Type Request::as_type(const char *type) {
+
+		static const char * typeNames[] = {
+			"GET",
+			"HEAD",
+			"POST",
+			"PUT",
+			"DELETE",
+			"CONNECT",
+			"OPTIONS",
+			"TRACE",
+			"PATCH"
+		};
 
 		for(size_t ix = 0; ix < (sizeof(typeNames)/sizeof(typeNames[0]));ix++) {
 
@@ -54,20 +48,25 @@ namespace Udjat {
 
 		}
 
+		cerr << "Unexpected request type '" << type << "' using '" << typeNames[(int) Request::Type::Get] << "'" << endl;
+
 		return Request::Type::Get;
 	}
 
 
 	bool Request::operator ==(const char *key) const noexcept {
 
-		if(path.empty())
+		if(name.empty())
 			return false;
 
-		return strcasecmp(this->path.c_str(),key) == 0;
+		return strcasecmp(this->name.c_str(),key) == 0;
 	}
 
 	string Request::pop() {
 
+		throw system_error(ENODATA,system_category(),"This request has no arguments");
+
+		/*
 		if(path.empty()) {
 			throw system_error(ENOENT,system_category(),"The path is incomplete");
 		}
@@ -83,6 +82,7 @@ namespace Udjat {
 		path.erase(0,pos+1);
 
 		return rc;
+		*/
 	}
 
 	size_t Request::pop(const char *str, ...) {
@@ -109,6 +109,9 @@ namespace Udjat {
 
 	Request & Request::pop(std::string &value) {
 
+		value = pop();
+
+		/*
 		if(path.empty()) {
 			value.clear();
 			return *this;
@@ -123,6 +126,7 @@ namespace Udjat {
 
 		value = string(path.c_str(),pos);
 		path.erase(0,pos+1);
+		*/
 
 		return *this;
 
@@ -138,7 +142,7 @@ namespace Udjat {
 	Request & Request::pop(unsigned int &value) {
 		string v;
 		pop(v);
-		value = stoi(v);
+		value = (unsigned int) stoi(v);
 		return *this;
 	}
 
