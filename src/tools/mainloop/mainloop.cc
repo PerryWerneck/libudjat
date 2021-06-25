@@ -65,9 +65,9 @@
 		//
 		// We can't simple remove the handlers; they can be waiting for a slot to run.
 		//
-		for(auto timer : timers.active) {
-			if(timer.id == id) {
-				timer.interval = 0;	// When set to '0' the timer will be removed when possible.
+		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
+			if(timer->id == id) {
+				timer->interval = 0;	// When set to '0' the timer will be removed when possible.
 			}
 		}
 
@@ -85,27 +85,6 @@
 		handlers.emplace_back(id,fd,event,call);
 		wakeup();
 	}
-
-	/*
-	void MainLoop::insert(const void *id, time_t seconds, const function<bool(const time_t)> call) {
-		lock_guard<mutex> lock(guard);
-		timers.active.emplace_back(id,seconds,call);
-		if(timers.next == 0 || (time(0)+seconds) < timers.next) {
-			wakeup();
-		}
-	}
-
-	void MainLoop::insert(const void *id, const std::function<bool(const time_t)> call) {
-
-		lock_guard<mutex> lock(guard);
-
-		Timer tm(id,call);
-		tm.next = time(nullptr);
-		timers.active.push_back(tm);
-		wakeup();
-
-	}
-	*/
 
  }
 
