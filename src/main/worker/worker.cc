@@ -42,16 +42,12 @@ namespace Udjat {
 		Controller::getInstance().getInfo(response);
 	}
 
-	bool Worker::work(const char *name,Request &request, Response &response) {
+	const Worker * Worker::find(const char *name) {
+		return Worker::Controller::getInstance().find(name);
+	}
 
-		bool rc = Worker::Controller::getInstance().find(name)->work(request,response);
-
-		if(response.isNull()) {
-			throw system_error(ENODATA,system_category(),"Empty response");
-		}
-
-		return rc;
-
+	bool Worker::work(const char *name, Request &request, Response &response) {
+		return find(name)->work(request,response);
 	}
 
 	void Worker::get(Request &request, Response &response) const {

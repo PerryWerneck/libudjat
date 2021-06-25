@@ -36,9 +36,6 @@ namespace Udjat {
 		/// @brief Information about the worker module.
 		const ModuleInfo *info;
 
-		/// @brief Process only the 'get' method.
-		virtual void get(Request &request, Response &response) const;
-
 	public:
 		Worker(const char *name, const ModuleInfo *info);
 		Worker(const char *name);
@@ -53,6 +50,12 @@ namespace Udjat {
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Response &response);
 		static void getInfo(Response &response);
+
+		/// @brief Get Worker by name.
+		static const Worker * find(const char *name);
+
+		/// @brief Process only the 'get' method.
+		virtual void get(Request &request, Response &response) const;
 
 		size_t hash() const;
 

@@ -41,7 +41,7 @@
 
 	std::string URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
 
-		auto rsp = call(url,method,"application/json; charset=utf-8",payload.c_str());
+		auto rsp = call(url,method,"application/json; charset=utf-8",payload.getPath());
 		if(rsp->getStatusCode() != 200) {
 			throw runtime_error(rsp->getStatusMessage());
 		}

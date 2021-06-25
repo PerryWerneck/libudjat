@@ -145,8 +145,11 @@
 
 		protected:
 
-			/// @brief Request name.
-			std::string name;
+			/// @brief Method name.
+			std::string method;
+
+			/// @brief Request path.
+			std::string path;
 
 		public:
 			Request(Type t = Type::Get) : type(t) {
@@ -155,8 +158,14 @@
 			Request(const char *t) : type(as_type(t)) {
 			}
 
-			inline const char * c_str() const noexcept {
-				return name.c_str();
+			/// @brief Get the request method.
+			inline const char * getMethod() const noexcept {
+				return method.c_str();
+			}
+
+			/// @brief Get the request path.
+			inline const char * getPath() const noexcept {
+				return path.c_str();
 			}
 
 			inline bool operator==(Request::Type) const noexcept {

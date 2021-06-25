@@ -87,7 +87,7 @@ namespace Udjat {
 		if(!(request == Request::Type::Get || request == Request::Type::Head))
 			return false;
 
-		auto agent = find(request.c_str());
+		auto agent = find(request.getPath());
 
 		if(!agent) {
 			throw system_error(ENOENT,system_category(),"Can't find requested agent");

@@ -56,19 +56,16 @@ namespace Udjat {
 
 	bool Request::operator ==(const char *key) const noexcept {
 
-		if(name.empty())
+		if(method.empty())
 			return false;
 
-		return strcasecmp(this->name.c_str(),key) == 0;
+		return strcasecmp(this->method.c_str(),key) == 0;
 	}
 
 	string Request::pop() {
 
-		throw system_error(ENODATA,system_category(),"This request has no arguments");
-
-		/*
 		if(path.empty()) {
-			throw system_error(ENOENT,system_category(),"The path is incomplete");
+			throw system_error(ENODATA,system_category(),"This request has no arguments");
 		}
 
 		size_t pos = path.find('/');
@@ -82,7 +79,7 @@ namespace Udjat {
 		path.erase(0,pos+1);
 
 		return rc;
-		*/
+
 	}
 
 	size_t Request::pop(const char *str, ...) {
@@ -110,24 +107,6 @@ namespace Udjat {
 	Request & Request::pop(std::string &value) {
 
 		value = pop();
-
-		/*
-		if(path.empty()) {
-			value.clear();
-			return *this;
-		}
-
-		size_t pos = path.find('/');
-		if(pos == string::npos) {
-			value = path;
-			path.clear();
-			return *this;
-		}
-
-		value = string(path.c_str(),pos);
-		path.erase(0,pos+1);
-		*/
-
 		return *this;
 
 	}
