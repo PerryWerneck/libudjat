@@ -55,7 +55,12 @@ namespace Udjat {
 		static const Worker * find(const char *name);
 
 		/// @brief Process only the 'get' method.
-		virtual void get(Request &request, Response &response) const;
+		/// @return false if the request method was not allowed.
+		virtual bool get(Request &request, Response &response) const;
+
+		/// @brief Process only the 'head' method.
+		/// @return false if the request method was not allowed.
+		virtual bool head(Request &request, Response &response) const;
 
 		size_t hash() const;
 

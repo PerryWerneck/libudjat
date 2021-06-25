@@ -82,26 +82,31 @@ namespace Udjat {
 		return controller;
 	}
 
-	bool Abstract::Agent::Controller::work(Request &request, Response &response) const {
-
-		if(!(request == Request::Type::Get || request == Request::Type::Head))
-			return false;
+	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
 
 		auto agent = find(request.getPath());
 
 		if(!agent) {
-			throw system_error(ENOENT,system_category(),"Can't find requested agent");
+			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
 		}
 
-		// First get head to check for updates.
 		agent->head(response);
-
-		if(request == Request::Type::Get) {
-			agent->get(request,response);
-		}
+		agent->get(request,response);
 
 		return true;
+	}
 
+	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
+
+		auto agent = find(request.getPath());
+
+		if(!agent) {
+			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
+		}
+
+		agent->head(response);
+
+		return true;
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) const {

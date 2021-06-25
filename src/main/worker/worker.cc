@@ -50,16 +50,27 @@ namespace Udjat {
 		return find(name)->work(request,response);
 	}
 
-	void Worker::get(Request &request, Response &response) const {
-		throw system_error(ENODATA,system_category(),"No 'get' method on this worker");
+	bool Worker::get(Request &request, Response &response) const {
+		return false;
+	}
+
+	bool Worker::head(Request &request, Response &response) const {
+		return false;
 	}
 
 	bool Worker:: work(Request &request, Response &response) const {
-		if(request == Request::Type::Get) {
-			get(request,response);
-			return true;
+
+		switch(request.as_type()) {
+		case Request::Type::Get:
+			return get(request,response);
+
+		case Request::Type::Head:
+			return head(request,response);
+
 		}
+
 		return false;
+
 	}
 
 	size_t Worker::hash() const {
