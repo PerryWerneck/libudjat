@@ -51,9 +51,9 @@
 		lock_guard<mutex> lock(guard);
 
 		unsigned long now = MainLoop::Timer::getCurrentTime();
-		unsigned long next = now + 60000;
+		unsigned long wait = 60000;
 
-		active.remove_if([this,now,&next](Timer &timer) {
+		active.remove_if([this,now,&wait](Timer &timer) {
 
 			// No interval; looks like the timer was deactivated.
 			// Do I still active? Return true *only* if not running.
@@ -84,15 +84,19 @@
 				}
 
 				timer.next = now + timer.interval;
+				wait = std::min(wait,timer.interval);
+
+			} else {
+
+				wait = std::min(wait,timer.next-now);
 
 			}
 
-			next = std::min(next,timer.next);
-
 			return false;
+
 		});
 
-		return next - now;
+		return wait;
 	}
 
 	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
