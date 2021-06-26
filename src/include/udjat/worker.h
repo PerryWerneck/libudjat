@@ -49,7 +49,14 @@ namespace Udjat {
 		/// @brief Execute request, update response
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Response &response);
+
+		/// @brief Get array with information about all registered worker.
 		static void getInfo(Response &response);
+
+		/// @brief Get module information.
+		inline const ModuleInfo * getModuleInfo() const noexcept {
+			return this->info;
+		}
 
 		/// @brief Get Worker by name.
 		static const Worker * find(const char *name);
