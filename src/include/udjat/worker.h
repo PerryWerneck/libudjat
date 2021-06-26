@@ -54,8 +54,8 @@ namespace Udjat {
 		static void getInfo(Response &response);
 
 		/// @brief Get module information.
-		inline const ModuleInfo * getModuleInfo() const noexcept {
-			return this->info;
+		inline const ModuleInfo & getModuleInfo() const noexcept {
+			return *this->info;
 		}
 
 		/// @brief Get Worker by name.
