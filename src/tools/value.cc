@@ -61,7 +61,10 @@
 	}
 
 	Value & Value::set(const TimeStamp value) {
-		return set(value.to_string(), Timestamp);
+		if(value) {
+			return set(value.to_string(), Timestamp);
+		}
+		return set("", Timestamp);
 	}
 
 	Value & Value::set(const bool value) {
