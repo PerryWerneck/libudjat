@@ -31,13 +31,18 @@
 
 		/// @brief A time value (in seconds)
 		class UDJAT_API TimeStamp {
-		public:
-
+		private:
 			time_t value;
+
+		public:
 
 			constexpr TimeStamp(time_t t = time(nullptr)) : value(t) { }
 
 			std::string to_string(const char *format = "%x %X") const noexcept;
+
+			inline operator bool() const noexcept {
+				return value != 0;
+			}
 
 			/// @brief Reseta valor com atraso.
 			///

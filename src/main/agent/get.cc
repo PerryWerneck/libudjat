@@ -53,12 +53,7 @@
 		// Get agent state
 		auto &state = value["state"];
 		this->state.active->get(state);
-
-		if(this->state.activation) {
-			state["activation"] = TimeStamp(this->state.activation);
-		} else {
-			state["activation"] = false;
-		}
+		state["activation"] = TimeStamp(this->state.activation);
 
 		return value;
 
