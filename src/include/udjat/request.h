@@ -163,6 +163,13 @@
 				return method.c_str();
 			}
 
+			/// @brief Get the requested action.
+			virtual const std::string getAction();
+
+			/// @brief Select action from list.
+			/// @return Index of the selected action.
+			size_t getAction(const char *name, ...) __attribute__ ((sentinel));
+
 			/// @brief Get the request path.
 			inline const char * getPath() const noexcept {
 				return path.c_str();

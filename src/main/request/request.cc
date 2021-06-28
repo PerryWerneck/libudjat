@@ -21,6 +21,7 @@
 #include "private.h"
 #include <cstring>
 #include <cstdarg>
+#include <udjat/tools/logger.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -101,6 +102,34 @@ namespace Udjat {
 		}
 		va_end(args);
 		throw system_error(ENOENT,system_category(),string{"Cant find '"} + key + "' on request");
+
+	}
+
+	const std::string Request::getAction() {
+		string rc;
+		pop(rc);
+		return rc;
+	}
+
+	size_t Request::getAction(const char *str, ...) {
+
+		string key = getAction();
+		size_t index = 0;
+
+		va_list args;
+		va_start(args, str);
+		while(str) {
+
+			if(!strcasecmp(key.c_str(),str)) {
+				va_end(args);
+				return index;
+			}
+
+			index++;
+			str = va_arg(args, const char *);
+		}
+		va_end(args);
+		throw system_error(ENOENT,system_category(),Logger::Message("The action '{}' is not registered",key));
 
 	}
 
