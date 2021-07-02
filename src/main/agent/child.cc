@@ -31,7 +31,7 @@
 		}
 
 #ifdef DEBUG
-		cout << getName() << "\tInserting child '" << child->getName() << endl;
+		cout << getName() << "\tInserting child '" << child->getName() << "'" << endl;
 #endif // DEBUG
 
 		child->parent = this;

@@ -53,6 +53,13 @@
 			Quark(const Quark *src);
 			Quark(const pugi::xml_attribute &attribute);
 
+			/// @brief Create quark from XML attribute
+			/// @param node	XML node.
+			/// @param Attribute name.
+			/// @param def Default value.
+			/// @param upsearch If true search the parent nodes.
+			Quark(const pugi::xml_node &node,const char *name,const char *def="",bool upsearch = true);
+
 			Quark & operator=(const char *str);
 			Quark & operator=(const std::string &str);
 			Quark & operator=(const pugi::xml_attribute &attribute);

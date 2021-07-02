@@ -20,6 +20,7 @@
 #include <config.h>
 #include <iostream>
 #include <udjat/tools/quark.h>
+#include <udjat/tools/xml.h>
 #include <mutex>
 #include <unordered_set>
 
@@ -157,6 +158,10 @@ namespace Udjat {
 
 	Quark::Quark(const pugi::xml_attribute &attribute) {
 		this->value = Controller::getInstance().find(attribute.as_string(),true);
+	}
+
+	Quark::Quark(const pugi::xml_node &node,const char *name,const char *def,bool upsearch) {
+		this->value = Controller::getInstance().find(Udjat::Attribute(node,name,upsearch).as_string(def),true);
 	}
 
 	Quark Quark::getFromStatic(const char *str) {
