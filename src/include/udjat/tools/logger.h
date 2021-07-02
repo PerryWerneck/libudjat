@@ -81,7 +81,7 @@
 				return this->name;
 			}
 
-			/// @brief Get Logger name
+			/// @brief Get Logger name.
 			const char * getName() const noexcept {
 				return this->name;
 			}

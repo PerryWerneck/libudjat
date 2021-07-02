@@ -38,13 +38,17 @@
 				return to_string();
 			}
 
+			// Agent path.
+			if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
+				return getPath();
+			}
+
 			// Agent properties.
 			{
 				struct {
 					const char *key;
 					const char *value;
 				} values[] = {
-					{ "agent.name",		this->getName()	},
 					{ "agent.name",		this->getName()	},
 					{ "agent.label",	this->label		},
 					{ "agent.summary",	this->summary	},

@@ -80,6 +80,7 @@
 				return attribute.as_string();
 			}
 
+			// Not expanded, return fixed value.
 			return "${}";
 
 		});

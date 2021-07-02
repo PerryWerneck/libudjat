@@ -186,6 +186,9 @@
 					return summary;
 				}
 
+				/// @brief Get Agent path.
+				std::string getPath() const;
+
 				/// @brief The agent has children?
 				bool hasChildren() const noexcept {
 					return ! this->children.empty();

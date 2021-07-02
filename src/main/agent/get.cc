@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -56,6 +57,27 @@
 		state["activation"] = TimeStamp(this->state.activation);
 
 		return value;
+
+	}
+
+	std::string Abstract::Agent::getPath() const {
+
+		std::list<std::string> names;
+
+		const Abstract::Agent *agent = this;
+		while(agent->parent) {
+			names.push_front(agent->getName());
+			agent = agent->parent;
+		}
+
+		string rc;
+
+		for(auto name : names) {
+			rc += "/";
+			rc += name;
+		}
+
+		return rc;
 
 	}
 
