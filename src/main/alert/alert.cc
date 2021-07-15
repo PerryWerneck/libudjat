@@ -31,7 +31,7 @@
 	Alert::Alert(const char *name) : Alert(Quark(name)) {
 	}
 
-	Alert::Alert(const pugi::xml_node &node, const char *type) : Alert(Attribute(node,"name",false).as_string("alert")) {
+	Alert::Alert(const pugi::xml_node &node, const char *type) : Alert(Quark(node,"name","alert",false)) {
 
 		// Get configuration file section.
 		string section = getConfigSection(node,type);
