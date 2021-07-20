@@ -42,6 +42,7 @@
 		png,                    ///> @brief image/png
 		pem,                    ///> @brief application/x-pem-file
 		icon,                   ///> @brief image/x-icon
+		yaml,					///> @brief text/yaml
 
 	};
 

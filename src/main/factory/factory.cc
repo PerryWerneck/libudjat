@@ -47,6 +47,9 @@ namespace Udjat {
 	#pragma GCC diagnostic pop
 
 	bool Factory::parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) {
+#ifdef DEBUG
+		cout << __FUNCTION__ << ": " << name << endl;
+#endif // DEBUG
 		return Controller::getInstance().parse(name,parent,node);
 	}
 
@@ -59,7 +62,7 @@ namespace Udjat {
 		const char * key = strchr(id,'.');
 
 		if(!key) {
-			throw system_error(EINVAL,system_category(),"Agent identifier should be in the formato [FACTORY].id");
+			throw system_error(EINVAL,system_category(),"Agent identifier should be in the format [FACTORY].id");
 		}
 
 		auto factory = Controller::getInstance().find(string(id,key-id).c_str());

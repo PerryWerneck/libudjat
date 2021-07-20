@@ -38,6 +38,8 @@
 	{ "txt",	"text/plain; charset=utf-8" },
 	{ "xml",	"text/xml; charset=utf-8" },
 	{ "html",	"text/html; charset=utf-8" },
+
+
 	{ "css",	"text/css; charset=utf-8" },
 	{ "js",		"application/javascript" },
 	{ "svg",	"image/svg+xml" },
@@ -46,6 +48,9 @@
 	{ "png",	"image/png" },
 	{ "pem",	"application/x-pem-file" },
 	{ "ico",	"image/x-icon" },
+
+	{ "yaml",	"text/yaml" }, // https://stackoverflow.com/a/332159/2356331
+
 
  };
 
