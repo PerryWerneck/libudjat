@@ -57,8 +57,8 @@ namespace Udjat {
 
 		this->level = getLevelFromName(level.as_string(levelnames[unimportant])),
 		this->summary = Attribute(node,"summary",true).c_str();
-		this->name = Udjat::Attribute(node,"name").c_str();
-		this->uri = Udjat::Attribute(node,"uri").c_str();
+		this->name = Attribute(node,"name").c_str();
+		this->uri = Attribute(node,"uri").c_str();
 
 	}
 

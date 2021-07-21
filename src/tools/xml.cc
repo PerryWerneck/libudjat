@@ -54,15 +54,32 @@
 		return xml_attribute();
 	}
 
-	Attribute::Attribute(const xml_node &n, const char *name, bool upsearch) : xml_attribute(find(n, name, upsearch)), node(n) {
+	Attribute::Attribute(const xml_node &node, const char *name, bool upsearch) : xml_attribute(find(node, name, upsearch)) {
+
+		str = this->as_string();
+
+		expand(str,[node](const char *key){
+
+			auto attr = find(node,key,true);
+			if(attr) {
+				return attr.as_string();
+			}
+
+			// Not expanded, return fixed value.
+			return "${}";
+		});
+
 	}
 
 	std::string Attribute::to_string(const string &def) const {
-		return expand(this->node,this->as_string(def.c_str()));
+		if(*this) {
+			return def;
+		}
+		return str;
 	}
 
 	Quark Attribute::as_quark(const char *def) const {
-		return Quark(as_string(def));
+		return Quark(to_string(def));
 	}
 
 	const char * Attribute::c_str(const char *def) const {
