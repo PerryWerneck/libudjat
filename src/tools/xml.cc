@@ -20,8 +20,10 @@
  #include <config.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <udjat.h>
+ #include <cstdarg>
 
  using namespace std;
  using namespace pugi;
@@ -103,6 +105,30 @@
 		});
 
 		return text;
+
+	}
+
+	size_t Attribute::select(const char *value, ...) {
+
+		const char * attr = as_string(value);
+
+		size_t index = 0;
+
+		va_list args;
+		va_start(args, value);
+		while(value) {
+
+			if(!strcasecmp(attr,value)) {
+				va_end(args);
+				return index;
+			}
+
+			index++;
+			value = va_arg(args, const char *);
+		}
+		va_end(args);
+
+		throw system_error(ENOENT,system_category(),Logger::Message("Unexpected value '{}'",attr));
 
 	}
 

@@ -67,6 +67,9 @@
 			/// @brief Convert string value to quark and return the stored value.
 			const char * c_str(const char *def = "") const;
 
+			/// @brief Select value from list.
+			/// @return Index of the attribute value (or exception if not found).
+			size_t select(const char *value, ...) __attribute__ ((sentinel));
 
 			std::string to_string(const std::string &def) const;
 
