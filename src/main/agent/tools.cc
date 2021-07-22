@@ -24,8 +24,8 @@
  namespace Udjat {
 
 	string Abstract::Agent::expand(const char *text) const {
-		string rc;
-		expand(rc);
+		string rc{text};
+		return expand(rc);
 		return rc;
 	}
 
