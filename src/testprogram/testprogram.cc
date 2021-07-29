@@ -16,6 +16,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
  #include <udjat/worker.h>
+ #include <udjat/disk/stat.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timestamp.h>
@@ -193,10 +194,14 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	test_agent_parser();
+	//test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();
+
+	{
+		Disk::Stat("sda");
+	}
 
 	/*
 	{

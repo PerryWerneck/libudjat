@@ -51,6 +51,8 @@
 
 	static void parse(Disk::Stat &st, const char *ptr) {
 
+		// https://www.kernel.org/doc/Documentation/iostats.txt
+
 		ptr = next(ptr);
 		st.major = atoi(ptr);
 
@@ -63,6 +65,7 @@
 			st.name = string{from,((size_t) (ptr-from)) - 1};
 		}
 
+
 		auto sz = sscanf(
 			ptr,
 			"%lu %lu %lu %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu",
@@ -70,13 +73,16 @@
 			&st.read.merged,
 			&st.read.sectors,
 			&st.read.time,
+
 			&st.write.count,
 			&st.write.merged,
 			&st.write.sectors,
 			&st.write.time,
+
 			&st.io.inprogress,
 			&st.io.time,
 			&st.io.weighted,
+
 			&st.discards.count,
 			&st.discards.merged,
 			&st.discards.sectors,
@@ -91,6 +97,7 @@
 
 	std::list<Disk::Stat> Disk::Stat::get() {
 
+		// https://www.kernel.org/doc/Documentation/iostats.txt
 		File::Text proc("/proc/diskstats");
 
 		std::list<Disk::Stat> stats;
@@ -108,18 +115,36 @@
 
 	Disk::Stat::Stat(const char *name) : Stat() {
 
-		File::Text proc("/proc/diskstats");
+		// https://www.kernel.org/doc/Documentation/block/stat.txt
 
-		for(auto it = proc.begin(); it != proc.end(); it++) {
+		File::Text proc( (string{"/sys/block/"} + name + "/stat").c_str() );
 
-			parse(*this,it->c_str());
-			if(!strcasecmp(this->name.c_str(),name)) {
-				return;
-			}
+		auto sz = sscanf(
+			next(proc.c_str()),
+			"%lu %lu %lu %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu",
+			&read.count,		// read I/Os       requests      number of read I/Os processed
+			&read.merged,		// read merges     requests      number of read I/Os merged with in-queue I/O
+			&read.sectors,		// read sectors    sectors       number of sectors read
+			&read.time,			// read ticks      milliseconds  total wait time for read requests
 
+			&write.count,		// write I/Os      requests      number of write I/Os processed
+			&write.merged,		// write merges    requests      number of write I/Os merged with in-queue I/O
+			&write.sectors,		// write sectors   sectors       number of sectors written
+			&write.time,		// write ticks     milliseconds  total wait time for write requests
+
+			&io.inprogress,		// in_flight       requests      number of I/Os currently in flight
+			&io.time,			// io_ticks        milliseconds  total time this block device has been active
+			&io.weighted,		// time_in_queue   milliseconds  total wait time for all requests
+
+			&discards.count,	// discard I/Os    requests      number of discard I/Os processed
+			&discards.merged,	// discard merges  requests      number of discard I/Os merged with in-queue I/O
+			&discards.sectors,	// discard sectors sectors       number of sectors discarded
+			&discards.time		// discard ticks   milliseconds  total wait time for discard requests
+		);
+
+		if(sz != 15) {
+			throw system_error(EINVAL, system_category(),string{"Unexpected format in /sys/block/"} + name + "/stat");
 		}
-
-		throw system_error(ENOENT, system_category(), (string{"Can't find diskstats for '"} + name + "'"));
 
 	}
 

@@ -53,7 +53,7 @@
 			struct {
 				unsigned int  inprogress = 0;	///< @brief The number of I/Os currently in progress.
 				unsigned int  time = 0;			///< @brief The time spent doing I/Os.
-				unsigned int  weighted = 0;		///< @brief The weighted # of milliseconds spent doing I/Os.
+				unsigned int  weighted = 0;		///< @brief Total wait time for all requests.
 			} io;
 
 			struct {
