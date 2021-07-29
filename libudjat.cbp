@@ -50,6 +50,7 @@
 		<Unit filename="src/include/udjat/agent.h" />
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/defs.h" />
+		<Unit filename="src/include/udjat/disk/stat.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
@@ -146,6 +147,7 @@
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/mimetype.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
+		<Unit filename="src/tools/os/linux/diskstats.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/quark.cc" />
