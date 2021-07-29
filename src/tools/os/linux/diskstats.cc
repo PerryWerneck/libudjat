@@ -49,7 +49,7 @@
 
 	}
 
-	static void read(Disk::Stat &st, const char *ptr) {
+	static void parse(Disk::Stat &st, const char *ptr) {
 
 		ptr = next(ptr);
 		st.major = atoi(ptr);
@@ -66,21 +66,21 @@
 		auto sz = sscanf(
 			ptr,
 			"%lu %lu %lu %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu",
-			&st.rdcount,
-			&st.rdmerged,
-			&st.rdsectors,
-			&st.rdtime,
-			&st.wrcount,
-			&st.wrmerged,
-			&st.wrsectors,
-			&st.wrtime,
-			&st.inprogress,
-			&st.iotime,
-			&st.ioweighted,
-			&st.dscount,
-			&st.dsmerged,
-			&st.dssectors,
-			&st.dstime
+			&st.read.count,
+			&st.read.merged,
+			&st.read.sectors,
+			&st.read.time,
+			&st.write.count,
+			&st.write.merged,
+			&st.write.sectors,
+			&st.write.time,
+			&st.io.inprogress,
+			&st.io.time,
+			&st.io.weighted,
+			&st.discards.count,
+			&st.discards.merged,
+			&st.discards.sectors,
+			&st.discards.time
 		);
 
 		if(sz != 15) {
@@ -89,17 +89,20 @@
 
 	}
 
-	void Disk::Stat::load(std::list<Stat> &stats) {
+	std::list<Disk::Stat> Disk::Stat::get() {
 
 		File::Text proc("/proc/diskstats");
 
+		std::list<Disk::Stat> stats;
 		for(auto it = proc.begin(); it != proc.end(); it++) {
 
 			Stat st;
-			read(st,it->c_str());
+			parse(st,it->c_str());
 			stats.push_back(st);
 
 		}
+
+		return stats;
 
 	}
 
@@ -109,7 +112,7 @@
 
 		for(auto it = proc.begin(); it != proc.end(); it++) {
 
-			read(*this,it->c_str());
+			parse(*this,it->c_str());
 			if(!strcasecmp(this->name.c_str(),name)) {
 				return;
 			}

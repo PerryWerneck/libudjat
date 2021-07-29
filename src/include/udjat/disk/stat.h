@@ -36,24 +36,32 @@
 
 			std::string name;				///< @brief Device name.
 
-			unsigned long rdcount = 0;		///< @brief The total number of reads completed successfully.
-			unsigned long rdmerged = 0;		///< @brief The number of reads merged.
-			unsigned long rdsectors = 0;	///< @brief The total number of sectors read successfully.
-			unsigned int  rdtime = 0;		///< @brief The total number of milliseconds spent by all reads.
+			struct {
+				unsigned long count = 0;		///< @brief The total number of reads completed successfully.
+				unsigned long merged = 0;		///< @brief The number of reads merged.
+				unsigned long sectors = 0;		///< @brief The total number of sectors read successfully.
+				unsigned int  time = 0;			///< @brief The total number of milliseconds spent by all reads.
+			} read;
 
-			unsigned long wrcount = 0;		///< @brief The total number of writes completed successfully.
-			unsigned long wrmerged = 0;		///< @brief The number of writes merged.
-			unsigned long wrsectors = 0;	///< @brief The total number of sectors written successfully.
-			unsigned int  wrtime = 0;		///< @brief The total number of milliseconds spent by all writes.
+			struct {
+				unsigned long count = 0;		///< @brief The total number of writes completed successfully.
+				unsigned long merged = 0;		///< @brief The number of writes merged.
+				unsigned long sectors = 0;		///< @brief The total number of sectors written successfully.
+				unsigned int  time = 0;			///< @brief The total number of milliseconds spent by all writes.
+			} write;
 
-			unsigned int  inprogress = 0;	///< @brief The number of I/Os currently in progress.
-			unsigned int  iotime = 0;		///< @brief The time spent doing I/Os.
-			unsigned int  ioweighted = 0;	///< @brief The weighted # of milliseconds spent doing I/Os.
+			struct {
+				unsigned int  inprogress = 0;	///< @brief The number of I/Os currently in progress.
+				unsigned int  time = 0;			///< @brief The time spent doing I/Os.
+				unsigned int  weighted = 0;		///< @brief The weighted # of milliseconds spent doing I/Os.
+			} io;
 
-			unsigned long dscount = 0;		///< @brief The total number of discards completed successfully.
-			unsigned long dsmerged = 0;		///< @brief The number of discards merged.
-			unsigned long dssectors = 0;	///< @brief The total number of sectors discarded successfully.
-			unsigned long dstime = 0;		///< @brief The number of milliseconds spent discarding.
+			struct {
+				unsigned long count = 0;		///< @brief The total number of discards completed successfully.
+				unsigned long merged = 0;		///< @brief The number of discards merged.
+				unsigned long sectors = 0;		///< @brief The total number of sectors discarded successfully.
+				unsigned long time = 0;			///< @brief The number of milliseconds spent discarding.
+			} discards;
 
 			/// @brief Create an empty device.
 			Stat() {
@@ -63,7 +71,7 @@
 			Stat(const char *name);
 
 			/// @brief Load /proc/diskstats.
-			static void load(std::list<Stat> &stats);
+			static std::list<Stat> get();
 
 		};
 
