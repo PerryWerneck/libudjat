@@ -115,38 +115,81 @@
 
 	Disk::Stat::Stat(const char *name) : Stat() {
 
-		// https://www.kernel.org/doc/Documentation/block/stat.txt
+		if(name && *name) {
 
-		File::Text proc( (string{"/sys/block/"} + name + "/stat").c_str() );
+			// https://www.kernel.org/doc/Documentation/block/stat.txt
 
-		auto sz = sscanf(
-			next(proc.c_str()),
-			"%lu %lu %lu %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu",
-			&read.count,		// read I/Os       requests      number of read I/Os processed
-			&read.merged,		// read merges     requests      number of read I/Os merged with in-queue I/O
-			&read.sectors,		// read sectors    sectors       number of sectors read
-			&read.time,			// read ticks      milliseconds  total wait time for read requests
+			File::Text proc( (string{"/sys/block/"} + name + "/stat").c_str() );
 
-			&write.count,		// write I/Os      requests      number of write I/Os processed
-			&write.merged,		// write merges    requests      number of write I/Os merged with in-queue I/O
-			&write.sectors,		// write sectors   sectors       number of sectors written
-			&write.time,		// write ticks     milliseconds  total wait time for write requests
+			auto sz = sscanf(
+				next(proc.c_str()),
+				"%lu %lu %lu %u %lu %lu %lu %u %u %u %u %lu %lu %lu %lu",
+				&read.count,		// read I/Os       requests      number of read I/Os processed
+				&read.merged,		// read merges     requests      number of read I/Os merged with in-queue I/O
+				&read.sectors,		// read sectors    sectors       number of sectors read
+				&read.time,			// read ticks      milliseconds  total wait time for read requests
 
-			&io.inprogress,		// in_flight       requests      number of I/Os currently in flight
-			&io.time,			// io_ticks        milliseconds  total time this block device has been active
-			&io.weighted,		// time_in_queue   milliseconds  total wait time for all requests
+				&write.count,		// write I/Os      requests      number of write I/Os processed
+				&write.merged,		// write merges    requests      number of write I/Os merged with in-queue I/O
+				&write.sectors,		// write sectors   sectors       number of sectors written
+				&write.time,		// write ticks     milliseconds  total wait time for write requests
 
-			&discards.count,	// discard I/Os    requests      number of discard I/Os processed
-			&discards.merged,	// discard merges  requests      number of discard I/Os merged with in-queue I/O
-			&discards.sectors,	// discard sectors sectors       number of sectors discarded
-			&discards.time		// discard ticks   milliseconds  total wait time for discard requests
-		);
+				&io.inprogress,		// in_flight       requests      number of I/Os currently in flight
+				&io.time,			// io_ticks        milliseconds  total time this block device has been active
+				&io.weighted,		// time_in_queue   milliseconds  total wait time for all requests
 
-		if(sz != 15) {
-			throw system_error(EINVAL, system_category(),string{"Unexpected format in /sys/block/"} + name + "/stat");
+				&discards.count,	// discard I/Os    requests      number of discard I/Os processed
+				&discards.merged,	// discard merges  requests      number of discard I/Os merged with in-queue I/O
+				&discards.sectors,	// discard sectors sectors       number of sectors discarded
+				&discards.time		// discard ticks   milliseconds  total wait time for discard requests
+			);
+
+			if(sz != 15) {
+				throw system_error(EINVAL, system_category(),string{"Unexpected format in /sys/block/"} + name + "/stat");
+			}
+
+		} else {
+
+			File::Text proc("/proc/diskstats");
+
+			for(auto it = proc.begin(); it != proc.end(); it++) {
+
+				Stat st;
+				parse(st,it->c_str());
+				if(st.major != 0 && st.minor == 0) {
+					*this += st;
+				}
+
+			}
+
 		}
 
 	}
+
+	Disk::Stat & Disk::Stat::operator+=(const Disk::Stat &s) {
+
+		read.count += s.read.count;
+		read.merged += s.read.merged;
+		read.sectors += s.read.sectors;
+		read.time += s.read.time;
+
+		write.count += s.write.count;
+		write.merged += s.write.merged;
+		write.sectors += s.write.sectors;
+		write.time += s.write.time;
+
+		io.inprogress += s.io.inprogress;
+		io.time += s.io.time;
+		io.weighted += s.io.weighted;
+
+		discards.count += s.discards.count;
+		discards.merged += s.discards.merged;
+		discards.sectors += s.discards.sectors;
+		discards.time += s.discards.time;
+
+		return *this;
+	}
+
 
  }
 

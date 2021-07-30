@@ -84,6 +84,10 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
 
+#ifdef DEBUG
+		cout << "Finding agent '" << request.getPath() << "'" << endl;
+#endif // DEBUG
+
 		auto agent = find(request.getPath());
 
 		if(!agent) {

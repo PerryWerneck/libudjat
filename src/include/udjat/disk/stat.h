@@ -68,10 +68,13 @@
 			}
 
 			/// @brief Get from device name.
+			/// @param name Device name (ex: sda) or empty to all disks.
 			Stat(const char *name);
 
 			/// @brief Load /proc/diskstats.
 			static std::list<Stat> get();
+
+			Stat & operator+=(const Stat &s);
 
 		};
 
