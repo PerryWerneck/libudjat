@@ -176,8 +176,9 @@ namespace Udjat {
 			~DefaultState() {
 			}
 
-			void parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
+			bool parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
 				agent.append_state(node);
+				return true;
 			}
 
 		};

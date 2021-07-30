@@ -59,10 +59,16 @@
 		static std::shared_ptr<Abstract::Agent> get(const char *id);
 
 		/// @brief Create Agent child.
-		virtual void parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
+		/// @param parent Parent agent to insert the built child.
+		/// @param node XML definition for the new agent.
+		/// @return true if the request was handled.
+		virtual bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
 
 		/// @brief Create State child.
-		virtual void parse(Abstract::State &parent, const pugi::xml_node &node) const;
+		/// @param parent Parent state insert the built child.
+		/// @param node XML definition for the new state.
+		/// @return true if the request was handled.
+		virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const;
 
 
 	};

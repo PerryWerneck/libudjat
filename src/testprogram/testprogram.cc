@@ -75,7 +75,7 @@ static void test_agent_parser() {
 			srand(time(NULL));
 		}
 
-		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
 
 			class RandomAgent : public Agent<unsigned int> {
 			private:
@@ -95,6 +95,7 @@ static void test_agent_parser() {
 
 			parent.insert(make_shared<RandomAgent>(node));
 
+			return true;
 		}
 
 	};
@@ -105,14 +106,14 @@ static void test_agent_parser() {
 	{
 		auto root_agent = Abstract::Agent::init("${PWD}/*.xml");
 
-		cout << "http://localhost:8989/api/1.0/info/modules" << endl;
-		cout << "http://localhost:8989/api/1.0/info/workers" << endl;
-		cout << "http://localhost:8989/api/1.0/info/factory" << endl;
-		cout << "http://localhost:8989/api/1.0/agent" << endl;
-		cout << "http://localhost:8989/api/1.0/alerts" << endl;
+		cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
+		cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
+		cout << "http://localhost:8989/api/1.0/info/factory.xml" << endl;
+		cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+		cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
 
 		for(auto agent : *root_agent) {
-			cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << endl;
+			cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 		}
 
 	}
@@ -194,14 +195,16 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	//test_agent_parser();
+	test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();
 
+	/*
 	{
 		Disk::Stat("sda");
 	}
+	*/
 
 	/*
 	{

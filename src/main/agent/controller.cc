@@ -198,7 +198,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+	bool Abstract::Agent::Controller::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 
 		static const struct
 		{
@@ -260,11 +260,14 @@ namespace Udjat {
 				auto agent = builder.build();
 				agent->load(node);
 				parent.insert(agent);
-				break;
+				return true;
 			}
 
 		}
 
+		// TODO: Call factory based on agent type.
+
+		return false;
 	}
 
 	void Abstract::Agent::Controller::onTimer(time_t now) noexcept {

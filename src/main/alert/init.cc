@@ -61,16 +61,16 @@
 
 		}
 
-		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
-			Factory::parse(
+		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+			return Factory::parse(
 				getFactoryNameByType(node).c_str(),
 				parent,
 				node
 			);
 		}
 
-		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
-			Factory::parse(
+		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override {
+			return Factory::parse(
 				getFactoryNameByType(node).c_str(),
 				parent,
 				node
@@ -96,12 +96,14 @@
 		virtual ~URLAlertFactory() {
 		}
 
-		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
 			parent.push_back(make_shared<URLAlert>(node));
+			return true;
 		}
 
-		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
+		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override {
 			parent.push_back(make_shared<URLAlert>(node));
+			return true;
 		}
 
 	};
@@ -123,12 +125,14 @@
 		virtual ~ScriptAlertFactory() {
 		}
 
-		void parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
 			parent.push_back(make_shared<ScriptAlert>(node));
+			return true;
 		}
 
-		void parse(Abstract::State &parent, const pugi::xml_node &node) const override {
+		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override {
 			parent.push_back(make_shared<ScriptAlert>(node));
+			return true;
 		}
 
 	};
