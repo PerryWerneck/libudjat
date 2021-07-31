@@ -195,16 +195,15 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	test_agent_parser();
+	// test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();
 
-	/*
 	{
-		Disk::Stat("sda");
+		Disk::Stat stat("sda");
+		cout << "SDA.blocksize = " << stat.getBlockSize() << endl;
 	}
-	*/
 
 	/*
 	{

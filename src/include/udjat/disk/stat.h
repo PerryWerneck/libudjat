@@ -31,22 +31,22 @@
 		/// @brief Disk stats from /proc/diskstats.
 		struct UDJAT_API Stat {
 
-			unsigned short major = 0;		///< @brief The major number of the disk.
-			unsigned short minor = 0;		///< @brief The minor number of the disk.
+			unsigned short major = 0;			///< @brief The major number of the disk.
+			unsigned short minor = 0;			///< @brief The minor number of the disk.
 
-			std::string name;				///< @brief Device name.
+			std::string name;					///< @brief Device name.
 
 			struct {
 				unsigned long count = 0;		///< @brief The total number of reads completed successfully.
 				unsigned long merged = 0;		///< @brief The number of reads merged.
-				unsigned long sectors = 0;		///< @brief The total number of sectors read successfully.
+				unsigned long blocks = 0;		///< @brief The total number of sectors read successfully.
 				unsigned int  time = 0;			///< @brief The total number of milliseconds spent by all reads.
 			} read;
 
 			struct {
 				unsigned long count = 0;		///< @brief The total number of writes completed successfully.
 				unsigned long merged = 0;		///< @brief The number of writes merged.
-				unsigned long sectors = 0;		///< @brief The total number of sectors written successfully.
+				unsigned long blocks = 0;		///< @brief The total number of sectors written successfully.
 				unsigned int  time = 0;			///< @brief The total number of milliseconds spent by all writes.
 			} write;
 
@@ -59,12 +59,22 @@
 			struct {
 				unsigned long count = 0;		///< @brief The total number of discards completed successfully.
 				unsigned long merged = 0;		///< @brief The number of discards merged.
-				unsigned long sectors = 0;		///< @brief The total number of sectors discarded successfully.
+				unsigned long blocks = 0;		///< @brief The total number of sectors discarded successfully.
 				unsigned long time = 0;			///< @brief The number of milliseconds spent discarding.
 			} discards;
 
 			/// @brief Create an empty device.
 			Stat() {
+			}
+
+			/// @brief Is a physical disk?
+			inline bool physical() const noexcept {
+				return major != 0 && minor == 0;
+			}
+
+			/// @brief Is a logical disk?
+			inline bool logical() const noexcept {
+				return major != 0 && minor != 0;
 			}
 
 			/// @brief Get from device name.
@@ -74,10 +84,25 @@
 			/// @brief Load /proc/diskstats.
 			static std::list<Stat> get();
 
+			/// @brief Get device sector size (in bytes).
+			size_t getBlockSize() const;
+
 			Stat & operator+=(const Stat &s);
 
 		};
 
+	}
+
+ }
+
+ namespace std {
+
+	inline string to_string(const Udjat::Disk::Stat &st) {
+		return st.name;
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::Disk::Stat &st) {
+		return os << st.name;
 	}
 
  }
