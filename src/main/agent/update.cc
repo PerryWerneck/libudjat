@@ -90,12 +90,13 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::refresh(bool od) {
-		refresh();
+	bool Abstract::Agent::refresh(bool od) {
+		return refresh();
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::Agent::refresh() {
+	bool Abstract::Agent::refresh() {
+		return false;
 	}
 
 	bool Abstract::Agent::hasStates() const noexcept {

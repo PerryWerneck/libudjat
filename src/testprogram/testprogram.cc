@@ -87,8 +87,9 @@ static void test_agent_parser() {
 					load(node);
 				}
 
-				void refresh() override {
+				bool refresh() override {
 					set( ((unsigned int) rand()) % limit);
+					return true;
 				}
 
 			};
