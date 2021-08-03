@@ -123,10 +123,13 @@
 
 		if(name && *name) {
 
+			if(!strncasecmp(name,"/dev/",5)) {
+				name += 5;
+			}
+
 			this->name = name;
 
 			// https://www.kernel.org/doc/Documentation/block/stat.txt
-
 			File::Text proc( (string{"/sys/block/"} + name + "/stat").c_str() );
 
 			auto sz = sscanf(

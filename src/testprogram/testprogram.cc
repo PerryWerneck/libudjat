@@ -202,7 +202,7 @@ int main(int argc, char **argv) {
 	// test_url();
 
 	{
-		Disk::Stat stat("sda");
+		Disk::Stat stat("/dev/sda");
 		cout << "SDA.blocksize = " << stat.getBlockSize() << endl;
 	}
 
