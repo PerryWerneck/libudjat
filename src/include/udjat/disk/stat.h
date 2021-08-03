@@ -21,12 +21,24 @@
 
  #include <udjat/defs.h>
  #include <udjat/disk/stat.h>
+ #include <pugixml.hpp>
  #include <string>
  #include <list>
 
  namespace Udjat {
 
 	namespace Disk {
+
+		/// @brief Disk length unity.
+		struct UDJAT_API Unit {
+			float value;						///< @brief Conversion from bytes.
+			const char *id;						///< @brief Unity APU.
+			const char *speed;					///< @brief Label for 'speed' values.
+
+			static const Unit * get(const pugi::xml_node &node, const char *attr = "size-unit", const char *def="M");
+			static const Unit * get(const char *str = "MB");
+
+		};
 
 		/// @brief Disk stats from /proc/diskstats.
 		struct UDJAT_API Stat {
