@@ -116,8 +116,6 @@
 			// Failed.
 			if(errno != ENODEV) {
 				cerr << "file\tCant map file contents: " << strerror(errno) << endl;
-			} else {
-				cout << "file\tUndelying filesystem does not support memory mapping." << endl;
 			}
 
 		}
