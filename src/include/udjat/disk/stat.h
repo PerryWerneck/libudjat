@@ -101,6 +101,29 @@
 
 			Stat & operator+=(const Stat &s);
 
+			/// @brief Convenience data for disk usage computation.
+			struct Data {
+
+				float read = 0;						///< @brief The read speed.
+				float write = 0;					///< @brief The write speed.
+
+				struct {
+					unsigned long blocks = 0;		///< @brief The total number of sectors read successfully.
+					unsigned int time = 0;			///< @brief The total number of milliseconds spent by all reads.
+				} saved_read;
+
+				struct {
+					unsigned long blocks = 0;		///< @brief The total number of sectors written successfully.
+					unsigned int time = 0;			///< @brief The total number of milliseconds spent by all writes.
+				} saved_write;
+			};
+
+			/// @brief Reset values for computation on next cycle.
+			void reset(Data &data) const;
+
+			/// @brief Compute read/write speed based on saved data.
+			void compute(Data &data) const;
+
 		};
 
 	}

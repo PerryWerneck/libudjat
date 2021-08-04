@@ -49,5 +49,43 @@
 
 	}
 
+	void Disk::Stat::reset(Disk::Stat::Data &data) const {
+		data.read = data.write = 0;
+
+		data.saved_read.blocks = read.blocks;
+		data.saved_read.time = read.time;
+
+		data.saved_write.blocks = write.blocks;
+		data.saved_write.time = write.time;
+	}
+
+	void Disk::Stat::compute(Disk::Stat::Data &data) const {
+
+		// Get this cicle values.
+		float blocks_read = read.blocks - data.saved_read.blocks;
+		float blocks_write = write.blocks - data.saved_write.blocks;
+		float time_read = read.time - data.saved_read.time;
+		float time_write = write.time - data.saved_write.time;
+
+		// Reset for next cicle.
+		reset(data);
+
+		// Compute response.
+		float blocksize = (float) this->getBlockSize();
+
+		if(blocks_read > 0 && time_read > 0) {
+			data.read = (blocks_read * blocksize) / (time_read/1000.0);
+		} else {
+			data.read = 0;
+		}
+
+		if(blocks_write > 0 && time_write > 0) {
+			data.write = (blocks_write * blocksize) / (time_write/1000.0);
+		} else {
+			data.write = 0;
+		}
+
+	}
+
 
  }
