@@ -49,43 +49,135 @@
 
 	}
 
-	void Disk::Stat::reset(Disk::Stat::Data &data) const {
+	Disk::Stat::Data & Disk::Stat::reset(Disk::Stat::Data &data) const {
 		data.read = data.write = 0;
 
-		data.saved_read.blocks = read.blocks;
-		data.saved_read.time = read.time;
+		float blocksize = getBlockSize();
 
-		data.saved_write.blocks = write.blocks;
-		data.saved_write.time = write.time;
+		data.saved.read.bytes = ((float) read.blocks) * blocksize;
+		data.saved.read.time = read.time;
+
+		data.saved.write.bytes = ((float) write.blocks) * blocksize;
+		data.saved.write.time = write.time;
+
+		return data;
 	}
 
-	void Disk::Stat::compute(Disk::Stat::Data &data) const {
+	Disk::Stat::Data & Disk::Stat::compute(Disk::Stat::Data &data) const {
+
+		// Get blocksize
+		float blocksize = getBlockSize();
 
 		// Get this cicle values.
-		float blocks_read = read.blocks - data.saved_read.blocks;
-		float blocks_write = write.blocks - data.saved_write.blocks;
-		float time_read = read.time - data.saved_read.time;
-		float time_write = write.time - data.saved_write.time;
+		float bytes_read = (read.blocks * blocksize) - data.saved.read.bytes;
+		float bytes_write = (write.blocks * blocksize) - data.saved.write.bytes;
+		float time_read = read.time - data.saved.read.time;
+		float time_write = write.time - data.saved.write.time;
 
 		// Reset for next cicle.
-		reset(data);
+		{
+			data.read = data.write = 0;
 
-		// Compute response.
-		float blocksize = (float) this->getBlockSize();
+			data.saved.read.bytes = ((float) read.blocks) * blocksize;
+			data.saved.read.time = read.time;
 
-		if(blocks_read > 0 && time_read > 0) {
-			data.read = (blocks_read * blocksize) / (time_read/1000.0);
+			data.saved.write.bytes = ((float) write.blocks) * blocksize;
+			data.saved.write.time = write.time;
+		}
+
+		if(bytes_read > 0 && time_read > 0) {
+			data.read = bytes_read / (time_read/1000.0);
 		} else {
 			data.read = 0;
 		}
 
-		if(blocks_write > 0 && time_write > 0) {
-			data.write = (blocks_write * blocksize) / (time_write/1000.0);
+		if(bytes_write > 0 && time_write > 0) {
+			data.write = bytes_write / (time_write/1000.0);
 		} else {
 			data.write = 0;
 		}
 
+		return data;
 	}
 
+	Disk::Stat::Data::Data(const Disk::Stat &stat) : Data() {
+
+		float blocksize = (float) stat.getBlockSize();
+
+		saved.read.bytes = ((float) stat.read.blocks) * blocksize;
+		saved.read.time = stat.read.time;
+
+		saved.write.bytes = ((float) stat.write.blocks) * blocksize;
+		saved.write.time = stat.write.time;
+
+	}
+
+	Disk::Stat::Data & Disk::Stat::Data::operator+=(const Disk::Stat &stat) {
+
+		Disk::Stat::Data data(stat);
+
+		read += data.read;
+		write += data.write;
+
+		saved.read.bytes += data.saved.read.bytes;
+		saved.read.time += data.saved.read.time;
+
+		saved.write.bytes += data.saved.write.bytes;
+		saved.write.time += data.saved.write.time;
+
+		return *this;
+
+	}
+
+	Disk::Stat::Data & Disk::Stat::Data::operator+=(const Disk::Stat::Data &data) {
+
+		read += data.read;
+		write += data.write;
+
+		saved.read.bytes += data.saved.read.bytes;
+		saved.read.time += data.saved.read.time;
+
+		saved.write.bytes += data.saved.write.bytes;
+		saved.write.time += data.saved.write.time;
+
+		return *this;
+
+	}
+
+	Disk::Stat::Data & Disk::Stat::Data::update(const Disk::Stat::Data &data) {
+
+		// Get disk read info.
+		{
+			float bytes_read = data.saved.read.bytes - saved.read.bytes;
+			float time_read = data.saved.read.time - saved.read.time;
+
+			if(bytes_read > 0 && time_read > 0) {
+				read = bytes_read / (time_read/1000.0);
+			} else {
+				read = 0;
+			}
+		}
+
+		// Get disk write info.
+		{
+			float bytes_write = data.saved.write.bytes - saved.write.bytes;
+			float time_write = data.saved.write.time - saved.write.time;
+
+			if(bytes_write > 0 && time_write > 0) {
+				write = bytes_write / (time_write/1000.0);
+			} else {
+				write = 0;
+			}
+		}
+
+		// Store for next cicle.
+		saved.read.bytes = data.saved.read.bytes;
+		saved.read.time = data.saved.read.time;
+
+		saved.write.bytes = data.saved.write.bytes;
+		saved.write.time = data.saved.write.time;
+
+		return *this;
+	}
 
  }

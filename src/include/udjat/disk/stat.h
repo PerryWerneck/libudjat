@@ -101,28 +101,41 @@
 
 			Stat & operator+=(const Stat &s);
 
-			/// @brief Convenience data for disk usage computation.
+			/// @brief Convenience data for disk read/write speed computation.
 			struct Data {
 
-				float read = 0;						///< @brief The read speed.
-				float write = 0;					///< @brief The write speed.
+				float read = 0;						///< @brief The read speed in bytes/second.
+				float write = 0;					///< @brief The write speed in bytes/second.
 
+				/// @brief Values from last cycle.
 				struct {
-					unsigned long blocks = 0;		///< @brief The total number of sectors read successfully.
-					unsigned int time = 0;			///< @brief The total number of milliseconds spent by all reads.
-				} saved_read;
 
-				struct {
-					unsigned long blocks = 0;		///< @brief The total number of sectors written successfully.
-					unsigned int time = 0;			///< @brief The total number of milliseconds spent by all writes.
-				} saved_write;
+					struct {
+						float bytes = 0;				///< @brief The total number of bytes read successfully.
+						unsigned int time = 0;			///< @brief The total number of milliseconds spent by all reads.
+					} read;
+
+					struct {
+						float bytes = 0;				///< @brief The total number of bytes written successfully.
+						unsigned int time = 0;			///< @brief The total number of milliseconds spent by all writes.
+					} write;
+
+				} saved;
+
+				Data & operator+=(const Disk::Stat &stat);
+				Data() = default;
+				Data(const Disk::Stat &stat);
+
+				Data & operator+=(const Data &data);
+				Data & update(const Data &data);
+
 			};
 
 			/// @brief Reset values for computation on next cycle.
-			void reset(Data &data) const;
+			Data & reset(Data &data) const;
 
 			/// @brief Compute read/write speed based on saved data.
-			void compute(Data &data) const;
+			Data & compute(Data &data) const;
 
 		};
 
