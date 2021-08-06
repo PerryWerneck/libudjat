@@ -55,6 +55,7 @@
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/state.h" />
+		<Unit filename="src/include/udjat/system/stat.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
@@ -150,6 +151,7 @@
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
 		<Unit filename="src/tools/os/linux/diskstats.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
+		<Unit filename="src/tools/os/linux/sysstats.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/string.cc" />
