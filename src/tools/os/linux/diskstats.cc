@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/disk/stat.h>
+ #include <udjat/tools/disk/stat.h>
  #include <udjat/tools/file.h>
  #include <iostream>
  #include <linux/fs.h>

@@ -16,7 +16,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
  #include <udjat/worker.h>
- #include <udjat/disk/stat.h>
+ #include <udjat/tools/disk/stat.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timestamp.h>

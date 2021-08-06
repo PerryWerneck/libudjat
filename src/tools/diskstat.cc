@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/disk/stat.h>
+ #include <udjat/tools/disk/stat.h>
  #include <udjat/tools/xml.h>
  #include <string>
 

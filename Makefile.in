@@ -235,12 +235,18 @@ install-devel:
 		$(DESTDIR)$(includedir)/udjat/tools
 
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/disk
+		$(DESTDIR)$(includedir)/udjat/tools/disk
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/disk/*.h \
-		$(DESTDIR)$(includedir)/udjat/disk
+		src/include/udjat/tools/disk/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/disk
 
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/system
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/system/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/system
 
 	@$(INSTALL_DATA) \
 		src/include/udjat.h \

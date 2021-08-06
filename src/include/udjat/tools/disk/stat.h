@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/disk/stat.h>
+ #include <udjat/tools/disk/stat.h>
  #include <pugixml.hpp>
  #include <string>
  #include <list>
