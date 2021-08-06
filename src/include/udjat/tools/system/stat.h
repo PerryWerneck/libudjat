@@ -39,21 +39,28 @@
 				TOTAL
 			};
 
-			unsigned long user;		///< @brief Normal processes
-			unsigned long nice;		///< @brief Niced processes
-			unsigned long system;	///< @brief Kernel mode
-			unsigned long idle;		///< @brief twiddling thumbs
-			unsigned long iowait;	///< @brief Waiting for I/O
-			unsigned long irq;		///< @brief CPU used when servicing interrupts
-			unsigned long softirq;	///< @brief Soft IRQS
+			unsigned long user;		///< @brief Normal processes.
+			unsigned long nice;		///< @brief Niced processes.
+			unsigned long system;	///< @brief Kernel mode.
+			unsigned long idle;		///< @brief twiddling thumbs.
+			unsigned long iowait;	///< @brief Waiting for I/O.
+			unsigned long irq;		///< @brief CPU used when servicing interrupts.
+			unsigned long softirq;	///< @brief Soft IRQS.
 
+			/// @brief Create object with data from /proc/stat.
 			Stat();
 
+			/// @brief The typenames.
+			static const char *typenames[];
+
+			/// @brief Get type from typename.
 			static Type getIndex(const char *name);
 
 			unsigned long operator[](const Type ix) const;
 			unsigned long operator[](const char *name) const;
 
+			/// @brief Sum all value.
+			/// @brief The sum of all fields (including idle).
 			unsigned long total() const noexcept;
 
 			Stat & operator-=(const Stat &stat);

@@ -28,7 +28,7 @@
 
  namespace Udjat {
 
-	static const char *names[] = { "user", "nice", "system", "idle", "iowait", "irq", "softirq" };
+	const char * System::Stat::typenames[] = { "user", "nice", "system", "idle", "iowait", "irq", "softirq", "total", nullptr };
 
 	System::Stat::Stat() {
 
@@ -47,8 +47,8 @@
 
 	System::Stat::Type System::Stat::getIndex(const char *name) {
 
-		for(unsigned short ix = 0; ix < N_ELEMENTS(names); ix++) {
-			if(!strcasecmp(name,names[ix])) {
+		for(unsigned short ix = 0; typenames[ix]; ix++) {
+			if(!strcasecmp(name,typenames[ix])) {
 				return (System::Stat::Type) ix;
 			}
 		}
