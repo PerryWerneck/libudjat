@@ -66,7 +66,10 @@
 			unsigned long operator[](const Type ix) const;
 			unsigned long operator[](const char *name) const;
 
+			/// @brief Get total number of ticks.
 			unsigned long getUsage() const noexcept;
+
+			/// @brief Get 'active' tickes (usage - idle).
 			unsigned long getRunning() const noexcept;
 
 			inline unsigned long getIdle() const noexcept {
