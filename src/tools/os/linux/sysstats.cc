@@ -28,7 +28,20 @@
 
  namespace Udjat {
 
-	const char * System::Stat::typenames[] = { "user", "nice", "system", "idle", "iowait", "irq", "softirq", "total", nullptr };
+	const char * System::Stat::typenames[] = {
+		"user",
+		"nice",
+		"system",
+		"idle",
+		"iowait",
+		"irq",
+		"softirq",
+		"steal",
+		"guest",
+		"guest_nice",
+		"total",
+		nullptr
+	};
 
 	System::Stat::Stat() {
 
@@ -41,8 +54,10 @@
 			>> idle
 			>> iowait
 			>> irq
-			>> softirq;
-
+			>> softirq
+			>> steal
+			>> guest
+			>> guest_nice;
 	}
 
 	System::Stat::Type System::Stat::getIndex(const char *name) {
@@ -84,8 +99,17 @@
 		case SOFTIRQ:
 			return softirq;
 
+		case STEAL:
+			return steal;
+
+		case GUEST:
+			return guest;
+
+		case GUEST_NICE:
+			return guest_nice;
+
 		case TOTAL:
-			return user+nice+system+idle+iowait+irq+softirq;
+			return total();
 
 		}
 
@@ -94,11 +118,19 @@
 	}
 
 	unsigned long System::Stat::total() const noexcept {
-		return user+nice+system+idle+iowait+irq+softirq;
+		return user+nice+system+idle+iowait+irq+softirq+steal+guest+guest_nice;
 	}
 
 	unsigned long System::Stat::operator[](const char *name) const {
 		return (*this)[getIndex(name)];
+	}
+
+	unsigned long System::Stat::getUsage() const noexcept {
+		return user+nice+system+idle+iowait+irq+softirq+steal+guest+guest_nice;
+	}
+
+	unsigned long System::Stat::getRunning() const noexcept {
+		return user+nice+system+iowait+irq+softirq+steal+guest+guest_nice;
 	}
 
 	System::Stat & System::Stat::operator-=(const System::Stat &stat) {
@@ -110,6 +142,9 @@
 		iowait -= stat.iowait;
 		irq -= stat.irq;
 		softirq -= stat.softirq;
+		steal -= stat.steal;
+		guest -= stat.guest;
+		guest_nice -= stat.guest_nice;
 
 		return *this;
 	}

@@ -36,16 +36,23 @@
 				IOWAIT,
 				IRQ,
 				SOFTIRQ,
-				TOTAL
+				STEAL,
+				GUEST,
+				GUEST_NICE,
+				TOTAL	// allways after the internal ones.
+
 			};
 
-			unsigned long user;		///< @brief Normal processes.
-			unsigned long nice;		///< @brief Niced processes.
-			unsigned long system;	///< @brief Kernel mode.
-			unsigned long idle;		///< @brief twiddling thumbs.
-			unsigned long iowait;	///< @brief Waiting for I/O.
-			unsigned long irq;		///< @brief CPU used when servicing interrupts.
-			unsigned long softirq;	///< @brief Soft IRQS.
+			unsigned long user = 0;			//< @brief normal processes executing in user mode.
+			unsigned long nice= 0;			//< @brief niced processes executing in user mode.
+			unsigned long system = 0;		//< @brief processes executing in kernel mode.
+			unsigned long idle = 0;			//< @brief twiddling thumbs.
+			unsigned long iowait = 0;		//< @brief waiting for I/O to complete.
+			unsigned long irq = 0;			//< @brief servicing interrupts.
+			unsigned long softirq = 0;		//< @brief servicing softirqs.
+			unsigned long steal = 0;		//< @brief ticks spent executing other virtual hosts (in virtual environments like Xen).
+			unsigned long guest = 0;
+			unsigned long guest_nice = 0;
 
 			/// @brief Create object with data from /proc/stat.
 			Stat();
@@ -58,6 +65,13 @@
 
 			unsigned long operator[](const Type ix) const;
 			unsigned long operator[](const char *name) const;
+
+			unsigned long getUsage() const noexcept;
+			unsigned long getRunning() const noexcept;
+
+			inline unsigned long getIdle() const noexcept {
+				return idle;
+			}
 
 			/// @brief Sum all value.
 			/// @brief The sum of all fields (including idle).
