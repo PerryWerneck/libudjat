@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ // https://www.kernel.org/doc/html/latest/filesystems/proc.html#miscellaneous-kernel-statistics-in-proc-stat
+
  #include <iostream>
  #include <sstream>
  #include <fstream>
@@ -27,6 +29,59 @@
  using namespace std;
 
  namespace Udjat {
+
+	const System::Stat::TypeInfo System::Stat::typeinfo[] = {
+		{
+			"Normal processes",
+			"CPU used by normal processes executing in user mode"
+		},
+		{
+			"Niced processes",
+			"Ticks used by niced processes executing in user mode"
+		},
+		{
+			"Kernel mode",
+			"Ticks used by processes executing in kernel mode"
+		},
+		{
+			"IDLE",
+			"twiddling thumbs"
+		},
+		{
+			"Waiting for I/O",
+			"Ticks waiting for I/O to complete"
+		},
+		{
+			"Interrupts",
+			"Ticks spent servicing interrupts"
+		},
+		{
+			"Soft IRQS",
+			"Ticks spent servicing softirqs"
+		},
+		{
+			"Involuntary wait",
+			"Ticks spent executing other virtual hosts (in virtual environments like Xen)" // FIXME: Is this right?
+		},
+		{
+			"Running a normal guest",
+			""
+		},
+		{
+			"Running a niced guest",
+			""
+		},
+
+		{
+			"Total use of CPU",
+			"Total CPU used by all processes and interrupts",
+		},
+		{
+			nullptr,
+			nullptr
+		}
+
+	};
 
 	const char * System::Stat::typenames[] = {
 		"user",
@@ -149,6 +204,13 @@
 		return *this;
 	}
 
+	const char * System::Stat::getLabel(const Type ix) noexcept {
+		return typeinfo[ix].label;
+	}
+
+	const char * System::Stat::getSummary(const Type ix) noexcept {
+		return typeinfo[ix].summary;
+	}
 
  }
 

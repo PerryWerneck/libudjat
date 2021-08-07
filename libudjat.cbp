@@ -66,6 +66,7 @@
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />
 		<Unit filename="src/include/udjat/tools/sysconfig.h" />
+		<Unit filename="src/include/udjat/tools/system/stat.h" />
 		<Unit filename="src/include/udjat/tools/threadpool.h" />
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />

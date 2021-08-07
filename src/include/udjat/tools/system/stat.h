@@ -57,6 +57,12 @@
 			/// @brief Create object with data from /proc/stat.
 			Stat();
 
+			/// @brief Type info
+			static const struct TypeInfo {
+				const char *label;
+				const char *summary;
+			} typeinfo[];
+
 			/// @brief The typenames.
 			static const char *typenames[];
 
@@ -81,6 +87,9 @@
 			unsigned long total() const noexcept;
 
 			Stat & operator-=(const Stat &stat);
+
+			static const char * getLabel(const Type ix) noexcept;
+			static const char * getSummary(const Type ix) noexcept;
 
 		};
 
