@@ -34,6 +34,12 @@
 		void parse_range(const pugi::xml_node &node, unsigned long &from, unsigned long &to);
 		void parse_range(const pugi::xml_node &node, long &from, long &to);
 
+		/// @brief Parse	byte range, convert values "TB', 'GB', 'MB', 'KB' to byes.
+		/// @param node		XML node to extract values.
+		/// @param from		Minor value in bytes.
+		/// @param to 		Major value in bytes.
+		void parse_byte_range(const pugi::xml_node &node, unsigned long long &from, unsigned long long &to);
+
 		/// @brief Alert/state level.
 		// TODO: Convert to class.
 		enum Level : uint8_t {

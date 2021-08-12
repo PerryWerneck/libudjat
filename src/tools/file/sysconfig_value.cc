@@ -75,13 +75,9 @@
 			value = this->value;
 		}
 
-	}
+		return value;
 
-	/*
-	operator SysConfig::Value::Quark() const {
-		return Quark(value.c_str());
 	}
-	*/
 
 
  }

@@ -11,6 +11,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <iostream>
+ #include <limits.h>
 
  using namespace std;
 
@@ -59,5 +60,66 @@ namespace Udjat {
 		from = node.attribute("from-value").as_uint(value);
 		to = node.attribute("to-value").as_uint(value);
 	}
+
+	unsigned long long parse_byte_value(const pugi::xml_attribute &attr) {
+		unsigned long long rc = 0;
+		const char *str = attr.as_string();
+
+		int bytes = sscanf(str,"%llu",&rc);
+		if(bytes == EOF) {
+			throw runtime_error("Unexpected byte value");
+		}
+
+		str += bytes;
+		while(*str && isspace(*str))
+			str++;
+
+		if(*str) {
+
+			static const char * names[] = { "B", "KB", "GB", "MB", "TB" };
+			unsigned long long value = 1;
+
+			for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {
+
+				if(!strcasecmp(str,names[ix])) {
+					return rc * value;
+				}
+
+				value *= 1024;
+
+			}
+
+			throw runtime_error("Unexpected byte unit");
+
+		}
+
+		return rc;
+	}
+
+	void parse_byte_range(const pugi::xml_node &node, unsigned long long &from, unsigned long long &to) {
+
+		auto value = node.attribute("value");
+
+		if(value) {
+			from = to = parse_byte_value(value);
+			return;
+		}
+
+		auto f = node.attribute("from-value");
+		if(f) {
+			from = parse_byte_value(f);
+		} else {
+			from  = 0;
+		}
+
+		auto t = node.attribute("to-value");
+		if(t) {
+			to = parse_byte_value(t);
+		} else {
+			to = ULLONG_MAX;
+		}
+
+	}
+
 
 }
