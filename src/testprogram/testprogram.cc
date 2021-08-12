@@ -31,6 +31,7 @@
  #include <netdb.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/system/info.h>
 
  using namespace std;
  using namespace Udjat;
@@ -202,9 +203,17 @@ int main(int argc, char **argv) {
 	// test_url();
 
 	{
+		System::Info info;
+
+		cout << endl << endl << "Total ram=" << info.totalram << endl << endl;
+	}
+
+	/*
+	{
 		Disk::Stat stat("/dev/sda");
 		cout << "SDA.blocksize = " << stat.getBlockSize() << endl;
 	}
+	*/
 
 	/*
 	{

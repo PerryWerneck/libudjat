@@ -41,12 +41,12 @@
 
 			unsigned long long mem_unit = (unsigned long long) info.mem_unit;
 
-			this->totalram = ((unsigned long long) totalram) * mem_unit;
-			this->freeram = ((unsigned long long) freeram) * mem_unit;
-			this->sharedram = ((unsigned long long) sharedram) * mem_unit;
-			this->bufferram = ((unsigned long long) bufferram) * mem_unit;
-			this->totalswap = ((unsigned long long) totalswap) * mem_unit;
-			this->freeswap = ((unsigned long long) freeswap) * mem_unit;
+			this->totalram = ((unsigned long long) info.totalram) * mem_unit;
+			this->freeram = ((unsigned long long) info.freeram) * mem_unit;
+			this->sharedram = ((unsigned long long) info.sharedram) * mem_unit;
+			this->bufferram = ((unsigned long long) info.bufferram) * mem_unit;
+			this->totalswap = ((unsigned long long) info.totalswap) * mem_unit;
+			this->freeswap = ((unsigned long long) info.freeswap) * mem_unit;
 
 			for(size_t ix = 0; ix < 3; ix++) {
 				this->loads[ix] = info.loads[ix];
