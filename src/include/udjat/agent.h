@@ -305,11 +305,9 @@
 		public:
 			Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
 				parse_value(node,value);
-				state.active = stateFromValue();
 			}
 
 			Agent(const pugi::xml_node &node, const T v) : Abstract::Agent(node), value(v) {
-				state.active = stateFromValue();
 			}
 
 			Agent(const char *name = nullptr) : Abstract::Agent(name), value(0) {
