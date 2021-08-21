@@ -83,11 +83,11 @@ namespace Udjat {
 
 		for(pugi::xml_node root = doc.child("config"); root; root = root.next_sibling("config")) {
 
-			const char *path = root.attribute("path").as_string();
+			const char *path = root.attribute("root-path").as_string();
 
 			if(path && *path) {
 
-				// Has defined path, find root agent.
+				// Has defined root path, find agent.
 				Abstract::Agent * agent = this;
 				while(agent->parent) {
 					agent = agent->parent;

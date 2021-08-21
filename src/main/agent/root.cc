@@ -135,7 +135,7 @@
 				info("root agent was {}","destroyed");
 			}
 
-			void get(const Request &request, Response &response) override {
+			void get(const Request UDJAT_UNUSED(&request), Response &response) override {
 
 				getDetails(response);
 
@@ -152,12 +152,8 @@
 				if(!state->isReady()) {
 
 					// The requested state is not ready, activate it.
-
-					bool changed = Abstract::Agent::activate(state);
-
-					// Not ready, update icon.
 					this->icon = "computer-fail";
-
+					bool changed = Abstract::Agent::activate(state);
 					return changed;
 
 				}
@@ -167,9 +163,8 @@
 					return false;
 				}
 
-				super::activate(stateFromValue());
-
 				this->icon = "computer";
+				super::activate(stateFromValue());
 
 				return true;
 			}

@@ -79,6 +79,7 @@
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/load.cc" />
+		<Unit filename="src/main/agent/parse.cc" />
 		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/root.cc" />
 		<Unit filename="src/main/agent/set.cc" />

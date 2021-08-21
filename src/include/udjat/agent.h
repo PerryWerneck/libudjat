@@ -29,6 +29,14 @@
 
 	namespace Udjat {
 
+		void parse_value(const pugi::xml_node &node, int &value);
+		void parse_value(const pugi::xml_node &node, unsigned int &value);
+		void parse_value(const pugi::xml_node &node, unsigned short &value);
+		void parse_value(const pugi::xml_node &node, float &value);
+		void parse_value(const pugi::xml_node &node, double &value);
+		void parse_value(const pugi::xml_node &node, unsigned long &value);
+		void parse_value(const pugi::xml_node &node, long &value);
+
 		namespace Abstract {
 
 			class UDJAT_API Agent : public Logger {
@@ -136,6 +144,8 @@
 				void insert(std::shared_ptr<Agent> child);
 
 				Agent(const char *name = "", const char *label = "", const char *summary = "");
+				Agent(const pugi::xml_node &node);
+
 				virtual ~Agent();
 
 				/// @brief Get root agent.
@@ -293,6 +303,15 @@
 			}
 
 		public:
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
+				parse_value(node,value);
+				state.active = stateFromValue();
+			}
+
+			Agent(const pugi::xml_node &node, const T v) : Abstract::Agent(node), value(v) {
+				state.active = stateFromValue();
+			}
+
 			Agent(const char *name = nullptr) : Abstract::Agent(name), value(0) {
 			}
 
