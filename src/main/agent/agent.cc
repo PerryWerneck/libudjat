@@ -41,7 +41,7 @@ namespace Udjat {
 		load(node);
 	}
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name) {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name ? name : "") {
 
 		state.active = stateFromValue();
 
@@ -64,6 +64,7 @@ namespace Udjat {
 		this->label = Quark((label ? label : name)).c_str();
 		this->summary = Quark(summary).c_str();
 
+		cout << "AQUIB" << endl;
 	}
 
 	Abstract::Agent::~Agent() {

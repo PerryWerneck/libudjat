@@ -24,15 +24,12 @@
  namespace Udjat {
 
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
+
 		lock_guard<std::recursive_mutex> lock(guard);
 
 		if(child->parent) {
 			throw runtime_error("Agent already has a parent");
 		}
-
-#ifdef DEBUG
-		cout << getName() << "\tInserting child '" << child->getName() << "'" << endl;
-#endif // DEBUG
 
 		child->parent = this;
 		children.push_back(child);

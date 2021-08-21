@@ -9,3 +9,9 @@ if [ "$?" != "0" ]; then
 	exit -1
 fi
 
+sudo rm -fr /usr/include/udjat
+sudo ln -sf $(readlink -f src/include/udjat) /usr/include/udjat
+if [ "$?" != "0" ]; then
+	exit -1
+fi
+

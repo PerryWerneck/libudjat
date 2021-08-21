@@ -310,7 +310,7 @@
 			Agent(const pugi::xml_node &node, const T v) : Abstract::Agent(node), value(v) {
 			}
 
-			Agent(const char *name = nullptr) : Abstract::Agent(name), value(0) {
+			Agent(const char *name = "") : Abstract::Agent(name), value(0) {
 			}
 
 			Agent(const char *name, T v) : Abstract::Agent(name), value(v) {
@@ -383,7 +383,7 @@
 			}
 
 		public:
-			Agent(const char *name = nullptr) : Abstract::Agent(name) {
+			Agent(const char *name = "") : Abstract::Agent(name) {
 			}
 
 			Agent(const char *name, const char *v) : Abstract::Agent(name), value(v) {
@@ -454,7 +454,7 @@
 			}
 
 		public:
-			Agent(const char *name = nullptr) : Abstract::Agent(name), value(false) {
+			Agent(const char *name = "") : Abstract::Agent(name), value(false) {
 			}
 
 			Agent(const char *name, bool v) : Abstract::Agent(name), value(v) {

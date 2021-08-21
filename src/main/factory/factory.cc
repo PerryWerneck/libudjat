@@ -49,9 +49,6 @@ namespace Udjat {
 	#pragma GCC diagnostic pop
 
 	bool Factory::parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) {
-#ifdef DEBUG
-		cout << __FUNCTION__ << ": " << name << endl;
-#endif // DEBUG
 		return Controller::getInstance().parse(name,parent,node);
 	}
 
