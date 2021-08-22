@@ -37,11 +37,6 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const pugi::xml_node &node) {
-		state.active = stateFromValue();
-		load(node);
-	}
-
 	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name ? name : "") {
 
 		state.active = stateFromValue();
@@ -65,6 +60,9 @@ namespace Udjat {
 		this->label = Quark((label ? label : name)).c_str();
 		this->summary = Quark(summary).c_str();
 
+	}
+
+	Abstract::Agent::Agent(const pugi::xml_node UDJAT_UNUSED(&node)) : Abstract::Agent() {
 	}
 
 	Abstract::Agent::~Agent() {
