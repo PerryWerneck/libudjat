@@ -27,10 +27,6 @@
 
 	std::mutex MainLoop::guard;
 
-	void run() noexcept {
-		MainLoop::getInstance().run();
-	}
-
 	MainLoop::MainLoop() {
 		cout << "MainLoop\tStarting service loop" << endl;
 		efd = eventfd(0,0);

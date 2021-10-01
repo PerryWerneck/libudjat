@@ -22,6 +22,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/mimetype.h>
+ #include <udjat/tools/systemservice.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -129,7 +130,7 @@ static void test_agent_parser() {
 	});
 	*/
 
-	Udjat::run();
+	Udjat::SystemService().run();
 
 	// Force agent cleanup
 	Abstract::Agent::deinit();
@@ -151,7 +152,7 @@ static void test_sub_process() {
 		return false;
 	});
 
-	Udjat::run();
+	Udjat::SystemService().run();
 
 }
 
@@ -197,16 +198,18 @@ int main(int argc, char **argv) {
 
 
 	// test_file_load();
-	// test_agent_parser();
+	test_agent_parser();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();
 
+	/*
 	{
 		System::Info info;
 
 		cout << endl << endl << "Total ram=" << info.totalram << endl << endl;
 	}
+	*/
 
 	/*
 	{
