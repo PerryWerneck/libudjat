@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
+#include <config.h>
 #include <cstring>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/logger.h>
@@ -36,7 +36,12 @@ namespace Udjat {
 		memset(timestamp,0,80);
 
 		struct tm tm;
+
+#ifdef HAVE_LOCALTIME_R
 		localtime_r(&value,&tm);
+#else
+		tm = *localtime(&value);
+#endif // HAVE_LOCALTIME_R
 
 		size_t len = strftime(timestamp, 79, format, &tm);
 		if(len == 0) {
@@ -55,14 +60,20 @@ namespace Udjat {
 
 			// Have format, use-it
 
+#ifdef _WIN32
+			throw runtime_error("Not implemented");
+#else
 			if(!strptime(time, format, &t)) {
 				throw runtime_error(string{"Can't parse '"} + time + "' in the requested format");
 			}
+#endif // _WIN32
 
 		} else {
 
 			// Dont have format, try known ones.
-
+#ifdef _WIN32
+			throw runtime_error("Not implemented");
+#else
 			static const char *formats[] = {
 				"%Y-%m-%d %T",
 				"%y-%m-%d %T",
@@ -81,6 +92,7 @@ namespace Udjat {
 				throw runtime_error(string{"Can't parse '"} + time + "' in any known format");
 			}
 
+#endif // _WIN32
 		}
 
 #ifdef DEBUG

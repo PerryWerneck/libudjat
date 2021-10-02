@@ -18,10 +18,33 @@
  */
 
  #include <config.h>
- #include <cstring>
+ #include <cstring
+ #include <sys/eventfd.h>
  #include "../private.h"
 
  namespace Udjat {
+
+	MainLoop::MainLoop() {
+		cout << "MainLoop\tStarting service loop" << endl;
+		efd = eventfd(0,0);
+		if(efd < 0)
+			throw system_error(errno,system_category(),"eventfd() has failed");
+
+	}
+
+	MainLoop::~MainLoop() {
+
+		cout << "MainLoop\tStopping service loop" << endl;
+
+		enabled = false;
+		wakeup();
+
+		{
+			lock_guard<mutex> lock(guard);
+			::close(efd);
+		}
+
+	}
 
 	void MainLoop::wakeup() noexcept {
 		static uint64_t evNum = 0;

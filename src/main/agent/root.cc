@@ -18,7 +18,10 @@
  */
 
  #include "private.h"
+
+#ifndef _WIN32
  #include <sys/utsname.h>
+#endif // _WIN32
  #include <udjat/factory.h>
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/virtualmachine.h>
@@ -37,6 +40,7 @@
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
 
+#ifndef _WIN32
 				//
 				// Get UNAME
 				//
@@ -67,6 +71,7 @@
 					error("Error '{}' reading system release file",e.what());
 
 				}
+#endif // _WIN32
 
 				//
 				// Detect virtualization.
@@ -139,11 +144,13 @@
 
 				getDetails(response);
 
+#ifndef _WIN32
 				struct utsname uts;
 
 				if(uname(&uts) >= 0) {
 					response["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
 				}
+#endif // _WIN32
 
 			}
 

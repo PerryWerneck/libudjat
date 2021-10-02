@@ -91,8 +91,10 @@ namespace Udjat {
 
 		} timers;
 
+#ifndef _WIN32
 		/// @brief get FDs.
 		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
+#endif // _WIN32
 
 		//
 		// File/socket management

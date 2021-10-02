@@ -154,6 +154,8 @@
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
 		<Unit filename="src/tools/os/linux/diskstats.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
+		<Unit filename="src/tools/os/linux/subprocess.cc" />
+		<Unit filename="src/tools/os/linux/subprocess.h" />
 		<Unit filename="src/tools/os/linux/sysinfo.cc" />
 		<Unit filename="src/tools/os/linux/sysstats.cc" />
 		<Unit filename="src/tools/os/linux/systemservice.cc" />

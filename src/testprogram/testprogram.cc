@@ -29,7 +29,11 @@
  #include <random>
  #include <ctime>
  #include <cstdlib>
+
+#ifndef _WIN32
  #include <netdb.h>
+#endif // _WIN32
+
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/system/info.h>

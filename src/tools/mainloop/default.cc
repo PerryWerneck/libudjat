@@ -23,7 +23,8 @@
 
  namespace Udjat {
 
-	class ServiceController : public MainLoop {
+ #ifndef _WIN32
+ 	class ServiceController : public MainLoop {
 	private:
 
 		static void onInterruptSignal(int signal) noexcept {
@@ -49,6 +50,9 @@
 		static ServiceController instance;
 		return instance;
 	}
+
+ #endif // _WIN32
+
 
 
  }

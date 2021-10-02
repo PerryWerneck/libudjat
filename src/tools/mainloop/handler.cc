@@ -24,6 +24,7 @@
 	MainLoop::Handler::Handler(const void *i, int f, const Event e, const function<bool(const Event event)> c)
 		: id(i),fd(f),events(e),running(0),call(c) { }
 
+#ifndef _WIN32
 	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
 
 		lock_guard<mutex> lock(guard);
@@ -60,6 +61,7 @@
 
 		return nfds;
 	}
+#endif // _WIN32
 
  }
 
