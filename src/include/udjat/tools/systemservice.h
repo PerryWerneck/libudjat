@@ -17,42 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <csignal>
- #include <cstring>
+ #pragma once
+
+ #include <udjat/defs.h>
 
  namespace Udjat {
 
- #ifndef _WIN32
- 	class ServiceController : public MainLoop {
-	private:
+	/// @brief Abstract class for system services.
+	class UDJAT_API SystemService {
+	protected:
 
-		static void onInterruptSignal(int signal) noexcept {
-			cout << "MainLoop\tInterrupting service loop by '" << strsignal(signal) << "' signal" << endl;
-			MainLoop::getInstance().quit();
-		}
-
+		/// @brief Service main loop
+		virtual void mainloop();
 
 	public:
-		ServiceController() : MainLoop() {
-			signal(SIGTERM,onInterruptSignal);
-			signal(SIGINT,onInterruptSignal);
-		}
+		SystemService();
+		virtual ~SystemService();
 
-		~ServiceController() {
-			signal(SIGTERM,SIG_DFL);
-			signal(SIGINT,SIG_DFL);
-		}
+		/// @brief Configure service, usually using option -S from command line.
+		virtual void setup();
+
+		/// @brief Run main loop.
+		int run();
 
 	};
 
- 	MainLoop & MainLoop::getInstance() {
-		static ServiceController instance;
-		return instance;
-	}
-
- #endif // _WIN32
-
-
-
  }
+
+

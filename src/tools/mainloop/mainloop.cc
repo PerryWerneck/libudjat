@@ -20,38 +20,11 @@
  #include <config.h>
  #include <udjat.h>
  #include "private.h"
- #include <sys/eventfd.h>
  #include <udjat/agent.h>
 
  namespace Udjat {
 
 	std::mutex MainLoop::guard;
-
-	void run() noexcept {
-		MainLoop::getInstance().run();
-	}
-
-	MainLoop::MainLoop() {
-		cout << "MainLoop\tStarting service loop" << endl;
-		efd = eventfd(0,0);
-		if(efd < 0)
-			throw system_error(errno,system_category(),"eventfd() has failed");
-
-	}
-
-	MainLoop::~MainLoop() {
-
-		cout << "MainLoop\tStopping service loop" << endl;
-
-		enabled = false;
-		wakeup();
-
-		{
-			lock_guard<mutex> lock(guard);
-			::close(efd);
-		}
-
-	}
 
 	void MainLoop::quit() {
 		enabled = false;

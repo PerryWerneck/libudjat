@@ -96,6 +96,12 @@ AC_PATH_TOOL([VALGRIND], [valgrind], [no])
 AC_PATH_TOOL([AR], [ar], [ar])
 
 dnl ---------------------------------------------------------------------------
+dnl Check for headers
+dnl ---------------------------------------------------------------------------
+
+AC_CHECK_FUNC(localtime_r, AC_DEFINE(HAVE_LOCALTIME_R, [], [Do we have localtime_r?]) )
+
+dnl ---------------------------------------------------------------------------
 dnl Check for doxygen
 dnl ---------------------------------------------------------------------------
 
@@ -238,6 +244,15 @@ PKG_CHECK_MODULES(PUGIXML, pugixml, AC_DEFINE(HAVE_PUGIXML,[],[Do we have PUGIXM
 
 AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
+
+dnl ---------------------------------------------------------------------------
+dnl test for vmdetect
+dnl ---------------------------------------------------------------------------
+
+PKG_CHECK_MODULES(VMDETECT, libvmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_ERROR(libvmdetect is required))
+
+AC_SUBST(VMDETECT_LIBS)
+AC_SUBST(VMDETECT_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Test for jsoncpp

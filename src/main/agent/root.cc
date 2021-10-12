@@ -17,11 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
- #include <sys/utsname.h>
+
+ #ifndef _WIN32
+	#include <sys/utsname.h>
+ #endif // _WIN32
+
  #include <udjat/factory.h>
  #include <udjat/tools/sysconfig.h>
- #include <udjat/tools/virtualmachine.h>
+
+ #ifdef HAVE_VMDETECT
+	#include <vmdetect/virtualmachine.h>
+ #endif // HAVE_VMDETECT
+
  #include <cstring>
  #include <unistd.h>
 
@@ -37,6 +46,7 @@
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
 
+#ifndef _WIN32
 				//
 				// Get UNAME
 				//
@@ -67,54 +77,55 @@
 					error("Error '{}' reading system release file",e.what());
 
 				}
+#endif // _WIN32
 
-				//
-				// Detect virtualization.
-				//
-				VirtualMachine vm;
+#ifdef HAVE_VMDETECT
+				{
+					//
+					// Detect virtualization.
+					//
+					VirtualMachine vm;
 
-#ifdef DEBUG
-				cout << "Detected Virtual machine was '" << vm << "'" << endl;
-#endif // DEBUG
+					//
+					// Get machine information
+					//
+					if(!vm) {
 
-				//
-				// Get machine information
-				//
-				if(!vm) {
+						try {
 
-					try {
+							static const char *ids[] = {
+								"dmi.1.0.1",
+								"dmi.1.0.2"
+							};
 
-						static const char *ids[] = {
-							"dmi.1.0.1",
-							"dmi.1.0.2"
-						};
+							string id;
 
-						string id;
+							for(size_t ix = 0; ix < (sizeof(ids)/sizeof(ids[0])); ix++) {
 
-						for(size_t ix = 0; ix < (sizeof(ids)/sizeof(ids[0])); ix++) {
+								if(!id.empty()) {
+									id += " ";
+								}
 
-							if(!id.empty()) {
-								id += " ";
+								id += Factory::get(ids[ix])->to_string();
+
 							}
 
-							id += Factory::get(ids[ix])->to_string();
+							if(!id.empty()) {
+								this->summary = Quark(id).c_str();
+							}
+
+						} catch(const std::exception &e) {
+
+							warning("{}",e.what());
 
 						}
+					} else {
 
-						if(!id.empty()) {
-							this->summary = Quark(id).c_str();
-						}
-
-					} catch(const std::exception &e) {
-
-						warning("{}",e.what());
+						this->summary = Quark(Logger::Message("{} virtual machine",vm.to_string())).c_str();
 
 					}
-				} else {
-
-					this->summary = Quark(Logger::Message("{} virtual machine",vm.to_string())).c_str();
-
 				}
+#endif // HAVE_VMDETECT
 
 			}
 
@@ -139,11 +150,13 @@
 
 				getDetails(response);
 
+#ifndef _WIN32
 				struct utsname uts;
 
 				if(uname(&uts) >= 0) {
 					response["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
 				}
+#endif // _WIN32
 
 			}
 

@@ -17,42 +17,48 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <csignal>
- #include <cstring>
+ #include <config.h>
+ #include <udjat/tools/systemservice.h>
+ #include <iostream>
+ #include <system_error>
+ #include <udjat/tools/mainloop.h>
+
+ using namespace std;
 
  namespace Udjat {
 
- #ifndef _WIN32
- 	class ServiceController : public MainLoop {
-	private:
+	 SystemService::SystemService() {
+	 }
 
-		static void onInterruptSignal(int signal) noexcept {
-			cout << "MainLoop\tInterrupting service loop by '" << strsignal(signal) << "' signal" << endl;
-			MainLoop::getInstance().quit();
+	 SystemService::~SystemService() {
+	 }
+
+	 void SystemService::mainloop() {
+		MainLoop::getInstance().run();
+	 }
+
+	 void SystemService::setup() {
+	 }
+
+	 int SystemService::run() {
+
+		try {
+
+			mainloop();
+
+		} catch(const system_error &e) {
+			cerr << e.what() << endl;
+			return e.code().value();
+		} catch(const exception &e) {
+			cerr << e.what() << endl;
+			return -1;
+		} catch(...) {
+			cerr << "Unexpected error running system service" << endl;
+			return -1;
 		}
 
-
-	public:
-		ServiceController() : MainLoop() {
-			signal(SIGTERM,onInterruptSignal);
-			signal(SIGINT,onInterruptSignal);
-		}
-
-		~ServiceController() {
-			signal(SIGTERM,SIG_DFL);
-			signal(SIGINT,SIG_DFL);
-		}
-
-	};
-
- 	MainLoop & MainLoop::getInstance() {
-		static ServiceController instance;
-		return instance;
-	}
-
- #endif // _WIN32
-
-
+		return 0;
+	 }
 
  }
+
