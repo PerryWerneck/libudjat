@@ -122,6 +122,11 @@
 
 			Method & operator = (const char *name);
 
+			Method & operator = (const Value v) {
+				value = v;
+				return *this;
+			}
+
 			operator Value() const noexcept {
 				return value;
 			}
@@ -140,6 +145,14 @@
 
 			constexpr bool operator==(const Method a) const {
 				return value == a.value;
+			}
+
+			constexpr bool operator==(const Value v) const {
+				return value == v;
+			}
+
+			constexpr bool operator!=(const Value v) const {
+				return value != v;
 			}
 
 			constexpr bool operator!=(const Method a) const {

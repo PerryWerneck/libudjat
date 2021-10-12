@@ -166,7 +166,6 @@
 		<Unit filename="src/tools/subprocess/subprocess.cc" />
 		<Unit filename="src/tools/timestamp.cc" />
 		<Unit filename="src/tools/value.cc" />
-		<Unit filename="src/tools/virtualmachine.cc" />
 		<Unit filename="src/tools/xml.cc" />
 		<Extensions />
 	</Project>

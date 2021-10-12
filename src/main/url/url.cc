@@ -225,12 +225,16 @@
 
 		string rc{protocol->c_str()};
 
+		cout	<< "Domain:\t'" << domain << "'" << endl
+				<< "Filename:\t'" << filename << "'" << endl;
+
+		rc += "://";
+		rc += domain;
+
 		if(!port.empty()) {
 			rc += ":";
 			rc += port;
 		}
-
-		rc += domain;
 
 		if(!filename.empty()) {
 			rc += "/";
