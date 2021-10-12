@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <cstring
+ #include <cstring>
  #include <sys/eventfd.h>
  #include "../private.h"
 

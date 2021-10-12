@@ -246,6 +246,15 @@ AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
+dnl test for vmdetect
+dnl ---------------------------------------------------------------------------
+
+PKG_CHECK_MODULES(VMDETECT, libvmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_ERROR(libvmdetect is required))
+
+AC_SUBST(VMDETECT_LIBS)
+AC_SUBST(VMDETECT_CFLAGS)
+
+dnl ---------------------------------------------------------------------------
 dnl Test for jsoncpp
 dnl ---------------------------------------------------------------------------
 dnl PKG_CHECK_MODULES( [JSONCPP], [jsoncpp], AC_DEFINE(HAVE_JSONCPP,[],[Do we have JSONCPP?]), AC_MSG_ERROR([libjsoncpp not present.]) )

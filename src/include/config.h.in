@@ -30,6 +30,9 @@
 /* Do we have systemd? */
 #undef HAVE_SYSTEMD
 
+/* Do we have libvmdetect? */
+#undef HAVE_VMDETECT
+
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
