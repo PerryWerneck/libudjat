@@ -64,7 +64,7 @@ jobs:
     #    uses a compiled language
     - name: Install Dependencies
       run: |
-       apt-get install gettext libeconf-dev libpugixml-dev
+       sudo apt-get install gettext libeconf-dev libpugixml-dev
        git clone https://github.com/PerryWerneck/vmdetect.git ./vmdetect
        NOCONFIGURE=1 ./vmdetect/autogen.sh
        cd vmdetect
