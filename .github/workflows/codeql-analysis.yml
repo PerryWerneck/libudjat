@@ -64,7 +64,7 @@ jobs:
     #    uses a compiled language
     - name: Install Dependencies
       run: |
-       sudo apt-get install gettext libeconf-dev libpugixml-dev
+       sudo apt-get install gettext libpugixml-dev
        
        git clone https://github.com/openSUSE/libeconf ./libeconf
        NOCONFIGURE=1 ./libeconf/autogen.sh
