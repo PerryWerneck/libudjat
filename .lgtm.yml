@@ -1,0 +1,34 @@
+
+# Reference: https://github.com/yasio/yasio/blob/main/.lgtm.yml
+
+extraction: 
+  # Define settings for C/C++ analysis
+  #####################################
+  cpp:
+    prepare:
+      packages: 
+        - gettext
+        - libpugixml-dev
+        - cmake
+        - git
+        - make
+    # Add an `after-prepare` step if you need to run commands after the prepare step.
+    # Each command should be listed on a separate line.
+    # This step is useful for C/C++ analysis where you want to prepare the environment
+    # for the `configure` step without changing the default behavior for that step. 
+    after_prepare:
+      - git clone https://github.com/openSUSE/libeconf ./libeconf
+      - cd libeconf
+      - cmake .
+      - make all
+      - sudo make install || true
+      - cd ..
+      - sudo rm -fr libeconf
+      - git clone https://github.com/PerryWerneck/vmdetect.git ./vmdetect
+      - NOCONFIGURE=1 ./vmdetect/autogen.sh
+      - cd vmdetect
+      - ./configure --prefix=/usr
+      - make all
+      - sudo make install
+      - cd ..
+      - sudo rm -fr vmdetect
