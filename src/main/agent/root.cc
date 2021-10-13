@@ -26,6 +26,8 @@
 
  #include <udjat/factory.h>
  #include <udjat/tools/sysconfig.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/url.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -93,25 +95,10 @@
 
 						try {
 
-							static const char *ids[] = {
-								"dmi.1.0.1",
-								"dmi.1.0.2"
-							};
+							auto sysid = URL(Config::Value<string>("system","url-summary","dmi:///system/sku").c_str()).get();
 
-							string id;
-
-							for(size_t ix = 0; ix < (sizeof(ids)/sizeof(ids[0])); ix++) {
-
-								if(!id.empty()) {
-									id += " ";
-								}
-
-								id += Factory::get(ids[ix])->to_string();
-
-							}
-
-							if(!id.empty()) {
-								this->summary = Quark(id).c_str();
+							if(sysid->isValid()) {
+								this->summary = Quark(sysid->c_str()).c_str();
 							}
 
 						} catch(const std::exception &e) {
