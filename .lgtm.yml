@@ -21,14 +21,19 @@ extraction:
       - cd libeconf
       - cmake .
       - make all
-      - make DESTDIR=./pre-reqs install || true
+      - make DESTDIR=../pre-reqs install || true
       - cd ..
-      - sudo rm -fr libeconf
       - git clone https://github.com/PerryWerneck/vmdetect.git ./vmdetect
-      - NOCONFIGURE=1 ./vmdetect/autogen.sh
       - cd vmdetect
-      - ./configure --prefix=/usr
+      - ./vmdetect/autogen.sh
       - make all
-      - sudo make DESTDIR=./pre-reqs install
+      - sudo make DESTDIR=../pre-reqs install
       - cd ..
-      - sudo rm -fr vmdetect
+      - find ./pre-reqs
+      - export LDFLAGS="${LDFLAGS} -L$(readlink -f ./pre-reqs)/usr/local/lib"
+      - echo ${LDFLAGS}
+      - export ECONF_CFLAGS=""
+      - export ECONF_LIBS="-leconf -lm"
+      - export VMDETECT_CFLAGS=""
+      - export VMDETECT_LIBS="-lvmdetect"
+
