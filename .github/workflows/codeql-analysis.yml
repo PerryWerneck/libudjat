@@ -64,14 +64,13 @@ jobs:
     #    uses a compiled language
     - name: Install Dependencies
       run: |
-       sudo apt-get install gettext libpugixml-dev
+       sudo apt-get install gettext libpugixml-dev cmake
        
        git clone https://github.com/openSUSE/libeconf ./libeconf
-       NOCONFIGURE=1 ./libeconf/autogen.sh
        cd libeconf
-       CFLAGS="-std=c11" ./configure --prefix=/usr
+       cmake .
        make all
-       sudo make install
+       sudo make install || true
        cd ..
        sudo rm -fr libeconf
        
