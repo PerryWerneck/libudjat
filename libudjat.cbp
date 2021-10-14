@@ -155,6 +155,15 @@
 		<Unit filename="src/tools/mimetype.cc" />
 		<Unit filename="src/tools/os/linux/configuration/file.cc" />
 		<Unit filename="src/tools/os/linux/diskstats.cc" />
+		<Unit filename="src/tools/os/linux/file/agent.cc" />
+		<Unit filename="src/tools/os/linux/file/controller.cc" />
+		<Unit filename="src/tools/os/linux/file/list.cc" />
+		<Unit filename="src/tools/os/linux/file/path.cc" />
+		<Unit filename="src/tools/os/linux/file/private.h" />
+		<Unit filename="src/tools/os/linux/file/sysconfig.cc" />
+		<Unit filename="src/tools/os/linux/file/sysconfig_value.cc" />
+		<Unit filename="src/tools/os/linux/file/text.cc" />
+		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/subprocess.cc" />
 		<Unit filename="src/tools/os/linux/subprocess.h" />
@@ -162,6 +171,7 @@
 		<Unit filename="src/tools/os/linux/sysstats.cc" />
 		<Unit filename="src/tools/os/linux/systemservice.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
+		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/string.cc" />
 		<Unit filename="src/tools/subprocess/private.h" />
