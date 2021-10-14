@@ -17,8 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat-internals.h>
  #include <sys/time.h>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 
