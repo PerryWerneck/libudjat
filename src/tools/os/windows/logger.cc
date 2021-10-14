@@ -26,6 +26,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -178,6 +180,45 @@ namespace Udjat {
 
 				// Write to log file.
 				{
+
+					// Get logfile path.
+					static string logpath;
+					if(logpath.empty()) {
+
+						TCHAR path[MAX_PATH];
+
+						if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
+							throw runtime_error("Can't get module filename");
+						}
+
+						char *ptr = strrchr((const char *) path,'\\');
+						if(ptr)
+							*(ptr+1) = 0;
+
+						logpath.assign(path);
+						logpath += "logs";
+
+						mkdir(logpath.c_str());
+					}
+
+					// Get filename.
+					string filename = logpath;
+					filename += "\\";
+					filename += TimeStamp().to_string("%d");
+					filename += ".log";
+
+					struct stat st;
+					if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > 86400) {
+						// Tem mais de um dia, remove
+						remove(filename.c_str());
+					}
+
+					std::ofstream ofs;
+					ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+					ofs.open(filename, ofstream::out | ofstream::app);
+					ofs << timestamp << " " << module << " " << message << endl;
+					ofs.close();
 
 				}
 
