@@ -94,9 +94,12 @@
 				} else if(!strncasecmp(ptr,"Type:",5)) {
 					value.setType(find_start(ptr+5));
 
-				} else if(!strncasecmp(ptr,"Default:",8)) {
+				}
+				/*
+				 else if(!strncasecmp(ptr,"Default:",8)) {
 
 				}
+				*/
 
 			} else {
 

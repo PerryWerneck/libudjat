@@ -64,6 +64,16 @@
 			Quark & operator=(const std::string &str);
 			Quark & operator=(const pugi::xml_attribute &attribute);
 
+			Quark & operator=(const Quark &src) {
+				value = src.value;
+				return *this;
+			}
+
+			Quark & operator=(const Quark *src) {
+				value = src->value;
+				return *this;
+			}
+
 			const char * c_str() const;
 
 			size_t hash() const;
