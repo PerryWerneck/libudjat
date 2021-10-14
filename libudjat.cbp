@@ -87,6 +87,7 @@
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
+		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/alert.cc" />
@@ -100,12 +101,13 @@
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/file/private.h" />
-		<Unit filename="src/main/module/controller.cc" />
-		<Unit filename="src/main/module/info.cc" />
-		<Unit filename="src/main/module/load.cc" />
-		<Unit filename="src/main/module/module.cc" />
 		<Unit filename="src/main/module/private.h" />
-		<Unit filename="src/main/module/unload.cc" />
+		<Unit filename="src/main/os/linux/module/controller.cc" />
+		<Unit filename="src/main/os/linux/module/info.cc" />
+		<Unit filename="src/main/os/linux/module/load.cc" />
+		<Unit filename="src/main/os/linux/module/module.cc" />
+		<Unit filename="src/main/os/linux/module/private.h" />
+		<Unit filename="src/main/os/linux/module/unload.cc" />
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/report.cc" />

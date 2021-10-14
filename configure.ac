@@ -68,7 +68,8 @@ OPTIONAL_MODULES=""
 
 case "$host" in
 	*-mingw32)
-		CFLAGS="$CFLAGS -pthread -D_WIN32_WINNT=0x0600"
+		CFLAGS="$CFLAGS -pthread"
+		#  -D_WIN32_WINNT=0x0600
 		LDFLAGS="$LDFLAGS -pthread"
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
@@ -79,12 +80,11 @@ case "$host" in
  	*)
 		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread"
+		LIBS="$LIBS -ldl"
 		AC_SUBST(LIBEXT,.so)
 		AC_SUBST(EXEEXT)
 		AC_SUBST(SONAME,libudjat.so.$app_vrs_major.$app_vrs_minor)
 		AC_SUBST(OSNAME,linux)
-		LIBS="$LIBS -ldl"
-
 
 esac
 
