@@ -17,20 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
+ #pragma once
+
  #include <udjat/defs.h>
- #include <cstring>
- #include <udjat-internals.h>
+ #include <udjat/win32/exception.h>
 
- namespace Udjat {
+ namespace Win32 {
 
-	MainLoop::MainLoop() {
-	}
+	/// @brief Excessão com base no estado de erro windows
+	class UDJAT_API Exception : public std::runtime_error {
+	public:
+		Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
+		}
 
-	MainLoop::~MainLoop() {
-	}
+		Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
+		}
 
-	void MainLoop::wakeup() noexcept {
-	}
+		static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
+
+	};
 
  }

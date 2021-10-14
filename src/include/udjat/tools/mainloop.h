@@ -27,7 +27,7 @@
 
 #ifndef _WIN32
 	#include <poll.h>
-#endif // !_WIN32
+#endif // _WIN32
 
 namespace Udjat {
 

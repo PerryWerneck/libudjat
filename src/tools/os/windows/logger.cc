@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include <windows.h>
 #include <config.h>
 
+#include <udjat/defs.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <mutex>

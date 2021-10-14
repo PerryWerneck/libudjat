@@ -46,13 +46,29 @@
 
 	};
 
+ #else
+
+ 	class ServiceController : public MainLoop {
+	private:
+
+	public:
+		ServiceController() : MainLoop() {
+			throw runtime_error("Not implemented");
+		}
+
+		~ServiceController() {
+		}
+
+	};
+
+
+ #endif // _WIN32
+
+
  	MainLoop & MainLoop::getInstance() {
 		static ServiceController instance;
 		return instance;
 	}
-
- #endif // _WIN32
-
 
 
  }

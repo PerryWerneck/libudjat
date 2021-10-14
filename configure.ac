@@ -71,6 +71,7 @@ case "$host" in
 		CFLAGS="$CFLAGS -pthread"
 		#  -D_WIN32_WINNT=0x0600
 		LDFLAGS="$LDFLAGS -pthread"
+		LIBS="-lws2_32 $LIBS"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
