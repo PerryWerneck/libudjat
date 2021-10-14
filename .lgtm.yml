@@ -17,23 +17,23 @@ extraction:
     # This step is useful for C/C++ analysis where you want to prepare the environment
     # for the `configure` step without changing the default behavior for that step. 
     after_prepare:
-      - git clone https://github.com/openSUSE/libeconf ./libeconf
+      - export PRE_REQS_DIR=$(readlink -f .)/pre-reqs
+      - git clone --branch 0.3.5 https://github.com/openSUSE/libeconf ./libeconf
       - cd libeconf
-      - cmake .
-      - make all
-      - make DESTDIR=../pre-reqs install || true
+      - ./autogen.sh 
+      - ./configure --prefix=/usr
+      - make
+      - make DESTDIR=${PRE_REQS_DIR} install
       - cd ..
       - git clone https://github.com/PerryWerneck/vmdetect.git ./vmdetect
       - cd vmdetect
-      - ./vmdetect/autogen.sh
+      - NOCONFIGURE=1 ./autogen.sh
+      - ./configure --prefix=/usr
       - make all
-      - sudo make DESTDIR=../pre-reqs install
+      - make DESTDIR=${PRE_REQS_DIR} install
       - cd ..
-      - find ./pre-reqs
-      - export LDFLAGS="${LDFLAGS} -L$(readlink -f ./pre-reqs)/usr/local/lib"
-      - echo ${LDFLAGS}
-      - export ECONF_CFLAGS=""
-      - export ECONF_LIBS="-leconf -lm"
-      - export VMDETECT_CFLAGS=""
-      - export VMDETECT_LIBS="-lvmdetect"
+      - export ECONF_CFLAGS="-I${PRE_REQS_DIR}/usr/include"
+      - export ECONF_LIBS="-L${PRE_REQS_DIR}/usr/lib -leconf -lm"
+      - export VMDETECT_CFLAGS="-I${PRE_REQS_DIR}/usr/include"
+      - export VMDETECT_LIBS="-L${PRE_REQS_DIR}/usr/lib -lvmdetect"
 
