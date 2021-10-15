@@ -157,7 +157,7 @@
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/mimetype.cc" />
-		<Unit filename="src/tools/os/linux/configuration/file.cc" />
+		<Unit filename="src/tools/os/linux/configvalue.cc" />
 		<Unit filename="src/tools/os/linux/diskstats.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
 		<Unit filename="src/tools/os/linux/file/controller.cc" />

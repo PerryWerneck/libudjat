@@ -65,11 +65,9 @@
 
 		try {
 
-			Config::File &config = Config::File::getInstance();
-
-			limits.threads	= config.get(name,"max-threads",limits.threads);
-			limits.tasks	= config.get(name,"max-tasks",limits.tasks);
-			limits.idle		= config.get(name,"max-idle",limits.idle);
+			limits.threads	= Config::get(name,"max-threads",limits.threads);
+			limits.tasks	= Config::get(name,"max-tasks",limits.tasks);
+			limits.idle		= Config::get(name,"max-idle",limits.idle);
 
 		} catch(const std::exception &e) {
 

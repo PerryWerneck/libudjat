@@ -10,47 +10,18 @@
 
 		namespace Config {
 
-			bool hasGroup(const std::string &group);
+			UDJAT_API int32_t get(const std::string &group, const std::string &name, const int32_t def);
+			UDJAT_API int64_t get(const std::string &group, const std::string &name, const int64_t def);
+			UDJAT_API uint32_t get(const std::string &group, const std::string &name, const uint32_t def);
+			UDJAT_API uint64_t get(const std::string &group, const std::string &name, const uint64_t def);
+			UDJAT_API float get(const std::string &group, const std::string &name, const float def);
+			UDJAT_API double get(const std::string &group, const std::string &name, const double def);
+			UDJAT_API std::string get(const std::string &group, const std::string &name, const char *def);
+			UDJAT_API std::string get(const std::string &group, const std::string &name, const std::string &def);
+			UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
 
-			class UDJAT_API File {
-			private:
+			UDJAT_API bool hasGroup(const std::string &group);
 
-				static std::recursive_mutex guard;
-
-				void *hFile;	///< @brief Configuration file handle.
-
-				void open();
-				void close();
-
-#ifndef _WIN32
-				static void handle_reload(int sig) noexcept;
-#endif // !_WIN32
-
-				File();
-
-			public:
-
-				File(const File &src) = delete;
-				File(const File *src) = delete;
-
-				static File & getInstance();
-				~File();
-
-				void reload();
-
-				bool hasGroup(const std::string &group);
-
-				int32_t get(const std::string &group, const std::string &name, const int32_t def) const;
-				int64_t get(const std::string &group, const std::string &name, const int64_t def) const;
-				uint32_t get(const std::string &group, const std::string &name, const uint32_t def) const;
-				uint64_t get(const std::string &group, const std::string &name, const uint64_t def) const;
-				float get(const std::string &group, const std::string &name, const float def) const;
-				double get(const std::string &group, const std::string &name, const double def) const;
-				std::string get(const std::string &group, const std::string &name, const char *def) const;
-				std::string get(const std::string &group, const std::string &name, const std::string &def) const;
-				bool get(const std::string &group, const std::string &name, const bool def) const;
-
-			};
 
 			template <typename T>
 			class Value {
@@ -65,7 +36,7 @@
 				}
 
 				T get() const {
-					return Config::File::getInstance().get(group,name,def);
+					return Config::get(group,name,def);
 				}
 
 				operator T() const {
@@ -73,7 +44,7 @@
 				}
 
 				const std::string to_string() const {
-					return Config::File::getInstance().get(group,name,std::to_string(def));
+					return Config::get(group,name,std::to_string(def));
 				}
 
 			};
@@ -86,12 +57,13 @@
 
 			public:
 				Value(const char *g, const char *n, const char *d)
-					: std::string(Config::File::getInstance().get(g,n,d)),group(g),name(n) {
+					: std::string(Config::get(g,n,d)),group(g),name(n) {
 				}
 
 				// const std::string & get() const;
 
 			};
+
 		}
 
 	}
