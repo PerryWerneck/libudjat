@@ -28,6 +28,8 @@
  #include <signal.h>
  #include <iostream>
  #include <cstring>
+ #include <limits.h>
+ #include <unistd.h>
 
  // https://github.com/openSUSE/libeconf
  #ifdef HAVE_ECONF
@@ -48,6 +50,12 @@
 	class Controller {
 	private:
 		void *hFile = nullptr;	///< @brief Configuration file handle.
+
+#ifdef DEBUG
+		string confname{"udjat"};
+#else
+		string confname;
+#endif // DEBUG
 
 		static void handle_reload(int sig) noexcept {
 
@@ -96,9 +104,31 @@
 		void open() {
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
-			string confname{"udjat"};
 
 			if(!hFile) {
+
+				if(confname.empty()) {
+
+					char buffer[PATH_MAX+1];
+					auto nbytes = readlink("/proc/self/exe", buffer, PATH_MAX);
+					if(nbytes > 0) {
+						buffer[nbytes] = 0;
+						char *basename = strrchr(buffer,'/');
+						if(basename) {
+							basename++;
+
+							char *ptr = strchr(basename,'.');
+							if(ptr) {
+								*ptr = 0;
+							}
+
+							confname = basename;
+							cout << "Searching configuration for '" << confname << "'" << endl;
+
+						}
+
+					}
+				}
 
 				econf_err err = econf_readDirs(
 					(econf_file **) &hFile,		// key_file
