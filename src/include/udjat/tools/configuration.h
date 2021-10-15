@@ -10,6 +10,7 @@
 
 		namespace Config {
 
+			UDJAT_API void setName(const char *name);
 			UDJAT_API int32_t get(const std::string &group, const std::string &name, const int32_t def);
 			UDJAT_API int64_t get(const std::string &group, const std::string &name, const int64_t def);
 			UDJAT_API uint32_t get(const std::string &group, const std::string &name, const uint32_t def);

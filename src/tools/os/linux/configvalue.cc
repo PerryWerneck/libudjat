@@ -25,6 +25,7 @@
 
  #include <config.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/quark.h>
  #include <signal.h>
  #include <iostream>
  #include <cstring>
@@ -45,17 +46,16 @@
  namespace Udjat {
 
 	static recursive_mutex guard;
+#ifdef DEBUG
+	static Quark confname = Quark::getFromStatic("udjat");
+#else
+	static Quark confname;
+#endif // DEBUG
 
 #ifdef HAVE_ECONF
 	class Controller {
 	private:
 		void *hFile = nullptr;	///< @brief Configuration file handle.
-
-#ifdef DEBUG
-		string confname{"udjat"};
-#else
-		string confname;
-#endif // DEBUG
 
 		static void handle_reload(int sig) noexcept {
 
@@ -107,7 +107,7 @@
 
 			if(!hFile) {
 
-				if(confname.empty()) {
+				if(!confname) {
 
 					char buffer[PATH_MAX+1];
 					auto nbytes = readlink("/proc/self/exe", buffer, PATH_MAX);
@@ -116,19 +116,21 @@
 						char *basename = strrchr(buffer,'/');
 						if(basename) {
 							basename++;
-
-							char *ptr = strchr(basename,'.');
-							if(ptr) {
-								*ptr = 0;
-							}
-
-							confname = basename;
-							cout << "Searching configuration for '" << confname << "'" << endl;
-
+						} else {
+							basename = buffer;
 						}
+
+						char *ptr = strchr(basename,'.');
+						if(ptr) {
+							*ptr = 0;
+						}
+
+						confname = basename;
 
 					}
 				}
+
+				cout << confname << "\tLoading configuration" << endl;
 
 				econf_err err = econf_readDirs(
 					(econf_file **) &hFile,		// key_file
@@ -388,6 +390,13 @@
 
 	};
 #endif // HAVE_ECONF
+
+	void Config::setName(const char *name) {
+		if(confname) {
+			throw runtime_error(string{"Configuration already set as '"} + confname.c_str() + "'");
+		}
+		confname = name;
+	}
 
 	bool Config::hasGroup(const std::string &group) {
 		return Controller::getInstance().hasGroup(group);
