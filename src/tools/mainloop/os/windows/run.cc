@@ -17,41 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * @brief Implement windows main loop.
+ *
+ * @author perry.werneck@gmail.com
+ *
+ */
+
  #include <config.h>
- #include <cstring>
- #include <sys/eventfd.h>
- #include "../private.h"
+ #include <udjat-internals.h>
 
- namespace Udjat {
+ using namespace std;
 
-	MainLoop::MainLoop() {
-		cout << "MainLoop\tStarting service loop" << endl;
-		efd = eventfd(0,0);
-		if(efd < 0)
-			throw system_error(errno,system_category(),"eventfd() has failed");
-
-	}
-
-	MainLoop::~MainLoop() {
-
-		cout << "MainLoop\tStopping service loop" << endl;
-
-		enabled = false;
-		wakeup();
-
-		{
-			lock_guard<mutex> lock(guard);
-			::close(efd);
-		}
-
-	}
-
-	void MainLoop::wakeup() noexcept {
-		static uint64_t evNum = 0;
-		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
-			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
-		}
-		evNum++;
-	}
-
+ void Udjat::MainLoop::run() {
+	throw runtime_error("Not implemented on windows");
  }
+

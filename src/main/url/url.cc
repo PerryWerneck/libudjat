@@ -17,8 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #ifndef _WIN32
+	#include <netdb.h>
+ #endif // !_WIN32
+
  #include "private.h"
- #include <netdb.h>
+
 
  namespace Udjat {
 

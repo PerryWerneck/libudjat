@@ -19,6 +19,7 @@
 
  #pragma once
  #include <udjat/url.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <memory>
  #include <list>

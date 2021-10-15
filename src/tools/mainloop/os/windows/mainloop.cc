@@ -17,14 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
+ #include <cstring>
+ #include <udjat-internals.h>
 
- using namespace std;
+ namespace Udjat {
 
+	MainLoop::MainLoop() {
+	}
+
+	MainLoop::~MainLoop() {
+	}
+
+	void MainLoop::wakeup() noexcept {
+	}
+
+ }

@@ -63,7 +63,8 @@
 			}
 		}
 
-		throw runtime_error(string{"No back-end for scheme '"} + name + "'");
+		throw runtime_error(Logger::Message("No available protocol manager for '{}://'",name).c_str());
+
 	}
 
 

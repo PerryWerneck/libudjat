@@ -10,14 +10,14 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
 	$(wildcard src/tools/mainloop/*.cc) \
 	$(wildcard src/tools/subprocess/*.cc) \
-	$(wildcard src/tools/mainloop/@OSNAME@/*.cc) \
+	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
 	$(wildcard src/main/*.cc) \
 	$(wildcard src/main/agent/*.cc) \
 	$(wildcard src/main/state/*.cc) \
 	$(wildcard src/main/request/*.cc) \
 	$(wildcard src/main/worker/*.cc) \
-	$(wildcard src/main/module/*.cc) \
-	$(wildcard src/tools/file/*.cc) \
+	$(wildcard src/main/os/@OSNAME@/module/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
 	$(wildcard src/main/url/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/alert/*.cc)

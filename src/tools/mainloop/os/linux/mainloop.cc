@@ -17,14 +17,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
+ #include <config.h>
+ #include <cstring>
+ #include <sys/eventfd.h>
+ #include <udjat-internals.h>
  #include <iostream>
+ #include <unistd.h>
 
  using namespace std;
 
+ namespace Udjat {
+
+	MainLoop::MainLoop() {
+		cout << "MainLoop\tStarting service loop" << endl;
+		efd = eventfd(0,0);
+		if(efd < 0)
+			throw system_error(errno,system_category(),"eventfd() has failed");
+
+	}
+
+	MainLoop::~MainLoop() {
+
+		cout << "MainLoop\tStopping service loop" << endl;
+
+		enabled = false;
+		wakeup();
+
+		{
+			lock_guard<mutex> lock(guard);
+			::close(efd);
+		}
+
+	}
+
+	void MainLoop::wakeup() noexcept {
+		static uint64_t evNum = 0;
+		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
+			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
+		}
+		evNum++;
+	}
+
+ }

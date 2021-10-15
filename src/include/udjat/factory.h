@@ -34,6 +34,9 @@
 		/// @brief Factory module info.
 		const ModuleInfo *info;
 
+		/// @brief Agent type (to build agents from the 'type=' attribute on XML).
+		const char *agentType = nullptr;
+
 	public:
 		Factory(const char *name);
 		Factory(const char *name, const ModuleInfo *info);
@@ -53,10 +56,10 @@
 		static bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node);
 
 		/// @brief Create agent by id.
-		virtual std::shared_ptr<Abstract::Agent> factory(const char *id) const;
+		// virtual std::shared_ptr<Abstract::Agent> factory(const char *id) const;
 
 		/// @brief Create agent by id.
-		static std::shared_ptr<Abstract::Agent> get(const char *id);
+		// static std::shared_ptr<Abstract::Agent> get(const char *id);
 
 		/// @brief Create Agent child.
 		/// @param parent Parent agent to insert the built child.

@@ -27,13 +27,6 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	std::shared_ptr<Abstract::Agent> Factory::factory(const char *id) const {
-		throw system_error(ENOTSUP,system_category(),string{"Can't create agent '"} + this->name + "." + id + "'");
-	}
-	#pragma GCC diagnostic pop
-
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	bool Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 		// throw runtime_error(string{"Element '"} + node.name() + "' is invalid at this context");
 		return false;
@@ -43,7 +36,6 @@ namespace Udjat {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	bool Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-		// throw runtime_error(string{"Element '"} + node.name() + "' is invalid at this context");
 		return false;
 	}
 	#pragma GCC diagnostic pop
@@ -54,19 +46,6 @@ namespace Udjat {
 
 	bool Factory::parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) {
 		return Controller::getInstance().parse(name,parent,node);
-	}
-
-	std::shared_ptr<Abstract::Agent> Factory::get(const char *id) {
-
-		const char * key = strchr(id,'.');
-
-		if(!key) {
-			throw system_error(EINVAL,system_category(),"Agent identifier should be in the format [FACTORY].id");
-		}
-
-		auto factory = Controller::getInstance().find(string(id,key-id).c_str());
-		return factory->factory(key+1);
-
 	}
 
 }

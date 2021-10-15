@@ -1,6 +1,7 @@
 #pragma once
 
 #include <config.h>
+#include <udjat/defs.h>
 #include <iostream>
 #include <udjat/agent.h>
 #include <unordered_map>

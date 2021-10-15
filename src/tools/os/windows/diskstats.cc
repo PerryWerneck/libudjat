@@ -17,14 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
+ #include <udjat/tools/disk/stat.h>
 
  using namespace std;
+
+ namespace Udjat {
+
+	std::list<Disk::Stat> Disk::Stat::get() {
+		throw runtime_error("DiskStats is not available on windows");
+	}
+
+	Disk::Stat::Stat(const char *name) : Stat() {
+		throw runtime_error("DiskStats is not available on windows");
+	}
+
+	Disk::Stat & Disk::Stat::operator+=(const Disk::Stat &s) {
+		throw runtime_error("DiskStats is not available on windows");
+	}
+
+	size_t Disk::Stat::getBlockSize() const {
+		throw runtime_error("DiskStats is not available on windows");
+	}
+
+ }
 
