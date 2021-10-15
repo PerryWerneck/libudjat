@@ -175,6 +175,7 @@
 		<Unit filename="src/tools/os/linux/sysstats.cc" />
 		<Unit filename="src/tools/os/linux/systemservice.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
+		<Unit filename="src/tools/os/windows/configvalue.cc" />
 		<Unit filename="src/tools/os/windows/diskstats.cc" />
 		<Unit filename="src/tools/os/windows/exception.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
