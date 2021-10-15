@@ -51,9 +51,6 @@
 
 			bool pop(Task &task) noexcept;
 
-#ifdef _WIN32
-
-#else
 			struct {
 				std::mutex m;
 				std::condition_variable cv;
@@ -62,8 +59,6 @@
 			inline void wakeup() noexcept {
 				event.cv.notify_one();
 			}
-
-#endif // _WIN32
 
 		protected:
 

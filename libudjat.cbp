@@ -136,15 +136,7 @@
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/diskstat.cc" />
 		<Unit filename="src/tools/expand.cc" />
-		<Unit filename="src/tools/file/agent.cc" />
-		<Unit filename="src/tools/file/controller.cc" />
-		<Unit filename="src/tools/file/list.cc" />
-		<Unit filename="src/tools/file/path.cc" />
 		<Unit filename="src/tools/file/private.h" />
-		<Unit filename="src/tools/file/sysconfig.cc" />
-		<Unit filename="src/tools/file/sysconfig_value.cc" />
-		<Unit filename="src/tools/file/text.cc" />
-		<Unit filename="src/tools/file/watcher.cc" />
 		<Unit filename="src/tools/mainloop/default.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
@@ -178,7 +170,9 @@
 		<Unit filename="src/tools/os/windows/configvalue.cc" />
 		<Unit filename="src/tools/os/windows/diskstats.cc" />
 		<Unit filename="src/tools/os/windows/exception.cc" />
+		<Unit filename="src/tools/os/windows/file/list.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
+		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/string.cc" />
 		<Unit filename="src/tools/subprocess/private.h" />
