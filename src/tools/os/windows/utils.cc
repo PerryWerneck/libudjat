@@ -17,26 +17,55 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
+ #include <windows.h>
  #include <udjat/defs.h>
- #include <string>
- #include <stdexcept>
  #include <udjat/win32/exception.h>
+ #include <string>
+ #include <string>
 
- namespace Win32 {
+ using namespace std;
 
-	/// @brief Excessão com base no estado de erro windows
-	class UDJAT_API Exception : public std::runtime_error {
-	public:
-		Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
+ namespace Udjat {
+
+	namespace Win32 {
+
+		UDJAT_API string getInstallPath() {
+
+			TCHAR path[MAX_PATH];
+
+			if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
+				throw ::Win32::Exception("Can't get application filename");
+			}
+
+			char *ptr = strrchr((const char *) path,'\\');
+			if(ptr)
+				*(ptr+1) = 0;
+
+			return path;
+
 		}
 
-		Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
+		UDJAT_API string buildFileName(const char *path, ...) {
+
+			string filename = getInstallPath();
+			bool sep = false;
+
+			va_list args;
+			va_start(args, path);
+			while(path) {
+				if(sep) {
+					filename += "\\";
+				}
+				filename += path;
+				sep = true;
+				path = va_arg(args, const char *);
+			}
+			va_end(args);
+
+
 		}
 
-		static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
-
-	};
+	}
 
  }

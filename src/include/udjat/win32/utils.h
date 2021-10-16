@@ -21,22 +21,15 @@
 
  #include <udjat/defs.h>
  #include <string>
- #include <stdexcept>
- #include <udjat/win32/exception.h>
 
- namespace Win32 {
+ namespace Udjat {
 
-	/// @brief Excessão com base no estado de erro windows
-	class UDJAT_API Exception : public std::runtime_error {
-	public:
-		Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
-		}
+	namespace Win32 {
 
-		Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
-		}
+		UDJAT_API std::string getInstallPath();
+		UDJAT_API std::string buildFileName(const char *path, ...) UDJAT_GNUC_NULL_TERMINATED;
 
-		static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
 
-	};
+	}
 
  }

@@ -76,6 +76,9 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
+		<Unit filename="src/include/udjat/win32/utils.h">
+			<Option target="&lt;{~None~}&gt;" />
+		</Unit>
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/child.cc" />
@@ -173,6 +176,7 @@
 		<Unit filename="src/tools/os/windows/file/list.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
+		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/string.cc" />
 		<Unit filename="src/tools/subprocess/private.h" />
