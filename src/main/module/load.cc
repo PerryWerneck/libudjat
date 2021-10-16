@@ -7,6 +7,12 @@
 #include <udjat/tools/file.h>
 #include <udjat/tools/configuration.h>
 
+#ifdef _WIN32
+	#define MODULE_EXT ".dll"
+#else
+	#define MODULE_EXT ".so"
+#endif // _WIN32
+
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
@@ -23,12 +29,12 @@ namespace Udjat {
 		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
 #endif // DEBUG
 
-		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + configured + ".so").c_str());
+		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + configured + MODULE_EXT).c_str());
 	}
 
 	void Module::Controller::load() {
 
-		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*.so").forEach([this](const char *filename){
+		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*" MODULE_EXT).forEach([this](const char *filename){
 
 			try {
 
@@ -48,6 +54,12 @@ namespace Udjat {
 	}
 
 	Module * Module::Controller::load(const char *filename) {
+
+#ifdef _WIN32
+
+		#error Implement
+
+#else
 
 		dlerror();
 
@@ -82,6 +94,8 @@ namespace Udjat {
 		 }
 
 		 return module;
+
+#endif // _WIN32
 	}
 
 }

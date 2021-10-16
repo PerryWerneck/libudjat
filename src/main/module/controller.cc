@@ -1,7 +1,10 @@
 
 
 #include "private.h"
-#include <dlfcn.h>
+
+#ifndef _WIN32
+	#include <dlfcn.h>
+#endif // _WIN32
 
 using namespace std;
 

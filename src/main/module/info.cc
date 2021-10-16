@@ -42,6 +42,12 @@
 
 		} else {
 
+#ifdef _WIN32
+
+			#error Implement
+
+#else
+
 			Dl_info info;
 			if(dladdr(this, &info) != 0) {
 
@@ -51,6 +57,8 @@
 					value["path"] = "";
 				}
 			}
+
+#endif // _WIN32
 
 		}
 

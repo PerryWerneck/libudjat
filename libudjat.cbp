@@ -76,9 +76,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
-		<Unit filename="src/include/udjat/win32/utils.h">
-			<Option target="&lt;{~None~}&gt;" />
-		</Unit>
+		<Unit filename="src/include/udjat/win32/utils.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/child.cc" />
@@ -106,7 +104,12 @@
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/file/private.h" />
+		<Unit filename="src/main/module/controller.cc" />
+		<Unit filename="src/main/module/info.cc" />
+		<Unit filename="src/main/module/load.cc" />
+		<Unit filename="src/main/module/module.cc" />
 		<Unit filename="src/main/module/private.h" />
+		<Unit filename="src/main/module/unload.cc" />
 		<Unit filename="src/main/os/linux/module/controller.cc" />
 		<Unit filename="src/main/os/linux/module/info.cc" />
 		<Unit filename="src/main/os/linux/module/load.cc" />
