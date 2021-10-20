@@ -44,7 +44,6 @@
 
 		Dl_info info;
 		if(dladdr(this, &info) != 0) {
-
 			if(info.dli_fname && info.dli_fname[0]) {
 				value["filename"] = info.dli_fname;
 			} else {

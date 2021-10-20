@@ -59,6 +59,15 @@ namespace Udjat {
 			object["name"] = module->name;
 			module->info->get(object);
 
+#ifdef _WIN32
+			{
+				TCHAR path[MAX_PATH];
+				if(GetModuleFileName(module->handle, path, MAX_PATH) ) {
+					object["filename"] = (const char *) path;
+				}
+			}
+#endif // _WIN32
+
 		}
 
 	}
