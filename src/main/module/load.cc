@@ -3,13 +3,14 @@
 #include "private.h"
 #include <sys/types.h>
 #include <dirent.h>
-#include <dlfcn.h>
 #include <udjat/tools/file.h>
 #include <udjat/tools/configuration.h>
 
 #ifdef _WIN32
 	#define MODULE_EXT ".dll"
+	#include <udjat/win32/exception.h>
 #else
+	#include <dlfcn.h>
 	#define MODULE_EXT ".so"
 #endif // _WIN32
 
@@ -55,9 +56,37 @@ namespace Udjat {
 
 	Module * Module::Controller::load(const char *filename) {
 
+		 Module * (*init)(void);
+		 Module * module = nullptr;
+
 #ifdef _WIN32
 
-		#error Implement
+		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
+		HMODULE handle = LoadLibrary(filename);
+		if(!handle) {
+			throw Win32::Exception("Cant load module");
+		}
+
+		try {
+
+			init = (Module * (*)(void)) GetProcAddress(handle,"udjat_module_init");
+			if(!init) {
+				throw Win32::Exception("Cant get module init method");
+			}
+
+			module = init();
+			if(!module) {
+				throw runtime_error("Can't initialize module");
+			}
+
+			module->handle = handle;
+
+		} catch(...) {
+
+			FreeLibrary(handle);
+			throw;
+
+		}
 
 #else
 
@@ -68,10 +97,7 @@ namespace Udjat {
 			throw runtime_error(dlerror());
 		}
 
-		 Module * (*init)(void);
-
-		 Module * module = nullptr;
-		 try {
+		try {
 
 			init = (Module * (*)(void)) dlsym(handle,"udjat_module_init");
 			auto err = dlerror();
@@ -85,17 +111,18 @@ namespace Udjat {
 
 			module->handle = handle;
 
-		 } catch(const exception &e) {
+		} catch(const exception &e) {
 
 			dlclose(handle);
 			handle = NULL;
 			throw;
 
-		 }
-
-		 return module;
+		}
 
 #endif // _WIN32
+
+		return module;
+
 	}
 
 }

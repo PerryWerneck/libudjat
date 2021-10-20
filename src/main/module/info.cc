@@ -20,7 +20,11 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
- #include <dlfcn.h>
+
+#ifndef _WIN32
+	#include <dlfcn.h>
+#endif // _WIN32
+
  #include <iostream>
  #include <cstdarg>
 
@@ -36,31 +40,19 @@
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 
-		if(path) {
+#ifndef _WIN32
 
-			value["path"] = path;
+		Dl_info info;
+		if(dladdr(this, &info) != 0) {
 
-		} else {
-
-#ifdef _WIN32
-
-			#error Implement
-
-#else
-
-			Dl_info info;
-			if(dladdr(this, &info) != 0) {
-
-				if(info.dli_fname && info.dli_fname[0]) {
-					value["path"] = info.dli_fname;
-				} else {
-					value["path"] = "";
-				}
+			if(info.dli_fname && info.dli_fname[0]) {
+				value["filename"] = info.dli_fname;
+			} else {
+				value["filename"] = "";
 			}
+		}
 
 #endif // _WIN32
-
-		}
 
 		return value;
 	}

@@ -167,7 +167,7 @@ namespace Udjat {
 		const char *url;
 
 		/// @brief The file path.
-		const char *path = nullptr;
+		// const char *path = nullptr;
 
 // https://isocpp.org/std/standing-documents/sd-6-sg10-feature-test-recommendations
 #ifdef __cpp_constexpr

@@ -35,7 +35,9 @@
 		Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
 		}
 
+		static std::string format() noexcept;
 		static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
+		static std::string format(const DWORD error) noexcept;
 
 	};
 

@@ -27,6 +27,14 @@
 
  using namespace std;
 
+ std::string Win32::Exception::format() noexcept {
+	return format("");
+ }
+
+ std::string Win32::Exception::format(const DWORD error) noexcept {
+	return format("",error);
+ }
+
  std::string Win32::Exception::format(const char *what_arg, const DWORD error) noexcept {
 
 	string response{what_arg};
