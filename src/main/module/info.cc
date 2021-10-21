@@ -20,11 +20,6 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
-
-#ifndef _WIN32
-	#include <dlfcn.h>
-#endif // _WIN32
-
  #include <iostream>
  #include <cstdarg>
 
@@ -40,8 +35,8 @@
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 
+		/*
 #ifndef _WIN32
-
 		Dl_info info;
 		if(dladdr(this, &info) != 0) {
 			if(info.dli_fname && info.dli_fname[0]) {
@@ -50,8 +45,8 @@
 				value["filename"] = "";
 			}
 		}
-
 #endif // _WIN32
+		*/
 
 		return value;
 	}

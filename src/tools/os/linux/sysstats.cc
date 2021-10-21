@@ -61,7 +61,7 @@
 		},
 		{
 			"Involuntary wait",
-			"Ticks spent executing other virtual hosts (in virtual environments like Xen)" // FIXME: Is this right?
+			"Ticks spent executing other virtual hosts (in virtual environments like Xen)" // Is this description ok?
 		},
 		{
 			"Running a normal guest",

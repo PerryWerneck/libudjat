@@ -59,19 +59,46 @@ namespace Udjat {
 			object["name"] = module->name;
 			module->info->get(object);
 
+			void (*getInfo)(Value &object) = NULL;
+
 #ifdef _WIN32
 			{
 				TCHAR path[MAX_PATH];
 				if(GetModuleFileName(module->handle, path, MAX_PATH) ) {
 					object["filename"] = (const char *) path;
+				} else {
+					object["filename"] = "";
 				}
+
+				getInfo = (void (*)(Value &object)) GetProcAddress(module->handle,"udjat_module_info");
+
+			}
+#else
+			{
+				Dl_info info;
+				memset(&info,0,sizeof(info));
+
+				if(dladdr(module->info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
+					object["filename"] = info.dli_fname;
+				} else {
+					object["filename"] = "";
+				}
+
+				getInfo = (void (*)(Value &object)) dlsym(module->handle,"udjat_module_info");
+				auto err = dlerror();
+				if(err)
+					getInfo = NULL;
+
 			}
 #endif // _WIN32
+
+			if(getInfo) {
+				getInfo(object);
+			}
 
 		}
 
 	}
-
 
 }
 
