@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <iconv.h>
 
  namespace Udjat {
 
@@ -28,6 +29,21 @@
 
 		UDJAT_API std::string getInstallPath();
 		UDJAT_API std::string buildFileName(const char *path, ...) UDJAT_GNUC_NULL_TERMINATED;
+
+		/// @brief String in Windows local charset.
+		class UDJAT_API String : public std::string {
+		private:
+			iconv_t	local;
+
+		public:
+			String();
+			String(const char *charset);
+			String(const char *winstr);
+			~String();
+
+			String & assign(const char *winstr);
+
+		};
 
 
 	}

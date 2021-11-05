@@ -178,6 +178,7 @@
 		<Unit filename="src/tools/os/windows/exception.cc" />
 		<Unit filename="src/tools/os/windows/file/list.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
+		<Unit filename="src/tools/os/windows/string.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/quark.cc" />
