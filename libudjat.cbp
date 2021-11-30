@@ -140,6 +140,7 @@
 		<Unit filename="src/state/private.h" />
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
+		<Unit filename="src/tools/configvalue.cc" />
 		<Unit filename="src/tools/diskstat.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/private.h" />

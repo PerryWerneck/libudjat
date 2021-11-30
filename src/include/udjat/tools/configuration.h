@@ -5,6 +5,7 @@
 	#include <string>
 	#include <mutex>
 	#include <udjat/defs.h>
+	#include <vector>
 
 	namespace Udjat {
 
@@ -64,6 +65,14 @@
 				// const std::string & get() const;
 
 			};
+
+			template <>
+			class Value<std::vector<std::string>> : public std::vector<std::string> {
+			public:
+				Value(const char *group, const char *name, const char *def, const char *delim = ",");
+
+			};
+
 
 		}
 
