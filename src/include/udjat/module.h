@@ -20,7 +20,11 @@
 			friend class Controller;
 
 			/// @brief The module handle.
+#ifdef _WIN32
+			HMODULE handle;
+#else
 			void *handle;
+#endif // _WIN32
 
 		protected:
 

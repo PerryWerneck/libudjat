@@ -21,24 +21,31 @@
 
  #include <udjat/defs.h>
  #include <string>
- #include <stdexcept>
- #include <udjat/win32/exception.h>
+ #include <iconv.h>
 
- namespace Win32 {
+ namespace Udjat {
 
-	/// @brief Excessão com base no estado de erro windows
-	class UDJAT_API Exception : public std::runtime_error {
-	public:
-		Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
-		}
+	namespace Win32 {
 
-		Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
-		}
+		UDJAT_API std::string getInstallPath();
+		UDJAT_API std::string buildFileName(const char *path, ...) UDJAT_GNUC_NULL_TERMINATED;
 
-		static std::string format() noexcept;
-		static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
-		static std::string format(const DWORD error) noexcept;
+		/// @brief String in Windows local charset.
+		class UDJAT_API String : public std::string {
+		private:
+			iconv_t	local;
 
-	};
+		public:
+			String();
+			String(const char *charset);
+			String(const char *winstr);
+			~String();
+
+			String & assign(const char *winstr);
+
+		};
+
+
+	}
 
  }

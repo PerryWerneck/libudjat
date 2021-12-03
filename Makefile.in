@@ -16,7 +16,7 @@ MAIN_SOURCES= \
 	$(wildcard src/main/state/*.cc) \
 	$(wildcard src/main/request/*.cc) \
 	$(wildcard src/main/worker/*.cc) \
-	$(wildcard src/main/os/@OSNAME@/module/*.cc) \
+	$(wildcard src/main/module/*.cc) \
 	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
 	$(wildcard src/main/url/*.cc) \
 	$(wildcard src/main/factory/*.cc) \

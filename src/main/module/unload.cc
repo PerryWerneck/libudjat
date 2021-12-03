@@ -18,7 +18,12 @@
  */
 
 #include "private.h"
-#include <dlfcn.h>
+
+#ifdef _WIN32
+	#include <udjat/win32/exception.h>
+#else
+	#include <dlfcn.h>
+#endif // _WIN32
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -37,7 +42,7 @@ namespace Udjat {
 			// Save module name.
 			string name(module->name);
 
-			void *handle = module->handle;
+			auto handle = module->handle;
 
 			try {
 
@@ -45,6 +50,20 @@ namespace Udjat {
 				delete module;
 
 				if(handle) {
+
+#ifdef _WIN32
+
+					// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary
+					bool (*deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
+					if(!deinit()) {
+						cout << name << "\tModule disabled (still open)" << endl;
+					} else if(FreeLibrary(handle)) {
+						cerr << name << "\tError '" << Win32::Exception::format() << "' closing module" << endl;
+					} else {
+						cout << name << "\tModule unloaded" << endl;
+					}
+
+#else
 					bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
 					auto err = dlerror();
 					if(!err) {
@@ -56,6 +75,7 @@ namespace Udjat {
 							cout << name << "\tModule unloaded" << endl;
 						}
 					}
+#endif // _WIN32
 				}
 
 			} catch(const exception &e) {

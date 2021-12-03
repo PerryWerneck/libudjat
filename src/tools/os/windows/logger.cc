@@ -22,6 +22,7 @@
 #include <udjat/defs.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/timestamp.h>
+#include <udjat/win32/utils.h>
 #include <mutex>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -136,20 +137,7 @@ namespace Udjat {
 				const char *message = buffer.c_str();
 
 				// Set timestamp
-				char timestamp[80];
-				{
-					time_t t = time(0);
-					struct tm tm = *localtime(&t);
-
-					memset(timestamp,0,sizeof(timestamp));
-
-					size_t len = strftime(timestamp, 79, "%x %X", &tm);
-
-					if(!len) {
-						strncpy(timestamp,"--/--/-- --:--:--", sizeof(timestamp));
-					}
-
-				}
+				string timestamp = TimeStamp().to_string("%x %X");
 
 				// Set module name.
 				char module[12];
@@ -175,7 +163,7 @@ namespace Udjat {
 
 				// If enable write console output.
 				if(console) {
-					write(1,timestamp,module,message);
+					write(1,timestamp.c_str(),module,message);
 				}
 
 				// Write to log file.
@@ -184,28 +172,12 @@ namespace Udjat {
 					// Get logfile path.
 					static string logpath;
 					if(logpath.empty()) {
-
-						TCHAR path[MAX_PATH];
-
-						if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
-							throw runtime_error("Can't get module filename");
-						}
-
-						char *ptr = strrchr((const char *) path,'\\');
-						if(ptr)
-							*(ptr+1) = 0;
-
-						logpath.assign(path);
-						logpath += "logs";
-
+						logpath = Win32::buildFileName("logs",nullptr) + "\\";
 						mkdir(logpath.c_str());
 					}
 
 					// Get filename.
-					string filename = logpath;
-					filename += "\\";
-					filename += TimeStamp().to_string("%d");
-					filename += ".log";
+					string filename = logpath + TimeStamp().to_string("%d") + ".log";
 
 					struct stat st;
 					if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > 86400) {

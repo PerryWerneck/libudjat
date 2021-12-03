@@ -18,43 +18,54 @@
  */
 
  #include <config.h>
+ #include <windows.h>
  #include <udjat/defs.h>
- #include <udjat/tools/value.h>
- #include <dlfcn.h>
- #include <iostream>
- #include <cstdarg>
+ #include <udjat/win32/exception.h>
+ #include <string>
+ #include <string>
 
  using namespace std;
 
  namespace Udjat {
 
-	Value & ModuleInfo::get(Value &value) const {
+	namespace Win32 {
 
-		value["module"] = name;
-		value["description"] = description;
-		value["version"] = version;
-		value["bugreport"] = bugreport;
-		value["url"] = url;
+		UDJAT_API string getInstallPath() {
 
-		if(path) {
+			TCHAR path[MAX_PATH];
 
-			value["path"] = path;
-
-		} else {
-
-			Dl_info info;
-			if(dladdr(this, &info) != 0) {
-
-				if(info.dli_fname && info.dli_fname[0]) {
-					value["path"] = info.dli_fname;
-				} else {
-					value["path"] = "";
-				}
+			if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
+				throw ::Win32::Exception("Can't get application filename");
 			}
+
+			char *ptr = strrchr((const char *) path,'\\');
+			if(ptr)
+				*(ptr+1) = 0;
+
+			return path;
 
 		}
 
-		return value;
+		UDJAT_API string buildFileName(const char *path, ...) {
+
+			string filename = getInstallPath();
+			bool sep = false;
+
+			va_list args;
+			va_start(args, path);
+			while(path) {
+				if(sep) {
+					filename += "\\";
+				}
+				filename += path;
+				sep = true;
+				path = va_arg(args, const char *);
+			}
+			va_end(args);
+
+
+		}
+
 	}
 
  }

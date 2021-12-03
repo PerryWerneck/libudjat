@@ -23,6 +23,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/mimetype.h>
  #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -199,7 +200,6 @@ int main(int argc, char **argv) {
 
 	}
 	*/
-
 
 	// test_file_load();
 	test_agent_parser();

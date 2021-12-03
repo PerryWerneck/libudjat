@@ -17,28 +17,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
- #include <string>
- #include <stdexcept>
- #include <udjat/win32/exception.h>
+ #include <udjat/tools/value.h>
+ #include <iostream>
+ #include <cstdarg>
 
- namespace Win32 {
+ using namespace std;
 
-	/// @brief Excessão com base no estado de erro windows
-	class UDJAT_API Exception : public std::runtime_error {
-	public:
-		Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
+ namespace Udjat {
+
+	Value & ModuleInfo::get(Value &value) const {
+
+		value["module"] = name;
+		value["description"] = description;
+		value["version"] = version;
+		value["bugreport"] = bugreport;
+		value["url"] = url;
+
+		/*
+#ifndef _WIN32
+		Dl_info info;
+		if(dladdr(this, &info) != 0) {
+			if(info.dli_fname && info.dli_fname[0]) {
+				value["filename"] = info.dli_fname;
+			} else {
+				value["filename"] = "";
+			}
 		}
+#endif // _WIN32
+		*/
 
-		Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
-		}
-
-		static std::string format() noexcept;
-		static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
-		static std::string format(const DWORD error) noexcept;
-
-	};
+		return value;
+	}
 
  }

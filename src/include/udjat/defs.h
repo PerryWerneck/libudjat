@@ -131,13 +131,8 @@
 /// @brief Obtém o número de elementos de um array.
 #define N_ELEMENTS(x) (sizeof(x)/sizeof(x[0]))
 
-#if __cplusplus < 201103L
-
-	// Old C++ compatibility
-	#define noexcept
-	#define nullptr NULL
-
-#endif // !C++11
+#define UDJAT_GNUC_FORMAT(s,f) __attribute__ ((__format__ (__printf__, s, f)))
+#define UDJAT_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
 
 namespace Udjat {
 
@@ -172,7 +167,7 @@ namespace Udjat {
 		const char *url;
 
 		/// @brief The file path.
-		const char *path = nullptr;
+		// const char *path = nullptr;
 
 // https://isocpp.org/std/standing-documents/sd-6-sg10-feature-test-recommendations
 #ifdef __cpp_constexpr
