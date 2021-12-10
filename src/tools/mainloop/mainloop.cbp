@@ -45,8 +45,6 @@
 		<Unit filename="default.cc" />
 		<Unit filename="handler.cc" />
 		<Unit filename="mainloop.cc" />
-		<Unit filename="os/linux/mainloop.cc" />
-		<Unit filename="os/linux/run.cc" />
 		<Unit filename="os/windows/mainloop.cc" />
 		<Unit filename="os/windows/private.h" />
 		<Unit filename="os/windows/run.cc" />

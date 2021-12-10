@@ -26,8 +26,9 @@
  #include <udjat-internals.h>
  #include <udjat/tools/mainloop.h>
 
- #define WM_WAKE_UP			WM_USER+100
- #define IDT_CHECK_TIMERS	1
+ #define WM_WAKE_UP				WM_USER+100
+ #define WM_CHECK_TIMERS		WM_USER+101
+ #define IDT_CHECK_TIMERS		1
 
  using namespace std;
 

@@ -47,9 +47,7 @@
 
 		}
 
-		//
-		// Cria objeto para recebimento de mensagens windows.
-		//
+		// Create object window.
 		hwnd = CreateWindow(
 			PACKAGE_NAME,
 			"MainLoop",
@@ -89,16 +87,26 @@
 
 			switch(uMsg) {
 			case WM_WAKE_UP:
+
+				// Check if the mainloop still enabled.
 				if(!controller.enabled) {
 					PostMessage(hwnd,WM_QUIT,0,0);
+					return 0;
 				}
+
+				// Enqueue a timer update.
+				PostMessage(hwnd,WM_CHECK_TIMERS,0);
+
+				break;
+
+			case WM_CHECK_TIMERS:
+				SetTimer(hwnd,IDT_CHECK_TIMERS,max(Timers::run(),1000L),(TIMERPROC) NULL);
 				break;
 
 			case WM_TIMER:
-				/*
 				if(wParam == IDT_CHECK_TIMERS) {
+					PostMessage(hwnd,WM_CHECK_TIMERS,0);
 				}
-				*/
 				break;
 
 			default:
