@@ -20,14 +20,17 @@
 #pragma once
 
 #include <udjat/defs.h>
+
+#ifdef _WIN32
+	#include <windows.h>
+#else
+	#include <poll.h>
+#endif // _WIN32
+
 #include <list>
 #include <functional>
 #include <mutex>
 #include <udjat.h>
-
-#ifndef _WIN32
-	#include <poll.h>
-#endif // _WIN32
 
 namespace Udjat {
 
@@ -64,6 +67,9 @@ namespace Udjat {
 
 	private:
 
+		/// @brief Private constructor, use getInstance() instead.
+		MainLoop();
+
 		/// @brief Services
 		std::list<Service *> services;
 
@@ -91,7 +97,13 @@ namespace Udjat {
 
 		} timers;
 
-#ifndef _WIN32
+#ifdef _WIN32
+		/// @brief Process windows messages.
+		static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+		/// @brief Object window for this loop
+		HWND hwnd;
+#else
 		/// @brief get FDs.
 		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
 #endif // _WIN32
@@ -124,7 +136,6 @@ namespace Udjat {
 		MainLoop(const MainLoop &src) = delete;
 		MainLoop(const MainLoop *src) = delete;
 
-		MainLoop();
 		~MainLoop();
 
 		/// @brief Get default mainloop.
