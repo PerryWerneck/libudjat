@@ -50,6 +50,7 @@ doxyfile
 pkg-config.pc
 vgcore.*
 *~
+*.cache
 
 # CodeBlocks
 *.layout

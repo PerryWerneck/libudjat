@@ -44,10 +44,14 @@
 		<Unit filename="../../include/udjat/tools/mainloop.h" />
 		<Unit filename="default.cc" />
 		<Unit filename="handler.cc" />
-		<Unit filename="linux/mainloop.cc" />
-		<Unit filename="linux/run.cc" />
 		<Unit filename="mainloop.cc" />
+		<Unit filename="os/linux/mainloop.cc" />
+		<Unit filename="os/linux/run.cc" />
+		<Unit filename="os/windows/mainloop.cc" />
+		<Unit filename="os/windows/private.h" />
+		<Unit filename="os/windows/run.cc" />
 		<Unit filename="private.h" />
+		<Unit filename="service.cc" />
 		<Unit filename="testprogram/testprogram.cc" />
 		<Unit filename="timer.cc" />
 		<Extensions />

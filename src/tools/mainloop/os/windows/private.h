@@ -17,33 +17,21 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @file
- *
- * @brief Implement windows main loop.
- *
- * @author perry.werneck@gmail.com
- *
- */
+ #pragma once
 
  #include <config.h>
+ #include <winsock2.h>
+ #include <windows.h>
+ #include <udjat/defs.h>
  #include <udjat-internals.h>
+ #include <udjat/tools/mainloop.h>
+
+ #define WM_WAKE_UP			WM_USER+100
+ #define IDT_CHECK_TIMERS	1
 
  using namespace std;
 
- void Udjat::MainLoop::run() {
+ namespace Udjat {
 
-	MSG msg;
-	memset(&msg,0,sizeof(msg));
-	while (GetMessage(&msg, NULL, 0, 0)) {
-
-		if(msg.message == WM_QUIT) {
-			break;
-		}
-
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
 
  }
-
