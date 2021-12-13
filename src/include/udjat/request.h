@@ -175,11 +175,11 @@
 				return path.c_str();
 			}
 
-			inline bool operator==(Request::Type) const noexcept {
+			inline bool operator==(Request::Type type) const noexcept {
 				return this->type == type;
 			}
 
-			inline bool operator!=(Request::Type) const noexcept {
+			inline bool operator!=(Request::Type type) const noexcept {
 				return this->type != type;
 			}
 

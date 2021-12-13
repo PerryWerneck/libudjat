@@ -21,7 +21,6 @@
  #include <udjat.h>
  #include "private.h"
  #include <udjat-internals.h>
- #include <udjat/agent.h>
 
  namespace Udjat {
 
