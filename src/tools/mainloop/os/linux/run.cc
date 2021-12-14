@@ -35,7 +35,11 @@
 
  using namespace std;
 
- void Udjat::MainLoop::run(bool service) {
+ void Udjat::MainLoop::start() {
+ 	getInstance().run();
+ }
+
+ void Udjat::MainLoop::run() {
 
 	/// Poll.
 	nfds_t szPoll = 2;

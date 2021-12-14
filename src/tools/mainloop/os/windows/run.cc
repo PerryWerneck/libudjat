@@ -33,10 +33,6 @@
 
  using namespace std;
 
- void Udjat::MainLoop::start() {
-	getInstance().run();
- }
-
  void Udjat::MainLoop::run() {
 
 	enabled = true;
