@@ -32,7 +32,22 @@
 
  using namespace std;
 
- void Udjat::MainLoop::run() {
+ void Udjat::MainLoop::run(bool service) {
+
+	if(!service) {
+		run();
+		return;
+	}
+
+	// It's a windows service setup it.
+	cout << "MainLoop\tStarting as a windows service" << endl;
+
+
+
+
+ }
+
+ void Udjat::Win32::MainLoop::run() noexcept {
 
 	enabled = true;
 

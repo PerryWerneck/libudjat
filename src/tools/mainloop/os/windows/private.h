@@ -45,6 +45,8 @@
 		public:
 			~MainLoop();
 
+			void run() noexcept;
+
 			static MainLoop & getInstance();
 
 		};

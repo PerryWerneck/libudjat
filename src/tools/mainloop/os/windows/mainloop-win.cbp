@@ -47,11 +47,10 @@
 		<Unit filename="../../service.cc" />
 		<Unit filename="../../testprogram/testprogram.cc" />
 		<Unit filename="../../timer.cc" />
-		<Unit filename="console.cc" />
+		<Unit filename="default.cc" />
 		<Unit filename="mainloop.cc" />
 		<Unit filename="private.h" />
 		<Unit filename="run.cc" />
-		<Unit filename="service.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
