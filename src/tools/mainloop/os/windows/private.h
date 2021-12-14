@@ -34,5 +34,21 @@
 
  namespace Udjat {
 
+	namespace Win32 {
+
+		class MainLoop : public Udjat::MainLoop {
+		private:
+			static BOOL WINAPI ConsoleHandler(DWORD event);
+
+		public:
+			MainLoop();
+			~MainLoop();
+
+			static MainLoop & getInstance();
+
+		};
+
+
+	}
 
  }

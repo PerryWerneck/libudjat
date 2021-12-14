@@ -28,3 +28,7 @@
 
  using namespace std;
 
+ namespace Udjat {
+
+ }
+

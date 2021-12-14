@@ -49,6 +49,7 @@
 		<Unit filename="../../timer.cc" />
 		<Unit filename="default.cc" />
 		<Unit filename="mainloop.cc" />
+		<Unit filename="private.h" />
 		<Unit filename="run.cc" />
 		<Extensions />
 	</Project>

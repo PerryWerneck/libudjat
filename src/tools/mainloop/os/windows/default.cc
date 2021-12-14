@@ -24,42 +24,30 @@
 
  namespace Udjat {
 
-	class ServiceController : public MainLoop {
-	private:
-		static BOOL WINAPI ConsoleHandler(DWORD event);
-
-	public:
-		ServiceController();
-		~ServiceController();
-
-		static ServiceController & getInstance();
-
-	};
-
-	ServiceController & ServiceController::getInstance() {
-		static ServiceController instance;
+	Win32::MainLoop & Win32::MainLoop::getInstance() {
+		static Win32::MainLoop instance;
 		return instance;
 	}
 
  	MainLoop & MainLoop::getInstance() {
- 		return ServiceController::getInstance();
+ 		return Win32::MainLoop::getInstance();
 	}
 
-	ServiceController::ServiceController() : MainLoop() {
+	Win32::MainLoop::MainLoop() : Udjat::MainLoop() {
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,TRUE)==FALSE) {
 			cerr << "mainloop\tUnable to install console handler" << endl;
 		}
 	}
 
-	ServiceController::~ServiceController() {
+	Win32::MainLoop::~MainLoop() {
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,FALSE)==FALSE) {
 			cerr << "mainloop\tUnable to remove console handler" << endl;
 		}
 	}
 
-	BOOL WINAPI ServiceController::ConsoleHandler(DWORD event) {
+	BOOL WINAPI Win32::MainLoop::ConsoleHandler(DWORD event) {
 
-		ServiceController &controller = ServiceController::getInstance();
+		Win32::MainLoop &controller = Win32::MainLoop::getInstance();
 
 		switch(event) {
 		case CTRL_C_EVENT:
