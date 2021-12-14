@@ -28,22 +28,30 @@
 
  #include <config.h>
  #include <udjat-internals.h>
+ #include <iostream>
 
  using namespace std;
 
  void Udjat::MainLoop::run() {
 
+	enabled = true;
+	cout << "Main loop starts" << endl;
+
 	MSG msg;
 	memset(&msg,0,sizeof(msg));
-	while (GetMessage(&msg, NULL, 0, 0)) {
 
-		if(msg.message == WM_QUIT) {
-			break;
-		}
-
+	int rc = -1;
+	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+
+	if(rc == 0) {
+		cout << "Main loop has ended normally" << endl;
+		return;
+	}
+
+	cerr << "Main loop has ended with windows error " << GetLastError() << endl;
 
  }
 

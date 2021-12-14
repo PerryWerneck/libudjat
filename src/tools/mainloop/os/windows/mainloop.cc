@@ -19,6 +19,8 @@
 
  #include "private.h"
 
+ #include <iostream>
+
  namespace Udjat {
 
 	static ATOM	winClass = 0;
@@ -70,9 +72,18 @@
 
 		SetTimer(hwnd,IDT_CHECK_TIMERS,1000,(TIMERPROC) NULL);
 
+#ifdef DEBUG
+		cout << "Main Object window was created" << endl;
+#endif // DEBUG
+
 	}
 
 	MainLoop::~MainLoop() {
+		DestroyWindow(hwnd);
+
+#ifdef DEBUG
+		cout << "Main Object window was destroyed" << endl;
+#endif // DEBUG
 	}
 
 	void MainLoop::wakeup() noexcept {
@@ -90,22 +101,23 @@
 
 				// Check if the mainloop still enabled.
 				if(!controller.enabled) {
-					PostMessage(hwnd,WM_QUIT,0,0);
+					cout << "Main loop was disabled" << endl;
+					PostMessage(controller.hwnd,WM_QUIT,0,0);
 					return 0;
 				}
 
 				// Enqueue a timer update.
-				PostMessage(hwnd,WM_CHECK_TIMERS,0);
+				PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
 
 				break;
 
 			case WM_CHECK_TIMERS:
-				SetTimer(hwnd,IDT_CHECK_TIMERS,max(Timers::run(),1000L),(TIMERPROC) NULL);
+				SetTimer(controller.hwnd,IDT_CHECK_TIMERS,max(controller.timers.run(),1000UL),(TIMERPROC) NULL);
 				break;
 
 			case WM_TIMER:
 				if(wParam == IDT_CHECK_TIMERS) {
-					PostMessage(hwnd,WM_CHECK_TIMERS,0);
+					PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
 				}
 				break;
 
@@ -116,7 +128,7 @@
 
 		} catch(const exception &e) {
 
-			cerr << "mainloop\t" << e.what << endl;
+			cerr << "mainloop\t" << e.what() << endl;
 
 		} catch(...) {
 
