@@ -70,7 +70,7 @@
 
 		SetWindowLongPtr(hwnd, 0, (LONG_PTR) this);
 
-		SetTimer(hwnd,IDT_CHECK_TIMERS,1000,(TIMERPROC) NULL);
+		SetTimer(hwnd,IDT_CHECK_TIMERS,100,(TIMERPROC) NULL);
 
 #ifdef DEBUG
 		cout << "Main Object window was created" << endl;
@@ -79,6 +79,8 @@
 	}
 
 	MainLoop::~MainLoop() {
+
+		KillTimer(hwnd, IDT_CHECK_TIMERS);
 		DestroyWindow(hwnd);
 
 #ifdef DEBUG
@@ -112,7 +114,7 @@
 				break;
 
 			case WM_CHECK_TIMERS:
-				SetTimer(controller.hwnd,IDT_CHECK_TIMERS,max(controller.timers.run(),1000UL),(TIMERPROC) NULL);
+				SetTimer(controller.hwnd,IDT_CHECK_TIMERS,min(controller.timers.run(),1000UL),(TIMERPROC) NULL);
 				break;
 
 			case WM_TIMER:
