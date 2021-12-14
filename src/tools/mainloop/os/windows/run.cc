@@ -27,31 +27,21 @@
  */
 
  #include <config.h>
+ #include "private.h"
  #include <udjat-internals.h>
  #include <iostream>
 
  using namespace std;
 
- void Udjat::MainLoop::run(bool service) {
-
-	if(!service) {
-		run();
-		return;
-	}
-
-	// It's a windows service setup it.
-	cout << "MainLoop\tStarting as a windows service" << endl;
-
-
-
-
+ void Udjat::MainLoop::start() {
+	getInstance().run();
  }
 
- void Udjat::Win32::MainLoop::run() noexcept {
+ void Udjat::MainLoop::run() {
 
 	enabled = true;
 
-	cout << "Main loop starts" << endl;
+	cout << "MainLoop\tStarting application controller" << endl;
 
 	MSG msg;
 	memset(&msg,0,sizeof(msg));
@@ -63,11 +53,11 @@
 	}
 
 	if(rc == 0) {
-		cout << "Main loop has ended normally" << endl;
+		cout << "MainLoop\tApplication controller has terminated" << endl;
 		return;
 	}
 
-	cerr << "Main loop has ended with windows error " << GetLastError() << endl;
+	cerr << "MainLoop\tApplication controller has failed with error " << GetLastError() << endl;
 
  }
 
