@@ -143,7 +143,8 @@ namespace Udjat {
 		static MainLoop & getInstance();
 
 		/// @brief Run mainloop.
-		void run();
+		/// @param service If true run as system service.
+		void run(bool service = false);
 
 		/// @brief Quit mainloop.
 		void quit();

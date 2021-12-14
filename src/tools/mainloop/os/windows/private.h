@@ -36,12 +36,13 @@
 
 	namespace Win32 {
 
+		/// @brief Win32 Mainloop for console application.
 		class MainLoop : public Udjat::MainLoop {
 		private:
 			static BOOL WINAPI ConsoleHandler(DWORD event);
+			MainLoop();
 
 		public:
-			MainLoop();
 			~MainLoop();
 
 			static MainLoop & getInstance();
