@@ -147,10 +147,14 @@
 		<Unit filename="src/tools/mainloop/default.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
+		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/console.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/service.cc" />
 		<Unit filename="src/tools/mainloop/private.h" />
 		<Unit filename="src/tools/mainloop/service.cc" />
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
