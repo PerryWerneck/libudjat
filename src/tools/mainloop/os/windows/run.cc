@@ -35,6 +35,7 @@
  void Udjat::MainLoop::run() {
 
 	enabled = true;
+
 	cout << "Main loop starts" << endl;
 
 	MSG msg;

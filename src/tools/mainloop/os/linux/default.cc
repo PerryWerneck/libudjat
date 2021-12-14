@@ -25,7 +25,6 @@
 
  	MainLoop & MainLoop::getInstance() {
 
-#ifndef _WIN32
 		class ServiceController : public MainLoop {
 		private:
 
@@ -47,23 +46,6 @@
 			}
 
 		};
-
-	 #else
-
-		class ServiceController : public MainLoop {
-		private:
-
-		public:
-			ServiceController() : MainLoop() {
-			}
-
-			~ServiceController() {
-			}
-
-		};
-
-
-#endif // _WIN32
 
 		static ServiceController instance;
 		return instance;

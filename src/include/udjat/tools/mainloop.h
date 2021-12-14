@@ -65,22 +65,20 @@ namespace Udjat {
 
 		};
 
-	private:
-
+	protected:
 		/// @brief Private constructor, use getInstance() instead.
 		MainLoop();
+
+		/// @brief Is the mainloop enabled.
+		bool enabled;
+
+	private:
 
 		/// @brief Services
 		std::list<Service *> services;
 
-		/// @brief Event FD.
-		int efd;
-
 		/// @brief Mutex
 		static std::mutex guard;
-
-		/// @brief Is the mainloop enabled.
-		bool enabled;
 
 		//
 		// Timers.
@@ -104,6 +102,9 @@ namespace Udjat {
 		/// @brief Object window for this loop
 		HWND hwnd;
 #else
+		/// @brief Event FD.
+		int efd;
+
 		/// @brief get FDs.
 		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
 #endif // _WIN32
