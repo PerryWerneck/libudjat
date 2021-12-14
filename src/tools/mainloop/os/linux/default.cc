@@ -17,9 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <udjat/defs.h>
+ #include <udjat-internals.h>
+ #include <udjat/tools/mainloop.h>
  #include <csignal>
  #include <cstring>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 
