@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
 	MainLoop::getInstance().insert(nullptr, 500L, []() {
 
-		cout << "Timer was activated!" << endl;
+		cout << "Timer was activated at " << time(0) << endl;
 
 		return true;
 	});
