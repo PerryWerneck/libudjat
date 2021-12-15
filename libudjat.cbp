@@ -187,6 +187,7 @@
 		<Unit filename="src/tools/os/windows/file/text.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/os/windows/string.cc" />
+		<Unit filename="src/tools/os/windows/subprocess.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/quark.cc" />
