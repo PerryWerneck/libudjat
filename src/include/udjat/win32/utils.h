@@ -37,7 +37,6 @@
 
 		public:
 			String();
-			String(const char *charset);
 			String(const char *winstr);
 			~String();
 

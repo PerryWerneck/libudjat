@@ -20,8 +20,6 @@
  #pragma once
 
  #include <config.h>
- #include <winsock2.h>
- #include <windows.h>
  #include <udjat/defs.h>
  #include <udjat-internals.h>
  #include <udjat/tools/mainloop.h>

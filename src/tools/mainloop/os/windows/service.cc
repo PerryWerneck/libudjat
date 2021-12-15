@@ -27,6 +27,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include "private.h"
  #include <udjat-internals.h>
  #include <iostream>
@@ -48,12 +49,20 @@
 	constexpr Status() {
 		dwCurrentState				= (DWORD) -1;
 		dwWin32ExitCode				= 0;
-		wWaitHint					= 0;
+		dwWaitHint					= 0;
 		dwServiceType				= SERVICE_WIN32;
 		dwServiceSpecificExitCode	= 0;
 		dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
 	}
+
+	static Status & getInstance();
+
  };
+
+ Status & Status::getInstance() {
+	static Status instance;
+	return instance;
+ }
 
  /// @brief Handle to the status information structure for the current service.
  static SERVICE_STATUS_HANDLE gStatusHandle;
@@ -67,10 +76,10 @@
 		{ SERVICE_START_PENDING,	"Service is pending start" },
 		{ SERVICE_STOP_PENDING,		"Service is pending stop"	},
 		{ SERVICE_STOPPED,			"Service is stopped"		},
-		{ SERVICE_RUNNING,			"Service is running"		}, ),
+		{ SERVICE_RUNNING,			"Service is running"		},
 	};
 
-	static Status status;
+	Status &status = Status::getInstance();
 
 	if(State != status.dwCurrentState) {
 
@@ -90,7 +99,7 @@
 	// gStatus.dwServiceSpecificExitCode	= 0;
 	// gStatus.dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
 
-	if(!SetServiceStatus(gStatusHandle, (SERVICE_STATUS *) &gStatus)) {
+	if(!SetServiceStatus(gStatusHandle, (SERVICE_STATUS *) &status)) {
 		cerr << "MainLoop\tSystem error in SetServiceStatus()" << endl;
 	}
 
@@ -107,23 +116,23 @@
 	case SERVICE_CONTROL_SHUTDOWN:
 			SetStatus(SERVICE_STOP_PENDING, NO_ERROR, 3000);
 			cout << "MainLoop\tSystem shutdown, stopping" << endl;
-			Controller::getInstance().stop();
+			Udjat::Win32::MainLoop::getInstance().stop();
 			break;
 
 	case SERVICE_CONTROL_STOP:
 			SetStatus(SERVICE_STOP_PENDING, NO_ERROR, 3000);
 			cout << "MainLoop\tStopping by request" << endl;
-			Controller::getInstance().stop();
+			Udjat::Win32::MainLoop::getInstance().stop();
 			break;
 
 	case SERVICE_CONTROL_INTERROGATE:
 			// Add here the necessary code to query the daemon
-			SetStatus(gStatus.dwCurrentState, NO_ERROR, 0);
+			SetStatus(Status::getInstance().dwCurrentState, NO_ERROR, 0);
 			break;
 
 	default:
 			clog << "MainLoop\tUnexpected service control code: " << ((int) CtrlCmd) << endl;
-			SetStatus(gStatus.dwCurrentState, NO_ERROR, 0);
+			SetStatus(Status::getInstance().dwCurrentState, NO_ERROR, 0);
 	}
 
  }
@@ -139,7 +148,7 @@
 
 	SetStatus(SERVICE_START_PENDING, NO_ERROR, 3000 );
 
-	auto controller = Controller::getInstance();
+	auto &controller = Udjat::Win32::MainLoop::getInstance();
 
 	SetStatus(SERVICE_RUNNING, NO_ERROR, 0);
 
@@ -175,5 +184,5 @@
  }
 
  void Udjat::MainLoop::stop() {
-	enabled = false;
+	Udjat::Win32::MainLoop::getInstance().enabled = false;
  }

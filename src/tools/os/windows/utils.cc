@@ -18,7 +18,6 @@
  */
 
  #include <config.h>
- #include <windows.h>
  #include <udjat/defs.h>
  #include <udjat/win32/exception.h>
  #include <string>

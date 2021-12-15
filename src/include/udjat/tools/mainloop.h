@@ -21,9 +21,7 @@
 
 #include <udjat/defs.h>
 
-#ifdef _WIN32
-	#include <windows.h>
-#else
+#ifndef _WIN32
 	#include <poll.h>
 #endif // _WIN32
 
