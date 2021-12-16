@@ -18,11 +18,11 @@
  */
 
  /***
-  * @brief Implement the SubProcess object.
+  * @brief Implement the Windows SubProcess object.
   *
   * References:
   *
-  * <https://opensource.apple.com/source/Libc/Libc-167/gen.subproj/popen.c.auto.html>
+  * <https://docs.microsoft.com/en-us/windows/win32/procthread/creating-a-child-process-with-redirected-input-and-output>
   *
   */
 

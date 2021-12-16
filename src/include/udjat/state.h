@@ -26,13 +26,13 @@
 
 	namespace Udjat {
 
-		void parse_range(const pugi::xml_node &node, int &from, int &to);
-		void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to);
-		void parse_range(const pugi::xml_node &node, unsigned short &from, unsigned short &to);
-		void parse_range(const pugi::xml_node &node, float &from, float &to);
-		void parse_range(const pugi::xml_node &node, double &from, double &to);
-		void parse_range(const pugi::xml_node &node, unsigned long &from, unsigned long &to);
-		void parse_range(const pugi::xml_node &node, long &from, long &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, int &from, int &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, unsigned short &from, unsigned short &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, float &from, float &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, double &from, double &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, unsigned long &from, unsigned long &to);
+		UDJAT_API void parse_range(const pugi::xml_node &node, long &from, long &to);
 
 		/// @brief Parse	byte range, convert values "TB', 'GB', 'MB', 'KB' to byes.
 		/// @param node		XML node to extract values.
