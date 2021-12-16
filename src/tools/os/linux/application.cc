@@ -25,11 +25,8 @@
 
  namespace Udjat {
 
-	Application::Name::Name() {
-
-		// Get application name
-		assign(program_invocation_short_name);
-
+	Application::Name::Name(bool with_path) {
+		assign(with_path ? program_invocation_name : program_invocation_short_name);
 	}
 
  }
