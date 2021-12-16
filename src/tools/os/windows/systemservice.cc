@@ -42,6 +42,7 @@
 		/// http://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx
 		///
 		struct Status : SERVICE_STATUS {
+
 			constexpr Status() {
 				dwCurrentState				= (DWORD) -1;
 				dwWin32ExitCode				= 0;
@@ -51,12 +52,12 @@
 				dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
 			}
 
-			void set(SERVICE_STATUS_HANDLE handle, DWORD State, DWORD wait = 0) {
+			void set(SERVICE_STATUS_HANDLE handle, DWORD state, DWORD wait = 0) {
 
-				if(State != status.dwCurrentState) {
+				if(state != dwCurrentState) {
 
 					static const struct _state {
-						DWORD State;
+						DWORD state;
 						const char *msg;
 					} st[] = {
 						{ SERVICE_START_PENDING,	"Service is pending start" },
@@ -66,14 +67,14 @@
 					};
 
 					for(size_t f = 1; f < (sizeof(st)/sizeof(st[0]));f++) {
-						if(st[f].State == State) {
+						if(st[f].state == state) {
 							clog << "Service\t" << st[f].msg << endl;
 							break;
 						}
 					}
 				}
 
-				dwCurrentState = State;
+				dwCurrentState = state;
 				dwWaitHint = wait;
 
 				if(!SetServiceStatus(handle, (SERVICE_STATUS *) this)) {
@@ -104,7 +105,7 @@
 		void set(SystemService *service) {
 
 			if(this->service) {
-				throw runtime_error(string{"Service is already registered as '"} + service->name + "'");
+				throw runtime_error(string{"Service is already registered as '"} + service->c_str() + "'");
 			}
 
 			this->service = service;
@@ -118,7 +119,7 @@
 
 			Controller &controller = getInstance();
 
-			if(!controller->service) {
+			if(!controller.service) {
 				// FIXME: Report failure.
 				controller.set(controller.status.dwCurrentState, 0);
 				return;
@@ -126,13 +127,13 @@
 
 			switch (CtrlCmd) {
 			case SERVICE_CONTROL_SHUTDOWN:
-					SetStatus(SERVICE_STOP_PENDING, 3000);
+					controller.set(SERVICE_STOP_PENDING, 3000);
 					cout << "MainLoop\tSystem shutdown, stopping" << endl;
 					controller.service->stop();
 					break;
 
 			case SERVICE_CONTROL_STOP:
-					SetStatus(SERVICE_STOP_PENDING, 3000);
+					controller.set(SERVICE_STOP_PENDING, 3000);
 					cout << "MainLoop\tStopping by request" << endl;
 					controller.service->stop();
 					break;
@@ -153,22 +154,22 @@
 			Controller &controller = getInstance();
 
 			// Inicia como serviço
-			hStatus = RegisterServiceCtrlHandler(TEXT(service->name), handler);
+			controller.hStatus = RegisterServiceCtrlHandler(TEXT(controller.service->c_str()), handler);
 
-			if(!hStatus) {
+			if(!controller.hStatus) {
 				throw runtime_error("RegisterServiceCtrlHandler failed");
 			}
 
 			try {
 
-				status.set(hStatus, SERVICE_START_PENDING, 3000);
-				service->init();
+				controller.set(SERVICE_START_PENDING, 3000);
+				controller.service->init();
 
-				status.set(hStatus, SERVICE_RUNNING);
-				service->mainloop();
+				controller.set(SERVICE_RUNNING, 0);
+				controller.service->run();
 
-				status.set(hStatus, SERVICE_STOP_PENDING, 3000);
-				service->deinit();
+				controller.set(SERVICE_STOP_PENDING, 3000);
+				controller.service->deinit();
 
 			} catch(const std::exception &e) {
 
@@ -179,14 +180,14 @@
 				cerr << "MainLoop\tUnexpected error starting windows service" << endl;
 			}
 
-			status.set(hStatus, SERVICE_STOPPED);
+			controller.set(SERVICE_STOPPED, 0);
 
 		}
 
 	};
 
 	Controller & Controller::getInstance() {
-		Controller instance;
+		static Controller instance;
 		return instance;
 	}
 
@@ -207,14 +208,14 @@
 	void SystemService::deinit() {
 	}
 
-	int SystemService::start() {
+	void SystemService::start() {
 
 		static SERVICE_TABLE_ENTRY DispatchTable[] = {
 			{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Controller::dispatcher },
 			{ NULL, NULL }
 		};
 
-		DispatchTable[0].lpServiceName = name;
+		DispatchTable[0].lpServiceName = TEXT( (char *) name);
 
 		cout << name << "\tStarting service dispatcher" << endl;
 
@@ -224,7 +225,7 @@
 
 	}
 
-	int SystemService::stop() {
+	void SystemService::stop() {
 		MainLoop::getInstance().quit();
 	}
 

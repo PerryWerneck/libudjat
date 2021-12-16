@@ -17,20 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @file
- *
- * @brief
- *
- * @author perry.werneck@gmail.com
- *
- */
+ #pragma once
 
- #include <config.h>
  #include <udjat/defs.h>
- #include "private.h"
- #include <udjat-internals.h>
- #include <iostream>
+ #include <string>
 
- using namespace std;
+ namespace Udjat {
+
+	namespace Application {
+
+		class UDJAT_API Name : public std::string {
+		public:
+			Name();
+
+		};
+
+	}
+
+ }
 

@@ -24,6 +24,7 @@
  #include <udjat/tools/mimetype.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -170,6 +171,9 @@ int main(int argc, char **argv) {
 	Logger::redirect();
 	Module::load();
 	Alert::init();
+
+	cout << PACKAGE_NAME << "\tThe application name is '" << Application::Name() << "'" << endl;
+
 
 	/*
 	{

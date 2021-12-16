@@ -31,15 +31,6 @@
 
 	protected:
 
-		/// @brief Initialize
-		virtual void init();
-
-		/// @brief Service main loop
-		virtual void run();
-
-		/// @brief Deinitialize;
-		virtual void deinit();
-
 	public:
 		SystemService(const char *name);
 		virtual ~SystemService();
@@ -49,6 +40,20 @@
 
 		/// @brief Stop service.
 		virtual void stop();
+
+		/// @brief Initialize
+		virtual void init();
+
+		/// @brief Service main loop
+		virtual void run();
+
+		/// @brief Deinitialize;
+		virtual void deinit();
+
+		/// @brief Get Service name
+		inline const char * c_str() const noexcept {
+			return name;
+		}
 
 
 	};

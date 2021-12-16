@@ -17,20 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @file
- *
- * @brief
- *
- * @author perry.werneck@gmail.com
- *
- */
-
+ #define _GNU_SOURCE
  #include <config.h>
  #include <udjat/defs.h>
- #include "private.h"
- #include <udjat-internals.h>
- #include <iostream>
+ #include <udjat/tools/application.h>
+ #include <errno.h>
 
- using namespace std;
+ namespace Udjat {
 
+	Application::Name::Name() {
+
+		// Get application name
+		assign(program_invocation_short_name);
+
+	}
+
+ }

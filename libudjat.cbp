@@ -55,6 +55,7 @@
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/state.h" />
+		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/disk/stat.h" />
@@ -140,6 +141,7 @@
 		<Unit filename="src/state/private.h" />
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
+		<Unit filename="src/tools/application.h" />
 		<Unit filename="src/tools/configvalue.cc" />
 		<Unit filename="src/tools/diskstat.cc" />
 		<Unit filename="src/tools/expand.cc" />
@@ -160,6 +162,7 @@
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/mimetype.cc" />
+		<Unit filename="src/tools/os/linux/application.cc" />
 		<Unit filename="src/tools/os/linux/configvalue.cc" />
 		<Unit filename="src/tools/os/linux/diskstats.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
@@ -188,6 +191,7 @@
 		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/os/windows/string.cc" />
 		<Unit filename="src/tools/os/windows/subprocess.cc" />
+		<Unit filename="src/tools/os/windows/systemservice.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/quark.cc" />
