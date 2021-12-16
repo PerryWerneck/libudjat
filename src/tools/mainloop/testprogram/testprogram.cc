@@ -24,7 +24,7 @@ int main(int argc, char **argv) {
 		return true;
 	});
 
-	MainLoop::start();
+	MainLoop::getInstance().run();
 
 	cout << "Test program ends normally" << endl;
 	return 0;

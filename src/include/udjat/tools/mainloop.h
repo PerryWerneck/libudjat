@@ -140,12 +140,6 @@ namespace Udjat {
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
 
-		/// @brief Start default mainloop as a system service.
-		static void start();
-
-		/// @brief Stop default mainloop as a system service.
-		static void stop();
-
 		/// @brief Run mainloop.
 		void run();
 
