@@ -25,20 +25,31 @@
 
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService {
+	private:
+		/// @brief Service name
+		const char *name = nullptr;
+
 	protected:
 
+		/// @brief Initialize
+		virtual void init();
+
 		/// @brief Service main loop
-		virtual void mainloop();
+		virtual void run();
+
+		/// @brief Deinitialize;
+		virtual void deinit();
 
 	public:
-		SystemService();
+		SystemService(const char *name);
 		virtual ~SystemService();
 
-		/// @brief Configure service, usually using option -S from command line.
-		virtual void setup();
+		/// @brief Start service.
+		void start();
 
-		/// @brief Run main loop.
-		int run();
+		/// @brief Stop service.
+		virtual void stop();
+
 
 	};
 

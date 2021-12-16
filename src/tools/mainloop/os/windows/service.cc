@@ -116,13 +116,13 @@
 	case SERVICE_CONTROL_SHUTDOWN:
 			SetStatus(SERVICE_STOP_PENDING, NO_ERROR, 3000);
 			cout << "MainLoop\tSystem shutdown, stopping" << endl;
-			Udjat::Win32::MainLoop::getInstance().stop();
+			// Udjat::Win32::MainLoop::getInstance().stop();
 			break;
 
 	case SERVICE_CONTROL_STOP:
 			SetStatus(SERVICE_STOP_PENDING, NO_ERROR, 3000);
 			cout << "MainLoop\tStopping by request" << endl;
-			Udjat::Win32::MainLoop::getInstance().stop();
+			// Udjat::Win32::MainLoop::getInstance().stop();
 			break;
 
 	case SERVICE_CONTROL_INTERROGATE:

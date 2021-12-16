@@ -41,6 +41,8 @@
 			<Add option="-pthread" />
 			<Add option="`pkg-config --libs libsystemd systemd pugixml`" />
 		</Linker>
+		<Unit filename="../../../../include/udjat/tools/systemservice.h" />
+		<Unit filename="../../../os/windows/systemservice.cc" />
 		<Unit filename="../../handler.cc" />
 		<Unit filename="../../mainloop.cc" />
 		<Unit filename="../../private.h" />
