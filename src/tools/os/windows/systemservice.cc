@@ -225,7 +225,7 @@
 	}
 
 	int SystemService::stop() {
-		MainLoop::getInstance().stop();
+		MainLoop::getInstance().quit();
 	}
 
  }

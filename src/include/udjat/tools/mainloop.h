@@ -99,16 +99,21 @@ namespace Udjat {
 
 		/// @brief Object window for this loop
 		HWND hwnd;
+
+		/// @brief get sockets
+		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
+
 #else
 		/// @brief Event FD.
 		int efd;
 
 		/// @brief get FDs.
 		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
+
 #endif // _WIN32
 
 		//
-		// File/socket management
+		// File/socket/Handle management
 		//
 
 		///< @brief File/Socket handler
@@ -148,6 +153,13 @@ namespace Udjat {
 
 		/// @brief Wakeup main loop.
 		void wakeup() noexcept;
+
+		#ifdef _WIN32
+
+			/// @brief Watch windows object.
+			void insert(const void *id, HANDLE handle, const std::function<bool()> call);
+
+		#endif // _WIN32
 
 		/// @brief Insert socket/file in the list of event sources.
 		void insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
