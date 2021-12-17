@@ -26,6 +26,7 @@
  #include <config.h>
  #include <windows.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
  #include <udjat/tools/quark.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
@@ -41,12 +42,6 @@
 
 	static recursive_mutex guard;
 
-#ifdef DEBUG
-	static Quark confname = Quark::getFromStatic("udjat");
-#else
-	static Quark confname;
-#endif // DEBUG
-
 	class Controller {
 	private:
 		HKEY hkey = (HKEY) 0;
@@ -54,17 +49,8 @@
 	public:
 		Controller() {
 
-			if(!confname) {
-
-				// Get application name
-#ifndef DEBUG
-				#error More work here!
-#endif // DEBUG
-
-			}
-
 			string regpath{"SOFTWARE\\"};
-			regpath += confname.c_str();
+			regpath += Application::Name();
 
 			DWORD disp = 0;
 			LSTATUS status = 0;
@@ -158,14 +144,6 @@
 		}
 
 	};
-
-
-	void Config::setName(const char *name) {
-		if(confname) {
-			throw runtime_error(string{"Configuration already set as '"} + confname.c_str() + "'");
-		}
-		confname = name;
-	}
 
 	bool Config::hasGroup(const std::string &group) {
 		// FIXME: Implement.

@@ -17,30 +17,49 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
- #include <string>
+ #include <udjat/tools/application.h>
+ #include <errno.h>
+ #include <stdexcept>
+
+ using namespace std;
 
  namespace Udjat {
 
-	namespace Application {
+	Application::Name::Name(bool with_path) {
 
-		/// @brief The application name.
-		class UDJAT_API Name : public std::string {
-		public:
-			/// @brief Get application name.
-			/// @param with_path when false get the complete application name with path.
-			Name(bool with_path = false);
+		char *ptr;
+		TCHAR filename[MAX_PATH];
 
-		};
+		if(!GetModuleFileName(NULL, filename, MAX_PATH ) ) {
+			throw runtime_error("Can't get module filename");
+		}
 
-#ifdef _WIN32
-		struct UDJAT_API Path {
-		};
-#endif // _WIN32
+		// Remove extension.
+		ptr = strrchr(filename,'.');
+		if(ptr) {
+			*ptr = 0;
+		}
 
+		if(with_path) {
+			assign(filename);
+			return;
+		}
+
+		ptr = strrchr(filename,'/');
+		if(ptr) {
+			ptr++;
+		} else {
+			ptr = filename;
+		}
+
+		ptr = strrchr(ptr,'\\');
+		if(ptr) {
+			ptr++;
+		}
+
+		assign(ptr);
 	}
 
  }
-

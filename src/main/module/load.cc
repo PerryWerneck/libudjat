@@ -25,7 +25,8 @@ namespace Udjat {
 
 	static string getModulePath() {
 #ifdef _WIN32
-		#error FIXME: Get application path
+		Application::Path path;
+		path += '\\modules';
 #else
 		string path{STRINGIZE_VALUE_OF(LIBDIR)};
 		path += "/";
