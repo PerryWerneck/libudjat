@@ -1,9 +1,10 @@
 
-
+#define GNU_SOURCE
 #include "private.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <udjat/tools/file.h>
+#include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
 
 #ifdef _WIN32
@@ -22,6 +23,18 @@ namespace Udjat {
 		Module::Controller::getInstance().load();
 	}
 
+	static string getModulePath() {
+#ifdef _WIN32
+		#error FIXME: Get application path
+#else
+		string path{STRINGIZE_VALUE_OF(LIBDIR)};
+		path += "/";
+		path += program_invocation_short_name;
+		path += "-modules/";
+		return path;
+#endif // _WIN32
+	}
+
 	void Module::load(const char *name) {
 
 		Config::Value<string> configured("modules",name,name);
@@ -30,12 +43,12 @@ namespace Udjat {
 		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
 #endif // DEBUG
 
-		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + configured + MODULE_EXT).c_str());
+		Module::Controller::getInstance().load((getModulePath() + configured + MODULE_EXT).c_str());
 	}
 
 	void Module::Controller::load() {
 
-		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*" MODULE_EXT).forEach([this](const char *filename){
+		File::List((getModulePath() + "*" MODULE_EXT).c_str()).forEach([this](const char *filename){
 
 			try {
 

@@ -111,12 +111,7 @@
 		<Unit filename="src/main/module/module.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
-		<Unit filename="src/main/os/linux/module/controller.cc" />
-		<Unit filename="src/main/os/linux/module/info.cc" />
-		<Unit filename="src/main/os/linux/module/load.cc" />
-		<Unit filename="src/main/os/linux/module/module.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
-		<Unit filename="src/main/os/linux/module/unload.cc" />
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/report.cc" />

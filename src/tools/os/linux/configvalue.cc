@@ -1,10 +1,11 @@
-/**
- *
- * Copyright (C) <2017> <Perry Werneck>
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,18 +13,13 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @file
- *
- * @brief Implements linux configuration file.
- *
- * @author Perry Werneck <perry.werneck@gmail.com>
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define _GNU_SOURCE
  #include <config.h>
+ #include <errno.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
  #include <signal.h>
@@ -46,11 +42,6 @@
  namespace Udjat {
 
 	static recursive_mutex guard;
-#ifdef DEBUG
-	static Quark confname = Quark::getFromStatic("udjat");
-#else
-	static Quark confname;
-#endif // DEBUG
 
 #ifdef HAVE_ECONF
 	class Controller {
@@ -107,39 +98,16 @@
 
 			if(!hFile) {
 
-				if(!confname) {
-
-					char buffer[PATH_MAX+1];
-					auto nbytes = readlink("/proc/self/exe", buffer, PATH_MAX);
-					if(nbytes > 0) {
-						buffer[nbytes] = 0;
-						char *basename = strrchr(buffer,'/');
-						if(basename) {
-							basename++;
-						} else {
-							basename = buffer;
-						}
-
-						char *ptr = strchr(basename,'.');
-						if(ptr) {
-							*ptr = 0;
-						}
-
-						confname = basename;
-
-					}
-				}
-
-				cout << confname << "\tLoading configuration" << endl;
+				cout << program_invocation_short_name << "\tLoading configuration" << endl;
 
 				econf_err err = econf_readDirs(
-					(econf_file **) &hFile,		// key_file
-					"/usr/etc",					// usr_conf_dir
-					"/etc",						// etc_conf_dir
-					confname.c_str(),			// project_name
-					".conf",					// config_suffis
-					"=",						// delim
-					"#"							// comment
+					(econf_file **) &hFile,				// key_file
+					"/usr/etc",							// usr_conf_dir
+					"/etc",								// etc_conf_dir
+					program_invocation_short_name,		// Application name
+					".conf",							// config_suffis
+					"=",								// delim
+					"#"									// comment
 				);
 
 				if(err != ECONF_SUCCESS) {
@@ -390,13 +358,6 @@
 
 	};
 #endif // HAVE_ECONF
-
-	void Config::setName(const char *name) {
-		if(confname) {
-			throw runtime_error(string{"Configuration already set as '"} + confname.c_str() + "'");
-		}
-		confname = name;
-	}
 
 	bool Config::hasGroup(const std::string &group) {
 		return Controller::getInstance().hasGroup(group);
