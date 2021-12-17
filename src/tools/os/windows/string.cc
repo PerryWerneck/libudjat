@@ -49,7 +49,7 @@
 #if defined(WINICONV_CONST)
 		WINICONV_CONST char 	* inBuf 	= (WINICONV_CONST char *) winstr;
 #elif defined(ICONV_CONST)
-		ICONV_CONST 			* inBuf 	= (ICONV_CONST *) winstr;
+		ICONV_CONST char		* inBuf 	= (ICONV_CONST char *) winstr;
 #else
 		char 		 			* inBuf 	= (char *) winstr;
 #endif // WINICONV_CONST
