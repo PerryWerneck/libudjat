@@ -36,9 +36,25 @@
 		};
 
 #ifdef _WIN32
-		struct UDJAT_API Path {
+		class UDJAT_API Path : public std::string {
+		public:
+			Path();
 		};
+
 #endif // _WIN32
+
+		struct UDJAT_API DataDir : public std::string {
+		public:
+			DataDir();
+		};
+
+		struct UDJAT_API LibDir : public std::string {
+		public:
+			LibDir();
+
+			/// @brief Create path to application subdir below the system's library path.
+			LibDir(const char *subdir);
+		};
 
 	}
 

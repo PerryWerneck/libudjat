@@ -62,4 +62,51 @@
 		assign(ptr);
 	}
 
+	Application::Path::Path() {
+
+		char *ptr;
+		TCHAR filename[MAX_PATH];
+
+		if(!GetModuleFileName(NULL, filename, MAX_PATH ) ) {
+			throw runtime_error("Can't get module filename");
+		}
+
+		ptr = strrchr(filename,'/');
+		if(ptr) {
+			*(ptr+1) = 0;
+		}
+
+		ptr = strrchr(ptr,'\\');
+		if(ptr) {
+			*(ptr+1) = 0;
+		}
+
+		assign(ptr);
+
+	}
+
+	Application::DataDir::DataDir() {
+
+		char *ptr;
+		TCHAR filename[MAX_PATH];
+
+		if(!GetModuleFileName(NULL, filename, MAX_PATH ) ) {
+			throw runtime_error("Can't get module filename");
+		}
+
+		ptr = strrchr(filename,'/');
+		if(ptr) {
+			*(ptr+1) = 0;
+		}
+
+		ptr = strrchr(ptr,'\\');
+		if(ptr) {
+			*(ptr+1) = 0;
+		}
+
+		assign(ptr);
+
+	}
+
+
  }

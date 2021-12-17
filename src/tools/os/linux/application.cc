@@ -29,4 +29,25 @@
 		assign(with_path ? program_invocation_name : program_invocation_short_name);
 	}
 
+	Application::DataDir::DataDir() {
+		assign(STRINGIZE_VALUE_OF(DATADIR));
+		append("/");
+		append(program_invocation_short_name);
+		append("/");
+	}
+
+	Application::LibDir::LibDir() {
+		assign(STRINGIZE_VALUE_OF(LIBDIR));
+		append("/");
+	}
+
+	Application::LibDir::LibDir(const char *subdir) {
+		assign(STRINGIZE_VALUE_OF(LIBDIR));
+		append("/");
+		append(program_invocation_short_name);
+		append("-");
+		append(subdir);
+		append("/");
+	}
+
  }

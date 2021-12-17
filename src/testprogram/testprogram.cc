@@ -173,7 +173,9 @@ int main(int argc, char **argv) {
 	Alert::init();
 
 	cout << PACKAGE_NAME << "\tThe application name is '" << Application::Name() << "'" << endl;
-
+	cout << PACKAGE_NAME << "\tThe application datadir is '" << Application::DataDir() << "'" << endl;
+	cout << PACKAGE_NAME << "\tThe application libdir is '" << Application::LibDir() << "'" << endl;
+	cout << PACKAGE_NAME << "\tThe application modules dir is '" << Application::LibDir("modules") << "'" << endl;
 
 	/*
 	{

@@ -23,19 +23,6 @@ namespace Udjat {
 		Module::Controller::getInstance().load();
 	}
 
-	static string getModulePath() {
-#ifdef _WIN32
-		Application::Path path;
-		path += '\\modules';
-#else
-		string path{STRINGIZE_VALUE_OF(LIBDIR)};
-		path += "/";
-		path += program_invocation_short_name;
-		path += "-modules/";
-		return path;
-#endif // _WIN32
-	}
-
 	void Module::load(const char *name) {
 
 		Config::Value<string> configured("modules",name,name);
@@ -44,12 +31,12 @@ namespace Udjat {
 		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
 #endif // DEBUG
 
-		Module::Controller::getInstance().load((getModulePath() + configured + MODULE_EXT).c_str());
+		Module::Controller::getInstance().load((Application::LibDir("modules") + configured + MODULE_EXT).c_str());
 	}
 
 	void Module::Controller::load() {
 
-		File::List((getModulePath() + "*" MODULE_EXT).c_str()).forEach([this](const char *filename){
+		File::List((Application::LibDir("modules") + "*" MODULE_EXT).c_str()).forEach([this](const char *filename){
 
 			try {
 
