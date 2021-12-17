@@ -172,9 +172,7 @@ int main(int argc, char **argv) {
 	{
 		Udjat::Win32::Registry registry;
 
-		// .get("test","")
-
-		//cout << "Logpath: '" <<  << "'" << endl;
+		cout << "Registry= '" << registry.get("test","") << "'" << endl;
 
 		return 0;
 	}

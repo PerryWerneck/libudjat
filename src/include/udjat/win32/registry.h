@@ -29,8 +29,11 @@
 			HKEY hKey = 0;
 
 		public:
-			Registry(const char *path = nullptr, bool write = false);
+			Registry();
+			Registry(const char *path, bool write = false);
 			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
+
+			static HKEY open(HKEY hParent = HKEY_LOCAL_MACHINE, const char *path = nullptr, bool write = false);
 
 			~Registry();
 

@@ -28,48 +28,22 @@
 
  namespace Udjat {
 
-	static HKEY open(HKEY hParent, const char *p, bool write) {
+	HKEY Win32::Registry::open(HKEY hParent, const char *p, bool write) {
 
-		HKEY hKey = 0;
+		HKEY hKey = NULL;
 		string path;
 
-		if(!hParent) {
-
-			hParent = HKEY_LOCAL_MACHINE;
-
-			if(!(p && *p)) {
-
-				path = "SOFTWARE\\";
-				path += Application::Name();
-
-			} if(p[0] != '\\') {
-
-				path = "SOFTWARE\\";
-				path += Application::Name();
-				path += "\\";
-				path += p;
-
-			} else {
-
-				path = (p+1);
-
-			}
-
-		} else if(!(p && *p)) {
-
-			throw runtime_error("Invalid registry path");
-
+		if(!(p && *p)) {
+			path = "SOFTWARE\\";
+			path += Application::Name();
+		} else if(p[0] != '\\' && p[0] != '/') {
+			path = "SOFTWARE\\";
+			path += Application::Name();
+			path += "\\";
+			path += p;
+		} else {
+			path = (p+1);
 		}
-
-		cout << "5a" << endl;
-		cout << "PATH=" << path << endl;
-
-		// Open registry.
-		DWORD dwOptions = KEY_QUERY_VALUE|KEY_READ|KEY_NOTIFY;
-
-		if(write)
-			dwOptions |= KEY_ALL_ACCESS;
-
 
 		for(char *ptr = (char *) path.c_str();*ptr;ptr++) {
 			if(*ptr == '/') {
@@ -77,7 +51,11 @@
 			}
 		}
 
-		cout << "PATH: '" << path << "' ";
+		// Open registry.
+		DWORD dwOptions = KEY_QUERY_VALUE|KEY_READ|KEY_NOTIFY;
+
+		if(write)
+			dwOptions |= KEY_ALL_ACCESS;
 
 		LSTATUS rc = RegCreateKeyEx(
 							hParent,
@@ -99,21 +77,20 @@
 
 	}
 
-	static void close(HKEY hKey) {
+	Win32::Registry::Registry() : hKey(Win32::Registry::open()) {
+	}
+
+	Win32::Registry::Registry(HKEY hParent, const char *path, bool write) : hKey(Win32::Registry::open(hParent,path,write)) {
+	}
+
+	Win32::Registry::Registry(const char *path, bool write) : Registry(HKEY_LOCAL_MACHINE,path,write) {
+	}
+
+	Win32::Registry::~Registry() {
 		if(hKey) {
 			RegCloseKey(hKey);
 			hKey = 0;
 		}
-	}
-
-	Win32::Registry::Registry(HKEY hParent, const char *path, bool write) : hKey(open(hParent,path,write)) {
-	}
-
-	Win32::Registry::Registry(const char *path, bool write) : hKey(open(0,path,write)) {
-	}
-
-	Win32::Registry::~Registry() {
-		Udjat::close(hKey);
 	}
 
 	std::string Win32::Registry::get(const char *name, const char *def) const {
