@@ -36,6 +36,8 @@
  #include <netdb.h>
 #endif // _WIN32
 
+ #include <udjat/win32/registry.h>
+
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/system/info.h>
@@ -167,6 +169,17 @@ int main(int argc, char **argv) {
 	// Setup locale
 	setlocale( LC_ALL, "" );
 
+	{
+		Udjat::Win32::Registry registry;
+
+		// .get("test","")
+
+		//cout << "Logpath: '" <<  << "'" << endl;
+
+		return 0;
+	}
+
+	/*
 	// Redirect output to log file
 	Logger::redirect();
 	Module::load();
@@ -176,6 +189,7 @@ int main(int argc, char **argv) {
 	cout << PACKAGE_NAME << "\tThe application datadir is '" << Application::DataDir() << "'" << endl;
 	cout << PACKAGE_NAME << "\tThe application libdir is '" << Application::LibDir() << "'" << endl;
 	cout << PACKAGE_NAME << "\tThe application modules dir is '" << Application::LibDir("modules") << "'" << endl;
+	*/
 
 	/*
 	{

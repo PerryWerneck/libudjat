@@ -18,30 +18,28 @@
  */
 
  #pragma once
-
  #include <udjat/defs.h>
- #include <string>
- #include <stdexcept>
- #include <udjat/win32/exception.h>
 
  namespace Udjat {
 
 	namespace Win32 {
 
-		/// @brief Excessão com base no estado de erro windows
-		class UDJAT_API Exception : public std::runtime_error {
+		class UDJAT_API Registry {
+		protected:
+			HKEY hKey = 0;
+
 		public:
-			Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
-			}
+			Registry(const char *path = nullptr, bool write = false);
+			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
 
-			Exception(const char * what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg,error)) {
-			}
+			~Registry();
 
-			static std::string format() noexcept;
-			static std::string format(const char *what_arg, const DWORD error = GetLastError()) noexcept;
-			static std::string format(const DWORD error) noexcept;
+			std::string get(const char *name, const char *def) const;
 
 		};
 
 	}
+
  }
+
+

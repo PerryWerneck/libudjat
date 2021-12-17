@@ -77,6 +77,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
+		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/utils.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
@@ -185,6 +186,7 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
+		<Unit filename="src/tools/os/windows/registry.cc" />
 		<Unit filename="src/tools/os/windows/string.cc" />
 		<Unit filename="src/tools/os/windows/subprocess.cc" />
 		<Unit filename="src/tools/os/windows/systemservice.cc" />
