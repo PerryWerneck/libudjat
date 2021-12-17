@@ -101,7 +101,7 @@
 			*(ptr+1) = 0;
 		}
 
-		ptr = strrchr(ptr,'\\');
+		ptr = strrchr(filename,'\\');
 		if(ptr) {
 			*(ptr+1) = 0;
 		}
