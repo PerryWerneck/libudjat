@@ -174,7 +174,8 @@ namespace Udjat {
 					Application::LogDir filename;
 
 					// Get filename.
-					filename.append(TimeStamp().to_string("%d.log"));
+					filename.append(Application::Name());
+					filename.append(TimeStamp().to_string("-%d.log"));
 
 					struct stat st;
 					if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > 86400) {
