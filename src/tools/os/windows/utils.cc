@@ -29,6 +29,7 @@
 
 	namespace Win32 {
 
+		/*
 		UDJAT_API string getInstallPath() {
 
 			TCHAR path[MAX_PATH];
@@ -64,6 +65,7 @@
 
 
 		}
+		*/
 
 	}
 

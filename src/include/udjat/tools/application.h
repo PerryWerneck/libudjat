@@ -20,6 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/application.h>
  #include <string>
 
  namespace Udjat {
@@ -41,14 +42,19 @@
 			Path();
 		};
 
+		class UDJAT_API LogDir : public std::string {
+		public:
+			LogDir();
+		};
+
 #endif // _WIN32
 
-		struct UDJAT_API DataDir : public std::string {
+		class UDJAT_API DataDir : public std::string {
 		public:
 			DataDir();
 		};
 
-		struct UDJAT_API LibDir : public std::string {
+		class UDJAT_API LibDir : public std::string {
 		public:
 			LibDir();
 

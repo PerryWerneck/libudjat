@@ -28,7 +28,7 @@
 	namespace Win32 {
 
 		UDJAT_API std::string getInstallPath();
-		UDJAT_API std::string buildFileName(const char *path, ...) UDJAT_GNUC_NULL_TERMINATED;
+		// UDJAT_API std::string buildFileName(const char *path, ...) UDJAT_GNUC_NULL_TERMINATED;
 
 		/// @brief String in Windows local charset.
 		class UDJAT_API String : public std::string {

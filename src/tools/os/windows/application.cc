@@ -22,6 +22,8 @@
  #include <udjat/tools/application.h>
  #include <errno.h>
  #include <stdexcept>
+ #include <sys/stat.h>
+ #include <sys/types.h>
 
  using namespace std;
 
@@ -116,10 +118,15 @@
 		assign(getBundlePath());
 	}
 
-	Application::LibDir::LibDir(const char *subdir) {
-		assign(getBundlePath());
+	Application::LibDir::LibDir(const char *subdir) : LibDir() {
 		append(subdir);
 		append("/");
+	}
+
+	Application::LogDir::LogDir() {
+		assign(getBundlePath());
+		append("/logs/");
+		mkdir(c_str());
 	}
 
  }

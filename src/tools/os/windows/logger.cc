@@ -22,6 +22,7 @@
 #include <udjat/defs.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/timestamp.h>
+#include <udjat/tools/application.h>
 #include <udjat/win32/utils.h>
 #include <mutex>
 #include <sys/types.h>
@@ -170,14 +171,10 @@ namespace Udjat {
 				{
 
 					// Get logfile path.
-					static string logpath;
-					if(logpath.empty()) {
-						logpath = Win32::buildFileName("logs",nullptr) + "\\";
-						mkdir(logpath.c_str());
-					}
+					Application::LogDir filename;
 
 					// Get filename.
-					string filename = logpath + TimeStamp().to_string("%d") + ".log";
+					filename.append(TimeStamp().to_string("%d.log"));
 
 					struct stat st;
 					if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > 86400) {
