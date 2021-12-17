@@ -79,8 +79,6 @@ CFLAGS= \
 	-fPIC \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
-	-DLIBDIR=$(libdir) \
-	-DDATADIR=$(datarootdir) \
 	@ECONF_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@SYSTEMD_CFLAGS@ \

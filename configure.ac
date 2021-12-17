@@ -79,7 +79,8 @@ case "$host" in
 		;;
 
  	*)
-		CFLAGS="$CFLAGS -pthread"
+		CFLAGS="$CFLAGS -pthread -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
+		CXXFLAGS="$CXXFLAGS -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
 		LDFLAGS="$LDFLAGS -pthread"
 		LIBS="$LIBS -ldl"
 		AC_SUBST(LIBEXT,.so)

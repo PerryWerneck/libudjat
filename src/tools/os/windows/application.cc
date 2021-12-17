@@ -85,7 +85,7 @@
 
 	}
 
-	Application::DataDir::DataDir() {
+	static string getBundlePath() {
 
 		char *ptr;
 		TCHAR filename[MAX_PATH];
@@ -104,9 +104,22 @@
 			*(ptr+1) = 0;
 		}
 
-		assign(ptr);
+		return filename;
 
 	}
 
+	Application::DataDir::DataDir() {
+		assign(getBundlePath());
+	}
+
+	Application::LibDir::LibDir() {
+		assign(getBundlePath());
+	}
+
+	Application::LibDir::LibDir(const char *subdir) {
+		assign(getBundlePath());
+		append(subdir);
+		append("/");
+	}
 
  }
