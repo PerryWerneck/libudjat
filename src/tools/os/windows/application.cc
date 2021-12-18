@@ -24,6 +24,7 @@
  #include <stdexcept>
  #include <sys/stat.h>
  #include <sys/types.h>
+ #include <udjat/win32/registry.h>
 
  using namespace std;
 
@@ -124,6 +125,20 @@
 	}
 
 	Application::LogDir::LogDir() {
+
+		try {
+
+			Win32::Registry registry("log");
+			assign(registry.get("path",""));
+			if(!empty()) {
+				mkdir(c_str());
+				return;
+			}
+
+		} catch(...) {
+			// Ignore errors.
+		}
+
 		assign(getBundlePath());
 		append("/logs/");
 		mkdir(c_str());
