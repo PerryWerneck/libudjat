@@ -112,7 +112,8 @@ static void test_agent_parser() {
 	static Factory factory;
 
 	// Load agent descriptions.
-	{
+	try {
+
 		auto root_agent = Abstract::Agent::init("${PWD}/*.xml");
 
 		cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
@@ -124,6 +125,10 @@ static void test_agent_parser() {
 		for(auto agent : *root_agent) {
 			cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 		}
+
+	} catch(const std::exception &e) {
+
+		cerr << "agent\tError loading agent descriptions: " << e.what() << endl;
 
 	}
 
