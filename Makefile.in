@@ -188,7 +188,8 @@ install: \
        $(foreach TARGET, $(TARGETS), install-$(TARGET))
 
 install-linux-lib: \
-	$(BINRLS)/@SONAME@
+	$(BINRLS)/@SONAME@ \
+	install-conf
 
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
@@ -227,7 +228,8 @@ install-windows-lib: \
 		--dllname @SONAME@ \
 		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
 
-install-devel:
+install-devel: \
+	install-@OSNAME@-devel
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat
@@ -261,12 +263,24 @@ install-devel:
 		src/include/udjat.h \
 		$(DESTDIR)$(includedir)
 
+install-linux-devel:
+
 	# Install PKG-CONFIG files
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/pkgconfig
 
 	@$(INSTALL_DATA) \
-		sdk/pkg-config.pc \
+		sdk/dynamic.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
+install-windows-devel:
+
+	# Install PKG-CONFIG files
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/pkgconfig
+
+	@$(INSTALL_DATA) \
+		sdk/dynamic.pc \
 		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
 
 install-conf:

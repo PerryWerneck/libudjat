@@ -286,7 +286,8 @@ dnl AC_CONFIG_SUBDIRS([sample])
 
 AC_CONFIG_FILES(doxygen/doxyfile)
 AC_CONFIG_FILES(Makefile)
-AC_CONFIG_FILES(sdk/pkg-config.pc)
+AC_CONFIG_FILES(sdk/dynamic.pc)
+AC_CONFIG_FILES(sdk/static.pc)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
