@@ -121,7 +121,7 @@
 
 	Application::LibDir::LibDir(const char *subdir) : LibDir() {
 		append(subdir);
-		append("/");
+		append("\\");
 	}
 
 	Application::LogDir::LogDir() {
@@ -140,7 +140,7 @@
 		}
 
 		assign(getBundlePath());
-		append("/logs/");
+		append("\\logs\\");
 		mkdir(c_str());
 	}
 

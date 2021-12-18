@@ -36,21 +36,35 @@ namespace Udjat {
 
 	void Module::Controller::load() {
 
-		File::List((Application::LibDir("modules") + "*" MODULE_EXT).c_str()).forEach([this](const char *filename){
+		Application::LibDir libdir("modules");
+		string path = libdir + "*" MODULE_EXT;
 
-			try {
+#ifdef _WIN32
+		mkdir(libdir.c_str());
+#endif // _WIN32
 
-				cout << "module\tLoading '" << filename << "'" << endl;
+		try {
 
-				load(filename);
+			File::List(path.c_str()).forEach([this](const char *filename){
 
-			} catch(const exception &e) {
+				try {
 
-				cerr << "module\t" << e.what() << endl;
+					cout << "module\tLoading '" << filename << "'" << endl;
 
-			}
+					load(filename);
 
-		});
+				} catch(const exception &e) {
+
+					cerr << "module\t" << e.what() << endl;
+
+				}
+
+			});
+
+		} catch(const std::exception &e) {
+
+			cerr << "module\tCan't load " << path << ": " << e.what() << endl;
+		}
 
 
 	}
