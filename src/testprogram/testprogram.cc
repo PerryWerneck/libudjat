@@ -36,8 +36,6 @@
  #include <netdb.h>
 #endif // _WIN32
 
- #include <udjat/win32/registry.h>
-
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/system/info.h>

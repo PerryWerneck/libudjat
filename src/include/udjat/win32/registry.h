@@ -20,6 +20,10 @@
  #pragma once
  #include <udjat/defs.h>
 
+ #ifndef _WIN32
+	#error Registry objects requires win32
+ #endif // _WIN32
+
  namespace Udjat {
 
 	namespace Win32 {
