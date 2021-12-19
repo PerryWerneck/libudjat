@@ -141,7 +141,8 @@ static void test_agent_parser() {
 	});
 	*/
 
-	Udjat::SystemService(PACKAGE_NAME).start();
+	//Udjat::SystemService(PACKAGE_NAME).start();
+	Udjat::MainLoop::getInstance().run();
 
 	// Force agent cleanup
 	Abstract::Agent::deinit();
