@@ -88,38 +88,21 @@
 
 	}
 
-	static string getBundlePath() {
-
-		char *ptr;
-		TCHAR filename[MAX_PATH];
-
-		if(!GetModuleFileName(NULL, filename, MAX_PATH ) ) {
-			throw runtime_error("Can't get module filename");
-		}
-
-		ptr = strrchr(filename,'/');
-		if(ptr) {
-			*(ptr+1) = 0;
-		}
-
-		ptr = strrchr(filename,'\\');
-		if(ptr) {
-			*(ptr+1) = 0;
-		}
-
-		return filename;
-
+	Application::DataDir::DataDir() : string(Application::Path()) {
 	}
 
-	Application::DataDir::DataDir() {
-		assign(getBundlePath());
-	}
-
-	Application::LibDir::LibDir() {
-		assign(getBundlePath());
+	Application::LibDir::LibDir() : string(Application::Path()) {
 	}
 
 	Application::LibDir::LibDir(const char *subdir) : LibDir() {
+		append(subdir);
+		append("\\");
+	}
+
+	Application::SysConfigDir::SysConfigDir() : string(Application::Path()) {
+	}
+
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : SysConfigDir() {
 		append(subdir);
 		append("\\");
 	}
@@ -139,7 +122,7 @@
 			// Ignore errors.
 		}
 
-		assign(getBundlePath());
+		assign(Application::Path());
 		append("\\logs\\");
 		mkdir(c_str());
 	}
