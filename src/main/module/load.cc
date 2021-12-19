@@ -37,15 +37,16 @@ namespace Udjat {
 	void Module::Controller::load() {
 
 		Application::LibDir libdir("modules");
-		string path = libdir + "*" MODULE_EXT;
 
 #ifdef _WIN32
 		mkdir(libdir.c_str());
 #endif // _WIN32
 
+		libdir += "*" MODULE_EXT;
+
 		try {
 
-			File::List(path.c_str()).forEach([this](const char *filename){
+			File::List(libdir.c_str()).forEach([this](const char *filename){
 
 				try {
 
@@ -63,7 +64,7 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			cerr << "module\tCan't load " << path << ": " << e.what() << endl;
+			cerr << "module\tCan't load " << libdir << ": " << e.what() << endl;
 		}
 
 

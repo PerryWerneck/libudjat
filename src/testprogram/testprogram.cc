@@ -173,10 +173,13 @@ int main(int argc, char **argv) {
 	setlocale( LC_ALL, "" );
 
 	// Redirect output to log file
-	Logger::redirect();
+	// Logger::redirect();
 	Module::load();
 	Alert::init();
 
+#ifdef _WIN32
+	cout << PACKAGE_NAME << "\tThe application path is '" << Application::Path() << "'" << endl;
+#endif // _WIN32
 	cout << PACKAGE_NAME << "\tThe application name is '" << Application::Name() << "'" << endl;
 	cout << PACKAGE_NAME << "\tThe application datadir is '" << Application::DataDir() << "'" << endl;
 	cout << PACKAGE_NAME << "\tThe application libdir is '" << Application::LibDir() << "'" << endl;

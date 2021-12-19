@@ -25,6 +25,11 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/win32/registry.h>
+ #include <cstring>
+
+#ifdef DEBUG 
+	#include <iostream>
+#endif // DEBUG
 
  using namespace std;
 
@@ -79,12 +84,12 @@
 			*(ptr+1) = 0;
 		}
 
-		ptr = strrchr(ptr,'\\');
+		ptr = strrchr(filename,'\\');
 		if(ptr) {
 			*(ptr+1) = 0;
 		}
 
-		assign(ptr);
+		assign(filename);
 
 	}
 
@@ -94,17 +99,19 @@
 	Application::LibDir::LibDir() : string(Application::Path()) {
 	}
 
-	Application::LibDir::LibDir(const char *subdir) : LibDir() {
+	Application::LibDir::LibDir(const char *subdir) : Application::LibDir() {
 		append(subdir);
 		append("\\");
+		mkdir(c_str());
 	}
 
 	Application::SysConfigDir::SysConfigDir() : string(Application::Path()) {
 	}
 
-	Application::SysConfigDir::SysConfigDir(const char *subdir) : SysConfigDir() {
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : Application::SysConfigDir() {
 		append(subdir);
 		append("\\");
+		mkdir(c_str());
 	}
 
 	Application::LogDir::LogDir() {
