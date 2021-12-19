@@ -114,7 +114,7 @@ static void test_agent_parser() {
 	// Load agent descriptions.
 	try {
 
-		auto root_agent = Abstract::Agent::init("${PWD}/*.xml");
+		auto root_agent = Abstract::Agent::init("*.xml");
 
 		cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 		cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
