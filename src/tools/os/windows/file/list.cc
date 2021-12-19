@@ -18,9 +18,10 @@
  */
 
  #include <config.h>
- #include <windows.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/file.h>
  #include <udjat/win32/exception.h>
+ #include <iostream>
 
  using namespace std;
 
@@ -37,18 +38,38 @@
 			throw Win32::Exception("Can't find file");
 		}
 
-		string path = pattern;
-		const char *ptr = strstr(pattern,"\\");
-		if(ptr) {
-			path.resize((ptr-pattern)+1);
+		string path;
+
+		const char * ptr[] = {
+			strchr(pattern,'\\'),
+			strchr(pattern,'/')
+		};
+
+		if(ptr[0] || ptr[1]) {
+
+			size_t len = strlen(pattern);
+
+			if(ptr[0]) {
+				len = min(len,(size_t) (ptr[0]-pattern));
+			}
+
+			if(ptr[1]) {
+				len = min(len,(size_t) (ptr[1]-pattern));
+			}
+
+			path.assign(pattern,len);
+
 		}
+
+		//cout << "PATH: [" << path << "]" << endl;
 
 		try {
 
 			do {
 
-				string str = path;
+				string str(path);
 				str += FindFileData.cFileName;
+				//cout << "FILENAME: [" << FindFileData.cFileName << "]" << endl;
 				this->push_back(str);
 
 			} while (FindNextFile(hFind, &FindFileData) != 0);
