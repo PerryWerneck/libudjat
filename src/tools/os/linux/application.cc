@@ -23,29 +23,34 @@
  #include <udjat/tools/application.h>
  #include <errno.h>
 
+ using namespace std;
+
  namespace Udjat {
 
-	Application::Name::Name(bool with_path) {
-		assign(with_path ? program_invocation_name : program_invocation_short_name);
+	Application::Name::Name(bool with_path) : string(with_path ? program_invocation_name : program_invocation_short_name) {
 	}
 
-	Application::DataDir::DataDir() {
-		assign(STRINGIZE_VALUE_OF(DATADIR));
-		append("/");
+	Application::DataDir::DataDir() : string{STRINGIZE_VALUE_OF(DATADIR) "/"} {
 		append(program_invocation_short_name);
 		append("/");
 	}
 
-	Application::LibDir::LibDir() {
-		assign(STRINGIZE_VALUE_OF(LIBDIR));
-		append("/");
+	Application::LibDir::LibDir() : string{STRINGIZE_VALUE_OF(LIBDIR) "/"} {
 	}
 
-	Application::LibDir::LibDir(const char *subdir) {
-		assign(STRINGIZE_VALUE_OF(LIBDIR));
-		append("/");
+	Application::LibDir::LibDir(const char *subdir) : LibDir() {
 		append(program_invocation_short_name);
 		append("-");
+		append(subdir);
+		append("/");
+	}
+
+	Application::SysConfigDir::SysConfigDir() : string{"/etc/"} {
+	}
+
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : SysConfigDir() {
+		append(program_invocation_short_name);
+		append("/");
 		append(subdir);
 		append("/");
 	}

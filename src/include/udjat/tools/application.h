@@ -46,7 +46,6 @@
 		public:
 			LogDir();
 		};
-
 #endif // _WIN32
 
 		class UDJAT_API DataDir : public std::string {
@@ -61,6 +60,15 @@
 			/// @brief Create path to application subdir below the system's library path.
 			LibDir(const char *subdir);
 		};
+
+		class UDJAT_API SysConfigDir : public std::string {
+		public:
+			SysConfigDir();
+
+			/// @brief Create path to application subdir below the system's configuration path.
+			SysConfigDir(const char *subdir);
+		};
+
 
 	}
 
