@@ -148,7 +148,6 @@
 		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
-		<Unit filename="src/tools/mainloop/os/windows/console.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
