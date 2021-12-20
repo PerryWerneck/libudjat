@@ -77,13 +77,9 @@
 
 	}
 
-	/*
-	ThreadPool::ThreadPool(const pugi::xml_node &node) : ThreadPool() {
-
-		set(node);
-
+	void ThreadPool::wakeup() noexcept {
+		event.cv.notify_one();
 	}
-	*/
 
 	ThreadPool::~ThreadPool() {
 		stop();

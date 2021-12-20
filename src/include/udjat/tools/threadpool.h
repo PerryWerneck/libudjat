@@ -51,14 +51,20 @@
 
 			bool pop(Task &task) noexcept;
 
+			/// @brief Wake up one worker.
+			void wakeup() noexcept;
+
+#ifdef _WIN32
+
+			HANDLE hEvent;
+#else
+
 			struct {
 				std::mutex m;
 				std::condition_variable cv;
 			} event;
 
-			inline void wakeup() noexcept {
-				event.cv.notify_one();
-			}
+#endif // _WIN32
 
 		protected:
 

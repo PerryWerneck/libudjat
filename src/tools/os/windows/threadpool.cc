@@ -1,10 +1,11 @@
-/**
- *
- * Copyright (C) <2017> <Perry Werneck>
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,34 +13,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @file
- *
- * @brief Implementa objeto para o pool de threads.
- *
- * @author Perry Werneck <perry.werneck@gmail.com>
- *
- * $URL: http://suportelinux.df.bb.com.br/svn/suporte/aplicativos/common-components/cpp/src/components/core/linux/threadpool.cc $
- * $Revision: 40262 $ $Author: c1103788 $
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
- #include <unistd.h>
- #include <semaphore.h>
- #include <cstring>
- #include <chrono>
- #include <unistd.h>
- #include <iostream>
- #include <pthread.h>
-
- #ifdef DEBUG
-	#undef DEBUG
- #endif // DEBUG
 
  using namespace std;
 
@@ -65,6 +48,17 @@
 
 		try {
 
+			hEvent = CreateEvent(
+				NULL,	// lpEventAttributes,
+				FALSE,	// bManualReset,
+				FALSE,	// bInitialState,
+				NULL	// lpName
+			);
+
+			if(!hEvent) {
+				throw Win32::Exception("Can't create event semaphore");
+			}
+
 			limits.threads	= Config::get(name,"max-threads",limits.threads);
 			limits.tasks	= Config::get(name,"max-tasks",limits.tasks);
 			limits.idle		= Config::get(name,"max-idle",limits.idle);
@@ -77,18 +71,21 @@
 
 	}
 
-	/*
-	ThreadPool::ThreadPool(const pugi::xml_node &node) : ThreadPool() {
-
-		set(node);
-
-	}
-	*/
-
 	ThreadPool::~ThreadPool() {
 		stop();
+		CloseHandle(hEvent);
 	}
 
+	void ThreadPool::wakeup() noexcept {
+
+		if (!SetEvent(hEvent)) {
+			cerr << name << "\tError '" << Win32::Exception::format("Error setting event semaphore") << endl;
+			limits.threads = 0;
+		}
+
+	}
+
+	/*
 	void ThreadPool::set(const pugi::xml_node &node) {
 
 		limits.threads	= node.attribute("max-threads").as_uint(limits.threads);
@@ -96,6 +93,7 @@
 		limits.idle		= node.attribute("max-idle").as_uint(limits.idle);
 
 	}
+	*/
 
 	void ThreadPool::stop() {
 
@@ -110,13 +108,17 @@
 
 			logger.info("Waiting for {} threads on pool",threads.active.load());
 
-			for(size_t f=0; f < 10000 && threads.active.load() > 0; f++) {
+#ifdef DEBUG
+			cout << "threads.waiting.load()=" << threads.waiting.load() << endl;
+#endif // DEBUG
+
+			for(size_t f=0; f < 1000 && threads.active.load() > 0; f++) {
 
 				if(threads.waiting.load()) {
 					wakeup();
 				}
 
-				usleep(20000);
+				Sleep(100);
 			}
 
 			logger.error("Stopping with {} threads on pool",threads.active.load());
@@ -139,7 +141,7 @@
 			logger.warning("Waiting for {} tasks on pool",tasks.size());
 
 			for(size_t f=0; f < 100000 && size() > 0; f++) {
-				usleep(100);
+				Sleep(100);
 			}
 
 			if(size()) {
@@ -158,13 +160,16 @@
 
 		std::lock_guard<std::mutex> lock(this->guard);
 
-//		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
+#ifdef DEBUG
+		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
+#endif // DEBUG
 
 		if(limits.tasks && tasks.size() >= limits.tasks) {
-			string message{"Can't add new task, the queue has reached the limit of "};
-			message += to_string(limits.tasks);
-			message += " tasks";
-			throw std::runtime_error(message);
+			throw std::runtime_error(
+				string{"Can't add new task, the queue has reached the limit of "}
+					+ to_string(limits.tasks)
+					+ " tasks"
+			);
 		}
 
 		tasks.emplace(name,callback);
@@ -196,10 +201,6 @@
 
 	void ThreadPool::worker(ThreadPool *pool) noexcept {
 
-		struct timespec   ts;
-
-		memset(&ts,0,sizeof(ts));
-
 		pool->threads.active++;
 
 #ifdef DEBUG
@@ -215,10 +216,6 @@
 				if(pool->pop(task)) {
 
 					try {
-
-						if(task.name && task.name != pool->name) {
-							pthread_setname_np(pthread_self(),task.name);
-						}
 
 #ifdef DEBUG
 						cout << pool->name << "\tRunning worker '" << task.name << "'" << endl;
@@ -259,19 +256,27 @@
 					<< " delay=" << pool->limits.idle << endl;
 #endif // DEBUG
 
-			std::unique_lock<std::mutex> lk(pool->event.m);
-			std::chrono::seconds wait(pool->limits.idle);
+			{
+				// Wait for event
+				pool->threads.waiting++;
+				DWORD dwWaitResult = WaitForSingleObject(pool->hEvent,(pool->limits.idle * 1000));
+				pool->threads.waiting--;
 
-			pool->threads.waiting++;
-			auto rc = pool->event.cv.wait_for(lk,wait);
-			pool->threads.waiting--;
-
-			if(rc == std::cv_status::timeout) {
+				if(dwWaitResult == WAIT_TIMEOUT) {
 #ifdef DEBUG
-				cout << pool->name << "\tTimeout waiting for tasks" << endl;
+					cout << pool->name << "\tTimeout, stopping worker" << endl;
 #endif // DEBUG
-				break;
+					break;
+				} else if(dwWaitResult == WAIT_ABANDONED) {
+					clog << pool->name << "\tEvent semaphore was abandoned" << endl;
+					break;
+				} else if(dwWaitResult == WAIT_FAILED) {
+					cerr << pool->name << "\t" << Win32::Exception::format("Error on event semaphore");
+					break;
+				}
+
 			}
+
 
 #ifdef DEBUG
 			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->threads.active.load() << endl;
