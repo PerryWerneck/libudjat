@@ -91,8 +91,7 @@
 
 		std::list<ThreadPool *> pools;
 
-		Controller() { }
-
+		Controller();
 		~Controller() { }
 
 	public:

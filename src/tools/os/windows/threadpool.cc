@@ -32,6 +32,17 @@
 
  namespace Udjat {
 
+	static const ModuleInfo ThreadPoolInfo {
+		PACKAGE_NAME,									// The module name.
+		"Thread Pool Controller for WIN32",	 			// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
+
+	ThreadPool::Controller::Controller() : Service(&ThreadPoolInfo) {
+	}
+
 	void ThreadPool::Controller::stop() {
 		cout << "ThreadPool\tStopping background threads" << endl;
 		std::lock_guard<std::mutex> lock(guard);
