@@ -51,6 +51,8 @@
 
 #ifdef _WIN32
 
+			class Controller;
+
 			HANDLE hEvent;
 			struct {
 				size_t	  active		= 0;		///< @brief Number of active threads.

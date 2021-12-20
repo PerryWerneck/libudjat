@@ -22,7 +22,10 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
  #include <functional>
+ #include <thread>
+ #include <list>
 
  #ifdef HAVE_LIBINTL
 	#include <locale.h>
@@ -78,6 +81,37 @@
 		Handler(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 	};
+
+	#ifdef _WIN32
+	class ThreadPool::Controller : MainLoop::Service {
+	private:
+
+		std::mutex guard;
+		HWND hwnd;
+
+		std::list<ThreadPool *> pools;
+
+		Controller() { }
+
+		~Controller() { }
+
+	public:
+		static Controller &getInstance();
+
+		inline void push_back(ThreadPool *pool) {
+			std::lock_guard<std::mutex> lock(guard);
+			pools.push_back(pool);
+		}
+
+		inline void remove(ThreadPool *pool) {
+			std::lock_guard<std::mutex> lock(guard);
+			pools.remove(pool);
+		}
+
+		void stop() override;
+
+	};
+	#endif // _WIN32
 
  }
 

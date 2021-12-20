@@ -26,6 +26,7 @@
 
  #define WM_WAKE_UP				WM_USER+100
  #define WM_CHECK_TIMERS		WM_USER+101
+ #define WM_STOP				WM_USER+102
  #define IDT_CHECK_TIMERS		1
 
  using namespace std;

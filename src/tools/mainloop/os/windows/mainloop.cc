@@ -99,11 +99,28 @@
 		try {
 
 			switch(uMsg) {
+			case WM_STOP:
+				cout << "MainLoop\tStopping services" << endl;
+				for(auto service : controller.services) {
+					if(service->info && service->info->name) {
+						clog << service->info->name << "\tStopping" << endl;
+					}
+					try {
+						service->stop();
+					} catch(const std::exception &e) {
+						cerr << "MainLoop\tError stopping service: " << e.what() << endl;
+					} catch(...) {
+						cerr << "MainLoop\tUnexpected error stopping service" << endl;
+					}
+				}
+				break;
+
 			case WM_WAKE_UP:
 
 				// Check if the mainloop still enabled.
 				if(!controller.enabled) {
-					cout << "Main loop was disabled" << endl;
+					cout << "MainLoop\tMain loop was disabled" << endl;
+					SendMessage(controller.hwnd,WM_STOP,0,0);
 					PostMessage(controller.hwnd,WM_QUIT,0,0);
 					return 0;
 				}

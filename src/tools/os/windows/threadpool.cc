@@ -19,16 +19,31 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat-internals.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
+ #include <list>
 
  using namespace std;
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 
  namespace Udjat {
+
+	void ThreadPool::Controller::stop() {
+		cout << "ThreadPool\tStopping background threads" << endl;
+		std::lock_guard<std::mutex> lock(guard);
+		for(auto pool : pools) {
+			pool->stop();
+		}
+	}
+
+	ThreadPool::Controller & ThreadPool::Controller::getInstance() {
+		static Controller instance;
+		return instance;
+	}
 
 	ThreadPool & ThreadPool::getInstance() {
 		class Pool : public ThreadPool {
@@ -43,6 +58,8 @@
 	}
 
 	ThreadPool::ThreadPool(const char *n) : name(n)  {
+
+		Controller::getInstance().push_back(this);
 
 		threads.active = threads.waiting = 0;
 
@@ -73,9 +90,11 @@
 
 		}
 
+		Controller::getInstance().push_back(this);
 	}
 
 	ThreadPool::~ThreadPool() {
+		Controller::getInstance().remove(this);
 		stop();
 		CloseHandle(hEvent);
 	}
