@@ -168,6 +168,47 @@ static void test_sub_process() {
 
 }
 
+static void test_thread_pool() {
+
+	ThreadPool &pool = ThreadPool::getInstance();
+
+	pool.push("teste",[]() {
+		cout << "Run task 1" << endl;
+	});
+
+	pool.push("teste",[]() {
+		cout << "Run task 2" << endl;
+	});
+
+#ifdef _WIN32
+	Sleep(1000);
+#else
+	sleep(1);
+#endif // _WIN32
+
+	pool.push("teste",[]() {
+		cout << "Task 3 begin" << endl;
+#ifdef _WIN32
+		Sleep(1000);
+#else
+		sleep(1);
+#endif // _WIN32
+		cout << "Task 3 end" << endl;
+
+	});
+
+	/*
+#ifdef _WIN32
+	Sleep(6000);
+#else
+	sleep(6);
+#endif // _WIN32
+	*/
+
+	pool.stop();
+
+}
+
 int main(int argc, char **argv) {
 
 	// Setup locale
@@ -218,7 +259,8 @@ int main(int argc, char **argv) {
 	*/
 
 	// test_file_load();
-	test_agent_parser();
+	// test_agent_parser();
+	test_thread_pool();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();

@@ -46,6 +46,10 @@
 
 		threads.active = threads.waiting = 0;
 
+#ifdef DEBUG
+		limits.threads = 1;
+#endif // DEBUG
+
 		try {
 
 			hEvent = CreateEvent(
@@ -78,6 +82,10 @@
 
 	void ThreadPool::wakeup() noexcept {
 
+#ifdef DEBUG
+		cerr << name << "\tWake-Up" << endl;
+#endif // DEBUG
+
 		if (!SetEvent(hEvent)) {
 			cerr << name << "\tError '" << Win32::Exception::format("Error setting event semaphore") << endl;
 			limits.threads = 0;
@@ -99,29 +107,32 @@
 
 		Logger logger(name);
 
-		wait();
+		// wait();
 
 		// Wait for tasks
 		limits.threads = 0;
 
-		if(threads.active.load()) {
+		if(getActiveThreads()) {
 
-			logger.info("Waiting for {} threads on pool",threads.active.load());
+			logger.info("Waiting for {} threads on pool ({} waiting)",getActiveThreads(),getWaitingThreads());
+
+			for(size_t f=0; f < 1000 && getActiveThreads() > 0; f++) {
 
 #ifdef DEBUG
-			cout << "threads.waiting.load()=" << threads.waiting.load() << endl;
+				cout	<< " threads.active=" << threads.active
+						<< " threads.waiting=" << threads.waiting
+						<< " limits.threads=" << limits.threads
+						<< endl;
 #endif // DEBUG
 
-			for(size_t f=0; f < 1000 && threads.active.load() > 0; f++) {
-
-				if(threads.waiting.load()) {
+				if(getWaitingThreads()) {
 					wakeup();
 				}
 
 				Sleep(100);
 			}
 
-			logger.error("Stopping with {} threads on pool",threads.active.load());
+			logger.error("Stopping with {} threads on pool",getActiveThreads());
 
 		}
 
@@ -140,8 +151,8 @@
 
 			logger.warning("Waiting for {} tasks on pool",tasks.size());
 
-			for(size_t f=0; f < 100000 && size() > 0; f++) {
-				Sleep(100);
+			for(size_t f=0; f < 100 && size() > 0; f++) {
+				Sleep(10);
 			}
 
 			if(size()) {
@@ -204,14 +215,15 @@
 		pool->threads.active++;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->getActiveThreads() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
-		while(pool->threads.active <= pool->limits.threads) {
+		bool enabled = true;
+		while(enabled && pool->threads.active <= pool->limits.threads) {
 
 			Task task;
 
-			while(pool->limits.threads) {
+			while(pool->limits.threads && enabled) {
 
 				if(pool->pop(task)) {
 
@@ -226,10 +238,6 @@
 #ifdef DEBUG
 						cout << pool->name << "\tWorker '" << task.name << "' is complete" << endl;
 #endif // DEBUG
-
-						if(task.name && task.name != pool->name) {
-							pthread_setname_np(pthread_self(),pool->name);
-						}
 
 					} catch(const std::exception &e) {
 
@@ -249,37 +257,68 @@
 
 			}
 
-#ifdef DEBUG
-			cout	<< pool->name
-					<< "\tMainLoop is waiting - ActiveThreads: "
-					<< pool->threads.active.load() << "/" << pool->limits.threads
-					<< " delay=" << pool->limits.idle << endl;
-#endif // DEBUG
-
 			{
 				// Wait for event
-				pool->threads.waiting++;
+				{
+					std::lock_guard<std::mutex> lock(pool->guard);
+					pool->threads.waiting++;
+				}
+#ifdef DEBUG
+				cout	<< pool->name << "\t Will wait for object "
+						<< " threads.active=" << pool->threads.active
+						<< " threads.waiting=" << pool->threads.waiting
+						<< " limits.threads=" << pool->limits.threads
+						<< endl;
+#endif // DEBUG
 				DWORD dwWaitResult = WaitForSingleObject(pool->hEvent,(pool->limits.idle * 1000));
-				pool->threads.waiting--;
 
-				if(dwWaitResult == WAIT_TIMEOUT) {
+#ifdef DEBUG
+				cout	<< pool->name << "\t Vait for object returned with rc " << dwWaitResult
+						<< " threads.active=" << pool->threads.active
+						<< " threads.waiting=" << pool->threads.waiting
+						<< " limits.threads=" << pool->limits.threads
+						<< endl;
+#endif // DEBUG
+
+				{
+					std::lock_guard<std::mutex> lock(pool->guard);
+					pool->threads.waiting--;
+				}
+
+				switch(dwWaitResult) {
+				case WAIT_OBJECT_0:
+#ifdef DEBUG
+					cout << pool->name << "\tWake up received" << endl;
+#endif // DEBUG
+					break;
+
+				case WAIT_TIMEOUT:
 #ifdef DEBUG
 					cout << pool->name << "\tTimeout, stopping worker" << endl;
 #endif // DEBUG
+					enabled = false;
 					break;
-				} else if(dwWaitResult == WAIT_ABANDONED) {
+
+				case WAIT_ABANDONED:
 					clog << pool->name << "\tEvent semaphore was abandoned" << endl;
+					enabled = false;
 					break;
-				} else if(dwWaitResult == WAIT_FAILED) {
+
+				case WAIT_FAILED:
 					cerr << pool->name << "\t" << Win32::Exception::format("Error on event semaphore");
+					enabled = false;
 					break;
+
+				default:
+					cerr << pool->name << "\tunexpected return " << dwWaitResult << " from WaitForSingleObject()" << endl;
+					enabled = false;
 				}
 
 			}
 
 
 #ifdef DEBUG
-			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->threads.active.load() << endl;
+			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->getActiveThreads() << endl;
 #endif // DEBUG
 
 		}
@@ -287,7 +326,7 @@
 		pool->threads.active--;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop ends - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop ends - ActiveThreads: " << pool->getActiveThreads() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
 	}

@@ -42,11 +42,6 @@
 			};
 			std::queue<Task> tasks;
 
-			struct {
-				std::atomic<size_t>	  active;		///< @brief Number of active threads.
-				std::atomic<size_t>	  waiting;		///< @brief Número of idle threads.
-			} threads;
-
 			static void worker(ThreadPool *pool) noexcept;
 
 			bool pop(Task &task) noexcept;
@@ -57,7 +52,16 @@
 #ifdef _WIN32
 
 			HANDLE hEvent;
+			struct {
+				size_t	  active		= 0;		///< @brief Number of active threads.
+				size_t	  waiting		= 0;		///< @brief Número of idle threads.
+			} threads;
+
 #else
+			struct {
+				std::atomic<size_t>	  active;		///< @brief Number of active threads.
+				std::atomic<size_t>	  waiting;		///< @brief Número of idle threads.
+			} threads;
 
 			struct {
 				std::mutex m;
@@ -98,6 +102,16 @@
 
 			inline operator bool() const noexcept {
 				return threads.active > 0;
+			}
+
+			/// @brief Get number of active threads.
+			inline size_t getActiveThreads() const noexcept {
+				return threads.active;
+			}
+
+			/// @brief Get number of waiting threads.
+			inline size_t getWaitingThreads() const noexcept {
+				return threads.waiting;
 			}
 
 			size_t size();
