@@ -17,11 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/win32/exception.h>
- #include <string>
- #include <string>
+ #include <udjat-internals.h>
+ #include <udjat/tools/mainloop.h>
+
+ #define WM_WAKE_UP				WM_USER+100
+ #define WM_CHECK_TIMERS		WM_USER+101
+ #define WM_STOP				WM_USER+102
+ #define IDT_CHECK_TIMERS		1
 
  using namespace std;
 
@@ -29,43 +35,19 @@
 
 	namespace Win32 {
 
-		/*
-		UDJAT_API string getInstallPath() {
+		/// @brief Win32 Mainloop for console application.
+		class MainLoop : public Udjat::MainLoop {
+		private:
+			static BOOL WINAPI ConsoleHandler(DWORD event);
+			MainLoop();
 
-			TCHAR path[MAX_PATH];
+		public:
+			~MainLoop();
 
-			if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
-				throw ::Win32::Exception("Can't get application filename");
-			}
+			static MainLoop & getInstance();
 
-			char *ptr = strrchr((const char *) path,'\\');
-			if(ptr)
-				*(ptr+1) = 0;
+		};
 
-			return path;
-
-		}
-
-		UDJAT_API string buildFileName(const char *path, ...) {
-
-			string filename = getInstallPath();
-			bool sep = false;
-
-			va_list args;
-			va_start(args, path);
-			while(path) {
-				if(sep) {
-					filename += "\\";
-				}
-				filename += path;
-				sep = true;
-				path = va_arg(args, const char *);
-			}
-			va_end(args);
-
-
-		}
-		*/
 
 	}
 

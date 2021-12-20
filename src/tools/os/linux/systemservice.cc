@@ -27,37 +27,45 @@
 
  namespace Udjat {
 
-	 SystemService::SystemService() {
+	 SystemService::SystemService(const char *n) : name(n) {
 	 }
 
 	 SystemService::~SystemService() {
 	 }
 
-	 void SystemService::mainloop() {
+	 void SystemService::init() {
+	 }
+
+	 void SystemService::run() {
 		MainLoop::getInstance().run();
 	 }
 
-	 void SystemService::setup() {
+	 void SystemService::deinit() {
 	 }
 
-	 int SystemService::run() {
+	 void SystemService::start() {
 
 		try {
 
-			mainloop();
+			cout << name << "\tInitializing service" << endl;
+			init();
 
-		} catch(const system_error &e) {
-			cerr << e.what() << endl;
-			return e.code().value();
+			cout << name << "\tRunning service" << endl;
+			run();
+
+			cout << name << "\tDeinitializing service" << endl;
+			deinit();
+
 		} catch(const exception &e) {
-			cerr << e.what() << endl;
-			return -1;
+			cerr << name << "\t" << e.what() << endl;
 		} catch(...) {
-			cerr << "Unexpected error running system service" << endl;
-			return -1;
+			cerr << name << "\tUnexpected error running system service" << endl;
 		}
 
-		return 0;
+	 }
+
+	 void SystemService::stop() {
+		MainLoop::getInstance().quit();
 	 }
 
  }

@@ -1,0 +1,16 @@
+prefix=/usr/local
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib64
+includedir=${prefix}/include
+
+product_name=udjat
+product_title=The Eye of Horus
+module_path=${libdir}/udjat-modules
+
+Name: udjat
+Description: The Eye of Horus
+Version: 1.0
+Libs: -ludjat @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@ @SYSTEMD_LIBS@ @VMDETECT_LIBS@
+
+Cflags: -I${prefix}/include
+

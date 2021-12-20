@@ -17,18 +17,22 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
+#pragma once
 
- #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
+#include <config.h>
+#include <udjat/defs.h>
+#include <udjat/module.h>
+#include <udjat/tools/file.h>
+#include <udjat/tools/quark.h>
+#include <list>
 
- using namespace std;
+using namespace std;
 
- namespace Udjat {
+namespace Udjat {
 
- }
+	namespace File {
 
+
+	}
+
+}

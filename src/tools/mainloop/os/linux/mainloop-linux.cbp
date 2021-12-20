@@ -2,7 +2,7 @@
 <CodeBlocks_project_file>
 	<FileVersion major="1" minor="6" />
 	<Project>
-		<Option title="Udjat MainLoop" />
+		<Option title="MainLoop-Linux" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
 		<Build>
@@ -35,21 +35,28 @@
 			<Add option="-std=c++17" />
 			<Add option="-pthread" />
 			<Add option="`pkg-config --cflags libsystemd`" />
-			<Add directory="../../include" />
+			<Add directory="../../../../include" />
 		</Compiler>
 		<Linker>
 			<Add option="-pthread" />
-			<Add option="`pkg-config --libs libsystemd systemd pugixml`" />
+			<Add option="`pkg-config --libs libsystemd systemd pugixml libeconf`" />
 		</Linker>
-		<Unit filename="../../include/udjat/tools/mainloop.h" />
+		<Unit filename="../../../configvalue.cc" />
+		<Unit filename="../../../expand.cc" />
+		<Unit filename="../../../os/linux/configvalue.cc" />
+		<Unit filename="../../../os/linux/logger.cc" />
+		<Unit filename="../../../os/linux/threadpool.cc" />
+		<Unit filename="../../../quark.cc" />
+		<Unit filename="../../../xml.cc" />
+		<Unit filename="../../handler.cc" />
+		<Unit filename="../../mainloop.cc" />
+		<Unit filename="../../private.h" />
+		<Unit filename="../../service.cc" />
+		<Unit filename="../../testprogram/testprogram.cc" />
+		<Unit filename="../../timer.cc" />
 		<Unit filename="default.cc" />
-		<Unit filename="handler.cc" />
-		<Unit filename="linux/mainloop.cc" />
-		<Unit filename="linux/run.cc" />
 		<Unit filename="mainloop.cc" />
-		<Unit filename="private.h" />
-		<Unit filename="testprogram/testprogram.cc" />
-		<Unit filename="timer.cc" />
+		<Unit filename="run.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

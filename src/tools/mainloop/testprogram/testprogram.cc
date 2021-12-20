@@ -17,14 +17,12 @@ using namespace Udjat;
 
 int main(int argc, char **argv) {
 
-	/*
-	MainLoop::getInstance().insert(nullptr, 1, [](const time_t now) {
+	MainLoop::getInstance().insert(nullptr, 500L, []() {
 
-		cout << "Timer!" << endl;
+		cout << "Timer was activated at " << time(0) << endl;
 
 		return true;
 	});
-	*/
 
 	MainLoop::getInstance().run();
 

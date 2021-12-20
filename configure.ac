@@ -70,22 +70,28 @@ case "$host" in
 	*-mingw32)
 		CFLAGS="$CFLAGS -pthread"
 		#  -D_WIN32_WINNT=0x0600
-		LDFLAGS="$LDFLAGS -pthread"
-		LIBS="-lws2_32 $LIBS"		
+		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
+		LIBS="-lws2_32 $LIBS -lwinhttp"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
 		AC_SUBST(OSNAME,windows)
+		AC_DEFINE(HAVE_WINHTTP, [], [Do we have winhttp?])
+		AC_CONFIG_FILES(sdk/windows/static.pc)
+		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		;;
 
  	*)
-		CFLAGS="$CFLAGS -pthread"
+		CFLAGS="$CFLAGS -pthread -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
+		CXXFLAGS="$CXXFLAGS -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
 		LDFLAGS="$LDFLAGS -pthread"
 		LIBS="$LIBS -ldl"
 		AC_SUBST(LIBEXT,.so)
 		AC_SUBST(EXEEXT)
 		AC_SUBST(SONAME,libudjat.so.$app_vrs_major.$app_vrs_minor)
 		AC_SUBST(OSNAME,linux)
+		AC_CONFIG_FILES(sdk/linux/static.pc)
+		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
 
 esac
 
@@ -95,6 +101,8 @@ dnl ---------------------------------------------------------------------------
 
 AC_PATH_TOOL([VALGRIND], [valgrind], [no])
 AC_PATH_TOOL([AR], [ar], [ar])
+AC_PATH_TOOL([DLLTOOL], [dlltool], [true])
+AC_PATH_TOOL([STRIP], [strip], [true])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for headers
@@ -285,7 +293,6 @@ dnl AC_CONFIG_SUBDIRS([sample])
 
 AC_CONFIG_FILES(doxygen/doxyfile)
 AC_CONFIG_FILES(Makefile)
-AC_CONFIG_FILES(sdk/pkg-config.pc)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

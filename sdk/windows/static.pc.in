@@ -5,12 +5,11 @@ includedir=@includedir@
 
 product_name=@PRODUCT_NAME@
 product_title=@PRODUCT_TITLE@
-module_path=${libdir}/@PRODUCT_NAME@-modules
 
 Name: udjat
 Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
-Libs: -ludjat
-Libs.private: @LIBS@ @ECONF_LIBS@ @PUGIXML_LIBS@
-Cflags: -I@includedir@
+Libs: -ludjat @LIBS@ @LIBICONV@ @PUGIXML_LIBS@ @VMDETECT_LIBS@
+
+Cflags: -I${prefix}/include
 

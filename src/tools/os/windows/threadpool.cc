@@ -1,10 +1,11 @@
-/**
- *
- * Copyright (C) <2017> <Perry Werneck>
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -12,40 +13,48 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * @file
- *
- * @brief Implementa objeto para o pool de threads.
- *
- * @author Perry Werneck <perry.werneck@gmail.com>
- *
- * $URL: http://suportelinux.df.bb.com.br/svn/suporte/aplicativos/common-components/cpp/src/components/core/linux/threadpool.cc $
- * $Revision: 40262 $ $Author: c1103788 $
- *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat-internals.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
- #include <unistd.h>
- #include <semaphore.h>
- #include <cstring>
- #include <chrono>
- #include <unistd.h>
- #include <iostream>
- #include <pthread.h>
-
- #ifdef DEBUG
-	#undef DEBUG
- #endif // DEBUG
+ #include <list>
 
  using namespace std;
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 
  namespace Udjat {
+
+	static const ModuleInfo ThreadPoolInfo {
+		PACKAGE_NAME,									// The module name.
+		"Thread Pool Controller for WIN32",	 			// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
+
+	ThreadPool::Controller::Controller() : Service(&ThreadPoolInfo) {
+	}
+
+	void ThreadPool::Controller::stop() {
+		cout << "ThreadPool\tStopping background threads" << endl;
+		std::lock_guard<std::mutex> lock(guard);
+		for(auto pool : pools) {
+			pool->stop();
+		}
+	}
+
+	ThreadPool::Controller & ThreadPool::Controller::getInstance() {
+		static Controller instance;
+		return instance;
+	}
 
 	ThreadPool & ThreadPool::getInstance() {
 		class Pool : public ThreadPool {
@@ -61,9 +70,26 @@
 
 	ThreadPool::ThreadPool(const char *n) : name(n)  {
 
+		Controller::getInstance().push_back(this);
+
 		threads.active = threads.waiting = 0;
 
+#ifdef DEBUG
+		limits.threads = 1;
+#endif // DEBUG
+
 		try {
+
+			hEvent = CreateEvent(
+				NULL,	// lpEventAttributes,
+				FALSE,	// bManualReset,
+				FALSE,	// bInitialState,
+				NULL	// lpName
+			);
+
+			if(!hEvent) {
+				throw Win32::Exception("Can't create event semaphore");
+			}
 
 			limits.threads	= Config::get(name,"max-threads",limits.threads);
 			limits.tasks	= Config::get(name,"max-tasks",limits.tasks);
@@ -75,20 +101,29 @@
 
 		}
 
+		Controller::getInstance().push_back(this);
+	}
+
+	ThreadPool::~ThreadPool() {
+		Controller::getInstance().remove(this);
+		stop();
+		CloseHandle(hEvent);
+	}
+
+	void ThreadPool::wakeup() noexcept {
+
+#ifdef DEBUG
+		cerr << name << "\tWake-Up" << endl;
+#endif // DEBUG
+
+		if (!SetEvent(hEvent)) {
+			cerr << name << "\tError '" << Win32::Exception::format("Error setting event semaphore") << endl;
+			limits.threads = 0;
+		}
+
 	}
 
 	/*
-	ThreadPool::ThreadPool(const pugi::xml_node &node) : ThreadPool() {
-
-		set(node);
-
-	}
-	*/
-
-	ThreadPool::~ThreadPool() {
-		stop();
-	}
-
 	void ThreadPool::set(const pugi::xml_node &node) {
 
 		limits.threads	= node.attribute("max-threads").as_uint(limits.threads);
@@ -96,30 +131,38 @@
 		limits.idle		= node.attribute("max-idle").as_uint(limits.idle);
 
 	}
+	*/
 
 	void ThreadPool::stop() {
 
 		Logger logger(name);
 
-		wait();
+		// wait();
 
 		// Wait for tasks
 		limits.threads = 0;
 
-		if(threads.active.load()) {
+		if(getActiveThreads()) {
 
-			logger.info("Waiting for {} threads on pool",threads.active.load());
+			logger.info("Waiting for {} threads on pool ({} waiting)",getActiveThreads(),getWaitingThreads());
 
-			for(size_t f=0; f < 10000 && threads.active.load() > 0; f++) {
+			for(size_t f=0; f < 1000 && getActiveThreads() > 0; f++) {
 
-				if(threads.waiting.load()) {
+#ifdef DEBUG
+				cout	<< " threads.active=" << threads.active
+						<< " threads.waiting=" << threads.waiting
+						<< " limits.threads=" << limits.threads
+						<< endl;
+#endif // DEBUG
+
+				if(getWaitingThreads()) {
 					wakeup();
 				}
 
-				usleep(20000);
+				Sleep(100);
 			}
 
-			logger.error("Stopping with {} threads on pool",threads.active.load());
+			logger.error("Stopping with {} threads on pool",getActiveThreads());
 
 		}
 
@@ -138,8 +181,8 @@
 
 			logger.warning("Waiting for {} tasks on pool",tasks.size());
 
-			for(size_t f=0; f < 100000 && size() > 0; f++) {
-				usleep(100);
+			for(size_t f=0; f < 100 && size() > 0; f++) {
+				Sleep(10);
 			}
 
 			if(size()) {
@@ -158,13 +201,16 @@
 
 		std::lock_guard<std::mutex> lock(this->guard);
 
-//		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
+#ifdef DEBUG
+		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
+#endif // DEBUG
 
 		if(limits.tasks && tasks.size() >= limits.tasks) {
-			string message{"Can't add new task, the queue has reached the limit of "};
-			message += to_string(limits.tasks);
-			message += " tasks";
-			throw std::runtime_error(message);
+			throw std::runtime_error(
+				string{"Can't add new task, the queue has reached the limit of "}
+					+ to_string(limits.tasks)
+					+ " tasks"
+			);
 		}
 
 		tasks.emplace(name,callback);
@@ -196,29 +242,22 @@
 
 	void ThreadPool::worker(ThreadPool *pool) noexcept {
 
-		struct timespec   ts;
-
-		memset(&ts,0,sizeof(ts));
-
 		pool->threads.active++;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->getActiveThreads() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
-		while(pool->threads.active <= pool->limits.threads) {
+		bool enabled = true;
+		while(enabled && pool->threads.active <= pool->limits.threads) {
 
 			Task task;
 
-			while(pool->limits.threads) {
+			while(pool->limits.threads && enabled) {
 
 				if(pool->pop(task)) {
 
 					try {
-
-						if(task.name && task.name != pool->name) {
-							pthread_setname_np(pthread_self(),task.name);
-						}
 
 #ifdef DEBUG
 						cout << pool->name << "\tRunning worker '" << task.name << "'" << endl;
@@ -229,10 +268,6 @@
 #ifdef DEBUG
 						cout << pool->name << "\tWorker '" << task.name << "' is complete" << endl;
 #endif // DEBUG
-
-						if(task.name && task.name != pool->name) {
-							pthread_setname_np(pthread_self(),pool->name);
-						}
 
 					} catch(const std::exception &e) {
 
@@ -252,29 +287,68 @@
 
 			}
 
+			{
+				// Wait for event
+				{
+					std::lock_guard<std::mutex> lock(pool->guard);
+					pool->threads.waiting++;
+				}
 #ifdef DEBUG
-			cout	<< pool->name
-					<< "\tMainLoop is waiting - ActiveThreads: "
-					<< pool->threads.active.load() << "/" << pool->limits.threads
-					<< " delay=" << pool->limits.idle << endl;
+				cout	<< pool->name << "\t Will wait for object "
+						<< " threads.active=" << pool->threads.active
+						<< " threads.waiting=" << pool->threads.waiting
+						<< " limits.threads=" << pool->limits.threads
+						<< endl;
+#endif // DEBUG
+				DWORD dwWaitResult = WaitForSingleObject(pool->hEvent,(pool->limits.idle * 1000));
+
+#ifdef DEBUG
+				cout	<< pool->name << "\t Vait for object returned with rc " << dwWaitResult
+						<< " threads.active=" << pool->threads.active
+						<< " threads.waiting=" << pool->threads.waiting
+						<< " limits.threads=" << pool->limits.threads
+						<< endl;
 #endif // DEBUG
 
-			std::unique_lock<std::mutex> lk(pool->event.m);
-			std::chrono::seconds wait(pool->limits.idle);
+				{
+					std::lock_guard<std::mutex> lock(pool->guard);
+					pool->threads.waiting--;
+				}
 
-			pool->threads.waiting++;
-			auto rc = pool->event.cv.wait_for(lk,wait);
-			pool->threads.waiting--;
-
-			if(rc == std::cv_status::timeout) {
+				switch(dwWaitResult) {
+				case WAIT_OBJECT_0:
 #ifdef DEBUG
-				cout << pool->name << "\tTimeout waiting for tasks" << endl;
+					cout << pool->name << "\tWake up received" << endl;
 #endif // DEBUG
-				break;
+					break;
+
+				case WAIT_TIMEOUT:
+#ifdef DEBUG
+					cout << pool->name << "\tTimeout, stopping worker" << endl;
+#endif // DEBUG
+					enabled = false;
+					break;
+
+				case WAIT_ABANDONED:
+					clog << pool->name << "\tEvent semaphore was abandoned" << endl;
+					enabled = false;
+					break;
+
+				case WAIT_FAILED:
+					cerr << pool->name << "\t" << Win32::Exception::format("Error on event semaphore");
+					enabled = false;
+					break;
+
+				default:
+					cerr << pool->name << "\tunexpected return " << dwWaitResult << " from WaitForSingleObject()" << endl;
+					enabled = false;
+				}
+
 			}
 
+
 #ifdef DEBUG
-			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->threads.active.load() << endl;
+			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->getActiveThreads() << endl;
 #endif // DEBUG
 
 		}
@@ -282,7 +356,7 @@
 		pool->threads.active--;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop ends - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop ends - ActiveThreads: " << pool->getActiveThreads() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
 	}

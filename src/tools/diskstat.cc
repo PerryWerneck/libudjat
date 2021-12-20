@@ -18,9 +18,10 @@
  */
 
  #include <config.h>
- #include <udjat/tools/disk/stat.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
  #include <string>
+ #include <udjat/tools/disk/stat.h>
 
  using namespace std;
 

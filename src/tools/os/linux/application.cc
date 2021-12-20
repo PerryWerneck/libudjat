@@ -17,56 +17,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define _GNU_SOURCE
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/win32/exception.h>
- #include <string>
- #include <string>
+ #include <udjat/tools/application.h>
+ #include <errno.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	namespace Win32 {
+	Application::Name::Name(bool with_path) : string(with_path ? program_invocation_name : program_invocation_short_name) {
+	}
 
-		/*
-		UDJAT_API string getInstallPath() {
+	Application::DataDir::DataDir() : string{STRINGIZE_VALUE_OF(DATADIR) "/"} {
+		append(program_invocation_short_name);
+		append("/");
+	}
 
-			TCHAR path[MAX_PATH];
+	Application::LibDir::LibDir() : string{STRINGIZE_VALUE_OF(LIBDIR) "/"} {
+	}
 
-			if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
-				throw ::Win32::Exception("Can't get application filename");
-			}
+	Application::LibDir::LibDir(const char *subdir) : LibDir() {
+		append(program_invocation_short_name);
+		append("-");
+		append(subdir);
+		append("/");
+	}
 
-			char *ptr = strrchr((const char *) path,'\\');
-			if(ptr)
-				*(ptr+1) = 0;
+	Application::SysConfigDir::SysConfigDir() : string{"/etc/"} {
+	}
 
-			return path;
-
-		}
-
-		UDJAT_API string buildFileName(const char *path, ...) {
-
-			string filename = getInstallPath();
-			bool sep = false;
-
-			va_list args;
-			va_start(args, path);
-			while(path) {
-				if(sep) {
-					filename += "\\";
-				}
-				filename += path;
-				sep = true;
-				path = va_arg(args, const char *);
-			}
-			va_end(args);
-
-
-		}
-		*/
-
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : SysConfigDir() {
+		append(program_invocation_short_name);
+		append("/");
+		append(subdir);
+		append("/");
 	}
 
  }

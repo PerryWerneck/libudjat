@@ -38,6 +38,8 @@ namespace Udjat {
 		MainLoop::getInstance().insert(this,1000,[this]() {
 			if(isActive()) {
 				onTimer(time(0));
+			} else {
+				cout << "agent\tAgent controller is not active" << endl;
 			}
 			return true;
 		});
@@ -165,6 +167,8 @@ namespace Udjat {
 
 		if(root) {
 
+			clog << "agent\tStarting controller" << endl;
+
 			try {
 				root->start();
 			} catch(const std::exception &e) {
@@ -275,6 +279,10 @@ namespace Udjat {
 		if(!root) {
 			return;
 		}
+
+#ifdef DEBUG
+		cout << "Checking for updates" << endl;
+#endif // DEBUG
 
 		// Check for updates on another thread; we'll change the
 		// timer and it has a mutex lock while running the callback.

@@ -1,0 +1,16 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+product_name=@PRODUCT_NAME@
+product_title=@PRODUCT_TITLE@
+module_path=${libdir}/@PRODUCT_NAME@-modules
+
+Name: udjat
+Description: @PRODUCT_TITLE@
+Version: @PACKAGE_VERSION@
+Libs: -ludjat
+Libs.private: @LIBS@ @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@ @SYSTEMD_LIBS@ @VMDETECT_LIBS@
+Cflags: -I@includedir@
+

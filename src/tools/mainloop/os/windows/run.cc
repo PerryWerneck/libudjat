@@ -27,11 +27,52 @@
  */
 
  #include <config.h>
+ #include "private.h"
  #include <udjat-internals.h>
+ #include <iostream>
 
  using namespace std;
 
  void Udjat::MainLoop::run() {
-	throw runtime_error("Not implemented on windows");
+
+	//
+	// Start services
+	//
+	{
+		lock_guard<mutex> lock(Service::guard);
+		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
+		for(auto service : services) {
+			if(!service->active) {
+				try {
+					cout << "service\tStarting '" << service->info->description << " " << service->info->version << "'" << endl;
+					service->start();
+					service->active = true;
+				} catch(const std::exception &e) {
+					cerr << service->info->name << "\tError '" << e.what() << "' starting service" << endl;
+				}
+			}
+		}
+	}
+
+	enabled = true;
+
+	cout << "MainLoop\tStarting application controller" << endl;
+
+	MSG msg;
+	memset(&msg,0,sizeof(msg));
+
+	int rc = -1;
+	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	if(rc == 0) {
+		cout << "MainLoop\tApplication controller has terminated" << endl;
+		return;
+	}
+
+	cerr << "MainLoop\tApplication controller has failed with error " << GetLastError() << endl;
+
  }
 

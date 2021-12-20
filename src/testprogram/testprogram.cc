@@ -24,6 +24,7 @@
  #include <udjat/tools/mimetype.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -111,8 +112,9 @@ static void test_agent_parser() {
 	static Factory factory;
 
 	// Load agent descriptions.
-	{
-		auto root_agent = Abstract::Agent::init("${PWD}/*.xml");
+	try {
+
+		auto root_agent = Abstract::Agent::init("*.xml");
 
 		cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 		cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
@@ -123,6 +125,10 @@ static void test_agent_parser() {
 		for(auto agent : *root_agent) {
 			cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 		}
+
+	} catch(const std::exception &e) {
+
+		cerr << "agent\tError loading agent descriptions: " << e.what() << endl;
 
 	}
 
@@ -135,7 +141,8 @@ static void test_agent_parser() {
 	});
 	*/
 
-	Udjat::SystemService().run();
+	//Udjat::SystemService(PACKAGE_NAME).start();
+	Udjat::MainLoop::getInstance().run();
 
 	// Force agent cleanup
 	Abstract::Agent::deinit();
@@ -157,7 +164,48 @@ static void test_sub_process() {
 		return false;
 	});
 
-	Udjat::SystemService().run();
+	Udjat::MainLoop::getInstance().run();
+
+}
+
+static void test_thread_pool() {
+
+	ThreadPool &pool = ThreadPool::getInstance();
+
+	pool.push("teste",[]() {
+		cout << "Run task 1" << endl;
+	});
+
+	pool.push("teste",[]() {
+		cout << "Run task 2" << endl;
+	});
+
+#ifdef _WIN32
+	Sleep(1000);
+#else
+	sleep(1);
+#endif // _WIN32
+
+	pool.push("teste",[]() {
+		cout << "Task 3 begin" << endl;
+#ifdef _WIN32
+		Sleep(1000);
+#else
+		sleep(1);
+#endif // _WIN32
+		cout << "Task 3 end" << endl;
+
+	});
+
+	/*
+#ifdef _WIN32
+	Sleep(6000);
+#else
+	sleep(6);
+#endif // _WIN32
+	*/
+
+	pool.stop();
 
 }
 
@@ -167,9 +215,18 @@ int main(int argc, char **argv) {
 	setlocale( LC_ALL, "" );
 
 	// Redirect output to log file
-	Logger::redirect();
+	// Logger::redirect();
 	Module::load();
 	Alert::init();
+
+#ifdef _WIN32
+	cout << PACKAGE_NAME << "\tThe application path is '" << Application::Path() << "'" << endl;
+#endif // _WIN32
+	cout << PACKAGE_NAME << "\tThe application name is '" << Application::Name() << "'" << endl;
+	cout << PACKAGE_NAME << "\tThe application datadir is '" << Application::DataDir() << "'" << endl;
+	cout << PACKAGE_NAME << "\tThe application libdir is '" << Application::LibDir() << "'" << endl;
+	cout << PACKAGE_NAME << "\tThe application modules dir is '" << Application::LibDir("modules") << "'" << endl;
+	cout << PACKAGE_NAME << "\tThe agent config dir is '" << Application::SysConfigDir("agents.d") << "'" << endl;
 
 	/*
 	{
@@ -203,6 +260,7 @@ int main(int argc, char **argv) {
 
 	// test_file_load();
 	test_agent_parser();
+	// test_thread_pool();
 	// test_sub_process();
 	// test_file_agent();
 	// test_url();

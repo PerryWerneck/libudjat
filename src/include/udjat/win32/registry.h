@@ -17,56 +17,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
+ #pragma once
  #include <udjat/defs.h>
- #include <udjat/win32/exception.h>
- #include <string>
- #include <string>
 
- using namespace std;
+ #ifndef _WIN32
+	#error Registry objects requires win32
+ #endif // _WIN32
 
  namespace Udjat {
 
 	namespace Win32 {
 
-		/*
-		UDJAT_API string getInstallPath() {
+		class UDJAT_API Registry {
+		protected:
+			HKEY hKey = 0;
 
-			TCHAR path[MAX_PATH];
+		public:
+			Registry();
+			Registry(const char *path, bool write = false);
+			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
 
-			if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
-				throw ::Win32::Exception("Can't get application filename");
-			}
+			static HKEY open(HKEY hParent = HKEY_LOCAL_MACHINE, const char *path = nullptr, bool write = false);
 
-			char *ptr = strrchr((const char *) path,'\\');
-			if(ptr)
-				*(ptr+1) = 0;
+			~Registry();
 
-			return path;
+			std::string get(const char *name, const char *def) const;
 
-		}
-
-		UDJAT_API string buildFileName(const char *path, ...) {
-
-			string filename = getInstallPath();
-			bool sep = false;
-
-			va_list args;
-			va_start(args, path);
-			while(path) {
-				if(sep) {
-					filename += "\\";
-				}
-				filename += path;
-				sep = true;
-				path = va_arg(args, const char *);
-			}
-			va_end(args);
-
-
-		}
-		*/
+		};
 
 	}
 
  }
+
+

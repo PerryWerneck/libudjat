@@ -19,30 +19,27 @@
 
  #include <config.h>
  #include <iconv.h>
- #include <win32.h>
+ #include <udjat/win32/utils.h>
  #include <stdexcept>
  #include <cstring>
 
  using namespace std;
 
- namespace Win32 {
+ namespace Udjat {
 
-	String::String(const char *charset) {
-		local = iconv_open(charset,"UTF-8");
+	Win32::String::String() {
+		local = iconv_open("CP1252","UTF-8");
 	}
 
-	String::String() : string("CP1252") {
-	}
-
-	String::String(const char *winstr) : CharsetConverter() {
+	Win32::String::String(const char *winstr) : string() {
 		assign(winstr);
 	}
 
-	String::~String() {
+	Win32::String::~String() {
 		iconv_close(local);
 	}
 
-	String & String::assign(const char *winstr) {
+	Win32::String & Win32::String::assign(const char *winstr) {
 
 		iconv(local,NULL,NULL,NULL,NULL);	// Reset state
 
@@ -52,7 +49,7 @@
 #if defined(WINICONV_CONST)
 		WINICONV_CONST char 	* inBuf 	= (WINICONV_CONST char *) winstr;
 #elif defined(ICONV_CONST)
-		ICONV_CONST 			* inBuf 	= (ICONV_CONST *) winstr;
+		ICONV_CONST char		* inBuf 	= (ICONV_CONST char *) winstr;
 #else
 		char 		 			* inBuf 	= (char *) winstr;
 #endif // WINICONV_CONST

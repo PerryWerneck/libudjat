@@ -1,9 +1,10 @@
 
-
+#define GNU_SOURCE
 #include "private.h"
 #include <sys/types.h>
 #include <dirent.h>
 #include <udjat/tools/file.h>
+#include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
 
 #ifdef _WIN32
@@ -30,26 +31,41 @@ namespace Udjat {
 		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
 #endif // DEBUG
 
-		Module::Controller::getInstance().load((string{STRINGIZE_VALUE_OF(PLUGIN_DIR) "/"} + configured + MODULE_EXT).c_str());
+		Module::Controller::getInstance().load((Application::LibDir("modules") + configured + MODULE_EXT).c_str());
 	}
 
 	void Module::Controller::load() {
 
-		File::List(STRINGIZE_VALUE_OF(PLUGIN_DIR) "/*" MODULE_EXT).forEach([this](const char *filename){
+		Application::LibDir libdir("modules");
 
-			try {
+#ifdef _WIN32
+		mkdir(libdir.c_str());
+#endif // _WIN32
 
-				cout << "module\tLoading '" << filename << "'" << endl;
+		libdir += "*" MODULE_EXT;
 
-				load(filename);
+		try {
 
-			} catch(const exception &e) {
+			File::List(libdir.c_str()).forEach([this](const char *filename){
 
-				cerr << "module\t" << e.what() << endl;
+				try {
 
-			}
+					cout << "module\tLoading '" << filename << "'" << endl;
 
-		});
+					load(filename);
+
+				} catch(const exception &e) {
+
+					cerr << "module\t" << e.what() << endl;
+
+				}
+
+			});
+
+		} catch(const std::exception &e) {
+
+			cerr << "module\tCan't load " << libdir << ": " << e.what() << endl;
+		}
 
 
 	}

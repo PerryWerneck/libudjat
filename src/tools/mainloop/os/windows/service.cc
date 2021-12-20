@@ -17,56 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/**
+ * @file
+ *
+ * @brief
+ *
+ * @author perry.werneck@gmail.com
+ *
+ */
+
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/win32/exception.h>
- #include <string>
- #include <string>
+ #include "private.h"
+ #include <udjat-internals.h>
+ #include <iostream>
 
  using namespace std;
 
- namespace Udjat {
-
-	namespace Win32 {
-
-		/*
-		UDJAT_API string getInstallPath() {
-
-			TCHAR path[MAX_PATH];
-
-			if(!GetModuleFileName(NULL, path, MAX_PATH ) ) {
-				throw ::Win32::Exception("Can't get application filename");
-			}
-
-			char *ptr = strrchr((const char *) path,'\\');
-			if(ptr)
-				*(ptr+1) = 0;
-
-			return path;
-
-		}
-
-		UDJAT_API string buildFileName(const char *path, ...) {
-
-			string filename = getInstallPath();
-			bool sep = false;
-
-			va_list args;
-			va_start(args, path);
-			while(path) {
-				if(sep) {
-					filename += "\\";
-				}
-				filename += path;
-				sep = true;
-				path = va_arg(args, const char *);
-			}
-			va_end(args);
-
-
-		}
-		*/
-
-	}
-
- }

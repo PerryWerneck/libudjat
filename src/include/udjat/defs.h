@@ -34,12 +34,10 @@
 		#define _WIN32_WINNT 0x0600
 	#endif // _WIN32_WINNT
 
-	#include <mswsock.h>
 	#include <winsock2.h>
-	#include <windows.h>
-	#include <ws2tcpip.h>
 
 	#define MSG_NOSIGNAL 0
+
 
 #endif // WIN32
 

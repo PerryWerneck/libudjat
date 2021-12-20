@@ -47,9 +47,10 @@ scripts
 # Misc
 doxyfile
 *.[0-9]
-pkg-config.pc
+*.pc
 vgcore.*
 *~
+*.cache
 
 # CodeBlocks
 *.layout

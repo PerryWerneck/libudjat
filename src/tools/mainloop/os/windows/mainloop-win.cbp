@@ -41,15 +41,19 @@
 			<Add option="-pthread" />
 			<Add option="`pkg-config --libs libsystemd systemd pugixml`" />
 		</Linker>
-		<Unit filename="../../default.cc" />
+		<Unit filename="../../../../include/udjat/tools/systemservice.h" />
+		<Unit filename="../../../os/windows/systemservice.cc" />
 		<Unit filename="../../handler.cc" />
 		<Unit filename="../../mainloop.cc" />
 		<Unit filename="../../private.h" />
 		<Unit filename="../../service.cc" />
 		<Unit filename="../../testprogram/testprogram.cc" />
 		<Unit filename="../../timer.cc" />
+		<Unit filename="default.cc" />
 		<Unit filename="mainloop.cc" />
+		<Unit filename="private.h" />
 		<Unit filename="run.cc" />
+		<Unit filename="service.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

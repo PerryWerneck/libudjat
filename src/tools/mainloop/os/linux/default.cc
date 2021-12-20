@@ -17,55 +17,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <udjat/defs.h>
+ #include <udjat-internals.h>
+ #include <udjat/tools/mainloop.h>
  #include <csignal>
  #include <cstring>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 
- #ifndef _WIN32
- 	class ServiceController : public MainLoop {
-	private:
-
-		static void onInterruptSignal(int signal) noexcept {
-			cout << "MainLoop\tInterrupting service loop by '" << strsignal(signal) << "' signal" << endl;
-			MainLoop::getInstance().quit();
-		}
-
-
-	public:
-		ServiceController() : MainLoop() {
-			signal(SIGTERM,onInterruptSignal);
-			signal(SIGINT,onInterruptSignal);
-		}
-
-		~ServiceController() {
-			signal(SIGTERM,SIG_DFL);
-			signal(SIGINT,SIG_DFL);
-		}
-
-	};
-
- #else
-
- 	class ServiceController : public MainLoop {
-	private:
-
-	public:
-		ServiceController() : MainLoop() {
-			throw runtime_error("Not implemented");
-		}
-
-		~ServiceController() {
-		}
-
-	};
-
-
- #endif // _WIN32
-
-
  	MainLoop & MainLoop::getInstance() {
+
+		class ServiceController : public MainLoop {
+		private:
+
+			static void onInterruptSignal(int signal) noexcept {
+				cout << "MainLoop\tInterrupting service loop by '" << strsignal(signal) << "' signal" << endl;
+				MainLoop::getInstance().quit();
+			}
+
+
+		public:
+			ServiceController() : MainLoop() {
+				signal(SIGTERM,onInterruptSignal);
+				signal(SIGINT,onInterruptSignal);
+			}
+
+			~ServiceController() {
+				signal(SIGTERM,SIG_DFL);
+				signal(SIGINT,SIG_DFL);
+			}
+
+		};
+
 		static ServiceController instance;
 		return instance;
 	}

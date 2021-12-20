@@ -20,14 +20,15 @@
 #pragma once
 
 #include <udjat/defs.h>
-#include <list>
-#include <functional>
-#include <mutex>
-#include <udjat.h>
 
 #ifndef _WIN32
 	#include <poll.h>
 #endif // _WIN32
+
+#include <list>
+#include <functional>
+#include <mutex>
+#include <udjat.h>
 
 namespace Udjat {
 
@@ -62,19 +63,20 @@ namespace Udjat {
 
 		};
 
+	protected:
+		/// @brief Private constructor, use getInstance() instead.
+		MainLoop();
+
+		/// @brief Is the mainloop enabled.
+		bool enabled;
+
 	private:
 
 		/// @brief Services
 		std::list<Service *> services;
 
-		/// @brief Event FD.
-		int efd;
-
 		/// @brief Mutex
 		static std::mutex guard;
-
-		/// @brief Is the mainloop enabled.
-		bool enabled;
 
 		//
 		// Timers.
@@ -91,13 +93,27 @@ namespace Udjat {
 
 		} timers;
 
-#ifndef _WIN32
+#ifdef _WIN32
+		/// @brief Process windows messages.
+		static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+		/// @brief Object window for this loop
+		HWND hwnd;
+
+		/// @brief get sockets
+		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
+
+#else
+		/// @brief Event FD.
+		int efd;
+
 		/// @brief get FDs.
 		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
+
 #endif // _WIN32
 
 		//
-		// File/socket management
+		// File/socket/Handle management
 		//
 
 		///< @brief File/Socket handler
@@ -124,7 +140,6 @@ namespace Udjat {
 		MainLoop(const MainLoop &src) = delete;
 		MainLoop(const MainLoop *src) = delete;
 
-		MainLoop();
 		~MainLoop();
 
 		/// @brief Get default mainloop.
@@ -138,6 +153,13 @@ namespace Udjat {
 
 		/// @brief Wakeup main loop.
 		void wakeup() noexcept;
+
+		#ifdef _WIN32
+
+			/// @brief Watch windows object.
+			void insert(const void *id, HANDLE handle, const std::function<bool()> call);
+
+		#endif // _WIN32
 
 		/// @brief Insert socket/file in the list of event sources.
 		void insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);

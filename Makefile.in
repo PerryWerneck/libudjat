@@ -79,7 +79,6 @@ CFLAGS= \
 	-fPIC \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
-	-DPLUGIN_DIR=$(libdir)/$(PRODUCT_NAME)-modules \
 	@ECONF_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@SYSTEMD_CFLAGS@ \
@@ -154,7 +153,8 @@ $(OBJRLS)/%.o: \
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/@SONAME@
+	$(BINRLS)/@SONAME@ \
+	$(BINRLS)/$(PACKAGE_NAME).a
 
 Release: \
 	$(BINRLS)/@SONAME@
@@ -172,6 +172,15 @@ $(BINRLS)/@SONAME@: \
 		$^ \
 		$(LIBS)
 
+static: \
+	$(BINRLS)/$(PACKAGE_NAME).a
+
+$(BINRLS)/$(PACKAGE_NAME).a: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@echo $@ ...
+	@$(MKDIR) $(dir $@)
+	@$(AR) rcs $@ $^
 
 #---[ Install Targets ]------------------------------------------------------------------
 
@@ -179,7 +188,8 @@ install: \
        $(foreach TARGET, $(TARGETS), install-$(TARGET))
 
 install-linux-lib: \
-	$(BINRLS)/@SONAME@
+	$(BINRLS)/@SONAME@ \
+	install-conf
 
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
@@ -196,29 +206,27 @@ install-linux-lib: \
 		$(DESTDIR)$(libdir)/$(PACKAGE_NAME)@LIBEXT@
 
 install-windows-lib: \
-	$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@
+	$(BINRLS)/@SONAME@ \
+	$(BINRLS)/$(PACKAGE_NAME).a
 
 	@$(MKDIR) \
 		$(DESTDIR)$(bindir)
 
 	@$(INSTALL_PROGRAM) \
-		$(BINRLS)/lib$(PACKAGE_NAME)@LIBEXT@ \
+		$(BINRLS)/@SONAME@ \
 		$(DESTDIR)$(bindir)/$(PACKAGE_NAME)@LIBEXT@
 		
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
 
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/$(PACKAGE_NAME).a \
+		$(DESTDIR)$(libdir)/$(PACKAGE_NAME).a
+
 	@$(DLLTOOL) \
-		--input-def $(BINRLS)/lib$(PACKAGE_NAME).def \
-		--dllname lib$(PACKAGE_NAME).dll \
-		--output-lib $(DESTDIR)$(libdir)/@SONAME@.a
-
-	@$(MKDIR) \
-		$(DESTDIR)$(datarootdir)/$(PACKAGE_NAME)/def
-
-	@$(INSTALL_DATA) \
-		$(BINRLS)/lib$(PACKAGE_NAME).def \
-		$(DESTDIR)$(datarootdir)/$(PACKAGE_NAME)/def
+		--input-def $(BINRLS)/$(PACKAGE_NAME).def \
+		--dllname @SONAME@ \
+		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
 
 install-devel:
 
@@ -259,8 +267,12 @@ install-devel:
 		$(DESTDIR)$(libdir)/pkgconfig
 
 	@$(INSTALL_DATA) \
-		sdk/pkg-config.pc \
+		sdk/@OSNAME@/dynamic.pc \
 		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
+	@$(INSTALL_DATA) \
+		sdk/@OSNAME@/static.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@-static.pc
 
 install-conf:
 
@@ -312,9 +324,9 @@ uninstall-conf:
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+	$(BINDBG)/udjat@EXEEXT@
 
-$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@: \
+$(BINDBG)/udjat@EXEEXT@: \
 	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
 	$(BINDBG)/@SONAME@
 
@@ -344,19 +356,19 @@ $(BINDBG)/@SONAME@: \
 
 
 run: \
-	$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+	$(BINDBG)/udjat@EXEEXT@
 
 ifeq ($(VALGRIND),no)
 
 	@LD_LIBRARY_PATH=$(BINDBG) \
-		$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+		$(BINDBG)/udjat@EXEEXT@
 
 else
 	@touch valgrind.suppression
 
 	@LD_LIBRARY_PATH=$(BINDBG) \
 		$(VALGRIND) --leak-check=full --track-origins=yes --gen-suppressions=all --suppressions=valgrind.suppression \
-		$(BINDBG)/$(PACKAGE_NAME)-test@EXEEXT@
+		$(BINDBG)/udjat@EXEEXT@
 endif
 
 #---[ Clean Targets ]--------------------------------------------------------------------
