@@ -33,6 +33,9 @@
 /* Do we have libvmdetect? */
 #undef HAVE_VMDETECT
 
+/* Do we have winhttp? */
+#undef HAVE_WINHTTP
+
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 

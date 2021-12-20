@@ -1,0 +1,15 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+product_name=@PRODUCT_NAME@
+product_title=@PRODUCT_TITLE@
+
+Name: udjat
+Description: @PRODUCT_TITLE@
+Version: @PACKAGE_VERSION@
+Libs: -ludjat.dll
+Libs.private: @LIBS@ @LIBICONV@ @PUGIXML_LIBS@ @VMDETECT_LIBS@
+Cflags: -I@includedir@
+

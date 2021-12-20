@@ -228,8 +228,7 @@ install-windows-lib: \
 		--dllname @SONAME@ \
 		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
 
-install-devel: \
-	install-@OSNAME@-devel
+install-devel:
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat
@@ -263,25 +262,17 @@ install-devel: \
 		src/include/udjat.h \
 		$(DESTDIR)$(includedir)
 
-install-linux-devel:
-
 	# Install PKG-CONFIG files
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/pkgconfig
 
 	@$(INSTALL_DATA) \
-		sdk/dynamic.pc \
+		sdk/@OSNAME@/dynamic.pc \
 		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
-
-install-windows-devel:
-
-	# Install PKG-CONFIG files
-	@$(MKDIR) \
-		$(DESTDIR)$(libdir)/pkgconfig
 
 	@$(INSTALL_DATA) \
-		sdk/dynamic.pc \
-		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+		sdk/@OSNAME@/static.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@-static.pc
 
 install-conf:
 
