@@ -26,9 +26,8 @@
 
  #include <stdexcept>
  #include <aclapi.h>
- // #include <udjat/win32/security.h>
+ #include <udjat/win32/security.h>
  #include <udjat/win32/exception.h>
- #include <udjat/tools/application.h>
  #include <functional>
 
  namespace Udjat {
@@ -94,6 +93,15 @@
 				}
 			}
 
+			/// @brief Stop service.
+			void stop(bool wait = true);
+
+			/// @brief Install service.
+			/// @param name Service name.
+			/// @param service_binary Full path to the service application.
+			/// @param start True to start service after installation.
+			int install(const char *name, const char *display_name, const char *service_binary, bool start = true);
+
 		};
 
 
@@ -115,7 +123,7 @@
 			}
 
 			/// @brief Open Service.
-			SC_HANDLE open(const char *name = Application::Name().c_str(), DWORD dwDesiredAccess = SERVICE_ALL_ACCESS) {
+			SC_HANDLE open(const char *name, DWORD dwDesiredAccess = SERVICE_ALL_ACCESS) {
 				SC_HANDLE hService = OpenService(handle, name, dwDesiredAccess);
 				if(!hService) {
 					throw Win32::Exception("Can't open service");
@@ -150,7 +158,7 @@
 			}
 
 			/// @brief Remove service
-			void remove(const char *name = Application::Name().c_str()) {
+			void remove(const char *name) {
 
 				SC_HANDLE hService = OpenService(handle, TEXT(name), SERVICE_ALL_ACCESS);
 				if(!hService) {
@@ -170,10 +178,6 @@
 
 				CloseServiceHandle(hService);
 
-			}
-
-			SC_HANDLE insert(const char *service_binary, const char *description) {
-				return insert(Application::Name().c_str(),description,service_binary);
 			}
 
 		};
