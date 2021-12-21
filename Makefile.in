@@ -228,7 +228,8 @@ install-windows-lib: \
 		--dllname @SONAME@ \
 		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
 
-install-devel:
+install-devel: \
+	install-devel-@OSNAME@
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat
@@ -273,6 +274,17 @@ install-devel:
 	@$(INSTALL_DATA) \
 		sdk/@OSNAME@/static.pc \
 		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@-static.pc
+
+install-devel-linux:
+
+install-devel-windows:
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/win32
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/win32/*.h \
+		$(DESTDIR)$(includedir)/udjat/win32
 
 install-conf:
 
