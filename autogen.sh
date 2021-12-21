@@ -1,5 +1,7 @@
 #!/bin/bash
 
+builddir=${PWD}
+
 test -n "$srcdir" || srcdir=$(readlink -f $(dirname "$0"))
 test -n "$srcdir" || srcdir=$(readlink -f .)
 
@@ -33,6 +35,10 @@ if test $? != 0 ; then
 fi
 
 automake --add-missing 2> /dev/null | true
+
+autopoint
+
+cd ${builddir}
 
 test -n "$NOCONFIGURE" || "./configure" "$@"
 
