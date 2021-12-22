@@ -37,8 +37,27 @@
 
  namespace Udjat {
 
+ 	namespace HTTP {
+
+		/// @brief HTTP Exception
+		class UDJAT_API Exception : public std::runtime_error {
+		private:
+			int err;
+
+		public:
+			Exception(int code, const char *t) : runtime_error(t), err(code) {
+			}
+
+			int code() const noexcept {
+				return err;
+			}
+		};
+
+ 	}
+
 	class UDJAT_API URL {
 	public:
+
 
 		/// @brief URL response
 		class UDJAT_API Response {
@@ -62,6 +81,9 @@
 
 			Response() = default;
 			virtual ~Response();
+
+			/// @brief Run function, capture exceptions.
+			void call(std::function<void()> method) noexcept;
 
 			/// @brief Check if the response is valid.
 			/// @return true is the response is valid.

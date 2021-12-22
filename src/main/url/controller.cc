@@ -17,13 +17,90 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
  #include <udjat/tools/value.h>
+
+ #ifdef HAVE_WINHTTP
+	#include <udjat/tools/http.h>
+ #endif // HAVE_WINHTTP
 
  namespace Udjat {
 
 	URL::Controller::Controller() {
+
 		insert(make_shared<FileProtocol>());
+
+#ifdef HAVE_WINHTTP
+
+	static const ModuleInfo winhttpinfo {
+		PACKAGE_NAME,									// The module name.
+		"WinHTTP protocol module",	 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
+
+	class WinHttpProtocol : public URL::Protocol {
+	public:
+
+		WinHttpProtocol() : URL::Protocol{"http", "", &winhttpinfo} {
+		}
+
+		~WinHttpProtocol() {
+		}
+
+		std::shared_ptr<URL::Response> call(const URL &url, const Method method, const char *mimetype, const char *payload) override {
+
+			class Response : public URL::Response {
+			private:
+				std::string text;
+
+			public:
+				Response() = default;
+
+				void set(const std::string &text) {
+					this->text = text;
+					this->status.code = 0;
+					this->status.text = "Success";
+					this->response.payload = text.c_str();
+					this->response.length = text.size();
+				}
+
+			};
+
+			std::shared_ptr<Response> response = make_shared<Response>();
+
+			response->call([response,method,url,payload]() {
+
+				HTTP::Client client(url.to_string().c_str());
+
+				switch(method) {
+				case URL::Method::Get:
+					response->set(client.get());
+					break;
+
+				case URL::Method::Post:
+					response->set(client.post(payload));
+					break;
+
+				default:
+					throw system_error(ENOTSUP,system_category(),"Unsupported http method");
+
+				}
+
+			});
+
+			return response;
+
+		}
+
+	};
+
+	insert(make_shared<WinHttpProtocol>());
+
+#endif // HAVE_WINHTTP
+
 	}
 
 	URL::Controller::~Controller() {

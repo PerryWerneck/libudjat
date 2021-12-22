@@ -25,6 +25,7 @@
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/http.h>
  #include <udjat/factory.h>
  #include <udjat/url.h>
  #include <udjat/alert.h>
@@ -258,8 +259,12 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	{
+		cout << Udjat::HTTP::Client("http://localhost/").get() << endl;
+	}
+
 	// test_file_load();
-	test_agent_parser();
+	// test_agent_parser();
 	// test_thread_pool();
 	// test_sub_process();
 	// test_file_agent();

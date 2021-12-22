@@ -18,6 +18,7 @@
  */
 
 #include "private.h"
+#include <udjat/url.h>
 
 #ifdef HAVE_WINHTTP
 
@@ -140,6 +141,7 @@
 			throw Win32::Exception(this->client->url + ": Can't set HTTP session timeouts");
 		}
 
+		/*
 		{
 			size_t hs = client->url.find("://");
 			if(hs == string::npos) {
@@ -156,10 +158,10 @@
 				hostname = string(client->url.c_str()+hs,(he-hs));
 				path.assign(client->url.c_str()+he+1);
 			}
-
 		}
 
 		this->secure = (strncasecmp(this->client->url.c_str(),"https://",8) == 0);
+		*/
 
 	}
 
@@ -167,20 +169,34 @@
 		WinHttpCloseHandle(this->session);
 	}
 
+	static void CrackUrl(wchar_t *pwszUrl, URL_COMPONENTS &urlComp) {
+
+		ZeroMemory(&urlComp, sizeof(urlComp));
+		urlComp.dwStructSize 		= sizeof(urlComp);
+		urlComp.dwSchemeLength    	= (DWORD)-1;
+		urlComp.dwHostNameLength  	= (DWORD)-1;
+		urlComp.dwUrlPathLength   	= (DWORD)-1;
+		urlComp.dwExtraInfoLength 	= (DWORD)-1;
+
+		if (!WinHttpCrackUrl(pwszUrl, (DWORD)wcslen(pwszUrl), 0, &urlComp)) {
+			throw Udjat::Win32::Exception("Invalid URL on HTTP request");
+		}
+	}
+
 	HINTERNET Udjat::HTTP::Client::Worker::connect() {
 
-		if(this->hostname.empty()) {
-			throw runtime_error("Invalid hostname");
-		}
+		URL_COMPONENTS urlComp;
 
-		INTERNET_TEXT wHostname = (wchar_t *) malloc(this->hostname.size()*3);
-		mbstowcs(wHostname, this->hostname.c_str(), this->hostname.size()+1);
+		INTERNET_TEXT pwszUrl = (wchar_t *) malloc(client->url.size()*3);
+		mbstowcs(pwszUrl, client->url.c_str(), client->url.size()+1);
+
+		CrackUrl(pwszUrl, urlComp);
 
 		HINTERNET connection =
 			WinHttpConnect(
 				this->session,
-				wHostname,
-				(this->secure ? INTERNET_DEFAULT_HTTPS_PORT : INTERNET_DEFAULT_HTTP_PORT),
+				urlComp.lpszHostName,
+				urlComp.nPort,
 				0
 			);
 
@@ -197,6 +213,47 @@
 		// Wait for response
 		if(!WinHttpReceiveResponse(request, NULL)) {
 			throw Win32::Exception(this->client->url + ": Error receiving response");
+		}
+
+		// Get status code.
+		{
+			DWORD dwStatusCode = 0;
+			DWORD dwSize = sizeof(DWORD);
+
+			if(!WinHttpQueryHeaders(
+					request,
+					WINHTTP_QUERY_STATUS_CODE | WINHTTP_QUERY_FLAG_NUMBER,
+					WINHTTP_HEADER_NAME_BY_INDEX,
+					&dwStatusCode,
+					&dwSize,
+					WINHTTP_NO_HEADER_INDEX
+				)) {
+					throw Udjat::Win32::Exception("Cant get HTTP status code");
+				}
+
+			if(dwStatusCode != 200) {
+
+				wchar_t buffer[1024];
+				dwSize = 1023;
+
+				ZeroMemory(buffer, sizeof(buffer));
+
+				WinHttpQueryHeaders(
+					request,
+					WINHTTP_QUERY_STATUS_TEXT,
+					WINHTTP_HEADER_NAME_BY_INDEX,
+                    buffer,
+                    &dwSize,
+					WINHTTP_NO_HEADER_INDEX
+				);
+
+				char text[1024];
+				ZeroMemory(text, sizeof(text));
+				wcstombs(text, buffer, 1023);
+
+				throw Udjat::HTTP::Exception(dwStatusCode,text);
+			}
+
 		}
 
 		DWORD szResponse = 0;
@@ -224,18 +281,22 @@
 
 	HINTERNET Udjat::HTTP::Client::Worker::open(HINTERNET connection, const LPCWSTR pwszVerb) {
 
-		INTERNET_TEXT wPath = (wchar_t *) malloc(this->path.size()*3);
-		mbstowcs(wPath, this->path.c_str(), this->path.size()+1);
+		URL_COMPONENTS urlComp;
+
+		INTERNET_TEXT pwszUrl = (wchar_t *) malloc(client->url.size()*3);
+		mbstowcs(pwszUrl, client->url.c_str(), client->url.size()+1);
+
+		CrackUrl(pwszUrl, urlComp);
 
 		HINTERNET req =
 			WinHttpOpenRequest(
 				connection,
 				pwszVerb,
-				wPath,
+				urlComp.lpszUrlPath,
 				NULL,
 				WINHTTP_NO_REFERER,
 				WINHTTP_DEFAULT_ACCEPT_TYPES,
-				(this->secure ? WINHTTP_FLAG_SECURE : 0)
+				(urlComp.nScheme == INTERNET_SCHEME_HTTPS ? WINHTTP_FLAG_SECURE : 0)
 			);
 
 		if(!req) {

@@ -28,7 +28,7 @@
 	namespace HTTP {
 
 		/// @brief Generic HTTP client component.
-		class Client {
+		class UDJAT_API Client {
 		public:
 			struct Header {
 				std::string name;

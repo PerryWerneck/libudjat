@@ -29,7 +29,7 @@
  #endif // _WIN32
 
  #ifdef HAVE_WINHTTP
-	#include <udjat/win32/http.h>
+	#include <udjat/tools/http.h>
  	#include <winhttp.h>
  #endif // HAVE_WINHTTP
 
@@ -58,10 +58,6 @@
 
 			/// @brief Wait for response.
 			std::string wait(HINTERNET req);
-
-			std::string hostname;
-			std::string path;
-			bool secure = false;
 
 			Worker(HTTP::Client *s);
 
