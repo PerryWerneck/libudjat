@@ -61,7 +61,21 @@
 					: std::string(Config::get(g,n,d)),group(g),name(n) {
 				}
 
-				// const std::string & get() const;
+				/// @brief Translate block ${name} in the string to *value.
+				/// @param name Name of the block inside the string to substitute.
+				/// @param value Value to substitute.
+				Value<std::string> & set(const char *name, const char *value);
+
+				/// @brief Translate block ${name} in the string with the value of group/key.
+				/// @param name Name of the block inside the string to substitute.
+				/// @param group Group of the configuration to get the value to substitute
+				/// @param key Key with the value to substitute.
+				/// @param def dafault value if the group/key doesn't exists in the configuration.
+				Value<std::string> & set(const char *name, const char *group, const char *key, const char *def = "");
+
+				inline operator const char *() const noexcept {
+					return c_str();
+				}
 
 			};
 

@@ -61,7 +61,6 @@
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/disk/stat.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
-		<Unit filename="src/include/udjat/tools/http.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/mimetype.h" />

@@ -37,46 +37,6 @@
 
  namespace Udjat {
 
-#ifdef HAVE_WINHTTP
-	namespace HTTP {
-
-		class Client::Worker {
-		private:
-			HTTP::Client *client;
-
-			/// @brief WinHTTP session handle.
-			HINTERNET session;
-
-			/// @brief Connect to HTTP host.
-			HINTERNET connect();
-
-			/// @brief Open HTTP Request.
-			HINTERNET open(HINTERNET connection, const LPCWSTR pwszVerb);
-
-			/// @brief Send request.
-			void send(HINTERNET request, const char *payload = nullptr);
-
-			/// @brief Wait for response.
-			std::string wait(HINTERNET req);
-
-			Worker(HTTP::Client *s);
-
-		public:
-			~Worker();
-
-			static Worker * getInstance(HTTP::Client *client);
-
-			std::string call(const char *verb, const char *payload = nullptr);
-
-			/*
-			std::string get();
-			std::string post();
-			*/
-
-		};
-
-	}
-#endif // HAVE_WINHTTP
 
  }
 

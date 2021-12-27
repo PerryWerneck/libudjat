@@ -28,33 +28,53 @@
 
  namespace Udjat {
 
-	Config::Value<std::vector<std::string>>::Value(const char *group, const char *name, const char *def, const char *delim) {
+	namespace Config {
 
-		// https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
-		// https://www.codespeedy.com/multiple-ways-to-split-a-string-in-cpp/
-		string str = get(group, name, def);
+		Value<std::vector<std::string>>::Value(const char *group, const char *name, const char *def, const char *delim) {
 
-		const char *ptr = str.c_str();
-		while(ptr && *ptr) {
-			const char *next = strstr(ptr,delim);
-			if(!next) {
-				push_back(ptr);
-				break;
-			}
+			// https://www.fluentcpp.com/2017/04/21/how-to-split-a-string-in-c/
+			// https://www.codespeedy.com/multiple-ways-to-split-a-string-in-cpp/
+			string str = get(group, name, def);
 
-			while(*next && isspace(*next))
-				next++;
+			const char *ptr = str.c_str();
+			while(ptr && *ptr) {
+				const char *next = strstr(ptr,delim);
+				if(!next) {
+					push_back(ptr);
+					break;
+				}
 
-			string value{ptr,(size_t) (next-ptr)};
-			push_back(value);
-			ptr = next+1;
-			while(*ptr && isspace(*ptr)) {
-				ptr++;
+				while(*next && isspace(*next))
+					next++;
+
+				string value{ptr,(size_t) (next-ptr)};
+				push_back(value);
+				ptr = next+1;
+				while(*ptr && isspace(*ptr)) {
+					ptr++;
+				}
+
 			}
 
 		}
 
+		Value<std::string> & Value<std::string>::set(const char *name, const char *value) {
+			string key{"${"};
+			key += name;
+			key += "}";
+			auto pos = find(key);
+			if(pos != string::npos) {
+				replace(pos,key.size(),value);
+			}
+			return *this;
+		}
+
+		Value<std::string> & Value<std::string>::set(const char *name, const char *group, const char *key, const char *def) {
+			return set(name, Value<std::string>(group,key,def).c_str());
+		}
+
 	}
+
 
  }
 

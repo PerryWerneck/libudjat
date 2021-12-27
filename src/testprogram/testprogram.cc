@@ -32,9 +32,10 @@
  #include <ctime>
  #include <cstdlib>
 
-#ifndef _WIN32
- #include <netdb.h>
-#endif // _WIN32
+ #ifndef _WIN32
+	#include <unistd.h>
+	#include <netdb.h>
+ #endif // _WIN32
 
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/string.h>
