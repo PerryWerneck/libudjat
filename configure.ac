@@ -74,12 +74,11 @@ case "$host" in
 		CFLAGS="$CFLAGS -pthread"
 		#  -D_WIN32_WINNT=0x0600
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
-		LIBS="-lws2_32 $LIBS -lwinhttp"		
+		LIBS="-lws2_32 $LIBS"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
 		AC_SUBST(OSNAME,windows)
-		AC_DEFINE(HAVE_WINHTTP, [], [Do we have winhttp?])
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		;;

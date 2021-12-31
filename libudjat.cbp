@@ -6,6 +6,7 @@
 		<Option makefile_is_custom="1" />
 		<Option pch_mode="2" />
 		<Option compiler="gcc" />
+		<Option virtualFolders="src/tools/" />
 		<Build>
 			<Target title="Debug">
 				<Option output=".bin/Debug/libudjat-test" prefix_auto="1" extension_auto="1" />
@@ -77,7 +78,10 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
+		<Unit filename="src/include/udjat/win32/http.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
+		<Unit filename="src/include/udjat/win32/security.h" />
+		<Unit filename="src/include/udjat/win32/service.h" />
 		<Unit filename="src/include/udjat/win32/utils.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
@@ -124,7 +128,9 @@
 		<Unit filename="src/main/state/private.h" />
 		<Unit filename="src/main/state/state.cc" />
 		<Unit filename="src/main/url/controller.cc" />
-		<Unit filename="src/main/url/fileprotocol.cc" />
+		<Unit filename="src/main/url/fileprotocol.cc">
+			<Option virtualFolder="src/tools/" />
+		</Unit>
 		<Unit filename="src/main/url/method.cc" />
 		<Unit filename="src/main/url/private.h" />
 		<Unit filename="src/main/url/protocol.cc" />
@@ -148,6 +154,7 @@
 		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
@@ -185,12 +192,15 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
+		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
+		<Unit filename="src/tools/os/windows/service.cc" />
 		<Unit filename="src/tools/os/windows/string.cc" />
 		<Unit filename="src/tools/os/windows/subprocess.cc" />
 		<Unit filename="src/tools/os/windows/systemservice.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
+		<Unit filename="src/tools/os/windows/winhttp.cc" />
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/string.cc" />
 		<Unit filename="src/tools/subprocess/private.h" />

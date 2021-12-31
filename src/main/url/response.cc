@@ -34,6 +34,31 @@
 		throw system_error(ENODATA,system_category(),(status.text.empty() ? "Empty response" : status.text.c_str()));
 	}
 
+	void URL::Response::call(std::function<void()> method) noexcept {
+
+		try {
+
+			method();
+
+		} catch(const HTTP::Exception &e) {
+
+			status.text = e.what();
+			status.code = e.code();
+
+		} catch(const std::exception &e) {
+
+			status.code = 500;
+			status.text = e.what();
+
+		} catch(...) {
+
+			status.code = 500;
+			status.text = "Unexpected error";
+
+		}
+
+	}
+
 	/*
 	Json::Value URL::Response::as_json() const {
 

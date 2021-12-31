@@ -19,16 +19,24 @@
 
  #pragma once
 
+ #include <config.h>
  #include <udjat/defs.h>
- #include <string>
- #include <functional>
+ #include <udjat/tools/configuration.h>
+ #include <iostream>
+
+ #ifdef _WIN32
+	#include <udjat/win32/exception.h>
+ #endif // _WIN32
+
+ #ifdef HAVE_WINHTTP
+	#include <udjat/tools/http.h>
+ 	#include <winhttp.h>
+ #endif // HAVE_WINHTTP
+
+ using namespace std;
 
  namespace Udjat {
 
-	/// @brief Expands ${key} tags.
-	/// @param str	String to expand.
-	/// @param exec Method to expand (Returns "${}" to disable expansion).
-	void UDJAT_API expand(std::string &str, std::function<std::string (const char *key)> exec);
 
  }
 
