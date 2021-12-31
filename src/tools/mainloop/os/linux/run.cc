@@ -84,6 +84,17 @@
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
 
+		#error FIXME: nSocks < 0 = Error! nSock == 0 TIMEOUT
+
+		if(nSocks == 0) {
+			continue;
+		}
+
+		if(nSocks < 0) {
+			this->enabled = false;
+			throw std::system_error(errno, std::system_category(),"poll()");
+		}
+
 		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
 
 			int event = fds[sock].revents;
