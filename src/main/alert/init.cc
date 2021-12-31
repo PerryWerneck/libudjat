@@ -18,7 +18,7 @@
  */
 
  #include "private.h"
- #include <udjat/url.h>
+ #include <udjat/tools/url.h>
  #include <udjat/factory.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>

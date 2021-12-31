@@ -84,8 +84,6 @@
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
 
-		#error FIXME: nSocks < 0 = Error! nSock == 0 TIMEOUT
-
 		if(nSocks == 0) {
 			continue;
 		}

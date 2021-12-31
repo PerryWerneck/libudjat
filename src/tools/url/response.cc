@@ -43,7 +43,7 @@
 		} catch(const HTTP::Exception &e) {
 
 			status.text = e.what();
-			status.code = e.code();
+			status.code = e.codes().http;
 
 		} catch(const std::exception &e) {
 

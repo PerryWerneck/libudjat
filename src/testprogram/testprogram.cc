@@ -26,7 +26,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/factory.h>
- #include <udjat/url.h>
+ #include <udjat/tools/url.h>
  #include <udjat/alert.h>
  #include <random>
  #include <ctime>

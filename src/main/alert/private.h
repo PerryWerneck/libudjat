@@ -26,7 +26,7 @@
  #include <udjat/alert.h>
  #include <udjat/worker.h>
  #include <udjat/factory.h>
- #include <udjat/url.h>
+ #include <udjat/tools/url.h>
  #include <list>
  #include <mutex>
 

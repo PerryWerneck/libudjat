@@ -39,25 +39,40 @@
 
  	namespace HTTP {
 
-		/// @brief HTTP Exception
+		/// @brief HTTP exception.
 		class UDJAT_API Exception : public std::runtime_error {
-		private:
-			int err;
+		public:
+
+			/// @brief Error codes.
+			struct Codes {
+				int http;
+				std::error_code system;
+
+				Codes() : http(-1) {
+				}
+
+			};
+
+		protected:
+			std::string url;
+			Codes error;
 
 		public:
-			Exception(int code, const char *t) : runtime_error(t), err(code) {
+			Exception(const char *url, const char *message);
+			Exception(unsigned int code, const char *url, const char *message);
+			Exception(unsigned int code, const char *url);
+
+			inline const Codes & codes() const noexcept {
+				return error;
 			}
 
-			int code() const noexcept {
-				return err;
-			}
+
 		};
 
  	}
 
 	class UDJAT_API URL {
 	public:
-
 
 		/// @brief URL response
 		class UDJAT_API Response {
