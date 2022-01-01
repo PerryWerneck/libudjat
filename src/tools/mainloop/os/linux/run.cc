@@ -89,6 +89,9 @@
 		}
 
 		if(nSocks < 0) {
+			if(errno == EINTR) {
+				continue;
+			}
 			this->enabled = false;
 			throw std::system_error(errno, std::system_category(),"poll()");
 		}
