@@ -10,7 +10,7 @@ module_path=${libdir}/udjat-modules
 Name: udjat
 Description: The Eye of Horus
 Version: 1.0
-Libs: -ludjat @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@ @SYSTEMD_LIBS@ @VMDETECT_LIBS@
+Libs: -ludjat.static @LIBICONV@ @ECONF_LIBS@
 
 Cflags: -I${prefix}/include
 
