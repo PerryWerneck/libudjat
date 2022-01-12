@@ -23,8 +23,9 @@ MAIN_SOURCES= \
 	$(wildcard src/main/alert/*.cc)
 
 TEST_SOURCES= \
-	$(wildcard src/testprogram/*.cc)
-
+	$(wildcard src/testprogram/*.cc) \
+	$(wildcard src/testprogram/@OSNAME@/*.rc)
+	
 TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@
 
 #---[ Tools ]----------------------------------------------------------------------------
@@ -121,7 +122,10 @@ $(OBJDBG)/%.o: \
 
 	@echo $< ...
 	@$(MKDIR) $(@D)
-	@$(WINDRES) $< -O coff -o $@
+	@$(WINDRES) \
+		$< \
+		-O coff \
+		-o $@
 
 #---[ Release Rules ]--------------------------------------------------------------------
 
@@ -160,7 +164,8 @@ Release: \
 	$(BINRLS)/@SONAME@
 
 $(BINRLS)/@SONAME@: \
-	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o) \
+	$(foreach SRC, $(basename $(wildcard src/main/os/@OSNAME@/*.rc)), $(OBJRLS)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
@@ -360,7 +365,8 @@ $(BINDBG)/udjat@EXEEXT@: \
 
 
 $(BINDBG)/@SONAME@: \
-	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o)
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(foreach SRC, $(basename $(wildcard src/main/os/@OSNAME@/*.rc)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...

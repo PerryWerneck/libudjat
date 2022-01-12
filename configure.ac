@@ -81,6 +81,9 @@ case "$host" in
 		AC_SUBST(OSNAME,windows)
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
+		AC_CONFIG_FILES(src/main/os/windows/resources.rc)
+		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
+		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		;;
 
  	*)
@@ -105,6 +108,8 @@ AC_PATH_TOOL([VALGRIND], [valgrind], [no])
 AC_PATH_TOOL([AR], [ar], [ar])
 AC_PATH_TOOL([DLLTOOL], [dlltool], [true])
 AC_PATH_TOOL([STRIP], [strip], [true])
+AC_PATH_TOOL([STRIP], [strip], [true])
+AC_PATH_TOOL([WINDRES], [windres], [true])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for headers

@@ -62,6 +62,8 @@ po
 .obj
 *.depend
 *.bak
+app-manifest.xml
+resources.rc
 
 
 

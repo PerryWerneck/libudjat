@@ -1,0 +1,32 @@
+/*
+	Recursos para o notificador GSTI
+
+	$URL: http://suportelinux.df.bb.com.br/svn/suporte/aplicativos/gsti/src/tools/os/windows/resources.rc.in $
+	$Author: c1103788 $ $Date: 2022-01-12 08:18:53 -0300 (qua, 12 jan 2022) $ $Rev: 45740 $
+
+	Referências:
+
+	<https://msdn.microsoft.com/en-us/library/windows/desktop/aa381058(v=vs.85).aspx>
+	<https://stackoverflow.com/questions/1022449/how-to-change-an-executables-properties-windows>
+	<https://stackoverflow.com/questions/708238/how-do-i-add-an-icon-to-a-mingw-gcc-compiled-executable>
+
+
+*/
+
+#pragma code_page( 65001 )  // UTF-8
+
+#include <windows.h>
+
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+
+CREATEPROCESS_MANIFEST_RESOURCE_ID      RT_MANIFEST "app-manifest.xml"
+
+VS_VERSION_INFO VERSIONINFO
+PRODUCTVERSION @PACKAGE_MAJOR_VERSION@,@PACKAGE_MINOR_VERSION@
+
+BEGIN
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0416, 0x04B0
+    END
+END
