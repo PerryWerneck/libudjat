@@ -19,9 +19,9 @@
 
  #pragma once
 
+ #include <udjat/defs.h>
  #include <string>
  #include <mutex>
- #include <udjat/defs.h>
  #include <vector>
 
  namespace Udjat {
@@ -42,7 +42,7 @@
 
 
 		template <typename T>
-		class Value {
+		class UDJAT_API Value {
 		private:
 			T def;
 
@@ -68,7 +68,7 @@
 		};
 
 		template <>
-		class Value<std::string> : public std::string {
+		class UDJAT_API Value<std::string> : public std::string {
 		private:
 			std::string group;
 			std::string name;
@@ -97,7 +97,7 @@
 		};
 
 		template <>
-		class Value<std::vector<std::string>> : public std::vector<std::string> {
+		class UDJAT_API Value<std::vector<std::string>> : public std::vector<std::string> {
 		public:
 			Value(const char *group, const char *name, const char *def, const char *delim = ",");
 
