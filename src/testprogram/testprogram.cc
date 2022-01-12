@@ -32,7 +32,9 @@
  #include <ctime>
  #include <cstdlib>
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <udjat/win32/exception.h>
+ #else
 	#include <unistd.h>
 	#include <netdb.h>
  #endif // _WIN32
@@ -214,6 +216,28 @@ int main(int argc, char **argv) {
 
 	// Setup locale
 	setlocale( LC_ALL, "" );
+
+#ifdef _WIN32
+	{
+		WSADATA WSAData;
+		WSAStartup(0x101, &WSAData);
+
+		// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+		SetConsoleOutputCP(CP_UTF8);
+		SetConsoleCP(CP_UTF8);
+	}
+#endif // _WIN32
+
+	try {
+
+		throw Win32::Exception("Testing win32 exception",2);
+
+	} catch(const std::exception &e) {
+
+		cerr << e.what() << endl;
+		return 0;
+
+	}
 
 	// Redirect output to log file
 	// Logger::redirect();

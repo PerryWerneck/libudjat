@@ -21,6 +21,7 @@
  #include <udjat-internals.h>
  #include <udjat/win32/exception.h>
  #include <windows.h>
+ #include <iostream>
 
  #include <cstring>
  #include <cstdio>
@@ -35,9 +36,41 @@
 	return format("",error);
  }
 
- std::string Udjat::Win32::Exception::format(const char *what_arg, const DWORD error) noexcept {
+ std::string Udjat::Win32::Exception::format(const char *what_arg, const DWORD dwMessageId) noexcept {
 
 	string response{what_arg};
+	LPVOID lpMsgBuf = 0;
+
+	response += " - ";
+
+	DWORD szMessage =
+		FormatMessage(
+			FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
+			0,
+			dwMessageId,
+			0,
+			(LPTSTR) &lpMsgBuf,
+			0,
+			NULL
+		);
+
+	if(lpMsgBuf) {
+
+		// TODO: Convert response to UTF-8 if GetACP() != 65001 (CP_UTF8)
+
+		response += (const char *) lpMsgBuf;
+		LocalFree(lpMsgBuf);
+
+	} else {
+
+		if(szMessage == 0) {
+			cerr << "win32\tError " << GetLastError() << " when formatting message id " << dwMessageId << endl;
+		}
+
+		response += "The windows error was " + to_string((unsigned int) dwMessageId);
+	}
+
+	/*
 	LPVOID lpMsgBuf = 0;
 
 	if(FormatMessage(
@@ -75,6 +108,7 @@
 		response += msg;
 
 	}
+	*/
 
 	return response;
 
