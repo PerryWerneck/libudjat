@@ -60,7 +60,7 @@
 
 			LocalFree(lpMsgBuf);
 
-			// TODO: Convert response to UTF-8
+			// TODO: Convert response to UTF-8 if GetACP() != 65001 (CP_UTF8)
 
 		} else {
 			char msg[4096];
