@@ -27,7 +27,7 @@
  #include <udjat/win32/registry.h>
  #include <cstring>
 
-#ifdef DEBUG 
+#ifdef DEBUG
 	#include <iostream>
 #endif // DEBUG
 
@@ -68,6 +68,11 @@
 		}
 
 		assign(ptr);
+	}
+
+	const Application::Name & Application::Name::getInstance() {
+		static Application::Name instance;
+		return instance;
 	}
 
 	Application::Path::Path() {

@@ -25,36 +25,33 @@
 
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService {
-	private:
-		/// @brief Service name
-		const char *name = nullptr;
-
 	protected:
 
-	public:
-		SystemService(const char *name);
-		virtual ~SystemService();
-
-		/// @brief Start service.
-		void start();
-
-		/// @brief Stop service.
-		virtual void stop();
-
-		/// @brief Initialize
+		/// @brief Initialize service.
 		virtual void init();
 
-		/// @brief Service main loop
-		virtual void run();
-
-		/// @brief Deinitialize;
+		/// @brief Deinitialize service.
 		virtual void deinit();
 
-		/// @brief Get Service name
-		inline const char * c_str() const noexcept {
-			return name;
-		}
+#ifdef _WIN32
 
+		/// @brief Install win32 service.
+		virtual void install();
+
+		/// @brief Uninstall win32 service.
+		virtual void uninstall();
+
+#endif // _WIN32
+
+	public:
+		SystemService();
+		virtual ~SystemService();
+
+		/// @brief Service main loop
+		virtual int run();
+
+		/// @brief Parse command line arguments and run service.
+		virtual int run(int argc, char **argv);
 
 	};
 

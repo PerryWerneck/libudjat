@@ -27,7 +27,12 @@
 
  namespace Udjat {
 
-	Application::Name::Name(bool with_path) : string(with_path ? program_invocation_name : program_invocation_short_name) {
+	Application::Name::Name(bool with_path) : string{with_path ? program_invocation_name : program_invocation_short_name} {
+	}
+
+	const Application::Name & Application::Name::getInstance() {
+		static const Application::Name instance;
+		return instance;
 	}
 
 	Application::DataDir::DataDir() : string{STRINGIZE_VALUE_OF(DATADIR) "/"} {

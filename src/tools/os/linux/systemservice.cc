@@ -22,51 +22,144 @@
  #include <iostream>
  #include <system_error>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
+ #include <getopt.h>
+ #include <unistd.h>
+ #include <fstream>
+ #include <sys/time.h>
+ #include <sys/resource.h>
+ #include <locale.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	 SystemService::SystemService(const char *n) : name(n) {
-	 }
+	SystemService::SystemService() {
+		setlocale( LC_ALL, "" );
+	}
 
-	 SystemService::~SystemService() {
-	 }
+	SystemService::~SystemService() {
+	}
 
-	 void SystemService::init() {
-	 }
+	void SystemService::init() {
+	}
 
-	 void SystemService::run() {
+	void SystemService::deinit() {
+	}
+
+	int SystemService::run() {
 		MainLoop::getInstance().run();
-	 }
+		return 0;
+	}
 
-	 void SystemService::deinit() {
-	 }
+	int SystemService::run(int argc, char **argv) {
 
-	 void SystemService::start() {
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+		static struct option options[] = {
+			{ "foreground",		no_argument,		0,	'f' },
+			{ "daemon",			no_argument,		0,	'd' },
+			{ "core",			optional_argument,	0,	'C' },
+			{ NULL }
+		};
+		#pragma GCC diagnostic pop
 
-		try {
+		auto appname = Application::Name::getInstance();
+		int rc = 0;
 
-			cout << name << "\tInitializing service" << endl;
-			init();
+		// Parse command line options.
+		{
+			int long_index =0;
+			int opt;
+			while((opt = getopt_long(argc, argv, "fdC:", options, &long_index )) != -1) {
+				switch(opt) {
+				case 'f':	// Run in foreground.
+					try {
 
-			cout << name << "\tRunning service" << endl;
-			run();
+						Logger::redirect(nullptr,true);
+						init();
+						rc = run();
+						deinit();
+						return rc;
 
-			cout << name << "\tDeinitializing service" << endl;
-			deinit();
+					} catch(const std::exception &e) {
+						cerr << appname << "\t" << e.what() << endl;
+						return -1;
+					} catch(...) {
+						cerr << appname << "\tUnexpected error" << endl;
+						return -1;
+					}
+					break;
 
-		} catch(const exception &e) {
-			cerr << name << "\t" << e.what() << endl;
-		} catch(...) {
-			cerr << name << "\tUnexpected error running system service" << endl;
+				case 'd':	// Run as a daemon.
+					try {
+
+						if(daemon(0,0)) {
+							throw std::system_error(errno, std::system_category());
+						}
+
+						Logger::redirect();
+						init();
+						run();
+						deinit();
+						return 0;
+
+					} catch(const std::exception &e) {
+						cerr << appname << "\t" << e.what() << endl;
+						return -1;
+					} catch(...) {
+						cerr << appname << "\tUnexpected error" << endl;
+						return -1;
+					}
+					break;
+
+				case 'C':	// Enable core dumps.
+					{
+						if(optarg) {
+							ofstream ofs;
+							ofs.open("/proc/sys/kernel/core_pattern",ofstream::out);
+							ofs << optarg;
+							ofs.close();
+						}
+
+						// Enable cores
+						struct rlimit core_limits;
+						core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+
+						if(setrlimit(RLIMIT_CORE, &core_limits)) {
+							cerr << appname << "\tError \"" << strerror(errno) << "\" activating coredumps" << endl;
+						} else {
+							cout << appname << "\tCoredumps are active" << endl;
+						}
+					}
+					break;
+
+				}
+
+			}
+
 		}
 
-	 }
+		// Run as service by default.
+		try {
 
-	 void SystemService::stop() {
-		MainLoop::getInstance().quit();
-	 }
+			Logger::redirect();
+			init();
+			rc = run();
+			deinit();
+
+		} catch(const std::exception &e) {
+			cerr << appname << "\t" << e.what() << endl;
+			return -1;
+		} catch(...) {
+			cerr << appname << "\tUnexpected error" << endl;
+			return -1;
+		}
+
+		return rc;
+
+	}
 
  }
 

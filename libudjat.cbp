@@ -201,7 +201,6 @@
 		<Unit filename="src/tools/os/windows/systemservice.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
-		<Unit filename="src/tools/os/windows/winhttp.cc" />
 		<Unit filename="src/tools/quark.cc" />
 		<Unit filename="src/tools/string.cc" />
 		<Unit filename="src/tools/subprocess/private.h" />

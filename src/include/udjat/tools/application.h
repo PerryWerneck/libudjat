@@ -34,6 +34,8 @@
 			/// @param with_path when false get the complete application name with path.
 			Name(bool with_path = false);
 
+			static const Name & getInstance();
+
 		};
 
 #ifdef _WIN32
