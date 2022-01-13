@@ -273,7 +273,7 @@
 
 					case 'f':	// Run in foreground.
 						Logger::redirect(nullptr,true);
-						cout << Application::Name() << "\tStarting in application mode" << endl;
+						cout << appname << "\tStarting in application mode" << endl;
 						init();
 						rc = run();
 						deinit();

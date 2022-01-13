@@ -48,6 +48,10 @@
 	void SystemService::deinit() {
 	}
 
+	void SystemService::stop() {
+		MainLoop::getInstance().quit();
+	}
+
 	int SystemService::run() {
 		MainLoop::getInstance().run();
 		return 0;
@@ -78,6 +82,7 @@
 					try {
 
 						Logger::redirect(nullptr,true);
+						cout << appname << "\tStarting in application mode" << endl;
 						init();
 						rc = run();
 						deinit();
