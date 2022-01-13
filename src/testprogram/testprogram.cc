@@ -50,14 +50,6 @@ int main(int argc, char **argv) {
 
 	/*
 #ifdef _WIN32
-	{
-		WSADATA WSAData;
-		WSAStartup(0x101, &WSAData);
-
-		// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
-		SetConsoleOutputCP(CP_UTF8);
-		SetConsoleCP(CP_UTF8);
-	}
 #endif // _WIN32
 	*/
 

@@ -27,12 +27,6 @@
 	class UDJAT_API SystemService {
 	protected:
 
-		/// @brief Initialize service.
-		virtual void init();
-
-		/// @brief Deinitialize service.
-		virtual void deinit();
-
 #ifdef _WIN32
 
 		/// @brief Install win32 service.
@@ -46,6 +40,15 @@
 	public:
 		SystemService();
 		virtual ~SystemService();
+
+		/// @brief Initialize service.
+		virtual void init();
+
+		/// @brief Deinitialize service.
+		virtual void deinit();
+
+		/// @brief Stop service.
+		virtual void stop();
 
 		/// @brief Service main loop
 		virtual int run();

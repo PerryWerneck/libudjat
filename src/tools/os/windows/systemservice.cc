@@ -23,12 +23,16 @@
  #include <iostream>
  #include <system_error>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/win32/exception.h>
+ #include <udjat/tools/logger.h>
+ #include <getopt.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	namespace Win32 {
+	namespace Service {
 
 		///
 		/// @brief Contains status information for a service.
@@ -41,7 +45,7 @@
 		///
 		/// http://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx
 		///
-		struct Status : SERVICE_STATUS {
+		struct UDJAT_API Status : SERVICE_STATUS {
 
 			constexpr Status() {
 				dwCurrentState				= (DWORD) -1;
@@ -85,148 +89,240 @@
 
 		};
 
+		/// @brief WIN32 Service controller.
+		///
+		/// Associate an udjat systemservice with the win32 service dispatcher.
+		///
+		class UDJAT_API Controller {
+		private:
+			Status status;
+			SERVICE_STATUS_HANDLE hStatus = 0;
+			Udjat::SystemService *service = nullptr;
+
+			Controller() {
+			}
+
+			void set(DWORD state, DWORD wait = 0) {
+				status.set(hStatus,state,wait);
+			}
+
+		public:
+			static Controller & getInstance();
+
+			~Controller() {
+			}
+
+			void insert(SystemService *service) {
+
+				if(this->service) {
+					throw runtime_error("WIN32 System Service is already registered");
+				}
+
+				this->service = service;
+			}
+
+			void remove(SystemService *service) {
+				if(this->service == service) {
+					this->service = nullptr;
+				}
+			}
+
+			static void WINAPI handler( DWORD CtrlCmd ) {
+
+				Controller &controller = getInstance();
+
+				if(!controller.service) {
+					// FIXME: Report failure.
+					controller.set(controller.status.dwCurrentState, 0);
+					return;
+				}
+
+				switch (CtrlCmd) {
+				case SERVICE_CONTROL_SHUTDOWN:
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						cout << "service\tSystem shutdown, stopping" << endl;
+						controller.service->stop();
+						break;
+
+				case SERVICE_CONTROL_STOP:
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						cout << "service\tStopping by request" << endl;
+						controller.service->stop();
+						break;
+
+				case SERVICE_CONTROL_INTERROGATE:
+						controller.set(controller.status.dwCurrentState, 0);
+						break;
+
+				default:
+						clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
+						controller.set(controller.status.dwCurrentState, 0);
+				}
+
+			}
+
+			static void dispatcher() {
+
+				Controller &controller = getInstance();
+
+				// Inicia como serviço
+				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name().c_str()), handler);
+
+				if(!controller.hStatus) {
+					throw runtime_error("RegisterServiceCtrlHandler failed");
+				}
+
+				try {
+
+					Logger::redirect();
+
+					controller.set(SERVICE_START_PENDING, 3000);
+					controller.service->init();
+
+					controller.set(SERVICE_RUNNING, 0);
+					controller.service->run();
+
+					controller.set(SERVICE_STOP_PENDING, 3000);
+					controller.service->deinit();
+
+				} catch(const std::exception &e) {
+
+					cerr << "service\t" << e.what() << endl;
+
+				} catch(...) {
+
+					cerr << "service\tUnexpected error starting windows service" << endl;
+				}
+
+				controller.set(SERVICE_STOPPED, 0);
+
+			}
+
+		};
+
+		Controller & Controller::getInstance() {
+			static Controller instance;
+			return instance;
+		}
+
 	}
 
-	class Controller {
-	private:
-		Win32::Status status;
-		SERVICE_STATUS_HANDLE hStatus = 0;
-		SystemService *service = nullptr;
-
-		Controller() {
-		}
-
-	public:
-		static Controller & getInstance();
-
-		~Controller() {
-		}
-
-		void set(SystemService *service) {
-
-			if(this->service) {
-				throw runtime_error(string{"Service is already registered as '"} + service->c_str() + "'");
-			}
-
-			this->service = service;
-		}
-
-		void set(DWORD state, DWORD wait) {
-			status.set(hStatus,state,wait);
-		}
-
-		static void WINAPI handler( DWORD CtrlCmd ) {
-
-			Controller &controller = getInstance();
-
-			if(!controller.service) {
-				// FIXME: Report failure.
-				controller.set(controller.status.dwCurrentState, 0);
-				return;
-			}
-
-			switch (CtrlCmd) {
-			case SERVICE_CONTROL_SHUTDOWN:
-					controller.set(SERVICE_STOP_PENDING, 3000);
-					cout << "MainLoop\tSystem shutdown, stopping" << endl;
-					controller.service->stop();
-					break;
-
-			case SERVICE_CONTROL_STOP:
-					controller.set(SERVICE_STOP_PENDING, 3000);
-					cout << "MainLoop\tStopping by request" << endl;
-					controller.service->stop();
-					break;
-
-			case SERVICE_CONTROL_INTERROGATE:
-					controller.set(controller.status.dwCurrentState, 0);
-					break;
-
-			default:
-					clog << "MainLoop\tUnexpected service control code: " << ((int) CtrlCmd) << endl;
-					controller.set(controller.status.dwCurrentState, 0);
-			}
-
-		}
-
-		static void dispatcher() {
-
-			Controller &controller = getInstance();
-
-			// Inicia como serviço
-			controller.hStatus = RegisterServiceCtrlHandler(TEXT(controller.service->c_str()), handler);
-
-			if(!controller.hStatus) {
-				throw runtime_error("RegisterServiceCtrlHandler failed");
-			}
-
-			try {
-
-				controller.set(SERVICE_START_PENDING, 3000);
-				controller.service->init();
-
-				controller.set(SERVICE_RUNNING, 0);
-				controller.service->run();
-
-				controller.set(SERVICE_STOP_PENDING, 3000);
-				controller.service->deinit();
-
-			} catch(const std::exception &e) {
-
-				cerr << "MainLoop\t" << e.what() << endl;
-
-			} catch(...) {
-
-				cerr << "MainLoop\tUnexpected error starting windows service" << endl;
-			}
-
-			controller.set(SERVICE_STOPPED, 0);
-
-		}
-
-	};
-
-	Controller & Controller::getInstance() {
-		static Controller instance;
-		return instance;
-	}
-
-	SystemService::SystemService(const char *n) : name(n) {
-		Controller::getInstance().set(this);
+	SystemService::SystemService() {
+		setlocale( LC_ALL, "" );
+		Service::Controller::getInstance().insert(this);
 	}
 
 	SystemService::~SystemService() {
+		Service::Controller::getInstance().remove(this);
 	}
 
 	void SystemService::init() {
 	}
 
-	void SystemService::run() {
-		MainLoop::getInstance().run();
-	}
-
 	void SystemService::deinit() {
-	}
-
-	void SystemService::start() {
-
-		static SERVICE_TABLE_ENTRY DispatchTable[] = {
-			{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Controller::dispatcher },
-			{ NULL, NULL }
-		};
-
-		DispatchTable[0].lpServiceName = TEXT( (char *) name);
-
-		cout << name << "\tStarting service dispatcher" << endl;
-
-		if(!StartServiceCtrlDispatcher( DispatchTable )) {
-			cerr << name << "\tError in service dispatcher" << endl;
-		}
-
 	}
 
 	void SystemService::stop() {
 		MainLoop::getInstance().quit();
+	}
+
+	int SystemService::run() {
+		MainLoop::getInstance().run();
+		return 0;
+	}
+
+	int SystemService::run(int argc, char **argv) {
+
+		{
+			WSADATA WSAData;
+			WSAStartup(0x101, &WSAData);
+
+			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+			SetConsoleOutputCP(CP_UTF8);
+			SetConsoleCP(CP_UTF8);
+		}
+
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+		static struct option options[] = {
+			{ "foreground",		no_argument,		0,	'f' },
+			{ "install",		no_argument,		0,	'i' },
+			{ "uninstall",		no_argument,		0,	'u' },
+			{ NULL }
+		};
+		#pragma GCC diagnostic pop
+
+		auto appname = Application::Name::getInstance();
+		int rc = 0;
+
+		// Parse command line options.
+		{
+			int long_index =0;
+			int opt;
+			while((opt = getopt_long(argc, argv, "f", options, &long_index )) != -1) {
+				try {
+
+					switch(opt) {
+					case 'i':	// Install service.
+						install();
+						break;
+
+					case 'u':	// Uninstall service.
+						uninstall();
+						break;
+
+					case 'f':	// Run in foreground.
+						Logger::redirect(nullptr,true);
+						cout << Application::Name() << "\tStarting in application mode" << endl;
+						init();
+						rc = run();
+						deinit();
+						return rc;
+						break;
+
+					}
+
+				} catch(const std::exception &e) {
+					cerr << appname << "\t" << e.what() << endl;
+					return -1;
+
+				} catch(...) {
+					cerr << appname << "\tUnexpected error" << endl;
+					return -1;
+
+				}
+
+			}
+
+		}
+
+		// Run as service by default.
+		static SERVICE_TABLE_ENTRY DispatchTable[] = {
+			{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
+			{ NULL, NULL }
+		};
+
+		DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
+
+		cout << "Starting '" << appname << "' service dispatcher" << endl;
+
+		if(!StartServiceCtrlDispatcher( DispatchTable )) {
+			cerr << "Failed to start '" << appname << "' service dispatcher" << endl << Win32::Exception::format(GetLastError()) << endl;
+			return -1;
+		}
+
+		return 0;
+
+	}
+
+	/// @brief Install win32 service.
+	void SystemService::install() {
+		throw system_error(ENOTSUP,system_category(),"Not implemented");
+	}
+
+	/// @brief Uninstall win32 service.
+	void SystemService::uninstall() {
+		throw system_error(ENOTSUP,system_category(),"Not implemented");
 	}
 
  }
