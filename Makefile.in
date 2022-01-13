@@ -192,6 +192,10 @@ $(BINRLS)/$(PACKAGE_NAME).a: \
 install: \
        $(foreach TARGET, $(TARGETS), install-$(TARGET))
 
+doc: \
+	doxygen/doxyfile
+	@cd doxygen ; @DOXYGEN@ doxyfile
+
 install-linux-lib: \
 	$(BINRLS)/@SONAME@ \
 	install-conf

@@ -110,6 +110,7 @@ AC_PATH_TOOL([DLLTOOL], [dlltool], [true])
 AC_PATH_TOOL([STRIP], [strip], [true])
 AC_PATH_TOOL([STRIP], [strip], [true])
 AC_PATH_TOOL([WINDRES], [windres], [true])
+AC_PATH_TOOL([DOXYGEN], [doxygen], [true])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for headers
