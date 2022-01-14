@@ -4,6 +4,7 @@
 
 	<module name='civetweb' required='no' />
 	<module name='information' required='no' />
+	<module name='civetweb' required='no' />
 
 	<agent name='intvalue' type='integer' value='0'>
 

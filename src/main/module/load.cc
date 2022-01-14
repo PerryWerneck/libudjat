@@ -25,7 +25,7 @@ namespace Udjat {
 
 	void Module::load(const char *name, bool required) {
 
-		Config::Value<string> configured("modules",name,name);
+		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
 
 #ifdef DEBUG
 		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
