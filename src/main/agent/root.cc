@@ -44,7 +44,7 @@
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				info("root agent was {}","created");
+				cout << "agent\tRoot node was created" << endl;
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
 
@@ -130,7 +130,7 @@
 			}
 
 			virtual ~Agent() {
-				info("root agent was {}","destroyed");
+				cout << "agent\tRoot node was destroyed" << endl;
 			}
 
 			void get(const Request UDJAT_UNUSED(&request), Response &response) override {

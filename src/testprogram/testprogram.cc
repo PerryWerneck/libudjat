@@ -21,7 +21,10 @@
 
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <udjat/agent.h>
+ #include <udjat/factory.h>
  #include <iostream>
+ #include <memory>
 
  using namespace std;
  using namespace Udjat;
@@ -30,11 +33,56 @@
 
 int main(int argc, char **argv) {
 
-	class Service : public SystemService {
+	class RandomFactory : public Udjat::Factory {
+	public:
+		RandomFactory() : Udjat::Factory("random") {
+			cout << "random agent factory was created" << endl;
+			srand(time(NULL));
+		}
+
+		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
+
+			class RandomAgent : public Agent<unsigned int> {
+			private:
+				unsigned int limit = 5;
+
+			public:
+				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>() {
+					cout << "Creating random Agent" << endl;
+					load(node);
+				}
+
+				bool refresh() override {
+					set( ((unsigned int) rand()) % limit);
+					return true;
+				}
+
+			};
+
+			parent.insert(make_shared<RandomAgent>(node));
+
+			return true;
+		}
+
+	};
+
+	class Service : public SystemService, private RandomFactory {
 	protected:
 		/// @brief Initialize service.
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
+			auto root = Abstract::Agent::init("*.xml");
+
+			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
+			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
+			cout << "http://localhost:8989/api/1.0/info/factory.xml" << endl;
+			cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+			cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+
+			for(auto agent : *root) {
+					cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+			}
+
 		}
 
 		/// @brief Deinitialize service.
@@ -45,6 +93,7 @@ int main(int argc, char **argv) {
 	public:
 		Service() = default;
 
+
 	};
 
 
@@ -54,5 +103,6 @@ int main(int argc, char **argv) {
 	*/
 
 	return Service().run(argc,argv);
+
 
 }

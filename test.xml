@@ -2,6 +2,9 @@
 
 <config>
 
+	<module name='civetweb' required='no' />
+	<module name='information' required='no' />
+
 	<agent name='intvalue' type='integer' value='0'>
 
 		<attribute name='summary' value='Summary of agent ${name}' />
