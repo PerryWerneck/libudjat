@@ -28,7 +28,7 @@ namespace Udjat {
 		void remove(Module *module);
 
 		void load();
-		Module * load(const char *filename);
+		Module * load(const char *filename, bool required = true);
 
 		void unload();
 

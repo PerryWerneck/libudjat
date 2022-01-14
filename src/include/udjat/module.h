@@ -38,7 +38,8 @@
 
 			/// @brief Load module by name or alias
 			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
-			static void load(const char *name);
+			/// @param required true if the module is required.
+			static void load(const char *name, bool required);
 
 			/// @brief Unload modules.
 			static void unload();
@@ -52,6 +53,9 @@
 			}
 
 			virtual ~Module();
+
+			/// @brief Get module filename.
+			std::string filename() const;
 
 		};
 

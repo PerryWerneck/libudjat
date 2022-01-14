@@ -8,6 +8,7 @@
  */
 
  #include "private.h"
+ #include <udjat/module.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -57,6 +58,16 @@ namespace Udjat {
 
 			// Skip reserved names.
 			if(!strcasecmp(node.name(),"attribute")) {
+				continue;
+			}
+
+			// Check for module tag.
+			if(!strcasecmp(node.name(),"module")) {
+#ifdef DEBUG
+				cout << "\tChecking for module '" << node.attribute("name").as_string() << "'" << endl;
+#endif // DEBUG
+				Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(true));
+
 				continue;
 			}
 

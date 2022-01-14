@@ -23,7 +23,7 @@ namespace Udjat {
 		Module::Controller::getInstance().load();
 	}
 
-	void Module::load(const char *name) {
+	void Module::load(const char *name, bool required) {
 
 		Config::Value<string> configured("modules",name,name);
 
@@ -31,7 +31,13 @@ namespace Udjat {
 		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
 #endif // DEBUG
 
-		Module::Controller::getInstance().load((Application::LibDir("modules") + configured + MODULE_EXT).c_str());
+		string filename = Application::LibDir("modules") + configured + MODULE_EXT;
+
+#ifdef DEBUG
+		cout << "Module filename: '" << filename << "'" << endl;
+#endif // DEBUG
+
+		Module::Controller::getInstance().load((Application::LibDir("modules") + configured + MODULE_EXT).c_str(),required);
 	}
 
 	void Module::Controller::load() {
@@ -52,7 +58,7 @@ namespace Udjat {
 
 					cout << "module\tLoading '" << filename << "'" << endl;
 
-					load(filename);
+					load(filename,true);
 
 				} catch(const exception &e) {
 
@@ -70,17 +76,33 @@ namespace Udjat {
 
 	}
 
-	Module * Module::Controller::load(const char *filename) {
+	Module * Module::Controller::load(const char *filename, bool required) {
 
-		 Module * (*init)(void);
-		 Module * module = nullptr;
+		// Check if is already loaded.
+		for(auto module : modules) {
+
+			if(!strcasecmp(module->filename().c_str(),filename)) {
+				cout << "module\tModule '" << module->name << "' is already loaded" << endl;
+				return module;
+			}
+
+		}
+
+		clog << "module\tLoading '" << filename << "'" << endl;
+
+		Module * (*init)(void);
+		Module * module = nullptr;
 
 #ifdef _WIN32
 
 		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
 		HMODULE handle = LoadLibrary(filename);
 		if(!handle) {
-			throw Win32::Exception("Cant load module");
+			if(required) {
+				throw Win32::Exception("Cant load module");
+			}
+			clog << "module\tCant load '" << filename << "': " << Win32::Exception::format() << endl;
+			return nullptr;
 		}
 
 		try {
@@ -110,7 +132,11 @@ namespace Udjat {
 
 		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
 		if(handle == NULL) {
-			throw runtime_error(dlerror());
+			if(required) {
+				throw runtime_error(dlerror());
+			}
+			clog << "module\t" << dlerror() << endl;
+			return nullptr;
 		}
 
 		try {
