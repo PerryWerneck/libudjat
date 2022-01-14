@@ -31,6 +31,7 @@
 
 		/// @brief Install win32 service.
 		virtual void install();
+		virtual void install(const char *display_name);
 
 		/// @brief Uninstall win32 service.
 		virtual void uninstall();

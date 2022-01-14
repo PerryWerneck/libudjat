@@ -149,6 +149,7 @@
 		// Run as service by default.
 		try {
 
+			cout << "Running service '" << appname << "'" << endl;
 			Logger::redirect();
 			init();
 			rc = run();

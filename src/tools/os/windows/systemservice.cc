@@ -25,6 +25,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/service.h>
  #include <udjat/tools/logger.h>
  #include <getopt.h>
 
@@ -315,9 +316,48 @@
 
 	}
 
-	/// @brief Install win32 service.
 	void SystemService::install() {
-		throw system_error(ENOTSUP,system_category(),"Not implemented");
+		install(Application::Name().c_str());
+	}
+
+	/// @brief Install win32 service.
+	void SystemService::install(const char *display_name) {
+
+		Application::Name appname;
+
+		// Get my path
+		TCHAR service_binary[MAX_PATH];
+		if(!GetModuleFileName(NULL, service_binary, MAX_PATH ) ) {
+			throw Win32::Exception("Can't get service filename");
+		}
+
+		Win32::Service::Manager manager;
+
+		try {
+
+			cout << appname << "\tStopping previous instance" << endl;
+			Win32::Service::Handler(manager.open(appname.c_str())).stop();
+			cout << appname << "\tPrevious instance stopped" << endl;
+
+		} catch(const exception &e) {
+			cerr << appname << "\t" << e.what() << endl;
+		}
+
+		try {
+
+			cout << appname << "\tRemoving previous instance" << endl;
+			manager.remove(appname.c_str());
+			cout << appname << "\tPrevious instance removed" << endl;
+
+		} catch(const exception &e) {
+			cerr << appname << "\t" << e.what() << endl;
+		}
+
+		// Inclui novo serviço
+		cout << appname << "\tInserting '" << display_name << "' service" << endl;
+		manager.insert(appname.c_str(),display_name,service_binary);
+		cout << appname << "\tService '" << display_name << "' inserted" << endl;
+
 	}
 
 	/// @brief Uninstall win32 service.

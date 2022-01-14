@@ -22,22 +22,25 @@
  #include <udjat/win32/service.h>
  #include <udjat/win32/exception.h>
  #include <iostream>
+ #include <udjat/tools/application.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	void Win32::Service::stop(bool wait) {
+	void Win32::Service::Handler::stop(bool wait) {
 
 		SERVICE_STATUS status;
 
-		cout << "win32\tStopping service" << endl;
+		Application::Name appname;
+
+		cout << appname << "\tStopping service" << endl;
 		if(!ControlService(handle,SERVICE_CONTROL_STOP,&status)) {
 
 			DWORD error = GetLastError();
 
 			if(error == ERROR_SERVICE_NOT_ACTIVE) {
-				clog << "win32\tService was not active" << endl;
+				clog << appname << "\tService was not active" << endl;
 				return;
 			}
 
@@ -50,16 +53,16 @@
 		}
 
 		if(status.dwCurrentState == SERVICE_STOPPED) {
-			cout << "win32\tService is stopped" << endl;
+			cout << appname << "\tService is stopped" << endl;
 		} else {
-			cout << "win32\tService still running" << endl;
+			cout << appname << "\tService still running" << endl;
 		}
 
 		if(!wait || status.dwCurrentState == SERVICE_STOPPED) {
 			return;
 		}
 
-		cout << "win32\tWaiting for service stop"  << endl;
+		cout << appname << "\tWaiting for service stop"  << endl;
 
 		// Wait for service stop
 		for(size_t ix = 0; ix < 100; ix++) {
@@ -75,48 +78,14 @@
 			}
 
 			if(status.dwCurrentState == SERVICE_STOPPED) {
-				cout << "win32\tService stopped"  << endl;
+				cout << appname << "\tService stopped"  << endl;
 				return;
 			}
 
 		}
 
-		cout << "win32\tService still running"  << endl;
+		cout << appname << "\tService still running"  << endl;
 
-	}
-
-	int Win32::Service::install(const char *name, const char *display_name, const char *service_binary, bool start) {
-
-		try {
-
-			ServiceManager manager;
-
-			try {
-				Service(manager.open(name)).stop();
-			} catch(const exception &e) {
-				cerr << "win32\tCant stop service: " << e.what() << endl;
-			}
-
-			try {
-				manager.remove(name);
-			} catch(const exception &e) {
-				cerr << "win32\tCant remove service: " << e.what() << endl;
-			}
-
-			// Add service
-			Win32::Service service(manager.insert(name,display_name,service_binary));
-
-			if(start) {
-				service.start();
-			}
-
-		} catch(const exception &e) {
-
-			cerr << "win32\tError '" << e.what() << "' installing service" << endl;
-			return -1;
-		}
-
-		return 0;
 	}
 
 
