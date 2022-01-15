@@ -17,7 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define _GNU_SOURCE
+#ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+#endif // !_GNU_SOURCE
+
  #include <config.h>
  #include <errno.h>
  #include <udjat/tools/configuration.h>
@@ -127,7 +130,7 @@
 			}
 		}
 
-		bool hasGroup(const std::string &group) {
+		bool hasGroup(const char *group) {
 			std::lock_guard<std::recursive_mutex> lock(guard);
 			bool rc = false;
 
@@ -137,12 +140,42 @@
 			if(err != ECONF_SUCCESS)
 				throw std::runtime_error(econf_errString(err));
 			for(size_t ix = 0; ix < length; ix++) {
-				if(!strcasecmp(groups[ix],group.c_str())) {
+				if(!strcasecmp(groups[ix],group)) {
 					rc = true;
 					break;
 				}
 			}
 			econf_freeArray(groups);
+			return rc;
+		}
+
+		bool hasKey(const char *group, const char *key) {
+
+			std::lock_guard<std::recursive_mutex> lock(guard);
+
+			if(!hasGroup(group)) {
+				return false;
+			}
+
+			bool rc = false;
+
+			size_t length = 0;
+			char **keys;
+
+			// Check for group
+			econf_err err = econf_getKeys((econf_file *) hFile, group, &length, &keys);
+
+			if(err != ECONF_SUCCESS)
+				throw std::runtime_error(econf_errString(err));
+
+			for(size_t ix = 0; ix < length; ix++) {
+				if(!strcasecmp(keys[ix],key)) {
+					rc = true;
+					break;
+				}
+			}
+			econf_freeArray(keys);
+
 			return rc;
 		}
 
@@ -360,7 +393,11 @@
 #endif // HAVE_ECONF
 
 	bool Config::hasGroup(const std::string &group) {
-		return Controller::getInstance().hasGroup(group);
+		return Controller::getInstance().hasGroup(group.c_str());
+	}
+
+	bool Config::hasKey(const char *group, const char *key) {
+		return Controller::getInstance().hasKey(group,key);
 	}
 
 	int32_t Config::get(const std::string &group, const std::string &name, const int32_t def) {

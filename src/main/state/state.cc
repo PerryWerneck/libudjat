@@ -62,13 +62,6 @@ namespace Udjat {
 
 	}
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::State::push_back(std::shared_ptr<Alert> alert) {
-		throw system_error(EINVAL,system_category(),string{"State '"} + name + "' is unable to manage agents");
-	}
-	#pragma GCC diagnostic pop
-
 	Abstract::State::~State() {
 
 	}
@@ -91,53 +84,9 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::State::activate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept {
-
-		Abstract::State::activate(agent);
-
-		for(auto alert : alerts) {
-			try {
-
-				alert->set(agent, *this, true);
-
-			} catch(const std::exception &e) {
-
-				cerr << agent << "\tError '" << e.what() << "' activating alert '" << alert->c_str() << "'" << endl;
-
-			} catch(...) {
-
-				cerr << agent << "\tUnexpected error activating alert '" << alert->c_str() << "'" << endl;
-
-			}
-
-		}
-	}
-
-	void Abstract::State::deactivate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept {
-
-		Abstract::State::deactivate(agent);
-
-		for(auto alert : alerts) {
-
-			try {
-
-				alert->set(agent, *this, false);
-
-			} catch(const std::exception &e) {
-
-				cerr << agent << "\tError '" << e.what() << "' deactivating alert '" << alert->c_str() << "'" << endl;
-
-			} catch(...) {
-
-				cerr << agent << "\tUnexpected error activating alert '" << alert->c_str() << "'" << endl;
-
-			}
-
-		}
-
-	}
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
+
 #ifdef DEBUG
 		agent.info("State '{}' was activated",name);
 #endif // DEBUG

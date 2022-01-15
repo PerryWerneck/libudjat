@@ -77,9 +77,6 @@
 				/// @brief Translate level from string.
 				static Level getLevelFromName(const char *name);
 
-				/// @brief State alerts.
-				// std::vector<std::shared_ptr<Alert>> alerts;
-
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
 
@@ -89,11 +86,6 @@
 
 				/// @brief Message body.
 				const char * body = "";
-
-			protected:
-
-				virtual void activate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept;
-				virtual void deactivate(const Agent &agent,std::vector<std::shared_ptr<Alert>> &alerts) noexcept;
 
 			public:
 
@@ -138,8 +130,6 @@
 				inline const char * getUri() const {
 					return uri;
 				}
-
-				virtual void push_back(std::shared_ptr<Alert> alert);
 
 				inline Level getLevel() const {
 					return this->level;
@@ -202,14 +192,6 @@
 				alerts.push_back(alert);
 			}
 
-			void activate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::activate(agent,alerts);
-			}
-
-			void deactivate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::deactivate(agent,alerts);
-			}
-
 		};
 
 
@@ -234,14 +216,6 @@
 				alerts.push_back(alert);
 			}
 
-			void activate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::activate(agent,alerts);
-			}
-
-			void deactivate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::deactivate(agent,alerts);
-			}
-
 		};
 
 		template <>
@@ -261,17 +235,6 @@
 				return this->value == value;
 			}
 
-			void push_back(std::shared_ptr<Alert> alert) {
-				alerts.push_back(alert);
-			}
-
-			void activate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::activate(agent,alerts);
-			}
-
-			void deactivate(const Abstract::Agent &agent) noexcept override {
-				Abstract::State::deactivate(agent,alerts);
-			}
 		};
 
 	}

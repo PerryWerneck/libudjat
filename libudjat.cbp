@@ -77,7 +77,6 @@
 		<Unit filename="src/include/udjat/tools/value.h" />
 		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
-		<Unit filename="src/include/udjat/url.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/http.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
@@ -101,12 +100,8 @@
 		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/alert.cc" />
-		<Unit filename="src/main/alert/controller.cc" />
-		<Unit filename="src/main/alert/event.cc" />
-		<Unit filename="src/main/alert/init.cc" />
 		<Unit filename="src/main/alert/private.h" />
-		<Unit filename="src/main/alert/script.cc" />
-		<Unit filename="src/main/alert/url.cc" />
+		<Unit filename="src/main/alert/settings.cc" />
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />

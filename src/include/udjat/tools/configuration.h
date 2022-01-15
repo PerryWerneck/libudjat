@@ -39,7 +39,7 @@
 		UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
 
 		UDJAT_API bool hasGroup(const std::string &group);
-
+		UDJAT_API bool hasKey(const char *group, const char *key);
 
 		template <typename T>
 		class UDJAT_API Value {
