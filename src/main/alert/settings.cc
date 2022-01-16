@@ -65,7 +65,7 @@
 
 		// Get & expand Payload.
 		string text = strip(node.child_value());
-		if(!text.empty()) {
+		if(text.empty()) {
 			payload = expand(text,node,section);
 		}
 

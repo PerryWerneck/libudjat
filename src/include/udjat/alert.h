@@ -73,7 +73,7 @@
 		time_t next = 0;
 
 	public:
-		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = nullptr) : settings(name,url,type,payload) {
+		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = "") : settings(name,url,type,payload) {
 		}
 
 		Alert(const pugi::xml_node &node);

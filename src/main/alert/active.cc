@@ -32,7 +32,7 @@
 		});
 	}
 
-	Alert::Controller::Active::Active(Alert *alert) : url(alert->url()), payload(alert->payload()) {
+	Alert::Controller::Active::Active(Alert *a) : alert(a), url(alert->url()), payload(alert->payload()) {
 		expander(url);
 		expander(payload);
 	}
