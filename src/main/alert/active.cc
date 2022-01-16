@@ -32,9 +32,10 @@
 		});
 	}
 
-	Alert::Controller::Active::Active(Alert *a) : alert(a), url(alert->url()), payload(alert->payload()) {
+	Alert::Controller::Active::Active(Alert *a) : alert(a), name(alert->settings.name), url(alert->url()), payload(alert->payload()) {
 		expander(url);
 		expander(payload);
+		cout << name << "\tActivating alert " << url << endl;
 	}
 
  }

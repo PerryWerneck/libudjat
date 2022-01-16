@@ -40,6 +40,7 @@
 
 		struct Active {
 			Alert *alert;
+			const char *name;
 			string url;
 			string payload;
 
@@ -50,6 +51,10 @@
 		list<Active> alerts;
 
 		Controller();
+
+		/// @brief Emit pending alerts.
+		/// @return Time (in seconds) for the next alert.
+		time_t emit() noexcept;
 
 	public:
 		static Controller & getInstance();

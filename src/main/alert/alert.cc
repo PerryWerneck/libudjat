@@ -75,9 +75,6 @@
 	}
 
 	void Alert::activate() {
-#ifdef DEBUG
-		cout << settings.name << "\tActivating alert" << endl << settings.url << endl << settings.payload << endl;
-#endif // DEBUG
 		Controller::getInstance().activate(this);
 	}
 
