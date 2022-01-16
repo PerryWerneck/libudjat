@@ -26,6 +26,10 @@
  namespace Udjat {
 
 	class UDJAT_API Alert {
+	private:
+		class Controller;
+		friend class Controller;
+
 	public:
 
 		/// @brief Alert settings
@@ -35,56 +39,10 @@
 			const char *url = "";			///< @brief Alert URL.
 			const char *payload = "";		///< @brief Alert payload.
 
-			time_t start = 0;				///< @brief Seconds to wait before first activation.
-			time_t interval = 60;			///< @brief Seconds to wait on every try.
-
-			/// @brief Alarm sents.
-			struct {
-				size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
-				size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
-			} limits;
-
-			/// @brief Restart timers.
-			struct {
-				time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-				time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successfull activation.
-			} restart;
-
 			constexpr Settings(const char *n, const char *u, const char *a, const char *p) : name(n), action(a), url(u), payload(p) {
 			}
 
 			Settings(const pugi::xml_node &node);
-
-		};
-
-		/// @brief Alert worker.
-		class Worker {
-		private:
-
-			Settings settings;
-
-			struct {
-				size_t success = 0;		///< @brief How many successful sends in the current cycle.
-				size_t failed = 0;		///< @brief How many failed sends in the current cycle.
-				time_t last = 0;		///< @brief Last try.
-				time_t next = 0;		///< @brief Next try (0 = disabled).
-			} events;
-
-		protected:
-
-			/// @brief Send alert.
-			virtual void send();
-
-		public:
-			constexpr Worker(const Settings &s) : settings(s) {
-			}
-
-			~Worker();
-
-			/// @brief Restart cycle.
-			void reset() {
-				events.success = events.failed = 0;
-			}
 
 		};
 
@@ -93,11 +51,36 @@
 		/// @brief Alert settings.
 		Settings settings;
 
+		/// @brief Alert limits.
+		struct {
+			size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
+			size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
+		} limits;
+
+		/// @brief Alert timers.
+		struct {
+			time_t start = 0;			///< @brief Seconds to wait before first activation.
+			time_t interval = 60;		///< @brief Seconds to wait on every try.
+		} timers;
+
+		/// @brief Restart timers.
+		struct {
+			time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
+			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successfull activation.
+		} restart;
+
+		time_t last = 0;
+		time_t next = 0;
+
 	public:
 		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = nullptr) : settings(name,url,type,payload) {
 		}
 
 		Alert(const pugi::xml_node &node);
+		virtual ~Alert();
+
+		void activate();
+		void deactivate();
 
 	};
 

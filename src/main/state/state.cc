@@ -90,12 +90,22 @@ namespace Udjat {
 #ifdef DEBUG
 		agent.info("State '{}' was activated",name);
 #endif // DEBUG
+
+		for(auto alert : alerts) {
+			alert->activate();
+		}
+
 	}
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
 #ifdef DEBUG
 		agent.info("State '{}' was deactivated",name);
 #endif // DEBUG
+
+		for(auto alert : alerts) {
+			alert->deactivate();
+		}
+
 	}
 
 	void Abstract::State::expand(std::string &text) const {

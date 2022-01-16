@@ -23,8 +23,64 @@
  namespace Udjat {
 
 	Alert::Alert(const pugi::xml_node &node) : settings(node) {
+
+		const char *section = node.attribute("settings-from").as_string("alert-defaults");
+
+		// Seconds to wait before first activation.
+		timers.start =
+			Attribute(node,"delay-before-start")
+				.as_uint(
+					Config::Value<uint32_t>(section,"delay-before-start",timers.start)
+				);
+
+		// Seconds to wait on every try.
+		timers.interval =
+			Attribute(node,"delay-before-retry")
+				.as_uint(
+					Config::Value<uint32_t>(section,"delay-before-retry",timers.interval)
+				);
+
+		// How many success emissions after deactivation or sleep?
+		limits.min =
+			Attribute(node,"min-retries")
+				.as_uint(
+					Config::Value<uint32_t>(section,"min-retries",limits.min)
+				);
+
+		// How many retries (success+fails) after deactivation or sleep?
+		limits.max =
+			Attribute(node,"max-retries")
+				.as_uint(
+					Config::Value<uint32_t>(section,"max-retries",limits.max)
+				);
+
+		// How many seconds to restart when failed?
+		restart.failed =
+			Attribute(node,"restart-when-failed")
+				.as_uint(
+					Config::Value<uint32_t>(section,"delay-when-failed",restart.failed)
+				);
+
+		// How many seconds to restart when suceeded?
+		restart.success =
+			Attribute(node,"restart-when-succeeded")
+				.as_uint(
+					Config::Value<uint32_t>(section,"restart-when-succeeded",restart.success)
+				);
+
 	}
 
+	Alert::~Alert() {
+		deactivate();
+	}
+
+	void Alert::activate() {
+		Controller::getInstance().activate(this);
+	}
+
+	void Alert::deactivate() {
+		Controller::getInstance().deactivate(this);
+	}
 
  }
 

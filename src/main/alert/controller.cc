@@ -17,40 +17,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <config.h>
- #include <udjat/tools/quark.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/alert.h>
- #include <udjat/worker.h>
- #include <mutex>
- #include <list>
-
- using namespace std;
+ #include "private.h"
 
  namespace Udjat {
 
-	/// @brief Singleton for alert emission.
-	class Alert::Controller {
-	private:
+	mutex Alert::Controller::guard;
 
-		/// @brief Mutex for serialization
-		static mutex guard;
+	Alert::Controller & Alert::Controller::getInstance() {
+		lock_guard<mutex> lock(guard);
+		static Controller instance;
+		return instance;
+	}
 
-		/// @brief List of active workers.
-		list<Alert *> alerts;
+	Alert::Controller::Controller() {
+	}
 
-		Controller();
+	Alert::Controller::~Controller() {
+	}
 
-	public:
-		static Controller & getInstance();
-		~Controller();
+	void Alert::Controller::deactivate(Alert *alert) {
+		lock_guard<mutex> lock(guard);
+		cout << alert->settings.name << "\tDeactivating alert " << alert->settings.url << endl;
+		alerts.remove_if([alert](Alert *active){
+			return active == alert;
+		});
+	}
 
-		void activate(Alert *alert);
-		void deactivate(Alert *alert);
+	void Alert::Controller::activate(Alert *alert) {
+		lock_guard<mutex> lock(guard);
+		cout << alert->settings.name << "\tActivating alert " << alert->settings.url << endl;
+		alert->next = time(0) + alert->timers.start;
+		alerts.push_back(alert);
+	}
 
-	};
 
  }
-

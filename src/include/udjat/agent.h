@@ -23,6 +23,7 @@
 	#include <udjat/tools/logger.h>
 	#include <udjat/request.h>
 	#include <udjat/tools/xml.h>
+	#include <udjat/alert.h>
 	#include <udjat/tools/converters.h>
 	#include <udjat/tools/value.h>
 	#include <cstring>

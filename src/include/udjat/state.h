@@ -21,6 +21,7 @@
 	#include <udjat/tools/quark.h>
 	#include <udjat/tools/xml.h>
 	#include <udjat/request.h>
+	#include <udjat/alert.h>
 	#include <udjat/tools/value.h>
 	#include <cstring>
 
@@ -80,6 +81,8 @@
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
 
+				std::vector<std::shared_ptr<Alert>> alerts;
+
 			protected:
 				/// @brief Message summary.
 				const char * summary = "";
@@ -92,7 +95,7 @@
 				static std::shared_ptr<Abstract::State> get(const char *summary, const std::exception &e);
 
 				/// @brief Create state using the strings without conversion.
-				constexpr State(const char *n, const Level l = Level::unimportant, const char *s = "", const char *b = "")
+				State(const char *n, const Level l = Level::unimportant, const char *s = "", const char *b = "")
 					: name(n), level(l), summary(s), body(b) { }
 
 				/// @brief Create state (convert strings to Quarks).
@@ -154,6 +157,11 @@
 				/// @brief Expand ${} tags on string.
 				virtual void expand(std::string &text) const;
 
+				/// @brief Associate and alert to this state.
+				inline void push_back(std::shared_ptr<Alert> alert) {
+					alerts.push_back(alert);
+				}
+
 			};
 
 		}
@@ -161,10 +169,6 @@
 
 		template <typename T>
 		class UDJAT_API State : public Abstract::State {
-		private:
-
-			std::vector<std::shared_ptr<Alert>> alerts;
-
 		protected:
 
 			/// @brief Minimum value for state activation.
@@ -188,10 +192,6 @@
 				return value >= from && value <= to;
 			}
 
-			void push_back(std::shared_ptr<Alert> alert) {
-				alerts.push_back(alert);
-			}
-
 		};
 
 
@@ -202,18 +202,12 @@
 			/// @brief State value;
 			std::string value;
 
-			std::vector<std::shared_ptr<Alert>> alerts;
-
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_string()) {
 			}
 
 			bool compare(const std::string &value) {
 				return strcasecmp(this->value.c_str(),value.c_str()) == 0;
-			}
-
-			void push_back(std::shared_ptr<Alert> alert) {
-				alerts.push_back(alert);
 			}
 
 		};
@@ -224,8 +218,6 @@
 
 			/// @brief State value;
 			bool value;
-
-			std::vector<std::shared_ptr<Alert>> alerts;
 
 		public:
 			State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_bool()) {
