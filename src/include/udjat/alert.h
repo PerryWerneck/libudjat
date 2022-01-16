@@ -79,6 +79,14 @@
 		Alert(const pugi::xml_node &node);
 		virtual ~Alert();
 
+		const char * url() const noexcept {
+			return settings.url;
+		}
+
+		const char * payload() const noexcept {
+			return settings.payload;
+		}
+
 		void activate();
 		void deactivate();
 

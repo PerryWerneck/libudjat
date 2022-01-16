@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/mainloop.h>
 
  namespace Udjat {
 
@@ -30,6 +31,15 @@
 	}
 
 	Alert::Controller::Controller() {
+
+		/*
+		MainLoop::getInstance().insert(this,60000L,[]() {
+
+
+			return true;
+		})
+		*/
+
 	}
 
 	Alert::Controller::~Controller() {
@@ -38,8 +48,8 @@
 	void Alert::Controller::deactivate(Alert *alert) {
 		lock_guard<mutex> lock(guard);
 		cout << alert->settings.name << "\tDeactivating alert " << alert->settings.url << endl;
-		alerts.remove_if([alert](Alert *active){
-			return active == alert;
+		alerts.remove_if([alert](const Active &active){
+			return active.alert == alert;
 		});
 	}
 
@@ -47,7 +57,7 @@
 		lock_guard<mutex> lock(guard);
 		cout << alert->settings.name << "\tActivating alert " << alert->settings.url << endl;
 		alert->next = time(0) + alert->timers.start;
-		alerts.push_back(alert);
+		alerts.emplace_back(alert);
 	}
 
 

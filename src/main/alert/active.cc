@@ -17,48 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
- #include <config.h>
- #include <udjat/tools/quark.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/alert.h>
- #include <udjat/worker.h>
- #include <mutex>
- #include <list>
-
- using namespace std;
+ #include "private.h"
+ #include <udjat.h>
+ #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
 
-	/// @brief Singleton for alert emission.
-	class Alert::Controller {
-	private:
+	static void expander(string &text) {
+		expand(text, [](const char *key){
+			if(!strcasecmp(key,"timestamp")) {
+				return TimeStamp().to_string(TIMESTAMP_FORMAT_JSON);
+			}
+			return string{"${}"};
+		});
+	}
 
-		/// @brief Mutex for serialization
-		static mutex guard;
-
-		struct Active {
-			Alert *alert;
-			string url;
-			string payload;
-
-			Active(Alert *alert);
-		};
-
-		/// @brief List of active workers.
-		list<Active> alerts;
-
-		Controller();
-
-	public:
-		static Controller & getInstance();
-		~Controller();
-
-		void activate(Alert *alert);
-		void deactivate(Alert *alert);
-
-	};
+	Alert::Controller::Active::Active(Alert *alert) : url(alert->url()), payload(alert->payload()) {
+		expander(url);
+		expander(payload);
+	}
 
  }
-
