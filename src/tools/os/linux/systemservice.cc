@@ -81,9 +81,9 @@
 				switch(opt) {
 				case 'h':
 					cout 	<< "Usage: " << endl << "  " << argv[0] << " [options]" << endl << endl
-							<< "  --foreground\tRun in foreground" << endl
-							<< "  --daemon\tFork to background" << endl
-							<< "  --core=1\tenable coredumps" << endl
+							<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl
+							<< "  --daemon\tRun " << appname << " service in the background" << endl
+							<< "  --core\tenable coredumps" << endl
 							<< endl;
 					return 0;
 
@@ -158,7 +158,7 @@
 		// Run as service by default.
 		try {
 
-			cout << "Running service '" << appname << "'" << endl;
+			cout << "Running " << appname << " service" << endl;
 			Logger::redirect();
 			init();
 			rc = run();
