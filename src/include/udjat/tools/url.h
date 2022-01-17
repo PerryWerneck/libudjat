@@ -100,6 +100,11 @@
 			/// @brief Run function, capture exceptions.
 			void call(std::function<void()> method) noexcept;
 
+			/// @brief Check if the query has failed.
+			inline bool failed() const noexcept {
+				return status.code != 200;
+			}
+
 			/// @brief Check if the response is valid.
 			/// @return true is the response is valid.
 			virtual bool isValid() const noexcept;

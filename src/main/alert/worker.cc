@@ -38,7 +38,7 @@
 		cout << "worker\tProcessing alert " << url << endl;
 #endif // DEBUG
 
-		auto response = 
+		auto response =
 			Udjat::URL(url.c_str())
 			.call(
 				alert.action(),
@@ -46,7 +46,11 @@
 				payload.c_str()
 			);
 
-			
+		if(response->failed()) {
+			cout << alert.name() << "\t" << url << " " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
+			throw runtime_error(response->getStatusMessage());
+		}
+
 	}
 
  }

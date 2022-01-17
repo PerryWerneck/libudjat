@@ -58,6 +58,10 @@
 		/// @brief Emit pending alerts.
 		void emit() noexcept;
 
+		/// @brief Reset update timer.
+		/// @param seconds Seconds for the next 'emit()'.
+		void reset(time_t seconds) noexcept;
+
 	public:
 		static Controller & getInstance();
 		~Controller();
@@ -65,6 +69,9 @@
 		void activate(Alert *alert);
 		void activate(Alert *alert, const string &payload);
 		void deactivate(Alert *alert);
+
+		/// @brief Update timer;
+		void refresh() noexcept;
 
 	};
 

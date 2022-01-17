@@ -137,6 +137,8 @@
 			activations.next = time(0) + timers.interval;
 		}
 
+		Controller::getInstance().refresh();
+
 	}
 
 	void Alert::emit(const Alert::PrivateData &data) noexcept {
@@ -182,7 +184,6 @@
 
 			running = 0;
 			next();
-
 		});
 
 	}

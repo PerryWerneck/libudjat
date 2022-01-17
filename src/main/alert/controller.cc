@@ -59,52 +59,86 @@
 		});
 	}
 
+	void Alert::Controller::reset(time_t seconds) noexcept {
+
+		if(!seconds) {
+			seconds = 1;
+		}
+
+#ifdef DEBUG
+			cout << "alert\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
+#endif // DEBUG
+
+		MainLoop &mainloop = MainLoop::getInstance();
+
+		lock_guard<mutex> lock(guard);
+		if(alerts.empty()) {
+
+			cout << "alerts\tStopping alert controller" << endl;
+			mainloop.remove(this);
+
+		} else {
+
+			if(!mainloop.reset(this,seconds*1000)) {
+				cout << "alerts\tStarting alert controller" << endl;
+				mainloop.insert(this,seconds*1000,[this]() {
+					emit();
+					return true;
+				});
+			}
+
+		}
+
+	}
+
+	void Alert::Controller::refresh() noexcept {
+
+		time_t now = time(0);
+		time_t next = now + 600;
+
+		{
+			lock_guard<mutex> lock(guard);
+			for(auto active = alerts.begin(); active != alerts.end(); active++) {
+
+				if(active->alert) {
+					if(active->alert->activations.next > now) {
+						next = min(next,active->alert->activations.next);
+					} else {
+						next = now+2;
+					}
+				}
+			}
+		}
+
+		reset(next-now);
+
+	}
+
 	void Alert::Controller::emit() noexcept {
 
 		ThreadPool::getInstance().push([this]() {
 
-			lock_guard<mutex> lock(guard);
 			time_t now = time(0);
 			time_t next = now + 600;
-			alerts.remove_if([now,&next](const auto &active){
-
-				if(!(active.alert && active.alert->activations.next))
-					// No alert or no next, remove from list.
-					return true;
-
-				if(active.alert->activations.next <= now) {
-					// Timer has expired, emit action.
-					active.alert->emit(active);
-				}
-
-				next = min(next,active.alert->activations.next);
-				return false;
-			});
-
-#ifdef DEBUG
-			cout << "alert\tNext check scheduled to " << TimeStamp(next) << endl;
-#endif // DEBUG
 			{
-				MainLoop &mainloop = MainLoop::getInstance();
-				if(alerts.empty()) {
+				lock_guard<mutex> lock(guard);
+				alerts.remove_if([now,&next](const auto &active){
 
-					cout << "alerts\tStopping alert controller" << endl;
-					mainloop.remove(this);
+					if(!(active.alert && active.alert->activations.next))
+						// No alert or no next, remove from list.
+						return true;
 
-				} else {
-
-					unsigned long mseconds = max(1UL, (unsigned long) (next - time(0))) * 1000;
-					if(!mainloop.reset(this,mseconds)) {
-						cout << "alerts\tStarting alert controller" << endl;
-						mainloop.insert(this,mseconds,[this]() {
-							emit();
-							return true;
-						});
+					if(active.alert->activations.next <= now) {
+						// Timer has expired, emit action.
+						active.alert->emit(active);
 					}
 
-				}
+					next = min(next,active.alert->activations.next);
+					return false;
+				});
 			}
 
+			reset(next-now);
 
 		});
 
