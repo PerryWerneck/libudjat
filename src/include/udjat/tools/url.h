@@ -332,6 +332,13 @@
 		/// @return The host response.
 		std::shared_ptr<URL::Response> call(const Method method = URL::Method::Get, const char *mimetype = nullptr, const char *payload = nullptr);
 
+		/// @brief Call URL.
+		/// @param method Required method.
+		/// @param Mimetype Response mimetype
+		/// @param payload URL payload.
+		/// @return The host response.
+		std::shared_ptr<URL::Response> call(const char *method, const char *mimetype = nullptr, const char *payload = nullptr);
+
 		/// @brief Get
 		std::shared_ptr<URL::Response> get(const char *mimetype = nullptr) const;
 

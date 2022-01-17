@@ -126,6 +126,10 @@
 			return settings.name;
 		}
 
+		inline const char * action() const noexcept {
+			return settings.action;
+		}
+
 		inline const char * url() const noexcept {
 			return settings.url;
 		}

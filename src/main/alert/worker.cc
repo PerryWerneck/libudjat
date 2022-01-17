@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/url.h>
 
  namespace Udjat {
 
@@ -37,6 +38,15 @@
 		cout << "worker\tProcessing alert " << url << endl;
 #endif // DEBUG
 
+		auto response = 
+			Udjat::URL(url.c_str())
+			.call(
+				alert.action(),
+				nullptr,
+				payload.c_str()
+			);
+
+			
 	}
 
  }

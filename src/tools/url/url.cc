@@ -218,6 +218,14 @@
 		return protocol->call(*this,method,mimetype,payload);
 	}
 
+	std::shared_ptr<URL::Response> URL::call(const char *mname, const char *mimetype, const char *payload) {
+		Method method(mname);
+#ifdef DEBUG
+		cout << "url\t" << mname << " " << *this << endl;
+#endif // DEBUG
+		return protocol->call(*this,method,mimetype,payload);
+	}
+
 	std::shared_ptr<URL::Response> URL::get(const char *mimetype) const {
 		return protocol->call(*this,URL::Method::Get,mimetype);
 	}

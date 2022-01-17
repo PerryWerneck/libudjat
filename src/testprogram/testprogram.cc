@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 
 	class Service : public SystemService, private RandomFactory {
 	private:
-		Alert alert{"test","http://localhost"};
+		Alert alert{"test","http://localhost/invalid"};
 
 	protected:
 		/// @brief Initialize service.
