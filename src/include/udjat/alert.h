@@ -55,7 +55,15 @@
 		struct {
 			size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
 			size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
-		} limits;
+		} retry;
+
+		/// @brief Alert activations.
+		struct {
+			time_t last = 0;
+			time_t next = 0;
+			unsigned int success = 0;
+			unsigned int failed = 0;
+		} activations;
 
 		/// @brief Alert timers.
 		struct {
@@ -69,8 +77,15 @@
 			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successfull activation.
 		} restart;
 
-		time_t last = 0;
-		time_t next = 0;
+		bool restarting = false;
+		time_t running = 0;
+
+		/// @brief Emit alert.
+		/// @return true if the alert is still valid.
+		bool emit() noexcept;
+
+		void checkForSleep(const char *msg) noexcept;
+		void next() noexcept;
 
 	public:
 		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = "") : settings(name,url,type,payload) {
@@ -79,11 +94,15 @@
 		Alert(const pugi::xml_node &node);
 		virtual ~Alert();
 
-		const char * url() const noexcept {
+		inline const char * name() const noexcept {
+			return settings.name;
+		}
+
+		inline const char * url() const noexcept {
 			return settings.url;
 		}
 
-		const char * payload() const noexcept {
+		inline const char * payload() const noexcept {
 			return settings.payload;
 		}
 

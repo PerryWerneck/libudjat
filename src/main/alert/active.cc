@@ -38,4 +38,5 @@
 		cout << name << "\tActivating alert " << url << endl;
 	}
 
+
  }

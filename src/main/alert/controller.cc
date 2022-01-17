@@ -56,24 +56,48 @@
 		});
 	}
 
+	void Alert::Controller::emit() noexcept {
+
+		ThreadPool::getInstance().push([this]() {
+
+			lock_guard<mutex> lock(guard);
+			time_t now = time(0);
+			time_t next = now + 600;
+			alerts.remove_if([now,&next](const Active &active){
+
+				if(!(active.alert && active.alert->activations.next))
+					// No alert or no next, remove from list.
+					return true;
+
+				if(active.alert->activations.next <= now) {
+					// Timer has expired, emit action.
+					if(!active.alert->emit()) {
+						return true;
+					}
+#ifdef DEBUG
+					cout << active.alert->name() << "\tNext activation scheduled to " << TimeStamp(active.alert->activations.next) << endl;
+#endif // DEBUG
+				}
+
+				next = min(next,active.alert->activations.next);
+				return false;
+			});
+
+#ifdef DEBUG
+			cout << "alert\tNext check scheduled to " << TimeStamp(next) << endl;
+#endif // DEBUG
+
+		});
+
+
+	}
+
 	void Alert::Controller::activate(Alert *alert) {
+
 		lock_guard<mutex> lock(guard);
-		alert->next = time(0) + alert->timers.start;
-
-		if(alerts.empty()) {
-
-			// No active alerts, insert alert and activate it.
-
-			alerts.emplace_back(alert);
-
-
-		} else {
-
-			// Already have active alerts, insert new alert and reset timer.
-
-			alerts.emplace_back(alert);
-
-		}
+		alert->activations.next = time(0) + alert->timers.start;
+		alerts.emplace_back(alert);
+		emit();
 
 	}
 

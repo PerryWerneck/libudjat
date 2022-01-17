@@ -45,6 +45,7 @@
 			string payload;
 
 			Active(Alert *alert);
+
 		};
 
 		/// @brief List of active workers.
@@ -53,8 +54,7 @@
 		Controller();
 
 		/// @brief Emit pending alerts.
-		/// @return Time (in seconds) for the next alert.
-		time_t emit() noexcept;
+		void emit() noexcept;
 
 	public:
 		static Controller & getInstance();

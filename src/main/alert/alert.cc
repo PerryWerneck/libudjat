@@ -41,17 +41,17 @@
 				);
 
 		// How many success emissions after deactivation or sleep?
-		limits.min =
+		retry.min =
 			Attribute(node,"min-retries")
 				.as_uint(
-					Config::Value<uint32_t>(section,"min-retries",limits.min)
+					Config::Value<uint32_t>(section,"min-retries",retry.min)
 				);
 
 		// How many retries (success+fails) after deactivation or sleep?
-		limits.max =
+		retry.max =
 			Attribute(node,"max-retries")
 				.as_uint(
-					Config::Value<uint32_t>(section,"max-retries",limits.max)
+					Config::Value<uint32_t>(section,"max-retries",retry.max)
 				);
 
 		// How many seconds to restart when failed?
@@ -80,6 +80,83 @@
 
 	void Alert::deactivate() {
 		Controller::getInstance().deactivate(this);
+	}
+
+	void Alert::checkForSleep(const char *msg) noexcept {
+
+		time_t rst = (activations.success ? restart.success : restart.failed);
+
+		if(rst) {
+			restarting = true;
+			activations.next = time(0) + rst;
+			clog
+				<< name() << "\t"
+				<< Logger::Message(
+						"{}, sleeping until {}",
+							msg,
+							TimeStamp(activations.next).to_string()
+					)
+				<< endl;
+
+		} else {
+			activations.next = 0;
+			clog
+				<< name()
+				<< Logger::Message(
+					"\t{}, stopping",
+							msg
+					)
+				<< endl;
+		}
+
+	}
+
+	void Alert::next() noexcept {
+
+		if(activations.success >= retry.min) {
+			checkForSleep("was sucessfull");
+		} else if( (activations.success + activations.failed) >= retry.max ) {
+			checkForSleep("reached the maximum number of emissions");
+		} else {
+			activations.next = time(0) + timers.interval;
+		}
+
+	}
+
+	bool Alert::emit() noexcept {
+
+		if(running) {
+			clog << name() << "\tIs active since " << TimeStamp(running) << endl;
+			activations.next = time(0) + timers.interval;
+			return true;
+		}
+
+		if(restarting) {
+			restarting = false;
+            cout << name() << "\tRestarting alert cycle" << endl;
+			activations.success = activations.failed = 0;
+		}
+
+		running = time(0);
+        activations.next = running + timers.interval;
+
+        try {
+
+			// Create and activate worker.
+
+#ifndef DEBUG
+			#error Still incomplete.
+			activations.sucess++;
+			running = 0;
+#endif // DEBUG
+
+        } catch(const std::exception &e) {
+			cerr << name() << "\tActivation failed: " << e.what() << endl;
+			activations.failed++;
+			running = 0;
+        }
+
+		return true;
 	}
 
  }
