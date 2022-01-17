@@ -57,34 +57,38 @@
 		return 0;
 	}
 
-	int SystemService::run(int argc, char **argv) {
+	void SystemService::usage(const char *appname) const noexcept {
+		cout 	<< "Usage: " << endl << "  " << appname << " [options]" << endl << endl
+				<< "  --core\tenable coredumps" << endl
+				<< "  --daemon\tRun " << appname << " service in the background" << endl
+				<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl
+				<< endl;
+	}
 
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-		static struct option options[] = {
-			{ "foreground",		no_argument,		0,	'f' },
-			{ "daemon",			no_argument,		0,	'd' },
-			{ "core",			optional_argument,	0,	'C' },
-			{ "help",			no_argument,		0,	'h' },
-			{ NULL }
-		};
-		#pragma GCC diagnostic pop
+	int SystemService::run(int argc, char **argv) {
 
 		auto appname = Application::Name::getInstance();
 		int rc = 0;
 
 		// Parse command line options.
 		{
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+			static struct option options[] = {
+				{ "foreground",		no_argument,		0,	'f' },
+				{ "daemon",			no_argument,		0,	'd' },
+				{ "core",			optional_argument,	0,	'C' },
+				{ "help",			no_argument,		0,	'h' },
+				{ NULL }
+			};
+			#pragma GCC diagnostic pop
+
 			int long_index =0;
 			int opt;
 			while((opt = getopt_long(argc, argv, "fdC:h", options, &long_index )) != -1) {
 				switch(opt) {
 				case 'h':
-					cout 	<< "Usage: " << endl << "  " << argv[0] << " [options]" << endl << endl
-							<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl
-							<< "  --daemon\tRun " << appname << " service in the background" << endl
-							<< "  --core\tenable coredumps" << endl
-							<< endl;
+					usage(appname.c_str());
 					return 0;
 
 				case 'f':	// Run in foreground.
@@ -148,6 +152,9 @@
 						}
 					}
 					break;
+
+				default:
+					return -1;
 
 				}
 
