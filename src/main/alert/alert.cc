@@ -92,7 +92,7 @@
 			clog
 				<< name() << "\t"
 				<< Logger::Message(
-						"{}, sleeping until {}",
+						"Alert cycle {}, sleeping until {}",
 							msg,
 							TimeStamp(activations.next).to_string()
 					)
@@ -103,7 +103,7 @@
 			clog
 				<< name()
 				<< Logger::Message(
-					"\t{}, stopping",
+					"\tAlert cycle {}, stopping",
 							msg
 					)
 				<< endl;
@@ -144,16 +144,19 @@
 
 			// Create and activate worker.
 
-#ifndef DEBUG
-			#error Still incomplete.
-			activations.sucess++;
+#ifdef DEBUG
+			activations.success++;
 			running = 0;
+			next();
+#else
+			#error Still incomplete.
 #endif // DEBUG
 
         } catch(const std::exception &e) {
 			cerr << name() << "\tActivation failed: " << e.what() << endl;
 			activations.failed++;
 			running = 0;
+			next();
         }
 
 		return true;

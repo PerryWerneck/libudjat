@@ -32,18 +32,11 @@
 	}
 
 	Alert::Controller::Controller() {
-
-		/*
-		MainLoop::getInstance().insert(this,60000L,[]() {
-
-
-			return true;
-		})
-		*/
-
 	}
 
 	Alert::Controller::~Controller() {
+		lock_guard<mutex> lock(guard);
+		MainLoop::getInstance().remove(this);
 	}
 
 	void Alert::Controller::deactivate(Alert *alert) {
@@ -86,6 +79,27 @@
 #ifdef DEBUG
 			cout << "alert\tNext check scheduled to " << TimeStamp(next) << endl;
 #endif // DEBUG
+			{
+				MainLoop &mainloop = MainLoop::getInstance();
+				if(alerts.empty()) {
+
+					cout << "alerts\tStopping alert controller" << endl;
+					mainloop.remove(this);
+
+				} else {
+
+					unsigned long mseconds = max(1UL, (unsigned long) (next - time(0))) * 1000;
+					if(!mainloop.reset(this,mseconds)) {
+						cout << "alerts\tStarting alert controller" << endl;
+						mainloop.insert(this,mseconds,[this]() {
+							emit();
+							return true;
+						});
+					}
+
+				}
+			}
+
 
 		});
 

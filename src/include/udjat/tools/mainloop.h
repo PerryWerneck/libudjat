@@ -172,7 +172,8 @@ namespace Udjat {
 		/// @brief Reset timer to new interval.
 		/// @param id		Timer id.
 		/// @param interval	Timer interval on miliseconds.
-		void reset(const void *id, unsigned long interval);
+		/// @param true if the timer exists.
+		bool reset(const void *id, unsigned long interval);
 
 		/// @brief Remove socket/file/timer/module from the list of event sources.
 		void remove(const void *id);
