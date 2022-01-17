@@ -18,31 +18,25 @@
  */
 
  #include "private.h"
- #include <udjat.h>
- #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
 
-	static void expander(string &text) {
-		expand(text, [](const char *key){
-			if(!strcasecmp(key,"timestamp")) {
-				return TimeStamp().to_string(TIMESTAMP_FORMAT_JSON);
-			}
-			return string{"${}"};
-		});
+	Alert::Worker::Worker(const char *n, const ModuleInfo *i) : name(n), info(i) {
+		// TODO: Insert in controller
 	}
 
-	Alert::PrivateData::PrivateData(Alert *a, const string &p) : alert(a), name(alert->settings.name), url(alert->url()), payload(p) {
-		expander(url);
-		expander(payload);
-		cout << name << "\tActivating alert " << url << endl;
+	Alert::Worker::~Worker() {
+		// TODO: Remove from controller.
 	}
 
-	Alert::PrivateData::PrivateData(Alert *a) : alert(a), name(alert->settings.name), url(alert->url()), payload(alert->payload()) {
-		expander(url);
-		expander(payload);
-		cout << name << "\tActivating alert " << url << endl;
+	Alert::Worker::Worker(const char *n) : Worker(n,nullptr) {
 	}
 
+	void Alert::Worker::send(const Alert &alert, const string &url, const string &payload) const {
+#ifdef DEBUG
+		cout << "worker\tProcessing alert " << url << endl;
+#endif // DEBUG
+
+	}
 
  }

@@ -30,7 +30,37 @@
 		class Controller;
 		friend class Controller;
 
+		class PrivateData;
+
+		void emit(const PrivateData &priv) noexcept;
+		void checkForSleep(const char *msg) noexcept;
+		void next() noexcept;
+
 	public:
+
+		/// @brief Alert worker.
+		class UDJAT_API Worker {
+		private:
+			const char *name = "";
+			friend class Controller;
+
+			constexpr Worker() {
+			}
+
+		protected:
+
+			/// @brief Worker module info.
+			const ModuleInfo *info = nullptr;
+
+		public:
+			Worker(const char *name);
+			Worker(const char *name, const ModuleInfo *info);
+
+			virtual ~Worker();
+
+			virtual void send(const Alert &alert, const std::string &url, const std::string &payload) const;
+
+		};
 
 		/// @brief Alert settings
 		struct Settings {
@@ -51,6 +81,9 @@
 		/// @brief Alert settings.
 		Settings settings;
 
+		/// @brief Alert worker.
+		const Worker *worker = nullptr;
+
 		/// @brief Alert limits.
 		struct {
 			size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
@@ -69,25 +102,20 @@
 		struct {
 			time_t start = 0;			///< @brief Seconds to wait before first activation.
 			time_t interval = 60;		///< @brief Seconds to wait on every try.
+			time_t busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
 		} timers;
 
 		/// @brief Restart timers.
 		struct {
 			time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successfull activation.
+			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successful activation.
 		} restart;
 
 		bool restarting = false;
 		time_t running = 0;
 
-		/// @brief Emit alert.
-		/// @return true if the alert is still valid.
-		bool emit() noexcept;
-
-		void checkForSleep(const char *msg) noexcept;
-		void next() noexcept;
-
 	public:
+
 		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = "") : settings(name,url,type,payload) {
 		}
 
@@ -106,6 +134,7 @@
 			return settings.payload;
 		}
 
+		void activate(const std::string &payload);
 		void activate();
 		void deactivate();
 

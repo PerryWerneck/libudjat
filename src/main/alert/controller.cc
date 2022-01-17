@@ -25,6 +25,14 @@
 
 	mutex Alert::Controller::guard;
 
+	static const Udjat::ModuleInfo moduleinfo {
+		PACKAGE_NAME,									// The module name.
+		"Alert controller",			 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
+
 	Alert::Controller & Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
 		static Controller instance;
@@ -32,6 +40,8 @@
 	}
 
 	Alert::Controller::Controller() {
+		Worker::info = &moduleinfo;
+		Worker::name = "default";
 	}
 
 	Alert::Controller::~Controller() {
@@ -41,7 +51,7 @@
 
 	void Alert::Controller::deactivate(Alert *alert) {
 		lock_guard<mutex> lock(guard);
-		alerts.remove_if([alert](const Active &active){
+		alerts.remove_if([alert](const auto &active){
 			if(active.alert != alert)
 				return false;
 			cout << active.name << "\tDeactivating alert " << active.url << endl;
@@ -56,7 +66,7 @@
 			lock_guard<mutex> lock(guard);
 			time_t now = time(0);
 			time_t next = now + 600;
-			alerts.remove_if([now,&next](const Active &active){
+			alerts.remove_if([now,&next](const auto &active){
 
 				if(!(active.alert && active.alert->activations.next))
 					// No alert or no next, remove from list.
@@ -64,12 +74,7 @@
 
 				if(active.alert->activations.next <= now) {
 					// Timer has expired, emit action.
-					if(!active.alert->emit()) {
-						return true;
-					}
-#ifdef DEBUG
-					cout << active.alert->name() << "\tNext activation scheduled to " << TimeStamp(active.alert->activations.next) << endl;
-#endif // DEBUG
+					active.alert->emit(active);
 				}
 
 				next = min(next,active.alert->activations.next);
@@ -109,10 +114,22 @@
 	void Alert::Controller::activate(Alert *alert) {
 
 		lock_guard<mutex> lock(guard);
+
+		if(!alert->worker) {
+			alert->worker = this;
+		}
+
 		alert->activations.next = time(0) + alert->timers.start;
 		alerts.emplace_back(alert);
 		emit();
 
+	}
+
+	void Alert::Controller::activate(Alert *alert, const string &payload) {
+		lock_guard<mutex> lock(guard);
+		alert->activations.next = time(0) + alert->timers.start;
+		alerts.emplace_back(alert,payload);
+		emit();
 	}
 
 

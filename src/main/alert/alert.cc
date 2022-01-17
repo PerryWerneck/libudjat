@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/threadpool.h>
 
  namespace Udjat {
 
@@ -38,6 +39,13 @@
 			Attribute(node,"delay-before-retry")
 				.as_uint(
 					Config::Value<uint32_t>(section,"delay-before-retry",timers.interval)
+				);
+
+		// Seconds to wait if busy.
+		timers.busy =
+			Attribute(node,"delay-when-busy")
+				.as_uint(
+					Config::Value<uint32_t>(section,"delay-when-busy",timers.busy)
 				);
 
 		// How many success emissions after deactivation or sleep?
@@ -71,11 +79,19 @@
 	}
 
 	Alert::~Alert() {
+
+		if(running) {
+			cerr << name() << "Critical error: Deleting an active alert" << endl;
+		}
 		deactivate();
 	}
 
 	void Alert::activate() {
 		Controller::getInstance().activate(this);
+	}
+
+	void Alert::activate(const string &payload) {
+		Controller::getInstance().activate(this,payload);
 	}
 
 	void Alert::deactivate() {
@@ -123,12 +139,11 @@
 
 	}
 
-	bool Alert::emit() noexcept {
+	void Alert::emit(const Alert::PrivateData &data) noexcept {
 
 		if(running) {
 			clog << name() << "\tIs active since " << TimeStamp(running) << endl;
-			activations.next = time(0) + timers.interval;
-			return true;
+			activations.next = time(0) + timers.busy;
 		}
 
 		if(restarting) {
@@ -137,29 +152,39 @@
 			activations.success = activations.failed = 0;
 		}
 
+		if(!worker) {
+			worker = &Controller::getInstance();
+			clog << settings.name << "\tNo worker, using the default one" << endl;
+		}
+
 		running = time(0);
-        activations.next = running + timers.interval;
+        activations.next = running + timers.busy;
 
-        try {
+		// Get a copy of the formatted private data, just in case of it changes.
+		Alert::PrivateData *dyndata = new Alert::PrivateData(data);
 
-			// Create and activate worker.
+        ThreadPool::getInstance().push([this,dyndata]{
 
-#ifdef DEBUG
-			activations.success++;
+			try {
+
+				worker->send(*this, dyndata->url,dyndata->payload);
+				activations.success++;
+
+			} catch(const std::exception &e) {
+				cerr << name() << "\tActivation failed: " << e.what() << endl;
+				activations.failed++;
+			} catch(...) {
+				cerr << name() << "\tUnexpected error emiting alert" << endl;
+				activations.failed++;
+			}
+
+			delete dyndata;
+
 			running = 0;
 			next();
-#else
-			#error Still incomplete.
-#endif // DEBUG
 
-        } catch(const std::exception &e) {
-			cerr << name() << "\tActivation failed: " << e.what() << endl;
-			activations.failed++;
-			running = 0;
-			next();
-        }
+		});
 
-		return true;
 	}
 
  }

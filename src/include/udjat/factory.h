@@ -27,12 +27,12 @@
 	class UDJAT_API Factory {
 	private:
 		class Controller;
-		const char *name;
+		const char *name = "";
 
 	protected:
 
 		/// @brief Factory module info.
-		const ModuleInfo *info;
+		const ModuleInfo *info = nullptr;
 
 		/// @brief Agent type (to build agents from the 'type=' attribute on XML).
 		const char *agentType = nullptr;
@@ -40,15 +40,14 @@
 	public:
 		Factory(const char *name);
 		Factory(const char *name, const ModuleInfo *info);
-
-		inline const char * getName() const {
-			return name;
-		}
-
 		Factory(const Quark &name, const ModuleInfo *info) : Factory(name.c_str(),info) {
 		}
 
 		virtual ~Factory();
+
+		inline const char * getName() const {
+			return name;
+		}
 
 		static void getInfo(Response &response);
 

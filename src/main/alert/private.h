@@ -31,25 +31,27 @@
 
  namespace Udjat {
 
+	/// @brief Alert private data.
+	struct Alert::PrivateData {
+		Alert *alert;
+		const char *name;
+		string url;
+		string payload;
+
+		PrivateData(Alert *alert);
+		PrivateData(Alert *alert, const string &payload);
+
+	};
+
 	/// @brief Singleton for alert emission.
-	class Alert::Controller {
+	class Alert::Controller : public Alert::Worker {
 	private:
 
 		/// @brief Mutex for serialization
 		static mutex guard;
 
-		struct Active {
-			Alert *alert;
-			const char *name;
-			string url;
-			string payload;
-
-			Active(Alert *alert);
-
-		};
-
 		/// @brief List of active workers.
-		list<Active> alerts;
+		list<Alert::PrivateData> alerts;
 
 		Controller();
 
@@ -61,6 +63,7 @@
 		~Controller();
 
 		void activate(Alert *alert);
+		void activate(Alert *alert, const string &payload);
 		void deactivate(Alert *alert);
 
 	};
