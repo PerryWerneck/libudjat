@@ -65,6 +65,7 @@
 			{ "foreground",		no_argument,		0,	'f' },
 			{ "daemon",			no_argument,		0,	'd' },
 			{ "core",			optional_argument,	0,	'C' },
+			{ "help",			no_argument,		0,	'h' },
 			{ NULL }
 		};
 		#pragma GCC diagnostic pop
@@ -76,8 +77,16 @@
 		{
 			int long_index =0;
 			int opt;
-			while((opt = getopt_long(argc, argv, "fdC:", options, &long_index )) != -1) {
+			while((opt = getopt_long(argc, argv, "fdC:h", options, &long_index )) != -1) {
 				switch(opt) {
+				case 'h':
+					cout 	<< "Usage: " << endl << "  " << argv[0] << " [options]" << endl << endl
+							<< "  --foreground\tRun in foreground" << endl
+							<< "  --daemon\tFork to background" << endl
+							<< "  --core=1\tenable coredumps" << endl
+							<< endl;
+					return 0;
+
 				case 'f':	// Run in foreground.
 					try {
 
