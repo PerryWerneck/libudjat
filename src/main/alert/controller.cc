@@ -18,92 +18,20 @@
  */
 
  #include "private.h"
- #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
- #include <udjat/request.h>
- #include <udjat/factory.h>
 
  namespace Udjat {
 
 	mutex Alert::Controller::guard;
 
 	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,								// The module name.
-		"Alert Controller",							// The module description.
-		PACKAGE_VERSION "." PACKAGE_RELEASE,		// The module version.
-#ifdef PACKAGE_URL
-		PACKAGE_URL,
-#else
-		"",
-#endif // PACKAGE_URL
-#ifdef PACKAGE_BUG_REPORT
-		PACKAGE_BUG_REPORT
-#else
-		""
-#endif // PACKAGE_BUG_REPORT
+		PACKAGE_NAME,									// The module name.
+		"Alert controller",			 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
-
-	Alert::Controller::Controller() : Worker("alerts",&moduleinfo) {
-
-		MainLoop::getInstance().insert(this, 1000, [this](){
-			ThreadPool::getInstance().push([this]() {
-				onTimer(time(0));
-			});
-			return true;
-		});
-
-	}
-
-	Alert::Controller::~Controller() {
-		MainLoop::getInstance().remove(this);
-
-		// Clear events and wait for all tasks to complete.
-		events.clear();
-		ThreadPool::getInstance().wait();
-
-	}
-
-	void Alert::Controller::onTimer(time_t now) noexcept {
-
-		lock_guard<mutex> lock(guard);
-
-		time_t next = now+600;
-		events.remove_if([now,&next](std::shared_ptr<Alert::Event> event){
-
-			// Event was disable, remove it.
-
-			if(!event->parent) {
-				clog << "Event '" << event->getName() << "' has lost his alert, disabling it" << endl;
-				return true;
-			}
-
-			if(event->alerts.next) {
-
-				// Event is active.
-
-				if(event->alerts.next > now) {
-
-					next = std::min(next,event->alerts.next);
-
-				} else {
-
-					// Enqueue event.
-					Event::enqueue(event);
-
-					if(event->alerts.next) {
-						next = std::min(next,event->alerts.next);
-					}
-
-				}
-
-			}
-
-			return event->alerts.next == 0;
-
-		});
-
-	}
 
 	Alert::Controller & Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
@@ -111,76 +39,132 @@
 		return instance;
 	}
 
-	bool Alert::Controller::work(Request &request, Response &response) const {
+	Alert::Controller::Controller() {
+		Worker::info = &moduleinfo;
+		Worker::name = "default";
+	}
 
-		if(request != Request::Type::Get)
-			return false;
+	Alert::Controller::~Controller() {
+		lock_guard<mutex> lock(guard);
+		MainLoop::getInstance().remove(this);
+	}
 
-		response.reset(Value::Array);
+	void Alert::Controller::deactivate(Alert *alert) {
+		lock_guard<mutex> lock(guard);
+		alerts.remove_if([alert](const auto &active){
+			if(active.alert != alert)
+				return false;
+			cout << active.name << "\tDeactivating alert " << active.url << endl;
+			return true;
+		});
+	}
 
-		for(auto event : events) {
-			event->get(response.append(Value::Object));
+	void Alert::Controller::reset(time_t seconds) noexcept {
+
+		if(!seconds) {
+			seconds = 1;
 		}
 
-		return true;
+#ifdef DEBUG
+			cout << "alert\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
+#endif // DEBUG
+
+		MainLoop &mainloop = MainLoop::getInstance();
+
+		lock_guard<mutex> lock(guard);
+		if(alerts.empty()) {
+
+			cout << "alerts\tStopping alert controller" << endl;
+			mainloop.remove(this);
+
+		} else {
+
+			if(!mainloop.reset(this,seconds*1000)) {
+				cout << "alerts\tStarting alert controller" << endl;
+				mainloop.insert(this,seconds*1000,[this]() {
+					emit();
+					return true;
+				});
+			}
+
+		}
 
 	}
 
-	void Alert::Controller::insert(Alert *alert, std::shared_ptr<Alert::Event> event) {
+	void Alert::Controller::refresh() noexcept {
 
-		event->parent = alert;
-
-		if(alert->retry.start) {
-			event->alerts.next = (time(0) + alert->retry.start);
-		} else {
-			Event::enqueue(event);
-		}
+		time_t now = time(0);
+		time_t next = now + 600;
 
 		{
 			lock_guard<mutex> lock(guard);
-			events.push_back(event);
+			for(auto active = alerts.begin(); active != alerts.end(); active++) {
+
+				if(active->alert) {
+					if(active->alert->activations.next > now) {
+						next = min(next,active->alert->activations.next);
+					} else {
+						next = now+2;
+					}
+				}
+			}
 		}
 
+		reset(next-now);
+
 	}
 
-	void Alert::Controller::remove(const Alert *alert) {
-		lock_guard<mutex> lock(guard);
-		events.remove_if([alert](std::shared_ptr<Alert::Event> event){
-			return event->parent == alert;
+	void Alert::Controller::emit() noexcept {
+
+		ThreadPool::getInstance().push([this]() {
+
+			time_t now = time(0);
+			time_t next = now + 600;
+			{
+				lock_guard<mutex> lock(guard);
+				alerts.remove_if([now,&next](const auto &active){
+
+					if(!(active.alert && active.alert->activations.next))
+						// No alert or no next, remove from list.
+						return true;
+
+					if(active.alert->activations.next <= now) {
+						// Timer has expired, emit action.
+						active.alert->emit(active);
+					}
+
+					next = min(next,active.alert->activations.next);
+					return false;
+				});
+			}
+
+			reset(next-now);
+
 		});
-	}
 
-	void Alert::Controller::remove(const Alert::Event *ev) {
-		lock_guard<mutex> lock(guard);
-		events.remove_if([ev](std::shared_ptr<Alert::Event> event){
-			return event.get() == ev;
-		});
-	}
-
-	string Alert::Controller::getType(const pugi::xml_node &node) {
-
-		string type =
-			Attribute(node,"type",false)
-				.as_string(
-					Config::Value<string>("alert-default","type","default").c_str()
-				);
-
-		return type;
 
 	}
 
-	void Alert::Controller::getInfo(Response &response) noexcept {
+	void Alert::Controller::activate(Alert *alert) {
+
 		lock_guard<mutex> lock(guard);
 
-		response.reset(Value::Array);
-
-		for(auto event : this->events) {
-
-			Value &value = response.append(Value::Object);
-			event->get(value);
-
+		if(!alert->worker) {
+			alert->worker = this;
 		}
 
+		alert->activations.next = time(0) + alert->timers.start;
+		alerts.emplace_back(alert);
+		emit();
+
 	}
+
+	void Alert::Controller::activate(Alert *alert, const string &payload) {
+		lock_guard<mutex> lock(guard);
+		alert->activations.next = time(0) + alert->timers.start;
+		alerts.emplace_back(alert,payload);
+		emit();
+	}
+
 
  }

@@ -23,6 +23,7 @@
 	#include <udjat/tools/logger.h>
 	#include <udjat/request.h>
 	#include <udjat/tools/xml.h>
+	#include <udjat/alert.h>
 	#include <udjat/tools/converters.h>
 	#include <udjat/tools/value.h>
 	#include <cstring>
@@ -67,9 +68,6 @@
 				} state;
 
 				std::vector<std::shared_ptr<Agent>> children;
-
-				/// @brief Agent alerts.
-				std::vector<std::shared_ptr<Alert>> alerts;
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
@@ -175,10 +173,6 @@
 
 				/// @brief true if the agent has states.
 				virtual bool hasStates() const noexcept;
-
-				inline void push_back(std::shared_ptr<Alert> alert) {
-					alerts.push_back(alert);
-				}
 
 				inline const char * getUri() const noexcept {
 					return uri;

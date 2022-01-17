@@ -23,6 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
+ #include <udjat/alert.h>
  #include <iostream>
  #include <memory>
 
@@ -67,6 +68,9 @@ int main(int argc, char **argv) {
 	};
 
 	class Service : public SystemService, private RandomFactory {
+	private:
+		Alert alert{"test","http://localhost/invalid"};
+
 	protected:
 		/// @brief Initialize service.
 		void init() override {
@@ -75,19 +79,22 @@ int main(int argc, char **argv) {
 
 			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/info/factory.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+			cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+			cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
 
 			for(auto agent : *root) {
-					cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+				cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 			}
+
+			alert.activate();
 
 		}
 
 		/// @brief Deinitialize service.
 		void deinit() override {
 			cout << Application::Name() << "\tDeinitializing" << endl;
+			alert.deactivate();
 		}
 
 	public:

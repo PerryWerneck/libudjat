@@ -155,6 +155,7 @@ namespace Udjat {
 
 		}
 
+		/*
 		// Notify alerts.
 		for(auto alert : alerts) {
 
@@ -173,6 +174,7 @@ namespace Udjat {
 			}
 
 		}
+		*/
 
 		return true;
 

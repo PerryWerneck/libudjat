@@ -100,6 +100,11 @@
 			/// @brief Run function, capture exceptions.
 			void call(std::function<void()> method) noexcept;
 
+			/// @brief Check if the query has failed.
+			inline bool failed() const noexcept {
+				return status.code != 200;
+			}
+
 			/// @brief Check if the response is valid.
 			/// @return true is the response is valid.
 			virtual bool isValid() const noexcept;
@@ -331,6 +336,13 @@
 		/// @param payload URL payload.
 		/// @return The host response.
 		std::shared_ptr<URL::Response> call(const Method method = URL::Method::Get, const char *mimetype = nullptr, const char *payload = nullptr);
+
+		/// @brief Call URL.
+		/// @param method Required method.
+		/// @param Mimetype Response mimetype
+		/// @param payload URL payload.
+		/// @return The host response.
+		std::shared_ptr<URL::Response> call(const char *method, const char *mimetype = nullptr, const char *payload = nullptr);
 
 		/// @brief Get
 		std::shared_ptr<URL::Response> get(const char *mimetype = nullptr) const;

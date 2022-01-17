@@ -111,7 +111,7 @@
 
 	}
 
-	void MainLoop::reset(const void *id, unsigned long interval) {
+	bool MainLoop::reset(const void *id, unsigned long interval) {
 
 		lock_guard<mutex> lock(guard);
 		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
@@ -119,10 +119,11 @@
 			if(timer->id == id) {
 				timer->reset(interval);
 				wakeup();
-				break;
+				return true;
 			}
 
 		}
+		return false;
 	}
 
 

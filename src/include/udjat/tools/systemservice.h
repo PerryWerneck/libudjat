@@ -38,6 +38,9 @@
 
 #endif // _WIN32
 
+		/// @brief Send usage help to std::cout
+		virtual void usage(const char *appname) const noexcept;
+
 	public:
 		SystemService();
 		virtual ~SystemService();

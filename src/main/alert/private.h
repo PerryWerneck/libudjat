@@ -21,96 +21,59 @@
 
  #include <config.h>
  #include <udjat/tools/quark.h>
- #include <udjat/agent.h>
- #include <udjat/state.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/alert.h>
  #include <udjat/worker.h>
- #include <udjat/factory.h>
- #include <udjat/tools/url.h>
- #include <list>
  #include <mutex>
+ #include <list>
 
  using namespace std;
 
  namespace Udjat {
 
-	class Alert::Controller : private Worker {
-	private:
-		Controller();
+	/// @brief Alert private data.
+	struct Alert::PrivateData {
+		Alert *alert;
+		const char *name;
+		string url;
+		string payload;
 
-		/// @brief Mutex for serialization.
+		PrivateData(Alert *alert);
+		PrivateData(Alert *alert, const string &payload);
+
+	};
+
+	/// @brief Singleton for alert emission.
+	class Alert::Controller : public Alert::Worker {
+	private:
+
+		/// @brief Mutex for serialization
 		static mutex guard;
 
-		/// @brief List of active alerts.
-		list<std::shared_ptr<Alert::Event>> events;
+		/// @brief List of active workers.
+		list<Alert::PrivateData> alerts;
 
-		/// @brief Build alert from XML
-		shared_ptr<Alert> build(const pugi::xml_node &node);
+		Controller();
 
-		static const string getFactoryNameByType(const pugi::xml_node &node);
+		/// @brief Emit pending alerts.
+		void emit() noexcept;
 
-		void onTimer(time_t now) noexcept;
+		/// @brief Reset update timer.
+		/// @param seconds Seconds for the next 'emit()'.
+		void reset(time_t seconds) noexcept;
 
 	public:
 		static Controller & getInstance();
 		~Controller();
 
-		static string getType(const pugi::xml_node &node);
+		void activate(Alert *alert);
+		void activate(Alert *alert, const string &payload);
+		void deactivate(Alert *alert);
 
-		bool work(Request &request, Response &response) const override;
-
-		void getInfo(Response &response) noexcept;
-
-		/// @brief Activate alert;
-		void insert(Alert *alert, std::shared_ptr<Alert::Event> event);
-
-		/// @brief Deactivate alert.
-		void remove(const Alert *alert);
-
-		/// @brief Remove event.
-		void remove(const Alert::Event *event);
+		/// @brief Update timer;
+		void refresh() noexcept;
 
 	};
-
-	class URLAlert : public Udjat::Alert {
-	private:
-
-		/// @brief The URL request method.
-		URL::Method method;
-
-		/// @brief The URL.
-		Quark url;
-
-		/// @brief Connection timeout.
-		time_t timeout = 60;
-
-		/// @brief Mimetype.
-		string mimetype = "application/json; charset=utf-8";
-
-	public:
-
-		URLAlert(const pugi::xml_node &node);
-		virtual ~URLAlert();
-
-		void activate(const Abstract::Agent &agent, const Abstract::State &state) override;
-
-	};
-
-	class ScriptAlert : public Udjat::Alert {
-	private:
-
-		/// @brief The command line
-		std::string command;
-
-	public:
-
-		ScriptAlert(const pugi::xml_node &node);
-		virtual ~ScriptAlert();
-
-		void activate(const Abstract::Agent &agent, const Abstract::State &state) override;
-
-	};
-
 
  }
 

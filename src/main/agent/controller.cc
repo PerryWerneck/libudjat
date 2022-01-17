@@ -280,9 +280,9 @@ namespace Udjat {
 			return;
 		}
 
-#ifdef DEBUG
-		cout << "Checking for updates" << endl;
-#endif // DEBUG
+//#ifdef DEBUG
+//		cout << "Checking for updates" << endl;
+//#endif // DEBUG
 
 		// Check for updates on another thread; we'll change the
 		// timer and it has a mutex lock while running the callback.
