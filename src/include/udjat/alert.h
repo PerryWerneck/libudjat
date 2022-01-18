@@ -121,6 +121,8 @@
 		Alert(const pugi::xml_node &node);
 		~Alert();
 
+		static void initialize();
+
 		inline const char * name() const noexcept {
 			return settings.name;
 		}

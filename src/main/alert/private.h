@@ -25,6 +25,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/alert.h>
  #include <udjat/worker.h>
+ #include <udjat/factory.h>
  #include <mutex>
  #include <list>
  #include <iostream>
@@ -36,7 +37,7 @@
 	/// @brief Alert private data.
 	struct Alert::PrivateData {
 		Alert *alert;
-		const char *name;
+		string name;
 		string url;
 		string payload;
 
@@ -46,7 +47,7 @@
 	};
 
 	/// @brief Singleton for alert emission.
-	class Alert::Controller : public Alert::Worker {
+	class Alert::Controller : public Alert::Worker, public Udjat::Factory {
 	private:
 
 		/// @brief Mutex for serialization
@@ -85,6 +86,9 @@
 
 		/// @brief Get workers.
 		const Alert::Worker * getWorker(const char *name) const;
+
+		/// @brief Create State child.
+		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 
 	};
 

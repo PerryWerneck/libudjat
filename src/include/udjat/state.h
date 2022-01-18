@@ -159,7 +159,9 @@
 				virtual std::string & expand(std::string &text) const;
 
 				/// @brief Insert Alert.
-				void append_alert(const pugi::xml_node &node);
+				inline void append_alert(const pugi::xml_node &node) {
+					alerts.emplace_back(node);
+				}
 
 			};
 

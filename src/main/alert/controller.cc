@@ -20,6 +20,7 @@
  #include "private.h"
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/state.h>
  #include <iostream>
 
  using namespace std;
@@ -42,12 +43,18 @@
 		return instance;
 	}
 
-	Alert::Controller::Controller() {
+	Alert::Controller::Controller() : Udjat::Factory("alert",&moduleinfo) {
 		Worker::info = &moduleinfo;
 		Worker::name = "default";
+		cout << "alerts\tInitializing" << endl;
+
+		// Force creation of the default mainloop.
+		MainLoop::getInstance();
+
 	}
 
 	Alert::Controller::~Controller() {
+		cout << "alerts\tDeinitializing" << endl;
 		lock_guard<mutex> lock(guard);
 		MainLoop::getInstance().remove(this);
 	}
@@ -188,5 +195,11 @@
 		alerts.emplace_back(alert,url,payload);
 		emit();
 	}
+
+	bool Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
+		parent.append_alert(node);
+		return true;
+	}
+
 
  }

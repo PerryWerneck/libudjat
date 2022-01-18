@@ -23,7 +23,13 @@
 
  namespace Udjat {
 
+	void Alert::initialize() {
+		Controller::getInstance();
+	}
+
 	Alert::Alert(const pugi::xml_node &node) : settings(node) {
+
+		initialize();
 
 		const char *section = node.attribute("settings-from").as_string("alert-defaults");
 
@@ -89,10 +95,13 @@
 					Config::Value<uint32_t>(section,"restart-when-succeeded",restart.success)
 				);
 
+#ifdef DEBUG
+		cout << settings.name << "\tAlert created" << endl;
+#endif // DEBUG
+
 	}
 
 	Alert::~Alert() {
-
 		if(running) {
 			cerr << name() << "Critical error: Deleting an active alert" << endl;
 		}
