@@ -100,6 +100,9 @@
 				/// @return Value of 'changed'.
 				virtual bool updated(bool changed) noexcept;
 
+				/// @brief Level changed.
+				virtual void onLevelChange();
+
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
 				/// @brief name Allow parsing of agent name.

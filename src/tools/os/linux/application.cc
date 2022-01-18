@@ -17,7 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define _GNU_SOURCE
+ #ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+ #endif // !_GNU_SOURCE
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
