@@ -190,11 +190,11 @@
 				activations.success++;
 
 			} catch(const std::exception &e) {
-				cerr << name() << "\tActivation failed: " << e.what() << endl;
 				activations.failed++;
+				cerr << name() << "\tActivation " << (activations.failed + activations.success) << " failed: " << e.what() << endl;
 			} catch(...) {
-				cerr << name() << "\tUnexpected error emiting alert" << endl;
 				activations.failed++;
+				cerr << name() << "\tActivation " << (activations.failed + activations.success) << " failed: Unexpected error"  << endl;
 			}
 
 			delete dyndata;
