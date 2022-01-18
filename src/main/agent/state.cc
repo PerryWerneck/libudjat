@@ -90,15 +90,15 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::activate(Alert &alert) {
+	void Abstract::Agent::activate(std::shared_ptr<Alert> alert) const {
 
-		string url(alert.url());
+		string url(alert->url());
 		expand(url);
 
-		string payload(alert.payload());
+		string payload(alert->payload());
 		expand(payload);
 
-		alert.activate(url,payload);
+		Alert::activate(alert,url,payload);
 
 	}
 

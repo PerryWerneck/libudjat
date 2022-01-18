@@ -113,7 +113,7 @@ namespace Udjat {
 		agent.info("State '{}' was activated",name);
 #endif // DEBUG
 
-		for(auto alert = alerts.begin(); alert != alerts.end(); alert++) {
+		for(auto alert : alerts) {
 
 			string payload(alert->payload());
 			expand(payload);
@@ -123,7 +123,7 @@ namespace Udjat {
 			expand(url);
 			agent.expand(url);
 
-			alert->activate(url,payload);
+			Alert::activate(alert, url, payload);
 
 		}
 
@@ -134,8 +134,8 @@ namespace Udjat {
 		agent.info("State '{}' was deactivated",name);
 #endif // DEBUG
 
-		for(auto alert = alerts.begin(); alert != alerts.end(); alert++) {
-			alert->deactivate();
+		for(auto alert : alerts) {
+			Alert::deactivate(alert);
 		}
 
 	}

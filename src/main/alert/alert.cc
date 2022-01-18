@@ -102,26 +102,18 @@
 	}
 
 	Alert::~Alert() {
-		if(running) {
-			cerr << name() << "Critical error: Deleting an active alert" << endl;
-		}
-		deactivate();
 	}
 
-	void Alert::activate() {
-		Controller::getInstance().activate(this,settings.url,settings.payload);
+	void Alert::activate(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload) {
+		Controller::getInstance().insert(alert,url,payload);
 	}
 
-	void Alert::activate(const string &url, const string &payload) {
-		Controller::getInstance().activate(this,url.c_str(),payload.c_str());
+	void Alert::activate(std::shared_ptr<Alert> alert) {
+		Controller::getInstance().insert(alert,alert->settings.url,alert->settings.payload);
 	}
 
-	void Alert::activate(const string &payload) {
-		Controller::getInstance().activate(this,settings.url,payload.c_str());
-	}
-
-	void Alert::deactivate() {
-		Controller::getInstance().deactivate(this);
+	void Alert::deactivate(std::shared_ptr<Alert> alert) {
+		Controller::getInstance().remove(alert);
 	}
 
 	void Alert::checkForSleep(const char *msg) noexcept {

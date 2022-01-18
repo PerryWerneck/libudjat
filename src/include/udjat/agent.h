@@ -113,7 +113,7 @@
 				virtual bool activate(std::shared_ptr<State> state);
 
 				/// @brief Activate an alert.
-				void activate(Alert &alert);
+				void activate(std::shared_ptr<Alert> alert) const;
 
 				/// @brief Set failed state from known exception
 				void failed(const char *summary, const std::exception &e) noexcept;

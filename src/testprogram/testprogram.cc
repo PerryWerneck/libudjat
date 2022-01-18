@@ -69,9 +69,6 @@ int main(int argc, char **argv) {
 	};
 
 	class Service : public SystemService, private RandomFactory {
-	private:
-		Alert alert{"test","http://localhost/invalid"};
-
 	public:
 		/// @brief Initialize service.
 		void init() override {
@@ -90,19 +87,20 @@ int main(int argc, char **argv) {
 				cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 			}
 
+			/*
 			MainLoop::getInstance().insert(this,5000,[]() {
 				MainLoop::getInstance().quit();
 				return false;
 			});
+			*/
 
-			alert.activate();
+			Alert::activate(make_shared<Alert>("test","http://localhost/invalid"));
 
 		}
 
 		/// @brief Deinitialize service.
 		void deinit() override {
 			cout << Application::Name() << "\tDeinitializing" << endl;
-			alert.deactivate();
 		}
 
 		Service() = default;

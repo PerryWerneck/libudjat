@@ -119,7 +119,7 @@
 		}
 
 		Alert(const pugi::xml_node &node);
-		~Alert();
+		virtual ~Alert();
 
 		static void initialize();
 
@@ -139,10 +139,9 @@
 			return settings.payload;
 		}
 
-		void activate(const std::string &url, const std::string &payload);
-		void activate(const std::string &payload);
-		void activate();
-		void deactivate();
+		static void activate(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload);
+		static void activate(std::shared_ptr<Alert> alert);
+		static void deactivate(std::shared_ptr<Alert> alert);
 
 	};
 

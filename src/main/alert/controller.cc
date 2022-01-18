@@ -59,12 +59,12 @@
 		MainLoop::getInstance().remove(this);
 	}
 
-	void Alert::Controller::deactivate(Alert *alert) {
+	void Alert::Controller::remove(std::shared_ptr<Alert> alert) {
 		lock_guard<mutex> lock(guard);
 		alerts.remove_if([alert](const auto &active){
-			if(active.alert != alert)
+			if(active.alert.get() != alert.get())
 				return false;
-			cout << active.name << "\tDeactivating alert " << active.url << endl;
+			cout << active.name() << "\tDeactivating " << active.url << endl;
 			return true;
 		});
 	}
@@ -139,13 +139,12 @@
 			lock_guard<mutex> lock(guard);
 			for(auto active = alerts.begin(); active != alerts.end(); active++) {
 
-				if(active->alert) {
-					if(active->alert->activations.next > now) {
-						next = min(next,active->alert->activations.next);
-					} else {
-						next = now+2;
-					}
+				if(active->alert->activations.next > now) {
+					next = min(next,active->alert->activations.next);
+				} else {
+					next = now+2;
 				}
+
 			}
 		}
 
@@ -184,7 +183,7 @@
 
 	}
 
-	void Alert::Controller::activate(Alert *alert, const char *url, const char *payload) {
+	void Alert::Controller::insert(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload)  {
 		lock_guard<mutex> lock(guard);
 
 		if(!alert->worker) {
@@ -197,7 +196,7 @@
 	}
 
 	bool Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-		parent.append_alert(node);
+		parent.append(make_shared<Alert>(node));
 		return true;
 	}
 

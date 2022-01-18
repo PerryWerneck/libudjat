@@ -82,7 +82,7 @@
 				void set(const pugi::xml_node &node);
 
 				/// @brief State alerts.
-				std::vector<Alert> alerts;
+				std::vector<std::shared_ptr<Alert>> alerts;
 
 			protected:
 				/// @brief Message summary.
@@ -158,9 +158,9 @@
 				/// @brief Expand ${} tags on string.
 				virtual std::string & expand(std::string &text) const;
 
-				/// @brief Insert Alert.
-				inline void append_alert(const pugi::xml_node &node) {
-					alerts.emplace_back(node);
+				/// @brief Insert alert.
+				inline void append(std::shared_ptr<Alert> alert) {
+					alerts.push_back(alert);
 				}
 
 			};

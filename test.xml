@@ -17,9 +17,9 @@
 
 	</agent>
 
+	<!-- 
 	<random name='random600' update-timer='600'>
 
-		<!-- alert delay-before-retry='3'/ -->
 		<state name='s0' value='0' summary='Random 0'>
 			<alert name='r0.0' url='http://localhost' />
 		</state>
@@ -34,7 +34,6 @@
 
 	<random name='random10' update-timer='10'>
 
-		<!-- alert delay-before-retry='3'/ -->
 		<state name='s0' value='0' summary='Random 0'>
 			<alert name='r10.0' url='http://localhost' />
 		</state>
@@ -60,5 +59,6 @@
 		</state>
 
 	</random>
+	-->
 
 </config>

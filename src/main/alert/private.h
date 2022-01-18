@@ -36,13 +36,17 @@
 
 	/// @brief Alert private data.
 	struct Alert::PrivateData {
-		Alert *alert;
-		string name;
+
+		shared_ptr<Alert> alert;
 		string url;
 		string payload;
 
-		PrivateData(Alert *alert);
-		PrivateData(Alert *alert, const char *url, const char *payload);
+		PrivateData(shared_ptr<Alert> alert);
+		PrivateData(shared_ptr<Alert> alert, const string &url, const string &payload);
+
+		inline const char *name() const noexcept {
+			return alert->name();
+		}
 
 	};
 
@@ -72,8 +76,8 @@
 		static Controller & getInstance();
 		~Controller();
 
-		void activate(Alert *alert, const char *url, const char *payload);
-		void deactivate(Alert *alert);
+		void insert(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload);
+		void remove(std::shared_ptr<Alert> alert);
 
 		/// @brief Update timer.
 		void refresh() noexcept;
