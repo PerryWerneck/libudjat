@@ -53,6 +53,9 @@
 		/// @brief List of active workers.
 		list<Alert::PrivateData> alerts;
 
+		/// @brief Alert workers.
+		list<const Alert::Worker *> workers;
+
 		Controller();
 
 		/// @brief Emit pending alerts.
@@ -70,8 +73,17 @@
 		void activate(Alert *alert, const string &payload);
 		void deactivate(Alert *alert);
 
-		/// @brief Update timer;
+		/// @brief Update timer.
 		void refresh() noexcept;
+
+		/// @brief Insert worker.
+		void insert(const Alert::Worker *worker);
+
+		/// @brief Remove worker.
+		void remove(const Alert::Worker *worker);
+
+		/// @brief Get workers.
+		const Alert::Worker * getWorker(const char *name) const;
 
 	};
 

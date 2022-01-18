@@ -91,6 +91,35 @@
 
 	}
 
+	void Alert::Controller::insert(const Alert::Worker *worker) {
+		lock_guard<mutex> lock(guard);
+		workers.push_back(worker);
+	}
+
+	void Alert::Controller::remove(const Alert::Worker *worker) {
+		lock_guard<mutex> lock(guard);
+		workers.remove_if([worker](const Worker *wrk){
+			return wrk == worker;
+		});
+	}
+
+	const Alert::Worker * Alert::Controller::getWorker(const char *name) const {
+
+		if(!(name && *name) || strcasecmp(name,"default") == 0) {
+			return this;
+		}
+
+		for(auto worker : workers) {
+			if(!strcasecmp(worker->name,name)) {
+				return worker;
+			}
+		}
+
+		cerr << "alert\tCan't find alert engine '" << name << "' using the default one" << endl;
+		return this;
+	}
+
+
 	void Alert::Controller::refresh() noexcept {
 
 		time_t now = time(0);

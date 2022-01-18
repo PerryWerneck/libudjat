@@ -27,6 +27,19 @@
 
 		const char *section = node.attribute("settings-from").as_string("alert-defaults");
 
+		// Get alert worker
+		string worker_name = Config::Value<string>(section,"engine","default");
+		worker =
+			Controller::getInstance().getWorker(
+				node.attribute("engine")
+					.as_string(
+						Attribute(node,"alert-engine")
+							.as_string(
+								worker_name.c_str()
+							)
+					)
+				);
+
 		// Seconds to wait before first activation.
 		timers.start =
 			Attribute(node,"delay-before-start")
