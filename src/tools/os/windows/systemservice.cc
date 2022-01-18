@@ -232,6 +232,51 @@
 		return 0;
 	}
 
+	void SystemService::usage(const char *appname) const noexcept {
+		cout 	<< "Usage: " << endl << endl << "  " << appname << " [options]" << endl << endl
+				<< "  --foreground\t\tRun " << appname << " service as application (foreground)" << endl
+				<< "  --install\t\tInstall " << appname << " service" << endl
+				<< "  --install-and-start\tInstall " << appname << " service and start it" << endl
+				<< "  --start\t\tStart " << appname << " service" << endl
+				<< "  --stop\t\tStop " << appname << " service" << endl
+				<< "  --uninstall\t\tUninstall " << appname << " service" << endl
+				<< endl;
+	}
+
+	static int service_start(const char *appname) {
+
+		Win32::Service::Manager manager;
+
+		try {
+
+			Win32::Service::Handler(manager.open(appname)).start();
+
+		} catch(const exception &e) {
+			cerr << e.what() << endl;
+			return -1;
+		}
+
+		return 0;
+
+	}
+
+	static int service_stop(const char *appname) {
+
+		Win32::Service::Manager manager;
+
+		try {
+
+			Win32::Service::Handler(manager.open(appname)).stop();
+
+		} catch(const exception &e) {
+			cerr << e.what() << endl;
+			return -1;
+		}
+
+		return 0;
+
+	}
+
 	int SystemService::run(int argc, char **argv) {
 
 		{
@@ -246,9 +291,13 @@
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 		static struct option options[] = {
-			{ "foreground",		no_argument,		0,	'f' },
-			{ "install",		no_argument,		0,	'i' },
-			{ "uninstall",		no_argument,		0,	'u' },
+			{ "foreground",			no_argument,		0,	'f' },
+			{ "install",			no_argument,		0,	'i' },
+			{ "install-and-start",	no_argument,		0,	'I' },
+			{ "start",				no_argument,		0,	's' },
+			{ "stop",				no_argument,		0,	'q' },
+			{ "uninstall",			no_argument,		0,	'u' },
+			{ "help",				no_argument,		0,	'h' },
 			{ NULL }
 		};
 		#pragma GCC diagnostic pop
@@ -260,17 +309,31 @@
 		{
 			int long_index =0;
 			int opt;
-			while((opt = getopt_long(argc, argv, "f", options, &long_index )) != -1) {
+			while((opt = getopt_long(argc, argv, "fiIsquh", options, &long_index )) != -1) {
 				try {
 
 					switch(opt) {
+					case 'h':
+						usage(appname.c_str());
+						return 0;
+
 					case 'i':	// Install service.
-						install();
-						break;
+						return install();
+
+					case 's':	// Start service.
+						return service_start(appname.c_str());
+
+					case 'q':	// Stop service.
+						return service_stop(appname.c_str());
+
+					case 'I':	// Install and start service.
+						if(!install()) {
+							return service_start(appname.c_str());
+						}
+						return -1;
 
 					case 'u':	// Uninstall service.
-						uninstall();
-						break;
+						return uninstall();
 
 					case 'f':	// Run in foreground.
 						Logger::redirect(nullptr,true);
@@ -316,12 +379,12 @@
 
 	}
 
-	void SystemService::install() {
-		install(Application::Name().c_str());
+	int SystemService::install() {
+		return install(Application::Name().c_str());
 	}
 
 	/// @brief Install win32 service.
-	void SystemService::install(const char *display_name) {
+	int SystemService::install(const char *display_name) {
 
 		Application::Name appname;
 
@@ -358,11 +421,39 @@
 		manager.insert(appname.c_str(),display_name,service_binary);
 		cout << appname << "\tService '" << display_name << "' inserted" << endl;
 
+		return 0;
+
 	}
 
 	/// @brief Uninstall win32 service.
-	void SystemService::uninstall() {
-		throw system_error(ENOTSUP,system_category(),"Not implemented");
+	int SystemService::uninstall() {
+
+		Application::Name appname;
+
+		Win32::Service::Manager manager;
+
+		try {
+
+			cout << appname << "\tStopping previous instance" << endl;
+			Win32::Service::Handler(manager.open(appname.c_str())).stop();
+			cout << appname << "\tPrevious instance stopped" << endl;
+
+		} catch(const exception &e) {
+			cerr << appname << "\t" << e.what() << endl;
+		}
+
+		try {
+
+			cout << appname << "\tRemoving previous instance" << endl;
+			manager.remove(appname.c_str());
+			cout << appname << "\tPrevious instance removed" << endl;
+
+		} catch(const exception &e) {
+			cerr << appname << "\t" << e.what() << endl;
+			return -1;
+		}
+
+		return 0;
 	}
 
  }
