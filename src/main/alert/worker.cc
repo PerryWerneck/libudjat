@@ -18,7 +18,10 @@
  */
 
  #include "private.h"
+ #include <iostream>
  #include <udjat/tools/url.h>
+
+ using namespace std;
 
  namespace Udjat {
 

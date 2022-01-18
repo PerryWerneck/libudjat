@@ -20,6 +20,9 @@
  #include "private.h"
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -174,8 +177,7 @@
 
 	}
 
-	void Alert::Controller::activate(Alert *alert) {
-
+	void Alert::Controller::activate(Alert *alert, const char *url, const char *payload) {
 		lock_guard<mutex> lock(guard);
 
 		if(!alert->worker) {
@@ -183,17 +185,8 @@
 		}
 
 		alert->activations.next = time(0) + alert->timers.start;
-		alerts.emplace_back(alert);
-		emit();
-
-	}
-
-	void Alert::Controller::activate(Alert *alert, const string &payload) {
-		lock_guard<mutex> lock(guard);
-		alert->activations.next = time(0) + alert->timers.start;
-		alerts.emplace_back(alert,payload);
+		alerts.emplace_back(alert,url,payload);
 		emit();
 	}
-
 
  }

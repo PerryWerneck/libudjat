@@ -32,16 +32,13 @@
 		});
 	}
 
-	Alert::PrivateData::PrivateData(Alert *a, const string &p) : alert(a), name(alert->settings.name), url(alert->url()), payload(p) {
+	Alert::PrivateData::PrivateData(Alert *a, const char *u, const char *p) : alert(a), name(alert->settings.name), url(u), payload(p) {
 		expander(url);
 		expander(payload);
 		cout << name << "\tActivating alert " << url << endl;
 	}
 
-	Alert::PrivateData::PrivateData(Alert *a) : alert(a), name(alert->settings.name), url(alert->url()), payload(alert->payload()) {
-		expander(url);
-		expander(payload);
-		cout << name << "\tActivating alert " << url << endl;
+	Alert::PrivateData::PrivateData(Alert *a) : PrivateData(a,a->url(),a->payload()) {
 	}
 
 

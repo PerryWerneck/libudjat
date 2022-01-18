@@ -100,11 +100,15 @@
 	}
 
 	void Alert::activate() {
-		Controller::getInstance().activate(this);
+		Controller::getInstance().activate(this,settings.url,settings.payload);
+	}
+
+	void Alert::activate(const string &url, const string &payload) {
+		Controller::getInstance().activate(this,url.c_str(),payload.c_str());
 	}
 
 	void Alert::activate(const string &payload) {
-		Controller::getInstance().activate(this,payload);
+		Controller::getInstance().activate(this,settings.url,payload.c_str());
 	}
 
 	void Alert::deactivate() {

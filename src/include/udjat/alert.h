@@ -20,7 +20,6 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/agent.h>
  #include <udjat/state.h>
 
  namespace Udjat {
@@ -120,7 +119,7 @@
 		}
 
 		Alert(const pugi::xml_node &node);
-		virtual ~Alert();
+		~Alert();
 
 		inline const char * name() const noexcept {
 			return settings.name;
@@ -138,6 +137,7 @@
 			return settings.payload;
 		}
 
+		void activate(const std::string &url, const std::string &payload);
 		void activate(const std::string &payload);
 		void activate();
 		void deactivate();

@@ -91,8 +91,18 @@ namespace Udjat {
 		agent.info("State '{}' was activated",name);
 #endif // DEBUG
 
-		for(auto alert : alerts) {
-			alert->activate();
+		for(auto alert = alerts.begin(); alert != alerts.end(); alert++) {
+
+			string payload(alert->payload());
+			expand(payload);
+			agent.expand(payload);
+
+			string url(alert->url());
+			expand(url);
+			agent.expand(url);
+
+			alert->activate(url,payload);
+
 		}
 
 	}
@@ -102,13 +112,13 @@ namespace Udjat {
 		agent.info("State '{}' was deactivated",name);
 #endif // DEBUG
 
-		for(auto alert : alerts) {
+		for(auto alert = alerts.begin(); alert != alerts.end(); alert++) {
 			alert->deactivate();
 		}
 
 	}
 
-	void Abstract::State::expand(std::string &text) const {
+	std::string & Abstract::State::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key) {
 
@@ -137,6 +147,8 @@ namespace Udjat {
 			return string{"${}"};
 
 		});
+
+		return text;
 
 	}
 

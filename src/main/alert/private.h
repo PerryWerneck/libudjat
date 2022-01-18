@@ -22,10 +22,12 @@
  #include <config.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/alert.h>
  #include <udjat/worker.h>
  #include <mutex>
  #include <list>
+ #include <iostream>
 
  using namespace std;
 
@@ -39,7 +41,7 @@
 		string payload;
 
 		PrivateData(Alert *alert);
-		PrivateData(Alert *alert, const string &payload);
+		PrivateData(Alert *alert, const char *url, const char *payload);
 
 	};
 
@@ -69,8 +71,7 @@
 		static Controller & getInstance();
 		~Controller();
 
-		void activate(Alert *alert);
-		void activate(Alert *alert, const string &payload);
+		void activate(Alert *alert, const char *url, const char *payload);
 		void deactivate(Alert *alert);
 
 		/// @brief Update timer.

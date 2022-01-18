@@ -88,6 +88,18 @@ namespace Udjat {
 
 	}
 
+	void Abstract::Agent::activate(Alert &alert) {
+
+		string url(alert.url());
+		expand(url);
+
+		string payload(alert.payload());
+		expand(payload);
+
+		alert.activate(url,payload);
+
+	}
+
 	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
 
 		// It's an empty state? If yes replaces with the default one.
