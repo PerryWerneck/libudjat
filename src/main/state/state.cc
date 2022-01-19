@@ -113,9 +113,11 @@ namespace Udjat {
 		agent.info("State '{}' was activated",name);
 #endif // DEBUG
 
+		/*
 		for(auto alert : alerts) {
 			Alert::activate(alert,agent,*this);
 		}
+		*/
 
 	}
 
@@ -125,7 +127,7 @@ namespace Udjat {
 #endif // DEBUG
 
 		for(auto alert : alerts) {
-			Alert::deactivate(alert);
+			alert->deactivate();
 		}
 
 	}

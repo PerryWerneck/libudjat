@@ -25,6 +25,7 @@
 
  namespace Udjat {
 
+	/*
 	Alert::Worker::Worker(const char *n, const ModuleInfo *i) : name(n), info(i) {
 		Alert::Controller::getInstance().insert(this);
 	}
@@ -55,5 +56,6 @@
 		}
 
 	}
+	*/
 
  }

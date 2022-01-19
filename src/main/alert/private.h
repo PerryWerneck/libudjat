@@ -61,16 +61,13 @@
 
 		virtual ~Activation();
 
-		/// @brief Emit alert.
-		virtual void emit() const;
-
 		/// @brief Schedule next alert.
 		void next() noexcept;
 		void success() noexcept;
 		void failed() noexcept;
 
 		inline const char * name() const noexcept {
-			return alertptr->name();
+			return alertptr->c_str();
 		}
 
 		inline std::shared_ptr<Alert> alert() const {
@@ -80,7 +77,7 @@
 	};;
 
 	/// @brief Singleton for alert emission.
-	class Alert::Controller : public Alert::Worker, public Udjat::Factory {
+	class Alert::Controller : public Udjat::Factory {
 	private:
 
 		/// @brief Mutex for serialization
@@ -90,7 +87,7 @@
 		list<shared_ptr<Alert::Activation>> activations;
 
 		/// @brief Alert workers.
-		list<const Alert::Worker *> workers;
+		// list<const Alert::Worker *> workers;
 
 		Controller();
 
@@ -109,19 +106,19 @@
 		void refresh() noexcept;
 
 		/// @brief Insert worker.
-		void insert(const Alert::Worker *worker);
+		// void insert(const Alert::Worker *worker);
 
 		/// @brief Remove worker.
-		void remove(const Alert::Worker *worker);
+		// void remove(const Alert::Worker *worker);
 
 		/// @brief Insert activation.
 		void insert(const std::shared_ptr<Alert::Activation> activation);
 
-		/// @brief Remove alert activation.
-		void remove(std::shared_ptr<Alert> alert);
+		/// @brief Insert URL activation.
+		void insert(const char *name, const char *url, const char *action, const char *payload);
 
-		/// @brief Get workers.
-		const Alert::Worker * getWorker(const char *name) const;
+		/// @brief Remove alert activation.
+		void remove(const Alert *alert);
 
 		/// @brief Create State child.
 		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;

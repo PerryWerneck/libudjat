@@ -27,24 +27,11 @@
 		Controller::getInstance();
 	}
 
-	Alert::Alert(const pugi::xml_node &node) : settings(node) {
+	Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
 
 		initialize();
 
-		const char *section = node.attribute("settings-from").as_string("alert-defaults");
-
-		// Get alert worker
-		string worker_name = Config::Value<string>(section,"engine","default");
-		worker =
-			Controller::getInstance().getWorker(
-				node.attribute("engine")
-					.as_string(
-						Attribute(node,"alert-engine")
-							.as_string(
-								worker_name.c_str()
-							)
-					)
-				);
+		const char *section = node.attribute("settings-from").as_string(defaults);
 
 		// Seconds to wait before first activation.
 		timers.start =
@@ -96,7 +83,7 @@
 				);
 
 #ifdef DEBUG
-		cout << settings.name << "\tAlert created" << endl;
+		cout << c_str() << "\tAlert created" << endl;
 #endif // DEBUG
 
 	}
@@ -108,66 +95,14 @@
 		Controller::getInstance().insert(make_shared<Alert::Activation>(alert));
 	}
 
-	void Alert::deactivate(std::shared_ptr<Alert> alert) {
-		Controller::getInstance().remove(alert);
+	void Alert::deactivate() {
+		Controller::getInstance().remove(this);
 	}
 
-	void Alert::activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent) {
-		throw runtime_error("Not implemented");
+	void Alert::emit() const {
+		throw system_error(ENOTSUP,system_category(),"Cant emit an abstract alert");
 	}
 
-	void Alert::activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state) {
-		throw runtime_error("Not implemented");
-	}
-
-	/*
-	void Alert::emit(const Alert::PrivateData &data) noexcept {
-
-		if(running) {
-			clog << name() << "\tIs active since " << TimeStamp(running) << endl;
-			activations.next = time(0) + timers.busy;
-		}
-
-		if(restarting) {
-			restarting = false;
-            cout << name() << "\tRestarting alert cycle" << endl;
-			activations.success = activations.failed = 0;
-		}
-
-		if(!worker) {
-			worker = &Controller::getInstance();
-			clog << settings.name << "\tNo worker, using the default one" << endl;
-		}
-
-		running = time(0);
-        activations.next = running + timers.busy;
-
-		// Get a copy of the formatted private data, just in case of it changes.
-		Alert::PrivateData *dyndata = new Alert::PrivateData(data);
-
-        ThreadPool::getInstance().push([this,dyndata]{
-
-			try {
-
-				worker->send(*this, dyndata->url,dyndata->payload);
-				activations.success++;
-
-			} catch(const std::exception &e) {
-				activations.failed++;
-				cerr << name() << "\tActivation " << (activations.failed + activations.success) << " failed: " << e.what() << endl;
-			} catch(...) {
-				activations.failed++;
-				cerr << name() << "\tActivation " << (activations.failed + activations.success) << " failed: Unexpected error"  << endl;
-			}
-
-			delete dyndata;
-
-			running = 0;
-			next();
-		});
-
-	}
-	*/
 
  }
 

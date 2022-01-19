@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			Alert::activate(make_shared<Alert>("test","http://localhost/invalid"));
+			Alert::activate("test","http://localhost/invalid");
 
 		}
 

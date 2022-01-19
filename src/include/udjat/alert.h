@@ -26,60 +26,32 @@
  namespace Udjat {
 
 	class UDJAT_API Alert {
+	public:
+
+		class UDJAT_API Factory {
+		private:
+			const char *name = "";
+			const ModuleInfo *info = nullptr;
+
+		public:
+			constexpr Factory(const char *n, const ModuleInfo *i) : name(n), info(i) {
+			}
+
+			virtual ~Factory() {
+			}
+
+		};
+
 	private:
 		class Activation;
-		friend class Activation;
 
 		class Controller;
 		friend class Controller;
 
-	public:
-
-		/// @brief Alert worker.
-		class UDJAT_API Worker {
-		private:
-			const char *name = "";
-			friend class Controller;
-
-			constexpr Worker() {
-			}
-
-		protected:
-
-			/// @brief Worker module info.
-			const ModuleInfo *info = nullptr;
-
-		public:
-			Worker(const char *name);
-			Worker(const char *name, const ModuleInfo *info);
-
-			virtual ~Worker();
-
-			virtual void send(const Alert &alert, const std::string &url, const std::string &payload) const;
-
-		};
-
-		/// @brief Alert settings
-		struct Settings {
-			const char *name = "alert";		///< @brief Alert name.
-			const char *action = "get";		///< @brief Alert action.
-			const char *url = "";			///< @brief Alert URL.
-			const char *payload = "";		///< @brief Alert payload.
-
-			constexpr Settings(const char *n, const char *u, const char *a, const char *p) : name(n), action(a), url(u), payload(p) {
-			}
-
-			Settings(const pugi::xml_node &node);
-
-		};
-
 	protected:
 
-		/// @brief Alert settings.
-		Settings settings;
-
-		/// @brief Alert worker.
-		const Worker *worker = nullptr;
+		/// @brief Alert name.
+		const char *name = "alert";
 
 		/// @brief Alert limits.
 		struct {
@@ -97,40 +69,36 @@
 		/// @brief Restart timers.
 		struct {
 			time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successful activation.
+			time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
 		} restart;
 
 	public:
 
-		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = "") : settings(name,url,type,payload) {
+		constexpr Alert(const char *n) : name(n) {
 		}
 
-		Alert(const pugi::xml_node &node);
+		/**
+		 * @brief Create alert for xml description.
+		 * @param node XML node with the alert description.
+		 * @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
+		 */
+		Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 		virtual ~Alert();
 
 		static void initialize();
 
-		inline const char * name() const noexcept {
-			return settings.name;
+		inline const char * c_str() const noexcept {
+			return name;
 		}
 
-		inline const char * action() const noexcept {
-			return settings.action;
-		}
-
-		inline const char * url() const noexcept {
-			return settings.url;
-		}
-
-		inline const char * payload() const noexcept {
-			return settings.payload;
-		}
+		/// @brief Emit alert.
+		virtual void emit() const;
 
 		static void activate(std::shared_ptr<Alert> alert);
-		static void deactivate(std::shared_ptr<Alert> alert);
+		static void activate(const char *name, const char *url, const char *action="get", const char *payload = "");
 
-		static void activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent);
-		static void activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state);
+		void deactivate();
+
 	};
 
 

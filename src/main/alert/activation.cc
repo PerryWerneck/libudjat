@@ -20,8 +20,39 @@
  #include "private.h"
  #include <udjat.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/url.h>
 
  namespace Udjat {
+
+	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {
+		Controller::getInstance().insert(name,url,action,payload);
+	}
+
+	void Alert::Controller::insert(const char *name, const char *url, const char *action, const char *payload) {
+
+		class UrlAlert : public Alert {
+		private:
+			string url;
+			string action;
+			string payload;
+
+		public:
+			UrlAlert(const char *name, const char *u, const char *a, const char *p) : Alert(name), url(u), action(a), payload(p) {
+			}
+
+			void emit() const override {
+				cout << "alerts\tEmitting '" << url << "'" << endl;
+				auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
+				if(response->failed()) {
+					throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
+				}
+ 			}
+
+		};
+
+		insert(make_shared<Activation>(make_shared<UrlAlert>(name,url,action,payload)));
+
+	}
 
 	Alert::Activation::Activation(std::shared_ptr<Alert> alert) : alertptr(alert) {
 		cout << "alerts\tActivating " << name() << endl;
@@ -32,10 +63,6 @@
 		cout << "alerts\tDeactivating " << name() << endl;
 	}
 
-	void Alert::Activation::emit() const {
-		throw system_error(ENOTSUP,system_category(),"Selected engine is incapable of alert emission");
-	}
-
 	void Alert::Activation::checkForSleep(const char *msg) noexcept {
 
 		time_t rst = (count.success ? alertptr->restart.success : alertptr->restart.failed);
@@ -44,13 +71,13 @@
 			restarting = true;
 			timers.next = time(0) + rst;
 			clog
-				<< "alerts\tAlert '" << alertptr->name() << "' cycle " << msg << ", sleeping until " << TimeStamp(timers.next)
+				<< "alerts\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", sleeping until " << TimeStamp(timers.next)
 				<< endl;
 
 		} else {
 			timers.next = 0;
 			clog
-				<< "alerts\tAlert '" << alertptr->name() << "' cycle " << msg << ", stopping"
+				<< "alerts\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", stopping"
 				<< endl;
 		}
 
@@ -68,7 +95,7 @@
 
 	void Alert::Activation::next() noexcept {
 
-		cout << "alerts\t" << alertptr->name() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
+		cout << "alerts\t" << alertptr->c_str() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
 
 		if(count.success >= alertptr->retry.min) {
 			checkForSleep("was sucessfull");

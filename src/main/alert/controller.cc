@@ -44,8 +44,6 @@
 	}
 
 	Alert::Controller::Controller() : Udjat::Factory("alert",&moduleinfo) {
-		Worker::info = &moduleinfo;
-		Worker::name = "default";
 		cout << "alerts\tInitializing" << endl;
 
 		// Force creation of the default mainloop.
@@ -59,10 +57,10 @@
 		MainLoop::getInstance().remove(this);
 	}
 
-	void Alert::Controller::remove(std::shared_ptr<Alert> alert) {
+	void Alert::Controller::remove(const Alert *alert) {
 		lock_guard<mutex> lock(guard);
 		activations.remove_if([alert](const auto &activation){
-			if(activation->alert().get() != alert.get())
+			if(activation->alert().get() != alert)
 				return false;
 			return true;
 		});
@@ -102,6 +100,7 @@
 
 	}
 
+	/*
 	void Alert::Controller::insert(const Alert::Worker *worker) {
 		lock_guard<mutex> lock(guard);
 		workers.push_back(worker);
@@ -113,7 +112,9 @@
 			return wrk == worker;
 		});
 	}
+	*/
 
+	/*
 	const Alert::Worker * Alert::Controller::getWorker(const char *name) const {
 
 		if(!(name && *name) || strcasecmp(name,"default") == 0) {
@@ -129,7 +130,7 @@
 		cerr << "alert\tCan't find alert engine '" << name << "' using the default one" << endl;
 		return this;
 	}
-
+	*/
 
 	void Alert::Controller::refresh() noexcept {
 
@@ -173,7 +174,7 @@
 
 			if(!activation->timers.next) {
 				// No alert or no next, remove from list.
-				cout << "alerts\tAlert '" << alert->name() << "' was stopped" << endl;
+				cout << "alerts\tAlert '" << alert->c_str() << "' was stopped" << endl;
 				return true;
 			}
 
@@ -184,7 +185,7 @@
 
 				if(activation->running) {
 
-					clog << "alerts\tAlert '" << alert->name() << "' is running since " << TimeStamp(activation->running) << endl;
+					clog << "alerts\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->running) << endl;
 
 				} else {
 
@@ -196,19 +197,19 @@
 
 						try {
 							cout << "alerts\tEmitting '"
-								<< alert->name() << "' ("
+								<< alert->c_str() << "' ("
 								<< (activation->count.success + activation->count.failed + 1)
 								<< ")"
 								<< endl;
 							activation->timers.last = time(0);
-							activation->emit();
+							alert->emit();
 							activation->success();
 						} catch(const exception &e) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << alert->name() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
+							cerr << "alerts\tAlert '" << alert->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
 						} catch(...) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << alert->name() << "' has failed " << activation->count.failed << " time(s)" << endl;
+							cerr << "alerts\tAlert '" << alert->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
 						activation->running = 0;
 
