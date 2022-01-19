@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <udjat/tools/xml.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
 
  namespace Udjat {
@@ -99,18 +100,15 @@
 		insert(make_shared<Alert::Activation>(alert));
 	}
 
-	void Alert::activate(const Abstract::Agent UDJAT_UNUSED(&agent), std::shared_ptr<Alert> alert) const {
+	void Alert::activate(const Abstract::Agent UDJAT_UNUSED(&agent), const Abstract::State UDJAT_UNUSED(&state), std::shared_ptr<Alert> alert) const {
 		if(alert.get() != this) {
 			throw system_error(EINVAL,system_category(),"Can't activate this alert");
 		}
 		activate(alert);
 	}
 
-	void Alert::activate(const Abstract::Agent &agent, const Abstract::State UDJAT_UNUSED(&state), std::shared_ptr<Alert> alert) const {
-		if(alert.get() != this) {
-			throw system_error(EINVAL,system_category(),"Can't activate this alert");
-		}
-		activate(agent,alert);
+	void Alert::activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const {
+		activate(agent,*agent.getState(),alert);
 	}
 
 	void Alert::deactivate() {

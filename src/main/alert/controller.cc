@@ -20,14 +20,96 @@
  #include "private.h"
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/agent.h>
  #include <udjat/state.h>
  #include <iostream>
 
  using namespace std;
 
+ static const char * expand(const char *value,const pugi::xml_node &node,const char *section);
+
  namespace Udjat {
 
 	mutex Alert::Controller::guard;
+
+	/// @brief Default alert (URL based).
+	class DefaultAlert : public Alert {
+	private:
+		const char *url;
+		const char *action;
+		const char *payload;
+
+	public:
+		DefaultAlert(const pugi::xml_node &node) : Alert(node) {
+
+			const char *section = node.attribute("settings-from").as_string("alert-defaults");
+
+			url = ::expand(
+					Attribute(node,"url")
+						.as_string(
+							Config::Value<string>(section,"url","")
+						),
+						node,
+						section
+					);
+
+			payload = ::expand(
+							node.child_value(),
+							node,
+							section
+						);
+
+			action = Quark(
+							Attribute(node,"action")
+							.as_string(
+								Config::Value<string>(section,"action","get")
+							)
+						).c_str();
+
+		}
+
+		void activate(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload) const {
+
+			class Activation : public Alert::Activation {
+			private:
+				string url;
+				string action;
+				string payload;
+
+			public:
+				Activation(std::shared_ptr<Alert> alert, const string &u, const char *a, const string &p) : Alert::Activation(alert), url(u), action(a), payload(p) {
+				}
+
+				void emit() const override {
+					cout << "alerts\tEmitting '" << url << "'" << endl;
+					auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
+					if(response->failed()) {
+						throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
+					}
+				}
+
+			};
+
+			insert(make_shared<Activation>(alert,url,this->action,payload));
+
+		}
+
+		void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const override {
+
+			string url{this->url};
+			string payload{this->payload};
+
+			agent.expand(url);
+			agent.expand(payload);
+
+			state.expand(url);
+			state.expand(payload);
+
+			activate(alert,url,payload);
+		}
+
+	};
 
 	static const Udjat::ModuleInfo moduleinfo {
 		PACKAGE_NAME,									// The module name.
@@ -43,7 +125,7 @@
 		return instance;
 	}
 
-	Alert::Controller::Controller() : Udjat::Factory("alert",&moduleinfo) {
+	Alert::Controller::Controller() : Udjat::Factory("alert",&moduleinfo), Udjat::MainLoop::Service(&moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 
 		// Force creation of the default mainloop.
@@ -52,8 +134,12 @@
 	}
 
 	Alert::Controller::~Controller() {
-		cout << "alerts\tDeinitializing" << endl;
+	}
+
+	void Alert::Controller::stop() {
+		cout << "alerts\tDeactivating active alerts" << endl;
 		lock_guard<mutex> lock(guard);
+		activations.clear();
 		MainLoop::getInstance().remove(this);
 	}
 
@@ -99,38 +185,6 @@
 		});
 
 	}
-
-	/*
-	void Alert::Controller::insert(const Alert::Worker *worker) {
-		lock_guard<mutex> lock(guard);
-		workers.push_back(worker);
-	}
-
-	void Alert::Controller::remove(const Alert::Worker *worker) {
-		lock_guard<mutex> lock(guard);
-		workers.remove_if([worker](const Worker *wrk){
-			return wrk == worker;
-		});
-	}
-	*/
-
-	/*
-	const Alert::Worker * Alert::Controller::getWorker(const char *name) const {
-
-		if(!(name && *name) || strcasecmp(name,"default") == 0) {
-			return this;
-		}
-
-		for(auto worker : workers) {
-			if(!strcasecmp(worker->name,name)) {
-				return worker;
-			}
-		}
-
-		cerr << "alert\tCan't find alert engine '" << name << "' using the default one" << endl;
-		return this;
-	}
-	*/
 
 	void Alert::Controller::refresh() noexcept {
 
@@ -224,8 +278,31 @@
 	}
 
 	bool Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-		parent.append(make_shared<Alert>(node));
+		parent.append(make_shared<DefaultAlert>(node));
 		return true;
 	}
 
  }
+
+ const char * expand(const char *value, const pugi::xml_node &node, const char *section) {
+
+	string text{value};
+	Udjat::expand(text, [node,section](const char *key) {
+
+		auto attr = Udjat::Attribute(node,key,true);
+		if(attr) {
+			return (string) attr.as_string();
+		}
+
+		if(Udjat::Config::hasKey(section,key)) {
+			return (string) Udjat::Config::Value<string>(section,key,"");
+		}
+
+		return string{"${}"};
+
+	});
+
+	return Udjat::Quark(text).c_str();
+
+ }
+
