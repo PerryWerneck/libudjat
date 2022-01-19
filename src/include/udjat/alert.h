@@ -92,7 +92,7 @@
 			};
 
 			/// @brief Emit alert.
-			virtual void emit() const noexcept;
+			virtual void emit() const;
 		};
 
 	protected:
@@ -139,9 +139,6 @@
 		inline const char * c_str() const noexcept {
 			return name;
 		}
-
-		/// @brief Emit alert.
-		virtual void emit() const;
 
 		virtual void activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const;
 		virtual void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const;

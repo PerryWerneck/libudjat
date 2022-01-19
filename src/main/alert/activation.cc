@@ -30,14 +30,14 @@
 
 	void Alert::Controller::insert(const char *name, const char *url, const char *action, const char *payload) {
 
-		class UrlAlert : public Alert {
+		class Activation : public Alert::Activation {
 		private:
 			string url;
 			string action;
 			string payload;
 
 		public:
-			UrlAlert(const char *name, const char *u, const char *a, const char *p) : Alert(name), url(u), action(a), payload(p) {
+			Activation(const char *name, const char *u, const char *a, const char *p) : Alert::Activation(make_shared<Alert>(name)), url(u), action(a), payload(p) {
 			}
 
 			void emit() const override {
@@ -50,7 +50,7 @@
 
 		};
 
-		insert(make_shared<Activation>(make_shared<UrlAlert>(name,url,action,payload)));
+		insert(make_shared<Activation>(name,url,action,payload));
 
 	}
 
@@ -83,8 +83,8 @@
 
 	}
 
-	void Alert::Activation::emit() const noexcept {
-		alertptr->emit();
+	void Alert::Activation::emit() const {
+		throw system_error(ENOTSUP,system_category(),"Cant emit an abstract activation");
 	}
 
 	void Alert::Activation::failed() noexcept {

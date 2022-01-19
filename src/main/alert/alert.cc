@@ -117,10 +117,5 @@
 		Controller::getInstance().remove(this);
 	}
 
-	void Alert::emit() const {
-		throw system_error(ENOTSUP,system_category(),"Cant emit an abstract alert");
-	}
-
-
  }
 
