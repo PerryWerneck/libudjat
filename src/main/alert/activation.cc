@@ -23,6 +23,54 @@
 
  namespace Udjat {
 
+	Alert::Activation::Activation(std::shared_ptr<Alert> alert) : alertptr(alert) {
+		cout << "alerts\tActivating " << name() << endl;
+		timers.next = time(0) + alert->timers.start;
+	}
+
+	Alert::Activation::~Activation() {
+		cout << "alerts\tDeactivating " << name() << endl;
+	}
+
+	void Alert::Activation::emit() const {
+		throw system_error(ENOTSUP,system_category(),"Selected engine is incapable of alert emission");
+	}
+
+	void Alert::Activation::checkForSleep(const char *msg) noexcept {
+
+		time_t rst = (success ? alertptr->restart.success : alertptr->restart.failed);
+
+		if(rst) {
+			restarting = true;
+			timers.next = time(0) + rst;
+			clog
+				<< "alerts\tAlert '" << alertptr->name() << "' cycle " << msg << ", sleeping until" << TimeStamp(timers.next)
+				<< endl;
+
+		} else {
+			timers.next = 0;
+			clog
+				<< "alerts\tAlert '" << alertptr->name() << "' cycle " << msg << ", stopping"
+				<< endl;
+		}
+
+	}
+
+	void Alert::Activation::next(bool failed) noexcept {
+
+		if(success >= alertptr->retry.min) {
+			checkForSleep("was sucessfull");
+		} else if( (success + failed) >= alertptr->retry.max ) {
+			checkForSleep("reached the maximum number of emissions");
+		} else {
+			timers.next = time(0) + alertptr->timers.interval;
+		}
+
+		Controller::getInstance().refresh();
+
+	}
+
+	/*
 	static void expander(string &text) {
 		expand(text, [](const char *key){
 			if(!strcasecmp(key,"timestamp")) {
@@ -38,7 +86,7 @@
 		cout << name() << "\tActivating alert " << url << endl;
 	}
 
-	Alert::PrivateData::PrivateData(shared_ptr<Alert> a) : alert(a) {
+	Alert::Activation::Activation(shared_ptr<Alert> a) : alert(a) {
 		url = alert->url();
 		payload = alert->payload();
 
@@ -46,6 +94,6 @@
 		expander(payload);
 		cout << name() << "\tActivating alert " << url << endl;
 	}
-
+	*/
 
  }

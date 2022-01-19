@@ -61,10 +61,9 @@
 
 	void Alert::Controller::remove(std::shared_ptr<Alert> alert) {
 		lock_guard<mutex> lock(guard);
-		alerts.remove_if([alert](const auto &active){
-			if(active.alert.get() != alert.get())
+		activations.remove_if([alert](const auto &activation){
+			if(activation->alert().get() != alert.get())
 				return false;
-			cout << active.name() << "\tDeactivating " << active.url << endl;
 			return true;
 		});
 	}
@@ -82,20 +81,18 @@
 		MainLoop &mainloop = MainLoop::getInstance();
 
 		lock_guard<mutex> lock(guard);
-		if(alerts.empty()) {
+		if(activations.empty()) {
 
-			cout << "alerts\tStopping alert controller" << endl;
+			cout << "alerts\tStopping controller" << endl;
 			mainloop.remove(this);
 
-		} else {
+		} else if(!mainloop.reset(this,seconds*1000)) {
 
-			if(!mainloop.reset(this,seconds*1000)) {
-				cout << "alerts\tStarting alert controller" << endl;
-				mainloop.insert(this,seconds*1000,[this]() {
-					emit();
-					return true;
-				});
-			}
+			cout << "alerts\tStarting controller" << endl;
+			mainloop.insert(this,seconds*1000,[this]() {
+				emit();
+				return true;
+			});
 
 		}
 
@@ -137,14 +134,12 @@
 
 		{
 			lock_guard<mutex> lock(guard);
-			for(auto active = alerts.begin(); active != alerts.end(); active++) {
-
-				if(active->alert->activations.next > now) {
-					next = min(next,active->alert->activations.next);
+			for(auto activation : activations) {
+				if(activation->timers.next > now) {
+					next = min(next,activation->timers.next);
 				} else {
 					next = now+2;
 				}
-
 			}
 		}
 
@@ -152,53 +147,83 @@
 
 	}
 
-	void Alert::Controller::emit() noexcept {
+	void Alert::Controller::insert(const std::shared_ptr<Alert::Activation> activation) {
 
-		ThreadPool::getInstance().push([this]() {
-
-			time_t now = time(0);
-			time_t next = now + 600;
 			{
 				lock_guard<mutex> lock(guard);
-				alerts.remove_if([now,&next](const auto &active){
-
-					if(!(active.alert && active.alert->activations.next))
-						// No alert or no next, remove from list.
-						return true;
-
-					if(active.alert->activations.next <= now) {
-						// Timer has expired, emit action.
-						active.alert->emit(active);
-					}
-
-					next = min(next,active.alert->activations.next);
-					return false;
-				});
+				activations.push_back(activation);
 			}
 
-			reset(next-now);
-
-		});
-
-
+			emit();
 	}
 
-	void Alert::Controller::insert(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload)  {
-		lock_guard<mutex> lock(guard);
+	void Alert::Controller::emit() noexcept {
 
-		if(!alert->worker) {
-			alert->worker = this;
+		time_t now = time(0);
+		time_t next = now + 600;
+
+		{
+			lock_guard<mutex> lock(guard);
+			activations.remove_if([this,now,&next](auto activation){
+
+				auto alert = activation->alert();
+
+				if(!activation->timers.next) {
+					// No alert or no next, remove from list.
+					cout << "alerts\tAlert '" << alert->name() << "' was stopped" << endl;
+					return true;
+				}
+
+				if(activation->timers.next <= now) {
+
+					// Timer has expired
+					activation->timers.next = (now + alert->timers.interval);
+
+					if(activation->running) {
+
+						clog << "alerts\tAlert '" << alert->name() << "' is running since " << TimeStamp(activation->running) << endl;
+
+					} else {
+
+						activation->running = time(0);
+
+						ThreadPool::getInstance().push([this,activation]() {
+
+							auto alert = activation->alert();
+
+							try {
+								cout << "alerts\tEmitting '" << alert->name() << "'" << endl;
+								activation->timers.last = time(0);
+								activation->emit();
+								activation->success++;
+								activation->next(false);
+							} catch(const exception &e) {
+								cerr << "alerts\tAlert '" << alert->name() << "': " << e.what() << endl;
+								activation->failed++;
+								activation->next(true);
+							} catch(...) {
+								cerr << "alerts\tAlert '" << alert->name() << "' has failed" << endl;
+								activation->failed++;
+								activation->next(true);
+							}
+							activation->running = 0;
+
+						});
+					}
+				}
+
+				next = min(next,activation->timers.next);
+				return false;
+			});
 		}
 
-		alert->activations.next = time(0) + alert->timers.start;
-		alerts.emplace_back(alert,url,payload);
-		emit();
+		reset(next-now);
+
 	}
 
 	bool Alert::Controller::parse(Abstract::State &parent, const pugi::xml_node &node) const {
 		parent.append(make_shared<Alert>(node));
 		return true;
 	}
-
 
  }

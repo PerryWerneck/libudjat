@@ -34,21 +34,46 @@
 
  namespace Udjat {
 
-	/// @brief Alert private data.
-	struct Alert::PrivateData {
+	/// @brief Alert activation (the object who really send the alerts).
+	class Alert::Activation {
+	private:
+		friend class Alert::Controller;
 
-		shared_ptr<Alert> alert;
-		string url;
-		string payload;
+		std::shared_ptr<Alert> alertptr;
 
-		PrivateData(shared_ptr<Alert> alert);
-		PrivateData(shared_ptr<Alert> alert, const string &url, const string &payload);
+		struct {
+			time_t last = 0;
+			time_t next = 0;
+		} timers;
 
-		inline const char *name() const noexcept {
-			return alert->name();
+		unsigned int success = 0;
+		unsigned int failed = 0;
+
+		void checkForSleep(const char *msg) noexcept;
+
+		bool restarting = false;
+		time_t running = 0;
+
+	public:
+		Activation(std::shared_ptr<Alert> alert);
+
+		virtual ~Activation();
+
+		/// @brief Emit alert.
+		virtual void emit() const;
+
+		/// @brief Schedule next alert.
+		void next(bool failed) noexcept;
+
+		inline const char * name() const noexcept {
+			return alertptr->name();
 		}
 
-	};
+		inline std::shared_ptr<Alert> alert() const {
+			return alertptr;
+		};
+
+	};;
 
 	/// @brief Singleton for alert emission.
 	class Alert::Controller : public Alert::Worker, public Udjat::Factory {
@@ -58,7 +83,7 @@
 		static mutex guard;
 
 		/// @brief List of active workers.
-		list<Alert::PrivateData> alerts;
+		list<shared_ptr<Alert::Activation>> activations;
 
 		/// @brief Alert workers.
 		list<const Alert::Worker *> workers;
@@ -76,9 +101,6 @@
 		static Controller & getInstance();
 		~Controller();
 
-		void insert(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload);
-		void remove(std::shared_ptr<Alert> alert);
-
 		/// @brief Update timer.
 		void refresh() noexcept;
 
@@ -87,6 +109,12 @@
 
 		/// @brief Remove worker.
 		void remove(const Alert::Worker *worker);
+
+		/// @brief Insert activation.
+		void insert(const std::shared_ptr<Alert::Activation> activation);
+
+		/// @brief Remove alert activation.
+		void remove(std::shared_ptr<Alert> alert);
 
 		/// @brief Get workers.
 		const Alert::Worker * getWorker(const char *name) const;

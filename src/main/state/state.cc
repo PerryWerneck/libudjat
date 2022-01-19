@@ -114,17 +114,7 @@ namespace Udjat {
 #endif // DEBUG
 
 		for(auto alert : alerts) {
-
-			string payload(alert->payload());
-			expand(payload);
-			agent.expand(payload);
-
-			string url(alert->url());
-			expand(url);
-			agent.expand(url);
-
-			Alert::activate(alert, url, payload);
-
+			Alert::activate(alert,agent,*this);
 		}
 
 	}

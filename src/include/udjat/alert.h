@@ -21,19 +21,17 @@
 
  #include <udjat/defs.h>
  #include <udjat/state.h>
+ #include <memory>
 
  namespace Udjat {
 
 	class UDJAT_API Alert {
 	private:
+		class Activation;
+		friend class Activation;
+
 		class Controller;
 		friend class Controller;
-
-		class PrivateData;
-
-		void emit(const PrivateData &priv) noexcept;
-		void checkForSleep(const char *msg) noexcept;
-		void next() noexcept;
 
 	public:
 
@@ -89,14 +87,6 @@
 			size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
 		} retry;
 
-		/// @brief Alert activations.
-		struct {
-			time_t last = 0;
-			time_t next = 0;
-			unsigned int success = 0;
-			unsigned int failed = 0;
-		} activations;
-
 		/// @brief Alert timers.
 		struct {
 			time_t start = 0;			///< @brief Seconds to wait before first activation.
@@ -109,9 +99,6 @@
 			time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
 			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successful activation.
 		} restart;
-
-		bool restarting = false;
-		time_t running = 0;
 
 	public:
 
@@ -139,10 +126,11 @@
 			return settings.payload;
 		}
 
-		static void activate(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload);
 		static void activate(std::shared_ptr<Alert> alert);
 		static void deactivate(std::shared_ptr<Alert> alert);
 
+		static void activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent);
+		static void activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state);
 	};
 
 

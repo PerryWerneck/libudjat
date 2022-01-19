@@ -104,61 +104,23 @@
 	Alert::~Alert() {
 	}
 
-	void Alert::activate(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload) {
-		Controller::getInstance().insert(alert,url,payload);
-	}
-
 	void Alert::activate(std::shared_ptr<Alert> alert) {
-		Controller::getInstance().insert(alert,alert->settings.url,alert->settings.payload);
+		Controller::getInstance().insert(make_shared<Alert::Activation>(alert));
 	}
 
 	void Alert::deactivate(std::shared_ptr<Alert> alert) {
 		Controller::getInstance().remove(alert);
 	}
 
-	void Alert::checkForSleep(const char *msg) noexcept {
-
-		time_t rst = (activations.success ? restart.success : restart.failed);
-
-		if(rst) {
-			restarting = true;
-			activations.next = time(0) + rst;
-			clog
-				<< name() << "\t"
-				<< Logger::Message(
-						"Alert cycle {}, sleeping until {}",
-							msg,
-							TimeStamp(activations.next).to_string()
-					)
-				<< endl;
-
-		} else {
-			activations.next = 0;
-			clog
-				<< name()
-				<< Logger::Message(
-					"\tAlert cycle {}, stopping",
-							msg
-					)
-				<< endl;
-		}
-
+	void Alert::activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent) {
+		throw runtime_error("Not implemented");
 	}
 
-	void Alert::next() noexcept {
-
-		if(activations.success >= retry.min) {
-			checkForSleep("was sucessfull");
-		} else if( (activations.success + activations.failed) >= retry.max ) {
-			checkForSleep("reached the maximum number of emissions");
-		} else {
-			activations.next = time(0) + timers.interval;
-		}
-
-		Controller::getInstance().refresh();
-
+	void Alert::activate(std::shared_ptr<Alert> alert, const Abstract::Agent &agent, const Abstract::State &state) {
+		throw runtime_error("Not implemented");
 	}
 
+	/*
 	void Alert::emit(const Alert::PrivateData &data) noexcept {
 
 		if(running) {
@@ -205,6 +167,7 @@
 		});
 
 	}
+	*/
 
  }
 
