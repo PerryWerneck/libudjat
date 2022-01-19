@@ -46,7 +46,12 @@
 
 	static recursive_mutex guard;
 
-#ifdef HAVE_ECONF
+#if defined(HAVE_ECONF)
+
+	//
+	// Use libeconf as back-end
+	//
+
 	class Controller {
 	private:
 		void *hFile = nullptr;	///< @brief Configuration file handle.
@@ -388,6 +393,61 @@
 			return get(group,name,def.c_str());
 		}
 
+
+	};
+
+#else
+
+	//
+	// No Back-end, Use a dumb controller.
+	//
+
+	class Controller {
+	private:
+		Controller() {
+			cerr << "config\tNo config file backend, using internal defaults" << endl;
+		}
+
+
+	public:
+		~Controller() {
+		}
+
+		static Controller & getInstance() {
+			std::lock_guard<std::recursive_mutex> lock(guard);
+			static Controller instance;
+			return instance;
+		}
+
+		void reload() {
+		}
+
+		void open() {
+		}
+
+		void close() {
+		}
+
+		bool hasGroup(const char *group) {
+			return false;
+		}
+
+		bool hasKey(const char *group, const char *key) {
+			return false;
+		}
+
+		std::string get(const std::string &group, const std::string &name, const char *def) const {
+			return string(def);
+		}
+
+		std::string get(const std::string &group, const std::string &name, const std::string &def) const {
+			return string(def);
+		}
+
+		template<typename T>
+		T get(const std::string &group, const std::string &name, const T def) const {
+			return def;
+		}
 
 	};
 #endif // HAVE_ECONF
