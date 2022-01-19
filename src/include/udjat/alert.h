@@ -26,6 +26,10 @@
  namespace Udjat {
 
 	class UDJAT_API Alert {
+	private:
+		class Controller;
+		friend class Controller;
+
 	public:
 
 		class UDJAT_API Factory {
@@ -42,11 +46,54 @@
 
 		};
 
-	private:
-		class Activation;
+		class UDJAT_API Activation {
+		private:
+			friend class Alert::Controller;
 
-		class Controller;
-		friend class Controller;
+			std::shared_ptr<Alert> alertptr;
+
+			struct {
+				time_t last = 0;
+				time_t next = 0;
+			} timers;
+
+			struct {
+				unsigned int success = 0;
+				unsigned int failed = 0;
+			} count;
+
+			void checkForSleep(const char *msg) noexcept;
+
+			bool restarting = false;
+			time_t running = 0;
+
+			/// @brief Schedule next alert.
+			void next() noexcept;
+
+		protected:
+
+			/// @brief Alert was send.
+			void success() noexcept;
+
+			/// @brief Alert was not send.
+			void failed() noexcept;
+
+		public:
+			Activation(std::shared_ptr<Alert> alert);
+
+			virtual ~Activation();
+
+			inline const char * name() const noexcept {
+				return alertptr->c_str();
+			}
+
+			inline std::shared_ptr<Alert> alert() const {
+				return alertptr;
+			};
+
+			/// @brief Emit alert.
+			virtual void emit() const noexcept;
+		};
 
 	protected:
 
@@ -72,6 +119,8 @@
 			time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
 		} restart;
 
+		static void insert(std::shared_ptr<Activation> activation);
+
 	public:
 
 		constexpr Alert(const char *n) : name(n) {
@@ -93,6 +142,9 @@
 
 		/// @brief Emit alert.
 		virtual void emit() const;
+
+		virtual void activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const;
+		virtual void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const;
 
 		static void activate(std::shared_ptr<Alert> alert);
 		static void activate(const char *name, const char *url, const char *action="get", const char *payload = "");

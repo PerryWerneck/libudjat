@@ -83,6 +83,10 @@
 
 	}
 
+	void Alert::Activation::emit() const noexcept {
+		alertptr->emit();
+	}
+
 	void Alert::Activation::failed() noexcept {
 		count.failed++;
 		next();
@@ -109,30 +113,5 @@
 
 	}
 
-	/*
-	static void expander(string &text) {
-		expand(text, [](const char *key){
-			if(!strcasecmp(key,"timestamp")) {
-				return TimeStamp().to_string(TIMESTAMP_FORMAT_JSON);
-			}
-			return string{"${}"};
-		});
-	}
-
-	Alert::PrivateData::PrivateData(shared_ptr<Alert> a, const string &u, const string &p) : alert(a), url(u), payload(p) {
-		expander(url);
-		expander(payload);
-		cout << name() << "\tActivating alert " << url << endl;
-	}
-
-	Alert::Activation::Activation(shared_ptr<Alert> a) : alert(a) {
-		url = alert->url();
-		payload = alert->payload();
-
-		expander(url);
-		expander(payload);
-		cout << name() << "\tActivating alert " << url << endl;
-	}
-	*/
 
  }

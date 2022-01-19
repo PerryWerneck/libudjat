@@ -91,8 +91,26 @@
 	Alert::~Alert() {
 	}
 
+	void Alert::insert(std::shared_ptr<Activation> activation) {
+		Controller::getInstance().insert(activation);
+	}
+
 	void Alert::activate(std::shared_ptr<Alert> alert) {
-		Controller::getInstance().insert(make_shared<Alert::Activation>(alert));
+		insert(make_shared<Alert::Activation>(alert));
+	}
+
+	void Alert::activate(const Abstract::Agent UDJAT_UNUSED(&agent), std::shared_ptr<Alert> alert) const {
+		if(alert.get() != this) {
+			throw system_error(EINVAL,system_category(),"Can't activate this alert");
+		}
+		activate(alert);
+	}
+
+	void Alert::activate(const Abstract::Agent &agent, const Abstract::State UDJAT_UNUSED(&state), std::shared_ptr<Alert> alert) const {
+		if(alert.get() != this) {
+			throw system_error(EINVAL,system_category(),"Can't activate this alert");
+		}
+		activate(agent,alert);
 	}
 
 	void Alert::deactivate() {

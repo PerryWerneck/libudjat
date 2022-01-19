@@ -34,48 +34,6 @@
 
  namespace Udjat {
 
-	/// @brief Alert activation (the object who really send the alerts).
-	class Alert::Activation {
-	private:
-		friend class Alert::Controller;
-
-		std::shared_ptr<Alert> alertptr;
-
-		struct {
-			time_t last = 0;
-			time_t next = 0;
-		} timers;
-
-		struct {
-			unsigned int success = 0;
-			unsigned int failed = 0;
-		} count;
-
-		void checkForSleep(const char *msg) noexcept;
-
-		bool restarting = false;
-		time_t running = 0;
-
-	public:
-		Activation(std::shared_ptr<Alert> alert);
-
-		virtual ~Activation();
-
-		/// @brief Schedule next alert.
-		void next() noexcept;
-		void success() noexcept;
-		void failed() noexcept;
-
-		inline const char * name() const noexcept {
-			return alertptr->c_str();
-		}
-
-		inline std::shared_ptr<Alert> alert() const {
-			return alertptr;
-		};
-
-	};;
-
 	/// @brief Singleton for alert emission.
 	class Alert::Controller : public Udjat::Factory {
 	private:

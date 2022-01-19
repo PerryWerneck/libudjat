@@ -91,7 +91,7 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::activate(std::shared_ptr<Alert> alert) const {
-//		Alert::activate(alert,*this);
+		alert->activate(*this, alert);
 	}
 
 	bool Abstract::Agent::activate(std::shared_ptr<State> state) {

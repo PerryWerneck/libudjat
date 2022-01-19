@@ -193,23 +193,21 @@
 
 					ThreadPool::getInstance().push([this,activation]() {
 
-						auto alert = activation->alert();
-
 						try {
 							cout << "alerts\tEmitting '"
-								<< alert->c_str() << "' ("
+								<< activation->name() << "' ("
 								<< (activation->count.success + activation->count.failed + 1)
 								<< ")"
 								<< endl;
 							activation->timers.last = time(0);
-							alert->emit();
+							activation->emit();
 							activation->success();
 						} catch(const exception &e) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << alert->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
+							cerr << "alerts\tAlert '" << activation->name() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
 						} catch(...) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << alert->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
+							cerr << "alerts\tAlert '" << activation->name() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
 						activation->running = 0;
 
