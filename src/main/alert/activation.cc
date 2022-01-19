@@ -38,13 +38,13 @@
 
 	void Alert::Activation::checkForSleep(const char *msg) noexcept {
 
-		time_t rst = (success ? alertptr->restart.success : alertptr->restart.failed);
+		time_t rst = (count.success ? alertptr->restart.success : alertptr->restart.failed);
 
 		if(rst) {
 			restarting = true;
 			timers.next = time(0) + rst;
 			clog
-				<< "alerts\tAlert '" << alertptr->name() << "' cycle " << msg << ", sleeping until" << TimeStamp(timers.next)
+				<< "alerts\tAlert '" << alertptr->name() << "' cycle " << msg << ", sleeping until " << TimeStamp(timers.next)
 				<< endl;
 
 		} else {
@@ -56,11 +56,23 @@
 
 	}
 
-	void Alert::Activation::next(bool failed) noexcept {
+	void Alert::Activation::failed() noexcept {
+		count.failed++;
+		next();
+	}
 
-		if(success >= alertptr->retry.min) {
+	void Alert::Activation::success() noexcept {
+		count.success++;
+		next();
+	}
+
+	void Alert::Activation::next() noexcept {
+
+		cout << "alerts\t" << alertptr->name() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
+
+		if(count.success >= alertptr->retry.min) {
 			checkForSleep("was sucessfull");
-		} else if( (success + failed) >= alertptr->retry.max ) {
+		} else if( (count.success + count.failed) >= alertptr->retry.max ) {
 			checkForSleep("reached the maximum number of emissions");
 		} else {
 			timers.next = time(0) + alertptr->timers.interval;

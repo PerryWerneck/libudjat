@@ -197,21 +197,18 @@
 						try {
 							cout << "alerts\tEmitting '"
 								<< alert->name() << "' ("
-								<< (activation->success + activation->failed + 1)
+								<< (activation->count.success + activation->count.failed + 1)
 								<< ")"
 								<< endl;
 							activation->timers.last = time(0);
 							activation->emit();
-							activation->success++;
-							activation->next(false);
+							activation->success();
 						} catch(const exception &e) {
-							cerr << "alerts\tAlert '" << alert->name() << "': " << e.what() << endl;
-							activation->failed++;
-							activation->next(true);
+							activation->failed();
+							cerr << "alerts\tAlert '" << alert->name() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
 						} catch(...) {
-							cerr << "alerts\tAlert '" << alert->name() << "' has failed" << endl;
-							activation->failed++;
-							activation->next(true);
+							activation->failed();
+							cerr << "alerts\tAlert '" << alert->name() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
 						activation->running = 0;
 

@@ -46,8 +46,10 @@
 			time_t next = 0;
 		} timers;
 
-		unsigned int success = 0;
-		unsigned int failed = 0;
+		struct {
+			unsigned int success = 0;
+			unsigned int failed = 0;
+		} count;
 
 		void checkForSleep(const char *msg) noexcept;
 
@@ -63,7 +65,9 @@
 		virtual void emit() const;
 
 		/// @brief Schedule next alert.
-		void next(bool failed) noexcept;
+		void next() noexcept;
+		void success() noexcept;
+		void failed() noexcept;
 
 		inline const char * name() const noexcept {
 			return alertptr->name();
