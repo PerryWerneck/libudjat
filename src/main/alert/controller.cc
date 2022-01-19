@@ -74,27 +74,31 @@
 			seconds = 1;
 		}
 
+		// Using threadpool because I cant change a timer from a timer callback.
+		ThreadPool::getInstance().push([this,seconds]{
 #ifdef DEBUG
-			cout << "alert\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
+				cout << "alert\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
 #endif // DEBUG
 
-		MainLoop &mainloop = MainLoop::getInstance();
+			MainLoop &mainloop = MainLoop::getInstance();
 
-		lock_guard<mutex> lock(guard);
-		if(activations.empty()) {
+			lock_guard<mutex> lock(guard);
+			if(activations.empty()) {
 
-			cout << "alerts\tStopping controller" << endl;
-			mainloop.remove(this);
+				cout << "alerts\tStopping controller" << endl;
+				mainloop.remove(this);
 
-		} else if(!mainloop.reset(this,seconds*1000)) {
+			} else if(!mainloop.reset(this,seconds*1000)) {
 
-			cout << "alerts\tStarting controller" << endl;
-			mainloop.insert(this,seconds*1000,[this]() {
-				emit();
-				return true;
-			});
+				cout << "alerts\tStarting controller" << endl;
+				mainloop.insert(this,seconds*1000,[this]() {
+					emit();
+					return true;
+				});
 
-		}
+			}
+
+		});
 
 	}
 
@@ -162,60 +166,62 @@
 		time_t now = time(0);
 		time_t next = now + 600;
 
-		{
-			lock_guard<mutex> lock(guard);
-			activations.remove_if([this,now,&next](auto activation){
+		lock_guard<mutex> lock(guard);
+		activations.remove_if([this,now,&next](auto activation){
 
-				auto alert = activation->alert();
+			auto alert = activation->alert();
 
-				if(!activation->timers.next) {
-					// No alert or no next, remove from list.
-					cout << "alerts\tAlert '" << alert->name() << "' was stopped" << endl;
-					return true;
+			if(!activation->timers.next) {
+				// No alert or no next, remove from list.
+				cout << "alerts\tAlert '" << alert->name() << "' was stopped" << endl;
+				return true;
+			}
+
+			if(activation->timers.next <= now) {
+
+				// Timer has expired
+				activation->timers.next = (now + alert->timers.interval);
+
+				if(activation->running) {
+
+					clog << "alerts\tAlert '" << alert->name() << "' is running since " << TimeStamp(activation->running) << endl;
+
+				} else {
+
+					activation->running = time(0);
+
+					ThreadPool::getInstance().push([this,activation]() {
+
+						auto alert = activation->alert();
+
+						try {
+							cout << "alerts\tEmitting '"
+								<< alert->name() << "' ("
+								<< (activation->success + activation->failed + 1)
+								<< ")"
+								<< endl;
+							activation->timers.last = time(0);
+							activation->emit();
+							activation->success++;
+							activation->next(false);
+						} catch(const exception &e) {
+							cerr << "alerts\tAlert '" << alert->name() << "': " << e.what() << endl;
+							activation->failed++;
+							activation->next(true);
+						} catch(...) {
+							cerr << "alerts\tAlert '" << alert->name() << "' has failed" << endl;
+							activation->failed++;
+							activation->next(true);
+						}
+						activation->running = 0;
+
+					});
 				}
+			}
 
-				if(activation->timers.next <= now) {
-
-					// Timer has expired
-					activation->timers.next = (now + alert->timers.interval);
-
-					if(activation->running) {
-
-						clog << "alerts\tAlert '" << alert->name() << "' is running since " << TimeStamp(activation->running) << endl;
-
-					} else {
-
-						activation->running = time(0);
-
-						ThreadPool::getInstance().push([this,activation]() {
-
-							auto alert = activation->alert();
-
-							try {
-								cout << "alerts\tEmitting '" << alert->name() << "'" << endl;
-								activation->timers.last = time(0);
-								activation->emit();
-								activation->success++;
-								activation->next(false);
-							} catch(const exception &e) {
-								cerr << "alerts\tAlert '" << alert->name() << "': " << e.what() << endl;
-								activation->failed++;
-								activation->next(true);
-							} catch(...) {
-								cerr << "alerts\tAlert '" << alert->name() << "' has failed" << endl;
-								activation->failed++;
-								activation->next(true);
-							}
-							activation->running = 0;
-
-						});
-					}
-				}
-
-				next = min(next,activation->timers.next);
-				return false;
-			});
-		}
+			next = min(next,activation->timers.next);
+			return false;
+		});
 
 		reset(next-now);
 
