@@ -81,6 +81,7 @@
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
 
+				/// @brief State alerts.
 				std::vector<std::shared_ptr<Alert>> alerts;
 
 			protected:
@@ -155,17 +156,16 @@
 				virtual void deactivate(const Agent &agent) noexcept;
 
 				/// @brief Expand ${} tags on string.
-				virtual void expand(std::string &text) const;
+				virtual std::string & expand(std::string &text) const;
 
-				/// @brief Associate and alert to this state.
-				inline void push_back(std::shared_ptr<Alert> alert) {
+				/// @brief Insert alert.
+				inline void append(std::shared_ptr<Alert> alert) {
 					alerts.push_back(alert);
 				}
 
 			};
 
 		}
-
 
 		template <typename T>
 		class UDJAT_API State : public Abstract::State {

@@ -20,8 +20,8 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/agent.h>
  #include <udjat/state.h>
+ #include <memory>
 
  namespace Udjat {
 
@@ -30,73 +30,81 @@
 		class Controller;
 		friend class Controller;
 
-		class PrivateData;
-
-		void emit(const PrivateData &priv) noexcept;
-		void checkForSleep(const char *msg) noexcept;
-		void next() noexcept;
-
 	public:
 
-		/// @brief Alert worker.
-		class UDJAT_API Worker {
+		class UDJAT_API Factory {
 		private:
 			const char *name = "";
-			friend class Controller;
-
-			constexpr Worker() {
-			}
-
-		protected:
-
-			/// @brief Worker module info.
 			const ModuleInfo *info = nullptr;
 
 		public:
-			Worker(const char *name);
-			Worker(const char *name, const ModuleInfo *info);
+			constexpr Factory(const char *n, const ModuleInfo *i) : name(n), info(i) {
+			}
 
-			virtual ~Worker();
-
-			virtual void send(const Alert &alert, const std::string &url, const std::string &payload) const;
+			virtual ~Factory() {
+			}
 
 		};
 
-		/// @brief Alert settings
-		struct Settings {
-			const char *name = "alert";		///< @brief Alert name.
-			const char *action = "get";		///< @brief Alert action.
-			const char *url = "";			///< @brief Alert URL.
-			const char *payload = "";		///< @brief Alert payload.
+		class UDJAT_API Activation {
+		private:
+			friend class Alert::Controller;
 
-			constexpr Settings(const char *n, const char *u, const char *a, const char *p) : name(n), action(a), url(u), payload(p) {
+			std::shared_ptr<Alert> alertptr;
+
+			struct {
+				time_t last = 0;
+				time_t next = 0;
+			} timers;
+
+			struct {
+				unsigned int success = 0;
+				unsigned int failed = 0;
+			} count;
+
+			void checkForSleep(const char *msg) noexcept;
+
+			bool restarting = false;
+			time_t running = 0;
+
+			/// @brief Schedule next alert.
+			void next() noexcept;
+
+		protected:
+
+			/// @brief Alert was send.
+			void success() noexcept;
+
+			/// @brief Alert was not send.
+			void failed() noexcept;
+
+		public:
+			Activation(std::shared_ptr<Alert> alert);
+
+			virtual ~Activation();
+
+			inline const char * name() const noexcept {
+				return alertptr->c_str();
 			}
 
-			Settings(const pugi::xml_node &node);
+			inline std::shared_ptr<Alert> alert() const {
+				return alertptr;
+			};
 
+			/// @brief Emit alert.
+			virtual void emit() const;
 		};
 
 	protected:
 
-		/// @brief Alert settings.
-		Settings settings;
-
-		/// @brief Alert worker.
-		const Worker *worker = nullptr;
+		/// @brief Alert name.
+		const char *name = "alert";
 
 		/// @brief Alert limits.
 		struct {
 			size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
 			size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
 		} retry;
-
-		/// @brief Alert activations.
-		struct {
-			time_t last = 0;
-			time_t next = 0;
-			unsigned int success = 0;
-			unsigned int failed = 0;
-		} activations;
 
 		/// @brief Alert timers.
 		struct {
@@ -108,38 +116,36 @@
 		/// @brief Restart timers.
 		struct {
 			time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-			time_t success = 86400;		///< @brief Seconds to wait for reactivate after a successful activation.
+			time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
 		} restart;
 
-		bool restarting = false;
-		time_t running = 0;
+		static void insert(std::shared_ptr<Activation> activation);
 
 	public:
 
-		constexpr Alert(const char *name, const char *url, const char *type="get", const char *payload = "") : settings(name,url,type,payload) {
+		constexpr Alert(const char *n) : name(n) {
 		}
 
-		Alert(const pugi::xml_node &node);
+		/**
+		 * @brief Create alert for xml description.
+		 * @param node XML node with the alert description.
+		 * @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
+		 */
+		Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 		virtual ~Alert();
 
-		inline const char * name() const noexcept {
-			return settings.name;
+		static void initialize();
+
+		inline const char * c_str() const noexcept {
+			return name;
 		}
 
-		inline const char * action() const noexcept {
-			return settings.action;
-		}
+		virtual void activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const;
+		virtual void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const;
 
-		inline const char * url() const noexcept {
-			return settings.url;
-		}
+		static void activate(std::shared_ptr<Alert> alert);
+		static void activate(const char *name, const char *url, const char *action="get", const char *payload = "");
 
-		inline const char * payload() const noexcept {
-			return settings.payload;
-		}
-
-		void activate(const std::string &payload);
-		void activate();
 		void deactivate();
 
 	};

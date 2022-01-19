@@ -21,6 +21,7 @@
 
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
@@ -68,13 +69,12 @@ int main(int argc, char **argv) {
 	};
 
 	class Service : public SystemService, private RandomFactory {
-	private:
-		Alert alert{"test","http://localhost/invalid"};
-
-	protected:
+	public:
 		/// @brief Initialize service.
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
+			Alert::initialize();
+
 			auto root = Abstract::Agent::init("*.xml");
 
 			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
@@ -87,17 +87,22 @@ int main(int argc, char **argv) {
 				cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 			}
 
-			alert.activate();
+			/*
+			MainLoop::getInstance().insert(this,5000,[]() {
+				MainLoop::getInstance().quit();
+				return false;
+			});
+			*/
+
+			Alert::activate("test","http://localhost/invalid");
 
 		}
 
 		/// @brief Deinitialize service.
 		void deinit() override {
 			cout << Application::Name() << "\tDeinitializing" << endl;
-			alert.deactivate();
 		}
 
-	public:
 		Service() = default;
 
 

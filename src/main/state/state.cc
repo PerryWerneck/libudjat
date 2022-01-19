@@ -30,6 +30,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/alert.h>
+ #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
  #include <udjat.h>
@@ -60,6 +61,27 @@ namespace Udjat {
 		this->name = Attribute(node,"name").c_str();
 		this->uri = Attribute(node,"uri").c_str();
 
+		for(pugi::xml_node child : node) {
+
+			if(!strcasecmp(node.name(),"attribute")) {
+				continue;
+			}
+
+			try {
+
+				Factory::parse(child.name(), *this, child);
+
+			} catch(const std::exception &e) {
+
+				cerr << this->name << "\tError '" << e.what() << "' loading node '" << child.name() << "'"  << endl;
+
+			} catch(...) {
+
+				cerr << this->name << "\tUnexpected error loading node '" << child.name() << "'"  << endl;
+
+			}
+
+		}
 	}
 
 	Abstract::State::~State() {
@@ -92,7 +114,7 @@ namespace Udjat {
 #endif // DEBUG
 
 		for(auto alert : alerts) {
-			alert->activate();
+			alert->activate(agent,*this,alert);
 		}
 
 	}
@@ -108,7 +130,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::State::expand(std::string &text) const {
+	std::string & Abstract::State::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key) {
 
@@ -137,6 +159,8 @@ namespace Udjat {
 			return string{"${}"};
 
 		});
+
+		return text;
 
 	}
 

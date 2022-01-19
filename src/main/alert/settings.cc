@@ -24,6 +24,7 @@
 
  namespace Udjat {
 
+	/*
 	static const char * expand(string &text,const pugi::xml_node &node,const char *section) {
 
 		expand(text, [node,section](const char *key) {
@@ -71,5 +72,5 @@
 
 
 	}
-
+	*/
  }

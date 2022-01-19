@@ -99,12 +99,12 @@
 		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
-		<Unit filename="src/main/alert/active.cc" />
+		<Unit filename="src/main/alert/activation.cc" />
 		<Unit filename="src/main/alert/alert.cc" />
 		<Unit filename="src/main/alert/controller.cc" />
+		<Unit filename="src/main/alert/factory.cc" />
 		<Unit filename="src/main/alert/private.h" />
 		<Unit filename="src/main/alert/settings.cc" />
-		<Unit filename="src/main/alert/worker.cc" />
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />
@@ -116,6 +116,7 @@
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
+		<Unit filename="src/main/os/windows/resources.rc" />
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/report.cc" />
@@ -126,15 +127,10 @@
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />
 		<Unit filename="src/main/state/state.cc" />
-		<Unit filename="src/main/url/controller.cc" />
 		<Unit filename="src/main/url/fileprotocol.cc">
 			<Option virtualFolder="src/tools/" />
 		</Unit>
-		<Unit filename="src/main/url/method.cc" />
 		<Unit filename="src/main/url/private.h" />
-		<Unit filename="src/main/url/protocol.cc" />
-		<Unit filename="src/main/url/response.cc" />
-		<Unit filename="src/main/url/url.cc" />
 		<Unit filename="src/main/worker/controller.cc" />
 		<Unit filename="src/main/worker/private.h" />
 		<Unit filename="src/main/worker/worker.cc" />

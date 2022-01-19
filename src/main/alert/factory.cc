@@ -18,16 +18,20 @@
  */
 
  #include "private.h"
+ #include <iostream>
  #include <udjat/tools/url.h>
+
+ using namespace std;
 
  namespace Udjat {
 
+	/*
 	Alert::Worker::Worker(const char *n, const ModuleInfo *i) : name(n), info(i) {
-		// TODO: Insert in controller
+		Alert::Controller::getInstance().insert(this);
 	}
 
 	Alert::Worker::~Worker() {
-		// TODO: Remove from controller.
+		Alert::Controller::getInstance().remove(this);
 	}
 
 	Alert::Worker::Worker(const char *n) : Worker(n,nullptr) {
@@ -52,5 +56,6 @@
 		}
 
 	}
+	*/
 
  }

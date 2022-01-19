@@ -80,7 +80,7 @@
 
 			protected:
 
-				/// @brief Allow use of super:: for acessing abstract::agent methods.
+				/// @brief Allow use of super:: for accessing abstract::agent methods.
 				typedef Abstract::Agent super;
 
 				/// @brief Agent label.
@@ -100,6 +100,9 @@
 				/// @return Value of 'changed'.
 				virtual bool updated(bool changed) noexcept;
 
+				/// @brief Level changed.
+				virtual void onLevelChange();
+
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
 				/// @brief name Allow parsing of agent name.
@@ -108,6 +111,9 @@
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.
 				virtual bool activate(std::shared_ptr<State> state);
+
+				/// @brief Activate an alert.
+				void activate(std::shared_ptr<Alert> alert) const;
 
 				/// @brief Set failed state from known exception
 				void failed(const char *summary, const std::exception &e) noexcept;
@@ -257,11 +263,15 @@
 				/// @brief Insert State.
 				virtual void append_state(const pugi::xml_node &node);
 
+				/// @brief Insert Alert.
+				virtual void append_alert(const pugi::xml_node &node);
+
 				/// @brief Expand ${} tags on string.
 				virtual std::string & expand(std::string &text) const;
 
 				/// @brief Expand ${} tags on string.
 				std::string expand(const char *text) const;
+
 
 			};
 

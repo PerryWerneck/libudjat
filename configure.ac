@@ -266,7 +266,7 @@ dnl ---------------------------------------------------------------------------
 dnl test for vmdetect
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES(VMDETECT, vmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_ERROR(libvmdetect is required))
+PKG_CHECK_MODULES(VMDETECT, vmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
 
 AC_SUBST(VMDETECT_LIBS)
 AC_SUBST(VMDETECT_CFLAGS)

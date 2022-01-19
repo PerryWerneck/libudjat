@@ -52,6 +52,9 @@ namespace Udjat {
 
 	}
 
+	void Abstract::Agent::onLevelChange() {
+	}
+
 	void Abstract::Agent::onChildStateChange() noexcept {
 
 		try {
@@ -85,12 +88,15 @@ namespace Udjat {
 
 		}
 
+	}
 
+	void Abstract::Agent::activate(std::shared_ptr<Alert> alert) const {
+		alert->activate(*this, alert);
 	}
 
 	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
 
-		// It's an empty state? If yes replaces with the default one.
+		// It's an empty state?.
 		if(!state) {
 			throw runtime_error("Activating an empty state");
 		}
@@ -115,7 +121,6 @@ namespace Udjat {
 					std::to_string(state->getLevel())
 				);
 		}
-
 
 		Udjat::Level saved_level = this->getLevel();
 

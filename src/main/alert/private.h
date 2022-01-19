@@ -22,36 +22,31 @@
  #include <config.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/alert.h>
  #include <udjat/worker.h>
+ #include <udjat/factory.h>
+ #include <udjat/tools/mainloop.h>
  #include <mutex>
  #include <list>
+ #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-	/// @brief Alert private data.
-	struct Alert::PrivateData {
-		Alert *alert;
-		const char *name;
-		string url;
-		string payload;
-
-		PrivateData(Alert *alert);
-		PrivateData(Alert *alert, const string &payload);
-
-	};
-
 	/// @brief Singleton for alert emission.
-	class Alert::Controller : public Alert::Worker {
+	class Alert::Controller : public Udjat::Factory, private MainLoop::Service {
 	private:
 
 		/// @brief Mutex for serialization
 		static mutex guard;
 
 		/// @brief List of active workers.
-		list<Alert::PrivateData> alerts;
+		list<shared_ptr<Alert::Activation>> activations;
+
+		/// @brief Alert workers.
+		// list<const Alert::Worker *> workers;
 
 		Controller();
 
@@ -62,16 +57,33 @@
 		/// @param seconds Seconds for the next 'emit()'.
 		void reset(time_t seconds) noexcept;
 
+	protected:
+		void stop() override;
+
 	public:
 		static Controller & getInstance();
 		~Controller();
 
-		void activate(Alert *alert);
-		void activate(Alert *alert, const string &payload);
-		void deactivate(Alert *alert);
-
-		/// @brief Update timer;
+		/// @brief Update timer.
 		void refresh() noexcept;
+
+		/// @brief Insert worker.
+		// void insert(const Alert::Worker *worker);
+
+		/// @brief Remove worker.
+		// void remove(const Alert::Worker *worker);
+
+		/// @brief Insert activation.
+		void insert(const std::shared_ptr<Alert::Activation> activation);
+
+		/// @brief Insert URL activation.
+		void insert(const char *name, const char *url, const char *action, const char *payload);
+
+		/// @brief Remove alert activation.
+		void remove(const Alert *alert);
+
+		/// @brief Create State child.
+		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 
 	};
 

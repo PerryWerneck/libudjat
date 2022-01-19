@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
- 
-/** 
+
+/**
  * @file
  *
  * @brief Implements windows configuration file abstraction.
@@ -146,11 +146,69 @@
 
 		}
 
+		bool hasGroup(const char *group) {
+
+			HKEY hK;
+			LSTATUS st = RegOpenKeyEx(
+								this->hkey,
+								group,
+								0,
+								KEY_READ,
+								&hK
+							);
+
+			if(st != ERROR_SUCCESS) {
+				return false;
+			}
+
+			RegCloseKey(hK);
+			return true;
+		}
+
+		bool hasKey(const char *group, const char *key) {
+
+			HKEY hGroup, hKey;
+			LSTATUS st;
+			bool rc = false;
+
+			st = RegOpenKeyEx(
+					this->hkey,
+					group,
+					0,
+					KEY_READ,
+					&hGroup
+				);
+
+			if(st == ERROR_SUCCESS) {
+
+				st = RegOpenKeyEx(
+						hGroup,
+						key,
+						0,
+						KEY_READ,
+						&hKey
+					);
+
+				if(st == ERROR_SUCCESS) {
+					RegCloseKey(hKey);
+					rc = true;
+				}
+
+				RegCloseKey(hGroup);
+
+			}
+			return rc;
+
+		}
+
 	};
 
 	bool Config::hasGroup(const std::string &group) {
-		// FIXME: Implement.
-		return true;
+		return Controller().hasGroup(group.c_str());
+	}
+
+	bool Config::hasKey(const char *group, const char *key) {
+		return Controller().hasKey(group,key);
 	}
 
 	int32_t Config::get(const std::string &group, const std::string &name, const int32_t def) {

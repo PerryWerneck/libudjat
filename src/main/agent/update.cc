@@ -117,11 +117,6 @@ namespace Udjat {
 		if(!changed)
 			return false;
 
-		//
-		// Value has changed, compute new state, emit alerts
-		//
-		bool level_has_changed = false;
-
 		// Compute new state
 		try {
 
@@ -139,7 +134,9 @@ namespace Udjat {
 				}
 			}
 
-			level_has_changed = activate(new_state);
+			if(activate(new_state)) {
+				onLevelChange();
+			}
 
 		} catch(const exception &e) {
 

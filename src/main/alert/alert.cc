@@ -19,13 +19,20 @@
 
  #include "private.h"
  #include <udjat/tools/xml.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
 
  namespace Udjat {
 
-	Alert::Alert(const pugi::xml_node &node) : settings(node) {
+	void Alert::initialize() {
+		Controller::getInstance();
+	}
 
-		const char *section = node.attribute("settings-from").as_string("alert-defaults");
+	Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
+
+		initialize();
+
+		const char *section = node.attribute("settings-from").as_string(defaults);
 
 		// Seconds to wait before first activation.
 		timers.start =
@@ -76,116 +83,36 @@
 					Config::Value<uint32_t>(section,"restart-when-succeeded",restart.success)
 				);
 
+#ifdef DEBUG
+		cout << c_str() << "\tAlert created" << endl;
+#endif // DEBUG
+
 	}
 
 	Alert::~Alert() {
+	}
 
-		if(running) {
-			cerr << name() << "Critical error: Deleting an active alert" << endl;
+	void Alert::insert(std::shared_ptr<Activation> activation) {
+		Controller::getInstance().insert(activation);
+	}
+
+	void Alert::activate(std::shared_ptr<Alert> alert) {
+		insert(make_shared<Alert::Activation>(alert));
+	}
+
+	void Alert::activate(const Abstract::Agent UDJAT_UNUSED(&agent), const Abstract::State UDJAT_UNUSED(&state), std::shared_ptr<Alert> alert) const {
+		if(alert.get() != this) {
+			throw system_error(EINVAL,system_category(),"Can't activate this alert");
 		}
-		deactivate();
+		activate(alert);
 	}
 
-	void Alert::activate() {
-		Controller::getInstance().activate(this);
-	}
-
-	void Alert::activate(const string &payload) {
-		Controller::getInstance().activate(this,payload);
+	void Alert::activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const {
+		activate(agent,*agent.getState(),alert);
 	}
 
 	void Alert::deactivate() {
-		Controller::getInstance().deactivate(this);
-	}
-
-	void Alert::checkForSleep(const char *msg) noexcept {
-
-		time_t rst = (activations.success ? restart.success : restart.failed);
-
-		if(rst) {
-			restarting = true;
-			activations.next = time(0) + rst;
-			clog
-				<< name() << "\t"
-				<< Logger::Message(
-						"Alert cycle {}, sleeping until {}",
-							msg,
-							TimeStamp(activations.next).to_string()
-					)
-				<< endl;
-
-		} else {
-			activations.next = 0;
-			clog
-				<< name()
-				<< Logger::Message(
-					"\tAlert cycle {}, stopping",
-							msg
-					)
-				<< endl;
-		}
-
-	}
-
-	void Alert::next() noexcept {
-
-		if(activations.success >= retry.min) {
-			checkForSleep("was sucessfull");
-		} else if( (activations.success + activations.failed) >= retry.max ) {
-			checkForSleep("reached the maximum number of emissions");
-		} else {
-			activations.next = time(0) + timers.interval;
-		}
-
-		Controller::getInstance().refresh();
-
-	}
-
-	void Alert::emit(const Alert::PrivateData &data) noexcept {
-
-		if(running) {
-			clog << name() << "\tIs active since " << TimeStamp(running) << endl;
-			activations.next = time(0) + timers.busy;
-		}
-
-		if(restarting) {
-			restarting = false;
-            cout << name() << "\tRestarting alert cycle" << endl;
-			activations.success = activations.failed = 0;
-		}
-
-		if(!worker) {
-			worker = &Controller::getInstance();
-			clog << settings.name << "\tNo worker, using the default one" << endl;
-		}
-
-		running = time(0);
-        activations.next = running + timers.busy;
-
-		// Get a copy of the formatted private data, just in case of it changes.
-		Alert::PrivateData *dyndata = new Alert::PrivateData(data);
-
-        ThreadPool::getInstance().push([this,dyndata]{
-
-			try {
-
-				worker->send(*this, dyndata->url,dyndata->payload);
-				activations.success++;
-
-			} catch(const std::exception &e) {
-				cerr << name() << "\tActivation failed: " << e.what() << endl;
-				activations.failed++;
-			} catch(...) {
-				cerr << name() << "\tUnexpected error emiting alert" << endl;
-				activations.failed++;
-			}
-
-			delete dyndata;
-
-			running = 0;
-			next();
-		});
-
+		Controller::getInstance().remove(this);
 	}
 
  }

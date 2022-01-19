@@ -158,6 +158,13 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wunused-parameter"
+	void Abstract::Agent::append_alert(const pugi::xml_node &node) {
+		throw system_error(EPERM,system_category(),string{"Agent '"} + getName() + "' doesnt allow alerts");
+	}
+	#pragma GCC diagnostic pop
+
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 
 		static const Udjat::ModuleInfo moduleinfo {
