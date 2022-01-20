@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <string.h>
  #include <udjat/tools/timestamp.h>
+ #include <ostream>
 
  namespace Udjat {
 
@@ -148,6 +149,11 @@
  inline Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
 	in.get(value);
 	return in;
+ }
+
+ template <typename T>
+ inline std::ostream & operator<< (std::ostream& os, const Udjat::Value &value) {
+	return os << value.to_string();
  }
 
 
