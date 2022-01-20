@@ -114,7 +114,11 @@ namespace Udjat {
 #endif // DEBUG
 
 		for(auto alert : alerts) {
-			alert->activate(agent,*this,alert);
+			alert->activate(alert,[agent,this](std::string &text) {
+				expand(text);
+				agent.expand(text);
+			});
+			// alert->activate(agent,*this,alert);
 		}
 
 	}

@@ -144,8 +144,8 @@ namespace Udjat {
 
 	Quark::Controller & Quark::Controller::getInstance() {
 		lock_guard<recursive_mutex> lock(guard);
-		static Controller controller;
-		return controller;
+		static Controller instance;
+		return instance;
 	}
 
 	Quark::Quark(const char *str) {

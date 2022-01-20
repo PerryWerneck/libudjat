@@ -140,8 +140,10 @@
 			return name;
 		}
 
-		virtual void activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const;
-		virtual void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const;
+		virtual void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> expander);
+
+		//virtual void activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const;
+		//virtual void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const;
 
 		static void activate(std::shared_ptr<Alert> alert);
 		static void activate(const char *name, const char *url, const char *action="get", const char *payload = "");

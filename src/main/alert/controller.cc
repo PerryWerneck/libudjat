@@ -69,6 +69,38 @@
 
 		}
 
+		void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> expander) override {
+
+			class Activation : public Alert::Activation {
+			private:
+				string url;
+				string action;
+				string payload;
+
+			public:
+				Activation(std::shared_ptr<Alert> alert, const string &u, const char *a, const string &p) : Alert::Activation(alert), url(u), action(a), payload(p) {
+				}
+
+				void emit() const override {
+					cout << "alerts\tEmitting '" << url << "'" << endl;
+					auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
+					if(response->failed()) {
+						throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
+					}
+				}
+
+			};
+
+			string url = this->url;
+			string payload = this->payload;
+
+			expander(url);
+			expander(payload);
+
+			insert(make_shared<Activation>(alert,url,this->action,payload));
+		}
+
+		/*
 		void activate(std::shared_ptr<Alert> alert, const std::string &url, const std::string &payload) const {
 
 			class Activation : public Alert::Activation {
@@ -108,6 +140,7 @@
 
 			activate(alert,url,payload);
 		}
+		*/
 
 	};
 
