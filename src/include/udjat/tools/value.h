@@ -93,7 +93,39 @@
 			return set(value);
 		}
 
+		virtual const Value & get(std::string &value) const;
+
+		virtual const Value & get(short &value) const;
+		virtual const Value & get(unsigned short &value) const;
+
+		virtual const Value & get(int &value) const;
+		virtual const Value & get(unsigned int &value) const;
+
+		virtual const Value & get(long &value) const;
+		virtual const Value & get(unsigned long &value) const;
+
+		virtual const Value & get(TimeStamp &value) const;
+		virtual const Value & get(bool &value) const;
+
+		virtual const Value & get(float &value) const;
+		virtual const Value & get(double &value) const;
+
+		std::string to_string() const;
+
+		inline std::string as_string() const {
+			return to_string();
+		}
+
+		unsigned int as_uint() const;
+		int as_int() const;
+		bool as_bool() const;
+
+		inline operator bool() const {
+			return as_bool();
+		}
+
 	};
+
 
  }
 
@@ -101,11 +133,21 @@
 
 	UDJAT_API const char * to_string(Udjat::Value::Type type) noexcept;
 
+	inline string to_string(const Udjat::Value &value) noexcept {
+		return value.to_string();
+	}
+
  }
 
  template <typename T>
  inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
 	return out.set(value);
+ }
+
+ template <typename T>
+ inline Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
+	in.get(value);
+	return in;
  }
 
 

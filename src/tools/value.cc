@@ -21,6 +21,7 @@
  #include <string>
  #include <sstream>
  #include <iomanip>
+ #include <ctype.h>
 
  using namespace std;
 
@@ -77,6 +78,102 @@
 
 	Value & Value::set(const double value) {
 		return Value::set(std::to_string(value), Real);
+	}
+
+	const Value & Value::get(std::string &value) const {
+		throw runtime_error("Invalid 'value' implementation");
+	}
+
+	const Value & Value::get(short &value) const {
+		value = (short) std::stoi(to_string());
+		return *this;
+	}
+
+	const Value & Value::get(unsigned short &value) const {
+		value = (unsigned short) std::stoi(to_string());
+		return *this;
+	}
+
+	const Value & Value::get(int &value) const {
+		value = std::stoi(to_string());
+		return *this;
+	}
+
+	const Value & Value::get(unsigned int &value) const {
+		value = (unsigned int) std::stoul(to_string());
+		return *this;
+	}
+
+	const Value & Value::get(long &value) const {
+		value = std::stol(to_string());
+		return *this;
+	}
+
+	const Value & Value::get(unsigned long &value) const {
+		value = std::stoul(to_string());
+		return *this;
+	}
+
+	const Value & Value::get(TimeStamp &value) const {
+		throw runtime_error("Can't convert value to timestamp");
+		return *this;
+	}
+
+	const Value & Value::get(bool &value) const {
+
+		string v;
+		get(v);
+
+		char first = toupper(v[0]);
+
+		if(first == 'V' || first == 'T') {
+			value = true;
+			return *this;
+		}
+
+		if(first == 'F') {
+			value = true;
+			return *this;
+		}
+
+		value = stoi(v) != 0;
+
+		return *this;
+	}
+
+	const Value & Value::get(float &value) const {
+		throw runtime_error("Can't convert value to float");
+		return *this;
+	}
+
+	const Value & Value::get(double &value) const {
+		throw runtime_error("Can't convert value to double");
+		return *this;
+	}
+
+	std::string Value::to_string() const {
+		std::string rc;
+		get(rc);
+		return rc;
+	}
+
+
+	unsigned int Value::as_uint() const {
+		unsigned int rc;
+		get(rc);
+		return rc;
+	}
+
+	int Value::as_int() const {
+		int rc;
+		get(rc);
+		return rc;
+	}
+
+	bool Value::as_bool() const {
+		bool rc;
+		get(rc);
+		return rc;
 	}
 
  }
