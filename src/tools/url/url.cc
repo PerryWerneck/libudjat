@@ -18,15 +18,81 @@
  */
 
  #include <config.h>
- #ifndef _WIN32
-	#include <netdb.h>
- #endif // !_WIN32
+ #include <udjat/tools/url.h>
+ #include <cstring>
 
- #include "private.h"
-
+ using namespace std;
 
  namespace Udjat {
 
+	URL::Components URL::ComponentsFactory() const {
+
+		URL::Components components;
+
+#ifdef _WIN32
+
+		#error Implement using URL_COMPONENTS from winhttp
+
+#else
+		const char *ptr;	// Temp pointer.
+
+		size_t from, to;
+
+		// Get URL Scheme.
+		from = find("://");
+		if(from == string::npos) {
+			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
+		}
+		from += 3;
+
+		string scheme{c_str(),from-3};
+		ptr = strrchr(scheme.c_str(),'+');
+		if(ptr) {
+			components.scheme = (ptr+1);
+		} else {
+			components.scheme = scheme;
+		}
+
+		// Get hostname.
+		string hostname;
+		to = find("/",from);
+		if(to == string::npos) {
+			hostname.assign(c_str()+from);
+		} else {
+			hostname.assign(c_str()+from,to-from);
+		}
+
+		ptr = strrchr(hostname.c_str(),':');
+		if(ptr) {
+			components.hostname.assign(hostname.c_str(),(size_t) (ptr - hostname.c_str()));
+			components.srvcname = (ptr+1);
+		} else {
+			components.hostname = hostname;
+			components.srvcname = components.scheme;
+		}
+
+		if(to == string::npos) {
+			return components;
+		}
+
+		from = to;
+		to = find("?",from);
+		if(to == string::npos) {
+			components.path.assign(c_str()+from);
+			return components;
+		}
+
+		components.path.assign(c_str()+from,to-from);
+		components.query = c_str()+to+1;
+
+#endif // _WIN32
+
+		return components;
+
+	}
+
+
+	/*
 	URL::URL() {
 	}
 
@@ -145,6 +211,7 @@
 
 		return rc;
 	}
+	*/
 
  }
 

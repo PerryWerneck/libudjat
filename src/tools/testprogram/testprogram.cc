@@ -7,9 +7,8 @@
  *
  */
 
-#include <iostream>
-#include <udjat/tools/atom.h>
-#include <udjat/tools/logger.h>
+ #include <iostream>
+ #include <udjat/tools/url.h>
 
  using namespace std;
  using namespace Udjat;
@@ -32,6 +31,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		Logger::redirect();
 
@@ -44,6 +44,15 @@ int main(int argc, char **argv) {
 
 
 	}
+	*/
+
+	auto components = URL("http://localhost/sample/path?query=1").ComponentsFactory();
+
+	cout << "Scheme:\t\t'" << components.scheme << "'" << endl;
+	cout << "Hostname:\t'" << components.hostname << "'" << endl;
+	cout << "Service:\t'" << components.srvcname << "'" << endl;
+	cout << "Path:\t\t'" << components.path << "'" << endl;
+	cout << "Query:\t\t'" << components.query << "'" << endl;
 
 	return 0;
 }

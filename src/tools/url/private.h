@@ -30,6 +30,7 @@
 
  namespace Udjat {
 
+	/*
 	class URL::Controller {
 		Controller();
 
@@ -55,5 +56,6 @@
 		shared_ptr<Protocol> find(const char *name);
 
 	};
+	*/
 
  }

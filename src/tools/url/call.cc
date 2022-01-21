@@ -22,6 +22,7 @@
 
  namespace Udjat {
 
+	/*
 	/// @brief Connect to host.
 	/// @return Socket connected to host.
 	int URL::connect(time_t timeout) const {
@@ -43,6 +44,7 @@
 	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) const {
 		return protocol->call(*this,URL::Method::Post,mimetype,payload);
 	}
+	*/
 
  }
 

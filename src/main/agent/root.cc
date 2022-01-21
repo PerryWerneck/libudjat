@@ -95,11 +95,14 @@
 
 						try {
 
+#ifndef DEBUG
 							auto sysid = URL(Config::Value<string>("system","url-summary","dmi:///system/sku").c_str()).get();
 
 							if(sysid->isValid()) {
 								this->summary = Quark(sysid->c_str()).c_str();
 							}
+#endif // !DEBUG
+
 
 						} catch(const std::exception &e) {
 

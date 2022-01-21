@@ -98,12 +98,14 @@
 			}
 
 			void emit() const override {
+#ifndef DEBUG
 				cout << "alerts\tEmitting '" << url << "'" << endl;
 				auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
 				if(response->failed()) {
 					throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
 				}
- 			}
+ #endif // DEBUG
+			}
 
 		};
 

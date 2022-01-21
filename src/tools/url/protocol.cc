@@ -21,6 +21,7 @@
 
  namespace Udjat {
 
+	/*
 	void URL::insert(std::shared_ptr<Protocol> protocol) {
 		Controller::getInstance().insert(protocol);
 	}
@@ -52,5 +53,6 @@
 
 		return rsp->c_str();
 	}
+	*/
 
  }

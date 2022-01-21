@@ -23,6 +23,7 @@
 
  namespace Udjat {
 
+	/*
 	static const ModuleInfo fileprotocolinfo {
 		PACKAGE_NAME,									// The module name.
 		"File protocol module",	 						// The module description.
@@ -84,6 +85,7 @@
 		return response;
 
 	}
+	*/
 
  }
 

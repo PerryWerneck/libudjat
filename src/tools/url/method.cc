@@ -22,6 +22,7 @@
 
  namespace Udjat {
 
+	/*
 	static const char *names[] = {
 		"GET",		// Requests a representation of the specified resource.
 		"HEAD",		// Asks for a response identical to that of a GET request, but without the response body.
@@ -61,6 +62,7 @@
 
 		return names[(int) value];
 	}
+	*/
 
 
  }

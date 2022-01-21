@@ -29,15 +29,13 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/request.h>
- #include <udjat/tools/quark.h>
- #include <memory>
  #include <string>
- #include <algorithm>
+ #include <stdexcept>
+ #include <system_error>
 
  namespace Udjat {
 
- 	namespace HTTP {
+	namespace HTTP {
 
 		/// @brief HTTP exception.
 		class UDJAT_API Exception : public std::runtime_error {
@@ -71,6 +69,30 @@
 
  	}
 
+	class UDJAT_API URL : public std::string {
+	public:
+
+		/// @brief URL Components.
+		struct Components {
+			std::string scheme;		///< @brief The scheme name.
+			std::string hostname;	///< @brief The host name.
+			std::string srvcname;	///< @brief The service name or port number.
+			std::string path;		///< @brief The request path.
+			std::string query;		///< @brief Query data.
+		};
+
+		URL() = default;
+		URL(const char *str) : std::string(unescape(str)) {
+		}
+
+		/// @brief Get URL components.
+		Components ComponentsFactory() const;
+
+		/// @brief Unescape URL
+		static std::string unescape(const char *src);
+	};
+
+ 	/*
 	class UDJAT_API URL {
 	public:
 
@@ -285,8 +307,6 @@
 
 	public:
 
-		/// @brief Unescape URL
-		static std::string unescape(const char *src);
 
 		/// @brief Insert protocol back-end.
 		static void insert(std::shared_ptr<Protocol> p);
@@ -351,9 +371,11 @@
 		std::shared_ptr<URL::Response> post(const char *payload, const char *mimetype = nullptr) const;
 
 	};
+	*/
 
  }
 
+/*
  namespace std {
 
 	inline string to_string(const Udjat::URL &url) {
@@ -365,3 +387,4 @@
 	}
 
  }
+*/

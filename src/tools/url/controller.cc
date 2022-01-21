@@ -23,6 +23,7 @@
 
  namespace Udjat {
 
+	/*
 	void URL::getInfo(Udjat::Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
@@ -79,6 +80,6 @@
 		throw runtime_error(Logger::Message("No available protocol manager for '{}://'",name).c_str());
 
 	}
-
+	*/
 
  }

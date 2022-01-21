@@ -44,6 +44,7 @@ static const Udjat::ModuleInfo moduleinfo {
 
 int main(int argc, char **argv) {
 
+	/*
 	class DummyProtocol : public URL::Protocol {
 	public:
 		DummyProtocol() : URL::Protocol("dummy","0",&moduleinfo) {
@@ -55,6 +56,7 @@ int main(int argc, char **argv) {
 		}
 
 	};
+	*/
 
 	class RandomFactory : public Udjat::Factory {
 	public:
@@ -104,7 +106,7 @@ int main(int argc, char **argv) {
 
 			auto root = Abstract::Agent::init("*.xml");
 
-			Udjat::URL::insert(make_shared<DummyProtocol>());
+			// Udjat::URL::insert(make_shared<DummyProtocol>());
 
 			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
