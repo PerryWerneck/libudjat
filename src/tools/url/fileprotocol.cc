@@ -17,14 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
  #include "private.h"
  #include <udjat/tools/file.h>
 
  namespace Udjat {
 
-	/*
-	static const ModuleInfo fileprotocolinfo {
+	static const ModuleInfo moduleinfo {
 		PACKAGE_NAME,									// The module name.
 		"File protocol module",	 						// The module description.
 		PACKAGE_VERSION, 								// The module version.
@@ -32,60 +30,18 @@
 		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
 
-	URL::Controller::FileProtocol::FileProtocol() : URL::Protocol{"file", "", &fileprotocolinfo} {
+	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",&moduleinfo) {
 	}
 
-	URL::Controller::FileProtocol::~FileProtocol() {
+	Protocol::Controller::File::~File() {
 	}
 
-	std::shared_ptr<URL::Response> URL::Controller::FileProtocol::call(const URL &url, const Method method, const char *mimetype, const char *payload) {
-
-		class Response : public URL::Response {
-		private:
-			string text;
-
-		public:
-			Response() = default;
-
-			void set(const char *text) {
-				this->text = text;
-				this->response.length = this->text.size();
-				this->response.payload = this->text.c_str();
-			}
-
-		};
-
-		std::shared_ptr<Response> response = make_shared<Response>();
-
-		switch(method) {
-		case URL::Method::Get:	// Get method, load the file.
-			response->set(File::Text(url.getDomainName()).c_str());
-			break;
-
-		case URL::Method::Put:	// Put method, save the payload.
-		case URL::Method::Post:	// Post method, save the payload.
-			if(!payload) {
-				throw runtime_error("PUT and POST methods requires a payload");
-			}
-
-			throw system_error(ENOTSUP,system_category(),"PUT and POST methods for file:// are not implemented (yet)");
-
-			break;
-
-		case URL::Method::Head:
-		case URL::Method::Delete:
-		case URL::Method::Connect:
-		case URL::Method::Options:
-		case URL::Method::Trace:
-		case URL::Method::Patch:
-			throw system_error(ENOTSUP,system_category(),"Unsuported method");
-
+	std::string Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char *payload) const {
+		if(method != HTTP::Get) {
+			throw system_error(EINVAL,system_category(),"Invalid request method");
 		}
-
-		return response;
-
+		return string(Udjat::File::Text(url.ComponentsFactory().path.c_str()).c_str());
 	}
-	*/
 
  }
 

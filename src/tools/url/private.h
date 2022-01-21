@@ -27,6 +27,7 @@
  #include <list>
  #include <mutex>
  #include <udjat/tools/logger.h>
+ #include <udjat/factory.h>
 
  using namespace std;
 
@@ -38,6 +39,16 @@
 		list<Protocol *> protocols;
 
 		Controller();
+
+		/// @brief Internal protocol for file://
+		class File : public Udjat::Protocol {
+		public:
+			File();
+			virtual ~File();
+
+			std::string call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
+
+		};
 
 	public:
 		static Controller & getInstance();

@@ -46,7 +46,8 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	auto url = URL{"http://localhost/sample/path?query=1"};
+	// auto url = URL{"http://localhost/sample/path?query=1"};
+	auto url = URL{"file:///tmp/x.txt"};
 	auto components = url.ComponentsFactory();
 
 	cout << "Scheme:\t\t'" << components.scheme << "'" << endl;

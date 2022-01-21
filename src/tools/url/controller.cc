@@ -48,6 +48,9 @@
 
 	const Protocol & Protocol::Controller::find(const char *name) {
 
+		/// @brief Singleton for file protocol.
+		static File file;
+
 		for(auto protocol : protocols) {
 			if(!strcasecmp(protocol->name,name)) {
 				return *protocol;
