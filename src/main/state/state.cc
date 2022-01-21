@@ -88,7 +88,7 @@ namespace Udjat {
 			// Insert alert using the same node.
 			try {
 
-				Factory::parse(node.attribute("alert-factory").as_string("alert"), *this, node);
+				Factory::parse(Attribute(node,"alert-factory").as_string("alert"), *this, node);
 
 			} catch(const std::exception &e) {
 
