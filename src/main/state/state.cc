@@ -82,6 +82,23 @@ namespace Udjat {
 			}
 
 		}
+
+		if(node.attribute("alert").as_bool(false)) {
+
+			// Insert alert using the same node.
+			try {
+
+				Factory::parse(node.attribute("alert-factory").as_string("alert"), *this, node);
+
+			} catch(const std::exception &e) {
+
+				cerr << this->name << "\tError '" << e.what() << "' embedding alert"  << endl;
+
+			}
+
+
+		}
+
 	}
 
 	Abstract::State::~State() {
