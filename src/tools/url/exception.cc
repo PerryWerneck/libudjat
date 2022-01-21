@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <string>
  #include <iostream>

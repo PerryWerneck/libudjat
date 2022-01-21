@@ -36,7 +36,7 @@
 	Protocol::Controller::File::~File() {
 	}
 
-	std::string Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char *payload) const {
+	std::string Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {
 		if(method != HTTP::Get) {
 			throw system_error(EINVAL,system_category(),"Invalid request method");
 		}

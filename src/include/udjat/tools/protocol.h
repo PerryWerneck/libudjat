@@ -101,6 +101,13 @@
 		/// @param method Required method.
 		/// @param payload request payload.
 		/// @return Host response.
+		static std::string call(const char *url, const char *method, const char *payload = "");
+
+		/// @brief Call protocol method.
+		/// @param url The URL to call.
+		/// @param method Required method.
+		/// @param payload request payload.
+		/// @return Host response.
 		virtual std::string call(const URL &url, const HTTP::Method method, const char *payload = "") const;
 
 		/// @brief Call protocol method.

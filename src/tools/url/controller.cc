@@ -57,7 +57,7 @@
 			}
 		}
 
-		throw system_error(ENOENT,system_category(),string{"Cant fint protocol '"} + name + "'");
+		throw system_error(ENOENT,system_category(),string{"Cant find protocol '"} + name + "'");
 	}
 
  }

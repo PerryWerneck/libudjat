@@ -50,6 +50,11 @@
 		return Controller::getInstance().find(name);
 	}
 
+	std::string Protocol::call(const char *u, const char *method, const char *payload) {
+		URL url(u);
+		return find(url).call(u,method,payload);
+	}
+
 	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
 		throw runtime_error(string {"Invalid protocol type for "} + url.c_str());
 	}

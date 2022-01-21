@@ -125,7 +125,7 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			Alert::activate("test","dummy+http://localhost");
+			Alert::activate("test","http://localhost");
 
 		}
 

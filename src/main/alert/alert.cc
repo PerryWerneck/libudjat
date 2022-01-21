@@ -22,6 +22,7 @@
  #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/protocol.h>
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
 
@@ -98,13 +99,8 @@
 			}
 
 			void emit() const override {
-#ifndef DEBUG
 				cout << "alerts\tEmitting '" << url << "'" << endl;
-				auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
-				if(response->failed()) {
-					throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
-				}
- #endif // DEBUG
+				Protocol::call(url.c_str(),action.c_str(),payload.c_str());
 			}
 
 		};

@@ -64,6 +64,7 @@
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/mimetype.h" />
+		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />

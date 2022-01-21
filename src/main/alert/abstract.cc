@@ -28,7 +28,7 @@
 	}
 
 	void Abstract::Alert::activate(std::shared_ptr<Alert> alert) {
-		activate(alert,[](std::string &text){});
+		activate(alert,[](std::string UDJAT_UNUSED(&text)){});
 	}
 
 	Abstract::Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
