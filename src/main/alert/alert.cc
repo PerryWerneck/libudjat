@@ -19,108 +19,98 @@
 
  #include "private.h"
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/quark.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/url.h>
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
 
  namespace Udjat {
 
-	void Alert::initialize() {
-		Controller::getInstance();
-	}
-
-	Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
-
-		initialize();
+	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(Quark(node,"name").c_str()) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
-		// Seconds to wait before first activation.
-		timers.start =
-			Attribute(node,"delay-before-start")
-				.as_uint(
-					Config::Value<uint32_t>(section,"delay-before-start",timers.start)
+		url = expand(
+				Attribute(node,"url")
+					.as_string(
+						Config::Value<string>(section,"url","")
+					),
+					node,
+					section
 				);
 
-		// Seconds to wait on every try.
-		timers.interval =
-			Attribute(node,"delay-before-retry")
-				.as_uint(
-					Config::Value<uint32_t>(section,"delay-before-retry",timers.interval)
-				);
+		payload = expand(
+						node.child_value(),
+						node,
+						section
+					);
 
-		// Seconds to wait if busy.
-		timers.busy =
-			Attribute(node,"delay-when-busy")
-				.as_uint(
-					Config::Value<uint32_t>(section,"delay-when-busy",timers.busy)
-				);
-
-		// How many success emissions after deactivation or sleep?
-		retry.min =
-			Attribute(node,"min-retries")
-				.as_uint(
-					Config::Value<uint32_t>(section,"min-retries",retry.min)
-				);
-
-		// How many retries (success+fails) after deactivation or sleep?
-		retry.max =
-			Attribute(node,"max-retries")
-				.as_uint(
-					Config::Value<uint32_t>(section,"max-retries",retry.max)
-				);
-
-		// How many seconds to restart when failed?
-		restart.failed =
-			Attribute(node,"restart-when-failed")
-				.as_uint(
-					Config::Value<uint32_t>(section,"delay-when-failed",restart.failed)
-				);
-
-		// How many seconds to restart when suceeded?
-		restart.success =
-			Attribute(node,"restart-when-succeeded")
-				.as_uint(
-					Config::Value<uint32_t>(section,"restart-when-succeeded",restart.success)
-				);
-
-#ifdef DEBUG
-		cout << c_str() << "\tAlert created" << endl;
-#endif // DEBUG
+		action = Quark(
+						Attribute(node,"action")
+						.as_string(
+							Config::Value<string>(section,"action","get")
+						)
+					).c_str();
 
 	}
 
-	Alert::~Alert() {
+	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {
+		Abstract::Alert::activate(make_shared<Alert>(name,url,action,payload));
 	}
 
-	void Alert::insert(std::shared_ptr<Activation> activation) {
-		Controller::getInstance().insert(activation);
+	const char * Alert::expand(const char *value, const pugi::xml_node &node, const char *section) {
+
+		string text{value};
+		Udjat::expand(text, [node,section](const char *key) {
+
+			auto attr = Udjat::Attribute(node,key,true);
+			if(attr) {
+				return (string) attr.as_string();
+			}
+
+			if(Udjat::Config::hasKey(section,key)) {
+				return (string) Udjat::Config::Value<string>(section,key,"");
+			}
+
+			return string{"${}"};
+
+		});
+
+		return Udjat::Quark(text).c_str();
+
 	}
 
-	void Alert::activate(std::shared_ptr<Alert> alert) {
-		insert(make_shared<Alert::Activation>(alert));
-	}
+	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const std::function<void(std::string &str)> &expander) const {
 
-	void Alert::activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> UDJAT_UNUSED(expander)) {
-		activate(alert);
-	}
+		class Activation : public Abstract::Alert::Activation {
+		private:
+			string url;
+			string action;
+			string payload;
 
-	/*
-	void Alert::activate(const Abstract::Agent UDJAT_UNUSED(&agent), const Abstract::State UDJAT_UNUSED(&state), std::shared_ptr<Alert> alert) const {
-		if(alert.get() != this) {
-			throw system_error(EINVAL,system_category(),"Can't activate this alert");
-		}
-		activate(alert);
-	}
-	*/
+		public:
+			Activation(const string &u, const string &a, const string &p) : url(u), action(a), payload(p) {
+			}
 
-	/*
-	void Alert::activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const {
-		activate(agent,*agent.getState(),alert);
-	}
-	*/
+			void emit() const override {
+				cout << "alerts\tEmitting '" << url << "'" << endl;
+				auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
+				if(response->failed()) {
+					throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
+				}
+ 			}
 
-	void Alert::deactivate() {
-		Controller::getInstance().remove(this);
+		};
+
+		string url{this->url};
+		string payload{this->payload};
+
+		expander(url);
+		expander(payload);
+
+		return make_shared<Activation>(url,action,payload);
+
 	}
 
  }

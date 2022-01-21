@@ -17,45 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/factory.h>
+ #include <udjat/alert.h>
  #include <iostream>
- #include <udjat/tools/url.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	/*
-	Alert::Worker::Worker(const char *n, const ModuleInfo *i) : name(n), info(i) {
-		Alert::Controller::getInstance().insert(this);
-	}
-
-	Alert::Worker::~Worker() {
-		Alert::Controller::getInstance().remove(this);
-	}
-
-	Alert::Worker::Worker(const char *n) : Worker(n,nullptr) {
-	}
-
-	void Alert::Worker::send(const Alert &alert, const string &url, const string &payload) const {
-#ifdef DEBUG
-		cout << "worker\tProcessing alert " << url << endl;
-#endif // DEBUG
-
-		auto response =
-			Udjat::URL(url.c_str())
-			.call(
-				alert.action(),
-				nullptr,
-				payload.c_str()
-			);
-
-		if(response->failed()) {
-			cout << alert.name() << "\t" << url << " " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
-			throw runtime_error(response->getStatusMessage());
-		}
-
-	}
-	*/
 
  }

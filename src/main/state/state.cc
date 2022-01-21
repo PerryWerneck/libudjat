@@ -106,7 +106,6 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
 #ifdef DEBUG
@@ -114,11 +113,10 @@ namespace Udjat {
 #endif // DEBUG
 
 		for(auto alert : alerts) {
-			alert->activate(alert,[agent,this](std::string &text) {
+			Abstract::Alert::activate(alert,[agent,this](std::string &text) {
 				expand(text);
 				agent.expand(text);
 			});
-			// alert->activate(agent,*this,alert);
 		}
 
 	}

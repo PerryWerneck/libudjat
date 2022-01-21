@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
 		/// @brief Initialize service.
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
-			Alert::initialize();
+			// Alert::initialize();
 
 			auto root = Abstract::Agent::init("*.xml");
 
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			Alert::activate("test","http://localhost/invalid");
+			Alert::activate("test","http://localhost");
 
 		}
 
