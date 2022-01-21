@@ -46,13 +46,16 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	auto components = URL("http://localhost/sample/path?query=1").ComponentsFactory();
+	auto url = URL{"http://localhost/sample/path?query=1"};
+	auto components = url.ComponentsFactory();
 
 	cout << "Scheme:\t\t'" << components.scheme << "'" << endl;
 	cout << "Hostname:\t'" << components.hostname << "'" << endl;
 	cout << "Service:\t'" << components.srvcname << "'" << endl;
 	cout << "Path:\t\t'" << components.path << "'" << endl;
 	cout << "Query:\t\t'" << components.query << "'" << endl;
+
+	cout << "Response:" << endl << url.get() << endl;
 
 	return 0;
 }

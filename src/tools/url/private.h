@@ -18,44 +18,36 @@
  */
 
  #pragma once
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/logger.h>
+ #include <udjat/tools/protocol.h>
  #include <iostream>
- #include <memory>
  #include <list>
+ #include <mutex>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	/*
-	class URL::Controller {
+	class Protocol::Controller {
+	private:
+		static mutex guard;
+		list<Protocol *> protocols;
+
 		Controller();
 
-		class FileProtocol : public URL::Protocol {
-		public:
-
-			FileProtocol();
-
-			virtual ~FileProtocol();
-			virtual std::shared_ptr<URL::Response> call(const URL &url, const Method method, const char *mimetype, const char *payload) override;
-
-		};
-
-		list<shared_ptr<Protocol>> protocols;
-
 	public:
-		~Controller();
 		static Controller & getInstance();
+		~Controller();
 
-		void getInfo(Udjat::Response &response) noexcept;
-		void insert(std::shared_ptr<Protocol> protocol);
+		void insert(Protocol *protocol);
+		void remove(Protocol *protocol);
 
-		shared_ptr<Protocol> find(const char *name);
+		const Protocol & find(const char *name);
 
 	};
-	*/
 
  }

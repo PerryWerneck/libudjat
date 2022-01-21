@@ -35,40 +35,6 @@
 
  namespace Udjat {
 
-	namespace HTTP {
-
-		/// @brief HTTP exception.
-		class UDJAT_API Exception : public std::runtime_error {
-		public:
-
-			/// @brief Error codes.
-			struct Codes {
-				int http;
-				std::error_code system;
-
-				Codes() : http(-1) {
-				}
-
-			};
-
-		protected:
-			std::string url;
-			Codes error;
-
-		public:
-			Exception(const char *url, const char *message);
-			Exception(unsigned int code, const char *url, const char *message);
-			Exception(unsigned int code, const char *url);
-
-			inline const Codes & codes() const noexcept {
-				return error;
-			}
-
-
-		};
-
- 	}
-
 	class UDJAT_API URL : public std::string {
 	public:
 
@@ -85,11 +51,21 @@
 		URL(const char *str) : std::string(unescape(str)) {
 		}
 
+		/// @brief Get URL scheme.
+		std::string scheme() const;
+
 		/// @brief Get URL components.
 		Components ComponentsFactory() const;
 
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
+
+		/// @brief Do a 'get' request.
+		std::string get() const;
+
+		/// @brief Do a 'post' request.
+		std::string post(const char *payload) const;
+
 	};
 
  	/*

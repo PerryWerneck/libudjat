@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include "private.h"
+ #include <cstring>
 
  namespace Udjat {
 

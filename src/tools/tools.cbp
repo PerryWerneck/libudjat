@@ -46,7 +46,9 @@
 		<Unit filename="mainloop/private.h" />
 		<Unit filename="subprocess/private.h" />
 		<Unit filename="testprogram/testprogram.cc" />
+		<Unit filename="url/controller.cc" />
 		<Unit filename="url/private.h" />
+		<Unit filename="url/protocol.cc" />
 		<Unit filename="url/unescape.cc" />
 		<Unit filename="url/url.cc" />
 		<Extensions />

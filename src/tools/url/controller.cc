@@ -17,69 +17,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
  #include "private.h"
- #include <udjat/tools/value.h>
+ #include <cstring>
 
  namespace Udjat {
 
-	/*
-	void URL::getInfo(Udjat::Response &response) {
-		Controller::getInstance().getInfo(response);
-	}
+	mutex Protocol::Controller::guard;
 
-	URL::Controller::Controller() {
-
-		insert(make_shared<FileProtocol>());
-
-	}
-
-	URL::Controller::~Controller() {
-
-	}
-
-	URL::Controller & URL::Controller::getInstance() {
-		static Controller instance;
+	Protocol::Controller & Protocol::Controller::getInstance() {
+		lock_guard<mutex> lock(guard);
+		static Protocol::Controller instance;
 		return instance;
 	}
 
-	void URL::Controller::insert(std::shared_ptr<Protocol> protocol) {
+	Protocol::Controller::Controller() {
+	}
+
+	Protocol::Controller::~Controller() {
+	}
+
+	void Protocol::Controller::insert(Protocol *protocol) {
+		lock_guard<mutex> lock(guard);
 		protocols.push_back(protocol);
 	}
 
-	void URL::Controller::getInfo(Udjat::Response &response) noexcept {
-
-		response.reset(Value::Array);
-
-		for(auto protocol : this->protocols) {
-
-			Value &object = response.append(Value::Object);
-
-			object["id"] = protocol->c_str();
-			object["portname"] = protocol->getDefaultPortName();
-			protocol->getModuleInfo()->get(object);
-
-		}
-
+	void Protocol::Controller::remove(Protocol *protocol) {
+		lock_guard<mutex> lock(guard);
+		protocols.remove(protocol);
 	}
 
-	shared_ptr<URL::Protocol> URL::Controller::find(const char *name) {
-
-		const char * mark = strchr(name,'+');
-
-		if(mark) {
-			return find(string(name, (size_t) (mark-name)).c_str());
-		}
+	const Protocol & Protocol::Controller::find(const char *name) {
 
 		for(auto protocol : protocols) {
-			if(!strcmp(name,protocol->c_str())) {
-				return protocol;
+			if(!strcasecmp(protocol->name,name)) {
+				return *protocol;
 			}
 		}
 
-		throw runtime_error(Logger::Message("No available protocol manager for '{}://'",name).c_str());
-
+		throw system_error(ENOENT,system_category(),string{"Cant fint protocol '"} + name + "'");
 	}
-	*/
 
  }

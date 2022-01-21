@@ -17,13 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <udjat/tools/url.h>
+ #include "private.h"
  #include <cstring>
 
  using namespace std;
 
  namespace Udjat {
+
+	std::string URL::scheme() const {
+
+		size_t pos = find("://");
+		if(pos == string::npos) {
+			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
+		}
+
+		return string{c_str(),pos};
+
+	}
 
 	URL::Components URL::ComponentsFactory() const {
 
@@ -91,127 +101,14 @@
 
 	}
 
-
-	/*
-	URL::URL() {
+	std::string URL::get() const {
+		return Protocol::find(*this).call(*this,HTTP::Get,"");
 	}
 
-	URL::URL(const char *url) : URL() {
-		assign(url);
+	std::string URL::post(const char *payload) const {
+		return Protocol::find(*this).call(*this,HTTP::Post,payload);
 	}
 
-	URL::~URL() {
-	}
-
-	const char * URL::getPortName() const {
-		if(port.empty()) {
-			const char *portname = protocol->getDefaultPortName();
-			if(!(portname && *portname)) {
-				portname = protocol->c_str();
-			}
-			return portname;
-		}
-		return port.c_str();
-	}
-
-	int URL::getPortNumber() const {
-
-		const char * portname = getPortName();
-
-		// Convert numeric ports direct.
-		int port = atoi(portname);
-		if(port)
-			return port;
-
-		// Can't convert numeric, search by port name.
-		struct servent *se = getservbyname(portname,NULL);
-		if(!se) {
-			throw runtime_error(string{"Can't find port number for service '"} + portname + "'");
-		}
-
-		return htons(se->s_port);
-
-	}
-
-	const char * URL::getFileName() const {
-		return filename.c_str();
-	}
-
-	URL & URL::assign(const char *u) {
-
-		string url = unescape(u);
-
-		if(url.empty()) {
-			throw runtime_error("URL value can't be empty");
-		}
-
-		size_t from, to;
-
-		// Get scheme and find associated protocol manager.
-		from = url.find("://");
-		if(from == string::npos) {
-			throw runtime_error(string{"Can't decode URL scheme on '"} + url + "'");
-		}
-		from += 3;
-
-		this->protocol = Controller::getInstance().find(string(url.c_str(),from-3).c_str());
-
-		// Get hostname and port.
-		string domain;
-
-		to = url.find("/",from);
-		if(to == string::npos) {
-			domain.assign(url.c_str()+from);
-		} else {
-			domain.assign(url.c_str()+from,to-from);
-		}
-		from = to;
-
-		to = domain.find(':');
-		if(to == string::npos) {
-			this->domain.assign(domain);
-		} else {
-			this->domain.assign(domain.c_str(),to);
-			this->port.assign(domain.c_str()+to+1);
-		}
-
-		if(from ==string::npos)
-			return *this;
-
-		to = url.find("?",from);
-
-		if(to == string::npos) {
-			this->filename.assign(url.c_str()+from);
-			return *this;
-		}
-
-		this->filename.assign(url.c_str()+from,to-from);
-
-		// TODO: Parse arguments.
-
-		return *this;
-	}
-
-	std::string URL::to_string() const {
-
-		string rc{protocol->c_str()};
-
-		rc += "://";
-		rc += domain;
-
-		if(!port.empty()) {
-			rc += ":";
-			rc += port;
-		}
-
-		if(!filename.empty()) {
-			rc += "/";
-			rc += filename;
-		}
-
-		return rc;
-	}
-	*/
 
  }
 

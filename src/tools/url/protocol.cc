@@ -18,41 +18,52 @@
  */
 
  #include "private.h"
+ #include <cstring>
 
  namespace Udjat {
 
-	/*
-	void URL::insert(std::shared_ptr<Protocol> protocol) {
-		Controller::getInstance().insert(protocol);
+	static const char * method_names[] = {
+		"get",
+		"head",
+		"post",
+		"put",
+		"delete",
+		"connect",
+		"options",
+		"trace",
+		"patch",
+	};
+
+	Protocol::Protocol(const char *n, const ModuleInfo *i) : name(n), info(i) {
+		Controller::getInstance().insert(this);
 	}
 
-	URL::Protocol::~Protocol() {
-		cout << name << "\tProtocol unregistered" << endl;
+	Protocol::~Protocol() {
+		Controller::getInstance().remove(this);
 	}
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	std::shared_ptr<URL::Response> URL::Protocol::call(const URL &url, const URL::Method method, const char *mimetype, const char *payload) {
-		throw runtime_error(string{"No back-end protocol for '"} + url.to_string() + "'");
+	const Protocol & Protocol::find(const URL &url) {
+		return find(url.scheme().c_str());
 	}
-	#pragma GCC diagnostic pop
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	int URL::Protocol::connect(const URL &url, time_t timeout) {
-		throw runtime_error(string{"No back-end protocol for connect('"} + url.to_string() + "')");
+	const Protocol & Protocol::find(const char *name) {
+		return Controller::getInstance().find(name);
 	}
-	#pragma GCC diagnostic pop
 
-	std::string URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
+	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
+		throw runtime_error(string {"Invalid protocol type for "} + url.c_str());
+	}
 
-		auto rsp = call(url,method,"application/json; charset=utf-8",payload.getPath());
-		if(rsp->getStatusCode() != 200) {
-			throw runtime_error(rsp->getStatusMessage());
+	std::string Protocol::call(const URL &url, const char *method, const char *payload) const {
+
+		for(size_t ix = 0; ix < (sizeof(method_names)/sizeof(method_names[0])); ix++) {
+			if(!strcasecmp(method,method_names[ix])) {
+				return call(url,(HTTP::Method) ix, payload);
+			}
 		}
 
-		return rsp->c_str();
+		throw runtime_error(string {"Unknown method '"} + method + "' for " + url.c_str());
+
 	}
-	*/
 
  }
