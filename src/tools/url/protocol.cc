@@ -21,6 +21,10 @@
 
  namespace Udjat {
 
+	void URL::insert(std::shared_ptr<Protocol> protocol) {
+		Controller::getInstance().insert(protocol);
+	}
+
 	URL::Protocol::~Protocol() {
 		cout << name << "\tProtocol unregistered" << endl;
 	}

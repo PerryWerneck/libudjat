@@ -207,6 +207,7 @@
 		<Unit filename="src/tools/url/private.h" />
 		<Unit filename="src/tools/url/protocol.cc" />
 		<Unit filename="src/tools/url/response.cc" />
+		<Unit filename="src/tools/url/unescape.cc" />
 		<Unit filename="src/tools/url/url.cc" />
 		<Unit filename="src/tools/value.cc" />
 		<Unit filename="src/tools/xml.cc" />

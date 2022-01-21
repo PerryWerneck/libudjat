@@ -23,6 +23,10 @@
 
  namespace Udjat {
 
+	void URL::getInfo(Udjat::Response &response) {
+		Controller::getInstance().getInfo(response);
+	}
+
 	URL::Controller::Controller() {
 
 		insert(make_shared<FileProtocol>());
