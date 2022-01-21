@@ -51,6 +51,9 @@
 		URL(const char *str) : std::string(unescape(str)) {
 		}
 
+		URL(const std::string &str) : URL(str.c_str()) {
+		}
+
 		/// @brief Get URL scheme.
 		std::string scheme() const;
 
