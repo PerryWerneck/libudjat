@@ -17,6 +17,7 @@
 
 	</agent>
 
+	<!--
 	<random name='random600' update-timer='600'>
 
 		<state name='s0' value='0' summary='Random 0'>
@@ -30,7 +31,9 @@
 		<state name='s5' value='5' summary='Random 5' />
 		
 	</random>
+	-->
 
+	<!--
 	<random name='random10' update-timer='10'>
 
 		<attribute name='alert-url' value='http://localhost' />
@@ -54,5 +57,6 @@
 		</state>
 
 	</random>
-
+	-->
+	
 </config>

@@ -60,6 +60,12 @@
 
 	shared_ptr<URL::Protocol> URL::Controller::find(const char *name) {
 
+		const char * mark = strchr(name,'+');
+
+		if(mark) {
+			return find(string(name, (size_t) (mark-name)).c_str());
+		}
+
 		for(auto protocol : protocols) {
 			if(!strcmp(name,protocol->c_str())) {
 				return protocol;

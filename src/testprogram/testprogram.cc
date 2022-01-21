@@ -25,6 +25,7 @@
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
+ #include <udjat/tools/url.h>
  #include <iostream>
  #include <memory>
 
@@ -33,17 +34,31 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
+static const Udjat::ModuleInfo moduleinfo {
+	PACKAGE_NAME,									// The module name.
+	"Test program",				 					// The module description.
+	PACKAGE_VERSION, 								// The module version.
+	PACKAGE_URL, 									// The package URL.
+	PACKAGE_BUGREPORT 								// The bugreport address.
+};
+
 int main(int argc, char **argv) {
 
-	class RandomFactory : public Udjat::Factory {
-	private:
-
-		struct {
-			Alert::Factory alert;
-		} factories;
-
+	class DummyProtocol : public URL::Protocol {
 	public:
-		RandomFactory() : Udjat::Factory("random") {
+		DummyProtocol() : URL::Protocol("dummy","0",&moduleinfo) {
+		}
+
+		std::shared_ptr<URL::Response> call(const URL &url, const URL::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*mimetype), const char UDJAT_UNUSED(*payload)) override {
+			cout << "dummy\t" << url<< " <<<<<<<<<<<<<<<<<" << endl;
+			return make_shared<URL::Response>();
+		}
+
+	};
+
+	class RandomFactory : public Udjat::Factory {
+	public:
+		RandomFactory() : Udjat::Factory("random",&moduleinfo) {
 			cout << "random agent factory was created" << endl;
 			srand(time(NULL));
 		}
@@ -75,6 +90,12 @@ int main(int argc, char **argv) {
 	};
 
 	class Service : public SystemService, private RandomFactory {
+	private:
+
+		struct {
+			Alert::Factory alert;
+		} factories;
+
 	public:
 		/// @brief Initialize service.
 		void init() override {
@@ -82,6 +103,8 @@ int main(int argc, char **argv) {
 			// Alert::initialize();
 
 			auto root = Abstract::Agent::init("*.xml");
+
+			Udjat::URL::insert(make_shared<DummyProtocol>());
 
 			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
@@ -100,7 +123,7 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			Alert::activate("test","http://localhost");
+			Alert::activate("test","dummy+http://localhost");
 
 		}
 
