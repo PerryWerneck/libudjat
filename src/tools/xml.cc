@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	static xml_attribute find(const xml_node &n, const char *name, bool upsearch) {
+	static xml_attribute find(const xml_node &n, const char *name, const char *upsearch) {
 
 		auto node = n;
 
@@ -47,22 +47,24 @@
 
 			}
 
-			if(upsearch && node.attribute("allow-upsearch").as_bool(true))
+			if(upsearch && node.attribute("allow-upsearch").as_bool(true)) {
+				name = upsearch;
 				node = node.parent();
-			else
+			} else {
 				break;
+			}
 		}
 
 		return xml_attribute();
 	}
 
-	Attribute::Attribute(const xml_node &node, const char *name, bool upsearch) : xml_attribute(find(node, name, upsearch)) {
+	Attribute::Attribute(const pugi::xml_node &node, const char *name, const char *upsearch) : xml_attribute(find(node, name, upsearch)) {
 
-		str = this->as_string();
+		value = this->as_string();
 
-		expand(str,[node](const char *key){
+		expand(value,[node](const char *key){
 
-			auto attr = find(node,key,true);
+			auto attr = find(node,key,key);
 			if(attr) {
 				return attr.as_string();
 			}
@@ -73,11 +75,17 @@
 
 	}
 
+	Attribute::Attribute(const xml_node &node, const char *name, bool upsearch) : Attribute(node,name,(upsearch ? name : nullptr)) {
+	}
+
+	Attribute::Attribute(const pugi::xml_node &node, const char *name) : Attribute(node,name,node.attribute("allow-upsearch").as_bool(true)) {
+	}
+
 	std::string Attribute::to_string(const string &def) const {
 		if(*this) {
 			return def;
 		}
-		return str;
+		return value;
 	}
 
 	Quark Attribute::as_quark(const char *def) const {
@@ -94,7 +102,7 @@
 
 		expand(text,[node](const char *key){
 
-			Attribute attribute(node,key);
+			Attribute attribute(node,key,key);
 			if(attribute) {
 				return attribute.as_string();
 			}

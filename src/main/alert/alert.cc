@@ -32,13 +32,17 @@
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
 		url = expand(
-				Attribute(node,"url")
+				Attribute(node,"url","alert-url")
 					.as_string(
 						Config::Value<string>(section,"url","")
 					),
 					node,
 					section
 				);
+
+		if(!(url && *url)) {
+			throw runtime_error("Required attribute 'url' or upstream 'alert-url' are both missing");
+		}
 
 		payload = expand(
 						node.child_value(),
@@ -52,8 +56,6 @@
 							Config::Value<string>(section,"action","get")
 						)
 					).c_str();
-
-		cout << "************************" << endl;
 
 	}
 

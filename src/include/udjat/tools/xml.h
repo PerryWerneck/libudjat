@@ -44,10 +44,12 @@
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {
 		private:
-			std::string str;
+			std::string value;
 
 		public:
-			Attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
+			Attribute(const pugi::xml_node &node, const char *name, const char *upsearch);
+			Attribute(const pugi::xml_node &node, const char *name, bool upsearch);
+			Attribute(const pugi::xml_node &node, const char *name);
 
 			operator uint32_t() const {
 				return as_uint();

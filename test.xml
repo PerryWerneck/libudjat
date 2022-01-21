@@ -33,7 +33,7 @@
 
 	<random name='random10' update-timer='10'>
 
-		<attribute name='url' value='http://localhost' />
+		<attribute name='alert-url' value='http://localhost' />
 
 		<state name='s0' value='0' summary='Random 0' alert='yes'>
 		</state>
