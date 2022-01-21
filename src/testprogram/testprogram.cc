@@ -36,6 +36,12 @@
 int main(int argc, char **argv) {
 
 	class RandomFactory : public Udjat::Factory {
+	private:
+
+		struct {
+			Alert::Factory alert;
+		} factories;
+
 	public:
 		RandomFactory() : Udjat::Factory("random") {
 			cout << "random agent factory was created" << endl;

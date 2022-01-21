@@ -20,11 +20,42 @@
  #include <config.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
+ #include <udjat/agent.h>
+ #include <udjat/state.h>
  #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
+	static const Udjat::ModuleInfo moduleinfo {
+		PACKAGE_NAME,									// The module name.
+		"Alert factory",			 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
+
+	Alert::Factory::Factory() : Udjat::Factory("alert",&moduleinfo) {
+	}
+
+	bool Alert::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+		try {
+
+			parent.append_alert(node);
+
+		} catch(const std::exception &e) {
+
+			cerr << "alerts\t" << e.what() << endl;
+			return false;
+
+		}
+		return true;
+	}
+
+	bool Alert::Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {
+		parent.append(make_shared<Alert>(node));
+		return true;
+	}
 
  }

@@ -53,6 +53,8 @@
 						)
 					).c_str();
 
+		cout << "************************" << endl;
+
 	}
 
 	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {

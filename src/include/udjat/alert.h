@@ -20,6 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/factory.h>
  #include <memory>
 
  namespace Udjat {
@@ -148,6 +149,14 @@
 		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const;
 
 	public:
+
+		class Factory : public Udjat::Factory {
+		public:
+			Factory();
+			bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+			bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
+		};
+
 		constexpr Alert(const char *name, const char *u, const char *a = "get", const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 		}
 
