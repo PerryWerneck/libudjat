@@ -51,7 +51,7 @@
 					);
 
 		action = Quark(
-						Attribute(node,"action")
+						Attribute(node,"action","alert-action")
 						.as_string(
 							Config::Value<string>(section,"action","get")
 						)
@@ -68,7 +68,7 @@
 		string text{value};
 		Udjat::expand(text, [node,section](const char *key) {
 
-			auto attr = Udjat::Attribute(node,key,true);
+			auto attr = Udjat::Attribute(node,key,key);
 			if(attr) {
 				return (string) attr.as_string();
 			}
