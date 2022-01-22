@@ -32,7 +32,7 @@
 			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
 		}
 
-		return string{c_str(),pos};
+		return string{string::c_str(),pos};
 
 	}
 
@@ -40,11 +40,6 @@
 
 		URL::Components components;
 
-#ifdef _WIN32
-
-		#error Implement using URL_COMPONENTS from winhttp
-
-#else
 		const char *ptr;	// Temp pointer.
 
 		size_t from, to;
@@ -56,7 +51,7 @@
 		}
 		from += 3;
 
-		string scheme{c_str(),from-3};
+		string scheme{string::c_str(),from-3};
 		ptr = strrchr(scheme.c_str(),'+');
 		if(ptr) {
 			components.scheme = (ptr+1);
@@ -68,9 +63,9 @@
 		string hostname;
 		to = find("/",from);
 		if(to == string::npos) {
-			hostname.assign(c_str()+from);
+			hostname.assign(string::c_str()+from);
 		} else {
-			hostname.assign(c_str()+from,to-from);
+			hostname.assign(string::c_str()+from,to-from);
 		}
 
 		ptr = strrchr(hostname.c_str(),':');
@@ -89,14 +84,12 @@
 		from = to;
 		to = find("?",from);
 		if(to == string::npos) {
-			components.path.assign(c_str()+from);
+			components.path.assign(string::c_str()+from);
 			return components;
 		}
 
-		components.path.assign(c_str()+from,to-from);
-		components.query = c_str()+to+1;
-
-#endif // _WIN32
+		components.path.assign(string::c_str()+from,to-from);
+		components.query = string::c_str()+to+1;
 
 		return components;
 
@@ -108,6 +101,17 @@
 
 	std::string URL::post(const char *payload) const {
 		return Protocol::find(*this).call(*this,HTTP::Post,payload);
+	}
+
+	const char * URL::c_str() const noexcept {
+
+		for(const char *ptr = string::c_str(); *ptr && *ptr != ':';ptr++) {
+			if(*ptr == '+') {
+				return ptr+1;
+			}
+		}
+
+		return string::c_str();
 	}
 
 	int URL::Components::portnumber() const {

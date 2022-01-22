@@ -22,6 +22,7 @@
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/protocol.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
@@ -44,19 +45,12 @@ static const Udjat::ModuleInfo moduleinfo {
 
 int main(int argc, char **argv) {
 
-	/*
-	class DummyProtocol : public URL::Protocol {
+	class DummyProtocol : public Udjat::Protocol {
 	public:
-		DummyProtocol() : URL::Protocol("dummy","0",&moduleinfo) {
-		}
-
-		std::shared_ptr<URL::Response> call(const URL &url, const URL::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*mimetype), const char UDJAT_UNUSED(*payload)) override {
-			cout << "dummy\t" << url<< " <<<<<<<<<<<<<<<<<" << endl;
-			return make_shared<URL::Response>();
+		DummyProtocol() : Udjat::Protocol("dummy",&moduleinfo) {
 		}
 
 	};
-	*/
 
 	class RandomFactory : public Udjat::Factory {
 	public:
@@ -96,6 +90,7 @@ int main(int argc, char **argv) {
 
 		struct {
 			Alert::Factory alert;
+			DummyProtocol protocol;
 		} factories;
 
 	public:
@@ -125,7 +120,7 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			Alert::activate("test","http://localhost");
+			Alert::activate("test","dummy+http://localhost");
 
 		}
 

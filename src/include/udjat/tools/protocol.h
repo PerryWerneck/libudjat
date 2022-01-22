@@ -39,6 +39,9 @@
 
 	public:
 
+		Protocol(const Protocol &) = delete;
+		Protocol(const Protocol *) = delete;
+
 		Protocol(const char *name, const ModuleInfo *module);
 		virtual ~Protocol();
 

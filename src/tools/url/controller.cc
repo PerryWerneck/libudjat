@@ -38,6 +38,9 @@
 
 	void Protocol::Controller::insert(Protocol *protocol) {
 		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "Inserting protocol " << protocol->name << endl;
+#endif // DEBUG
 		protocols.push_back(protocol);
 	}
 
@@ -48,9 +51,16 @@
 
 	const Protocol & Protocol::Controller::find(const char *name) {
 
-		/// @brief Singleton for file protocol.
-		static File file;
+		{
+			/// @brief Singleton for file protocol.
+			static File file;
+		}
 
+#ifdef DEBUG
+		cout << "Searching for protocol '" << name << "'" << endl;
+#endif // DEBUG
+
+		lock_guard<mutex> lock(guard);
 		for(auto protocol : protocols) {
 			if(!strcasecmp(protocol->name,name)) {
 				return *protocol;
@@ -68,7 +78,7 @@
 
 			Value &object = response.append(Value::Object);
 			object["id"] = protocol->name;
-			protocol->info->get(object);
+//			protocol->info->get(object);
 
 		}
 

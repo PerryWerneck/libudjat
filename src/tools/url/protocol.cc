@@ -52,7 +52,14 @@
 	}
 
 	const Protocol & Protocol::find(const URL &url) {
-		return find(url.scheme().c_str());
+		string scheme = url.scheme();
+
+		const char *ptr = strrchr(scheme.c_str(),'+');
+		if(ptr) {
+			scheme.resize(ptr - scheme.c_str());
+		}
+
+		return find(scheme.c_str());
 	}
 
 	const Protocol & Protocol::find(const char *name) {
@@ -65,11 +72,11 @@
 
 	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
 		URL url(u);
-		return find(url).call(u,method,payload);
+		return find(url).call(url,method,payload);
 	}
 
 	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
-		throw runtime_error(string {"Invalid protocol type for "} + url.c_str());
+		throw runtime_error(string {"Invalid protocol '"} + name + "' for " + url.string::c_str());
 	}
 
 	std::string Protocol::call(const URL &url, const char *method, const char *payload) const {
