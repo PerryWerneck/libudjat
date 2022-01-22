@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <cstring>
+ #include <netdb.h>
 
  using namespace std;
 
@@ -109,6 +110,20 @@
 		return Protocol::find(*this).call(*this,HTTP::Post,payload);
 	}
 
+	int URL::Components::portnumber() const {
+
+		for(const char *ptr = srvcname.c_str(); *ptr; ptr++) {
+			if(!isdigit(*ptr)) {
+				struct servent *se = getservbyname(srvcname.c_str(),NULL);
+				if(se) {
+					return htons(se->s_port);
+				}
+				throw system_error(EINVAL,system_category(),string{"The service '"} + srvcname.c_str() + "' is invalid");
+			}
+		}
+
+		return stoi(srvcname);
+	}
 
  }
 

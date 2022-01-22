@@ -45,6 +45,10 @@
 			std::string srvcname;	///< @brief The service name or port number.
 			std::string path;		///< @brief The request path.
 			std::string query;		///< @brief Query data.
+
+			/// @brief Get the port number from srvcname.
+			int portnumber() const;
+
 		};
 
 		URL() = default;

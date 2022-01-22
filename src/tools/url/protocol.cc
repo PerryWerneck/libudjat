@@ -20,19 +20,28 @@
  #include "private.h"
  #include <cstring>
 
+ static const char * method_names[] = {
+	"get",
+	"head",
+	"post",
+	"put",
+	"delete",
+	"connect",
+	"options",
+	"trace",
+	"patch",
+ };
+
  namespace Udjat {
 
-	static const char * method_names[] = {
-		"get",
-		"head",
-		"post",
-		"put",
-		"delete",
-		"connect",
-		"options",
-		"trace",
-		"patch",
-	};
+	HTTP::Method HTTP::MethodFactory(const char *name) {
+		for(size_t ix = 0; ix < (sizeof(method_names)/sizeof(method_names[0])); ix++) {
+			if(!strcasecmp(name,method_names[ix])) {
+				return (Method) ix;
+			}
+		}
+		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
+	}
 
 	Protocol::Protocol(const char *n, const ModuleInfo *i) : name(n), info(i) {
 		Controller::getInstance().insert(this);
@@ -60,15 +69,19 @@
 	}
 
 	std::string Protocol::call(const URL &url, const char *method, const char *payload) const {
-
-		for(size_t ix = 0; ix < (sizeof(method_names)/sizeof(method_names[0])); ix++) {
-			if(!strcasecmp(method,method_names[ix])) {
-				return call(url,(HTTP::Method) ix, payload);
-			}
-		}
-
-		throw runtime_error(string {"Unknown method '"} + method + "' for " + url.c_str());
-
+		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
  }
+
+ namespace std {
+
+	const char * to_string(const Udjat::HTTP::Method method) {
+		if((size_t) method > (sizeof(method_names)/sizeof(method_names[0]))) {
+			throw system_error(EINVAL,system_category(),"Invalid method id");
+		}
+		return method_names[method];
+	}
+
+ }
+

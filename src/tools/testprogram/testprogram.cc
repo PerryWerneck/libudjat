@@ -47,12 +47,13 @@ int main(int argc, char **argv) {
 	*/
 
 	// auto url = URL{"http://localhost/sample/path?query=1"};
-	auto url = URL{"file:///tmp/x.txt"};
+	auto url = URL{"http:///tmp/x.txt"};
 	auto components = url.ComponentsFactory();
 
 	cout << "Scheme:\t\t'" << components.scheme << "'" << endl;
 	cout << "Hostname:\t'" << components.hostname << "'" << endl;
 	cout << "Service:\t'" << components.srvcname << "'" << endl;
+	cout << "Port:\t\t'" << components.portnumber() << "'" << endl;
 	cout << "Path:\t\t'" << components.path << "'" << endl;
 	cout << "Query:\t\t'" << components.query << "'" << endl;
 

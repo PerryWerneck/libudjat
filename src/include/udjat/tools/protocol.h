@@ -41,6 +41,8 @@
 			Patch,		///< @brief Apply partial modifications to a resource.
 		};
 
+		Method MethodFactory(const char *name);
+
 		/// @brief HTTP exception.
 		class UDJAT_API Exception : public std::runtime_error {
 		public:
@@ -120,4 +122,10 @@
 	};
 
  }
+
+ namespace std {
+
+	const char * to_string(const Udjat::HTTP::Method method);
+ }
+
 
