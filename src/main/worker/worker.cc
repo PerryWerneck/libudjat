@@ -50,23 +50,22 @@ namespace Udjat {
 		return find(name)->work(request,response);
 	}
 
-	bool Worker::get(Request &request, Response &response) const {
+	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
 		return false;
 	}
 
-	bool Worker::head(Request &request, Response &response) const {
+	bool Worker::head(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
 		return false;
 	}
 
 	bool Worker:: work(Request &request, Response &response) const {
 
 		switch(request.as_type()) {
-		case Request::Type::Get:
+		case HTTP::Get:
 			return get(request,response);
 
-		case Request::Type::Head:
+		case HTTP::Head:
 			return head(request,response);
-
 		}
 
 		return false;

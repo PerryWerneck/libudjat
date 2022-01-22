@@ -35,56 +35,6 @@
 
  namespace Udjat {
 
-	namespace HTTP {
-
-		/// @brief Protocol Method.
-		/// <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>
-		enum Method : uint8_t {
-			Get,		///< @brief Requests a representation of the specified resource.
-			Head,		///< @brief Asks for a response identical to that of a GET request, but without the response body.
-			Post,		///< @brief Submit an entity to the specified resource, often causing a change in state or side effects on the server.
-			Put,		///< @brief Replaces all current representations of the target resource with the request payload.
-			Delete,		///< @brief Deletes the specified resource.
-			Connect,	///< @brief Establishes a tunnel to the server identified by the target resource.
-			Options,	///< @brief Describe the communication options for the target resource.
-			Trace,		///< @brief Performs a message loop-back test along the path to the target resource.
-			Patch,		///< @brief Apply partial modifications to a resource.
-		};
-
-		Method MethodFactory(const char *name);
-
-		/// @brief HTTP exception.
-		class UDJAT_API Exception : public std::runtime_error {
-		public:
-
-			/// @brief Error codes.
-			struct Codes {
-				int http;
-				std::error_code system;
-
-				Codes() : http(-1) {
-				}
-
-			};
-
-		protected:
-			std::string url;
-			Codes error;
-
-		public:
-			Exception(const char *url, const char *message);
-			Exception(unsigned int code, const char *url, const char *message);
-			Exception(unsigned int code, const char *url);
-
-			inline const Codes & codes() const noexcept {
-				return error;
-			}
-
-
-		};
-
- 	}
-
 	class UDJAT_API URL : public std::string {
 	public:
 

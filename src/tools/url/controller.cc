@@ -60,4 +60,18 @@
 		throw system_error(ENOENT,system_category(),string{"Cant find protocol '"} + name + "'");
 	}
 
+	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
+
+		response.reset(Value::Array);
+
+		for(auto protocol : protocols) {
+
+			Value &object = response.append(Value::Object);
+			object["id"] = protocol->name;
+			protocol->info->get(object);
+
+		}
+
+	}
+
  }

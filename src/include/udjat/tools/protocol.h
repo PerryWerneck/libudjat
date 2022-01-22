@@ -22,6 +22,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
+ #include <udjat/request.h>
 
  namespace Udjat {
 
@@ -37,8 +38,6 @@
 		/// @brief Module information.
 		const ModuleInfo *info;
 
-	protected:
-
 	public:
 
 		Protocol(const char *name, const ModuleInfo *module);
@@ -47,6 +46,8 @@
 		static const Protocol & find(const URL &url);
 
 		static const Protocol & find(const char *name);
+
+		static void getInfo(Udjat::Response &response) noexcept;
 
 		/// @brief Call protocol method.
 		/// @param url The URL to call.
@@ -73,9 +74,5 @@
 
  }
 
- namespace std {
-
-	const char * to_string(const Udjat::HTTP::Method method);
- }
 
 

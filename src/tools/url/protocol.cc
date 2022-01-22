@@ -59,6 +59,10 @@
 		return Controller::getInstance().find(name);
 	}
 
+	void Protocol::getInfo(Udjat::Response &response) noexcept {
+		Controller::getInstance().getInfo(response);
+	}
+
 	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
 		URL url(u);
 		return find(url).call(u,method,payload);

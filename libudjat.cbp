@@ -61,8 +61,10 @@
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/disk/stat.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
+		<Unit filename="src/include/udjat/tools/httpexception.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
+		<Unit filename="src/include/udjat/tools/method.h" />
 		<Unit filename="src/include/udjat/tools/mimetype.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />

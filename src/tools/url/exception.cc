@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/httpexception.h>
  #include <cstring>
  #include <string>
  #include <iostream>
