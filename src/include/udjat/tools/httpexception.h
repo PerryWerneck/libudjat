@@ -19,6 +19,10 @@
 
  #pragma once
 
+ #include <udjat/defs.h>
+ #include <system_error>
+ #include <string>
+
  namespace Udjat {
 
 	namespace HTTP {

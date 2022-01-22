@@ -18,6 +18,8 @@
  */
 
  #pragma once
+ #include <udjat/defs.h>
+ #include <ostream>
 
  namespace Udjat {
 
