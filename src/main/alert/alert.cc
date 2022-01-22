@@ -51,17 +51,17 @@
 						section
 					);
 
-		action = Quark(
+		action = HTTP::MethodFactory(
 						Attribute(node,"action","alert-action")
 						.as_string(
 							Config::Value<string>(section,"action","get")
 						)
-					).c_str();
+					);
 
 	}
 
 	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {
-		Abstract::Alert::activate(make_shared<Alert>(name,url,action,payload));
+		Abstract::Alert::activate(make_shared<Alert>(name,url,HTTP::MethodFactory(action),payload));
 	}
 
 	const char * Alert::expand(const char *value, const pugi::xml_node &node, const char *section) {
@@ -91,16 +91,16 @@
 		class Activation : public Abstract::Alert::Activation {
 		private:
 			string url;
-			string action;
+			HTTP::Method action;
 			string payload;
 
 		public:
-			Activation(const string &u, const string &a, const string &p) : url(u), action(a), payload(p) {
+			Activation(const string &u, const HTTP::Method a, const string &p) : url(u), action(a), payload(p) {
 			}
 
 			void emit() const override {
 				cout << "alerts\tEmitting '" << url << "'" << endl;
-				Protocol::call(url.c_str(),action.c_str(),payload.c_str());
+				Protocol::call(url.c_str(),action,payload.c_str());
 			}
 
 		};

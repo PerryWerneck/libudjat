@@ -59,7 +59,7 @@
 		return Controller::getInstance().find(name);
 	}
 
-	std::string Protocol::call(const char *u, const char *method, const char *payload) {
+	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
 		URL url(u);
 		return find(url).call(u,method,payload);
 	}

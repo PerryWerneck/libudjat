@@ -80,7 +80,7 @@
 		return Value::set(std::to_string(value), Real);
 	}
 
-	const Value & Value::get(std::string &value) const {
+	const Value & Value::get(std::string UDJAT_UNUSED(&value)) const {
 		throw runtime_error("Invalid 'value' implementation");
 	}
 
@@ -114,7 +114,7 @@
 		return *this;
 	}
 
-	const Value & Value::get(TimeStamp &value) const {
+	const Value & Value::get(TimeStamp UDJAT_UNUSED(&value)) const {
 		throw runtime_error("Can't convert value to timestamp");
 		return *this;
 	}
@@ -141,12 +141,12 @@
 		return *this;
 	}
 
-	const Value & Value::get(float &value) const {
+	const Value & Value::get(float UDJAT_UNUSED(&value)) const {
 		throw runtime_error("Can't convert value to float");
 		return *this;
 	}
 
-	const Value & Value::get(double &value) const {
+	const Value & Value::get(double UDJAT_UNUSED(&value)) const {
 		throw runtime_error("Can't convert value to double");
 		return *this;
 	}

@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/factory.h>
+ #include <udjat/tools/url.h>
  #include <memory>
 
  namespace Udjat {
@@ -141,7 +142,7 @@
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
 		const char *url = "";
-		const char *action = "";
+		HTTP::Method action = HTTP::Get;
 		const char *payload = "";
 
 		static const char * expand(const char *value, const pugi::xml_node &node, const char *section);
@@ -157,7 +158,7 @@
 			bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
 		};
 
-		constexpr Alert(const char *name, const char *u, const char *a = "get", const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
+		constexpr Alert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 		}
 
 		Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
