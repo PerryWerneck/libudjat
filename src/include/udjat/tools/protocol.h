@@ -19,7 +19,6 @@
 
  #pragma once
 
- #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/request.h>
