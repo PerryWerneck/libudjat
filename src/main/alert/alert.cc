@@ -25,6 +25,7 @@
  #include <udjat/tools/protocol.h>
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/expander.h>
 
  namespace Udjat {
 
@@ -67,18 +68,20 @@
 	const char * Alert::expand(const char *value, const pugi::xml_node &node, const char *section) {
 
 		string text{value};
-		Udjat::expand(text, [node,section](const char *key) {
+		Udjat::expand(text, [node,section](const char *key, string &value) {
 
 			auto attr = Udjat::Attribute(node,key,key);
 			if(attr) {
-				return (string) attr.as_string();
+				value = attr.as_string();
+				return true;
 			}
 
 			if(Udjat::Config::hasKey(section,key)) {
-				return (string) Udjat::Config::Value<string>(section,key,"");
+				value = Udjat::Config::Value<string>(section,key,"");
+				return true;
 			}
 
-			return string{"${}"};
+			return false;
 
 		});
 

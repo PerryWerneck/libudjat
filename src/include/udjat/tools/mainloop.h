@@ -28,7 +28,6 @@
 #include <list>
 #include <functional>
 #include <mutex>
-#include <udjat.h>
 
 namespace Udjat {
 

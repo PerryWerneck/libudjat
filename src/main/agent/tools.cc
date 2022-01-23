@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/expander.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -26,21 +27,22 @@
 	string Abstract::Agent::expand(const char *text) const {
 		string rc{text};
 		return expand(rc);
-		return rc;
 	}
 
 	string & Abstract::Agent::expand(std::string &text) const {
 
-		Udjat::expand(text,[this](const char *key) {
+		Udjat::expand(text,[this](const char *key, std::string &value) {
 
 			// Agent value
 			if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
-				return to_string();
+				value = to_string();
+				return true;
 			}
 
 			// Agent path.
 			if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
-				return getPath();
+				value = getPath();
+				return true;
 			}
 
 			// Agent properties.
@@ -59,7 +61,8 @@
 				for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
 
 					if(!strcasecmp(values[ix].key,key)) {
-						return string(values[ix].value);
+						value = string(values[ix].value);
+						return true;
 					}
 
 				}
@@ -89,10 +92,12 @@
 					if(!strcasecmp(values[ix].key,key)) {
 
 						if(values[ix].state) {
-							return string(values[ix].state.c_str());
+							value = string(values[ix].state.c_str());
+							return true;
 						}
 
-						return string(values[ix].agent.c_str());
+						value = string(values[ix].agent.c_str());
+						return true;
 
 					}
 
@@ -103,7 +108,7 @@
 #ifdef DEBUG
 			cout << "Can't find key '" << key << "'" << endl;
 #endif // DEBUG
-			return string{"${}"};
+			return false;
 
 		});
 

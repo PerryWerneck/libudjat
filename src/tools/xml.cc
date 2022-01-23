@@ -21,8 +21,8 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/expander.h>
  #include <iostream>
- #include <udjat.h>
  #include <cstdarg>
 
  using namespace std;
@@ -62,15 +62,16 @@
 
 		value = this->as_string();
 
-		expand(value,[node](const char *key){
+		expand(value,[node](const char *key, string &value){
 
 			auto attr = find(node,key,key);
 			if(attr) {
-				return attr.as_string();
+				value = attr.as_string();
+				return true;
 			}
 
-			// Not expanded, return fixed value.
-			return "${}";
+			return false;
+
 		});
 
 	}
@@ -100,15 +101,16 @@
 
 		string text(str);
 
-		expand(text,[node](const char *key){
+		expand(text,[node](const char *key, string &value){
 
 			Attribute attribute(node,key,key);
 			if(attribute) {
-				return attribute.as_string();
+				value = attribute.as_string();
+				return true;
 			}
 
 			// Not expanded, return fixed value.
-			return "${}";
+			return false;
 
 		});
 

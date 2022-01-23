@@ -18,7 +18,6 @@
  */
 
  #include "private.h"
- #include <udjat.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
 

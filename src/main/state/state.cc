@@ -29,11 +29,11 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/expander.h>
  #include <udjat/alert.h>
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
- #include <udjat.h>
 
  using namespace std;
 
@@ -151,10 +151,11 @@ namespace Udjat {
 
 	std::string & Abstract::State::expand(std::string &text) const {
 
-		Udjat::expand(text,[this](const char *key) {
+		Udjat::expand(text,[this](const char *key, string &value) {
 
 			if(!strcasecmp(key,"level")) {
-				return string(to_string(this->level));
+				value = string(to_string(this->level));
+				return true;
 			}
 
 			struct {
@@ -170,12 +171,13 @@ namespace Udjat {
 			for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
 
 				if(!strcasecmp(values[ix].key,key)) {
-					return string(values[ix].value.c_str());
+					value = string(values[ix].value.c_str());
+					return true;
 				}
 
 			}
 
-			return string{"${}"};
+			return false;
 
 		});
 

@@ -4,7 +4,6 @@
 	#define PRIVATE_H_INCLUDED
 
 	#include <config.h>
-	#include <udjat.h>
 	#include <iostream>
 	#include <memory>
 
