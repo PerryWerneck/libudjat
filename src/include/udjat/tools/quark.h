@@ -23,7 +23,6 @@
 
 	#include <udjat/defs.h>
 	#include <pugixml.hpp>
-	#include <udjat/tools/quark.h>
 	#include <cstring>
 	#include <functional>
 

@@ -12,6 +12,7 @@
 	#include <udjat/tools/value.h>
 	#include <memory>
 	#include <udjat/tools/mimetype.h>
+	#include <udjat/tools/method.h>
 
 	namespace Udjat {
 
@@ -125,23 +126,8 @@
 		};
 
 		class UDJAT_API Request {
-		public:
-			enum class Type : uint8_t {
-				Get,		///< @brief Requests a representation of the specified resource; only retrieve data.
-				Head,		///< @brief Asks for a response identical to that of a GET without body.
-				Post,		///< @brief Submit an entity to the specified resource.
-				Put,		///< @brief Replace all current representations of the target resource.
-				Delete,		///< @brief Delete the specified resource.
-				Connect,	///< @brief Establishes a tunnel to the server identified by the target resource.
-				Options,	///< @brief Describe the communication options for the target resource.
-				Trace,		///< @brief Performs a message loop-back test along the path to the target resource.
-				Patch,		///< @brief Apply partial modifications to a resource.
-
-				Count		///< @brief Type count.
-			};
-
 		private:
-			Type type = Type::Get;
+			HTTP::Method type = HTTP::Get;
 
 		protected:
 
@@ -152,10 +138,13 @@
 			std::string path;
 
 		public:
-			Request(Type t = Type::Get) : type(t) {
+			Request() {
 			}
 
-			Request(const char *t) : type(as_type(t)) {
+			Request(HTTP::Method t) : type(t) {
+			}
+
+			Request(const char *type) : type(HTTP::MethodFactory(type)) {
 			}
 
 			/// @brief Get the request method.
@@ -175,17 +164,15 @@
 				return path.c_str();
 			}
 
-			inline bool operator==(Request::Type type) const noexcept {
+			inline bool operator==(HTTP::Method type) const noexcept {
 				return this->type == type;
 			}
 
-			inline bool operator!=(Request::Type type) const noexcept {
+			inline bool operator!=(HTTP::Method type) const noexcept {
 				return this->type != type;
 			}
 
-			static Type as_type(const char *type);
-
-			inline Type as_type() const noexcept {
+			inline HTTP::Method as_type() const noexcept {
 				return type;
 			}
 
@@ -206,14 +193,19 @@
 
 	}
 
-	template <typename T>
-	inline Udjat::Report & operator<<(Udjat::Report &out, T value) {
-		return out.push_back(value);
+	namespace std {
+
+		template <typename T>
+		inline Udjat::Report & operator<<(Udjat::Report &out, T value) {
+			return out.push_back(value);
+		}
+
+		template <typename T>
+		inline Udjat::Request & operator>>(Udjat::Request &in, T &value) {
+			return in.pop(value);
+		}
+
 	}
 
-	template <typename T>
-	inline Udjat::Request & operator>>(Udjat::Request &in, T &value) {
-		return in.pop(value);
-	}
 
 #endif // UDJAT_REQUEST_H_INCLUDED

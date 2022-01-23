@@ -17,6 +17,7 @@
 
 	</agent>
 
+	<!--
 	<random name='random600' update-timer='600'>
 
 		<state name='s0' value='0' summary='Random 0'>
@@ -30,33 +31,32 @@
 		<state name='s5' value='5' summary='Random 5' />
 		
 	</random>
+	-->
 
+	<!--
 	<random name='random10' update-timer='10'>
 
-		<state name='s0' value='0' summary='Random 0'>
-			<alert name='r10.0' url='http://localhost' />
+		<attribute name='alert-url' value='http://localhost' />
+
+		<state name='s0' value='0' summary='Random 0' alert='yes'>
 		</state>
 
-		<state name='s1' value='1' summary='Random 1'>
-			<alert name='r10.1' url='http://localhost' />
+		<state name='s1' value='1' summary='Random 1' alert='yes'>
 		</state>
 
-		<state name='s2' value='2' summary='Random 2'>
-			<alert name='r10.2' url='http://localhost' />
+		<state name='s2' value='2' summary='Random 2' alert='yes'>
 		</state>
 
-		<state name='s3' value='3' summary='Random 3'>
-			<alert name='r10.3' url='http://localhost' />
+		<state name='s3' value='3' summary='Random 3' alert='yes'>
 		</state>
 		
-		<state name='s4' value='4' summary='Random 4'>
-			<alert name='r10.4' url='http://localhost' />
+		<state name='s4' value='4' summary='Random 4' alert='yes'>
 		</state>
 		
-		<state name='s5' value='5' summary='Random 5'>
-			<alert name='r10.5' url='http://localhost' />
+		<state name='s5' value='5' summary='Random 5' alert='yes'>
 		</state>
 
 	</random>
-
+	-->
+	
 </config>

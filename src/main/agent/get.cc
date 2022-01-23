@@ -35,11 +35,11 @@
 		return "";
 	}
 
-	void Abstract::Agent::get(const Request &request, Report &report) {
+	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
 	}
 
-	void Abstract::Agent::get(const Request &request, Response &response) {
+	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
 		this->get(getDetails(response)["value"]);
 	}
 

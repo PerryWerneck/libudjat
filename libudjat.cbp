@@ -9,10 +9,11 @@
 		<Option virtualFolders="src/tools/" />
 		<Build>
 			<Target title="Debug">
-				<Option output=".bin/Debug/libudjat-test" prefix_auto="1" extension_auto="1" />
+				<Option output=".bin/Debug/udjat" prefix_auto="1" extension_auto="1" />
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-f" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DDEBUG=1" />
@@ -23,6 +24,7 @@
 				<Option object_output=".obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
+				<Option parameters="-f" />
 				<Compiler>
 					<Add option="-O2" />
 					<Add option="-DNDEBUG=1" />
@@ -48,10 +50,10 @@
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/udjat-internals.h" />
-		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/defs.h" />
+		<Unit filename="src/include/udjat/expander.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
@@ -60,10 +62,14 @@
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/disk/stat.h" />
+		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
+		<Unit filename="src/include/udjat/tools/httpexception.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
+		<Unit filename="src/include/udjat/tools/method.h" />
 		<Unit filename="src/include/udjat/tools/mimetype.h" />
+		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />
@@ -75,7 +81,6 @@
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/url.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />
-		<Unit filename="src/include/udjat/tools/virtualmachine.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/http.h" />
@@ -99,12 +104,12 @@
 		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
+		<Unit filename="src/main/alert/abstract.cc" />
 		<Unit filename="src/main/alert/activation.cc" />
 		<Unit filename="src/main/alert/alert.cc" />
 		<Unit filename="src/main/alert/controller.cc" />
 		<Unit filename="src/main/alert/factory.cc" />
 		<Unit filename="src/main/alert/private.h" />
-		<Unit filename="src/main/alert/settings.cc" />
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />
@@ -201,6 +206,7 @@
 		<Unit filename="src/tools/subprocess/subprocess.cc" />
 		<Unit filename="src/tools/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/timestamp.cc" />
+		<Unit filename="src/tools/url/call.cc" />
 		<Unit filename="src/tools/url/controller.cc" />
 		<Unit filename="src/tools/url/exception.cc" />
 		<Unit filename="src/tools/url/fileprotocol.cc" />
@@ -208,6 +214,7 @@
 		<Unit filename="src/tools/url/private.h" />
 		<Unit filename="src/tools/url/protocol.cc" />
 		<Unit filename="src/tools/url/response.cc" />
+		<Unit filename="src/tools/url/unescape.cc" />
 		<Unit filename="src/tools/url/url.cc" />
 		<Unit filename="src/tools/value.cc" />
 		<Unit filename="src/tools/xml.cc" />

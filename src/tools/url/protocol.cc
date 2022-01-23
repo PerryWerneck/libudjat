@@ -18,35 +18,81 @@
  */
 
  #include "private.h"
+ #include <cstring>
+
+ static const char * method_names[] = {
+	"GET",
+	"HEAD",
+	"POST",
+	"PUT",
+	"DELETE",
+	"CONNECT",
+	"OPTIONS",
+	"TRACE",
+	"PATCH",
+ };
 
  namespace Udjat {
 
-	URL::Protocol::~Protocol() {
-		cout << name << "\tProtocol unregistered" << endl;
+	HTTP::Method HTTP::MethodFactory(const char *name) {
+		for(size_t ix = 0; ix < (sizeof(method_names)/sizeof(method_names[0])); ix++) {
+			if(!strcasecmp(name,method_names[ix])) {
+				return (Method) ix;
+			}
+		}
+		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	std::shared_ptr<URL::Response> URL::Protocol::call(const URL &url, const URL::Method method, const char *mimetype, const char *payload) {
-		throw runtime_error(string{"No back-end protocol for '"} + url.to_string() + "'");
+	Protocol::Protocol(const char *n, const ModuleInfo *i) : name(n), info(i) {
+		Controller::getInstance().insert(this);
 	}
-	#pragma GCC diagnostic pop
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	int URL::Protocol::connect(const URL &url, time_t timeout) {
-		throw runtime_error(string{"No back-end protocol for connect('"} + url.to_string() + "')");
+	Protocol::~Protocol() {
+		Controller::getInstance().remove(this);
 	}
-	#pragma GCC diagnostic pop
 
-	std::string URL::Protocol::call(const URL &url, const Method method, const Request &payload) {
+	const Protocol & Protocol::find(const URL &url) {
+		string scheme = url.scheme();
 
-		auto rsp = call(url,method,"application/json; charset=utf-8",payload.getPath());
-		if(rsp->getStatusCode() != 200) {
-			throw runtime_error(rsp->getStatusMessage());
+		const char *ptr = strrchr(scheme.c_str(),'+');
+		if(ptr) {
+			scheme.resize(ptr - scheme.c_str());
 		}
 
-		return rsp->c_str();
+		return find(scheme.c_str());
+	}
+
+	const Protocol & Protocol::find(const char *name) {
+		return Controller::getInstance().find(name);
+	}
+
+	void Protocol::getInfo(Udjat::Response &response) noexcept {
+		Controller::getInstance().getInfo(response);
+	}
+
+	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
+		URL url(u);
+		return find(url).call(url,method,payload);
+	}
+
+	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
+		throw runtime_error(string {"Invalid protocol '"} + name + "' for " + url.string::c_str());
+	}
+
+	std::string Protocol::call(const URL &url, const char *method, const char *payload) const {
+		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
  }
+
+ namespace std {
+
+	const char * to_string(const Udjat::HTTP::Method method) {
+		if((size_t) method > (sizeof(method_names)/sizeof(method_names[0]))) {
+			throw system_error(EINVAL,system_category(),"Invalid method id");
+		}
+		return method_names[method];
+	}
+
+ }
+

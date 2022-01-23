@@ -18,45 +18,14 @@
  */
 
  #include "private.h"
- #include <udjat.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
 
  namespace Udjat {
 
-	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {
-		Controller::getInstance().insert(name,url,action,payload);
-	}
-
-	void Alert::Controller::insert(const char *name, const char *url, const char *action, const char *payload) {
-
-		class Activation : public Alert::Activation {
-		private:
-			string url;
-			string action;
-			string payload;
-
-		public:
-			Activation(const char *name, const char *u, const char *a, const char *p) : Alert::Activation(make_shared<Alert>(name)), url(u), action(a), payload(p) {
-			}
-
-			void emit() const override {
-				cout << "alerts\tEmitting '" << url << "'" << endl;
-				auto response = URL(url.c_str()).call(action.c_str(),nullptr,payload.c_str());
-				if(response->failed()) {
-					throw runtime_error(to_string(response->getStatusCode()) + " " + response->getStatusMessage());
-				}
- 			}
-
-		};
-
-		insert(make_shared<Activation>(name,url,action,payload));
-
-	}
-
-	Alert::Activation::Activation(std::shared_ptr<Alert> alert) : alertptr(alert) {
-		cout << "alerts\tActivating " << name() << endl;
-		timers.next = time(0) + alert->timers.start;
+	Alert::Activation::Activation() {
+//		cout << "alerts\tActivating " << name() << endl;
+//		timers.next = time(0) + alert->timers.start;
 	}
 
 	Alert::Activation::~Activation() {

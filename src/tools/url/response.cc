@@ -21,6 +21,7 @@
 
  namespace Udjat {
 
+	/*
 	URL::Response::~Response() {
 	}
 
@@ -58,6 +59,7 @@
 		}
 
 	}
+	*/
 
 	/*
 	Json::Value URL::Response::as_json() const {

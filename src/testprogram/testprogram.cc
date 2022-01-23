@@ -22,9 +22,11 @@
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/protocol.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
+ #include <udjat/tools/url.h>
  #include <iostream>
  #include <memory>
 
@@ -33,11 +35,26 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
+static const Udjat::ModuleInfo moduleinfo {
+	PACKAGE_NAME,									// The module name.
+	"Test program",				 					// The module description.
+	PACKAGE_VERSION, 								// The module version.
+	PACKAGE_URL, 									// The package URL.
+	PACKAGE_BUGREPORT 								// The bugreport address.
+};
+
 int main(int argc, char **argv) {
+
+	class DummyProtocol : public Udjat::Protocol {
+	public:
+		DummyProtocol() : Udjat::Protocol("dummy",&moduleinfo) {
+		}
+
+	};
 
 	class RandomFactory : public Udjat::Factory {
 	public:
-		RandomFactory() : Udjat::Factory("random") {
+		RandomFactory() : Udjat::Factory("random",&moduleinfo) {
 			cout << "random agent factory was created" << endl;
 			srand(time(NULL));
 		}
@@ -69,13 +86,22 @@ int main(int argc, char **argv) {
 	};
 
 	class Service : public SystemService, private RandomFactory {
+	private:
+
+		struct {
+			Alert::Factory alert;
+			DummyProtocol protocol;
+		} factories;
+
 	public:
 		/// @brief Initialize service.
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
-			Alert::initialize();
+			// Alert::initialize();
 
 			auto root = Abstract::Agent::init("*.xml");
+
+			// Udjat::URL::insert(make_shared<DummyProtocol>());
 
 			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
@@ -94,7 +120,7 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			Alert::activate("test","http://localhost/invalid");
+			Alert::activate("test","dummy+http://localhost");
 
 		}
 

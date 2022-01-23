@@ -17,58 +17,71 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
  #include "private.h"
- #include <udjat/tools/value.h>
+ #include <cstring>
 
  namespace Udjat {
 
-	URL::Controller::Controller() {
+	mutex Protocol::Controller::guard;
 
-		insert(make_shared<FileProtocol>());
-
-	}
-
-	URL::Controller::~Controller() {
-
-	}
-
-	URL::Controller & URL::Controller::getInstance() {
-		static Controller instance;
+	Protocol::Controller & Protocol::Controller::getInstance() {
+		lock_guard<mutex> lock(guard);
+		static Protocol::Controller instance;
 		return instance;
 	}
 
-	void URL::Controller::insert(std::shared_ptr<Protocol> protocol) {
+	Protocol::Controller::Controller() {
+	}
+
+	Protocol::Controller::~Controller() {
+	}
+
+	void Protocol::Controller::insert(Protocol *protocol) {
+		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "Inserting protocol " << protocol->name << endl;
+#endif // DEBUG
 		protocols.push_back(protocol);
 	}
 
-	void URL::Controller::getInfo(Udjat::Response &response) noexcept {
-
-		response.reset(Value::Array);
-
-		for(auto protocol : this->protocols) {
-
-			Value &object = response.append(Value::Object);
-
-			object["id"] = protocol->c_str();
-			object["portname"] = protocol->getDefaultPortName();
-			protocol->getModuleInfo()->get(object);
-
-		}
-
+	void Protocol::Controller::remove(Protocol *protocol) {
+		lock_guard<mutex> lock(guard);
+		protocols.remove(protocol);
 	}
 
-	shared_ptr<URL::Protocol> URL::Controller::find(const char *name) {
+	const Protocol & Protocol::Controller::find(const char *name) {
 
+		{
+			/// @brief Singleton for file protocol.
+			static File file;
+		}
+
+#ifdef DEBUG
+		cout << "Searching for protocol '" << name << "'" << endl;
+#endif // DEBUG
+
+		lock_guard<mutex> lock(guard);
 		for(auto protocol : protocols) {
-			if(!strcmp(name,protocol->c_str())) {
-				return protocol;
+			if(!strcasecmp(protocol->name,name)) {
+				return *protocol;
 			}
 		}
 
-		throw runtime_error(Logger::Message("No available protocol manager for '{}://'",name).c_str());
-
+		throw system_error(ENOENT,system_category(),string{"Cant find protocol '"} + name + "'");
 	}
 
+	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
+
+		response.reset(Value::Array);
+
+		for(auto protocol : protocols) {
+
+			Value &object = response.append(Value::Object);
+			object["id"] = protocol->name;
+//			protocol->info->get(object);
+
+		}
+
+	}
 
  }

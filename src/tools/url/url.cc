@@ -17,244 +17,116 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #ifndef _WIN32
-	#include <netdb.h>
- #endif // !_WIN32
-
  #include "private.h"
+ #include <cstring>
+ #include <netdb.h>
 
+ using namespace std;
 
  namespace Udjat {
 
-	URL::URL() {
-	}
+	std::string URL::scheme() const {
 
-	URL::URL(const char *url) : URL() {
-		assign(url);
-	}
-
-	void URL::insert(std::shared_ptr<Protocol> protocol) {
-		Controller::getInstance().insert(protocol);
-	}
-
-	URL::~URL() {
-	}
-
-	void URL::getInfo(Udjat::Response &response) {
-		Controller::getInstance().getInfo(response);
-	}
-
-	const char * URL::getPortName() const {
-		if(port.empty()) {
-			const char *portname = protocol->getDefaultPortName();
-			if(!(portname && *portname)) {
-				portname = protocol->c_str();
-			}
-			return portname;
-		}
-		return port.c_str();
-	}
-
-	int URL::getPortNumber() const {
-
-		const char * portname = getPortName();
-
-		// Convert numeric ports direct.
-		int port = atoi(portname);
-		if(port)
-			return port;
-
-		// Can't convert numeric, search by port name.
-		struct servent *se = getservbyname(portname,NULL);
-		if(!se) {
-			throw runtime_error(string{"Can't find port number for service '"} + portname + "'");
+		size_t pos = find("://");
+		if(pos == string::npos) {
+			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
 		}
 
-		return htons(se->s_port);
+		return string{string::c_str(),pos};
 
 	}
 
-	const char * URL::getFileName() const {
-		return filename.c_str();
-	}
+	URL::Components URL::ComponentsFactory() const {
 
-	URL & URL::assign(const char *u) {
+		URL::Components components;
 
-		string url = unescape(u);
-
-		if(url.empty()) {
-			throw runtime_error("URL value can't be empty");
-		}
+		const char *ptr;	// Temp pointer.
 
 		size_t from, to;
 
-		// Get scheme and find associated protocol manager.
-		from = url.find("://");
+		// Get URL Scheme.
+		from = find("://");
 		if(from == string::npos) {
-			throw runtime_error(string{"Can't decode URL scheme on '"} + url + "'");
+			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
 		}
 		from += 3;
 
-		this->protocol = Controller::getInstance().find(string(url.c_str(),from-3).c_str());
-
-		// Get hostname and port.
-		string domain;
-
-		to = url.find("/",from);
-		if(to == string::npos) {
-			domain.assign(url.c_str()+from);
+		string scheme{string::c_str(),from-3};
+		ptr = strrchr(scheme.c_str(),'+');
+		if(ptr) {
+			components.scheme = (ptr+1);
 		} else {
-			domain.assign(url.c_str()+from,to-from);
+			components.scheme = scheme;
 		}
+
+		// Get hostname.
+		string hostname;
+		to = find("/",from);
+		if(to == string::npos) {
+			hostname.assign(string::c_str()+from);
+		} else {
+			hostname.assign(string::c_str()+from,to-from);
+		}
+
+		ptr = strrchr(hostname.c_str(),':');
+		if(ptr) {
+			components.hostname.assign(hostname.c_str(),(size_t) (ptr - hostname.c_str()));
+			components.srvcname = (ptr+1);
+		} else {
+			components.hostname = hostname;
+			components.srvcname = components.scheme;
+		}
+
+		if(to == string::npos) {
+			return components;
+		}
+
 		from = to;
-
-		to = domain.find(':');
+		to = find("?",from);
 		if(to == string::npos) {
-			this->domain.assign(domain);
-		} else {
-			this->domain.assign(domain.c_str(),to);
-			this->port.assign(domain.c_str()+to+1);
+			components.path.assign(string::c_str()+from);
+			return components;
 		}
 
-		if(from ==string::npos)
-			return *this;
+		components.path.assign(string::c_str()+from,to-from);
+		components.query = string::c_str()+to+1;
 
-		to = url.find("?",from);
-
-		if(to == string::npos) {
-			this->filename.assign(url.c_str()+from);
-			return *this;
-		}
-
-		this->filename.assign(url.c_str()+from,to-from);
-
-		// TODO: Parse arguments.
-
-		return *this;
-	}
-
-	/// @brief Connect to host.
-	/// @return Socket connected to host.
-	int URL::connect(time_t timeout) const {
-		return protocol->connect(*this,timeout);
-	}
-
-	static int xdigit_value(const char scanner) {
-
-		if(scanner >= '0' && scanner <= '9') {
-			return scanner - '0';
-		}
-
-		if(scanner >= 'A' && scanner <= 'F') {
-			return 10 + (scanner - 'A');
-		}
-
-		if(scanner >= 'a' && scanner <= 'f') {
-			return 10 + (scanner - 'a');
-		}
-
-		throw runtime_error("Invalid escape character");
-	}
-
-	static int unescape_character(const char *scanner) {
-
-		int first_digit = xdigit_value(*scanner++);
-		int second_digit = xdigit_value(*scanner++);
-
-		return (first_digit << 4) | second_digit;
+		return components;
 
 	}
 
-	std::string URL::unescape(const char *src) {
+	std::string URL::get() const {
+		return Protocol::find(*this).call(*this,HTTP::Get,"");
+	}
 
-		char 		* buffer;
-		char		* dst;
+	std::string URL::post(const char *payload) const {
+		return Protocol::find(*this).call(*this,HTTP::Post,payload);
+	}
 
-		buffer = dst = new char[strlen(src)+1];
+	const char * URL::c_str() const noexcept {
 
-		try {
-
-			while(*src) {
-
-				if(*src == '%') {
-
-					if(src[1] && src[2]) {
-
-						*(dst++) = (char) unescape_character(++src);
-						src += 2;
-
-					} else {
-
-						throw runtime_error("Unexpected escape sequence");
-
-					}
-
-				} else {
-
-					*(dst++) = *(src++);
-
-				}
-
+		for(const char *ptr = string::c_str(); *ptr && *ptr != ':';ptr++) {
+			if(*ptr == '+') {
+				return ptr+1;
 			}
-
-			*dst = 0;
-
-		} catch(...) {
-
-			delete[] buffer;
-			throw;
-
 		}
 
-		string rc = string{buffer};
-		delete[] buffer;
-
-		return rc;
-
+		return string::c_str();
 	}
 
-	std::shared_ptr<URL::Response> URL::call(const Method method, const char *mimetype, const char *payload) {
-		return protocol->call(*this,method,mimetype,payload);
-	}
+	int URL::Components::portnumber() const {
 
-	std::shared_ptr<URL::Response> URL::call(const char *mname, const char *mimetype, const char *payload) {
-		Method method(mname);
-#ifdef DEBUG
-		cout << "url\t" << mname << " " << *this << endl;
-#endif // DEBUG
-		return protocol->call(*this,method,mimetype,payload);
-	}
-
-	std::shared_ptr<URL::Response> URL::get(const char *mimetype) const {
-		return protocol->call(*this,URL::Method::Get,mimetype);
-	}
-
-	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) const {
-		return protocol->call(*this,URL::Method::Post,mimetype,payload);
-	}
-
-	std::string URL::to_string() const {
-
-		string rc{protocol->c_str()};
-
-		cout	<< "Domain:\t'" << domain << "'" << endl
-				<< "Filename:\t'" << filename << "'" << endl;
-
-		rc += "://";
-		rc += domain;
-
-		if(!port.empty()) {
-			rc += ":";
-			rc += port;
+		for(const char *ptr = srvcname.c_str(); *ptr; ptr++) {
+			if(!isdigit(*ptr)) {
+				struct servent *se = getservbyname(srvcname.c_str(),NULL);
+				if(se) {
+					return htons(se->s_port);
+				}
+				throw system_error(EINVAL,system_category(),string{"The service '"} + srvcname.c_str() + "' is invalid");
+			}
 		}
 
-		if(!filename.empty()) {
-			rc += "/";
-			rc += filename;
-		}
-
-		return rc;
+		return stoi(srvcname);
 	}
 
  }

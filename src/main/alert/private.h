@@ -36,17 +36,14 @@
  namespace Udjat {
 
 	/// @brief Singleton for alert emission.
-	class Alert::Controller : public Udjat::Factory, private MainLoop::Service {
+	class Abstract::Alert::Controller : private MainLoop::Service {
 	private:
 
 		/// @brief Mutex for serialization
 		static mutex guard;
 
 		/// @brief List of active workers.
-		list<shared_ptr<Alert::Activation>> activations;
-
-		/// @brief Alert workers.
-		// list<const Alert::Worker *> workers;
+		list<shared_ptr<Abstract::Alert::Activation>> activations;
 
 		Controller();
 
@@ -67,23 +64,13 @@
 		/// @brief Update timer.
 		void refresh() noexcept;
 
-		/// @brief Insert worker.
-		// void insert(const Alert::Worker *worker);
+		//void insert(const std::shared_ptr<Abstract::Alert::Activation> activation);
 
-		/// @brief Remove worker.
-		// void remove(const Alert::Worker *worker);
-
-		/// @brief Insert activation.
-		void insert(const std::shared_ptr<Alert::Activation> activation);
-
-		/// @brief Insert URL activation.
-		void insert(const char *name, const char *url, const char *action, const char *payload);
+		/// @brief Activate an alert.
+		void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);
 
 		/// @brief Remove alert activation.
-		void remove(const Alert *alert);
-
-		/// @brief Create State child.
-		bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
+		void remove(const Abstract::Alert *alert);
 
 	};
 

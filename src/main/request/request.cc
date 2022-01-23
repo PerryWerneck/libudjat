@@ -27,34 +27,6 @@
 
 namespace Udjat {
 
-	Request::Type Request::as_type(const char *type) {
-
-		static const char * typeNames[] = {
-			"GET",
-			"HEAD",
-			"POST",
-			"PUT",
-			"DELETE",
-			"CONNECT",
-			"OPTIONS",
-			"TRACE",
-			"PATCH"
-		};
-
-		for(size_t ix = 0; ix < (sizeof(typeNames)/sizeof(typeNames[0]));ix++) {
-
-			if(!strcasecmp(type,typeNames[ix])) {
-				return (Request::Type) ix;
-			}
-
-		}
-
-		cerr << "Unexpected request type '" << type << "' using '" << typeNames[(int) Request::Type::Get] << "'" << endl;
-
-		return Request::Type::Get;
-	}
-
-
 	bool Request::operator ==(const char *key) const noexcept {
 
 		if(method.empty())

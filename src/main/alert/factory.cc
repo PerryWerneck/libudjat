@@ -17,45 +17,45 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/factory.h>
+ #include <udjat/alert.h>
+ #include <udjat/agent.h>
+ #include <udjat/state.h>
  #include <iostream>
- #include <udjat/tools/url.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	/*
-	Alert::Worker::Worker(const char *n, const ModuleInfo *i) : name(n), info(i) {
-		Alert::Controller::getInstance().insert(this);
+	static const Udjat::ModuleInfo moduleinfo {
+		PACKAGE_NAME,									// The module name.
+		"Alert factory",			 					// The module description.
+		PACKAGE_VERSION, 								// The module version.
+		PACKAGE_URL, 									// The package URL.
+		PACKAGE_BUGREPORT 								// The bugreport address.
+	};
+
+	Alert::Factory::Factory() : Udjat::Factory("alert",&moduleinfo) {
 	}
 
-	Alert::Worker::~Worker() {
-		Alert::Controller::getInstance().remove(this);
-	}
+	bool Alert::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
+		try {
 
-	Alert::Worker::Worker(const char *n) : Worker(n,nullptr) {
-	}
+			parent.append_alert(node);
 
-	void Alert::Worker::send(const Alert &alert, const string &url, const string &payload) const {
-#ifdef DEBUG
-		cout << "worker\tProcessing alert " << url << endl;
-#endif // DEBUG
+		} catch(const std::exception &e) {
 
-		auto response =
-			Udjat::URL(url.c_str())
-			.call(
-				alert.action(),
-				nullptr,
-				payload.c_str()
-			);
+			cerr << "alerts\t" << e.what() << endl;
+			return false;
 
-		if(response->failed()) {
-			cout << alert.name() << "\t" << url << " " << response->getStatusCode() << " " << response->getStatusMessage() << endl;
-			throw runtime_error(response->getStatusMessage());
 		}
-
+		return true;
 	}
-	*/
+
+	bool Alert::Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {
+		parent.append(make_shared<Alert>(node));
+		return true;
+	}
 
  }

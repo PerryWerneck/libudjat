@@ -17,31 +17,34 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
- #include <udjat/tools/file.h>
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"File protocol module",	 						// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
-
-	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",&moduleinfo) {
+	/*
+	/// @brief Connect to host.
+	/// @return Socket connected to host.
+	int URL::connect(time_t timeout) const {
+		return protocol->connect(*this,timeout);
 	}
 
-	Protocol::Controller::File::~File() {
+	std::shared_ptr<URL::Response> URL::call(const Method method, const char *mimetype, const char *payload) {
+		return protocol->call(*this,method,mimetype,payload);
 	}
 
-	std::string Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {
-		if(method != HTTP::Get) {
-			throw system_error(EINVAL,system_category(),"Invalid request method");
-		}
-		return string(Udjat::File::Text(url.ComponentsFactory().path.c_str()).c_str());
+	std::shared_ptr<URL::Response> URL::call(const char *mname, const char *mimetype, const char *payload) {
+		return protocol->call(*this,Method(mname),mimetype,payload);
 	}
+
+	std::shared_ptr<URL::Response> URL::get(const char *mimetype) const {
+		return protocol->call(*this,URL::Method::Get,mimetype);
+	}
+
+	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) const {
+		return protocol->call(*this,URL::Method::Post,mimetype,payload);
+	}
+	*/
 
  }
 

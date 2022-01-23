@@ -20,133 +20,151 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/state.h>
+ #include <udjat/factory.h>
+ #include <udjat/tools/url.h>
  #include <memory>
 
  namespace Udjat {
 
-	class UDJAT_API Alert {
-	private:
-		class Controller;
-		friend class Controller;
+	namespace Abstract {
 
-	public:
-
-		class UDJAT_API Factory {
+		/// @brief Abstract alert.
+		class UDJAT_API Alert {
 		private:
-			const char *name = "";
-			const ModuleInfo *info = nullptr;
-
-		public:
-			constexpr Factory(const char *n, const ModuleInfo *i) : name(n), info(i) {
-			}
-
-			virtual ~Factory() {
-			}
-
-		};
-
-		class UDJAT_API Activation {
-		private:
-			friend class Alert::Controller;
-
-			std::shared_ptr<Alert> alertptr;
-
-			struct {
-				time_t last = 0;
-				time_t next = 0;
-			} timers;
-
-			struct {
-				unsigned int success = 0;
-				unsigned int failed = 0;
-			} count;
-
-			void checkForSleep(const char *msg) noexcept;
-
-			bool restarting = false;
-			time_t running = 0;
-
-			/// @brief Schedule next alert.
-			void next() noexcept;
+			class Controller;
+			friend class Controller;
 
 		protected:
 
-			/// @brief Alert was send.
-			void success() noexcept;
+			/// @brief Alert activation.
+			class UDJAT_API Activation {
+			private:
+				friend class Controller;
 
-			/// @brief Alert was not send.
-			void failed() noexcept;
+				std::shared_ptr<Alert> alertptr;
 
-		public:
-			Activation(std::shared_ptr<Alert> alert);
+				struct {
+					time_t last = 0;
+					time_t next = 0;
+				} timers;
 
-			virtual ~Activation();
+				struct {
+					unsigned int success = 0;
+					unsigned int failed = 0;
+				} count;
 
-			inline const char * name() const noexcept {
-				return alertptr->c_str();
-			}
+				void checkForSleep(const char *msg) noexcept;
 
-			inline std::shared_ptr<Alert> alert() const {
-				return alertptr;
+				bool restarting = false;
+				time_t running = 0;
+
+				/// @brief Schedule next alert.
+				void next() noexcept;
+
+			protected:
+
+				/// @brief Alert was send.
+				void success() noexcept;
+
+				/// @brief Alert was not send.
+				void failed() noexcept;
+
+			public:
+				Activation();
+				virtual ~Activation();
+
+				inline const char * name() const noexcept {
+					return alertptr->c_str();
+				}
+
+				inline std::shared_ptr<Alert> alert() const {
+					return alertptr;
+				};
+
+				/// @brief Emit alert.
+				virtual void emit() const;
 			};
 
-			/// @brief Emit alert.
-			virtual void emit() const;
+			/// @brief Alert name.
+			const char *name = "alert";
+
+			/// @brief Alert limits.
+			struct {
+				size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
+				size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
+			} retry;
+
+			/// @brief Alert timers.
+			struct {
+				time_t start = 0;			///< @brief Seconds to wait before first activation.
+				time_t interval = 60;		///< @brief Seconds to wait on every try.
+				time_t busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
+			} timers;
+
+			/// @brief Restart timers.
+			struct {
+				time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
+				time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
+			} restart;
+
+			/// @brief Create and activation object for this alert.
+			/// @param expander lambda for alert parameters expansion.
+			virtual std::shared_ptr<Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const = 0;
+
+		public:
+			constexpr Alert(const char *n) : name(n) {
+			}
+
+			/// @brief Create alert for xml description.
+			/// @param node XML node with the alert description.
+			/// @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
+			Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
+			virtual ~Alert();
+
+			inline const char * c_str() const noexcept {
+				return name;
+			}
+
+			/// @brief Activate an alert.
+			static void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);
+
+			/// @brief Activate and alert without expansion.
+			static void activate(std::shared_ptr<Alert> alert);
+
+			/// @brief Deactivate an alert.
+			void deactivate();
+
 		};
 
+	}
+
+	/// @brief Default alert (based on URL and payload).
+	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
+		const char *url = "";
+		HTTP::Method action = HTTP::Get;
+		const char *payload = "";
 
-		/// @brief Alert name.
-		const char *name = "alert";
+		static const char * expand(const char *value, const pugi::xml_node &node, const char *section);
 
-		/// @brief Alert limits.
-		struct {
-			size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
-			size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
-		} retry;
-
-		/// @brief Alert timers.
-		struct {
-			time_t start = 0;			///< @brief Seconds to wait before first activation.
-			time_t interval = 60;		///< @brief Seconds to wait on every try.
-			time_t busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
-		} timers;
-
-		/// @brief Restart timers.
-		struct {
-			time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-			time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
-		} restart;
-
-		static void insert(std::shared_ptr<Activation> activation);
+		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const;
 
 	public:
 
-		constexpr Alert(const char *n) : name(n) {
+		class Factory : public Udjat::Factory {
+		public:
+			Factory();
+			bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
+			bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
+		};
+
+		constexpr Alert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 		}
 
-		/**
-		 * @brief Create alert for xml description.
-		 * @param node XML node with the alert description.
-		 * @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
-		 */
 		Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
-		virtual ~Alert();
 
-		static void initialize();
-
-		inline const char * c_str() const noexcept {
-			return name;
-		}
-
-		virtual void activate(const Abstract::Agent &agent, std::shared_ptr<Alert> alert) const;
-		virtual void activate(const Abstract::Agent &agent, const Abstract::State &state, std::shared_ptr<Alert> alert) const;
-
-		static void activate(std::shared_ptr<Alert> alert);
-		static void activate(const char *name, const char *url, const char *action="get", const char *payload = "");
-
-		void deactivate();
+		/// @brief Activate a single alert with the default settings.
+		static void activate(const char *name, const char *url, const char *action = "get", const char *payload = "");
 
 	};
 

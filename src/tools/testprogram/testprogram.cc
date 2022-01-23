@@ -7,9 +7,10 @@
  *
  */
 
-#include <iostream>
-#include <udjat/tools/atom.h>
-#include <udjat/tools/logger.h>
+ #include <udjat/defs.h>
+ #include <iostream>
+ #include <udjat/tools/url.h>
+ #include <udjat/tools/protocol.h>
 
  using namespace std;
  using namespace Udjat;
@@ -17,6 +18,24 @@
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 int main(int argc, char **argv) {
+
+	static const ModuleInfo moduleinfo;
+
+	class DummyProtocol : public Udjat::Protocol {
+	public:
+		DummyProtocol() : Udjat::Protocol("dummy",&moduleinfo) {
+		}
+
+		/*
+		std::string call(const URL &url, const HTTP::Method method, const char *payload) const override {
+			cout << ">>>>>> " << endl;
+			return "";
+		}
+		*/
+
+	};
+
+	DummyProtocol dummy;
 
 	/*
 	cout 	<< "Processor by value: " << Dmi::Value(Dmi::PROCESSOR_INFO,0x10).as_string() << endl
@@ -32,6 +51,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		Logger::redirect();
 
@@ -44,6 +64,21 @@ int main(int argc, char **argv) {
 
 
 	}
+	*/
+
+	// auto url = URL{"http://localhost/sample/path?query=1"};
+	auto url = URL{"dummy+http://localhost/sample?args=1"};
+	auto components = url.ComponentsFactory();
+
+	cout << "URL:\t\t'" << url << "'" << endl;
+	cout << "Scheme:\t\t'" << components.scheme << "'" << endl;
+	cout << "Hostname:\t'" << components.hostname << "'" << endl;
+	cout << "Service:\t'" << components.srvcname << "'" << endl;
+	cout << "Port:\t\t'" << components.portnumber() << "'" << endl;
+	cout << "Path:\t\t'" << components.path << "'" << endl;
+	cout << "Query:\t\t'" << components.query << "'" << endl;
+
+	cout << "Response:" << endl << url.get() << endl;
 
 	return 0;
 }
