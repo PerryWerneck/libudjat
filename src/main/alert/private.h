@@ -64,6 +64,9 @@
 		/// @brief Update timer.
 		void refresh() noexcept;
 
+		/// @brief How many active activations?
+		size_t running() const noexcept;
+
 		//void insert(const std::shared_ptr<Abstract::Alert::Activation> activation);
 
 		/// @brief Activate an alert.

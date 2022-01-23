@@ -25,6 +25,10 @@
  #include <udjat/state.h>
  #include <iostream>
 
+ #ifndef _WIN32
+	#include <unistd.h>
+ #endif // _WIN32
+
  using namespace std;
 
  // static const char * expand(const char *value,const pugi::xml_node &node,const char *section);
@@ -55,11 +59,44 @@
 	Abstract::Alert::Controller::~Controller() {
 	}
 
-	void Abstract::Alert::Controller::stop() {
-		cout << "alerts\tDeactivating active alerts" << endl;
+	size_t Abstract::Alert::Controller::running() const noexcept {
+		size_t running = 0;
 		lock_guard<mutex> lock(guard);
-		activations.clear();
-		MainLoop::getInstance().remove(this);
+		for(auto activation : activations) {
+			if(activation->running()) {
+				running++;
+			}
+		}
+		return running;
+	}
+
+	void Abstract::Alert::Controller::stop() {
+		cout << "alerts\tDeactivating controller" << endl;
+
+		{
+			size_t pending_activations = running();
+			if(pending_activations) {
+				clog << "alerts\tWaiting for " << pending_activations << " activations to complete" << endl;
+				for(size_t timer = 0; timer < 100 && running(); timer++) {
+#ifdef _WIN32
+					Sleep(100)
+#else
+					usleep(100);
+#endif // _WIN32
+				}
+			}
+			pending_activations = running();
+			if(pending_activations) {
+				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
+				ThreadPool::getInstance().wait();
+			}
+		}
+
+		{
+			lock_guard<mutex> lock(guard);
+			activations.clear();
+			MainLoop::getInstance().remove(this);
+		}
 	}
 
 	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
@@ -160,13 +197,13 @@
 				// Timer has expired
 				activation->timers.next = (now + alert->timers.interval);
 
-				if(activation->running) {
+				if(activation->state.running) {
 
-					clog << "alerts\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->running) << endl;
+					clog << "alerts\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
 
 				} else {
 
-					activation->running = time(0);
+					activation->state.running = time(0);
 
 					ThreadPool::getInstance().push([this,activation]() {
 
@@ -186,7 +223,7 @@
 							activation->failed();
 							cerr << "alerts\tAlert '" << activation->name() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
-						activation->running = 0;
+						activation->state.running = 0;
 
 					});
 				}
