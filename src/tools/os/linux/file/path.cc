@@ -25,7 +25,7 @@
 
  namespace Udjat {
 
-	File::Path::Path(int fd) {
+	File::Path::Path(int UDJAT_UNUSED(fd)) {
 	}
 
 	void File::Path::save(const char *filename, const char *contents) {

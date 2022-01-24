@@ -146,7 +146,7 @@
  }
 
  template <typename T>
- inline Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
+ inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
 	in.get(value);
 	return in;
  }
