@@ -37,7 +37,7 @@
 		time_t rst = (count.success ? alertptr->restart.success : alertptr->restart.failed);
 
 		if(rst) {
-			restarting = true;
+			state.restarting = true;
 			timers.next = time(0) + rst;
 			clog
 				<< "alerts\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", sleeping until " << TimeStamp(timers.next)

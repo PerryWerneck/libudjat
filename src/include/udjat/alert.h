@@ -55,8 +55,10 @@
 
 				void checkForSleep(const char *msg) noexcept;
 
-				bool restarting = false;
-				time_t running = 0;
+				struct {
+					bool restarting = false;
+					time_t running = 0;
+				} state;
 
 				/// @brief Schedule next alert.
 				void next() noexcept;
@@ -80,6 +82,11 @@
 				inline std::shared_ptr<Alert> alert() const {
 					return alertptr;
 				};
+
+				/// @brief Is the activation running?
+				inline bool running() const noexcept {
+					return state.running != 0;
+				}
 
 				/// @brief Emit alert.
 				virtual void emit() const;
