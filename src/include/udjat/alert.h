@@ -158,7 +158,7 @@
 
 	public:
 
-		class Factory : public Udjat::Factory {
+		class UDJAT_API Factory : public Udjat::Factory {
 		public:
 			Factory();
 			bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;

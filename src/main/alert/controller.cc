@@ -79,7 +79,7 @@
 				clog << "alerts\tWaiting for " << pending_activations << " activations to complete" << endl;
 				for(size_t timer = 0; timer < 100 && running(); timer++) {
 #ifdef _WIN32
-					Sleep(100)
+					Sleep(100);
 #else
 					usleep(100);
 #endif // _WIN32
