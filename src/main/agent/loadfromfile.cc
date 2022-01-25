@@ -93,6 +93,11 @@ namespace Udjat {
 			// First load the modules.
 			load_modules(doc.document_element());
 
+			// Create new root agent.
+			clog << STRINGIZE_VALUE_OF(PRODUCT_NAME) << "\tCreating the new root agent" << endl;
+			Abstract::Agent::Controller::getInstance();
+			root = getDefaultRootAgent();
+
 			// Then load agents
 			load(root, doc.document_element());
 
