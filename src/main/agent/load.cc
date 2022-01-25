@@ -57,17 +57,7 @@ namespace Udjat {
 		for(pugi::xml_node node : root) {
 
 			// Skip reserved names.
-			if(!strcasecmp(node.name(),"attribute")) {
-				continue;
-			}
-
-			// Check for module tag.
-			if(!strcasecmp(node.name(),"module")) {
-#ifdef DEBUG
-				cout << "\tChecking for module '" << node.attribute("name").as_string() << "'" << endl;
-#endif // DEBUG
-				Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(true));
-
+			if(!(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module"))) {
 				continue;
 			}
 
@@ -90,6 +80,7 @@ namespace Udjat {
 
 	}
 
+	/*
 	void Abstract::Agent::load(const pugi::xml_document &doc) {
 
 		for(pugi::xml_node root = doc.child("config"); root; root = root.next_sibling("config")) {
@@ -116,6 +107,6 @@ namespace Udjat {
 		}
 
 	}
-
+	*/
 
 }

@@ -94,6 +94,7 @@
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/load.cc" />
+		<Unit filename="src/main/agent/loadfromfile.cc" />
 		<Unit filename="src/main/agent/parse.cc" />
 		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/root.cc" />
@@ -101,7 +102,6 @@
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
-		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/abstract.cc" />

@@ -42,9 +42,6 @@
 
 			class UDJAT_API Agent : public Logger {
 			private:
-
-				class Controller;
-
 				static std::recursive_mutex guard;
 
 				Agent *parent = nullptr;
@@ -103,11 +100,6 @@
 				/// @brief Level changed.
 				virtual void onLevelChange();
 
-				/// @brief Load children from xml node.
-				/// @brief node XML node with agent attributes.
-				/// @brief name Allow parsing of agent name.
-				void load(const pugi::xml_node &node, bool name = true);
-
 				/// @brief Activate a new state.
 				/// @return true if the level has changed.
 				virtual bool activate(std::shared_ptr<State> state);
@@ -140,9 +132,7 @@
 				Value & getDetails(Value &response) const;
 
 			public:
-
-				/// @brief Load agents from xml.file
-				void load(const pugi::xml_document &doc);
+				class Controller;
 
 				/// @brief Insert child agent.
 				void insert(std::shared_ptr<Agent> child);
@@ -156,11 +146,6 @@
 				static std::shared_ptr<Abstract::Agent> get_root();
 
 				/// @brief Initialize agent subsystem.
-				/// @param agent Root agent.
-				/// @return root agent.
-				static std::shared_ptr<Abstract::Agent> init(std::shared_ptr<Abstract::Agent> agent);
-
-				/// @brief Initialize agent subsystem.
 				/// @return root agent.
 				static std::shared_ptr<Abstract::Agent> init();
 
@@ -168,6 +153,11 @@
 				/// @param path Path to agent descriptions.
 				/// @return root agent.
 				static std::shared_ptr<Abstract::Agent> init(const char *path);
+
+				/// @brief Load children from xml node.
+				/// @brief node XML node with agent attributes.
+				/// @brief name Allow parsing of agent name.
+				void load(const pugi::xml_node &node, bool name = true);
 
 				/// @brief Deinitialize agent subsystem.
 				static void deinit();
@@ -276,6 +266,11 @@
 			};
 
 		}
+
+		/// @brief Initialize agent subsystem.
+		/// @param pathname Path to a single xml file or a folder with xml files.
+		/// @return root agent.
+		UDJAT_API std::shared_ptr<Abstract::Agent> init(const char *pathname);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {

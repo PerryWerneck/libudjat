@@ -99,9 +99,7 @@ int main(int argc, char **argv) {
 			cout << Application::Name() << "\tInitializing" << endl;
 			// Alert::initialize();
 
-			auto root = Abstract::Agent::init("*.xml");
-
-			// Udjat::URL::insert(make_shared<DummyProtocol>());
+			auto root = Udjat::init(".");
 
 			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
@@ -109,8 +107,10 @@ int main(int argc, char **argv) {
 			cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
 			cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
 
-			for(auto agent : *root) {
-				cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+			if(root) {
+				for(auto agent : *root) {
+					cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+				}
 			}
 
 			/*
