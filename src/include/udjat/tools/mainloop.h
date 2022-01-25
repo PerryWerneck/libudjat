@@ -35,7 +35,7 @@ namespace Udjat {
 	public:
 
 		/// @brief Service who can be started/stopped.
-		class Service {
+		class UDJAT_API Service {
 		private:
 			friend class MainLoop;
 
