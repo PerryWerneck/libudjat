@@ -167,6 +167,7 @@
 		auto activation = alert->ActivationFactory(expander);
 
 		activation->alertptr = alert;
+
 		if(activation->name.empty()) {
 			activation->name = alert->name;
 		}

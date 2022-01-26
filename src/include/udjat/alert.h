@@ -151,6 +151,20 @@
 	/// @brief Default alert (based on URL and payload).
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
+
+		/// @brief URL based alert activation.
+		class Activation : public Abstract::Alert::Activation {
+		private:
+			std::string url;
+			HTTP::Method action;
+			std::string payload;
+
+		public:
+			Activation(const std::string &u, const HTTP::Method a, const std::string &p);
+			void emit() const override;
+
+		};
+
 		const char *url = "";
 		HTTP::Method action = HTTP::Get;
 		const char *payload = "";

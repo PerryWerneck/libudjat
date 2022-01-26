@@ -91,23 +91,6 @@
 
 	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const std::function<void(std::string &str)> &expander) const {
 
-		class Activation : public Abstract::Alert::Activation {
-		private:
-			string url;
-			HTTP::Method action;
-			string payload;
-
-		public:
-			Activation(const string &u, const HTTP::Method a, const string &p) : url(u), action(a), payload(p) {
-			}
-
-			void emit() const override {
-				cout << "alerts\tEmitting '" << url << "'" << endl;
-				Protocol::call(url.c_str(),action,payload.c_str());
-			}
-
-		};
-
 		string url{this->url};
 		string payload{this->payload};
 
