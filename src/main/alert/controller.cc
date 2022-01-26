@@ -165,7 +165,12 @@
 	void Abstract::Alert::Controller::activate(std::shared_ptr<Abstract::Alert> alert, const std::function<void(std::string &str)> &expander) {
 
 		auto activation = alert->ActivationFactory(expander);
+
 		activation->alertptr = alert;
+		if(activation->name.empty()) {
+			activation->name = alert->name;
+		}
+
 		activation->timers.next = time(0) + alert->timers.start;
 
 		{
@@ -209,7 +214,7 @@
 
 						try {
 							cout << "alerts\tEmitting '"
-								<< activation->name() << "' ("
+								<< activation->c_str() << "' ("
 								<< (activation->count.success + activation->count.failed + 1)
 								<< ")"
 								<< endl;
@@ -218,10 +223,10 @@
 							activation->success();
 						} catch(const exception &e) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << activation->name() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
+							cerr << "alerts\tAlert '" << activation->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
 						} catch(...) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << activation->name() << "' has failed " << activation->count.failed << " time(s)" << endl;
+							cerr << "alerts\tAlert '" << activation->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
 						activation->state.running = 0;
 

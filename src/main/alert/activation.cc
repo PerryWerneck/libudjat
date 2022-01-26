@@ -29,7 +29,7 @@
 	}
 
 	Alert::Activation::~Activation() {
-		cout << "alerts\tDeactivating " << name() << endl;
+		cout << "alerts\tDeactivating " << c_str() << endl;
 	}
 
 	void Alert::Activation::checkForSleep(const char *msg) noexcept {

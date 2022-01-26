@@ -12,6 +12,7 @@
 	#include <udjat/win32/exception.h>
 #else
 	#include <dlfcn.h>
+	#include <unistd.h>
 	#define MODULE_EXT ".so"
 #endif // _WIN32
 

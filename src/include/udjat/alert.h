@@ -65,6 +65,9 @@
 
 			protected:
 
+				/// @brief Alert name
+				std::string name;
+
 				/// @brief Alert was send.
 				void success() noexcept;
 
@@ -75,8 +78,8 @@
 				Activation();
 				virtual ~Activation();
 
-				inline const char * name() const noexcept {
-					return alertptr->c_str();
+				inline const char * c_str() const noexcept {
+					return name.c_str();
 				}
 
 				inline std::shared_ptr<Alert> alert() const {
@@ -175,6 +178,16 @@
 
 	};
 
-
  }
 
+ namespace std {
+
+	inline string to_string(const Udjat::Abstract::Alert &alert) {
+			return alert.c_str();
+	}
+
+	inline ostream& operator<< (ostream& os, Udjat::Abstract::Alert &alert) {
+			return os << alert.c_str();
+	}
+
+ }
