@@ -28,16 +28,21 @@
 
  using namespace std;
 
+ // Disable debug messages for this module.
+ #ifdef DEBUG 
+	#undef DEBUG
+ #endif // DEBUG
+
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 
  namespace Udjat {
 
 	static const ModuleInfo ThreadPoolInfo {
-		PACKAGE_NAME,									// The module name.
-		"Thread Pool Controller for WIN32",	 			// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
+		PACKAGE_NAME,					// The module name.
+		"Thread Pool for WIN32",	 	// The module description.
+		PACKAGE_VERSION, 				// The module version.
+		PACKAGE_URL, 					// The package URL.
+		PACKAGE_BUGREPORT 				// The bugreport address.
 	};
 
 	ThreadPool::Controller::Controller() : Service(&ThreadPoolInfo) {
@@ -122,16 +127,6 @@
 		}
 
 	}
-
-	/*
-	void ThreadPool::set(const pugi::xml_node &node) {
-
-		limits.threads	= node.attribute("max-threads").as_uint(limits.threads);
-		limits.tasks	= node.attribute("max-tasks").as_uint(limits.tasks);
-		limits.idle		= node.attribute("max-idle").as_uint(limits.idle);
-
-	}
-	*/
 
 	void ThreadPool::stop() {
 
