@@ -28,20 +28,10 @@
 
  using namespace std;
 
- std::string Udjat::Win32::Exception::format() noexcept {
-	return format("");
- }
+ std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
- std::string Udjat::Win32::Exception::format(const DWORD error) noexcept {
-	return format("",error);
- }
-
- std::string Udjat::Win32::Exception::format(const char *what_arg, const DWORD dwMessageId) noexcept {
-
-	string response{what_arg};
+	string response;
 	LPVOID lpMsgBuf = 0;
-
-	response += " - ";
 
 	DWORD szMessage =
 		FormatMessage(
@@ -56,9 +46,10 @@
 
 	if(lpMsgBuf) {
 
-		// TODO: Convert response to UTF-8 if GetACP() != 65001 (CP_UTF8)
-
-		response += (const char *) lpMsgBuf;
+		if(szMessage) {
+			response = string((const char *) lpMsgBuf,szMessage);
+		}
+	
 		LocalFree(lpMsgBuf);
 
 	} else {
@@ -67,49 +58,14 @@
 			cerr << "win32\tError " << GetLastError() << " when formatting message id " << dwMessageId << endl;
 		}
 
-		response += "The windows error was " + to_string((unsigned int) dwMessageId);
+		response = "The windows error was ";
+		response += std::to_string((unsigned int) dwMessageId);
 	}
-
-	/*
-	LPVOID lpMsgBuf = 0;
-
-	if(FormatMessage(
-			FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_ALLOCATE_BUFFER,
-			NULL,
-			error,
-			MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL) == 0) {
-
-		if(lpMsgBuf) {
-
-			char *ptr;
-			for(ptr=(char *) lpMsgBuf;*ptr && *ptr != '\n' && *ptr != '\r';ptr++);
-			*ptr = 0;
-
-			response += " - ";
-			response += (const char *) lpMsgBuf;
-
-			LocalFree(lpMsgBuf);
-
-			// TODO: Convert response to UTF-8 if GetACP() != 65001 (CP_UTF8)
-
-		} else {
-			char msg[4096];
-			snprintf(msg,4095," - The windows error was %u - 0x%08x",(unsigned int) error, (unsigned int) error);
-			response += msg;
-		}
-
-	}  else {
-
-		char msg[4096];
-		snprintf(msg,4095," - The windows error was %u - 0x%08x",(unsigned int) error, (unsigned int) error);
-		response += msg;
-
-	}
-	*/
 
 	return response;
 
-}
+ }
+
+ std::string Udjat::Win32::Exception::format(const char *what_arg, const DWORD dwMessageId) noexcept {
+	 return string(what_arg) + " - " + format(dwMessageId).c_str();
+ }
