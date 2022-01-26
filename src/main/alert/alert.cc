@@ -91,6 +91,7 @@
 
 	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const std::function<void(std::string &str)> &expander) const {
 
+		/*
 		string url{this->url};
 		string payload{this->payload};
 
@@ -98,6 +99,8 @@
 		expander(payload);
 
 		return make_shared<Activation>(url,action,payload);
+		*/
+		return make_shared<Activation>(*this,expander);
 
 	}
 

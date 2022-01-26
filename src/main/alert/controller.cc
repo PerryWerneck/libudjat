@@ -194,7 +194,7 @@
 
 			if(!activation->timers.next) {
 				// No alert or no next, remove from list.
-				cout << "alerts\tAlert '" << alert->c_str() << "' was stopped" << endl;
+				cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
 				return true;
 			}
 
@@ -205,7 +205,7 @@
 
 				if(activation->state.running) {
 
-					clog << "alerts\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
+					clog << activation->name << "\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
 
 				} else {
 
@@ -214,7 +214,7 @@
 					ThreadPool::getInstance().push([this,activation]() {
 
 						try {
-							cout << "alerts\tEmitting '"
+							cout << activation->name << "\tEmitting '"
 								<< activation->c_str() << "' ("
 								<< (activation->count.success + activation->count.failed + 1)
 								<< ")"
@@ -224,10 +224,10 @@
 							activation->success();
 						} catch(const exception &e) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << activation->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
+							cerr << activation->name << "\tAlert '" << activation->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
 						} catch(...) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << activation->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
+							cerr << activation->name << "\tAlert '" << activation->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
 						activation->state.running = 0;
 

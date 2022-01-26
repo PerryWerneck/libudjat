@@ -78,9 +78,7 @@
 				Activation();
 				virtual ~Activation();
 
-				inline const char * c_str() const noexcept {
-					return name.c_str();
-				}
+				virtual const char * c_str() const noexcept;
 
 				inline std::shared_ptr<Alert> alert() const {
 					return alertptr;
@@ -152,22 +150,24 @@
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
 
+		const char *url = "";
+		HTTP::Method action = HTTP::Get;
+		const char *payload = "";
+
 		/// @brief URL based alert activation.
 		class Activation : public Abstract::Alert::Activation {
-		private:
+		protected:
 			std::string url;
 			HTTP::Method action;
 			std::string payload;
 
 		public:
 			Activation(const std::string &u, const HTTP::Method a, const std::string &p);
+			Activation(const Alert &alert, const std::function<void(std::string &str)> &expander);
 			void emit() const override;
+			const char * c_str() const noexcept override;
 
 		};
-
-		const char *url = "";
-		HTTP::Method action = HTTP::Get;
-		const char *payload = "";
 
 		static const char * expand(const char *value, const pugi::xml_node &node, const char *section);
 

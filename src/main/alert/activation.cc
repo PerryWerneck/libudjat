@@ -28,8 +28,14 @@
 	Alert::Activation::Activation(const string &u, const HTTP::Method a, const string &p) : url(u), action(a), payload(p) {
 	}
 
+	Alert::Activation::Activation(const Alert &alert, const std::function<void(std::string &str)> &expander) : Activation(alert.url,alert.action,alert.payload) {
+
+		expander(url);
+		expander(payload);
+
+	}
+
 	void Alert::Activation::emit() const {
-		cout << name << "\tEmitting '" << url << "'" << endl;
 		Protocol::call(url.c_str(),action,payload.c_str());
 	}
 
@@ -37,6 +43,14 @@
 	}
 
 	Abstract::Alert::Activation::~Activation() {
+	}
+
+	const char * Abstract::Alert::Activation::c_str() const noexcept {
+		return name.c_str();
+	}
+
+	const char * Alert::Activation::c_str() const noexcept {
+		return url.c_str();
 	}
 
 	void Abstract::Alert::Activation::checkForSleep(const char *msg) noexcept {
@@ -47,13 +61,13 @@
 			state.restarting = true;
 			timers.next = time(0) + rst;
 			clog
-				<< name << "\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", sleeping until " << TimeStamp(timers.next)
+				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
 				<< endl;
 
 		} else {
 			timers.next = 0;
 			clog
-				<< name << "\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", stopping"
+				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
 				<< endl;
 		}
 
@@ -76,7 +90,7 @@
 	void Abstract::Alert::Activation::next() noexcept {
 
 #ifdef DEBUG
-		cout << "alerts\t" << alertptr->c_str() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
+		cout << name << "\t" << alertptr->c_str() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
 #endif // DEBUG
 
 		if(count.success >= alertptr->retry.min) {
