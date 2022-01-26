@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	UDJAT_API const char * expand(std::string &text, std::function<bool(const char *key, std::string &value)> exec) {
+	UDJAT_API const char * expand(std::string &text, const Expander &exec) {
 
 		auto from = text.find("${");
 		while(from != string::npos) {
