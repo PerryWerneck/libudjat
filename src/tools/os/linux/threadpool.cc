@@ -36,6 +36,7 @@
  #include <unistd.h>
  #include <iostream>
  #include <pthread.h>
+ #include <pthread.h>
 
  #ifdef DEBUG
 	#undef DEBUG
@@ -194,6 +195,7 @@
 
 		struct timespec   ts;
 
+		pthread_setname_np(pthread_self(),"poolworker");
 		memset(&ts,0,sizeof(ts));
 
 		pool->threads.active++;

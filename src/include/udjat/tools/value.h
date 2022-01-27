@@ -127,6 +127,16 @@
 
 	};
 
+	template <typename T>
+	inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
+		return out.set(value);
+	}
+
+	template <typename T>
+	inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
+		in.get(value);
+		return in;
+	}
 
  }
 
@@ -138,22 +148,12 @@
 		return value.to_string();
 	}
 
+	inline ostream & operator<< (ostream& os, const Udjat::Value &value) {
+		return os << value.to_string();
+	}
+
  }
 
- template <typename T>
- inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
-	return out.set(value);
- }
 
- template <typename T>
- inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
-	in.get(value);
-	return in;
- }
-
- template <typename T>
- inline std::ostream & operator<< (std::ostream& os, const Udjat::Value &value) {
-	return os << value.to_string();
- }
 
 
