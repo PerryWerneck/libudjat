@@ -79,7 +79,7 @@
 				clog << "alerts\tWaiting for " << pending_activations << " activations to complete" << endl;
 				for(size_t timer = 0; timer < 100 && running(); timer++) {
 #ifdef _WIN32
-					Sleep(100)
+					Sleep(100);
 #else
 					usleep(100);
 #endif // _WIN32
@@ -165,7 +165,13 @@
 	void Abstract::Alert::Controller::activate(std::shared_ptr<Abstract::Alert> alert, const std::function<void(std::string &str)> &expander) {
 
 		auto activation = alert->ActivationFactory(expander);
+
 		activation->alertptr = alert;
+
+		if(activation->name.empty()) {
+			activation->name = alert->name;
+		}
+
 		activation->timers.next = time(0) + alert->timers.start;
 
 		{
@@ -188,7 +194,7 @@
 
 			if(!activation->timers.next) {
 				// No alert or no next, remove from list.
-				cout << "alerts\tAlert '" << alert->c_str() << "' was stopped" << endl;
+				cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
 				return true;
 			}
 
@@ -199,7 +205,7 @@
 
 				if(activation->state.running) {
 
-					clog << "alerts\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
+					clog << activation->name << "\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
 
 				} else {
 
@@ -208,8 +214,8 @@
 					ThreadPool::getInstance().push([this,activation]() {
 
 						try {
-							cout << "alerts\tEmitting '"
-								<< activation->name() << "' ("
+							cout << activation->name << "\tEmitting '"
+								<< activation->c_str() << "' ("
 								<< (activation->count.success + activation->count.failed + 1)
 								<< ")"
 								<< endl;
@@ -218,10 +224,10 @@
 							activation->success();
 						} catch(const exception &e) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << activation->name() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
+							cerr << activation->name << "\tAlert '" << activation->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
 						} catch(...) {
 							activation->failed();
-							cerr << "alerts\tAlert '" << activation->name() << "' has failed " << activation->count.failed << " time(s)" << endl;
+							cerr << activation->name << "\tAlert '" << activation->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
 						}
 						activation->state.running = 0;
 

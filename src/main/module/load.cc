@@ -12,6 +12,7 @@
 	#include <udjat/win32/exception.h>
 #else
 	#include <dlfcn.h>
+	#include <unistd.h>
 	#define MODULE_EXT ".so"
 #endif // _WIN32
 
@@ -88,6 +89,24 @@ namespace Udjat {
 
 		}
 
+		// First check if the file is acessible.
+		if(access(filename,R_OK) != 0) {
+
+			// Check if the module exists.
+
+			string message{"Cant access '"};
+			message += filename;
+			message += "' - ";
+			message += strerror(errno);
+			if(required) {
+				throw runtime_error(message);
+			}
+
+			clog << "module\t" << message << endl;
+			return nullptr;
+		}
+
+		// Load module
 		clog << "module\tLoading '" << filename << "'" << endl;
 
 		Module * (*init)(void);
@@ -98,10 +117,14 @@ namespace Udjat {
 		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
 		HMODULE handle = LoadLibrary(filename);
 		if(!handle) {
+			string message = Win32::Exception::format(GetLastError());
+
 			if(required) {
-				throw Win32::Exception("Cant load module");
+				throw runtime_error(string{"Cant load '"} + filename + "' - " + message.c_str());
 			}
-			clog << "module\tCant load '" << filename << "': " << Win32::Exception::format() << endl;
+
+			clog << "module\tCant load '" << filename << "': " << message << endl;
+
 			return nullptr;
 		}
 
@@ -153,7 +176,7 @@ namespace Udjat {
 
 			module->handle = handle;
 
-		} catch(const exception &e) {
+		} catch(...) {
 
 			dlclose(handle);
 			handle = NULL;

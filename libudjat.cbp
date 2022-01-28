@@ -53,7 +53,6 @@
 		<Unit filename="src/include/udjat/agent.h" />
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/defs.h" />
-		<Unit filename="src/include/udjat/expander.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/request.h" />
@@ -94,6 +93,7 @@
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/load.cc" />
+		<Unit filename="src/main/agent/loadfromfile.cc" />
 		<Unit filename="src/main/agent/parse.cc" />
 		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/root.cc" />
@@ -101,7 +101,6 @@
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
-		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/abstract.cc" />
@@ -148,7 +147,6 @@
 		<Unit filename="src/tools/diskstat.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/private.h" />
-		<Unit filename="src/tools/mainloop/default.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/default.cc" />

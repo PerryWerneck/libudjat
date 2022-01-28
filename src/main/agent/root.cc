@@ -28,6 +28,7 @@
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
+ #include <udjat-internals.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>

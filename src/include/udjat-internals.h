@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/agent.h>
  #include <functional>
  #include <thread>
  #include <list>

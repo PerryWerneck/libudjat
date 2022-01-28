@@ -25,21 +25,13 @@
 
  namespace Udjat {
 
+ 	typedef std::function<bool(const char *key, std::string &value)> Expander;
+
 	/// @brief Expands ${key} tags.
 	/// @param str	String to expand.
 	/// @param exec Method to expand (Returns true if the value was updated).
-	UDJAT_API const char * expand(std::string &str, std::function<bool(const char *key, std::string &value)> exec);
+	UDJAT_API const char * expand(std::string &str, const Expander &exec);
 
-	/*
-	class UDJAT_API Expander {
-	private:
-
-	public:
-		Expander();
-		~Expander();
-
-	};
-	*/
 
  }
 

@@ -126,6 +126,7 @@ namespace Udjat {
 
 	}
 
+	/*
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(std::shared_ptr<Abstract::Agent> agent) {
 		Abstract::Agent::Controller::getInstance().set(agent);
 		return agent;
@@ -134,7 +135,9 @@ namespace Udjat {
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::init() {
 		return init(getDefaultRootAgent());
 	}
+	*/
 
+	/*
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(const char *path) {
 
 		Abstract::Agent::Controller &controller = Abstract::Agent::Controller::getInstance();
@@ -154,6 +157,7 @@ namespace Udjat {
 		return root;
 
 	}
+	*/
 
 	void Abstract::Agent::deinit() {
 		Abstract::Agent::Controller::getInstance().set(std::shared_ptr<Abstract::Agent>());

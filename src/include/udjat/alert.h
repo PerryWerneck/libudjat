@@ -65,6 +65,9 @@
 
 			protected:
 
+				/// @brief Alert name
+				std::string name;
+
 				/// @brief Alert was send.
 				void success() noexcept;
 
@@ -75,9 +78,7 @@
 				Activation();
 				virtual ~Activation();
 
-				inline const char * name() const noexcept {
-					return alertptr->c_str();
-				}
+				virtual const char * c_str() const noexcept;
 
 				inline std::shared_ptr<Alert> alert() const {
 					return alertptr;
@@ -148,9 +149,25 @@
 	/// @brief Default alert (based on URL and payload).
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
+
 		const char *url = "";
 		HTTP::Method action = HTTP::Get;
 		const char *payload = "";
+
+		/// @brief URL based alert activation.
+		class UDJAT_API Activation : public Abstract::Alert::Activation {
+		protected:
+			std::string url;
+			HTTP::Method action;
+			std::string payload;
+
+		public:
+			Activation(const std::string &u, const HTTP::Method a, const std::string &p);
+			Activation(const Alert &alert, const std::function<void(std::string &str)> &expander);
+			void emit() const override;
+			const char * c_str() const noexcept override;
+
+		};
 
 		static const char * expand(const char *value, const pugi::xml_node &node, const char *section);
 
@@ -158,7 +175,7 @@
 
 	public:
 
-		class Factory : public Udjat::Factory {
+		class UDJAT_API Factory : public Udjat::Factory {
 		public:
 			Factory();
 			bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
@@ -175,6 +192,16 @@
 
 	};
 
-
  }
 
+ namespace std {
+
+	inline string to_string(const Udjat::Abstract::Alert &alert) {
+			return alert.c_str();
+	}
+
+	inline ostream& operator<< (ostream& os, Udjat::Abstract::Alert &alert) {
+			return os << alert.c_str();
+	}
+
+ }

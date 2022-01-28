@@ -25,6 +25,7 @@
 	#include <pugixml.hpp>
 	#include <cstring>
 	#include <functional>
+	#include <ostream>
 
 #ifdef HAVE_PUGIXML
 	#include <pugixml.hpp>
@@ -110,13 +111,13 @@
 
 		template <>
 		struct hash<Udjat::Quark> {
-			inline size_t operator() (const Udjat::Quark &q) const {
-				return std::hash<std::string>{}(q.c_str());
+			inline size_t operator() (const Udjat::Quark &quark) const {
+				return std::hash<std::string>{}(quark.c_str());
 			}
 		};
 
-		inline ostream& operator<< (ostream& os, const Udjat::Quark &q ) {
-			return os << q.c_str();
+		inline ostream& operator<< (ostream& os, const Udjat::Quark &quark ) {
+			return os << ((const char *)quark.c_str());
 		}
 
 	}

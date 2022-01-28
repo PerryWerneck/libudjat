@@ -20,19 +20,40 @@
  #include "private.h"
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/protocol.h>
+ #include <udjat/alert.h>
 
  namespace Udjat {
 
-	Alert::Activation::Activation() {
-//		cout << "alerts\tActivating " << name() << endl;
-//		timers.next = time(0) + alert->timers.start;
+	Alert::Activation::Activation(const string &u, const HTTP::Method a, const string &p) : url(u), action(a), payload(p) {
 	}
 
-	Alert::Activation::~Activation() {
-		cout << "alerts\tDeactivating " << name() << endl;
+	Alert::Activation::Activation(const Alert &alert, const std::function<void(std::string &str)> &expander) : Activation(alert.url,alert.action,alert.payload) {
+
+		expander(url);
+		expander(payload);
+
 	}
 
-	void Alert::Activation::checkForSleep(const char *msg) noexcept {
+	void Alert::Activation::emit() const {
+		Protocol::call(url.c_str(),action,payload.c_str());
+	}
+
+	Abstract::Alert::Activation::Activation() {
+	}
+
+	Abstract::Alert::Activation::~Activation() {
+	}
+
+	const char * Abstract::Alert::Activation::c_str() const noexcept {
+		return name.c_str();
+	}
+
+	const char * Alert::Activation::c_str() const noexcept {
+		return url.c_str();
+	}
+
+	void Abstract::Alert::Activation::checkForSleep(const char *msg) noexcept {
 
 		time_t rst = (count.success ? alertptr->restart.success : alertptr->restart.failed);
 
@@ -40,35 +61,37 @@
 			state.restarting = true;
 			timers.next = time(0) + rst;
 			clog
-				<< "alerts\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", sleeping until " << TimeStamp(timers.next)
+				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
 				<< endl;
 
 		} else {
 			timers.next = 0;
 			clog
-				<< "alerts\tAlert '" << alertptr->c_str() << "' cycle " << msg << ", stopping"
+				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
 				<< endl;
 		}
 
 	}
 
-	void Alert::Activation::emit() const {
+	void Abstract::Alert::Activation::emit() const {
 		throw system_error(ENOTSUP,system_category(),"Cant emit an abstract activation");
 	}
 
-	void Alert::Activation::failed() noexcept {
+	void Abstract::Alert::Activation::failed() noexcept {
 		count.failed++;
 		next();
 	}
 
-	void Alert::Activation::success() noexcept {
+	void Abstract::Alert::Activation::success() noexcept {
 		count.success++;
 		next();
 	}
 
-	void Alert::Activation::next() noexcept {
+	void Abstract::Alert::Activation::next() noexcept {
 
-		cout << "alerts\t" << alertptr->c_str() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
+#ifdef DEBUG
+		cout << name << "\t" << alertptr->c_str() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
+#endif // DEBUG
 
 		if(count.success >= alertptr->retry.min) {
 			checkForSleep("was sucessfull");
