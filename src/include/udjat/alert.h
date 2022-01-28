@@ -155,7 +155,7 @@
 		const char *payload = "";
 
 		/// @brief URL based alert activation.
-		class Activation : public Abstract::Alert::Activation {
+		class UDJAT_API Activation : public Abstract::Alert::Activation {
 		protected:
 			std::string url;
 			HTTP::Method action;
