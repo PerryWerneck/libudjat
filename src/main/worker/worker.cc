@@ -18,6 +18,7 @@
  */
 
 #include "private.h"
+#include <udjat/tools/logger.h>
 
 using namespace std;
 
@@ -58,14 +59,18 @@ namespace Udjat {
 		return false;
 	}
 
-	bool Worker:: work(Request &request, Response &response) const {
+	bool Worker::work(Request &request, Response &response) const {
 
-		switch(request.as_type()) {
+		auto type = request.as_type();
+		switch(type) {
 		case HTTP::Get:
 			return get(request,response);
 
 		case HTTP::Head:
 			return head(request,response);
+
+		default:
+			throw system_error(ENOENT,system_category(),Logger::Message("'{}' request are unavailable here",type));
 		}
 
 		return false;

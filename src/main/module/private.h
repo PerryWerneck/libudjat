@@ -30,6 +30,8 @@ namespace Udjat {
 		void load();
 		Module * load(const char *filename, bool required = true);
 
+		const Module * find(const char *name) const noexcept;
+
 		void unload();
 
 		void getInfo(Response &response) noexcept;
