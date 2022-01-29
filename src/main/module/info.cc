@@ -35,19 +35,6 @@
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 
-		/*
-#ifndef _WIN32
-		Dl_info info;
-		if(dladdr(this, &info) != 0) {
-			if(info.dli_fname && info.dli_fname[0]) {
-				value["filename"] = info.dli_fname;
-			} else {
-				value["filename"] = "";
-			}
-		}
-#endif // _WIN32
-		*/
-
 		return value;
 	}
 

@@ -36,7 +36,7 @@
  namespace Udjat {
 
 	/// @brief Singleton for alert emission.
-	class Abstract::Alert::Controller : private MainLoop::Service {
+	class Abstract::Alert::Controller : private MainLoop::Service, private Udjat::Worker {
 	private:
 
 		/// @brief Mutex for serialization
@@ -74,6 +74,8 @@
 
 		/// @brief Remove alert activation.
 		void remove(const Abstract::Alert *alert);
+
+		bool get(Request &request, Response &response) const override;
 
 	};
 

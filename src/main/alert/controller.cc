@@ -51,7 +51,7 @@
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(&moduleinfo) {
+	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(&moduleinfo), Udjat::Worker("alerts",&moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		MainLoop::getInstance();
 	}
@@ -241,6 +241,18 @@
 
 		reset(next-now);
 
+	}
+
+	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
+
+		response.reset(Value::Array);
+
+		lock_guard<mutex> lock(guard);
+		for(auto activation : activations) {
+			activation->get(response.append(Value::Object));
+		}
+
+		return true;
 	}
 
  }

@@ -91,7 +91,12 @@
 
 				/// @brief Emit alert.
 				virtual void emit() const;
+
+				/// @brief Get activation info.
+				virtual void get(Udjat::Value &response) const noexcept;
+
 			};
+
 
 			/// @brief Alert name.
 			const char *name = "alert";
@@ -142,6 +147,9 @@
 			/// @brief Deactivate an alert.
 			void deactivate();
 
+			/// @brief Get alert info.
+			virtual void get(Udjat::Value &response) const noexcept;
+
 		};
 
 	}
@@ -189,6 +197,9 @@
 
 		/// @brief Activate a single alert with the default settings.
 		static void activate(const char *name, const char *url, const char *action = "get", const char *payload = "");
+
+		/// @brief Get alert info.
+		void get(Udjat::Value &response) const noexcept override;
 
 	};
 
