@@ -35,6 +35,7 @@
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 
+		
 		return value;
 	}
 

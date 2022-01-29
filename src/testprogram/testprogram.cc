@@ -26,6 +26,7 @@
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
+ #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <iostream>
  #include <memory>
@@ -97,7 +98,6 @@ int main(int argc, char **argv) {
 		/// @brief Initialize service.
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
-			// Alert::initialize();
 
 			auto root = Udjat::init(".");
 
@@ -127,6 +127,7 @@ int main(int argc, char **argv) {
 		/// @brief Deinitialize service.
 		void deinit() override {
 			cout << Application::Name() << "\tDeinitializing" << endl;
+			Module::unload();
 		}
 
 		Service() = default;
