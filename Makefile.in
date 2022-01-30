@@ -226,7 +226,7 @@ install-windows-lib: \
 		$(DESTDIR)$(bindir)/$(PACKAGE_NAME)@LIBEXT@
 		
 	@$(MKDIR) \
-		$(DESTDIR)$(libdir)
+		$(DESTDIR)$(libdir)/udjat-modules
 
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
