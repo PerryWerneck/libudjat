@@ -43,6 +43,9 @@
 
 			};
 
+			/// @brief The typenames.
+			static UDJAT_API Type TypeFactory(const char *name);
+
 			unsigned long user = 0;			//< @brief normal processes executing in user mode.
 			unsigned long nice= 0;			//< @brief niced processes executing in user mode.
 			unsigned long system = 0;		//< @brief processes executing in kernel mode.
@@ -62,12 +65,6 @@
 				const char *label;
 				const char *summary;
 			} typeinfo[];
-
-			/// @brief The typenames.
-			static const char *typenames[];
-
-			/// @brief Get type from typename.
-			static Type getIndex(const char *name);
 
 			unsigned long operator[](const Type ix) const;
 			unsigned long operator[](const char *name) const;
@@ -93,6 +90,16 @@
 
 		};
 
+	}
+
+ }
+
+ namespace std {
+
+	const char * to_string(const Udjat::System::Stat::Type type) noexcept;
+
+	inline ostream& operator<< (ostream& os, const Udjat::System::Stat::Type type ) {
+		return os << to_string(type);
 	}
 
  }

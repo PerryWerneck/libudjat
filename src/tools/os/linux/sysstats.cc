@@ -25,8 +25,23 @@
  #include <iomanip>
  #include <cstring>
  #include <udjat/tools/system/stat.h>
+ #include <ostream>
 
  using namespace std;
+
+ static const char * typenames[] = {
+	"user",
+	"nice",
+	"system",
+	"idle",
+	"iowait",
+	"irq",
+	"softirq",
+	"steal",
+	"guest",
+	"guest_nice",
+	"total"
+ };
 
  namespace Udjat {
 
@@ -83,21 +98,6 @@
 
 	};
 
-	const char * System::Stat::typenames[] = {
-		"user",
-		"nice",
-		"system",
-		"idle",
-		"iowait",
-		"irq",
-		"softirq",
-		"steal",
-		"guest",
-		"guest_nice",
-		"total",
-		nullptr
-	};
-
 	System::Stat::Stat() {
 
 		ifstream in("/proc/stat", ifstream::in);
@@ -115,19 +115,23 @@
 			>> guest_nice;
 	}
 
-	System::Stat::Type System::Stat::getIndex(const char *name) {
+	UDJAT_API System::Stat::Type System::Stat::TypeFactory(const char *name) {
 
-		for(unsigned short ix = 0; typenames[ix]; ix++) {
+		for(unsigned short ix = 0; ix < (sizeof(typenames)/sizeof(typenames[0])); ix++) {
 			if(!strcasecmp(name,typenames[ix])) {
 				return (System::Stat::Type) ix;
 			}
 		}
 
 		if(!strcasecmp(name,"total")) {
-			return TOTAL;
+			return System::Stat::TOTAL;
 		}
 
 		throw runtime_error(string{"Unexpected property name '"} + name + "'");
+	}
+
+	unsigned long System::Stat::operator[](const char *name) const {
+		return (*this)[ (const System::Stat::Type) TypeFactory(name)];
 	}
 
 	unsigned long System::Stat::operator[](const System::Stat::Type ix) const {
@@ -176,10 +180,6 @@
 		return user+nice+system+idle+iowait+irq+softirq+steal+guest+guest_nice;
 	}
 
-	unsigned long System::Stat::operator[](const char *name) const {
-		return (*this)[getIndex(name)];
-	}
-
 	unsigned long System::Stat::getUsage() const noexcept {
 		return user+nice+system+idle+iowait+irq+softirq+steal+guest+guest_nice;
 	}
@@ -213,6 +213,21 @@
 	}
 
  }
+
+ namespace std {
+
+ 	const char * to_string(const Udjat::System::Stat::Type type) noexcept {
+
+ 		if(type > (sizeof(typenames)/sizeof(typenames[0]))) {
+			return "undefined";
+ 		}
+
+ 		return typenames[type];
+
+ 	}
+
+ }
+
 
 
 
