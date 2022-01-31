@@ -261,13 +261,6 @@ install-devel: \
 		src/include/udjat/tools/disk/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/disk
 
-	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/system
-
-	@$(INSTALL_DATA) \
-		src/include/udjat/tools/system/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/system
-
 	# Install PKG-CONFIG files
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/pkgconfig
