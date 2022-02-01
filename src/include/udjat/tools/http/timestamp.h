@@ -33,6 +33,7 @@
 			}
 
 			std::string to_string() const noexcept;
+			TimeStamp & set(const char *time);
 
 		};
 

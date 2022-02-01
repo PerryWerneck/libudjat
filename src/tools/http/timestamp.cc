@@ -20,6 +20,10 @@
  #include <config.h>
  #include <udjat/tools/http/timestamp.h>
  #include <cstdio>
+ #include <ctype.h>
+ #include <udjat/tools/logger.h>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -85,6 +89,49 @@
 
 		return std::string(buffer);
 
+	}
+
+	static int getMonth(const char *name) {
+
+		for(size_t m = 0; m < (sizeof(month)/sizeof(month[0]));m++) {
+			if(!strcasecmp(month[m],name)) {
+				return m;
+			}
+		}
+
+		throw runtime_error(Logger::Message("Unexpected timestamp '{}'",name));
+	}
+
+	HTTP::TimeStamp & HTTP::TimeStamp::set(const char *str) {
+
+		while(*str && !isdigit(*str))
+			str++;
+
+		if(*str) {
+
+			struct tm gmt;
+			char m[5];
+
+			memset(&gmt,0,sizeof(gmt));
+
+			if(sscanf(str,"%d %3s %d %d:%d:%d",&gmt.tm_mday,m,&gmt.tm_year,&gmt.tm_hour,&gmt.tm_min,&gmt.tm_sec) == 6) {
+
+				gmt.tm_year -= 1900;
+				gmt.tm_mon = getMonth(m);
+
+				value = timegm(&gmt);
+
+			} else {
+				throw runtime_error(Logger::Message("Unexpected timestamp value '{}'",str));
+			}
+
+		} else {
+
+			value = 0;
+
+		}
+
+		return *this;
 	}
 
  }
