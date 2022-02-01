@@ -73,6 +73,11 @@
 		/// @brief Do a 'get' request.
 		std::string get() const;
 
+		/// @brief Download/update a file.
+		/// @param filename The fullpath for the file.
+		/// @return true if the file was updated.
+		bool get(const char *filename) const;
+
 		/// @brief Do a 'post' request.
 		std::string post(const char *payload) const;
 

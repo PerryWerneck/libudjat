@@ -91,6 +91,11 @@
 		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
+	bool Protocol::get(const URL &url, const char *filename) const {
+		cerr << name << "\tUnable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
+		return false;
+	}
+
  }
 
  namespace std {
