@@ -152,6 +152,7 @@
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/event.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />

@@ -23,6 +23,9 @@
  #include <udjat/defs.h>
  #include <udjat-internals.h>
  #include <udjat/tools/mainloop.h>
+ #include <thread>
+ #include <list>
+ #include <mutex>
 
  #define WM_WAKE_UP				WM_USER+100
  #define WM_CHECK_TIMERS		WM_USER+101
@@ -34,6 +37,51 @@
  namespace Udjat {
 
 	namespace Win32 {
+
+		/// @brief Windows event.
+		class Event {
+		private:
+			HANDLE handle;
+
+			class Controller {
+			public:
+				struct Worker {
+					bool enabled = true;
+					std::thread *hThread = nullptr;
+					std::list<Win32::Event *> events;
+
+					// Disable copy.
+					Worker(const Worker &) = delete;
+					Worker(const Worker *) = delete;
+
+					Worker(Win32::Event *event);
+
+					~Worker();
+
+				};
+
+				static void wait(Worker *worker);
+
+			private:
+
+				std::list<Worker> workers;
+
+				static std::mutex guard;
+
+				Controller() = default;
+			public:
+				static Controller & getInstance();
+
+				void insert(Event *event);
+				void remove(Event *event);
+
+			};
+
+		public:
+			Event(HANDLE handle);
+			~Event();
+
+		};
 
 		/// @brief Win32 Mainloop for console application.
 		class MainLoop : public Udjat::MainLoop {
