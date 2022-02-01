@@ -20,45 +20,25 @@
  #include <config.h>
  #include "private.h"
  #include <udjat/win32/exception.h>
+ #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	mutex Win32::Event::Controller::guard;
 
-	Win32::Event::Controller & Win32::Event::Controller::getInstance() {
-		lock_guard<mutex> lock(guard);
-		static Win32::Event::Controller instance;
-		return instance;
+	void MainLoop::insert(HANDLE handle, std::function<void(HANDLE handle,bool abandoned)> exec) {
+		new Win32::Event(handle,exec);
 	}
 
-	void Win32::Event::Controller::insert(Event *event) {
-		lock_guard<mutex> lock(guard);
-		for(auto worker = workers.begin(); worker != workers.end(); worker++) {
-
-			if(worker->events.size() < MAXIMUM_WAIT_OBJECTS) {
-				worker->events.push_back(event);
-				return;
-			}
-
-		}
-
-		// Not found, alloc a new worker.
-		workers.emplace_back(event);
-
-	}
-
-	void Win32::Event::Controller::remove(Event *event) {
-		lock_guard<mutex> lock(guard);
-		for(auto worker = workers.begin(); worker != workers.end(); worker++) {
-			worker->events.remove_if([event](const Event *e) {
-				return event == e;
-			});
+	void MainLoop::remove(HANDLE handle) {
+		Win32::Event *event = Win32::Event::Controller::getInstance().find(handle);
+		if(event) {
+			delete event;
 		}
 	}
 
-	Win32::Event::Event(HANDLE h) : handle(h) {
+	Win32::Event::Event(HANDLE h, std::function<void(HANDLE,bool)> e) : handle(h),exec(e) {
 		Controller::getInstance().insert(this);
 	}
 
@@ -66,76 +46,45 @@
 		Controller::getInstance().remove(this);
 	}
 
-	Win32::Event::Controller::Worker::Worker(Win32::Event *event) {
+	/*
+	void Win32::Event::abandon() noexcept {
 
-		this->hThread = new thread([this]() {
-#ifdef DEBUG
-			cout << "win32\tStarting event monitor thread" << endl;
-#endif // DEBUG
+		try {
 
-		while(enabled && Controller::getInstance().wait(this) {
+			exec(handle,true);
+
+		} catch(const exception &e) {
+
+			cerr << "win32\tError '" << e.what() << "' abandoning event" << endl;
+
+		} catch(...) {
+
+			cerr << "win32\tUnexpected error abandoning event" << endl;
+
 		}
+	}
 
-#ifdef DEBUG
-			cout << "win32\tStopping event monitor thread" << endl;
-#endif // DEBUG
+	void Win32::Event::call() noexcept {
+		HANDLE h = this->handle;
+		std::function<void(HANDLE,bool)> e = this->exec;
+
+		ThreadPool::getInstance().push([h,e]() {
+			try {
+
+				e(h,false);
+
+			} catch(const exception &e) {
+
+				cerr << "win32\tError '" << e.what() << "' running event processor" << endl;
+
+			} catch(...) {
+
+				cerr << "win32\tUnexpected error running event processor" << endl;
+
+			}
+
 		});
 	}
-
-	Win32::Event::Controller::Worker::~Worker() {
-#ifdef DEBUG
-		cout << "win32\tStopping event monitor" << endl;
-#endif // DEBUG
-		enabled = false;
-		hThread->join();
-		delete hThread;
-
-	}
-
-	bool Win32::Event::Controller::wait(Worker *worker) {
-		DWORD nCount = 0;
-		const HANDLE *lpHandles = nullptr;
-
-		{
-			lock_guard<mutex> lock(guard);
-			nCount = (DWORD) worker.events.size();
-
-			if(!nCount) {
-				// TODO: Enqueue worker cleanup.
-				return false;
-			}
-
-			lpHandles = malloc((lpHandles+1) * sizeof(HANDLE *));
-
-			DWORD ix = 0;
-			for(event in worker.events) {
-				lpHandles[ix++] = event->handle;
-			}
-
-		}
-
-		// https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects
-		DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,500);
-		if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
-
-			// Abandoned.
-			size_t index = response - WAIT_ABANDONED_0;
-
-		} else if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
-
-			// Object was signaled.
-			size_t index = response - WAIT_OBJECT_0;
-
-		} else if(response == WAIT_FAILED) {
-
-			cerr << "win32\t" << Win32::Exception::format() << endl;
-			return false;
-
-		}
-
-		free(lpHandles);
-		return true;
-
-	}
+	*/
 
  }

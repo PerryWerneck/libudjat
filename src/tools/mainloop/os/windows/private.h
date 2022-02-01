@@ -30,6 +30,7 @@
  #define WM_WAKE_UP				WM_USER+100
  #define WM_CHECK_TIMERS		WM_USER+101
  #define WM_STOP				WM_USER+102
+ #define WM_EVENT_ACTION		WM_USER+103
  #define IDT_CHECK_TIMERS		1
 
  using namespace std;
@@ -42,6 +43,9 @@
 		class Event {
 		private:
 			HANDLE handle;
+			std::function<void(HANDLE,bool)> exec;
+
+		public:
 
 			class Controller {
 			public:
@@ -60,7 +64,9 @@
 
 				};
 
-				static void wait(Worker *worker);
+				static Win32::Event * find(Worker *worker, HANDLE handle) noexcept;
+
+				static bool wait(Worker *worker) noexcept;
 
 			private:
 
@@ -75,11 +81,18 @@
 				void insert(Event *event);
 				void remove(Event *event);
 
+				Win32::Event * find(HANDLE handle) noexcept;
+
 			};
 
-		public:
-			Event(HANDLE handle);
+			friend class controller;
+
+			Event(HANDLE handle, std::function<void(HANDLE,bool)> exec);
 			~Event();
+
+			inline void call(bool abandoned) {
+				exec(handle,abandoned);
+			}
 
 		};
 

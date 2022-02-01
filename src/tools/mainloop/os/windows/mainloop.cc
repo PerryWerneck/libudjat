@@ -92,6 +92,10 @@
 		PostMessage(hwnd,WM_WAKE_UP,0,0);
 	}
 
+	void MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+		PostMessage(hwnd,uMsg,wParam,lParam);
+	}
+
 	LRESULT WINAPI MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		MainLoop & controller = *((MainLoop *) GetWindowLongPtr(hWnd,0));
@@ -137,6 +141,21 @@
 			case WM_TIMER:
 				if(wParam == IDT_CHECK_TIMERS) {
 					PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
+				}
+				break;
+
+			case WM_EVENT_ACTION:
+				try {
+
+					Win32::Event * event = Win32::Event::Controller::getInstance().find((HANDLE) lParam);
+					if(event) {
+						event->call(wParam != 0);
+					}
+
+				} catch(const std::exception &e) {
+					cerr << "Win32\tError '" << e.what() << "' processing event handler" << endl;
+				} catch(...) {
+					cerr << "Win32\tUnexpected error processing event handler" << endl;
 				}
 				break;
 
