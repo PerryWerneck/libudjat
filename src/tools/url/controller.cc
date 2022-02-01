@@ -49,7 +49,7 @@
 		protocols.remove(protocol);
 	}
 
-	const Protocol & Protocol::Controller::find(const char *name) {
+	const Protocol * Protocol::Controller::find(const char *name) {
 
 		{
 			/// @brief Singleton for file protocol.
@@ -63,11 +63,13 @@
 		lock_guard<mutex> lock(guard);
 		for(auto protocol : protocols) {
 			if(!strcasecmp(protocol->name,name)) {
-				return *protocol;
+				return protocol;
 			}
 		}
 
-		throw system_error(ENOENT,system_category(),string{"Cant find protocol '"} + name + "'");
+//		throw system_error(ENOENT,system_category(),string{"Cant find protocol '"} + name + "'");
+		return nullptr;
+
 	}
 
 	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {

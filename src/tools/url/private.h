@@ -58,7 +58,7 @@
 		void insert(Protocol *protocol);
 		void remove(Protocol *protocol);
 
-		const Protocol & find(const char *name);
+		const Protocol * find(const char *name);
 		void getInfo(Response &response) noexcept;
 
 	};

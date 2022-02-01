@@ -101,23 +101,27 @@ int main(int argc, char **argv) {
 
 			auto root = Udjat::init(".");
 
-			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
-
-			if(root) {
-				for(auto agent : *root) {
-					cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+			if(Module::find("httpd")) {
+				if(Module::find("information")) {
+					cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
+				}
+				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+				if(root) {
+					cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+					for(auto agent : *root) {
+						cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+					}
 				}
 			}
+
 
 #ifdef _WIN32
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
 
-				cout << "Criando evento " << hex << ((unsigned long long) hEvent) << endl;
+				cout << "Creating event " << hex << ((unsigned long long) hEvent) << endl;
 
 				MainLoop::getInstance().insert(hEvent,[](HANDLE handle, bool abandoned){
 

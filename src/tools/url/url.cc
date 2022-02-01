@@ -99,11 +99,19 @@
 	}
 
 	std::string URL::get() const {
-		return Protocol::find(*this).call(*this,HTTP::Get,"");
+		const Protocol * protocol = Protocol::find(*this);
+		if(!protocol) {
+			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
+		}
+		return protocol->call(*this,HTTP::Get,"");
 	}
 
 	std::string URL::post(const char *payload) const {
-		return Protocol::find(*this).call(*this,HTTP::Post,payload);
+		const Protocol * protocol = Protocol::find(*this);
+		if(!protocol) {
+			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
+		}
+		return protocol->call(*this,HTTP::Post,payload);
 	}
 
 	const char * URL::c_str() const noexcept {

@@ -29,6 +29,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <udjat-internals.h>
+ #include <udjat/tools/protocol.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -95,11 +96,19 @@
 					if(!vm) {
 
 						try {
+							URL sysid(Config::Value<string>("system","summary","dmi:///system/sku"));
+
+							if(!sysid.empty() && Protocol::find(sysid)) {
+								this->summary = Quark(sysid.get()).c_str();
+							}
+
+							/*
 							string sysid = URL(Config::Value<string>("system","url-summary","dmi:///system/sku")).get();
 
 							if(!sysid.empty()) {
 								this->summary = Quark(sysid).c_str();
 							}
+							*/
 
 						} catch(const std::exception &e) {
 
@@ -110,6 +119,10 @@
 
 						this->summary = Quark(Logger::Message("{} virtual machine",vm.to_string())).c_str();
 
+					}
+
+					if(this->summary && *this->summary) {
+						cout << getName() << "\t" << this->summary << endl;
 					}
 				}
 #endif // HAVE_VMDETECT
