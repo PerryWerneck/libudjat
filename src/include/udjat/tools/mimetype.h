@@ -24,7 +24,7 @@
 
  namespace Udjat {
 
-	enum class MimeType : uint8_t {
+	enum MimeType : uint8_t {
 		custom,					///> @brief Custom
 		json,                   ///> @brief application/json; charset=utf-8
 		csv,                    ///> @brief text/csv; charset=utf-8
@@ -46,7 +46,7 @@
 
 	};
 
-	UDJAT_API MimeType str2mime(const char *str) noexcept;
+	UDJAT_API MimeType MimeTypeFactory(const char *str) noexcept;
 
  }
 

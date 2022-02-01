@@ -64,7 +64,7 @@
 	return types[ix].str;
  }
 
- Udjat::MimeType Udjat::str2mime(const char *str) noexcept {
+ Udjat::MimeType Udjat::MimeTypeFactory(const char *str) noexcept {
 
 	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].str)) {
@@ -77,6 +77,8 @@
 			return (MimeType) ix;
 		}
  	}
+
+ 	clog << "http\tUnknown mymetype '" << str << "' assuming '" << types[MimeType::custom].str << "'" << endl;
 
  	return MimeType::custom;
  }
