@@ -26,6 +26,7 @@
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
+ #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <iostream>
  #include <memory>
@@ -97,36 +98,64 @@ int main(int argc, char **argv) {
 		/// @brief Initialize service.
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
-			// Alert::initialize();
 
 			auto root = Udjat::init(".");
 
-			cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
-			cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
-
-			if(root) {
-				for(auto agent : *root) {
-					cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+			if(Module::find("httpd")) {
+				if(Module::find("information")) {
+					cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
+					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
+				}
+				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+				if(root) {
+					cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+					for(auto agent : *root) {
+						cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+					}
 				}
 			}
 
-			/*
-			MainLoop::getInstance().insert(this,5000,[]() {
-				MainLoop::getInstance().quit();
-				return false;
-			});
-			*/
 
-			Alert::activate("test","dummy+http://localhost");
+#ifdef _WIN32
+			{
+				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
+
+				cout << "Creating event " << hex << ((unsigned long long) hEvent) << endl;
+
+				MainLoop::getInstance().insert(hEvent,[](HANDLE handle, bool abandoned){
+
+					if(abandoned) {
+						cout << "event\tEvent was abandoned" << endl;
+					} else {
+						cout << "event\tSignaled" << endl;
+					}
+
+				});
+
+				MainLoop::getInstance().insert(this,1000,[hEvent]() {
+					static int counter = 5;
+					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << " (" << counter << ")" << endl;
+					if(--counter > 0) {
+						SetEvent(hEvent);
+					} else {
+						MainLoop::getInstance().remove(hEvent);
+						CloseHandle(hEvent);
+						return false;
+					}
+					return true;
+				});
+			}
+#endif // _WIN32
+
+			//Alert::activate("test","dummy+http://localhost");
 
 		}
 
 		/// @brief Deinitialize service.
 		void deinit() override {
 			cout << Application::Name() << "\tDeinitializing" << endl;
+			Module::unload();
 		}
 
 		Service() = default;

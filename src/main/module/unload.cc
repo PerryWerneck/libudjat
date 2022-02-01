@@ -39,6 +39,8 @@ namespace Udjat {
 
 			Module * module = *modules.begin();
 
+			cout << module->name << "\tUnloading module" << endl;
+
 			// Save module name.
 			string name(module->name);
 

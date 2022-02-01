@@ -31,6 +31,15 @@ namespace Udjat {
 
 	}
 
+	const Module * Module::Controller::find(const char *name) const noexcept {
+		for(auto module : modules) {
+			if(strcasecmp(module->name,name) == 0) {
+				return module;
+			}
+		}
+		return nullptr;
+	}
+
 	void Module::Controller::insert(Module *module) {
 		lock_guard<recursive_mutex> lock(guard);
 		modules.push_back(module);

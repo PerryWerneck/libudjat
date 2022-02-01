@@ -226,7 +226,7 @@ install-windows-lib: \
 		$(DESTDIR)$(bindir)/$(PACKAGE_NAME)@LIBEXT@
 		
 	@$(MKDIR) \
-		$(DESTDIR)$(libdir)
+		$(DESTDIR)$(libdir)/udjat-modules
 
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
@@ -253,20 +253,6 @@ install-devel: \
 	@$(INSTALL_DATA) \
 		src/include/udjat/tools/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools
-
-	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/disk
-
-	@$(INSTALL_DATA) \
-		src/include/udjat/tools/disk/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/disk
-
-	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/system
-
-	@$(INSTALL_DATA) \
-		src/include/udjat/tools/system/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/system
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

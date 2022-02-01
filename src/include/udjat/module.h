@@ -31,10 +31,20 @@
 			/// @brief Information about the module.
 			const ModuleInfo *info;
 
+			Module(const char *name, const ModuleInfo *info);
+
+			Module(const Quark &name, const ModuleInfo *info) : Module(name.c_str(),info) {
+			}
+
 		public:
 
 			/// @brief Load modules.
 			static void load();
+
+			/// @brief Get module by name.
+			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
+			/// @return Pointer to module or nullptr if not found.
+			static const Module * find(const char *name) noexcept;
 
 			/// @brief Load module by name or alias
 			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
@@ -46,11 +56,6 @@
 
 			/// @brief List modules.
 			static void getInfo(Response &response);
-
-			Module(const char *name, const ModuleInfo *info);
-
-			Module(const Quark &name, const ModuleInfo *info) : Module(name.c_str(),info) {
-			}
 
 			virtual ~Module();
 

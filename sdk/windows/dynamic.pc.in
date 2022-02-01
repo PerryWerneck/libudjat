@@ -5,6 +5,7 @@ includedir=@includedir@
 
 product_name=@PRODUCT_NAME@
 product_title=@PRODUCT_TITLE@
+module_path=${libdir}/udjat-modules
 
 Name: udjat
 Description: @PRODUCT_TITLE@

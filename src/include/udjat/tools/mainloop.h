@@ -177,6 +177,15 @@ namespace Udjat {
 		/// @brief Remove socket/file/timer/module from the list of event sources.
 		void remove(const void *id);
 
+#ifdef _WIN32
+
+		void post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+
+		static void insert(HANDLE handle, std::function<void(HANDLE handle,bool abandoned)> exec);
+		static void remove(HANDLE handle);
+
+#endif // _WIN32
+
 	};
 
 }

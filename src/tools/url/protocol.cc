@@ -51,7 +51,7 @@
 		Controller::getInstance().remove(this);
 	}
 
-	const Protocol & Protocol::find(const URL &url) {
+	const Protocol * Protocol::find(const URL &url) {
 		string scheme = url.scheme();
 
 		const char *ptr = strrchr(scheme.c_str(),'+');
@@ -60,9 +60,10 @@
 		}
 
 		return find(scheme.c_str());
+
 	}
 
-	const Protocol & Protocol::find(const char *name) {
+	const Protocol * Protocol::find(const char *name) {
 		return Controller::getInstance().find(name);
 	}
 
@@ -71,8 +72,15 @@
 	}
 
 	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
+
 		URL url(u);
-		return find(url).call(url,method,payload);
+		const Protocol * protocol = find(url);
+
+		if(!protocol) {
+			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",url));
+		}
+
+		return protocol->call(url,method,payload);
 	}
 
 	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {

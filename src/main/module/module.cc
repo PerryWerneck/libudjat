@@ -27,6 +27,10 @@ namespace Udjat {
 		Controller::getInstance().getInfo(response);
 	}
 
+	const Module * Module::find(const char *name) noexcept {
+		return Controller::getInstance().find(name);
+	}
+
 	std::string Module::filename() const {
 #ifdef _WIN32
 		TCHAR path[MAX_PATH];

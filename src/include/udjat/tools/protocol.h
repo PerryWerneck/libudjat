@@ -45,9 +45,8 @@
 		Protocol(const char *name, const ModuleInfo *module);
 		virtual ~Protocol();
 
-		static const Protocol & find(const URL &url);
-
-		static const Protocol & find(const char *name);
+		static const Protocol * find(const URL &url);
+		static const Protocol * find(const char *name);
 
 		static void getInfo(Udjat::Response &response) noexcept;
 

@@ -18,25 +18,43 @@
  */
 
  #include <config.h>
- #include <udjat/defs.h>
- #include <udjat/tools/value.h>
- #include <iostream>
- #include <cstdarg>
+ #include "private.h"
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Value & ModuleInfo::get(Value &value) const {
+	Win32::Event::Controller::Worker::Worker(Win32::Event *event) {
 
-		value["module"] = name;
-		value["description"] = description;
-		value["version"] = version;
-		value["bugreport"] = bugreport;
-		value["url"] = url;
+		events.push_back(event);
 
-		
-		return value;
+		this->hThread = new thread([this]() {
+#ifdef DEBUG
+			cout << "win32\tStarting event monitor thread" << endl;
+#endif // DEBUG
+
+			while(enabled && Controller::getInstance().wait(this)) {
+				cout << enabled << endl;
+			}
+
+#ifdef DEBUG
+			cout << "win32\tStopping event monitor thread" << endl;
+#endif // DEBUG
+		});
+	}
+
+	Win32::Event::Controller::Worker::~Worker() {
+#ifdef DEBUG
+		cout << "win32\tStopping event monitor" << endl;
+#endif // DEBUG
+		enabled = false;
+		hThread->join();
+		delete hThread;
+#ifdef DEBUG
+		cout << "win32\tEvent monitor stopped" << endl;
+#endif // DEBUG
+
 	}
 
  }

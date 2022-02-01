@@ -144,7 +144,6 @@
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/application.h" />
 		<Unit filename="src/tools/configuration.cc" />
-		<Unit filename="src/tools/diskstat.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/private.h" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
@@ -153,6 +152,9 @@
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/event.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/eventcontroller.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/eventworker.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
