@@ -31,7 +31,7 @@
 
 		/// @brief A time value (in seconds)
 		class UDJAT_API TimeStamp {
-		private:
+		protected:
 			time_t value;
 
 		public:

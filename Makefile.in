@@ -19,6 +19,7 @@ MAIN_SOURCES= \
 	$(wildcard src/main/module/*.cc) \
 	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
 	$(wildcard src/tools/url/*.cc) \
+	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/alert/*.cc)
 
@@ -253,6 +254,13 @@ install-devel: \
 	@$(INSTALL_DATA) \
 		src/include/udjat/tools/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/http
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/http/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

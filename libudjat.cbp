@@ -60,10 +60,10 @@
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
-		<Unit filename="src/include/udjat/tools/disk/stat.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
-		<Unit filename="src/include/udjat/tools/httpexception.h" />
+		<Unit filename="src/include/udjat/tools/http/exception.h" />
+		<Unit filename="src/include/udjat/tools/http/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
@@ -73,8 +73,6 @@
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />
 		<Unit filename="src/include/udjat/tools/sysconfig.h" />
-		<Unit filename="src/include/udjat/tools/system/info.h" />
-		<Unit filename="src/include/udjat/tools/system/stat.h" />
 		<Unit filename="src/include/udjat/tools/systemservice.h" />
 		<Unit filename="src/include/udjat/tools/threadpool.h" />
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
@@ -145,6 +143,8 @@
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/private.h" />
+		<Unit filename="src/tools/http/exception.cc" />
+		<Unit filename="src/tools/http/timestamp.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
