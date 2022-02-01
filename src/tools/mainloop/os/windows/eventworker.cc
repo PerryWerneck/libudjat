@@ -35,6 +35,7 @@
 #endif // DEBUG
 
 			while(enabled && Controller::getInstance().wait(this)) {
+				cout << enabled << endl;
 			}
 
 #ifdef DEBUG
@@ -50,6 +51,9 @@
 		enabled = false;
 		hThread->join();
 		delete hThread;
+#ifdef DEBUG
+		cout << "win32\tEvent monitor stopped" << endl;
+#endif // DEBUG
 
 	}
 

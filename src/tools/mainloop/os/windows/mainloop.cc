@@ -92,7 +92,7 @@
 		PostMessage(hwnd,WM_WAKE_UP,0,0);
 	}
 
-	void MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) {
+ 	void MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
 		PostMessage(hwnd,uMsg,wParam,lParam);
 	}
 

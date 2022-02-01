@@ -113,14 +113,38 @@ int main(int argc, char **argv) {
 				}
 			}
 
-			/*
-			MainLoop::getInstance().insert(this,5000,[]() {
-				MainLoop::getInstance().quit();
-				return false;
-			});
-			*/
+#ifdef _WIN32
+			{
+				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
 
-			Alert::activate("test","dummy+http://localhost");
+				cout << "Criando evento " << hex << ((unsigned long long) hEvent) << endl;
+
+				MainLoop::getInstance().insert(hEvent,[](HANDLE handle, bool abandoned){
+
+					if(abandoned) {
+						cout << "event\tEvent was abandoned" << endl;
+					} else {
+						cout << "event\tSignaled" << endl;
+					}
+
+				});
+
+				MainLoop::getInstance().insert(this,1000,[hEvent]() {
+					static int counter = 5;
+					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << " (" << counter << ")" << endl;
+					if(--counter > 0) {
+						SetEvent(hEvent);
+					} else {
+						MainLoop::getInstance().remove(hEvent);
+						CloseHandle(hEvent);
+						return false;
+					}
+					return true;
+				});
+			}
+#endif // _WIN32
+
+			//Alert::activate("test","dummy+http://localhost");
 
 		}
 
