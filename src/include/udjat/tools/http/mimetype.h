@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <ostream>
 
  namespace Udjat {
 
@@ -52,7 +53,7 @@
 
  namespace std {
 
-	const char * to_string(const Udjat::MimeType type, bool suffix = false);
+	UDJAT_API const char * to_string(const Udjat::MimeType type, bool suffix = false);
 
 	inline ostream& operator<< (ostream& os, Udjat::MimeType type) {
 			return os << std::to_string(type);

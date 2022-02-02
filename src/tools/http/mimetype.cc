@@ -18,7 +18,7 @@
  */
 
  #include <udjat/defs.h>
- #include <udjat/tools/mimetype.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <cstring>
  #include <iostream>
 
@@ -59,7 +59,7 @@
 	size_t ix = (size_t) type;
 
 	if(ix > (sizeof(types)/sizeof(types[0])))
-		return (suffix ? types[0].ext : types[0].str);
+		ix = 0;
 
 	return (suffix ? types[ix].ext : types[ix].str);
  }
