@@ -167,7 +167,6 @@
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/os/linux/application.cc" />
 		<Unit filename="src/tools/os/linux/configvalue.cc" />
-		<Unit filename="src/tools/os/linux/diskstats.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
 		<Unit filename="src/tools/os/linux/file/controller.cc" />
 		<Unit filename="src/tools/os/linux/file/list.cc" />
@@ -180,8 +179,6 @@
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/subprocess.cc" />
 		<Unit filename="src/tools/os/linux/subprocess.h" />
-		<Unit filename="src/tools/os/linux/sysinfo.cc" />
-		<Unit filename="src/tools/os/linux/sysstats.cc" />
 		<Unit filename="src/tools/os/linux/systemservice.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/application.cc" />

@@ -21,6 +21,7 @@
 
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/agent.h>
@@ -163,11 +164,10 @@ int main(int argc, char **argv) {
 
 	};
 
-
-	/*
-#ifdef _WIN32
-#endif // _WIN32
-	*/
+	Config::for_each("service-events",[](const char *key, const char *value){
+		cout << "config\t" << key << "='" << value << "'" << endl;
+		return true;
+	});
 
 	return Service().run(argc,argv);
 
