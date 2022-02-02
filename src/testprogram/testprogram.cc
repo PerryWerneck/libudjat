@@ -169,6 +169,8 @@ int main(int argc, char **argv) {
 		return true;
 	});
 
+	cout << "webroot: '" << Application::DataDir("www/error-pages") << endl;
+
 	return Service().run(argc,argv);
 
 

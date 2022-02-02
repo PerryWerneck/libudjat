@@ -43,6 +43,11 @@
 		append("/");
 	}
 
+	Application::DataDir::DataDir(const char *subdir) : DataDir() {
+		append(subdir);
+		append("/");
+	}
+
 	Application::LibDir::LibDir() : string{STRINGIZE_VALUE_OF(LIBDIR) "/"} {
 	}
 

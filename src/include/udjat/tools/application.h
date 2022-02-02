@@ -53,6 +53,7 @@
 		class UDJAT_API DataDir : public std::string {
 		public:
 			DataDir();
+			DataDir(const char *subdir);
 		};
 
 		class UDJAT_API LibDir : public std::string {
