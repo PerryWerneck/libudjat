@@ -54,14 +54,14 @@
 
  };
 
- std::string std::to_string(const Udjat::MimeType type) {
+ const char * std::to_string(const Udjat::MimeType type, bool suffix) {
 
 	size_t ix = (size_t) type;
 
 	if(ix > (sizeof(types)/sizeof(types[0])))
-		return types[0].str;
+		return (suffix ? types[0].ext : types[0].str);
 
-	return types[ix].str;
+	return (suffix ? types[ix].ext : types[ix].str);
  }
 
  Udjat::MimeType Udjat::MimeTypeFactory(const char *str) noexcept {
@@ -78,7 +78,7 @@
 		}
  	}
 
- 	clog << "http\tUnknown mymetype '" << str << "' assuming '" << types[MimeType::custom].str << "'" << endl;
+ 	clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[MimeType::custom].str << "'" << endl;
 
  	return MimeType::custom;
  }

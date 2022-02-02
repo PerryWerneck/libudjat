@@ -116,6 +116,9 @@ namespace Udjat {
 
 			Text(int fd, ssize_t length = -1);
 			Text(const char *filename);
+			Text(const std::string &filename) : Text(filename.c_str()) {
+			}
+
 			~Text();
 
 			inline const char * c_str() const noexcept {

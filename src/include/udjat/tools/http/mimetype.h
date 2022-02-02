@@ -52,7 +52,7 @@
 
  namespace std {
 
-	string to_string(const Udjat::MimeType type);
+	const char * to_string(const Udjat::MimeType type, bool suffix = false);
 
 	inline ostream& operator<< (ostream& os, Udjat::MimeType type) {
 			return os << std::to_string(type);
