@@ -29,10 +29,20 @@
 
 		class UDJAT_API TimeStamp : public Udjat::TimeStamp {
 		public:
-			constexpr TimeStamp(time_t t = time(nullptr)) : Udjat::TimeStamp(t) {
+			constexpr TimeStamp() : Udjat::TimeStamp(0) {
 			}
 
+			constexpr TimeStamp(time_t time) : Udjat::TimeStamp(time) {
+			}
+
+			TimeStamp(const char *time);
+
 			std::string to_string() const noexcept;
+
+			inline TimeStamp & operator=(const char *time) {
+				return set(time);
+			}
+
 			TimeStamp & set(const char *time);
 
 		};

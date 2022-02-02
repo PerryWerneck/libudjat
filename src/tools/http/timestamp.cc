@@ -62,6 +62,10 @@
 	static const char *month[]	= { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", nullptr };
 	static const char *days[]	= { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", nullptr };
 
+	HTTP::TimeStamp::TimeStamp(const char *time) {
+		set(time);
+	}
+
 	std::string HTTP::TimeStamp::to_string() const noexcept {
 
 		if(!value) {
