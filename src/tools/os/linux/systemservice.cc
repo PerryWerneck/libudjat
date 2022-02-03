@@ -40,7 +40,7 @@
 
 	SystemService * SystemService::instance = nullptr;
 
-	void SystemService::onReloadSignal(int signal) noexcept {
+	void SystemService::onReloadSignal(int UDJAT_UNUSED(signal)) noexcept {
 
 		cout << "service\tReconfigure request received from signal SIGUSR1" << endl;
 
@@ -66,9 +66,6 @@
 
 		}
 
-	}
-
-	SystemService::SystemService() {
 	}
 
 	SystemService::~SystemService() {

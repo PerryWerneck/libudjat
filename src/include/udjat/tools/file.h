@@ -257,6 +257,11 @@ namespace Udjat {
 			/// @brief The reference filename.
 			std::string filename;
 
+#ifdef _WIN32
+			Temporary();
+			std::string tempname;
+#endif // _WIN32
+
 		public:
 			/// @brief Create temporary file with same path of another one
 			/// @param filename Filename to use as reference.
@@ -264,6 +269,7 @@ namespace Udjat {
 			~Temporary();
 
 #ifndef _WIN32
+
 			/// @brief Hardlink tempfile to new filename (Linux only).
 			/// @param filename The hard link name.
 			void link(const char *filename) const;
