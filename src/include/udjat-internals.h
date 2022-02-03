@@ -40,6 +40,9 @@
 
  namespace Udjat {
 
+	UDJAT_PRIVATE std::shared_ptr<Abstract::Agent> getDefaultRootAgent();
+	UDJAT_PRIVATE void setRootAgent(std::shared_ptr<Abstract::Agent> agent);
+
 	class MainLoop::Timer {
 	public:
 

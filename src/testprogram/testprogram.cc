@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
 		void init() override {
 			cout << Application::Name() << "\tInitializing" << endl;
 
-			auto root = Udjat::init(".");
+			auto root = Udjat::load("test.xml");
 
 			if(Module::find("httpd")) {
 				if(Module::find("information")) {

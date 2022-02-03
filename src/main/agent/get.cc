@@ -39,8 +39,12 @@
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
 	}
 
-	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
+	void Abstract::Agent::get(Response &response) {
 		this->get(getDetails(response)["value"]);
+	}
+
+	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
+		get(response);
 	}
 
 	Value & Abstract::Agent::getDetails(Value &value) const {

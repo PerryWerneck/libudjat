@@ -1,14 +1,33 @@
-/**
- * @file
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
- * @brief Implements the agent loader.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file main/load/xml.cc
+ *
+ * @brief Implements the application settings loader.
  *
  * @author perry.werneck@gmail.com
  *
  */
 
  #include <config.h>
- #include "private.h"
+ #include <udjat-internals.h>
  #include <sys/stat.h>
  #include <udjat/module.h>
  #include <udjat/tools/logger.h>
@@ -47,7 +66,7 @@ namespace Udjat {
 
 	}
 
-	UDJAT_API std::shared_ptr<Abstract::Agent> init(const char *pathname) {
+	UDJAT_API std::shared_ptr<Abstract::Agent> load(const char *pathname) {
 
 		struct stat pathstat;
 		if(stat(pathname, &pathstat) == -1) {
@@ -72,7 +91,6 @@ namespace Udjat {
 
 			// Then load agents
 			clog << STRINGIZE_VALUE_OF(PRODUCT_NAME) << "\tCreating the new root agent" << endl;
-			Abstract::Agent::Controller::getInstance();
 			root = getDefaultRootAgent();
 
 			files.forEach([root](const char *filename){
@@ -87,24 +105,30 @@ namespace Udjat {
 			// Load a single XML file.
 			//
 			cout << STRINGIZE_VALUE_OF(PRODUCT_NAME) << "\tLoading '" << pathname << "'" << endl;
-			pugi::xml_document doc;
-			doc.load_file(pathname);
 
 			// First load the modules.
-			load_modules(doc.document_element());
+			{
+				pugi::xml_document doc;
+				doc.load_file(pathname);
+				load_modules(doc.document_element());
+			}
+
+
 
 			// Create new root agent.
-			clog << STRINGIZE_VALUE_OF(PRODUCT_NAME) << "\tCreating the new root agent" << endl;
-			Abstract::Agent::Controller::getInstance();
-			root = getDefaultRootAgent();
+			{
+				pugi::xml_document doc;
+				doc.load_file(pathname);
 
-			// Then load agents
-			load(root, doc.document_element());
+				root = getDefaultRootAgent();
+
+				// Then load agents
+				load(root, doc.document_element());
+			}
 
 		}
 
-		cout << STRINGIZE_VALUE_OF(PRODUCT_NAME) << "\tActivating the new agent controller from '" << pathname << "'" << endl;
-		Abstract::Agent::Controller::getInstance().set(root);
+		setRootAgent(root);
 
 		return root;
 	}
