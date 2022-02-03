@@ -30,6 +30,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <iostream>
+ #include <udjat/tools/file.h>
  #include <memory>
 
  using namespace std;
@@ -171,6 +172,15 @@ int main(int argc, char **argv) {
 	});
 
 	cout << "webroot: '" << Application::DataDir("www/error-pages") << endl;
+
+	{
+		File::Temporary tempfile("test.tmp");
+
+		tempfile.write("teste\n");
+		tempfile.save();
+
+	}
+
 
 	return Service().run(argc,argv);
 

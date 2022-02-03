@@ -273,10 +273,11 @@ namespace Udjat {
 			/// @brief Hardlink tempfile to new filename (Linux only).
 			/// @param filename The hard link name.
 			void link(const char *filename) const;
+
 #endif // _WIN32
 
 			/// @brief Move temporary file to the reference filename.
-			void save() const;
+			void save();
 
 			/// @brief Write data to tempfile.
 			/// @param contents Data to write.

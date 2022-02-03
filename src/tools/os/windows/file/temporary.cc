@@ -32,6 +32,7 @@
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <fcntl.h>
+ #include <iostream>
 
  #include <windows.h>
  #include <fileapi.h>
@@ -56,6 +57,10 @@
 
 		tempname = szTempFileName;
 
+#ifdef DEBUG
+		cout << "Tempname: '" << tempname << "'" << endl;
+#endif // DEBUG
+
 		fd = open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
 
 		if(fd < 0) {
@@ -69,19 +74,55 @@
 	}
 
 	File::Temporary::~Temporary() {
-		::close(fd);
+		if(fd > 0) {
+			::close(fd);
+			DeleteFile(tempname.c_str());
+		}
 	}
 
-	void File::Temporary::save() const {
+	void File::Temporary::save() {
 
 		if(filename.empty()) {
 			throw system_error(EINVAL,system_category(),"No target filename");
 		}
 
-		throw runtime_error("Not implemented (yes)");
+		if(fd > 0) {
+			::close(fd);
+			fd = -1;
+		}
+
+		if(MoveFile(tempname.c_str(),filename.c_str())) {
+			return;
+		}
+
+		if(GetLastError() != ERROR_ALREADY_EXISTS) {
+			throw Win32::Exception("Can't save file");
+		}
+
+		char bakfile[PATH_MAX+1];
+		strncpy(bakfile,filename.c_str(),PATH_MAX);
+		char *ptr = strrchr(bakfile,'.');
+		if(ptr) {
+			*ptr = 0;
+		}
+		strncat(bakfile,".bak",PATH_MAX);
+
+		DeleteFile(bakfile);
+		MoveFile(filename.c_str(),bakfile);
+
+		if(MoveFile(tempname.c_str(),filename.c_str())) {
+			return;
+		}
+
+		throw Win32::Exception("Can't save file");
+
 	}
 
 	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
+
+		if(fd < 0) {
+			throw runtime_error("Temporary file is no longer available");
+		}
 
 		while(length) {
 
