@@ -35,10 +35,10 @@
 
  namespace Udjat {
 
-	File::Temporary::Temporary(const char *filename) {
+	File::Temporary::Temporary(const char *name) : filename{name} {
 
 		char path[PATH_MAX];
-		strncpy(path,filename,PATH_MAX);
+		strncpy(path,name,PATH_MAX);
 
 		fd = open(dirname(path),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR);
 		if(fd < 0) {
@@ -98,7 +98,16 @@
 
 	}
 
-	void File::Temporary::write(void *contents, size_t length) {
+	void File::Temporary::save() const {
+
+		if(filename.empty()) {
+				throw system_error(EINVAL,system_category(),"No target filename");
+		}
+
+		this->link(filename.c_str());
+	}
+
+	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
 
 		while(length) {
 
@@ -111,6 +120,7 @@
 			contents = (void *) (((uint8_t *) contents) + bytes);
 
 		}
+		return *this;
 
 	}
 
