@@ -42,19 +42,29 @@
 
 	void SystemService::onReloadSignal(int signal) noexcept {
 
-		if(instance && instance->definitions) {
+		cout << "service\tReconfigure request received from signal SIGUSR1" << endl;
 
-			cout << "service\tReloading '" << instance->definitions << "' by SIGUSR1 request" << endl;
+		try {
+
 			ThreadPool::getInstance().push([](){
-				Udjat::load(Application::DataFile(instance->definitions).c_str());
+				if(instance && instance->definitions) {
+
+					Application::DataFile path(instance->definitions);
+					cout << Application::Name() << "\tReconfiguring from '" << path << "'" << endl;
+					Udjat::load(path.c_str());
+
+				} else {
+
+					clog << "service\tUnable to handle SIGUSR1, no service or no defined file(s)" << endl;
+
+				}
 			});
 
-		} else {
+		} catch(const std::exception &e) {
 
-			clog << "service\tUnable to handle SIGUSR1, no service or no defined file(s)" << endl;
+			cerr << "service\t" << e.what() << endl;
 
 		}
-
 
 	}
 
