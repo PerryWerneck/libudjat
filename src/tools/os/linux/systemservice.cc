@@ -45,8 +45,9 @@
 
 	void SystemService::init() {
 		if(definitions) {
-			cout << Application::Name() << "\tInitializing from '" << definitions << "'" << endl;
-			Udjat::load(definitions);
+			Application::DataFile path(definitions);
+			cout << Application::Name() << "\tInitializing from '" << path << "'" << endl;
+			Udjat::load(path.c_str());
 		}
 	}
 

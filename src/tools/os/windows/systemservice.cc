@@ -218,10 +218,9 @@
 	}
 
 	void SystemService::init() {
-		if(definitions) {
-			cout << Application::Name() << "\tInitializing from '" << definitions << "'" << endl;
-			Udjat::load(definitions);
-		}
+
+		#error Need implementation
+
 	}
 
 	void SystemService::deinit() {
