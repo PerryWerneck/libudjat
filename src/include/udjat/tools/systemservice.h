@@ -25,6 +25,9 @@
 
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService {
+	private:
+		void load() noexcept;
+
 	protected:
 
 		/// @brief Path for the xml file(s) with service definitions.
@@ -38,6 +41,10 @@
 
 		/// @brief Uninstall win32 service.
 		virtual int uninstall();
+
+#else
+		static SystemService *instance;
+		static void onReloadSignal(int signal) noexcept;
 
 #endif // _WIN32
 
