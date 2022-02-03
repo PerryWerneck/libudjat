@@ -30,6 +30,7 @@
  #include <sys/time.h>
  #include <sys/resource.h>
  #include <locale.h>
+ #include <udjat/agent.h>
 
  using namespace std;
 
@@ -43,6 +44,10 @@
 	}
 
 	void SystemService::init() {
+		if(definitions) {
+			cout << Application::Name() << "\tInitializing from '" << definitions << "'" << endl;
+			Udjat::load(definitions);
+		}
 	}
 
 	void SystemService::deinit() {

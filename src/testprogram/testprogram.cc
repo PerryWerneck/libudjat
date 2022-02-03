@@ -98,9 +98,8 @@ int main(int argc, char **argv) {
 	public:
 		/// @brief Initialize service.
 		void init() override {
-			cout << Application::Name() << "\tInitializing" << endl;
 
-			auto root = Udjat::load("test.xml");
+			SystemService::init();
 
 			if(Module::find("httpd")) {
 				if(Module::find("information")) {
@@ -109,12 +108,14 @@ int main(int argc, char **argv) {
 					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
 				}
 				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+				/*
 				if(root) {
 					cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
 					for(auto agent : *root) {
 						cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 					}
 				}
+				*/
 			}
 
 
@@ -159,8 +160,8 @@ int main(int argc, char **argv) {
 			Module::unload();
 		}
 
-		Service() = default;
-
+		Service() : SystemService{"test.xml"} {
+		}
 
 	};
 

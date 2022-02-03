@@ -27,6 +27,9 @@
 	class UDJAT_API SystemService {
 	protected:
 
+		/// @brief Path for the xml file(s) with service definitions.
+		const char * definitions = nullptr;
+
 #ifdef _WIN32
 
 		/// @brief Install win32 service.
@@ -42,6 +45,9 @@
 		virtual void usage(const char *appname) const noexcept;
 
 	public:
+		constexpr SystemService(const char *d) : definitions(d) {
+		}
+
 		SystemService();
 		virtual ~SystemService();
 
