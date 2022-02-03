@@ -83,7 +83,9 @@ namespace Udjat {
 		for(auto module : modules) {
 
 			if(!strcasecmp(module->filename().c_str(),filename)) {
+#ifdef DEBUG
 				cout << "module\tModule '" << module->name << "' is already loaded" << endl;
+#endif // DEBUG
 				return module;
 			}
 
