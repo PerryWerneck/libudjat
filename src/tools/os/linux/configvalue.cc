@@ -393,7 +393,7 @@
 			return get(group,name,def.c_str());
 		}
 
-		void for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
 
@@ -402,8 +402,14 @@
 			char **keys;
 			econf_err err = econf_getKeys((econf_file *) hFile, group, &length, &keys);
 
-			if(err != ECONF_SUCCESS)
+			if(err != ECONF_SUCCESS) {
+				if(err == ECONF_NOKEY) {
+					clog << "config\tNo '" << group << "' section on configuration file" << endl;
+					return false;
+				}
 				throw std::runtime_error(econf_errString(err));
+
+			}
 
 			bool next = true;
 			for(size_t ix = 0;ix < length && next; ix++) {
@@ -438,6 +444,8 @@
 
 			}
 			econf_freeArray(keys);
+
+			return next;
 
 		}
 
@@ -497,14 +505,14 @@
 			return def;
 		}
 
-		void for_each(const char *group,const std::function<void(const char *key, const char *value)> &call) {
+		bool for_each(const char *group,const std::function<void(const char *key, const char *value)> &call) {
 		}
 
 	};
 #endif // HAVE_ECONF
 
-	void Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
-		Controller::getInstance().for_each(group,call);
+	bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+		return Controller::getInstance().for_each(group,call);
 	}
 
 	bool Config::hasGroup(const std::string &group) {
