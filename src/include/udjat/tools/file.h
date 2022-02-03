@@ -248,6 +248,28 @@ namespace Udjat {
 
 		};
 
+		/// @brief Temporary file.
+		class UDJAT_API Temporary {
+		private:
+			int fd = -1;
+
+		public:
+			/// @brief Create temporary file with same path of another one
+			/// @param filename Filename to use as reference.
+			Temporary(const char *filename);
+			~Temporary();
+
+			/// @brief Hardlink tempfile to new filename.
+			/// @param filename The hard link name.
+			void link(const char *filename) const;
+
+			/// @brief Write data to tempfile.
+			/// @param contents Data to write.
+			/// @param length Data length.
+			void write(void *contents, size_t length);
+
+		};
+
 	}
 
 }
