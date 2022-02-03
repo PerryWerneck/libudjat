@@ -52,10 +52,13 @@
 		virtual void usage(const char *appname) const noexcept;
 
 	public:
+
+		constexpr SystemService() {
+		}
+
 		constexpr SystemService(const char *d) : definitions(d) {
 		}
 
-		SystemService();
 		virtual ~SystemService();
 
 		/// @brief Initialize service.

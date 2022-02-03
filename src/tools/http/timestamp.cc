@@ -74,7 +74,11 @@
 
 		struct tm gmt;
 
+#ifdef _WIN32
+		gmt = *gmtime(&value);
+#else
 		gmtime_r(&value,&gmt);
+#endif // _WIN32
 
 		char buffer[101];
 
@@ -123,7 +127,11 @@
 				gmt.tm_year -= 1900;
 				gmt.tm_mon = getMonth(m);
 
+#ifdef _WIN32
+				value = _mkgmtime(&gmt);
+#else
 				value = timegm(&gmt);
+#endif // _WIN32
 
 			} else {
 				throw runtime_error(Logger::Message("Unexpected timestamp value '{}'",str));

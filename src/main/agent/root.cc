@@ -163,12 +163,12 @@
 
 				string sysname{"windows "};
 
-				sysname += to_string(osvi.dwMajorVersion);
+				sysname += std::to_string(osvi.dwMajorVersion);
 				sysname += ".";
-				sysname += to_string(osvi.dwMinorVersion);
+				sysname += std::to_string(osvi.dwMinorVersion);
 
 				sysname += " build ";
-				sysname += to_string(osvi.dwBuildNumber);
+				sysname += std::to_string(osvi.dwBuildNumber);
 
 				sysname += " ";
 				sysname += (const char *) osvi.szCSDVersion;
