@@ -101,6 +101,11 @@
 	Application::DataDir::DataDir() : string(Application::Path()) {
 	}
 
+	Application::DataDir::DataDir(const char *subdir) : DataDir() {
+		append(subdir);
+		append("/");
+	}
+
 	Application::DataFile::DataFile(const char *name) {
 		if(name[0] == '/' || (name[0] == '.' && name[1] == '/') || name[0] == '\\' || (name[0] == '.' && name[1] == '\\') || name[1] == ':' ) {
 			assign(name);

@@ -101,14 +101,7 @@
 			return rc;
 		}
 
-		string get(const string &group, const string &key, const char *def) {
-
-			HKEY hK;
-			DWORD disp;
-
-			if(RegCreateKeyEx(this->hkey,group.c_str(),0,NULL,REG_OPTION_NON_VOLATILE,KEY_READ,NULL,&hK,&disp) != ERROR_SUCCESS) {
-				return def;
-			}
+		string get(HKEY hK, const char *name, const char *def) {
 
 			static DWORD bufLen = 100;
 
@@ -118,7 +111,7 @@
 			memset(data,0,bufLen);
 
 			DWORD cbData = bufLen -1;
-			dwRet = RegQueryValueEx( hK, key.c_str(), NULL, NULL, (LPBYTE) data, &cbData );
+			dwRet = RegQueryValueEx( hK, name, NULL, NULL, (LPBYTE) data, &cbData );
 
 			while( dwRet == ERROR_MORE_DATA ) {
 
@@ -128,19 +121,33 @@
 				memset(data,0,bufLen);
 
 				cbData = bufLen-1;
-				dwRet = RegQueryValueEx( hK, key.c_str(), NULL, NULL, (LPBYTE) data, &cbData );
+				dwRet = RegQueryValueEx( hK, name, NULL, NULL, (LPBYTE) data, &cbData );
 			}
 
-			RegCloseKey(hK);
-			string rc(data);
+			string rc;
+			if(dwRet == ERROR_SUCCESS) {
+				rc.assign(data);
+			} else {
+				rc.assign(def);
+			}
 
 			delete[] data;
 
-			if(dwRet != ERROR_SUCCESS) {
+			return rc;
+		}
 
+		string get(const string &group, const string &key, const char *def) {
+
+			HKEY hK;
+			DWORD disp;
+
+			if(RegCreateKeyEx(this->hkey,group.c_str(),0,NULL,REG_OPTION_NON_VOLATILE,KEY_READ,NULL,&hK,&disp) != ERROR_SUCCESS) {
 				return def;
-
 			}
+
+			string rc = get(hK, key.c_str(), def);
+
+			RegCloseKey(hK);
 
 			return rc;
 
@@ -201,7 +208,37 @@
 
 		}
 
+		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+
+			HKEY hGroup;
+			if(RegOpenKeyEx(this->hkey,group,0,KEY_READ|KEY_ENUMERATE_SUB_KEYS,&hGroup) != ERROR_SUCCESS) {
+				return false;
+			}
+
+			TCHAR achkey[1024];		// buffer for subkey name
+			DWORD cbName = 1024;	// size of name string
+			bool rc = true;
+			for(DWORD index = 0;RegEnumKeyEx(hGroup,index,achkey,&cbName,NULL,NULL,NULL,NULL) == ERROR_SUCCESS && rc; index++) {
+				string keyname(achkey,cbName);
+				string value = get(hGroup,keyname.c_str(),"");
+
+#ifdef DEBUG
+				cout << "key='" << keyname << "' value='" << value << "'" << endl;
+#endif // DEBUG
+
+
+				cbName = 1024;
+			}
+
+			RegCloseKey(hGroup);
+			return rc;
+		}
+
 	};
+
+	bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+		return Controller().for_each(group,call);
+	}
 
 	bool Config::hasGroup(const std::string &group) {
 		return Controller().hasGroup(group.c_str());
