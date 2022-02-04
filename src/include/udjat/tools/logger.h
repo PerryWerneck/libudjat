@@ -13,8 +13,14 @@
 		/// @brief Manage log files.
 		/// Reference: https://www.youtube.com/watch?v=IdM0Z2a4fjU
 		class UDJAT_API Logger {
-		private:
-			  const char * name;	///< @brief Object name.
+		protected:
+			struct Properties {
+				const char * name;	///< @brief Object name.
+
+				constexpr Properties(const char *n) : name(n) {
+				}
+
+			} properties;
 
 		public:
 			enum Type : uint8_t {
@@ -69,7 +75,7 @@
 			static void redirect(const char *filename = nullptr, bool console = false);
 #endif // DEBUG
 
-			constexpr Logger(const char *n = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : name(n) {
+			constexpr Logger(const char *name = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : properties(name) {
 			}
 
 			~Logger();
@@ -77,43 +83,43 @@
 			void set(const pugi::xml_node &name);
 
 			operator const char *() const noexcept {
-				return this->name;
+				return this->properties.name;
 			}
 
 			/// @brief Get Logger name.
-			const char * getName() const noexcept {
-				return this->name;
+			const char * name() const noexcept {
+				return this->properties.name;
 			}
 
 			inline const char * c_str() const noexcept {
-				return this->name;
+				return this->properties.name;
 			}
 
 			/// @brief Write informational message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void info(const char *format, const Targs... args) const noexcept {
-				std::cout << name << "\t" << Message(format, args...) << std::endl;
+				std::cout << name() << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write warning message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void warning(const char *format, const Targs... args) const noexcept {
-				std::clog << name << "\t" << Message(format, args...) << std::endl;
+				std::clog << name() << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write error message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void error(const char *format, const Targs... args) const noexcept {
-				std::cerr << name << "\t" << Message(format, args...) << std::endl;
+				std::cerr << name() << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write Error message.
 			/// @param e exception to write.
 			void error(const std::exception &e) {
-				std::cerr << name << "\t" << e.what() << std::endl;
+				std::cerr << name() << "\t" << e.what() << std::endl;
 			}
 
 			/// @brief Write error message.
@@ -121,7 +127,7 @@
 			/// @param format String with '{}' placeholders (the last one with be the exception message)
 			template<typename... Targs>
 			void error(const std::exception &e, const char *format, const Targs... args) const noexcept {
-				std::cerr << name << "\t" << Message(format, args...).append(e) << std::endl;
+				std::cerr << name() << "\t" << Message(format, args...).append(e) << std::endl;
 			}
 
 		};
@@ -130,15 +136,15 @@
 	namespace std {
 
 		inline string to_string(const Udjat::Logger &logger) {
-			return logger.getName();
+			return logger.name();
 		}
 
 		inline string to_string(const Udjat::Logger *logger) {
-			return logger->getName();
+			return logger->name();
 		}
 
 		inline ostream& operator<< (ostream& os, const Udjat::Logger &logger) {
-			return os << logger.getName();
+			return os << logger.name();
 		}
 
 	}

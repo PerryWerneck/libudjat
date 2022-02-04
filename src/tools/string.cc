@@ -69,7 +69,7 @@
 		return string(from+1,to-from);
 	}
 
-	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander) {
+	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 
 		auto from = find("${");
 		while(from != string::npos) {
@@ -92,7 +92,7 @@
 
 				from = find("${",from);
 
-			} else if(!strcasecmp(key.c_str(),"timestamp")) {
+			} else if(!strcasecmp(key.c_str(),"timestamp") && dynamic) {
 
 				replace(
 					from,
@@ -110,6 +110,16 @@
 						from,
 						(to-from)+1,
 						env
+					);
+
+					from = find("${",from);
+
+				} else if(cleanup) {
+
+					replace(
+						from,
+						(to-from)+1,
+						""
 					);
 
 					from = find("${",from);

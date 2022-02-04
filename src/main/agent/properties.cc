@@ -45,7 +45,7 @@
 				const char *key;
 				const char *value;
 			} values[] = {
-				{ "agent.name",		this->getName()	},
+				{ "agent.name",		this->name()	},
 				{ "agent.label",	this->label		},
 				{ "agent.summary",	this->summary	},
 				{ "agent.uri", 		this->uri		},

@@ -83,7 +83,13 @@
 		String(const char *str, size_t length) : std::string(str,length) {
 		}
 
-		String & expand(const std::function<bool(const char *key, std::string &value)> &expander);
+		/**
+		 * @brief Expand ${} macros.
+		 * @param expander value expander method.
+		 * @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+		 * @param cleanup if true remove the non existent values from string.
+		 */
+		String & expand(const std::function<bool(const char *key, std::string &value)> &expander, bool dynamic = false, bool cleanup = false);
 
 		/**
 		 * @brief Expand ${} macros.

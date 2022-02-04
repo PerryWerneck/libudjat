@@ -59,7 +59,7 @@
 		{
 			for(auto child : children) {
 
-				if(strncasecmp(child->getName(),path,length))
+				if(strncasecmp(child->name(),path,length))
 					continue;
 
 				if(ptr && ptr[1]) {

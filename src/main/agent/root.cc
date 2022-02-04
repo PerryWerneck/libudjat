@@ -67,7 +67,7 @@
 
 				if(uname(&uts) < 0) {
 					memset(&uts,0,sizeof(uts));
-					clog << getName() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
+					clog << Logger::name() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
 				}
 
 				//
@@ -124,7 +124,7 @@
 					}
 
 					if(this->summary && *this->summary) {
-						cout << getName() << "\t" << this->summary << endl;
+						cout << Logger::name() << "\t" << this->summary << endl;
 					}
 
 				}

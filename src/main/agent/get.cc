@@ -49,7 +49,7 @@
 
 	Value & Abstract::Agent::getDetails(Value &value) const {
 
-		value["name"] = this->getName();
+		value["name"] = this->name();
 		value["summary"] = this->summary;
 		value["label"] = this->label;
 		value["uri"] = this->uri;
@@ -70,7 +70,7 @@
 
 		const Abstract::Agent *agent = this;
 		while(agent->parent) {
-			names.push_front(agent->getName());
+			names.push_front(agent->name());
 			agent = agent->parent;
 		}
 

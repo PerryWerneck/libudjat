@@ -76,7 +76,7 @@ namespace Udjat {
 	void Abstract::Agent::stop() {
 
 #ifdef DEBUG
-		cout << getName() << "\tStopping agent" << endl;
+		cout << name() << "\tStopping agent" << endl;
 #endif // DEBUG
 
 		lock_guard<std::recursive_mutex> lock(guard);
@@ -138,14 +138,14 @@ namespace Udjat {
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + getName() + "' doesnt allow states");
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_alert(const pugi::xml_node &node) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + getName() + "' doesnt allow alerts");
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
 	}
 	#pragma GCC diagnostic pop
 

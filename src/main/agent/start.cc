@@ -24,7 +24,7 @@
 	void Abstract::Agent::start() {
 
 #ifdef DEBUG
-		cout << getName() << "\tStarting agent" << endl;
+		cout << name() << "\tStarting agent" << endl;
 #endif // DEBUG
 
 		// Start children
@@ -48,7 +48,7 @@
 		{
 			this->state.active = stateFromValue();
 			if(!this->state.active) {
-				cerr << getName() << "\tGot an invalid state, switching to the default one" << endl;
+				cerr << name() << "\tGot an invalid state, switching to the default one" << endl;
 				this->state.active = Abstract::Agent::stateFromValue();
 			}
 

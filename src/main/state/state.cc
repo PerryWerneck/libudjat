@@ -150,19 +150,6 @@ namespace Udjat {
 
 	}
 
-	/*
-	std::string & Abstract::State::expand(std::string &text) const {
-
-		Udjat::expand(text,[this](const char *key, string &value) {
-
-
-		});
-
-		return text;
-
-	}
-	*/
-
 	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {
 
 		if(!strcasecmp(key,"level")) {

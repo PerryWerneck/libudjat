@@ -36,7 +36,7 @@ namespace Udjat {
 	void Logger::set(const pugi::xml_node &node) {
 		auto attribute = node.attribute("name");
 		if(attribute)
-			name = Quark(attribute.as_string(this->name)).c_str();
+			properties.name = Quark(attribute.as_string(this->properties.name)).c_str();
 	}
 
 	#pragma GCC diagnostic push

@@ -26,7 +26,7 @@
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	bool Abstract::Agent::assign(const char *value) {
-		throw system_error(ENOTSUP,system_category(),string{"Agent '"} + getName() + "' doesnt allow assign method");;
+		throw system_error(ENOTSUP,system_category(),string{"Agent '"} + name() + "' doesnt allow assign method");;
 	}
 	#pragma GCC diagnostic pop
 
