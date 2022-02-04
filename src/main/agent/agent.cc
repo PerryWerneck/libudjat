@@ -46,7 +46,7 @@ namespace Udjat {
 			Object::properties.summary = summary;
 		}
 
-		state.active = Agent::stateFromValue();
+		current_state.active = Agent::stateFromValue();
 
 		try {
 

@@ -92,6 +92,10 @@ namespace Udjat {
 				return find(key);
 			}
 
+			/// @brief Get the object name.
+			/// @return String with the filename without path or extension.
+			std::string name() const;
+
 			const char * getPath() const noexcept {
 				return path.c_str();
 			}

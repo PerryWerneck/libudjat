@@ -198,7 +198,7 @@
 
 				}
 
-				if(this->getState()->ready()) {
+				if(this->state()->ready()) {
 					// Already ok, do not change.
 					return false;
 				}

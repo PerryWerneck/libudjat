@@ -82,7 +82,7 @@
 					/// @brief State activation.
 					time_t activation;
 
-				} state;
+				} current_state;
 
 				std::vector<std::shared_ptr<Agent>> children;
 
@@ -148,16 +148,18 @@
 				virtual ~Agent();
 
 				/// @brief Get root agent.
-				static std::shared_ptr<Abstract::Agent> get_root();
+				static std::shared_ptr<Abstract::Agent> root();
+
+				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
 
 				/// @brief Initialize agent subsystem.
 				/// @return root agent.
-				static std::shared_ptr<Abstract::Agent> init();
+				// static std::shared_ptr<Abstract::Agent> init();
 
 				/// @brief Initialize agent subsystem, load agent descriptors.
 				/// @param path Path to agent descriptions.
 				/// @return root agent.
-				static std::shared_ptr<Abstract::Agent> init(const char *path);
+				// static std::shared_ptr<Abstract::Agent> init(const char *path);
 
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
@@ -230,14 +232,18 @@
 				/// @brief Assign value from string.
 				virtual bool assign(const char *value);
 
+				UDJAT_DEPRECATED(inline std::shared_ptr<State> getState() const) {
+					return this->current_state.active;
+				}
+
 				/// @brief Get current state
-				inline std::shared_ptr<State> getState() const {
-					return this->state.active;
+				inline std::shared_ptr<State> state() const {
+					return this->current_state.active;
 				}
 
 				/// @brief Get current level.
 				inline Level level() const {
-					return this->state.active->level();
+					return this->current_state.active->level();
 				}
 
 				/// @brief Insert State.

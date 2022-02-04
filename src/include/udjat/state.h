@@ -107,16 +107,21 @@
 					return properties.body;
 				}
 
+				/// @brief Get the state level.
+				/// @return The state level.
+				/// @see Level
 				inline Level level() const noexcept {
 					return properties.level;
 				}
 
-				Udjat::Value & getLevel(Udjat::Value &value) const;
-
-				inline bool isCritical() const noexcept {
-					return level() >= critical;
+				/// @brief Is this state a critical one?
+				/// @return true if the state is critical.
+				inline bool critical() const noexcept {
+					return level() >= Level::critical;
 				}
 
+				/// @brief Check if this state is a problem.
+				/// @return true if the state is not a problem.
 				inline bool ready() const noexcept {
 					return level() <= Level::ready;
 				}
@@ -132,6 +137,9 @@
 				/// @return true if the property is valid.
 				bool getProperty(const char *key, std::string &value) const noexcept override;
 
+				/// @brief Get the state properties.
+				/// @brief Value to receive the properties.
+				/// @return The save value from arguments.
 				Value & getProperties(Value &value) const noexcept override;
 
 				/// @brief Insert alert.

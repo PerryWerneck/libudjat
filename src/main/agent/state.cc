@@ -67,7 +67,7 @@ namespace Udjat {
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
 					if(child->level() > state->level()) {
-						state = child->getState();
+						state = child->state();
 					}
 				}
 			}
@@ -77,14 +77,14 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->state.active = StateFactory(e,"Error switching state");
-			this->state.activation = time(0);
+			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
-			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
-			this->state.activation = time(0);
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->current_state.activation = time(0);
 
 		}
 
@@ -104,14 +104,14 @@ namespace Udjat {
 		}
 
 		// Return if it's the same.
-		if(state == this->state.active)
+		if(state == this->current_state.active)
 			return false;
 
 		string value = to_string();
 
 		if(value.empty()) {
 			info()	<< "Current state changes from'"
-					<< this->state.active
+					<< this->current_state.active
 					<< "' to '"
 					<< state
 					<< "(" << state->level() << ")"
@@ -119,7 +119,7 @@ namespace Udjat {
 
 		} else {
 			info()	<< "Value '" << value << "' changes state from '"
-					<< this->state.active->summary()
+					<< this->current_state.active->summary()
 					<< "' to '"
 					<< state->summary()
 					<< "(" << state->level() << ")"
@@ -130,10 +130,10 @@ namespace Udjat {
 
 		try {
 
-			this->state.active->deactivate(*this);
-			this->state.active = state;
-			this->state.activation = time(0);
-			this->state.active->activate(*this);
+			this->current_state.active->deactivate(*this);
+			this->current_state.active = state;
+			this->current_state.activation = time(0);
+			this->current_state.active->activate(*this);
 
 			if(parent)
 				parent->onChildStateChange();
@@ -141,14 +141,14 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->state.active = StateFactory(e,"Error switching state");
-			this->state.activation = time(0);
+			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			error() << "Unexpected error switching state" << endl;
-			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
-			this->state.activation = time(0);
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->current_state.activation = time(0);
 
 		}
 

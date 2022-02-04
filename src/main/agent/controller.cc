@@ -171,6 +171,10 @@ namespace Udjat {
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {
+		return root();
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::root() {
 		return Abstract::Agent::Controller::getInstance().get();
 	}
 

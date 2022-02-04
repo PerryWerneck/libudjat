@@ -46,10 +46,10 @@
 
 		// Update agent state.
 		{
-			this->state.active = stateFromValue();
-			if(!this->state.active) {
+			this->current_state.active = stateFromValue();
+			if(!this->current_state.active) {
 				cerr << name() << "\tGot an invalid state, switching to the default one" << endl;
-				this->state.active = Abstract::Agent::stateFromValue();
+				this->current_state.active = Abstract::Agent::stateFromValue();
 			}
 
 			// Check for children state
@@ -57,14 +57,14 @@
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
 					if(child->level() > this->level()) {
-						this->state.active = child->state.active;
+						this->current_state.active = child->current_state.active;
 					}
 				}
 			}
 
-			this->state.activation = time(0);
+			this->current_state.activation = time(0);
 
-			const char * name = this->state.active->name();
+			const char * name = this->current_state.active->name();
 			if(name && *name) {
 
 				string value = to_string();
@@ -72,7 +72,7 @@
 				if(value.empty()) {
 
 					info()	<< "Starts with state '"
-							<< this->state.active->name()
+							<< this->current_state.active->name()
 							<< "' and level '"
 							<< level()
 							<< "'"
@@ -83,7 +83,7 @@
 					info()	<< "Starts with value '"
 							<< value
 							<< "', state '"
-							<< this->state.active->name()
+							<< this->current_state.active->name()
 							<< "' and level '"
 							<< level()
 							<< "'"

@@ -129,7 +129,7 @@ namespace Udjat {
 				for(auto child : children) {
 
 					if(child->level() > new_state->level()) {
-						new_state = child->getState();
+						new_state = child->state();
 					}
 				}
 			}
@@ -141,14 +141,14 @@ namespace Udjat {
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->state.active = StateFactory(e,"Error switching state");
-			this->state.activation = time(0);
+			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
-			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
-			this->state.activation = time(0);
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->current_state.activation = time(0);
 
 		}
 
