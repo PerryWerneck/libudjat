@@ -98,7 +98,7 @@
 
 	}
 
-	void File::Temporary::save() const {
+	void File::Temporary::save() {
 
 		if(filename.empty()) {
 				throw system_error(EINVAL,system_category(),"No target filename");
