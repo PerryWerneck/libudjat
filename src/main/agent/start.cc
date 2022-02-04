@@ -24,7 +24,7 @@
 	void Abstract::Agent::start() {
 
 #ifdef DEBUG
-		cout << name() << "\tStarting agent" << endl;
+		info() << "Starting agent" << endl;
 #endif // DEBUG
 
 		// Start children

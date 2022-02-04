@@ -32,11 +32,12 @@
 	}
 
 	void NamedObject::set(const pugi::xml_node &node) {
-		objectName = Quark(node.attribute("name").as_string("unnamed")).c_str();
+		objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
 	}
 
 	Value & NamedObject::getProperties(Value &value) const noexcept {
 		value["name"] = objectName;
+		return value;
 	}
 
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
@@ -55,6 +56,7 @@
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const noexcept {
+		return value;
 	}
 
 	Value & Object::getProperties(Value &value) const noexcept {
@@ -66,6 +68,7 @@
 		value["url"] = url();
 		value["icon"] = icon();
 
+		return value;
 	}
 
 	bool Object::getProperty(const char *key, std::string &value) const noexcept {
@@ -91,6 +94,18 @@
 			return true;
 		}
 		return false;
+	}
+
+	std::ostream & NamedObject::info() const {
+		return std::cout << name() << "\t";
+	}
+
+	std::ostream & NamedObject::warning() const {
+		return std::clog << name() << "\t";
+	}
+
+	std::ostream & NamedObject::error() const {
+		return std::cerr << name() << "\t";
 	}
 
 	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, const char *def) {

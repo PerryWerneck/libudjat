@@ -36,7 +36,7 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Object(name ? name : "unnamed") {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Object( (name && *name) ? name : "unnamed") {
 
 		if(label && *label) {
 			Object::properties.label = label;
@@ -81,7 +81,7 @@ namespace Udjat {
 	void Abstract::Agent::stop() {
 
 #ifdef DEBUG
-		cout << name() << "\tStopping agent" << endl;
+		info() << "\tStopping agent" << endl;
 #endif // DEBUG
 
 		lock_guard<std::recursive_mutex> lock(guard);
