@@ -106,6 +106,14 @@
 		return protocol->call(*this,HTTP::Get,"");
 	}
 
+	bool URL::get(const char *filename) const {
+		const Protocol * protocol = Protocol::find(*this);
+		if(!protocol) {
+			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
+		}
+		return protocol->get(*this,filename);
+	}
+
 	std::string URL::post(const char *payload) const {
 		const Protocol * protocol = Protocol::find(*this);
 		if(!protocol) {

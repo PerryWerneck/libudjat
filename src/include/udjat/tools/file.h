@@ -26,6 +26,7 @@
 #include <algorithm>
 #include <mutex>
 #include <string>
+#include <cstring>
 
 namespace Udjat {
 
@@ -116,6 +117,9 @@ namespace Udjat {
 
 			Text(int fd, ssize_t length = -1);
 			Text(const char *filename);
+			Text(const std::string &filename) : Text(filename.c_str()) {
+			}
+
 			~Text();
 
 			inline const char * c_str() const noexcept {
@@ -245,6 +249,65 @@ namespace Udjat {
 
 		};
 
+		/// @brief Temporary file.
+		class UDJAT_API Temporary {
+		private:
+			int fd = -1;
+
+			/// @brief The reference filename.
+			std::string filename;
+
+#ifdef _WIN32
+			Temporary();
+			std::string tempname;
+#endif // _WIN32
+
+		public:
+			/// @brief Create temporary file with same path of another one
+			/// @param filename Filename to use as reference.
+			Temporary(const char *filename);
+			~Temporary();
+
+#ifndef _WIN32
+
+			/// @brief Hardlink tempfile to new filename (Linux only).
+			/// @param filename The hard link name.
+			void link(const char *filename) const;
+
+#endif // _WIN32
+
+			/// @brief Move temporary file to the reference filename.
+			void save();
+
+			/// @brief Write data to tempfile.
+			/// @param contents Data to write.
+			/// @param length Data length.
+			Temporary & write(const void *contents, size_t length);
+
+			inline Temporary & write(const std::string &str) {
+				return write(str.c_str(),str.size());
+			}
+
+			inline Temporary & write(const char *str) {
+				return write(str,strlen(str));
+			}
+
+			template<typename T>
+			inline Temporary & write(const T &value) {
+				return write((const void *) &value, sizeof(value));
+			}
+
+		};
+
+	}
+
+}
+
+namespace std {
+
+	template<typename T>
+	inline Udjat::File::Temporary& operator<< (Udjat::File::Temporary &file, const T &value) {
+			return file.write(value);
 	}
 
 }

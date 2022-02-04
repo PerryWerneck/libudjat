@@ -27,6 +27,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/win32/service.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/agent.h>
  #include <getopt.h>
 
  using namespace std;
@@ -208,19 +209,27 @@
 
 	}
 
-	SystemService::SystemService() {
-		setlocale( LC_ALL, "" );
-		Service::Controller::getInstance().insert(this);
-	}
-
 	SystemService::~SystemService() {
-		Service::Controller::getInstance().remove(this);
 	}
 
 	void SystemService::init() {
+
+		setlocale( LC_ALL, "" );
+		Service::Controller::getInstance().insert(this);
+
+		if(definitions) {
+
+			// Inicialize from XML
+			Application::DataFile path(definitions);
+			cout << Application::Name() << "\tInitializing from '" << path << "'" << endl;
+			Udjat::load(path.c_str());
+
+		}
+
 	}
 
 	void SystemService::deinit() {
+		Service::Controller::getInstance().remove(this);
 	}
 
 	void SystemService::stop() {

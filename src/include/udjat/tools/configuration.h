@@ -23,6 +23,7 @@
  #include <string>
  #include <mutex>
  #include <vector>
+ #include <functional>
 
  namespace Udjat {
 
@@ -37,6 +38,12 @@
 		UDJAT_API std::string get(const std::string &group, const std::string &name, const char *def);
 		UDJAT_API std::string get(const std::string &group, const std::string &name, const std::string &def);
 		UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
+
+		/// @brief Navigate from all group keys.
+		/// @param group Group name.
+		/// @param call function to call on every group key until it returns 'false'.
+		/// @return true if the lambda returns 'true' for all keys.
+		UDJAT_API bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call);
 
 		UDJAT_API bool hasGroup(const std::string &group);
 		UDJAT_API bool hasKey(const char *group, const char *key);

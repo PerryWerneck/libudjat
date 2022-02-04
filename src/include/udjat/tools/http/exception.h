@@ -54,6 +54,15 @@
 				return error;
 			}
 
+			/// @brief Translate system error to http.
+			/// @param syscode system error code.
+			/// @return The corresponding http error code (or 500 if there's no one).
+			static int translate(int syscode) noexcept;
+
+			/// @brief Translate system error to http.
+			/// @param except system error.
+			/// @return The corresponding http error code (or 500 if there's no one).
+			static int translate(const std::system_error &except) noexcept;
 
 		};
 	}

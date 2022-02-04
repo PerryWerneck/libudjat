@@ -18,7 +18,7 @@
  */
 
  #include <udjat/defs.h>
- #include <udjat/tools/mimetype.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <cstring>
  #include <iostream>
 
@@ -54,17 +54,17 @@
 
  };
 
- std::string std::to_string(const Udjat::MimeType type) {
+ const char * std::to_string(const Udjat::MimeType type, bool suffix) {
 
 	size_t ix = (size_t) type;
 
 	if(ix > (sizeof(types)/sizeof(types[0])))
-		return types[0].str;
+		ix = 0;
 
-	return types[ix].str;
+	return (suffix ? types[ix].ext : types[ix].str);
  }
 
- Udjat::MimeType Udjat::str2mime(const char *str) noexcept {
+ Udjat::MimeType Udjat::MimeTypeFactory(const char *str) noexcept {
 
 	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].str)) {
@@ -77,6 +77,8 @@
 			return (MimeType) ix;
 		}
  	}
+
+ 	clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[MimeType::custom].str << "'" << endl;
 
  	return MimeType::custom;
  }

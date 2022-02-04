@@ -17,27 +17,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/tools/disk/stat.h>
-
- using namespace std;
+ #pragma once
+ #include <udjat/defs.h>
+ #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
 
-	std::list<Disk::Stat> Disk::Stat::get() {
-		throw runtime_error("DiskStats is not available on windows");
-	}
+	namespace HTTP {
 
-	Disk::Stat::Stat(const char *name) : Stat() {
-		throw runtime_error("DiskStats is not available on windows");
-	}
+		/// @brief HTTP Date/time specialization.
 
-	Disk::Stat & Disk::Stat::operator+=(const Disk::Stat &s) {
-		throw runtime_error("DiskStats is not available on windows");
-	}
+		class UDJAT_API TimeStamp : public Udjat::TimeStamp {
+		public:
+			constexpr TimeStamp() : Udjat::TimeStamp(0) {
+			}
 
-	size_t Disk::Stat::getBlockSize() const {
-		throw runtime_error("DiskStats is not available on windows");
+			constexpr TimeStamp(time_t time) : Udjat::TimeStamp(time) {
+			}
+
+			TimeStamp(const char *time);
+
+			std::string to_string() const noexcept;
+
+			inline TimeStamp & operator=(const char *time) {
+				return set(time);
+			}
+
+			TimeStamp & set(const char *time);
+
+		};
+
 	}
 
  }
-

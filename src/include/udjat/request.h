@@ -11,7 +11,7 @@
 	#include <udjat/tools/timestamp.h>
 	#include <udjat/tools/value.h>
 	#include <memory>
-	#include <udjat/tools/mimetype.h>
+	#include <udjat/tools/http/mimetype.h>
 	#include <udjat/tools/method.h>
 
 	namespace Udjat {

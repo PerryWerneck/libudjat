@@ -30,6 +30,7 @@
  #include <udjat/tools/url.h>
  #include <udjat-internals.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/application.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -40,13 +41,21 @@
 
  namespace Udjat {
 
+	void setRootAgent(std::shared_ptr<Abstract::Agent> agent) {
+
+		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << endl;
+		Abstract::Agent::Controller::getInstance().set(agent);
+
+	}
+
 	std::shared_ptr<Abstract::Agent> getDefaultRootAgent() {
 
+		/// @brief The root agent.
 		class Agent : public Abstract::Agent {
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				cout << "agent\tRoot node was created" << endl;
+				cout << "agent\tRoot agent " << hex << ((void *) this) << " was created" << endl;
 				this->icon = "computer";
 				this->uri = Quark(string{"http://"} + name).c_str();
 
@@ -88,42 +97,36 @@
 					//
 					// Detect virtualization.
 					//
-					VirtualMachine vm;
+					VirtualMachine virtualmachine;
 
 					//
 					// Get machine information
 					//
-					if(!vm) {
+					if(!virtualmachine) {
 
 						try {
-							URL sysid(Config::Value<string>("system","summary","dmi:///system/sku"));
+							URL sysid(Config::Value<string>("bare-metal","summary","dmi:///system/sku"));
 
 							if(!sysid.empty() && Protocol::find(sysid)) {
 								this->summary = Quark(sysid.get()).c_str();
 							}
-
-							/*
-							string sysid = URL(Config::Value<string>("system","url-summary","dmi:///system/sku")).get();
-
-							if(!sysid.empty()) {
-								this->summary = Quark(sysid).c_str();
-							}
-							*/
 
 						} catch(const std::exception &e) {
 
 							warning("{}",e.what());
 
 						}
+
 					} else {
 
-						this->summary = Quark(Logger::Message("{} virtual machine",vm.to_string())).c_str();
+						this->summary = Quark(Logger::Message("{} virtual machine",virtualmachine.to_string())).c_str();
 
 					}
 
 					if(this->summary && *this->summary) {
 						cout << getName() << "\t" << this->summary << endl;
 					}
+
 				}
 #endif // HAVE_VMDETECT
 
@@ -143,14 +146,36 @@
 			}
 
 			virtual ~Agent() {
-				cout << "agent\tRoot node was destroyed" << endl;
+				cout << "agent\tRoot agent " << hex << ((void *) this) << " was destroyed" << endl;
 			}
 
-			void get(const Request UDJAT_UNUSED(&request), Response &response) override {
+			void get(Response &response) override {
 
-				getDetails(response);
+				Abstract::Agent::get(response);
 
-#ifndef _WIN32
+#ifdef _WIN32
+				OSVERSIONINFO osvi;
+
+				ZeroMemory(&osvi, sizeof(osvi));
+				osvi.dwOSVersionInfoSize = sizeof(osvi);
+
+				GetVersionEx(&osvi);
+
+				string sysname{"windows "};
+
+				sysname += std::to_string(osvi.dwMajorVersion);
+				sysname += ".";
+				sysname += std::to_string(osvi.dwMinorVersion);
+
+				sysname += " build ";
+				sysname += std::to_string(osvi.dwBuildNumber);
+
+				sysname += " ";
+				sysname += (const char *) osvi.szCSDVersion;
+
+				response["system"] = sysname;
+
+#else
 				struct utsname uts;
 
 				if(uname(&uts) >= 0) {
@@ -184,10 +209,13 @@
 
 		};
 
+		// Get controller to initialize it.
+		Abstract::Agent::Controller::getInstance();
+
 		char hostname[255];
 		if(gethostname(hostname, 255)) {
-			cerr << "Error '" << strerror(errno) << "' getting hostname" << endl;
-			strncpy(hostname,PACKAGE_NAME,255);
+			cerr << "agent\tError '" << strerror(errno) << "' getting hostname" << endl;
+			strncpy(hostname,Application::Name().c_str(),255);
 		}
 
 		return make_shared<Agent>(Quark(hostname).c_str());

@@ -71,6 +71,13 @@
 		/// @return Host response.
 		std::string call(const URL &url, const char *method, const char *payload = "") const;
 
+		/// @brief Download/update a file.
+		/// @param url the file URL.
+		/// @param filename The fullpath for the file.
+		/// @return true if the file was updated.
+		virtual bool get(const URL &url, const char *filename) const;
+
+
 	};
 
  }

@@ -31,7 +31,7 @@
 
 		/// @brief A time value (in seconds)
 		class UDJAT_API TimeStamp {
-		private:
+		protected:
 			time_t value;
 
 		public:
@@ -59,8 +59,12 @@
 				return *this;
 			}
 
-			TimeStamp & operator=(const char *time) {
+			inline TimeStamp & operator=(const char *time) {
 				return set(time);
+			}
+
+			operator time_t() const noexcept {
+				return this->value;
 			}
 
 			bool operator==(time_t value) const noexcept {

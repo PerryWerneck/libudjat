@@ -393,8 +393,64 @@
 			return get(group,name,def.c_str());
 		}
 
+		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+
+			std::lock_guard<std::recursive_mutex> lock(guard);
+
+			// Get keys.
+			size_t length = 0;
+			char **keys;
+			econf_err err = econf_getKeys((econf_file *) hFile, group, &length, &keys);
+
+			if(err != ECONF_SUCCESS) {
+				if(err == ECONF_NOKEY) {
+					clog << "config\tNo '" << group << "' section on configuration file" << endl;
+					return false;
+				}
+				throw std::runtime_error(econf_errString(err));
+
+			}
+
+			bool next = true;
+			for(size_t ix = 0;ix < length && next; ix++) {
+
+				char *value = nullptr;
+				econf_err err = econf_getStringValueDef(
+									(econf_file *) hFile,
+									group,
+									keys[ix],
+									&value,
+									(char *) ""		// It should be const here but, it isnt in libeconf.
+								);
+
+				if(err == ECONF_SUCCESS) {
+					try {
+
+						next = call(keys[ix],value);
+
+					} catch(const std::exception &e) {
+						cerr << "config\tError '" << e.what() << "' navigating from configuration" << endl;
+						next = false;
+					} catch(...) {
+						cerr << "config\tUnexpected errro navigating from configuration" << endl;
+						next = false;
+					}
+
+				}
+
+				if(value) {
+					free(value);
+				}
+
+			}
+			econf_freeArray(keys);
+
+			return next;
+
+		}
 
 	};
+
 
 #else
 
@@ -449,8 +505,15 @@
 			return def;
 		}
 
+		bool for_each(const char *group,const std::function<void(const char *key, const char *value)> &call) {
+		}
+
 	};
 #endif // HAVE_ECONF
+
+	bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+		return Controller::getInstance().for_each(group,call);
+	}
 
 	bool Config::hasGroup(const std::string &group) {
 		return Controller::getInstance().hasGroup(group.c_str());

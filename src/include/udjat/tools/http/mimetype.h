@@ -21,10 +21,11 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <ostream>
 
  namespace Udjat {
 
-	enum class MimeType : uint8_t {
+	enum MimeType : uint8_t {
 		custom,					///> @brief Custom
 		json,                   ///> @brief application/json; charset=utf-8
 		csv,                    ///> @brief text/csv; charset=utf-8
@@ -46,13 +47,13 @@
 
 	};
 
-	UDJAT_API MimeType str2mime(const char *str) noexcept;
+	UDJAT_API MimeType MimeTypeFactory(const char *str) noexcept;
 
  }
 
  namespace std {
 
-	string to_string(const Udjat::MimeType type);
+	UDJAT_API const char * to_string(const Udjat::MimeType type, bool suffix = false);
 
 	inline ostream& operator<< (ostream& os, Udjat::MimeType type) {
 			return os << std::to_string(type);

@@ -21,6 +21,7 @@
 
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/agent.h>
@@ -29,6 +30,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <iostream>
+ #include <udjat/tools/file.h>
  #include <memory>
 
  using namespace std;
@@ -97,9 +99,8 @@ int main(int argc, char **argv) {
 	public:
 		/// @brief Initialize service.
 		void init() override {
-			cout << Application::Name() << "\tInitializing" << endl;
 
-			auto root = Udjat::init(".");
+			SystemService::init();
 
 			if(Module::find("httpd")) {
 				if(Module::find("information")) {
@@ -108,12 +109,14 @@ int main(int argc, char **argv) {
 					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
 				}
 				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+				/*
 				if(root) {
 					cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
 					for(auto agent : *root) {
 						cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
 					}
 				}
+				*/
 			}
 
 
@@ -158,16 +161,26 @@ int main(int argc, char **argv) {
 			Module::unload();
 		}
 
-		Service() = default;
-
+		Service() : SystemService{"./test.xml"} {
+		}
 
 	};
 
+	Config::for_each("service-events",[](const char *key, const char *value){
+		cout << "config\t" << key << "='" << value << "'" << endl;
+		return true;
+	});
 
-	/*
-#ifdef _WIN32
-#endif // _WIN32
-	*/
+	cout << "webroot: '" << Application::DataDir("www/error-pages") << endl;
+
+	{
+		File::Temporary tempfile("test.tmp");
+
+		tempfile.write("teste\n");
+		tempfile.save();
+
+	}
+
 
 	return Service().run(argc,argv);
 

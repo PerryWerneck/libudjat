@@ -30,22 +30,76 @@
  #include <sys/time.h>
  #include <sys/resource.h>
  #include <locale.h>
+ #include <udjat/agent.h>
+ #include <csignal>
+ #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	SystemService::SystemService() {
-		setlocale( LC_ALL, "" );
+	SystemService * SystemService::instance = nullptr;
+
+	void SystemService::onReloadSignal(int UDJAT_UNUSED(signal)) noexcept {
+
+		cout << "service\tReconfigure request received from signal SIGUSR1" << endl;
+
+		try {
+
+			ThreadPool::getInstance().push([](){
+				if(instance && instance->definitions) {
+
+					Application::DataFile path(instance->definitions);
+					cout << Application::Name() << "\tReconfiguring from '" << path << "'" << endl;
+					Udjat::load(path.c_str());
+
+				} else {
+
+					clog << "service\tUnable to handle SIGUSR1, no service or no defined file(s)" << endl;
+
+				}
+			});
+
+		} catch(const std::exception &e) {
+
+			cerr << "service\t" << e.what() << endl;
+
+		}
+
 	}
 
 	SystemService::~SystemService() {
+		if(instance == this) {
+			cerr << Application::Name() << "\tSystem service destroyed without deinitialization" << endl;
+		}
 	}
 
 	void SystemService::init() {
+		setlocale( LC_ALL, "" );
+
+		if(definitions) {
+
+			// Inicialize from XML
+			Application::DataFile path(definitions);
+			cout << Application::Name() << "\tInitializing from '" << path << "'" << endl;
+			Udjat::load(path.c_str());
+
+			// Capture reload signal.
+			if(!instance) {
+				instance = this;
+				signal(SIGUSR1,onReloadSignal);
+				cout << Application::Name() << "\tUse SIGUSR1 to force reload of " << path << endl;
+			}
+
+		}
+
 	}
 
 	void SystemService::deinit() {
+		if(instance == this) {
+			signal(SIGUSR1,SIG_DFL);
+			instance = nullptr;
+		}
 	}
 
 	void SystemService::stop() {

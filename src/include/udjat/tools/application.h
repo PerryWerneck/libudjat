@@ -53,6 +53,13 @@
 		class UDJAT_API DataDir : public std::string {
 		public:
 			DataDir();
+			DataDir(const char *subdir);
+		};
+
+		/// @brief File from the application datadir.
+		class UDJAT_API DataFile : public std::string {
+		public:
+			DataFile(const char *name);
 		};
 
 		class UDJAT_API LibDir : public std::string {

@@ -25,7 +25,13 @@
 
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService {
+	private:
+		void load() noexcept;
+
 	protected:
+
+		/// @brief Path for the xml file(s) with service definitions.
+		const char * definitions = nullptr;
 
 #ifdef _WIN32
 
@@ -36,13 +42,23 @@
 		/// @brief Uninstall win32 service.
 		virtual int uninstall();
 
+#else
+		static SystemService *instance;
+		static void onReloadSignal(int signal) noexcept;
+
 #endif // _WIN32
 
 		/// @brief Send usage help to std::cout
 		virtual void usage(const char *appname) const noexcept;
 
 	public:
-		SystemService();
+
+		constexpr SystemService() {
+		}
+
+		constexpr SystemService(const char *d) : definitions(d) {
+		}
+
 		virtual ~SystemService();
 
 		/// @brief Initialize service.

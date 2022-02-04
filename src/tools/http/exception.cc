@@ -21,7 +21,8 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
- #include <udjat/tools/httpexception.h>
+ #include <udjat/tools/http/exception.h>
+ #include <system_error>
  #include <cstring>
  #include <string>
  #include <iostream>
@@ -30,6 +31,7 @@
 
  namespace Udjat {
 
+	// https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 	static const struct {
 		unsigned int http;
 		int syscode;
@@ -39,10 +41,27 @@
 		{ 404, ENOENT		},
 		{ 405, EINVAL		},
 		{ 407, EPERM	 	},
-//		{ 407, ETIMEOUT 	},
+#ifdef ETIMEDOUT
+		{ 408, ETIMEDOUT 	},
+#endif // ETIMEDOUT
 		{ 501, ENOTSUP		},
-//		{ 504, ETIMEOUT 	},
+		{ 503, EBUSY	 	},
 	};
+
+	int HTTP::Exception::translate(int syscode) noexcept {
+
+		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
+			if(syscodes[ix].syscode == syscode) {
+				return syscodes[ix].http;
+			}
+		}
+
+		return 500;
+	}
+
+	int HTTP::Exception::translate(const system_error &except) noexcept {
+		return translate(except.code().value());
+	}
 
 	static int toSysError(unsigned int http) {
 
@@ -59,7 +78,7 @@
 
 		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
 			if(syscodes[ix].http == http) {
-				return string(strerror(syscodes[ix].syscode));
+				return string{strerror(syscodes[ix].syscode)};
 			}
 		}
 

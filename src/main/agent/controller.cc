@@ -54,20 +54,27 @@ namespace Udjat {
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
 
 		if(root && root->parent) {
-			throw system_error(ENOENT,system_category(),"Child agent cant be set as root");
+			throw system_error(EINVAL,system_category(),"Child agent cant be set as root");
 		}
 
 		if(!root) {
 
 			if(this->root) {
-				cout << "agent\tRemoving root agent '" << this->root->getName() << "'" << endl;
+				cout << "agent\tRemoving root agent '"
+						<< this->root->getName()
+						<< "' (" << hex << ((void *) this->root.get()) << ")"
+						<< endl;
 				this->root.reset();
 			}
 			return;
 		}
 
-		cout << "agent\tDefining '" << root->getName() << "' as root agent" << endl;
 		this->root = root;
+
+		cout << "agent\tAgent '"
+				<< this->root->getName()
+				<< "' (" << hex << ((void *) root.get() ) << ") is the new root" << endl;
+
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() const {
