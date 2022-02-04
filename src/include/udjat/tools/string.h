@@ -23,6 +23,7 @@
  #include <string>
  #include <iostream>
  #include <vector>
+ #include <functional>
 
  namespace Udjat {
 
@@ -81,6 +82,8 @@
 
 		String(const char *str, size_t length) : std::string(str,length) {
 		}
+
+		String & expand(const std::function<bool(const char *key, std::string &value)> &expander);
 
 		/**
 		 * @brief Expand ${} macros.

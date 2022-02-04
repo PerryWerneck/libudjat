@@ -18,8 +18,12 @@
  */
 
  #include <udjat/tools/string.h>
+ #include <udjat/tools/timestamp.h>
  #include <cstring>
  #include <ctype.h>
+ #include <cstdlib>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -41,6 +45,85 @@
 		char *ptr = strdup(c_str());
 		assign(Udjat::chomp(ptr));
 		free(ptr);
+		return *this;
+	}
+
+	/*
+	String & expand() {
+		return expand([](std::string &str){return false;});
+	}
+	*/
+
+	static std::string getarguments(const std::string &key, const char *def) {
+
+		const char *from = strchr(key.c_str(),'(');
+		if(!from) {
+			return def;
+		}
+
+		const char *to = strchr(++from,')');
+		if(!from) {
+			throw runtime_error(string{"Invalid expression '"} + key + "'");
+		}
+
+		return string(from+1,to-from);
+	}
+
+	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander) {
+
+		auto from = find("${");
+		while(from != string::npos) {
+
+			auto to = find("}",from+3);
+			if(to == string::npos) {
+				throw runtime_error("Invalid ${} usage");
+			}
+
+			string value;
+			string key(c_str()+from+2,(to-from)-2);
+			if(expander(key.c_str(),value)) {
+
+				// Got value, apply it.
+				replace(
+					from,
+					(to-from)+1,
+					value.c_str()
+				);
+
+				from = find("${",from);
+
+			} else if(!strcasecmp(key.c_str(),"timestamp")) {
+
+				replace(
+					from,
+					(to-from)+1,
+					TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
+				);
+
+			} else {
+
+				const char *env = getenv(key.c_str());
+
+				if(env) {
+
+					replace(
+						from,
+						(to-from)+1,
+						env
+					);
+
+					from = find("${",from);
+
+				} else {
+					// No value, skip.
+					from = find("${",to+1);
+				}
+
+
+			}
+
+		}
+
 		return *this;
 	}
 
