@@ -51,33 +51,25 @@
 			warning,
 			error,
 
-			critical		///< @brief Critical level (allways the last one)
+			critical		///< @brief Critical level (always the last one)
 
 		};
 
+		/// @brief Get level from string.
+		UDJAT_API Level LevelFactory(const char *name);
+
+		/// @brief Get level from XML node.
+		UDJAT_API Level LevelFactory(const pugi::xml_node &node);
+
 		namespace Abstract {
 
-			class UDJAT_API State : public Object {
+			class UDJAT_API State : public Udjat::Object {
 			public:
 
 				/// @brief Notify on state activation?
 				bool notify = false;
 
-				/// @brief State name
-				const char * name = "";
-
-				static const char *levelnames[];
-
 			private:
-
-				/// @brief State level.
-				Level level = unimportant;
-
-				/// @brief Web link to this state (Usually used for http exporters).
-				const char * uri = "";
-
-				/// @brief Translate level from string.
-				static Level getLevelFromName(const char *name);
 
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
@@ -86,75 +78,49 @@
 				std::vector<std::shared_ptr<Abstract::Alert>> alerts;
 
 			protected:
-				/// @brief Message summary.
-				const char * summary = "";
 
-				/// @brief Message body.
-				const char * body = "";
+				struct Properties {
+
+					/// @brief State level.
+					Level level = unimportant;
+
+					/// @brief Message body.
+					const char * body = "";
+
+				} properties;
 
 			public:
 
-				static std::shared_ptr<Abstract::State> get(const char *summary, const std::exception &e);
-
 				/// @brief Create state using the strings without conversion.
-				State(const char *n, const Level l = Level::unimportant, const char *s = "", const char *b = "")
-					: name(n), level(l), summary(s), body(b) { }
+				State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
-				/// @brief Create state (convert strings to Quarks).
-				State(const Level l, const Quark &summary, const Quark &body = "");
-
-				/// @brief Create state (convert strings to Quarks).
-				State(const Level l, const char *summary, const char *body = "");
-
-				/// @brief Create state from xml node)
+				/// @brief Create state from xml node
 				State(const pugi::xml_node &node);
 
-				State(const std::exception &e) : State(critical, e.what()) {
-				}
-
 				std::string to_string() const override {
-					return summary;
+					return Object::properties.summary;
 				}
 
 				virtual ~State();
 
-				operator Quark() const {
-					return name;
+				inline const char * body() const noexcept {
+					return properties.body;
 				}
 
-				static const char * to_string(const Level level);
-
-				inline const char * getName() const {
-					return name;
-				}
-
-				inline const char * getSummary() const {
-					return summary;
-				}
-
-				inline const char * getBody() const {
-					return body;
-				}
-
-				inline const char * getUri() const {
-					return uri;
-				}
-
-				inline Level getLevel() const {
-					return this->level;
+				inline Level level() const noexcept {
+					return properties.level;
 				}
 
 				Udjat::Value & getLevel(Udjat::Value &value) const;
 
 				inline bool isCritical() const noexcept {
-					return this->level >= critical;
+					return level() >= critical;
 				}
 
-				inline bool isReady() const noexcept {
-					return this->level <= ready;
+				inline bool ready() const noexcept {
+					return level() <= Level::ready;
 				}
 
-				virtual void get(Udjat::Value &value) const;
 				virtual void get(const Request &request, Response &response) const;
 
 				virtual void activate(const Agent &agent) noexcept;
@@ -165,6 +131,8 @@
 				/// @param value String to update with the property value.
 				/// @return true if the property is valid.
 				bool getProperty(const char *key, std::string &value) const noexcept override;
+
+				Value & getProperties(Value &value) const noexcept override;
 
 				/// @brief Insert alert.
 				inline void append(std::shared_ptr<Abstract::Alert> alert) {
@@ -237,16 +205,16 @@
 
 		};
 
+		UDJAT_API std::shared_ptr<Abstract::State> StateFactory(const std::exception &e, const char *summary);
+
 	}
 
 	namespace std {
 
-		inline string to_string(const Udjat::Level level) {
-			return Udjat::Abstract::State::to_string(level);
-		}
+		const char * to_string(const Udjat::Level level);
 
 		inline ostream& operator<< (ostream& os, const Udjat::Level level) {
-			return os << Udjat::Abstract::State::to_string(level);
+			return os << to_string(level);
 		}
 
 	}

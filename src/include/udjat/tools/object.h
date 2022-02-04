@@ -31,18 +31,19 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
-		protected:
 
+		public:
 			/// @brief Get property from xml node and convert to const string;
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param def The default value.
 			/// @return Attribute value converted to quark.
-			const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
-
-		public:
+			static const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
 
 			virtual std::string to_string() const = 0;
+
+			/// @brief Get object as Udjat::Value.
+			// Udjat::Value as_value() const noexcept;
 
 			/// @brief Get property.
 			/// @param key The property name.

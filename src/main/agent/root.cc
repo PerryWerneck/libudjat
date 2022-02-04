@@ -136,7 +136,8 @@
 
 				class ReadyState : public Abstract::State {
 				public:
-					ReadyState() : Abstract::State("ready", ready, "System is ready", "No abnormal state was detected") {
+					ReadyState() : Abstract::State("ready", Level::ready, "System is ready", "No abnormal state was detected") {
+						Object::properties.icon = "computer";
 					}
 
 				};
@@ -149,9 +150,9 @@
 				cout << "agent\tRoot agent " << hex << ((void *) this) << " was destroyed" << endl;
 			}
 
-			void get(Response &response) override {
+			Value & getProperties(Value &value) const noexcept override {
 
-				Abstract::Agent::get(response);
+				Abstract::Agent::getProperties(value);
 
 #ifdef _WIN32
 				OSVERSIONINFO osvi;
@@ -173,21 +174,22 @@
 				sysname += " ";
 				sysname += (const char *) osvi.szCSDVersion;
 
-				response["system"] = sysname;
+				value["system"] = sysname;
 
 #else
 				struct utsname uts;
 
 				if(uname(&uts) >= 0) {
-					response["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
+					value["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
 				}
 #endif // _WIN32
 
+				return value;
 			}
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				if(!state->isReady()) {
+				if(!state->ready()) {
 
 					// The requested state is not ready, activate it.
 					Object::properties.icon = "computer-fail";
@@ -196,7 +198,7 @@
 
 				}
 
-				if(this->getState()->isReady()) {
+				if(this->getState()->ready()) {
 					// Already ok, do not change.
 					return false;
 				}

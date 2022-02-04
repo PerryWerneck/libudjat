@@ -16,11 +16,6 @@ namespace Udjat {
 
 	void Abstract::Agent::load(const pugi::xml_node &root, bool name) {
 
-		// Translate method
-		auto translate = [root](const char *key) {
-			return (const char *) root.attribute(key).as_string();
-		};
-
 		Object::set(root);
 
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
@@ -56,34 +51,5 @@ namespace Udjat {
 		}
 
 	}
-
-	/*
-	void Abstract::Agent::load(const pugi::xml_document &doc) {
-
-		for(pugi::xml_node root = doc.child("config"); root; root = root.next_sibling("config")) {
-
-			const char *path = root.attribute("root-path").as_string();
-
-			if(path && *path) {
-
-				// Has defined root path, find agent.
-				Abstract::Agent * agent = this;
-				while(agent->parent) {
-					agent = agent->parent;
-				}
-
-				agent->find(path,true,true)->load(root);
-
-			} else {
-
-				// No path, load here.
-				load(root);
-
-			}
-
-		}
-
-	}
-	*/
 
 }

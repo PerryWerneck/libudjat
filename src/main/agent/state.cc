@@ -17,13 +17,13 @@ namespace Udjat {
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const char *summary, const std::exception &e) noexcept {
 
-		cerr << name() << "\t" << summary << ": " << e.what() << endl;
+		error() << summary << ": " << e.what() << endl;
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(Abstract::State::get(summary,e));
+		activate(StateFactory(e,summary));
 
 	}
 
@@ -66,7 +66,7 @@ namespace Udjat {
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
-					if(child->getLevel() > state->getLevel()) {
+					if(child->level() > state->level()) {
 						state = child->getState();
 					}
 				}
@@ -76,8 +76,8 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			cerr << name() << "\tError '" << e.what() << "' switching state" << endl;
-			this->state.active = Abstract::State::get("Error switching state",e);
+			error() << "Error '" << e.what() << "' switching state" << endl;
+			this->state.active = StateFactory(e,"Error switching state");
 			this->state.activation = time(0);
 
 		} catch(...) {
@@ -110,24 +110,23 @@ namespace Udjat {
 		string value = to_string();
 
 		if(value.empty()) {
-			cout << name() << "\tCurrent state changes from'"
+			info()	<< "Current state changes from'"
 					<< this->state.active
 					<< "' to '"
 					<< state
-					<< "(" << state->getLevel() << ")"
+					<< "(" << state->level() << ")"
 					<< endl;
 
 		} else {
-			cout << name()
-					<< "Value '" << value << "' changes state from '"
-					<< this->state.active->getSummary()
+			info()	<< "Value '" << value << "' changes state from '"
+					<< this->state.active->summary()
 					<< "' to '"
-					<< state->getSummary()
-					<< "(" << std::to_string(state->getLevel()) << ")"
+					<< state->summary()
+					<< "(" << state->level() << ")"
 					<< endl;
 		}
 
-		Udjat::Level saved_level = this->getLevel();
+		Udjat::Level saved_level = this->level();
 
 		try {
 
@@ -141,19 +140,19 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			cerr << name() << "Error '" << e.what() << "' switching state" << endl;
-			this->state.active = Abstract::State::get("Error switching state",e);
+			error() << "Error '" << e.what() << "' switching state" << endl;
+			this->state.active = StateFactory(e,"Error switching state");
 			this->state.activation = time(0);
 
 		} catch(...) {
 
-			cerr << name() << "Unexpected error switching state" << endl;
+			error() << "Unexpected error switching state" << endl;
 			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 			this->state.activation = time(0);
 
 		}
 
-		return (saved_level != this->getLevel());
+		return (saved_level != this->level());
 	}
 
 }

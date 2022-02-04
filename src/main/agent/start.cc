@@ -56,7 +56,7 @@
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
-					if(child->getLevel() > this->getLevel()) {
+					if(child->level() > this->level()) {
 						this->state.active = child->state.active;
 					}
 				}
@@ -64,30 +64,32 @@
 
 			this->state.activation = time(0);
 
-			const char * name = this->state.active->getName();
+			const char * name = this->state.active->name();
 			if(name && *name) {
 
 				string value = to_string();
 
-				/*
 				if(value.empty()) {
 
-
-					info("Starts with state '{}' and level '{}'",
-						this->state.active->getName(),
-						std::to_string(this->getLevel())
-					);
+					info()	<< "Starts with state '"
+							<< this->state.active->name()
+							<< "' and level '"
+							<< level()
+							<< "'"
+							<< endl;
 
 				} else {
 
-					info("Starts with value '{}', state '{}' and level '{}'",
-						value,
-						this->state.active->getName(),
-						std::to_string(this->getLevel())
-					);
+					info()	<< "Starts with value '"
+							<< value
+							<< "', state '"
+							<< this->state.active->name()
+							<< "' and level '"
+							<< level()
+							<< "'"
+							<< endl;
 
 				}
-				*/
 
 			}
 

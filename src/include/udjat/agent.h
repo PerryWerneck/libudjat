@@ -236,8 +236,8 @@
 				}
 
 				/// @brief Get current level.
-				inline Level getLevel() const {
-					return this->state.active->getLevel();
+				inline Level level() const {
+					return this->state.active->level();
 				}
 
 				/// @brief Insert State.

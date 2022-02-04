@@ -97,6 +97,10 @@
 		return as_quark(def).c_str();
 	}
 
+	std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def) {
+		return expand(node,attribute.as_string(def));
+	}
+
 	std::string expand(const pugi::xml_node &node, const char *str) {
 
 		string text(str);

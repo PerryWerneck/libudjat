@@ -24,22 +24,26 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
+static const char * levelnames[] = {
+	"undefined",
+	"unimportant",
+	"ready",
+	"warning",
+	"error",
+	"critical"
+};
+
+#define LEVEL_COUNT (sizeof(levelnames)/sizeof(levelnames[0]))
+
 namespace Udjat {
 
-	const char * Abstract::State::levelnames[] = {
-		"undefined",
-		"unimportant",
-		"ready",
-		"warning",
-		"error",
-		"critical",
+	Level LevelFactory(const pugi::xml_node &node) {
+		return LevelFactory(node.attribute("level").as_string("unimportant"));
+	}
 
-		nullptr
-	};
+	Udjat::Level LevelFactory(const char *name) {
 
-	Udjat::Level Abstract::State::getLevelFromName(const char *name) {
-
-		for(size_t ix=0; levelnames[ix]; ix++) {
+		for(size_t ix=0; ix < LEVEL_COUNT; ix++) {
 			if(!strcasecmp(name,levelnames[ix]))
 				return (Udjat::Level) ix;
 		}
@@ -48,18 +52,14 @@ namespace Udjat {
 
 	}
 
-	Udjat::Value & Abstract::State::getLevel(Udjat::Value &value) const {
-		value["value"] = (uint32_t) this->level;
-		value["label"] = levelnames[this->level];
-		return value;
-	}
+}
 
-	const char * Abstract::State::to_string(const Udjat::Level level) {
+namespace std {
 
-		if(level > (sizeof(levelnames) / sizeof(levelnames[0])))
-			return "Invalid";
+	const char * to_string(const Udjat::Level level) {
+		if(level > LEVEL_COUNT)
+			return "undefined";
 		return levelnames[level];
 	}
-
 
 }

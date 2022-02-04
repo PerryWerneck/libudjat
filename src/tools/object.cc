@@ -60,6 +60,7 @@
 	}
 
 	Value & Object::getProperties(Value &value) const noexcept {
+
 		NamedObject::getProperties(value);
 
 		value["name"] = name();
@@ -108,14 +109,39 @@
 		return std::cerr << name() << "\t";
 	}
 
-	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, const char *def) {
+	const char * Abstract::Object::getAttribute(const pugi::xml_node &n, const char *name, const char *def) {
 
-		return Udjat::Attribute(
-					node,
-					name,
-					(string(name) + "-" + node.name()).c_str()
-				).c_str(def);
+		bool change = true;
+		string key{name};
+		pugi::xml_node node = n;
 
+		while(node) {
+
+			pugi::xml_attribute attribute = node.attribute(key.c_str());
+			if(attribute) {
+				return Quark(Udjat::expand(node,attribute,def)).c_str();
+			}
+
+			for(auto child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+
+				if(strcasecmp(key.c_str(),child.attribute("name").as_string()) == 0) {
+					return Quark(Udjat::expand(node,attribute,def)).c_str();
+				}
+
+			}
+
+			if(change) {
+				change = false;
+				key = node.name();
+				key += "-";
+				key += name;
+			}
+
+			node = node.parent();
+
+		}
+
+		return def;
 	}
 
 	std::string Abstract::Object::operator[](const char *key) const noexcept {

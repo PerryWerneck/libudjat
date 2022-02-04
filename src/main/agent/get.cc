@@ -53,7 +53,7 @@
 
 		// Get agent state
 		auto &state = value["state"];
-		this->state.active->get(state);
+		this->state.active->getProperties(state);
 		state["activation"] = TimeStamp(this->state.activation);
 
 		return value;
