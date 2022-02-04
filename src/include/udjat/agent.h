@@ -45,6 +45,7 @@
 	#include <udjat/alert.h>
 	#include <udjat/tools/converters.h>
 	#include <udjat/tools/value.h>
+	#include <udjat/tools/object.h>
 	#include <cstring>
 
 	namespace Udjat {
@@ -59,7 +60,7 @@
 
 		namespace Abstract {
 
-			class UDJAT_API Agent : public Logger {
+			class UDJAT_API Agent : public Logger, public Object {
 			private:
 				static std::recursive_mutex guard;
 
@@ -255,7 +256,7 @@
 				virtual void get(const Request &request, Report &report);
 
 				/// @brief Get formatted value.
-				virtual std::string to_string() const;
+				virtual std::string to_string() const override;
 
 				/// @brief Assign value from string.
 				virtual bool assign(const char *value);
@@ -276,12 +277,19 @@
 				/// @brief Insert Alert.
 				virtual void append_alert(const pugi::xml_node &node);
 
-				/// @brief Expand ${} tags on string.
-				virtual std::string & expand(std::string &text) const;
+				/// @brief Get property.
+				/// @param key The property name.
+				/// @param value String to update with the property value.
+				/// @return true if the property is valid.
+				bool getProperty(const char *key, std::string &value) const noexcept override;
+
+				/// @brief Get property.
+				/// @param key The property name.
+				/// @return The property value (empty if the property doesnt exists).
+				// std::string operator[](const char *key) const noexcept;
 
 				/// @brief Expand ${} tags on string.
-				std::string expand(const char *text) const;
-
+				// std::string expand(const char *text) const;
 
 			};
 
@@ -505,16 +513,5 @@
 
 	}
 
-namespace std {
-
-	inline string to_string(const Udjat::Abstract::Agent &agent) {
-			return agent.to_string();
-	}
-
-	inline ostream& operator<< (ostream& os, const Udjat::Abstract::Agent &agent) {
-			return os << agent.to_string();
-	}
-
-}
 
 #endif // UDJAT_AGENT_H_INCLUDED

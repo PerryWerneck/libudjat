@@ -135,21 +135,6 @@ namespace Udjat {
 
 	}
 
-	/*
-	Json::Value & Abstract::Agent::setup(const Request &request, Response &response) {
-
-		chk4refresh(true);
-
-		if(update.expires && update.expires > time(nullptr))
-			response.setExpirationTimestamp(update.expires);
-
-		if(update.last)
-			response.setModificationTimestamp(update.last);
-
-		return response;
-	}
-	*/
-
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {

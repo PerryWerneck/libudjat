@@ -23,6 +23,7 @@
 	#include <udjat/request.h>
 	#include <udjat/alert.h>
 	#include <udjat/tools/value.h>
+	#include <udjat/tools/object.h>
 	#include <cstring>
 
 	namespace Udjat {
@@ -56,7 +57,7 @@
 
 		namespace Abstract {
 
-			class UDJAT_API State {
+			class UDJAT_API State : public Object {
 			public:
 
 				/// @brief Notify on state activation?
@@ -111,6 +112,10 @@
 				State(const std::exception &e) : State(critical, e.what()) {
 				}
 
+				std::string to_string() const override {
+					return summary;
+				}
+
 				virtual ~State();
 
 				operator Quark() const {
@@ -155,8 +160,11 @@
 				virtual void activate(const Agent &agent) noexcept;
 				virtual void deactivate(const Agent &agent) noexcept;
 
-				/// @brief Expand ${} tags on string.
-				virtual std::string & expand(std::string &text) const;
+				/// @brief Get property.
+				/// @param key The property name.
+				/// @param value String to update with the property value.
+				/// @return true if the property is valid.
+				bool getProperty(const char *key, std::string &value) const noexcept override;
 
 				/// @brief Insert alert.
 				inline void append(std::shared_ptr<Abstract::Alert> alert) {
@@ -233,16 +241,8 @@
 
 	namespace std {
 
-		inline string to_string(const std::shared_ptr<Udjat::Abstract::State> state) {
-			return state->getSummary();
-		}
-
 		inline string to_string(const Udjat::Level level) {
 			return Udjat::Abstract::State::to_string(level);
-		}
-
-		inline ostream& operator<< (ostream& os, const std::shared_ptr<Udjat::Abstract::State> state) {
-			return os << state->getSummary();
 		}
 
 		inline ostream& operator<< (ostream& os, const Udjat::Level level) {

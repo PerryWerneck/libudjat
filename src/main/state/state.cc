@@ -34,6 +34,7 @@
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/string.h>
 
  using namespace std;
 
@@ -131,8 +132,8 @@ namespace Udjat {
 
 		for(auto alert : alerts) {
 			Abstract::Alert::activate(alert,[agent,this](std::string &text) {
-				expand(text);
-				agent.expand(text);
+				text = expand(text.c_str());
+				text = agent.expand(text.c_str());
 			});
 		}
 
@@ -149,39 +150,46 @@ namespace Udjat {
 
 	}
 
+	/*
 	std::string & Abstract::State::expand(std::string &text) const {
 
 		Udjat::expand(text,[this](const char *key, string &value) {
 
-			if(!strcasecmp(key,"level")) {
-				value = string(to_string(this->level));
-				return true;
-			}
-
-			struct {
-				const char *key;
-				const Quark &value;
-			} values[] = {
-				{ "state.name",		this->name		},
-				{ "state.summary",	this->summary	},
-				{ "state.body",		this->body		},
-				{ "state.uri", 		this->uri		},
-			};
-
-			for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
-
-				if(!strcasecmp(values[ix].key,key)) {
-					value = string(values[ix].value.c_str());
-					return true;
-				}
-
-			}
-
-			return false;
 
 		});
 
 		return text;
+
+	}
+	*/
+
+	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(!strcasecmp(key,"level")) {
+			value = string(to_string(this->level));
+			return true;
+		}
+
+		struct {
+			const char *key;
+			const Quark &value;
+		} values[] = {
+			{ "state.name",		this->name		},
+			{ "state.summary",	this->summary	},
+			{ "state.body",		this->body		},
+			{ "state.uri", 		this->uri		},
+		};
+
+		for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
+
+			if(!strcasecmp(values[ix].key,key)) {
+				value = string(values[ix].value.c_str());
+				return true;
+			}
+
+		}
+
+		return false;
 
 	}
 

@@ -72,7 +72,7 @@
 	 * @brief String with 'extras'
 	 *
 	 */
-	class UDJAT_API String : std::string {
+	class UDJAT_API String : public std::string {
 	public:
 		String() : std::string() {
 		}

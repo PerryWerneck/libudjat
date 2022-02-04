@@ -68,6 +68,7 @@
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
+		<Unit filename="src/include/udjat/tools/object.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
@@ -91,16 +92,15 @@
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/load.cc" />
-		<Unit filename="src/main/agent/loadfromfile.cc" />
 		<Unit filename="src/main/agent/parse.cc" />
 		<Unit filename="src/main/agent/private.h" />
+		<Unit filename="src/main/agent/properties.cc" />
 		<Unit filename="src/main/agent/root.cc" />
 		<Unit filename="src/main/agent/set.cc" />
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
 		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
-		<Unit filename="src/main/agent/tools.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/abstract.cc" />
 		<Unit filename="src/main/alert/activation.cc" />
@@ -166,6 +166,7 @@
 		<Unit filename="src/tools/mainloop/service.cc" />
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
+		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application.cc" />
 		<Unit filename="src/tools/os/linux/configvalue.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />

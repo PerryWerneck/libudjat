@@ -92,7 +92,7 @@ namespace Udjat {
 
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
 		Abstract::Alert::activate(alert,[this](std::string &text) {
-			this->expand(text);
+			text = this->expand(text.c_str());
 		});
 	}
 
