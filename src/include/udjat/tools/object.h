@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <ostream>
  #include <string>
+ #include <pugixml.hpp>
 
  namespace Udjat {
 
@@ -29,6 +30,15 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
+		protected:
+
+			/// @brief Get property from xml node and convert to const string;
+			/// @param node The xml node.
+			/// @param name The property name.
+			/// @param def The default value.
+			/// @return Attribute value converted to quark.
+			const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
+
 		public:
 
 			virtual std::string to_string() const = 0;
@@ -49,7 +59,76 @@
 
 		};
 
+
 	}
+
+	/// @brief An object with name.
+	class UDJAT_API NamedObject : public Abstract::Object {
+	private:
+		const char *objectName = "";
+
+	protected:
+		constexpr NamedObject(const char *name) : objectName(name) {}
+		NamedObject(const pugi::xml_node &node);
+
+		void set(const pugi::xml_node &node);
+
+	public:
+		bool getProperty(const char *key, std::string &value) const noexcept override;
+
+		inline const char * name() const noexcept {
+			return objectName;
+		}
+
+	};
+
+	/// @brief An object with common properties.
+	class UDJAT_API Object : public NamedObject {
+	private:
+		struct Properties {
+
+			/// @brief Object label.
+			const char * label = "";
+
+			/// @brief Object summary.
+			const char * summary = "";
+
+			/// @brief URL associated with the object.
+			const char * uri = "";
+
+			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
+			const char * icon = STRINGIZE_VALUE_OF(PRODUCT_NAME);
+
+		} properties;
+
+	protected:
+		constexpr Object(const char *name) : NamedObject(name) {
+		}
+
+		Object(const pugi::xml_node &node);
+		void set(const pugi::xml_node &node);
+
+	public:
+
+		inline const char * label() const {
+			return properties.label;
+		}
+
+		/// @brief Object summary.
+		inline const char * summary() const {
+			return properties.summary;
+		}
+
+		/// @brief URL associated with the object.
+		inline const char * uri() const {
+			return properties.uri;
+		}
+
+		/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
+		inline const char * icon() const {
+			return properties.icon;
+		}
+	};
 
  }
 
