@@ -39,7 +39,7 @@
 
 		// Agent path.
 		if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
-			value = getPath();
+			value = path();
 			return true;
 		}
 

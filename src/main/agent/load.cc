@@ -40,11 +40,11 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				cerr << Object::name() << "Error '" << e.what() << "' loading node '" << node.name() << "'" << endl;
+				error() << "Error '" << e.what() << "' loading node '" << node.name() << "'" << endl;
 
 			} catch(...) {
 
-				cerr << Object::name() << "Unexpected error loading node '" << node.name() << "'" << endl;
+				error() << "Unexpected error loading node '" << node.name() << "'" << endl;
 
 			}
 

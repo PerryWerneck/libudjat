@@ -32,7 +32,7 @@
 	#pragma GCC diagnostic pop
 
 	std::string Abstract::Agent::to_string() const {
-		return "";
+		return name();
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
@@ -40,11 +40,11 @@
 	}
 
 	void Abstract::Agent::get(Response &response) {
-		this->get(getProperties(response)["value"]);
+		getProperties(response);
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
-		get(response);
+		getProperties(response);
 	}
 
 	Value & Abstract::Agent::getProperties(Value &value) const noexcept {
@@ -60,7 +60,7 @@
 
 	}
 
-	std::string Abstract::Agent::getPath() const {
+	std::string Abstract::Agent::path() const {
 
 		std::list<std::string> names;
 

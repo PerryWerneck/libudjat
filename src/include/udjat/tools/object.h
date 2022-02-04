@@ -96,6 +96,7 @@
 	/// @brief An object with common properties.
 	class UDJAT_API Object : public NamedObject {
 	protected:
+
 		struct Properties {
 
 			/// @brief Object label.

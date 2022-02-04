@@ -176,7 +176,7 @@
 				virtual bool hasStates() const noexcept;
 
 				/// @brief Get Agent path.
-				std::string getPath() const;
+				std::string path() const;
 
 				/// @brief The agent has children?
 				bool hasChildren() const noexcept {
