@@ -56,8 +56,8 @@
 			Agent(const char *name) : Abstract::Agent(name) {
 
 				cout << "agent\tRoot agent " << hex << ((void *) this) << " was created" << endl;
-				this->icon = "computer";
-				this->uri = Quark(string{"http://"} + name).c_str();
+				Object::properties.icon = "computer";
+				Object::properties.url = Quark(string{"http://"} + name).c_str();
 
 #ifndef _WIN32
 				//
@@ -67,7 +67,7 @@
 
 				if(uname(&uts) < 0) {
 					memset(&uts,0,sizeof(uts));
-					clog << Logger::name() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
+					clog << Object::name() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
 				}
 
 				//
@@ -83,11 +83,11 @@
 						label += uts.machine;
 					}
 
-					this->label = Quark(label).c_str();
+					Object::properties.label = Quark(label).c_str();
 
 				} catch(const std::exception &e) {
 
-					error("Error '{}' reading system release file",e.what());
+					cerr << Object::name() << "\tError '" << e.what() << "' reading system release file" << endl;
 
 				}
 #endif // _WIN32
@@ -108,23 +108,23 @@
 							URL sysid(Config::Value<string>("bare-metal","summary","dmi:///system/sku"));
 
 							if(!sysid.empty() && Protocol::find(sysid)) {
-								this->summary = Quark(sysid.get()).c_str();
+								Object::properties.summary = Quark(sysid.get()).c_str();
 							}
 
 						} catch(const std::exception &e) {
 
-							warning("{}",e.what());
+							clog << Object::name() << "\t" << e.what() << endl;
 
 						}
 
 					} else {
 
-						this->summary = Quark(Logger::Message("{} virtual machine",virtualmachine.to_string())).c_str();
+						Object::properties.summary = Quark(Logger::Message("{} virtual machine",virtualmachine.to_string())).c_str();
 
 					}
 
-					if(this->summary && *this->summary) {
-						cout << Logger::name() << "\t" << this->summary << endl;
+					if(*Object::properties.summary) {
+						cout << Object::name() << "\t" << Object::properties.summary << endl;
 					}
 
 				}
@@ -190,7 +190,7 @@
 				if(!state->isReady()) {
 
 					// The requested state is not ready, activate it.
-					this->icon = "computer-fail";
+					Object::properties.icon = "computer-fail";
 					bool changed = Abstract::Agent::activate(state);
 					return changed;
 
@@ -201,7 +201,7 @@
 					return false;
 				}
 
-				this->icon = "computer";
+				Object::properties.icon = "computer";
 				super::activate(stateFromValue());
 
 				return true;

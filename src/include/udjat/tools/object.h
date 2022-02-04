@@ -20,6 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/value.h>
  #include <ostream>
  #include <string>
  #include <pugixml.hpp>
@@ -57,6 +58,9 @@
 			/// @brief Expand ${} tags on string.
 			std::string expand(const char *text) const;
 
+			/// @brief Add object properties to the value.
+			virtual Value & getProperties(Value &value) const noexcept;
+
 		};
 
 
@@ -80,11 +84,13 @@
 			return objectName;
 		}
 
+		Value & getProperties(Value &value) const noexcept override;
+
 	};
 
 	/// @brief An object with common properties.
 	class UDJAT_API Object : public NamedObject {
-	private:
+	protected:
 		struct Properties {
 
 			/// @brief Object label.
@@ -94,14 +100,13 @@
 			const char * summary = "";
 
 			/// @brief URL associated with the object.
-			const char * uri = "";
+			const char * url = "";
 
 			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
 			const char * icon = STRINGIZE_VALUE_OF(PRODUCT_NAME);
 
 		} properties;
 
-	protected:
 		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
@@ -109,6 +114,8 @@
 		void set(const pugi::xml_node &node);
 
 	public:
+
+		bool getProperty(const char *key, std::string &value) const noexcept override;
 
 		inline const char * label() const {
 			return properties.label;
@@ -120,14 +127,16 @@
 		}
 
 		/// @brief URL associated with the object.
-		inline const char * uri() const {
-			return properties.uri;
+		inline const char * url() const {
+			return properties.url;
 		}
 
 		/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
 		inline const char * icon() const {
 			return properties.icon;
 		}
+
+		Value & getProperties(Value &value) const noexcept override;
 	};
 
  }

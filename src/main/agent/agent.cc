@@ -36,7 +36,15 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name ? name : "") {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Object(name ? name : "unnamed") {
+
+		if(label && *label) {
+			Object::properties.label = label;
+		}
+
+		if(summary && *summary) {
+			Object::properties.summary = summary;
+		}
 
 		state.active = Agent::stateFromValue();
 
@@ -53,9 +61,6 @@ namespace Udjat {
 			cerr << "Agent\tError '" << e.what() << "' loading defaults" << endl;
 
 		}
-
-		this->label = Quark((label ? label : name)).c_str();
-		this->summary = Quark(summary).c_str();
 
 	}
 

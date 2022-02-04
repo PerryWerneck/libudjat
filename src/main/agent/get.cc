@@ -40,20 +40,16 @@
 	}
 
 	void Abstract::Agent::get(Response &response) {
-		this->get(getDetails(response)["value"]);
+		this->get(getProperties(response)["value"]);
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
 		get(response);
 	}
 
-	Value & Abstract::Agent::getDetails(Value &value) const {
+	Value & Abstract::Agent::getProperties(Value &value) const noexcept {
 
-		value["name"] = this->name();
-		value["summary"] = this->summary;
-		value["label"] = this->label;
-		value["uri"] = this->uri;
-		value["icon"] = this->icon;
+		Object::getProperties(value);
 
 		// Get agent state
 		auto &state = value["state"];

@@ -35,7 +35,7 @@
 		update.on_demand = true;
 
 		if(update.timer) {
-			info("Disabling timer update ({} seconds)",update.timer);
+			cout << name() << "Disabling timer update (" << update.timer << " seconds)" << endl;
 			update.timer = 0;
 		}
 	}

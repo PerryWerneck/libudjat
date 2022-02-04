@@ -27,6 +27,10 @@
 
 	bool Abstract::Agent::getProperty(const char *key, std::string &value) const noexcept {
 
+		if(Object::getProperty(key, value)) {
+			return true;
+		}
+
 		// Agent value
 		if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
 			value = to_string();
@@ -37,66 +41,6 @@
 		if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
 			value = getPath();
 			return true;
-		}
-
-		// Agent properties.
-		{
-			struct {
-				const char *key;
-				const char *value;
-			} values[] = {
-				{ "agent.name",		this->name()	},
-				{ "agent.label",	this->label		},
-				{ "agent.summary",	this->summary	},
-				{ "agent.uri", 		this->uri		},
-				{ "agent.icon", 	this->icon		}
-			};
-
-			for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
-
-				if(!strcasecmp(values[ix].key,key)) {
-					value = string(values[ix].value);
-					return true;
-				}
-
-			}
-		}
-
-		if(this->state.active) {
-
-			struct {
-				const char *key;
-				const Quark &agent;
-				const Quark &state;
-			} values[] = {
-				{
-					"summary",
-					this->summary,
-					this->state.active->getSummary()
-				},
-				{
-					"uri",
-					this->uri,
-					this->state.active->getUri()
-				}
-			};
-
-			for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
-
-				if(!strcasecmp(values[ix].key,key)) {
-
-					if(values[ix].state) {
-						value = string(values[ix].state.c_str());
-						return true;
-					}
-
-					value = string(values[ix].agent.c_str());
-					return true;
-
-				}
-
-			}
-
 		}
 
 		return false;

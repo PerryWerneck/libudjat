@@ -127,7 +127,7 @@ namespace Udjat {
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
 #ifdef DEBUG
-		agent.info("State '{}' was activated",name);
+		cout << agent.name() << "\tState '" << name << "' was activated" << endl;
 #endif // DEBUG
 
 		for(auto alert : alerts) {
@@ -141,7 +141,7 @@ namespace Udjat {
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
 #ifdef DEBUG
-		agent.info("State '{}' was deactivated",name);
+		cout << agent.name() << "\tState '" << name << "' was deactivated" << endl;
 #endif // DEBUG
 
 		for(auto alert : alerts) {

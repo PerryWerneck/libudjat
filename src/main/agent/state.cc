@@ -17,7 +17,7 @@ namespace Udjat {
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const char *summary, const std::exception &e) noexcept {
 
-		error("{}: {}",summary,e.what());
+		cerr << name() << "\t" << summary << ": " << e.what() << endl;
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
@@ -29,7 +29,7 @@ namespace Udjat {
 
 	void Abstract::Agent::failed(const char *summary, int code) noexcept {
 
-		error("{}: {}",summary,string(strerror(code)));
+		cerr << name() << "\t" << summary << ": " << strerror(code) << endl;
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
@@ -42,7 +42,7 @@ namespace Udjat {
 	/// @brief Set failed state from known exception
 	void Abstract::Agent::failed(const char *summary, const char *body) noexcept {
 
-		error("{}",summary);
+		cerr << name() << "\t" << summary << endl;
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
@@ -76,13 +76,13 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			error("Error '{}' switching state",e.what());
+			cerr << name() << "\tError '" << e.what() << "' switching state" << endl;
 			this->state.active = Abstract::State::get("Error switching state",e);
 			this->state.activation = time(0);
 
 		} catch(...) {
 
-			error("Error '{}' switching state","unexpected");
+			cerr << name() << "\tUnexpected error switching state" << endl;
 			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 			this->state.activation = time(0);
 
@@ -110,18 +110,21 @@ namespace Udjat {
 		string value = to_string();
 
 		if(value.empty()) {
-			info("Current state changes from '{}' to '{}' ({})",
-					this->state.active->getSummary(),
-					state->getSummary(),
-					std::to_string(state->getLevel())
-				);
+			cout << name() << "\tCurrent state changes from'"
+					<< this->state.active
+					<< "' to '"
+					<< state
+					<< "(" << state->getLevel() << ")"
+					<< endl;
+
 		} else {
-			info("Value '{}' changes state from '{}' to '{}' ({})",
-					value,
-					this->state.active->getSummary(),
-					state->getSummary(),
-					std::to_string(state->getLevel())
-				);
+			cout << name()
+					<< "Value '" << value << "' changes state from '"
+					<< this->state.active->getSummary()
+					<< "' to '"
+					<< state->getSummary()
+					<< "(" << std::to_string(state->getLevel()) << ")"
+					<< endl;
 		}
 
 		Udjat::Level saved_level = this->getLevel();
@@ -138,23 +141,17 @@ namespace Udjat {
 
 		} catch(const std::exception &e) {
 
-			error("Error '{}' switching state",e.what());
+			cerr << name() << "Error '" << e.what() << "' switching state" << endl;
 			this->state.active = Abstract::State::get("Error switching state",e);
 			this->state.activation = time(0);
 
 		} catch(...) {
 
-			error("Error '{}' switching state","unexpected");
+			cerr << name() << "Unexpected error switching state" << endl;
 			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 			this->state.activation = time(0);
 
 		}
-
-#ifdef DEBUG
-		if(saved_level != this->getLevel()) {
-			info("State has changed from '{}' to '{}'",saved_level,this->getLevel());
-		}
-#endif // DEBUG
 
 		return (saved_level != this->getLevel());
 	}

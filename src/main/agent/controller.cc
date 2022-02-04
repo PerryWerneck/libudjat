@@ -183,7 +183,7 @@ namespace Udjat {
 			try {
 				root->start();
 			} catch(const std::exception &e) {
-				root->error("Error '{}' starting root agent",e.what());;
+				cerr << root->name() << "\tError '" << e.what() << "' starting root agent" << endl;
 				return;
 			}
 
@@ -202,7 +202,7 @@ namespace Udjat {
 			try {
 				root->stop();
 			} catch(const std::exception &e) {
-				root->error("Error '{}' stopping root agent",e.what());
+				cerr << root->name() << "\tError '" << e.what() << "' stopping root agent" << endl;
 			}
 
 		} else {
@@ -315,10 +315,7 @@ namespace Udjat {
 
 				if(agent->update.running) {
 
-					agent->warning(
-						"Update is active since {}",
-						TimeStamp(agent->update.running).to_string()
-					);
+					clog << agent->name() << "\tUpdate is active since " << TimeStamp(agent->update.running) << endl;
 
 					if(agent->update.timer) {
 						agent->update.next = now + agent->update.timer;

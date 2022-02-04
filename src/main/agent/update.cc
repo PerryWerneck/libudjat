@@ -140,13 +140,13 @@ namespace Udjat {
 
 		} catch(const exception &e) {
 
-			error("Error '{}' switching state",e.what());
+			cerr << name() << "\tError '" << e.what() << "' switching state" << endl;
 			this->state.active = Abstract::State::get("Error switching state",e);
 			this->state.activation = time(0);
 
 		} catch(...) {
 
-			error("Error '{}' switching state","unexpected");
+			cerr << name() << "\tUnexpected error switching state" << endl;
 			this->state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
 			this->state.activation = time(0);
 

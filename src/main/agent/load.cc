@@ -21,30 +21,7 @@ namespace Udjat {
 			return (const char *) root.attribute(key).as_string();
 		};
 
-		//bool upsearch = root.attribute("upsearch").as_bool(true);
-
-		// Load my attributes
-		struct Attr {
-			/// @brief The attribute name.
-			const char *name;
-			const char **value;
-		} attributes[] = {
-			{ "summary",	&this->summary	},
-			{ "label",		&this->label	},
-			{ "icon",		&this->icon		},
-			{ "uri",		&this->uri		}
-		};
-
-		for(size_t ix = 0; ix < (sizeof(attributes)/sizeof(attributes[0])); ix++) {
-			const char * value = Quark().set(root,attributes[ix].name,false,translate).c_str();
-			if(value && *value) {
-				*attributes[ix].value = value;
-			}
-		}
-
-		if(name) {
-			Logger::set(root);
-		}
+		Object::set(root);
 
 		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
 		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
@@ -68,11 +45,11 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				error("Error '{}' loading node '{}'",e.what(),node.name());
+				cerr << Object::name() << "Error '" << e.what() << "' loading node '" << node.name() << "'" << endl;
 
 			} catch(...) {
 
-				error("Unexpected error loading node '{}'",node.name());
+				cerr << Object::name() << "Unexpected error loading node '" << node.name() << "'" << endl;
 
 			}
 

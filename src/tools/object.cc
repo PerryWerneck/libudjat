@@ -35,16 +35,53 @@
 		objectName = Quark(node.attribute("name").as_string("unnamed")).c_str();
 	}
 
+	Value & NamedObject::getProperties(Value &value) const noexcept {
+		value["name"] = objectName;
+	}
+
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
 		set(node);
 	}
 
 	void Object::set(const pugi::xml_node &node) {
 
+		NamedObject::set(node);
+
 		properties.label = getAttribute(node,"label",properties.label);
 		properties.summary = getAttribute(node,"summary",properties.summary);
-		properties.uri = getAttribute(node,"uri",properties.uri);
+		properties.url = getAttribute(node,"url",properties.url);
 		properties.icon = getAttribute(node,"icon",properties.icon);
+
+	}
+
+	Value & Abstract::Object::getProperties(Value &value) const noexcept {
+	}
+
+	Value & Object::getProperties(Value &value) const noexcept {
+		NamedObject::getProperties(value);
+
+		value["name"] = name();
+		value["summary"] = summary();
+		value["label"] = label();
+		value["url"] = url();
+		value["icon"] = icon();
+
+	}
+
+	bool Object::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(!strcasecmp(key,"label")) {
+			value = properties.label;
+		} else if(!strcasecmp(key,"summary")) {
+			value = properties.summary;
+		} else if(!strcasecmp(key,"url")) {
+			value = properties.url;
+		} else if(!strcasecmp(key,"icon")) {
+			value = properties.icon;
+		} else {
+			return false;
+		}
+		return true;
 
 	}
 

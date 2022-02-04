@@ -60,7 +60,7 @@
 
 		namespace Abstract {
 
-			class UDJAT_API Agent : public Logger, public Object {
+			class UDJAT_API Agent : public Udjat::Object {
 			private:
 				static std::recursive_mutex guard;
 
@@ -89,9 +89,6 @@
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
 
-				/// @brief Search for attribute.
-				static const pugi::xml_attribute & attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
-
 				/// @brief Enable disable 'running updates' flag.
 				void updating(bool running);
 
@@ -99,18 +96,6 @@
 
 				/// @brief Allow use of super:: for accessing abstract::agent methods.
 				typedef Abstract::Agent super;
-
-				/// @brief Agent label.
-				const char * label = "";
-
-				/// @brief Agent summary.
-				const char * summary = "";
-
-				/// @brief Web link for this agent (HTTP API).
-				const char * uri = "";
-
-				/// @brief Name of the agent icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-				const char * icon = "";
 
 				/// @brief Update complete (success or failure).
 				/// @param changed true if the value has changed.
@@ -149,7 +134,7 @@
 				void setOndemand() noexcept;
 
 				/// @brief Set agent details on value.
-				Value & getDetails(Value &response) const;
+				Value & getProperties(Value &response) const noexcept override;
 
 			public:
 				class Controller;
@@ -189,22 +174,6 @@
 
 				/// @brief true if the agent has states.
 				virtual bool hasStates() const noexcept;
-
-				inline const char * getUri() const noexcept {
-					return uri;
-				}
-
-				inline const char * getIcon() const noexcept {
-					return icon;
-				}
-
-				inline const char * getLabel() const noexcept {
-					return label;
-				}
-
-				inline const char * getSummary() const noexcept {
-					return summary;
-				}
 
 				/// @brief Get Agent path.
 				std::string getPath() const;
@@ -350,7 +319,7 @@
 
 				this->value = value;
 #ifdef DEBUG
-				info("Value set to {}",this->value);
+				std::cout << name() << Logger::Message("Value set to {}",this->value) << std::endl;
 #endif // DEBUG
 				return updated(true);
 			}

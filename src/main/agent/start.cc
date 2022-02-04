@@ -69,7 +69,9 @@
 
 				string value = to_string();
 
+				/*
 				if(value.empty()) {
+
 
 					info("Starts with state '{}' and level '{}'",
 						this->state.active->getName(),
@@ -85,6 +87,7 @@
 					);
 
 				}
+				*/
 
 			}
 
