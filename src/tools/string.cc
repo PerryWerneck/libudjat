@@ -23,6 +23,54 @@
 
  namespace Udjat {
 
+	String & String::strip() noexcept {
+		char *ptr = strdup(c_str());
+		assign(Udjat::strip(ptr));
+		free(ptr);
+		return *this;
+	}
+
+	String & String::chug() noexcept {
+		char *ptr = strdup(c_str());
+		assign(Udjat::chug(ptr));
+		free(ptr);
+		return *this;
+	}
+
+	String & String::chomp() noexcept {
+		char *ptr = strdup(c_str());
+		assign(Udjat::chomp(ptr));
+		free(ptr);
+		return *this;
+	}
+
+	std::vector<String> String::split(const char *delim) {
+
+		std::vector<String> strings;
+
+		const char *ptr = c_str();
+		while(ptr && *ptr) {
+			const char *next = strstr(ptr,delim);
+			if(!next) {
+				strings.push_back(String(ptr).strip());
+				break;
+			}
+
+			while(*next && isspace(*next))
+				next++;
+
+			strings.push_back(String(ptr,(size_t) (next-ptr)).strip());
+			ptr = next+1;
+			while(*ptr && isspace(*ptr)) {
+				ptr++;
+			}
+
+		}
+
+		return strings;
+
+	}
+
  	char * chomp(char *str) noexcept {
 
 		size_t len = strlen(str);
@@ -40,23 +88,6 @@
 
 	}
 
-	/**
-	 * @brief Remove the leading whitespace from the string.
-	 *
-	 * Removes leading whitespace from a string, by moving the rest
-	 * of the characters forward.
-	 *
-	 * This function doesn't allocate or reallocate any memory;
-	 * it modifies the string in place. Therefore, it cannot be used on
-	 * statically allocated strings.
-	 *
-	 * Reference: <https://git.gnome.org/browse/glib/tree/glib/gstrfuncs.c>
-	 *
-	 * @see chomp() and strip().
-	 *
-	 * @return pointer to string.
-	 *
-	 */
 	char * chug (char *str) noexcept {
 
 		char *start;

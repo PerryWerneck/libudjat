@@ -41,18 +41,19 @@
 			while(ptr && *ptr) {
 				const char *next = strstr(ptr,delim);
 				if(!next) {
-					push_back(ptr);
+					emplace_back(ptr);
 					break;
 				}
 
 				while(*next && isspace(*next))
 					next++;
 
-				string value{ptr,(size_t) (next-ptr)};
-				push_back(value);
-				ptr = next+1;
-				while(*ptr && isspace(*ptr)) {
-					ptr++;
+				if(*next) {
+					emplace_back(ptr,(size_t) (next-ptr));
+					ptr = next+1;
+					while(*ptr && isspace(*ptr)) {
+						ptr++;
+					}
 				}
 
 			}
