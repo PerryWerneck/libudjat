@@ -33,12 +33,27 @@
 		class UDJAT_API Object {
 
 		public:
-			/// @brief Get property from xml node and convert to const string;
+
+			/// @brief Get property from xml node and convert to const string.
+			/// @param node The xml node.
+			/// @param name The property name.
+			/// @param change If true add the node name as prefix on the attribute name for upsearch.
+			/// @return XML Attribute.
+			static const pugi::xml_attribute getAttribute(const pugi::xml_node &n, const char *name, bool change = true);
+
+			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param def The default value.
 			/// @return Attribute value converted to quark.
 			static const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
+
+			/// @brief Get property from xml node.
+			/// @param node The xml node.
+			/// @param name The property name.
+			/// @param def The default value.
+			/// @return Attribute value.
+			static unsigned int getAttribute(const pugi::xml_node &node, const char *name, unsigned int def);
 
 			virtual std::string to_string() const = 0;
 

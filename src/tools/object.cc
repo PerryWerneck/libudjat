@@ -109,8 +109,52 @@
 		return std::cerr << name() << "\t";
 	}
 
-	const char * Abstract::Object::getAttribute(const pugi::xml_node &n, const char *name, const char *def) {
+	const pugi::xml_attribute Abstract::Object::getAttribute(const pugi::xml_node &n, const char *name, bool change) {
 
+		string key{name};
+		pugi::xml_node node = n;
+
+		while(node) {
+
+			pugi::xml_attribute attribute = node.attribute(key.c_str());
+			if(attribute) {
+				return attribute;
+			}
+
+			for(auto child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+
+				if(strcasecmp(key.c_str(),child.attribute("name").as_string()) == 0) {
+					return child.attribute("value");
+				}
+
+			}
+
+			if(change) {
+				change = false;
+				key = node.name();
+				key += "-";
+				key += name;
+			}
+
+			node = node.parent();
+
+		}
+
+		return pugi::xml_attribute();
+
+	}
+
+	unsigned int Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, unsigned int def) {
+		return getAttribute(node,name).as_uint(def);
+	}
+
+	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, const char *def) {
+		auto attribute = getAttribute(node,name);
+		if(attribute) {
+			return Quark(Udjat::expand(node,attribute,def)).c_str();
+		}
+		return def;
+		/*
 		bool change = true;
 		string key{name};
 		pugi::xml_node node = n;
@@ -142,6 +186,7 @@
 		}
 
 		return def;
+		*/
 	}
 
 	std::string Abstract::Object::operator[](const char *key) const noexcept {
