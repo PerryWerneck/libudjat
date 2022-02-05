@@ -27,10 +27,6 @@
 
 	bool Abstract::Agent::getProperty(const char *key, std::string &value) const noexcept {
 
-		if(Object::getProperty(key, value)) {
-			return true;
-		}
-
 		// Agent value
 		if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
 			value = to_string();
@@ -43,7 +39,8 @@
 			return true;
 		}
 
-		return false;
+		return Object::getProperty(key, value);
+
 	}
 
  }
