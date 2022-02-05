@@ -43,7 +43,7 @@
 
 	void setRootAgent(std::shared_ptr<Abstract::Agent> agent) {
 
-		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << endl;
+		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << dec << endl;
 		Abstract::Agent::Controller::getInstance().set(agent);
 
 	}
@@ -55,7 +55,7 @@
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				cout << "agent\tRoot agent " << hex << ((void *) this) << " was created" << endl;
+				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was created" << endl;
 				Object::properties.icon = "computer";
 				Object::properties.url = Quark(string{"http://"} + name).c_str();
 
@@ -147,7 +147,7 @@
 			}
 
 			virtual ~Agent() {
-				cout << "agent\tRoot agent " << hex << ((void *) this) << " was destroyed" << endl;
+				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
 			}
 
 			Value & getProperties(Value &value) const noexcept override {

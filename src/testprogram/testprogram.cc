@@ -127,7 +127,7 @@ int main(int argc, char **argv) {
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
 
-				cout << "Creating event " << hex << ((unsigned long long) hEvent) << endl;
+				cout << "Creating event " << hex << ((unsigned long long) hEvent)<< dec << endl;
 
 				MainLoop::getInstance().insert(hEvent,[](HANDLE handle, bool abandoned){
 
@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 
 				MainLoop::getInstance().insert(this,1000,[hEvent]() {
 					static int counter = 5;
-					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << " (" << counter << ")" << endl;
+					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << dec << " (" << counter << ")" << endl;
 					if(--counter > 0) {
 						SetEvent(hEvent);
 					} else {

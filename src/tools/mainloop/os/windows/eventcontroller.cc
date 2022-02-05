@@ -51,7 +51,7 @@
 
 	void Win32::Event::Controller::remove(Event *event) {
 #ifdef DEBUG
-		cout << "win32\tRemoving event " << hex << ((unsigned long long) event->handle) << endl;
+		cout << "win32\tRemoving event " << hex << ((unsigned long long) event->handle) << dec << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
 		workers.remove_if([event](Worker &worker){
@@ -61,7 +61,7 @@
 			return worker.events.empty();
 		});
 #ifdef DEBUG
-		cout << "win32\tEvent " << hex << ((unsigned long long) event->handle) << " was removed" << endl;
+		cout << "win32\tEvent " << hex << ((unsigned long long) event->handle) << dec << " was removed" << endl;
 #endif // DEBUG
 	}
 

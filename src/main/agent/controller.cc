@@ -62,7 +62,7 @@ namespace Udjat {
 			if(this->root) {
 				cout << "agent\tRemoving root agent '"
 						<< this->root->name()
-						<< "' (" << hex << ((void *) this->root.get()) << ")"
+						<< "' (" << hex << ((void *) this->root.get()) << dec << ")"
 						<< endl;
 				this->root.reset();
 			}
@@ -73,7 +73,7 @@ namespace Udjat {
 
 		cout << "agent\tAgent '"
 				<< this->root->name()
-				<< "' (" << hex << ((void *) root.get() ) << ") is the new root" << endl;
+				<< "' (" << hex << ((void *) root.get() ) << dec << ") is the new root" << endl;
 
 	}
 
