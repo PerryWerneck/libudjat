@@ -109,14 +109,17 @@ int main(int argc, char **argv) {
 					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
 				}
 				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
-				/*
-				if(root) {
-					cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
-					for(auto agent : *root) {
-						cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+
+				{
+					auto root = Udjat::Abstract::Agent::root();
+					if(root) {
+						cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+						for(auto agent : *root) {
+							cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".xml" << endl;
+						}
 					}
 				}
-				*/
+
 			}
 
 

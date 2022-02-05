@@ -24,12 +24,10 @@
 
  namespace Udjat {
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) {
+	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
+		value.set(state()->ready());
 		return value;
 	}
-	#pragma GCC diagnostic pop
 
 	std::string Abstract::Agent::to_string() const {
 		return name();
@@ -51,7 +49,10 @@
 
 		Object::getProperties(value);
 
-		// Get agent state
+		// Get agent value.
+		get(value["value"]);
+
+		// Get agent state.
 		auto &state = value["state"];
 		this->current_state.active->getProperties(state);
 		state["activation"] = TimeStamp(this->current_state.activation);

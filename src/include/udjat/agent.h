@@ -221,7 +221,9 @@
 				/// @brief Adds cache and update information to the response.
 				void head(Response &response);
 
-				virtual Value & get(Value &value);
+				/// @brief Get agent value.
+				virtual Value & get(Value &value) const;
+
 				virtual void get(Response &response);
 				virtual void get(const Request &request, Response &response);
 				virtual void get(const Request &request, Report &report);
@@ -295,7 +297,7 @@
 				return super::stateFromValue();
 			}
 
-			Udjat::Value & get(Udjat::Value &value) override {
+			Udjat::Value & get(Udjat::Value &value) const override {
 				return value.set(this->value);
 			}
 
@@ -375,7 +377,7 @@
 				return super::stateFromValue();
 			}
 
-			Udjat::Value & get(Udjat::Value &value) override {
+			Udjat::Value & get(Udjat::Value &value) const override {
 				return value.set(this->value);
 			}
 
