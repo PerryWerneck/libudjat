@@ -170,8 +170,6 @@
 
 		};
 
-		static const char * expand(const char *value, const pugi::xml_node &node, const char *section);
-
 		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const;
 
 	public:

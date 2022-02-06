@@ -24,6 +24,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/expander.h>
 
  using namespace std;
 
@@ -68,7 +69,6 @@
 
 		NamedObject::getProperties(value);
 
-		value["name"] = name();
 		value["summary"] = summary();
 		value["label"] = label();
 		value["url"] = url();
@@ -78,6 +78,10 @@
 	}
 
 	bool Object::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(NamedObject::getProperty(key,value)) {
+			return true;
+		}
 
 		if(!strcasecmp(key,"label")) {
 			value = properties.label;
@@ -192,6 +196,30 @@
 		return String(text).expand([this](const char *key, std::string &value) {
 			return getProperty(key,value);
 		});
+	}
+
+	const char * Abstract::Object::expand(const pugi::xml_node &node, const char *group, const char *value) {
+
+		string text{value};
+		Udjat::expand(text, [node,group](const char *key, string &value) {
+
+			auto attribute = getAttribute(node,key);
+			if(attribute) {
+				value = Udjat::expand(node,attribute,"");
+				return true;
+			}
+
+			if(Config::hasKey(group,key)) {
+				value = Udjat::expand(node,Config::Value<string>(group,key,"").c_str());
+				return true;
+			}
+
+			return false;
+
+		});
+
+		return Quark(text).c_str();
+
 	}
 
 

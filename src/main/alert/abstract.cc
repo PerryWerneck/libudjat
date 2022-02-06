@@ -18,7 +18,7 @@
  */
 
  #include "private.h"
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
 
  namespace Udjat {

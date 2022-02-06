@@ -33,24 +33,13 @@
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
-		url = expand(
-				Attribute(node,"url","alert-url")
-					.as_string(
-						Config::Value<string>(section,"url","")
-					),
-					node,
-					section
-				);
+		url = getAttribute(node,section,"url");
 
 		if(!(url && *url)) {
-			throw runtime_error("Required attribute 'url' or upstream 'alert-url' are both missing");
+			throw runtime_error("Required attribute 'url' is missing");
 		}
 
-		payload = expand(
-						node.child_value(),
-						node,
-						section
-					);
+		payload = expand(node,node.child_value(),section);
 
 		action = HTTP::MethodFactory(
 						Attribute(node,"action","alert-action")
@@ -65,6 +54,7 @@
 		Abstract::Alert::activate(make_shared<Alert>(name,url,HTTP::MethodFactory(action),payload));
 	}
 
+	/*
 	const char * Alert::expand(const char *value, const pugi::xml_node &node, const char *section) {
 
 		string text{value};
@@ -88,11 +78,10 @@
 		return Udjat::Quark(text).c_str();
 
 	}
+	*/
 
 	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const std::function<void(std::string &str)> &expander) const {
-
 		return make_shared<Activation>(*this,expander);
-
 	}
 
 	Value & Alert::getProperties(Value &value) const noexcept {

@@ -75,12 +75,23 @@
 				return getAttribute(node,group.c_str(),name,def);
 			}
 
+			/// @brief Expand string using XML definitions and configuration file.
+			/// @param node Reference node.
+			/// @param group Configuration file group to get values.
+			/// @param value String to expand.
+			/// @return 'quarked' string with value expanded.
+			static const char * expand(const pugi::xml_node &node, const char *group, const char *value);
+
+			static inline const char * expand(const pugi::xml_node &node, const std::string &group, const char *value) {
+				return expand(node,group.c_str(),value);
+			}
+
 			virtual std::string to_string() const = 0;
 
 			/// @brief Get object as Udjat::Value.
 			// Udjat::Value as_value() const noexcept;
 
-			/// @brief Get property.
+			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
@@ -91,7 +102,9 @@
 			/// @return The property value (empty if invalid key).
 			std::string operator[](const char *key) const noexcept;
 
-			/// @brief Expand ${} tags on string.
+			/// @brief Expand ${} tags using object properties.
+			/// @param text Text to expand.
+			/// @return String with the known ${} tags expanded.
 			std::string expand(const char *text) const;
 
 			/// @brief Add object properties to the value.
@@ -113,7 +126,7 @@
 
 		void set(const pugi::xml_node &node);
 
-		typedef NamedObject super;
+		typedef NamedObject Super;
 
 	public:
 		bool getProperty(const char *key, std::string &value) const noexcept override;
