@@ -169,7 +169,7 @@
 		activation->alertptr = alert;
 
 		if(activation->name.empty()) {
-			activation->name = alert->name;
+			activation->name = alert->name();
 		}
 
 		activation->timers.next = time(0) + alert->timers.start;
@@ -249,7 +249,7 @@
 
 		lock_guard<mutex> lock(guard);
 		for(auto activation : activations) {
-			activation->get(response.append(Value::Object));
+			activation->getProperties(response.append(Value::Object));
 		}
 
 		return true;

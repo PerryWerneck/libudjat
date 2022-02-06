@@ -23,6 +23,7 @@
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/configuration.h>
 
  using namespace std;
 
@@ -38,6 +39,10 @@
 	Value & NamedObject::getProperties(Value &value) const noexcept {
 		value["name"] = objectName;
 		return value;
+	}
+
+	std::string NamedObject::to_string() const {
+		return objectName;
 	}
 
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
@@ -148,45 +153,33 @@
 		return getAttribute(node,name).as_uint(def);
 	}
 
+	unsigned int Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, unsigned int def) {
+		auto attribute = getAttribute(node,name);
+		if(attribute) {
+			return attribute.as_uint(def);
+		}
+		return Config::Value<unsigned int>(group,name,def);
+	}
+
 	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, const char *def) {
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
 			return Quark(Udjat::expand(node,attribute,def)).c_str();
 		}
 		return def;
-		/*
-		bool change = true;
-		string key{name};
-		pugi::xml_node node = n;
+	}
 
-		while(node) {
+	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def) {
+		auto attribute = getAttribute(node,name);
+		if(attribute) {
+			return Quark(Udjat::expand(node,attribute,def)).c_str();
+		}
 
-			pugi::xml_attribute attribute = node.attribute(key.c_str());
-			if(attribute) {
-				return Quark(Udjat::expand(node,attribute,def)).c_str();
-			}
-
-			for(auto child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
-
-				if(strcasecmp(key.c_str(),child.attribute("name").as_string()) == 0) {
-					return Quark(Udjat::expand(node,attribute,def)).c_str();
-				}
-
-			}
-
-			if(change) {
-				change = false;
-				key = node.name();
-				key += "-";
-				key += name;
-			}
-
-			node = node.parent();
-
+		if(Config::hasKey(group,name)) {
+			return Quark(Udjat::expand(node,Config::Value<string>(group,name,def).c_str()).c_str()).c_str();
 		}
 
 		return def;
-		*/
 	}
 
 	std::string Abstract::Object::operator[](const char *key) const noexcept {

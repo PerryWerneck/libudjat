@@ -45,18 +45,20 @@
 	Abstract::Alert::Activation::~Activation() {
 	}
 
-	void Abstract::Alert::Activation::get(Udjat::Value &response) const noexcept {
+	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
 
 		if(alertptr) {
-			alertptr->get(response);
+			alertptr->getProperties(value);
 		}
 
-		response["next"] = TimeStamp(timers.next);
-		response["last"] = TimeStamp(timers.last);
-		response["failed"] = count.failed;
-		response["success"] = count.success;
-		response["restarting"] = state.restarting;
-		response["running"] = TimeStamp(state.running);
+		value["next"] = TimeStamp(timers.next);
+		value["last"] = TimeStamp(timers.last);
+		value["failed"] = count.failed;
+		value["success"] = count.success;
+		value["restarting"] = state.restarting;
+		value["running"] = TimeStamp(state.running);
+
+		return value;
 	}
 
 	const char * Abstract::Alert::Activation::c_str() const noexcept {

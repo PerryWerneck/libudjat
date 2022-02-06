@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/object.h>
  #include <memory>
 
  namespace Udjat {
@@ -29,7 +30,7 @@
 	namespace Abstract {
 
 		/// @brief Abstract alert.
-		class UDJAT_API Alert {
+		class UDJAT_API Alert : public NamedObject {
 		private:
 			class Controller;
 			friend class Controller;
@@ -93,13 +94,9 @@
 				virtual void emit() const;
 
 				/// @brief Get activation info.
-				virtual void get(Udjat::Value &response) const noexcept;
+				virtual Value & getProperties(Value &value) const noexcept;
 
 			};
-
-
-			/// @brief Alert name.
-			const char *name = "alert";
 
 			/// @brief Alert limits.
 			struct {
@@ -125,7 +122,7 @@
 			virtual std::shared_ptr<Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const = 0;
 
 		public:
-			constexpr Alert(const char *n) : name(n) {
+			constexpr Alert(const char *name) : NamedObject(name) {
 			}
 
 			/// @brief Create alert for xml description.
@@ -133,10 +130,6 @@
 			/// @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
 			Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 			virtual ~Alert();
-
-			inline const char * c_str() const noexcept {
-				return name;
-			}
 
 			/// @brief Activate an alert.
 			static void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);
@@ -148,7 +141,7 @@
 			void deactivate();
 
 			/// @brief Get alert info.
-			virtual void get(Udjat::Value &response) const noexcept;
+			Value & getProperties(Value &value) const noexcept override;
 
 		};
 
@@ -199,7 +192,7 @@
 		static void activate(const char *name, const char *url, const char *action = "get", const char *payload = "");
 
 		/// @brief Get alert info.
-		void get(Udjat::Value &response) const noexcept override;
+		Value & getProperties(Value &value) const noexcept override;
 
 	};
 

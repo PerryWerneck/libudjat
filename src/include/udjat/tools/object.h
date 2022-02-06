@@ -44,9 +44,17 @@
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
-			/// @param def The default value.
-			/// @return Attribute value converted to quark.
+			/// @param def The default value (should be constant).
+			/// @return Attribute value converted to quark or def
 			static const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
+
+			/// @brief Get property from xml node with fallback to configuration file.
+			/// @param node The xml node.
+			/// @param group The configuration group name.
+			/// @param name The property name.
+			/// @param def The default value (should be constant).
+			/// @return Attribute value converted to quark or def
+			static const char * getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def);
 
 			/// @brief Get property from xml node.
 			/// @param node The xml node.
@@ -54,6 +62,18 @@
 			/// @param def The default value.
 			/// @return Attribute value.
 			static unsigned int getAttribute(const pugi::xml_node &node, const char *name, unsigned int def);
+
+			/// @brief Get property from xml node with fallback to configuration file.
+			/// @param node The xml node.
+			/// @param group The configuration group name.
+			/// @param name The property name.
+			/// @param def The default value.
+			/// @return Attribute value.
+			static unsigned int getAttribute(const pugi::xml_node &node, const char *group, const char *name, unsigned int def);
+
+			static inline unsigned int getAttribute(const pugi::xml_node &node, const std::string &group, const char *name, unsigned int def) {
+				return getAttribute(node,group.c_str(),name,def);
+			}
 
 			virtual std::string to_string() const = 0;
 
@@ -93,12 +113,20 @@
 
 		void set(const pugi::xml_node &node);
 
+		typedef NamedObject super;
+
 	public:
 		bool getProperty(const char *key, std::string &value) const noexcept override;
 
 		inline const char * name() const noexcept {
 			return objectName;
 		}
+
+		inline const char * c_str() const noexcept {
+			return objectName;
+		}
+
+		std::string to_string() const override;
 
 		Value & getProperties(Value &value) const noexcept override;
 

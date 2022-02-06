@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(Quark(node,"name").c_str()) {
+	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
@@ -95,10 +95,11 @@
 
 	}
 
-	void Alert::get(Udjat::Value &response) const noexcept {
-		Abstract::Alert::get(response);
-		response["url"] = url;
-		response["action"] = to_string(action);
+	Value & Alert::getProperties(Value &value) const noexcept {
+		Abstract::Alert::getProperties(value);
+		value["url"] = url;
+		value["action"] = std::to_string(action);
+		return value;
 	}
 
  }
