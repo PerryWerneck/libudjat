@@ -48,7 +48,7 @@
 
 	}
 
-	std::shared_ptr<Abstract::Agent> getDefaultRootAgent() {
+	std::shared_ptr<Abstract::Agent> RootAgentFactory() {
 
 		/// @brief The root agent.
 		class Agent : public Abstract::Agent {

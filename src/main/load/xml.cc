@@ -32,7 +32,9 @@
  #include <udjat/module.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/threadpool.h>
 
 #ifndef _WIN32
 	#include <unistd.h>
@@ -43,15 +45,16 @@
  namespace Udjat {
 
 	/// @brief Load modules from xml file.
-	static bool prepare(const char *filename) {
+	static bool prepare(const char *filename, bool download) {
 
 		string url;
+		Application::Name appname;
 
 		{
 			pugi::xml_document doc;
 			auto result = doc.load_file(filename);
 			if(result.status != pugi::status_ok) {
-				cerr << Application::Name() << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+				cerr << appname << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
 				return false;
 			}
 
@@ -62,7 +65,7 @@
 			url = doc.document_element().attribute("src").as_string();
 		}
 
-		if(url.empty()) {
+		if(url.empty() || !download) {
 			return true;
 		}
 
@@ -70,13 +73,13 @@
 		try {
 
 			if(URL(url.c_str()).get(filename)) {
-				cout << Application::Name() << "\tFile '" << filename << "' was updated, reloading modules" << endl;
+				cout << appname << "\tFile '" << filename << "' was updated, reloading modules" << endl;
 
 				// Reload modules.
 				pugi::xml_document doc;
 				auto result = doc.load_file(filename);
 				if(result.status != pugi::status_ok) {
-					cerr << Application::Name() << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+					cerr << appname << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
 					return false;
 				}
 
@@ -89,7 +92,7 @@
 
 		} catch(const exception &e) {
 
-			cerr << Application::Name() << "\t" << e.what() << endl;
+			cerr << appname << "\t" << e.what() << endl;
 
 		}
 
@@ -97,13 +100,15 @@
 
 	}
 
-	static void load(std::shared_ptr<Abstract::Agent> root, const char *filename) {
+	static time_t load(std::shared_ptr<Abstract::Agent> root, const char *filename) {
+
+		Application::Name appname;
 
 		pugi::xml_document doc;
 		auto result = doc.load_file(filename);
 		if(result.status != pugi::status_ok) {
-			cerr << Application::Name() << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
-			return;
+			cerr << appname << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+			return 0;
 		}
 
 		auto node = doc.document_element();
@@ -122,9 +127,20 @@
 
 		}
 
+		return node.attribute("update-timer").as_uint(0);
+
 	}
 
-	UDJAT_API std::shared_ptr<Abstract::Agent> load(const char *pathname) {
+	/// @brief Activate root agent from application definitions.
+	/// @param pathname Path to a single xml file or a folder with xml files.
+	static time_t activate(const char *pathname) {
+		auto root = RootAgentFactory();
+		time_t timer = load(root,pathname);
+		setRootAgent(root);
+		return timer;
+	}
+
+	UDJAT_API void load(const char *pathname) {
 
 		Application::Name application;
 
@@ -132,9 +148,6 @@
 		if(stat(pathname, &pathstat) == -1) {
 			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",pathname));
 		}
-
-		/// @brief The new root agent.
-		std::shared_ptr<Abstract::Agent> root;
 
 		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
 			//
@@ -144,16 +157,18 @@
 
 			// First load modules.
 			files.forEach([](const char *filename){
-				prepare(filename);
+				prepare(filename,false);
 			});
 
 			// Then load agents
 			clog << application << "\tCreating the new root agent" << endl;
-			root = getDefaultRootAgent();
+			auto root = RootAgentFactory();
 
 			files.forEach([root](const char *filename){
 				load(root, filename);
 			});
+
+			setRootAgent(root);
 
 		} else {
 
@@ -163,23 +178,87 @@
 			cout << application << "\tLoading '" << pathname << "'" << endl;
 
 			// First load the modules and check for update url.
-			if(!prepare(pathname)) {
+			if(!prepare(pathname,true)) {
 				throw runtime_error("Can't prepare definition file");
 			}
 
 			// Create new root agent.
 			{
-				root = getDefaultRootAgent();
 
 				// Then load agents
-				load(root, pathname);
+				time_t timer = activate(pathname);
+				if(timer) {
+
+					clog << Application::Name() << "\tReconfiguration scheduled to " << TimeStamp(time(0)+timer) << endl;
+
+					const char *name = Quark(pathname).c_str();
+					MainLoop::getInstance().insert(name,timer*1000L,[name](){
+						//
+						// Reconfigure time, do we need reload?
+						//
+						ThreadPool::getInstance().push([name]{
+
+							Application::Name appname;
+							try {
+
+								string url;
+
+								{
+									pugi::xml_document doc;
+									auto result = doc.load_file(name);
+									if(result.status != pugi::status_ok) {
+										cerr << appname << "\tError parsing '" << name << "' (" << result.description() << "'" << endl;
+										return;
+									}
+									url = doc.document_element().attribute("src").as_string();
+								}
+
+								if(url.empty()) {
+									clog << appname << "\tUpdating from '" << name << "' was disabled" << endl;
+									MainLoop::getInstance().remove(name);
+									return;
+								}
+
+								if(!URL(url.c_str()).get(name)) {
+									cout << appname << "\tFile '" << name << "' was not updated, will keep current settings" << endl;
+									return;
+								}
+
+								if(prepare(name,false)) {
+
+									// Then load agents
+									time_t timer = activate(name);
+
+									if(!timer) {
+										clog << appname << "\tUpdating from '" << name << "' was disabled" << endl;
+										MainLoop::getInstance().remove(name);
+									} else {
+										clog << appname << "\tNext update of '" << name << "' will be on " << TimeStamp(time(0) + timer) << endl;
+										// MainLoop::getInstance().reset(name,timer*1000L);
+									}
+
+								}
+
+							} catch(const exception &e) {
+
+								cerr << appname << "\tError '" << e.what() << "' reloading '" << name << "'" << endl;
+
+							} catch(...) {
+
+								cerr << appname << "\tUnexpected error reloading '" << name << "'" << endl;
+
+							}
+
+						});
+						return true;
+					});
+				}
+
+
 			}
 
 		}
 
-		setRootAgent(root);
-
-		return root;
 	}
 
  }

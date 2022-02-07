@@ -274,7 +274,7 @@
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @return root agent.
-		UDJAT_API std::shared_ptr<Abstract::Agent> load(const char *pathname);
+		UDJAT_API void load(const char *pathname);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
