@@ -163,8 +163,7 @@
 
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
-				/// @brief name Allow parsing of agent name.
-				void load(const pugi::xml_node &node, bool name = true);
+				void load(const pugi::xml_node &node);
 
 				/// @brief Deinitialize agent subsystem.
 				static void deinit();

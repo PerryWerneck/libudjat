@@ -17,21 +17,19 @@
 
 	</agent>
 
-	<!--
 	<random name='random600' update-timer='600'>
 
 		<state name='s0' value='0' summary='Random 0'>
 			<alert name='r0.0' url='http://localhost' />
 		</state>
 		
-		<state name='s1' value='1' summary='Random 1' />
-		<state name='s2' value='2' summary='Random 2' />
-		<state name='s3' value='3' summary='Random 3' />
-		<state name='s4' value='4' summary='Random 4' />
-		<state name='s5' value='5' summary='Random 5' />
+		<state name='s1' value='1' summary='Random 1' alert-type='default' url='http://localhost' />
+		<state name='s2' value='2' summary='Random 2' alert-type='default' url='http://localhost' />
+		<state name='s3' value='3' summary='Random 3' alert-type='default' url='http://localhost' />
+		<state name='s4' value='4' summary='Random 4' alert-type='default' url='http://localhost' />
+		<state name='s5' value='5' summary='Random 5' alert-type='default' url='http://localhost' />
 		
 	</random>
-	-->
 
 	<!--
 	<random name='random10' update-timer='10'>

@@ -79,7 +79,7 @@
 			/// @param node Reference node.
 			/// @param group Configuration file group to get values.
 			/// @param value String to expand.
-			/// @return 'quarked' string with value expanded.
+			/// @return 'quarked' string with the expanded value.
 			static const char * expand(const pugi::xml_node &node, const char *group, const char *value);
 
 			static inline const char * expand(const pugi::xml_node &node, const std::string &group, const char *value) {

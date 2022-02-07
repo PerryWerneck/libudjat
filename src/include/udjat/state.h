@@ -213,7 +213,11 @@
 
 		};
 
-		UDJAT_API std::shared_ptr<Abstract::State> StateFactory(const std::exception &e, const char *summary);
+		/// @brief Create an state from exception.
+		/// @param except The exception.
+		/// @param summary State summary (for message).
+		/// @return A new state object based on the exception type and message.
+		UDJAT_API std::shared_ptr<Abstract::State> StateFactory(const std::exception &except, const char *summary);
 
 	}
 

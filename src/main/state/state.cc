@@ -55,8 +55,7 @@ namespace Udjat {
 	}
 
 	Abstract::State::State(const pugi::xml_node &node) : Object(node) {
-		properties.body = getAttribute(node,"body",properties.body);
-		properties.level = LevelFactory(node);
+		set(node);
 	}
 
 	void Abstract::State::set(const pugi::xml_node &node) {
@@ -64,6 +63,7 @@ namespace Udjat {
 		Object::set(node);
 
 		properties.level = LevelFactory(node);
+		properties.body = getAttribute(node,"state-defaults","body",properties.body);
 
 		for(pugi::xml_node child : node) {
 
@@ -87,19 +87,30 @@ namespace Udjat {
 
 		}
 
-		if(node.attribute("alert").as_bool(false)) {
+		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
 
 			// Insert alert using the same node.
 			try {
 
-				Factory::parse(Attribute(node,"alert-factory").as_string("alert"), *this, node);
+				const char *type = getAttribute(node, "state-defaults", "alert-type", "default");
+
+				if(strcasecmp(type,"default")) {
+
+					// Not default, use factory.
+					Factory::parse(type, *this, node);
+
+				} else {
+
+					// Create the default alert.
+					append(make_shared<Udjat::Alert>(node));
+
+				}
 
 			} catch(const std::exception &e) {
 
 				error() << "Error '" << e.what() << "' embedding alert"  << endl;
 
 			}
-
 
 		}
 
@@ -115,24 +126,19 @@ namespace Udjat {
 		value["body"] = properties.body;
 		value["level"] = std::to_string(properties.level);
 
-		// Set level information
-		// getLevel(value);
-
 		return value;
 	}
-
-
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::State::get(const Request &request, Response &response) const {
-//		this->get(response);
+		getProperties(response);
 	}
 	#pragma GCC diagnostic pop
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
-		agent.info() << "State '" << name() << "' was activated" << endl;
+		agent.info() << "State '" << *this << "' was activated" << endl;
 
 		for(auto alert : alerts) {
 			Abstract::Alert::activate(alert,[agent,this](std::string &text) {
@@ -145,7 +151,7 @@ namespace Udjat {
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
 
-		agent.info() << "State '" << name() << "' was deactivated" << endl;
+		agent.info() << "State '" << *this << "' was deactivated" << endl;
 
 		for(auto alert : alerts) {
 			alert->deactivate();
@@ -179,7 +185,9 @@ namespace Udjat {
 
 		if(!syserror) {
 
-			// It's regular error
+			// It's not a system error
+
+			/// @brief Exception state.
 			class Error : public Abstract::State {
 			private:
 

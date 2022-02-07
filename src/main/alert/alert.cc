@@ -23,6 +23,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/object.h>
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/expander.h>
@@ -33,20 +34,24 @@
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
-		url = getAttribute(node,section,"url");
+		url = getAttribute(node,section,"url","");
 
 		if(!(url && *url)) {
 			throw runtime_error("Required attribute 'url' is missing");
 		}
 
-		payload = expand(node,node.child_value(),section);
+		payload = Object::expand(node,section,node.child_value());
 
-		action = HTTP::MethodFactory(
-						Attribute(node,"action","alert-action")
-						.as_string(
-							Config::Value<string>(section,"action","get")
-						)
-					);
+		{
+			// Get alert action.
+			// (Dont use the default getAttribute to avoid the creation of a new 'quark')
+			auto attribute = getAttribute(node,"action",true);
+			if(attribute) {
+				action = HTTP::MethodFactory(attribute.as_string("get"));
+			} else {
+				action = HTTP::MethodFactory(Config::Value<string>(section,"action","get"));
+			}
+		}
 
 	}
 

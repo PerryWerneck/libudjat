@@ -14,7 +14,7 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::load(const pugi::xml_node &root, bool name) {
+	void Abstract::Agent::load(const pugi::xml_node &root) {
 
 		Object::set(root);
 
