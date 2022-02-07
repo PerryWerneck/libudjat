@@ -42,14 +42,71 @@
 
  namespace Udjat {
 
-	/// @brief Load modules from node definition.
-	static void load_modules(const pugi::xml_node &root) {
-		for(pugi::xml_node node = root.child("module"); node; node = node.next_sibling("module")) {
-			Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(true));
+	/// @brief Load modules from xml file.
+	static bool prepare(const char *filename) {
+
+		string url;
+
+		{
+			pugi::xml_document doc;
+			auto result = doc.load_file(filename);
+			if(result.status != pugi::status_ok) {
+				cerr << Application::Name() << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+				return false;
+			}
+
+			// Load modules.
+			for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+				Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(false));
+			}
+			url = doc.document_element().attribute("src").as_string();
 		}
+
+		if(url.empty()) {
+			return true;
+		}
+
+		// Check for file update.
+		try {
+
+			if(URL(url.c_str()).get(filename)) {
+				cout << Application::Name() << "\tFile '" << filename << "' was updated, reloading modules" << endl;
+
+				// Reload modules.
+				pugi::xml_document doc;
+				auto result = doc.load_file(filename);
+				if(result.status != pugi::status_ok) {
+					cerr << Application::Name() << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+					return false;
+				}
+
+				// Reload modules.
+				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+					Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(false));
+				}
+
+			}
+
+		} catch(const exception &e) {
+
+			cerr << Application::Name() << "\t" << e.what() << endl;
+
+		}
+
+		return true;
+
 	}
 
-	static void load(std::shared_ptr<Abstract::Agent> root, const pugi::xml_node &node) {
+	static void load(std::shared_ptr<Abstract::Agent> root, const char *filename) {
+
+		pugi::xml_document doc;
+		auto result = doc.load_file(filename);
+		if(result.status != pugi::status_ok) {
+			cerr << Application::Name() << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+			return;
+		}
+
+		auto node = doc.document_element();
 
 		const char *path = node.attribute("path").as_string();
 
@@ -87,9 +144,7 @@
 
 			// First load modules.
 			files.forEach([](const char *filename){
-				pugi::xml_document doc;
-				doc.load_file(filename);
-				load_modules(doc.document_element());
+				prepare(filename);
 			});
 
 			// Then load agents
@@ -97,9 +152,7 @@
 			root = getDefaultRootAgent();
 
 			files.forEach([root](const char *filename){
-				pugi::xml_document doc;
-				doc.load_file(filename);
-				load(root, doc.document_element());
+				load(root, filename);
 			});
 
 		} else {
@@ -109,46 +162,17 @@
 			//
 			cout << application << "\tLoading '" << pathname << "'" << endl;
 
-			// List of file to update
-			string url;
-
 			// First load the modules and check for update url.
-			{
-				pugi::xml_document doc;
-				doc.load_file(pathname);
-				url = doc.document_element().attribute("src").as_string();
-				load_modules(doc.document_element());
-			}
-
-			if(!url.empty()) {
-
-				// The file has an update url, use it.
-
-				try {
-
-					if(URL(url.c_str()).get(pathname)) {
-						cout << application << "\tFile '" << pathname << "' was updated" << endl;
-
-						// TODO: Reload modules.
-
-					}
-
-				} catch(const exception &e) {
-
-					cerr << application << "\t" << e.what() << endl;
-				}
-
+			if(!prepare(pathname)) {
+				throw runtime_error("Can't prepare definition file");
 			}
 
 			// Create new root agent.
 			{
-				pugi::xml_document doc;
-				doc.load_file(pathname);
-
 				root = getDefaultRootAgent();
 
 				// Then load agents
-				load(root, doc.document_element());
+				load(root, pathname);
 			}
 
 		}
