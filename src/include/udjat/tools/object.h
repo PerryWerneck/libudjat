@@ -70,6 +70,7 @@
 			/// @param def The default value.
 			/// @return Attribute value.
 			static unsigned int getAttribute(const pugi::xml_node &node, const char *group, const char *name, unsigned int def);
+			static bool getAttribute(const pugi::xml_node &node, const char *group, const char *name, bool def);
 
 			static inline unsigned int getAttribute(const pugi::xml_node &node, const std::string &group, const char *name, unsigned int def) {
 				return getAttribute(node,group.c_str(),name,def);

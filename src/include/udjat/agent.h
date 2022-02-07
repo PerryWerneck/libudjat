@@ -386,6 +386,9 @@
 			}
 
 		public:
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(node.attribute("value").as_string()) {
+			}
+
 			Agent(const char *name = "") : Abstract::Agent(name) {
 			}
 
@@ -457,6 +460,9 @@
 			}
 
 		public:
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(node.attribute("value").as_bool()) {
+			}
+
 			Agent(const char *name = "") : Abstract::Agent(name), value(false) {
 			}
 

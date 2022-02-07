@@ -69,7 +69,7 @@ int main(int argc, char **argv) {
 				unsigned int limit = 5;
 
 			public:
-				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>() {
+				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
 					cout << "Creating random Agent" << endl;
 					load(node);
 				}

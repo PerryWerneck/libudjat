@@ -64,7 +64,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const pugi::xml_node UDJAT_UNUSED(&node)) : Abstract::Agent() {
+	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(Quark(node,"name","unnamed",false).c_str()) {
 	}
 
 	Abstract::Agent::~Agent() {

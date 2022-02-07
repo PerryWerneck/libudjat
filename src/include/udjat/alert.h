@@ -100,21 +100,21 @@
 
 			/// @brief Alert limits.
 			struct {
-				size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
-				size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
+				unsigned int min = 1;			///< @brief How many success emissions after deactivation or sleep?
+				unsigned int max = 3;			///< @brief How many retries (success+fails) after deactivation or sleep?
 			} retry;
 
 			/// @brief Alert timers.
 			struct {
-				time_t start = 0;			///< @brief Seconds to wait before first activation.
-				time_t interval = 60;		///< @brief Seconds to wait on every try.
-				time_t busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
+				unsigned int start = 0;			///< @brief Seconds to wait before first activation.
+				unsigned int interval = 60;		///< @brief Seconds to wait on every try.
+				unsigned int busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
 			} timers;
 
 			/// @brief Restart timers.
 			struct {
-				time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-				time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
+				unsigned int failed = 14400;	///< @brief Seconds to wait for reactivate after a failed activation.
+				unsigned int success = 0;		///< @brief Seconds to wait for reactivate after a successful activation.
 			} restart;
 
 			/// @brief Create and activation object for this alert.

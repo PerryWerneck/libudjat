@@ -167,6 +167,14 @@
 		return Config::Value<unsigned int>(group,name,def);
 	}
 
+	bool Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, bool def) {
+		auto attribute = getAttribute(node,name);
+		if(attribute) {
+			return attribute.as_bool(def);
+		}
+		return Config::Value<bool>(group,name,def);
+	}
+
 	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, const char *def) {
 		auto attribute = getAttribute(node,name);
 		if(attribute) {

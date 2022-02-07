@@ -222,41 +222,41 @@ namespace Udjat {
 		static const struct
 		{
 			const char *type;
-			function< std::shared_ptr<Abstract::Agent>()> build;
+			function< std::shared_ptr<Abstract::Agent>(const pugi::xml_node &node)> build;
 		} builders[] = {
 
 			{
 				"integer",
-				[]() {
-					return make_shared<Udjat::Agent<int>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<int>>(node);
 				}
 
 			},
 			{
 				"int32",
-				[]() {
-					return make_shared<Udjat::Agent<int32_t>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<int32_t>>(node);
 				}
 			},
 
 			{
 				"uint32",
-				[]() {
-					return make_shared<Udjat::Agent<uint32_t>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<uint32_t>>(node);
 				}
 			},
 
 			{
 				"boolean",
-				[]() {
-					return make_shared<Udjat::Agent<bool>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<bool>>(node);
 				}
 			},
 
 			{
 				"string",
-				[]() {
-					return make_shared<Udjat::Agent<std::string>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<std::string>>(node);
 				}
 			},
 
@@ -276,7 +276,7 @@ namespace Udjat {
 		for(auto builder : builders) {
 
 			if(!strcasecmp(type,builder.type)) {
-				auto agent = builder.build();
+				auto agent = builder.build(node);
 				agent->load(node);
 				parent.insert(agent);
 				return true;

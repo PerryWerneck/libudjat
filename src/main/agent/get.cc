@@ -25,7 +25,7 @@
  namespace Udjat {
 
 	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
-		value.set(state()->ready());
+		value.set(to_string());
 		return value;
 	}
 
@@ -49,13 +49,25 @@
 
 		Object::getProperties(value);
 
-		// Get agent value.
-		get(value["value"]);
+		try {
 
-		// Get agent state.
-		auto &state = value["state"];
-		this->current_state.active->getProperties(state);
-		state["activation"] = TimeStamp(this->current_state.activation);
+			// Get agent value.
+			get(value["value"]);
+
+			// Get agent state.
+			auto &state = value["state"];
+			this->current_state.active->getProperties(state);
+			state["activation"] = TimeStamp(this->current_state.activation);
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' getting agent properties" << endl;
+
+		} catch(...) {
+
+			error() << "Unexpected error getting agent properties" << endl;
+
+		}
 
 		return value;
 
