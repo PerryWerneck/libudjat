@@ -121,10 +121,14 @@
 		const char *objectName = "";
 
 	protected:
-		constexpr NamedObject(const char *name) : objectName(name) {}
+		constexpr NamedObject(const char *name = "") : objectName(name) {}
 		NamedObject(const pugi::xml_node &node);
 
 		void set(const pugi::xml_node &node);
+
+		inline void rename(const char *name) {
+			objectName = name;
+		}
 
 		typedef NamedObject Super;
 

@@ -34,7 +34,9 @@
 	}
 
 	void NamedObject::set(const pugi::xml_node &node) {
-		objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
+		if(!(objectName && *objectName)) {
+			objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
+		}
 	}
 
 	Value & NamedObject::getProperties(Value &value) const noexcept {
