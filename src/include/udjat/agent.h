@@ -35,6 +35,7 @@
 	#include <memory>
 	#include <vector>
 	#include <mutex>
+	#include <list>
 	#include <functional>
 	#include <udjat/defs.h>
 	#include <udjat/state.h>
@@ -84,7 +85,11 @@
 
 				} current_state;
 
+				/// @brief Agent children.
 				std::vector<std::shared_ptr<Agent>> children;
+
+				/// @brief Associated objects.
+				std::list<std::shared_ptr<Abstract::Object>> objects;
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
@@ -139,8 +144,14 @@
 			public:
 				class Controller;
 
-				/// @brief Insert child agent.
+				/// @brief Insert child node.
 				void insert(std::shared_ptr<Agent> child);
+
+				/// @brief Insert object.
+				void push_back(std::shared_ptr<Abstract::Object> object);
+
+				/// @brief Remove object.
+				void remove(std::shared_ptr<Abstract::Object> object);
 
 				Agent(const char *name = "", const char *label = "", const char *summary = "");
 				Agent(const pugi::xml_node &node);
@@ -253,10 +264,10 @@
 				/// @brief Insert Alert.
 				virtual void append_alert(const pugi::xml_node &node);
 
-				/// @brief Get property.
+				/// @brief Get property from the agent os related objects.
 				/// @param key The property name.
 				/// @param value String to update with the property value.
-				/// @return true if the property is valid.
+				/// @return true if the property was found.
 				bool getProperty(const char *key, std::string &value) const noexcept override;
 
 				/// @brief Get property.

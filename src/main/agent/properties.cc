@@ -39,7 +39,20 @@
 			return true;
 		}
 
-		return Object::getProperty(key, value);
+		if(Object::getProperty(key, value))
+			return true;
+
+		// Not found, search related objects.
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto object : objects) {
+				if(object->getProperty(key,value)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 
 	}
 

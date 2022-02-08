@@ -36,6 +36,18 @@
 
 	}
 
+	/// @brief Insert object.
+	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		objects.push_back(object);
+	}
+
+	/// @brief Remove object.
+	void Abstract::Agent::remove(std::shared_ptr<Abstract::Object> object) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		objects.remove(object);
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path, bool required, bool autoins) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
