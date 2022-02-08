@@ -80,12 +80,15 @@
 				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
 				<< endl;
 
-		} else {
+		}
+		/*
+		else {
 			timers.next = 0;
 			clog
 				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
 				<< endl;
 		}
+		*/
 
 	}
 

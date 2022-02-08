@@ -66,7 +66,7 @@
 			throw runtime_error(string{"Invalid expression '"} + key + "'");
 		}
 
-		return string(from+1,to-from);
+		return string(from,to-from);
 	}
 
 	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
@@ -92,13 +92,15 @@
 
 				from = find("${",from);
 
-			} else if(!strcasecmp(key.c_str(),"timestamp") && dynamic) {
+			} else if(dynamic && strncasecmp(key.c_str(),"timestamp",9) == 0) {
 
 				replace(
 					from,
 					(to-from)+1,
 					TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
 				);
+
+				from = find("${",from);
 
 			} else {
 

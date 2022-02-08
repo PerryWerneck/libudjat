@@ -65,7 +65,8 @@
 			this->current_state.activation = time(0);
 
 			const char * name = this->current_state.active->name();
-			if(name && *name) {
+			auto level = this->level();
+			if(name && *name && level != Udjat::unimportant) {
 
 				string value = to_string();
 
@@ -74,7 +75,7 @@
 					info()	<< "Starts with state '"
 							<< this->current_state.active->name()
 							<< "' and level '"
-							<< level()
+							<< level
 							<< "'"
 							<< endl;
 
@@ -85,7 +86,7 @@
 							<< "', state '"
 							<< this->current_state.active->name()
 							<< "' and level '"
-							<< level()
+							<< level
 							<< "'"
 							<< endl;
 

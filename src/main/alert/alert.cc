@@ -37,7 +37,7 @@
 		url = getAttribute(node,section,"url","");
 
 		if(!(url && *url)) {
-			throw runtime_error("Required attribute 'url' is missing");
+			throw runtime_error(string{"Required attribute 'url' is missing on alert '"} + name() + "'");
 		}
 
 		payload = Object::expand(node,section,node.child_value());
