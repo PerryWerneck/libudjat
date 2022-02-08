@@ -22,6 +22,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/expander.h>
+ #include <udjat/tools/object.h>
  #include <iostream>
  #include <cstdarg>
 
@@ -107,13 +108,21 @@
 
 		expand(text,[node](const char *key, string &value){
 
-			Attribute attribute(node,key,key);
+			pugi::xml_attribute attribute;
+
+			attribute = Object::getAttribute(node,key);
 			if(attribute) {
 				value = attribute.as_string();
 				return true;
 			}
 
-			// Not expanded, return fixed value.
+			attribute = Object::getAttribute(node,key,false);
+			if(attribute) {
+				value = attribute.as_string();
+				return true;
+			}
+
+			// Not expanded
 			return false;
 
 		});

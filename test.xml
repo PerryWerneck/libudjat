@@ -6,6 +6,8 @@
 	<module name='information' required='no' />
 	<module name='civetweb' required='no' />
 
+	<attribute name='default-url' value='http://localhost' />
+	
 	<agent name='intvalue' type='integer' value='0'>
 
 		<attribute name='summary' value='Summary of agent ${name}' />
@@ -20,21 +22,21 @@
 	<random name='random600' update-timer='600'>
 
 		<state name='s0' value='0' summary='Random 0'>
-			<alert name='r0.0' url='http://localhost' />
+			<alert name='r0.0' url='${default-url}' />
 		</state>
 		
-		<state name='s1' value='1' summary='Random 1' alert-type='default' url='http://localhost' />
-		<state name='s2' value='2' summary='Random 2' alert-type='default' url='http://localhost' />
-		<state name='s3' value='3' summary='Random 3' alert-type='default' url='http://localhost' />
-		<state name='s4' value='4' summary='Random 4' alert-type='default' url='http://localhost' />
-		<state name='s5' value='5' summary='Random 5' alert-type='default' url='http://localhost' />
+		<state name='s1' value='1' summary='Random 1' alert-type='default' url='${default-url}' />
+		<state name='s2' value='2' summary='Random 2' alert-type='default' url='${default-url}' />
+		<state name='s3' value='3' summary='Random 3' alert-type='default' url='${default-url}' />
+		<state name='s4' value='4' summary='Random 4' alert-type='default' url='${default-url}' />
+		<state name='s5' value='5' summary='Random 5' alert-type='default' url='${default-url}' />
 		
 	</random>
 
 	<!--
 	<random name='random10' update-timer='10'>
 
-		<attribute name='alert-url' value='http://localhost' />
+		<attribute name='default-url' value='http://localhost' />
 
 		<state name='s0' value='0' summary='Random 0' alert='yes'>
 		</state>
