@@ -122,17 +122,6 @@
 		return protocol->call(*this,HTTP::Post,payload);
 	}
 
-	const char * URL::c_str() const noexcept {
-
-		for(const char *ptr = string::c_str(); *ptr && *ptr != ':';ptr++) {
-			if(*ptr == '+') {
-				return ptr+1;
-			}
-		}
-
-		return string::c_str();
-	}
-
 	int URL::Components::portnumber() const {
 
 		for(const char *ptr = srvcname.c_str(); *ptr; ptr++) {
@@ -150,3 +139,10 @@
 
  }
 
+ namespace std {
+
+ 	string to_string(const Udjat::URL &url) {
+		return string(url);
+ 	}
+
+ }

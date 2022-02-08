@@ -6,7 +6,7 @@
 	<module name='information' required='no' />
 	<module name='civetweb' required='no' />
 
-	<attribute name='default-url' value='http://localhost' />
+	<attribute name='default-url' value='dummy+http://localhost' />
 	
 	<agent name='intvalue' type='integer' value='0'>
 

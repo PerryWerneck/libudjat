@@ -67,9 +67,6 @@
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
 
-		/// @brief Get URL.
-		const char *c_str() const noexcept;
-
 		/// @brief Do a 'get' request.
 		std::string get() const;
 
@@ -87,12 +84,10 @@
 
  namespace std {
 
-	inline string to_string(const Udjat::URL &url) {
-		return url.c_str();
-	}
+	UDJAT_API string to_string(const Udjat::URL &url);
 
 	inline ostream& operator<< (ostream& os, const Udjat::URL &url) {
-		return os << url.c_str();
+		return os << to_string(url);
 	}
 
  }
