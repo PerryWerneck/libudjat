@@ -6,6 +6,7 @@
 #include <udjat/tools/file.h>
 #include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
+#include <udjat/tools/object.h>
 
 #ifdef _WIN32
 	#define MODULE_EXT ".dll"
@@ -22,6 +23,34 @@ namespace Udjat {
 
 	void Module::load() {
 		Module::Controller::getInstance().load();
+	}
+
+	void Module::load(const pugi::xml_node &node) {
+
+		// Get libdir.
+		Application::LibDir libdir("modules");
+		if(!libdir && (node.attribute("allow-default-path").as_bool(true))) {
+			libdir.reset("udjat","modules");
+		}
+
+		if(!libdir) {
+			throw runtime_error(string{"No access to '"} + libdir + "'");
+		}
+
+		// get Module name.
+		const char *name = node.attribute("name").as_string();
+		if(!(name && *name)) {
+			throw runtime_error("'name' attribute is required");
+		}
+
+		// Get module path.
+		string path = Object::getAttribute(node, "modules", "path", libdir.c_str());
+
+		// Translate module name.
+		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
+
+		Module::Controller::getInstance().load((path + configured + MODULE_EXT).c_str(),node.attribute("required").as_bool(false));
+
 	}
 
 	void Module::load(const char *name, bool required) {

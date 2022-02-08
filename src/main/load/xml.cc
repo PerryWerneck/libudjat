@@ -60,7 +60,8 @@
 
 			// Load modules.
 			for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-				Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(false));
+				Module::load(node);
+//				Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(false));
 			}
 			url = doc.document_element().attribute("src").as_string();
 		}

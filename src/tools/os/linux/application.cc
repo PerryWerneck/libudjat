@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <errno.h>
+ #include <unistd.h>
 
  using namespace std;
 
@@ -61,10 +62,26 @@
 	}
 
 	Application::LibDir::LibDir(const char *subdir) : LibDir() {
+#ifdef DEBUG
+		append("userinfo");
+#else
 		append(program_invocation_short_name);
+#endif // DEBUG
 		append("-");
 		append(subdir);
 		append("/");
+	}
+
+	void Application::LibDir::reset(const char *application_name, const char *subdir) {
+		assign(STRINGIZE_VALUE_OF(LIBDIR) "/");
+		append(application_name);
+		append("-");
+		append(subdir);
+		append("/");
+	}
+
+	Application::LibDir::operator bool() const noexcept {
+		return (access(c_str(), R_OK) == 0);
 	}
 
 	Application::SysConfigDir::SysConfigDir() : string{"/etc/"} {

@@ -66,8 +66,15 @@
 		public:
 			LibDir();
 
+			/// @brief True if the path exists.
+			operator bool() const noexcept;
+
 			/// @brief Create path to application subdir below the system's library path.
 			LibDir(const char *subdir);
+
+			/// @brief Set application name.
+			void reset(const char *application_name, const char *subdir);
+
 		};
 
 		class UDJAT_API SysConfigDir : public std::string {

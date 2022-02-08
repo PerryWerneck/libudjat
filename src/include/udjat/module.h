@@ -51,6 +51,9 @@
 			/// @param required true if the module is required.
 			static void load(const char *name, bool required);
 
+			/// @brief Load module by XML node.
+			static void load(const pugi::xml_node &node);
+
 			/// @brief Unload modules.
 			static void unload();
 
