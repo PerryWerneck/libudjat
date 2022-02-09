@@ -30,6 +30,7 @@
 #include <functional>
 #include <mutex>
 #include <ostream>
+#include <udjat/request.h>
 
 namespace Udjat {
 
@@ -83,6 +84,9 @@ namespace Udjat {
 			inline bool isActive() const noexcept {
 				return state.active;
 			}
+
+			/// @brief List services.
+			static void getInfo(Response &response);
 
 			virtual void start();
 			virtual void stop();

@@ -61,4 +61,21 @@
 		return cerr;
 	}
 
+	void MainLoop::Service::getInfo(Response &response) {
+
+		lock_guard<mutex> lock(guard);
+		response.reset(Value::Array);
+
+		for(auto service : MainLoop::getInstance().services) {
+
+			Value &object = response.append(Value::Object);
+
+			service->module.get(object);
+
+			object["name"] = service->service_name;
+			object["active"] = service->state.active;
+
+		}
+	}
+
  }
