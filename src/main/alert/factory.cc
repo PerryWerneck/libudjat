@@ -23,20 +23,15 @@
  #include <udjat/agent.h>
  #include <udjat/state.h>
  #include <iostream>
+ #include <udjat/moduleinfo.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"Alert factory",			 					// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
+	static const Udjat::ModuleInfo moduleinfo { "Alert factory" };
 
-	Alert::Factory::Factory() : Udjat::Factory("alert",&moduleinfo) {
+	Alert::Factory::Factory() : Udjat::Factory("alert",moduleinfo) {
 	}
 
 	bool Alert::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {

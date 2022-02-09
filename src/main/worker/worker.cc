@@ -19,6 +19,7 @@
 
 #include "private.h"
 #include <udjat/tools/logger.h>
+#include <udjat/moduleinfo.h>
 
 using namespace std;
 
@@ -26,13 +27,8 @@ using namespace std;
 
 namespace Udjat {
 
-	static ModuleInfo moduleinfo;
-
-	Worker::Worker(const char *n, const ModuleInfo *i) : name(n), info(i) {
+	Worker::Worker(const char *n, const ModuleInfo &i) : name(n), info(i) {
 		Controller::getInstance().insert(this);
-	}
-
-	Worker::Worker(const char *name) : Worker(name,&moduleinfo) {
 	}
 
 	Worker::~Worker() {

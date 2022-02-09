@@ -38,19 +38,13 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
-static const Udjat::ModuleInfo moduleinfo {
-	PACKAGE_NAME,									// The module name.
-	"Test program",				 					// The module description.
-	PACKAGE_VERSION, 								// The module version.
-	PACKAGE_URL, 									// The package URL.
-	PACKAGE_BUGREPORT 								// The bugreport address.
-};
+static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
 int main(int argc, char **argv) {
 
 	class DummyProtocol : public Udjat::Protocol {
 	public:
-		DummyProtocol() : Udjat::Protocol("dummy",&moduleinfo) {
+		DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
 		}
 
 		std::string call(const URL &url, const HTTP::Method method, const char *payload) const override {
@@ -62,7 +56,7 @@ int main(int argc, char **argv) {
 
 	class RandomFactory : public Udjat::Factory {
 	public:
-		RandomFactory() : Udjat::Factory("random",&moduleinfo) {
+		RandomFactory() : Udjat::Factory("random",moduleinfo) {
 			cout << "random agent factory was created" << endl;
 			srand(time(NULL));
 		}

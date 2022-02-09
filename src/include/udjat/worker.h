@@ -34,16 +34,12 @@ namespace Udjat {
 	protected:
 
 		/// @brief Information about the worker module.
-		const ModuleInfo *info;
+		const ModuleInfo &info;
 
 	public:
-		Worker(const char *name, const ModuleInfo *info);
-		Worker(const char *name);
+		Worker(const char *name, const ModuleInfo &info);
 
-		Worker(const Quark &name, const ModuleInfo *info) : Worker(name.c_str(),info) {
-		}
-
-		Worker(const Quark &name) : Worker(name.c_str()) {
+		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
 		}
 
 		/// @brief Execute request, update response
@@ -55,7 +51,7 @@ namespace Udjat {
 
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {
-			return *this->info;
+			return this->info;
 		}
 
 		/// @brief Get Worker by name.

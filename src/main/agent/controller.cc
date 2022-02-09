@@ -23,15 +23,9 @@
 
 namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"Agent controller",			 					// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
+	static const Udjat::ModuleInfo moduleinfo{ "Agent controller" };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",&moduleinfo), Factory("agent",&moduleinfo), MainLoop::Service(moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service(moduleinfo) {
 
 		cout << "agent\tStarting controller" << endl;
 

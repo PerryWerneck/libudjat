@@ -20,6 +20,7 @@
 #pragma once
 
 #include <udjat/defs.h>
+#include <udjat/moduleinfo.h>
 
 #ifndef _WIN32
 	#include <poll.h>

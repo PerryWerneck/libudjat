@@ -35,14 +35,14 @@
 		const char * name;
 
 		/// @brief Module information.
-		const ModuleInfo *info;
+		const ModuleInfo &module;
 
 	public:
 
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;
 
-		Protocol(const char *name, const ModuleInfo *module);
+		Protocol(const char *name, const ModuleInfo &module);
 		virtual ~Protocol();
 
 		static const Protocol * find(const URL &url);

@@ -1,6 +1,7 @@
 
 
 #include "private.h"
+#include <udjat/moduleinfo.h>
 
 using namespace std;
 
@@ -79,7 +80,7 @@ namespace Udjat {
 			Value &object = response.append(Value::Object);
 
 			object["name"] = worker.second->name;
-			worker.second->info->get(object);
+			worker.second->info.get(object);
 
 		}
 

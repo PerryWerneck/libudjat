@@ -164,18 +164,12 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 
-		static const Udjat::ModuleInfo moduleinfo {
-			PACKAGE_NAME,									// The module name.
-			"State factory",			 					// The module description.
-			PACKAGE_VERSION, 								// The module version.
-			PACKAGE_URL, 									// The package URL.
-			PACKAGE_BUGREPORT 								// The bugreport address.
-		};
+		static const Udjat::ModuleInfo moduleinfo{ "State factory" };
 
 		class DefaultState : public Abstract::State, Factory {
 		public:
 
-			DefaultState() : Abstract::State(""), Factory("state", &moduleinfo) {
+			DefaultState() : Abstract::State(""), Factory("state", moduleinfo) {
 			}
 
 			~DefaultState() {

@@ -32,15 +32,22 @@
 	protected:
 
 		/// @brief Factory module info.
-		const ModuleInfo *info = nullptr;
+		const ModuleInfo &info;
 
-		/// @brief Agent type (to build agents from the 'type=' attribute on XML).
-		const char *agentType = nullptr;
+		/// @brief Types.
+		struct {
+			/// @brief Agent type (to build agents from the 'type=' attribute on XML).
+			const char *agent = nullptr;
+
+			/// @brief Alert type (to build alerts from the 'type=' attribute on XML).
+			const char *type = nullptr;
+
+		} type;
 
 	public:
 		Factory(const char *name);
-		Factory(const char *name, const ModuleInfo *info);
-		Factory(const Quark &name, const ModuleInfo *info) : Factory(name.c_str(),info) {
+		Factory(const char *name, const ModuleInfo &info);
+		Factory(const Quark &name, const ModuleInfo &info) : Factory(name.c_str(),info) {
 		}
 
 		virtual ~Factory();

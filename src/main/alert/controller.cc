@@ -37,13 +37,7 @@
 
 	mutex Abstract::Alert::Controller::guard;
 
-	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"Alert controller",			 					// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
+	static const Udjat::ModuleInfo moduleinfo{ "Alert controller" };
 
 	Abstract::Alert::Controller & Abstract::Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
@@ -51,7 +45,7 @@
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(moduleinfo), Udjat::Worker("alerts",&moduleinfo) {
+	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		MainLoop::getInstance();
 	}
