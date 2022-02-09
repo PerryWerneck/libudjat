@@ -9,6 +9,7 @@
 
  #include "private.h"
  #include <udjat/module.h>
+ #include <udjat/tools/object.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -18,10 +19,12 @@ namespace Udjat {
 
 		Object::set(root);
 
-		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
-		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
+		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 
-		time_t delay = root.attribute("delay-on-startup").as_uint(0);
+		this->update.timer = getAttribute(root,section,"update-timer",(unsigned int) this->update.timer);
+		this->update.on_demand = getAttribute(root,section,"update-on-demand",this->update.timer == 0);
+
+		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) 0);
 		if(delay)
 			this->update.next = time(nullptr) + delay;
 

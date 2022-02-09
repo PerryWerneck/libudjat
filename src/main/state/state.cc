@@ -62,8 +62,10 @@ namespace Udjat {
 
 		Object::set(node);
 
+		const char *section = node.attribute("settings-from").as_string("state-defaults");
+
 		properties.level = LevelFactory(node);
-		properties.body = getAttribute(node,"state-defaults","body",properties.body);
+		properties.body = getAttribute(node,section,"body",properties.body);
 
 		for(pugi::xml_node child : node) {
 
@@ -92,7 +94,7 @@ namespace Udjat {
 			// Insert alert using the same node.
 			try {
 
-				const char *type = getAttribute(node, "state-defaults", "alert-type", "default");
+				const char *type = getAttribute(node, section, "alert-type", "default");
 
 				if(strcasecmp(type,"default")) {
 
