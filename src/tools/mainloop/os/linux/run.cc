@@ -51,7 +51,7 @@
 		for(auto service : services) {
 			if(!service->state.active) {
 				try {
-					service->info() << "Starting '" << service->description() << " " << service->version() << "'" << endl;
+					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
 					service->start();
 					service->state.active = true;
 				} catch(const std::exception &e) {
@@ -163,7 +163,7 @@
 			Service *service = *srvc;
 			if(service->state.active) {
 				try {
-					service->info() << "Stopping '" << service->description() << " " << service->version() << "'" << endl;
+					cout << "services\tStopping '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
 					service->stop();
 				} catch(const std::exception &e) {
 					service->error() << "Error '" << e.what() << "' stopping service" << endl;

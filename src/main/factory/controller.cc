@@ -33,7 +33,7 @@ namespace Udjat {
 	void Factory::Controller::insert(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << factory->name << "\tFactory registered" << endl;
+		cout << "factories\tRegister '" << factory->name << "' (" << factory->info.description << ")" << endl;
 
 		factories.insert(make_pair(factory->name,factory));
 
@@ -54,7 +54,7 @@ namespace Udjat {
 	void Factory::Controller::remove(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << factory->name << "\tFactory unregistered" << endl;
+		cout << "factories\tUnregister '" << factory->name << "' (" << factory->info.description << ")" << endl;
 
 		auto entry = factories.find(factory->name);
 		if(entry == factories.end())
