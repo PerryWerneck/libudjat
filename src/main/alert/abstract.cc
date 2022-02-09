@@ -36,6 +36,9 @@
 		// Get section from configuration file with the defaults.
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
+		// Verbosity.
+		options.verbose = getAttribute(node,section,"verbose",options.verbose);
+
 		// Seconds to wait before first activation.
 		timers.start = getAttribute(node,section,"delay-before-start",timers.start);
 

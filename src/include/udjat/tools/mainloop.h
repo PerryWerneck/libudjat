@@ -147,6 +147,11 @@ namespace Udjat {
 		/// @brief Run mainloop.
 		void run();
 
+		/// @brief Is the mainloop active?
+		inline operator bool() const noexcept {
+			return enabled;
+		}
+
 		/// @brief Quit mainloop.
 		void quit();
 

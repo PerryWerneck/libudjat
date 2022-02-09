@@ -79,6 +79,10 @@
 				Activation();
 				virtual ~Activation();
 
+				inline bool verbose() const noexcept {
+					return alertptr->verbose();
+				}
+
 				virtual const char * c_str() const noexcept;
 
 				inline std::shared_ptr<Alert> alert() const {
@@ -97,6 +101,11 @@
 				virtual Value & getProperties(Value &value) const noexcept;
 
 			};
+
+			/// @brief Alert options.
+			struct {
+				bool verbose = true;
+			} options;
 
 			/// @brief Alert limits.
 			struct {
@@ -130,6 +139,11 @@
 			/// @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
 			Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 			virtual ~Alert();
+
+			/// @brief Is the alert in verbose mode?
+			inline bool verbose() const noexcept {
+				return options.verbose;
+			}
 
 			/// @brief Activate an alert.
 			static void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);

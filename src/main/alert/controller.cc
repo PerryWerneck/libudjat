@@ -164,16 +164,27 @@
 
 	void Abstract::Alert::Controller::activate(std::shared_ptr<Abstract::Alert> alert, const std::function<void(std::string &str)> &expander) {
 
+		// Create an activation
 		auto activation = alert->ActivationFactory(expander);
-
 		activation->alertptr = alert;
 
 		if(activation->name.empty()) {
 			activation->name = alert->name();
 		}
 
-		activation->timers.next = time(0) + alert->timers.start;
+		// Is the mainloop active?
+		if(!MainLoop::getInstance()) {
 
+			if(alert->timers.start) {
+				throw runtime_error("Can't emit a delayed alert without the default main loop");
+			}
+
+			clog << *alert << "\tWARNING: The main loop is disabled" << endl;
+
+		}
+
+		// Set timer for the first emission, add activation in the queue.
+		activation->timers.next = time(0) + alert->timers.start;
 		{
 			lock_guard<mutex> lock(guard);
 			activations.push_back(activation);
@@ -194,7 +205,9 @@
 
 			if(!activation->timers.next) {
 				// No alert or no next, remove from list.
-				cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
+				if(alert->verbose()) {
+					cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
+				}
 				return true;
 			}
 
