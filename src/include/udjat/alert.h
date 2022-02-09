@@ -75,6 +75,9 @@
 				/// @brief Alert was not send.
 				void failed() noexcept;
 
+				/// @brief Emit alert, update timers.
+				void run() noexcept;
+
 			public:
 				Activation();
 				virtual ~Activation();

@@ -25,14 +25,9 @@
 
 	mutex MainLoop::Service::guard;
 
-	static const ModuleInfo moduleinfo{"service"};
-
-	MainLoop::Service::Service(const ModuleInfo *i) : info(i) {
+	MainLoop::Service::Service(const ModuleInfo &i) : module(i) {
 		lock_guard<mutex> lock(guard);
 		MainLoop::getInstance().services.push_back(this);
-	}
-
-	MainLoop::Service::Service() : Service(&moduleinfo) {
 	}
 
 	MainLoop::Service::~Service() {
@@ -46,6 +41,21 @@
 	}
 
 	void MainLoop::Service::stop() {
+	}
+
+	std::ostream & MainLoop::Service::info() const {
+		cout << name() << "\t";
+		return cout;
+	}
+
+	std::ostream & MainLoop::Service::warning() const {
+		clog << name() << "\t";
+		return clog;
+	}
+
+	std::ostream & MainLoop::Service::error() const {
+		cerr << name() << "\t";
+		return cerr;
 	}
 
  }

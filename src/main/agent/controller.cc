@@ -31,7 +31,7 @@ namespace Udjat {
 		PACKAGE_BUGREPORT 								// The bugreport address.
 	};
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",&moduleinfo), Factory("agent",&moduleinfo), MainLoop::Service(&moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker("agent",&moduleinfo), Factory("agent",&moduleinfo), MainLoop::Service(moduleinfo) {
 
 		cout << "agent\tStarting controller" << endl;
 
@@ -206,8 +206,12 @@ namespace Udjat {
 			try {
 				root->stop();
 			} catch(const std::exception &e) {
-				cerr << root->name() << "\tError '" << e.what() << "' stopping root agent" << endl;
+				root->error() << "Error '" << e.what() << "' stopping root agent" << endl;
+			} catch(...) {
+				root->error() << "Unexpected error stopping root agent" << endl;
 			}
+
+			root.reset();
 
 		} else {
 

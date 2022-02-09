@@ -106,6 +106,27 @@
 		next();
 	}
 
+	void Abstract::Alert::Activation::run() noexcept {
+
+		try {
+			cout << name << "\tEmitting '"
+				<< c_str() << "' ("
+				<< (count.success + count.failed + 1)
+				<< ")"
+				<< endl;
+			timers.last = time(0);
+			emit();
+			success();
+		} catch(const exception &e) {
+			failed();
+			cerr << name << "\tAlert '" << c_str() << "': " << e.what() << " (" << count.failed << " fail(s))" << endl;
+		} catch(...) {
+			failed();
+			cerr << name << "\tAlert '" << c_str() << "' has failed " << count.failed << " time(s)" << endl;
+		}
+
+	}
+
 	void Abstract::Alert::Activation::next() noexcept {
 
 #ifdef DEBUG

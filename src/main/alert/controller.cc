@@ -51,7 +51,7 @@
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(&moduleinfo), Udjat::Worker("alerts",&moduleinfo) {
+	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(moduleinfo), Udjat::Worker("alerts",&moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		MainLoop::getInstance();
 	}
@@ -176,21 +176,25 @@
 		if(!MainLoop::getInstance()) {
 
 			if(alert->timers.start) {
-				throw runtime_error("Can't emit a delayed alert without the default main loop");
+				throw runtime_error("Can't emit a delayed alert, the main loop is disabled");
 			}
 
-			clog << *alert << "\tWARNING: The main loop is disabled" << endl;
+			clog << activation->name << "\tWARNING: The main loop is disabled, cant retry a failed alert" << endl;
+			activation->run();
+
+		} else {
+
+			// Set timer for the first emission, add activation in the queue.
+			activation->timers.next = time(0) + alert->timers.start;
+			{
+				lock_guard<mutex> lock(guard);
+				activations.push_back(activation);
+			}
+
+			emit();
 
 		}
 
-		// Set timer for the first emission, add activation in the queue.
-		activation->timers.next = time(0) + alert->timers.start;
-		{
-			lock_guard<mutex> lock(guard);
-			activations.push_back(activation);
-		}
-
-		emit();
 	}
 
 	void Abstract::Alert::Controller::emit() noexcept {
@@ -226,22 +230,7 @@
 
 					ThreadPool::getInstance().push([this,activation]() {
 
-						try {
-							cout << activation->name << "\tEmitting '"
-								<< activation->c_str() << "' ("
-								<< (activation->count.success + activation->count.failed + 1)
-								<< ")"
-								<< endl;
-							activation->timers.last = time(0);
-							activation->emit();
-							activation->success();
-						} catch(const exception &e) {
-							activation->failed();
-							cerr << activation->name << "\tAlert '" << activation->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
-						} catch(...) {
-							activation->failed();
-							cerr << activation->name << "\tAlert '" << activation->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
-						}
+						activation->run();
 						activation->state.running = 0;
 
 					});

@@ -147,7 +147,7 @@
 			}
 
 			virtual ~Agent() {
-				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
+				info() << "Root agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
 			}
 
 			Value & getProperties(Value &value) const noexcept override {

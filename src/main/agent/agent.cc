@@ -80,23 +80,31 @@ namespace Udjat {
 
 	void Abstract::Agent::stop() {
 
+		lock_guard<std::recursive_mutex> lock(guard);
+
+		for(auto childptr = children.rbegin(); childptr != children.rend(); childptr++) {
+
+			auto agent = *childptr;
+			try {
+
+				agent->stop();
+
+			} catch(const exception &e) {
+
+				agent->error() << "Error '" << e.what() << "' while stopping" << endl;
+
+			} catch(...) {
+
+				agent->error() << "Unexpected error while stopping" << endl;
+
+			}
+
+		}
+
 #ifdef DEBUG
 		info() << "\tStopping agent" << endl;
 #endif // DEBUG
 
-		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto child : children) {
-
-			try {
-
-				child->stop();
-
-			} catch(const exception &e) {
-
-				child->failed("Agent stop has failed",e);
-
-			}
-		}
 	}
 
 	void Abstract::Agent::head(Response &response) {

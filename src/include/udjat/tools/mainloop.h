@@ -28,6 +28,7 @@
 #include <list>
 #include <functional>
 #include <mutex>
+#include <ostream>
 
 namespace Udjat {
 
@@ -42,23 +43,44 @@ namespace Udjat {
 			/// @brief Mainloop control semaphore
 			static std::mutex guard;
 
-			/// @brief Is the service active?
-			bool active = false;
+			/// @brief Service state.
+			struct {
+				/// @brief Is the service active?
+				bool active = false;
+			} state;
 
-		protected:
-			const ModuleInfo *info;
+			/// @brief Service module.
+			const ModuleInfo &module;
 
 		public:
-			Service(const ModuleInfo *info);
-			Service();
+			Service(const Service &src) = delete;
+			Service(const Service *src) = delete;
+
+			Service(const ModuleInfo &module);
 			virtual ~Service();
 
+			inline const char * name() const noexcept {
+				return module.name;
+			}
+
+			inline const char * description() const noexcept {
+				return module.description;
+			}
+
+			inline const char * version() const noexcept {
+				return module.version;
+			}
+
 			inline bool isActive() const noexcept {
-				return active;
+				return state.active;
 			}
 
 			virtual void start();
 			virtual void stop();
+
+			std::ostream & info() const;
+			std::ostream & warning() const;
+			std::ostream & error() const;
 
 		};
 
