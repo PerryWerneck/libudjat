@@ -278,7 +278,7 @@ install-devel: \
 install-devel-linux: \
 	$(BINRLS)/$(PACKAGE_NAME).a
 
-	@$(INSTALL_PROGRAM) \
+	@$(INSTALL_DATA) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
 		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.static.a
 		

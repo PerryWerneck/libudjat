@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <cstring>
 
  using namespace std;
 
@@ -27,6 +28,8 @@
 
 	MainLoop::Service::Service(const ModuleInfo &i) : module(i) {
 		lock_guard<mutex> lock(guard);
+		const char *ptr = strrchr(module.name,'-');
+		service_name = (ptr ? ptr+1 : module.name);
 		MainLoop::getInstance().services.push_back(this);
 	}
 

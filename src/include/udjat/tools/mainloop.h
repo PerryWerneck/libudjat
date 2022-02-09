@@ -53,6 +53,14 @@ namespace Udjat {
 			/// @brief Service module.
 			const ModuleInfo &module;
 
+		protected:
+			/// @brief Service name.
+#ifdef PACKAGE_NAME
+			const char *service_name = PACKAGE_NAME;
+#else
+			const char *service_name = "service";
+#endif // PACKAGE_NAME
+
 		public:
 			Service(const Service &src) = delete;
 			Service(const Service *src) = delete;
@@ -60,8 +68,8 @@ namespace Udjat {
 			Service(const ModuleInfo &module);
 			virtual ~Service();
 
-			inline const char * name() const noexcept {
-				return module.name;
+			const char * name() const noexcept {
+				return service_name;
 			}
 
 			inline const char * description() const noexcept {
