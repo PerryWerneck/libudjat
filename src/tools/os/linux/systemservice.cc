@@ -70,7 +70,8 @@
 
 	SystemService::~SystemService() {
 		if(instance == this) {
-			cerr << Application::Name() << "\tSystem service destroyed without deinitialization" << endl;
+			deinit();
+			instance = nullptr;
 		}
 	}
 
