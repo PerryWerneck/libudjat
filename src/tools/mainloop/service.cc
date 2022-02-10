@@ -28,16 +28,18 @@
 
 	MainLoop::Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
 		lock_guard<mutex> lock(guard);
+		if(!service_name) {
+			service_name = strrchr(module.name,'-');
+			if(service_name) {
+				service_name++;
+			} else {
+				service_name = module.name;
+			}
+		}
 		MainLoop::getInstance().services.push_back(this);
 	}
 
-	MainLoop::Service::Service(const ModuleInfo &i) : module(i), service_name(module.name) {
-		lock_guard<mutex> lock(guard);
-		const char *ptr = strrchr(service_name,'-');
-		if(ptr) {
-			service_name = (ptr+1);
-		}
-		MainLoop::getInstance().services.push_back(this);
+	MainLoop::Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
 	}
 
 	MainLoop::Service::~Service() {

@@ -45,7 +45,7 @@
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(moduleinfo), Udjat::Worker("alerts",moduleinfo) {
+	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		MainLoop::getInstance();
 	}

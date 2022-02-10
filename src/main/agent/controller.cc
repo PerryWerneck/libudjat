@@ -25,7 +25,7 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ "Agent controller" };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service(moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
 
 		cout << "agent\tStarting controller" << endl;
 
