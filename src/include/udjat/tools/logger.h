@@ -4,16 +4,71 @@
 
 	#include <udjat/defs.h>
 	#include <udjat/tools/quark.h>
-	#include <vector>
+	//#include <vector>
 	#include <string>
 	#include <iostream>
+	#include <mutex>
 
 	namespace Udjat {
 
 		/// @brief Manage log files.
 		/// Reference: https://www.youtube.com/watch?v=IdM0Z2a4fjU
 		class UDJAT_API Logger {
+		public:
+			enum Level : uint8_t {
+				Info,
+				Warning,
+				Error
+			};
+
+		private:
+
+			static std::mutex guard;
+
+			class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
+			private:
+				class Buffer : public std::string {
+				private:
+					Buffer() : std::string() {
+					}
+
+				public:
+					Buffer(const Buffer &src) = delete;
+					Buffer(const Buffer *src) = delete;
+
+					static Buffer & getInstance(Level id);
+					bool push_back(int c);
+
+				};
+
+
+				/// @brief The buffer id.
+				Level id = Info;
+
+				/// @brief Send output to console?
+				bool console = true;
+
+				void write(int fd, const std::string &str);
+				void write(Buffer &buffer);
+
+			protected:
+
+				/// @brief Writes characters to the associated file from the put area
+				int sync() override;
+
+				/// @brief Writes characters to the associated output sequence from the put area.
+				int overflow(int c) override;
+
+			public:
+				Writer(Logger::Level i, bool c) : id(i), console(c) {
+				}
+
+			};
+
 		protected:
+
+			static Level level;
+
 			struct Properties {
 				const char * name;	///< @brief Object name.
 
@@ -23,12 +78,8 @@
 			} properties;
 
 		public:
-			enum Type : uint8_t {
-				Info,
-				Warning,
-				Error,
-				Debug
-			};
+
+			static Level LevelFactory(const char *name) noexcept;
 
 			/// @brief Log message formatter.
 			class UDJAT_API Message : public std::string {
@@ -67,18 +118,15 @@
 		public:
 
 			/// @brief Redirect std::cout, std::clog and std::cerr to log file.
-			/// @param filename The log file name.
 			/// @param console If true send log output to standard out.
 #ifdef DEBUG
-			static void redirect(const char *filename = nullptr, bool console = true);
+			static void redirect(bool console = true);
 #else
-			static void redirect(const char *filename = nullptr, bool console = false);
+			static void redirect(bool console = false);
 #endif // DEBUG
 
 			constexpr Logger(const char *name = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : properties(name) {
 			}
-
-			~Logger();
 
 			void set(const pugi::xml_node &name);
 

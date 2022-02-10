@@ -13,37 +13,6 @@ using namespace std;
 namespace Udjat {
 
 	//
-	// @brief Log buffer
-	//
-	class Buffer : public std::string {
-	public:
-		Buffer(const Buffer &src) = delete;
-		Buffer(const Buffer *src) = delete;
-
-		Buffer() : std::string() {
-		}
-
-		bool push_back(int c) {
-
-			if(c == EOF || c == '\n') {
-				return true;
-			}
-
-			if(c >= ' ' || c == '\t') {
-				std::string::push_back(c);
-			}
-
-			return false;
-		}
-
-	};
-
-	static Buffer & getInstance(uint8_t id) {
-		static Buffer instances[3];
-		return instances[id];
-	}
-
-	//
 	// Syslog writer
 	//
 	class SysWriter {
@@ -75,204 +44,103 @@ namespace Udjat {
 		return instance;
 	}
 
-	//
-	// Logger
-	//
-	Logger::~Logger() {
-	}
+	void Logger::Writer::write(Buffer &buffer) {
 
-	Logger::Message & Logger::Message::append(const char *value) {
+		// Remove spaces
+		size_t len = buffer.size();
+		while(len--) {
 
-		size_t from = find("{");
-		if(from == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
+			if(isspace(buffer[len])) {
+				buffer[len] = 0;
+			} else {
+				break;
+			}
 		}
 
-		size_t to = find("}",from);
-		if(to == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
+		buffer.resize(strlen(buffer.c_str()));
+
+		if(buffer.empty()) {
+			return;
 		}
 
-		replace(from,(to-from)+1,value);
+		// Get '\t' position.
+		auto pos = buffer.find("\t");
 
-		return *this;
-	}
+		// If enable write console output.
+		if(console) {
 
-	Logger::Message & Logger::Message::append(const std::exception &e) {
-		return append(e.what());
-	}
+			// Write current time.
+			{
+				time_t t = time(0);
+				struct tm tm;
+				localtime_r(&t,&tm);
 
-	void Logger::set(const pugi::xml_node &node) {
-		auto attribute = node.attribute("name");
-		if(attribute)
-			properties.name = Quark(attribute.as_string(this->properties.name)).c_str();
-	}
+				char buffer[80];
+				memset(buffer,0,sizeof(buffer));
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Logger::redirect(const char *filename, bool console) {
+				size_t len = strftime(buffer, 79, "%x %X", &tm);
 
-		static std::mutex guard;
-
-		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
-		private:
-
-			/// @brief The buffer id.
-			uint8_t id;
-
-			/// @brief Send output to console?
-			bool console;
-
-			void write(int fd, const std::string &str) {
-
-				size_t bytes = str.size();
-				const char *ptr = str.c_str();
-
-				while(bytes > 0) {
-
-					ssize_t sz = ::write(fd,ptr,bytes);
-					if(sz < 0)
-						return;
-					bytes -= sz;
-					ptr += sz;
-
+				if(len) {
+					write(1,buffer);
+				} else {
+					write(1,"--/--/-- --:--:--");
 				}
 
+				write(1," ");
 			}
 
-			void write(Buffer &buffer) {
+			// Write module name & message
+			char module[12];
+			memset(module,' ',sizeof(module));
 
-				// Remove spaces
-				size_t len = buffer.size();
-				while(len--) {
+			if(pos == string::npos) {
 
-					if(isspace(buffer[len])) {
-						buffer[len] = 0;
-					} else {
-						break;
+				module[sizeof(module)-1] = 0;
+				write(1,module);
+				write(1," ");
+				write(1,buffer);
+
+			} else {
+
+				strncpy(module,buffer.c_str(),min(sizeof(module),pos));
+				for(size_t ix = 0; ix < sizeof(module); ix++) {
+					if(module[ix] < ' ') {
+						module[ix] = ' ';
 					}
 				}
+				module[sizeof(module)-1] = 0;
+				write(1,module);
+				write(1," ");
+				write(1,buffer.c_str()+pos+1);
+			}
 
-				buffer.resize(strlen(buffer.c_str()));
+			write(1,"\n");
+			fsync(1);
+		}
 
-				if(buffer.empty()) {
-					return;
+		{
+			size_t length = buffer.size()+2;
+			char tmp[length+1];
+			size_t ix = 0;
+			for(const char *ptr = buffer.c_str(); *ptr && ix < length; ptr++) {
+				if(*ptr == '\t') {
+					tmp[ix++] = ':';
+					tmp[ix++] = ' ';
+				} else if(*ptr < ' ') {
+					tmp[ix++] = '?';
+				} else {
+					tmp[ix++] = *ptr;
 				}
-
-				// Get '\t' position.
-				auto pos = buffer.find("\t");
-
-				// If enable write console output.
-				if(console) {
-
-					// Write current time.
-					{
-						time_t t = time(0);
-						struct tm tm;
-						localtime_r(&t,&tm);
-
-						char buffer[80];
-						memset(buffer,0,sizeof(buffer));
-
-						size_t len = strftime(buffer, 79, "%x %X", &tm);
-
-						if(len) {
-							write(1,buffer);
-						} else {
-							write(1,"--/--/-- --:--:--");
-						}
-
-						write(1," ");
-					}
-
-					// Write module name & message
-					char module[12];
-					memset(module,' ',sizeof(module));
-
-					if(pos == string::npos) {
-
-						module[sizeof(module)-1] = 0;
-						write(1,module);
-						write(1," ");
-						write(1,buffer);
-
-					} else {
-
-						strncpy(module,buffer.c_str(),min(sizeof(module),pos));
-						for(size_t ix = 0; ix < sizeof(module); ix++) {
-							if(module[ix] < ' ') {
-								module[ix] = ' ';
-							}
-						}
-						module[sizeof(module)-1] = 0;
-						write(1,module);
-						write(1," ");
-						write(1,buffer.c_str()+pos+1);
-					}
-
-					write(1,"\n");
-					fsync(1);
-				}
-
-				{
-					size_t length = buffer.size()+2;
-					char tmp[length+1];
-					size_t ix = 0;
-					for(const char *ptr = buffer.c_str(); *ptr && ix < length; ptr++) {
-						if(*ptr == '\t') {
-							tmp[ix++] = ':';
-							tmp[ix++] = ' ';
-						} else if(*ptr < ' ') {
-							tmp[ix++] = '?';
-						} else {
-							tmp[ix++] = *ptr;
-						}
-					}
-					tmp[ix] = 0;
-
-					SysWriter::getInstance().write(id,tmp);
-				}
-
-				buffer.erase();
-
 			}
+			tmp[ix] = 0;
 
-		protected:
+			SysWriter::getInstance().write(id,tmp);
+		}
 
-			/// @brief Writes characters to the associated file from the put area
-			int sync() override {
-				return 0;
-			}
-
-			/// @brief Writes characters to the associated output sequence from the put area.
-			int overflow(int c) override {
-
-				lock_guard<std::mutex> lock(guard);
-				Buffer & buffer = getInstance(id);
-
-				if(buffer.push_back(c)) {
-					write(buffer);
-				}
-
-				return c;
-
-			}
-
-		public:
-			Writer(uint8_t i, bool c) : id(i), console(c) {
-			}
-
-			~Writer() {
-			}
-
-		};
-
-		std::cout.rdbuf(new Writer(0,console));
-		std::clog.rdbuf(new Writer(1,console));
-		std::cerr.rdbuf(new Writer(2,console));
+		buffer.erase();
 
 	}
-	#pragma GCC diagnostic pop
+
 
 }
 

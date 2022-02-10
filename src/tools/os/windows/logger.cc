@@ -39,33 +39,6 @@ namespace Udjat {
 	Logger::~Logger() {
 	}
 
-	Logger::Message & Logger::Message::append(const char *value) {
-
-		size_t from = find("{");
-		if(from == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
-		}
-
-		size_t to = find("}",from);
-		if(to == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
-		}
-
-		replace(from,(to-from)+1,value);
-
-		return *this;
-	}
-
-	Logger::Message & Logger::Message::append(const std::exception &e) {
-		return append(e.what());
-	}
-
-	void Logger::set(const pugi::xml_node &node) {
-		auto attribute = node.attribute("name");
-		if(attribute)
-			properties.name = Quark(attribute.as_string(properties.name)).c_str();
-	}
-
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Logger::redirect(const char *filename, bool console) {

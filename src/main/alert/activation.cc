@@ -77,15 +77,16 @@
 		if(rst) {
 			state.restarting = true;
 			timers.next = time(0) + rst;
-			LogFactory(alertptr->restart.failed ? Udjat::error : Udjat::ready)
-				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
-				<< endl;
-
+			if(alertptr->options.verbose) {
+				LogFactory(count.failed ? Udjat::error : Udjat::ready)
+					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
+					<< endl;
+			}
 		}
 		else {
 			timers.next = 0;
 			if(alertptr->options.verbose) {
-				LogFactory(alertptr->restart.failed ? Udjat::error : Udjat::ready)
+				LogFactory(count.failed ? Udjat::error : Udjat::ready)
 					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
 					<< endl;
 			}
