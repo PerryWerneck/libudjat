@@ -127,7 +127,7 @@ namespace Udjat {
 				<< this->current_state.active
 				<< "' to '"
 				<< state
-				<< "(" << level << ")"
+				<< "' (" << level << ")"
 				<< endl;
 
 		} else {
@@ -138,7 +138,7 @@ namespace Udjat {
 				<< this->current_state.active->summary()
 				<< "' to '"
 				<< state->summary()
-				<< "(" << level << ")"
+				<< "' (" << level << ")"
 				<< endl;
 		}
 
