@@ -42,6 +42,7 @@
 			~Registry();
 
 			std::string get(const char *name, const char *def) const;
+			DWORD get(const char *name, DWORD def) const;
 
 		};
 

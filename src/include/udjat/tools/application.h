@@ -47,6 +47,7 @@
 		class UDJAT_API LogDir : public std::string {
 		public:
 			LogDir();
+
 		};
 #endif // _WIN32
 

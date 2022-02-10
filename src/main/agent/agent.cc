@@ -102,7 +102,7 @@ namespace Udjat {
 		}
 
 #ifdef DEBUG
-		info() << "\tStopping agent" << endl;
+		info() << "Stopping agent" << endl;
 #endif // DEBUG
 
 	}

@@ -345,7 +345,7 @@
 						return uninstall();
 
 					case 'f':	// Run in foreground.
-						Logger::redirect(nullptr,true);
+						Logger::redirect(true);
 						cout << appname << "\tStarting in application mode" << endl;
 						init();
 						rc = run();

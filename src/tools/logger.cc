@@ -21,7 +21,11 @@
  #include <udjat/tools/logger.h>
  #include <cstring>
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <fcntl.h>
+ #else
 	#include <unistd.h>
  #endif // _WIN32
 
@@ -66,6 +70,7 @@
 
 		if(buffer.push_back(c)) {
 			write(buffer);
+			buffer.clear();
 		}
 
 		return c;
@@ -87,7 +92,7 @@
 
 	bool Logger::Writer::Buffer::push_back(int c) {
 
-		if(c == EOF || c == '\n') {
+		if(c == EOF || c == '\n' || c == '\r') {
 			return true;
 		}
 
