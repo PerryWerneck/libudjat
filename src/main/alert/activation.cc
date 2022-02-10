@@ -22,6 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/alert.h>
+ #include <udjat/state.h>
 
  namespace Udjat {
 
@@ -76,19 +77,19 @@
 		if(rst) {
 			state.restarting = true;
 			timers.next = time(0) + rst;
-			clog
+			LogFactory(alertptr->restart.failed ? Udjat::error : Udjat::ready)
 				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
 				<< endl;
 
 		}
-		/*
 		else {
 			timers.next = 0;
-			clog
-				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
-				<< endl;
+			if(alertptr->options.verbose) {
+				LogFactory(alertptr->restart.failed ? Udjat::error : Udjat::ready)
+					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
+					<< endl;
+			}
 		}
-		*/
 
 	}
 

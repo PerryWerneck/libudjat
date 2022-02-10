@@ -26,10 +26,17 @@
 
 	mutex MainLoop::Service::guard;
 
-	MainLoop::Service::Service(const ModuleInfo &i) : module(i) {
+	MainLoop::Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
 		lock_guard<mutex> lock(guard);
-		const char *ptr = strrchr(module.name,'-');
-		service_name = (ptr ? ptr+1 : module.name);
+		MainLoop::getInstance().services.push_back(this);
+	}
+
+	MainLoop::Service::Service(const ModuleInfo &i) : module(i), service_name(module.name) {
+		lock_guard<mutex> lock(guard);
+		const char *ptr = strrchr(service_name,'-');
+		if(ptr) {
+			service_name = (ptr+1);
+		}
 		MainLoop::getInstance().services.push_back(this);
 	}
 
@@ -70,10 +77,11 @@
 
 			Value &object = response.append(Value::Object);
 
-			service->module.get(object);
-
 			object["name"] = service->service_name;
 			object["active"] = service->state.active;
+
+			service->module.get(object);
+
 
 		}
 	}

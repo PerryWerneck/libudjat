@@ -56,16 +56,13 @@ namespace Udjat {
 
 		protected:
 			/// @brief Service name.
-#ifdef PACKAGE_NAME
-			const char *service_name = PACKAGE_NAME;
-#else
 			const char *service_name = "service";
-#endif // PACKAGE_NAME
 
 		public:
 			Service(const Service &src) = delete;
 			Service(const Service *src) = delete;
 
+			Service(const char *name, const ModuleInfo &module);
 			Service(const ModuleInfo &module);
 			virtual ~Service();
 
