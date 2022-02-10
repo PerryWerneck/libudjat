@@ -29,7 +29,7 @@
  using namespace std;
 
  // Disable debug messages for this module.
- #ifdef DEBUG 
+ #ifdef DEBUG
 	#undef DEBUG
  #endif // DEBUG
 
@@ -37,15 +37,9 @@
 
  namespace Udjat {
 
-	static const ModuleInfo ThreadPoolInfo {
-		PACKAGE_NAME,					// The module name.
-		"Thread Pool for WIN32",	 	// The module description.
-		PACKAGE_VERSION, 				// The module version.
-		PACKAGE_URL, 					// The package URL.
-		PACKAGE_BUGREPORT 				// The bugreport address.
-	};
+	static const ModuleInfo ThreadPoolInfo {"Thread Pool for WIN32"};
 
-	ThreadPool::Controller::Controller() : Service(&ThreadPoolInfo) {
+	ThreadPool::Controller::Controller() : Service(ThreadPoolInfo) {
 	}
 
 	void ThreadPool::Controller::stop() {

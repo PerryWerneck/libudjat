@@ -42,6 +42,21 @@
 		lock_guard<mutex> lock(Service::guard);
 		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
 		for(auto service : services) {
+			if(!service->state.active) {
+				try {
+					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
+					service->start();
+					service->state.active = true;
+				} catch(const std::exception &e) {
+					service->error() << "Error '" << e.what() << "' starting service" << endl;
+				} catch(...) {
+					service->error() << "Unexpected error starting service" << endl;
+				}
+			}
+		}
+
+		/*
+		for(auto service : services) {
 			if(!service->active) {
 				try {
 					cout << "service\tStarting '" << service->info->description << " " << service->info->version << "'" << endl;
@@ -52,6 +67,7 @@
 				}
 			}
 		}
+		*/
 	}
 
 	enabled = true;

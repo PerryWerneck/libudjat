@@ -214,7 +214,7 @@
 		// Get controller to initialize it.
 		Abstract::Agent::Controller::getInstance();
 
-		char hostname[255];
+		char hostname[256];
 		if(gethostname(hostname, 255)) {
 			cerr << "agent\tError '" << strerror(errno) << "' getting hostname" << endl;
 			strncpy(hostname,Application::Name().c_str(),255);

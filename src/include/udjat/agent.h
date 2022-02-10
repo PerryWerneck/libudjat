@@ -51,13 +51,13 @@
 
 	namespace Udjat {
 
-		void parse_value(const pugi::xml_node &node, int &value);
-		void parse_value(const pugi::xml_node &node, unsigned int &value);
-		void parse_value(const pugi::xml_node &node, unsigned short &value);
-		void parse_value(const pugi::xml_node &node, float &value);
-		void parse_value(const pugi::xml_node &node, double &value);
-		void parse_value(const pugi::xml_node &node, unsigned long &value);
-		void parse_value(const pugi::xml_node &node, long &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, int &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned int &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned short &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, float &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, double &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned long &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, long &value);
 
 		namespace Abstract {
 
