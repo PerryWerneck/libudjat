@@ -32,13 +32,9 @@ namespace Udjat {
 
 	void Factory::Controller::insert(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
-
 		cout << "factories\tRegister '" << factory->name << "' (" << factory->info.description << ")" << endl;
-
 		factories.insert(make_pair(factory->name,factory));
-
 	}
-
 
 	const Factory * Factory::Controller::find(const char *name) {
 		lock_guard<recursive_mutex> lock(guard);

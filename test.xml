@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<config src='http://127.0.0.1/~perry/libudjat.xml' update-timer='120'>
+<config>
 
-	<module name='http' required='no' />
 	<module name='information' required='no' />
+	<module name='http' required='no' />
+
+	<!--
 	<module name='civetweb' required='no' />
+	-->
 
 	<attribute name='default-url' value='http://localhost' />
 	

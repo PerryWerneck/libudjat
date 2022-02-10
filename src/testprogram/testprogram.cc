@@ -168,6 +168,7 @@ int main(int argc, char **argv) {
 
 	};
 
+	/*
 	Config::for_each("service-events",[](const char *key, const char *value){
 		cout << "config\t" << key << "='" << value << "'" << endl;
 		return true;
@@ -182,6 +183,7 @@ int main(int argc, char **argv) {
 		tempfile.save();
 
 	}
+	*/
 
 	return Service().run(argc,argv);
 
