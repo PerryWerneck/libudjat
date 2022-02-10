@@ -37,13 +37,7 @@
 
 	mutex Abstract::Alert::Controller::guard;
 
-	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"Alert controller",			 					// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
+	static const Udjat::ModuleInfo moduleinfo{ "Alert controller" };
 
 	Abstract::Alert::Controller & Abstract::Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
@@ -51,7 +45,7 @@
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service(&moduleinfo), Udjat::Worker("alerts",&moduleinfo) {
+	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		MainLoop::getInstance();
 	}
@@ -164,22 +158,37 @@
 
 	void Abstract::Alert::Controller::activate(std::shared_ptr<Abstract::Alert> alert, const std::function<void(std::string &str)> &expander) {
 
+		// Create an activation
 		auto activation = alert->ActivationFactory(expander);
-
 		activation->alertptr = alert;
 
 		if(activation->name.empty()) {
-			activation->name = alert->name;
+			activation->name = alert->name();
 		}
 
-		activation->timers.next = time(0) + alert->timers.start;
+		// Is the mainloop active?
+		if(!MainLoop::getInstance()) {
 
-		{
-			lock_guard<mutex> lock(guard);
-			activations.push_back(activation);
+			if(alert->timers.start) {
+				throw runtime_error("Can't emit a delayed alert, the main loop is disabled");
+			}
+
+			clog << activation->name << "\tWARNING: The main loop is disabled, cant retry a failed alert" << endl;
+			activation->run();
+
+		} else {
+
+			// Set timer for the first emission, add activation in the queue.
+			activation->timers.next = time(0) + alert->timers.start;
+			{
+				lock_guard<mutex> lock(guard);
+				activations.push_back(activation);
+			}
+
+			emit();
+
 		}
 
-		emit();
 	}
 
 	void Abstract::Alert::Controller::emit() noexcept {
@@ -194,7 +203,9 @@
 
 			if(!activation->timers.next) {
 				// No alert or no next, remove from list.
-				cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
+				if(alert->verbose()) {
+					cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
+				}
 				return true;
 			}
 
@@ -213,22 +224,7 @@
 
 					ThreadPool::getInstance().push([this,activation]() {
 
-						try {
-							cout << activation->name << "\tEmitting '"
-								<< activation->c_str() << "' ("
-								<< (activation->count.success + activation->count.failed + 1)
-								<< ")"
-								<< endl;
-							activation->timers.last = time(0);
-							activation->emit();
-							activation->success();
-						} catch(const exception &e) {
-							activation->failed();
-							cerr << activation->name << "\tAlert '" << activation->c_str() << "': " << e.what() << " (" << activation->count.failed << " fail(s))" << endl;
-						} catch(...) {
-							activation->failed();
-							cerr << activation->name << "\tAlert '" << activation->c_str() << "' has failed " << activation->count.failed << " time(s)" << endl;
-						}
+						activation->run();
 						activation->state.running = 0;
 
 					});
@@ -249,7 +245,7 @@
 
 		lock_guard<mutex> lock(guard);
 		for(auto activation : activations) {
-			activation->get(response.append(Value::Object));
+			activation->getProperties(response.append(Value::Object));
 		}
 
 		return true;

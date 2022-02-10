@@ -145,40 +145,7 @@ namespace Udjat {
 	class Alert;
 	class Value;
 	class TimeStamp;
-
-	/// @brief Module information data.
-	struct UDJAT_API ModuleInfo {
-
-		/// @brief The module name.
-		const char *name;
-
-		/// @brief The module description.
-		const char *description;
-
-		/// @brief The module version.
-		const char *version;
-
-		/// @brief The bugreport address.
-		const char *bugreport;
-
-		/// @brief The package URL.
-		const char *url;
-
-		/// @brief The file path.
-		// const char *path = nullptr;
-
-// https://isocpp.org/std/standing-documents/sd-6-sg10-feature-test-recommendations
-#ifdef __cpp_constexpr
-		constexpr ModuleInfo(const char *n = "", const char *d = "", const char *v = "", const char *u="", const char *b= "") :
-			name(n), description(d), version(v), bugreport(b), url(u) { }
-#else
-		ModuleInfo(const char *n = "", const char *d = "", const char *v = "", const char *u="", const char *b= "") :
-			name(n), description(d), version(v), bugreport(b), url(u) { }
-#endif
-
-		Udjat::Value & get(Udjat::Value &value) const;
-
-	};
+	struct ModuleInfo;
 
 }
 

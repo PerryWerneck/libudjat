@@ -66,7 +66,7 @@ namespace Udjat {
 			Value &object = response.append(Value::Object);
 
 			object["name"] = module->name;
-			module->info->get(object);
+			module->info.get(object);
 
 			void (*getInfo)(Value &object) = NULL;
 

@@ -38,26 +38,25 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
-static const Udjat::ModuleInfo moduleinfo {
-	PACKAGE_NAME,									// The module name.
-	"Test program",				 					// The module description.
-	PACKAGE_VERSION, 								// The module version.
-	PACKAGE_URL, 									// The package URL.
-	PACKAGE_BUGREPORT 								// The bugreport address.
-};
+static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
 int main(int argc, char **argv) {
 
 	class DummyProtocol : public Udjat::Protocol {
 	public:
-		DummyProtocol() : Udjat::Protocol("dummy",&moduleinfo) {
+		DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
+		}
+
+		std::string call(const URL &url, const HTTP::Method method, const char *payload) const override {
+			cout << "dummy\t" << url << endl;
+			return "";
 		}
 
 	};
 
 	class RandomFactory : public Udjat::Factory {
 	public:
-		RandomFactory() : Udjat::Factory("random",&moduleinfo) {
+		RandomFactory() : Udjat::Factory("random",moduleinfo) {
 			cout << "random agent factory was created" << endl;
 			srand(time(NULL));
 		}
@@ -69,7 +68,7 @@ int main(int argc, char **argv) {
 				unsigned int limit = 5;
 
 			public:
-				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>() {
+				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
 					cout << "Creating random Agent" << endl;
 					load(node);
 				}
@@ -109,14 +108,17 @@ int main(int argc, char **argv) {
 					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
 				}
 				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
-				/*
-				if(root) {
-					cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
-					for(auto agent : *root) {
-						cout << "http://localhost:8989/api/1.0/agent/" << agent->getName() << ".xml" << endl;
+
+				{
+					auto root = Udjat::Abstract::Agent::root();
+					if(root) {
+						cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+						for(auto agent : *root) {
+							cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".xml" << endl;
+						}
 					}
 				}
-				*/
+
 			}
 
 
@@ -124,7 +126,7 @@ int main(int argc, char **argv) {
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
 
-				cout << "Creating event " << hex << ((unsigned long long) hEvent) << endl;
+				cout << "Creating event " << hex << ((unsigned long long) hEvent)<< dec << endl;
 
 				MainLoop::getInstance().insert(hEvent,[](HANDLE handle, bool abandoned){
 
@@ -138,7 +140,7 @@ int main(int argc, char **argv) {
 
 				MainLoop::getInstance().insert(this,1000,[hEvent]() {
 					static int counter = 5;
-					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << " (" << counter << ")" << endl;
+					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << dec << " (" << counter << ")" << endl;
 					if(--counter > 0) {
 						SetEvent(hEvent);
 					} else {
@@ -166,6 +168,7 @@ int main(int argc, char **argv) {
 
 	};
 
+	/*
 	Config::for_each("service-events",[](const char *key, const char *value){
 		cout << "config\t" << key << "='" << value << "'" << endl;
 		return true;
@@ -180,9 +183,8 @@ int main(int argc, char **argv) {
 		tempfile.save();
 
 	}
-
+	*/
 
 	return Service().run(argc,argv);
-
 
 }

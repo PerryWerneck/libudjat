@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/object.h>
  #include <memory>
 
  namespace Udjat {
@@ -29,7 +30,7 @@
 	namespace Abstract {
 
 		/// @brief Abstract alert.
-		class UDJAT_API Alert {
+		class UDJAT_API Alert : public NamedObject {
 		private:
 			class Controller;
 			friend class Controller;
@@ -74,9 +75,16 @@
 				/// @brief Alert was not send.
 				void failed() noexcept;
 
+				/// @brief Emit alert, update timers.
+				void run() noexcept;
+
 			public:
 				Activation();
 				virtual ~Activation();
+
+				inline bool verbose() const noexcept {
+					return alertptr->verbose();
+				}
 
 				virtual const char * c_str() const noexcept;
 
@@ -93,31 +101,32 @@
 				virtual void emit() const;
 
 				/// @brief Get activation info.
-				virtual void get(Udjat::Value &response) const noexcept;
+				virtual Value & getProperties(Value &value) const noexcept;
 
 			};
 
-
-			/// @brief Alert name.
-			const char *name = "alert";
+			/// @brief Alert options.
+			struct {
+				bool verbose = true;
+			} options;
 
 			/// @brief Alert limits.
 			struct {
-				size_t min = 1;				///< @brief How many success emissions after deactivation or sleep?
-				size_t max = 3;				///< @brief How many retries (success+fails) after deactivation or sleep?
+				unsigned int min = 1;			///< @brief How many success emissions after deactivation or sleep?
+				unsigned int max = 3;			///< @brief How many retries (success+fails) after deactivation or sleep?
 			} retry;
 
 			/// @brief Alert timers.
 			struct {
-				time_t start = 0;			///< @brief Seconds to wait before first activation.
-				time_t interval = 60;		///< @brief Seconds to wait on every try.
-				time_t busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
+				unsigned int start = 0;			///< @brief Seconds to wait before first activation.
+				unsigned int interval = 60;		///< @brief Seconds to wait on every try.
+				unsigned int busy = 60;			///< @brief Seconds to wait if the alert is busy when activated.
 			} timers;
 
 			/// @brief Restart timers.
 			struct {
-				time_t failed = 14400;		///< @brief Seconds to wait for reactivate after a failed activation.
-				time_t success = 0;			///< @brief Seconds to wait for reactivate after a successful activation.
+				unsigned int failed = 14400;	///< @brief Seconds to wait for reactivate after a failed activation.
+				unsigned int success = 0;		///< @brief Seconds to wait for reactivate after a successful activation.
 			} restart;
 
 			/// @brief Create and activation object for this alert.
@@ -125,7 +134,7 @@
 			virtual std::shared_ptr<Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const = 0;
 
 		public:
-			constexpr Alert(const char *n) : name(n) {
+			constexpr Alert(const char *name) : NamedObject(name) {
 			}
 
 			/// @brief Create alert for xml description.
@@ -134,8 +143,9 @@
 			Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 			virtual ~Alert();
 
-			inline const char * c_str() const noexcept {
-				return name;
+			/// @brief Is the alert in verbose mode?
+			inline bool verbose() const noexcept {
+				return options.verbose;
 			}
 
 			/// @brief Activate an alert.
@@ -148,7 +158,7 @@
 			void deactivate();
 
 			/// @brief Get alert info.
-			virtual void get(Udjat::Value &response) const noexcept;
+			Value & getProperties(Value &value) const noexcept override;
 
 		};
 
@@ -177,8 +187,6 @@
 
 		};
 
-		static const char * expand(const char *value, const pugi::xml_node &node, const char *section);
-
 		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const;
 
 	public:
@@ -199,7 +207,7 @@
 		static void activate(const char *name, const char *url, const char *action = "get", const char *payload = "");
 
 		/// @brief Get alert info.
-		void get(Udjat::Value &response) const noexcept override;
+		Value & getProperties(Value &value) const noexcept override;
 
 	};
 

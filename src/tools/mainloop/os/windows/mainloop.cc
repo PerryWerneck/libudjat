@@ -106,15 +106,13 @@
 			case WM_STOP:
 				cout << "MainLoop\tStopping services" << endl;
 				for(auto service : controller.services) {
-					if(service->info && service->info->name) {
-						clog << service->info->name << "\tStopping" << endl;
-					}
+					cout << "services\tStopping '" << service->name() << "'" << endl;
 					try {
 						service->stop();
 					} catch(const std::exception &e) {
-						cerr << "MainLoop\tError stopping service: " << e.what() << endl;
+						cerr << "services\tError stopping service: " << e.what() << endl;
 					} catch(...) {
-						cerr << "MainLoop\tUnexpected error stopping service" << endl;
+						cerr << "services\tUnexpected error stopping service" << endl;
 					}
 				}
 				break;

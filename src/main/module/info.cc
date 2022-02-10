@@ -20,12 +20,18 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/moduleinfo.h>
  #include <iostream>
  #include <cstdarg>
 
  using namespace std;
 
  namespace Udjat {
+
+	const ModuleInfo & ModuleInfo::getInstance() {
+		static const ModuleInfo instance{""};
+		return instance;
+	}
 
 	Value & ModuleInfo::get(Value &value) const {
 
@@ -35,7 +41,7 @@
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 
-		
+
 		return value;
 	}
 

@@ -24,7 +24,7 @@
 	void Abstract::Agent::start() {
 
 #ifdef DEBUG
-		cout << getName() << "\tStarting agent" << endl;
+		info() << "Starting agent" << endl;
 #endif // DEBUG
 
 		// Start children
@@ -46,43 +46,49 @@
 
 		// Update agent state.
 		{
-			this->state.active = stateFromValue();
-			if(!this->state.active) {
-				cerr << getName() << "\tGot an invalid state, switching to the default one" << endl;
-				this->state.active = Abstract::Agent::stateFromValue();
+			this->current_state.active = stateFromValue();
+			if(!this->current_state.active) {
+				cerr << name() << "\tGot an invalid state, switching to the default one" << endl;
+				this->current_state.active = Abstract::Agent::stateFromValue();
 			}
 
 			// Check for children state
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children) {
-					if(child->getLevel() > this->getLevel()) {
-						this->state.active = child->state.active;
+					if(child->level() > this->level()) {
+						this->current_state.active = child->current_state.active;
 					}
 				}
 			}
 
-			this->state.activation = time(0);
+			this->current_state.activation = time(0);
 
-			const char * name = this->state.active->getName();
-			if(name && *name) {
+			const char * name = this->current_state.active->name();
+			auto level = this->level();
+			if(name && *name && level != Udjat::unimportant) {
 
 				string value = to_string();
 
 				if(value.empty()) {
 
-					info("Starts with state '{}' and level '{}'",
-						this->state.active->getName(),
-						std::to_string(this->getLevel())
-					);
+					info()	<< "Starts with state '"
+							<< this->current_state.active->name()
+							<< "' and level '"
+							<< level
+							<< "'"
+							<< endl;
 
 				} else {
 
-					info("Starts with value '{}', state '{}' and level '{}'",
-						value,
-						this->state.active->getName(),
-						std::to_string(this->getLevel())
-					);
+					info()	<< "Starts with value '"
+							<< value
+							<< "', state '"
+							<< this->current_state.active->name()
+							<< "' and level '"
+							<< level
+							<< "'"
+							<< endl;
 
 				}
 

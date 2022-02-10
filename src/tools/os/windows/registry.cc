@@ -93,6 +93,25 @@
 		}
 	}
 
+	DWORD Win32::Registry::get(const char *name, DWORD def) const {
+
+		DWORD value = def;
+		unsigned long datatype;
+		unsigned long datalen = sizeof(DWORD);
+
+		if(RegQueryValueEx(hKey,name,NULL,&datatype,(LPBYTE) &value,&datalen) != ERROR_SUCCESS) {
+
+			value = def;
+
+		} else if(datatype != REG_DWORD) {
+
+			value = def;
+
+		}
+
+		return value;
+	}
+
 	std::string Win32::Registry::get(const char *name, const char *def) const {
 
 		DWORD		  cbData	= 4096;
@@ -118,14 +137,13 @@
 		}
 
 		if(dwRet == ERROR_SUCCESS) {
+
 			buffer[cbData] = 0;
 			rc.assign(buffer);
+
 		} else {
 
-			if(dwRet != ERROR_FILE_NOT_FOUND) {
-				clog << "Can't read " << name << " from registry, assuming \"" << def << "\" (error code was " << dwRet << ")" << endl;
-			}
-
+			// Cant log error because the registry is used by logwriter, just use the default.
 			rc.assign(def);
 		}
 

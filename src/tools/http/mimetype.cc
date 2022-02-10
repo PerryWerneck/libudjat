@@ -24,12 +24,13 @@
 
  using namespace std;
 
+ // https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
  static const struct {
 	const char *ext;
 	const char *str;
  } types[] = {
 
- 	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+	// 'dat' is allways the first one.
 	{ "dat",	"application/octet-stream" },
 
 	{ "json",	"application/json; charset=utf-8" },
@@ -66,19 +67,34 @@
 
  Udjat::MimeType Udjat::MimeTypeFactory(const char *str) noexcept {
 
+ 	if(!(str && *str)) {
+		cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
+		return (Udjat::MimeType) 0;
+ 	}
+
+	// First check for the name
 	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].str)) {
 			return (MimeType) ix;
 		}
  	}
 
+ 	// Then for the extension
 	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
 		if(!strcasecmp(str,types[ix].ext)) {
 			return (MimeType) ix;
 		}
  	}
 
- 	clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[MimeType::custom].str << "'" << endl;
+ 	// Again, only the length of str.
+ 	size_t length = strlen(str);
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strncasecmp(str,types[ix].str,length)) {
+			return (MimeType) ix;
+		}
+ 	}
 
- 	return MimeType::custom;
+ 	// Not found!
+ 	clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[0].str << "'" << endl;
+ 	return (Udjat::MimeType) 0;
  }

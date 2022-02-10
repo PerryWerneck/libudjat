@@ -26,14 +26,14 @@
 			void *handle;
 #endif // _WIN32
 
+			/// @brief Information about the module.
+			const ModuleInfo &info;
+
 		protected:
 
-			/// @brief Information about the module.
-			const ModuleInfo *info;
+			Module(const char *name, const ModuleInfo &info);
 
-			Module(const char *name, const ModuleInfo *info);
-
-			Module(const Quark &name, const ModuleInfo *info) : Module(name.c_str(),info) {
+			Module(const Quark &name, const ModuleInfo &info) : Module(name.c_str(),info) {
 			}
 
 		public:
@@ -50,6 +50,9 @@
 			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
 			/// @param required true if the module is required.
 			static void load(const char *name, bool required);
+
+			/// @brief Load module by XML node.
+			static void load(const pugi::xml_node &node);
 
 			/// @brief Unload modules.
 			static void unload();
@@ -75,5 +78,9 @@
 		/// @brief Deinitialize the module.
 		/// @return true if the module can be unloaded.
 		UDJAT_API bool udjat_module_deinit();
+
+		/// @brief Get informations about the module.
+		/// @param object Value to receive the informations.
+		UDJAT_API void udjat_module_info(Udjat::Value &object);
 
 	}

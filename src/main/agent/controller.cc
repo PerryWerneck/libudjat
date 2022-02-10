@@ -23,15 +23,9 @@
 
 namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"Agent controller",			 					// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
+	static const Udjat::ModuleInfo moduleinfo{ "Agent controller" };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",&moduleinfo), Factory("agent",&moduleinfo), MainLoop::Service(&moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
 
 		cout << "agent\tStarting controller" << endl;
 
@@ -61,8 +55,8 @@ namespace Udjat {
 
 			if(this->root) {
 				cout << "agent\tRemoving root agent '"
-						<< this->root->getName()
-						<< "' (" << hex << ((void *) this->root.get()) << ")"
+						<< this->root->name()
+						<< "' (" << hex << ((void *) this->root.get()) << dec << ")"
 						<< endl;
 				this->root.reset();
 			}
@@ -72,8 +66,8 @@ namespace Udjat {
 		this->root = root;
 
 		cout << "agent\tAgent '"
-				<< this->root->getName()
-				<< "' (" << hex << ((void *) root.get() ) << ") is the new root" << endl;
+				<< this->root->name()
+				<< "' (" << hex << ((void *) root.get() ) << dec << ") is the new root" << endl;
 
 	}
 
@@ -171,6 +165,10 @@ namespace Udjat {
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {
+		return root();
+	}
+
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::root() {
 		return Abstract::Agent::Controller::getInstance().get();
 	}
 
@@ -178,12 +176,12 @@ namespace Udjat {
 
 		if(root) {
 
-			clog << "agent\tStarting controller" << endl;
+			cout << "agent\tStarting controller" << endl;
 
 			try {
 				root->start();
 			} catch(const std::exception &e) {
-				root->error("Error '{}' starting root agent",e.what());;
+				cerr << root->name() << "\tError '" << e.what() << "' starting root agent" << endl;
 				return;
 			}
 
@@ -202,8 +200,12 @@ namespace Udjat {
 			try {
 				root->stop();
 			} catch(const std::exception &e) {
-				root->error("Error '{}' stopping root agent",e.what());
+				root->error() << "Error '" << e.what() << "' stopping root agent" << endl;
+			} catch(...) {
+				root->error() << "Unexpected error stopping root agent" << endl;
 			}
+
+			root.reset();
 
 		} else {
 
@@ -218,41 +220,41 @@ namespace Udjat {
 		static const struct
 		{
 			const char *type;
-			function< std::shared_ptr<Abstract::Agent>()> build;
+			function< std::shared_ptr<Abstract::Agent>(const pugi::xml_node &node)> build;
 		} builders[] = {
 
 			{
 				"integer",
-				[]() {
-					return make_shared<Udjat::Agent<int>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<int>>(node);
 				}
 
 			},
 			{
 				"int32",
-				[]() {
-					return make_shared<Udjat::Agent<int32_t>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<int32_t>>(node);
 				}
 			},
 
 			{
 				"uint32",
-				[]() {
-					return make_shared<Udjat::Agent<uint32_t>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<uint32_t>>(node);
 				}
 			},
 
 			{
 				"boolean",
-				[]() {
-					return make_shared<Udjat::Agent<bool>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<bool>>(node);
 				}
 			},
 
 			{
 				"string",
-				[]() {
-					return make_shared<Udjat::Agent<std::string>>();
+				[](const pugi::xml_node &node) {
+					return make_shared<Udjat::Agent<std::string>>(node);
 				}
 			},
 
@@ -272,7 +274,7 @@ namespace Udjat {
 		for(auto builder : builders) {
 
 			if(!strcasecmp(type,builder.type)) {
-				auto agent = builder.build();
+				auto agent = builder.build(node);
 				agent->load(node);
 				parent.insert(agent);
 				return true;
@@ -315,10 +317,7 @@ namespace Udjat {
 
 				if(agent->update.running) {
 
-					agent->warning(
-						"Update is active since {}",
-						TimeStamp(agent->update.running).to_string()
-					);
+					clog << agent->name() << "\tUpdate is active since " << TimeStamp(agent->update.running) << endl;
 
 					if(agent->update.timer) {
 						agent->update.next = now + agent->update.timer;

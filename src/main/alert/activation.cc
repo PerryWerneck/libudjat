@@ -22,6 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/alert.h>
+ #include <udjat/state.h>
 
  namespace Udjat {
 
@@ -45,18 +46,20 @@
 	Abstract::Alert::Activation::~Activation() {
 	}
 
-	void Abstract::Alert::Activation::get(Udjat::Value &response) const noexcept {
+	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
 
 		if(alertptr) {
-			alertptr->get(response);
+			alertptr->getProperties(value);
 		}
 
-		response["next"] = TimeStamp(timers.next);
-		response["last"] = TimeStamp(timers.last);
-		response["failed"] = count.failed;
-		response["success"] = count.success;
-		response["restarting"] = state.restarting;
-		response["running"] = TimeStamp(state.running);
+		value["next"] = TimeStamp(timers.next);
+		value["last"] = TimeStamp(timers.last);
+		value["failed"] = count.failed;
+		value["success"] = count.success;
+		value["restarting"] = state.restarting;
+		value["running"] = TimeStamp(state.running);
+
+		return value;
 	}
 
 	const char * Abstract::Alert::Activation::c_str() const noexcept {
@@ -74,15 +77,19 @@
 		if(rst) {
 			state.restarting = true;
 			timers.next = time(0) + rst;
-			clog
-				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
-				<< endl;
-
-		} else {
+			if(alertptr->options.verbose) {
+				LogFactory(count.failed ? Udjat::error : Udjat::ready)
+					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
+					<< endl;
+			}
+		}
+		else {
 			timers.next = 0;
-			clog
-				<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
-				<< endl;
+			if(alertptr->options.verbose) {
+				LogFactory(count.failed ? Udjat::error : Udjat::ready)
+					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
+					<< endl;
+			}
 		}
 
 	}
@@ -99,6 +106,27 @@
 	void Abstract::Alert::Activation::success() noexcept {
 		count.success++;
 		next();
+	}
+
+	void Abstract::Alert::Activation::run() noexcept {
+
+		try {
+			cout << name << "\tEmitting '"
+				<< c_str() << "' ("
+				<< (count.success + count.failed + 1)
+				<< ")"
+				<< endl;
+			timers.last = time(0);
+			emit();
+			success();
+		} catch(const exception &e) {
+			failed();
+			cerr << name << "\tAlert '" << c_str() << "': " << e.what() << " (" << count.failed << " fail(s))" << endl;
+		} catch(...) {
+			failed();
+			cerr << name << "\tAlert '" << c_str() << "' has failed " << count.failed << " time(s)" << endl;
+		}
+
 	}
 
 	void Abstract::Alert::Activation::next() noexcept {

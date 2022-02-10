@@ -24,15 +24,13 @@
 
  namespace Udjat {
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) {
+	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
+		value.set(to_string());
 		return value;
 	}
-	#pragma GCC diagnostic pop
 
 	std::string Abstract::Agent::to_string() const {
-		return "";
+		return name();
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
@@ -40,37 +38,48 @@
 	}
 
 	void Abstract::Agent::get(Response &response) {
-		this->get(getDetails(response)["value"]);
+		getProperties(response);
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
-		get(response);
+		getProperties(response);
 	}
 
-	Value & Abstract::Agent::getDetails(Value &value) const {
+	Value & Abstract::Agent::getProperties(Value &value) const noexcept {
 
-		value["name"] = this->getName();
-		value["summary"] = this->summary;
-		value["label"] = this->label;
-		value["uri"] = this->uri;
-		value["icon"] = this->icon;
+		Object::getProperties(value);
 
-		// Get agent state
-		auto &state = value["state"];
-		this->state.active->get(state);
-		state["activation"] = TimeStamp(this->state.activation);
+		try {
+
+			// Get agent value.
+			get(value["value"]);
+
+			// Get agent state.
+			auto &state = value["state"];
+			this->current_state.active->getProperties(state);
+			state["activation"] = TimeStamp(this->current_state.activation);
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' getting agent properties" << endl;
+
+		} catch(...) {
+
+			error() << "Unexpected error getting agent properties" << endl;
+
+		}
 
 		return value;
 
 	}
 
-	std::string Abstract::Agent::getPath() const {
+	std::string Abstract::Agent::path() const {
 
 		std::list<std::string> names;
 
 		const Abstract::Agent *agent = this;
 		while(agent->parent) {
-			names.push_front(agent->getName());
+			names.push_front(agent->name());
 			agent = agent->parent;
 		}
 

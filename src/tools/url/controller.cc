@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <cstring>
+ #include <udjat/moduleinfo.h>
 
  namespace Udjat {
 
@@ -38,14 +39,13 @@
 
 	void Protocol::Controller::insert(Protocol *protocol) {
 		lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-		cout << "Inserting protocol " << protocol->name << endl;
-#endif // DEBUG
+		cout << "protocols\tRegister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.push_back(protocol);
 	}
 
 	void Protocol::Controller::remove(Protocol *protocol) {
 		lock_guard<mutex> lock(guard);
+		cout << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.remove(protocol);
 	}
 

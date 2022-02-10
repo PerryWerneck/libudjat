@@ -41,6 +41,9 @@
 		/// @brief Expand, if possible, values ${} from str.
 		std::string expand(const pugi::xml_node &node, const char *str);
 
+		/// @brief Expand, if possible, values ${} from attribute.
+		std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def);
+
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {
 		private:

@@ -9,47 +9,22 @@
 
  #include "private.h"
  #include <udjat/module.h>
+ #include <udjat/tools/object.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
-	void Abstract::Agent::load(const pugi::xml_node &root, bool name) {
+	void Abstract::Agent::load(const pugi::xml_node &root) {
 
-		// Translate method
-		auto translate = [root](const char *key) {
-			return (const char *) root.attribute(key).as_string();
-		};
+		Object::set(root);
 
-		//bool upsearch = root.attribute("upsearch").as_bool(true);
+		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 
-		// Load my attributes
-		struct Attr {
-			/// @brief The attribute name.
-			const char *name;
-			const char **value;
-		} attributes[] = {
-			{ "summary",	&this->summary	},
-			{ "label",		&this->label	},
-			{ "icon",		&this->icon		},
-			{ "uri",		&this->uri		}
-		};
+		this->update.timer = getAttribute(root,section,"update-timer",(unsigned int) this->update.timer);
+		this->update.on_demand = getAttribute(root,section,"update-on-demand",this->update.timer == 0);
 
-		for(size_t ix = 0; ix < (sizeof(attributes)/sizeof(attributes[0])); ix++) {
-			const char * value = Quark().set(root,attributes[ix].name,false,translate).c_str();
-			if(value && *value) {
-				*attributes[ix].value = value;
-			}
-		}
-
-		if(name) {
-			Logger::set(root);
-		}
-
-		this->update.timer = root.attribute("update-timer").as_uint(this->update.timer);
-		this->update.on_demand = root.attribute("update-on-demand").as_bool(this->update.timer == 0);
-
-		time_t delay = root.attribute("delay-on-startup").as_uint(0);
+		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) 0);
 		if(delay)
 			this->update.next = time(nullptr) + delay;
 
@@ -68,45 +43,16 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				error("Error '{}' loading node '{}'",e.what(),node.name());
+				error() << "Error '" << e.what() << "' loading node '" << node.name() << "'" << endl;
 
 			} catch(...) {
 
-				error("Unexpected error loading node '{}'",node.name());
+				error() << "Unexpected error loading node '" << node.name() << "'" << endl;
 
 			}
 
 		}
 
 	}
-
-	/*
-	void Abstract::Agent::load(const pugi::xml_document &doc) {
-
-		for(pugi::xml_node root = doc.child("config"); root; root = root.next_sibling("config")) {
-
-			const char *path = root.attribute("root-path").as_string();
-
-			if(path && *path) {
-
-				// Has defined root path, find agent.
-				Abstract::Agent * agent = this;
-				while(agent->parent) {
-					agent = agent->parent;
-				}
-
-				agent->find(path,true,true)->load(root);
-
-			} else {
-
-				// No path, load here.
-				load(root);
-
-			}
-
-		}
-
-	}
-	*/
 
 }

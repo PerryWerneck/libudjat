@@ -105,7 +105,7 @@
 
 		if(threads.active.load()) {
 
-			logger.info("Waiting for {} threads on pool",threads.active.load());
+			clog << "threadpool\tWaiting for " << threads.active.load() << " thread(s)" << endl;
 
 			for(size_t f=0; f < 10000 && threads.active.load() > 0; f++) {
 
@@ -116,7 +116,14 @@
 				usleep(20000);
 			}
 
-			logger.error("Stopping with {} threads on pool",threads.active.load());
+			{
+				size_t count = threads.active.load();
+				if(count) {
+					cerr << "threadpool\tStopping with " << count << " threads on pool" << endl;
+				} else {
+					cout << "threadpool\tStopping with no pending threads" << endl;
+				}
+			}
 
 		}
 

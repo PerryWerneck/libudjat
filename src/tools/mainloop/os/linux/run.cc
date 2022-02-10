@@ -49,13 +49,15 @@
 		lock_guard<mutex> lock(Service::guard);
 		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
 		for(auto service : services) {
-			if(!service->active) {
+			if(!service->state.active) {
 				try {
-					cout << "service\tStarting '" << service->info->description << " " << service->info->version << "'" << endl;
+					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
 					service->start();
-					service->active = true;
+					service->state.active = true;
 				} catch(const std::exception &e) {
-					cerr << service->info->name << "\tError '" << e.what() << "' starting service" << endl;
+					service->error() << "Error '" << e.what() << "' starting service" << endl;
+				} catch(...) {
+					service->error() << "Unexpected error starting service" << endl;
 				}
 			}
 		}
@@ -155,6 +157,24 @@
 	{
 		lock_guard<mutex> lock(Service::guard);
 		cout << "mainloop\tStopping " << services.size() << " service(s)" << endl;
+
+		// Stop services in reverse order.
+		for(auto srvc = services.rbegin(); srvc != services.rend(); srvc++) {
+			Service *service = *srvc;
+			if(service->state.active) {
+				try {
+					cout << "services\tStopping '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
+					service->stop();
+				} catch(const std::exception &e) {
+					service->error() << "Error '" << e.what() << "' stopping service" << endl;
+				} catch(...) {
+					service->error() << "Unexpected error stopping service" << endl;
+				}
+				service->state.active = false;
+			}
+		}
+
+		/*
 		for(auto service : services) {
 			if(service->active) {
 				try {
@@ -166,6 +186,7 @@
 				service->active = false;
 			}
 		}
+		*/
 	}
 
 	// Wait for pool

@@ -23,41 +23,35 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/object.h>
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/expander.h>
 
  namespace Udjat {
 
-	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(Quark(node,"name").c_str()) {
+	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
-		url = expand(
-				Attribute(node,"url","alert-url")
-					.as_string(
-						Config::Value<string>(section,"url","")
-					),
-					node,
-					section
-				);
+		url = getAttribute(node,section,"url","");
 
 		if(!(url && *url)) {
-			throw runtime_error("Required attribute 'url' or upstream 'alert-url' are both missing");
+			throw runtime_error(string{"Required attribute 'url' is missing on alert '"} + name() + "'");
 		}
 
-		payload = expand(
-						node.child_value(),
-						node,
-						section
-					);
+		payload = Object::expand(node,section,node.child_value());
 
-		action = HTTP::MethodFactory(
-						Attribute(node,"action","alert-action")
-						.as_string(
-							Config::Value<string>(section,"action","get")
-						)
-					);
+		{
+			// Get alert action.
+			// (Dont use the default getAttribute to avoid the creation of a new 'quark')
+			auto attribute = getAttribute(node,"action",true);
+			if(attribute) {
+				action = HTTP::MethodFactory(attribute.as_string("get"));
+			} else {
+				action = HTTP::MethodFactory(Config::Value<string>(section,"action","get"));
+			}
+		}
 
 	}
 
@@ -65,6 +59,7 @@
 		Abstract::Alert::activate(make_shared<Alert>(name,url,HTTP::MethodFactory(action),payload));
 	}
 
+	/*
 	const char * Alert::expand(const char *value, const pugi::xml_node &node, const char *section) {
 
 		string text{value};
@@ -88,17 +83,17 @@
 		return Udjat::Quark(text).c_str();
 
 	}
+	*/
 
 	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const std::function<void(std::string &str)> &expander) const {
-
 		return make_shared<Activation>(*this,expander);
-
 	}
 
-	void Alert::get(Udjat::Value &response) const noexcept {
-		Abstract::Alert::get(response);
-		response["url"] = url;
-		response["action"] = to_string(action);
+	Value & Alert::getProperties(Value &value) const noexcept {
+		Abstract::Alert::getProperties(value);
+		value["url"] = url;
+		value["action"] = std::to_string(action);
+		return value;
 	}
 
  }

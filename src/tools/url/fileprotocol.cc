@@ -19,18 +19,13 @@
 
  #include "private.h"
  #include <udjat/tools/file.h>
+ #include <udjat/moduleinfo.h>
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo {
-		PACKAGE_NAME,									// The module name.
-		"File protocol module",	 						// The module description.
-		PACKAGE_VERSION, 								// The module version.
-		PACKAGE_URL, 									// The package URL.
-		PACKAGE_BUGREPORT 								// The bugreport address.
-	};
+	static const ModuleInfo moduleinfo { "File protocol module" };
 
-	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",&moduleinfo) {
+	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",moduleinfo) {
 	}
 
 	Protocol::Controller::File::~File() {

@@ -20,6 +20,7 @@
 #pragma once
 
 #include <udjat/defs.h>
+#include <udjat/moduleinfo.h>
 
 #ifndef _WIN32
 	#include <poll.h>
@@ -28,6 +29,8 @@
 #include <list>
 #include <functional>
 #include <mutex>
+#include <ostream>
+#include <udjat/request.h>
 
 namespace Udjat {
 
@@ -42,23 +45,52 @@ namespace Udjat {
 			/// @brief Mainloop control semaphore
 			static std::mutex guard;
 
-			/// @brief Is the service active?
-			bool active = false;
+			/// @brief Service state.
+			struct {
+				/// @brief Is the service active?
+				bool active = false;
+			} state;
+
+			/// @brief Service module.
+			const ModuleInfo &module;
 
 		protected:
-			const ModuleInfo *info;
+			/// @brief Service name.
+			const char *service_name = "service";
 
 		public:
-			Service(const ModuleInfo *info);
-			Service();
+			Service(const Service &src) = delete;
+			Service(const Service *src) = delete;
+
+			Service(const char *name, const ModuleInfo &module);
+			Service(const ModuleInfo &module);
 			virtual ~Service();
 
-			inline bool isActive() const noexcept {
-				return active;
+			const char * name() const noexcept {
+				return service_name;
 			}
+
+			inline const char * description() const noexcept {
+				return module.description;
+			}
+
+			inline const char * version() const noexcept {
+				return module.version;
+			}
+
+			inline bool isActive() const noexcept {
+				return state.active;
+			}
+
+			/// @brief List services.
+			static void getInfo(Response &response);
 
 			virtual void start();
 			virtual void stop();
+
+			std::ostream & info() const;
+			std::ostream & warning() const;
+			std::ostream & error() const;
 
 		};
 
@@ -146,6 +178,11 @@ namespace Udjat {
 
 		/// @brief Run mainloop.
 		void run();
+
+		/// @brief Is the mainloop active?
+		inline operator bool() const noexcept {
+			return enabled;
+		}
 
 		/// @brief Quit mainloop.
 		void quit();

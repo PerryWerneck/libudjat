@@ -40,6 +40,10 @@
 
 			std::string to_string(const char *format = "%x %X") const noexcept;
 
+			inline std::string to_string(const std::string &format) const noexcept {
+				return to_string(format.c_str());
+			}
+
 			inline operator bool() const noexcept {
 				return value != 0;
 			}

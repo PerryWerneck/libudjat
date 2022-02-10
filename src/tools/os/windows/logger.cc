@@ -36,36 +36,96 @@ using namespace std;
 
 namespace Udjat {
 
-	Logger::~Logger() {
-	}
+	void Logger::Writer::write(Buffer &buffer) {
 
-	Logger::Message & Logger::Message::append(const char *value) {
+		const char *message = buffer.c_str();
 
-		size_t from = find("{");
-		if(from == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
+		// Set timestamp
+		string timestamp = TimeStamp().to_string("%x %X");
+
+		// Set module name.
+		char module[12];
+		{
+			memset(module,' ',sizeof(module));
+
+			const char *ptr = strchr(message,'\t');
+			if(ptr) {
+
+				// Has module name.
+				size_t length = (ptr-message);
+				if(length >= sizeof(module)-1) {
+					length = sizeof(module)-1;
+				}
+				memcpy(module,message,length);
+				message = (ptr+1);
+
+			}
+
+			module[sizeof(module)-1] = 0;
+
 		}
 
-		size_t to = find("}",from);
-		if(to == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
+		// If enable write console output.
+		if(console) {
+			write(1,timestamp.c_str());
+			write(1," ");
+			write(1,module);
+			write(1," ");
+			write(1,message);
+			write(1,"\n");
 		}
 
-		replace(from,(to-from)+1,value);
+		//
+		// Get filename.
+		//
+		string filename, format;
+		DWORD keep = 86400;
 
-		return *this;
+		try {
+
+			Win32::Registry registry("log");
+
+			keep = registry.get("keep",keep);
+			filename.assign(registry.get("path",""));
+			format.assign(registry.get("format",""));
+
+		} catch(...) {
+			// On error assume defaults.
+			filename.clear();
+			format.clear();
+		}
+
+		if(filename.empty()) {
+			filename.assign(Application::Path() + "\\logs\\");
+		}
+
+		if(format.empty()) {
+			format.assign(Application::Name() + "-%d.log");
+		}
+
+		mkdir(filename.c_str());
+
+		// Get logfile path.
+		filename.append(TimeStamp().to_string(format.c_str()));
+
+		struct stat st;
+		if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+			// More than one day, remove it
+			remove(filename.c_str());
+		}
+
+		// Open file
+		std::ofstream ofs;
+		ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+		ofs.open(filename, ofstream::out | ofstream::app);
+		ofs << timestamp << " " << module << " " << message << endl;
+		ofs.close();
+
 	}
 
-	Logger::Message & Logger::Message::append(const std::exception &e) {
-		return append(e.what());
-	}
 
-	void Logger::set(const pugi::xml_node &node) {
-		auto attribute = node.attribute("name");
-		if(attribute)
-			name = Quark(attribute.as_string(this->name)).c_str();
-	}
-
+	/*
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Logger::redirect(const char *filename, bool console) {
@@ -230,6 +290,6 @@ namespace Udjat {
 
 	}
 	#pragma GCC diagnostic pop
-
+	*/
 }
 

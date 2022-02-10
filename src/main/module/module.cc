@@ -12,9 +12,9 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const ModuleInfo *i) : name(n),handle(nullptr),info(i) {
-		if(!(info && name)) {
-			throw system_error(EINVAL,system_category(),"Module info and name cant be null");
+	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),info(i) {
+		if(!name) {
+			throw system_error(EINVAL,system_category(),"Module name cant be null");
 		}
 		Controller::getInstance().insert(this);
 	}
@@ -40,7 +40,7 @@ namespace Udjat {
 #else
 		Dl_info info;
 		memset(&info,0,sizeof(info));
-		if(dladdr(this->info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
+		if(dladdr(&this->info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
 			return info.dli_fname;
 		}
 #endif // _WIN32

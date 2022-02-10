@@ -43,21 +43,21 @@
 
 	void setRootAgent(std::shared_ptr<Abstract::Agent> agent) {
 
-		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << endl;
+		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << dec << endl;
 		Abstract::Agent::Controller::getInstance().set(agent);
 
 	}
 
-	std::shared_ptr<Abstract::Agent> getDefaultRootAgent() {
+	std::shared_ptr<Abstract::Agent> RootAgentFactory() {
 
 		/// @brief The root agent.
 		class Agent : public Abstract::Agent {
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				cout << "agent\tRoot agent " << hex << ((void *) this) << " was created" << endl;
-				this->icon = "computer";
-				this->uri = Quark(string{"http://"} + name).c_str();
+				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was created" << endl;
+				Object::properties.icon = "computer";
+				Object::properties.url = Quark(string{"http://"} + name).c_str();
 
 #ifndef _WIN32
 				//
@@ -67,7 +67,7 @@
 
 				if(uname(&uts) < 0) {
 					memset(&uts,0,sizeof(uts));
-					clog << getName() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
+					clog << Object::name() << "\tError '" << strerror(errno) << "' getting uts info" << endl;
 				}
 
 				//
@@ -83,11 +83,11 @@
 						label += uts.machine;
 					}
 
-					this->label = Quark(label).c_str();
+					Object::properties.label = Quark(label).c_str();
 
 				} catch(const std::exception &e) {
 
-					error("Error '{}' reading system release file",e.what());
+					cerr << Object::name() << "\tError '" << e.what() << "' reading system release file" << endl;
 
 				}
 #endif // _WIN32
@@ -108,23 +108,23 @@
 							URL sysid(Config::Value<string>("bare-metal","summary","dmi:///system/sku"));
 
 							if(!sysid.empty() && Protocol::find(sysid)) {
-								this->summary = Quark(sysid.get()).c_str();
+								Object::properties.summary = Quark(sysid.get()).c_str();
 							}
 
 						} catch(const std::exception &e) {
 
-							warning("{}",e.what());
+							clog << Object::name() << "\t" << e.what() << endl;
 
 						}
 
 					} else {
 
-						this->summary = Quark(Logger::Message("{} virtual machine",virtualmachine.to_string())).c_str();
+						Object::properties.summary = Quark(Logger::Message("{} virtual machine",virtualmachine.to_string())).c_str();
 
 					}
 
-					if(this->summary && *this->summary) {
-						cout << getName() << "\t" << this->summary << endl;
+					if(*Object::properties.summary) {
+						cout << Object::name() << "\t" << Object::properties.summary << endl;
 					}
 
 				}
@@ -136,7 +136,8 @@
 
 				class ReadyState : public Abstract::State {
 				public:
-					ReadyState() : Abstract::State("ready", ready, "System is ready", "No abnormal state was detected") {
+					ReadyState() : Abstract::State("ready", Level::ready, "System is ready", "No abnormal state was detected") {
+						Object::properties.icon = "computer";
 					}
 
 				};
@@ -146,12 +147,12 @@
 			}
 
 			virtual ~Agent() {
-				cout << "agent\tRoot agent " << hex << ((void *) this) << " was destroyed" << endl;
+				info() << "Root agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
 			}
 
-			void get(Response &response) override {
+			Value & getProperties(Value &value) const noexcept override {
 
-				Abstract::Agent::get(response);
+				Abstract::Agent::getProperties(value);
 
 #ifdef _WIN32
 				OSVERSIONINFO osvi;
@@ -173,35 +174,36 @@
 				sysname += " ";
 				sysname += (const char *) osvi.szCSDVersion;
 
-				response["system"] = sysname;
+				value["system"] = sysname;
 
 #else
 				struct utsname uts;
 
 				if(uname(&uts) >= 0) {
-					response["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
+					value["system"] = string(uts.sysname) + " " + uts.release + " " + uts.version;
 				}
 #endif // _WIN32
 
+				return value;
 			}
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				if(!state->isReady()) {
+				if(!state->ready()) {
 
 					// The requested state is not ready, activate it.
-					this->icon = "computer-fail";
+					Object::properties.icon = "computer-fail";
 					bool changed = Abstract::Agent::activate(state);
 					return changed;
 
 				}
 
-				if(this->getState()->isReady()) {
+				if(this->state()->ready()) {
 					// Already ok, do not change.
 					return false;
 				}
 
-				this->icon = "computer";
+				Object::properties.icon = "computer";
 				super::activate(stateFromValue());
 
 				return true;
@@ -212,7 +214,7 @@
 		// Get controller to initialize it.
 		Abstract::Agent::Controller::getInstance();
 
-		char hostname[255];
+		char hostname[256];
 		if(gethostname(hostname, 255)) {
 			cerr << "agent\tError '" << strerror(errno) << "' getting hostname" << endl;
 			strncpy(hostname,Application::Name().c_str(),255);

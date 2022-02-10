@@ -4,25 +4,82 @@
 
 	#include <udjat/defs.h>
 	#include <udjat/tools/quark.h>
-	#include <vector>
+	//#include <vector>
 	#include <string>
 	#include <iostream>
+	#include <mutex>
 
 	namespace Udjat {
 
 		/// @brief Manage log files.
 		/// Reference: https://www.youtube.com/watch?v=IdM0Z2a4fjU
 		class UDJAT_API Logger {
-		private:
-			  const char * name;	///< @brief Object name.
-
 		public:
-			enum Type : uint8_t {
+			enum Level : uint8_t {
 				Info,
 				Warning,
-				Error,
-				Debug
+				Error
 			};
+
+		private:
+
+			static std::mutex guard;
+
+			class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
+			private:
+				class Buffer : public std::string {
+				private:
+					Buffer() : std::string() {
+					}
+
+				public:
+					Buffer(const Buffer &src) = delete;
+					Buffer(const Buffer *src) = delete;
+
+					static Buffer & getInstance(Level id);
+					bool push_back(int c);
+
+				};
+
+
+				/// @brief The buffer id.
+				Level id = Info;
+
+				/// @brief Send output to console?
+				bool console = true;
+
+				void write(int fd, const std::string &str);
+				void write(Buffer &buffer);
+
+			protected:
+
+				/// @brief Writes characters to the associated file from the put area
+				int sync() override;
+
+				/// @brief Writes characters to the associated output sequence from the put area.
+				int overflow(int c) override;
+
+			public:
+				Writer(Logger::Level i, bool c) : id(i), console(c) {
+				}
+
+			};
+
+		protected:
+
+			static Level level;
+
+			struct Properties {
+				const char * name;	///< @brief Object name.
+
+				constexpr Properties(const char *n) : name(n) {
+				}
+
+			} properties;
+
+		public:
+
+			static Level LevelFactory(const char *name) noexcept;
 
 			/// @brief Log message formatter.
 			class UDJAT_API Message : public std::string {
@@ -61,59 +118,56 @@
 		public:
 
 			/// @brief Redirect std::cout, std::clog and std::cerr to log file.
-			/// @param filename The log file name.
 			/// @param console If true send log output to standard out.
 #ifdef DEBUG
-			static void redirect(const char *filename = nullptr, bool console = true);
+			static void redirect(bool console = true);
 #else
-			static void redirect(const char *filename = nullptr, bool console = false);
+			static void redirect(bool console = false);
 #endif // DEBUG
 
-			constexpr Logger(const char *n = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : name(n) {
+			constexpr Logger(const char *name = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : properties(name) {
 			}
-
-			~Logger();
 
 			void set(const pugi::xml_node &name);
 
 			operator const char *() const noexcept {
-				return this->name;
+				return this->properties.name;
 			}
 
 			/// @brief Get Logger name.
-			const char * getName() const noexcept {
-				return this->name;
+			const char * name() const noexcept {
+				return this->properties.name;
 			}
 
 			inline const char * c_str() const noexcept {
-				return this->name;
+				return this->properties.name;
 			}
 
 			/// @brief Write informational message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void info(const char *format, const Targs... args) const noexcept {
-				std::cout << name << "\t" << Message(format, args...) << std::endl;
+				std::cout << name() << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write warning message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void warning(const char *format, const Targs... args) const noexcept {
-				std::clog << name << "\t" << Message(format, args...) << std::endl;
+				std::clog << name() << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write error message.
 			/// @param format String with '{}' placeholders
 			template<typename... Targs>
 			void error(const char *format, const Targs... args) const noexcept {
-				std::cerr << name << "\t" << Message(format, args...) << std::endl;
+				std::cerr << name() << "\t" << Message(format, args...) << std::endl;
 			}
 
 			/// @brief Write Error message.
 			/// @param e exception to write.
 			void error(const std::exception &e) {
-				std::cerr << name << "\t" << e.what() << std::endl;
+				std::cerr << name() << "\t" << e.what() << std::endl;
 			}
 
 			/// @brief Write error message.
@@ -121,7 +175,7 @@
 			/// @param format String with '{}' placeholders (the last one with be the exception message)
 			template<typename... Targs>
 			void error(const std::exception &e, const char *format, const Targs... args) const noexcept {
-				std::cerr << name << "\t" << Message(format, args...).append(e) << std::endl;
+				std::cerr << name() << "\t" << Message(format, args...).append(e) << std::endl;
 			}
 
 		};
@@ -130,15 +184,15 @@
 	namespace std {
 
 		inline string to_string(const Udjat::Logger &logger) {
-			return logger.getName();
+			return logger.name();
 		}
 
 		inline string to_string(const Udjat::Logger *logger) {
-			return logger->getName();
+			return logger->name();
 		}
 
 		inline ostream& operator<< (ostream& os, const Udjat::Logger &logger) {
-			return os << logger.getName();
+			return os << logger.name();
 		}
 
 	}

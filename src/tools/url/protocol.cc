@@ -43,7 +43,7 @@
 		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
-	Protocol::Protocol(const char *n, const ModuleInfo *i) : name(n), info(i) {
+	Protocol::Protocol(const char *n, const ModuleInfo &i) : name(n), module(i) {
 		Controller::getInstance().insert(this);
 	}
 

@@ -54,6 +54,7 @@ vgcore.*
 ABOUT-NLS
 intl
 m4
+*.tmp
 po
 
 # CodeBlocks

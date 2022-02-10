@@ -22,29 +22,30 @@
 #include <udjat/defs.h>
 #include <udjat/request.h>
 #include <udjat/tools/quark.h>
+#include <ostream>
 
 namespace Udjat {
 
 	class UDJAT_API Worker {
 	private:
-		const char * name;
+		const char * name = "";
 		class Controller;
 		friend class Controller;
 
 	protected:
 
 		/// @brief Information about the worker module.
-		const ModuleInfo *info;
+		const ModuleInfo &module;
 
 	public:
-		Worker(const char *name, const ModuleInfo *info);
-		Worker(const char *name);
+		Worker(const char *name, const ModuleInfo &info);
 
-		Worker(const Quark &name, const ModuleInfo *info) : Worker(name.c_str(),info) {
+		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
 		}
 
-		Worker(const Quark &name) : Worker(name.c_str()) {
-		}
+		std::ostream & info() const;
+		std::ostream & warning() const;
+		std::ostream & error() const;
 
 		/// @brief Execute request, update response
 		/// @return false if the request method was not allowed.
@@ -55,7 +56,7 @@ namespace Udjat {
 
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {
-			return *this->info;
+			return this->module;
 		}
 
 		/// @brief Get Worker by name.

@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <cstring>
 
  using namespace std;
 
@@ -25,14 +26,20 @@
 
 	mutex MainLoop::Service::guard;
 
-	static const ModuleInfo moduleinfo{"service"};
-
-	MainLoop::Service::Service(const ModuleInfo *i) : info(i) {
+	MainLoop::Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
 		lock_guard<mutex> lock(guard);
+		if(!service_name) {
+			service_name = strrchr(module.name,'-');
+			if(service_name) {
+				service_name++;
+			} else {
+				service_name = module.name;
+			}
+		}
 		MainLoop::getInstance().services.push_back(this);
 	}
 
-	MainLoop::Service::Service() : Service(&moduleinfo) {
+	MainLoop::Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
 	}
 
 	MainLoop::Service::~Service() {
@@ -46,6 +53,39 @@
 	}
 
 	void MainLoop::Service::stop() {
+	}
+
+	std::ostream & MainLoop::Service::info() const {
+		cout << name() << "\t";
+		return cout;
+	}
+
+	std::ostream & MainLoop::Service::warning() const {
+		clog << name() << "\t";
+		return clog;
+	}
+
+	std::ostream & MainLoop::Service::error() const {
+		cerr << name() << "\t";
+		return cerr;
+	}
+
+	void MainLoop::Service::getInfo(Response &response) {
+
+		lock_guard<mutex> lock(guard);
+		response.reset(Value::Array);
+
+		for(auto service : MainLoop::getInstance().services) {
+
+			Value &object = response.append(Value::Object);
+
+			object["name"] = service->service_name;
+			object["active"] = service->state.active;
+
+			service->module.get(object);
+
+
+		}
 	}
 
  }

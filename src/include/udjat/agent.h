@@ -35,6 +35,7 @@
 	#include <memory>
 	#include <vector>
 	#include <mutex>
+	#include <list>
 	#include <functional>
 	#include <udjat/defs.h>
 	#include <udjat/state.h>
@@ -45,21 +46,22 @@
 	#include <udjat/alert.h>
 	#include <udjat/tools/converters.h>
 	#include <udjat/tools/value.h>
+	#include <udjat/tools/object.h>
 	#include <cstring>
 
 	namespace Udjat {
 
-		void parse_value(const pugi::xml_node &node, int &value);
-		void parse_value(const pugi::xml_node &node, unsigned int &value);
-		void parse_value(const pugi::xml_node &node, unsigned short &value);
-		void parse_value(const pugi::xml_node &node, float &value);
-		void parse_value(const pugi::xml_node &node, double &value);
-		void parse_value(const pugi::xml_node &node, unsigned long &value);
-		void parse_value(const pugi::xml_node &node, long &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, int &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned int &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned short &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, float &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, double &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned long &value);
+		UDJAT_API void parse_value(const pugi::xml_node &node, long &value);
 
 		namespace Abstract {
 
-			class UDJAT_API Agent : public Logger {
+			class UDJAT_API Agent : public Udjat::Object {
 			private:
 				static std::recursive_mutex guard;
 
@@ -81,15 +83,16 @@
 					/// @brief State activation.
 					time_t activation;
 
-				} state;
+				} current_state;
 
+				/// @brief Agent children.
 				std::vector<std::shared_ptr<Agent>> children;
+
+				/// @brief Associated objects.
+				std::list<std::shared_ptr<Abstract::Object>> objects;
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
-
-				/// @brief Search for attribute.
-				static const pugi::xml_attribute & attribute(const pugi::xml_node &node, const char *name, bool upsearch = true);
 
 				/// @brief Enable disable 'running updates' flag.
 				void updating(bool running);
@@ -98,18 +101,6 @@
 
 				/// @brief Allow use of super:: for accessing abstract::agent methods.
 				typedef Abstract::Agent super;
-
-				/// @brief Agent label.
-				const char * label = "";
-
-				/// @brief Agent summary.
-				const char * summary = "";
-
-				/// @brief Web link for this agent (HTTP API).
-				const char * uri = "";
-
-				/// @brief Name of the agent icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-				const char * icon = "";
 
 				/// @brief Update complete (success or failure).
 				/// @param changed true if the value has changed.
@@ -148,13 +139,19 @@
 				void setOndemand() noexcept;
 
 				/// @brief Set agent details on value.
-				Value & getDetails(Value &response) const;
+				Value & getProperties(Value &response) const noexcept override;
 
 			public:
 				class Controller;
 
-				/// @brief Insert child agent.
+				/// @brief Insert child node.
 				void insert(std::shared_ptr<Agent> child);
+
+				/// @brief Insert object.
+				void push_back(std::shared_ptr<Abstract::Object> object);
+
+				/// @brief Remove object.
+				void remove(std::shared_ptr<Abstract::Object> object);
 
 				Agent(const char *name = "", const char *label = "", const char *summary = "");
 				Agent(const pugi::xml_node &node);
@@ -162,21 +159,22 @@
 				virtual ~Agent();
 
 				/// @brief Get root agent.
-				static std::shared_ptr<Abstract::Agent> get_root();
+				static std::shared_ptr<Abstract::Agent> root();
+
+				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
 
 				/// @brief Initialize agent subsystem.
 				/// @return root agent.
-				static std::shared_ptr<Abstract::Agent> init();
+				// static std::shared_ptr<Abstract::Agent> init();
 
 				/// @brief Initialize agent subsystem, load agent descriptors.
 				/// @param path Path to agent descriptions.
 				/// @return root agent.
-				static std::shared_ptr<Abstract::Agent> init(const char *path);
+				// static std::shared_ptr<Abstract::Agent> init(const char *path);
 
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
-				/// @brief name Allow parsing of agent name.
-				void load(const pugi::xml_node &node, bool name = true);
+				void load(const pugi::xml_node &node);
 
 				/// @brief Deinitialize agent subsystem.
 				static void deinit();
@@ -189,24 +187,8 @@
 				/// @brief true if the agent has states.
 				virtual bool hasStates() const noexcept;
 
-				inline const char * getUri() const noexcept {
-					return uri;
-				}
-
-				inline const char * getIcon() const noexcept {
-					return icon;
-				}
-
-				inline const char * getLabel() const noexcept {
-					return label;
-				}
-
-				inline const char * getSummary() const noexcept {
-					return summary;
-				}
-
 				/// @brief Get Agent path.
-				std::string getPath() const;
+				std::string path() const;
 
 				/// @brief The agent has children?
 				bool hasChildren() const noexcept {
@@ -249,25 +231,31 @@
 				/// @brief Adds cache and update information to the response.
 				void head(Response &response);
 
-				virtual Value & get(Value &value);
+				/// @brief Get agent value.
+				virtual Value & get(Value &value) const;
+
 				virtual void get(Response &response);
 				virtual void get(const Request &request, Response &response);
 				virtual void get(const Request &request, Report &report);
 
 				/// @brief Get formatted value.
-				virtual std::string to_string() const;
+				virtual std::string to_string() const override;
 
 				/// @brief Assign value from string.
 				virtual bool assign(const char *value);
 
+				UDJAT_DEPRECATED(inline std::shared_ptr<State> getState() const) {
+					return this->current_state.active;
+				}
+
 				/// @brief Get current state
-				inline std::shared_ptr<State> getState() const {
-					return this->state.active;
+				inline std::shared_ptr<State> state() const {
+					return this->current_state.active;
 				}
 
 				/// @brief Get current level.
-				inline Level getLevel() const {
-					return this->state.active->getLevel();
+				inline Level level() const {
+					return this->current_state.active->level();
 				}
 
 				/// @brief Insert State.
@@ -276,12 +264,11 @@
 				/// @brief Insert Alert.
 				virtual void append_alert(const pugi::xml_node &node);
 
-				/// @brief Expand ${} tags on string.
-				virtual std::string & expand(std::string &text) const;
-
-				/// @brief Expand ${} tags on string.
-				std::string expand(const char *text) const;
-
+				/// @brief Get property from the agent os related objects.
+				/// @param key The property name.
+				/// @param value String to update with the property value.
+				/// @return true if the property was found.
+				bool getProperty(const char *key, std::string &value) const noexcept override;
 
 			};
 
@@ -290,7 +277,7 @@
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @return root agent.
-		UDJAT_API std::shared_ptr<Abstract::Agent> load(const char *pathname);
+		UDJAT_API void load(const char *pathname);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
@@ -312,7 +299,7 @@
 				return super::stateFromValue();
 			}
 
-			Udjat::Value & get(Udjat::Value &value) override {
+			Udjat::Value & get(Udjat::Value &value) const override {
 				return value.set(this->value);
 			}
 
@@ -342,7 +329,7 @@
 
 				this->value = value;
 #ifdef DEBUG
-				info("Value set to {}",this->value);
+				info() << Logger::Message("Value set to {}",this->value) << std::endl;
 #endif // DEBUG
 				return updated(true);
 			}
@@ -392,7 +379,7 @@
 				return super::stateFromValue();
 			}
 
-			Udjat::Value & get(Udjat::Value &value) override {
+			Udjat::Value & get(Udjat::Value &value) const override {
 				return value.set(this->value);
 			}
 
@@ -402,6 +389,9 @@
 			}
 
 		public:
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(node.attribute("value").as_string()) {
+			}
+
 			Agent(const char *name = "") : Abstract::Agent(name) {
 			}
 
@@ -473,6 +463,9 @@
 			}
 
 		public:
+			Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(node.attribute("value").as_bool()) {
+			}
+
 			Agent(const char *name = "") : Abstract::Agent(name), value(false) {
 			}
 
@@ -505,16 +498,5 @@
 
 	}
 
-namespace std {
-
-	inline string to_string(const Udjat::Abstract::Agent &agent) {
-			return agent.to_string();
-	}
-
-	inline ostream& operator<< (ostream& os, const Udjat::Abstract::Agent &agent) {
-			return os << agent.to_string();
-	}
-
-}
 
 #endif // UDJAT_AGENT_H_INCLUDED

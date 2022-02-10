@@ -34,6 +34,7 @@
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/string.h>
 
  using namespace std;
 
@@ -41,25 +42,30 @@
 
 namespace Udjat {
 
-	Abstract::State::State(const Level level, const char *summary, const char *body)
-		:  State(levelnames[level],level,Quark(summary).c_str(),Quark(body).c_str()) { }
+	Abstract::State::State(const char *name, const Level level, const char *summary, const char *body) : Object((name && *name) ? name : "unnamed") {
+		if(summary && *summary) {
+			Object::properties.summary = summary;
+		}
 
-	Abstract::State::State(const pugi::xml_node &node) : State(Attribute(node,"name",false).c_str()) {
+		if(body && *body) {
+			properties.body = body;
+		}
+
+		this->properties.level = level;
+	}
+
+	Abstract::State::State(const pugi::xml_node &node) : Object(node) {
 		set(node);
 	}
 
 	void Abstract::State::set(const pugi::xml_node &node) {
 
-		auto level = Attribute(node,"level",false);
+		Object::set(node);
 
-		if(!(name && *name)) {
-			name = level.c_str();
-		}
+		const char *section = node.attribute("settings-from").as_string("state-defaults");
 
-		this->level = getLevelFromName(level.as_string(levelnames[unimportant])),
-		this->summary = Attribute(node,"summary",true).c_str();
-		this->name = Attribute(node,"name").c_str();
-		this->uri = Attribute(node,"uri").c_str();
+		properties.level = LevelFactory(node);
+		properties.body = getAttribute(node,section,"body",properties.body);
 
 		for(pugi::xml_node child : node) {
 
@@ -73,29 +79,40 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				cerr << this->name << "\tError '" << e.what() << "' loading node '" << child.name() << "'"  << endl;
+				error() << "Error '" << e.what() << "' loading node '" << child.name() << "'"  << endl;
 
 			} catch(...) {
 
-				cerr << this->name << "\tUnexpected error loading node '" << child.name() << "'"  << endl;
+				error() << "Unexpected error loading node '" << child.name() << "'"  << endl;
 
 			}
 
 		}
 
-		if(node.attribute("alert").as_bool(false)) {
+		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
 
 			// Insert alert using the same node.
 			try {
 
-				Factory::parse(Attribute(node,"alert-factory").as_string("alert"), *this, node);
+				const char *type = getAttribute(node, section, "alert-type", "default");
+
+				if(strcasecmp(type,"default")) {
+
+					// Not default, use factory.
+					Factory::parse(type, *this, node);
+
+				} else {
+
+					// Create the default alert.
+					append(make_shared<Udjat::Alert>(node));
+
+				}
 
 			} catch(const std::exception &e) {
 
-				cerr << this->name << "\tError '" << e.what() << "' embedding alert"  << endl;
+				error() << "Error '" << e.what() << "' embedding alert"  << endl;
 
 			}
-
 
 		}
 
@@ -105,43 +122,38 @@ namespace Udjat {
 
 	}
 
-	void Abstract::State::get(Udjat::Value &value) const {
+	Value & Abstract::State::getProperties(Value &value) const noexcept {
 
-		value["summary"] = summary;
-		value["body"] = body;
-		value["uri"] = uri;
+		Object::getProperties(value);
+		value["body"] = properties.body;
+		value["level"] = std::to_string(properties.level);
 
-		// Set level information
-		getLevel(value);
-
+		return value;
 	}
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::State::get(const Request &request, Response &response) const {
-//		this->get(response);
+		getProperties(response);
 	}
 	#pragma GCC diagnostic pop
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
-#ifdef DEBUG
-		agent.info("State '{}' was activated",name);
-#endif // DEBUG
+		agent.info() << "State '" << *this << "' was activated" << endl;
 
 		for(auto alert : alerts) {
 			Abstract::Alert::activate(alert,[agent,this](std::string &text) {
-				expand(text);
-				agent.expand(text);
+				text = expand(text.c_str());
+				text = agent.expand(text.c_str());
 			});
 		}
 
 	}
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
-#ifdef DEBUG
-		agent.info("State '{}' was deactivated",name);
-#endif // DEBUG
+
+		agent.info() << "State '" << *this << "' was deactivated" << endl;
 
 		for(auto alert : alerts) {
 			alert->deactivate();
@@ -149,76 +161,75 @@ namespace Udjat {
 
 	}
 
-	std::string & Abstract::State::expand(std::string &text) const {
+	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {
 
-		Udjat::expand(text,[this](const char *key, string &value) {
+		if(Object::getProperty(key,value)) {
+			return true;
+		}
 
-			if(!strcasecmp(key,"level")) {
-				value = string(to_string(this->level));
-				return true;
-			}
+		if(!strcasecmp(key,"level")) {
+			value = std::to_string(properties.level);
+			return true;
+		}
 
-			struct {
-				const char *key;
-				const Quark &value;
-			} values[] = {
-				{ "state.name",		this->name		},
-				{ "state.summary",	this->summary	},
-				{ "state.body",		this->body		},
-				{ "state.uri", 		this->uri		},
-			};
+		if(!strcasecmp(key,"body")) {
+			value = properties.body;
+			return true;
+		}
 
-			for(size_t ix = 0; ix < (sizeof(values)/sizeof(values[0]));ix++) {
-
-				if(!strcasecmp(values[ix].key,key)) {
-					value = string(values[ix].value.c_str());
-					return true;
-				}
-
-			}
-
-			return false;
-
-		});
-
-		return text;
+		return false;
 
 	}
 
-	std::shared_ptr<Abstract::State> Abstract::State::get(const char *summary, const std::exception &e) {
+	std::shared_ptr<Abstract::State> StateFactory(const std::exception &except, const char *summary) {
 
-		const std::system_error *syserror = dynamic_cast<const std::system_error *>(&e);
+		const std::system_error *syserror = dynamic_cast<const std::system_error *>(&except);
 
 		if(!syserror) {
 
-			// It's regular error
+			// It's not a system error
+
+			/// @brief Exception state.
 			class Error : public Abstract::State {
 			private:
+
+				// Use string to keep the contents.
 				string summary;
 				string body;
 
 			public:
 				Error(const char *s, const exception &e) : Abstract::State("error",Udjat::critical), summary(s), body(e.what()) {
-					Abstract::State::body = this->body.c_str();
-					Abstract::State::summary = this->summary.c_str();
+					Abstract::State::properties.body = this->body.c_str();
+					Object::properties.icon = "dialog-error";
+					Object::properties.summary = this->summary.c_str();
 				}
 
 			};
 
-			return make_shared<Error>(summary,e);
+			return make_shared<Error>(summary,except);
 
 		}
 
 		/// @brief System Error State
-		class SysError : public Udjat::State<int> {
+		class SysError : public Abstract::State {
 		private:
+
+			// Use string to keep the contents.
 			string summary;
 			string body;
+			int code;
 
 		public:
-			SysError(const char *s, const system_error *e) : Udjat::State<int>("error",e->code().value(),Udjat::critical),summary(s),body(e->what()) {
-				Abstract::State::body = this->body.c_str();
-				Abstract::State::summary = this->summary.c_str();
+			SysError(const char *s, const system_error *e) : Abstract::State("error",Udjat::critical), summary(s), body(e->what()), code(e->code().value()) {
+				Abstract::State::properties.body = this->body.c_str();
+				Object::properties.icon = "dialog-error";
+				Object::properties.summary = this->summary.c_str();
+			}
+
+			Value & getProperties(Value &value) const noexcept override {
+				Abstract::State::getProperties(value);
+				value["syscode"] = code;
+				return value;
 			}
 
 		};

@@ -1,6 +1,7 @@
 
 
 #include "private.h"
+#include <udjat/moduleinfo.h>
 
 using namespace std;
 
@@ -50,7 +51,7 @@ namespace Udjat {
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << worker->c_str() << "\tInserting worker" << endl;
+		cout << "workers\tRegister '" << worker->name << "' (" << worker->module.description << ") " << endl;
 		workers.insert(make_pair(worker->c_str(),worker));
 
 	}
@@ -65,7 +66,7 @@ namespace Udjat {
 		if(entry->second != worker)
 			return;
 
-		cout << worker->c_str() << "\tRemoving worker" << endl;
+		cout << "workers\tUnregister '" << worker->name << "' (" << worker->module.description << ") " << endl;
 		workers.erase(entry);
 
 	}
@@ -79,7 +80,7 @@ namespace Udjat {
 			Value &object = response.append(Value::Object);
 
 			object["name"] = worker.second->name;
-			worker.second->info->get(object);
+			worker.second->module.get(object);
 
 		}
 

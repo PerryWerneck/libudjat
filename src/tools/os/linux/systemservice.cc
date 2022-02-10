@@ -70,7 +70,8 @@
 
 	SystemService::~SystemService() {
 		if(instance == this) {
-			cerr << Application::Name() << "\tSystem service destroyed without deinitialization" << endl;
+			deinit();
+			instance = nullptr;
 		}
 	}
 
@@ -148,7 +149,7 @@
 				case 'f':	// Run in foreground.
 					try {
 
-						Logger::redirect(nullptr,true);
+						Logger::redirect(true);
 						cout << appname << "\tStarting in application mode" << endl;
 						init();
 						rc = run();

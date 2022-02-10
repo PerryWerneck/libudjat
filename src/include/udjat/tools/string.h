@@ -22,7 +22,8 @@
  #include <udjat/defs.h>
  #include <string>
  #include <iostream>
-
+ #include <vector>
+ #include <functional>
 
  namespace Udjat {
 
@@ -66,6 +67,64 @@
 	UDJAT_API std::string & strip(std::string &str) noexcept;
 
 	UDJAT_API std::string strip(const char *str, ssize_t length = -1);
+
+	/**
+	 * @brief String with 'extras'
+	 *
+	 */
+	class UDJAT_API String : public std::string {
+	public:
+		String() : std::string() {
+		}
+
+		String(const char *str) : std::string(str) {
+		}
+
+		String(const char *str, size_t length) : std::string(str,length) {
+		}
+
+		/**
+		 * @brief Expand ${} macros.
+		 * @param expander value expander method.
+		 * @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+		 * @param cleanup if true remove the non existent values from string.
+		 */
+		String & expand(const std::function<bool(const char *key, std::string &value)> &expander, bool dynamic = false, bool cleanup = false);
+
+		/**
+		 * @brief Expand ${} macros.
+		 *
+		 */
+		// String & expand();
+
+		String & strip() noexcept;
+
+		std::vector<String> split(const char *delim);
+
+		/**
+		 * @brief Remove the leading whitespace from the string.
+		 *
+		 * Removes leading whitespace from a string, by moving the rest
+		 * of the characters forward.
+		 *
+		 * @see chomp() and strip().
+		 *
+		 * @return The string.
+		 *
+		 */
+		String & chug() noexcept;
+
+		/**
+		 * @brief Removes trailing whitespace from a string.
+		 *
+		 * @see chug() and strip().
+		 *
+		 * @return The string.
+		 *
+		 */
+		String & chomp() noexcept;
+
+	};
 
  }
 

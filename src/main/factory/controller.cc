@@ -1,6 +1,7 @@
 
 #include "private.h"
 #include <iostream>
+#include <udjat/moduleinfo.h>
 
 using namespace std;
 
@@ -23,7 +24,7 @@ namespace Udjat {
 			Value &value  = response.append(Value::Object);
 
 			value["name"] = factory.second->name;
-			factory.second->info->get(value);
+			factory.second->info.get(value);
 
 		}
 
@@ -31,13 +32,9 @@ namespace Udjat {
 
 	void Factory::Controller::insert(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
-
-		cout << factory->name << "\tFactory registered" << endl;
-
+		cout << "factories\tRegister '" << factory->name << "' (" << factory->info.description << ")" << endl;
 		factories.insert(make_pair(factory->name,factory));
-
 	}
-
 
 	const Factory * Factory::Controller::find(const char *name) {
 		lock_guard<recursive_mutex> lock(guard);
@@ -53,7 +50,7 @@ namespace Udjat {
 	void Factory::Controller::remove(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << factory->name << "\tFactory unregistered" << endl;
+		cout << "factories\tUnregister '" << factory->name << "' (" << factory->info.description << ")" << endl;
 
 		auto entry = factories.find(factory->name);
 		if(entry == factories.end())

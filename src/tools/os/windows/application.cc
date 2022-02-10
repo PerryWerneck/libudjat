@@ -124,6 +124,17 @@
 		mkdir(c_str());
 	}
 
+	void Application::LibDir::reset(const char *application_name, const char *subdir) {
+		// TODO: Search application_name install dir on registry.
+		assign(Application::Path());
+		append(subdir);
+		append("\\");
+	}
+
+	Application::LibDir::operator bool() const noexcept {
+		return (access(c_str(), R_OK) == 0);
+	}
+
 	Application::SysConfigDir::SysConfigDir() : string(Application::Path()) {
 	}
 

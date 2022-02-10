@@ -18,26 +18,42 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/object.h>
+ #include <udjat/tools/string.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
  namespace Udjat {
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	bool Abstract::Agent::assign(const char *value) {
-		throw system_error(ENOTSUP,system_category(),string{"Agent '"} + name() + "' doesnt allow assign method");;
-	}
-	#pragma GCC diagnostic pop
+	bool Abstract::Agent::getProperty(const char *key, std::string &value) const noexcept {
 
-	void Abstract::Agent::setOndemand() noexcept {
-
-		update.on_demand = true;
-
-		if(update.timer) {
-			cout << name() << "Disabling timer update (" << update.timer << " seconds)" << endl;
-			update.timer = 0;
+		// Agent value
+		if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
+			value = to_string();
+			return true;
 		}
+
+		// Agent path.
+		if( !(strcasecmp(key,"path") && strcasecmp(key,"agent.path")) ) {
+			value = path();
+			return true;
+		}
+
+		if(Object::getProperty(key, value))
+			return true;
+
+		// Not found, search related objects.
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto object : objects) {
+				if(object->getProperty(key,value)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+
 	}
 
  }

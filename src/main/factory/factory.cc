@@ -3,17 +3,16 @@
 #include "private.h"
 #include <udjat/agent.h>
 #include <udjat/state.h>
+#include <udjat/moduleinfo.h>
 
 using namespace std;
 
 namespace Udjat {
 
-	static const ModuleInfo moduleinfo;
-
-	Factory::Factory(const char *name) : Factory(name,&moduleinfo) {
+	Factory::Factory(const char *name) : Factory(name,ModuleInfo::getInstance()) {
 	}
 
-	Factory::Factory(const char *n, const ModuleInfo *i) : name(n), info(i) {
+	Factory::Factory(const char *n, const ModuleInfo &i) : name(n), info(i) {
 		Controller::getInstance().insert(this);
 	}
 

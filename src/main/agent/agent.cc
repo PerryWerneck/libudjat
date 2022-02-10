@@ -36,9 +36,17 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Logger(name ? name : "") {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Object( (name && *name) ? name : "unnamed") {
 
-		state.active = Agent::stateFromValue();
+		if(label && *label) {
+			Object::properties.label = label;
+		}
+
+		if(summary && *summary) {
+			Object::properties.summary = summary;
+		}
+
+		current_state.active = Agent::stateFromValue();
 
 		try {
 
@@ -54,12 +62,9 @@ namespace Udjat {
 
 		}
 
-		this->label = Quark((label ? label : name)).c_str();
-		this->summary = Quark(summary).c_str();
-
 	}
 
-	Abstract::Agent::Agent(const pugi::xml_node UDJAT_UNUSED(&node)) : Abstract::Agent() {
+	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(Quark(node,"name","unnamed",false).c_str()) {
 	}
 
 	Abstract::Agent::~Agent() {
@@ -75,23 +80,31 @@ namespace Udjat {
 
 	void Abstract::Agent::stop() {
 
-#ifdef DEBUG
-		cout << getName() << "\tStopping agent" << endl;
-#endif // DEBUG
-
 		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto child : children) {
 
+		for(auto childptr = children.rbegin(); childptr != children.rend(); childptr++) {
+
+			auto agent = *childptr;
 			try {
 
-				child->stop();
+				agent->stop();
 
 			} catch(const exception &e) {
 
-				child->failed("Agent stop has failed",e);
+				agent->error() << "Error '" << e.what() << "' while stopping" << endl;
+
+			} catch(...) {
+
+				agent->error() << "Unexpected error while stopping" << endl;
 
 			}
+
 		}
+
+#ifdef DEBUG
+		info() << "Stopping agent" << endl;
+#endif // DEBUG
+
 	}
 
 	void Abstract::Agent::head(Response &response) {
@@ -135,49 +148,28 @@ namespace Udjat {
 
 	}
 
-	/*
-	Json::Value & Abstract::Agent::setup(const Request &request, Response &response) {
-
-		chk4refresh(true);
-
-		if(update.expires && update.expires > time(nullptr))
-			response.setExpirationTimestamp(update.expires);
-
-		if(update.last)
-			response.setModificationTimestamp(update.last);
-
-		return response;
-	}
-	*/
-
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_state(const pugi::xml_node &node) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + getName() + "' doesnt allow states");
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Abstract::Agent::append_alert(const pugi::xml_node &node) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + getName() + "' doesnt allow alerts");
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
 	}
 	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 
-		static const Udjat::ModuleInfo moduleinfo {
-			PACKAGE_NAME,									// The module name.
-			"State factory",			 					// The module description.
-			PACKAGE_VERSION, 								// The module version.
-			PACKAGE_URL, 									// The package URL.
-			PACKAGE_BUGREPORT 								// The bugreport address.
-		};
+		static const Udjat::ModuleInfo moduleinfo{ "State factory" };
 
 		class DefaultState : public Abstract::State, Factory {
 		public:
 
-			DefaultState() : Abstract::State(""), Factory("state", &moduleinfo) {
+			DefaultState() : Abstract::State(""), Factory("state", moduleinfo) {
 			}
 
 			~DefaultState() {
