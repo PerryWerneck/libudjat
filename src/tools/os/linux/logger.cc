@@ -9,6 +9,34 @@ using namespace std;
 
 namespace Udjat {
 
+	class Buffer : public std::string {
+	public:
+		Buffer(const Buffer &src) = delete;
+		Buffer(const Buffer *src) = delete;
+
+		Buffer() : std::string() {
+		}
+
+		bool push_back(int c) {
+
+			if(c == EOF || c == '\n') {
+				return true;
+			}
+
+			if(c >= ' ' || c == '\t') {
+				std::string::push_back(c);
+			}
+
+			return false;
+		}
+
+	};
+
+	static Buffer & getInstance(uint8_t id) {
+		static Buffer instances[3];
+		return instances[id];
+	}
+
 	Logger::~Logger() {
 	}
 
@@ -43,23 +71,16 @@ namespace Udjat {
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void Logger::redirect(const char *filename, bool console) {
 
-		/// @brief Mutex para serialização.
 		static std::mutex guard;
 
 		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
 		private:
 
+			/// @brief The buffer id.
+			uint8_t id;
+
 			/// @brief Send output to console?
 			bool console;
-			/// @brief Buffer contendo a linha de log.
-			std::string buffer;
-
-		protected:
-
-			/// @brief Writes characters to the associated file from the put area
-			int sync() override {
-				return 0;
-			}
 
 			void write(int fd, const std::string &str) {
 
@@ -78,9 +99,7 @@ namespace Udjat {
 
 			}
 
-			void write() {
-
-				lock_guard<std::mutex> lock(guard);
+			void write(Buffer &buffer) {
 
 				// Remove spaces
 				size_t len = buffer.size();
@@ -156,21 +175,29 @@ namespace Udjat {
 
 			}
 
+		protected:
+
+			/// @brief Writes characters to the associated file from the put area
+			int sync() override {
+				return 0;
+			}
+
 			/// @brief Writes characters to the associated output sequence from the put area.
 			int overflow(int c) override {
 
-				if(c == EOF || c == '\n' || c == '\r') {
-					write();
-				} else {
-					lock_guard<std::mutex> lock(guard);
-					buffer += static_cast<char>(c);
+				lock_guard<std::mutex> lock(guard);
+				Buffer & buffer = getInstance(id);
+
+				if(buffer.push_back(c)) {
+					write(buffer);
 				}
 
 				return c;
+
 			}
 
 		public:
-			Writer(bool c) : console(c) {
+			Writer(uint8_t i, bool c) : id(i), console(c) {
 			}
 
 			~Writer() {
@@ -178,9 +205,9 @@ namespace Udjat {
 
 		};
 
-		std::clog.rdbuf(new Writer(console));
-		std::cout.rdbuf(new Writer(console));
-		std::cerr.rdbuf(new Writer(console));
+		std::cout.rdbuf(new Writer(0,console));
+		std::clog.rdbuf(new Writer(1,console));
+		std::cerr.rdbuf(new Writer(2,console));
 
 	}
 	#pragma GCC diagnostic pop

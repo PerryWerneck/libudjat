@@ -337,7 +337,7 @@
 
 				this->value = value;
 #ifdef DEBUG
-				std::cout << name() << Logger::Message("Value set to {}",this->value) << std::endl;
+				info() << Logger::Message("Value set to {}",this->value) << std::endl;
 #endif // DEBUG
 				return updated(true);
 			}
