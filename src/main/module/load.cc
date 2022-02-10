@@ -138,7 +138,7 @@ namespace Udjat {
 		}
 
 		// Load module
-		clog << "module\tLoading '" << filename << "'" << endl;
+		cout << "module\tLoading '" << filename << "'" << endl;
 
 		Module * (*init)(void);
 		Module * module = nullptr;

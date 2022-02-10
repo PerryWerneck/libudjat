@@ -2,13 +2,19 @@
 #include <config.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/timestamp.h>
+#include <udjat/tools/application.h>
 #include <mutex>
 #include <unistd.h>
+#include <syslog.h>
+#include <udjat/tools/quark.h>
 
 using namespace std;
 
 namespace Udjat {
 
+	//
+	// @brief Log buffer
+	//
 	class Buffer : public std::string {
 	public:
 		Buffer(const Buffer &src) = delete;
@@ -37,6 +43,41 @@ namespace Udjat {
 		return instances[id];
 	}
 
+	//
+	// Syslog writer
+	//
+	class SysWriter {
+	private:
+		SysWriter() {
+			::openlog(Quark(Application::Name()).c_str(), LOG_PID, LOG_DAEMON);
+		}
+
+	public:
+		~SysWriter() {
+			::closelog();
+		}
+
+		SysWriter(const SysWriter &src) = delete;
+		SysWriter(const SysWriter *src) = delete;
+
+		static SysWriter & getInstance();
+
+		void write(uint8_t id, const char *message) {
+			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR};
+			syslog(priority[id],"%s",message);
+
+		}
+
+	};
+
+	SysWriter & SysWriter::getInstance() {
+		static SysWriter instance;
+		return instance;
+	}
+
+	//
+	// Logger
+	//
 	Logger::~Logger() {
 	}
 
@@ -118,6 +159,9 @@ namespace Udjat {
 					return;
 				}
 
+				// Get '\t' position.
+				auto pos = buffer.find("\t");
+
 				// If enable write console output.
 				if(console) {
 
@@ -145,7 +189,6 @@ namespace Udjat {
 					char module[12];
 					memset(module,' ',sizeof(module));
 
-					auto pos = buffer.find("\t");
 					if(pos == string::npos) {
 
 						module[sizeof(module)-1] = 0;
@@ -169,6 +212,25 @@ namespace Udjat {
 
 					write(1,"\n");
 					fsync(1);
+				}
+
+				{
+					size_t length = buffer.size()+2;
+					char tmp[length+1];
+					size_t ix = 0;
+					for(const char *ptr = buffer.c_str(); *ptr && ix < length; ptr++) {
+						if(*ptr == '\t') {
+							tmp[ix++] = ':';
+							tmp[ix++] = ' ';
+						} else if(*ptr < ' ') {
+							tmp[ix++] = '?';
+						} else {
+							tmp[ix++] = *ptr;
+						}
+					}
+					tmp[ix] = 0;
+
+					SysWriter::getInstance().write(id,tmp);
 				}
 
 				buffer.erase();

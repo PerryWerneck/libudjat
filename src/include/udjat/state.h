@@ -25,6 +25,7 @@
 	#include <udjat/tools/value.h>
 	#include <udjat/tools/object.h>
 	#include <cstring>
+	#include <ostream>
 
 	namespace Udjat {
 
@@ -60,6 +61,9 @@
 
 		/// @brief Get level from XML node.
 		UDJAT_API Level LevelFactory(const pugi::xml_node &node);
+
+		/// @brief Get OStream from level.
+		UDJAT_API std::ostream & LogFactory(Udjat::Level level);
 
 		namespace Abstract {
 

@@ -176,7 +176,7 @@ namespace Udjat {
 
 		if(root) {
 
-			clog << "agent\tStarting controller" << endl;
+			cout << "agent\tStarting controller" << endl;
 
 			try {
 				root->start();

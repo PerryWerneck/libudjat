@@ -96,6 +96,15 @@ namespace Udjat {
 		});
 	}
 
+	std::ostream & LogFactory(Udjat::Level level) {
+		if(level >= Udjat::error) {
+			return cerr;
+		} else if(level >= Udjat::warning) {
+			return clog;
+		}
+		return cout;
+	}
+
 	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
 
 		// It's an empty state?.
@@ -108,22 +117,29 @@ namespace Udjat {
 			return false;
 
 		string value = to_string();
+		auto level = state->level();
 
 		if(value.empty()) {
-			info()	<< "Current state changes from'"
-					<< this->current_state.active
-					<< "' to '"
-					<< state
-					<< "(" << state->level() << ")"
-					<< endl;
+
+			LogFactory(level)
+				<< name()
+				<< "\tCurrent state changes from'"
+				<< this->current_state.active
+				<< "' to '"
+				<< state
+				<< "(" << level << ")"
+				<< endl;
 
 		} else {
-			info()	<< "Value '" << value << "' changes state from '"
-					<< this->current_state.active->summary()
-					<< "' to '"
-					<< state->summary()
-					<< "(" << state->level() << ")"
-					<< endl;
+
+			LogFactory(level)
+				<< name()
+				<< "\tValue '" << value << "' changes state from '"
+				<< this->current_state.active->summary()
+				<< "' to '"
+				<< state->summary()
+				<< "(" << level << ")"
+				<< endl;
 		}
 
 		Udjat::Level saved_level = this->level();

@@ -270,14 +270,6 @@
 				/// @return true if the property was found.
 				bool getProperty(const char *key, std::string &value) const noexcept override;
 
-				/// @brief Get property.
-				/// @param key The property name.
-				/// @return The property value (empty if the property doesnt exists).
-				// std::string operator[](const char *key) const noexcept;
-
-				/// @brief Expand ${} tags on string.
-				// std::string expand(const char *text) const;
-
 			};
 
 		}
