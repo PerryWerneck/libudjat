@@ -55,8 +55,11 @@ namespace Udjat {
 				// Create alerts.
 				try {
 
-					if(!AlertFactory(node)) {
-						error() << "Unable to create child state" << endl;
+					auto alert = AlertFactory(node);
+					if(alert) {
+						push_back(alert);
+					} else {
+						error() << "Unable to create child alert" << endl;
 					}
 
 				} catch(const std::exception &e) {

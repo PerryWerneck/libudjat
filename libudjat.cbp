@@ -89,6 +89,7 @@
 		<Unit filename="src/include/udjat/win32/utils.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
+		<Unit filename="src/main/agent/alertfactory.cc" />
 		<Unit filename="src/main/agent/child.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/get.cc" />
@@ -101,7 +102,6 @@
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
-		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/abstract.cc" />
 		<Unit filename="src/main/alert/activation.cc" />
@@ -128,6 +128,7 @@
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
 		<Unit filename="src/main/service/private.h" />
+		<Unit filename="src/main/state/alertfactory.cc" />
 		<Unit filename="src/main/state/level.cc" />
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />

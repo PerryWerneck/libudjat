@@ -29,34 +29,78 @@
 
  namespace Udjat {
 
-	/*
-	static const Udjat::ModuleInfo moduleinfo { "Alert factory" };
+	std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *name) {
 
-	Alert::Factory::Factory() : Udjat::Factory("alert",moduleinfo) {
-	}
+		std::shared_ptr<Abstract::Alert> alert;
 
-	std::shared_ptr<Abstract::Alert> Alert::Factory::AlertFactory(const pugi::xml_node &node) const {
-		return make_shared<Alert>(node);
-	}
+		if(!name) {
+			name = Object::getAttribute(node,"alert-defaults","type","default");
+		}
 
-	bool Alert::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
-		try {
+#ifdef DEBUG
+		cout << "alerts\tCreating alert '" << name << "'" << endl;
+#endif // DEBUG
 
-			parent.AlertFactory(node);
+		if(strcasecmp(name,"default")) {
 
-		} catch(const std::exception &e) {
+			// It's not the default alert, search for factory.
+			if(!Factory::for_each(name,[&alert,node](const Factory &factory){
 
-			cerr << "alerts\t" << e.what() << endl;
-			return false;
+				try {
+
+					alert = factory.AlertFactory(node);
+					if(alert) {
+						return true;
+					}
+
+				} catch(const std::exception &e) {
+
+					factory.error() << "Error '" << e.what() << "' creating alert" << endl;
+
+				} catch(...) {
+
+					factory.error() << "Unexpected error creating alert" << endl;
+
+				}
+
+				return false;
+
+			})) {
+
+				cerr << "alerts\tUnable to create the required alert" << endl;
+
+			}
+
+		} else {
+
+			// It's the default alert, search for a valid factory, first, search upstream.
+			int level = (int) Object::getAttribute(node,"alert-defaults","upstream-levels",(unsigned int) 3);
+			auto alertnode = node;
+			while(alertnode && alertnode.attribute("allow-upstream").as_bool(true) && level-- > 0) {
+
+#ifdef DEBUG
+				cout << "alerts\tSearching for alerts on '" << alertnode.name() << "'" << endl;
+#endif // DEBUG
+				const Factory * factory = Factory::find(alertnode.name());
+				if(factory) {
+					alert = factory->AlertFactory(node);
+					if(alert) {
+						cout << "alerts\tUsing alert engine from '" << factory->name() << "'" << endl;
+						break;
+					}
+				}
+				alertnode = alertnode.parent();
+			}
+
+			if(!alert) {
+				cout << "alerts\tUsing the default alert engine" << endl;
+				alert = make_shared<Udjat::Alert>(node);
+			}
 
 		}
-		return true;
-	}
 
-	bool Alert::Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-		parent.append(AlertFactory(node));
-		return true;
+		return alert;
+
 	}
-	*/
 
  }

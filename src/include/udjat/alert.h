@@ -164,6 +164,9 @@
 
 	}
 
+	/// @brief Create an alert from XML description;
+	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *name = nullptr);
+
 	/// @brief Default alert (based on URL and payload).
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:

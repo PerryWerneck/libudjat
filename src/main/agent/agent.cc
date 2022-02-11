@@ -160,42 +160,6 @@ namespace Udjat {
 		error() << "This agent is unable to handle alerts." << endl;
 	}
 
-	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
-
-		const char *name = getAttribute(node,"alert-defaults","type","default");
-
-		if(strcasecmp(name,"default")) {
-
-			// It's not the default alert, search for factory.
-			std::shared_ptr<Abstract::Alert> alert;
-			Factory::for_each(name,[node,&alert](const Factory &factory){
-
-				try {
-
-					alert = factory.AlertFactory(node);
-
-				} catch(const std::exception &e) {
-
-					factory.error() << "Error '" << e.what() << "' creating alert" << endl;
-
-				} catch(...) {
-
-					factory.error() << "Unexpected error creating alert" << endl;
-
-				}
-
-				return (bool) alert;
-			});
-
-			return alert;
-
-		}
-
-		// Create default alert.
-		return make_shared<Udjat::Alert>(node);
-
-	}
-
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;
 		if(!instance) {

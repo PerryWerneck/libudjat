@@ -19,26 +19,22 @@
 
 /**
  *
- * @brief Implements the state alert factory.
+ * @brief Implements the agent alert factory method
  *
  * @author perry.werneck@gmail.com
  *
  */
 
  #include "private.h"
-
- using namespace std;
+ #include <cstring>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> Abstract::State::AlertFactory(const pugi::xml_node &node, const char *type) {
-		auto alert = Udjat::AlertFactory(node, type);
-		if(alert) {
-			alerts.push_back(alert);
-		}
-		return alert;
+	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
+		return Udjat::AlertFactory(node);
 	}
+
 
 }

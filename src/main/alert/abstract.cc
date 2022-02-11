@@ -61,7 +61,7 @@
 		restart.success = getAttribute(node,section,"restart-when-succeeded",restart.success);
 
 #ifdef DEBUG
-		cout << c_str() << "\tAlert created" << endl;
+		info() << "Alert created ***" << endl;
 #endif // DEBUG
 
 	}
