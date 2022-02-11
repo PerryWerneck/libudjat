@@ -42,7 +42,7 @@
 	bool Alert::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 		try {
 
-			parent.append_alert(node);
+			parent.AlertFactory(node);
 
 		} catch(const std::exception &e) {
 

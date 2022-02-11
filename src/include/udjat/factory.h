@@ -52,6 +52,11 @@
 			return factory_name;
 		}
 
+		/// @brief Find factory by name.
+		/// @param name Factory name.
+		/// @return The factory with the requested name or nullptr if not found.
+		static const Factory * find(const char *name);
+
 		static void getInfo(Response &response);
 
 		/// @brief Execute function in all registered factories until it returns true.

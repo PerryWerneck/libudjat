@@ -50,6 +50,25 @@ namespace Udjat {
 
 				}
 
+			} else if(!strcasecmp(node.name(),"alert")) {
+
+				// Create alerts.
+				try {
+
+					if(!AlertFactory(node)) {
+						error() << "Unable to create child state" << endl;
+					}
+
+				} catch(const std::exception &e) {
+
+					error() << "Error '" << e.what() << "' parsing state definition" << endl;
+
+				} catch(...) {
+
+					error() << "Unexpected error parsing state definition" << endl;
+
+				}
+
 			} else if(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module")) {
 
 				// Use factory to parse child nodes.

@@ -29,6 +29,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/object.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -155,12 +156,45 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::append_alert(const pugi::xml_node &node) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
+	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
+		error() << "This agent is unable to handle alerts." << endl;
 	}
-	#pragma GCC diagnostic pop
+
+	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
+
+		const char *name = getAttribute(node,"alert-defaults","type","default");
+
+		if(strcasecmp(name,"default")) {
+
+			// It's not the default alert, search for factory.
+			std::shared_ptr<Abstract::Alert> alert;
+			Factory::for_each(name,[node,&alert](const Factory &factory){
+
+				try {
+
+					alert = factory.AlertFactory(node);
+
+				} catch(const std::exception &e) {
+
+					factory.error() << "Error '" << e.what() << "' creating alert" << endl;
+
+				} catch(...) {
+
+					factory.error() << "Unexpected error creating alert" << endl;
+
+				}
+
+				return (bool) alert;
+			});
+
+			return alert;
+
+		}
+
+		// Create default alert.
+		return make_shared<Udjat::Alert>(node);
+
+	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;

@@ -69,9 +69,75 @@ namespace Udjat {
 
 		for(pugi::xml_node child : node) {
 
-			if(strcasecmp(node.name(),"attribute")) {
+			if(!strcasecmp(child.name(),"alert")) {
 
-				// Parse generic node.
+				const char *name = getAttribute(child,"alert-defaults","type","default");
+
+#ifdef DEBUG
+				info() << "Creating alert '" << name << "'" << endl;
+#endif // DEBUG
+
+				if(strcasecmp(name,"default")) {
+
+					// It's not the default alert, search for factory.
+					if(!Factory::for_each(name,[this,child](const Factory &factory){
+
+						try {
+
+							auto alert = factory.AlertFactory(child);
+							if(alert) {
+								alerts.push_back(alert);
+								return true;
+							}
+
+						} catch(const std::exception &e) {
+
+							factory.error() << "Error '" << e.what() << "' creating alert" << endl;
+
+						} catch(...) {
+
+							factory.error() << "Unexpected error creating alert" << endl;
+
+						}
+
+						return false;
+
+					})) {
+
+						error() << "Unable to create the required alert" << endl;
+
+					}
+
+				} else {
+
+					std::shared_ptr<Abstract::Alert> alert;
+
+					// First, try the node and state parent names.
+					const char *names[] = { node.parent().name(), node.name() };
+
+					for(size_t ix = 0; !alert && ix < (sizeof(names)/sizeof(names[0])); ix++) {
+						const Factory * factory = Factory::find(names[ix]);
+						if(factory) {
+							alert = factory->AlertFactory(child);
+							if(alert) {
+								info() << "Using alert engine from '" << factory->name() << "'" << endl;
+								break;
+							}
+						}
+					}
+
+					if(!alert) {
+						info() << "Using the default alert engine" << endl;
+						alert = make_shared<Udjat::Alert>(child);
+					}
+
+					alerts.push_back(alert);
+
+				}
+
+			} else if(strcasecmp(child.name(),"attribute")) {
+
+				// Parse child using factories.
 				Factory::for_each(child.name(),[this,&child](const Factory & factory){
 
 					try {

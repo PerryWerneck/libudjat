@@ -46,6 +46,9 @@
 		// bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const;
 		// bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const;
 
+		/// @brief Find factory by name.
+		/// @param name Factory name.
+		/// @return The requested factory or nullptr.
 		const Factory * find(const char *name);
 
 		//void getInfo(Response &response) noexcept;

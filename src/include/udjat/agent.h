@@ -147,6 +147,9 @@
 				/// @brief Insert child node.
 				void insert(std::shared_ptr<Agent> child);
 
+				/// @brief Insert Alert.
+				virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
+
 				/// @brief Insert object.
 				void push_back(std::shared_ptr<Abstract::Object> object);
 
@@ -253,7 +256,7 @@
 				virtual std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
 
 				/// @brief Insert Alert.
-				virtual void append_alert(const pugi::xml_node &node);
+				virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node);
 
 				/// @brief Get property from the agent os related objects.
 				/// @param key The property name.

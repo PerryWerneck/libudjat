@@ -46,6 +46,10 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
+	const Factory * Factory::find(const char *name) {
+		return Controller::getInstance().find(name);
+	}
+
 	bool Factory::for_each(std::function<bool(const Factory &factory)> func) {
 		return Controller::getInstance().for_each(nullptr,func);
 	}
