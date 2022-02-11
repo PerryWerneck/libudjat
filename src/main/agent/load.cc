@@ -31,9 +31,28 @@ namespace Udjat {
 		// Load children
 		for(pugi::xml_node node : root) {
 
-			// Skip reserved names.
-			if(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module")) {
+			if(!strcasecmp(node.name(),"state")) {
 
+				// Create states.
+				try {
+
+					if(!StateFactory(node)) {
+						error() << "Unable to create child state" << endl;
+					}
+
+				} catch(const std::exception &e) {
+
+					error() << "Error '" << e.what() << "' parsing state definition" << endl;
+
+				} catch(...) {
+
+					error() << "Unexpected error parsing state definition" << endl;
+
+				}
+
+			} else if(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module")) {
+
+				// Use factory to parse child nodes.
 				Factory::for_each(node.name(),[this,&node](const Factory &factory){
 
 					try {

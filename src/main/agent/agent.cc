@@ -163,29 +163,13 @@ namespace Udjat {
 	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
+		static shared_ptr<Abstract::State> instance;
+		if(!instance) {
+			cout << "states\tCreating default state" << endl;
+			instance = make_shared<Abstract::State>("");
+		}
 
-		static const Udjat::ModuleInfo moduleinfo{ "State factory" };
-
-		class DefaultState : public Abstract::State, Factory {
-		public:
-
-			DefaultState() : Abstract::State(""), Factory("state", moduleinfo) {
-			}
-
-			~DefaultState() {
-			}
-
-			bool parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
-				agent.StateFactory(node);
-				return true;
-			}
-
-		};
-
-		static shared_ptr<Abstract::State> state(new DefaultState());
-
-		return state;
-
+		return instance;
 	}
 
 }
