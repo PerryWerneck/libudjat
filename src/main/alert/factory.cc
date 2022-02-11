@@ -33,70 +33,20 @@
 
 		std::shared_ptr<Abstract::Alert> alert;
 
-		if(!name) {
-			name = Object::getAttribute(node,"alert-defaults","type","default");
+		if(Factory::search(node,[&alert](const Factory &factory, const pugi::xml_node &node){
+			alert = factory.AlertFactory(node);
+			if(alert) {
+				alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
+				return true;
+			}
+			return false;
+		},name)) {
+			return alert;
 		}
 
-#ifdef DEBUG
-		cout << "alerts\tCreating alert '" << name << "'" << endl;
-#endif // DEBUG
-
-		if(strcasecmp(name,"default")) {
-
-			// It's not the default alert, search for factory.
-			if(!Factory::for_each(name,[&alert,node](const Factory &factory){
-
-				try {
-
-					alert = factory.AlertFactory(node);
-					if(alert) {
-						return true;
-					}
-
-				} catch(const std::exception &e) {
-
-					factory.error() << "Error '" << e.what() << "' creating alert" << endl;
-
-				} catch(...) {
-
-					factory.error() << "Unexpected error creating alert" << endl;
-
-				}
-
-				return false;
-
-			})) {
-
-				cerr << "alerts\tUnable to create the required alert" << endl;
-
-			}
-
-		} else {
-
-			// It's the default alert, search for a valid factory, first, search upstream.
-			int level = (int) Object::getAttribute(node,"alert-defaults","upstream-levels",(unsigned int) 3);
-			auto alertnode = node;
-			while(alertnode && alertnode.attribute("allow-upstream").as_bool(true) && level-- > 0) {
-
-#ifdef DEBUG
-				cout << "alerts\tSearching for alerts on '" << alertnode.name() << "'" << endl;
-#endif // DEBUG
-				const Factory * factory = Factory::find(alertnode.name());
-				if(factory) {
-					alert = factory->AlertFactory(node);
-					if(alert) {
-						cout << "alerts\tUsing alert engine from '" << factory->name() << "'" << endl;
-						break;
-					}
-				}
-				alertnode = alertnode.parent();
-			}
-
-			if(!alert) {
-				cout << "alerts\tUsing the default alert engine" << endl;
-				alert = make_shared<Udjat::Alert>(node);
-			}
-
+		alert = make_shared<Udjat::Alert>(node);
+		if(alert->verbose()) {
+			alert->info() << "Using the default alert engine" << endl;
 		}
 
 		return alert;

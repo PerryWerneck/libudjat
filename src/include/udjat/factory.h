@@ -59,6 +59,13 @@
 
 		static void getInfo(Response &response);
 
+		/// @brief Search factory for xml defined element.
+		/// @param node XML node to start searching for.
+		/// @param call Lamba call to test for valid factory.
+		/// @param typeattribute The name of the optional attribute with the factory name.
+		/// @return true if the lambda has returned true.
+		static bool search(const pugi::xml_node &node, const std::function<bool(const Factory &, const pugi::xml_node &)> &call, const char *typeattribute = "type");
+
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.

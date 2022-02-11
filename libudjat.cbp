@@ -112,6 +112,7 @@
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />
+		<Unit filename="src/main/factory/search.cc" />
 		<Unit filename="src/main/file/private.h" />
 		<Unit filename="src/main/load/xml.cc" />
 		<Unit filename="src/main/module/controller.cc" />
