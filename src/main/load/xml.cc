@@ -101,14 +101,12 @@
 
 	}
 
-	static time_t load(std::shared_ptr<Abstract::Agent> root, const char *filename) {
-
-		Application::Name appname;
+	static time_t load_file(std::shared_ptr<Abstract::Agent> root, const char *filename) {
 
 		pugi::xml_document doc;
 		auto result = doc.load_file(filename);
 		if(result.status != pugi::status_ok) {
-			cerr << appname << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
+			root->error() << "Error parsing '" << filename << "' (" << result.description() << "'" << endl;
 			return 0;
 		}
 
@@ -136,9 +134,58 @@
 	/// @param pathname Path to a single xml file or a folder with xml files.
 	static time_t activate(const char *pathname) {
 		auto root = RootAgentFactory();
-		time_t timer = load(root,pathname);
+		time_t timer = load_file(root,pathname);
 		setRootAgent(root);
 		return timer;
+	}
+
+	UDJAT_API time_t load(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
+
+		time_t timer = 0;
+
+		struct stat pathstat;
+		if(stat(pathname, &pathstat) == -1) {
+			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",pathname));
+		}
+
+		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
+			//
+			// Load all XML files from pathname
+			//
+			File::List files((string{pathname} + "/*.xml").c_str());
+
+			// First load modules.
+			agent->info() << "Preparing" << endl;
+			files.forEach([](const char *filename){
+				prepare(filename,false);
+			});
+
+			agent->info() << "Loading configuration" << endl;
+			files.forEach([agent,&timer](const char *filename){
+				time_t tm = load(agent, filename);
+				if(!timer) {
+					timer = tm;
+				} else {
+					timer = std::min(timer,tm);
+				}
+			});
+
+
+		} else {
+
+			agent->info() << "Preparing " << pathname << endl;
+			if(!prepare(pathname,true)) {
+				throw runtime_error("Can't prepare definition file");
+			}
+
+			timer = load_file(agent,pathname);
+
+			setRootAgent(agent);
+
+		}
+
+		return timer;
+
 	}
 
 	UDJAT_API void load(const char *pathname) {
@@ -166,7 +213,7 @@
 			auto root = RootAgentFactory();
 
 			files.forEach([root](const char *filename){
-				load(root, filename);
+				load_file(root, filename);
 			});
 
 			setRootAgent(root);
