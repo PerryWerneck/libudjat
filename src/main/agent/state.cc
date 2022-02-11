@@ -23,7 +23,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(StateFactory(e,summary));
+		activate(Udjat::StateFactory(e,summary));
 
 	}
 
@@ -77,7 +77,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
 			this->current_state.activation = time(0);
 
 		} catch(...) {
@@ -157,7 +157,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
 			this->current_state.activation = time(0);
 
 		} catch(...) {

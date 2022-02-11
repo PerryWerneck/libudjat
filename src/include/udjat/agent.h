@@ -249,8 +249,8 @@
 					return this->current_state.active->level();
 				}
 
-				/// @brief Insert State.
-				virtual void append_state(const pugi::xml_node &node);
+				/// @brief Create and insert State.
+				virtual std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
 
 				/// @brief Insert Alert.
 				virtual void append_alert(const pugi::xml_node &node);
@@ -340,8 +340,10 @@
 			}
 
 			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				push_back(std::make_shared<State<T>>(node));
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
+				auto state =std::make_shared<State<T>>(node);
+				push_back(state);
+				return state;
 			}
 
 			std::string to_string() const override {
@@ -416,9 +418,10 @@
 				return !states.empty();
 			}
 
-			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				push_back(std::make_shared<State<std::string>>(node));
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
+				auto state = std::make_shared<State<std::string>>(node);
+				push_back(state);
+				return state;
 			}
 
 			std::string to_string() const override {
@@ -477,8 +480,10 @@
 			}
 
 			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				push_back(std::make_shared<State<bool>>(node));
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) {
+				auto state =std::make_shared<State<bool>>(node);
+				push_back(state);
+				return state;
 			}
 
 			std::string to_string() const override {

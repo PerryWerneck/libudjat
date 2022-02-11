@@ -150,7 +150,7 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::append_state(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const pugi::xml_node &node) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
@@ -176,7 +176,7 @@ namespace Udjat {
 			}
 
 			bool parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
-				agent.append_state(node);
+				agent.StateFactory(node);
 				return true;
 			}
 
