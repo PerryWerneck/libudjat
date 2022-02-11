@@ -163,15 +163,6 @@
 
 				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
 
-				/// @brief Initialize agent subsystem.
-				/// @return root agent.
-				// static std::shared_ptr<Abstract::Agent> init();
-
-				/// @brief Initialize agent subsystem, load agent descriptors.
-				/// @param path Path to agent descriptions.
-				/// @return root agent.
-				// static std::shared_ptr<Abstract::Agent> init(const char *path);
-
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
 				void load(const pugi::xml_node &node);

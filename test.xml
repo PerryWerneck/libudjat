@@ -28,7 +28,7 @@
 			<alert name='r0.0' url='${default-url}' />
 		</state>
 		
-		<state name='s1' value='1' summary='Random 1' alert-type='default' url='${default-url}' />
+		<state name='s1' value='1' summary='Random 1' alert-type='alert' url='${default-url}' />
 		<state name='s2' value='2' summary='Random 2' alert-type='default' url='${default-url}' />
 		<state name='s3' value='3' summary='Random 3' alert-type='default' url='${default-url}' />
 		<state name='s4' value='4' summary='Random 4' alert-type='default' url='${default-url}' />

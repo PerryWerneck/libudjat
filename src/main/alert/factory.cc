@@ -34,6 +34,10 @@
 	Alert::Factory::Factory() : Udjat::Factory("alert",moduleinfo) {
 	}
 
+	std::shared_ptr<Abstract::Alert> Alert::Factory::AlertFactory(const pugi::xml_node &node) const {
+		return make_shared<Alert>(node);
+	}
+
 	bool Alert::Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
 		try {
 
@@ -49,7 +53,7 @@
 	}
 
 	bool Alert::Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {
-		parent.append(make_shared<Alert>(node));
+		parent.append(AlertFactory(node));
 		return true;
 	}
 

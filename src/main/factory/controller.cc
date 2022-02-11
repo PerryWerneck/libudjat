@@ -15,6 +15,7 @@ namespace Udjat {
 		return instance;
 	}
 
+	/*
 	void Factory::Controller::getInfo(Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -23,77 +24,77 @@ namespace Udjat {
 
 			Value &value  = response.append(Value::Object);
 
-			value["name"] = factory.second->name;
-			factory.second->info.get(value);
+			value["name"] = factory->name();
+			factory->module.get(value);
 
 		}
 
 	}
+	*/
 
 	void Factory::Controller::insert(const Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
-		cout << "factories\tRegister '" << factory->name << "' (" << factory->info.description << ")" << endl;
-		factories.insert(make_pair(factory->name,factory));
+		cout << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+		factories.push_back(factory);
 	}
 
 	const Factory * Factory::Controller::find(const char *name) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		auto entry = factories.find(name);
-		if(entry == factories.end()) {
-			throw system_error(ENOENT,system_category(),string{"Cant find factory '"} + name + "'");
+		for(auto factory : factories) {
+			if(!strcasecmp(factory->name(),name)) {
+				return factory;
+			}
 		}
 
-		return entry->second;
+		throw system_error(ENOENT,system_category(),string{"Cant find factory '"} + name + "'");
 	}
 
 	void Factory::Controller::remove(const Factory *factory) {
+
+		cout << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+
 		lock_guard<recursive_mutex> lock(guard);
-
-		cout << "factories\tUnregister '" << factory->name << "' (" << factory->info.description << ")" << endl;
-
-		auto entry = factories.find(factory->name);
-		if(entry == factories.end())
-			return;
-
-		if(entry->second != factory)
-			return;
-
-		factories.erase(entry);
+		factories.remove_if([factory](const Factory *obj){
+			return factory == obj;
+		});
 
 	}
 
+	/*
 	bool Factory::Controller::parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const {
-
-		auto entry = factories.find(name);
-
-		if(entry == factories.end()) {
-#ifdef DEBUG
-			cout << "Cant find factory for element '" << name << "'" << endl;
-#endif // DEBUG
-			return false;
+		for(auto factory : factories) {
+			if(!strcasecmp(factory->name(),name)) {
+				factory->parse(parent,node);
+				return true;
+			}
 		}
-
-		entry->second->parse(parent,node);
-
-		return true;
+		return false;
 	}
+	*/
 
+	/*
 	bool Factory::Controller::parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const {
-
-		auto entry = factories.find(name);
-
-		if(entry == factories.end()) {
-#ifdef DEBUG
-			cout << "Cant find factory for element '" << name << "'" << endl;
-#endif // DEBUG
-			return false;
+		for(auto factory : factories) {
+			if(!strcasecmp(factory->name,name)) {
+				factory->parse(parent,node);
+				return true;
+			}
 		}
-
-		entry->second->parse(parent,node);
-
-		return true;
+		return false;
 	}
+	*/
 
+	bool Factory::Controller::for_each(const char *name, std::function<bool(const Factory &factory)> func) {
+		lock_guard<recursive_mutex> lock(guard);
+		for(auto factory : factories) {
+			if(!(name && *name && strcasecmp(factory->name(),name))) {
+				if(func(*factory)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }

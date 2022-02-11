@@ -69,21 +69,24 @@ namespace Udjat {
 
 		for(pugi::xml_node child : node) {
 
-			if(!strcasecmp(node.name(),"attribute")) {
-				continue;
-			}
+			if(strcasecmp(node.name(),"attribute")) {
 
-			try {
+				// Parse generic node.
+				Factory::for_each(child.name(),[this,&child](const Factory & factory){
 
-				Factory::parse(child.name(), *this, child);
+					try {
 
-			} catch(const std::exception &e) {
+						factory.parse(*this,child);
 
-				error() << "Error '" << e.what() << "' loading node '" << child.name() << "'"  << endl;
+					} catch(const std::exception &e) {
+						factory.error() << "Error '" << e.what() << "' parsing <" << child.name() << ">" << endl;
+					} catch(...) {
+						factory.error() << "Unexpected error parsing <" << child.name() << ">" << endl;
+					}
 
-			} catch(...) {
+					return false;
 
-				error() << "Unexpected error loading node '" << child.name() << "'"  << endl;
+				});
 
 			}
 
@@ -99,11 +102,44 @@ namespace Udjat {
 				if(strcasecmp(type,"default")) {
 
 					// Not default, use factory.
-					Factory::parse(type, *this, node);
+					Factory::for_each(type,[this,node](const Factory &factory){
+
+						try {
+
+							auto alert = factory.AlertFactory(node);
+							if(alert) {
+#ifdef DEBUG
+								factory.info() << "Using agent from factory" << endl;
+#endif // DEBUG
+								append(alert);
+								return true;
+							}
+#ifdef DEBUG
+							else {
+								factory.info() << "EMPTY ALERT!!" << endl;
+							}
+#endif // DEBUG
+
+						} catch(const std::exception &e) {
+
+							factory.error() << "Error '" << e.what() << "' creating alert" << endl;
+
+						} catch(...) {
+
+							factory.error() << "Unexpected error creating alert" << endl;
+
+						}
+
+						return false;
+
+					});
 
 				} else {
 
 					// Create the default alert.
+#ifdef DEBUG
+					cout << "alerts\tCreating default alert" << endl;
+#endif // DEBUG
 					append(make_shared<Udjat::Alert>(node));
 
 				}

@@ -196,6 +196,9 @@
 			Factory();
 			bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
 			bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
+
+			std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node) const override;
+
 		};
 
 		constexpr Alert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
