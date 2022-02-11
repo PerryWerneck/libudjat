@@ -91,7 +91,6 @@ int main(int argc, char **argv) {
 	private:
 
 		struct {
-			Alert::Factory alert;
 			DummyProtocol protocol;
 		} factories;
 

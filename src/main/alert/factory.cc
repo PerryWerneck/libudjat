@@ -29,6 +29,7 @@
 
  namespace Udjat {
 
+	/*
 	static const Udjat::ModuleInfo moduleinfo { "Alert factory" };
 
 	Alert::Factory::Factory() : Udjat::Factory("alert",moduleinfo) {
@@ -56,5 +57,6 @@
 		parent.append(AlertFactory(node));
 		return true;
 	}
+	*/
 
  }

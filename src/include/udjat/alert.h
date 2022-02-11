@@ -191,6 +191,7 @@
 
 	public:
 
+		/*
 		class UDJAT_API Factory : public Udjat::Factory {
 		public:
 			Factory();
@@ -200,6 +201,7 @@
 			std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node) const override;
 
 		};
+		*/
 
 		constexpr Alert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 		}
