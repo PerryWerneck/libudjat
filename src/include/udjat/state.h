@@ -78,6 +78,11 @@
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
 
+				/// @brief Create and insert alert.
+				/// @param node Alert definitions.
+				/// @param type Alert type.
+				std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *type = nullptr);
+
 				/// @brief State alerts.
 				std::vector<std::shared_ptr<Abstract::Alert>> alerts;
 

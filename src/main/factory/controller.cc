@@ -41,13 +41,15 @@ namespace Udjat {
 	const Factory * Factory::Controller::find(const char *name) {
 		lock_guard<recursive_mutex> lock(guard);
 
+		if(name && *name) {
 #ifdef DEBUG
-		cout << "factories\tSearching for '" << name << "' factory" << endl;
+			cout << "factories\tSearching for '" << name << "' factory" << endl;
 #endif // DEBUG
 
-		for(auto factory : factories) {
-			if(!strcasecmp(factory->name(),name)) {
-				return factory;
+			for(auto factory : factories) {
+				if(!strcasecmp(factory->name(),name)) {
+					return factory;
+				}
 			}
 		}
 
