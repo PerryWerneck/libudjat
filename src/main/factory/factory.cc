@@ -63,7 +63,8 @@ namespace Udjat {
 	}
 
 	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
-		return std::shared_ptr<Abstract::Object>();
+		//return std::shared_ptr<Abstract::Object>();
+		return AgentFactory(node);
 	}
 
 	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const pugi::xml_node UDJAT_UNUSED(&node)) const {
