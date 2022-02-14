@@ -28,9 +28,12 @@
 	class UDJAT_API SystemService {
 	private:
 		void load() noexcept;
-		void reconfigure() noexcept;
 
 	protected:
+
+		/// @brief Reconfigure application from XML files.
+		/// @param pathname Path for a xml file or folder with xml files.
+		virtual void reconfigure(const char *pathname) noexcept;
 
 		/// @brief Path for the xml file(s) with service definitions.
 		const char * definitions = nullptr;

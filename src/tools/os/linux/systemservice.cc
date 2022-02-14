@@ -41,9 +41,9 @@
 
 	SystemService * SystemService::instance = nullptr;
 
-	void SystemService::reconfigure() noexcept {
+	void SystemService::reconfigure(const char *pathname) noexcept {
 
-		if(definitions) {
+		try {
 
 			Application::DataFile path(definitions);
 			Application::info() << "Loading settings from '" << path << "'" << endl;
@@ -61,7 +61,7 @@
 				Udjat::MainLoop::getInstance().insert(definitions,next*1000,[]{
 					ThreadPool::getInstance().push([]{
 						if(instance) {
-							instance->reconfigure();
+							instance->reconfigure(instance->definitions);
 						}
 					});
 					return false;
@@ -70,11 +70,16 @@
 				Application::info() << "Next reconfiguration set to " << TimeStamp(time(0)+next) << endl;
 			}
 
-		} else {
+		} catch(const std::exception &e ) {
 
-			Application::warning() << "Unable to reconfigure, no service or no defined file(s)" << endl;
+			Application::error() << "Reconfiguration has failed: " << e.what() << endl;
+
+		} catch(...) {
+
+			Application::error() << "Unexpected error during reconfiguration" << endl;
 
 		}
+
 	}
 
 	void SystemService::onReloadSignal(int signal) noexcept {
@@ -85,7 +90,7 @@
 
 			ThreadPool::getInstance().push([](){
 				if(instance) {
-					instance->reconfigure();
+					instance->reconfigure(instance->definitions);
 				}
 			});
 
@@ -108,7 +113,7 @@
 		setlocale( LC_ALL, "" );
 
 		if(definitions) {
-			reconfigure();
+			reconfigure(definitions);
 		}
 
 	}
