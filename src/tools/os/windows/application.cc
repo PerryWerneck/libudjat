@@ -164,4 +164,28 @@
 		mkdir(c_str());
 	}
 
+	Application::CacheDir::CacheDir() {
+
+		try {
+
+			Win32::Registry registry;
+			assign(registry.get("cachedir",""));
+			if(!empty()) {
+				mkdir(c_str());
+				return;
+			}
+
+		} catch(...) {
+			// Ignore errors.
+		}
+
+		assign(Application::Path());
+		append("\\cache\\");
+		mkdir(c_str());
+	}
+
+	Application::CacheDir::CacheDir(const char *filename) : CacheDir() {
+		append(filename);
+	}
+
  }
