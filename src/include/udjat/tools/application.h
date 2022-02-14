@@ -51,10 +51,18 @@
 		};
 #endif // _WIN32
 
+		/// @brief Application data dir.
 		class UDJAT_API DataDir : public std::string {
 		public:
 			DataDir();
 			DataDir(const char *subdir);
+		};
+
+		/// @brief Application cache dir.
+		class UDJAT_API CacheDir : public std::string {
+		public:
+			CacheDir();
+			CacheDir(const char *filename);
 		};
 
 		/// @brief File from the application datadir.

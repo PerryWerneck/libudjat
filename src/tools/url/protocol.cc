@@ -91,7 +91,7 @@
 		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
-	bool Protocol::get(const URL &url, const char *filename) const {
+	bool Protocol::get(const URL &url, const char *filename, std::function<bool(uint64_t current, uint64_t total)> UDJAT_UNUSED(progress)) const {
 		cerr << name << "\tUnable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
 		return false;
 	}

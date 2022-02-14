@@ -106,12 +106,16 @@
 		return protocol->call(*this,HTTP::Get,"");
 	}
 
-	bool URL::get(const char *filename) const {
+	bool URL::get(const char *filename, std::function<bool(uint64_t current, uint64_t total)> progress) const {
 		const Protocol * protocol = Protocol::find(*this);
 		if(!protocol) {
 			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
 		}
-		return protocol->get(*this,filename);
+		return protocol->get(*this,filename,progress);
+	}
+
+	bool URL::get(const char *filename) const {
+		return get(filename,[](uint64_t current, uint64_t total){return true;});
 	}
 
 	std::string URL::post(const char *payload) const {

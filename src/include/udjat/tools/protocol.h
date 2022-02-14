@@ -74,8 +74,9 @@
 		/// @brief Download/update a file.
 		/// @param url the file URL.
 		/// @param filename The fullpath for the file.
+		/// @param progress The progress callback.
 		/// @return true if the file was updated.
-		virtual bool get(const URL &url, const char *filename) const;
+		virtual bool get(const URL &url, const char *filename, std::function<bool(uint64_t current, uint64_t total)> progress) const;
 
 
 	};
