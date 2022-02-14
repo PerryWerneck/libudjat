@@ -202,10 +202,10 @@
 		return value;
 	}
 
-	string Abstract::Object::expand(const char *text) const {
+	string Abstract::Object::expand(const char *text, bool dynamic, bool cleanup) const {
 		return String(text).expand([this](const char *key, std::string &value) {
 			return getProperty(key,value);
-		});
+		},dynamic,cleanup);
 	}
 
 	const char * Abstract::Object::expand(const pugi::xml_node &node, const char *group, const char *value) {
