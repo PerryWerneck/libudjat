@@ -35,6 +35,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/threadpool.h>
+ #include <list>
 
 #ifndef _WIN32
 	#include <unistd.h>
@@ -44,269 +45,185 @@
 
  namespace Udjat {
 
-	/// @brief Load modules from xml file.
-	static bool prepare(const char *filename, bool download) {
+	static void loader(const char *pathname, const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
 
-		string url;
-		Application::Name appname;
-
-		{
-			pugi::xml_document doc;
-			auto result = doc.load_file(filename);
-			if(result.status != pugi::status_ok) {
-				cerr << appname << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
-				return false;
-			}
-
-			// Load modules.
-			for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-				Module::load(node);
-//				Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(false));
-			}
-			url = doc.document_element().attribute("src").as_string();
+		struct stat pathstat;
+		if(stat(pathname, &pathstat) == -1) {
+			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",pathname));
 		}
 
-		if(url.empty() || !download) {
-			return true;
-		}
+		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
+			//
+			// It's a folder.
+			//
+			File::List((string{pathname} + "/*.xml").c_str()).forEach([&call,&pathname](const char *filename){
 
-		// Check for file update.
-		try {
+				try {
 
-			if(URL(url.c_str()).get(filename)) {
-				cout << appname << "\tFile '" << filename << "' was updated, reloading modules" << endl;
+					pugi::xml_document doc;
+					auto result = doc.load_file(filename);
+					if(result.status != pugi::status_ok) {
+						Application::error() << filename << ": " << result.description() << endl;
+						return;
+					}
 
-				// Reload modules.
-				pugi::xml_document doc;
-				auto result = doc.load_file(filename);
-				if(result.status != pugi::status_ok) {
-					cerr << appname << "\tError parsing '" << filename << "' (" << result.description() << "'" << endl;
-					return false;
+					call(filename,doc);
+
+				} catch(const std::exception &e) {
+
+					Application::error() << pathname << ": " << e.what() << endl;
+
+				} catch(...) {
+
+					Application::error() << pathname << ": Unexpected error" << endl;
+
 				}
 
-				// Reload modules.
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					Module::load(node.attribute("name").as_string(),node.attribute("required").as_bool(false));
-				}
-
-			}
-
-		} catch(const exception &e) {
-
-			cerr << appname << "\t" << e.what() << endl;
-
-		}
-
-		return true;
-
-	}
-
-	static time_t load_file(std::shared_ptr<Abstract::Agent> root, const char *filename) {
-
-		pugi::xml_document doc;
-		auto result = doc.load_file(filename);
-		if(result.status != pugi::status_ok) {
-			root->error() << "Error parsing '" << filename << "' (" << result.description() << "'" << endl;
-			return 0;
-		}
-
-		auto node = doc.document_element();
-
-		const char *path = node.attribute("path").as_string();
-
-		if(path && *path) {
-
-			// Has defined root path, find agent.
-			root->find(path,true,true)->load(node);
+			});
 
 		} else {
+			//
+			// It's a single file.
+			//
+			try {
 
-			// No path, load here.
-			root->load(node);
+				pugi::xml_document doc;
+				auto result = doc.load_file(pathname);
+				if(result.status != pugi::status_ok) {
+					Application::error() << pathname << ": " << result.description() << endl;
+					return;
+				}
 
+				call(pathname,doc);
+
+			} catch(const std::exception &e) {
+
+				Application::error() << pathname << ": " << e.what() << endl;
+
+			} catch(...) {
+
+				Application::error() << pathname << ": Unexpected error" << endl;
+
+			}
 		}
+	}
 
-		return node.attribute("update-timer").as_uint(0);
+	void load_modules(const char *pathname) {
+
+		loader(pathname,[](const char *filename, const pugi::xml_document &doc){
+			for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+				Module::load(node);
+			}
+		});
 
 	}
 
-	/// @brief Activate root agent from application definitions.
-	/// @param pathname Path to a single xml file or a folder with xml files.
-	static time_t activate(const char *pathname) {
-		auto root = RootAgentFactory();
-		time_t timer = load_file(root,pathname);
-		setRootAgent(root);
-		return timer;
+	UDJAT_PRIVATE time_t refresh_definitions(const char *pathname) {
+
+		time_t next = 0;
+
+		struct FileDefinition {
+			std::string filename;
+			std::string url;
+
+			FileDefinition(const char *f, const char *u) : filename(f), url(u) {
+			}
+
+		};
+
+		std::list<FileDefinition> definitions;
+
+		loader(pathname,[&next,&definitions](const char *filename, const pugi::xml_document &doc){
+
+			auto node = doc.document_element();
+
+			const char *url = node.attribute("src").as_string();
+			if(url && *url) {
+
+				time_t refresh = node.attribute("update-timer").as_uint(0);
+				if(refresh) {
+					next = std::min(next,refresh);
+
+					// TODO: Check for the file timestamps to see if an update is required.
+					definitions.emplace_back(filename,url);
+
+				} else {
+					definitions.emplace_back(filename,url);
+				}
+
+			}
+
+		});
+
+		// Update file(s)
+		for(auto definition : definitions) {
+			try {
+#ifdef DBUG
+				Application::info() << "Downloading " << definition.url << endl;
+#endif // DBUG
+				URL(definition.url).get(definition.filename.c_str());
+			} catch(const std::exception &e) {
+				Application::error() << e.what() << endl;
+			} catch(...) {
+				Application::error() << "Unexpected error getting " << definition.url << endl;
+			}
+		}
+
+		return next;
+	}
+
+	void load_agent_definitions(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
+
+		loader(pathname,[agent](const char *filename, const pugi::xml_document &doc){
+
+			agent->info() << "Loading '" << filename << "'" << endl;
+
+			try {
+
+				auto node = doc.document_element();
+				const char *path = node.attribute("path").as_string();
+
+				if(path && *path) {
+
+					// Has defined root path, find agent.
+					agent->find(path,true,true)->load(node);
+
+				} else {
+
+					// No path, load here.
+					agent->load(node);
+
+				}
+
+			} catch(const std::exception &e) {
+
+				agent->error() << filename << ": " << e.what() << endl;
+
+			} catch(...) {
+
+				agent->error() << filename << ": Unexpected error" << endl;
+
+			}
+		});
+
 	}
 
 	UDJAT_API time_t load(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
 
-		time_t timer = 0;
-
-		struct stat pathstat;
-		if(stat(pathname, &pathstat) == -1) {
-			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",pathname));
-		}
-
-		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
-			//
-			// Load all XML files from pathname
-			//
-			File::List files((string{pathname} + "/*.xml").c_str());
-
-			// First load modules.
-			agent->info() << "Preparing" << endl;
-			files.forEach([](const char *filename){
-				prepare(filename,false);
-			});
-
-			agent->info() << "Loading configuration" << endl;
-			files.forEach([agent,&timer](const char *filename){
-				time_t tm = load(agent, filename);
-				if(!timer) {
-					timer = tm;
-				} else {
-					timer = std::min(timer,tm);
-				}
-			});
-
-
-		} else {
-
-			agent->info() << "Preparing " << pathname << endl;
-			if(!prepare(pathname,true)) {
-				throw runtime_error("Can't prepare definition file");
-			}
-
-			timer = load_file(agent,pathname);
-
-			setRootAgent(agent);
-
-		}
-
-		return timer;
-
+		Udjat::load_modules(pathname);
+		time_t next = Udjat::refresh_definitions(pathname);
+		load_agent_definitions(agent,pathname);
+		setRootAgent(agent);
+		return next;
 	}
 
-	UDJAT_API void load(const char *pathname) {
-
-		Application::Name application;
-
-		struct stat pathstat;
-		if(stat(pathname, &pathstat) == -1) {
-			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",pathname));
-		}
-
-		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
-			//
-			// Load all XML files from pathname
-			//
-			File::List files((string{pathname} + "/*.xml").c_str());
-
-			// First load modules.
-			files.forEach([](const char *filename){
-				prepare(filename,false);
-			});
-
-			// Then load agents
-			clog << application << "\tCreating the new root agent" << endl;
-			auto root = RootAgentFactory();
-
-			files.forEach([root](const char *filename){
-				load_file(root, filename);
-			});
-
-			setRootAgent(root);
-
-		} else {
-
-			//
-			// Load a single XML file.
-			//
-			cout << application << "\tLoading '" << pathname << "'" << endl;
-
-			// First load the modules and check for update url.
-			if(!prepare(pathname,true)) {
-				throw runtime_error("Can't prepare definition file");
-			}
-
-			// Create new root agent.
-			{
-
-				// Then load agents
-				time_t timer = activate(pathname);
-				if(timer) {
-
-					clog << Application::Name() << "\tReconfiguration scheduled to " << TimeStamp(time(0)+timer) << endl;
-
-					const char *name = Quark(pathname).c_str();
-					MainLoop::getInstance().insert(name,timer*1000L,[name](){
-						//
-						// Reconfigure time, do we need reload?
-						//
-						ThreadPool::getInstance().push([name]{
-
-							Application::Name appname;
-							try {
-
-								string url;
-
-								{
-									pugi::xml_document doc;
-									auto result = doc.load_file(name);
-									if(result.status != pugi::status_ok) {
-										cerr << appname << "\tError parsing '" << name << "' (" << result.description() << "'" << endl;
-										return;
-									}
-									url = doc.document_element().attribute("src").as_string();
-								}
-
-								if(url.empty()) {
-									clog << appname << "\tUpdating from '" << name << "' was disabled" << endl;
-									MainLoop::getInstance().remove(name);
-									return;
-								}
-
-								if(!URL(url.c_str()).get(name)) {
-									cout << appname << "\tFile '" << name << "' was not updated, will keep current settings" << endl;
-									return;
-								}
-
-								if(prepare(name,false)) {
-
-									// Then load agents
-									time_t timer = activate(name);
-
-									if(!timer) {
-										clog << appname << "\tUpdating from '" << name << "' was disabled" << endl;
-										MainLoop::getInstance().remove(name);
-									} else {
-										clog << appname << "\tNext update of '" << name << "' will be on " << TimeStamp(time(0) + timer) << endl;
-										// MainLoop::getInstance().reset(name,timer*1000L);
-									}
-
-								}
-
-							} catch(const exception &e) {
-
-								cerr << appname << "\tError '" << e.what() << "' reloading '" << name << "'" << endl;
-
-							} catch(...) {
-
-								cerr << appname << "\tUnexpected error reloading '" << name << "'" << endl;
-
-							}
-
-						});
-						return true;
-					});
-				}
-
-
-			}
-
-		}
-
+	UDJAT_API time_t load(const char *pathname) {
+		Udjat::load_modules(pathname);
+		time_t next = Udjat::refresh_definitions(pathname);
+		auto agent = RootAgentFactory();
+		load_agent_definitions(agent,pathname);
+		setRootAgent(agent);
+		return next;
 	}
 
  }

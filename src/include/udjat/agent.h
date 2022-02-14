@@ -270,7 +270,8 @@
 
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
-		UDJAT_API void load(const char *pathname);
+		/// @return Seconds for the next reload.
+		UDJAT_API time_t load(const char *pathname);
 
 		/// @brief Load XML application definitions.
 		/// @param agent New root agent.

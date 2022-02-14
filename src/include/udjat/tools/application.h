@@ -22,10 +22,15 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <string>
+ #include <ostream>
 
  namespace Udjat {
 
 	namespace Application {
+
+		std::ostream & info();
+		std::ostream & warning();
+		std::ostream & error();
 
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {

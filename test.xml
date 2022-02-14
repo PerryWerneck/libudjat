@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<config>
+<config src='http://localhost/~perry/libudjat.xml' update-timer='600'>
 
 	<module name='information' required='no' />
 	<module name='http' required='no' />

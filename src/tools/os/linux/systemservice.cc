@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat-internals.h>
  #include <udjat/tools/systemservice.h>
  #include <iostream>
  #include <system_error>
@@ -40,29 +41,57 @@
 
 	SystemService * SystemService::instance = nullptr;
 
-	void SystemService::onReloadSignal(int UDJAT_UNUSED(signal)) noexcept {
+	void SystemService::reconfigure() noexcept {
 
-		cout << "service\tReconfigure request received from signal SIGUSR1" << endl;
+		if(definitions) {
+
+			Application::DataFile path(definitions);
+			Application::info() << "Loading settings from '" << path << "'" << endl;
+
+			Udjat::load_modules(path.c_str());
+			time_t next = Udjat::refresh_definitions(path.c_str());
+			Udjat::load_modules(path.c_str());
+
+			auto root = RootFactory();
+			load_agent_definitions(root,path.c_str());
+
+			setRootAgent(root);
+
+			if(next) {
+				Udjat::MainLoop::getInstance().insert(definitions,next*1000,[]{
+					ThreadPool::getInstance().push([]{
+						if(instance) {
+							instance->reconfigure();
+						}
+					});
+					return false;
+				});
+
+				Application::info() << "Next reconfiguration set to " << TimeStamp(time(0)+next) << endl;
+			}
+
+		} else {
+
+			Application::warning() << "Unable to reconfigure, no service or no defined file(s)" << endl;
+
+		}
+	}
+
+	void SystemService::onReloadSignal(int signal) noexcept {
+
+		Application::info() << "Reconfigure request received from signal " << strsignal(signal) << endl;
 
 		try {
 
 			ThreadPool::getInstance().push([](){
-				if(instance && instance->definitions) {
-
-					Application::DataFile path(instance->definitions);
-					cout << Application::Name() << "\tReconfiguring from '" << path << "'" << endl;
-					Udjat::load(path.c_str());
-
-				} else {
-
-					clog << "service\tUnable to handle SIGUSR1, no service or no defined file(s)" << endl;
-
+				if(instance) {
+					instance->reconfigure();
 				}
 			});
 
 		} catch(const std::exception &e) {
 
-			cerr << "service\t" << e.what() << endl;
+			Application::error() << e.what() << endl;
 
 		}
 
@@ -79,21 +108,13 @@
 		setlocale( LC_ALL, "" );
 
 		if(definitions) {
-
-			// Inicialize from XML
-			Application::DataFile path(definitions);
-			cout << Application::Name() << "\tInitializing from '" << path << "'" << endl;
-			Udjat::load(path.c_str());
-
-			// Capture reload signal.
-			if(!instance) {
-				instance = this;
-				signal(SIGUSR1,onReloadSignal);
-				cout << Application::Name() << "\tUse SIGUSR1 to force reload of " << path << endl;
-			}
-
+			reconfigure();
 		}
 
+	}
+
+	std::shared_ptr<Abstract::Agent> SystemService::RootFactory() const {
+		return Udjat::RootAgentFactory();
 	}
 
 	void SystemService::deinit() {

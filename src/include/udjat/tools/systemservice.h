@@ -20,6 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <memory>
 
  namespace Udjat {
 
@@ -27,11 +28,15 @@
 	class UDJAT_API SystemService {
 	private:
 		void load() noexcept;
+		void reconfigure() noexcept;
 
 	protected:
 
 		/// @brief Path for the xml file(s) with service definitions.
 		const char * definitions = nullptr;
+
+		/// @brief Factory for the application root.
+		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
 
 #ifdef _WIN32
 
