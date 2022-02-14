@@ -110,7 +110,7 @@
 
 	void load_modules(const char *pathname) {
 
-		loader(pathname,[](const char *filename, const pugi::xml_document &doc){
+		loader(pathname,[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
 			for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
 				Module::load(node);
 			}
@@ -142,7 +142,11 @@
 
 				time_t refresh = node.attribute("update-timer").as_uint(0);
 				if(refresh) {
-					next = std::min(next,refresh);
+					if(next) {
+						next = std::min(next,refresh);
+					} else {
+						next = refresh;
+					}
 
 					// TODO: Check for the file timestamps to see if an update is required.
 					definitions.emplace_back(filename,url);
