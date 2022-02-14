@@ -11,6 +11,8 @@
 
 	<attribute name='default-url' value='http://localhost' />
 	
+	<alert name='startup' url='${default-url}/hello' />	
+	
 	<agent name='intvalue' type='integer' value='0'>
 
 		<attribute name='summary' value='Summary of agent ${name}' />

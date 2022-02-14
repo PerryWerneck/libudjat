@@ -42,11 +42,11 @@ namespace Udjat {
 
 				} catch(const std::exception &e) {
 
-					error() << "Error '" << e.what() << "' parsing state definition" << endl;
+					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
 
 				} catch(...) {
 
-					error() << "Unexpected error parsing state definition" << endl;
+					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
 
 				}
 
@@ -59,16 +59,16 @@ namespace Udjat {
 					if(alert) {
 						push_back(alert);
 					} else {
-						error() << "Unable to create child alert" << endl;
+						error() << "Unable to create alert" << endl;
 					}
 
 				} catch(const std::exception &e) {
 
-					error() << "Error '" << e.what() << "' parsing state definition" << endl;
+					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
 
 				} catch(...) {
 
-					error() << "Unexpected error parsing state definition" << endl;
+					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
 
 				}
 

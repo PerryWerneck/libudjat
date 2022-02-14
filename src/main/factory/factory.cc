@@ -26,7 +26,7 @@ namespace Udjat {
 	}
 
 	bool Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
-		auto agent = AgentFactory(node);
+		auto agent = AgentFactory(parent,node);
 		if(agent) {
 			parent.insert(agent);
 			return true;
@@ -34,6 +34,11 @@ namespace Udjat {
 		auto object = ObjectFactory(parent,node);
 		if(object) {
 			parent.push_back(object);
+			return true;
+		}
+		auto alert = AlertFactory(parent,node);
+		if(alert) {
+			parent.push_back(alert);
 			return true;
 		}
 		return false;
@@ -58,7 +63,7 @@ namespace Udjat {
 		return Controller::getInstance().for_each(name,func);
 	}
 
-	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
@@ -66,7 +71,7 @@ namespace Udjat {
 		return std::shared_ptr<Abstract::Object>();
 	}
 
-	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 

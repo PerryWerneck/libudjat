@@ -165,7 +165,7 @@
 	}
 
 	/// @brief Create an alert from XML description;
-	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *name = nullptr);
+	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name = nullptr);
 
 	/// @brief Default alert (based on URL and payload).
 	class UDJAT_API Alert : public Abstract::Alert {
@@ -193,18 +193,6 @@
 		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const;
 
 	public:
-
-		/*
-		class UDJAT_API Factory : public Udjat::Factory {
-		public:
-			Factory();
-			bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override;
-			bool parse(Abstract::State &parent, const pugi::xml_node &node) const override;
-
-			std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node) const override;
-
-		};
-		*/
 
 		constexpr Alert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 		}

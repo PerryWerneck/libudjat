@@ -60,10 +60,6 @@
 		// How many seconds to restart when suceeded?
 		restart.success = getAttribute(node,section,"restart-when-succeeded",restart.success);
 
-#ifdef DEBUG
-		info() << "Alert created ***" << endl;
-#endif // DEBUG
-
 	}
 
 	Abstract::Alert::~Alert() {

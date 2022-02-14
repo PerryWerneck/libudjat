@@ -29,14 +29,16 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *name) {
+	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name) {
 
 		std::shared_ptr<Abstract::Alert> alert;
 
-		if(Factory::search(node,[&alert](const Factory &factory, const pugi::xml_node &node){
-			alert = factory.AlertFactory(node);
+		if(Factory::search(node,[&parent,&alert](const Factory &factory, const pugi::xml_node &node){
+			alert = factory.AlertFactory(parent,node);
 			if(alert) {
-				alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
+				if(alert->verbose()) {
+					alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
+				}
 				return true;
 			}
 			return false;

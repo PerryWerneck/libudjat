@@ -79,7 +79,7 @@
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
-		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
 
 		/// @brief Create a child object from XML node.
 		/// @param node XML definition for the new state.
@@ -87,7 +87,7 @@
 
 		/// @brief Create an alert from XML node.
 		/// @param node XML definition for the new alert.
-		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
 
 		/// @brief Parse agent sub-node.
 		/// @param parent Parent agent to insert the built child.

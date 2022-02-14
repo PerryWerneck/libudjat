@@ -34,7 +34,7 @@
 namespace Udjat {
 
 	std::shared_ptr<Abstract::Alert> Abstract::State::AlertFactory(const pugi::xml_node &node, const char *type) {
-		auto alert = Udjat::AlertFactory(node, type);
+		auto alert = Udjat::AlertFactory(*this, node, type);
 		if(alert) {
 			alerts.push_back(alert);
 		}

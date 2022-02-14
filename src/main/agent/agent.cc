@@ -157,7 +157,7 @@ namespace Udjat {
 	#pragma GCC diagnostic pop
 
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
-		error() << "This agent is unable to handle alerts." << endl;
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
