@@ -45,6 +45,10 @@
 		Protocol(const char *name, const ModuleInfo &module);
 		virtual ~Protocol();
 
+		std::ostream & info() const;
+		std::ostream & warning() const;
+		std::ostream & error() const;
+
 		static const Protocol * find(const URL &url);
 		static const Protocol * find(const char *name);
 
@@ -71,12 +75,12 @@
 		/// @return Host response.
 		std::string call(const URL &url, const char *method, const char *payload = "") const;
 
-		/// @brief Download/update a file.
+		/// @brief Download/update file.
 		/// @param url the file URL.
 		/// @param filename The fullpath for the file.
 		/// @param progress The progress callback.
 		/// @return true if the file was updated.
-		virtual bool get(const URL &url, const char *filename, std::function<bool(uint64_t current, uint64_t total)> progress) const;
+		virtual bool get(const URL &url, const char *filename, const std::function<bool(double current, double total)> &progress) const;
 
 
 	};

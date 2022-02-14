@@ -115,7 +115,7 @@
 	}
 
 	bool URL::get(const char *filename) const {
-		return get(filename,[](uint64_t current, uint64_t total){return true;});
+		return get(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
 	}
 
 	std::string URL::post(const char *payload) const {

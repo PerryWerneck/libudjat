@@ -51,6 +51,18 @@
 		Controller::getInstance().remove(this);
 	}
 
+	std::ostream & Protocol::info() const {
+		return cout << name << "\t";
+	}
+
+	std::ostream & Protocol::warning() const {
+		return clog << name << "\t";
+	}
+
+	std::ostream & Protocol::error() const {
+		return cerr << name << "\t";
+	}
+
 	const Protocol * Protocol::find(const URL &url) {
 		string scheme = url.scheme();
 
@@ -91,8 +103,8 @@
 		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
-	bool Protocol::get(const URL &url, const char *filename, std::function<bool(uint64_t current, uint64_t total)> UDJAT_UNUSED(progress)) const {
-		cerr << name << "\tUnable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
+	bool Protocol::get(const URL &url, const char *filename, const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) const {
+		error() << "Unable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
 		return false;
 	}
 
