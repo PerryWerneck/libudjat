@@ -211,8 +211,16 @@
 				/// @return Agent pointer.
 				virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
-				void foreach(std::function<void(Agent &agent)> method);
-				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
+				void for_each(std::function<void(Agent &agent)> method);
+				void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
+
+				inline void foreach(std::function<void(Agent &agent)> method) {
+					for_each(method);
+				}
+
+				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method) {
+					for_each(method);
+				}
 
 				inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 					return children.begin();

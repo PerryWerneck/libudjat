@@ -131,10 +131,14 @@ namespace Udjat {
 
 			void set(const char *contents);
 
-			static void forEach(const char *text, std::function<void (const std::string &line)> call);
+			static void for_each(const char *text, std::function<void (const std::string &line)> call);
+
+			inline void for_each(std::function<void (const std::string &line)> call) const {
+				for_each(contents,call);
+			}
 
 			inline void forEach(std::function<void (const std::string &line)> call) const {
-				forEach(contents,call);
+				for_each(contents,call);
 			}
 
 			void save() const;
