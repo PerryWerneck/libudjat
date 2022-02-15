@@ -47,8 +47,18 @@
 
 		Controller();
 
+		/// @brief Reset timer.
+		/// @param seconds Seconds for the next 'emit()'.
 		void reset(time_t interval) noexcept;
+
+		/// @brief Emit pending alerts.
 		void emit() noexcept;
+
+	protected:
+		void stop() override;
+
+		/// @brief How many activations?
+		size_t running() const noexcept;
 
 	public:
 		static Controller & getInstance();
@@ -56,21 +66,17 @@
 
 		void push_back(shared_ptr<Abstract::Alert::Activation> activation);
 		void remove(const Abstract::Alert *alert);
+		bool get(Request &request, Response &response) const override;
 
 	};
+
 	/*
 
 
 
-		/// @brief Emit pending alerts.
 		void emit() noexcept;
 
-		/// @brief Reset update timer.
-		/// @param seconds Seconds for the next 'emit()'.
 		void reset(time_t seconds) noexcept;
-
-	protected:
-		void stop() override;
 
 	public:
 		static Controller & getInstance();
@@ -79,8 +85,6 @@
 		/// @brief Update timer.
 		void refresh() noexcept;
 
-		/// @brief How many active activations?
-		size_t running() const noexcept;
 
 		/// @brief Activate an alert.
 		void activate(const Abstract::Object &object, std::shared_ptr<Alert> alert);

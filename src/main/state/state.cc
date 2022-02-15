@@ -132,6 +132,7 @@ namespace Udjat {
 			auto activation = alert->ActivationFactory();
 			activation->set(*this);
 			activation->set(agent);
+			activation->set(level());
 			Udjat::start(activation);
 		}
 

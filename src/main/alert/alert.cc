@@ -72,6 +72,13 @@
 		return value;
 	}
 
+	Value & Alert::Activation::getProperties(Value &value) const noexcept {
+		Abstract::Alert::Activation::getProperties(value);
+		value["url"] = url.c_str();
+		value["action"] = std::to_string(action);
+		return value;
+	}
+
 	Alert::Activation::Activation(const Alert *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
 	}
 
@@ -81,7 +88,11 @@
 		payload.expand();
 
 		if(verbose()) {
-			info() << "Emitting " << action << " " << url << endl << payload << endl;
+			if(description.empty()) {
+				info() << "Emitting " << action << " " << url << endl << payload << endl;
+			} else {
+				info() << description << ": " << action << " " << url << endl << payload << endl;
+			}
 		}
 
 		Protocol::call(url.c_str(),action,payload.c_str());

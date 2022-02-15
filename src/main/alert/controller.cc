@@ -94,7 +94,7 @@
 		// Using threadpool because I cant change a timer from a timer callback.
 		ThreadPool::getInstance().push([this,seconds]{
 #ifdef DEBUG
-				cout << "alerts\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
+			cout << "alerts\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
 #endif // DEBUG
 
 			MainLoop &mainloop = MainLoop::getInstance();
@@ -165,10 +165,6 @@
 
 	}
 
-	/*
-
-
-
 	size_t Abstract::Alert::Controller::running() const noexcept {
 		size_t running = 0;
 		lock_guard<mutex> lock(guard);
@@ -181,7 +177,9 @@
 	}
 
 	void Abstract::Alert::Controller::stop() {
+
 		cout << "alerts\tDeactivating controller" << endl;
+		MainLoop::getInstance().remove(this);
 
 		{
 			size_t pending_activations = running();
@@ -205,9 +203,25 @@
 		{
 			lock_guard<mutex> lock(guard);
 			activations.clear();
-			MainLoop::getInstance().remove(this);
 		}
 	}
+
+	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
+
+		response.reset(Value::Array);
+
+		lock_guard<mutex> lock(guard);
+		for(auto activation : activations) {
+			activation->getProperties(response.append(Value::Object));
+		}
+
+		return true;
+	}
+
+	/*
+
+
+
 
 
 	void Abstract::Alert::Controller::refresh() noexcept {
@@ -231,17 +245,6 @@
 	}
 
 
-	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
-
-		response.reset(Value::Array);
-
-		lock_guard<mutex> lock(guard);
-		for(auto activation : activations) {
-			activation->getProperties(response.append(Value::Object));
-		}
-
-		return true;
-	}
 	*/
 
  }

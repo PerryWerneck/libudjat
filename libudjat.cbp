@@ -54,6 +54,7 @@
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
+		<Unit filename="src/include/udjat/level.h" />
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/request.h" />

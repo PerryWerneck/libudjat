@@ -24,6 +24,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
+ #include <udjat/level.h>
  #include <memory>
 
  namespace Udjat {
@@ -95,6 +96,7 @@
 
 				struct {
 					bool verbose = true;
+					Udjat::Level level = Udjat::unimportant;
 				} options;
 
 				struct {
@@ -138,6 +140,11 @@
 			public:
 				Activation(const Alert *alert);
 				virtual ~Activation();
+
+				/// @brief Set level.
+				inline void set(const Udjat::Level level) noexcept {
+					options.level = level;
+				}
 
 				/// @brief Set object on the activation.
 				virtual void set(const Abstract::Object &object);
@@ -192,6 +199,7 @@
 			Activation(const Alert *alert);
 			void emit() override;
 
+			Value & getProperties(Value &value) const noexcept override;
 			void set(const Abstract::Object &object) override;
 
 		};

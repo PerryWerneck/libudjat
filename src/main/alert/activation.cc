@@ -73,6 +73,7 @@
 	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
 
 		value["name"] = name;
+		value["level"] = std::to_string(options.level);
 		value["description"] = description;
 		value["next"] = TimeStamp(timers.next);
 		value["last"] = TimeStamp(timers.last);

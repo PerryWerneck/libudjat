@@ -93,6 +93,7 @@ namespace Udjat {
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
 		auto activation = alert->ActivationFactory();
 		activation->set(*this);
+		activation->set(current_state.active->level());
 		Udjat::start(activation);
 	}
 
