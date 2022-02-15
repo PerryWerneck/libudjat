@@ -80,6 +80,10 @@
 	}
 
 	Alert::Activation::Activation(const Alert *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
+
+		url.expand(*alert,true,false);
+		payload.expand(*alert,true,false);
+
 	}
 
 	void Alert::Activation::emit() {
