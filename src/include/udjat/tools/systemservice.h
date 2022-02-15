@@ -27,16 +27,17 @@
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService {
 	private:
-		void load() noexcept;
+		/// @brief Service instance.
+		static SystemService *instance;
+
+		/// @brief Path for the xml file(s) with service definitions.
+		const char * definitions = nullptr;
 
 	protected:
 
 		/// @brief Reconfigure application from XML files.
 		/// @param pathname Path for a xml file or folder with xml files.
 		virtual void reconfigure(const char *pathname) noexcept;
-
-		/// @brief Path for the xml file(s) with service definitions.
-		const char * definitions = nullptr;
 
 		/// @brief Factory for the application root.
 		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
@@ -51,7 +52,6 @@
 		virtual int uninstall();
 
 #else
-		static SystemService *instance;
 		static void onReloadSignal(int signal) noexcept;
 
 #endif // _WIN32

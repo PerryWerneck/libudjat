@@ -218,12 +218,7 @@
 		Service::Controller::getInstance().insert(this);
 
 		if(definitions) {
-
-			// Inicialize from XML
-			Application::DataFile path(definitions);
-			cout << Application::Name() << "\tInitializing from '" << path << "'" << endl;
-			Udjat::load(path.c_str());
-
+			reconfigure(definitions);
 		}
 
 	}
