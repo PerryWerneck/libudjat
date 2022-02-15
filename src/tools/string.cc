@@ -75,6 +75,12 @@
 		},dynamic,cleanup);
 	}
 
+	String & String::expand(bool dynamic, bool cleanup) {
+		return expand([](const char UDJAT_UNUSED(*key), std::string UDJAT_UNUSED(&str)){
+			return false;
+		},dynamic,cleanup);
+	}
+
 	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 
 		auto from = find("${");

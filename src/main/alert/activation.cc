@@ -66,7 +66,7 @@
 	void Abstract::Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
 	}
 
-	void Abstract::Alert::Activation::emit() const {
+	void Abstract::Alert::Activation::emit() {
 		throw runtime_error("Cant emit an abstract activation");
 	}
 

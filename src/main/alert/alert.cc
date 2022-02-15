@@ -75,12 +75,22 @@
 	Alert::Activation::Activation(const Alert *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
 	}
 
-	void Alert::Activation::emit() const {
+	void Alert::Activation::emit() {
+
+		url.expand();
+		payload.expand();
+
+		if(verbose()) {
+			info() << "Emitting " << action << " " << url << endl << payload << endl;
+		}
+
+		Protocol::call(url.c_str(),action,payload.c_str());
+
 	}
 
 	void Alert::Activation::set(const Abstract::Object &object) {
-		url.expand(object,true);
-		payload.expand(object,true);
+		url.expand(object);
+		payload.expand(object);
 	}
 
  }

@@ -121,6 +121,9 @@
 				/// @brief Schedule next alert.
 				void next() noexcept;
 
+				/// @brief Emit alert, update timers, control if active.
+				void run() noexcept;
+
 			protected:
 
 				/// @brief Alert name
@@ -129,12 +132,8 @@
 				/// @brief Alert description.
 				std::string description;
 
-				/// @brief Emit alert, update timers.
-				void run() noexcept;
-
-			protected:
 				/// @brief Emit alert.
-				virtual void emit() const;
+				virtual void emit();
 
 			public:
 				Activation(const Alert *alert);
@@ -191,7 +190,7 @@
 
 		public:
 			Activation(const Alert *alert);
-			void emit() const override;
+			void emit() override;
 
 			void set(const Abstract::Object &object) override;
 
