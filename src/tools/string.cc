@@ -69,6 +69,12 @@
 		return string(from,to-from);
 	}
 
+	String & String::expand(const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
+		return expand([&object](const char *key, std::string &str){
+			return object.getProperty(key,str);
+		},dynamic,cleanup);
+	}
+
 	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 
 		auto from = find("${");

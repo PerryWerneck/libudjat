@@ -31,7 +31,7 @@
 		Abstract::Alert::Controller::getInstance().push_back(activation);
  	}
 
-	Abstract::Alert::Activation::Activation(Alert *a) : alert(a) {
+	Abstract::Alert::Activation::Activation(const Alert *a) : alert(a) {
 
 		options.verbose = alert->verbose();
 
@@ -72,12 +72,8 @@
 
 	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
 
-		/*
-		if(alert) {
-			alert->getProperties(value);
-		}
-		*/
-
+		value["name"] = name;
+		value["description"] = description;
 		value["next"] = TimeStamp(timers.next);
 		value["last"] = TimeStamp(timers.last);
 		value["failed"] = count.failed;

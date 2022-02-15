@@ -31,7 +31,6 @@
 
  namespace Udjat {
 
-	/*
 	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
@@ -62,12 +61,8 @@
 
 	}
 
-	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {
-		throw system_error(ENOTSUP,system_category(),"Not implemented");
-	}
-
-	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const Abstract::Object &object) const {
-		return make_shared<Activation>(*this,object);
+	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory() const {
+		return make_shared<Activation>(this);
 	}
 
 	Value & Alert::getProperties(Value &value) const noexcept {
@@ -76,7 +71,18 @@
 		value["action"] = std::to_string(action);
 		return value;
 	}
-	*/
+
+	Alert::Activation::Activation(const Alert *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
+	}
+
+	void Alert::Activation::emit() const {
+	}
+
+	void Alert::Activation::set(const Abstract::Object &object) {
+		url.expand(object,true);
+		payload.expand(object,true);
+	}
 
  }
+
 

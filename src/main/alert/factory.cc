@@ -46,12 +46,10 @@
 			return alert;
 		}
 
-		/*
 		alert = make_shared<Udjat::Alert>(node);
 		if(alert->verbose()) {
 			alert->info() << "Using the default alert engine" << endl;
 		}
-		*/
 
 		return alert;
 

@@ -45,7 +45,7 @@
 
 		try {
 
-			Application::DataFile path(definitions);
+			Application::DataFile path(pathname);
 			Application::info() << "Loading settings from '" << path << "'" << endl;
 
 			Udjat::load_modules(path.c_str());

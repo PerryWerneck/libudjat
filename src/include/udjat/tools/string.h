@@ -24,6 +24,7 @@
  #include <iostream>
  #include <vector>
  #include <functional>
+ #include <udjat/tools/object.h>
 
  namespace Udjat {
 
@@ -95,7 +96,7 @@
 		 * @brief Expand ${} macros.
 		 *
 		 */
-		// String & expand();
+		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
 
 		String & strip() noexcept;
 

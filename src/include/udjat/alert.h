@@ -23,6 +23,7 @@
  #include <udjat/factory.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/string.h>
  #include <memory>
 
  namespace Udjat {
@@ -85,7 +86,7 @@
 			private:
 				friend class Controller;
 
-				Alert * alert = nullptr;
+				const Alert * alert = nullptr;
 
 				struct {
 					unsigned int min;
@@ -125,6 +126,9 @@
 				/// @brief Alert name
 				std::string name;
 
+				/// @brief Alert description.
+				std::string description;
+
 				/// @brief Emit alert, update timers.
 				void run() noexcept;
 
@@ -133,7 +137,7 @@
 				virtual void emit() const;
 
 			public:
-				Activation(Alert *alert);
+				Activation(const Alert *alert);
 				virtual ~Activation();
 
 				/// @brief Set object on the activation.
@@ -170,7 +174,6 @@
 	/// @brief Create an alert from XML description;
 	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name = nullptr);
 
-	/*
 	/// @brief Default alert (based on URL and payload).
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
@@ -182,19 +185,19 @@
 		/// @brief URL based alert activation.
 		class UDJAT_API Activation : public Abstract::Alert::Activation {
 		protected:
-			std::string url;
+			String url;
 			HTTP::Method action;
-			std::string payload;
+			String payload;
 
 		public:
-			Activation(const std::string &u, const HTTP::Method a, const std::string &p);
-			Activation(const Alert &alert, const Abstract::Object &object);
+			Activation(const Alert *alert);
 			void emit() const override;
-			const char * c_str() const noexcept override;
+
+			void set(const Abstract::Object &object) override;
 
 		};
 
-		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const Abstract::Object &object) const override;
+		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory() const override;
 
 	public:
 
@@ -203,14 +206,10 @@
 
 		Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 
-		/// @brief Activate a single alert with the default settings.
-		static void activate(const char *name, const char *url, const char *action = "get", const char *payload = "");
-
 		/// @brief Get alert info.
 		Value & getProperties(Value &value) const noexcept override;
 
 	};
-	*/
 
  }
 

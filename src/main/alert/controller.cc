@@ -148,6 +148,9 @@
 				} else {
 
 					activation->state.running = time(0);
+					if(activation->verbose()) {
+						activation->info() << "Emitting alert" << endl;
+					}
 
 					ThreadPool::getInstance().push([this,activation]() {
 

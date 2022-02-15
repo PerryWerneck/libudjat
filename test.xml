@@ -24,6 +24,7 @@
 
 	</agent>
 
+	<!--
 	<random name='random600' update-timer='600'>
 
 		<state name='s0' value='0' summary='Random 0'>
@@ -53,8 +54,8 @@
 		</state>
 		
 	</random>
-
-	<!--
+	-->
+	
 	<random name='random10' update-timer='10'>
 
 		<attribute name='default-url' value='http://localhost' />
@@ -78,6 +79,5 @@
 		</state>
 
 	</random>
-	-->
 	
 </config>
