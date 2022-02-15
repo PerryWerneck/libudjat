@@ -31,6 +31,7 @@
 
  namespace Udjat {
 
+	/*
 	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
@@ -75,6 +76,7 @@
 		value["action"] = std::to_string(action);
 		return value;
 	}
+	*/
 
  }
 

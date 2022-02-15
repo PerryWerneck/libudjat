@@ -27,6 +27,7 @@
  #include <udjat/worker.h>
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/alert.h>
  #include <mutex>
  #include <list>
  #include <iostream>
@@ -35,10 +36,9 @@
 
  namespace Udjat {
 
-	/// @brief Singleton for alert emission.
+ 	/// @brief Singleton for alert emission.
 	class Abstract::Alert::Controller : private MainLoop::Service, private Udjat::Worker {
 	private:
-
 		/// @brief Mutex for serialization
 		static mutex guard;
 
@@ -46,6 +46,21 @@
 		list<shared_ptr<Abstract::Alert::Activation>> activations;
 
 		Controller();
+
+		void reset(time_t interval) noexcept;
+		void emit() noexcept;
+
+	public:
+		static Controller & getInstance();
+		virtual ~Controller();
+
+		void push_back(shared_ptr<Abstract::Alert::Activation> activation);
+		void remove(const Abstract::Alert *alert);
+
+	};
+	/*
+
+
 
 		/// @brief Emit pending alerts.
 		void emit() noexcept;
@@ -76,6 +91,7 @@
 		bool get(Request &request, Response &response) const override;
 
 	};
+	*/
 
  }
 

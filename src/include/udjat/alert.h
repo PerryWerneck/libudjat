@@ -32,78 +32,6 @@
 		/// @brief Abstract alert.
 		class UDJAT_API Alert : public NamedObject {
 		private:
-			class Controller;
-			friend class Controller;
-
-		protected:
-
-			/// @brief Alert activation.
-			class UDJAT_API Activation {
-			private:
-				friend class Controller;
-
-				std::shared_ptr<Alert> alertptr;
-
-				struct {
-					time_t last = 0;
-					time_t next = 0;
-				} timers;
-
-				struct {
-					unsigned int success = 0;
-					unsigned int failed = 0;
-				} count;
-
-				void checkForSleep(const char *msg) noexcept;
-
-				struct {
-					bool restarting = false;
-					time_t running = 0;
-				} state;
-
-				/// @brief Schedule next alert.
-				void next() noexcept;
-
-			protected:
-
-				/// @brief Alert name
-				std::string name;
-
-				/// @brief Alert was send.
-				void success() noexcept;
-
-				/// @brief Alert was not send.
-				void failed() noexcept;
-
-				/// @brief Emit alert, update timers.
-				void run() noexcept;
-
-			public:
-				Activation();
-				virtual ~Activation();
-
-				inline bool verbose() const noexcept {
-					return alertptr->verbose();
-				}
-
-				virtual const char * c_str() const noexcept;
-
-				inline std::shared_ptr<Alert> alert() const {
-					return alertptr;
-				};
-
-				/// @brief Is the activation running?
-				inline bool running() const noexcept {
-					return state.running != 0;
-				}
-
-				/// @brief Emit alert.
-				virtual void emit() const;
-
-				/// @brief Get activation info.
-				virtual Value & getProperties(Value &value) const noexcept;
-
-			};
 
 			/// @brief Alert options.
 			struct {
@@ -129,11 +57,9 @@
 				unsigned int success = 0;		///< @brief Seconds to wait for reactivate after a successful activation.
 			} restart;
 
-			/// @brief Create and activation object for this alert.
-			/// @param expander lambda for alert parameters expansion.
-			virtual std::shared_ptr<Activation> ActivationFactory(const Abstract::Object &object) const = 0;
-
 		public:
+			class Controller;
+
 			constexpr Alert(const char *name) : NamedObject(name) {
 			}
 
@@ -148,22 +74,103 @@
 				return options.verbose;
 			}
 
-			/// @brief Activate an alert.
-			static void activate(const Abstract::Object &object, std::shared_ptr<Alert> alert);
-
 			/// @brief Deactivate an alert.
 			void deactivate();
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const noexcept override;
 
+			/// @brief Alert activation.
+			class UDJAT_API Activation {
+			private:
+				friend class Controller;
+
+				Alert * alert = nullptr;
+
+				struct {
+					unsigned int min;
+					unsigned int max;
+				} retry;
+
+				struct {
+					bool verbose = true;
+				} options;
+
+				struct {
+					unsigned int interval = 0;
+					unsigned int busy = 0;
+					unsigned int failed = 14400;
+					unsigned int success = 0;
+					time_t last = 0;
+					time_t next = 0;
+				} timers;
+
+				struct {
+					unsigned int success = 0;
+					unsigned int failed = 0;
+				} count;
+
+				void checkForSleep(const char *msg) noexcept;
+
+				struct {
+					bool restarting = false;
+					time_t running = 0;
+				} state;
+
+				/// @brief Schedule next alert.
+				void next() noexcept;
+
+			protected:
+
+				/// @brief Alert name
+				std::string name;
+
+				/// @brief Emit alert, update timers.
+				void run() noexcept;
+
+			protected:
+				/// @brief Emit alert.
+				virtual void emit() const;
+
+			public:
+				Activation(Alert *alert);
+				virtual ~Activation();
+
+				/// @brief Set object on the activation.
+				virtual void set(const Abstract::Object &object);
+
+				inline bool verbose() const noexcept {
+					return options.verbose;
+				}
+
+				/// @brief Is the activation running?
+				inline bool running() const noexcept {
+					return state.running != 0;
+				}
+
+				/// @brief Get activation info.
+				virtual Value & getProperties(Value &value) const noexcept;
+
+				std::ostream & info() const;
+				std::ostream & warning() const;
+				std::ostream & error() const;
+
+			};
+
+			/// @brief Create and activation object for this alert.
+			virtual std::shared_ptr<Activation> ActivationFactory() const;
+
 		};
 
 	}
 
+	/// @brief Start alert activation.
+	UDJAT_API void start(std::shared_ptr<Abstract::Alert::Activation> activation);
+
 	/// @brief Create an alert from XML description;
 	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name = nullptr);
 
+	/*
 	/// @brief Default alert (based on URL and payload).
 	class UDJAT_API Alert : public Abstract::Alert {
 	protected:
@@ -203,9 +210,11 @@
 		Value & getProperties(Value &value) const noexcept override;
 
 	};
+	*/
 
  }
 
+ /*
  namespace std {
 
 	inline string to_string(const Udjat::Abstract::Alert &alert) {
@@ -217,3 +226,4 @@
 	}
 
  }
+ */

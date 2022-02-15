@@ -31,8 +31,6 @@
 
  using namespace std;
 
- // static const char * expand(const char *value,const pugi::xml_node &node,const char *section);
-
  namespace Udjat {
 
 	mutex Abstract::Alert::Controller::guard;
@@ -52,6 +50,125 @@
 
 	Abstract::Alert::Controller::~Controller() {
 	}
+
+	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
+
+		lock_guard<mutex> lock(guard);
+		activations.remove_if([alert](auto activation){
+			return activation->alert == alert;
+		});
+
+	}
+
+	void Abstract::Alert::Controller::push_back(shared_ptr<Abstract::Alert::Activation> activation) {
+
+		if(!MainLoop::getInstance()) {
+
+			// No mainloop
+
+			if(activation->alert && activation->alert->timers.start) {
+				throw runtime_error("Can't emit a delayed alert, the main loop is disabled");
+			}
+
+			activation->warning() << "WARNING: The main loop is disabled, cant retry a failed alert" << endl;
+			activation->run();
+			return;
+
+		}
+
+		// Have mainloop
+		{
+			lock_guard<mutex> lock(guard);
+			activations.push_back(activation);
+		}
+
+		emit();
+	}
+
+	void Abstract::Alert::Controller::reset(time_t seconds) noexcept {
+
+		if(!seconds) {
+			seconds = 1;
+		}
+
+		// Using threadpool because I cant change a timer from a timer callback.
+		ThreadPool::getInstance().push([this,seconds]{
+#ifdef DEBUG
+				cout << "alerts\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
+#endif // DEBUG
+
+			MainLoop &mainloop = MainLoop::getInstance();
+
+			lock_guard<mutex> lock(guard);
+			if(activations.empty()) {
+
+				cout << "alerts\tStopping controller" << endl;
+				mainloop.remove(this);
+
+			} else if(!mainloop.reset(this,seconds*1000)) {
+
+				cout << "alerts\tStarting controller" << endl;
+				mainloop.insert(this,seconds*1000,[this]() {
+					emit();
+					return true;
+				});
+
+			}
+
+		});
+
+	}
+
+	void Abstract::Alert::Controller::emit() noexcept {
+
+		time_t now = time(0);
+		time_t next = now + 600;
+
+		lock_guard<mutex> lock(guard);
+		activations.remove_if([this,now,&next](auto activation){
+
+			if(!activation->timers.next) {
+				// No alert or no next, remove from list.
+				if(activation->verbose()) {
+					activation->info() << "Alert was stopped" << endl;
+				}
+				return true;
+			}
+
+			if(activation->timers.next <= now) {
+
+				// Timer has expired
+				activation->timers.next = (now + activation->timers.interval);
+
+				if(activation->state.running) {
+
+					activation->warning() << "Alert is running since " << TimeStamp(activation->state.running) << endl;
+					activation->timers.next = now + max((unsigned int) 5, activation->timers.busy);
+
+				} else {
+
+					activation->state.running = time(0);
+
+					ThreadPool::getInstance().push([this,activation]() {
+
+						activation->run();
+						activation->state.running = 0;
+
+					});
+				}
+			}
+
+			next = min(next,activation->timers.next);
+			return false;
+		});
+
+		reset(next-now);
+
+	}
+
+	/*
+
+
 
 	size_t Abstract::Alert::Controller::running() const noexcept {
 		size_t running = 0;
@@ -93,48 +210,6 @@
 		}
 	}
 
-	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
-		lock_guard<mutex> lock(guard);
-		activations.remove_if([alert](const auto &activation){
-			if(activation->alert().get() != alert)
-				return false;
-			return true;
-		});
-	}
-
-	void Abstract::Alert::Controller::reset(time_t seconds) noexcept {
-
-		if(!seconds) {
-			seconds = 1;
-		}
-
-		// Using threadpool because I cant change a timer from a timer callback.
-		ThreadPool::getInstance().push([this,seconds]{
-#ifdef DEBUG
-				cout << "alert\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
-#endif // DEBUG
-
-			MainLoop &mainloop = MainLoop::getInstance();
-
-			lock_guard<mutex> lock(guard);
-			if(activations.empty()) {
-
-				cout << "alerts\tStopping controller" << endl;
-				mainloop.remove(this);
-
-			} else if(!mainloop.reset(this,seconds*1000)) {
-
-				cout << "alerts\tStarting controller" << endl;
-				mainloop.insert(this,seconds*1000,[this]() {
-					emit();
-					return true;
-				});
-
-			}
-
-		});
-
-	}
 
 	void Abstract::Alert::Controller::refresh() noexcept {
 
@@ -156,88 +231,6 @@
 
 	}
 
-	void Abstract::Alert::Controller::activate(const Abstract::Object &object, std::shared_ptr<Alert> alert) {
-
-		// Create an activation
-		auto activation = alert->ActivationFactory(object);
-		activation->alertptr = alert;
-
-		if(activation->name.empty()) {
-			activation->name = alert->name();
-		}
-
-		// Is the mainloop active?
-		if(!MainLoop::getInstance()) {
-
-			if(alert->timers.start) {
-				throw runtime_error("Can't emit a delayed alert, the main loop is disabled");
-			}
-
-			clog << activation->name << "\tWARNING: The main loop is disabled, cant retry a failed alert" << endl;
-			activation->run();
-
-		} else {
-
-			// Set timer for the first emission, add activation in the queue.
-			activation->timers.next = time(0) + alert->timers.start;
-			{
-				lock_guard<mutex> lock(guard);
-				activations.push_back(activation);
-			}
-
-			emit();
-
-		}
-
-	}
-
-	void Abstract::Alert::Controller::emit() noexcept {
-
-		time_t now = time(0);
-		time_t next = now + 600;
-
-		lock_guard<mutex> lock(guard);
-		activations.remove_if([this,now,&next](auto activation){
-
-			auto alert = activation->alert();
-
-			if(!activation->timers.next) {
-				// No alert or no next, remove from list.
-				if(alert->verbose()) {
-					cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
-				}
-				return true;
-			}
-
-			if(activation->timers.next <= now) {
-
-				// Timer has expired
-				activation->timers.next = (now + alert->timers.interval);
-
-				if(activation->state.running) {
-
-					clog << activation->name << "\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
-
-				} else {
-
-					activation->state.running = time(0);
-
-					ThreadPool::getInstance().push([this,activation]() {
-
-						activation->run();
-						activation->state.running = 0;
-
-					});
-				}
-			}
-
-			next = min(next,activation->timers.next);
-			return false;
-		});
-
-		reset(next-now);
-
-	}
 
 	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
 
@@ -250,6 +243,7 @@
 
 		return true;
 	}
+	*/
 
  }
 

@@ -129,7 +129,10 @@ namespace Udjat {
 		agent.info() << "State '" << *this << "' was activated" << endl;
 
 		for(auto alert : alerts) {
-			Abstract::Alert::activate(*this,alert);
+			auto activation = alert->ActivationFactory();
+			activation->set(*this);
+			activation->set(agent);
+			Udjat::start(activation);
 		}
 
 	}
