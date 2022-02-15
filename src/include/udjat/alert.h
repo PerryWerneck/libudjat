@@ -123,9 +123,6 @@
 				/// @brief Schedule next alert.
 				void next() noexcept;
 
-				/// @brief Emit alert, update timers, control if active.
-				void run() noexcept;
-
 			protected:
 
 				/// @brief Alert name
@@ -140,6 +137,10 @@
 			public:
 				Activation(const Alert *alert);
 				virtual ~Activation();
+
+				/// @brief Emit alert, update timers block until completed.
+				/// @return true if the alert emission was ok.
+				bool run() noexcept;
 
 				/// @brief Rename activation.
 				/// @param new_name New activation name.

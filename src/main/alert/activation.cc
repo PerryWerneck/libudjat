@@ -85,12 +85,14 @@
 		return value;
 	}
 
-	void Abstract::Alert::Activation::run() noexcept {
+	bool Abstract::Alert::Activation::run() noexcept {
 
+		bool succeeded = false;
 		try {
 			timers.last = time(0);
 			emit();
 			count.success++;
+			succeeded = true;
 			timers.next = time(0) + timers.interval;
 		} catch(const exception &e) {
 			error() << "Alert emmission failed with '" << e.what() << "'" << endl;
@@ -121,6 +123,8 @@
 				info() << "No interval, deactivating alert" << endl;
 			}
 		}
+
+		return succeeded;
 
 	}
 
