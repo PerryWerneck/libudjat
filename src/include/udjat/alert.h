@@ -141,6 +141,12 @@
 				Activation(const Alert *alert);
 				virtual ~Activation();
 
+				/// @brief Rename activation.
+				/// @param new_name New activation name.
+				inline void rename(const char *new_name) noexcept {
+					this->name == new_name;
+				}
+
 				/// @brief Set description.
 				inline void set(const char *descr) noexcept {
 					description = descr;
