@@ -208,6 +208,10 @@
 		},dynamic,cleanup);
 	}
 
+	void Abstract::Object::expand(std::string &text, bool dynamic, bool cleanup) const {
+		text = expand(text.c_str(),dynamic,cleanup);
+	}
+
 	const char * Abstract::Object::expand(const pugi::xml_node &node, const char *group, const char *value) {
 
 		string text{value};

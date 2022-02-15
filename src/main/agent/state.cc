@@ -91,9 +91,7 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
-		Abstract::Alert::activate(alert,[this](std::string &text) {
-			text = this->expand(text.c_str());
-		});
+		Abstract::Alert::activate(*this,alert);
 	}
 
 	std::ostream & LogFactory(Udjat::Level level) {

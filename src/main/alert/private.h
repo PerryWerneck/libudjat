@@ -67,10 +67,8 @@
 		/// @brief How many active activations?
 		size_t running() const noexcept;
 
-		//void insert(const std::shared_ptr<Abstract::Alert::Activation> activation);
-
 		/// @brief Activate an alert.
-		void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);
+		void activate(const Abstract::Object &object, std::shared_ptr<Alert> alert);
 
 		/// @brief Remove alert activation.
 		void remove(const Abstract::Alert *alert);

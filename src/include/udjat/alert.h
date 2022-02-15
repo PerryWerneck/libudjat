@@ -131,7 +131,7 @@
 
 			/// @brief Create and activation object for this alert.
 			/// @param expander lambda for alert parameters expansion.
-			virtual std::shared_ptr<Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const = 0;
+			virtual std::shared_ptr<Activation> ActivationFactory(const Abstract::Object &object) const = 0;
 
 		public:
 			constexpr Alert(const char *name) : NamedObject(name) {
@@ -149,10 +149,7 @@
 			}
 
 			/// @brief Activate an alert.
-			static void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);
-
-			/// @brief Activate and alert without expansion.
-			static void activate(std::shared_ptr<Alert> alert);
+			static void activate(const Abstract::Object &object, std::shared_ptr<Alert> alert);
 
 			/// @brief Deactivate an alert.
 			void deactivate();
@@ -184,13 +181,13 @@
 
 		public:
 			Activation(const std::string &u, const HTTP::Method a, const std::string &p);
-			Activation(const Alert &alert, const std::function<void(std::string &str)> &expander);
+			Activation(const Alert &alert, const Abstract::Object &object);
 			void emit() const override;
 			const char * c_str() const noexcept override;
 
 		};
 
-		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const std::function<void(std::string &str)> &expander) const;
+		std::shared_ptr<Abstract::Alert::Activation> ActivationFactory(const Abstract::Object &object) const override;
 
 	public:
 

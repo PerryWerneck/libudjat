@@ -107,6 +107,13 @@
 			/// @return String with the known ${} tags expanded.
 			std::string expand(const char *text, bool dynamic = false, bool cleanup = false) const;
 
+			/// @brief Expand ${} tags using object properties.
+			/// @param text Text to expand.
+			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+			/// @param cleanup if true put an empty string in the non existant attributes.
+			/// @return String with the known ${} tags expanded.
+			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
+
 			/// @brief Add object properties to the value.
 			virtual Value & getProperties(Value &value) const noexcept;
 

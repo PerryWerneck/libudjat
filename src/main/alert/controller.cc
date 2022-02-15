@@ -156,10 +156,10 @@
 
 	}
 
-	void Abstract::Alert::Controller::activate(std::shared_ptr<Abstract::Alert> alert, const std::function<void(std::string &str)> &expander) {
+	void Abstract::Alert::Controller::activate(const Abstract::Object &object, std::shared_ptr<Alert> alert) {
 
 		// Create an activation
-		auto activation = alert->ActivationFactory(expander);
+		auto activation = alert->ActivationFactory(object);
 		activation->alertptr = alert;
 
 		if(activation->name.empty()) {

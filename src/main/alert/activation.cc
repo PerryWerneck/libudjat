@@ -21,6 +21,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/object.h>
  #include <udjat/alert.h>
  #include <udjat/state.h>
 
@@ -29,10 +30,17 @@
 	Alert::Activation::Activation(const string &u, const HTTP::Method a, const string &p) : url(u), action(a), payload(p) {
 	}
 
-	Alert::Activation::Activation(const Alert &alert, const std::function<void(std::string &str)> &expander) : Activation(alert.url,alert.action,alert.payload) {
+	Alert::Activation::Activation(const Alert &alert, const Abstract::Object &object) : Activation(alert.url,alert.action,alert.payload) {
 
-		expander(url);
-		expander(payload);
+		alert.expand(url,true,false);
+		object.expand(url,true,true);
+
+		alert.expand(payload,true,false);
+		object.expand(payload,true,true);
+
+#ifdef DEBUG
+		cout << "alert\tURL: " << url << endl << payload << endl;
+#endif // DEBUG
 
 	}
 

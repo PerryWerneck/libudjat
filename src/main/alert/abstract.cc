@@ -23,13 +23,15 @@
 
  namespace Udjat {
 
-	void Abstract::Alert::activate(std::shared_ptr<Alert> alert,const std::function<void(std::string &str)> &expander) {
-		Controller::getInstance().activate(alert,expander);
+	void Abstract::Alert::activate(const Abstract::Object &object, std::shared_ptr<Alert> alert) {
+		Controller::getInstance().activate(object,alert);
 	}
 
+	/*
 	void Abstract::Alert::activate(std::shared_ptr<Alert> alert) {
 		activate(alert,[](std::string UDJAT_UNUSED(&text)){});
 	}
+	*/
 
 	Abstract::Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
 
