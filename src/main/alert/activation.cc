@@ -91,11 +91,12 @@
 			timers.last = time(0);
 			emit();
 			count.success++;
+			timers.next = time(0) + timers.interval;
 		} catch(const exception &e) {
-			error() << e.what() << endl;
+			error() << "Alert emmission failed with '" << e.what() << "'" << endl;
 			count.failed++;
 		} catch(...) {
-			error() << "Unexpected error" << endl;
+			error() << "Unexpected error emitting alert" << endl;
 			count.failed++;
 		}
 
@@ -109,8 +110,16 @@
 			checkForSleep("was sucessfull");
 		} else if( (count.success + count.failed) >= retry.max ) {
 			checkForSleep("reached the maximum number of emissions");
-		} else {
+		} else if(timers.interval) {
 			timers.next = time(0) + timers.interval;
+			if(verbose()) {
+				info() << "Next emission set to " << TimeStamp(timers.next) << endl;
+			}
+		} else {
+			timers.next = 0;
+			if(verbose()) {
+				info() << "No interval, deactivating alert" << endl;
+			}
 		}
 
 	}
