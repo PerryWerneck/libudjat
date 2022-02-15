@@ -141,12 +141,17 @@
 				Activation(const Alert *alert);
 				virtual ~Activation();
 
+				/// @brief Set description.
+				inline void set(const char *descr) noexcept {
+					description = descr;
+				}
+
 				/// @brief Set level.
 				inline void set(const Udjat::Level level) noexcept {
 					options.level = level;
 				}
 
-				/// @brief Set object on the activation.
+				/// @brief Set object (expand ${} on strings).
 				virtual void set(const Abstract::Object &object);
 
 				inline bool verbose() const noexcept {
@@ -167,7 +172,7 @@
 
 			};
 
-			/// @brief Create and activation object for this alert.
+			/// @brief Create and activation for this alert.
 			virtual std::shared_ptr<Activation> ActivationFactory() const;
 
 		};
