@@ -97,7 +97,7 @@
 		}
 
 		if(!protocol) {
-			throw system_error(ENOENT,system_category(),Logger::Message("Unable to handle '{}'",url));
+			throw system_error(ENOENT,system_category(),"No available protocol worker");
 		}
 
 		return protocol->call(URL(url),method,payload);
