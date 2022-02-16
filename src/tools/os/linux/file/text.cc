@@ -152,7 +152,7 @@
 
 	}
 
-	void File::Text::forEach(const char *from, std::function<void (const string &line)> call) {
+	void File::Text::for_each(const char *from, std::function<void (const string &line)> call) {
 		while(from) {
 			const char *to = strchr(from,'\n');
 			if(to) {

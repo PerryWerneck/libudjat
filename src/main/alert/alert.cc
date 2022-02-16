@@ -24,6 +24,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/string.h>
  #include <udjat/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/expander.h>
@@ -40,7 +41,12 @@
 			throw runtime_error(string{"Required attribute 'url' is missing on alert '"} + name() + "'");
 		}
 
-		payload = Object::expand(node,section,node.child_value());
+		String child(node.child_value());
+		if(getAttribute(node,section,"strip-payload",true)) {
+			child.strip();
+		}
+
+		payload = Object::expand(node,section,child.c_str());
 
 		{
 			// Get alert action.
@@ -55,38 +61,8 @@
 
 	}
 
-	void Alert::activate(const char *name, const char *url, const char *action, const char *payload) {
-		Abstract::Alert::activate(make_shared<Alert>(name,url,HTTP::MethodFactory(action),payload));
-	}
-
-	/*
-	const char * Alert::expand(const char *value, const pugi::xml_node &node, const char *section) {
-
-		string text{value};
-		Udjat::expand(text, [node,section](const char *key, string &value) {
-
-			auto attr = Udjat::Attribute(node,key,key);
-			if(attr) {
-				value = attr.as_string();
-				return true;
-			}
-
-			if(Udjat::Config::hasKey(section,key)) {
-				value = Udjat::Config::Value<string>(section,key,"");
-				return true;
-			}
-
-			return false;
-
-		});
-
-		return Udjat::Quark(text).c_str();
-
-	}
-	*/
-
-	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory(const std::function<void(std::string &str)> &expander) const {
-		return make_shared<Activation>(*this,expander);
+	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory() const {
+		return make_shared<Activation>(this);
 	}
 
 	Value & Alert::getProperties(Value &value) const noexcept {
@@ -96,5 +72,42 @@
 		return value;
 	}
 
+	Value & Alert::Activation::getProperties(Value &value) const noexcept {
+		Abstract::Alert::Activation::getProperties(value);
+		value["url"] = url.c_str();
+		value["action"] = std::to_string(action);
+		return value;
+	}
+
+	Alert::Activation::Activation(const Alert *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
+
+		url.expand(*alert,true,false);
+		payload.expand(*alert,true,false);
+
+	}
+
+	void Alert::Activation::emit() {
+
+		url.expand();
+		payload.expand();
+
+		if(verbose()) {
+			if(description.empty()) {
+				info() << "Emitting " << action << " " << url << endl << payload << endl;
+			} else {
+				info() << description << ": " << action << " " << url << endl << payload << endl;
+			}
+		}
+
+		Protocol::call(url.c_str(),action,payload.c_str());
+
+	}
+
+	void Alert::Activation::set(const Abstract::Object &object) {
+		url.expand(object);
+		payload.expand(object);
+	}
+
  }
+
 

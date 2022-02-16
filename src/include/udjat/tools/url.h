@@ -32,6 +32,7 @@
  #include <string>
  #include <stdexcept>
  #include <system_error>
+ #include <functional>
 
  namespace Udjat {
 
@@ -68,15 +69,24 @@
 		static std::string unescape(const char *src);
 
 		/// @brief Do a 'get' request.
+		/// @return Server response.
 		std::string get() const;
+
+		/// @brief Do a 'post' request.
+		/// @param payload Post payload.
+		/// @return Server response.
+		std::string post(const char *payload) const;
 
 		/// @brief Download/update a file.
 		/// @param filename The fullpath for the file.
 		/// @return true if the file was updated.
 		bool get(const char *filename) const;
 
-		/// @brief Do a 'post' request.
-		std::string post(const char *payload) const;
+		/// @brief Download/update a file with progress callback.
+		/// @param filename The fullpath for the file.
+		/// @param call progress callback.
+		/// @return true if the file was updated.
+		bool get(const char *filename, std::function<bool(uint64_t current, uint64_t total)> call) const;
 
 	};
 

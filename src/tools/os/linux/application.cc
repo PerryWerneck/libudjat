@@ -26,6 +26,9 @@
  #include <udjat/tools/application.h>
  #include <errno.h>
  #include <unistd.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <system_error>
 
  using namespace std;
 
@@ -47,6 +50,20 @@
 	Application::DataDir::DataDir(const char *subdir) : DataDir() {
 		append(subdir);
 		append("/");
+	}
+
+	Application::CacheDir::CacheDir() : string{"/var/cache/"} {
+		append(program_invocation_short_name);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+	}
+
+	Application::CacheDir::CacheDir(const char *filename) : CacheDir() {
+		append(filename);
 	}
 
 	Application::DataFile::DataFile(const char *name) {

@@ -103,7 +103,7 @@
 
 	}
 
-	void Abstract::Agent::foreach(std::function<void(Abstract::Agent &agent)> method) {
+	void Abstract::Agent::for_each(std::function<void(Abstract::Agent &agent)> method) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
@@ -115,7 +115,7 @@
 
 	}
 
-	void Abstract::Agent::foreach(std::function<void(std::shared_ptr<Abstract::Agent> agent)> method) {
+	void Abstract::Agent::for_each(std::function<void(std::shared_ptr<Abstract::Agent> agent)> method) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 

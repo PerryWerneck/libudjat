@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat-internals.h>
  #include <udjat/tools/systemservice.h>
  #include <iostream>
  #include <system_error>
@@ -38,31 +39,21 @@
 
  namespace Udjat {
 
-	SystemService * SystemService::instance = nullptr;
+	void SystemService::onReloadSignal(int signal) noexcept {
 
-	void SystemService::onReloadSignal(int UDJAT_UNUSED(signal)) noexcept {
-
-		cout << "service\tReconfigure request received from signal SIGUSR1" << endl;
+		Application::info() << "Reconfigure request received from signal " << strsignal(signal) << endl;
 
 		try {
 
 			ThreadPool::getInstance().push([](){
-				if(instance && instance->definitions) {
-
-					Application::DataFile path(instance->definitions);
-					cout << Application::Name() << "\tReconfiguring from '" << path << "'" << endl;
-					Udjat::load(path.c_str());
-
-				} else {
-
-					clog << "service\tUnable to handle SIGUSR1, no service or no defined file(s)" << endl;
-
+				if(instance) {
+					instance->reconfigure(instance->definitions);
 				}
 			});
 
 		} catch(const std::exception &e) {
 
-			cerr << "service\t" << e.what() << endl;
+			Application::error() << e.what() << endl;
 
 		}
 
@@ -79,19 +70,7 @@
 		setlocale( LC_ALL, "" );
 
 		if(definitions) {
-
-			// Inicialize from XML
-			Application::DataFile path(definitions);
-			cout << Application::Name() << "\tInitializing from '" << path << "'" << endl;
-			Udjat::load(path.c_str());
-
-			// Capture reload signal.
-			if(!instance) {
-				instance = this;
-				signal(SIGUSR1,onReloadSignal);
-				cout << Application::Name() << "\tUse SIGUSR1 to force reload of " << path << endl;
-			}
-
+			reconfigure(definitions);
 		}
 
 	}

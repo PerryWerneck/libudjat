@@ -23,14 +23,6 @@
 
  namespace Udjat {
 
-	void Abstract::Alert::activate(std::shared_ptr<Alert> alert,const std::function<void(std::string &str)> &expander) {
-		Controller::getInstance().activate(alert,expander);
-	}
-
-	void Abstract::Alert::activate(std::shared_ptr<Alert> alert) {
-		activate(alert,[](std::string UDJAT_UNUSED(&text)){});
-	}
-
 	Abstract::Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
 
 		// Get section from configuration file with the defaults.
@@ -60,13 +52,13 @@
 		// How many seconds to restart when suceeded?
 		restart.success = getAttribute(node,section,"restart-when-succeeded",restart.success);
 
-#ifdef DEBUG
-		cout << c_str() << "\tAlert created" << endl;
-#endif // DEBUG
-
 	}
 
 	Abstract::Alert::~Alert() {
+	}
+
+	std::shared_ptr<Abstract::Alert::Activation> Abstract::Alert::ActivationFactory() const {
+		throw runtime_error("Cant activate an abstract alert");
 	}
 
 	void Abstract::Alert::deactivate() {

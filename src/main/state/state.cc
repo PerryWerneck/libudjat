@@ -69,51 +69,37 @@ namespace Udjat {
 
 		for(pugi::xml_node child : node) {
 
-			if(!strcasecmp(node.name(),"attribute")) {
-				continue;
-			}
+			if(!strcasecmp(child.name(),"alert")) {
 
-			try {
+				if(!AlertFactory(child)) {
+					error() << "Unable to create alert" << endl;
+				}
 
-				Factory::parse(child.name(), *this, child);
+			} else if(strcasecmp(child.name(),"attribute")) {
 
-			} catch(const std::exception &e) {
+				// Parse child using factories.
+				Factory::for_each(child.name(),[this,&child](const Factory & factory){
 
-				error() << "Error '" << e.what() << "' loading node '" << child.name() << "'"  << endl;
+					try {
 
-			} catch(...) {
+						factory.parse(*this,child);
 
-				error() << "Unexpected error loading node '" << child.name() << "'"  << endl;
+					} catch(const std::exception &e) {
+						factory.error() << "Error '" << e.what() << "' parsing <" << child.name() << ">" << endl;
+					} catch(...) {
+						factory.error() << "Unexpected error parsing <" << child.name() << ">" << endl;
+					}
+
+					return false;
+
+				});
 
 			}
 
 		}
 
 		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
-
-			// Insert alert using the same node.
-			try {
-
-				const char *type = getAttribute(node, section, "alert-type", "default");
-
-				if(strcasecmp(type,"default")) {
-
-					// Not default, use factory.
-					Factory::parse(type, *this, node);
-
-				} else {
-
-					// Create the default alert.
-					append(make_shared<Udjat::Alert>(node));
-
-				}
-
-			} catch(const std::exception &e) {
-
-				error() << "Error '" << e.what() << "' embedding alert"  << endl;
-
-			}
-
+			AlertFactory(node,node.attribute("alert-type").as_string("default"));
 		}
 
 	}
@@ -143,10 +129,21 @@ namespace Udjat {
 		agent.info() << "State '" << *this << "' was activated" << endl;
 
 		for(auto alert : alerts) {
-			Abstract::Alert::activate(alert,[agent,this](std::string &text) {
-				text = expand(text.c_str());
-				text = agent.expand(text.c_str());
-			});
+			auto activation = alert->ActivationFactory();
+
+			const char *description = summary();
+			if(!(description && *description)) {
+				description = agent.summary();
+			}
+			if(description && *description) {
+				activation->set(description);
+			}
+
+			activation->set(*this);
+			activation->set(agent);
+			activation->set(level());
+
+			Udjat::start(activation);
 		}
 
 	}

@@ -27,6 +27,7 @@
  #include <udjat/worker.h>
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/alert.h>
  #include <mutex>
  #include <list>
  #include <iostream>
@@ -35,10 +36,9 @@
 
  namespace Udjat {
 
-	/// @brief Singleton for alert emission.
+ 	/// @brief Singleton for alert emission.
 	class Abstract::Alert::Controller : private MainLoop::Service, private Udjat::Worker {
 	private:
-
 		/// @brief Mutex for serialization
 		static mutex guard;
 
@@ -47,37 +47,29 @@
 
 		Controller();
 
+		/// @brief Reset timer.
+		/// @param seconds Seconds for the next 'emit()'.
+		void reset(time_t interval) noexcept;
+
 		/// @brief Emit pending alerts.
 		void emit() noexcept;
-
-		/// @brief Reset update timer.
-		/// @param seconds Seconds for the next 'emit()'.
-		void reset(time_t seconds) noexcept;
 
 	protected:
 		void stop() override;
 
-	public:
-		static Controller & getInstance();
-		~Controller();
-
-		/// @brief Update timer.
-		void refresh() noexcept;
-
-		/// @brief How many active activations?
+		/// @brief How many activations?
 		size_t running() const noexcept;
 
-		//void insert(const std::shared_ptr<Abstract::Alert::Activation> activation);
+	public:
+		static Controller & getInstance();
+		virtual ~Controller();
 
-		/// @brief Activate an alert.
-		void activate(std::shared_ptr<Alert> alert, const std::function<void(std::string &str)> &expander);
-
-		/// @brief Remove alert activation.
+		void push_back(shared_ptr<Abstract::Alert::Activation> activation);
 		void remove(const Abstract::Alert *alert);
-
 		bool get(Request &request, Response &response) const override;
 
 	};
+
 
  }
 

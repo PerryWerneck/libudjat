@@ -26,6 +26,7 @@
 	#include <udjat/tools/object.h>
 	#include <cstring>
 	#include <ostream>
+	#include <udjat/level.h>
 
 	namespace Udjat {
 
@@ -43,25 +44,6 @@
 		/// @param to 		Major value in bytes.
 		void parse_byte_range(const pugi::xml_node &node, unsigned long long &from, unsigned long long &to);
 
-		/// @brief Alert/state level.
-		// TODO: Convert to class.
-		enum Level : uint8_t {
-			undefined,
-			unimportant,
-			ready,
-			warning,
-			error,
-
-			critical		///< @brief Critical level (always the last one)
-
-		};
-
-		/// @brief Get level from string.
-		UDJAT_API Level LevelFactory(const char *name);
-
-		/// @brief Get level from XML node.
-		UDJAT_API Level LevelFactory(const pugi::xml_node &node);
-
 		/// @brief Get OStream from level.
 		UDJAT_API std::ostream & LogFactory(Udjat::Level level);
 
@@ -77,6 +59,11 @@
 
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
+
+				/// @brief Create and insert alert.
+				/// @param node Alert definitions.
+				/// @param type Alert type.
+				std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *type = nullptr);
 
 				/// @brief State alerts.
 				std::vector<std::shared_ptr<Abstract::Alert>> alerts;
@@ -222,16 +209,6 @@
 		/// @param summary State summary (for message).
 		/// @return A new state object based on the exception type and message.
 		UDJAT_API std::shared_ptr<Abstract::State> StateFactory(const std::exception &except, const char *summary);
-
-	}
-
-	namespace std {
-
-		const char * to_string(const Udjat::Level level);
-
-		inline ostream& operator<< (ostream& os, const Udjat::Level level) {
-			return os << to_string(level);
-		}
 
 	}
 

@@ -141,7 +141,7 @@ namespace Udjat {
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
 			this->current_state.activation = time(0);
 
 		} catch(...) {

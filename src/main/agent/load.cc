@@ -31,25 +31,72 @@ namespace Udjat {
 		// Load children
 		for(pugi::xml_node node : root) {
 
-			// Skip reserved names.
-			if(!(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module"))) {
-				continue;
+			if(!strcasecmp(node.name(),"state")) {
+
+				// Create states.
+				try {
+
+					if(!StateFactory(node)) {
+						error() << "Unable to create child state" << endl;
+					}
+
+				} catch(const std::exception &e) {
+
+					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
+
+				} catch(...) {
+
+					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
+
+				}
+
+			} else if(!strcasecmp(node.name(),"alert")) {
+
+				// Create alerts.
+				try {
+
+					auto alert = AlertFactory(node);
+					if(alert) {
+						push_back(alert);
+					} else {
+						error() << "Unable to create alert" << endl;
+					}
+
+				} catch(const std::exception &e) {
+
+					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
+
+				} catch(...) {
+
+					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
+
+				}
+
+			} else if(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module")) {
+
+				// Use factory to parse child nodes.
+				Factory::for_each(node.name(),[this,&node](const Factory &factory){
+
+					try {
+
+						return factory.parse(*this,node);
+
+					} catch(const std::exception &e) {
+
+						factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
+
+					} catch(...) {
+
+						factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
+
+					}
+
+					return false;
+
+				});
+
 			}
 
-			// Process factory methods.
-			try {
-
-				Factory::parse(node.name(), *this, node);
-
-			} catch(const std::exception &e) {
-
-				error() << "Error '" << e.what() << "' loading node '" << node.name() << "'" << endl;
-
-			} catch(...) {
-
-				error() << "Unexpected error loading node '" << node.name() << "'" << endl;
-
-			}
 
 		}
 

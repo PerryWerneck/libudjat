@@ -45,6 +45,18 @@
 	UDJAT_PRIVATE std::shared_ptr<Abstract::Agent> RootAgentFactory();
 	UDJAT_PRIVATE void setRootAgent(std::shared_ptr<Abstract::Agent> agent);
 
+	/// @brief Load modules from XML definitions.
+	UDJAT_PRIVATE void load_modules(const char *pathname);
+
+	/// @brief Get new definition files from server.
+	/// @returns Seconds for the next refresh.
+	UDJAT_PRIVATE time_t refresh_definitions(const char *pathname);
+
+	/// @brief Load agent definitions from files.
+	/// @param agent Root agent.
+	/// @param pathname Path for XML agent definitions.
+	UDJAT_PRIVATE void load_agent_definitions(std::shared_ptr<Abstract::Agent> agent,const char *pathname);
+
 	class MainLoop::Timer {
 	public:
 

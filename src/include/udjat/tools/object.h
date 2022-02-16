@@ -89,9 +89,6 @@
 
 			virtual std::string to_string() const = 0;
 
-			/// @brief Get object as Udjat::Value.
-			// Udjat::Value as_value() const noexcept;
-
 			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
@@ -105,8 +102,17 @@
 
 			/// @brief Expand ${} tags using object properties.
 			/// @param text Text to expand.
+			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+			/// @param cleanup if true put an empty string in the non existant attributes.
 			/// @return String with the known ${} tags expanded.
-			std::string expand(const char *text) const;
+			std::string expand(const char *text, bool dynamic = false, bool cleanup = false) const;
+
+			/// @brief Expand ${} tags using object properties.
+			/// @param text Text to expand.
+			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+			/// @param cleanup if true put an empty string in the non existant attributes.
+			/// @return String with the known ${} tags expanded.
+			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
 
 			/// @brief Add object properties to the value.
 			virtual Value & getProperties(Value &value) const noexcept;

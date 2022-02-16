@@ -139,10 +139,10 @@ namespace Udjat {
 
 		class Agent;
 		class State;
+		class Alert;
 
 	}
 
-	class Alert;
 	class Value;
 	class TimeStamp;
 	struct ModuleInfo;

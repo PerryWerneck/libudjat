@@ -29,6 +29,7 @@
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/object.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -150,42 +151,23 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::append_state(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const pugi::xml_node &node) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::Agent::append_alert(const pugi::xml_node &node) {
+	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
 	}
-	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
+		static shared_ptr<Abstract::State> instance;
+		if(!instance) {
+			cout << "states\tCreating default state" << endl;
+			instance = make_shared<Abstract::State>("");
+		}
 
-		static const Udjat::ModuleInfo moduleinfo{ "State factory" };
-
-		class DefaultState : public Abstract::State, Factory {
-		public:
-
-			DefaultState() : Abstract::State(""), Factory("state", moduleinfo) {
-			}
-
-			~DefaultState() {
-			}
-
-			bool parse(Abstract::Agent &agent, const pugi::xml_node &node) const override {
-				agent.append_state(node);
-				return true;
-			}
-
-		};
-
-		static shared_ptr<Abstract::State> state(new DefaultState());
-
-		return state;
-
+		return instance;
 	}
 
 }

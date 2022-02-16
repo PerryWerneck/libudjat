@@ -47,8 +47,8 @@ int main(int argc, char **argv) {
 		DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
 		}
 
-		std::string call(const URL &url, const HTTP::Method method, const char *payload) const override {
-			cout << "dummy\t" << url << endl;
+		std::string call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const override {
+			cout << "**** dummy\t[" << url << "]" << endl;
 			return "";
 		}
 
@@ -91,7 +91,6 @@ int main(int argc, char **argv) {
 	private:
 
 		struct {
-			Alert::Factory alert;
 			DummyProtocol protocol;
 		} factories;
 
@@ -121,6 +120,7 @@ int main(int argc, char **argv) {
 
 			}
 
+			Protocol::call("dummy+http://localhost");
 
 #ifdef _WIN32
 			{
@@ -186,5 +186,4 @@ int main(int argc, char **argv) {
 	*/
 
 	return Service().run(argc,argv);
-
 }

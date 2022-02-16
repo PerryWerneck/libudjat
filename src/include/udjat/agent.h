@@ -147,6 +147,9 @@
 				/// @brief Insert child node.
 				void insert(std::shared_ptr<Agent> child);
 
+				/// @brief Insert Alert.
+				virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
+
 				/// @brief Insert object.
 				void push_back(std::shared_ptr<Abstract::Object> object);
 
@@ -162,15 +165,6 @@
 				static std::shared_ptr<Abstract::Agent> root();
 
 				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
-
-				/// @brief Initialize agent subsystem.
-				/// @return root agent.
-				// static std::shared_ptr<Abstract::Agent> init();
-
-				/// @brief Initialize agent subsystem, load agent descriptors.
-				/// @param path Path to agent descriptions.
-				/// @return root agent.
-				// static std::shared_ptr<Abstract::Agent> init(const char *path);
 
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
@@ -217,8 +211,16 @@
 				/// @return Agent pointer.
 				virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
-				void foreach(std::function<void(Agent &agent)> method);
-				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method);
+				void for_each(std::function<void(Agent &agent)> method);
+				void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
+
+				inline void foreach(std::function<void(Agent &agent)> method) {
+					for_each(method);
+				}
+
+				void foreach(std::function<void(std::shared_ptr<Agent> agent)> method) {
+					for_each(method);
+				}
 
 				inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 					return children.begin();
@@ -258,11 +260,11 @@
 					return this->current_state.active->level();
 				}
 
-				/// @brief Insert State.
-				virtual void append_state(const pugi::xml_node &node);
+				/// @brief Create and insert State.
+				virtual std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
 
 				/// @brief Insert Alert.
-				virtual void append_alert(const pugi::xml_node &node);
+				virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node);
 
 				/// @brief Get property from the agent os related objects.
 				/// @param key The property name.
@@ -276,8 +278,14 @@
 
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @return root agent.
-		UDJAT_API void load(const char *pathname);
+		/// @return Seconds for the next reload.
+		UDJAT_API time_t load(const char *pathname);
+
+		/// @brief Load XML application definitions.
+		/// @param agent New root agent.
+		/// @param pathname Path to a single xml file or a folder with xml files.
+		/// @param time_t Seconds for file refresh.
+		UDJAT_API time_t load(std::shared_ptr<Abstract::Agent> agent, const char *pathname);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
@@ -349,8 +357,10 @@
 			}
 
 			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				push_back(std::make_shared<State<T>>(node));
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
+				auto state =std::make_shared<State<T>>(node);
+				push_back(state);
+				return state;
 			}
 
 			std::string to_string() const override {
@@ -425,9 +435,10 @@
 				return !states.empty();
 			}
 
-			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				push_back(std::make_shared<State<std::string>>(node));
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
+				auto state = std::make_shared<State<std::string>>(node);
+				push_back(state);
+				return state;
 			}
 
 			std::string to_string() const override {
@@ -486,8 +497,10 @@
 			}
 
 			/// @brief Insert State.
-			void append_state(const pugi::xml_node &node) override {
-				push_back(std::make_shared<State<bool>>(node));
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) {
+				auto state =std::make_shared<State<bool>>(node);
+				push_back(state);
+				return state;
 			}
 
 			std::string to_string() const override {

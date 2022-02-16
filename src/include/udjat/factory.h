@@ -21,58 +21,85 @@
 
  #include <udjat/defs.h>
  #include <udjat/request.h>
+ #include <udjat/tools/object.h>
 
  namespace Udjat {
 
+	/// @brief Object factory.
+	/// Create objects from XML definition.
 	class UDJAT_API Factory {
 	private:
 		class Controller;
-		const char *name = "";
 
-	protected:
+		const char *factory_name = "";
 
 		/// @brief Factory module info.
-		const ModuleInfo &info;
-
-		/// @brief Types.
-		struct {
-			/// @brief Agent type (to build agents from the 'type=' attribute on XML).
-			const char *agent = nullptr;
-
-			/// @brief Alert type (to build alerts from the 'type=' attribute on XML).
-			const char *type = nullptr;
-
-		} type;
+		const ModuleInfo &module;
 
 	public:
-		Factory(const char *name);
-		Factory(const char *name, const ModuleInfo &info);
-		Factory(const Quark &name, const ModuleInfo &info) : Factory(name.c_str(),info) {
-		}
-
+		Factory(const char *name, const ModuleInfo &module);
 		virtual ~Factory();
 
+		std::ostream & info() const;
+		std::ostream & warning() const;
+		std::ostream & error() const;
+
 		inline const char * getName() const {
-			return name;
+			return factory_name;
 		}
+
+		inline const char * name() const {
+			return factory_name;
+		}
+
+		/// @brief Find factory by name.
+		/// @param name Factory name.
+		/// @return The factory with the requested name or nullptr if not found.
+		static const Factory * find(const char *name);
 
 		static void getInfo(Response &response);
 
-		static bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node);
-		static bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node);
+		/// @brief Search factory for xml defined element.
+		/// @param node XML node to start searching for.
+		/// @param call Lamba call to test for valid factory.
+		/// @param typeattribute The name of the optional attribute with the factory name.
+		/// @return true if the lambda has returned true.
+		static bool search(const pugi::xml_node &node, const std::function<bool(const Factory &, const pugi::xml_node &)> &call, const char *typeattribute = "type");
 
-		/// @brief Create Agent child.
+		/// @brief Execute function in all registered factories until it returns true.
+		/// @param func	Function to execute.
+		/// @return false if the function doesnt returned true for any element.
+		static bool for_each(std::function<bool(const Factory &factory)> func);
+
+		/// @brief Execute function in all registered factories until it returns true.
+		/// @param name	Requested factory name.
+		/// @param func	Function to execute.
+		/// @return false if the function doesnt returned true for any element.
+		static bool for_each(const char *name, std::function<bool(const Factory &factory)> func);
+
+		/// @brief Create an agent from XML node.
+		/// @param node XML definition for the new agent.
+		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+
+		/// @brief Create a child object from XML node.
+		/// @param node XML definition for the new state.
+		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+
+		/// @brief Create an alert from XML node.
+		/// @param node XML definition for the new alert.
+		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+
+		/// @brief Parse agent sub-node.
 		/// @param parent Parent agent to insert the built child.
 		/// @param node XML definition for the new agent.
 		/// @return true if the request was handled.
 		virtual bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
 
-		/// @brief Create State child.
+		/// @brief Parse State sub-node.
 		/// @param parent Parent state insert the built child.
 		/// @param node XML definition for the new state.
 		/// @return true if the request was handled.
 		virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const;
-
 
 	};
 

@@ -51,6 +51,18 @@
 		Controller::getInstance().remove(this);
 	}
 
+	std::ostream & Protocol::info() const {
+		return cout << name << "\t";
+	}
+
+	std::ostream & Protocol::warning() const {
+		return clog << name << "\t";
+	}
+
+	std::ostream & Protocol::error() const {
+		return cerr << name << "\t";
+	}
+
 	const Protocol * Protocol::find(const URL &url) {
 		string scheme = url.scheme();
 
@@ -71,16 +83,25 @@
 		Controller::getInstance().getInfo(response);
 	}
 
-	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
+	std::string Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
 
-		URL url(u);
-		const Protocol * protocol = find(url);
+		const Protocol * protocol = nullptr;
+		const char *hostname = strstr(url,"://");
+		const char *prefix = strchr(url,'+');
 
-		if(!protocol) {
-			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",url));
+		if(prefix && prefix < hostname) {
+			protocol = find(string(url,prefix-url).c_str());
+			url = prefix+1;
+		} else {
+			protocol = find(string(url,hostname-url).c_str());
 		}
 
-		return protocol->call(url,method,payload);
+		if(!protocol) {
+			throw system_error(ENOENT,system_category(),"No available protocol worker");
+		}
+
+		return protocol->call(URL(url),method,payload);
+
 	}
 
 	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
@@ -91,8 +112,8 @@
 		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
-	bool Protocol::get(const URL &url, const char *filename) const {
-		cerr << name << "\tUnable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
+	bool Protocol::get(const URL &url, const char *filename, const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) const {
+		error() << "Unable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
 		return false;
 	}
 

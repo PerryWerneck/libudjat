@@ -31,8 +31,6 @@
 
  using namespace std;
 
- // static const char * expand(const char *value,const pugi::xml_node &node,const char *section);
-
  namespace Udjat {
 
 	mutex Abstract::Alert::Controller::guard;
@@ -47,59 +45,41 @@
 
 	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
-		MainLoop::getInstance();
+		if(MainLoop::getInstance()) {
+			start();
+		}
 	}
 
 	Abstract::Alert::Controller::~Controller() {
 	}
 
-	size_t Abstract::Alert::Controller::running() const noexcept {
-		size_t running = 0;
+	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
+
 		lock_guard<mutex> lock(guard);
-		for(auto activation : activations) {
-			if(activation->running()) {
-				running++;
-			}
-		}
-		return running;
+		activations.remove_if([alert](auto activation){
+			return activation->id == alert;
+		});
+
 	}
 
-	void Abstract::Alert::Controller::stop() {
-		cout << "alerts\tDeactivating controller" << endl;
+	void Abstract::Alert::Controller::push_back(shared_ptr<Abstract::Alert::Activation> activation) {
 
-		{
-			size_t pending_activations = running();
-			if(pending_activations) {
-				clog << "alerts\tWaiting for " << pending_activations << " activations to complete" << endl;
-				for(size_t timer = 0; timer < 100 && running(); timer++) {
-#ifdef _WIN32
-					Sleep(100);
-#else
-					usleep(100);
-#endif // _WIN32
-				}
-			}
-			pending_activations = running();
-			if(pending_activations) {
-				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
-				ThreadPool::getInstance().wait();
-			}
+		if(!MainLoop::getInstance()) {
+
+			// No mainloop
+			activation->warning() << "WARNING: The main loop is disabled, cant retry a failed alert" << endl;
+			activation->run();
+			return;
+
 		}
 
+		// Have mainloop
 		{
 			lock_guard<mutex> lock(guard);
-			activations.clear();
-			MainLoop::getInstance().remove(this);
+			activations.push_back(activation);
 		}
-	}
 
-	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
-		lock_guard<mutex> lock(guard);
-		activations.remove_if([alert](const auto &activation){
-			if(activation->alert().get() != alert)
-				return false;
-			return true;
-		});
+		emit();
 	}
 
 	void Abstract::Alert::Controller::reset(time_t seconds) noexcept {
@@ -111,7 +91,7 @@
 		// Using threadpool because I cant change a timer from a timer callback.
 		ThreadPool::getInstance().push([this,seconds]{
 #ifdef DEBUG
-				cout << "alert\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
+			cout << "alerts\tNext check scheduled to " << TimeStamp(time(0) + seconds) << endl;
 #endif // DEBUG
 
 			MainLoop &mainloop = MainLoop::getInstance();
@@ -136,6 +116,143 @@
 
 	}
 
+	void Abstract::Alert::Controller::emit() noexcept {
+
+		time_t now = time(0);
+		time_t next = 0;
+
+		lock_guard<mutex> lock(guard);
+		activations.remove_if([this,now,&next](auto activation){
+
+			if(!activation->timers.next) {
+				// No alert or no next, remove from list.
+				if(activation->verbose()) {
+					activation->info() << "Alert was stopped" << endl;
+				}
+				return true;
+			}
+
+			if(activation->timers.next <= now) {
+
+				// Timer has expired
+				if(activation->state.running) {
+
+					activation->warning() << "Alert is running since " << TimeStamp(activation->state.running) << endl;
+					activation->timers.next = now + max((unsigned int) 5, activation->timers.busy);
+
+				} else {
+
+					if(activation->timers.interval) {
+						activation->timers.next = (now + activation->timers.interval);
+					} else {
+						activation->timers.next = now + 60;
+					}
+
+					activation->state.running = time(0);
+					ThreadPool::getInstance().push([this,activation]() {
+
+						activation->run();
+						activation->state.running = 0;
+
+					});
+				}
+			}
+
+			if(activation->timers.next) {
+				if(next) {
+					next = min(next,activation->timers.next);
+				} else {
+					next = activation->timers.next;
+				}
+			}
+
+			return false;
+		});
+
+		if(next) {
+			reset(next-now);
+		} else {
+			reset(5);
+		}
+
+	}
+
+	size_t Abstract::Alert::Controller::running() const noexcept {
+		size_t running = 0;
+		lock_guard<mutex> lock(guard);
+		for(auto activation : activations) {
+			if(activation->running()) {
+				running++;
+			}
+		}
+		return running;
+	}
+
+	void Abstract::Alert::Controller::stop() {
+
+		cout << "alerts\tDeactivating controller" << endl;
+		MainLoop::getInstance().remove(this);
+
+		{
+			size_t pending_activations = running();
+			if(pending_activations) {
+				clog << "alerts\tWaiting for " << pending_activations << " activations to complete" << endl;
+				for(size_t timer = 0; timer < 100 && running(); timer++) {
+#ifdef _WIN32
+					Sleep(100);
+#else
+					usleep(100);
+#endif // _WIN32
+				}
+			}
+			pending_activations = running();
+			if(pending_activations) {
+				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
+				ThreadPool::getInstance().wait();
+			}
+		}
+
+		// Cleanup active alerts
+		{
+			// First copy in the reverse order using the mutex
+			list<shared_ptr<Abstract::Alert::Activation>> active;
+			{
+				lock_guard<mutex> lock(guard);
+				for(auto activation : activations) {
+					active.push_front(activation);
+				}
+
+				// Clear activations list.
+				activations.clear();
+			}
+
+			// Second, notify and remove.
+			active.remove_if([](auto activation){
+				activation->warning() << "Cancelling active alert" << endl;
+				return true;
+			});
+		}
+
+	}
+
+	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
+
+		response.reset(Value::Array);
+
+		lock_guard<mutex> lock(guard);
+		for(auto activation : activations) {
+			activation->getProperties(response.append(Value::Object));
+		}
+
+		return true;
+	}
+
+	/*
+
+
+
+
+
 	void Abstract::Alert::Controller::refresh() noexcept {
 
 		time_t now = time(0);
@@ -156,100 +273,8 @@
 
 	}
 
-	void Abstract::Alert::Controller::activate(std::shared_ptr<Abstract::Alert> alert, const std::function<void(std::string &str)> &expander) {
 
-		// Create an activation
-		auto activation = alert->ActivationFactory(expander);
-		activation->alertptr = alert;
-
-		if(activation->name.empty()) {
-			activation->name = alert->name();
-		}
-
-		// Is the mainloop active?
-		if(!MainLoop::getInstance()) {
-
-			if(alert->timers.start) {
-				throw runtime_error("Can't emit a delayed alert, the main loop is disabled");
-			}
-
-			clog << activation->name << "\tWARNING: The main loop is disabled, cant retry a failed alert" << endl;
-			activation->run();
-
-		} else {
-
-			// Set timer for the first emission, add activation in the queue.
-			activation->timers.next = time(0) + alert->timers.start;
-			{
-				lock_guard<mutex> lock(guard);
-				activations.push_back(activation);
-			}
-
-			emit();
-
-		}
-
-	}
-
-	void Abstract::Alert::Controller::emit() noexcept {
-
-		time_t now = time(0);
-		time_t next = now + 600;
-
-		lock_guard<mutex> lock(guard);
-		activations.remove_if([this,now,&next](auto activation){
-
-			auto alert = activation->alert();
-
-			if(!activation->timers.next) {
-				// No alert or no next, remove from list.
-				if(alert->verbose()) {
-					cout << activation->name << "\tAlert '" << alert->c_str() << "' was stopped" << endl;
-				}
-				return true;
-			}
-
-			if(activation->timers.next <= now) {
-
-				// Timer has expired
-				activation->timers.next = (now + alert->timers.interval);
-
-				if(activation->state.running) {
-
-					clog << activation->name << "\tAlert '" << alert->c_str() << "' is running since " << TimeStamp(activation->state.running) << endl;
-
-				} else {
-
-					activation->state.running = time(0);
-
-					ThreadPool::getInstance().push([this,activation]() {
-
-						activation->run();
-						activation->state.running = 0;
-
-					});
-				}
-			}
-
-			next = min(next,activation->timers.next);
-			return false;
-		});
-
-		reset(next-now);
-
-	}
-
-	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
-
-		response.reset(Value::Array);
-
-		lock_guard<mutex> lock(guard);
-		for(auto activation : activations) {
-			activation->getProperties(response.append(Value::Object));
-		}
-
-		return true;
-	}
+	*/
 
  }
 

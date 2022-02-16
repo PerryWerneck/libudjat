@@ -22,7 +22,7 @@
  #include <config.h>
  #include <udjat/tools/quark.h>
  #include <udjat/factory.h>
- #include <unordered_map>
+ #include <list>
  #include <mutex>
  #include <udjat/request.h>
 
@@ -34,31 +34,8 @@
 	private:
 		static recursive_mutex guard;
 
-		// Hash method
-		class Hash {
-		public:
-			inline size_t operator() (const char * str) const {
-				// https://stackoverflow.com/questions/7666509/hash-function-for-string
-				size_t value = 5381;
-
-				for(const char *ptr = str; *ptr; ptr++) {
-					value = ((value << 5) + value) + tolower(*ptr);
-				}
-
-				return value;
-			}
-		};
-
-		// Equal method
-		class Equal {
-		public:
-			inline bool operator() (const char *a, const char *b) const {
-				return strcasecmp(a,b) == 0;
-			}
-		};
-
 		/// @brief The list of active factories.
-		std::unordered_map<const char *, const Factory *, Hash, Equal> factories;
+		std::list<const Factory *> factories;
 
 		Controller() {
 		}
@@ -66,15 +43,20 @@
 	public:
 		static Controller & getInstance();
 
-		bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const;
-		bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const;
+		// bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const;
+		// bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const;
 
+		/// @brief Find factory by name.
+		/// @param name Factory name.
+		/// @return The requested factory or nullptr.
 		const Factory * find(const char *name);
 
-		void getInfo(Response &response) noexcept;
+		//void getInfo(Response &response) noexcept;
 
 		void insert(const Factory *factory);
 		void remove(const Factory *factory);
+
+		bool for_each(const char *name, std::function<bool(const Factory &factory)> func);
 
 	};
 

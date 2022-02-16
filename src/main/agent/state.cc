@@ -23,7 +23,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(StateFactory(e,summary));
+		activate(Udjat::StateFactory(e,summary));
 
 	}
 
@@ -77,7 +77,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
 			this->current_state.activation = time(0);
 
 		} catch(...) {
@@ -91,9 +91,19 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
-		Abstract::Alert::activate(alert,[this](std::string &text) {
-			text = this->expand(text.c_str());
-		});
+		auto activation = alert->ActivationFactory();
+
+		const char *description = summary();
+		if(!(description && *description)) {
+			description = state()->summary();
+		}
+		if(description && *description) {
+			activation->set(description);
+		}
+
+		activation->set(*this);
+		activation->set(state()->level());
+		Udjat::start(activation);
 	}
 
 	std::ostream & LogFactory(Udjat::Level level) {
@@ -157,7 +167,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
 			this->current_state.activation = time(0);
 
 		} catch(...) {

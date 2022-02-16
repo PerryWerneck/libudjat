@@ -101,7 +101,7 @@
 
 		values.clear();
 
-		Udjat::File::Text::forEach(contents, [this,&value](const string &line) {
+		Udjat::File::Text::for_each(contents, [this,&value](const string &line) {
 
 			if(line[0] == '#') {
 

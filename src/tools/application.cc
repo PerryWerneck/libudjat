@@ -18,41 +18,24 @@
  */
 
  #include <config.h>
- #include <udjat/factory.h>
- #include <udjat/alert.h>
- #include <udjat/agent.h>
- #include <udjat/state.h>
+ #include <udjat/tools/application.h>
  #include <iostream>
- #include <udjat/moduleinfo.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name) {
+	std::ostream & Application::info() {
+		return cout << Application::Name::getInstance() << "\t";
+	}
 
-		std::shared_ptr<Abstract::Alert> alert;
+	std::ostream & Application::warning() {
+		return clog << Application::Name::getInstance() << "\t";
+	}
 
-		if(Factory::search(node,[&parent,&alert](const Factory &factory, const pugi::xml_node &node){
-			alert = factory.AlertFactory(parent,node);
-			if(alert) {
-				if(alert->verbose()) {
-					alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
-				}
-				return true;
-			}
-			return false;
-		},name)) {
-			return alert;
-		}
-
-		alert = make_shared<Udjat::Alert>(node);
-		if(alert->verbose()) {
-			alert->info() << "Using the default alert engine" << endl;
-		}
-
-		return alert;
-
+	std::ostream & Application::error() {
+		return cerr << Application::Name::getInstance() << "\t";
 	}
 
  }
+

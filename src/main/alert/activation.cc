@@ -21,37 +21,60 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/object.h>
  #include <udjat/alert.h>
  #include <udjat/state.h>
 
  namespace Udjat {
 
-	Alert::Activation::Activation(const string &u, const HTTP::Method a, const string &p) : url(u), action(a), payload(p) {
-	}
+ 	void start(std::shared_ptr<Abstract::Alert::Activation> activation) {
+		Abstract::Alert::Controller::getInstance().push_back(activation);
+ 	}
 
-	Alert::Activation::Activation(const Alert &alert, const std::function<void(std::string &str)> &expander) : Activation(alert.url,alert.action,alert.payload) {
+	Abstract::Alert::Activation::Activation(const Alert *alert) : id(alert) {
 
-		expander(url);
-		expander(payload);
+		options.verbose = alert->verbose();
 
-	}
+		name = alert->name();
 
-	void Alert::Activation::emit() const {
-		Protocol::call(url.c_str(),action,payload.c_str());
-	}
+		retry.min = alert->retry.min;
+		retry.max = alert->retry.max;
 
-	Abstract::Alert::Activation::Activation() {
+		timers.interval = alert->timers.interval;
+		timers.busy = alert->timers.busy;
+		timers.next = time(0) + alert->timers.start;
+		timers.success = alert->restart.success;
+		timers.failed = alert->restart.failed;
+
 	}
 
 	Abstract::Alert::Activation::~Activation() {
 	}
 
+	std::ostream & Abstract::Alert::Activation::info() const {
+		return cout << name << "\t";
+	}
+
+	std::ostream & Abstract::Alert::Activation::warning() const {
+		return clog << name << "\t";
+	}
+
+	std::ostream & Abstract::Alert::Activation::error() const {
+		return cerr << name << "\t";
+	}
+
+	void Abstract::Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
+	}
+
+	void Abstract::Alert::Activation::emit() {
+		throw runtime_error("Cant emit an abstract activation");
+	}
+
 	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
 
-		if(alertptr) {
-			alertptr->getProperties(value);
-		}
-
+		value["name"] = name;
+		value["level"] = std::to_string(options.level);
+		value["description"] = description;
 		value["next"] = TimeStamp(timers.next);
 		value["last"] = TimeStamp(timers.last);
 		value["failed"] = count.failed;
@@ -62,90 +85,71 @@
 		return value;
 	}
 
-	const char * Abstract::Alert::Activation::c_str() const noexcept {
-		return name.c_str();
-	}
+	bool Abstract::Alert::Activation::run() noexcept {
 
-	const char * Alert::Activation::c_str() const noexcept {
-		return url.c_str();
+		bool succeeded = false;
+		try {
+			timers.last = time(0);
+			emit();
+			count.success++;
+			succeeded = true;
+			timers.next = time(0) + timers.interval;
+		} catch(const exception &e) {
+			error() << "Alert emmission failed with '" << e.what() << "'" << endl;
+			count.failed++;
+		} catch(...) {
+			error() << "Unexpected error emitting alert" << endl;
+			count.failed++;
+		}
+
+
+		// Setup for next emission.
+#ifdef DEBUG
+		info() << "success=" << count.success << " failed=" << count.failed << " min=" << retry.min << " max= " << retry.max << endl;
+#endif // DEBUG
+
+		if(count.success >= retry.min) {
+			checkForSleep("was sucessfull");
+		} else if( (count.success + count.failed) >= retry.max ) {
+			checkForSleep("reached the maximum number of emissions");
+		} else if(timers.interval) {
+			timers.next = time(0) + timers.interval;
+			if(verbose()) {
+				info() << "Next emission set to " << TimeStamp(timers.next) << endl;
+			}
+		} else {
+			timers.next = 0;
+			if(verbose()) {
+				info() << "No interval, deactivating alert" << endl;
+			}
+		}
+
+		return succeeded;
+
 	}
 
 	void Abstract::Alert::Activation::checkForSleep(const char *msg) noexcept {
 
-		time_t rst = (count.success ? alertptr->restart.success : alertptr->restart.failed);
+		time_t rst = (count.success ? timers.success : timers.failed);
 
 		if(rst) {
 			state.restarting = true;
 			timers.next = time(0) + rst;
-			if(alertptr->options.verbose) {
+			if(options.verbose) {
 				LogFactory(count.failed ? Udjat::error : Udjat::ready)
-					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", sleeping until " << TimeStamp(timers.next)
+					<< name << "\t" << msg << ", sleeping until " << TimeStamp(timers.next)
 					<< endl;
 			}
 		}
 		else {
 			timers.next = 0;
-			if(alertptr->options.verbose) {
+			if(options.verbose) {
 				LogFactory(count.failed ? Udjat::error : Udjat::ready)
-					<< name << "\tAlert '" << alertptr->c_str() << "' " << msg << ", stopping"
+					<< name << "\t" << msg << ", stopping"
 					<< endl;
 			}
 		}
 
 	}
-
-	void Abstract::Alert::Activation::emit() const {
-		throw system_error(ENOTSUP,system_category(),"Cant emit an abstract activation");
-	}
-
-	void Abstract::Alert::Activation::failed() noexcept {
-		count.failed++;
-		next();
-	}
-
-	void Abstract::Alert::Activation::success() noexcept {
-		count.success++;
-		next();
-	}
-
-	void Abstract::Alert::Activation::run() noexcept {
-
-		try {
-			cout << name << "\tEmitting '"
-				<< c_str() << "' ("
-				<< (count.success + count.failed + 1)
-				<< ")"
-				<< endl;
-			timers.last = time(0);
-			emit();
-			success();
-		} catch(const exception &e) {
-			failed();
-			cerr << name << "\tAlert '" << c_str() << "': " << e.what() << " (" << count.failed << " fail(s))" << endl;
-		} catch(...) {
-			failed();
-			cerr << name << "\tAlert '" << c_str() << "' has failed " << count.failed << " time(s)" << endl;
-		}
-
-	}
-
-	void Abstract::Alert::Activation::next() noexcept {
-
-#ifdef DEBUG
-		cout << name << "\t" << alertptr->c_str() << " success=" << count.success << " failed=" << count.failed << " min=" << alertptr->retry.min << " max= " << alertptr->retry.max << endl;
-#endif // DEBUG
-
-		if(count.success >= alertptr->retry.min) {
-			checkForSleep("was sucessfull");
-		} else if( (count.success + count.failed) >= alertptr->retry.max ) {
-			checkForSleep("reached the maximum number of emissions");
-		} else {
-			timers.next = time(0) + alertptr->timers.interval;
-		}
-
-		Controller::getInstance().refresh();
-
-	}
-
 
  }
