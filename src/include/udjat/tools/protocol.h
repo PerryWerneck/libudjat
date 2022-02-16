@@ -54,12 +54,12 @@
 
 		static void getInfo(Udjat::Response &response) noexcept;
 
-		/// @brief Call protocol method.
+		/// @brief Find protocol and call.
 		/// @param url The URL to call.
 		/// @param method Required method.
 		/// @param payload request payload.
 		/// @return Host response.
-		static std::string call(const char *url, const HTTP::Method method, const char *payload = "");
+		static std::string call(const char *url, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		/// @brief Call protocol method.
 		/// @param url The URL to call.

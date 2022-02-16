@@ -83,16 +83,25 @@
 		Controller::getInstance().getInfo(response);
 	}
 
-	std::string Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
+	std::string Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
 
-		URL url(u);
-		const Protocol * protocol = find(url);
+		const Protocol * protocol = nullptr;
+		const char *hostname = strstr(url,"://");
+		const char *prefix = strchr(url,'+');
 
-		if(!protocol) {
-			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",url));
+		if(prefix && prefix < hostname) {
+			protocol = find(string(url,prefix-url).c_str());
+			url = prefix+1;
+		} else {
+			protocol = find(string(url,hostname-url).c_str());
 		}
 
-		return protocol->call(url,method,payload);
+		if(!protocol) {
+			throw system_error(ENOENT,system_category(),Logger::Message("Unable to handle '{}'",url));
+		}
+
+		return protocol->call(URL(url),method,payload);
+
 	}
 
 	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
