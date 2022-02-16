@@ -185,5 +185,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	cout << Config::Value<string>("group","key","sample") << endl;
+
 	return Service().run(argc,argv);
 }

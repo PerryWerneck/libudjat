@@ -236,54 +236,54 @@
 
 	};
 
-	bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+	UDJAT_API bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
 		return Controller().for_each(group,call);
 	}
 
-	bool Config::hasGroup(const std::string &group) {
+	UDJAT_API bool Config::hasGroup(const std::string &group) {
 		return Controller().hasGroup(group.c_str());
 	}
 
-	bool Config::hasKey(const char *group, const char *key) {
+	UDJAT_API bool Config::hasKey(const char *group, const char *key) {
 		return Controller().hasKey(group,key);
 	}
 
-	int32_t Config::get(const std::string &group, const std::string &name, const int32_t def) {
+	UDJAT_API int32_t Config::get(const std::string &group, const std::string &name, const int32_t def) {
 		return Controller().get(group,name,def);
 	}
 
-	int64_t Config::get(const std::string &group, const std::string &name, const int64_t def) {
+	UDJAT_API int64_t Config::get(const std::string &group, const std::string &name, const int64_t def) {
 		return Controller().get(group,name,def);
 	}
 
-	uint32_t Config::get(const std::string &group, const std::string &name, const uint32_t def) {
+	UDJAT_API uint32_t Config::get(const std::string &group, const std::string &name, const uint32_t def) {
 		return Controller().get(group,name,def);
 	}
 
-	uint64_t Config::get(const std::string &group, const std::string &name, const uint64_t def) {
+	UDJAT_API uint64_t Config::get(const std::string &group, const std::string &name, const uint64_t def) {
 		// FIXME: Implement.
 		return def;
 	}
 
-	float Config::get(const std::string &group, const std::string &name, const float def) {
+	UDJAT_API float Config::get(const std::string &group, const std::string &name, const float def) {
 		// FIXME: Implement.
 		return def;
 	}
 
-	double Config::get(const std::string &group, const std::string &name, const double def) {
+	UDJAT_API double Config::get(const std::string &group, const std::string &name, const double def) {
 		// FIXME: Implement.
 		return def;
 	}
 
-	std::string Config::get(const std::string &group, const std::string &name, const char *def) {
+	UDJAT_API std::string Config::get(const std::string &group, const std::string &name, const char *def) {
 		return Controller().get(group,name,def);
 	}
 
-	std::string Config::get(const std::string &group, const std::string &name, const std::string &def) {
+	UDJAT_API std::string Config::get(const std::string &group, const std::string &name, const std::string &def) {
 		return Controller().get(group,name,def.c_str());
 	}
 
-	bool Config::get(const std::string &group, const std::string &name, const bool def) {
+	UDJAT_API bool Config::get(const std::string &group, const std::string &name, const bool def) {
 		return Controller().get(group,name,(DWORD) def) != 0;
 	}
 
