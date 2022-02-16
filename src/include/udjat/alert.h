@@ -125,10 +125,10 @@
 
 			protected:
 
-				/// @brief Alert name
+				/// @brief Activation name
 				std::string name;
 
-				/// @brief Alert description.
+				/// @brief Activation description.
 				std::string description;
 
 				/// @brief Just emit alert, no update on emission data.
@@ -145,7 +145,7 @@
 				/// @brief Rename activation.
 				/// @param new_name New activation name.
 				inline void rename(const char *new_name) noexcept {
-					this->name == new_name;
+					this->name = new_name;
 				}
 
 				/// @brief Set description.

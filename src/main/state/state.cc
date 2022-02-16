@@ -130,9 +130,19 @@ namespace Udjat {
 
 		for(auto alert : alerts) {
 			auto activation = alert->ActivationFactory();
+
+			const char *description = summary();
+			if(!(description && *description)) {
+				description = agent.summary();
+			}
+			if(description && *description) {
+				activation->set(description);
+			}
+
 			activation->set(*this);
 			activation->set(agent);
 			activation->set(level());
+
 			Udjat::start(activation);
 		}
 
