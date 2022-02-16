@@ -55,7 +55,6 @@
 	}
 
 	Abstract::Alert::~Alert() {
-		Controller::getInstance().remove(this);
 	}
 
 	std::shared_ptr<Abstract::Alert::Activation> Abstract::Alert::ActivationFactory() const {

@@ -45,7 +45,9 @@
 
 	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
-		MainLoop::getInstance();
+		if(MainLoop::getInstance()) {
+			start();
+		}
 	}
 
 	Abstract::Alert::Controller::~Controller() {
@@ -55,7 +57,7 @@
 
 		lock_guard<mutex> lock(guard);
 		activations.remove_if([alert](auto activation){
-			return activation->alert == alert;
+			return activation->id == alert;
 		});
 
 	}
@@ -65,11 +67,6 @@
 		if(!MainLoop::getInstance()) {
 
 			// No mainloop
-
-			if(activation->alert && activation->alert->timers.start) {
-				throw runtime_error("Can't emit a delayed alert, the main loop is disabled");
-			}
-
 			activation->warning() << "WARNING: The main loop is disabled, cant retry a failed alert" << endl;
 			activation->run();
 			return;
@@ -122,7 +119,7 @@
 	void Abstract::Alert::Controller::emit() noexcept {
 
 		time_t now = time(0);
-		time_t next = now + 600;
+		time_t next = 0;
 
 		lock_guard<mutex> lock(guard);
 		activations.remove_if([this,now,&next](auto activation){
@@ -138,14 +135,18 @@
 			if(activation->timers.next <= now) {
 
 				// Timer has expired
-				activation->timers.next = (now + activation->timers.interval);
-
 				if(activation->state.running) {
 
 					activation->warning() << "Alert is running since " << TimeStamp(activation->state.running) << endl;
 					activation->timers.next = now + max((unsigned int) 5, activation->timers.busy);
 
 				} else {
+
+					if(activation->timers.interval) {
+						activation->timers.next = (now + activation->timers.interval);
+					} else {
+						activation->timers.next = now + 60;
+					}
 
 					activation->state.running = time(0);
 					ThreadPool::getInstance().push([this,activation]() {
@@ -157,11 +158,22 @@
 				}
 			}
 
-			next = min(next,activation->timers.next);
+			if(activation->timers.next) {
+				if(next) {
+					next = min(next,activation->timers.next);
+				} else {
+					next = activation->timers.next;
+				}
+			}
+
 			return false;
 		});
 
-		reset(next-now);
+		if(next) {
+			reset(next-now);
+		} else {
+			reset(5);
+		}
 
 	}
 
@@ -200,10 +212,27 @@
 			}
 		}
 
+		// Cleanup active alerts
 		{
-			lock_guard<mutex> lock(guard);
-			activations.clear();
+			// First copy in the reverse order using the mutex
+			list<shared_ptr<Abstract::Alert::Activation>> active;
+			{
+				lock_guard<mutex> lock(guard);
+				for(auto activation : activations) {
+					active.push_front(activation);
+				}
+
+				// Clear activations list.
+				activations.clear();
+			}
+
+			// Second, notify and remove.
+			active.remove_if([](auto activation){
+				activation->warning() << "Cancelling active alert" << endl;
+				return true;
+			});
 		}
+
 	}
 
 	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {

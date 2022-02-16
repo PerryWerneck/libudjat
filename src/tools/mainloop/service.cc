@@ -50,9 +50,11 @@
 	}
 
 	void MainLoop::Service::start() {
+		state.active = true;
 	}
 
 	void MainLoop::Service::stop() {
+		state.active = false;
 	}
 
 	std::ostream & MainLoop::Service::info() const {

@@ -87,7 +87,7 @@
 			private:
 				friend class Controller;
 
-				const Alert * alert = nullptr;
+				const void * id = nullptr;
 
 				struct {
 					unsigned int min;
@@ -131,7 +131,7 @@
 				/// @brief Alert description.
 				std::string description;
 
-				/// @brief Emit alert.
+				/// @brief Just emit alert, no update on emission data.
 				virtual void emit();
 
 			public:

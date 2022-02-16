@@ -70,32 +70,6 @@
 
 	};
 
-	/*
-
-
-
-		void emit() noexcept;
-
-		void reset(time_t seconds) noexcept;
-
-	public:
-		static Controller & getInstance();
-		~Controller();
-
-		/// @brief Update timer.
-		void refresh() noexcept;
-
-
-		/// @brief Activate an alert.
-		void activate(const Abstract::Object &object, std::shared_ptr<Alert> alert);
-
-		/// @brief Remove alert activation.
-		void remove(const Abstract::Alert *alert);
-
-		bool get(Request &request, Response &response) const override;
-
-	};
-	*/
 
  }
 

@@ -31,7 +31,7 @@
 		Abstract::Alert::Controller::getInstance().push_back(activation);
  	}
 
-	Abstract::Alert::Activation::Activation(const Alert *a) : alert(a) {
+	Abstract::Alert::Activation::Activation(const Alert *alert) : id(alert) {
 
 		options.verbose = alert->verbose();
 

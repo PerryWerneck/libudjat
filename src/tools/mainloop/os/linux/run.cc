@@ -172,21 +172,13 @@
 				}
 				service->state.active = false;
 			}
+#ifdef DEBUG
+			else {
+				cout << "services\tService '" << service->name() << "' is not active" << endl;
+			}
+#endif // DEBUG
 		}
 
-		/*
-		for(auto service : services) {
-			if(service->active) {
-				try {
-					cout << "service\tStopping '" << service->info->description << " " << service->info->version << "'" << endl;
-					service->stop();
-				} catch(const std::exception &e) {
-					cerr << service->info->name << "\tError '" << e.what() << "' stopping service" << endl;
-				}
-				service->active = false;
-			}
-		}
-		*/
 	}
 
 	// Wait for pool
