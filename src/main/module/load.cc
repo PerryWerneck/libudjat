@@ -161,7 +161,10 @@ namespace Udjat {
 
 		try {
 
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wcast-function-type"
 			init = (Module * (*)(void)) GetProcAddress(handle,"udjat_module_init");
+			#pragma GCC diagnostic pop
 			if(!init) {
 				throw Win32::Exception("Cant get module init method");
 			}

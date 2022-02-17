@@ -56,7 +56,10 @@ namespace Udjat {
 #ifdef _WIN32
 
 					// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary
+					#pragma GCC diagnostic push
+					#pragma GCC diagnostic ignored "-Wcast-function-type"
 					bool (*deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
+					#pragma GCC diagnostic pop
 					if(!deinit()) {
 						cout << name << "\tModule disabled (still open)" << endl;
 					} else if(FreeLibrary(handle)) {

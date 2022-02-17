@@ -28,7 +28,7 @@
  #include <udjat/win32/service.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
- #include <getopt.h>
+ #include <direct.h>
 
  using namespace std;
 
@@ -237,14 +237,22 @@
 	}
 
 	void SystemService::usage(const char *appname) const noexcept {
-		cout 	<< "Usage: " << endl << endl << "  " << appname << " [options]" << endl << endl
+
+		cout << "Usage: " << endl << endl << "  ";
+
+		TCHAR filename[MAX_PATH];
+		if(GetModuleFileName(NULL, filename, MAX_PATH ) ) {
+			cout << filename;
+		} else {
+			cout << appname;
+		}
+
+		cout	<< " [options]" << endl << endl
 				<< "  --foreground\t\tRun " << appname << " service as application (foreground)" << endl
-				<< "  --install\t\tInstall " << appname << " service" << endl
-				<< "  --install-and-start\tInstall " << appname << " service and start it" << endl
 				<< "  --start\t\tStart " << appname << " service" << endl
 				<< "  --stop\t\tStop " << appname << " service" << endl
-				<< "  --uninstall\t\tUninstall " << appname << " service" << endl
-				<< endl;
+				<< "  --install\t\tInstall " << appname << " service" << endl
+				<< "  --uninstall\t\tUninstall " << appname << " service" << endl;
 	}
 
 	static int service_start(const char *appname) {
@@ -281,6 +289,61 @@
 
 	}
 
+	int SystemService::cmdline(const char *appname, char key, const char UDJAT_UNUSED(*value)) {
+
+		switch(key) {
+		case 'i':	// Install service.
+			return install();
+
+		case 's':	// Start service.
+			return service_start(appname);
+
+		case 'q':	// Stop service.
+			return service_stop(appname);
+
+		case 'u':	// Uninstall service.
+			return uninstall();
+
+		case 'f':	// Run in foreground.
+			Logger::redirect(true);
+			cout << appname << "\tStarting in application mode" << endl;
+			init();
+			run();
+			deinit();
+			return 0;
+
+		}
+
+		return ENOENT;
+	}
+
+	int SystemService::cmdline(const char *appname, const char *key, const char *value) {
+
+		// The default options doesn't have values, then, reject here.
+		if(value) {
+			return ENOENT;
+		}
+
+		static const struct {
+			char option;
+			const char *key;
+		} options[] = {
+			{ 'i', "install" },
+			{ 'u', "uninstall" },
+			{ 's', "start" },
+			{ 'q', "stop" },
+			{ 'f', "foreground" }
+		};
+
+		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
+			if(!strcasecmp(key,options[option].key)) {
+				return cmdline(appname, options[option].option);
+			}
+		}
+
+		return ENOENT;
+	}
+
 	int SystemService::run(int argc, char **argv) {
 
 		{
@@ -290,78 +353,14 @@
 			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
 			SetConsoleOutputCP(CP_UTF8);
 			SetConsoleCP(CP_UTF8);
+
+			_chdir(Application::Path().c_str());
 		}
 
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-		static struct option options[] = {
-			{ "foreground",			no_argument,		0,	'f' },
-			{ "install",			no_argument,		0,	'i' },
-			{ "install-and-start",	no_argument,		0,	'I' },
-			{ "start",				no_argument,		0,	's' },
-			{ "stop",				no_argument,		0,	'q' },
-			{ "uninstall",			no_argument,		0,	'u' },
-			{ "help",				no_argument,		0,	'h' },
-			{ NULL }
-		};
-		#pragma GCC diagnostic pop
-
 		auto appname = Application::Name::getInstance();
-		int rc = 0;
 
-		// Parse command line options.
-		{
-			int long_index =0;
-			int opt;
-			while((opt = getopt_long(argc, argv, "fiIsquh", options, &long_index )) != -1) {
-				try {
-
-					switch(opt) {
-					case 'h':
-						usage(appname.c_str());
-						return 0;
-
-					case 'i':	// Install service.
-						return install();
-
-					case 's':	// Start service.
-						return service_start(appname.c_str());
-
-					case 'q':	// Stop service.
-						return service_stop(appname.c_str());
-
-					case 'I':	// Install and start service.
-						if(!install()) {
-							return service_start(appname.c_str());
-						}
-						return -1;
-
-					case 'u':	// Uninstall service.
-						return uninstall();
-
-					case 'f':	// Run in foreground.
-						Logger::redirect(true);
-						cout << appname << "\tStarting in application mode" << endl;
-						init();
-						rc = run();
-						deinit();
-						return rc;
-						break;
-
-					}
-
-				} catch(const std::exception &e) {
-					cerr << appname << "\t" << e.what() << endl;
-					return -1;
-
-				} catch(...) {
-					cerr << appname << "\tUnexpected error" << endl;
-					return -1;
-
-				}
-
-			}
-
+		if(argc > 1) {
+			return cmdline(appname.c_str(),argc,(const char **) argv);
 		}
 
 		// Run as service by default.

@@ -85,8 +85,9 @@
 
 			try {
 
-				if(!(strcmp(arg,"-h") && strcmp(arg,"--help") && strcmp(arg,"/h") && strcmp(arg,"/H"))) {
+				if(!(strcmp(arg,"-h") && strcmp(arg,"--help") && strcmp(arg,"/h") && strcmp(arg,"/?") && strcmp(arg,"-?"))) {
 					usage(appname);
+					cout << endl;
 					return 0;
 				}
 
@@ -110,6 +111,11 @@
 					} else {
 						rc = cmdline(appname,arg[1]);
 					}
+
+				} else if(arg[0] == '/' && arg[1] && arg[2] == 0) {
+
+					// /P value
+					rc = cmdline(appname,arg[1]);
 
 				}
 

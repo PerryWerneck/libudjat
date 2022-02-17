@@ -94,8 +94,7 @@
 		cout 	<< "Usage: " << endl << "  " << appname << " [options]" << endl << endl
 				<< "  --core\tenable coredumps" << endl
 				<< "  --daemon\tRun " << appname << " service in the background" << endl
-				<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl
-				<< endl;
+				<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl;
 	}
 
 	int SystemService::cmdline(const char *appname, char key, const char UDJAT_UNUSED(*value)) {
