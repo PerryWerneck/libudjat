@@ -30,37 +30,44 @@
 
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
+	#define BUFFER_LENGTH 100
+
 	string response;
-	LPVOID lpMsgBuf = 0;
+	char *buffer = new char[BUFFER_LENGTH+1];
 
-	DWORD szMessage =
-		FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
-			0,
-			dwMessageId,
-			0,
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL
-		);
+	memset(buffer,0,BUFFER_LENGTH+1);
 
-	if(lpMsgBuf) {
+	FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+		0,
+		dwMessageId,
+		0,
+		(LPTSTR) buffer,
+		BUFFER_LENGTH,
+		NULL
+	);
 
-		if(szMessage) {
-			response = string((const char *) lpMsgBuf,szMessage);
+	if(*buffer) {
+
+		// TODO: Convert buffer to UTF-8
+
+		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
+			if(*ptr < ' ') {
+				*ptr = ' ';
+			}
 		}
-	
-		LocalFree(lpMsgBuf);
+
+		response = string(buffer);
 
 	} else {
 
-		if(szMessage == 0) {
-			cerr << "win32\tError " << GetLastError() << " when formatting message id " << dwMessageId << endl;
-		}
+		cerr << "win32\tError " << GetLastError() << " when formatting message id " << dwMessageId << endl;
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
 	}
+
+	delete[] buffer;
 
 	return response;
 
