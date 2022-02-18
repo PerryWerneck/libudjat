@@ -59,21 +59,9 @@
 
 	} else if(*buffer) {
 
-		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
-			if(*ptr < ' ') {
-				*ptr = '?';
-			}			
-		}
-
-		// TODO: Fix ICONV.
-		
-		response = buffer; // Win32::String(buffer).c_str();
+		response = Win32::String(buffer).c_str();
 
 	} else {
-
-		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
-
-		}
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
