@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat-internals.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/utils.h>
  #include <windows.h>
  #include <iostream>
 
@@ -37,7 +38,7 @@
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
-	FormatMessage(
+	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
 		0,
 		dwMessageId,
@@ -47,24 +48,25 @@
 		NULL
 	);
 
-	if(*buffer) {
+	if(retval == 0) {
 
-		// TODO: Convert buffer to UTF-8
-
-		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
-			if(*ptr < ' ') {
-				*ptr = ' ';
-			}
-		}
-
-		response = string(buffer);
-
-	} else {
-
-		cerr << "win32\tError " << GetLastError() << " when formatting message id " << dwMessageId << endl;
+		auto winerror = GetLastError();
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
+		response += " (with an aditional error ";
+		response += std::to_string(winerror);
+		response += " while formatting message)";
+
+	} else if(*buffer) {
+
+		response = Win32::String(buffer).c_str();
+
+	} else {
+
+		response = "The windows error was ";
+		response += std::to_string((unsigned int) dwMessageId);
+
 	}
 
 	delete[] buffer;

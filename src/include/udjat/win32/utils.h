@@ -40,6 +40,7 @@
 			String(const char *winstr);
 			~String();
 
+			/// @brief Assign CP1256 string, will be converted to UTF-8.
 			String & assign(const char *winstr);
 
 		};
