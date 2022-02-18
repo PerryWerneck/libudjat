@@ -33,6 +33,9 @@
 		/// @brief Path for the xml file(s) with service definitions.
 		const char * definitions = nullptr;
 
+		/// @brief Command line parser.
+		int cmdline(const char *appname, int argc, const char **argv);
+
 	protected:
 
 		/// @brief Reconfigure application from XML files.
@@ -41,6 +44,23 @@
 
 		/// @brief Factory for the application root.
 		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
+
+		/// @brief Check '--param=value' command line options.
+		/// @param key Option name.
+		/// @param value Option value (can be nullptr).
+		/// @retval 0 Normal exit.
+		/// @retval -2 Continue as a service.
+		/// @retval ENOENT Invalid option.
+		virtual int cmdline(const char *appname, const char *key, const char *value = nullptr);
+
+		/// @brief Check '-p value' command line options.
+		/// @param key Option name.
+		/// @param value Option value (can be nullptr).
+		/// @return result.
+		/// @retval 0 Normal exit.
+		/// @retval -2 Continue as a service.
+		/// @retval ENOENT Invalid option.
+		virtual int cmdline(const char *appname, const char key, const char *value = nullptr);
 
 #ifdef _WIN32
 
@@ -59,15 +79,14 @@
 		/// @brief Send usage help to std::cout
 		virtual void usage(const char *appname) const noexcept;
 
+		SystemService(const char *definitions = nullptr);
+
 	public:
 
-		constexpr SystemService() {
-		}
-
-		constexpr SystemService(const char *d) : definitions(d) {
-		}
-
 		virtual ~SystemService();
+
+		/// @brief Get current service instance.
+		static SystemService * getInstance();
 
 		/// @brief Initialize service.
 		virtual void init();

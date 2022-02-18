@@ -28,7 +28,7 @@
  #include <udjat/win32/service.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
- #include <getopt.h>
+ #include <direct.h>
 
  using namespace std;
 
@@ -74,7 +74,7 @@
 
 					for(size_t f = 1; f < (sizeof(st)/sizeof(st[0]));f++) {
 						if(st[f].state == state) {
-							clog << "Service\t" << st[f].msg << endl;
+							clog << "service\t" << st[f].msg << endl;
 							break;
 						}
 					}
@@ -84,7 +84,7 @@
 				dwWaitHint = wait;
 
 				if(!SetServiceStatus(handle, (SERVICE_STATUS *) this)) {
-					cerr << "Service\tSystem error in SetServiceStatus()" << endl;
+					cerr << "service\tWindows error " << GetLastError() << " in SetServiceStatus(" << state << ")" << endl;
 				}
 
 			}
@@ -99,7 +99,6 @@
 		private:
 			Status status;
 			SERVICE_STATUS_HANDLE hStatus = 0;
-			Udjat::SystemService *service = nullptr;
 
 			Controller() {
 			}
@@ -114,51 +113,52 @@
 			~Controller() {
 			}
 
-			void insert(SystemService *service) {
-
-				if(this->service) {
-					throw runtime_error("WIN32 System Service is already registered");
-				}
-
-				this->service = service;
-			}
-
-			void remove(SystemService *service) {
-				if(this->service == service) {
-					this->service = nullptr;
-				}
-			}
-
 			static void WINAPI handler( DWORD CtrlCmd ) {
 
 				Controller &controller = getInstance();
 
-				if(!controller.service) {
+				if(!SystemService::getInstance()) {
 					// FIXME: Report failure.
 					controller.set(controller.status.dwCurrentState, 0);
 					return;
 				}
 
-				switch (CtrlCmd) {
-				case SERVICE_CONTROL_SHUTDOWN:
+				try {
+
+					switch (CtrlCmd) {
+					case SERVICE_CONTROL_SHUTDOWN:
 						controller.set(SERVICE_STOP_PENDING, 3000);
 						cout << "service\tSystem shutdown, stopping" << endl;
-						controller.service->stop();
+						SystemService::getInstance()->stop();
 						break;
 
-				case SERVICE_CONTROL_STOP:
+					case SERVICE_CONTROL_STOP:
 						controller.set(SERVICE_STOP_PENDING, 3000);
 						cout << "service\tStopping by request" << endl;
-						controller.service->stop();
+						SystemService::getInstance()->stop();
 						break;
 
-				case SERVICE_CONTROL_INTERROGATE:
+					case SERVICE_CONTROL_INTERROGATE:
 						controller.set(controller.status.dwCurrentState, 0);
 						break;
 
-				default:
+					default:
 						clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
 						controller.set(controller.status.dwCurrentState, 0);
+					}
+
+				} catch(const std::exception &e) {
+
+					cerr << "service\tError '" << e.what() << "' handling service request" << endl;
+					// FIXME: Report failure.
+					controller.set(controller.status.dwCurrentState, 0);
+
+				} catch(...) {
+
+					cerr << "service\tUnexpected error handling service request" << endl;
+					// FIXME: Report failure.
+					controller.set(controller.status.dwCurrentState, 0);
+
 				}
 
 			}
@@ -168,24 +168,26 @@
 				Controller &controller = getInstance();
 
 				// Inicia como serviço
-				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name().c_str()), handler);
-
+				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
 				if(!controller.hStatus) {
-					throw runtime_error("RegisterServiceCtrlHandler failed");
+					cerr << "service\tRegisterServiceCtrlHandler failed with windows error " << GetLastError() << endl;
+					return;
 				}
 
 				try {
 
-					Logger::redirect();
+					auto service = SystemService::getInstance();
 
-					controller.set(SERVICE_START_PENDING, 3000);
-					controller.service->init();
+					if(service) {
+						controller.set(SERVICE_START_PENDING, 3000);
+						service->init();
 
-					controller.set(SERVICE_RUNNING, 0);
-					controller.service->run();
+						controller.set(SERVICE_RUNNING, 0);
+						service->run();
 
-					controller.set(SERVICE_STOP_PENDING, 3000);
-					controller.service->deinit();
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						service->deinit();
+					}
 
 				} catch(const std::exception &e) {
 
@@ -209,13 +211,9 @@
 
 	}
 
-	SystemService::~SystemService() {
-	}
-
 	void SystemService::init() {
 
 		setlocale( LC_ALL, "" );
-		Service::Controller::getInstance().insert(this);
 
 		if(definitions) {
 			reconfigure(definitions);
@@ -224,7 +222,6 @@
 	}
 
 	void SystemService::deinit() {
-		Service::Controller::getInstance().remove(this);
 	}
 
 	void SystemService::stop() {
@@ -237,14 +234,22 @@
 	}
 
 	void SystemService::usage(const char *appname) const noexcept {
-		cout 	<< "Usage: " << endl << endl << "  " << appname << " [options]" << endl << endl
+
+		cout << "Usage: " << endl << endl << "  ";
+
+		TCHAR filename[MAX_PATH];
+		if(GetModuleFileName(NULL, filename, MAX_PATH ) ) {
+			cout << filename;
+		} else {
+			cout << appname;
+		}
+
+		cout	<< " [options]" << endl << endl
 				<< "  --foreground\t\tRun " << appname << " service as application (foreground)" << endl
-				<< "  --install\t\tInstall " << appname << " service" << endl
-				<< "  --install-and-start\tInstall " << appname << " service and start it" << endl
 				<< "  --start\t\tStart " << appname << " service" << endl
 				<< "  --stop\t\tStop " << appname << " service" << endl
-				<< "  --uninstall\t\tUninstall " << appname << " service" << endl
-				<< endl;
+				<< "  --install\t\tInstall " << appname << " service" << endl
+				<< "  --uninstall\t\tUninstall " << appname << " service" << endl;
 	}
 
 	static int service_start(const char *appname) {
@@ -281,6 +286,65 @@
 
 	}
 
+	int SystemService::cmdline(const char *appname, char key, const char UDJAT_UNUSED(*value)) {
+
+		switch(key) {
+		case 'i':	// Install service.
+			Logger::redirect(true);
+			return install();
+
+		case 's':	// Start service.
+			Logger::redirect(true);
+			return service_start(appname);
+
+		case 'q':	// Stop service.
+			Logger::redirect(true);
+			return service_stop(appname);
+
+		case 'u':	// Uninstall service.
+			Logger::redirect(true);
+			return uninstall();
+
+		case 'f':	// Run in foreground.
+			Logger::redirect(true);
+			cout << appname << "\tStarting in application mode" << endl;
+			init();
+			run();
+			deinit();
+			return 0;
+
+		}
+
+		return ENOENT;
+	}
+
+	int SystemService::cmdline(const char *appname, const char *key, const char *value) {
+
+		// The default options doesn't have values, then, reject here.
+		if(value) {
+			return ENOENT;
+		}
+
+		static const struct {
+			char option;
+			const char *key;
+		} options[] = {
+			{ 'i', "install" },
+			{ 'u', "uninstall" },
+			{ 's', "start" },
+			{ 'q', "stop" },
+			{ 'f', "foreground" }
+		};
+
+		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
+			if(!strcasecmp(key,options[option].key)) {
+				return cmdline(appname, options[option].option);
+			}
+		}
+
+		return ENOENT;
+	}
+
 	int SystemService::run(int argc, char **argv) {
 
 		{
@@ -290,79 +354,19 @@
 			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
 			SetConsoleOutputCP(CP_UTF8);
 			SetConsoleCP(CP_UTF8);
-		}
 
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-		static struct option options[] = {
-			{ "foreground",			no_argument,		0,	'f' },
-			{ "install",			no_argument,		0,	'i' },
-			{ "install-and-start",	no_argument,		0,	'I' },
-			{ "start",				no_argument,		0,	's' },
-			{ "stop",				no_argument,		0,	'q' },
-			{ "uninstall",			no_argument,		0,	'u' },
-			{ "help",				no_argument,		0,	'h' },
-			{ NULL }
-		};
-		#pragma GCC diagnostic pop
+			_chdir(Application::Path().c_str());
+		}
 
 		auto appname = Application::Name::getInstance();
-		int rc = 0;
 
-		// Parse command line options.
-		{
-			int long_index =0;
-			int opt;
-			while((opt = getopt_long(argc, argv, "fiIsquh", options, &long_index )) != -1) {
-				try {
-
-					switch(opt) {
-					case 'h':
-						usage(appname.c_str());
-						return 0;
-
-					case 'i':	// Install service.
-						return install();
-
-					case 's':	// Start service.
-						return service_start(appname.c_str());
-
-					case 'q':	// Stop service.
-						return service_stop(appname.c_str());
-
-					case 'I':	// Install and start service.
-						if(!install()) {
-							return service_start(appname.c_str());
-						}
-						return -1;
-
-					case 'u':	// Uninstall service.
-						return uninstall();
-
-					case 'f':	// Run in foreground.
-						Logger::redirect(true);
-						cout << appname << "\tStarting in application mode" << endl;
-						init();
-						rc = run();
-						deinit();
-						return rc;
-						break;
-
-					}
-
-				} catch(const std::exception &e) {
-					cerr << appname << "\t" << e.what() << endl;
-					return -1;
-
-				} catch(...) {
-					cerr << appname << "\tUnexpected error" << endl;
-					return -1;
-
-				}
-
-			}
-
+		if(argc > 1) {
+			return cmdline(appname.c_str(),argc,(const char **) argv);
 		}
+
+		// Redirect output
+		cout << "Starting service dispatcher" << endl;
+		Logger::redirect(false);
 
 		// Run as service by default.
 		static SERVICE_TABLE_ENTRY DispatchTable[] = {
@@ -372,7 +376,7 @@
 
 		DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
 
-		cout << "Starting '" << appname << "' service dispatcher" << endl;
+		cout << "Starting " << appname << " service dispatcher" << endl;
 
 		if(!StartServiceCtrlDispatcher( DispatchTable )) {
 			cerr << "Failed to start '" << appname << "' service dispatcher" << endl << Win32::Exception::format(GetLastError()) << endl;
@@ -400,6 +404,7 @@
 
 		Win32::Service::Manager manager;
 
+		// Stop previous instance
 		try {
 
 			cout << appname << "\tStopping previous instance" << endl;
@@ -410,6 +415,7 @@
 			cerr << appname << "\t" << e.what() << endl;
 		}
 
+		// Remove previous instance
 		try {
 
 			cout << appname << "\tRemoving previous instance" << endl;
@@ -422,6 +428,9 @@
 
 		// Inclui novo serviço
 		cout << appname << "\tInserting '" << display_name << "' service" << endl;
+#ifdef DEBUG
+		cout << appname << "\tService binary is '" << service_binary << "'" << endl;
+#endif // DEBUG
 		manager.insert(appname.c_str(),display_name,service_binary);
 		cout << appname << "\tService '" << display_name << "' inserted" << endl;
 

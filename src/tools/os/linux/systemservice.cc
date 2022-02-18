@@ -25,7 +25,6 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
- #include <getopt.h>
  #include <unistd.h>
  #include <fstream>
  #include <sys/time.h>
@@ -59,27 +58,20 @@
 
 	}
 
-	SystemService::~SystemService() {
-		if(instance == this) {
-			deinit();
-			instance = nullptr;
-		}
-	}
-
 	void SystemService::init() {
 		setlocale( LC_ALL, "" );
 
 		if(definitions) {
 			reconfigure(definitions);
+			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
+				cout << "service\tUse SIGUSR1 to reload " << definitions << endl;
+			}
 		}
 
 	}
 
 	void SystemService::deinit() {
-		if(instance == this) {
-			signal(SIGUSR1,SIG_DFL);
-			instance = nullptr;
-		}
+		signal(SIGUSR1,SIG_DFL);
 	}
 
 	void SystemService::stop() {
@@ -95,105 +87,99 @@
 		cout 	<< "Usage: " << endl << "  " << appname << " [options]" << endl << endl
 				<< "  --core\tenable coredumps" << endl
 				<< "  --daemon\tRun " << appname << " service in the background" << endl
-				<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl
-				<< endl;
+				<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl;
+	}
+
+	int SystemService::cmdline(const char *appname, char key, const char UDJAT_UNUSED(*value)) {
+
+		switch(key) {
+		case 'f':	// Run in foreground.
+			{
+				Logger::redirect(true);
+				cout << appname << "\tStarting in application mode" << endl;
+				init();
+				run();
+				deinit();
+				return 0;
+			}
+			break;
+
+		case 'd':	// Run as a daemon.
+			{
+
+				if(daemon(0,0)) {
+					throw std::system_error(errno, std::system_category());
+				}
+
+				Logger::redirect();
+				init();
+				run();
+				deinit();
+				return 0;
+
+			}
+			break;
+
+		case 'C':	// Enable core dumps.
+			{
+				if(optarg) {
+					ofstream ofs;
+					ofs.open("/proc/sys/kernel/core_pattern",ofstream::out);
+					ofs << optarg;
+					ofs.close();
+				}
+
+				// Enable cores
+				struct rlimit core_limits;
+				core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+
+				if(setrlimit(RLIMIT_CORE, &core_limits)) {
+					cerr << appname << "\tError \"" << strerror(errno) << "\" activating coredumps" << endl;
+				} else {
+					cout << appname << "\tCoredumps are active" << endl;
+				}
+			}
+			return -2;
+
+		}
+
+		return ENOENT;
+	}
+
+	int SystemService::cmdline(const char *appname, const char *key, const char *value) {
+
+		// The default options doesn't have values, then, reject here.
+		if(value) {
+			return ENOENT;
+		}
+
+		static const struct {
+			char option;
+			const char *key;
+		} options[] = {
+			{ 'C', "coredump" },
+			{ 'd', "daemon" },
+			{ 'f', "foreground" }
+		};
+
+		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
+			if(!strcasecmp(key,options[option].key)) {
+				return cmdline(appname, options[option].option);
+			}
+		}
+
+		return ENOENT;
 	}
 
 	int SystemService::run(int argc, char **argv) {
 
 		auto appname = Application::Name::getInstance();
-		int rc = 0;
 
-		// Parse command line options.
-		{
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-			static struct option options[] = {
-				{ "foreground",		no_argument,		0,	'f' },
-				{ "daemon",			no_argument,		0,	'd' },
-				{ "core",			optional_argument,	0,	'C' },
-				{ "help",			no_argument,		0,	'h' },
-				{ NULL }
-			};
-			#pragma GCC diagnostic pop
-
-			int long_index =0;
-			int opt;
-			while((opt = getopt_long(argc, argv, "fdC:h", options, &long_index )) != -1) {
-				switch(opt) {
-				case 'h':
-					usage(appname.c_str());
-					return 0;
-
-				case 'f':	// Run in foreground.
-					try {
-
-						Logger::redirect(true);
-						cout << appname << "\tStarting in application mode" << endl;
-						init();
-						rc = run();
-						deinit();
-						return rc;
-
-					} catch(const std::exception &e) {
-						cerr << appname << "\t" << e.what() << endl;
-						return -1;
-					} catch(...) {
-						cerr << appname << "\tUnexpected error" << endl;
-						return -1;
-					}
-					break;
-
-				case 'd':	// Run as a daemon.
-					try {
-
-						if(daemon(0,0)) {
-							throw std::system_error(errno, std::system_category());
-						}
-
-						Logger::redirect();
-						init();
-						run();
-						deinit();
-						return 0;
-
-					} catch(const std::exception &e) {
-						cerr << appname << "\t" << e.what() << endl;
-						return -1;
-					} catch(...) {
-						cerr << appname << "\tUnexpected error" << endl;
-						return -1;
-					}
-					break;
-
-				case 'C':	// Enable core dumps.
-					{
-						if(optarg) {
-							ofstream ofs;
-							ofs.open("/proc/sys/kernel/core_pattern",ofstream::out);
-							ofs << optarg;
-							ofs.close();
-						}
-
-						// Enable cores
-						struct rlimit core_limits;
-						core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
-
-						if(setrlimit(RLIMIT_CORE, &core_limits)) {
-							cerr << appname << "\tError \"" << strerror(errno) << "\" activating coredumps" << endl;
-						} else {
-							cout << appname << "\tCoredumps are active" << endl;
-						}
-					}
-					break;
-
-				default:
-					return -1;
-
-				}
-
+		if(argc > 1) {
+			int rc = cmdline(appname.c_str(),argc,(const char **) argv);
+			if(rc != -2) {
+				return rc;
 			}
-
 		}
 
 		// Run as service by default.
@@ -202,18 +188,17 @@
 			cout << "Running " << appname << " service" << endl;
 			Logger::redirect();
 			init();
-			rc = run();
+			int rc = run();
 			deinit();
+			return rc;
 
 		} catch(const std::exception &e) {
 			cerr << appname << "\t" << e.what() << endl;
-			return -1;
 		} catch(...) {
 			cerr << appname << "\tUnexpected error" << endl;
-			return -1;
 		}
 
-		return rc;
+		return -1;
 
 	}
 

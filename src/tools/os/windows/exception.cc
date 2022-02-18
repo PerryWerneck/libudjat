@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat-internals.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/string.h>
  #include <windows.h>
  #include <iostream>
 
@@ -30,37 +31,56 @@
 
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
+	#define BUFFER_LENGTH 100
+
 	string response;
-	LPVOID lpMsgBuf = 0;
+	char *buffer = new char[BUFFER_LENGTH+1];
 
-	DWORD szMessage =
-		FormatMessage(
-			FORMAT_MESSAGE_ALLOCATE_BUFFER|FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS|FORMAT_MESSAGE_MAX_WIDTH_MASK,
-			0,
-			dwMessageId,
-			0,
-			(LPTSTR) &lpMsgBuf,
-			0,
-			NULL
-		);
+	memset(buffer,0,BUFFER_LENGTH+1);
 
-	if(lpMsgBuf) {
+	int retval = FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+		0,
+		dwMessageId,
+		0,
+		(LPTSTR) buffer,
+		BUFFER_LENGTH,
+		NULL
+	);
 
-		if(szMessage) {
-			response = string((const char *) lpMsgBuf,szMessage);
+	if(retval == 0) {
+
+		auto winerror = GetLastError();
+
+		response = "The windows error was ";
+		response += std::to_string((unsigned int) dwMessageId);
+		response += " (with an aditional error ";
+		response += std::to_string(winerror);
+
+	} else if(*buffer) {
+
+		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
+			if(*ptr < ' ') {
+				*ptr = '?';
+			}			
 		}
-	
-		LocalFree(lpMsgBuf);
+
+		// TODO: Fix ICONV.
+		
+		response = buffer; // Win32::String(buffer).c_str();
 
 	} else {
 
-		if(szMessage == 0) {
-			cerr << "win32\tError " << GetLastError() << " when formatting message id " << dwMessageId << endl;
+		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
+
 		}
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
+
 	}
+
+	delete[] buffer;
 
 	return response;
 

@@ -19,6 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <functional>
 
  #ifndef _WIN32
 	#error Registry objects requires win32
@@ -32,10 +33,19 @@
 		protected:
 			HKEY hKey = 0;
 
+			static std::string get(HKEY hK, const char *name, const char *def);
+
 		public:
 			Registry();
 			Registry(const char *path, bool write = false);
 			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
+
+			bool hasKey(const char *name) const noexcept;
+			bool hasValue(const char *name) const noexcept;
+
+			inline operator bool() const noexcept {
+				return hKey != 0;
+			}
 
 			static HKEY open(HKEY hParent = HKEY_LOCAL_MACHINE, const char *path = nullptr, bool write = false);
 
@@ -43,6 +53,8 @@
 
 			std::string get(const char *name, const char *def) const;
 			DWORD get(const char *name, DWORD def) const;
+
+			bool for_each(const char *group, const std::function<bool(const char *key, const char *value)> &call);
 
 		};
 

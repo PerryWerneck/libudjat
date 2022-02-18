@@ -42,6 +42,7 @@
 	std::mutex Logger::guard;
 	Logger::Level Logger::level = Logger::Error;
 
+#ifndef _WIN32
 	//
 	// Log writer
 	//
@@ -61,6 +62,7 @@
 		}
 
 	}
+#endif // !_WIN32
 
 	/// @brief Writes characters to the associated output sequence from the put area.
 	int Logger::Writer::overflow(int c) {

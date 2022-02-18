@@ -41,14 +41,16 @@
 
 				};
 
-
 				/// @brief The buffer id.
 				Level id = Info;
 
 				/// @brief Send output to console?
 				bool console = true;
 
+#ifndef _WIN32
 				void write(int fd, const std::string &str);
+#endif // !WIN32
+
 				void write(Buffer &buffer);
 
 			protected:
