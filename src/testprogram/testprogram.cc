@@ -32,7 +32,6 @@
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
- #include <udjat/win32/registry.h>
 
  using namespace std;
  using namespace Udjat;
