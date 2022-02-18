@@ -99,7 +99,6 @@
 		private:
 			Status status;
 			SERVICE_STATUS_HANDLE hStatus = 0;
-			Udjat::SystemService *service = nullptr;
 
 			Controller() {
 			}
@@ -114,78 +113,86 @@
 			~Controller() {
 			}
 
-			void insert(SystemService *service) {
-
-				if(this->service) {
-					throw runtime_error("WIN32 System Service is already registered");
-				}
-
-				this->service = service;
-			}
-
-			void remove(SystemService *service) {
-				if(this->service == service) {
-					this->service = nullptr;
-				}
-			}
-
 			static void WINAPI handler( DWORD CtrlCmd ) {
 
 				Controller &controller = getInstance();
 
-				if(!controller.service) {
+				if(!SystemService::getInstance()) {
 					// FIXME: Report failure.
 					controller.set(controller.status.dwCurrentState, 0);
 					return;
 				}
 
-				switch (CtrlCmd) {
-				case SERVICE_CONTROL_SHUTDOWN:
-						controller.set(SERVICE_STOP_PENDING, 3000);
-						cout << "service\tSystem shutdown, stopping" << endl;
-						controller.service->stop();
-						break;
+				try {
 
-				case SERVICE_CONTROL_STOP:
-						controller.set(SERVICE_STOP_PENDING, 3000);
-						cout << "service\tStopping by request" << endl;
-						controller.service->stop();
-						break;
+					switch (CtrlCmd) {
+					case SERVICE_CONTROL_SHUTDOWN:
+							controller.set(SERVICE_STOP_PENDING, 3000);
+							cout << "service\tSystem shutdown, stopping" << endl;
+							SystemService::getInstance()->stop();
+							break;
 
-				case SERVICE_CONTROL_INTERROGATE:
-						controller.set(controller.status.dwCurrentState, 0);
-						break;
+					case SERVICE_CONTROL_STOP:
+							controller.set(SERVICE_STOP_PENDING, 3000);
+							cout << "service\tStopping by request" << endl;
+							SystemService::getInstance()->stop();
+							break;
 
-				default:
-						clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
-						controller.set(controller.status.dwCurrentState, 0);
+					case SERVICE_CONTROL_INTERROGATE:
+							controller.set(controller.status.dwCurrentState, 0);
+							break;
+
+					default:
+							clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
+							controller.set(controller.status.dwCurrentState, 0);
+					}
+
+				} catch(const std::exception &e) {
+
+					cerr << "service\tError '" << e.what() << "' handling service request" << endl;
+					// FIXME: Report failure.
+					controller.set(controller.status.dwCurrentState, 0);
+
+				} catch(...) {
+
+					cerr << "service\tUnexpected error handling service request" << endl;
+					// FIXME: Report failure.
+					controller.set(controller.status.dwCurrentState, 0);
+
 				}
 
 			}
 
 			static void dispatcher() {
 
-				Controller &controller = getInstance();
+				const Application::Name &appname = Application::Name().getInstance();
 
 				// Inicia como serviço
-				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name().c_str()), handler);
+				cout << __FUNCTION__ << " " << __LINE__ << endl;
 
-				if(!controller.hStatus) {
-					throw runtime_error("RegisterServiceCtrlHandler failed");
+				if(!RegisterServiceCtrlHandler(TEXT(appname.c_str()), handler)) {
+					cerr	<< "service\tRegisterServiceCtrlHandler(" 
+							<< appname << ") failed with windows error " << GetLastError() << endl;
+					return;
 				}
+				cout << __FUNCTION__ << " " << __LINE__ << endl;
+
+				cout << __FUNCTION__ << " " << __LINE__ << endl;
+				Controller &controller = getInstance();
+				cout << __FUNCTION__ << " " << __LINE__ << endl;
 
 				try {
 
-					Logger::redirect();
+					auto service = SystemService::getInstance();
 
 					controller.set(SERVICE_START_PENDING, 3000);
-					controller.service->init();
+					service->init();
 
 					controller.set(SERVICE_RUNNING, 0);
-					controller.service->run();
+					service->run();
 
 					controller.set(SERVICE_STOP_PENDING, 3000);
-					controller.service->deinit();
+					service->deinit();
 
 				} catch(const std::exception &e) {
 
@@ -215,7 +222,6 @@
 	void SystemService::init() {
 
 		setlocale( LC_ALL, "" );
-		Service::Controller::getInstance().insert(this);
 
 		if(definitions) {
 			reconfigure(definitions);
@@ -224,7 +230,6 @@
 	}
 
 	void SystemService::deinit() {
-		Service::Controller::getInstance().remove(this);
 	}
 
 	void SystemService::stop() {
@@ -293,15 +298,19 @@
 
 		switch(key) {
 		case 'i':	// Install service.
+			Logger::redirect(true);
 			return install();
 
 		case 's':	// Start service.
+			Logger::redirect(true);
 			return service_start(appname);
 
 		case 'q':	// Stop service.
+			Logger::redirect(true);
 			return service_stop(appname);
 
 		case 'u':	// Uninstall service.
+			Logger::redirect(true);
 			return uninstall();
 
 		case 'f':	// Run in foreground.
@@ -363,6 +372,10 @@
 			return cmdline(appname.c_str(),argc,(const char **) argv);
 		}
 
+		// Redirect output
+		cout << "Starting service dispatcher" << endl;
+		Logger::redirect(false);
+
 		// Run as service by default.
 		static SERVICE_TABLE_ENTRY DispatchTable[] = {
 			{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
@@ -371,7 +384,7 @@
 
 		DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
 
-		cout << "Starting '" << appname << "' service dispatcher" << endl;
+		cout << "Starting " << appname << " service dispatcher" << endl;
 
 		if(!StartServiceCtrlDispatcher( DispatchTable )) {
 			cerr << "Failed to start '" << appname << "' service dispatcher" << endl << Win32::Exception::format(GetLastError()) << endl;
@@ -399,6 +412,7 @@
 
 		Win32::Service::Manager manager;
 
+		// Stop previous instance
 		try {
 
 			cout << appname << "\tStopping previous instance" << endl;
@@ -409,6 +423,7 @@
 			cerr << appname << "\t" << e.what() << endl;
 		}
 
+		// Remove previous instance
 		try {
 
 			cout << appname << "\tRemoving previous instance" << endl;
@@ -421,6 +436,9 @@
 
 		// Inclui novo serviço
 		cout << appname << "\tInserting '" << display_name << "' service" << endl;
+#ifdef DEBUG
+		cout << appname << "\tService binary is '" << service_binary << "'" << endl;
+#endif // DEBUG
 		manager.insert(appname.c_str(),display_name,service_binary);
 		cout << appname << "\tService '" << display_name << "' inserted" << endl;
 

@@ -30,6 +30,13 @@
 
 	SystemService * SystemService::instance = nullptr;
 
+	SystemService * SystemService::getInstance() {
+		if(instance) {
+			return instance;
+		}
+		throw runtime_error("There's no active service instance");
+	}
+
 	void SystemService::reconfigure(const char *pathname) noexcept {
 
 		try {

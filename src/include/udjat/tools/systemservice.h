@@ -89,6 +89,9 @@
 
 		virtual ~SystemService();
 
+		/// @brief Get current service instance.
+		static SystemService * getInstance();
+
 		/// @brief Initialize service.
 		virtual void init();
 

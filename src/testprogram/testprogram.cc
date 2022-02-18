@@ -33,6 +33,10 @@
  #include <udjat/tools/file.h>
  #include <memory>
 
+#ifdef _WIN32
+	#include <udjat/win32/string.h>
+#endif // _WIN32
+
  using namespace std;
  using namespace Udjat;
 
@@ -122,6 +126,7 @@ int main(int argc, char **argv) {
 
 			Protocol::call("dummy+http://localhost");
 
+/*
 #ifdef _WIN32
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
@@ -152,6 +157,7 @@ int main(int argc, char **argv) {
 				});
 			}
 #endif // _WIN32
+*/
 
 			//Alert::activate("test","dummy+http://localhost");
 

@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat-internals.h>
  #include <udjat/win32/exception.h>
- #include <udjat/win32/utils.h>
+ #include <udjat/win32/string.h>
  #include <windows.h>
  #include <iostream>
 
@@ -56,13 +56,24 @@
 		response += std::to_string((unsigned int) dwMessageId);
 		response += " (with an aditional error ";
 		response += std::to_string(winerror);
-		response += " while formatting message)";
 
 	} else if(*buffer) {
 
-		response = Win32::String(buffer).c_str();
+		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
+			if(*ptr < ' ') {
+				*ptr = '?';
+			}			
+		}
+
+		// TODO: Fix ICONV.
+		
+		response = buffer; // Win32::String(buffer).c_str();
 
 	} else {
+
+		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
+
+		}
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
