@@ -32,6 +32,7 @@
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
+ #include <udjat/win32/registry.h>
 
  using namespace std;
  using namespace Udjat;
@@ -169,11 +170,6 @@ int main(int argc, char **argv) {
 	};
 
 	/*
-	Config::for_each("service-events",[](const char *key, const char *value){
-		cout << "config\t" << key << "='" << value << "'" << endl;
-		return true;
-	});
-
 	cout << "webroot: '" << Application::DataDir("www/error-pages") << endl;
 
 	{
@@ -185,7 +181,19 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	cout << Config::Value<string>("group","key","sample") << endl;
+	/*
+	cout 	<< "---------------------------" << endl
+			<< Config::Value<string>("service-events","max-tasks","sample") << endl
+			<< "Has service-events " << Config::hasGroup("service-events") << endl
+			<< "Has max-tasks " << Config::hasKey("service-events","max-tasks") << endl
+			<< "---------------------------"
+			<< endl;
+
+	Config::for_each("service-events",[](const char *key, const char *value){
+		cout << "config\t" << key << "='" << value << "'" << endl;
+		return true;
+	});
+	*/
 
 	return Service().run(argc,argv);
 }

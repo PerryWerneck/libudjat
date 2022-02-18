@@ -52,25 +52,40 @@
 		}
 
 		// Open registry.
-		DWORD dwOptions = KEY_QUERY_VALUE|KEY_READ|KEY_NOTIFY;
+		LSTATUS rc;
 
-		if(write)
-			dwOptions |= KEY_ALL_ACCESS;
+		if(write) {
 
-		LSTATUS rc = RegCreateKeyEx(
+			rc = RegCreateKeyEx(
 							hParent,
 							TEXT(path.c_str()),
 							0,
 							NULL,
 							REG_OPTION_NON_VOLATILE,
-							dwOptions,
+							KEY_ALL_ACCESS,
 							NULL,
 							&hKey,
 							NULL
-						);
+			);
+
+			if(rc != ERROR_SUCCESS) {
+				throw Win32::Exception( (string{"Can't open registry key at '"} + path + "'").c_str(),rc);
+			}
+
+		} else {
+
+			rc = RegOpenKeyEx(
+					hParent,
+					path.c_str(),
+					0,
+					KEY_READ,
+					&hKey
+			);
+
+		}
 
 		if(rc != ERROR_SUCCESS) {
-			throw Win32::Exception( (string{"Can't open registry key at '"} + path + "'").c_str(),rc);
+			hKey = 0;
 		}
 
 		return hKey;
@@ -95,6 +110,10 @@
 
 	DWORD Win32::Registry::get(const char *name, DWORD def) const {
 
+		if(!hKey) {
+			return def;
+		}
+
 		DWORD value = def;
 		unsigned long datatype;
 		unsigned long datalen = sizeof(DWORD);
@@ -112,45 +131,109 @@
 		return value;
 	}
 
-	std::string Win32::Registry::get(const char *name, const char *def) const {
+	string Win32::Registry::get(HKEY hK, const char *name, const char *def) {
 
-		DWORD		  cbData	= 4096;
-		char		* buffer	= (char *) malloc(cbData+1);
-		std::string	  rc;
+		if(!hK)
+			return def;
 
-		DWORD dwRet = RegQueryValueEx(	hKey,
-										name,
-										NULL,
-										NULL,
-										(LPBYTE) buffer,
-										&cbData );
+		static DWORD bufLen = 100;
 
-		if(dwRet == ERROR_MORE_DATA) {
-			buffer = (char *) realloc(buffer,cbData+1);
-			dwRet = RegQueryValueEx(	hKey,
-										name,
-										NULL,
-										NULL,
-										(LPBYTE) buffer,
-										&cbData );
+		DWORD dwRet;
 
+		char * data = new char[bufLen];
+		memset(data,0,bufLen);
+
+		DWORD cbData = bufLen -1;
+		dwRet = RegQueryValueEx( hK, name, NULL, NULL, (LPBYTE) data, &cbData );
+
+		while( dwRet == ERROR_MORE_DATA ) {
+
+			delete[] data;
+			bufLen += 1024;
+			data = new char[bufLen];
+			memset(data,0,bufLen);
+
+			cbData = bufLen-1;
+			dwRet = RegQueryValueEx( hK, name, NULL, NULL, (LPBYTE) data, &cbData );
 		}
 
+		string rc;
 		if(dwRet == ERROR_SUCCESS) {
-
-			buffer[cbData] = 0;
-			rc.assign(buffer);
-
+			rc.assign(data);
 		} else {
-
-			// Cant log error because the registry is used by logwriter, just use the default.
 			rc.assign(def);
 		}
 
-		free(buffer);
+		delete[] data;
 
 		return rc;
+	}
 
+	std::string Win32::Registry::get(const char *name, const char *def) const {
+		return get(hKey, name, def);
+	}
+
+	bool Win32::Registry::hasKey(const char *name) const noexcept {
+
+		if(!this->hKey) {
+			return false;
+		}
+
+		HKEY hK;
+		LSTATUS st = RegOpenKeyEx(
+							this->hKey,
+							name,
+							0,
+							KEY_READ,
+							&hK
+						);
+
+		if(st != ERROR_SUCCESS) {
+			return false;
+		}
+
+		RegCloseKey(hK);
+		return true;
+	}
+
+	bool Win32::Registry::hasValue(const char *name) const noexcept {
+
+		if(!this->hKey) {
+			return false;
+		}
+
+		return RegQueryValueEx( hKey, name, NULL, NULL, NULL, NULL ) == ERROR_SUCCESS;
+	}
+
+	bool Win32::Registry::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+
+		if(!this->hKey) {
+			return false;
+		}
+
+		HKEY hGroup;
+		if(RegOpenKeyEx(this->hKey,group,0,KEY_ALL_ACCESS,&hGroup) != ERROR_SUCCESS) {
+			return false;
+		}
+
+		TCHAR achkey[1024];		// buffer for subkey name
+		DWORD cbName = 1024;	// size of name string
+
+		bool rc = true;
+		for(DWORD index = 0;RegEnumValue(hGroup,index,achkey,&cbName,NULL,NULL,NULL,NULL) == ERROR_SUCCESS && rc; index++) {
+			string keyname(achkey,cbName);
+			string value = get(hGroup,keyname.c_str(),"");
+
+#ifdef DEBUG
+			cout << "key='" << keyname << "' value='" << value << "'" << endl;
+#endif // DEBUG
+
+
+			cbName = 1024;
+		}
+
+		RegCloseKey(hGroup);
+		return rc;
 	}
 
  }
