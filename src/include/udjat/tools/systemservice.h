@@ -79,13 +79,9 @@
 		/// @brief Send usage help to std::cout
 		virtual void usage(const char *appname) const noexcept;
 
+		SystemService(const char *definitions = nullptr);
+
 	public:
-
-		constexpr SystemService() {
-		}
-
-		constexpr SystemService(const char *d) : definitions(d) {
-		}
 
 		virtual ~SystemService();
 

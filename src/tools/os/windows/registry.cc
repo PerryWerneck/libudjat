@@ -228,6 +228,7 @@
 			cout << "key='" << keyname << "' value='" << value << "'" << endl;
 #endif // DEBUG
 
+			call(keyname.c_str(),value.c_str());
 
 			cbName = 1024;
 		}

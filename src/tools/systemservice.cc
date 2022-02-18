@@ -30,6 +30,20 @@
 
 	SystemService * SystemService::instance = nullptr;
 
+	SystemService::SystemService(const char *d) : definitions(d) {
+
+		if(instance) {
+			throw runtime_error("Can't start more than one system service");
+		}
+
+		instance = this;
+
+	}
+
+	SystemService::~SystemService() {
+		instance = nullptr;
+	}
+
 	SystemService * SystemService::getInstance() {
 		if(instance) {
 			return instance;

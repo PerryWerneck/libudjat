@@ -165,34 +165,29 @@
 
 			static void dispatcher() {
 
-				const Application::Name &appname = Application::Name().getInstance();
+				Controller &controller = getInstance();
 
 				// Inicia como serviço
-				cout << __FUNCTION__ << " " << __LINE__ << endl;
-
-				if(!RegisterServiceCtrlHandler(TEXT(appname.c_str()), handler)) {
-					cerr	<< "service\tRegisterServiceCtrlHandler(" 
-							<< appname << ") failed with windows error " << GetLastError() << endl;
+				if(!RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()), handler)) {
+					cerr << "service\tRegisterServiceCtrlHandler failed with windows error " << GetLastError() << endl;
+					controller.set(SERVICE_STOPPED, 0);
 					return;
 				}
-				cout << __FUNCTION__ << " " << __LINE__ << endl;
-
-				cout << __FUNCTION__ << " " << __LINE__ << endl;
-				Controller &controller = getInstance();
-				cout << __FUNCTION__ << " " << __LINE__ << endl;
 
 				try {
 
 					auto service = SystemService::getInstance();
 
-					controller.set(SERVICE_START_PENDING, 3000);
-					service->init();
+					if(service) {
+						controller.set(SERVICE_START_PENDING, 3000);
+						service->init();
 
-					controller.set(SERVICE_RUNNING, 0);
-					service->run();
+						controller.set(SERVICE_RUNNING, 0);
+						service->run();
 
-					controller.set(SERVICE_STOP_PENDING, 3000);
-					service->deinit();
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						service->deinit();
+					}
 
 				} catch(const std::exception &e) {
 
@@ -214,9 +209,6 @@
 			return instance;
 		}
 
-	}
-
-	SystemService::~SystemService() {
 	}
 
 	void SystemService::init() {

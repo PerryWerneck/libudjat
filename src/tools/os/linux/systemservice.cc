@@ -58,27 +58,20 @@
 
 	}
 
-	SystemService::~SystemService() {
-		if(instance == this) {
-			deinit();
-			instance = nullptr;
-		}
-	}
-
 	void SystemService::init() {
 		setlocale( LC_ALL, "" );
 
 		if(definitions) {
 			reconfigure(definitions);
+			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
+				cout << "service\tUse SIGUSR1 to reload " << definitions << endl;
+			}
 		}
 
 	}
 
 	void SystemService::deinit() {
-		if(instance == this) {
-			signal(SIGUSR1,SIG_DFL);
-			instance = nullptr;
-		}
+		signal(SIGUSR1,SIG_DFL);
 	}
 
 	void SystemService::stop() {

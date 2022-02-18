@@ -39,6 +39,26 @@
 
 	public:
 
+		/*
+		/// @brief Protocol Worker.
+		class UDJAT_API Worker {
+		protected:
+			struct {
+				time_t modification_time = 0;
+			} headers;
+
+		public:
+			constexpr Worker() {};
+
+			virtual ~Worker();
+
+			inline void setModificationTime(const time_t modification_time) noexcept {
+				headers.modification_time = modification_time
+			}
+
+		};
+		*/
+
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;
 
