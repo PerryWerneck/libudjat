@@ -74,7 +74,7 @@
 
 					for(size_t f = 1; f < (sizeof(st)/sizeof(st[0]));f++) {
 						if(st[f].state == state) {
-							clog << "Service\t" << st[f].msg << endl;
+							clog << "service\t" << st[f].msg << endl;
 							break;
 						}
 					}
@@ -84,7 +84,7 @@
 				dwWaitHint = wait;
 
 				if(!SetServiceStatus(handle, (SERVICE_STATUS *) this)) {
-					cerr << "Service\tSystem error in SetServiceStatus()" << endl;
+					cerr << "service\tWindows error " << GetLastError() << " in SetServiceStatus(" << state << ")" << endl;
 				}
 
 			}
@@ -127,24 +127,24 @@
 
 					switch (CtrlCmd) {
 					case SERVICE_CONTROL_SHUTDOWN:
-							controller.set(SERVICE_STOP_PENDING, 3000);
-							cout << "service\tSystem shutdown, stopping" << endl;
-							SystemService::getInstance()->stop();
-							break;
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						cout << "service\tSystem shutdown, stopping" << endl;
+						SystemService::getInstance()->stop();
+						break;
 
 					case SERVICE_CONTROL_STOP:
-							controller.set(SERVICE_STOP_PENDING, 3000);
-							cout << "service\tStopping by request" << endl;
-							SystemService::getInstance()->stop();
-							break;
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						cout << "service\tStopping by request" << endl;
+						SystemService::getInstance()->stop();
+						break;
 
 					case SERVICE_CONTROL_INTERROGATE:
-							controller.set(controller.status.dwCurrentState, 0);
-							break;
+						controller.set(controller.status.dwCurrentState, 0);
+						break;
 
 					default:
-							clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
-							controller.set(controller.status.dwCurrentState, 0);
+						clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
+						controller.set(controller.status.dwCurrentState, 0);
 					}
 
 				} catch(const std::exception &e) {
@@ -168,9 +168,9 @@
 				Controller &controller = getInstance();
 
 				// Inicia como serviço
-				if(!RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()), handler)) {
+				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
+				if(!controller.hStatus) {
 					cerr << "service\tRegisterServiceCtrlHandler failed with windows error " << GetLastError() << endl;
-					controller.set(SERVICE_STOPPED, 0);
 					return;
 				}
 
