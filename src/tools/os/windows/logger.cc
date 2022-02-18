@@ -23,7 +23,7 @@
 #include <udjat/tools/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
-#include <udjat/win32/utils.h>
+#include <udjat/win32/string.h>
 #include <udjat/win32/registry.h>
 #include <mutex>
 #include <sys/types.h>
