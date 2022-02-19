@@ -40,25 +40,28 @@
 
 	enabled = true;
 
-	cout << "MainLoop\tStarting application controller" << endl;
-
 	MSG msg;
 	memset(&msg,0,sizeof(msg));
 
 	int rc = -1;
+	cout << "MainLoop\tRunning Win32 Message loop" << endl;
 	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
 	if(rc == 0) {
-		cout << "MainLoop\tApplication controller has terminated" << endl;
+		cout << "MainLoop\tWin32 Message loop ends" << endl;
 	} else {
-		cerr << "MainLoop\tApplication controller has failed with error " << rc << endl;
+		cerr << "MainLoop\tAWin32 Message loop ends with error " << rc << endl;
 	}
 
 	// Stop services
 	stop();
+
+#ifdef DEBUG
+	cout << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
 
  }
 
