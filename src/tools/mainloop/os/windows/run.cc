@@ -35,40 +35,8 @@
 
  void Udjat::MainLoop::run() {
 
-	//
 	// Start services
-	//
-	{
-		lock_guard<mutex> lock(Service::guard);
-		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-		for(auto service : services) {
-			if(!service->state.active) {
-				try {
-					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-					service->start();
-					service->state.active = true;
-				} catch(const std::exception &e) {
-					service->error() << "Error '" << e.what() << "' starting service" << endl;
-				} catch(...) {
-					service->error() << "Unexpected error starting service" << endl;
-				}
-			}
-		}
-
-		/*
-		for(auto service : services) {
-			if(!service->active) {
-				try {
-					cout << "service\tStarting '" << service->info->description << " " << service->info->version << "'" << endl;
-					service->start();
-					service->active = true;
-				} catch(const std::exception &e) {
-					cerr << service->info->name << "\tError '" << e.what() << "' starting service" << endl;
-				}
-			}
-		}
-		*/
-	}
+	start();
 
 	enabled = true;
 
@@ -85,10 +53,12 @@
 
 	if(rc == 0) {
 		cout << "MainLoop\tApplication controller has terminated" << endl;
-		return;
+	} else {
+		cerr << "MainLoop\tApplication controller has failed with error " << rc << endl;
 	}
 
-	cerr << "MainLoop\tApplication controller has failed with error " << GetLastError() << endl;
+	// Stop services
+	stop();
 
  }
 

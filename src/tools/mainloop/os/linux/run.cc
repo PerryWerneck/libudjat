@@ -42,26 +42,8 @@
 	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
 	memset(fds,0,sizeof(struct pollfd) *szPoll);
 
-	//
 	// Start services
-	//
-	{
-		lock_guard<mutex> lock(Service::guard);
-		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-		for(auto service : services) {
-			if(!service->state.active) {
-				try {
-					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-					service->start();
-					service->state.active = true;
-				} catch(const std::exception &e) {
-					service->error() << "Error '" << e.what() << "' starting service" << endl;
-				} catch(...) {
-					service->error() << "Unexpected error starting service" << endl;
-				}
-			}
-		}
-	}
+	start();
 
  	//
  	// Main event loop
@@ -151,38 +133,8 @@
 
  	free(fds);
 
- 	//
-	// Stop services
-	//
-	{
-		lock_guard<mutex> lock(Service::guard);
-		cout << "mainloop\tStopping " << services.size() << " service(s)" << endl;
-
-		// Stop services in reverse order.
-		for(auto srvc = services.rbegin(); srvc != services.rend(); srvc++) {
-			Service *service = *srvc;
-			if(service->state.active) {
-				try {
-					cout << "services\tStopping '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-					service->stop();
-				} catch(const std::exception &e) {
-					service->error() << "Error '" << e.what() << "' stopping service" << endl;
-				} catch(...) {
-					service->error() << "Unexpected error stopping service" << endl;
-				}
-				service->state.active = false;
-			}
-#ifdef DEBUG
-			else {
-				cout << "services\tService '" << service->name() << "' is not active" << endl;
-			}
-#endif // DEBUG
-		}
-
-	}
-
-	// Wait for pool
-	ThreadPool::getInstance().wait();
+ 	// Stop services
+	stop();
 
  }
 
