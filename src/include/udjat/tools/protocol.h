@@ -39,7 +39,6 @@
 
 	public:
 
-		/*
 		/// @brief Protocol Worker.
 		class UDJAT_API Worker {
 		protected:
@@ -47,17 +46,49 @@
 				time_t modification_time = 0;
 			} headers;
 
-		public:
-			constexpr Worker() {};
+			struct {
+				URL url;
+				HTTP::Method method;
+				std::string payload;
+			} args;
 
+		public:
+			Worker();
 			virtual ~Worker();
 
 			inline void setModificationTime(const time_t modification_time) noexcept {
-				headers.modification_time = modification_time
+				headers.modification_time = modification_time;
 			}
 
+			inline void payload(const char *payload) noexcept {
+				args.payload = payload;
+			}
+
+			inline void url(const char *url) noexcept {
+				args.url.assign(url);
+			}
+
+			inline void url(const URL &url) noexcept {
+				args.url = url;
+			}
+
+			inline void method(const HTTP::Method method) noexcept {
+				args.method = method;
+			}
+
+			/// @brief Call URL, return response as string.
+			virtual std::string get(const std::function<bool(double current, double total)> &progress) = 0;
+
+			/// @brief Call URL, save response as filename.
+			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress) = 0;
+
+			std::string get();
+
+			bool save(const char *filename);
+
 		};
-		*/
+
+		std::shared_ptr<Worker> WorkerFactory() const;
 
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;

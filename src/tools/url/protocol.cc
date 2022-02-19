@@ -117,6 +117,46 @@
 		return false;
 	}
 
+	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
+
+		/// @brief Proxy to call the default protocol methods.
+		class Proxy : public Protocol::Worker {
+		private:
+			const Protocol &protocol;
+
+		public:
+			Proxy(const Protocol &p) : protocol(p) {
+			}
+
+			std::string get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+				return protocol.call(args.url,args.method,args.payload.c_str());
+			}
+
+			/// @brief Call URL, save response to filename.
+			bool save(const char *filename, const std::function<bool(double current, double total)> &progress) override {
+				return protocol.get(args.url,filename,progress);
+			}
+
+		};
+
+		return std::make_shared<Proxy>(*this);
+
+	}
+
+	Protocol::Worker::Worker() {
+	}
+
+	Protocol::Worker::~Worker() {
+	}
+
+	std::string Protocol::Worker::get() {
+		return get([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+	}
+
+	bool Protocol::Worker::save(const char *filename) {
+		return save(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+	}
+
  }
 
  namespace std {
