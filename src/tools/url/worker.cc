@@ -18,25 +18,28 @@
  */
 
  #include "private.h"
- #include <udjat/tools/file.h>
- #include <udjat/moduleinfo.h>
+ #include <cstring>
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo { "File protocol module" };
-
-	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",moduleinfo) {
+	Protocol::Worker::Worker() {
 	}
 
-	Protocol::Controller::File::~File() {
+	Protocol::Worker::~Worker() {
 	}
 
-	String Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {
-		if(method != HTTP::Get) {
-			throw system_error(EINVAL,system_category(),"Invalid request method");
-		}
-		return String(Udjat::File::Text(url.ComponentsFactory().path.c_str()).c_str());
+	bool Protocol::Worker::header(const char *name, const char *value) {
+		return header(name).assign(value);
+	}
+
+	String Protocol::Worker::get() {
+		return get([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+	}
+
+	bool Protocol::Worker::save(const char *filename) {
+		return save(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
 	}
 
  }
+
 

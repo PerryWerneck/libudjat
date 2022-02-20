@@ -47,7 +47,7 @@
 			File();
 			virtual ~File();
 
-			std::string call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
+			String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
 
 		};
 

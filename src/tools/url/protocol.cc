@@ -83,7 +83,7 @@
 		Controller::getInstance().getInfo(response);
 	}
 
-	std::string Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
+	String Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
 
 		const Protocol * protocol = nullptr;
 		const char *hostname = strstr(url,"://");
@@ -104,11 +104,11 @@
 
 	}
 
-	std::string Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
+	String Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
 		throw runtime_error(string {"Invalid protocol '"} + name + "' for " + url.string::c_str());
 	}
 
-	std::string Protocol::call(const URL &url, const char *method, const char *payload) const {
+	String Protocol::call(const URL &url, const char *method, const char *payload) const {
 		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
@@ -128,7 +128,7 @@
 			Proxy(const Protocol &p) : protocol(p) {
 			}
 
-			std::string get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
 				return protocol.call(args.url,args.method,args.payload.c_str());
 			}
 
@@ -141,20 +141,6 @@
 
 		return std::make_shared<Proxy>(*this);
 
-	}
-
-	Protocol::Worker::Worker() {
-	}
-
-	Protocol::Worker::~Worker() {
-	}
-
-	std::string Protocol::Worker::get() {
-		return get([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
-	}
-
-	bool Protocol::Worker::save(const char *filename) {
-		return save(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
 	}
 
  }

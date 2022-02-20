@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/string.h>
  #include <udjat/request.h>
 
  namespace Udjat {
@@ -39,13 +40,31 @@
 
 	public:
 
+		/// @brief Request header.
+		class UDJAT_API Header {
+		public:
+			virtual bool assign(const std::string &value);
+
+			template <typename T>
+			bool assign(const T value) {
+				return assign(std::to_string(value));
+			}
+
+			inline Header & operator = (const std::string &value) {
+				assign(value);
+				return *this;
+			}
+
+			template <typename T>
+			bool operator = (const T value) {
+				return assign(std::to_string(value));
+			}
+
+		};
+
 		/// @brief Protocol Worker.
 		class UDJAT_API Worker {
 		protected:
-			struct {
-				time_t modification_time = 0;
-			} headers;
-
 			struct {
 				URL url;
 				HTTP::Method method;
@@ -55,10 +74,6 @@
 		public:
 			Worker();
 			virtual ~Worker();
-
-			inline void setModificationTime(const time_t modification_time) noexcept {
-				headers.modification_time = modification_time;
-			}
 
 			inline void payload(const char *payload) noexcept {
 				args.payload = payload;
@@ -76,13 +91,33 @@
 				args.method = method;
 			}
 
+			/// @brief Get Header.
+			virtual Header & header(const char *name);
+
+			/// @brief Get header.
+			/// @param key The header name.
+			/// @return The header.
+			Header & operator[](const char *key);
+
+			/// @brief Set request header.
+			/// @param name Header name.
+			/// @param value Header value;
+			/// @return true if the header was appended.
+			bool header(const char *name, const char *value);
+
+			template <typename T>
+			bool header(const char *name, const T value) {
+				return header(name,std::to_string(value).c_str());
+			}
+
 			/// @brief Call URL, return response as string.
-			virtual std::string get(const std::function<bool(double current, double total)> &progress) = 0;
+			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
+
+			/// @brief Call URL, return response as string.
+			String get();
 
 			/// @brief Call URL, save response as filename.
 			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress) = 0;
-
-			std::string get();
 
 			bool save(const char *filename);
 
@@ -110,21 +145,21 @@
 		/// @param method Required method.
 		/// @param payload request payload.
 		/// @return Host response.
-		static std::string call(const char *url, const HTTP::Method method = HTTP::Get, const char *payload = "");
+		static String call(const char *url, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		/// @brief Call protocol method.
 		/// @param url The URL to call.
 		/// @param method Required method.
 		/// @param payload request payload.
 		/// @return Host response.
-		virtual std::string call(const URL &url, const HTTP::Method method, const char *payload = "") const;
+		virtual String call(const URL &url, const HTTP::Method method, const char *payload = "") const;
 
 		/// @brief Call protocol method.
 		/// @param url The URL to call.
 		/// @param method Required method.
 		/// @param payload request payload.
 		/// @return Host response.
-		std::string call(const URL &url, const char *method, const char *payload = "") const;
+		String call(const URL &url, const char *method, const char *payload = "") const;
 
 		/// @brief Download/update file.
 		/// @param url the file URL.
