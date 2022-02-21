@@ -39,10 +39,6 @@
 		throw runtime_error(string{"Cant add headers to "} + args.url);
 	}
 
-	bool Protocol::Worker::header(const char *name, const char *value) {
-		return header(name).assign(value);
-	}
-
 	String Protocol::Worker::get() {
 		return get([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
 	}

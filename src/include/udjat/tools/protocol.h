@@ -43,23 +43,21 @@
 		/// @brief Request header.
 		class UDJAT_API Header {
 		public:
-			constexpr Header() {}
+			virtual Header & assign(const char *value);
+			virtual Header & assign(const TimeStamp &value);
 
-			virtual bool assign(const std::string &value);
-
-			template <typename T>
-			bool assign(const T value) {
-				return assign(std::to_string(value));
-			}
-
-			inline Header & operator = (const std::string &value) {
-				assign(value);
-				return *this;
+			inline Header assign(const std::string &value) {
+				return assign(value.c_str());
 			}
 
 			template <typename T>
-			bool operator = (const T value) {
+			Header assign(const T value) {
 				return assign(std::to_string(value));
+			}
+
+			template <typename T>
+			Header & operator = (const T value) {
+				return assign(value);
 			}
 
 		};
@@ -94,6 +92,8 @@
 			}
 
 			/// @brief Get Header.
+			/// @param name Header name.
+			/// @return Header info.
 			virtual Header & header(const char *name);
 
 			/// @brief Get header.
@@ -104,23 +104,28 @@
 			/// @brief Set request header.
 			/// @param name Header name.
 			/// @param value Header value;
-			/// @return true if the header was appended.
-			bool header(const char *name, const char *value);
+			inline void header(const char *name, const char *value) {
+				header(name).assign(value);
+			}
 
+			/// @brief Set request header.
+			/// @param name Header name.
+			/// @param value Header value;
 			template <typename T>
-			bool header(const char *name, const T value) {
-				return header(name,std::to_string(value).c_str());
+			inline void header(const char *name, const T value) {
+				header(name).assign(value);
 			}
 
 			/// @brief Call URL, return response as string.
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
+			/// @brief Call URL, save response as filename.
+			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress) = 0;
+
 			/// @brief Call URL, return response as string.
 			String get();
 
 			/// @brief Call URL, save response as filename.
-			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress) = 0;
-
 			bool save(const char *filename);
 
 		};

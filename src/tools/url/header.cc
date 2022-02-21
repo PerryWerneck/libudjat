@@ -19,11 +19,16 @@
 
  #include "private.h"
  #include <cstring>
+ #include <udjat/tools/http/timestamp.h>
 
  namespace Udjat {
 
-	bool Protocol::Header::assign(const std::string UDJAT_UNUSED(&value)) {
-		return false;
+	Protocol::Header & Protocol::Header::assign(const char UDJAT_UNUSED(*value)) {
+		return *this;
+	}
+
+	Protocol::Header & Protocol::Header::assign(const TimeStamp &value) {
+		return assign(HTTP::TimeStamp::to_string(value).c_str());
 	}
 
  }
