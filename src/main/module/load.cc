@@ -52,12 +52,22 @@ namespace Udjat {
 #ifdef _WIN32
 		// Scan WIN32 module paths.
 		Application::LibDir libdir;
-		Config::Value<string> sysroot("modules","sysroot",libdir.c_str());
+
+		// FIXME: Detect the right path.
+#if defined(__x86_64__)
+		// 64 bit detected
+		Config::Value<string> sysroot("modules","sysroot","c:\\msys64\\mingw64\\lib\\");
+#elif  defined(__i386__)
+		// 32 bit x86 detected
+		Config::Value<string> sysroot("modules","sysroot","c:\\msys64\\mingw32\\lib\\");
+#else
+		Config::Value<string> sysroot("modules","sysroot",Application::LibDir("lib").c_str());
+#endif		
 
 		cout << "sysroot='" << sysroot << endl;
 
 		string paths[] = {
-			Config::Value<string>("modules","primary-path",(libdir + "modules\\").c_str()),
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
 			Config::Value<string>("modules","secondary-path",(sysroot + "udjat-modules\\" + PACKAGE_VERSION "\\").c_str()),
 			Config::Value<string>("modules","secondary-path",(sysroot + "udjat-modules\\").c_str()),
 		};
