@@ -77,7 +77,7 @@
 				}
 #ifdef DEBUG
 				else {
-					cout << "services\tService '" << service->name() << "' is not active" << endl;
+					cout << "services\tService '" << service->name() << "' (" << service->description() << ") is not active" << endl;
 				}
 #endif // DEBUG
 			}

@@ -62,7 +62,10 @@
 		constexpr ModuleInfo(const char *d) :
 			description(d) { }
 
-		constexpr ModuleInfo(const char *n, const char *d, const char *v = "", const char *u="", const char *b= "") :
+		constexpr ModuleInfo(const char *n, const char *d) :
+			name(n), description(d) { }
+
+		constexpr ModuleInfo(const char *n, const char *d, const char *v, const char *u, const char *b= "") :
 			name(n), description(d), version(v), bugreport(b), url(u) { }
 #else
 		ModuleInfo(const char *d) : description(d) {

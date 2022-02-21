@@ -22,10 +22,21 @@
 
  namespace Udjat {
 
-	Protocol::Worker::Worker() {
+	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) {
+		args.url = url;
+		args.method = method;
+		args.payload = payload;
+
+		if(method == HTTP::Get && !args.payload.empty()) {
+			clog << "protocol\tUnexpected payload on '" << method << "' " << url << endl;
+		}
 	}
 
 	Protocol::Worker::~Worker() {
+	}
+
+	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
+		throw runtime_error(string{"Cant add headers to "} + args.url);
 	}
 
 	bool Protocol::Worker::header(const char *name, const char *value) {

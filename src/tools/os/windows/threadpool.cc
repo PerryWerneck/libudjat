@@ -37,9 +37,10 @@
 
  namespace Udjat {
 
-	static const ModuleInfo ThreadPoolInfo {"Thread Pool for WIN32"};
+	static const ModuleInfo ThreadPoolInfo {"ThreadPool", "Thread Pool for WIN32"};
 
 	ThreadPool::Controller::Controller() : Service(ThreadPoolInfo) {
+		start();
 	}
 
 	void ThreadPool::Controller::stop() {
@@ -126,7 +127,7 @@
 
 		Logger logger(name);
 
-		// wait();
+		wait();
 
 		// Wait for tasks
 		limits.threads = 0;

@@ -207,10 +207,6 @@ namespace Udjat {
 
 			root.reset();
 
-		} else {
-
-			clog << "agent\tStopping controller without root agent" << endl;
-
 		}
 
 	}

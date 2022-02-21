@@ -82,6 +82,7 @@ CFLAGS= \
 	-fPIC \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
+	-DLIBDIR=$(libdir) \
 	@ECONF_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@SYSTEMD_CFLAGS@ \
@@ -377,6 +378,8 @@ $(BINDBG)/@SONAME@: \
 run: \
 	$(BINDBG)/udjat@EXEEXT@
 
+	cp *.xml $(BINDBG)
+	
 ifeq ($(VALGRIND),no)
 
 	@LD_LIBRARY_PATH=$(BINDBG) \

@@ -43,6 +43,8 @@
 		/// @brief Request header.
 		class UDJAT_API Header {
 		public:
+			constexpr Header() {}
+
 			virtual bool assign(const std::string &value);
 
 			template <typename T>
@@ -72,7 +74,7 @@
 			} args;
 
 		public:
-			Worker();
+			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
 			virtual ~Worker();
 
 			inline void payload(const char *payload) noexcept {

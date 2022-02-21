@@ -79,11 +79,7 @@
 	}
 
 	Application::LibDir::LibDir(const char *subdir) : LibDir() {
-#ifdef DEBUG
-		append("userinfo");
-#else
 		append(program_invocation_short_name);
-#endif // DEBUG
 		append("-");
 		append(subdir);
 		append("/");
