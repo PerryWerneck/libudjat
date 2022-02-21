@@ -126,6 +126,11 @@ int main(int argc, char **argv) {
 
 			Protocol::call("dummy+http://localhost");
 
+			MainLoop::getInstance().insert(0,2000,[](){
+				MainLoop::getInstance().quit();
+				return false;
+			});
+
 /*
 #ifdef _WIN32
 			{

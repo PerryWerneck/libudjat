@@ -64,9 +64,19 @@
 			delete[] outBuff;
 			cerr << "Error '" << strerror(errno) << "' converting string to UTF-8" << endl;
 			strcpy(outBuff,inBuf);
-		}
+			for(char * ptr = outBuff; *ptr; ptr++) {
+				if(*ptr < ' ') {
+					*ptr = '?';
+				}
+			}
 
-		outBuff[szOut] = 0;
+#ifdef DEBUG 
+			cout << "---> " << winstr << " <---" << endl << outBuff << endl;
+#endif // DEBUG
+
+		} else {
+			outBuff[szOut] = 0;
+		}
 
 		std::string::assign(outBuff);
 

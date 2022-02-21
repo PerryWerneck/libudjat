@@ -60,10 +60,11 @@ namespace Udjat {
 					#pragma GCC diagnostic ignored "-Wcast-function-type"
 					bool (*deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
 					#pragma GCC diagnostic pop
-					if(!deinit()) {
+
+					if(deinit && !deinit()) {
 						cout << name << "\tModule disabled (still open)" << endl;
-					} else if(FreeLibrary(handle)) {
-						cerr << name << "\tError '" << Win32::Exception::format() << "' closing module" << endl;
+					} else if(FreeLibrary(handle) == 0) {
+						cerr << name << "\tError '" << GetLastError() << "' freeing module" << endl;
 					} else {
 						cout << name << "\tModule unloaded" << endl;
 					}
