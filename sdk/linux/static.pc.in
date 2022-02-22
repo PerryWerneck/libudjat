@@ -5,7 +5,7 @@ includedir=${prefix}/include
 
 product_name=udjat
 product_title=The Eye of Horus
-module_path=${libdir}/udjat-modules
+module_path=${libdir}/@PRODUCT_NAME@-modules/@PACKAGE_VERSION@/
 
 Name: udjat
 Description: The Eye of Horus
