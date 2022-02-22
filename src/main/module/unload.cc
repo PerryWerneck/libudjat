@@ -38,18 +38,25 @@ namespace Udjat {
 		while(modules.size()) {
 
 			Module * module = *modules.begin();
+			string name(module->name);
+			string description(module->info.description);
 
-			cout << module->name << "\tUnloading module" << endl;
+			cout << "modules\tUnloading '" << name << "' (" << description << ")" << endl;
 
 			// Save module name.
-			string name(module->name);
 
 			auto handle = module->handle;
 
 			try {
 
 				// First delete module
+#ifdef DEBUG 
+				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 				delete module;
+#ifdef DEBUG 
+				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 
 				if(handle) {
 
@@ -62,11 +69,11 @@ namespace Udjat {
 					#pragma GCC diagnostic pop
 
 					if(deinit && !deinit()) {
-						cout << name << "\tModule disabled (still open)" << endl;
+						cout << "modules\tModule '" << name << "' disabled (still open)" << endl;
 					} else if(FreeLibrary(handle) == 0) {
-						cerr << name << "\tError '" << GetLastError() << "' freeing module" << endl;
+						cerr << "modules\tError '" << GetLastError() << "' freeing module '" << name << "'" << endl;
 					} else {
-						cout << name << "\tModule unloaded" << endl;
+						cout << "modules\tModule '" << name << "' unloaded" << endl;
 					}
 
 #else
@@ -85,9 +92,9 @@ namespace Udjat {
 				}
 
 			} catch(const exception &e) {
-				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;
+				cerr << "modules\tError '" << e.what() << "' deinitializing " << name << "'" << endl;
 			} catch(...) {
-				cerr << name << "\tUnexpected error deinitializing module" << endl;
+				cerr << "modules\tUnexpected error deinitializing '" << name << "'" << endl;
 			}
 
 		}
