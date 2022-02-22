@@ -103,6 +103,14 @@
 		try {
 
 			switch(uMsg) {
+			case WM_QUIT:
+				cout << "MainLoop\tWM_QUIT" << endl;
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_DESTROY:
+				cout << "MainLoop\tWM_DESTROY" << endl;
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
 			case WM_STOP:
 				cout << "MainLoop\tStopping services" << endl;
 				for(auto service : controller.services) {

@@ -36,7 +36,15 @@
  void Udjat::MainLoop::run() {
 
 	// Start services
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
+
 	start();
+
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
 
 	enabled = true;
 
@@ -57,10 +65,14 @@
 	}
 
 	// Stop services
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
+
 	stop();
 
 #ifdef DEBUG
-	cout << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
 #endif // DEBUG
 
  }

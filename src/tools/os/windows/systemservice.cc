@@ -174,28 +174,30 @@
 					return;
 				}
 
-				try {
+				auto service = SystemService::getInstance();
 
-					auto service = SystemService::getInstance();
+				if(service) {
 
-					if(service) {
+					try {
+
 						controller.set(SERVICE_START_PENDING, 3000);
 						service->init();
 
 						controller.set(SERVICE_RUNNING, 0);
 						service->run();
 
-						controller.set(SERVICE_STOP_PENDING, 3000);
-						service->deinit();
+					} catch(const std::exception &e) {
+
+						Application::error() << "Error '" << e.what() << "' running service" << endl;
+
+					} catch(...) {
+
+						Application::error() << "Unexpected error running service" << endl;
+
 					}
 
-				} catch(const std::exception &e) {
-
-					cerr << "service\t" << e.what() << endl;
-
-				} catch(...) {
-
-					cerr << "service\tUnexpected error starting windows service" << endl;
+					controller.set(SERVICE_STOP_PENDING, 3000);
+					service->deinit();
 				}
 
 				controller.set(SERVICE_STOPPED, 0);
@@ -308,9 +310,24 @@
 		case 'f':	// Run in foreground.
 			Logger::redirect(true);
 			cout << appname << "\tStarting in application mode" << endl;
-			init();
-			run();
+
+			try {
+
+				init();
+				run();
+
+			} catch(const std::exception &e) {
+
+				cerr << appname << "\tError '" << e.what() << "' running application" << endl;
+
+			} catch(...) {
+
+				cerr << appname << "\tUnexpected error running application" << endl;
+				
+			}
+
 			deinit();
+
 			return 0;
 
 		}
