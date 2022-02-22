@@ -212,6 +212,9 @@ install-linux-lib: \
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/@PRODUCT_NAME@-modules
 
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/@PRODUCT_NAME@-modules/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/@SONAME@ \
 		$(DESTDIR)$(libdir)/@SONAME@
