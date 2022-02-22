@@ -23,6 +23,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/string.h>
  #include <udjat/request.h>
+ #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
 
@@ -51,6 +52,10 @@
 			template <typename T>
 			Header assign(const T value) {
 				return assign(std::to_string(value));
+			}
+
+			Header & operator = (const TimeStamp &value) {
+				return assign(value);
 			}
 
 			template <typename T>
