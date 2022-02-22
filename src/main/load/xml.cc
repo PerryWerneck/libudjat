@@ -160,17 +160,19 @@
 		});
 
 		// Update file(s)
-		for(auto definition : definitions) {
-			try {
-#ifdef DBUG
-				Application::info() << "Downloading " << definition.url << endl;
-#endif // DBUG
-				URL(definition.url).get(definition.filename.c_str());
-			} catch(const std::exception &e) {
-				Application::error() << e.what() << endl;
-			} catch(...) {
-				Application::error() << "Unexpected error getting " << definition.url << endl;
+		if(!definitions.empty()) {
+			Application::info() << "Updating configuration files" << endl;
+			for(auto definition : definitions) {
+				try {
+					Application::info() << "Updating from '" << definition.url << "'" << endl;
+					URL(definition.url).get(definition.filename.c_str());
+				} catch(const std::exception &e) {
+					Application::error() << e.what() << endl;
+				} catch(...) {
+					Application::error() << "Unexpected error getting " << definition.url << endl;
+				}
 			}
+			Application::info() << "Updating complete" << endl;
 		}
 
 		return next;

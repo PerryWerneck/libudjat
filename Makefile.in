@@ -195,6 +195,9 @@ $(BINRLS)/$(PACKAGE_NAME).a: \
 install: \
        $(foreach TARGET, $(TARGETS), install-$(TARGET))
 
+install-debug: \
+	install-@OSNAME@-debug
+
 doc: \
 	doxygen/doxyfile
 	@cd doxygen ; @DOXYGEN@ doxyfile
@@ -216,6 +219,13 @@ install-linux-lib: \
 	@$(LN_S) \
 		@SONAME@ \
 		$(DESTDIR)$(libdir)/$(PACKAGE_NAME)@LIBEXT@
+
+install-linux-debug: \
+	$(BINDBG)/@SONAME@
+
+	@$(INSTALL_PROGRAM) \
+		$(BINDBG)/@SONAME@ \
+		$(DESTDIR)$(libdir)/@SONAME@
 
 install-windows-lib: \
 	$(BINRLS)/@SONAME@ \
@@ -239,6 +249,13 @@ install-windows-lib: \
 		--input-def $(BINRLS)/$(PACKAGE_NAME).def \
 		--dllname @SONAME@ \
 		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
+
+install-windows-debug: \
+	$(BINDBG)/@SONAME@
+
+	@$(INSTALL_PROGRAM) \
+		$(BINDBG)/@SONAME@ \
+		$(DESTDIR)$(bindir)/$(PACKAGE_NAME)@LIBEXT@
 
 install-devel: \
 	install-devel-@OSNAME@

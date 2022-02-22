@@ -21,6 +21,7 @@
  #include <csignal>
  #include <cstring>
  #include <iostream>
+ #include <udjat/tools/configuration.h>
 
  namespace Udjat {
 
@@ -34,14 +35,24 @@
 	}
 
 	Win32::MainLoop::MainLoop() : Udjat::MainLoop() {
-		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,TRUE)==FALSE) {
-			cerr << "mainloop\tUnable to install console handler" << endl;
+
+		if(Config::Value<bool>("win32","enable-ctrl-handler",true)) {
+			if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,TRUE)==FALSE) {
+				cerr << "mainloop\tUnable to install console handler" << endl;
+			} else {
+				cout << "mainloop\tConsole handler installed, use CTRL-C to interrupt" << endl;
+			}
 		}
+
 	}
 
 	Win32::MainLoop::~MainLoop() {
-		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,FALSE)==FALSE) {
-			cerr << "mainloop\tUnable to remove console handler" << endl;
+		if(Config::Value<bool>("win32","enable-ctrl-handler",true)) {
+			if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,FALSE)==FALSE) {
+				cerr << "mainloop\tUnable to remove console handler" << endl;
+			} else {
+				cout << "mainloop\tConsole handler removed" << endl;
+			}
 		}
 	}
 

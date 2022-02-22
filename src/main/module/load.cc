@@ -54,22 +54,64 @@ namespace Udjat {
 		Application::LibDir libdir;
 
 		// FIXME: Detect the right path.
-#if defined(__x86_64__)
-		// 64 bit detected
-		Config::Value<string> sysroot("modules","sysroot","c:\\msys64\\mingw64\\lib\\");
-#elif  defined(__i386__)
-		// 32 bit x86 detected
-		Config::Value<string> sysroot("modules","sysroot","c:\\msys64\\mingw32\\lib\\");
-#else
-		Config::Value<string> sysroot("modules","sysroot",Application::LibDir("lib").c_str());
-#endif		
-
-		cout << "sysroot='" << sysroot << endl;
-
 		string paths[] = {
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
-			Config::Value<string>("modules","secondary-path",(sysroot + "udjat-modules\\" + PACKAGE_VERSION "\\").c_str()),
-			Config::Value<string>("modules","secondary-path",(sysroot + "udjat-modules\\").c_str()),
+#if defined(__x86_64__)
+			// 64 bit detected
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw64\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw64\\lib\\udjat-modules\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw64/lib/udjat-modules/" PACKAGE_VERSION "/"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw64/lib/udjat-modules/"
+			),
+#elif  defined(__i386__)
+			// 32 bit detected
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw32\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw32\\lib\\udjat-modules\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw32/lib/udjat-modules/" PACKAGE_VERSION "/"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw32/lib/udjat-modules/"
+			),
+#else
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				(libdir + "udjat-modules\\" + PACKAGE_VERSION "\\").c_str()
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				(libdir + "udjat-modules\\").c_str()
+			),
+#endif
 		};
 #else
 		// Scan Linux module paths.
