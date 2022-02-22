@@ -126,11 +126,12 @@
 			String get();
 
 			/// @brief Call URL, save response as filename.
+			/// @return true if the file was updated.
 			bool save(const char *filename);
 
 		};
 
-		std::shared_ptr<Worker> WorkerFactory() const;
+		virtual std::shared_ptr<Worker> WorkerFactory() const;
 
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;

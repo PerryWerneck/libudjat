@@ -19,6 +19,13 @@
 
  #include "private.h"
  #include <cstring>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <udjat/tools/configuration.h>
+
+ #ifndef _WIN32
+	#include <unistd.h>
+ #endif // _WIN32
 
  static const char * method_names[] = {
 	"GET",
@@ -79,6 +86,10 @@
 		return Controller::getInstance().find(name);
 	}
 
+	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
+		throw system_error(ENOTSUP,system_category(),string{"No worker support on "} + name + " protocol handler");
+	}
+
 	void Protocol::getInfo(Udjat::Response &response) noexcept {
 		Controller::getInstance().getInfo(response);
 	}
@@ -104,43 +115,67 @@
 
 	}
 
-	String Protocol::call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const {
-		throw runtime_error(string {"Invalid protocol '"} + name + "' for " + url.string::c_str());
+	String Protocol::call(const URL &url, const HTTP::Method method, const char *payload) const {
+		std::shared_ptr<Protocol::Worker> worker = WorkerFactory();
+		worker->url(url);
+		worker->method(method);
+		worker->payload(payload);
+		return worker->get();
 	}
 
 	String Protocol::call(const URL &url, const char *method, const char *payload) const {
 		return call(url,HTTP::MethodFactory(method), payload);
 	}
 
-	bool Protocol::get(const URL &url, const char *filename, const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) const {
-		error() << "Unable to get " <<  filename << " from " << url << " - No support from protocol module" << endl;
-		return false;
-	}
+	bool Protocol::get(const URL &url, const char *filename, const std::function<bool(double current, double total)> &progress) const {
 
-	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
+		//
+		// Get file status.
+		//
+		struct stat st;
 
-		/// @brief Proxy to call the default protocol methods.
-		class Proxy : public Protocol::Worker {
-		private:
-			const Protocol &protocol;
+		if(stat(filename,&st) < 0) {
 
-		public:
-			Proxy(const Protocol &p) : protocol(p) {
+			if(errno != ENOENT) {
+				throw system_error(errno,system_category(),Logger::Message("Can't stat '{}'",filename));
 			}
 
-			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
-				return protocol.call(args.url,args.method,args.payload.c_str());
+			memset(&st,0,sizeof(st));
+			st.st_mode = 0644;
+
+		}
+
+		//
+		// Get and setup worker.
+		//
+		std::shared_ptr<Protocol::Worker> worker = WorkerFactory();
+		worker->url(url);
+
+		Config::for_each(
+			"default-download-headers",
+			[worker](const char *key, const char *value) {
+				worker->header(key) = value;
+				return true;
 			}
+		);
 
-			/// @brief Call URL, save response to filename.
-			bool save(const char *filename, const std::function<bool(double current, double total)> &progress) override {
-				return protocol.get(args.url,filename,progress);
+		if(st.st_mtime) {
+			worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
+
+			Header &hdr = worker->header("Cache-Control");
+			if(hdr.empty()) {
+				warning() << "No cache-control in the 'default-download-headers' section, using defaults" << endl;
+				hdr = "Cache-Control=public, max-age=31536000";
 			}
+		}
 
-		};
+		if(!worker->save(filename,progress)) {
+			return false;
+		}
 
-		return std::make_shared<Proxy>(*this);
+		chmod(filename, st.st_mode);
 
+		return true;
 	}
 
  }
