@@ -41,14 +41,12 @@
 	public:
 
 		/// @brief Request header.
-		class UDJAT_API Header {
+		class UDJAT_API Header : public std::string {
 		public:
-			virtual Header & assign(const char *value);
 			virtual Header & assign(const TimeStamp &value);
 
-			inline Header assign(const std::string &value) {
-				return assign(value.c_str());
-			}
+			Header & assign(const char *value);
+			Header & assign(const std::string &value);
 
 			template <typename T>
 			Header assign(const T value) {
@@ -57,7 +55,7 @@
 
 			template <typename T>
 			Header & operator = (const T value) {
-				return assign(value);
+				return assign(std::to_string(value));
 			}
 
 		};
@@ -99,7 +97,9 @@
 			/// @brief Get header.
 			/// @param key The header name.
 			/// @return The header.
-			Header & operator[](const char *key);
+			inline Header & operator[](const char *name) {
+				return header(name);
+			}
 
 			/// @brief Set request header.
 			/// @param name Header name.
