@@ -85,12 +85,11 @@ namespace Udjat {
 					if(!err) {
 						if(!deinit()) {
 							cout << "modules\tModule '" << name << "'disabled (still open)" << endl;
-						} else if(dlclose(handle)) {
-							cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
-						} else {
-							cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
+							continue;
 						}
-					} else if(dlclose(handle)) {
+					}
+
+					if(dlclose(handle)) {
 						cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
 					} else {
 						cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
