@@ -116,11 +116,8 @@ namespace Udjat {
 #else
 		// Scan Linux module paths.
 		string paths[] = {
-			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
-#if defined(LIBDIR)
-			Config::Value<string>("modules","secondary-path",STRINGIZE_VALUE_OF(LIBDIR) "/udjat-modules/" PACKAGE_VERSION "/"),
-			Config::Value<string>("modules","secondary-path",STRINGIZE_VALUE_OF(LIBDIR) "/udjat-modules/"),
-#endif // LIBDIR
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
+			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
 		};
 #endif // _WIN32
 

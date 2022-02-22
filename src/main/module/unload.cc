@@ -37,7 +37,16 @@ namespace Udjat {
 
 		while(modules.size()) {
 
-			Module * module = *modules.begin();
+			Module * module;
+			{
+				lock_guard<recursive_mutex> lock(guard);
+				if(modules.empty()) {
+					break;
+				}
+				module = modules.back();
+				modules.pop_back();
+			}
+
 			string name(module->name);
 			string description(module->info.description);
 
@@ -50,13 +59,7 @@ namespace Udjat {
 			try {
 
 				// First delete module
-#ifdef DEBUG 
-				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
 				delete module;
-#ifdef DEBUG 
-				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
 
 				if(handle) {
 
@@ -81,12 +84,16 @@ namespace Udjat {
 					auto err = dlerror();
 					if(!err) {
 						if(!deinit()) {
-							cout << name << "\tModule disabled (still open)" << endl;
+							cout << "modules\tModule '" << name << "'disabled (still open)" << endl;
 						} else if(dlclose(handle)) {
-							cerr << name << "\tError '" << dlerror() << "' closing module" << endl;
+							cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
 						} else {
-							cout << name << "\tModule unloaded" << endl;
+							cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
 						}
+					} else if(dlclose(handle)) {
+						cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
+					} else {
+						cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
 					}
 #endif // _WIN32
 				}
