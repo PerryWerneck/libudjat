@@ -1,5 +1,6 @@
 
 #define GNU_SOURCE
+#include <config.h>
 #include "private.h"
 #include <sys/types.h>
 #include <dirent.h>
@@ -27,29 +28,20 @@ namespace Udjat {
 
 	void Module::load(const pugi::xml_node &node) {
 
-		// Get libdir.
-		Application::LibDir libdir("modules");
-		if(!libdir && (node.attribute("allow-default-path").as_bool(true))) {
-			libdir.reset("udjat","modules");
+		string path{Object::getAttribute(node,"modules","path","")};
+		bool required = Object::getAttribute(node,"modules","required",true);
+
+		if(!path.empty()) {
+			Module::Controller::getInstance().load(path.c_str(),required);
+			return;
 		}
 
-		if(!libdir) {
-			throw runtime_error(string{"No access to '"} + libdir + "'");
+		const char * name = Object::getAttribute(node,"name","");
+		if(!*name) {
+			throw runtime_error("Required attribute 'name' is missing");
 		}
 
-		// get Module name.
-		const char *name = node.attribute("name").as_string();
-		if(!(name && *name)) {
-			throw runtime_error("'name' attribute is required");
-		}
-
-		// Get module path.
-		string path = Object::getAttribute(node, "modules", "path", libdir.c_str());
-
-		// Translate module name.
-		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
-
-		Module::Controller::getInstance().load((path + configured + MODULE_EXT).c_str(),node.attribute("required").as_bool(false));
+		load(name,required);
 
 	}
 
@@ -57,17 +49,96 @@ namespace Udjat {
 
 		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
 
+#ifdef _WIN32
+		// Scan WIN32 module paths.
+		Application::LibDir libdir;
+
+		// FIXME: Detect the right path.
+		string paths[] = {
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
+#if defined(__x86_64__)
+			// 64 bit detected
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw64\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw64\\lib\\udjat-modules\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw64/lib/udjat-modules/" PACKAGE_VERSION "/"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw64/lib/udjat-modules/"
+			),
+#elif  defined(__i386__)
+			// 32 bit detected
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw32\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw32\\lib\\udjat-modules\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw32/lib/udjat-modules/" PACKAGE_VERSION "/"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw32/lib/udjat-modules/"
+			),
+#else
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				(libdir + "udjat-modules\\" + PACKAGE_VERSION "\\").c_str()
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				(libdir + "udjat-modules\\").c_str()
+			),
+#endif
+		};
+#else
+		// Scan Linux module paths.
+		string paths[] = {
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
+			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
+		};
+#endif // _WIN32
+
+		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
+			string filename = paths[ix] + configured + MODULE_EXT;
+			if(access(filename.c_str(),R_OK) == 0) {
+				auto module = Module::Controller::getInstance().load(filename.c_str(),required);
+				if(module) {
+					return;
+				}
+			}
 #ifdef DEBUG
-		cout << "Alias: '" << name << "' Module: '" << configured.c_str() << "'" << endl;
+			else {
+				cout << "modules\tNot found in " << filename << " (" << ix << ")" << endl;
+			}
 #endif // DEBUG
 
-		string filename = Application::LibDir("modules") + configured + MODULE_EXT;
+		}
 
-#ifdef DEBUG
-		cout << "Module filename: '" << filename << "'" << endl;
-#endif // DEBUG
-
-		Module::Controller::getInstance().load((Application::LibDir("modules") + configured + MODULE_EXT).c_str(),required);
+		cerr << "modules\tCant find module '" << name << "'" << endl;
+		return;
 	}
 
 	void Module::Controller::load() {

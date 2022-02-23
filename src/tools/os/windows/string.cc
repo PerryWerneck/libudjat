@@ -19,9 +19,10 @@
 
  #include <config.h>
  #include <iconv.h>
- #include <udjat/win32/utils.h>
+ #include <udjat/win32/string.h>
  #include <stdexcept>
  #include <cstring>
+ #include <iostream>
 
  using namespace std;
 
@@ -31,7 +32,7 @@
 		local = iconv_open("CP1252","UTF-8");
 	}
 
-	Win32::String::String(const char *winstr) : string() {
+	Win32::String::String(const char *winstr) : String() {
 		assign(winstr);
 	}
 
@@ -55,15 +56,28 @@
 #endif // WINICONV_CONST
 
 		// Limpa buffer de saída.
-		char * outBuff	= new char[szOut];
-		memset(outBuff,0,szOut);
+		char * outBuff	= new char[szOut+1];
+		char * ptr;
+		memset(ptr = outBuff,0,szOut+1);
 
-		if(iconv(local,&inBuf,&szIn,&outBuff,&szOut) == ((size_t) -1)) {
+		if(iconv(local,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1)) {
 			delete[] outBuff;
-			throw runtime_error("Cant convert charset");
+			cerr << "Error '" << strerror(errno) << "' converting string to UTF-8" << endl;
+			strcpy(outBuff,inBuf);
+			for(char * ptr = outBuff; *ptr; ptr++) {
+				if(*ptr < ' ') {
+					*ptr = '?';
+				}
+			}
+
+#ifdef DEBUG 
+			cout << "---> " << winstr << " <---" << endl << outBuff << endl;
+#endif // DEBUG
+
+		} else {
+			outBuff[szOut] = 0;
 		}
 
-		outBuff[szOut] = 0;
 		std::string::assign(outBuff);
 
 		delete[] outBuff;

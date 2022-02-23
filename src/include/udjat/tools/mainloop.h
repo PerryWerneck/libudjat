@@ -106,6 +106,12 @@ namespace Udjat {
 		/// @brief Services
 		std::list<Service *> services;
 
+		/// @brief Start services.
+		void start() noexcept;
+
+		/// @brief Stop services.
+		void stop() noexcept;
+
 		/// @brief Mutex
 		static std::mutex guard;
 

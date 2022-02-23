@@ -37,12 +37,22 @@ namespace Udjat {
 
 		while(modules.size()) {
 
-			Module * module = *modules.begin();
+			Module * module;
+			{
+				lock_guard<recursive_mutex> lock(guard);
+				if(modules.empty()) {
+					break;
+				}
+				module = modules.back();
+				modules.pop_back();
+			}
 
-			cout << module->name << "\tUnloading module" << endl;
+			string name(module->name);
+			string description(module->info.description);
+
+			cout << "modules\tUnloading '" << name << "' (" << description << ")" << endl;
 
 			// Save module name.
-			string name(module->name);
 
 			auto handle = module->handle;
 
@@ -60,12 +70,13 @@ namespace Udjat {
 					#pragma GCC diagnostic ignored "-Wcast-function-type"
 					bool (*deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
 					#pragma GCC diagnostic pop
-					if(!deinit()) {
-						cout << name << "\tModule disabled (still open)" << endl;
-					} else if(FreeLibrary(handle)) {
-						cerr << name << "\tError '" << Win32::Exception::format() << "' closing module" << endl;
+
+					if(deinit && !deinit()) {
+						cout << "modules\tModule '" << name << "' disabled (still open)" << endl;
+					} else if(FreeLibrary(handle) == 0) {
+						cerr << "modules\tError '" << GetLastError() << "' freeing module '" << name << "'" << endl;
 					} else {
-						cout << name << "\tModule unloaded" << endl;
+						cout << "modules\tModule '" << name << "' unloaded" << endl;
 					}
 
 #else
@@ -73,20 +84,23 @@ namespace Udjat {
 					auto err = dlerror();
 					if(!err) {
 						if(!deinit()) {
-							cout << name << "\tModule disabled (still open)" << endl;
-						} else if(dlclose(handle)) {
-							cerr << name << "\tError '" << dlerror() << "' closing module" << endl;
-						} else {
-							cout << name << "\tModule unloaded" << endl;
+							cout << "modules\tModule '" << name << "'disabled (still open)" << endl;
+							continue;
 						}
+					}
+
+					if(dlclose(handle)) {
+						cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
+					} else {
+						cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
 					}
 #endif // _WIN32
 				}
 
 			} catch(const exception &e) {
-				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;
+				cerr << "modules\tError '" << e.what() << "' deinitializing " << name << "'" << endl;
 			} catch(...) {
-				cerr << name << "\tUnexpected error deinitializing module" << endl;
+				cerr << "modules\tUnexpected error deinitializing '" << name << "'" << endl;
 			}
 
 		}

@@ -72,6 +72,19 @@
 			return "";
 		}
 
+		return to_string(value);
+	}
+
+	std::string HTTP::TimeStamp::to_string(const Udjat::TimeStamp &timestamp) noexcept {
+		time_t value = (time_t) timestamp;
+		if(!value) {
+			return "";
+		}
+		return to_string(value);
+	}
+
+	std::string HTTP::TimeStamp::to_string(const time_t value) noexcept {
+
 		struct tm gmt;
 
 #ifdef _WIN32

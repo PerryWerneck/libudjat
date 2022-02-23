@@ -29,9 +29,9 @@
 
  using namespace std;
 
- std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
+ #define BUFFER_LENGTH 100
 
-	#define BUFFER_LENGTH 100
+ std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
 	string response;
 	char *buffer = new char[BUFFER_LENGTH+1];
@@ -54,26 +54,18 @@
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
-		response += " (with an aditional error ";
-		response += std::to_string(winerror);
+
+		if(winerror != ERROR_MR_MID_NOT_FOUND) {
+			response += " (with an aditional error ";
+			response += std::to_string(winerror);
+			response += ")";
+		}
 
 	} else if(*buffer) {
 
-		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
-			if(*ptr < ' ') {
-				*ptr = '?';
-			}			
-		}
-
-		// TODO: Fix ICONV.
-		
-		response = buffer; // Win32::String(buffer).c_str();
+		response = Win32::String(buffer).c_str();
 
 	} else {
-
-		for(unsigned char *ptr = (unsigned char *) buffer; *ptr; ptr++) {
-
-		}
 
 		response = "The windows error was ";
 		response += std::to_string((unsigned int) dwMessageId);
@@ -87,5 +79,52 @@
  }
 
  std::string Udjat::Win32::Exception::format(const char *what_arg, const DWORD dwMessageId) noexcept {
+	 return string(what_arg) + " - " + format(dwMessageId).c_str();
+ }
+
+ std::string Udjat::Win32::WSAException::format(const DWORD dwMessageId) noexcept {
+
+	// https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+
+	string response;
+	char *buffer = new char[BUFFER_LENGTH+1];
+
+	memset(buffer,0,BUFFER_LENGTH+1);
+
+	int retval = FormatMessage(
+		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
+		0,
+		dwMessageId,
+		0,
+		(LPTSTR) buffer,
+		BUFFER_LENGTH,
+		NULL
+	);
+
+	if(retval == 0) {
+
+		response = "The WinSock error was ";
+		response += std::to_string((unsigned int) dwMessageId);
+		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2 )";
+
+	} else if(*buffer) {
+
+		response = Win32::String(buffer).c_str();
+
+	} else {
+
+		response = "The WinSock error was ";
+		response += std::to_string((unsigned int) dwMessageId);
+		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2 )";
+
+	}
+
+	delete[] buffer;
+
+	return response;
+
+ }
+
+ std::string Udjat::Win32::WSAException::format(const char *what_arg, const DWORD dwMessageId) noexcept {
 	 return string(what_arg) + " - " + format(dwMessageId).c_str();
  }

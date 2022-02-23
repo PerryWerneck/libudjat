@@ -42,7 +42,6 @@
 
 		};
 
-		/*
 		/// @brief Win32 WSA error
 		class UDJAT_API WSAException : public std::runtime_error {
 		public:
@@ -56,7 +55,6 @@
 			static std::string format(const DWORD error = WSAGetLastError()) noexcept;
 
 		};
-		*/
 
 	}
  }

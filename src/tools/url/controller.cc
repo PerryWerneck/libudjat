@@ -44,9 +44,15 @@
 	}
 
 	void Protocol::Controller::remove(Protocol *protocol) {
+#ifdef DEBUG 
+		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 		lock_guard<mutex> lock(guard);
 		cout << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.remove(protocol);
+#ifdef DEBUG 
+		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 	}
 
 	const Protocol * Protocol::Controller::find(const char *name) {

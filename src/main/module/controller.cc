@@ -21,12 +21,17 @@ namespace Udjat {
 	}
 
 	Module::Controller::Controller() {
-		cout << "module\tStarting controller" << endl;
+		cout << "modules\tStarting controller" << endl;
 	}
 
 	Module::Controller::~Controller() {
 
-		cout << "module\tStopping controller" << endl;
+		if(modules.size()) {
+			cerr << "modules\tThe module controller was destroyed without deactivation" << endl;
+		} else {
+			cout << "modules\tStopping clean controller" << endl;
+		}
+
 		unload();
 
 	}
@@ -47,11 +52,6 @@ namespace Udjat {
 
 	void Module::Controller::remove(Module *module) {
 		lock_guard<recursive_mutex> lock(guard);
-
-#ifdef DEBUG
-		cout << module->name << "\tRemoving module" << endl;
-#endif // DEBUG
-
 		modules.remove_if([module](Module *entry) {
 			return entry == module;
 		});

@@ -18,24 +18,23 @@
  */
 
  #include "private.h"
- #include <udjat/tools/file.h>
- #include <udjat/moduleinfo.h>
+ #include <cstring>
+ #include <udjat/tools/http/timestamp.h>
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo { "File protocol module" };
-
-	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",moduleinfo) {
+	Protocol::Header & Protocol::Header::assign(const char *value) {
+		std::string::assign(value);
+		return *this;
 	}
 
-	Protocol::Controller::File::~File() {
+	Protocol::Header & Protocol::Header::assign(const std::string &value) {
+		std::string::assign(value);
+		return *this;
 	}
 
-	String Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {
-		if(method != HTTP::Get) {
-			throw system_error(EINVAL,system_category(),"Invalid request method");
-		}
-		return String(Udjat::File::Text(url.ComponentsFactory().path.c_str()).c_str());
+	Protocol::Header & Protocol::Header::assign(const TimeStamp &value) {
+		return assign(HTTP::TimeStamp::to_string(value));
 	}
 
  }

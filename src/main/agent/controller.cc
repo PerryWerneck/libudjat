@@ -127,39 +127,6 @@ namespace Udjat {
 
 	}
 
-	/*
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(std::shared_ptr<Abstract::Agent> agent) {
-		Abstract::Agent::Controller::getInstance().set(agent);
-		return agent;
-	}
-
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::init() {
-		return init(getDefaultRootAgent());
-	}
-	*/
-
-	/*
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::init(const char *path) {
-
-		Abstract::Agent::Controller &controller = Abstract::Agent::Controller::getInstance();
-		auto root = getDefaultRootAgent();
-
-		File::List(path).forEach([root](const char *filename){
-
-			cout << endl << "agent\tLoading '" << filename << "'" << endl;
-			pugi::xml_document doc;
-			doc.load_file(filename);
-			root->load(doc);
-
-		});
-
-		controller.set(root);
-
-		return root;
-
-	}
-	*/
-
 	void Abstract::Agent::deinit() {
 		Abstract::Agent::Controller::getInstance().set(std::shared_ptr<Abstract::Agent>());
 	}
@@ -206,10 +173,6 @@ namespace Udjat {
 			}
 
 			root.reset();
-
-		} else {
-
-			clog << "agent\tStopping controller without root agent" << endl;
 
 		}
 

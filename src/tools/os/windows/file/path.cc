@@ -22,6 +22,7 @@
  namespace Udjat {
 
 	File::Path::Path(int fd) {
+		throw system_error(ENOTSUP,system_category(),"Not available on windows");
 	}
 
 	void File::Path::save(const char *filename, const char *contents) {

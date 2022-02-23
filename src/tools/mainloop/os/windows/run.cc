@@ -35,60 +35,45 @@
 
  void Udjat::MainLoop::run() {
 
-	//
 	// Start services
-	//
-	{
-		lock_guard<mutex> lock(Service::guard);
-		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-		for(auto service : services) {
-			if(!service->state.active) {
-				try {
-					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-					service->start();
-					service->state.active = true;
-				} catch(const std::exception &e) {
-					service->error() << "Error '" << e.what() << "' starting service" << endl;
-				} catch(...) {
-					service->error() << "Unexpected error starting service" << endl;
-				}
-			}
-		}
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
 
-		/*
-		for(auto service : services) {
-			if(!service->active) {
-				try {
-					cout << "service\tStarting '" << service->info->description << " " << service->info->version << "'" << endl;
-					service->start();
-					service->active = true;
-				} catch(const std::exception &e) {
-					cerr << service->info->name << "\tError '" << e.what() << "' starting service" << endl;
-				}
-			}
-		}
-		*/
-	}
+	start();
+
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
 
 	enabled = true;
-
-	cout << "MainLoop\tStarting application controller" << endl;
 
 	MSG msg;
 	memset(&msg,0,sizeof(msg));
 
 	int rc = -1;
+	cout << "MainLoop\tRunning Win32 Message loop" << endl;
 	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
 
 	if(rc == 0) {
-		cout << "MainLoop\tApplication controller has terminated" << endl;
-		return;
+		cout << "MainLoop\tWin32 Message loop ends" << endl;
+	} else {
+		cerr << "MainLoop\tAWin32 Message loop ends with error " << rc << endl;
 	}
 
-	cerr << "MainLoop\tApplication controller has failed with error " << GetLastError() << endl;
+	// Stop services
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
+
+	stop();
+
+#ifdef DEBUG
+	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+#endif // DEBUG
 
  }
 

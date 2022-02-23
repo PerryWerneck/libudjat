@@ -37,6 +37,9 @@
 
 			TimeStamp(const char *time);
 
+			static std::string to_string(const time_t value) noexcept;
+			static std::string to_string(const Udjat::TimeStamp &value) noexcept;
+
 			std::string to_string() const noexcept;
 
 			inline TimeStamp & operator=(const char *time) {
