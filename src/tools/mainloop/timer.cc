@@ -118,12 +118,12 @@
 
 			if(timer->id == id) {
 				timer->reset(interval);
-				wakeup();
 				return true;
 			}
 
 		}
 		return false;
+
 	}
 
 

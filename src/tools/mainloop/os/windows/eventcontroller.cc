@@ -121,7 +121,9 @@
 		if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
 
 			// Abandoned.
-			MainLoop::getInstance().post(WM_EVENT_ACTION,1,(LPARAM) lpHandles[response - WAIT_ABANDONED_0]);
+			if(!MainLoop::getInstance().post(WM_EVENT_ACTION,1,(LPARAM) lpHandles[response - WAIT_ABANDONED_0])) {
+				cerr << "win32\tError " << GetLastError() << " posting WM_EVENT_ACTION" << endl;
+			}
 
 		} else if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
 

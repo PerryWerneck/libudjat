@@ -89,11 +89,13 @@
 	}
 
 	void MainLoop::wakeup() noexcept {
-		PostMessage(hwnd,WM_WAKE_UP,0,0);
+		if(!PostMessage(hwnd,WM_WAKE_UP,0,0)) {
+			cerr << "win32\tWindows error " << GetLastError() << " while posting wake up message" << endl;
+		}
 	}
 
- 	void MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
-		PostMessage(hwnd,uMsg,wParam,lParam);
+ 	BOOL MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
+		return PostMessage(hwnd,uMsg,wParam,lParam);
 	}
 
 	LRESULT WINAPI MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -112,7 +114,7 @@
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_STOP:
-				cout << "MainLoop\tStopping services" << endl;
+				cout << "MainLoop\tWM_STOP - Stopping services" << endl;
 				for(auto service : controller.services) {
 					cout << "services\tStopping '" << service->name() << "'" << endl;
 					try {
@@ -128,25 +130,42 @@
 			case WM_WAKE_UP:
 
 				// Check if the mainloop still enabled.
+#ifdef DEBUG
+				cout <<  __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif //
 				if(!controller.enabled) {
 					cout << "MainLoop\tMain loop was disabled" << endl;
 					SendMessage(controller.hwnd,WM_STOP,0,0);
-					PostMessage(controller.hwnd,WM_QUIT,0,0);
+
+					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
+						cerr << "win32\tError " << GetLastError() << " posting WM_QUIT message" << endl;
+					}
 					return 0;
 				}
 
-				// Enqueue a timer update.
-				PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
+				// Update timers.
+				SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
 
 				break;
 
 			case WM_CHECK_TIMERS:
-				SetTimer(controller.hwnd,IDT_CHECK_TIMERS,min(controller.timers.run(),1000UL),(TIMERPROC) NULL);
+				{
+					UINT interval = controller.timers.run();
+
+#ifdef DEBUG
+					cout <<  __FILE__ << "(" << __LINE__ << ") interval=" << interval << endl;
+#endif //
+					if(interval) {
+						SetTimer(controller.hwnd,IDT_CHECK_TIMERS,interval,(TIMERPROC) NULL);
+					}
+
+				}
+
 				break;
 
 			case WM_TIMER:
 				if(wParam == IDT_CHECK_TIMERS) {
-					PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
+					SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
 				}
 				break;
 

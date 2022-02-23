@@ -39,17 +39,23 @@
 		//
 		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
 			if(timer->id == id) {
+#ifdef DEBUG
+				cout <<  __FILE__ << "(" << __LINE__ << ") timer " << hex << id << dec << " was removed" << endl;
+#endif //
 				timer->interval = 0;	// When set to '0' the timer will be removed when possible.
 			}
 		}
 
 		for(auto handler = handlers.begin(); handler != handlers.end(); handler++) {
 			if(handler->id == id) {
+#ifdef DEBUG
+				cout <<  __FILE__ << "(" << __LINE__ << ") handler " << hex << id << dec << " was removed" << endl;
+#endif //
 				handler->fd = -1;	// When set to '-1' the handle will be removed when possible.
 			}
 		}
 
-		wakeup();
+		// wakeup();
 	}
 
 	void MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {

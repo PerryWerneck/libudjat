@@ -222,7 +222,7 @@ namespace Udjat {
 
 #ifdef _WIN32
 
-		void post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
 		static void insert(HANDLE handle, std::function<void(HANDLE handle,bool abandoned)> exec);
 		static void remove(HANDLE handle);
