@@ -250,6 +250,7 @@
 				<< "  --foreground\t\tRun " << appname << " service as application (foreground)" << endl
 				<< "  --start\t\tStart " << appname << " service" << endl
 				<< "  --stop\t\tStop " << appname << " service" << endl
+				<< "  --restart\t\tRestart " << appname << " service" << endl
 				<< "  --install\t\tInstall " << appname << " service" << endl
 				<< "  --uninstall\t\tUninstall " << appname << " service" << endl;
 	}
@@ -257,10 +258,21 @@
 	static int service_start(const char *appname) {
 
 		Win32::Service::Manager manager;
+		Win32::Service::Handler service{manager.open(appname)};
+		if(!service) {
+			auto lasterror = GetLastError();
+			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
+				clog << "winservice\tService '" << appname << "' does not exist" << endl;
+				return -1;
+			}
+			throw Win32::Exception("Cant stop service",lasterror);
+		}
 
 		try {
 
-			Win32::Service::Handler(manager.open(appname)).start();
+			clog << "winservice\tStarting service '" << appname << "'" << endl;
+			service.start();
+			clog << "winservice\tService '" << appname << "' was started" << endl;
 
 		} catch(const exception &e) {
 			cerr << e.what() << endl;
@@ -274,14 +286,25 @@
 	static int service_stop(const char *appname) {
 
 		Win32::Service::Manager manager;
+		Win32::Service::Handler service{manager.open(appname)};
+		if(!service) {
+			auto lasterror = GetLastError();
+			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
+				clog << "winservice\tService '" << appname << "' does not exist" << endl;
+				return -1;
+			}
+			throw Win32::Exception("Cant stop service",lasterror);
+		}
 
 		try {
 
-			Win32::Service::Handler(manager.open(appname)).stop();
+			service.stop();
 
 		} catch(const exception &e) {
-			cerr << e.what() << endl;
+
+			cerr << "winservice\t" << e.what() << endl;
 			return -1;
+
 		}
 
 		return 0;
@@ -298,6 +321,20 @@
 		case 's':	// Start service.
 			Logger::redirect(true);
 			return service_start(appname);
+
+		case 'r':	// Restart service.
+			Logger::redirect(true);
+			service_stop(appname);
+			service_start(appname);
+			return 0;
+
+		case 'R':	// Reinstall service.
+			Logger::redirect(true);
+			service_stop(appname);
+			uninstall();
+			install();
+			service_start(appname);
+			return 0;
 
 		case 'q':	// Stop service.
 			Logger::redirect(true);
@@ -350,6 +387,8 @@
 			{ 'u', "uninstall" },
 			{ 's', "start" },
 			{ 'q', "stop" },
+			{ 'r', "restart" },
+			{ 'R', "reinstall" },
 			{ 'f', "foreground" }
 		};
 
@@ -421,6 +460,15 @@
 
 		Win32::Service::Manager manager;
 
+		cout << "winservice\tInserting '" << display_name << "' service" << endl;
+#ifdef DEBUG
+		cout << "Service binary is '" << service_binary << "'" << endl;
+#endif // DEBUG
+
+		manager.insert(appname.c_str(),display_name,service_binary);
+		cout << "winservice\tService '" << display_name << "' installed" << endl;
+
+		/*
 		// Stop previous instance
 		try {
 
@@ -450,6 +498,7 @@
 #endif // DEBUG
 		manager.insert(appname.c_str(),display_name,service_binary);
 		cout << appname << "\tService '" << display_name << "' inserted" << endl;
+		*/
 
 		return 0;
 
@@ -461,25 +510,24 @@
 		Application::Name appname;
 
 		Win32::Service::Manager manager;
-
-		try {
-
-			cout << appname << "\tStopping previous instance" << endl;
-			Win32::Service::Handler(manager.open(appname.c_str())).stop();
-			cout << appname << "\tPrevious instance stopped" << endl;
-
-		} catch(const exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
+	
+		if(!Win32::Service::Handler(manager.open(appname.c_str()))) {
+			auto lasterror = GetLastError();
+			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
+				clog << "winservice\tService '" << appname << "' does not exist" << endl;
+				return 0;
+			}
+			throw Win32::Exception("Cant open service",lasterror);
 		}
 
 		try {
 
-			cout << appname << "\tRemoving previous instance" << endl;
+			cout << "winservice\tRemoving service '" << appname << "'" << endl;
 			manager.remove(appname.c_str());
-			cout << appname << "\tPrevious instance removed" << endl;
+			cout << "winservice\tService '" << appname << "' removed" << endl;
 
 		} catch(const exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
+			cerr << "winservice\tCant remove '" << appname << "': " << e.what() << endl;
 			return -1;
 		}
 

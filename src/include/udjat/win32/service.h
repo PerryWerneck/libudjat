@@ -55,11 +55,7 @@
 
 				/// @brief Open Service.
 				SC_HANDLE open(const char *name, DWORD dwDesiredAccess = SERVICE_ALL_ACCESS) {
-					SC_HANDLE hService = OpenService(handle, name, dwDesiredAccess);
-					if(!hService) {
-						throw Win32::Exception("Can't open service");
-					}
-					return hService;
+					return OpenService(handle, name, dwDesiredAccess);
 				}
 
 				/// @brief Create windows service.
@@ -119,10 +115,14 @@
 				SC_HANDLE handle;
 
 			public:
-				Handler() : handle(0) {
+				constexpr Handler() : handle(0) {
 				}
 
-				Handler(SC_HANDLE h) : handle(h) {
+				constexpr Handler(SC_HANDLE h) : handle(h) {
+				}
+
+				inline operator bool() const noexcept {
+					return handle != NULL;
 				}
 
 				Handler & operator = (SC_HANDLE h) noexcept {
