@@ -75,13 +75,13 @@ namespace Udjat {
 				struct tm tm;
 				localtime_r(&t,&tm);
 
-				char buffer[80];
-				memset(buffer,0,sizeof(buffer));
+				char timestr[80];
+				memset(timestr,0,sizeof(timestr));
 
-				size_t len = strftime(buffer, 79, "%x %X", &tm);
+				size_t len = strftime(timestr, 79, "%x %X", &tm);
 
 				if(len) {
-					write(1,buffer);
+					write(1,timestr);
 				} else {
 					write(1,"--/--/-- --:--:--");
 				}
