@@ -46,7 +46,7 @@
 				class Proxy : public Protocol::Worker {
 				public:
 
-					String get(const std::function<bool(double current, double total)> &progress) override {
+					String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
 						return Udjat::Protocol::call(args.url.c_str(),args.method,args.payload.c_str());
 					}
 
