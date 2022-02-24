@@ -291,7 +291,7 @@ dnl ac_configure_args="UDJAT_CFLAGS=-I$ac_pwd/src/include UDJAT_LIBS=-L$ac_pwd/.
 
 dnl AC_CONFIG_SUBDIRS([sample])
 
-AC_CONFIG_FILES(doxygen/doxyfile)
+AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
 
 dnl ---------------------------------------------------------------------------
