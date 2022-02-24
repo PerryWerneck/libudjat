@@ -26,11 +26,17 @@
 
  namespace Udjat {
 
+	/// @brief Base class for applications.
 	class UDJAT_API Application {
 	public:
 
+		/// @brief Write to the 'information' stream.
 		static std::ostream & info();
+
+		/// @brief Write to the 'warning' stream.
 		static std::ostream & warning();
+
+		/// @brief Write to the 'error' stream.
 		static std::ostream & error();
 
 		/// @brief The application name.

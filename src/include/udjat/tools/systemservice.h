@@ -20,12 +20,13 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/application.h>
  #include <memory>
 
  namespace Udjat {
 
 	/// @brief Abstract class for system services.
-	class UDJAT_API SystemService {
+	class UDJAT_API SystemService : public Udjat::Application {
 	private:
 		/// @brief Service instance.
 		static SystemService *instance;
