@@ -26,11 +26,12 @@
 
  namespace Udjat {
 
-	namespace Application {
+	class UDJAT_API Application {
+	public:
 
-		std::ostream & info();
-		std::ostream & warning();
-		std::ostream & error();
+		static std::ostream & info();
+		static std::ostream & warning();
+		static std::ostream & error();
 
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {
@@ -42,6 +43,10 @@
 			static const Name & getInstance();
 
 		};
+
+		inline const Name & name() const {
+			return Name::getInstance();
+		}
 
 #ifdef _WIN32
 		class UDJAT_API Path : public std::string {
@@ -99,8 +104,7 @@
 			SysConfigDir(const char *subdir);
 		};
 
-
-	}
+	};
 
  }
 
