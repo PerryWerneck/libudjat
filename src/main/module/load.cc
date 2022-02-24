@@ -118,6 +118,9 @@ namespace Udjat {
 		string paths[] = {
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
 			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
+#ifdef LIBDIR
+			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
+#endif //LIBDIR
 		};
 #endif // _WIN32
 

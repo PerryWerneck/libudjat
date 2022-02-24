@@ -32,14 +32,27 @@
 
 			URL url{u};
 
-			const Protocol * protocol = Protocol::find(u);
+			// Find a protocol handler for this URL.
+			const Protocol * protocol = Protocol::find(url);
 			if(!protocol) {
-				throw runtime_error(string{"Unable to handle "} + u);
+				throw runtime_error(string{"Cant find a protocol handler for "} + u);
 			}
 
 			worker = protocol->WorkerFactory();
 			if(!worker) {
-				throw runtime_error(string{"Unable to find a worker for "} + u);
+				protocol->warning() << "No worker factory (old version?) using proxy worker" << endl;
+
+				/// @brief Proxy worker for 'old' handlers.
+				class Proxy : public Protocol::Worker {
+				public:
+
+					String get(const std::function<bool(double current, double total)> &progress) override {
+						return Udjat::Protocol::call(args.url.c_str(),args.method,args.payload.c_str());
+					}
+
+				};
+
+				worker = std::shared_ptr<Proxy>();
 			}
 
 			worker->url(url);
@@ -47,7 +60,7 @@
 		}
 
 		String Client::get(const std::function<bool(double current, double total)> &progress) {
-			// worker->payload(payload.str());
+			worker->payload(payload.str());
 			worker->method(Get);
 			return worker->get(progress);
 		}
@@ -57,7 +70,7 @@
 		}
 
 		bool Client::save(const char *filename, const std::function<bool(double current, double total)> &progress) {
-			// worker->payload(payload.str());
+			worker->payload(payload.str());
 			worker->method(Get);
 			return worker->save(filename,progress);
 		}
