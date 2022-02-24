@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <sstream>
 
  namespace Udjat {
 
@@ -37,7 +38,13 @@
 
 		public:
 			Client(const char *url);
-			Client(const std::string &url);
+			Client(const std::string &url) : Client(url.c_str()) {
+			}
+
+			inline Client & credentials(const char *user, const char *passwd) {
+				worker->credentials(user,passwd);
+				return *this;
+			}
 
 			template<typename T>
 			inline Client & operator<<(T value) {
@@ -60,25 +67,17 @@
 			}
 
 			/// @brief Call URL, return response as string.
-			inline String get(const std::function<bool(double current, double total)> &progress) {
-				return worker->get(progress);
-			}
-
-			/// @brief Call URL, save response as filename.
-			inline bool save(const char *filename, const std::function<bool(double current, double total)> &progress) {
-				return worker->save(filename,progress);
-			}
+			String get(const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Call URL, return response as string.
-			inline String get() {
-				return worker->get();
-			}
+			String get();
+
+			/// @brief Call URL, save response as filename.
+			bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
-			inline bool save(const char *filename) {
-				return worker->save(filename);
-			}
+			bool save(const char *filename);
 
 		};
 

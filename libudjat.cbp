@@ -152,6 +152,7 @@
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/private.h" />
+		<Unit filename="src/tools/http/client.cc" />
 		<Unit filename="src/tools/http/exception.cc" />
 		<Unit filename="src/tools/http/mimetype.cc" />
 		<Unit filename="src/tools/http/timestamp.cc" />

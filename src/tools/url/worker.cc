@@ -35,6 +35,10 @@
 	Protocol::Worker::~Worker() {
 	}
 
+	Protocol::Worker & Protocol::Worker::credentials(const char *user, const char *passwd) {
+		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
+	}
+
 	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
 		throw runtime_error(string{"Cant add headers to "} + args.url);
 	}

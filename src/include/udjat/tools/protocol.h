@@ -78,20 +78,31 @@
 			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
 			virtual ~Worker();
 
-			inline void payload(const char *payload) noexcept {
+			virtual Worker & credentials(const char *user, const char *passwd);
+
+			inline Worker & payload(const char *payload) noexcept {
 				args.payload = payload;
+				return *this;
 			}
 
-			inline void url(const char *url) noexcept {
+			inline Worker & payload(const std::string &payload) noexcept {
+				args.payload = payload;
+				return *this;
+			}
+
+			inline Worker & url(const char *url) noexcept {
 				args.url.assign(url);
+				return *this;
 			}
 
-			inline void url(const URL &url) noexcept {
+			inline Worker & url(const URL &url) noexcept {
 				args.url = url;
+				return *this;
 			}
 
-			inline void method(const HTTP::Method method) noexcept {
+			inline Worker & method(const HTTP::Method method) noexcept {
 				args.method = method;
+				return *this;
 			}
 
 			/// @brief Get Header.
