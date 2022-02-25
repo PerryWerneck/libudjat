@@ -24,6 +24,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/request.h>
  #include <udjat/tools/timestamp.h>
+ #include <list>
 
  namespace Udjat {
 
@@ -43,7 +44,25 @@
 
 		/// @brief Request header.
 		class UDJAT_API Header : public std::string {
+		private:
+			std::string field_name;
+
 		public:
+			Header(const char *n) : field_name(n) {
+			}
+
+			inline const char * name() const noexcept {
+				return field_name.c_str();
+			}
+
+			inline const char * value() const noexcept {
+				return this->c_str();
+			}
+
+			inline bool operator == (const char *name) const noexcept {
+				return strcasecmp(name,this->field_name.c_str()) == 0;
+			}
+
 			virtual Header & assign(const TimeStamp &value);
 
 			Header & assign(const char *value);
@@ -78,6 +97,9 @@
 			} args;
 
 		protected:
+
+			/// @brief Request headers.
+			std::list<Header> headers;
 
 			/// @brief Output data (To host)
 			struct Out {
@@ -144,7 +166,7 @@
 			/// @brief Get Header.
 			/// @param name Header name.
 			/// @return Header info.
-			virtual Header & header(const char *name);
+			Header & header(const char *name);
 
 			/// @brief Get header.
 			/// @param key The header name.

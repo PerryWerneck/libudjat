@@ -26,8 +26,16 @@
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
 	}
 
-	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
-		throw runtime_error(string{"Cant add headers to "} + args.url);
+	Protocol::Header & Protocol::Worker::header(const char *name) {
+
+		for(Header &header : headers) {
+			if(header == name) {
+				return header;
+			}
+		}
+
+		headers.emplace_back(name);
+		return headers.back();
 	}
 
 	String Protocol::Worker::get() {
