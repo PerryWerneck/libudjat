@@ -67,43 +67,62 @@
 
 		/// @brief Protocol Worker.
 		class UDJAT_API Worker {
-		protected:
-			struct Args {
+		private:
+			struct Args{
 				URL url;
 				HTTP::Method method;
-				std::string payload;
 
-				Args(const URL &u, const HTTP::Method m, const char *p);
+				Args(const URL &u, HTTP::Method m) : url(u), method(m) {
+				}
 
 			} args;
 
+		protected:
+
+			/// @brief Output data (To host)
+			struct Out {
+				std::string payload;	///< @brief Request payload.
+
+				Out(const char *p) : payload(p) {
+				}
+
+			} out;
+
+			/// @brief Input data (From host)
+			struct In {
+				TimeStamp modification;	///< @brief Last-modified time.
+			} in;
+
 		public:
 
-			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "") : args(URL(url),method,payload) {
+			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url, method), out(payload) {
 			}
 
-			Worker(const URL &url, const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url,method,payload) {
+			Worker(const URL &url, const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url, method), out(payload) {
 			}
 
-			virtual ~Worker();
-
+			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
 
+			/// @brief Set request payload.
 			inline Worker & payload(const char *payload) noexcept {
-				args.payload = payload;
+				out.payload = payload;
 				return *this;
 			}
 
+			/// @brief Set request payload.
 			inline Worker & payload(const std::string &payload) noexcept {
-				args.payload = payload;
+				out.payload = payload;
 				return *this;
 			}
 
+			/// @brief Set request url.
 			inline Worker & url(const char *url) noexcept {
 				args.url = url;
 				return *this;
 			}
 
+			/// @brief Set request url.
 			inline Worker & url(const URL &url) noexcept {
 				args.url = url;
 				return *this;
@@ -116,6 +135,10 @@
 			inline Worker & method(const HTTP::Method method) noexcept {
 				args.method = method;
 				return *this;
+			}
+
+			inline HTTP::Method method() const noexcept {
+				return args.method;
 			}
 
 			/// @brief Get Header.

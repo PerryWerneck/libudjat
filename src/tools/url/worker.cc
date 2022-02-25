@@ -22,15 +22,6 @@
 
  namespace Udjat {
 
-	Protocol::Worker::Args::Args(const URL &u, const HTTP::Method m, const char *p) : url{u}, method{m}, payload{p ? p : ""} {
-		if(method == HTTP::Get && !payload.empty()) {
-			throw runtime_error(string{"Unexpected payload on '"} + to_string(method) + "'");
-		}
-	}
-
-	Protocol::Worker::~Worker() {
-	}
-
 	Protocol::Worker & Protocol::Worker::credentials(const char *user, const char *passwd) {
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
 	}
