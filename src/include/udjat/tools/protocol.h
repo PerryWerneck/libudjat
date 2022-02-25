@@ -150,8 +150,8 @@
 				return *this;
 			}
 
-			inline const char * url() const noexcept {
-				return args.url.c_str();
+			inline const URL & url() const noexcept {
+				return args.url;
 			}
 
 			inline Worker & method(const HTTP::Method method) noexcept {

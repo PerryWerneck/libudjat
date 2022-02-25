@@ -58,7 +58,7 @@
 				}
 
 				String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
-					return Udjat::Protocol::call(url(),method(),out.payload.c_str());
+					return Udjat::Protocol::call(url().c_str(),method(),out.payload.c_str());
 				}
 
 				bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
