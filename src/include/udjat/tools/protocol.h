@@ -68,14 +68,23 @@
 		/// @brief Protocol Worker.
 		class UDJAT_API Worker {
 		protected:
-			struct {
+			struct Args {
 				URL url;
 				HTTP::Method method;
 				std::string payload;
+
+				Args(const URL &u, const HTTP::Method m, const char *p);
+
 			} args;
 
 		public:
-			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
+
+			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "") : args(URL(url),method,payload) {
+			}
+
+			Worker(const URL &url, const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url,method,payload) {
+			}
+
 			virtual ~Worker();
 
 			virtual Worker & credentials(const char *user, const char *passwd);
@@ -91,13 +100,17 @@
 			}
 
 			inline Worker & url(const char *url) noexcept {
-				args.url.assign(url);
+				args.url = url;
 				return *this;
 			}
 
 			inline Worker & url(const URL &url) noexcept {
 				args.url = url;
 				return *this;
+			}
+
+			inline const char * url() const noexcept {
+				return args.url.c_str();
 			}
 
 			inline Worker & method(const HTTP::Method method) noexcept {

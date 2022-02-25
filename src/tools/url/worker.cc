@@ -22,13 +22,9 @@
 
  namespace Udjat {
 
-	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) {
-		args.url = url;
-		args.method = method;
-		args.payload = payload;
-
-		if(method == HTTP::Get && !args.payload.empty()) {
-			clog << "protocol\tUnexpected payload on '" << method << "' " << url << endl;
+	Protocol::Worker::Args::Args(const URL &u, const HTTP::Method m, const char *p) : url{u}, method{m}, payload{p ? p : ""} {
+		if(method == HTTP::Get && !payload.empty()) {
+			throw runtime_error(string{"Unexpected payload on '"} + to_string(method) + "'");
 		}
 	}
 

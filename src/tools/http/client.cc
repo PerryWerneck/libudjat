@@ -39,23 +39,35 @@
 			}
 
 			worker = protocol->WorkerFactory();
-			if(!worker) {
-				protocol->warning() << "No worker factory (old version?) using proxy worker" << endl;
-
-				/// @brief Proxy worker for 'old' handlers.
-				class Proxy : public Protocol::Worker {
-				public:
-
-					String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
-						return Udjat::Protocol::call(args.url.c_str(),args.method,args.payload.c_str());
-					}
-
-				};
-
-				worker = std::shared_ptr<Proxy>();
+			if(worker) {
+				worker->url(url);
+				return;
 			}
 
-			worker->url(url);
+			//
+			// The protocol was unable to create a worker, use a proxy to the 'old' API.
+			//
+			protocol->warning() << "No worker factory (old version?) using proxy worker" << endl;
+
+			class Proxy : public Protocol::Worker {
+			public:
+				Proxy(const URL &url) : Protocol::Worker(url) {
+				}
+
+				virtual ~Proxy() {
+				}
+
+				String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+					return Udjat::Protocol::call(args.url.c_str(),args.method,args.payload.c_str());
+				}
+
+				bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+					throw runtime_error("The selected protocol is unable to save files");
+				}
+
+			};
+
+			worker = make_shared<Proxy>(url);
 
 		}
 
