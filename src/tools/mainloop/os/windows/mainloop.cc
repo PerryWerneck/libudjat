@@ -152,9 +152,9 @@
 				{
 					UINT interval = controller.timers.run();
 
-#ifdef DEBUG
-					cout <<  __FILE__ << "(" << __LINE__ << ") interval=" << interval << endl;
-#endif //
+//#ifdef DEBUG
+//					cout <<  __FILE__ << "(" << __LINE__ << ") interval=" << interval << endl;
+//#endif //
 					if(interval) {
 						SetTimer(controller.hwnd,IDT_CHECK_TIMERS,interval,(TIMERPROC) NULL);
 					}
