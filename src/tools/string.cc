@@ -114,7 +114,9 @@
 
 				from = find("${",from);
 
-			} else {
+			} else if(cleanup) {
+
+				// Last resource, use the environment.
 
 				const char *env = getenv(key.c_str());
 
@@ -126,9 +128,7 @@
 						env
 					);
 
-					from = find("${",from);
-
-				} else if(cleanup) {
+				} else {
 
 					replace(
 						from,
@@ -136,13 +136,14 @@
 						""
 					);
 
-					from = find("${",from);
-
-				} else {
-					// No value, skip.
-					from = find("${",to+1);
 				}
 
+				from = find("${",from);
+
+			} else {
+
+				// No value, skip.
+				from = find("${",to+1);
 
 			}
 

@@ -42,19 +42,26 @@
 
 		};
 
-		/// @brief Win32 WSA error
-		class UDJAT_API WSAException : public std::runtime_error {
-		public:
-			WSAException(const std::string & what_arg, const DWORD error = WSAGetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
-			}
+		/// @brief Windows Sockets
+		namespace WSA {
 
-			WSAException(const char * what_arg, const DWORD error = WSAGetLastError()) : runtime_error(format(what_arg,error)) {
-			}
+			/// @brief Windows sockets exceptions
+			/// https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
+			class UDJAT_API Exception : public std::runtime_error {
+			public:
+				Exception(const std::string & what_arg, const DWORD error = WSAGetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
+				}
 
-			static std::string format(const char *what_arg, const DWORD error = WSAGetLastError()) noexcept;
-			static std::string format(const DWORD error = WSAGetLastError()) noexcept;
+				Exception(const char * what_arg, const DWORD error = WSAGetLastError()) : runtime_error(format(what_arg,error)) {
+				}
 
-		};
+				static std::string format(const char *what_arg, const DWORD error = WSAGetLastError()) noexcept;
+				static std::string format(const DWORD error = WSAGetLastError()) noexcept;
+
+			};
+
+		}
+
 
 	}
  }
