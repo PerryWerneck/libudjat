@@ -38,24 +38,29 @@
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
+	/*
+	// https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid
 	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
 		0,
 		dwMessageId,
-		0,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
 		(LPTSTR) buffer,
 		BUFFER_LENGTH,
 		NULL
 	);
+	*/
+
+	int retval = 0;
 
 	if(retval == 0) {
 
 		auto winerror = GetLastError();
 
-		response = "The windows error was ";
+		response = "Windows error ";
 		response += std::to_string((unsigned int) dwMessageId);
 
-		if(winerror != ERROR_MR_MID_NOT_FOUND) {
+		if(winerror && winerror != ERROR_MR_MID_NOT_FOUND) {
 			response += " (with an aditional error ";
 			response += std::to_string(winerror);
 			response += ")";
@@ -67,7 +72,7 @@
 
 	} else {
 
-		response = "The windows error was ";
+		response = "Windows error ";
 		response += std::to_string((unsigned int) dwMessageId);
 
 	}
@@ -82,7 +87,7 @@
 	 return string(what_arg) + " - " + format(dwMessageId).c_str();
  }
 
- std::string Udjat::Win32::WSAException::format(const DWORD dwMessageId) noexcept {
+ std::string Udjat::Win32::WSA::Exception::format(const DWORD dwMessageId) noexcept {
 
 	// https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
 
@@ -91,19 +96,23 @@
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
+	int retval = 0;
+	/*
+	// https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid
 	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
 		0,
 		dwMessageId,
-		0,
+		MAKELANGID(LANG_NEUTRAL, SUBLANG_NEUTRAL),
 		(LPTSTR) buffer,
 		BUFFER_LENGTH,
 		NULL
 	);
+	*/
 
 	if(retval == 0) {
 
-		response = "The WinSock error was ";
+		response = "WinSock error ";
 		response += std::to_string((unsigned int) dwMessageId);
 		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2 )";
 
@@ -113,9 +122,9 @@
 
 	} else {
 
-		response = "The WinSock error was ";
+		response = "WinSock error ";
 		response += std::to_string((unsigned int) dwMessageId);
-		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2 )";
+		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2)";
 
 	}
 
@@ -125,6 +134,6 @@
 
  }
 
- std::string Udjat::Win32::WSAException::format(const char *what_arg, const DWORD dwMessageId) noexcept {
+ std::string Udjat::Win32::WSA::Exception::format(const char *what_arg, const DWORD dwMessageId) noexcept {
 	 return string(what_arg) + " - " + format(dwMessageId).c_str();
  }
