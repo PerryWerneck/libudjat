@@ -20,6 +20,8 @@
  #include <config.h>
  #include <udjat/tools/application.h>
  #include <iostream>
+ #include <sys/stat.h>
+ #include <sys/types.h>
 
  using namespace std;
 
@@ -36,6 +38,18 @@
 	std::ostream & Application::error() {
 		return cerr << Application::Name::getInstance() << "\t";
 	}
+
+	Application::CacheDir::CacheDir(const char *type, const char *filename) : CacheDir(type) {
+		append(type);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+		append(filename);
+	}
+
 
  }
 

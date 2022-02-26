@@ -28,14 +28,20 @@
 
 	namespace HTTP {
 
-		Client::Client(const char *u) {
+		String get(const char *url) {
+			return Client(url).get();
+		}
 
-			URL url{u};
+		bool save(const char *url, const char *filename) {
+			return Client(url).save(filename);
+		}
+
+		Client::Client(const URL &url) {
 
 			// Find a protocol handler for this URL.
 			const Protocol * protocol = Protocol::find(url);
 			if(!protocol) {
-				throw runtime_error(string{"Cant find a protocol handler for "} + u);
+				throw runtime_error(string{"Cant find a protocol handler for "} + url);
 			}
 
 			worker = protocol->WorkerFactory();
@@ -79,6 +85,16 @@
 
 		String Client::get() {
 			return get([](double UDJAT_UNUSED(current),double UDJAT_UNUSED(total)){return true;});
+		}
+
+		String Client::post(const char *payload, const std::function<bool(double current, double total)> &progress) {
+			worker->payload(payload);
+			worker->method(Post);
+			return worker->get(progress);
+		}
+
+		String Client::post(const char *payload) {
+			return post(payload,[](double UDJAT_UNUSED(current),double UDJAT_UNUSED(total)){return true;});
 		}
 
 		bool Client::save(const char *filename, const std::function<bool(double current, double total)> &progress) {

@@ -34,7 +34,11 @@
 #endif // PACKAGE_NAME
 
 		/// @brief The module description.
+#ifdef PACKAGE_DESCRIPTION
+		const char *description = PACKAGE_DESCRIPTION;
+#else
 		const char *description = "";
+#endif // PACKAGE_DESCRIPTION
 
 		/// @brief The module version.
 #ifdef PACKAGE_VERSION

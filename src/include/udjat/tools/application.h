@@ -79,6 +79,7 @@
 		public:
 			CacheDir();
 			CacheDir(const char *filename);
+			CacheDir(const char *type, const char *filename);
 		};
 
 		/// @brief File from the application datadir.

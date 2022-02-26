@@ -28,6 +28,17 @@
 
 	namespace HTTP {
 
+		/// @brief Convenience 'get' method.
+		/// @param url URL to get.
+		/// @return String with response or exception.
+		String get(const char *url);
+
+		/// @brief Convenience 'save' method.
+		/// @param url URL to get.
+		/// @param filename File to save response.
+		/// @return true if the file was updated.
+		bool save(const char *url, const char *filename);
+
 		/// @brief Simple HTTP client.
 		class UDJAT_API Client {
 		private:
@@ -37,8 +48,12 @@
 			std::ostringstream payload;
 
 		public:
-			Client(const char *url);
-			Client(const std::string &url) : Client(url.c_str()) {
+			Client(const URL &url);
+
+			Client(const char *url) : Client(URL(url)) {
+			}
+
+			Client(const std::string &url) : Client(URL(url)) {
 			}
 
 			inline Client & credentials(const char *user, const char *passwd) {
@@ -71,6 +86,12 @@
 
 			/// @brief Call URL, return response as string.
 			String get();
+
+			/// @brief Call URL, return response as string.
+			String post(const char *payload, const std::function<bool(double current, double total)> &progress);
+
+			/// @brief Call URL, return response as string.
+			String post(const char *payload);
 
 			/// @brief Call URL, save response as filename.
 			bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
