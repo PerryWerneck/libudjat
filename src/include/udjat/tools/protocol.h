@@ -98,9 +98,6 @@
 
 		protected:
 
-			/// @brief Request headers.
-			std::list<Header> headers;
-
 			/// @brief Output data (To host)
 			struct Out {
 				std::string payload;	///< @brief Request payload.
@@ -166,7 +163,7 @@
 			/// @brief Get Header.
 			/// @param name Header name.
 			/// @return Header info.
-			Header & header(const char *name);
+			virtual Header & header(const char *name);
 
 			/// @brief Get header.
 			/// @param key The header name.

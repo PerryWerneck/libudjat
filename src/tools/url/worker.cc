@@ -27,15 +27,7 @@
 	}
 
 	Protocol::Header & Protocol::Worker::header(const char *name) {
-
-		for(Header &header : headers) {
-			if(header == name) {
-				return header;
-			}
-		}
-
-		headers.emplace_back(name);
-		return headers.back();
+		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
 	}
 
 	String Protocol::Worker::get() {
