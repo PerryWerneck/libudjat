@@ -21,6 +21,13 @@
  #include <udjat/defs.h>
  #include <udjat/tools/http/client.h>
  #include <string>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <udjat/tools/logger.h>
+
+#ifndef _WIN32
+	#include <unistd.h>
+#endif // _WIN32
 
  using namespace std;
 
@@ -100,6 +107,27 @@
 		bool Client::save(const char *filename, const std::function<bool(double current, double total)> &progress) {
 			worker->payload(payload.str());
 			worker->method(Get);
+
+			struct stat st;
+
+			if(stat(filename,&st) < 0) {
+
+				if(errno != ENOENT) {
+					throw system_error(errno,system_category(),Logger::Message("Can't stat '{}'",filename));
+				}
+
+				cout << "http\tDownloading '" << filename << "'" << endl;
+
+			} else {
+
+				worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
+
+#ifdef DEBUG
+				cout << "Last modification time: " << worker->header("If-Modified-Since") << endl;
+#endif // DEBUG
+
+			}
+
 			return worker->save(filename,progress);
 		}
 
