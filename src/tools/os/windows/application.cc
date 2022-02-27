@@ -188,4 +188,11 @@
 		append(filename);
 	}
 
+	Application::CacheDir::CacheDir(const char *type, const char *filename) : CacheDir(type) {
+		append(type);
+		mkdir(c_str());
+		append("\\");
+		append(filename);
+	}
+
  }

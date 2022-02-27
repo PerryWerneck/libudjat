@@ -66,6 +66,17 @@
 		append(filename);
 	}
 
+	Application::CacheDir::CacheDir(const char *type, const char *filename) : CacheDir(type) {
+		append(type);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+		append(filename);
+	}
+
 	Application::DataFile::DataFile(const char *name) {
 		if(name[0] == '/' || (name[0] == '.' && name[1] == '/')) {
 			assign(name);
