@@ -102,8 +102,18 @@
 		Controller::getInstance().getInfo(response);
 	}
 
-	String Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
+	String Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
 
+		URL url{u};
+		const Protocol * protocol = find(url);
+
+		if(!protocol) {
+			throw runtime_error(string{"Can't handle '"} + url + "' - no protocol handler");
+		}
+
+		return protocol->call(url,method,payload);
+
+		/*
 		const Protocol * protocol = nullptr;
 		const char *hostname = strstr(url,"://");
 		const char *prefix = strchr(url,'+');
@@ -120,6 +130,7 @@
 		}
 
 		return protocol->call(URL(url),method,payload);
+		*/
 
 	}
 

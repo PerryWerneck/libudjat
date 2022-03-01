@@ -104,7 +104,7 @@
 	}
 
 	void Alert::Activation::set(const Abstract::Object &object) {
-#ifdef DEBUG 
+#ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl
 				<< "URL='" << url << "'" << endl
 				<< "PAYLOAD='" << payload << endl;

@@ -22,20 +22,24 @@
 
  namespace Udjat {
 
-	Protocol::Worker & Protocol::Worker::credentials(const char *user, const char *passwd) {
+	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
 	}
 
-	Protocol::Header & Protocol::Worker::header(const char *name) {
+	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
 		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
 	}
 
+	static const std::function<bool(double current, double total)> dummy_progress([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)) {
+		return true;
+	});
+
 	String Protocol::Worker::get() {
-		return get([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+		return get(dummy_progress);
 	}
 
 	bool Protocol::Worker::save(const char *filename) {
-		return save(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+		return save(filename, dummy_progress);
 	}
 
  }

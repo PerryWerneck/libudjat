@@ -61,6 +61,12 @@
 		const char *url = "";
 #endif // PACKAGE_URL
 
+#ifdef BUILD_DATE
+		const unsigned long build = BUILD_DATE;
+#else
+		const unsigned long build = 0;
+#endif // BUILD_DATE
+
 // https://isocpp.org/std/standing-documents/sd-6-sg10-feature-test-recommendations
 #ifdef __cpp_constexpr
 		constexpr ModuleInfo(const char *d) :
@@ -80,7 +86,7 @@
 #endif
 
 		/// @brief Get singleton with an empty instance of ModuleInfo.
-		static const ModuleInfo & getInstance();
+		// static const ModuleInfo & getInstance();
 
 		Udjat::Value & get(Udjat::Value &value) const;
 
