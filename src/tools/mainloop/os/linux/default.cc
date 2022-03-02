@@ -20,7 +20,6 @@
  #include <udjat/defs.h>
  #include <udjat-internals.h>
  #include <udjat/tools/mainloop.h>
- #include <csignal>
  #include <cstring>
  #include <iostream>
 
@@ -29,32 +28,9 @@
  namespace Udjat {
 
  	MainLoop & MainLoop::getInstance() {
-
-		class ServiceController : public MainLoop {
-		private:
-
-			static void onInterruptSignal(int signal) noexcept {
-				cout << "MainLoop\tInterrupting service loop by '" << strsignal(signal) << "' signal" << endl;
-				MainLoop::getInstance().quit();
-			}
-
-
-		public:
-			ServiceController() : MainLoop() {
-				signal(SIGTERM,onInterruptSignal);
-				signal(SIGINT,onInterruptSignal);
-			}
-
-			~ServiceController() {
-				signal(SIGTERM,SIG_DFL);
-				signal(SIGINT,SIG_DFL);
-			}
-
-		};
-
-		static ServiceController instance;
+		lock_guard<mutex> lock(guard);
+		static MainLoop instance;
 		return instance;
 	}
-
 
  }

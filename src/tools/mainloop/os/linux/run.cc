@@ -32,22 +32,35 @@
  #include <udjat/tools/threadpool.h>
  #include <iostream>
  #include <unistd.h>
+ #include <csignal>
 
  using namespace std;
 
+ static void onInterruptSignal(int signal) noexcept {
+	cout << "MainLoop\tInterrupting by '" << strsignal(signal) << "' signal" << endl;
+	Udjat::MainLoop::getInstance().quit();
+ }
+
  void Udjat::MainLoop::run() {
 
-	/// Poll.
-	nfds_t szPoll = 2;
-	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
-	memset(fds,0,sizeof(struct pollfd) *szPoll);
-
+	//
 	// Start services
+	//
 	start();
+
+	//
+	// Capture signals
+	//
+	signal(SIGTERM,onInterruptSignal);
+	signal(SIGINT,onInterruptSignal);
 
  	//
  	// Main event loop
  	//
+	nfds_t szPoll = 2;
+	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
+	memset(fds,0,sizeof(struct pollfd) *szPoll);
+
  	this->enabled = true;
  	while(this->enabled) {
 
@@ -133,7 +146,15 @@
 
  	free(fds);
 
+ 	//
+ 	// Restore signals
+ 	//
+	signal(SIGTERM,SIG_DFL);
+	signal(SIGINT,SIG_DFL);
+
+	//
  	// Stop services
+ 	//
 	stop();
 
  }
