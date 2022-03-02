@@ -68,9 +68,16 @@
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
 
+		/// @brief Get protocol worker.
+
 		/// @brief Do a 'get' request.
 		/// @return Server response.
 		std::string get() const;
+
+		/// @brief Do a 'get' request.
+		/// @param progress progress callback.
+		/// @return Server response.
+		std::string get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
 		/// @brief Do a 'post' request.
 		/// @param payload Post payload.
@@ -84,9 +91,9 @@
 
 		/// @brief Download/update a file with progress callback.
 		/// @param filename The fullpath for the file.
-		/// @param call progress callback.
+		/// @param progress progress callback.
 		/// @return true if the file was updated.
-		bool get(const char *filename, std::function<bool(uint64_t current, uint64_t total)> call) const;
+		bool get(const char *filename,const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
 	};
 

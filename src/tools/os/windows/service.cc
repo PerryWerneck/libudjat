@@ -32,15 +32,13 @@
 
 		SERVICE_STATUS status;
 
-		Application::Name appname;
-
-		cout << appname << "\tStopping service" << endl;
+		cout << "winservice\tStopping service" << endl;
 		if(!ControlService(handle,SERVICE_CONTROL_STOP,&status)) {
 
 			DWORD error = GetLastError();
 
 			if(error == ERROR_SERVICE_NOT_ACTIVE) {
-				clog << appname << "\tService was not active" << endl;
+				clog << "winservice\tService was not active" << endl;
 				return;
 			}
 
@@ -53,16 +51,16 @@
 		}
 
 		if(status.dwCurrentState == SERVICE_STOPPED) {
-			cout << appname << "\tService is stopped" << endl;
+			cout << "winservice\tService is stopped" << endl;
 		} else {
-			cout << appname << "\tService still running" << endl;
+			cout << "winservice\tService still running" << endl;
 		}
 
 		if(!wait || status.dwCurrentState == SERVICE_STOPPED) {
 			return;
 		}
 
-		cout << appname << "\tWaiting for service stop"  << endl;
+		cout << "winservice\tWaiting for service stop"  << endl;
 
 		// Wait for service stop
 		for(size_t ix = 0; ix < 100; ix++) {
@@ -78,13 +76,13 @@
 			}
 
 			if(status.dwCurrentState == SERVICE_STOPPED) {
-				cout << appname << "\tService stopped"  << endl;
+				cout << "winservice\tService stopped"  << endl;
 				return;
 			}
 
 		}
 
-		cout << appname << "\tService still running"  << endl;
+		cout << "winservice\tService still running"  << endl;
 
 	}
 

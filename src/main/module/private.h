@@ -27,12 +27,12 @@ namespace Udjat {
 		void insert(Module *module);
 		void remove(Module *module);
 
-		void load();
+		void unload();
+
 		Module * load(const char *filename, bool required = true);
 
 		const Module * find(const char *name) const noexcept;
 
-		void unload();
 
 		void getInfo(Response &response) noexcept;
 

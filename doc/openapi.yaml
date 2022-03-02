@@ -1,0 +1,131 @@
+openapi: 3.0.1
+info:
+  title: Udjat System
+  description: 'Udjat API.'
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: perry.werneck@gmail.com
+  license:
+    name: LGPL-3.0-or-later
+    url: https://www.gnu.org/licenses/gpl-3.0.html
+  version: '1.0'
+externalDocs:
+  description: Find out more about Udjat
+  url: https://github.com/PerryWerneck/libudjat
+servers:
+- url: http://localhost:8989/api/1.0
+tags:
+- name: agent
+  description: Udjat Agent
+- name: information
+  description: Get information about service internals.
+paths:
+  /agent/{path}:
+    get:
+      tags:
+      - agent
+      summary: Get agent information
+      operationId: getAgent
+      parameters:
+      - name: path
+        in: path
+        description: Path of the requested agent
+        required: true
+        schema:
+          type: string
+      responses:
+        200:
+          description: Agent found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/agent'
+        404:
+          description: Agent not found
+  /info/modules:
+    get:
+      tags:
+      - information     
+      summary: Get list of active modules
+      operationId: infoModules
+      responses:
+        200:
+          description: List of modules
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/module'
+  /info/protocols:
+    get:
+      tags:
+      - information     
+      summary: Get list of supported protocols
+      operationId: infoProtocols
+      responses:
+        200:
+          description: List of protocols
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/protocol'
+components:
+  schemas:
+    state:
+      type: object
+      properties:
+        name:
+          type: string
+        level:
+          type: string
+        icon:
+          type: string
+        label:
+          type: string
+        summary:
+          type: string
+        url:
+          type: string
+    agent:
+      type: object
+      properties:
+        name:
+          type: string
+        icon:
+          type: string
+        label:
+          type: string
+        summary:
+          type: string
+        url:
+          type: string
+        value:
+          type: string
+        state:
+          $ref: "#/components/schemas/state"
+    module:
+      type: object
+      properties:
+        name:
+          type: string
+        bugreport:
+          type: string
+        description:
+          type: string
+        filename:
+          type: string
+        module:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+    protocol:
+      type: object
+      properties:
+        name:
+          type: string
+        

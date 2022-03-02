@@ -208,12 +208,12 @@ namespace Udjat {
 
 		/// @brief Insert timer in the list of event sources.
 		/// @param id		Timer id.
-		/// @param interval	Timer interval on miliseconds.
+		/// @param interval	Timer interval on milliseconds.
 		void insert(const void *id, unsigned long interval, const std::function<bool()> call);
 
 		/// @brief Reset timer to new interval.
 		/// @param id		Timer id.
-		/// @param interval	Timer interval on miliseconds.
+		/// @param interval	Timer interval on milliseconds.
 		/// @param true if the timer exists.
 		bool reset(const void *id, unsigned long interval);
 
@@ -222,7 +222,7 @@ namespace Udjat {
 
 #ifdef _WIN32
 
-		void post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
 		static void insert(HANDLE handle, std::function<void(HANDLE handle,bool abandoned)> exec);
 		static void remove(HANDLE handle);

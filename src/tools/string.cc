@@ -48,12 +48,6 @@
 		return *this;
 	}
 
-	/*
-	String & expand() {
-		return expand([](std::string &str){return false;});
-	}
-	*/
-
 	static std::string getarguments(const std::string &key, const char *def) {
 
 		const char *from = strchr(key.c_str(),'(');
@@ -62,8 +56,12 @@
 		}
 
 		const char *to = strchr(++from,')');
-		if(!from) {
+		if(!to) {
 			throw runtime_error(string{"Invalid expression '"} + key + "'");
+		}
+
+		if(*(to+1) != '}') {
+			clog << "string\tPossible misconfiguration in '" << key << "' expansion. The character after ')' should be '}'" << endl;
 		}
 
 		return string(from,to-from);
@@ -114,7 +112,9 @@
 
 				from = find("${",from);
 
-			} else {
+			} else if(cleanup) {
+
+				// Last resource, use the environment.
 
 				const char *env = getenv(key.c_str());
 
@@ -126,9 +126,7 @@
 						env
 					);
 
-					from = find("${",from);
-
-				} else if(cleanup) {
+				} else {
 
 					replace(
 						from,
@@ -136,13 +134,14 @@
 						""
 					);
 
-					from = find("${",from);
-
-				} else {
-					// No value, skip.
-					from = find("${",to+1);
 				}
 
+				from = find("${",from);
+
+			} else {
+
+				// No value, skip.
+				from = find("${",to+1);
 
 			}
 

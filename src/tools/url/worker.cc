@@ -22,29 +22,24 @@
 
  namespace Udjat {
 
-	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) {
-		args.url = url;
-		args.method = method;
-		args.payload = payload;
-
-		if(method == HTTP::Get && !args.payload.empty()) {
-			clog << "protocol\tUnexpected payload on '" << method << "' " << url << endl;
-		}
-	}
-
-	Protocol::Worker::~Worker() {
+	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
+		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
 	}
 
 	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
-		throw runtime_error(string{"Cant add headers to "} + args.url);
+		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
 	}
 
+	static const std::function<bool(double current, double total)> dummy_progress([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)) {
+		return true;
+	});
+
 	String Protocol::Worker::get() {
-		return get([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+		return get(dummy_progress);
 	}
 
 	bool Protocol::Worker::save(const char *filename) {
-		return save(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+		return save(filename, dummy_progress);
 	}
 
  }

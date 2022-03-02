@@ -24,6 +24,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/request.h>
  #include <udjat/tools/timestamp.h>
+ #include <list>
 
  namespace Udjat {
 
@@ -43,7 +44,25 @@
 
 		/// @brief Request header.
 		class UDJAT_API Header : public std::string {
+		private:
+			std::string field_name;
+
 		public:
+			Header(const char *n) : field_name(n) {
+			}
+
+			inline const char * name() const noexcept {
+				return field_name.c_str();
+			}
+
+			inline const char * value() const noexcept {
+				return this->c_str();
+			}
+
+			inline bool operator == (const char *name) const noexcept {
+				return strcasecmp(name,this->field_name.c_str()) == 0;
+			}
+
 			virtual Header & assign(const TimeStamp &value);
 
 			Header & assign(const char *value);
@@ -67,31 +86,78 @@
 
 		/// @brief Protocol Worker.
 		class UDJAT_API Worker {
-		protected:
-			struct {
+		private:
+			struct Args{
 				URL url;
 				HTTP::Method method;
-				std::string payload;
+
+				Args(const URL &u, HTTP::Method m) : url(u), method(m) {
+				}
+
 			} args;
 
+		protected:
+
+			/// @brief Output data (To host)
+			struct Out {
+				std::string payload;	///< @brief Request payload.
+
+				Out(const char *p) : payload(p) {
+				}
+
+			} out;
+
+			/// @brief Input data (From host)
+			struct In {
+				TimeStamp modification;	///< @brief Last-modified time.
+			} in;
+
 		public:
-			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
-			virtual ~Worker();
 
-			inline void payload(const char *payload) noexcept {
-				args.payload = payload;
+			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url, method), out(payload) {
 			}
 
-			inline void url(const char *url) noexcept {
-				args.url.assign(url);
+			Worker(const URL &url, const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url, method), out(payload) {
 			}
 
-			inline void url(const URL &url) noexcept {
+			/// @brief Set request credentials.
+			virtual Worker & credentials(const char *user, const char *passwd);
+
+			/// @brief Set request payload.
+			inline Worker & payload(const char *payload) noexcept {
+				out.payload = payload;
+				return *this;
+			}
+
+			/// @brief Set request payload.
+			inline Worker & payload(const std::string &payload) noexcept {
+				out.payload = payload;
+				return *this;
+			}
+
+			/// @brief Set request url.
+			inline Worker & url(const char *url) noexcept {
 				args.url = url;
+				return *this;
 			}
 
-			inline void method(const HTTP::Method method) noexcept {
+			/// @brief Set request url.
+			inline Worker & url(const URL &url) noexcept {
+				args.url = url;
+				return *this;
+			}
+
+			inline const URL & url() const noexcept {
+				return args.url;
+			}
+
+			inline Worker & method(const HTTP::Method method) noexcept {
 				args.method = method;
+				return *this;
+			}
+
+			inline HTTP::Method method() const noexcept {
+				return args.method;
 			}
 
 			/// @brief Get Header.

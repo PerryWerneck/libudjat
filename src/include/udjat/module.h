@@ -38,7 +38,7 @@
 
 		public:
 
-			/// @brief Load modules.
+			/// @brief Load modules from configuration file.
 			static void load();
 
 			/// @brief Get module by name.

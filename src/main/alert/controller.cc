@@ -88,6 +88,10 @@
 			seconds = 1;
 		}
 
+#ifdef DEBUG
+		cout <<  __FILE__ << "(" << __LINE__ << ") seconds=" << seconds << endl;
+#endif //
+
 		// Using threadpool because I cant change a timer from a timer callback.
 		ThreadPool::getInstance().push([this,seconds]{
 #ifdef DEBUG
@@ -96,19 +100,28 @@
 
 			MainLoop &mainloop = MainLoop::getInstance();
 
-			lock_guard<mutex> lock(guard);
-			if(activations.empty()) {
+			if(!mainloop) {
 
-				cout << "alerts\tStopping controller" << endl;
-				mainloop.remove(this);
+				cerr << "alerts\tUnable to schedule next alert, the mainloop is not active" << endl;
 
-			} else if(!mainloop.reset(this,seconds*1000)) {
+			} else {
 
-				cout << "alerts\tStarting controller" << endl;
-				mainloop.insert(this,seconds*1000,[this]() {
-					emit();
-					return true;
-				});
+				lock_guard<mutex> lock(guard);
+
+				if(activations.empty()) {
+
+					cout << "alerts\tStopping controller" << endl;
+					mainloop.remove(this);
+
+				} else if(!mainloop.reset(this,seconds*1000)) {
+
+					cout << "alerts\tStarting controller" << endl;
+					mainloop.insert(this,seconds*1000,[this]() {
+						emit();
+						return true;
+					});
+
+				}
 
 			}
 

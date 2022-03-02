@@ -27,12 +27,6 @@
  #include <list>
  #include <mutex>
 
- #define WM_WAKE_UP				WM_USER+100
- #define WM_CHECK_TIMERS		WM_USER+101
- #define WM_STOP				WM_USER+102
- #define WM_EVENT_ACTION		WM_USER+103
- #define IDT_CHECK_TIMERS		1
-
  using namespace std;
 
  namespace Udjat {

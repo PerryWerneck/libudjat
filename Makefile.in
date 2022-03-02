@@ -39,6 +39,7 @@ MKDIR=@MKDIR_P@
 INSTALL=@INSTALL@
 INSTALL_DATA=@INSTALL_DATA@
 INSTALL_PROGRAM=@INSTALL_PROGRAM@
+INSTALL_STRIP_PROGRAM=@INSTALL_STRIP_PROGRAM@
 XGETTEXT=@XGETTEXT@
 MSGCAT=@MSGCAT@
 WINDRES=@WINDRES@
@@ -58,14 +59,13 @@ datarootdir=@datarootdir@
 localedir=@localedir@
 docdir=@docdir@
 sysconfdir=/etc
+srcdir=@srcdir@
 
-BASEDIR=@BASEDIR@
-
-OBJDIR=.obj/core
+OBJDIR=.obj
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
-BINDIR=$(BASEDIR)/.bin
+BINDIR=.bin
 BINDBG=$(BINDIR)/Debug
 BINRLS=$(BINDIR)/Release
 
@@ -198,9 +198,14 @@ install: \
 install-debug: \
 	install-@OSNAME@-debug
 
-doc: \
-	doxygen/doxyfile
-	@cd doxygen ; @DOXYGEN@ doxyfile
+install-doc:
+
+	@cd doc ; @DOXYGEN@ doxyfile
+	
+	@$(MKDIR) \
+		$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html
+
+	cp -rv ${srcdir}/doc/html/* "$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html"
 
 install-linux-lib: \
 	$(BINRLS)/@SONAME@ \

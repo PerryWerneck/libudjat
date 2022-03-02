@@ -62,7 +62,7 @@
 
 		if(iconv(local,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1)) {
 			delete[] outBuff;
-			cerr << "Error '" << strerror(errno) << "' converting string to UTF-8" << endl;
+			cerr << "win32\tError '" << strerror(errno) << "' converting '" << inBuf << "' to UTF-8" << endl;
 			strcpy(outBuff,inBuf);
 			for(char * ptr = outBuff; *ptr; ptr++) {
 				if(*ptr < ' ') {
@@ -70,7 +70,7 @@
 				}
 			}
 
-#ifdef DEBUG 
+#ifdef DEBUG
 			cout << "---> " << winstr << " <---" << endl << outBuff << endl;
 #endif // DEBUG
 

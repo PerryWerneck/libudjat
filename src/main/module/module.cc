@@ -20,9 +20,9 @@ namespace Udjat {
 	}
 
 	Module::~Module() {
-	#ifdef DEBUG
+#ifdef DEBUG
 		cout << name << "\t" <<  __FILE__ << "(" << __LINE__ << ")" << endl;
-	#endif // 
+#endif // 
 		Controller::getInstance().remove(this);
 	}
 

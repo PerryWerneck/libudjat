@@ -20,6 +20,8 @@
  #include <config.h>
  #include <udjat/tools/application.h>
  #include <iostream>
+ #include <sys/stat.h>
+ #include <sys/types.h>
 
  using namespace std;
 
@@ -36,6 +38,7 @@
 	std::ostream & Application::error() {
 		return cerr << Application::Name::getInstance() << "\t";
 	}
+
 
  }
 

@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/http/client.h>
  #include <cstring>
 
 #ifndef _WIN32
@@ -99,31 +100,23 @@
 	}
 
 	std::string URL::get() const {
-		const Protocol * protocol = Protocol::find(*this);
-		if(!protocol) {
-			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
-		}
-		return protocol->call(*this,HTTP::Get,"");
+		return HTTP::Client(*this).get();
 	}
 
-	bool URL::get(const char *filename, std::function<bool(uint64_t current, uint64_t total)> progress) const {
-		const Protocol * protocol = Protocol::find(*this);
-		if(!protocol) {
-			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
-		}
-		return protocol->get(*this,filename,progress);
+	std::string URL::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
+		return HTTP::Client(*this).get(progress);
+	}
+
+	bool URL::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
+		return HTTP::Client(*this).save(filename,progress);
 	}
 
 	bool URL::get(const char *filename) const {
-		return get(filename,[](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)){return true;});
+		return HTTP::Client(*this).save(filename);
 	}
 
 	std::string URL::post(const char *payload) const {
-		const Protocol * protocol = Protocol::find(*this);
-		if(!protocol) {
-			throw system_error(ENOENT,system_category(),Logger::Message("Can't find protocol for '{}'",*this));
-		}
-		return protocol->call(*this,HTTP::Post,payload);
+		return HTTP::Client(*this).post(payload);
 	}
 
 	int URL::Components::portnumber() const {

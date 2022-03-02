@@ -20,12 +20,13 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/application.h>
  #include <memory>
 
  namespace Udjat {
 
 	/// @brief Abstract class for system services.
-	class UDJAT_API SystemService {
+	class UDJAT_API SystemService : public Udjat::Application {
 	private:
 		/// @brief Service instance.
 		static SystemService *instance;
@@ -34,7 +35,7 @@
 		const char * definitions = nullptr;
 
 		/// @brief Command line parser.
-		int cmdline(const char *appname, int argc, const char **argv);
+		int cmdline(int argc, const char **argv);
 
 	protected:
 
@@ -51,7 +52,7 @@
 		/// @retval 0 Normal exit.
 		/// @retval -2 Continue as a service.
 		/// @retval ENOENT Invalid option.
-		virtual int cmdline(const char *appname, const char *key, const char *value = nullptr);
+		virtual int cmdline(const char *key, const char *value = nullptr);
 
 		/// @brief Check '-p value' command line options.
 		/// @param key Option name.
@@ -60,7 +61,7 @@
 		/// @retval 0 Normal exit.
 		/// @retval -2 Continue as a service.
 		/// @retval ENOENT Invalid option.
-		virtual int cmdline(const char *appname, const char key, const char *value = nullptr);
+		virtual int cmdline(const char key, const char *value = nullptr);
 
 #ifdef _WIN32
 
@@ -77,7 +78,7 @@
 #endif // _WIN32
 
 		/// @brief Send usage help to std::cout
-		virtual void usage(const char *appname) const noexcept;
+		virtual void usage() const noexcept;
 
 		SystemService(const char *definitions = nullptr);
 

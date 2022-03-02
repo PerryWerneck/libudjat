@@ -26,11 +26,18 @@
 
  namespace Udjat {
 
-	namespace Application {
+	/// @brief Base class for applications.
+	class UDJAT_API Application {
+	public:
 
-		std::ostream & info();
-		std::ostream & warning();
-		std::ostream & error();
+		/// @brief Write to the 'information' stream.
+		static std::ostream & info();
+
+		/// @brief Write to the 'warning' stream.
+		static std::ostream & warning();
+
+		/// @brief Write to the 'error' stream.
+		static std::ostream & error();
 
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {
@@ -42,6 +49,10 @@
 			static const Name & getInstance();
 
 		};
+
+		inline const Name & name() const {
+			return Name::getInstance();
+		}
 
 #ifdef _WIN32
 		class UDJAT_API Path : public std::string {
@@ -68,6 +79,7 @@
 		public:
 			CacheDir();
 			CacheDir(const char *filename);
+			CacheDir(const char *type, const char *filename);
 		};
 
 		/// @brief File from the application datadir.
@@ -99,8 +111,7 @@
 			SysConfigDir(const char *subdir);
 		};
 
-
-	}
+	};
 
  }
 

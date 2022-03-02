@@ -64,6 +64,9 @@
 	}
 
 	void Abstract::Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
+#ifdef DEBUG
+		cerr << "alert\t*** Object was set on an abstract alert" << endl;
+#endif 
 	}
 
 	void Abstract::Alert::Activation::emit() {

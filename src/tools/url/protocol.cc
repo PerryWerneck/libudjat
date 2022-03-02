@@ -55,11 +55,11 @@
 	}
 
 	Protocol::~Protocol() {
-#ifdef DEBUG 
+#ifdef DEBUG
 				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 		Controller::getInstance().remove(this);
-#ifdef DEBUG 
+#ifdef DEBUG
 				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 	}
@@ -92,16 +92,28 @@
 		return Controller::getInstance().find(name);
 	}
 
+	/// @brief Create a worker for this protocol.
+	/// @return Worker for this protocol or empty shared pointer if the protocol cant factory workers.
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
-		throw system_error(ENOTSUP,system_category(),string{"No worker support on "} + name + " protocol handler");
+		return std::shared_ptr<Protocol::Worker>();
 	}
 
 	void Protocol::getInfo(Udjat::Response &response) noexcept {
 		Controller::getInstance().getInfo(response);
 	}
 
-	String Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
+	String Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
 
+		URL url{u};
+		const Protocol * protocol = find(url);
+
+		if(!protocol) {
+			throw runtime_error(string{"Can't handle '"} + url + "' - no protocol handler");
+		}
+
+		return protocol->call(url,method,payload);
+
+		/*
 		const Protocol * protocol = nullptr;
 		const char *hostname = strstr(url,"://");
 		const char *prefix = strchr(url,'+');
@@ -118,11 +130,15 @@
 		}
 
 		return protocol->call(URL(url),method,payload);
+		*/
 
 	}
 
 	String Protocol::call(const URL &url, const HTTP::Method method, const char *payload) const {
 		std::shared_ptr<Protocol::Worker> worker = WorkerFactory();
+		if(!worker) {
+			throw runtime_error(string{"Cant handle '"} + name + "' protocol");
+		}
 		worker->url(url);
 		worker->method(method);
 		worker->payload(payload);
@@ -155,10 +171,16 @@
 		// Get and setup worker.
 		//
 		std::shared_ptr<Protocol::Worker> worker = WorkerFactory();
+		if(!worker) {
+			throw runtime_error(string{"Cant handle '"} + name + "' protocol");
+		}
+
 		worker->url(url);
 
+		string settings = string{name} + "-file-headers";
+
 		Config::for_each(
-			"default-download-headers",
+			settings.c_str(),
 			[worker](const char *key, const char *value) {
 				worker->header(key) = value;
 				return true;
@@ -167,10 +189,9 @@
 
 		if(st.st_mtime) {
 			worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
-
 			Header &hdr = worker->header("Cache-Control");
 			if(hdr.empty()) {
-				warning() << "No cache-control in the 'default-download-headers' section, using defaults" << endl;
+				warning() << "No cache-control in the '" << settings << "' section, using defaults" << endl;
 				hdr = "Cache-Control=public, max-age=31536000";
 			}
 		}
