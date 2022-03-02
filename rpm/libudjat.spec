@@ -35,9 +35,9 @@ BuildRequires:	binutils
 BuildRequires:	coreutils
 BuildRequires:	gcc-c++
 
-BuildRequires:  pkgconfig(libeconf)
-BuildRequires:  pkgconfig(pugixml)
-BuildRequires:  pkgconfig(jsoncpp)
+BuildRequires:	pkgconfig(libeconf)
+BuildRequires:	pkgconfig(pugixml)
+BuildRequires:	pkgconfig(vmdetect)
 
 %description
 UDJat core library
@@ -63,6 +63,13 @@ Main library for udjat modules.
 %package -n udjat-devel
 Summary: Development files for %{name}
 Requires: %{name}%{_libvrs} = %{version}
+Requires: pkgconfig(pugixml)
+
+# The http exporter helps debugging of modules.
+Recommends: udjat-module-httpd
+
+# The information module helps too.
+Recommends: udjat-module-information
 
 %description -n udjat-devel
 
@@ -76,7 +83,7 @@ Development files for Udjat main library.
 NOCONFIGURE=1 \
 	./autogen.sh
 
-%configure --disable-static
+%configure
 
 %build
 make all
@@ -88,18 +95,25 @@ make all
 %defattr(-,root,root)
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
+%dir %{_libdir}/udjat-modules
+%dir %{_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
+
 %dir %{_sysconfdir}/udjat.conf.d
-%config %{_sysconfdir}/udjat.conf.d/*.conf
+%config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
 
 %files -n udjat-devel
 %defattr(-,root,root)
 %dir %{_includedir}/udjat
-%dir %{_includedir}/udjat/tools
-%{_includedir}/udjat.h
 %{_includedir}/udjat/*.h
-%{_includedir}/udjat/tools/*.h
 %{_libdir}/%{name}.so
+%{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
+
+%dir %{_includedir}/udjat/tools
+%{_includedir}/udjat/tools/*.h
+
+%dir %{_includedir}/udjat/tools/http
+%{_includedir}/udjat/tools/http/*.h
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 
