@@ -61,7 +61,7 @@
 		}
 
 		if(*(to+1) != '}') {
-			clog << "string\tPossible misconfiguration in string expansion. The character after ')' should be '}'" << endl;
+			clog << "string\tPossible misconfiguration in '" << key << "' expansion. The character after ')' should be '}'" << endl;
 		}
 
 		return string(from,to-from);

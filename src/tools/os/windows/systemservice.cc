@@ -28,6 +28,7 @@
  #include <udjat/win32/service.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
+ #include <udjat/module.h>
  #include <direct.h>
 
  using namespace std;
@@ -217,6 +218,8 @@
 
 		setlocale( LC_ALL, "" );
 
+		Module::load();
+
 		if(definitions) {
 			reconfigure(definitions);
 		}
@@ -235,7 +238,7 @@
 		return 0;
 	}
 
-	void SystemService::usage(const char *appname) const noexcept {
+	void SystemService::usage() const noexcept {
 
 		cout << "Usage: " << endl << endl << "  ";
 
@@ -243,16 +246,16 @@
 		if(GetModuleFileName(NULL, filename, MAX_PATH ) ) {
 			cout << filename;
 		} else {
-			cout << appname;
+			cout << name();
 		}
 
 		cout	<< " [options]" << endl << endl
-				<< "  --foreground\t\tRun " << appname << " service as application (foreground)" << endl
-				<< "  --start\t\tStart " << appname << " service" << endl
-				<< "  --stop\t\tStop " << appname << " service" << endl
-				<< "  --restart\t\tRestart " << appname << " service" << endl
-				<< "  --install\t\tInstall " << appname << " service" << endl
-				<< "  --uninstall\t\tUninstall " << appname << " service" << endl;
+				<< "  --foreground\t\tRun " << name() << " service as application (foreground)" << endl
+				<< "  --start\t\tStart " << name() << " service" << endl
+				<< "  --stop\t\tStop " << name() << " service" << endl
+				<< "  --restart\t\tRestart " << name() << " service" << endl
+				<< "  --install\t\tInstall " << name() << " service" << endl
+				<< "  --uninstall\t\tUninstall " << name() << " service" << endl;
 	}
 
 	static int service_start(const char *appname) {
@@ -311,7 +314,7 @@
 
 	}
 
-	int SystemService::cmdline(const char *appname, char key, const char UDJAT_UNUSED(*value)) {
+	int SystemService::cmdline(char key, const char UDJAT_UNUSED(*value)) {
 
 		switch(key) {
 		case 'i':	// Install service.
@@ -320,33 +323,34 @@
 
 		case 's':	// Start service.
 			Logger::redirect(true);
-			return service_start(appname);
+			return service_start(name().c_str());
 
 		case 'r':	// Restart service.
 			Logger::redirect(true);
-			service_stop(appname);
-			service_start(appname);
+			service_stop(name().c_str());
+			service_start(name().c_str());
 			return 0;
 
 		case 'R':	// Reinstall service.
 			Logger::redirect(true);
-			service_stop(appname);
+			service_stop(name().c_str());
 			uninstall();
 			install();
-			service_start(appname);
+			service_start(name().c_str());
 			return 0;
 
 		case 'q':	// Stop service.
 			Logger::redirect(true);
-			return service_stop(appname);
+			return service_stop(name().c_str());
 
 		case 'u':	// Uninstall service.
 			Logger::redirect(true);
 			return uninstall();
 
 		case 'f':	// Run in foreground.
+			cout << "Starting " << name() << " application" << endl << endl;
+
 			Logger::redirect(true);
-			cout << appname << "\tStarting in application mode" << endl;
 
 			try {
 
@@ -355,12 +359,12 @@
 
 			} catch(const std::exception &e) {
 
-				cerr << appname << "\tError '" << e.what() << "' running application" << endl;
+				cerr << name() << "\tError '" << e.what() << "' running application" << endl;
 
 			} catch(...) {
 
-				cerr << appname << "\tUnexpected error running application" << endl;
-				
+				cerr << name() << "\tUnexpected error running application" << endl;
+
 			}
 
 			deinit();
@@ -372,7 +376,7 @@
 		return ENOENT;
 	}
 
-	int SystemService::cmdline(const char *appname, const char *key, const char *value) {
+	int SystemService::cmdline(const char *key, const char *value) {
 
 		// The default options doesn't have values, then, reject here.
 		if(value) {
@@ -394,7 +398,7 @@
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
-				return cmdline(appname, options[option].option);
+				return cmdline(options[option].option);
 			}
 		}
 
@@ -417,7 +421,7 @@
 		auto appname = Application::Name::getInstance();
 
 		if(argc > 1) {
-			return cmdline(appname.c_str(),argc,(const char **) argv);
+			return cmdline(argc,(const char **) argv);
 		}
 
 		// Redirect output
@@ -510,7 +514,7 @@
 		Application::Name appname;
 
 		Win32::Service::Manager manager;
-	
+
 		if(!Win32::Service::Handler(manager.open(appname.c_str()))) {
 			auto lasterror = GetLastError();
 			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {

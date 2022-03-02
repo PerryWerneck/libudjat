@@ -25,6 +25,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/module.h>
  #include <unistd.h>
  #include <fstream>
  #include <sys/time.h>
@@ -61,6 +62,8 @@
 	void SystemService::init() {
 		setlocale( LC_ALL, "" );
 
+		Module::load();
+
 		if(definitions) {
 			reconfigure(definitions);
 			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
@@ -83,20 +86,20 @@
 		return 0;
 	}
 
-	void SystemService::usage(const char *appname) const noexcept {
-		cout 	<< "Usage: " << endl << "  " << appname << " [options]" << endl << endl
+	void SystemService::usage() const noexcept {
+		cout 	<< "Usage: " << endl << "  " << name() << " [options]" << endl << endl
 				<< "  --core\tenable coredumps" << endl
-				<< "  --daemon\tRun " << appname << " service in the background" << endl
-				<< "  --foreground\tRun " << appname << " service as application (foreground)" << endl;
+				<< "  --daemon\tRun " << name() << " service in the background" << endl
+				<< "  --foreground\tRun " << name() << " service as application (foreground)" << endl;
 	}
 
-	int SystemService::cmdline(const char *appname, char key, const char UDJAT_UNUSED(*value)) {
+	int SystemService::cmdline(char key, const char UDJAT_UNUSED(*value)) {
 
 		switch(key) {
 		case 'f':	// Run in foreground.
 			{
+				cout << "Starting " << name () << " application" << endl << endl;
 				Logger::redirect(true);
-				cout << appname << "\tStarting in application mode" << endl;
 				init();
 				run();
 				deinit();
@@ -134,9 +137,9 @@
 				core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
 
 				if(setrlimit(RLIMIT_CORE, &core_limits)) {
-					cerr << appname << "\tError \"" << strerror(errno) << "\" activating coredumps" << endl;
+					cerr << name() << "\tError \"" << strerror(errno) << "\" activating coredumps" << endl;
 				} else {
-					cout << appname << "\tCoredumps are active" << endl;
+					cout << name() << "\tCoredumps are active" << endl;
 				}
 			}
 			return -2;
@@ -146,7 +149,7 @@
 		return ENOENT;
 	}
 
-	int SystemService::cmdline(const char *appname, const char *key, const char *value) {
+	int SystemService::cmdline(const char *key, const char *value) {
 
 		// The default options doesn't have values, then, reject here.
 		if(value) {
@@ -164,7 +167,7 @@
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
-				return cmdline(appname, options[option].option);
+				return cmdline(options[option].option);
 			}
 		}
 
@@ -173,10 +176,8 @@
 
 	int SystemService::run(int argc, char **argv) {
 
-		auto appname = Application::Name::getInstance();
-
 		if(argc > 1) {
-			int rc = cmdline(appname.c_str(),argc,(const char **) argv);
+			int rc = cmdline(argc,(const char **) argv);
 			if(rc != -2) {
 				return rc;
 			}
@@ -185,7 +186,7 @@
 		// Run as service by default.
 		try {
 
-			cout << "Running " << appname << " service" << endl;
+			cout << "Starting " << name() << " service" << endl;
 			Logger::redirect();
 			init();
 			int rc = run();
@@ -193,9 +194,9 @@
 			return rc;
 
 		} catch(const std::exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
+			cerr << name() << "\t" << e.what() << endl;
 		} catch(...) {
-			cerr << appname << "\tUnexpected error" << endl;
+			cerr << name() << "\tUnexpected error" << endl;
 		}
 
 		return -1;

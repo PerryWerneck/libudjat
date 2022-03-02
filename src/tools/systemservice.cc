@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <udjat/module.h>
  #include <iostream>
  #include <udjat-internals.h>
 
@@ -96,7 +97,7 @@
 		return Udjat::RootAgentFactory();
 	}
 
-	int SystemService::cmdline(const char *appname, int argc, const char **argv) {
+	int SystemService::cmdline(int argc, const char **argv) {
 
 		int exit = 0;
 		while(--argc > 0) {
@@ -107,7 +108,7 @@
 			try {
 
 				if(!(strcmp(arg,"-h") && strcmp(arg,"--help") && strcmp(arg,"/h") && strcmp(arg,"/?") && strcmp(arg,"-?"))) {
-					usage(appname);
+					usage();
 					cout << endl;
 					return 0;
 				}
@@ -119,24 +120,24 @@
 					arg += 2;
 					const char *ptr = strchr(arg,'=');
 					if(ptr) {
-						rc = cmdline(appname,string(arg,ptr-arg).c_str(),ptr+1);
+						rc = cmdline(string(arg,ptr-arg).c_str(),ptr+1);
 					} else {
-						rc = cmdline(appname,arg);
+						rc = cmdline(arg);
 					}
 				} else if(arg[0] == '-' && arg[1] && arg[2] == 0) {
 
 					// -P value
 					if(argc > 1 && argv[1] && argv[1][0] != '-') {
-						rc = cmdline(appname, arg[1], *(++argv));
+						rc = cmdline(arg[1], *(++argv));
 						argc--;
 					} else {
-						rc = cmdline(appname,arg[1]);
+						rc = cmdline(arg[1]);
 					}
 
 				} else if(arg[0] == '/' && arg[1] && arg[2] == 0) {
 
 					// /P value
-					rc = cmdline(appname,arg[1]);
+					rc = cmdline(arg[1]);
 
 				}
 
@@ -149,12 +150,12 @@
 
 			} catch(const std::exception &e) {
 
-				cerr << appname << "\t" << e.what() << endl;
+				cerr << name() << "\t" << e.what() << endl;
 				return -1;
 
 			} catch(...) {
 
-				cerr << appname << "\tUnexpected error" << endl;
+				cerr << name() << "\tUnexpected error" << endl;
 				return -1;
 
 			}

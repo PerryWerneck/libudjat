@@ -38,7 +38,15 @@
 
 	MainLoop::~MainLoop() {
 
-		cout << "MainLoop\tStopping service loop" << endl;
+		if(!handlers.empty()) {
+
+			cerr << "MainLoop\tStopping mainloop with " << handlers.size() << " pending handler(s)" << endl;
+			lock_guard<mutex> lock(guard);
+			handlers.clear();
+
+		} else {
+			cout << "MainLoop\tStopping clean service loop" << endl;
+		}
 
 		enabled = false;
 		wakeup();
@@ -47,6 +55,10 @@
 			lock_guard<mutex> lock(guard);
 			::close(efd);
 		}
+
+#ifdef DEBUG
+		cout << "MainLoop\tMainloop has stopped" << endl;
+#endif // DEBUG
 
 	}
 

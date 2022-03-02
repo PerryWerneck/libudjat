@@ -23,7 +23,21 @@
 namespace Udjat {
 
 	void Module::load() {
-		Module::Controller::getInstance().load();
+
+		Config::Value<vector<string>> modules("modules","load","");
+
+		if(modules.empty()) {
+			cout << "modules\tNo preload modules" << endl;
+			return;
+		}
+
+		cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
+
+		Config::Value<bool> required("modules","required",false);
+		for(string &module : modules) {
+			load(module.c_str(),required);
+		}
+
 	}
 
 	void Module::load(const pugi::xml_node &node) {
@@ -142,42 +156,6 @@ namespace Udjat {
 
 		cerr << "modules\tCant find module '" << name << "'" << endl;
 		return;
-	}
-
-	void Module::Controller::load() {
-
-		Application::LibDir libdir("modules");
-
-#ifdef _WIN32
-		mkdir(libdir.c_str());
-#endif // _WIN32
-
-		libdir += "*" MODULE_EXT;
-
-		try {
-
-			File::List(libdir.c_str()).forEach([this](const char *filename){
-
-				try {
-
-					cout << "module\tLoading '" << filename << "'" << endl;
-
-					load(filename,true);
-
-				} catch(const exception &e) {
-
-					cerr << "module\t" << e.what() << endl;
-
-				}
-
-			});
-
-		} catch(const std::exception &e) {
-
-			cerr << "module\tCan't load " << libdir << ": " << e.what() << endl;
-		}
-
-
 	}
 
 	Module * Module::Controller::load(const char *filename, bool required) {
