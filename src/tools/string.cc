@@ -60,8 +60,8 @@
 			throw runtime_error(string{"Invalid expression '"} + key + "'");
 		}
 
-		if(*(to+1) != '}') {
-			clog << "string\tPossible misconfiguration in '" << key << "' expansion. The character after ')' should be '}'" << endl;
+		if(to[1]) {
+			clog << "string\tPossible misconfiguration in '" << key << "' expansion, found '" << (to+1) << "' after ')'" << endl;
 		}
 
 		return string(from,to-from);
