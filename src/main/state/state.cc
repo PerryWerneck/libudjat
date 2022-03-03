@@ -69,6 +69,11 @@ namespace Udjat {
 
 		for(pugi::xml_node child : node) {
 
+			if(strcasecmp(node.name(),"attribute")) {
+				push_back(node);
+			}
+
+			/*
 			if(!strcasecmp(child.name(),"alert")) {
 
 				if(!AlertFactory(child)) {
@@ -95,11 +100,15 @@ namespace Udjat {
 				});
 
 			}
+			*/
 
 		}
 
 		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
-			AlertFactory(node,node.attribute("alert-type").as_string("default"));
+			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string("default"));
+			if(alert) {
+				alerts.push_back(alert);
+			}
 		}
 
 	}

@@ -313,13 +313,13 @@
 
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @return Seconds for the next reload.
+		/// @return Seconds for file refresh.
 		UDJAT_API time_t reconfigure(const char *pathname);
 
 		/// @brief Load XML application definitions.
 		/// @param agent New root agent.
 		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @param time_t Seconds for file refresh.
+		/// @return Seconds for file refresh.
 		UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname);
 
 		template <typename T>

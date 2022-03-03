@@ -60,11 +60,6 @@
 				/// @brief Parse XML node
 				void set(const pugi::xml_node &node);
 
-				/// @brief Create and insert alert.
-				/// @param node Alert definitions.
-				/// @param type Alert type.
-				std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node, const char *type = nullptr);
-
 				/// @brief State alerts.
 				std::vector<std::shared_ptr<Abstract::Alert>> alerts;
 
@@ -130,13 +125,24 @@
 
 				/// @brief Get the state properties.
 				/// @brief Value to receive the properties.
-				/// @return The save value from arguments.
+				/// @return Pointer to value.
 				Value & getProperties(Value &value) const noexcept override;
 
 				/// @brief Insert alert.
-				inline void append(std::shared_ptr<Abstract::Alert> alert) {
+				inline void push_back(std::shared_ptr<Abstract::Alert> alert) {
 					alerts.push_back(alert);
 				}
+
+				/// @brief Create and insert child.
+				/// @param type The agent type.
+				/// @param node XML agent definitions.
+				/// @return true if the child was created.
+				bool push_back(const char *type, const pugi::xml_node &node);
+
+				/// @brief Create and insert child from XML definition.
+				/// @param node XML agent definitions.
+				/// @return true if the child was created.
+				bool push_back(const pugi::xml_node &node);
 
 			};
 

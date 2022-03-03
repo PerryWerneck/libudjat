@@ -215,7 +215,7 @@
 
 	}
 
-	UDJAT_API time_t load(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
+	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
 
 		Udjat::load_modules(pathname);
 		time_t next = Udjat::refresh_definitions(pathname);
@@ -224,7 +224,7 @@
 		return next;
 	}
 
-	UDJAT_API time_t load(const char *pathname) {
+	UDJAT_API time_t reconfigure(const char *pathname) {
 		Udjat::load_modules(pathname);
 		time_t next = Udjat::refresh_definitions(pathname);
 		auto agent = RootAgentFactory();
