@@ -18,34 +18,92 @@
  */
 
  #include "private.h"
+ #include <udjat/factory.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
  namespace Udjat {
 
+	bool Abstract::Agent::push_back(const pugi::xml_node &node) {
+		return push_back(node.name(),node);
+	}
+
+	bool Abstract::Agent::push_back(const char *type, const pugi::xml_node &node) {
+
+		return Factory::for_each(type,[this,&node](const Factory &factory){
+
+			try {
+
+				lock_guard<std::recursive_mutex> lock(guard);
+
+				auto agent = factory.AgentFactory(*this,node);
+				if(agent) {
+					agent->parent = this;
+#ifdef DEBUG
+					info() << "*** Inserting child '" << agent->name() << "'" << endl;
+#endif // DEBUG
+					children.agents.push_back(agent);
+					return true;
+				}
+
+				auto object = factory.ObjectFactory(*this,node);
+				if(object) {
+					children.objects.push_back(object);
+					return true;
+				}
+
+				auto alert = factory.AlertFactory(*this,node);
+				if(alert) {
+					push_back(alert);
+					return true;
+				}
+
+				return false;
+
+
+			} catch(const std::exception &e) {
+
+				factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
+
+			} catch(...) {
+
+				factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
+
+			}
+
+			return false;
+
+		});
+
+	}
+
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
+		push_back(child);
+	}
+
+	void Abstract::Agent::push_back(std::shared_ptr<Agent> child) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
 		if(child->parent) {
-			throw runtime_error("Agent already has a parent");
+			throw runtime_error(string{"Agent '"} + child->name() + "' is child of '" + child->parent->name() + "'");
 		}
 
 		child->parent = this;
-		children.push_back(child);
+		children.agents.push_back(child);
 
 	}
 
 	/// @brief Insert object.
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
 		lock_guard<std::recursive_mutex> lock(guard);
-		objects.push_back(object);
+		children.objects.push_back(object);
 	}
 
 	/// @brief Remove object.
 	void Abstract::Agent::remove(std::shared_ptr<Abstract::Object> object) {
 		lock_guard<std::recursive_mutex> lock(guard);
-		objects.remove(object);
+		children.objects.remove(object);
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path, bool required, bool autoins) {
@@ -69,7 +127,7 @@
 		}
 
 		{
-			for(auto child : children) {
+			for(auto child : children.agents) {
 
 				if(strncasecmp(child->name(),path,length))
 					continue;
@@ -86,7 +144,7 @@
 		if(autoins) {
 			string name{path,length};
 			auto child = make_shared<Abstract::Agent>(Quark(string(path,length)).c_str());
-			insert(child);
+			push_back(child);
 
 			if(ptr && ptr[1]) {
 				return child->find(ptr+1,required,autoins);
@@ -107,8 +165,8 @@
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
-		for(auto child : children) {
-			child->foreach(method);
+		for(auto child : children.agents) {
+			child->for_each(method);
 		}
 
 		method(*this);
@@ -119,10 +177,10 @@
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
-		for(auto child : children) {
+		for(auto child : children.agents) {
 
-			if(!child->children.empty()) {
-				child->foreach(method);
+			if(!child->children.agents.empty()) {
+				child->for_each(method);
 			}
 
 			method(child);

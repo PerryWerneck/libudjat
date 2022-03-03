@@ -25,25 +25,6 @@ namespace Udjat {
 		});
 	}
 
-	bool Factory::parse(Abstract::Agent &parent, const pugi::xml_node &node) const {
-		auto agent = AgentFactory(parent,node);
-		if(agent) {
-			parent.insert(agent);
-			return true;
-		}
-		auto object = ObjectFactory(parent,node);
-		if(object) {
-			parent.push_back(object);
-			return true;
-		}
-		auto alert = AlertFactory(parent,node);
-		if(alert) {
-			parent.push_back(alert);
-			return true;
-		}
-		return false;
-	}
-
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	bool Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {

@@ -45,7 +45,7 @@
 		// Not found, search related objects.
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto object : objects) {
+			for(auto object : children.objects) {
 				if(object->getProperty(key,value)) {
 					return true;
 				}

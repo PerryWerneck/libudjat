@@ -93,13 +93,13 @@
 		/// @param parent Parent agent to insert the built child.
 		/// @param node XML definition for the new agent.
 		/// @return true if the request was handled.
-		virtual bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
+		// virtual bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
 
 		/// @brief Parse State sub-node.
 		/// @param parent Parent state insert the built child.
 		/// @param node XML definition for the new state.
 		/// @return true if the request was handled.
-		virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const;
+		UDJAT_DEPRECATED(virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const);
 
 	};
 

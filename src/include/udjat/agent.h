@@ -86,10 +86,15 @@
 				} current_state;
 
 				/// @brief Agent children.
-				std::vector<std::shared_ptr<Agent>> children;
+				struct {
 
-				/// @brief Associated objects.
-				std::list<std::shared_ptr<Abstract::Object>> objects;
+					/// @brief Agent children.
+					std::vector<std::shared_ptr<Agent>> agents;
+
+					/// @brief Object children.
+					std::list<std::shared_ptr<Abstract::Object>> objects;
+
+				} children;
 
 				/// @brief Child state has changed; compute my new state.
 				void onChildStateChange() noexcept;
@@ -145,13 +150,27 @@
 				class Controller;
 
 				/// @brief Insert child node.
-				void insert(std::shared_ptr<Agent> child);
+				void insert(std::shared_ptr<Abstract::Agent> child);
+
+				/// @brief Insert child node.
+				void push_back(std::shared_ptr<Abstract::Agent> child);
+
+				/// @brief Insert object.
+				void push_back(std::shared_ptr<Abstract::Object> object);
 
 				/// @brief Insert Alert.
 				virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
 
-				/// @brief Insert object.
-				void push_back(std::shared_ptr<Abstract::Object> object);
+				/// @brief Create and insert child.
+				/// @param type The agent type.
+				/// @param node XML agent definitions.
+				/// @return true if the child was created.
+				bool push_back(const char *type, const pugi::xml_node &node);
+
+				/// @brief Create and insert child from XML definition.
+				/// @param node XML agent definitions.
+				/// @return true if the child was created.
+				bool push_back(const pugi::xml_node &node);
 
 				/// @brief Remove object.
 				void remove(std::shared_ptr<Abstract::Object> object);
@@ -166,6 +185,14 @@
 
 				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
 
+				inline std::vector<std::shared_ptr<Agent>> & agents() noexcept {
+					return children.agents;
+				}
+
+				inline std::list<std::shared_ptr<Abstract::Object>> & objects() noexcept {
+					return children.objects;
+				}
+
 				/// @brief Load children from xml node.
 				/// @brief node XML node with agent attributes.
 				void load(const pugi::xml_node &node);
@@ -178,21 +205,23 @@
 					return update.timer;
 				}
 
-				/// @brief true if the agent has states.
-				// virtual bool hasStates() const noexcept;
+				/// @brief Get update timer interval.
+				inline time_t updatetimer() const noexcept {
+					return update.timer;
+				}
 
 				/// @brief Get Agent path.
 				std::string path() const;
 
 				/// @brief The agent has children?
 				UDJAT_DEPRECATED(bool hasChildren() const noexcept) {
-					return ! this->children.empty();
+					return !children.agents.empty();
 				}
 
 				/// @brief The agent has children?
 				/// @return false if the agent have children.
 				bool empty() const noexcept {
-					return children.empty();
+					return children.agents.empty();
 				}
 
 				/// @brief Start agent.
@@ -229,11 +258,11 @@
 				}
 
 				inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
-					return children.begin();
+					return children.agents.begin();
 				}
 
 				inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
-					return children.end();
+					return children.agents.end();
 				}
 
 				/// @brief Adds cache and update information to the response.
@@ -285,13 +314,13 @@
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @return Seconds for the next reload.
-		UDJAT_API time_t load(const char *pathname);
+		UDJAT_API time_t reconfigure(const char *pathname);
 
 		/// @brief Load XML application definitions.
 		/// @param agent New root agent.
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @param time_t Seconds for file refresh.
-		UDJAT_API time_t load(std::shared_ptr<Abstract::Agent> agent, const char *pathname);
+		UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {
