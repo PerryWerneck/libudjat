@@ -123,7 +123,7 @@ namespace Udjat {
 		struct Timers {
 
 			/// @brief List of active timers.
-			std::list<Timer> active;
+			std::list<std::shared_ptr<Timer>> active;
 
 			/// @brief Run timers, return miliseconds to next timer.
 			unsigned long run() noexcept;

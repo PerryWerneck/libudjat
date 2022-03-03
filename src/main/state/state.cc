@@ -69,38 +69,9 @@ namespace Udjat {
 
 		for(pugi::xml_node child : node) {
 
-			if(strcasecmp(node.name(),"attribute")) {
-				push_back(node);
+			if(strcasecmp(child.name(),"attribute")) {
+				push_back(child);
 			}
-
-			/*
-			if(!strcasecmp(child.name(),"alert")) {
-
-				if(!AlertFactory(child)) {
-					error() << "Unable to create alert" << endl;
-				}
-
-			} else if(strcasecmp(child.name(),"attribute")) {
-
-				// Parse child using factories.
-				Factory::for_each(child.name(),[this,&child](const Factory & factory){
-
-					try {
-
-						factory.parse(*this,child);
-
-					} catch(const std::exception &e) {
-						factory.error() << "Error '" << e.what() << "' parsing <" << child.name() << ">" << endl;
-					} catch(...) {
-						factory.error() << "Unexpected error parsing <" << child.name() << ">" << endl;
-					}
-
-					return false;
-
-				});
-
-			}
-			*/
 
 		}
 

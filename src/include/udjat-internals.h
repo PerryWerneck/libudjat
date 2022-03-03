@@ -71,9 +71,6 @@
 		/// @brief The timer identifier.
 		const void *id;
 
-		/// @brief Is the timer running.
-		bool running = false;
-
 		/// @brief The interval in milliseconds.
 		unsigned long interval;
 

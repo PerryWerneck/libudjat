@@ -30,6 +30,7 @@
  #include <cstring>
  #include <udjat-internals.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/application.h>
  #include <iostream>
  #include <unistd.h>
  #include <csignal>
@@ -39,10 +40,8 @@
  static void onInterruptSignal(int signal) noexcept {
 
  	// Use thread to avoid semaphore dead lock.
- 	std::thread([signal](){
-		cout << "MainLoop\tInterrupting by '" << strsignal(signal) << "' signal" << endl;
-		Udjat::MainLoop::getInstance().quit();
-	}).detach();
+	Udjat::Application::warning() << "Received '" << strsignal(signal) << "' signal" << endl;
+	Udjat::MainLoop::getInstance().quit();
 
  }
 
