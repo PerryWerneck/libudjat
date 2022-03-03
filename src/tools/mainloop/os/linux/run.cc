@@ -37,8 +37,13 @@
  using namespace std;
 
  static void onInterruptSignal(int signal) noexcept {
-	cout << "MainLoop\tInterrupting by '" << strsignal(signal) << "' signal" << endl;
-	Udjat::MainLoop::getInstance().quit();
+
+ 	// Use thread to avoid semaphore dead lock.
+ 	std::thread([signal](){
+		cout << "MainLoop\tInterrupting by '" << strsignal(signal) << "' signal" << endl;
+		Udjat::MainLoop::getInstance().quit();
+	}).detach();
+
  }
 
  void Udjat::MainLoop::run() {
