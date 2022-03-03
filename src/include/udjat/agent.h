@@ -179,14 +179,20 @@
 				}
 
 				/// @brief true if the agent has states.
-				virtual bool hasStates() const noexcept;
+				// virtual bool hasStates() const noexcept;
 
 				/// @brief Get Agent path.
 				std::string path() const;
 
 				/// @brief The agent has children?
-				bool hasChildren() const noexcept {
+				UDJAT_DEPRECATED(bool hasChildren() const noexcept) {
 					return ! this->children.empty();
+				}
+
+				/// @brief The agent has children?
+				/// @return false if the agent have children.
+				bool empty() const noexcept {
+					return children.empty();
 				}
 
 				/// @brief Start agent.
@@ -352,9 +358,9 @@
 				return set(new_value);
 			}
 
-			bool hasStates() const noexcept override {
-				return !states.empty();
-			}
+			//bool hasStates() const noexcept override {
+			//	return !states.empty();
+			//}
 
 			/// @brief Insert State.
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
@@ -431,9 +437,9 @@
 
 			}
 
-			bool hasStates() const noexcept override {
-				return !states.empty();
-			}
+			//bool hasStates() const noexcept override {
+			//	return !states.empty();
+			//}
 
 			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 				auto state = std::make_shared<State<std::string>>(node);

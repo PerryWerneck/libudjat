@@ -99,9 +99,9 @@ namespace Udjat {
 		return false;
 	}
 
-	bool Abstract::Agent::hasStates() const noexcept {
-		return false;
-	}
+	//bool Abstract::Agent::hasStates() const noexcept {
+	//	return false;
+	//}
 
 	bool Abstract::Agent::updated(bool changed) noexcept {
 
