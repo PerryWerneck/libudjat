@@ -52,6 +52,31 @@ namespace Udjat {
 #endif // WIN32
 		};
 
+		///< @brief File/Socket handler
+		class UDJAT_API Handler {
+		private:
+			friend class MainLoop;
+
+			const void *id = nullptr;
+			int fd = -1;
+			Event events = (Event) 0;
+			// time_t running = 0;
+
+		protected:
+			virtual bool call(const Event event) const = 0;
+
+		public:
+			constexpr Handler(const void *i, int f, const Event e) : id(i), fd(f), events(e) {
+			}
+
+			inline bool operator ==(const void *id) const noexcept {
+				return id == this->id;
+			}
+
+			virtual ~Handler();
+
+		};
+
 		/// @brief Service who can be started/stopped.
 		class UDJAT_API Service {
 		private:
@@ -167,27 +192,6 @@ namespace Udjat {
 		//
 		// File/socket/Handle management
 		//
-
-		///< @brief File/Socket handler
-		class UDJAT_API Handler {
-		private:
-			friend class MainLoop;
-
-			const void *id = nullptr;
-			int fd = -1;
-			Event events = (Event) 0;
-			// time_t running = 0;
-
-		protected:
-			virtual bool call(const Event event) const = 0;
-
-		public:
-			constexpr Handler(const void *i, int f, const Event e) : id(i), fd(f), events(e) {
-			}
-
-			virtual ~Handler();
-
-		};
 		std::list<std::shared_ptr<Handler>> handlers;
 
 	public:
