@@ -224,8 +224,12 @@ namespace Udjat {
 		/// @brief Insert socket/file handler in the list of event sources.
 		void push_back(std::shared_ptr<Handler> handler);
 
+		/// @brief Remove socket/file handler.
+		void remove(std::shared_ptr<Handler> handler);
+
 		/// @brief Insert socket/file in the list of event sources.
-		void insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> &call);
+		/// @return Socket/file handler.
+		std::shared_ptr<Handler> insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 		/// @brief Insert timer in the list of event sources.
 		/// @param id		Timer id.

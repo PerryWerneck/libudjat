@@ -33,13 +33,25 @@
 		}
 
 		wakeup();
+
 	}
 
-	void MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> &call) {
+	void MainLoop::remove(std::shared_ptr<Handler> handler) {
+
+		{
+			lock_guard<mutex> lock(guard);
+			handlers.remove(handler);
+		}
+
+		wakeup();
+
+	}
+
+	std::shared_ptr<MainLoop::Handler> MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
 
 		class CallHandler : public MainLoop::Handler {
 		private:
-			const function<bool(const Event event)> &callback;
+			const function<bool(const Event event)> callback;
 
 		protected:
 			bool call(const Event event) const override {
@@ -47,7 +59,7 @@
 			}
 
 		public:
-			CallHandler(const void *id, int fd, const Event event, const function<bool(const Event event)> &c) : Handler(id,fd,event), callback(c) {
+			CallHandler(const void *id, int fd, const Event event, const function<bool(const Event event)> c) : Handler(id,fd,event), callback(c) {
 			}
 
 			virtual ~CallHandler() {
@@ -55,7 +67,9 @@
 
 		};
 
-		push_back(make_shared<CallHandler>(id,fd,event,call));
+		std::shared_ptr<Handler> handler = make_shared<CallHandler>(id,fd,event,call);
+		push_back(handler);
+		return handler;
 
 	}
 
