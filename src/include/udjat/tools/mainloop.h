@@ -58,11 +58,13 @@ namespace Udjat {
 			friend class MainLoop;
 
 			const void *id = nullptr;
-			int fd = -1;
-			Event events = (Event) 0;
-			// time_t running = 0;
+			bool enabled = true;
 
 		protected:
+
+			int fd = -1;
+			Event events = (Event) 0;
+
 			virtual bool call(const Event event) const = 0;
 
 		public:
@@ -72,6 +74,15 @@ namespace Udjat {
 			inline bool operator ==(const void *id) const noexcept {
 				return id == this->id;
 			}
+
+			/// @brief Enable handler.
+			void enable() noexcept;
+
+			/// @brief Disable handler.
+			void disable() noexcept;
+
+			/// @brief Remove and destroy handler.
+			void clear() noexcept;
 
 			virtual ~Handler();
 

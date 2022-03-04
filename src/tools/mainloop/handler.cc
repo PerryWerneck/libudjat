@@ -22,6 +22,22 @@
 
  namespace Udjat {
 
+	void MainLoop::Handler::enable() noexcept {
+		enabled = true;
+		MainLoop::getInstance().wakeup();
+	}
+
+	void MainLoop::Handler::disable() noexcept {
+		enabled = false;
+		MainLoop::getInstance().wakeup();
+	}
+
+	void MainLoop::Handler::clear() noexcept {
+		fd = -1;
+		enabled = false;
+		MainLoop::getInstance().wakeup();
+	}
+
 	MainLoop::Handler::~Handler() {
 	}
 
@@ -43,7 +59,8 @@
 			handlers.remove(handler);
 		}
 
-		wakeup();
+		handler->fd = -1;
+		handler->disable();
 
 	}
 
@@ -87,20 +104,25 @@
 			if(handle->fd <= 0)
 				return true;
 
-			if(nfds >= (*length-1)) {
-				*length += 2;
-				*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
-				for(size_t ix = nfds; ix < *length; ix++) {
-					(*fds)[ix].fd = -1;
-					(*fds)[ix].events = 0;
-					(*fds)[ix].revents = 0;
+			if(handle->enabled) {
+
+				if(nfds >= (*length-1)) {
+					*length += 2;
+					*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+					for(size_t ix = nfds; ix < *length; ix++) {
+						(*fds)[ix].fd = -1;
+						(*fds)[ix].events = 0;
+						(*fds)[ix].revents = 0;
+					}
 				}
+
+				(*fds)[nfds].fd = handle->fd;
+				(*fds)[nfds].events = handle->events;
+				(*fds)[nfds].revents = 0;
+				nfds++;
+
 			}
 
-			(*fds)[nfds].fd = handle->fd;
-			(*fds)[nfds].events = handle->events;
-			(*fds)[nfds].revents = 0;
-			nfds++;
 			return false;
 		});
 
