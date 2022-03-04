@@ -100,6 +100,16 @@
 			/// @return true if the file was updated.
 			bool save(const char *filename);
 
+			/// @brief Save filename based on XML definitions.
+			/// @param node XML node with URL & download settings.
+			/// @return true if the file was updated.
+			static bool save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress);
+
+			/// @brief Save filename based on XML definitions.
+			/// @param node XML node with URL & download settings.
+			/// @return true if the file was updated.
+			static bool save(const pugi::xml_node &node, const char *filename);
+
 		};
 
 	}

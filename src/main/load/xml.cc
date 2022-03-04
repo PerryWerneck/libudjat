@@ -35,6 +35,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/http/client.h>
  #include <udjat/tools/threadpool.h>
  #include <list>
 
@@ -123,18 +124,7 @@
 
 		time_t next = 0;
 
-		struct FileDefinition {
-			std::string filename;
-			std::string url;
-
-			FileDefinition(const char *f, const char *u) : filename(f), url(u) {
-			}
-
-		};
-
-		std::list<FileDefinition> definitions;
-
-		loader(pathname,[&next,&definitions](const char *filename, const pugi::xml_document &doc){
+		loader(pathname,[&next](const char *filename, const pugi::xml_document &doc){
 
 			auto node = doc.document_element();
 
@@ -142,24 +132,37 @@
 			if(url && *url) {
 
 				time_t refresh = node.attribute("update-timer").as_uint(0);
+
+				try {
+
+					Application::info() << "Updating " << filename << endl;
+					HTTP::Client::save(node,filename);
+
+				} catch(const std::exception &e) {
+
+					Application::error() << "Error '" << e.what() << "' updating " << filename << endl;
+					refresh = node.attribute("update-when-failed").as_uint(refresh);
+
+				} catch(...) {
+
+					Application::error() << "Unexpected error updating " << filename << endl;
+					refresh = node.attribute("update-when-failed").as_uint(refresh);
+
+				}
+
 				if(refresh) {
 					if(next) {
 						next = std::min(next,refresh);
 					} else {
 						next = refresh;
 					}
-
-					// TODO: Check for the file timestamps to see if an update is required.
-					definitions.emplace_back(filename,url);
-
-				} else {
-					definitions.emplace_back(filename,url);
 				}
 
 			}
 
 		});
 
+		/*
 		// Update file(s)
 		if(!definitions.empty()) {
 			Application::info() << "Updating configuration files" << endl;
@@ -175,6 +178,7 @@
 			}
 			Application::info() << "Updating complete" << endl;
 		}
+		*/
 
 		return next;
 	}
