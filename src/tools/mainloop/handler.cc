@@ -22,8 +22,43 @@
 
  namespace Udjat {
 
-	MainLoop::Handler::Handler(const void *i, int f, const Event e, const function<bool(const Event event)> &c)
-		: id(i),fd(f),events(e),running(0),call(c) { }
+	MainLoop::Handler::~Handler() {
+	}
+
+	void MainLoop::push_back(std::shared_ptr<MainLoop::Handler> handler) {
+
+		{
+			lock_guard<mutex> lock(guard);
+			handlers.push_back(handler);
+		}
+
+		wakeup();
+	}
+
+	void MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> &call) {
+
+		class CallHandler : public MainLoop::Handler {
+		private:
+			const function<bool(const Event event)> &callback;
+
+		protected:
+			bool call(const Event event) const override {
+				return callback(event);
+			}
+
+		public:
+			CallHandler(const void *id, int fd, const Event event, const function<bool(const Event event)> &c) : Handler(id,fd,event), callback(c) {
+			}
+
+			virtual ~CallHandler() {
+			}
+
+		};
+
+		push_back(make_shared<CallHandler>(id,fd,event,call));
+
+	}
+
 
 #ifndef _WIN32
 	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
@@ -33,15 +68,10 @@
 		nfds_t nfds = 0;
 
 		// Get waiting sockets.
-		handlers.remove_if([fds,length,&nfds](Handler &handle) {
+		handlers.remove_if([fds,length,&nfds](auto handle) {
 
-			// Are we active? If not return true *only* if theres no pending event.
-			if(handle.fd <= 0)
-				return handle.running == 0;
-
-			// Am I running? If yes don't pool for me, but keep me in the list.
-			if(handle.running)
-				return false;
+			if(handle->fd <= 0)
+				return true;
 
 			if(nfds >= (*length-1)) {
 				*length += 2;
@@ -53,8 +83,8 @@
 				}
 			}
 
-			(*fds)[nfds].fd = handle.fd;
-			(*fds)[nfds].events = handle.events;
+			(*fds)[nfds].fd = handle->fd;
+			(*fds)[nfds].events = handle->events;
 			(*fds)[nfds].revents = 0;
 			nfds++;
 			return false;

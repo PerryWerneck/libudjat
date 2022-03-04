@@ -38,19 +38,12 @@
 			return timer->id == id;
 		});
 
-		for(auto handler = handlers.begin(); handler != handlers.end(); handler++) {
-			if(handler->id == id) {
-				handler->fd = -1;	// When set to '-1' the handle will be removed when possible.
-			}
-		}
+		handlers.remove_if([id](auto handler){
+			return handler->id == id;
+		});
 
 	}
 
-	void MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
-		lock_guard<mutex> lock(guard);
-		handlers.emplace_back(id,fd,event,call);
-		wakeup();
-	}
 
  }
 

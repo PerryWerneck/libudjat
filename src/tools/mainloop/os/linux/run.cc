@@ -116,11 +116,9 @@
 				continue;
 			}
 
-			for(auto handle = handlers.begin(); handle != handlers.end(); handle++) {
+			for(auto handle : handlers) {
 
-				if(handle->fd == fds[sock].fd && (handle->events & fds[sock].events) != 0 && !handle->running) {
-
-					handle->running = time(nullptr);
+				if(handle->fd == fds[sock].fd && (handle->events & fds[sock].events) != 0) {
 
 					try {
 
@@ -137,7 +135,6 @@
 
 					}
 
-					handle->running = 0;
 					break;
 
 				}

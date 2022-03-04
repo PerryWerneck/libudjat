@@ -91,20 +91,6 @@
 
 	};
 
-	class MainLoop::Handler {
-	public:
-
-		const void *id;
-		int fd;
-		Event events;
-		time_t running;			///< @brief Is the callback running?
-
-		const std::function<bool(const Event event)> &call;
-
-		Handler(const void *id, int fd, const Event event, const std::function<bool(const Event event)> &call);
-
-	};
-
 	#ifdef _WIN32
 	class ThreadPool::Controller : MainLoop::Service {
 	private:
