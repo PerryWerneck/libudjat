@@ -99,9 +99,9 @@
 		Event events;
 		time_t running;			///< @brief Is the callback running?
 
-		const std::function<bool(const Event event)> call;
+		const std::function<bool(const Event event)> &call;
 
-		Handler(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
+		Handler(const void *id, int fd, const Event event, const std::function<bool(const Event event)> &call);
 
 	};
 
