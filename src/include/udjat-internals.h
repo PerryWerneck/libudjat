@@ -74,7 +74,7 @@
 		/// @brief The interval in milliseconds.
 		unsigned long interval;
 
-		/// @brief The interval in milliseconds.
+		/// @brief The of next call.
 		unsigned long next;
 
 		/// @brief The timer method.

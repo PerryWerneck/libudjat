@@ -52,47 +52,6 @@
 		throw runtime_error("There's no active service instance");
 	}
 
-	void SystemService::reconfigure(const char *pathname) noexcept {
-
-		try {
-
-			Application::DataFile path(pathname);
-			Application::info() << "Loading settings from '" << path << "'" << endl;
-
-			Udjat::load_modules(path.c_str());
-			time_t next = Udjat::refresh_definitions(path.c_str());
-			Udjat::load_modules(path.c_str());
-
-			auto root = RootFactory();
-			load_agent_definitions(root,path.c_str());
-
-			setRootAgent(root);
-
-			if(next) {
-				Udjat::MainLoop::getInstance().insert(definitions,next*1000,[]{
-					ThreadPool::getInstance().push([]{
-						if(instance) {
-							instance->reconfigure(instance->definitions);
-						}
-					});
-					return false;
-				});
-
-				Application::info() << "Next reconfiguration set to " << TimeStamp(time(0)+next) << endl;
-			}
-
-		} catch(const std::exception &e ) {
-
-			Application::error() << "Reconfiguration has failed: " << e.what() << endl;
-
-		} catch(...) {
-
-			Application::error() << "Unexpected error during reconfiguration" << endl;
-
-		}
-
-	}
-
 	std::shared_ptr<Abstract::Agent> SystemService::RootFactory() const {
 		return Udjat::RootAgentFactory();
 	}

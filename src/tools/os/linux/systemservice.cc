@@ -47,7 +47,7 @@
 
 			ThreadPool::getInstance().push([](){
 				if(instance) {
-					instance->reconfigure(instance->definitions);
+					instance->reconfigure(instance->definitions,true);
 				}
 			});
 
@@ -65,7 +65,7 @@
 		Module::load();
 
 		if(definitions) {
-			reconfigure(definitions);
+			reconfigure(definitions,true);
 			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
 				cout << "service\tUse SIGUSR1 to reload " << definitions << endl;
 			}
