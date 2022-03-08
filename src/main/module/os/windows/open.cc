@@ -20,27 +20,109 @@
  #include <config.h>
  #include "../../private.h"
  #include <udjat/win32/exception.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
+ #include <fcntl.h>
 
  namespace Udjat {
 
-	HMODULE Module::Controller::open(const char *filename, bool required) {
+	HMODULE Module::Controller::open(const char *name, bool required) {
 
-		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
-		HMODULE handle = LoadLibrary(filename);
-		if(!handle) {
-			string message = Win32::Exception::format(GetLastError());
+		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
+		Application::LibDir libdir;
 
-			if(required) {
-				throw runtime_error(string{"Cant load '"} + filename + "' - " + message.c_str());
+		string paths[] = {
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
+#if defined(__x86_64__)
+			// 64 bit detected
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw64\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw64\\lib\\udjat-modules\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw64/lib/udjat-modules/" PACKAGE_VERSION "/"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw64/lib/udjat-modules/"
+			),
+#elif  defined(__i386__)
+			// 32 bit detected
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw32\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"c:\\msys64\\mingw32\\lib\\udjat-modules\\"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw32/lib/udjat-modules/" PACKAGE_VERSION "/"
+			),
+			Config::Value<string>(
+				"modules",
+				"secondary-path",
+				"/mingw32/lib/udjat-modules/"
+			),
+#endif
+		};
+
+		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
+
+			string filename = paths[ix] + configured + ".dll";
+
+			if(access(filename.c_str(),R_OK) == 0) {
+
+				for(auto module : modules) {
+
+					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+#ifdef DEBUG
+						cout << "module\tModule '" << module->name << "' is already loaded" << endl;
+#endif // DEBUG
+						return (HMODULE) 0;
+					}
+
+				}
+
+				// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
+				HMODULE handle = LoadLibrary(filename.c_str());
+				if(handle) {
+					return handle;
+				}
+
+				cerr << "modules\t" << filename << " " << Win32::Exception::format(GetLastError()) << endl;
+
 			}
-
-			clog << "module\tCant load '" << filename << "': " << message << endl;
-
-				return nullptr;
+#ifdef DEBUG
+			else {
+				cout << "modules\tNo module in " << filename << endl;
+			}
+#endif // DEBUG
 		}
 
-		return handle;
+		if(required) {
+			throw runtime_error(string{"Cant load module '"} + name + "'");
+		}
 
+		return (HMODULE) 0;
+
+	}
+
+	void Module::Controller::close(HMODULE module) {
+		FreeLibrary(module);
 	}
 
 	Module * Module::Controller::init(HMODULE handle) {

@@ -50,7 +50,7 @@
 #ifdef DEBUG
 						cout << "module\tModule '" << module->name << "' is already loaded" << endl;
 #endif // DEBUG
-						return nullptr;
+						return NULL;
 					}
 
 				}
@@ -72,19 +72,6 @@
 		if(required) {
 			throw runtime_error(string{"Cant load module '"} + name + "'");
 		}
-
-		/*
-		dlerror();
-
-		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
-		if(handle == NULL) {
-			if(required) {
-				throw runtime_error(dlerror());
-			}
-			clog << "module\t" << dlerror() << endl;
-			return nullptr;
-		}
-		*/
 
 		return NULL;
 
