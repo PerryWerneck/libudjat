@@ -18,6 +18,14 @@ namespace Udjat {
 
 		list<Module *> modules;
 
+#ifdef _WIN32
+		HMODULE open(const char *filename, bool required);
+		Module * init(HMODULE hModule);
+#else
+		void * open(const char *filename, bool required);
+		Module * init(void *handle);
+#endif // _WIN32
+
 	public:
 		Controller();
 		~Controller();
@@ -32,7 +40,6 @@ namespace Udjat {
 		Module * load(const char *filename, bool required = true);
 
 		const Module * find(const char *name) const noexcept;
-
 
 		void getInfo(Response &response) noexcept;
 

@@ -38,6 +38,7 @@
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/configuration.h>
  #include <list>
 
 #ifndef _WIN32
@@ -119,11 +120,14 @@
 		Updater(const char *pathname) {
 
 			// First scan for modules.
-			loader(pathname,[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					Module::load(node);
-				}
-			});
+			if(Config::Value<bool>("modules","preload-from-xml",true)) {
+				cout << "modules\tPreloading from " << pathname << endl;
+				loader(pathname,[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
+					for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+						Module::load(node);
+					}
+				});
+			}
 
 			// Then check for file updates.
 			loader(pathname,[this](const char *filename, const pugi::xml_document &doc){

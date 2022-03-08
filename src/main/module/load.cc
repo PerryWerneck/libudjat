@@ -24,7 +24,7 @@ namespace Udjat {
 
 	void Module::load() {
 
-		Config::Value<vector<string>> modules("modules","load","");
+		Config::Value<vector<string>> modules("modules","load-at-startup","");
 
 		if(modules.empty()) {
 			cout << "modules\tNo preload modules" << endl;
@@ -192,40 +192,18 @@ namespace Udjat {
 		// Load module
 		cout << "module\tLoading '" << filename << "'" << endl;
 
-		Module * (*init)(void);
 		Module * module = nullptr;
 
 #ifdef _WIN32
 
-		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
-		HMODULE handle = LoadLibrary(filename);
+		HMODULE handle = open(filename,required);
 		if(!handle) {
-			string message = Win32::Exception::format(GetLastError());
-
-			if(required) {
-				throw runtime_error(string{"Cant load '"} + filename + "' - " + message.c_str());
-			}
-
-			clog << "module\tCant load '" << filename << "': " << message << endl;
-
 			return nullptr;
 		}
 
 		try {
 
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wcast-function-type"
-			init = (Module * (*)(void)) GetProcAddress(handle,"udjat_module_init");
-			#pragma GCC diagnostic pop
-			if(!init) {
-				throw Win32::Exception("Cant get module init method");
-			}
-
-			module = init();
-			if(!module) {
-				throw runtime_error("Can't initialize module");
-			}
-
+			module = init(handle);
 			module->handle = handle;
 
 		} catch(...) {
@@ -236,30 +214,14 @@ namespace Udjat {
 		}
 
 #else
-
-		dlerror();
-
-		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
-		if(handle == NULL) {
-			if(required) {
-				throw runtime_error(dlerror());
-			}
-			clog << "module\t" << dlerror() << endl;
+		void * handle = open(filename,required);
+		if(!handle) {
 			return nullptr;
 		}
 
 		try {
 
-			init = (Module * (*)(void)) dlsym(handle,"udjat_module_init");
-			auto err = dlerror();
-			if(err)
-				throw runtime_error(err);
-
-			module = init();
-			if(!module) {
-				throw runtime_error("Can't initialize module");
-			}
-
+			module = init(handle);
 			module->handle = handle;
 
 		} catch(...) {
