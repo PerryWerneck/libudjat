@@ -20,11 +20,60 @@
  #include <config.h>
  #include "../../private.h"
  #include <dlfcn.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
+ #include <unistd.h>
 
  namespace Udjat {
 
-	void * Module::Controller::open(const char *filename, bool required) {
+	void * Module::Controller::open(const char *name, bool required) {
 
+		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
+
+		string paths[] = {
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
+			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
+#ifdef LIBDIR
+			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
+#endif //LIBDIR
+		};
+
+		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
+
+			string filename = paths[ix] + configured + ".so";
+
+			if(access(filename.c_str(),R_OK) == 0) {
+
+				for(auto module : modules) {
+
+					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+#ifdef DEBUG
+						cout << "module\tModule '" << module->name << "' is already loaded" << endl;
+#endif // DEBUG
+						return nullptr;
+					}
+
+				}
+
+				dlerror();
+				void * handle = dlopen(filename.c_str(),RTLD_NOW|RTLD_LOCAL);
+				if(handle) {
+					return handle;
+				}
+				cerr << "modules\t" << filename << " " << dlerror() << endl;
+			}
+#ifdef DEBUG
+			else {
+				cout << "modules\tNo module in " << filename << endl;
+			}
+#endif // DEBUG
+		}
+
+		if(required) {
+			throw runtime_error(string{"Cant load module '"} + name + "'");
+		}
+
+		/*
 		dlerror();
 
 		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
@@ -35,9 +84,14 @@
 			clog << "module\t" << dlerror() << endl;
 			return nullptr;
 		}
+		*/
 
-		return handle;
+		return NULL;
 
+	}
+
+	void Module::Controller::close(void *module) {
+		dlclose(module);
 	}
 
 	Module * Module::Controller::init(void * handle) {

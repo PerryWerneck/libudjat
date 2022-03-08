@@ -19,10 +19,12 @@ namespace Udjat {
 		list<Module *> modules;
 
 #ifdef _WIN32
-		HMODULE open(const char *filename, bool required);
+		HMODULE open(const char *name, bool required);
+		void close(HMODULE module);
 		Module * init(HMODULE hModule);
 #else
-		void * open(const char *filename, bool required);
+		void * open(const char *name, bool required);
+		void close(void *module);
 		Module * init(void *handle);
 #endif // _WIN32
 
@@ -37,7 +39,7 @@ namespace Udjat {
 
 		void unload();
 
-		Module * load(const char *filename, bool required = true);
+		void load(const char *name, bool required = true);
 
 		const Module * find(const char *name) const noexcept;
 
