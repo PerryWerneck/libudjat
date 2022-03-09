@@ -70,6 +70,9 @@
 			return Client(url).save(filename);
 		}
 
+		Client::Client(const pugi::xml_node &node) : Client(node.attribute("src").as_string()) {
+		}
+
 		Client::Client(const URL &url) {
 
 			// Find a protocol handler for this URL.
@@ -144,10 +147,12 @@
 
 		bool Client::save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
 
-			Client client(node.attribute("src").as_string());
+			Client client(node);
 
 			if(node.attribute("cache").as_bool(true)) {
 				setup_cache(client.worker,filename);
+			} else {
+				cout << "http\tCache was disabled for '" << filename << "'" << endl;
 			}
 
 			return client.worker->save(filename,progress);
