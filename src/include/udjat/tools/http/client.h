@@ -47,8 +47,15 @@
 			/// @brief Request payload.
 			std::ostringstream payload;
 
+			/// @brief Default progress dialog.
+			static const std::function<bool(double current, double total)> &default_progress;
+
 		public:
+
+			static void set(const std::function<bool(double current, double total)> progress);
+
 			Client(const URL &url);
+			Client(const pugi::xml_node &node);
 
 			Client(const char *url) : Client(URL(url)) {
 			}
