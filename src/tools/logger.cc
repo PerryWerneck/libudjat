@@ -63,7 +63,9 @@
 	}
 
 	Logger::Controller::~Controller() {
-		for(auto buffer : buffers) {
+		while(!buffers.empty()) {
+			Buffer * buffer = buffers.back();
+			buffers.pop_back();
 			delete buffer;
 		}
 	}
