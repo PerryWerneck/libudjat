@@ -4,10 +4,10 @@
 
 	#include <udjat/defs.h>
 	#include <udjat/tools/quark.h>
-	//#include <vector>
 	#include <string>
 	#include <iostream>
 	#include <mutex>
+	#include <pthread.h>
 
 	namespace Udjat {
 
@@ -22,24 +22,29 @@
 			};
 
 		private:
+			class Controller;
+			friend class Controller;
+
+			class Buffer : public std::string {
+			public:
+				pthread_t thread;
+				Level level;
+				Buffer(pthread_t t, Level l) : thread(t), level(l) {
+				}
+
+				~Buffer();
+
+				Buffer(const Buffer &src) = delete;
+				Buffer(const Buffer *src) = delete;
+
+				bool push_back(int c);
+
+			};
 
 			static std::mutex guard;
 
 			class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
 			private:
-				class Buffer : public std::string {
-				private:
-					Buffer() : std::string() {
-					}
-
-				public:
-					Buffer(const Buffer &src) = delete;
-					Buffer(const Buffer *src) = delete;
-
-					static Buffer & getInstance(Level id);
-					bool push_back(int c);
-
-				};
 
 				/// @brief The buffer id.
 				Level id = Info;
