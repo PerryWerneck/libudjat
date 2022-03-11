@@ -121,7 +121,9 @@
 		<Unit filename="src/main/module/info.cc" />
 		<Unit filename="src/main/module/load.cc" />
 		<Unit filename="src/main/module/module.cc" />
+		<Unit filename="src/main/module/os/linux/close.cc" />
 		<Unit filename="src/main/module/os/linux/open.cc" />
+		<Unit filename="src/main/module/os/windows/close.cc" />
 		<Unit filename="src/main/module/os/windows/open.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />

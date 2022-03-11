@@ -77,10 +77,6 @@
 
 	}
 
-	void Module::Controller::close(void *module) {
-		dlclose(module);
-	}
-
 	Module * Module::Controller::init(void * handle) {
 
 		Module * (*init)(void) = (Module * (*)(void)) dlsym(handle,"udjat_module_init");
@@ -97,7 +93,6 @@
 
 		return module;
 	}
-
 
  }
 

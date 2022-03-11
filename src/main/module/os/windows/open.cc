@@ -121,10 +121,6 @@
 
 	}
 
-	void Module::Controller::close(HMODULE module) {
-		FreeLibrary(module);
-	}
-
 	Module * Module::Controller::init(HMODULE handle) {
 
 		#pragma GCC diagnostic push
