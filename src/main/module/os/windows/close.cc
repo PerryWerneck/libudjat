@@ -44,10 +44,10 @@
 		return true;
 	}
 
-	void Module::Controller::unload(Module *module, const string &name, const string &description) const {
+	void Module::Controller::unload(HMODULE handle, const string &name, const string &description) const {
 
 		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary
-		if(FreeLibrary(module->handle) == 0) {
+		if(FreeLibrary(handle) == 0) {
 			cerr << "modules\tError '" << GetLastError() << "' freeing module '" << name << "'" << endl;
 		} else {
 			cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;

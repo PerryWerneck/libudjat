@@ -39,9 +39,13 @@
 		return true;
 	}
 
-	void Module::Controller::unload(Module *module, const string &name, const string &description) const {
+	void Module::Controller::unload(void *handle, const string &name, const string &description) const {
 
-		if(dlclose(module->handle)) {
+#ifdef DEBUG
+		cout << "**** Releasing module " << hex << handle << dec << endl;
+#endif // DEBUG
+
+		if(dlclose(handle)) {
 			cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
 		} else {
 			cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;

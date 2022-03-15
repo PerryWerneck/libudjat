@@ -60,6 +60,9 @@ namespace Udjat {
 			try {
 
 				// First delete module
+#ifdef DEBUG
+				cout << "**** Deleting module " << hex << module << dec << endl;
+#endif // DEBUG
 				delete module;
 
 				if(handle) {
@@ -72,7 +75,7 @@ namespace Udjat {
 					if(Config::Value<bool>("modules","keep-loaded",false)) {
 						cout << "modules\tKeeping module '" << name << "' loaded by configuration request" << endl;
 					} else  {
-						unload(module,name,description);
+						unload(handle,name,description);
 					}
 
 				}

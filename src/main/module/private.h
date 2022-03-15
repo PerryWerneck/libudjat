@@ -23,14 +23,15 @@ namespace Udjat {
 		void close(HMODULE module);
 		Module * init(HMODULE hModule);
 		bool deinit(HMODULE handle);
+		void unload(HMODULE handle, const string &name, const string &description) const;
 #else
 		void * open(const char *name, bool required);
 		void close(void *module);
 		Module * init(void *handle);
 		bool deinit(void *handle);
+		void unload(void *handle, const string &name, const string &description) const;
 #endif // _WIN32
 
-		void unload(Module *module, const string &name, const string &description) const;
 
 	public:
 		Controller();
