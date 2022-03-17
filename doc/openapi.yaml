@@ -72,6 +72,36 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/protocol'
+  /info/workers:
+    get:
+      tags:
+      - information     
+      summary: Get list of registered workers
+      operationId: infoWorkers
+      responses:
+        200:
+          description: List of workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/worker'
+  /info/factories:
+    get:
+      tags:
+      - information     
+      summary: Get list of registered factories
+      operationId: info
+      responses:
+        200:
+          description: List of factories
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/factory'
 components:
   schemas:
     state:
@@ -126,6 +156,58 @@ components:
     protocol:
       type: object
       properties:
+        id:
+          type: string
+        build:
+          type: string
+        bugreport:
+          type: string
+        description:
+          type: string
+        filename:
+          type: string
+        module:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+    worker:
+      type: object
+      properties:
         name:
           type: string
-        
+        build:
+          type: string
+        bugreport:
+          type: string
+        description:
+          type: string
+        filename:
+          type: string
+        module:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+    factory:
+      type: object
+      properties:
+        name:
+          type: string
+        build:
+          type: string
+        bugreport:
+          type: string
+        description:
+          type: string
+        filename:
+          type: string
+        module:
+          type: string
+        url:
+          type: string
+        version:
+          type: string
+      

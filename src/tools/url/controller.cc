@@ -44,13 +44,13 @@
 	}
 
 	void Protocol::Controller::remove(Protocol *protocol) {
-#ifdef DEBUG 
+#ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
 		cout << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.remove(protocol);
-#ifdef DEBUG 
+#ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 	}
@@ -86,7 +86,7 @@
 
 			Value &object = response.append(Value::Object);
 			object["id"] = protocol->name;
-//			protocol->info->get(object);
+			protocol->module.get(object);
 
 		}
 
