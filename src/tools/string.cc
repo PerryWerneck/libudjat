@@ -19,6 +19,7 @@
 
  #include <udjat/tools/string.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/http/client.h>
  #include <cstring>
  #include <ctype.h>
  #include <cstdlib>
@@ -79,6 +80,30 @@
 		},dynamic,cleanup);
 	}
 
+	static string expandFromURL(const string &url) {
+
+		try {
+
+			auto lines = HTTP::Client(url).get().split("\n");
+			if(!lines.empty()) {
+				return *lines.begin();
+			}
+
+		} catch(const std::exception &e) {
+
+			cerr << "string\tError '" << e.what() << "' expanding '" << url << "'" << endl;
+
+		} catch(...) {
+
+			cerr << "string\tUnexpected error expanding '" << url << "'" << endl;
+
+		}
+
+		return "";
+
+	}
+
+
 	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 
 		auto from = find("${");
@@ -91,6 +116,10 @@
 
 			string value;
 			string key(c_str()+from+2,(to-from)-2);
+
+			//
+			// First, try the supplied expand callback.
+			//
 			if(expander(key.c_str(),value)) {
 
 				// Got value, apply it.
@@ -101,46 +130,93 @@
 				);
 
 				from = find("${",from);
+				continue;
 
-			} else if(dynamic && strncasecmp(key.c_str(),"timestamp",9) == 0) {
+			}
 
-				replace(
-					from,
-					(to-from)+1,
-					TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
-				);
+			//
+			// If requested, expand dynamic values (timestamp, environment & url).
+			//
+			if(dynamic) {
+				if(strncasecmp(key.c_str(),"timestamp",9) == 0) {
+					replace(
+						from,
+						(to-from)+1,
+						TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
+					);
 
-				from = find("${",from);
+					from = find("${",from);
+					continue;
+				}
 
-			} else if(cleanup) {
+				//
+				// Search the environment.
+				//
+#ifdef _WIN32
+				// Windows, use the win32 api
+				const char *env = nullptr;
+				char szEnvironment[4096];
+				memset(szEnvironment,0,sizeof(szEnvironment));
 
-				// Last resource, use the environment.
+				if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
+					replace(
+						from,
+						(to-from)+1,
+						szEnvironment
+					);
+					from = find("${",from);
+					continue;
+				}
 
+#else
+				// Linux, use standard getenv.
 				const char *env = getenv(key.c_str());
-
 				if(env) {
-
 					replace(
 						from,
 						(to-from)+1,
 						env
 					);
+					from = find("${",from);
+					continue;
+				}
 
-				} else {
+#endif // _WIN32
+
+				//
+				// Search for URL identifier.
+				//
+				const char *sep = strstr(key.c_str(),"://");
+
+				if(sep) {
 
 					replace(
 						from,
 						(to-from)+1,
-						""
+						expandFromURL(key)
 					);
+					from = find("${",from);
+					continue;
 
 				}
+
+			}
+
+			//
+			// If cleanup is set, replace with an empty string, otherwise keep the ${} keyword.
+			//
+			if(cleanup) {
+
+				replace(
+					from,
+					(to-from)+1,
+					""
+				);
 
 				from = find("${",from);
 
 			} else {
 
-				// No value, skip.
 				from = find("${",to+1);
 
 			}

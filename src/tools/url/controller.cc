@@ -73,7 +73,6 @@
 			}
 		}
 
-//		throw system_error(ENOENT,system_category(),string{"Cant find protocol '"} + name + "'");
 		return nullptr;
 
 	}
