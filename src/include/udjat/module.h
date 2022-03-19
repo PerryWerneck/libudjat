@@ -77,7 +77,7 @@
 
 		/// @brief Initialize module from XML node.
 		/// @return Module controller.
-		UDJAT_API Udjat::Module * udjat_module_init_from_xml();
+		UDJAT_API Udjat::Module * udjat_module_init_from_xml(const pugi::xml_node &node);
 
 		/// @brief Deinitialize the module.
 		/// @return true if the module can be unloaded.

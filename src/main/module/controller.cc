@@ -68,23 +68,9 @@ namespace Udjat {
 			object["name"] = module->name;
 			module->info.get(object);
 
-			void (*getInfo)(Value &object) = NULL;
-
 			object["filename"] = module->filename();
 
-#ifdef _WIN32
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wcast-function-type"
-			getInfo = (void (*)(Value &object)) GetProcAddress(module->handle,"udjat_module_info");
-			#pragma GCC diagnostic pop
-#else
-			{
-				getInfo = (void (*)(Value &object)) dlsym(module->handle,"udjat_module_info");
-				auto err = dlerror();
-				if(err)
-					getInfo = NULL;
-			}
-#endif // _WIN32
+			void (*getInfo)(Value &object) = (void (*)(Value &)) getSymbol(module->handle,"udjat_module_info",false);
 
 			if(getInfo) {
 				getInfo(object);
