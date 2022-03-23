@@ -42,7 +42,6 @@ namespace Udjat {
 
 #endif // _WIN32
 
-
 	public:
 		Controller();
 		~Controller();
@@ -55,6 +54,7 @@ namespace Udjat {
 		void unload();
 
 		void load(const char *name, bool required = true);
+		void load(const pugi::xml_node &node);
 
 		const Module * find(const char *name) const noexcept;
 

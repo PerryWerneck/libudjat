@@ -41,18 +41,37 @@ namespace Udjat {
 	}
 
 	void Module::load(const pugi::xml_node &node) {
+		Controller::getInstance().load(node);
+	}
+
+	void Module::load(const char *name, bool required) {
+		Controller::getInstance().load(name,required);
+	}
+
+	void Module::Controller::load(const pugi::xml_node &node) {
 
 		const char * name = Object::getAttribute(node,"name","");
 		if(!*name) {
 			throw runtime_error("Required attribute 'name' is missing");
 		}
 
-		load(name,Object::getAttribute(node,"modules","required",true));
+		auto handle = open(name,Object::getAttribute(node,"modules","required",true));
 
-	}
+		if(!handle)
+			return;
 
-	void Module::load(const char *name, bool required) {
-		Controller::getInstance().load(name,required);
+		try {
+
+			auto module = init(handle,node);
+			module->handle = handle;
+
+		} catch(...) {
+
+			close(handle);
+			throw;
+
+		}
+
 	}
 
 	void Module::Controller::load(const char *name, bool required) {
