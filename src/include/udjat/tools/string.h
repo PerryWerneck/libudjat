@@ -93,11 +93,11 @@
 		/// @brief Expand ${} macros.
 		String & expand(bool dynamic = true, bool cleanup = true);
 
-		/**
-		 * @brief Expand ${} macros.
-		 *
-		 */
+		/// @brief Expand ${} macros.
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
+
+		/// @brief Expand ${} macros.
+		String & expand(const pugi::xml_node &node);
 
 		String & strip() noexcept;
 

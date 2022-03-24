@@ -20,6 +20,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/client.h>
+ #include <udjat/tools/xml.h>
  #include <cstring>
  #include <ctype.h>
  #include <cstdlib>
@@ -78,6 +79,34 @@
 		return expand([](const char UDJAT_UNUSED(*key), std::string UDJAT_UNUSED(&str)){
 			return false;
 		},dynamic,cleanup);
+	}
+
+	String & String::expand(const pugi::xml_node &node) {
+
+		return expand([node](const char *key, std::string &value){
+
+			pugi::xml_attribute attribute;
+
+			attribute = Object::getAttribute(node,key);
+			if(attribute) {
+				value = attribute.as_string();
+				return true;
+			}
+
+			attribute = Object::getAttribute(node,key,false);
+			if(attribute) {
+				value = attribute.as_string();
+				return true;
+			}
+
+			// Not expanded
+			return false;
+
+		},
+		node.attribute("expand-dynamic").as_bool(true),
+		node.attribute("clear-undefined").as_bool(true)
+		);
+
 	}
 
 	static string expandFromURL(const string &url) {

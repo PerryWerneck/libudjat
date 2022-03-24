@@ -36,6 +36,9 @@
 			Module(const Quark &name, const ModuleInfo &info) : Module(name.c_str(),info) {
 			}
 
+			/// @brief Navigate on module options.
+			static void options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call);
+
 		public:
 
 			/// @brief Load modules from configuration file.
