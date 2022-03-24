@@ -3,10 +3,6 @@
 #include "private.h"
 #include <udjat/tools/string.h>
 
-#ifndef _WIN32
-	#include <dlfcn.h>
-#endif // _WIN32
-
 using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -33,22 +29,6 @@ namespace Udjat {
 
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
-	}
-
-	std::string Module::filename() const {
-#ifdef _WIN32
-		TCHAR path[MAX_PATH];
-		if(GetModuleFileName(this->handle, path, MAX_PATH) ) {
-			return (const char *) path;
-		}
-#else
-		Dl_info info;
-		memset(&info,0,sizeof(info));
-		if(dladdr(&this->info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
-			return info.dli_fname;
-		}
-#endif // _WIN32
-		return name;
 	}
 
 	void Module::options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call) {

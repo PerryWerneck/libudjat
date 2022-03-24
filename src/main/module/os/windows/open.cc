@@ -121,51 +121,5 @@
 
 	}
 
-	void * Module::Controller::getSymbol(HMODULE hModule, const char *name, bool required) {
-
-		void * symbol = (void *) GetProcAddress(hModule,name);
-
-		if(required && !symbol) {
-			throw Win32::Exception(string{"Can't find symbol '"} + name + "'");
-		}
-
-		return symbol;
-	}
-
-	Module * Module::Controller::init(HMODULE handle, const pugi::xml_node &node) {
-
-		Module * (*init_from_xml)(const pugi::xml_node &node)
-				= (Module * (*)(const pugi::xml_node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
-
-		if(init_from_xml) {
-
-			Module * module = init_from_xml(node);
-			if(!module) {
-				throw runtime_error("Can't initialize module");
-			}
-
-			module->handle = handle;
-			return module;
-
-		}
-
-		return init(handle);
-
-	}
-
-	Module * Module::Controller::init(HMODULE handle) {
-
-		Module * (*init)(void) = (Module * (*)(void)) getSymbol(handle,"udjat_module_init");
-
-		Module * module = init();
-		if(!module) {
-			throw runtime_error("Can't initialize module");
-		}
-
-		module->handle = handle;
-
-		return module;
-
-	}
  }
 
