@@ -65,6 +65,29 @@ int main(int argc, char **argv) {
 			srand(time(NULL));
 		}
 
+		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const override {
+
+			class RandomAgent : public Agent<unsigned int> {
+			private:
+				unsigned int limit = 5;
+
+			public:
+				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
+					load(node);
+				}
+
+				bool refresh() override {
+					set( ((unsigned int) rand()) % limit);
+					return true;
+				}
+
+			};
+
+			return make_shared<RandomAgent>(node);
+
+		}
+
+		/*
 		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
 
 			class RandomAgent : public Agent<unsigned int> {
@@ -88,6 +111,7 @@ int main(int argc, char **argv) {
 
 			return true;
 		}
+		*/
 
 	};
 

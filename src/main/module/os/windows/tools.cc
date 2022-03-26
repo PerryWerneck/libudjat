@@ -17,20 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/defs.h>
- #include <udjat-internals.h>
- #include <udjat/tools/mainloop.h>
- #include <cstring>
- #include <iostream>
-
- using namespace std;
+ #include <config.h>
+ #include "../../private.h"
+ #include <udjat/win32/exception.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
+ #include <fcntl.h>
 
  namespace Udjat {
 
- 	MainLoop & MainLoop::getInstance() {
-		lock_guard<mutex> lock(guard);
-		static MainLoop instance;
-		return instance;
+	std::string Module::filename() const {
+		TCHAR path[MAX_PATH];
+		if(GetModuleFileName(this->handle, path, MAX_PATH) ) {
+			return (const char *) path;
+		}
+		return name;
+	}
+
+	void * Module::Controller::getSymbol(HMODULE hModule, const char *name, bool required) {
+
+		void * symbol = (void *) GetProcAddress(hModule,name);
+
+		if(required && !symbol) {
+			throw Win32::Exception(string{"Can't find symbol '"} + name + "'");
+		}
+
+		return symbol;
 	}
 
  }
+

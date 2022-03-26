@@ -221,7 +221,7 @@
 		Module::load();
 
 		if(definitions) {
-			reconfigure(definitions);
+			reconfigure(definitions,true);
 		}
 
 	}

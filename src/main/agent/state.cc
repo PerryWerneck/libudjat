@@ -65,7 +65,7 @@ namespace Udjat {
 			// Then check the children.
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
-				for(auto child : children) {
+				for(auto child : children.agents) {
 					if(child->level() > state->level()) {
 						state = child->state();
 					}

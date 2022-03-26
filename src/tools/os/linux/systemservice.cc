@@ -41,19 +41,19 @@
 
 	void SystemService::onReloadSignal(int signal) noexcept {
 
-		Application::info() << "Reconfigure request received from signal " << strsignal(signal) << endl;
+		info() << "Reconfigure request received from signal " << strsignal(signal) << endl;
 
 		try {
 
 			ThreadPool::getInstance().push([](){
 				if(instance) {
-					instance->reconfigure(instance->definitions);
+					instance->reconfigure(instance->definitions,true);
 				}
 			});
 
 		} catch(const std::exception &e) {
 
-			Application::error() << e.what() << endl;
+			error() << e.what() << endl;
 
 		}
 
@@ -65,7 +65,7 @@
 		Module::load();
 
 		if(definitions) {
-			reconfigure(definitions);
+			reconfigure(definitions,true);
 			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
 				cout << "service\tUse SIGUSR1 to reload " << definitions << endl;
 			}
@@ -125,7 +125,7 @@
 
 		case 'C':	// Enable core dumps.
 			{
-				if(optarg) {
+				if(optarg && *optarg) {
 					ofstream ofs;
 					ofs.open("/proc/sys/kernel/core_pattern",ofstream::out);
 					ofs << optarg;
@@ -137,9 +137,9 @@
 				core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
 
 				if(setrlimit(RLIMIT_CORE, &core_limits)) {
-					cerr << name() << "\tError \"" << strerror(errno) << "\" activating coredumps" << endl;
+					error() << "Error \"" << strerror(errno) << "\" activating coredumps" << endl;
 				} else {
-					cout << name() << "\tCoredumps are active" << endl;
+					info() << "Coredumps are active" << endl;
 				}
 			}
 			return -2;
@@ -160,13 +160,14 @@
 			char option;
 			const char *key;
 		} options[] = {
-			{ 'C', "coredump" },
+			{ 'C', "core" },
 			{ 'd', "daemon" },
 			{ 'f', "foreground" }
 		};
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
+				cout << "********************* " << key << endl;
 				return cmdline(options[option].option);
 			}
 		}
@@ -194,9 +195,9 @@
 			return rc;
 
 		} catch(const std::exception &e) {
-			cerr << name() << "\t" << e.what() << endl;
+			error() << e.what() << endl;
 		} catch(...) {
-			cerr << name() << "\tUnexpected error" << endl;
+			error() << "\tUnexpected error" << endl;
 		}
 
 		return -1;

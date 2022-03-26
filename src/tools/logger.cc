@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/tools/logger.h>
  #include <cstring>
+ #include <list>
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -39,40 +40,63 @@
 		"error"
 	};
 
+	class Logger::Controller {
+	public:
+		std::list<Buffer *> buffers;
+
+		Controller() {
+		};
+
+		~Controller();
+
+		static Controller & getInstance();
+
+		Buffer * BufferFactory(Level id);
+	};
+
 	std::mutex Logger::guard;
 	Logger::Level Logger::level = Logger::Error;
 
-#ifndef _WIN32
-	//
-	// Log writer
-	//
-	void Logger::Writer::write(int fd, const std::string &str) {
+	Logger::Controller & Logger::Controller::getInstance() {
+		static Controller instance;
+		return instance;
+	}
 
-		size_t bytes = str.size();
-		const char *ptr = str.c_str();
+	Logger::Controller::~Controller() {
+		while(!buffers.empty()) {
+			Buffer * buffer = buffers.back();
+			buffers.pop_back();
+			delete buffer;
+		}
+	}
 
-		while(bytes > 0) {
+	Logger::Buffer * Logger::Controller::BufferFactory(Level level) {
 
-			ssize_t sz = ::write(fd,ptr,bytes);
-			if(sz < 0)
-				return;
-			bytes -= sz;
-			ptr += sz;
-
+		for(auto buffer : buffers) {
+			if(buffer->level == level && buffer->thread == pthread_self()) {
+				return buffer;
+			}
 		}
 
+		Buffer * bf = new Buffer(pthread_self(),level);
+		buffers.push_back(bf);
+		return bf;
+
 	}
-#endif // !_WIN32
+
+	Logger::Buffer::~Buffer() {
+		Controller::getInstance().buffers.remove(this);
+	}
 
 	/// @brief Writes characters to the associated output sequence from the put area.
 	int Logger::Writer::overflow(int c) {
 
 		lock_guard<std::mutex> lock(guard);
-		Buffer & buffer = Buffer::getInstance(id);
+		Buffer * buffer = Controller::getInstance().BufferFactory(id);
 
-		if(buffer.push_back(c)) {
-			write(buffer);
-			buffer.clear();
+		if(buffer->push_back(c)) {
+			write(*buffer);
+			delete buffer;
 		}
 
 		return c;
@@ -84,15 +108,7 @@
 		return 0;
 	}
 
-	//
-	// @brief Log buffer
-	//
-	Logger::Writer::Buffer & Logger::Writer::Buffer::getInstance(Level id) {
-		static Buffer instances[3];
-		return instances[id];
-	}
-
-	bool Logger::Writer::Buffer::push_back(int c) {
+	bool Logger::Buffer::push_back(int c) {
 
 		if(c == EOF || c == '\n' || c == '\r') {
 			return true;

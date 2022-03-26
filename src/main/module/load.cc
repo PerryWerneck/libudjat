@@ -24,7 +24,7 @@ namespace Udjat {
 
 	void Module::load() {
 
-		Config::Value<vector<string>> modules("modules","load","");
+		Config::Value<vector<string>> modules("modules","load-at-startup","");
 
 		if(modules.empty()) {
 			cout << "modules\tNo preload modules" << endl;
@@ -41,238 +41,57 @@ namespace Udjat {
 	}
 
 	void Module::load(const pugi::xml_node &node) {
+		Controller::getInstance().load(node);
+	}
 
-		string path{Object::getAttribute(node,"modules","path","")};
-		bool required = Object::getAttribute(node,"modules","required",true);
+	void Module::load(const char *name, bool required) {
+		Controller::getInstance().load(name,required);
+	}
 
-		if(!path.empty()) {
-			Module::Controller::getInstance().load(path.c_str(),required);
-			return;
-		}
+	void Module::Controller::load(const pugi::xml_node &node) {
 
 		const char * name = Object::getAttribute(node,"name","");
 		if(!*name) {
 			throw runtime_error("Required attribute 'name' is missing");
 		}
 
-		load(name,required);
+		auto handle = open(name,Object::getAttribute(node,"modules","required",true));
 
-	}
-
-	void Module::load(const char *name, bool required) {
-
-		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
-
-#ifdef _WIN32
-		// Scan WIN32 module paths.
-		Application::LibDir libdir;
-
-		// FIXME: Detect the right path.
-		string paths[] = {
-			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
-#if defined(__x86_64__)
-			// 64 bit detected
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw64\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw64\\lib\\udjat-modules\\"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw64/lib/udjat-modules/" PACKAGE_VERSION "/"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw64/lib/udjat-modules/"
-			),
-#elif  defined(__i386__)
-			// 32 bit detected
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw32\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw32\\lib\\udjat-modules\\"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw32/lib/udjat-modules/" PACKAGE_VERSION "/"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw32/lib/udjat-modules/"
-			),
-#else
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				(libdir + "udjat-modules\\" + PACKAGE_VERSION "\\").c_str()
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				(libdir + "udjat-modules\\").c_str()
-			),
-#endif
-		};
-#else
-		// Scan Linux module paths.
-		string paths[] = {
-			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
-			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
-#ifdef LIBDIR
-			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
-#endif //LIBDIR
-		};
-#endif // _WIN32
-
-		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
-			string filename = paths[ix] + configured + MODULE_EXT;
-			if(access(filename.c_str(),R_OK) == 0) {
-				auto module = Module::Controller::getInstance().load(filename.c_str(),required);
-				if(module) {
-					return;
-				}
-			}
-#ifdef DEBUG
-			else {
-				cout << "modules\tNot found in " << filename << " (" << ix << ")" << endl;
-			}
-#endif // DEBUG
-
-		}
-
-		cerr << "modules\tCant find module '" << name << "'" << endl;
-		return;
-	}
-
-	Module * Module::Controller::load(const char *filename, bool required) {
-
-		// Check if is already loaded.
-		for(auto module : modules) {
-
-			if(!strcasecmp(module->filename().c_str(),filename)) {
-#ifdef DEBUG
-				cout << "module\tModule '" << module->name << "' is already loaded" << endl;
-#endif // DEBUG
-				return module;
-			}
-
-		}
-
-		// First check if the file is acessible.
-		if(access(filename,R_OK) != 0) {
-
-			// Check if the module exists.
-
-			string message{"Cant access '"};
-			message += filename;
-			message += "' - ";
-			message += strerror(errno);
-			if(required) {
-				throw runtime_error(message);
-			}
-
-			clog << "module\t" << message << endl;
-			return nullptr;
-		}
-
-		// Load module
-		cout << "module\tLoading '" << filename << "'" << endl;
-
-		Module * (*init)(void);
-		Module * module = nullptr;
-
-#ifdef _WIN32
-
-		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
-		HMODULE handle = LoadLibrary(filename);
-		if(!handle) {
-			string message = Win32::Exception::format(GetLastError());
-
-			if(required) {
-				throw runtime_error(string{"Cant load '"} + filename + "' - " + message.c_str());
-			}
-
-			clog << "module\tCant load '" << filename << "': " << message << endl;
-
-			return nullptr;
-		}
+		if(!handle)
+			return;
 
 		try {
 
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wcast-function-type"
-			init = (Module * (*)(void)) GetProcAddress(handle,"udjat_module_init");
-			#pragma GCC diagnostic pop
-			if(!init) {
-				throw Win32::Exception("Cant get module init method");
-			}
-
-			module = init();
-			if(!module) {
-				throw runtime_error("Can't initialize module");
-			}
-
+			auto module = init(handle,node);
 			module->handle = handle;
 
 		} catch(...) {
 
-			FreeLibrary(handle);
+			close(handle);
 			throw;
 
 		}
 
-#else
+	}
 
-		dlerror();
+	void Module::Controller::load(const char *name, bool required) {
 
-		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
-		if(handle == NULL) {
-			if(required) {
-				throw runtime_error(dlerror());
-			}
-			clog << "module\t" << dlerror() << endl;
-			return nullptr;
-		}
+		auto handle = open(name,required);
+
+		if(!handle)
+			return;
 
 		try {
 
-			init = (Module * (*)(void)) dlsym(handle,"udjat_module_init");
-			auto err = dlerror();
-			if(err)
-				throw runtime_error(err);
-
-			module = init();
-			if(!module) {
-				throw runtime_error("Can't initialize module");
-			}
-
+			auto module = init(handle);
 			module->handle = handle;
 
 		} catch(...) {
 
-			dlclose(handle);
-			handle = NULL;
+			close(handle);
 			throw;
 
 		}
-
-#endif // _WIN32
-
-		return module;
 
 	}
 

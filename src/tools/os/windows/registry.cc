@@ -169,9 +169,31 @@
 		return rc;
 	}
 
+	void Win32::Registry::set(HKEY hK, const char *name, const char *value) {
+
+		DWORD dwRet = RegSetValueEx(
+							hK,
+							(LPCSTR) name,
+							0,
+							REG_SZ,
+							(const BYTE *) value,
+							(DWORD) strlen(value)
+					);
+
+		if(dwRet != ERROR_SUCCESS) {
+			throw Win32::Exception(dwRet);
+		}
+
+	}
+
 	std::string Win32::Registry::get(const char *name, const char *def) const {
 		return get(hKey, name, def);
 	}
+
+	void Win32::Registry::set(const char *name, const char *value) {
+		set(hKey, name, value);
+	}
+
 
 	bool Win32::Registry::hasKey(const char *name) const noexcept {
 

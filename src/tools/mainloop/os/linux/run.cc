@@ -30,24 +30,41 @@
  #include <cstring>
  #include <udjat-internals.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/application.h>
  #include <iostream>
  #include <unistd.h>
+ #include <csignal>
 
  using namespace std;
 
+ static void onInterruptSignal(int signal) noexcept {
+
+ 	// Use thread to avoid semaphore dead lock.
+	Udjat::Application::warning() << "Received '" << strsignal(signal) << "' signal" << endl;
+	Udjat::MainLoop::getInstance().quit();
+
+ }
+
  void Udjat::MainLoop::run() {
 
-	/// Poll.
-	nfds_t szPoll = 2;
-	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
-	memset(fds,0,sizeof(struct pollfd) *szPoll);
-
+	//
 	// Start services
+	//
 	start();
+
+	//
+	// Capture signals
+	//
+	signal(SIGTERM,onInterruptSignal);
+	signal(SIGINT,onInterruptSignal);
 
  	//
  	// Main event loop
  	//
+	nfds_t szPoll = 2;
+	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
+	memset(fds,0,sizeof(struct pollfd) *szPoll);
+
  	this->enabled = true;
  	while(this->enabled) {
 
@@ -99,11 +116,9 @@
 				continue;
 			}
 
-			for(auto handle = handlers.begin(); handle != handlers.end(); handle++) {
+			for(auto handle : handlers) {
 
-				if(handle->fd == fds[sock].fd && (handle->events & fds[sock].events) != 0 && !handle->running) {
-
-					handle->running = time(nullptr);
+				if(handle->fd == fds[sock].fd && (handle->events & fds[sock].events) != 0) {
 
 					try {
 
@@ -120,7 +135,6 @@
 
 					}
 
-					handle->running = 0;
 					break;
 
 				}
@@ -133,7 +147,15 @@
 
  	free(fds);
 
+ 	//
+ 	// Restore signals
+ 	//
+	signal(SIGTERM,SIG_DFL);
+	signal(SIGINT,SIG_DFL);
+
+	//
  	// Stop services
+ 	//
 	stop();
 
  }

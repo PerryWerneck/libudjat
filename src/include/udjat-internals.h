@@ -71,13 +71,10 @@
 		/// @brief The timer identifier.
 		const void *id;
 
-		/// @brief Is the timer running.
-		bool running = false;
-
 		/// @brief The interval in milliseconds.
 		unsigned long interval;
 
-		/// @brief The interval in milliseconds.
+		/// @brief The of next call.
 		unsigned long next;
 
 		/// @brief The timer method.
@@ -91,20 +88,6 @@
 
 		/// @brief Reset timer.
 		void reset(unsigned long milliseconds);
-
-	};
-
-	class MainLoop::Handler {
-	public:
-
-		const void *id;
-		int fd;
-		Event events;
-		time_t running;			///< @brief Is the callback running?
-
-		const std::function<bool(const Event event)> call;
-
-		Handler(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 	};
 

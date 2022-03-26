@@ -35,12 +35,42 @@
 
 	namespace HTTP {
 
+		static const std::function<bool(double current, double total)> dummy_progress([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)) {
+			return true;
+		});
+
+		static void setup_cache(std::shared_ptr<Protocol::Worker> worker, const char *filename) {
+
+			struct stat st;
+
+			if(stat(filename,&st) < 0) {
+
+				if(errno != ENOENT) {
+					throw system_error(errno,system_category(),Logger::Message("Can't stat '{}'",filename));
+				}
+
+				cout << "http\tDownloading '" << filename << "'" << endl;
+
+			} else {
+
+				worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
+
+#ifdef DEBUG
+				cout << "Last modification time: " << worker->header("If-Modified-Since") << endl;
+#endif // DEBUG
+
+			}
+		}
+
 		String get(const char *url) {
 			return Client(url).get();
 		}
 
 		bool save(const char *url, const char *filename) {
 			return Client(url).save(filename);
+		}
+
+		Client::Client(const pugi::xml_node &node) : Client(node.attribute("src").as_string()) {
 		}
 
 		Client::Client(const URL &url) {
@@ -91,7 +121,7 @@
 		}
 
 		String Client::get() {
-			return get([](double UDJAT_UNUSED(current),double UDJAT_UNUSED(total)){return true;});
+			return get(dummy_progress);
 		}
 
 		String Client::post(const char *payload, const std::function<bool(double current, double total)> &progress) {
@@ -107,34 +137,30 @@
 		bool Client::save(const char *filename, const std::function<bool(double current, double total)> &progress) {
 			worker->payload(payload.str());
 			worker->method(Get);
-
-			struct stat st;
-
-			if(stat(filename,&st) < 0) {
-
-				if(errno != ENOENT) {
-					throw system_error(errno,system_category(),Logger::Message("Can't stat '{}'",filename));
-				}
-
-				cout << "http\tDownloading '" << filename << "'" << endl;
-
-			} else {
-
-				worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
-
-#ifdef DEBUG
-				cout << "Last modification time: " << worker->header("If-Modified-Since") << endl;
-#endif // DEBUG
-
-			}
-
+			setup_cache(worker,filename);
 			return worker->save(filename,progress);
 		}
 
 		bool Client::save(const char *filename) {
-			return save(filename,[](double UDJAT_UNUSED(current),double UDJAT_UNUSED(total)){return true;});
+			return save(filename,dummy_progress);
 		}
 
+		bool Client::save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
+
+			Client client(node);
+
+			if(node.attribute("cache").as_bool(true)) {
+				setup_cache(client.worker,filename);
+			} else {
+				cout << "http\tCache was disabled for '" << filename << "'" << endl;
+			}
+
+			return client.worker->save(filename,progress);
+		}
+
+		bool Client::save(const pugi::xml_node &node, const char *filename) {
+			return save(node,filename,dummy_progress);
+		}
 	}
 
  }

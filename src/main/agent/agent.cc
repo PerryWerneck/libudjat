@@ -72,7 +72,7 @@ namespace Udjat {
 
 		// Deleted! My children are now orphans.
 		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto child : children) {
+		for(auto child : agents()) {
 			child->parent = nullptr;
 		}
 
@@ -83,7 +83,7 @@ namespace Udjat {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
-		for(auto childptr = children.rbegin(); childptr != children.rend(); childptr++) {
+		for(auto childptr = children.agents.rbegin(); childptr != children.agents.rend(); childptr++) {
 
 			auto agent = *childptr;
 			try {

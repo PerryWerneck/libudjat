@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat-internals.h>
+ #include <udjat/tools/application.h>
  #include <sys/time.h>
  #include <iostream>
 
@@ -52,76 +53,93 @@
 
 	unsigned long MainLoop::Timers::run() noexcept {
 
-		lock_guard<mutex> lock(guard);
-
 		unsigned long now = MainLoop::Timer::getCurrentTime();
-		unsigned long wait = 60000;
+		unsigned long next = now + 60000;
 
-		active.remove_if([this,now,&wait](Timer &timer) {
+		//
+		// Get expired timers.
+		//
+		std::list<std::shared_ptr<Timer>> timers;
+		{
+			lock_guard<mutex> lock(guard);
 
-			// No interval; looks like the timer was deactivated.
-			// Do I still active? Return true *only* if not running.
-			if(!timer.interval) {
-				return !timer.running;
-			}
+			active.remove_if([this,now,&next,&timers](auto timer) {
 
-			if(timer.next <= now) {
-
-				try {
-
-					if(!timer.call()) {
-						return true;
-					}
-
-				} catch(const std::exception &e) {
-
-					cerr << "MainLoop\tTimer error '" << e.what() << "'" << endl;
-
-				} catch(...) {
-
-					cerr << "MainLoop\tUnexpected error on timer" << endl;
-
-				}
-
-				if(!timer.interval) {
+				if(!timer->interval) {
 					return true;
 				}
 
-				timer.next = now + timer.interval;
-				wait = std::min(wait,timer.interval);
+				if(timer->next <= now) {
+					timers.push_back(timer);
+				} else {
+					next = std::min(next,timer->next);
+				}
 
-			} else {
+				return false;
+			});
 
-				wait = std::min(wait,timer.next-now);
+		}
+
+		//
+		// Call expired timers
+		//
+		for(auto timer : timers) {
+
+			try {
+
+				if(!timer->call()) {
+					timer->interval = 0;
+				}
+
+			} catch(const std::exception &e) {
+
+				Application::error() << "Timer error '" << e.what() << "'" << endl;
+				timer->interval = 0;
+
+			} catch(...) {
+
+				Application::error() << "Unexpected error on timer" << endl;
+				timer->interval = 0;
 
 			}
 
-			return false;
+			if(timer->interval) {
+				timer->next = now + timer->interval;
+				next = std::min(next,timer->next);
+			} else {
+				lock_guard<mutex> lock(guard);
+				active.remove(timer);
+			}
 
-		});
+		}
 
-		return wait;
+		return next - now;
 	}
 
 	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
 
-		lock_guard<mutex> lock(guard);
-		timers.active.emplace_back(id,interval,call);
+		{
+			lock_guard<mutex> lock(guard);
+			timers.active.push_back(make_shared<Timer>(id,interval,call));
+		}
 		wakeup();
 
 	}
 
 	bool MainLoop::reset(const void *id, unsigned long interval) {
 
-		lock_guard<mutex> lock(guard);
-		for(auto timer = timers.active.begin(); timer != timers.active.end(); timer++) {
-
-			if(timer->id == id) {
-				timer->reset(interval);
-				return true;
+		{
+			lock_guard<mutex> lock(guard);
+			for(auto timer : timers.active) {
+				if(timer->id == id) {
+					timer->reset(interval);
+					return true;
+				}
 			}
-
 		}
+
+		wakeup();
+
 		return false;
 
 	}

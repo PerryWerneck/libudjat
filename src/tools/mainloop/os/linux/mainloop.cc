@@ -29,7 +29,7 @@
  namespace Udjat {
 
 	MainLoop::MainLoop() {
-		cout << "MainLoop\tStarting service loop" << endl;
+		cout << "MainLoop\tInitializing service loop" << endl;
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
@@ -40,12 +40,12 @@
 
 		if(!handlers.empty()) {
 
-			cerr << "MainLoop\tStopping mainloop with " << handlers.size() << " pending handler(s)" << endl;
+			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
 			lock_guard<mutex> lock(guard);
 			handlers.clear();
 
 		} else {
-			cout << "MainLoop\tStopping clean service loop" << endl;
+			cout << "MainLoop\tDestroying clean service loop" << endl;
 		}
 
 		enabled = false;
@@ -57,7 +57,7 @@
 		}
 
 #ifdef DEBUG
-		cout << "MainLoop\tMainloop has stopped" << endl;
+		cout << "MainLoop\tMainloop was destroyed" << endl;
 #endif // DEBUG
 
 	}

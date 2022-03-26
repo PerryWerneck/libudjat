@@ -18,6 +18,30 @@ namespace Udjat {
 
 		list<Module *> modules;
 
+#ifdef _WIN32
+
+		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);
+		static Module * init(HMODULE hModule);
+		static Module * init(HMODULE hModule, const pugi::xml_node &node);
+
+		HMODULE open(const char *name, bool required);
+		void close(HMODULE module);
+		bool deinit(HMODULE handle);
+		void unload(HMODULE handle, const string &name, const string &description) const;
+
+#else
+
+		static void * getSymbol(void *handle, const char *name, bool required = true);
+		static Module * init(void *handle);
+		static Module * init(void *handle, const pugi::xml_node &node);
+
+		void * open(const char *name, bool required);
+		void close(void *module);
+		bool deinit(void *handle);
+		void unload(void *handle, const string &name, const string &description) const;
+
+#endif // _WIN32
+
 	public:
 		Controller();
 		~Controller();
@@ -29,10 +53,10 @@ namespace Udjat {
 
 		void unload();
 
-		Module * load(const char *filename, bool required = true);
+		void load(const char *name, bool required = true);
+		void load(const pugi::xml_node &node);
 
 		const Module * find(const char *name) const noexcept;
-
 
 		void getInfo(Response &response) noexcept;
 

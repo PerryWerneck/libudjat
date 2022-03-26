@@ -84,11 +84,9 @@
 		<Unit filename="src/include/udjat/tools/value.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
-		<Unit filename="src/include/udjat/win32/http.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
 		<Unit filename="src/include/udjat/win32/service.h" />
-		<Unit filename="src/include/udjat/win32/utils.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/alertfactory.cc" />
@@ -121,6 +119,14 @@
 		<Unit filename="src/main/module/info.cc" />
 		<Unit filename="src/main/module/load.cc" />
 		<Unit filename="src/main/module/module.cc" />
+		<Unit filename="src/main/module/os/linux/close.cc" />
+		<Unit filename="src/main/module/os/linux/init.cc" />
+		<Unit filename="src/main/module/os/linux/open.cc" />
+		<Unit filename="src/main/module/os/linux/tools.cc" />
+		<Unit filename="src/main/module/os/windows/close.cc" />
+		<Unit filename="src/main/module/os/windows/init.cc" />
+		<Unit filename="src/main/module/os/windows/open.cc" />
+		<Unit filename="src/main/module/os/windows/tools.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
@@ -131,7 +137,7 @@
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
 		<Unit filename="src/main/service/private.h" />
-		<Unit filename="src/main/state/alertfactory.cc" />
+		<Unit filename="src/main/state/child.cc" />
 		<Unit filename="src/main/state/level.cc" />
 		<Unit filename="src/main/state/parse.cc" />
 		<Unit filename="src/main/state/private.h" />

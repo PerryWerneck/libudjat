@@ -35,7 +35,10 @@
  #include <udjat/module.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/http/client.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/configuration.h>
  #include <list>
 
 #ifndef _WIN32
@@ -109,128 +112,184 @@
 		}
 	}
 
-	void load_modules(const char *pathname) {
 
-		loader(pathname,[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-			for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-				Module::load(node);
-			}
-		});
-
-	}
-
-	UDJAT_PRIVATE time_t refresh_definitions(const char *pathname) {
-
+	struct Updater {
+		bool changed = false;
 		time_t next = 0;
 
-		struct FileDefinition {
-			std::string filename;
-			std::string url;
+		Updater(const char *pathname) {
 
-			FileDefinition(const char *f, const char *u) : filename(f), url(u) {
+			// First scan for modules.
+			if(Config::Value<bool>("modules","preload-from-xml",true)) {
+				cout << "modules\tPreloading from " << pathname << endl;
+				loader(pathname,[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
+					for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+						Module::load(node);
+					}
+				});
 			}
 
-		};
+			// Then check for file updates.
+			loader(pathname,[this](const char *filename, const pugi::xml_document &doc){
 
-		std::list<FileDefinition> definitions;
+					auto node = doc.document_element();
 
-		loader(pathname,[&next,&definitions](const char *filename, const pugi::xml_document &doc){
+					const char *url = node.attribute("src").as_string();
+					if(url && *url) {
 
-			auto node = doc.document_element();
+						time_t refresh = node.attribute("update-timer").as_uint(0);
 
-			const char *url = node.attribute("src").as_string();
-			if(url && *url) {
+						try {
 
-				time_t refresh = node.attribute("update-timer").as_uint(0);
-				if(refresh) {
-					if(next) {
-						next = std::min(next,refresh);
-					} else {
-						next = refresh;
+							Application::info() << "Updating " << filename << endl;
+							if(HTTP::Client::save(node,filename)) {
+								changed = true;
+							}
+
+						} catch(const std::exception &e) {
+
+							Application::error() << "Error '" << e.what() << "' updating " << filename << endl;
+							refresh = node.attribute("update-when-failed").as_uint(refresh);
+
+						} catch(...) {
+
+							Application::error() << "Unexpected error updating " << filename << endl;
+							refresh = node.attribute("update-when-failed").as_uint(refresh);
+
+						}
+
+						if(refresh) {
+							if(next) {
+								next = std::min(next,refresh);
+							} else {
+								next = refresh;
+							}
+						}
+
 					}
 
-					// TODO: Check for the file timestamps to see if an update is required.
-					definitions.emplace_back(filename,url);
+				});
 
-				} else {
-					definitions.emplace_back(filename,url);
-				}
-
-			}
-
-		});
-
-		// Update file(s)
-		if(!definitions.empty()) {
-			Application::info() << "Updating configuration files" << endl;
-			for(auto definition : definitions) {
-				try {
-					Application::info() << "Updating from '" << definition.url << "'" << endl;
-					URL(definition.url).get(definition.filename.c_str());
-				} catch(const std::exception &e) {
-					Application::error() << e.what() << endl;
-				} catch(...) {
-					Application::error() << "Unexpected error getting " << definition.url << endl;
-				}
-			}
-			Application::info() << "Updating complete" << endl;
 		}
 
-		return next;
-	}
 
-	void load_agent_definitions(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
+		/// @brief Update agent, set it as a new root.
+		void set(std::shared_ptr<Abstract::Agent> agent, const char *pathname) const noexcept {
 
-		loader(pathname,[agent](const char *filename, const pugi::xml_document &doc){
+			loader(pathname,[agent](const char *filename, const pugi::xml_document &doc){
 
-			agent->info() << "Loading '" << filename << "'" << endl;
+				agent->info() << "Loading '" << filename << "'" << endl;
 
-			try {
+				try {
 
-				auto node = doc.document_element();
-				const char *path = node.attribute("path").as_string();
+					auto node = doc.document_element();
+					const char *path = node.attribute("path").as_string();
 
-				if(path && *path) {
+					if(path && *path) {
 
-					// Has defined root path, find agent.
-					agent->find(path,true,true)->load(node);
+						// Has defined root path, find agent.
+						agent->find(path,true,true)->load(node);
 
-				} else {
+					} else {
 
-					// No path, load here.
-					agent->load(node);
+						// No path, load here.
+						agent->load(node);
+
+					}
+
+				} catch(const std::exception &e) {
+
+					agent->error() << filename << ": " << e.what() << endl;
+
+				} catch(...) {
+
+					agent->error() << filename << ": Unexpected error" << endl;
 
 				}
+			});
 
-			} catch(const std::exception &e) {
+		}
 
-				agent->error() << filename << ": " << e.what() << endl;
+	};
 
-			} catch(...) {
+	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
 
-				agent->error() << filename << ": Unexpected error" << endl;
+		Updater update(pathname);
+		if(!(update.changed || force)) {
+			Application::info() << "No changes, reconfiguration is not necessary" << endl;
+			return update.next;
+		}
+
+		auto agent = RootAgentFactory();
+		update.set(agent,pathname);
+		setRootAgent(agent);
+
+		return update.next;
+
+	}
+
+	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false) {
+
+		Updater update(pathname);
+		if(!(update.changed || force)) {
+			Application::info() << "No changes, reconfiguration is not necessary" << endl;
+			return update.next;
+		}
+
+		update.set(agent,pathname);
+		setRootAgent(agent);
+
+		return update.next;
+
+	}
+
+	void SystemService::reconfigure(const char *pathname, bool force) noexcept {
+
+		try {
+
+			Application::DataFile path(pathname);
+			Application::info() << "Reconfiguring from '" << path << "'" << endl;
+
+			Updater update(path.c_str());
+
+			if(!(update.changed || force)) {
+
+				info() << "No changes, reconfiguration is not necessary" << endl;
+
+			} else {
+
+				auto agent = RootFactory();
+				update.set(agent,pathname);
+				setRootAgent(agent);
 
 			}
-		});
+
+			if(update.next) {
+
+				Udjat::MainLoop::getInstance().insert(definitions,update.next*1000,[]{
+					ThreadPool::getInstance().push([]{
+						if(instance) {
+							instance->reconfigure(instance->definitions,false);
+						}
+					});
+					return false;
+				});
+
+				Application::info() << "Next reconfiguration set to " << TimeStamp(time(0)+update.next) << endl;
+
+			}
+
+		} catch(const std::exception &e ) {
+
+			Application::error() << "Reconfiguration has failed: " << e.what() << endl;
+
+		} catch(...) {
+
+			Application::error() << "Unexpected error during reconfiguration" << endl;
+
+		}
 
 	}
 
-	UDJAT_API time_t load(std::shared_ptr<Abstract::Agent> agent, const char *pathname) {
-
-		Udjat::load_modules(pathname);
-		time_t next = Udjat::refresh_definitions(pathname);
-		load_agent_definitions(agent,pathname);
-		setRootAgent(agent);
-		return next;
-	}
-
-	UDJAT_API time_t load(const char *pathname) {
-		Udjat::load_modules(pathname);
-		time_t next = Udjat::refresh_definitions(pathname);
-		auto agent = RootAgentFactory();
-		load_agent_definitions(agent,pathname);
-		setRootAgent(agent);
-		return next;
-	}
 
  }

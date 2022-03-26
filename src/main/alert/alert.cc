@@ -99,7 +99,11 @@
 			}
 		}
 
-		Protocol::call(url.c_str(),action,payload.c_str());
+		String response = Protocol::call(url.c_str(),action,payload.c_str());
+
+		if(verbose()) {
+			info() << response << endl;
+		}
 
 	}
 

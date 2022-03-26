@@ -74,6 +74,9 @@ namespace Udjat {
 
 			} else if(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module")) {
 
+				push_back(node);
+
+				/*
 				// Use factory to parse child nodes.
 				Factory::for_each(node.name(),[this,&node](const Factory &factory){
 
@@ -94,6 +97,7 @@ namespace Udjat {
 					return false;
 
 				});
+				*/
 
 			}
 

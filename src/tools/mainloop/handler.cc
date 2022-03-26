@@ -22,8 +22,74 @@
 
  namespace Udjat {
 
-	MainLoop::Handler::Handler(const void *i, int f, const Event e, const function<bool(const Event event)> c)
-		: id(i),fd(f),events(e),running(0),call(c) { }
+	void MainLoop::Handler::enable() noexcept {
+		enabled = true;
+		MainLoop::getInstance().wakeup();
+	}
+
+	void MainLoop::Handler::disable() noexcept {
+		enabled = false;
+		MainLoop::getInstance().wakeup();
+	}
+
+	void MainLoop::Handler::clear() noexcept {
+		fd = -1;
+		enabled = false;
+		MainLoop::getInstance().wakeup();
+	}
+
+	MainLoop::Handler::~Handler() {
+	}
+
+	void MainLoop::push_back(std::shared_ptr<MainLoop::Handler> handler) {
+
+		{
+			lock_guard<mutex> lock(guard);
+			handlers.push_back(handler);
+		}
+
+		wakeup();
+
+	}
+
+	void MainLoop::remove(std::shared_ptr<Handler> handler) {
+
+		{
+			lock_guard<mutex> lock(guard);
+			handlers.remove(handler);
+		}
+
+		handler->fd = -1;
+		handler->disable();
+
+	}
+
+	std::shared_ptr<MainLoop::Handler> MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
+
+		class CallHandler : public MainLoop::Handler {
+		private:
+			const function<bool(const Event event)> callback;
+
+		protected:
+			bool call(const Event event) const override {
+				return callback(event);
+			}
+
+		public:
+			CallHandler(const void *id, int fd, const Event event, const function<bool(const Event event)> c) : Handler(id,fd,event), callback(c) {
+			}
+
+			virtual ~CallHandler() {
+			}
+
+		};
+
+		std::shared_ptr<Handler> handler = make_shared<CallHandler>(id,fd,event,call);
+		push_back(handler);
+		return handler;
+
+	}
+
 
 #ifndef _WIN32
 	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
@@ -33,30 +99,30 @@
 		nfds_t nfds = 0;
 
 		// Get waiting sockets.
-		handlers.remove_if([fds,length,&nfds](Handler &handle) {
+		handlers.remove_if([fds,length,&nfds](auto handle) {
 
-			// Are we active? If not return true *only* if theres no pending event.
-			if(handle.fd <= 0)
-				return handle.running == 0;
+			if(handle->fd <= 0)
+				return true;
 
-			// Am I running? If yes don't pool for me, but keep me in the list.
-			if(handle.running)
-				return false;
+			if(handle->enabled) {
 
-			if(nfds >= (*length-1)) {
-				*length += 2;
-				*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
-				for(size_t ix = nfds; ix < *length; ix++) {
-					(*fds)[ix].fd = -1;
-					(*fds)[ix].events = 0;
-					(*fds)[ix].revents = 0;
+				if(nfds >= (*length-1)) {
+					*length += 2;
+					*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+					for(size_t ix = nfds; ix < *length; ix++) {
+						(*fds)[ix].fd = -1;
+						(*fds)[ix].events = 0;
+						(*fds)[ix].revents = 0;
+					}
 				}
+
+				(*fds)[nfds].fd = handle->fd;
+				(*fds)[nfds].events = handle->events;
+				(*fds)[nfds].revents = 0;
+				nfds++;
+
 			}
 
-			(*fds)[nfds].fd = handle.fd;
-			(*fds)[nfds].events = handle.events;
-			(*fds)[nfds].revents = 0;
-			nfds++;
 			return false;
 		});
 

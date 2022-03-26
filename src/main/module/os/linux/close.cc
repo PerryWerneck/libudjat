@@ -18,29 +18,38 @@
  */
 
  #include <config.h>
- #include "private.h"
- #include <udjat-internals.h>
+ #include "../../private.h"
+ #include <dlfcn.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
+ #include <unistd.h>
 
  namespace Udjat {
 
-	std::mutex MainLoop::guard;
-
-	void MainLoop::quit() {
-		enabled = false;
-		wakeup();
+	void Module::Controller::close(void *module) {
+		dlclose(module);
 	}
 
-	void MainLoop::remove(const void *id) {
+	bool Module::Controller::deinit(void *handle) {
+		bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
+		auto err = dlerror();
+		if(!err) {
+			return deinit();
+		}
+		return true;
+	}
 
-		lock_guard<mutex> lock(guard);
+	void Module::Controller::unload(void *handle, const string &name, const string &description) const {
 
-		timers.active.remove_if([id](auto timer){
-			return timer->id == id;
-		});
+#ifdef DEBUG
+		cout << "**** Releasing module " << hex << handle << dec << endl;
+#endif // DEBUG
 
-		handlers.remove_if([id](auto handler){
-			return handler->id == id;
-		});
+		if(dlclose(handle)) {
+			cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
+		} else {
+			cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
+		}
 
 	}
 

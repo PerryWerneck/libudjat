@@ -30,7 +30,7 @@
 		// Start children
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto child : children) {
+			for(auto child : children.agents) {
 
 				try {
 
@@ -55,7 +55,7 @@
 			// Check for children state
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
-				for(auto child : children) {
+				for(auto child : children.agents) {
 					if(child->level() > this->level()) {
 						this->current_state.active = child->current_state.active;
 					}

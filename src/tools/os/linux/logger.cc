@@ -44,6 +44,26 @@ namespace Udjat {
 		return instance;
 	}
 
+	//
+	// Log writer
+	//
+	void Logger::Writer::write(int fd, const std::string &str) {
+
+		size_t bytes = str.size();
+		const char *ptr = str.c_str();
+
+		while(bytes > 0) {
+
+			ssize_t sz = ::write(fd,ptr,bytes);
+			if(sz < 0)
+				return;
+			bytes -= sz;
+			ptr += sz;
+
+		}
+
+	}
+
 	void Logger::Writer::write(Buffer &buffer) {
 
 		// Remove spaces

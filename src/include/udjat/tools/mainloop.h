@@ -37,6 +37,57 @@ namespace Udjat {
 	class UDJAT_API MainLoop {
 	public:
 
+		enum Event : short {
+#ifdef _WIN32
+			// https://msdn.microsoft.com/en-us/library/windows/desktop/ms740094(v=vs.85).aspx
+			oninput         = POLLRDNORM,   		///< @brief There is data to read.
+			onoutput        = POLLWRNORM,   		///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
+			onerror         = POLLERR,              ///< @brief Error condition
+			onhangup        = POLLHUP,              ///< @brief Hang  up
+#else
+			oninput         = POLLIN,               ///< @brief There is data to read.
+			onoutput        = POLLOUT,              ///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
+			onerror         = POLLERR,              ///< @brief Error condition
+			onhangup        = POLLHUP,              ///< @brief Hang  up
+#endif // WIN32
+		};
+
+		///< @brief File/Socket handler
+		class UDJAT_API Handler {
+		private:
+			friend class MainLoop;
+
+			const void *id = nullptr;
+			bool enabled = true;
+
+		protected:
+
+			int fd = -1;
+			Event events = (Event) 0;
+
+			virtual bool call(const Event event) const = 0;
+
+		public:
+			constexpr Handler(const void *i, int f, const Event e) : id(i), fd(f), events(e) {
+			}
+
+			inline bool operator ==(const void *id) const noexcept {
+				return id == this->id;
+			}
+
+			/// @brief Enable handler.
+			void enable() noexcept;
+
+			/// @brief Disable handler.
+			void disable() noexcept;
+
+			/// @brief Remove and destroy handler.
+			void clear() noexcept;
+
+			virtual ~Handler();
+
+		};
+
 		/// @brief Service who can be started/stopped.
 		class UDJAT_API Service {
 		private:
@@ -123,7 +174,7 @@ namespace Udjat {
 		struct Timers {
 
 			/// @brief List of active timers.
-			std::list<Timer> active;
+			std::list<std::shared_ptr<Timer>> active;
 
 			/// @brief Run timers, return miliseconds to next timer.
 			unsigned long run() noexcept;
@@ -152,27 +203,9 @@ namespace Udjat {
 		//
 		// File/socket/Handle management
 		//
-
-		///< @brief File/Socket handler
-		class Handler;
-		std::list<Handler> handlers;
+		std::list<std::shared_ptr<Handler>> handlers;
 
 	public:
-
-		enum Event : short {
-#ifdef _WIN32
-			// https://msdn.microsoft.com/en-us/library/windows/desktop/ms740094(v=vs.85).aspx
-			oninput         = POLLRDNORM,   		///< @brief There is data to read.
-			onoutput        = POLLWRNORM,   		///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
-			onerror         = POLLERR,              ///< @brief Error condition
-			onhangup        = POLLHUP,              ///< @brief Hang  up
-#else
-			oninput         = POLLIN,               ///< @brief There is data to read.
-			onoutput        = POLLOUT,              ///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
-			onerror         = POLLERR,              ///< @brief Error condition
-			onhangup        = POLLHUP,              ///< @brief Hang  up
-#endif // WIN32
-		};
 
 		MainLoop(const MainLoop &src) = delete;
 		MainLoop(const MainLoop *src) = delete;
@@ -203,8 +236,15 @@ namespace Udjat {
 
 		#endif // _WIN32
 
+		/// @brief Insert socket/file handler in the list of event sources.
+		void push_back(std::shared_ptr<Handler> handler);
+
+		/// @brief Remove socket/file handler.
+		void remove(std::shared_ptr<Handler> handler);
+
 		/// @brief Insert socket/file in the list of event sources.
-		void insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
+		/// @return Socket/file handler.
+		std::shared_ptr<Handler> insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 		/// @brief Insert timer in the list of event sources.
 		/// @param id		Timer id.

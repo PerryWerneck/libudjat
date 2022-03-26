@@ -41,7 +41,7 @@
 			throw system_error(errno,system_category(),"Can't initialize inotify");
 		}
 
-		MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event event){
+		MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event UDJAT_UNUSED(event)) {
 
 			char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
 			memset(buffer,0,INOTIFY_EVENT_BUF_LEN);

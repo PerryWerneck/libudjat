@@ -69,37 +69,17 @@ namespace Udjat {
 
 		for(pugi::xml_node child : node) {
 
-			if(!strcasecmp(child.name(),"alert")) {
-
-				if(!AlertFactory(child)) {
-					error() << "Unable to create alert" << endl;
-				}
-
-			} else if(strcasecmp(child.name(),"attribute")) {
-
-				// Parse child using factories.
-				Factory::for_each(child.name(),[this,&child](const Factory & factory){
-
-					try {
-
-						factory.parse(*this,child);
-
-					} catch(const std::exception &e) {
-						factory.error() << "Error '" << e.what() << "' parsing <" << child.name() << ">" << endl;
-					} catch(...) {
-						factory.error() << "Unexpected error parsing <" << child.name() << ">" << endl;
-					}
-
-					return false;
-
-				});
-
+			if(strcasecmp(child.name(),"attribute")) {
+				push_back(child);
 			}
 
 		}
 
 		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
-			AlertFactory(node,node.attribute("alert-type").as_string("default"));
+			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string("default"));
+			if(alert) {
+				alerts.push_back(alert);
+			}
 		}
 
 	}

@@ -34,6 +34,7 @@
 			HKEY hKey = 0;
 
 			static std::string get(HKEY hK, const char *name, const char *def);
+			static void set(HKEY hK, const char *name, const char *value);
 
 		public:
 			Registry();
@@ -53,6 +54,8 @@
 
 			std::string get(const char *name, const char *def) const;
 			DWORD get(const char *name, DWORD def) const;
+
+			void set(const char *name, const char *value);
 
 			bool for_each(const char *group, const std::function<bool(const char *key, const char *value)> &call);
 

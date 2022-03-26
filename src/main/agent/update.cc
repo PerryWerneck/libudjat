@@ -77,7 +77,7 @@ namespace Udjat {
 		if(forward) {
 			// Check children
 			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto child : children) {
+			for(auto child : children.agents) {
 				child->chk4refresh(true);
 			}
 		}
@@ -99,9 +99,9 @@ namespace Udjat {
 		return false;
 	}
 
-	bool Abstract::Agent::hasStates() const noexcept {
-		return false;
-	}
+	//bool Abstract::Agent::hasStates() const noexcept {
+	//	return false;
+	//}
 
 	bool Abstract::Agent::updated(bool changed) noexcept {
 
@@ -126,7 +126,7 @@ namespace Udjat {
 			// Does any children has worst state? if yes; use-it.
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
-				for(auto child : children) {
+				for(auto child : children.agents) {
 
 					if(child->level() > new_state->level()) {
 						new_state = child->state();

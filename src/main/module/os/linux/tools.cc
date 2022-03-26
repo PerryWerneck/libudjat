@@ -17,28 +17,36 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- *
- * @brief Implements the state alert factory.
- *
- * @author perry.werneck@gmail.com
- *
- */
+ #include <config.h>
+ #include "../../private.h"
+ #include <dlfcn.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
+ #include <unistd.h>
 
- #include "private.h"
+ namespace Udjat {
 
- using namespace std;
+	void * Module::Controller::getSymbol(void *handle, const char *name	, bool required) {
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+		void * symbol = dlsym(handle,name);
 
-namespace Udjat {
-
-	std::shared_ptr<Abstract::Alert> Abstract::State::AlertFactory(const pugi::xml_node &node, const char *type) {
-		auto alert = Udjat::AlertFactory(*this, node, type);
-		if(alert) {
-			alerts.push_back(alert);
+		if(required) {
+			auto err = dlerror();
+			if(err)
+				throw runtime_error(err);
 		}
-		return alert;
+
+		return symbol;
 	}
 
-}
+	std::string Module::filename() const {
+		Dl_info info;
+		memset(&info,0,sizeof(info));
+		if(dladdr(&this->info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
+			return info.dli_fname;
+		}
+		return name;
+	}
+
+ }
+

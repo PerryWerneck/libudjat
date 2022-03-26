@@ -47,8 +47,15 @@
 			/// @brief Request payload.
 			std::ostringstream payload;
 
+			/// @brief Default progress dialog.
+			static const std::function<bool(double current, double total)> &default_progress;
+
 		public:
+
+			static void set(const std::function<bool(double current, double total)> progress);
+
 			Client(const URL &url);
+			Client(const pugi::xml_node &node);
 
 			Client(const char *url) : Client(URL(url)) {
 			}
@@ -99,6 +106,16 @@
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
 			bool save(const char *filename);
+
+			/// @brief Save filename based on XML definitions.
+			/// @param node XML node with URL & download settings.
+			/// @return true if the file was updated.
+			static bool save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress);
+
+			/// @brief Save filename based on XML definitions.
+			/// @param node XML node with URL & download settings.
+			/// @return true if the file was updated.
+			static bool save(const pugi::xml_node &node, const char *filename);
 
 		};
 

@@ -18,6 +18,7 @@
  */
 
 #include "private.h"
+#include <udjat/tools/configuration.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/exception.h>
@@ -47,8 +48,8 @@ namespace Udjat {
 				modules.pop_back();
 			}
 
-			string name(module->name);
-			string description(module->info.description);
+			string name{module->name};
+			string description{module->info.description};
 
 			cout << "modules\tUnloading '" << name << "' (" << description << ")" << endl;
 
@@ -59,42 +60,24 @@ namespace Udjat {
 			try {
 
 				// First delete module
+#ifdef DEBUG
+				cout << "**** Deleting module " << hex << module << dec << endl;
+#endif // DEBUG
 				delete module;
 
 				if(handle) {
 
-#ifdef _WIN32
-
-					// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-freelibrary
-					#pragma GCC diagnostic push
-					#pragma GCC diagnostic ignored "-Wcast-function-type"
-					bool (*deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
-					#pragma GCC diagnostic pop
-
-					if(deinit && !deinit()) {
-						cout << "modules\tModule '" << name << "' disabled (still open)" << endl;
-					} else if(FreeLibrary(handle) == 0) {
-						cerr << "modules\tError '" << GetLastError() << "' freeing module '" << name << "'" << endl;
-					} else {
-						cout << "modules\tModule '" << name << "' unloaded" << endl;
+					if(!deinit(handle)) {
+						cout << "modules\tModule '" << name << "'disabled (still open)" << endl;
+						continue;
 					}
 
-#else
-					bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
-					auto err = dlerror();
-					if(!err) {
-						if(!deinit()) {
-							cout << "modules\tModule '" << name << "'disabled (still open)" << endl;
-							continue;
-						}
+					if(Config::Value<bool>("modules","keep-loaded",false)) {
+						cout << "modules\tKeeping module '" << name << "' loaded by configuration request" << endl;
+					} else  {
+						unload(handle,name,description);
 					}
 
-					if(dlclose(handle)) {
-						cerr << "modules\tError '" << dlerror() << "' closing module '" << name << "'" << endl;
-					} else {
-						cout << "modules\tModule '" << name << "' (" << description << ") was unloaded" << endl;
-					}
-#endif // _WIN32
 				}
 
 			} catch(const exception &e) {
