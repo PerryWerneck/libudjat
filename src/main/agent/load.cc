@@ -10,6 +10,7 @@
  #include "private.h"
  #include <udjat/module.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/configuration.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -72,32 +73,19 @@ namespace Udjat {
 
 				}
 
-			} else if(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"module")) {
+			} else if(strcasecmp(node.name(),"module") == 0) {
+
+				// Only load module if 'preload' is not set.
+				if(!Config::Value<bool>("modules","preload-from-xml",true)) {
+#ifdef DEBUG
+					cout << "*** Loading module '" << node.attribute("name").as_string() << "' from xml" << endl;
+#endif // DEBUG
+					Module::load(node);
+				}
+
+			} else if(strcasecmp(node.name(),"attribute")) {
 
 				push_back(node);
-
-				/*
-				// Use factory to parse child nodes.
-				Factory::for_each(node.name(),[this,&node](const Factory &factory){
-
-					try {
-
-						return factory.parse(*this,node);
-
-					} catch(const std::exception &e) {
-
-						factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
-
-					} catch(...) {
-
-						factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
-
-					}
-
-					return false;
-
-				});
-				*/
 
 			}
 
