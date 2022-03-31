@@ -104,46 +104,42 @@
 
 		nfds_t nfds = 0;
 
-		cout << "hCount=" << handlers.size() << endl;
+#ifdef DEBUG
+		cout << handlers.size() << " registered handler(s)" << endl;
+#endif // DEBUG
 
 		// Get waiting sockets.
-		handlers.remove_if([fds,length,&nfds](auto handle) {
+		for(auto handle : handlers) {
 
-			if(handle->fd <= 0) {
-				cout << "Invalid FD (" << handle->fd << ", removing watcher" << endl;
-				return true;
-			}
-
-			if(handle->enabled) {
-
-				if(nfds >= (*length-1)) {
-					*length += 2;
-					*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
-					for(size_t ix = nfds; ix < *length; ix++) {
-						(*fds)[ix].fd = -1;
-						(*fds)[ix].events = 0;
-						(*fds)[ix].revents = 0;
-					}
-				}
-
-				handle->pfd = &(*fds)[nfds];
-				handle->pfd->fd = handle->fd;
-				handle->pfd->events = handle->events;
-				handle->pfd->revents = 0;
-				nfds++;
-
-				cout << "Handle " << handle->id() << " enabled - nfds=" << nfds << " pfd=" << handle->pfd << " events=" << handle->pfd->events << " " << handle->events << endl;
-
-			} else {
-
+			if(!handle->enabled || handle->fd <=0) {
 				handle->pfd = nullptr;
-
-				cout << "Handle " << handle->id() << " disabled" << endl;
-
+#ifdef DEBUG
+				cout << "Handle " << handle->id() << " is disabled (fd=" << handle->fd << ")" << endl;
+#endif // DEBUG
+				continue;
 			}
 
-			return false;
-		});
+			if(nfds >= (*length-1)) {
+				*length += 2;
+				*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+				for(size_t ix = nfds; ix < *length; ix++) {
+					(*fds)[ix].fd = -1;
+					(*fds)[ix].events = 0;
+					(*fds)[ix].revents = 0;
+				}
+			}
+
+			handle->pfd = &(*fds)[nfds];
+			handle->pfd->fd = handle->fd;
+			handle->pfd->events = handle->events;
+			handle->pfd->revents = 0;
+			nfds++;
+
+#ifdef DEBUG
+			cout << "Handle " << handle->id() << " enabled - nfds=" << nfds << " pfd=" << handle->pfd << " events=" << handle->pfd->events << " " << handle->events << endl;
+#endif // DEBUG
+
+		}
 
 		return nfds;
 	}

@@ -32,9 +32,14 @@
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/string.h>
+#else
+	#include <unistd.h>
 #endif // _WIN32
 
  using namespace std;
@@ -86,32 +91,6 @@ int main(int argc, char **argv) {
 			return make_shared<RandomAgent>(node);
 
 		}
-
-		/*
-		bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const override {
-
-			class RandomAgent : public Agent<unsigned int> {
-			private:
-				unsigned int limit = 5;
-
-			public:
-				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
-					cout << "Creating random Agent" << endl;
-					load(node);
-				}
-
-				bool refresh() override {
-					set( ((unsigned int) rand()) % limit);
-					return true;
-				}
-
-			};
-
-			parent.insert(make_shared<RandomAgent>(node));
-
-			return true;
-		}
-		*/
 
 	};
 
@@ -204,32 +183,6 @@ int main(int argc, char **argv) {
 		}
 
 	};
-
-	/*
-	cout << "webroot: '" << Application::DataDir("www/error-pages") << endl;
-
-	{
-		File::Temporary tempfile("test.tmp");
-
-		tempfile.write("teste\n");
-		tempfile.save();
-
-	}
-	*/
-
-	/*
-	cout 	<< "---------------------------" << endl
-			<< Config::Value<string>("service-events","max-tasks","sample") << endl
-			<< "Has service-events " << Config::hasGroup("service-events") << endl
-			<< "Has max-tasks " << Config::hasKey("service-events","max-tasks") << endl
-			<< "---------------------------"
-			<< endl;
-
-	Config::for_each("service-events",[](const char *key, const char *value){
-		cout << "config\t" << key << "='" << value << "'" << endl;
-		return true;
-	});
-	*/
 
 	return Service().run(argc,argv);
 }
