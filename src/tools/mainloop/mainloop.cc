@@ -39,7 +39,7 @@
 		});
 
 		handlers.remove_if([id](auto handler){
-			return handler->id == id;
+			return handler->id() == id;
 		});
 
 	}

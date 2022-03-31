@@ -68,26 +68,22 @@
  	this->enabled = true;
  	while(this->enabled) {
 
-		// Load lists.
-		nfds_t nfds = 0;
-
-		// Add event handle
+ 		// Setup FD list.
 		{
-			fds[nfds].fd = efd;
-			fds[nfds].events = POLLIN;
-			nfds++;
+			fds[0].fd = efd;
+			fds[0].events = POLLIN;
 		}
 
 		// Get wait time, update timers.
 		unsigned long wait = timers.run();
-		nfds += getHandlers(&fds, &szPoll);
+		nfds_t nfds = 1 + getHandlers(&fds, &szPoll);
 
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
 
-//#ifdef DEBUG
-//		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
-//#endif // DEBUG
+#ifdef DEBUG
+		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
+#endif // DEBUG
 
 		if(nSocks == 0) {
 			continue;
@@ -108,6 +104,58 @@
 
 		}
 
+		// Check for event fd.
+		if(fds[0].revents) {
+			uint64_t evNum;
+			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
+				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
+			}
+		}
+
+		// Check for fd handlers.
+		{
+			// First, get list of the active handlers.
+			std::list<std::shared_ptr<Handler>> hList;
+
+			{
+				lock_guard<mutex> lock(guard);
+				for(auto handle : handlers) {
+					if(handle->pfd && handle->pfd->revents) {
+						hList.push_back(handle);
+					}
+				}
+			}
+
+			// Second, call handlers
+			for(auto handle : hList) {
+
+				try {
+
+					if(!handle->call((const Event) handle->pfd->revents)) {
+						lock_guard<mutex> lock(guard);
+						cout << "Removing handle" << endl;
+						handlers.remove(handle);
+					}
+
+				} catch(const std::exception &e) {
+
+					cerr << "MainLoop\tError '" << e.what() << "' processing FD(" << handle->fd << "), disabling it" << endl;
+					handle->disable();
+
+				} catch(...) {
+
+					cerr << "MainLoop\tUnexpected error processing FD(" << handle->fd << "), disabling it" << endl;
+					handle->disable();
+
+				}
+
+				handle->pfd = nullptr;
+
+			}
+
+		}
+
+		/*
 		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
 
 			int event = fds[sock].revents;
@@ -156,6 +204,7 @@
 			}
 
 		}
+		*/
 
  	}
 

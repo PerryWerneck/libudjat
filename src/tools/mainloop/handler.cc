@@ -27,6 +27,10 @@
 		MainLoop::getInstance().wakeup();
 	}
 
+	const void * MainLoop::Handler::id() const noexcept {
+		return (void *) this;
+	}
+
 	void MainLoop::Handler::disable() noexcept {
 		enabled = false;
 		MainLoop::getInstance().wakeup();
@@ -68,6 +72,7 @@
 
 		class CallHandler : public MainLoop::Handler {
 		private:
+			const void * identifier;
 			const function<bool(const Event event)> callback;
 
 		protected:
@@ -76,10 +81,11 @@
 			}
 
 		public:
-			CallHandler(const void *id, int fd, const Event event, const function<bool(const Event event)> c) : Handler(id,fd,event), callback(c) {
+			CallHandler(const void *i, int fd, const Event event, const function<bool(const Event event)> c) : Handler(fd,event), identifier(i), callback(c) {
 			}
 
-			virtual ~CallHandler() {
+			const void * id() const noexcept override {
+				return identifier;
 			}
 
 		};
@@ -98,11 +104,15 @@
 
 		nfds_t nfds = 0;
 
+		cout << "hCount=" << handlers.size() << endl;
+
 		// Get waiting sockets.
 		handlers.remove_if([fds,length,&nfds](auto handle) {
 
-			if(handle->fd <= 0)
+			if(handle->fd <= 0) {
+				cout << "Invalid FD (" << handle->fd << ", removing watcher" << endl;
 				return true;
+			}
 
 			if(handle->enabled) {
 
@@ -116,10 +126,19 @@
 					}
 				}
 
-				(*fds)[nfds].fd = handle->fd;
-				(*fds)[nfds].events = handle->events;
-				(*fds)[nfds].revents = 0;
+				handle->pfd = &(*fds)[nfds];
+				handle->pfd->fd = handle->fd;
+				handle->pfd->events = handle->events;
+				handle->pfd->revents = 0;
 				nfds++;
+
+				cout << "Handle " << handle->id() << " enabled - nfds=" << nfds << " pfd=" << handle->pfd << " events=" << handle->pfd->events << " " << handle->events << endl;
+
+			} else {
+
+				handle->pfd = nullptr;
+
+				cout << "Handle " << handle->id() << " disabled" << endl;
 
 			}
 

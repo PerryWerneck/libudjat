@@ -56,24 +56,24 @@ namespace Udjat {
 		class UDJAT_API Handler {
 		private:
 			friend class MainLoop;
-
-			const void *id = nullptr;
 			bool enabled = true;
+
+#ifndef _WIN32
+			struct pollfd *pfd = nullptr;
+#endif // _WIN32
 
 		protected:
 
 			int fd = -1;
 			Event events = (Event) 0;
-
 			virtual bool call(const Event event) = 0;
 
 		public:
-			constexpr Handler(const void *i, int f, const Event e) : id(i), fd(f), events(e) {
+			constexpr Handler(int f, const Event e) : fd(f), events(e) {
 			}
 
-			inline bool operator ==(const void *id) const noexcept {
-				return id == this->id;
-			}
+			/// @brief Get handle id.
+			virtual const void * id() const noexcept;
 
 			/// @brief Enable handler.
 			void enable() noexcept;
