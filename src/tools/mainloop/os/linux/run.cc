@@ -66,8 +66,6 @@
 	memset(fds,0,sizeof(struct pollfd) *szPoll);
 
  	this->enabled = true;
-
-	pthread_setname_np(pthread_self(),"mainloop");
  	while(this->enabled) {
 
 		// Load lists.
@@ -87,16 +85,27 @@
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
 
+#ifdef DEBUG
+		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
+#endif // DEBUG
+
 		if(nSocks == 0) {
 			continue;
 		}
 
 		if(nSocks < 0) {
-			if(errno == EINTR) {
-				continue;
+
+			if(!this->enabled) {
+				break;
 			}
-			this->enabled = false;
-			throw std::system_error(errno, std::system_category(),"poll()");
+
+			if(errno != EINTR) {
+				cerr << "MainLoop\tError '" << strerror(errno) << "' (" << errno << ") running mainloop, stopping" << endl;
+				this->enabled = false;
+			}
+
+			continue;
+
 		}
 
 		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
@@ -115,6 +124,9 @@
 					cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
 				}
 
+#ifdef DEBUG
+				cout << "MainLoop\tEvent FD was triggered" << endl;
+#endif // DEBUG
 				continue;
 			}
 

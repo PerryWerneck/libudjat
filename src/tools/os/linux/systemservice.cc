@@ -101,7 +101,14 @@
 				cout << "Starting " << name () << " application" << endl << endl;
 				Logger::redirect(true);
 				init();
-				run();
+				try {
+					run();
+				} catch(const std::exception &e) {
+					error() << "Error '" << e.what() << "' running service" << endl;
+				} catch(...) {
+					error() << "Unexpected error running service" << endl;
+				}
+
 				deinit();
 				return 0;
 			}
