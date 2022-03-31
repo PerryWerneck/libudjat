@@ -102,42 +102,28 @@
 
 		lock_guard<mutex> lock(guard);
 
-		nfds_t nfds = 0;
-
-#ifdef DEBUG
-		cout << handlers.size() << " registered handler(s)" << endl;
-#endif // DEBUG
+		if(*length <= handlers.size()) {
+			*length = handlers.size()+1;	// 1 extra for the eventfd.
+			*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+		}
 
 		// Get waiting sockets.
+		nfds_t nfds = 0;
 		for(auto handle : handlers) {
 
 			if(!handle->enabled || handle->fd <=0) {
-				handle->pfd = nullptr;
-#ifdef DEBUG
-				cout << "Handle " << handle->id() << " is disabled (fd=" << handle->fd << ")" << endl;
-#endif // DEBUG
-				continue;
+				handle->index = -1;
+			} else {
+				handle->index = nfds;
+				(*fds)[nfds].fd = handle->fd;
+				(*fds)[nfds].events = handle->events;
+				(*fds)[nfds].revents = 0;
+				nfds++;
 			}
 
-			if(nfds >= (*length-1)) {
-				*length += 2;
-				*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
-				for(size_t ix = nfds; ix < *length; ix++) {
-					(*fds)[ix].fd = -1;
-					(*fds)[ix].events = 0;
-					(*fds)[ix].revents = 0;
-				}
-			}
-
-			handle->pfd = &(*fds)[nfds];
-			handle->pfd->fd = handle->fd;
-			handle->pfd->events = handle->events;
-			handle->pfd->revents = 0;
-			nfds++;
-
-#ifdef DEBUG
-			cout << "Handle " << handle->id() << " enabled - nfds=" << nfds << " pfd=" << handle->pfd << " events=" << handle->pfd->events << " " << handle->events << endl;
-#endif // DEBUG
+//#ifdef DEBUG
+//			cout << "Handle " << handle->id() << " fd=" << handle->fd << " index=" << handle->index << " event=" << handle->events << endl;
+//#endif // DEBUG
 
 		}
 

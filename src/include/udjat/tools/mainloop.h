@@ -59,7 +59,7 @@ namespace Udjat {
 			bool enabled = true;
 
 #ifndef _WIN32
-			struct pollfd *pfd = nullptr;
+			int index=-1;
 #endif // _WIN32
 
 		protected:

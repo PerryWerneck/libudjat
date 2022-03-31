@@ -68,22 +68,25 @@
  	this->enabled = true;
  	while(this->enabled) {
 
- 		// Setup FD list.
-		{
-			fds[0].fd = efd;
-			fds[0].events = POLLIN;
-		}
-
 		// Get wait time, update timers.
 		unsigned long wait = timers.run();
-		nfds_t nfds = 1 + getHandlers(&fds, &szPoll);
+		nfds_t nfds = getHandlers(&fds, &szPoll);
+
+ 		// EventFD in the last entry.
+		{
+			fds[nfds].fd = efd;
+			fds[nfds].events = POLLIN;
+		}
 
 		// Wait for event.
-		int nSocks = poll(fds, nfds, wait);
+		int nSocks = poll(fds, nfds+1, wait);
 
-#ifdef DEBUG
-		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
-#endif // DEBUG
+//#ifdef DEBUG
+//		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
+//		for(size_t ix = 0; ix < nfds;ix++) {
+//			cout << ix << " = " << fds[ix].revents << "  (" << &fds[ix] << ")" << endl;
+//		}
+//#endif // DEBUG
 
 		if(nSocks == 0) {
 			continue;
@@ -105,11 +108,15 @@
 		}
 
 		// Check for event fd.
-		if(fds[0].revents) {
+		if(fds[nfds].revents) {
 			uint64_t evNum;
+//#ifdef DEBUG
+//			cout << "MainLoop\tEventFD was changed" << endl;
+//#endif // DEBUG
 			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
 			}
+			nSocks--;
 		}
 
 		// Check for fd handlers.
@@ -120,7 +127,8 @@
 			{
 				lock_guard<mutex> lock(guard);
 				for(auto handle : handlers) {
-					if(handle->pfd && handle->pfd->revents) {
+					if(handle->index >= 0 && fds[handle->index].revents) {
+//						cout << "*** " << handle->id() << " events=" << fds[handle->index].revents << endl;
 						hList.push_back(handle);
 					}
 				}
@@ -131,9 +139,8 @@
 
 				try {
 
-					if(!handle->call((const Event) handle->pfd->revents)) {
+					if(!handle->call((const Event) fds[handle->index].revents)) {
 						lock_guard<mutex> lock(guard);
-						cout << "Removing handle" << endl;
 						handlers.remove(handle);
 					}
 
@@ -149,62 +156,9 @@
 
 				}
 
-				handle->pfd = nullptr;
-
 			}
 
 		}
-
-		/*
-		for(nfds_t sock = 0; sock < nfds && nSocks > 0; sock++) {
-
-			int event = fds[sock].revents;
-
-			if(!event)
-				continue;
-
-			nSocks--;
-
-			if(fds[sock].fd == efd) {
-
-				uint64_t evNum;
-				if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
-					cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
-				}
-
-#ifdef DEBUG
-				cout << "MainLoop\tEvent FD was triggered" << endl;
-#endif // DEBUG
-				continue;
-			}
-
-			for(auto handle : handlers) {
-
-				if(handle->fd == fds[sock].fd && (handle->events & fds[sock].events) != 0) {
-
-					try {
-
-						if(handle->fd > 0 && !handle->call((const Event) event))
-							handle->fd = -1;
-
-					} catch(const exception &e) {
-
-						cerr << "MainLoop\tError '" << e.what() << "' processing event" << endl;
-
-					} catch(...) {
-
-						cerr << "MainLoop\tUnexpected error processing event" << endl;
-
-					}
-
-					break;
-
-				}
-
-			}
-
-		}
-		*/
 
  	}
 
