@@ -71,7 +71,7 @@
 			const function<bool(const Event event)> callback;
 
 		protected:
-			bool call(const Event event) const override {
+			bool call(const Event event) override {
 				return callback(event);
 			}
 

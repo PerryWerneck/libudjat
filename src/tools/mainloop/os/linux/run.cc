@@ -85,9 +85,9 @@
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
 
-#ifdef DEBUG
-		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
-#endif // DEBUG
+//#ifdef DEBUG
+//		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
+//#endif // DEBUG
 
 		if(nSocks == 0) {
 			continue;

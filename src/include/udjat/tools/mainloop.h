@@ -65,7 +65,7 @@ namespace Udjat {
 			int fd = -1;
 			Event events = (Event) 0;
 
-			virtual bool call(const Event event) const = 0;
+			virtual bool call(const Event event) = 0;
 
 		public:
 			constexpr Handler(const void *i, int f, const Event e) : id(i), fd(f), events(e) {
