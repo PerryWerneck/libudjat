@@ -66,6 +66,8 @@
 	memset(fds,0,sizeof(struct pollfd) *szPoll);
 
  	this->enabled = true;
+
+	pthread_setname_np(pthread_self(),"mainloop");
  	while(this->enabled) {
 
 		// Load lists.
