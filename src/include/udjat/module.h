@@ -44,6 +44,9 @@
 			/// @brief Load modules from configuration file.
 			static void load();
 
+			/// @brief Call method on every modules.
+			static void for_each(std::function<void(Module &module)> method);
+
 			/// @brief Get module by name.
 			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
 			/// @return Pointer to module or nullptr if not found.
@@ -62,6 +65,10 @@
 
 			/// @brief List modules.
 			static void getInfo(Response &response);
+
+			/// @brief Set XML document
+			/// Called when a XML document is loaded.
+			virtual void set(const pugi::xml_document &document);
 
 			virtual ~Module();
 

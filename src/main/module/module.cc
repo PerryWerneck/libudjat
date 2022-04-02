@@ -23,12 +23,19 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
+	void Module::set(const pugi::xml_document &document) {
+	}
+
 	void Module::getInfo(Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
 
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
+	}
+
+	void Module::for_each(std::function<void(Module &module)> method) {
+		Controller::getInstance().for_each(method);
 	}
 
 	void Module::options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call) {

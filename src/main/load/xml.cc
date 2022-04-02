@@ -182,6 +182,7 @@
 
 				agent->info() << "Loading '" << filename << "'" << endl;
 
+				// First setup agent, load modules, etc.
 				try {
 
 					auto node = doc.document_element();
@@ -208,6 +209,26 @@
 					agent->error() << filename << ": Unexpected error" << endl;
 
 				}
+
+				// Then setup modules.
+				Module::for_each([&doc](Module &module) {
+
+					try {
+
+						module.set(doc);
+
+					} catch(const std::exception &e) {
+
+						cerr << "modules\tError '" << e.what() << "' on module setup" << endl;
+
+					} catch(...) {
+
+						cerr << "modules\tUnexpected error on module setup" << endl;
+
+					}
+
+				});
+
 			});
 
 		}
