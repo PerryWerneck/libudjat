@@ -191,7 +191,8 @@
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
 			/// @brief Call URL, save response as filename.
-			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress) = 0;
+			/// @return true if the file was updated.
+			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Call URL, return response as string.
 			String get();

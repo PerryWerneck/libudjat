@@ -19,6 +19,13 @@
 
  #include "private.h"
  #include <cstring>
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ #include <fcntl.h>
+
+ #ifndef _WIN32
+	#include <unistd.h>
+ #endif // _WIN32
 
  namespace Udjat {
 
@@ -40,6 +47,35 @@
 
 	bool Protocol::Worker::save(const char *filename) {
 		return save(filename, dummy_progress);
+	}
+
+	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress) {
+
+		String text = get(progress);
+
+		size_t length = text.size();
+		int fd = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0777);
+		if(fd < 0) {
+			throw system_error(errno,system_category(),filename);
+		}
+
+		const char *ptr = text.c_str();
+		while(length) {
+			ssize_t bytes = write(fd,ptr,length);
+			if(bytes < 0) {
+				int err = errno;
+				::close(fd);
+				throw system_error(err,system_category(),filename);
+			} else if(bytes == 0) {
+				::close(fd);
+				throw runtime_error(string{"Unexpected error writing "} + filename);
+			}
+			ptr += bytes;
+			length -= bytes;
+		}
+		::close(fd);
+
+		return true;
 	}
 
  }
