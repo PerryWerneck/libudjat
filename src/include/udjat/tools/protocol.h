@@ -135,6 +135,11 @@
 				return *this;
 			}
 
+			/// @brief Get request payload.
+			inline const char * payload() const {
+				return out.payload.c_str();
+			}
+
 			/// @brief Set request url.
 			inline Worker & url(const char *url) noexcept {
 				args.url = url;
