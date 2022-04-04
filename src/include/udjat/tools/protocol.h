@@ -141,15 +141,11 @@
 			}
 
 			/// @brief Set request url.
-			inline Worker & url(const char *url) noexcept {
-				args.url = url;
-				return *this;
-			}
+			Worker & url(const char *url) noexcept;
 
 			/// @brief Set request url.
 			inline Worker & url(const URL &url) noexcept {
-				args.url = url;
-				return *this;
+				return this->url(url.c_str());
 			}
 
 			inline const URL & url() const noexcept {

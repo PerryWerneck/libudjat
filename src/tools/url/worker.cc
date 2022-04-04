@@ -41,6 +41,22 @@
 		return true;
 	});
 
+	Protocol::Worker & Protocol::Worker::url(const char *url) noexcept {
+
+		const char *scheme = strstr(url,"://");
+		if(scheme) {
+			for(const char *ptr = url; *ptr && ptr < scheme; ptr++) {
+				if(*ptr == '+') {
+					url = ptr+1;
+					break;
+				}
+			}
+		}
+
+		args.url = url;
+		return *this;
+	}
+
 	String Protocol::Worker::get() {
 		return get(dummy_progress);
 	}
