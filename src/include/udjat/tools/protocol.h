@@ -216,6 +216,14 @@
 		Protocol(const char *name, const ModuleInfo &module);
 		virtual ~Protocol();
 
+		inline const char * c_str() const noexcept {
+			return name;
+		}
+
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->name) == 0;
+		}
+
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;

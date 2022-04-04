@@ -68,7 +68,7 @@
 
 		lock_guard<mutex> lock(guard);
 		for(auto protocol : protocols) {
-			if(!strcasecmp(protocol->name,name)) {
+			if(*protocol == name) {
 				return protocol;
 			}
 		}
