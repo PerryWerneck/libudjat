@@ -179,40 +179,6 @@
 				}
 
 				//
-				// Search the environment.
-				//
-#ifdef _WIN32
-				// Windows, use the win32 api
-				const char *env = nullptr;
-				char szEnvironment[4096];
-				memset(szEnvironment,0,sizeof(szEnvironment));
-
-				if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
-					replace(
-						from,
-						(to-from)+1,
-						szEnvironment
-					);
-					from = find("${",from);
-					continue;
-				}
-
-#else
-				// Linux, use standard getenv.
-				const char *env = getenv(key.c_str());
-				if(env) {
-					replace(
-						from,
-						(to-from)+1,
-						env
-					);
-					from = find("${",from);
-					continue;
-				}
-
-#endif // _WIN32
-
-				//
 				// Search for URL identifier.
 				//
 				const char *sep = strstr(key.c_str(),"://");
@@ -236,11 +202,48 @@
 			//
 			if(cleanup) {
 
-				replace(
-					from,
-					(to-from)+1,
-					""
-				);
+				//
+				// Last resource, search the environment, if not available clean the value.
+				//
+#ifdef _WIN32
+				// Windows, use the win32 api
+				const char *env = nullptr;
+				char szEnvironment[4096];
+				memset(szEnvironment,0,sizeof(szEnvironment));
+
+				if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
+					replace(
+						from,
+						(to-from)+1,
+						szEnvironment
+					);
+				} else {
+					replace(
+						from,
+						(to-from)+1,
+						""
+					);
+				}
+
+#else
+				// Linux, use standard getenv.
+				const char *env = getenv(key.c_str());
+				if(env) {
+					replace(
+						from,
+						(to-from)+1,
+						env
+					);
+					from = find("${",from);
+					continue;
+				} else {
+					replace(
+						from,
+						(to-from)+1,
+						""
+					);
+				}
+#endif // _WIN32
 
 				from = find("${",from);
 
