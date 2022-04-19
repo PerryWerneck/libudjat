@@ -125,4 +125,40 @@
 		return exit;
 	}
 
+	std::shared_ptr<Abstract::State> SystemService::state() const {
+
+		std::shared_ptr<Abstract::State> selected;
+
+		for(auto state : states) {
+			if(!selected || selected->level() < state->level()) {
+				selected = state;
+			}
+		}
+
+		if(!selected) {
+			selected = make_shared<Abstract::State>("ready",Level::ready,"No messages","Service is running with no messages");
+		}
+
+		return selected;
+
+	}
+
+	void SystemService::activate(std::shared_ptr<Abstract::State> state) {
+		states.push_back(state);
+		notify(this->state()->to_string().c_str());
+	}
+
+	void SystemService::deactivate(std::shared_ptr<Abstract::State> state) {
+
+		states.remove_if([state](std::shared_ptr<Abstract::State> st){
+			if(st.get() == state.get()) {
+				return true;
+			}
+			return false;
+		});
+		notify(this->state()->to_string().c_str());
+
+	}
+
+
  }

@@ -21,7 +21,9 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/state.h>
  #include <memory>
+ #include <list>
 
  namespace Udjat {
 
@@ -36,6 +38,12 @@
 
 		/// @brief Command line parser.
 		int cmdline(int argc, const char **argv);
+
+		/// @brief Set service state message.
+		void notify(const char *message) noexcept;
+
+		/// @brief The current service state.
+		std::list<std::shared_ptr<Abstract::State>> states;
 
 	protected:
 
@@ -88,9 +96,16 @@
 
 		virtual ~SystemService();
 
-		/// @brief Set service status.
-		/// @param message The current service estatus.
-		virtual void notify(const char *message) noexcept;
+		/// @brief Activate service state.
+		/// @param state New system state.
+		virtual void activate(std::shared_ptr<Abstract::State> state);
+
+		/// @brief Deactivate service state.
+		/// @param State the state to deactivate.
+		virtual void deactivate(std::shared_ptr<Abstract::State> state);
+
+		/// @brief Get Service state.
+		std::shared_ptr<Abstract::State> state() const;
 
 		/// @brief Get current service instance.
 		static SystemService * getInstance();
