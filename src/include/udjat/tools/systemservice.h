@@ -77,8 +77,6 @@
 
 		static void onReloadSignal(int signal) noexcept;
 
-		static void setStatus(const char *message) noexcept;
-
 #endif // _WIN32
 
 		/// @brief Send usage help to std::cout
@@ -89,6 +87,10 @@
 	public:
 
 		virtual ~SystemService();
+
+		/// @brief Set service status.
+		/// @param message The current service estatus.
+		virtual void notify(const char *message) noexcept;
 
 		/// @brief Get current service instance.
 		static SystemService * getInstance();

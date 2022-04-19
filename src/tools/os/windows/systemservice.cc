@@ -226,6 +226,9 @@
 
 	}
 
+	void SystemService::notify(const char UDJAT_UNUSED(*message)) noexcept {
+	}
+
 	void SystemService::deinit() {
 	}
 
