@@ -36,6 +36,10 @@
 	#include <vmdetect/virtualmachine.h>
  #endif // HAVE_VMDETECT
 
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
  #include <cstring>
  #include <unistd.h>
 
@@ -194,6 +198,11 @@
 					// The requested state is not ready, activate it.
 					Object::properties.icon = "computer-fail";
 					bool changed = Abstract::Agent::activate(state);
+
+#ifdef HAVE_SYSTEMD
+					sd_notifyf(0,"STATUS=%s",state->to_string().c_str());
+#endif // HAVE_SYSTEMD
+
 					return changed;
 
 				}
@@ -202,6 +211,10 @@
 					// Already ok, do not change.
 					return false;
 				}
+
+#ifdef HAVE_SYSTEMD
+				sd_notifyf(0,"STATUS=Application is ready");
+#endif // HAVE_SYSTEMD
 
 				Object::properties.icon = "computer";
 				super::activate(stateFromValue());
