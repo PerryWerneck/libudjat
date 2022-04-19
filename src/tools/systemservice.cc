@@ -37,6 +37,7 @@
 			throw runtime_error("Can't start more than one system service");
 		}
 
+		setlocale( LC_ALL, "" );
 		instance = this;
 
 	}

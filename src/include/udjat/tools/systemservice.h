@@ -74,6 +74,7 @@
 		virtual int uninstall();
 
 #else
+
 		static void onReloadSignal(int signal) noexcept;
 
 #endif // _WIN32

@@ -238,8 +238,9 @@
 	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
 
 		Updater update(pathname);
+
 		if(!(update.changed || force)) {
-			Application::info() << "No changes, reconfiguration is not necessary" << endl;
+			Application::info() << "Reconfiguration is not necessary" << endl;
 			return update.next;
 		}
 
@@ -278,7 +279,7 @@
 
 			if(!(update.changed || force)) {
 
-				info() << "No changes, reconfiguration is not necessary" << endl;
+				info() << "Reconfiguration is not necessary" << endl;
 
 			} else {
 

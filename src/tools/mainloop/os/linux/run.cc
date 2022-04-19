@@ -35,11 +35,18 @@
  #include <unistd.h>
  #include <csignal>
 
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
  using namespace std;
 
  static void onInterruptSignal(int signal) noexcept {
 
- 	// Use thread to avoid semaphore dead lock.
+#ifdef HAVE_SYSTEMD
+	sd_notifyf(0,"STATUS=Interrupting by '%s' signal",strsignal(signal));
+#endif // HAVE_SYSTEMD
+
 	Udjat::Application::warning() << "Received '" << strsignal(signal) << "' signal" << endl;
 	Udjat::MainLoop::getInstance().quit();
 
@@ -47,9 +54,16 @@
 
  void Udjat::MainLoop::run() {
 
+#ifdef HAVE_SYSTEMD
+	sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
+#endif // HAVE_SYSTEMD
+
 	//
 	// Start services
 	//
+#ifdef HAVE_SYSTEMD
+	sd_notifyf(0,"STATUS=Starting up");
+#endif // HAVE_SYSTEMD
 	start();
 
 	//
@@ -66,6 +80,9 @@
 	memset(fds,0,sizeof(struct pollfd) *szPoll);
 
  	this->enabled = true;
+#ifdef HAVE_SYSTEMD
+	sd_notifyf(0,"READY=1\nSTATUS=Running");
+#endif // HAVE_SYSTEMD
  	while(this->enabled) {
 
 		// Get wait time, update timers.
@@ -161,6 +178,9 @@
 		}
 
  	}
+#ifdef HAVE_SYSTEMD
+	sd_notifyf(0,"STOPPING=1\nSTATUS=Stopping");
+#endif // HAVE_SYSTEMD
 
  	free(fds);
 
@@ -175,5 +195,8 @@
  	//
 	stop();
 
+#ifdef HAVE_SYSTEMD
+	sd_notifyf(0,"STATUS=Stopped");
+#endif // HAVE_SYSTEMD
  }
 
