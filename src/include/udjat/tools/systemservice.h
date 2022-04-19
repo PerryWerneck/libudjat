@@ -77,6 +77,8 @@
 
 		static void onReloadSignal(int signal) noexcept;
 
+		static void setStatus(const char *message) noexcept;
+
 #endif // _WIN32
 
 		/// @brief Send usage help to std::cout
