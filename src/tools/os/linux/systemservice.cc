@@ -109,7 +109,7 @@
 
 				cout << "systemd\tWatchdog timer is not set" << endl;
 
-			} else if(status > 0) {
+			} else {
 
 				// SystemD watchdog is enabled.
 				if(watchdog_timer > 0) {
