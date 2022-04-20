@@ -26,6 +26,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/service.h>
+ #include <udjat/win32/registry.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
  #include <udjat/module.h>
@@ -226,7 +227,21 @@
 
 	}
 
-	void SystemService::notify(const char UDJAT_UNUSED(*message)) noexcept {
+	void SystemService::notify(const Abstract::State &state) noexcept {
+
+		try {
+
+			Win32::Registry registry("service",true);
+
+			registry.set("status",state.to_string().c_str());
+			registry.set("status_time",TimeStamp().to_string().c_str());
+
+		} catch(const std::exception &e) {
+
+			Application::error() << "Error '" << e.what() << "' setting service state" << endl;
+
+		}
+
 	}
 
 	void SystemService::deinit() {

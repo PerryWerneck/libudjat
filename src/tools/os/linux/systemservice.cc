@@ -63,11 +63,9 @@
 
 	}
 
-	void SystemService::notify(const char *message) noexcept {
+	void SystemService::notify(const Abstract::State &state) noexcept {
 #ifdef HAVE_SYSTEMD
-		if(message && *message) {
-			sd_notifyf(0,"STATUS=%s",message);
-		}
+		sd_notifyf(0,"STATUS=%s",state.to_string().c_str());
 #endif // HAVE_SYSTEMD
 	}
 

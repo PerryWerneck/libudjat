@@ -150,7 +150,7 @@ dnl ---------------------------------------------------------------------------
 dnl Check for integer types & library functions
 dnl ---------------------------------------------------------------------------
 
-AC_CHECK_FUNCS(sendfile poll eventfd signal)
+AC_CHECK_FUNCS(sendfile poll eventfd signal strptime)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for libintl

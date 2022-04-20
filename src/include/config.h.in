@@ -27,6 +27,9 @@
 /* Define to 1 if you have the `signal' function. */
 #undef HAVE_SIGNAL
 
+/* Define to 1 if you have the `strptime' function. */
+#undef HAVE_STRPTIME
+
 /* Do we have systemd? */
 #undef HAVE_SYSTEMD
 

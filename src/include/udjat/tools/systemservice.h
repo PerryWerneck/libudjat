@@ -40,7 +40,7 @@
 		int cmdline(int argc, const char **argv);
 
 		/// @brief Set service state message.
-		void notify(const char *message) noexcept;
+		void notify(const Abstract::State &state) noexcept;
 
 		/// @brief The current service state.
 		std::list<std::shared_ptr<Abstract::State>> states;
