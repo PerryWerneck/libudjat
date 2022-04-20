@@ -145,7 +145,11 @@
 
 	void SystemService::activate(std::shared_ptr<Abstract::State> state) {
 		states.push_back(state);
-		notify(this->state()->to_string().c_str());
+
+		auto st = this->state();
+		info() << st->to_string() << endl;
+
+		notify(st->to_string().c_str());
 	}
 
 	void SystemService::deactivate(std::shared_ptr<Abstract::State> state) {
