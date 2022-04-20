@@ -9,8 +9,8 @@ module_path=${libdir}/@PRODUCT_NAME@-modules/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MI
 
 Name: udjat
 Description: The Eye of Horus
-Version: 1.0
-Libs: -ludjat.static @LIBICONV@ @ECONF_LIBS@
+Version: @PACKAGE_VERSION@
+Libs: -ludjat.static @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@
 
 Cflags: -I${prefix}/include
 

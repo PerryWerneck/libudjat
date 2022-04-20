@@ -46,22 +46,16 @@
 #undef PACKAGE_BUGREPORT
 
 /* The library major version */
-#undef PACKAGE_MAJOR_RELEASE
-
-/* The module major version */
 #undef PACKAGE_MAJOR_VERSION
 
 /* The library minor version */
-#undef PACKAGE_MINOR_RELEASE
-
-/* The module minor version */
 #undef PACKAGE_MINOR_VERSION
 
 /* Define to the full name of this package. */
 #undef PACKAGE_NAME
 
-/* The library release */
-#undef PACKAGE_RELEASE
+/* The patch level */
+#undef PACKAGE_PATCH_LEVEL
 
 /* Define to the full name and version of this package. */
 #undef PACKAGE_STRING

@@ -35,11 +35,12 @@ AC_PROG_LN_S
 AC_LANG([C++])
 
 dnl ---------------------------------------------------------------------------
-dnl Version info
+dnl Version info - https://semver.org/
 dnl ---------------------------------------------------------------------------
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
+app_vrs_patch=0
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
 
@@ -50,17 +51,13 @@ app_cv_title="The Eye of Horus"
 AC_DEFINE_UNQUOTED(PRODUCT_TITLE,"$app_cv_title",[The product title])
 AC_SUBST(PRODUCT_TITLE,"$app_cv_title")
 
-AC_ARG_WITH([release], [AS_HELP_STRING([--with-release], [Set release])], [ app_cv_release="$withval" ],[ app_cv_release="0.0" ])
-
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major, [The module major version])
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor, [The module minor version])
+AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_VERSION, $app_vrs_major, [The library major version])
+AC_DEFINE_UNQUOTED(PACKAGE_MINOR_VERSION, $app_vrs_minor, [The library minor version])
+AC_DEFINE_UNQUOTED(PACKAGE_PATCH_LEVEL, $app_vrs_patch, [The patch level])
 
 AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
-
-AC_DEFINE_UNQUOTED(PACKAGE_MAJOR_RELEASE, $app_rls_major, [The library major version])
-AC_DEFINE_UNQUOTED(PACKAGE_MINOR_RELEASE, $app_rls_minor, [The library minor version])
-AC_DEFINE_UNQUOTED(PACKAGE_RELEASE, "$app_cv_release", [The library release])
+AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
