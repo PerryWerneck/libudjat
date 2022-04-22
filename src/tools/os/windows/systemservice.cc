@@ -250,11 +250,14 @@
 	}
 
 	void SystemService::stop() {
+		notify("Stopping");
 		MainLoop::getInstance().quit();
 	}
 
 	int SystemService::run() {
+		notify("Main loop is running");
 		MainLoop::getInstance().run();
+		notify("Main loop is not running");
 		return 0;
 	}
 
@@ -491,38 +494,6 @@
 
 		manager.insert(appname.c_str(),display_name,service_binary);
 		cout << "winservice\tService '" << display_name << "' installed" << endl;
-
-		/*
-		// Stop previous instance
-		try {
-
-			cout << appname << "\tStopping previous instance" << endl;
-			Win32::Service::Handler(manager.open(appname.c_str())).stop();
-			cout << appname << "\tPrevious instance stopped" << endl;
-
-		} catch(const exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
-		}
-
-		// Remove previous instance
-		try {
-
-			cout << appname << "\tRemoving previous instance" << endl;
-			manager.remove(appname.c_str());
-			cout << appname << "\tPrevious instance removed" << endl;
-
-		} catch(const exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
-		}
-
-		// Inclui novo serviço
-		cout << appname << "\tInserting '" << display_name << "' service" << endl;
-#ifdef DEBUG
-		cout << appname << "\tService binary is '" << service_binary << "'" << endl;
-#endif // DEBUG
-		manager.insert(appname.c_str(),display_name,service_binary);
-		cout << appname << "\tService '" << display_name << "' inserted" << endl;
-		*/
 
 		return 0;
 
