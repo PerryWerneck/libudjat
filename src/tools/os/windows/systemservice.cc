@@ -236,6 +236,8 @@
 			registry.set("status",state.to_string().c_str());
 			registry.set("status_time",TimeStamp().to_string().c_str());
 
+			info() << state.to_string() << endl;
+
 		} catch(const std::exception &e) {
 
 			Application::error() << "Error '" << e.what() << "' setting service state" << endl;

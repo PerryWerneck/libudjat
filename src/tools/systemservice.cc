@@ -136,7 +136,7 @@
 		}
 
 		if(!selected) {
-			selected = make_shared<Abstract::State>("ready",Level::ready,"No messages","Service is running with no messages");
+			selected = make_shared<Abstract::State>("ready",Level::unimportant,"No messages","Service is running with no messages");
 		}
 
 		return selected;
@@ -145,22 +145,14 @@
 
 	void SystemService::activate(std::shared_ptr<Abstract::State> state) {
 		states.push_back(state);
-
-		auto st = this->state();
-		info() << st->to_string() << endl;
-
-		notify(st->to_string().c_str());
+		notify(*this->state());
 	}
 
 	void SystemService::deactivate(std::shared_ptr<Abstract::State> state) {
-
 		states.remove_if([state](std::shared_ptr<Abstract::State> st){
-			if(st.get() == state.get()) {
-				return true;
-			}
-			return false;
+			return (st.get() == state.get());
 		});
-		notify(this->state()->to_string().c_str());
+		notify(*this->state());
 
 	}
 

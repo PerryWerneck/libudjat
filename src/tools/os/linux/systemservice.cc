@@ -67,6 +67,7 @@
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=%s",state.to_string().c_str());
 #endif // HAVE_SYSTEMD
+		info() << state.to_string() << endl;
 	}
 
 	void SystemService::init() {
