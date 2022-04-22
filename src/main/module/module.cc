@@ -23,7 +23,7 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
-	void Module::set(const pugi::xml_document &document) {
+	void Module::set(const pugi::xml_document UDJAT_UNUSED(&document)) {
 	}
 
 	void Module::getInfo(Response &response) {
