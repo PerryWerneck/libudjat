@@ -29,6 +29,7 @@
  #include <udjat/alert.h>
  #include <udjat/module.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/file.h>
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
@@ -183,6 +184,8 @@ int main(int argc, char **argv) {
 		}
 
 	};
+
+	// File::copy(argv[0],"/tmp/test");
 
 	return Service().run(argc,argv);
 }
