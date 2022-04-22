@@ -143,17 +143,20 @@
 
 	}
 
+	void SystemService::notify() noexcept {
+		notify(state()->to_string().c_str());
+	}
+
 	void SystemService::activate(std::shared_ptr<Abstract::State> state) {
 		states.push_back(state);
-		notify(*this->state());
+		notify();
 	}
 
 	void SystemService::deactivate(std::shared_ptr<Abstract::State> state) {
 		states.remove_if([state](std::shared_ptr<Abstract::State> st){
 			return (st.get() == state.get());
 		});
-		notify(*this->state());
-
+		notify();
 	}
 
 

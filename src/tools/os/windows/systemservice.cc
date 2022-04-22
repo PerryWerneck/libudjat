@@ -227,20 +227,20 @@
 
 	}
 
-	void SystemService::notify(const Abstract::State &state) noexcept {
+	void SystemService::notify(const char *message) noexcept {
 
 		try {
 
 			Win32::Registry registry("service",true);
 
-			registry.set("status",state.to_string().c_str());
+			registry.set("status",message);
 			registry.set("status_time",TimeStamp().to_string().c_str());
 
-			info() << state.to_string() << endl;
+			info() << message << endl;
 
 		} catch(const std::exception &e) {
 
-			Application::error() << "Error '" << e.what() << "' setting service state" << endl;
+			error() << "Error '" << e.what() << "' setting service state" << endl;
 
 		}
 
