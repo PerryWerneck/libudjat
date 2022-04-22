@@ -71,7 +71,10 @@
 		}
 
 		int in = dup(fd);
+
+#ifndef _WIN32
 		fcntl(in,F_SETFL,fcntl(in,F_GETFL,0)|O_RDWR);
+#endif // _WIN32
 
 		try {
 

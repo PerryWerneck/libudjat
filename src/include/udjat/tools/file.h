@@ -288,7 +288,7 @@ namespace Udjat {
 
 			/// @brief Save tempfile to new filename.
 			/// @param filename The file name.
-			void save(const char *filename) const;
+			void save(const char *filename);
 
 			/// @brief Move temporary file to the reference filename.
 			void save();

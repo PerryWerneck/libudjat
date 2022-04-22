@@ -51,7 +51,7 @@
 		::close(fd);
 	}
 
-	void File::Temporary::save(const char *filename) const {
+	void File::Temporary::save(const char *filename) {
 
 		//
 		// First get target file attributes
