@@ -40,7 +40,7 @@
 	public:
 
 		/// @brief URL Components.
-		struct Components {
+		struct UDJAT_API Components {
 			std::string scheme;		///< @brief The scheme name.
 			std::string hostname;	///< @brief The host name.
 			std::string srvcname;	///< @brief The service name or port number.
