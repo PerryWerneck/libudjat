@@ -127,36 +127,18 @@
 
 	std::shared_ptr<Abstract::State> SystemService::state() const {
 
-		std::shared_ptr<Abstract::State> selected;
+		auto agent = Abstract::Agent::root();
 
-		for(auto state : states) {
-			if(!selected || selected->level() < state->level()) {
-				selected = state;
-			}
+		if(agent) {
+			return agent->state();
 		}
 
-		if(!selected) {
-			selected = make_shared<Abstract::State>("ready",Level::unimportant,"No messages","Service is running with no messages");
-		}
-
-		return selected;
+		return make_shared<Abstract::State>("no-messages",Level::unimportant,"No messages","Service is running with no messages");
 
 	}
 
 	void SystemService::notify() noexcept {
 		notify(state()->to_string().c_str());
-	}
-
-	void SystemService::activate(std::shared_ptr<Abstract::State> state) {
-		states.push_back(state);
-		notify();
-	}
-
-	void SystemService::deactivate(std::shared_ptr<Abstract::State> state) {
-		states.remove_if([state](std::shared_ptr<Abstract::State> st){
-			return (st.get() == state.get());
-		});
-		notify();
 	}
 
 

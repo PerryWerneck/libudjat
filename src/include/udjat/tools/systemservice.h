@@ -42,11 +42,8 @@
 		/// @brief Set service state message.
 		void notify(const char *state) noexcept;
 
-		/// @brief Set service state message.
+		/// @brief Set service state message to the root agent.
 		void notify() noexcept;
-
-		/// @brief The current service state.
-		std::list<std::shared_ptr<Abstract::State>> states;
 
 	protected:
 
@@ -98,14 +95,6 @@
 	public:
 
 		virtual ~SystemService();
-
-		/// @brief Activate service state.
-		/// @param state New system state.
-		virtual void activate(std::shared_ptr<Abstract::State> state);
-
-		/// @brief Deactivate service state.
-		/// @param State the state to deactivate.
-		virtual void deactivate(std::shared_ptr<Abstract::State> state);
 
 		/// @brief Get Service state.
 		std::shared_ptr<Abstract::State> state() const;
