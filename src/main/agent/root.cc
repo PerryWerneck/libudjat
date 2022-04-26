@@ -195,6 +195,9 @@
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
+#ifdef DEBUG
+				info() << "----------------------------------------------------------" << endl;
+#endif // DEBUG
 				info() << state->to_string() << endl;
 
 #if defined(HAVE_SYSTEMD)
@@ -236,6 +239,19 @@
 				super::activate(stateFromValue());
 
 				return true;
+			}
+
+			void push_back(std::shared_ptr<Abstract::Alert> alert) {
+
+				alert->info() << "Root alert, emitting it on startup" << endl;
+
+				// Can't start now because the main loop is not active, wait 100ms.
+				MainLoop::getInstance().insert(0,100,[alert](){
+					auto activation = alert->ActivationFactory();
+					Udjat::start(activation);
+					return false;
+				});
+
 			}
 
 		};
