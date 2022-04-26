@@ -131,6 +131,9 @@
 				/// @brief Set unexpected failed state.
 				void failed(const char *summary, const char *body = "") noexcept;
 
+				/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
+				void requestRefresh(time_t seconds = 0);
+
 				/// @brief Run update if required.
 				/// @param forward	If true forward update to children.
 				/// @return true if the state was refreshed.

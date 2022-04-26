@@ -20,6 +20,10 @@ namespace Udjat {
 
 		Object::set(root);
 
+#ifdef DEBUG
+		info() << "*** Loading from xml" << endl;
+#endif // DEBUG
+
 		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 
 		this->update.timer = getAttribute(root,section,"update-timer",(unsigned int) this->update.timer);
