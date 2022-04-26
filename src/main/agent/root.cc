@@ -20,8 +20,11 @@
  #include <config.h>
  #include "private.h"
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <udjat/win32/registry.h>
+ #else
 	#include <sys/utsname.h>
+	#include <unistd.h>
  #endif // _WIN32
 
  #include <udjat/factory.h>
@@ -41,7 +44,6 @@
  #endif // HAVE_SYSTEMD
 
  #include <cstring>
- #include <unistd.h>
 
  namespace Udjat {
 
@@ -193,16 +195,34 @@
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
+				info() << state->to_string() << endl;
+
+#if defined(HAVE_SYSTEMD)
+
+				sd_notifyf(0,"STATUS=%s",state->to_string().c_str());
+
+#elif defined(_WIN32)
+
+				try {
+
+					Win32::Registry registry("service",true);
+
+					registry.set("status",state->to_string().c_str());
+					registry.set("status_time",TimeStamp().to_string().c_str());
+
+				} catch(const std::exception &e) {
+
+					error() << "Error '" << e.what() << "' setting service state" << endl;
+
+				}
+
+#endif // HAVE_SYSTEMD
+
 				if(!state->ready()) {
 
 					// The requested state is not ready, activate it.
 					Object::properties.icon = "computer-fail";
 					bool changed = Abstract::Agent::activate(state);
-
-#ifdef HAVE_SYSTEMD
-					sd_notifyf(0,"STATUS=%s",state->to_string().c_str());
-#endif // HAVE_SYSTEMD
-
 					return changed;
 
 				}
@@ -211,10 +231,6 @@
 					// Already ok, do not change.
 					return false;
 				}
-
-#ifdef HAVE_SYSTEMD
-				sd_notifyf(0,"STATUS=Application is ready");
-#endif // HAVE_SYSTEMD
 
 				Object::properties.icon = "computer";
 				super::activate(stateFromValue());

@@ -57,6 +57,15 @@
 
 			void set(const char *name, const char *value);
 
+			inline void set(const char *name, const std::string &value) {
+				set(name,value.c_str());
+			}
+
+			template<typename T>
+			inline void set(const T &value) {
+				return set(std::to_string(value).c_str());
+			}
+
 			bool for_each(const char *group, const std::function<bool(const char *key, const char *value)> &call);
 
 		};

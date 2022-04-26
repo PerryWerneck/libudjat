@@ -41,9 +41,15 @@
  #include <udjat/tools/configuration.h>
  #include <list>
 
-#ifndef _WIN32
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
+ #ifdef _WIN32
+	#include <udjat/win32/registry.h>
+ #else
 	#include <unistd.h>
-#endif // _WIN32
+ #endif // _WIN32
 
  using namespace std;
 
@@ -273,6 +279,12 @@
 
 	void SystemService::reconfigure(const char *pathname, bool force) noexcept {
 
+#ifdef HAVE_SYSTEMD
+		sd_notify(0,"RELOADING=1");
+#else
+		notify("Reloading");
+#endif // HAVE_SYSTEMD
+
 		try {
 
 			Updater update(pathname);
@@ -287,6 +299,9 @@
 				update.set(agent,update.path.c_str());
 				setRootAgent(agent);
 
+#ifdef _WIN32
+				registry("last_reconfig",TimeStamp().to_string().c_str());
+#endif // _WIN32
 			}
 
 			if(update.next) {
@@ -300,19 +315,30 @@
 					return false;
 				});
 
-				Application::info() << "Next reconfiguration set to " << TimeStamp(time(0)+update.next) << endl;
+				TimeStamp next(time(0)+update.next);
+				info() << "Next reconfiguration set to " << next << endl;
+
+#ifdef _WIN32
+				registry("next_reconfig",next.to_string().c_str());
+#endif // _WIN32
 
 			}
 
 		} catch(const std::exception &e ) {
 
-			Application::error() << "Reconfiguration has failed: " << e.what() << endl;
+			error() << "Reconfiguration has failed: " << e.what() << endl;
 
 		} catch(...) {
 
-			Application::error() << "Unexpected error during reconfiguration" << endl;
+			error() << "Unexpected error during reconfiguration" << endl;
 
 		}
+
+#ifdef HAVE_SYSTEMD
+		sd_notify(0,"READY=1");
+#else
+		notify(state()->to_string().c_str());
+#endif // HAVE_SYSTEMD
 
 	}
 

@@ -227,6 +227,23 @@
 
 	}
 
+	void SystemService::registry(const char *name, const char *value) {
+
+		try {
+
+			Win32::Registry("service",true).set(name,value);
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' while updating registry service/" << name << "=" << value << endl;
+
+		} catch(...) {
+
+			error() << "Unexpected error while updating registry service/" << name << "=" << value << endl;
+
+		}
+	}
+
 	void SystemService::notify(const char *message) noexcept {
 
 		try {

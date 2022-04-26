@@ -50,7 +50,7 @@
 		if(instance) {
 			return instance;
 		}
-		throw runtime_error("There's no active service instance");
+		return nullptr;
 	}
 
 	std::shared_ptr<Abstract::Agent> SystemService::RootFactory() const {

@@ -45,6 +45,9 @@
 		/// @brief Set service state message to the root agent.
 		void notify() noexcept;
 
+#ifdef _WIN32
+		void registry(const char *name, const char *value);
+#endif // _WIN32
 	protected:
 
 		/// @brief Reconfigure application from XML files.
