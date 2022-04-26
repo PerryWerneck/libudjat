@@ -293,8 +293,6 @@ namespace Udjat {
 				// Agent requires update.
 				agent->updating(true);
 
-				agent->info() << "** update.timer=" << agent->update.timer << endl;
-
 				if(agent->update.timer) {
 					agent->update.next = time(0) + agent->update.timer;
 #ifdef DEBUG
