@@ -265,7 +265,7 @@ namespace Udjat {
 
 			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
 
-			root->foreach([now,this,&next](std::shared_ptr<Agent> agent){
+			root->foreach([now,this,&next](std::shared_ptr<Agent> agent) {
 
 				// Return if no update timer.
 				if(!agent->update.next)
@@ -292,8 +292,12 @@ namespace Udjat {
 
 				// Agent requires update.
 				agent->updating(true);
+
 				if(agent->update.timer) {
 					agent->update.next = time(0) + agent->update.timer;
+#ifdef DEBUG
+					agent->info() << "**** Next update scheduled to " << TimeStamp(agent->update.next) << " (" << agent->update.timer << " seconds)" << endl;
+#endif // DEBUG
 					next = std::min(next,agent->update.next);
 				}
 
@@ -302,7 +306,13 @@ namespace Udjat {
 
 					try {
 
+#ifdef DEBUG
+						agent->info() << "--A---------------------------------" << endl;
+#endif // DEBUG
 						agent->refresh(false);
+#ifdef DEBUG
+						agent->info() << "--B---------------------------------" << endl;
+#endif // DEBUG
 
 					} catch(const exception &e) {
 

@@ -25,12 +25,14 @@ namespace Udjat {
 		});
 	}
 
+	/*
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	bool Factory::parse(Abstract::State &parent, const pugi::xml_node &node) const {
 		return false;
 	}
 	#pragma GCC diagnostic pop
+	*/
 
 	const Factory * Factory::find(const char *name) {
 		return Controller::getInstance().find(name);
@@ -54,6 +56,10 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
+	}
+
+	bool Factory::push_back(const pugi::xml_node UDJAT_UNUSED(&node)) const {
+		return false;
 	}
 
 	std::ostream & Factory::info() const {

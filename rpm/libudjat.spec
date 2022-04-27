@@ -38,6 +38,7 @@ BuildRequires:	gcc-c++
 BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
 BuildRequires:	pkgconfig(vmdetect)
+BuildRequires:	pkgconfig(libsystemd)
 
 %description
 UDJat core library

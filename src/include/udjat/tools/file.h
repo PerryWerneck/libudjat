@@ -35,6 +35,12 @@ namespace Udjat {
 		class Agent;
 		class Controller;
 
+		/// @brief Copy file
+		void save(int fd, const char *filename);
+
+		/// @brief Copy file
+		void copy(const char *from, const char *to);
+
 		/// @brief File Path.
 		class UDJAT_API Path {
 		private:
@@ -279,6 +285,10 @@ namespace Udjat {
 			void link(const char *filename) const;
 
 #endif // _WIN32
+
+			/// @brief Save tempfile to new filename.
+			/// @param filename The file name.
+			void save(const char *filename);
 
 			/// @brief Move temporary file to the reference filename.
 			void save();

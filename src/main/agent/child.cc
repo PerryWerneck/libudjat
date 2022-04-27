@@ -58,7 +58,7 @@
 					return true;
 				}
 
-				return false;
+				return factory.push_back(node);
 
 
 			} catch(const std::exception &e) {

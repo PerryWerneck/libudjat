@@ -41,9 +41,15 @@
  #include <udjat/tools/configuration.h>
  #include <list>
 
-#ifndef _WIN32
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
+ #ifdef _WIN32
+	#include <udjat/win32/registry.h>
+ #else
 	#include <unistd.h>
-#endif // _WIN32
+ #endif // _WIN32
 
  using namespace std;
 
@@ -114,15 +120,17 @@
 
 
 	struct Updater {
+
 		bool changed = false;
 		time_t next = 0;
+		Application::DataFile path;
 
-		Updater(const char *pathname) {
+		Updater(const char *pathname) : path{pathname} {
 
 			// First scan for modules.
 			if(Config::Value<bool>("modules","preload-from-xml",true)) {
-				cout << "modules\tPreloading from " << pathname << endl;
-				loader(pathname,[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
+				cout << "modules\tPreloading from " << path << endl;
+				loader(path.c_str(),[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
 					for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
 						Module::load(node);
 					}
@@ -130,7 +138,7 @@
 			}
 
 			// Then check for file updates.
-			loader(pathname,[this](const char *filename, const pugi::xml_document &doc){
+			loader(path.c_str(),[this](const char *filename, const pugi::xml_document &doc){
 
 					auto node = doc.document_element();
 
@@ -180,6 +188,7 @@
 
 				agent->info() << "Loading '" << filename << "'" << endl;
 
+				// First setup agent, load modules, etc.
 				try {
 
 					auto node = doc.document_element();
@@ -206,6 +215,26 @@
 					agent->error() << filename << ": Unexpected error" << endl;
 
 				}
+
+				// Then setup modules.
+				Module::for_each([&doc](Module &module) {
+
+					try {
+
+						module.set(doc);
+
+					} catch(const std::exception &e) {
+
+						cerr << "modules\tError '" << e.what() << "' on module setup" << endl;
+
+					} catch(...) {
+
+						cerr << "modules\tUnexpected error on module setup" << endl;
+
+					}
+
+				});
+
 			});
 
 		}
@@ -215,20 +244,23 @@
 	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
 
 		Updater update(pathname);
+
 		if(!(update.changed || force)) {
-			Application::info() << "No changes, reconfiguration is not necessary" << endl;
+			Application::info() << "Reconfiguration is not necessary" << endl;
 			return update.next;
 		}
 
+		Application::warning() << "Reconfiguring from '" << update.path << "'" << endl;
+
 		auto agent = RootAgentFactory();
-		update.set(agent,pathname);
+		update.set(agent,update.path.c_str());
 		setRootAgent(agent);
 
 		return update.next;
 
 	}
 
-	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false) {
+	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
 
 		Updater update(pathname);
 		if(!(update.changed || force)) {
@@ -236,7 +268,9 @@
 			return update.next;
 		}
 
-		update.set(agent,pathname);
+		Application::warning() << "Reconfiguring from '" << update.path << "'" << endl;
+
+		update.set(agent,update.path.c_str());
 		setRootAgent(agent);
 
 		return update.next;
@@ -245,23 +279,29 @@
 
 	void SystemService::reconfigure(const char *pathname, bool force) noexcept {
 
+#ifdef HAVE_SYSTEMD
+		sd_notify(0,"RELOADING=1");
+#else
+		notify("Reloading");
+#endif // HAVE_SYSTEMD
+
 		try {
 
-			Application::DataFile path(pathname);
-			Application::info() << "Reconfiguring from '" << path << "'" << endl;
-
-			Updater update(path.c_str());
+			Updater update(pathname);
 
 			if(!(update.changed || force)) {
 
-				info() << "No changes, reconfiguration is not necessary" << endl;
+				info() << "Reconfiguration is not necessary" << endl;
 
 			} else {
 
 				auto agent = RootFactory();
-				update.set(agent,pathname);
+				update.set(agent,update.path.c_str());
 				setRootAgent(agent);
 
+#ifdef _WIN32
+				registry("last_reconfig",TimeStamp().to_string().c_str());
+#endif // _WIN32
 			}
 
 			if(update.next) {
@@ -275,19 +315,30 @@
 					return false;
 				});
 
-				Application::info() << "Next reconfiguration set to " << TimeStamp(time(0)+update.next) << endl;
+				TimeStamp next(time(0)+update.next);
+				info() << "Next reconfiguration set to " << next << endl;
+
+#ifdef _WIN32
+				registry("next_reconfig",next.to_string().c_str());
+#endif // _WIN32
 
 			}
 
 		} catch(const std::exception &e ) {
 
-			Application::error() << "Reconfiguration has failed: " << e.what() << endl;
+			error() << "Reconfiguration has failed: " << e.what() << endl;
 
 		} catch(...) {
 
-			Application::error() << "Unexpected error during reconfiguration" << endl;
+			error() << "Unexpected error during reconfiguration" << endl;
 
 		}
+
+#ifdef HAVE_SYSTEMD
+		sd_notify(0,"READY=1");
+#else
+		notify(state()->to_string().c_str());
+#endif // HAVE_SYSTEMD
 
 	}
 

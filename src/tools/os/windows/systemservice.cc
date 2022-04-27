@@ -26,6 +26,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/service.h>
+ #include <udjat/win32/registry.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
  #include <udjat/module.h>
@@ -226,15 +227,54 @@
 
 	}
 
+	void SystemService::registry(const char *name, const char *value) {
+
+		try {
+
+			Win32::Registry("service",true).set(name,value);
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' while updating registry service/" << name << "=" << value << endl;
+
+		} catch(...) {
+
+			error() << "Unexpected error while updating registry service/" << name << "=" << value << endl;
+
+		}
+	}
+
+	void SystemService::notify(const char *message) noexcept {
+
+		try {
+
+			Win32::Registry registry("service",true);
+
+			registry.set("status",message);
+			registry.set("status_time",TimeStamp().to_string().c_str());
+
+			info() << message << endl;
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' setting service state" << endl;
+
+		}
+
+	}
+
 	void SystemService::deinit() {
 	}
 
 	void SystemService::stop() {
+		notify("Stopping");
 		MainLoop::getInstance().quit();
 	}
 
 	int SystemService::run() {
+		notify("Main loop is running");
 		MainLoop::getInstance().run();
+		notify("Main loop is not running");
 		return 0;
 	}
 
@@ -471,38 +511,6 @@
 
 		manager.insert(appname.c_str(),display_name,service_binary);
 		cout << "winservice\tService '" << display_name << "' installed" << endl;
-
-		/*
-		// Stop previous instance
-		try {
-
-			cout << appname << "\tStopping previous instance" << endl;
-			Win32::Service::Handler(manager.open(appname.c_str())).stop();
-			cout << appname << "\tPrevious instance stopped" << endl;
-
-		} catch(const exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
-		}
-
-		// Remove previous instance
-		try {
-
-			cout << appname << "\tRemoving previous instance" << endl;
-			manager.remove(appname.c_str());
-			cout << appname << "\tPrevious instance removed" << endl;
-
-		} catch(const exception &e) {
-			cerr << appname << "\t" << e.what() << endl;
-		}
-
-		// Inclui novo serviço
-		cout << appname << "\tInserting '" << display_name << "' service" << endl;
-#ifdef DEBUG
-		cout << appname << "\tService binary is '" << service_binary << "'" << endl;
-#endif // DEBUG
-		manager.insert(appname.c_str(),display_name,service_binary);
-		cout << appname << "\tService '" << display_name << "' inserted" << endl;
-		*/
 
 		return 0;
 

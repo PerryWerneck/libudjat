@@ -80,18 +80,14 @@
 		}
 	}
 
-	void File::Temporary::save() {
-
-		if(filename.empty()) {
-			throw system_error(EINVAL,system_category(),"No target filename");
-		}
+	void File::Temporary::save(const char *filename) {
 
 		if(fd > 0) {
 			::close(fd);
 			fd = -1;
 		}
 
-		if(MoveFile(tempname.c_str(),filename.c_str())) {
+		if(MoveFile(tempname.c_str(),filename)) {
 			return;
 		}
 
@@ -100,7 +96,7 @@
 		}
 
 		char bakfile[PATH_MAX+1];
-		strncpy(bakfile,filename.c_str(),PATH_MAX);
+		strncpy(bakfile,filename,PATH_MAX);
 		char *ptr = strrchr(bakfile,'.');
 		if(ptr) {
 			*ptr = 0;
@@ -108,13 +104,24 @@
 		strncat(bakfile,".bak",PATH_MAX);
 
 		DeleteFile(bakfile);
-		MoveFile(filename.c_str(),bakfile);
+		MoveFile(filename,bakfile);
 
-		if(MoveFile(tempname.c_str(),filename.c_str())) {
+		if(MoveFile(tempname.c_str(),filename)) {
 			return;
 		}
 
 		throw Win32::Exception("Can't save file");
+
+	}
+
+
+	void File::Temporary::save() {
+
+		if(filename.empty()) {
+			throw system_error(EINVAL,system_category(),"No target filename");
+		}
+
+		save(filename.c_str());
 
 	}
 

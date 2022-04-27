@@ -35,6 +35,10 @@
  #include <csignal>
  #include <udjat/tools/threadpool.h>
 
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
  using namespace std;
 
  namespace Udjat {
@@ -59,8 +63,14 @@
 
 	}
 
+	void SystemService::notify(const char *message) noexcept {
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=%s",message);
+#endif // HAVE_SYSTEMD
+		info() << message << endl;
+	}
+
 	void SystemService::init() {
-		setlocale( LC_ALL, "" );
 
 		Module::load();
 
@@ -82,7 +92,51 @@
 	}
 
 	int SystemService::run() {
+
+#ifdef HAVE_SYSTEMD
+		uint64_t watchdog_timer = 0;
+
+		{
+
+			int status = sd_watchdog_enabled(0,&watchdog_timer);
+
+			if(status < 0) {
+
+				cout << "systemd\tError '" << strerror(-status) << "' getting watchdog status" << endl;
+
+			} else if(status == 0) {
+
+				cout << "systemd\tWatchdog timer is not set" << endl;
+
+			} else {
+
+				// SystemD watchdog is enabled.
+				if(watchdog_timer > 0) {
+
+					cout << "systemd\tWatchdog timer is set to " << (watchdog_timer / 1000000L) << " seconds" << endl;
+
+					MainLoop::getInstance().insert(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
+						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state()->to_string().c_str());
+						return true;
+					});
+
+				} else {
+
+					cout << "systemd\tWatchdog timer is disabled" << endl;
+
+				}
+			}
+
+		}
+
+#endif // HAVE_SYSTEMD
+
 		MainLoop::getInstance().run();
+
+#ifdef HAVE_SYSTEMD
+		MainLoop::getInstance().remove(&watchdog_timer);
+#endif // HAVE_SYSTEMD
+
 		return 0;
 	}
 
@@ -101,7 +155,14 @@
 				cout << "Starting " << name () << " application" << endl << endl;
 				Logger::redirect(true);
 				init();
-				run();
+				try {
+					run();
+				} catch(const std::exception &e) {
+					error() << "Error '" << e.what() << "' running service" << endl;
+				} catch(...) {
+					error() << "Unexpected error running service" << endl;
+				}
+
 				deinit();
 				return 0;
 			}
@@ -167,7 +228,6 @@
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
-				cout << "********************* " << key << endl;
 				return cmdline(options[option].option);
 			}
 		}

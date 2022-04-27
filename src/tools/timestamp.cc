@@ -18,6 +18,7 @@
  */
 
 #include <config.h>
+#include <udjat-internals.h>
 #include <cstring>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/logger.h>
@@ -59,21 +60,13 @@ namespace Udjat {
 		if(format && *format) {
 
 			// Have format, use-it
-
-#ifdef _WIN32
-			throw runtime_error("Not implemented");
-#else
 			if(!strptime(time, format, &t)) {
 				throw runtime_error(string{"Can't parse '"} + time + "' in the requested format");
 			}
-#endif // _WIN32
 
 		} else {
 
 			// Dont have format, try known ones.
-#ifdef _WIN32
-			throw runtime_error("Not implemented");
-#else
 			static const char *formats[] = {
 				"%Y-%m-%d %T",
 				"%y-%m-%d %T",
@@ -92,7 +85,6 @@ namespace Udjat {
 				throw runtime_error(string{"Can't parse '"} + time + "' in any known format");
 			}
 
-#endif // _WIN32
 		}
 
 #ifdef DEBUG

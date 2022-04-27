@@ -21,7 +21,9 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/state.h>
  #include <memory>
+ #include <list>
 
  namespace Udjat {
 
@@ -37,6 +39,15 @@
 		/// @brief Command line parser.
 		int cmdline(int argc, const char **argv);
 
+		/// @brief Set service state message.
+		void notify(const char *state) noexcept;
+
+		/// @brief Set service state message to the root agent.
+		void notify() noexcept;
+
+#ifdef _WIN32
+		void registry(const char *name, const char *value);
+#endif // _WIN32
 	protected:
 
 		/// @brief Reconfigure application from XML files.
@@ -74,6 +85,7 @@
 		virtual int uninstall();
 
 #else
+
 		static void onReloadSignal(int signal) noexcept;
 
 #endif // _WIN32
@@ -86,6 +98,9 @@
 	public:
 
 		virtual ~SystemService();
+
+		/// @brief Get Service state.
+		std::shared_ptr<Abstract::State> state() const;
 
 		/// @brief Get current service instance.
 		static SystemService * getInstance();

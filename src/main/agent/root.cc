@@ -20,8 +20,11 @@
  #include <config.h>
  #include "private.h"
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <udjat/win32/registry.h>
+ #else
 	#include <sys/utsname.h>
+	#include <unistd.h>
  #endif // _WIN32
 
  #include <udjat/factory.h>
@@ -36,8 +39,11 @@
 	#include <vmdetect/virtualmachine.h>
  #endif // HAVE_VMDETECT
 
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
  #include <cstring>
- #include <unistd.h>
 
  namespace Udjat {
 
@@ -189,6 +195,32 @@
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
+#ifdef DEBUG
+				info() << "----------------------------------------------------------" << endl;
+#endif // DEBUG
+				info() << state->to_string() << endl;
+
+#if defined(HAVE_SYSTEMD)
+
+				sd_notifyf(0,"STATUS=%s",state->to_string().c_str());
+
+#elif defined(_WIN32)
+
+				try {
+
+					Win32::Registry registry("service",true);
+
+					registry.set("status",state->to_string().c_str());
+					registry.set("status_time",TimeStamp().to_string().c_str());
+
+				} catch(const std::exception &e) {
+
+					error() << "Error '" << e.what() << "' setting service state" << endl;
+
+				}
+
+#endif // HAVE_SYSTEMD
+
 				if(!state->ready()) {
 
 					// The requested state is not ready, activate it.
@@ -207,6 +239,19 @@
 				super::activate(stateFromValue());
 
 				return true;
+			}
+
+			void push_back(std::shared_ptr<Abstract::Alert> alert) {
+
+				alert->info() << "Root alert, emitting it on startup" << endl;
+
+				// Can't start now because the main loop is not active, wait 100ms.
+				MainLoop::getInstance().insert(0,100,[alert](){
+					auto activation = alert->ActivationFactory();
+					Udjat::start(activation);
+					return false;
+				});
+
 			}
 
 		};

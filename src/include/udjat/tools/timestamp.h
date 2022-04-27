@@ -83,12 +83,30 @@
 				return this->value > value;
 			}
 
-			time_t operator-(time_t value) const noexcept {
-				return this->value - value;
+			TimeStamp & operator-(time_t value) noexcept {
+				this->value -= value;
+				return *this;
 			}
 
-			time_t operator+(time_t value) const noexcept {
-				return this->value + value;
+			time_t operator+(time_t value) noexcept {
+				this->value -= value;
+				return *this;
+			}
+
+			void operator ++() {
+				++value;
+			}
+
+			void operator --() {
+				++value;
+			}
+
+			void operator ++ (int) {
+				value++;
+			}
+
+			void operator -- (int) {
+				value--;
 			}
 
 		};

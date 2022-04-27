@@ -60,6 +60,7 @@ namespace Udjat {
 
 		void getInfo(Response &response) noexcept;
 
+		void for_each(std::function<void(Module &module)> method);
 	};
 
 

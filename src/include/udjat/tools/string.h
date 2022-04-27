@@ -84,6 +84,10 @@
 		String(const char *str, size_t length) : std::string(str,length) {
 		}
 
+		/// @brief Insert global expander.
+		/// @param method String expander method (returns 'true' if the value was parsed).
+		static void push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method);
+
 		/// @brief Expand ${} macros.
 		/// @param expander value expander method.
 		/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.

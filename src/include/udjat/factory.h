@@ -89,17 +89,16 @@
 		/// @param node XML definition for the new alert.
 		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
 
-		/// @brief Parse agent sub-node.
-		/// @param parent Parent agent to insert the built child.
-		/// @param node XML definition for the new agent.
-		/// @return true if the request was handled.
-		// virtual bool parse(Abstract::Agent &parent, const pugi::xml_node &node) const;
+		/// @brief Parse a XML node.
+		/// @param XML definition for the new element.
+		/// @return true if the node whas inserted.
+		virtual bool push_back(const pugi::xml_node &node) const;
 
 		/// @brief Parse State sub-node.
 		/// @param parent Parent state insert the built child.
 		/// @param node XML definition for the new state.
 		/// @return true if the request was handled.
-		UDJAT_DEPRECATED(virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const);
+		// UDJAT_DEPRECATED(virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const);
 
 	};
 

@@ -78,7 +78,6 @@ namespace Udjat {
 
 	}
 
-
 	void Abstract::Agent::stop() {
 
 		lock_guard<std::recursive_mutex> lock(guard);
@@ -169,5 +168,13 @@ namespace Udjat {
 
 		return instance;
 	}
+
+	void Abstract::Agent::requestRefresh(time_t seconds) {
+		update.next	= time(nullptr) + seconds;
+#ifdef DEBUG
+		info() << "Next update set to " << TimeStamp(update.next) << endl;
+#endif // DEBUG
+	}
+
 
 }

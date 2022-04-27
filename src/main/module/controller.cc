@@ -57,6 +57,12 @@ namespace Udjat {
 		});
 	}
 
+	void Module::Controller::for_each(std::function<void(Module &module)> method) {
+		for(auto module : this->modules) {
+			method(*module);
+		}
+	}
+
 	void Module::Controller::getInfo(Response &response) noexcept {
 
 		response.reset(Value::Array);

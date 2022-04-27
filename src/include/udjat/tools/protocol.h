@@ -135,16 +135,17 @@
 				return *this;
 			}
 
-			/// @brief Set request url.
-			inline Worker & url(const char *url) noexcept {
-				args.url = url;
-				return *this;
+			/// @brief Get request payload.
+			inline const char * payload() const {
+				return out.payload.c_str();
 			}
 
 			/// @brief Set request url.
+			Worker & url(const char *url) noexcept;
+
+			/// @brief Set request url.
 			inline Worker & url(const URL &url) noexcept {
-				args.url = url;
-				return *this;
+				return this->url(url.c_str());
 			}
 
 			inline const URL & url() const noexcept {
@@ -191,7 +192,8 @@
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
 			/// @brief Call URL, save response as filename.
-			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress) = 0;
+			/// @return true if the file was updated.
+			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Call URL, return response as string.
 			String get();
@@ -209,6 +211,14 @@
 
 		Protocol(const char *name, const ModuleInfo &module);
 		virtual ~Protocol();
+
+		inline const char * c_str() const noexcept {
+			return name;
+		}
+
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->name) == 0;
+		}
 
 		std::ostream & info() const;
 		std::ostream & warning() const;

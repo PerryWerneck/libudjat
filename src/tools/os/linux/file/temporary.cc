@@ -51,6 +51,58 @@
 		::close(fd);
 	}
 
+	void File::Temporary::save(const char *filename) {
+
+		//
+		// First get target file attributes
+		//
+		struct stat st;
+		if(stat(filename, &st) == -1) {
+
+			// Error getting filename, assume defaults if not found.
+
+			if(errno != ENOENT) {
+				throw system_error(errno,system_category(),"Error getting file information");
+			}
+
+			memset(&st,0,sizeof(st));
+			st.st_mode = 0644;
+
+		} else {
+
+			// Got target filename, create '.bak' file.
+			char bakfile[PATH_MAX];
+			strncpy(bakfile,filename,PATH_MAX);
+			char *ptr = strrchr(bakfile,'.');
+			if(ptr) {
+				*ptr = 0;
+			}
+			strncat(bakfile,".bak",PATH_MAX);
+
+			unlink(bakfile);
+			if(rename(filename, bakfile) != 0) {
+				throw system_error(errno,system_category(),"Cant create backup");
+			}
+
+		}
+
+		//
+		// Try to hardlink file
+		//
+		char tempfile[PATH_MAX];
+		snprintf(tempfile, PATH_MAX,  "/proc/self/fd/%d", fd);
+		if(linkat(AT_FDCWD, tempfile, AT_FDCWD, filename, AT_SYMLINK_FOLLOW) != 0) {
+
+			// Unable to create hardlink, try to save file.
+			Udjat::File::save(fd,filename);
+
+		}
+
+		chmod(filename,st.st_mode);
+		chown(filename,st.st_uid,st.st_gid);
+
+	}
+
 	void File::Temporary::link(const char *filename) const {
 
 		char tempfile[PATH_MAX];
@@ -104,7 +156,7 @@
 				throw system_error(EINVAL,system_category(),"No target filename");
 		}
 
-		this->link(filename.c_str());
+		this->save(filename.c_str());
 	}
 
 	File::Temporary & File::Temporary::write(const void *contents, size_t length) {

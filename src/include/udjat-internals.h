@@ -36,6 +36,10 @@
 	#define IDT_CHECK_TIMERS	1
  #endif // _WIN32
 
+ #ifndef HAVE_STRPTIME
+	UDJAT_PRIVATE char *strptime(const char *buf, const char *fmt, struct tm *tm);
+ #endif // !HAVE_STRPTIME
+
  #ifdef HAVE_LIBINTL
 	#include <locale.h>
 	#include <libintl.h>

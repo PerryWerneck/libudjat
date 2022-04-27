@@ -37,6 +37,7 @@
 			throw runtime_error("Can't start more than one system service");
 		}
 
+		setlocale( LC_ALL, "" );
 		instance = this;
 
 	}
@@ -49,7 +50,7 @@
 		if(instance) {
 			return instance;
 		}
-		throw runtime_error("There's no active service instance");
+		return nullptr;
 	}
 
 	std::shared_ptr<Abstract::Agent> SystemService::RootFactory() const {
@@ -123,5 +124,22 @@
 
 		return exit;
 	}
+
+	std::shared_ptr<Abstract::State> SystemService::state() const {
+
+		auto agent = Abstract::Agent::root();
+
+		if(agent) {
+			return agent->state();
+		}
+
+		return make_shared<Abstract::State>("no-messages",Level::unimportant,"No messages","Service is running with no messages");
+
+	}
+
+	void SystemService::notify() noexcept {
+		notify(state()->to_string().c_str());
+	}
+
 
  }

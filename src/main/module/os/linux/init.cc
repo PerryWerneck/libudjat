@@ -38,6 +38,12 @@
 				throw runtime_error("Can't initialize module");
 			}
 
+			if(node.attribute("quiet").as_bool(true)) {
+				cout	<< "modules\t"
+						<< module->info.description
+						<< " build " << module->info.build << " initialized" << endl;
+			}
+
 			module->handle = handle;
 			return module;
 

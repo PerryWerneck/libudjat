@@ -29,6 +29,41 @@
 
  namespace Udjat {
 
+	/// @brief Customized string expander.
+	struct UDJAT_PRIVATE Expander {
+
+		const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method;
+
+		constexpr Expander(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &e) : method(e) {
+		}
+
+	};
+
+	/// @brief List of registered string expanders.
+	class UDJAT_PRIVATE Expanders : public std::vector<Expander> {
+	public:
+		static Expanders & getInstance() {
+			static Expanders instance;
+			return instance;
+		}
+
+		bool expand(const char *key, std::string &str, bool dynamic, bool cleanup) {
+
+			for(Expander &expander : *this) {
+				if(expander.method(key,str,dynamic,cleanup)) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+	};
+
+	void String::push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method) {
+		Expanders::getInstance().emplace_back(method);
+	}
+
 	String & String::strip() noexcept {
 		char *ptr = strdup(c_str());
 		assign(Udjat::strip(ptr));
@@ -70,20 +105,25 @@
 	}
 
 	String & String::expand(const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
-		return expand([&object](const char *key, std::string &str){
-			return object.getProperty(key,str);
+		return expand([&object,dynamic,cleanup](const char *key, std::string &str){
+			if(object.getProperty(key,str))
+				return true;
+			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
 		},dynamic,cleanup);
 	}
 
 	String & String::expand(bool dynamic, bool cleanup) {
-		return expand([](const char UDJAT_UNUSED(*key), std::string UDJAT_UNUSED(&str)){
-			return false;
+		return expand([dynamic,cleanup](const char *key, std::string &str){
+			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
 		},dynamic,cleanup);
 	}
 
 	String & String::expand(const pugi::xml_node &node) {
 
-		return expand([node](const char *key, std::string &value){
+		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
+		bool cleanup = node.attribute("clear-undefined").as_bool(false);
+
+		return expand([node,dynamic,cleanup](const char *key, std::string &value){
 
 			pugi::xml_attribute attribute;
 
@@ -100,11 +140,11 @@
 			}
 
 			// Not expanded
-			return false;
+			return Expanders::getInstance().expand(key,value,dynamic,cleanup);
 
 		},
-		node.attribute("expand-dynamic").as_bool(true),
-		node.attribute("clear-undefined").as_bool(true)
+		dynamic,
+		cleanup
 		);
 
 	}
@@ -179,40 +219,6 @@
 				}
 
 				//
-				// Search the environment.
-				//
-#ifdef _WIN32
-				// Windows, use the win32 api
-				const char *env = nullptr;
-				char szEnvironment[4096];
-				memset(szEnvironment,0,sizeof(szEnvironment));
-
-				if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
-					replace(
-						from,
-						(to-from)+1,
-						szEnvironment
-					);
-					from = find("${",from);
-					continue;
-				}
-
-#else
-				// Linux, use standard getenv.
-				const char *env = getenv(key.c_str());
-				if(env) {
-					replace(
-						from,
-						(to-from)+1,
-						env
-					);
-					from = find("${",from);
-					continue;
-				}
-
-#endif // _WIN32
-
-				//
 				// Search for URL identifier.
 				//
 				const char *sep = strstr(key.c_str(),"://");
@@ -236,11 +242,48 @@
 			//
 			if(cleanup) {
 
-				replace(
-					from,
-					(to-from)+1,
-					""
-				);
+				//
+				// Last resource, search the environment, if not available clean the value.
+				//
+#ifdef _WIN32
+				// Windows, use the win32 api
+				const char *env = nullptr;
+				char szEnvironment[4096];
+				memset(szEnvironment,0,sizeof(szEnvironment));
+
+				if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
+					replace(
+						from,
+						(to-from)+1,
+						szEnvironment
+					);
+				} else {
+					replace(
+						from,
+						(to-from)+1,
+						""
+					);
+				}
+
+#else
+				// Linux, use standard getenv.
+				const char *env = getenv(key.c_str());
+				if(env) {
+					replace(
+						from,
+						(to-from)+1,
+						env
+					);
+					from = find("${",from);
+					continue;
+				} else {
+					replace(
+						from,
+						(to-from)+1,
+						""
+					);
+				}
+#endif // _WIN32
 
 				from = find("${",from);
 

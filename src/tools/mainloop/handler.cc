@@ -27,6 +27,10 @@
 		MainLoop::getInstance().wakeup();
 	}
 
+	const void * MainLoop::Handler::id() const noexcept {
+		return (void *) this;
+	}
+
 	void MainLoop::Handler::disable() noexcept {
 		enabled = false;
 		MainLoop::getInstance().wakeup();
@@ -68,18 +72,20 @@
 
 		class CallHandler : public MainLoop::Handler {
 		private:
+			const void * identifier;
 			const function<bool(const Event event)> callback;
 
 		protected:
-			bool call(const Event event) const override {
+			bool call(const Event event) override {
 				return callback(event);
 			}
 
 		public:
-			CallHandler(const void *id, int fd, const Event event, const function<bool(const Event event)> c) : Handler(id,fd,event), callback(c) {
+			CallHandler(const void *i, int fd, const Event event, const function<bool(const Event event)> c) : Handler(fd,event), identifier(i), callback(c) {
 			}
 
-			virtual ~CallHandler() {
+			const void * id() const noexcept override {
+				return identifier;
 			}
 
 		};
@@ -96,35 +102,30 @@
 
 		lock_guard<mutex> lock(guard);
 
-		nfds_t nfds = 0;
+		if(*length <= handlers.size()) {
+			*length = handlers.size()+1;	// 1 extra for the eventfd.
+			*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+		}
 
 		// Get waiting sockets.
-		handlers.remove_if([fds,length,&nfds](auto handle) {
+		nfds_t nfds = 0;
+		for(auto handle : handlers) {
 
-			if(handle->fd <= 0)
-				return true;
-
-			if(handle->enabled) {
-
-				if(nfds >= (*length-1)) {
-					*length += 2;
-					*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
-					for(size_t ix = nfds; ix < *length; ix++) {
-						(*fds)[ix].fd = -1;
-						(*fds)[ix].events = 0;
-						(*fds)[ix].revents = 0;
-					}
-				}
-
+			if(!handle->enabled || handle->fd <=0) {
+				handle->index = -1;
+			} else {
+				handle->index = nfds;
 				(*fds)[nfds].fd = handle->fd;
 				(*fds)[nfds].events = handle->events;
 				(*fds)[nfds].revents = 0;
 				nfds++;
-
 			}
 
-			return false;
-		});
+//#ifdef DEBUG
+//			cout << "Handle " << handle->id() << " fd=" << handle->fd << " index=" << handle->index << " event=" << handle->events << endl;
+//#endif // DEBUG
+
+		}
 
 		return nfds;
 	}

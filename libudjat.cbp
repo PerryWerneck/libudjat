@@ -157,6 +157,7 @@
 		<Unit filename="src/tools/application.cc" />
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/expand.cc" />
+		<Unit filename="src/tools/file.cc" />
 		<Unit filename="src/tools/file/private.h" />
 		<Unit filename="src/tools/http/client.cc" />
 		<Unit filename="src/tools/http/exception.cc" />
@@ -211,6 +212,9 @@
 		<Unit filename="src/tools/os/windows/registry.cc" />
 		<Unit filename="src/tools/os/windows/service.cc" />
 		<Unit filename="src/tools/os/windows/string.cc" />
+		<Unit filename="src/tools/os/windows/strptime.cc">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="src/tools/os/windows/subprocess.cc" />
 		<Unit filename="src/tools/os/windows/systemservice.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />

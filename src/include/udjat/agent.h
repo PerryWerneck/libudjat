@@ -131,6 +131,9 @@
 				/// @brief Set unexpected failed state.
 				void failed(const char *summary, const char *body = "") noexcept;
 
+				/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
+				void requestRefresh(time_t seconds = 0);
+
 				/// @brief Run update if required.
 				/// @param forward	If true forward update to children.
 				/// @return true if the state was refreshed.
@@ -315,14 +318,14 @@
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @param force Do a reconfiguration even if the file hasn't change.
 		/// @return Seconds for file refresh.
-		UDJAT_API time_t reconfigure(const char *pathname, bool force);
+		UDJAT_API time_t reconfigure(const char *pathname, bool force = false);
 
 		/// @brief Load XML application definitions.
 		/// @param agent New root agent.
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @param force Do a reconfiguration even if the file hasn't change.
 		/// @return Seconds for file refresh.
-		UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force);
+		UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false);
 
 		template <typename T>
 		class UDJAT_API Agent : public Abstract::Agent {

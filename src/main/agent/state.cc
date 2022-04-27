@@ -126,31 +126,16 @@ namespace Udjat {
 		if(state == this->current_state.active)
 			return false;
 
-		string value = to_string();
 		auto level = state->level();
 
-		if(value.empty()) {
-
-			LogFactory(level)
-				<< name()
-				<< "\tCurrent state changes from'"
-				<< this->current_state.active
-				<< "' to '"
-				<< state
-				<< "' (" << level << ")"
-				<< endl;
-
-		} else {
-
-			LogFactory(level)
-				<< name()
-				<< "\tValue '" << value << "' changes state from '"
-				<< this->current_state.active->summary()
-				<< "' to '"
-				<< state->summary()
-				<< "' (" << level << ")"
-				<< endl;
-		}
+		LogFactory(level)
+			<< name()
+			<< "\tCurrent state changes from'"
+			<< this->current_state.active->to_string()
+			<< "' to '"
+			<< state->to_string()
+			<< "' (" << level << ")"
+			<< endl;
 
 		Udjat::Level saved_level = this->level();
 
