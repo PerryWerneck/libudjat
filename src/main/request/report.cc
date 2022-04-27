@@ -35,6 +35,17 @@
 		va_end(args);
 	}
 
+	void Report::start(const char *name, const std::vector<string> &column_names) {
+
+		if(!this->columns.names.empty()) {
+			throw system_error(EBUSY,system_category(),"Report already started");
+		}
+
+		this->columns.names = column_names;
+
+		open();
+	}
+
 	void Report::set(const char *column_name, va_list args) {
 
 		if(!columns.names.empty()) {

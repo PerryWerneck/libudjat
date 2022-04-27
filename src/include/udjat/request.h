@@ -52,6 +52,11 @@
 			/// @param ...			Subsequent column names.
 			void start(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
 
+			/// @brief Open report, define column names.
+			/// @param name	Report	name.
+			/// @param column_names	The column names.
+			void start(const char *name, const std::vector<std::string> &column_names);
+
 			virtual ~Report();
 
 			virtual Report & push_back(const char *str) = 0;
