@@ -16,8 +16,29 @@
 
 	namespace Udjat {
 
+		/// @brief Cache information for http responses.
+		class UDJAT_API ResponseInfo {
+		protected:
+			/// @brief Expiration timestamp (For cache headers)
+			time_t expiration = 0;
+
+			/// @brief Timestamp of data.
+			time_t modification = 0;
+
+		public:
+			constexpr ResponseInfo() {
+			}
+
+			/// @brief Set timestamp for cache the response.
+			void setExpirationTimestamp(const time_t time);
+
+			/// @brief Set timestamp for data.
+			void setModificationTimestamp(const time_t time);
+
+		};
+
 		/// @brief Report in the format row/col.
-		class UDJAT_API Report {
+		class UDJAT_API Report : public ResponseInfo {
 		protected:
 
 			struct {
@@ -85,15 +106,9 @@
 
 		};
 
-		class UDJAT_API Response : public Udjat::Value {
+		class UDJAT_API Response : public ResponseInfo, public Udjat::Value {
 		public:
 		protected:
-
-			/// @brief Expiration timestamp (For cache headers)
-			time_t expiration = 0;
-
-			/// @brief Timestamp of data.
-			time_t modification = 0;
 
 			/// @brief Response type.
 			MimeType type = MimeType::custom;
@@ -104,13 +119,7 @@
 		public:
 
 			constexpr Response(const MimeType m = MimeType::custom)
-			: expiration(0), modification(0), type(m) { }
-
-			/// @brief Set timestamp for cache the response.
-			void setExpirationTimestamp(const time_t time);
-
-			/// @brief Set timestamp for data.
-			void setModificationTimestamp(const time_t time);
+			: type(m) { }
 
 			inline bool operator ==(const MimeType type) const noexcept {
 				return this->type == type;

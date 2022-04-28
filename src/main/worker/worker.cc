@@ -47,6 +47,10 @@ namespace Udjat {
 		return find(name)->work(request,response);
 	}
 
+	bool Worker::work(const char *name, Request &request, Report &response) {
+		return find(name)->work(request,response);
+	}
+
 	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
 		return false;
 	}
@@ -71,6 +75,10 @@ namespace Udjat {
 
 		return false;
 
+	}
+
+	bool Worker::work(Request &request, Report &response) const {
+		return false;
 	}
 
 	size_t Worker::hash() const {

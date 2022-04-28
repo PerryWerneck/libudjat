@@ -107,7 +107,7 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::head(Response &response) {
+	void Abstract::Agent::head(ResponseInfo &response) {
 
 		chk4refresh(true);
 

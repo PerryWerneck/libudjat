@@ -51,6 +51,10 @@ namespace Udjat {
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Response &response);
 
+		/// @brief Execute request, update response
+		/// @return false if the request method was not allowed.
+		static bool work(const char *name, Request &request, Report &response);
+
 		/// @brief Get array with information about all registered worker.
 		static void getInfo(Response &response);
 
@@ -81,6 +85,9 @@ namespace Udjat {
 		/// @brief Process all methods.
 		/// @return true if the method was allowed.
 		virtual bool work(Request &request, Response &response) const;
+
+		/// @brief Process report method.
+		virtual bool work(Request &request, Report &response) const;
 
 	};
 

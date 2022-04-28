@@ -116,6 +116,20 @@ namespace Udjat {
 		return true;
 	}
 
+	bool Abstract::Agent::Controller::work(Request &request, Report &response) const {
+
+		auto agent = find(request.getPath());
+
+		if(!agent) {
+			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
+		}
+
+		agent->head(response);
+		agent->get(request,response);
+
+		return true;
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) const {
 
 		auto root = get();

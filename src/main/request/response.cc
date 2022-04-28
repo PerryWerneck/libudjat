@@ -8,7 +8,7 @@
 
 namespace Udjat {
 
-	void Response::setExpirationTimestamp(const time_t time) {
+	void ResponseInfo::setExpirationTimestamp(const time_t time) {
 
 		if(expiration) {
 			expiration = min(expiration,time);
@@ -18,7 +18,7 @@ namespace Udjat {
 
 	}
 
-	void Response::setModificationTimestamp(const time_t time) {
+	void ResponseInfo::setModificationTimestamp(const time_t time) {
 
 		if(modification)
 			modification = min(modification,time);

@@ -269,7 +269,7 @@
 				}
 
 				/// @brief Adds cache and update information to the response.
-				void head(Response &response);
+				void head(ResponseInfo &response);
 
 				/// @brief Get agent value.
 				virtual Value & get(Value &value) const;
