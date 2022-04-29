@@ -188,8 +188,8 @@ int main(int argc, char **argv) {
 
 	// File::copy(argv[0],"/tmp/test");
 
-	// File::List(Application::DataDir("icons"),true);
-	File::List("/usr/share/icons/","*.png",true);
+	File::List(Application::DataDir("icons"),true);
+	// File::List("/usr/share/icons/","*.png",true);
 	return 0;
 
 	return Service().run(argc,argv);

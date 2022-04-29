@@ -27,6 +27,7 @@
 
  namespace Udjat {
 
+	/*
 	static void load(std::list<std::string> &files, const char *fpat, bool recursive) {
 
 		if(!(fpat && *fpat)) {
@@ -100,6 +101,17 @@
 
 	File::List::List(const char *fpat, bool recursive) {
 		load(*this,fpat,recursive);
+	}
+	*/
+
+	File::List::List(const char *path, bool recursive) : List(path,"*",recursive) {
+	}
+
+	File::List::List(const char *path, const char *pattern, bool recursive) {
+		Path::for_each(path,pattern,recursive,[this](const char *filename){
+			emplace_back(filename);
+			return true;
+		});
 	}
 
 	File::List::~List() {
