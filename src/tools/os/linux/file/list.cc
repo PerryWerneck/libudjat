@@ -18,27 +18,22 @@
  */
 
  #include "private.h"
- #include <wordexp.h>
+ #include <sys/types.h>
+
 
  using namespace std;
 
  namespace Udjat {
 
-	File::List::List(const char *pattern) {
 
-		wordexp_t p;
-		memset(&p,0,sizeof(p));
+	File::List::List(const char *fpath, bool recursive) : List(fpath,"*",recursive) {
+	}
 
-		wordexp(pattern, &p, 0);
-
-		list<string> lst;
-
-		for(size_t wordc = 0; wordc < p.we_wordc; wordc++) {
-			emplace_back(((char **) p.we_wordv)[wordc]);
-		}
-
-		wordfree(&p);
-
+	File::List::List(const char *path, const char *pattern, bool recursive) {
+		Path::for_each(path,pattern,recursive,[this](const char *filename){
+			emplace_back(filename);
+			return true;
+		});
 	}
 
 	File::List::~List() {

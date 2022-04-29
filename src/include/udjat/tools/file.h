@@ -52,6 +52,14 @@ namespace Udjat {
 
 			Path(int fd);
 
+			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
+			/// @return false if 'call' has returned false;
+			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *filename)> call);
+
+			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
+			/// @return false if 'call' has returned false;
+			static bool for_each(const char *path, bool recursive, std::function<bool (const char *filename)> call);
+
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
 
@@ -211,7 +219,12 @@ namespace Udjat {
 		/// @brief Directory contents.
 		class UDJAT_API List : public std::list<std::string> {
 		public:
-			List(const char *pattern);
+			List(const char *path, const char *pattern, bool recursive=false);
+			List(const char *path, bool recursive=false);
+
+			List(const std::string &pattern, bool recursive=false) : List(pattern.c_str(),recursive) {
+			}
+
 			~List();
 
 			/// @brief Navigate for all files until lambda returns 'false'.

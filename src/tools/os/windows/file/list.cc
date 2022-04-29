@@ -27,63 +27,66 @@
 
  namespace Udjat {
 
-	File::List::List(const char *filepattern) {
+	static void load(std::list<std::string> &files, const char *fpat, bool recursive) {
 
-		if(!(filepattern && *filepattern)) {
+		if(!(fpat && *fpat)) {
 			throw system_error(EINVAL,system_category(),"Empty file pattern");
 		}
 
-		string pattern{filepattern};
-		for(char *ptr = (char *) pattern.c_str();*ptr;ptr++) {
+		string folder{fpat};
+		for(char *ptr = (char *) folder.c_str();*ptr;ptr++) {
 			if(*ptr == '/') {
 				*ptr = '\\';
 			}
 		}
 
-		if(pattern[pattern.size()-1] == '\\') {
-			pattern += "*.*";
+		// Split folder & mask
+
+		if(folder[folder.size()-1] == '\\') {
+			folder.resize(folder.size()-1);
+		} else {
+			throw system_error(ENOTSUP,system_category(),"Pattern based filter is not supported");
+
+			// TODO: Use PathMatchSpec to match file pattern.
+
 		}
 
-#ifdef DEBUG
-		cout << "Searching for '" << pattern << "'" << endl;
-#endif // DEBUG
-
+		// Scan folder.
 		WIN32_FIND_DATA FindFileData;
-		memset(&FindFileData,0,sizeof(FindFileData));
-
-		HANDLE hFind = FindFirstFile(pattern.c_str(),&FindFileData);
-
+		HANDLE hFind = FindFirstFile((folder + "\\*").c_str(), &FindFileData);
 		if (hFind == INVALID_HANDLE_VALUE) {
-			throw Win32::Exception(string{"Can't find '"} + pattern + "'");
-		}
-
-		string path{pattern};
-
-		size_t pos = path.rfind('\\');
-		if(pos != string::npos) {
-			path.resize(pos);
+			throw Win32::Exception(folder.c_str());
 		}
 
 		try {
 
 			do {
 
-				if(FindFileData.cFileName[0] != '.') {
-					string str(path);
-					str += '\\';
-					str += FindFileData.cFileName;
-					this->push_back(str);
-#ifdef DEBUG
-					cout << "Found '" << str << "'" << endl;
-#endif // DEBUG
+				if(FindFileData.cFileName[0] == '.') {
+					continue;
 				}
 
-			} while (FindNextFile(hFind, &FindFileData) != 0);
+				string filename = folder + "\\" + FindFileData.cFileName;
 
-			DWORD dwError = GetLastError();
-			if(dwError != ERROR_NO_MORE_FILES) {
-				throw Win32::Exception("Error reading files",dwError);
-			}
+				DWORD attr = GetFileAttributes(filename.c_str());
+				if(attr == INVALID_FILE_ATTRIBUTES) {
+					throw Win32::Exception(filename);
+				}
+
+				if(recursive && (attr & FILE_ATTRIBUTE_DIRECTORY)) {
+#ifdef DEBUG
+					cout << "Found folder '" << filename << "'" << endl;
+#endif // DEBUG
+					load(files, (filename + "\\").c_str(),true);
+
+				} else {
+#ifdef DEBUG
+					cout << "Found file '" << filename << "'" << endl;
+#endif // DEBUG
+					files.push_back(filename);
+				}
+
+			} while(FindNextFile(hFind, &FindFileData) != 0);
 
 		} catch(...) {
 
@@ -93,7 +96,10 @@
 		}
 
 		FindClose(hFind);
+	}
 
+	File::List::List(const char *fpat, bool recursive) {
+		load(*this,fpat,recursive);
 	}
 
 	File::List::~List() {
