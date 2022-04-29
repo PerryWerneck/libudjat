@@ -27,50 +27,56 @@
 
  namespace Udjat {
 
-	File::List::List(const char *pattern) {
+	File::List::List(const char *filepattern) {
+
+		if(!(filepattern && *filepattern)) {
+			throw system_error(EINVAL,system_category(),"Empty file pattern");
+		}
+
+		string pattern{filepattern};
+		for(char *ptr = (char *) pattern.c_str();*ptr;ptr++) {
+			if(*ptr == '/') {
+				*ptr = '\\';
+			}
+		}
+
+		if(pattern[pattern.size()-1] == '\\') {
+			pattern += "*.*";
+		}
+
+#ifdef DEBUG
+		cout << "Searching for '" << pattern << "'" << endl;
+#endif // DEBUG
 
 		WIN32_FIND_DATA FindFileData;
 		memset(&FindFileData,0,sizeof(FindFileData));
 
-		HANDLE hFind = FindFirstFile(pattern,&FindFileData);
+		HANDLE hFind = FindFirstFile(pattern.c_str(),&FindFileData);
 
 		if (hFind == INVALID_HANDLE_VALUE) {
-			throw Win32::Exception("Can't find file");
+			throw Win32::Exception(string{"Can't find '"} + pattern + "'");
 		}
 
-		string path;
+		string path{pattern};
 
-		const char * ptr[] = {
-			strchr(pattern,'\\'),
-			strchr(pattern,'/')
-		};
-
-		if(ptr[0] || ptr[1]) {
-
-			size_t len = strlen(pattern);
-
-			if(ptr[0]) {
-				len = min(len,(size_t) (ptr[0]-pattern));
-			}
-
-			if(ptr[1]) {
-				len = min(len,(size_t) (ptr[1]-pattern));
-			}
-
-			path.assign(pattern,len);
-
+		size_t pos = path.rfind('\\');
+		if(pos != string::npos) {
+			path.resize(pos);
 		}
-
-		//cout << "PATH: [" << path << "]" << endl;
 
 		try {
 
 			do {
 
-				string str(path);
-				str += FindFileData.cFileName;
-				//cout << "FILENAME: [" << FindFileData.cFileName << "]" << endl;
-				this->push_back(str);
+				if(FindFileData.cFileName[0] != '.') {
+					string str(path);
+					str += '\\';
+					str += FindFileData.cFileName;
+					this->push_back(str);
+#ifdef DEBUG
+					cout << "Found '" << str << "'" << endl;
+#endif // DEBUG
+				}
 
 			} while (FindNextFile(hFind, &FindFileData) != 0);
 

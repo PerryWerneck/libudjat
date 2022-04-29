@@ -24,6 +24,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/file.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert.h>
@@ -186,6 +187,9 @@ int main(int argc, char **argv) {
 	};
 
 	// File::copy(argv[0],"/tmp/test");
+
+	File::List((Application::DataDir("icons")).c_str());
+	return 0;
 
 	return Service().run(argc,argv);
 }
