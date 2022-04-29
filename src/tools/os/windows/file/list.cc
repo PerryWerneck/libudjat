@@ -76,7 +76,7 @@
 
 			DWORD dwError = GetLastError();
 			if(dwError != ERROR_NO_MORE_FILES) {
-				throw Win32::Exception("Error reading files");
+				throw Win32::Exception("Error reading files",dwError);
 			}
 
 		} catch(...) {
@@ -93,10 +93,13 @@
 	File::List::~List() {
 	}
 
-	void File::List::forEach(std::function<void (const char *filename)> call) {
+	bool File::List::for_each(std::function<bool (const char *filename)> call) {
 		for(auto ix = begin(); ix != end(); ix++)  {
-			call( (*ix).c_str());
+			if(!call( (*ix).c_str())) {
+				return false;
+			}
 		}
+		return true;
 	}
 
  }

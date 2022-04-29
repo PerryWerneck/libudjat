@@ -213,7 +213,11 @@ namespace Udjat {
 		public:
 			List(const char *pattern);
 			~List();
-			void forEach(std::function<void (const char *filename)> call);
+
+			/// @brief Navigate for all files until lambda returns 'false'.
+			/// @return true if the lambda doesnt returns 'false' on any file.
+			bool for_each(std::function<bool (const char *filename)> call);
+
 		};
 
 		/// @brief Text file agent.

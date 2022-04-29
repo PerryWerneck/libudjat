@@ -66,7 +66,7 @@
 			//
 			// It's a folder.
 			//
-			File::List((string{pathname} + "/*.xml").c_str()).forEach([&call,&pathname](const char *filename){
+			File::List((string{pathname} + "/*.xml").c_str()).for_each([&call,&pathname](const char *filename){
 
 				try {
 
@@ -74,7 +74,7 @@
 					auto result = doc.load_file(filename);
 					if(result.status != pugi::status_ok) {
 						Application::error() << filename << ": " << result.description() << endl;
-						return;
+						return true;
 					}
 
 					call(filename,doc);
@@ -88,6 +88,8 @@
 					Application::error() << pathname << ": Unexpected error" << endl;
 
 				}
+
+				return true;
 
 			});
 

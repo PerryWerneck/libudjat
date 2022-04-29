@@ -39,34 +39,18 @@
 
 		wordfree(&p);
 
-		/*
-		switch(glob(pattern, flags, NULL, &files)) {
-		case 0:
-			break;
-
-		case GLOB_NOSPACE:
-			throw runtime_error(string{"Out of memory scanning for '"} +pattern + "'" );
-
-		case GLOB_ABORTED:
-			throw runtime_error(string{"Read error scanning for '"} +pattern + "'" );
-
-		case GLOB_NOMATCH:
-			throw runtime_error(string{"No matches for '"} +pattern + "'" );
-
-		default:
-			throw runtime_error(string{"Unexpected error scanning for '"} +pattern + "'" );
-		}
-		*/
-
 	}
 
 	File::List::~List() {
 	}
 
-	void File::List::forEach(std::function<void (const char *filename)> call) {
+	bool File::List::for_each(std::function<bool (const char *filename)> call) {
 		for(auto ix = begin(); ix != end(); ix++)  {
-			call( (*ix).c_str());
+			if(!call( (*ix).c_str())) {
+				return false;
+			}
 		}
+		return true;
 	}
 
  }
