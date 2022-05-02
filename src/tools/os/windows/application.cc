@@ -26,10 +26,7 @@
  #include <sys/types.h>
  #include <udjat/win32/registry.h>
  #include <cstring>
-
-#ifdef DEBUG
-	#include <iostream>
-#endif // DEBUG
+ #include <iostream>
 
  using namespace std;
 
