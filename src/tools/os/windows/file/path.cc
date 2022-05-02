@@ -33,10 +33,6 @@
 		throw system_error(ENOTSUP,system_category(),"Not available on windows");
 	}
 
-	bool File::Path::for_each(const char *path, bool recursive, std::function<bool (const char *)> call) {
-		return for_each(path,"*",recursive,call);
-	}
-
 	static bool is_dir(const std::string &filename) {
 		DWORD attr = GetFileAttributes(filename.c_str());
 		if(attr == INVALID_FILE_ATTRIBUTES) {
@@ -45,9 +41,9 @@
 		return attr & FILE_ATTRIBUTE_DIRECTORY;
 	}
 
-	bool File::Path::for_each(const char *fpath, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
+	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
 
-		string path{fpath};
+		string path{pathname};
 
 		for(char *ptr = (char *) path.c_str();*ptr;ptr++) {
 			if(*ptr == '/') {

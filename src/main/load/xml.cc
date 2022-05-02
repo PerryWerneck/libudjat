@@ -66,7 +66,7 @@
 			//
 			// It's a folder.
 			//
-			File::Path::for_each(pathname,"*.xml",false,[&call,&pathname](const char *filename){
+			File::Path(pathname).for_each("*.xml",false,[&call,&pathname](const char *filename){
 
 				try {
 

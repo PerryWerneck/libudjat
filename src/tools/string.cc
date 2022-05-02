@@ -247,7 +247,7 @@
 				//
 #ifdef _WIN32
 				// Windows, use the win32 api
-				const char *env = nullptr;
+				//const char *env = nullptr;
 				char szEnvironment[4096];
 				memset(szEnvironment,0,sizeof(szEnvironment));
 

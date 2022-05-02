@@ -136,9 +136,12 @@
 
 	}
 
+
+	/*
 	bool File::Path::for_each(const char *path, bool recursive, std::function<bool (const char *)> call) {
 		return for_each(path,"*",recursive,call);
 	}
+	*/
 
 	bool File::Path::for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
 

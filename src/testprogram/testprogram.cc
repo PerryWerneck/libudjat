@@ -188,9 +188,12 @@ int main(int argc, char **argv) {
 
 	// File::copy(argv[0],"/tmp/test");
 
-	File::List(Application::DataDir("icons"),true);
+	// File::List(Application::DataDir("icons"),true);
 	// File::List("/usr/share/icons/","*.png",true);
-	return 0;
+	//if(File::Path("/usr/share/icons").find("window-new-symbolic.svg",true)) {
+	//	cout << "FOUND!!!" << endl;
+	//}
+	//return 0;
 
 	return Service().run(argc,argv);
 }

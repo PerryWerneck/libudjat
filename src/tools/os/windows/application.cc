@@ -98,7 +98,7 @@
 
 	}
 
-	Application::DataDir::DataDir() : string(Application::Path()) {
+	Application::DataDir::DataDir() : File::Path(Application::Path()) {
 	}
 
 	Application::DataDir::DataDir(const char *subdir) : DataDir() {
@@ -125,7 +125,33 @@
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {
-		// TODO: Search application_name install dir on registry.
+
+		if(application_name && *application_name) {
+
+			// Search application install dir.
+			try {
+
+				Win32::Registry registry(HKEY_LOCAL_MACHINE,(string{"\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"}+application_name).c_str());
+				assign(registry.get("InstallLocation",""));
+				if(!empty()) {
+					append(subdir);
+					append("\\");
+					return;
+				}
+
+			} catch(const std::exception &e) {
+
+				cerr << "win32\tError '" << e.what() << "' finding installation path of '" << application_name << "'" << endl;
+
+			} catch(...) {
+
+				cerr << "win32\tUnexpected error finding installation path of '" << application_name << "'" << endl;
+
+			}
+
+
+		}
+
 		assign(Application::Path());
 		append(subdir);
 		append("\\");

@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/file.h>
  #include <string>
  #include <ostream>
 
@@ -68,14 +69,14 @@
 #endif // _WIN32
 
 		/// @brief Application data dir.
-		class UDJAT_API DataDir : public std::string {
+		class UDJAT_API DataDir : public File::Path {
 		public:
 			DataDir();
 			DataDir(const char *subdir);
 		};
 
 		/// @brief Application cache dir.
-		class UDJAT_API CacheDir : public std::string {
+		class UDJAT_API CacheDir : public File::Path {
 		public:
 			CacheDir();
 			CacheDir(const char *filename);

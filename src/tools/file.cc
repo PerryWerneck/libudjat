@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/file.h>
+ #include <iostream>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -30,6 +31,20 @@
  using namespace std;
 
  namespace Udjat {
+
+	File::Path::operator bool() const noexcept {
+		if(empty()) {
+			return false;
+		}
+		return (access(c_str(), R_OK) == 0);
+	}
+
+	bool File::Path::find(const char *name, bool recursive) {
+		return !for_each(name,recursive,[this](const char *name){
+			assign(name);
+			return false;
+		});
+	}
 
 	void File::copy(const char *from, const char *to) {
 

@@ -42,23 +42,46 @@ namespace Udjat {
 		void copy(const char *from, const char *to);
 
 		/// @brief File Path.
-		class UDJAT_API Path {
-		private:
-			std::string value;
-
+		class UDJAT_API Path : public std::string {
 		public:
-			Path(const char *v) : value{v} {
+
+			Path() : std::string() {
+			}
+
+			Path(const char *v) : std::string(v) {
+			}
+
+			Path(const std::string &v) : std::string(v) {
 			}
 
 			Path(int fd);
 
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *filename)> call);
+			/// @brief Find file in the path, replace value if found.
+			/// @return true if 'name' was found and the object value was updated.
+			bool find(const char *name, bool recursive = false);
+
+			/// @brief Test if the file is valid.
+			operator bool() const noexcept;
+
+			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call);
 
 			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
 			/// @return false if 'call' has returned false;
-			static bool for_each(const char *path, bool recursive, std::function<bool (const char *filename)> call);
+			inline bool for_each(const char *pattern, bool recursive, std::function<bool (const char *filename)> call) const {
+				return for_each(c_str(),pattern,recursive,call);
+			}
+
+			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
+			/// @return false if 'call' has returned false;
+			inline bool for_each(bool recursive, std::function<bool (const char *filename)> call) const {
+				return for_each(c_str(),"*",recursive,call);
+			}
+
+			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
+			/// @return false if 'call' has returned false;
+			bool for_each(std::function<bool (const char *filename)> call) {
+				return for_each(c_str(),"*",false,call);
+			}
 
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
@@ -66,7 +89,7 @@ namespace Udjat {
 			/// @brief Save file.
 			/// @param filename File name.
 			inline void save(const char *contents) const {
-				save(value.c_str(),contents);
+				save(c_str(),contents);
 			}
 
 		};
