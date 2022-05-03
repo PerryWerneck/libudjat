@@ -186,8 +186,6 @@
 				/// @brief Get root agent.
 				static std::shared_ptr<Abstract::Agent> root();
 
-				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
-
 				inline std::vector<std::shared_ptr<Agent>> & agents() noexcept {
 					return children.agents;
 				}

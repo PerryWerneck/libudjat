@@ -145,10 +145,6 @@ namespace Udjat {
 		Abstract::Agent::Controller::getInstance().set(std::shared_ptr<Abstract::Agent>());
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {
-		return root();
-	}
-
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::root() {
 		return Abstract::Agent::Controller::getInstance().get();
 	}
@@ -346,6 +342,12 @@ namespace Udjat {
 
 		});
 
+	}
+
+	void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
+	}
+
+	void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
 	}
 
 }

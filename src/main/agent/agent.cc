@@ -76,6 +76,8 @@ namespace Udjat {
 			child->parent = nullptr;
 		}
 
+		Controller::getInstance().remove(this);
+
 	}
 
 	void Abstract::Agent::stop() {

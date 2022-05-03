@@ -50,6 +50,10 @@ namespace Udjat {
 		void start() noexcept override;
 		void stop() noexcept override;
 
+		/// @brief Check if agent has special options.
+		void insert(Abstract::Agent *agent, const pugi::xml_node &node);
+		void remove(Abstract::Agent *agent);
+
 	};
 
 }
