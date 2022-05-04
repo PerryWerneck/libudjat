@@ -77,7 +77,7 @@
 
 		for(size_t ix = 0; ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
 			if(!strcasecmp(eventnames[ix].name,name)){
-				return SignalHandler(id,eventnames[ix].dwCtrlType,handler);
+				return ConsoleHandler(id,eventnames[ix].dwCtrlType,handler);
 			}
 		}
 
