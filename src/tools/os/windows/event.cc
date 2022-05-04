@@ -19,13 +19,8 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/event.h>
+ #include <private/event.h>
  #include <iostream>
- #include <forward_list>
- #include <csignal>
- #include <cstring>
- #include <mutex>
- #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
@@ -35,146 +30,58 @@
 		DWORD dwCtrlType;
 		const char *name;
 	} eventnames[] = {
-		{ CTRL_C_EVENT,			"Ctrl-C"				},
-		{ CTRL_BREAK_EVENT,		"Ctrl-Break"			},
-		{ CTRL_CLOSE_EVENT,		"close"					},
-		{ CTRL_LOGOFF_EVENT,	"logoff"				},
-		{ CTRL_SHUTDOWN_EVENT,	"shutdown"				},
-		{ CTRL_C_EVENT,			"^C"					},
-		{ CTRL_BREAK_EVENT,		"^Break"				},
-		{ CTRL_C_EVENT,			"CTRL_C_EVENT"			},
-		{ CTRL_BREAK_EVENT,		"CTRL_BREAK_EVENT"		},
-		{ CTRL_CLOSE_EVENT,		"CTRL_CLOSE_EVENT"		},
-		{ CTRL_LOGOFF_EVENT,	"CTRL_LOGOFF_EVENT"		},
-		{ CTRL_SHUTDOWN_EVENT,	"CTRL_SHUTDOWN_EVENT"	},
+		{ CTRL_C_EVENT,					"Ctrl-C"                                },
+		{ CTRL_BREAK_EVENT,				"Ctrl-Break"                    		},
+		{ CTRL_CLOSE_EVENT,				"close"                                 },
+		{ CTRL_LOGOFF_EVENT,			"logoff"                                },
+		{ CTRL_SHUTDOWN_EVENT,			"shutdown"                              },
+		{ CTRL_C_EVENT,					"^C"                                    },
+		{ CTRL_BREAK_EVENT,				"^Break"                                },
+		{ CTRL_C_EVENT,					"CTRL_C_EVENT"                 			},
+		{ CTRL_BREAK_EVENT,				"CTRL_BREAK_EVENT"              		},
+		{ CTRL_CLOSE_EVENT,				"CTRL_CLOSE_EVENT"              		},
+		{ CTRL_LOGOFF_EVENT,			"CTRL_LOGOFF_EVENT"             		},
+		{ CTRL_SHUTDOWN_EVENT,			"CTRL_SHUTDOWN_EVENT"   				},
+		{ CTRL_C_EVENT,					"SIGTERM"                               },
+		{ CTRL_C_EVENT,					"terminate"                             },
+		{ CTRL_BREAK_EVENT,				"SIGHUP"  		                  		},
+		{ CTRL_BREAK_EVENT,				"reload"  		                  		},
 	};
 
- 	class ConsoleEvent : public Event {
-	public:
-		DWORD dwCtrlType;
-
-		ConsoleEvent(DWORD t) : dwCtrlType(t) {
-			cout << "win32\tWatching '" << to_string() << "'" << endl;
-		}
-
-		virtual ~ConsoleEvent() {
-			cout << "win32\tUnwatching '" << to_string() << "'" << endl;
-		}
-
-		std::string to_string() const noexcept override {
-			for(size_t ix=0;ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
-				if(eventnames[ix].dwCtrlType == dwCtrlType) {
-					return eventnames[ix].name;
-				}
-			}
-			return "ConsoleEvent";
-		}
-
-		void remove(void *id) override;
-
-	};
-
-	class Controller : public forward_list<ConsoleEvent> {
-	private:
-
-		static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType);
-
-		Controller() {
-			cout << "win32\tInitializing console handler" << endl;
-			if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,TRUE)==FALSE) {
-				cerr << "win32\tUnable to install console handler" << endl;
-			} else {
-				cout << "win32\tConsole handler installed" << endl;
-			}
-		}
-
-		~Controller() {
-			if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,FALSE)==FALSE) {
-				cerr << "win32\tUnable to remove console handler" << endl;
-			} else {
-				cout << "win32\tConsole handler removed" << endl;
-			}
-		}
-
-	public:
-
-		Controller(const Controller &src) = delete;
-		Controller(const Controller *src) = delete;
-
-		static Controller & getInstance();
-
-	};
-
-	Controller & Controller::getInstance() {
-		static Controller instance;
-		return instance;
+	Event::Controller::ConsoleHandlerType::ConsoleHandlerType(DWORD type) : dwCtrlType(type) {
+		cout << "win32\tWatching " << to_string() << endl;
 	}
 
-	BOOL WINAPI Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
+	Event::Controller::ConsoleHandlerType::~ConsoleHandlerType() {
+		cout << "win32\tUnwatching " << to_string() << endl;
+	}
 
-		switch(dwCtrlType) {
-		case CTRL_C_EVENT:
-			clog << "win32\tCTRL+C received!" << endl;
-			break;
-
-		case CTRL_BREAK_EVENT:
-			clog << "win32\tCTRL+BREAK received!" << endl;
-			break;
-
-		case CTRL_CLOSE_EVENT:
-			clog << "win32\tProgram being closed!" << endl;
-			break;
-
-		case CTRL_LOGOFF_EVENT:
-			clog << "win32\tUser is logging off!" << endl;
-			break;
-
-		case CTRL_SHUTDOWN_EVENT:
-			clog << "win32\tUser is logging off!" << endl;
-			break;
-
-		}
-
-		ThreadPool::getInstance().push([dwCtrlType]() {
-			for(ConsoleEvent &event : Controller::getInstance()) {
-				if(event.dwCtrlType == dwCtrlType) {
-					cout << "win32\tHandling '" << event.to_string() << "'" << endl;
-					event.trigger();
-					break;
-				}
+	const char * Event::Controller::ConsoleHandlerType::to_string() const noexcept {
+		for(size_t ix=0;ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
+			if(eventnames[ix].dwCtrlType == dwCtrlType) {
+				return eventnames[ix].name;
 			}
-		});
-
-		return TRUE;
-
-	}
-
-	void ConsoleEvent::remove(void *id) {
-
-		Event::remove(id);
-
-		if(empty()) {
-			Controller::getInstance().remove_if([this](ConsoleEvent &event){
-				return &event == this;
-			});
 		}
-
+		return "ConsoleEvent";
 	}
 
-	Event & Event::ConsoleHandlerFactory(DWORD dwCtrlType) {
+	void Event::remove(void *id) {
+		Controller::getInstance().remove(id);
+	}
 
-		Controller &controller = Controller::getInstance();
+	Event & Event::ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler) {
+		return Controller::getInstance().ConsoleHandler(id,dwCtrlType,handler);
+	}
 
-		for(ConsoleEvent &event : controller) {
-			if(event.dwCtrlType == dwCtrlType) {
-				return event;
+	Event & Event::ConsoleHandler(void *id, const char *name, const std::function<bool()> handler) {
+
+		for(size_t ix = 0; ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
+			if(!strcasecmp(eventnames[ix].name,name)){
+				return SignalHandler(id,eventnames[ix].dwCtrlType,handler);
 			}
 		}
 
-		// Not found, create a new one.
-		controller.emplace_front(dwCtrlType);
-
-		return controller.front();
+		throw system_error(EINVAL,system_category(),string{name} + " is not a valid signal name");
 
 	}
 

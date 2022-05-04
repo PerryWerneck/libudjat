@@ -54,12 +54,13 @@
 
 			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
 
-				Udjat::Event::ConsoleHandlerFactory(events[ix].id).insert(this,[this](){
+				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
 					clog << "mainloop\tTerminating by console request" << endl;
 					enabled = false;
 					wakeup();
 					return true;
 				});
+
 				cout << "mainloop\t" << events[ix].message << endl;
 			}
 
@@ -68,13 +69,7 @@
 	}
 
 	Win32::MainLoop::~MainLoop() {
-
-		for(size_t ix = 0; ix < (sizeof(events)/sizeof(events[0]));ix++) {
-			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
-				Udjat::Event::ConsoleHandlerFactory(events[ix].id).remove(this);
-			}
-		}
-
+		Udjat::Event::remove(this);
 	}
 
  }

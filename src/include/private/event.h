@@ -32,6 +32,22 @@
 
 #ifdef _WIN32
 
+		/// @brief Handler for system signal.
+		class ConsoleHandlerType : public Udjat::Event  {
+		public:
+			DWORD dwCtrlType;
+
+			ConsoleHandlerType(DWORD dwCtrlType);
+			~ConsoleHandlerType();
+
+			const char * to_string() const noexcept override;
+
+		};
+
+		ConsoleHandlerType & ConsoleHandlerTypeFactory(DWORD dwCtrlType);
+
+		std::forward_list<ConsoleHandlerType> consolehandlertypes;
+
 #else
 
 		/// @brief Handler for system signal.
@@ -60,13 +76,16 @@
 
 		static Controller & getInstance();
 
-		Event & SignalHandler(void *id, int signum, const std::function<bool()> handler);
 		void remove(void *id);
 
 #ifdef _WIN32
 
+		Event & ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler);
+		static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType);
+
 #else
 
+		Event & SignalHandler(void *id, int signum, const std::function<bool()> handler);
 		static void onSignal(int signum) noexcept;
 
 #endif // _WIN32

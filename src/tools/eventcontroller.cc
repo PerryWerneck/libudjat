@@ -24,16 +24,6 @@
 
  namespace Udjat {
 
-	mutex guard;
-
-	Event::Controller::Controller() {
-		cout << "event\tStarting controller " << hex << this << dec << endl;
-	}
-
-	Event::Controller::~Controller() {
-		cout << "event\tStopping controller " << hex << this << dec << endl;
-	}
-
 	Event::Controller & Event::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
 		static Controller instance;

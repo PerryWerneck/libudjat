@@ -32,14 +32,15 @@
 
  namespace Udjat {
 
-	/*
-	static const struct SigName {
+	static const struct EventNames {
 		int signum;
 		const char *name;
-	} signames[] = {
-
-	}
-	*/
+	} eventnames[] = {
+		{ SIGTERM,						"Ctrl-C"                                },
+		{ SIGTERM,						"CTRL_C_EVENT"                 			},
+		{ SIGTERM,						"terminate"                 			},
+		{ SIGHUP,						"reload" 	                			},
+	};
 
 	Event::Controller::Signal::Signal(int s) : signum(s) {
 		cout << "signal\tWatching " << strsignal(signum) << endl;
@@ -66,9 +67,18 @@
 	Event & Event::SignalHandler(void *id, const char *name, const std::function<bool()> handler) {
 
 		for(size_t ix = 0; ix < (sizeof(sys_siglist)/sizeof(sys_siglist[0]));ix++) {
-
+			if(!strcasecmp(sys_siglist[ix],name)){
+				return SignalHandler(id,ix,handler);
+			}
 		}
 
+		for(size_t ix = 0; ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
+			if(!strcasecmp(eventnames[ix].name,name)){
+				return SignalHandler(id,eventnames[ix].signum,handler);
+			}
+		}
+
+		throw system_error(EINVAL,system_category(),string{name} + " is not a valid signal name");
 
 	}
 
