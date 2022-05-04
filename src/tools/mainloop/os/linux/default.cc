@@ -18,7 +18,7 @@
  */
 
  #include <udjat/defs.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/tools/mainloop.h>
  #include <cstring>
  #include <iostream>

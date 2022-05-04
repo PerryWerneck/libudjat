@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/win32/exception.h>

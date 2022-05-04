@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 
 		/// @brief Deinitialize service.
 		void deinit() override {
-			cout << Application::Name() << "\tDeinitializing" << endl;
+			SystemService::deinit();
 			Module::unload();
 		}
 

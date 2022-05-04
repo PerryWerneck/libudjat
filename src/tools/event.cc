@@ -19,14 +19,14 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/event.h>
+ #include <private/event.h>
  #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-	mutex Event::guard;
+	mutex Event::Controller::guard;
 
 	Event::Event() {
 	}
@@ -34,44 +34,29 @@
 	Event::~Event() {
 	}
 
-	std::string Event::to_string() const noexcept {
-		return "event";
-	}
-
 	void Event::trigger() noexcept {
 
-		std::lock_guard<std::mutex> lock(guard);
-		string name = to_string();
+		{
+			std::lock_guard<std::mutex> lock(Controller::guard);
+			string name = to_string();
 
-		listeners.remove_if([name](const Listener &listener){
+			listeners.remove_if([name](const Listener &listener){
 
-			try {
-				if(listener.handler()) {
-					return false;
+				try {
+					if(listener.handler()) {
+						return false;
+					}
+				} catch(const std::exception &e) {
+					cerr << name << "\t" << e.what() << endl;
+				} catch(...) {
+					cerr << name << "\tUnexpected error processing event" << endl;
 				}
-			} catch(const std::exception &e) {
-				cerr << name << "\t" << e.what() << endl;
-			} catch(...) {
-				cerr << name << "\tUnexpected error processing event" << endl;
-			}
 
-			return true;
+				return true;
 
-		});
+			});
+		}
 
-
-	}
-
-	void Event::insert(void *id, const std::function<bool()> handler) {
-		std::lock_guard<std::mutex> lock(guard);
-		listeners.emplace_front(id,handler);
-	}
-
-	void Event::remove(void *id) {
-		std::lock_guard<std::mutex> lock(guard);
-		listeners.remove_if([id](const Listener &listener){
-			return listener.id == id;
-		});
 	}
 
  }

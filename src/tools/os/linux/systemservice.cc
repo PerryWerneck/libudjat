@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/tools/systemservice.h>
  #include <iostream>
  #include <system_error>
@@ -34,6 +34,7 @@
  #include <udjat/agent.h>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/event.h>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -42,26 +43,6 @@
  using namespace std;
 
  namespace Udjat {
-
-	void SystemService::onReloadSignal(int signal) noexcept {
-
-		info() << "Reconfigure request received from signal " << strsignal(signal) << endl;
-
-		try {
-
-			ThreadPool::getInstance().push([](){
-				if(instance) {
-					instance->reconfigure(instance->definitions,true);
-				}
-			});
-
-		} catch(const std::exception &e) {
-
-			error() << e.what() << endl;
-
-		}
-
-	}
 
 	void SystemService::notify(const char *message) noexcept {
 #ifdef HAVE_SYSTEMD
@@ -75,16 +56,21 @@
 		Module::load();
 
 		if(definitions) {
+
 			reconfigure(definitions,true);
-			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
-				cout << "service\tUse SIGUSR1 to reload " << definitions << endl;
-			}
+
+			Udjat::Event::SignalHandler(this,SIGHUP,[this](){
+				reconfigure(definitions,true);
+				return true;
+			});
+
+			cout << "service\tUse SIGHUP to reload " << definitions << endl;
 		}
 
 	}
 
 	void SystemService::deinit() {
-		signal(SIGUSR1,SIG_DFL);
+		Udjat::Event::remove(this);
 	}
 
 	void SystemService::stop() {
@@ -163,7 +149,9 @@
 					error() << "Unexpected error running service" << endl;
 				}
 
+				cout << "AAAAAAAAAAAAAAAAAAAAAAAAAA" << endl;
 				deinit();
+				cout << "BBBBBBBBBBBBBBBBBBBBB" << endl;
 				return 0;
 			}
 			break;

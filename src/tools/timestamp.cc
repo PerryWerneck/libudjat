@@ -18,7 +18,7 @@
  */
 
 #include <config.h>
-#include <udjat-internals.h>
+#include <private/misc.h>
 #include <cstring>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/logger.h>

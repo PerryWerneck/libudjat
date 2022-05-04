@@ -19,100 +19,56 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/event.h>
+ #include <private/event.h>
  #include <iostream>
  #include <forward_list>
  #include <csignal>
  #include <cstring>
  #include <mutex>
- #include <udjat/tools/threadpool.h>
+ #include <csignal>
+ #include <cstring>
 
  using namespace std;
 
  namespace Udjat {
 
-	static void onSignal(int signum) noexcept;
-
- 	class SignalEvent : public Event {
-	public:
+	/*
+	static const struct SigName {
 		int signum;
-
-		SignalEvent(int s) : signum(s) {
-			signal(signum,onSignal);
-			cout << "signals\tWatching '" << strsignal(signum) << "'" << endl;
-		}
-
-		virtual ~SignalEvent() {
-			cout << "signals\tUnwatching '" << strsignal(signum) << "'" << endl;
-			signal(signum,SIG_DFL);
-		}
-
-		std::string to_string() const noexcept override {
-			return strsignal(signum);
-		}
-
-		void remove(void *id) override;
-
-	};
-
-	class Controller : public forward_list<SignalEvent> {
-	private:
-		Controller() {
-			cout << "signals\tInitializing controller" << endl;
-		}
-
-	public:
-		Controller(const Controller &src) = delete;
-		Controller(const Controller *src) = delete;
-
-		static Controller & getInstance();
-
-	};
-
-	Controller & Controller::getInstance() {
-		static Controller instance;
-		return instance;
-	}
-
-	Event & Event::SignalEventFactory(int signum) {
-
-		Controller &controller = Controller::getInstance();
-
-		for(SignalEvent &event : controller) {
-			if(event.signum == signum) {
-				return event;
-			}
-		}
-
-		// Not found, create a new one.
-		controller.emplace_front(signum);
-
-		return controller.front();
-	}
-
-	void SignalEvent::remove(void *id) {
-
-		Event::remove(id);
-
-		if(empty()) {
-			Controller::getInstance().remove_if([this](SignalEvent &event){
-				return &event == this;
-			});
-		}
+		const char *name;
+	} signames[] = {
 
 	}
+	*/
 
-	void onSignal(int signum) noexcept {
-		cout << "signals\tReceived '" << strsignal(signum) << "'" << endl;
+	Event::Controller::Signal::Signal(int s) : signum(s) {
+		cout << "signal\tWatching " << strsignal(signum) << endl;
+		signal(signum,Controller::onSignal);
+	}
 
-		ThreadPool::getInstance().push([signum]() {
-			for(SignalEvent &event : Controller::getInstance()) {
-				if(event.signum == signum) {
-					event.trigger();
-					break;
-				}
-			}
-		});
+	Event::Controller::Signal::~Signal() {
+		cout << "signal\tUnwatching " << strsignal(signum) << endl;
+		signal(signum,SIG_DFL);
+	}
+
+	const char * Event::Controller::Signal::to_string() const noexcept {
+		return strsignal(signum);
+	}
+
+	void Event::remove(void *id) {
+		Controller::getInstance().remove(id);
+	}
+
+	Event & Event::SignalHandler(void *id, int signum, const std::function<bool()> handler) {
+		return Controller::getInstance().SignalHandler(id,signum,handler);
+	}
+
+	Event & Event::SignalHandler(void *id, const char *name, const std::function<bool()> handler) {
+
+		for(size_t ix = 0; ix < (sizeof(sys_siglist)/sizeof(sys_siglist[0]));ix++) {
+
+		}
+
 
 	}
 

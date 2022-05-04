@@ -27,7 +27,7 @@
  */
 
  #include <config.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <sys/stat.h>
  #include <udjat/module.h>
  #include <udjat/tools/logger.h>

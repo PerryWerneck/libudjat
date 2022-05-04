@@ -28,7 +28,8 @@
 	class UDJAT_API Event {
 	private:
 
-		static std::mutex guard;
+		class Controller;
+		friend class Controller;
 
 		struct Listener {
 			const void *id;
@@ -41,41 +42,43 @@
 
 	protected:
 		Event();
-		virtual ~Event();
 
 	public:
 
-		Event(const Event &src) = delete;
-		Event(const Event *src) = delete;
+		Event(Event &src) = delete;
+		Event(Event *src) = delete;
+		virtual ~Event();
 
 #ifdef WIN32
 
 		/// @brief Get console handler event.
 		/// https://docs.microsoft.com/en-us/windows/console/handlerroutine
 		/// @param dwCtrlType The type of control signal.
-		static Event & ConsoleHandlerFactory(DWORD dwCtrlType);
+		static Event & ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler);
 
 #else
 
-		/// @brief Get event handler for system signal.
-		static Event & SignalEventFactory(int signum);
+		/// @brief Insert a signal handler.
+		static Event & SignalHandler(void *id, const char *name, const std::function<bool()> handler);
+
+		/// @brief Insert a signal handler.
+		static Event & SignalHandler(void *id, int signum, const std::function<bool()> handler);
 
 #endif // !WIN32
 
-		void trigger() noexcept;
+		virtual void trigger() noexcept;
 
-		/// @brief Insert event handler.
-		/// @param id The event handler id.
-		/// @param handler The event handler; will be removed on exception or 'false' return.
-		void insert(void *id, const std::function<bool()> handler);
-		virtual void remove(void *id);
+		inline void insert(void *id, const std::function<bool()> handler) {
+			listeners.emplace_front(id,handler);
+		}
+
+		static void remove(void *id);
 
 		inline bool empty() const noexcept {
 			return listeners.empty();
 		}
 
-		virtual std::string to_string() const noexcept;
-
+		virtual const char * to_string() const noexcept = 0;
 
 	};
 

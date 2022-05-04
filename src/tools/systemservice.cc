@@ -23,7 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/module.h>
  #include <iostream>
- #include <udjat-internals.h>
+ #include <private/misc.h>
 
  using namespace std;
 
