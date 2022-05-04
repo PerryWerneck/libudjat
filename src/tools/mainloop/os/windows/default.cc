@@ -70,7 +70,9 @@
 	Win32::MainLoop::~MainLoop() {
 
 		for(size_t ix = 0; ix < (sizeof(events)/sizeof(events[0]));ix++) {
-			Udjat::Event::ConsoleHandlerFactory(events[ix].id).remove(this);
+			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
+				Udjat::Event::ConsoleHandlerFactory(events[ix].id).remove(this);
+			}
 		}
 
 	}
