@@ -112,6 +112,29 @@
 
 	BOOL WINAPI Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
 
+		switch(dwCtrlType) {
+		case CTRL_C_EVENT:
+			clog << "win32\tCTRL+C received!" << endl;
+			break;
+
+		case CTRL_BREAK_EVENT:
+			clog << "win32\tCTRL+BREAK received!" << endl;
+			break;
+
+		case CTRL_CLOSE_EVENT:
+			clog << "win32\tProgram being closed!" << endl;
+			break;
+
+		case CTRL_LOGOFF_EVENT:
+			clog << "win32\tUser is logging off!" << endl;
+			break;
+
+		case CTRL_SHUTDOWN_EVENT:
+			clog << "win32\tUser is logging off!" << endl;
+			break;
+
+		}
+
 		ThreadPool::getInstance().push([dwCtrlType]() {
 			for(ConsoleEvent &event : Controller::getInstance()) {
 				if(event.dwCtrlType == dwCtrlType) {
