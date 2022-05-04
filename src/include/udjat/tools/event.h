@@ -20,7 +20,7 @@
  #include <udjat/defs.h>
  #include <functional>
  #include <mutex>
- #include <vector>
+ #include <forward_list>
 
  namespace Udjat {
 
@@ -31,22 +31,16 @@
 		static std::mutex guard;
 
 		struct Listener {
-			void *id;
+			const void *id;
 			const std::function<bool()> handler;
-			constexpr Listener(void *i, const std::function<bool()> h) : id(i), handler(h) {
+			Listener(const void *i, const std::function<bool()> h) : id(i), handler(h) {
 			}
 		};
 
-		std::vector<Listener> listeners;
-
-#ifndef WIN32
-		static onSignal(int signum) noexcept;
-#endif // !WIN32
+		std::forward_list<Listener> listeners;
 
 	protected:
-		void trigger() noexcept;
-
-		void Event();
+		Event();
 		virtual ~Event();
 
 	public:
@@ -58,12 +52,18 @@
 
 #endif // !WIN32
 
+		void trigger() noexcept;
+
+		/// @brief Insert event handler.
+		/// @param id The event handler id.
+		/// @param handler The event handler; will be removed on exception or 'false' return.
 		void insert(void *id, const std::function<bool()> handler);
 		void remove(void *id);
+
+		virtual std::string to_string() const noexcept;
 
 
 	};
 
  }
 
-#endif // EVENT_H_INCLUDED

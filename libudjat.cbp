@@ -62,6 +62,7 @@
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
+		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/http/client.h" />
@@ -156,6 +157,7 @@
 		<Unit filename="src/testprogram/windows/resources.rc" />
 		<Unit filename="src/tools/application.cc" />
 		<Unit filename="src/tools/configuration.cc" />
+		<Unit filename="src/tools/event.cc" />
 		<Unit filename="src/tools/event.h" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file.cc" />
@@ -185,6 +187,7 @@
 		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application.cc" />
 		<Unit filename="src/tools/os/linux/configvalue.cc" />
+		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
 		<Unit filename="src/tools/os/linux/file/controller.cc" />
 		<Unit filename="src/tools/os/linux/file/list.cc" />
