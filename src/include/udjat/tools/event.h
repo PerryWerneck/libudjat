@@ -61,7 +61,11 @@
 		/// @param id The event handler id.
 		/// @param handler The event handler; will be removed on exception or 'false' return.
 		void insert(void *id, const std::function<bool()> handler);
-		void remove(void *id);
+		virtual void remove(void *id);
+
+		inline bool empty() const noexcept {
+			return listeners.empty();
+		}
 
 		virtual std::string to_string() const noexcept;
 

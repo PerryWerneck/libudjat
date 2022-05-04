@@ -51,6 +51,8 @@
 			return strsignal(signum);
 		}
 
+		void remove(void *id) override;
+
 	};
 
 	class Controller : public forward_list<SignalEvent> {
@@ -86,6 +88,18 @@
 		controller.emplace_front(signum);
 
 		return controller.front();
+	}
+
+	void SignalEvent::remove(void *id) {
+
+		Event::remove(id);
+
+		if(empty()) {
+			Controller::getInstance().remove_if([this](SignalEvent &event){
+				return &event == this;
+			});
+		}
+
 	}
 
 	void onSignal(int signum) noexcept {
