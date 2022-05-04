@@ -205,6 +205,7 @@
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/application.cc" />
 		<Unit filename="src/tools/os/windows/configvalue.cc" />
+		<Unit filename="src/tools/os/windows/event.cc" />
 		<Unit filename="src/tools/os/windows/exception.cc" />
 		<Unit filename="src/tools/os/windows/file/list.cc" />
 		<Unit filename="src/tools/os/windows/file/path.cc" />

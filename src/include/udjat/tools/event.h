@@ -48,7 +48,14 @@
 		Event(const Event &src) = delete;
 		Event(const Event *src) = delete;
 
-#ifndef WIN32
+#ifdef WIN32
+
+		/// @brief Get console handler event.
+		/// https://docs.microsoft.com/en-us/windows/console/handlerroutine
+		/// @param dwCtrlType The type of control signal.
+		static Event & ConsoleHandlerFactory(DWORD dwCtrlType);
+
+#else
 
 		/// @brief Get event handler for system signal.
 		static Event & SignalEventFactory(int signum);
