@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/event.h>
  #include <iostream>
- #include <vector>
+ #include <forward_list>
  #include <csignal>
  #include <cstring>
  #include <mutex>
@@ -53,7 +53,7 @@
 
 	};
 
-	class Controller : public vector<SignalEvent> {
+	class Controller : public forward_list<SignalEvent> {
 	private:
 		Controller() {
 			cout << "signals\tInitializing controller" << endl;
@@ -63,11 +63,14 @@
 		Controller(const Controller &src) = delete;
 		Controller(const Controller *src) = delete;
 
-		static Controller & getInstance() {
-			static Controller instance;
-			return instance;
-		}
+		static Controller & getInstance();
+
 	};
+
+	Controller & Controller::getInstance() {
+		static Controller instance;
+		return instance;
+	}
 
 	Event & Event::SignalEventFactory(int signum) {
 
@@ -80,9 +83,9 @@
 		}
 
 		// Not found, create a new one.
-		controller.emplace_back(signum);
+		controller.emplace_front(signum);
 
-		return controller.back();
+		return controller.front();
 	}
 
 	void onSignal(int signum) noexcept {

@@ -27,12 +27,14 @@
  */
 
  #include <config.h>
- #include <cstring>
  #include <udjat-internals.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
  #include <iostream>
  #include <unistd.h>
+ #include <udjat/tools/event.h>
+
+// #include <cstring>
  #include <csignal>
 
  #ifdef HAVE_SYSTEMD
@@ -41,6 +43,9 @@
 
  using namespace std;
 
+ static const int signals[] = { SIGTERM, SIGINT };
+
+ /*
  static void onInterruptSignal(int signal) noexcept {
 
 #ifdef HAVE_SYSTEMD
@@ -51,6 +56,7 @@
 	Udjat::MainLoop::getInstance().quit();
 
  }
+ */
 
  void Udjat::MainLoop::run() {
 
@@ -69,8 +75,24 @@
 	//
 	// Capture signals
 	//
+	for(size_t signal = 0; signal < (sizeof(signals)/sizeof(signals[0]));signal++) {
+
+		Udjat::Event::SignalEventFactory(signals[signal]).insert(this,[]{
+#ifdef HAVE_SYSTEMD
+			sd_notify(0,"STATUS=Interrupting by signal");
+#endif // HAVE_SYSTEMD
+
+			Udjat::Application::warning() << "Interrupting main loop" << endl;
+			Udjat::MainLoop::getInstance().quit();
+
+			return true;
+		});
+
+	}
+	/*
 	signal(SIGTERM,onInterruptSignal);
 	signal(SIGINT,onInterruptSignal);
+	*/
 
  	//
  	// Main event loop
@@ -187,8 +209,12 @@
  	//
  	// Restore signals
  	//
-	signal(SIGTERM,SIG_DFL);
-	signal(SIGINT,SIG_DFL);
+	for(size_t signal = 0; signal < (sizeof(signals)/sizeof(signals[0]));signal++) {
+		Udjat::Event::SignalEventFactory(signals[signal]).remove(this);
+	}
+
+	//signal(SIGTERM,SIG_DFL);
+	//signal(SIGINT,SIG_DFL);
 
 	//
  	// Stop services

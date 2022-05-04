@@ -45,6 +45,9 @@
 
 	public:
 
+		Event(const Event &src) = delete;
+		Event(const Event *src) = delete;
+
 #ifndef WIN32
 
 		/// @brief Get event handler for system signal.
