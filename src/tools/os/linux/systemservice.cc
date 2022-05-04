@@ -149,9 +149,7 @@
 					error() << "Unexpected error running service" << endl;
 				}
 
-				cout << "AAAAAAAAAAAAAAAAAAAAAAAAAA" << endl;
 				deinit();
-				cout << "BBBBBBBBBBBBBBBBBBBBB" << endl;
 				return 0;
 			}
 			break;

@@ -53,9 +53,12 @@
 		lock_guard<mutex> lock(guard);
 
 		signals.remove_if([id](Signal &signal){
-			signal.remove(id);
+			signal.listeners.remove_if([id](Signal::Listener &listener){
+				return listener.id == id;
+			});
 			return signal.empty();
 		});
+
 	}
 
 	void Event::Controller::onSignal(int signum) noexcept {
