@@ -27,6 +27,7 @@
  #include <mutex>
  #include <csignal>
  #include <cstring>
+ #include <udjat/tools/configuration.h>
 
  using namespace std;
 
@@ -71,16 +72,25 @@
 		return Controller::getInstance().SignalHandler(id,signum,handler);
 	}
 
-	Event & Event::SignalHandler(void *id, const char *name, const std::function<bool()> handler) {
+	static Event & SignalHandlerFactory(void *id, const char *name, const std::function<bool()> handler) {
 
 		for(size_t ix = 0; ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
 			if(!strcasecmp(eventnames[ix].name,name)){
-				return SignalHandler(id,eventnames[ix].signum,handler);
+				return Event::SignalHandler(id,eventnames[ix].signum,handler);
 			}
 		}
 
 		throw system_error(EINVAL,system_category(),string{name} + " is not a valid signal name");
 
+	}
+
+	Event & Event::SignalHandler(void *id, const char *name, const std::function<bool()> handler) {
+
+		if(!strcasecmp(name,"reconfigure")) {
+			return SignalHandlerFactory(id,Config::Value<string>("service","signal-reconfigure","SIGHUP").c_str(),handler);
+		}
+
+		return SignalHandlerFactory(id,name,handler);
 	}
 
  }

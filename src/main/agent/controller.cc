@@ -316,13 +316,7 @@ namespace Udjat {
 
 					try {
 
-#ifdef DEBUG
-						agent->info() << "--A---------------------------------" << endl;
-#endif // DEBUG
 						agent->refresh(false);
-#ifdef DEBUG
-						agent->info() << "--B---------------------------------" << endl;
-#endif // DEBUG
 
 					} catch(const exception &e) {
 

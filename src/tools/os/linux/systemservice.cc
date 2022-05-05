@@ -24,6 +24,7 @@
  #include <system_error>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
  #include <unistd.h>
@@ -59,12 +60,17 @@
 
 			reconfigure(definitions,true);
 
-			Udjat::Event::SignalHandler(this,SIGHUP,[this](){
-				reconfigure(definitions,true);
-				return true;
-			});
+			string signame;
 
-			cout << "service\tUse SIGHUP to reload " << definitions << endl;
+			signame = Config::Value<string>("service","signal-reconfigure","SIGHUP");
+			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
+				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
+					reconfigure(definitions,false);
+					return true;
+				});
+				cout << "service\tSignal '" << reconfig.to_string() << "' trigger a conditional reload of " << definitions << endl;
+			}
+
 		}
 
 	}

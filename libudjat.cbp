@@ -50,6 +50,7 @@
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/event.h" />
+		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/udjat-internals.h" />
 		<Unit filename="src/include/udjat/agent.h" />
 		<Unit filename="src/include/udjat/alert.h" />
@@ -116,6 +117,7 @@
 		<Unit filename="src/main/factory/private.h" />
 		<Unit filename="src/main/factory/search.cc" />
 		<Unit filename="src/main/file/private.h" />
+		<Unit filename="src/main/load/updater.cc" />
 		<Unit filename="src/main/load/xml.cc" />
 		<Unit filename="src/main/module/controller.cc" />
 		<Unit filename="src/main/module/info.cc" />

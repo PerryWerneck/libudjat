@@ -39,276 +39,71 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
+ #include <private/updater.h>
  #include <list>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
  #endif // HAVE_SYSTEMD
 
- #ifdef _WIN32
-	#include <udjat/win32/registry.h>
- #else
-	#include <unistd.h>
- #endif // _WIN32
-
  using namespace std;
 
  namespace Udjat {
-
-	static void loader(const char *pathname, const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
-
-		struct stat pathstat;
-		if(stat(pathname, &pathstat) == -1) {
-			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",pathname));
-		}
-
-		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
-			//
-			// It's a folder.
-			//
-			File::Path(pathname).for_each("*.xml",false,[&call,&pathname](const char *filename){
-
-				try {
-
-					pugi::xml_document doc;
-					auto result = doc.load_file(filename);
-					if(result.status != pugi::status_ok) {
-						Application::error() << filename << ": " << result.description() << endl;
-						return true;
-					}
-
-					call(filename,doc);
-
-				} catch(const std::exception &e) {
-
-					Application::error() << pathname << ": " << e.what() << endl;
-
-				} catch(...) {
-
-					Application::error() << pathname << ": Unexpected error" << endl;
-
-				}
-
-				return true;
-
-			});
-
-		} else {
-			//
-			// It's a single file.
-			//
-			try {
-
-				pugi::xml_document doc;
-				auto result = doc.load_file(pathname);
-				if(result.status != pugi::status_ok) {
-					Application::error() << pathname << ": " << result.description() << endl;
-					return;
-				}
-
-				call(pathname,doc);
-
-			} catch(const std::exception &e) {
-
-				Application::error() << pathname << ": " << e.what() << endl;
-
-			} catch(...) {
-
-				Application::error() << pathname << ": Unexpected error" << endl;
-
-			}
-		}
-	}
-
-
-	struct Updater {
-
-		bool changed = false;
-		time_t next = 0;
-		Application::DataFile path;
-
-		Updater(const char *pathname) : path{pathname} {
-
-			// First scan for modules.
-			if(Config::Value<bool>("modules","preload-from-xml",true)) {
-				cout << "modules\tPreloading from " << path << endl;
-				loader(path.c_str(),[](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-					for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-						Module::load(node);
-					}
-				});
-			}
-
-			// Then check for file updates.
-			loader(path.c_str(),[this](const char *filename, const pugi::xml_document &doc){
-
-					auto node = doc.document_element();
-
-					const char *url = node.attribute("src").as_string();
-					if(url && *url) {
-
-						time_t refresh = node.attribute("update-timer").as_uint(0);
-
-						try {
-
-							Application::info() << "Updating " << filename << endl;
-							if(HTTP::Client::save(node,filename)) {
-								changed = true;
-							}
-
-						} catch(const std::exception &e) {
-
-							Application::error() << "Error '" << e.what() << "' updating " << filename << endl;
-							refresh = node.attribute("update-when-failed").as_uint(refresh);
-
-						} catch(...) {
-
-							Application::error() << "Unexpected error updating " << filename << endl;
-							refresh = node.attribute("update-when-failed").as_uint(refresh);
-
-						}
-
-						if(refresh) {
-							if(next) {
-								next = std::min(next,refresh);
-							} else {
-								next = refresh;
-							}
-						}
-
-					}
-
-				});
-
-		}
-
-
-		/// @brief Update agent, set it as a new root.
-		void set(std::shared_ptr<Abstract::Agent> agent, const char *pathname) const noexcept {
-
-			loader(pathname,[agent](const char *filename, const pugi::xml_document &doc){
-
-				agent->info() << "Loading '" << filename << "'" << endl;
-
-				// First setup agent, load modules, etc.
-				try {
-
-					auto node = doc.document_element();
-					const char *path = node.attribute("path").as_string();
-
-					if(path && *path) {
-
-						// Has defined root path, find agent.
-						agent->find(path,true,true)->load(node);
-
-					} else {
-
-						// No path, load here.
-						agent->load(node);
-
-					}
-
-				} catch(const std::exception &e) {
-
-					agent->error() << filename << ": " << e.what() << endl;
-
-				} catch(...) {
-
-					agent->error() << filename << ": Unexpected error" << endl;
-
-				}
-
-				// Then setup modules.
-				Module::for_each([&doc](Module &module) {
-
-					try {
-
-						module.set(doc);
-
-					} catch(const std::exception &e) {
-
-						cerr << "modules\tError '" << e.what() << "' on module setup" << endl;
-
-					} catch(...) {
-
-						cerr << "modules\tUnexpected error on module setup" << endl;
-
-					}
-
-				});
-
-			});
-
-		}
-
-	};
 
 	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
 
 		Updater update(pathname);
 
-		if(!(update.changed || force)) {
-			Application::info() << "Reconfiguration is not necessary" << endl;
-			return update.next;
+		if(update || force) {
+			return update.set(RootAgentFactory());
 		}
 
-		Application::warning() << "Reconfiguring from '" << update.path << "'" << endl;
-
-		auto agent = RootAgentFactory();
-		update.set(agent,update.path.c_str());
-		setRootAgent(agent);
-
-		return update.next;
+		Application::info() << "Reconfiguration is not necessary" << endl;
+		return update.time();
 
 	}
 
 	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
 
 		Updater update(pathname);
-		if(!(update.changed || force)) {
+
+		if(update || force) {
+			update.set(agent);
+		} else {
 			Application::info() << "No changes, reconfiguration is not necessary" << endl;
-			return update.next;
 		}
 
-		Application::warning() << "Reconfiguring from '" << update.path << "'" << endl;
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=%s",Abstract::Agent::root()->state()->to_string().c_str());
+#endif // HAVE_SYSTEMD
 
-		update.set(agent,update.path.c_str());
-		setRootAgent(agent);
-
-		return update.next;
+		return update.time();
 
 	}
 
 	void SystemService::reconfigure(const char *pathname, bool force) noexcept {
 
-#ifdef HAVE_SYSTEMD
-		sd_notify(0,"RELOADING=1");
-#else
-		notify("Reloading");
-#endif // HAVE_SYSTEMD
-
 		try {
 
 			Updater update(pathname);
 
-			if(!(update.changed || force)) {
-
-				info() << "Reconfiguration is not necessary" << endl;
-
-			} else {
+			if(update || force) {
 
 				auto agent = RootFactory();
-				update.set(agent,update.path.c_str());
-				setRootAgent(agent);
+				update.set(agent);
 
 #ifdef _WIN32
 				registry("last_reconfig",TimeStamp().to_string().c_str());
 #endif // _WIN32
+
+			} else {
+
+				info() << "Reconfiguration is not necessary" << endl;
 			}
 
-			if(update.next) {
+			if(update.time()) {
 
-				Udjat::MainLoop::getInstance().insert(definitions,update.next*1000,[]{
+				Udjat::MainLoop::getInstance().insert(definitions,update.time()*1000,[]{
 					ThreadPool::getInstance().push([]{
 						if(instance) {
 							instance->reconfigure(instance->definitions,false);
@@ -317,7 +112,7 @@
 					return false;
 				});
 
-				TimeStamp next(time(0)+update.next);
+				TimeStamp next(time(0)+update.time());
 				info() << "Next reconfiguration set to " << next << endl;
 
 #ifdef _WIN32
@@ -336,13 +131,8 @@
 
 		}
 
-#ifdef HAVE_SYSTEMD
-		sd_notify(0,"READY=1");
-#else
-		notify(state()->to_string().c_str());
-#endif // HAVE_SYSTEMD
+		notify(Abstract::Agent::root()->state()->to_string().c_str());
 
 	}
-
 
  }
