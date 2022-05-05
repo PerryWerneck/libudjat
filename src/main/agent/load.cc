@@ -41,8 +41,6 @@ namespace Udjat {
 			const char *signame = root.attribute("update-signal").as_string();
 			if(*signame && strcasecmp(signame,"none")) {
 
-				cout << "--aaaaaaaaaaaaaaaaaaa-----------------------------------------------" << endl;
-
 				// Agent has signal based update.
 				this->update.sigdelay = (short) getAttribute(root,section,"update-signal-delay",(unsigned int) 0);
 
@@ -51,7 +49,15 @@ namespace Udjat {
 					return true;
 				});
 
-				info() << "Signal '" << event.to_string() << "' will trigger an agent update" << endl;
+				if(this->update.sigdelay) {
+					info()	<< "An agent update with a "
+							<< this->update.sigdelay
+							<< " second(s) delay will be triggered by signal '"
+							<< event.to_string() << "'"
+							<< endl;
+				} else {
+					info() << "Signal '" << event.to_string() << "' will trigger an agent update" << endl;
+				}
 
 			} else {
 				this->update.sigdelay = -1;
