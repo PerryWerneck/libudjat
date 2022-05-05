@@ -11,6 +11,8 @@
  #include <udjat/module.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/event.h>
+ #include <udjat/tools/mainloop.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -32,6 +34,31 @@ namespace Udjat {
 		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) 0);
 		if(delay)
 			this->update.next = time(nullptr) + delay;
+
+#ifndef _WIN32
+		{
+			// Check for signal based update.
+			const char *signame = root.attribute("update-signal").as_string();
+			if(*signame && strcasecmp(signame,"none")) {
+
+				cout << "--aaaaaaaaaaaaaaaaaaa-----------------------------------------------" << endl;
+
+				// Agent has signal based update.
+				this->update.sigdelay = (short) getAttribute(root,section,"update-signal-delay",(unsigned int) 0);
+
+				Udjat::Event &event = Event::SignalHandler(this, signame, [this](){
+					requestRefresh(this->update.sigdelay);
+					return true;
+				});
+
+				info() << "Signal '" << event.to_string() << "' will trigger an agent update" << endl;
+
+			} else {
+				this->update.sigdelay = -1;
+			}
+
+		}
+#endif // !_WIN32
 
 		// Load children
 		for(pugi::xml_node node : root) {

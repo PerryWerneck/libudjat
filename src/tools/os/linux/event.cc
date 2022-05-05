@@ -40,15 +40,22 @@
 		{ SIGTERM,						"CTRL_C_EVENT"                 			},
 		{ SIGTERM,						"terminate"                 			},
 		{ SIGHUP,						"reload" 	                			},
+		{ SIGTERM,						"SIGTERM"								},
+		{ SIGHUP,						"SIGHUP" 	                			},
+		{ SIGUSR1,						"SIGUSR1" 	                			},
+		{ SIGUSR2,						"SIGUSR2" 	                			},
+		{ SIGUSR1,						"user" 		                			},
+		{ SIGUSR1,						"user1" 	                			},
+		{ SIGUSR2,						"user2" 	                			},
 	};
 
 	Event::Controller::Signal::Signal(int s) : signum(s) {
-		cout << "signal\tWatching " << strsignal(signum) << endl;
+		cout << "signal\tWatching " << strsignal(signum) << " (" << signum << ")" << endl;
 		signal(signum,Controller::onSignal);
 	}
 
 	Event::Controller::Signal::~Signal() {
-		cout << "signal\tUnwatching " << strsignal(signum) << endl;
+		cout << "signal\tUnwatching " << strsignal(signum) << " (" << signum << ")" << endl;
 		signal(signum,SIG_DFL);
 	}
 
@@ -65,12 +72,6 @@
 	}
 
 	Event & Event::SignalHandler(void *id, const char *name, const std::function<bool()> handler) {
-
-		for(size_t ix = 0; ix < (sizeof(sys_siglist)/sizeof(sys_siglist[0]));ix++) {
-			if(!strcasecmp(sys_siglist[ix],name)){
-				return SignalHandler(id,ix,handler);
-			}
-		}
 
 		for(size_t ix = 0; ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
 			if(!strcasecmp(eventnames[ix].name,name)){

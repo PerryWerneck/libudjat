@@ -30,6 +30,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/event.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -69,6 +70,9 @@ namespace Udjat {
 	}
 
 	Abstract::Agent::~Agent() {
+
+		// Remove all associated events.
+		Udjat::Event::remove(this);
 
 		// Deleted! My children are now orphans.
 		lock_guard<std::recursive_mutex> lock(guard);
