@@ -42,6 +42,10 @@
 		protected:
 
 			struct {
+				std::string caption;
+			} info;
+
+			struct {
 
 				/// @brief Column names.
 				std::vector<std::string> names;
@@ -67,16 +71,21 @@
 
 		public:
 
+			/// @brief Set report title.
+			/// @param caption	The report title.
+			inline void caption(const char *value) noexcept {
+				info.caption = value;
+			}
+
 			/// @brief Open report, define column names.
 			/// @param name	Report	name.
 			/// @param column_name	First column name.
 			/// @param ...			Subsequent column names.
-			void start(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
+			void start(const char *column_name, ...) __attribute__ ((sentinel));
 
 			/// @brief Open report, define column names.
-			/// @param name	Report	name.
 			/// @param column_names	The column names.
-			void start(const char *name, const std::vector<std::string> &column_names);
+			void start(const std::vector<std::string> &column_names);
 
 			virtual ~Report();
 
