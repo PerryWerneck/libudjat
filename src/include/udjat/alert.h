@@ -37,7 +37,7 @@
 
 			/// @brief Alert options.
 			struct {
-				bool verbose = true;
+				bool verbose = false;
 			} options;
 
 			/// @brief Alert limits.

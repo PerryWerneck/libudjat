@@ -253,34 +253,6 @@
 		return true;
 	}
 
-	/*
-
-
-
-
-
-	void Abstract::Alert::Controller::refresh() noexcept {
-
-		time_t now = time(0);
-		time_t next = now + 600;
-
-		{
-			lock_guard<mutex> lock(guard);
-			for(auto activation : activations) {
-				if(activation->timers.next > now) {
-					next = min(next,activation->timers.next);
-				} else {
-					next = now+2;
-				}
-			}
-		}
-
-		reset(next-now);
-
-	}
-
-
-	*/
 
  }
 
