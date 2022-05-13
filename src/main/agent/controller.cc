@@ -275,7 +275,7 @@ namespace Udjat {
 
 			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
 
-			root->foreach([now,this,&next](std::shared_ptr<Agent> agent) {
+			root->for_each([now,this,&next](std::shared_ptr<Agent> agent) {
 
 				// Return if no update timer.
 				if(!agent->update.next)
@@ -338,11 +338,11 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
-	}
+	//void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
+	//}
 
-	void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
-	}
+	//void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
+	//}
 
 }
 

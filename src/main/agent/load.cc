@@ -44,7 +44,7 @@ namespace Udjat {
 				// Agent has signal based update.
 				this->update.sigdelay = (short) getAttribute(root,section,"update-signal-delay",(unsigned int) 0);
 
-				Udjat::Event &event = Event::SignalHandler(this, signame, [this](){
+				Udjat::Event &event = Udjat::Event::SignalHandler(this, signame, [this](){
 					requestRefresh(this->update.sigdelay);
 					return true;
 				});
@@ -129,10 +129,12 @@ namespace Udjat {
 
 		}
 
+		/*
 		{
 			lock_guard<std::recursive_mutex> lock(guard);
 			Controller::getInstance().insert(this,root);
 		}
+		*/
 
 	}
 

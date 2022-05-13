@@ -32,6 +32,29 @@
 	namespace Abstract {
 
 		class UDJAT_API Agent : public Udjat::Object {
+		public:
+
+			enum Event : uint8_t {
+				VALUE_CHANGED,		///< @brief Agent value has changed.
+				STATE_CHANGED,		///< @brief Agent state has changed.
+
+			};
+
+			class UDJAT_API EventListener {
+			private:
+				friend class Agent;
+
+				const void *id;
+				Event event;
+
+			public:
+				constexpr EventListener(const Event e, const void *i = 0) : id(i),event(e) {
+				}
+
+				virtual void trigger() noexcept = 0;
+
+			};
+
 		private:
 			static std::recursive_mutex guard;
 
@@ -69,6 +92,9 @@
 
 			} children;
 
+			/// @brief Event listeners.
+			std::list<std::shared_ptr<EventListener>> listeners;
+
 			/// @brief Child state has changed; compute my new state.
 			void onChildStateChange() noexcept;
 
@@ -85,8 +111,8 @@
 			/// @return Value of 'changed'.
 			virtual bool updated(bool changed) noexcept;
 
-			/// @brief Level changed.
-			virtual void onLevelChange();
+			/// @brief Send event to listeners.
+			void notify(const Event event);
 
 			/// @brief Activate a new state.
 			/// @return true if the level has changed.
@@ -223,6 +249,7 @@
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
 
+			/*
 			inline void foreach(std::function<void(Agent &agent)> method) {
 				for_each(method);
 			}
@@ -230,6 +257,7 @@
 			void foreach(std::function<void(std::shared_ptr<Agent> agent)> method) {
 				for_each(method);
 			}
+			*/
 
 			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 				return children.agents.begin();

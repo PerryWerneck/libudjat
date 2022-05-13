@@ -69,6 +69,9 @@ namespace Udjat {
 	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(Quark(node,"name","unnamed",false).c_str()) {
 	}
 
+	void Abstract::Agent::notify(const Event event) {
+	}
+
 	Abstract::Agent::~Agent() {
 
 		// Remove all associated events.
@@ -80,7 +83,7 @@ namespace Udjat {
 			child->parent = nullptr;
 		}
 
-		Controller::getInstance().remove(this);
+		// Controller::getInstance().remove(this);
 
 	}
 
@@ -125,7 +128,7 @@ namespace Udjat {
 		// Gets the major time from the last update.
 		time_t updated = 0;
 
-		foreach([&next,&updated](Agent &agent){
+		for_each([&next,&updated](Agent &agent){
 
 			if(agent.update.next) {
 				next = std::min(next,agent.update.next);

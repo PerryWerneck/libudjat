@@ -99,10 +99,6 @@ namespace Udjat {
 		return false;
 	}
 
-	//bool Abstract::Agent::hasStates() const noexcept {
-	//	return false;
-	//}
-
 	bool Abstract::Agent::updated(bool changed) noexcept {
 
 		update.last = time(nullptr);
@@ -114,8 +110,11 @@ namespace Udjat {
 
 		}
 
-		if(!changed)
+		if(changed) {
+			notify(VALUE_CHANGED);
+		} else {
 			return false;
+		}
 
 		// Compute new state
 		try {
@@ -135,7 +134,7 @@ namespace Udjat {
 			}
 
 			if(activate(new_state)) {
-				onLevelChange();
+				notify(STATE_CHANGED);
 			}
 
 		} catch(const exception &e) {
@@ -151,27 +150,6 @@ namespace Udjat {
 			this->current_state.activation = time(0);
 
 		}
-
-		/*
-		// Notify alerts.
-		for(auto alert : alerts) {
-
-			try {
-
-				alert->set(*this,level_has_changed);
-
-			} catch(const std::exception &e) {
-
-				error("Error '{}' firing alert '{}'",e.what(),alert->c_str());
-
-			} catch(...) {
-
-				error("Unexpected error firing alert '{}'",alert->c_str());
-
-			}
-
-		}
-		*/
 
 		return true;
 

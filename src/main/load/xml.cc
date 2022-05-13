@@ -106,10 +106,10 @@
 				Udjat::MainLoop &mainloop = Udjat::MainLoop::getInstance();
 
 				// Remove active timer.
-				Udjat::MainLoop::getInstance().remove(definitions);
+				mainloop.remove(definitions);
 
 				// Create e new timer with the updated value.
-				Udjat::MainLoop::getInstance().insert(definitions,update.time()*1000,[]{
+				mainloop.insert(definitions,update.time()*1000,[]{
 					ThreadPool::getInstance().push([]{
 						if(instance) {
 							instance->reconfigure(instance->definitions,false);

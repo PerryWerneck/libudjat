@@ -52,9 +52,6 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::onLevelChange() {
-	}
-
 	void Abstract::Agent::onChildStateChange() noexcept {
 
 		try {
