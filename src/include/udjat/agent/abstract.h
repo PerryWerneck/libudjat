@@ -51,7 +51,7 @@
 				constexpr EventListener(const Event e, const void *i = 0) : id(i),event(e) {
 				}
 
-				virtual void trigger() noexcept = 0;
+				virtual void trigger(Abstract::Agent &agent) = 0;
 
 			};
 
@@ -162,6 +162,9 @@
 
 			/// @brief Insert Alert.
 			virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
+
+			/// @brief Insert Listener.
+			void push_back(std::shared_ptr<EventListener> listener);
 
 			/// @brief Create and insert child.
 			/// @param type The agent type.

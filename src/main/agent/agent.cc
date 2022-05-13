@@ -31,6 +31,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/event.h>
+ #include <udjat/tools/threadpool.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -70,6 +71,31 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::notify(const Event event) {
+
+		lock_guard<std::recursive_mutex> lock(guard);
+		for(auto listener : listeners) {
+
+			if(listener->event == event) {
+
+				ThreadPool::getInstance().push([this,listener]() {
+
+					try {
+
+						listener->trigger(*this);
+
+					} catch(const std::exception &e) {
+
+						error() << "Error '" << e.what() << "' on event listener" << endl;
+
+					} catch(...) {
+
+						error() << "Unexpected error on event listener" << endl;
+
+					}
+
+				});
+			}
+		}
 	}
 
 	Abstract::Agent::~Agent() {
@@ -166,6 +192,11 @@ namespace Udjat {
 
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
+	}
+
+	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.push_back(listener);
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
