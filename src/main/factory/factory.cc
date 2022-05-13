@@ -2,7 +2,6 @@
 #include <udjat/defs.h>
 #include "private.h"
 #include <udjat/agent.h>
-#include <udjat/state.h>
 #include <udjat/moduleinfo.h>
 
 using namespace std;

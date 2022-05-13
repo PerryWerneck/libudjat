@@ -34,6 +34,7 @@
  #include <private/misc.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>

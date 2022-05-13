@@ -21,7 +21,6 @@
  #include <udjat/factory.h>
  #include <udjat/alert.h>
  #include <udjat/agent.h>
- #include <udjat/state.h>
  #include <iostream>
  #include <udjat/moduleinfo.h>
 

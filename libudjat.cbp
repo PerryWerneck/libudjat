@@ -51,8 +51,8 @@
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/updater.h" />
-		<Unit filename="src/include/udjat-internals.h" />
 		<Unit filename="src/include/udjat/agent.h" />
+		<Unit filename="src/include/udjat/agent/abstract.h" />
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
@@ -75,6 +75,7 @@
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
 		<Unit filename="src/include/udjat/tools/object.h" />
+		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
@@ -90,6 +91,7 @@
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
 		<Unit filename="src/include/udjat/win32/service.h" />
+		<Unit filename="src/include/udjat/win32/string.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/alertfactory.cc" />

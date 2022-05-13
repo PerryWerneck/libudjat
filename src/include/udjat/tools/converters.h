@@ -49,11 +49,19 @@
 
 	inline float to_value(const char *str, float &value) {
 		return (value = std::stof(str));
-	 }
+	}
 
 	inline double to_value(const char *str, double &value) {
 		return (value = std::stod(str));
-	 }
+	}
+
+ 	UDJAT_API void to_value(const pugi::xml_node &node, int &value);
+	UDJAT_API void to_value(const pugi::xml_node &node, unsigned int &value);
+	UDJAT_API void to_value(const pugi::xml_node &node, unsigned short &value);
+	UDJAT_API void to_value(const pugi::xml_node &node, float &value);
+	UDJAT_API void to_value(const pugi::xml_node &node, double &value);
+	UDJAT_API void to_value(const pugi::xml_node &node, unsigned long &value);
+	UDJAT_API void to_value(const pugi::xml_node &node, long &value);
 
  }
 
