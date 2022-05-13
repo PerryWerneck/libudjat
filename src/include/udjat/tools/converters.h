@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
  #include <udjat/defs.h>
  #include <string>
  #include <cstdlib>
@@ -55,13 +57,33 @@
 		return (value = std::stod(str));
 	}
 
- 	UDJAT_API void to_value(const pugi::xml_node &node, int &value);
-	UDJAT_API void to_value(const pugi::xml_node &node, unsigned int &value);
-	UDJAT_API void to_value(const pugi::xml_node &node, unsigned short &value);
-	UDJAT_API void to_value(const pugi::xml_node &node, float &value);
-	UDJAT_API void to_value(const pugi::xml_node &node, double &value);
-	UDJAT_API void to_value(const pugi::xml_node &node, unsigned long &value);
-	UDJAT_API void to_value(const pugi::xml_node &node, long &value);
+	inline int to_value(const pugi::xml_node &node, int &value) {
+		return (value = node.attribute("value").as_int(value));
+	}
+
+	inline unsigned int to_value(const pugi::xml_node &node, unsigned int &value) {
+		return (value = node.attribute("value").as_uint(value));
+	}
+
+	inline unsigned short to_value(const pugi::xml_node &node, unsigned short &value) {
+		return (value = (unsigned short) node.attribute("value").as_int(value));
+	}
+
+	inline float to_value(const pugi::xml_node &node, float &value) {
+		return (value = node.attribute("value").as_float(value));
+	}
+
+	inline double to_value(const pugi::xml_node &node, double &value) {
+		return (value = node.attribute("value").as_double(value));
+	}
+
+	inline unsigned long to_value(const pugi::xml_node &node, unsigned long &value) {
+		return (value = (unsigned long) node.attribute("value").as_uint(value));
+	}
+
+	inline long to_value(const pugi::xml_node &node, long &value) {
+		return (value = (long) node.attribute("value").as_int(value));
+	}
 
  }
 

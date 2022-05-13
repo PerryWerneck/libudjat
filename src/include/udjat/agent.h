@@ -55,11 +55,14 @@
 		}
 
 	public:
+		/*
 		Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
-			to_value(node,value);
+			to_value(node, value);
 		}
+		*/
 
-		Agent(const pugi::xml_node &node, const T v) : Abstract::Agent(node), value(v) {
+		Agent(const pugi::xml_node &node, const T v = 0) : Abstract::Agent(node), value(v) {
+			to_value(node, value);
 		}
 
 		Agent(const char *name = "") : Abstract::Agent(name), value(0) {
