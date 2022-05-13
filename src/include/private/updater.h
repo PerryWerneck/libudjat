@@ -17,35 +17,42 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <sys/types.h>
+ #pragma once
 
-
- using namespace std;
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <iostream>
+ #include <udjat/tools/application.h>
+ #include <memory>
 
  namespace Udjat {
 
+	class UDJAT_PRIVATE Updater : private Application {
+	private:
+		bool changed = false;
+		time_t next = 0;
+		Application::DataFile path;
 
-	File::List::List(const char *fpath, bool recursive) : List(fpath,"*",recursive) {
-	}
+	public:
+		Updater(const char *pathname);
 
-	File::List::List(const char *path, const char *pattern, bool recursive) {
-		Path::for_each(path,pattern,recursive,[this](const char *filename){
-			emplace_back(filename);
-			return true;
-		});
-	}
+		void for_each(const std::function<void(const char *filename, const pugi::xml_document &document)> &call);
 
-	File::List::~List() {
-	}
+		/// @brief Update agent, set it as a new root.
+		time_t set(std::shared_ptr<Abstract::Agent> agent) noexcept;
 
-	bool File::List::for_each(std::function<bool (const char *filename)> call) {
-		for(auto ix = begin(); ix != end(); ix++)  {
-			if(!call( (*ix).c_str())) {
-				return false;
-			}
+		inline operator bool() const noexcept {
+			return changed;
 		}
-		return true;
-	}
+
+		inline time_t time() const noexcept {
+			return next;
+		}
+
+		inline const char * to_string() const noexcept {
+			return path.c_str();
+		}
+
+	};
 
  }

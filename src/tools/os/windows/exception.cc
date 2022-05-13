@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/string.h>
  #include <windows.h>

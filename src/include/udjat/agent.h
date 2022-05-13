@@ -65,7 +65,7 @@
 			private:
 				static std::recursive_mutex guard;
 
-				Agent *parent = nullptr;
+				Agent *parent = nullptr;	///< @brief Agent parent.
 
 				struct {
 					time_t last = 0;		///< @brief Timestamp of the last update.
@@ -74,6 +74,9 @@
 					time_t timer = 0;		///< @brief Update time (0=No update).
 					time_t failed = 300;	///< @brief Delay when the agent fails to update.
 					bool on_demand = false;	///< @brief True if agent should update on request.
+#ifndef _WIN32
+					short sigdelay = -1;	///< @brief Delay (in seconds) after the update signal (-1 no signal).
+#endif // !WIN32
 				} update;
 
 				struct {
@@ -186,8 +189,6 @@
 				/// @brief Get root agent.
 				static std::shared_ptr<Abstract::Agent> root();
 
-				UDJAT_DEPRECATED(static std::shared_ptr<Abstract::Agent> get_root());
-
 				inline std::vector<std::shared_ptr<Agent>> & agents() noexcept {
 					return children.agents;
 				}
@@ -269,7 +270,7 @@
 				}
 
 				/// @brief Adds cache and update information to the response.
-				void head(Response &response);
+				void head(ResponseInfo &response);
 
 				/// @brief Get agent value.
 				virtual Value & get(Value &value) const;

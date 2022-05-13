@@ -16,9 +16,34 @@
 
 	namespace Udjat {
 
-		/// @brief Report in the format row/col.
-		class UDJAT_API Report {
+		/// @brief Cache information for http responses.
+		class UDJAT_API ResponseInfo {
 		protected:
+			/// @brief Expiration timestamp (For cache headers)
+			time_t expiration = 0;
+
+			/// @brief Timestamp of data.
+			time_t modification = 0;
+
+		public:
+			constexpr ResponseInfo() {
+			}
+
+			/// @brief Set timestamp for cache the response.
+			void setExpirationTimestamp(const time_t time);
+
+			/// @brief Set timestamp for data.
+			void setModificationTimestamp(const time_t time);
+
+		};
+
+		/// @brief Report in the format row/col.
+		class UDJAT_API Report : public ResponseInfo {
+		protected:
+
+			struct {
+				std::string caption;
+			} info;
 
 			struct {
 
@@ -46,11 +71,21 @@
 
 		public:
 
+			/// @brief Set report title.
+			/// @param caption	The report title.
+			inline void caption(const char *value) noexcept {
+				info.caption = value;
+			}
+
 			/// @brief Open report, define column names.
 			/// @param name	Report	name.
 			/// @param column_name	First column name.
 			/// @param ...			Subsequent column names.
-			void start(const char *name, const char *column_name, ...) __attribute__ ((sentinel));
+			void start(const char *column_name, ...) __attribute__ ((sentinel));
+
+			/// @brief Open report, define column names.
+			/// @param column_names	The column names.
+			void start(const std::vector<std::string> &column_names);
 
 			virtual ~Report();
 
@@ -80,15 +115,9 @@
 
 		};
 
-		class UDJAT_API Response : public Udjat::Value {
+		class UDJAT_API Response : public ResponseInfo, public Udjat::Value {
 		public:
 		protected:
-
-			/// @brief Expiration timestamp (For cache headers)
-			time_t expiration = 0;
-
-			/// @brief Timestamp of data.
-			time_t modification = 0;
 
 			/// @brief Response type.
 			MimeType type = MimeType::custom;
@@ -99,13 +128,7 @@
 		public:
 
 			constexpr Response(const MimeType m = MimeType::custom)
-			: expiration(0), modification(0), type(m) { }
-
-			/// @brief Set timestamp for cache the response.
-			void setExpirationTimestamp(const time_t time);
-
-			/// @brief Set timestamp for data.
-			void setModificationTimestamp(const time_t time);
+			: type(m) { }
 
 			inline bool operator ==(const MimeType type) const noexcept {
 				return this->type == type;

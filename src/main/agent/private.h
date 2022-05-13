@@ -43,11 +43,16 @@ namespace Udjat {
 
 		bool get(Request &request, Response &response) const override;
 		bool head(Request &request, Response &response) const override;
+		bool work(Request &request, Report &response) const override;
 
 		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
 
 		void start() noexcept override;
 		void stop() noexcept override;
+
+		/// @brief Check if agent has special options.
+		void insert(Abstract::Agent *agent, const pugi::xml_node &node);
+		void remove(Abstract::Agent *agent);
 
 	};
 

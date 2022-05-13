@@ -42,7 +42,7 @@
 		return instance;
 	}
 
-	Application::DataDir::DataDir() : string{STRINGIZE_VALUE_OF(DATADIR) "/"} {
+	Application::DataDir::DataDir() : File::Path{STRINGIZE_VALUE_OF(DATADIR) "/"} {
 		append(program_invocation_short_name);
 		append("/");
 	}
@@ -52,7 +52,7 @@
 		append("/");
 	}
 
-	Application::CacheDir::CacheDir() : string{"/var/cache/"} {
+	Application::CacheDir::CacheDir() : File::Path{"/var/cache/"} {
 		append(program_invocation_short_name);
 		if(mkdir(c_str(),0755)) {
 			if(errno != EEXIST) {

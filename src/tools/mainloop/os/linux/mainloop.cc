@@ -20,7 +20,7 @@
  #include <config.h>
  #include <cstring>
  #include <sys/eventfd.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <iostream>
  #include <unistd.h>
 

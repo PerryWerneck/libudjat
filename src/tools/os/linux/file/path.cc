@@ -22,6 +22,8 @@
  #include <fcntl.h>
  #include <unistd.h>
  #include <libgen.h>
+ #include <dirent.h>
+ #include <fnmatch.h>
 
  namespace Udjat {
 
@@ -133,6 +135,75 @@
 		}
 
 	}
+
+
+	/*
+	bool File::Path::for_each(const char *path, bool recursive, std::function<bool (const char *)> call) {
+		return for_each(path,"*",recursive,call);
+	}
+	*/
+
+	bool File::Path::for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
+
+		DIR *dir;
+		size_t szPath = strlen(path);
+
+		if(path[szPath-1] == '/') {
+			szPath--;
+			dir = opendir(string(path,szPath).c_str());
+		} else {
+			dir = opendir(path);
+		}
+
+		if(!dir) {
+			throw system_error(ENOENT,system_category(),path);
+		}
+
+		bool rc = true;
+
+		try {
+
+			struct dirent *de;
+			while(rc && (de = readdir(dir)) != NULL) {
+
+				if(!de->d_name || de->d_name[0] == '.') {
+					continue;
+				}
+
+				string filename(path,szPath);
+				filename += "/";
+				filename += de->d_name;
+
+				if(recursive && de->d_type == DT_DIR) {
+
+					rc = for_each(filename.c_str(), pattern, recursive, call);
+
+				} else if(fnmatch(pattern,de->d_name,FNM_CASEFOLD) == 0) {
+
+#ifdef DEBUG
+					cout << "found '" << filename << "'" << endl;
+#endif // DEBUG
+
+					rc = call(filename.c_str());
+
+				}
+
+			}
+
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		return rc;
+	}
+
+
 
 }
 

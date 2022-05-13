@@ -18,12 +18,13 @@
  */
 
  #include <config.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/tools/systemservice.h>
  #include <iostream>
  #include <system_error>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module.h>
  #include <unistd.h>
@@ -34,6 +35,7 @@
  #include <udjat/agent.h>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/event.h>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -42,26 +44,6 @@
  using namespace std;
 
  namespace Udjat {
-
-	void SystemService::onReloadSignal(int signal) noexcept {
-
-		info() << "Reconfigure request received from signal " << strsignal(signal) << endl;
-
-		try {
-
-			ThreadPool::getInstance().push([](){
-				if(instance) {
-					instance->reconfigure(instance->definitions,true);
-				}
-			});
-
-		} catch(const std::exception &e) {
-
-			error() << e.what() << endl;
-
-		}
-
-	}
 
 	void SystemService::notify(const char *message) noexcept {
 #ifdef HAVE_SYSTEMD
@@ -75,16 +57,26 @@
 		Module::load();
 
 		if(definitions) {
+
 			reconfigure(definitions,true);
-			if(signal(SIGUSR1,onReloadSignal) != SIG_ERR) {
-				cout << "service\tUse SIGUSR1 to reload " << definitions << endl;
+
+			string signame;
+
+			signame = Config::Value<string>("service","signal-reconfigure","SIGHUP");
+			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
+				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
+					reconfigure(definitions,false);
+					return true;
+				});
+				cout << "service\tSignal '" << reconfig.to_string() << "' trigger a conditional reload of " << definitions << endl;
 			}
+
 		}
 
 	}
 
 	void SystemService::deinit() {
-		signal(SIGUSR1,SIG_DFL);
+		Udjat::Event::remove(this);
 	}
 
 	void SystemService::stop() {

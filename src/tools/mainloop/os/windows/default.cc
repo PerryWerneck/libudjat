@@ -17,13 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
  #include "private.h"
  #include <csignal>
  #include <cstring>
  #include <iostream>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/event.h>
 
  namespace Udjat {
+
+	static const struct Events {
+		DWORD id;
+		bool def;
+		const char * key;
+		const char * message;
+	} events[] = {
+		{ CTRL_C_EVENT,			true,	"terminate-on-ctrl-c",		"Ctrl-C to interrupt"	},
+		{ CTRL_BREAK_EVENT,		false,	"terminate-on-ctrl-break",	""						},
+		{ CTRL_SHUTDOWN_EVENT,	false,	"terminate-on-shutdown",	""						},
+	};
 
 	Win32::MainLoop & Win32::MainLoop::getInstance() {
 		static Win32::MainLoop instance;
@@ -36,62 +50,26 @@
 
 	Win32::MainLoop::MainLoop() : Udjat::MainLoop() {
 
-		if(Config::Value<bool>("win32","enable-ctrl-handler",true)) {
-			if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,TRUE)==FALSE) {
-				cerr << "mainloop\tUnable to install console handler" << endl;
-			} else {
-				cout << "mainloop\tConsole handler installed, use CTRL-C to interrupt" << endl;
+		for(size_t ix = 0; ix < (sizeof(events)/sizeof(events[0]));ix++) {
+
+			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
+
+				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
+					clog << "mainloop\tTerminating by console request" << endl;
+					enabled = false;
+					wakeup();
+					return true;
+				});
+
+				cout << "mainloop\t" << events[ix].message << endl;
 			}
+
 		}
 
 	}
 
 	Win32::MainLoop::~MainLoop() {
-		if(Config::Value<bool>("win32","enable-ctrl-handler",true)) {
-			if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandler,FALSE)==FALSE) {
-				cerr << "mainloop\tUnable to remove console handler" << endl;
-			} else {
-				cout << "mainloop\tConsole handler removed" << endl;
-			}
-		}
-	}
-
-	BOOL WINAPI Win32::MainLoop::ConsoleHandler(DWORD event) {
-
-		Win32::MainLoop &controller = Win32::MainLoop::getInstance();
-
-		switch(event) {
-		case CTRL_C_EVENT:
-			cerr << "mainloop\tCTRL+C received!" << endl;
-			controller.enabled = false;
-			break;
-
-		case CTRL_BREAK_EVENT:
-		   cerr << "mainloop\tCTRL+BREAK received!" << endl;
-			controller.enabled = false;
-			break;
-
-		case CTRL_CLOSE_EVENT:
-			cerr << "mainloop\tProgram being closed!" << endl;
-			controller.enabled = false;
-			break;
-
-		case CTRL_LOGOFF_EVENT:
-			cerr << "mainloop\tUser is logging off!" << endl;
-			controller.enabled = false;
-			break;
-
-		case CTRL_SHUTDOWN_EVENT:
-			cerr << "mainloop\tUser is logging off!" << endl;
-			controller.enabled = false;
-			break;
-
-		}
-
-		controller.wakeup();
-
-		return TRUE;
-
+		Udjat::Event::remove(this);
 	}
 
  }

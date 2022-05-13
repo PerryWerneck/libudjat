@@ -84,10 +84,6 @@
 		/// @brief Uninstall win32 service.
 		virtual int uninstall();
 
-#else
-
-		static void onReloadSignal(int signal) noexcept;
-
 #endif // _WIN32
 
 		/// @brief Send usage help to std::cout

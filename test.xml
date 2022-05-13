@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<config src='http://localhost/~perry/libudjat.xml' update-timer='600'>
+<!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
+<config>
 
 	<module name='information' required='no' />
-	<module name='http' required='no' />
+	<!-- module name='http' required='no' / -->
 
-	<!--
 	<module name='civetweb' required='no' />
-	-->
 
 	<attribute name='default-url' value='http://localhost' />
 	
@@ -24,8 +23,7 @@
 
 	</agent>
 
-	<!--
-	<random name='random600' update-timer='600'>
+	<random name='random600' update-timer='600' update-signal='reload'>
 
 		<state name='s0' value='0' summary='Random 0'>
 			<alert name='r0.0' url='${default-url}' action='post' strip-payload='yes'>
@@ -54,7 +52,6 @@
 		</state>
 		
 	</random>
-	-->
 	
 	<random name='random10' update-timer='10'>
 

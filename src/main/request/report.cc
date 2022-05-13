@@ -19,6 +19,8 @@
 
  #include "private.h"
  #include <cstdarg>
+ #include <iomanip>
+ #include <sstream>
 
  namespace Udjat {
 
@@ -28,11 +30,22 @@
 	Report::~Report() {
 	}
 
-	void Report::start(const char *name, const char *column_name, ...) {
+	void Report::start(const char *column_name, ...) {
 		va_list args;
 		va_start(args, column_name);
 		set(column_name,args);
 		va_end(args);
+	}
+
+	void Report::start(const std::vector<string> &column_names) {
+
+		if(!this->columns.names.empty()) {
+			throw system_error(EBUSY,system_category(),"Report already started");
+		}
+
+		this->columns.names = column_names;
+
+		open();
 	}
 
 	void Report::set(const char *column_name, va_list args) {
@@ -107,7 +120,7 @@
 	}
 
 	Report & Report::push_back(const TimeStamp value) {
-		return push_back(value.to_string(TIMESTAMP_FORMAT_JSON));
+		return push_back(value.to_string());
 	}
 
 	Report & Report::push_back(const bool value) {
@@ -115,11 +128,15 @@
 	}
 
 	Report & Report::push_back(const float value) {
-		return push_back(std::to_string(value));
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(2) << value;
+		return push_back(stream.str());
 	}
 
 	Report & Report::push_back(const double value) {
-		return push_back(std::to_string(value));
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(2) << value;
+		return push_back(stream.str());
 	}
 
  }

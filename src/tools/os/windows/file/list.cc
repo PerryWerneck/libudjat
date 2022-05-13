@@ -27,57 +27,67 @@
 
  namespace Udjat {
 
-	File::List::List(const char *pattern) {
+	/*
+	static void load(std::list<std::string> &files, const char *fpat, bool recursive) {
 
+		if(!(fpat && *fpat)) {
+			throw system_error(EINVAL,system_category(),"Empty file pattern");
+		}
+
+		string folder{fpat};
+		for(char *ptr = (char *) folder.c_str();*ptr;ptr++) {
+			if(*ptr == '/') {
+				*ptr = '\\';
+			}
+		}
+
+		// Split folder & mask
+
+		if(folder[folder.size()-1] == '\\') {
+			folder.resize(folder.size()-1);
+		} else {
+			throw system_error(ENOTSUP,system_category(),"Pattern based filter is not supported");
+
+			// TODO: Use PathMatchSpec to match file pattern.
+
+		}
+
+		// Scan folder.
 		WIN32_FIND_DATA FindFileData;
-		memset(&FindFileData,0,sizeof(FindFileData));
-
-		HANDLE hFind = FindFirstFile(pattern,&FindFileData);
-
+		HANDLE hFind = FindFirstFile((folder + "\\*").c_str(), &FindFileData);
 		if (hFind == INVALID_HANDLE_VALUE) {
-			throw Win32::Exception("Can't find file");
+			throw Win32::Exception(folder.c_str());
 		}
-
-		string path;
-
-		const char * ptr[] = {
-			strchr(pattern,'\\'),
-			strchr(pattern,'/')
-		};
-
-		if(ptr[0] || ptr[1]) {
-
-			size_t len = strlen(pattern);
-
-			if(ptr[0]) {
-				len = min(len,(size_t) (ptr[0]-pattern));
-			}
-
-			if(ptr[1]) {
-				len = min(len,(size_t) (ptr[1]-pattern));
-			}
-
-			path.assign(pattern,len);
-
-		}
-
-		//cout << "PATH: [" << path << "]" << endl;
 
 		try {
 
 			do {
 
-				string str(path);
-				str += FindFileData.cFileName;
-				//cout << "FILENAME: [" << FindFileData.cFileName << "]" << endl;
-				this->push_back(str);
+				if(FindFileData.cFileName[0] == '.') {
+					continue;
+				}
 
-			} while (FindNextFile(hFind, &FindFileData) != 0);
+				string filename = folder + "\\" + FindFileData.cFileName;
 
-			DWORD dwError = GetLastError();
-			if(dwError != ERROR_NO_MORE_FILES) {
-				throw Win32::Exception("Error reading files");
-			}
+				DWORD attr = GetFileAttributes(filename.c_str());
+				if(attr == INVALID_FILE_ATTRIBUTES) {
+					throw Win32::Exception(filename);
+				}
+
+				if(recursive && (attr & FILE_ATTRIBUTE_DIRECTORY)) {
+#ifdef DEBUG
+					cout << "Found folder '" << filename << "'" << endl;
+#endif // DEBUG
+					load(files, (filename + "\\").c_str(),true);
+
+				} else {
+#ifdef DEBUG
+					cout << "Found file '" << filename << "'" << endl;
+#endif // DEBUG
+					files.push_back(filename);
+				}
+
+			} while(FindNextFile(hFind, &FindFileData) != 0);
 
 		} catch(...) {
 
@@ -87,16 +97,33 @@
 		}
 
 		FindClose(hFind);
+	}
 
+	File::List::List(const char *fpat, bool recursive) {
+		load(*this,fpat,recursive);
+	}
+	*/
+
+	File::List::List(const char *path, bool recursive) : List(path,"*",recursive) {
+	}
+
+	File::List::List(const char *path, const char *pattern, bool recursive) {
+		Path::for_each(path,pattern,recursive,[this](const char *filename){
+			emplace_back(filename);
+			return true;
+		});
 	}
 
 	File::List::~List() {
 	}
 
-	void File::List::forEach(std::function<void (const char *filename)> call) {
+	bool File::List::for_each(std::function<bool (const char *filename)> call) {
 		for(auto ix = begin(); ix != end(); ix++)  {
-			call( (*ix).c_str());
+			if(!call( (*ix).c_str())) {
+				return false;
+			}
 		}
+		return true;
 	}
 
  }

@@ -34,6 +34,7 @@
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
+		error() << "Rejecting 'report' request - Not available in this agent" << endl;
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
 	}
 

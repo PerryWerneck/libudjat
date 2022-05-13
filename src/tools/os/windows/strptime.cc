@@ -30,7 +30,7 @@
  */
 
 #include <config.h>
-#include <udjat-internals.h>
+#include <private/misc.h>
 
 #ifndef HAVE_STRPTIME
 

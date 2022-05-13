@@ -18,7 +18,7 @@
  */
 
  #include "private.h"
- #include <udjat-internals.h>
+ #include <private/misc.h>
 
  namespace Udjat {
 

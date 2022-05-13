@@ -74,9 +74,10 @@
 
 		while(alertnode && alertnode.attribute("allow-upstream").as_bool(true) && level-- > 0) {
 
-#ifdef DEBUG
-			cout << "factories\tSearching on '" << alertnode.name() << "'" << endl;
-#endif // DEBUG
+//#ifdef DEBUG
+//			cout << "factories\tSearching on '" << alertnode.name() << "'" << endl;
+//#endif // DEBUG
+
 			const Factory * factory = Factory::find(alertnode.name());
 			if(factory && call(*factory,node)) {
 				return true;

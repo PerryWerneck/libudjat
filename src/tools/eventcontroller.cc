@@ -17,35 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <sys/types.h>
-
+ #include <private/event.h>
+ #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-
-	File::List::List(const char *fpath, bool recursive) : List(fpath,"*",recursive) {
+	Event::Controller & Event::Controller::getInstance() {
+		lock_guard<mutex> lock(guard);
+		static Controller instance;
+		return instance;
 	}
 
-	File::List::List(const char *path, const char *pattern, bool recursive) {
-		Path::for_each(path,pattern,recursive,[this](const char *filename){
-			emplace_back(filename);
-			return true;
-		});
-	}
-
-	File::List::~List() {
-	}
-
-	bool File::List::for_each(std::function<bool (const char *filename)> call) {
-		for(auto ix = begin(); ix != end(); ix++)  {
-			if(!call( (*ix).c_str())) {
-				return false;
-			}
-		}
-		return true;
-	}
 
  }
+

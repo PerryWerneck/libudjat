@@ -17,35 +17,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <sys/types.h>
-
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <private/event.h>
+ #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
+	mutex Event::Controller::guard;
 
-	File::List::List(const char *fpath, bool recursive) : List(fpath,"*",recursive) {
+	Event::Event() {
 	}
 
-	File::List::List(const char *path, const char *pattern, bool recursive) {
-		Path::for_each(path,pattern,recursive,[this](const char *filename){
-			emplace_back(filename);
-			return true;
-		});
+	Event::~Event() {
 	}
 
-	File::List::~List() {
-	}
+	void Event::trigger() noexcept {
 
-	bool File::List::for_each(std::function<bool (const char *filename)> call) {
-		for(auto ix = begin(); ix != end(); ix++)  {
-			if(!call( (*ix).c_str())) {
-				return false;
-			}
+		{
+			std::lock_guard<std::mutex> lock(Controller::guard);
+			string name = to_string();
+
+			listeners.remove_if([name](const Listener &listener){
+
+				try {
+					if(listener.handler()) {
+						return false;
+					}
+				} catch(const std::exception &e) {
+					cerr << name << "\t" << e.what() << endl;
+				} catch(...) {
+					cerr << name << "\tUnexpected error processing event" << endl;
+				}
+
+				return true;
+
+			});
 		}
-		return true;
+
 	}
 
  }

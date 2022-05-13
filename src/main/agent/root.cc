@@ -31,7 +31,7 @@
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/application.h>
 

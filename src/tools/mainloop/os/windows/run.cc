@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include "private.h"
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <iostream>
 
  using namespace std;

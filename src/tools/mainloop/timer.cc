@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat-internals.h>
+ #include <private/misc.h>
  #include <udjat/tools/application.h>
  #include <sys/time.h>
  #include <iostream>

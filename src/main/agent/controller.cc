@@ -116,6 +116,20 @@ namespace Udjat {
 		return true;
 	}
 
+	bool Abstract::Agent::Controller::work(Request &request, Report &response) const {
+
+		auto agent = find(request.getPath());
+
+		if(!agent) {
+			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
+		}
+
+		agent->head(response);
+		agent->get(request,response);
+
+		return true;
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) const {
 
 		auto root = get();
@@ -129,10 +143,6 @@ namespace Udjat {
 
 	void Abstract::Agent::deinit() {
 		Abstract::Agent::Controller::getInstance().set(std::shared_ptr<Abstract::Agent>());
-	}
-
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::get_root() {
-		return root();
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::root() {
@@ -306,13 +316,7 @@ namespace Udjat {
 
 					try {
 
-#ifdef DEBUG
-						agent->info() << "--A---------------------------------" << endl;
-#endif // DEBUG
 						agent->refresh(false);
-#ifdef DEBUG
-						agent->info() << "--B---------------------------------" << endl;
-#endif // DEBUG
 
 					} catch(const exception &e) {
 
@@ -332,6 +336,12 @@ namespace Udjat {
 
 		});
 
+	}
+
+	void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
+	}
+
+	void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
 	}
 
 }
