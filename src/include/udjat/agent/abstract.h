@@ -35,15 +35,14 @@
 		public:
 
 			enum Event : uint8_t {
-				VALUE_CHANGED,		///< @brief Agent value has changed.
-				STATE_CHANGED,		///< @brief Agent state has changed.
+				VALUE_CHANGED	= 0,		///< @brief Agent value has changed.
+				STATE_CHANGED	= 1,		///< @brief Agent state has changed.
 
+				CUSTOM_EVENT	= 200		///< @brief Custom event (for module use).
 			};
 
 			class UDJAT_API EventListener {
 			private:
-				friend class Agent;
-
 				const void *id;
 				Event event;
 
@@ -52,6 +51,14 @@
 				}
 
 				virtual void trigger(Abstract::Agent &agent) = 0;
+
+				inline bool operator ==(const Event event) const noexcept {
+					return this->event == event;
+				}
+
+				inline bool operator ==(const void *id) const noexcept {
+					return this->id == id;
+				}
 
 			};
 
@@ -251,16 +258,7 @@
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
-
-			/*
-			inline void foreach(std::function<void(Agent &agent)> method) {
-				for_each(method);
-			}
-
-			void foreach(std::function<void(std::shared_ptr<Agent> agent)> method) {
-				for_each(method);
-			}
-			*/
+			void for_each(std::function<void(std::shared_ptr<EventListener> listener)> method);
 
 			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 				return children.agents.begin();
@@ -317,60 +315,3 @@
 
  }
 
- /*
-#ifndef UDJAT_AGENT_H_INCLUDED
-
-	#define UDJAT_AGENT_H_INCLUDED
-
-	#include <string>
-	#include <pugixml.hpp>
-	#include <memory>
-	#include <vector>
-	#include <mutex>
-	#include <list>
-	#include <functional>
-	#include <udjat/defs.h>
-	#include <udjat/state.h>
-	#include <udjat/tools/quark.h>
-	#include <udjat/tools/logger.h>
-	#include <udjat/request.h>
-	#include <udjat/tools/xml.h>
-	#include <udjat/alert.h>
-	#include <udjat/tools/converters.h>
-	#include <cstring>
-
-	namespace Udjat {
-
-		UDJAT_API void parse_value(const pugi::xml_node &node, int &value);
-		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned int &value);
-		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned short &value);
-		UDJAT_API void parse_value(const pugi::xml_node &node, float &value);
-		UDJAT_API void parse_value(const pugi::xml_node &node, double &value);
-		UDJAT_API void parse_value(const pugi::xml_node &node, unsigned long &value);
-		UDJAT_API void parse_value(const pugi::xml_node &node, long &value);
-
-		namespace Abstract {
-
-
-		}
-
-		/// @brief Load XML application definitions.
-		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @param force Do a reconfiguration even if the file hasn't change.
-		/// @return Seconds for file refresh.
-		UDJAT_API time_t reconfigure(const char *pathname, bool force = false);
-
-		/// @brief Load XML application definitions.
-		/// @param agent New root agent.
-		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @param force Do a reconfiguration even if the file hasn't change.
-		/// @return Seconds for file refresh.
-		UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false);
-
-
-	}
-
-
-#endif // UDJAT_AGENT_H_INCLUDED
-
-*/

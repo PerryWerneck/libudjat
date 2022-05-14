@@ -199,10 +199,14 @@ install: \
 install-debug: \
 	install-@OSNAME@-debug
 
-install-doc:
-
-	@cd doc ; @DOXYGEN@ doxyfile
+doc:
+	doc/html/index.html
 	
+	@cd doc ; @DOXYGEN@ doxyfile; cd ..
+
+install-doc: \
+	doc
+
 	@$(MKDIR) \
 		$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html
 

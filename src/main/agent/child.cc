@@ -189,4 +189,17 @@
 
 	}
 
+	void Abstract::Agent::for_each(std::function<void(std::shared_ptr<EventListener> listener)> method) {
+
+		lock_guard<std::recursive_mutex> lock(guard);
+
+		for(auto listener : listeners) {
+
+			method(listener);
+
+		}
+
+	}
+
+
  }

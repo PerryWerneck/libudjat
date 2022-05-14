@@ -75,7 +75,7 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto listener : listeners) {
 
-			if(listener->event == event) {
+			if(*listener == event) {
 
 				ThreadPool::getInstance().push([this,listener]() {
 

@@ -176,7 +176,7 @@
 			const char * url = "";
 
 			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-			const char * icon = STRINGIZE_VALUE_OF(PRODUCT_NAME);
+			const char * icon = "";
 
 		} properties;
 
@@ -190,25 +190,28 @@
 
 		bool getProperty(const char *key, std::string &value) const noexcept override;
 
-		inline const char * label() const {
+		inline const char * label() const noexcept {
 			return properties.label;
 		}
 
 		/// @brief Object summary.
-		inline const char * summary() const {
+		inline const char * summary() const noexcept {
 			return properties.summary;
 		}
 
 		/// @brief URL associated with the object.
-		inline const char * url() const {
+		inline const char * url() const noexcept {
 			return properties.url;
 		}
 
 		/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-		inline const char * icon() const {
+		inline const char * icon() const noexcept {
 			return properties.icon;
 		}
 
+		/// @brief Export all object properties.
+		/// @param Value to receive the properties.
+		/// @return Pointer to value (for reference).
 		Value & getProperties(Value &value) const noexcept override;
 	};
 

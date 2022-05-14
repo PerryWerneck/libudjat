@@ -105,7 +105,7 @@
 
 		/// @brief Insert State.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
-			auto state =std::make_shared<State<T>>(node);
+			auto state = std::make_shared<State<T>>(node);
 			push_back(state);
 			return state;
 		}
