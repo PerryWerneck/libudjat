@@ -32,7 +32,7 @@ namespace Udjat {
 	}
 	*/
 
-	void Factory::Controller::insert(const Factory *factory) {
+	void Factory::Controller::insert(Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
 		cout << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
 		factories.push_back(factory);
@@ -57,7 +57,7 @@ namespace Udjat {
 
 	}
 
-	void Factory::Controller::remove(const Factory *factory) {
+	void Factory::Controller::remove(Factory *factory) {
 
 		cout << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
 
@@ -68,31 +68,7 @@ namespace Udjat {
 
 	}
 
-	/*
-	bool Factory::Controller::parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const {
-		for(auto factory : factories) {
-			if(!strcasecmp(factory->name(),name)) {
-				factory->parse(parent,node);
-				return true;
-			}
-		}
-		return false;
-	}
-	*/
-
-	/*
-	bool Factory::Controller::parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const {
-		for(auto factory : factories) {
-			if(!strcasecmp(factory->name,name)) {
-				factory->parse(parent,node);
-				return true;
-			}
-		}
-		return false;
-	}
-	*/
-
-	bool Factory::Controller::for_each(const char *name, std::function<bool(const Factory &factory)> func) {
+	bool Factory::Controller::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto factory : factories) {
 			if(!(name && *name && strcasecmp(factory->name(),name))) {

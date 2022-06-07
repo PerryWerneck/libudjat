@@ -30,7 +30,7 @@
 
 	bool Abstract::Agent::push_back(const char *type, const pugi::xml_node &node) {
 
-		return Factory::for_each(type,[this,&node](const Factory &factory){
+		return Factory::for_each(type,[this,&node](Factory &factory){
 
 			try {
 

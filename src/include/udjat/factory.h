@@ -69,13 +69,13 @@
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(std::function<bool(const Factory &factory)> func);
+		static bool for_each(const std::function<bool(Factory &factory)> &func);
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param name	Requested factory name.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(const char *name, std::function<bool(const Factory &factory)> func);
+		static bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
@@ -92,7 +92,7 @@
 		/// @brief Parse a XML node.
 		/// @param XML definition for the new element.
 		/// @return true if the node was inserted.
-		virtual bool push_back(const pugi::xml_node &node) const;
+		virtual bool push_back(const pugi::xml_node &node);
 
 	};
 
