@@ -27,10 +27,6 @@
 	#include <functional>
 	#include <ostream>
 
-#ifdef HAVE_PUGIXML
-	#include <pugixml.hpp>
-#endif // HAVE_PUGIXML
-
 	namespace Udjat {
 
 		/// @brief Single instance string.
