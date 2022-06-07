@@ -39,6 +39,20 @@
 		}
 	}
 
+	bool NamedObject::operator==(const char *name) const noexcept {
+		if(objectName && *objectName) {
+			return strcasecmp(this->objectName, name) == 0;
+		}
+		return false;
+	}
+
+	bool NamedObject::operator==(const pugi::xml_node &node) const noexcept {
+		if(objectName && *objectName) {
+			return strcasecmp(objectName,node.attribute("name").as_string()) == 0;
+		}
+		return false;
+	}
+
 	Value & NamedObject::getProperties(Value &value) const noexcept {
 		value["name"] = objectName;
 		return value;

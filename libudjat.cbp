@@ -97,6 +97,7 @@
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/alertfactory.cc" />
 		<Unit filename="src/main/agent/child.cc" />
+		<Unit filename="src/main/agent/compare.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/load.cc" />

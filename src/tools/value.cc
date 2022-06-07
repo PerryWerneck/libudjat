@@ -27,6 +27,18 @@
 
  namespace Udjat {
 
+	Value & Value::operator[](const char *name) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
+	Value & Value::append(const Type type) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
+	Value & Value::set(const char *value, const Type type) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
 	Value & Value::setFraction(const float fraction) {
 		std::stringstream out;
 		out << std::fixed << std::setprecision(2) << (fraction *100);

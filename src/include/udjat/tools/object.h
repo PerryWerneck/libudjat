@@ -24,6 +24,7 @@
  #include <ostream>
  #include <string>
  #include <pugixml.hpp>
+ #include <cstring>
 
  namespace Udjat {
 
@@ -145,6 +146,9 @@
 		inline const char * name() const noexcept {
 			return objectName;
 		}
+
+		bool operator==(const char *name) const noexcept;
+		bool operator==(const pugi::xml_node &node) const noexcept;
 
 		inline const char * c_str() const noexcept {
 			return objectName;

@@ -274,6 +274,8 @@
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
 
+			bool operator==(const Abstract::State &state) const noexcept;
+
 			virtual void get(Response &response);
 			virtual void get(const Request &request, Response &response);
 			virtual void get(const Request &request, Report &report);
