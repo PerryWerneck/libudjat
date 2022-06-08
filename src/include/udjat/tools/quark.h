@@ -39,6 +39,9 @@
 
 		public:
 
+			/// @brief Initialize Quark Engine.
+			static void init(int argc, char **argv);
+
 			static Quark getFromStatic(const char *str);
 
 			Quark() : value(nullptr) {}
