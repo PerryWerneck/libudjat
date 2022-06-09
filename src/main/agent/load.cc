@@ -129,13 +129,6 @@ namespace Udjat {
 
 		}
 
-		/*
-		{
-			lock_guard<std::recursive_mutex> lock(guard);
-			Controller::getInstance().insert(this,root);
-		}
-		*/
-
 	}
 
 }

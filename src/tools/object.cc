@@ -71,8 +71,8 @@
 
 		for(pugi::xml_node child : node) {
 
-			Factory::search(child,[this](Factory &factory, const pugi::xml_node &node) {
-				return factory.push_back(*this,node);
+			Factory::for_each(child.name(),[this,&child](Factory &factory) {
+				return factory.push_back(*this,child);
 			});
 
 		}
