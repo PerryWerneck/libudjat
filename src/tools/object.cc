@@ -32,15 +32,6 @@
  namespace Udjat {
 
 	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(Quark(node.attribute("name").as_string("unnamed")).c_str()) {
-
-		for(pugi::xml_node child : node) {
-
-			Factory::search(child,[this](Factory &factory, const pugi::xml_node &node) {
-				return factory.push_back(*this,node);
-			});
-
-		}
-
 	}
 
 	void NamedObject::set(const pugi::xml_node &node) {
@@ -74,6 +65,18 @@
 
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
 		set(node);
+	}
+
+	void Abstract::Object::load(const pugi::xml_node &node) {
+
+		for(pugi::xml_node child : node) {
+
+			Factory::search(child,[this](Factory &factory, const pugi::xml_node &node) {
+				return factory.push_back(*this,node);
+			});
+
+		}
+
 	}
 
 	void Object::set(const pugi::xml_node &node) {

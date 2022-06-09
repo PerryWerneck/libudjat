@@ -32,6 +32,11 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
+		protected:
+
+			/// @brief Load children.
+			/// @param node The XML node with the children definitions.
+			virtual void load(const pugi::xml_node &node);
 
 		public:
 
@@ -132,6 +137,8 @@
 		constexpr NamedObject(const char *name = "") : objectName(name) {}
 		NamedObject(const pugi::xml_node &node);
 
+		/// @brief Set object properties from XML node.
+		/// @param node XML node for the object properties
 		void set(const pugi::xml_node &node);
 
 		inline void rename(const char *name) {

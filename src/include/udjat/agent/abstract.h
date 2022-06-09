@@ -205,7 +205,7 @@
 
 			/// @brief Load children from xml node.
 			/// @brief node XML node with agent attributes.
-			void load(const pugi::xml_node &node);
+			void load(const pugi::xml_node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();
