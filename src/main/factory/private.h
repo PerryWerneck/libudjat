@@ -46,7 +46,7 @@
 		/// @brief Find factory by name.
 		/// @param name Factory name.
 		/// @return The requested factory or nullptr.
-		const Factory * find(const char *name);
+		Factory * find(const char *name);
 
 		void insert(Factory *factory);
 		void remove(Factory *factory);

@@ -38,7 +38,7 @@ namespace Udjat {
 		factories.push_back(factory);
 	}
 
-	const Factory * Factory::Controller::find(const char *name) {
+	Factory * Factory::Controller::find(const char *name) {
 		lock_guard<recursive_mutex> lock(guard);
 
 		if(name && *name) {

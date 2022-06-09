@@ -24,7 +24,7 @@ namespace Udjat {
 		});
 	}
 
-	const Factory * Factory::find(const char *name) {
+	Factory * Factory::find(const char *name) {
 		return Controller::getInstance().find(name);
 	}
 
@@ -46,6 +46,10 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
+	}
+
+	bool Factory::push_back(Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) {
+		return push_back(node);
 	}
 
 	bool Factory::push_back(const pugi::xml_node UDJAT_UNUSED(&node)) {
