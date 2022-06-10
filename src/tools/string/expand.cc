@@ -23,6 +23,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/url.h>
 
  using namespace std;
 
@@ -100,12 +101,39 @@
 		},dynamic,cleanup);
 	}
 
+	static bool check_node(pugi::xml_node &xml, const char *key, std::string &value) {
+
+		for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
+
+			// Check the attribute name.
+			if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
+
+				// Test if the attribute requirement is valid.
+				const char *str = child.attribute("valid-if").as_string();
+				if(str && *str && URL(str).test() != 200) {
+					continue;
+				}
+
+				// Test if the attribute requirement is not valid.
+				str = child.attribute("not-valid-if").as_string();
+				if(str && *str && URL(str).test() == 200) {
+					continue;
+				}
+
+				value = child.attribute("value").as_string();
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	String & String::expand(const pugi::xml_node &node, const char *group) {
 
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
 
-		return expand([node,dynamic,cleanup,group](const char *key, std::string &value){
+		return expand([node,dynamic,cleanup,group](const char *key, std::string &value) {
 
 			// Check node attributes
 			{
@@ -119,30 +147,33 @@
 			// Search the XML tree for an attribute with the required name.
 			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
 
-				for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
+				// Search attributes.
+				if(check_node(xml,key,value)) {
+					return true;
+				}
 
-					// Check the attribute name.
-					if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
-						/*
+				// Search attribute lists.
+				for(auto lst = xml.child("attribute-list"); lst; lst = lst.next_sibling("attribute-list")) {
 
-						TODO: Implement it
+					// Test if the attribute requirement is valid.
+					const char *str = lst.attribute("valid-if").as_string();
+					if(str && *str && URL(str).test() != 200) {
+						continue;
+					}
 
-						const char *valid = child.attribute("valid-if").as_string();
-						if(valid) {
+					// Test if the attribute requirement is not valid.
+					str = lst.attribute("not-valid-if").as_string();
+					if(str && *str && URL(str).test() == 200) {
+						continue;
+					}
 
-						}
-
-						const char *invalid = child.attribute("not-valid-if").as_string();
-						if(invalid) {
-
-						}
-
-						*/
-
-						value = child.attribute("value").as_string();
+					if(check_node(lst,key,value)) {
 						return true;
 					}
+
 				}
+
+
 			}
 
 			if(group && Config::hasKey(group,key)) {
