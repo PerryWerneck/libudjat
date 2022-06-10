@@ -60,41 +60,4 @@
 		return text.c_str();
 	}
 
-	/*
-	void UDJAT_API expand(string &text, std::function<std::string (const char *key)> exec) {
-
-		auto from = text.find("${");
-		while(from != string::npos) {
-
-			auto to = text.find("}",from+3);
-			if(to == string::npos) {
-				throw runtime_error("Invalid ${} usage");
-			}
-
-			string value = exec(string(text.c_str()+from+2,(to-from)-2).c_str());
-
-			if(strcasecmp(value.c_str(),"${}")) {
-
-				// Value was expanded, aply it.
-
-				text.replace(
-					from,
-					(to-from)+1,
-					value.c_str()
-				);
-
-				from = text.find("${",from);
-
-			} else {
-
-				// Value was not expanded, ignore it.
-				from = text.find("${",to+1);
-
-			}
-
-		}
-
-	}
-	*/
-
  }

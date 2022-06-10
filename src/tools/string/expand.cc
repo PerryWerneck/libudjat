@@ -17,15 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/client.h>
- #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
- #include <cstring>
- #include <ctype.h>
- #include <cstdlib>
- #include <cstdarg>
 
  using namespace std;
 
@@ -68,27 +65,6 @@
 
 	void String::push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method) {
 		Expanders::getInstance().emplace_back(method);
-	}
-
-	String & String::strip() noexcept {
-		char *ptr = strdup(c_str());
-		assign(Udjat::strip(ptr));
-		free(ptr);
-		return *this;
-	}
-
-	String & String::chug() noexcept {
-		char *ptr = strdup(c_str());
-		assign(Udjat::chug(ptr));
-		free(ptr);
-		return *this;
-	}
-
-	String & String::chomp() noexcept {
-		char *ptr = strdup(c_str());
-		assign(Udjat::chomp(ptr));
-		free(ptr);
-		return *this;
 	}
 
 	static std::string getarguments(const std::string &key, const char *def) {
@@ -142,11 +118,28 @@
 
 			// Search the XML tree for an attribute with the required name.
 			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
+
 				for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
-					// It's an attribute value, check the name.
+
+					// Check the attribute name.
 					if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
+						/*
+
+						TODO: Implement it
+
+						const char *valid = child.attribute("valid-if").as_string();
+						if(valid) {
+
+						}
+
+						const char *invalid = child.attribute("not-valid-if").as_string();
+						if(invalid) {
+
+						}
+
+						*/
+
 						value = child.attribute("value").as_string();
-						cout << "Found " << key << "='" << value << "'" << endl;
 						return true;
 					}
 				}
@@ -157,18 +150,6 @@
 				value = Config::get(group, key, "");
 				return true;
 			}
-
-			//attribute = Object::getAttribute(node,key);
-			//if(attribute) {
-			//	value = attribute.as_string();
-			//	return true;
-			//}
-
-			//attribute = Object::getAttribute(node,key,false);
-			//if(attribute) {
-			//	value = attribute.as_string();
-			//	return true;
-			//}
 
 			// Not expanded, use non xml expanders.
 			return Expanders::getInstance().expand(key,value,dynamic,cleanup);
@@ -329,113 +310,6 @@
 		return *this;
 	}
 
-	std::vector<String> String::split(const char *delim) {
-
-		std::vector<String> strings;
-
-		const char *ptr = c_str();
-		while(ptr && *ptr) {
-			const char *next = strstr(ptr,delim);
-			if(!next) {
-				strings.push_back(String(ptr).strip());
-				break;
-			}
-
-			while(*next && isspace(*next))
-				next++;
-
-			strings.push_back(String(ptr,(size_t) (next-ptr)).strip());
-			ptr = next+1;
-			while(*ptr && isspace(*ptr)) {
-				ptr++;
-			}
-
-		}
-
-		return strings;
-
-	}
-
- 	char * chomp(char *str) noexcept {
-
-		size_t len = strlen(str);
-
-		while(len--) {
-
-			if(isspace(str[len])) {
-				str[len] = 0;
-			} else {
-				break;
-			}
-		}
-
-		return str;
-
-	}
-
-	char * chug (char *str) noexcept {
-
-		char *start;
-
-		for (start = (char*) str; *start && isspace(*start); start++);
-
-		memmove(str, start, strlen ((char *) start) + 1);
-
-		return str;
-	}
-
-	char * strip(char *str) noexcept {
-		return chomp(chug(str));
-	}
-
-	std::string & strip(std::string &str) noexcept {
-		char *buffer = new char[str.size()+1];
-		memcpy(buffer,str.c_str(),str.size());
-		buffer[str.size()] = 0;
-		strip(buffer);
-		str.assign(buffer);
-		delete[] buffer;
-		return str;
-	}
-
-	std::string UDJAT_API strip(const char *str, ssize_t length) {
-
-		if(length < 0) {
-			length = strlen(str);
-		}
-
-		char *buffer = new char[length+1];
-		memcpy(buffer,str,length);
-		buffer[length] = 0;
-		strip(buffer);
-
-		std::string rc(buffer);
-		delete[] buffer;
-
-		return rc;
-	}
-
-	size_t String::select(const char *value, ...) {
-
-		size_t index = 0;
-
-		va_list args;
-		va_start(args, value);
-		while(value) {
-
-			if(!strcasecmp(c_str(),value)) {
-				va_end(args);
-				return index;
-			}
-
-			index++;
-			value = va_arg(args, const char *);
-		}
-		va_end(args);
-
-		return -1;
-
-	}
 
  }
 
