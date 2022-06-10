@@ -25,6 +25,7 @@
  #include <cstring>
  #include <ctype.h>
  #include <cstdlib>
+ #include <cstdarg>
 
  using namespace std;
 
@@ -130,9 +131,6 @@
 
 		return expand([node,dynamic,cleanup,group](const char *key, std::string &value){
 
-			cout << "-----------------------------------------------------------" << __LINE__ << endl;
-			cout << "node='" << node.name() << "' key='" << key << "'" << endl;
-
 			// Check node attributes
 			{
 				pugi::xml_attribute attribute = node.attribute(key);
@@ -144,11 +142,8 @@
 
 			// Search the XML tree for an attribute with the required name.
 			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
-
-				cout << "Node=" << xml.name() << endl;
 				for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
 					// It's an attribute value, check the name.
-					cout << "**** name=" << child.attribute("name").as_string("*") << " Searching for " << key << endl;
 					if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
 						value = child.attribute("value").as_string();
 						cout << "Found " << key << "='" << value << "'" << endl;
@@ -156,8 +151,6 @@
 					}
 				}
 			}
-
-			cout << "-----------------------------------------------------------" << __LINE__ << endl;
 
 			if(group && Config::hasKey(group,key)) {
 				// Get from the configuration file.
@@ -422,6 +415,27 @@
 		return rc;
 	}
 
+	size_t String::select(const char *value, ...) {
+
+		size_t index = 0;
+
+		va_list args;
+		va_start(args, value);
+		while(value) {
+
+			if(!strcasecmp(c_str(),value)) {
+				va_end(args);
+				return index;
+			}
+
+			index++;
+			value = va_arg(args, const char *);
+		}
+		va_end(args);
+
+		return -1;
+
+	}
 
  }
 

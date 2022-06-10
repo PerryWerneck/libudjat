@@ -196,9 +196,6 @@
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
-#ifdef DEBUG
-				info() << "----------------------------------------------------------" << endl;
-#endif // DEBUG
 				info() << state->to_string() << endl;
 
 #if defined(HAVE_SYSTEMD)

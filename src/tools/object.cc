@@ -230,16 +230,11 @@
 
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
-			Udjat::String(attribute.as_string(def)).expand(node,group);
+			return Quark(Udjat::String(attribute.as_string(def)).expand(node)).c_str();
 		}
-		/*
-		if(attribute) {
-			return Quark(Udjat::expand(node,attribute,def)).c_str();
-		}
-		*/
 
 		if(Config::hasKey(group,name)) {
-			return Quark(Udjat::expand(node,Config::Value<string>(group,name,def).c_str()).c_str()).c_str();
+			return Quark(Udjat::String(Config::get(group,name,def)).expand(node)).c_str();
 		}
 
 		return def;

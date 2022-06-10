@@ -39,7 +39,7 @@
 	namespace Udjat {
 
 		/// @brief Expand, if possible, values ${} from str.
-		std::string expand(const pugi::xml_node &node, const char *str);
+		UDJAT_DEPRECATED(std::string expand(const pugi::xml_node &node, const char *str));
 
 		/// @brief Expand, if possible, values ${} from attribute.
 		std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def);

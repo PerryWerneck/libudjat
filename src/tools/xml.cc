@@ -23,6 +23,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/expander.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/string.h>
  #include <iostream>
  #include <cstdarg>
 
@@ -99,11 +100,14 @@
 	}
 
 	std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def) {
-		return expand(node,attribute.as_string(def));
+		return Udjat::String(attribute.as_string(def)).expand(node);
 	}
 
 	std::string expand(const pugi::xml_node &node, const char *str) {
 
+		return Udjat::String(str).expand(node);
+
+		/*
 		string text(str);
 
 		expand(text,[node](const char *key, string &value){
@@ -126,8 +130,10 @@
 			return false;
 
 		});
-
 		return text;
+
+		*/
+
 
 	}
 

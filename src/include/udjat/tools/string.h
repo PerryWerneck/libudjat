@@ -84,6 +84,13 @@
 		String(const char *str, size_t length) : std::string(str,length) {
 		}
 
+		String(const std::string &str) : std::string(str) {
+		}
+
+		/// @brief Test if the string contains one of the elements of a list.
+		/// @return Index of the matched content (-1 if not found).
+		size_t select(const char *value, ...) __attribute__ ((sentinel));
+
 		/// @brief Insert global expander.
 		/// @param method String expander method (returns 'true' if the value was parsed).
 		static void push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method);
