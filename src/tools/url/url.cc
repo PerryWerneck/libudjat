@@ -99,6 +99,34 @@
 
 	}
 
+	unsigned short URL::test() const noexcept {
+
+		try {
+
+			const Protocol * protocol = Protocol::find(*this);
+			if(!protocol) {
+				cerr << "url\tCant find a protocol handler for " << *this << endl;
+				return -EINVAL;
+			}
+
+			auto worker = protocol->WorkerFactory();
+			if(worker) {
+				worker->url(*this);
+			}
+
+		} catch(const std::exception &e) {
+
+			cerr << "url\tError '" << e.what() << "' testing " << *this << endl;
+
+		} catch(...) {
+
+			cerr << "url\tUnexpected error testing " << *this << endl;
+
+		}
+
+		return -1;
+	}
+
 	std::string URL::get() const {
 		return HTTP::Client(*this).get();
 	}

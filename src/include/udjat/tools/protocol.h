@@ -123,6 +123,10 @@
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
 
+			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
+			/// @return 200 if the file is accessible.
+			virtual unsigned short test();
+
 			/// @brief Set request payload.
 			inline Worker & payload(const char *payload) noexcept {
 				out.payload = payload;

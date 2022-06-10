@@ -21,6 +21,10 @@
  #include <udjat/tools/file.h>
  #include <udjat/moduleinfo.h>
 
+ #ifndef _WIN32
+	#include <unistd.h>
+ #endif // _WIN32
+
  namespace Udjat {
 
 	static const ModuleInfo moduleinfo { "File protocol module" };
@@ -29,6 +33,37 @@
 	}
 
 	Protocol::Controller::File::~File() {
+	}
+
+	std::shared_ptr<Protocol::Worker> Protocol::Controller::File::WorkerFactory() const {
+
+		class Worker : public Protocol::Worker {
+		public:
+			Worker() = default;
+
+			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) {
+				return String(Udjat::File::Text(url().ComponentsFactory().path.c_str()).c_str());
+			}
+
+			unsigned short test() override {
+
+				auto path = url().ComponentsFactory().path;
+
+				if(access(path.c_str(),R_OK) == 0) {
+					return 200;
+				}
+
+				if(access(path.c_str(),F_OK) != 0) {
+					return 404;
+				}
+
+				return -1;
+
+			}
+
+		};
+
+		return make_shared<Worker>();
 	}
 
 	String Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {

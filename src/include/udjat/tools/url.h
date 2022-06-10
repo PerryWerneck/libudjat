@@ -68,7 +68,9 @@
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
 
-		/// @brief Get protocol worker.
+		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
+		/// @return 200 if the file is accessible.
+		unsigned short test() const noexcept;
 
 		/// @brief Do a 'get' request.
 		/// @return Server response.

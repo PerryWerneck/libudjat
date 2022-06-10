@@ -33,6 +33,10 @@
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
 	}
 
+	unsigned short Protocol::Worker::test() {
+		throw system_error(ENOTSUP,system_category(),"No test support on selected worker");
+	}
+
 	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
 		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
 	}
