@@ -21,6 +21,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/configuration.h>
  #include <cstring>
  #include <ctype.h>
  #include <cstdlib>
@@ -47,6 +48,10 @@
 			return instance;
 		}
 
+		/// @brief Expand 'key' in the string.
+		/// @param key The key to expand.
+		/// @param str The string to expand.
+		/// @return true if the string was expanded.
 		bool expand(const char *key, std::string &str, bool dynamic, bool cleanup) {
 
 			for(Expander &expander : *this) {
@@ -118,28 +123,61 @@
 		},dynamic,cleanup);
 	}
 
-	String & String::expand(const pugi::xml_node &node) {
+	String & String::expand(const pugi::xml_node &node, const char *group) {
 
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
 
-		return expand([node,dynamic,cleanup](const char *key, std::string &value){
+		return expand([node,dynamic,cleanup,group](const char *key, std::string &value){
 
-			pugi::xml_attribute attribute;
+			cout << "-----------------------------------------------------------" << __LINE__ << endl;
+			cout << "node='" << node.name() << "' key='" << key << "'" << endl;
 
-			attribute = Object::getAttribute(node,key);
-			if(attribute) {
-				value = attribute.as_string();
+			// Check node attributes
+			{
+				pugi::xml_attribute attribute = node.attribute(key);
+				if(attribute) {
+					value = attribute.as_string();
+					return true;
+				}
+			}
+
+			// Search the XML tree for an attribute with the required name.
+			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
+
+				cout << "Node=" << xml.name() << endl;
+				for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
+					// It's an attribute value, check the name.
+					cout << "**** name=" << child.attribute("name").as_string("*") << " Searching for " << key << endl;
+					if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
+						value = child.attribute("value").as_string();
+						cout << "Found " << key << "='" << value << "'" << endl;
+						return true;
+					}
+				}
+			}
+
+			cout << "-----------------------------------------------------------" << __LINE__ << endl;
+
+			if(group && Config::hasKey(group,key)) {
+				// Get from the configuration file.
+				value = Config::get(group, key, "");
 				return true;
 			}
 
-			attribute = Object::getAttribute(node,key,false);
-			if(attribute) {
-				value = attribute.as_string();
-				return true;
-			}
+			//attribute = Object::getAttribute(node,key);
+			//if(attribute) {
+			//	value = attribute.as_string();
+			//	return true;
+			//}
 
-			// Not expanded
+			//attribute = Object::getAttribute(node,key,false);
+			//if(attribute) {
+			//	value = attribute.as_string();
+			//	return true;
+			//}
+
+			// Not expanded, use non xml expanders.
 			return Expanders::getInstance().expand(key,value,dynamic,cleanup);
 
 		},

@@ -227,10 +227,16 @@
 	}
 
 	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def) {
+
 		auto attribute = getAttribute(node,name);
+		if(attribute) {
+			Udjat::String(attribute.as_string(def)).expand(node,group);
+		}
+		/*
 		if(attribute) {
 			return Quark(Udjat::expand(node,attribute,def)).c_str();
 		}
+		*/
 
 		if(Config::hasKey(group,name)) {
 			return Quark(Udjat::expand(node,Config::Value<string>(group,name,def).c_str()).c_str()).c_str();

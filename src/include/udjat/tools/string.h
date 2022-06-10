@@ -101,7 +101,9 @@
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
 
 		/// @brief Expand ${} macros.
-		String & expand(const pugi::xml_node &node);
+		/// @param node XML node from the begin of the value search.
+		/// @param group Group from configuration file to search.
+		String & expand(const pugi::xml_node &node,const char *group = "default-attributes");
 
 		String & strip() noexcept;
 
