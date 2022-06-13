@@ -218,6 +218,8 @@
 
 		virtual std::shared_ptr<Worker> WorkerFactory() const;
 
+		static std::shared_ptr<Worker> WorkerFactory(const char *url);
+
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;
 

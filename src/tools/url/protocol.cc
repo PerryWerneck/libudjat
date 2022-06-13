@@ -92,6 +92,23 @@
 		return Controller::getInstance().find(name);
 	}
 
+	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url) {
+
+		const Protocol * protocol = Protocol::find(url);
+		if(!protocol) {
+			throw runtime_error(string{"Cant find a protocol handler for "} + url);
+		}
+
+		auto worker = protocol->WorkerFactory();
+		if(!worker) {
+			throw runtime_error(string{"Cant create protocol worker for "} + url);
+		}
+
+		worker->url(url);
+
+		return worker;
+	}
+
 	/// @brief Create a worker for this protocol.
 	/// @return Worker for this protocol or empty shared pointer if the protocol cant factory workers.
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
