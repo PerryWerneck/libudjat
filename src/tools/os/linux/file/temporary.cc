@@ -68,7 +68,7 @@
 		for(size_t f = 0; f < 1000; f++) {
 
 			string filename = basename + "." + std::to_string(rand()) + ".tmp";
-			int fd = open(filename.c_str(),O_CREAT|O_EXCL);
+			int fd = open(filename.c_str(),O_CREAT|O_EXCL,0600);
 			if(fd > 0) {
 				::close(fd);
 				return filename;
