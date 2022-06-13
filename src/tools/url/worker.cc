@@ -22,6 +22,9 @@
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <fcntl.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <udjat/tools/file.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -67,6 +70,16 @@
 
 	bool Protocol::Worker::save(const char *filename) {
 		return save(filename, dummy_progress);
+	}
+
+	string Protocol::Worker::save() {
+		return save(dummy_progress);
+	}
+
+	string Protocol::Worker::save(const std::function<bool(double current, double total)> &progress) {
+		std::string filename = File::Temporary::create();
+		save(filename.c_str(),progress);
+		return filename;
 	}
 
 	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress) {

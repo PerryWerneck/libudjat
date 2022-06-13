@@ -199,12 +199,20 @@
 			/// @return true if the file was updated.
 			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
 
+			/// @brief Call URL, save response to temporary file.
+			/// @return The temporary filename.
+			std::string save(const std::function<bool(double current, double total)> &progress);
+
 			/// @brief Call URL, return response as string.
 			String get();
 
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
 			bool save(const char *filename);
+
+			/// @brief Call URL, save response to temporary file.
+			/// @return The temporary filename.
+			std::string save();
 
 		};
 

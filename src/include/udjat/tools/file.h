@@ -318,6 +318,8 @@ namespace Udjat {
 			Temporary(const char *filename);
 			~Temporary();
 
+			static std::string create();
+
 #ifndef _WIN32
 
 			/// @brief Hardlink tempfile to new filename (Linux only).
