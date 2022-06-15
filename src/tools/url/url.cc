@@ -182,7 +182,10 @@
 			path++;
 		}
 
-		append("/");
+		if(path[0] != '/') {
+			append("/");
+		}
+
 		append(path);
 
 		return *this;

@@ -207,6 +207,11 @@ int main(int argc, char **argv) {
 		url += "../../thepath";
 		cout << "double upsearch add: '" << url << "'" << endl;
 
+		url = "https://download.opensuse.net.br/distribution/leap/15.4/repo/oss";
+		url += "/boot/x86_64/loader/linux";
+
+		cout << "Simple concat: '" << url << "'" << endl;
+
 		return 0;
 	}
 
