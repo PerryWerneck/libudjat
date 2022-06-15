@@ -330,10 +330,12 @@ namespace Udjat {
 
 			/// @brief Save tempfile to new filename.
 			/// @param filename The file name.
-			void save(const char *filename);
+			/// @param replace If true just replace the file, no backup.
+			void save(const char *filename, bool replace = false);
 
 			/// @brief Move temporary file to the reference filename.
-			void save();
+			/// @param replace If true just replace the file, no backup.
+			void save(bool replace = false);
 
 			/// @brief Write data to tempfile.
 			/// @param contents Data to write.

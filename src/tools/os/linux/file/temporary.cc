@@ -84,7 +84,7 @@
 
 	}
 
-	void File::Temporary::save(const char *filename) {
+	void File::Temporary::save(const char *filename, bool replace) {
 
 		//
 		// First get target file attributes
@@ -101,9 +101,14 @@
 			memset(&st,0,sizeof(st));
 			st.st_mode = 0644;
 
+		} else if(replace) {
+
+			// Replace, remove current file.
+			unlink(filename);
+
 		} else {
 
-			// Got target filename, create '.bak' file.
+			// Not replace, create '.bak' file.
 			char bakfile[PATH_MAX];
 			strncpy(bakfile,filename,PATH_MAX);
 			char *ptr = strrchr(bakfile,'.');
@@ -183,13 +188,13 @@
 
 	}
 
-	void File::Temporary::save() {
+	void File::Temporary::save(bool replace) {
 
 		if(filename.empty()) {
-				throw system_error(EINVAL,system_category(),"No target filename");
+			throw system_error(EINVAL,system_category(),"No target filename");
 		}
 
-		this->save(filename.c_str());
+		this->save(filename.c_str(),replace);
 	}
 
 	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
