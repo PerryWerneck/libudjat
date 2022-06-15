@@ -59,6 +59,8 @@
 		URL(const std::string &str) : URL(str.c_str()) {
 		}
 
+		URL & operator += (const char *path);
+
 		/// @brief Get URL scheme.
 		std::string scheme() const;
 

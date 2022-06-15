@@ -162,6 +162,32 @@
 		return stoi(srvcname);
 	}
 
+	URL & URL::operator += (const char *path) {
+
+		// TODO: Extract arguments after '?' and rejoin after merge.
+
+		while(!strncmp(path,"../",3)) {
+
+			auto pos = rfind('/');
+			if(pos == string::npos) {
+				throw system_error(EINVAL,system_category(),"Cant merge path on URL");
+			}
+
+			resize(pos);
+			path += 3;
+
+		}
+
+		if(!strncmp(path,"./",2)) {
+			path++;
+		}
+
+		append("/");
+		append(path);
+
+		return *this;
+	}
+
  }
 
  namespace std {
