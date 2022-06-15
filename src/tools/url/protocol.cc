@@ -94,7 +94,14 @@
 
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url) {
 
-		const Protocol * protocol = Protocol::find(url);
+		string name{url};
+
+		auto pos = name.find(":");
+		if(pos != string::npos) {
+			name.resize(pos);
+		}
+
+		const Protocol * protocol = Protocol::find(name.c_str());
 		if(!protocol) {
 			throw runtime_error(string{"Cant find a protocol handler for "} + url);
 		}

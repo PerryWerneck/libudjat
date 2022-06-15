@@ -196,8 +196,11 @@
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
 			/// @brief Call URL, save response as filename.
-			/// @return true if the file was updated.
-			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
+			/// @param filename	The file name to save.
+			/// @param progress The download progress notifier.
+			/// @param replace If true the file will be replaced (if updated); if false a '.bak' file will be keep with the old contents.
+			/// @return true if the file was updated or replaced.
+			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace = false);
 
 			/// @brief Call URL, save response to temporary file.
 			/// @return The temporary filename.

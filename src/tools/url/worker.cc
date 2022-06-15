@@ -82,9 +82,11 @@
 		return filename;
 	}
 
-	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress) {
+	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace) {
 
 		String text = get(progress);
+
+		// TODO: Make backup.
 
 		size_t length = text.size();
 		int fd = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0777);
