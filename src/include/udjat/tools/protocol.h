@@ -211,7 +211,8 @@
 
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
-			bool save(const char *filename);
+			/// @param replace If true the file will be replaced (if updated); if false a '.bak' file will be keep with the old contents.
+			bool save(const char *filename, bool replace = false);
 
 			/// @brief Call URL, save response to temporary file.
 			/// @return The temporary filename.

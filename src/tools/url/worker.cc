@@ -68,8 +68,8 @@
 		return get(dummy_progress);
 	}
 
-	bool Protocol::Worker::save(const char *filename) {
-		return save(filename, dummy_progress);
+	bool Protocol::Worker::save(const char *filename, bool replace) {
+		return save(filename, dummy_progress, replace);
 	}
 
 	string Protocol::Worker::save() {
@@ -78,7 +78,7 @@
 
 	string Protocol::Worker::save(const std::function<bool(double current, double total)> &progress) {
 		std::string filename = File::Temporary::create();
-		save(filename.c_str(),progress);
+		save(filename.c_str(),progress,true);
 		return filename;
 	}
 
