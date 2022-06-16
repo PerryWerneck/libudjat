@@ -195,6 +195,7 @@ int main(int argc, char **argv) {
 	//}
 	//return 0;
 
+	/*
 	{
 		URL url{"http://host.domain/sample"};
 
@@ -214,6 +215,7 @@ int main(int argc, char **argv) {
 
 		return 0;
 	}
+	*/
 
 	return Service().run(argc,argv);
 }
