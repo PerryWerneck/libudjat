@@ -34,7 +34,7 @@
 
 		int fd = open(filename,O_RDONLY);
 		if(fd < 0) {
-			throw system_error(errno, system_category(), "Can't open file");
+			throw system_error(errno, system_category(), filename);
 		}
 
 		try {

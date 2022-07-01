@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
  #include <udjat/moduleinfo.h>
 
@@ -41,19 +42,28 @@
 		public:
 			Worker() = default;
 
+			string path() const {
+
+				if(strncasecmp(url().c_str(),"file://.",8) == 0) {
+					return url().c_str()+7;
+				}
+
+				return url().ComponentsFactory().path.c_str();
+			}
+
 			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) {
-				return String(Udjat::File::Text(url().ComponentsFactory().path.c_str()).c_str());
+				return String(Udjat::File::Text(path()).c_str());
 			}
 
 			unsigned short test() override {
 
-				auto path = url().ComponentsFactory().path;
+				auto filepath = path();
 
-				if(access(path.c_str(),R_OK) == 0) {
+				if(access(filepath.c_str(),R_OK) == 0) {
 					return 200;
 				}
 
-				if(access(path.c_str(),F_OK) != 0) {
+				if(access(filepath.c_str(),F_OK) != 0) {
 					return 404;
 				}
 
