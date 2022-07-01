@@ -41,6 +41,11 @@ namespace Udjat {
 		/// @brief Copy file
 		void copy(const char *from, const char *to);
 
+		/// @brief Save to temporary file.
+		/// @param contents String with file contents.
+		/// @return Temporary file name.
+		std::string save(const char *contents);
+
 		/// @brief File Path.
 		class UDJAT_API Path : public std::string {
 		public:

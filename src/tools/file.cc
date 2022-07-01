@@ -73,6 +73,53 @@
 
 	}
 
+	std::string File::save(const char *contents) {
+
+		std::string name = File::Temporary::create();
+
+#ifdef _WIN32
+		int out = open(name.c_str(),O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+#else
+		int out = open(name.c_str(),O_WRONLY|O_CREAT|O_TRUNC,0644);
+#endif // _WIN32
+
+		if(out < 0) {
+			throw system_error(errno,system_category(),"Cant open temporary file");
+		}
+
+		try {
+
+			ssize_t len = strlen(contents);
+			while(len > 0) {
+
+				ssize_t bytes = write(out,contents,len);
+
+				if(bytes < 0) {
+					throw system_error(errno,system_category(),"Error writing temporary file");
+				}
+
+				if(bytes < 1) {
+					throw runtime_error("Unexpected EOF writing temporary filed");
+				}
+
+				len -= bytes;
+				contents += bytes;
+
+			}
+
+		} catch(...) {
+
+			::close(out);
+			remove(name.c_str());
+			throw;
+
+		}
+
+		::close(out);
+
+		return name;
+	}
+
 	void File::save(int fd, const char *filename) {
 
 #ifdef _WIN32
