@@ -53,12 +53,42 @@
 		::close(fd);
 	}
 
+	std::string File::Temporary::mkdir() {
+
+		string basename{"/tmp/"};
+		basename += Application::Name();
+
+		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
+			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
+		}
+
+		basename += "/";
+		basename += TimeStamp().to_string("%Y%m%d%H%M%s");
+
+		for(size_t f = 0; f < 1000; f++) {
+
+			string filename = basename + "." + std::to_string(rand()) + ".tmp";
+
+			if(::mkdir(filename.c_str(), 0700) == 0) {
+				return filename;
+			}
+
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),string{"Can't create '"} + filename + "'");
+			}
+
+		}
+
+		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+
+	}
+
 	std::string File::Temporary::create() {
 
 		string basename{"/tmp/"};
 		basename += Application::Name();
 
-		if(mkdir(basename.c_str(),0777) && errno != EEXIST) {
+		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
 			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
 		}
 

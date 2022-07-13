@@ -323,7 +323,11 @@ namespace Udjat {
 			Temporary(const char *filename);
 			~Temporary();
 
+			/// @brief Create an empty temporary file.
 			static std::string create();
+
+			/// @brief Create an empty temporary dir.
+			static std::string mkdir();
 
 #ifndef _WIN32
 
