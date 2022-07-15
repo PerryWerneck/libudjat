@@ -91,8 +91,13 @@ namespace Udjat {
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
 
+			/// @brief Save file to FD.
+			static void save(int fd, const char *contents);
+
+			/// @brief Replace file withou backup
+			static void replace(const char *filename, const char *contents);
+
 			/// @brief Save file.
-			/// @param filename File name.
 			inline void save(const char *contents) const {
 				save(c_str(),contents);
 			}
@@ -183,7 +188,12 @@ namespace Udjat {
 				for_each(contents,call);
 			}
 
+			/// @brief Save file contents.
 			void save() const;
+
+			/// @brief Replace file contents without backup.
+			/// @param filename The new filename.
+			void replace(const char *filename);
 
 		};
 

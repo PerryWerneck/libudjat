@@ -73,6 +73,10 @@
 		File::Path::save(contents);
 	}
 
+	void File::Text::replace(const char *filename) {
+		File::Path::replace(filename,contents);
+	}
+
 	void File::Text::set(const char *contents) {
 
 		unload();

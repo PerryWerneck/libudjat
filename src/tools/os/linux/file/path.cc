@@ -30,6 +30,45 @@
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
 	}
 
+	void File::Path::save(int fd, const char *contents) {
+
+		size_t length = strlen(contents);
+		while(length > 0) {
+
+			auto wrote = write(fd,contents,length);
+			if(wrote < 0) {
+				throw system_error(errno, system_category());
+			} if(!wrote) {
+				throw runtime_error("Unexpected EOF writing file");
+			}
+
+			length -= wrote;
+			contents += wrote;
+
+		}
+	}
+
+	void File::Path::replace(const char *filename, const char *contents) {
+
+#ifdef _WIN32
+		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+#else
+		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0644);
+#endif // _WIN32
+
+		try {
+
+			save(out,contents);
+
+		} catch(...) {
+			::close(out);
+			throw;
+		}
+
+		::close(out);
+
+	}
+
 	void File::Path::save(const char *filename, const char *contents) {
 
 		// Get file information.
@@ -76,21 +115,7 @@
 
 		try {
 
-			size_t length = strlen((const char *) contents);
-			const char * ptr = (const char *) contents;
-			while(length > 0) {
-
-				auto wrote = write(fd,ptr,length);
-				if(wrote < 0) {
-					throw system_error(errno, system_category(), string{"Error writing to temp when saving '"} + filename + "'");
-				} if(!wrote) {
-					throw system_error(errno, system_category(), string{"Unexpected '0' bytes return code when saving '"} + filename + "'");
-				}
-
-				length -= wrote;
-				ptr += wrote;
-
-			}
+			save(fd,contents);
 
 		} catch(...) {
 
