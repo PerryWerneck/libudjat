@@ -29,14 +29,14 @@
 
  namespace Udjat {
 
-	std::string URL::scheme() const {
+	URL::Scheme URL::scheme() const {
 
 		size_t pos = find("://");
 		if(pos == string::npos) {
 			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
 		}
 
-		return string{string::c_str(),pos};
+		return URL::Scheme{string::c_str(),pos};
 
 	}
 
@@ -58,9 +58,9 @@
 		string scheme{string::c_str(),from-3};
 		ptr = strrchr(scheme.c_str(),'+');
 		if(ptr) {
-			components.scheme = (ptr+1);
+			components.scheme.assign(ptr+1);
 		} else {
-			components.scheme = scheme;
+			components.scheme.assign(scheme);
 		}
 
 		// Get hostname.

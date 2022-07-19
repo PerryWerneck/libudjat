@@ -30,6 +30,7 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <cstring>
  #include <stdexcept>
  #include <system_error>
  #include <functional>
@@ -39,9 +40,26 @@
 	class UDJAT_API URL : public std::string {
 	public:
 
+		class UDJAT_API Scheme : public std::string {
+		public:
+			Scheme() : std::string() {
+			}
+
+			Scheme(const char *value) : std::string(value) {
+			};
+
+			Scheme(const char *value, size_t len) : std::string(value,len) {
+			};
+
+			bool operator==(const char *scheme) const noexcept {
+				return strcasecmp(c_str(),scheme) == 0;
+			}
+
+		};
+
 		/// @brief URL Components.
 		struct UDJAT_API Components {
-			std::string scheme;		///< @brief The scheme name.
+			Scheme scheme;			///< @brief The scheme name.
 			std::string hostname;	///< @brief The host name.
 			std::string srvcname;	///< @brief The service name or port number.
 			std::string path;		///< @brief The request path.
@@ -62,7 +80,7 @@
 		URL & operator += (const char *path);
 
 		/// @brief Get URL scheme.
-		std::string scheme() const;
+		Scheme scheme() const;
 
 		/// @brief Get URL components.
 		Components ComponentsFactory() const;
