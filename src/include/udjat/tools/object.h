@@ -156,6 +156,7 @@
 
 		bool operator==(const char *name) const noexcept;
 		bool operator==(const pugi::xml_node &node) const noexcept;
+		size_t hash() const noexcept;
 
 		inline const char * c_str() const noexcept {
 			return objectName;
@@ -238,5 +239,20 @@
 			return os << object.to_string();
 	}
 
+	template<>
+	struct hash<Udjat::NamedObject> {
+		size_t operator() (const Udjat::NamedObject &object) const {
+			return object.hash();
+		}
+	};
+
+	/*
+	template<>
+	struct equal<Udjat::NamedObject> {
+		bool operator() (cconst Udjat::NamedObject &a, const Udjat::NamedObject &b) const {
+			return a == b;
+		}
+	}
+	*/
  }
 

@@ -151,6 +151,15 @@
 		return false;
 	}
 
+	size_t NamedObject::hash() const noexcept {
+		size_t seed = 0x19670123;
+		size_t hash = 0;
+		for(const char *ptr = objectName;*ptr;ptr++) {
+			hash = (hash * seed) + ((size_t) *ptr);
+		}
+		return hash;
+	}
+
 	std::ostream & NamedObject::info() const {
 		return std::cout << name() << "\t";
 	}
