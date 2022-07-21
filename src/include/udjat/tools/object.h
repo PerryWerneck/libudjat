@@ -246,13 +246,5 @@
 		}
 	};
 
-	/*
-	template<>
-	struct equal<Udjat::NamedObject> {
-		bool operator() (cconst Udjat::NamedObject &a, const Udjat::NamedObject &b) const {
-			return a == b;
-		}
-	}
-	*/
  }
 
