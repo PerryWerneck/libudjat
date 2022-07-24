@@ -34,24 +34,28 @@
 	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(Quark(node.attribute("name").as_string("unnamed")).c_str()) {
 	}
 
-	void NamedObject::set(const pugi::xml_node &node) {
+	bool NamedObject::set(const pugi::xml_node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
+			return true;
 		}
+		return false;
+	}
+
+	const char * NamedObject::c_str() const noexcept {
+		return (this->objectName ? this->objectName : "" );
+	}
+
+	int NamedObject::compare(const NamedObject &object ) const {
+		return strcasecmp(this->c_str(),object.c_str());
 	}
 
 	bool NamedObject::operator==(const char *name) const noexcept {
-		if(objectName && *objectName) {
-			return strcasecmp(this->objectName, name) == 0;
-		}
-		return false;
+		return strcasecmp(c_str(), name) == 0;
 	}
 
 	bool NamedObject::operator==(const pugi::xml_node &node) const noexcept {
-		if(objectName && *objectName) {
-			return strcasecmp(objectName,node.attribute("name").as_string()) == 0;
-		}
-		return false;
+		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
 	}
 
 	Value & NamedObject::getProperties(Value &value) const noexcept {
@@ -60,7 +64,7 @@
 	}
 
 	std::string NamedObject::to_string() const {
-		return objectName;
+		return c_str();
 	}
 
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
@@ -267,8 +271,8 @@
 
 	const char * Abstract::Object::expand(const pugi::xml_node &node, const char *group, const char *value) {
 
-		string text{value};
-		Udjat::expand(text, [node,group](const char *key, string &value) {
+		String text{value};
+		text.expand([node,group](const char *key, string &value) {
 
 			auto attribute = getAttribute(node,key);
 			if(attribute) {
@@ -277,7 +281,7 @@
 			}
 
 			if(Config::hasKey(group,key)) {
-				value = Udjat::expand(node,Config::Value<string>(group,key,"").c_str());
+				value = Config::Value<string>(group,key,"");
 				return true;
 			}
 

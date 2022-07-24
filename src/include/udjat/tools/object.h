@@ -134,12 +134,14 @@
 		const char *objectName = "";
 
 	protected:
+
 		constexpr NamedObject(const char *name = "") : objectName(name) {}
 		NamedObject(const pugi::xml_node &node);
 
 		/// @brief Set object properties from XML node.
 		/// @param node XML node for the object properties
-		void set(const pugi::xml_node &node);
+		/// @return true if the value was updated.
+		bool set(const pugi::xml_node &node);
 
 		inline void rename(const char *name) {
 			objectName = name;
@@ -148,7 +150,14 @@
 		typedef NamedObject Super;
 
 	public:
+
 		bool getProperty(const char *key, std::string &value) const noexcept override;
+
+		int compare(const NamedObject &object ) const;
+
+		inline bool empty() const {
+			return !(objectName && *objectName);
+		}
 
 		inline const char * name() const noexcept {
 			return objectName;
@@ -158,9 +167,7 @@
 		bool operator==(const pugi::xml_node &node) const noexcept;
 		size_t hash() const noexcept;
 
-		inline const char * c_str() const noexcept {
-			return objectName;
-		}
+		const char * c_str() const noexcept;
 
 		std::string to_string() const override;
 
