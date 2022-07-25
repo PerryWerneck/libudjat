@@ -22,7 +22,9 @@
  #include <udjat/tools/file.h>
  #include <udjat/moduleinfo.h>
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <shlwapi.h>
+ #else
 	#include <unistd.h>
  #endif // _WIN32
 
@@ -59,6 +61,13 @@
 
 				auto filepath = path();
 
+#ifdef _WIN32
+				if(!PathFileExists(filepath.c_str())) {
+					return 404;
+				}
+
+				return 200;
+#else
 				if(access(filepath.c_str(),R_OK) == 0) {
 					return 200;
 				}
@@ -68,6 +77,8 @@
 				}
 
 				return -1;
+#endif // _WIN32
+
 
 			}
 

@@ -41,6 +41,40 @@
 
  namespace Udjat {
 
+	std::string File::Temporary::create() {
+
+		std::string tempname;
+
+		for(size_t f = 0; f < 1000; f++) {
+
+			TCHAR szTempFileName[MAX_PATH];
+			TCHAR lpTempPathBuffer[MAX_PATH];
+
+			DWORD dwRetVal = GetTempPath(MAX_PATH,lpTempPathBuffer);
+			if(dwRetVal > MAX_PATH || (dwRetVal == 0)) {
+				throw Win32::Exception("GetTempPath has failed");
+			}
+
+			if(GetTempFileName(lpTempPathBuffer,TEXT(Application::Name().c_str()),0,szTempFileName) == 0) {
+				throw Win32::Exception("GetTempFileName has failed");
+			}
+
+			int fd = open(szTempFileName,O_CREAT|O_EXCL,0600);
+
+			if(fd > 0) {
+#ifdef DEBUG
+				cout << "Tempname: '" << tempname << "'" << endl;
+#endif // DEBUG
+				::close(fd);
+				return szTempFileName;
+			}
+
+		}
+
+		throw runtime_error("Can't create temporary file");
+
+	}
+
 	File::Temporary::Temporary() {
 
 		TCHAR szTempFileName[MAX_PATH];
@@ -80,18 +114,22 @@
 		}
 	}
 
-	void File::Temporary::save(const char *filename) {
+	void File::Temporary::save(const char *filename, bool replace) {
 
 		if(fd > 0) {
 			::close(fd);
 			fd = -1;
 		}
 
+		if(replace) {
+			DeleteFile(filename);
+		}
+
 		if(MoveFile(tempname.c_str(),filename)) {
 			return;
 		}
 
-		if(GetLastError() != ERROR_ALREADY_EXISTS) {
+		if(replace || GetLastError() != ERROR_ALREADY_EXISTS) {
 			throw Win32::Exception("Can't save file");
 		}
 
@@ -115,13 +153,13 @@
 	}
 
 
-	void File::Temporary::save() {
+	void File::Temporary::save(bool replace) {
 
 		if(filename.empty()) {
 			throw system_error(EINVAL,system_category(),"No target filename");
 		}
 
-		save(filename.c_str());
+		save(filename.c_str(),replace);
 
 	}
 
