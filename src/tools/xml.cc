@@ -24,6 +24,7 @@
  #include <udjat/tools/expander.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/url.h>
  #include <iostream>
  #include <cstdarg>
 
@@ -97,6 +98,25 @@
 
 	const char * Attribute::c_str(const char *def) const {
 		return as_quark(def).c_str();
+	}
+
+	bool is_allowed(const pugi::xml_node &node) {
+
+		const char *str;
+
+		// Test if the attribute requirement is valid.
+		str = node.attribute("valid-if").as_string();
+		if(str && *str && URL(str).test() != 200) {
+			return false;
+		}
+
+		// Test if the attribute requirement is not valid.
+		str = node.attribute("not-valid-if").as_string();
+		if(str && *str && URL(str).test() == 200) {
+			return false;
+		}
+
+		return true;
 	}
 
 	std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def) {

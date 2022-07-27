@@ -25,6 +25,7 @@
  #include <string>
  #include <pugixml.hpp>
  #include <cstring>
+ #include <functional>
 
  namespace Udjat {
 
@@ -39,6 +40,12 @@
 			virtual void load(const pugi::xml_node &node);
 
 		public:
+
+			/// @brief Call method on every ocorrence of 'tagname' until method returns 'true'.
+			/// @param node The xml node.
+			/// @param tagname The tagname.
+			/// @return true if method has returned 'true'.
+			static bool for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.

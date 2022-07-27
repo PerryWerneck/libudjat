@@ -176,6 +176,25 @@
 		return std::cerr << name() << "\t";
 	}
 
+	bool Abstract::Object::for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call) {
+
+		bool rc = false;
+
+		for(pugi::xml_node n = node; n && !rc; n = n.parent()) {
+
+			for(pugi::xml_node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
+
+				if(is_allowed(child)) {
+					rc = call(child);
+				}
+
+			}
+
+		}
+
+		return rc;
+	}
+
 	const pugi::xml_attribute Abstract::Object::getAttribute(const pugi::xml_node &n, const char *name, bool change) {
 
 		string key{name};

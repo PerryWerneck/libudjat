@@ -24,6 +24,7 @@
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/xml.h>
 
  using namespace std;
 
@@ -108,20 +109,11 @@
 			// Check the attribute name.
 			if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
 
-				// Test if the attribute requirement is valid.
-				const char *str = child.attribute("valid-if").as_string();
-				if(str && *str && URL(str).test() != 200) {
-					continue;
+				if(is_allowed(child)) {
+					value = child.attribute("value").as_string();
+					return true;
 				}
 
-				// Test if the attribute requirement is not valid.
-				str = child.attribute("not-valid-if").as_string();
-				if(str && *str && URL(str).test() == 200) {
-					continue;
-				}
-
-				value = child.attribute("value").as_string();
-				return true;
 			}
 		}
 
@@ -147,32 +139,23 @@
 			// Search the XML tree for an attribute with the required name.
 			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
 
-				// Search attributes.
-				if(check_node(xml,key,value)) {
-					return true;
-				}
+				if(is_allowed(xml)) {
 
-				// Search attribute lists.
-				for(auto lst = xml.child("attribute-list"); lst; lst = lst.next_sibling("attribute-list")) {
-
-					// Test if the attribute requirement is valid.
-					const char *str = lst.attribute("valid-if").as_string();
-					if(str && *str && URL(str).test() != 200) {
-						continue;
-					}
-
-					// Test if the attribute requirement is not valid.
-					str = lst.attribute("not-valid-if").as_string();
-					if(str && *str && URL(str).test() == 200) {
-						continue;
-					}
-
-					if(check_node(lst,key,value)) {
+					// Search attributes.
+					if(check_node(xml,key,value)) {
 						return true;
 					}
 
-				}
+					// Search attribute lists.
+					for(auto lst = xml.child("attribute-list"); lst; lst = lst.next_sibling("attribute-list")) {
 
+						if(is_allowed(lst) && check_node(lst,key,value)) {
+							return true;
+						}
+
+					}
+
+				}
 
 			}
 

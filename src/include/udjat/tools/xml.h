@@ -38,11 +38,12 @@
 
 	namespace Udjat {
 
-		/// @brief Expand, if possible, values ${} from str.
-		// UDJAT_DEPRECATED(std::string expand(const pugi::xml_node &node, const char *str));
+		/// @brief Test common filter options.
+		/// @return true if the node is valid.
+		UDJAT_API bool is_allowed(const pugi::xml_node &node);
 
 		/// @brief Expand, if possible, values ${} from attribute.
-		std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def);
+		UDJAT_API std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def);
 
 		/// @brief Wrapper for XML attribute
 		class UDJAT_API Attribute : public pugi::xml_attribute {
