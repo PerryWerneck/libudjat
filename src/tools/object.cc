@@ -176,6 +176,44 @@
 		return std::cerr << name() << "\t";
 	}
 
+	void Abstract::Object::for_each(const pugi::xml_node &root, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler) {
+
+		for(pugi::xml_node node = root.child(name); node; node = node.next_sibling(name)) {
+			handler(node);
+		}
+
+		if(group && *group) {
+
+			string group_name{root.name()};
+			group_name += '-';
+			group_name += group;
+
+			string node_name{root.name()};
+			node_name += '-';
+			node_name += name;
+
+			for(pugi::xml_node parent = root.parent(); parent; parent = parent.parent()) {
+
+				// Scan for nodes.
+				for(pugi::xml_node node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
+					handler(node);
+				}
+
+				// Scan for groups.
+				for(pugi::xml_node group = parent.child(group_name.c_str()); group; group = group.next_sibling(group_name.c_str())) {
+
+					for(pugi::xml_node node = group.child(name); node; node = node.next_sibling(name)) {
+						handler(node);
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
 	bool Abstract::Object::for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call) {
 
 		bool rc = false;

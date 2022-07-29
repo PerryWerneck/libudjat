@@ -35,13 +35,6 @@
 		class UDJAT_API Object {
 		protected:
 
-			/// @brief Scan for children.
-			/// @param node The XML node to start search.
-			/// @param attr The child node name.
-			/// @param group The child group node name (optional).
-			/// @param handler The handler for children.
-			static void load(const pugi::xml_node &node, const char *attr, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
-
 			/// @brief Load children.
 			/// @param node The XML node with the children definitions.
 			virtual void load(const pugi::xml_node &node);
@@ -53,6 +46,13 @@
 			/// @param tagname The tagname.
 			/// @return true if method has returned 'true'.
 			static bool for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call);
+
+			/// @brief Navigate thru XML nodes, including groups.
+			/// @param node The XML node to start search.
+			/// @param name The child node name.
+			/// @param group The child group node name, usually the plural of name (optional).
+			/// @param handler The handler for children.
+			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.

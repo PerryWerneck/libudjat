@@ -18,38 +18,6 @@
 
 namespace Udjat {
 
-	void Abstract::Object::load(const pugi::xml_node &root, const char *attr, const char *group, const std::function<void(const pugi::xml_node &node)> &handler) {
-
-		for(const pugi::xml_node &node : root) {
-
-			if(!strcasecmp(node.name(),attr)) {
-				handler(node);
-			}
-
-		}
-
-		if(group && *group) {
-
-			string name{root.name()};
-			name += '-';
-			name += group;
-
-			for(pugi::xml_node parent = root; parent; parent = parent.parent()) {
-
-				for(const pugi::xml_node &node : parent) {
-
-					if(!strcasecmp(node.name(),attr)) {
-						handler(node);
-					}
-
-				}
-
-			}
-
-		}
-
-	}
-
 	void Abstract::Agent::load(const pugi::xml_node &root) {
 
 		Object::set(root);
@@ -99,7 +67,7 @@ namespace Udjat {
 #endif // !_WIN32
 
 		// Load children
-		Abstract::Object::load(root,"state","states",[this](const pugi::xml_node &node){
+		Abstract::Object::for_each(root,"state","states",[this](const pugi::xml_node &node){
 			try {
 
 				if(!StateFactory(node)) {
@@ -117,7 +85,7 @@ namespace Udjat {
 			}
 		});
 
-		Abstract::Object::load(root,"alert","alerts",[this](const pugi::xml_node &node){
+		Abstract::Object::for_each(root,"alert","alerts",[this](const pugi::xml_node &node){
 
 			// Create alerts.
 			try {
