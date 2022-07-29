@@ -35,6 +35,13 @@
 		class UDJAT_API Object {
 		protected:
 
+			/// @brief Scan for children.
+			/// @param node The XML node to start search.
+			/// @param attr The child node name.
+			/// @param group The child group node name (optional).
+			/// @param handler The handler for children.
+			static void load(const pugi::xml_node &node, const char *attr, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
+
 			/// @brief Load children.
 			/// @param node The XML node with the children definitions.
 			virtual void load(const pugi::xml_node &node);
