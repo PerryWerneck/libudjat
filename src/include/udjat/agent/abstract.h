@@ -137,9 +137,6 @@
 			/// @brief Set unexpected failed state.
 			void failed(const char *summary, const char *body = "") noexcept;
 
-			/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
-			void requestRefresh(time_t seconds = 0);
-
 			/// @brief Run update if required.
 			/// @param forward	If true forward update to children.
 			/// @return true if the state was refreshed.
@@ -154,6 +151,18 @@
 
 			/// @brief Set agent details on value.
 			Value & getProperties(Value &response) const noexcept override;
+
+			/// @brief Set update timer interval.
+			/// @param value New timer interval (0 disable it).
+			inline time_t timer(time_t value) noexcept {
+				return (update.timer = value);
+			}
+
+			/// @brief Reset timestamp for the next update;
+			/// @param value Value for next update.
+			inline time_t reset(time_t timestamp) {
+				return (update.next = timestamp);
+			}
 
 		public:
 			class Controller;
@@ -211,12 +220,20 @@
 			static void deinit();
 
 			/// @brief Get update timer interval.
-			inline time_t getUpdateInterval() const noexcept {
+			inline time_t timer() const noexcept {
+				return update.timer;
+			}
+
+			/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
+			/// @param seconds Seconds for next refresh.
+			void requestRefresh(time_t seconds = 0);
+
+			UDJAT_DEPRECATED(inline time_t getUpdateInterval() const noexcept) {
 				return update.timer;
 			}
 
 			/// @brief Get update timer interval.
-			inline time_t updatetimer() const noexcept {
+			UDJAT_DEPRECATED(inline time_t updatetimer() const noexcept) {
 				return update.timer;
 			}
 
