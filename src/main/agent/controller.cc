@@ -281,6 +281,8 @@ namespace Udjat {
 				if(!agent->update.next)
 					return;
 
+				cout << "TIMER=" << agent->update.timer << " Next=" << TimeStamp(agent->update.next) << endl;
+
 				// If the update is in the future, adjust delay and return.
 				if(agent->update.next > now) {
 					next = std::min(next,agent->update.next);
@@ -309,6 +311,11 @@ namespace Udjat {
 					agent->info() << "**** Next update scheduled to " << TimeStamp(agent->update.next) << " (" << agent->update.timer << " seconds)" << endl;
 #endif // DEBUG
 					next = std::min(next,agent->update.next);
+				} else {
+
+					// No timer and already updated, reset next update time.
+					agent->update.next = 0;
+
 				}
 
 				// Enqueue agent update.
