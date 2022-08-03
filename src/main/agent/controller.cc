@@ -244,17 +244,30 @@ namespace Udjat {
 
 		const char *type = node.attribute("type").as_string("int32");
 
-		for(auto builder : builders) {
+		if(type && *type) {
 
-			if(!strcasecmp(type,builder.type)) {
-				auto agent = builder.build(node);
-				agent->load(node);
-				return agent;
+			// Check for module factory.
+			Factory *factory(Factory::find(type));
+			if(factory) {
+				auto agent = factory->AgentFactory(parent,node);
+				if(agent) {
+					agent->load(node);
+					return agent;
+				}
+			}
+
+			// Check for internal builders.
+			for(auto builder : builders) {
+
+				if(!strcasecmp(type,builder.type)) {
+					auto agent = builder.build(node);
+					agent->load(node);
+					return agent;
+				}
+
 			}
 
 		}
-
-		// TODO: Call factory based on agent type.
 
 		return Factory::AgentFactory(parent,node);
 	}
@@ -281,7 +294,9 @@ namespace Udjat {
 				if(!agent->update.next)
 					return;
 
+#ifdef DEBUG
 				cout << "TIMER=" << agent->update.timer << " Next=" << TimeStamp(agent->update.next) << endl;
+#endif // DEBUG
 
 				// If the update is in the future, adjust delay and return.
 				if(agent->update.next > now) {
