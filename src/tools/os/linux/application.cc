@@ -49,6 +49,11 @@
 
 	Application::DataDir::DataDir(const char *subdir) : DataDir() {
 		append(subdir);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
 		append("/");
 	}
 
