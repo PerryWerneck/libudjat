@@ -59,24 +59,27 @@
 
 		string appconfig;
 		if(!definitions) {
-			definitions = Quark(Application::DataDir("xml.d")).c_str();
+			Config::Value<string> config("service","definitions","");
+			if(config.empty()) {
+				definitions = Quark(Application::DataDir("xml.d")).c_str();
+			} else {
+				definitions = Quark(config).c_str();
+			}
 		}
 
-		if(definitions[0]) {
+		if(definitions[0] && strcasecmp(definitions,"none")) {
 
-			info() << "service\tLoading service definitions from " << definitions << endl;
+			info() << "Loading service definitions from " << definitions << endl;
 
 			reconfigure(definitions,true);
 
-			string signame;
-
-			signame = Config::Value<string>("service","signal-reconfigure","SIGHUP");
+			Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
 			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
 				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
 					reconfigure(definitions,false);
 					return true;
 				});
-				cout << "service\tSignal '" << reconfig.to_string() << "' trigger a conditional reload of " << definitions << endl;
+				info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 			}
 
 		}

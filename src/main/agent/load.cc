@@ -56,7 +56,7 @@ namespace Udjat {
 							<< event.to_string() << "'"
 							<< endl;
 				} else {
-					info() << "Signal '" << event.to_string() << "' will trigger an agent update" << endl;
+					info() << signame << " (" << event.to_string() << ") will trigger an agent update" << endl;
 				}
 
 			} else {
