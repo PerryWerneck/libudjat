@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	Value & Value::operator[](const char *name) {
+	Value & Value::operator[](const char UDJAT_UNUSED(*name)) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
