@@ -161,7 +161,7 @@
 
 	}
 
-	bool File::Path::for_each(const char *path, std::function<bool (const char *name, bool is_dir)> call) {
+	bool File::Path::for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call) {
 
 		DIR *dir;
 		size_t szPath = strlen(path);
@@ -188,11 +188,17 @@
 					continue;
 				}
 
+				Stat st;
+				if(fstatat(dirfd(dir),de->d_name,&st,0) == -1) {
+					cerr << path << de->d_name << ": " << strerror(errno) << endl;
+					continue;
+				}
+
 				string filename{path,szPath};
 				filename += "/";
 				filename += de->d_name;
 
-				rc = call(filename.c_str(), (de->d_type == DT_DIR));
+				rc = call(filename.c_str(), st);
 
 			}
 

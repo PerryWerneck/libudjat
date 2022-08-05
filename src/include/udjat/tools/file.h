@@ -27,10 +27,13 @@
 #include <mutex>
 #include <string>
 #include <cstring>
+#include <sys/stat.h>
 
 namespace Udjat {
 
 	namespace File {
+
+		using Stat = struct stat;
 
 		class Agent;
 		class Controller;
@@ -71,7 +74,8 @@ namespace Udjat {
 			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call);
 
 			/// @brief Navigate on all directory files.
-			static bool for_each(const char *path, std::function<bool (const char *name, bool is_dir)> call);
+			/// @return false if 'call' has returned false;
+			static bool for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call);
 
 			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
 			/// @return false if 'call' has returned false;
