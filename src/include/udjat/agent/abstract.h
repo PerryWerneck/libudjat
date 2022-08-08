@@ -84,7 +84,7 @@
 				std::shared_ptr<State> active;
 
 				/// @brief State activation.
-				time_t activation;
+				time_t activation = 0;
 
 			} current_state;
 
