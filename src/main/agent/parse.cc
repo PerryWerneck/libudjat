@@ -10,6 +10,7 @@
  #include "private.h"
  #include <cstring>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/converters.h>
  #include <iostream>
  #include <limits.h>
 
@@ -19,32 +20,34 @@
 
 namespace Udjat {
 
-	void parse_value(const pugi::xml_node &node, int &value) {
+	/*
+	void to_value(const pugi::xml_node &node, int &value) {
 		value = node.attribute("value").as_int();
 	}
 
-	void parse_value(const pugi::xml_node &node, unsigned int &value) {
+	void to_value(const pugi::xml_node &node, unsigned int &value) {
 		value = node.attribute("value").as_uint();
 	}
 
-	void parse_value(const pugi::xml_node &node, unsigned short &value) {
+	void to_value(const pugi::xml_node &node, unsigned short &value) {
 		value = node.attribute("value").as_uint();
 	}
 
-	void parse_value(const pugi::xml_node &node, float &value) {
+	void to_value(const pugi::xml_node &node, float &value) {
 		value = node.attribute("value").as_float();
 	}
 
-	void parse_value(const pugi::xml_node &node, double &value) {
+	void to_value(const pugi::xml_node &node, double &value) {
 		value = node.attribute("value").as_double();
 	}
 
-	void parse_value(const pugi::xml_node &node, unsigned long &value) {
+	void to_value(const pugi::xml_node &node, unsigned long &value) {
 		value = node.attribute("value").as_int();
 	}
 
-	void parse_value(const pugi::xml_node &node, long &value) {
+	void to_value(const pugi::xml_node &node, long &value) {
 		value = node.attribute("value").as_uint();
 	}
+	*/
 
 }

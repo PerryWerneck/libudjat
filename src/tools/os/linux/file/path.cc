@@ -30,6 +30,45 @@
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
 	}
 
+	void File::Path::save(int fd, const char *contents) {
+
+		size_t length = strlen(contents);
+		while(length > 0) {
+
+			auto wrote = write(fd,contents,length);
+			if(wrote < 0) {
+				throw system_error(errno, system_category());
+			} if(!wrote) {
+				throw runtime_error("Unexpected EOF writing file");
+			}
+
+			length -= wrote;
+			contents += wrote;
+
+		}
+	}
+
+	void File::Path::replace(const char *filename, const char *contents) {
+
+#ifdef _WIN32
+		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+#else
+		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0644);
+#endif // _WIN32
+
+		try {
+
+			save(out,contents);
+
+		} catch(...) {
+			::close(out);
+			throw;
+		}
+
+		::close(out);
+
+	}
+
 	void File::Path::save(const char *filename, const char *contents) {
 
 		// Get file information.
@@ -76,21 +115,7 @@
 
 		try {
 
-			size_t length = strlen((const char *) contents);
-			const char * ptr = (const char *) contents;
-			while(length > 0) {
-
-				auto wrote = write(fd,ptr,length);
-				if(wrote < 0) {
-					throw system_error(errno, system_category(), string{"Error writing to temp when saving '"} + filename + "'");
-				} if(!wrote) {
-					throw system_error(errno, system_category(), string{"Unexpected '0' bytes return code when saving '"} + filename + "'");
-				}
-
-				length -= wrote;
-				ptr += wrote;
-
-			}
+			save(fd,contents);
 
 		} catch(...) {
 
@@ -136,12 +161,58 @@
 
 	}
 
+	bool File::Path::for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call) {
 
-	/*
-	bool File::Path::for_each(const char *path, bool recursive, std::function<bool (const char *)> call) {
-		return for_each(path,"*",recursive,call);
+		DIR *dir;
+		size_t szPath = strlen(path);
+
+		if(path[szPath-1] == '/') {
+			szPath--;
+			dir = opendir(string(path,szPath).c_str());
+		} else {
+			dir = opendir(path);
+		}
+
+		if(!dir) {
+			throw system_error(ENOENT,system_category(),path);
+		}
+
+		bool rc = true;
+
+		try {
+
+			struct dirent *de;
+			while(rc && (de = readdir(dir)) != NULL) {
+
+				if(!de->d_name) {
+					continue;
+				}
+
+				Stat st;
+				if(fstatat(dirfd(dir),de->d_name,&st,0) == -1) {
+					cerr << path << de->d_name << ": " << strerror(errno) << endl;
+					continue;
+				}
+
+				string filename{path,szPath};
+				filename += "/";
+				filename += de->d_name;
+
+				rc = call(filename.c_str(), st);
+
+			}
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		return rc;
 	}
-	*/
 
 	bool File::Path::for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
 

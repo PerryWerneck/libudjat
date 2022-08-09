@@ -22,6 +22,7 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
 	$(wildcard src/tools/url/*.cc) \
 	$(wildcard src/tools/http/*.cc) \
+	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/alert/*.cc)
 
@@ -199,10 +200,14 @@ install: \
 install-debug: \
 	install-@OSNAME@-debug
 
-install-doc:
-
-	@cd doc ; @DOXYGEN@ doxyfile
+doc:
+	doc/html/index.html
 	
+	@cd doc ; @DOXYGEN@ doxyfile; cd ..
+
+install-doc: \
+	doc
+
 	@$(MKDIR) \
 		$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html
 
@@ -289,6 +294,13 @@ install-devel: \
 	@$(INSTALL_DATA) \
 		src/include/udjat/tools/http/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/http
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/agent
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/agent/*.h \
+		$(DESTDIR)$(includedir)/udjat/agent
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

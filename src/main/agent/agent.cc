@@ -31,6 +31,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/event.h>
+ #include <udjat/tools/threadpool.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -69,6 +70,34 @@ namespace Udjat {
 	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(Quark(node,"name","unnamed",false).c_str()) {
 	}
 
+	void Abstract::Agent::notify(const Event event) {
+
+		lock_guard<std::recursive_mutex> lock(guard);
+		for(auto listener : listeners) {
+
+			if(*listener == event) {
+
+				ThreadPool::getInstance().push([this,listener]() {
+
+					try {
+
+						listener->trigger(*this);
+
+					} catch(const std::exception &e) {
+
+						error() << "Error '" << e.what() << "' on event listener" << endl;
+
+					} catch(...) {
+
+						error() << "Unexpected error on event listener" << endl;
+
+					}
+
+				});
+			}
+		}
+	}
+
 	Abstract::Agent::~Agent() {
 
 		// Remove all associated events.
@@ -80,7 +109,7 @@ namespace Udjat {
 			child->parent = nullptr;
 		}
 
-		Controller::getInstance().remove(this);
+		// Controller::getInstance().remove(this);
 
 	}
 
@@ -125,7 +154,7 @@ namespace Udjat {
 		// Gets the major time from the last update.
 		time_t updated = 0;
 
-		foreach([&next,&updated](Agent &agent){
+		for_each([&next,&updated](Agent &agent){
 
 			if(agent.update.next) {
 				next = std::min(next,agent.update.next);
@@ -163,6 +192,11 @@ namespace Udjat {
 
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
+	}
+
+	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.push_back(listener);
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {

@@ -52,9 +52,6 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::onLevelChange() {
-	}
-
 	void Abstract::Agent::onChildStateChange() noexcept {
 
 		try {
@@ -130,7 +127,7 @@ namespace Udjat {
 
 		LogFactory(level)
 			<< name()
-			<< "\tCurrent state changes from'"
+			<< "\tCurrent state changes from '"
 			<< this->current_state.active->to_string()
 			<< "' to '"
 			<< state->to_string()

@@ -27,10 +27,6 @@
 	#include <functional>
 	#include <ostream>
 
-#ifdef HAVE_PUGIXML
-	#include <pugixml.hpp>
-#endif // HAVE_PUGIXML
-
 	namespace Udjat {
 
 		/// @brief Single instance string.
@@ -42,6 +38,9 @@
 			const char *value;
 
 		public:
+
+			/// @brief Initialize Quark Engine.
+			static void init(int argc, char **argv);
 
 			static Quark getFromStatic(const char *str);
 

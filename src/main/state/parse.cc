@@ -12,7 +12,7 @@
  #include <udjat/tools/xml.h>
  #include <iostream>
  #include <limits.h>
- #include <udjat/state.h>
+ #include <udjat/agent/state.h>
 
  using namespace std;
 

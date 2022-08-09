@@ -195,5 +195,27 @@ int main(int argc, char **argv) {
 	//}
 	//return 0;
 
+	/*
+	{
+		URL url{"http://host.domain/sample"};
+
+		url += "newpath";
+		cout << "simple add: '" << url << "'" << endl;
+
+		url += "../otherpath";
+		cout << "upsearch add: '" << url << "'" << endl;
+
+		url += "../../thepath";
+		cout << "double upsearch add: '" << url << "'" << endl;
+
+		url = "https://download.opensuse.net.br/distribution/leap/15.4/repo/oss";
+		url += "/boot/x86_64/loader/linux";
+
+		cout << "Simple concat: '" << url << "'" << endl;
+
+		return 0;
+	}
+	*/
+
 	return Service().run(argc,argv);
 }

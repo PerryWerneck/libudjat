@@ -55,7 +55,7 @@
 		/// @brief Find factory by name.
 		/// @param name Factory name.
 		/// @return The factory with the requested name or nullptr if not found.
-		static const Factory * find(const char *name);
+		static Factory * find(const char *name);
 
 		static void getInfo(Response &response);
 
@@ -64,18 +64,18 @@
 		/// @param call Lamba call to test for valid factory.
 		/// @param typeattribute The name of the optional attribute with the factory name.
 		/// @return true if the lambda has returned true.
-		static bool search(const pugi::xml_node &node, const std::function<bool(const Factory &, const pugi::xml_node &)> &call, const char *typeattribute = "type");
+		static bool search(const pugi::xml_node &node, const std::function<bool(Factory &, const pugi::xml_node &)> &call, const char *typeattribute = "type");
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(std::function<bool(const Factory &factory)> func);
+		static bool for_each(const std::function<bool(Factory &factory)> &func);
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param name	Requested factory name.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(const char *name, std::function<bool(const Factory &factory)> func);
+		static bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
@@ -91,14 +91,14 @@
 
 		/// @brief Parse a XML node.
 		/// @param XML definition for the new element.
-		/// @return true if the node whas inserted.
-		virtual bool push_back(const pugi::xml_node &node) const;
+		/// @return true if the node was inserted.
+		virtual bool push_back(const pugi::xml_node &node);
 
-		/// @brief Parse State sub-node.
-		/// @param parent Parent state insert the built child.
-		/// @param node XML definition for the new state.
-		/// @return true if the request was handled.
-		// UDJAT_DEPRECATED(virtual bool parse(Abstract::State &parent, const pugi::xml_node &node) const);
+		/// @brief Parse a XML node.
+		/// @param object Parent object.
+		/// @param XML definition for the new element.
+		/// @return true if the node was inserted.
+		virtual bool push_back(Abstract::Object &parent, const pugi::xml_node &node);
 
 	};
 

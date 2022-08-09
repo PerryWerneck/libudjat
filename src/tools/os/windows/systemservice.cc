@@ -221,10 +221,7 @@
 
 		Module::load();
 
-		if(definitions) {
-			reconfigure(definitions,true);
-		}
-
+		reconfigure(definitions,true);
 	}
 
 	void SystemService::registry(const char *name, const char *value) {

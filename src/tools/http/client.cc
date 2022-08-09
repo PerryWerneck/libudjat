@@ -104,7 +104,7 @@
 					return Udjat::Protocol::call(url().c_str(),method(),out.payload.c_str());
 				}
 
-				bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+				bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress), bool UDJAT_UNUSED(replace)) override {
 					throw runtime_error("The selected protocol is unable to save files");
 				}
 

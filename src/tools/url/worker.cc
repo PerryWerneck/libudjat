@@ -22,6 +22,9 @@
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <fcntl.h>
+ #include <sys/stat.h>
+ #include <sys/types.h>
+ #include <udjat/tools/file.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -31,6 +34,10 @@
 
 	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
+	}
+
+	unsigned short Protocol::Worker::test() {
+		throw system_error(ENOTSUP,system_category(),"No test support on selected worker");
 	}
 
 	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
@@ -61,13 +68,25 @@
 		return get(dummy_progress);
 	}
 
-	bool Protocol::Worker::save(const char *filename) {
-		return save(filename, dummy_progress);
+	bool Protocol::Worker::save(const char *filename, bool replace) {
+		return save(filename, dummy_progress, replace);
 	}
 
-	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress) {
+	string Protocol::Worker::save() {
+		return save(dummy_progress);
+	}
+
+	string Protocol::Worker::save(const std::function<bool(double current, double total)> &progress) {
+		std::string filename = File::Temporary::create();
+		save(filename.c_str(),progress,true);
+		return filename;
+	}
+
+	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace) {
 
 		String text = get(progress);
+
+		// TODO: Make backup.
 
 		size_t length = text.size();
 		int fd = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0777);

@@ -34,7 +34,7 @@
 
 		int fd = open(filename,O_RDONLY);
 		if(fd < 0) {
-			throw system_error(errno, system_category(), "Can't open file");
+			throw system_error(errno, system_category(), filename);
 		}
 
 		try {
@@ -71,6 +71,10 @@
 
 	void File::Text::save() const {
 		File::Path::save(contents);
+	}
+
+	void File::Text::replace(const char *filename) {
+		File::Path::replace(filename,contents);
 	}
 
 	void File::Text::set(const char *contents) {

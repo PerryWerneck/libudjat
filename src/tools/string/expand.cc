@@ -17,13 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/client.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/url.h>
  #include <udjat/tools/xml.h>
- #include <cstring>
- #include <ctype.h>
- #include <cstdlib>
 
  using namespace std;
 
@@ -47,6 +48,10 @@
 			return instance;
 		}
 
+		/// @brief Expand 'key' in the string.
+		/// @param key The key to expand.
+		/// @param str The string to expand.
+		/// @return true if the string was expanded.
 		bool expand(const char *key, std::string &str, bool dynamic, bool cleanup) {
 
 			for(Expander &expander : *this) {
@@ -62,27 +67,6 @@
 
 	void String::push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method) {
 		Expanders::getInstance().emplace_back(method);
-	}
-
-	String & String::strip() noexcept {
-		char *ptr = strdup(c_str());
-		assign(Udjat::strip(ptr));
-		free(ptr);
-		return *this;
-	}
-
-	String & String::chug() noexcept {
-		char *ptr = strdup(c_str());
-		assign(Udjat::chug(ptr));
-		free(ptr);
-		return *this;
-	}
-
-	String & String::chomp() noexcept {
-		char *ptr = strdup(c_str());
-		assign(Udjat::chomp(ptr));
-		free(ptr);
-		return *this;
 	}
 
 	static std::string getarguments(const std::string &key, const char *def) {
@@ -118,28 +102,70 @@
 		},dynamic,cleanup);
 	}
 
-	String & String::expand(const pugi::xml_node &node) {
+	static bool check_node(pugi::xml_node &xml, const char *key, std::string &value) {
+
+		for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
+
+			// Check the attribute name.
+			if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
+
+				if(is_allowed(child)) {
+					value = child.attribute("value").as_string();
+					return true;
+				}
+
+			}
+		}
+
+		return false;
+	}
+
+	String & String::expand(const pugi::xml_node &node, const char *group) {
 
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
 
-		return expand([node,dynamic,cleanup](const char *key, std::string &value){
+		return expand([node,dynamic,cleanup,group](const char *key, std::string &value) {
 
-			pugi::xml_attribute attribute;
+			// Check node attributes
+			{
+				pugi::xml_attribute attribute = node.attribute(key);
+				if(attribute) {
+					value = attribute.as_string();
+					return true;
+				}
+			}
 
-			attribute = Object::getAttribute(node,key);
-			if(attribute) {
-				value = attribute.as_string();
+			// Search the XML tree for an attribute with the required name.
+			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
+
+				if(is_allowed(xml)) {
+
+					// Search attributes.
+					if(check_node(xml,key,value)) {
+						return true;
+					}
+
+					// Search attribute lists.
+					for(auto lst = xml.child("attribute-list"); lst; lst = lst.next_sibling("attribute-list")) {
+
+						if(is_allowed(lst) && check_node(lst,key,value)) {
+							return true;
+						}
+
+					}
+
+				}
+
+			}
+
+			if(group && Config::hasKey(group,key)) {
+				// Get from the configuration file.
+				value = Config::get(group, key, "");
 				return true;
 			}
 
-			attribute = Object::getAttribute(node,key,false);
-			if(attribute) {
-				value = attribute.as_string();
-				return true;
-			}
-
-			// Not expanded
+			// Not expanded, use non xml expanders.
 			return Expanders::getInstance().expand(key,value,dynamic,cleanup);
 
 		},
@@ -296,92 +322,6 @@
 		}
 
 		return *this;
-	}
-
-	std::vector<String> String::split(const char *delim) {
-
-		std::vector<String> strings;
-
-		const char *ptr = c_str();
-		while(ptr && *ptr) {
-			const char *next = strstr(ptr,delim);
-			if(!next) {
-				strings.push_back(String(ptr).strip());
-				break;
-			}
-
-			while(*next && isspace(*next))
-				next++;
-
-			strings.push_back(String(ptr,(size_t) (next-ptr)).strip());
-			ptr = next+1;
-			while(*ptr && isspace(*ptr)) {
-				ptr++;
-			}
-
-		}
-
-		return strings;
-
-	}
-
- 	char * chomp(char *str) noexcept {
-
-		size_t len = strlen(str);
-
-		while(len--) {
-
-			if(isspace(str[len])) {
-				str[len] = 0;
-			} else {
-				break;
-			}
-		}
-
-		return str;
-
-	}
-
-	char * chug (char *str) noexcept {
-
-		char *start;
-
-		for (start = (char*) str; *start && isspace(*start); start++);
-
-		memmove(str, start, strlen ((char *) start) + 1);
-
-		return str;
-	}
-
-	char * strip(char *str) noexcept {
-		return chomp(chug(str));
-	}
-
-	std::string & strip(std::string &str) noexcept {
-		char *buffer = new char[str.size()+1];
-		memcpy(buffer,str.c_str(),str.size());
-		buffer[str.size()] = 0;
-		strip(buffer);
-		str.assign(buffer);
-		delete[] buffer;
-		return str;
-	}
-
-	std::string UDJAT_API strip(const char *str, ssize_t length) {
-
-		if(length < 0) {
-			length = strlen(str);
-		}
-
-		char *buffer = new char[length+1];
-		memcpy(buffer,str,length);
-		buffer[length] = 0;
-		strip(buffer);
-
-		std::string rc(buffer);
-		delete[] buffer;
-
-		return rc;
 	}
 
 

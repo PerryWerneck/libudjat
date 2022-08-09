@@ -44,7 +44,7 @@ namespace Udjat {
 				// Agent has signal based update.
 				this->update.sigdelay = (short) getAttribute(root,section,"update-signal-delay",(unsigned int) 0);
 
-				Udjat::Event &event = Event::SignalHandler(this, signame, [this](){
+				Udjat::Event &event = Udjat::Event::SignalHandler(this, signame, [this](){
 					requestRefresh(this->update.sigdelay);
 					return true;
 				});
@@ -56,7 +56,7 @@ namespace Udjat {
 							<< event.to_string() << "'"
 							<< endl;
 				} else {
-					info() << "Signal '" << event.to_string() << "' will trigger an agent update" << endl;
+					info() << signame << " (" << event.to_string() << ") will trigger an agent update" << endl;
 				}
 
 			} else {
@@ -67,56 +67,54 @@ namespace Udjat {
 #endif // !_WIN32
 
 		// Load children
-		for(pugi::xml_node node : root) {
+		Abstract::Object::for_each(root,"state","states",[this](const pugi::xml_node &node){
+			try {
 
-			if(!strcasecmp(node.name(),"state")) {
-
-				// Create states.
-				try {
-
-					if(!StateFactory(node)) {
-						error() << "Unable to create child state" << endl;
-					}
-
-				} catch(const std::exception &e) {
-
-					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
-
-				} catch(...) {
-
-					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
-
+				if(!StateFactory(node)) {
+					error() << "Unable to create child state" << endl;
 				}
 
-			} else if(!strcasecmp(node.name(),"alert")) {
+			} catch(const std::exception &e) {
 
-				// Create alerts.
-				try {
+				error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
 
-					auto alert = AlertFactory(node);
-					if(alert) {
-						push_back(alert);
-					} else {
-						error() << "Unable to create alert" << endl;
-					}
+			} catch(...) {
 
-				} catch(const std::exception &e) {
+				error() << "Unexpected error parsing <" << node.name() << ">" << endl;
 
-					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
+			}
+		});
 
-				} catch(...) {
+		Abstract::Object::for_each(root,"alert","alerts",[this](const pugi::xml_node &node){
 
-					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
+			// Create alerts.
+			try {
 
+				auto alert = AlertFactory(node);
+				if(alert) {
+					push_back(alert);
+				} else {
+					error() << "Unable to create alert" << endl;
 				}
 
-			} else if(strcasecmp(node.name(),"module") == 0) {
+			} catch(const std::exception &e) {
+
+				error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
+
+			} catch(...) {
+
+				error() << "Unexpected error parsing <" << node.name() << ">" << endl;
+
+			}
+
+		});
+
+		for(const pugi::xml_node &node : root) {
+
+			if(strcasecmp(node.name(),"module") == 0) {
 
 				// Only load module if 'preload' is not set.
 				if(!Config::Value<bool>("modules","preload-from-xml",true)) {
-#ifdef DEBUG
-					cout << "*** Loading module '" << node.attribute("name").as_string() << "' from xml" << endl;
-#endif // DEBUG
 					Module::load(node);
 				}
 
@@ -126,12 +124,6 @@ namespace Udjat {
 
 			}
 
-
-		}
-
-		{
-			lock_guard<std::recursive_mutex> lock(guard);
-			Controller::getInstance().insert(this,root);
 		}
 
 	}

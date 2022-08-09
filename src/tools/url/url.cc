@@ -29,14 +29,14 @@
 
  namespace Udjat {
 
-	std::string URL::scheme() const {
+	URL::Scheme URL::scheme() const {
 
 		size_t pos = find("://");
 		if(pos == string::npos) {
 			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
 		}
 
-		return string{string::c_str(),pos};
+		return URL::Scheme{string::c_str(),pos};
 
 	}
 
@@ -58,9 +58,9 @@
 		string scheme{string::c_str(),from-3};
 		ptr = strrchr(scheme.c_str(),'+');
 		if(ptr) {
-			components.scheme = (ptr+1);
+			components.scheme.assign(ptr+1);
 		} else {
-			components.scheme = scheme;
+			components.scheme.assign(scheme);
 		}
 
 		// Get hostname.
@@ -99,6 +99,34 @@
 
 	}
 
+	unsigned short URL::test() const noexcept {
+
+		try {
+
+			const Protocol * protocol = Protocol::find(*this);
+			if(!protocol) {
+				cerr << "url\tCant find a protocol handler for " << *this << endl;
+				return -EINVAL;
+			}
+
+			auto worker = protocol->WorkerFactory();
+			if(worker) {
+				worker->url(*this);
+			}
+
+		} catch(const std::exception &e) {
+
+			cerr << "url\tError '" << e.what() << "' testing " << *this << endl;
+
+		} catch(...) {
+
+			cerr << "url\tUnexpected error testing " << *this << endl;
+
+		}
+
+		return -1;
+	}
+
 	std::string URL::get() const {
 		return HTTP::Client(*this).get();
 	}
@@ -132,6 +160,35 @@
 		}
 
 		return stoi(srvcname);
+	}
+
+	URL & URL::operator += (const char *path) {
+
+		// TODO: Extract arguments after '?' and rejoin after merge.
+
+		while(!strncmp(path,"../",3)) {
+
+			auto pos = rfind('/');
+			if(pos == string::npos) {
+				throw system_error(EINVAL,system_category(),"Cant merge path on URL");
+			}
+
+			resize(pos);
+			path += 3;
+
+		}
+
+		if(!strncmp(path,"./",2)) {
+			path++;
+		}
+
+		if(path[0] != '/') {
+			append("/");
+		}
+
+		append(path);
+
+		return *this;
 	}
 
  }

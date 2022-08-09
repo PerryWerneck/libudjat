@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/factory.h>
- #include <udjat/state.h>
+ #include <udjat/agent/state.h>
  #include <iostream>
 
 //---[ Implement ]------------------------------------------------------------------------------------------

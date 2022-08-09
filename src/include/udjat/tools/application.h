@@ -31,6 +31,13 @@
 	class UDJAT_API Application {
 	public:
 
+		/// @brief Initialize application.
+		/// @param definitions	The xml file for application definitions.
+		static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
+
+		/// @brief Finalize application.
+		static int UDJAT_API finalize();
+
 		/// @brief Write to the 'information' stream.
 		static std::ostream & info();
 

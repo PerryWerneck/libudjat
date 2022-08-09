@@ -26,9 +26,7 @@
 
  namespace Udjat {
 
-	void * Module::Controller::open(const char *name, bool required) {
-
-		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
+	void * Module::Controller::search(const char *name) {
 
 		string paths[] = {
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
@@ -36,11 +34,12 @@
 #ifdef LIBDIR
 			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
 #endif //LIBDIR
+
 		};
 
 		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
 
-			string filename = paths[ix] + configured + ".so";
+			string filename = paths[ix] + "udjat-module-" + name + ".so";
 
 			if(access(filename.c_str(),R_OK) == 0) {
 
@@ -58,6 +57,7 @@
 				dlerror();
 				void * handle = dlopen(filename.c_str(),RTLD_NOW|RTLD_LOCAL);
 				if(handle) {
+					cout << "modules\tLoading " << filename << endl;
 					return handle;
 				}
 				cerr << "modules\t" << filename << " " << dlerror() << endl;
@@ -67,6 +67,24 @@
 				cout << "modules\tNo module in " << filename << endl;
 			}
 #endif // DEBUG
+		}
+
+		return NULL;
+
+	}
+
+	void * Module::Controller::open(const char *name, bool required) {
+
+		void *handle;
+
+		handle = search(name);
+		if(handle) {
+			return handle;
+		}
+
+		handle = search(Config::Value<std::string>("modules",name,name).c_str());
+		if(handle) {
+			return handle;
 		}
 
 		if(required) {

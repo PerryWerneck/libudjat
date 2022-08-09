@@ -77,7 +77,7 @@ namespace Udjat {
 
 	}
 
-	bool Worker::work(Request &request, Report &response) const {
+	bool Worker::work(Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&response)) const {
 		return false;
 	}
 

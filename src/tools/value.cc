@@ -27,6 +27,22 @@
 
  namespace Udjat {
 
+	Value & Value::operator[](const char UDJAT_UNUSED(*name)) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
+	Value & Value::append(const Type type) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
+	Value & Value::set(const char *value, const Type type) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
+	void Value::for_each(const std::function<void(const char *name, const Value &value)> &call) const {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
 	Value & Value::setFraction(const float fraction) {
 		std::stringstream out;
 		out << std::fixed << std::setprecision(2) << (fraction *100);
@@ -78,6 +94,14 @@
 
 	Value & Value::set(const double value) {
 		return Value::set(std::to_string(value), Real);
+	}
+
+	Value & Value::set(const pugi::xml_node &node) {
+		Value &object = *this;
+		for(auto child = node.child("value"); child; child = child.next_sibling("value")) {
+			object[child.attribute("name").as_string("unnamed")] = child.attribute("value").as_string();
+		}
+		return object;
 	}
 
 	const Value & Value::get(std::string UDJAT_UNUSED(&value)) const {

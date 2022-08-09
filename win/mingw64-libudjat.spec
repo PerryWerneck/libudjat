@@ -137,5 +137,8 @@ mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_V
 %dir %{_mingw64_includedir}/udjat/win32
 %{_mingw64_includedir}/udjat/win32/*.h
 
+%dir %{_mingw64_includedir}/udjat/agent
+%{_mingw64_includedir}/udjat/agent/*.h
+
 %changelog
 

@@ -35,7 +35,7 @@
 		static recursive_mutex guard;
 
 		/// @brief The list of active factories.
-		std::list<const Factory *> factories;
+		std::list<Factory *> factories;
 
 		Controller() {
 		}
@@ -43,20 +43,15 @@
 	public:
 		static Controller & getInstance();
 
-		// bool parse(const char *name, Abstract::Agent &parent, const pugi::xml_node &node) const;
-		// bool parse(const char *name, Abstract::State &parent, const pugi::xml_node &node) const;
-
 		/// @brief Find factory by name.
 		/// @param name Factory name.
 		/// @return The requested factory or nullptr.
-		const Factory * find(const char *name);
+		Factory * find(const char *name);
 
-		//void getInfo(Response &response) noexcept;
+		void insert(Factory *factory);
+		void remove(Factory *factory);
 
-		void insert(const Factory *factory);
-		void remove(const Factory *factory);
-
-		bool for_each(const char *name, std::function<bool(const Factory &factory)> func);
+		bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
 
 	};
 

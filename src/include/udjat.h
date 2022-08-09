@@ -17,47 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/tools/expander.h>
- #include <cstring>
- #include <iostream>
 
- using namespace std;
-
- namespace Udjat {
-
-	UDJAT_API const char * expand(std::string &text, const Expander &exec) {
-
-		auto from = text.find("${");
-		while(from != string::npos) {
-
-			auto to = text.find("}",from+3);
-			if(to == string::npos) {
-				throw runtime_error("Invalid ${} usage");
-			}
-
-			string value;
-			if(exec(string(text.c_str()+from+2,(to-from)-2).c_str(),value)) {
-
-				// Got value, apply it.
-				text.replace(
-					from,
-					(to-from)+1,
-					value.c_str()
-				);
-
-				from = text.find("${",from);
-
-			} else {
-
-				// No value, skip.
-				from = text.find("${",to+1);
-
-			}
-
-		}
-
-		return text.c_str();
-	}
-
- }
+/** @mainpage libudjat - UDJAT Core Library
+ *
+ */
+ 
+/** Main header file for the UDJAT API
+ *
+ * @file       udjat.h
+ * @author     Perry Werneck (perry.werneck@gmail.com)
+ * @attention  Please submit patches to https://github.com/PerryWerneck/libudjat
+ * @ingroup    Core
+ */
+ 

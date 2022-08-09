@@ -18,8 +18,15 @@
  */
 
  #include "private.h"
+ #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
  #include <udjat/moduleinfo.h>
+
+ #ifdef _WIN32
+	#include <shlwapi.h>
+ #else
+	#include <unistd.h>
+ #endif // _WIN32
 
  namespace Udjat {
 
@@ -29,6 +36,55 @@
 	}
 
 	Protocol::Controller::File::~File() {
+	}
+
+	std::shared_ptr<Protocol::Worker> Protocol::Controller::File::WorkerFactory() const {
+
+		class Worker : public Protocol::Worker {
+		public:
+			Worker() = default;
+
+			string path() const {
+
+				if(strncasecmp(url().c_str(),"file://.",8) == 0) {
+					return url().c_str()+7;
+				}
+
+				return url().ComponentsFactory().path.c_str();
+			}
+
+			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) {
+				return String(Udjat::File::Text(path()).c_str());
+			}
+
+			unsigned short test() override {
+
+				auto filepath = path();
+
+#ifdef _WIN32
+				if(!PathFileExists(filepath.c_str())) {
+					return 404;
+				}
+
+				return 200;
+#else
+				if(access(filepath.c_str(),R_OK) == 0) {
+					return 200;
+				}
+
+				if(access(filepath.c_str(),F_OK) != 0) {
+					return 404;
+				}
+
+				return -1;
+#endif // _WIN32
+
+
+			}
+
+		};
+
+		return make_shared<Worker>();
 	}
 
 	String Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {

@@ -24,6 +24,8 @@
  #include <ostream>
  #include <string>
  #include <pugixml.hpp>
+ #include <cstring>
+ #include <functional>
 
  namespace Udjat {
 
@@ -31,8 +33,26 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
+		protected:
+
+			/// @brief Load children.
+			/// @param node The XML node with the children definitions.
+			virtual void load(const pugi::xml_node &node);
 
 		public:
+
+			/// @brief Call method on every ocorrence of 'tagname' until method returns 'true'.
+			/// @param node The xml node.
+			/// @param tagname The tagname.
+			/// @return true if method has returned 'true'.
+			static bool for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call);
+
+			/// @brief Navigate thru XML nodes, including groups.
+			/// @param node The XML node to start search.
+			/// @param name The child node name.
+			/// @param group The child group node name, usually the plural of name (optional).
+			/// @param handler The handler for children.
+			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
@@ -128,10 +148,14 @@
 		const char *objectName = "";
 
 	protected:
+
 		constexpr NamedObject(const char *name = "") : objectName(name) {}
 		NamedObject(const pugi::xml_node &node);
 
-		void set(const pugi::xml_node &node);
+		/// @brief Set object properties from XML node.
+		/// @param node XML node for the object properties
+		/// @return true if the value was updated.
+		bool set(const pugi::xml_node &node);
 
 		inline void rename(const char *name) {
 			objectName = name;
@@ -140,15 +164,24 @@
 		typedef NamedObject Super;
 
 	public:
+
 		bool getProperty(const char *key, std::string &value) const noexcept override;
+
+		int compare(const NamedObject &object ) const;
+
+		inline bool empty() const {
+			return !(objectName && *objectName);
+		}
 
 		inline const char * name() const noexcept {
 			return objectName;
 		}
 
-		inline const char * c_str() const noexcept {
-			return objectName;
-		}
+		bool operator==(const char *name) const noexcept;
+		bool operator==(const pugi::xml_node &node) const noexcept;
+		size_t hash() const noexcept;
+
+		const char * c_str() const noexcept;
 
 		std::string to_string() const override;
 
@@ -176,7 +209,7 @@
 			const char * url = "";
 
 			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-			const char * icon = STRINGIZE_VALUE_OF(PRODUCT_NAME);
+			const char * icon = "";
 
 		} properties;
 
@@ -190,25 +223,28 @@
 
 		bool getProperty(const char *key, std::string &value) const noexcept override;
 
-		inline const char * label() const {
+		inline const char * label() const noexcept {
 			return properties.label;
 		}
 
 		/// @brief Object summary.
-		inline const char * summary() const {
+		inline const char * summary() const noexcept {
 			return properties.summary;
 		}
 
 		/// @brief URL associated with the object.
-		inline const char * url() const {
+		inline const char * url() const noexcept {
 			return properties.url;
 		}
 
 		/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-		inline const char * icon() const {
+		inline const char * icon() const noexcept {
 			return properties.icon;
 		}
 
+		/// @brief Export all object properties.
+		/// @param Value to receive the properties.
+		/// @return Pointer to value (for reference).
 		Value & getProperties(Value &value) const noexcept override;
 	};
 
@@ -223,6 +259,13 @@
 	inline ostream& operator<< (ostream& os, const Udjat::Abstract::Object &object) {
 			return os << object.to_string();
 	}
+
+	template<>
+	struct hash<Udjat::NamedObject> {
+		size_t operator() (const Udjat::NamedObject &object) const {
+			return object.hash();
+		}
+	};
 
  }
 

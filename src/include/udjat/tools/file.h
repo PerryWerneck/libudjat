@@ -27,10 +27,13 @@
 #include <mutex>
 #include <string>
 #include <cstring>
+#include <sys/stat.h>
 
 namespace Udjat {
 
 	namespace File {
+
+		using Stat = struct stat;
 
 		class Agent;
 		class Controller;
@@ -40,6 +43,11 @@ namespace Udjat {
 
 		/// @brief Copy file
 		void copy(const char *from, const char *to);
+
+		/// @brief Save to temporary file.
+		/// @param contents String with file contents.
+		/// @return Temporary file name.
+		std::string save(const char *contents);
 
 		/// @brief File Path.
 		class UDJAT_API Path : public std::string {
@@ -65,6 +73,10 @@ namespace Udjat {
 
 			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call);
 
+			/// @brief Navigate on all directory files.
+			/// @return false if 'call' has returned false;
+			static bool for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call);
+
 			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
 			/// @return false if 'call' has returned false;
 			inline bool for_each(const char *pattern, bool recursive, std::function<bool (const char *filename)> call) const {
@@ -86,8 +98,13 @@ namespace Udjat {
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
 
+			/// @brief Save file to FD.
+			static void save(int fd, const char *contents);
+
+			/// @brief Replace file withou backup
+			static void replace(const char *filename, const char *contents);
+
 			/// @brief Save file.
-			/// @param filename File name.
 			inline void save(const char *contents) const {
 				save(c_str(),contents);
 			}
@@ -178,7 +195,12 @@ namespace Udjat {
 				for_each(contents,call);
 			}
 
+			/// @brief Save file contents.
 			void save() const;
+
+			/// @brief Replace file contents without backup.
+			/// @param filename The new filename.
+			void replace(const char *filename);
 
 		};
 
@@ -318,6 +340,12 @@ namespace Udjat {
 			Temporary(const char *filename);
 			~Temporary();
 
+			/// @brief Create an empty temporary file.
+			static std::string create();
+
+			/// @brief Create an empty temporary dir.
+			static std::string mkdir();
+
 #ifndef _WIN32
 
 			/// @brief Hardlink tempfile to new filename (Linux only).
@@ -328,10 +356,12 @@ namespace Udjat {
 
 			/// @brief Save tempfile to new filename.
 			/// @param filename The file name.
-			void save(const char *filename);
+			/// @param replace If true just replace the file, no backup.
+			void save(const char *filename, bool replace = false);
 
 			/// @brief Move temporary file to the reference filename.
-			void save();
+			/// @param replace If true just replace the file, no backup.
+			void save(bool replace = false);
 
 			/// @brief Write data to tempfile.
 			/// @param contents Data to write.

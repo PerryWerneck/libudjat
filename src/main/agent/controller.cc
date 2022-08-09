@@ -244,17 +244,30 @@ namespace Udjat {
 
 		const char *type = node.attribute("type").as_string("int32");
 
-		for(auto builder : builders) {
+		if(type && *type) {
 
-			if(!strcasecmp(type,builder.type)) {
-				auto agent = builder.build(node);
-				agent->load(node);
-				return agent;
+			// Check for module factory.
+			Factory *factory(Factory::find(type));
+			if(factory) {
+				auto agent = factory->AgentFactory(parent,node);
+				if(agent) {
+					agent->load(node);
+					return agent;
+				}
+			}
+
+			// Check for internal builders.
+			for(auto builder : builders) {
+
+				if(!strcasecmp(type,builder.type)) {
+					auto agent = builder.build(node);
+					agent->load(node);
+					return agent;
+				}
+
 			}
 
 		}
-
-		// TODO: Call factory based on agent type.
 
 		return Factory::AgentFactory(parent,node);
 	}
@@ -275,11 +288,15 @@ namespace Udjat {
 
 			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
 
-			root->foreach([now,this,&next](std::shared_ptr<Agent> agent) {
+			root->for_each([now,this,&next](std::shared_ptr<Agent> agent) {
 
 				// Return if no update timer.
 				if(!agent->update.next)
 					return;
+
+#ifdef DEBUG
+				cout << "TIMER=" << agent->update.timer << " Next=" << TimeStamp(agent->update.next) << endl;
+#endif // DEBUG
 
 				// If the update is in the future, adjust delay and return.
 				if(agent->update.next > now) {
@@ -304,11 +321,18 @@ namespace Udjat {
 				agent->updating(true);
 
 				if(agent->update.timer) {
+
 					agent->update.next = time(0) + agent->update.timer;
 #ifdef DEBUG
 					agent->info() << "**** Next update scheduled to " << TimeStamp(agent->update.next) << " (" << agent->update.timer << " seconds)" << endl;
 #endif // DEBUG
 					next = std::min(next,agent->update.next);
+
+				} else {
+
+					// No timer and updated was triggered, reset next update time.
+					agent->update.next = 0;
+
 				}
 
 				// Enqueue agent update.
@@ -338,11 +362,11 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
-	}
+	//void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
+	//}
 
-	void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
-	}
+	//void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
+	//}
 
 }
 

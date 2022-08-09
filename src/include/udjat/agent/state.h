@@ -26,7 +26,7 @@
 	#include <udjat/tools/object.h>
 	#include <cstring>
 	#include <ostream>
-	#include <udjat/level.h>
+	#include <udjat/agent/level.h>
 
 	namespace Udjat {
 

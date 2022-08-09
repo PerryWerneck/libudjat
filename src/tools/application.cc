@@ -19,13 +19,34 @@
 
  #include <config.h>
  #include <udjat/tools/application.h>
+ #include <udjat/agent.h>
+ #include <udjat/module.h>
  #include <iostream>
  #include <sys/stat.h>
  #include <sys/types.h>
+ #include <udjat/tools/quark.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	int UDJAT_API Application::init(int argc, char **argv, const char *definitions) {
+
+		Quark::init(argc,argv);
+
+		if(definitions) {
+			Udjat::reconfigure(definitions,true);
+		}
+
+
+		return 0;
+
+	}
+
+	int UDJAT_API Application::finalize() {
+		Udjat::Module::unload();
+		return 0;
+	}
 
 	std::ostream & Application::info() {
 		return cout << Application::Name::getInstance() << "\t";

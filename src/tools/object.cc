@@ -25,6 +25,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
+ #include <udjat/factory.h>
 
  using namespace std;
 
@@ -33,10 +34,28 @@
 	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(Quark(node.attribute("name").as_string("unnamed")).c_str()) {
 	}
 
-	void NamedObject::set(const pugi::xml_node &node) {
+	bool NamedObject::set(const pugi::xml_node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
+			return true;
 		}
+		return false;
+	}
+
+	const char * NamedObject::c_str() const noexcept {
+		return (this->objectName ? this->objectName : "" );
+	}
+
+	int NamedObject::compare(const NamedObject &object ) const {
+		return strcasecmp(this->c_str(),object.c_str());
+	}
+
+	bool NamedObject::operator==(const char *name) const noexcept {
+		return strcasecmp(c_str(), name) == 0;
+	}
+
+	bool NamedObject::operator==(const pugi::xml_node &node) const noexcept {
+		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
 	}
 
 	Value & NamedObject::getProperties(Value &value) const noexcept {
@@ -45,11 +64,39 @@
 	}
 
 	std::string NamedObject::to_string() const {
-		return objectName;
+		return c_str();
 	}
 
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
 		set(node);
+	}
+
+	void Abstract::Object::load(const pugi::xml_node &node) {
+
+		for(pugi::xml_node child : node) {
+
+			Factory::for_each(child.name(),[this,&child](Factory &factory) {
+
+				try {
+
+					return factory.push_back(*this,child);
+
+				} catch(const std::exception &e) {
+
+					factory.error() << "Error '" << e.what() << "' parsing node <" << child.name() << ">" << endl;
+
+				} catch(...) {
+
+					factory.error() << "Unexpected error parsing node <" << child.name() << ">" << endl;
+
+				}
+
+				return false;
+
+			});
+
+		}
+
 	}
 
 	void Object::set(const pugi::xml_node &node) {
@@ -108,6 +155,15 @@
 		return false;
 	}
 
+	size_t NamedObject::hash() const noexcept {
+		size_t seed = 0x19670123;
+		size_t hash = 0;
+		for(const char *ptr = objectName;*ptr;ptr++) {
+			hash = (hash * seed) + ((size_t) *ptr);
+		}
+		return hash;
+	}
+
 	std::ostream & NamedObject::info() const {
 		return std::cout << name() << "\t";
 	}
@@ -118,6 +174,63 @@
 
 	std::ostream & NamedObject::error() const {
 		return std::cerr << name() << "\t";
+	}
+
+	void Abstract::Object::for_each(const pugi::xml_node &root, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler) {
+
+		for(pugi::xml_node node = root.child(name); node; node = node.next_sibling(name)) {
+			handler(node);
+		}
+
+		if(group && *group) {
+
+			string group_name{root.name()};
+			group_name += '-';
+			group_name += group;
+
+			string node_name{root.name()};
+			node_name += '-';
+			node_name += name;
+
+			for(pugi::xml_node parent = root.parent(); parent; parent = parent.parent()) {
+
+				// Scan for nodes.
+				for(pugi::xml_node node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
+					handler(node);
+				}
+
+				// Scan for groups.
+				for(pugi::xml_node group = parent.child(group_name.c_str()); group; group = group.next_sibling(group_name.c_str())) {
+
+					for(pugi::xml_node node = group.child(name); node; node = node.next_sibling(name)) {
+						handler(node);
+					}
+
+				}
+
+			}
+
+		}
+
+	}
+
+	bool Abstract::Object::for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call) {
+
+		bool rc = false;
+
+		for(pugi::xml_node n = node; n && !rc; n = n.parent()) {
+
+			for(pugi::xml_node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
+
+				if(is_allowed(child)) {
+					rc = call(child);
+				}
+
+			}
+
+		}
+
+		return rc;
 	}
 
 	const pugi::xml_attribute Abstract::Object::getAttribute(const pugi::xml_node &n, const char *name, bool change) {
@@ -184,13 +297,14 @@
 	}
 
 	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def) {
+
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
-			return Quark(Udjat::expand(node,attribute,def)).c_str();
+			return Quark(Udjat::String(attribute.as_string(def)).expand(node)).c_str();
 		}
 
 		if(Config::hasKey(group,name)) {
-			return Quark(Udjat::expand(node,Config::Value<string>(group,name,def).c_str()).c_str()).c_str();
+			return Quark(Udjat::String(Config::get(group,name,def)).expand(node)).c_str();
 		}
 
 		return def;
@@ -214,8 +328,8 @@
 
 	const char * Abstract::Object::expand(const pugi::xml_node &node, const char *group, const char *value) {
 
-		string text{value};
-		Udjat::expand(text, [node,group](const char *key, string &value) {
+		String text{value};
+		text.expand([node,group](const char *key, string &value) {
 
 			auto attribute = getAttribute(node,key);
 			if(attribute) {
@@ -224,7 +338,7 @@
 			}
 
 			if(Config::hasKey(group,key)) {
-				value = Udjat::expand(node,Config::Value<string>(group,key,"").c_str());
+				value = Config::Value<string>(group,key,"");
 				return true;
 			}
 

@@ -22,7 +22,6 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/url.h>
  #include <udjat/agent.h>
- #include <udjat/state.h>
  #include <iostream>
 
  #ifndef _WIN32

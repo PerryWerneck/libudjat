@@ -21,7 +21,6 @@
  #include <udjat/factory.h>
  #include <udjat/alert.h>
  #include <udjat/agent.h>
- #include <udjat/state.h>
  #include <iostream>
  #include <udjat/moduleinfo.h>
 
@@ -29,7 +28,7 @@
 
  namespace Udjat {
 
-	bool Factory::search(const pugi::xml_node &node, const std::function<bool(const Factory &, const pugi::xml_node &)> &call, const char *typeattribute) {
+	bool Factory::search(const pugi::xml_node &node, const std::function<bool(Factory &, const pugi::xml_node &)> &call, const char *typeattribute) {
 
 		if(!typeattribute) {
 			typeattribute = Object::getAttribute(node,(string{node.name()} + "-defaults").c_str(),"type","default");
@@ -43,7 +42,7 @@
 			//
 			// It's NOT the default factory, search by name.
 			//
-			return for_each(typeattribute,[&call,node](const Factory &factory){
+			return for_each(typeattribute,[&call,node](Factory &factory){
 
 				try {
 
@@ -78,7 +77,7 @@
 //			cout << "factories\tSearching on '" << alertnode.name() << "'" << endl;
 //#endif // DEBUG
 
-			const Factory * factory = Factory::find(alertnode.name());
+			Factory * factory = Factory::find(alertnode.name());
 			if(factory && call(*factory,node)) {
 				return true;
 			}

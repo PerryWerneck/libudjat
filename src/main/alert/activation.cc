@@ -23,7 +23,7 @@
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/object.h>
  #include <udjat/alert.h>
- #include <udjat/state.h>
+ #include <udjat/agent/state.h>
 
  namespace Udjat {
 
@@ -66,7 +66,7 @@
 	void Abstract::Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
 #ifdef DEBUG
 		cerr << "alert\t*** Object was set on an abstract alert" << endl;
-#endif 
+#endif
 	}
 
 	void Abstract::Alert::Activation::emit() {

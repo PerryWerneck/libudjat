@@ -34,6 +34,7 @@
  #include <private/misc.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -195,9 +196,6 @@
 
 			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
 
-#ifdef DEBUG
-				info() << "----------------------------------------------------------" << endl;
-#endif // DEBUG
 				info() << state->to_string() << endl;
 
 #if defined(HAVE_SYSTEMD)

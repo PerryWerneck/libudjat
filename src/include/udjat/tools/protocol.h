@@ -123,6 +123,10 @@
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
 
+			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
+			/// @return 200 if the file is accessible.
+			virtual unsigned short test();
+
 			/// @brief Set request payload.
 			inline Worker & payload(const char *payload) noexcept {
 				out.payload = payload;
@@ -192,19 +196,33 @@
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
 			/// @brief Call URL, save response as filename.
-			/// @return true if the file was updated.
-			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
+			/// @param filename	The file name to save.
+			/// @param progress The download progress notifier.
+			/// @param replace If true the file will be replaced (if updated); if false a '.bak' file will be keep with the old contents.
+			/// @return true if the file was updated or replaced.
+			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace = false);
+
+			/// @brief Call URL, save response to temporary file.
+			/// @return The temporary filename.
+			std::string save(const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Call URL, return response as string.
 			String get();
 
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
-			bool save(const char *filename);
+			/// @param replace If true the file will be replaced (if updated); if false a '.bak' file will be keep with the old contents.
+			bool save(const char *filename, bool replace = false);
+
+			/// @brief Call URL, save response to temporary file.
+			/// @return The temporary filename.
+			std::string save();
 
 		};
 
 		virtual std::shared_ptr<Worker> WorkerFactory() const;
+
+		static std::shared_ptr<Worker> WorkerFactory(const char *url);
 
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;

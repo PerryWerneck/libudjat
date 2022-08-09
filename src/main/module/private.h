@@ -36,6 +36,7 @@ namespace Udjat {
 		static Module * init(void *handle, const pugi::xml_node &node);
 
 		void * open(const char *name, bool required);
+		void * search(const char *name);
 		void close(void *module);
 		bool deinit(void *handle);
 		void unload(void *handle, const string &name, const string &description) const;

@@ -26,6 +26,7 @@
  #include <private/misc.h>
  #include <sys/types.h>
  #include <sys/stat.h>
+ #include <udjat/tools/logger.h>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>

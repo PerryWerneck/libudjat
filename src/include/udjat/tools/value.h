@@ -23,6 +23,8 @@
  #include <string.h>
  #include <udjat/tools/timestamp.h>
  #include <ostream>
+ #include <pugixml.hpp>
+ #include <functional>
 
  namespace Udjat {
 
@@ -49,11 +51,14 @@
 
 		/// @brief Convert Value to 'object' and insert child.
 		/// @return Null value inserted to object.
-		virtual Value & operator[](const char *name) = 0;
+		virtual Value & operator[](const char *name);
+
+		/// @brief Navigate from all values.
+		virtual void for_each(const std::function<void(const char *name, const Value &value)> &call) const;
 
 		/// @brief Convert Value to 'array' and insert child.
 		/// @return Array entry.
-		virtual Value & append(const Type type = Object) = 0;
+		virtual Value & append(const Type type = Object);
 
 		/// @brief Clear contents, set value type.
 		virtual Value & reset(const Type type = Undefined) = 0;
@@ -62,7 +67,7 @@
 		virtual Value & set(const Value &value) = 0;
 
 		/// @brief Set string to value
-		virtual Value & set(const char *value, const Type type = String) = 0;
+		virtual Value & set(const char *value, const Type type = String);
 
 		/// @brief Set a percentual from 0.0 to 1.0
 		virtual Value & setFraction(const float fraction);
@@ -83,6 +88,9 @@
 
 		virtual Value & set(const float value);
 		virtual Value & set(const double value);
+
+		/// @brief Load tags <value name='name' value='value' /> into value.
+		virtual Value & set(const pugi::xml_node &node);
 
 		template <typename T>
 		Value & set(const T value) {

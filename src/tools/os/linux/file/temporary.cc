@@ -30,6 +30,8 @@
  #include <cstring>
  #include <cstdio>
  #include <system_error>
+ #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/application.h>
 
  using namespace std;
 
@@ -51,7 +53,68 @@
 		::close(fd);
 	}
 
-	void File::Temporary::save(const char *filename) {
+	std::string File::Temporary::mkdir() {
+
+		string basename{"/tmp/"};
+		basename += Application::Name();
+
+		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
+			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
+		}
+
+		basename += "/";
+		basename += TimeStamp().to_string("%Y%m%d%H%M%s");
+
+		for(size_t f = 0; f < 1000; f++) {
+
+			string filename = basename + "." + std::to_string(rand()) + ".tmp";
+
+			if(::mkdir(filename.c_str(), 0700) == 0) {
+				return filename;
+			}
+
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),string{"Can't create '"} + filename + "'");
+			}
+
+		}
+
+		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+
+	}
+
+	std::string File::Temporary::create() {
+
+		string basename{"/tmp/"};
+		basename += Application::Name();
+
+		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
+			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
+		}
+
+		basename += "/";
+		basename += TimeStamp().to_string("%Y%m%d%H%M%s");
+
+		for(size_t f = 0; f < 1000; f++) {
+
+			string filename = basename + "." + std::to_string(rand()) + ".tmp";
+			int fd = open(filename.c_str(),O_CREAT|O_EXCL,0600);
+			if(fd > 0) {
+				::close(fd);
+				return filename;
+			}
+
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),string{"Can't create '"} + filename + "'");
+			}
+
+		}
+
+		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+
+	}
+
+	void File::Temporary::save(const char *filename, bool replace) {
 
 		//
 		// First get target file attributes
@@ -68,9 +131,14 @@
 			memset(&st,0,sizeof(st));
 			st.st_mode = 0644;
 
+		} else if(replace) {
+
+			// Replace, remove current file.
+			unlink(filename);
+
 		} else {
 
-			// Got target filename, create '.bak' file.
+			// Not replace, create '.bak' file.
 			char bakfile[PATH_MAX];
 			strncpy(bakfile,filename,PATH_MAX);
 			char *ptr = strrchr(bakfile,'.');
@@ -150,13 +218,13 @@
 
 	}
 
-	void File::Temporary::save() {
+	void File::Temporary::save(bool replace) {
 
 		if(filename.empty()) {
-				throw system_error(EINVAL,system_category(),"No target filename");
+			throw system_error(EINVAL,system_category(),"No target filename");
 		}
 
-		this->save(filename.c_str());
+		this->save(filename.c_str(),replace);
 	}
 
 	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
