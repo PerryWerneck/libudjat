@@ -43,6 +43,7 @@
 namespace Udjat {
 
 	Abstract::State::State(const char *name, const Level level, const char *summary, const char *body) : Object((name && *name) ? name : "unnamed") {
+
 		if(summary && *summary) {
 			Object::properties.summary = summary;
 		}

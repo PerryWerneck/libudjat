@@ -52,7 +52,7 @@
 
 	{ "yaml",	"text/yaml" }, // https://stackoverflow.com/a/332159/2356331
 
-
+	// TODO: gz, 
  };
 
  const char * std::to_string(const Udjat::MimeType type, bool suffix) {

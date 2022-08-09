@@ -89,6 +89,7 @@
 		<Unit filename="src/include/udjat/tools/value.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
+		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
 		<Unit filename="src/include/udjat/win32/service.h" />

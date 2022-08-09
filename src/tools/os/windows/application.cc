@@ -101,7 +101,7 @@
 	Application::DataDir::DataDir(const char *subdir) : DataDir() {
 		append(subdir);
 		mkdir(c_str());
-		append("/");
+		append("\\");
 	}
 
 	Application::DataFile::DataFile(const char *name) {

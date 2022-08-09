@@ -31,7 +31,7 @@
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
-	Value & Value::append(const Type type) {
+	Value & Value::append(const Type UDJAT_UNUSED(type)) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
