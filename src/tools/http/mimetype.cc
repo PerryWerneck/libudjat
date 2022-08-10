@@ -31,7 +31,7 @@
  } types[] = {
 
 	// 'dat' is allways the first one.
-	{ "dat",	"application/octet-stream" },
+	{ "bin",	"application/octet-stream" },
 
 	{ "json",	"application/json; charset=utf-8" },
 	{ "csv",	"text/csv; charset=utf-8" },
@@ -52,7 +52,17 @@
 
 	{ "yaml",	"text/yaml" }, // https://stackoverflow.com/a/332159/2356331
 
-	// TODO: gz, 
+	// https://mimetype.io/application/gzip
+	{ "gz",		"application/gzip" },
+
+	// https://mimetype.io/application/x-rpm
+	{ "rpm",	"application/x-rpm" },
+
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+	{ "odt",	"application/vnd.oasis.opendocument.text" },
+	{ "ods",	"application/vnd.oasis.opendocument.spreadsheet" },
+	{ "sh",		"application/x-sh" },
+
  };
 
  const char * std::to_string(const Udjat::MimeType type, bool suffix) {
@@ -65,7 +75,7 @@
 	return (suffix ? types[ix].ext : types[ix].str);
  }
 
- Udjat::MimeType Udjat::MimeTypeFactory(const char *str) noexcept {
+ Udjat::MimeType Udjat::MimeTypeFactory(const char *str, bool log_def) noexcept {
 
  	if(!(str && *str)) {
 		cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
@@ -95,6 +105,8 @@
  	}
 
  	// Not found!
- 	clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[0].str << "'" << endl;
+ 	if(log_def) {
+		clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[0].str << "'" << endl;
+ 	}
  	return (Udjat::MimeType) 0;
  }
