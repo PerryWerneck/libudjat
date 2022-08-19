@@ -60,6 +60,9 @@
 		{
 			/// @brief Singleton for file protocol.
 			static File file;
+#ifndef _WIN32
+			static Script script;
+#endif // !_WIN32
 		}
 
 #ifdef DEBUG

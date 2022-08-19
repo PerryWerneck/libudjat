@@ -68,6 +68,10 @@
 		return get(dummy_progress);
 	}
 
+	void Protocol::Worker::get(const std::function<void(int code, const char *response)> &call) {
+		call(200,get().c_str());
+	}
+
 	bool Protocol::Worker::save(const char *filename, bool replace) {
 		return save(filename, dummy_progress, replace);
 	}

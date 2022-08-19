@@ -209,6 +209,9 @@
 			/// @brief Call URL, return response as string.
 			String get();
 
+			/// @brief Call URL (asyncronous when protocol handler can do it).
+			virtual void get(const std::function<void(int code, const char *response)> &call);
+
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
 			/// @param replace If true the file will be replaced (if updated); if false a '.bak' file will be keep with the old contents.

@@ -53,6 +53,18 @@
 
 		};
 
+		#ifndef _WIN32
+		/// @brief Internal protocol for script://
+		class Script : public Udjat::Protocol {
+		public:
+			Script();
+			virtual ~Script();
+
+			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
+
+		};
+		#endif // !_WIN32
+
 	public:
 		static Controller & getInstance();
 		~Controller();

@@ -166,7 +166,6 @@
 		<Unit filename="src/tools/application.cc" />
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/event.cc" />
-		<Unit filename="src/tools/event.h" />
 		<Unit filename="src/tools/eventcontroller.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file.cc" />
@@ -251,6 +250,8 @@
 		<Unit filename="src/tools/url/method.cc" />
 		<Unit filename="src/tools/url/private.h" />
 		<Unit filename="src/tools/url/protocol.cc" />
+		<Unit filename="src/tools/url/protocols/file.cc" />
+		<Unit filename="src/tools/url/protocols/script.cc" />
 		<Unit filename="src/tools/url/response.cc" />
 		<Unit filename="src/tools/url/unescape.cc" />
 		<Unit filename="src/tools/url/url.cc" />
