@@ -44,22 +44,25 @@
 	std::shared_ptr<Protocol::Worker> Protocol::Controller::Script::WorkerFactory() const {
 
 		class Worker : public Protocol::Worker {
-		public:
-			Worker() = default;
-
+		private:
 			string path() const {
 
 				if(strncasecmp(url().c_str(),"script://.",10) == 0) {
 					return url().c_str()+10;
 				}
 
-				return url().ComponentsFactory().path.c_str();
+				return url().ComponentsFactory().path;
 			}
+
+
+		public:
+			Worker() = default;
 
 			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) {
 
-				const char *script = url().ComponentsFactory().path.c_str();
-				FILE *in = popen(script, "r");
+				string script = this->path();
+
+				FILE *in = popen(script.c_str(), "r");
 				if(!in) {
 					throw system_error(errno,system_category(),script);
 				}
@@ -86,17 +89,19 @@
 
 			unsigned short test() override {
 
-				const char *script = url().ComponentsFactory().path.c_str();
+				string script = this->path();
 
-				if(access(script,R_OK)) {
+				if(access(script.c_str(),R_OK)) {
 					clog << "script\t" << script << " is not available" << endl;
 					return 404;
 				}
 
-				int rc = system(script);
+				int rc = system(script.c_str());
 
-				if(rc == 0)
+				if(rc == 0) {
+					cout << "script\t" << script << " rc=" << rc << endl;
 					return 200;
+				}
 
 				clog << "script\t" << script << " rc=" << rc << endl;
 
