@@ -190,6 +190,11 @@ $(POTDIR)/%.pot: \
 	@$(MKDIR) $(dir $@)
 	@touch $@
 
+install-%: \
+	%/Makefile
+
+	@$(MAKE) -C `dirname $<` DESTDIR=$(DESTDIR) install
+
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
