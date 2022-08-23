@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/agent.h>
  #include <functional>
  #include <thread>
@@ -39,16 +40,6 @@
  #ifndef HAVE_STRPTIME
 	UDJAT_PRIVATE char *strptime(const char *buf, const char *fmt, struct tm *tm);
  #endif // !HAVE_STRPTIME
-
- #ifdef HAVE_LIBINTL
-	#include <locale.h>
-	#include <libintl.h>
-	#define _( x )                  dgettext(PACKAGE_NAME,x)
-	#define N_( x )                 x
- #else
-	#define _( x )                  x
-	#define N_( x )                 x
- #endif // HAVE_LIBINTL
 
  namespace Udjat {
 

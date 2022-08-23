@@ -31,6 +31,7 @@
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/intl.h>
  #include <private/misc.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/application.h>
@@ -143,7 +144,7 @@
 
 				class ReadyState : public Abstract::State {
 				public:
-					ReadyState() : Abstract::State("ready", Level::ready, "System is ready", "No abnormal state was detected") {
+					ReadyState() : Abstract::State("ready", Level::ready, _( "System is ready" ), _( "No abnormal state was detected" )) {
 						Object::properties.icon = "computer";
 					}
 
