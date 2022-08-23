@@ -1,5 +1,8 @@
 /* src/include/config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* The gettext package name. */
+#undef GETTEXT_PACKAGE
+
 /* Do we have econf? */
 #undef HAVE_ECONF
 

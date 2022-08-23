@@ -59,6 +59,9 @@ AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
 AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
 
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
+AC_SUBST(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor")
+
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------

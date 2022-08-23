@@ -31,7 +31,10 @@
 	class UDJAT_API Application {
 	public:
 
-		/// @brief Initialize application.
+		/// @brief Initialize application; setup locale.
+		static void UDJAT_API init();
+
+		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.
 		static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
 

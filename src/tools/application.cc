@@ -32,12 +32,12 @@
 
 	int UDJAT_API Application::init(int argc, char **argv, const char *definitions) {
 
+		Application::init();
 		Quark::init(argc,argv);
 
 		if(definitions) {
 			Udjat::reconfigure(definitions,true);
 		}
-
 
 		return 0;
 

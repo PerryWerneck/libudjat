@@ -29,10 +29,31 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <system_error>
+ #include <libintl.h>
+ #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
+
+	void Application::init() {
+
+		static bool initialized = false;
+
+		if(!initialized) {
+
+			initialized = true;
+			bindtextdomain(GETTEXT_PACKAGE, STRINGIZE_VALUE_OF(LOCALEDIR));
+			bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+			setlocale( LC_ALL, "" );
+
+#ifdef DEBUG
+			cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << GETTEXT_PACKAGE << endl;
+#endif // DEBUG
+		}
+
+	}
+
 
 	Application::Name::Name(bool with_path) : string{with_path ? program_invocation_name : program_invocation_short_name} {
 	}

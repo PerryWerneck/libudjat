@@ -57,6 +57,7 @@
 		<Unit filename="src/include/udjat/agent/level.h" />
 		<Unit filename="src/include/udjat/agent/state.h" />
 		<Unit filename="src/include/udjat/alert.h" />
+		<Unit filename="src/include/udjat/context.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
@@ -72,6 +73,7 @@
 		<Unit filename="src/include/udjat/tools/http/exception.h" />
 		<Unit filename="src/include/udjat/tools/http/mimetype.h" />
 		<Unit filename="src/include/udjat/tools/http/timestamp.h" />
+		<Unit filename="src/include/udjat/tools/intl.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
@@ -138,6 +140,7 @@
 		<Unit filename="src/main/module/os/windows/tools.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
+		<Unit filename="src/main/os/linux/context.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
 		<Unit filename="src/main/os/windows/resources.rc" />
 		<Unit filename="src/main/private.h" />

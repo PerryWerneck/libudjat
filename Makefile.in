@@ -25,7 +25,9 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
-	$(wildcard src/main/alert/*.cc)
+	$(wildcard src/main/alert/*.cc) \
+	$(wildcard src/main/os/@OSNAME@/*.cc) \
+	$(wildcard src/main/os/@OSNAME@/*.rc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc) \
@@ -63,8 +65,9 @@ localedir=@localedir@
 docdir=@docdir@
 sysconfdir=/etc
 srcdir=@srcdir@
+localedir=@localedir@
 
-OBJDIR=.obj
+OBJDIR=.obj/@OSNAME@
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
@@ -86,6 +89,7 @@ CFLAGS= \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	-DLIBDIR=$(libdir) \
+	-DLOCALEDIR=$(localedir) \
 	@ECONF_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@SYSTEMD_CFLAGS@ \
