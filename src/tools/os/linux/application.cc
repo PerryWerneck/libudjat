@@ -40,7 +40,6 @@
 
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
-		setlocale( LC_ALL, "" );
 
 #ifdef DEBUG
 		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << GETTEXT_PACKAGE << endl;
@@ -48,13 +47,16 @@
 
 	}
 
-	void Application::init() {
+	bool Application::init() {
 		static bool initialized = false;
 
 		if(!initialized) {
 			initialized = true;
 			set_gettext_package(GETTEXT_PACKAGE);
+			setlocale( LC_ALL, "" );
+			return true;
 		}
+		return false;
 
 	}
 

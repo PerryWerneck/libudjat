@@ -15,8 +15,17 @@
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
 
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Libintl is available */
+#undef HAVE_LIBINTL
+
 /* Do we have localtime_r? */
 #undef HAVE_LOCALTIME_R
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
 
 /* Define to 1 if you have the `poll' function. */
 #undef HAVE_POLL
@@ -30,11 +39,32 @@
 /* Define to 1 if you have the `signal' function. */
 #undef HAVE_SIGNAL
 
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
 /* Define to 1 if you have the `strptime' function. */
 #undef HAVE_STRPTIME
 
 /* Do we have systemd? */
 #undef HAVE_SYSTEMD
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
 
 /* Do we have libvmdetect? */
 #undef HAVE_VMDETECT
@@ -77,6 +107,9 @@
 
 /* The product title */
 #undef PRODUCT_TITLE
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
 
 /* Version number of package */
 #undef VERSION

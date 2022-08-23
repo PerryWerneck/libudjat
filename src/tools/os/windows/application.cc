@@ -27,10 +27,39 @@
  #include <udjat/win32/registry.h>
  #include <cstring>
  #include <iostream>
+ #include <libintl.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	void Application::set_gettext_package(const char *gettext_package) {
+
+		Path localedir;
+		localedir += "locale";
+
+		if(access(localedir.c_str(),R_OK) == 0) {
+			bindtextdomain(gettext_package, localedir.c_str());
+			bind_textdomain_codeset(gettext_package, "UTF-8");
+		}
+
+#ifdef DEBUG
+		cout << "locale\tInitialized using " << localedir << endl;
+#endif // DEBUG
+
+	}
+
+	bool Application::init() {
+		static bool initialized = false;
+
+		if(!initialized) {
+			initialized = true;
+			set_gettext_package(GETTEXT_PACKAGE);
+			setlocale( LC_ALL, "" );
+			return true;
+		}
+		return false;
+	}
 
 	Application::Name::Name(bool with_path) {
 
@@ -38,7 +67,7 @@
 		TCHAR filename[MAX_PATH];
 
 		if(!GetModuleFileName(NULL, filename, MAX_PATH ) ) {
-			throw runtime_error("Can't get module filename");
+			throw runtime_error("Can't get application filename");
 		}
 
 		// Remove extension.

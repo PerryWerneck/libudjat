@@ -162,6 +162,25 @@ AC_PATH_TOOL([MSGINIT], [msginit], [true])
 AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
 AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
 
+AC_CHECK_HEADER(libintl.h, [
+        AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])
+
+        case "$host" in
+        *-mingw32|*-pc-msys)
+            LIBS="$LIBS -lintl"
+            ;;
+
+        *)
+			AC_MSG_NOTICE([No need for libintl])
+
+        esac
+
+], [
+        AC_MSG_ERROR([Can't find required file libintl.h])
+])
+
+AC_SUBST(INTL_LIBS)
+
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
 dnl ---------------------------------------------------------------------------

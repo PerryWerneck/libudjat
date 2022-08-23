@@ -36,7 +36,8 @@
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
 		/// @brief Initialize application; setup locale.
-		static void UDJAT_API init();
+		/// @return true if the application was initialized.
+		static bool UDJAT_API init();
 
 		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.
