@@ -45,6 +45,11 @@
 			}
 
 			module->handle = handle;
+
+			if(module->info.gettext_package && *module->info.gettext_package) {
+				Application::set_gettext_package(module->info.gettext_package);
+			}
+
 			return module;
 
 		}
@@ -63,6 +68,10 @@
 		}
 
 		module->handle = handle;
+
+		if(module->info.gettext_package && *module->info.gettext_package) {
+			Application::set_gettext_package(module->info.gettext_package);
+		}
 
 		return module;
 	}
