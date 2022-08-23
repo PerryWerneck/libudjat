@@ -75,6 +75,8 @@ BINDIR=.bin
 BINDBG=$(BINDIR)/Debug
 BINRLS=$(BINDIR)/Release
 
+POTDIR=.pot
+
 #---[ Rules ]----------------------------------------------------------------------------
 
 DEPENDS= \
@@ -164,6 +166,30 @@ $(OBJRLS)/%.o: \
 	@$(MKDIR) $(@D)
 	@$(WINDRES) $< -O coff -o $@
 
+#---[ Misc Rules ]-----------------------------------------------------------------------
+
+$(POTDIR)/%.pot: \
+	%.cc
+
+	@echo $(notdir $@) ...
+	@$(MKDIR) $(dir $@)
+	@$(XGETTEXT) \
+		--from-code=UTF-8 \
+		--language=C \
+		--keyword=_ \
+		--keyword=N_ \
+		--keyword=MSG_:2 \
+		--output=$@ \
+		$<
+	@touch $@
+
+$(POTDIR)/%.pot: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(dir $@)
+	@touch $@
+
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
@@ -197,10 +223,21 @@ $(BINRLS)/$(PACKAGE_NAME).a: \
 	@$(MKDIR) $(dir $@)
 	@$(AR) rcs $@ $^
 
+locale/$(PACKAGE_NAME).pot: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(POTDIR)/$(SRC).pot)
+
+	@rm -f $@
+	@$(MKDIR) $(dir $@)
+	@$(MSGCAT) --sort-output $^ > $@
+
+locale: \
+	locale/$(PACKAGE_NAME).pot
+
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
-       $(foreach TARGET, $(TARGETS), install-$(TARGET))
+       $(foreach TARGET, $(TARGETS), install-$(TARGET)) \
+       locale/$(PACKAGE_NAME).pot
 
 install-debug: \
 	install-@OSNAME@-debug
