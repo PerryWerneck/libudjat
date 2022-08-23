@@ -28,13 +28,6 @@
 
  namespace Udjat {
 
-	/*
-	const ModuleInfo & ModuleInfo::getInstance() {
-		static const ModuleInfo instance{""};
-		return instance;
-	}
-	*/
-
 	Value & ModuleInfo::get(Value &value) const {
 
 		value["module"] = name;
@@ -43,6 +36,9 @@
 		value["bugreport"] = bugreport;
 		value["url"] = url;
 		value["build"] = build;
+		if(gettext_package) {
+			value["locale"] = gettext_package;
+		}
 
 		return value;
 	}

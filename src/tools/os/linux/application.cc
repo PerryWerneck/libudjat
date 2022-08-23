@@ -36,20 +36,24 @@
 
  namespace Udjat {
 
-	void Application::init() {
+	void Application::set_gettext_package(const char *gettext_package) {
 
+		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
+		bind_textdomain_codeset(gettext_package, "UTF-8");
+		setlocale( LC_ALL, "" );
+
+#ifdef DEBUG
+		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << GETTEXT_PACKAGE << endl;
+#endif // DEBUG
+
+	}
+
+	void Application::init() {
 		static bool initialized = false;
 
 		if(!initialized) {
-
 			initialized = true;
-			bindtextdomain(GETTEXT_PACKAGE, STRINGIZE_VALUE_OF(LOCALEDIR));
-			bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
-			setlocale( LC_ALL, "" );
-
-#ifdef DEBUG
-			cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << GETTEXT_PACKAGE << endl;
-#endif // DEBUG
+			set_gettext_package(GETTEXT_PACKAGE);
 		}
 
 	}

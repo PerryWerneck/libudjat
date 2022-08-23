@@ -31,6 +31,10 @@
 	class UDJAT_API Application {
 	public:
 
+		/// @brief Setup locale.
+		/// @param gettext_package The gettext package name.
+		static void UDJAT_API set_gettext_package(const char *gettext_package);
+
 		/// @brief Initialize application; setup locale.
 		static void UDJAT_API init();
 

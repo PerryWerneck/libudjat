@@ -67,6 +67,12 @@
 		const unsigned long build = 0;
 #endif // BUILD_DATE
 
+#ifdef GETTEXT_PACKAGE
+		const char * gettext_package = GETTEXT_PACKAGE;
+#else
+		const char * gettext_package = nullptr;
+#endif // GETTEXT_PACKAGE
+
 // https://isocpp.org/std/standing-documents/sd-6-sg10-feature-test-recommendations
 #ifdef __cpp_constexpr
 		constexpr ModuleInfo(const char *d) :
@@ -84,9 +90,6 @@
 		ModuleInfo(const char *n, const char *d, const char *v = "", const char *u="", const char *b= "") :
 			name(n), description(d), version(v), bugreport(b), url(u) { }
 #endif
-
-		/// @brief Get singleton with an empty instance of ModuleInfo.
-		// static const ModuleInfo & getInstance();
 
 		Udjat::Value & get(Udjat::Value &value) const;
 

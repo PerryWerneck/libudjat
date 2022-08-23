@@ -57,7 +57,6 @@
 		<Unit filename="src/include/udjat/agent/level.h" />
 		<Unit filename="src/include/udjat/agent/state.h" />
 		<Unit filename="src/include/udjat/alert.h" />
-		<Unit filename="src/include/udjat/context.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
