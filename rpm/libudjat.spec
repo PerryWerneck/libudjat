@@ -76,6 +76,8 @@ Recommends: udjat-module-information
 
 Development files for Udjat main library.
 
+%lang_package
+
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
 %prep
@@ -91,6 +93,7 @@ make all
 
 %install
 %makeinstall
+%find_lang %{name}-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
@@ -101,6 +104,8 @@ make all
 
 %dir %{_sysconfdir}/udjat.conf.d
 %config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
+
+%files lang -f langfiles
 
 %files -n udjat-devel
 %defattr(-,root,root)
