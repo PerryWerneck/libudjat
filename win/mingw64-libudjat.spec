@@ -51,6 +51,7 @@ BuildRequires:	mingw64-gettext-tools
 
 BuildRequires:	mingw64-pugixml-devel
 BuildRequires:	mingw64-vmdetect-devel
+BuildRequires:	mingw64-libintl-devel
 
 %description
 UDJat core library
@@ -105,9 +106,13 @@ make all %{?_smp_mflags}
 	.bin/Release/*.dll
 
 %install
-make DESTDIR=%{buildroot} install
+#make DESTDIR=%{buildroot} install
+%_mingw64_make_install
+
 mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules
 mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
+
+find %{buildroot}
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
@@ -116,7 +121,9 @@ mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_V
 
 %{_mingw64_bindir}/*.dll
 
-%exclude /etc/udjat.conf.d 
+%{_mingw64_datadir}/locale/*/LC_MESSAGES/*.mo
+
+%exclude %{_mingw64_sysconfdir}/udjat.conf.d 
 
 %files devel
 %defattr(-,root,root)
