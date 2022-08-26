@@ -31,6 +31,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/subprocess.h>
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>

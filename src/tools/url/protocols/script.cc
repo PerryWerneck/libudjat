@@ -22,6 +22,7 @@
  #ifndef _WIN32
 
  #include <udjat/tools/url.h>
+ #include <udjat/tools/subprocess.h>
  #include <udjat/moduleinfo.h>
  #include <cstdio>
  #include <iostream>
@@ -62,6 +63,43 @@
 
 				string script = this->path();
 
+				if(access(script.c_str(),R_OK)) {
+					throw system_error(ENOENT,system_category(),script);
+				}
+
+				class Process : public SubProcess, public stringstream {
+				public:
+					int rc = 0;
+					Process(const char *command) : SubProcess(command) {
+					}
+
+				private:
+					void onStdOut(const char *line) override {
+						*this << line << endl;
+					}
+
+					void onStdErr(const char *line) override {
+						*this << line << endl;
+					}
+
+					void onExit(int rc) override {
+						this->rc = rc;
+					}
+
+					void onSignal(int UDJAT_UNUSED(sig)) override {
+						this->rc = -1;
+					}
+
+				};
+
+				Process proc(script.c_str());
+				proc.run();
+
+				return String(proc.str());
+
+				/*
+				string script = this->path();
+
 				FILE *in = popen(script.c_str(), "r");
 				if(!in) {
 					throw system_error(errno,system_category(),script);
@@ -85,6 +123,7 @@
 				clog << "script\t" << script << " rc=" << rc << endl;
 
 				return String(rsp.str());
+				*/
 			}
 
 			unsigned short test() override {
@@ -96,7 +135,7 @@
 					return 404;
 				}
 
-				int rc = system(script.c_str());
+				int rc = SubProcess::run(script.c_str());
 
 				if(rc == 0) {
 					cout << "script\t" << script << " rc=" << rc << endl;

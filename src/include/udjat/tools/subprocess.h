@@ -46,6 +46,9 @@
 			char buffer[256];
 		} pipes[2];
 
+		/// @brief Initialize.
+		void init();
+
 		/// @brief Read from pipe.
 		void read(int id);
 
@@ -81,11 +84,19 @@
 			return command.c_str();
 		}
 
-		/// @brief Start sub process; this object will be removed when it exits.
+		/// @brief Start sub process in background; this object will be removed when it exits.
 		void start();
 
-		/// @brief Start sub process using the default object.
+		/// @brief Run subprocess in foreground.
+		/// @return Sub process return code.
+		int run();
+
+		/// @brief Start sub process in background using the default object.
 		static void start(const char *command);
+
+		/// @brief Start sub process in foreground using the default object.
+		/// @return Sub process return code.
+		static int run(const char *command);
 
 	};
 

@@ -160,6 +160,10 @@
 
 	}
 
+	int SubProcess::run(const char *command) {
+		return SubProcess(command).run();
+	}
+
 	void SubProcess::start(const char *command) {
 
 		SubProcess *process = new SubProcess(command);
@@ -218,7 +222,7 @@
 	}
 	#pragma GCC diagnostic pop
 
-	void SubProcess::start() {
+	void SubProcess::init() {
 
 		if(this->pid != -1) {
 			throw system_error(EBUSY,system_category(),string{"The child process is active on pid "} + to_string(this->pid));
@@ -275,6 +279,88 @@
 		// Child started, capture pipes.
 		this->pipes[0].fd = out[0];
 		this->pipes[1].fd = err[0];
+
+	}
+
+	int SubProcess::run() {
+
+		init();
+
+		int rc = -1;
+		while(this->pid != -1) {
+
+			struct pollfd fds[sizeof(pipes)/sizeof(pipes[0])];
+
+			size_t nfds = 0;
+			for(size_t ix = 0; ix < (sizeof(pipes) /sizeof(pipes[0])); ix++) {
+				if(pipes[ix].fd > 0) {
+					fds[nfds].fd = pipes[ix].fd;
+					fds[nfds].events = POLLIN|POLLERR|POLLHUP;
+					fds[nfds].revents = 0;
+					nfds++;
+				}
+			}
+
+			int nEvents = poll(fds,nfds,1000);
+
+			if(nEvents < 0) {
+
+				throw system_error(errno,system_category(),string{"Error reading data from pid "} + to_string(this->pid));
+
+			} else if(nEvents > 0) {
+
+				for(size_t ix = 0; nEvents > 0 && ix < (sizeof(pipes) /sizeof(pipes[0])); ix++) {
+
+					if(fds[ix].revents) {
+
+						if(fds[ix].revents & MainLoop::oninput) {
+							read(ix);
+						}
+
+						if(fds[ix].revents & MainLoop::onerror) {
+							onStdErr("Error reading pipe");
+							close(this->pipes[ix].fd);
+							this->pipes[ix].fd = -1;
+						}
+
+						if(fds[ix].revents & MainLoop::onhangup) {
+							onStdErr("Pipe was closed");
+							close(this->pipes[ix].fd);
+							this->pipes[ix].fd = -1;
+						}
+
+						nEvents--;
+					}
+
+				}
+
+			}
+			int status = 0;
+			waitpid(this->pid,&status,WNOHANG);
+
+			if(WIFEXITED(status)) {
+				rc = this->status.exit = WEXITSTATUS(status);
+				onExit(rc);
+				break;
+			}
+
+			if(WIFSIGNALED(status)) {
+				rc = -1;
+				this->status.failed = true;
+				this->status.termsig = WTERMSIG(status);
+				onSignal(this->status.termsig);
+				break;
+			}
+
+		}
+
+		return rc;
+
+	}
+
+	void SubProcess::start() {
+
+		init();
 
 		MainLoop::getInstance().insert(
 			this,
