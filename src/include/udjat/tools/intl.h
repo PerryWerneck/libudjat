@@ -19,13 +19,18 @@
 
  #pragma once
 
- #ifdef HAVE_LIBINTL
+ #if defined(GETTEXT_PACKAGE)
+
 	#include <locale.h>
 	#include <libintl.h>
-	#define _( x )                  dgettext(PACKAGE_NAME,x)
+
+	#define _( x )                  dgettext(GETTEXT_PACKAGE,x)
 	#define N_( x )                 x
+
  #else
+
 	#define _( x )                  x
 	#define N_( x )                 x
+
  #endif // HAVE_LIBINTL
 

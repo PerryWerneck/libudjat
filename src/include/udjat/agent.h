@@ -46,12 +46,17 @@
 		T value;
 
 		/// @brief Agent states.
-		std::vector<std::shared_ptr<State<T>>> states;
+		std::vector<std::shared_ptr<State<T>>> statelist;
 
 	protected:
 
+		/// @brief Get agent states.
+		inline const std::vector<std::shared_ptr<State<T>>> states() const {
+			return this->statelist;
+		}
+
 		std::shared_ptr<Abstract::State> stateFromValue() const override {
-			for(auto state : states) {
+			for(auto state : statelist) {
 				if(state->compare(this->value))
 					return state;
 			}
@@ -64,15 +69,10 @@
 
 		/// @brief Insert state.
 		void push_back(std::shared_ptr<State<T>> state) {
-			states.push_back(state);
+			statelist.push_back(state);
 		}
 
 	public:
-		/*
-		Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
-			to_value(node, value);
-		}
-		*/
 
 		Agent(const pugi::xml_node &node, const T v = 0) : Abstract::Agent(node), value(v) {
 			to_value(node, value);
@@ -81,7 +81,7 @@
 		Agent(const char *name = "") : Abstract::Agent(name), value(0) {
 		}
 
-		Agent(const char *name, T v) : Abstract::Agent(name), value(v) {
+		Agent(const char *name, const T v) : Abstract::Agent(name), value(v) {
 		}
 
 		bool set(const T &value) {
@@ -93,14 +93,24 @@
 			return updated(true);
 		}
 
-		T get() const noexcept {
-			return value;
-		}
-
 		bool assign(const char *value) override {
 			T new_value;
 			to_value(value,new_value);
 			return set(new_value);
+		}
+
+		inline Agent & operator = (const T value) {
+			set(value);
+			return *this;
+		}
+
+		inline Agent & operator = (const char *value) {
+			assign(value);
+			return *this;
+		}
+
+		T get() const noexcept {
+			return value;
 		}
 
 		/// @brief Insert State.
@@ -178,9 +188,15 @@
 
 		}
 
-		//bool hasStates() const noexcept override {
-		//	return !states.empty();
-		//}
+		inline Agent & operator = (const std::string & value) {
+			set(value);
+			return *this;
+		}
+
+		inline Agent & operator = (const char *value) {
+			assign(value);
+			return *this;
+		}
 
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 			auto state = std::make_shared<State<std::string>>(node);
@@ -237,6 +253,11 @@
 
 			this->value = value;
 			return updated(true);
+		}
+
+		inline Agent & operator = (const bool value) {
+			set(value);
+			return *this;
 		}
 
 		bool get() const noexcept {
