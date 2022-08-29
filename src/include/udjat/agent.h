@@ -45,18 +45,13 @@
 		/// @brief Agent value.
 		T value;
 
-		/// @brief Agent states.
-		std::vector<std::shared_ptr<State<T>>> statelist;
-
 	protected:
 
-		/// @brief Get agent states.
-		inline const std::vector<std::shared_ptr<State<T>>> states() const {
-			return this->statelist;
-		}
+		/// @brief Agent states.
+		std::vector<std::shared_ptr<State<T>>> states;
 
 		std::shared_ptr<Abstract::State> stateFromValue() const override {
-			for(auto state : statelist) {
+			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
@@ -65,10 +60,6 @@
 
 		Udjat::Value & get(Udjat::Value &value) const override {
 			return value.set(this->value);
-		}
-
-		/// @brief Insert state.
-		void push_back(std::shared_ptr<State<T>> state) {
 		}
 
 	public:
@@ -115,7 +106,7 @@
 		/// @brief Insert State.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 			auto state = std::make_shared<State<T>>(node);
-			statelist.push_back(state);
+			states.push_back(state);
 			return state;
 		}
 
@@ -132,10 +123,10 @@
 		/// @brief Agent value.
 		std::string value;
 
+	protected:
+
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<std::string>>> states;
-
-	protected:
 
 		std::shared_ptr<Abstract::State> stateFromValue() const override {
 			for(auto state : states) {
