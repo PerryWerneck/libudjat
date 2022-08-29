@@ -69,7 +69,6 @@
 
 		/// @brief Insert state.
 		void push_back(std::shared_ptr<State<T>> state) {
-			statelist.push_back(state);
 		}
 
 	public:
@@ -116,7 +115,7 @@
 		/// @brief Insert State.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 			auto state = std::make_shared<State<T>>(node);
-			push_back(state);
+			statelist.push_back(state);
 			return state;
 		}
 
@@ -148,11 +147,6 @@
 
 		Udjat::Value & get(Udjat::Value &value) const override {
 			return value.set(this->value);
-		}
-
-		/// @brief Insert state.
-		void push_back(std::shared_ptr<State<std::string>> state) {
-			states.push_back(state);
 		}
 
 	public:
@@ -200,7 +194,7 @@
 
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 			auto state = std::make_shared<State<std::string>>(node);
-			push_back(state);
+			states.push_back(state);
 			return state;
 		}
 
@@ -229,11 +223,6 @@
 					return state;
 			}
 			return super::stateFromValue();
-		}
-
-		/// @brief Insert state.
-		void push_back(std::shared_ptr<State<bool>> state) {
-			states.push_back(state);
 		}
 
 	public:
@@ -267,7 +256,7 @@
 		/// @brief Insert State.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) {
 			auto state =std::make_shared<State<bool>>(node);
-			push_back(state);
+			states.push_back(state);
 			return state;
 		}
 
