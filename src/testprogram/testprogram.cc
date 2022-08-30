@@ -81,7 +81,6 @@ int main(int argc, char **argv) {
 
 			public:
 				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
-					load(node);
 				}
 
 				bool refresh() override {

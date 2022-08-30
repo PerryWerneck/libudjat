@@ -119,12 +119,12 @@
 				if(path && *path) {
 
 					// Has defined root path, find agent.
-					agent->find(path,true,true)->load(node);
+					agent->find(path,true,true)->setup(node);
 
 				} else {
 
 					// No path, load here.
-					agent->load(node);
+					agent->setup(node);
 
 				}
 

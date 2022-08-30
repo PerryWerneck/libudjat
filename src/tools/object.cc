@@ -71,7 +71,7 @@
 		set(node);
 	}
 
-	void Abstract::Object::load(const pugi::xml_node &node) {
+	void Abstract::Object::setup(const pugi::xml_node &node) {
 
 		for(pugi::xml_node child : node) {
 

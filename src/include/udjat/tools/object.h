@@ -33,13 +33,11 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
-		protected:
-
-			/// @brief Load children.
-			/// @param node The XML node with the children definitions.
-			virtual void load(const pugi::xml_node &node);
-
 		public:
+
+			/// @brief Setup object.
+			/// @param node The XML node with the object definitions.
+			virtual void setup(const pugi::xml_node &node);
 
 			/// @brief Call method on every ocorrence of 'tagname' until method returns 'true'.
 			/// @param node The xml node.

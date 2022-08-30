@@ -231,15 +231,6 @@ namespace Udjat {
 				}
 			},
 
-			/*
-			{
-				"timestamp",
-				[]() {
-					return make_shared<Udjat::Agent<TimeStamp>>();
-				}
-			},
-			*/
-
 		};
 
 		const char *type = node.attribute("type").as_string("int32");
@@ -251,7 +242,6 @@ namespace Udjat {
 			if(factory) {
 				auto agent = factory->AgentFactory(parent,node);
 				if(agent) {
-					agent->load(node);
 					return agent;
 				}
 			}
@@ -261,7 +251,6 @@ namespace Udjat {
 
 				if(!strcasecmp(type,builder.type)) {
 					auto agent = builder.build(node);
-					agent->load(node);
 					return agent;
 				}
 
@@ -269,6 +258,10 @@ namespace Udjat {
 
 		}
 
+
+		{
+
+		}
 		return Factory::AgentFactory(parent,node);
 	}
 

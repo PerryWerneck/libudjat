@@ -186,12 +186,12 @@
 			/// @param type The agent type.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const char *type, const pugi::xml_node &node);
+			bool ChildFactory(const char *type, const pugi::xml_node &node);
 
 			/// @brief Create and insert child from XML definition.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const pugi::xml_node &node);
+			bool ChildFactory(const pugi::xml_node &node);
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
@@ -214,7 +214,7 @@
 
 			/// @brief Load children from xml node.
 			/// @brief node XML node with agent attributes.
-			void load(const pugi::xml_node &node) override;
+			void setup(const pugi::xml_node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();
