@@ -30,6 +30,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
  #include <system_error>
+ #include <iostream>
 
  using namespace std;
 
@@ -65,7 +66,7 @@
 			CloseHandle(hWrite);
 	}
 
-	SubProcess::SubProcess(const char *c) : command(c) {
+	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n),command(c) {
 		ZeroMemory(&piProcInfo,sizeof(piProcInfo));
 	}
 
@@ -124,7 +125,53 @@
 
 	int SubProcess::run() {
 
-		throw system_error(ENOTSUP,system_category(),"Cant run Win32 subprocess (yet)");
+		init();
+
+		DWORD dwRead;
+		CHAR chBuf[1024];
+		BOOL bSuccess = FALSE;
+		while(true) {
+
+			HANDLE lpHandles[] = { pipes[0].hRead, pipes[1].hRead };
+
+			DWORD response = WaitForMultipleObjects(sizeof(lpHandles)/sizeof(lpHandles[0]),lpHandles,FALSE,500);
+
+			switch(response) {
+			case WAIT_OBJECT_0:
+				bSuccess = ReadFile(pipes[0].hRead, chBuf, sizeof(chBuf), &dwRead, NULL);
+				if(!bSuccess) {
+					clog << "Error " << GetLastError() << " reading  subprocess stdout" << endl;
+					return -1;
+				} else if(dwRead) {
+					cout << "Got " << dwRead << " bytes from stdout" << endl;
+				} else {
+					cout << "Empty data from stdout" << endl;
+				}
+				break;
+
+			case WAIT_OBJECT_0+1:
+				bSuccess = ReadFile(pipes[1].hRead, chBuf, sizeof(chBuf), &dwRead, NULL);
+				if(!bSuccess) {
+					clog << "Error " << GetLastError() << " reading subprocess stderr" << endl;
+					return -1;
+				} else if(dwRead) {
+					cout << "Got " << dwRead << " bytes from stderr" << endl;
+				} else {
+					cout << "Empty data from stdout" << endl;
+				}
+				break;
+
+			case WAIT_FAILED:
+				cerr << "process\tError " << GetLastError() << " waiting for subprocess data" << endl;
+				return -1;
+
+			default:
+				clog << "process\tUnexpected return " << response << " from WaitForMultipleObjects while waiting for subprocess data" << endl;
+				return -1;
+
+			}
+
+		}
 
 	}
 

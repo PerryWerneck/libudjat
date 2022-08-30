@@ -19,12 +19,13 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <udjat/tools/object.h>
  #include <string>
 
  namespace Udjat {
 
 	/// @brief Creates and run a child process.
-	class UDJAT_API SubProcess {
+	class UDJAT_API SubProcess : public NamedObject {
 	private:
 
 #ifdef _WIN32
@@ -93,7 +94,9 @@
 		SubProcess(const SubProcess &) = delete;
 		SubProcess(const SubProcess *) = delete;
 
-		/// @brief Create a sub-process.
+		SubProcess(const char *name, const char *command);
+
+		/// @brief Create a sub-process with the default name.
 		SubProcess(const char *command);
 
 		/// @brief Get command line

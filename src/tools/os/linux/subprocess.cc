@@ -37,6 +37,7 @@
  #include <sys/wait.h>
  #include <poll.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -141,7 +142,7 @@
 
 	}
 
-	SubProcess::SubProcess(const char *c) : command(c) {
+	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
 		memset(pipes[0].buffer,0,sizeof(pipes[0].buffer));
 		memset(pipes[1].buffer,0,sizeof(pipes[1].buffer));
 		Controller::getInstance().insert(this);
@@ -163,7 +164,7 @@
 	void SubProcess::init() {
 
 		if(this->pid != -1) {
-			throw system_error(EBUSY,system_category(),string{"The child process is active on pid "} + to_string(this->pid));
+			throw system_error(EBUSY,system_category(),Logger::Message{"The child process is active on pid {}",this->pid});
 		}
 
 		//
@@ -176,14 +177,14 @@
 
 		// Create sockets.
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, out) < 0) {
-			throw system_error(errno,system_category(),string{"Can't create stdout pipes for '"} + c_str() + "'");
+			throw system_error(errno,system_category(),Logger::Message{"Can't create stdout pipes for '{}'",command});
 		}
 
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, err) < 0) {
 			errcode = errno;
 			::close(out[0]);
 			::close(out[1]);
-			throw system_error(errcode,system_category(),string{"Can't create stderr pipes for '"} + c_str() + "'");
+			throw system_error(errno,system_category(),Logger::Message{"Can't create stderr pipes for '{}'",command});
 		}
 
 		switch (this->pid = vfork()) {
@@ -243,7 +244,7 @@
 
 			if(nEvents < 0) {
 
-				throw system_error(errno,system_category(),string{"Error reading data from pid "} + to_string(this->pid));
+				throw system_error(errno,system_category(),Logger::Message{"Error reading data from pid {}",this->pid});
 
 			} else if(nEvents > 0) {
 
