@@ -52,6 +52,7 @@
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/misc.h" />
 		<Unit filename="src/include/private/updater.h" />
+		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />
 		<Unit filename="src/include/udjat/agent/abstract.h" />
 		<Unit filename="src/include/udjat/agent/level.h" />
@@ -111,6 +112,7 @@
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
+		<Unit filename="src/main/agent/testprogram/testprogram.cc" />
 		<Unit filename="src/main/agent/update.cc" />
 		<Unit filename="src/main/alert/abstract.cc" />
 		<Unit filename="src/main/alert/activation.cc" />
@@ -240,6 +242,7 @@
 		<Unit filename="src/tools/string.cc" />
 		<Unit filename="src/tools/string/expand.cc" />
 		<Unit filename="src/tools/string/string.cc" />
+		<Unit filename="src/tools/subprocess.cc" />
 		<Unit filename="src/tools/subprocess/private.h" />
 		<Unit filename="src/tools/subprocess/subprocess.cc" />
 		<Unit filename="src/tools/systemservice.cc" />

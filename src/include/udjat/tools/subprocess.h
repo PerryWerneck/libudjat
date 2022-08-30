@@ -27,6 +27,21 @@
 	class UDJAT_API SubProcess {
 	private:
 
+#ifdef _WIN32
+
+		struct Pipe {
+			HANDLE hRead = 0;
+			HANDLE hWrite = 0;
+
+			Pipe();
+			~Pipe();
+
+		} pipes[2];
+
+		PROCESS_INFORMATION piProcInfo;
+
+#else
+
 		/// @brief Subprocess controller.
 		class Controller;
 		friend class Controller;
@@ -46,11 +61,13 @@
 			char buffer[256];
 		} pipes[2];
 
-		/// @brief Initialize.
-		void init();
-
 		/// @brief Read from pipe.
 		void read(int id);
+
+#endif // _WIN32
+
+		/// @brief Initialize.
+		void init();
 
 		/// @brief The command line to start.
 		std::string command;

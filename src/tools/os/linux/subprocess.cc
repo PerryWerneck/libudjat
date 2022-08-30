@@ -160,68 +160,6 @@
 
 	}
 
-	int SubProcess::run(const char *command) {
-		return SubProcess(command).run();
-	}
-
-	void SubProcess::start(const char *command) {
-
-		SubProcess *process = new SubProcess(command);
-
-		ThreadPool::getInstance().push([process]() {
-
-			try {
-
-				process->start();
-
-			} catch(const std::exception &e) {
-
-				process->onStdErr((string{"Error '"} + e.what() + "' starting process").c_str());
-				delete process;
-
-			} catch(...) {
-
-				process->onStdErr("Unexpected error starting process");
-				delete process;
-
-			}
-
-		});
-
-
-
-	}
-
-	/// @brief Called on subprocess stdout.
-	void SubProcess::onStdOut(const char *line) {
-		cout << line << endl;
-	}
-
-	/// @brief Called on subprocess stderr.
-	void SubProcess::onStdErr(const char *line) {
-		onStdOut(line);
-	}
-
-	/// @brief Called on subprocess normal exit.
-	void SubProcess::onExit(int rc) {
-		string msg = string{"Process '"} + command + "' finishes with rc=" + to_string(rc);
-
-		if(rc) {
-			onStdOut(msg.c_str());
-		} else {
-			onStdErr(msg.c_str());
-		}
-
-	}
-
-	/// @brief Called on subprocess abnormal exit.
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void SubProcess::onSignal(int sig) {
-		onStdErr((string{"Process '" + command + "' finishes with signal "} + to_string(sig)).c_str());
-	}
-	#pragma GCC diagnostic pop
-
 	void SubProcess::init() {
 
 		if(this->pid != -1) {
