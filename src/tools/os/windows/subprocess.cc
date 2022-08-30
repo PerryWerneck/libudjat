@@ -125,14 +125,49 @@
 
 	}
 
+	void SubProcess::read(int id) {
+
+		DWORD dwRead = 0;
+
+		BOOL bSuccess =
+				ReadFile(
+					pipes[id].hRead,
+					pipes[id].buffer+pipes[id].length,
+					sizeof(pipes[id].buffer) - (pipes[id].length+1),
+					&dwRead,
+					NULL
+				);
+
+		if(!bSuccess) {
+
+			DWORD errcode = GetLastError();
+
+			if(errcode == ERROR_BROKEN_PIPE) {
+				DWORD rc = 0;
+				if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
+					onExit(rc);
+				}
+			} else {
+				warning() << "Error " << errcode << " reading from subprocess" << endl;
+			}
+			piProcInfo.dwProcessId = 0;
+
+		} else if(dwRead) {
+
+			pipes[id].buffer[pipes[id].length+dwRead] = 0;
+			parse(id);
+
+		} else {
+			info() << "Empty data from subprocess" << endl;
+		}
+
+	}
+
 	int SubProcess::run() {
 
 		init();
 
-		DWORD dwRead;
-		CHAR chBuf[1024];
-		BOOL bSuccess = FALSE;
-		while(true) {
+		while(piProcInfo.dwProcessId) {
 
 			HANDLE lpHandles[] = { pipes[0].hRead, pipes[1].hRead };
 
@@ -140,36 +175,11 @@
 
 			switch(response) {
 			case WAIT_OBJECT_0:
-				bSuccess = ReadFile(pipes[0].hRead, chBuf, sizeof(chBuf)-1, &dwRead, NULL);
-				if(!bSuccess) {
-					DWORD errcode = GetLastError();
-
-					if(errcode == ERROR_BROKEN_PIPE) {
-						onExit(0);
-						info() << "Process has ended" << endl;
-						return 0;
-					}
-
-					warning() << "Error " << errcode << " reading  subprocess stdout" << endl;
-					return -1;
-				} else if(dwRead) {
-					chBuf[dwRead] = 0;
-					info() << "Got " << dwRead << " bytes from stdout '" << ((const char *) chBuf) << "'" << endl;
-				} else {
-					info() << "Empty data from stdout" << endl;
-				}
+				read(0);
 				break;
 
 			case WAIT_OBJECT_0+1:
-				bSuccess = ReadFile(pipes[1].hRead, chBuf, sizeof(chBuf), &dwRead, NULL);
-				if(!bSuccess) {
-					warning() << "Error " << GetLastError() << " reading subprocess stderr" << endl;
-					return -1;
-				} else if(dwRead) {
-					info() << "Got " << dwRead << " bytes from stderr" << endl;
-				} else {
-					info() << "Empty data from stdout" << endl;
-				}
+				read(1);
 				break;
 
 			case WAIT_FAILED:
@@ -183,6 +193,8 @@
 			}
 
 		}
+
+		return 0;
 
 	}
 

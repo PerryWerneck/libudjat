@@ -374,33 +374,7 @@
 		}
 
 		pipes[id].buffer[pipes[id].length+szRead] = 0;
-
-		char *from = pipes[id].buffer;
-		char *to = strchr(from,'\n');
-		while(to) {
-
-			*to = 0;
-
-			if(id) {
-				onStdErr(from);
-			} else {
-				onStdOut(from);
-			}
-
-			from = to+1;
-			to = strchr(from,'\n');
-		}
-
-		if(from && from != pipes[id].buffer) {
-			pipes[id].length = strlen(from);
-			char *to = pipes[id].buffer;
-			while(*from) {
-				*(to++) = *(from++);
-			}
-			*to = 0;
-		}
-
-		pipes[id].length = strlen(pipes[id].buffer);
+		parse(id);
 
 	}
 

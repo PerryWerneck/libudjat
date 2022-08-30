@@ -28,11 +28,21 @@
 	class UDJAT_API SubProcess : public NamedObject {
 	private:
 
+		/// @brief Parse input.
+		void parse(int id);
+
+		/// @brief Read from pipe.
+		void read(int id);
+
 #ifdef _WIN32
 
 		struct Pipe {
+
 			HANDLE hRead = 0;
 			HANDLE hWrite = 0;
+
+			size_t length = 0;
+			char buffer[1024];
 
 			Pipe();
 			~Pipe();
@@ -61,9 +71,6 @@
 			size_t length = 0;
 			char buffer[256];
 		} pipes[2];
-
-		/// @brief Read from pipe.
-		void read(int id);
 
 #endif // _WIN32
 

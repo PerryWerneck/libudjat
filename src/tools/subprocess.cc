@@ -95,12 +95,12 @@
 
 	/// @brief Called on subprocess stdout.
 	void SubProcess::onStdOut(const char *line) {
-		cout << line << endl;
+		info() << line << endl;
 	}
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		onStdOut(line);
+		error() << line << endl;
 	}
 
 	/// @brief Called on subprocess normal exit.
@@ -122,5 +122,39 @@
 		onStdErr(Logger::Message{"Process '{}' finishes with signal {}",command,std::to_string(sig)}.c_str());
 	}
 	#pragma GCC diagnostic pop
+
+	void SubProcess::parse(int id) {
+
+		char *from = pipes[id].buffer;
+		char *to = strchr(from,'\n');
+		while(to) {
+
+			*to = 0;
+			if(to > from && *(to-1) == '\r') {
+				*(to-1) = 0;
+			}
+
+			if(id) {
+				onStdErr(from);
+			} else {
+				onStdOut(from);
+			}
+
+			from = to+1;
+			to = strchr(from,'\n');
+		}
+
+		if(from && from != pipes[id].buffer) {
+			pipes[id].length = strlen(from);
+			char *to = pipes[id].buffer;
+			while(*from) {
+				*(to++) = *(from++);
+			}
+			*to = 0;
+		}
+
+		pipes[id].length = strlen(pipes[id].buffer);
+
+	}
 
  }
