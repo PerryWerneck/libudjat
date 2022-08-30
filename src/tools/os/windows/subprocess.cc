@@ -29,6 +29,8 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/win32/exception.h>
  #include <system_error>
  #include <iostream>
 
@@ -103,7 +105,7 @@
 										&piProcInfo);		// receives PROCESS_INFORMATION
 
 		if(!bSuccess) {
-			throw runtime_error("Cant create process");
+			throw Win32::Exception(Logger::Message("Cant create process '{}'",command));
 		}
 
 		// Close handles to the stdin and stdout pipes no longer needed by the child process.
@@ -138,35 +140,44 @@
 
 			switch(response) {
 			case WAIT_OBJECT_0:
-				bSuccess = ReadFile(pipes[0].hRead, chBuf, sizeof(chBuf), &dwRead, NULL);
+				bSuccess = ReadFile(pipes[0].hRead, chBuf, sizeof(chBuf)-1, &dwRead, NULL);
 				if(!bSuccess) {
-					clog << "Error " << GetLastError() << " reading  subprocess stdout" << endl;
+					DWORD errcode = GetLastError();
+
+					if(errcode == ERROR_BROKEN_PIPE) {
+						onExit(0);
+						info() << "Process has ended" << endl;
+						return 0;
+					}
+
+					warning() << "Error " << errcode << " reading  subprocess stdout" << endl;
 					return -1;
 				} else if(dwRead) {
-					cout << "Got " << dwRead << " bytes from stdout" << endl;
+					chBuf[dwRead] = 0;
+					info() << "Got " << dwRead << " bytes from stdout '" << ((const char *) chBuf) << "'" << endl;
 				} else {
-					cout << "Empty data from stdout" << endl;
+					info() << "Empty data from stdout" << endl;
 				}
 				break;
 
 			case WAIT_OBJECT_0+1:
 				bSuccess = ReadFile(pipes[1].hRead, chBuf, sizeof(chBuf), &dwRead, NULL);
 				if(!bSuccess) {
-					clog << "Error " << GetLastError() << " reading subprocess stderr" << endl;
+					warning() << "Error " << GetLastError() << " reading subprocess stderr" << endl;
 					return -1;
 				} else if(dwRead) {
-					cout << "Got " << dwRead << " bytes from stderr" << endl;
+					info() << "Got " << dwRead << " bytes from stderr" << endl;
 				} else {
-					cout << "Empty data from stdout" << endl;
+					info() << "Empty data from stdout" << endl;
 				}
 				break;
 
 			case WAIT_FAILED:
-				cerr << "process\tError " << GetLastError() << " waiting for subprocess data" << endl;
+				error() << "Error " << GetLastError() << " waiting for subprocess data" << endl;
 				return -1;
 
 			default:
-				clog << "process\tUnexpected return " << response << " from WaitForMultipleObjects while waiting for subprocess data" << endl;
+				warning() << "Unexpected return " << response << " from WaitForMultipleObjects while waiting for subprocess data" << endl;
 				return -1;
 
 			}

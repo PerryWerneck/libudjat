@@ -24,6 +24,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/subprocess.h>
  #include <udjat/tools/file.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
@@ -217,5 +218,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	return Service().run(argc,argv);
+	SubProcess("subprocess.bat").run();
+
+	// return Service().run(argc,argv);
 }

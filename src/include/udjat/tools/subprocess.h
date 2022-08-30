@@ -75,9 +75,6 @@
 
 	protected:
 
-		/// @brief Destroy subprocess (automatic when the subprocess finishes).
-		virtual ~SubProcess();
-
 		/// @brief Called on subprocess output.
 		virtual void onStdOut(const char *line);
 
@@ -98,6 +95,8 @@
 
 		/// @brief Create a sub-process with the default name.
 		SubProcess(const char *command);
+
+		virtual ~SubProcess();
 
 		/// @brief Get command line
 		inline const char * c_str() const noexcept {
