@@ -35,7 +35,14 @@
 #endif // DEBUG
 
 			while(enabled && Controller::getInstance().wait(this)) {
-				cout << enabled << endl;
+#ifdef DEBUG
+				cout << __FILE__ << "(" << __LINE__ << ") event worker is " << (enabled ? "enabled" : "disabled") << endl;
+#endif // DEBUG
+
+				if(!MainLoop::getInstance()) {
+					cerr << "win32\tMainloop is dead, disabling event worker" << endl;
+					enabled = false;
+				}
 			}
 
 #ifdef DEBUG

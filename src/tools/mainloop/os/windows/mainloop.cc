@@ -95,7 +95,7 @@
 	}
 
  	BOOL MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
-		return PostMessage(hwnd,uMsg,wParam,lParam);
+ 		return PostMessage(hwnd,uMsg,wParam,lParam);
 	}
 
 	LRESULT WINAPI MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -170,17 +170,29 @@
 				break;
 
 			case WM_EVENT_ACTION:
-				try {
+				{
+#ifdef DEBUG
+					cout <<  __FILE__ << "(" << __LINE__ << ") - WM_EVENT_ACTION" << endl;
+#endif //
+					Win32::Event::Controller &controller = Win32::Event::Controller::getInstance();
+					Win32::Event * event = controller.find((HANDLE) lParam);
 
-					Win32::Event * event = Win32::Event::Controller::getInstance().find((HANDLE) lParam);
-					if(event) {
-						event->call(wParam != 0);
+					try {
+
+						if(event && !event->handle(wParam != 0)) {
+							controller.remove(event);
+						}
+
+					} catch(const std::exception &e) {
+						cerr << "Win32\tError '" << e.what() << "' processing event handler" << endl;
+						controller.remove(event);
+
+					} catch(...) {
+						cerr << "Win32\tUnexpected error processing event handler" << endl;
+						controller.remove(event);
+
 					}
 
-				} catch(const std::exception &e) {
-					cerr << "Win32\tError '" << e.what() << "' processing event handler" << endl;
-				} catch(...) {
-					cerr << "Win32\tUnexpected error processing event handler" << endl;
 				}
 				break;
 

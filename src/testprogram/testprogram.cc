@@ -139,8 +139,13 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-/*
 #ifdef _WIN32
+			MainLoop::getInstance().insert(0,2000,[](){
+				(new SubProcess("subprocess.bat"))->start();
+				return false;
+			});
+
+			/*
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
 
@@ -154,6 +159,7 @@ int main(int argc, char **argv) {
 						cout << "event\tSignaled" << endl;
 					}
 
+					return true;
 				});
 
 				MainLoop::getInstance().insert(this,1000,[hEvent]() {
@@ -169,8 +175,8 @@ int main(int argc, char **argv) {
 					return true;
 				});
 			}
+			*/
 #endif // _WIN32
-*/
 
 			//Alert::activate("test","dummy+http://localhost");
 
@@ -218,7 +224,8 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	SubProcess("subprocess.bat").run();
+	// SubProcess("subprocess.bat").run();
 
-	// return Service().run(argc,argv);
+	return Service().run(argc,argv);
+
 }

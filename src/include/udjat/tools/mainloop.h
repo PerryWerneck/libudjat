@@ -229,12 +229,12 @@ namespace Udjat {
 		/// @brief Wakeup main loop.
 		void wakeup() noexcept;
 
-		#ifdef _WIN32
+#ifdef _WIN32
 
 			/// @brief Watch windows object.
-			void insert(const void *id, HANDLE handle, const std::function<bool()> call);
+			void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
 
-		#endif // _WIN32
+#endif // _WIN32
 
 		/// @brief Insert socket/file handler in the list of event sources.
 		void push_back(std::shared_ptr<Handler> handler);
@@ -264,7 +264,7 @@ namespace Udjat {
 
 		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
-		static void insert(HANDLE handle, std::function<void(HANDLE handle,bool abandoned)> exec);
+		static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
 		static void remove(HANDLE handle);
 
 #endif // _WIN32

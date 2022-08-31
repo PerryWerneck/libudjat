@@ -32,9 +32,13 @@
 		void parse(int id);
 
 		/// @brief Read from pipe.
-		void read(int id);
+		/// @return true if the pipe is still valid.
+		bool read(int id);
 
 #ifdef _WIN32
+
+		// class Proxy;
+		// friend class Proxy;
 
 		struct Pipe {
 
@@ -46,6 +50,10 @@
 
 			Pipe();
 			~Pipe();
+
+			inline operator bool() const noexcept {
+				return hRead != 0;
+			}
 
 		} pipes[2];
 

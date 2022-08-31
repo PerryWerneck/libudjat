@@ -74,6 +74,15 @@
 
 	SubProcess::~SubProcess() {
 
+		/*
+		{
+			DWORD rc = 0;
+			if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE && running()) {
+				onExit(rc);
+			}
+		}
+		*/
+
 		if(piProcInfo.hProcess) {
 			CloseHandle(piProcInfo.hProcess);
 		}
@@ -81,6 +90,10 @@
 		if(piProcInfo.hThread) {
 			CloseHandle(piProcInfo.hThread);
 		}
+
+#ifdef DEBUG
+		info() << "Subprocess was destroyed" << endl;
+#endif // DEBUG
 	}
 
 	void SubProcess::init() {
@@ -119,13 +132,7 @@
 
 	}
 
-	void SubProcess::start() {
-
-		throw system_error(ENOTSUP,system_category(),"Cant start Win32 subprocess (yet)");
-
-	}
-
-	void SubProcess::read(int id) {
+	bool SubProcess::read(int id) {
 
 		DWORD dwRead = 0;
 
@@ -142,15 +149,17 @@
 
 			DWORD errcode = GetLastError();
 
-			if(errcode == ERROR_BROKEN_PIPE) {
-				DWORD rc = 0;
-				if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
-					onExit(rc);
-				}
-			} else {
-				warning() << "Error " << errcode << " reading from subprocess" << endl;
+			if(errcode != ERROR_BROKEN_PIPE) {
+				error() << "Error '" << Win32::Exception::format() << "' reading from subprocess" << endl;
 			}
-			piProcInfo.dwProcessId = 0;
+
+#ifdef DEBUG
+			info() << "Pipe " << id << " was closed" << endl;
+#endif // DEBUG
+
+			CloseHandle(pipes[id].hRead);
+			pipes[id].hRead = 0;
+			return false;
 
 		} else if(dwRead) {
 
@@ -158,44 +167,11 @@
 			parse(id);
 
 		} else {
-			info() << "Empty data from subprocess" << endl;
+			warning() << "Empty data from subprocess" << endl;
 		}
 
+		return true;
 	}
 
-	int SubProcess::run() {
-
-		init();
-
-		while(piProcInfo.dwProcessId) {
-
-			HANDLE lpHandles[] = { pipes[0].hRead, pipes[1].hRead };
-
-			DWORD response = WaitForMultipleObjects(sizeof(lpHandles)/sizeof(lpHandles[0]),lpHandles,FALSE,500);
-
-			switch(response) {
-			case WAIT_OBJECT_0:
-				read(0);
-				break;
-
-			case WAIT_OBJECT_0+1:
-				read(1);
-				break;
-
-			case WAIT_FAILED:
-				error() << "Error " << GetLastError() << " waiting for subprocess data" << endl;
-				return -1;
-
-			default:
-				warning() << "Unexpected return " << response << " from WaitForMultipleObjects while waiting for subprocess data" << endl;
-				return -1;
-
-			}
-
-		}
-
-		return 0;
-
-	}
 
  }

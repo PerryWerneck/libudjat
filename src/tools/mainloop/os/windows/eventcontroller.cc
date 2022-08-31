@@ -20,6 +20,7 @@
  #include <config.h>
  #include "private.h"
  #include <udjat/win32/exception.h>
+ #include <udjat/tools/mainloop.h>
 
  using namespace std;
 
@@ -51,7 +52,7 @@
 
 	void Win32::Event::Controller::remove(Event *event) {
 #ifdef DEBUG
-		cout << "win32\tRemoving event " << hex << ((unsigned long long) event->handle) << dec << endl;
+		cout << "win32\tRemoving event " << hex << ((unsigned long long) event->hEvent) << dec << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
 		workers.remove_if([event](Worker &worker){
@@ -61,7 +62,7 @@
 			return worker.events.empty();
 		});
 #ifdef DEBUG
-		cout << "win32\tEvent " << hex << ((unsigned long long) event->handle) << dec << " was removed" << endl;
+		cout << "win32\tEvent " << hex << ((unsigned long long) event->hEvent) << dec << " was removed" << endl;
 #endif // DEBUG
 	}
 
@@ -70,7 +71,7 @@
 		lock_guard<mutex> lock(guard);
 		for(Worker &worker : workers) {
 			for(auto event : worker.events) {
-				if(event->handle == handle) {
+				if(event->hEvent == handle) {
 					return event;
 				}
 			}
@@ -85,7 +86,7 @@
 		lock_guard<mutex> lock(guard);
 
 		for(auto event : worker->events) {
-			if(event->handle == handle) {
+			if(event->hEvent == handle) {
 				return event;
 			}
 		}
@@ -111,7 +112,7 @@
 
 			DWORD ix = 0;
 			for(auto event : worker->events) {
-				lpHandles[ix++] = event->handle;
+				lpHandles[ix++] = event->hEvent;
 			}
 
 		}
@@ -128,12 +129,25 @@
 		} else if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
 
 			// Signaled.
-			MainLoop::getInstance().post(WM_EVENT_ACTION,0,(LPARAM) lpHandles[response - WAIT_OBJECT_0]);
+#ifdef DEBUG
+			cout <<  __FUNCTION__ << "(" << __LINE__ << ") posting WM_EVENT_ACTION" << endl;
+#endif //
+
+			if(!MainLoop::getInstance().post(WM_EVENT_ACTION,0,(LPARAM) lpHandles[response - WAIT_OBJECT_0])) {
+				cerr << "win32\tError " << GetLastError() << " posting WM_EVENT_ACTION" << endl;
+			}
 
 		} else if(response == WAIT_FAILED) {
 
-			cerr << "win32\t" << Win32::Exception::format() << endl;
-			return false;
+			DWORD errcode = GetLastError();
+
+			if(errcode != ERROR_INVALID_HANDLE) {
+				cerr << "win32\tWaitForMultipleObjects has failed with error '" << Win32::Exception::format(errcode) << "' (" << errcode << ")" << endl;
+
+				if(errcode) {
+					return false;
+				}
+			}
 
 		}
 
