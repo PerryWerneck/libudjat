@@ -61,46 +61,10 @@
 		}
 
 		bool handle(bool UDJAT_UNUSED(abandoned)) override {
-			process->info() << " *** Activity on watcher " << id << endl;
 			return process->read(id);
 		}
 
 	};
-
-	/*
-	class UDJAT_PRIVATE SubProcess::Proxy {
-	private:
-		SubProcess *process;
-
-	public:
-
-		constexpr Proxy(SubProcess *p) : process(p) {
-		}
-
-		~Proxy() {
-
-#ifdef DEBUG
-			process->warning() << "*** Proxy was deleted, cleaning" << endl;
-#endif // DEBUG
-
-			{
-				DWORD rc = 0;
-				if(GetExitCodeProcess(process->piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
-					process->onExit(rc);
-				} else {
-					process->warning() << "Still active, no more pipes" << endl;
-				}
-			}
-
-			delete process;
-		}
-
-		bool read(int id) {
-			process->read(id);
-			return process->pipes[id].hRead != 0;
-		}
-	};
-	*/
 
 	void SubProcess::start() {
 
@@ -114,15 +78,16 @@
 		new Watcher(this,0);
 		new Watcher(this,1);
 
-		/*
-		MainLoop::insert(pipes[0].hRead, [this](HANDLE handle,bool abandoned) {
-			return read(0);
+		MainLoop::insert(piProcInfo.hProcess, [this](HANDLE handle,bool abandoned) {
+			DWORD rc;
+			if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
+				onExit(exitcode = rc);
+				CloseHandle(piProcInfo.hProcess);
+				piProcInfo.hProcess = 0;
+				return false;
+			}
+			return true;
 		});
-
-		MainLoop::insert(pipes[1].hRead, [this](HANDLE handle,bool abandoned) {
-			return read(1);
-		});
-		*/
 
 	}
 

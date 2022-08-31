@@ -59,6 +59,8 @@
 
 		PROCESS_INFORMATION piProcInfo;
 
+		int exitcode = -1;
+
 #else
 
 		/// @brief Subprocess controller.

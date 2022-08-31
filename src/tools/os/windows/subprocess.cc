@@ -66,6 +66,7 @@
 
 		if(hWrite)
 			CloseHandle(hWrite);
+
 	}
 
 	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n),command(c) {
@@ -73,15 +74,6 @@
 	}
 
 	SubProcess::~SubProcess() {
-
-		/*
-		{
-			DWORD rc = 0;
-			if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE && running()) {
-				onExit(rc);
-			}
-		}
-		*/
 
 		if(piProcInfo.hProcess) {
 			CloseHandle(piProcInfo.hProcess);
