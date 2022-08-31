@@ -33,64 +33,23 @@
 
  namespace Udjat {
 
-	const char *getName(const char *c) {
-
-		const char *p[] = {
-					strrchr(c,'\\'),
-					strrchr(c,'/')
-				};
-
-		if(p[0] && (p[1] && p[1] > p[0])) {
-			return p[0]+1;
-		}
-
-		if(p[1] && (p[0] && p[0] > p[1])) {
-			return p[1]+1;
-		}
-
-		if(p[0]) {
-			return p[0]+1;
-		}
-
-		if(p[1]) {
-			return p[1]+1;
-		}
-
-		return "subprocess";
-
-	}
-
-	SubProcess::SubProcess(const char *c) : SubProcess(getName(c),c) {
+	SubProcess::SubProcess(const char *c) : SubProcess("subprocess",c) {
 	}
 
 	int SubProcess::run(const char *command) {
 		return SubProcess(command).run();
 	}
 
+	int SubProcess::run(const NamedObject *obj, const char *command) {
+		return SubProcess(obj,command).run();
+	}
+
 	void SubProcess::start(const char *command) {
+		(new SubProcess(command))->start();
+	}
 
-		SubProcess *process = new SubProcess(command);
-
-		ThreadPool::getInstance().push([process]() {
-
-			try {
-
-				process->start();
-
-			} catch(const std::exception &e) {
-
-				process->onStdErr((string{"Error '"} + e.what() + "' starting process").c_str());
-				delete process;
-
-			} catch(...) {
-
-				process->onStdErr("Unexpected error starting process");
-				delete process;
-
-			}
-
-		});
-
+	void SubProcess::start(const NamedObject *obj, const char *command) {
+		(new SubProcess(obj, command))->start();
 	}
 
 	/// @brief Called on subprocess stdout.
@@ -105,6 +64,7 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
+
 		Logger::Message msg("Process '{}' finishes with rc={}",command,rc);
 
 		if(rc) {

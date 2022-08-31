@@ -141,7 +141,7 @@ int main(int argc, char **argv) {
 
 #ifdef _WIN32
 			MainLoop::getInstance().insert(0,2000,[](){
-				(new SubProcess("subprocess.bat"))->start();
+				SubProcess::start("subprocess.bat");
 				return false;
 			});
 
@@ -224,8 +224,8 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	// SubProcess("subprocess.bat").run();
+	return SubProcess("subprocess.bat").run();
 
-	return Service().run(argc,argv);
+	//return Service().run(argc,argv);
 
 }

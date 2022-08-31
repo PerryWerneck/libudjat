@@ -143,6 +143,7 @@
 	}
 
 	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
+		info() << "Running '" << command << "'" << endl;
 		memset(pipes[0].buffer,0,sizeof(pipes[0].buffer));
 		memset(pipes[1].buffer,0,sizeof(pipes[1].buffer));
 		Controller::getInstance().insert(this);

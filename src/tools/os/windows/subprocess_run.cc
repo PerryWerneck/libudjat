@@ -40,48 +40,66 @@
 
 	int SubProcess::run() {
 
-		throw system_error(ENOTSUP,system_category(),"Unable to run sync processes");
-
-		/*
 		init();
 
-		while(pipes[0].hRead && pipes[1].hRead) {
+		while(running()) {
 
-			HANDLE lpHandles[sizeof(pipes)/sizeof(pipes[0] = { pipes[0].hRead, pipes[1].hRead };
+			HANDLE lpHandles[ (sizeof(pipes)/sizeof(pipes[0]))+1 ];
+			DWORD nCount = 0;
 
-			DWORD response = WaitForMultipleObjects(sizeof(lpHandles)/sizeof(lpHandles[0]),lpHandles,FALSE,500);
+			for(size_t pipe = 0; pipe < (sizeof(pipes)/sizeof(pipes[0])); pipe++) {
+				if(pipes[pipe].hRead) {
+					lpHandles[nCount++] = pipes[pipe].hRead;
+				}
+			}
 
-			switch(response) {
-			case WAIT_OBJECT_0:
-				read(0);
-				break;
+			if(piProcInfo.hProcess) {
+				lpHandles[nCount++] = piProcInfo.hProcess;
+			}
 
-			case WAIT_OBJECT_0+1:
-				read(1);
-				break;
+			DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,1000);
+			HANDLE handle = 0;
 
-			case WAIT_FAILED:
-				error() << "Error " << GetLastError() << " waiting for subprocess data" << endl;
-				return -1;
+			if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
 
-			default:
-				warning() << "Unexpected return " << response << " from WaitForMultipleObjects while waiting for subprocess data" << endl;
-				return -1;
+				handle = lpHandles[response - WAIT_OBJECT_0];
+
+			} else if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
+
+				handle = lpHandles[response - WAIT_ABANDONED_0];
+
+			} else if(response == WAIT_FAILED) {
+
+				throw Win32::Exception();
+
+			} else if(response == WAIT_TIMEOUT) {
+
+				continue;
+
+			}
+
+			if(handle == piProcInfo.hProcess) {
+
+				DWORD rc;
+				if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
+					onExit(exitcode = rc);
+					CloseHandle(piProcInfo.hProcess);
+					piProcInfo.hProcess = 0;
+				}
+
+			} else {
+
+				for(size_t pipe = 0; pipe < (sizeof(pipes)/sizeof(pipes[0])); pipe++) {
+					if(handle == pipes[pipe].hRead) {
+						read(pipe);
+					}
+				}
 
 			}
 
 		}
 
-		DWORD rc = 0;
-
-		if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
-			onExit(rc);
-			return rc;
-		}
-
-		error() << "Process still active after closing pipes" << endl;
-		return -1;
-		*/
+		return exitcode;
 
 	}
 

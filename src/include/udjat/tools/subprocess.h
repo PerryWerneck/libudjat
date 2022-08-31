@@ -108,11 +108,17 @@
 		/// @brief Called on subprocess abnormal exit (redirects to onStdOut if not overrided).
 		virtual void onSignal(int sig);
 
+		/// @brief Start sub process in background; the object will be removed when it exits.
+		void start();
+
 	public:
 		SubProcess(const SubProcess &) = delete;
 		SubProcess(const SubProcess *) = delete;
 
 		SubProcess(const char *name, const char *command);
+
+		SubProcess(const NamedObject *obj, const char *command) : SubProcess(obj->name(),command) {
+		}
 
 		/// @brief Create a sub-process with the default name.
 		SubProcess(const char *command);
@@ -124,9 +130,6 @@
 			return command.c_str();
 		}
 
-		/// @brief Start sub process in background; this object will be removed when it exits.
-		void start();
-
 		/// @brief Run subprocess in foreground.
 		/// @return Sub process return code.
 		int run();
@@ -134,10 +137,13 @@
 		/// @brief Start sub process in background using the default object.
 		static void start(const char *command);
 
+		static void start(const NamedObject *obj, const char *command);
+
 		/// @brief Start sub process in foreground using the default object.
 		/// @return Sub process return code.
 		static int run(const char *command);
 
+		static int run(const NamedObject *obj, const char *command);
 	};
 
  }

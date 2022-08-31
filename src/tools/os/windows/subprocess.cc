@@ -70,6 +70,7 @@
 	}
 
 	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n),command(c) {
+		info() << "Running '" << command << "'" << endl;
 		ZeroMemory(&piProcInfo,sizeof(piProcInfo));
 	}
 
