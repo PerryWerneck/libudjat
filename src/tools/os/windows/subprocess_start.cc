@@ -61,7 +61,16 @@
 		}
 
 		bool handle(bool UDJAT_UNUSED(abandoned)) override {
-			return process->read(id);
+
+			if(process->read(id)) {
+				return true;
+			}
+
+			if(!process->running()) {
+				delete process;
+			}
+
+			return false;
 		}
 
 	};
