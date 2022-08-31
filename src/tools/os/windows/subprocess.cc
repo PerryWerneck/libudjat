@@ -150,7 +150,7 @@
 			DWORD errcode = GetLastError();
 
 			if(errcode != ERROR_BROKEN_PIPE) {
-				error() << "Error '" << Win32::Exception::format() << "' reading from subprocess" << endl;
+				error() << "Error '" << Win32::Exception::format(errcode) << "' reading from subprocess" << endl;
 			}
 
 #ifdef DEBUG

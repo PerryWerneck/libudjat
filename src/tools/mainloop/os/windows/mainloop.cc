@@ -169,6 +169,7 @@
 				}
 				break;
 
+			/*
 			case WM_EVENT_ACTION:
 				{
 #ifdef DEBUG
@@ -195,6 +196,7 @@
 
 				}
 				break;
+			*/
 
 			default:
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);

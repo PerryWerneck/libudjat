@@ -29,39 +29,30 @@
 
 		events.push_back(event);
 
-		this->hThread = new thread([this]() {
+		std::thread hThread([this]() {
 #ifdef DEBUG
 			cout << "win32\tStarting event monitor thread" << endl;
 #endif // DEBUG
 
-			while(enabled && Controller::getInstance().wait(this)) {
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ") event worker is " << (enabled ? "enabled" : "disabled") << endl;
-#endif // DEBUG
-
+			while(Controller::getInstance().wait(this)) {
 				if(!MainLoop::getInstance()) {
 					cerr << "win32\tMainloop is dead, disabling event worker" << endl;
-					enabled = false;
+					break;
 				}
 			}
 
 #ifdef DEBUG
 			cout << "win32\tStopping event monitor thread" << endl;
 #endif // DEBUG
+
+			delete this;
+
 		});
+
+		hThread.detach();
 	}
 
 	Win32::Event::Controller::Worker::~Worker() {
-#ifdef DEBUG
-		cout << "win32\tStopping event monitor" << endl;
-#endif // DEBUG
-		enabled = false;
-		hThread->join();
-		delete hThread;
-#ifdef DEBUG
-		cout << "win32\tEvent monitor stopped" << endl;
-#endif // DEBUG
-
 	}
 
  }

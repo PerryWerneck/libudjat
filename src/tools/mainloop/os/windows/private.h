@@ -36,30 +36,32 @@
 
 		class UDJAT_API Event::Controller {
 		public:
-			struct Worker {
-				bool enabled = true;
-				std::thread *hThread = nullptr;
+			class Worker {
+			private:
+				~Worker();
+
+			public:
+				Worker(Win32::Event *event);
+
 				std::list<Win32::Event *> events;
 
 				// Disable copy.
 				Worker(const Worker &) = delete;
 				Worker(const Worker *) = delete;
 
-				Worker(Win32::Event *event);
-
-				~Worker();
-
 			};
 
 			static Win32::Event * find(Worker *worker, HANDLE handle) noexcept;
 
-			static bool wait(Worker *worker) noexcept;
+			bool wait(Worker *worker) noexcept;
+			void call(HANDLE handle, bool abandoned) noexcept;
 
 		private:
 
-			std::list<Worker> workers;
+			std::list<Worker *> workers;
 
 			static std::mutex guard;
+
 
 			Controller() = default;
 		public:

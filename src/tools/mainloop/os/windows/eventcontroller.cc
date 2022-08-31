@@ -36,7 +36,7 @@
 
 	void Win32::Event::Controller::insert(Event *event) {
 		lock_guard<mutex> lock(guard);
-		for(auto worker = workers.begin(); worker != workers.end(); worker++) {
+		for(auto worker : workers) {
 
 			if(worker->events.size() < MAXIMUM_WAIT_OBJECTS) {
 				worker->events.push_back(event);
@@ -46,7 +46,7 @@
 		}
 
 		// Not found, alloc a new worker.
-		workers.emplace_back(event);
+		workers.push_back(new Worker(event));
 
 	}
 
@@ -55,11 +55,11 @@
 		cout << "win32\tRemoving event " << hex << ((unsigned long long) event->hEvent) << dec << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
-		workers.remove_if([event](Worker &worker){
-			worker.events.remove_if([event](const Event *e) {
+		workers.remove_if([event](Worker *worker){
+			worker->events.remove_if([event](const Event *e) {
 				return event == e;
 			});
-			return worker.events.empty();
+			return worker->events.empty();
 		});
 #ifdef DEBUG
 		cout << "win32\tEvent " << hex << ((unsigned long long) event->hEvent) << dec << " was removed" << endl;
@@ -69,8 +69,8 @@
 	Win32::Event * Win32::Event::Controller::find(HANDLE handle) noexcept {
 
 		lock_guard<mutex> lock(guard);
-		for(Worker &worker : workers) {
-			for(auto event : worker.events) {
+		for(Worker * worker : workers) {
+			for(auto event : worker->events) {
 				if(event->hEvent == handle) {
 					return event;
 				}
@@ -94,7 +94,33 @@
 		return nullptr;
 	}
 
+	void Win32::Event::Controller::call(HANDLE handle, bool abandoned) noexcept {
+
+		Win32::Event * event = find(handle);
+		if(event) {
+
+			try {
+
+				if(event->handle(abandoned)) {
+					return;
+				}
+
+			} catch(const std::exception &e) {
+				cerr << "Win32\tError '" << e.what() << "' processing event handler" << endl;
+
+			} catch(...) {
+				cerr << "Win32\tUnexpected error processing event handler" << endl;
+
+			}
+
+			remove(event);
+
+		}
+
+	}
+
 	bool Win32::Event::Controller::wait(Worker *worker) noexcept {
+
 		DWORD nCount = 0;
 		HANDLE *lpHandles = nullptr;
 
@@ -119,23 +145,16 @@
 
 		// https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects
 		DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,500);
+
 		if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
 
 			// Abandoned.
-			if(!MainLoop::getInstance().post(WM_EVENT_ACTION,1,(LPARAM) lpHandles[response - WAIT_ABANDONED_0])) {
-				cerr << "win32\tError " << GetLastError() << " posting WM_EVENT_ACTION" << endl;
-			}
+			call(lpHandles[response - WAIT_ABANDONED_0],true);
 
 		} else if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
 
 			// Signaled.
-#ifdef DEBUG
-			cout <<  __FUNCTION__ << "(" << __LINE__ << ") posting WM_EVENT_ACTION" << endl;
-#endif //
-
-			if(!MainLoop::getInstance().post(WM_EVENT_ACTION,0,(LPARAM) lpHandles[response - WAIT_OBJECT_0])) {
-				cerr << "win32\tError " << GetLastError() << " posting WM_EVENT_ACTION" << endl;
-			}
+			call(lpHandles[response - WAIT_OBJECT_0],false);
 
 		} else if(response == WAIT_FAILED) {
 
