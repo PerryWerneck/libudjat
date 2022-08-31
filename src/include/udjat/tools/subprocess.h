@@ -37,8 +37,8 @@
 
 #ifdef _WIN32
 
-		// class Proxy;
-		// friend class Proxy;
+		class Watcher;
+		friend class Watcher;
 
 		struct Pipe {
 

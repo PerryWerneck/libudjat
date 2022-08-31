@@ -113,7 +113,7 @@
 
 			}
 
-			remove(event);
+			delete event;
 
 		}
 
@@ -129,7 +129,6 @@
 			nCount = (DWORD) worker->events.size();
 
 			if(!nCount) {
-				// TODO: Enqueue worker cleanup.
 				return false;
 			}
 
@@ -140,11 +139,16 @@
 			for(auto event : worker->events) {
 				lpHandles[ix++] = event->hEvent;
 			}
+			nCount = ix;
 
 		}
 
+#ifdef DEBUG
+		cout << "Waiting for " << nCount << " handlers" << endl;
+#endif // DEBUG
+
 		// https://docs.microsoft.com/en-us/windows/win32/api/synchapi/nf-synchapi-waitformultipleobjects
-		DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,500);
+		DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,2000);
 
 		if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
 
@@ -159,13 +163,8 @@
 		} else if(response == WAIT_FAILED) {
 
 			DWORD errcode = GetLastError();
-
-			if(errcode != ERROR_INVALID_HANDLE) {
+			if(errcode) {
 				cerr << "win32\tWaitForMultipleObjects has failed with error '" << Win32::Exception::format(errcode) << "' (" << errcode << ")" << endl;
-
-				if(errcode) {
-					return false;
-				}
 			}
 
 		}

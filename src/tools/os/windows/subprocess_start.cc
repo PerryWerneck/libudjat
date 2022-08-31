@@ -31,6 +31,7 @@
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/event.h>
  #include <udjat/tools/mainloop.h>
  #include <system_error>
  #include <iostream>
@@ -39,6 +40,32 @@
  using namespace std;
 
  namespace Udjat {
+
+	class UDJAT_PRIVATE SubProcess::Watcher : public Win32::Event {
+	private:
+		SubProcess * process;
+		int id;
+
+	public:
+		Watcher(SubProcess *p, int i) : Win32::Event(p->pipes[i].hRead), process(p), id(i) {
+#ifdef DEBUG
+			process->info() << " *** Watcher " << id << " is starting" << endl;
+#endif // DEBUG
+			start();
+		}
+
+		virtual ~Watcher() {
+#ifdef DEBUG
+			process->info() << " *** Watcher " << id << " was destroyed" << endl;
+#endif // DEBUG
+		}
+
+		bool handle(bool UDJAT_UNUSED(abandoned)) override {
+			process->info() << " *** Activity on watcher " << id << endl;
+			return process->read(id);
+		}
+
+	};
 
 	/*
 	class UDJAT_PRIVATE SubProcess::Proxy {
@@ -84,6 +111,10 @@
 
 		init();
 
+		new Watcher(this,0);
+		new Watcher(this,1);
+
+		/*
 		MainLoop::insert(pipes[0].hRead, [this](HANDLE handle,bool abandoned) {
 			return read(0);
 		});
@@ -91,6 +122,7 @@
 		MainLoop::insert(pipes[1].hRead, [this](HANDLE handle,bool abandoned) {
 			return read(1);
 		});
+		*/
 
 	}
 
