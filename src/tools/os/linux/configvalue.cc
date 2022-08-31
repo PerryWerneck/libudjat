@@ -120,7 +120,7 @@
 
 				if(err != ECONF_SUCCESS) {
 					hFile = nullptr;
-					throw std::runtime_error(econf_errString(err));
+					cerr << program_invocation_short_name << "\t" << econf_errString(err) << endl;;
 				}
 
 			}
@@ -136,21 +136,25 @@
 		}
 
 		bool hasGroup(const char *group) {
+
 			std::lock_guard<std::recursive_mutex> lock(guard);
 			bool rc = false;
 
-			size_t length = 0;
-			char **groups;
-			econf_err err = econf_getGroups((econf_file *) hFile, &length, &groups);
-			if(err != ECONF_SUCCESS)
-				throw std::runtime_error(econf_errString(err));
-			for(size_t ix = 0; ix < length; ix++) {
-				if(!strcasecmp(groups[ix],group)) {
-					rc = true;
-					break;
+			if(hFile) {
+				size_t length = 0;
+				char **groups;
+				econf_err err = econf_getGroups((econf_file *) hFile, &length, &groups);
+				if(err != ECONF_SUCCESS)
+					throw std::runtime_error(econf_errString(err));
+				for(size_t ix = 0; ix < length; ix++) {
+					if(!strcasecmp(groups[ix],group)) {
+						rc = true;
+						break;
+					}
 				}
+				econf_freeArray(groups);
 			}
-			econf_freeArray(groups);
+
 			return rc;
 		}
 
@@ -186,6 +190,10 @@
 
 		int32_t get(const std::string &group, const std::string &name, const int32_t def) const {
 
+			if(!hFile) {
+				return def;
+			}
+
 			int32_t result;
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
@@ -209,6 +217,10 @@
 		}
 
 		int64_t get(const std::string &group, const std::string &name, const int64_t def) const {
+
+			if(!hFile) {
+				return def;
+			}
 
 			int64_t result;
 
@@ -234,6 +246,10 @@
 
 		uint32_t get(const std::string &group, const std::string &name, const uint32_t def) const {
 
+			if(!hFile) {
+				return def;
+			}
+
 			uint32_t result;
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
@@ -256,6 +272,10 @@
 		}
 
 		uint64_t get(const std::string &group, const std::string &name, const uint64_t def) const {
+
+			if(!hFile) {
+				return def;
+			}
 
 			uint64_t result;
 
@@ -280,6 +300,10 @@
 
 		float get(const std::string &group, const std::string &name, const float def) const {
 
+			if(!hFile) {
+				return def;
+			}
+
 			float result;
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
@@ -302,6 +326,10 @@
 		}
 
 		double get(const std::string &group, const std::string &name, const double def) const {
+
+			if(!hFile) {
+				return def;
+			}
 
 			double result;
 
@@ -327,6 +355,10 @@
 
 		bool get(const std::string &group, const std::string &name, const bool def) const {
 
+			if(!hFile) {
+				return def;
+			}
+
 			bool result;
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
@@ -350,6 +382,10 @@
 		}
 
 		std::string get(const std::string &group, const std::string &name, const char *def) const {
+
+			if(!hFile) {
+				return def;
+			}
 
 			char *result = NULL;
 
@@ -394,6 +430,10 @@
 		}
 
 		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+
+			if(!hFile) {
+				return false;
+			}
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
 
