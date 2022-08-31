@@ -139,12 +139,16 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-#ifdef _WIN32
 			MainLoop::getInstance().insert(0,2000,[](){
+#ifdef _WIN32
 				SubProcess::start("subprocess.bat");
+#else
+				SubProcess::start("ls");
+#endif // _WIN32
 				return false;
 			});
 
+#ifdef _WIN32
 			/*
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
@@ -224,8 +228,14 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
+#ifdef _WIN32
 	return SubProcess("subprocess.bat").run();
+#else
+	return SubProcess("ls").run();
+#endif // _WIN32
+	*/
 
-	//return Service().run(argc,argv);
+	return Service().run(argc,argv);
 
 }

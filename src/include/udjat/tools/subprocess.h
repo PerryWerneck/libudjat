@@ -86,6 +86,10 @@
 			char buffer[256];
 		} pipes[2];
 
+		inline bool running() const noexcept {
+			return this->pid != -1;
+		}
+
 #endif // _WIN32
 
 		/// @brief Initialize.

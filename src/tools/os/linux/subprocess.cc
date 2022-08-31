@@ -227,7 +227,7 @@
 		init();
 
 		int rc = -1;
-		while(this->pid != -1) {
+		while(running()) {
 
 			struct pollfd fds[sizeof(pipes)/sizeof(pipes[0])];
 
@@ -355,7 +355,7 @@
 
 	}
 
-	void SubProcess::read(int id) {
+	bool SubProcess::read(int id) {
 
 		ssize_t szRead =
 			::read(
@@ -366,17 +366,18 @@
 
 		if(szRead < 0) {
 			onStdErr((string{"Error '"} + strerror(errno) + "' reading from pipe").c_str());
-			return;
+			return true;
 		}
 
 		if(szRead == 0) {
 			onStdErr("Unexpected 'EOF' reading from pipe");
-			return;
+			return false;
 		}
 
 		pipes[id].buffer[pipes[id].length+szRead] = 0;
 		parse(id);
 
+		return true;
 	}
 
  }
