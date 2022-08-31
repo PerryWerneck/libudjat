@@ -61,6 +61,10 @@
 
 		int exitcode = -1;
 
+		inline bool running() const noexcept {
+			return pipes[0] || pipes[1] || piProcInfo.hProcess;
+		}
+
 #else
 
 		/// @brief Subprocess controller.

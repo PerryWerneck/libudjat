@@ -84,6 +84,9 @@
 				onExit(exitcode = rc);
 				CloseHandle(piProcInfo.hProcess);
 				piProcInfo.hProcess = 0;
+				if(!running()) {
+					delete this;
+				}
 				return false;
 			}
 			return true;
