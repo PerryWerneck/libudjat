@@ -25,6 +25,8 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/base64.h>
+ #include <udjat/tools/application.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -118,7 +120,10 @@
 	}
 
 	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {
-		throw system_error(ENOTSUP,system_category(),"Not implemented");
+		Application::CacheDir name{"urls"};
+		name += Base64::encode(url());
+		save(name.c_str());
+		return name;
 	}
 
 	std::string Protocol::Worker::filename() {
