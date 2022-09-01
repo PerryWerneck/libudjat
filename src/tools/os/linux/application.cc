@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <errno.h>
+ #include <fcntl.h>
  #include <unistd.h>
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -84,31 +85,6 @@
 		append("/");
 	}
 
-	Application::CacheDir::CacheDir() : File::Path{"/var/cache/"} {
-		append(program_invocation_short_name);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
-		append("/");
-	}
-
-	Application::CacheDir::CacheDir(const char *filename) : CacheDir() {
-		append(filename);
-	}
-
-	Application::CacheDir::CacheDir(const char *type, const char *filename) : CacheDir(type) {
-		append(type);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
-		append("/");
-		append(filename);
-	}
-
 	Application::DataFile::DataFile(const char *name) {
 		if(name[0] == '/' || (name[0] == '.' && name[1] == '/')) {
 			assign(name);
@@ -148,6 +124,52 @@
 		append("/");
 		append(subdir);
 		append("/");
+	}
+
+	Application::CacheDir::CacheDir() : string{"/var/cache/"} {
+
+		append(program_invocation_short_name);
+		append("/");
+
+		if(mkdir(c_str(), 0700) == 0)
+			return;
+
+		if(access(c_str(),W_OK) == 0)
+			return;
+
+		const char *homedir = getenv("HOME");
+		if(!homedir)
+			homedir = "~";
+
+		assign(homedir);
+		append("/.cache/");
+
+		append(program_invocation_short_name);
+		append("/");
+
+		if(mkdir(c_str(), 0700) == 0)
+			return;
+
+		if(access(c_str(),W_OK) == 0)
+			return;
+
+		throw system_error(EPERM,system_category(),c_str());
+
+	}
+
+	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
+
+		append(subdir);
+		append("/");
+
+		if(mkdir(c_str(), 0700) == 0)
+			return;
+
+		if(access(c_str(),W_OK) == 0)
+			return;
+
+		throw system_error(EPERM,system_category(),c_str());
+
 	}
 
  }

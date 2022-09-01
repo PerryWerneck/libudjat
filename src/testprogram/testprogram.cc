@@ -236,6 +236,11 @@ int main(int argc, char **argv) {
 #endif // _WIN32
 	*/
 
-	return Service().run(argc,argv);
+	{
+		Application::CacheDir cache{"urls"};
+		cout << "Cache set to " << cache << endl;
+	}
+
+	// return Service().run(argc,argv);
 
 }

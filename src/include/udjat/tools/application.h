@@ -90,14 +90,6 @@
 			DataDir(const char *subdir);
 		};
 
-		/// @brief Application cache dir.
-		class UDJAT_API CacheDir : public File::Path {
-		public:
-			CacheDir();
-			CacheDir(const char *filename);
-			CacheDir(const char *type, const char *filename);
-		};
-
 		/// @brief File from the application datadir.
 		class UDJAT_API DataFile : public std::string {
 		public:
@@ -125,6 +117,14 @@
 
 			/// @brief Create path to application subdir below the system's configuration path.
 			SysConfigDir(const char *subdir);
+		};
+
+		class UDJAT_API CacheDir : public std::string {
+		public:
+			CacheDir();
+			CacheDir(const char *subdir);
+
+
 		};
 
 	};
