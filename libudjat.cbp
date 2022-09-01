@@ -64,6 +64,7 @@
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
+		<Unit filename="src/include/udjat/tools/base64.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
@@ -169,6 +170,7 @@
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/testprogram/windows/resources.rc" />
 		<Unit filename="src/tools/application.cc" />
+		<Unit filename="src/tools/base64.cc" />
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/event.cc" />
 		<Unit filename="src/tools/eventcontroller.cc" />
