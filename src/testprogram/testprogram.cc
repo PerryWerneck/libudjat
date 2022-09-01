@@ -140,6 +140,14 @@ int main(int argc, char **argv) {
 			*/
 
 			MainLoop::getInstance().insert(0,2000,[](){
+				cout 	<< "------------------------------------------" << endl
+						<< "Cache: " << URL("http://localhost").filename() << endl
+						<< "------------------------------------------" << endl;
+				return false;
+			});
+
+
+			MainLoop::getInstance().insert(0,2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
 #else
@@ -236,11 +244,13 @@ int main(int argc, char **argv) {
 #endif // _WIN32
 	*/
 
+	/*
 	{
 		Application::CacheDir cache{"urls"};
 		cout << "Cache set to " << cache << endl;
 	}
+	*/
 
-	// return Service().run(argc,argv);
+	return Service().run(argc,argv);
 
 }

@@ -161,6 +161,16 @@
 		bool Client::save(const pugi::xml_node &node, const char *filename) {
 			return save(node,filename,dummy_progress);
 		}
+
+		std::string Client::filename(const std::function<bool(double current, double total)> &progress) {
+			return worker->filename(progress);
+		}
+
+		std::string Client::filename() {
+			return worker->filename();
+		}
+
+
 	}
 
  }

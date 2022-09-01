@@ -147,6 +147,14 @@
 		return HTTP::Client(*this).post(payload);
 	}
 
+	std::string URL::filename(const std::function<bool(double current, double total)> &progress) {
+		return HTTP::Client(*this).filename(progress);
+	}
+
+	std::string URL::filename() {
+		return HTTP::Client(*this).filename();
+	}
+
 	int URL::Components::portnumber() const {
 
 		for(const char *ptr = srvcname.c_str(); *ptr; ptr++) {
