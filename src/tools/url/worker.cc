@@ -117,6 +117,14 @@
 		return true;
 	}
 
+	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {
+		throw system_error(ENOTSUP,system_category(),"Not implemented");
+	}
+
+	std::string Protocol::Worker::filename() {
+		return filename(dummy_progress);
+	}
+
  }
 
 

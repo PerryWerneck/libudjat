@@ -202,17 +202,26 @@
 			/// @return true if the file was updated or replaced.
 			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace = false);
 
-			/// @brief Call URL, save response to temporary file.
+			/// @brief Get URL, save response to temporary file.
 			/// @return The temporary filename.
 			std::string save(const std::function<bool(double current, double total)> &progress);
 
-			/// @brief Call URL, return response as string.
+			/// @brief Get URL, save response to cache file.
+			/// @param progress The download progress notifier.
+			/// @return The cached filename.
+			virtual std::string filename(const std::function<bool(double current, double total)> &progress);
+
+			/// @brief Get URL, save response to cache file.
+			/// @return The cached filename.
+			std::string filename();
+
+			/// @brief Get URL, return response as string.
 			String get();
 
-			/// @brief Call URL (asyncronous when protocol handler can do it).
+			/// @brief Get URL (asyncronous when protocol handler can do it).
 			virtual void get(const std::function<void(int code, const char *response)> &call);
 
-			/// @brief Call URL, save response as filename.
+			/// @brief Get URL, save response as filename.
 			/// @return true if the file was updated.
 			/// @param replace If true the file will be replaced (if updated); if false a '.bak' file will be keep with the old contents.
 			bool save(const char *filename, bool replace = false);

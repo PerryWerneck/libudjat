@@ -53,8 +53,19 @@
 				return url().ComponentsFactory().path.c_str();
 			}
 
-			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) {
+			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
 				return String(Udjat::File::Text(path()).c_str());
+			}
+
+			std::string filename(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+				// No need for caching, just return the local file path.
+				auto filepath = path();
+
+				if(access(filepath.c_str(),F_OK) != 0) {
+					throw system_error(ENOENT,system_category(),filepath);
+				}
+
+				return filepath;
 			}
 
 			unsigned short test() override {

@@ -97,33 +97,6 @@
 
 				return String(proc.str());
 
-				/*
-				string script = this->path();
-
-				FILE *in = popen(script.c_str(), "r");
-				if(!in) {
-					throw system_error(errno,system_category(),script);
-				}
-
-				stringstream rsp;
-
-				try {
-
-					int ch;
-					while( (ch=fgetc(in)) != EOF) {
-						rsp << ((char) ch);
-					}
-
-				} catch(...) {
-					pclose(in);
-					throw;
-				}
-
-				int rc = pclose(in);
-				clog << "script\t" << script << " rc=" << rc << endl;
-
-				return String(rsp.str());
-				*/
 			}
 
 			unsigned short test() override {
@@ -138,11 +111,8 @@
 				int rc = SubProcess::run(script.c_str());
 
 				if(rc == 0) {
-					cout << "script\t" << script << " rc=" << rc << endl;
 					return 200;
 				}
-
-				clog << "script\t" << script << " rc=" << rc << endl;
 
 				return 500;
 			}
