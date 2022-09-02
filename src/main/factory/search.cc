@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/factory.h>
- #include <udjat/alert.h>
+ #include <udjat/alerts/abstract.h>
  #include <udjat/agent.h>
  #include <iostream>
  #include <udjat/moduleinfo.h>

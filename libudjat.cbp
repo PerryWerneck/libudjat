@@ -58,6 +58,8 @@
 		<Unit filename="src/include/udjat/agent/level.h" />
 		<Unit filename="src/include/udjat/agent/state.h" />
 		<Unit filename="src/include/udjat/alert.h" />
+		<Unit filename="src/include/udjat/alerts/abstract.h" />
+		<Unit filename="src/include/udjat/alerts/url.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
@@ -122,7 +124,9 @@
 		<Unit filename="src/main/alert/alert.cc" />
 		<Unit filename="src/main/alert/controller.cc" />
 		<Unit filename="src/main/alert/factory.cc" />
+		<Unit filename="src/main/alert/http.cc" />
 		<Unit filename="src/main/alert/private.h" />
+		<Unit filename="src/main/alert/url.cc" />
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />

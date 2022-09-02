@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/factory.h>
- #include <udjat/alert.h>
+ #include <udjat/alerts/url.h>
  #include <udjat/agent.h>
  #include <iostream>
  #include <udjat/moduleinfo.h>
@@ -45,12 +45,12 @@
 			return alert;
 		}
 
-		alert = make_shared<Udjat::Alert>(node);
-		if(alert->verbose()) {
-			alert->info() << "Using the default alert engine" << endl;
+		// Try internal alerts.
+		if(node.attribute("url")) {
+			return make_shared<Udjat::Alert::URL>(node);
 		}
 
-		return alert;
+		throw runtime_error("Required attributes 'url' or 'script' are missing");
 
 	}
 

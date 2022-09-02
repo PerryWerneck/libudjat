@@ -23,11 +23,11 @@
  #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
- #include <udjat/alert.h>
+ #include <udjat/alerts/abstract.h>
  #include <udjat/worker.h>
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
- #include <udjat/alert.h>
+ #include <udjat/alerts/abstract.h>
  #include <mutex>
  #include <list>
  #include <iostream>

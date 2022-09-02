@@ -22,7 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/object.h>
- #include <udjat/alert.h>
+ #include <udjat/alerts/abstract.h>
  #include <udjat/agent/state.h>
 
  namespace Udjat {
