@@ -76,12 +76,6 @@ namespace Udjat {
 
 			object["filename"] = module->filename();
 
-			void (*getInfo)(Value &object) = (void (*)(Value &)) getSymbol(module->handle,"udjat_module_info",false);
-
-			if(getInfo) {
-				getInfo(object);
-			}
-
 		}
 
 	}
