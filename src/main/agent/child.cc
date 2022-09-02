@@ -61,7 +61,6 @@
 
 				return factory.push_back(node);
 
-
 			} catch(const std::exception &e) {
 
 				factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;

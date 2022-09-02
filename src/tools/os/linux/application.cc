@@ -43,7 +43,7 @@
 		bind_textdomain_codeset(gettext_package, "UTF-8");
 
 #ifdef DEBUG
-		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << GETTEXT_PACKAGE << endl;
+		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << gettext_package << endl;
 #endif // DEBUG
 
 	}

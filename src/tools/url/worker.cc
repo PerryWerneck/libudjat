@@ -128,7 +128,7 @@
 	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {
 		Application::CacheDir name{"urls"};
 		name += Base64::encode(url());
-		save(name.c_str());
+		save(name.c_str(),progress);
 		return name;
 	}
 

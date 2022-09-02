@@ -65,10 +65,11 @@ namespace Udjat {
 			try {
 
 				auto state = StateFactory(node);
-				if(!state) {
+				if(state) {
+					state->setup(node);
+				} else {
 					error() << "Unable to create child state" << endl;
 				}
-				state->setup(node);
 
 			} catch(const std::exception &e) {
 
