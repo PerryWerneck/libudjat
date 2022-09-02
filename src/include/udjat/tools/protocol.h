@@ -193,6 +193,8 @@
 			}
 
 			/// @brief Call URL, return response as string.
+			/// @param progress The download progress notifier.
+			/// @return String with the URL contents.
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
 			/// @brief Call URL, save response as filename.
