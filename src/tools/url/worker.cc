@@ -90,6 +90,11 @@
 
 	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace) {
 
+		File::Temporary{filename}
+			.write(get(progress))
+			.save(filename,replace);
+
+		/*
 		String text = get(progress);
 
 		// TODO: Make backup.
@@ -115,6 +120,7 @@
 			length -= bytes;
 		}
 		::close(fd);
+		*/
 
 		return true;
 	}
