@@ -92,12 +92,14 @@
 		return value;
 	}
 
+	/*
 	Quark Attribute::as_quark(const char *def) const {
 		return Quark(to_string(def));
 	}
+	*/
 
 	const char * Attribute::c_str(const char *def) const {
-		return as_quark(def).c_str();
+		return Quark(to_string(def)).c_str();
 	}
 
 	bool is_allowed(const pugi::xml_node &node) {

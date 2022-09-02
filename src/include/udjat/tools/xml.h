@@ -18,70 +18,70 @@
  */
 
 /**
- * @file src/include/udjat/agent.h
+ * @file src/include/udjat/tools/xml.h
  *
- * @brief Declare the agent classes
+ * @brief Declare the udjat XML classes and tools
  *
  * @author perry.werneck@gmail.com
  *
  */
 
-#ifndef UDJAT_TOOLS_XML_H_INCLUDED
+ #pragma once
 
-	#define UDJAT_TOOLS_XML_H_INCLUDED
+ #include <pugixml.hpp>
+ #include <udjat/defs.h>
+// #include <udjat/tools/quark.h>
+ #include <string>
 
-	#include <pugixml.hpp>
-	#include <udjat/defs.h>
-	#include <udjat/tools/xml.h>
-	#include <udjat/tools/quark.h>
-	#include <string>
+ namespace Udjat {
 
-	namespace Udjat {
-
-		/// @brief Test common filter options.
-		/// @return true if the node is valid.
-		UDJAT_API bool is_allowed(const pugi::xml_node &node);
-
-		/// @brief Expand, if possible, values ${} from attribute.
-		UDJAT_API std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def);
-
-		/// @brief Wrapper for XML attribute
-		class UDJAT_API Attribute : public pugi::xml_attribute {
-		private:
-			std::string value;
-
-		public:
-			Attribute(const pugi::xml_node &node, const char *name, const char *upsearch);
-			Attribute(const pugi::xml_node &node, const char *name, bool upsearch);
-			Attribute(const pugi::xml_node &node, const char *name);
-
-			operator uint32_t() const {
-				return as_uint();
-			}
-
-			operator int32_t() const {
-				return as_int();
-			}
-
-			operator bool() const {
-				return as_bool();
-			}
-
-			/// @brief Return string value as quark.
-			Quark as_quark(const char *def = "") const;
-
-			/// @brief Convert string value to quark and return the stored value.
-			const char * c_str(const char *def = "") const;
-
-			/// @brief Select value from list.
-			/// @return Index of the attribute value (or exception if not found).
-			size_t select(const char *value, ...) __attribute__ ((sentinel));
-
-			std::string to_string(const std::string &def) const;
-
-		};
-
+	namespace XML {
+		using Node = pugi::xml_node;
+		using Attribute = pugi::xml_attribute;
 	}
 
+	/// @brief Test common filter options.
+	/// @return true if the node is valid.
+	UDJAT_API bool is_allowed(const XML::Node &node);
 
-#endif // UDJAT_TOOLS_XML_H_INCLUDED
+	/// @brief Expand, if possible, values ${} from attribute.
+	UDJAT_API std::string expand(const XML::Node &node, const XML::Attribute &attribute, const char *def);
+
+	/// @brief Wrapper for XML attribute
+	class UDJAT_API Attribute : public XML::Attribute {
+	private:
+		std::string value;
+
+	public:
+		Attribute(const XML::Node &node, const char *name, const char *upsearch);
+		Attribute(const XML::Node &node, const char *name, bool upsearch);
+		Attribute(const XML::Node &node, const char *name);
+
+		operator uint32_t() const {
+			return as_uint();
+		}
+
+		operator int32_t() const {
+			return as_int();
+		}
+
+		operator bool() const {
+			return as_bool();
+		}
+
+		/// @brief Return string value as quark.
+		//Quark as_quark(const char *def = "") const;
+
+		/// @brief Convert string value to quark and return the stored value.
+		const char * c_str(const char *def = "") const;
+
+		/// @brief Select value from list.
+		/// @return Index of the attribute value (or exception if not found).
+		size_t select(const char *value, ...) __attribute__ ((sentinel));
+
+		std::string to_string(const std::string &def) const;
+
+	};
+
+ }
+

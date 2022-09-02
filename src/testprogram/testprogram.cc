@@ -139,14 +139,17 @@ int main(int argc, char **argv) {
 			});
 			*/
 
+			/*
 			MainLoop::getInstance().insert(0,2000,[](){
-				cout 	<< "------------------------------------------" << endl
-						<< "Cache: " << URL("http://localhost").filename() << endl
-						<< "------------------------------------------" << endl;
+				cout << "------------------------------------------" << endl;
+				cout << "Cache: " << URL("http://localhost").filename() << endl;
+				cout << "------------------------------------------" << endl;
 				return false;
 			});
+			*/
 
 
+			/*
 			MainLoop::getInstance().insert(0,2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
@@ -155,6 +158,7 @@ int main(int argc, char **argv) {
 #endif // _WIN32
 				return false;
 			});
+			*/
 
 #ifdef _WIN32
 			/*

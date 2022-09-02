@@ -27,10 +27,17 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name) {
+	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type) {
 
 		std::shared_ptr<Abstract::Alert> alert;
 
+		if(!type) {
+			type = "default";	// Just in case.
+		}
+
+		//
+		// First, try using the type name (even for 'default').
+		//
 		if(Factory::search(node,[&parent,&alert](const Factory &factory, const pugi::xml_node &node){
 			alert = factory.AlertFactory(parent,node);
 			if(alert) {
@@ -40,20 +47,26 @@
 				return true;
 			}
 			return false;
-		},name)) {
+		},type)) {
 			return alert;
 		}
 
-		// Try internal alerts.
-		if(node.attribute("url")) {
-			return make_shared<Udjat::Alert::URL>(node);
+		//
+		// No factory for 'type', try default engines
+		//
+		if(!strcasecmp(type,"url") || (!strcasecmp(type,"default") && node.attribute("url"))) {
+			alert = make_shared<Udjat::Alert::URL>(node);
+		} else if(!strcasecmp(type,"script") || (!strcasecmp(type,"default") && node.attribute("script"))) {
+			alert = make_shared<Udjat::Alert::Script>(node);
+		} else {
+			throw runtime_error(string{"Unable to create an alert of type '"} + type + "'");
 		}
 
-		if(node.attribute("cmdline")) {
-			return make_shared<Udjat::Alert::Script>(node);
+		if(alert->verbose()) {
+			alert->info() << "Using default alert engine" << endl;
 		}
 
-		throw runtime_error("Required attributes 'url' or 'script' are missing");
+		return alert;
 
 	}
 
