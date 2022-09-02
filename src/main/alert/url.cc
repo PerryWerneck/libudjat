@@ -19,16 +19,8 @@
 
  #include <config.h>
  #include <udjat/alerts/url.h>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
- #include <udjat/tools/object.h>
- #include <udjat/tools/string.h>
- #include <udjat/agent.h>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/expander.h>
 
  using namespace std;
 

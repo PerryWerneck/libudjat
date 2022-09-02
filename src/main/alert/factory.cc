@@ -20,9 +20,8 @@
  #include <config.h>
  #include <udjat/factory.h>
  #include <udjat/alerts/url.h>
- #include <udjat/agent.h>
+ #include <udjat/alerts/script.h>
  #include <iostream>
- #include <udjat/moduleinfo.h>
 
  using namespace std;
 
@@ -48,6 +47,10 @@
 		// Try internal alerts.
 		if(node.attribute("url")) {
 			return make_shared<Udjat::Alert::URL>(node);
+		}
+
+		if(node.attribute("cmdline")) {
+			return make_shared<Udjat::Alert::Script>(node);
 		}
 
 		throw runtime_error("Required attributes 'url' or 'script' are missing");
