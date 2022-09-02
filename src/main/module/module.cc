@@ -10,9 +10,15 @@ using namespace std;
 namespace Udjat {
 
 	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),info(i) {
+
+		if(i.build && i.build < 20220902) {
+			throw system_error(EINVAL,system_category(),"Invalid build date on module");
+		}
+
 		if(!name) {
 			throw system_error(EINVAL,system_category(),"Module name cant be null");
 		}
+
 		Controller::getInstance().insert(this);
 	}
 

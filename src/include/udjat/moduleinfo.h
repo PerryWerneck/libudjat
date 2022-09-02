@@ -26,6 +26,14 @@
 	/// @brief Module information data.
 	struct UDJAT_API ModuleInfo {
 
+		// Module build - SHOULD BE THE FIRST VALUE.
+#ifdef BUILD_DATE
+		const int build = BUILD_DATE;
+#else
+		const int build = 0;
+#endif // BUILD_DATE
+
+
 		/// @brief The module name.
 #ifdef PACKAGE_NAME
 		const char *name = PACKAGE_NAME;
@@ -60,12 +68,6 @@
 #else
 		const char *url = "";
 #endif // PACKAGE_URL
-
-#ifdef BUILD_DATE
-		const unsigned long build = BUILD_DATE;
-#else
-		const unsigned long build = 0;
-#endif // BUILD_DATE
 
 #ifdef GETTEXT_PACKAGE
 		const char * gettext_package = GETTEXT_PACKAGE;
