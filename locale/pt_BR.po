@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2021-11-29 14:31-0300\n"
-"PO-Revision-Date: 2022-08-23 15:03-0300\n"
+"PO-Revision-Date: 2022-09-05 10:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -32,7 +32,7 @@ msgstr "Nenhum estado anormal foi reportado"
 
 #: src/main/agent/root.cc:147
 msgid "System is ready"
-msgstr "System em funcionamento"
+msgstr "Sistema em funcionamento"
 
 #: src/main/agent/state.cc:85 src/main/agent/state.cc:160
 msgid "Unexpected error switching state"
