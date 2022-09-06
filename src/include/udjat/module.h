@@ -49,7 +49,8 @@
 
 			/// @brief Preload modules before the reconfiguration.
 			/// @param pathname The xml definitions file (or folder) path.
-			static void preload(const char *pathname = nullptr);
+			/// @return true if success.
+			static bool preload(const char *pathname = nullptr) noexcept;
 
 			/// @brief Call method on every modules.
 			static void for_each(std::function<void(Module &module)> method);
@@ -62,12 +63,10 @@
 			/// @brief Load module by name or alias
 			/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
 			/// @param required true if the module is required.
-			/// @return true if the module is available.
-			static bool load(const char *name, bool required);
+			static void load(const char *name, bool required);
 
 			/// @brief Load module by XML node.
-			/// @return true if the module is available.
-			static bool load(const pugi::xml_node &node);
+			static void load(const pugi::xml_node &node);
 
 			/// @brief Unload modules.
 			static void unload();

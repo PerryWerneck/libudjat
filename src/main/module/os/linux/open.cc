@@ -22,6 +22,7 @@
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <unistd.h>
 
  namespace Udjat {
@@ -88,7 +89,7 @@
 		}
 
 		if(required) {
-			throw runtime_error(string{"Cant load module '"} + name + "'");
+			throw runtime_error(Logger::Message("Cant load module '{}'",name));
 		}
 
 		return NULL;

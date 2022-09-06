@@ -23,7 +23,9 @@
 
 namespace Udjat {
 
-	void Module::preload(const char *pathname) {
+	bool Module::preload(const char *pathname) noexcept {
+
+		bool rc = true;
 
 		// Preload from configuration file.
 		{
@@ -34,7 +36,18 @@ namespace Udjat {
 
 				Config::Value<bool> required("modules","required",false);
 				for(string &module : modules) {
-					load(module.c_str(),required);
+
+					try {
+
+						load(module.c_str(),required);
+
+					} catch(const std::exception &e) {
+
+						cerr << "modules\tCant load '" << module << "': " << e.what() << endl;
+						rc = false;
+
+					}
+
 				}
 			}
 
@@ -44,27 +57,39 @@ namespace Udjat {
 
 			// Preload from path.
 			cout << "modules\tPreloading from " << pathname << endl;
-			Udjat::for_each(pathname, [](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
+			Udjat::for_each(pathname, [&rc](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
 				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
 					if(node.attribute("preload").as_bool(false)) {
-						Module::load(node);
+
+						try {
+
+							Module::load(node);
+
+						} catch(const std::exception &e) {
+
+							cerr << "modules\t" << e.what() << endl;
+							rc = false;
+
+						}
+
 					}
 				}
 			});
 
 		}
 
+		return rc;
 	}
 
-	bool Module::load(const pugi::xml_node &node) {
-		return Controller::getInstance().load(node);
+	void Module::load(const pugi::xml_node &node) {
+		Controller::getInstance().load(node);
 	}
 
-	bool Module::load(const char *name, bool required) {
+	void Module::load(const char *name, bool required) {
 		return Controller::getInstance().load(name,required);
 	}
 
-	bool Module::Controller::load(const pugi::xml_node &node) {
+	void Module::Controller::load(const pugi::xml_node &node) {
 
 		const char * name = node.attribute("name").as_string();
 
@@ -77,60 +102,57 @@ namespace Udjat {
 #ifdef DEBUG
 			cout << "module\t**** The module '" << name << "' was already loaded" << endl;
 #endif // DEBUG
-			return true;
+			return;
 		}
 
 		// Open module.
 		auto handle = open(name,Object::getAttribute(node,"modules","required",true));
 
-		if(!handle) {
-			return false;
+		if(handle) {
+
+			try {
+
+				auto module = init(handle,node);
+				module->handle = handle;
+
+			} catch(...) {
+
+				close(handle);
+				throw;
+
+			}
+
 		}
-
-		try {
-
-			auto module = init(handle,node);
-			module->handle = handle;
-
-		} catch(...) {
-
-			close(handle);
-			throw;
-
-		}
-
-		return true;
 
 	}
 
-	bool Module::Controller::load(const char *name, bool required) {
+	void Module::Controller::load(const char *name, bool required) {
 
 		// Check if the module is already loaded.
 		if(find(name)) {
 #ifdef DEBUG
 			cout << "module\t**** The module '" << name << "' was already loaded" << endl;
 #endif // DEBUG
-			return true;
+			return;
 		}
 
 		auto handle = open(name,required);
 
-		if(!handle)
-			return false;
+		if(handle) {
 
-		try {
+			try {
 
-			auto module = init(handle);
-			module->handle = handle;
+				auto module = init(handle);
+				module->handle = handle;
 
-		} catch(...) {
+			} catch(...) {
 
-			close(handle);
-			throw;
+				close(handle);
+				throw;
+
+			}
 
 		}
-
-		return true;
 
 	}
 

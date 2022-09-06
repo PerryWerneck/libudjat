@@ -54,8 +54,8 @@ namespace Udjat {
 
 		void unload();
 
-		bool load(const char *name, bool required = true);
-		bool load(const pugi::xml_node &node);
+		void load(const char *name, bool required = true);
+		void load(const pugi::xml_node &node);
 
 		const Module * find(const char *name) const noexcept;
 
