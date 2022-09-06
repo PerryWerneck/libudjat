@@ -104,6 +104,10 @@ namespace Udjat {
 				return properties.level;
 			}
 
+			inline bool operator ==(const Level level) const noexcept {
+				return properties.level == level;
+			}
+
 			/// @brief Is this state a critical one?
 			/// @return true if the state is critical.
 			inline bool critical() const noexcept {

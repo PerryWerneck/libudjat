@@ -89,6 +89,10 @@
 			return set(new_value);
 		}
 
+		inline bool operator ==(const T value) const noexcept {
+			return this->value == value;
+		}
+
 		inline Agent & operator = (const T value) {
 			set(value);
 			return *this;
