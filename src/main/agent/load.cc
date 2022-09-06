@@ -112,10 +112,7 @@ namespace Udjat {
 
 			if(strcasecmp(node.name(),"module") == 0) {
 
-				// Only load module if 'preload' is not set.
-				if(!Config::Value<bool>("modules","preload-from-xml",true)) {
-					Module::load(node);
-				}
+				Module::load(node);
 
 			} else if(strcasecmp(node.name(),"attribute")) {
 

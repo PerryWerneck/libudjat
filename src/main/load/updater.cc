@@ -44,6 +44,7 @@
 
 	Updater::Updater(const char *pathname) : path{pathname} {
 
+		/*
 		// First scan for modules.
 		if(Config::Value<bool>("modules","preload-from-xml",true)) {
 			cout << "modules\tPreloading from " << path << endl;
@@ -53,6 +54,7 @@
 				}
 			});
 		}
+		*/
 
 		// Then check for file updates.
 		for_each([this](const char *filename, const pugi::xml_document &doc){

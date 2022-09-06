@@ -55,8 +55,6 @@
 
 	void SystemService::init() {
 
-		Module::load();
-
 		string appconfig;
 		if(!definitions) {
 			Config::Value<string> config("service","definitions","");
@@ -66,6 +64,8 @@
 				definitions = Quark(config).c_str();
 			}
 		}
+
+		Module::preload(definitions);
 
 		if(definitions[0] && strcasecmp(definitions,"none")) {
 
