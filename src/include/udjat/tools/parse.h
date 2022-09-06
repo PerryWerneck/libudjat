@@ -20,8 +20,35 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
+
+	namespace XML {
+
+		UDJAT_API void parse(const Node &node, int &from, int &to);
+		UDJAT_API void parse(const Node &node, unsigned int &from, unsigned int &to);
+		UDJAT_API void parse(const Node &node, unsigned short &from, unsigned short &to);
+		UDJAT_API void parse(const Node &node, float &from, float &to);
+		UDJAT_API void parse(const Node &node, double &from, double &to);
+		UDJAT_API void parse(const Node &node, unsigned long &from, unsigned long &to);
+		UDJAT_API void parse(const Node &node, long &from, long &to);
+
+		UDJAT_API void parse(const Node &node, int &value);
+		UDJAT_API void parse(const Node &node, unsigned int &value);
+		UDJAT_API void parse(const Node &node, unsigned short &value);
+		UDJAT_API void parse(const Node &node, float &value);
+		UDJAT_API void parse(const Node &node, double &value);
+		UDJAT_API void parse(const Node &node, unsigned long &value);
+		UDJAT_API void parse(const Node &node, long &value);
+
+	}
+
+	/// @brief Parse	byte range, convert values "TB', 'GB', 'MB', 'KB' to bytes.
+	/// @param node		XML node to extract values.
+	/// @param from		Minor value in bytes.
+	/// @param to 		Major value in bytes.
+	void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to);
 
 
  }

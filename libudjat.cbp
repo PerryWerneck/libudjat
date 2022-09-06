@@ -57,8 +57,10 @@
 		<Unit filename="src/include/udjat/agent/abstract.h" />
 		<Unit filename="src/include/udjat/agent/level.h" />
 		<Unit filename="src/include/udjat/agent/state.h" />
+		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/alert/abstract.h" />
 		<Unit filename="src/include/udjat/alert/activation.h" />
+		<Unit filename="src/include/udjat/alert/proxy.h" />
 		<Unit filename="src/include/udjat/alert/script.h" />
 		<Unit filename="src/include/udjat/alert/url.h" />
 		<Unit filename="src/include/udjat/alerts/abstract.h" />

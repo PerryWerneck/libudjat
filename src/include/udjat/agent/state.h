@@ -41,25 +41,12 @@
 #include <udjat/alert/abstract.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/object.h>
+#include <udjat/tools/parse.h>
 #include <cstring>
 #include <ostream>
 #include <udjat/agent/level.h>
 
 namespace Udjat {
-
-	UDJAT_API void parse_range(const pugi::xml_node &node, int &from, int &to);
-	UDJAT_API void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to);
-	UDJAT_API void parse_range(const pugi::xml_node &node, unsigned short &from, unsigned short &to);
-	UDJAT_API void parse_range(const pugi::xml_node &node, float &from, float &to);
-	UDJAT_API void parse_range(const pugi::xml_node &node, double &from, double &to);
-	UDJAT_API void parse_range(const pugi::xml_node &node, unsigned long &from, unsigned long &to);
-	UDJAT_API void parse_range(const pugi::xml_node &node, long &from, long &to);
-
-	/// @brief Parse	byte range, convert values "TB', 'GB', 'MB', 'KB' to bytes.
-	/// @param node		XML node to extract values.
-	/// @param from		Minor value in bytes.
-	/// @param to 		Major value in bytes.
-	void parse_byte_range(const pugi::xml_node &node, unsigned long long &from, unsigned long long &to);
 
 	/// @brief Get OStream from level.
 	UDJAT_API std::ostream & LogFactory(Udjat::Level level);
@@ -183,7 +170,7 @@ namespace Udjat {
 				: Abstract::State(name,level,summary,body), from(value),to(value) { }
 
 		State(const pugi::xml_node &node) : Abstract::State(node) {
-			parse_range(node,from,to);
+			XML::parse(node,from,to);
 		}
 
 		bool compare(T value) {

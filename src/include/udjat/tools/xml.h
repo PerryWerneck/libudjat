@@ -30,8 +30,7 @@
 
  #include <pugixml.hpp>
  #include <udjat/defs.h>
-// #include <udjat/tools/quark.h>
- #include <string>
+// #include <string>
 
  namespace Udjat {
 
