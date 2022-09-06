@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/alerts/url.h>
+ #include <udjat/alert/url.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/protocol.h>
 

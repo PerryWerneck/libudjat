@@ -62,7 +62,7 @@
 	}
 
 	void Abstract::Alert::deactivate() {
-		Controller::getInstance().remove(this);
+		Udjat::Alert::Controller::getInstance().remove(this);
 	}
 
 	Value & Abstract::Alert::getProperties(Value &value) const noexcept {

@@ -29,6 +29,13 @@
 
  namespace Udjat {
 
+	namespace Alert {
+
+		class Controller;
+		class Activation;
+
+	}
+
 	namespace Abstract {
 
 		/// @brief Abstract alert.
@@ -60,7 +67,6 @@
 			} restart;
 
 		public:
-			class Controller;
 
 			constexpr Alert(const char *name) : NamedObject(name) {
 			}
@@ -85,7 +91,7 @@
 			/// @brief Alert activation.
 			class UDJAT_API Activation {
 			private:
-				friend class Controller;
+				friend class Udjat::Alert::Controller;
 
 				const void * id = nullptr;
 

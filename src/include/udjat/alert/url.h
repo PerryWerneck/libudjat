@@ -20,27 +20,29 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/alerts/abstract.h>
- #include <udjat/tools/string.h>
+ #include <udjat/alert/abstract.h>
 
  namespace Udjat {
 
 	namespace Alert {
 
 		/// @brief Default alert (based on URL and payload).
-		class UDJAT_API Script : public Abstract::Alert {
+		class UDJAT_API URL : public Abstract::Alert {
 		protected:
 
-			/// @brief Command line to execute.
-			const char *cmdline = "";
+			const char *url = "";
+			HTTP::Method action = HTTP::Get;
+			const char *payload = "";
 
 			/// @brief URL based alert activation.
 			class UDJAT_API Activation : public Abstract::Alert::Activation {
 			protected:
-				String cmdline;
+				String url;
+				HTTP::Method action;
+				String payload;
 
 			public:
-				Activation(const Udjat::Alert::Script *alert);
+				Activation(const Udjat::Alert::URL *alert);
 				void emit() override;
 
 				Value & getProperties(Value &value) const noexcept override;
@@ -52,10 +54,10 @@
 
 		public:
 
-			constexpr Script(const char *name, const char *c) : Abstract::Alert(name), cmdline(c) {
+			constexpr URL(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 			}
 
-			Script(const pugi::xml_node &node, const char *defaults = "alert-defaults");
+			URL(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const noexcept override;

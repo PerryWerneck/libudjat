@@ -38,7 +38,7 @@
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
 #include <udjat/request.h>
-#include <udjat/alerts/abstract.h>
+#include <udjat/alert/abstract.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/object.h>
 #include <cstring>

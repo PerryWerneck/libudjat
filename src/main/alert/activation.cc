@@ -22,13 +22,13 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/object.h>
- #include <udjat/alerts/abstract.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/agent/state.h>
 
  namespace Udjat {
 
  	void start(std::shared_ptr<Abstract::Alert::Activation> activation) {
-		Abstract::Alert::Controller::getInstance().push_back(activation);
+		Alert::Controller::getInstance().push_back(activation);
  	}
 
 	Abstract::Alert::Activation::Activation(const Alert *alert) : id(alert) {

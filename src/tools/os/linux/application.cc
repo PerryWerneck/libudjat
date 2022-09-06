@@ -53,8 +53,10 @@
 
 		if(!initialized) {
 			initialized = true;
+#ifdef GETTEXT_PACKAGE
 			set_gettext_package(GETTEXT_PACKAGE);
 			setlocale( LC_ALL, "" );
+#endif // GETTEXT_PACKAGE
 			return true;
 		}
 		return false;

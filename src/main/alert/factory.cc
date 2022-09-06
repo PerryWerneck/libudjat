@@ -19,8 +19,8 @@
 
  #include <config.h>
  #include <udjat/factory.h>
- #include <udjat/alerts/url.h>
- #include <udjat/alerts/script.h>
+ #include <udjat/alert/url.h>
+ #include <udjat/alert/script.h>
  #include <iostream>
 
  using namespace std;

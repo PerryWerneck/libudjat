@@ -28,7 +28,7 @@
  #include <udjat/tools/file.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
- #include <udjat/alerts/abstract.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>

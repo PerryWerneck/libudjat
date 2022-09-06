@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/alerts/script.h>
+ #include <udjat/alert/script.h>
  #include <udjat/tools/subprocess.h>
 
  using namespace std;

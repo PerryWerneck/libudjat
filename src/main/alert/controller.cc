@@ -32,27 +32,27 @@
 
  namespace Udjat {
 
-	mutex Abstract::Alert::Controller::guard;
+	mutex Alert::Controller::guard;
 
 	static const Udjat::ModuleInfo moduleinfo{ "Alert controller" };
 
-	Abstract::Alert::Controller & Abstract::Alert::Controller::getInstance() {
+	Alert::Controller & Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
+	Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		if(MainLoop::getInstance()) {
 			start();
 		}
 	}
 
-	Abstract::Alert::Controller::~Controller() {
+	Alert::Controller::~Controller() {
 	}
 
-	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
+	void Alert::Controller::remove(const Abstract::Alert *alert) {
 
 		lock_guard<mutex> lock(guard);
 		activations.remove_if([alert](auto activation){
@@ -61,7 +61,7 @@
 
 	}
 
-	void Abstract::Alert::Controller::push_back(shared_ptr<Abstract::Alert::Activation> activation) {
+	void Alert::Controller::push_back(shared_ptr<Abstract::Alert::Activation> activation) {
 
 		if(!MainLoop::getInstance()) {
 
@@ -81,7 +81,7 @@
 		emit();
 	}
 
-	void Abstract::Alert::Controller::reset(time_t seconds) noexcept {
+	void Alert::Controller::reset(time_t seconds) noexcept {
 
 		if(!seconds) {
 			seconds = 1;
@@ -121,7 +121,7 @@
 
 	}
 
-	void Abstract::Alert::Controller::emit() noexcept {
+	void Alert::Controller::emit() noexcept {
 
 		time_t now = time(0);
 		time_t next = 0;
@@ -182,7 +182,7 @@
 
 	}
 
-	size_t Abstract::Alert::Controller::running() const noexcept {
+	size_t Alert::Controller::running() const noexcept {
 		size_t running = 0;
 		lock_guard<mutex> lock(guard);
 		for(auto activation : activations) {
@@ -193,7 +193,7 @@
 		return running;
 	}
 
-	void Abstract::Alert::Controller::stop() {
+	void Alert::Controller::stop() {
 
 		cout << "alerts\tDeactivating controller" << endl;
 		MainLoop::getInstance().remove(this);
@@ -240,7 +240,7 @@
 
 	}
 
-	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
+	bool Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
 
 		response.reset(Value::Array);
 
