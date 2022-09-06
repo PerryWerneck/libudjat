@@ -46,7 +46,7 @@ namespace Udjat {
 			cout << "modules\tPreloading from " << pathname << endl;
 			Udjat::for_each(pathname, [](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
 				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					if(node.attribute("preload").as_bool(true)) {
+					if(node.attribute("preload").as_bool(false)) {
 						Module::load(node);
 					}
 				}
