@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <iostream>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/xml.h>
  #include <memory>
 
  namespace Udjat {
@@ -36,7 +37,9 @@
 	public:
 		Updater(const char *pathname);
 
-		void for_each(const std::function<void(const char *filename, const pugi::xml_document &document)> &call);
+		inline void for_each(const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
+			Udjat::for_each(path.c_str(),call);
+		}
 
 		/// @brief Update agent, set it as a new root.
 		time_t set(std::shared_ptr<Abstract::Agent> agent) noexcept;
