@@ -18,9 +18,11 @@
  */
 
  #include <config.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/factory.h>
  #include <udjat/alert/url.h>
  #include <udjat/alert/script.h>
+ #include <udjat/tools/object.h>
  #include <iostream>
 
  using namespace std;
@@ -52,21 +54,43 @@
 		}
 
 		//
-		// No factory for 'type', try default engines
+		// Try defined types
 		//
-		if(!strcasecmp(type,"url") || (!strcasecmp(type,"default") && node.attribute("url"))) {
-			alert = make_shared<Udjat::Alert::URL>(node);
-		} else if(!strcasecmp(type,"script") || (!strcasecmp(type,"default") && node.attribute("script"))) {
-			alert = make_shared<Udjat::Alert::Script>(node);
-		} else {
-			throw runtime_error(string{"Unable to create an alert of type '"} + type + "'");
+		if(!strcasecmp(type,"url")) {
+			return make_shared<Udjat::Alert::URL>(node);
 		}
 
-		if(alert->verbose()) {
-			alert->info() << "Using default alert engine" << endl;
+		if(!strcasecmp(type,"script")) {
+			return make_shared<Udjat::Alert::Script>(node);
 		}
 
-		return alert;
+		if(!strcasecmp(type,"default")) {
+
+			//
+			// Check node attributes.
+			//
+			if(node.attribute("url")) {
+				return make_shared<Udjat::Alert::URL>(node);
+			}
+
+			if(node.attribute("script")) {
+				return make_shared<Udjat::Alert::Script>(node);
+			}
+
+			//
+			// Do an upsearch.
+			//
+			if(Object::getAttribute(node,"url")) {
+				return make_shared<Udjat::Alert::URL>(node);
+			}
+
+			if(Object::getAttribute(node,"script")) {
+				return make_shared<Udjat::Alert::Script>(node);
+			}
+
+		}
+
+		throw runtime_error(Logger::Message("Unable to create an alert type '{}'",type));
 
 	}
 

@@ -31,18 +31,22 @@
 
 		/// @brief Alert proxy.
 		template <typename T>
-		class UDJAT_API Proxy : public Abstract::Alert {
-		private:
+		class UDJAT_API Proxy {
+		protected:
 			std::shared_ptr<Abstract::Alert> alert;
 			T value;
 
 		public:
-			Proxy(const Abstract::Object &parent, const XML::Node &node) : Abstract::Alert(node), alert(parent,node) {
+			Proxy(const Abstract::Object &parent, const XML::Node &node) : alert(AlertFactory(parent,node)) {
 				XML::parse(value);
 			}
 
 			inline bool operator ==(const T value) const noexcept {
 				return this->value == value;
+			}
+
+			inline std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const {
+				return alert->ActivationFactory();
 			}
 
 		}
