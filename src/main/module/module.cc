@@ -11,8 +11,8 @@ namespace Udjat {
 
 	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),info(i) {
 
-		if(i.build && i.build < 20220902) {
-			throw system_error(EINVAL,system_category(),"Invalid build date on module");
+		if(i.build && i.build < MINIMAL_MODULE_BUILD) {
+			throw system_error(EINVAL,system_category(),"Invalid module build date");
 		}
 
 		if(!name) {

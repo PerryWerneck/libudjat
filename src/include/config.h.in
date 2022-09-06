@@ -72,6 +72,9 @@
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
 
+/* "The required build for modules" */
+#undef MINIMAL_MODULE_BUILD
+
 /* Name of package */
 #undef PACKAGE
 
