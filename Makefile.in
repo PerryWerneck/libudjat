@@ -351,11 +351,11 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/agent
 
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/alerts
+		$(DESTDIR)$(includedir)/udjat/alert
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/alerts/*.h \
-		$(DESTDIR)$(includedir)/udjat/alerts
+		src/include/udjat/alert/*.h \
+		$(DESTDIR)$(includedir)/udjat/alert
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

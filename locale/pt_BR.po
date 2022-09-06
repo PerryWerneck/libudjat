@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-29 14:31-0300\n"
+"POT-Creation-Date: 2022-09-06 09:59-0300\n"
 "PO-Revision-Date: 2022-09-05 10:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -22,7 +22,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Generator: Gtranslator 3.38.0\n"
 
-#: src/main/agent/state.cc:79 src/main/agent/state.cc:154
+#: src/main/agent/state.cc:80 src/main/agent/state.cc:155
 msgid "Error switching state"
 msgstr "Erro ao trocar estado"
 
@@ -34,6 +34,6 @@ msgstr "Nenhum estado anormal foi reportado"
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:85 src/main/agent/state.cc:160
+#: src/main/agent/state.cc:86 src/main/agent/state.cc:161
 msgid "Unexpected error switching state"
 msgstr "Erro inesperado ao trocar de estado"

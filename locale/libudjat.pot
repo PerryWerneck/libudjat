@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-05 10:08-0300\n"
+"POT-Creation-Date: 2022-09-06 09:59-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main/agent/state.cc:79 src/main/agent/state.cc:154
+#: src/main/agent/state.cc:80 src/main/agent/state.cc:155
 msgid "Error switching state"
 msgstr ""
 
@@ -29,6 +29,6 @@ msgstr ""
 msgid "System is ready"
 msgstr ""
 
-#: src/main/agent/state.cc:85 src/main/agent/state.cc:160
+#: src/main/agent/state.cc:86 src/main/agent/state.cc:161
 msgid "Unexpected error switching state"
 msgstr ""
