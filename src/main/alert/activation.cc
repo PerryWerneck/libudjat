@@ -24,14 +24,15 @@
  #include <udjat/tools/object.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/agent/state.h>
+ #include <udjat/alert/activation.h>
 
  namespace Udjat {
 
- 	void start(std::shared_ptr<Abstract::Alert::Activation> activation) {
+ 	void start(std::shared_ptr<Udjat::Alert::Activation> activation) {
 		Alert::Controller::getInstance().push_back(activation);
  	}
 
-	Abstract::Alert::Activation::Activation(const Alert *alert) : id(alert) {
+	Alert::Activation::Activation(const Abstract::Alert *alert) : id(alert) {
 
 		options.verbose = alert->verbose();
 
@@ -48,32 +49,32 @@
 
 	}
 
-	Abstract::Alert::Activation::~Activation() {
+	Alert::Activation::~Activation() {
 	}
 
-	std::ostream & Abstract::Alert::Activation::info() const {
+	std::ostream & Alert::Activation::info() const {
 		return cout << name << "\t";
 	}
 
-	std::ostream & Abstract::Alert::Activation::warning() const {
+	std::ostream & Alert::Activation::warning() const {
 		return clog << name << "\t";
 	}
 
-	std::ostream & Abstract::Alert::Activation::error() const {
+	std::ostream & Alert::Activation::error() const {
 		return cerr << name << "\t";
 	}
 
-	void Abstract::Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
+	void Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
 #ifdef DEBUG
 		cerr << "alert\t*** Object was set on an abstract alert" << endl;
 #endif
 	}
 
-	void Abstract::Alert::Activation::emit() {
+	void Alert::Activation::emit() {
 		throw runtime_error("Cant emit an abstract activation");
 	}
 
-	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
+	Value & Alert::Activation::getProperties(Value &value) const noexcept {
 
 		value["name"] = name;
 		value["level"] = std::to_string(options.level);
@@ -88,7 +89,7 @@
 		return value;
 	}
 
-	bool Abstract::Alert::Activation::run() noexcept {
+	bool Alert::Activation::run() noexcept {
 
 		bool succeeded = false;
 		try {
@@ -131,7 +132,7 @@
 
 	}
 
-	void Abstract::Alert::Activation::checkForSleep(const char *msg) noexcept {
+	void Alert::Activation::checkForSleep(const char *msg) noexcept {
 
 		time_t rst = (count.success ? timers.success : timers.failed);
 

@@ -57,7 +57,7 @@
 	Abstract::Alert::~Alert() {
 	}
 
-	std::shared_ptr<Abstract::Alert::Activation> Abstract::Alert::ActivationFactory() const {
+	std::shared_ptr<Udjat::Alert::Activation> Abstract::Alert::ActivationFactory() const {
 		throw runtime_error("Cant activate an abstract alert");
 	}
 

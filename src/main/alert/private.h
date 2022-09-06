@@ -43,7 +43,7 @@
 		static mutex guard;
 
 		/// @brief List of active workers.
-		list<shared_ptr<Abstract::Alert::Activation>> activations;
+		list<shared_ptr<Udjat::Alert::Activation>> activations;
 
 		Controller();
 
@@ -64,7 +64,7 @@
 		static Controller & getInstance();
 		virtual ~Controller();
 
-		void push_back(shared_ptr<Abstract::Alert::Activation> activation);
+		void push_back(shared_ptr<Udjat::Alert::Activation> activation);
 		void remove(const Abstract::Alert *alert);
 		bool get(Request &request, Response &response) const override;
 

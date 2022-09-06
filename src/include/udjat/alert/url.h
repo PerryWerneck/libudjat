@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/alert/abstract.h>
+ #include <udjat/alert/activation.h>
 
  namespace Udjat {
 
@@ -35,7 +36,7 @@
 			const char *payload = "";
 
 			/// @brief URL based alert activation.
-			class UDJAT_API Activation : public Abstract::Alert::Activation {
+			class UDJAT_API Activation : public Udjat::Alert::Activation {
 			protected:
 				String url;
 				HTTP::Method action;
@@ -50,7 +51,7 @@
 
 			};
 
-			std::shared_ptr<Abstract::Alert::Activation> ActivationFactory() const override;
+			std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const override;
 
 		public:
 

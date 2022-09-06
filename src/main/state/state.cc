@@ -31,6 +31,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/expander.h>
  #include <udjat/alert/abstract.h>
+ #include <udjat/alert/activation.h>
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>

@@ -56,7 +56,7 @@
 
 	}
 
-	std::shared_ptr<Abstract::Alert::Activation> Alert::URL::ActivationFactory() const {
+	std::shared_ptr<Udjat::Alert::Activation> Alert::URL::ActivationFactory() const {
 		return make_shared<Activation>(this);
 	}
 
@@ -68,13 +68,13 @@
 	}
 
 	Value & Alert::URL::Activation::getProperties(Value &value) const noexcept {
-		Abstract::Alert::Activation::getProperties(value);
+		Udjat::Alert::Activation::getProperties(value);
 		value["url"] = url.c_str();
 		value["action"] = std::to_string(action);
 		return value;
 	}
 
-	Alert::URL::Activation::Activation(const Udjat::Alert::URL *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
+	Alert::URL::Activation::Activation(const Udjat::Alert::URL *alert) : Udjat::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
 		url.expand(*alert,true,false);
 		payload.expand(*alert,true,false);
 	}

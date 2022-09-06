@@ -37,7 +37,7 @@
 
 	}
 
-	std::shared_ptr<Abstract::Alert::Activation> Alert::Script::ActivationFactory() const {
+	std::shared_ptr<Udjat::Alert::Activation> Alert::Script::ActivationFactory() const {
 		return make_shared<Activation>(this);
 	}
 
@@ -48,12 +48,12 @@
 	}
 
 	Value & Alert::Script::Activation::getProperties(Value &value) const noexcept {
-		Abstract::Alert::Activation::getProperties(value);
+		Udjat::Alert::Activation::getProperties(value);
 		value["cmdline"] = cmdline.c_str();
 		return value;
 	}
 
-	Alert::Script::Activation::Activation(const Udjat::Alert::Script *alert) : Abstract::Alert::Activation(alert), cmdline(alert->cmdline) {
+	Alert::Script::Activation::Activation(const Udjat::Alert::Script *alert) : Udjat::Alert::Activation(alert), cmdline(alert->cmdline) {
 		cmdline.expand(*alert,true,false);
 	}
 

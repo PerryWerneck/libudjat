@@ -23,6 +23,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/agent.h>
  #include <iostream>
+ #include <udjat/alert/activation.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -61,7 +62,7 @@
 
 	}
 
-	void Alert::Controller::push_back(shared_ptr<Abstract::Alert::Activation> activation) {
+	void Alert::Controller::push_back(shared_ptr<Udjat::Alert::Activation> activation) {
 
 		if(!MainLoop::getInstance()) {
 
@@ -220,7 +221,7 @@
 		// Cleanup active alerts
 		{
 			// First copy in the reverse order using the mutex
-			list<shared_ptr<Abstract::Alert::Activation>> active;
+			list<shared_ptr<Udjat::Alert::Activation>> active;
 			{
 				lock_guard<mutex> lock(guard);
 				for(auto activation : activations) {

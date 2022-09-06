@@ -11,6 +11,7 @@
  #include "private.h"
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/alert/activation.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 

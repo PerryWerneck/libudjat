@@ -42,6 +42,8 @@
 		class UDJAT_API Alert : public NamedObject {
 		private:
 
+			friend class Udjat::Alert::Activation;
+
 			/// @brief Alert options.
 			struct {
 				bool verbose = false;
@@ -88,112 +90,15 @@
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const noexcept override;
 
-			/// @brief Alert activation.
-			class UDJAT_API Activation {
-			private:
-				friend class Udjat::Alert::Controller;
-
-				const void * id = nullptr;
-
-				struct {
-					unsigned int min;
-					unsigned int max;
-				} retry;
-
-				struct {
-					bool verbose = true;
-					Udjat::Level level = Udjat::unimportant;
-				} options;
-
-				struct {
-					unsigned int interval = 0;
-					unsigned int busy = 0;
-					unsigned int failed = 14400;
-					unsigned int success = 0;
-					time_t last = 0;
-					time_t next = 0;
-				} timers;
-
-				struct {
-					unsigned int success = 0;
-					unsigned int failed = 0;
-				} count;
-
-				void checkForSleep(const char *msg) noexcept;
-
-				struct {
-					bool restarting = false;
-					time_t running = 0;
-				} state;
-
-				/// @brief Schedule next alert.
-				void next() noexcept;
-
-			protected:
-
-				/// @brief Activation name
-				std::string name;
-
-				/// @brief Activation description.
-				std::string description;
-
-				/// @brief Just emit alert, no update on emission data.
-				virtual void emit();
-
-			public:
-				Activation(const Alert *alert);
-				virtual ~Activation();
-
-				/// @brief Emit alert, update timers block until completed.
-				/// @return true if the alert emission was ok.
-				bool run() noexcept;
-
-				/// @brief Rename activation.
-				/// @param new_name New activation name.
-				inline void rename(const char *new_name) noexcept {
-					this->name = new_name;
-				}
-
-				/// @brief Set description.
-				inline void set(const char *descr) noexcept {
-					description = descr;
-				}
-
-				/// @brief Set level.
-				inline void set(const Udjat::Level level) noexcept {
-					options.level = level;
-				}
-
-				/// @brief Set object (expand ${} on strings).
-				virtual void set(const Abstract::Object &object);
-
-				inline bool verbose() const noexcept {
-					return options.verbose;
-				}
-
-				/// @brief Is the activation running?
-				inline bool running() const noexcept {
-					return state.running != 0;
-				}
-
-				/// @brief Get activation info.
-				virtual Value & getProperties(Value &value) const noexcept;
-
-				std::ostream & info() const;
-				std::ostream & warning() const;
-				std::ostream & error() const;
-
-			};
-
 			/// @brief Create and activation for this alert.
-			virtual std::shared_ptr<Activation> ActivationFactory() const;
+			virtual std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const;
 
 		};
 
 	}
 
 	/// @brief Start alert activation.
-	UDJAT_API void start(std::shared_ptr<Abstract::Alert::Activation> activation);
+	UDJAT_API void start(std::shared_ptr<Udjat::Alert::Activation> activation);
 
 	/// @brief Create an alert from XML description;
 	/// @param parent Parent object, usually an agent, scanned for alert attributes.
