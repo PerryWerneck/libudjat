@@ -194,6 +194,10 @@ namespace Udjat {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
 	}
 
+	void Abstract::Agent::push_back(const pugi::xml_node UDJAT_UNUSED(&node), std::shared_ptr<Abstract::Alert> alert) {
+		push_back(alert);
+	}
+
 	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.push_back(listener);

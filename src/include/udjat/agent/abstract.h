@@ -179,6 +179,9 @@
 			/// @brief Insert Alert.
 			virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
 
+			/// @brief Insert Alert.
+			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
+
 			/// @brief Insert Listener.
 			void push_back(std::shared_ptr<EventListener> listener);
 

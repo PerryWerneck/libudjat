@@ -91,7 +91,7 @@ namespace Udjat {
 				auto alert = AlertFactory(node);
 				if(alert) {
 					alert->setup(node);
-					push_back(alert);
+					push_back(node, alert);
 				} else {
 					error() << "Unable to create alert" << endl;
 				}
