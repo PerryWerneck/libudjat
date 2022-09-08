@@ -52,7 +52,7 @@ Main library for udjat modules.
 %define _libvrs %{MAJOR_VERSION}_%{MINOR_VERSION}
 
 %package -n %{name}%{_libvrs}
-Summary:	UDJat core library
+Summary: UDJat core library
 
 %description -n %{name}%{_libvrs}
 UDJat core library
@@ -109,17 +109,22 @@ make all
 
 %files -n udjat-devel
 %defattr(-,root,root)
-%dir %{_includedir}/udjat
-%{_includedir}/udjat/*.h
-%{_libdir}/%{name}.so
+
+%{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
+
+%dir %{_includedir}/udjat
+%{_includedir}/udjat/*.h
 
 %dir %{_includedir}/udjat/tools
 %{_includedir}/udjat/tools/*.h
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h
+
+%dir %{_includedir}/udjat/alert
+%{_includedir}/udjat/alert/*.h
 
 %dir %{_includedir}/udjat/agent
 %{_includedir}/udjat/agent/*.h
