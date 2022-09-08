@@ -20,11 +20,32 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
  #include <cstdarg>
 
  using namespace std;
 
  namespace Udjat {
+
+	String::String(const XML::Node &node, const char *attrname, const char *def) {
+
+		auto attribute = node.attribute(attrname);
+
+		if(attribute) {
+			assign(attribute.as_string(def ? def : ""));
+		} else if(def) {
+			assign(def);
+		} else {
+			throw runtime_error(Logger::Message("Required attribute '{}' is missing",attrname));
+		}
+
+		if(empty()) {
+			return;
+		}
+
+		expand(node);
+
+	}
 
 	String & String::strip() noexcept {
 		char *ptr = strdup(c_str());
