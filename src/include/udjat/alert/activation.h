@@ -99,17 +99,25 @@
 			}
 
 			/// @brief Set description.
-			inline void set(const char *descr) noexcept {
+			inline Activation & set(const char *descr) noexcept {
 				description = descr;
+				return *this;
 			}
 
 			/// @brief Set level.
-			inline void set(const Udjat::Level level) noexcept {
+			inline Activation & set(const Udjat::Level level) noexcept {
 				options.level = level;
+				return *this;
 			}
 
 			/// @brief Set object (expand ${} on strings).
-			virtual void set(const Abstract::Object &object);
+			virtual Activation & set(const Abstract::Object &object);
+
+			/// @brief Set objects (expand ${} on strings).
+			Activation & apply(const Abstract::Object *object, ...) __attribute__ ((sentinel));
+
+			/// @brief Expand activation strings.
+			virtual Activation & expand(const std::function<bool(const char *key, std::string &value)> &expander);
 
 			inline bool verbose() const noexcept {
 				return options.verbose;

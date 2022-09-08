@@ -63,9 +63,6 @@
 		<Unit filename="src/include/udjat/alert/proxy.h" />
 		<Unit filename="src/include/udjat/alert/script.h" />
 		<Unit filename="src/include/udjat/alert/url.h" />
-		<Unit filename="src/include/udjat/alerts/abstract.h" />
-		<Unit filename="src/include/udjat/alerts/script.h" />
-		<Unit filename="src/include/udjat/alerts/url.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />

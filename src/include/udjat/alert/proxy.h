@@ -37,16 +37,35 @@
 			T value;
 
 		public:
-			Proxy(const Abstract::Object &parent, const XML::Node &node) : alert(AlertFactory(parent,node)) {
-				XML::parse(value);
+			Proxy(const XML::Node &node) {
+				XML::parse(node, value);
+			}
+
+			Proxy(const XML::Node &node, std::shared_ptr<Abstract::Alert> a) : alert(a) {
+				XML::parse(node, value);
 			}
 
 			inline bool operator ==(const T value) const noexcept {
 				return this->value == value;
 			}
 
+			/// @brief Get alert info.
+			inline Value & getProperties(Value &value) const noexcept {
+				return alert->getProperties(value);
+			}
+
 			inline std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const {
 				return alert->ActivationFactory();
+			}
+
+			/// @brief Just emit alert, no update on emission data.
+			inline void emit() {
+				alert->emit();
+			}
+
+			/// @brief Deactivate an alert.
+			inline void deactivate() {
+				alert->deactivate();
 			}
 
 		}

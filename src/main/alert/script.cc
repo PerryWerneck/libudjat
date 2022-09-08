@@ -73,8 +73,14 @@
 
 	}
 
-	void Alert::Script::Activation::set(const Abstract::Object &object) {
+	Alert::Activation & Alert::Script::Activation::set(const Abstract::Object &object) {
 		cmdline.expand(object);
+		return *this;
+	}
+
+	Alert::Activation & Alert::Script::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+		cmdline.expand(expander);
+		return *this;
 	}
 
  }

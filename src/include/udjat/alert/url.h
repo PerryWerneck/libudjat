@@ -47,7 +47,8 @@
 				void emit() override;
 
 				Value & getProperties(Value &value) const noexcept override;
-				void set(const Abstract::Object &object) override;
+				Udjat::Alert::Activation & set(const Abstract::Object &object) override;
+				Udjat::Alert::Activation & expand(const std::function<bool(const char *key, std::string &value)> &expander) override;
 
 			};
 

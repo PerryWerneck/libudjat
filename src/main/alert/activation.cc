@@ -25,6 +25,7 @@
  #include <udjat/alert/abstract.h>
  #include <udjat/agent/state.h>
  #include <udjat/alert/activation.h>
+ #include <cstdarg>
 
  namespace Udjat {
 
@@ -64,10 +65,28 @@
 		return cerr << name << "\t";
 	}
 
-	void Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
-#ifdef DEBUG
-		cerr << "alert\t*** Object was set on an abstract alert" << endl;
-#endif
+	Alert::Activation & Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
+		return *this;
+	}
+
+	Alert::Activation & Alert::Activation::apply(const Abstract::Object *object, ...) {
+		va_list args;
+		va_start(args, object);
+		while(object) {
+			try {
+				set(*object);
+			} catch(...) {
+				va_end(args);
+				throw;
+			}
+			object = va_arg(args, const Abstract::Object *);
+		}
+		va_end(args);
+		return *this;
+	}
+
+	Alert::Activation & Alert::Activation::expand(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) {
+		return *this;
 	}
 
 	void Alert::Activation::emit() {

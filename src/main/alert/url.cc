@@ -100,7 +100,7 @@
 
 	}
 
-	void Alert::URL::Activation::set(const Abstract::Object &object) {
+	Alert::Activation & Alert::URL::Activation::set(const Abstract::Object &object) {
 #ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl
 				<< "URL='" << url << "'" << endl
@@ -108,6 +108,13 @@
 #endif // DEBUG
 		url.expand(object);
 		payload.expand(object);
+		return *this;
+	}
+
+	Alert::Activation & Alert::URL::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+		url.expand(expander);
+		payload.expand(expander);
+		return *this;
 	}
 
  }
