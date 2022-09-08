@@ -214,6 +214,36 @@
 
 	}
 
+	const char * Abstract::Object::settings_from(const XML::Node &node, bool upstream, const char *def) {
+
+		auto attribute = node.attribute("settings-from");
+		if(attribute) {
+			return attribute.as_string(def);
+		}
+
+		string attrname{node.name()};
+		attrname += "-defaults-from";
+		attribute = node.attribute(attrname.c_str());
+		if(attribute) {
+			return attribute.as_string(def);
+		}
+
+		if(upstream) {
+			for(XML::Node parent = node.parent(); parent; parent = parent.parent()) {
+				attribute = parent.attribute(attrname.c_str());
+				if(attribute) {
+					return attribute.as_string(def);
+				}
+			}
+		}
+
+		if(*def) {
+			return def;
+		}
+
+		return Quark( (string{node.name()} + "-defaults").c_str() ).c_str();
+	}
+
 	bool Abstract::Object::for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call) {
 
 		bool rc = false;

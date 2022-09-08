@@ -23,7 +23,7 @@
  #include <udjat/tools/value.h>
  #include <ostream>
  #include <string>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <cstring>
  #include <functional>
 
@@ -38,6 +38,9 @@
 			/// @brief Setup object.
 			/// @param node The XML node with the object definitions.
 			virtual void setup(const pugi::xml_node &node);
+
+			/// @brief Get configuration file group.
+			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");
 
 			/// @brief Call method on every ocorrence of 'tagname' until method returns 'true'.
 			/// @param node The xml node.
