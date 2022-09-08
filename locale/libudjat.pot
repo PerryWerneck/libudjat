@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-06 09:59-0300\n"
+"POT-Creation-Date: 2022-09-08 15:02-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -31,4 +31,24 @@ msgstr ""
 
 #: src/main/agent/state.cc:86 src/main/agent/state.cc:161
 msgid "Unexpected error switching state"
+msgstr ""
+
+#: src/tools/string/string.cc:210
+msgid "default"
+msgstr ""
+
+#: src/tools/string/string.cc:198
+msgid "false"
+msgstr ""
+
+#: src/tools/string/string.cc:190
+msgid "no"
+msgstr ""
+
+#: src/tools/string/string.cc:194
+msgid "true"
+msgstr ""
+
+#: src/tools/string/string.cc:186
+msgid "yes"
 msgstr ""

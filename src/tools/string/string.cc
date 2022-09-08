@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
  #include <cstdarg>
 
  using namespace std;
@@ -174,6 +175,45 @@
 
 		return -1;
 
+	}
+
+	bool String::as_bool(bool def) {
+
+		if(empty()) {
+			return def;
+		}
+
+		if(!strcasecmp(c_str(),_("yes"))) {
+			return true;
+		}
+
+		if(!strcasecmp(c_str(),_("no"))) {
+			return false;
+		}
+
+		if(!strcasecmp(c_str(),_("true"))) {
+			return true;
+		}
+
+		if(!strcasecmp(c_str(),_("false"))) {
+			return false;
+		}
+
+		if(at(0) == 's' || at(0) == 'S' || at(0) == 't' || at(0) == 'T' || at(0) == '1') {
+			return true;
+		}
+
+		if(at(0) == 'n' || at(0) == 'N' || at(0) == 'f' || at(0) == 'F' || at(0) == '0') {
+			return false;
+		}
+
+		if(at(0) == '?' || !strcasecmp(c_str(),"default") || !strcasecmp(c_str(),_("default"))) {
+			return def;
+		}
+
+		clog << "Unexpected boolean keyword '" << c_str() << "', assuming '" << (def ? "true" : "false") << "'" << endl;
+
+		return def;
 	}
 
  }

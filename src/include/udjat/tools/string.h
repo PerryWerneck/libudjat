@@ -147,6 +147,8 @@
 		/// @return The string.
 		String & chomp() noexcept;
 
+		bool as_bool(bool def = false);
+
 	};
 
  }

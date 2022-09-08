@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-06 09:59-0300\n"
-"PO-Revision-Date: 2022-09-05 10:14-0300\n"
+"POT-Creation-Date: 2022-09-08 15:02-0300\n"
+"PO-Revision-Date: 2022-09-08 15:03-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -37,3 +37,23 @@ msgstr "Sistema em funcionamento"
 #: src/main/agent/state.cc:86 src/main/agent/state.cc:161
 msgid "Unexpected error switching state"
 msgstr "Erro inesperado ao trocar de estado"
+
+#: src/tools/string/string.cc:210
+msgid "default"
+msgstr "padrão"
+
+#: src/tools/string/string.cc:198
+msgid "false"
+msgstr "falso"
+
+#: src/tools/string/string.cc:190
+msgid "no"
+msgstr "não"
+
+#: src/tools/string/string.cc:194
+msgid "true"
+msgstr "verdadeiro"
+
+#: src/tools/string/string.cc:186
+msgid "yes"
+msgstr "sim"
