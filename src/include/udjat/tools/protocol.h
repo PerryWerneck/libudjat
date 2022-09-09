@@ -114,11 +114,9 @@
 
 		public:
 
-			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url, method), out(payload) {
-			}
-
-			Worker(const URL &url, const HTTP::Method method = HTTP::Get, const char *payload = "") : args(url, method), out(payload) {
-			}
+			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
+			Worker(const URL &url, const HTTP::Method method = HTTP::Get, const char *payload = "");
+			virtual ~Worker();
 
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);

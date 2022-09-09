@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <private/protocol.h>
  #include <cstring>
  #include <udjat/moduleinfo.h>
 
@@ -35,6 +35,16 @@
 	}
 
 	Protocol::Controller::~Controller() {
+	}
+
+	void Protocol::Controller::insert(Protocol::Worker *worker) {
+		lock_guard<mutex> lock(guard);
+		workers.push_back(worker);
+	}
+
+	void Protocol::Controller::remove(Protocol::Worker *worker) {
+		lock_guard<mutex> lock(guard);
+		workers.remove(worker);
 	}
 
 	void Protocol::Controller::insert(Protocol *protocol) {

@@ -17,9 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "../private.h"
-
- #ifndef _WIN32
+ #include <private/protocol.h>
 
  #include <udjat/tools/url.h>
  #include <udjat/tools/subprocess.h>
@@ -123,5 +121,4 @@
 	}
 
  }
- #endif // !_WIN32
 

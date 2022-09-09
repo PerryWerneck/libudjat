@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/protocol.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -33,6 +34,18 @@
  #endif // _WIN32
 
  namespace Udjat {
+
+	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+		Protocol::Controller::getInstance().insert(this);
+	}
+
+	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+		Protocol::Controller::getInstance().insert(this);
+	}
+
+	Protocol::Worker::~Worker() {
+		Protocol::Controller::getInstance().remove(this);
+	}
 
 	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");

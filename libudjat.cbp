@@ -52,6 +52,7 @@
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/misc.h" />
 		<Unit filename="src/include/private/module.h" />
+		<Unit filename="src/include/private/protocol.h" />
 		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />

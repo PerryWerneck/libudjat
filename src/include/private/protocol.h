@@ -38,6 +38,7 @@
 	private:
 		static mutex guard;
 		list<Protocol *> protocols;
+		list<Protocol::Worker *> workers;
 
 		Controller();
 
@@ -53,7 +54,6 @@
 
 		};
 
-		#ifndef _WIN32
 		/// @brief Internal protocol for script://
 		class Script : public Udjat::Protocol {
 		public:
@@ -63,7 +63,6 @@
 			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
 
 		};
-		#endif // !_WIN32
 
 	public:
 		static Controller & getInstance();
@@ -71,6 +70,9 @@
 
 		void insert(Protocol *protocol);
 		void remove(Protocol *protocol);
+
+		void insert(Protocol::Worker *worker);
+		void remove(Protocol::Worker *worker);
 
 		const Protocol * find(const char *name);
 		void getInfo(Response &response) noexcept;
