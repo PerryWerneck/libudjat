@@ -37,6 +37,9 @@
 			T value;
 
 		public:
+			Proxy(std::shared_ptr<Abstract::Alert> a, T v) : alert(a), value(t) {
+			}
+
 			Proxy(const XML::Node &node) {
 				XML::parse(node, value);
 			}
@@ -47,6 +50,14 @@
 
 			inline bool operator ==(const T value) const noexcept {
 				return this->value == value;
+			}
+
+			inline T operator &(const T value) const noexcept {
+				return (T) (this->value & value);
+			}
+
+			inline operator T () const noexcept {
+				return this->value;
 			}
 
 			/// @brief Get alert info.
@@ -67,6 +78,19 @@
 			inline void deactivate() {
 				alert->deactivate();
 			}
+
+			inline std::ostream & info() const {
+				return alert->info();
+			}
+
+			inline std::ostream & warning() const {
+				return alert->warning();
+			}
+
+			inline std::ostream & error() const {
+				return alert->error();
+			}
+
 
 		}
 
