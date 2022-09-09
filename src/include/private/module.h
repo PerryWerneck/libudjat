@@ -24,7 +24,7 @@ namespace Udjat {
 		static Module * init(HMODULE hModule);
 		static Module * init(HMODULE hModule, const pugi::xml_node &node);
 
-		HMODULE open(const char *name, bool required);
+		// HMODULE open(const char *name, bool required);
 		void close(HMODULE module);
 		bool deinit(HMODULE handle);
 		void unload(HMODULE handle, const string &name, const string &description) const;
@@ -35,9 +35,10 @@ namespace Udjat {
 		static Module * init(void *handle);
 		static Module * init(void *handle, const pugi::xml_node &node);
 
-		void * open(const char *name, bool required);
-		void * search(const char *name);
-		void close(void *module);
+		// void * open(const char *name, bool required);
+		// void * search(const char *name);
+		// void close(void *module);
+
 		bool deinit(void *handle);
 		void unload(void *handle, const string &name, const string &description) const;
 
@@ -54,8 +55,10 @@ namespace Udjat {
 
 		void unload();
 
-		void load(const char *name, bool required = true);
-		void load(const pugi::xml_node &node);
+		/// @brief Load module by xml definition.
+		/// @param node Module definitions.
+		/// @return true if the module was already loaded.
+		bool load(const pugi::xml_node &node);
 
 		const Module * find(const char *name) const noexcept;
 

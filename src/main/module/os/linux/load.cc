@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include "../../private.h"
+ #include <private/module.h>
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
@@ -27,6 +27,80 @@
 
  namespace Udjat {
 
+	bool Module::Controller::load(const pugi::xml_node &node) {
+
+		string paths[] = {
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
+			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
+#ifdef LIBDIR
+			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
+#endif //LIBDIR
+
+		};
+
+		const char *name = node.attribute("name").as_string();
+		if(!*name) {
+			throw runtime_error("Missing required attribute 'name'");
+		}
+
+		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
+
+			string filename = paths[ix] + "udjat-module-" + name + ".so";
+
+			if(access(filename.c_str(),R_OK) == 0) {
+
+				for(auto module : modules) {
+
+					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+#ifdef DEBUG
+						cout << "module\t *** Module '" << module->name << "' is already loaded" << endl;
+#endif // DEBUG
+						return true;
+					}
+
+				}
+
+				dlerror();
+				void * handle = dlopen(filename.c_str(),RTLD_NOW|RTLD_LOCAL);
+				if(handle) {
+					cout << name << "\tLoading module from " << filename << endl;
+					try {
+
+						auto module = init(handle,node);
+						if(!module) {
+							throw runtime_error("Module initialization has failed");
+						}
+						module->handle = handle;
+
+					} catch(...) {
+
+						dlclose(handle);
+						throw;
+
+					}
+
+					return false;
+
+				} else {
+					cerr << "modules\t" << filename << " " << dlerror() << endl;
+				}
+			}
+#ifdef DEBUG
+			else {
+				cout << "modules\tNo module in " << filename << endl;
+			}
+#endif // DEBUG
+		}
+
+		// Not found.
+		if(node.attribute("required").as_bool(true)) {
+			throw runtime_error(string{"Cant load module '"} + name + "'");
+		}
+
+		return false;
+	}
+
+	/*
 	void * Module::Controller::search(const char *name) {
 
 		string paths[] = {
@@ -89,12 +163,16 @@
 		}
 
 		if(required) {
+#ifdef DEBUG
+			cout << "*** " << __FILE__ << "(" << __LINE__ << ") Cant load module " << name << endl;
+#endif // DEBUG
 			throw runtime_error(Logger::Message("Cant load module '{}'",name));
 		}
 
 		return NULL;
 
 	}
+	*/
 
  }
 

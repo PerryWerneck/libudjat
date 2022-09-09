@@ -114,6 +114,9 @@
 		}
 
 		if(required) {
+#ifdef DEBUG
+			cout << "*** " << __FILE__ << "(" << __LINE__ << ") Cant load module " << name << endl;
+#endif // DEBUG
 			throw runtime_error(string{"Cant load module '"} + name + "'");
 		}
 

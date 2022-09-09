@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "private.h"
+#include <config.h>
+#include <private/module.h>
 #include <udjat/tools/configuration.h>
 
 #ifdef _WIN32

@@ -18,17 +18,13 @@
  */
 
  #include <config.h>
- #include "../../private.h"
+ #include <private/module.h>
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <unistd.h>
 
  namespace Udjat {
-
-	void Module::Controller::close(void *module) {
-		dlclose(module);
-	}
 
 	bool Module::Controller::deinit(void *handle) {
 		bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");

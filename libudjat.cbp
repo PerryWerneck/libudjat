@@ -51,6 +51,7 @@
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/misc.h" />
+		<Unit filename="src/include/private/module.h" />
 		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />
@@ -142,7 +143,7 @@
 		<Unit filename="src/main/module/module.cc" />
 		<Unit filename="src/main/module/os/linux/close.cc" />
 		<Unit filename="src/main/module/os/linux/init.cc" />
-		<Unit filename="src/main/module/os/linux/open.cc" />
+		<Unit filename="src/main/module/os/linux/load.cc" />
 		<Unit filename="src/main/module/os/linux/tools.cc" />
 		<Unit filename="src/main/module/os/windows/close.cc" />
 		<Unit filename="src/main/module/os/windows/init.cc" />

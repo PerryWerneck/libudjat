@@ -1,7 +1,25 @@
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
 #define GNU_SOURCE
 #include <config.h>
-#include "private.h"
+#include <private/module.h>
 #include <sys/types.h>
 #include <dirent.h>
 #include <udjat/tools/file.h>
@@ -27,6 +45,7 @@ namespace Udjat {
 
 		bool rc = true;
 
+		/*
 		// Preload from configuration file.
 		{
 			Config::Value<vector<string>> modules("modules","load-at-startup","");
@@ -38,6 +57,7 @@ namespace Udjat {
 				for(string &module : modules) {
 
 					try {
+
 
 						load(module.c_str(),required);
 
@@ -52,6 +72,7 @@ namespace Udjat {
 			}
 
 		}
+		*/
 
 		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
 
@@ -86,9 +107,12 @@ namespace Udjat {
 	}
 
 	void Module::load(const char *name, bool required) {
-		return Controller::getInstance().load(name,required);
+		pugi::xml_node node;
+		node.append_attribute("required").set_value(required);
+		load(node);
 	}
 
+	/*
 	void Module::Controller::load(const pugi::xml_node &node) {
 
 		const char * name = node.attribute("name").as_string();
@@ -104,6 +128,10 @@ namespace Udjat {
 #endif // DEBUG
 			return;
 		}
+
+#ifdef DEBUG
+			cout << "module\t**** Opening module '" << name << "'" << endl;
+#endif // DEBUG
 
 		// Open module.
 		auto handle = open(name,Object::getAttribute(node,"modules","required",true));
@@ -155,6 +183,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 }
 
