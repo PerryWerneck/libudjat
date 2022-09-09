@@ -22,6 +22,7 @@
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/object.h>
  #include <unistd.h>
 
  namespace Udjat {
@@ -45,6 +46,7 @@
 			}
 
 			module->handle = handle;
+			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
 
 			if(module->info.gettext_package && *module->info.gettext_package) {
 				Application::set_gettext_package(module->info.gettext_package);

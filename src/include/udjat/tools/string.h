@@ -149,6 +149,9 @@
 
 		bool as_bool(bool def = false);
 
+		/// @brief Return 'quark' string from value.
+		const char * as_quark() const;
+
 	};
 
  }

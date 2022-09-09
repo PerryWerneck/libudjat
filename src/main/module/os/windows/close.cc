@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include "../../private.h"
+ #include <private/module.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>

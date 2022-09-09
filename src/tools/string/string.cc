@@ -216,5 +216,10 @@
 		return def;
 	}
 
+	const char * String::as_quark() const {
+		return Quark(*this).c_str();
+	}
+
+
  }
 

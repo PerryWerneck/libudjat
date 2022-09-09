@@ -57,6 +57,7 @@ namespace Udjat {
 			// Save module name.
 
 			auto handle = module->handle;
+			auto keep_loaded = module->keep_loaded;
 
 			try {
 
@@ -69,22 +70,29 @@ namespace Udjat {
 				if(handle) {
 
 					if(!deinit(handle)) {
-						cout << "modules\tModule '" << name << "'disabled (still open)" << endl;
+						clog << name << "\tKeeping module loaded by deinit() request" << endl;
 						continue;
 					}
 
+					if(keep_loaded) {
+						clog << name << "\tKeeping module loaded by configuration request" << endl;
+					} else {
+						unload(handle,name,description);
+					}
+
+					/*
 					if(Config::Value<bool>("modules","keep-loaded",false)) {
-						cout << "modules\tKeeping module '" << name << "' loaded by configuration request" << endl;
 					} else  {
 						unload(handle,name,description);
 					}
+					*/
 
 				}
 
 			} catch(const exception &e) {
-				cerr << "modules\tError '" << e.what() << "' deinitializing " << name << "'" << endl;
+				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;
 			} catch(...) {
-				cerr << "modules\tUnexpected error deinitializing '" << name << "'" << endl;
+				cerr << name << "\tUnexpected error deinitializing module" << endl;
 			}
 
 		}

@@ -70,7 +70,6 @@
 						if(!module) {
 							throw runtime_error("Module initialization has failed");
 						}
-						module->handle = handle;
 
 					} catch(...) {
 

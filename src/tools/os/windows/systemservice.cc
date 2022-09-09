@@ -24,6 +24,7 @@
  #include <system_error>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/service.h>
  #include <udjat/win32/registry.h>
@@ -219,7 +220,19 @@
 
 		setlocale( LC_ALL, "" );
 
-		Module::load();
+		string appconfig;
+		if(!definitions) {
+			Config::Value<string> config("service","definitions","");
+			if(config.empty()) {
+				definitions = Quark(Application::DataDir("xml.d")).c_str();
+			} else {
+				definitions = Quark(config).c_str();
+			}
+		}
+
+		if(!Module::preload(definitions)) {
+			throw runtime_error("Module preload has failed, aborting service");
+		}
 
 		reconfigure(definitions,true);
 	}

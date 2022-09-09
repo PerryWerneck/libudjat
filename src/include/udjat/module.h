@@ -15,6 +15,9 @@
 			/// @brief The module name.
 			const char *name;
 
+			/// @brief When true the module is never unloaded.
+			bool keep_loaded = false;
+
 			/// @brief The module controller.
 			class Controller;
 			friend class Controller;

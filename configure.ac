@@ -62,7 +62,7 @@ AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
 AC_SUBST(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor")
 
-AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20220906 ])
+AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20220909 ])
 AC_DEFINE_UNQUOTED(MINIMAL_MODULE_BUILD,$app_cv_minbuild,["The required build for modules"])
 AC_SUBST(MINIMAL_MODULE_BUILD,$app_cv_minbuild)
 

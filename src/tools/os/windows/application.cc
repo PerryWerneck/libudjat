@@ -237,15 +237,11 @@
 		mkdir(c_str());
 	}
 
-	Application::CacheDir::CacheDir(const char *filename) : CacheDir() {
-		append(filename);
-	}
+	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
 
-	Application::CacheDir::CacheDir(const char *type, const char *filename) : CacheDir(type) {
-		append(type);
-		mkdir(c_str());
+		append(subdir);
 		append("\\");
-		append(filename);
+
 	}
 
  }
