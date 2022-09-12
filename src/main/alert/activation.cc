@@ -36,6 +36,7 @@
 	Alert::Activation::Activation(const Abstract::Alert *alert) : id(alert) {
 
 		options.verbose = alert->verbose();
+		options.asyncronous = alert->asyncronous();
 
 		name = alert->name();
 

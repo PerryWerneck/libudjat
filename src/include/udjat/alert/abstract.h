@@ -41,6 +41,7 @@
 			/// @brief Alert options.
 			struct {
 				bool verbose = false;
+				bool asyncronous = true;
 			} options;
 
 			/// @brief Alert limits.
@@ -76,6 +77,11 @@
 			/// @brief Is the alert in verbose mode?
 			inline bool verbose() const noexcept {
 				return options.verbose;
+			}
+
+			/// @brief Is the alert in asyncronous mode?
+			inline bool asyncronous() const noexcept {
+				return options.asyncronous;
 			}
 
 			/// @brief Deactivate an alert.

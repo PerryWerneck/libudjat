@@ -64,7 +64,14 @@
 
 	void Alert::Controller::push_back(shared_ptr<Udjat::Alert::Activation> activation) {
 
-		if(!active()) {
+		if(!activation->options.asyncronous) {
+			// It's a syncronous alert, just emit it.
+#ifdef DEBUG
+			activation->info() << "Running alert in foreground" << endl;
+#endif // DEBUG
+			activation->run();
+			return;
+		} else if(!active()) {
 
 			// disabled, run syncronous.
 			activation->warning() << "WARNING: The alert controller is disabled, cant retry a failed alert" << endl;
@@ -83,6 +90,9 @@
 		// Have mainloop
 		{
 			lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+			activation->info() << "Running alert in background" << endl;
+#endif // DEBUG
 			activations.push_back(activation);
 		}
 

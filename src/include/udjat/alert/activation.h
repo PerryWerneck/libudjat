@@ -46,6 +46,7 @@
 
 			struct {
 				bool verbose = true;
+				bool asyncronous = true;
 				Udjat::Level level = Udjat::unimportant;
 			} options;
 
