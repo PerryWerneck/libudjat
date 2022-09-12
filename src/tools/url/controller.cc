@@ -90,6 +90,18 @@
 
 	}
 
+	const Protocol * Protocol::Controller::verify(const void *protocol) {
+
+		lock_guard<mutex> lock(guard);
+		for(auto prot : protocols) {
+			if(prot == (Protocol *) protocol) {
+				return prot;
+			}
+		}
+
+		return nullptr;
+	}
+
 	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
 
 		response.reset(Value::Array);

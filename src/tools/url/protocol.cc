@@ -92,6 +92,10 @@
 		return Controller::getInstance().find(name);
 	}
 
+	const Protocol * Protocol::verify(const void *protocol) {
+		return Controller::getInstance().verify(protocol);
+	}
+
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url) {
 
 		string name{url};

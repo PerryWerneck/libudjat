@@ -257,6 +257,11 @@
 		static const Protocol * find(const URL &url);
 		static const Protocol * find(const char *name);
 
+		/// @brief Verify protocol pointer.
+		/// @param protocol Pointer to protocol to confirm.
+		/// @return nullptr if protocol is not valid.
+		static const Protocol * verify(const void *protocol);
+
 		static void getInfo(Udjat::Response &response) noexcept;
 
 		/// @brief Find protocol and call.

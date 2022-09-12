@@ -75,6 +75,8 @@
 		void remove(Protocol::Worker *worker);
 
 		const Protocol * find(const char *name);
+		const Protocol * verify(const void *protocol);
+
 		void getInfo(Response &response) noexcept;
 
 	};
