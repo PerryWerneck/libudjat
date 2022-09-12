@@ -133,6 +133,10 @@ namespace Udjat {
 				return state.active;
 			}
 
+			inline bool active() const noexcept {
+				return state.active;
+			}
+
 			/// @brief List services.
 			static void getInfo(Response &response);
 

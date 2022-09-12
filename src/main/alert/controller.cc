@@ -64,9 +64,16 @@
 
 	void Alert::Controller::push_back(shared_ptr<Udjat::Alert::Activation> activation) {
 
-		if(!MainLoop::getInstance()) {
+		if(!active()) {
 
-			// No mainloop
+			// disabled, run syncronous.
+			activation->warning() << "WARNING: The alert controller is disabled, cant retry a failed alert" << endl;
+			activation->run();
+			return;
+
+		} if(!MainLoop::getInstance()) {
+
+			// No mainloop, run syncronous.
 			activation->warning() << "WARNING: The main loop is disabled, cant retry a failed alert" << endl;
 			activation->run();
 			return;
@@ -194,10 +201,7 @@
 		return running;
 	}
 
-	void Alert::Controller::stop() {
-
-		cout << "alerts\tDeactivating controller" << endl;
-		MainLoop::getInstance().remove(this);
+	void Alert::Controller::clear() noexcept {
 
 		{
 			size_t pending_activations = running();
@@ -238,6 +242,13 @@
 				return true;
 			});
 		}
+	}
+
+	void Alert::Controller::stop() {
+
+		cout << "alerts\tDeactivating controller" << endl;
+		MainLoop::getInstance().remove(this);
+		clear();
 
 	}
 

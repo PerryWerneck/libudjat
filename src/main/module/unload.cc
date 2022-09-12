@@ -20,6 +20,7 @@
 #include <config.h>
 #include <private/module.h>
 #include <udjat/tools/configuration.h>
+#include <udjat/tools/threadpool.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/exception.h>
@@ -49,23 +50,25 @@ namespace Udjat {
 				modules.pop_back();
 			}
 
+			// Save module name.
 			string name{module->name};
 			string description{module->info.description};
 
-			cout << "modules\tUnloading '" << name << "' (" << description << ")" << endl;
-
-			// Save module name.
-
 			auto handle = module->handle;
 			auto keep_loaded = module->keep_loaded;
+
+			cout << name << "\t" << (keep_loaded ? "Deactivating" : "Unloading") << " '" << description << "'" << endl;
 
 			try {
 
 				// First delete module
 #ifdef DEBUG
-				cout << "**** Deleting module " << hex << module << dec << endl;
+				cout << name << "\t**** Deleting module " << hex << module << dec << endl;
 #endif // DEBUG
 				delete module;
+#ifdef DEBUG
+				cout << name << "\t**** module " << hex << module << dec << " deleted" << endl;
+#endif // DEBUG
 
 				if(handle) {
 
@@ -79,13 +82,6 @@ namespace Udjat {
 					} else {
 						unload(handle,name,description);
 					}
-
-					/*
-					if(Config::Value<bool>("modules","keep-loaded",false)) {
-					} else  {
-						unload(handle,name,description);
-					}
-					*/
 
 				}
 

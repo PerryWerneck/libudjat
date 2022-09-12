@@ -54,6 +54,9 @@
 		/// @brief Emit pending alerts.
 		void emit() noexcept;
 
+		/// @brief Disable active alerts.
+		void clear() noexcept;
+
 	protected:
 		void stop() override;
 
