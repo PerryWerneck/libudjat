@@ -75,25 +75,31 @@
 
 		for(pugi::xml_node child : node) {
 
-			Factory::for_each(child.name(),[this,&child](Factory &factory) {
+			const char *name = child.name();
 
-				try {
+			if(name && *name) {
 
-					return factory.push_back(*this,child);
+				Factory::for_each(name,[this,name,&child](Factory &factory) {
 
-				} catch(const std::exception &e) {
+					try {
 
-					factory.error() << "Error '" << e.what() << "' parsing node <" << child.name() << ">" << endl;
+						return factory.push_back(*this,child);
 
-				} catch(...) {
+					} catch(const std::exception &e) {
 
-					factory.error() << "Unexpected error parsing node <" << child.name() << ">" << endl;
+						factory.error() << "Cant parse node <" << name << ">: " << e.what() << endl;
 
-				}
+					} catch(...) {
 
-				return false;
+						factory.error() << "Cant parse node <" << name << ">: Unexpected error" << endl;
 
-			});
+					}
+
+					return false;
+
+				});
+
+			}
 
 		}
 
