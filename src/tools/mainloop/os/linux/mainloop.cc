@@ -38,6 +38,10 @@
 
 	MainLoop::~MainLoop() {
 
+#ifdef DEBUG
+		cout << "MainLoop\tDestroying mainloop" << endl;
+#endif // DEBUG
+
 		if(!handlers.empty()) {
 
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
