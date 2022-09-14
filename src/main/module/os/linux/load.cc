@@ -30,6 +30,9 @@
 	bool Module::Controller::load(const pugi::xml_node &node) {
 
 		string paths[] = {
+#ifdef MODULES_DIR
+			Config::Value<string>("modules","application-path",STRINGIZE_VALUE_OF(MODULES_DIR)).c_str(),
+#endif // MODULES_DIR
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
 			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
 #ifdef LIBDIR

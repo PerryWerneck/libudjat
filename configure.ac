@@ -44,6 +44,9 @@ app_vrs_patch=0
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
 
+AC_ARG_WITH([module-debug-path], [AS_HELP_STRING([--with-module-debug-path], [Setup module-debug-path])], [ app_cv_module_debug_path="$withval" ],[ app_cv_module_debug_path="$ac_pwd/.bin/Debug/modules/" ])
+AC_SUBST(MODULE_DEBUG_PATH,$app_cv_module_debug_path)
+
 AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product,[The product name])
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
 

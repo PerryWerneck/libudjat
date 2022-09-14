@@ -126,6 +126,7 @@ $(OBJDBG)/%.o: \
 		$(CFLAGS) \
 		-Wall -Wextra -fstack-check \
 		-DDEBUG=1 \
+		-DMODULES_DIR=@MODULE_DEBUG_PATH@ \
 		-o $@ \
 		-c $<
 
