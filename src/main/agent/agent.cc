@@ -100,6 +100,10 @@ namespace Udjat {
 
 	Abstract::Agent::~Agent() {
 
+#ifdef DEBUG
+		info() << "Agent destroyed" << endl;
+#endif // DEBUG
+
 		// Remove all associated events.
 		Udjat::Event::remove(this);
 
@@ -107,6 +111,9 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : agents()) {
 			child->parent = nullptr;
+#ifdef DEBUG
+			child->info() << "Releasing agent with " << child.use_count() << " references" << endl;
+#endif // DEBUG
 		}
 
 		// Controller::getInstance().remove(this);
