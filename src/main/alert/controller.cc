@@ -228,7 +228,14 @@
 			pending_activations = running();
 			if(pending_activations) {
 				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
+
+#ifdef DEBUG
+				cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 				ThreadPool::getInstance().wait();
+#ifdef DEBUG
+				cout << "agent\t*** Wait for tasks complete" << endl;
+#endif // DEBUG
 			}
 		}
 

@@ -204,9 +204,12 @@ namespace Udjat {
 			root.reset();
 
 #ifdef DEBUG
-			cout << "*** Waiting for tasks" << endl;
+			cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 			ThreadPool::getInstance().wait();
+#ifdef DEBUG
+			cout << "agent\t*** Wait for tasks complete" << endl;
+#endif // DEBUG
 
 		}
 
@@ -217,6 +220,13 @@ namespace Udjat {
 		if(!root) {
 			return;
 		}
+
+		if(root->update.running) {
+			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;
+			return;
+		}
+
+		root->updating(true);
 
 //#ifdef DEBUG
 //		cout << "Checking for updates" << endl;
@@ -298,15 +308,11 @@ namespace Udjat {
 
 			});
 
+			root->updating(false);
+
 		});
 
 	}
-
-	//void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
-	//}
-
-	//void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
-	//}
 
 }
 

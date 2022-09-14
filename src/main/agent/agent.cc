@@ -122,6 +122,21 @@ namespace Udjat {
 			auto agent = *childptr;
 			try {
 
+				if(agent->update.running) {
+					agent->warning() << "Updating since " << TimeStamp(agent->update.running) << ", waiting" << endl;
+					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",10};
+					for(size_t ix = 0; ix < Config::Value<size_t>("agent-controller","max-wait-on-stop",100); ix++) {
+#ifdef _WIN32
+						Sleep(delay);
+#else
+						usleep(delay);
+#endif // _WIN32
+					}
+					if(agent->update.running) {
+						agent->error() << "Still updating, giving up" << endl;
+					}
+				}
+
 				agent->stop();
 
 			} catch(const exception &e) {
