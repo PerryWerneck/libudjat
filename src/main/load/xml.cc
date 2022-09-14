@@ -110,7 +110,7 @@
 
 				// Create e new timer with the updated value.
 				mainloop.insert(definitions,update.time()*1000,[]{
-					ThreadPool::getInstance().push([]{
+					ThreadPool::getInstance().push("system-reconfigure",[]{
 						if(instance) {
 							instance->reconfigure(instance->definitions,false);
 						}

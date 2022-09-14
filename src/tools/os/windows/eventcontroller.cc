@@ -110,7 +110,7 @@
 			lock_guard<mutex> lock(guard);
 			for(ConsoleHandlerType &type : instance.consolehandlertypes) {
 				if(type.dwCtrlType == dwCtrlType) {
-					ThreadPool::getInstance().push([&type]() {
+					ThreadPool::getInstance().push("EventController",[&type]() {
 						type.trigger();
 					});
 				}

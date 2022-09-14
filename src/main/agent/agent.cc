@@ -77,7 +77,7 @@ namespace Udjat {
 
 			if(*listener == event) {
 
-				ThreadPool::getInstance().push([this,listener]() {
+				push([this,listener]() {
 
 					try {
 
@@ -101,7 +101,7 @@ namespace Udjat {
 	Abstract::Agent::~Agent() {
 
 #ifdef DEBUG
-		info() << "Agent destroyed" << endl;
+		info() << "Cleaning up" << endl;
 #endif // DEBUG
 
 		// Remove all associated events.
@@ -115,8 +115,6 @@ namespace Udjat {
 			child->info() << "Releasing agent with " << child.use_count() << " references" << endl;
 #endif // DEBUG
 		}
-
-		// Controller::getInstance().remove(this);
 
 	}
 

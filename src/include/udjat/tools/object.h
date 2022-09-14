@@ -168,6 +168,10 @@
 
 		bool getProperty(const char *key, std::string &value) const noexcept override;
 
+		/// @brief Push a background task.
+		/// @param callback Task method.
+		size_t push(std::function<void()> callback);
+
 		int compare(const NamedObject &object ) const;
 
 		inline bool empty() const {

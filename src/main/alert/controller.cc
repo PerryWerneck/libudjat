@@ -106,7 +106,7 @@
 		}
 
 		// Using threadpool because I cant change a timer from a timer callback.
-		ThreadPool::getInstance().push([this,seconds]{
+		ThreadPool::getInstance().push("alert-controller",[this,seconds]{
 
 			MainLoop &mainloop = MainLoop::getInstance();
 
@@ -172,7 +172,7 @@
 					}
 
 					activation->state.running = time(0);
-					ThreadPool::getInstance().push([this,activation]() {
+					ThreadPool::getInstance().push("alert-run",[this,activation]() {
 
 						activation->run();
 						activation->state.running = 0;

@@ -149,7 +149,7 @@
 
 		Controller::getInstance().remove(this);
 
-		ThreadPool::getInstance().push([this]() {
+		ThreadPool::getInstance().push("FileWatcher",[this]() {
 
 			sched_yield();
 
@@ -180,7 +180,7 @@
 
 		if(event & IN_CLOSE_WRITE) {
 			cout << "inotify\tFile '" << this->name.c_str() << "' was changed" << endl;
-			ThreadPool::getInstance().push([this]() {
+			ThreadPool::getInstance().push("FileWatcherEvent",[this]() {
 				sched_yield();
 				update(true);
 				Controller::getInstance().insert(this);

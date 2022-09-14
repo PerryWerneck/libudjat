@@ -234,7 +234,7 @@ namespace Udjat {
 
 		// Check for updates on another thread; we'll change the
 		// timer and it has a mutex lock while running the callback.
-		ThreadPool::getInstance().push([this,now]() {
+		ThreadPool::getInstance().push("agent-updates",[this,now]() {
 
 			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
 
@@ -286,7 +286,7 @@ namespace Udjat {
 				}
 
 				// Enqueue agent update.
-				ThreadPool::getInstance().push([this,agent]() {
+				agent->push([this,agent]() {
 
 					try {
 

@@ -88,7 +88,7 @@
 				MainLoop::getInstance().insert(NULL,100,[process]() {
 
 					// cleanup and delete process on another thread to avoid dead-locks.
-					ThreadPool::getInstance().push([process](){
+					ThreadPool::getInstance().push("ProcessCleanup",[process](){
 
 						// Read pending data.
 						int nfds = 0;

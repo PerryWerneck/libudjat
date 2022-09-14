@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/threadpool.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
@@ -44,6 +45,10 @@
 
 	const char * NamedObject::c_str() const noexcept {
 		return (this->objectName ? this->objectName : "" );
+	}
+
+	size_t NamedObject::push(std::function<void()> callback) {
+		return ThreadPool::getInstance().push(objectName,callback);
 	}
 
 	int NamedObject::compare(const NamedObject &object ) const {
