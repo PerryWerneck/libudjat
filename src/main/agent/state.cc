@@ -8,7 +8,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/intl.h>
  #include <udjat/alert/activation.h>

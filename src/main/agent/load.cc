@@ -7,7 +7,8 @@
  *
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
  #include <udjat/module.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>

@@ -27,7 +27,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/mainloop.h>

@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
 
  #ifdef _WIN32
 	#include <udjat/win32/registry.h>

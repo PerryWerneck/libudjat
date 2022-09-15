@@ -49,6 +49,7 @@
 		</Linker>
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
+		<Unit filename="src/include/private/agent.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/misc.h" />
 		<Unit filename="src/include/private/module.h" />

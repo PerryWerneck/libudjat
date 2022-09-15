@@ -7,7 +7,7 @@
  *
  */
 
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/tools/threadpool.h>
 
