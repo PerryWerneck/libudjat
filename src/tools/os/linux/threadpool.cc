@@ -38,11 +38,9 @@
  #include <pthread.h>
  #include <pthread.h>
 
- /*
  #ifdef DEBUG
 	#undef DEBUG
  #endif // DEBUG
- */
 
  #define THREAD_ID hex << ((unsigned long long) pthread_self()) << dec
 
