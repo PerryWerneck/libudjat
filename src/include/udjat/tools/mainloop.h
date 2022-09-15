@@ -69,8 +69,14 @@ namespace Udjat {
 			virtual bool call(const Event event) = 0;
 
 		public:
+
+			Handler(int fd, const Event event);
+			virtual ~Handler();
+
+			/*
 			constexpr Handler(int f, const Event e) : fd(f), events(e) {
 			}
+			*/
 
 			/// @brief Get handle id.
 			virtual const void * id() const noexcept;
@@ -83,8 +89,6 @@ namespace Udjat {
 
 			/// @brief Remove and destroy handler.
 			void clear() noexcept;
-
-			virtual ~Handler();
 
 		};
 

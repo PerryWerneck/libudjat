@@ -46,22 +46,12 @@ namespace Udjat {
 
 	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
 
-		cout << "agent\tStarting controller" << endl;
-
-		MainLoop::getInstance().insert(this,1000,[this]() {
-			if(isActive()) {
-				onTimer(time(0));
-			} else {
-				cout << "agent\tAgent controller is not active" << endl;
-			}
-			return true;
-		});
+		cout << "agent\tInitializing controller" << endl;
 
 	}
 
 	Abstract::Agent::Controller::~Controller() {
-		cout << "agent\tStopping controller" << endl;
-		MainLoop::getInstance().remove(this);
+		cout << "agent\tDeinitializing controller" << endl;
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
@@ -172,8 +162,6 @@ namespace Udjat {
 
 		if(root) {
 
-			cout << "agent\tStarting controller" << endl;
-
 			try {
 				root->start();
 			} catch(const std::exception &e) {
@@ -187,9 +175,20 @@ namespace Udjat {
 
 		}
 
+		cout << "agent\tStarting controller" << endl;
+		MainLoop::getInstance().insert(this,1000,[this]() {
+			onTimer(time(0));
+			return isActive();
+		});
+
+
 	}
 
 	void Abstract::Agent::Controller::stop() noexcept {
+
+		cout << "agent\tStopping controller" << endl;
+
+		MainLoop::getInstance().remove(this);
 
 		if(root) {
 

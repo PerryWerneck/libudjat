@@ -17,10 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/mainloop.h>
  #include <private/misc.h>
 
  namespace Udjat {
+
+	MainLoop::Handler::Handler(int f, const Event e) : fd(f), events(e) {
+#ifdef DEBUG
+		cout << "handler\tCreating handler " << hex << ((void *) this) << dec << endl;
+#endif // DEBUG
+	}
+
+	MainLoop::Handler::~Handler() {
+#ifdef DEBUG
+		cout << "handler\tDestroying handler " << hex << ((void *) this) << dec << endl;
+#endif // DEBUG
+	}
 
 	void MainLoop::Handler::enable() noexcept {
 		enabled = true;
@@ -42,9 +55,6 @@
 		MainLoop::getInstance().wakeup();
 	}
 
-	MainLoop::Handler::~Handler() {
-	}
-
 	void MainLoop::push_back(std::shared_ptr<MainLoop::Handler> handler) {
 
 		{
@@ -58,10 +68,18 @@
 
 	void MainLoop::remove(std::shared_ptr<Handler> handler) {
 
+#ifdef DEBUG
+		cout << "handler\tAARemoving handler " << hex << ((void *) handler.get()) << dec << " with " << handler.use_count() << " pending instance(s)" << endl;
+#endif // DEBUG
+
 		{
 			lock_guard<mutex> lock(guard);
 			handlers.remove(handler);
 		}
+
+#ifdef DEBUG
+		cout << "handler\tRemoving handler " << hex << ((void *) handler.get()) << dec << " with " << handler.use_count() << " pending instance(s)" << endl;
+#endif // DEBUG
 
 		handler->fd = -1;
 		handler->disable();

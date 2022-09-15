@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/mainloop.h>
  #include <private/misc.h>
 
  namespace Udjat {
@@ -33,6 +33,10 @@
 	void MainLoop::remove(const void *id) {
 
 		lock_guard<mutex> lock(guard);
+
+#ifdef DEBUG
+		cout << "handler\tRemoving handlers with id " << hex << id << dec << endl;
+#endif // DEBUG
 
 		timers.active.remove_if([id](auto timer){
 			return timer->id == id;

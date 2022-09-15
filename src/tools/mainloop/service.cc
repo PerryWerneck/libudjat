@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/mainloop.h>
  #include <cstring>
  #include <udjat/tools/threadpool.h>
 
