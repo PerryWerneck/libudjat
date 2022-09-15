@@ -21,10 +21,31 @@
  #include <shlwapi.h>
  #include <dirent.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/path.h>
 
  namespace Udjat {
 
-	File::Path::Path(int fd) {
+	Win32::Path::Path(const char *pathname) : std::string(pathname) {
+		for(char *ptr = (char *) c_str();*ptr;ptr++) {
+			if(*ptr == '/') {
+				*ptr = '\\';
+			}
+		}
+
+		if(at(size()-1) == '\\') {
+			resize(size()-1);
+		}
+	}
+
+	bool Win32::Path::dir(const char *pathname) {
+		DWORD attr = GetFileAttributes(pathname);
+		if(attr == INVALID_FILE_ATTRIBUTES) {
+			throw Win32::Exception(pathname);
+		}
+		return attr & FILE_ATTRIBUTE_DIRECTORY;
+	}
+
+	File::Path::Path(int UDJAT_UNUSED(fd)) {
 		throw system_error(ENOTSUP,system_category(),"Not available on windows");
 	}
 
@@ -33,27 +54,9 @@
 		throw system_error(ENOTSUP,system_category(),"Not available on windows");
 	}
 
-	static bool is_dir(const std::string &filename) {
-		DWORD attr = GetFileAttributes(filename.c_str());
-		if(attr == INVALID_FILE_ATTRIBUTES) {
-			throw Win32::Exception(filename);
-		}
-		return attr & FILE_ATTRIBUTE_DIRECTORY;
-	}
+	bool File::Path::for_each(const char *pathname, const std::function<bool (const char *name, const Stat &stat)> &call) {
 
-	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
-
-		string path{pathname};
-
-		for(char *ptr = (char *) path.c_str();*ptr;ptr++) {
-			if(*ptr == '/') {
-				*ptr = '\\';
-			}
-		}
-
-		if(path[path.size()-1] == '\\') {
-			path.resize(path.size()-1);
-		}
+		Win32::Path path{pathname};
 
 		DIR *dir = opendir(path.c_str());
 
@@ -68,7 +71,7 @@
 			struct dirent *de;
 			while(rc && (de = readdir(dir)) != NULL) {
 
-				if(!de->d_name || de->d_name[0] == '.') {
+				if(de->d_name[0] == '.') {
 					continue;
 				}
 
@@ -76,7 +79,56 @@
 				filename += "\\";
 				filename += de->d_name;
 
-				if(recursive && is_dir(filename)) {
+				Stat st;
+				if(stat(filename.c_str(),&st) == -1) {
+					cerr << filename << ": " << strerror(errno) << endl;
+					continue;
+				}
+
+				rc = call(filename.c_str(), st);
+
+			}
+
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		return rc;
+
+	}
+
+	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
+
+		Win32::Path path{pathname};
+
+		DIR *dir = opendir(path.c_str());
+
+		if(!dir) {
+			throw system_error(ENOENT,system_category(),path);
+		}
+
+		bool rc = true;
+
+		try {
+
+			struct dirent *de;
+			while(rc && (de = readdir(dir)) != NULL) {
+
+				if(de->d_name[0] == '.') {
+					continue;
+				}
+
+				string filename{path};
+				filename += "\\";
+				filename += de->d_name;
+
+				if(recursive && Win32::Path::dir(filename.c_str())) {
 
 					rc = for_each(filename.c_str(), pattern, recursive, call);
 

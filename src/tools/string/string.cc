@@ -20,11 +20,33 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
  #include <cstdarg>
 
  using namespace std;
 
  namespace Udjat {
+
+	String::String(const XML::Node &node, const char *attrname, const char *def) {
+
+		auto attribute = node.attribute(attrname);
+
+		if(attribute) {
+			assign(attribute.as_string(def ? def : ""));
+		} else if(def) {
+			assign(def);
+		} else {
+			throw runtime_error(Logger::Message("Required attribute '{}' is missing",attrname));
+		}
+
+		if(empty()) {
+			return;
+		}
+
+		expand(node);
+
+	}
 
 	String & String::strip() noexcept {
 		char *ptr = strdup(c_str());
@@ -154,6 +176,50 @@
 		return -1;
 
 	}
+
+	bool String::as_bool(bool def) {
+
+		if(empty()) {
+			return def;
+		}
+
+		if(!strcasecmp(c_str(),_("yes"))) {
+			return true;
+		}
+
+		if(!strcasecmp(c_str(),_("no"))) {
+			return false;
+		}
+
+		if(!strcasecmp(c_str(),_("true"))) {
+			return true;
+		}
+
+		if(!strcasecmp(c_str(),_("false"))) {
+			return false;
+		}
+
+		if(at(0) == 's' || at(0) == 'S' || at(0) == 't' || at(0) == 'T' || at(0) == '1') {
+			return true;
+		}
+
+		if(at(0) == 'n' || at(0) == 'N' || at(0) == 'f' || at(0) == 'F' || at(0) == '0') {
+			return false;
+		}
+
+		if(at(0) == '?' || !strcasecmp(c_str(),"default") || !strcasecmp(c_str(),_("default"))) {
+			return def;
+		}
+
+		clog << "Unexpected boolean keyword '" << c_str() << "', assuming '" << (def ? "true" : "false") << "'" << endl;
+
+		return def;
+	}
+
+	const char * String::as_quark() const {
+		return Quark(*this).c_str();
+	}
+
 
  }
 

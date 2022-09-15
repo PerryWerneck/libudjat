@@ -23,11 +23,11 @@
  #include <udjat/tools/quark.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
- #include <udjat/alert.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/worker.h>
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
- #include <udjat/alert.h>
+ #include <udjat/alert/abstract.h>
  #include <mutex>
  #include <list>
  #include <iostream>
@@ -37,13 +37,13 @@
  namespace Udjat {
 
  	/// @brief Singleton for alert emission.
-	class Abstract::Alert::Controller : private MainLoop::Service, private Udjat::Worker {
+	class Alert::Controller : private MainLoop::Service, private Udjat::Worker {
 	private:
 		/// @brief Mutex for serialization
 		static mutex guard;
 
 		/// @brief List of active workers.
-		list<shared_ptr<Abstract::Alert::Activation>> activations;
+		list<shared_ptr<Udjat::Alert::Activation>> activations;
 
 		Controller();
 
@@ -53,6 +53,9 @@
 
 		/// @brief Emit pending alerts.
 		void emit() noexcept;
+
+		/// @brief Disable active alerts.
+		void clear() noexcept;
 
 	protected:
 		void stop() override;
@@ -64,7 +67,7 @@
 		static Controller & getInstance();
 		virtual ~Controller();
 
-		void push_back(shared_ptr<Abstract::Alert::Activation> activation);
+		void push_back(shared_ptr<Udjat::Alert::Activation> activation);
 		void remove(const Abstract::Alert *alert);
 		bool get(Request &request, Response &response) const override;
 

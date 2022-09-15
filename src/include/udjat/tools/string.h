@@ -25,6 +25,7 @@
  #include <vector>
  #include <functional>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
 
@@ -87,6 +88,19 @@
 		String(const std::string &str) : std::string(str) {
 		}
 
+		/// @brief Create string from xml definition.
+		/// @param node XML node with string definitions.
+		/// @param attrname XML attribute name for the string value.
+		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr);
+
+		inline bool operator ==(const char * str) const noexcept {
+			return strcasecmp(c_str(),str) == 0;
+		}
+
+		inline bool operator ==(const std::string & str) const noexcept {
+			return strcasecmp(c_str(),str.c_str()) == 0;
+		}
+
 		/// @brief Test if the string contains one of the elements of a list.
 		/// @return Index of the matched content (-1 if not found).
 		size_t select(const char *value, ...) __attribute__ ((sentinel));
@@ -116,28 +130,27 @@
 
 		std::vector<String> split(const char *delim);
 
-		/**
-		 * @brief Remove the leading whitespace from the string.
-		 *
-		 * Removes leading whitespace from a string, by moving the rest
-		 * of the characters forward.
-		 *
-		 * @see chomp() and strip().
-		 *
-		 * @return The string.
-		 *
-		 */
+		/// @brief Remove the leading whitespace from the string.
+		///
+		/// Removes leading white spaces from a string, by moving the rest
+		/// of the characters forward.
+		///
+		/// @see chomp() and strip().
+		///
+		/// @return The string.
 		String & chug() noexcept;
 
-		/**
-		 * @brief Removes trailing whitespace from a string.
-		 *
-		 * @see chug() and strip().
-		 *
-		 * @return The string.
-		 *
-		 */
+		/// @brief Removes trailing white spaces from a string.
+		///
+		/// @see chug() and strip().
+		///
+		/// @return The string.
 		String & chomp() noexcept;
+
+		bool as_bool(bool def = false);
+
+		/// @brief Return 'quark' string from value.
+		const char * as_quark() const;
 
 	};
 

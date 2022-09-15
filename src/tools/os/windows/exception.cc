@@ -114,7 +114,7 @@
 
 		response = "WinSock error ";
 		response += std::to_string((unsigned int) dwMessageId);
-		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2 )";
+		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2)";
 
 	} else if(*buffer) {
 

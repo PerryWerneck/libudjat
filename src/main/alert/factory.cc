@@ -18,20 +18,28 @@
  */
 
  #include <config.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/factory.h>
- #include <udjat/alert.h>
- #include <udjat/agent.h>
+ #include <udjat/alert/url.h>
+ #include <udjat/alert/script.h>
+ #include <udjat/tools/object.h>
  #include <iostream>
- #include <udjat/moduleinfo.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *name) {
+	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type) {
 
 		std::shared_ptr<Abstract::Alert> alert;
 
+		if(!type) {
+			type = "default";	// Just in case.
+		}
+
+		//
+		// First, try using the type name (even for 'default').
+		//
 		if(Factory::search(node,[&parent,&alert](const Factory &factory, const pugi::xml_node &node){
 			alert = factory.AlertFactory(parent,node);
 			if(alert) {
@@ -41,16 +49,48 @@
 				return true;
 			}
 			return false;
-		},name)) {
+		},type)) {
 			return alert;
 		}
 
-		alert = make_shared<Udjat::Alert>(node);
-		if(alert->verbose()) {
-			alert->info() << "Using the default alert engine" << endl;
+		//
+		// Try defined types
+		//
+		if(!strcasecmp(type,"url")) {
+			return make_shared<Udjat::Alert::URL>(node);
 		}
 
-		return alert;
+		if(!strcasecmp(type,"script")) {
+			return make_shared<Udjat::Alert::Script>(node);
+		}
+
+		if(!strcasecmp(type,"default")) {
+
+			//
+			// Check node attributes.
+			//
+			if(node.attribute("url")) {
+				return make_shared<Udjat::Alert::URL>(node);
+			}
+
+			if(node.attribute("script")) {
+				return make_shared<Udjat::Alert::Script>(node);
+			}
+
+			//
+			// Do an upsearch.
+			//
+			if(Object::getAttribute(node,"url")) {
+				return make_shared<Udjat::Alert::URL>(node);
+			}
+
+			if(Object::getAttribute(node,"script")) {
+				return make_shared<Udjat::Alert::Script>(node);
+			}
+
+		}
+
+		throw runtime_error(Logger::Message("Unable to create an alert type '{}'",type));
 
 	}
 

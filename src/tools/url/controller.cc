@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <private/protocol.h>
  #include <cstring>
  #include <udjat/moduleinfo.h>
 
@@ -35,6 +35,16 @@
 	}
 
 	Protocol::Controller::~Controller() {
+	}
+
+	void Protocol::Controller::insert(Protocol::Worker *worker) {
+		lock_guard<mutex> lock(guard);
+		workers.push_back(worker);
+	}
+
+	void Protocol::Controller::remove(Protocol::Worker *worker) {
+		lock_guard<mutex> lock(guard);
+		workers.remove(worker);
 	}
 
 	void Protocol::Controller::insert(Protocol *protocol) {
@@ -60,6 +70,9 @@
 		{
 			/// @brief Singleton for file protocol.
 			static File file;
+#ifndef _WIN32
+			static Script script;
+#endif // !_WIN32
 		}
 
 #ifdef DEBUG
@@ -75,6 +88,18 @@
 
 		return nullptr;
 
+	}
+
+	const Protocol * Protocol::Controller::verify(const void *protocol) {
+
+		lock_guard<mutex> lock(guard);
+		for(auto prot : protocols) {
+			if(prot == (Protocol *) protocol) {
+				return prot;
+			}
+		}
+
+		return nullptr;
 	}
 
 	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {

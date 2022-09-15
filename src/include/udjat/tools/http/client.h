@@ -117,6 +117,15 @@
 			/// @return true if the file was updated.
 			static bool save(const pugi::xml_node &node, const char *filename);
 
+			/// @brief Get URL, save response to cache file.
+			/// @param progress The download progress notifier.
+			/// @return The cached filename.
+			std::string filename(const std::function<bool(double current, double total)> &progress);
+
+			/// @brief Get URL, save response to cache file.
+			/// @return The cached filename.
+			std::string filename();
+
 		};
 
 	}

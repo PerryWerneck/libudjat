@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/protocol.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -25,12 +26,26 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/base64.h>
+ #include <udjat/tools/application.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
  #endif // _WIN32
 
  namespace Udjat {
+
+	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+		Protocol::Controller::getInstance().insert(this);
+	}
+
+	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+		Protocol::Controller::getInstance().insert(this);
+	}
+
+	Protocol::Worker::~Worker() {
+		Protocol::Controller::getInstance().remove(this);
+	}
 
 	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
@@ -66,6 +81,10 @@
 
 	String Protocol::Worker::get() {
 		return get(dummy_progress);
+	}
+
+	void Protocol::Worker::get(const std::function<void(int code, const char *response)> &call) {
+		call(200,get().c_str());
 	}
 
 	bool Protocol::Worker::save(const char *filename, bool replace) {
@@ -117,6 +136,17 @@
 		*/
 
 		return true;
+	}
+
+	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {
+		Application::CacheDir name{"urls"};
+		name += Base64::encode(url());
+		save(name.c_str(),progress);
+		return name;
+	}
+
+	std::string Protocol::Worker::filename() {
+		return filename(dummy_progress);
 	}
 
  }

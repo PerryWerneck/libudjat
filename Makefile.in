@@ -21,16 +21,19 @@ MAIN_SOURCES= \
 	$(wildcard src/main/module/os/@OSNAME@/*.cc) \
 	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
 	$(wildcard src/tools/url/*.cc) \
+	$(wildcard src/tools/url/protocols/*.cc) \
 	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
-	$(wildcard src/main/alert/*.cc)
+	$(wildcard src/main/alert/*.cc) \
+	$(wildcard src/main/os/@OSNAME@/*.cc) \
+	$(wildcard src/main/os/@OSNAME@/*.rc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc) \
 	$(wildcard src/testprogram/@OSNAME@/*.rc)
 	
-TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@
+TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@ locale
 
 #---[ Tools ]----------------------------------------------------------------------------
 
@@ -62,14 +65,17 @@ localedir=@localedir@
 docdir=@docdir@
 sysconfdir=/etc
 srcdir=@srcdir@
+localedir=@localedir@
 
-OBJDIR=.obj
+OBJDIR=.obj/@OSNAME@
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
 BINDIR=.bin
 BINDBG=$(BINDIR)/Debug
 BINRLS=$(BINDIR)/Release
+
+POTDIR=.pot
 
 #---[ Rules ]----------------------------------------------------------------------------
 
@@ -85,6 +91,7 @@ CFLAGS= \
 	-Isrc/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	-DLIBDIR=$(libdir) \
+	-DLOCALEDIR=$(localedir) \
 	@ECONF_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@SYSTEMD_CFLAGS@ \
@@ -119,6 +126,7 @@ $(OBJDBG)/%.o: \
 		$(CFLAGS) \
 		-Wall -Wextra -fstack-check \
 		-DDEBUG=1 \
+		-DMODULES_DIR=@MODULE_DEBUG_PATH@ \
 		-o $@ \
 		-c $<
 
@@ -159,11 +167,41 @@ $(OBJRLS)/%.o: \
 	@$(MKDIR) $(@D)
 	@$(WINDRES) $< -O coff -o $@
 
+#---[ Misc Rules ]-----------------------------------------------------------------------
+
+$(POTDIR)/%.pot: \
+	%.cc
+
+	@echo $(notdir $@) ...
+	@$(MKDIR) $(dir $@)
+	@$(XGETTEXT) \
+		--from-code=UTF-8 \
+		--language=C \
+		--keyword=_ \
+		--keyword=N_ \
+		--keyword=MSG_:2 \
+		--output=$@ \
+		$<
+	@touch $@
+
+$(POTDIR)/%.pot: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(dir $@)
+	@touch $@
+
+install-%: \
+	%/Makefile
+
+	@$(MAKE) -C `dirname $<` DESTDIR=$(DESTDIR) install
+
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
 	$(BINRLS)/@SONAME@ \
-	$(BINRLS)/$(PACKAGE_NAME).a
+	$(BINRLS)/$(PACKAGE_NAME).a \
+	locale/$(PACKAGE_NAME).pot
 
 Release: \
 	$(BINRLS)/@SONAME@
@@ -192,10 +230,21 @@ $(BINRLS)/$(PACKAGE_NAME).a: \
 	@$(MKDIR) $(dir $@)
 	@$(AR) rcs $@ $^
 
+locale/$(PACKAGE_NAME).pot: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(POTDIR)/$(SRC).pot)
+
+	@rm -f $@
+	@$(MKDIR) $(dir $@)
+	@$(MSGCAT) --sort-output $^ > $@
+
+locale: \
+	locale/$(PACKAGE_NAME).pot
+
 #---[ Install Targets ]------------------------------------------------------------------
 
 install: \
-       $(foreach TARGET, $(TARGETS), install-$(TARGET))
+       $(foreach TARGET, $(TARGETS), install-$(TARGET)) \
+       locale/$(PACKAGE_NAME).pot
 
 install-debug: \
 	install-@OSNAME@-debug
@@ -301,6 +350,13 @@ install-devel: \
 	@$(INSTALL_DATA) \
 		src/include/udjat/agent/*.h \
 		$(DESTDIR)$(includedir)/udjat/agent
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/alert
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/alert/*.h \
+		$(DESTDIR)$(includedir)/udjat/alert
 
 	# Install PKG-CONFIG files
 	@$(MKDIR) \

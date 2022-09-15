@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/agent.h>
  #include <functional>
  #include <thread>
@@ -32,23 +33,13 @@
 	#define WM_WAKE_UP			WM_USER+100
 	#define WM_CHECK_TIMERS		WM_USER+101
 	#define WM_STOP				WM_USER+102
-	#define WM_EVENT_ACTION		WM_USER+103
+//	#define WM_EVENT_ACTION		WM_USER+103
 	#define IDT_CHECK_TIMERS	1
  #endif // _WIN32
 
  #ifndef HAVE_STRPTIME
 	UDJAT_PRIVATE char *strptime(const char *buf, const char *fmt, struct tm *tm);
  #endif // !HAVE_STRPTIME
-
- #ifdef HAVE_LIBINTL
-	#include <locale.h>
-	#include <libintl.h>
-	#define _( x )                  dgettext(PACKAGE_NAME,x)
-	#define N_( x )                 x
- #else
-	#define _( x )                  x
-	#define N_( x )                 x
- #endif // HAVE_LIBINTL
 
  namespace Udjat {
 

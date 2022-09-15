@@ -37,6 +37,7 @@
  #include <sys/wait.h>
  #include <poll.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -87,7 +88,7 @@
 				MainLoop::getInstance().insert(NULL,100,[process]() {
 
 					// cleanup and delete process on another thread to avoid dead-locks.
-					ThreadPool::getInstance().push([process](){
+					ThreadPool::getInstance().push("ProcessCleanup",[process](){
 
 						// Read pending data.
 						int nfds = 0;
@@ -141,7 +142,8 @@
 
 	}
 
-	SubProcess::SubProcess(const char *c) : command(c) {
+	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
+		info() << "Running '" << command << "'" << endl;
 		memset(pipes[0].buffer,0,sizeof(pipes[0].buffer));
 		memset(pipes[1].buffer,0,sizeof(pipes[1].buffer));
 		Controller::getInstance().insert(this);
@@ -160,68 +162,10 @@
 
 	}
 
-	void SubProcess::start(const char *command) {
-
-		SubProcess *process = new SubProcess(command);
-
-		ThreadPool::getInstance().push([process]() {
-
-			try {
-
-				process->start();
-
-			} catch(const std::exception &e) {
-
-				process->onStdErr((string{"Error '"} + e.what() + "' starting process").c_str());
-				delete process;
-
-			} catch(...) {
-
-				process->onStdErr("Unexpected error starting process");
-				delete process;
-
-			}
-
-		});
-
-
-
-	}
-
-	/// @brief Called on subprocess stdout.
-	void SubProcess::onStdOut(const char *line) {
-		cout << line << endl;
-	}
-
-	/// @brief Called on subprocess stderr.
-	void SubProcess::onStdErr(const char *line) {
-		onStdOut(line);
-	}
-
-	/// @brief Called on subprocess normal exit.
-	void SubProcess::onExit(int rc) {
-		string msg = string{"Process '"} + command + "' finishes with rc=" + to_string(rc);
-
-		if(rc) {
-			onStdOut(msg.c_str());
-		} else {
-			onStdErr(msg.c_str());
-		}
-
-	}
-
-	/// @brief Called on subprocess abnormal exit.
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void SubProcess::onSignal(int sig) {
-		onStdErr((string{"Process '" + command + "' finishes with signal "} + to_string(sig)).c_str());
-	}
-	#pragma GCC diagnostic pop
-
-	void SubProcess::start() {
+	void SubProcess::init() {
 
 		if(this->pid != -1) {
-			throw system_error(EBUSY,system_category(),string{"The child process is active on pid "} + to_string(this->pid));
+			throw system_error(EBUSY,system_category(),Logger::Message{"The child process is active on pid {}",this->pid});
 		}
 
 		//
@@ -234,14 +178,14 @@
 
 		// Create sockets.
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, out) < 0) {
-			throw system_error(errno,system_category(),string{"Can't create stdout pipes for '"} + c_str() + "'");
+			throw system_error(errno,system_category(),Logger::Message{"Can't create stdout pipes for '{}'",command});
 		}
 
 		if(socketpair(AF_UNIX, SOCK_STREAM, 0, err) < 0) {
 			errcode = errno;
 			::close(out[0]);
 			::close(out[1]);
-			throw system_error(errcode,system_category(),string{"Can't create stderr pipes for '"} + c_str() + "'");
+			throw system_error(errno,system_category(),Logger::Message{"Can't create stderr pipes for '{}'",command});
 		}
 
 		switch (this->pid = vfork()) {
@@ -275,6 +219,88 @@
 		// Child started, capture pipes.
 		this->pipes[0].fd = out[0];
 		this->pipes[1].fd = err[0];
+
+	}
+
+	int SubProcess::run() {
+
+		init();
+
+		int rc = -1;
+		while(running()) {
+
+			struct pollfd fds[sizeof(pipes)/sizeof(pipes[0])];
+
+			size_t nfds = 0;
+			for(size_t ix = 0; ix < (sizeof(pipes) /sizeof(pipes[0])); ix++) {
+				if(pipes[ix].fd > 0) {
+					fds[nfds].fd = pipes[ix].fd;
+					fds[nfds].events = POLLIN|POLLERR|POLLHUP;
+					fds[nfds].revents = 0;
+					nfds++;
+				}
+			}
+
+			int nEvents = poll(fds,nfds,1000);
+
+			if(nEvents < 0) {
+
+				throw system_error(errno,system_category(),Logger::Message{"Error reading data from pid {}",this->pid});
+
+			} else if(nEvents > 0) {
+
+				for(size_t ix = 0; nEvents > 0 && ix < (sizeof(pipes) /sizeof(pipes[0])); ix++) {
+
+					if(fds[ix].revents) {
+
+						if(fds[ix].revents & MainLoop::oninput) {
+							read(ix);
+						}
+
+						if(fds[ix].revents & MainLoop::onerror) {
+							onStdErr("Error reading pipe");
+							close(this->pipes[ix].fd);
+							this->pipes[ix].fd = -1;
+						}
+
+						if(fds[ix].revents & MainLoop::onhangup) {
+							onStdErr("Pipe was closed");
+							close(this->pipes[ix].fd);
+							this->pipes[ix].fd = -1;
+						}
+
+						nEvents--;
+					}
+
+				}
+
+			}
+			int status = 0;
+			waitpid(this->pid,&status,WNOHANG);
+
+			if(WIFEXITED(status)) {
+				rc = this->status.exit = WEXITSTATUS(status);
+				onExit(rc);
+				break;
+			}
+
+			if(WIFSIGNALED(status)) {
+				rc = -1;
+				this->status.failed = true;
+				this->status.termsig = WTERMSIG(status);
+				onSignal(this->status.termsig);
+				break;
+			}
+
+		}
+
+		return rc;
+
+	}
+
+	void SubProcess::start() {
+
+		init();
 
 		MainLoop::getInstance().insert(
 			this,
@@ -329,7 +355,7 @@
 
 	}
 
-	void SubProcess::read(int id) {
+	bool SubProcess::read(int id) {
 
 		ssize_t szRead =
 			::read(
@@ -340,43 +366,18 @@
 
 		if(szRead < 0) {
 			onStdErr((string{"Error '"} + strerror(errno) + "' reading from pipe").c_str());
-			return;
+			return true;
 		}
 
 		if(szRead == 0) {
 			onStdErr("Unexpected 'EOF' reading from pipe");
-			return;
+			return false;
 		}
 
 		pipes[id].buffer[pipes[id].length+szRead] = 0;
+		parse(id);
 
-		char *from = pipes[id].buffer;
-		char *to = strchr(from,'\n');
-		while(to) {
-
-			*to = 0;
-
-			if(id) {
-				onStdErr(from);
-			} else {
-				onStdOut(from);
-			}
-
-			from = to+1;
-			to = strchr(from,'\n');
-		}
-
-		if(from && from != pipes[id].buffer) {
-			pipes[id].length = strlen(from);
-			char *to = pipes[id].buffer;
-			while(*from) {
-				*(to++) = *(from++);
-			}
-			*to = 0;
-		}
-
-		pipes[id].length = strlen(pipes[id].buffer);
-
+		return true;
 	}
 
  }

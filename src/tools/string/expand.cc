@@ -125,6 +125,8 @@
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
 
+		group = node.attribute("settings-from").as_string(group);
+
 		return expand([node,dynamic,cleanup,group](const char *key, std::string &value) {
 
 			// Check node attributes

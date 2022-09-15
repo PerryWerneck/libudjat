@@ -18,13 +18,7 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::load(const pugi::xml_node &root) {
-
-		Object::set(root);
-
-#ifdef DEBUG
-		info() << "*** Loading from xml" << endl;
-#endif // DEBUG
+	void Abstract::Agent::setup(const pugi::xml_node &root) {
 
 		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 
@@ -66,11 +60,14 @@ namespace Udjat {
 		}
 #endif // !_WIN32
 
-		// Load children
+		// Load agent states.
 		Abstract::Object::for_each(root,"state","states",[this](const pugi::xml_node &node){
 			try {
 
-				if(!StateFactory(node)) {
+				auto state = StateFactory(node);
+				if(state) {
+					state->setup(node);
+				} else {
 					error() << "Unable to create child state" << endl;
 				}
 
@@ -85,6 +82,7 @@ namespace Udjat {
 			}
 		});
 
+		// Load agent alerts.
 		Abstract::Object::for_each(root,"alert","alerts",[this](const pugi::xml_node &node){
 
 			// Create alerts.
@@ -92,7 +90,8 @@ namespace Udjat {
 
 				auto alert = AlertFactory(node);
 				if(alert) {
-					push_back(alert);
+					alert->setup(node);
+					push_back(node, alert);
 				} else {
 					error() << "Unable to create alert" << endl;
 				}
@@ -113,14 +112,12 @@ namespace Udjat {
 
 			if(strcasecmp(node.name(),"module") == 0) {
 
-				// Only load module if 'preload' is not set.
-				if(!Config::Value<bool>("modules","preload-from-xml",true)) {
-					Module::load(node);
-				}
+				Module::load(node);
 
 			} else if(strcasecmp(node.name(),"attribute")) {
 
-				push_back(node);
+				// It's not an attribute, check if it's a child node.
+				ChildFactory(node);
 
 			}
 

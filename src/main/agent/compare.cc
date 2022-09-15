@@ -22,6 +22,7 @@
 
  namespace Udjat {
 
+	/*
 	class UDJAT_PRIVATE Tester : public Udjat::Value {
 	private:
 		Value::Type type = Udjat::Value::Undefined;
@@ -71,6 +72,10 @@
 
 			case Udjat::Value::Boolean:
 				return this->value.b == src.value.b;
+
+			case Udjat::Value::String:
+				throw system_error(ENOTSUP,system_category(),"Unable to test strings");
+
 			}
 
 			throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
@@ -153,6 +158,6 @@
 		}
 
 	};
-
+	*/
 
  }

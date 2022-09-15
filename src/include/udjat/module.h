@@ -15,6 +15,9 @@
 			/// @brief The module name.
 			const char *name;
 
+			/// @brief When true the module is never unloaded.
+			bool keep_loaded = false;
+
 			/// @brief The module controller.
 			class Controller;
 			friend class Controller;
@@ -33,7 +36,13 @@
 
 			Module(const char *name, const ModuleInfo &info);
 
+			Module(const char *name, const ModuleInfo *info) : Module(name,*info) {
+			}
+
 			Module(const Quark &name, const ModuleInfo &info) : Module(name.c_str(),info) {
+			}
+
+			Module(const Quark &name, const ModuleInfo *info) : Module(name.c_str(),*info) {
 			}
 
 			/// @brief Navigate on module options.
@@ -41,8 +50,10 @@
 
 		public:
 
-			/// @brief Load modules from configuration file.
-			static void load();
+			/// @brief Preload modules before the reconfiguration.
+			/// @param pathname The xml definitions file (or folder) path.
+			/// @return true if success.
+			static bool preload(const char *pathname = nullptr) noexcept;
 
 			/// @brief Call method on every modules.
 			static void for_each(std::function<void(Module &module)> method);
@@ -81,6 +92,9 @@
 
 	extern "C" {
 
+		/// @brief Module information data.
+		extern UDJAT_API const Udjat::ModuleInfo udjat_module_info;
+
 		/// @brief Initialize module.
 		/// @return Module controller.
 		UDJAT_API Udjat::Module * udjat_module_init();
@@ -92,9 +106,5 @@
 		/// @brief Deinitialize the module.
 		/// @return true if the module can be unloaded.
 		UDJAT_API bool udjat_module_deinit();
-
-		/// @brief Get informations about the module.
-		/// @param object Value to receive the informations.
-		UDJAT_API void udjat_module_info(Udjat::Value &object);
 
 	}

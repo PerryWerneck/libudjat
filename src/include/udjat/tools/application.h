@@ -31,7 +31,15 @@
 	class UDJAT_API Application {
 	public:
 
-		/// @brief Initialize application.
+		/// @brief Setup locale.
+		/// @param gettext_package The gettext package name.
+		static void UDJAT_API set_gettext_package(const char *gettext_package);
+
+		/// @brief Initialize application; setup locale.
+		/// @return true if the application was initialized.
+		static bool UDJAT_API init();
+
+		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.
 		static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
 
@@ -82,14 +90,6 @@
 			DataDir(const char *subdir);
 		};
 
-		/// @brief Application cache dir.
-		class UDJAT_API CacheDir : public File::Path {
-		public:
-			CacheDir();
-			CacheDir(const char *filename);
-			CacheDir(const char *type, const char *filename);
-		};
-
 		/// @brief File from the application datadir.
 		class UDJAT_API DataFile : public std::string {
 		public:
@@ -117,6 +117,14 @@
 
 			/// @brief Create path to application subdir below the system's configuration path.
 			SysConfigDir(const char *subdir);
+		};
+
+		class UDJAT_API CacheDir : public std::string {
+		public:
+			CacheDir();
+			CacheDir(const char *subdir);
+
+
 		};
 
 	};

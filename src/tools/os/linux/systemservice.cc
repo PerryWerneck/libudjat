@@ -55,8 +55,6 @@
 
 	void SystemService::init() {
 
-		Module::load();
-
 		string appconfig;
 		if(!definitions) {
 			Config::Value<string> config("service","definitions","");
@@ -65,6 +63,10 @@
 			} else {
 				definitions = Quark(config).c_str();
 			}
+		}
+
+		if(!Module::preload(definitions)) {
+			throw runtime_error("Module preload has failed, aborting service");
 		}
 
 		if(definitions[0] && strcasecmp(definitions,"none")) {

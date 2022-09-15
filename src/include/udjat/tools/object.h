@@ -23,7 +23,7 @@
  #include <udjat/tools/value.h>
  #include <ostream>
  #include <string>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <cstring>
  #include <functional>
 
@@ -33,13 +33,14 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
-		protected:
-
-			/// @brief Load children.
-			/// @param node The XML node with the children definitions.
-			virtual void load(const pugi::xml_node &node);
-
 		public:
+
+			/// @brief Setup object.
+			/// @param node The XML node with the object definitions.
+			virtual void setup(const pugi::xml_node &node);
+
+			/// @brief Get configuration file group.
+			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");
 
 			/// @brief Call method on every ocorrence of 'tagname' until method returns 'true'.
 			/// @param node The xml node.
@@ -166,6 +167,10 @@
 	public:
 
 		bool getProperty(const char *key, std::string &value) const noexcept override;
+
+		/// @brief Push a background task.
+		/// @param callback Task method.
+		size_t push(std::function<void()> callback);
 
 		int compare(const NamedObject &object ) const;
 

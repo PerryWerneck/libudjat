@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/protocol.h>
  #include <udjat/tools/http/client.h>
  #include <cstring>
 
@@ -145,6 +146,14 @@
 
 	std::string URL::post(const char *payload) const {
 		return HTTP::Client(*this).post(payload);
+	}
+
+	std::string URL::filename(const std::function<bool(double current, double total)> &progress) {
+		return HTTP::Client(*this).filename(progress);
+	}
+
+	std::string URL::filename() {
+		return HTTP::Client(*this).filename();
 	}
 
 	int URL::Components::portnumber() const {

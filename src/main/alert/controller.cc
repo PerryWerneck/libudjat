@@ -23,6 +23,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/agent.h>
  #include <iostream>
+ #include <udjat/alert/activation.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -32,27 +33,27 @@
 
  namespace Udjat {
 
-	mutex Abstract::Alert::Controller::guard;
+	mutex Alert::Controller::guard;
 
 	static const Udjat::ModuleInfo moduleinfo{ "Alert controller" };
 
-	Abstract::Alert::Controller & Abstract::Alert::Controller::getInstance() {
+	Alert::Controller & Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}
 
-	Abstract::Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
+	Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
 		cout << "alerts\tInitializing" << endl;
 		if(MainLoop::getInstance()) {
 			start();
 		}
 	}
 
-	Abstract::Alert::Controller::~Controller() {
+	Alert::Controller::~Controller() {
 	}
 
-	void Abstract::Alert::Controller::remove(const Abstract::Alert *alert) {
+	void Alert::Controller::remove(const Abstract::Alert *alert) {
 
 		lock_guard<mutex> lock(guard);
 		activations.remove_if([alert](auto activation){
@@ -61,11 +62,25 @@
 
 	}
 
-	void Abstract::Alert::Controller::push_back(shared_ptr<Abstract::Alert::Activation> activation) {
+	void Alert::Controller::push_back(shared_ptr<Udjat::Alert::Activation> activation) {
 
-		if(!MainLoop::getInstance()) {
+		if(!activation->options.asyncronous) {
+			// It's a syncronous alert, just emit it.
+#ifdef DEBUG
+			activation->info() << "Running alert in foreground" << endl;
+#endif // DEBUG
+			activation->run();
+			return;
+		} else if(!active()) {
 
-			// No mainloop
+			// disabled, run syncronous.
+			activation->warning() << "WARNING: The alert controller is disabled, cant retry a failed alert" << endl;
+			activation->run();
+			return;
+
+		} if(!MainLoop::getInstance()) {
+
+			// No mainloop, run syncronous.
 			activation->warning() << "WARNING: The main loop is disabled, cant retry a failed alert" << endl;
 			activation->run();
 			return;
@@ -75,20 +90,23 @@
 		// Have mainloop
 		{
 			lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+			activation->info() << "Running alert in background" << endl;
+#endif // DEBUG
 			activations.push_back(activation);
 		}
 
 		emit();
 	}
 
-	void Abstract::Alert::Controller::reset(time_t seconds) noexcept {
+	void Alert::Controller::reset(time_t seconds) noexcept {
 
 		if(!seconds) {
 			seconds = 1;
 		}
 
 		// Using threadpool because I cant change a timer from a timer callback.
-		ThreadPool::getInstance().push([this,seconds]{
+		ThreadPool::getInstance().push("alert-controller",[this,seconds]{
 
 			MainLoop &mainloop = MainLoop::getInstance();
 
@@ -121,7 +139,7 @@
 
 	}
 
-	void Abstract::Alert::Controller::emit() noexcept {
+	void Alert::Controller::emit() noexcept {
 
 		time_t now = time(0);
 		time_t next = 0;
@@ -154,7 +172,7 @@
 					}
 
 					activation->state.running = time(0);
-					ThreadPool::getInstance().push([this,activation]() {
+					ThreadPool::getInstance().push("alert-run",[this,activation]() {
 
 						activation->run();
 						activation->state.running = 0;
@@ -182,7 +200,7 @@
 
 	}
 
-	size_t Abstract::Alert::Controller::running() const noexcept {
+	size_t Alert::Controller::running() const noexcept {
 		size_t running = 0;
 		lock_guard<mutex> lock(guard);
 		for(auto activation : activations) {
@@ -193,10 +211,7 @@
 		return running;
 	}
 
-	void Abstract::Alert::Controller::stop() {
-
-		cout << "alerts\tDeactivating controller" << endl;
-		MainLoop::getInstance().remove(this);
+	void Alert::Controller::clear() noexcept {
 
 		{
 			size_t pending_activations = running();
@@ -213,14 +228,21 @@
 			pending_activations = running();
 			if(pending_activations) {
 				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
+
+#ifdef DEBUG
+				cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 				ThreadPool::getInstance().wait();
+#ifdef DEBUG
+				cout << "agent\t*** Wait for tasks complete" << endl;
+#endif // DEBUG
 			}
 		}
 
 		// Cleanup active alerts
 		{
 			// First copy in the reverse order using the mutex
-			list<shared_ptr<Abstract::Alert::Activation>> active;
+			list<shared_ptr<Udjat::Alert::Activation>> active;
 			{
 				lock_guard<mutex> lock(guard);
 				for(auto activation : activations) {
@@ -237,10 +259,17 @@
 				return true;
 			});
 		}
+	}
+
+	void Alert::Controller::stop() {
+
+		cout << "alerts\tDeactivating controller" << endl;
+		MainLoop::getInstance().remove(this);
+		clear();
 
 	}
 
-	bool Abstract::Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
+	bool Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
 
 		response.reset(Value::Array);
 

@@ -117,6 +117,15 @@
 		/// @return true if the file was updated.
 		bool get(const char *filename,const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
+		/// @brief Get URL, save response to cache file.
+		/// @param progress The download progress notifier.
+		/// @return The cached filename.
+		std::string filename(const std::function<bool(double current, double total)> &progress);
+
+		/// @brief Get URL, save response to cache file.
+		/// @return The cached filename.
+		std::string filename();
+
 	};
 
  }

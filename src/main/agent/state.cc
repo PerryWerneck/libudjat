@@ -7,8 +7,11 @@
  *
  */
 
+ #include <config.h>
  #include "private.h"
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/alert/activation.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -74,13 +77,13 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,_("Error switching state"));
 			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
 			this->current_state.activation = time(0);
 
 		}
@@ -149,13 +152,13 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
+			this->current_state.active = Udjat::StateFactory(e,_("Error switching state"));
 			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			error() << "Unexpected error switching state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
 			this->current_state.activation = time(0);
 
 		}

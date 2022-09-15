@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include "../../private.h"
+ #include <private/module.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
@@ -39,6 +39,12 @@
 			}
 
 			module->handle = handle;
+			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
+
+			if(module->info.gettext_package && *module->info.gettext_package) {
+				Application::set_gettext_package(module->info.gettext_package);
+			}
+
 			return module;
 
 		}
@@ -56,7 +62,9 @@
 			throw runtime_error("Can't initialize module");
 		}
 
-		module->handle = handle;
+		if(module->info.gettext_package && *module->info.gettext_package) {
+			Application::set_gettext_package(module->info.gettext_package);
+		}
 
 		return module;
 

@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/threadpool.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
@@ -44,6 +45,10 @@
 
 	const char * NamedObject::c_str() const noexcept {
 		return (this->objectName ? this->objectName : "" );
+	}
+
+	size_t NamedObject::push(std::function<void()> callback) {
+		return ThreadPool::getInstance().push(objectName,callback);
 	}
 
 	int NamedObject::compare(const NamedObject &object ) const {
@@ -71,29 +76,35 @@
 		set(node);
 	}
 
-	void Abstract::Object::load(const pugi::xml_node &node) {
+	void Abstract::Object::setup(const pugi::xml_node &node) {
 
 		for(pugi::xml_node child : node) {
 
-			Factory::for_each(child.name(),[this,&child](Factory &factory) {
+			const char *name = child.name();
 
-				try {
+			if(name && *name) {
 
-					return factory.push_back(*this,child);
+				Factory::for_each(name,[this,name,&child](Factory &factory) {
 
-				} catch(const std::exception &e) {
+					try {
 
-					factory.error() << "Error '" << e.what() << "' parsing node <" << child.name() << ">" << endl;
+						return factory.push_back(*this,child);
 
-				} catch(...) {
+					} catch(const std::exception &e) {
 
-					factory.error() << "Unexpected error parsing node <" << child.name() << ">" << endl;
+						factory.error() << "Cant parse node <" << name << ">: " << e.what() << endl;
 
-				}
+					} catch(...) {
 
-				return false;
+						factory.error() << "Cant parse node <" << name << ">: Unexpected error" << endl;
 
-			});
+					}
+
+					return false;
+
+				});
+
+			}
 
 		}
 
@@ -212,6 +223,36 @@
 
 		}
 
+	}
+
+	const char * Abstract::Object::settings_from(const XML::Node &node, bool upstream, const char *def) {
+
+		auto attribute = node.attribute("settings-from");
+		if(attribute) {
+			return attribute.as_string(def);
+		}
+
+		string attrname{node.name()};
+		attrname += "-defaults-from";
+		attribute = node.attribute(attrname.c_str());
+		if(attribute) {
+			return attribute.as_string(def);
+		}
+
+		if(upstream) {
+			for(XML::Node parent = node.parent(); parent; parent = parent.parent()) {
+				attribute = parent.attribute(attrname.c_str());
+				if(attribute) {
+					return attribute.as_string(def);
+				}
+			}
+		}
+
+		if(*def) {
+			return def;
+		}
+
+		return Quark( (string{node.name()} + "-defaults").c_str() ).c_str();
 	}
 
 	bool Abstract::Object::for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call) {

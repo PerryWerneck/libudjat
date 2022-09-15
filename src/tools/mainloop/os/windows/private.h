@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <private/misc.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/win32/event.h>
  #include <thread>
  #include <list>
  #include <mutex>
@@ -33,62 +34,46 @@
 
 	namespace Win32 {
 
-		/// @brief Windows event.
-		class Event {
-		private:
-			HANDLE handle;
-			std::function<void(HANDLE,bool)> exec;
-
+		class UDJAT_API Event::Controller {
 		public:
-
-			class Controller {
-			public:
-				struct Worker {
-					bool enabled = true;
-					std::thread *hThread = nullptr;
-					std::list<Win32::Event *> events;
-
-					// Disable copy.
-					Worker(const Worker &) = delete;
-					Worker(const Worker *) = delete;
-
-					Worker(Win32::Event *event);
-
-					~Worker();
-
-				};
-
-				static Win32::Event * find(Worker *worker, HANDLE handle) noexcept;
-
-				static bool wait(Worker *worker) noexcept;
-
+			class Worker {
 			private:
+				~Worker();
 
-				std::list<Worker> workers;
-
-				static std::mutex guard;
-
-				Controller() = default;
 			public:
-				static Controller & getInstance();
+				Worker(Win32::Event *event);
 
-				void insert(Event *event);
-				void remove(Event *event);
+				std::list<Win32::Event *> events;
 
-				Win32::Event * find(HANDLE handle) noexcept;
+				// Disable copy.
+				Worker(const Worker &) = delete;
+				Worker(const Worker *) = delete;
 
 			};
 
-			friend class controller;
+			static Win32::Event * find(Worker *worker, HANDLE handle) noexcept;
 
-			Event(HANDLE handle, std::function<void(HANDLE,bool)> exec);
-			~Event();
+			bool wait(Worker *worker) noexcept;
+			void call(HANDLE handle, bool abandoned) noexcept;
 
-			inline void call(bool abandoned) {
-				exec(handle,abandoned);
-			}
+		private:
+
+			std::list<Worker *> workers;
+
+			static std::mutex guard;
+
+
+			Controller() = default;
+		public:
+			static Controller & getInstance();
+
+			void insert(Event *event);
+			void remove(Event *event);
+
+			Win32::Event * find(HANDLE handle) noexcept;
 
 		};
+
 
 		/// @brief Win32 Mainloop for console application.
 		class MainLoop : public Udjat::MainLoop {

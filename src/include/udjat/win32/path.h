@@ -19,50 +19,27 @@
 
  #pragma once
 
- #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/url.h>
- #include <udjat/tools/protocol.h>
- #include <iostream>
- #include <list>
- #include <mutex>
- #include <udjat/tools/logger.h>
- #include <udjat/factory.h>
- #include <udjat/request.h>
-
- using namespace std;
+ #include <string>
+ #include <iconv.h>
 
  namespace Udjat {
 
-	class Protocol::Controller {
-	private:
-		static mutex guard;
-		list<Protocol *> protocols;
+	namespace Win32 {
 
-		Controller();
-
-		/// @brief Internal protocol for file://
-		class File : public Udjat::Protocol {
+		/// @brief Win32 path (all '/' replaced by '\', no ending '\')
+		class UDJAT_API Path : public std::string {
 		public:
-			File();
-			virtual ~File();
+			Path(const char *pathname);
 
-			String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
+			static bool dir(const char *pathname);
 
-			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
+			inline bool dir() const {
+				return dir(c_str());
+			}
 
 		};
 
-	public:
-		static Controller & getInstance();
-		~Controller();
-
-		void insert(Protocol *protocol);
-		void remove(Protocol *protocol);
-
-		const Protocol * find(const char *name);
-		void getInfo(Response &response) noexcept;
-
-	};
+	}
 
  }

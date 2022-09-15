@@ -77,7 +77,7 @@ namespace Udjat {
 
 			if(*listener == event) {
 
-				ThreadPool::getInstance().push([this,listener]() {
+				push([this,listener]() {
 
 					try {
 
@@ -100,6 +100,10 @@ namespace Udjat {
 
 	Abstract::Agent::~Agent() {
 
+#ifdef DEBUG
+		info() << "Cleaning up" << endl;
+#endif // DEBUG
+
 		// Remove all associated events.
 		Udjat::Event::remove(this);
 
@@ -107,9 +111,10 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : agents()) {
 			child->parent = nullptr;
+#ifdef DEBUG
+			child->info() << "Releasing agent with " << child.use_count() << " references" << endl;
+#endif // DEBUG
 		}
-
-		// Controller::getInstance().remove(this);
 
 	}
 
@@ -121,6 +126,21 @@ namespace Udjat {
 
 			auto agent = *childptr;
 			try {
+
+				if(agent->update.running) {
+					agent->warning() << "Updating since " << TimeStamp(agent->update.running) << ", waiting" << endl;
+					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",10};
+					for(size_t ix = 0; ix < Config::Value<size_t>("agent-controller","max-wait-on-stop",100); ix++) {
+#ifdef _WIN32
+						Sleep(delay);
+#else
+						usleep(delay);
+#endif // _WIN32
+					}
+					if(agent->update.running) {
+						agent->error() << "Still updating, giving up" << endl;
+					}
+				}
 
 				agent->stop();
 
@@ -192,6 +212,10 @@ namespace Udjat {
 
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
+	}
+
+	void Abstract::Agent::push_back(const pugi::xml_node UDJAT_UNUSED(&node), std::shared_ptr<Abstract::Alert> alert) {
+		push_back(alert);
 	}
 
 	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {

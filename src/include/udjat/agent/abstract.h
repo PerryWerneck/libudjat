@@ -84,7 +84,7 @@
 				std::shared_ptr<State> active;
 
 				/// @brief State activation.
-				time_t activation;
+				time_t activation = 0;
 
 			} current_state;
 
@@ -168,7 +168,7 @@
 			class Controller;
 
 			/// @brief Insert child node.
-			void insert(std::shared_ptr<Abstract::Agent> child);
+			void UDJAT_DEPRECATED(insert(std::shared_ptr<Abstract::Agent> child));
 
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
@@ -179,6 +179,9 @@
 			/// @brief Insert Alert.
 			virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
 
+			/// @brief Insert Alert with XML definition.
+			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
+
 			/// @brief Insert Listener.
 			void push_back(std::shared_ptr<EventListener> listener);
 
@@ -186,12 +189,12 @@
 			/// @param type The agent type.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const char *type, const pugi::xml_node &node);
+			bool ChildFactory(const char *type, const pugi::xml_node &node);
 
 			/// @brief Create and insert child from XML definition.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const pugi::xml_node &node);
+			bool ChildFactory(const pugi::xml_node &node);
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
@@ -214,7 +217,7 @@
 
 			/// @brief Load children from xml node.
 			/// @brief node XML node with agent attributes.
-			void load(const pugi::xml_node &node) override;
+			void setup(const pugi::xml_node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();

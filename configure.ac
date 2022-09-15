@@ -44,6 +44,9 @@ app_vrs_patch=0
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
 
+AC_ARG_WITH([module-debug-path], [AS_HELP_STRING([--with-module-debug-path], [Setup module-debug-path])], [ app_cv_module_debug_path="$withval" ],[ app_cv_module_debug_path="$ac_pwd/.bin/Debug/modules/" ])
+AC_SUBST(MODULE_DEBUG_PATH,$app_cv_module_debug_path)
+
 AC_DEFINE_UNQUOTED(PRODUCT_NAME, $app_cv_product,[The product name])
 AC_SUBST(PRODUCT_NAME,$app_cv_product)
 
@@ -58,6 +61,13 @@ AC_DEFINE_UNQUOTED(PACKAGE_PATCH_LEVEL, $app_vrs_patch, [The patch level])
 AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
 AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
+
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
+AC_SUBST(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor")
+
+AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20220909 ])
+AC_DEFINE_UNQUOTED(MINIMAL_MODULE_BUILD,$app_cv_minbuild,["The required build for modules"])
+AC_SUBST(MINIMAL_MODULE_BUILD,$app_cv_minbuild)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
@@ -158,6 +168,25 @@ AC_PATH_TOOL([MSGCAT], [msgcat], [true])
 AC_PATH_TOOL([MSGINIT], [msginit], [true])
 AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
 AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
+
+AC_CHECK_HEADER(libintl.h, [
+        AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])
+
+        case "$host" in
+        *-mingw32|*-pc-msys)
+            LIBS="$LIBS -lintl"
+            ;;
+
+        *)
+			AC_MSG_NOTICE([No need for libintl])
+
+        esac
+
+], [
+        AC_MSG_ERROR([Can't find required file libintl.h])
+])
+
+AC_SUBST(INTL_LIBS)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
@@ -290,6 +319,7 @@ dnl AC_CONFIG_SUBDIRS([sample])
 
 AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
+AC_CONFIG_FILES(locale/Makefile)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

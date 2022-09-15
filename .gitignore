@@ -62,6 +62,7 @@ doc/html
 *.layout
 .bin
 .obj
+.pot
 *.depend
 *.bak
 app-manifest.xml

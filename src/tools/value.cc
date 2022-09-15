@@ -31,15 +31,15 @@
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
-	Value & Value::append(const Type type) {
+	Value & Value::append(const Type UDJAT_UNUSED(type)) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
-	Value & Value::set(const char *value, const Type type) {
+	Value & Value::set(const char UDJAT_UNUSED(*value), const Type UDJAT_UNUSED(type)) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
-	void Value::for_each(const std::function<void(const char *name, const Value &value)> &call) const {
+	void Value::for_each(const std::function<void(const char *name, const Value &value)> UDJAT_UNUSED(&call)) const {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 

@@ -22,18 +22,21 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/object.h>
- #include <udjat/alert.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/agent/state.h>
+ #include <udjat/alert/activation.h>
+ #include <cstdarg>
 
  namespace Udjat {
 
- 	void start(std::shared_ptr<Abstract::Alert::Activation> activation) {
-		Abstract::Alert::Controller::getInstance().push_back(activation);
+ 	void start(std::shared_ptr<Udjat::Alert::Activation> activation) {
+		Alert::Controller::getInstance().push_back(activation);
  	}
 
-	Abstract::Alert::Activation::Activation(const Alert *alert) : id(alert) {
+	Alert::Activation::Activation(const Abstract::Alert *alert) : id(alert) {
 
 		options.verbose = alert->verbose();
+		options.asyncronous = alert->asyncronous();
 
 		name = alert->name();
 
@@ -48,32 +51,50 @@
 
 	}
 
-	Abstract::Alert::Activation::~Activation() {
+	Alert::Activation::~Activation() {
 	}
 
-	std::ostream & Abstract::Alert::Activation::info() const {
+	std::ostream & Alert::Activation::info() const {
 		return cout << name << "\t";
 	}
 
-	std::ostream & Abstract::Alert::Activation::warning() const {
+	std::ostream & Alert::Activation::warning() const {
 		return clog << name << "\t";
 	}
 
-	std::ostream & Abstract::Alert::Activation::error() const {
+	std::ostream & Alert::Activation::error() const {
 		return cerr << name << "\t";
 	}
 
-	void Abstract::Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
-#ifdef DEBUG
-		cerr << "alert\t*** Object was set on an abstract alert" << endl;
-#endif
+	Alert::Activation & Alert::Activation::set(const Abstract::Object UDJAT_UNUSED(&object)) {
+		return *this;
 	}
 
-	void Abstract::Alert::Activation::emit() {
+	Alert::Activation & Alert::Activation::apply(const Abstract::Object *object, ...) {
+		va_list args;
+		va_start(args, object);
+		while(object) {
+			try {
+				set(*object);
+			} catch(...) {
+				va_end(args);
+				throw;
+			}
+			object = va_arg(args, const Abstract::Object *);
+		}
+		va_end(args);
+		return *this;
+	}
+
+	Alert::Activation & Alert::Activation::expand(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) {
+		return *this;
+	}
+
+	void Alert::Activation::emit() {
 		throw runtime_error("Cant emit an abstract activation");
 	}
 
-	Value & Abstract::Alert::Activation::getProperties(Value &value) const noexcept {
+	Value & Alert::Activation::getProperties(Value &value) const noexcept {
 
 		value["name"] = name;
 		value["level"] = std::to_string(options.level);
@@ -88,7 +109,7 @@
 		return value;
 	}
 
-	bool Abstract::Alert::Activation::run() noexcept {
+	bool Alert::Activation::run() noexcept {
 
 		bool succeeded = false;
 		try {
@@ -131,7 +152,7 @@
 
 	}
 
-	void Abstract::Alert::Activation::checkForSleep(const char *msg) noexcept {
+	void Alert::Activation::checkForSleep(const char *msg) noexcept {
 
 		time_t rst = (count.success ? timers.success : timers.failed);
 

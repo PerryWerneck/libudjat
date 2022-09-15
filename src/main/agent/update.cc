@@ -8,7 +8,7 @@
  */
 
  #include "private.h"
- #include <udjat/alert.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/tools/threadpool.h>
 
  using namespace std;

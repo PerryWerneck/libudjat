@@ -11,6 +11,7 @@
  #include <iostream>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/mainloop.h>
 
  using namespace std;
  using namespace Udjat;

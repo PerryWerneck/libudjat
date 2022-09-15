@@ -44,6 +44,7 @@
 
 	Updater::Updater(const char *pathname) : path{pathname} {
 
+		/*
 		// First scan for modules.
 		if(Config::Value<bool>("modules","preload-from-xml",true)) {
 			cout << "modules\tPreloading from " << path << endl;
@@ -53,6 +54,7 @@
 				}
 			});
 		}
+		*/
 
 		// Then check for file updates.
 		for_each([this](const char *filename, const pugi::xml_document &doc){
@@ -119,12 +121,12 @@
 				if(path && *path) {
 
 					// Has defined root path, find agent.
-					agent->find(path,true,true)->load(node);
+					agent->find(path,true,true)->setup(node);
 
 				} else {
 
 					// No path, load here.
-					agent->load(node);
+					agent->setup(node);
 
 				}
 
@@ -182,10 +184,12 @@
 
 	}
 
-	void Updater::for_each(const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
+	bool for_each(const char *path, const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
+
+		bool rc = true;
 
 		struct stat pathstat;
-		if(stat(path.c_str(), &pathstat) == -1) {
+		if(stat(path, &pathstat) == -1) {
 			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",path));
 		}
 
@@ -193,14 +197,15 @@
 			//
 			// It's a folder.
 			//
-			File::Path(path.c_str()).for_each("*.xml",false,[this,&call](const char *filename){
+			File::Path(path).for_each("*.xml",false,[&call,&rc](const char *filename){
 
 				try {
 
 					pugi::xml_document doc;
 					auto result = doc.load_file(filename);
 					if(result.status != pugi::status_ok) {
-						error() << filename << ": " << result.description() << endl;
+						cerr << "xml\t" << filename << ": " << result.description() << endl;
+						rc = false;
 						return true;
 					}
 
@@ -208,11 +213,13 @@
 
 				} catch(const std::exception &e) {
 
-					error() << this->path << ": " << e.what() << endl;
+					cerr << "xml\t" << filename << ": " << e.what() << endl;
+					rc = false;
 
 				} catch(...) {
 
-					error() << this->path << ": Unexpected error" << endl;
+					cerr << "xml\t" << filename << ": Unexpected error" << endl;
+					rc = false;
 
 				}
 
@@ -227,24 +234,29 @@
 			try {
 
 				pugi::xml_document doc;
-				auto result = doc.load_file(this->path.c_str());
+				auto result = doc.load_file(path);
 				if(result.status != pugi::status_ok) {
-					error() << this->path << ": " << result.description() << endl;
-					return;
+					cerr << "xml\t" << path << ": " << result.description() << endl;
+					return false;
 				}
 
-				call(path.c_str(),doc);
+				call(path,doc);
 
 			} catch(const std::exception &e) {
 
-				error() << this->path << ": " << e.what() << endl;
+				cerr << "xml\t" << path << ": " << e.what() << endl;
+				return false;
 
 			} catch(...) {
 
-				error() << this->path << ": Unexpected error" << endl;
+				cerr << "xml\t" << path << ": Unexpected error" << endl;
+				return false;
 
 			}
 		}
+
+		return rc;
+
 	}
 
  }

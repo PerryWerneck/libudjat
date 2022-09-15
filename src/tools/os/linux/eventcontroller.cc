@@ -78,7 +78,7 @@
 			lock_guard<mutex> lock(guard);
 			for(Signal &signal : instance.signals) {
 				if(signal.signum == signum) {
-					ThreadPool::getInstance().push([&signal]() {
+					ThreadPool::getInstance().push("signal-event",[&signal]() {
 						signal.trigger();
 					});
 				}

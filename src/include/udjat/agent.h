@@ -45,10 +45,10 @@
 		/// @brief Agent value.
 		T value;
 
+	protected:
+
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<T>>> states;
-
-	protected:
 
 		std::shared_ptr<Abstract::State> stateFromValue() const override {
 			for(auto state : states) {
@@ -62,17 +62,7 @@
 			return value.set(this->value);
 		}
 
-		/// @brief Insert state.
-		void push_back(std::shared_ptr<State<T>> state) {
-			states.push_back(state);
-		}
-
 	public:
-		/*
-		Agent(const pugi::xml_node &node) : Abstract::Agent(node) {
-			to_value(node, value);
-		}
-		*/
 
 		Agent(const pugi::xml_node &node, const T v = 0) : Abstract::Agent(node), value(v) {
 			to_value(node, value);
@@ -81,7 +71,7 @@
 		Agent(const char *name = "") : Abstract::Agent(name), value(0) {
 		}
 
-		Agent(const char *name, T v) : Abstract::Agent(name), value(v) {
+		Agent(const char *name, const T v) : Abstract::Agent(name), value(v) {
 		}
 
 		bool set(const T &value) {
@@ -93,20 +83,34 @@
 			return updated(true);
 		}
 
-		T get() const noexcept {
-			return value;
-		}
-
 		bool assign(const char *value) override {
 			T new_value;
 			to_value(value,new_value);
 			return set(new_value);
 		}
 
+		inline bool operator ==(const T value) const noexcept {
+			return this->value == value;
+		}
+
+		inline Agent & operator = (const T value) {
+			set(value);
+			return *this;
+		}
+
+		inline Agent & operator = (const char *value) {
+			assign(value);
+			return *this;
+		}
+
+		T get() const noexcept {
+			return value;
+		}
+
 		/// @brief Insert State.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 			auto state = std::make_shared<State<T>>(node);
-			push_back(state);
+			states.push_back(state);
 			return state;
 		}
 
@@ -123,10 +127,10 @@
 		/// @brief Agent value.
 		std::string value;
 
+	protected:
+
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<std::string>>> states;
-
-	protected:
 
 		std::shared_ptr<Abstract::State> stateFromValue() const override {
 			for(auto state : states) {
@@ -138,11 +142,6 @@
 
 		Udjat::Value & get(Udjat::Value &value) const override {
 			return value.set(this->value);
-		}
-
-		/// @brief Insert state.
-		void push_back(std::shared_ptr<State<std::string>> state) {
-			states.push_back(state);
 		}
 
 	public:
@@ -178,13 +177,19 @@
 
 		}
 
-		//bool hasStates() const noexcept override {
-		//	return !states.empty();
-		//}
+		inline Agent & operator = (const std::string & value) {
+			set(value);
+			return *this;
+		}
+
+		inline Agent & operator = (const char *value) {
+			assign(value);
+			return *this;
+		}
 
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 			auto state = std::make_shared<State<std::string>>(node);
-			push_back(state);
+			states.push_back(state);
 			return state;
 		}
 
@@ -215,11 +220,6 @@
 			return super::stateFromValue();
 		}
 
-		/// @brief Insert state.
-		void push_back(std::shared_ptr<State<bool>> state) {
-			states.push_back(state);
-		}
-
 	public:
 		Agent(const pugi::xml_node &node) : Abstract::Agent(node), value(node.attribute("value").as_bool()) {
 		}
@@ -239,6 +239,11 @@
 			return updated(true);
 		}
 
+		inline Agent & operator = (const bool value) {
+			set(value);
+			return *this;
+		}
+
 		bool get() const noexcept {
 			return value;
 		}
@@ -246,7 +251,7 @@
 		/// @brief Insert State.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) {
 			auto state =std::make_shared<State<bool>>(node);
-			push_back(state);
+			states.push_back(state);
 			return state;
 		}
 

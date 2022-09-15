@@ -84,10 +84,12 @@
 		}
 
 #ifdef DEBUG
-		cout << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
+		cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
-		// Wait for pool
 		ThreadPool::getInstance().wait();
+#ifdef DEBUG
+		cout << "agent\t*** Wait for tasks complete" << endl;
+#endif // DEBUG
 
 	}
 

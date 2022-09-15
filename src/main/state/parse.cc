@@ -12,7 +12,7 @@
  #include <udjat/tools/xml.h>
  #include <iostream>
  #include <limits.h>
- #include <udjat/agent/state.h>
+ #include <udjat/tools/parse.h>
 
  using namespace std;
 
@@ -20,46 +20,78 @@
 
 namespace Udjat {
 
-	void parse_range(const pugi::xml_node &node, int &from, int &to) {
-		int value = node.attribute("value").as_int();
-		from = node.attribute("from-value").as_int(value);
-		to = node.attribute("to-value").as_int(value);
-	}
+	namespace XML {
 
-	void parse_range(const pugi::xml_node &node, unsigned int &from, unsigned int &to) {
-		unsigned int value = node.attribute("value").as_uint();
-		from = node.attribute("from-value").as_uint(value);
-		to = node.attribute("to-value").as_uint(value);
-	}
+		void parse(const XML::Node &node, int &from, int &to) {
+			int value = node.attribute("value").as_int();
+			from = node.attribute("from-value").as_int(value);
+			to = node.attribute("to-value").as_int(value);
+		}
 
-	void parse_range(const pugi::xml_node &node, unsigned short &from, unsigned short &to) {
-		unsigned int value = node.attribute("value").as_uint();
-		from = (unsigned short) node.attribute("from-value").as_uint(value);
-		to = (unsigned short) node.attribute("to-value").as_uint(value);
-	}
+		void parse(const XML::Node &node, unsigned int &from, unsigned int &to) {
+			unsigned int value = node.attribute("value").as_uint();
+			from = node.attribute("from-value").as_uint(value);
+			to = node.attribute("to-value").as_uint(value);
+		}
 
-	void parse_range(const pugi::xml_node &node, float &from, float &to) {
-		float value = node.attribute("value").as_float();
-		from = node.attribute("from-value").as_float(value);
-		to = node.attribute("to-value").as_float(value);
-	}
+		void parse(const XML::Node &node, unsigned short &from, unsigned short &to) {
+			unsigned int value = node.attribute("value").as_uint();
+			from = (unsigned short) node.attribute("from-value").as_uint(value);
+			to = (unsigned short) node.attribute("to-value").as_uint(value);
+		}
 
-	void parse_range(const pugi::xml_node &node, double &from, double &to) {
-		double value = node.attribute("value").as_double();
-		from = node.attribute("from-value").as_double(value);
-		to = node.attribute("to-value").as_double(value);
-	}
+		void parse(const XML::Node &node, float &from, float &to) {
+			float value = node.attribute("value").as_float();
+			from = node.attribute("from-value").as_float(value);
+			to = node.attribute("to-value").as_float(value);
+		}
 
-	void parse_range(const pugi::xml_node &node, unsigned long &from, unsigned long &to) {
-		int value = node.attribute("value").as_int();
-		from = node.attribute("from-value").as_int(value);
-		to = node.attribute("to-value").as_int(value);
-	}
+		void parse(const XML::Node &node, double &from, double &to) {
+			double value = node.attribute("value").as_double();
+			from = node.attribute("from-value").as_double(value);
+			to = node.attribute("to-value").as_double(value);
+		}
 
-	void parse_range(const pugi::xml_node &node, long &from, long &to) {
-		unsigned int value = node.attribute("value").as_uint();
-		from = node.attribute("from-value").as_uint(value);
-		to = node.attribute("to-value").as_uint(value);
+		void parse(const XML::Node &node, unsigned long &from, unsigned long &to) {
+			int value = node.attribute("value").as_int();
+			from = node.attribute("from-value").as_int(value);
+			to = node.attribute("to-value").as_int(value);
+		}
+
+		void parse(const XML::Node &node, long &from, long &to) {
+			unsigned int value = node.attribute("value").as_uint();
+			from = node.attribute("from-value").as_uint(value);
+			to = node.attribute("to-value").as_uint(value);
+		}
+
+		void parse(const XML::Node &node, int &value) {
+			value = node.attribute("value").as_int();
+		}
+
+		void parse(const XML::Node &node, unsigned int &value) {
+			value = node.attribute("value").as_uint();
+		}
+
+		void parse(const XML::Node &node, unsigned short &value) {
+			value = node.attribute("value").as_uint();
+		}
+
+		void parse(const XML::Node &node, float &value) {
+			value = node.attribute("value").as_float();
+		}
+
+		void parse(const XML::Node &node, double &value) {
+			value = node.attribute("value").as_double();
+		}
+
+		void parse(const XML::Node &node, unsigned long &value) {
+			value = node.attribute("value").as_int();
+		}
+
+		void parse(const XML::Node &node, long &value) {
+			value = node.attribute("value").as_uint();
+		}
+
 	}
 
 	unsigned long long parse_byte_value(const pugi::xml_attribute &attr) {
@@ -97,7 +129,7 @@ namespace Udjat {
 		return rc;
 	}
 
-	void parse_byte_range(const pugi::xml_node &node, unsigned long long &from, unsigned long long &to) {
+	void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to) {
 
 		auto value = node.attribute("value");
 

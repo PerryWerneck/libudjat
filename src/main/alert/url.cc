@@ -17,21 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <udjat/tools/xml.h>
- #include <udjat/tools/quark.h>
+ #include <config.h>
+ #include <udjat/alert/url.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
- #include <udjat/tools/object.h>
- #include <udjat/tools/string.h>
- #include <udjat/agent.h>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/expander.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	Alert::Alert(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::URL::URL(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
@@ -61,32 +56,30 @@
 
 	}
 
-	std::shared_ptr<Abstract::Alert::Activation> Alert::ActivationFactory() const {
+	std::shared_ptr<Udjat::Alert::Activation> Alert::URL::ActivationFactory() const {
 		return make_shared<Activation>(this);
 	}
 
-	Value & Alert::getProperties(Value &value) const noexcept {
+	Value & Alert::URL::getProperties(Value &value) const noexcept {
 		Abstract::Alert::getProperties(value);
 		value["url"] = url;
 		value["action"] = std::to_string(action);
 		return value;
 	}
 
-	Value & Alert::Activation::getProperties(Value &value) const noexcept {
-		Abstract::Alert::Activation::getProperties(value);
+	Value & Alert::URL::Activation::getProperties(Value &value) const noexcept {
+		Udjat::Alert::Activation::getProperties(value);
 		value["url"] = url.c_str();
 		value["action"] = std::to_string(action);
 		return value;
 	}
 
-	Alert::Activation::Activation(const Alert *alert) : Abstract::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
-
+	Alert::URL::Activation::Activation(const Udjat::Alert::URL *alert) : Udjat::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
 		url.expand(*alert,true,false);
 		payload.expand(*alert,true,false);
-
 	}
 
-	void Alert::Activation::emit() {
+	void Alert::URL::Activation::emit() {
 
 		url.expand();
 		payload.expand();
@@ -107,7 +100,7 @@
 
 	}
 
-	void Alert::Activation::set(const Abstract::Object &object) {
+	Alert::Activation & Alert::URL::Activation::set(const Abstract::Object &object) {
 #ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl
 				<< "URL='" << url << "'" << endl
@@ -115,6 +108,13 @@
 #endif // DEBUG
 		url.expand(object);
 		payload.expand(object);
+		return *this;
+	}
+
+	Alert::Activation & Alert::URL::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+		url.expand(expander);
+		payload.expand(expander);
+		return *this;
 	}
 
  }

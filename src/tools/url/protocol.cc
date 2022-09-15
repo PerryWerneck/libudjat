@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <private/protocol.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -90,6 +90,10 @@
 
 	const Protocol * Protocol::find(const char *name) {
 		return Controller::getInstance().find(name);
+	}
+
+	const Protocol * Protocol::verify(const void *protocol) {
+		return Controller::getInstance().verify(protocol);
 	}
 
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url) {

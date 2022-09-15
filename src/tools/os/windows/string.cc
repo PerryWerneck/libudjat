@@ -55,13 +55,11 @@
 		char 		 			* inBuf 	= (char *) winstr;
 #endif // WINICONV_CONST
 
-		// Limpa buffer de saída.
 		char * outBuff	= new char[szOut+1];
 		char * ptr;
 		memset(ptr = outBuff,0,szOut+1);
 
 		if(iconv(local,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1)) {
-			delete[] outBuff;
 			cerr << "win32\tError '" << strerror(errno) << "' converting '" << inBuf << "' to UTF-8" << endl;
 			strcpy(outBuff,inBuf);
 			for(char * ptr = outBuff; *ptr; ptr++) {

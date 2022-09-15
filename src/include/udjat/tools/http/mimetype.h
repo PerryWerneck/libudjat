@@ -47,7 +47,10 @@
 
 	};
 
-	UDJAT_API MimeType MimeTypeFactory(const char *str) noexcept;
+	/// @brief Create mimetype from string.
+	/// @param str Mime type string.
+	/// @param log_def enable log message when using default value.
+	UDJAT_API MimeType MimeTypeFactory(const char *str, bool log_def = true) noexcept;
 
  }
 

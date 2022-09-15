@@ -1,7 +1,26 @@
-/**
- * @file src/core/agent/controller.cc
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
+
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
  *
- * @brief Implements the root agent.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/**
+ * @file src/main/agent/controller.cc
+ *
+ * @brief Implements the agent controller.
  *
  * @author perry.werneck@gmail.com
  *
@@ -184,92 +203,16 @@ namespace Udjat {
 
 			root.reset();
 
-		}
-
-	}
-
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
-
-		static const struct
-		{
-			const char *type;
-			function< std::shared_ptr<Abstract::Agent>(const pugi::xml_node &node)> build;
-		} builders[] = {
-
-			{
-				"integer",
-				[](const pugi::xml_node &node) {
-					return make_shared<Udjat::Agent<int>>(node);
-				}
-
-			},
-			{
-				"int32",
-				[](const pugi::xml_node &node) {
-					return make_shared<Udjat::Agent<int32_t>>(node);
-				}
-			},
-
-			{
-				"uint32",
-				[](const pugi::xml_node &node) {
-					return make_shared<Udjat::Agent<uint32_t>>(node);
-				}
-			},
-
-			{
-				"boolean",
-				[](const pugi::xml_node &node) {
-					return make_shared<Udjat::Agent<bool>>(node);
-				}
-			},
-
-			{
-				"string",
-				[](const pugi::xml_node &node) {
-					return make_shared<Udjat::Agent<std::string>>(node);
-				}
-			},
-
-			/*
-			{
-				"timestamp",
-				[]() {
-					return make_shared<Udjat::Agent<TimeStamp>>();
-				}
-			},
-			*/
-
-		};
-
-		const char *type = node.attribute("type").as_string("int32");
-
-		if(type && *type) {
-
-			// Check for module factory.
-			Factory *factory(Factory::find(type));
-			if(factory) {
-				auto agent = factory->AgentFactory(parent,node);
-				if(agent) {
-					agent->load(node);
-					return agent;
-				}
-			}
-
-			// Check for internal builders.
-			for(auto builder : builders) {
-
-				if(!strcasecmp(type,builder.type)) {
-					auto agent = builder.build(node);
-					agent->load(node);
-					return agent;
-				}
-
-			}
+#ifdef DEBUG
+			cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
+			ThreadPool::getInstance().wait();
+#ifdef DEBUG
+			cout << "agent\t*** Wait for tasks complete" << endl;
+#endif // DEBUG
 
 		}
 
-		return Factory::AgentFactory(parent,node);
 	}
 
 	void Abstract::Agent::Controller::onTimer(time_t now) noexcept {
@@ -278,13 +221,20 @@ namespace Udjat {
 			return;
 		}
 
+		if(root->update.running) {
+			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;
+			return;
+		}
+
+		root->updating(true);
+
 //#ifdef DEBUG
 //		cout << "Checking for updates" << endl;
 //#endif // DEBUG
 
 		// Check for updates on another thread; we'll change the
 		// timer and it has a mutex lock while running the callback.
-		ThreadPool::getInstance().push([this,now]() {
+		ThreadPool::getInstance().push("agent-updates",[this,now]() {
 
 			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
 
@@ -336,7 +286,7 @@ namespace Udjat {
 				}
 
 				// Enqueue agent update.
-				ThreadPool::getInstance().push([this,agent]() {
+				agent->push([this,agent]() {
 
 					try {
 
@@ -358,15 +308,11 @@ namespace Udjat {
 
 			});
 
+			root->updating(false);
+
 		});
 
 	}
-
-	//void Abstract::Agent::Controller::insert(Abstract::Agent *agent, const pugi::xml_node &node) {
-	//}
-
-	//void Abstract::Agent::Controller::remove(Abstract::Agent *agent) {
-	//}
 
 }
 

@@ -24,11 +24,11 @@
 
  namespace Udjat {
 
-	bool Abstract::Agent::push_back(const pugi::xml_node &node) {
-		return push_back(node.name(),node);
+	bool Abstract::Agent::ChildFactory(const pugi::xml_node &node) {
+		return ChildFactory(node.name(),node);
 	}
 
-	bool Abstract::Agent::push_back(const char *type, const pugi::xml_node &node) {
+	bool Abstract::Agent::ChildFactory(const char *type, const pugi::xml_node &node) {
 
 		return Factory::for_each(type,[this,&node](Factory &factory){
 
@@ -39,27 +39,27 @@
 				auto agent = factory.AgentFactory(*this,node);
 				if(agent) {
 					agent->parent = this;
-#ifdef DEBUG
-					info() << "*** Inserting child '" << agent->name() << "'" << endl;
-#endif // DEBUG
+					agent->Object::set(node);
+					agent->setup(node);
 					children.agents.push_back(agent);
 					return true;
 				}
 
 				auto object = factory.ObjectFactory(*this,node);
 				if(object) {
+					object->setup(node);
 					children.objects.push_back(object);
 					return true;
 				}
 
 				auto alert = factory.AlertFactory(*this,node);
 				if(alert) {
+					alert->setup(node);
 					push_back(alert);
 					return true;
 				}
 
 				return factory.push_back(node);
-
 
 			} catch(const std::exception &e) {
 

@@ -28,8 +28,9 @@
 		// Get section from configuration file with the defaults.
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
-		// Verbosity.
+		// options.
 		options.verbose = getAttribute(node,section,"verbose",options.verbose);
+		options.verbose = getAttribute(node,section,"asyncronous",options.asyncronous);
 
 		// Seconds to wait before first activation.
 		timers.start = getAttribute(node,section,"delay-before-start",timers.start);
@@ -57,12 +58,12 @@
 	Abstract::Alert::~Alert() {
 	}
 
-	std::shared_ptr<Abstract::Alert::Activation> Abstract::Alert::ActivationFactory() const {
+	std::shared_ptr<Udjat::Alert::Activation> Abstract::Alert::ActivationFactory() const {
 		throw runtime_error("Cant activate an abstract alert");
 	}
 
 	void Abstract::Alert::deactivate() {
-		Controller::getInstance().remove(this);
+		Udjat::Alert::Controller::getInstance().remove(this);
 	}
 
 	Value & Abstract::Alert::getProperties(Value &value) const noexcept {

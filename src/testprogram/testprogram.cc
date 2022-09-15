@@ -24,13 +24,15 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/subprocess.h>
  #include <udjat/tools/file.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
- #include <udjat/alert.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/subprocess.h>
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
@@ -80,7 +82,6 @@ int main(int argc, char **argv) {
 
 			public:
 				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
-					load(node);
 				}
 
 				bool refresh() override {
@@ -138,8 +139,29 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-/*
+			/*
+			MainLoop::getInstance().insert(0,2000,[](){
+				cout << "------------------------------------------" << endl;
+				cout << "Cache: " << URL("http://localhost").filename() << endl;
+				cout << "------------------------------------------" << endl;
+				return false;
+			});
+			*/
+
+
+			/*
+			MainLoop::getInstance().insert(0,2000,[](){
 #ifdef _WIN32
+				SubProcess::start("subprocess.bat");
+#else
+				SubProcess::start("ls");
+#endif // _WIN32
+				return false;
+			});
+			*/
+
+#ifdef _WIN32
+			/*
 			{
 				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
 
@@ -153,6 +175,7 @@ int main(int argc, char **argv) {
 						cout << "event\tSignaled" << endl;
 					}
 
+					return true;
 				});
 
 				MainLoop::getInstance().insert(this,1000,[hEvent]() {
@@ -168,8 +191,8 @@ int main(int argc, char **argv) {
 					return true;
 				});
 			}
+			*/
 #endif // _WIN32
-*/
 
 			//Alert::activate("test","dummy+http://localhost");
 
@@ -217,5 +240,21 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
+#ifdef _WIN32
+	return SubProcess("subprocess.bat").run();
+#else
+	return SubProcess("ls").run();
+#endif // _WIN32
+	*/
+
+	/*
+	{
+		Application::CacheDir cache{"urls"};
+		cout << "Cache set to " << cache << endl;
+	}
+	*/
+
 	return Service().run(argc,argv);
+
 }

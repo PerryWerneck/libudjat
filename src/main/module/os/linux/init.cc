@@ -18,10 +18,11 @@
  */
 
  #include <config.h>
- #include "../../private.h"
+ #include <private/module.h>
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/object.h>
  #include <unistd.h>
 
  namespace Udjat {
@@ -45,6 +46,16 @@
 			}
 
 			module->handle = handle;
+			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
+
+#ifdef DEBUG
+			cout << module->name << "\t *** Keep-loaded=" << (module->keep_loaded ? "yes" : "no") << endl;
+#endif // DEBUG
+
+			if(module->info.gettext_package && *module->info.gettext_package) {
+				Application::set_gettext_package(module->info.gettext_package);
+			}
+
 			return module;
 
 		}
@@ -63,6 +74,10 @@
 		}
 
 		module->handle = handle;
+
+		if(module->info.gettext_package && *module->info.gettext_package) {
+			Application::set_gettext_package(module->info.gettext_package);
+		}
 
 		return module;
 	}
