@@ -19,7 +19,7 @@ module_path=$(readlink -f .bin/Debug)/modules
 Name: udjat
 Description: The Eye of Horus (DEBUG)
 Version: 1.0
-Libs: -L$(readlink -f .bin/Debug) -ludjat
+Libs: -Wl,-rpath,$(readlink -f .bin/Debug) -L$(readlink -f .bin/Debug) -ludjat
 Libs.private:  -ldl  -leconf -lpugixml -lsystemd -lvmdetect
 Cflags: -I$(readlink -f ./src/include)
 EOF
