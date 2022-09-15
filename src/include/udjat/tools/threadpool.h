@@ -128,7 +128,10 @@
 
 			/// @brief Push an unnamed task.
 			/// @param callback Task method.
-			size_t push(std::function<void()> callback);
+			// size_t push(std::function<void()> callback);
+			inline size_t push(std::function<void()> callback) {
+				return push(__FILE__,callback);
+			}
 
 		};
 
