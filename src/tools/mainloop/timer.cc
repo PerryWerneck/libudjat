@@ -27,8 +27,8 @@
 
  namespace Udjat {
 
-	MainLoop::Timer::Timer(const void *i, unsigned long m, const function<bool()> c)
-		: callback(c), interval(m), id(i) {
+	MainLoop::Timer::Timer(const void *i, unsigned long m)
+		: interval(m), id(i) {
 
 		next = this->getCurrentTime() + interval;
 
@@ -120,7 +120,23 @@
 
 		{
 			lock_guard<mutex> lock(guard);
-			timers.active.push_back(make_shared<Timer>(id,interval,call));
+
+			class CallBackTimer : public Timer {
+			private:
+				const std::function<bool()> callback;
+
+			public:
+				CallBackTimer(const void *id, unsigned long milliseconds, const std::function<bool()> c) : Timer(id,milliseconds), callback(c) {
+				}
+
+				bool call() const override {
+					return callback();
+				}
+
+			};
+
+			timers.active.push_back(make_shared<CallBackTimer>(id,interval,call));
+
 		}
 		wakeup();
 

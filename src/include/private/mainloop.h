@@ -45,9 +45,6 @@
 		friend class MainLoop::Timers;
 		friend class MainLoop;
 
-		/// @brief The timer method.
-		const std::function<bool()> callback;
-
 		/// @brief The time of next call.
 		unsigned long next;
 
@@ -65,14 +62,12 @@
 		static unsigned long getCurrentTime();
 
 		/// @brief Create timer.
-		Timer(const void *id, unsigned long milliseconds, const std::function<bool()> callback);
+		Timer(const void *id, unsigned long milliseconds);
 
 		/// @brief Reset timer.
 		void reset(unsigned long milliseconds);
 
-		inline bool call() const {
-			return callback();
-		}
+		virtual bool call() const = 0;
 
 	};
 
