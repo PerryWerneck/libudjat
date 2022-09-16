@@ -120,7 +120,7 @@
 
 					cout << "systemd\tWatchdog timer is set to " << (watchdog_timer / 1000000L) << " seconds" << endl;
 
-					MainLoop::getInstance().insert(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
+					MainLoop::getInstance().TimerFactory(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
 						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state()->to_string().c_str());
 						return true;
 					});

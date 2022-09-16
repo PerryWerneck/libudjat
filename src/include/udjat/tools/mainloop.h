@@ -254,10 +254,11 @@ namespace Udjat {
 		/// @return Socket/file handler.
 		std::shared_ptr<Handler> insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
-		/// @brief Insert timer in the list of event sources.
+		/// @brief Create timer for callback.
 		/// @param id		Timer id.
 		/// @param interval	Timer interval on milliseconds.
-		void insert(const void *id, unsigned long interval, const std::function<bool()> call);
+		/// @return Timer object.
+		Timer * TimerFactory(const void *id, unsigned long interval, const std::function<bool()> call);
 
 		/// @brief Reset timer to new interval.
 		/// @param id		Timer id.

@@ -148,7 +148,7 @@
 	}
 
 
-	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
+	MainLoop::Timer * MainLoop::TimerFactory(const void *id, unsigned long interval, const std::function<bool()> call) {
 
 		class CallBackTimer : public Timer {
 		private:
@@ -185,128 +185,22 @@
 
 		};
 
-
-	}
-
-
-	/*
-	MainLoop::Timer::Timer(const void *i, unsigned long m)
-		: interval(m), id(i) {
-
-		next = this->getCurrentTime() + interval;
-
-	}
-
-
-	unsigned long MainLoop::Timers::run() noexcept {
-
-		unsigned long now = MainLoop::Timer::getCurrentTime();
-		unsigned long next = now + 60000;
-
-		//
-		// Get expired timers.
-		//
-		std::list<std::shared_ptr<Timer>> timers;
-		{
-			lock_guard<mutex> lock(guard);
-
-			active.remove_if([this,now,&next,&timers](auto timer) {
-
-				if(!timer->interval) {
-					return true;
-				}
-
-				if(timer->next <= now) {
-					timers.push_back(timer);
-				} else {
-					next = std::min(next,timer->next);
-				}
-
-				return false;
-			});
-
-		}
-
-		//
-		// Call expired timers
-		//
-		for(auto timer : timers) {
-
-			try {
-
-				if(!timer->call()) {
-					timer->interval = 0;
-				}
-
-			} catch(const std::exception &e) {
-
-				Application::error() << "Timer error '" << e.what() << "'" << endl;
-				timer->interval = 0;
-
-			} catch(...) {
-
-				Application::error() << "Unexpected error on timer" << endl;
-				timer->interval = 0;
-
-			}
-
-			if(timer->interval) {
-				timer->next = now + timer->interval;
-				next = std::min(next,timer->next);
-			} else {
-				lock_guard<mutex> lock(guard);
-				active.remove(timer);
-			}
-
-		}
-
-		return next - now;
-	}
-
-	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
-
-		{
-			lock_guard<mutex> lock(guard);
-
-			class CallBackTimer : public Timer {
-			private:
-				const std::function<bool()> callback;
-
-			public:
-				CallBackTimer(const void *id, unsigned long milliseconds, const std::function<bool()> c) : Timer(id,milliseconds), callback(c) {
-				}
-
-				bool call() const override {
-					return callback();
-				}
-
-			};
-
-			timers.active.push_back(make_shared<CallBackTimer>(id,interval,call));
-
-		}
-		wakeup();
+		return new CallBackTimer(id,interval,call);
 
 	}
 
 	bool MainLoop::reset(const void *id, unsigned long interval) {
 
-		{
-			lock_guard<mutex> lock(guard);
-			for(auto timer : timers.active) {
-				if(timer->id == id) {
-					timer->reset(interval);
-					return true;
-				}
+		lock_guard<mutex> lock(guard);
+		for(auto timer : timers.enabled) {
+			if(timer->equal(id)) {
+				timer->reset(interval);
+				return true;
 			}
 		}
 
-		wakeup();
-
 		return false;
-
 	}
-	*/
 
  }
 
