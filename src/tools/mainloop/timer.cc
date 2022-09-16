@@ -63,15 +63,36 @@
 
 	}
 
+	bool MainLoop::Timer::enabled() const {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		{
+			lock_guard<mutex> lock(mainloop.guard);
+			for(auto timer : mainloop.timers.enabled) {
+				if(timer->id() == this->id()) {
+					return true;
+				}
+			}
+
+		}
+
+		return false;
+	}
+
 	void MainLoop::Timer::enable() {
 
 		MainLoop &mainloop{MainLoop::getInstance()};
 
-		next = getCurrentTime() + milliseconds;
+		if(!enabled()) {
 
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-			mainloop.timers.enabled.push_back(this);
+			next = getCurrentTime() + milliseconds;
+
+			{
+				lock_guard<mutex> lock(mainloop.guard);
+				mainloop.timers.enabled.push_back(this);
+			}
+
 		}
 
 		mainloop.wakeup();
@@ -89,8 +110,8 @@
 		mainloop.wakeup();
 	}
 
-	bool MainLoop::Timer::equal(const void *id) const noexcept {
-		return id == this;
+	const void * MainLoop::Timer::id() const noexcept {
+		return this;
 	}
 
 	unsigned long MainLoop::Timers::run() noexcept {
@@ -152,7 +173,7 @@
 
 		class CallBackTimer : public Timer {
 		private:
-			const void *id;
+			const void *identifier;
 			const std::function<bool()> callback;
 
 		protected:
@@ -176,11 +197,11 @@
 			}
 
 		public:
-			CallBackTimer(const void *i, unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), id(i), callback(c) {
+			CallBackTimer(const void *id, unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), identifier(id), callback(c) {
 			}
 
-			bool equal(const void *id) const noexcept override {
-				return id == this->id;
+			const void *id() const noexcept override {
+				return this->identifier;
 			}
 
 		};
@@ -193,7 +214,7 @@
 
 		lock_guard<mutex> lock(guard);
 		for(auto timer : timers.enabled) {
-			if(timer->equal(id)) {
+			if(timer->id() == id) {
 				timer->reset(interval);
 				return true;
 			}

@@ -40,6 +40,9 @@
 		/// @brief Timer event.
 		virtual void on_timer() = 0;
 
+		/// @brief Is timer enabled?
+		bool enabled() const;
+
 		/// @brief Enable timer.
 		void enable();
 
@@ -53,7 +56,7 @@
 		}
 
 		/// @brief Test timer id.
-		virtual bool equal(const void *id) const noexcept;
+		virtual const void * id() const noexcept;
 
 		/// @brief Create timer.
 		/// @param interval Timer value in milliseconds.
