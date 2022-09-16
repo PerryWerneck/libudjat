@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <private/misc.h>
+ #include <private/mainloop.h>
  #include <udjat/tools/application.h>
  #include <sys/time.h>
  #include <iostream>

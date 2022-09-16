@@ -21,14 +21,80 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
  #include <functional>
  #include <csignal>
  #include <unistd.h>
  #include <iostream>
 
+ #ifdef _WIN32
+	#define WM_WAKE_UP			WM_USER+100
+	#define WM_CHECK_TIMERS		WM_USER+101
+	#define WM_STOP				WM_USER+102
+//	#define WM_EVENT_ACTION		WM_USER+103
+	#define IDT_CHECK_TIMERS	1
+ #endif // _WIN32
+
  using namespace std;
 
  namespace Udjat {
+
+	class UDJAT_PRIVATE MainLoop::Timer {
+	public:
+
+		/// @brief The timer identifier.
+		const void *id;
+
+		/// @brief The interval in milliseconds.
+		unsigned long interval;
+
+		/// @brief The of next call.
+		unsigned long next;
+
+		/// @brief The timer method.
+		const std::function<bool()> call;
+
+		/// @brief Get current timer.
+		static unsigned long getCurrentTime();
+
+		/// @brief Create timer.
+		Timer(const void *id, unsigned long milliseconds, const std::function<bool()> call);
+
+		/// @brief Reset timer.
+		void reset(unsigned long milliseconds);
+
+	};
+
+#ifdef _WIN32
+	class UDJAT_PRIVATE ThreadPool::Controller : MainLoop::Service {
+	private:
+
+		std::mutex guard;
+		HWND hwnd;
+
+		std::list<ThreadPool *> pools;
+
+		Controller();
+		~Controller() { }
+
+	public:
+		static Controller &getInstance();
+
+		inline void push_back(ThreadPool *pool) {
+			std::lock_guard<std::mutex> lock(guard);
+			pools.push_back(pool);
+		}
+
+		inline void remove(ThreadPool *pool) {
+			std::lock_guard<std::mutex> lock(guard);
+			pools.remove(pool);
+		}
+
+		void stop() override;
+
+	};
+#endif // _WIN32
+
 
  }
 

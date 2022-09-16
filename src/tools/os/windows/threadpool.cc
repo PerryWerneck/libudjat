@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <private/mainloop.h>
  #include <private/misc.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
@@ -181,10 +182,6 @@
 
 		}
 
-	}
-
-	size_t ThreadPool::push(std::function<void()> callback) {
-		return push(this->name,callback);
 	}
 
 	size_t ThreadPool::push(const char *name, std::function<void()> callback) {

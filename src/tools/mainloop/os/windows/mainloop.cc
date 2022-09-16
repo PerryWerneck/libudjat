@@ -18,6 +18,7 @@
  */
 
  #include "private.h"
+ #include <private/mainloop.h>
 
  #include <iostream>
 
