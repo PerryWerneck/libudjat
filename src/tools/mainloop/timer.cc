@@ -28,7 +28,7 @@
  namespace Udjat {
 
 	MainLoop::Timer::Timer(const void *i, unsigned long m, const function<bool()> c)
-		: id(i), interval(m), call(c) {
+		: callback(c), interval(m), id(i) {
 
 		next = this->getCurrentTime() + interval;
 

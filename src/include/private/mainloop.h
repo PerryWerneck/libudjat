@@ -40,28 +40,39 @@
  namespace Udjat {
 
 	class UDJAT_PRIVATE MainLoop::Timer {
-	public:
+	private:
 
-		/// @brief The timer identifier.
-		const void *id;
+		friend class MainLoop::Timers;
+		friend class MainLoop;
+
+		/// @brief The timer method.
+		const std::function<bool()> callback;
+
+		/// @brief The time of next call.
+		unsigned long next;
 
 		/// @brief The interval in milliseconds.
 		unsigned long interval;
 
-		/// @brief The of next call.
-		unsigned long next;
+	protected:
 
-		/// @brief The timer method.
-		const std::function<bool()> call;
+		/// @brief The timer identifier.
+		const void *id = nullptr;
+
+	public:
 
 		/// @brief Get current timer.
 		static unsigned long getCurrentTime();
 
 		/// @brief Create timer.
-		Timer(const void *id, unsigned long milliseconds, const std::function<bool()> call);
+		Timer(const void *id, unsigned long milliseconds, const std::function<bool()> callback);
 
 		/// @brief Reset timer.
 		void reset(unsigned long milliseconds);
+
+		inline bool call() const {
+			return callback();
+		}
 
 	};
 
