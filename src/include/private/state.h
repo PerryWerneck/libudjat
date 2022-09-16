@@ -20,29 +20,11 @@
  #pragma once
 
  #include <config.h>
- #include <private/request.h>
- #include <ctime>
+ #include <udjat/agent.h>
 
- namespace Udjat {
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
-	void ResponseInfo::setExpirationTimestamp(const time_t time) {
-
-		if(expiration) {
-			expiration = min(expiration,time);
-		} else {
-			expiration = time;
-		}
-
-	}
-
-	void ResponseInfo::setModificationTimestamp(const time_t time) {
-
-		if(modification)
-			modification = min(modification,time);
-		else
-			modification = time;
-
-	}
-
- }
+ using namespace std;
 

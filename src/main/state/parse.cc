@@ -7,7 +7,8 @@
  *
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/state.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <iostream>
@@ -16,9 +17,7 @@
 
  using namespace std;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-namespace Udjat {
+ namespace Udjat {
 
 	namespace XML {
 
@@ -154,5 +153,4 @@ namespace Udjat {
 
 	}
 
-
-}
+ }

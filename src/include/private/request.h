@@ -17,47 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
  #include <config.h>
- #include <private/state.h>
+ #include <udjat/request.h>
+ #include <udjat/tools/quark.h>
+ #include <mutex>
+ #include <unordered_map>
+ #include <iostream>
 
  using namespace std;
 
- static const char * levelnames[] = {
-	"undefined",
-	"unimportant",
-	"ready",
-	"warning",
-	"error",
-	"critical"
- };
-
- #define LEVEL_COUNT (sizeof(levelnames)/sizeof(levelnames[0]))
-
  namespace Udjat {
 
-	Level LevelFactory(const pugi::xml_node &node) {
-		return LevelFactory(node.attribute("level").as_string("unimportant"));
-	}
-
-	Udjat::Level LevelFactory(const char *name) {
-
-		for(size_t ix=0; ix < LEVEL_COUNT; ix++) {
-			if(!strcasecmp(name,levelnames[ix]))
-				return (Udjat::Level) ix;
-		}
-
-		throw runtime_error(string{"Unknown level '"} + name + "'");
-
-	}
-
- }
-
- namespace std {
-
-	const char * to_string(const Udjat::Level level) {
-		if(level > LEVEL_COUNT)
-			return "undefined";
-		return levelnames[level];
-	}
 
  }

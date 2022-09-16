@@ -17,15 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#include "private.h"
-#include <udjat/tools/logger.h>
-#include <udjat/moduleinfo.h>
+ #include <config.h>
+ #include <private/worker.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/moduleinfo.h>
 
-using namespace std;
+ using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
-namespace Udjat {
+ namespace Udjat {
 
 	Worker::Worker(const char *n, const ModuleInfo &i) : name(n), module(i) {
 		Controller::getInstance().insert(this);
@@ -106,5 +107,5 @@ namespace Udjat {
 		return cerr << name << "\t";
 	}
 
-}
+ }
 

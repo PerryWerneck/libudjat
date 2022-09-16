@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/alert.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
