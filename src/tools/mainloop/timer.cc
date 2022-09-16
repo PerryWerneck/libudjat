@@ -28,17 +28,27 @@
 
  namespace Udjat {
 
+	MainLoop::Timer::Timer(unsigned long milliseconds) {
+		if(!milliseconds) {
+			throw system_error(EINVAL,system_category(),"Invalid timer value");
+		}
+		reset(milliseconds);
+	}
+
 	MainLoop::Timer::~Timer() {
 		disable();
 	}
 
 	void MainLoop::Timer::reset(unsigned long milliseconds) {
 
-		if(!milliseconds) {
-			throw system_error(EINVAL,system_category(),"Child agent cant be set as root");
+		if(milliseconds) {
+			this->milliseconds = milliseconds;
+		} else {
+			next = getCurrentTime();
 		}
 
-		this->milliseconds = milliseconds;
+		MainLoop::getInstance().wakeup();
+
 	}
 
 	unsigned long MainLoop::Timer::getCurrentTime() {
@@ -77,6 +87,10 @@
 		}
 
 		mainloop.wakeup();
+	}
+
+	bool MainLoop::Timer::equal(const void *id) const noexcept {
+		return id == this;
 	}
 
 	unsigned long MainLoop::Timers::run() noexcept {
@@ -132,6 +146,48 @@
 		return next - now;
 
 	}
+
+
+	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
+
+		class CallBackTimer : public Timer {
+		private:
+			const void *id;
+			const std::function<bool()> callback;
+
+		protected:
+			void on_timer() override {
+
+				bool success = true;
+
+				try {
+					success = callback();
+				} catch(const std::exception &e) {
+					Application::error() << "Timer failed: " << e.what() << endl;
+					success = false;
+				} catch(...) {
+					Application::error() << "Timer failed: Unexpected error"  << endl;
+					success = false;
+				}
+
+				if(!success) {
+					delete this;
+				}
+			}
+
+		public:
+			CallBackTimer(const void *i, unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), id(i), callback(c) {
+			}
+
+			bool equal(const void *id) const noexcept override {
+				return id == this->id;
+			}
+
+		};
+
+
+	}
+
 
 	/*
 	MainLoop::Timer::Timer(const void *i, unsigned long m)
