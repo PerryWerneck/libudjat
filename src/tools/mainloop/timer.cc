@@ -198,7 +198,17 @@
 
 		public:
 			CallBackTimer(const void *id, unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), identifier(id), callback(c) {
+#ifdef DEBUG
+				cout << " ***" << __FILE__ << "(" << __LINE__ << ") " << __FUNCTION__ << endl;
+#endif // DEBUG
+				enable();
 			}
+
+#ifdef DEBUG
+			virtual ~CallBackTimer() {
+				cout << " ***" << __FILE__ << "(" << __LINE__ << ") " << __FUNCTION__ << endl;
+			}
+#endif // DEBUG
 
 			const void *id() const noexcept override {
 				return this->identifier;

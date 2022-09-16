@@ -13,7 +13,7 @@
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-f" />
+				<Option parameters="--timer=2 --foreground  " />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DDEBUG=1" />

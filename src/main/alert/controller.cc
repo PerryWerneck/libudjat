@@ -100,6 +100,14 @@
 		emit();
 	}
 
+	void Alert::Controller::on_timer() {
+
+		ThreadPool::getInstance().push([this](){
+			emit();
+		});
+
+	}
+
 	void Alert::Controller::reset(time_t seconds) noexcept {
 
 		if(!seconds) {
