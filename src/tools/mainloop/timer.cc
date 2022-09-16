@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/mainloop.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/timer.h>
  #include <sys/time.h>
  #include <iostream>
 
@@ -27,16 +28,17 @@
 
  namespace Udjat {
 
-	MainLoop::Timer::Timer(const void *i, unsigned long m)
-		: interval(m), id(i) {
-
-		next = this->getCurrentTime() + interval;
-
+	MainLoop::Timer::~Timer() {
+		disable();
 	}
 
 	void MainLoop::Timer::reset(unsigned long milliseconds) {
-		interval = milliseconds;
-		next = this->getCurrentTime() + interval;
+
+		if(!milliseconds) {
+			throw system_error(EINVAL,system_category(),"Child agent cant be set as root");
+		}
+
+		this->milliseconds = milliseconds;
 	}
 
 	unsigned long MainLoop::Timer::getCurrentTime() {
@@ -50,6 +52,95 @@
 		return (tv.tv_sec * 1000) + (tv.tv_usec /1000);
 
 	}
+
+	void MainLoop::Timer::enable() {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		next = getCurrentTime() + milliseconds;
+
+		{
+			lock_guard<mutex> lock(mainloop.guard);
+			mainloop.timers.enabled.push_back(this);
+		}
+
+		mainloop.wakeup();
+	}
+
+	void MainLoop::Timer::disable() {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		{
+			lock_guard<mutex> lock(mainloop.guard);
+			mainloop.timers.enabled.remove(this);
+		}
+
+		mainloop.wakeup();
+	}
+
+	unsigned long MainLoop::Timers::run() noexcept {
+
+		unsigned long now = MainLoop::Timer::getCurrentTime();
+		unsigned long next = now + 60000;
+
+		//
+		// Get expired timers.
+		//
+		std::list<Timer *> expired;
+		{
+			lock_guard<mutex> lock(guard);
+			for(Timer *timer : enabled) {
+				if(timer->next <= now) {
+					expired.push_back(timer);
+				} else {
+					next = std::min(next,timer->next);
+				}
+			}
+
+		}
+
+		//
+		// Emit timer events.
+		//
+		for(auto timer : expired) {
+
+			try {
+
+				if(timer->milliseconds) {
+					timer->next = now + timer->milliseconds;
+					next = std::min(next,timer->next);
+					timer->on_timer();
+				} else {
+					timer->disable();
+				}
+
+			} catch(const std::exception &e) {
+
+				Application::error() << "Timer disabled: " << e.what() << endl;
+				timer->disable();
+
+			} catch(...) {
+
+				Application::error() << "Timer disabled: Unexpected error" << endl;
+				timer->disable();
+
+			}
+
+		}
+
+		return next - now;
+
+	}
+
+	/*
+	MainLoop::Timer::Timer(const void *i, unsigned long m)
+		: interval(m), id(i) {
+
+		next = this->getCurrentTime() + interval;
+
+	}
+
 
 	unsigned long MainLoop::Timers::run() noexcept {
 
@@ -159,7 +250,7 @@
 		return false;
 
 	}
-
+	*/
 
  }
 
