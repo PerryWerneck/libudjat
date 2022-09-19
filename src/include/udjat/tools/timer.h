@@ -40,23 +40,24 @@
 		/// @brief Timer event.
 		virtual void on_timer() = 0;
 
-		/// @brief Is timer enabled?
-		bool enabled() const;
-
-		/// @brief Enable timer.
-		void enable();
-
-		/// @brief Disable timer
-		void disable();
-
 	public:
 
 		/// @brief Create a disabled timer.
 		constexpr Timer() {
 		}
 
-		/// @brief Test timer id.
-		virtual const void * id() const noexcept;
+		/// @brief Is timer enabled?
+		bool enabled() const;
+
+		/// @brief Enable timer.
+		void enable();
+
+		/// @brief Enable timer.
+		/// @param interval Timer value in milliseconds.
+		void enable(unsigned long milliseconds);
+
+		/// @brief Disable timer
+		void disable();
 
 		/// @brief Create timer.
 		/// @param interval Timer value in milliseconds.

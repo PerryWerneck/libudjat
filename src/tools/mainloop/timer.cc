@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/mainloop.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/timer.h>
  #include <sys/time.h>
@@ -43,6 +44,7 @@
 
 		if(milliseconds) {
 			this->milliseconds = milliseconds;
+			next = getCurrentTime() + milliseconds;
 		} else {
 			next = getCurrentTime();
 		}
@@ -69,8 +71,8 @@
 
 		{
 			lock_guard<mutex> lock(mainloop.guard);
-			for(auto timer : mainloop.timers.enabled) {
-				if(timer->id() == this->id()) {
+			for(Timer *timer : mainloop.timers.enabled) {
+				if(timer == this) {
 					return true;
 				}
 			}
@@ -80,19 +82,20 @@
 		return false;
 	}
 
+	void MainLoop::Timer::enable(unsigned long milliseconds) {
+		this->milliseconds = milliseconds;
+		enable();
+	}
+
 	void MainLoop::Timer::enable() {
 
 		MainLoop &mainloop{MainLoop::getInstance()};
 
+		next = getCurrentTime() + milliseconds;
+
 		if(!enabled()) {
-
-			next = getCurrentTime() + milliseconds;
-
-			{
-				lock_guard<mutex> lock(mainloop.guard);
-				mainloop.timers.enabled.push_back(this);
-			}
-
+			lock_guard<mutex> lock(mainloop.guard);
+			mainloop.timers.enabled.push_back(this);
 		}
 
 		mainloop.wakeup();
@@ -108,10 +111,6 @@
 		}
 
 		mainloop.wakeup();
-	}
-
-	const void * MainLoop::Timer::id() const noexcept {
-		return this;
 	}
 
 	unsigned long MainLoop::Timers::run() noexcept {
