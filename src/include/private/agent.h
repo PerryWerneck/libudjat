@@ -30,6 +30,7 @@
 #include <udjat/module.h>
 #include <udjat/factory.h>
 #include <udjat/tools/mainloop.h>
+#include <udjat/tools/timer.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -39,7 +40,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Worker, Factory, MainLoop::Service {
+	class Abstract::Agent::Controller : private Worker, Factory, MainLoop::Service, MainLoop::Timer {
 	private:
 
 		std::shared_ptr<Abstract::Agent> root;
@@ -48,7 +49,8 @@ namespace Udjat {
 		Controller(const Controller *) = delete;
 		Controller();
 
-		void onTimer(time_t tm) noexcept;
+		//void onTimer(time_t tm) noexcept;
+		void on_timer() override;
 
 	public:
 		~Controller();

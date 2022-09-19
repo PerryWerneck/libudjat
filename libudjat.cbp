@@ -13,7 +13,7 @@
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="-f" />
+				<Option parameters="--timer=2 --foreground  " />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DDEBUG=1" />
@@ -101,6 +101,7 @@
 		<Unit filename="src/include/udjat/tools/sysconfig.h" />
 		<Unit filename="src/include/udjat/tools/systemservice.h" />
 		<Unit filename="src/include/udjat/tools/threadpool.h" />
+		<Unit filename="src/include/udjat/tools/timer.h" />
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/url.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />

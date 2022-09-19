@@ -100,6 +100,14 @@
 		emit();
 	}
 
+	void Alert::Controller::on_timer() {
+
+		ThreadPool::getInstance().push([this](){
+			emit();
+		});
+
+	}
+
 	void Alert::Controller::reset(time_t seconds) noexcept {
 
 		if(!seconds) {
@@ -118,19 +126,17 @@
 			} else {
 
 				lock_guard<mutex> lock(guard);
-
 				if(activations.empty()) {
 
-					// cout << "alerts\tStopping controller" << endl;
-					mainloop.remove(this);
+#ifdef DEBUG
+					cout << "alerts\tPausing controller" << endl;
+#endif // DEBUG
+					MainLoop::Timer::disable();
 
-				} else if(!mainloop.reset(this,seconds*1000)) {
+				} else {
 
-					// cout << "alerts\tStarting controller" << endl;
-					mainloop.insert(this,seconds*1000,[this]() {
-						emit();
-						return true;
-					});
+					MainLoop::Timer::reset(seconds*100);
+					MainLoop::Timer::enable();
 
 				}
 

@@ -39,6 +39,7 @@
 
  namespace Udjat {
 
+	/*
 	class UDJAT_PRIVATE MainLoop::Timer {
 	private:
 
@@ -70,6 +71,7 @@
 		virtual bool call() const = 0;
 
 	};
+	*/
 
 #ifdef _WIN32
 	class UDJAT_PRIVATE ThreadPool::Controller : MainLoop::Service {

@@ -176,10 +176,16 @@ namespace Udjat {
 		}
 
 		cout << "agent\tStarting controller" << endl;
+
+		MainLoop::Timer::reset(1000);
+		MainLoop::Timer::enable();
+
+		/*
 		MainLoop::getInstance().insert(this,1000,[this]() {
 			onTimer(time(0));
 			return isActive();
 		});
+		*/
 
 
 	}
@@ -214,11 +220,13 @@ namespace Udjat {
 
 	}
 
-	void Abstract::Agent::Controller::onTimer(time_t now) noexcept {
+	void Abstract::Agent::Controller::on_timer() {
 
 		if(!root) {
 			return;
 		}
+
+		time_t now{time(0)};
 
 		if(root->update.running) {
 			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;

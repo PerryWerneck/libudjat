@@ -37,6 +37,8 @@ namespace Udjat {
 	class UDJAT_API MainLoop {
 	public:
 
+		class Timer;
+
 		enum Event : short {
 #ifdef _WIN32
 			// https://msdn.microsoft.com/en-us/library/windows/desktop/ms740094(v=vs.85).aspx
@@ -175,14 +177,12 @@ namespace Udjat {
 		static std::mutex guard;
 
 		//
-		// Timers.
+		// Timer controller
 		//
-		class Timer;
-
 		struct Timers {
 
-			/// @brief List of active timers.
-			std::list<std::shared_ptr<Timer>> active;
+			/// @brief List of enabled timers.
+			std::list<Timer *> enabled;
 
 			/// @brief Run timers, return miliseconds to next timer.
 			unsigned long run() noexcept;
@@ -254,10 +254,11 @@ namespace Udjat {
 		/// @return Socket/file handler.
 		std::shared_ptr<Handler> insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
-		/// @brief Insert timer in the list of event sources.
+		/// @brief Create timer for callback.
 		/// @param id		Timer id.
 		/// @param interval	Timer interval on milliseconds.
-		void insert(const void *id, unsigned long interval, const std::function<bool()> call);
+		/// @return Timer object.
+		Timer * TimerFactory(const void *id, unsigned long interval, const std::function<bool()> call);
 
 		/// @brief Reset timer to new interval.
 		/// @param id		Timer id.

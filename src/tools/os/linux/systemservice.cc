@@ -35,6 +35,7 @@
  #include <udjat/agent.h>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/application.h>
 
@@ -120,7 +121,7 @@
 
 					cout << "systemd\tWatchdog timer is set to " << (watchdog_timer / 1000000L) << " seconds" << endl;
 
-					MainLoop::getInstance().insert(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
+					MainLoop::getInstance().TimerFactory(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
 						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state()->to_string().c_str());
 						return true;
 					});
@@ -147,12 +148,13 @@
 
 	void SystemService::usage() const noexcept {
 		cout 	<< "Usage: " << endl << "  " << name() << " [options]" << endl << endl
-				<< "  --core\tenable coredumps" << endl
-				<< "  --daemon\tRun " << name() << " service in the background" << endl
-				<< "  --foreground\tRun " << name() << " service as application (foreground)" << endl;
+				<< "  --core\t\tenable coredumps" << endl
+				<< "  --timer=seconds\tTerminate " << name() << " after 'seconds'" << endl
+				<< "  --daemon\t\tRun " << name() << " service in the background" << endl
+				<< "  --foreground\t\tRun " << name() << " service as application (foreground)" << endl;
 	}
 
-	int SystemService::cmdline(char key, const char UDJAT_UNUSED(*value)) {
+	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
 		case 'f':	// Run in foreground.
@@ -172,6 +174,26 @@
 				return 0;
 			}
 			break;
+
+		case 'T':	// Auto quit
+			{
+				if(!value) {
+					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
+				}
+
+				int seconds = atoi(value);
+				if(!seconds) {
+					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
+				}
+
+				MainLoop::getInstance().TimerFactory(NULL,seconds * 1000,[](){
+					Application::warning() << "Exiting by timer request" << endl;
+					MainLoop::getInstance().quit();
+					return false;
+				});
+
+			}
+			return 0;
 
 		case 'd':	// Run as a daemon.
 			{
@@ -217,23 +239,19 @@
 
 	int SystemService::cmdline(const char *key, const char *value) {
 
-		// The default options doesn't have values, then, reject here.
-		if(value) {
-			return ENOENT;
-		}
-
 		static const struct {
 			char option;
 			const char *key;
 		} options[] = {
 			{ 'C', "core" },
 			{ 'd', "daemon" },
-			{ 'f', "foreground" }
+			{ 'f', "foreground" },
+			{ 'T', "timer" }
 		};
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
-				return cmdline(options[option].option);
+				return cmdline(options[option].option,value);
 			}
 		}
 

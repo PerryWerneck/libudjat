@@ -61,9 +61,11 @@
 	int SystemService::cmdline(int argc, const char **argv) {
 
 		int exit = 0;
+
 		while(--argc > 0) {
 
 			const char *arg = *(++argv);
+
 			int rc = 0;
 
 			try {
