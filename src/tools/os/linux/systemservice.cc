@@ -119,14 +119,23 @@
 				// SystemD watchdog is enabled.
 				if(watchdog_timer > 0) {
 
-					cout << "systemd\tWatchdog timer is set to " << (watchdog_timer / 1000000L) << " seconds" << endl;
+					class WatchDogTimer : public MainLoop::Timer {
+					protected:
+						void on_timer() override {
+							if(instance) {
+								sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",instance->state()->to_string().c_str());
+							}
+						}
 
-#ifndef DEBUG
-					MainLoop::getInstance().TimerFactory(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
-						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state()->to_string().c_str());
-						return true;
-					});
-#endif // !DEBUG
+					public:
+						WatchDogTimer(uint64_t timer) : MainLoop::Timer(timer/2000L) {
+							cout << "systemd\tWatchdog timer is set to " << (timer / 1000000L) << " seconds" << endl;
+							enable();
+
+						}
+					};
+
+					static WatchDogTimer timer(watchdog_timer);
 
 				} else {
 
