@@ -85,7 +85,7 @@
 				MainLoop::getInstance().remove(process);
 
 				// Delay reading to avoid timing problems.
-				MainLoop::getInstance().TimerFactory(NULL,100,[process]() {
+				MainLoop::getInstance().TimerFactory(100,[process]() {
 
 					// cleanup and delete process on another thread to avoid dead-locks.
 					ThreadPool::getInstance().push("ProcessCleanup",[process](){

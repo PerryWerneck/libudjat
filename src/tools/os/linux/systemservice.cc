@@ -121,10 +121,12 @@
 
 					cout << "systemd\tWatchdog timer is set to " << (watchdog_timer / 1000000L) << " seconds" << endl;
 
+#ifndef DEBUG
 					MainLoop::getInstance().TimerFactory(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
 						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state()->to_string().c_str());
 						return true;
 					});
+#endif // !DEBUG
 
 				} else {
 
@@ -186,7 +188,7 @@
 					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
 				}
 
-				MainLoop::getInstance().TimerFactory(NULL,seconds * 1000,[](){
+				MainLoop::getInstance().TimerFactory(seconds * 1000,[](){
 					Application::warning() << "Exiting by timer request" << endl;
 					MainLoop::getInstance().quit();
 					return false;

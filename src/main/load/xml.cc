@@ -32,6 +32,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/timer.h>
  #include <udjat/module.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
@@ -83,6 +84,48 @@
 
 	void SystemService::reconfigure(const char *pathname, bool force) noexcept {
 
+		// Create reconfig timer.
+		class ReconfigTimer : public MainLoop::Timer {
+		protected:
+			void on_timer() override {
+				ThreadPool::getInstance().push("system-reconfigure",[]{
+					if(instance) {
+						instance->reconfigure(instance->definitions,false);
+					}
+				});
+			}
+
+		public:
+			ReconfigTimer() = default;
+
+			void set(time_t seconds) {
+
+				if(seconds) {
+
+					reset(seconds * 1000);
+					enable();
+
+					TimeStamp next(time(0)+seconds);
+					Application::info() << "Auto reconfiguration set to " << next << endl;
+#ifdef _WIN32
+					registry("next_reconfig",next.to_string().c_str());
+#endif // _WIN32
+
+				} else {
+
+					disable();
+
+					Application::info() << "Auto reconfiguration is not enabled" << endl;
+#ifdef _WIN32
+					registry("next_reconfig","-");
+#endif // _WIN32
+				}
+			}
+
+		};
+
+		static ReconfigTimer timer;
+
 		try {
 
 			Updater update(pathname);
@@ -101,39 +144,17 @@
 				info() << "Reconfiguration is not necessary" << endl;
 			}
 
-			if(update.time()) {
-
-				Udjat::MainLoop &mainloop = Udjat::MainLoop::getInstance();
-
-				// Remove active timer.
-				mainloop.remove(definitions);
-
-				// Create e new timer with the updated value.
-				mainloop.TimerFactory(definitions,update.time()*1000,[]{
-					ThreadPool::getInstance().push("system-reconfigure",[]{
-						if(instance) {
-							instance->reconfigure(instance->definitions,false);
-						}
-					});
-					return false;
-				});
-
-				TimeStamp next(time(0)+update.time());
-				info() << "Next reconfiguration set to " << next << endl;
-
-#ifdef _WIN32
-				registry("next_reconfig",next.to_string().c_str());
-#endif // _WIN32
-
-			}
+			timer.set(update.time());
 
 		} catch(const std::exception &e ) {
 
 			error() << "Reconfiguration has failed: " << e.what() << endl;
+			timer.set(Config::Value<time_t>("service","reconfig-time-when-failed",120000));
 
 		} catch(...) {
 
 			error() << "Unexpected error during reconfiguration" << endl;
+			timer.set(Config::Value<time_t>("service","reconfig-time-when-failed",120000));
 
 		}
 

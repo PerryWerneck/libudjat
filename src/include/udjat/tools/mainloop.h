@@ -255,18 +255,11 @@ namespace Udjat {
 		std::shared_ptr<Handler> insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
 
 		/// @brief Create timer for callback.
-		/// @param id		Timer id.
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
-		Timer * TimerFactory(const void *id, unsigned long interval, const std::function<bool()> call);
+		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
 
-		/// @brief Reset timer to new interval.
-		/// @param id		Timer id.
-		/// @param interval	Timer interval on milliseconds.
-		/// @param true if the timer exists.
-		bool reset(const void *id, unsigned long interval);
-
-		/// @brief Remove socket/file/timer/module from the list of event sources.
+		/// @brief Remove socket/file/module from the list of event sources.
 		void remove(const void *id);
 
 #ifdef _WIN32

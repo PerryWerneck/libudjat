@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/timer.h>
  #include <memory>
  #include <list>
 
@@ -48,6 +49,7 @@
 #ifdef _WIN32
 		void registry(const char *name, const char *value);
 #endif // _WIN32
+
 	protected:
 
 		/// @brief Reconfigure application from XML files.

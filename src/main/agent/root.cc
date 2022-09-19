@@ -245,7 +245,7 @@
 				alert->info() << "Root alert, emitting it on startup" << endl;
 
 				// Can't start now because the main loop is not active, wait 100ms.
-				MainLoop::getInstance().TimerFactory(NULL,100,[alert](){
+				MainLoop::getInstance().TimerFactory(100,[alert](){
 					auto activation = alert->ActivationFactory();
 					Udjat::start(activation);
 					return false;

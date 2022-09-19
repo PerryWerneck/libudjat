@@ -169,11 +169,10 @@
 	}
 
 
-	MainLoop::Timer * MainLoop::TimerFactory(const void *id, unsigned long interval, const std::function<bool()> call) {
+	MainLoop::Timer * MainLoop::TimerFactory(unsigned long interval, const std::function<bool()> call) {
 
 		class CallBackTimer : public Timer {
 		private:
-			const void *identifier;
 			const std::function<bool()> callback;
 
 		protected:
@@ -197,7 +196,7 @@
 			}
 
 		public:
-			CallBackTimer(const void *id, unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), identifier(id), callback(c) {
+			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
 #ifdef DEBUG
 				cout << " ***" << __FILE__ << "(" << __LINE__ << ") " << __FUNCTION__ << endl;
 #endif // DEBUG
@@ -210,27 +209,10 @@
 			}
 #endif // DEBUG
 
-			const void *id() const noexcept override {
-				return this->identifier;
-			}
-
 		};
 
-		return new CallBackTimer(id,interval,call);
+		return new CallBackTimer(interval,call);
 
-	}
-
-	bool MainLoop::reset(const void *id, unsigned long interval) {
-
-		lock_guard<mutex> lock(guard);
-		for(auto timer : timers.enabled) {
-			if(timer->id() == id) {
-				timer->reset(interval);
-				return true;
-			}
-		}
-
-		return false;
 	}
 
  }
