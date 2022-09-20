@@ -59,12 +59,14 @@
 
 		if(szRead < 0) {
 
-			on_error((string{"Error '"} + strerror(errno) + "' reading from pipe").c_str());
+			on_error((string{"Error '"} + Win32::Exception::format() + "' reading from pipe").c_str());
 			close();
 
 		} else if(!szRead) {
 
-			on_error("Unexpected 'EOF' reading from pipe");
+			if(errno != EPIPE) {
+				on_error("Unexpected 'EOF' reading from pipe");
+			}
 
 		} else {
 

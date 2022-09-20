@@ -78,6 +78,7 @@
 				if(GetExitCodeProcess(this->hEvent,&rc) != STILL_ACTIVE) {
 					proc.onExit(proc.exitcode = rc);
 					close();
+					proc.piProcInfo.hProcess = 0;
 				}
 			}
 
@@ -90,73 +91,9 @@
 		ProcHandler prochandler{this,piProcInfo.hProcess};
 
 		Win32::Handler *hdl[]{&handlers[0],&handlers[1],&prochandler};
-		while(Win32::Handler::poll(hdl,3,1000)) {
 
-
-		}
-
-		piProcInfo.hProcess = 0;
-
-		/*
-		init();
-
-		while(running()) {
-
-			HANDLE lpHandles[ (sizeof(pipes)/sizeof(pipes[0]))+1 ];
-			DWORD nCount = 0;
-
-			for(size_t pipe = 0; pipe < (sizeof(pipes)/sizeof(pipes[0])); pipe++) {
-				if(pipes[pipe].hRead) {
-					lpHandles[nCount++] = pipes[pipe].hRead;
-				}
-			}
-
-			if(piProcInfo.hProcess) {
-				lpHandles[nCount++] = piProcInfo.hProcess;
-			}
-
-			DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,1000);
-			HANDLE handle = 0;
-
-			if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
-
-				handle = lpHandles[response - WAIT_OBJECT_0];
-
-			} else if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
-
-				handle = lpHandles[response - WAIT_ABANDONED_0];
-
-			} else if(response == WAIT_FAILED) {
-
-				throw Win32::Exception();
-
-			} else if(response == WAIT_TIMEOUT) {
-
-				continue;
-
-			}
-
-			if(handle == piProcInfo.hProcess) {
-
-				DWORD rc;
-				if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
-					onExit(exitcode = rc);
-					CloseHandle(piProcInfo.hProcess);
-					piProcInfo.hProcess = 0;
-				}
-
-			} else {
-
-				for(size_t pipe = 0; pipe < (sizeof(pipes)/sizeof(pipes[0])); pipe++) {
-					if(handle == pipes[pipe].hRead) {
-						read(pipe);
-					}
-				}
-
-			}
-
-		}
-		*/
+		// Wait for child.
+		while(Win32::Handler::poll(hdl,3,1000));
 
 		return exitcode;
 

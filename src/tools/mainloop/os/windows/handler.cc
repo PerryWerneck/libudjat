@@ -77,7 +77,7 @@
 
 	void Win32::Handler::set(HANDLE handle) {
 
-		if(!hEvent) {
+		if(!handle) {
 			throw system_error(EINVAL,system_category(),"Invalid handle");
 		}
 
@@ -94,6 +94,11 @@
 		DWORD dwRead = 0;
 
 		if(!ReadFile(hEvent,buf,count,&dwRead,NULL)) {
+			if(GetLastError() == ERROR_BROKEN_PIPE) {
+				close();
+				errno = EPIPE;
+				return 0;
+			}
 			return -1;
 		}
 
