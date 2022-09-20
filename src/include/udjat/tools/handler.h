@@ -64,6 +64,20 @@
 		Handler(int fd, const Event event);
 		virtual ~Handler();
 
+		void set(int fd);
+
+		void set(const Event events);
+
+		inline Handler & operator = (int fd) {
+			set(fd);
+			return *this;
+		}
+
+		inline Handler & operator = (const Event events) {
+			set(events);
+			return *this;
+		}
+
 		inline operator bool() const noexcept {
 			return fd != -1;
 		}

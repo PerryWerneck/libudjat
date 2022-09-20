@@ -65,11 +65,17 @@
 			return pipes[0] || pipes[1] || piProcInfo.hProcess;
 		}
 
+		/// @brief Initialize.
+		void init();
+
 #else
 
 		/// @brief Subprocess controller.
 		class Controller;
 		friend class Controller;
+
+		/// @brief I/O handler
+		class Handler;
 
 		/// @brief Pid of the subprocess.
 		pid_t pid = -1;
@@ -90,10 +96,10 @@
 			return this->pid != -1;
 		}
 
-#endif // _WIN32
-
 		/// @brief Initialize.
 		void init();
+
+#endif // _WIN32
 
 		/// @brief The command line to start.
 		std::string command;

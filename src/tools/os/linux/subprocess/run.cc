@@ -44,9 +44,11 @@
 
 	int SubProcess::run() {
 
+		int rc = -1;
+
+		/*
 		init();
 
-		int rc = -1;
 		while(running()) {
 
 			#error Refactor using Handler::poll
@@ -116,6 +118,7 @@
 
 		}
 
+		*/
 		return rc;
 
 	}

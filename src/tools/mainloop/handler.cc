@@ -90,6 +90,23 @@
 		::close(fd);
 	}
 
+	void MainLoop::Handler::set(int fd) {
+
+		if(this->fd != -1) {
+			throw system_error(EBUSY,system_category(),"Handler already have a file descriptor");
+		}
+
+		this->fd = fd;
+
+	}
+
+	void MainLoop::Handler::set(const Event events) {
+		this->events = events;
+		if(enabled()) {
+			MainLoop::getInstance().wakeup();
+		}
+	}
+
 	/*
 	void MainLoop::Handler::clear() noexcept {
 		fd = -1;
