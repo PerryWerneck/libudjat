@@ -64,6 +64,14 @@
 		Handler(int fd, const Event event);
 		virtual ~Handler();
 
+		inline operator bool() const noexcept {
+			return fd != -1;
+		}
+
+		inline operator int() const noexcept {
+			return fd;
+		}
+
 		/// @brief Is handler enabled?
 		bool enabled() const noexcept;
 
@@ -73,6 +81,17 @@
 
 		/// @brief Disable handler.
 		void disable() noexcept;
+
+		ssize_t read(void *buf, size_t count);
+
+		void close();
+
+		/// @brief Wait for handlers.
+		/// @param handlers	List of handlers to poll.
+		/// @param nfds Length of 'handlers'.
+		/// @param timeout for poll.
+		/// @return Count of valid handlers (0=none).
+		static size_t poll(Handler **handlers, size_t nfds, int timeout);
 
 	};
 

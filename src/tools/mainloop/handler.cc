@@ -81,6 +81,15 @@
 
 	}
 
+	ssize_t MainLoop::Handler::read(void *buf, size_t count) {
+		return ::read(fd,buf,count);
+	}
+
+	void MainLoop::Handler::close() {
+		disable();
+		::close(fd);
+	}
+
 	/*
 	void MainLoop::Handler::clear() noexcept {
 		fd = -1;

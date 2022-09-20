@@ -71,7 +71,7 @@
 		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
 		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
 
-		ssize_t bytes = read(MainLoop::Handler::fd, buffer, INOTIFY_EVENT_BUF_LEN);
+		ssize_t bytes = read(buffer, INOTIFY_EVENT_BUF_LEN);
 
 		while(bytes > 0) {
 
@@ -83,7 +83,7 @@
 				bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
 			}
 
-			bytes = read(MainLoop::Handler::fd, buffer, INOTIFY_EVENT_BUF_LEN);
+			bytes = read(buffer, INOTIFY_EVENT_BUF_LEN);
 		}
 
 		delete[] buffer;

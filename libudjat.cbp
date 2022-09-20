@@ -204,6 +204,7 @@
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
+		<Unit filename="src/tools/mainloop/os/linux/handler.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
@@ -234,8 +235,12 @@
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
-		<Unit filename="src/tools/os/linux/subprocess.cc" />
 		<Unit filename="src/tools/os/linux/subprocess.h" />
+		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/run.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/start.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/subprocess.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/subprocess.h" />
 		<Unit filename="src/tools/os/linux/systemservice.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/application.cc" />
