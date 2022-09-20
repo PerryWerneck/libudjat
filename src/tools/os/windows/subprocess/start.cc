@@ -41,6 +41,7 @@
 
  namespace Udjat {
 
+	/*
 	class UDJAT_PRIVATE SubProcess::Watcher : public Win32::Event {
 	private:
 		SubProcess * process;
@@ -74,9 +75,11 @@
 		}
 
 	};
+	*/
 
 	void SubProcess::start() {
 
+		/*
 		if(!MainLoop::getInstance()) {
 			delete this;
 			throw runtime_error("Cant start win32 async subprocess without an active main loop");
@@ -100,6 +103,7 @@
 			}
 			return true;
 		});
+		*/
 
 	}
 

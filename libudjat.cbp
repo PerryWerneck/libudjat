@@ -109,6 +109,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/win32/event.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
+		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
@@ -263,6 +264,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/tools/os/windows/subprocess.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/init.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/private.h" />
+		<Unit filename="src/tools/os/windows/subprocess/run.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/start.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/subprocess.cc" />
 		<Unit filename="src/tools/os/windows/subprocess_run.cc" />
 		<Unit filename="src/tools/os/windows/subprocess_start.cc" />
 		<Unit filename="src/tools/os/windows/systemservice.cc" />

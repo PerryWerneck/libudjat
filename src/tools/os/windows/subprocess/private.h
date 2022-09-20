@@ -19,39 +19,34 @@
 
  #pragma once
 
+ #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/subprocess.h>
+ #include <udjat/win32/handler.h>
+ #include <udjat/win32/exception.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	namespace Win32 {
+	class UDJAT_PRIVATE SubProcess::Handler : public Win32::Handler {
+	private:
+		size_t length = 0;
+		char buffer[256];
 
-		/// @brief Windows event handler.
-		class UDJAT_API Event {
-		protected:
+	protected:
 
-			/// @brief The event handle.
-			HANDLE hEvent;
+		bool handle(bool abandoned) override;
 
-			/// @brief Start event watcher.
-			void start();
+	public:
+		Handler() = default;
 
-		public:
+		void parse();
 
-			class Controller;
-			friend class controller;
-
-			constexpr Event(HANDLE handle) : hEvent(handle) {
-			}
-
-			virtual ~Event();
-
-			/// @brief Handle activity.
-			virtual bool handle(bool abandoned) = 0;
-
-
-		};
-
+		virtual void on_error(const char *reason) = 0;
+		virtual void on_input(const char *line) = 0;
 
 	}
 
  }
+

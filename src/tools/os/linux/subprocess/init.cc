@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "subprocess.h"
+ #include "private.h"
  #include <sys/types.h>
  #include <sys/socket.h>
  #include <unistd.h>

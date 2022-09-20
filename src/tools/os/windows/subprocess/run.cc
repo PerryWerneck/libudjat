@@ -40,6 +40,33 @@
 
 	int SubProcess::run() {
 
+		class SyncHandler : public SubProcess::Handler {
+		private:
+			SubProcess &proc;
+
+		protected:
+
+			void on_error(const char *reason) override {
+				proc.onStdErr(reason);
+			}
+
+			void on_input(const char *line) override {
+				if(id == 0) {
+					proc.onStdOut(line);
+				} else {
+					proc.onStdErr(line);
+				}
+			}
+
+		public:
+			SyncHandler(SubProcess *p, unsigned short id) : SubProcess::Handler(id), proc(*p) {
+			}
+
+		};
+
+		SyncHandler handlers[]{ { this,0 }, { this,1}  };
+
+		/*
 		init();
 
 		while(running()) {
@@ -98,6 +125,7 @@
 			}
 
 		}
+		*/
 
 		return exitcode;
 

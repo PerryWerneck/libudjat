@@ -28,6 +28,9 @@
 	class UDJAT_API SubProcess : public NamedObject {
 	private:
 
+		/// @brief I/O handler
+		class Handler;
+
 		/// @brief Parse input.
 		// void parse(int id);
 
@@ -37,9 +40,7 @@
 
 #ifdef _WIN32
 
-		class Watcher;
-		friend class Watcher;
-
+		/*
 		struct Pipe {
 
 			HANDLE hRead = 0;
@@ -56,13 +57,14 @@
 			}
 
 		} pipes[2];
+		*/
 
 		PROCESS_INFORMATION piProcInfo;
 
 		int exitcode = -1;
 
 		inline bool running() const noexcept {
-			return pipes[0] || pipes[1] || piProcInfo.hProcess;
+			return piProcInfo.hProcess;
 		}
 
 		/// @brief Initialize.
@@ -73,9 +75,6 @@
 		/// @brief Subprocess controller.
 		class Controller;
 		friend class Controller;
-
-		/// @brief I/O handler
-		class Handler;
 
 		/// @brief Pid of the subprocess.
 		pid_t pid = -1;
@@ -89,6 +88,8 @@
 		inline bool running() const noexcept {
 			return this->pid != -1;
 		}
+
+		void init(Handler &outpipe, Handler &errpipe);
 
 #endif // _WIN32
 

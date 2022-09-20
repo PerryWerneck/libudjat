@@ -17,30 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /***
-  * @brief Implement the Windows SubProcess object.
-  *
-  * References:
-  *
-  * <https://docs.microsoft.com/en-us/windows/win32/procthread/creating-a-child-process-with-redirected-input-and-output>
-  *
-  */
-
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
- #include <udjat/tools/logger.h>
- #include <udjat/win32/exception.h>
- #include <system_error>
- #include <iostream>
+ #include "private.h"
 
  using namespace std;
 
- #pragma GCC diagnostic ignored "-Wunused-parameter"
-
  namespace Udjat {
 
-	SubProcess::Pipe::Pipe() {
+	static void PipeFactory(HANDLE &hRead, HANDLE &hWrite) {
+
 		SECURITY_ATTRIBUTES saAttr;
 
 		saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
@@ -60,71 +47,63 @@
 
 	}
 
-	SubProcess::Pipe::~Pipe() {
-		if(hRead)
-			CloseHandle(hRead);
+	void SubProcess::init(Handler &outpipe, Handler &errpipe) {
 
-		if(hWrite)
-			CloseHandle(hWrite);
+		HANDLE hRead[2];
+		HANDLE hWrite[2];
 
-	}
+		PipeFactory(hRead[0],hWrite[0]);
+		PipeFactory(hRead[1],hWrite[1]);
 
-	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n),command(c) {
-		info() << "Running '" << command << "'" << endl;
-		ZeroMemory(&piProcInfo,sizeof(piProcInfo));
-	}
+		try {
 
-	SubProcess::~SubProcess() {
+			STARTUPINFO siStartInfo;
 
-		if(piProcInfo.hProcess) {
-			CloseHandle(piProcInfo.hProcess);
-		}
+			ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
+			siStartInfo.cb = sizeof(STARTUPINFO);
+			siStartInfo.hStdOutput = hWrite[0];
+			siStartInfo.hStdError = hWrite[1];
+			siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
 
-		if(piProcInfo.hThread) {
-			CloseHandle(piProcInfo.hThread);
-		}
+			BOOL bSuccess = CreateProcess(	NULL,
+											(LPSTR) command.c_str(),	// command line
+											NULL,				// process security attributes
+											NULL,				// primary thread security attributes
+											TRUE,				// handles are inherited
+											0,					// creation flags
+											NULL,				// use parent's environment
+											NULL,				// use parent's current directory
+											&siStartInfo,		// STARTUPINFO pointer
+											&piProcInfo);		// receives PROCESS_INFORMATION
 
-#ifdef DEBUG
-		info() << "Subprocess was destroyed" << endl;
-#endif // DEBUG
-	}
+			if(!bSuccess) {
+				throw Win32::Exception(Logger::Message("Cant create process '{}'",command));
+			}
 
-	void SubProcess::init() {
 
-		STARTUPINFO siStartInfo;
+		} catch(...) {
 
-		ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-		siStartInfo.cb = sizeof(STARTUPINFO);
-		siStartInfo.hStdOutput = pipes[0].hWrite;
-		siStartInfo.hStdError = pipes[1].hWrite;
-		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
+			CloseHandle(hRead[0]);
+			CloseHandle(hWrite[0]);
 
-		BOOL bSuccess = CreateProcess(	NULL,
-										(LPSTR) command.c_str(),	// command line
-										NULL,				// process security attributes
-										NULL,				// primary thread security attributes
-										TRUE,				// handles are inherited
-										0,					// creation flags
-										NULL,				// use parent's environment
-										NULL,				// use parent's current directory
-										&siStartInfo,		// STARTUPINFO pointer
-										&piProcInfo);		// receives PROCESS_INFORMATION
+			CloseHandle(hRead[1]);
+			CloseHandle(hWrite[1]);
 
-		if(!bSuccess) {
-			throw Win32::Exception(Logger::Message("Cant create process '{}'",command));
+			throw;
 		}
 
 		// Close handles to the stdin and stdout pipes no longer needed by the child process.
 		// If they are not explicitly closed, there is no way to recognize that the child process has ended.
-		CloseHandle(pipes[0].hWrite);
-		pipes[0].hWrite = 0;
+		CloseHandle(hWrite[0]);
+		CloseHandle(hWrite[1]);
 
-		CloseHandle(pipes[1].hWrite);
-		pipes[1].hWrite = 0;
-
+		// Setup pipe readers.
+		outpipe.set(hRead[0]);
+		errpipe.set(hRead[1]);
 
 	}
 
+	/*
 	bool SubProcess::read(int id) {
 
 		DWORD dwRead = 0;
@@ -165,6 +144,7 @@
 
 		return true;
 	}
+	*/
 
 
  }

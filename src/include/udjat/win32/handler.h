@@ -19,24 +19,45 @@
 
  #pragma once
 
- #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/configuration.h>
- #include <iostream>
-
- #ifdef _WIN32
-	#include <udjat/win32/exception.h>
- #endif // _WIN32
-
- #ifdef HAVE_WINHTTP
-	#include <udjat/tools/http.h>
- 	#include <winhttp.h>
- #endif // HAVE_WINHTTP
-
- using namespace std;
 
  namespace Udjat {
 
+	namespace Win32 {
+
+		/// @brief Windows event handler.
+		class UDJAT_API Handler {
+		protected:
+
+			/// @brief The event handle.
+			HANDLE hEvent = NULLHANDLE;
+
+			/// @brief Start event watcher.
+			void start();
+
+		public:
+
+			class Controller;
+			friend class controller;
+
+			constexpr Handler() {
+			}
+
+			constexpr Event(HANDLE handle) : hEvent(handle) {
+			}
+
+			void set(HANDLE handle);
+			void close();
+
+			virtual ~Event();
+
+			/// @brief Handle activity.
+			virtual bool handle(bool abandoned) = 0;
+
+
+		};
+
+
+	}
 
  }
-
