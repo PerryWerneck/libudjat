@@ -36,35 +36,13 @@
 
 		cout << "inotify\tStarting service" << endl;
 
-		instance = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
-		if(instance == -1) {
+		MainLoop::Handler::fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
+		if(MainLoop::Handler::fd == -1) {
 			throw system_error(errno,system_category(),"Can't initialize inotify");
 		}
 
-		MainLoop::getInstance().insert( (void *) this, instance, MainLoop::oninput, [this](const MainLoop::Event UDJAT_UNUSED(event)) {
-
-			char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
-			memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
-
-			ssize_t bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
-
-			while(bytes > 0) {
-
-				ssize_t	bufPtr	= 0;
-
-				while(bufPtr < bytes) {
-					auto pevent = (struct inotify_event *) &buffer[bufPtr];
-					onEvent(pevent);
-					bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
-				}
-
-				bytes = read(instance, buffer, INOTIFY_EVENT_BUF_LEN);
-			}
-
-			delete[] buffer;
-
-			return true;
-		});
+		MainLoop::Handler::events = MainLoop::Handler::oninput;
+		MainLoop::Handler::enable();
 
 	}
 
@@ -77,14 +55,38 @@
 		for(auto watcher : watchers) {
 
 			if(watcher->wd != -1) {
-				inotify_rm_watch(instance, watcher->wd);
+				inotify_rm_watch(MainLoop::Handler::fd, watcher->wd);
 				watcher->wd = -1;
 			}
 
 		}
 
-		MainLoop::getInstance().remove((void *) this);
-		::close(instance);
+		MainLoop::Handler::disable();
+		::close(MainLoop::Handler::fd);
+
+	}
+
+	void File::Controller::handle_event(const MainLoop::Handler::Event event) {
+
+		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
+		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
+
+		ssize_t bytes = read(MainLoop::Handler::fd, buffer, INOTIFY_EVENT_BUF_LEN);
+
+		while(bytes > 0) {
+
+			ssize_t	bufPtr	= 0;
+
+			while(bufPtr < bytes) {
+				auto pevent = (struct inotify_event *) &buffer[bufPtr];
+				onEvent(pevent);
+				bufPtr += (offsetof (struct inotify_event, name) + pevent->len);
+			}
+
+			bytes = read(MainLoop::Handler::fd, buffer, INOTIFY_EVENT_BUF_LEN);
+		}
+
+		delete[] buffer;
 
 	}
 
@@ -126,7 +128,7 @@
 
 		if(watcher->wd < 0) {
 
-			watcher->wd = inotify_add_watch(instance,watcher->name.c_str(),IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
+			watcher->wd = inotify_add_watch(MainLoop::Handler::fd,watcher->name.c_str(),IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
 			if(watcher->wd == -1) {
 				throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->name.c_str() + "'");
 			}
@@ -142,9 +144,9 @@
 	void File::Controller::remove(Watcher *watcher) {
 
 		if(watcher->wd > 0) {
-			if(inotify_rm_watch(instance, watcher->wd) == -1) {
+			if(inotify_rm_watch(MainLoop::Handler::fd, watcher->wd) == -1) {
 				cerr << "inotify\tError '" << strerror(errno) << "' unwatching file '"
-						<< watcher->name << "' (wd=" << watcher->wd << " instance=" << instance << ")" << endl;
+						<< watcher->name << "' (wd=" << watcher->wd << " instance=" << MainLoop::Handler::fd << ")" << endl;
 			} else {
 				cerr << "inotify\tUnwatching '" << watcher->name << "'" << endl;
 			}

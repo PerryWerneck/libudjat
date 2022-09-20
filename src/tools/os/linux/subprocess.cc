@@ -31,6 +31,7 @@
  #include <sys/socket.h>
  #include <unistd.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/handler.h>
  #include <iostream>
  #include <cstring>
  #include <csignal>
@@ -81,8 +82,6 @@
 					process->status.failed = true;
 					process->status.termsig = WTERMSIG(status);
 				}
-
-				MainLoop::getInstance().remove(process);
 
 				// Delay reading to avoid timing problems.
 				MainLoop::getInstance().TimerFactory(100,[process]() {
@@ -151,7 +150,6 @@
 
 	SubProcess::~SubProcess() {
 
-		MainLoop::getInstance().remove(this);
 		Controller::getInstance().remove(this);
 
 		for(size_t ix = 0; ix < (sizeof(pipes) /sizeof(pipes[0])); ix++) {
@@ -253,17 +251,17 @@
 
 					if(fds[ix].revents) {
 
-						if(fds[ix].revents & MainLoop::oninput) {
+						if(fds[ix].revents & MainLoop::Handler::oninput) {
 							read(ix);
 						}
 
-						if(fds[ix].revents & MainLoop::onerror) {
+						if(fds[ix].revents & MainLoop::Handler::onerror) {
 							onStdErr("Error reading pipe");
 							close(this->pipes[ix].fd);
 							this->pipes[ix].fd = -1;
 						}
 
-						if(fds[ix].revents & MainLoop::onhangup) {
+						if(fds[ix].revents & MainLoop::Handler::onhangup) {
 							onStdErr("Pipe was closed");
 							close(this->pipes[ix].fd);
 							this->pipes[ix].fd = -1;
@@ -301,6 +299,9 @@
 	void SubProcess::start() {
 
 		init();
+
+#ifndef DEBUG
+		#error Refactor.
 
 		MainLoop::getInstance().insert(
 			this,
@@ -352,6 +353,8 @@
 				return true;
 			}
 		);
+
+#endif // DEBUG
 
 	}
 

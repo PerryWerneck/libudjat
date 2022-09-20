@@ -150,10 +150,6 @@
 
 		MainLoop::getInstance().run();
 
-#ifdef HAVE_SYSTEMD
-		MainLoop::getInstance().remove(&watchdog_timer);
-#endif // HAVE_SYSTEMD
-
 		return 0;
 	}
 

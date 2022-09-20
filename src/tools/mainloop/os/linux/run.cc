@@ -30,6 +30,7 @@
  #include <private/misc.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/handler.h>
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>
@@ -149,7 +150,7 @@
 		// Check for fd handlers.
 		{
 			// First, get list of the active handlers.
-			std::list<std::shared_ptr<Handler>> hList;
+			std::list<Handler *> hList;
 
 			{
 				lock_guard<mutex> lock(guard);
@@ -166,10 +167,7 @@
 
 				try {
 
-					if(!handle->call((const Event) fds[handle->index].revents)) {
-						lock_guard<mutex> lock(guard);
-						handlers.remove(handle);
-					}
+					handle->handle_event((const Handler::Event) fds[handle->index].revents);
 
 				} catch(const std::exception &e) {
 

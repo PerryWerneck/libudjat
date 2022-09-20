@@ -45,13 +45,6 @@
 		if(!handlers.empty()) {
 
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
-			lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-			for(auto handler : handlers) {
-				cerr << "handler\tPending handler " << hex << ((void *) handler.get()) << dec << " (" << handler.use_count() << " instance(s))" << endl;
-			}
-#endif // DEBUG
-			handlers.clear();
 
 		} else {
 			cout << "MainLoop\tDestroying clean service loop" << endl;

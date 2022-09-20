@@ -18,6 +18,8 @@
  */
 
  #include <config.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/handler.h>
  #include <private/mainloop.h>
  #include <private/misc.h>
 
@@ -33,28 +35,61 @@
 #ifdef DEBUG
 		cout << "handler\tDestroying handler " << hex << ((void *) this) << dec << endl;
 #endif // DEBUG
+		disable();
 	}
 
-	void MainLoop::Handler::enable() noexcept {
-		enabled = true;
-		MainLoop::getInstance().wakeup();
+	bool MainLoop::Handler::enabled() const noexcept {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		lock_guard<mutex> lock(mainloop.guard);
+		for(auto handler : mainloop.handlers) {
+			if(handler == this) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
-	const void * MainLoop::Handler::id() const noexcept {
-		return (void *) this;
+	bool MainLoop::Handler::enable() noexcept {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+		lock_guard<mutex> lock(mainloop.guard);
+
+		// Is the handler enabled?
+		for(auto handler : mainloop.handlers) {
+			if(handler == this) {
+				return false;
+			}
+		}
+
+		mainloop.handlers.push_back(this);
+		mainloop.wakeup();
+
+		return true;
 	}
 
 	void MainLoop::Handler::disable() noexcept {
-		enabled = false;
-		MainLoop::getInstance().wakeup();
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+		lock_guard<mutex> lock(mainloop.guard);
+#ifndef _WIN32
+		index = -1;
+#endif // _WIN32
+		mainloop.handlers.remove(this);
+
 	}
 
+	/*
 	void MainLoop::Handler::clear() noexcept {
 		fd = -1;
 		enabled = false;
 		MainLoop::getInstance().wakeup();
 	}
+	*/
 
+	/*
 	void MainLoop::push_back(std::shared_ptr<MainLoop::Handler> handler) {
 
 		{
@@ -65,7 +100,9 @@
 		wakeup();
 
 	}
+	*/
 
+	/*
 	void MainLoop::remove(std::shared_ptr<Handler> handler) {
 
 #ifdef DEBUG
@@ -85,7 +122,9 @@
 		handler->disable();
 
 	}
+	*/
 
+	/*
 	std::shared_ptr<MainLoop::Handler> MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
 
 		class CallHandler : public MainLoop::Handler {
@@ -113,6 +152,7 @@
 		return handler;
 
 	}
+	*/
 
 
 #ifndef _WIN32
@@ -129,19 +169,11 @@
 		nfds_t nfds = 0;
 		for(auto handle : handlers) {
 
-			if(!handle->enabled || handle->fd <=0) {
-				handle->index = -1;
-			} else {
-				handle->index = nfds;
-				(*fds)[nfds].fd = handle->fd;
-				(*fds)[nfds].events = handle->events;
-				(*fds)[nfds].revents = 0;
-				nfds++;
-			}
-
-//#ifdef DEBUG
-//			cout << "Handle " << handle->id() << " fd=" << handle->fd << " index=" << handle->index << " event=" << handle->events << endl;
-//#endif // DEBUG
+			handle->index = nfds;
+			(*fds)[nfds].fd = handle->fd;
+			(*fds)[nfds].events = handle->events;
+			(*fds)[nfds].revents = 0;
+			nfds++;
 
 		}
 

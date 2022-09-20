@@ -194,8 +194,6 @@ namespace Udjat {
 
 		cout << "agent\tStopping controller" << endl;
 
-		MainLoop::getInstance().remove(this);
-
 		if(root) {
 
 			try {

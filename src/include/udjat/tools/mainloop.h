@@ -38,61 +38,7 @@ namespace Udjat {
 	public:
 
 		class Timer;
-
-		enum Event : short {
-#ifdef _WIN32
-			// https://msdn.microsoft.com/en-us/library/windows/desktop/ms740094(v=vs.85).aspx
-			oninput         = POLLRDNORM,   		///< @brief There is data to read.
-			onoutput        = POLLWRNORM,   		///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
-			onerror         = POLLERR,              ///< @brief Error condition
-			onhangup        = POLLHUP,              ///< @brief Hang  up
-#else
-			oninput         = POLLIN,               ///< @brief There is data to read.
-			onoutput        = POLLOUT,              ///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
-			onerror         = POLLERR,              ///< @brief Error condition
-			onhangup        = POLLHUP,              ///< @brief Hang  up
-#endif // WIN32
-		};
-
-		///< @brief File/Socket handler
-		class UDJAT_API Handler {
-		private:
-			friend class MainLoop;
-			bool enabled = true;
-
-#ifndef _WIN32
-			int index=-1;
-#endif // _WIN32
-
-		protected:
-
-			int fd = -1;
-			Event events = (Event) 0;
-			virtual bool call(const Event event) = 0;
-
-		public:
-
-			Handler(int fd, const Event event);
-			virtual ~Handler();
-
-			/*
-			constexpr Handler(int f, const Event e) : fd(f), events(e) {
-			}
-			*/
-
-			/// @brief Get handle id.
-			virtual const void * id() const noexcept;
-
-			/// @brief Enable handler.
-			void enable() noexcept;
-
-			/// @brief Disable handler.
-			void disable() noexcept;
-
-			/// @brief Remove and destroy handler.
-			void clear() noexcept;
-
-		};
+		class Handler;
 
 		/// @brief Service who can be started/stopped.
 		class UDJAT_API Service {
@@ -211,7 +157,7 @@ namespace Udjat {
 		//
 		// File/socket/Handle management
 		//
-		std::list<std::shared_ptr<Handler>> handlers;
+		std::list<Handler *> handlers;
 
 	public:
 
@@ -244,23 +190,13 @@ namespace Udjat {
 
 #endif // _WIN32
 
-		/// @brief Insert socket/file handler in the list of event sources.
-		void push_back(std::shared_ptr<Handler> handler);
-
-		/// @brief Remove socket/file handler.
-		void remove(std::shared_ptr<Handler> handler);
-
-		/// @brief Insert socket/file in the list of event sources.
-		/// @return Socket/file handler.
-		std::shared_ptr<Handler> insert(const void *id, int fd, const Event event, const std::function<bool(const Event event)> call);
-
 		/// @brief Create timer for callback.
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
 
 		/// @brief Remove socket/file/module from the list of event sources.
-		void remove(const void *id);
+		//void remove(const void *id);
 
 #ifdef _WIN32
 

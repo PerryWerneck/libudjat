@@ -271,7 +271,6 @@
 	void Alert::Controller::stop() {
 
 		cout << "alerts\tDeactivating controller" << endl;
-		MainLoop::getInstance().remove(this);
 		clear();
 
 	}
