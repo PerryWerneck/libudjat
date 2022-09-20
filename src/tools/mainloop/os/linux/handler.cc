@@ -26,6 +26,30 @@
 
  namespace Udjat {
 
+	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
+
+		lock_guard<mutex> lock(guard);
+
+		if(*length <= handlers.size()) {
+			*length = handlers.size()+1;	// 1 extra for the eventfd.
+			*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+		}
+
+		// Get waiting sockets.
+		nfds_t nfds = 0;
+		for(auto handle : handlers) {
+
+			handle->index = nfds;
+			(*fds)[nfds].fd = handle->fd;
+			(*fds)[nfds].events = handle->events;
+			(*fds)[nfds].revents = 0;
+			nfds++;
+
+		}
+
+		return nfds;
+	}
+
 	size_t MainLoop::Handler::poll(MainLoop::Handler **handlers, size_t nfds, int timeout) {
 
 		size_t valid_handlers = 0;

@@ -240,13 +240,11 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	/*
 #ifdef _WIN32
 	return SubProcess("subprocess.bat").run();
 #else
 	return SubProcess("ls").run();
 #endif // _WIN32
-	*/
 
 	/*
 	{
@@ -255,6 +253,6 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	return Service().run(argc,argv);
+	// return Service().run(argc,argv);
 
 }

@@ -26,6 +26,7 @@
  namespace Udjat {
 
 	MainLoop::Handler::Handler(int f, const Event e) : fd(f), events(e) {
+		MainLoop::getInstance();
 #ifdef DEBUG
 		cout << "handler\tCreating handler " << hex << ((void *) this) << dec << endl;
 #endif // DEBUG
@@ -55,16 +56,20 @@
 	bool MainLoop::Handler::enable() noexcept {
 
 		MainLoop &mainloop{MainLoop::getInstance()};
-		lock_guard<mutex> lock(mainloop.guard);
 
-		// Is the handler enabled?
-		for(auto handler : mainloop.handlers) {
-			if(handler == this) {
-				return false;
+		{
+			lock_guard<mutex> lock(mainloop.guard);
+
+			// Is the handler enabled?
+			for(auto handler : mainloop.handlers) {
+				if(handler == this) {
+					return false;
+				}
 			}
+
+			mainloop.handlers.push_back(this);
 		}
 
-		mainloop.handlers.push_back(this);
 		mainloop.wakeup();
 
 		return true;
@@ -73,11 +78,16 @@
 	void MainLoop::Handler::disable() noexcept {
 
 		MainLoop &mainloop{MainLoop::getInstance()};
-		lock_guard<mutex> lock(mainloop.guard);
+
+		{
+			lock_guard<mutex> lock(mainloop.guard);
 #ifndef _WIN32
-		index = -1;
+			index = -1;
 #endif // _WIN32
-		mainloop.handlers.remove(this);
+			mainloop.handlers.remove(this);
+		}
+
+		mainloop.wakeup();
 
 	}
 
@@ -86,8 +96,11 @@
 	}
 
 	void MainLoop::Handler::close() {
-		disable();
-		::close(fd);
+		if(fd != -1) {
+			disable();
+			::close(fd);
+			fd = -1;
+		}
 	}
 
 	void MainLoop::Handler::set(int fd) {
@@ -106,106 +119,6 @@
 			MainLoop::getInstance().wakeup();
 		}
 	}
-
-	/*
-	void MainLoop::Handler::clear() noexcept {
-		fd = -1;
-		enabled = false;
-		MainLoop::getInstance().wakeup();
-	}
-	*/
-
-	/*
-	void MainLoop::push_back(std::shared_ptr<MainLoop::Handler> handler) {
-
-		{
-			lock_guard<mutex> lock(guard);
-			handlers.push_back(handler);
-		}
-
-		wakeup();
-
-	}
-	*/
-
-	/*
-	void MainLoop::remove(std::shared_ptr<Handler> handler) {
-
-#ifdef DEBUG
-		cout << "handler\tAARemoving handler " << hex << ((void *) handler.get()) << dec << " with " << handler.use_count() << " pending instance(s)" << endl;
-#endif // DEBUG
-
-		{
-			lock_guard<mutex> lock(guard);
-			handlers.remove(handler);
-		}
-
-#ifdef DEBUG
-		cout << "handler\tRemoving handler " << hex << ((void *) handler.get()) << dec << " with " << handler.use_count() << " pending instance(s)" << endl;
-#endif // DEBUG
-
-		handler->fd = -1;
-		handler->disable();
-
-	}
-	*/
-
-	/*
-	std::shared_ptr<MainLoop::Handler> MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
-
-		class CallHandler : public MainLoop::Handler {
-		private:
-			const void * identifier;
-			const function<bool(const Event event)> callback;
-
-		protected:
-			bool call(const Event event) override {
-				return callback(event);
-			}
-
-		public:
-			CallHandler(const void *i, int fd, const Event event, const function<bool(const Event event)> c) : Handler(fd,event), identifier(i), callback(c) {
-			}
-
-			const void * id() const noexcept override {
-				return identifier;
-			}
-
-		};
-
-		std::shared_ptr<Handler> handler = make_shared<CallHandler>(id,fd,event,call);
-		push_back(handler);
-		return handler;
-
-	}
-	*/
-
-
-#ifndef _WIN32
-	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
-
-		lock_guard<mutex> lock(guard);
-
-		if(*length <= handlers.size()) {
-			*length = handlers.size()+1;	// 1 extra for the eventfd.
-			*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
-		}
-
-		// Get waiting sockets.
-		nfds_t nfds = 0;
-		for(auto handle : handlers) {
-
-			handle->index = nfds;
-			(*fds)[nfds].fd = handle->fd;
-			(*fds)[nfds].events = handle->events;
-			(*fds)[nfds].revents = 0;
-			nfds++;
-
-		}
-
-		return nfds;
-	}
-#endif // _WIN32
 
  }
 
