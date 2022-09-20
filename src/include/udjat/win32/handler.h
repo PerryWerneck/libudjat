@@ -30,7 +30,7 @@
 		protected:
 
 			/// @brief The event handle.
-			HANDLE hEvent = NULLHANDLE;
+			HANDLE hEvent = 0;
 
 			/// @brief Start event watcher.
 			void start();
@@ -43,17 +43,30 @@
 			constexpr Handler() {
 			}
 
-			constexpr Event(HANDLE handle) : hEvent(handle) {
+			constexpr Handler(HANDLE handle) : hEvent(handle) {
 			}
 
+			operator bool() const noexcept {
+				return hEvent != 0;
+			}
+
+			virtual ~Handler();
+
+			void enable();
+			void disable();
 			void set(HANDLE handle);
 			void close();
-
-			virtual ~Event();
+			ssize_t read(void *buf, size_t count);
 
 			/// @brief Handle activity.
-			virtual bool handle(bool abandoned) = 0;
+			virtual void handle(bool abandoned) = 0;
 
+			/// @brief Wait for handlers.
+			/// @param handlers	List of handlers to poll.
+			/// @param nfds Length of 'handlers'.
+			/// @param timeout for poll.
+			/// @return Count of valid handlers (0=none).
+			static size_t poll(Win32::Handler **handlers, size_t nfds, int timeout);
 
 		};
 

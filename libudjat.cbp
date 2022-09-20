@@ -212,6 +212,7 @@
 		<Unit filename="src/tools/mainloop/os/windows/event.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventcontroller.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventworker.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/handler.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
@@ -264,6 +265,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="src/tools/os/windows/subprocess.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/handler.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/init.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/private.h" />
 		<Unit filename="src/tools/os/windows/subprocess/run.cc" />

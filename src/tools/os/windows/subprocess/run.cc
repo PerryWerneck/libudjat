@@ -28,6 +28,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include "private.h"
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
@@ -64,7 +65,37 @@
 
 		};
 
-		SyncHandler handlers[]{ { this,0 }, { this,1}  };
+		class ProcHandler : public Win32::Handler {
+		private:
+			SubProcess &proc;
+
+		public:
+			ProcHandler(SubProcess *p, HANDLE h) : Win32::Handler(h), proc(*p) {
+			}
+
+			void handle(bool UDJAT_UNUSED(abandoned)) override {
+				DWORD rc;
+				if(GetExitCodeProcess(this->hEvent,&rc) != STILL_ACTIVE) {
+					proc.onExit(proc.exitcode = rc);
+					close();
+				}
+			}
+
+		};
+
+		SyncHandler handlers[]{ { this,0 }, { this,1 } };
+
+		init(handlers[0],handlers[1]);
+
+		ProcHandler prochandler{this,piProcInfo.hProcess};
+
+		Win32::Handler *hdl[]{&handlers[0],&handlers[1],&prochandler};
+		while(Win32::Handler::poll(hdl,3,1000)) {
+
+
+		}
+
+		piProcInfo.hProcess = 0;
 
 		/*
 		init();

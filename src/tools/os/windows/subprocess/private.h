@@ -35,18 +35,20 @@
 		char buffer[256];
 
 	protected:
+		unsigned short id;
 
-		bool handle(bool abandoned) override;
+		void handle(bool abandoned) override;
 
 	public:
-		Handler() = default;
+		Handler(unsigned short i) : id(i) {
+		}
 
 		void parse();
 
 		virtual void on_error(const char *reason) = 0;
 		virtual void on_input(const char *line) = 0;
 
-	}
+	};
 
  }
 

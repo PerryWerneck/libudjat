@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/logger.h>
  #include "private.h"
 
  using namespace std;

@@ -17,49 +17,62 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
  #include "private.h"
- #include <udjat/win32/exception.h>
- #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
  namespace Udjat {
 
+	void SubProcess::Handler::parse() {
 
-	void MainLoop::insert(HANDLE handle, std::function<bool(HANDLE handle,bool abandoned)> exec) {
+		char *from = buffer;
+		char *to = strchr(from,'\n');
+		while(to) {
 
-		class Event : public Win32::Event {
-		private:
-			std::function<bool(HANDLE,bool)> exec;
-
-		public:
-			Event(HANDLE handle, std::function<bool(HANDLE,bool)> e) : Win32::Event(handle), exec(e) {
-				start();
+			*to = 0;
+			if(to > from && *(to-1) == '\r') {
+				*(to-1) = 0;
 			}
 
-			bool handle(bool abandoned) override {
-				return exec(hEvent,abandoned);
-			}
+			on_input(from);
 
-		};
-
-		new Event(handle,exec);
-	}
-
-	void MainLoop::remove(HANDLE handle) {
-		Win32::Event *event = Win32::Event::Controller::getInstance().find(handle);
-		if(event) {
-			delete event;
+			from = to+1;
+			to = strchr(from,'\n');
 		}
+
+		if(from && from != buffer) {
+			length = strlen(from);
+			char *to = buffer;
+			while(*from) {
+				*(to++) = *(from++);
+			}
+			*to = 0;
+		}
+
+		length = strlen(buffer);
+
 	}
 
-	void Win32::Event::start() {
-		Controller::getInstance().insert(this);
-	}
+	void SubProcess::Handler::handle(bool UDJAT_UNUSED(abandoned)) {
 
-	Win32::Event::~Event() {
-		Controller::getInstance().remove(this);
+		ssize_t szRead = read(buffer+length, sizeof(buffer)-(length+1));
+
+		if(szRead < 0) {
+
+			on_error((string{"Error '"} + strerror(errno) + "' reading from pipe").c_str());
+			close();
+
+		} else if(!szRead) {
+
+			on_error("Unexpected 'EOF' reading from pipe");
+
+		} else {
+
+			buffer[length+szRead] = 0;
+			parse();
+
+		}
+
 	}
 
  }

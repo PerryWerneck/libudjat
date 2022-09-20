@@ -63,12 +63,8 @@
 
 		int exitcode = -1;
 
-		inline bool running() const noexcept {
-			return piProcInfo.hProcess;
-		}
-
 		/// @brief Initialize.
-		void init();
+		void init(Handler &outpipe, Handler &errpipe);
 
 #else
 
