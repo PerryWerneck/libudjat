@@ -61,66 +61,6 @@
 
 	}
 
-	void SubProcess::init() {
-
-		if(this->pid != -1) {
-			throw system_error(EBUSY,system_category(),Logger::Message{"The child process is active on pid {}",this->pid});
-		}
-
-		//
-		// Start process.
-		//
-		int errcode;
-
-		int out[2] = {-1, -1};
-		int err[2] = {-1, -1};
-
-		// Create sockets.
-		if(socketpair(AF_UNIX, SOCK_STREAM, 0, out) < 0) {
-			throw system_error(errno,system_category(),Logger::Message{"Can't create stdout pipes for '{}'",command});
-		}
-
-		if(socketpair(AF_UNIX, SOCK_STREAM, 0, err) < 0) {
-			errcode = errno;
-			::close(out[0]);
-			::close(out[1]);
-			throw system_error(errno,system_category(),Logger::Message{"Can't create stderr pipes for '{}'",command});
-		}
-
-		switch (this->pid = vfork()) {
-		case -1: // Error
-			errcode = errno;
-			::close(out[0]);
-			::close(out[1]);
-			::close(err[0]);
-			::close(err[1]);
-			throw system_error(errcode,system_category(),string{"Can't start child for '"} + c_str() + "'");
-
-		case 0:	// child
-
-			if(out[1] != STDOUT_FILENO) {
-				(void)dup2(out[1], STDOUT_FILENO);
-				(void)close(out[1]);
-				out[1] = STDOUT_FILENO;
-			}
-
-			if(err[1] != STDERR_FILENO) {
-				(void)dup2(err[1], STDERR_FILENO);
-				(void)close(err[1]);
-				err[1] = STDERR_FILENO;
-			}
-
-			execl("/bin/bash", "/bin/bash", "-c", command.c_str(), NULL);
-			_exit(127);
-
-		}
-
-		// Child started, capture pipes.
-		this->pipes[0].fd = out[0];
-		this->pipes[1].fd = err[0];
-
-	}
-
 	bool SubProcess::read(int id) {
 
 		ssize_t szRead =

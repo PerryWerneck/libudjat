@@ -45,6 +45,33 @@
 	int SubProcess::run() {
 
 		int rc = -1;
+		Handler handlers[]{0,1};
+
+		Controller::init(*this,handlers[0],handlers[1]);
+
+		MainLoop::Handler *hdl[]{&handlers[0],&handlers[1]};
+		while(running()) {
+
+			Handler::poll(hdl,2,1000);
+
+			int status = 0;
+			waitpid(this->pid,&status,WNOHANG);
+
+			if(WIFEXITED(status)) {
+				rc = this->status.exit = WEXITSTATUS(status);
+				onExit(rc);
+				break;
+			}
+
+			if(WIFSIGNALED(status)) {
+				rc = -1;
+				this->status.failed = true;
+				this->status.termsig = WTERMSIG(status);
+				onSignal(this->status.termsig);
+				break;
+			}
+
+		}
 
 		/*
 		init();

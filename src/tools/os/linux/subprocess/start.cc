@@ -44,9 +44,9 @@
 
 	void SubProcess::start() {
 
+#ifndef DEBUG
 		init();
 
-#ifndef DEBUG
 		#error Refactor.
 
 		MainLoop::getInstance().insert(

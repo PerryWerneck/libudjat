@@ -21,6 +21,7 @@
  #include <sys/types.h>
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/handler.h>
  #include <mutex>
  #include <list>
  #include <mutex>
@@ -29,7 +30,20 @@
 
  namespace Udjat {
 
-	class SubProcess::Controller {
+	class UDJAT_PRIVATE SubProcess::Handler : public MainLoop::Handler {
+	private:
+		unsigned short id;
+
+	protected:
+		void handle_event(const Event event) override;
+
+	public:
+		Handler(unsigned short i) : MainLoop::Handler(-1, (Event) (oninput|onerror|onhangup)), id(i) {
+		}
+
+	};
+
+	class UDJAT_PRIVATE SubProcess::Controller {
 	private:
 		Controller();
 
@@ -41,6 +55,9 @@
 
 		~Controller();
 		static Controller & getInstance();
+
+		/// @brief Initialize subprocess.
+		static void init(SubProcess &proc, Handler &out, Handler &err);
 
 		void insert(SubProcess *subprocess);
 		void remove(SubProcess *subprocess);

@@ -96,9 +96,6 @@
 			return this->pid != -1;
 		}
 
-		/// @brief Initialize.
-		void init();
-
 #endif // _WIN32
 
 		/// @brief The command line to start.

@@ -235,8 +235,8 @@
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
-		<Unit filename="src/tools/os/linux/subprocess.h" />
 		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/init.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/run.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/start.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/subprocess.cc" />
@@ -271,8 +271,6 @@
 		<Unit filename="src/tools/string/expand.cc" />
 		<Unit filename="src/tools/string/string.cc" />
 		<Unit filename="src/tools/subprocess.cc" />
-		<Unit filename="src/tools/subprocess/private.h" />
-		<Unit filename="src/tools/subprocess/subprocess.cc" />
 		<Unit filename="src/tools/systemservice.cc" />
 		<Unit filename="src/tools/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/timestamp.cc" />
