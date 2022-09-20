@@ -17,15 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /***
-  * @brief Implement the SubProcess object.
-  *
-  * References:
-  *
-  * <https://opensource.apple.com/source/Libc/Libc-167/gen.subproj/popen.c.auto.html>
-  *
-  */
-
  #include "subprocess.h"
  #include <sys/types.h>
  #include <sys/socket.h>
@@ -40,13 +31,74 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
 
+ using namespace std;
+
  namespace Udjat {
 
-	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
-		info() << "Running '" << command << "'" << endl;
+	void SubProcess::Handler::parse() {
+
+		char *from = buffer;
+		char *to = strchr(from,'\n');
+		while(to) {
+
+			*to = 0;
+			if(to > from && *(to-1) == '\r') {
+				*(to-1) = 0;
+			}
+
+			on_input(from);
+
+			from = to+1;
+			to = strchr(from,'\n');
+		}
+
+		if(from && from != buffer) {
+			length = strlen(from);
+			char *to = buffer;
+			while(*from) {
+				*(to++) = *(from++);
+			}
+			*to = 0;
+		}
+
+		length = strlen(buffer);
+
 	}
 
-	SubProcess::~SubProcess() {
+	void SubProcess::Handler::handle_event(const Event event) {
+
+		if(event & oninput) {
+
+			ssize_t szRead = read(buffer+length, sizeof(buffer)-(length+1));
+
+			if(szRead < 0) {
+
+				on_error((string{"Error '"} + strerror(errno) + "' reading from pipe").c_str());
+				close();
+
+			} else if(!szRead) {
+
+				on_error("Unexpected 'EOF' reading from pipe");
+
+			} else {
+
+				buffer[length+szRead] = 0;
+				parse();
+
+			}
+
+		}
+
+		if(event & onerror) {
+			on_error("I/O error");
+			close();
+		}
+
+		if(event & onhangup) {
+			on_error("Pipe closed");
+			close();
+		}
+
 	}
 
  }

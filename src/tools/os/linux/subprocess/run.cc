@@ -44,18 +44,47 @@
 
 	int SubProcess::run() {
 
+		class SyncHandler : public SubProcess::Handler {
+		private:
+			SubProcess &proc;
+
+		protected:
+
+			void on_error(const char *reason) override {
+				proc.onStdErr(reason);
+			}
+
+			void on_input(const char *line) override {
+				if(id == 0) {
+					proc.onStdOut(line);
+				} else {
+					proc.onStdErr(line);
+				}
+			}
+
+		public:
+			SyncHandler(SubProcess *p, unsigned short id) : SubProcess::Handler(id), proc(*p) {
+			}
+
+		};
+
 		int rc = -1;
-		Handler handlers[]{0,1};
+		SyncHandler handlers[]{ { this,0 }, { this,1}  };
 
 		Controller::init(*this,handlers[0],handlers[1]);
 
 		MainLoop::Handler *hdl[]{&handlers[0],&handlers[1]};
 		while(running()) {
 
-			Handler::poll(hdl,2,1000);
-
 			int status = 0;
-			waitpid(this->pid,&status,WNOHANG);
+
+			if(Handler::poll(hdl,2,1000)) {
+				// Have active handlers, keep loop running.
+				waitpid(this->pid,&status,WNOHANG);
+			} else {
+				// No more active handlers, wait.
+				waitpid(this->pid,&status,0);
+			}
 
 			if(WIFEXITED(status)) {
 				rc = this->status.exit = WEXITSTATUS(status);

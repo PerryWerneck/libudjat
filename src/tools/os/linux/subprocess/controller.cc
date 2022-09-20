@@ -67,6 +67,7 @@
 
 	void SubProcess::Controller::handle_signal(int sig) noexcept {
 
+		/*
 		int status = 0;
 		pid_t pid = waitpid(0,&status,WNOHANG);
 
@@ -123,21 +124,12 @@
 
 				});
 
-				/*
-				// Remove FD from mainloop.
-				lock_guard<mutex> lock(Controller::getInstance().guard);
-
-
-				// Process exit codes.
-
-
-				delete process;
-				*/
 				break;
 
 			}
 
 		}
+		*/
 
 	}
  }

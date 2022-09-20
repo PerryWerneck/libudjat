@@ -29,11 +29,11 @@
 	private:
 
 		/// @brief Parse input.
-		void parse(int id);
+		// void parse(int id);
 
 		/// @brief Read from pipe.
 		/// @return true if the pipe is still valid.
-		bool read(int id);
+		// bool read(int id);
 
 #ifdef _WIN32
 
@@ -85,12 +85,6 @@
 			int exit = 0;
 			int termsig = 0;
 		} status;
-
-		struct {
-			int fd = -1;
-			size_t length = 0;
-			char buffer[256];
-		} pipes[2];
 
 		inline bool running() const noexcept {
 			return this->pid != -1;

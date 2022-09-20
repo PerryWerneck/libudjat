@@ -32,10 +32,17 @@
 
 	class UDJAT_PRIVATE SubProcess::Handler : public MainLoop::Handler {
 	private:
-		unsigned short id;
+		size_t length = 0;
+		char buffer[256];
 
 	protected:
+		unsigned short id;
+
 		void handle_event(const Event event) override;
+		void parse();
+
+		virtual void on_error(const char *reason) = 0;
+		virtual void on_input(const char *line) = 0;
 
 	public:
 		Handler(unsigned short i) : MainLoop::Handler(-1, (Event) (oninput|onerror|onhangup)), id(i) {

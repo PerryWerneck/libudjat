@@ -236,6 +236,7 @@
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/handler.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/init.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/run.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/start.cc" />

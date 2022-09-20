@@ -88,8 +88,8 @@
 		}
 
 		// Child started, capture pipes.
-		outpipe = out[0];
-		errpipe = err[0];
+		outpipe.set(out[0]);
+		errpipe.set(err[0]);
 
 	}
 
