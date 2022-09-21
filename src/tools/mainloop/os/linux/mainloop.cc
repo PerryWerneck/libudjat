@@ -56,6 +56,7 @@
 		{
 			lock_guard<mutex> lock(guard);
 			::close(efd);
+			efd = -1;
 		}
 
 #ifdef DEBUG
@@ -65,11 +66,18 @@
 	}
 
 	void MainLoop::wakeup() noexcept {
-		static uint64_t evNum = 0;
-		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
-			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
+		if(efd != -1) {
+			static uint64_t evNum = 0;
+			if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
+				cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop using fd " << efd << endl;
+			}
+			evNum++;
 		}
-		evNum++;
+#ifdef DEBUG
+		else {
+			cerr << "MainLoop\t" << __FILE__ << "(" << __LINE__ << "): Unexpected call with efd=" << efd << endl;
+		}
+#endif // DEBUG
 	}
 
  }

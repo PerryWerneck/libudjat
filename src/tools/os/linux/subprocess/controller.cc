@@ -57,6 +57,7 @@
 		if(entries.empty()) {
 
 			// Subscribe to signal.
+			Udjat::Event::remove(this); // Just in case.
 			Udjat::Event::SignalHandler(this,SIGCHLD,[this](){
 
 				int status = 0;
