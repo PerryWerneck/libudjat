@@ -86,8 +86,6 @@
 
 		try {
 
-			init();
-
 #ifdef HAVE_SYSTEMD
 			{
 				uint64_t watchdog_timer = 0;
@@ -113,7 +111,6 @@
 
 			MainLoop::getInstance().run();
 
-			deinit();
 			return 0;
 
 		} catch(const std::exception &e) {

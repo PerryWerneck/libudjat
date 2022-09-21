@@ -232,7 +232,19 @@
 		}
 
 		if(mode != SERVICE_MODE_NONE) {
-			rc = run();
+
+			try {
+
+				init();
+				rc = run();
+				deinit();
+
+			} catch(const std::exception &e) {
+
+				error() << e.what() << endl;
+				rc = -1;
+
+			}
 		}
 
 		return rc;

@@ -191,11 +191,11 @@
 
 					} catch(const std::exception &e) {
 
-						Application::error() << "Error '" << e.what() << "' running service" << endl;
+						service->error() << "Error '" << e.what() << "' running service" << endl;
 
 					} catch(...) {
 
-						Application::error() << "Unexpected error running service" << endl;
+						service->error() << "Unexpected error running service" << endl;
 
 					}
 
@@ -442,38 +442,49 @@
 			_chdir(Application::Path().c_str());
 		}
 
-		#ifndef DEBUG
-			#error FIX-ME
-		#endif // DEBUG
+		int rc = 0;
 
-		/*
 		auto appname = Application::Name::getInstance();
 
 		if(argc > 1) {
-			return cmdline(argc,(const char **) argv);
+			rc = cmdline(argc,(const char **) argv);
+			if(rc) {
+				mode = SERVICE_MODE_NONE;
+			}
 		}
 
-		// Redirect output
-		cout << "Starting service dispatcher" << endl;
-		Logger::redirect(false);
+		if(mode == SERVICE_MODE_FOREGROUND) {
+			info() << "Running as application" << endl;
 
-		// Run as service by default.
-		static SERVICE_TABLE_ENTRY DispatchTable[] = {
-			{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
-			{ NULL, NULL }
-		};
-
-		DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
-
-		cout << "Starting " << appname << " service dispatcher" << endl;
-
-		if(!StartServiceCtrlDispatcher( DispatchTable )) {
-			cerr << "Failed to start '" << appname << "' service dispatcher" << endl << Win32::Exception::format(GetLastError()) << endl;
-			return -1;
+			try {
+				init();
+				rc = run();
+				deinit();
+			} catch(const std::exception &e) {
+				error() << e.what() << endl;
+				rc = -1;
+			}
 		}
-		*/
 
-		return 0;
+		if(mode == SERVICE_MODE_DEFAULT || mode == SERVICE_MODE_DAEMON) {
+			info() << "Starting service dispatcher" << endl;
+
+			// Run as service by default.
+			static SERVICE_TABLE_ENTRY DispatchTable[] = {
+				{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
+				{ NULL, NULL }
+			};
+
+			DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
+
+			if(!StartServiceCtrlDispatcher( DispatchTable )) {
+				error() << "Failed to start service dispatcher: " << endl << Win32::Exception::format(GetLastError()) << endl;
+				return -1;
+			}
+
+		}
+
+		return rc;
 
 	}
 
