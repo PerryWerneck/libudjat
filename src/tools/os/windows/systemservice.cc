@@ -281,13 +281,6 @@
 		MainLoop::getInstance().quit();
 	}
 
-	int SystemService::run() {
-		notify("Main loop is running");
-		MainLoop::getInstance().run();
-		notify("Main loop is not running");
-		return 0;
-	}
-
 	void SystemService::usage() const noexcept {
 
 		cout << "Usage: " << endl << endl << "  ";
@@ -369,20 +362,24 @@
 		switch(key) {
 		case 'i':	// Install service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return install();
 
 		case 's':	// Start service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return service_start(name().c_str());
 
 		case 'r':	// Restart service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			service_stop(name().c_str());
 			service_start(name().c_str());
 			return 0;
 
 		case 'R':	// Reinstall service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			service_stop(name().c_str());
 			uninstall();
 			install();
@@ -391,35 +388,13 @@
 
 		case 'q':	// Stop service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return service_stop(name().c_str());
 
 		case 'u':	// Uninstall service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return uninstall();
-
-		case 'f':	// Run in foreground.
-			cout << "Starting " << name() << " application" << endl << endl;
-
-			Logger::redirect(true);
-
-			try {
-
-				init();
-				run();
-
-			} catch(const std::exception &e) {
-
-				cerr << name() << "\tError '" << e.what() << "' running application" << endl;
-
-			} catch(...) {
-
-				cerr << name() << "\tUnexpected error running application" << endl;
-
-			}
-
-			deinit();
-
-			return 0;
 
 		}
 
@@ -443,7 +418,6 @@
 			{ 'q', "stop" },
 			{ 'r', "restart" },
 			{ 'R', "reinstall" },
-			{ 'f', "foreground" }
 		};
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
@@ -468,6 +442,11 @@
 			_chdir(Application::Path().c_str());
 		}
 
+		#ifndef DEBUG
+			#error FIX-ME
+		#endif // DEBUG
+
+		/*
 		auto appname = Application::Name::getInstance();
 
 		if(argc > 1) {
@@ -492,6 +471,7 @@
 			cerr << "Failed to start '" << appname << "' service dispatcher" << endl << Win32::Exception::format(GetLastError()) << endl;
 			return -1;
 		}
+		*/
 
 		return 0;
 

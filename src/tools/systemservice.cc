@@ -24,6 +24,11 @@
  #include <udjat/module.h>
  #include <iostream>
  #include <private/misc.h>
+ #include <udjat/tools/logger.h>
+
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
 
  using namespace std;
 
@@ -58,22 +63,96 @@
 		return Udjat::RootAgentFactory();
 	}
 
-	int SystemService::cmdline(int argc, const char **argv) {
+	int SystemService::run() noexcept {
 
-		int exit = 0;
+		/// @brief WatchDog timer
+#ifdef HAVE_SYSTEMD
+		class WatchDog : public MainLoop::Timer {
+		protected:
+			void on_timer() override {
+				if(instance) {
+					sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",instance->state()->to_string().c_str());
+				}
+			}
+
+		public:
+			WatchDog() = default;
+		};
+
+		WatchDog watchdog;
+#endif // HAVE_SYSTEMD
+
+		Logger::redirect(mode == SERVICE_MODE_FOREGROUND ? true : false);
+
+		try {
+
+			init();
+
+#ifdef HAVE_SYSTEMD
+			{
+				uint64_t watchdog_timer = 0;
+				int status = sd_watchdog_enabled(0,&watchdog_timer);
+				if(status < 0) {
+					warning() << "Can't get SystemD watchdog status: " << strerror(-status) << endl;
+				} else if(status == 0) {
+#ifdef DEBUG
+					watchdog.reset(120000L);
+					watchdog.enable();
+					info() << "SystemD watchdog set to " << watchdog.to_string() << endl;
+#else
+					warning() << "SystemD watchdog is not set" << endl;
+#endif // DEBUG
+				} else {
+					watchdog.reset(watchdog_timer/2000L);
+					watchdog.enable();
+					info() << "SystemD watchdog set to " << watchdog.to_string() << endl;
+				}
+
+			}
+#endif // HAVE_SYSTEMD
+
+			MainLoop::getInstance().run();
+
+			deinit();
+			return 0;
+
+		} catch(const std::exception &e) {
+
+			error() << e.what() << endl;
+
+		} catch(...) {
+
+			error() << "Unexpected error" << endl;
+
+		}
+
+		return -1;
+	}
+
+	int SystemService::cmdline(int argc, const char **argv) {
 
 		while(--argc > 0) {
 
-			const char *arg = *(++argv);
-
 			int rc = 0;
+			const char *arg = *(++argv);
 
 			try {
 
 				if(!(strcmp(arg,"-h") && strcmp(arg,"--help") && strcmp(arg,"/h") && strcmp(arg,"/?") && strcmp(arg,"-?"))) {
 					usage();
 					cout << endl;
+					mode = SERVICE_MODE_NONE;
 					return 0;
+				}
+
+				if(!(strcmp(arg,"-f") && strcasecmp(arg,"--foreground") && strcmp(arg,"/f"))) {
+					mode = SERVICE_MODE_FOREGROUND;
+					continue;
+				}
+
+				if(!(strcmp(arg,"-d") && strcasecmp(arg,"--daemon") && strcmp(arg,"/d"))) {
+					mode = SERVICE_MODE_DAEMON;
+					continue;
 				}
 
 				if(arg[0] == '-' && arg[1] == '-') {
@@ -104,28 +183,24 @@
 
 				}
 
-				if(rc == ENOENT) {
-					cerr << "Invalid option: '" << arg << "'" << endl;
-					return -1;
-				} else if(rc == -2) {
-					exit = -2;
-				}
-
 			} catch(const std::exception &e) {
 
 				cerr << name() << "\t" << e.what() << endl;
-				return -1;
+				rc = -1;
 
 			} catch(...) {
 
 				cerr << name() << "\tUnexpected error" << endl;
-				return -1;
+				rc = -1;
 
 			}
 
+			if(rc) {
+				return rc;
+			}
 		}
 
-		return exit;
+		return 0;
 	}
 
 	std::shared_ptr<Abstract::State> SystemService::state() const {
