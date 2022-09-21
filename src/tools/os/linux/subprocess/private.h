@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/handler.h>
+ #include <private/event.h>
  #include <mutex>
  #include <list>
  #include <mutex>
@@ -51,10 +52,20 @@
 	};
 
 	class UDJAT_PRIVATE SubProcess::Controller {
+	public:
+
+		struct Entry {
+			std::shared_ptr<SubProcess> proc;				///< @brief The process object.
+			std::shared_ptr<SubProcess::Handler> out;		///< @brief The output stream.
+			std::shared_ptr<SubProcess::Handler> err;		///< @brief The error stream.
+		};
+
 	private:
 		Controller();
 
-		list<SubProcess *> processes;
+		static mutex guard;
+
+		list<Entry> entries;
 
 		static void handle_signal(int sig) noexcept;
 
@@ -66,8 +77,7 @@
 		/// @brief Initialize subprocess.
 		static void init(SubProcess &proc, Handler &out, Handler &err);
 
-		void insert(SubProcess *subprocess);
-		void remove(SubProcess *subprocess);
+		void push_back(Entry &entry);
 
  	};
 

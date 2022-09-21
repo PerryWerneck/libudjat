@@ -149,8 +149,8 @@ int main(int argc, char **argv) {
 			*/
 
 
-			/*
-			MainLoop::getInstance().insert(0,2000,[](){
+			cout << "------------------------------------------" << endl;
+			MainLoop::getInstance().TimerFactory(2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
 #else
@@ -158,7 +158,7 @@ int main(int argc, char **argv) {
 #endif // _WIN32
 				return false;
 			});
-			*/
+			cout << "------------------------------------------" << endl;
 
 #ifdef _WIN32
 			/*
@@ -240,11 +240,13 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 #ifdef _WIN32
 	return SubProcess("subprocess.bat").run();
 #else
 	return SubProcess("ls").run();
 #endif // _WIN32
+	*/
 
 	/*
 	{
@@ -253,6 +255,6 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	// return Service().run(argc,argv);
+	return Service().run(argc,argv);
 
 }

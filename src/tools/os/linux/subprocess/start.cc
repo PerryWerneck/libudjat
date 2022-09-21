@@ -44,7 +44,48 @@
 
 	void SubProcess::start() {
 
-#ifndef DEBUG
+		class ASyncHandler : public SubProcess::Handler {
+		private:
+			std::shared_ptr<SubProcess> proc;
+
+		protected:
+
+			void on_error(const char *reason) override {
+				proc->onStdErr(reason);
+			}
+
+			void on_input(const char *line) override {
+				if(id == 0) {
+					proc->onStdOut(line);
+				} else {
+					proc->onStdErr(line);
+				}
+			}
+
+		public:
+			ASyncHandler(std::shared_ptr<SubProcess> p, unsigned short id) : SubProcess::Handler(id), proc(p) {
+			}
+
+		};
+
+		SubProcess::Controller::Entry handlers;
+
+		handlers.proc = shared_ptr<SubProcess>{this};
+
+		handlers.out = make_shared<ASyncHandler>(handlers.proc,0);
+		handlers.err = make_shared<ASyncHandler>(handlers.proc,1);
+
+		Controller::init(*this,*handlers.out,*handlers.err);
+
+		if(*handlers.out && *handlers.err) {
+
+			handlers.out->enable();
+			handlers.err->enable();
+			Controller::getInstance().push_back(handlers);
+
+		}
+
+/*
 		init();
 
 		#error Refactor.
@@ -100,7 +141,7 @@
 			}
 		);
 
-#endif // DEBUG
+*/
 
 	}
 

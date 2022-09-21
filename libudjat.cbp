@@ -239,6 +239,7 @@
 		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/handler.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/init.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/private.h" />
 		<Unit filename="src/tools/os/linux/subprocess/run.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/start.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/subprocess.cc" />

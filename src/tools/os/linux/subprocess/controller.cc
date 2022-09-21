@@ -42,22 +42,56 @@
 
  namespace Udjat {
 
+	mutex SubProcess::Controller::guard;
+
 	SubProcess::Controller::Controller() {
-		signal(SIGCHLD,handle_signal);
 	}
 
 	SubProcess::Controller::~Controller() {
-		signal(SIGCHLD,SIG_DFL);
+		Udjat::Event::remove(this);
 	}
 
-	void SubProcess::Controller::insert(SubProcess *subprocess) {
-		processes.push_back(subprocess);
-	}
+	void SubProcess::Controller::push_back(SubProcess::Controller::Entry &entry) {
 
-	void SubProcess::Controller::remove(SubProcess *subprocess) {
-		processes.remove_if([subprocess](SubProcess *p) {
-			return p == subprocess;
-		});
+		std::lock_guard<std::mutex> lock(guard);
+		if(entries.empty()) {
+
+			// Subscribe to signal.
+			Udjat::Event::SignalHandler(this,SIGCHLD,[this](){
+
+				int status = 0;
+				pid_t pid = waitpid(0,&status,WNOHANG);
+
+				std::lock_guard<std::mutex> lock(guard);
+				entries.remove_if([status,pid](const Entry &entry){
+
+					if(entry.proc->pid != pid) {
+						return false;
+					}
+
+					if(WIFEXITED(status)) {
+						entry.proc->status.exit = WEXITSTATUS(status);
+						// process->onExit(process->status.exit);
+					}
+
+					if(WIFSIGNALED(status)) {
+						entry.proc->status.failed = true;
+						entry.proc->status.termsig = WTERMSIG(status);
+						// proc->onSignal(process->status.termsig);
+					}
+
+					entry.proc->pid = -1;
+
+					return true;
+				});
+
+				return !entries.empty();
+			});
+
+		}
+
+		entries.push_back(entry);
+
 	}
 
 	SubProcess::Controller & SubProcess::Controller::getInstance() {
@@ -65,9 +99,9 @@
 		return instance;
 	}
 
+	/*
 	void SubProcess::Controller::handle_signal(int sig) noexcept {
 
-		/*
 		int status = 0;
 		pid_t pid = waitpid(0,&status,WNOHANG);
 
@@ -129,8 +163,8 @@
 			}
 
 		}
-		*/
 
 	}
+	*/
  }
 
