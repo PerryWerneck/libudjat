@@ -47,6 +47,9 @@
 	}
 
 	SubProcess::~SubProcess() {
+#ifdef DEBUG
+		info() << "Process '" << command << "' removed" << endl;
+#endif // DEBUG
 	}
 
  }

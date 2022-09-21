@@ -76,16 +76,11 @@
 
 						// Disable streams.
 						if(entry.out) {
-							entry.out->disable();
+							entry.out->close();
 						}
 
 						if(entry.err) {
-							entry.err->disable();
-						}
-
-						// Read last bytes from streams.
-						{
-
+							entry.err->close();
 						}
 
 						// Get process exit.
@@ -97,6 +92,11 @@
 							entry.proc->onSignal(WTERMSIG(status));
 						}
 
+#ifdef DEBUG
+						cout << "Use counts: proc=" << entry.proc.use_count()
+									<< " out=" << entry.out.use_count()
+									<< " err=" << entry.err.use_count() << endl;
+#endif // DEBUG
 					});
 
 					return true;
