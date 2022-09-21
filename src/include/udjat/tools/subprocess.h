@@ -75,11 +75,13 @@
 		/// @brief Pid of the subprocess.
 		pid_t pid = -1;
 
+		/*
 		struct {
 			bool failed = false;
 			int exit = 0;
 			int termsig = 0;
 		} status;
+		*/
 
 		inline bool running() const noexcept {
 			return this->pid != -1;

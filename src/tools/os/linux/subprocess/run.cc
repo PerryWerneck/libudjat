@@ -87,16 +87,14 @@
 			}
 
 			if(WIFEXITED(status)) {
-				rc = this->status.exit = WEXITSTATUS(status);
+				rc = WEXITSTATUS(status);
 				onExit(rc);
 				break;
 			}
 
 			if(WIFSIGNALED(status)) {
 				rc = -1;
-				this->status.failed = true;
-				this->status.termsig = WTERMSIG(status);
-				onSignal(this->status.termsig);
+				onSignal(WTERMSIG(status));
 				break;
 			}
 

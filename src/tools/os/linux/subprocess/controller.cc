@@ -69,18 +69,35 @@
 						return false;
 					}
 
-					if(WIFEXITED(status)) {
-						entry.proc->status.exit = WEXITSTATUS(status);
-						// process->onExit(process->status.exit);
-					}
-
-					if(WIFSIGNALED(status)) {
-						entry.proc->status.failed = true;
-						entry.proc->status.termsig = WTERMSIG(status);
-						// proc->onSignal(process->status.termsig);
-					}
-
 					entry.proc->pid = -1;
+
+					// Enqueue cleanup.
+					ThreadPool::getInstance().push([entry,status](){
+
+						// Disable streams.
+						if(entry.out) {
+							entry.out->disable();
+						}
+
+						if(entry.err) {
+							entry.err->disable();
+						}
+
+						// Read last bytes from streams.
+						{
+
+						}
+
+						// Get process exit.
+						if(WIFEXITED(status)) {
+							entry.proc->onExit(WEXITSTATUS(status));
+						}
+
+						if(WIFSIGNALED(status)) {
+							entry.proc->onSignal(WTERMSIG(status));
+						}
+
+					});
 
 					return true;
 				});
