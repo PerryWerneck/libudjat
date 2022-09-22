@@ -76,8 +76,21 @@
 #ifdef DEBUG
 		else {
 			cerr << "MainLoop\t" << __FILE__ << "(" << __LINE__ << "): Unexpected call with efd=" << efd << endl;
+			//abort();
 		}
 #endif // DEBUG
+	}
+
+	bool MainLoop::verify(const Handler *ptr) const noexcept {
+
+		lock_guard<mutex> lock(guard);
+		for(auto handle : handlers) {
+			if(handle == ptr) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
  }

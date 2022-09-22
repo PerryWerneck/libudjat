@@ -54,64 +54,7 @@
 
 	void SubProcess::Controller::push_back(SubProcess::Controller::Entry &entry) {
 		std::lock_guard<std::mutex> lock(guard);
-
-		/*
-		if(entries.empty()) {
-
-			// Subscribe to signal.
-			Udjat::Event::remove(this); // Just in case.
-			Udjat::Event::SignalHandler(this,SIGCHLD,[this](){
-
-				int status = 0;
-				pid_t pid = waitpid(0,&status,WNOHANG);
-
-				std::lock_guard<std::mutex> lock(guard);
-				entries.remove_if([status,pid](const Entry &entry){
-
-					if(entry.proc->pid != pid) {
-						return false;
-					}
-
-					entry.proc->pid = -1;
-
-					// Enqueue cleanup.
-					ThreadPool::getInstance().push([entry,status](){
-
-						// Disable streams.
-						if(entry.out) {
-							entry.out->close();
-						}
-
-						if(entry.err) {
-							entry.err->close();
-						}
-
-						// Get process exit.
-						if(WIFEXITED(status)) {
-							entry.proc->onExit(WEXITSTATUS(status));
-						}
-
-						if(WIFSIGNALED(status)) {
-							entry.proc->onSignal(WTERMSIG(status));
-						}
-
-#ifdef DEBUG
-						cout << "Use counts: proc=" << entry.proc.use_count()
-									<< " out=" << entry.out.use_count()
-									<< " err=" << entry.err.use_count() << endl;
-#endif // DEBUG
-					});
-
-					return true;
-				});
-
-				return !entries.empty();
-			});
-
-		}
-		*/
 		entries.push_back(entry);
-
 	}
 
 	SubProcess::Controller & SubProcess::Controller::getInstance() {
@@ -166,6 +109,10 @@
 
 			return true;
 		});
+
+#ifdef DEBUG
+		cout << "subprocess\t*** Process count: " << entries.size() << endl;
+#endif // DEBUG
 
 	}
  }

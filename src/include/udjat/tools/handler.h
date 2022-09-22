@@ -48,7 +48,6 @@
 
 #ifndef _WIN32
 		friend class MainLoop;
-		int index=-1;
 #endif // _WIN32
 
 	protected:

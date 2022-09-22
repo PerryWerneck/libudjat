@@ -85,64 +85,6 @@
 
 		}
 
-/*
-		init();
-
-		#error Refactor.
-
-		MainLoop::getInstance().insert(
-			this,
-			this->pipes[0].fd,
-			(MainLoop::Event) (MainLoop::oninput|MainLoop::onerror|MainLoop::onhangup),
-			[this](const MainLoop::Event event) {
-
-				if(event & MainLoop::oninput) {
-					read(0);
-				}
-
-				if(event & MainLoop::onerror) {
-					onStdErr("Error on stdout pipe");
-					close(this->pipes[0].fd);
-					return false;
-				}
-
-				if(event & MainLoop::onhangup) {
-					onStdErr("stdout pipe was closed");
-					close(this->pipes[0].fd);
-					return false;
-				}
-
-				return true;
-			});
-
-		MainLoop::getInstance().insert(
-			this,
-			this->pipes[1].fd,
-			(MainLoop::Event) (MainLoop::oninput|MainLoop::onerror|MainLoop::onhangup),
-			[this](const MainLoop::Event event) {
-
-				if(event & MainLoop::oninput) {
-					read(1);
-				}
-
-				if(event & MainLoop::onerror) {
-					onStdErr("Error on stderr pipe");
-					close(this->pipes[1].fd);
-					return false;
-				}
-
-				if(event & MainLoop::onhangup) {
-					onStdErr("stderr pipe was closed");
-					close(this->pipes[1].fd);
-					return false;
-				}
-
-				return true;
-			}
-		);
-
-*/
-
 	}
 
  }

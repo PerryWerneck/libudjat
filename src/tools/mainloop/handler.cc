@@ -55,6 +55,10 @@
 
 	bool MainLoop::Handler::enable() noexcept {
 
+#ifdef DEBUG
+		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << endl;
+#endif // DEBUG
+
 		MainLoop &mainloop{MainLoop::getInstance()};
 
 		{
@@ -77,13 +81,14 @@
 
 	void MainLoop::Handler::disable() noexcept {
 
+#ifdef DEBUG
+		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << endl;
+#endif // DEBUG
+
 		MainLoop &mainloop{MainLoop::getInstance()};
 
 		{
 			lock_guard<mutex> lock(mainloop.guard);
-#ifndef _WIN32
-			index = -1;
-#endif // _WIN32
 			mainloop.handlers.remove(this);
 		}
 

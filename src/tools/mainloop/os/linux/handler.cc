@@ -26,6 +26,7 @@
 
  namespace Udjat {
 
+	/*
 	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
 
 		lock_guard<mutex> lock(guard);
@@ -49,6 +50,7 @@
 
 		return nfds;
 	}
+	*/
 
 	size_t MainLoop::Handler::poll(MainLoop::Handler **handlers, size_t nfds, int timeout) {
 

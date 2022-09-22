@@ -150,7 +150,7 @@ namespace Udjat {
 		int efd;
 
 		/// @brief get FDs.
-		nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
+		//nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
 
 #endif // _WIN32
 
@@ -176,6 +176,9 @@ namespace Udjat {
 		inline operator bool() const noexcept {
 			return enabled;
 		}
+
+		/// @brief Check if the handler is enabled.
+		bool verify(const Handler *handler) const noexcept;
 
 		/// @brief Quit mainloop.
 		void quit();

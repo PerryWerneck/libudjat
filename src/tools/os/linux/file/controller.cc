@@ -66,7 +66,7 @@
 
 	}
 
-	void File::Controller::handle_event(const MainLoop::Handler::Event event) {
+	void File::Controller::handle_event(const MainLoop::Handler::Event UDJAT_UNUSED(event)) {
 
 		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
 		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
