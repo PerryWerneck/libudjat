@@ -145,6 +145,9 @@
 
 		// Check for event fd.
 		if(fds[0].revents) {
+#ifdef DEBUG
+			cout << "MainLoop\t** Wake UP" << endl;
+#endif // DEBUG
 			uint64_t evNum;
 			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;

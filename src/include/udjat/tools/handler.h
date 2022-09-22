@@ -67,6 +67,8 @@
 
 		void set(const Event events);
 
+		virtual void flush();
+
 		inline Handler & operator = (int fd) {
 			set(fd);
 			return *this;
@@ -99,12 +101,20 @@
 
 		void close();
 
-		/// @brief Wait for handlers.
+		/// @brief Process handlers.
 		/// @param handlers	List of handlers to poll.
 		/// @param nfds Length of 'handlers'.
 		/// @param timeout for poll.
 		/// @return Count of valid handlers (0=none).
 		static size_t poll(Handler **handlers, size_t nfds, int timeout);
+
+		/// @brief Handle pending events.
+		/// @param handlers	List of handlers to poll.
+		/// @param nfds Length of 'handlers'.
+		/// @param timeout for poll.
+		/// @return Count of valid handlers (0=none).
+		static size_t flush(Handler **handlers, size_t nfds, int timeout);
+
 
 	};
 

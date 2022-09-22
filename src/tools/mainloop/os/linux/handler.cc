@@ -21,6 +21,7 @@
  #include <udjat/tools/handler.h>
  #include <poll.h>
  #include <system_error>
+ #include <iostream>
 
  using namespace std;
 
@@ -51,6 +52,66 @@
 		return nfds;
 	}
 	*/
+
+	size_t MainLoop::Handler::flush(MainLoop::Handler **handlers, size_t nfds, int timeout) {
+
+		size_t valid_handlers = 0;
+		struct pollfd fds[nfds];
+		Handler *index[nfds];
+
+		do {
+
+			valid_handlers = 0;
+			for(size_t ix = 0; ix < nfds; ix++) {
+
+				if(handlers[ix]->fd != -1) {
+					index[valid_handlers] = handlers[ix];
+					fds[valid_handlers].fd = handlers[ix]->fd;
+					fds[valid_handlers].events = handlers[ix]->events;
+					fds[valid_handlers].revents = 0;
+					valid_handlers++;
+				}
+
+			}
+
+			if(valid_handlers) {
+
+				int nEvents = ::poll(fds,valid_handlers,timeout);
+
+				if(nEvents < 0) {
+
+					throw system_error(errno,system_category());
+
+				} else if(!nEvents) {
+
+#ifdef DEBUG
+					cout << "Timeout flushing " << valid_handlers << " handler(s)" << endl;
+#endif // DEBUG
+					break;
+
+				}
+
+				for(size_t ix = 0; ix < valid_handlers && nEvents > 0; ix++) {
+
+					cout << "ix=" << ix << " nfds=" << nfds << " valid=" << valid_handlers
+							<< " oninput=" << ((fds[ix].revents & oninput) ? "yes" : "no")
+							<< " onerror=" << ((fds[ix].revents & onerror) ? "yes" : "no")
+							<< " onhangup=" << ((fds[ix].revents & onhangup) ? "yes" : "no")
+							<< endl;
+
+					if(fds[ix].revents) {
+						index[ix]->handle_event((Event) fds[ix].revents);
+						nEvents--;
+					}
+
+				}
+			}
+
+		} while(valid_handlers);
+
+		return valid_handlers;
+
+	}
 
 	size_t MainLoop::Handler::poll(MainLoop::Handler **handlers, size_t nfds, int timeout) {
 

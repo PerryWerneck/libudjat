@@ -88,24 +88,17 @@
 			entry.out->disable();
 			entry.err->disable();
 
+			usleep(100);
 
-
-			// Flush streams
+			// check for pending events.
 			{
 				MainLoop::Handler *hdl[]{entry.out.get(),entry.err.get()};
-
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ") Wait for stream data begin" << endl;
-#endif // DEBUG
-				Handler::poll(hdl,2,1000);
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ") Wait for stream data ends" << endl;
-#endif // DEBUG
-
+				Handler::flush(hdl,2,1000);
 			}
 
-			//entry.out->flush();
-			//entry.err->flush();
+			// Flush streams.
+			entry.out->flush();
+			entry.err->flush();
 
 			// Close streams.
 			entry.out->close();
