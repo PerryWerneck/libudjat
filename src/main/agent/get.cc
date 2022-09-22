@@ -34,6 +34,21 @@
 		return name();
 	}
 
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::to_shared_ptr() {
+
+		if(!parent) {
+			throw system_error(EINVAL,system_category(),"Cant get pointer on orphaned agent");
+		}
+
+		for(auto ptr : *parent) {
+			if(ptr.get() == this) {
+				return ptr;
+			}
+		}
+
+		throw system_error(EINVAL,system_category(),"Cant get pointer to an invalid agent");
+	}
+
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
 		error() << "Rejecting 'report' request - Not available in this agent" << endl;
 		throw system_error(ENOENT,system_category(),"No available reports on this path");
