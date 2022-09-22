@@ -81,17 +81,14 @@
 
 	void MainLoop::Handler::disable() noexcept {
 
+		MainLoop &mainloop{MainLoop::getInstance()};
+		lock_guard<mutex> lock(mainloop.guard);
+
 #ifdef DEBUG
-		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << endl;
+		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << " count=" << mainloop.handlers.size() << endl;
 #endif // DEBUG
 
-		MainLoop &mainloop{MainLoop::getInstance()};
-
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-			mainloop.handlers.remove(this);
-		}
-
+		mainloop.handlers.remove(this);
 		mainloop.wakeup();
 
 	}
