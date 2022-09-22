@@ -45,15 +45,17 @@
 	mutex SubProcess::Controller::guard;
 
 	SubProcess::Controller::Controller() {
+		signal(SIGCHLD,handle_signal);
 	}
 
 	SubProcess::Controller::~Controller() {
-		Udjat::Event::remove(this);
+		signal(SIGCHLD,SIG_DFL);
 	}
 
 	void SubProcess::Controller::push_back(SubProcess::Controller::Entry &entry) {
-
 		std::lock_guard<std::mutex> lock(guard);
+
+		/*
 		if(entries.empty()) {
 
 			// Subscribe to signal.
@@ -107,7 +109,7 @@
 			});
 
 		}
-
+		*/
 		entries.push_back(entry);
 
 	}
@@ -117,72 +119,54 @@
 		return instance;
 	}
 
-	/*
-	void SubProcess::Controller::handle_signal(int sig) noexcept {
+	void SubProcess::Controller::handle_signal(int UDJAT_UNUSED(sig)) noexcept {
 
 		int status = 0;
 		pid_t pid = waitpid(0,&status,WNOHANG);
 
-		for(auto process : Controller::getInstance().processes) {
-
-			if(process->pid == pid) {
-
-				if(WIFEXITED(status)) {
-					process->status.exit = WEXITSTATUS(status);
-				}
-
-				if(WIFSIGNALED(status)) {
-					process->status.failed = true;
-					process->status.termsig = WTERMSIG(status);
-				}
-
-				// Delay reading to avoid timing problems.
-				MainLoop::getInstance().TimerFactory(100,[process]() {
-
-					// cleanup and delete process on another thread to avoid dead-locks.
-					ThreadPool::getInstance().push("ProcessCleanup",[process](){
-
-						// Read pending data.
-						int nfds = 0;
-						do {
-
-							struct pollfd pfd[2];
-
-							for(size_t ix = 0; ix < 2; ix++) {
-								pfd[ix].fd = process->pipes[ix].fd;
-								pfd[ix].events = POLLIN;
-							}
-
-							nfds = poll(pfd,2,10);
-
-							for(size_t ix = 0; ix < 2; ix++) {
-								if(pfd[ix].revents & POLLIN) {
-									process->read(ix);
-								}
-							}
-
-						} while(nfds > 0);
-
-						if(process->status.failed) {
-							process->onSignal(process->status.termsig);
-						} else {
-							process->onExit(process->status.exit);
-						}
-
-						delete process;
-					});
-
-					return false;
-
-				});
-
-				break;
-
-			}
-
-		}
+		ThreadPool::getInstance().push("SubProcCleanup",[pid,status](){
+			getInstance().child_ended(pid,status);
+		});
 
 	}
-	*/
+
+	void SubProcess::Controller::child_ended(pid_t pid, int status) noexcept {
+
+		std::lock_guard<std::mutex> lock(guard);
+		entries.remove_if([status,pid](const Entry &entry){
+
+			if(entry.proc->pid != pid) {
+				return false;
+			}
+
+			entry.proc->pid = -1;
+
+			// Disable streams
+			entry.out->disable();
+			entry.err->disable();
+
+
+
+			// Flush streams
+			//entry.out->flush();
+			//entry.err->flush();
+
+			// Close streams.
+			entry.out->close();
+			entry.err->close();
+
+			// Get process exit.
+			if(WIFEXITED(status)) {
+				entry.proc->onExit(WEXITSTATUS(status));
+			}
+
+			if(WIFSIGNALED(status)) {
+				entry.proc->onSignal(WTERMSIG(status));
+			}
+
+			return true;
+		});
+
+	}
  }
 

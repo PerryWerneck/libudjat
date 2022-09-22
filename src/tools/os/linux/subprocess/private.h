@@ -69,6 +69,8 @@
 
 		static void handle_signal(int sig) noexcept;
 
+		void child_ended(pid_t pid, int status) noexcept;
+
 	public:
 
 		~Controller();

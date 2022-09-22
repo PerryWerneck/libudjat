@@ -163,7 +163,6 @@
 		<Unit filename="src/main/module/os/windows/tools.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
-		<Unit filename="src/main/os/linux/context.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
 		<Unit filename="src/main/os/windows/resources.rc" />
 		<Unit filename="src/main/private.h" />
