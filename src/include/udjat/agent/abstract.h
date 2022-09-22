@@ -303,6 +303,9 @@
 			/// @brief Get formatted value.
 			virtual std::string to_string() const override;
 
+			/// @brief Get smart pointer.
+			std::shared_ptr<Agent> to_shared_ptr();
+
 			/// @brief Assign value from string.
 			virtual bool assign(const char *value);
 
