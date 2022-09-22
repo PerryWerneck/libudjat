@@ -108,7 +108,7 @@
 					TimeStamp next(time(0)+seconds);
 					Application::info() << "Auto reconfiguration set to " << next << endl;
 #ifdef _WIN32
-					SystemService::getInstance()->registry("next_reconfig",next.to_string().c_str());
+					SystemService::getInstance()->registry("auto-reconfig",next.to_string().c_str());
 #endif // _WIN32
 
 				} else {
@@ -117,7 +117,7 @@
 
 					Application::info() << "Auto reconfiguration is not enabled" << endl;
 #ifdef _WIN32
-					SystemService::getInstance()->registry("next_reconfig","-");
+					SystemService::getInstance()->registry("auto-reconfig","disabled");
 #endif // _WIN32
 				}
 			}

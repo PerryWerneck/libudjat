@@ -52,6 +52,14 @@
 
 	protected:
 
+		/// @brief Service mode.
+		enum Mode : uint8_t {
+			SERVICE_MODE_DEFAULT,		///< @brief Standard service mode based on OS.
+			SERVICE_MODE_NONE,			///< @brief Doesn't run, just quit after parameter parsing.
+			SERVICE_MODE_FOREGROUND,	///< @brief Run in foreground as an application.
+			SERVICE_MODE_DAEMON			///< @brief Run as daemon (Linux only).
+		} mode = SERVICE_MODE_DEFAULT;
+
 		/// @brief Reconfigure application from XML files.
 		/// @param force Do a reconfiguration even if the file hasn't change.
 		/// @param pathname Path for a xml file or folder with xml files.
@@ -113,7 +121,7 @@
 		virtual void stop();
 
 		/// @brief Service main loop
-		virtual int run();
+		virtual int run() noexcept;
 
 		/// @brief Parse command line arguments and run service.
 		virtual int run(int argc, char **argv);

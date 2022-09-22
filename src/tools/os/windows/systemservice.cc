@@ -191,11 +191,11 @@
 
 					} catch(const std::exception &e) {
 
-						Application::error() << "Error '" << e.what() << "' running service" << endl;
+						service->error() << "Error '" << e.what() << "' running service" << endl;
 
 					} catch(...) {
 
-						Application::error() << "Unexpected error running service" << endl;
+						service->error() << "Unexpected error running service" << endl;
 
 					}
 
@@ -281,13 +281,6 @@
 		MainLoop::getInstance().quit();
 	}
 
-	int SystemService::run() {
-		notify("Main loop is running");
-		MainLoop::getInstance().run();
-		notify("Main loop is not running");
-		return 0;
-	}
-
 	void SystemService::usage() const noexcept {
 
 		cout << "Usage: " << endl << endl << "  ";
@@ -369,20 +362,24 @@
 		switch(key) {
 		case 'i':	// Install service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return install();
 
 		case 's':	// Start service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return service_start(name().c_str());
 
 		case 'r':	// Restart service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			service_stop(name().c_str());
 			service_start(name().c_str());
 			return 0;
 
 		case 'R':	// Reinstall service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			service_stop(name().c_str());
 			uninstall();
 			install();
@@ -391,35 +388,13 @@
 
 		case 'q':	// Stop service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return service_stop(name().c_str());
 
 		case 'u':	// Uninstall service.
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
 			return uninstall();
-
-		case 'f':	// Run in foreground.
-			cout << "Starting " << name() << " application" << endl << endl;
-
-			Logger::redirect(true);
-
-			try {
-
-				init();
-				run();
-
-			} catch(const std::exception &e) {
-
-				cerr << name() << "\tError '" << e.what() << "' running application" << endl;
-
-			} catch(...) {
-
-				cerr << name() << "\tUnexpected error running application" << endl;
-
-			}
-
-			deinit();
-
-			return 0;
 
 		}
 
@@ -443,7 +418,6 @@
 			{ 'q', "stop" },
 			{ 'r', "restart" },
 			{ 'R', "reinstall" },
-			{ 'f', "foreground" }
 		};
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
@@ -468,32 +442,49 @@
 			_chdir(Application::Path().c_str());
 		}
 
+		int rc = 0;
+
 		auto appname = Application::Name::getInstance();
 
 		if(argc > 1) {
-			return cmdline(argc,(const char **) argv);
+			rc = cmdline(argc,(const char **) argv);
+			if(rc) {
+				mode = SERVICE_MODE_NONE;
+			}
 		}
 
-		// Redirect output
-		cout << "Starting service dispatcher" << endl;
-		Logger::redirect(false);
+		if(mode == SERVICE_MODE_FOREGROUND) {
+			info() << "Running as application" << endl;
 
-		// Run as service by default.
-		static SERVICE_TABLE_ENTRY DispatchTable[] = {
-			{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
-			{ NULL, NULL }
-		};
-
-		DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
-
-		cout << "Starting " << appname << " service dispatcher" << endl;
-
-		if(!StartServiceCtrlDispatcher( DispatchTable )) {
-			cerr << "Failed to start '" << appname << "' service dispatcher" << endl << Win32::Exception::format(GetLastError()) << endl;
-			return -1;
+			try {
+				init();
+				rc = run();
+				deinit();
+			} catch(const std::exception &e) {
+				error() << e.what() << endl;
+				rc = -1;
+			}
 		}
 
-		return 0;
+		if(mode == SERVICE_MODE_DEFAULT || mode == SERVICE_MODE_DAEMON) {
+			info() << "Starting service dispatcher" << endl;
+
+			// Run as service by default.
+			static SERVICE_TABLE_ENTRY DispatchTable[] = {
+				{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
+				{ NULL, NULL }
+			};
+
+			DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
+
+			if(!StartServiceCtrlDispatcher( DispatchTable )) {
+				error() << "Failed to start service dispatcher: " << endl << Win32::Exception::format(GetLastError()) << endl;
+				return -1;
+			}
+
+		}
+
+		return rc;
 
 	}
 

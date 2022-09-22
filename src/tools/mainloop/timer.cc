@@ -22,6 +22,8 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
  #include <sys/time.h>
  #include <iostream>
 
@@ -111,6 +113,45 @@
 		}
 
 		mainloop.wakeup();
+	}
+
+	std::string MainLoop::Timer::to_string() const {
+
+		if(!milliseconds) {
+			return "none";
+		}
+
+		if(!(milliseconds%1000L)) {
+
+			// In seconds.
+			unsigned long seconds{milliseconds/1000L};
+
+			if(seconds == 1) {
+				return "one second";
+			}
+
+			if(!(seconds%3600)) {
+				unsigned long hours{seconds/3600};
+				if(hours == 1) {
+					return "one hour";
+				}
+
+				return Logger::Message("{} hours",hours);
+			}
+
+			if(!(seconds%60)) {
+				unsigned long minutes{seconds/60};
+				if(minutes == 1) {
+					return "one minute";
+				}
+
+				return Logger::Message("{} minutes",minutes);
+			}
+
+			return Logger::Message("{} seconds",seconds);
+		}
+
+		return Logger::Message( "{} milliseconds", milliseconds);
 	}
 
 	unsigned long MainLoop::Timers::run() noexcept {

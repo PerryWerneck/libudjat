@@ -72,6 +72,9 @@
 		/// @param milliseconds The new timer value or '0' to activate timer on next cicle.
 		void reset(unsigned long milliseconds = 0);
 
+		/// @brief Get timer as string.
+		std::string to_string() const;
+
 	};
 
 

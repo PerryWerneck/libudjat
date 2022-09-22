@@ -97,62 +97,6 @@
 		MainLoop::getInstance().quit();
 	}
 
-	int SystemService::run() {
-
-#ifdef HAVE_SYSTEMD
-		uint64_t watchdog_timer = 0;
-
-		{
-
-			int status = sd_watchdog_enabled(0,&watchdog_timer);
-
-			if(status < 0) {
-
-				cout << "systemd\tError '" << strerror(-status) << "' getting watchdog status" << endl;
-
-			} else if(status == 0) {
-
-				cout << "systemd\tWatchdog timer is not set" << endl;
-
-			} else {
-
-				// SystemD watchdog is enabled.
-				if(watchdog_timer > 0) {
-
-					class WatchDogTimer : public MainLoop::Timer {
-					protected:
-						void on_timer() override {
-							if(instance) {
-								sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",instance->state()->to_string().c_str());
-							}
-						}
-
-					public:
-						WatchDogTimer(uint64_t timer) : MainLoop::Timer(timer/2000L) {
-							cout << "systemd\tWatchdog timer is set to " << (timer / 1000000L) << " seconds" << endl;
-							enable();
-
-						}
-					};
-
-					static WatchDogTimer timer(watchdog_timer);
-
-				} else {
-
-					cout << "systemd\tWatchdog timer is disabled" << endl;
-
-				}
-			}
-
-		}
-
-#endif // HAVE_SYSTEMD
-
-		MainLoop::getInstance().run();
-
-		return 0;
-	}
-
 	void SystemService::usage() const noexcept {
 		cout 	<< "Usage: " << endl << "  " << name() << " [options]" << endl << endl
 				<< "  --core\t\tenable coredumps" << endl
@@ -164,6 +108,7 @@
 	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
+		/*
 		case 'f':	// Run in foreground.
 			{
 				cout << "Starting " << name () << " application" << endl << endl;
@@ -181,6 +126,7 @@
 				return 0;
 			}
 			break;
+		*/
 
 		case 'T':	// Auto quit
 			{
@@ -202,6 +148,7 @@
 			}
 			return 0;
 
+		/*
 		case 'd':	// Run as a daemon.
 			{
 
@@ -217,6 +164,7 @@
 
 			}
 			break;
+		*/
 
 		case 'C':	// Enable core dumps.
 			{
@@ -267,30 +215,39 @@
 
 	int SystemService::run(int argc, char **argv) {
 
+		int rc = 0;
+
 		if(argc > 1) {
-			int rc = cmdline(argc,(const char **) argv);
-			if(rc != -2) {
-				return rc;
+			rc = cmdline(argc,(const char **) argv);
+			if(rc) {
+				mode = SERVICE_MODE_NONE;
 			}
 		}
 
-		// Run as service by default.
-		try {
-
-			cout << "Starting " << name() << " service" << endl;
-			Logger::redirect();
-			init();
-			int rc = run();
-			deinit();
-			return rc;
-
-		} catch(const std::exception &e) {
-			error() << e.what() << endl;
-		} catch(...) {
-			error() << "\tUnexpected error" << endl;
+		if(mode == SERVICE_MODE_DAEMON) {
+			if(daemon(0,0)) {
+				error() << strerror(errno) << endl;
+				return -1;
+			}
 		}
 
-		return -1;
+		if(mode != SERVICE_MODE_NONE) {
+
+			try {
+
+				init();
+				rc = run();
+				deinit();
+
+			} catch(const std::exception &e) {
+
+				error() << e.what() << endl;
+				rc = -1;
+
+			}
+		}
+
+		return rc;
 
 	}
 

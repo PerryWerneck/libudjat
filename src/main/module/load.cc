@@ -108,82 +108,10 @@ namespace Udjat {
 
 	void Module::load(const char *name, bool required) {
 		pugi::xml_node node;
+		node.append_attribute("name").set_value(name);
 		node.append_attribute("required").set_value(required);
 		load(node);
 	}
-
-	/*
-	void Module::Controller::load(const pugi::xml_node &node) {
-
-		const char * name = node.attribute("name").as_string();
-
-		if(!(name && *name)) {
-			throw runtime_error("Required attribute 'name' is missing");
-		}
-
-		// Check if the module is already loaded.
-		if(find(name)) {
-#ifdef DEBUG
-			cout << "module\t**** The module '" << name << "' was already loaded" << endl;
-#endif // DEBUG
-			return;
-		}
-
-#ifdef DEBUG
-			cout << "module\t**** Opening module '" << name << "'" << endl;
-#endif // DEBUG
-
-		// Open module.
-		auto handle = open(name,Object::getAttribute(node,"modules","required",true));
-
-		if(handle) {
-
-			try {
-
-				auto module = init(handle,node);
-				module->handle = handle;
-
-			} catch(...) {
-
-				close(handle);
-				throw;
-
-			}
-
-		}
-
-	}
-
-	void Module::Controller::load(const char *name, bool required) {
-
-		// Check if the module is already loaded.
-		if(find(name)) {
-#ifdef DEBUG
-			cout << "module\t**** The module '" << name << "' was already loaded" << endl;
-#endif // DEBUG
-			return;
-		}
-
-		auto handle = open(name,required);
-
-		if(handle) {
-
-			try {
-
-				auto module = init(handle);
-				module->handle = handle;
-
-			} catch(...) {
-
-				close(handle);
-				throw;
-
-			}
-
-		}
-
-	}
-	*/
 
 }
 
