@@ -35,6 +35,11 @@
 	}
 
 	void Win32::Handler::Controller::insert(Win32::Handler *handler) {
+
+		if(!handler->hEvent) {
+			throw system_error(EINVAL,system_category(),"Cant watch 'NULLHANDLE'");
+		}
+
 		lock_guard<mutex> lock(guard);
 		for(Worker *worker : workers) {
 
@@ -62,7 +67,7 @@
 			return worker->handlers.empty();
 		});
 #ifdef DEBUG
-		cout << "win32\tHander " << hex << ((unsigned long long) handler->hEvent) << dec << " was removed" << endl;
+		cout << "win32\tHandçer " << hex << ((unsigned long long) handler->hEvent) << dec << " was removed" << endl;
 #endif // DEBUG
 	}
 
