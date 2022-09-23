@@ -31,37 +31,16 @@
 		/// @brief I/O handler
 		class Handler;
 
-		/// @brief Parse input.
-		// void parse(int id);
-
-		/// @brief Read from pipe.
-		/// @return true if the pipe is still valid.
-		// bool read(int id);
-
 #ifdef _WIN32
 
-		/*
-		struct Pipe {
-
-			HANDLE hRead = 0;
-			HANDLE hWrite = 0;
-
-			size_t length = 0;
-			char buffer[1024];
-
-			Pipe();
-			~Pipe();
-
-			inline operator bool() const noexcept {
-				return hRead != 0;
-			}
-
-		} pipes[2];
-		*/
+		/// @brief Subprocess watcher.
+		class Watcher;
+		friend class Watcher;
 
 		PROCESS_INFORMATION piProcInfo;
 
-		int exitcode = -1;
+		/// @brief The process exit code.
+		DWORD exitcode = -1;
 
 		/// @brief Initialize.
 		void init(Handler &outpipe, Handler &errpipe);
@@ -74,14 +53,6 @@
 
 		/// @brief Pid of the subprocess.
 		pid_t pid = -1;
-
-		/*
-		struct {
-			bool failed = false;
-			int exit = 0;
-			int termsig = 0;
-		} status;
-		*/
 
 		inline bool running() const noexcept {
 			return this->pid != -1;

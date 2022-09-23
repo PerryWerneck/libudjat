@@ -74,9 +74,8 @@
 			}
 
 			void handle(bool UDJAT_UNUSED(abandoned)) override {
-				DWORD rc;
-				if(GetExitCodeProcess(this->hEvent,&rc) != STILL_ACTIVE) {
-					proc.onExit(proc.exitcode = rc);
+				if(GetExitCodeProcess(this->hEvent,&proc.exitcode) != STILL_ACTIVE) {
+					proc.onExit(proc.exitcode);
 					close();
 					proc.piProcInfo.hProcess = 0;
 				}

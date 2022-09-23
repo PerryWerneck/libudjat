@@ -211,6 +211,7 @@
 		<Unit filename="src/tools/mainloop/os/windows/eventcontroller.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventworker.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/handler.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/handlercontroller.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
@@ -263,15 +264,13 @@
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src/tools/os/windows/subprocess.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/handler.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/init.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/private.h" />
 		<Unit filename="src/tools/os/windows/subprocess/run.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/start.cc" />
 		<Unit filename="src/tools/os/windows/subprocess/subprocess.cc" />
-		<Unit filename="src/tools/os/windows/subprocess_run.cc" />
-		<Unit filename="src/tools/os/windows/subprocess_start.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/watcher.cc" />
 		<Unit filename="src/tools/os/windows/systemservice.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />

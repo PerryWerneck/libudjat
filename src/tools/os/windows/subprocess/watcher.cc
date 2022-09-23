@@ -17,42 +17,52 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
  #include "private.h"
- #include <udjat/win32/exception.h>
+ #include <udjat/tools/threadpool.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Win32::Handler::Controller::Worker::Worker(Win32::Handler *handler) {
+	SubProcess::Watcher::Watcher(shared_ptr<SubProcess> p, shared_ptr<Win32::Handler> o, shared_ptr<Win32::Handler> e) : Win32::Handler{p->piProcInfo.hProcess}, proc{p}, out{o}, err{e} {
 
-		handlers.push_back(handler);
+		out->enable();
+		err->enable();
 
-		std::thread hThread([this]() {
-#ifdef DEBUG
-			cout << "win32\tStarting event monitor thread" << endl;
-#endif // DEBUG
+		enable();
 
-			while(Controller::getInstance().wait(this)) {
-				if(!MainLoop::getInstance()) {
-					cerr << "win32\tMainloop is dead, disabling event worker" << endl;
-					break;
-				}
-			}
-
-#ifdef DEBUG
-			cout << "win32\tStopping event monitor thread" << endl;
-#endif // DEBUG
-
-			delete this;
-
-		});
-
-		hThread.detach();
 	}
 
-	Win32::Handler::Controller::Worker::~Worker() {
+	SubProcess::Watcher::~Watcher() {
+	}
+
+	void SubProcess::Watcher::handle(bool UDJAT_UNUSED(abandoned)) {
+
+		if(GetExitCodeProcess(proc->piProcInfo.hProcess,&proc->exitcode) != STILL_ACTIVE) {
+
+			ThreadPool::getInstance().push("subprocess-cleanup",[this](){
+
+				disable();
+
+				out->disable();
+				err->disable();
+
+				Sleep(100);
+
+				// Flush streams
+				{
+					Win32::Handler *hdl[]{out.get(),err.get()};
+					while(Win32::Handler::poll(hdl,3,1000));
+				}
+
+				close();
+
+				proc->onExit(proc->exitcode);
+				delete this;
+
+			});
+		}
+
 	}
 
  }

@@ -62,17 +62,19 @@
 	}
 
 	void Win32::Handler::enable() {
-//		Controller::getInstance().insert(this);
+		Controller::getInstance().insert(this);
 	}
 
 	void Win32::Handler::disable() {
-//		Controller::getInstance().remove(this);
+		Controller::getInstance().remove(this);
 	}
 
 	void Win32::Handler::close() {
 		disable();
-		CloseHandle(hEvent);
-		hEvent = 0;
+		if(hEvent) {
+			CloseHandle(hEvent);
+			hEvent = 0;
+		}
 	}
 
 	void Win32::Handler::set(HANDLE handle) {

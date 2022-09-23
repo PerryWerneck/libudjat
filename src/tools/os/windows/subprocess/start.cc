@@ -27,64 +27,68 @@
   */
 
  #include <config.h>
+ #include "private.h"
+ #include <memory>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/handler.h>
+
+ /*
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/event.h>
- #include <udjat/tools/mainloop.h>
  #include <system_error>
  #include <iostream>
- #include <memory>
+ */
 
  using namespace std;
 
  namespace Udjat {
 
-	/*
-	class UDJAT_PRIVATE SubProcess::Watcher : public Win32::Event {
-	private:
-		SubProcess * process;
-		int id;
-
-	public:
-		Watcher(SubProcess *p, int i) : Win32::Event(p->pipes[i].hRead), process(p), id(i) {
-#ifdef DEBUG
-			process->info() << " *** Watcher " << id << " is starting" << endl;
-#endif // DEBUG
-			start();
-		}
-
-		virtual ~Watcher() {
-#ifdef DEBUG
-			process->info() << " *** Watcher " << id << " was destroyed" << endl;
-#endif // DEBUG
-		}
-
-		bool handle(bool UDJAT_UNUSED(abandoned)) override {
-
-			if(process->read(id)) {
-				return true;
-			}
-
-			if(!process->running()) {
-				delete process;
-			}
-
-			return false;
-		}
-
-	};
-	*/
-
 	void SubProcess::start() {
 
-		/*
+		class ASyncHandler : public SubProcess::Handler {
+		private:
+			shared_ptr<SubProcess> proc;
+
+		protected:
+
+			void on_error(const char *reason) override {
+				proc->onStdErr(reason);
+			}
+
+			void on_input(const char *line) override {
+				if(id == 0) {
+					proc->onStdOut(line);
+				} else {
+					proc->onStdErr(line);
+				}
+			}
+
+		public:
+			ASyncHandler(shared_ptr<SubProcess> p, unsigned short id) : SubProcess::Handler(id), proc(p) {
+			}
+
+		};
+
+
 		if(!MainLoop::getInstance()) {
 			delete this;
-			throw runtime_error("Cant start win32 async subprocess without an active main loop");
+			throw runtime_error("Cant start async subprocess without an active main loop");
 		}
 
+		auto proc = shared_ptr<SubProcess>{this};
+		auto out = make_shared<ASyncHandler>(proc,0);
+		auto err = make_shared<ASyncHandler>(proc,1);
+
+		init(*out,*err);
+
+		if(*out && *err) {
+			new Watcher(proc,out,err);
+		}
+
+		/*
 		init();
 
 		new Watcher(this,0);

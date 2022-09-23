@@ -68,6 +68,11 @@
 
 		};
 
+		if(!MainLoop::getInstance()) {
+			delete this;
+			throw runtime_error("Cant start async subprocess without an active main loop");
+		}
+
 		SubProcess::Controller::Entry handlers;
 
 		handlers.proc = shared_ptr<SubProcess>{this};
