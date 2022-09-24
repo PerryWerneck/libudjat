@@ -64,7 +64,8 @@
 
 			static std::mutex guard;
 
-			Controller() = default;
+			Controller();
+			~Controller();
 
 		public:
 			static Controller & getInstance();

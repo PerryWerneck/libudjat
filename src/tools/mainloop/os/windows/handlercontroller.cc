@@ -28,6 +28,18 @@
 
 	mutex Win32::Handler::Controller::guard;
 
+	Win32::Handler::Controller::Controller() {
+		cout << "win32\tStarting handler controller" << endl;
+	}
+
+	Win32::Handler::Controller::~Controller() {
+		if(workers.empty()) {
+			cout << "win32\tStopping clean handler controller" << endl;
+		} else {
+			clog << "win32\Stopping handler controller with " << workers.size() << " active handler(s)" << endl;
+		}
+	}
+
 	Win32::Handler::Controller & Win32::Handler::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
 		static Win32::Handler::Controller instance;

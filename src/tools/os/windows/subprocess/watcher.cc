@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <udjat/tools/threadpool.h>
+ #include <iostream>
 
  using namespace std;
 
@@ -40,9 +41,9 @@
 
 		if(GetExitCodeProcess(proc->piProcInfo.hProcess,&proc->exitcode) != STILL_ACTIVE) {
 
-			ThreadPool::getInstance().push("subprocess-cleanup",[this](){
+			disable();
 
-				disable();
+			ThreadPool::getInstance().push("subprocess-cleanup",[this](){
 
 				out->disable();
 				err->disable();
@@ -52,7 +53,16 @@
 				// Flush streams
 				{
 					Win32::Handler *hdl[]{out.get(),err.get()};
-					while(Win32::Handler::poll(hdl,3,1000));
+
+#ifdef DEBUG
+					cout << "Waiting for streams begin ----------------------------- " << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
+
+					while(Win32::Handler::poll(hdl,2,1000));
+
+#ifdef DEBUG
+					cout << "Waiting for streams end ----------------------------- " << __FILE__ << "(" << __LINE__ << ")" << endl;
+#endif // DEBUG
 				}
 
 				close();

@@ -41,7 +41,7 @@
 		if(workers.size()) {
 			cerr << "workers\tStopping controller with " << workers.size() << " active worker(s)" << endl;
 		} else {
-			cout << "workers\tStopping controller" << endl;
+			cout << "workers\tStopping clean controller" << endl;
 		}
 
 	}
