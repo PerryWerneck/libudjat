@@ -84,6 +84,7 @@
 		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
+		<Unit filename="src/include/udjat/tools/handler.h" />
 		<Unit filename="src/include/udjat/tools/http/client.h" />
 		<Unit filename="src/include/udjat/tools/http/exception.h" />
 		<Unit filename="src/include/udjat/tools/http/mimetype.h" />
@@ -108,6 +109,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/win32/event.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
+		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
@@ -161,7 +163,6 @@
 		<Unit filename="src/main/module/os/windows/tools.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
-		<Unit filename="src/main/os/linux/context.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
 		<Unit filename="src/main/os/windows/resources.rc" />
 		<Unit filename="src/main/private.h" />
@@ -203,12 +204,14 @@
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
+		<Unit filename="src/tools/mainloop/os/linux/handler.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
-		<Unit filename="src/tools/mainloop/os/windows/event.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventcontroller.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventworker.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/handler.cc" />
+		<Unit filename="src/tools/mainloop/os/windows/handlercontroller.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/private.h" />
 		<Unit filename="src/tools/mainloop/os/windows/run.cc" />
@@ -233,8 +236,14 @@
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
-		<Unit filename="src/tools/os/linux/subprocess.cc" />
-		<Unit filename="src/tools/os/linux/subprocess.h" />
+		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/handler.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/init.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/private.h" />
+		<Unit filename="src/tools/os/linux/subprocess/run.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/start.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/subprocess.cc" />
+		<Unit filename="src/tools/os/linux/subprocess/subprocess.h" />
 		<Unit filename="src/tools/os/linux/systemservice.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/application.cc" />
@@ -255,9 +264,13 @@
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="src/tools/os/windows/subprocess.cc" />
-		<Unit filename="src/tools/os/windows/subprocess_run.cc" />
-		<Unit filename="src/tools/os/windows/subprocess_start.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/handler.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/init.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/private.h" />
+		<Unit filename="src/tools/os/windows/subprocess/run.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/start.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/subprocess.cc" />
+		<Unit filename="src/tools/os/windows/subprocess/watcher.cc" />
 		<Unit filename="src/tools/os/windows/systemservice.cc" />
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
@@ -265,8 +278,6 @@
 		<Unit filename="src/tools/string/expand.cc" />
 		<Unit filename="src/tools/string/string.cc" />
 		<Unit filename="src/tools/subprocess.cc" />
-		<Unit filename="src/tools/subprocess/private.h" />
-		<Unit filename="src/tools/subprocess/subprocess.cc" />
 		<Unit filename="src/tools/systemservice.cc" />
 		<Unit filename="src/tools/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/timestamp.cc" />

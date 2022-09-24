@@ -17,49 +17,39 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include "private.h"
- #include <udjat/win32/exception.h>
- #include <udjat/tools/threadpool.h>
+ /***
+  * @brief Implement the SubProcess object.
+  *
+  * References:
+  *
+  * <https://opensource.apple.com/source/Libc/Libc-167/gen.subproj/popen.c.auto.html>
+  *
+  */
 
- using namespace std;
+ #include "private.h"
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <unistd.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/handler.h>
+ #include <iostream>
+ #include <cstring>
+ #include <csignal>
+ #include <sys/wait.h>
+ #include <poll.h>
+ #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
-
-	void MainLoop::insert(HANDLE handle, std::function<bool(HANDLE handle,bool abandoned)> exec) {
-
-		class Event : public Win32::Event {
-		private:
-			std::function<bool(HANDLE,bool)> exec;
-
-		public:
-			Event(HANDLE handle, std::function<bool(HANDLE,bool)> e) : Win32::Event(handle), exec(e) {
-				start();
-			}
-
-			bool handle(bool abandoned) override {
-				return exec(hEvent,abandoned);
-			}
-
-		};
-
-		new Event(handle,exec);
+	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
+		info() << "Running '" << command << "'" << endl;
 	}
 
-	void MainLoop::remove(HANDLE handle) {
-		Win32::Event *event = Win32::Event::Controller::getInstance().find(handle);
-		if(event) {
-			delete event;
-		}
-	}
-
-	void Win32::Event::start() {
-		Controller::getInstance().insert(this);
-	}
-
-	Win32::Event::~Event() {
-		Controller::getInstance().remove(this);
+	SubProcess::~SubProcess() {
+#ifdef DEBUG
+		info() << "Process '" << command << "' removed" << endl;
+#endif // DEBUG
 	}
 
  }

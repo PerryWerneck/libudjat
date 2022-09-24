@@ -21,22 +21,49 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/configuration.h>
- #include <iostream>
-
- #ifdef _WIN32
-	#include <udjat/win32/exception.h>
- #endif // _WIN32
-
- #ifdef HAVE_WINHTTP
-	#include <udjat/tools/http.h>
- 	#include <winhttp.h>
- #endif // HAVE_WINHTTP
+ #include <udjat/tools/subprocess.h>
+ #include <udjat/win32/handler.h>
+ #include <memory>
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 
  namespace Udjat {
 
+	class UDJAT_PRIVATE SubProcess::Watcher : public Win32::Handler {
+	private:
+		shared_ptr<SubProcess> proc;
+		shared_ptr<Win32::Handler> out;
+		shared_ptr<Win32::Handler> err;
+
+	public:
+		Watcher(shared_ptr<SubProcess> p, shared_ptr<Win32::Handler> out, shared_ptr<Win32::Handler> err);
+		~Watcher();
+
+		void handle(bool abandoned) override;
+
+	};
+
+	class UDJAT_PRIVATE SubProcess::Handler : public Win32::Handler {
+	private:
+		size_t length = 0;
+		char buffer[256];
+
+	protected:
+		unsigned short id;
+
+		void handle(bool abandoned) override;
+
+	public:
+		Handler(unsigned short i) : id(i) {
+		}
+
+		void parse();
+
+		virtual void on_error(const char *reason) = 0;
+		virtual void on_input(const char *line) = 0;
+
+	};
 
  }
 

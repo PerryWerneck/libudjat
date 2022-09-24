@@ -19,6 +19,7 @@
 
  #include "private.h"
  #include <private/mainloop.h>
+ #include <udjat/win32/exception.h>
 
  #include <iostream>
 
@@ -83,6 +84,7 @@
 
 		KillTimer(hwnd, IDT_CHECK_TIMERS);
 		DestroyWindow(hwnd);
+		hwnd = 0;
 
 #ifdef DEBUG
 		cout << "Main Object window was destroyed" << endl;
@@ -90,8 +92,13 @@
 	}
 
 	void MainLoop::wakeup() noexcept {
-		if(!PostMessage(hwnd,WM_WAKE_UP,0,0)) {
-			cerr << "win32\tWindows error " << GetLastError() << " while posting wake up message" << endl;
+#ifdef DEBUG
+		if(!hwnd) {
+			clog << "MainLoop\tUnexpected call to " << __FUNCTION__ << " without an active window" << endl;
+		}
+#endif // DEBUG
+		if(hwnd && !PostMessage(hwnd,WM_WAKE_UP,0,0)) {
+			cerr << "MainLoop\tError posting wake up message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
 	}
 

@@ -21,6 +21,8 @@
  #include <sys/types.h>
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/handler.h>
+ #include <private/event.h>
  #include <mutex>
  #include <list>
  #include <mutex>
@@ -29,21 +31,55 @@
 
  namespace Udjat {
 
-	class SubProcess::Controller {
+	class UDJAT_PRIVATE SubProcess::Handler : public MainLoop::Handler {
+	private:
+		size_t length = 0;
+		char buffer[256];
+
+	protected:
+		unsigned short id;
+
+		void handle_event(const Event event) override;
+		void parse();
+
+		virtual void on_error(const char *reason) = 0;
+		virtual void on_input(const char *line) = 0;
+
+	public:
+		Handler(unsigned short i) : MainLoop::Handler(-1, (Event) (oninput|onerror|onhangup)), id(i) {
+		}
+
+	};
+
+	class UDJAT_PRIVATE SubProcess::Controller {
+	public:
+
+		struct Entry {
+			std::shared_ptr<SubProcess> proc;				///< @brief The process object.
+			std::shared_ptr<SubProcess::Handler> out;		///< @brief The output stream.
+			std::shared_ptr<SubProcess::Handler> err;		///< @brief The error stream.
+		};
+
 	private:
 		Controller();
 
-		list<SubProcess *> processes;
+		static mutex guard;
+
+		list<Entry> entries;
 
 		static void handle_signal(int sig) noexcept;
+
+		void child_ended(pid_t pid, int status) noexcept;
 
 	public:
 
 		~Controller();
 		static Controller & getInstance();
 
-		void insert(SubProcess *subprocess);
-		void remove(SubProcess *subprocess);
+		/// @brief Initialize subprocess.
+		static void init(SubProcess &proc, Handler &out, Handler &err);
+
+		void push_back(Entry &entry);
 
  	};
 

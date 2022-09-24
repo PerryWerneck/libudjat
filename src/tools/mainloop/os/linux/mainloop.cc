@@ -45,13 +45,6 @@
 		if(!handlers.empty()) {
 
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
-			lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-			for(auto handler : handlers) {
-				cerr << "handler\tPending handler " << hex << ((void *) handler.get()) << dec << " (" << handler.use_count() << " instance(s))" << endl;
-			}
-#endif // DEBUG
-			handlers.clear();
 
 		} else {
 			cout << "MainLoop\tDestroying clean service loop" << endl;
@@ -63,6 +56,7 @@
 		{
 			lock_guard<mutex> lock(guard);
 			::close(efd);
+			efd = -1;
 		}
 
 #ifdef DEBUG
@@ -72,11 +66,31 @@
 	}
 
 	void MainLoop::wakeup() noexcept {
-		static uint64_t evNum = 0;
-		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
-			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
+		if(efd != -1) {
+			static uint64_t evNum = 0;
+			if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
+				cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop using fd " << efd << endl;
+			}
+			evNum++;
 		}
-		evNum++;
+#ifdef DEBUG
+		else {
+			cerr << "MainLoop\t" << __FILE__ << "(" << __LINE__ << "): Unexpected call with efd=" << efd << endl;
+			//abort();
+		}
+#endif // DEBUG
+	}
+
+	bool MainLoop::verify(const Handler *ptr) const noexcept {
+
+		lock_guard<mutex> lock(guard);
+		for(auto handle : handlers) {
+			if(handle == ptr) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
  }

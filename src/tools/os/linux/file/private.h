@@ -23,6 +23,7 @@
 #include <udjat/module.h>
 #include <udjat/tools/file.h>
 #include <udjat/tools/quark.h>
+#include <udjat/tools/handler.h>
 #include <unistd.h>
 #include <list>
 #include <sys/inotify.h>
@@ -33,17 +34,18 @@ namespace Udjat {
 
 	namespace File {
 
-		class Controller {
+		class Controller : private MainLoop::Handler {
 		private:
 			Controller();
-
-			/// @brief Inotify instance.
-			int instance;
 
 			/// @brief Active watches
 			list<Watcher *> watchers;
 
 			void onEvent(struct inotify_event *event) noexcept;
+
+		protected:
+
+			void handle_event(const MainLoop::Handler::Event event) override;
 
 		public:
 			static Controller & getInstance();

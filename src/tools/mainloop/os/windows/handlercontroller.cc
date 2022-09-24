@@ -26,53 +26,70 @@
 
  namespace Udjat {
 
-	mutex Win32::Event::Controller::guard;
+	mutex Win32::Handler::Controller::guard;
 
-	Win32::Event::Controller & Win32::Event::Controller::getInstance() {
+	Win32::Handler::Controller::Controller() {
+		cout << "win32\tStarting handler controller" << endl;
+	}
+
+	Win32::Handler::Controller::~Controller() {
+		if(workers.empty()) {
+			cout << "win32\tStopping clean handler controller" << endl;
+		} else {
+			clog << "win32\Stopping handler controller with " << workers.size() << " active handler(s)" << endl;
+		}
+	}
+
+	Win32::Handler::Controller & Win32::Handler::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
-		static Win32::Event::Controller instance;
+		static Win32::Handler::Controller instance;
 		return instance;
 	}
 
-	void Win32::Event::Controller::insert(Event *event) {
-		lock_guard<mutex> lock(guard);
-		for(auto worker : workers) {
+	void Win32::Handler::Controller::insert(Win32::Handler *handler) {
 
-			if(worker->events.size() < MAXIMUM_WAIT_OBJECTS) {
-				worker->events.push_back(event);
+		if(!handler->hEvent) {
+			throw system_error(EINVAL,system_category(),"Cant watch 'NULLHANDLE'");
+		}
+
+		lock_guard<mutex> lock(guard);
+		for(Worker *worker : workers) {
+
+			if(worker->handlers.size() < MAXIMUM_WAIT_OBJECTS) {
+				worker->handlers.push_back(handler);
 				return;
 			}
 
 		}
 
 		// Not found, alloc a new worker.
-		workers.push_back(new Worker(event));
+		workers.push_back(new Worker(handler));
 
 	}
 
-	void Win32::Event::Controller::remove(Event *event) {
+	void Win32::Handler::Controller::remove(Handler *handler) {
 #ifdef DEBUG
-		cout << "win32\tRemoving event " << hex << ((unsigned long long) event->hEvent) << dec << endl;
+		cout << "win32\tRemoving handler " << hex << ((unsigned long long) handler->hEvent) << dec << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
-		workers.remove_if([event](Worker *worker){
-			worker->events.remove_if([event](const Event *e) {
-				return event == e;
+		workers.remove_if([handler](Worker *worker){
+			worker->handlers.remove_if([handler](const Handler *h) {
+				return handler == h;
 			});
-			return worker->events.empty();
+			return worker->handlers.empty();
 		});
 #ifdef DEBUG
-		cout << "win32\tEvent " << hex << ((unsigned long long) event->hEvent) << dec << " was removed" << endl;
+		cout << "win32\tHandçer " << hex << ((unsigned long long) handler->hEvent) << dec << " was removed" << endl;
 #endif // DEBUG
 	}
 
-	Win32::Event * Win32::Event::Controller::find(HANDLE handle) noexcept {
+	Win32::Handler * Win32::Handler::Controller::find(HANDLE handle) noexcept {
 
 		lock_guard<mutex> lock(guard);
-		for(Worker * worker : workers) {
-			for(auto event : worker->events) {
-				if(event->hEvent == handle) {
-					return event;
+		for(Worker *worker : workers) {
+			for(Handler *handler : worker->handlers) {
+				if(handler->hEvent == handle) {
+					return handler;
 				}
 			}
 		}
@@ -81,52 +98,46 @@
 
 	}
 
-	Win32::Event * Win32::Event::Controller::find(Worker *worker, HANDLE handle) noexcept {
+	Win32::Handler * Win32::Handler::Controller::find(Worker *worker, HANDLE handle) noexcept {
 
 		lock_guard<mutex> lock(guard);
 
-		for(auto event : worker->events) {
-			if(event->hEvent == handle) {
-				return event;
+		for(auto handler : worker->handlers) {
+			if(handler->hEvent == handle) {
+				return handler;
 			}
 		}
 
 		return nullptr;
 	}
 
-	void Win32::Event::Controller::call(HANDLE handle, bool abandoned) noexcept {
+	void Win32::Handler::Controller::call(HANDLE handle, bool abandoned) noexcept {
 
-		Win32::Event * event = find(handle);
-		if(event) {
+		Win32::Handler * handler = find(handle);
+		if(handler) {
 
 			try {
 
-				if(event->handle(abandoned)) {
-					return;
-				}
+				handler->handle(abandoned);
 
 			} catch(const std::exception &e) {
 				cerr << "Win32\tError '" << e.what() << "' processing event handler" << endl;
-
 			} catch(...) {
 				cerr << "Win32\tUnexpected error processing event handler" << endl;
-
 			}
-
-			delete event;
 
 		}
 
 	}
 
-	bool Win32::Event::Controller::wait(Worker *worker) noexcept {
+	bool Win32::Handler::Controller::wait(Worker *worker) noexcept {
 
 		DWORD nCount = 0;
 		HANDLE *lpHandles = nullptr;
 
 		{
 			lock_guard<mutex> lock(guard);
-			nCount = (DWORD) worker->events.size();
+			nCount = (DWORD) worker->handlers.size();
 
 			if(!nCount) {
 				return false;
@@ -136,8 +147,8 @@
 			lpHandles[nCount] = 0; // Just in case.
 
 			DWORD ix = 0;
-			for(auto event : worker->events) {
-				lpHandles[ix++] = event->hEvent;
+			for(auto handler : worker->handlers) {
+				lpHandles[ix++] = handler->hEvent;
 			}
 			nCount = ix;
 

@@ -17,42 +17,64 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
  #include "private.h"
- #include <udjat/win32/exception.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Win32::Handler::Controller::Worker::Worker(Win32::Handler *handler) {
+	void SubProcess::Handler::parse() {
 
-		handlers.push_back(handler);
+		char *from = buffer;
+		char *to = strchr(from,'\n');
+		while(to) {
 
-		std::thread hThread([this]() {
-#ifdef DEBUG
-			cout << "win32\tStarting event monitor thread" << endl;
-#endif // DEBUG
-
-			while(Controller::getInstance().wait(this)) {
-				if(!MainLoop::getInstance()) {
-					cerr << "win32\tMainloop is dead, disabling event worker" << endl;
-					break;
-				}
+			*to = 0;
+			if(to > from && *(to-1) == '\r') {
+				*(to-1) = 0;
 			}
 
-#ifdef DEBUG
-			cout << "win32\tStopping event monitor thread" << endl;
-#endif // DEBUG
+			on_input(from);
 
-			delete this;
+			from = to+1;
+			to = strchr(from,'\n');
+		}
 
-		});
+		if(from && from != buffer) {
+			length = strlen(from);
+			char *to = buffer;
+			while(*from) {
+				*(to++) = *(from++);
+			}
+			*to = 0;
+		}
 
-		hThread.detach();
+		length = strlen(buffer);
+
 	}
 
-	Win32::Handler::Controller::Worker::~Worker() {
+	void SubProcess::Handler::handle(bool UDJAT_UNUSED(abandoned)) {
+
+		ssize_t szRead = read(buffer+length, sizeof(buffer)-(length+1));
+
+		if(szRead < 0) {
+
+			on_error((string{"Error '"} + Win32::Exception::format() + "' reading from pipe").c_str());
+			close();
+
+		} else if(!szRead) {
+
+			if(errno != EPIPE) {
+				on_error("Unexpected 'EOF' reading from pipe");
+			}
+
+		} else {
+
+			buffer[length+szRead] = 0;
+			parse();
+
+		}
+
 	}
 
  }

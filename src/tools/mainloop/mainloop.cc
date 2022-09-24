@@ -30,6 +30,7 @@
 		wakeup();
 	}
 
+	/*
 	void MainLoop::remove(const void *id) {
 
 		lock_guard<mutex> lock(guard);
@@ -38,17 +39,16 @@
 		cout << "handler\tRemoving handlers with id " << hex << id << dec << endl;
 #endif // DEBUG
 
-		/*
 		timers.active.remove_if([id](auto timer){
 			return timer->id == id;
 		});
-		*/
 
 		handlers.remove_if([id](auto handler){
 			return handler->id() == id;
 		});
 
 	}
+	*/
 
 
  }

@@ -37,7 +37,11 @@
 	}
 
 	Event::Controller::~Controller() {
-		cout << "event\tStopping controller " << hex << this << dec << endl;
+		if(consolehandlertypes.empty()) {
+			cout << "event\tStopping clean controller " << hex << this << dec << endl;
+		} else {
+			cout << "event\tStopping controller " << hex << this << dec << " with active handlers" << endl;
+		}
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,FALSE)==FALSE) {
 			cerr << "win32\tUnable to remove console handler" << endl;
 		} else {

@@ -70,20 +70,24 @@
 	}
 
 	void Event::Controller::onSignal(int signum) noexcept {
-		cout << "signals\tProcessing signal '" << strsignal(signum) << "' (" << signum << ")" << endl;
 
-		Controller &instance = getInstance();
+		// Move signal processing to another thread to avoid dead locks.
+		ThreadPool::getInstance().push("SignalHandler",[signum](){
+			cout << "signals\tProcessing signal '" << strsignal(signum) << "' (" << signum << ")" << endl;
 
-		{
-			lock_guard<mutex> lock(guard);
-			for(Signal &signal : instance.signals) {
-				if(signal.signum == signum) {
-					ThreadPool::getInstance().push("signal-event",[&signal]() {
-						signal.trigger();
-					});
+			Controller &instance = getInstance();
+
+			{
+				lock_guard<mutex> lock(guard);
+				for(Signal &signal : instance.signals) {
+					if(signal.signum == signum) {
+						ThreadPool::getInstance().push("signal-event",[&signal]() {
+							signal.trigger();
+						});
+					}
 				}
 			}
-		}
+		});
 
 	}
 
