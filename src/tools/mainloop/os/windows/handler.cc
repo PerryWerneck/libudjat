@@ -111,7 +111,7 @@
 	size_t Win32::Handler::poll(Win32::Handler **handlers, size_t nfds, int timeout) {
 
 		size_t valid_handlers = 0;
-		DWORD nCount = 0;
+//		DWORD nCount = 0;
 		HANDLE lpHandles[nfds];
 		Handler *index[nfds];
 
@@ -127,7 +127,7 @@
 
 		if(valid_handlers) {
 
-			DWORD response = WaitForMultipleObjects(valid_handlers,lpHandles,FALSE,1000);
+			DWORD response = WaitForMultipleObjects(valid_handlers,lpHandles,FALSE,timeout);
 
 			if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+valid_handlers)) {
 

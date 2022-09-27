@@ -36,7 +36,7 @@
 		if(workers.empty()) {
 			cout << "win32\tStopping clean handler controller" << endl;
 		} else {
-			clog << "win32\Stopping handler controller with " << workers.size() << " active handler(s)" << endl;
+			clog << "win32\tStopping handler controller with " << workers.size() << " active handler(s)" << endl;
 		}
 	}
 

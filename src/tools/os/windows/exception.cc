@@ -23,6 +23,7 @@
  #include <udjat/win32/charset.h>
  #include <windows.h>
  #include <iostream>
+ #include <mutex>
 
  #include <cstring>
  #include <cstdio>
@@ -31,7 +32,35 @@
 
  #define BUFFER_LENGTH 100
 
+ class Guard : public mutex {
+ public:
+ 	Guard() = default;
+
+ 	static Guard & getInstance() {
+		static Guard instance;
+		return instance;
+ 	}
+
+ };
+
+ /*
+ static bool is_wine() noexcept {
+
+	// https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
+
+	HMODULE hntdll = GetModuleHandle("ntdll.dll");
+	if(!hntdll) {
+		return false;
+	}
+
+	return (((void *) GetProcAddress(hntdll, "wine_get_version")) != NULL);
+
+ }
+ */
+
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
+
+	lock_guard<mutex> lock(Guard::getInstance());
 
 	string response;
 	char buffer[BUFFER_LENGTH+1];
@@ -86,6 +115,8 @@
  }
 
  std::string Udjat::Win32::WSA::Exception::format(const DWORD dwMessageId) noexcept {
+
+	lock_guard<mutex> lock(Guard::getInstance());
 
 	// https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
 
