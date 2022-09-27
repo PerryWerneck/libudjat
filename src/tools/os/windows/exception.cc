@@ -20,7 +20,7 @@
  #include <config.h>
  #include <private/misc.h>
  #include <udjat/win32/exception.h>
- #include <udjat/win32/string.h>
+ #include <udjat/win32/charset.h>
  #include <windows.h>
  #include <iostream>
 
@@ -34,11 +34,12 @@
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
 	string response;
-	char *buffer = new char[BUFFER_LENGTH+1];
+	char buffer[BUFFER_LENGTH+1];
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
-	/*
+	SetLastError(0);
+
 	// https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid
 	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -49,9 +50,6 @@
 		BUFFER_LENGTH,
 		NULL
 	);
-	*/
-
-	int retval = 0;
 
 	if(retval == 0) {
 
@@ -68,7 +66,7 @@
 
 	} else if(*buffer) {
 
-		response = Win32::String(buffer).c_str();
+		response = buffer;
 
 	} else {
 
@@ -77,7 +75,7 @@
 
 	}
 
-	delete[] buffer;
+	SetLastError(dwMessageId);
 
 	return response;
 
@@ -92,12 +90,10 @@
 	// https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
 
 	string response;
-	char *buffer = new char[BUFFER_LENGTH+1];
+	char buffer[BUFFER_LENGTH+1];
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
-	int retval = 0;
-	/*
 	// https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid
 	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -108,27 +104,18 @@
 		BUFFER_LENGTH,
 		NULL
 	);
-	*/
 
-	if(retval == 0) {
+	if(retval == 0 || !*buffer) {
 
 		response = "WinSock error ";
 		response += std::to_string((unsigned int) dwMessageId);
 		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2)";
-
-	} else if(*buffer) {
-
-		response = Win32::String(buffer).c_str();
 
 	} else {
 
-		response = "WinSock error ";
-		response += std::to_string((unsigned int) dwMessageId);
-		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2)";
+		response = buffer;
 
 	}
-
-	delete[] buffer;
 
 	return response;
 

@@ -41,7 +41,8 @@
  #include <fcntl.h>
 
 #ifdef _WIN32
-	#include <udjat/win32/string.h>
+	#include <udjat/win32/charset.h>
+	#include <udjat/win32/exception.h>
 #else
 	#include <unistd.h>
 #endif // _WIN32
@@ -255,6 +256,13 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	return Service().run(argc,argv);
+	{
+		cout << "----------------------------" << endl;
+		cout << "Charset=" << Win32::Charset::system() << endl;
+		cout << Win32::Exception::format(2) << endl;
+		cout << "----------------------------" << endl;
+	}
+
+	//return Service().run(argc,argv);
 
 }

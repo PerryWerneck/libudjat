@@ -40,7 +40,7 @@
 			~Charset();
 
 			/// @brief Get win32 local charset.
-			const char * system();
+			static const char * system();
 
 			void convert(const char *from, std::string &to);
 			std::string convert(const char *text);
