@@ -19,48 +19,67 @@
 
  #include <config.h>
  #include <iconv.h>
- #include <udjat/win32/string.h>
+ #include <udjat/win32/charset.h>
+ #include <udjat/tools/quark.h>
  #include <stdexcept>
  #include <cstring>
  #include <iostream>
+ #include <mutex>
 
  using namespace std;
 
  namespace Udjat {
 
-	Win32::String::String() {
-		local = iconv_open("CP1252","UTF-8");
+ 	mutex Win32::Charset::guard;
+
+	Win32::Charset::Charset(const char *tocode, const char *fromcode) {
+		lock_guard<mutex> lock(guard);
+		icnv = iconv_open(tocode,fromcode);
 	}
 
-	Win32::String::String(const char *winstr) : String() {
-		assign(winstr);
+	Win32::Charset::~Charset() {
+		lock_guard<mutex> lock(guard);
+		iconv_close(icnv);
 	}
 
-	Win32::String::~String() {
-		iconv_close(local);
+	std::string Win32::Charset::convert(const char *text) {
+		std::string rc;
+		convert(text,rc);
+		return rc;
 	}
 
-	Win32::String & Win32::String::assign(const char *winstr) {
+	std::string Win32::Charset::from_windows(const char *winstr) {
+		static UTF8String converter;
+		return converter.assign(winstr);
+	}
 
-		iconv(local,NULL,NULL,NULL,NULL);	// Reset state
+	std::string Win32::Charset::to_windows(const char *utfstr) {
+		static Win32String converter;
+		return converter.assign(utfstr);
+	}
 
-		size_t	  	  szIn		= strlen(winstr);
+	void Win32::Charset::convert(const char *from, std::string &to) {
+
+		lock_guard<mutex> lock(guard);
+
+		iconv(icnv,NULL,NULL,NULL,NULL);	// Reset state
+
+		size_t	  	  szIn		= strlen(from);
 		size_t	  	  szOut		= szIn*2;
 
 #if defined(WINICONV_CONST)
-		WINICONV_CONST char 	* inBuf 	= (WINICONV_CONST char *) winstr;
+		WINICONV_CONST char 	* inBuf 	= (WINICONV_CONST char *) from;
 #elif defined(ICONV_CONST)
-		ICONV_CONST char		* inBuf 	= (ICONV_CONST char *) winstr;
+		ICONV_CONST char		* inBuf 	= (ICONV_CONST char *) from;
 #else
-		char 		 			* inBuf 	= (char *) winstr;
+		char 		 			* inBuf 	= (char *) from;
 #endif // WINICONV_CONST
 
-		char * outBuff	= new char[szOut+1];
-		char * ptr;
-		memset(ptr = outBuff,0,szOut+1);
+		char outBuff[szOut+1];
+		char * ptr = outBuff;
+		memset(ptr,0,szOut+1);
 
-		if(iconv(local,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1)) {
-			cerr << "win32\tError '" << strerror(errno) << "' converting '" << inBuf << "' to UTF-8" << endl;
+		if(iconv(icnv,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1)) {
 			strcpy(outBuff,inBuf);
 			for(char * ptr = outBuff; *ptr; ptr++) {
 				if(*ptr < ' ') {
@@ -68,18 +87,48 @@
 				}
 			}
 
-#ifdef DEBUG
-			cout << "---> " << winstr << " <---" << endl << outBuff << endl;
-#endif // DEBUG
-
 		} else {
 			outBuff[szOut] = 0;
 		}
 
-		std::string::assign(outBuff);
+		to.assign(outBuff);
 
-		delete[] outBuff;
+	}
+
+	const char * Win32::Charset::system() {
+		char buffer[10];
+		snprintf(buffer,9,"CP%u",GetACP());
+		return Quark(buffer).c_str();
+	}
+
+	Win32::UTF8String::UTF8String() : Win32::Charset(Win32::Charset::system(),"UTF-8") {
+	}
+
+	Win32::UTF8String::UTF8String(const char *winstr) : UTF8String() {
+		assign(winstr);
+	}
+
+	Win32::UTF8String & Win32::UTF8String::assign(const char *winstr) {
+		convert(winstr,*this);
 		return *this;
+	}
+
+	Win32::UTF8String::~UTF8String() {
+	}
+
+	Win32::Win32String::Win32String() : Win32::Charset("UTF-8", Win32::Charset::system()) {
+	}
+
+	Win32::Win32String::Win32String(const char *utfstr) : Win32String() {
+		assign(utfstr);
+	}
+
+	Win32::Win32String & Win32::Win32String::assign(const char *utfstr) {
+		convert(utfstr,*this);
+		return *this;
+	}
+
+	Win32::Win32String::~Win32String() {
 	}
 
  }

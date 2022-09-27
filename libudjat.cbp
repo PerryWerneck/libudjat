@@ -107,14 +107,13 @@
 		<Unit filename="src/include/udjat/tools/url.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
-		<Unit filename="src/include/udjat/win32/event.h" />
+		<Unit filename="src/include/udjat/win32/charset.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
 		<Unit filename="src/include/udjat/win32/service.h" />
-		<Unit filename="src/include/udjat/win32/string.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/alertfactory.cc" />
