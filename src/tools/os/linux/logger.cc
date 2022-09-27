@@ -139,6 +139,7 @@ namespace Udjat {
 		}
 
 		{
+			/*
 			size_t length = buffer.size()+2;
 			char tmp[length+1];
 			size_t ix = 0;
@@ -155,6 +156,9 @@ namespace Udjat {
 			tmp[ix] = 0;
 
 			SysWriter::getInstance().write(id,tmp);
+			*/
+
+			SysWriter::getInstance().write(id,buffer.c_str());
 		}
 
 		buffer.erase();

@@ -149,8 +149,10 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-
 			cout << "------------------------------------------" << endl;
+
+			cout << "test\táéióú" << endl;
+
 			MainLoop::getInstance().TimerFactory(2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
@@ -256,13 +258,15 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		cout << "----------------------------" << endl;
 		cout << "Charset=" << Win32::Charset::system() << endl;
 		cout << Win32::Exception::format(2) << endl;
 		cout << "----------------------------" << endl;
 	}
+	*/
 
-	//return Service().run(argc,argv);
+	return Service().run(argc,argv);
 
 }
