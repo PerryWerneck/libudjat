@@ -99,9 +99,15 @@
 		unsigned long wait = timers.run();
 
 		// Get handlers
-		struct pollfd fds[handlers.size()+2];
-		Handler *hList[handlers.size()+2];
+		size_t maxfd = handlers.size()+2;
+		struct pollfd fds[maxfd];
+		Handler *hList[maxfd];
+
+		// Clear
 		nfds_t nfds = 0;
+
+		memset(fds,0,maxfd * sizeof(pollfd));
+		memset(hList,0,maxfd * sizeof(Handler *));
 
  		// EventFD in the first entry.
 		{
