@@ -77,12 +77,13 @@
 		File::Path::replace(filename,contents);
 	}
 
-	void File::Text::set(const char *contents) {
+	File::Text & File::Text::set(const char *contents) {
 
 		unload();
 		this->contents = strdup(contents);
 		this->length = strlen(this->contents);
 
+		return *this;
 	}
 
 	void File::Text::load(int fd, ssize_t length) {

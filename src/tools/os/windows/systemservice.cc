@@ -451,29 +451,6 @@
 
 	int SystemService::run(int argc, char **argv) {
 
-		{
-			WSADATA WSAData;
-			WSAStartup(0x101, &WSAData);
-
-			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
-			SetConsoleOutputCP(CP_UTF8);
-			SetConsoleCP(CP_UTF8);
-
-			if(Config::Value<bool>("service","virtual-terminal-processing",true)) {
-				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-				if(hOut != INVALID_HANDLE_VALUE) {
-					DWORD dwMode = 0;
-					if(GetConsoleMode(hOut, &dwMode)) {
-						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-						SetConsoleMode(hOut,dwMode);
-					}
-				}
-			}
-
-			_chdir(Application::Path().c_str());
-		}
-
 		int rc = 0;
 
 		auto appname = Application::Name::getInstance();
@@ -486,6 +463,7 @@
 		}
 
 		if(mode == SERVICE_MODE_FOREGROUND) {
+			Logger::redirect(true);
 			info() << "Running as application" << endl;
 
 			try {
@@ -499,6 +477,8 @@
 		}
 
 		if(mode == SERVICE_MODE_DEFAULT || mode == SERVICE_MODE_DAEMON) {
+
+			Logger::redirect(false);
 			info() << "Starting service dispatcher" << endl;
 
 			// Run as service by default.

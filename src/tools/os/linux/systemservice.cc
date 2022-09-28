@@ -224,6 +224,8 @@
 			}
 		}
 
+		Logger::redirect(mode == SERVICE_MODE_FOREGROUND ? true : false);
+
 		if(mode == SERVICE_MODE_DAEMON) {
 			if(daemon(0,0)) {
 				error() << strerror(errno) << endl;

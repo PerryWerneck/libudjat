@@ -21,10 +21,15 @@
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/module.h>
  #include <iostream>
  #include <private/misc.h>
  #include <udjat/tools/logger.h>
+
+ #ifdef _WIN32
+	#include <direct.h>
+ #endif // _WIN32
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -41,6 +46,31 @@
 		if(instance) {
 			throw runtime_error("Can't start more than one system service");
 		}
+
+#ifdef _WIN32
+		{
+			WSADATA WSAData;
+			WSAStartup(0x101, &WSAData);
+
+			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+			SetConsoleOutputCP(CP_UTF8);
+			SetConsoleCP(CP_UTF8);
+
+			if(Config::Value<bool>("service","virtual-terminal-processing",true)) {
+				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+				if(hOut != INVALID_HANDLE_VALUE) {
+					DWORD dwMode = 0;
+					if(GetConsoleMode(hOut, &dwMode)) {
+						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+						SetConsoleMode(hOut,dwMode);
+					}
+				}
+			}
+
+			_chdir(Application::Path().c_str());
+		}
+#endif // _WIN32
 
 		Application::init();
 
@@ -81,8 +111,6 @@
 
 		WatchDog watchdog;
 #endif // HAVE_SYSTEMD
-
-		Logger::redirect(mode == SERVICE_MODE_FOREGROUND ? true : false);
 
 		try {
 
