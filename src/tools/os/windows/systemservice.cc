@@ -439,6 +439,18 @@
 			SetConsoleOutputCP(CP_UTF8);
 			SetConsoleCP(CP_UTF8);
 
+			if(Config::Value<bool>("service","virtual-terminal-processing",true)) {
+				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+				if(hOut != INVALID_HANDLE_VALUE) {
+					DWORD dwMode = 0;
+					if(GetConsoleMode(hOut, &dwMode)) {
+						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+						SetConsoleMode(hOut,dwMode);
+					}
+				}
+			}
+
 			_chdir(Application::Path().c_str());
 		}
 

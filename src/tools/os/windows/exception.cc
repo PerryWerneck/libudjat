@@ -46,13 +46,17 @@
  static bool is_wine() noexcept {
 
 	// https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
+	static unsigned char detected = 3;
 
-	HMODULE hntdll = GetModuleHandle("ntdll.dll");
-	if(!hntdll) {
-		return false;
+	if(detected == 3) {
+		HMODULE hntdll = GetModuleHandle("ntdll.dll");
+		if(!hntdll) {
+			return false;
+		}
+		detected = GetProcAddress(hntdll, "wine_get_version") == NULL ? 0 : 1;
 	}
 
-	return (((void *) GetProcAddress(hntdll, "wine_get_version")) != NULL);
+	return detected != 0;
 
  }
 

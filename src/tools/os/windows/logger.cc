@@ -67,14 +67,47 @@ namespace Udjat {
 
 		// If enabled write console output.
 		if(console) {
+
+			const char *prefix = "";
+			const char *suffix = "";
+
+			{
+				DWORD mode = 0;
+				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+				if(hOut != INVALID_HANDLE_VALUE && GetConsoleMode(hOut, &mode)) {
+
+					if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
+
+						// Allowed, setup console colors.
+						static const char *decorations[] = {
+							"\x1b[32m",	// Info
+							"\x1b[33m",	// Warning
+							"\x1b[91m"	// Error
+						};
+
+						if(this->id < (sizeof(decorations)/sizeof(decorations[0]))) {
+							prefix = decorations[id];
+						}
+
+						suffix = "\x1b[0m";
+					}
+
+				}
+
+			}
+
 			fprintf(
 					stdout,
-					"%s %s %s\n",
+					"%s%s %s %s%s\n",
+					prefix,
 					timestamp.c_str(),
 					module,
-					message
+					message,
+					suffix
 			);
 			fflush(stdout);
+
 		}
 
 		//

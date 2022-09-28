@@ -259,6 +259,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		cout << "----------------------------" << endl;
 		cout << "Charset=" << Win32::Charset::system() << endl;
@@ -284,17 +285,10 @@ int main(int argc, char **argv) {
 			file << Win32::Charset::from_windows(text.c_str()).c_str() << endl;
 		}
 
-		/*
-		string winstr = Win32::Charset::to_windows("Teste de mensagemáéíóú");
-		//string winstr = Win32::Charset::to_windows("áéíóú");
-		cout << "Win32 string=" << winstr << endl;
-		cout << "UTF String=" << Win32::Charset::from_windows(winstr.c_str()) << endl;
-		cout << Win32::Exception::format(2) << endl;
-		*/
-
 		cout << "----------------------------" << endl;
 	}
+	*/
 
-	// return Service().run(argc,argv);
+	return Service().run(argc,argv);
 
 }
