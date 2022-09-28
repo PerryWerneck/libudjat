@@ -43,7 +43,6 @@
 
  };
 
- /*
  static bool is_wine() noexcept {
 
 	// https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
@@ -56,7 +55,6 @@
 	return (((void *) GetProcAddress(hntdll, "wine_get_version")) != NULL);
 
  }
- */
 
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
@@ -95,7 +93,21 @@
 
 	} else if(*buffer) {
 
-		response = buffer;
+		if(is_wine()) {
+
+			response = buffer;
+
+		} else {
+
+			// TODO: Convert charset from windows.
+			for(char *ptr = buffer; *ptr; ptr++) {
+				if(*ptr < 0) {
+					*ptr = '?';
+				}
+			}
+			response = buffer;
+
+		}
 
 	} else {
 
