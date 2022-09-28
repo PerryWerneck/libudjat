@@ -38,6 +38,7 @@
  #include <memory>
  #include <sys/types.h>
  #include <sys/stat.h>
+ #include <fstream>
  #include <fcntl.h>
 
 #ifdef _WIN32
@@ -258,15 +259,42 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	/*
 	{
 		cout << "----------------------------" << endl;
 		cout << "Charset=" << Win32::Charset::system() << endl;
+
+		// Udjat::File::Text text("charset.txt");
+		std::string text{"áéíóú"};
+
+		{
+			ofstream file;
+			file.open("source.txt", std::ios::binary);
+			file << text.c_str() << endl;
+		}
+
+		{
+			ofstream file;
+			file.open("to_windows.txt", std::ios::binary);
+			file << Win32::Charset::to_windows(text.c_str()).c_str() << endl;
+		}
+
+		{
+			ofstream file;
+			file.open("from_windows.txt", std::ios::binary);
+			file << Win32::Charset::from_windows(text.c_str()).c_str() << endl;
+		}
+
+		/*
+		string winstr = Win32::Charset::to_windows("Teste de mensagemáéíóú");
+		//string winstr = Win32::Charset::to_windows("áéíóú");
+		cout << "Win32 string=" << winstr << endl;
+		cout << "UTF String=" << Win32::Charset::from_windows(winstr.c_str()) << endl;
 		cout << Win32::Exception::format(2) << endl;
+		*/
+
 		cout << "----------------------------" << endl;
 	}
-	*/
 
-	return Service().run(argc,argv);
+	// return Service().run(argc,argv);
 
 }

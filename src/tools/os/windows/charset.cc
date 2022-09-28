@@ -48,14 +48,22 @@
 		return rc;
 	}
 
-	std::string Win32::Charset::from_windows(const char *winstr) {
-		static UTF8String converter;
-		return converter.assign(winstr);
+	std::string Win32::Charset::from_windows(const char *str) {
+		static Win32::Charset converter{
+			"UTF-8",
+			Win32::Charset::system()
+		};
+
+		return converter.convert(str);
 	}
 
-	std::string Win32::Charset::to_windows(const char *utfstr) {
-		static Win32String converter;
-		return converter.assign(utfstr);
+	std::string Win32::Charset::to_windows(const char *str) {
+		static Win32::Charset converter{
+			Win32::Charset::system(),
+			"UTF-8"
+		};
+
+		return converter.convert(str);
 	}
 
 	void Win32::Charset::convert(const char *from, std::string &to) {
@@ -79,7 +87,7 @@
 		char * ptr = outBuff;
 		memset(ptr,0,szOut+1);
 
-		if(iconv(icnv,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1)) {
+		if(iconv(icnv,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1) || !szOut) {
 			strcpy(outBuff,inBuf);
 			for(char * ptr = outBuff; *ptr; ptr++) {
 				if(*ptr < ' ') {

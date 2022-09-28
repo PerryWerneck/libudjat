@@ -183,7 +183,11 @@ namespace Udjat {
 			const Iterator begin() const noexcept;
 			const Iterator end() const noexcept;
 
-			void set(const char *contents);
+			Text & set(const char *contents);
+
+			inline Text & set(const std::string &contents) {
+				return set(contents.c_str());
+			}
 
 			static void for_each(const char *text, std::function<void (const std::string &line)> call);
 
