@@ -25,6 +25,7 @@
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/quark.h>
  #include <iostream>
  #include <cstdarg>
 

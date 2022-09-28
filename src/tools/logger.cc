@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/quark.h>
  #include <cstring>
  #include <list>
 

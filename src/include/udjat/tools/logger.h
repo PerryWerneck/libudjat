@@ -3,11 +3,11 @@
 	#define UDJAT_LOGGER_H_INCLUDED
 
 	#include <udjat/defs.h>
-	#include <udjat/tools/quark.h>
 	#include <string>
 	#include <iostream>
 	#include <mutex>
 	#include <pthread.h>
+	#include <pugixml.hpp>
 
 	namespace Udjat {
 

@@ -23,6 +23,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
+ #include <udjat/tools/quark.h>
 
  using namespace std;
 
