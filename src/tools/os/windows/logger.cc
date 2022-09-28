@@ -77,7 +77,6 @@ namespace Udjat {
 
 				{
 					DWORD mode = 0;
-
 					if(GetConsoleMode(hOut, &mode)) {
 
 						if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {

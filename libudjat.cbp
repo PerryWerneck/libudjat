@@ -260,7 +260,6 @@
 		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
 		<Unit filename="src/tools/os/windows/service.cc" />
-		<Unit filename="src/tools/os/windows/string.cc" />
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />
 		</Unit>
