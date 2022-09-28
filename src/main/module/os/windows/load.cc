@@ -60,6 +60,16 @@
 				"secondary-path",
 				"/mingw64/lib/udjat-modules/"
 			),
+			Config::Value<string>(
+				"modules",
+				"sysroot",
+				"c:\\msys64\\mingw64\\"
+			) + "lib\\udjat-modules\\" PACKAGE_VERSION "\\",
+			Config::Value<string>(
+				"modules",
+				"sysroot",
+				"c:\\msys64\\mingw64\\"
+			) + "lib\\udjat-modules\\",
 #elif  defined(__i386__)
 			// 32 bit detected
 			Config::Value<string>(
