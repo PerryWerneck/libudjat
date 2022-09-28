@@ -39,12 +39,16 @@
 
 	void Application::set_gettext_package(const char *gettext_package) {
 
+#ifdef HAVE_LIBINTL
+
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
 
 #ifdef DEBUG
 		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << gettext_package << endl;
 #endif // DEBUG
+
+#endif // HAVE_LIBINTL
 
 	}
 

@@ -35,6 +35,8 @@
 
 	void Application::set_gettext_package(const char *gettext_package) {
 
+#ifdef HAVE_LIBINTL
+
 		Path localedir;
 		localedir += "locale";
 
@@ -47,6 +49,8 @@
 		cout << "locale\tInitialized using " << localedir << endl;
 #endif // DEBUG
 
+#endif // HAVE_LIBINTL
+
 	}
 
 	bool Application::init() {
@@ -54,8 +58,10 @@
 
 		if(!initialized) {
 			initialized = true;
+#ifdef GETTEXT_PACKAGE
 			set_gettext_package(GETTEXT_PACKAGE);
 			setlocale( LC_ALL, "" );
+#endif // GETTEXT_PACKAGE
 			return true;
 		}
 		return false;

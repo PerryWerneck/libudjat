@@ -30,10 +30,12 @@ namespace Udjat {
 
 	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),info(i) {
 
+#ifdef MINIMAL_MODULE_BUILD
 		if(i.build && i.build < MINIMAL_MODULE_BUILD) {
 			cerr << n << "\tThe module build date " << i.build << " is lower than the expected " << MINIMAL_MODULE_BUILD << endl;
 			throw system_error(EINVAL,system_category(),"Invalid module build date");
 		}
+#endif // MINIMAL_MODULE_BUILD
 
 		if(!name) {
 			throw system_error(EINVAL,system_category(),"Module name cant be null");
