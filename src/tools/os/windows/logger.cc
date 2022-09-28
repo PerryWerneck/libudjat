@@ -68,45 +68,70 @@ namespace Udjat {
 		// If enabled write console output.
 		if(console) {
 
-			const char *prefix = "";
-			const char *suffix = "";
+			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-			{
-				DWORD mode = 0;
-				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+			if(hOut != INVALID_HANDLE_VALUE) {
 
-				if(hOut != INVALID_HANDLE_VALUE && GetConsoleMode(hOut, &mode)) {
+				const char *prefix = "";
+				const char *suffix = "";
 
-					if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
+				{
+					DWORD mode = 0;
 
-						// Allowed, setup console colors.
-						static const char *decorations[] = {
-							"\x1b[32m",	// Info
-							"\x1b[33m",	// Warning
-							"\x1b[91m"	// Error
-						};
+					if(GetConsoleMode(hOut, &mode)) {
 
-						if(this->id < (sizeof(decorations)/sizeof(decorations[0]))) {
-							prefix = decorations[id];
+						if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
+
+							// Allowed, setup console colors.
+							static const char *decorations[] = {
+								"\x1b[92m",	// Info
+								"\x1b[93m",	// Warning
+								"\x1b[91m"	// Error
+							};
+
+							if(this->id < (sizeof(decorations)/sizeof(decorations[0]))) {
+								prefix = decorations[id];
+							}
+
+							suffix = "\x1b[0m";
 						}
 
-						suffix = "\x1b[0m";
 					}
 
 				}
 
-			}
+				DWORD dunno;
 
-			fprintf(
-					stdout,
-					"%s%s %s %s%s\n",
-					prefix,
-					timestamp.c_str(),
-					module,
-					message,
-					suffix
-			);
-			fflush(stdout);
+				if(*prefix) {
+					WriteFile(hOut,prefix,strlen(prefix),&dunno,NULL);
+				}
+
+				WriteFile(hOut,timestamp.c_str(),timestamp.size(),&dunno,NULL);
+				WriteFile(hOut," ",1,&dunno,NULL);
+				WriteFile(hOut,module,sizeof(module)-1,&dunno,NULL);
+				WriteFile(hOut," ",1,&dunno,NULL);
+				WriteFile(hOut,message,strlen(message),&dunno,NULL);
+
+				if(*suffix) {
+					WriteFile(hOut,suffix,strlen(suffix),&dunno,NULL);
+				}
+
+				WriteFile(hOut,"\r\n",2,&dunno,NULL);
+
+				/*
+				fprintf(
+						stdout,
+						"%s%s %s %s%s\n",
+						prefix,
+						timestamp.c_str(),
+						module,
+						message,
+						suffix
+				);
+				fflush(stdout);
+				*/
+
+			}
 
 		}
 
