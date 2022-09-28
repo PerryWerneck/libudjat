@@ -43,6 +43,7 @@
 
  };
 
+ /*
  static bool is_wine() noexcept {
 
 	// https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
@@ -59,6 +60,7 @@
 	return detected != 0;
 
  }
+ */
 
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
@@ -97,21 +99,7 @@
 
 	} else if(*buffer) {
 
-		if(is_wine()) {
-
-			response = buffer;
-
-		} else {
-
-			// TODO: Convert charset from windows.
-			for(char *ptr = buffer; *ptr; ptr++) {
-				if(*ptr < 0) {
-					*ptr = '?';
-				}
-			}
-			response = buffer;
-
-		}
+		response = Win32::Charset::from_windows(buffer);
 
 	} else {
 
@@ -158,9 +146,9 @@
 		response += std::to_string((unsigned int) dwMessageId);
 		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2)";
 
-	} else {
+	} else if(*buffer) {
 
-		response = buffer;
+		response = Win32::Charset::from_windows(buffer);
 
 	}
 
