@@ -20,7 +20,7 @@
 #include <config.h>
 
 #include <udjat/defs.h>
-#include <udjat/tools/logger.h>
+#include <private/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
 #include <udjat/win32/charset.h>
@@ -36,36 +36,27 @@ using namespace std;
 
 namespace Udjat {
 
-	void Logger::Writer::write(Buffer &buffer) {
+	void Logger::Controller::write(const Level level, bool console, const char *message) noexcept {
 
-		const char *message = buffer.c_str();
+		Win32::Registry registry("log");
+		string timestamp{TimeStamp().to_string("%x %X")};
 
-		// Set timestamp
-		string timestamp = TimeStamp().to_string("%x %X");
+		// Split message.
+		char domain[15];
+		memset(domain,' ',15);
 
-		// Set module name.
-		char module[12];
-		{
-			memset(module,' ',sizeof(module));
+		const char *text = strchr(message,'\t');
+		if(text) {
+			memcpy(domain,message,std::min( (int) (text-message), (int) sizeof(domain) ));
+		} else {
+			text = message;
+		}
+		domain[14] = 0;
 
-			const char *ptr = strchr(message,'\t');
-			if(ptr) {
-
-				// Has module name.
-				size_t length = (ptr-message);
-				if(length >= sizeof(module)-1) {
-					length = sizeof(module)-1;
-				}
-				memcpy(module,message,length);
-				message = (ptr+1);
-
-			}
-
-			module[sizeof(module)-1] = 0;
-
+		while(*text && isspace(*text)) {
+			text++;
 		}
 
-		// If enabled write console output.
 		if(console) {
 
 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -85,12 +76,11 @@ namespace Udjat {
 							static const char *decorations[] = {
 								"\x1b[92m",	// Info
 								"\x1b[93m",	// Warning
-								"\x1b[91m"	// Error
+								"\x1b[91m",	// Error
+								"\x1b[92m",	// Trace
 							};
 
-							if(this->id < (sizeof(decorations)/sizeof(decorations[0]))) {
-								prefix = decorations[id];
-							}
+							prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
 
 							suffix = "\x1b[0m";
 						}
@@ -107,9 +97,9 @@ namespace Udjat {
 
 				WriteFile(hOut,timestamp.c_str(),timestamp.size(),&dunno,NULL);
 				WriteFile(hOut," ",1,&dunno,NULL);
-				WriteFile(hOut,module,sizeof(module)-1,&dunno,NULL);
+				WriteFile(hOut,domain,sizeof(domain)-1,&dunno,NULL);
 				WriteFile(hOut," ",1,&dunno,NULL);
-				WriteFile(hOut,message,strlen(message),&dunno,NULL);
+				WriteFile(hOut,text,strlen(text),&dunno,NULL);
 
 				if(*suffix) {
 					WriteFile(hOut,suffix,strlen(suffix),&dunno,NULL);
@@ -117,70 +107,63 @@ namespace Udjat {
 
 				WriteFile(hOut,"\r\n",2,&dunno,NULL);
 
-				/*
-				fprintf(
-						stdout,
-						"%s%s %s %s%s\n",
-						prefix,
-						timestamp.c_str(),
-						module,
-						message,
-						suffix
-				);
-				fflush(stdout);
-				*/
+			}
 
+			{
+				//
+				// Get filename.
+				//
+				string filename, format;
+				DWORD keep = 86400;
+
+				try {
+
+					keep = registry.get("keep",keep);
+					filename.assign(registry.get("path",""));
+					format.assign(registry.get("format",""));
+
+				} catch(...) {
+
+					// On error assume defaults.
+					filename.clear();
+					format.clear();
+
+				}
+
+				if(filename.empty()) {
+					filename.assign(Application::Path() + "\\logs\\");
+				}
+
+				if(format.empty()) {
+					format.assign(Application::Name() + "-%d.log");
+				}
+
+				mkdir(filename.c_str());
+
+				// Get logfile path.
+				filename.append(TimeStamp().to_string(format.c_str()));
+
+				struct stat st;
+				if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+					// More than one day, remove it
+					remove(filename.c_str());
+				}
+
+				// Open file
+				std::ofstream ofs;
+				ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+				ofs.open(filename, ofstream::out | ofstream::app);
+				ofs << timestamp << " " << domain << " " << text << endl;
+				ofs.close();
 			}
 
 		}
 
-		//
-		// Get filename.
-		//
-		string filename, format;
-		DWORD keep = 86400;
+	}
 
-		try {
-
-			Win32::Registry registry("log");
-
-			keep = registry.get("keep",keep);
-			filename.assign(registry.get("path",""));
-			format.assign(registry.get("format",""));
-
-		} catch(...) {
-			// On error assume defaults.
-			filename.clear();
-			format.clear();
-		}
-
-		if(filename.empty()) {
-			filename.assign(Application::Path() + "\\logs\\");
-		}
-
-		if(format.empty()) {
-			format.assign(Application::Name() + "-%d.log");
-		}
-
-		mkdir(filename.c_str());
-
-		// Get logfile path.
-		filename.append(TimeStamp().to_string(format.c_str()));
-
-		struct stat st;
-		if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
-			// More than one day, remove it
-			remove(filename.c_str());
-		}
-
-		// Open file
-		std::ofstream ofs;
-		ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-
-		ofs.open(filename, ofstream::out | ofstream::app);
-		ofs << timestamp << " " << module << " " << message << endl;
-		ofs.close();
-
+	void Logger::Writer::write(Buffer &buffer) {
+		Controller::getInstance().write((Level) id, console, buffer.c_str());
 	}
 
 }
