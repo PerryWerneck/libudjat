@@ -31,6 +31,10 @@
 	#include <direct.h>
  #endif // _WIN32
 
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
  #endif // HAVE_SYSTEMD
@@ -45,6 +49,16 @@
 
 		if(instance) {
 			throw runtime_error("Can't start more than one system service");
+		}
+
+		if(!definitions) {
+			definitions = Quark(Application::DataFile{(Application::name() + ".xml").c_str()}).c_str();
+		} else if(definitions[0] != '.' && definitions[0] != '/' && ::access(definitions,F_OK) != 0) {
+			definitions = Quark(Application::DataFile{definitions}).c_str();
+		}
+
+		if(::access(definitions,R_OK) != 0) {
+			throw system_error(ENOENT,system_category(),definitions);
 		}
 
 #ifdef _WIN32
