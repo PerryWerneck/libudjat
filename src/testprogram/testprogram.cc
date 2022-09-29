@@ -290,6 +290,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	trace("Simple trace message");
 	return Service().run(argc,argv);
 
 }

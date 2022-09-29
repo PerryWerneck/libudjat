@@ -116,9 +116,6 @@
 			}
 
 			String & append(const char *value) {
-				if(!empty()) {
-					std::string::append(" ");
-				}
 				std::string::append(value);
 				return *this;
 			}
@@ -257,7 +254,7 @@
 	};
 
 	#if defined(DEBUG) || defined(TRACE_ENABLED)
-		#define trace( ... ) Logger::write(Logger::Trace,Logger::String("trace\t",__VA_ARGS__))
+		#define trace( ... ) Logger::write(Logger::Trace,Logger::String("trace\t",__FILE__,"(",__LINE__,"): ",__VA_ARGS__))
 	#else
 		#define trace( ... )           // __VA_ARGS__
 	#endif // DEBUG
