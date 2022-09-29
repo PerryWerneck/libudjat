@@ -29,8 +29,6 @@
  #include <private/agent.h>
  #include <cstring>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
 namespace Udjat {
 
 	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {

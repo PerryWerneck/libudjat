@@ -108,26 +108,6 @@
 	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
-		/*
-		case 'f':	// Run in foreground.
-			{
-				cout << "Starting " << name () << " application" << endl << endl;
-				Logger::redirect(true);
-				init();
-				try {
-					run();
-				} catch(const std::exception &e) {
-					error() << "Error '" << e.what() << "' running service" << endl;
-				} catch(...) {
-					error() << "Unexpected error running service" << endl;
-				}
-
-				deinit();
-				return 0;
-			}
-			break;
-		*/
-
 		case 'T':	// Auto quit
 			{
 				if(!value) {
@@ -147,24 +127,6 @@
 
 			}
 			return 0;
-
-		/*
-		case 'd':	// Run as a daemon.
-			{
-
-				if(daemon(0,0)) {
-					throw std::system_error(errno, std::system_category());
-				}
-
-				Logger::redirect();
-				init();
-				run();
-				deinit();
-				return 0;
-
-			}
-			break;
-		*/
 
 		case 'C':	// Enable core dumps.
 			{

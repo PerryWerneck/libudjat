@@ -32,6 +32,7 @@
  #include <udjat/agent.h>
  #include <udjat/module.h>
  #include <direct.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -314,6 +315,7 @@
 
 		cout	<< " [options]" << endl << endl
 				<< "  --foreground\t\tRun " << name() << " service as application (foreground)" << endl
+				<< "  --timer=seconds\tTerminate " << name() << " after 'seconds'" << endl
 				<< "  --start\t\tStart " << name() << " service" << endl
 				<< "  --stop\t\tStop " << name() << " service" << endl
 				<< "  --restart\t\tRestart " << name() << " service" << endl
@@ -377,9 +379,29 @@
 
 	}
 
-	int SystemService::cmdline(char key, const char UDJAT_UNUSED(*value)) {
+	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
+		case 'T':	// Auto quit
+			{
+				if(!value) {
+					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
+				}
+
+				int seconds = atoi(value);
+				if(!seconds) {
+					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
+				}
+
+				MainLoop::getInstance().TimerFactory(seconds * 1000,[](){
+					Application::warning() << "Exiting by timer request" << endl;
+					MainLoop::getInstance().quit();
+					return false;
+				});
+
+			}
+			return 0;
+
 		case 'i':	// Install service.
 			Logger::redirect(true);
 			mode = SERVICE_MODE_NONE;
@@ -423,16 +445,12 @@
 
 	int SystemService::cmdline(const char *key, const char *value) {
 
-		// The default options doesn't have values, then, reject here.
-		if(value) {
-			return ENOENT;
-		}
-
 		static const struct {
 			char option;
 			const char *key;
 		} options[] = {
 			{ 'i', "install" },
+			{ 'T', "timer" },
 			{ 'u', "uninstall" },
 			{ 's', "start" },
 			{ 'q', "stop" },
@@ -442,7 +460,7 @@
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
-				return cmdline(options[option].option);
+				return cmdline(options[option].option,value);
 			}
 		}
 

@@ -45,7 +45,7 @@
 	}
 
 	void ThreadPool::Controller::stop() {
-		cout << "ThreadPool\tStopping background threads" << endl;
+		info() << "Stopping background threads" << endl;
 		std::lock_guard<std::mutex> lock(guard);
 		for(auto pool : pools) {
 			pool->stop();
@@ -153,7 +153,14 @@
 				Sleep(100);
 			}
 
-			logger.error("Stopping with {} threads on pool",getActiveThreads());
+			{
+				size_t count = getActiveThreads();
+				if(count) {
+					logger.error("Stopping with {} threads on pool",count);
+				} else {
+					cout << logger.name() << "\tStopping with no pending threads" << endl;
+				}
+			}
 
 		}
 

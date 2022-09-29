@@ -74,6 +74,7 @@
 	*/
 
 #ifdef _WIN32
+
 	class UDJAT_PRIVATE ThreadPool::Controller : MainLoop::Service {
 	private:
 

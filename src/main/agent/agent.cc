@@ -34,8 +34,6 @@
  #include <udjat/tools/event.h>
  #include <udjat/tools/threadpool.h>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
 namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;

@@ -257,7 +257,6 @@
 		<Unit filename="src/tools/os/windows/file/temporary.cc" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
-		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
 		<Unit filename="src/tools/os/windows/service.cc" />
 		<Unit filename="src/tools/os/windows/strptime.cc">
