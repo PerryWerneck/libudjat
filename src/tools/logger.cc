@@ -19,6 +19,8 @@
 
  #include <config.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/application.h>
+ #include <private/logger.h>
  #include <udjat/tools/quark.h>
  #include <cstring>
  #include <list>
@@ -29,6 +31,7 @@
 	#include <fcntl.h>
  #else
 	#include <unistd.h>
+	#include <syslog.h>
  #endif // _WIN32
 
  using namespace std;
@@ -41,20 +44,6 @@
 		"error"
 	};
 
-	class Logger::Controller {
-	public:
-		std::list<Buffer *> buffers;
-
-		Controller() {
-		};
-
-		~Controller();
-
-		static Controller & getInstance();
-
-		Buffer * BufferFactory(Level id);
-	};
-
 	std::mutex Logger::guard;
 	Logger::Level Logger::level = Logger::Error;
 
@@ -63,12 +52,21 @@
 		return instance;
 	}
 
+	Logger::Controller::Controller() {
+#ifndef _WIN32
+		::openlog(Quark(Application::Name()).c_str(), LOG_PID, LOG_DAEMON);
+#endif // _WIN32
+	}
+
 	Logger::Controller::~Controller() {
 		while(!buffers.empty()) {
 			Buffer * buffer = buffers.back();
 			buffers.pop_back();
 			delete buffer;
 		}
+#ifndef _WIN32
+		::closelog();
+#endif // _WIN32
 	}
 
 	Logger::Buffer * Logger::Controller::BufferFactory(Level level) {
@@ -168,6 +166,13 @@
 		std::clog.rdbuf(new Writer(Logger::Warning,console));
 		std::cerr.rdbuf(new Writer(Logger::Error,console));
 
+	}
+
+	void Logger::write(const Logger::Level level, const char *message) noexcept {
+	}
+
+	void Logger::write(const Logger::Level level, const std::string &message) noexcept {
+		write(level,message.c_str());
 	}
 
  }

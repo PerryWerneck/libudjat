@@ -1,67 +1,95 @@
 
 #include <config.h>
-#include <udjat/tools/logger.h>
+#include <private/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
 #include <mutex>
 #include <unistd.h>
 #include <syslog.h>
 #include <udjat/tools/quark.h>
+#include <algorithm>
 
 using namespace std;
 
 namespace Udjat {
 
-	//
-	// Syslog writer
-	//
-	class SysWriter {
-	private:
-		SysWriter() {
-			::openlog(Quark(Application::Name()).c_str(), LOG_PID, LOG_DAEMON);
-		}
+	static void fdwrite(int fd, const char *text) {
 
-	public:
-		~SysWriter() {
-			::closelog();
-		}
-
-		SysWriter(const SysWriter &src) = delete;
-		SysWriter(const SysWriter *src) = delete;
-
-		static SysWriter & getInstance();
-
-		void write(uint8_t id, const char *message) {
-			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR};
-			syslog(priority[id],"%s",message);
-
-		}
-
-	};
-
-	SysWriter & SysWriter::getInstance() {
-		static SysWriter instance;
-		return instance;
-	}
-
-	//
-	// Log writer
-	//
-	void Logger::Writer::write(int fd, const std::string &str) {
-
-		size_t bytes = str.size();
-		const char *ptr = str.c_str();
-
-		while(bytes > 0) {
-
-			ssize_t sz = ::write(fd,ptr,bytes);
+		size_t bytes = strlen(text);
+		while(bytes) {
+			ssize_t sz = ::write(fd,text,bytes);
 			if(sz < 0)
 				return;
 			bytes -= sz;
-			ptr += sz;
+			text += sz;
+		}
+
+	}
+
+	void Logger::Controller::write(const Level level, bool console, const char *message) noexcept {
+
+		// Split message.
+		char domain[15];
+		memset(domain,' ',15);
+
+		const char *text = strchr(message,'\t');
+		if(text) {
+			memcpy(domain,message,std::min( (int) (text-message), (int) sizeof(domain) ));
+		} else {
+			text = message;
+		}
+		domain[14] = 0;
+
+		while(*text && isspace(*text)) {
+			text++;
+		}
+
+		if(console) {
+
+			// Write to console.
+			// Write current time.
+			{
+				time_t t = time(0);
+				struct tm tm;
+				localtime_r(&t,&tm);
+
+				char timestr[80];
+				memset(timestr,0,sizeof(timestr));
+
+				size_t len = strftime(timestr, 79, "%x %X", &tm);
+
+				if(len) {
+					fdwrite(1,timestr);
+				} else {
+					fdwrite(1,"--/--/-- --:--:--");
+				}
+
+				fdwrite(1," ");
+			}
+
+			fdwrite(1,domain);
+			fdwrite(1," ");
+			fdwrite(1,text);
+			fdwrite(1,"\n");
+			fsync(1);
 
 		}
 
+		// Write to syslog.
+		static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_INFO};
+
+		{
+			char *ptr = strchr(domain,' ');
+			if(ptr) {
+				*ptr = 0;
+			}
+		}
+
+		if(*domain) {
+			syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s: %s",domain,text);
+		} else {
+			syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s",text);
+		}
 	}
 
 	void Logger::Writer::write(Buffer &buffer) {
@@ -83,83 +111,7 @@ namespace Udjat {
 			return;
 		}
 
-		// Get '\t' position.
-		auto pos = buffer.find("\t");
-
-		// If enable write console output.
-		if(console) {
-
-			// Write current time.
-			{
-				time_t t = time(0);
-				struct tm tm;
-				localtime_r(&t,&tm);
-
-				char timestr[80];
-				memset(timestr,0,sizeof(timestr));
-
-				size_t len = strftime(timestr, 79, "%x %X", &tm);
-
-				if(len) {
-					write(1,timestr);
-				} else {
-					write(1,"--/--/-- --:--:--");
-				}
-
-				write(1," ");
-			}
-
-			// Write module name & message
-			char module[12];
-			memset(module,' ',sizeof(module));
-
-			if(pos == string::npos) {
-
-				module[sizeof(module)-1] = 0;
-				write(1,module);
-				write(1," ");
-				write(1,buffer);
-
-			} else {
-
-				strncpy(module,buffer.c_str(),min(sizeof(module),pos));
-				for(size_t ix = 0; ix < sizeof(module); ix++) {
-					if(module[ix] < ' ') {
-						module[ix] = ' ';
-					}
-				}
-				module[sizeof(module)-1] = 0;
-				write(1,module);
-				write(1," ");
-				write(1,buffer.c_str()+pos+1);
-			}
-
-			write(1,"\n");
-			fsync(1);
-		}
-
-		{
-			/*
-			size_t length = buffer.size()+2;
-			char tmp[length+1];
-			size_t ix = 0;
-			for(const char *ptr = buffer.c_str(); *ptr && ix < length; ptr++) {
-				if(*ptr == '\t') {
-					tmp[ix++] = ':';
-					tmp[ix++] = ' ';
-				} else if(*ptr < ' ') {
-					tmp[ix++] = '?';
-				} else {
-					tmp[ix++] = *ptr;
-				}
-			}
-			tmp[ix] = 0;
-
-			SysWriter::getInstance().write(id,tmp);
-			*/
-
-			SysWriter::getInstance().write(id,buffer.c_str());
-		}
+		Controller::getInstance().write((Level) id, console, buffer.c_str());
 
 		buffer.erase();
 

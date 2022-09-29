@@ -53,6 +53,7 @@
 		<Unit filename="src/include/private/alert.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/factory.h" />
+		<Unit filename="src/include/private/logger.h" />
 		<Unit filename="src/include/private/mainloop.h" />
 		<Unit filename="src/include/private/misc.h" />
 		<Unit filename="src/include/private/module.h" />

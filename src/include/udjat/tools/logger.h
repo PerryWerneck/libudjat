@@ -18,7 +18,8 @@
 			enum Level : uint8_t {
 				Info,
 				Warning,
-				Error
+				Error,
+				Trace
 			};
 
 		private:
@@ -184,6 +185,16 @@
 			void error(const std::exception &e, const char *format, const Targs... args) const noexcept {
 				std::cerr << name() << "\t" << Message(format, args...).append(e) << std::endl;
 			}
+
+			/// @brief Write message.
+			/// @param level	Log level.
+			/// @param message	The message.
+			void write(const Level level, const char *message) noexcept;
+
+			/// @brief Write message.
+			/// @param level	Log level.
+			/// @param message	The message.
+			void write(const Level level, const std::string &message) noexcept;
 
 		};
 	}
