@@ -158,7 +158,6 @@
 		<Unit filename="src/main/module/os/windows/close.cc" />
 		<Unit filename="src/main/module/os/windows/init.cc" />
 		<Unit filename="src/main/module/os/windows/load.cc" />
-		<Unit filename="src/main/module/os/windows/open.cc" />
 		<Unit filename="src/main/module/os/windows/tools.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />

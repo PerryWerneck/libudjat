@@ -57,6 +57,9 @@ namespace Udjat {
 			auto handle = module->handle;
 			auto keep_loaded = module->keep_loaded;
 
+#ifdef DEBUG
+			cout << name << "\tkeep-loaded=" << (keep_loaded ? "ON" : "OFF") << endl;
+#endif // DEBUG
 			cout << name << "\t" << (keep_loaded ? "Deactivating" : "Unloading") << " '" << description << "'" << endl;
 
 			try {
