@@ -19,6 +19,7 @@
 
  #include <config.h>
 
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>

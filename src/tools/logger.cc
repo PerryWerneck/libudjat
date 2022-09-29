@@ -169,6 +169,7 @@
 	}
 
 	void Logger::write(const Logger::Level level, const char *message) noexcept {
+		Controller::getInstance().write(level,true,message);
 	}
 
 	void Logger::write(const Logger::Level level, const std::string &message) noexcept {

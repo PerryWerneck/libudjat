@@ -73,11 +73,12 @@ namespace Udjat {
 						if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
 
 							// Allowed, setup console colors.
+							// https://learn.microsoft.com/pt-br/windows/console/console-virtual-terminal-sequences
 							static const char *decorations[] = {
 								"\x1b[92m",	// Info
 								"\x1b[93m",	// Warning
 								"\x1b[91m",	// Error
-								"\x1b[92m",	// Trace
+								"\x1b[94m",	// Trace
 							};
 
 							prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
