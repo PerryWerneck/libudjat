@@ -168,6 +168,21 @@
 
 	}
 
+	void Logger::console(bool enable) {
+
+		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
+
+		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
+
+			Writer * writer = dynamic_cast<Writer *>(streams[ix]->rdbuf());
+			if(writer) {
+				writer->console = enable;
+			}
+
+		}
+
+	}
+
 	void Logger::write(const Logger::Level level, const char *message) noexcept {
 		Controller::getInstance().write(level,true,message);
 	}

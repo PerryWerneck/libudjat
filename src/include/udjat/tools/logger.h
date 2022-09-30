@@ -64,6 +64,8 @@
 		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
 		private:
 
+			friend class Logger;
+
 			/// @brief The buffer id.
 			Level id = Info;
 
@@ -187,6 +189,8 @@
 #else
 		static void redirect(bool console = false);
 #endif // DEBUG
+
+		static void console(bool enable);
 
 		constexpr Logger(const char *name = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : properties(name) {
 		}
