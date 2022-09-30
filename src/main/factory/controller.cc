@@ -45,10 +45,6 @@
 		lock_guard<recursive_mutex> lock(guard);
 
 		if(name && *name) {
-//#ifdef DEBUG
-//			cout << "factories\tSearching for '" << name << "' factory" << endl;
-//#endif // DEBUG
-
 			for(auto factory : factories) {
 				if(!strcasecmp(factory->name(),name)) {
 					return factory;

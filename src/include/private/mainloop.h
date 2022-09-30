@@ -39,40 +39,6 @@
 
  namespace Udjat {
 
-	/*
-	class UDJAT_PRIVATE MainLoop::Timer {
-	private:
-
-		friend class MainLoop::Timers;
-		friend class MainLoop;
-
-		/// @brief The time of next call.
-		unsigned long next;
-
-		/// @brief The interval in milliseconds.
-		unsigned long interval;
-
-	protected:
-
-		/// @brief The timer identifier.
-		const void *id = nullptr;
-
-	public:
-
-		/// @brief Get current timer.
-		static unsigned long getCurrentTime();
-
-		/// @brief Create timer.
-		Timer(const void *id, unsigned long milliseconds);
-
-		/// @brief Reset timer.
-		void reset(unsigned long milliseconds);
-
-		virtual bool call() const = 0;
-
-	};
-	*/
-
 #ifdef _WIN32
 
 	class UDJAT_PRIVATE ThreadPool::Controller : MainLoop::Service {

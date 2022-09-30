@@ -30,33 +30,29 @@
  #include "private.h"
  #include <private/misc.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  void Udjat::MainLoop::run() {
 
 	// Start services
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
-
+	trace(__FUNCTION__," - Start begin");
 	start();
-
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
-
-	enabled = true;
+	trace(__FUNCTION__," - Start end");
 
 	MSG msg;
 	memset(&msg,0,sizeof(msg));
 
 	int rc = -1;
 	cout << "MainLoop\tRunning Win32 Message loop" << endl;
+
+	enabled = true;
 	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	enabled = false;
 
 	if(rc == 0) {
 		cout << "MainLoop\tWin32 Message loop ends" << endl;
@@ -65,15 +61,9 @@
 	}
 
 	// Stop services
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
-
+	trace(__FUNCTION__," - Stop begin");
 	stop();
-
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
+	trace(__FUNCTION__," - Stop end");
 
  }
 

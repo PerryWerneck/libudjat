@@ -383,7 +383,9 @@
 
 		switch(key) {
 		case 'T':	// Auto quit
+
 			{
+
 				if(!value) {
 					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
 				}
@@ -392,6 +394,8 @@
 				if(!seconds) {
 					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
 				}
+
+				trace("Auto close timer set to ",seconds);
 
 				MainLoop::getInstance().TimerFactory(seconds * 1000,[](){
 					Application::warning() << "Exiting by timer request" << endl;

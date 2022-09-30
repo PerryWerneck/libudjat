@@ -17,9 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
  #include <private/mainloop.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/tools/logger.h>
 
  #include <iostream>
 
@@ -118,7 +120,7 @@
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_DESTROY:
-				cout << "MainLoop\tWM_DESTROY" << endl;
+				trace("WM_DESTROY");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_STOP:
@@ -138,9 +140,8 @@
 			case WM_WAKE_UP:
 
 				// Check if the mainloop still enabled.
-#ifdef DEBUG
-				cout <<  __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif //
+				// trace("WM_WAKE_UP");
+
 				if(!controller.enabled) {
 					cout << "MainLoop\tMain loop was disabled" << endl;
 					SendMessage(controller.hwnd,WM_STOP,0,0);

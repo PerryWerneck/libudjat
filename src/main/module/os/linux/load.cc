@@ -89,7 +89,7 @@
 			}
 #ifdef DEBUG
 			else {
-				cout << "modules\tNo module in " << filename << endl;
+				trace("No module in '",filename,"'");
 			}
 #endif // DEBUG
 		}

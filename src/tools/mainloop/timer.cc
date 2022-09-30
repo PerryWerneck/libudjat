@@ -237,15 +237,13 @@
 
 		public:
 			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
-#ifdef DEBUG
-				cout << " ***" << __FILE__ << "(" << __LINE__ << ") " << __FUNCTION__ << endl;
-#endif // DEBUG
+				trace(__FUNCTION__);
 				enable();
 			}
 
 #ifdef DEBUG
 			virtual ~CallBackTimer() {
-				cout << " ***" << __FILE__ << "(" << __LINE__ << ") " << __FUNCTION__ << endl;
+				trace(__FUNCTION__);
 			}
 #endif // DEBUG
 

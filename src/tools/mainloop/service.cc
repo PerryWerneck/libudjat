@@ -21,6 +21,7 @@
  #include <private/mainloop.h>
  #include <cstring>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -84,13 +85,9 @@
 			}
 		}
 
-#ifdef DEBUG
-		cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
+		trace("Waiting for tasks (agent)");
 		ThreadPool::getInstance().wait();
-#ifdef DEBUG
-		cout << "agent\t*** Wait for tasks complete" << endl;
-#endif // DEBUG
+		trace("Wait for tasks complete");
 
 	}
 

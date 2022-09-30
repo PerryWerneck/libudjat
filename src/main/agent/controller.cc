@@ -35,6 +35,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
  #include <unistd.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -206,13 +207,9 @@ namespace Udjat {
 
 			root.reset();
 
-#ifdef DEBUG
-			cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
+			trace("Waiting for tasks (agent)");
 			ThreadPool::getInstance().wait();
-#ifdef DEBUG
-			cout << "agent\t*** Wait for tasks complete" << endl;
-#endif // DEBUG
+			trace("Wait for tasks complete");
 
 		}
 
