@@ -258,7 +258,7 @@
 	};
 
 	#if defined(DEBUG) || defined(TRACE_ENABLED)
-		#define trace( ... ) Logger::write(Logger::Trace,Logger::String("trace\t",__FILE__,"(",__LINE__,"): ",__VA_ARGS__))
+		#define trace( ... ) Udjat::Logger::write(Logger::Trace,Udjat::Logger::String("trace\t",__FILE__,"(",__LINE__,"): ",__VA_ARGS__))
 	#else
 		#define trace( ... )           // __VA_ARGS__
 	#endif // DEBUG

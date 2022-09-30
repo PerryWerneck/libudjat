@@ -21,6 +21,7 @@
 #include <private/module.h>
 #include <udjat/tools/configuration.h>
 #include <udjat/tools/threadpool.h>
+#include <udjat/tools/logger.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/exception.h>
@@ -65,25 +66,26 @@ namespace Udjat {
 			try {
 
 				// First delete module
-#ifdef DEBUG
-				cout << name << "\t**** Deleting module " << hex << module << dec << endl;
-#endif // DEBUG
+
+				trace("Deleting module '",name,"'");
 				delete module;
-#ifdef DEBUG
-				cout << name << "\t**** module " << hex << module << dec << " deleted" << endl;
-#endif // DEBUG
+				trace("Module '",name,"' deleted");
 
 				if(handle) {
 
+					trace("Deinitializing module '",name,"'");
 					if(!deinit(handle)) {
 						clog << name << "\tKeeping module loaded by deinit() request" << endl;
 						continue;
 					}
+					trace("Module '",name,"' deinitialized");
 
 					if(keep_loaded) {
 						clog << name << "\tKeeping module loaded by configuration request" << endl;
 					} else {
+						trace("Unloading module '",name,"'");
 						unload(handle,name,description);
+						trace("Module '",name,"' unloaded");
 					}
 
 				}
