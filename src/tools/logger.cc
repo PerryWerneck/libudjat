@@ -162,9 +162,26 @@
 
 	void Logger::redirect(bool console) {
 
+		static const Level levels[] = { Info,Warning,Error };
+		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
+
+		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
+
+			Writer * writer = dynamic_cast<Writer *>(streams[ix]->rdbuf());
+			if(writer) {
+				trace("Stream(",ix,") was already redirected");
+				writer->set_console(console);
+			} else {
+				streams[ix]->rdbuf(new Writer(levels[ix],console));
+			}
+
+		}
+
+		/*
 		std::cout.rdbuf(new Writer(Logger::Info,console));
 		std::clog.rdbuf(new Writer(Logger::Warning,console));
 		std::cerr.rdbuf(new Writer(Logger::Error,console));
+		*/
 
 	}
 

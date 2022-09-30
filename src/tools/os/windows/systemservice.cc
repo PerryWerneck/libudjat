@@ -169,6 +169,8 @@
 
 			static void dispatcher() {
 
+				Logger::redirect(false);
+
 				Controller &controller = getInstance();
 
 				// Inicia como serviço
@@ -181,6 +183,8 @@
 				auto service = SystemService::getInstance();
 
 				if(service) {
+
+					service->info() << "Running as windows service" << endl;
 
 					try {
 
@@ -235,7 +239,14 @@
 			throw runtime_error("Module preload has failed, aborting service");
 		}
 
-		reconfigure(definitions,true);
+		if(definitions[0] && strcasecmp(definitions,"none")) {
+
+			info() << "Loading service definitions from " << definitions << endl;
+
+			reconfigure(definitions,true);
+
+		}
+
 	}
 
 	void SystemService::registry(const char *name, const char *value) {
@@ -485,6 +496,7 @@
 		}
 
 		if(mode == SERVICE_MODE_FOREGROUND) {
+
 			Logger::redirect(true);
 			info() << "Running as application" << endl;
 

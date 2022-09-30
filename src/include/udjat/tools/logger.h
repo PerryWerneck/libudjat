@@ -90,6 +90,10 @@
 			Writer(Logger::Level i, bool c) : id(i), console(c) {
 			}
 
+			inline void set_console(bool mode) {
+				this->console = mode;
+			}
+
 		};
 
 	protected:
