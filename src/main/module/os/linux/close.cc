@@ -22,16 +22,21 @@
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <unistd.h>
 
  namespace Udjat {
 
 	bool Module::Controller::deinit(void *handle) {
-		bool (*deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
+		bool (*udjat_module_deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
 		auto err = dlerror();
 		if(!err) {
-			return deinit();
+			trace("Calling udjat_module_deinit");
+			bool rc = udjat_module_deinit();
+			trace("(udjat_module_deinit returns ",rc);
+			return rc;
 		}
+		trace("No udjat_module_deinit method, just returning true");
 		return true;
 	}
 

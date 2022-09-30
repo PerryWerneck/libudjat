@@ -49,6 +49,11 @@
 
 	}
 
+	String & String::concat(const bool value) {
+		append(value ? _( "yes" ) : _( "no" ) );
+		return *this;
+	}
+
 	String & String::strip() noexcept {
 		char *ptr = strdup(c_str());
 		assign(Udjat::strip(ptr));

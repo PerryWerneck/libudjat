@@ -291,6 +291,11 @@ int main(int argc, char **argv) {
 	*/
 
 	trace("Simple trace message");
-	return Service().run(argc,argv);
+	auto rc = Service().run(argc,argv);
 
+	trace("Service exits with rc=",rc);
+
+	Udjat::Module::unload();
+
+	return rc;
 }

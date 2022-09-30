@@ -39,6 +39,7 @@ namespace Udjat {
 
 	void Module::Controller::unload() {
 
+		trace("Unloading ",modules.size()," modules");
 		while(modules.size()) {
 
 			Module * module;
@@ -97,6 +98,7 @@ namespace Udjat {
 			}
 
 		}
+		trace("Module unloading complete");
 
 	}
 
