@@ -88,10 +88,13 @@
 #ifdef _WIN32
 
 		/// @brief Install win32 service.
+		/// @return 0 when success.
 		virtual int install();
+
 		virtual int install(const char *display_name);
 
 		/// @brief Uninstall win32 service.
+		/// @return 0 when success.
 		virtual int uninstall();
 
 #endif // _WIN32

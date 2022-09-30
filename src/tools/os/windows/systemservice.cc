@@ -334,7 +334,14 @@
 				<< "  --uninstall\t\tUninstall " << name() << " service" << endl;
 	}
 
+	/// @brief Start service by name.
+	/// @param appname Service name.
+	/// @retval ENOENT Service does not exist.
+	/// @retval 0 Service was started.
+	/// @retval -1 Unexpected error.
 	static int service_start(const char *appname) {
+
+		cout << "win32\tStarting service '" << appname << "'" << endl;
 
 		Win32::Service::Manager manager;
 		Win32::Service::Handler service{manager.open(appname)};
@@ -342,9 +349,9 @@
 			auto lasterror = GetLastError();
 			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
 				clog << "winservice\tService '" << appname << "' does not exist" << endl;
-				return -1;
+				return ENOENT;
 			}
-			throw Win32::Exception("Cant stop service",lasterror);
+			throw Win32::Exception("Cant start service",lasterror);
 		}
 
 		try {
@@ -362,7 +369,12 @@
 
 	}
 
+	/// @brief Stop win32 service.
+	/// @retval 0 Services was stopped or does not exist.
+	/// @retval -1 Unexpected error.
 	static int service_stop(const char *appname) {
+
+		cout << "win32\tStopping service '" << appname << "'" << endl;
 
 		Win32::Service::Manager manager;
 		Win32::Service::Handler service{manager.open(appname)};
@@ -370,7 +382,7 @@
 			auto lasterror = GetLastError();
 			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
 				clog << "winservice\tService '" << appname << "' does not exist" << endl;
-				return -1;
+				return 0;
 			}
 			throw Win32::Exception("Cant stop service",lasterror);
 		}
@@ -472,6 +484,58 @@
 			{ 'r', "restart" },
 			{ 'R', "reinstall" },
 		};
+
+		if(!strcasecmp(key,"uninstall-and-clean")) {
+
+			Logger::redirect(true);
+			info() << "Uninstalling and cleaning service" << endl;
+
+			// Stop service
+			if(service_stop(name().c_str())) {
+				return 1;
+			}
+
+			// Uninstall service
+			if(uninstall()) {
+				return 2;
+			}
+
+			// Remove registry entries.
+			info() << "Cleaning application registry" << endl;
+			{
+				HKEY hKey = 0;
+				LSTATUS rc = RegCreateKeyEx(HKEY_LOCAL_MACHINE,TEXT("SOFTWARE"),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL,&hKey,NULL);
+
+				if(rc == ERROR_SUCCESS) {
+
+					try {
+
+						rc = RegDeleteTree(hKey,Application::Name().c_str());
+						if(rc != ERROR_SUCCESS && rc != ERROR_FILE_NOT_FOUND) {
+							throw Win32::Exception("Cant delete application registry",rc);
+						}
+
+					} catch(...) {
+
+						RegCloseKey(hKey);
+						throw;
+
+					}
+
+					RegCloseKey(hKey);
+
+				} if(rc != ERROR_FILE_NOT_FOUND) {
+
+					throw Win32::Exception("Cant open application registry",rc);
+					return 3;
+
+				}
+
+
+			}
+
+			return 0;
+		}
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {

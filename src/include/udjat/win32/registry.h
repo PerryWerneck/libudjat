@@ -37,7 +37,7 @@
 			static void set(HKEY hK, const char *name, const char *value);
 
 		public:
-			Registry();
+			Registry(bool write = false);
 			Registry(const char *path, bool write = false);
 			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
 

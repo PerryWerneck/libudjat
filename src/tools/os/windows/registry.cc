@@ -92,7 +92,7 @@
 
 	}
 
-	Win32::Registry::Registry() : hKey(Win32::Registry::open()) {
+	Win32::Registry::Registry(bool write) : hKey(Win32::Registry::open(HKEY_LOCAL_MACHINE,nullptr,write)) {
 	}
 
 	Win32::Registry::Registry(HKEY hParent, const char *path, bool write) : hKey(Win32::Registry::open(hParent,path,write)) {
