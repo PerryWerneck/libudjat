@@ -19,7 +19,7 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::setup(const pugi::xml_node &root) {
+	void Abstract::Agent::setup_properties(const pugi::xml_node &root) noexcept {
 
 		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 
@@ -61,6 +61,10 @@ namespace Udjat {
 		}
 #endif // !_WIN32
 
+	}
+
+	void Abstract::Agent::setup_states(const pugi::xml_node &root) noexcept {
+
 		// Load agent states.
 		Abstract::Object::for_each(root,"state","states",[this](const pugi::xml_node &node){
 			try {
@@ -82,6 +86,10 @@ namespace Udjat {
 
 			}
 		});
+
+	}
+
+	void Abstract::Agent::setup_alerts(const pugi::xml_node &root) noexcept {
 
 		// Load agent alerts.
 		Abstract::Object::for_each(root,"alert","alerts",[this](const pugi::xml_node &node){
@@ -108,7 +116,9 @@ namespace Udjat {
 			}
 
 		});
+	}
 
+	void Abstract::Agent::setup_children(const pugi::xml_node &root) noexcept {
 		for(const pugi::xml_node &node : root) {
 
 			if(strcasecmp(node.name(),"module") == 0) {
@@ -122,6 +132,24 @@ namespace Udjat {
 
 			}
 
+		}
+	}
+
+	void Abstract::Agent::setup(const pugi::xml_node &root) {
+
+		setup_properties(root);
+		setup_states(root);
+		setup_alerts(root);
+		setup_children(root);
+
+		// Search for common states & alerts.
+		string nodename{root.name()};
+		nodename += "-defaults";
+		for(XML::Node node = root.parent(); node; node = node.parent()) {
+			for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
+				setup_states(child);
+				setup_alerts(child);
+			}
 		}
 
 	}

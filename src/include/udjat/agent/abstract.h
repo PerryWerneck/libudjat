@@ -108,6 +108,18 @@
 			/// @brief Enable disable 'running updates' flag.
 			void updating(bool running);
 
+			/// @brief Load agent properties from XML node.
+			void setup_properties(const pugi::xml_node &node) noexcept;
+
+			/// @brief Load states from XML node.
+			void setup_states(const pugi::xml_node &node) noexcept;
+
+			/// @brief Load alerts from XML node.
+			void setup_alerts(const pugi::xml_node &node) noexcept;
+
+			/// @brief Load children from XML node.
+			void setup_children(const pugi::xml_node &node) noexcept;
+
 		protected:
 
 			/// @brief Allow use of super:: for accessing abstract::agent methods.
@@ -215,8 +227,12 @@
 				return children.objects;
 			}
 
-			/// @brief Load children from xml node.
-			/// @brief node XML node with agent attributes.
+			/// @brief Setup agent from XML node.
+			/// @see setup_properties
+			/// @see setup_states
+			/// @see setup_alerts
+			/// @see setup_children
+			/// @brief node XML node with agent and children definitions.
 			void setup(const pugi::xml_node &node) override;
 
 			/// @brief Deinitialize agent subsystem.

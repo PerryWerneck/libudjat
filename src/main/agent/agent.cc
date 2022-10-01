@@ -32,6 +32,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/event.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
 
 namespace Udjat {
@@ -66,7 +67,8 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(Quark(node,"name","unnamed",false).c_str()) {
+	Abstract::Agent::Agent(const pugi::xml_node &node) : Object(node) {
+		setup_properties(node);
 	}
 
 	void Abstract::Agent::notify(const Event event) {
@@ -99,9 +101,7 @@ namespace Udjat {
 
 	Abstract::Agent::~Agent() {
 
-#ifdef DEBUG
-		info() << "Cleaning up" << endl;
-#endif // DEBUG
+		trace("Cleaning up agent ",name());
 
 		// Remove all associated events.
 		Udjat::Event::remove(this);
@@ -110,9 +110,7 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : agents()) {
 			child->parent = nullptr;
-#ifdef DEBUG
-			child->info() << "Releasing agent with " << child.use_count() << " references" << endl;
-#endif // DEBUG
+			trace("Releasing agent ",name()," with ",child.use_count()," references");
 		}
 
 	}
