@@ -531,6 +531,8 @@
 		if(!strcasecmp(key,"uninstall-and-clean")) {
 
 			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
+
 			info() << "Uninstalling and cleaning service" << endl;
 
 			// Stop service
