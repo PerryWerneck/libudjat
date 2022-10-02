@@ -402,6 +402,43 @@
 
 	}
 
+	/// @brief Remove registry
+	static int reset_to_defaults() {
+
+		cout << "win32\tCleaning application registry" << endl;
+
+		HKEY hKey = 0;
+		LSTATUS rc = RegCreateKeyEx(HKEY_LOCAL_MACHINE,TEXT("SOFTWARE"),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL,&hKey,NULL);
+
+		if(rc == ERROR_SUCCESS) {
+
+			try {
+
+				rc = RegDeleteTree(hKey,Application::Name().c_str());
+				if(rc != ERROR_SUCCESS && rc != ERROR_FILE_NOT_FOUND) {
+					throw Win32::Exception("Cant delete application registry",rc);
+				}
+
+			} catch(...) {
+
+				RegCloseKey(hKey);
+				throw;
+
+			}
+
+			RegCloseKey(hKey);
+
+		} if(rc != ERROR_FILE_NOT_FOUND) {
+
+			throw Win32::Exception("Cant open application registry",rc);
+			return 3;
+
+		}
+
+		trace("Registry cleanup complete");
+		return 0;
+	}
+
 	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
@@ -428,6 +465,11 @@
 
 			}
 			return 0;
+
+		case 'C':	// Reset to defaults.
+			Logger::redirect(true);
+			mode = SERVICE_MODE_NONE;
+			return reset_to_defaults();
 
 		case 'i':	// Install service.
 			Logger::redirect(true);
@@ -483,6 +525,7 @@
 			{ 'q', "stop" },
 			{ 'r', "restart" },
 			{ 'R', "reinstall" },
+			{ 'C', "reset-to-defaults" },
 		};
 
 		if(!strcasecmp(key,"uninstall-and-clean")) {
@@ -501,37 +544,8 @@
 			}
 
 			// Remove registry entries.
-			info() << "Cleaning application registry" << endl;
-			{
-				HKEY hKey = 0;
-				LSTATUS rc = RegCreateKeyEx(HKEY_LOCAL_MACHINE,TEXT("SOFTWARE"),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL,&hKey,NULL);
-
-				if(rc == ERROR_SUCCESS) {
-
-					try {
-
-						rc = RegDeleteTree(hKey,Application::Name().c_str());
-						if(rc != ERROR_SUCCESS && rc != ERROR_FILE_NOT_FOUND) {
-							throw Win32::Exception("Cant delete application registry",rc);
-						}
-
-					} catch(...) {
-
-						RegCloseKey(hKey);
-						throw;
-
-					}
-
-					RegCloseKey(hKey);
-
-				} if(rc != ERROR_FILE_NOT_FOUND) {
-
-					throw Win32::Exception("Cant open application registry",rc);
-					return 3;
-
-				}
-
-
+			if(reset_to_defaults()) {
+				return 3;
 			}
 
 			return 0;
