@@ -81,6 +81,12 @@
 			LogDir();
 
 		};
+
+		class UDJAT_API InstallLocation : public std::string {
+		public:
+			InstallLocation();
+		};
+
 #endif // _WIN32
 
 		/// @brief Application data dir.

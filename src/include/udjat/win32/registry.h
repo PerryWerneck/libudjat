@@ -37,9 +37,11 @@
 			static void set(HKEY hK, const char *name, const char *value);
 
 		public:
+			constexpr Registry(HKEY k) : hKey(k) {
+			}
+
 			Registry(bool write = false);
 			Registry(const char *path, bool write = false);
-			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
 
 			bool hasKey(const char *name) const noexcept;
 			bool hasValue(const char *name) const noexcept;

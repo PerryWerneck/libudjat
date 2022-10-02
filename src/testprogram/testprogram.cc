@@ -290,6 +290,10 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+#ifdef _WIN32
+	Application::InstallLocation();
+#endif // _WIN32
+
 	trace("Simple trace message");
 	auto rc = Service().run(argc,argv);
 

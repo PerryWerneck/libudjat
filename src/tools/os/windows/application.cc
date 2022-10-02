@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <errno.h>
  #include <stdexcept>
  #include <sys/stat.h>
@@ -148,6 +149,43 @@
 		}
 	}
 
+	Application::InstallLocation::InstallLocation() {
+
+		string path{"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"};
+		path += Application::Name();
+
+		trace("Searching for 'InstallLocation' in '",path,"'");
+
+		static const DWORD options[] = { KEY_READ|KEY_WOW64_32KEY, KEY_READ|KEY_WOW64_64KEY };
+
+		for(size_t ix = 0; ix < (sizeof(options)/sizeof(options[0])); ix++) {
+			HKEY hKey;
+			LSTATUS rc =
+				RegCreateKeyEx(
+					HKEY_LOCAL_MACHINE,
+					TEXT(path.c_str()),
+					0,
+					NULL,
+					REG_OPTION_NON_VOLATILE,
+					options[ix],
+					NULL,
+					&hKey,
+					NULL
+				);
+
+			if(rc == ERROR_SUCCESS) {
+				Win32::Registry registry{hKey};
+				if(registry.hasValue("InstallLocation")) {
+					assign(registry.get("InstallLocation",""));
+					trace("InstallLocation='",c_str(),"'");
+				}
+			}
+		}
+
+		trace("No 'InstallLocation' registry key");
+
+	}
+
 	Application::LibDir::LibDir() : string(Application::Path()) {
 	}
 
@@ -164,7 +202,7 @@
 			// Search application install dir.
 			try {
 
-				Win32::Registry registry(HKEY_LOCAL_MACHINE,(string{"\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"}+application_name).c_str());
+				Win32::Registry registry((string{"\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"}+application_name).c_str());
 				assign(registry.get("InstallLocation",""));
 				if(!empty()) {
 					append(subdir);
