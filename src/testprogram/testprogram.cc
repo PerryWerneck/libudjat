@@ -292,11 +292,13 @@ int main(int argc, char **argv) {
 
 #ifdef _WIN32
 	{
+		Logger::redirect(true,true);
 		Application::InstallLocation appinstall;
+		trace("AppInstall=",appinstall.c_str());
 		if(appinstall) {
-			trace("InstalLocation='",appinstall.c_str(),"'");
+			cout << "InstalLocation='" << appinstall << "'" << endl;
 		} else {
-			trace("No install location");
+			cout << "No install location" << endl;
 		}
 	}
 #endif // _WIN32

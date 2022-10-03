@@ -202,11 +202,11 @@
 	}
 
 	void Logger::write(const Logger::Level level, const char *message) noexcept {
-		Writer(level,false,true).write(message);
+		Writer(level,true,true).write(message);
 	}
 
 	void Logger::write(const Logger::Level level, const std::string &message) noexcept {
-		Writer(level,false,true).write(message.c_str());
+		Writer(level,true,true).write(message.c_str());
 	}
 
  }

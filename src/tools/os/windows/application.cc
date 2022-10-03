@@ -156,8 +156,10 @@
 			return false;
 		}
 
-		trace("InstallLocation='",c_str(),"'");
-		trace("ApplicationPath='",Application::Path().c_str(),"'");
+#ifdef DEBUG
+		cout	<< "InstallLocation='" << c_str() << "'" << endl
+				<< "ApplicationPath='" << Application::Path().c_str() << "'" << endl;
+#endif
 		return strcmp(c_str(),Application::Path().c_str()) == 0;
 
 	}
@@ -186,7 +188,14 @@
 				Win32::Registry registry{hKey};
 				if(registry.hasValue("InstallLocation")) {
 					assign(registry.get("InstallLocation",""));
+
+					if(at(size()-1) != '\\') {
+						append("\\");
+					}
+
 					trace("InstallLocation='",c_str(),"'");
+					return;
+
 				}
 			} else if(rc != ERROR_FILE_NOT_FOUND) {
 				cerr << "win32\t" << Win32::Exception::format(path.c_str()) << endl;
