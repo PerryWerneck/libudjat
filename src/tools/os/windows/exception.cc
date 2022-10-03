@@ -21,6 +21,7 @@
  #include <private/misc.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/charset.h>
+ #include <udjat/tools/string.h>
  #include <windows.h>
  #include <iostream>
  #include <mutex>
@@ -30,7 +31,7 @@
 
  using namespace std;
 
- #define BUFFER_LENGTH 100
+ #define BUFFER_LENGTH 1024
 
  class Guard : public mutex {
  public:
@@ -99,7 +100,7 @@
 
 	} else if(*buffer) {
 
-		response = Win32::Charset::from_windows(buffer);
+		response = Win32::Charset::from_windows(strip(buffer));
 
 	} else {
 
@@ -148,7 +149,7 @@
 
 	} else if(*buffer) {
 
-		response = Win32::Charset::from_windows(buffer);
+		response = Win32::Charset::from_windows(strip(buffer));
 
 	}
 

@@ -41,12 +41,6 @@
 
 		Buffer * BufferFactory(Level id);
 
-		/// @brief Write log message.
-		/// @param level The loglevel.
-		/// @param console Show it on console?
-		/// @param message The log message.
-		void write(const Level level, bool console, const char *message) noexcept;
-
 	};
 
  }

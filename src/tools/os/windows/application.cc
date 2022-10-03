@@ -26,6 +26,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/win32/registry.h>
+ #include <udjat/win32/exception.h>
  #include <cstring>
  #include <iostream>
  #include <libintl.h>
@@ -173,16 +174,12 @@
 		for(size_t ix = 0; ix < (sizeof(options)/sizeof(options[0])); ix++) {
 			HKEY hKey;
 			LSTATUS rc =
-				RegCreateKeyEx(
+				RegOpenKeyEx(
 					HKEY_LOCAL_MACHINE,
 					TEXT(path.c_str()),
 					0,
-					NULL,
-					REG_OPTION_NON_VOLATILE,
 					options[ix],
-					NULL,
-					&hKey,
-					NULL
+					&hKey
 				);
 
 			if(rc == ERROR_SUCCESS) {
@@ -191,6 +188,8 @@
 					assign(registry.get("InstallLocation",""));
 					trace("InstallLocation='",c_str(),"'");
 				}
+			} else if(rc != ERROR_FILE_NOT_FOUND) {
+				cerr << "win32\t" << Win32::Exception::format(path.c_str()) << endl;
 			}
 		}
 

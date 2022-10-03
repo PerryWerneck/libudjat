@@ -26,7 +26,7 @@ namespace Udjat {
 
 	}
 
-	void Logger::Controller::write(const Level level, bool console, const char *message) noexcept {
+	void Logger::Writer::write(const char *message) const noexcept {
 
 		// Split message.
 		char domain[15];
@@ -75,20 +75,24 @@ namespace Udjat {
 
 		}
 
-		// Write to syslog.
-		static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_INFO};
+		if(file) {
+			//
+			// Write to syslog.
+			//
+			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_INFO};
 
-		{
-			char *ptr = strchr(domain,' ');
-			if(ptr) {
-				*ptr = 0;
+			{
+				char *ptr = strchr(domain,' ');
+				if(ptr) {
+					*ptr = 0;
+				}
 			}
-		}
 
-		if(*domain) {
-			syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s: %s",domain,text);
-		} else {
-			syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s",text);
+			if(*domain) {
+				syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s: %s",domain,text);
+			} else {
+				syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s",text);
+			}
 		}
 	}
 
@@ -111,7 +115,7 @@ namespace Udjat {
 			return;
 		}
 
-		Controller::getInstance().write((Level) id, console, buffer.c_str());
+		write(buffer.c_str());
 
 		buffer.erase();
 

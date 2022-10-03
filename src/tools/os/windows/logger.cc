@@ -36,7 +36,7 @@ using namespace std;
 
 namespace Udjat {
 
-	void Logger::Controller::write(const Level level, bool console, const char *message) noexcept {
+	void Logger::Writer::write(const char *message) const noexcept {
 
 		Win32::Registry registry("log");
 		string timestamp{TimeStamp().to_string("%x %X")};
@@ -59,6 +59,7 @@ namespace Udjat {
 
 		if(console) {
 
+			// Log to console
 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
 			if(hOut != INVALID_HANDLE_VALUE) {
@@ -110,9 +111,9 @@ namespace Udjat {
 
 			}
 
-			{
+			if(file) {
 				//
-				// Get filename.
+				// Write to file.
 				//
 				string filename, format;
 				DWORD keep = 86400;
@@ -164,7 +165,7 @@ namespace Udjat {
 	}
 
 	void Logger::Writer::write(Buffer &buffer) {
-		Controller::getInstance().write((Level) id, console, buffer.c_str());
+		write(buffer.c_str());
 	}
 
 }

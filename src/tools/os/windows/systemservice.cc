@@ -33,6 +33,7 @@
  #include <udjat/module.h>
  #include <direct.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/file.h>
 
  using namespace std;
 
@@ -417,8 +418,9 @@
 
 				Win32::Registry{hKey}.remove(Application::Name().c_str());
 
-			} if(rc != ERROR_FILE_NOT_FOUND) {
+			} else if(rc != ERROR_FILE_NOT_FOUND) {
 
+				trace("RegCreateKeyEx(HKLM/SOFTWARE) rc was ",rc);
 				throw Win32::Exception("Cant open application registry",rc);
 
 			}
@@ -518,26 +520,95 @@
 			{ 'C', "reset-to-defaults" },
 		};
 
-		if(!strcasecmp(key,"uninstall-and-clean")) {
+		if(!strcasecmp(key,"force-uninstall")) {
 
-			Logger::redirect(true);
+			Logger::redirect(true,false);
 			mode = SERVICE_MODE_NONE;
 
-			info() << "Uninstalling and cleaning service" << endl;
+			Application::InstallLocation instpath;
+
+#ifdef DEBUG
+			instpath.assign(Application::Path());
+#endif // DEBUG
+
+			if(!instpath) {
+				error() << "This application was not installed" << endl;
+				return 1;
+			}
+
+			info() << "Doing a forced uninstall" << endl;
 
 			// Stop service
 			if(service_stop(name().c_str())) {
-				return 1;
+				return 2;
 			}
 
 			// Uninstall service
 			if(uninstall()) {
-				return 2;
+				return 3;
 			}
 
 			// Remove registry entries.
 			if(reset_to_defaults()) {
-				return 3;
+				return 4;
+			}
+
+			// Remove from system registry.
+			static const DWORD options[] = { KEY_ALL_ACCESS|KEY_WOW64_32KEY, KEY_ALL_ACCESS|KEY_WOW64_64KEY };
+			for(size_t ix = 0; ix < (sizeof(options)/sizeof(options[0])); ix++) {
+
+				HKEY hKey;
+				LSTATUS rc =
+					RegOpenKeyEx(
+						HKEY_LOCAL_MACHINE,
+						TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall"),
+						0,
+						options[ix],
+						&hKey
+					);
+
+				if(rc == ERROR_SUCCESS) {
+
+					Win32::Registry{hKey}.remove(Application::Name().c_str());
+
+				} else if(rc != ERROR_FILE_NOT_FOUND) {
+
+					cerr << "win32\t" << Win32::Exception::format("Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall") << endl;
+
+				}
+
+			}
+
+			// Remove all files from instpath.
+			{
+
+				cout << "win32\tRemoving files in '" << instpath << "'" << endl;
+
+				File::Path::for_each(instpath.c_str(),"*",true,[this](bool isdir, const char *path){
+					// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-deletefile
+					trace("Removing '",path,"'");
+					if(isdir) {
+						if(RemoveDirectory(path) == 0) {
+							auto rc = GetLastError();
+							if(rc == ERROR_DIR_NOT_EMPTY) {
+								MoveFileEx(path,NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
+							} else {
+								error() << Win32::Exception::format(path,rc) << endl;
+							}
+						}
+					} else if(DeleteFile(path) == 0) {
+						auto rc = GetLastError();
+						if(rc == ERROR_ACCESS_DENIED) {
+							MoveFileEx(path,NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
+						} else {
+							error() << Win32::Exception::format(path,rc) << endl;
+						}
+					}
+					return true;
+				});
+
+				MoveFileEx(instpath.c_str(),NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
+
 			}
 
 			return 0;

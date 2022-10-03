@@ -67,16 +67,20 @@
 			friend class Logger;
 
 			/// @brief The buffer id.
-			Level id = Info;
+			Level level = Info;
 
 			/// @brief Send output to console?
 			bool console = true;
+
+			/// @brief Send output to file?
+			bool file = true;
 
 #ifndef _WIN32
 			void write(int fd, const std::string &str);
 #endif // !WIN32
 
 			void write(Buffer &buffer);
+			void write(const char *message) const noexcept;
 
 		protected:
 
@@ -87,11 +91,15 @@
 			int overflow(int c) override;
 
 		public:
-			Writer(Logger::Level i, bool c) : id(i), console(c) {
+			Writer(Logger::Level i, bool c, bool f) : level(i), console(c), file(f) {
 			}
 
 			inline void set_console(bool mode) {
 				this->console = mode;
+			}
+
+			inline void set_file(bool mode) {
+				this->file = mode;
 			}
 
 		};
@@ -189,9 +197,9 @@
 		/// @brief Redirect std::cout, std::clog and std::cerr to log file.
 		/// @param console If true send log output to standard out.
 #ifdef DEBUG
-		static void redirect(bool console = true);
+		static void redirect(bool console = true, bool file = true);
 #else
-		static void redirect(bool console = false);
+		static void redirect(bool console = false, bool file = true);
 #endif // DEBUG
 
 		static void console(bool enable);

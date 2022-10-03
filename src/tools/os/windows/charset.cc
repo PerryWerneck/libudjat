@@ -99,7 +99,8 @@
 			outBuff[szOut] = 0;
 		}
 
-		to.assign(outBuff);
+
+		to.assign(outBuff,szOut);
 
 	}
 

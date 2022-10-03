@@ -91,7 +91,7 @@
 	int Logger::Writer::overflow(int c) {
 
 		lock_guard<std::mutex> lock(guard);
-		Buffer * buffer = Controller::getInstance().BufferFactory(id);
+		Buffer * buffer = Controller::getInstance().BufferFactory(level);
 
 		if(buffer->push_back(c)) {
 			write(*buffer);
@@ -160,7 +160,7 @@
 		return append(e.what());
 	}
 
-	void Logger::redirect(bool console) {
+	void Logger::redirect(bool console, bool file) {
 
 		static const Level levels[] = { Info,Warning,Error };
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
@@ -171,8 +171,9 @@
 			if(writer) {
 				trace("Stream(",ix,") was already redirected");
 				writer->set_console(console);
+				writer->set_file(file);
 			} else {
-				streams[ix]->rdbuf(new Writer(levels[ix],console));
+				streams[ix]->rdbuf(new Writer(levels[ix],console,file));
 			}
 
 		}
@@ -201,11 +202,11 @@
 	}
 
 	void Logger::write(const Logger::Level level, const char *message) noexcept {
-		Controller::getInstance().write(level,true,message);
+		Writer(level,false,true).write(message);
 	}
 
 	void Logger::write(const Logger::Level level, const std::string &message) noexcept {
-		write(level,message.c_str());
+		Writer(level,false,true).write(message.c_str());
 	}
 
  }
