@@ -26,6 +26,7 @@
 #include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
 #include <udjat/tools/object.h>
+#include <udjat/tools/logger.h>
 #include <udjat/tools/xml.h>
 
 #ifdef _WIN32
@@ -45,6 +46,20 @@ namespace Udjat {
 
 		bool rc = true;
 
+		// Preload modules from config
+		{
+			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
+
+			trace("load-at-startup size=",modules.size());
+			if(modules.size()) {
+				cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
+				for(const std::string &module : modules) {
+					Module::load(module.c_str(),true);
+				}
+			}
+		}
+
+		// Preload modules from XML
 		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
 
 			// Preload from path.
@@ -78,10 +93,7 @@ namespace Udjat {
 	}
 
 	void Module::load(const char *name, bool required) {
-		pugi::xml_node node;
-		node.append_attribute("name").set_value(name);
-		node.append_attribute("required").set_value(required);
-		load(node);
+		throw system_error(ENOTSUP,system_category(),"Non XML module load was not implemented");
 	}
 
 }

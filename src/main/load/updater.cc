@@ -44,18 +44,6 @@
 
 	Updater::Updater(const char *pathname) : path{pathname} {
 
-		/*
-		// First scan for modules.
-		if(Config::Value<bool>("modules","preload-from-xml",true)) {
-			cout << "modules\tPreloading from " << path << endl;
-			for_each([](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					Module::load(node);
-				}
-			});
-		}
-		*/
-
 		// Then check for file updates.
 		for_each([this](const char *filename, const pugi::xml_document &doc){
 
