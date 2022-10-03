@@ -85,6 +85,9 @@
 		class UDJAT_API InstallLocation : public std::string {
 		public:
 			InstallLocation();
+
+			operator bool() const;
+
 		};
 
 #endif // _WIN32

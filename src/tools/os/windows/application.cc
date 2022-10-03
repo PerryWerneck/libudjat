@@ -149,6 +149,18 @@
 		}
 	}
 
+	Application::InstallLocation::operator bool() const {
+
+		if(empty()) {
+			return false;
+		}
+
+		trace("InstallLocation='",c_str(),"'");
+		trace("ApplicationPath='",Application::Path().c_str(),"'");
+		return strcmp(c_str(),Application::Path().c_str()) == 0;
+
+	}
+
 	Application::InstallLocation::InstallLocation() {
 
 		string path{"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"};

@@ -291,7 +291,14 @@ int main(int argc, char **argv) {
 	*/
 
 #ifdef _WIN32
-	Application::InstallLocation();
+	{
+		Application::InstallLocation appinstall;
+		if(appinstall) {
+			trace("InstalLocation='",appinstall.c_str(),"'");
+		} else {
+			trace("No install location");
+		}
+	}
 #endif // _WIN32
 
 	trace("Simple trace message");

@@ -407,31 +407,21 @@
 
 		cout << "win32\tCleaning application registry" << endl;
 
-		HKEY hKey = 0;
-		LSTATUS rc = RegCreateKeyEx(HKEY_LOCAL_MACHINE,TEXT("SOFTWARE"),0,NULL,REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL,&hKey,NULL);
+		static const DWORD options[] = { KEY_ALL_ACCESS|KEY_WOW64_32KEY, KEY_ALL_ACCESS|KEY_WOW64_64KEY };
+		for(size_t ix = 0; ix < (sizeof(options)/sizeof(options[0])); ix++) {
 
-		if(rc == ERROR_SUCCESS) {
+			HKEY hKey = 0;
+			LSTATUS rc = RegCreateKeyEx(HKEY_LOCAL_MACHINE,TEXT("SOFTWARE"),0,NULL,REG_OPTION_NON_VOLATILE,options[ix],NULL,&hKey,NULL);
 
-			try {
+			if(rc == ERROR_SUCCESS) {
 
-				rc = RegDeleteTree(hKey,Application::Name().c_str());
-				if(rc != ERROR_SUCCESS && rc != ERROR_FILE_NOT_FOUND) {
-					throw Win32::Exception("Cant delete application registry",rc);
-				}
+				Win32::Registry{hKey}.remove(Application::Name().c_str());
 
-			} catch(...) {
+			} if(rc != ERROR_FILE_NOT_FOUND) {
 
-				RegCloseKey(hKey);
-				throw;
+				throw Win32::Exception("Cant open application registry",rc);
 
 			}
-
-			RegCloseKey(hKey);
-
-		} if(rc != ERROR_FILE_NOT_FOUND) {
-
-			throw Win32::Exception("Cant open application registry",rc);
-			return 3;
 
 		}
 

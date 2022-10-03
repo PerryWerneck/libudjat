@@ -105,6 +105,13 @@
 		}
 	}
 
+	void Win32::Registry::remove(const char *keyname) {
+		auto rc = RegDeleteTree(hKey,keyname);
+		if(rc != ERROR_SUCCESS && rc != ERROR_FILE_NOT_FOUND) {
+			throw Win32::Exception("Cant delete application registry",rc);
+		}
+	}
+
 	DWORD Win32::Registry::get(const char *name, DWORD def) const {
 
 		if(!hKey) {
