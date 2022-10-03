@@ -67,32 +67,28 @@ namespace Udjat {
 				const char *prefix = "";
 				const char *suffix = "";
 
-				{
-					DWORD mode = 0;
-					if(GetConsoleMode(hOut, &mode)) {
+				DWORD mode = 0;
+				if(GetConsoleMode(hOut, &mode)) {
 
-						if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
+					if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
 
-							// Allowed, setup console colors.
-							// https://learn.microsoft.com/pt-br/windows/console/console-virtual-terminal-sequences
-							static const char *decorations[] = {
-								"\x1b[92m",	// Info
-								"\x1b[93m",	// Warning
-								"\x1b[91m",	// Error
-								"\x1b[94m",	// Trace
-							};
+						// Allowed, setup console colors.
+						// https://learn.microsoft.com/pt-br/windows/console/console-virtual-terminal-sequences
+						static const char *decorations[] = {
+							"\x1b[92m",	// Info
+							"\x1b[93m",	// Warning
+							"\x1b[91m",	// Error
+							"\x1b[94m",	// Trace
+						};
 
-							prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
+						prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
 
-							suffix = "\x1b[0m";
-						}
-
+						suffix = "\x1b[0m";
 					}
 
 				}
 
 				DWORD dunno;
-
 				if(*prefix) {
 					WriteFile(hOut,prefix,strlen(prefix),&dunno,NULL);
 				}
@@ -111,56 +107,57 @@ namespace Udjat {
 
 			}
 
-			if(file) {
-				//
-				// Write to file.
-				//
-				string filename, format;
-				DWORD keep = 86400;
+		}
 
-				try {
+		if(file) {
+			//
+			// Write to file.
+			//
+			string filename, format;
+			DWORD keep = 86400;
 
-					keep = registry.get("keep",keep);
-					filename.assign(registry.get("path",""));
-					format.assign(registry.get("format",""));
+			try {
 
-				} catch(...) {
+				keep = registry.get("keep",keep);
+				filename.assign(registry.get("path",""));
+				format.assign(registry.get("format",""));
 
-					// On error assume defaults.
-					filename.clear();
-					format.clear();
+			} catch(...) {
 
-				}
+				// On error assume defaults.
+				filename.clear();
+				format.clear();
 
-				if(filename.empty()) {
-					filename.assign(Application::Path() + "\\logs\\");
-				}
-
-				if(format.empty()) {
-					format.assign(Application::Name() + "-%d.log");
-				}
-
-				mkdir(filename.c_str());
-
-				// Get logfile path.
-				filename.append(TimeStamp().to_string(format.c_str()));
-
-				struct stat st;
-				if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
-					// More than one day, remove it
-					remove(filename.c_str());
-				}
-
-				// Open file
-				std::ofstream ofs;
-				ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-
-				ofs.open(filename, ofstream::out | ofstream::app);
-				ofs << timestamp << " " << domain << " " << text << endl;
-				ofs.close();
 			}
 
+			if(filename.empty()) {
+				filename.assign(Application::Path() + "\\logs\\");
+			}
+
+			if(format.empty()) {
+				format.assign(Application::Name() + "-%d.log");
+			}
+
+			mkdir(filename.c_str());
+
+			// Get logfile path.
+			filename.append(TimeStamp().to_string(format.c_str()));
+
+			struct stat st;
+			if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+				// More than one day, remove it
+				remove(filename.c_str());
+			}
+
+			// Open file
+			std::ofstream ofs;
+			ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+			ofs.open(filename, ofstream::out | ofstream::app);
+			ofs << timestamp << " " << domain << " " << text << endl;
+			ofs.close();
 		}
+
 
 	}
 
