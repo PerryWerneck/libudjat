@@ -21,6 +21,7 @@
  #include "private.h"
  #include <udjat/win32/exception.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -68,9 +69,9 @@
 	}
 
 	void Win32::Handler::Controller::remove(Handler *handler) {
-#ifdef DEBUG
-		cout << "win32\tRemoving handler " << hex << ((unsigned long long) handler->hEvent) << dec << endl;
-#endif // DEBUG
+
+		trace("Removing handler ",((unsigned long long) handler->hEvent));
+
 		lock_guard<mutex> lock(guard);
 		workers.remove_if([handler](Worker *worker){
 			worker->handlers.remove_if([handler](const Handler *h) {
@@ -78,9 +79,8 @@
 			});
 			return worker->handlers.empty();
 		});
-#ifdef DEBUG
-		cout << "win32\tHandçer " << hex << ((unsigned long long) handler->hEvent) << dec << " was removed" << endl;
-#endif // DEBUG
+
+		trace("Handler ",((unsigned long long) handler->hEvent), " removed");
 	}
 
 	Win32::Handler * Win32::Handler::Controller::find(HANDLE handle) noexcept {
