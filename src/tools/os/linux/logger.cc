@@ -47,29 +47,43 @@ namespace Udjat {
 		if(console) {
 
 			// Write to console.
-			// Write current time.
-			{
-				time_t t = time(0);
-				struct tm tm;
-				localtime_r(&t,&tm);
+			static bool decorated = (getenv("TERM") != NULL);
 
-				char timestr[80];
-				memset(timestr,0,sizeof(timestr));
+			static const char *decorations[] = {
+				"\x1b[92m",	// Info
+				"\x1b[93m",	// Warning
+				"\x1b[91m",	// Error
+				"\x1b[94m",	// Trace
+			};
 
-				size_t len = strftime(timestr, 79, "%x %X", &tm);
-
-				if(len) {
-					fdwrite(1,timestr);
-				} else {
-					fdwrite(1,"--/--/-- --:--:--");
-				}
-
-				fdwrite(1," ");
+			if(decorated) {
+				fdwrite(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
 			}
+
+			time_t t = time(0);
+			struct tm tm;
+			localtime_r(&t,&tm);
+
+			char timestr[80];
+			memset(timestr,0,sizeof(timestr));
+
+			size_t len = strftime(timestr, 79, "%x %X", &tm);
+			if(len) {
+				fdwrite(1,timestr);
+			} else {
+				fdwrite(1,"--/--/-- --:--:--");
+			}
+
+			fdwrite(1," ");
 
 			fdwrite(1,domain);
 			fdwrite(1," ");
 			fdwrite(1,text);
+
+			if(decorated) {
+				fdwrite(1,"\x1b[0m");
+			}
+
 			fdwrite(1,"\n");
 			fsync(1);
 
