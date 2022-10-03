@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat.h>
  #include <udjat/tools/systemservice.h>
  #include <iostream>
  #include <system_error>
@@ -170,7 +171,7 @@
 
 			static void dispatcher() {
 
-				Logger::redirect(false);
+				Logger::redirect(false,true);
 
 				Controller &controller = getInstance();
 
@@ -638,8 +639,8 @@
 
 		if(mode == SERVICE_MODE_FOREGROUND) {
 
-			Logger::redirect(true);
-			info() << "Running as application" << endl;
+			Logger::redirect(true,true);
+			info() << "Running as application with " << PACKAGE_NAME << " revision " << revision() << endl;
 
 			try {
 				init();
@@ -654,7 +655,7 @@
 		if(mode == SERVICE_MODE_DEFAULT || mode == SERVICE_MODE_DAEMON) {
 
 			Logger::redirect(false);
-			info() << "Starting service dispatcher" << endl;
+			info() << "Starting service dispatcher with " << PACKAGE_NAME << " revision " << revision() << endl;
 
 			// Run as service by default.
 			static SERVICE_TABLE_ENTRY DispatchTable[] = {

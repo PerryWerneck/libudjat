@@ -45,35 +45,6 @@ namespace Udjat {
 
 		bool rc = true;
 
-		/*
-		// Preload from configuration file.
-		{
-			Config::Value<vector<string>> modules("modules","load-at-startup","");
-
-			if(!modules.empty()) {
-				cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
-
-				Config::Value<bool> required("modules","required",false);
-				for(string &module : modules) {
-
-					try {
-
-
-						load(module.c_str(),required);
-
-					} catch(const std::exception &e) {
-
-						cerr << "modules\tCant load '" << module << "': " << e.what() << endl;
-						rc = false;
-
-					}
-
-				}
-			}
-
-		}
-		*/
-
 		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
 
 			// Preload from path.

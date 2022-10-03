@@ -30,6 +30,10 @@
 
  namespace Udjat {
 
+	UDJAT_API const char * revision() {
+		return STRINGIZE_VALUE_OF(BUILD_DATE);
+	}
+
 	int UDJAT_API Application::init(int argc, char **argv, const char *definitions) {
 
 		Application::init();
