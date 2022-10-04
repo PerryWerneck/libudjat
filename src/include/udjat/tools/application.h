@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/xml.h>
  #include <string>
  #include <ostream>
 
@@ -108,9 +109,15 @@
 		class UDJAT_API DataFile : public std::string {
 		public:
 
-			// @brief Create a full path for datafile.
-			// @param name	The file name.
-			// @param system When true use the systemdatafir for file path if necessary.
+			/// @brief Create a full path to datafile based on XML definition.
+			/// @param node XML node for file definition.
+			/// @param attrname Attribute for filename
+			/// @param system When true use the systemdatadir for file path if necessary.
+			DataFile(const XML::Node &node, const char *attrname = "path", bool system = true);
+
+			/// @brief Create a full path to datafile.
+			/// @param name	The file name.
+			/// @param system When true use the systemdatadir for file path if necessary.
 			DataFile(const char *name, bool system = false);
 
 		};

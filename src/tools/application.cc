@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
  #include <udjat/module.h>
  #include <iostream>
@@ -75,6 +76,29 @@
 			}
 			append(name);
 		}
+	}
+
+	Application::DataFile::DataFile(const XML::Node &node, const char *attrname, bool system) {
+
+		const char *name = node.attribute(attrname).as_string("");
+
+		if(!name[0]) {
+			throw runtime_error(Logger::String("Required attribute '",attrname,"' is missing"));
+		}
+
+		if(name[0] == '/' || (name[0] == '.' && name[1] == '/') || name[0] == '\\' || (name[0] == '.' && name[1] == '\\') || name[1] == ':' ) {
+			assign(name);
+			return;
+		}
+
+		if(node.attribute("system-data-dir").as_bool(system)) {
+			assign(SystemDataDir());
+		} else {
+			assign(DataDir());
+		}
+
+		append(name);
+
 	}
 
  }
