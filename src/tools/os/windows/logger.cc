@@ -38,7 +38,7 @@ namespace Udjat {
 
 	void Logger::Writer::write(const char *message) const noexcept {
 
-		Win32::Registry registry("log");
+		Win32::Registry registry{"log"};
 		string timestamp{TimeStamp().to_string("%x %X")};
 
 		// Split message.
@@ -113,25 +113,20 @@ namespace Udjat {
 			//
 			// Write to file.
 			//
-			string filename, format;
+			Application::LogDir filename;
+			string format;
 			DWORD keep = 86400;
 
 			try {
 
 				keep = registry.get("keep",keep);
-				filename.assign(registry.get("path",""));
 				format.assign(registry.get("format",""));
 
 			} catch(...) {
 
 				// On error assume defaults.
-				filename.clear();
 				format.clear();
 
-			}
-
-			if(filename.empty()) {
-				filename.assign(Application::Path() + "\\logs\\");
 			}
 
 			if(format.empty()) {

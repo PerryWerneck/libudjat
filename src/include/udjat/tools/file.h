@@ -99,14 +99,13 @@ namespace Udjat {
 				return for_each(c_str(),"*",false,call);
 			}
 
-
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
 
 			/// @brief Save file to FD.
 			static void save(int fd, const char *contents);
 
-			/// @brief Replace file withou backup
+			/// @brief Replace file without backup
 			static void replace(const char *filename, const char *contents);
 
 			/// @brief Save file.

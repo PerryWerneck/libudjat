@@ -302,11 +302,12 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	cout << "--------------[" << Application::SystemDataDir() << "]----------" << endl;
-	exit(-1);
 #endif // _WIN32
 
-	trace("Simple trace message");
+	trace("SystemDatadir=",Application::SystemDataDir().c_str());
+	trace("CacheDir=",Application::CacheDir().c_str());
+	trace("LogDir=",Application::LogDir().c_str());
+
 	auto rc = Service().run(argc,argv);
 
 	trace("Service exits with rc=",rc);

@@ -76,12 +76,6 @@
 			Path();
 		};
 
-		class UDJAT_API LogDir : public std::string {
-		public:
-			LogDir();
-
-		};
-
 		class UDJAT_API InstallLocation : public std::string {
 		public:
 			InstallLocation();
@@ -89,8 +83,13 @@
 			operator bool() const;
 
 		};
-
 #endif // _WIN32
+
+		class UDJAT_API LogDir : public File::Path {
+		public:
+			LogDir();
+
+		};
 
 		/// @brief Application data dir.
 		class UDJAT_API DataDir : public File::Path {

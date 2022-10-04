@@ -336,8 +336,7 @@
 
 		try {
 
-			Win32::Registry registry("log");
-			assign(registry.get("path",""));
+			assign(Win32::Registry("log").get("path",""));
 			if(!empty()) {
 				mkdir(c_str());
 				return;
