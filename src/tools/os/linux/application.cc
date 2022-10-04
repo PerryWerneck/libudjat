@@ -91,15 +91,6 @@
 		append("/");
 	}
 
-	Application::DataFile::DataFile(const char *name) {
-		if(name[0] == '/' || (name[0] == '.' && name[1] == '/')) {
-			assign(name);
-		} else {
-			assign(DataDir());
-			append(name);
-		}
-	}
-
 	Application::LibDir::LibDir() : string{STRINGIZE_VALUE_OF(LIBDIR) "/"} {
 	}
 

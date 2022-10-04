@@ -36,13 +36,19 @@
 
 		public:
 
-			Charset(const char *from, const char *to);
+			/// @brief Construct charset converter.
+			/// @param tocode Destination charset.
+			/// @param fromcode Origin charset.
+			Charset(const char *tocode, const char *fromcode);
 			~Charset();
 
 			/// @brief Get win32 local charset.
 			static const char * system();
 
 			void convert(const char *from, std::string &to);
+			// void convert(const PWSTR from, std::string &to);
+			void convert(const char *from, std::string &to, size_t length);
+
 			std::string convert(const char *text);
 
 			static std::string from_windows(const char *winstr);

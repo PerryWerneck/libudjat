@@ -27,9 +27,19 @@
  #include <sys/types.h>
  #include <udjat/win32/registry.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/charset.h>
  #include <cstring>
  #include <iostream>
- #include <libintl.h>
+
+ #ifdef DEBUG
+	#undef HAVE_LIBINTL
+ #endif // DEBUG
+
+ #ifdef HAVE_LIBINTL
+	#include <libintl.h>
+ #endif // HAVE_LIBINTL
+
+ #include <shlobj.h>
 
  using namespace std;
 
@@ -141,13 +151,49 @@
 		append("\\");
 	}
 
-	Application::DataFile::DataFile(const char *name) {
-		if(name[0] == '/' || (name[0] == '.' && name[1] == '/') || name[0] == '\\' || (name[0] == '.' && name[1] == '\\') || name[1] == ':' ) {
-			assign(name);
-		} else {
-			assign(DataDir());
-			append(name);
+	/// @brief Get windows special folder.
+	/// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+	/// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c
+	static string get_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr) {
+
+		PWSTR wcp = NULL;
+		string result;
+
+		HRESULT hr = SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp);
+
+		try {
+
+			if (SUCCEEDED(hr)) {
+
+				size_t len = wcslen(wcp) * 2;
+				char buffer[len+1];
+
+				wcstombs(buffer,wcp,len);
+
+				result.assign(buffer);
+
+			} else {
+				throw runtime_error("Can't get known folder path");
+			}
+
+		} catch(...) {
+			CoTaskMemFree (wcp);
+			throw;
 		}
+
+		CoTaskMemFree (wcp);
+
+		result += '\\';
+		return result;
+
+	}
+
+	Application::SystemDataDir::SystemDataDir() : File::Path(get_special_folder(FOLDERID_ProgramData)) {
+
+		append(Application::Name());
+		mkdir(c_str());
+		append("\\");
+
 	}
 
 	Application::InstallLocation::operator bool() const {

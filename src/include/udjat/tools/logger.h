@@ -134,6 +134,11 @@
 				return *this;
 			}
 
+			String & append(char *value) {
+				std::string::append(value);
+				return *this;
+			}
+
 			String & append(const std::string &value) {
 				return append(value.c_str());
 			}

@@ -99,10 +99,21 @@
 			DataDir(const char *subdir);
 		};
 
-		/// @brief File from the application datadir.
+		/// @brief System datadir
+		class UDJAT_API SystemDataDir : public File::Path {
+		public:
+			SystemDataDir();
+		};
+
+		/// @brief File from the application or system datadir.
 		class UDJAT_API DataFile : public std::string {
 		public:
-			DataFile(const char *name);
+
+			// @brief Create a full path for datafile.
+			// @param name	The file name.
+			// @param system When true use the systemdatafir for file path if necessary.
+			DataFile(const char *name, bool system = false);
+
 		};
 
 		class UDJAT_API LibDir : public std::string {

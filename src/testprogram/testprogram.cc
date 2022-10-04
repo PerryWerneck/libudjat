@@ -301,6 +301,9 @@ int main(int argc, char **argv) {
 			cout << "No install location" << endl;
 		}
 	}
+
+	cout << "--------------[" << Application::SystemDataDir() << "]----------" << endl;
+	exit(-1);
 #endif // _WIN32
 
 	trace("Simple trace message");

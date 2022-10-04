@@ -21,6 +21,7 @@
  #include <iconv.h>
  #include <udjat/win32/charset.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
  #include <cstring>
  #include <iostream>
@@ -67,13 +68,21 @@
 	}
 
 	void Win32::Charset::convert(const char *from, std::string &to) {
+		convert(from,to,strlen(from));
+	}
 
+	//void Win32::Charset::convert(const PWSTR from, std::string &to) {
+	//	convert((const char *) from,to,wcslen(from));
+	//}
+
+	void Win32::Charset::convert(const char *from, std::string &to, size_t length) {
 		lock_guard<mutex> lock(guard);
 
 		iconv(icnv,NULL,NULL,NULL,NULL);	// Reset state
 
-		size_t	  	  szIn		= strlen(from);
-		size_t	  	  szOut		= szIn*2;
+		size_t	  	szIn	= length;
+		size_t		buflen	= szIn*2;
+		size_t	  	szOut	= buflen;
 
 #if defined(WINICONV_CONST)
 		WINICONV_CONST char 	* inBuf 	= (WINICONV_CONST char *) from;
@@ -83,24 +92,19 @@
 		char 		 			* inBuf 	= (char *) from;
 #endif // WINICONV_CONST
 
-		char outBuff[szOut+1];
+		char outBuff[buflen+1];
+		memset(outBuff,' ',buflen+1);
+		outBuff[buflen] = 0;
+
 		char * ptr = outBuff;
-		memset(ptr,0,szOut+1);
 
 		if(iconv(icnv,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1) || !szOut) {
-			strcpy(outBuff,inBuf);
-			for(char * ptr = outBuff; *ptr; ptr++) {
-				if(*ptr < ' ') {
-					*ptr = '?';
-				}
-			}
-
-		} else {
-			outBuff[szOut] = 0;
+			trace("Error ",strerror(errno));
+			to.assign(from);
+			return;
 		}
 
-
-		to.assign(outBuff,szOut);
+		to.assign(outBuff,(buflen-szOut));
 
 	}
 

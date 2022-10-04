@@ -64,6 +64,18 @@
 		return cerr << Application::Name::getInstance() << "\t";
 	}
 
+	Application::DataFile::DataFile(const char *name, bool system) {
+		if(name[0] == '/' || (name[0] == '.' && name[1] == '/') || name[0] == '\\' || (name[0] == '.' && name[1] == '\\') || name[1] == ':' ) {
+			assign(name);
+		} else {
+			if(system) {
+				assign(SystemDataDir());
+			} else {
+				assign(DataDir());
+			}
+			append(name);
+		}
+	}
 
  }
 
