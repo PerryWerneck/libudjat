@@ -69,6 +69,9 @@ AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minima
 AC_DEFINE_UNQUOTED(MINIMAL_MODULE_BUILD,$app_cv_minbuild,["The required build for modules"])
 AC_SUBST(MINIMAL_MODULE_BUILD,$app_cv_minbuild)
 
+core_build_id=$(date +%y%m%d%H)
+AC_SUBST(CORE_BUILD_ID,$core_build_id)
+
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
@@ -300,6 +303,7 @@ dnl ac_configure_args="UDJAT_CFLAGS=-I$ac_pwd/src/include UDJAT_LIBS=-L$ac_pwd/.
 
 dnl AC_CONFIG_SUBDIRS([sample])
 
+AC_CONFIG_FILES(src/include/udjat/version.h)
 AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(locale/Makefile)
