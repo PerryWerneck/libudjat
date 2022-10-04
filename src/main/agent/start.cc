@@ -35,6 +35,10 @@
 
 				try {
 
+					if(!child->current_state.active) {
+						child->current_state.active = Abstract::Agent::stateFromValue();
+					}
+
 					child->start();
 
 				} catch(const std::exception &e) {

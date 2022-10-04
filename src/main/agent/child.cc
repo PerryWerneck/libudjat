@@ -42,6 +42,9 @@
 					agent->parent = this;
 					agent->Object::set(node);
 					agent->setup(node);
+					if(!agent->current_state.active) {
+						agent->current_state.active = agent->stateFromValue();
+					}
 					children.agents.push_back(agent);
 					return true;
 				}
