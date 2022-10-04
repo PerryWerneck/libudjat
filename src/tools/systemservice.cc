@@ -52,9 +52,32 @@
 		}
 
 		if(!definitions) {
-			definitions = Quark(Application::DataFile{(Application::name() + ".xml").c_str()}).c_str();
+
+			// No definitions, try to detect.
+			std::string options[] = {
+				Application::DataFile{ (Application::name() + ".xml").c_str() },
+				Application::DataFile{"xml.d"},
+			};
+
+			for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
+				trace("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
+
+				if(access(options[ix].c_str(), R_OK) == 0) {
+					info() << "Detected service configuration file in '" << options[ix] << "'" << endl;
+					definitions = Quark(options[ix]).c_str();
+					break;
+				}
+
+			}
+
+			if(!definitions) {
+				throw system_error(ENOENT,system_category(),"Unable to detect service configuration file");
+			}
+
 		} else if(definitions[0] != '.' && definitions[0] != '/' && ::access(definitions,F_OK) != 0) {
+
 			definitions = Quark(Application::DataFile{definitions}).c_str();
+
 		}
 
 		if(::access(definitions,R_OK) != 0) {
