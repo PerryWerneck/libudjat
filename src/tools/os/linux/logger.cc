@@ -93,7 +93,7 @@ namespace Udjat {
 			//
 			// Write to syslog.
 			//
-			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_INFO};
+			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_DEBUG};
 
 			{
 				char *ptr = strchr(domain,' ');
