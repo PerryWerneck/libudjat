@@ -31,10 +31,6 @@
  #include <cstring>
  #include <iostream>
 
- #ifdef DEBUG
-	#undef HAVE_LIBINTL
- #endif // DEBUG
-
  #ifdef HAVE_LIBINTL
 	#include <libintl.h>
  #endif // HAVE_LIBINTL
@@ -188,7 +184,36 @@
 
 	}
 
-	Application::SystemDataDir::SystemDataDir() : File::Path(get_special_folder(FOLDERID_ProgramData)) {
+	static string get_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) {
+
+		string result = get_special_folder(known_folder_guid_ptr);
+
+		result.append(Application::Name());
+		mkdir(result.c_str());
+
+		result.append("\\");
+		result.append(subdir);
+		mkdir(result.c_str());
+
+		result.append("\\");
+		return result;
+	}
+
+	Application::SystemDataDir::SystemDataDir() : File::Path() {
+
+		try {
+
+			assign(Win32::Registry().get("systemdatadir",""));
+			if(!empty()) {
+				mkdir(c_str());
+				return;
+			}
+
+		} catch(...) {
+			// Ignore errors.
+		}
+
+		assign(get_special_folder(FOLDERID_ProgramData));
 
 		append(Application::Name());
 		mkdir(c_str());
@@ -322,17 +347,15 @@
 			// Ignore errors.
 		}
 
-		assign(Application::Path());
-		append("\\logs\\");
-		mkdir(c_str());
+		assign(get_special_folder(FOLDERID_ProgramData,"logs"));
+
 	}
 
 	Application::CacheDir::CacheDir() {
 
 		try {
 
-			Win32::Registry registry;
-			assign(registry.get("cachedir",""));
+			assign(Win32::Registry().get("cachedir",""));
 			if(!empty()) {
 				mkdir(c_str());
 				return;
@@ -342,9 +365,7 @@
 			// Ignore errors.
 		}
 
-		assign(Application::Path());
-		append("\\cache\\");
-		mkdir(c_str());
+		assign(get_special_folder(FOLDERID_ProgramData,"cache"));
 	}
 
 	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
