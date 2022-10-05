@@ -243,9 +243,7 @@
 		}
 
 		/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
-		inline const char * icon() const noexcept {
-			return properties.icon;
-		}
+		virtual const char * icon() const noexcept;
 
 		/// @brief Export all object properties.
 		/// @param Value to receive the properties.

@@ -209,11 +209,8 @@ int main(int argc, char **argv) {
 			Module::unload();
 		}
 
-		Service() : SystemService() {
+		Service() : SystemService{"./test.xml"} {
 		}
-
-		//Service() : SystemService{"./test.xml"} {
-		//}
 
 	};
 

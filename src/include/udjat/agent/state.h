@@ -125,6 +125,9 @@ namespace Udjat {
 			virtual void activate(const Agent &agent) noexcept;
 			virtual void deactivate(const Agent &agent) noexcept;
 
+			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
+			const char * icon() const noexcept override;
+
 			/// @brief Get property.
 			/// @param key The property name.
 			/// @param value String to update with the property value.

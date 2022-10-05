@@ -125,6 +125,10 @@
 		return value;
 	}
 
+	const char * Object::icon() const noexcept {
+		return properties.icon;
+	}
+
 	Value & Object::getProperties(Value &value) const noexcept {
 
 		NamedObject::getProperties(value);

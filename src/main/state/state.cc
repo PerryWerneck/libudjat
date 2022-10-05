@@ -91,6 +91,27 @@ namespace Udjat {
 
 	}
 
+	const char * Abstract::State::icon() const noexcept {
+		const char *icon = Object::icon();
+		if(!(icon && *icon)) {
+
+			// Set icon based on level
+			static const char * names[] = {
+				"dialog-information",	// undefined,
+				"dialog-information",	// unimportant,
+				"dialog-information",	// ready,
+				"dialog-warning",		// warning,
+				"dialog-error",			// error,
+				"dialog-error",			// critical
+			};
+
+			if( ((size_t) properties.level) < (sizeof(names)/sizeof(names[0]))) {
+				icon = names[properties.level];
+			}
+		}
+		return icon;
+	}
+
 	Value & Abstract::State::getProperties(Value &value) const noexcept {
 
 		Object::getProperties(value);
