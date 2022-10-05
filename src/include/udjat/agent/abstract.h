@@ -37,6 +37,7 @@
 			enum Event : uint8_t {
 				VALUE_CHANGED	= 0,		///< @brief Agent value has changed.
 				STATE_CHANGED	= 1,		///< @brief Agent state has changed.
+				LEVEL_CHANGED	= 2,		///< @brief Agent level has changed.
 
 				CUSTOM_EVENT	= 200		///< @brief Custom event (for module use).
 			};
@@ -133,9 +134,9 @@
 			/// @brief Send event to listeners.
 			void notify(const Event event);
 
-			/// @brief Activate a new state.
-			/// @return true if the level has changed.
-			virtual bool activate(std::shared_ptr<State> state);
+			/// @brief Set agent state.
+			/// @return true if the state has changed.
+			virtual bool set(std::shared_ptr<State> state);
 
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;

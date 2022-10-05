@@ -133,10 +133,6 @@ namespace Udjat {
 				}
 			}
 
-			if(activate(new_state)) {
-				notify(STATE_CHANGED);
-			}
-
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;

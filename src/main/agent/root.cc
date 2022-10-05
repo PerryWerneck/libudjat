@@ -195,9 +195,13 @@
 				return value;
 			}
 
-			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
+			bool set(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				info() << state->to_string() << endl;
+				Object::properties.icon = (state->ready() ? "computer" : "computer-fail");
+
+				if(!super::set(state)) {
+					return false;
+				}
 
 #if defined(HAVE_SYSTEMD)
 
@@ -219,23 +223,6 @@
 				}
 
 #endif // HAVE_SYSTEMD
-
-				if(!state->ready()) {
-
-					// The requested state is not ready, activate it.
-					Object::properties.icon = "computer-fail";
-					bool changed = Abstract::Agent::activate(state);
-					return changed;
-
-				}
-
-				if(this->state()->ready()) {
-					// Already ok, do not change.
-					return false;
-				}
-
-				Object::properties.icon = "computer";
-				super::activate(stateFromValue());
 
 				return true;
 			}

@@ -26,7 +26,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(Udjat::StateFactory(e,summary));
+		set(Udjat::StateFactory(e,summary));
 
 	}
 
@@ -38,7 +38,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>("error",Udjat::critical,summary,strerror(errno)));
+		set(make_shared<Abstract::State>("error",Udjat::critical,summary,strerror(errno)));
 
 	}
 
@@ -51,7 +51,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>("error",Udjat::critical,summary,body));
+		set(make_shared<Abstract::State>("error",Udjat::critical,summary,body));
 
 	}
 
@@ -72,7 +72,7 @@ namespace Udjat {
 				}
 			}
 
-			activate(state);
+			set(state);
 
 		} catch(const std::exception &e) {
 
@@ -115,11 +115,11 @@ namespace Udjat {
 		return cout;
 	}
 
-	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
+	bool Abstract::Agent::set(std::shared_ptr<State> state) {
 
 		// It's an empty state?.
 		if(!state) {
-			throw runtime_error("Activating an empty state");
+			throw runtime_error("Cant set an empty state");
 		}
 
 		// Return if it's the same.
@@ -163,7 +163,14 @@ namespace Udjat {
 
 		}
 
-		return (saved_level != this->level());
+		notify(STATE_CHANGED);
+
+		if(saved_level != this->level()) {
+			notify(LEVEL_CHANGED);
+		}
+
+		return true;
+
 	}
 
 }
