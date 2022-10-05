@@ -270,38 +270,45 @@
 
 	void SystemService::notify(const char *message) noexcept {
 
-		if(!*message) {
-			return;
-		}
+		if(message && *message) {
 
-		try {
+			try {
 
-			Win32::Registry registry("service",true);
+				Win32::Registry registry("service",true);
 
-			registry.set("status",message);
-			registry.set("status_time",TimeStamp().to_string().c_str());
+				registry.set("status",message);
+				registry.set("status_time",TimeStamp().to_string().c_str());
 
-			info() << message << endl;
+				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
-			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+				if(hOut != INVALID_HANDLE_VALUE) {
 
-			if(hOut != INVALID_HANDLE_VALUE) {
-				DWORD mode = 0;
-				if(GetConsoleMode(hOut, &mode) && (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING)) {
-					DWORD dunno;
+					DWORD mode{0}, dunno{0};
+					if(GetConsoleMode(hOut, &mode) && (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING)) {
 
-					// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+						// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 
-					WriteFile(hOut,"\x1b]0;",3,&dunno,NULL);
-					WriteFile(hOut,message,strlen(message),&dunno,NULL);
-					WriteFile(hOut,"\x1b\x5c",2,&dunno,NULL);
+						WriteFile(hOut,"\x1b[96m;",5,&dunno,NULL);
+						WriteFile(hOut,message,strlen(message),&dunno,NULL);
+						WriteFile(hOut,"\x1b[0m",2,&dunno,NULL);
+
+						WriteFile(hOut,"\x1b]0;",3,&dunno,NULL);
+						WriteFile(hOut,message,strlen(message),&dunno,NULL);
+						WriteFile(hOut,"\x1b\x5c",2,&dunno,NULL);
+
+					} else {
+
+						WriteFile(hOut,message,strlen(message),&dunno,NULL);
+
+					}
+
 				}
+
+			} catch(const std::exception &e) {
+
+				error() << "Error '" << e.what() << "' setting service state" << endl;
+
 			}
-
-
-		} catch(const std::exception &e) {
-
-			error() << "Error '" << e.what() << "' setting service state" << endl;
 
 		}
 

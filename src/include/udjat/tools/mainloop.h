@@ -170,7 +170,7 @@ namespace Udjat {
 		static MainLoop & getInstance();
 
 		/// @brief Run mainloop.
-		void run();
+		int run();
 
 		/// @brief Is the mainloop active?
 		inline operator bool() const noexcept {
