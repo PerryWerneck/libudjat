@@ -223,10 +223,9 @@ namespace Udjat {
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;
 		if(!instance) {
-			cout << "states\tCreating default state" << endl;
+			trace("Creating agent default state");
 			instance = make_shared<Abstract::State>("");
 		}
-
 		return instance;
 	}
 
