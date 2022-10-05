@@ -50,25 +50,27 @@
 
 	void SystemService::notify(const char *message) noexcept {
 
-#ifdef HAVE_SYSTEMD
 		if(message && *message) {
+
+#ifdef HAVE_SYSTEMD
 			sd_notifyf(0,"STATUS=%s",message);
-		}
 #endif // HAVE_SYSTEMD
 
-		Logger::Writer * writer = dynamic_cast<Logger::Writer *>(cout.rdbuf());
+			Logger::Writer * writer = dynamic_cast<Logger::Writer *>(cout.rdbuf());
 
-		if(writer && writer->get_console() && (getenv("TERM") != NULL)) {
-			writer->write(1,"\x1b[96m");
-			writer->timestamp(1);
-			for(size_t ix = 0; ix < 15;ix++) {
-				writer->write(1," ");
+			if(writer && writer->get_console() && (getenv("TERM") != NULL)) {
+				writer->write(1,"\x1b[96m");
+				writer->timestamp(1);
+				for(size_t ix = 0; ix < 15;ix++) {
+					writer->write(1," ");
+				}
+				writer->write(1,message);
+				writer->write(1,"\x1b[0m\n");
 			}
-			writer->write(1,message);
-			writer->write(1,"\x1b[0m\n");
-		}
 
-		syslog(LOG_NOTICE,"%s",message);
+			syslog(LOG_NOTICE,"%s",message);
+
+		}
 
 	}
 

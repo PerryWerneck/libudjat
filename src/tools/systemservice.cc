@@ -155,6 +155,7 @@
 			auto root = Abstract::Agent::root();
 			if(root) {
 				root->push_back(this);
+				trigger(*root);	// Notify current root state.
 			}
 		}
 
@@ -287,14 +288,21 @@
 	}
 
 	void SystemService::notify() noexcept {
-		notify(state()->to_string().c_str());
+		String message{state()->to_string()};
+		if(!message.empty()) {
+			notify(state()->to_string().c_str());
+		}
 	}
 
 	void SystemService::trigger(Abstract::Agent &agent) {
 
-		string message = agent.state()->to_string().c_str();
+		auto state = agent.state();
+		String message{state->summary()};
 
-		if(message.empty()) {
+//		String message = agent.state()->to_string().c_str();
+//		message.strip();
+
+		if(message.strip().empty()) {
 			notify( _( "System is ready" ));
 		} else {
 			trace("Global state changes to '",message.c_str(),"'");
