@@ -150,7 +150,9 @@
 
 				};
 
-				return make_shared<ReadyState>();
+				static std::shared_ptr<Abstract::State> instance(new ReadyState());
+
+				return instance;
 
 			}
 
