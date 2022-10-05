@@ -124,7 +124,6 @@
 #ifndef _WIN32
 			static bool write(int fd, const char *text);
 			static void timestamp(int fd);
-
 #endif // _WIN32
 
 		};

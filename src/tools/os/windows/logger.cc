@@ -82,8 +82,8 @@ namespace Udjat {
 						};
 
 						prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
-
 						suffix = "\x1b[0m";
+
 					}
 
 				}

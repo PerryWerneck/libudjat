@@ -57,13 +57,15 @@
 	if(rc == 0) {
 		cout << "MainLoop\tWin32 Message loop ends" << endl;
 	} else {
-		cerr << "MainLoop\tAWin32 Message loop ends with error " << rc << endl;
+		cerr << "MainLoop\tWin32 Message loop ends with error " << rc << endl;
 	}
 
 	// Stop services
 	trace(__FUNCTION__," - Stop begin");
 	stop();
 	trace(__FUNCTION__," - Stop end");
+
+	return rc;
 
  }
 
