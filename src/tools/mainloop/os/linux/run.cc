@@ -47,7 +47,7 @@
 
  static const int signals[] = { SIGTERM, SIGINT };
 
- void Udjat::MainLoop::run() {
+ int Udjat::MainLoop::run() {
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
@@ -211,5 +211,8 @@
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STATUS=Stopped");
 #endif // HAVE_SYSTEMD
+
+	return 0;
+
  }
 

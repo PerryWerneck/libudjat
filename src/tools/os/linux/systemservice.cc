@@ -38,6 +38,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/application.h>
+ #include <syslog.h>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -48,10 +49,27 @@
  namespace Udjat {
 
 	void SystemService::notify(const char *message) noexcept {
+
 #ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=%s",message);
+		if(message && *message) {
+			sd_notifyf(0,"STATUS=%s",message);
+		}
 #endif // HAVE_SYSTEMD
-		info() << message << endl;
+
+		Logger::Writer * writer = dynamic_cast<Logger::Writer *>(cout.rdbuf());
+
+		if(writer && writer->get_console() && (getenv("TERM") != NULL)) {
+			writer->write(1,"\x1b[96m");
+			writer->timestamp(1);
+			for(size_t ix = 0; ix < 15;ix++) {
+				writer->write(1," ");
+			}
+			writer->write(1,message);
+			writer->write(1,"\x1b[0m\n");
+		}
+
+		syslog(LOG_NOTICE,"%s",message);
+
 	}
 
 	void SystemService::init() {

@@ -45,7 +45,7 @@
 
 	SystemService * SystemService::instance = nullptr;
 
-	SystemService::SystemService(const char *d) : definitions(d) {
+	SystemService::SystemService(const char *d) : Abstract::Agent::EventListener(Abstract::Agent::STATE_CHANGED), definitions(d) {
 
 		if(instance) {
 			throw runtime_error("Can't start more than one system service");
@@ -132,6 +132,8 @@
 
 	int SystemService::run() noexcept {
 
+		int rc = -1;
+
 		/// @brief WatchDog timer
 #ifdef HAVE_SYSTEMD
 		class WatchDog : public MainLoop::Timer {
@@ -148,6 +150,13 @@
 
 		WatchDog watchdog;
 #endif // HAVE_SYSTEMD
+
+		{
+			auto root = Abstract::Agent::root();
+			if(root) {
+				root->push_back(this);
+			}
+		}
 
 		try {
 
@@ -174,21 +183,21 @@
 			}
 #endif // HAVE_SYSTEMD
 
-			MainLoop::getInstance().run();
-
-			return 0;
+			rc = MainLoop::getInstance().run();
 
 		} catch(const std::exception &e) {
 
 			error() << e.what() << endl;
+			rc = -1;
 
 		} catch(...) {
 
 			error() << "Unexpected error" << endl;
+			rc = -1;
 
 		}
 
-		return -1;
+		return rc;
 	}
 
 	int SystemService::cmdline(int argc, const char **argv) {
@@ -279,6 +288,19 @@
 
 	void SystemService::notify() noexcept {
 		notify(state()->to_string().c_str());
+	}
+
+	void SystemService::trigger(Abstract::Agent &agent) {
+
+		string message = agent.state()->to_string().c_str();
+
+		if(message.empty()) {
+			notify( _( "System is ready" ));
+		} else {
+			trace("Global state changes to '",message.c_str(),"'");
+			notify(message.c_str());
+		}
+
 	}
 
 

@@ -76,7 +76,7 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto listener : listeners) {
 
-			if(*listener == event) {
+			if(listener->event == event) {
 
 				push([this,listener]() {
 
@@ -215,9 +215,14 @@ namespace Udjat {
 		push_back(alert);
 	}
 
-	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
+	void Abstract::Agent::push_back(EventListener *listener) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.push_back(listener);
+	}
+
+	void Abstract::Agent::remove(EventListener *listener) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.remove(listener);
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {

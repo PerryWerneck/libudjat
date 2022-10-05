@@ -34,7 +34,7 @@
 
  using namespace std;
 
- void Udjat::MainLoop::run() {
+ int Udjat::MainLoop::run() {
 
 	// Start services
 	trace(__FUNCTION__," - Start begin");

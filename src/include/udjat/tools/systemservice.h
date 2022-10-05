@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/timer.h>
  #include <memory>
@@ -29,7 +30,7 @@
  namespace Udjat {
 
 	/// @brief Abstract class for system services.
-	class UDJAT_API SystemService : public Udjat::Application {
+	class UDJAT_API SystemService : public Udjat::Application, private Abstract::Agent::EventListener {
 	private:
 		/// @brief Service instance.
 		static SystemService *instance;
@@ -45,6 +46,8 @@
 
 		/// @brief Set service state message to the root agent.
 		void notify() noexcept;
+
+		void trigger(Abstract::Agent &agent) override;
 
 #ifdef _WIN32
 		void registry(const char *name, const char *value);

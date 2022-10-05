@@ -44,22 +44,16 @@
 
 			class UDJAT_API EventListener {
 			private:
-				const void *id;
+				friend class Abstract::Agent;
+
+			protected:
 				Event event;
 
 			public:
-				constexpr EventListener(const Event e, const void *i = 0) : id(i),event(e) {
+				constexpr EventListener(const Event e) : event(e) {
 				}
 
 				virtual void trigger(Abstract::Agent &agent) = 0;
-
-				inline bool operator ==(const Event event) const noexcept {
-					return this->event == event;
-				}
-
-				inline bool operator ==(const void *id) const noexcept {
-					return this->id == id;
-				}
 
 			};
 
@@ -101,7 +95,7 @@
 			} children;
 
 			/// @brief Event listeners.
-			std::list<std::shared_ptr<EventListener>> listeners;
+			std::list<EventListener *> listeners;
 
 			/// @brief Child state has changed; compute my new state.
 			void onChildStateChange() noexcept;
@@ -196,7 +190,10 @@
 			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
 
 			/// @brief Insert Listener.
-			void push_back(std::shared_ptr<EventListener> listener);
+			void push_back(EventListener *listener);
+
+			/// @brief Remove listener.
+			void remove(EventListener *listener);
 
 			/// @brief Create and insert child.
 			/// @param type The agent type.
@@ -295,7 +292,7 @@
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
-			void for_each(std::function<void(std::shared_ptr<EventListener> listener)> method);
+			void for_each(const std::function<void(EventListener &listener)> &method);
 
 			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 				return children.agents.begin();

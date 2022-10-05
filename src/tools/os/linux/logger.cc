@@ -13,17 +13,37 @@ using namespace std;
 
 namespace Udjat {
 
-	static void fdwrite(int fd, const char *text) {
+	bool Logger::Writer::write(int fd, const char *text) {
 
 		size_t bytes = strlen(text);
 		while(bytes) {
 			ssize_t sz = ::write(fd,text,bytes);
 			if(sz < 0)
-				return;
+				return false;
 			bytes -= sz;
 			text += sz;
 		}
+		return true;
 
+	}
+
+	void Logger::Writer::timestamp(int fd) {
+
+		time_t t = time(0);
+		struct tm tm;
+		localtime_r(&t,&tm);
+
+		char timestr[80];
+		memset(timestr,0,sizeof(timestr));
+
+		size_t len = strftime(timestr, 79, "%x %X", &tm);
+		if(len) {
+			write(fd,timestr);
+		} else {
+			write(fd,"--/--/-- --:--:--");
+		}
+
+		write(fd," ");
 	}
 
 	void Logger::Writer::write(const char *message) const noexcept {
@@ -57,34 +77,20 @@ namespace Udjat {
 			};
 
 			if(decorated) {
-				fdwrite(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
+				write(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
 			}
 
-			time_t t = time(0);
-			struct tm tm;
-			localtime_r(&t,&tm);
+			timestamp(1);
 
-			char timestr[80];
-			memset(timestr,0,sizeof(timestr));
-
-			size_t len = strftime(timestr, 79, "%x %X", &tm);
-			if(len) {
-				fdwrite(1,timestr);
-			} else {
-				fdwrite(1,"--/--/-- --:--:--");
-			}
-
-			fdwrite(1," ");
-
-			fdwrite(1,domain);
-			fdwrite(1," ");
-			fdwrite(1,text);
+			write(1,domain);
+			write(1," ");
+			write(1,text);
 
 			if(decorated) {
-				fdwrite(1,"\x1b[0m");
+				write(1,"\x1b[0m");
 			}
 
-			fdwrite(1,"\n");
+			write(1,"\n");
 			fsync(1);
 
 		}

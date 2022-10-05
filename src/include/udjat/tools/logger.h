@@ -61,6 +61,20 @@
 
 		static std::mutex guard;
 
+	protected:
+
+		static Level level;
+
+		struct Properties {
+			const char * name;	///< @brief Object name.
+
+			constexpr Properties(const char *n) : name(n) {
+			}
+
+		} properties;
+
+	public:
+
 		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
 		private:
 
@@ -91,32 +105,29 @@
 			int overflow(int c) override;
 
 		public:
+
 			Writer(Logger::Level i, bool c, bool f) : level(i), console(c), file(f) {
 			}
 
-			inline void set_console(bool mode) {
+			inline void set_console(bool mode) noexcept {
 				this->console = mode;
 			}
 
-			inline void set_file(bool mode) {
+			inline bool get_console() const noexcept {
+				return this->console;
+			}
+
+			inline void set_file(bool mode) noexcept {
 				this->file = mode;
 			}
 
+#ifndef _WIN32
+			static bool write(int fd, const char *text);
+			static void timestamp(int fd);
+
+#endif // _WIN32
+
 		};
-
-	protected:
-
-		static Level level;
-
-		struct Properties {
-			const char * name;	///< @brief Object name.
-
-			constexpr Properties(const char *n) : name(n) {
-			}
-
-		} properties;
-
-	public:
 
 		static Level LevelFactory(const char *name) noexcept;
 
