@@ -88,7 +88,8 @@ int main(int argc, char **argv) {
 				}
 
 				bool refresh() override {
-					set( ((unsigned int) rand()) % limit);
+					trace("Updating agent '",name(),"'");
+					set( ((unsigned int) rand()) % limit );
 					return true;
 				}
 

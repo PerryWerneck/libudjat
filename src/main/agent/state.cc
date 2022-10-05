@@ -123,19 +123,21 @@ namespace Udjat {
 		}
 
 		// Return if it's the same.
-		if(state == this->current_state.active)
+		if(state.get() == this->current_state.active.get())
 			return false;
 
 		auto level = state->level();
 
-		LogFactory(level)
-			<< name()
-			<< "\tCurrent state changes from '"
-			<< this->current_state.active->to_string()
-			<< "' to '"
-			<< state->to_string()
-			<< "' (" << level << ")"
-			<< endl;
+		if(this->current_state.active->level() != level) {
+			LogFactory(level)
+				<< name()
+				<< "\tCurrent state changes from '"
+				<< this->current_state.active->to_string()
+				<< "' to '"
+				<< state->to_string()
+				<< "' (" << level << ")"
+				<< endl;
+		}
 
 		Udjat::Level saved_level = this->level();
 
@@ -143,30 +145,29 @@ namespace Udjat {
 
 			this->current_state.active->deactivate(*this);
 			this->current_state.active = state;
-			this->current_state.activation = time(0);
 			this->current_state.active->activate(*this);
-
-			if(parent)
-				parent->onChildStateChange();
 
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
 			this->current_state.active = Udjat::StateFactory(e,_("Error switching state"));
-			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			error() << "Unexpected error switching state" << endl;
 			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
-			this->current_state.activation = time(0);
 
 		}
 
+		this->current_state.activation = time(0);
 		notify(STATE_CHANGED);
 
 		if(saved_level != this->level()) {
 			notify(LEVEL_CHANGED);
+		}
+
+		if(parent) {
+			parent->onChildStateChange();
 		}
 
 		return true;

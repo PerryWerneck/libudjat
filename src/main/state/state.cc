@@ -33,6 +33,7 @@
  #include <udjat/tools/expander.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/alert/activation.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
@@ -130,7 +131,7 @@ namespace Udjat {
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
-		agent.info() << "State '" << *this << "' was activated" << endl;
+		trace("State '",to_string().c_str(),"' was activated on '",agent.name(),"'");
 
 		for(auto alert : alerts) {
 			auto activation = alert->ActivationFactory();
@@ -154,7 +155,7 @@ namespace Udjat {
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
 
-		agent.info() << "State '" << *this << "' was deactivated" << endl;
+		trace("State '",to_string().c_str(),"' was deactivated on '",agent.name(),"'");
 
 		for(auto alert : alerts) {
 			alert->deactivate();

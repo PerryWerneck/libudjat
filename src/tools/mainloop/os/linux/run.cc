@@ -31,6 +31,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>
@@ -151,9 +152,7 @@
 
 		// Check for event fd.
 		if(fds[0].revents) {
-#ifdef DEBUG
-			cout << "MainLoop\t** Wake UP" << endl;
-#endif // DEBUG
+			trace("Wake UP received");
 			uint64_t evNum;
 			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
@@ -193,47 +192,8 @@
 
 		}
 
-		/*
-		// Check for fd handlers.
-		{
-			// First, get list of the active handlers.
-			std::list<Handler *> hList;
-
-			{
-				lock_guard<mutex> lock(guard);
-				for(auto handle : handlers) {
-					if(handle->index >= 0 && fds[handle->index].revents) {
-//						cout << "*** " << handle->id() << " events=" << fds[handle->index].revents << endl;
-						hList.push_back(handle);
-					}
-				}
-			}
-
-			// Second, call handlers
-			for(auto handle : hList) {
-
-				try {
-
-					handle->handle_event((const Handler::Event) fds[handle->index].revents);
-
-				} catch(const std::exception &e) {
-
-					cerr << "MainLoop\tError '" << e.what() << "' processing FD(" << handle->fd << "), disabling it" << endl;
-					handle->disable();
-
-				} catch(...) {
-
-					cerr << "MainLoop\tUnexpected error processing FD(" << handle->fd << "), disabling it" << endl;
-					handle->disable();
-
-				}
-
-			}
-
-		}
-		*/
-
  	}
+
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STOPPING=1\nSTATUS=Stopping");
 #endif // HAVE_SYSTEMD

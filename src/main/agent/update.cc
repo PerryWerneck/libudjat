@@ -10,6 +10,7 @@
  #include <private/agent.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -110,14 +111,21 @@ namespace Udjat {
 
 		}
 
-		if(changed) {
-			notify(VALUE_CHANGED);
-		} else {
+		if(!changed) {
 			return false;
 		}
 
-		// Compute new state
 		try {
+
+			//
+			// Notify new value
+			//
+			trace("Agent '",name(),"' changed value to ",to_string().c_str());
+			notify(VALUE_CHANGED);
+
+			//
+			// Compute new state
+			//
 
 			// First get state for current agent value.
 			auto new_state = stateFromValue();
@@ -133,17 +141,17 @@ namespace Udjat {
 				}
 			}
 
+			set(new_state);
+
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
-			this->current_state.activation = time(0);
+			set(Udjat::StateFactory(e,"Error switching state"));
 
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
 			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
-			this->current_state.activation = time(0);
 
 		}
 
