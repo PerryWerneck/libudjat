@@ -44,6 +44,8 @@
 
 	void MainLoop::Timer::reset(unsigned long milliseconds) {
 
+		auto saved = next;
+
 		if(milliseconds) {
 			this->milliseconds = milliseconds;
 			next = getCurrentTime() + milliseconds;
@@ -51,7 +53,9 @@
 			next = getCurrentTime();
 		}
 
-		MainLoop::getInstance().wakeup();
+		if(next < saved) {
+			MainLoop::getInstance().wakeup();
+		}
 
 	}
 

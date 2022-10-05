@@ -203,6 +203,8 @@
 					return false;
 				}
 
+				// TODO: Move this to system service notification listener.
+
 #if defined(HAVE_SYSTEMD)
 
 				sd_notifyf(0,"STATUS=%s",state->to_string().c_str());

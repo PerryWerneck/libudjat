@@ -165,6 +165,14 @@ namespace Udjat {
 
 			try {
 				root->start();
+
+				// Setup next update on all children.
+				root->for_each([](std::shared_ptr<Agent> agent) {
+					if(agent->update.timer && !agent->update.next) {
+						agent->update.next = time(0) + agent->update.timer;
+					}
+				});
+
 			} catch(const std::exception &e) {
 				cerr << root->name() << "\tError '" << e.what() << "' starting root agent" << endl;
 				return;
@@ -178,22 +186,18 @@ namespace Udjat {
 
 		cout << "agent\tStarting controller" << endl;
 
+
+
 		MainLoop::Timer::reset(1000);
 		MainLoop::Timer::enable();
-
-		/*
-		MainLoop::getInstance().insert(this,1000,[this]() {
-			onTimer(time(0));
-			return isActive();
-		});
-		*/
-
 
 	}
 
 	void Abstract::Agent::Controller::stop() noexcept {
 
 		cout << "agent\tStopping controller" << endl;
+
+		MainLoop::Timer::disable();
 
 		if(root) {
 
@@ -218,24 +222,23 @@ namespace Udjat {
 	void Abstract::Agent::Controller::on_timer() {
 
 		if(!root) {
+			trace("No root agent!!");
 			return;
 		}
-
-		time_t now{time(0)};
 
 		if(root->update.running) {
 			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;
 			return;
 		}
 
-		root->updating(true);
+		trace("Checking for updates");
 
-//#ifdef DEBUG
-//		cout << "Checking for updates" << endl;
-//#endif // DEBUG
+		root->updating(true);
 
 		// Check for updates on another thread; we'll change the
 		// timer and it has a mutex lock while running the callback.
+
+		time_t now{time(0)};
 		ThreadPool::getInstance().push("agent-updates",[this,now]() {
 
 			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
@@ -258,7 +261,7 @@ namespace Udjat {
 
 				if(agent->update.running) {
 
-					clog << agent->name() << "\tUpdate is active since " << TimeStamp(agent->update.running) << endl;
+					agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
 
 					if(agent->update.timer) {
 						agent->update.next = now + agent->update.timer;
@@ -266,6 +269,7 @@ namespace Udjat {
 						agent->update.next = now + 60;
 					}
 
+					next = std::min(next,agent->update.next);
 					return;
 				}
 
@@ -273,18 +277,12 @@ namespace Udjat {
 				agent->updating(true);
 
 				if(agent->update.timer) {
-
 					agent->update.next = time(0) + agent->update.timer;
-#ifdef DEBUG
-					agent->info() << "**** Next update scheduled to " << TimeStamp(agent->update.next) << " (" << agent->update.timer << " seconds)" << endl;
-#endif // DEBUG
+					trace("Next update for '",agent->name(),"' scheduled to ",TimeStamp(agent->update.next)," (",agent->update.timer," seconds)");
 					next = std::min(next,agent->update.next);
-
 				} else {
-
-					// No timer and updated was triggered, reset next update time.
 					agent->update.next = 0;
-
+					trace("Disabling updates for agent '",agent->name(),"'");
 				}
 
 				// Enqueue agent update.
@@ -309,6 +307,16 @@ namespace Udjat {
 				});
 
 			});
+
+			{
+				time_t now = time(nullptr);
+				if(now < next) {
+					trace("Next update set to ",TimeStamp(next));
+					MainLoop::Timer::reset( (next-now) * 1000 );
+				} else {
+					MainLoop::Timer::reset(1000);
+				}
+			}
 
 			root->updating(false);
 
