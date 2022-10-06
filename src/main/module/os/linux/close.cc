@@ -31,12 +31,12 @@
 		bool (*udjat_module_deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
 		auto err = dlerror();
 		if(!err) {
-			trace("Calling udjat_module_deinit");
+			debug("Calling udjat_module_deinit");
 			bool rc = udjat_module_deinit();
-			trace("(udjat_module_deinit returns ",rc);
+			debug("(udjat_module_deinit returns ",rc);
 			return rc;
 		}
-		trace("No udjat_module_deinit method, just returning true");
+		debug("No udjat_module_deinit method, just returning true");
 		return true;
 	}
 

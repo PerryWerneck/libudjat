@@ -75,6 +75,7 @@ namespace Udjat {
 				"\x1b[92m",	// Info
 				"\x1b[93m",	// Warning
 				"\x1b[91m",	// Error
+				"\x1b[94m",	// Debug
 
 				"\x1b[94m",	// Trace
 				"\x1b[96m",	// SysInfo (Allways Trace+1)
@@ -107,6 +108,8 @@ namespace Udjat {
 				LOG_INFO,		// Info
 				LOG_WARNING,	// Warning
 				LOG_ERR,		// Error
+				LOG_DEBUG,		// Debug
+
 				LOG_DEBUG,		// Trace
 				LOG_NOTICE		// Trace+1
 			};

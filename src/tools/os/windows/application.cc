@@ -240,7 +240,7 @@
 		string path{"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"};
 		path += Application::Name();
 
-		trace("Searching for 'InstallLocation' in '",path,"'");
+		debug("Searching for 'InstallLocation' in '",path,"'");
 
 		static const DWORD options[] = { KEY_READ|KEY_WOW64_32KEY, KEY_READ|KEY_WOW64_64KEY };
 
@@ -264,7 +264,7 @@
 						append("\\");
 					}
 
-					trace("InstallLocation='",c_str(),"'");
+					debug("InstallLocation='",c_str(),"'");
 					return;
 
 				}
@@ -273,7 +273,7 @@
 			}
 		}
 
-		trace("No 'InstallLocation' registry key");
+		debug("No 'InstallLocation' registry key");
 
 	}
 

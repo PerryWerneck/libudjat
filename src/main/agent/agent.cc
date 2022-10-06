@@ -101,7 +101,7 @@ namespace Udjat {
 
 	Abstract::Agent::~Agent() {
 
-		trace("Cleaning up agent ",name());
+		debug("Cleaning up agent ",name());
 
 		// Remove all associated events.
 		Udjat::Event::remove(this);
@@ -110,7 +110,7 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : agents()) {
 			child->parent = nullptr;
-			trace("Releasing agent ",name()," with ",child.use_count()," references");
+			debug("Releasing agent ",name()," with ",child.use_count()," references");
 		}
 
 	}
@@ -228,7 +228,7 @@ namespace Udjat {
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;
 		if(!instance) {
-			trace("Creating agent default state");
+			debug("Creating agent default state");
 			instance = make_shared<Abstract::State>("");
 		}
 		return instance;

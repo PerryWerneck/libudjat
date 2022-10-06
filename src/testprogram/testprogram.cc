@@ -88,7 +88,7 @@ int main(int argc, char **argv) {
 				}
 
 				bool refresh() override {
-					trace("Updating agent '",name(),"'");
+					debug("Updating agent '",name(),"'");
 					set( ((unsigned int) rand()) % limit );
 					return true;
 				}
@@ -295,7 +295,7 @@ int main(int argc, char **argv) {
 	{
 		Logger::redirect(true,true);
 		Application::InstallLocation appinstall;
-		trace("AppInstall=",appinstall.c_str());
+		debug("AppInstall=",appinstall.c_str());
 		if(appinstall) {
 			cout << "InstalLocation='" << appinstall << "'" << endl;
 		} else {
@@ -305,13 +305,13 @@ int main(int argc, char **argv) {
 
 #endif // _WIN32
 
-	trace("SystemDatadir=",Application::SystemDataDir().c_str());
-	trace("CacheDir=",Application::CacheDir().c_str());
-	trace("LogDir=",Application::LogDir().c_str());
+	debug("SystemDatadir=",Application::SystemDataDir().c_str());
+	debug("CacheDir=",Application::CacheDir().c_str());
+	debug("LogDir=",Application::LogDir().c_str());
 
 	auto rc = Service().run(argc,argv);
 
-	trace("Service exits with rc=",rc);
+	debug("Service exits with rc=",rc);
 
 	Udjat::Module::unload();
 

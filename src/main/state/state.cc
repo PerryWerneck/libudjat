@@ -131,7 +131,7 @@ namespace Udjat {
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
-		trace("State '",to_string().c_str(),"' was activated on '",agent.name(),"'");
+		debug("State '",to_string().c_str(),"' was activated on '",agent.name(),"'");
 
 		for(auto alert : alerts) {
 			auto activation = alert->ActivationFactory();
@@ -155,7 +155,7 @@ namespace Udjat {
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
 
-		trace("State '",to_string().c_str(),"' was deactivated on '",agent.name(),"'");
+		debug("State '",to_string().c_str(),"' was deactivated on '",agent.name(),"'");
 
 		for(auto alert : alerts) {
 			alert->deactivate();

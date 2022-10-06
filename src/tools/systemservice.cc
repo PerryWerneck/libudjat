@@ -60,7 +60,7 @@
 			};
 
 			for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
-				trace("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
+				debug("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
 
 				if(access(options[ix].c_str(), R_OK) == 0) {
 					info() << "Detected service configuration file in '" << options[ix] << "'" << endl;
@@ -305,7 +305,7 @@
 		if(message.strip().empty()) {
 			notify( _( "System is ready" ));
 		} else {
-			trace("Global state changes to '",message.c_str(),"'");
+			debug("Global state changes to '",message.c_str(),"'");
 			notify(message.c_str());
 		}
 

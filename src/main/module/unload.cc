@@ -39,7 +39,7 @@ namespace Udjat {
 
 	void Module::Controller::unload() {
 
-		trace("Unloading ",modules.size()," modules");
+		debug("Unloading ",modules.size()," modules");
 		while(modules.size()) {
 
 			Module * module;
@@ -68,25 +68,25 @@ namespace Udjat {
 
 				// First delete module
 
-				trace("Deleting module '",name,"'");
+				debug("Deleting module '",name,"'");
 				delete module;
-				trace("Module '",name,"' deleted");
+				debug("Module '",name,"' deleted");
 
 				if(handle) {
 
-					trace("Deinitializing module '",name,"'");
+					debug("Deinitializing module '",name,"'");
 					if(!deinit(handle)) {
 						clog << name << "\tKeeping module loaded by deinit() request" << endl;
 						continue;
 					}
-					trace("Module '",name,"' deinitialized");
+					debug("Module '",name,"' deinitialized");
 
 					if(keep_loaded) {
 						clog << name << "\tKeeping module loaded by configuration request" << endl;
 					} else {
-						trace("Unloading module '",name,"'");
+						debug("Unloading module '",name,"'");
 						unload(handle,name,description);
-						trace("Module '",name,"' unloaded");
+						debug("Module '",name,"' unloaded");
 					}
 
 				}
@@ -98,7 +98,7 @@ namespace Udjat {
 			}
 
 		}
-		trace("Module unloading complete");
+		debug("Module unloading complete");
 
 	}
 

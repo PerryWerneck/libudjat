@@ -70,7 +70,7 @@
 
 	void Win32::Handler::Controller::remove(Handler *handler) {
 
-		trace("Removing handler ",((unsigned long long) handler->hEvent));
+		debug("Removing handler ",((unsigned long long) handler->hEvent));
 
 		lock_guard<mutex> lock(guard);
 		workers.remove_if([handler](Worker *worker){
@@ -80,7 +80,7 @@
 			return worker->handlers.empty();
 		});
 
-		trace("Handler ",((unsigned long long) handler->hEvent), " removed");
+		debug("Handler ",((unsigned long long) handler->hEvent), " removed");
 	}
 
 	Win32::Handler * Win32::Handler::Controller::find(HANDLE handle) noexcept {

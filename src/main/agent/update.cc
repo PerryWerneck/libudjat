@@ -120,7 +120,7 @@ namespace Udjat {
 			//
 			// Notify new value
 			//
-			trace("Agent '",name(),"' changed value to ",to_string().c_str());
+			debug("Agent '",name(),"' changed value to ",to_string().c_str());
 			notify(VALUE_CHANGED);
 
 			//

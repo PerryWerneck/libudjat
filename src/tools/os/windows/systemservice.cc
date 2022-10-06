@@ -432,14 +432,14 @@
 
 			} else if(rc != ERROR_FILE_NOT_FOUND) {
 
-				trace("RegCreateKeyEx(HKLM/SOFTWARE) rc was ",rc);
+				debug("RegCreateKeyEx(HKLM/SOFTWARE) rc was ",rc);
 				throw Win32::Exception("Cant open application registry",rc);
 
 			}
 
 		}
 
-		trace("Registry cleanup complete");
+		debug("Registry cleanup complete");
 		return 0;
 	}
 
@@ -459,7 +459,7 @@
 					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
 				}
 
-				trace("Auto close timer set to ",seconds);
+				debug("Auto close timer set to ",seconds);
 
 				MainLoop::getInstance().TimerFactory(seconds * 1000,[](){
 					Application::warning() << "Exiting by timer request" << endl;
@@ -598,7 +598,7 @@
 
 				File::Path::for_each(instpath.c_str(),"*",true,[this](bool isdir, const char *path){
 					// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-deletefile
-					trace("Removing '",path,"'");
+					debug("Removing '",path,"'");
 					if(isdir) {
 						if(RemoveDirectory(path) == 0) {
 							auto rc = GetLastError();

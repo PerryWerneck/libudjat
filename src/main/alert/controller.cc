@@ -235,9 +235,9 @@
 			pending_activations = running();
 			if(pending_activations) {
 				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
-				trace("Waiting for tasks (agent)");
+				debug("Waiting for tasks (agent)");
 				ThreadPool::getInstance().wait();
-				trace("Wait for tasks complete");
+				debug("Wait for tasks complete");
 			}
 		}
 

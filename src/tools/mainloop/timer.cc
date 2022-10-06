@@ -241,13 +241,13 @@
 
 		public:
 			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
-				trace(__FUNCTION__);
+				debug(__FUNCTION__);
 				enable();
 			}
 
 //#ifdef DEBUG
 //			virtual ~CallBackTimer() {
-//				trace(__FUNCTION__);
+//				debug(__FUNCTION__);
 //			}
 //#endif // DEBUG
 

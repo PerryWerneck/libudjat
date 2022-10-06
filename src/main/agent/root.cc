@@ -152,7 +152,7 @@
 
 				static shared_ptr<Abstract::State> instance;
 				if(!instance) {
-					trace("Creating root default state");
+					debug("Creating root default state");
 					instance = make_shared<ReadyState>();
 				}
 
@@ -206,7 +206,7 @@
 				if(state->level() <= Level::ready) {
 					// It's a 'ready' state, set it to my own default value.
 					state = this->stateFromValue();
-					trace("Child state is ready, using the default root state");
+					debug("Child state is ready, using the default root state");
 				}
 
 				Object::properties.icon = (state->ready() ? "computer" : "computer-fail");

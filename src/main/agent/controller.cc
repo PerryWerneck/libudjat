@@ -211,9 +211,9 @@ namespace Udjat {
 
 			root.reset();
 
-			trace("Waiting for tasks (agent)");
+			debug("Waiting for tasks (agent)");
 			ThreadPool::getInstance().wait();
-			trace("Wait for tasks complete");
+			debug("Wait for tasks complete");
 
 		}
 
@@ -222,7 +222,7 @@ namespace Udjat {
 	void Abstract::Agent::Controller::on_timer() {
 
 		if(!root) {
-			trace("No root agent!!");
+			debug("No root agent!!");
 			return;
 		}
 
@@ -231,7 +231,7 @@ namespace Udjat {
 			return;
 		}
 
-		trace("Checking for updates");
+		debug("Checking for updates");
 
 		root->updating(true);
 
@@ -278,11 +278,11 @@ namespace Udjat {
 
 				if(agent->update.timer) {
 					agent->update.next = time(0) + agent->update.timer;
-					trace("Next update for '",agent->name(),"' scheduled to ",TimeStamp(agent->update.next)," (",agent->update.timer," seconds)");
+					debug("Next update for '",agent->name(),"' scheduled to ",TimeStamp(agent->update.next)," (",agent->update.timer," seconds)");
 					next = std::min(next,agent->update.next);
 				} else {
 					agent->update.next = 0;
-					trace("Disabling updates for agent '",agent->name(),"'");
+					debug("Disabling updates for agent '",agent->name(),"'");
 				}
 
 				// Enqueue agent update.
@@ -311,7 +311,7 @@ namespace Udjat {
 			{
 				time_t now = time(nullptr);
 				if(now < next) {
-					trace("Next update set to ",TimeStamp(next));
+					debug("Next update set to ",TimeStamp(next));
 					MainLoop::Timer::reset( (next-now) * 1000 );
 				} else {
 					MainLoop::Timer::reset(1000);

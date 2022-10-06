@@ -50,7 +50,7 @@ namespace Udjat {
 		{
 			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
 
-			trace("load-at-startup size=",modules.size());
+			debug("load-at-startup size=",modules.size());
 			if(modules.size()) {
 				cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
 				for(const std::string &module : modules) {

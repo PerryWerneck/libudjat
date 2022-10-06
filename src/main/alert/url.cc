@@ -107,8 +107,8 @@
 
 	Alert::Activation & Alert::URL::Activation::set(const Abstract::Object &object) {
 
-		trace("URL=",url.c_str());
-		trace("PAYLOAD=",payload.c_str());
+		debug("URL=",url.c_str());
+		debug("PAYLOAD=",payload.c_str());
 
 		url.expand(object);
 		payload.expand(object);

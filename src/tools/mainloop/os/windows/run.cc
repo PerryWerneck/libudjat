@@ -37,9 +37,9 @@
  int Udjat::MainLoop::run() {
 
 	// Start services
-	trace(__FUNCTION__," - Start begin");
+	debug(__FUNCTION__," - Start begin");
 	start();
-	trace(__FUNCTION__," - Start end");
+	debug(__FUNCTION__," - Start end");
 
 	MSG msg;
 	memset(&msg,0,sizeof(msg));
@@ -61,9 +61,9 @@
 	}
 
 	// Stop services
-	trace(__FUNCTION__," - Stop begin");
+	debug(__FUNCTION__," - Stop begin");
 	stop();
-	trace(__FUNCTION__," - Stop end");
+	debug(__FUNCTION__," - Stop end");
 
 	return rc;
 

@@ -120,7 +120,7 @@
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_DESTROY:
-				trace("WM_DESTROY");
+				debug("WM_DESTROY");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_STOP:
@@ -140,7 +140,7 @@
 			case WM_WAKE_UP:
 
 				// Check if the mainloop still enabled.
-				// trace("WM_WAKE_UP");
+				// debug("WM_WAKE_UP");
 
 				if(!controller.enabled) {
 					cout << "MainLoop\tMain loop was disabled" << endl;

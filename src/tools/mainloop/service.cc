@@ -85,9 +85,9 @@
 			}
 		}
 
-		trace("Waiting for tasks (agent)");
+		debug("Waiting for tasks (agent)");
 		ThreadPool::getInstance().wait();
-		trace("Wait for tasks complete");
+		debug("Wait for tasks complete");
 
 	}
 

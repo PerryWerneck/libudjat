@@ -99,7 +99,7 @@
 		char * ptr = outBuff;
 
 		if(iconv(icnv,&inBuf,&szIn,&ptr,&szOut) == ((size_t) -1) || !szOut) {
-			trace("Error ",strerror(errno));
+			debug("Error ",strerror(errno));
 			to.assign(from);
 			return;
 		}

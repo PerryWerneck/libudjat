@@ -141,7 +141,7 @@
 			}
 #ifdef DEBUG
 			else {
-				trace("No module in '",filename,"'");
+				debug("No module in '",filename,"'");
 			}
 #endif // DEBUG
 		}

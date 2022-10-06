@@ -36,6 +36,7 @@
 			Info,
 			Warning,
 			Error,
+			Debug,
 
 			Trace	// Trace should be the last one.
 		};
@@ -177,11 +178,15 @@
 
 	};
 
-	#if defined(DEBUG) || defined(TRACE_ENABLED)
+	#if defined(DEBUG)
 		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"debug");
-		#define trace( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"debug");
 	#else
 		#define debug( ... )           // __VA_ARGS__
+	#endif // DEBUG
+
+	#if defined(DEBUG) || defined(TRACE_ENABLED)
+		#define trace( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"trace");
+	#else
 		#define trace( ... )           // __VA_ARGS__
 	#endif // DEBUG
 
