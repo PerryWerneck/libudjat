@@ -38,7 +38,6 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/application.h>
- #include <syslog.h>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -57,8 +56,6 @@
 #endif // HAVE_SYSTEMD
 
 			Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
-
-			syslog(LOG_NOTICE,"%s",message);
 
 		}
 

@@ -99,7 +99,14 @@ namespace Udjat {
 			//
 			// Write to syslog.
 			//
-			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_DEBUG};
+			static const int priority[] = {
+				LOG_INFO,		// Info
+				LOG_WARNING,	// Warning
+				LOG_ERR,		// Error
+				LOG_DEBUG,		// Trace
+				LOG_NOTICE		// Trace+1
+			};
+
 			::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
 		}
 
