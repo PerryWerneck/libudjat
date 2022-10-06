@@ -33,9 +33,9 @@
 	/// @brief Customized string expander.
 	struct UDJAT_PRIVATE Expander {
 
-		const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method;
+		const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> method;
 
-		constexpr Expander(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &e) : method(e) {
+		Expander(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> e) : method(e) {
 		}
 
 	};
