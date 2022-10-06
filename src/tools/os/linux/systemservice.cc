@@ -59,7 +59,7 @@
 			Logger::Writer * writer = dynamic_cast<Logger::Writer *>(cout.rdbuf());
 
 			if(writer) {
-				Logger::write((Logger::Level) (Logger::Trace+1),writer->get_console(),true,message);
+				Logger::write((Logger::Level) (Logger::Trace+1),writer->get_console(),false,message);
 			}
 
 			syslog(LOG_NOTICE,"%s",message);
