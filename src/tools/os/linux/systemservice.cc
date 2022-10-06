@@ -58,14 +58,8 @@
 
 			Logger::Writer * writer = dynamic_cast<Logger::Writer *>(cout.rdbuf());
 
-			if(writer && writer->get_console() && (getenv("TERM") != NULL)) {
-				writer->write(1,"\x1b[96m");
-				writer->timestamp(1);
-				for(size_t ix = 0; ix < 15;ix++) {
-					writer->write(1," ");
-				}
-				writer->write(1,message);
-				writer->write(1,"\x1b[0m\n");
+			if(writer) {
+				Logger::write((Logger::Level) (Logger::Trace+1),writer->get_console(),true,message);
 			}
 
 			syslog(LOG_NOTICE,"%s",message);

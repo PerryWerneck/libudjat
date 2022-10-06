@@ -36,8 +36,15 @@
 			Info,
 			Warning,
 			Error,
-			Trace
+
+			Trace	// Trace should be the last one.
 		};
+
+#ifndef _WIN32
+		static bool write(int fd, const char *text);
+		static void write(Level level, bool console, bool file, const char *message) noexcept;
+		static void timestamp(int fd);
+#endif // !WIN32
 
 	private:
 		class Controller;
@@ -89,10 +96,6 @@
 			/// @brief Send output to file?
 			bool file = true;
 
-#ifndef _WIN32
-			void write(int fd, const std::string &str);
-#endif // !WIN32
-
 			void write(Buffer &buffer);
 			void write(const char *message) const noexcept;
 
@@ -121,10 +124,6 @@
 				this->file = mode;
 			}
 
-#ifndef _WIN32
-			static bool write(int fd, const char *text);
-			static void timestamp(int fd);
-#endif // _WIN32
 
 		};
 
