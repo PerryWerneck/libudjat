@@ -64,15 +64,7 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-
-		Logger::Message msg("Process '{}' finishes with rc={}",command,rc);
-
-		if(rc) {
-			onStdOut(msg.c_str());
-		} else {
-			onStdErr(msg.c_str());
-		}
-
+		(rc ? cerr : cout) << name() << "\tProcess '" << command << "' finishes with rc=" << rc << endl;
 	}
 
 	/// @brief Called on subprocess abnormal exit.

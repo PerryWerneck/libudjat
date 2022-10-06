@@ -17,6 +17,10 @@ namespace Udjat {
 		Options::getInstance().syslog = enable;
 	}
 
+	bool Logger::syslog() {
+		return Options::getInstance().syslog;
+	}
+
 	bool Logger::write(int fd, const char *text) {
 
 		size_t bytes = strlen(text);

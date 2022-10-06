@@ -49,8 +49,16 @@
 		Options::getInstance().console = enable;
 	}
 
+	bool Logger::console() {
+		return Options::getInstance().console;
+	}
+
 	void Logger::file(bool enable) {
 		Options::getInstance().file = enable;
+	}
+
+	bool Logger::file() {
+		return Options::getInstance().file;
 	}
 
 	Logger::Options & Logger::Options::getInstance() {

@@ -64,6 +64,22 @@
 			void write(const Logger::Level level) const;
 			void write(const Logger::Level level, const char *domain) const;
 
+			inline void trace(const char *domain) const {
+				write(Logger::Trace,domain);
+			}
+
+			String() = default;
+
+			String(const char *str) : std::string(str) {
+			}
+
+			String(const std::string &str) : std::string(str) {
+			};
+
+			template<typename T>
+			String(const T &value) : std::string(std::to_string(value)) {
+			}
+
 			template<typename T, typename... Targs>
 			String(T &value, Targs... Fargs) {
 				append(value);
@@ -148,18 +164,24 @@
 		UDJAT_API void console(bool enable = false);
 #endif // DEBUG
 
+		UDJAT_API bool file();
+		UDJAT_API bool console();
+
 #ifdef _WIN32
 		UDJAT_API void file(bool enable = true);
 #else
 		UDJAT_API void file(bool enable = false);
 		UDJAT_API void syslog(bool enable = true);
+		UDJAT_API bool syslog();
 #endif // _WIN32
 
 	};
 
 	#if defined(DEBUG) || defined(TRACE_ENABLED)
-		#define trace( ... ) Udjat::Logger::String("trace\t",__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace);
+		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"debug");
+		#define trace( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"debug");
 	#else
+		#define debug( ... )           // __VA_ARGS__
 		#define trace( ... )           // __VA_ARGS__
 	#endif // DEBUG
 
