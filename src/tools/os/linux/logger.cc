@@ -13,6 +13,10 @@ using namespace std;
 
 namespace Udjat {
 
+	void Logger::syslog(bool enable) {
+		Options::getInstance().syslog = enable;
+	}
+
 	bool Logger::write(int fd, const char *text) {
 
 		size_t bytes = strlen(text);
@@ -102,32 +106,6 @@ namespace Udjat {
 		// TODO: Optional write to file.
 
 	}
-
-	void Logger::Writer::write(Buffer &buffer) {
-
-		// Remove spaces
-		size_t len = buffer.size();
-		while(len--) {
-
-			if(isspace(buffer[len])) {
-				buffer[len] = 0;
-			} else {
-				break;
-			}
-		}
-
-		buffer.resize(strlen(buffer.c_str()));
-
-		if(buffer.empty()) {
-			return;
-		}
-
-		Logger::write(id,buffer.c_str());
-
-		buffer.erase();
-
-	}
-
 
 }
 

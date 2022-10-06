@@ -61,7 +61,7 @@
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
-				Logger(name).info("Creating standard pool with {} threads",limits.threads);
+				cout << name << "\tCreating standard pool with " << limits.threads << " threads" << endl;
 			}
 		};
 
@@ -126,8 +126,6 @@
 
 	void ThreadPool::stop() {
 
-		Logger logger(name);
-
 		wait();
 
 		// Wait for tasks
@@ -135,7 +133,7 @@
 
 		if(getActiveThreads()) {
 
-			logger.info("Waiting for {} threads on pool ({} waiting)",getActiveThreads(),getWaitingThreads());
+			cout << name << "\tWaiting for " << getActiveThreads() << " threads on pool (" << getWaitingThreads() << " waiting)" << endl;
 
 			for(size_t f=0; f < 1000 && getActiveThreads() > 0; f++) {
 
@@ -156,9 +154,9 @@
 			{
 				size_t count = getActiveThreads();
 				if(count) {
-					logger.error("Stopping with {} threads on pool",count);
+					cerr << name << "\tStopping with " << count << " threads on pool" << endl;
 				} else {
-					cout << logger.name() << "\tStopping with no pending threads" << endl;
+					cout << name << "\tStopping with no pending threads" << endl;
 				}
 			}
 
@@ -173,18 +171,16 @@
 
 	void ThreadPool::wait() {
 
-		Logger logger(name);
-
 		if(size()) {
 
-			logger.warning("Waiting for {} tasks on pool",tasks.size());
+			clog << name << "\tWaiting for " << tasks.size() << " tasks on pool" << endl;
 
 			for(size_t f=0; f < 100 && size() > 0; f++) {
 				Sleep(10);
 			}
 
 			if(size()) {
-				logger.error("Timeout waiting for {} tasks on pool",tasks.size());
+				cerr << name << "\tTimeout waiting for " << tasks.size() << " tasks on pool" << endl;
 			}
 
 		}

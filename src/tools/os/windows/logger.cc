@@ -36,7 +36,7 @@ using namespace std;
 
 namespace Udjat {
 
-	void Logger::write(Level level, bool console, bool file, const char *d, const char *text) noexcept {
+	void Logger::write(Level level, const char *d, const char *text) noexcept {
 
 		char domain[15];
 		memset(domain,' ',15);
@@ -51,7 +51,7 @@ namespace Udjat {
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(console) {
+		if(Options::getInstance().console) {
 
 			// Log to console
 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -72,7 +72,9 @@ namespace Udjat {
 							"\x1b[92m",	// Info
 							"\x1b[93m",	// Warning
 							"\x1b[91m",	// Error
+
 							"\x1b[94m",	// Trace
+							"\x1b[96m",	// SysInfo (Allways Trace+1)
 						};
 
 						prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
@@ -103,7 +105,7 @@ namespace Udjat {
 
 		}
 
-		if(file) {
+		if(Options::getInstance().file) {
 			//
 			// Write to file.
 			//
@@ -148,10 +150,6 @@ namespace Udjat {
 		}
 
 
-	}
-
-	void Logger::Writer::write(Buffer &buffer) {
-		write(buffer.c_str());
 	}
 
 }

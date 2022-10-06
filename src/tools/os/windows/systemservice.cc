@@ -279,6 +279,9 @@
 				registry.set("status",message);
 				registry.set("status_time",TimeStamp().to_string().c_str());
 
+				Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
+
+				/*
 				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 
 				if(hOut != INVALID_HANDLE_VALUE) {
@@ -290,7 +293,7 @@
 
 						WriteFile(hOut,"\x1b[96m;",5,&dunno,NULL);
 						WriteFile(hOut,message,strlen(message),&dunno,NULL);
-						WriteFile(hOut,"\x1b[0m",2,&dunno,NULL);
+						WriteFile(hOut,"\x1b[0m\r\n",4,&dunno,NULL);
 
 						WriteFile(hOut,"\x1b]0;",3,&dunno,NULL);
 						WriteFile(hOut,message,strlen(message),&dunno,NULL);
@@ -303,6 +306,7 @@
 					}
 
 				}
+				*/
 
 			} catch(const std::exception &e) {
 

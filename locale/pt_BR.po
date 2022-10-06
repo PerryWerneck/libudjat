@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-08 15:02-0300\n"
-"PO-Revision-Date: 2022-09-08 15:03-0300\n"
+"POT-Creation-Date: 2022-10-06 09:52-0300\n"
+"PO-Revision-Date: 2022-10-06 09:52-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -22,38 +22,43 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Generator: Gtranslator 3.38.0\n"
 
-#: src/main/agent/state.cc:80 src/main/agent/state.cc:155
+#: src/main/agent/state.cc:80 src/main/agent/state.cc:153
 msgid "Error switching state"
 msgstr "Erro ao trocar estado"
+
+#: src/tools/os/windows/systemservice.cc:454
+#: src/tools/os/windows/systemservice.cc:459
+msgid "Invalid timer value"
+msgstr "Valor de timer inválido"
 
 #: src/main/agent/root.cc:147
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/main/agent/root.cc:147
+#: src/tools/systemservice.cc:306 src/main/agent/root.cc:147
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:86 src/main/agent/state.cc:161
+#: src/main/agent/state.cc:86 src/main/agent/state.cc:158
 msgid "Unexpected error switching state"
 msgstr "Erro inesperado ao trocar de estado"
 
-#: src/tools/string/string.cc:210
+#: src/tools/string/string.cc:216
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:198
+#: src/tools/string/string.cc:204
 msgid "false"
 msgstr "falso"
 
-#: src/tools/string/string.cc:190
+#: src/tools/string/string.cc:53 src/tools/string/string.cc:196
 msgid "no"
 msgstr "não"
 
-#: src/tools/string/string.cc:194
+#: src/tools/string/string.cc:200
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:186
+#: src/tools/string/string.cc:53 src/tools/string/string.cc:192
 msgid "yes"
 msgstr "sim"

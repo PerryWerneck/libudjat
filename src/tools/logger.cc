@@ -53,10 +53,6 @@
 		Options::getInstance().file = enable;
 	}
 
-	void Logger::syslog(bool enable) {
-		Options::getInstance().syslog = enable;
-	}
-
 	Logger::Options & Logger::Options::getInstance() {
 		static Options instance;
 		return instance;
@@ -219,6 +215,32 @@
 		Logger::write(level,message);
 	}
 	*/
+
+	void Logger::Writer::write(Buffer &buffer) {
+
+		// Remove spaces
+		size_t len = buffer.size();
+		while(len--) {
+
+			if(isspace(buffer[len])) {
+				buffer[len] = 0;
+			} else {
+				break;
+			}
+		}
+
+		buffer.resize(strlen(buffer.c_str()));
+
+		if(buffer.empty()) {
+			return;
+		}
+
+		Logger::write(id,buffer.c_str());
+
+		buffer.erase();
+
+	}
+
 
 	void Logger::String::write(const Logger::Level level) const {
 		Logger::write(level,c_str());
