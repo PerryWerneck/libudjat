@@ -152,7 +152,7 @@
 
 		// Check for event fd.
 		if(fds[0].revents) {
-			trace("Wake UP received");
+			// trace("Wake UP received");
 			uint64_t evNum;
 			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;

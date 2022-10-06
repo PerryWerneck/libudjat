@@ -24,6 +24,7 @@
  #include <udjat/tools/quark.h>
  #include <cstring>
  #include <list>
+ #include <ostream>
 
  #ifdef _WIN32
 	#include <sys/types.h>

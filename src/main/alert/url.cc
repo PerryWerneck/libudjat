@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/alert/url.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/protocol.h>
 
@@ -86,26 +87,29 @@
 
 		if(verbose()) {
 			if(description.empty()) {
-				info() << "Emitting " << action << " " << url << endl << payload << endl;
+				info() << "Emitting " << action << " " << url << endl;
 			} else {
-				info() << description << ": " << action << " " << url << endl << payload << endl;
+				info() << description << ": " << action << " " << url << endl;
+			}
+
+			if(!payload.empty()) {
+				Logger::write(Logger::Trace,Logger::String(this->name,"\t",payload.c_str()));
 			}
 		}
 
 		String response = Protocol::call(url.c_str(),action,payload.c_str());
 
-		if(verbose()) {
-			info() << response << endl;
+		if(verbose() && !response.empty()) {
+			Logger::write(Logger::Trace,Logger::String{this->name,"\t",response.c_str()});
 		}
 
 	}
 
 	Alert::Activation & Alert::URL::Activation::set(const Abstract::Object &object) {
-#ifdef DEBUG
-		cout << __FILE__ << "(" << __LINE__ << ")" << endl
-				<< "URL='" << url << "'" << endl
-				<< "PAYLOAD='" << payload << endl;
-#endif // DEBUG
+
+		trace("URL=",url.c_str());
+		trace("PAYLOAD=",payload.c_str());
+
 		url.expand(object);
 		payload.expand(object);
 		return *this;

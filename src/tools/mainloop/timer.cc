@@ -245,11 +245,11 @@
 				enable();
 			}
 
-#ifdef DEBUG
-			virtual ~CallBackTimer() {
-				trace(__FUNCTION__);
-			}
-#endif // DEBUG
+//#ifdef DEBUG
+//			virtual ~CallBackTimer() {
+//				trace(__FUNCTION__);
+//			}
+//#endif // DEBUG
 
 		};
 
