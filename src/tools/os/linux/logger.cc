@@ -46,33 +46,19 @@ namespace Udjat {
 		Logger::write(fd," ");
 	}
 
-	void Logger::Writer::write(const char *message) const noexcept {
-		Logger::write(level,console,file,message);
-	}
+	void Logger::write(Level level, const char *d, const char *text) noexcept {
 
-	void Logger::write(Level level, bool console, bool file, const char *message) noexcept {
+		char domain[15];
+		memset(domain,' ',15);
+		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		domain[14] = 0;
 
 		// Serialize
 		static mutex mtx;
 		lock_guard<mutex> lock(mtx);
 
-		// Split message.
-		char domain[15];
-		memset(domain,' ',15);
-
-		const char *text = strchr(message,'\t');
-		if(text) {
-			memcpy(domain,message,std::min( (int) (text-message), (int) sizeof(domain) ));
-		} else {
-			text = message;
-		}
-		domain[14] = 0;
-
-		while(*text && isspace(*text)) {
-			text++;
-		}
-
-		if(console) {
+		// Write
+		if(Options::getInstance().console) {
 
 			// Write to console.
 			static bool decorated = (getenv("TERM") != NULL);
@@ -105,25 +91,16 @@ namespace Udjat {
 
 		}
 
-		if(file) {
+		if(Options::getInstance().syslog) {
 			//
 			// Write to syslog.
 			//
 			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR,LOG_DEBUG};
-
-			{
-				char *ptr = strchr(domain,' ');
-				if(ptr) {
-					*ptr = 0;
-				}
-			}
-
-			if(*domain) {
-				syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s: %s",domain,text);
-			} else {
-				syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s",text);
-			}
+			::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
 		}
+
+		// TODO: Optional write to file.
+
 	}
 
 	void Logger::Writer::write(Buffer &buffer) {
@@ -145,7 +122,7 @@ namespace Udjat {
 			return;
 		}
 
-		write(buffer.c_str());
+		Logger::write(id,buffer.c_str());
 
 		buffer.erase();
 

@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/tools/logger.h>
+ #include <private/logger.h>
  #include <udjat/tools/application.h>
  #include <private/logger.h>
  #include <udjat/tools/quark.h>
@@ -45,8 +45,22 @@
 		"error"
 	};
 
-	std::mutex Logger::guard;
-	Logger::Level Logger::level = Logger::Error;
+	void Logger::console(bool enable) {
+		Options::getInstance().console = enable;
+	}
+
+	void Logger::file(bool enable) {
+		Options::getInstance().file = enable;
+	}
+
+	void Logger::syslog(bool enable) {
+		Options::getInstance().syslog = enable;
+	}
+
+	Logger::Options & Logger::Options::getInstance() {
+		static Options instance;
+		return instance;
+	}
 
 	Logger::Controller & Logger::Controller::getInstance() {
 		static Controller instance;
@@ -91,8 +105,8 @@
 	/// @brief Writes characters to the associated output sequence from the put area.
 	int Logger::Writer::overflow(int c) {
 
-		lock_guard<std::mutex> lock(guard);
-		Buffer * buffer = Controller::getInstance().BufferFactory(level);
+		// lock_guard<std::mutex> lock(guard);
+		Buffer * buffer = Controller::getInstance().BufferFactory(id);
 
 		if(buffer->push_back(c)) {
 			write(*buffer);
@@ -131,12 +145,6 @@
 		return Logger::Error;
 	}
 
-	void Logger::set(const pugi::xml_node &node) {
-		auto attribute = node.attribute("name");
-		if(attribute)
-			properties.name = Quark(attribute.as_string(properties.name)).c_str();
-	}
-
 	//
 	// Log messages.
 	//
@@ -166,48 +174,58 @@
 		static const Level levels[] = { Info,Warning,Error };
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
-		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
-
-			Writer * writer = dynamic_cast<Writer *>(streams[ix]->rdbuf());
-			if(writer) {
-				trace("Stream(",ix,") was already redirected");
-				writer->set_console(console);
-				writer->set_file(file);
-			} else {
-				streams[ix]->rdbuf(new Writer(levels[ix],console,file));
-			}
-
-		}
-
-		/*
-		std::cout.rdbuf(new Writer(Logger::Info,console));
-		std::clog.rdbuf(new Writer(Logger::Warning,console));
-		std::cerr.rdbuf(new Writer(Logger::Error,console));
-		*/
-
-	}
-
-	void Logger::console(bool enable) {
-
-		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
+		Options &options{Options::getInstance()};
+		options.console = console;
+		options.file = file;
 
 		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
 
 			Writer * writer = dynamic_cast<Writer *>(streams[ix]->rdbuf());
-			if(writer) {
-				writer->console = enable;
+			if(!writer) {
+				streams[ix]->rdbuf(new Writer(levels[ix]));
 			}
 
 		}
 
 	}
 
-	void Logger::write(const Logger::Level level, const char *message) noexcept {
-		Writer(level,true,true).write(message);
+	void Logger::write(const Level level, const char *message) noexcept {
+
+		char domain[15];
+		memset(domain,' ',15);
+
+		const char *text = strchr(message,'\t');
+		if(text) {
+			memcpy(domain,message,std::min( (int) (text-message), (int) sizeof(domain) ));
+		} else {
+			text = message;
+		}
+		domain[14] = 0;
+
+		while(*text && isspace(*text)) {
+			text++;
+		}
+
+		write(level, domain, text);
+
 	}
 
-	void Logger::write(const Logger::Level level, const std::string &message) noexcept {
-		Writer(level,true,true).write(message.c_str());
+	void Logger::write(const Level level, const std::string &message) noexcept {
+		write(level,message.c_str());
+	}
+
+	/*
+	void Logger::Writer::write(const char *message) const noexcept {
+		Logger::write(level,message);
+	}
+	*/
+
+	void Logger::String::write(const Logger::Level level) const {
+		Logger::write(level,c_str());
+	}
+
+	void Logger::String::write(const Logger::Level level, const char *domain) const {
+		Logger::write(level,domain,c_str());
 	}
 
  }

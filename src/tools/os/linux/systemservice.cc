@@ -56,11 +56,7 @@
 			sd_notifyf(0,"STATUS=%s",message);
 #endif // HAVE_SYSTEMD
 
-			Logger::Writer * writer = dynamic_cast<Logger::Writer *>(cout.rdbuf());
-
-			if(writer) {
-				Logger::write((Logger::Level) (Logger::Trace+1),writer->get_console(),false,message);
-			}
+			Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
 
 			syslog(LOG_NOTICE,"%s",message);
 

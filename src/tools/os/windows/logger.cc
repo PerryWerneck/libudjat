@@ -36,27 +36,21 @@ using namespace std;
 
 namespace Udjat {
 
-	void Logger::Writer::write(const char *message) const noexcept {
+	void Logger::write(Level level, bool console, bool file, const char *d, const char *text) noexcept {
+
+		char domain[15];
+		memset(domain,' ',15);
+		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		domain[14] = 0;
 
 		Win32::Registry registry{"log"};
 		string timestamp{TimeStamp().to_string("%x %X")};
 
-		// Split message.
-		char domain[15];
-		memset(domain,' ',15);
+		// Serialize
+		static mutex mtx;
+		lock_guard<mutex> lock(mtx);
 
-		const char *text = strchr(message,'\t');
-		if(text) {
-			memcpy(domain,message,std::min( (int) (text-message), (int) sizeof(domain) ));
-		} else {
-			text = message;
-		}
-		domain[14] = 0;
-
-		while(*text && isspace(*text)) {
-			text++;
-		}
-
+		// Write
 		if(console) {
 
 			// Log to console

@@ -30,8 +30,8 @@
 
 	/// @brief Manage log files.
 	/// Reference: https://www.youtube.com/watch?v=IdM0Z2a4fjU
-	class UDJAT_API Logger {
-	public:
+	namespace Logger {
+
 		enum Level : uint8_t {
 			Info,
 			Warning,
@@ -40,98 +40,30 @@
 			Trace	// Trace should be the last one.
 		};
 
-#ifndef _WIN32
-		static bool write(int fd, const char *text);
-		static void write(Level level, bool console, bool file, const char *message) noexcept;
-		static void timestamp(int fd);
-#endif // !WIN32
+		/// @brief Write message.
+		/// @param level	Log level.
+		/// @param message	The message.
+		UDJAT_API void write(const Level level, const char *message) noexcept;
 
-	private:
-		class Controller;
-		friend class Controller;
+		/// @brief Write message.
+		/// @param level	Log level.
+		/// @param domain	The message domain.
+		/// @param message	The message.
+		UDJAT_API void write(const Level level, const char *domain, const char *message) noexcept;
 
-		class Buffer : public std::string {
-		public:
-			pthread_t thread;
-			Level level;
-			Buffer(pthread_t t, Level l) : thread(t), level(l) {
-			}
+		/// @brief Write message.
+		/// @param level	Log level.
+		/// @param message	The message.
+		UDJAT_API void write(const Level level, const std::string &message) noexcept;
 
-			~Buffer();
-
-			Buffer(const Buffer &src) = delete;
-			Buffer(const Buffer *src) = delete;
-
-			bool push_back(int c);
-
-		};
-
-		static std::mutex guard;
-
-	protected:
-
-		static Level level;
-
-		struct Properties {
-			const char * name;	///< @brief Object name.
-
-			constexpr Properties(const char *n) : name(n) {
-			}
-
-		} properties;
-
-	public:
-
-		class Writer : public std::basic_streambuf<char, std::char_traits<char> > {
-		private:
-
-			friend class Logger;
-
-			/// @brief The buffer id.
-			Level level = Info;
-
-			/// @brief Send output to console?
-			bool console = true;
-
-			/// @brief Send output to file?
-			bool file = true;
-
-			void write(Buffer &buffer);
-			void write(const char *message) const noexcept;
-
-		protected:
-
-			/// @brief Writes characters to the associated file from the put area
-			int sync() override;
-
-			/// @brief Writes characters to the associated output sequence from the put area.
-			int overflow(int c) override;
-
-		public:
-
-			Writer(Logger::Level i, bool c, bool f) : level(i), console(c), file(f) {
-			}
-
-			inline void set_console(bool mode) noexcept {
-				this->console = mode;
-			}
-
-			inline bool get_console() const noexcept {
-				return this->console;
-			}
-
-			inline void set_file(bool mode) noexcept {
-				this->file = mode;
-			}
-
-
-		};
-
-		static Level LevelFactory(const char *name) noexcept;
+		UDJAT_API Level LevelFactory(const char *name) noexcept;
 
 		/// @brief Unformatted Log message.
 		class UDJAT_API String : public std::string {
 		public:
+			void write(const Logger::Level level) const;
+			void write(const Logger::Level level, const char *domain) const;
+
 			template<typename T, typename... Targs>
 			String(T &value, Targs... Fargs) {
 				append(value);
@@ -171,7 +103,6 @@
 
 		};
 
-
 		/// @brief Formatted Log message.
 		class UDJAT_API Message : public std::string {
 		public:
@@ -206,103 +137,30 @@
 
 		};
 
-	public:
-
 		/// @brief Redirect std::cout, std::clog and std::cerr to log file.
 		/// @param console If true send log output to standard out.
 #ifdef DEBUG
-		static void redirect(bool console = true, bool file = true);
+		UDJAT_API void redirect(bool console = true, bool file = true);
+		UDJAT_API void console(bool enable = true);
+
 #else
-		static void redirect(bool console = false, bool file = true);
+		UDJAT_API void redirect(bool console = false, bool file = true);
+		UDJAT_API void console(bool enable = false);
 #endif // DEBUG
 
-		static void console(bool enable);
-
-		constexpr Logger(const char *name = STRINGIZE_VALUE_OF(PRODUCT_NAME)) : properties(name) {
-		}
-
-		void set(const pugi::xml_node &name);
-
-		operator const char *() const noexcept {
-			return this->properties.name;
-		}
-
-		/// @brief Get Logger name.
-		const char * name() const noexcept {
-			return this->properties.name;
-		}
-
-		inline const char * c_str() const noexcept {
-			return this->properties.name;
-		}
-
-		/// @brief Write informational message.
-		/// @param format String with '{}' placeholders
-		template<typename... Targs>
-		void info(const char *format, const Targs... args) const noexcept {
-			std::cout << name() << "\t" << Message(format, args...) << std::endl;
-		}
-
-		/// @brief Write warning message.
-		/// @param format String with '{}' placeholders
-		template<typename... Targs>
-		void warning(const char *format, const Targs... args) const noexcept {
-			std::clog << name() << "\t" << Message(format, args...) << std::endl;
-		}
-
-		/// @brief Write error message.
-		/// @param format String with '{}' placeholders
-		template<typename... Targs>
-		void error(const char *format, const Targs... args) const noexcept {
-			std::cerr << name() << "\t" << Message(format, args...) << std::endl;
-		}
-
-		/// @brief Write Error message.
-		/// @param e exception to write.
-		void error(const std::exception &e) {
-			std::cerr << name() << "\t" << e.what() << std::endl;
-		}
-
-		/// @brief Write error message.
-		/// @param e exception to write.
-		/// @param format String with '{}' placeholders (the last one with be the exception message)
-		template<typename... Targs>
-		void error(const std::exception &e, const char *format, const Targs... args) const noexcept {
-			std::cerr << name() << "\t" << Message(format, args...).append(e) << std::endl;
-		}
-
-		/// @brief Write message.
-		/// @param level	Log level.
-		/// @param message	The message.
-		static void write(const Level level, const char *message) noexcept;
-
-		/// @brief Write message.
-		/// @param level	Log level.
-		/// @param message	The message.
-		static void write(const Level level, const std::string &message) noexcept;
+#ifdef _WIN32
+		UDJAT_API void file(bool enable = true);
+#else
+		UDJAT_API void file(bool enable = false);
+		UDJAT_API void syslog(bool enable = true);
+#endif // _WIN32
 
 	};
 
 	#if defined(DEBUG) || defined(TRACE_ENABLED)
-		#define trace( ... ) Udjat::Logger::write(Logger::Trace,Udjat::Logger::String("trace\t",__FILE__,"(",__LINE__,"): ",__VA_ARGS__))
+		#define trace( ... ) Udjat::Logger::String("trace\t",__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace);
 	#else
 		#define trace( ... )           // __VA_ARGS__
 	#endif // DEBUG
-
- }
-
- namespace std {
-
-	inline string to_string(const Udjat::Logger &logger) {
-		return logger.name();
-	}
-
-	inline string to_string(const Udjat::Logger *logger) {
-		return logger->name();
-	}
-
-	inline ostream& operator<< (ostream& os, const Udjat::Logger &logger) {
-		return os << logger.name();
-	}
 
  }

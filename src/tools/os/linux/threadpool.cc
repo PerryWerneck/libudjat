@@ -54,7 +54,7 @@
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
-				Logger(name).info("Creating standard pool with {} threads",limits.threads);
+				cout << name << "\tCreating standard pool with " << limits.threads << " threads" << endl;
 			}
 		};
 
@@ -98,8 +98,6 @@
 
 	void ThreadPool::stop() {
 
-		Logger logger(name);
-
 		wait();
 
 		// Wait for tasks
@@ -138,18 +136,16 @@
 
 	void ThreadPool::wait() {
 
-		Logger logger(name);
-
 		if(size()) {
 
-			logger.warning("Waiting for {} tasks on pool",tasks.size());
+			clog << "Waiting for " << tasks.size() << " tasks on pool" << endl;
 
 			for(size_t f=0; f < 100000 && size() > 0; f++) {
 				usleep(100);
 			}
 
 			if(size()) {
-				logger.error("Timeout waiting for {} tasks on pool",tasks.size());
+				cerr << "Timeout waiting for " << tasks.size() << " tasks on pool" << endl;
 			}
 
 		}
