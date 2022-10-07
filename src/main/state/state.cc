@@ -34,6 +34,7 @@
  #include <udjat/alert/abstract.h>
  #include <udjat/alert/activation.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
@@ -60,6 +61,10 @@ namespace Udjat {
 
 	Abstract::State::State(const pugi::xml_node &node) : Object(node) {
 		set(node);
+	}
+
+	std::string Abstract::State::value() const {
+		return "";
 	}
 
 	void Abstract::State::set(const pugi::xml_node &node) {
@@ -241,6 +246,10 @@ namespace Udjat {
 		// body = code.message();
 		return make_shared<SysError>(summary,syserror);
 
+	}
+
+	std::string State<bool>::value() const {
+		return (this->state_value ? _("on") : _("off"));
 	}
 
 }
