@@ -91,7 +91,6 @@
 		<Unit filename="src/include/udjat/tools/http/mimetype.h" />
 		<Unit filename="src/include/udjat/tools/http/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/intl.h" />
-		<Unit filename="src/include/udjat/tools/listener.h" />
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />

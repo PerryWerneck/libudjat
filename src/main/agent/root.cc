@@ -215,7 +215,9 @@
 					return false;
 				}
 
-				// TODO: Move this to system service notification listener.
+				/*
+
+				-- Moved to SystemService() --
 
 #if defined(HAVE_SYSTEMD)
 
@@ -237,6 +239,7 @@
 				}
 
 #endif // HAVE_SYSTEMD
+				*/
 
 				return true;
 			}
