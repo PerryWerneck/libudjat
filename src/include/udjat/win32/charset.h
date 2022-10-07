@@ -52,6 +52,7 @@
 			std::string convert(const char *text);
 
 			static std::string from_windows(const char *winstr);
+			static std::string from_windows(const wchar_t *wcp);
 			static std::string to_windows(const char *utfstr);
 
 		};

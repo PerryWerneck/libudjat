@@ -58,6 +58,13 @@
 		return converter.convert(str);
 	}
 
+	std::string Win32::Charset::from_windows(const wchar_t *wcp) {
+		size_t len = wcslen(wcp) * 2;
+		char buffer[len+1];
+		wcstombs(buffer,wcp,len);
+		return from_windows(buffer);
+	}
+
 	std::string Win32::Charset::to_windows(const char *str) {
 		static Win32::Charset converter{
 			Win32::Charset::system(),
