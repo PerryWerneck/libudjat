@@ -244,7 +244,12 @@
 
 			/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
 			/// @param seconds Seconds for next refresh.
-			void requestRefresh(time_t seconds = 0);
+			void UDJAT_DEPRECATED(requestRefresh(time_t seconds = 0));
+
+			/// @brief Set time for the next update (force a refresh in the next cicle if seconds=0).
+			/// @param seconds Seconds for next refresh.
+			/// @return Timestamp for next update.
+			time_t sched_update(time_t seconds = 0);
 
 			UDJAT_DEPRECATED(inline time_t getUpdateInterval() const noexcept) {
 				return update.timer;
@@ -312,6 +317,7 @@
 			bool operator==(const Abstract::State &state) const noexcept;
 
 			virtual void get(Response &response);
+			virtual void get(Report &report);
 			virtual void get(const Request &request, Response &response);
 			virtual void get(const Request &request, Report &report);
 

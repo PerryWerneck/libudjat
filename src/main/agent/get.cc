@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/agent.h>
+ #include <udjat/tools/intl.h>
  #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -49,9 +50,13 @@
 		throw system_error(EINVAL,system_category(),"Cant get pointer to an invalid agent");
 	}
 
-	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
+	void Abstract::Agent::get(Report &report) {
 		error() << "Rejecting 'report' request - Not available in this agent" << endl;
-		throw system_error(ENOENT,system_category(),"No available reports on this path");
+		throw system_error(ENOENT,system_category(),_( "No reports on this path") );
+	}
+
+	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report &report) {
+		get(report);
 	}
 
 	void Abstract::Agent::get(Response &response) {

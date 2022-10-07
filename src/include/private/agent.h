@@ -40,7 +40,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Worker, Factory, MainLoop::Service, MainLoop::Timer {
+	class Abstract::Agent::Controller : private Worker, Factory, private MainLoop::Service, public MainLoop::Timer {
 	private:
 
 		std::shared_ptr<Abstract::Agent> root;

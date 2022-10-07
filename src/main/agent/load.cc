@@ -40,7 +40,7 @@ namespace Udjat {
 				this->update.sigdelay = (short) getAttribute(root,section,"update-signal-delay",(unsigned int) 0);
 
 				Udjat::Event &event = Udjat::Event::SignalHandler(this, signame, [this](){
-					requestRefresh(this->update.sigdelay);
+					sched_update(this->update.sigdelay);
 					return true;
 				});
 

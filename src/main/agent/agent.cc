@@ -234,11 +234,18 @@ namespace Udjat {
 		return instance;
 	}
 
+	time_t Abstract::Agent::sched_update(time_t seconds) {
+		time_t saved_next = update.next;
+		update.next = time(nullptr) + seconds;
+		if(update.next < saved_next) {
+			Controller::getInstance().reset(100);
+		}
+		trace("Next update for ",name()," set to ",TimeStamp(update.next).to_string().c_str());
+		return update.next;
+	}
+
 	void Abstract::Agent::requestRefresh(time_t seconds) {
-		update.next	= time(nullptr) + seconds;
-#ifdef DEBUG
-		info() << "Next update set to " << TimeStamp(update.next) << endl;
-#endif // DEBUG
+		sched_update(seconds);
 	}
 
 
