@@ -58,6 +58,7 @@
 			};
 
 		private:
+
 			static std::recursive_mutex guard;
 
 			Agent *parent = nullptr;	///< @brief Agent parent.
