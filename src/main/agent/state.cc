@@ -60,7 +60,7 @@ namespace Udjat {
 		try {
 
 			// Compute my current state based on value.
-			auto state = stateFromValue();
+			auto state = computeState();
 
 			// Then check the children.
 			{

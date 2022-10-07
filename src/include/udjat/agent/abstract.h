@@ -152,7 +152,9 @@
 
 			/// @brief Compute state from agent value.
 			/// @return Computed state or the default one if agents has no state table.
-			virtual std::shared_ptr<Abstract::State> stateFromValue() const;
+			virtual std::shared_ptr<Abstract::State> computeState();
+
+			virtual UDJAT_DEPRECATED(std::shared_ptr<Abstract::State> stateFromValue() const);
 
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;

@@ -49,7 +49,7 @@ namespace Udjat {
 			Object::properties.summary = summary;
 		}
 
-		current_state.active = Agent::stateFromValue();
+		current_state.active = Agent::computeState();
 
 		try {
 
@@ -223,6 +223,17 @@ namespace Udjat {
 	void Abstract::Agent::remove(EventListener *listener) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.remove(listener);
+	}
+
+
+	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
+
+		// Forward to legacy.
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+		return stateFromValue();
+		#pragma GCC diagnostic pop
+
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {

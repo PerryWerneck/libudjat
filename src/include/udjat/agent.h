@@ -50,12 +50,12 @@
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<T>>> states;
 
-		std::shared_ptr<Abstract::State> stateFromValue() const override {
+		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::stateFromValue();
+			return super::computeState();
 		}
 
 		Udjat::Value & get(Udjat::Value &value) const override {
@@ -132,12 +132,12 @@
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<std::string>>> states;
 
-		std::shared_ptr<Abstract::State> stateFromValue() const override {
+		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::stateFromValue();
+			return super::computeState();
 		}
 
 		Udjat::Value & get(Udjat::Value &value) const override {
@@ -212,12 +212,12 @@
 
 	protected:
 
-		std::shared_ptr<Abstract::State> stateFromValue() const override {
+		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::stateFromValue();
+			return super::computeState();
 		}
 
 	public:
