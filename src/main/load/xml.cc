@@ -59,7 +59,7 @@
 			return update.set(RootAgentFactory());
 		}
 
-		Application::info() << "Reconfiguration is not necessary" << endl;
+		Application::info() << "Keeping configuration" << endl;
 		return update.time();
 
 	}
