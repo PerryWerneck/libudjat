@@ -119,7 +119,7 @@
 			size_t size();
 
 			/// @brief Wait for pool cleanup.
-			void wait();
+			bool wait();
 
 			/// @brief Push a named task.
 			/// @param name	Task name (Should be a static string).

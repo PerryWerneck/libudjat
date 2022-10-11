@@ -125,9 +125,14 @@ namespace Udjat {
 			try {
 
 				if(agent->update.running) {
+
 					agent->warning() << "Updating since " << TimeStamp(agent->update.running) << ", waiting" << endl;
-					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",10};
-					for(size_t ix = 0; ix < Config::Value<size_t>("agent-controller","max-wait-on-stop",100); ix++) {
+					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",100};
+					Config::Value<size_t> max_wait("agent-controller","max-wait-on-stop",1000);
+
+					ThreadPool::getInstance().wait();
+
+					for(size_t ix = 0; agent->update.running && ix < max_wait; ix++) {
 #ifdef _WIN32
 						Sleep(delay);
 #else

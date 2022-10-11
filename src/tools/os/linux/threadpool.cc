@@ -134,7 +134,7 @@
 		return tasks.size();
 	}
 
-	void ThreadPool::wait() {
+	bool ThreadPool::wait() {
 
 		if(size()) {
 
@@ -149,6 +149,8 @@
 			}
 
 		}
+
+		return size() != 0;
 
 	}
 
