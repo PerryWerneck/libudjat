@@ -44,6 +44,11 @@
 		pem,                    ///> @brief application/x-pem-file
 		icon,                   ///> @brief image/x-icon
 		yaml,					///> @brief text/yaml
+		gz,						///> @brief application/gzip
+		rpm,					///> @brief application/x-rpm
+		odt,					///> @brief application/vnd.oasis.opendocument.text
+		ods,					///> @brief application/vnd.oasis.opendocument.spreadsheet
+		sh,						///> @brief application/x-sh
 
 	};
 
