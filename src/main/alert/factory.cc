@@ -33,9 +33,11 @@
 
 		std::shared_ptr<Abstract::Alert> alert;
 
-		if(!type) {
+		if(!(type && *type)) {
 			type = "default";	// Just in case.
 		}
+
+		// debug("Creating alert '",type,"'");
 
 		//
 		// First, try using the type name (even for 'default').

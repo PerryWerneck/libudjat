@@ -84,7 +84,13 @@ namespace Udjat {
 
 		}
 
-		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
+		debug(
+			"name=",node.attribute("name").as_string()," ",
+			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
+			" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
+		);
+
+		if(node.attribute("alert").as_bool(node.attribute("alert-type"))) {
 			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string("default"));
 			if(alert) {
 				alerts.push_back(alert);
