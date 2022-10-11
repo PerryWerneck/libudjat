@@ -104,6 +104,14 @@
 		/// @brief Get module filename.
 		std::string filename() const;
 
+		/// @brief Get property value.
+		/// @param key The property name.
+		/// @param value String to update with the property value.
+		/// @return true if the property is valid.
+		virtual bool getProperty(const char *key, std::string &value) const noexcept;
+
+		std::string operator[](const char *property_name);
+
 	};
 
  }

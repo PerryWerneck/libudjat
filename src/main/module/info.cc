@@ -43,4 +43,28 @@
 		return value;
 	}
 
+	bool ModuleInfo::getProperty(const char *key, std::string &value) const noexcept {
+
+		struct {
+			const char *name;
+			const char *value;
+		} info[] = {
+			{ "name",			name		},
+			{ "description",	description	},
+			{ "version",		version		},
+			{ "bugreport",		bugreport	},
+			{ "url",			url			},
+		};
+
+		for(size_t ix = 0; ix < (sizeof(info)/sizeof(info[0])); ix++) {
+			if(!strcasecmp(key,info[ix].name)) {
+				value = info[ix].value;
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
  }

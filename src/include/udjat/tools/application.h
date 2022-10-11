@@ -71,6 +71,12 @@
 			return Name::getInstance();
 		}
 
+		/// @brief Set application title.
+		void title(const char *value);
+
+		/// @brief Get application title.
+		const char * title();
+
 #ifdef _WIN32
 		class UDJAT_API Path : public std::string {
 		public:

@@ -66,6 +66,22 @@ namespace Udjat {
 		Controller::getInstance().for_each(method);
 	}
 
+	bool Module::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(!strcasecmp(key,"filename")) {
+			value = filename();
+			return true;
+		}
+
+		return info.getProperty(key,value);
+	}
+
+	std::string Module::operator[](const char *property_name) {
+		std::string value;
+		getProperty(property_name,value);
+		return value;
+	}
+
 	void Module::options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call) {
 
 		for(pugi::xml_node child = node.child("option"); child; child = child.next_sibling("option")) {

@@ -52,6 +52,11 @@
 	/// @param log_def enable log message when using default value.
 	UDJAT_API MimeType MimeTypeFactory(const char *str, bool log_def = true) noexcept;
 
+	/// @brief Create mimetype from string with fallback.
+	/// @param str Mime type string.
+	/// @param def Default value if not found.
+	UDJAT_API MimeType MimeTypeFactory(const char *str, const MimeType def) noexcept;
+
  }
 
  namespace std {

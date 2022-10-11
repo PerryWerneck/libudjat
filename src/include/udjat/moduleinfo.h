@@ -19,6 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <string>
 
  namespace Udjat {
 
@@ -93,6 +94,12 @@
 #endif
 
 		Udjat::Value & get(Udjat::Value &value) const;
+
+		/// @brief Get property value.
+		/// @param key The property name.
+		/// @param value String to update with the property value.
+		/// @return true if the property is valid.
+		bool getProperty(const char *key, std::string &value) const noexcept;
 
 	};
 

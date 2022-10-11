@@ -43,7 +43,7 @@
 					agent->Object::set(node);
 					agent->setup(node);
 					if(!agent->current_state.active) {
-						agent->current_state.active = agent->stateFromValue();
+						agent->current_state.active = agent->computeState();
 					}
 					children.agents.push_back(agent);
 					return true;

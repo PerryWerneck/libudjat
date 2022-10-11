@@ -50,7 +50,7 @@
 		throw system_error(EINVAL,system_category(),"Cant get pointer to an invalid agent");
 	}
 
-	void Abstract::Agent::get(Report &report) {
+	void Abstract::Agent::get(Report UDJAT_UNUSED(&report)) {
 		error() << "Rejecting 'report' request - Not available in this agent" << endl;
 		throw system_error(ENOENT,system_category(),_( "No reports on this path") );
 	}
