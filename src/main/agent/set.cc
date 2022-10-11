@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/agent.h>
+ #include <udjat/tools/logger.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -39,6 +40,20 @@
 			cout << name() << "Disabling timer update (" << update.timer << " seconds)" << endl;
 			update.timer = 0;
 		}
+	}
+
+	time_t Abstract::Agent::reset(time_t timestamp) {
+
+		time_t saved = update.next;
+		update.next = timestamp;
+
+		debug("Agent '",name(),"' update set to ", TimeStamp(update.next));
+
+		if(update.next < saved) {
+			debug("Agent timer needs reset");
+			Controller::getInstance().reset();
+		}
+		return update.next;
 	}
 
  }

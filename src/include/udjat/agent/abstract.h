@@ -170,9 +170,8 @@
 
 			/// @brief Reset timestamp for the next update;
 			/// @param value Value for next update.
-			inline time_t reset(time_t timestamp) {
-				return (update.next = timestamp);
-			}
+			/// @return Save value of timestamp.
+			time_t reset(time_t timestamp);
 
 		public:
 			class Controller;
