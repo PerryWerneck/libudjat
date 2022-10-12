@@ -169,7 +169,7 @@
 		return tasks.size();
 	}
 
-	void ThreadPool::wait() {
+	bool ThreadPool::wait() {
 
 		if(size()) {
 
@@ -185,6 +185,7 @@
 
 		}
 
+		return size() != 0;
 	}
 
 	size_t ThreadPool::push(const char *name, std::function<void()> callback) {
