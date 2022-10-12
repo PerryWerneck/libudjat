@@ -171,7 +171,7 @@ namespace Udjat {
 		time_t now = time(nullptr);
 
 		// Gets the minor time for the next update.
-		time_t next = now + Config::Value<time_t>("agent","max-update-time",600);
+		time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
 
 		// Gets the major time from the last update.
 		time_t updated = 0;
@@ -248,20 +248,6 @@ namespace Udjat {
 			instance = make_shared<Abstract::State>("");
 		}
 		return instance;
-	}
-
-	time_t Abstract::Agent::sched_update(time_t seconds) {
-		time_t saved_next = update.next;
-		update.next = time(nullptr) + seconds;
-		if(update.next < saved_next) {
-			Controller::getInstance().reset(100);
-		}
-		trace("Next update for ",name()," set to ",TimeStamp(update.next).to_string().c_str());
-		return update.next;
-	}
-
-	void Abstract::Agent::requestRefresh(time_t seconds) {
-		sched_update(seconds);
 	}
 
 

@@ -167,11 +167,6 @@
 				return (update.timer = value);
 			}
 
-			/// @brief Reset timestamp for the next update;
-			/// @param value Value for next update.
-			/// @return Save value of timestamp.
-			time_t reset(time_t timestamp);
-
 		public:
 			class Controller;
 
@@ -248,8 +243,15 @@
 
 			/// @brief Set time for the next update (force a refresh in the next cicle if seconds=0).
 			/// @param seconds Seconds for next refresh.
-			/// @return Timestamp for next update.
+			/// @see reset
+			/// @return Update timestamp after change.
 			time_t sched_update(time_t seconds = 0);
+
+			/// @brief Reset timestamp for the next update;
+			/// @param value Value for next update.
+			/// @see sched_update
+			/// @return Update timestamp after change.
+			time_t reset(time_t timestamp);
 
 			UDJAT_DEPRECATED(inline time_t getUpdateInterval() const noexcept) {
 				return update.timer;
