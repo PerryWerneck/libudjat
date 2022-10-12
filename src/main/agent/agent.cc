@@ -55,7 +55,7 @@ namespace Udjat {
 
 			update.timer		= Config::get("agent-defaults","update-timer",update.timer);
 			update.on_demand	= Config::get("agent-defaults","update-on-demand",update.timer == 0);
-			update.next			= time(nullptr) + Config::get("agent-defaults","delay-on-startup",update.timer);
+			update.next			= time(nullptr) + Config::get("agent-defaults","delay-on-startup",update.timer ? 1 : 0);
 			update.failed 		= Config::get("agent-defaults","delay-when-failed",update.failed);
 
 		} catch(const std::exception &e) {

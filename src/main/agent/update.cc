@@ -18,74 +18,45 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::updating(bool running) {
+	void Abstract::Agent::chk4refresh(bool forward) noexcept {
 
-		if(running) {
-
-			// Update is running.
-			update.running = time(nullptr);
-
-			if(update.timer) {
-				update.next = (update.running + update.timer);
-			} else {
-				update.next = update.running + 10;
-			}
-
-		} else {
-
-			// Update is complete.
-			update.running = 0;
-			updated(false);
-
-		}
-
-	}
-
-	bool Abstract::Agent::chk4refresh(bool forward) {
+		lock_guard<std::recursive_mutex> lock(guard);
 
 		// Return if update is running.
 		if(update.running)
-			return false;
+			return;
 
-		if(!update.on_demand) {
+		if(update.on_demand) {
 
-			// It's not on-demand, check for timer and return if still waiting
-			if(update.next && update.next > time(nullptr))
-				return false;
+			// It's on demand, run agent update.
 
-		}
+			update.running = time(0);
 
-		updating(true);
+			try {
 
-		try {
+				refresh(true);
 
-			refresh(true);
+			} catch(const std::exception &e) {
 
-		} catch(const std::exception &e) {
+				failed("Error updating agent",e);
 
-			updating(false);
-			failed("Error updating agent",e);
-			throw;
+			} catch(...) {
 
-		} catch(...) {
+				failed("Unexpected error while updating");
 
-			updating(false);
-			failed("Unexpected error updating agent");
-			throw;
+			}
+
 
 		}
 
 		if(forward) {
 			// Check children
-			lock_guard<std::recursive_mutex> lock(guard);
 			for(auto child : children.agents) {
 				child->chk4refresh(true);
 			}
 		}
 
-		updating(false);
-
-		return true;
+		update.running = 0;
 
 	}
 

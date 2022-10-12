@@ -26,7 +26,7 @@ namespace Udjat {
 		this->update.timer = getAttribute(root,section,"update-timer",(unsigned int) this->update.timer);
 		this->update.on_demand = getAttribute(root,section,"update-on-demand",this->update.timer == 0);
 
-		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) 0);
+		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) (this->update.timer ? 1 : 0));
 		if(delay)
 			this->update.next = time(nullptr) + delay;
 

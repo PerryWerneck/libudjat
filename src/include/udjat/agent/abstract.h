@@ -102,7 +102,7 @@
 			void onChildStateChange() noexcept;
 
 			/// @brief Enable disable 'running updates' flag.
-			void updating(bool running);
+			// void updating(bool running);
 
 			/// @brief Load agent properties from XML node.
 			void setup_properties(const pugi::xml_node &node) noexcept;
@@ -147,8 +147,7 @@
 
 			/// @brief Run update if required.
 			/// @param forward	If true forward update to children.
-			/// @return true if the state was refreshed.
-			bool chk4refresh(bool forward = false);
+			void chk4refresh(bool forward = false) noexcept;
 
 			/// @brief Compute state from agent value.
 			/// @return Computed state or the default one if agents has no state table.

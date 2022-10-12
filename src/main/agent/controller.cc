@@ -228,9 +228,13 @@ namespace Udjat {
 
 		debug("Checking for updates");
 
-		if(updating) {
-			cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
-			return;
+		{
+			lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
+			if(updating) {
+				cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
+				return;
+			}
+			updating = time(0);
 		}
 
 		//
@@ -252,6 +256,7 @@ namespace Udjat {
 				// Do the agent requires an update?
 				if(agent->update.next <= now) {
 
+					lock_guard<std::recursive_mutex> lock(agent->guard);
 					if(agent->update.running) {
 
 						//
@@ -267,13 +272,15 @@ namespace Udjat {
 						// Queue agent update.
 						//
 
-						debug("Agent='",agent->name(),"' is expired, adding to the update list");
-						agent->updating(true);
+						debug("Agent='",agent->name(),"' is expired by ", (now - agent->update.next)," seconds, adding to the update list");
+						agent->update.running = time(0);
 						updatelist.push_back(agent);
 
 						if(agent->update.timer) {
 							agent->update.next = now + agent->update.timer;
 							next = std::min(next,agent->update.next);
+						} else {
+							agent->update.next = 0;
 						}
 
 					}
@@ -313,112 +320,22 @@ namespace Udjat {
 
 					}
 
-					agent->updating(false);
+					{
+						lock_guard<std::recursive_mutex> lock(agent->guard);
+						agent->update.running = 0;
+					}
 
 				});
 
 			}
-
-			updating = 0;
-
-		});
-
-		/*
-		if(root->update.running) {
-			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;
-			return;
-		}
-
-		debug("Checking for updates");
-
-		root->updating(true);
-
-		// Check for updates on another thread; we'll change the
-		// timer and it has a mutex lock while running the callback.
-
-		time_t now{time(0)};
-		ThreadPool::getInstance().push("agent-updates",[this,now]() {
-
-			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
-
-			root->for_each([now,this,&next](std::shared_ptr<Agent> agent) {
-
-				// Return if no update timer.
-				if(!agent->update.next)
-					return;
-
-				debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
-
-				// If the update is in the future, adjust delay and return.
-				if(agent->update.next > now) {
-					next = std::min(next,agent->update.next);
-					return;
-				}
-
-				if(agent->update.running) {
-
-					agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
-
-					if(agent->update.timer) {
-						agent->update.next = now + agent->update.timer;
-					} else {
-						agent->update.next = now + 60;
-					}
-
-					next = std::min(next,agent->update.next);
-					return;
-				}
-
-				// Agent requires update.
-				agent->updating(true);
-
-				if(agent->update.timer) {
-					agent->update.next = time(0) + agent->update.timer;
-					debug("Next update for '",agent->name(),"' scheduled to ",TimeStamp(agent->update.next)," (",agent->update.timer," seconds)");
-					next = std::min(next,agent->update.next);
-				} else {
-					agent->update.next = 0;
-					debug("Disabling updates for agent '",agent->name(),"'");
-				}
-
-				// Enqueue agent update.
-				agent->push([this,agent]() {
-
-					try {
-
-						agent->refresh(false);
-						debug("**** Agent '",agent->name(), "' refresh is set to ",TimeStamp(agent->update.next));
-
-					} catch(const exception &e) {
-
-						agent->failed("Agent update failed",e);
-
-					} catch(...) {
-
-						agent->failed("Unexpected error when updating");
-
-					}
-
-					agent->updating(false);
-
-				});
-
-			});
 
 			{
-				time_t now = time(nullptr);
-				if(now < next) {
-					debug("Next update set to ",TimeStamp(next));
-					MainLoop::Timer::reset( (next-now) * 1000 );
-				} else {
-					MainLoop::Timer::reset(1000);
-				}
+				lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
+				updating = 0;
 			}
 
-			root->updating(false);
-
 		});
-		*/
+
 
 	}
 
