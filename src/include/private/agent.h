@@ -43,6 +43,8 @@ namespace Udjat {
 	class Abstract::Agent::Controller : private Worker, Factory, private MainLoop::Service, public MainLoop::Timer {
 	private:
 
+		time_t updating = 0;
+
 		std::shared_ptr<Abstract::Agent> root;
 
 		Controller(const Controller &) = delete;

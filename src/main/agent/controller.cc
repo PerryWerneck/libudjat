@@ -226,6 +226,104 @@ namespace Udjat {
 			return;
 		}
 
+		debug("Checking for updates");
+
+		if(updating) {
+			cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
+			return;
+		}
+
+		//
+		// Get list of agents to update.
+		//
+		ThreadPool::getInstance().push("agent-updates",[this]() {
+
+			time_t now{time(0)};
+			time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
+
+			std::vector<std::shared_ptr<Agent>> updatelist;
+
+			root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
+
+				if(!agent->update.next) {
+					return;
+				}
+
+				// Do the agent requires an update?
+				if(agent->update.next <= now) {
+
+					if(agent->update.running) {
+
+						//
+						// Agent still updating.
+						//
+						agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
+						agent->update.next = now + 60;
+						next = std::min(next,agent->update.next);
+
+					} else {
+
+						//
+						// Queue agent update.
+						//
+
+						debug("Agent='",agent->name(),"' is expired, adding to the update list");
+						agent->updating(true);
+						updatelist.push_back(agent);
+
+						if(agent->update.timer) {
+							agent->update.next = now + agent->update.timer;
+							next = std::min(next,agent->update.next);
+						}
+
+					}
+
+				} else {
+					debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
+					next = std::min(next,agent->update.next);
+				}
+			});
+
+			//
+			// Enqueue agent updates
+			//
+			debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
+
+			if(now < next) {
+				MainLoop::Timer::reset((next-now) * 1000);
+			} else {
+				MainLoop::Timer::reset(1000);
+			}
+
+			for(auto agent : updatelist) {
+
+				ThreadPool::getInstance().push(agent->name(),[agent]{
+
+					try {
+
+						agent->refresh(false);
+
+					} catch(const exception &e) {
+
+						agent->failed("Agent update failed",e);
+
+					} catch(...) {
+
+						agent->failed("Unexpected error when updating");
+
+					}
+
+					agent->updating(false);
+
+				});
+
+			}
+
+			updating = 0;
+
+		});
+
+		/*
 		if(root->update.running) {
 			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;
 			return;
@@ -249,9 +347,7 @@ namespace Udjat {
 				if(!agent->update.next)
 					return;
 
-#ifdef DEBUG
-				cout << "TIMER=" << agent->update.timer << " Next=" << TimeStamp(agent->update.next) << endl;
-#endif // DEBUG
+				debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
 
 				// If the update is in the future, adjust delay and return.
 				if(agent->update.next > now) {
@@ -291,6 +387,7 @@ namespace Udjat {
 					try {
 
 						agent->refresh(false);
+						debug("**** Agent '",agent->name(), "' refresh is set to ",TimeStamp(agent->update.next));
 
 					} catch(const exception &e) {
 
@@ -321,6 +418,7 @@ namespace Udjat {
 			root->updating(false);
 
 		});
+		*/
 
 	}
 
