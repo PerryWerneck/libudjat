@@ -66,7 +66,6 @@ localedir=@localedir@
 docdir=@docdir@
 sysconfdir=/etc
 srcdir=@srcdir@
-localedir=@localedir@
 
 OBJDIR=.obj/@OSNAME@
 OBJDBG=$(OBJDIR)/Debug

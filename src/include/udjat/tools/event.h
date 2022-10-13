@@ -51,6 +51,9 @@
 
 #ifdef WIN32
 
+		/// @brief Trigger console handler.
+		static void ConsoleHandler(DWORD dwCtrlType) noexcept;
+
 		/// @brief Get console handler event.
 		/// https://docs.microsoft.com/en-us/windows/console/handlerroutine
 		static Event & ConsoleHandler(void *id, const char *name, const std::function<bool()> handler);

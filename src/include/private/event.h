@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	class UDJAT_PRIVATE Event::Controller {
+	class Event::Controller {
 	private:
 		Controller();
 
@@ -82,6 +82,8 @@
 
 		Event & ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler);
 		static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType);
+
+		void call(DWORD dwCtrlType) noexcept;
 
 #else
 

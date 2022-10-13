@@ -22,6 +22,9 @@
  #include <cstring>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
+ #include <private/mainloop.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 
@@ -83,9 +86,29 @@
 
 	}
 
-	BOOL WINAPI Event::Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
+	void Event::ConsoleHandler(DWORD dwCtrlType) noexcept {
+		Controller::getInstance().call(dwCtrlType);
+	}
 
-		Controller &instance = getInstance();
+	void Event::Controller::call(DWORD dwCtrlType) noexcept {
+
+		debug("Will lock");
+		lock_guard<mutex> lock(guard);
+		debug("Locked");
+
+		for(ConsoleHandlerType &type : consolehandlertypes) {
+			if(type.dwCtrlType == dwCtrlType) {
+				debug("Pushing event controller task");
+				ThreadPool::getInstance().push("EventController",[&type]() {
+					debug("Running trigger");
+					type.trigger();
+					debug("Trigger complete");
+				});
+			}
+		}
+	}
+
+	BOOL WINAPI Event::Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
 
 		switch(dwCtrlType) {
 		case CTRL_C_EVENT:
@@ -110,17 +133,11 @@
 
 		}
 
-		{
-			lock_guard<mutex> lock(guard);
-			for(ConsoleHandlerType &type : instance.consolehandlertypes) {
-				if(type.dwCtrlType == dwCtrlType) {
-					ThreadPool::getInstance().push("EventController",[&type]() {
-						type.trigger();
-					});
-				}
-			}
+		if(!MainLoop::getInstance().post(WM_CONSOLE_HANDLER, (WPARAM) dwCtrlType, 0)) {
+			cerr << "MainLoop\tError posting console handler message: " << Win32::Exception::format() << endl;
 		}
 
+		debug("Done!");
 		return TRUE;
 	}
 

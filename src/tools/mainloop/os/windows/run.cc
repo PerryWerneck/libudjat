@@ -36,34 +36,33 @@
 
  int Udjat::MainLoop::run() {
 
-	// Start services
-	debug(__FUNCTION__," - Start begin");
-	start();
-	debug(__FUNCTION__," - Start end");
-
-	MSG msg;
-	memset(&msg,0,sizeof(msg));
-
 	int rc = -1;
-	cout << "MainLoop\tRunning Win32 Message loop" << endl;
 
-	enabled = true;
-	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-	enabled = false;
+	// Start services
+	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting services");
+	start();
+	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting complete");
 
-	if(rc == 0) {
-		cout << "MainLoop\tWin32 Message loop ends" << endl;
-	} else {
-		cerr << "MainLoop\tWin32 Message loop ends with error " << rc << endl;
+	{
+		MSG msg;
+		memset(&msg,0,sizeof(msg));
+
+		Logger::String("Running message loop").write((Logger::Level) (Logger::Trace+1),"win32");
+
+		enabled = true;
+		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		enabled = false;
+
+		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Trace+1),"win32");
 	}
 
 	// Stop services
-	debug(__FUNCTION__," - Stop begin");
+	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Stopping services");
 	stop();
-	debug(__FUNCTION__," - Stop end");
+	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Stop complete");
 
 	return rc;
 
