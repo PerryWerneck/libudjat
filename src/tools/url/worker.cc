@@ -60,15 +60,19 @@
 
 	void Protocol::Worker::Timeouts::setup(const char *scheme) noexcept {
 
-		debug("Setting worker timeouts for scheme '",scheme,"'");
+		if(scheme && *scheme) {
 
-		connect = Config::Value<time_t>(scheme,"ConnectTimeout",connect);
-		recv = Config::Value<time_t>(scheme,"ReceiveTimeout",recv);
-		send = Config::Value<time_t>(scheme,"SendTimeout",send);
+			debug("Setting worker timeouts for scheme '",scheme,"'");
+
+			connect = Config::Value<time_t>(scheme,"ConnectTimeout",connect);
+			recv = Config::Value<time_t>(scheme,"ReceiveTimeout",recv);
+			send = Config::Value<time_t>(scheme,"SendTimeout",send);
 
 #ifdef _WIN32
-		resolv = Config::Value<time_t>(scheme,"ResolveTimeout",resolv);
+			resolv = Config::Value<time_t>(scheme,"ResolveTimeout",resolv);
 #endif // _WIN32
+
+		}
 
 	}
 
