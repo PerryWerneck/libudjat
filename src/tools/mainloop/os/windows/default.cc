@@ -24,6 +24,7 @@
  #include <cstring>
  #include <iostream>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/event.h>
 
  namespace Udjat {
@@ -55,7 +56,7 @@
 			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
 
 				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
-					clog << "mainloop\tTerminating by console request" << endl;
+					Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
 					enabled = false;
 					wakeup();
 					return true;
