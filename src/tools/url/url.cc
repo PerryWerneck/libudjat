@@ -32,6 +32,10 @@
 
 	URL::Scheme URL::scheme() const {
 
+		if(empty()) {
+			throw runtime_error("Can't get scheme on empty URL");
+		}
+
 		size_t pos = find("://");
 		if(pos == string::npos) {
 			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");

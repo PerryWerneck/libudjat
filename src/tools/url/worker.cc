@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/protocol.h>
+ #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -36,38 +37,39 @@
 
  namespace Udjat {
 
-	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
 
-		auto scheme = args.url.scheme();
+		if(!args.url.empty()) {
 
-		timeout.connect = Config::Value<time_t>(scheme.c_str(),"ConnectTimeout",timeout.connect);
-		timeout.recv = Config::Value<time_t>(scheme.c_str(),"ReceiveTimeout",timeout.recv);
-		timeout.send = Config::Value<time_t>(scheme.c_str(),"SendTimeout",timeout.send);
+			size_t pos = args.url.find("://");
+			if(pos != string::npos) {
+				timeout.setup(URL::Scheme{args.url.c_str(),pos}.c_str());
+			}
 
-#ifdef _WIN32
-		timeout.resolv = Config::Value<time_t>(scheme.c_str(),"ResolveTimeout",timeout.resolv);
-#endif // _WIN32
+		}
 
 		Protocol::Controller::getInstance().insert(this);
 	}
 
-	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
-
-		auto scheme = args.url.scheme();
-
-		timeout.connect = Config::Value<time_t>(scheme.c_str(),"ConnectTimeout",timeout.connect);
-		timeout.recv = Config::Value<time_t>(scheme.c_str(),"ReceiveTimeout",timeout.recv);
-		timeout.send = Config::Value<time_t>(scheme.c_str(),"SendTimeout",timeout.send);
-
-#ifdef _WIN32
-		timeout.resolv = Config::Value<time_t>(scheme.c_str(),"ResolveTimeout",timeout.resolv);
-#endif // _WIN32
-
-		Protocol::Controller::getInstance().insert(this);
+	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : Worker(URL(url),method,payload) {
 	}
 
 	Protocol::Worker::~Worker() {
 		Protocol::Controller::getInstance().remove(this);
+	}
+
+	void Protocol::Worker::Timeouts::setup(const char *scheme) noexcept {
+
+		debug("Setting worker timeouts for scheme '",scheme,"'");
+
+		connect = Config::Value<time_t>(scheme,"ConnectTimeout",connect);
+		recv = Config::Value<time_t>(scheme,"ReceiveTimeout",recv);
+		send = Config::Value<time_t>(scheme,"SendTimeout",send);
+
+#ifdef _WIN32
+		resolv = Config::Value<time_t>(scheme,"ResolveTimeout",resolv);
+#endif // _WIN32
+
 	}
 
 	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
@@ -99,6 +101,16 @@
 		}
 
 		args.url = url;
+
+		if(!args.url.empty()) {
+
+			size_t pos = args.url.find("://");
+			if(pos != string::npos) {
+				timeout.setup(URL::Scheme{args.url.c_str(),pos}.c_str());
+			}
+
+		}
+
 		return *this;
 	}
 

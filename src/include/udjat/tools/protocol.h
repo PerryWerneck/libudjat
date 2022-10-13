@@ -106,6 +106,10 @@
 #ifdef _WIN32
 				time_t resolv = 30;			///< @brief Resolv timeout (in seconds);
 #endif // _WIN32
+
+				/// @brief Setup timeout values from scheme.
+				void setup(const char *scheme) noexcept;
+
 			} timeout;
 
 			/// @brief Output data (To host)
