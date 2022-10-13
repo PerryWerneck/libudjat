@@ -98,6 +98,16 @@
 
 		protected:
 
+			/// @brief Timeouts
+			struct Timeouts {
+				time_t connect = 30;		///< @brief Connect timeout (in seconds);
+				time_t recv = 30;			///< @brief Receive timeout (in seconds);
+				time_t send = 30;			///< @brief Send timeout (in seconds);
+#ifdef _WIN32
+				time_t resolv = 30;			///< @brief Resolv timeout (in seconds);
+#endif // _WIN32
+			} timeout;
+
 			/// @brief Output data (To host)
 			struct Out {
 				std::string payload;	///< @brief Request payload.

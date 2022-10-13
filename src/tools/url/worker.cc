@@ -28,6 +28,7 @@
  #include <udjat/tools/file.h>
  #include <udjat/tools/base64.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -36,10 +37,32 @@
  namespace Udjat {
 
 	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+
+		auto scheme = args.url.scheme();
+
+		timeout.connect = Config::Value<time_t>(scheme.c_str(),"ConnectTimeout",timeout.connect);
+		timeout.recv = Config::Value<time_t>(scheme.c_str(),"ReceiveTimeout",timeout.recv);
+		timeout.send = Config::Value<time_t>(scheme.c_str(),"SendTimeout",timeout.send);
+
+#ifdef _WIN32
+		timeout.resolv = Config::Value<time_t>(scheme.c_str(),"ResolveTimeout",timeout.resolv);
+#endif // _WIN32
+
 		Protocol::Controller::getInstance().insert(this);
 	}
 
 	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+
+		auto scheme = args.url.scheme();
+
+		timeout.connect = Config::Value<time_t>(scheme.c_str(),"ConnectTimeout",timeout.connect);
+		timeout.recv = Config::Value<time_t>(scheme.c_str(),"ReceiveTimeout",timeout.recv);
+		timeout.send = Config::Value<time_t>(scheme.c_str(),"SendTimeout",timeout.send);
+
+#ifdef _WIN32
+		timeout.resolv = Config::Value<time_t>(scheme.c_str(),"ResolveTimeout",timeout.resolv);
+#endif // _WIN32
+
 		Protocol::Controller::getInstance().insert(this);
 	}
 
