@@ -25,7 +25,7 @@
 
 	void Abstract::Agent::start() {
 
-		debug("Starting agent '",name(),"' with (value=",to_string().c_str(),")");
+		debug("Starting agent '",name(),"' with value ",to_string().c_str());
 
 		// Start children
 		{

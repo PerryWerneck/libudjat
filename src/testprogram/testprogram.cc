@@ -93,6 +93,11 @@ int main(int argc, char **argv) {
 					return true;
 				}
 
+				void start() override {
+					trace("-------------> Starting agent ",name());
+					Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
+				}
+
 			};
 
 			return make_shared<RandomAgent>(node);
@@ -115,19 +120,20 @@ int main(int argc, char **argv) {
 			SystemService::init();
 
 			if(Module::find("httpd")) {
+
 				if(Module::find("information")) {
-					cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
+					trace("http://localhost:8989/api/1.0/info/modules.xml");
+					trace("http://localhost:8989/api/1.0/info/workers.xml");
+					trace("http://localhost:8989/api/1.0/info/factories.xml");
 				}
-				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+				trace("http://localhost:8989/api/1.0/alerts.xml");
 
 				{
 					auto root = Udjat::Abstract::Agent::root();
 					if(root) {
-						cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+						trace("http://localhost:8989/api/1.0/agent.html");
 						for(auto agent : *root) {
-							cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".xml" << endl;
+							trace("http://localhost:8989/api/1.0/agent/",agent->name(),".html");
 						}
 					}
 				}
