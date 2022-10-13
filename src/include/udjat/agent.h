@@ -62,6 +62,13 @@
 			return value.set(this->value);
 		}
 
+		/// @brief Set initial value, doesnt update state.
+		/// @param value The initial value to set.
+		inline void start(const T value) noexcept {
+			this->value = value;
+			super::start();
+		}
+
 	public:
 
 		Agent(const pugi::xml_node &node, const T v = 0) : Abstract::Agent(node), value(v) {

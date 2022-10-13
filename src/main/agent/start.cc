@@ -19,14 +19,13 @@
 
  #include <config.h>
  #include <private/agent.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
 	void Abstract::Agent::start() {
 
-#ifdef DEBUG
-		info() << "Starting agent" << endl;
-#endif // DEBUG
+		debug("Starting agent '",name(),"' with (value=",to_string().c_str(),")");
 
 		// Start children
 		{
@@ -48,6 +47,8 @@
 				}
 			}
 		}
+
+		debug("Agent '",name(), "' started, updating state");
 
 		// Update agent state.
 		{
@@ -100,6 +101,8 @@
 			}
 
 		}
+
+		debug("Agent '",name(), "' start complete");
 
 	}
 
