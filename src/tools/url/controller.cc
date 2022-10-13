@@ -75,9 +75,7 @@
 #endif // !_WIN32
 		}
 
-#ifdef DEBUG
-		cout << "Searching for protocol '" << name << "'" << endl;
-#endif // DEBUG
+		debug("Searching for protocol '",name,"'");
 
 		lock_guard<mutex> lock(guard);
 		for(auto protocol : protocols) {

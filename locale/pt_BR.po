@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-06 09:52-0300\n"
-"PO-Revision-Date: 2022-10-06 09:52-0300\n"
+"POT-Creation-Date: 2022-10-13 09:13-0300\n"
+"PO-Revision-Date: 2022-10-13 09:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -26,14 +26,18 @@ msgstr ""
 msgid "Error switching state"
 msgstr "Erro ao trocar estado"
 
-#: src/tools/os/windows/systemservice.cc:454
-#: src/tools/os/windows/systemservice.cc:459
+#: src/tools/os/linux/systemservice.cc:121
+#: src/tools/os/linux/systemservice.cc:126
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
 
 #: src/main/agent/root.cc:147
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
+
+#: src/main/agent/get.cc:55
+msgid "No reports on this path"
+msgstr "Nenhum relatório no caminho informado"
 
 #: src/tools/systemservice.cc:306 src/main/agent/root.cc:147
 msgid "System is ready"
@@ -54,6 +58,14 @@ msgstr "falso"
 #: src/tools/string/string.cc:53 src/tools/string/string.cc:196
 msgid "no"
 msgstr "não"
+
+#: src/main/state/state.cc:258
+msgid "off"
+msgstr "desligado"
+
+#: src/main/state/state.cc:258
+msgid "on"
+msgstr "ligado"
 
 #: src/tools/string/string.cc:200
 msgid "true"

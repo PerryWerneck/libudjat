@@ -68,6 +68,8 @@
 			recv = Config::Value<time_t>(scheme,"ReceiveTimeout",recv);
 			send = Config::Value<time_t>(scheme,"SendTimeout",send);
 
+			debug("connect=",connect,", recv=",recv,", send=",send);
+
 #ifdef _WIN32
 			resolv = Config::Value<time_t>(scheme,"ResolveTimeout",resolv);
 #endif // _WIN32
