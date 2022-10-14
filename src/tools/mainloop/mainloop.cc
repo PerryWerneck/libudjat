@@ -20,7 +20,10 @@
  #include <config.h>
  #include <private/mainloop.h>
  #include <private/misc.h>
- #include <udjat/win32/exception.h>
+
+ #ifdef _WIN32
+	#include <udjat/win32/exception.h>
+ #endif // _WIN32
 
  namespace Udjat {
 

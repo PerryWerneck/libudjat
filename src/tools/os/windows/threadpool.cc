@@ -38,9 +38,8 @@
 
  namespace Udjat {
 
-	static const ModuleInfo ThreadPoolInfo {"ThreadPool", "Thread Pool for WIN32"};
-
 	ThreadPool & ThreadPool::getInstance() {
+
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
@@ -139,18 +138,19 @@
 		return tasks.size();
 	}
 
-	bool ThreadPool::wait() {
+	bool ThreadPool::wait(time_t seconds) {
 
 		if(size()) {
 
-			clog << name << "\tWaiting for " << tasks.size() << " tasks on pool" << endl;
+			Logger::String("Waiting for ",tasks.size()," tasks on pool").write(Logger::Trace,name);
 
-			for(size_t f=0; f < 100 && size() > 0; f++) {
+			seconds *= (time_t) 100;
+			for(time_t f=0; f < seconds && size() > 0; f++) {
 				Sleep(10);
 			}
 
 			if(size()) {
-				cerr << name << "\tTimeout waiting for " << tasks.size() << " tasks on pool" << endl;
+				Logger::String("Timeout waiting for ",tasks.size()," tasks on pool").write(Logger::Trace,name);
 			}
 
 		}
@@ -160,11 +160,17 @@
 
 	size_t ThreadPool::push(const char *name, std::function<void()> callback) {
 
+		/*
+		if(!enabled) {
+			cerr << "ThreadPoool\tPool is disabled, running task '" << name << "' in foreground" << endl;
+			callback();
+			return tasks.size();
+		}
+		*/
+
 		std::lock_guard<std::mutex> lock(this->guard);
 
-#ifdef DEBUG
-		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
-#endif // DEBUG
+		debug("Inserting task size=",tasks.size()," Limit=",limits.tasks);
 
 		if(limits.tasks && tasks.size() >= limits.tasks) {
 			throw std::runtime_error(
@@ -179,7 +185,7 @@
 		if(threads.waiting) {
 			wakeup();
 		} else if(threads.active < limits.threads) {
-			std::thread(worker, this).detach();
+			thread(worker, this).detach();
 		}
 
 		return tasks.size();
@@ -220,23 +226,17 @@
 
 					try {
 
-#ifdef DEBUG
-						cout << pool->name << "\tRunning worker '" << task.name << "'" << endl;
-#endif // DEBUG
-
+						debug("Calling '",task.name,"'");
 						task.callback();
-
-#ifdef DEBUG
-						cout << pool->name << "\tWorker '" << task.name << "' is complete" << endl;
-#endif // DEBUG
+						debug("Returned from '",task.name,"'");
 
 					} catch(const std::exception &e) {
 
-						cerr << task.name << "\t" << e.what() << endl;
+						cerr << "ThreadPool\tTask '" << task.name << "' has failed: " << e.what() << endl;
 
 					} catch(...) {
 
-						cerr << task.name << "\tUnexpected error running delayed task" << endl;
+						cerr << "ThreadPool\tUnexpected error running task '" << task.name << "'" << endl;
 
 					}
 

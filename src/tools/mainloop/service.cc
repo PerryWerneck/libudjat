@@ -54,19 +54,18 @@
 
 	void MainLoop::stop() noexcept {
 
-#ifdef DEBUG
-		cout << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
 		{
 			lock_guard<mutex> lock(Service::guard);
-			cout << "mainloop\tStopping " << services.size() << " service(s)" << endl;
+
+			Logger::String("Stopping ",services.size()," service(s)").write(Logger::Trace,"mainloop");
 
 			// Stop services in reverse order.
+			size_t count = 0;
 			for(auto srvc = services.rbegin(); srvc != services.rend(); srvc++) {
 				Service *service = *srvc;
 				if(service->state.active) {
 					try {
-						cout << "services\tStopping '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
+						Logger::String("Stopping '",service->name(),"' (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
 						service->stop();
 					} catch(const std::exception &e) {
 						service->error() << "Error '" << e.what() << "' stopping service" << endl;
@@ -75,17 +74,13 @@
 					}
 					service->state.active = false;
 				}
-#ifdef DEBUG
 				else {
-					cout << "services\tService '" << service->name() << "' (" << service->description() << ") is not active" << endl;
+					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
 				}
-#endif // DEBUG
 			}
 		}
 
-		debug("Waiting for tasks (agent)");
 		ThreadPool::getInstance().wait();
-		debug("Wait for tasks complete");
 
 	}
 
