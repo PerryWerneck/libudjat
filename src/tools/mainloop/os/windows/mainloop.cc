@@ -126,6 +126,7 @@
 
 			case WM_START:
 				Logger::String("Starting services in response to a 'WM_START' message").write(Logger::Trace,"MainLoop");
+				ThreadPool::getInstance();
 				controller.start();
 				break;
 

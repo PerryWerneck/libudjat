@@ -56,12 +56,28 @@
 		struct UDJAT_API Status : SERVICE_STATUS {
 
 			constexpr Status() {
-				dwCurrentState				= (DWORD) -1;
-				dwWin32ExitCode				= 0;
-				dwWaitHint					= 0;
+
+				/// @brief The type of service.
 				dwServiceType				= SERVICE_WIN32;
+
+				/// @brief The current state of the service.
+				dwCurrentState				= SERVICE_STOPPED;
+
+				/// @brief The control codes the service accepts and processes in its handler function
+				dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN;
+
+				/// @brief The error code the service uses to report an error that occurs when it is starting or stopping.
+				dwWin32ExitCode				= NO_ERROR;
+
+				/// @brief A service-specific error code that the service returns when an error occurs while the service is starting or stopping.
 				dwServiceSpecificExitCode	= 0;
-				dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN;
+
+				/// @brief The check-point value the service increments periodically to report its progress during a lengthy start, stop, pause, or continue operation.
+				dwCheckPoint				= 0;
+
+				/// @brief The estimated time required for a pending start, stop, pause, or continue operation, in milliseconds.
+				dwWaitHint					= 0;
+
 			}
 
 			void set(SERVICE_STATUS_HANDLE handle, DWORD state, DWORD wait = 0) {
@@ -132,9 +148,21 @@
 				try {
 
 					switch (CtrlCmd) {
+					case SERVICE_CONTROL_SESSIONCHANGE:
+						break;
+
+					case SERVICE_CONTROL_POWEREVENT:
+						break;
+
+					case SERVICE_CONTROL_PRESHUTDOWN:
+						controller.set(SERVICE_STOP_PENDING, 3000);
+						clog << "service\tSystem is preparing for shutdown, stopping" << endl;
+						SystemService::getInstance()->stop();
+						break;
+
 					case SERVICE_CONTROL_SHUTDOWN:
 						controller.set(SERVICE_STOP_PENDING, 3000);
-						cout << "service\tSystem shutdown, stopping" << endl;
+						clog << "service\tSystem shutdown, stopping" << endl;
 						SystemService::getInstance()->stop();
 						break;
 
