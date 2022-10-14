@@ -20,14 +20,21 @@
  #include <config.h>
  #include <private/mainloop.h>
  #include <private/misc.h>
+ #include <udjat/win32/exception.h>
 
  namespace Udjat {
 
 	std::mutex MainLoop::guard;
 
 	void MainLoop::quit() {
+#ifdef _WIN32
+		if(!PostMessage(hwnd,WM_STOP,0,0)) {
+			cerr << "MainLoop\tError posting WM_STOP message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
+		}
+#else
 		enabled = false;
 		wakeup();
+#endif // _WIN32
 	}
 
 

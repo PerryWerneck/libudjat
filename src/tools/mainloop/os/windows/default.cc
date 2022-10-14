@@ -57,8 +57,7 @@
 
 				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
 					Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
-					enabled = false;
-					wakeup();
+					quit();
 					return true;
 				});
 

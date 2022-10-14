@@ -30,28 +30,26 @@
 	mutex MainLoop::Service::guard;
 
 	void MainLoop::start() noexcept {
-#ifdef DEBUG
-		cout << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
 
-		lock_guard<mutex> lock(Service::guard);
-		cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-		for(auto service : services) {
-			if(!service->state.active) {
-				try {
-					cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-					service->start();
-					service->state.active = true;
-				} catch(const std::exception &e) {
-					service->error() << "Error '" << e.what() << "' starting service" << endl;
-				} catch(...) {
-					service->error() << "Unexpected error starting service" << endl;
+		ThreadPool::getInstance();
+
+		{
+			lock_guard<mutex> lock(Service::guard);
+			cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
+			for(auto service : services) {
+				if(!service->state.active) {
+					try {
+						cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
+						service->start();
+						service->state.active = true;
+					} catch(const std::exception &e) {
+						service->error() << "Error '" << e.what() << "' starting service" << endl;
+					} catch(...) {
+						service->error() << "Unexpected error starting service" << endl;
+					}
 				}
 			}
 		}
-#ifdef DEBUG
-		cout << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
 	}
 
 	void MainLoop::stop() noexcept {

@@ -112,25 +112,30 @@
 		try {
 
 			switch(uMsg) {
-			case WM_QUIT:
-				Logger::String("WM_QUIT").write(Logger::Trace,"MainLoop");
+			case WM_CREATE:
+				Logger::String("WM_CREATE").write(Logger::Trace,"MainLoop");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_DESTROY:
 				Logger::String("WM_DESTROY").write(Logger::Trace,"MainLoop");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
+			case WM_QUIT:
+				Logger::String("WM_QUIT").write(Logger::Trace,"MainLoop");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_START:
+				Logger::String("Starting services in response to a 'WM_START' message").write(Logger::Trace,"MainLoop");
+				controller.start();
+				break;
+
 			case WM_STOP:
 				Logger::String("Stoppping services in response to a 'WM_STOP' message").write(Logger::Trace,"MainLoop");
-				for(auto service : controller.services) {
-					cout << "services\tStopping '" << service->name() << "'" << endl;
-					try {
-						service->stop();
-					} catch(const std::exception &e) {
-						cerr << "services\tError stopping service: " << e.what() << endl;
-					} catch(...) {
-						cerr << "services\tUnexpected error stopping service" << endl;
-					}
+				controller.enabled = false;
+				controller.stop();
+				ThreadPool::getInstance().stop();
+				if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
+					cerr << "MainLoop\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 				}
 				break;
 
@@ -138,23 +143,7 @@
 
 				// Check if the mainloop still enabled.
 				debug("WM_WAKE_UP");
-
-				if(controller.enabled) {
-
-					// Controller is enabled, update timers.
-					SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
-
-				} else {
-
-					// Controller is not enabled, stop.
-
-					cout << "MainLoop\tMain loop was disabled" << endl;
-					SendMessage(controller.hwnd,WM_STOP,0,0);
-
-					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
-						cerr << "MainLoop\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
-					}
-				}
+				SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
 				return 0;
 
 			case WM_CHECK_TIMERS:

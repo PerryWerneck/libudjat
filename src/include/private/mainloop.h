@@ -30,8 +30,8 @@
  #ifdef _WIN32
 	#define WM_WAKE_UP			WM_USER+100
 	#define WM_CHECK_TIMERS		WM_USER+101
-	#define WM_STOP				WM_USER+102
-//	#define WM_EVENT_ACTION		WM_USER+103
+	#define WM_START			WM_USER+102
+	#define WM_STOP				WM_USER+103
 	#define WM_CONSOLE_HANDLER	WM_USER+104
 
 	#define IDT_CHECK_TIMERS	1
@@ -40,37 +40,6 @@
  using namespace std;
 
  namespace Udjat {
-
-#ifdef _WIN32
-
-	class UDJAT_PRIVATE ThreadPool::Controller : MainLoop::Service {
-	private:
-
-		std::mutex guard;
-		HWND hwnd;
-
-		std::list<ThreadPool *> pools;
-
-		Controller();
-		~Controller() { }
-
-	public:
-		static Controller &getInstance();
-
-		inline void push_back(ThreadPool *pool) {
-			std::lock_guard<std::mutex> lock(guard);
-			pools.push_back(pool);
-		}
-
-		inline void remove(ThreadPool *pool) {
-			std::lock_guard<std::mutex> lock(guard);
-			pools.remove(pool);
-		}
-
-		void stop() override;
-
-	};
-#endif // _WIN32
 
 
  }

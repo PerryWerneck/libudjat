@@ -78,7 +78,7 @@ namespace Udjat {
 
 			if((listener->event & event) != 0) {
 
-				push([this,event	,listener]() {
+				push([this,event,listener]() {
 
 					try {
 
@@ -95,6 +95,7 @@ namespace Udjat {
 					}
 
 				});
+
 			}
 		}
 	}

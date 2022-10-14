@@ -30,32 +30,15 @@
  using namespace std;
 
  // Disable debug messages for this module.
- #ifdef DEBUG
-	#undef DEBUG
- #endif // DEBUG
+ //#ifdef DEBUG
+ //	#undef DEBUG
+ //#endif // DEBUG
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 
  namespace Udjat {
 
 	static const ModuleInfo ThreadPoolInfo {"ThreadPool", "Thread Pool for WIN32"};
-
-	ThreadPool::Controller::Controller() : Service(ThreadPoolInfo) {
-		start();
-	}
-
-	void ThreadPool::Controller::stop() {
-		info() << "Stopping background threads" << endl;
-		std::lock_guard<std::mutex> lock(guard);
-		for(auto pool : pools) {
-			pool->stop();
-		}
-	}
-
-	ThreadPool::Controller & ThreadPool::Controller::getInstance() {
-		static Controller instance;
-		return instance;
-	}
 
 	ThreadPool & ThreadPool::getInstance() {
 		class Pool : public ThreadPool {
@@ -71,13 +54,7 @@
 
 	ThreadPool::ThreadPool(const char *n) : name(n)  {
 
-		Controller::getInstance().push_back(this);
-
 		threads.active = threads.waiting = 0;
-
-#ifdef DEBUG
-		limits.threads = 1;
-#endif // DEBUG
 
 		try {
 
@@ -102,11 +79,9 @@
 
 		}
 
-		Controller::getInstance().push_back(this);
 	}
 
 	ThreadPool::~ThreadPool() {
-		Controller::getInstance().remove(this);
 		stop();
 		CloseHandle(hEvent);
 	}
@@ -114,7 +89,7 @@
 	void ThreadPool::wakeup() noexcept {
 
 #ifdef DEBUG
-		cerr << name << "\tWake-Up" << endl;
+		cerr << name << "\tWake-Up on event " << hex << hEvent << dec << endl;
 #endif // DEBUG
 
 		if (!SetEvent(hEvent)) {
@@ -133,16 +108,11 @@
 
 		if(getActiveThreads()) {
 
-			cout << name << "\tWaiting for " << getActiveThreads() << " threads on pool (" << getWaitingThreads() << " waiting)" << endl;
+			debug("Waiting for ",getActiveThreads()," active threads on pool (",getWaitingThreads()," waiting)");
 
 			for(size_t f=0; f < 1000 && getActiveThreads() > 0; f++) {
 
-#ifdef DEBUG
-				cout	<< " threads.active=" << threads.active
-						<< " threads.waiting=" << threads.waiting
-						<< " limits.threads=" << limits.threads
-						<< endl;
-#endif // DEBUG
+				debug(" threads.active=",threads.active," threads.waiting=",threads.waiting," limits.threads=",limits.threads);
 
 				if(getWaitingThreads()) {
 					wakeup();
@@ -236,7 +206,7 @@
 		pool->threads.active++;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->getActiveThreads() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop starts - ActiveThreads=" << pool->getActiveThreads() << " maxthreads=" << pool->limits.threads << endl;
 #endif // DEBUG
 
 		bool enabled = true;
@@ -286,6 +256,7 @@
 				}
 #ifdef DEBUG
 				cout	<< pool->name << "\t Will wait for object "
+						<< "handle=" << hex << pool->hEvent << dec
 						<< " threads.active=" << pool->threads.active
 						<< " threads.waiting=" << pool->threads.waiting
 						<< " limits.threads=" << pool->limits.threads
@@ -294,7 +265,7 @@
 				DWORD dwWaitResult = WaitForSingleObject(pool->hEvent,(pool->limits.idle * 1000));
 
 #ifdef DEBUG
-				cout	<< pool->name << "\t Vait for object returned with rc " << dwWaitResult
+				cout	<< pool->name << "\tWait for object returned with rc " << dwWaitResult
 						<< " threads.active=" << pool->threads.active
 						<< " threads.waiting=" << pool->threads.waiting
 						<< " limits.threads=" << pool->limits.threads
