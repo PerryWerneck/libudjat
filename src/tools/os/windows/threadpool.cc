@@ -160,13 +160,11 @@
 
 	size_t ThreadPool::push(const char *name, std::function<void()> callback) {
 
-		/*
-		if(!enabled) {
+		if(!limits.threads) {
 			cerr << "ThreadPoool\tPool is disabled, running task '" << name << "' in foreground" << endl;
 			callback();
 			return tasks.size();
 		}
-		*/
 
 		std::lock_guard<std::mutex> lock(this->guard);
 
@@ -185,7 +183,7 @@
 		if(threads.waiting) {
 			wakeup();
 		} else if(threads.active < limits.threads) {
-			thread(worker, this).detach();
+			thread{worker, this}.detach();
 		}
 
 		return tasks.size();
