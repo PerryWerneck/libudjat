@@ -148,34 +148,6 @@
 			.write(get(progress))
 			.save(filename,replace);
 
-		/*
-		String text = get(progress);
-
-		// TODO: Make backup.
-
-		size_t length = text.size();
-		int fd = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0777);
-		if(fd < 0) {
-			throw system_error(errno,system_category(),filename);
-		}
-
-		const char *ptr = text.c_str();
-		while(length) {
-			ssize_t bytes = write(fd,ptr,length);
-			if(bytes < 0) {
-				int err = errno;
-				::close(fd);
-				throw system_error(err,system_category(),filename);
-			} else if(bytes == 0) {
-				::close(fd);
-				throw runtime_error(string{"Unexpected error writing "} + filename);
-			}
-			ptr += bytes;
-			length -= bytes;
-		}
-		::close(fd);
-		*/
-
 		return true;
 	}
 
@@ -189,6 +161,23 @@
 	std::string Protocol::Worker::filename() {
 		return filename(dummy_progress);
 	}
+
+	std::ostream & Protocol::Worker::info() const {
+		return cout << name << "\t";
+	}
+
+	std::ostream & Protocol::Worker::warning() const {
+		return clog << name << "\t";
+	}
+
+	std::ostream & Protocol::Worker::error() const {
+		return cerr << name << "\t";
+	}
+
+	std::ostream & Protocol::Worker::trace() const {
+		return Logger::trace() << name << "\t";
+	}
+
 
  }
 

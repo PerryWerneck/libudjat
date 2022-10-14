@@ -41,6 +41,11 @@
 			Trace	// Trace should be the last one.
 		};
 
+		UDJAT_API std::ostream & info();
+		UDJAT_API std::ostream & warning();
+		UDJAT_API std::ostream & error();
+		UDJAT_API std::ostream & trace();
+
 		/// @brief Write message.
 		/// @param level	Log level.
 		/// @param message	The message.
@@ -182,12 +187,6 @@
 		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"debug");
 	#else
 		#define debug( ... )           // __VA_ARGS__
-	#endif // DEBUG
-
-	#if defined(DEBUG) || defined(TRACE_ENABLED)
-		#define trace( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"trace");
-	#else
-		#define trace( ... )           // __VA_ARGS__
 	#endif // DEBUG
 
  }

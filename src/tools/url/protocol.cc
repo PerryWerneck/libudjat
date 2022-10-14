@@ -77,6 +77,10 @@
 		return cerr << name << "\t";
 	}
 
+	std::ostream & Protocol::trace() const {
+		return Logger::trace() << name << "\t";
+	}
+
 	const Protocol * Protocol::find(const URL &url) {
 		string scheme = url.scheme();
 

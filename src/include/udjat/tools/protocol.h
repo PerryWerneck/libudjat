@@ -98,6 +98,9 @@
 
 		protected:
 
+			/// @brief Worker name.
+			const char *name = "";
+
 			/// @brief Timeouts
 			struct Timeouts {
 				time_t connect = 30;		///< @brief Connect timeout (in seconds);
@@ -244,6 +247,11 @@
 			/// @return The temporary filename.
 			std::string save();
 
+			std::ostream & info() const;
+			std::ostream & warning() const;
+			std::ostream & error() const;
+			std::ostream & trace() const;
+
 		};
 
 		virtual std::shared_ptr<Worker> WorkerFactory() const;
@@ -267,6 +275,7 @@
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
+		std::ostream & trace() const;
 
 		static const Protocol * find(const URL &url);
 		static const Protocol * find(const char *name);

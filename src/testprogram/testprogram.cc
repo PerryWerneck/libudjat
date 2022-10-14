@@ -94,7 +94,6 @@ int main(int argc, char **argv) {
 				}
 
 				void start() override {
-					trace("-------------> Starting agent ",name());
 					Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
 				}
 
@@ -122,18 +121,18 @@ int main(int argc, char **argv) {
 			if(Module::find("httpd")) {
 
 				if(Module::find("information")) {
-					trace("http://localhost:8989/api/1.0/info/modules.xml");
-					trace("http://localhost:8989/api/1.0/info/workers.xml");
-					trace("http://localhost:8989/api/1.0/info/factories.xml");
+					debug("http://localhost:8989/api/1.0/info/modules.xml");
+					debug("http://localhost:8989/api/1.0/info/workers.xml");
+					debug("http://localhost:8989/api/1.0/info/factories.xml");
 				}
-				trace("http://localhost:8989/api/1.0/alerts.xml");
+				debug("http://localhost:8989/api/1.0/alerts.xml");
 
 				{
 					auto root = Udjat::Abstract::Agent::root();
 					if(root) {
-						trace("http://localhost:8989/api/1.0/agent.html");
+						debug("http://localhost:8989/api/1.0/agent.html");
 						for(auto agent : *root) {
-							trace("http://localhost:8989/api/1.0/agent/",agent->name(),".html");
+							debug("http://localhost:8989/api/1.0/agent/",agent->name(),".html");
 						}
 					}
 				}

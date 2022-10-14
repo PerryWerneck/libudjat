@@ -218,12 +218,6 @@
 		write(level,message.c_str());
 	}
 
-	/*
-	void Logger::Writer::write(const char *message) const noexcept {
-		Logger::write(level,message);
-	}
-	*/
-
 	void Logger::Writer::write(Buffer &buffer) {
 
 		// Remove spaces
@@ -256,6 +250,23 @@
 
 	void Logger::String::write(const Logger::Level level, const char *domain) const {
 		Logger::write(level,domain,c_str());
+	}
+
+	UDJAT_API std::ostream & Logger::info() {
+		return cout;
+	}
+
+	UDJAT_API std::ostream & Logger::warning() {
+		return clog;
+	}
+
+	UDJAT_API std::ostream & Logger::error() {
+		return cerr;
+	}
+
+	UDJAT_API std::ostream & Logger::trace() {
+		static std::ostream ctrace{new Writer(Logger::Trace)};
+		return ctrace;
 	}
 
  }

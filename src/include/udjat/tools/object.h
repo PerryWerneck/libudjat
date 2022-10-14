@@ -195,6 +195,7 @@
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
+		std::ostream & trace() const;
 
 	};
 

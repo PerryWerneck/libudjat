@@ -27,6 +27,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
  #include <udjat/factory.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -189,6 +190,10 @@
 
 	std::ostream & NamedObject::error() const {
 		return std::cerr << name() << "\t";
+	}
+
+	std::ostream & NamedObject::trace() const {
+		return Logger::trace() << name() << "\t";
 	}
 
 	void Abstract::Object::for_each(const pugi::xml_node &root, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler) {
