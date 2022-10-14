@@ -54,24 +54,24 @@
 
 	/// @brief Called on subprocess stdout.
 	void SubProcess::onStdOut(const char *line) {
-		info() << line << endl;
+		Logger::String(line).write(Logger::Trace,name());
 	}
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		error() << line << endl;
+		Logger::String(line).write(Logger::Trace,name());
 	}
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		(rc ? cerr : cout) << name() << "\tProcess '" << command << "' finishes with rc=" << rc << endl;
+		Logger::String("Process '",command,"' finishes with rc=",rc).write(rc ? Logger::Error : Logger::Trace, name());
 	}
 
 	/// @brief Called on subprocess abnormal exit.
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void SubProcess::onSignal(int sig) {
-		onStdErr(Logger::Message{"Process '{}' finishes with signal {}",command,std::to_string(sig)}.c_str());
+		Logger::String("Process '",command,"' finishes with signal ",sig).write(Logger::Trace,name());
 	}
 	#pragma GCC diagnostic pop
 

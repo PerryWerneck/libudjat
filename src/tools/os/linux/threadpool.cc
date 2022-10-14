@@ -134,13 +134,14 @@
 		return tasks.size();
 	}
 
-	bool ThreadPool::wait() {
+	bool ThreadPool::wait(time_t seconds) {
 
 		if(size()) {
 
 			clog << "Waiting for " << tasks.size() << " tasks on pool" << endl;
 
-			for(size_t f=0; f < 100000 && size() > 0; f++) {
+			seconds *= ((time_t) 10);
+			for(time_t f=0; f < seconds && size() > 0; f++) {
 				usleep(100);
 			}
 

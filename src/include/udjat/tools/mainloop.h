@@ -101,14 +101,10 @@ namespace Udjat {
 
 		};
 
-	protected:
+	private:
+
 		/// @brief Private constructor, use getInstance() instead.
 		MainLoop();
-
-		/// @brief Is the mainloop enabled.
-		bool enabled;
-
-	private:
 
 		/// @brief Services
 		std::list<Service *> services;
@@ -135,22 +131,22 @@ namespace Udjat {
 
 		} timers;
 
+		/// @brief Is the mainloop enabled.
+		bool enabled = true;
+
 #ifdef _WIN32
 		/// @brief Process windows messages.
 		static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 		/// @brief Object window for this loop
-		HWND hwnd;
+		HWND hwnd = 0;
 
 		/// @brief get sockets
 		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
 
 #else
 		/// @brief Event FD.
-		int efd;
-
-		/// @brief get FDs.
-		//nfds_t getHandlers(struct pollfd **fds, nfds_t *length);
+		int efd = -1;
 
 #endif // _WIN32
 
@@ -186,24 +182,17 @@ namespace Udjat {
 		/// @brief Wakeup main loop.
 		void wakeup() noexcept;
 
-#ifdef _WIN32
-
-			/// @brief Watch windows object.
-			void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
-
-#endif // _WIN32
-
 		/// @brief Create timer for callback.
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
 
-		/// @brief Remove socket/file/module from the list of event sources.
-		//void remove(const void *id);
-
 #ifdef _WIN32
 
 		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+
+		/// @brief Watch windows object.
+		void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
 
 		static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
 		static void remove(HANDLE handle);

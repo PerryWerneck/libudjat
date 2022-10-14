@@ -23,6 +23,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
  #include <private/event.h>
+ #include <udjat/tools/configuration.h>
 
  #include <iostream>
 
@@ -48,8 +49,7 @@
 			winClass = RegisterClassEx(&wc);
 
 			if(!winClass) {
-				// throw Win32::Exception("Error calling RegisterClass");
-				throw runtime_error("Failed: Can't register window class");
+				throw Win32::Exception("Error calling RegisterClass");
 			}
 
 		}
@@ -79,9 +79,47 @@
 
 		debug("Main Object window was created");
 
+		//
+		// Apply console handlers.
+		//
+		static const struct Events {
+			DWORD id;
+			bool def;
+			const char * key;
+			const char * message;
+		} events[] = {
+			{ CTRL_C_EVENT,			true,	"terminate-on-ctrl-c",		"Ctrl-C to interrupt"	},
+			{ CTRL_BREAK_EVENT,		false,	"terminate-on-ctrl-break",	""						},
+			{ CTRL_SHUTDOWN_EVENT,	false,	"terminate-on-shutdown",	""						},
+		};
+
+		for(size_t ix = 0; ix < (sizeof(events)/sizeof(events[0]));ix++) {
+
+			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
+
+				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
+					Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
+					quit();
+					return true;
+				});
+
+				if(events[ix].message[0]) {
+					cout << "mainloop\t" << events[ix].message << endl;
+				}
+			}
+
+		}
+
+	}
+
+	MainLoop & MainLoop::getInstance() {
+		static MainLoop instance;
+		return instance;
 	}
 
 	MainLoop::~MainLoop() {
+
+		Udjat::Event::remove(this);
 
 		KillTimer(hwnd, IDT_CHECK_TIMERS);
 		DestroyWindow(hwnd);

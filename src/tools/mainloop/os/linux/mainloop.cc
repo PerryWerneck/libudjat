@@ -21,6 +21,8 @@
  #include <cstring>
  #include <sys/eventfd.h>
  #include <private/misc.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <unistd.h>
 
@@ -29,23 +31,15 @@
  namespace Udjat {
 
 	MainLoop::MainLoop() {
-		cout << "MainLoop\tInitializing service loop" << endl;
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
-
 	}
 
 	MainLoop::~MainLoop() {
 
-#ifdef DEBUG
-		cout << "MainLoop\tDestroying mainloop" << endl;
-#endif // DEBUG
-
 		if(!handlers.empty()) {
-
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
-
 		} else {
 			cout << "MainLoop\tDestroying clean service loop" << endl;
 		}
@@ -59,9 +53,7 @@
 			efd = -1;
 		}
 
-#ifdef DEBUG
-		cout << "MainLoop\tMainloop was destroyed" << endl;
-#endif // DEBUG
+		debug("Mainloop was destroyed");
 
 	}
 

@@ -29,17 +29,7 @@
 
  namespace Udjat {
 
-	static const struct Events {
-		DWORD id;
-		bool def;
-		const char * key;
-		const char * message;
-	} events[] = {
-		{ CTRL_C_EVENT,			true,	"terminate-on-ctrl-c",		"Ctrl-C to interrupt"	},
-		{ CTRL_BREAK_EVENT,		false,	"terminate-on-ctrl-break",	""						},
-		{ CTRL_SHUTDOWN_EVENT,	false,	"terminate-on-shutdown",	""						},
-	};
-
+	/*
 	Win32::MainLoop & Win32::MainLoop::getInstance() {
 		static Win32::MainLoop instance;
 		return instance;
@@ -51,25 +41,10 @@
 
 	Win32::MainLoop::MainLoop() : Udjat::MainLoop() {
 
-		for(size_t ix = 0; ix < (sizeof(events)/sizeof(events[0]));ix++) {
-
-			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
-
-				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
-					Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
-					quit();
-					return true;
-				});
-
-				cout << "mainloop\t" << events[ix].message << endl;
-			}
-
-		}
-
 	}
 
 	Win32::MainLoop::~MainLoop() {
-		Udjat::Event::remove(this);
 	}
+	*/
 
  }
