@@ -76,13 +76,13 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto listener : listeners) {
 
-			if(listener->event == event) {
+			if((listener->event & event) != 0) {
 
-				push([this,listener]() {
+				push([this,event	,listener]() {
 
 					try {
 
-						listener->trigger(*this);
+						listener->trigger(event, *this);
 
 					} catch(const std::exception &e) {
 
@@ -117,8 +117,11 @@ namespace Udjat {
 
 	void Abstract::Agent::stop() {
 
+		debug("Stopping agent '",name(),"'");
+
 		lock_guard<std::recursive_mutex> lock(guard);
 
+		// Stop children
 		for(auto childptr = children.agents.rbegin(); childptr != children.agents.rend(); childptr++) {
 
 			auto agent = *childptr;
@@ -158,9 +161,7 @@ namespace Udjat {
 
 		}
 
-#ifdef DEBUG
-		info() << "Stopping agent" << endl;
-#endif // DEBUG
+		notify(STOPPED);
 
 	}
 

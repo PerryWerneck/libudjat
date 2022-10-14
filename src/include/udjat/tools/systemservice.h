@@ -47,7 +47,7 @@
 		/// @brief Set service state message to the root agent.
 		void notify() noexcept;
 
-		void trigger(Abstract::Agent &agent) override;
+		void trigger(const Abstract::Agent::Event event, Abstract::Agent &agent) override;
 
 #ifdef _WIN32
 		void registry(const char *name, const char *value);

@@ -34,12 +34,14 @@
 		class UDJAT_API Agent : public Udjat::Object {
 		public:
 
-			enum Event : uint8_t {
-				VALUE_CHANGED	= 0,		///< @brief Agent value has changed.
-				STATE_CHANGED	= 1,		///< @brief Agent state has changed.
-				LEVEL_CHANGED	= 2,		///< @brief Agent level has changed.
+			enum Event : uint16_t {
+				STARTED			= 0x0001,		///< @brief Agent was started.
+				STOPPED			= 0x0002,		///< @brief Agent was stopped.
+				VALUE_CHANGED	= 0x0004,		///< @brief Agent value has changed.
+				STATE_CHANGED	= 0x0008,		///< @brief Agent state has changed.
+				LEVEL_CHANGED	= 0x0010,		///< @brief Agent level has changed.
 
-				CUSTOM_EVENT	= 200		///< @brief Custom event (for module use).
+				ALL 			= 0x001F		///< @brief All events.
 			};
 
 			class UDJAT_API EventListener {
@@ -53,7 +55,7 @@
 				constexpr EventListener(const Event e) : event(e) {
 				}
 
-				virtual void trigger(Abstract::Agent &agent) = 0;
+				virtual void trigger(const Event e, Abstract::Agent &agent) = 0;
 
 			};
 

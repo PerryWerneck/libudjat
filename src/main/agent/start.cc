@@ -102,6 +102,7 @@
 
 		}
 
+		notify(STARTED);
 		debug("Agent '",name(), "' start complete");
 
 	}

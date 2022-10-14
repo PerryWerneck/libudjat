@@ -43,9 +43,11 @@
 
  namespace Udjat {
 
+	using Event = Abstract::Agent::Event;
+
 	SystemService * SystemService::instance = nullptr;
 
-	SystemService::SystemService(const char *d) : Abstract::Agent::EventListener(Abstract::Agent::STATE_CHANGED), definitions(d) {
+	SystemService::SystemService(const char *d) : Abstract::Agent::EventListener((Event) (Event::STARTED|Event::STATE_CHANGED)), definitions(d) {
 
 		if(instance) {
 			throw runtime_error("Can't start more than one system service");
@@ -155,7 +157,6 @@
 			auto root = Abstract::Agent::root();
 			if(root) {
 				root->push_back(this);
-				trigger(*root);	// Notify current root state.
 			}
 		}
 
@@ -294,13 +295,12 @@
 		}
 	}
 
-	void SystemService::trigger(Abstract::Agent &agent) {
+	void SystemService::trigger(Event event, Abstract::Agent &agent) {
 
 		auto state = agent.state();
 		String message{state->summary()};
 
-//		String message = agent.state()->to_string().c_str();
-//		message.strip();
+		debug("Trigger state ",((int) event)," - ",message);
 
 		if(message.strip().empty()) {
 			notify( _( "System is ready" ));
