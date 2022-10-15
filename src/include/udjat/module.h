@@ -110,7 +110,7 @@
 		/// @return true if the property is valid.
 		virtual bool getProperty(const char *key, std::string &value) const noexcept;
 
-		std::string operator[](const char *property_name);
+		std::string operator[](const char *property_name) const noexcept;
 
 	};
 

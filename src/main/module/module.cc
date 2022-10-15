@@ -76,7 +76,7 @@ namespace Udjat {
 		return info.getProperty(key,value);
 	}
 
-	std::string Module::operator[](const char *property_name) {
+	std::string Module::operator[](const char *property_name) const noexcept {
 		std::string value;
 		getProperty(property_name,value);
 		return value;
