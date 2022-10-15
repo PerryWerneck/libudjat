@@ -17,10 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <private/protocol.h>
-
  #include <udjat/tools/url.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/moduleinfo.h>
  #include <cstdio>
  #include <iostream>
@@ -32,7 +33,7 @@
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo { "Script protocol module" };
+	static const ModuleInfo moduleinfo { N_("Subprocess/Script protocol" ) };
 
 	Protocol::Controller::Script::Script() : Udjat::Protocol((const char *) "script",moduleinfo) {
 	}

@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <private/protocol.h>
  #include <cstring>
  #include <udjat/moduleinfo.h>

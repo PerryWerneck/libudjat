@@ -25,6 +25,7 @@
  #include <udjat/agent.h>
  #include <iostream>
  #include <udjat/alert/activation.h>
+ #include <udjat/tools/intl.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -36,7 +37,7 @@
 
 	mutex Alert::Controller::guard;
 
-	static const Udjat::ModuleInfo moduleinfo{ "Alert controller" };
+	static const Udjat::ModuleInfo moduleinfo{ N_( "Alert controller" ) };
 
 	Alert::Controller & Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);

@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/moduleinfo.h>
  #include <iostream>
  #include <cstdarg>
@@ -30,11 +31,25 @@
 
 	Value & ModuleInfo::get(Value &value) const {
 
-		value["module"] = name;
-		value["description"] = description;
-		value["version"] = version;
-		value["bugreport"] = bugreport;
-		value["url"] = url;
+		struct {
+			const char *name;
+			const char *value;
+		} info[] = {
+			{ "name",			name		},
+			{ "description",	description	},
+			{ "version",		version		},
+			{ "bugreport",		bugreport	},
+			{ "url",			url			},
+		};
+
+		for(auto &item : info) {
+			if(gettext_package && *gettext_package) {
+				value[item.name] = (const char *) dgettext(gettext_package,item.value);
+			} else {
+				value[item.name] = item.value;
+			}
+		}
+
 		value["build"] = build;
 		if(gettext_package) {
 			value["locale"] = gettext_package;
@@ -56,9 +71,13 @@
 			{ "url",			url			},
 		};
 
-		for(size_t ix = 0; ix < (sizeof(info)/sizeof(info[0])); ix++) {
-			if(!strcasecmp(key,info[ix].name)) {
-				value = info[ix].value;
+		for(auto &item : info) {
+			if(!strcasecmp(key,item.name)) {
+				if(gettext_package && *gettext_package) {
+					value = dgettext(gettext_package,item.value);
+				} else {
+					value = item.value;
+				}
 				return true;
 			}
 		}

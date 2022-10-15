@@ -36,6 +36,7 @@
  #include <udjat/tools/file.h>
  #include <unistd.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -43,7 +44,7 @@
 
 namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo{ "Agent controller" };
+	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
 	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
 

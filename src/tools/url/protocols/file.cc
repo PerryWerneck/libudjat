@@ -17,9 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <private/protocol.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/moduleinfo.h>
 
  #ifdef _WIN32
@@ -30,7 +32,7 @@
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo { "File protocol module" };
+	static const ModuleInfo moduleinfo { N_( "Local file protocol" ) };
 
 	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",moduleinfo) {
 	}
