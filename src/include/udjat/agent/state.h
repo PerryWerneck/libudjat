@@ -90,7 +90,7 @@ namespace Udjat {
 			/// @brief Get state values as string.
 			virtual std::string value() const;
 
-			std::string to_string() const override {
+			std::string to_string() const noexcept override {
 				return Object::properties.summary;
 			}
 

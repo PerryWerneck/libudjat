@@ -108,7 +108,9 @@
 				return expand(node,group.c_str(),value);
 			}
 
-			virtual std::string to_string() const = 0;
+			virtual const char * name() const noexcept;
+
+			virtual std::string to_string() const noexcept;
 
 			/// @brief Get property value.
 			/// @param key The property name.
@@ -137,6 +139,11 @@
 
 			/// @brief Add object properties to the value.
 			virtual Value & getProperties(Value &value) const noexcept;
+
+			std::ostream & info() const;
+			std::ostream & warning() const;
+			std::ostream & error() const;
+			std::ostream & trace() const;
 
 		};
 
@@ -178,9 +185,7 @@
 			return !(objectName && *objectName);
 		}
 
-		inline const char * name() const noexcept {
-			return objectName;
-		}
+		const char * name() const noexcept override;
 
 		bool operator==(const char *name) const noexcept;
 		bool operator==(const pugi::xml_node &node) const noexcept;
@@ -188,14 +193,9 @@
 
 		const char * c_str() const noexcept;
 
-		std::string to_string() const override;
+		std::string to_string() const noexcept override;
 
 		Value & getProperties(Value &value) const noexcept override;
-
-		std::ostream & info() const;
-		std::ostream & warning() const;
-		std::ostream & error() const;
-		std::ostream & trace() const;
 
 	};
 

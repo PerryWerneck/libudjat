@@ -121,7 +121,7 @@
 			return state;
 		}
 
-		std::string to_string() const override {
+		std::string to_string() const noexcept override {
 			return std::to_string(value);
 		}
 
@@ -200,7 +200,7 @@
 			return state;
 		}
 
-		std::string to_string() const override {
+		std::string to_string() const noexcept override {
 			return value;
 		}
 
@@ -262,7 +262,7 @@
 			return state;
 		}
 
-		std::string to_string() const override {
+		std::string to_string() const noexcept override {
 			return (value ? "yes" : "no");
 		}
 

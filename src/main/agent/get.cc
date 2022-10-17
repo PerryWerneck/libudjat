@@ -31,7 +31,7 @@
 		return value;
 	}
 
-	std::string Abstract::Agent::to_string() const {
+	std::string Abstract::Agent::to_string() const noexcept {
 		return name();
 	}
 

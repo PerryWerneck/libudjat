@@ -36,6 +36,10 @@
 	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(Quark(node.attribute("name").as_string("unnamed")).c_str()) {
 	}
 
+	const char * NamedObject::name() const noexcept {
+		return objectName;
+	}
+
 	bool NamedObject::set(const pugi::xml_node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
@@ -69,7 +73,7 @@
 		return value;
 	}
 
-	std::string NamedObject::to_string() const {
+	std::string NamedObject::to_string() const noexcept {
 		return c_str();
 	}
 
@@ -130,6 +134,14 @@
 		return properties.icon;
 	}
 
+	const char * Abstract::Object::name() const noexcept {
+		return "";
+	}
+
+	std::string Abstract::Object::to_string() const noexcept {
+		return name();
+	}
+
 	Value & Object::getProperties(Value &value) const noexcept {
 
 		NamedObject::getProperties(value);
@@ -180,19 +192,19 @@
 		return hash;
 	}
 
-	std::ostream & NamedObject::info() const {
+	std::ostream & Abstract::Object::info() const {
 		return std::cout << name() << "\t";
 	}
 
-	std::ostream & NamedObject::warning() const {
+	std::ostream & Abstract::Object::warning() const {
 		return std::clog << name() << "\t";
 	}
 
-	std::ostream & NamedObject::error() const {
+	std::ostream & Abstract::Object::error() const {
 		return std::cerr << name() << "\t";
 	}
 
-	std::ostream & NamedObject::trace() const {
+	std::ostream & Abstract::Object::trace() const {
 		return Logger::trace() << name() << "\t";
 	}
 

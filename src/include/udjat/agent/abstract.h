@@ -326,7 +326,7 @@
 			virtual void get(const Request &request, Report &report);
 
 			/// @brief Get formatted value.
-			virtual std::string to_string() const override;
+			virtual std::string to_string() const noexcept override;
 
 			/// @brief Get smart pointer.
 			std::shared_ptr<Agent> to_shared_ptr();
