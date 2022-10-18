@@ -313,6 +313,7 @@ int main(int argc, char **argv) {
 	debug("SystemDatadir=",Application::SystemDataDir().c_str());
 	debug("CacheDir=",Application::CacheDir().c_str());
 	debug("LogDir=",Application::LogDir().c_str());
+	debug("Timestamp=",TimeStamp(90000).to_verbose_string());
 
 	auto rc = Service().run(argc,argv);
 
