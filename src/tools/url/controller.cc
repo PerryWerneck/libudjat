@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/protocol.h>
+ #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <udjat/moduleinfo.h>
 
@@ -108,7 +109,7 @@
 		for(auto protocol : protocols) {
 
 			Value &object = response.append(Value::Object);
-			object["id"] = protocol->name;
+			object["name"] = protocol->name;
 			protocol->module.get(object);
 
 		}

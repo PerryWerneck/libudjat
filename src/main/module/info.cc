@@ -35,7 +35,7 @@
 			const char *name;
 			const char *value;
 		} info[] = {
-			{ "name",			name		},
+			{ "module",			name		},	// Use 'modulename' to keep the child object name.
 			{ "description",	description	},
 			{ "version",		version		},
 			{ "bugreport",		bugreport	},
