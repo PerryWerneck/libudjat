@@ -36,6 +36,10 @@
 		Controller::getInstance().remove(this);
 	}
 
+	void Worker::for_each(const std::function<void(const Worker &worker)> &func) {
+		Controller::getInstance().for_each(func);
+	}
+
 	void Worker::getInfo(Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
@@ -105,6 +109,10 @@
 
 	std::ostream & Worker::error() const {
 		return cerr << name << "\t";
+	}
+
+	std::ostream & Worker::trace() const {
+		return Logger::trace() << name << "\t";
 	}
 
  }

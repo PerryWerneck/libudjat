@@ -43,9 +43,12 @@ namespace Udjat {
 		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
 		}
 
+		static void for_each(const std::function<void(const Worker &worker)> &func);
+
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
+		std::ostream & trace() const;
 
 		/// @brief Execute request, update response
 		/// @return false if the request method was not allowed.

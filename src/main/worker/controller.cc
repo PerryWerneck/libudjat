@@ -102,5 +102,15 @@
 
 	}
 
+	void Worker::Controller::for_each(const std::function<void(const Worker &worker)> &func) {
+
+		for(auto worker : workers) {
+
+			func(*worker.second);
+
+		}
+
+	}
+
  }
 
