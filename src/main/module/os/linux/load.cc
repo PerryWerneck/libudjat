@@ -27,6 +27,7 @@
 
  namespace Udjat {
 
+	/*
 	bool Module::Controller::load(const pugi::xml_node &node) {
 
 		string filename = locate(node.attribute("name").as_string());
@@ -56,6 +57,7 @@
 
 		return false;
 	}
+	*/
 
  }
 

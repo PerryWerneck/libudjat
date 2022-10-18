@@ -26,6 +26,33 @@
 
  namespace Udjat {
 
+	void Module::Controller::init(const std::string &filename, const pugi::xml_node &node) {
+
+		cout << "module\tLoading '" << filename << "'" << endl;
+
+		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
+		HMODULE handle = LoadLibrary(filename.c_str());
+
+		if(!handle) {
+			throw Win32::Exception();
+		}
+
+		try {
+
+			auto module = init(handle,node);
+			if(!module) {
+				throw runtime_error("Module initialization has failed");
+			}
+
+		} catch(...) {
+
+			CloseHandle(handle);
+			throw;
+		}
+
+
+	}
+
 	Module * Module::Controller::init(HMODULE handle, const pugi::xml_node &node) {
 
 		Module * module = nullptr;

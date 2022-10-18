@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/win32/exception.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
@@ -27,19 +26,12 @@
 
  namespace Udjat {
 
-	/*
-	bool Module::Controller::load(const pugi::xml_node &node) {
-
-		const char *name = node.attribute("name").as_string();
-		if(!*name) {
-			throw runtime_error("Missing required attribute 'name'");
-		}
-
-		Config::Value<string> configured("modules",name,(string{"udjat-module-"} + name).c_str());
-		Application::LibDir libdir;
+	std::string Module::Controller::locate(const char *name) noexcept {
 
 		string paths[] = {
+
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
+
 #if defined(__x86_64__)
 			// 64 bit detected
 			Config::Value<string>(
@@ -97,66 +89,25 @@
 #endif
 		};
 
-		for(size_t ix = 0; ix < (sizeof(paths)/sizeof(paths[0]));ix++) {
+		if(name && *name) {
 
-			string filename = paths[ix] + configured + ".dll";
+			for(const string &path : paths) {
 
-			if(access(filename.c_str(),R_OK) == 0) {
+				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".dll";
+				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
-				for(auto module : modules) {
-
-					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
-#ifdef DEBUG
-						cout << "module\tModule '" << module->name << "' is already loaded" << endl;
-#endif // DEBUG
-						return true;
-					}
-
+				if(access(filename.c_str(),R_OK) == 0) {
+					return filename;
 				}
 
-				// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
-				HMODULE handle = LoadLibrary(filename.c_str());
-				if(handle) {
-
-					cout << name << "\tLoading module from " << filename << endl;
-
-					try {
-
-						auto module = init(handle,node);
-						if(!module) {
-							throw runtime_error("Module initialization has failed");
-						}
-
-					} catch(...) {
-
-						CloseHandle(handle);
-						throw;
-					}
-
-					return false;
-
-				}
-
-				cerr << "modules\t" << filename << " " << Win32::Exception::format(GetLastError()) << endl;
-
 			}
-#ifdef DEBUG
-			else {
-				debug("No module in '",filename,"'");
-			}
-#endif // DEBUG
+
 		}
 
-
-		// Not found.
-		if(node.attribute("required").as_bool(true)) {
-			throw runtime_error(string{"Cant load module '"} + name + "'");
-		}
-
-		return false;
+		return "";
 
 	}
-	*/
+
 
  }
 

@@ -42,6 +42,47 @@
 
 namespace Udjat {
 
+	bool Module::Controller::load(const pugi::xml_node &node) {
+
+		static const char * attributes[] = {
+			"name",
+			"altname",
+			"fallback-to"
+		};
+
+		for(const char *attribute : attributes) {
+
+			string filename = locate(node.attribute(attribute).as_string());
+
+			if(!filename.empty()) {
+
+				for(auto module : modules) {
+
+					// Check if the module is already loaded.
+					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+#ifdef DEBUG
+						debug("module '",filename,"' is already loaded");
+#endif // DEBUG
+						return true;
+					}
+
+				}
+
+				init(filename, node);
+				return false;
+
+			}
+
+		}
+
+		// Not found.
+		if(node.attribute("required").as_bool(true)) {
+			throw runtime_error("Cant load required module");
+		}
+
+		return false;
+	}
+
 	bool Module::preload(const char *pathname) noexcept {
 
 		bool rc = true;
