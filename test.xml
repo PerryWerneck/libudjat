@@ -6,7 +6,7 @@
 	<module name='information' required='no' preload='no' />
 	<!-- module name='http' required='no' / -->
 
-	<!-- module name='civetweb' required='yes' preload='yes' / -->
+	<module name='civetweb' required='no' preload='no' />
 
 	<attribute-list>
 	

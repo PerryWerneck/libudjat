@@ -155,6 +155,7 @@
 		<Unit filename="src/main/module/os/linux/close.cc" />
 		<Unit filename="src/main/module/os/linux/init.cc" />
 		<Unit filename="src/main/module/os/linux/load.cc" />
+		<Unit filename="src/main/module/os/linux/locate.cc" />
 		<Unit filename="src/main/module/os/linux/tools.cc" />
 		<Unit filename="src/main/module/os/windows/close.cc" />
 		<Unit filename="src/main/module/os/windows/init.cc" />

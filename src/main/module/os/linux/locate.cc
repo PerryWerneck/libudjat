@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
@@ -27,34 +26,38 @@
 
  namespace Udjat {
 
-	bool Module::Controller::load(const pugi::xml_node &node) {
+	std::string Module::Controller::locate(const char *name) noexcept {
 
-		string filename = locate(node.attribute("name").as_string());
+		string paths[] = {
+#ifdef MODULES_DIR
+			Config::Value<string>("modules","application-path",STRINGIZE_VALUE_OF(MODULES_DIR)).c_str(),
+#endif // MODULES_DIR
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules/" PACKAGE_VERSION).c_str()),
+			Config::Value<string>("modules","secondary-path",Application::LibDir("modules").c_str()),
+#ifdef LIBDIR
+			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
+#endif //LIBDIR
 
-		if(!filename.empty()) {
+		};
 
-			for(auto module : modules) {
+		if(name && *name) {
 
-				// Check if the module is already loaded.
-				if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
-#ifdef DEBUG
-					debug("module '",filename,"' is already loaded");
-#endif // DEBUG
-					return true;
+			for(const string &path : paths) {
+
+				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".so";
+
+				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+
+				if(access(filename.c_str(),R_OK) == 0) {
+					return filename;
 				}
 
 			}
 
-			init(filename, node);
-
 		}
 
-		// Not found.
-		if(node.attribute("required").as_bool(true)) {
-			throw runtime_error(string{"Cant load module '"}+node.attribute("name").as_string() + "'");
-		}
+		return "";
 
-		return false;
 	}
 
  }

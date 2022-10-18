@@ -18,6 +18,13 @@ namespace Udjat {
 
 		list<Module *> modules;
 
+		/// @brief Find path from module name.
+		/// @param name Module name.
+		/// @return Module path or empty string if not found.
+		static std::string locate(const char *name) noexcept;
+
+		void init(const std::string &filename, const pugi::xml_node &node);
+
 #ifdef _WIN32
 
 		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);
