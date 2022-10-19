@@ -44,7 +44,7 @@
 		/// @brief Set service state message.
 		void notify(const char *state) noexcept;
 
-		/// @brief Set service state message to the root agent.
+		/// @brief Set service state message from the root agent.
 		void notify() noexcept;
 
 		void trigger(const Abstract::Agent::Event event, Abstract::Agent &agent) override;

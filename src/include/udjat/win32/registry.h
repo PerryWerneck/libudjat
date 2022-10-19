@@ -35,6 +35,7 @@
 
 			static std::string get(HKEY hK, const char *name, const char *def);
 			static void set(HKEY hK, const char *name, const char *value);
+			static void set(HKEY hK, const char *name, const void *ptr, size_t len);
 
 		public:
 			constexpr Registry(HKEY k) : hKey(k) {
@@ -60,8 +61,10 @@
 
 			std::string get(const char *name, const char *def) const;
 			DWORD get(const char *name, DWORD def) const;
+			UINT64 get(const char *name, UINT64 def) const;
 
 			void set(const char *name, const char *value);
+			void set(const char *name, const void *ptr, size_t length);
 
 			inline void set(const char *name, const std::string &value) {
 				set(name,value.c_str());

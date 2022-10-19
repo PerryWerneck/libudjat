@@ -155,19 +155,19 @@
 						break;
 
 					case SERVICE_CONTROL_PRESHUTDOWN:
-						controller.set(SERVICE_STOP_PENDING, 3000);
+						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
 						clog << "service\tSystem is preparing for shutdown, stopping" << endl;
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_SHUTDOWN:
-						controller.set(SERVICE_STOP_PENDING, 3000);
+						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
 						clog << "service\tSystem shutdown, stopping" << endl;
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_STOP:
-						controller.set(SERVICE_STOP_PENDING, 3000);
+						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
 						cout << "service\tStopping by request" << endl;
 						SystemService::getInstance()->stop();
 						break;
@@ -206,7 +206,7 @@
 				// Inicia como serviço
 				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
 				if(!controller.hStatus) {
-					cerr << "service\tRegisterServiceCtrlHandler failed with windows error " << GetLastError() << endl;
+					cerr << "win32\t" << Win32::Exception::format("RegisterServiceCtrlHandler failed") << endl;
 					return;
 				}
 
@@ -218,7 +218,7 @@
 
 					try {
 
-						controller.set(SERVICE_START_PENDING, 3000);
+						controller.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
 						service->init();
 
 						controller.set(SERVICE_RUNNING, 0);
@@ -234,7 +234,7 @@
 
 					}
 
-					controller.set(SERVICE_STOP_PENDING, 3000);
+					controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
 					service->deinit();
 				}
 

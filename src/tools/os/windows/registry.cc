@@ -135,6 +135,34 @@
 		return value;
 	}
 
+	UINT64 Win32::Registry::get(const char *name, UINT64 def) const {
+
+		if(!hKey) {
+			return def;
+		}
+
+		UINT64 value = 0;
+		unsigned long datatype;
+		unsigned long datalen = sizeof(UINT64);
+
+		if(RegQueryValueEx(hKey,name,NULL,&datatype,(LPBYTE) &value,&datalen) != ERROR_SUCCESS) {
+
+			value = def;
+
+		} else if(datatype == REG_DWORD) {
+
+			const DWORD *dw = ((DWORD *) &def);
+			return (UINT64) *dw;
+
+		} else if(datatype != REG_QWORD) {
+
+			value = def;
+
+		}
+
+		return value;
+	}
+
 	string Win32::Registry::get(HKEY hK, const char *name, const char *def) {
 
 		if(!hK)
@@ -190,12 +218,33 @@
 
 	}
 
+	void Win32::Registry::set(HKEY hK, const char *name, const void *ptr, size_t len) {
+
+		DWORD dwRet = RegSetValueEx(
+							hK,
+							(LPCSTR) name,
+							0,
+							REG_BINARY,
+							(const BYTE *) ptr,
+							(DWORD) len
+					);
+
+		if(dwRet != ERROR_SUCCESS) {
+			throw Win32::Exception(dwRet);
+		}
+
+	}
+
 	std::string Win32::Registry::get(const char *name, const char *def) const {
 		return get(hKey, name, def);
 	}
 
 	void Win32::Registry::set(const char *name, const char *value) {
 		set(hKey, name, value);
+	}
+
+	void Win32::Registry::set(const char *name, const void *ptr, size_t length) {
+		set(hKey, name, ptr, length);
 	}
 
 
