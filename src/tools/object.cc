@@ -33,7 +33,19 @@
 
  namespace Udjat {
 
-	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(Quark(node.attribute("name").as_string("unnamed")).c_str()) {
+	static const char * NameFactory(const pugi::xml_node &node) noexcept {
+
+		const char *name = node.attribute("name").as_string();
+
+		if(!(name && *name)) {
+			clog << "xml\t<" << node.name() << "> doesn't have the required attribute 'name', using default" << endl;
+			name = node.name();
+		}
+
+		return Quark(name).c_str();
+	}
+
+	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(NameFactory(node)) {
 	}
 
 	const char * NamedObject::name() const noexcept {
@@ -42,7 +54,7 @@
 
 	bool NamedObject::set(const pugi::xml_node &node) {
 		if(!(objectName && *objectName)) {
-			objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
+			objectName = NameFactory(node);
 			return true;
 		}
 		return false;
