@@ -63,8 +63,29 @@
 				/// @brief The current state of the service.
 				dwCurrentState				= SERVICE_STOPPED;
 
+				// A service cant accept SERVICE_ACCEPT_SHUTDOWN and SERVICE_ACCEPT_PRESHUTDOWN, just one of them.
+				// From http://msdn.microsoft.com/en-us/library/windows/desktop/ms683241(v=vs.85).aspx
+				//
+				// Referring to SERVICE_CONTROL_PRESHUTDOWN:
+				//
+				// A service that handles this notification blocks system shutdown until the service stops
+				// or the preshutdown time-out interval specified through SERVICE_PRESHUTDOWN_INFO expires.
+				//
+				// In the same page, the section about SERVICE_CONTROL_SHUTDOWN adds:
+				//
+				// Note that services that register for SERVICE_CONTROL_PRESHUTDOWN notifications cannot
+				// receive this notification because they have already stopped.
+				//
+				// So, the correct way is to set the dwControlsAccepted to include either SERVICE_ACCEPT_SHUTDOWN
+				// or SERVICE_ACCEPT_PRESHUTDOWN, depending on your needs, but not to both at the same time.
+				//
+				// But do note that you probably want to accept more controls. You should always allow at least
+				// SERVICE_CONTROL_INTERROGATE, and almost certainly allow SERVICE_CONTROL_STOP, s
+				// ince without the latter the service cannot be stopped (e.g. in order to uninstall the software)
+				// and the process will have to be forcibly terminated (i.e. killed).
+
 				/// @brief The control codes the service accepts and processes in its handler function
-				dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN;
+				dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PRESHUTDOWN | SERVICE_ACCEPT_POWEREVENT | SERVICE_ACCEPT_SESSIONCHANGE;
 
 				/// @brief The error code the service uses to report an error that occurs when it is starting or stopping.
 				dwWin32ExitCode				= NO_ERROR;
@@ -149,26 +170,28 @@
 
 					switch (CtrlCmd) {
 					case SERVICE_CONTROL_SESSIONCHANGE:
+						cout << "win32\tSERVICE_CONTROL_SESSIONCHANGE" << endl;
 						break;
 
 					case SERVICE_CONTROL_POWEREVENT:
+						cout << "win32\tSERVICE_CONTROL_POWEREVENT" << endl;
 						break;
 
 					case SERVICE_CONTROL_PRESHUTDOWN:
+						clog << "win32\tSystem is preparing for shutdown, stopping" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
-						clog << "service\tSystem is preparing for shutdown, stopping" << endl;
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_SHUTDOWN:
+						clog << "win32\tSystem shutdown, stopping" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
-						clog << "service\tSystem shutdown, stopping" << endl;
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_STOP:
+						cout << "win32\tStopping by request" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-						cout << "service\tStopping by request" << endl;
 						SystemService::getInstance()->stop();
 						break;
 
