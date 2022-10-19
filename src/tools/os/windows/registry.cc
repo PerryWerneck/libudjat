@@ -163,6 +163,10 @@
 		return value;
 	}
 
+	void * Win32::Registry::get(const char *name, void *ptr, size_t len) {
+		return get(hKey,name,ptr,len);
+	}
+
 	string Win32::Registry::get(HKEY hK, const char *name, const char *def) {
 
 		if(!hK)
@@ -199,6 +203,36 @@
 		delete[] data;
 
 		return rc;
+	}
+
+	void * Win32::Registry::get(HKEY hKey, const char *name, void *ptr, size_t len) {
+
+		uint8_t datablock[len+1];
+		memset(datablock,0,len+1);
+
+		DWORD datalen = len;
+		DWORD datatype = 0;
+
+		if(RegQueryValueEx(hKey,name,NULL,&datatype,(LPBYTE) datablock,&datalen) != ERROR_SUCCESS) {
+
+			return nullptr;
+
+		} else if(datatype != REG_BINARY) {
+
+			clog << "win32\tNon binary data on registry value '" << name << "', was expecting a binary block with " << len << " bytes" << endl;
+
+		} else if(datalen == len) {
+
+			memcpy(ptr,datablock,len);
+			return ptr;
+
+		} else {
+
+			clog << "win32\tUnexpected length " << datalen << " reading value '" << name << "' from registry (was expecting " << len << ")" << endl;
+
+		}
+
+		return nullptr;
 	}
 
 	void Win32::Registry::set(HKEY hK, const char *name, const char *value) {
