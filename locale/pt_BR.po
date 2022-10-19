@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 22:51-0300\n"
+"POT-Creation-Date: 2022-10-19 15:27-0300\n"
 "PO-Revision-Date: 2022-10-17 22:53-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -34,8 +34,8 @@ msgstr "Controlador de alertas"
 msgid "Error switching state"
 msgstr "Erro ao trocar estado"
 
-#: src/tools/os/linux/systemservice.cc:121
-#: src/tools/os/linux/systemservice.cc:126
+#: src/tools/os/windows/systemservice.cc:478
+#: src/tools/os/windows/systemservice.cc:483
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
 

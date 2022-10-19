@@ -97,11 +97,9 @@
 					}
 
 					if(!DeleteService(hService)) {
-
 						// Não consegui remover o serviço
 						CloseServiceHandle(hService);
-						throw std::runtime_error("Can't delete service");
-
+						throw Win32::Exception("Can't delete service");
 					}
 
 					CloseServiceHandle(hService);
