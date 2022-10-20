@@ -223,6 +223,7 @@
 			static void dispatcher() {
 
 				Logger::redirect(false,true);
+				cout << "Registering " << PACKAGE_NAME << " service dispatcher" << endl;
 
 				Controller &controller = getInstance();
 
@@ -661,6 +662,8 @@
 
 	int SystemService::run(int argc, char **argv) {
 
+		debug("************** argc=",argc);
+		
 		int rc = 0;
 
 		auto appname = Application::Name::getInstance();
@@ -671,6 +674,8 @@
 				mode = SERVICE_MODE_NONE;
 			}
 		}
+
+		debug("Service mode=",mode);
 
 		if(mode == SERVICE_MODE_FOREGROUND) {
 
@@ -689,7 +694,9 @@
 
 		if(mode == SERVICE_MODE_DEFAULT || mode == SERVICE_MODE_DAEMON) {
 
-			Logger::redirect(false);
+			debug("Running as a service");
+
+			Logger::redirect(false,true);
 			info() << "Starting service dispatcher with " << PACKAGE_NAME << " revision " << revision() << endl;
 
 			// Run as service by default.
@@ -701,12 +708,13 @@
 			DispatchTable[0].lpServiceName = TEXT( (char *) appname.c_str());
 
 			if(!StartServiceCtrlDispatcher( DispatchTable )) {
-				error() << "Failed to start service dispatcher: " << endl << Win32::Exception::format(GetLastError()) << endl;
+				error() << "Failed to start service dispatcher: " << Win32::Exception::format(GetLastError()) << endl;
 				return -1;
 			}
 
 		}
 
+		debug("Service ends with rc=",rc);
 		return rc;
 
 	}

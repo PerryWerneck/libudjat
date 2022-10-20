@@ -154,45 +154,6 @@
 
 		}
 
-
-		/*
-		class UDJAT_API Service {
-
-
-			class UDJAT_API Security {
-			private:
-				SC_HANDLE handle;
-				PSECURITY_DESCRIPTOR	pSD;
-
-			public:
-				Security(const Service &service);
-				~Security();
-
-				/// @brief Aplica ACLs no objeto.
-				void set(PEXPLICIT_ACCESS acl, size_t cCountOfExplicitEntries);
-
-				/// @brief Apply ACLs to object.
-				/// @param permissions	Array with the permissions to set.
-				/// @param length		Length of the permissions array.
-				void set(const Permission *permissions, size_t length);
-
-				/// @brief Aplica permissões de segurança no serviço.
-				void setProtected();
-
-			};
-
-
-			/// @brief Install service.
-			/// @param name Service name.
-			/// @param service_binary Full path to the service application.
-			/// @param start True to start service after installation.
-			int install(const char *name, const char *display_name, const char *service_binary, bool start = true);
-
-		};
-
-
-
-		*/
 	}
 
  }

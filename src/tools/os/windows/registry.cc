@@ -28,21 +28,28 @@
 
  namespace Udjat {
 
-	HKEY Win32::Registry::open(HKEY hParent, const char *p, bool write) {
+	static const char *regpath = "SOFTWARE";
 
-		HKEY hKey = NULL;
-		string path;
+	static string PathFactory(const char *p) noexcept {
+
+		string path{regpath};
 
 		if(!(p && *p)) {
-			path = "SOFTWARE\\";
+
+			path += "\\";
 			path += Application::Name();
+
 		} else if(p[0] != '\\' && p[0] != '/') {
-			path = "SOFTWARE\\";
+
+			path += "\\";
 			path += Application::Name();
 			path += "\\";
 			path += p;
+
 		} else {
+
 			path = (p+1);
+
 		}
 
 		for(char *ptr = (char *) path.c_str();*ptr;ptr++) {
@@ -51,10 +58,21 @@
 			}
 		}
 
+		return path;
+
+	}
+
+	HKEY Win32::Registry::open(HKEY hParent, const char *p, bool write) {
+
+		HKEY hKey = NULL;
+		string path{PathFactory(p)};
+
 		// Open registry.
 		LSTATUS rc;
 
 		if(write) {
+
+			// Write access requested, throw exception if failed.
 
 			rc = RegCreateKeyEx(
 							hParent,
@@ -73,6 +91,8 @@
 			}
 
 		} else {
+
+			// Read only access, open and use defaults if failed.
 
 			rc = RegOpenKeyEx(
 					hParent,
@@ -103,6 +123,10 @@
 			RegCloseKey(hKey);
 			hKey = 0;
 		}
+	}
+
+	void Win32::Registry::setRoot(const char *path) {
+		regpath = path;
 	}
 
 	void Win32::Registry::remove(const char *keyname) {

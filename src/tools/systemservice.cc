@@ -49,9 +49,18 @@
 
 	SystemService::SystemService(const char *d) : Abstract::Agent::EventListener((Event) (Event::STARTED|Event::STATE_CHANGED)), definitions(d) {
 
+		debug("Creating system service");
+
 		if(instance) {
+			debug("Instance is not null");
 			throw runtime_error("Can't start more than one system service");
 		}
+
+#ifdef _WIN32
+		{
+			_chdir(Application::Path().c_str());
+		}
+#endif // _WIN32
 
 		if(!definitions) {
 
@@ -83,6 +92,9 @@
 		}
 
 		if(::access(definitions,R_OK) != 0) {
+#ifdef _WIN32
+			notify( (string{"Cant find '"} + definitions + "'").c_str() );
+#endif //  _WIN32
 			throw system_error(ENOENT,system_category(),definitions);
 		}
 
@@ -107,7 +119,6 @@
 				}
 			}
 
-			_chdir(Application::Path().c_str());
 		}
 #endif // _WIN32
 

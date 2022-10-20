@@ -50,7 +50,17 @@
 			constexpr Registry(HKEY k) : hKey(k) {
 			}
 
+			/// @brief Set registry application root.
+			/// @param path The new registry path for application (should be a quark or static string)
+			static void setRoot(const char *path = "SOFTWARE");
+
+			/// @brief  Open default registry.
+			/// @param write true if not read-only.
 			Registry(bool write = false);
+
+			/// @brief  Open registry on path.
+			/// @param path Registry path.
+			/// @param write true if not read-only.
 			Registry(const char *path, bool write = false);
 
 			bool hasKey(const char *name) const noexcept;

@@ -46,7 +46,7 @@
 			static const char * system();
 
 			void convert(const char *from, std::string &to);
-			// void convert(const PWSTR from, std::string &to);
+			// void convert(const wchar_t *wcp, std::string &to);
 			void convert(const char *from, std::string &to, size_t length);
 
 			std::string convert(const char *text);
