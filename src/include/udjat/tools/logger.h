@@ -33,12 +33,13 @@
 	namespace Logger {
 
 		enum Level : uint8_t {
-			Info,
-			Warning,
-			Error,
-			Debug,
+			Info,		///< @brief Informational message.
+			Warning,	///< @brief Warning conditions.
+			Error,		///< @brief Error conditions.
+			Debug,		///< @brief Debug-level message.
 
-			Trace	// Trace should be the last one.
+			// Trace should be the last one.
+			Trace		///< @brief Debug-level message
 		};
 
 		UDJAT_API std::ostream & info();

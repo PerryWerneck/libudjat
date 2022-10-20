@@ -83,7 +83,6 @@
 		// Terminate on Ctrl-C
 		Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[this](){
 			Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
-			exit(-1);
 			return true;
 		});
 
@@ -187,13 +186,6 @@
 				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
-			case WM_QUIT:
-				Logger::String("WM_QUIT").write(Logger::Trace,"win32");
-				controller.enabled = false; // Just in case.
-				controller.stop();
-				ThreadPool::getInstance().stop();
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
-
 			case WM_START:
 				Logger::String("Starting services in response to a 'WM_START' message").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
@@ -203,7 +195,9 @@
 			case WM_STOP:
 				if(controller.enabled) {
 					Logger::String("WM_STOP: Disabling mainloop").write(Logger::Trace,"win32");
-					controller.enabled = false;
+					controller.enabled = false; // Just in case.
+					controller.stop();
+					ThreadPool::getInstance().stop();
 					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
 						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 					}

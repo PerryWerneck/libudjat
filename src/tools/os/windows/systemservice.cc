@@ -35,6 +35,7 @@
  #include <direct.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/file.h>
+ #include <private/event.h>
 
  using namespace std;
 
@@ -662,10 +663,16 @@
 		return ENOENT;
 	}
 
+	static void terminate_by_console_event(const char *msg) noexcept {
+		Logger::String(msg).write((Logger::Level) (Logger::Trace+1),"win32");
+		MainLoop &mainloop{MainLoop::getInstance()};
+		if(mainloop) {
+			mainloop.quit();
+		}
+	}
+
 	int SystemService::run(int argc, char **argv) {
 
-		debug("************** argc=",argc);
-		
 		int rc = 0;
 
 		auto appname = Application::Name::getInstance();
@@ -683,6 +690,21 @@
 
 			Logger::redirect(true,true);
 			info() << "Running as application with " << PACKAGE_NAME << " revision " << revision() << endl;
+
+			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
+				terminate_by_console_event("Terminating by ctrl-c event");
+				return true;
+			});
+
+			Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
+				terminate_by_console_event("Terminating by close event");
+				return true;
+			});
+
+			Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
+				terminate_by_console_event("Terminating by shutdown event");
+				return true;
+			});
 
 			try {
 				init();
