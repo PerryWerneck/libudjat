@@ -79,6 +79,14 @@
 
 		debug("Main Object window was created");
 
+		/*
+		// Terminate on Ctrl-C
+		Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[this](){
+			Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
+			exit(-1);
+			return true;
+		});
+
 		//
 		// Apply console handlers.
 		//
@@ -109,6 +117,7 @@
 			}
 
 		}
+		*/
 
 	}
 
@@ -145,7 +154,7 @@
 
 		MainLoop & controller = *((MainLoop *) GetWindowLongPtr(hWnd,0));
 
-		// debug("------------------------------------- uMsg=",uMsg);
+		// debug("uMsg=",uMsg);
 
 		try {
 
@@ -158,6 +167,10 @@
 				Logger::String("WM_CLOSE").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
+			case WM_QUERYENDSESSION:
+				Logger::String("WM_QUERYENDSESSION").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
 			case WM_ENDSESSION:
 				Logger::String("WM_ENDSESSION").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
@@ -166,12 +179,19 @@
 				Logger::String("WM_POWERBROADCAST").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
+			case WM_DEVICECHANGE:
+				Logger::String("WM_DEVICECHANGE").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
 			case WM_DESTROY:
 				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_QUIT:
 				Logger::String("WM_QUIT").write(Logger::Trace,"win32");
+				controller.enabled = false; // Just in case.
+				controller.stop();
+				ThreadPool::getInstance().stop();
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_START:
@@ -181,21 +201,22 @@
 				break;
 
 			case WM_STOP:
-				Logger::String("Stoppping services in response to a 'WM_STOP' message").write(Logger::Trace,"win32");
-				controller.enabled = false;
-				controller.stop();
-				ThreadPool::getInstance().stop();
-				if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
-					cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
+				if(controller.enabled) {
+					Logger::String("WM_STOP: Disabling mainloop").write(Logger::Trace,"win32");
+					controller.enabled = false;
+					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
+						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
+					}
+				} else {
+					Logger::String("WM_STOP: Already disabled").write(Logger::Trace,"win32");
 				}
 				break;
 
 			case WM_WAKE_UP:
-
-				// Check if the mainloop still enabled.
-				debug("WM_WAKE_UP");
-				SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
-				return 0;
+				if(controller.hwnd) {
+					SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
+				}
+				break;
 
 			case WM_CHECK_TIMERS:
 				{
@@ -220,6 +241,9 @@
 				break;
 
 			default:
+#ifdef DEBUG
+				Logger::String("uMsg=",uMsg).write(Logger::Trace,"win32");
+#endif // DEBUG
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			}

@@ -56,7 +56,7 @@
 
 		/// @brief Get console handler event.
 		/// https://docs.microsoft.com/en-us/windows/console/handlerroutine
-		static Event & ConsoleHandler(void *id, const char *name, const std::function<bool()> handler);
+		// static Event & ConsoleHandler(void *id, const char *name, const std::function<bool()> handler);
 
 		/// @brief Get console handler event.
 		/// https://docs.microsoft.com/en-us/windows/console/handlerroutine
