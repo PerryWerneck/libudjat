@@ -65,6 +65,10 @@
 		return cerr << Application::Name::getInstance() << "\t";
 	}
 
+	std::ostream & Application::trace() {
+		return Logger::trace() << Application::Name::getInstance() << "\t";
+	}
+
 	Application::DataFile::DataFile(const char *name, bool system) {
 		if(name[0] == '/' || (name[0] == '.' && name[1] == '/') || name[0] == '\\' || (name[0] == '.' && name[1] == '\\') || name[1] == ':' ) {
 			assign(name);

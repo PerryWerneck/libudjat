@@ -230,6 +230,16 @@
 
 				Controller &controller = getInstance();
 
+				Udjat::Event::ConsoleHandler(&controller,CTRL_SHUTDOWN_EVENT,[](){
+					auto service{SystemService::getInstance()};
+					if(service) {
+						service->trace() << "CTRL_SHUTDOWN_EVENT" << endl;
+						getInstance().set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
+						service->stop();
+					}
+					return false;
+				});
+
 				// Inicia como serviço
 				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
 				if(!controller.hStatus) {

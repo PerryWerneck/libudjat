@@ -56,6 +56,9 @@
 		/// @brief Write to the 'error' stream.
 		static std::ostream & error();
 
+		/// @brief Write to the 'trace' stream.
+		static std::ostream & trace();
+
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {
 		public:
