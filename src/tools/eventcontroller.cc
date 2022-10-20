@@ -25,7 +25,7 @@
  namespace Udjat {
 
 	Event::Controller & Event::Controller::getInstance() {
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 		static Controller instance;
 		return instance;
 	}

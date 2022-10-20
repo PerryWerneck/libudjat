@@ -31,7 +31,7 @@
  namespace Udjat {
 
 	Event::Controller::Controller() {
-		cout << "event\tStarting controller " << hex << this << dec << endl;
+		cout << "win32\tStarting event controller " << hex << this << dec << endl;
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,TRUE)==FALSE) {
 			cerr << "win32\tUnable to install console handler" << endl;
 		} else {
@@ -41,9 +41,9 @@
 
 	Event::Controller::~Controller() {
 		if(consolehandlertypes.empty()) {
-			cout << "event\tStopping clean controller " << hex << this << dec << endl;
+			cout << "win32\tStopping clean event controller " << hex << this << dec << endl;
 		} else {
-			cout << "event\tStopping controller " << hex << this << dec << " with active handlers" << endl;
+			cout << "win32\tStopping event controller " << hex << this << dec << " with active handlers" << endl;
 		}
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,FALSE)==FALSE) {
 			cerr << "win32\tUnable to remove console handler" << endl;
@@ -66,7 +66,7 @@
 	}
 
 	Event & Event::Controller::ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler) {
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 
 		ConsoleHandlerType &type = ConsoleHandlerTypeFactory(dwCtrlType);
 		type.insert(id,handler);
@@ -75,7 +75,7 @@
 	}
 
 	void Event::Controller::remove(void *id) {
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 
 		consolehandlertypes.remove_if([id](ConsoleHandlerType &type){
 			type.listeners.remove_if([id](Event::Listener &listener){
@@ -86,11 +86,8 @@
 
 	}
 
-	void Event::ConsoleHandler(DWORD dwCtrlType) noexcept {
-		Controller::getInstance().call(dwCtrlType);
-	}
-
-	void Event::Controller::call(DWORD dwCtrlType) noexcept {
+	/*
+	bool Event::Controller::call(DWORD dwCtrlType) noexcept {
 
 		debug("Will lock");
 		lock_guard<mutex> lock(guard);
@@ -104,11 +101,16 @@
 					type.trigger();
 					debug("Trigger complete");
 				});
+				return true;
 			}
 		}
+		return false;
 	}
+	*/
 
 	BOOL WINAPI Event::Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
+
+		BOOL rc = FALSE;
 
 		switch(dwCtrlType) {
 		case CTRL_C_EVENT:
@@ -128,17 +130,27 @@
 			break;
 
 		case CTRL_SHUTDOWN_EVENT:
-			clog << "win32\tUser is logging off!" << endl;
+			clog << "win32\tSystem is shutting down!" << endl;
 			break;
 
 		}
 
-		if(!MainLoop::getInstance().post(WM_CONSOLE_HANDLER, (WPARAM) dwCtrlType, 0)) {
-			cerr << "MainLoop\tError posting console handler message: " << Win32::Exception::format() << endl;
+		{
+			lock_guard<recursive_mutex> lock(guard);
+
+			for(ConsoleHandlerType &type : Controller::getInstance().consolehandlertypes) {
+				if(type.dwCtrlType == dwCtrlType) {
+					debug("Pushing console handler");
+					ThreadPool::getInstance().push("ConsoleHandler",[&type]() {
+						type.trigger();
+					});
+					rc = TRUE;
+				}
+			}
+
 		}
 
-		debug("Done!");
-		return TRUE;
+		return rc;
 	}
 
  }

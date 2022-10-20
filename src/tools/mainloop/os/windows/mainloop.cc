@@ -145,36 +145,48 @@
 
 		MainLoop & controller = *((MainLoop *) GetWindowLongPtr(hWnd,0));
 
-		debug("------------------------------------- uMsg=",uMsg);
+		// debug("------------------------------------- uMsg=",uMsg);
 
 		try {
 
 			switch(uMsg) {
 			case WM_CREATE:
-				Logger::String("WM_CREATE").write(Logger::Trace,"MainLoop");
+				Logger::String("WM_CREATE").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_CLOSE:
+				Logger::String("WM_CLOSE").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_ENDSESSION:
+				Logger::String("WM_ENDSESSION").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_POWERBROADCAST:
+				Logger::String("WM_POWERBROADCAST").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_DESTROY:
-				Logger::String("WM_DESTROY").write(Logger::Trace,"MainLoop");
+				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_QUIT:
-				Logger::String("WM_QUIT").write(Logger::Trace,"MainLoop");
+				Logger::String("WM_QUIT").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_START:
-				Logger::String("Starting services in response to a 'WM_START' message").write(Logger::Trace,"MainLoop");
+				Logger::String("Starting services in response to a 'WM_START' message").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
 				controller.start();
 				break;
 
 			case WM_STOP:
-				Logger::String("Stoppping services in response to a 'WM_STOP' message").write(Logger::Trace,"MainLoop");
+				Logger::String("Stoppping services in response to a 'WM_STOP' message").write(Logger::Trace,"win32");
 				controller.enabled = false;
 				controller.stop();
 				ThreadPool::getInstance().stop();
 				if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
-					cerr << "MainLoop\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
+					cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 				}
 				break;
 
@@ -207,11 +219,6 @@
 				}
 				break;
 
-			case WM_CONSOLE_HANDLER:
-				debug("WM_CONSOLE_HANDLER");
-				Event::ConsoleHandler((DWORD) wParam);
-				return 0;
-
 			default:
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
@@ -219,11 +226,11 @@
 
 		} catch(const exception &e) {
 
-			cerr << "mainloop\t" << e.what() << endl;
+			cerr << "win32\t" << e.what() << endl;
 
 		} catch(...) {
 
-			cerr << "mainloop\tUnexpected error processing windows message" << endl;
+			cerr << "win32\tUnexpected error processing windows message" << endl;
 
 		}
 

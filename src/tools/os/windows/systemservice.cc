@@ -162,6 +162,7 @@
 
 				if(!SystemService::getInstance()) {
 					// FIXME: Report failure.
+					cerr << "winsrvc\tService handler called with cmd " << CtrlCmd << " without an active service" << endl;
 					controller.set(controller.status.dwCurrentState, 0);
 					return;
 				}
@@ -178,41 +179,42 @@
 						break;
 
 					case SERVICE_CONTROL_PRESHUTDOWN:
-						clog << "win32\tSystem is preparing for shutdown, stopping" << endl;
+						clog << "win32\tSERVICE_CONTROL_PRESHUTDOWN" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_SHUTDOWN:
-						clog << "win32\tSystem shutdown, stopping" << endl;
+						clog << "win32\tSERVICE_CONTROL_SHUTDOWN" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_STOP:
-						cout << "win32\tStopping by request" << endl;
+						cout << "win32\tSERVICE_CONTROL_STOP" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
 						SystemService::getInstance()->stop();
 						break;
 
 					case SERVICE_CONTROL_INTERROGATE:
+						cout << "win32\tSERVICE_CONTROL_INTERROGATE" << endl;
 						controller.set(controller.status.dwCurrentState, 0);
 						break;
 
 					default:
-						clog << "service\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
+						clog << "win32\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
 						controller.set(controller.status.dwCurrentState, 0);
 					}
 
 				} catch(const std::exception &e) {
 
-					cerr << "service\tError '" << e.what() << "' handling service request" << endl;
+					cerr << "win32\tError '" << e.what() << "' handling service request" << endl;
 					// FIXME: Report failure.
 					controller.set(controller.status.dwCurrentState, 0);
 
 				} catch(...) {
 
-					cerr << "service\tUnexpected error handling service request" << endl;
+					cerr << "win32\tUnexpected error handling service request" << endl;
 					// FIXME: Report failure.
 					controller.set(controller.status.dwCurrentState, 0);
 
@@ -223,7 +225,7 @@
 			static void dispatcher() {
 
 				Logger::redirect(false,true);
-				cout << "Registering " << PACKAGE_NAME << " service dispatcher" << endl;
+				cout << "win32\tRegistering " << PACKAGE_NAME << " service dispatcher" << endl;
 
 				Controller &controller = getInstance();
 
