@@ -75,48 +75,7 @@
 
 		SetWindowLongPtr(hwnd, 0, (LONG_PTR) this);
 
-		SetTimer(hwnd,IDT_CHECK_TIMERS,100,(TIMERPROC) NULL);
-
 		debug("Main Object window was created");
-
-		/*
-		// Terminate on Ctrl-C
-		Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[this](){
-			Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
-			return true;
-		});
-
-		//
-		// Apply console handlers.
-		//
-		static const struct Events {
-			DWORD id;
-			bool def;
-			const char * key;
-			const char * message;
-		} events[] = {
-			{ CTRL_C_EVENT,			true,	"terminate-on-ctrl-c",		"Ctrl-C to interrupt"	},
-			{ CTRL_BREAK_EVENT,		false,	"terminate-on-ctrl-break",	""						},
-			{ CTRL_SHUTDOWN_EVENT,	false,	"terminate-on-shutdown",	""						},
-		};
-
-		for(size_t ix = 0; ix < (sizeof(events)/sizeof(events[0]));ix++) {
-
-			if(Config::Value<bool>("win32",events[ix].key,events[ix].def)) {
-
-				Udjat::Event::ConsoleHandler(this,events[ix].id,[this](){
-					Logger::String("Terminating by console request").write((Logger::Level) (Logger::Trace+1),"win32");
-					quit();
-					return true;
-				});
-
-				if(events[ix].message[0]) {
-					cout << "mainloop\t" << events[ix].message << endl;
-				}
-			}
-
-		}
-		*/
 
 	}
 
@@ -129,7 +88,6 @@
 
 		Udjat::Event::remove(this);
 
-		KillTimer(hwnd, IDT_CHECK_TIMERS);
 		DestroyWindow(hwnd);
 		hwnd = 0;
 
@@ -140,9 +98,14 @@
 	void MainLoop::wakeup() noexcept {
 		if(!hwnd) {
 			Logger::String("Unexpected call to wakeup() without an active window").write(Logger::Trace,"MainLoop");
-		} else if(!PostMessage(hwnd,WM_WAKE_UP,0,0)) {
+		} else if(!PostMessage(hwnd,WM_TIMER,IDT_CHECK_TIMERS,0)) {
 			cerr << "MainLoop\tError posting wake up message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
+#ifdef DEBUG
+		else {
+			debug("WAKE-UP");
+		}
+#endif // DEBUG
 	}
 
  	BOOL MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
@@ -152,8 +115,6 @@
 	LRESULT WINAPI MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		MainLoop & controller = *((MainLoop *) GetWindowLongPtr(hWnd,0));
-
-		// debug("uMsg=",uMsg);
 
 		try {
 
@@ -187,14 +148,20 @@
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_START:
-				Logger::String("Starting services in response to a 'WM_START' message").write(Logger::Trace,"win32");
+				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
 				controller.start();
+
+				SetTimer(hWnd,IDT_CHECK_TIMERS,10,(TIMERPROC) NULL);
+
 				break;
 
 			case WM_STOP:
+
+				KillTimer(hWnd, IDT_CHECK_TIMERS);
+
 				if(controller.enabled) {
-					Logger::String("WM_STOP: Disabling mainloop").write(Logger::Trace,"win32");
+					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");
 					controller.enabled = false; // Just in case.
 					controller.stop();
 					ThreadPool::getInstance().stop();
@@ -206,37 +173,31 @@
 				}
 				break;
 
-			case WM_WAKE_UP:
-				if(controller.hwnd) {
-					SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
-				}
-				break;
+//			case WM_WAKE_UP:
+//				debug("WM_WAKE_UP");
+//				if(controller.hwnd) {
+//					SetTimer(controller.hwnd,IDT_CHECK_TIMERS,10,(TIMERPROC) NULL);
+//				}
+//				break;
 
-			case WM_CHECK_TIMERS:
-				{
-					debug("WM_CHECK_TIMERS");
+			case WM_TIMER:
+
+				debug("WM_TIMER ",(DWORD) wParam);
+
+				if(wParam == IDT_CHECK_TIMERS && controller.hwnd) {
 
 					UINT interval = controller.timers.run();
 
 					debug("interval=",interval);
 
-					if(interval) {
-						SetTimer(controller.hwnd,IDT_CHECK_TIMERS,interval,(TIMERPROC) NULL);
-					}
+					SetTimer(controller.hwnd,IDT_CHECK_TIMERS, (interval ? interval : 1000), (TIMERPROC) NULL);
 
-				}
-
-				break;
-
-			case WM_TIMER:
-				if(wParam == IDT_CHECK_TIMERS) {
-					PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
 				}
 				break;
 
 			default:
 #ifdef DEBUG
-				Logger::String("uMsg=",uMsg).write(Logger::Trace,"win32");
+				Logger::trace() << "win32\tuMsg=" << hex << uMsg << dec << endl;
 #endif // DEBUG
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 

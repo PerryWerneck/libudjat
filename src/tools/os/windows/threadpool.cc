@@ -17,6 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ // Disable debug messages for this source.
+ #ifdef DEBUG
+	#undef DEBUG
+ #endif // DEBUG
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/mainloop.h>
@@ -28,11 +33,6 @@
  #include <list>
 
  using namespace std;
-
- // Disable debug messages for this module.
- //#ifdef DEBUG
- //	#undef DEBUG
- //#endif // DEBUG
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 

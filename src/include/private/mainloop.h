@@ -28,8 +28,8 @@
  #include <iostream>
 
  #ifdef _WIN32
-	#define WM_WAKE_UP			WM_USER+100
-	#define WM_CHECK_TIMERS		WM_USER+101
+//	#define WM_WAKE_UP			WM_USER+100
+	// #define WM_CHECK_TIMERS		WM_USER+101
 	#define WM_START			WM_USER+102
 	#define WM_STOP				WM_USER+103
 	// #define WM_CONSOLE_HANDLER	WM_USER+104
