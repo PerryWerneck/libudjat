@@ -61,12 +61,15 @@ namespace Udjat {
 		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
 		domain[14] = 0;
 
+		// Log options.
+		Logger::Options &options{Options::getInstance()};
+
 		// Serialize
 		static mutex mtx;
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(Options::getInstance().console) {
+		if(options.console) {
 
 			// Write to console.
 			static bool decorated = (getenv("TERM") != NULL);
@@ -100,7 +103,7 @@ namespace Udjat {
 
 		}
 
-		if(Options::getInstance().syslog) {
+		if(options.syslog && options.enabled[level % N_ELEMENTS(options.enabled)]) {
 			//
 			// Write to syslog.
 			//

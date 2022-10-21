@@ -106,6 +106,10 @@
 		Controller::getInstance().buffers.remove(this);
 	}
 
+	void Logger::enable(Level level) noexcept {
+		Logger::Options::getInstance().enabled[level % N_ELEMENTS(Logger::Options::enabled)] = level;
+	}
+
 	/// @brief Writes characters to the associated output sequence from the put area.
 	int Logger::Writer::overflow(int c) {
 

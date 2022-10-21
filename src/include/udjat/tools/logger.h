@@ -36,16 +36,19 @@
 			Info,		///< @brief Informational message.
 			Warning,	///< @brief Warning conditions.
 			Error,		///< @brief Error conditions.
-			Debug,		///< @brief Debug-level message.
+			Debug,		///< @brief Debug message.
 
 			// Trace should be the last one.
-			Trace		///< @brief Debug-level message
+			Trace		///< @brief Trace message
 		};
 
 		UDJAT_API std::ostream & info();
 		UDJAT_API std::ostream & warning();
 		UDJAT_API std::ostream & error();
 		UDJAT_API std::ostream & trace();
+
+		/// @brief Enable/Disable write fo file based on level
+		UDJAT_API void enable(Level level) noexcept;
 
 		/// @brief Write message.
 		/// @param level	Log level.
@@ -185,7 +188,7 @@
 	};
 
 	#if defined(DEBUG)
-		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Trace,"debug");
+		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Debug,"debug");
 	#else
 		#define debug( ... )           // __VA_ARGS__
 	#endif // DEBUG

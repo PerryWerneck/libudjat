@@ -26,6 +26,7 @@
  #include <private/misc.h>
  #include <sys/types.h>
  #include <sys/stat.h>
+ #include <private/logger.h>
  #include <udjat/tools/logger.h>
 
  #ifdef HAVE_SYSTEMD
@@ -49,6 +50,26 @@
 
 			auto node = doc.document_element();
 
+			// Setup log options
+			{
+				static const char *attributes[] = {
+					"log-info",			// Informational message.
+					"log-warning",		// Warning conditions.
+					"log-error",		// Error conditions.
+					"log-debug",		// Debug message.
+					"log-trace",		// Trace message.
+				};
+
+				Logger::Options &options{Logger::Options::getInstance()};
+
+				for(size_t ix = 0; ix < N_ELEMENTS(attributes); ix++) {
+					size_t option = ix % N_ELEMENTS(options.enabled);
+					options.enabled[option] = node.attribute(attributes[ix]).as_bool(options.enabled[option]);
+				}
+
+			}
+
+			// Check for update timer.
 			const char *url = node.attribute("src").as_string();
 			if(url && *url) {
 

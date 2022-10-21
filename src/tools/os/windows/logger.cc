@@ -46,12 +46,15 @@ namespace Udjat {
 		Win32::Registry registry{"log"};
 		string timestamp{TimeStamp().to_string("%x %X")};
 
+		// Log options.
+		Logger::Options &options{Options::getInstance()};
+
 		// Serialize
 		static mutex mtx;
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(Options::getInstance().console) {
+		if(options.console) {
 
 			// Log to console
 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -106,7 +109,7 @@ namespace Udjat {
 
 		}
 
-		if(Options::getInstance().file) {
+		if(options.file && options.enabled[level % N_ELEMENTS(options.enabled)]) {
 			//
 			// Write to file.
 			//

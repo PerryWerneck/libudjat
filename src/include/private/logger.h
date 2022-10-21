@@ -42,6 +42,17 @@
 			bool syslog = true;
 #endif // !_WIN32
 
+			bool enabled[Logger::Trace+2] = {
+				true,		// Informational message.
+				true,		// Warning conditions.
+				true,		// Error conditions.
+				true,		// Debug message.
+
+				// Allways the last ones.
+				true,		// Trace message.
+				true,		// Notify message.
+			};
+
 			static Options & getInstance();
 
 		};
