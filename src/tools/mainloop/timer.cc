@@ -116,7 +116,8 @@
 			mainloop.timers.enabled.remove(this);
 		}
 
-		mainloop.wakeup();
+		// No need for wakeup when a timer is removed.
+		// mainloop.wakeup();
 	}
 
 	std::string MainLoop::Timer::to_string() const {

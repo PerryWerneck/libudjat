@@ -49,7 +49,7 @@
 	}
 
 	Event & Event::Controller::SignalHandler(void *id, int signum, const std::function<bool()> handler) {
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 
 		Signal &signal = SignalFactory(signum);
 		signal.insert(id,handler);
@@ -58,7 +58,7 @@
 	}
 
 	void Event::Controller::remove(void *id) {
-		lock_guard<mutex> lock(guard);
+		lock_guard<recursive_mutex> lock(guard);
 
 		signals.remove_if([id](Signal &signal){
 			signal.listeners.remove_if([id](Signal::Listener &listener){
@@ -78,7 +78,7 @@
 			Controller &instance = getInstance();
 
 			{
-				lock_guard<mutex> lock(guard);
+				lock_guard<recursive_mutex> lock(guard);
 				for(Signal &signal : instance.signals) {
 					if(signal.signum == signum) {
 						ThreadPool::getInstance().push("signal-event",[&signal]() {
