@@ -86,7 +86,13 @@
 				// and the process will have to be forcibly terminated (i.e. killed).
 
 				/// @brief The control codes the service accepts and processes in its handler function
-				dwControlsAccepted			= SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PRESHUTDOWN | SERVICE_ACCEPT_POWEREVENT | SERVICE_ACCEPT_SESSIONCHANGE;
+				dwControlsAccepted			=
+					SERVICE_ACCEPT_STOP |
+	#ifdef SERVICE_ACCEPT_PRESHUTDOWN
+					SERVICE_ACCEPT_PRESHUTDOWN |
+	#endif // SERVICE_ACCEPT_PRESHUTDOWN
+					SERVICE_ACCEPT_POWEREVENT |
+					SERVICE_ACCEPT_SESSIONCHANGE;
 
 				/// @brief The error code the service uses to report an error that occurs when it is starting or stopping.
 				dwWin32ExitCode				= NO_ERROR;
@@ -179,11 +185,13 @@
 						cout << "win32\tSERVICE_CONTROL_POWEREVENT" << endl;
 						break;
 
+#ifdef SERVICE_CONTROL_PRESHUTDOWN
 					case SERVICE_CONTROL_PRESHUTDOWN:
 						clog << "win32\tSERVICE_CONTROL_PRESHUTDOWN" << endl;
 						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
 						SystemService::getInstance()->stop();
 						break;
+#endif // SERVICE_CONTROL_PRESHUTDOWN
 
 					case SERVICE_CONTROL_SHUTDOWN:
 						clog << "win32\tSERVICE_CONTROL_SHUTDOWN" << endl;
