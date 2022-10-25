@@ -134,6 +134,10 @@
 		return tasks.size();
 	}
 
+	bool ThreadPool::wait() {
+		return wait(Config::get(name,"wait-timeout",5));
+	}
+
 	bool ThreadPool::wait(time_t seconds) {
 
 		if(size()) {

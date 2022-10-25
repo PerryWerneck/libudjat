@@ -120,7 +120,10 @@
 
 			/// @brief Wait for pool cleanup.
 			/// @param seconds time to wait
-			bool wait(time_t seconds = 5);
+			bool wait(time_t seconds);
+
+			/// @brief Wait for pool cleanup, using default timeout.
+			bool wait();
 
 			/// @brief Push a named task.
 			/// @param name	Task name (Should be a static string).
