@@ -135,6 +135,10 @@
 			/// @return true if the state has changed.
 			virtual bool set(std::shared_ptr<State> state);
 
+			/// @brief Activate a new state.
+			/// @return true if the level has changed.
+			virtual bool UDJAT_DEPRECATED(activate(std::shared_ptr<State> state));
+
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;
 

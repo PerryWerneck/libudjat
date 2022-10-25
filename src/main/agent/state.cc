@@ -115,6 +115,10 @@ namespace Udjat {
 		return cout;
 	}
 
+	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
+		return set(state);
+	}
+
 	bool Abstract::Agent::set(std::shared_ptr<State> state) {
 
 		// It's an empty state?.
