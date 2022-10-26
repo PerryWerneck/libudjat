@@ -50,61 +50,8 @@
 
 			auto node = doc.document_element();
 
-			debug("LOG SETTINGS:----------------------------------------------");
-
-			// Setup log options
-			{
-				static const struct {
-					const char * name;
-					const char * message;
-				} attributes[] = {
-					{ "log-info",		"Info messages are {}"		},	// Informational message.
-					{ "log-warning",	"Warning messages are {}"	},	// Warning conditions.
-					{ "log-error",		"Error messages are {}"		},	// Error conditions.
-					{ "log-debug",		"Debug messages are {}"		},	// Debug message.
-					{ "log-trace",		"Trace messages are {}"		},	// Trace message.
-				};
-
-				Logger::Options &options{Logger::Options::getInstance()};
-
-				for(size_t ix = 0; ix < N_ELEMENTS(attributes); ix++) {
-
-					auto attribute = node.attribute(attributes[ix].name);
-					if(!attribute) {
-						continue;
-					}
-
-					size_t option = ix % N_ELEMENTS(options.enabled);
-					options.enabled[option] = attribute.as_bool(options.enabled[option]);
-
-					const char * text = (options.enabled[option] ? "enabled" : "disabled");
-					Logger::write(
-						Logger::Trace,
-						"logger",
-						Logger::Message(attributes[ix].message,text).c_str(),
-						true
-					);
-
-				}
-
-				/*
-				static const char *attributes[] = {
-					"log-info",			// Informational message.
-					"log-warning",		// Warning conditions.
-					"log-error",		// Error conditions.
-					"log-debug",		// Debug message.
-					"log-trace",		// Trace message.
-				};
-
-				Logger::Options &options{Logger::Options::getInstance()};
-
-				for(size_t ix = 0; ix < N_ELEMENTS(attributes); ix++) {
-					size_t option = ix % N_ELEMENTS(options.enabled);
-					options.enabled[option] = node.attribute(attributes[ix]).as_bool(options.enabled[option]);
-				}
-				*/
-
-			}
+			/// Setup logger.
+			Logger::setup(node);
 
 			// Check for update timer.
 			const char *url = node.attribute("src").as_string();
@@ -162,6 +109,8 @@
 			try {
 
 				auto node = doc.document_element();
+				Logger::setup(node);
+
 				const char *path = node.attribute("path").as_string();
 
 				if(path && *path) {

@@ -22,6 +22,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
+ #include <pugixml.hpp>
  #include <list>
 
  namespace Udjat {
@@ -32,6 +33,8 @@
 		bool write(int fd, const char *text);
 		void timestamp(int fd);
 #endif // !WIN32
+
+		void setup(const pugi::xml_node &node) noexcept;
 
 		struct UDJAT_PRIVATE Options {
 			bool console = true;

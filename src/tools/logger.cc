@@ -45,6 +45,52 @@
 		"error"
 	};
 
+	void Logger::setup(const pugi::xml_node &node) noexcept {
+
+		debug("LOG SETTINGS:----------------------------------------------");
+
+		static const struct {
+			const char * name;
+			const char * message;
+		} attributes[] = {
+			{ "log-info",		"Info messages are {}"		},	// Informational message.
+			{ "log-warning",	"Warning messages are {}"	},	// Warning conditions.
+			{ "log-error",		"Error messages are {}"		},	// Error conditions.
+			{ "log-debug",		"Debug messages are {}"		},	// Debug message.
+			{ "log-trace",		"Trace messages are {}"		},	// Trace message.
+		};
+
+		Logger::Options &options{Logger::Options::getInstance()};
+
+		for(size_t ix = 0; ix < N_ELEMENTS(attributes); ix++) {
+
+			auto attribute = node.attribute(attributes[ix].name);
+			if(!attribute) {
+				continue;
+			}
+
+			size_t option = ix % N_ELEMENTS(options.enabled);
+			bool enabled = attribute.as_bool(options.enabled[option]);
+
+			if(enabled == options.enabled[option]) {
+				debug("Keeping '",attributes[ix].name,"'");
+				continue;
+			}
+
+			options.enabled[option] = enabled;
+			const char * text = (options.enabled[option] ? "enabled" : "disabled");
+
+			write(
+				Trace,
+				"logger",
+				Message(attributes[ix].message,text).c_str(),
+				true
+			);
+
+		}
+
+	}
+
 	void Logger::console(bool enable) {
 		Options::getInstance().console = enable;
 	}
