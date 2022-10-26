@@ -215,32 +215,6 @@
 					return false;
 				}
 
-				/*
-
-				-- Moved to SystemService() --
-
-#if defined(HAVE_SYSTEMD)
-
-				sd_notifyf(0,"STATUS=%s",state->to_string().c_str());
-
-#elif defined(_WIN32)
-
-				try {
-
-					Win32::Registry registry("service",true);
-
-					registry.set("status",state->to_string().c_str());
-					registry.set("status_time",TimeStamp().to_string().c_str());
-
-				} catch(const std::exception &e) {
-
-					error() << "Error '" << e.what() << "' setting service state" << endl;
-
-				}
-
-#endif // HAVE_SYSTEMD
-				*/
-
 				return true;
 			}
 
@@ -266,6 +240,13 @@
 		if(gethostname(hostname, 255)) {
 			cerr << "agent\tError '" << strerror(errno) << "' getting hostname" << endl;
 			strncpy(hostname,Application::Name().c_str(),255);
+		}
+
+		{
+			char *ptr = strchr(hostname,'.');
+			if(ptr) {
+				*ptr = 0;
+			}
 		}
 
 		return make_shared<Agent>(Quark(hostname).c_str());
