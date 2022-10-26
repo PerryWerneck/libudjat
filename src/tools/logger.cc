@@ -256,6 +256,14 @@
 		Logger::write(level,domain,c_str());
 	}
 
+	void Logger::Message::write(const Logger::Level level) const {
+		Logger::write(level,c_str());
+	}
+
+	void Logger::Message::write(const Logger::Level level, const char *domain) const {
+		Logger::write(level,domain,c_str());
+	}
+
 	UDJAT_API std::ostream & Logger::info() {
 		return cout;
 	}

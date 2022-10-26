@@ -54,7 +54,11 @@ namespace Udjat {
 		Logger::write(fd," ");
 	}
 
-	void Logger::write(Level level, const char *d, const char *text) noexcept {
+	void Logger::write(Level level, const char *domain, const char *text) noexcept {
+		write(level,domain,text,false);
+	}
+
+	void Logger::write(Level level, const char *d, const char *text, bool force) noexcept {
 
 		char domain[15];
 		memset(domain,' ',15);
@@ -103,7 +107,7 @@ namespace Udjat {
 
 		}
 
-		if(options.syslog && options.enabled[level % N_ELEMENTS(options.enabled)]) {
+		if(options.syslog && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
 			//
 			// Write to syslog.
 			//

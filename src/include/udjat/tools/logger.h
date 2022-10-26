@@ -59,6 +59,13 @@
 		/// @param level	Log level.
 		/// @param domain	The message domain.
 		/// @param message	The message.
+		/// @param force	If true ignore level 'enable' option.
+		UDJAT_API void write(const Level level, const char *domain, const char *message, bool force) noexcept;
+
+		/// @brief Write message.
+		/// @param level	Log level.
+		/// @param domain	The message domain.
+		/// @param message	The message.
 		UDJAT_API void write(const Level level, const char *domain, const char *message) noexcept;
 
 		/// @brief Write message.
@@ -160,6 +167,9 @@
 				append(value);
 				return add(Fargs...);
 			}
+
+			void write(const Logger::Level level) const;
+			void write(const Logger::Level level, const char *domain) const;
 
 		};
 
