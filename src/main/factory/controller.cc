@@ -22,6 +22,7 @@
  #include <private/factory.h>
  #include <iostream>
  #include <udjat/moduleinfo.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -37,7 +38,7 @@
 
 	void Factory::Controller::insert(Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
-		cout << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+		Logger::trace() << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
 		factories.push_back(factory);
 	}
 
@@ -58,7 +59,7 @@
 
 	void Factory::Controller::remove(Factory *factory) {
 
-		cout << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+		Logger::trace() << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
 
 		lock_guard<recursive_mutex> lock(guard);
 		factories.remove_if([factory](const Factory *obj){

@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/worker.h>
  #include <udjat/moduleinfo.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -67,7 +68,7 @@
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << "workers\tRegister '" << worker->name << "' (" << worker->module.description << ") " << endl;
+		Logger::trace() << "workers\tRegister '" << worker->name << "' (" << worker->module.description << ") " << endl;
 		workers.insert(make_pair(worker->c_str(),worker));
 
 	}
@@ -82,7 +83,7 @@
 		if(entry->second != worker)
 			return;
 
-		cout << "workers\tUnregister '" << worker->name << "' (" << worker->module.description << ") " << endl;
+		Logger::trace() << "workers\tUnregister '" << worker->name << "' (" << worker->module.description << ") " << endl;
 		workers.erase(entry);
 
 	}

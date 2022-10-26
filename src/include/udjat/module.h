@@ -21,8 +21,10 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/tools/value.h>
  #include <udjat/agent.h>
  #include <udjat/request.h>
+ #include <cstdarg>
 
  namespace Udjat {
 
@@ -57,10 +59,10 @@
 		Module(const char *name, const ModuleInfo *info) : Module(name,*info) {
 		}
 
-		Module(const Quark &name, const ModuleInfo &info) : Module(name.c_str(),info) {
+		UDJAT_DEPRECATED(Module(const Quark &name, const ModuleInfo &info)) : Module(name.c_str(),info) {
 		}
 
-		Module(const Quark &name, const ModuleInfo *info) : Module(name.c_str(),*info) {
+		UDJAT_DEPRECATED(Module(const Quark &name, const ModuleInfo *info)) : Module(name.c_str(),*info) {
 		}
 
 		/// @brief Navigate on module options.
@@ -110,7 +112,19 @@
 		/// @return true if the property is valid.
 		virtual bool getProperty(const char *key, std::string &value) const noexcept;
 
+		/// @brief Get module property.
+		/// @param property_name The property name.
+		/// @return The property value.
 		std::string operator[](const char *property_name) const noexcept;
+
+		/// @brief Execute command.
+		static void exec(const char *module_name, Udjat::Value &response, const char *name, ...) __attribute__ ((sentinel));
+
+		/// @brief Execute command.
+		void exec(Udjat::Value &response, const char *name,...) const __attribute__ ((sentinel));
+
+		/// @brief Execute command.
+		virtual void exec(Udjat::Value &response, const char *name, va_list args) const;
 
 	};
 

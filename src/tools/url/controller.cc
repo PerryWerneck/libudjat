@@ -51,7 +51,7 @@
 
 	void Protocol::Controller::insert(Protocol *protocol) {
 		lock_guard<mutex> lock(guard);
-		cout << "protocols\tRegister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+		Logger::trace() << "protocols\tRegister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.push_back(protocol);
 	}
 
@@ -60,7 +60,7 @@
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
-		cout << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+		Logger::trace() << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.remove(protocol);
 #ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
