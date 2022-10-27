@@ -36,7 +36,11 @@ using namespace std;
 
 namespace Udjat {
 
-	void Logger::write(Level level, const char *d, const char *text) noexcept {
+	void Logger::write(Level level, const char *domain, const char *text) noexcept {
+		write(level,domain,text,false);
+	}
+
+	void Logger::write(const Level level, const char *d, const char *text, bool force) noexcept {
 
 		char domain[15];
 		memset(domain,' ',15);
@@ -75,7 +79,7 @@ namespace Udjat {
 							"\x1b[92m",	// Info
 							"\x1b[93m",	// Warning
 							"\x1b[91m",	// Error
-							"\x1b[91m",	// Debug
+							"\x1b[95m",	// Debug
 
 							"\x1b[94m",	// Trace
 							"\x1b[96m",	// SysInfo (Allways Trace+1)
@@ -109,7 +113,7 @@ namespace Udjat {
 
 		}
 
-		if(options.file && options.enabled[level % N_ELEMENTS(options.enabled)]) {
+		if(options.file && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
 			//
 			// Write to file.
 			//

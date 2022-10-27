@@ -82,7 +82,7 @@ namespace Udjat {
 				"\x1b[92m",	// Info
 				"\x1b[93m",	// Warning
 				"\x1b[91m",	// Error
-				"\x1b[94m",	// Debug
+				"\x1b[95m",	// Debug
 
 				"\x1b[94m",	// Trace
 				"\x1b[96m",	// SysInfo (Allways Trace+1)
