@@ -25,6 +25,7 @@
  #include <errno.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/tools/logger.h>
  #include <signal.h>
  #include <iostream>
  #include <cstring>
@@ -58,7 +59,7 @@
 
 		static void handle_reload(int sig) noexcept {
 
-			clog << "config\tReloading configuration by signal '" << strsignal(sig) << "'" << endl;
+			Logger::String("Reloading configuration by signal '",strsignal(sig),"'").write(Logger::Trace,"econf");
 
 			try {
 
@@ -106,7 +107,7 @@
 
 			if(!hFile) {
 
-				cout << program_invocation_short_name << "\tLoading configuration" << endl;
+				//cout << program_invocation_short_name << "\tLoading configuration" << endl;
 
 				econf_err err = econf_readDirs(
 					(econf_file **) &hFile,				// key_file
@@ -120,7 +121,7 @@
 
 				if(err != ECONF_SUCCESS) {
 					hFile = nullptr;
-					cerr << program_invocation_short_name << "\t" << econf_errString(err) << endl;;
+					cerr << "econf\t" << econf_errString(err) << endl;;
 				}
 
 			}
@@ -444,7 +445,7 @@
 
 			if(err != ECONF_SUCCESS) {
 				if(err == ECONF_NOKEY) {
-					clog << "config\tNo '" << group << "' section on configuration file" << endl;
+					clog << "econf\tNo '" << group << "' section on configuration file" << endl;
 					return false;
 				}
 				throw std::runtime_error(econf_errString(err));

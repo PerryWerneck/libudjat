@@ -127,7 +127,7 @@
 
 #ifdef HAVE_VMDETECT
 
-		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) && VirtualMachine()) ) {
+		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine()) ) {
 			return false;
 		}
 

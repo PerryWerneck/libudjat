@@ -221,7 +221,7 @@
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application.cc" />
-		<Unit filename="src/tools/os/linux/configvalue.cc" />
+		<Unit filename="src/tools/os/linux/econf.cc" />
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
