@@ -131,6 +131,12 @@
 			return false;
 		}
 
+#else
+
+		if(!node.attribute("allowed-in-virtual-machine").as_bool(true)) {
+			cerr << PACKAGE_NAME "\tLibrary built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute" << endl;
+		}
+
 #endif // HAVE_VMDETECT
 
 		// Test if the attribute requirement is valid.
