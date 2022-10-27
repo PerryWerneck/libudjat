@@ -121,6 +121,12 @@ namespace Udjat {
 	void Abstract::Agent::setup_children(const pugi::xml_node &root) noexcept {
 		for(const pugi::xml_node &node : root) {
 
+			// Check for validation.
+			if(!is_allowed(node)) {
+				continue;
+			}
+
+			// Create child.
 			if(strcasecmp(node.name(),"module") == 0) {
 
 				Module::load(node);
