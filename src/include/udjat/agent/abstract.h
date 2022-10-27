@@ -332,6 +332,10 @@
 			/// @brief Get formatted value.
 			virtual std::string to_string() const noexcept override;
 
+			const char * summary() const noexcept override;
+			const char * icon() const noexcept override;
+			const char * label() const noexcept override;
+
 			/// @brief Get smart pointer.
 			std::shared_ptr<Agent> to_shared_ptr();
 

@@ -52,7 +52,7 @@
 
 	void Abstract::Agent::get(Report UDJAT_UNUSED(&report)) {
 		error() << "Rejecting 'report' request - Not available in this agent" << endl;
-		throw system_error(ENOENT,system_category(),_( "No reports on this path") );
+		throw system_error(ENOENT,system_category(),_("No reports on this path") );
 	}
 
 	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report &report) {
@@ -113,6 +113,39 @@
 		}
 
 		return rc;
+
+	}
+
+	const char * Abstract::Agent::summary() const noexcept {
+
+		const char *str = Udjat::Object::summary();
+		if(str && *str) {
+			return str;
+		}
+
+		return current_state.active->summary();
+
+	}
+
+	const char * Abstract::Agent::label() const noexcept {
+
+		const char *str = Udjat::Object::label();
+		if(str && *str) {
+			return str;
+		}
+
+		return current_state.active->label();
+
+	}
+
+	const char * Abstract::Agent::icon() const noexcept {
+
+		const char *str = Udjat::Object::icon();
+		if(str && *str) {
+			return str;
+		}
+
+		return current_state.active->icon();
 
 	}
 

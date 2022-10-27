@@ -142,8 +142,16 @@
 		return value;
 	}
 
+	const char * Object::label() const noexcept {
+		return properties.label;
+	}
+
 	const char * Object::icon() const noexcept {
 		return properties.icon;
+	}
+
+	const char * Object::summary() const noexcept {
+		return properties.summary;
 	}
 
 	const char * Abstract::Object::name() const noexcept {
@@ -175,11 +183,11 @@
 		if(!strcasecmp(key,"label")) {
 			value = properties.label;
 		} else if(!strcasecmp(key,"summary")) {
-			value = properties.summary;
+			value = summary();
 		} else if(!strcasecmp(key,"url")) {
 			value = properties.url;
 		} else if(!strcasecmp(key,"icon")) {
-			value = properties.icon;
+			value = icon();
 		} else {
 			return false;
 		}

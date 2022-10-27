@@ -229,14 +229,10 @@
 
 		bool getProperty(const char *key, std::string &value) const noexcept override;
 
-		inline const char * label() const noexcept {
-			return properties.label;
-		}
+		virtual const char * label() const noexcept;
 
 		/// @brief Object summary.
-		inline const char * summary() const noexcept {
-			return properties.summary;
-		}
+		virtual const char * summary() const noexcept;
 
 		/// @brief URL associated with the object.
 		inline const char * url() const noexcept {
