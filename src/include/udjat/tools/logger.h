@@ -47,8 +47,15 @@
 		UDJAT_API std::ostream & error();
 		UDJAT_API std::ostream & trace();
 
-		/// @brief Enable/Disable write fo file based on level
-		UDJAT_API void enable(Level level) noexcept;
+		/// @brief Enable/Disable write to file.
+		/// @param Log level.
+		/// @param enabled true to enable write to file in label.
+		UDJAT_API void enable(Level level, bool enabled = true) noexcept;
+
+		/// @brief Check if log level is enabled.
+		/// @param Log level.
+		/// @return true if the level is enabled.
+		UDJAT_API bool enabled(Level level) noexcept;
 
 		/// @brief Write message.
 		/// @param level	Log level.

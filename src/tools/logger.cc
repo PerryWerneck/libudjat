@@ -152,8 +152,12 @@
 		Controller::getInstance().buffers.remove(this);
 	}
 
-	void Logger::enable(Level level) noexcept {
-		Logger::Options::getInstance().enabled[level % N_ELEMENTS(Logger::Options::enabled)] = level;
+	void Logger::enable(Level level, bool enabled) noexcept {
+		Logger::Options::getInstance().enabled[level % N_ELEMENTS(Logger::Options::enabled)] = enabled;
+	}
+
+	bool Logger::enabled(Level level) noexcept {
+		return Logger::Options::getInstance().enabled[level % N_ELEMENTS(Logger::Options::enabled)];
 	}
 
 	/// @brief Writes characters to the associated output sequence from the put area.

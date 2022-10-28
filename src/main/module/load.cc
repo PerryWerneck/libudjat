@@ -29,15 +29,6 @@
 #include <udjat/tools/logger.h>
 #include <udjat/tools/xml.h>
 
-#ifdef _WIN32
-	#define MODULE_EXT ".dll"
-	#include <udjat/win32/exception.h>
-#else
-	#include <dlfcn.h>
-	#include <unistd.h>
-	#define MODULE_EXT ".so"
-#endif // _WIN32
-
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
@@ -60,9 +51,7 @@ namespace Udjat {
 
 					// Check if the module is already loaded.
 					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
-#ifdef DEBUG
 						debug("module '",filename,"' is already loaded");
-#endif // DEBUG
 						return true;
 					}
 
