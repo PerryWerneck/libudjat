@@ -98,7 +98,7 @@
 	void MainLoop::wakeup() noexcept {
 		if(!hwnd) {
 			Logger::String("Unexpected call to wakeup() without an active window").write(Logger::Trace,"MainLoop");
-		} else if(!PostMessage(hwnd,WM_TIMER,IDT_CHECK_TIMERS,0)) {
+		} else if(!PostMessage(hwnd,WM_CHECK_TIMERS,0,0)) {
 			cerr << "MainLoop\tError posting wake up message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
 #ifdef DEBUG
@@ -152,7 +152,7 @@
 				ThreadPool::getInstance();
 				controller.start();
 
-				SetTimer(hWnd,IDT_CHECK_TIMERS,10,(TIMERPROC) NULL);
+				SetTimer(hWnd,IDT_CHECK_TIMERS,100,(TIMERPROC) NULL);
 
 				break;
 
@@ -173,25 +173,36 @@
 				}
 				break;
 
-//			case WM_WAKE_UP:
-//				debug("WM_WAKE_UP");
-//				if(controller.hwnd) {
-//					SetTimer(controller.hwnd,IDT_CHECK_TIMERS,10,(TIMERPROC) NULL);
-//				}
-//				break;
-
 			case WM_TIMER:
 
-				debug("WM_TIMER ",(DWORD) wParam);
+				Logger::String("WM_TIMER ", ((unsigned int) wParam)).write(Logger::Debug,"win32");
 
-				if(wParam == IDT_CHECK_TIMERS && controller.hwnd) {
+				if(controller.hwnd) {
 
+					if(wParam == IDT_CHECK_TIMERS) {
+
+						if(!PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0)) {
+							cerr << "MainLoop\tError posting WM_CHECK_TIMERS up message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
+						}
+
+					} else {
+
+						cerr << "win32\tInvalid or unexpected timer ID " << ((unsigned int ) wParam) << endl;
+
+					}
+
+				} else {
+
+					Logger::String("Got timer ", ((unsigned int) wParam), " on invalid window").write(Logger::Debug,"win32");
+
+				}
+				break;
+
+			case WM_CHECK_TIMERS:
+				{
 					UINT interval = controller.timers.run();
-
-					debug("interval=",interval);
-
+					Logger::String("Reseting timer to ", interval).write(Logger::Debug,"win32");
 					SetTimer(controller.hwnd,IDT_CHECK_TIMERS, (interval ? interval : 1000), (TIMERPROC) NULL);
-
 				}
 				break;
 
