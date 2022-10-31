@@ -152,7 +152,7 @@
 				ThreadPool::getInstance();
 				controller.start();
 
-				SetTimer(hWnd,IDT_CHECK_TIMERS,100,(TIMERPROC) NULL);
+				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
 
 				break;
 
@@ -201,8 +201,17 @@
 			case WM_CHECK_TIMERS:
 				{
 					UINT interval = controller.timers.run();
-					Logger::String("Reseting timer to ", interval).write(Logger::Debug,"win32");
-					SetTimer(controller.hwnd,IDT_CHECK_TIMERS, (interval ? interval : 1000), (TIMERPROC) NULL);
+					if(!interval) {
+						interval = 1000;
+					}
+
+					if(interval != controller.uElapse) {
+						Logger::String("Reseting timer to ", interval).write(Logger::Debug,"win32");
+						SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
+					} else {
+						Logger::String("Keeping timer set to ", interval).write(Logger::Debug,"win32");
+					}
+
 				}
 				break;
 

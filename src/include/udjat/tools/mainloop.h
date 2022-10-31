@@ -141,6 +141,9 @@ namespace Udjat {
 		/// @brief Object window for this loop
 		HWND hwnd = 0;
 
+		/// @brief Current timer value, in milliseconds.
+		UINT uElapse = 0;
+
 		/// @brief get sockets
 		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
 
