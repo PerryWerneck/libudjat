@@ -96,6 +96,9 @@
 
 			} args;
 
+			/// @brief Post connect method (apply connection info in the payload).
+			void post_connect(int sock);
+
 		protected:
 
 			/// @brief Worker name.
@@ -117,7 +120,7 @@
 
 			/// @brief Output data (To host)
 			struct Out {
-				std::string payload;	///< @brief Request payload.
+				Udjat::String payload;	///< @brief Request payload.
 
 				Out(const char *p) : payload(p) {
 				}
