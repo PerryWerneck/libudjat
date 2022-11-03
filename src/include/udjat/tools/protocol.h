@@ -96,9 +96,6 @@
 
 			} args;
 
-			/// @brief Post connect method (apply connection info in the payload).
-			void post_connect(int sock);
-
 		protected:
 
 			/// @brief Worker name.
@@ -131,6 +128,10 @@
 			struct In {
 				TimeStamp modification;	///< @brief Last-modified time.
 			} in;
+
+			/// @brief Connected to host, expand network variables in payload string.
+			/// @param sock The connected socket used to get network info.
+			void set_socket(int sock);
 
 		public:
 

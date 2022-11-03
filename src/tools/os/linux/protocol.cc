@@ -65,11 +65,7 @@
 
 	}
 
-	void Protocol::Worker::post_connect(int sock) {
-
-		if(out.payload.empty()) {
-			return;
-		}
+	void Protocol::Worker::set_socket(int sock) {
 
 		out.payload.expand([sock](const char *key, std::string &value){
 
