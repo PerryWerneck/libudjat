@@ -99,7 +99,7 @@
 
 			for(auto *interface = interfaces; interface && nic.empty(); interface = interface->ifa_next) {
 
-				if(interface->ifa_addr->sa_family != addr.ss_family) {
+				if(!interface->ifa_addr || (interface->ifa_addr->sa_family != addr.ss_family)) {
 					continue;
 				}
 
