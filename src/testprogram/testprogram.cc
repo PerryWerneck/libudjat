@@ -157,8 +157,6 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			cout << "------------------------------------------" << endl;
-
 			cout << "test\táéióú" << endl;
 
 			MainLoop::getInstance().TimerFactory(2000,[](){
@@ -316,6 +314,7 @@ int main(int argc, char **argv) {
 	// debug("CacheDir=",Application::CacheDir().c_str());
 	// debug("LogDir=",Application::LogDir().c_str());
 	// debug("Timestamp=",TimeStamp(90000).to_verbose_string());
+
 
 	auto rc = Service().run(argc,argv);
 

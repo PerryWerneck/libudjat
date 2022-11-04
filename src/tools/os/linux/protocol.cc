@@ -24,6 +24,15 @@
  #include <sys/socket.h>
  #include <arpa/inet.h>
  #include <stdexcept>
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <ifaddrs.h>
+ #include <udjat/tools/logger.h>
+ #include <iostream>
+ #include <linux/if.h>
+ #include <sys/ioctl.h>
+ #include <sstream>
+ #include <iomanip>
 
  using namespace std;
 
@@ -66,7 +75,66 @@
 
 	}
 
+	static void getpeer(int sock, sockaddr_storage &addr) {
+		socklen_t length = sizeof(addr);
+		if(getpeername(sock, (sockaddr *) &addr, &length)) {
+			throw system_error(errno,system_category(),"Cant get peer name");
+		}
+	}
+
+	static void getnic(int sock, std::string &nic) {
+
+		sockaddr_storage addr;
+		getpeer(sock,addr);
+
+		// Search for interfaces.
+		struct ifaddrs * interfaces = nullptr;
+		if(getifaddrs(&interfaces) != 0) {
+			throw system_error(errno,system_category(),"Cant get network interfaces");
+		}
+
+		nic.clear(); // Just in case.
+
+		try {
+
+			for(auto *interface = interfaces; interface && nic.empty(); interface = interface->ifa_next) {
+
+				if(interface->ifa_addr->sa_family != addr.ss_family) {
+					continue;
+				}
+
+				debug("Testing interface ",interface->ifa_name);
+
+				switch(interface->ifa_addr->sa_family) {
+				case AF_INET:
+					if( ((const struct sockaddr_in *) &addr)->sin_addr.s_addr == ((const struct sockaddr_in *) interface->ifa_addr)->sin_addr.s_addr) {
+						nic = interface->ifa_name;
+					}
+					break;
+
+				case AF_INET6:
+					if( ((const struct sockaddr_in6 *) &addr)->sin6_addr.s6_addr == ((const struct sockaddr_in6 *) interface->ifa_addr)->sin6_addr.s6_addr) {
+						nic = interface->ifa_name;
+					}
+					break;
+				}
+
+			}
+
+		} catch(...) {
+
+			freeifaddrs(interfaces);
+			throw;
+
+		}
+
+		freeifaddrs(interfaces);
+
+	}
+
 	void Protocol::Worker::set_socket(int sock) {
+
+		debug("*************************************");
 
 		out.payload.expand([sock](const char *key, std::string &value){
 
@@ -88,13 +156,42 @@
 			if(strcasecmp(key,"hostip") == 0) {
 
 				sockaddr_storage addr;
-				socklen_t length = sizeof(addr);
+				getpeer(sock,addr);
+				value = to_string(addr);
 
-				if(getpeername(sock, (sockaddr *) &addr, &length)) {
-					throw system_error(errno,system_category(),"Cant resolve ${hostip}");
+				return true;
+			}
+
+			if(strcasecmp(key,"network-interface") == 0) {
+				getnic(sock,value);
+				return true;
+			}
+
+			if(strcasecmp(key,"macaddress") == 0) {
+
+				string nic;
+				getnic(sock,nic);
+
+				struct ifreq ifr;
+
+				memset(&ifr,0,sizeof(ifr));
+				strncpy(ifr.ifr_name, nic.c_str(), sizeof( ifr.ifr_name ) );
+
+				if(ioctl(sock, SIOCGIFHWADDR, &ifr) < 0 ) {
+					cerr << "protocol\tCant get mac address for '" << nic << "': " << strerror(errno) << endl;
+					value.clear();
+					return false;
 				}
 
-				value = to_string(addr);
+				value.clear();
+				static const char *digits = "0123456789ABCDEF";
+				for(size_t ix = 0; ix < 6; ix++) {
+					uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
+
+					value += digits[(digit >> 4) & 0x0f];
+					value += digits[digit & 0x0f];
+
+				}
 
 				return true;
 			}
@@ -102,6 +199,10 @@
 			return false;
 
 		},true,true);
+
+		debug("Payload:\n",out.payload);
+
 	}
+
 
  }

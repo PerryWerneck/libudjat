@@ -4,9 +4,9 @@
 <config log-debug='no' log-trace='no' log-info='no'>
 
 	<module name='information' required='no' preload='no' />
-	<!-- module name='http' required='no' / -->
+	<module name='http' required='no' />
 
-	<module name='civetweb' required='no' preload='no' />
+	<!-- module name='civetweb' required='no' preload='no' / -->
 
 	<attribute-list>
 	
