@@ -18,16 +18,17 @@
  */
 
  #include <config.h>
+
  #include <udjat/defs.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/ip.h>
- #include <sys/socket.h>
- #include <arpa/inet.h>
+ #include <ws2tcpip.h>
+ #include <udjat/win32/exception.h>
  #include <stdexcept>
 
  using namespace std;
 
- namespace Udjat {
+ namespace std {
 
 	UDJAT_API string to_string(const sockaddr_storage &addr) {
 
@@ -40,7 +41,7 @@
 
 		switch(addr.ss_family) {
 		case AF_INET:
-			inet_ntop(
+			InetNtop(
 				((const struct sockaddr_in *) &addr)->sin_family,
 				&((const struct sockaddr_in *) &addr)->sin_addr,
 				ipaddr,
@@ -49,7 +50,7 @@
 			break;
 
 		case AF_INET6:
-			inet_ntop(
+			InetNtop(
 				((const struct sockaddr_in6 *) &addr)->sin6_family,
 				&((const struct sockaddr_in6 *) &addr)->sin6_addr,
 				ipaddr,
@@ -66,20 +67,26 @@
 
 	}
 
+ }
+
+ namespace Udjat {
+
 	void Protocol::Worker::set_socket(int sock) {
 
 		out.payload.expand([sock](const char *key, std::string &value){
 
 			if(strcasecmp(key,"ipaddr") == 0) {
 
-				sockaddr_storage addr;
-				socklen_t length = sizeof(addr);
+				// https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockname
 
-				if(getsockname(sock, (sockaddr *) &addr, &length)) {
-					throw system_error(errno,system_category(),"Cant resolve ${ipaddr}");
+				sockaddr_storage name;
+				int namelen = sizeof(name);
+
+				if(getsockname((SOCKET) sock, (sockaddr *) &name, &namelen)) {
+					throw Win32::WSA::Exception("Cant resolve ${ipaddr}");
 				}
 
-				value = to_string(addr);
+				value = std::to_string(name);
 
 				return true;
 
@@ -87,21 +94,25 @@
 
 			if(strcasecmp(key,"hostip") == 0) {
 
-				sockaddr_storage addr;
-				socklen_t length = sizeof(addr);
+				sockaddr_storage name;
+				int namelen = sizeof(name);
 
-				if(getpeername(sock, (sockaddr *) &addr, &length)) {
-					throw system_error(errno,system_category(),"Cant resolve ${hostip}");
+				// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername
+
+				if(getpeername((SOCKET) sock, (sockaddr *) &name, &namelen)) {
+					throw Win32::WSA::Exception("Cant resolve ${hostip}");
 				}
 
-				value = to_string(addr);
+				value = std::to_string(name);
 
 				return true;
+
 			}
 
 			return false;
 
 		},true,true);
+
 	}
 
  }
