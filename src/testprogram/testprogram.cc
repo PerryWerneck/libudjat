@@ -41,10 +41,12 @@
  #include <sys/stat.h>
  #include <fstream>
  #include <fcntl.h>
+ #include <iomanip>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
 	#include <udjat/win32/exception.h>
+	#include <udjat/win32/ip.h>
 #else
 	#include <unistd.h>
 #endif // _WIN32
@@ -315,6 +317,21 @@ int main(int argc, char **argv) {
 	// debug("LogDir=",Application::LogDir().c_str());
 	// debug("Timestamp=",TimeStamp(90000).to_verbose_string());
 
+	{
+		Udjat::Win32::for_each([](const IP_ADAPTER_INFO &adapter) {
+
+			cout << adapter.AdapterName << " " << adapter.IpAddressList.IpAddress.String << " ";
+
+			for(UINT ix = 0; ix < adapter.AddressLength; ix++) {
+				cout << setfill('0') << setw(2) << hex << ((int) adapter.Address[ix]) << dec << " ";
+			}
+
+			cout << endl;
+			return false;
+
+		});
+		exit(-1);
+	}
 
 	auto rc = Service().run(argc,argv);
 

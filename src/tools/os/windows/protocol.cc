@@ -23,9 +23,12 @@
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/ip.h>
  #include <udjat/win32/ip.h>
+ #include <udjat/tools/logger.h>
  #include <ws2tcpip.h>
  #include <udjat/win32/exception.h>
  #include <stdexcept>
+ #include <sstream>
+ #include <iomanip>
 
  using namespace std;
 
@@ -88,6 +91,22 @@
 		sockaddr_storage addr;
 		getpeer(sock,addr);
 
+		string IpAddress{to_string(addr)};
+
+		Win32::for_each([&IpAddress,&nic](const IP_ADAPTER_INFO &adapter) {
+
+			debug(adapter.AdapterName," ",adapter.IpAddressList.IpAddress.String);
+
+			if(!strcasecmp(IpAddress.c_str(),adapter.IpAddressList.IpAddress.String)) {
+				nic = adapter.AdapterName;
+				return true;
+			}
+
+			return false;
+
+		});
+
+
 	}
 
 	void Protocol::Worker::set_socket(int sock) {
@@ -118,6 +137,39 @@
 				value = to_string(addr);
 
 				return true;
+
+			}
+
+			if(strcasecmp(key,"network-interface") == 0) {
+				getnic(sock,value);
+				return true;
+			}
+
+			if(strcasecmp(key,"macaddress") == 0) {
+
+				sockaddr_storage addr;
+				getpeer(sock,addr);
+
+				string IpAddress{to_string(addr)};
+
+				Win32::for_each([&IpAddress,&value](const IP_ADAPTER_INFO &adapter) {
+
+					if(!strcasecmp(IpAddress.c_str(),adapter.IpAddressList.IpAddress.String)) {
+
+						stringstream mac;
+
+						for(UINT ix = 0; ix < adapter.AddressLength; ix++) {
+							mac << setfill('0') << setw(2) << hex << ((int) adapter.Address[ix]) << dec;
+						}
+
+						value = mac.str();
+
+						return true;
+					}
+
+					return false;
+
+				});
 
 			}
 
