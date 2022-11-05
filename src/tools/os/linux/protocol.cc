@@ -36,7 +36,7 @@
 
  using namespace std;
 
- namespace Udjat {
+ namespace std {
 
 	UDJAT_API string to_string(const sockaddr_storage &addr) {
 
@@ -74,6 +74,10 @@
 		return string{ipaddr};
 
 	}
+
+ }
+
+ namespace Udjat {
 
 	static void getpeer(int sock, sockaddr_storage &addr) {
 		socklen_t length = sizeof(addr);
@@ -133,8 +137,6 @@
 	}
 
 	void Protocol::Worker::set_socket(int sock) {
-
-		debug("*************************************");
 
 		out.payload.expand([sock](const char *key, std::string &value){
 

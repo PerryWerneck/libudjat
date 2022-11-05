@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/ip.h>
+ #include <udjat/win32/ip.h>
  #include <ws2tcpip.h>
  #include <udjat/win32/exception.h>
  #include <stdexcept>
@@ -71,6 +72,24 @@
 
  namespace Udjat {
 
+	static void getpeer(int sock, sockaddr_storage &addr) {
+
+		int namelen = sizeof(addr);
+
+		// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername
+		if(getpeername((SOCKET) sock, (sockaddr *) &addr, &namelen)) {
+			throw Win32::WSA::Exception("Cant get peer name");
+		}
+
+	}
+
+	static void getnic(int sock, std::string &nic) {
+
+		sockaddr_storage addr;
+		getpeer(sock,addr);
+
+	}
+
 	void Protocol::Worker::set_socket(int sock) {
 
 		out.payload.expand([sock](const char *key, std::string &value){
@@ -94,16 +113,9 @@
 
 			if(strcasecmp(key,"hostip") == 0) {
 
-				sockaddr_storage name;
-				int namelen = sizeof(name);
-
-				// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername
-
-				if(getpeername((SOCKET) sock, (sockaddr *) &name, &namelen)) {
-					throw Win32::WSA::Exception("Cant resolve ${hostip}");
-				}
-
-				value = std::to_string(name);
+				sockaddr_storage addr;
+				getpeer(sock,addr);
+				value = to_string(addr);
 
 				return true;
 
