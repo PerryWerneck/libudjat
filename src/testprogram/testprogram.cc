@@ -317,6 +317,7 @@ int main(int argc, char **argv) {
 	// debug("LogDir=",Application::LogDir().c_str());
 	// debug("Timestamp=",TimeStamp(90000).to_verbose_string());
 
+	/*
 	{
 		Udjat::Win32::for_each([](const IP_ADAPTER_INFO &adapter) {
 
@@ -332,6 +333,7 @@ int main(int argc, char **argv) {
 		});
 		exit(-1);
 	}
+	*/
 
 	auto rc = Service().run(argc,argv);
 

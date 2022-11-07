@@ -26,6 +26,10 @@
  #include <udjat/tools/timestamp.h>
  #include <list>
 
+ #ifndef _WIN32
+	#include <sys/socket.h>
+ #endif // !_WIN32
+
  namespace Udjat {
 
 	/// @brief Network protocol module.
@@ -96,6 +100,8 @@
 
 			} args;
 
+			static void getnic(const sockaddr_storage &addr, std::string &nic);
+
 		protected:
 
 			/// @brief Worker name.
@@ -132,6 +138,12 @@
 			/// @brief Connected to host, expand network variables in payload string.
 			/// @param sock The connected socket used to get network info.
 			void set_socket(int sock);
+
+			/// @brief Set local addr.
+			void set_local(const sockaddr_storage &addr) noexcept;
+
+			/// @brief Set remote addr.
+			void set_remote(const sockaddr_storage &addr) noexcept;
 
 		public:
 

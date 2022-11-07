@@ -75,21 +75,19 @@
 
  namespace Udjat {
 
-	static void getpeer(int sock, sockaddr_storage &addr) {
+	/// @brief Get local address.
+	static void getaddr(int sock, sockaddr_storage &addr) {
 
 		int namelen = sizeof(addr);
 
 		// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername
-		if(getpeername((SOCKET) sock, (sockaddr *) &addr, &namelen)) {
+		if(getsockname((SOCKET) sock, (sockaddr *) &addr, &namelen)) {
 			throw Win32::WSA::Exception("Cant get peer name");
 		}
 
 	}
 
-	static void getnic(int sock, std::string &nic) {
-
-		sockaddr_storage addr;
-		getpeer(sock,addr);
+	void Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
 
 		string IpAddress{to_string(addr)};
 
@@ -111,6 +109,68 @@
 
 	void Protocol::Worker::set_socket(int sock) {
 
+		// Ignore if no payload.
+		if(out.payload.empty()) {
+			return;
+		}
+
+		{
+			sockaddr_storage name;
+			int namelen;
+
+			// https://docs.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getsockname
+			namelen = sizeof(name);
+			if(getsockname((SOCKET) sock, (sockaddr *) &name, &namelen)) {
+				error() << "Cant get socket name" << endl;
+			} else {
+				set_local(name);
+			}
+
+			// https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-getpeername
+			namelen = sizeof(name);
+			if(getpeername((SOCKET) sock, (sockaddr *) &name, &namelen)) {
+				error() << "Cant get peer name" << endl;
+			} else {
+				set_remote(name);
+			}
+
+		}
+
+		out.payload.expand([this,sock](const char *key, std::string &value){
+
+			if(strcasecmp(key,"macaddress") == 0) {
+
+				sockaddr_storage addr;
+				getaddr(sock,addr);
+
+				string IpAddress{to_string(addr)};
+
+				Win32::for_each([&IpAddress,&value](const IP_ADAPTER_INFO &adapter) {
+
+					if(!strcasecmp(IpAddress.c_str(),adapter.IpAddressList.IpAddress.String)) {
+
+						stringstream mac;
+
+						for(UINT ix = 0; ix < adapter.AddressLength; ix++) {
+							mac << setfill('0') << setw(2) << hex << ((int) adapter.Address[ix]) << dec;
+						}
+
+						value = mac.str();
+
+						return true;
+					}
+
+					return false;
+
+				});
+
+			}
+
+			return false;
+
+		},false,false);
+
+		/*
 		out.payload.expand([sock](const char *key, std::string &value){
 
 			if(strcasecmp(key,"ipaddr") == 0) {
@@ -176,6 +236,7 @@
 			return false;
 
 		},true,true);
+		*/
 
 	}
 

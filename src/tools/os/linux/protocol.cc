@@ -36,60 +36,9 @@
 
  using namespace std;
 
- namespace std {
-
-	UDJAT_API string to_string(const sockaddr_storage &addr) {
-
-		if(!addr.ss_family) {
-			throw runtime_error("Invalid IP address (no family)");
-		}
-
-		char ipaddr[256];
-		memset(ipaddr,0,sizeof(ipaddr));
-
-		switch(addr.ss_family) {
-		case AF_INET:
-			inet_ntop(
-				((const struct sockaddr_in *) &addr)->sin_family,
-				&((const struct sockaddr_in *) &addr)->sin_addr,
-				ipaddr,
-				sizeof(ipaddr)
-			);
-			break;
-
-		case AF_INET6:
-			inet_ntop(
-				((const struct sockaddr_in6 *) &addr)->sin6_family,
-				&((const struct sockaddr_in6 *) &addr)->sin6_addr,
-				ipaddr,
-				sizeof(ipaddr)
-			);
-			break;
-
-		default:
-			throw runtime_error("Unexpected IPADDR family");
-
-		}
-
-		return string{ipaddr};
-
-	}
-
- }
-
  namespace Udjat {
 
-	static void getpeer(int sock, sockaddr_storage &addr) {
-		socklen_t length = sizeof(addr);
-		if(getpeername(sock, (sockaddr *) &addr, &length)) {
-			throw system_error(errno,system_category(),"Cant get peer name");
-		}
-	}
-
-	static void getnic(int sock, std::string &nic) {
-
-		sockaddr_storage addr;
-		getpeer(sock,addr);
+	void Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
 
 		// Search for interfaces.
 		struct ifaddrs * interfaces = nullptr;
@@ -138,50 +87,52 @@
 
 	void Protocol::Worker::set_socket(int sock) {
 
-		out.payload.expand([sock](const char *key, std::string &value){
+		// Ignore if no payload.
+		if(out.payload.empty()) {
+			return;
+		}
 
-			if(strcasecmp(key,"ipaddr") == 0) {
+		{
+			sockaddr_storage addr;
+			socklen_t length;
 
+			length = sizeof(addr);
+			if(!getsockname(sock, (sockaddr *) &addr, &length)) {
+				set_local(addr);
+			}
+
+			length = sizeof(addr);
+			if(!getpeername(sock, (sockaddr *) &addr, &length)) {
+				set_remote(addr);
+			}
+
+		}
+
+		out.payload.expand([this,sock](const char *key, std::string &value){
+
+			if(strcasecmp(key,"macaddress") == 0) {
+
+				// Get local addr.
 				sockaddr_storage addr;
 				socklen_t length = sizeof(addr);
 
 				if(getsockname(sock, (sockaddr *) &addr, &length)) {
-					throw system_error(errno,system_category(),"Cant resolve ${ipaddr}");
+					error() << "Cant get socket name" << endl;
+					return false;
 				}
 
-				value = to_string(addr);
-
-				return true;
-
-			}
-
-			if(strcasecmp(key,"hostip") == 0) {
-
-				sockaddr_storage addr;
-				getpeer(sock,addr);
-				value = to_string(addr);
-
-				return true;
-			}
-
-			if(strcasecmp(key,"network-interface") == 0) {
-				getnic(sock,value);
-				return true;
-			}
-
-			if(strcasecmp(key,"macaddress") == 0) {
-
+				// Get NIC using local addr.
 				string nic;
-				getnic(sock,nic);
+				getnic(addr,nic);
 
+				// Get mac address from NIC
 				struct ifreq ifr;
 
 				memset(&ifr,0,sizeof(ifr));
 				strncpy(ifr.ifr_name, nic.c_str(), sizeof( ifr.ifr_name ) );
 
 				if(ioctl(sock, SIOCGIFHWADDR, &ifr) < 0 ) {
-					cerr << "protocol\tCant get mac address for '" << nic << "': " << strerror(errno) << endl;
-					value.clear();
+					error() << "Cant get mac address for '" << nic << "': " << strerror(errno) << endl;
 					return false;
 				}
 
@@ -189,10 +140,8 @@
 				static const char *digits = "0123456789ABCDEF";
 				for(size_t ix = 0; ix < 6; ix++) {
 					uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
-
 					value += digits[(digit >> 4) & 0x0f];
 					value += digits[digit & 0x0f];
-
 				}
 
 				return true;
@@ -200,9 +149,7 @@
 
 			return false;
 
-		},true,true);
-
-		debug("Payload:\n",out.payload);
+		},false,false);
 
 	}
 

@@ -30,6 +30,7 @@
  #include <udjat/tools/base64.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/ip.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -75,6 +76,42 @@
 #endif // _WIN32
 
 		}
+
+	}
+
+	void Protocol::Worker::set_local(const sockaddr_storage &addr) noexcept {
+
+		out.payload.expand([addr](const char *key, std::string &value){
+
+			if(strcasecmp(key,"ipaddr") == 0) {
+				value = to_string(addr);
+				return true;
+			}
+
+			if(strcasecmp(key,"network-interface") == 0) {
+				getnic(addr,value);
+				return true;
+			}
+
+			return false;
+
+		},false,false);
+
+	}
+
+	/// @brief Set remote addr.
+	void Protocol::Worker::set_remote(const sockaddr_storage &addr) noexcept {
+
+		out.payload.expand([addr](const char *key, std::string &value){
+
+			if(strcasecmp(key,"hostip") == 0) {
+				value = to_string(addr);
+				return true;
+			}
+
+			return false;
+
+		},false,false);
 
 	}
 
