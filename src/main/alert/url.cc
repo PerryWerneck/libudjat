@@ -80,27 +80,28 @@
 		payload.expand(*alert,true,false);
 	}
 
+
 	void Alert::URL::Activation::emit() {
 
-		url.expand();
-		payload.expand();
+		url.expand(true,false);
+		payload.expand(true,false);
 
 		if(verbose()) {
 			if(description.empty()) {
-				info() << "Emitting " << action << " " << url << endl;
+				Logger::String{"Emitting ",action," ",url}.write(Logger::Trace,this->name.c_str());
 			} else {
-				info() << description << ": " << action << " " << url << endl;
+				Logger::String{description,": ",action," ",url}.write(Logger::Trace,this->name.c_str());
 			}
 
 			if(!payload.empty()) {
-				Logger::write(Logger::Trace,Logger::String(this->name,"\t",payload.c_str()));
+				Logger::String{payload}.write(Logger::Trace,this->name.c_str());
 			}
 		}
 
 		String response = Protocol::call(url.c_str(),action,payload.c_str());
 
 		if(verbose() && !response.empty()) {
-			Logger::write(Logger::Trace,Logger::String{this->name,"\t",response.c_str()});
+			Logger::String{response.c_str()}.write(Logger::Trace,this->name.c_str());
 		}
 
 	}
@@ -112,10 +113,15 @@
 
 		url.expand(object);
 		payload.expand(object);
+
 		return *this;
 	}
 
 	Alert::Activation & Alert::URL::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+
+		debug("URL=",url.c_str());
+		debug("PAYLOAD=",payload.c_str());
+
 		url.expand(expander);
 		payload.expand(expander);
 		return *this;
