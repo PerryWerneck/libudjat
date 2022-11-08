@@ -24,12 +24,18 @@
  #include <netdb.h>
  #include <stdexcept>
  #include <cstring>
+ #include <iostream>
 
  using namespace std;
 
  namespace std {
 
 	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns) {
+
+		if(addr.ss_family == AF_PACKET) {
+			// TODO: How to get ipaddr on AF_PACKET?
+			return "";
+		}
 
 		char host[NI_MAXHOST];
 		memset(host,0,sizeof(host));

@@ -49,15 +49,23 @@
 
 		nic.clear(); // Just in case.
 
+		debug("Searching for interface with ",addr);
+
 		try {
 
 			for(auto *interface = interfaces; interface && nic.empty(); interface = interface->ifa_next) {
 
+#ifdef DEBUG
+				if(interface->ifa_addr) {
+					sockaddr_storage a;
+					memcpy(&a,interface->ifa_addr,sizeof(sockaddr));
+					debug("Testing interface ",interface->ifa_name," - ",to_string(a));
+				}
+#endif // DEBUG
+
 				if(!interface->ifa_addr || (interface->ifa_addr->sa_family != addr.ss_family)) {
 					continue;
 				}
-
-				debug("Testing interface ",interface->ifa_name);
 
 				switch(interface->ifa_addr->sa_family) {
 				case AF_INET:
