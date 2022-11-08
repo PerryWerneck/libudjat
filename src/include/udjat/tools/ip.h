@@ -30,7 +30,7 @@
 
  namespace std {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr);
+	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns = false);
 
 	inline ostream & operator<< (ostream& os, const sockaddr_storage &addr) {
 		return os << to_string(addr);

@@ -445,7 +445,7 @@
 
 			if(err != ECONF_SUCCESS) {
 				if(err == ECONF_NOKEY) {
-					clog << "econf\tNo '" << group << "' section on configuration file" << endl;
+					Logger::String("No '",group,"' section on configuration file").write(Logger::Debug,"econf");
 					return false;
 				}
 				throw std::runtime_error(econf_errString(err));

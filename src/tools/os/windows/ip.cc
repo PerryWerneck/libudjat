@@ -18,43 +18,30 @@
  */
 
  #include <config.h>
+
  #include <udjat/defs.h>
  #include <udjat/tools/ip.h>
- #include <sys/socket.h>
- #include <netdb.h>
+ #include <udjat/win32/ip.h>
+ #include <udjat/tools/logger.h>
+ #include <ws2tcpip.h>
  #include <stdexcept>
- #include <cstring>
 
  using namespace std;
 
  namespace std {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns) {
+	UDJAT_API string to_string(const sockaddr_storage &addr, bool UDJAT_UNUSED(dns)) {
 
-		char host[NI_MAXHOST];
-		memset(host,0,sizeof(host));
-
-		int rc = getnameinfo(
-					(sockaddr *) &addr,
-					(addr.ss_family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6)),
-					host, NI_MAXHOST,
-					NULL, 0,
-					(dns ? 0 : NI_NUMERICHOST)
-				);
-
-		if(rc != 0) {
-			throw runtime_error(gai_strerror(rc));
+		if(!addr.ss_family) {
+			throw runtime_error("Invalid IP address (no family)");
 		}
 
-		return string{host};
-
-		/*
 		char ipaddr[256];
 		memset(ipaddr,0,sizeof(ipaddr));
 
 		switch(addr.ss_family) {
 		case AF_INET:
-			inet_ntop(
+			InetNtop(
 				((const struct sockaddr_in *) &addr)->sin_family,
 				&((const struct sockaddr_in *) &addr)->sin_addr,
 				ipaddr,
@@ -63,7 +50,7 @@
 			break;
 
 		case AF_INET6:
-			inet_ntop(
+			InetNtop(
 				((const struct sockaddr_in6 *) &addr)->sin6_family,
 				&((const struct sockaddr_in6 *) &addr)->sin6_addr,
 				ipaddr,
@@ -75,9 +62,8 @@
 			throw runtime_error("Unexpected IPADDR family");
 
 		}
-		return string{ipaddr};
-		*/
 
+		return string{ipaddr};
 
 	}
 

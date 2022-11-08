@@ -81,7 +81,7 @@
 
 	void Protocol::Worker::set_local(const sockaddr_storage &addr) noexcept {
 
-		out.payload.expand([addr](const char *key, std::string &value){
+		out.payload.expand([this,addr](const char *key, std::string &value){
 
 			if(strcasecmp(key,"ipaddr") == 0) {
 				value = to_string(addr);
@@ -90,6 +90,11 @@
 
 			if(strcasecmp(key,"network-interface") == 0) {
 				getnic(addr,value);
+				return true;
+			}
+
+			if(strcasecmp(key,"macaddress") == 0) {
+				getmac(addr,value);
 				return true;
 			}
 

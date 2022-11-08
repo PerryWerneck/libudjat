@@ -33,6 +33,7 @@
  #include <sys/ioctl.h>
  #include <sstream>
  #include <iomanip>
+ #include <unistd.h>
 
  using namespace std;
 
@@ -85,6 +86,39 @@
 
 	}
 
+	void Protocol::Worker::getmac(const sockaddr_storage &addr, std::string &mac) {
+
+		// Get NIC using addr.
+		string nic;
+		getnic(addr,nic);
+
+		// Get mac address from NIC
+		struct ifreq ifr;
+
+		memset(&ifr,0,sizeof(ifr));
+		strncpy(ifr.ifr_name, nic.c_str(), sizeof( ifr.ifr_name ) );
+
+		mac.clear();
+
+		{
+			int sock = socket(PF_INET, SOCK_STREAM, 0);
+			int rc = ioctl(sock, SIOCGIFHWADDR, &ifr);
+			::close(sock);
+			if(rc < 0 ) {
+				error() << "Cant get mac address for '" << nic << "': " << strerror(errno) << endl;
+				return;
+			}
+		}
+
+		static const char *digits = "0123456789ABCDEF";
+		for(size_t ix = 0; ix < 6; ix++) {
+			uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
+			mac += digits[(digit >> 4) & 0x0f];
+			mac += digits[digit & 0x0f];
+		}
+
+	}
+
 	void Protocol::Worker::set_socket(int sock) {
 
 		// Ignore if no payload.
@@ -92,64 +126,18 @@
 			return;
 		}
 
-		{
-			sockaddr_storage addr;
-			socklen_t length;
+		sockaddr_storage addr;
+		socklen_t length;
 
-			length = sizeof(addr);
-			if(!getsockname(sock, (sockaddr *) &addr, &length)) {
-				set_local(addr);
-			}
-
-			length = sizeof(addr);
-			if(!getpeername(sock, (sockaddr *) &addr, &length)) {
-				set_remote(addr);
-			}
-
+		length = sizeof(addr);
+		if(!getsockname(sock, (sockaddr *) &addr, &length)) {
+			set_local(addr);
 		}
 
-		out.payload.expand([this,sock](const char *key, std::string &value){
-
-			if(strcasecmp(key,"macaddress") == 0) {
-
-				// Get local addr.
-				sockaddr_storage addr;
-				socklen_t length = sizeof(addr);
-
-				if(getsockname(sock, (sockaddr *) &addr, &length)) {
-					error() << "Cant get socket name" << endl;
-					return false;
-				}
-
-				// Get NIC using local addr.
-				string nic;
-				getnic(addr,nic);
-
-				// Get mac address from NIC
-				struct ifreq ifr;
-
-				memset(&ifr,0,sizeof(ifr));
-				strncpy(ifr.ifr_name, nic.c_str(), sizeof( ifr.ifr_name ) );
-
-				if(ioctl(sock, SIOCGIFHWADDR, &ifr) < 0 ) {
-					error() << "Cant get mac address for '" << nic << "': " << strerror(errno) << endl;
-					return false;
-				}
-
-				value.clear();
-				static const char *digits = "0123456789ABCDEF";
-				for(size_t ix = 0; ix < 6; ix++) {
-					uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
-					value += digits[(digit >> 4) & 0x0f];
-					value += digits[digit & 0x0f];
-				}
-
-				return true;
-			}
-
-			return false;
-
-		},false,false);
+		length = sizeof(addr);
+		if(!getpeername(sock, (sockaddr *) &addr, &length)) {
+			set_remote(addr);
+		}
 
 	}
 

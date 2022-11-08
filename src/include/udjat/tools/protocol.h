@@ -100,7 +100,11 @@
 
 			} args;
 
-			static void getnic(const sockaddr_storage &addr, std::string &nic);
+			/// @brief Get network interface name from IP.
+			void getnic(const sockaddr_storage &addr, std::string &nic);
+
+			/// @brief Get mac address from IP.
+			void getmac(const sockaddr_storage &addr, std::string &mac);
 
 		protected:
 

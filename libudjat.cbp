@@ -262,6 +262,7 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/temporary.cc" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
+		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
