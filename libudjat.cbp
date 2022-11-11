@@ -95,6 +95,7 @@
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
+		<Unit filename="src/include/udjat/tools/network.h" />
 		<Unit filename="src/include/udjat/tools/object.h" />
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
@@ -237,6 +238,7 @@
 		<Unit filename="src/tools/os/linux/file/temporary.cc" />
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
+		<Unit filename="src/tools/os/linux/hostname.cc" />
 		<Unit filename="src/tools/os/linux/ip.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/protocol.cc" />
@@ -262,6 +264,7 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/temporary.cc" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
+		<Unit filename="src/tools/os/windows/hostname.cc" />
 		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />

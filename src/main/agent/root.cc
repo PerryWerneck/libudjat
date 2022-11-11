@@ -36,6 +36,7 @@
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/network.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -236,20 +237,7 @@
 		// Get controller to initialize it.
 		Abstract::Agent::Controller::getInstance();
 
-		char hostname[256];
-		if(gethostname(hostname, 255)) {
-			cerr << "agent\tError '" << strerror(errno) << "' getting hostname" << endl;
-			strncpy(hostname,Application::Name().c_str(),255);
-		}
-
-		{
-			char *ptr = strchr(hostname,'.');
-			if(ptr) {
-				*ptr = 0;
-			}
-		}
-
-		return make_shared<Agent>(Quark(hostname).c_str());
+		return make_shared<Agent>(Quark(Hostname()).c_str());
 
 	}
 
