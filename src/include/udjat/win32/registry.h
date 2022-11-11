@@ -34,12 +34,34 @@
 			HKEY hKey = 0;
 
 			static std::string get(HKEY hK, const char *name, const char *def);
+
+			/// @brief Get binary data from registry.
+			/// @param hK the registry key.
+			/// @param name The value name.
+			/// @param ptr Pointer to data.
+			/// @param len Length of data.
+			/// @return ptr on success, nullptr on failure.
+			static void * get(HKEY hK, const char *name, void *ptr, size_t len);
+
 			static void set(HKEY hK, const char *name, const char *value);
+			static void set(HKEY hK, const char *name, const void *ptr, size_t len);
 
 		public:
-			Registry();
+			constexpr Registry(HKEY k) : hKey(k) {
+			}
+
+			/// @brief Set registry application root.
+			/// @param path The new registry path for application (should be a quark or static string)
+			static void setRoot(const char *path = "SOFTWARE");
+
+			/// @brief  Open default registry.
+			/// @param write true if not read-only.
+			Registry(bool write = false);
+
+			/// @brief  Open registry on path.
+			/// @param path Registry path.
+			/// @param write true if not read-only.
 			Registry(const char *path, bool write = false);
-			Registry(HKEY hParent, const char *path = nullptr, bool write = false);
 
 			bool hasKey(const char *name) const noexcept;
 			bool hasValue(const char *name) const noexcept;
@@ -52,10 +74,23 @@
 
 			~Registry();
 
+			/// @brief Remove key.
+			/// @param Name Key name.
+			void remove(const char *keyname);
+
 			std::string get(const char *name, const char *def) const;
 			DWORD get(const char *name, DWORD def) const;
+			UINT64 get(const char *name, UINT64 def) const;
+
+			/// @brief Get binary data from registry.
+			/// @param name The value name.
+			/// @param ptr Pointer to data.
+			/// @param len Length of data.
+			/// @return ptr on success, nullptr on failure.
+			void * get(const char *name, void *ptr, size_t len);
 
 			void set(const char *name, const char *value);
+			void set(const char *name, const void *ptr, size_t length);
 
 			inline void set(const char *name, const std::string &value) {
 				set(name,value.c_str());

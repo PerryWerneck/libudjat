@@ -40,6 +40,13 @@
 
 			std::string to_string(const char *format = "%x %X") const noexcept;
 
+			/// @brief Format as json date/time
+			inline std::string to_json() const noexcept {
+				return to_string(TIMESTAMP_FORMAT_JSON);
+			}
+
+			std::string to_verbose_string() const noexcept;
+
 			inline std::string to_string(const std::string &format) const noexcept {
 				return to_string(format.c_str());
 			}

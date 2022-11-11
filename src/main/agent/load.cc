@@ -7,7 +7,8 @@
  *
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
  #include <udjat/module.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
@@ -18,14 +19,14 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::setup(const pugi::xml_node &root) {
+	void Abstract::Agent::setup_properties(const pugi::xml_node &root) noexcept {
 
 		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 
 		this->update.timer = getAttribute(root,section,"update-timer",(unsigned int) this->update.timer);
 		this->update.on_demand = getAttribute(root,section,"update-on-demand",this->update.timer == 0);
 
-		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) 0);
+		time_t delay = getAttribute(root,section,"delay-on-startup",(unsigned int) (this->update.timer ? 1 : 0));
 		if(delay)
 			this->update.next = time(nullptr) + delay;
 
@@ -39,7 +40,7 @@ namespace Udjat {
 				this->update.sigdelay = (short) getAttribute(root,section,"update-signal-delay",(unsigned int) 0);
 
 				Udjat::Event &event = Udjat::Event::SignalHandler(this, signame, [this](){
-					requestRefresh(this->update.sigdelay);
+					sched_update(this->update.sigdelay);
 					return true;
 				});
 
@@ -59,6 +60,10 @@ namespace Udjat {
 
 		}
 #endif // !_WIN32
+
+	}
+
+	void Abstract::Agent::setup_states(const pugi::xml_node &root) noexcept {
 
 		// Load agent states.
 		Abstract::Object::for_each(root,"state","states",[this](const pugi::xml_node &node){
@@ -81,6 +86,10 @@ namespace Udjat {
 
 			}
 		});
+
+	}
+
+	void Abstract::Agent::setup_alerts(const pugi::xml_node &root) noexcept {
 
 		// Load agent alerts.
 		Abstract::Object::for_each(root,"alert","alerts",[this](const pugi::xml_node &node){
@@ -107,9 +116,17 @@ namespace Udjat {
 			}
 
 		});
+	}
 
+	void Abstract::Agent::setup_children(const pugi::xml_node &root) noexcept {
 		for(const pugi::xml_node &node : root) {
 
+			// Check for validation.
+			if(!is_allowed(node)) {
+				continue;
+			}
+
+			// Create child.
 			if(strcasecmp(node.name(),"module") == 0) {
 
 				Module::load(node);
@@ -121,6 +138,24 @@ namespace Udjat {
 
 			}
 
+		}
+	}
+
+	void Abstract::Agent::setup(const pugi::xml_node &root) {
+
+		setup_properties(root);
+		setup_states(root);
+		setup_alerts(root);
+		setup_children(root);
+
+		// Search for common states & alerts.
+		string nodename{root.name()};
+		nodename += "-defaults";
+		for(XML::Node node = root.parent(); node; node = node.parent()) {
+			for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
+				setup_states(child);
+				setup_alerts(child);
+			}
 		}
 
 	}

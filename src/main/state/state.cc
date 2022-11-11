@@ -26,12 +26,15 @@
  *
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/state.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/expander.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/alert/activation.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
@@ -60,6 +63,10 @@ namespace Udjat {
 		set(node);
 	}
 
+	std::string Abstract::State::value() const {
+		return "";
+	}
+
 	void Abstract::State::set(const pugi::xml_node &node) {
 
 		Object::set(node);
@@ -77,7 +84,13 @@ namespace Udjat {
 
 		}
 
-		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
+		debug(
+			"name=",node.attribute("name").as_string()," ",
+			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
+			" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
+		);
+
+		if(node.attribute("alert").as_bool(node.attribute("alert-type"))) {
 			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string("default"));
 			if(alert) {
 				alerts.push_back(alert);
@@ -88,6 +101,27 @@ namespace Udjat {
 
 	Abstract::State::~State() {
 
+	}
+
+	const char * Abstract::State::icon() const noexcept {
+		const char *icon = Object::icon();
+		if(!(icon && *icon)) {
+
+			// Set icon based on level
+			static const char * names[] = {
+				"dialog-information",	// undefined,
+				"dialog-information",	// unimportant,
+				"dialog-information",	// ready,
+				"dialog-warning",		// warning,
+				"dialog-error",			// error,
+				"dialog-error",			// critical
+			};
+
+			if( ((size_t) properties.level) < (sizeof(names)/sizeof(names[0]))) {
+				icon = names[properties.level];
+			}
+		}
+		return icon;
 	}
 
 	Value & Abstract::State::getProperties(Value &value) const noexcept {
@@ -108,7 +142,7 @@ namespace Udjat {
 
 	void Abstract::State::activate(const Agent &agent) noexcept {
 
-		agent.info() << "State '" << *this << "' was activated" << endl;
+		debug("State '",to_string().c_str(),"' was activated on '",agent.name(),"'");
 
 		for(auto alert : alerts) {
 			auto activation = alert->ActivationFactory();
@@ -132,7 +166,7 @@ namespace Udjat {
 
 	void Abstract::State::deactivate(const Agent &agent) noexcept {
 
-		agent.info() << "State '" << *this << "' was deactivated" << endl;
+		debug("State '",to_string().c_str(),"' was deactivated on '",agent.name(),"'");
 
 		for(auto alert : alerts) {
 			alert->deactivate();
@@ -218,6 +252,10 @@ namespace Udjat {
 		// body = code.message();
 		return make_shared<SysError>(summary,syserror);
 
+	}
+
+	std::string State<bool>::value() const {
+		return (this->state_value ? _("on") : _("off"));
 	}
 
 }

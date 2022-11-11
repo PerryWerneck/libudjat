@@ -17,7 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
+ #include <udjat/agent/abstract.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/configuration.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -38,6 +42,50 @@
 			cout << name() << "Disabling timer update (" << update.timer << " seconds)" << endl;
 			update.timer = 0;
 		}
+	}
+
+	time_t Abstract::Agent::reset(time_t timestamp) {
+
+		time_t saved = update.next;
+		update.next = timestamp;
+
+		debug("Next update for ",name()," set to ",TimeStamp(update.next).to_string().c_str());
+
+		if(update.next < saved) {
+
+			debug("Agent timer needs reset");
+
+			if(root()) {
+
+				time_t now = time(nullptr);
+				time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
+
+				root()->for_each([&next](std::shared_ptr<Agent> agent) {
+					if(agent->update.next) {
+						next = std::min(next,agent->update.next);
+					}
+				});
+
+				debug("Next agent update will be ",TimeStamp(next));
+
+				if(now > next) {
+					Controller::getInstance().reset( (now-next) * 1000);
+				} else {
+					Controller::getInstance().reset(0);
+				}
+			}
+
+		}
+		return update.next;
+	}
+
+	time_t Abstract::Agent::sched_update(time_t seconds) {
+		debug("Agent '",name(),"' will wait for ",seconds," seconds");
+		return reset(time(nullptr) + seconds);
+	}
+
+	void Abstract::Agent::requestRefresh(time_t seconds) {
+		sched_update(seconds);
 	}
 
  }

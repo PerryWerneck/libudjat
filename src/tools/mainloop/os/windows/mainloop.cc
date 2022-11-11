@@ -17,7 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include "private.h"
+ #include <private/mainloop.h>
+ #include <udjat/win32/exception.h>
+ #include <udjat/tools/logger.h>
+ #include <private/event.h>
+ #include <udjat/tools/configuration.h>
 
  #include <iostream>
 
@@ -43,8 +49,7 @@
 			winClass = RegisterClassEx(&wc);
 
 			if(!winClass) {
-				// throw Win32::Exception("Error calling RegisterClass");
-				throw runtime_error("Failed: Can't register window class");
+				throw Win32::Exception("Error calling RegisterClass");
 			}
 
 		}
@@ -70,28 +75,37 @@
 
 		SetWindowLongPtr(hwnd, 0, (LONG_PTR) this);
 
-		SetTimer(hwnd,IDT_CHECK_TIMERS,100,(TIMERPROC) NULL);
+		debug("Main Object window was created");
 
-#ifdef DEBUG
-		cout << "Main Object window was created" << endl;
-#endif // DEBUG
+	}
 
+	MainLoop & MainLoop::getInstance() {
+		static MainLoop instance;
+		return instance;
 	}
 
 	MainLoop::~MainLoop() {
 
-		KillTimer(hwnd, IDT_CHECK_TIMERS);
-		DestroyWindow(hwnd);
+		Udjat::Event::remove(this);
 
-#ifdef DEBUG
-		cout << "Main Object window was destroyed" << endl;
-#endif // DEBUG
+		DestroyWindow(hwnd);
+		hwnd = 0;
+
+		debug("Main Object window was destroyed");
+
 	}
 
 	void MainLoop::wakeup() noexcept {
-		if(!PostMessage(hwnd,WM_WAKE_UP,0,0)) {
-			cerr << "win32\tWindows error " << GetLastError() << " while posting wake up message" << endl;
+		if(!hwnd) {
+			Logger::String("Unexpected call to wakeup() without an active window").write(Logger::Trace,"MainLoop");
+		} else if(!PostMessage(hwnd,WM_CHECK_TIMERS,0,0)) {
+			cerr << "MainLoop\tError posting wake up message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
+#ifdef DEBUG
+		else {
+			debug("WAKE-UP");
+		}
+#endif // DEBUG
 	}
 
  	BOOL MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
@@ -105,111 +119,117 @@
 		try {
 
 			switch(uMsg) {
-			case WM_QUIT:
-				cout << "MainLoop\tWM_QUIT" << endl;
+			case WM_CREATE:
+				Logger::String("WM_CREATE").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_CLOSE:
+				Logger::String("WM_CLOSE").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_QUERYENDSESSION:
+				Logger::String("WM_QUERYENDSESSION").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_ENDSESSION:
+				Logger::String("WM_ENDSESSION").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_POWERBROADCAST:
+				Logger::String("WM_POWERBROADCAST").write(Logger::Trace,"win32");
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
+			case WM_DEVICECHANGE:
+				Logger::String("WM_DEVICECHANGE").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_DESTROY:
-				cout << "MainLoop\tWM_DESTROY" << endl;
+				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
+			case WM_START:
+				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
+				ThreadPool::getInstance();
+				controller.start();
+
+				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
+
+				break;
+
 			case WM_STOP:
-				cout << "MainLoop\tWM_STOP - Stopping services" << endl;
-				for(auto service : controller.services) {
-					cout << "services\tStopping '" << service->name() << "'" << endl;
-					try {
-						service->stop();
-					} catch(const std::exception &e) {
-						cerr << "services\tError stopping service: " << e.what() << endl;
-					} catch(...) {
-						cerr << "services\tUnexpected error stopping service" << endl;
+
+				KillTimer(hWnd, IDT_CHECK_TIMERS);
+
+				if(controller.enabled) {
+					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");
+					controller.enabled = false; // Just in case.
+					controller.stop();
+					ThreadPool::getInstance().stop();
+					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
+						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 					}
+				} else {
+					Logger::String("WM_STOP: Already disabled").write(Logger::Trace,"win32");
 				}
 				break;
 
-			case WM_WAKE_UP:
+			case WM_TIMER:
 
-				// Check if the mainloop still enabled.
-#ifdef DEBUG
-				cout <<  __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif //
-				if(!controller.enabled) {
-					cout << "MainLoop\tMain loop was disabled" << endl;
-					SendMessage(controller.hwnd,WM_STOP,0,0);
+				Logger::String("WM_TIMER ", ((unsigned int) wParam)).write(Logger::Debug,"win32");
 
-					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
-						cerr << "win32\tError " << GetLastError() << " posting WM_QUIT message" << endl;
+				if(controller.hwnd) {
+
+					if(wParam == IDT_CHECK_TIMERS) {
+
+						if(!PostMessage(controller.hwnd,WM_CHECK_TIMERS,0,0)) {
+							cerr << "MainLoop\tError posting WM_CHECK_TIMERS up message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
+						}
+
+					} else {
+
+						cerr << "win32\tInvalid or unexpected timer ID " << ((unsigned int ) wParam) << endl;
+
 					}
-					return 0;
+
+				} else {
+
+					Logger::String("Got timer ", ((unsigned int) wParam), " on invalid window").write(Logger::Debug,"win32");
+
 				}
-
-				// Update timers.
-				SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
-
 				break;
 
 			case WM_CHECK_TIMERS:
 				{
 					UINT interval = controller.timers.run();
-
-//#ifdef DEBUG
-//					cout <<  __FILE__ << "(" << __LINE__ << ") interval=" << interval << endl;
-//#endif //
-					if(interval) {
-						SetTimer(controller.hwnd,IDT_CHECK_TIMERS,interval,(TIMERPROC) NULL);
+					if(!interval) {
+						interval = 1000;
 					}
 
-				}
-
-				break;
-
-			case WM_TIMER:
-				if(wParam == IDT_CHECK_TIMERS) {
-					SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
-				}
-				break;
-
-			/*
-			case WM_EVENT_ACTION:
-				{
-#ifdef DEBUG
-					cout <<  __FILE__ << "(" << __LINE__ << ") - WM_EVENT_ACTION" << endl;
-#endif //
-					Win32::Event::Controller &controller = Win32::Event::Controller::getInstance();
-					Win32::Event * event = controller.find((HANDLE) lParam);
-
-					try {
-
-						if(event && !event->handle(wParam != 0)) {
-							controller.remove(event);
-						}
-
-					} catch(const std::exception &e) {
-						cerr << "Win32\tError '" << e.what() << "' processing event handler" << endl;
-						controller.remove(event);
-
-					} catch(...) {
-						cerr << "Win32\tUnexpected error processing event handler" << endl;
-						controller.remove(event);
-
+					if(interval != controller.uElapse) {
+						Logger::String("Reseting timer to ", interval).write(Logger::Debug,"win32");
+						SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
+					} else {
+						Logger::String("Keeping timer set to ", interval).write(Logger::Debug,"win32");
 					}
 
 				}
 				break;
-			*/
 
 			default:
+#ifdef DEBUG
+				Logger::trace() << "win32\tuMsg=" << hex << uMsg << dec << endl;
+#endif // DEBUG
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			}
 
 		} catch(const exception &e) {
 
-			cerr << "mainloop\t" << e.what() << endl;
+			cerr << "win32\t" << e.what() << endl;
 
 		} catch(...) {
 
-			cerr << "mainloop\tUnexpected error processing windows message" << endl;
+			cerr << "win32\tUnexpected error processing windows message" << endl;
 
 		}
 

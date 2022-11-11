@@ -18,9 +18,13 @@
  */
 
  #include <config.h>
- #include <udjat/tools/logger.h>
+ #include <private/logger.h>
+ #include <udjat/tools/application.h>
+ #include <private/logger.h>
+ #include <udjat/tools/quark.h>
  #include <cstring>
  #include <list>
+ #include <ostream>
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -28,6 +32,7 @@
 	#include <fcntl.h>
  #else
 	#include <unistd.h>
+	#include <syslog.h>
  #endif // _WIN32
 
  using namespace std;
@@ -40,26 +45,82 @@
 		"error"
 	};
 
-	class Logger::Controller {
-	public:
-		std::list<Buffer *> buffers;
+	void Logger::setup(const pugi::xml_node &node) noexcept {
 
-		Controller() {
+		debug("LOG SETTINGS:----------------------------------------------");
+
+		static const struct {
+			const char * name;
+			const char * message;
+		} attributes[] = {
+			{ "log-info",		"Info messages are {}"		},	// Informational message.
+			{ "log-warning",	"Warning messages are {}"	},	// Warning conditions.
+			{ "log-error",		"Error messages are {}"		},	// Error conditions.
+			{ "log-debug",		"Debug messages are {}"		},	// Debug message.
+			{ "log-trace",		"Trace messages are {}"		},	// Trace message.
 		};
 
-		~Controller();
+		Logger::Options &options{Logger::Options::getInstance()};
 
-		static Controller & getInstance();
+		for(size_t ix = 0; ix < N_ELEMENTS(attributes); ix++) {
 
-		Buffer * BufferFactory(Level id);
-	};
+			auto attribute = node.attribute(attributes[ix].name);
+			if(!attribute) {
+				continue;
+			}
 
-	std::mutex Logger::guard;
-	Logger::Level Logger::level = Logger::Error;
+			size_t option = ix % N_ELEMENTS(options.enabled);
+			bool enabled = attribute.as_bool(options.enabled[option]);
+
+			if(enabled == options.enabled[option]) {
+				debug("Keeping '",attributes[ix].name,"'");
+				continue;
+			}
+
+			options.enabled[option] = enabled;
+			const char * text = (options.enabled[option] ? "enabled" : "disabled");
+
+			write(
+				Trace,
+				"logger",
+				Message(attributes[ix].message,text).c_str(),
+				true
+			);
+
+		}
+
+	}
+
+	void Logger::console(bool enable) {
+		Options::getInstance().console = enable;
+	}
+
+	bool Logger::console() {
+		return Options::getInstance().console;
+	}
+
+	void Logger::file(bool enable) {
+		Options::getInstance().file = enable;
+	}
+
+	bool Logger::file() {
+		return Options::getInstance().file;
+	}
+
+	Logger::Options & Logger::Options::getInstance() {
+		static Options instance;
+		return instance;
+	}
 
 	Logger::Controller & Logger::Controller::getInstance() {
 		static Controller instance;
 		return instance;
+	}
+
+	Logger::Controller::Controller() {
+#ifndef _WIN32
+		::openlog(Quark(Application::Name()).c_str(), LOG_PID, LOG_DAEMON);
+#endif // _WIN32
 	}
 
 	Logger::Controller::~Controller() {
@@ -68,6 +129,9 @@
 			buffers.pop_back();
 			delete buffer;
 		}
+#ifndef _WIN32
+		::closelog();
+#endif // _WIN32
 	}
 
 	Logger::Buffer * Logger::Controller::BufferFactory(Level level) {
@@ -88,10 +152,18 @@
 		Controller::getInstance().buffers.remove(this);
 	}
 
+	void Logger::enable(Level level, bool enabled) noexcept {
+		Logger::Options::getInstance().enabled[level % N_ELEMENTS(Logger::Options::enabled)] = enabled;
+	}
+
+	bool Logger::enabled(Level level) noexcept {
+		return Logger::Options::getInstance().enabled[level % N_ELEMENTS(Logger::Options::enabled)];
+	}
+
 	/// @brief Writes characters to the associated output sequence from the put area.
 	int Logger::Writer::overflow(int c) {
 
-		lock_guard<std::mutex> lock(guard);
+		// lock_guard<std::mutex> lock(guard);
 		Buffer * buffer = Controller::getInstance().BufferFactory(id);
 
 		if(buffer->push_back(c)) {
@@ -131,12 +203,6 @@
 		return Logger::Error;
 	}
 
-	void Logger::set(const pugi::xml_node &node) {
-		auto attribute = node.attribute("name");
-		if(attribute)
-			properties.name = Quark(attribute.as_string(properties.name)).c_str();
-	}
-
 	//
 	// Log messages.
 	//
@@ -161,12 +227,108 @@
 		return append(e.what());
 	}
 
-	void Logger::redirect(bool console) {
+	void Logger::redirect(bool console, bool file) {
 
-		std::cout.rdbuf(new Writer(Logger::Info,console));
-		std::clog.rdbuf(new Writer(Logger::Warning,console));
-		std::cerr.rdbuf(new Writer(Logger::Error,console));
+		static const Level levels[] = { Info,Warning,Error };
+		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
+		Options &options{Options::getInstance()};
+		options.console = console;
+		options.file = file;
+
+		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
+
+			Writer * writer = dynamic_cast<Writer *>(streams[ix]->rdbuf());
+			if(!writer) {
+				streams[ix]->rdbuf(new Writer(levels[ix]));
+			}
+
+		}
+
+	}
+
+	void Logger::write(const Level level, const char *message) noexcept {
+
+		char domain[15];
+		memset(domain,' ',15);
+
+		const char *text = strchr(message,'\t');
+		if(text) {
+			memcpy(domain,message,std::min( (int) (text-message), (int) sizeof(domain) ));
+		} else {
+			text = message;
+		}
+		domain[14] = 0;
+
+		while(*text && isspace(*text)) {
+			text++;
+		}
+
+		write(level, domain, text);
+
+	}
+
+	void Logger::write(const Level level, const std::string &message) noexcept {
+		write(level,message.c_str());
+	}
+
+	void Logger::Writer::write(Buffer &buffer) {
+
+		// Remove spaces
+		size_t len = buffer.size();
+		while(len--) {
+
+			if(isspace(buffer[len])) {
+				buffer[len] = 0;
+			} else {
+				break;
+			}
+		}
+
+		buffer.resize(strlen(buffer.c_str()));
+
+		if(buffer.empty()) {
+			return;
+		}
+
+		Logger::write(id,buffer.c_str());
+
+		buffer.erase();
+
+	}
+
+
+	void Logger::String::write(const Logger::Level level) const {
+		Logger::write(level,c_str());
+	}
+
+	void Logger::String::write(const Logger::Level level, const char *domain) const {
+		Logger::write(level,domain,c_str());
+	}
+
+	void Logger::Message::write(const Logger::Level level) const {
+		Logger::write(level,c_str());
+	}
+
+	void Logger::Message::write(const Logger::Level level, const char *domain) const {
+		Logger::write(level,domain,c_str());
+	}
+
+	UDJAT_API std::ostream & Logger::info() {
+		return cout;
+	}
+
+	UDJAT_API std::ostream & Logger::warning() {
+		return clog;
+	}
+
+	UDJAT_API std::ostream & Logger::error() {
+		return cerr;
+	}
+
+	UDJAT_API std::ostream & Logger::trace() {
+		static std::ostream ctrace{new Writer(Logger::Trace)};
+		return ctrace;
 	}
 
  }

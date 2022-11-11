@@ -18,8 +18,12 @@
  */
 
  #include <config.h>
- #include <private/misc.h>
+ #include <private/mainloop.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/timer.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
  #include <sys/time.h>
  #include <iostream>
 
@@ -27,16 +31,32 @@
 
  namespace Udjat {
 
-	MainLoop::Timer::Timer(const void *i, unsigned long m, const function<bool()> c)
-		: id(i), interval(m), call(c) {
+	MainLoop::Timer::Timer(unsigned long milliseconds) {
+		if(!milliseconds) {
+			throw system_error(EINVAL,system_category(),"Invalid timer value");
+		}
+		reset(milliseconds);
+	}
 
-		next = this->getCurrentTime() + interval;
-
+	MainLoop::Timer::~Timer() {
+		disable();
 	}
 
 	void MainLoop::Timer::reset(unsigned long milliseconds) {
-		interval = milliseconds;
-		next = this->getCurrentTime() + interval;
+
+		auto saved = next;
+
+		if(milliseconds) {
+			this->milliseconds = milliseconds;
+			next = getCurrentTime() + milliseconds;
+		} else {
+			next = getCurrentTime();
+		}
+
+		if(next < saved) {
+			MainLoop::getInstance().wakeup();
+		}
+
 	}
 
 	unsigned long MainLoop::Timer::getCurrentTime() {
@@ -51,6 +71,94 @@
 
 	}
 
+	bool MainLoop::Timer::enabled() const {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		{
+			lock_guard<mutex> lock(mainloop.guard);
+			for(Timer *timer : mainloop.timers.enabled) {
+				if(timer == this) {
+					return true;
+				}
+			}
+
+		}
+
+		return false;
+	}
+
+	void MainLoop::Timer::enable(unsigned long milliseconds) {
+		this->milliseconds = milliseconds;
+		enable();
+	}
+
+	void MainLoop::Timer::enable() {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		next = getCurrentTime() + milliseconds;
+
+		if(!enabled()) {
+			lock_guard<mutex> lock(mainloop.guard);
+			mainloop.timers.enabled.push_back(this);
+		}
+
+		mainloop.wakeup();
+	}
+
+	void MainLoop::Timer::disable() {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		{
+			lock_guard<mutex> lock(mainloop.guard);
+			mainloop.timers.enabled.remove(this);
+		}
+
+		// No need for wakeup when a timer is removed.
+		// mainloop.wakeup();
+	}
+
+	std::string MainLoop::Timer::to_string() const {
+
+		if(!milliseconds) {
+			return "none";
+		}
+
+		if(!(milliseconds%1000L)) {
+
+			// In seconds.
+			unsigned long seconds{milliseconds/1000L};
+
+			if(seconds == 1) {
+				return "one second";
+			}
+
+			if(!(seconds%3600)) {
+				unsigned long hours{seconds/3600};
+				if(hours == 1) {
+					return "one hour";
+				}
+
+				return Logger::Message("{} hours",hours);
+			}
+
+			if(!(seconds%60)) {
+				unsigned long minutes{seconds/60};
+				if(minutes == 1) {
+					return "one minute";
+				}
+
+				return Logger::Message("{} minutes",minutes);
+			}
+
+			return Logger::Message("{} seconds",seconds);
+		}
+
+		return Logger::Message( "{} milliseconds", milliseconds);
+	}
+
 	unsigned long MainLoop::Timers::run() noexcept {
 
 		unsigned long now = MainLoop::Timer::getCurrentTime();
@@ -59,91 +167,96 @@
 		//
 		// Get expired timers.
 		//
-		std::list<std::shared_ptr<Timer>> timers;
+		std::list<Timer *> expired;
 		{
 			lock_guard<mutex> lock(guard);
-
-			active.remove_if([this,now,&next,&timers](auto timer) {
-
-				if(!timer->interval) {
-					return true;
-				}
-
+			for(Timer *timer : enabled) {
 				if(timer->next <= now) {
-					timers.push_back(timer);
+					expired.push_back(timer);
 				} else {
 					next = std::min(next,timer->next);
 				}
-
-				return false;
-			});
+			}
 
 		}
 
 		//
-		// Call expired timers
+		// Emit timer events.
 		//
-		for(auto timer : timers) {
+		for(auto timer : expired) {
 
 			try {
 
-				if(!timer->call()) {
-					timer->interval = 0;
+				if(timer->milliseconds) {
+					timer->next = now + timer->milliseconds;
+					next = std::min(next,timer->next);
+					timer->on_timer();
+				} else {
+					timer->disable();
 				}
 
 			} catch(const std::exception &e) {
 
-				Application::error() << "Timer error '" << e.what() << "'" << endl;
-				timer->interval = 0;
+				Application::error() << "Timer disabled: " << e.what() << endl;
+				timer->disable();
 
 			} catch(...) {
 
-				Application::error() << "Unexpected error on timer" << endl;
-				timer->interval = 0;
+				Application::error() << "Timer disabled: Unexpected error" << endl;
+				timer->disable();
 
-			}
-
-			if(timer->interval) {
-				timer->next = now + timer->interval;
-				next = std::min(next,timer->next);
-			} else {
-				lock_guard<mutex> lock(guard);
-				active.remove(timer);
 			}
 
 		}
 
 		return next - now;
-	}
-
-	void MainLoop::insert(const void *id, unsigned long interval, const std::function<bool()> call) {
-
-		{
-			lock_guard<mutex> lock(guard);
-			timers.active.push_back(make_shared<Timer>(id,interval,call));
-		}
-		wakeup();
 
 	}
 
-	bool MainLoop::reset(const void *id, unsigned long interval) {
 
-		{
-			lock_guard<mutex> lock(guard);
-			for(auto timer : timers.active) {
-				if(timer->id == id) {
-					timer->reset(interval);
-					return true;
+	MainLoop::Timer * MainLoop::TimerFactory(unsigned long interval, const std::function<bool()> call) {
+
+		class CallBackTimer : public Timer {
+		private:
+			const std::function<bool()> callback;
+
+		protected:
+			void on_timer() override {
+
+				bool success = true;
+
+				try {
+					success = callback();
+				} catch(const std::exception &e) {
+					Application::error() << "Timer failed: " << e.what() << endl;
+					success = false;
+				} catch(...) {
+					Application::error() << "Timer failed: Unexpected error"  << endl;
+					success = false;
+				}
+
+				if(!success) {
+					delete this;
 				}
 			}
-		}
 
-		wakeup();
+		public:
+			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
+				debug(__FUNCTION__);
+				enable();
+			}
 
-		return false;
+//#ifdef DEBUG
+//			virtual ~CallBackTimer() {
+//				debug(__FUNCTION__);
+//			}
+//#endif // DEBUG
+
+		};
+
+		return new CallBackTimer(interval,call);
 
 	}
-
 
  }
 

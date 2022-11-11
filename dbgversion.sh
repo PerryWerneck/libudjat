@@ -1,4 +1,7 @@
 #!/bin/bash
+
+cd $(dirname $(readlink -f ${0}))
+
 make Debug
 if [ "$?" != "0" ]; then
 	exit -1

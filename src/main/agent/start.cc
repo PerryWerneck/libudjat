@@ -17,15 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
 	void Abstract::Agent::start() {
 
-#ifdef DEBUG
-		info() << "Starting agent" << endl;
-#endif // DEBUG
+		debug("Starting agent '",name(),"' with value ",to_string().c_str());
 
 		// Start children
 		{
@@ -33,6 +33,10 @@
 			for(auto child : children.agents) {
 
 				try {
+
+					if(!child->current_state.active) {
+						child->current_state.active = Abstract::Agent::computeState();
+					}
 
 					child->start();
 
@@ -44,12 +48,14 @@
 			}
 		}
 
+		debug("Agent '",name(), "' started, updating state");
+
 		// Update agent state.
 		{
-			this->current_state.active = stateFromValue();
+			this->current_state.active = computeState();
 			if(!this->current_state.active) {
-				cerr << name() << "\tGot an invalid state, switching to the default one" << endl;
-				this->current_state.active = Abstract::Agent::stateFromValue();
+				warning() << "Got an invalid state, switching to the default one" << endl;
+				this->current_state.active = Abstract::Agent::computeState();
 			}
 
 			// Check for children state
@@ -95,6 +101,9 @@
 			}
 
 		}
+
+		notify(STARTED);
+		debug("Agent '",name(), "' start complete");
 
 	}
 

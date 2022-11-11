@@ -20,6 +20,8 @@
 #include <config.h>
 #include <private/module.h>
 #include <udjat/tools/string.h>
+#include <udjat/tools/logger.h>
+#include <udjat/tools/intl.h>
 #include <iostream>
 
 using namespace std;
@@ -30,10 +32,12 @@ namespace Udjat {
 
 	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),info(i) {
 
+#ifdef MINIMAL_MODULE_BUILD
 		if(i.build && i.build < MINIMAL_MODULE_BUILD) {
 			cerr << n << "\tThe module build date " << i.build << " is lower than the expected " << MINIMAL_MODULE_BUILD << endl;
 			throw system_error(EINVAL,system_category(),"Invalid module build date");
 		}
+#endif // MINIMAL_MODULE_BUILD
 
 		if(!name) {
 			throw system_error(EINVAL,system_category(),"Module name cant be null");
@@ -62,6 +66,56 @@ namespace Udjat {
 
 	void Module::for_each(std::function<void(Module &module)> method) {
 		Controller::getInstance().for_each(method);
+	}
+
+	bool Module::getProperty(const char *key, std::string &value) const noexcept {
+
+		if(!strcasecmp(key,"filename")) {
+			value = filename();
+			return true;
+		}
+
+		return info.getProperty(key,value);
+	}
+
+	std::string Module::operator[](const char *property_name) const noexcept {
+		std::string value;
+		getProperty(property_name,value);
+		return value;
+	}
+
+	void Module::exec(Udjat::Value &response, const char *name,...) const {
+		va_list args;
+		va_start(args, name);
+		try {
+			exec(response,name,args);
+		} catch(...) {
+			va_end(args);
+			throw;
+		}
+		va_end(args);
+	}
+
+	void Module::exec(const char *module_name, Udjat::Value &response, const char *name, ...) {
+		const Module *module = find(module_name);
+		if(!module) {
+			throw system_error(EINVAL,system_category(),Logger::Message(_("Module '{}' is not loaded"),module_name));
+		}
+
+		va_list args;
+		va_start(args, name);
+		try {
+			module->exec(response,name,args);
+		} catch(...) {
+			va_end(args);
+			throw;
+		}
+		va_end(args);
+
+	}
+
+	void Module::exec(Udjat::Value UDJAT_UNUSED(&response), const char *name, va_list UDJAT_UNUSED(args)) const {
+		throw system_error(ENOTSUP,system_category(),Logger::Message(_("I dont know how to execute '{}'"),name));
 	}
 
 	void Module::options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call) {

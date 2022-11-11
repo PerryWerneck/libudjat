@@ -22,6 +22,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <fcntl.h>
 
  namespace Udjat {
@@ -34,13 +35,16 @@
 
 		#pragma GCC diagnostic push
 		#pragma GCC diagnostic ignored "-Wcast-function-type"
-		bool (*deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
+		bool (*udjat_module_deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
 		#pragma GCC diagnostic pop
 
-		if(!deinit()) {
-			return deinit();
+		if(udjat_module_deinit) {
+			debug("Calling udjat_module_deinit");
+			bool rc = udjat_module_deinit();
+			debug("(udjat_module_deinit returns ",rc);
+			return rc;
 		}
-
+		debug("No udjat_module_deinit method, just returning true");
 		return true;
 	}
 

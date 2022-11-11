@@ -152,6 +152,37 @@
 		/// @brief Return 'quark' string from value.
 		const char * as_quark() const;
 
+		//
+		// 'concat' templates
+		//
+		String & concat(const char *value) {
+			append(value);
+			return *this;
+		}
+
+		String & concat(const std::string &value) {
+			append(value);
+			return *this;
+		}
+
+		String & concat(const bool value);
+
+		String & concat() {
+			return *this;
+		}
+
+		template<typename T>
+		String & concat(const T &value) {
+			append(std::to_string(value));
+			return *this;
+		}
+
+		template<typename T, typename... Targs>
+		String & concat(T &value, Targs... Fargs) {
+			concat(value);
+			return concat(Fargs...);
+		}
+
 	};
 
  }

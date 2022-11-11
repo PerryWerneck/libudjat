@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
  #include <udjat/factory.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -41,6 +42,9 @@
 					agent->parent = this;
 					agent->Object::set(node);
 					agent->setup(node);
+					if(!agent->current_state.active) {
+						agent->current_state.active = agent->computeState();
+					}
 					children.agents.push_back(agent);
 					return true;
 				}
@@ -189,14 +193,11 @@
 
 	}
 
-	void Abstract::Agent::for_each(std::function<void(std::shared_ptr<EventListener> listener)> method) {
+	void Abstract::Agent::for_each(const std::function<void(EventListener &listener)> &method) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
-
 		for(auto listener : listeners) {
-
-			method(listener);
-
+			method(*listener);
 		}
 
 	}

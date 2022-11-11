@@ -21,6 +21,8 @@
  #include <cstring>
  #include <sys/eventfd.h>
  #include <private/misc.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <unistd.h>
 
@@ -29,25 +31,15 @@
  namespace Udjat {
 
 	MainLoop::MainLoop() {
-		cout << "MainLoop\tInitializing service loop" << endl;
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
-
 	}
 
 	MainLoop::~MainLoop() {
 
-#ifdef DEBUG
-		cout << "MainLoop\tDestroying mainloop" << endl;
-#endif // DEBUG
-
 		if(!handlers.empty()) {
-
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
-			lock_guard<mutex> lock(guard);
-			handlers.clear();
-
 		} else {
 			cout << "MainLoop\tDestroying clean service loop" << endl;
 		}
@@ -58,20 +50,39 @@
 		{
 			lock_guard<mutex> lock(guard);
 			::close(efd);
+			efd = -1;
 		}
 
-#ifdef DEBUG
-		cout << "MainLoop\tMainloop was destroyed" << endl;
-#endif // DEBUG
+		debug("Mainloop was destroyed");
 
 	}
 
 	void MainLoop::wakeup() noexcept {
-		static uint64_t evNum = 0;
-		if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
-			cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop" << endl;
+		if(efd != -1) {
+			static uint64_t evNum = 0;
+			if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
+				cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop using fd " << efd << endl;
+			}
+			evNum++;
 		}
-		evNum++;
+#ifdef DEBUG
+		else {
+			cerr << "MainLoop\t" << __FILE__ << "(" << __LINE__ << "): Unexpected call with efd=" << efd << endl;
+			//abort();
+		}
+#endif // DEBUG
+	}
+
+	bool MainLoop::verify(const Handler *ptr) const noexcept {
+
+		lock_guard<mutex> lock(guard);
+		for(auto handle : handlers) {
+			if(handle == ptr) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
  }

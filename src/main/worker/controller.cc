@@ -1,13 +1,30 @@
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
 
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
-#include "private.h"
-#include <udjat/moduleinfo.h>
+ #include <config.h>
+ #include <private/worker.h>
+ #include <udjat/moduleinfo.h>
+ #include <udjat/tools/logger.h>
 
-using namespace std;
+ using namespace std;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-namespace Udjat {
+ namespace Udjat {
 
 	recursive_mutex Worker::Controller::guard;
 
@@ -25,7 +42,7 @@ namespace Udjat {
 		if(workers.size()) {
 			cerr << "workers\tStopping controller with " << workers.size() << " active worker(s)" << endl;
 		} else {
-			cout << "workers\tStopping controller" << endl;
+			cout << "workers\tStopping clean controller" << endl;
 		}
 
 	}
@@ -51,7 +68,7 @@ namespace Udjat {
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 
-		cout << "workers\tRegister '" << worker->name << "' (" << worker->module.description << ") " << endl;
+		Logger::trace() << "workers\tRegister '" << worker->name << "' (" << worker->module.description << ") " << endl;
 		workers.insert(make_pair(worker->c_str(),worker));
 
 	}
@@ -66,7 +83,7 @@ namespace Udjat {
 		if(entry->second != worker)
 			return;
 
-		cout << "workers\tUnregister '" << worker->name << "' (" << worker->module.description << ") " << endl;
+		Logger::trace() << "workers\tUnregister '" << worker->name << "' (" << worker->module.description << ") " << endl;
 		workers.erase(entry);
 
 	}
@@ -86,5 +103,15 @@ namespace Udjat {
 
 	}
 
-}
+	void Worker::Controller::for_each(const std::function<void(const Worker &worker)> &func) {
+
+		for(auto worker : workers) {
+
+			func(*worker.second);
+
+		}
+
+	}
+
+ }
 

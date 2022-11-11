@@ -28,42 +28,22 @@
 	class UDJAT_API SubProcess : public NamedObject {
 	private:
 
-		/// @brief Parse input.
-		void parse(int id);
-
-		/// @brief Read from pipe.
-		/// @return true if the pipe is still valid.
-		bool read(int id);
+		/// @brief I/O handler
+		class Handler;
 
 #ifdef _WIN32
 
+		/// @brief Subprocess watcher.
 		class Watcher;
 		friend class Watcher;
 
-		struct Pipe {
-
-			HANDLE hRead = 0;
-			HANDLE hWrite = 0;
-
-			size_t length = 0;
-			char buffer[1024];
-
-			Pipe();
-			~Pipe();
-
-			inline operator bool() const noexcept {
-				return hRead != 0;
-			}
-
-		} pipes[2];
-
 		PROCESS_INFORMATION piProcInfo;
 
-		int exitcode = -1;
+		/// @brief The process exit code.
+		DWORD exitcode = -1;
 
-		inline bool running() const noexcept {
-			return pipes[0] || pipes[1] || piProcInfo.hProcess;
-		}
+		/// @brief Initialize.
+		void init(Handler &outpipe, Handler &errpipe);
 
 #else
 
@@ -74,26 +54,13 @@
 		/// @brief Pid of the subprocess.
 		pid_t pid = -1;
 
-		struct {
-			bool failed = false;
-			int exit = 0;
-			int termsig = 0;
-		} status;
-
-		struct {
-			int fd = -1;
-			size_t length = 0;
-			char buffer[256];
-		} pipes[2];
-
 		inline bool running() const noexcept {
 			return this->pid != -1;
 		}
 
-#endif // _WIN32
+		void init(Handler &outpipe, Handler &errpipe);
 
-		/// @brief Initialize.
-		void init();
+#endif // _WIN32
 
 		/// @brief The command line to start.
 		std::string command;

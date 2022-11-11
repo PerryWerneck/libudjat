@@ -20,20 +20,30 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <errno.h>
  #include <stdexcept>
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/win32/registry.h>
+ #include <udjat/win32/exception.h>
+ #include <udjat/win32/charset.h>
  #include <cstring>
  #include <iostream>
- #include <libintl.h>
+
+ #ifdef HAVE_LIBINTL
+	#include <libintl.h>
+ #endif // HAVE_LIBINTL
+
+ #include <shlobj.h>
 
  using namespace std;
 
  namespace Udjat {
 
 	void Application::set_gettext_package(const char *gettext_package) {
+
+#ifdef HAVE_LIBINTL
 
 		Path localedir;
 		localedir += "locale";
@@ -47,6 +57,8 @@
 		cout << "locale\tInitialized using " << localedir << endl;
 #endif // DEBUG
 
+#endif // HAVE_LIBINTL
+
 	}
 
 	bool Application::init() {
@@ -54,8 +66,10 @@
 
 		if(!initialized) {
 			initialized = true;
+#ifdef GETTEXT_PACKAGE
 			set_gettext_package(GETTEXT_PACKAGE);
 			setlocale( LC_ALL, "" );
+#endif // GETTEXT_PACKAGE
 			return true;
 		}
 		return false;
@@ -133,13 +147,134 @@
 		append("\\");
 	}
 
-	Application::DataFile::DataFile(const char *name) {
-		if(name[0] == '/' || (name[0] == '.' && name[1] == '/') || name[0] == '\\' || (name[0] == '.' && name[1] == '\\') || name[1] == ':' ) {
-			assign(name);
-		} else {
-			assign(DataDir());
-			append(name);
+	/// @brief Get windows special folder.
+	/// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+	/// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c
+	static string get_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr) {
+
+		PWSTR wcp = NULL;
+		string result;
+
+		HRESULT hr = SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp);
+
+		try {
+
+			if (SUCCEEDED(hr)) {
+
+				size_t len = wcslen(wcp) * 2;
+				char buffer[len+1];
+
+				wcstombs(buffer,wcp,len);
+
+				result.assign(buffer);
+
+			} else {
+				throw runtime_error("Can't get known folder path");
+			}
+
+		} catch(...) {
+			CoTaskMemFree (wcp);
+			throw;
 		}
+
+		CoTaskMemFree (wcp);
+
+		result += '\\';
+		return result;
+
+	}
+
+	static string get_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) {
+
+		string result = get_special_folder(known_folder_guid_ptr);
+
+		result.append(Application::Name());
+		mkdir(result.c_str());
+
+		result.append("\\");
+		result.append(subdir);
+		mkdir(result.c_str());
+
+		result.append("\\");
+		return result;
+	}
+
+	Application::SystemDataDir::SystemDataDir() : File::Path() {
+
+		try {
+
+			assign(Win32::Registry().get("systemdatadir",""));
+			if(!empty()) {
+				mkdir(c_str());
+				return;
+			}
+
+		} catch(...) {
+			// Ignore errors.
+		}
+
+		assign(get_special_folder(FOLDERID_ProgramData));
+
+		append(Application::Name());
+		mkdir(c_str());
+		append("\\");
+
+	}
+
+	Application::InstallLocation::operator bool() const {
+
+		if(empty()) {
+			return false;
+		}
+
+#ifdef DEBUG
+		cout	<< "InstallLocation='" << c_str() << "'" << endl
+				<< "ApplicationPath='" << Application::Path().c_str() << "'" << endl;
+#endif
+		return strcmp(c_str(),Application::Path().c_str()) == 0;
+
+	}
+
+	Application::InstallLocation::InstallLocation() {
+
+		string path{"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"};
+		path += Application::Name();
+
+		debug("Searching for 'InstallLocation' in '",path,"'");
+
+		static const DWORD options[] = { KEY_READ|KEY_WOW64_32KEY, KEY_READ|KEY_WOW64_64KEY };
+
+		for(size_t ix = 0; ix < (sizeof(options)/sizeof(options[0])); ix++) {
+			HKEY hKey;
+			LSTATUS rc =
+				RegOpenKeyEx(
+					HKEY_LOCAL_MACHINE,
+					TEXT(path.c_str()),
+					0,
+					options[ix],
+					&hKey
+				);
+
+			if(rc == ERROR_SUCCESS) {
+				Win32::Registry registry{hKey};
+				if(registry.hasValue("InstallLocation")) {
+					assign(registry.get("InstallLocation",""));
+
+					if(at(size()-1) != '\\') {
+						append("\\");
+					}
+
+					debug("InstallLocation='",c_str(),"'");
+					return;
+
+				}
+			} else if(rc != ERROR_FILE_NOT_FOUND) {
+				cerr << "win32\t" << Win32::Exception::format(path.c_str()) << endl;
+			}
+		}
+
+		debug("No 'InstallLocation' registry key");
+
 	}
 
 	Application::LibDir::LibDir() : string(Application::Path()) {
@@ -158,7 +293,7 @@
 			// Search application install dir.
 			try {
 
-				Win32::Registry registry(HKEY_LOCAL_MACHINE,(string{"\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"}+application_name).c_str());
+				Win32::Registry registry((string{"\\Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"}+application_name).c_str());
 				assign(registry.get("InstallLocation",""));
 				if(!empty()) {
 					append(subdir);
@@ -201,8 +336,7 @@
 
 		try {
 
-			Win32::Registry registry("log");
-			assign(registry.get("path",""));
+			assign(Win32::Registry("log").get("path",""));
 			if(!empty()) {
 				mkdir(c_str());
 				return;
@@ -212,17 +346,15 @@
 			// Ignore errors.
 		}
 
-		assign(Application::Path());
-		append("\\logs\\");
-		mkdir(c_str());
+		assign(get_special_folder(FOLDERID_ProgramData,"logs"));
+
 	}
 
 	Application::CacheDir::CacheDir() {
 
 		try {
 
-			Win32::Registry registry;
-			assign(registry.get("cachedir",""));
+			assign(Win32::Registry().get("cachedir",""));
 			if(!empty()) {
 				mkdir(c_str());
 				return;
@@ -232,9 +364,7 @@
 			// Ignore errors.
 		}
 
-		assign(Application::Path());
-		append("\\cache\\");
-		mkdir(c_str());
+		assign(get_special_folder(FOLDERID_ProgramData,"cache"));
 	}
 
 	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {

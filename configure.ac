@@ -69,6 +69,9 @@ AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minima
 AC_DEFINE_UNQUOTED(MINIMAL_MODULE_BUILD,$app_cv_minbuild,["The required build for modules"])
 AC_SUBST(MINIMAL_MODULE_BUILD,$app_cv_minbuild)
 
+core_build_id=$(date +%y%m%d%H)
+AC_SUBST(CORE_BUILD_ID,$core_build_id)
+
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
@@ -77,11 +80,11 @@ CFLAGS="$CFLAGS -I$ac_pwd/src/include"
 OPTIONAL_MODULES=""
 
 case "$host" in
-	*-mingw32)
+	*-mingw32|*-pc-msys)
 		CFLAGS="$CFLAGS -pthread"
 		#  -D_WIN32_WINNT=0x0600
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
-		LIBS="-lws2_32 -lshlwapi $LIBS"		
+		LIBS="-lws2_32 -lshlwapi $LIBS -lintl -lshell32 -lole32 -luuid -liphlpapi"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
@@ -89,8 +92,8 @@ case "$host" in
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		AC_CONFIG_FILES(src/main/os/windows/resources.rc)
-		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
-		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
+dnl		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
+dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		;;
 
  	*)
@@ -169,24 +172,7 @@ AC_PATH_TOOL([MSGINIT], [msginit], [true])
 AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
 AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
 
-AC_CHECK_HEADER(libintl.h, [
-        AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])
-
-        case "$host" in
-        *-mingw32|*-pc-msys)
-            LIBS="$LIBS -lintl"
-            ;;
-
-        *)
-			AC_MSG_NOTICE([No need for libintl])
-
-        esac
-
-], [
-        AC_MSG_ERROR([Can't find required file libintl.h])
-])
-
-AC_SUBST(INTL_LIBS)
+AC_CHECK_HEADER(libintl.h, [AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])], [AC_MSG_ERROR([Can't find required file libintl.h])])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
@@ -241,7 +227,7 @@ AC_ARG_ENABLE([pic],
 ],[
 
 	case "$host" in
-		*-mingw32)
+		*-mingw32|*-pc-msys)
 			app_cv_pic="no"
 		;;
 
@@ -317,6 +303,7 @@ dnl ac_configure_args="UDJAT_CFLAGS=-I$ac_pwd/src/include UDJAT_LIBS=-L$ac_pwd/.
 
 dnl AC_CONFIG_SUBDIRS([sample])
 
+AC_CONFIG_FILES(src/include/udjat/version.h)
 AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(locale/Makefile)

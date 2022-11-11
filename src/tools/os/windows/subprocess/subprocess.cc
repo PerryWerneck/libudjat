@@ -40,6 +40,7 @@
 
  namespace Udjat {
 
+	/*
 	SubProcess::Pipe::Pipe() {
 		SECURITY_ATTRIBUTES saAttr;
 
@@ -68,6 +69,7 @@
 			CloseHandle(hWrite);
 
 	}
+	*/
 
 	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n),command(c) {
 		info() << "Running '" << command << "'" << endl;
@@ -89,42 +91,7 @@
 #endif // DEBUG
 	}
 
-	void SubProcess::init() {
-
-		STARTUPINFO siStartInfo;
-
-		ZeroMemory( &siStartInfo, sizeof(STARTUPINFO) );
-		siStartInfo.cb = sizeof(STARTUPINFO);
-		siStartInfo.hStdOutput = pipes[0].hWrite;
-		siStartInfo.hStdError = pipes[1].hWrite;
-		siStartInfo.dwFlags |= STARTF_USESTDHANDLES;
-
-		BOOL bSuccess = CreateProcess(	NULL,
-										(LPSTR) command.c_str(),	// command line
-										NULL,				// process security attributes
-										NULL,				// primary thread security attributes
-										TRUE,				// handles are inherited
-										0,					// creation flags
-										NULL,				// use parent's environment
-										NULL,				// use parent's current directory
-										&siStartInfo,		// STARTUPINFO pointer
-										&piProcInfo);		// receives PROCESS_INFORMATION
-
-		if(!bSuccess) {
-			throw Win32::Exception(Logger::Message("Cant create process '{}'",command));
-		}
-
-		// Close handles to the stdin and stdout pipes no longer needed by the child process.
-		// If they are not explicitly closed, there is no way to recognize that the child process has ended.
-		CloseHandle(pipes[0].hWrite);
-		pipes[0].hWrite = 0;
-
-		CloseHandle(pipes[1].hWrite);
-		pipes[1].hWrite = 0;
-
-
-	}
-
+	/*
 	bool SubProcess::read(int id) {
 
 		DWORD dwRead = 0;
@@ -165,6 +132,7 @@
 
 		return true;
 	}
+	*/
 
 
  }

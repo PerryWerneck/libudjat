@@ -19,38 +19,25 @@
 
  #pragma once
 
+ #include <winsock2.h>
+ #include <windows.h>
+ #include <iphlpapi.h>
+
  #include <udjat/defs.h>
+ #include <string>
+ #include <functional>
 
  namespace Udjat {
 
 	namespace Win32 {
 
-		/// @brief Windows event handler.
-		class UDJAT_API Event {
-		protected:
+		/// @brief Navigate on the addresses associated with the adapters on the local computer.
+		/// @param func Will be called on every adapter until it returns 'true'.
+		UDJAT_API void for_each(const std::function<bool(const IP_ADAPTER_ADDRESSES &address)> &func);
 
-			/// @brief The event handle.
-			HANDLE hEvent;
-
-			/// @brief Start event watcher.
-			void start();
-
-		public:
-
-			class Controller;
-			friend class controller;
-
-			constexpr Event(HANDLE handle) : hEvent(handle) {
-			}
-
-			virtual ~Event();
-
-			/// @brief Handle activity.
-			virtual bool handle(bool abandoned) = 0;
-
-
-		};
-
+		/// @brief Navigate on the local computer adapters.
+		/// @param func Will be called on every adapter until it returns 'true'.
+		UDJAT_API void for_each(const std::function<bool(const IP_ADAPTER_INFO &info)> &func);
 
 	}
 

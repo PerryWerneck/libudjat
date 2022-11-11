@@ -73,6 +73,7 @@
 		return Controller::getInstance().ConsoleHandler(id,dwCtrlType,handler);
 	}
 
+	/*
 	Event & Event::ConsoleHandler(void *id, const char *name, const std::function<bool()> handler) {
 
 		for(size_t ix = 0; ix < (sizeof(eventnames)/sizeof(eventnames[0]));ix++) {
@@ -84,5 +85,6 @@
 		throw system_error(EINVAL,system_category(),string{name} + " is not a valid signal name");
 
 	}
+	*/
 
  }

@@ -19,6 +19,7 @@
 
  #include <config.h>
 
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
@@ -38,10 +39,14 @@
  #include <memory>
  #include <sys/types.h>
  #include <sys/stat.h>
+ #include <fstream>
  #include <fcntl.h>
+ #include <iomanip>
 
 #ifdef _WIN32
-	#include <udjat/win32/string.h>
+	#include <udjat/win32/charset.h>
+	#include <udjat/win32/exception.h>
+	#include <udjat/win32/ip.h>
 #else
 	#include <unistd.h>
 #endif // _WIN32
@@ -85,8 +90,13 @@ int main(int argc, char **argv) {
 				}
 
 				bool refresh() override {
-					set( ((unsigned int) rand()) % limit);
+					debug("Updating agent '",name(),"'");
+					set( ((unsigned int) rand()) % limit );
 					return true;
+				}
+
+				void start() override {
+					Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
 				}
 
 			};
@@ -111,19 +121,20 @@ int main(int argc, char **argv) {
 			SystemService::init();
 
 			if(Module::find("httpd")) {
+
 				if(Module::find("information")) {
-					cout << "http://localhost:8989/api/1.0/info/modules.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/workers.xml" << endl;
-					cout << "http://localhost:8989/api/1.0/info/factories.xml" << endl;
+					debug("http://localhost:8989/api/1.0/info/modules.xml");
+					debug("http://localhost:8989/api/1.0/info/workers.xml");
+					debug("http://localhost:8989/api/1.0/info/factories.xml");
 				}
-				cout << "http://localhost:8989/api/1.0/alerts.xml" << endl;
+				debug("http://localhost:8989/api/1.0/alerts.xml");
 
 				{
 					auto root = Udjat::Abstract::Agent::root();
 					if(root) {
-						cout << "http://localhost:8989/api/1.0/agent.xml" << endl;
+						debug("http://localhost:8989/api/1.0/agent.html");
 						for(auto agent : *root) {
-							cout << "http://localhost:8989/api/1.0/agent/" << agent->name() << ".xml" << endl;
+							debug("http://localhost:8989/api/1.0/agent/",agent->name(),".html");
 						}
 					}
 				}
@@ -148,9 +159,9 @@ int main(int argc, char **argv) {
 			});
 			*/
 
+			cout << "test\táéióú" << endl;
 
-			/*
-			MainLoop::getInstance().insert(0,2000,[](){
+			MainLoop::getInstance().TimerFactory(2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
 #else
@@ -158,7 +169,7 @@ int main(int argc, char **argv) {
 #endif // _WIN32
 				return false;
 			});
-			*/
+			cout << "------------------------------------------" << endl;
 
 #ifdef _WIN32
 			/*
@@ -255,6 +266,80 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	return Service().run(argc,argv);
+	/*
+	{
+		cout << "----------------------------" << endl;
+		cout << "Charset=" << Win32::Charset::system() << endl;
 
+		// Udjat::File::Text text("charset.txt");
+		std::string text{"áéíóú"};
+
+		{
+			ofstream file;
+			file.open("source.txt", std::ios::binary);
+			file << text.c_str() << endl;
+		}
+
+		{
+			ofstream file;
+			file.open("to_windows.txt", std::ios::binary);
+			file << Win32::Charset::to_windows(text.c_str()).c_str() << endl;
+		}
+
+		{
+			ofstream file;
+			file.open("from_windows.txt", std::ios::binary);
+			file << Win32::Charset::from_windows(text.c_str()).c_str() << endl;
+		}
+
+		cout << "----------------------------" << endl;
+	}
+	*/
+
+/*
+#ifdef _WIN32
+	{
+		Logger::redirect(true,true);
+		Application::InstallLocation appinstall;
+		debug("AppInstall=",appinstall.c_str());
+		if(appinstall) {
+			cout << "InstalLocation='" << appinstall << "'" << endl;
+		} else {
+			cout << "No install location" << endl;
+		}
+	}
+
+#endif // _WIN32
+*/
+
+	// debug("SystemDatadir=",Application::SystemDataDir().c_str());
+	// debug("CacheDir=",Application::CacheDir().c_str());
+	// debug("LogDir=",Application::LogDir().c_str());
+	// debug("Timestamp=",TimeStamp(90000).to_verbose_string());
+
+	/*
+	{
+		Udjat::Win32::for_each([](const IP_ADAPTER_INFO &adapter) {
+
+			cout << adapter.AdapterName << " " << adapter.IpAddressList.IpAddress.String << " ";
+
+			for(UINT ix = 0; ix < adapter.AddressLength; ix++) {
+				cout << setfill('0') << setw(2) << hex << ((int) adapter.Address[ix]) << dec << " ";
+			}
+
+			cout << endl;
+			return false;
+
+		});
+		exit(-1);
+	}
+	*/
+
+	auto rc = Service().run(argc,argv);
+
+	debug("Service exits with rc=",rc);
+
+	Udjat::Module::unload();
+
+	return rc;
 }

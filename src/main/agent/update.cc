@@ -7,9 +7,10 @@
  *
  */
 
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -17,74 +18,45 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::updating(bool running) {
+	void Abstract::Agent::chk4refresh(bool forward) noexcept {
 
-		if(running) {
-
-			// Update is running.
-			update.running = time(nullptr);
-
-			if(update.timer) {
-				update.next = (update.running + update.timer);
-			} else {
-				update.next = update.running + 10;
-			}
-
-		} else {
-
-			// Update is complete.
-			update.running = 0;
-			updated(false);
-
-		}
-
-	}
-
-	bool Abstract::Agent::chk4refresh(bool forward) {
+		lock_guard<std::recursive_mutex> lock(guard);
 
 		// Return if update is running.
 		if(update.running)
-			return false;
+			return;
 
-		if(!update.on_demand) {
+		if(update.on_demand) {
 
-			// It's not on-demand, check for timer and return if still waiting
-			if(update.next && update.next > time(nullptr))
-				return false;
+			// It's on demand, run agent update.
 
-		}
+			update.running = time(0);
 
-		updating(true);
+			try {
 
-		try {
+				refresh(true);
 
-			refresh(true);
+			} catch(const std::exception &e) {
 
-		} catch(const std::exception &e) {
+				failed("Error updating agent",e);
 
-			updating(false);
-			failed("Error updating agent",e);
-			throw;
+			} catch(...) {
 
-		} catch(...) {
+				failed("Unexpected error while updating");
 
-			updating(false);
-			failed("Unexpected error updating agent");
-			throw;
+			}
+
 
 		}
 
 		if(forward) {
 			// Check children
-			lock_guard<std::recursive_mutex> lock(guard);
 			for(auto child : children.agents) {
 				child->chk4refresh(true);
 			}
 		}
 
-		updating(false);
-
-		return true;
+		update.running = 0;
 
 	}
 
@@ -110,17 +82,24 @@ namespace Udjat {
 
 		}
 
-		if(changed) {
-			notify(VALUE_CHANGED);
-		} else {
+		if(!changed) {
 			return false;
 		}
 
-		// Compute new state
 		try {
 
+			//
+			// Notify new value
+			//
+			debug("Agent '",name(),"' changed value to ",to_string().c_str());
+			notify(VALUE_CHANGED);
+
+			//
+			// Compute new state
+			//
+
 			// First get state for current agent value.
-			auto new_state = stateFromValue();
+			auto new_state = computeState();
 
 			// Does any children has worst state? if yes; use-it.
 			{
@@ -133,21 +112,17 @@ namespace Udjat {
 				}
 			}
 
-			if(activate(new_state)) {
-				notify(STATE_CHANGED);
-			}
+			set(new_state);
 
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,"Error switching state");
-			this->current_state.activation = time(0);
+			set(Udjat::StateFactory(e,"Error switching state"));
 
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
 			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
-			this->current_state.activation = time(0);
 
 		}
 

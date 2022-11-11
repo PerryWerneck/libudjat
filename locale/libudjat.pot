@@ -6,32 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-08 15:02-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  root.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-08 15:02-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  string.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-14 12:49-0300\n"
+"POT-Creation-Date: 2022-10-19 15:27-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,38 +17,127 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main/agent/state.cc:80 src/main/agent/state.cc:155
+#: src/main/agent/controller.cc:47
+msgid "Agent controller"
+msgstr ""
+
+#: src/main/alert/controller.cc:40
+msgid "Alert controller"
+msgstr ""
+
+#: src/main/agent/state.cc:80 src/main/agent/state.cc:153
 msgid "Error switching state"
+msgstr ""
+
+#: src/tools/os/windows/systemservice.cc:478
+#: src/tools/os/windows/systemservice.cc:483
+msgid "Invalid timer value"
+msgstr ""
+
+#: src/tools/timestamp.cc:61
+msgid "Less than one minute"
+msgstr ""
+
+#: src/tools/url/protocols/file.cc:35
+msgid "Local file protocol"
 msgstr ""
 
 #: src/main/agent/root.cc:147
 msgid "No abnormal state was detected"
 msgstr ""
 
-#: src/main/agent/root.cc:147
+#: src/main/agent/get.cc:55
+msgid "No reports on this path"
+msgstr ""
+
+#: src/tools/url/protocols/script.cc:36
+msgid "Subprocess/Script protocol"
+msgstr ""
+
+#: src/tools/systemservice.cc:306 src/main/agent/root.cc:147
 msgid "System is ready"
 msgstr ""
 
-#: src/main/agent/state.cc:86 src/main/agent/state.cc:161
+#: src/main/agent/state.cc:86 src/main/agent/state.cc:158
 msgid "Unexpected error switching state"
 msgstr ""
 
-#: src/tools/string/string.cc:210
+#: src/tools/timestamp.cc:88
+msgid "day"
+msgstr ""
+
+#: src/tools/timestamp.cc:88
+msgid "days"
+msgstr ""
+
+#: src/tools/string/string.cc:216
 msgid "default"
 msgstr ""
 
-#: src/tools/string/string.cc:198
+#: src/tools/string/string.cc:204
 msgid "false"
 msgstr ""
 
-#: src/tools/string/string.cc:190
+#: src/tools/timestamp.cc:90
+msgid "hour"
+msgstr ""
+
+#: src/tools/timestamp.cc:90
+msgid "hours"
+msgstr ""
+
+#: src/tools/timestamp.cc:92
+msgid "minute"
+msgstr ""
+
+#: src/tools/timestamp.cc:92
+msgid "minutes"
+msgstr ""
+
+#: src/tools/string/string.cc:53 src/tools/string/string.cc:196
 msgid "no"
 msgstr ""
 
-#: src/tools/string/string.cc:194
+#: src/main/state/state.cc:258
+msgid "off"
+msgstr ""
+
+#: src/main/state/state.cc:258
+msgid "on"
+msgstr ""
+
+#: src/tools/string/string.cc:200
 msgid "true"
 msgstr ""
 
-#: src/tools/string/string.cc:186
+#: src/tools/string/string.cc:53 src/tools/string/string.cc:192
 msgid "yes"
+msgstr ""
+
+#: src/tools/timestamp.cc:74
+msgid "{d} {D}"
+msgstr ""
+
+#: src/tools/timestamp.cc:76
+msgid "{d} {D} and {h} {H}"
+msgstr ""
+
+#: src/tools/timestamp.cc:78
+msgid "{d} {D} and {m} {M}"
+msgstr ""
+
+#: src/tools/timestamp.cc:80
+msgid "{d} {D}, {h} {H} and {m} {M}"
+msgstr ""
+
+#: src/tools/timestamp.cc:75
+msgid "{h} {H}"
+msgstr ""
+
+#: src/tools/timestamp.cc:79
+msgid "{h} {H} and {m} {M}"
+msgstr ""
+
+#: src/tools/timestamp.cc:77
+msgid "{m} {M}"
 msgstr ""

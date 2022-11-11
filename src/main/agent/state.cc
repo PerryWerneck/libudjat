@@ -8,7 +8,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/intl.h>
  #include <udjat/alert/activation.h>
@@ -26,7 +26,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(Udjat::StateFactory(e,summary));
+		set(Udjat::StateFactory(e,summary));
 
 	}
 
@@ -38,7 +38,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>("error",Udjat::critical,summary,strerror(errno)));
+		set(make_shared<Abstract::State>("error",Udjat::critical,summary,strerror(errno)));
 
 	}
 
@@ -51,7 +51,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		activate(make_shared<Abstract::State>("error",Udjat::critical,summary,body));
+		set(make_shared<Abstract::State>("error",Udjat::critical,summary,body));
 
 	}
 
@@ -60,7 +60,7 @@ namespace Udjat {
 		try {
 
 			// Compute my current state based on value.
-			auto state = stateFromValue();
+			auto state = computeState();
 
 			// Then check the children.
 			{
@@ -72,7 +72,7 @@ namespace Udjat {
 				}
 			}
 
-			activate(state);
+			set(state);
 
 		} catch(const std::exception &e) {
 
@@ -116,26 +116,32 @@ namespace Udjat {
 	}
 
 	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
+		return set(state);
+	}
+
+	bool Abstract::Agent::set(std::shared_ptr<State> state) {
 
 		// It's an empty state?.
 		if(!state) {
-			throw runtime_error("Activating an empty state");
+			throw runtime_error("Cant set an empty state");
 		}
 
 		// Return if it's the same.
-		if(state == this->current_state.active)
+		if(state.get() == this->current_state.active.get())
 			return false;
 
 		auto level = state->level();
 
-		LogFactory(level)
-			<< name()
-			<< "\tCurrent state changes from '"
-			<< this->current_state.active->to_string()
-			<< "' to '"
-			<< state->to_string()
-			<< "' (" << level << ")"
-			<< endl;
+		if(this->current_state.active->level() != level) {
+			LogFactory(level)
+				<< name()
+				<< "\tCurrent state changes from '"
+				<< this->current_state.active->to_string()
+				<< "' to '"
+				<< state->to_string()
+				<< "' (" << level << ")"
+				<< endl;
+		}
 
 		Udjat::Level saved_level = this->level();
 
@@ -143,27 +149,33 @@ namespace Udjat {
 
 			this->current_state.active->deactivate(*this);
 			this->current_state.active = state;
-			this->current_state.activation = time(0);
 			this->current_state.active->activate(*this);
-
-			if(parent)
-				parent->onChildStateChange();
 
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
 			this->current_state.active = Udjat::StateFactory(e,_("Error switching state"));
-			this->current_state.activation = time(0);
 
 		} catch(...) {
 
 			error() << "Unexpected error switching state" << endl;
 			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
-			this->current_state.activation = time(0);
 
 		}
 
-		return (saved_level != this->level());
+		this->current_state.activation = time(0);
+		notify(STATE_CHANGED);
+
+		if(saved_level != this->level()) {
+			notify(LEVEL_CHANGED);
+		}
+
+		if(parent) {
+			parent->onChildStateChange();
+		}
+
+		return true;
+
 	}
 
 }

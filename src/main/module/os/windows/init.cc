@@ -26,31 +26,67 @@
 
  namespace Udjat {
 
+	void Module::Controller::init(const std::string &filename, const pugi::xml_node &node) {
+
+		cout << "module\tLoading '" << filename << "'" << endl;
+
+		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
+		HMODULE handle = LoadLibrary(filename.c_str());
+
+		if(!handle) {
+			throw Win32::Exception();
+		}
+
+		try {
+
+			auto module = init(handle,node);
+			if(!module) {
+				throw runtime_error("Module initialization has failed");
+			}
+
+		} catch(...) {
+
+			CloseHandle(handle);
+			throw;
+		}
+
+
+	}
+
 	Module * Module::Controller::init(HMODULE handle, const pugi::xml_node &node) {
 
+		Module * module = nullptr;
+
+		//
+		// First try from xml
+		//
 		Module * (*init_from_xml)(const pugi::xml_node &node)
 				= (Module * (*)(const pugi::xml_node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
 
 		if(init_from_xml) {
 
-			Module * module = init_from_xml(node);
+			module = init_from_xml(node);
 			if(!module) {
-				throw runtime_error("Can't initialize module");
+				throw runtime_error("Can't initialize module from XML");
 			}
 
 			module->handle = handle;
-			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
-
 			if(module->info.gettext_package && *module->info.gettext_package) {
 				Application::set_gettext_package(module->info.gettext_package);
 			}
 
-			return module;
+		} else {
+
+			//
+			// Not found, try non xml version.
+			//
+			module = init(handle);
 
 		}
 
-		return init(handle);
+		module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
 
+		return module;
 	}
 
 	Module * Module::Controller::init(HMODULE handle) {
@@ -62,6 +98,7 @@
 			throw runtime_error("Can't initialize module");
 		}
 
+		module->handle = handle;
 		if(module->info.gettext_package && *module->info.gettext_package) {
 			Application::set_gettext_package(module->info.gettext_package);
 		}

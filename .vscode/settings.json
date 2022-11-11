@@ -1,0 +1,20 @@
+{
+	"makefile.extensionOutputFolder": "./.vscode",
+	"files.associations": {
+		"*.tcc": "cpp",
+		"compare": "cpp",
+		"exception": "cpp",
+		"algorithm": "cpp",
+		"fstream": "cpp",
+		"functional": "cpp",
+		"initializer_list": "cpp",
+		"istream": "cpp",
+		"mutex": "cpp",
+		"ostream": "cpp",
+		"numeric": "cpp",
+		"stop_token": "cpp",
+		"streambuf": "cpp",
+		"type_traits": "cpp",
+		"utility": "cpp"
+	}
+}

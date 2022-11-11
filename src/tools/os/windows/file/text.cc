@@ -64,11 +64,13 @@
 		File::Path::save(contents);
 	}
 
-	void File::Text::set(const char *contents) {
+	File::Text & File::Text::set(const char *contents) {
 
 		unload();
 		this->contents = strdup(contents);
 		this->length = strlen(this->contents);
+
+		return *this;
 
 	}
 

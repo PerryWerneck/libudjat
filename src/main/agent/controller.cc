@@ -27,7 +27,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/mainloop.h>
@@ -35,6 +35,8 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
  #include <unistd.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -42,26 +44,16 @@
 
 namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo{ "Agent controller" };
+	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
 	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
 
-		cout << "agent\tStarting controller" << endl;
-
-		MainLoop::getInstance().insert(this,1000,[this]() {
-			if(isActive()) {
-				onTimer(time(0));
-			} else {
-				cout << "agent\tAgent controller is not active" << endl;
-			}
-			return true;
-		});
+		cout << "agent\tInitializing controller" << endl;
 
 	}
 
 	Abstract::Agent::Controller::~Controller() {
-		cout << "agent\tStopping controller" << endl;
-		MainLoop::getInstance().remove(this);
+		cout << "agent\tDeinitializing controller" << endl;
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
@@ -172,10 +164,16 @@ namespace Udjat {
 
 		if(root) {
 
-			cout << "agent\tStarting controller" << endl;
-
 			try {
 				root->start();
+
+				// Setup next update on all children.
+				root->for_each([](std::shared_ptr<Agent> agent) {
+					if(agent->update.timer && !agent->update.next) {
+						agent->update.next = time(0) + agent->update.timer;
+					}
+				});
+
 			} catch(const std::exception &e) {
 				cerr << root->name() << "\tError '" << e.what() << "' starting root agent" << endl;
 				return;
@@ -187,9 +185,20 @@ namespace Udjat {
 
 		}
 
+		cout << "agent\tStarting controller" << endl;
+
+
+
+		MainLoop::Timer::reset(1000);
+		MainLoop::Timer::enable();
+
 	}
 
 	void Abstract::Agent::Controller::stop() noexcept {
+
+		cout << "agent\tStopping controller" << endl;
+
+		MainLoop::Timer::disable();
 
 		if(root) {
 
@@ -203,90 +212,100 @@ namespace Udjat {
 
 			root.reset();
 
-#ifdef DEBUG
-			cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
+			debug("Waiting for tasks (agent)");
 			ThreadPool::getInstance().wait();
-#ifdef DEBUG
-			cout << "agent\t*** Wait for tasks complete" << endl;
-#endif // DEBUG
+			debug("Wait for tasks complete");
 
 		}
 
 	}
 
-	void Abstract::Agent::Controller::onTimer(time_t now) noexcept {
+	void Abstract::Agent::Controller::on_timer() {
 
 		if(!root) {
+			debug("No root agent!!");
 			return;
 		}
 
-		if(root->update.running) {
-			root->error() << "Updating since " << TimeStamp(root->update.running) << endl;
-			return;
+		debug("Checking for updates");
+
+		{
+			lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
+			if(updating) {
+				cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
+				return;
+			}
+			updating = time(0);
 		}
 
-		root->updating(true);
+		//
+		// Get list of agents to update.
+		//
+		ThreadPool::getInstance().push("agent-updates",[this]() {
 
-//#ifdef DEBUG
-//		cout << "Checking for updates" << endl;
-//#endif // DEBUG
+			time_t now{time(0)};
+			time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
 
-		// Check for updates on another thread; we'll change the
-		// timer and it has a mutex lock while running the callback.
-		ThreadPool::getInstance().push("agent-updates",[this,now]() {
+			std::vector<std::shared_ptr<Agent>> updatelist;
 
-			time_t next = time(nullptr) + Config::Value<time_t>("agent","max-update-time",600);
+			root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
 
-			root->for_each([now,this,&next](std::shared_ptr<Agent> agent) {
-
-				// Return if no update timer.
-				if(!agent->update.next)
-					return;
-
-#ifdef DEBUG
-				cout << "TIMER=" << agent->update.timer << " Next=" << TimeStamp(agent->update.next) << endl;
-#endif // DEBUG
-
-				// If the update is in the future, adjust delay and return.
-				if(agent->update.next > now) {
-					next = std::min(next,agent->update.next);
+				if(!agent->update.next) {
 					return;
 				}
 
-				if(agent->update.running) {
+				// Do the agent requires an update?
+				if(agent->update.next <= now) {
 
-					clog << agent->name() << "\tUpdate is active since " << TimeStamp(agent->update.running) << endl;
+					lock_guard<std::recursive_mutex> lock(agent->guard);
+					if(agent->update.running) {
 
-					if(agent->update.timer) {
-						agent->update.next = now + agent->update.timer;
-					} else {
+						//
+						// Agent still updating.
+						//
+						agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
 						agent->update.next = now + 60;
+						next = std::min(next,agent->update.next);
+
+					} else {
+
+						//
+						// Queue agent update.
+						//
+
+						debug("Agent='",agent->name(),"' is expired by ", (now - agent->update.next)," seconds, adding to the update list");
+						agent->update.running = time(0);
+						updatelist.push_back(agent);
+
+						if(agent->update.timer) {
+							agent->update.next = now + agent->update.timer;
+							next = std::min(next,agent->update.next);
+						} else {
+							agent->update.next = 0;
+						}
+
 					}
 
-					return;
-				}
-
-				// Agent requires update.
-				agent->updating(true);
-
-				if(agent->update.timer) {
-
-					agent->update.next = time(0) + agent->update.timer;
-#ifdef DEBUG
-					agent->info() << "**** Next update scheduled to " << TimeStamp(agent->update.next) << " (" << agent->update.timer << " seconds)" << endl;
-#endif // DEBUG
-					next = std::min(next,agent->update.next);
-
 				} else {
-
-					// No timer and updated was triggered, reset next update time.
-					agent->update.next = 0;
-
+					debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
+					next = std::min(next,agent->update.next);
 				}
+			});
 
-				// Enqueue agent update.
-				agent->push([this,agent]() {
+			//
+			// Enqueue agent updates
+			//
+			debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
+
+			if(now < next) {
+				MainLoop::Timer::reset((next-now) * 1000);
+			} else {
+				MainLoop::Timer::reset(1000);
+			}
+
+			for(auto agent : updatelist) {
+
+				ThreadPool::getInstance().push(agent->name(),[agent]{
 
 					try {
 
@@ -302,15 +321,22 @@ namespace Udjat {
 
 					}
 
-					agent->updating(false);
+					{
+						lock_guard<std::recursive_mutex> lock(agent->guard);
+						agent->update.running = 0;
+					}
 
 				});
 
-			});
+			}
 
-			root->updating(false);
+			{
+				lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
+				updating = 0;
+			}
 
 		});
+
 
 	}
 

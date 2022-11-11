@@ -1,6 +1,11 @@
-workflow:
+rebuild_develop:
   steps:
-    - branch_package:
-        source_project: home:PerryWerneck:udjat
-        source_package: libudjat
+    - trigger_services:
+        project: home:PerryWerneck:udjat
+        package: libudjat
+  filters:
+    event: push
+    branches:
+      only:
+        - develop
 

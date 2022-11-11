@@ -24,7 +24,7 @@
 /** @mainpage libudjat - UDJAT Core Library
  *
  */
- 
+
 /** Main header file for the UDJAT API
  *
  * @file       udjat.h
@@ -32,4 +32,10 @@
  * @attention  Please submit patches to https://github.com/PerryWerneck/libudjat
  * @ingroup    Core
  */
- 
+
+ namespace Udjat {
+
+	/// @brief Get libudjat revision
+	UDJAT_API const char * revision();
+
+ }

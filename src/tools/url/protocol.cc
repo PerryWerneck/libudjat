@@ -22,6 +22,7 @@
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -74,6 +75,10 @@
 
 	std::ostream & Protocol::error() const {
 		return cerr << name << "\t";
+	}
+
+	std::ostream & Protocol::trace() const {
+		return Logger::trace() << name << "\t";
 	}
 
 	const Protocol * Protocol::find(const URL &url) {

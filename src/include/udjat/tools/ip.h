@@ -17,35 +17,24 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
+ #ifdef _WIN32
+	#include <winsock2.h>
+	#include <windows.h>
+ #else
+	#include <arpa/inet.h>
+ #endif // _WIN32
 
  #include <udjat/defs.h>
  #include <string>
- #include <iconv.h>
-
- namespace Udjat {
-
-	namespace Win32 {
-
-		// UDJAT_API std::string getInstallPath();
-		// UDJAT_API std::string buildFileName(const char *path, ...) UDJAT_GNUC_NULL_TERMINATED;
-
-		/// @brief String in Windows local charset.
-		class UDJAT_API String : public std::string {
-		private:
-			iconv_t	local;
-
-		public:
-			String();
-			String(const char *winstr);
-			~String();
-
-			/// @brief Assign CP1256 string, will be converted to UTF-8.
-			String & assign(const char *winstr);
-
-		};
 
 
+ namespace std {
+
+	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns = false);
+
+	inline ostream & operator<< (ostream& os, const sockaddr_storage &addr) {
+		return os << to_string(addr);
 	}
 
  }
+

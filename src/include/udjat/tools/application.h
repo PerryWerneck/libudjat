@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/xml.h>
  #include <string>
  #include <ostream>
 
@@ -55,6 +56,9 @@
 		/// @brief Write to the 'error' stream.
 		static std::ostream & error();
 
+		/// @brief Write to the 'trace' stream.
+		static std::ostream & trace();
+
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {
 		public:
@@ -76,12 +80,20 @@
 			Path();
 		};
 
-		class UDJAT_API LogDir : public std::string {
+		class UDJAT_API InstallLocation : public std::string {
+		public:
+			InstallLocation();
+
+			operator bool() const;
+
+		};
+#endif // _WIN32
+
+		class UDJAT_API LogDir : public File::Path {
 		public:
 			LogDir();
 
 		};
-#endif // _WIN32
 
 		/// @brief Application data dir.
 		class UDJAT_API DataDir : public File::Path {
@@ -90,10 +102,27 @@
 			DataDir(const char *subdir);
 		};
 
-		/// @brief File from the application datadir.
+		/// @brief System datadir
+		class UDJAT_API SystemDataDir : public File::Path {
+		public:
+			SystemDataDir();
+		};
+
+		/// @brief File from the application or system datadir.
 		class UDJAT_API DataFile : public std::string {
 		public:
-			DataFile(const char *name);
+
+			/// @brief Create a full path to datafile based on XML definition.
+			/// @param node XML node for file definition.
+			/// @param attrname Attribute for filename
+			/// @param system When true use the systemdatadir for file path if necessary.
+			DataFile(const XML::Node &node, const char *attrname = "path", bool system = true);
+
+			/// @brief Create a full path to datafile.
+			/// @param name	The file name.
+			/// @param system When true use the systemdatadir for file path if necessary.
+			DataFile(const char *name, bool system = false);
+
 		};
 
 		class UDJAT_API LibDir : public std::string {

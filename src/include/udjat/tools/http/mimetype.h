@@ -44,6 +44,11 @@
 		pem,                    ///> @brief application/x-pem-file
 		icon,                   ///> @brief image/x-icon
 		yaml,					///> @brief text/yaml
+		gz,						///> @brief application/gzip
+		rpm,					///> @brief application/x-rpm
+		odt,					///> @brief application/vnd.oasis.opendocument.text
+		ods,					///> @brief application/vnd.oasis.opendocument.spreadsheet
+		sh,						///> @brief application/x-sh
 
 	};
 
@@ -51,6 +56,11 @@
 	/// @param str Mime type string.
 	/// @param log_def enable log message when using default value.
 	UDJAT_API MimeType MimeTypeFactory(const char *str, bool log_def = true) noexcept;
+
+	/// @brief Create mimetype from string with fallback.
+	/// @param str Mime type string.
+	/// @param def Default value if not found.
+	UDJAT_API MimeType MimeTypeFactory(const char *str, const MimeType def) noexcept;
 
  }
 

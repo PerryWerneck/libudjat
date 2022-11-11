@@ -25,8 +25,13 @@
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/quark.h>
  #include <iostream>
  #include <cstdarg>
+
+#ifdef HAVE_VMDETECT
+ #include <vmdetect/virtualmachine.h>
+#endif // HAVE_VMDETECT
 
  using namespace std;
  using namespace pugi;
@@ -105,6 +110,34 @@
 	bool is_allowed(const pugi::xml_node &node) {
 
 		const char *str;
+
+#ifdef _WIN32
+
+		if(!node.attribute("allowed-in-windows").as_bool(true)) {
+			return false;
+		}
+
+#else
+
+		if(!node.attribute("allowed-in-linux").as_bool(true)) {
+			return false;
+		}
+
+#endif // _WIN32
+
+#ifdef HAVE_VMDETECT
+
+		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine()) ) {
+			return false;
+		}
+
+#else
+
+		if(!node.attribute("allowed-in-virtual-machine").as_bool(true)) {
+			cerr << PACKAGE_NAME "\tLibrary built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute" << endl;
+		}
+
+#endif // HAVE_VMDETECT
 
 		// Test if the attribute requirement is valid.
 		str = node.attribute("valid-if").as_string();

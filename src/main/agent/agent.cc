@@ -25,15 +25,15 @@
  *
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/event.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
-
-//---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
@@ -49,13 +49,13 @@ namespace Udjat {
 			Object::properties.summary = summary;
 		}
 
-		current_state.active = Agent::stateFromValue();
+		current_state.active = Agent::computeState();
 
 		try {
 
 			update.timer		= Config::get("agent-defaults","update-timer",update.timer);
 			update.on_demand	= Config::get("agent-defaults","update-on-demand",update.timer == 0);
-			update.next			= time(nullptr) + Config::get("agent-defaults","delay-on-startup",update.timer);
+			update.next			= time(nullptr) + Config::get("agent-defaults","delay-on-startup",update.timer ? 1 : 0);
 			update.failed 		= Config::get("agent-defaults","delay-when-failed",update.failed);
 
 		} catch(const std::exception &e) {
@@ -67,7 +67,8 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const pugi::xml_node &node) : Abstract::Agent(Quark(node,"name","unnamed",false).c_str()) {
+	Abstract::Agent::Agent(const pugi::xml_node &node) : Object(node) {
+		setup_properties(node);
 	}
 
 	void Abstract::Agent::notify(const Event event) {
@@ -75,13 +76,13 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto listener : listeners) {
 
-			if(*listener == event) {
+			if((listener->event & event) != 0) {
 
-				push([this,listener]() {
+				push([this,event,listener]() {
 
 					try {
 
-						listener->trigger(*this);
+						listener->trigger(event, *this);
 
 					} catch(const std::exception &e) {
 
@@ -94,15 +95,14 @@ namespace Udjat {
 					}
 
 				});
+
 			}
 		}
 	}
 
 	Abstract::Agent::~Agent() {
 
-#ifdef DEBUG
-		info() << "Cleaning up" << endl;
-#endif // DEBUG
+		debug("Cleaning up agent ",name());
 
 		// Remove all associated events.
 		Udjat::Event::remove(this);
@@ -111,26 +111,32 @@ namespace Udjat {
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(auto child : agents()) {
 			child->parent = nullptr;
-#ifdef DEBUG
-			child->info() << "Releasing agent with " << child.use_count() << " references" << endl;
-#endif // DEBUG
+			debug("Releasing agent ",name()," with ",child.use_count()," references");
 		}
 
 	}
 
 	void Abstract::Agent::stop() {
 
+		debug("Stopping agent '",name(),"'");
+
 		lock_guard<std::recursive_mutex> lock(guard);
 
+		// Stop children
 		for(auto childptr = children.agents.rbegin(); childptr != children.agents.rend(); childptr++) {
 
 			auto agent = *childptr;
 			try {
 
 				if(agent->update.running) {
+
 					agent->warning() << "Updating since " << TimeStamp(agent->update.running) << ", waiting" << endl;
-					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",10};
-					for(size_t ix = 0; ix < Config::Value<size_t>("agent-controller","max-wait-on-stop",100); ix++) {
+					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",100};
+					Config::Value<size_t> max_wait("agent-controller","max-wait-on-stop",1000);
+
+					ThreadPool::getInstance().wait();
+
+					for(size_t ix = 0; agent->update.running && ix < max_wait; ix++) {
 #ifdef _WIN32
 						Sleep(delay);
 #else
@@ -156,9 +162,7 @@ namespace Udjat {
 
 		}
 
-#ifdef DEBUG
-		info() << "Stopping agent" << endl;
-#endif // DEBUG
+		notify(STOPPED);
 
 	}
 
@@ -169,7 +173,7 @@ namespace Udjat {
 		time_t now = time(nullptr);
 
 		// Gets the minor time for the next update.
-		time_t next = now + Config::Value<time_t>("agent","max-update-time",600);
+		time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
 
 		// Gets the major time from the last update.
 		time_t updated = 0;
@@ -218,26 +222,34 @@ namespace Udjat {
 		push_back(alert);
 	}
 
-	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
+	void Abstract::Agent::push_back(EventListener *listener) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.push_back(listener);
+	}
+
+	void Abstract::Agent::remove(EventListener *listener) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.remove(listener);
+	}
+
+
+	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
+
+		// Forward to legacy.
+		#pragma GCC diagnostic push
+		#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+		return stateFromValue();
+		#pragma GCC diagnostic pop
+
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;
 		if(!instance) {
-			cout << "states\tCreating default state" << endl;
+			debug("Creating agent default state");
 			instance = make_shared<Abstract::State>("");
 		}
-
 		return instance;
-	}
-
-	void Abstract::Agent::requestRefresh(time_t seconds) {
-		update.next	= time(nullptr) + seconds;
-#ifdef DEBUG
-		info() << "Next update set to " << TimeStamp(update.next) << endl;
-#endif // DEBUG
 	}
 
 

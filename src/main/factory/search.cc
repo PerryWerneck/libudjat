@@ -34,10 +34,6 @@
 			typeattribute = Object::getAttribute(node,(string{node.name()} + "-defaults").c_str(),"type","default");
 		}
 
-#ifdef DEBUG
-		cout << "factories\tSearching for '" << typeattribute << "'" << endl;
-#endif // DEBUG
-
 		if(strcasecmp(typeattribute,"default")) {
 			//
 			// It's NOT the default factory, search by name.

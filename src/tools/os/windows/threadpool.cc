@@ -17,8 +17,14 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ // Disable debug messages for this source.
+ #ifdef DEBUG
+	#undef DEBUG
+ #endif // DEBUG
+
  #include <config.h>
  #include <udjat/defs.h>
+ #include <private/mainloop.h>
  #include <private/misc.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
@@ -28,39 +34,16 @@
 
  using namespace std;
 
- // Disable debug messages for this module.
- #ifdef DEBUG
-	#undef DEBUG
- #endif // DEBUG
-
 /*---[ Implement ]----------------------------------------------------------------------------------*/
 
  namespace Udjat {
 
-	static const ModuleInfo ThreadPoolInfo {"ThreadPool", "Thread Pool for WIN32"};
-
-	ThreadPool::Controller::Controller() : Service(ThreadPoolInfo) {
-		start();
-	}
-
-	void ThreadPool::Controller::stop() {
-		cout << "ThreadPool\tStopping background threads" << endl;
-		std::lock_guard<std::mutex> lock(guard);
-		for(auto pool : pools) {
-			pool->stop();
-		}
-	}
-
-	ThreadPool::Controller & ThreadPool::Controller::getInstance() {
-		static Controller instance;
-		return instance;
-	}
-
 	ThreadPool & ThreadPool::getInstance() {
+
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
-				Logger(name).info("Creating standard pool with {} threads",limits.threads);
+				cout << name << "\tCreating standard pool with " << limits.threads << " threads" << endl;
 			}
 		};
 
@@ -70,13 +53,7 @@
 
 	ThreadPool::ThreadPool(const char *n) : name(n)  {
 
-		Controller::getInstance().push_back(this);
-
 		threads.active = threads.waiting = 0;
-
-#ifdef DEBUG
-		limits.threads = 1;
-#endif // DEBUG
 
 		try {
 
@@ -101,11 +78,9 @@
 
 		}
 
-		Controller::getInstance().push_back(this);
 	}
 
 	ThreadPool::~ThreadPool() {
-		Controller::getInstance().remove(this);
 		stop();
 		CloseHandle(hEvent);
 	}
@@ -113,7 +88,7 @@
 	void ThreadPool::wakeup() noexcept {
 
 #ifdef DEBUG
-		cerr << name << "\tWake-Up" << endl;
+		cerr << name << "\tWake-Up on event " << hex << hEvent << dec << endl;
 #endif // DEBUG
 
 		if (!SetEvent(hEvent)) {
@@ -125,8 +100,6 @@
 
 	void ThreadPool::stop() {
 
-		Logger logger(name);
-
 		wait();
 
 		// Wait for tasks
@@ -134,16 +107,11 @@
 
 		if(getActiveThreads()) {
 
-			logger.info("Waiting for {} threads on pool ({} waiting)",getActiveThreads(),getWaitingThreads());
+			debug("Waiting for ",getActiveThreads()," active threads on pool (",getWaitingThreads()," waiting)");
 
 			for(size_t f=0; f < 1000 && getActiveThreads() > 0; f++) {
 
-#ifdef DEBUG
-				cout	<< " threads.active=" << threads.active
-						<< " threads.waiting=" << threads.waiting
-						<< " limits.threads=" << limits.threads
-						<< endl;
-#endif // DEBUG
+				debug(" threads.active=",threads.active," threads.waiting=",threads.waiting," limits.threads=",limits.threads);
 
 				if(getWaitingThreads()) {
 					wakeup();
@@ -152,7 +120,14 @@
 				Sleep(100);
 			}
 
-			logger.error("Stopping with {} threads on pool",getActiveThreads());
+			{
+				size_t count = getActiveThreads();
+				if(count) {
+					cerr << name << "\tStopping with " << count << " threads on pool" << endl;
+				} else {
+					cout << name << "\tStopping with no pending threads" << endl;
+				}
+			}
 
 		}
 
@@ -163,37 +138,41 @@
 		return tasks.size();
 	}
 
-	void ThreadPool::wait() {
+	bool ThreadPool::wait() {
+		return wait(Config::get(name,"wait-timeout",5));
+	}
 
-		Logger logger(name);
+	bool ThreadPool::wait(time_t seconds) {
 
 		if(size()) {
 
-			logger.warning("Waiting for {} tasks on pool",tasks.size());
+			Logger::String("Waiting for ",tasks.size()," tasks on pool").write(Logger::Trace,name);
 
-			for(size_t f=0; f < 100 && size() > 0; f++) {
+			seconds *= (time_t) 100;
+			for(time_t f=0; f < seconds && size() > 0; f++) {
 				Sleep(10);
 			}
 
 			if(size()) {
-				logger.error("Timeout waiting for {} tasks on pool",tasks.size());
+				Logger::String("Timeout waiting for ",tasks.size()," tasks on pool").write(Logger::Trace,name);
 			}
 
 		}
 
-	}
-
-	size_t ThreadPool::push(std::function<void()> callback) {
-		return push(this->name,callback);
+		return size() != 0;
 	}
 
 	size_t ThreadPool::push(const char *name, std::function<void()> callback) {
 
+		if(!limits.threads) {
+			cerr << "ThreadPoool\tPool is disabled, running task '" << name << "' in foreground" << endl;
+			callback();
+			return tasks.size();
+		}
+
 		std::lock_guard<std::mutex> lock(this->guard);
 
-#ifdef DEBUG
-		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
-#endif // DEBUG
+		debug("Inserting task size=",tasks.size()," Limit=",limits.tasks);
 
 		if(limits.tasks && tasks.size() >= limits.tasks) {
 			throw std::runtime_error(
@@ -208,7 +187,7 @@
 		if(threads.waiting) {
 			wakeup();
 		} else if(threads.active < limits.threads) {
-			std::thread(worker, this).detach();
+			thread{worker, this}.detach();
 		}
 
 		return tasks.size();
@@ -235,7 +214,7 @@
 		pool->threads.active++;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->getActiveThreads() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop starts - ActiveThreads=" << pool->getActiveThreads() << " maxthreads=" << pool->limits.threads << endl;
 #endif // DEBUG
 
 		bool enabled = true;
@@ -249,23 +228,17 @@
 
 					try {
 
-#ifdef DEBUG
-						cout << pool->name << "\tRunning worker '" << task.name << "'" << endl;
-#endif // DEBUG
-
+						debug("Calling '",task.name,"'");
 						task.callback();
-
-#ifdef DEBUG
-						cout << pool->name << "\tWorker '" << task.name << "' is complete" << endl;
-#endif // DEBUG
+						debug("Returned from '",task.name,"'");
 
 					} catch(const std::exception &e) {
 
-						cerr << task.name << "\t" << e.what() << endl;
+						cerr << "ThreadPool\tTask '" << task.name << "' has failed: " << e.what() << endl;
 
 					} catch(...) {
 
-						cerr << task.name << "\tUnexpected error running delayed task" << endl;
+						cerr << "ThreadPool\tUnexpected error running task '" << task.name << "'" << endl;
 
 					}
 
@@ -285,6 +258,7 @@
 				}
 #ifdef DEBUG
 				cout	<< pool->name << "\t Will wait for object "
+						<< "handle=" << hex << pool->hEvent << dec
 						<< " threads.active=" << pool->threads.active
 						<< " threads.waiting=" << pool->threads.waiting
 						<< " limits.threads=" << pool->limits.threads
@@ -293,7 +267,7 @@
 				DWORD dwWaitResult = WaitForSingleObject(pool->hEvent,(pool->limits.idle * 1000));
 
 #ifdef DEBUG
-				cout	<< pool->name << "\t Vait for object returned with rc " << dwWaitResult
+				cout	<< pool->name << "\tWait for object returned with rc " << dwWaitResult
 						<< " threads.active=" << pool->threads.active
 						<< " threads.waiting=" << pool->threads.waiting
 						<< " limits.threads=" << pool->limits.threads

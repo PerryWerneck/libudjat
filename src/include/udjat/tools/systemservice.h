@@ -21,14 +21,16 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/timer.h>
  #include <memory>
  #include <list>
 
  namespace Udjat {
 
 	/// @brief Abstract class for system services.
-	class UDJAT_API SystemService : public Udjat::Application {
+	class UDJAT_API SystemService : public Udjat::Application, private Abstract::Agent::EventListener {
 	private:
 		/// @brief Service instance.
 		static SystemService *instance;
@@ -42,13 +44,24 @@
 		/// @brief Set service state message.
 		void notify(const char *state) noexcept;
 
-		/// @brief Set service state message to the root agent.
+		/// @brief Set service state message from the root agent.
 		void notify() noexcept;
+
+		void trigger(const Abstract::Agent::Event event, Abstract::Agent &agent) override;
 
 #ifdef _WIN32
 		void registry(const char *name, const char *value);
 #endif // _WIN32
+
 	protected:
+
+		/// @brief Service mode.
+		enum Mode : uint8_t {
+			SERVICE_MODE_DEFAULT,		///< @brief Standard service mode based on OS.
+			SERVICE_MODE_NONE,			///< @brief Doesn't run, just quit after parameter parsing.
+			SERVICE_MODE_FOREGROUND,	///< @brief Run in foreground as an application.
+			SERVICE_MODE_DAEMON			///< @brief Run as daemon (Linux only).
+		} mode = SERVICE_MODE_DEFAULT;
 
 		/// @brief Reconfigure application from XML files.
 		/// @param force Do a reconfiguration even if the file hasn't change.
@@ -78,10 +91,13 @@
 #ifdef _WIN32
 
 		/// @brief Install win32 service.
+		/// @return 0 when success.
 		virtual int install();
+
 		virtual int install(const char *display_name);
 
 		/// @brief Uninstall win32 service.
+		/// @return 0 when success.
 		virtual int uninstall();
 
 #endif // _WIN32
@@ -111,7 +127,7 @@
 		virtual void stop();
 
 		/// @brief Service main loop
-		virtual int run();
+		virtual int run() noexcept;
 
 		/// @brief Parse command line arguments and run service.
 		virtual int run(int argc, char **argv);

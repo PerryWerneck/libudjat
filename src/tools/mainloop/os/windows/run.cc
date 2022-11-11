@@ -29,51 +29,46 @@
  #include <config.h>
  #include "private.h"
  #include <private/misc.h>
+ #include <private/mainloop.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 
- void Udjat::MainLoop::run() {
-
-	// Start services
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
-
-	start();
-
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
-
-	enabled = true;
-
-	MSG msg;
-	memset(&msg,0,sizeof(msg));
+ int Udjat::MainLoop::run() {
 
 	int rc = -1;
-	cout << "MainLoop\tRunning Win32 Message loop" << endl;
-	while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+
+	// Start services
+	/*
+	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting services");
+	start();
+	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting complete");
+	*/
+
+	if(!PostMessage(hwnd,WM_START,0,0)) {
+		cerr << "MainLoop\tError posting WM_START message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
+		return -1;
 	}
 
-	if(rc == 0) {
-		cout << "MainLoop\tWin32 Message loop ends" << endl;
-	} else {
-		cerr << "MainLoop\tAWin32 Message loop ends with error " << rc << endl;
+	{
+		MSG msg;
+		memset(&msg,0,sizeof(msg));
+
+		Logger::String("Running message loop").write((Logger::Level) (Logger::Trace+1),"win32");
+
+		enabled = true;
+		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		enabled = false;
+
+		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Trace+1),"win32");
 	}
 
-	// Stop services
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
-
-	stop();
-
-#ifdef DEBUG
-	cout << "---> " << __FUNCTION__ << " " << __FILE__ << " " << __LINE__ << endl;
-#endif // DEBUG
+	return rc;
 
  }
 

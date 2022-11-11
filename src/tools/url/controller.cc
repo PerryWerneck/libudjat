@@ -17,7 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <private/protocol.h>
+ #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <udjat/moduleinfo.h>
 
@@ -49,7 +51,7 @@
 
 	void Protocol::Controller::insert(Protocol *protocol) {
 		lock_guard<mutex> lock(guard);
-		cout << "protocols\tRegister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+		Logger::trace() << "protocols\tRegister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.push_back(protocol);
 	}
 
@@ -58,7 +60,7 @@
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
 		lock_guard<mutex> lock(guard);
-		cout << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+		Logger::trace() << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
 		protocols.remove(protocol);
 #ifdef DEBUG
 		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
@@ -75,9 +77,7 @@
 #endif // !_WIN32
 		}
 
-#ifdef DEBUG
-		cout << "Searching for protocol '" << name << "'" << endl;
-#endif // DEBUG
+		debug("Searching for protocol '",name,"'");
 
 		lock_guard<mutex> lock(guard);
 		for(auto protocol : protocols) {
@@ -109,7 +109,7 @@
 		for(auto protocol : protocols) {
 
 			Value &object = response.append(Value::Object);
-			object["id"] = protocol->name;
+			object["name"] = protocol->name;
 			protocol->module.get(object);
 
 		}

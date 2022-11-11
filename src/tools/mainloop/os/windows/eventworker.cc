@@ -25,9 +25,9 @@
 
  namespace Udjat {
 
-	Win32::Event::Controller::Worker::Worker(Win32::Event *event) {
+	Win32::Handler::Controller::Worker::Worker(Win32::Handler *handler) {
 
-		events.push_back(event);
+		handlers.push_back(handler);
 
 		std::thread hThread([this]() {
 #ifdef DEBUG
@@ -52,7 +52,7 @@
 		hThread.detach();
 	}
 
-	Win32::Event::Controller::Worker::~Worker() {
+	Win32::Handler::Controller::Worker::~Worker() {
 	}
 
  }

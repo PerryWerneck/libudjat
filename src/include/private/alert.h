@@ -27,6 +27,7 @@
  #include <udjat/worker.h>
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/timer.h>
  #include <udjat/alert/abstract.h>
  #include <mutex>
  #include <list>
@@ -37,7 +38,7 @@
  namespace Udjat {
 
  	/// @brief Singleton for alert emission.
-	class Alert::Controller : private MainLoop::Service, private Udjat::Worker {
+	class Alert::Controller : private MainLoop::Service, private Udjat::Worker, private MainLoop::Timer {
 	private:
 		/// @brief Mutex for serialization
 		static mutex guard;
@@ -46,6 +47,8 @@
 		list<shared_ptr<Udjat::Alert::Activation>> activations;
 
 		Controller();
+
+		void on_timer() override;
 
 		/// @brief Reset timer.
 		/// @param seconds Seconds for the next 'emit()'.

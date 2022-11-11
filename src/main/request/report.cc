@@ -17,7 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/request.h>
  #include <cstdarg>
  #include <iomanip>
  #include <sstream>

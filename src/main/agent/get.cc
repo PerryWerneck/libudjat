@@ -17,7 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
+ #include <udjat/tools/intl.h>
  #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -29,13 +31,32 @@
 		return value;
 	}
 
-	std::string Abstract::Agent::to_string() const {
+	std::string Abstract::Agent::to_string() const noexcept {
 		return name();
 	}
 
-	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&report)) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::to_shared_ptr() {
+
+		if(!parent) {
+			throw system_error(EINVAL,system_category(),"Cant get pointer on orphaned agent");
+		}
+
+		for(auto ptr : *parent) {
+			if(ptr.get() == this) {
+				return ptr;
+			}
+		}
+
+		throw system_error(EINVAL,system_category(),"Cant get pointer to an invalid agent");
+	}
+
+	void Abstract::Agent::get(Report UDJAT_UNUSED(&report)) {
 		error() << "Rejecting 'report' request - Not available in this agent" << endl;
-		throw system_error(ENOENT,system_category(),"No available reports on this path");
+		throw system_error(ENOENT,system_category(),_("No reports on this path") );
+	}
+
+	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report &report) {
+		get(report);
 	}
 
 	void Abstract::Agent::get(Response &response) {
@@ -92,6 +113,39 @@
 		}
 
 		return rc;
+
+	}
+
+	const char * Abstract::Agent::summary() const noexcept {
+
+		const char *str = Udjat::Object::summary();
+		if(str && *str) {
+			return str;
+		}
+
+		return current_state.active->summary();
+
+	}
+
+	const char * Abstract::Agent::label() const noexcept {
+
+		const char *str = Udjat::Object::label();
+		if(str && *str) {
+			return str;
+		}
+
+		return current_state.active->label();
+
+	}
+
+	const char * Abstract::Agent::icon() const noexcept {
+
+		const char *str = Udjat::Object::icon();
+		if(str && *str) {
+			return str;
+		}
+
+		return current_state.active->icon();
 
 	}
 

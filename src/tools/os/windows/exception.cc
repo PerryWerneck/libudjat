@@ -20,25 +20,60 @@
  #include <config.h>
  #include <private/misc.h>
  #include <udjat/win32/exception.h>
- #include <udjat/win32/string.h>
+ #include <udjat/win32/charset.h>
+ #include <udjat/tools/string.h>
  #include <windows.h>
  #include <iostream>
+ #include <mutex>
 
  #include <cstring>
  #include <cstdio>
 
  using namespace std;
 
- #define BUFFER_LENGTH 100
+ #define BUFFER_LENGTH 1024
+
+ class Guard : public mutex {
+ public:
+ 	Guard() = default;
+
+ 	static Guard & getInstance() {
+		static Guard instance;
+		return instance;
+ 	}
+
+ };
+
+ /*
+ static bool is_wine() noexcept {
+
+	// https://stackoverflow.com/questions/7372388/determine-whether-a-program-is-running-under-wine-at-runtime
+	static unsigned char detected = 3;
+
+	if(detected == 3) {
+		HMODULE hntdll = GetModuleHandle("ntdll.dll");
+		if(!hntdll) {
+			return false;
+		}
+		detected = GetProcAddress(hntdll, "wine_get_version") == NULL ? 0 : 1;
+	}
+
+	return detected != 0;
+
+ }
+ */
 
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
+	lock_guard<mutex> lock(Guard::getInstance());
+
 	string response;
-	char *buffer = new char[BUFFER_LENGTH+1];
+	char buffer[BUFFER_LENGTH+1];
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
-	/*
+	SetLastError(0);
+
 	// https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid
 	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -49,9 +84,6 @@
 		BUFFER_LENGTH,
 		NULL
 	);
-	*/
-
-	int retval = 0;
 
 	if(retval == 0) {
 
@@ -68,7 +100,7 @@
 
 	} else if(*buffer) {
 
-		response = Win32::String(buffer).c_str();
+		response = Win32::Charset::from_windows(strip(buffer));
 
 	} else {
 
@@ -77,7 +109,7 @@
 
 	}
 
-	delete[] buffer;
+	SetLastError(dwMessageId);
 
 	return response;
 
@@ -89,15 +121,15 @@
 
  std::string Udjat::Win32::WSA::Exception::format(const DWORD dwMessageId) noexcept {
 
+	lock_guard<mutex> lock(Guard::getInstance());
+
 	// https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2
 
 	string response;
-	char *buffer = new char[BUFFER_LENGTH+1];
+	char buffer[BUFFER_LENGTH+1];
 
 	memset(buffer,0,BUFFER_LENGTH+1);
 
-	int retval = 0;
-	/*
 	// https://docs.microsoft.com/en-us/windows/win32/api/winnt/nf-winnt-makelangid
 	int retval = FormatMessage(
 		FORMAT_MESSAGE_FROM_SYSTEM|FORMAT_MESSAGE_IGNORE_INSERTS,
@@ -108,9 +140,8 @@
 		BUFFER_LENGTH,
 		NULL
 	);
-	*/
 
-	if(retval == 0) {
+	if(retval == 0 || !*buffer) {
 
 		response = "WinSock error ";
 		response += std::to_string((unsigned int) dwMessageId);
@@ -118,17 +149,9 @@
 
 	} else if(*buffer) {
 
-		response = Win32::String(buffer).c_str();
-
-	} else {
-
-		response = "WinSock error ";
-		response += std::to_string((unsigned int) dwMessageId);
-		response += " (check it in https://docs.microsoft.com/en-us/windows/win32/winsock/windows-sockets-error-codes-2)";
+		response = Win32::Charset::from_windows(strip(buffer));
 
 	}
-
-	delete[] buffer;
 
 	return response;
 

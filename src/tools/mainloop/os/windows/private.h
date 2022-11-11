@@ -23,7 +23,7 @@
  #include <udjat/defs.h>
  #include <private/misc.h>
  #include <udjat/tools/mainloop.h>
- #include <udjat/win32/event.h>
+ #include <udjat/win32/handler.h>
  #include <thread>
  #include <list>
  #include <mutex>
@@ -34,16 +34,18 @@
 
 	namespace Win32 {
 
-		class UDJAT_API Event::Controller {
+		class UDJAT_API Handler::Controller {
 		public:
+
+			/// @brief Object to manage a list of handlers.
 			class Worker {
 			private:
-				~Worker();
+				~Worker();	// Will be deleted when worker thread finishes.
 
 			public:
-				Worker(Win32::Event *event);
+				Worker(Win32::Handler *handler);
 
-				std::list<Win32::Event *> events;
+				std::list<Win32::Handler *> handlers;
 
 				// Disable copy.
 				Worker(const Worker &) = delete;
@@ -51,7 +53,7 @@
 
 			};
 
-			static Win32::Event * find(Worker *worker, HANDLE handle) noexcept;
+			static Win32::Handler * find(Worker *worker, HANDLE handle) noexcept;
 
 			bool wait(Worker *worker) noexcept;
 			void call(HANDLE handle, bool abandoned) noexcept;
@@ -62,32 +64,18 @@
 
 			static std::mutex guard;
 
+			Controller();
+			~Controller();
 
-			Controller() = default;
 		public:
 			static Controller & getInstance();
 
-			void insert(Event *event);
-			void remove(Event *event);
+			void insert(Handler *handler);
+			void remove(Handler *handler);
 
-			Win32::Event * find(HANDLE handle) noexcept;
-
-		};
-
-
-		/// @brief Win32 Mainloop for console application.
-		class MainLoop : public Udjat::MainLoop {
-		private:
-			static BOOL WINAPI ConsoleHandler(DWORD event);
-			MainLoop();
-
-		public:
-			~MainLoop();
-
-			static MainLoop & getInstance();
+			Win32::Handler * find(HANDLE handle) noexcept;
 
 		};
-
 
 	}
 

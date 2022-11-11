@@ -23,6 +23,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
+ #include <udjat/tools/quark.h>
 
  using namespace std;
 
@@ -46,6 +47,11 @@
 
 		expand(node);
 
+	}
+
+	String & String::concat(const bool value) {
+		append(value ? _( "yes" ) : _( "no" ) );
+		return *this;
 	}
 
 	String & String::strip() noexcept {

@@ -77,13 +77,11 @@
 	}
 
 	UDJAT_API int64_t Config::get(const std::string &group, const std::string &name, const int64_t def) {
-		// FIXME: Implement.
-		return def;
+		return (int64_t) (Win32::Registry(group.c_str()).get(name.c_str(),(UINT64) def));
 	}
 
 	UDJAT_API uint64_t Config::get(const std::string &group, const std::string &name, const uint64_t def) {
-		// FIXME: Implement.
-		return def;
+		return (Win32::Registry(group.c_str()).get(name.c_str(),(UINT64) def));
 	}
 
 	UDJAT_API float Config::get(const std::string &group, const std::string &name, const float def) {

@@ -28,21 +28,28 @@
 
  namespace Udjat {
 
-	HKEY Win32::Registry::open(HKEY hParent, const char *p, bool write) {
+	static const char *regpath = "SOFTWARE";
 
-		HKEY hKey = NULL;
-		string path;
+	static string PathFactory(const char *p) noexcept {
+
+		string path{regpath};
 
 		if(!(p && *p)) {
-			path = "SOFTWARE\\";
+
+			path += "\\";
 			path += Application::Name();
+
 		} else if(p[0] != '\\' && p[0] != '/') {
-			path = "SOFTWARE\\";
+
+			path += "\\";
 			path += Application::Name();
 			path += "\\";
 			path += p;
+
 		} else {
+
 			path = (p+1);
+
 		}
 
 		for(char *ptr = (char *) path.c_str();*ptr;ptr++) {
@@ -51,10 +58,21 @@
 			}
 		}
 
+		return path;
+
+	}
+
+	HKEY Win32::Registry::open(HKEY hParent, const char *p, bool write) {
+
+		HKEY hKey = NULL;
+		string path{PathFactory(p)};
+
 		// Open registry.
 		LSTATUS rc;
 
 		if(write) {
+
+			// Write access requested, throw exception if failed.
 
 			rc = RegCreateKeyEx(
 							hParent,
@@ -74,6 +92,8 @@
 
 		} else {
 
+			// Read only access, open and use defaults if failed.
+
 			rc = RegOpenKeyEx(
 					hParent,
 					path.c_str(),
@@ -92,19 +112,27 @@
 
 	}
 
-	Win32::Registry::Registry() : hKey(Win32::Registry::open()) {
+	Win32::Registry::Registry(bool write) : hKey(Win32::Registry::open(HKEY_LOCAL_MACHINE,nullptr,write)) {
 	}
 
-	Win32::Registry::Registry(HKEY hParent, const char *path, bool write) : hKey(Win32::Registry::open(hParent,path,write)) {
-	}
-
-	Win32::Registry::Registry(const char *path, bool write) : Registry(HKEY_LOCAL_MACHINE,path,write) {
+	Win32::Registry::Registry(const char *path, bool write) : hKey(Win32::Registry::open(HKEY_LOCAL_MACHINE,path,write)) {
 	}
 
 	Win32::Registry::~Registry() {
 		if(hKey) {
 			RegCloseKey(hKey);
 			hKey = 0;
+		}
+	}
+
+	void Win32::Registry::setRoot(const char *path) {
+		regpath = path;
+	}
+
+	void Win32::Registry::remove(const char *keyname) {
+		auto rc = RegDeleteTree(hKey,keyname);
+		if(rc != ERROR_SUCCESS && rc != ERROR_FILE_NOT_FOUND) {
+			throw Win32::Exception("Cant delete application registry",rc);
 		}
 	}
 
@@ -129,6 +157,38 @@
 		}
 
 		return value;
+	}
+
+	UINT64 Win32::Registry::get(const char *name, UINT64 def) const {
+
+		if(!hKey) {
+			return def;
+		}
+
+		UINT64 value = 0;
+		unsigned long datatype;
+		unsigned long datalen = sizeof(UINT64);
+
+		if(RegQueryValueEx(hKey,name,NULL,&datatype,(LPBYTE) &value,&datalen) != ERROR_SUCCESS) {
+
+			value = def;
+
+		} else if(datatype == REG_DWORD) {
+
+			const DWORD *dw = ((DWORD *) &def);
+			return (UINT64) *dw;
+
+		} else if(datatype != REG_QWORD) {
+
+			value = def;
+
+		}
+
+		return value;
+	}
+
+	void * Win32::Registry::get(const char *name, void *ptr, size_t len) {
+		return get(hKey,name,ptr,len);
 	}
 
 	string Win32::Registry::get(HKEY hK, const char *name, const char *def) {
@@ -169,6 +229,36 @@
 		return rc;
 	}
 
+	void * Win32::Registry::get(HKEY hKey, const char *name, void *ptr, size_t len) {
+
+		uint8_t datablock[len+1];
+		memset(datablock,0,len+1);
+
+		DWORD datalen = len;
+		DWORD datatype = 0;
+
+		if(RegQueryValueEx(hKey,name,NULL,&datatype,(LPBYTE) datablock,&datalen) != ERROR_SUCCESS) {
+
+			return nullptr;
+
+		} else if(datatype != REG_BINARY) {
+
+			clog << "win32\tNon binary data on registry value '" << name << "', was expecting a binary block with " << len << " bytes" << endl;
+
+		} else if(datalen == len) {
+
+			memcpy(ptr,datablock,len);
+			return ptr;
+
+		} else {
+
+			clog << "win32\tUnexpected length " << datalen << " reading value '" << name << "' from registry (was expecting " << len << ")" << endl;
+
+		}
+
+		return nullptr;
+	}
+
 	void Win32::Registry::set(HKEY hK, const char *name, const char *value) {
 
 		DWORD dwRet = RegSetValueEx(
@@ -186,12 +276,33 @@
 
 	}
 
+	void Win32::Registry::set(HKEY hK, const char *name, const void *ptr, size_t len) {
+
+		DWORD dwRet = RegSetValueEx(
+							hK,
+							(LPCSTR) name,
+							0,
+							REG_BINARY,
+							(const BYTE *) ptr,
+							(DWORD) len
+					);
+
+		if(dwRet != ERROR_SUCCESS) {
+			throw Win32::Exception(dwRet);
+		}
+
+	}
+
 	std::string Win32::Registry::get(const char *name, const char *def) const {
 		return get(hKey, name, def);
 	}
 
 	void Win32::Registry::set(const char *name, const char *value) {
 		set(hKey, name, value);
+	}
+
+	void Win32::Registry::set(const char *name, const void *ptr, size_t length) {
+		set(hKey, name, ptr, length);
 	}
 
 

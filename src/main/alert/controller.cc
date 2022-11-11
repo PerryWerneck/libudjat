@@ -17,13 +17,15 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/alert.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/url.h>
  #include <udjat/agent.h>
  #include <iostream>
  #include <udjat/alert/activation.h>
+ #include <udjat/tools/intl.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -35,7 +37,7 @@
 
 	mutex Alert::Controller::guard;
 
-	static const Udjat::ModuleInfo moduleinfo{ "Alert controller" };
+	static const Udjat::ModuleInfo moduleinfo{ N_( "Alert controller" ) };
 
 	Alert::Controller & Alert::Controller::getInstance() {
 		lock_guard<mutex> lock(guard);
@@ -99,6 +101,14 @@
 		emit();
 	}
 
+	void Alert::Controller::on_timer() {
+
+		ThreadPool::getInstance().push([this](){
+			emit();
+		});
+
+	}
+
 	void Alert::Controller::reset(time_t seconds) noexcept {
 
 		if(!seconds) {
@@ -117,19 +127,17 @@
 			} else {
 
 				lock_guard<mutex> lock(guard);
-
 				if(activations.empty()) {
 
-					// cout << "alerts\tStopping controller" << endl;
-					mainloop.remove(this);
+#ifdef DEBUG
+					cout << "alerts\tPausing controller" << endl;
+#endif // DEBUG
+					MainLoop::Timer::disable();
 
-				} else if(!mainloop.reset(this,seconds*1000)) {
+				} else {
 
-					// cout << "alerts\tStarting controller" << endl;
-					mainloop.insert(this,seconds*1000,[this]() {
-						emit();
-						return true;
-					});
+					MainLoop::Timer::reset(seconds*100);
+					MainLoop::Timer::enable();
 
 				}
 
@@ -228,14 +236,9 @@
 			pending_activations = running();
 			if(pending_activations) {
 				clog << "alerts\tStopping with " << pending_activations << " activations still active" << endl;
-
-#ifdef DEBUG
-				cout << "agent\t*** Waiting for tasks " << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
+				debug("Waiting for tasks (agent)");
 				ThreadPool::getInstance().wait();
-#ifdef DEBUG
-				cout << "agent\t*** Wait for tasks complete" << endl;
-#endif // DEBUG
+				debug("Wait for tasks complete");
 			}
 		}
 
@@ -264,7 +267,6 @@
 	void Alert::Controller::stop() {
 
 		cout << "alerts\tDeactivating controller" << endl;
-		MainLoop::getInstance().remove(this);
 		clear();
 
 	}

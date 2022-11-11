@@ -28,6 +28,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include "private.h"
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
@@ -40,64 +41,58 @@
 
 	int SubProcess::run() {
 
-		init();
+		class SyncHandler : public SubProcess::Handler {
+		private:
+			SubProcess &proc;
 
-		while(running()) {
+		protected:
 
-			HANDLE lpHandles[ (sizeof(pipes)/sizeof(pipes[0]))+1 ];
-			DWORD nCount = 0;
+			void on_error(const char *reason) override {
+				proc.onStdErr(reason);
+			}
 
-			for(size_t pipe = 0; pipe < (sizeof(pipes)/sizeof(pipes[0])); pipe++) {
-				if(pipes[pipe].hRead) {
-					lpHandles[nCount++] = pipes[pipe].hRead;
+			void on_input(const char *line) override {
+				if(id == 0) {
+					proc.onStdOut(line);
+				} else {
+					proc.onStdErr(line);
 				}
 			}
 
-			if(piProcInfo.hProcess) {
-				lpHandles[nCount++] = piProcInfo.hProcess;
+		public:
+			SyncHandler(SubProcess *p, unsigned short id) : SubProcess::Handler(id), proc(*p) {
 			}
 
-			DWORD response = WaitForMultipleObjects(nCount,lpHandles,FALSE,1000);
-			HANDLE handle = 0;
+		};
 
-			if(response >= WAIT_OBJECT_0 && response < WAIT_OBJECT_0+nCount) {
+		class ProcHandler : public Win32::Handler {
+		private:
+			SubProcess &proc;
 
-				handle = lpHandles[response - WAIT_OBJECT_0];
-
-			} else if(response >= WAIT_ABANDONED_0 && response < (WAIT_ABANDONED_0+nCount)) {
-
-				handle = lpHandles[response - WAIT_ABANDONED_0];
-
-			} else if(response == WAIT_FAILED) {
-
-				throw Win32::Exception();
-
-			} else if(response == WAIT_TIMEOUT) {
-
-				continue;
-
+		public:
+			ProcHandler(SubProcess *p, HANDLE h) : Win32::Handler(h), proc(*p) {
 			}
 
-			if(handle == piProcInfo.hProcess) {
-
-				DWORD rc;
-				if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
-					onExit(exitcode = rc);
-					CloseHandle(piProcInfo.hProcess);
-					piProcInfo.hProcess = 0;
+			void handle(bool UDJAT_UNUSED(abandoned)) override {
+				if(GetExitCodeProcess(this->hEvent,&proc.exitcode) != STILL_ACTIVE) {
+					proc.onExit(proc.exitcode);
+					close();
+					proc.piProcInfo.hProcess = 0;
 				}
-
-			} else {
-
-				for(size_t pipe = 0; pipe < (sizeof(pipes)/sizeof(pipes[0])); pipe++) {
-					if(handle == pipes[pipe].hRead) {
-						read(pipe);
-					}
-				}
-
 			}
 
-		}
+		};
+
+		SyncHandler handlers[]{ { this,0 }, { this,1 } };
+
+		init(handlers[0],handlers[1]);
+
+		ProcHandler prochandler{this,piProcInfo.hProcess};
+
+		Win32::Handler *hdl[]{&handlers[0],&handlers[1],&prochandler};
+
+		// Wait for child.
+		while(Win32::Handler::poll(hdl,3,1000));
 
 		return exitcode;
 

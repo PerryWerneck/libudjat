@@ -8,7 +8,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
  #include <udjat/tools/subprocess.h>
 
  using namespace std;

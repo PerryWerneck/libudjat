@@ -17,15 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <private/request.h>
+ #include <cstring>
+ #include <cstdarg>
+ #include <udjat/tools/logger.h>
 
-#include "private.h"
-#include <cstring>
-#include <cstdarg>
-#include <udjat/tools/logger.h>
-
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-namespace Udjat {
+ namespace Udjat {
 
 	bool Request::operator ==(const char *key) const noexcept {
 
@@ -126,5 +124,5 @@ namespace Udjat {
 		return *this;
 	}
 
-}
+ }
 

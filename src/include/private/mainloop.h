@@ -18,34 +18,29 @@
  */
 
  #pragma once
- #include <sys/types.h>
+
  #include <udjat/defs.h>
- #include <udjat/tools/subprocess.h>
- #include <mutex>
- #include <list>
- #include <mutex>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
+ #include <functional>
+ #include <csignal>
+ #include <unistd.h>
+ #include <iostream>
+
+ #ifdef _WIN32
+//	#define WM_WAKE_UP			WM_USER+100
+	#define WM_CHECK_TIMERS		WM_USER+101
+	#define WM_START			WM_USER+102
+	#define WM_STOP				WM_USER+103
+	// #define WM_CONSOLE_HANDLER	WM_USER+104
+
+	#define IDT_CHECK_TIMERS	1
+ #endif // _WIN32
 
  using namespace std;
 
  namespace Udjat {
 
-	class SubProcess::Controller {
-	private:
-		Controller();
-
-		list<SubProcess *> processes;
-
-		static void handle_signal(int sig) noexcept;
-
-	public:
-
-		~Controller();
-		static Controller & getInstance();
-
-		void insert(SubProcess *subprocess);
-		void remove(SubProcess *subprocess);
-
- 	};
-
 
  }
+

@@ -35,6 +35,7 @@
  #include <udjat/agent.h>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/application.h>
 
@@ -47,10 +48,17 @@
  namespace Udjat {
 
 	void SystemService::notify(const char *message) noexcept {
+
+		if(message && *message) {
+
 #ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=%s",message);
+			sd_notifyf(0,"STATUS=%s",message);
 #endif // HAVE_SYSTEMD
-		info() << message << endl;
+
+			Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
+
+		}
+
 	}
 
 	void SystemService::init() {
@@ -96,98 +104,36 @@
 		MainLoop::getInstance().quit();
 	}
 
-	int SystemService::run() {
-
-#ifdef HAVE_SYSTEMD
-		uint64_t watchdog_timer = 0;
-
-		{
-
-			int status = sd_watchdog_enabled(0,&watchdog_timer);
-
-			if(status < 0) {
-
-				cout << "systemd\tError '" << strerror(-status) << "' getting watchdog status" << endl;
-
-			} else if(status == 0) {
-
-				cout << "systemd\tWatchdog timer is not set" << endl;
-
-			} else {
-
-				// SystemD watchdog is enabled.
-				if(watchdog_timer > 0) {
-
-					cout << "systemd\tWatchdog timer is set to " << (watchdog_timer / 1000000L) << " seconds" << endl;
-
-					MainLoop::getInstance().insert(&watchdog_timer,(unsigned long) (watchdog_timer / 2000L),[this](){
-						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state()->to_string().c_str());
-						return true;
-					});
-
-				} else {
-
-					cout << "systemd\tWatchdog timer is disabled" << endl;
-
-				}
-			}
-
-		}
-
-#endif // HAVE_SYSTEMD
-
-		MainLoop::getInstance().run();
-
-#ifdef HAVE_SYSTEMD
-		MainLoop::getInstance().remove(&watchdog_timer);
-#endif // HAVE_SYSTEMD
-
-		return 0;
-	}
-
 	void SystemService::usage() const noexcept {
 		cout 	<< "Usage: " << endl << "  " << name() << " [options]" << endl << endl
-				<< "  --core\tenable coredumps" << endl
-				<< "  --daemon\tRun " << name() << " service in the background" << endl
-				<< "  --foreground\tRun " << name() << " service as application (foreground)" << endl;
+				<< "  --core\t\tenable coredumps" << endl
+				<< "  --timer=seconds\tTerminate " << name() << " after 'seconds'" << endl
+				<< "  --daemon\t\tRun " << name() << " service in the background" << endl
+				<< "  --foreground\t\tRun " << name() << " service as application (foreground)" << endl;
 	}
 
-	int SystemService::cmdline(char key, const char UDJAT_UNUSED(*value)) {
+	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
-		case 'f':	// Run in foreground.
+		case 'T':	// Auto quit
 			{
-				cout << "Starting " << name () << " application" << endl << endl;
-				Logger::redirect(true);
-				init();
-				try {
-					run();
-				} catch(const std::exception &e) {
-					error() << "Error '" << e.what() << "' running service" << endl;
-				} catch(...) {
-					error() << "Unexpected error running service" << endl;
+				if(!value) {
+					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
 				}
 
-				deinit();
-				return 0;
-			}
-			break;
-
-		case 'd':	// Run as a daemon.
-			{
-
-				if(daemon(0,0)) {
-					throw std::system_error(errno, std::system_category());
+				int seconds = atoi(value);
+				if(!seconds) {
+					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
 				}
 
-				Logger::redirect();
-				init();
-				run();
-				deinit();
-				return 0;
+				MainLoop::getInstance().TimerFactory(seconds * 1000,[](){
+					Application::warning() << "Exiting by timer request" << endl;
+					MainLoop::getInstance().quit();
+					return false;
+				});
 
 			}
-			break;
+			return 0;
 
 		case 'C':	// Enable core dumps.
 			{
@@ -217,23 +163,19 @@
 
 	int SystemService::cmdline(const char *key, const char *value) {
 
-		// The default options doesn't have values, then, reject here.
-		if(value) {
-			return ENOENT;
-		}
-
 		static const struct {
 			char option;
 			const char *key;
 		} options[] = {
 			{ 'C', "core" },
 			{ 'd', "daemon" },
-			{ 'f', "foreground" }
+			{ 'f', "foreground" },
+			{ 'T', "timer" }
 		};
 
 		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
 			if(!strcasecmp(key,options[option].key)) {
-				return cmdline(options[option].option);
+				return cmdline(options[option].option,value);
 			}
 		}
 
@@ -242,30 +184,41 @@
 
 	int SystemService::run(int argc, char **argv) {
 
+		int rc = 0;
+
 		if(argc > 1) {
-			int rc = cmdline(argc,(const char **) argv);
-			if(rc != -2) {
-				return rc;
+			rc = cmdline(argc,(const char **) argv);
+			if(rc) {
+				mode = SERVICE_MODE_NONE;
 			}
 		}
 
-		// Run as service by default.
-		try {
+		Logger::redirect(mode == SERVICE_MODE_FOREGROUND ? true : false);
 
-			cout << "Starting " << name() << " service" << endl;
-			Logger::redirect();
-			init();
-			int rc = run();
-			deinit();
-			return rc;
-
-		} catch(const std::exception &e) {
-			error() << e.what() << endl;
-		} catch(...) {
-			error() << "\tUnexpected error" << endl;
+		if(mode == SERVICE_MODE_DAEMON) {
+			if(daemon(0,0)) {
+				error() << strerror(errno) << endl;
+				return -1;
+			}
 		}
 
-		return -1;
+		if(mode != SERVICE_MODE_NONE) {
+
+			try {
+
+				init();
+				rc = run();
+				deinit();
+
+			} catch(const std::exception &e) {
+
+				error() << e.what() << endl;
+				rc = -1;
+
+			}
+		}
+
+		return rc;
 
 	}
 

@@ -50,16 +50,23 @@
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<T>>> states;
 
-		std::shared_ptr<Abstract::State> stateFromValue() const override {
+		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::stateFromValue();
+			return super::computeState();
 		}
 
 		Udjat::Value & get(Udjat::Value &value) const override {
 			return value.set(this->value);
+		}
+
+		/// @brief Set initial value, doesnt update state.
+		/// @param value The initial value to set.
+		inline void start(const T value) noexcept {
+			this->value = value;
+			super::start();
 		}
 
 	public:
@@ -114,7 +121,7 @@
 			return state;
 		}
 
-		std::string to_string() const override {
+		std::string to_string() const noexcept override {
 			return std::to_string(value);
 		}
 
@@ -132,12 +139,12 @@
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<std::string>>> states;
 
-		std::shared_ptr<Abstract::State> stateFromValue() const override {
+		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::stateFromValue();
+			return super::computeState();
 		}
 
 		Udjat::Value & get(Udjat::Value &value) const override {
@@ -193,7 +200,7 @@
 			return state;
 		}
 
-		std::string to_string() const override {
+		std::string to_string() const noexcept override {
 			return value;
 		}
 
@@ -212,12 +219,12 @@
 
 	protected:
 
-		std::shared_ptr<Abstract::State> stateFromValue() const override {
+		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::stateFromValue();
+			return super::computeState();
 		}
 
 	public:
@@ -255,7 +262,7 @@
 			return state;
 		}
 
-		std::string to_string() const override {
+		std::string to_string() const noexcept override {
 			return (value ? "yes" : "no");
 		}
 

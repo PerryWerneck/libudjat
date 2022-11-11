@@ -80,6 +80,7 @@ Main library for udjat modules.
 Summary: Development files for %{name}
 Requires:	mingw64-pugixml-devel
 Requires:	mingw64-vmdetect-devel
+Requires:	mingw64-libintl-devel
 Requires:	%{name}%{_libvrs} = %{version}
 
 Provides:	mingw64-udjat-devel = %{version}
@@ -137,6 +138,9 @@ find %{buildroot}
 
 %dir %{_mingw64_includedir}/udjat/tools
 %{_mingw64_includedir}/udjat/tools/*.h
+
+%dir %{_mingw64_includedir}/udjat/alert
+%{_mingw64_includedir}/udjat/alert/*.h
 
 %dir %{_mingw64_includedir}/udjat/tools/http
 %{_mingw64_includedir}/udjat/tools/http/*.h

@@ -30,6 +30,8 @@
  #include <private/misc.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/handler.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>
@@ -45,7 +47,7 @@
 
  static const int signals[] = { SIGTERM, SIGINT };
 
- void Udjat::MainLoop::run() {
+ int Udjat::MainLoop::run() {
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
@@ -85,35 +87,49 @@
  	//
  	// Main event loop
  	//
-	nfds_t szPoll = 2;
-	struct pollfd *fds = (pollfd *) malloc(sizeof(struct pollfd) *szPoll);
-	memset(fds,0,sizeof(struct pollfd) *szPoll);
 
  	this->enabled = true;
+
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"READY=1\nSTATUS=Running");
 #endif // HAVE_SYSTEMD
+
  	while(this->enabled) {
 
 		// Get wait time, update timers.
 		unsigned long wait = timers.run();
-		nfds_t nfds = getHandlers(&fds, &szPoll);
 
- 		// EventFD in the last entry.
+		// Get handlers
+		size_t maxfd = handlers.size()+2;
+		struct pollfd fds[maxfd];
+		Handler *hList[maxfd];
+
+		// Clear
+		nfds_t nfds = 0;
+
+		memset(fds,0,maxfd * sizeof(pollfd));
+		memset(hList,0,maxfd * sizeof(Handler *));
+
+ 		// EventFD in the first entry.
 		{
 			fds[nfds].fd = efd;
 			fds[nfds].events = POLLIN;
+			nfds++;
+		}
+
+		{
+			lock_guard<mutex> lock(guard);
+			for(auto handle : handlers) {
+				hList[nfds] = handle;
+				fds[nfds].fd = handle->fd;
+				fds[nfds].events = handle->events;
+				fds[nfds].revents = 0;
+				nfds++;
+			}
 		}
 
 		// Wait for event.
-		int nSocks = poll(fds, nfds+1, wait);
-
-//#ifdef DEBUG
-//		cout << "MainLoop\tnSocks=" << nSocks << " wait=" << wait << " nfds=" << nfds << endl;
-//		for(size_t ix = 0; ix < nfds;ix++) {
-//			cout << ix << " = " << fds[ix].revents << "  (" << &fds[ix] << ")" << endl;
-//		}
-//#endif // DEBUG
+		int nSocks = poll(fds, nfds, wait);
 
 		if(nSocks == 0) {
 			continue;
@@ -135,52 +151,41 @@
 		}
 
 		// Check for event fd.
-		if(fds[nfds].revents) {
+		if(fds[0].revents) {
+			// debug("Wake UP received");
 			uint64_t evNum;
-//#ifdef DEBUG
-//			cout << "MainLoop\tEventFD was changed" << endl;
-//#endif // DEBUG
 			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
 			}
 			nSocks--;
 		}
 
-		// Check for fd handlers.
-		{
-			// First, get list of the active handlers.
-			std::list<std::shared_ptr<Handler>> hList;
+		while(nSocks > 0) {
 
-			{
-				lock_guard<mutex> lock(guard);
-				for(auto handle : handlers) {
-					if(handle->index >= 0 && fds[handle->index].revents) {
-//						cout << "*** " << handle->id() << " events=" << fds[handle->index].revents << endl;
-						hList.push_back(handle);
+			for(size_t ix=0; ix < nfds; ix++) {
+
+				if(fds[ix].revents) {
+
+					if(verify(hList[ix])) {
+
+						try {
+
+							hList[ix]->handle_event((const Handler::Event) fds[ix].revents);
+
+						} catch(const std::exception &e) {
+
+							cerr << "MainLoop\tError '" << e.what() << "' processing FD(" << hList[ix]->fd << "), disabling it" << endl;
+							hList[ix]->disable();
+
+						} catch(...) {
+
+							cerr << "MainLoop\tUnexpected error processing FD(" << hList[ix]->fd << "), disabling it" << endl;
+							hList[ix]->disable();
+
+						}
+
 					}
-				}
-			}
-
-			// Second, call handlers
-			for(auto handle : hList) {
-
-				try {
-
-					if(!handle->call((const Event) fds[handle->index].revents)) {
-						lock_guard<mutex> lock(guard);
-						handlers.remove(handle);
-					}
-
-				} catch(const std::exception &e) {
-
-					cerr << "MainLoop\tError '" << e.what() << "' processing FD(" << handle->fd << "), disabling it" << endl;
-					handle->disable();
-
-				} catch(...) {
-
-					cerr << "MainLoop\tUnexpected error processing FD(" << handle->fd << "), disabling it" << endl;
-					handle->disable();
-
+					nSocks--;
 				}
 
 			}
@@ -188,11 +193,10 @@
 		}
 
  	}
+
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STOPPING=1\nSTATUS=Stopping");
 #endif // HAVE_SYSTEMD
-
- 	free(fds);
 
  	//
  	// Restore signals
@@ -207,5 +211,8 @@
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STATUS=Stopped");
 #endif // HAVE_SYSTEMD
+
+	return 0;
+
  }
 

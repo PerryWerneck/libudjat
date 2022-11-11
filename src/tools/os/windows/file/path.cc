@@ -162,5 +162,66 @@
 		return rc;
 	}
 
+	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, const std::function<bool (bool, const char *)> &call) {
+
+		Win32::Path path{pathname};
+
+		DIR *dir = opendir(path.c_str());
+
+		if(!dir) {
+			throw system_error(ENOENT,system_category(),path);
+		}
+
+		bool rc = true;
+
+		try {
+
+			struct dirent *de;
+			while(rc && (de = readdir(dir)) != NULL) {
+
+				if(de->d_name[0] == '.') {
+					continue;
+				}
+
+				string filename{path};
+				filename += "\\";
+				filename += de->d_name;
+
+				if(Win32::Path::dir(filename.c_str())) {
+
+					if(recursive) {
+						rc = for_each(filename.c_str(), pattern, recursive, call);
+					}
+
+					if(rc && PathMatchSpec(de->d_name,pattern)) {
+						rc = call(true, filename.c_str());
+					}
+
+				} else if(PathMatchSpec(de->d_name,pattern)) {
+
+					rc = call(false, filename.c_str());
+
+				}
+#ifdef DEBUG
+				else {
+					cout << "Not found '" << filename << "'" << endl;
+				}
+#endif // DEBUG
+
+			}
+
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		return rc;
+	}
+
 }
 

@@ -119,7 +119,11 @@
 			size_t size();
 
 			/// @brief Wait for pool cleanup.
-			void wait();
+			/// @param seconds time to wait
+			bool wait(time_t seconds);
+
+			/// @brief Wait for pool cleanup, using default timeout.
+			bool wait();
 
 			/// @brief Push a named task.
 			/// @param name	Task name (Should be a static string).
@@ -128,7 +132,10 @@
 
 			/// @brief Push an unnamed task.
 			/// @param callback Task method.
-			size_t push(std::function<void()> callback);
+			// size_t push(std::function<void()> callback);
+			inline size_t push(std::function<void()> callback) {
+				return push(__FILE__,callback);
+			}
 
 		};
 

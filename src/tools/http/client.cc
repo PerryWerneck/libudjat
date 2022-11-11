@@ -152,7 +152,7 @@
 			if(node.attribute("cache").as_bool(true)) {
 				setup_cache(client.worker,filename);
 			} else {
-				cout << "http\tCache was disabled for '" << filename << "'" << endl;
+				cout << "http\tCache for '" << filename << "' disabled by XML definition" << endl;
 			}
 
 			return client.worker->save(filename,progress);

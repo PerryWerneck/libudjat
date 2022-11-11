@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/alert/url.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/protocol.h>
 
@@ -79,39 +80,48 @@
 		payload.expand(*alert,true,false);
 	}
 
+
 	void Alert::URL::Activation::emit() {
 
-		url.expand();
-		payload.expand();
+		url.expand(true,false);
+		payload.expand(true,false);
 
 		if(verbose()) {
 			if(description.empty()) {
-				info() << "Emitting " << action << " " << url << endl << payload << endl;
+				Logger::String{"Emitting ",action," ",url}.write(Logger::Trace,this->name.c_str());
 			} else {
-				info() << description << ": " << action << " " << url << endl << payload << endl;
+				Logger::String{description,": ",action," ",url}.write(Logger::Trace,this->name.c_str());
+			}
+
+			if(!payload.empty()) {
+				Logger::String{payload}.write(Logger::Trace,this->name.c_str());
 			}
 		}
 
 		String response = Protocol::call(url.c_str(),action,payload.c_str());
 
-		if(verbose()) {
-			info() << response << endl;
+		if(verbose() && !response.empty()) {
+			Logger::String{response.c_str()}.write(Logger::Trace,this->name.c_str());
 		}
 
 	}
 
 	Alert::Activation & Alert::URL::Activation::set(const Abstract::Object &object) {
-#ifdef DEBUG
-		cout << __FILE__ << "(" << __LINE__ << ")" << endl
-				<< "URL='" << url << "'" << endl
-				<< "PAYLOAD='" << payload << endl;
-#endif // DEBUG
+
+		debug("URL=",url.c_str());
+		debug("PAYLOAD=",payload.c_str());
+
 		url.expand(object);
 		payload.expand(object);
+
 		return *this;
 	}
 
 	Alert::Activation & Alert::URL::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+
+		debug("URL=",url.c_str());
+		debug("PAYLOAD=",payload.c_str());
+
 		url.expand(expander);
 		payload.expand(expander);
 		return *this;

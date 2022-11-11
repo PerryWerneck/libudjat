@@ -77,6 +77,10 @@ namespace Udjat {
 			/// @return false if 'call' has returned false;
 			static bool for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call);
 
+			/// @brief Navigate on all directory files and directories.
+			/// @return false if 'call' has returned false;
+			static bool for_each(const char *pathname, const char *pattern, bool recursive, const std::function<bool (bool isdir, const char *path)> &call);
+
 			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
 			/// @return false if 'call' has returned false;
 			inline bool for_each(const char *pattern, bool recursive, std::function<bool (const char *filename)> call) const {
@@ -101,7 +105,7 @@ namespace Udjat {
 			/// @brief Save file to FD.
 			static void save(int fd, const char *contents);
 
-			/// @brief Replace file withou backup
+			/// @brief Replace file without backup
 			static void replace(const char *filename, const char *contents);
 
 			/// @brief Save file.
@@ -183,7 +187,11 @@ namespace Udjat {
 			const Iterator begin() const noexcept;
 			const Iterator end() const noexcept;
 
-			void set(const char *contents);
+			Text & set(const char *contents);
+
+			inline Text & set(const std::string &contents) {
+				return set(contents.c_str());
+			}
 
 			static void for_each(const char *text, std::function<void (const std::string &line)> call);
 

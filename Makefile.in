@@ -20,6 +20,7 @@ MAIN_SOURCES= \
 	$(wildcard src/main/module/*.cc) \
 	$(wildcard src/main/module/os/@OSNAME@/*.cc) \
 	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/subprocess/*.cc) \
 	$(wildcard src/tools/url/*.cc) \
 	$(wildcard src/tools/url/protocols/*.cc) \
 	$(wildcard src/tools/http/*.cc) \
@@ -65,7 +66,6 @@ localedir=@localedir@
 docdir=@docdir@
 sysconfdir=/etc
 srcdir=@srcdir@
-localedir=@localedir@
 
 OBJDIR=.obj/@OSNAME@
 OBJDBG=$(OBJDIR)/Debug

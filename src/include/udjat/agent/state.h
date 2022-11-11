@@ -87,7 +87,10 @@ namespace Udjat {
 			/// @brief Create state from xml node
 			State(const pugi::xml_node &node);
 
-			std::string to_string() const override {
+			/// @brief Get state values as string.
+			virtual std::string value() const;
+
+			std::string to_string() const noexcept override {
 				return Object::properties.summary;
 			}
 
@@ -124,6 +127,9 @@ namespace Udjat {
 
 			virtual void activate(const Agent &agent) noexcept;
 			virtual void deactivate(const Agent &agent) noexcept;
+
+			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
+			const char * icon() const noexcept override;
 
 			/// @brief Get property.
 			/// @param key The property name.
@@ -181,22 +187,34 @@ namespace Udjat {
 			return value >= from && value <= to;
 		}
 
+		std::string value() const override {
+
+			if(from == to) {
+				return std::to_string(from);
+			}
+
+			std::string text;
+			text += std::to_string(from);
+			text += "->";
+			text += std::to_string(to);
+			return text;
+		}
+
 	};
 
 
 	template <>
-	class UDJAT_API State<std::string> : public Abstract::State {
-	private:
-
-		/// @brief State value;
-		std::string value;
-
+	class UDJAT_API State<std::string> : public Abstract::State, public std::string {
 	public:
-		State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_string()) {
+		State(const pugi::xml_node &node) : Abstract::State(node),std::string(Udjat::Attribute(node,"value",false).as_string()) {
 		}
 
 		bool compare(const std::string &value) {
-			return strcasecmp(this->value.c_str(),value.c_str()) == 0;
+			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
+		}
+
+		std::string value() const override {
+			return *this;
 		}
 
 	};
@@ -206,15 +224,17 @@ namespace Udjat {
 	private:
 
 		/// @brief State value;
-		bool value;
+		bool state_value;
 
 	public:
-		State(const pugi::xml_node &node) : Abstract::State(node),value(Udjat::Attribute(node,"value",false).as_bool()) {
+		State(const pugi::xml_node &node) : Abstract::State(node),state_value(Udjat::Attribute(node,"value",false).as_bool()) {
 		}
 
 		bool compare(const bool value) {
-			return this->value == value;
+			return this->state_value == value;
 		}
+
+		std::string value() const override;
 
 	};
 

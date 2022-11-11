@@ -20,10 +20,10 @@
 #include <config.h>
 
 #include <udjat/defs.h>
-#include <udjat/tools/logger.h>
+#include <private/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
-#include <udjat/win32/string.h>
+#include <udjat/win32/charset.h>
 #include <udjat/win32/registry.h>
 #include <mutex>
 #include <sys/types.h>
@@ -36,93 +36,127 @@ using namespace std;
 
 namespace Udjat {
 
-	void Logger::Writer::write(Buffer &buffer) {
+	void Logger::write(Level level, const char *domain, const char *text) noexcept {
+		write(level,domain,text,false);
+	}
 
-		const char *message = buffer.c_str();
+	void Logger::write(const Level level, const char *d, const char *text, bool force) noexcept {
 
-		// Set timestamp
-		string timestamp = TimeStamp().to_string("%x %X");
+		char domain[15];
+		memset(domain,' ',15);
+		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		domain[14] = 0;
 
-		// Set module name.
-		char module[12];
-		{
-			memset(module,' ',sizeof(module));
+		Win32::Registry registry{"log"};
+		string timestamp{TimeStamp().to_string("%x %X")};
 
-			const char *ptr = strchr(message,'\t');
-			if(ptr) {
+		// Log options.
+		Logger::Options &options{Options::getInstance()};
 
-				// Has module name.
-				size_t length = (ptr-message);
-				if(length >= sizeof(module)-1) {
-					length = sizeof(module)-1;
+		// Serialize
+		static mutex mtx;
+		lock_guard<mutex> lock(mtx);
+
+		// Write
+		if(options.console) {
+
+			// Log to console
+			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+
+			if(hOut != INVALID_HANDLE_VALUE) {
+
+				const char *prefix = "";
+				const char *suffix = "";
+
+				DWORD mode = 0;
+				if(GetConsoleMode(hOut, &mode)) {
+
+					if(mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) {
+
+						// Allowed, setup console colors.
+						// https://learn.microsoft.com/pt-br/windows/console/console-virtual-terminal-sequences
+						static const char *decorations[] = {
+							"\x1b[92m",	// Info
+							"\x1b[93m",	// Warning
+							"\x1b[91m",	// Error
+							"\x1b[95m",	// Debug
+
+							"\x1b[94m",	// Trace
+							"\x1b[96m",	// SysInfo (Allways Trace+1)
+						};
+
+						prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
+						suffix = "\x1b[0m";
+
+					}
+
 				}
-				memcpy(module,message,length);
-				message = (ptr+1);
+
+				DWORD dunno;
+				if(*prefix) {
+					WriteFile(hOut,prefix,strlen(prefix),&dunno,NULL);
+				}
+
+				WriteFile(hOut,timestamp.c_str(),timestamp.size(),&dunno,NULL);
+				WriteFile(hOut," ",1,&dunno,NULL);
+				WriteFile(hOut,domain,sizeof(domain)-1,&dunno,NULL);
+				WriteFile(hOut," ",1,&dunno,NULL);
+				WriteFile(hOut,text,strlen(text),&dunno,NULL);
+
+				if(*suffix) {
+					WriteFile(hOut,suffix,strlen(suffix),&dunno,NULL);
+				}
+
+				WriteFile(hOut,"\r\n",2,&dunno,NULL);
 
 			}
 
-			module[sizeof(module)-1] = 0;
-
 		}
 
-		// If enabled write console output.
-		if(console) {
-			fprintf(
-					stdout,
-					"%s %s %s\n",
-					timestamp.c_str(),
-					module,
-					message
-			);
-			fflush(stdout);
+		if(options.file && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
+			//
+			// Write to file.
+			//
+			Application::LogDir filename;
+			string format;
+			DWORD keep = 86400;
+
+			try {
+
+				keep = registry.get("keep",keep);
+				format.assign(registry.get("format",""));
+
+			} catch(...) {
+
+				// On error assume defaults.
+				format.clear();
+
+			}
+
+			if(format.empty()) {
+				format.assign(Application::Name() + "-%d.log");
+			}
+
+			mkdir(filename.c_str());
+
+			// Get logfile path.
+			filename.append(TimeStamp().to_string(format.c_str()));
+
+			struct stat st;
+			if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+				// More than one day, remove it
+				remove(filename.c_str());
+			}
+
+			// Open file
+			std::ofstream ofs;
+			ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+			ofs.open(filename, ofstream::out | ofstream::app);
+			ofs << timestamp << " " << domain << " " << text << endl;
+			ofs.close();
 		}
 
-		//
-		// Get filename.
-		//
-		string filename, format;
-		DWORD keep = 86400;
-
-		try {
-
-			Win32::Registry registry("log");
-
-			keep = registry.get("keep",keep);
-			filename.assign(registry.get("path",""));
-			format.assign(registry.get("format",""));
-
-		} catch(...) {
-			// On error assume defaults.
-			filename.clear();
-			format.clear();
-		}
-
-		if(filename.empty()) {
-			filename.assign(Application::Path() + "\\logs\\");
-		}
-
-		if(format.empty()) {
-			format.assign(Application::Name() + "-%d.log");
-		}
-
-		mkdir(filename.c_str());
-
-		// Get logfile path.
-		filename.append(TimeStamp().to_string(format.c_str()));
-
-		struct stat st;
-		if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
-			// More than one day, remove it
-			remove(filename.c_str());
-		}
-
-		// Open file
-		std::ofstream ofs;
-		ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-
-		ofs.open(filename, ofstream::out | ofstream::app);
-		ofs << timestamp << " " << module << " " << message << endl;
-		ofs.close();
 
 	}
 

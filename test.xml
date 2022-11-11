@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<config>
+<config log-debug='no' log-trace='no' log-info='no'>
 
 	<module name='information' required='no' preload='no' />
-	<!-- module name='http' required='no' / -->
+	<module name='http' required='no' />
 
-	<module name='civetweb' required='yes' preload='yes' />
+	<!-- module name='civetweb' required='no' preload='no' / -->
 
 	<attribute-list>
 	
@@ -35,7 +35,7 @@
 			</alert>
 		</state>
 		
-		<state name='s1' value='1' summary='Random 1' alert-type='alert' url='${default-url}' action='post' strip-payload='yes'>
+		<state name='s1' value='1' summary='Random 1' alert-type='default' url='${default-url}' action='post' strip-payload='yes'>
 			{"timestamp":"${timestamp(%Y/%m/%d %H:%M:%S)}"}
 		</state>
 

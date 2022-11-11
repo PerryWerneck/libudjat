@@ -1,166 +1,132 @@
 
 #include <config.h>
-#include <udjat/tools/logger.h>
+#include <private/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
 #include <mutex>
 #include <unistd.h>
 #include <syslog.h>
 #include <udjat/tools/quark.h>
+#include <algorithm>
 
 using namespace std;
 
 namespace Udjat {
 
-	//
-	// Syslog writer
-	//
-	class SysWriter {
-	private:
-		SysWriter() {
-			::openlog(Quark(Application::Name()).c_str(), LOG_PID, LOG_DAEMON);
-		}
-
-	public:
-		~SysWriter() {
-			::closelog();
-		}
-
-		SysWriter(const SysWriter &src) = delete;
-		SysWriter(const SysWriter *src) = delete;
-
-		static SysWriter & getInstance();
-
-		void write(uint8_t id, const char *message) {
-			static const int priority[] = {LOG_INFO,LOG_WARNING,LOG_ERR};
-			syslog(priority[id],"%s",message);
-
-		}
-
-	};
-
-	SysWriter & SysWriter::getInstance() {
-		static SysWriter instance;
-		return instance;
+	void Logger::syslog(bool enable) {
+		Options::getInstance().syslog = enable;
 	}
 
-	//
-	// Log writer
-	//
-	void Logger::Writer::write(int fd, const std::string &str) {
+	bool Logger::syslog() {
+		return Options::getInstance().syslog;
+	}
 
-		size_t bytes = str.size();
-		const char *ptr = str.c_str();
+	bool Logger::write(int fd, const char *text) {
 
-		while(bytes > 0) {
-
-			ssize_t sz = ::write(fd,ptr,bytes);
+		size_t bytes = strlen(text);
+		while(bytes) {
+			ssize_t sz = ::write(fd,text,bytes);
 			if(sz < 0)
-				return;
+				return false;
 			bytes -= sz;
-			ptr += sz;
-
+			text += sz;
 		}
+		return true;
 
 	}
 
-	void Logger::Writer::write(Buffer &buffer) {
+	void Logger::timestamp(int fd) {
 
-		// Remove spaces
-		size_t len = buffer.size();
-		while(len--) {
+		time_t t = time(0);
+		struct tm tm;
+		localtime_r(&t,&tm);
 
-			if(isspace(buffer[len])) {
-				buffer[len] = 0;
-			} else {
-				break;
-			}
+		char timestr[80];
+		memset(timestr,0,sizeof(timestr));
+
+		size_t len = strftime(timestr, 79, "%x %X", &tm);
+		if(len) {
+			Logger::write(fd,timestr);
+		} else {
+			Logger::write(fd,"--/--/-- --:--:--");
 		}
 
-		buffer.resize(strlen(buffer.c_str()));
+		Logger::write(fd," ");
+	}
 
-		if(buffer.empty()) {
-			return;
-		}
+	void Logger::write(Level level, const char *domain, const char *text) noexcept {
+		write(level,domain,text,false);
+	}
 
-		// Get '\t' position.
-		auto pos = buffer.find("\t");
+	void Logger::write(Level level, const char *d, const char *text, bool force) noexcept {
 
-		// If enable write console output.
-		if(console) {
+		char domain[15];
+		memset(domain,' ',15);
+		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		domain[14] = 0;
 
-			// Write current time.
-			{
-				time_t t = time(0);
-				struct tm tm;
-				localtime_r(&t,&tm);
+		// Log options.
+		Logger::Options &options{Options::getInstance()};
 
-				char timestr[80];
-				memset(timestr,0,sizeof(timestr));
+		// Serialize
+		static mutex mtx;
+		lock_guard<mutex> lock(mtx);
 
-				size_t len = strftime(timestr, 79, "%x %X", &tm);
+		// Write
+		if(options.console) {
 
-				if(len) {
-					write(1,timestr);
-				} else {
-					write(1,"--/--/-- --:--:--");
-				}
+			// Write to console.
+			static bool decorated = (getenv("TERM") != NULL);
 
-				write(1," ");
+			static const char *decorations[] = {
+				"\x1b[92m",	// Info
+				"\x1b[93m",	// Warning
+				"\x1b[91m",	// Error
+				"\x1b[95m",	// Debug
+
+				"\x1b[94m",	// Trace
+				"\x1b[96m",	// SysInfo (Allways Trace+1)
+			};
+
+			if(decorated) {
+				Logger::write(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
 			}
 
-			// Write module name & message
-			char module[12];
-			memset(module,' ',sizeof(module));
+			timestamp(1);
 
-			if(pos == string::npos) {
+			Logger::write(1,domain);
+			Logger::write(1," ");
+			Logger::write(1,text);
 
-				module[sizeof(module)-1] = 0;
-				write(1,module);
-				write(1," ");
-				write(1,buffer);
-
-			} else {
-
-				strncpy(module,buffer.c_str(),min(sizeof(module),pos));
-				for(size_t ix = 0; ix < sizeof(module); ix++) {
-					if(module[ix] < ' ') {
-						module[ix] = ' ';
-					}
-				}
-				module[sizeof(module)-1] = 0;
-				write(1,module);
-				write(1," ");
-				write(1,buffer.c_str()+pos+1);
+			if(decorated) {
+				Logger::write(1,"\x1b[0m");
 			}
 
-			write(1,"\n");
+			Logger::write(1,"\n");
 			fsync(1);
+
 		}
 
-		{
-			size_t length = buffer.size()+2;
-			char tmp[length+1];
-			size_t ix = 0;
-			for(const char *ptr = buffer.c_str(); *ptr && ix < length; ptr++) {
-				if(*ptr == '\t') {
-					tmp[ix++] = ':';
-					tmp[ix++] = ' ';
-				} else if(*ptr < ' ') {
-					tmp[ix++] = '?';
-				} else {
-					tmp[ix++] = *ptr;
-				}
-			}
-			tmp[ix] = 0;
+		if(options.syslog && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
+			//
+			// Write to syslog.
+			//
+			static const int priority[] = {
+				LOG_INFO,		// Info
+				LOG_WARNING,	// Warning
+				LOG_ERR,		// Error
+				LOG_DEBUG,		// Debug
 
-			SysWriter::getInstance().write(id,tmp);
+				LOG_DEBUG,		// Trace
+				LOG_NOTICE		// Trace+1
+			};
+
+			::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
 		}
 
-		buffer.erase();
+		// TODO: Optional write to file.
 
 	}
-
 
 }
 

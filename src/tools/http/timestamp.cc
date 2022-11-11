@@ -21,6 +21,7 @@
  #include <udjat/tools/http/timestamp.h>
  #include <cstdio>
  #include <ctype.h>
+ #include <cstring>
  #include <udjat/tools/logger.h>
 
  using namespace std;

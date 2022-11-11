@@ -25,10 +25,9 @@
  *
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <private/agent.h>
  #include <cstring>
-
-//---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 

@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/agent.h>
 
  #ifdef _WIN32
 	#include <udjat/win32/registry.h>
@@ -150,7 +150,13 @@
 
 				};
 
-				return make_shared<ReadyState>();
+				static shared_ptr<Abstract::State> instance;
+				if(!instance) {
+					debug("Creating root default state");
+					instance = make_shared<ReadyState>();
+				}
+
+				return instance;
 
 			}
 
@@ -195,47 +201,19 @@
 				return value;
 			}
 
-			bool activate(std::shared_ptr<Abstract::State> state) noexcept override {
+			bool set(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				info() << state->to_string() << endl;
-
-#if defined(HAVE_SYSTEMD)
-
-				sd_notifyf(0,"STATUS=%s",state->to_string().c_str());
-
-#elif defined(_WIN32)
-
-				try {
-
-					Win32::Registry registry("service",true);
-
-					registry.set("status",state->to_string().c_str());
-					registry.set("status_time",TimeStamp().to_string().c_str());
-
-				} catch(const std::exception &e) {
-
-					error() << "Error '" << e.what() << "' setting service state" << endl;
-
+				if(state->level() <= Level::ready) {
+					// It's a 'ready' state, set it to my own default value.
+					state = this->stateFromValue();
+					debug("Child state is ready, using the default root state");
 				}
 
-#endif // HAVE_SYSTEMD
+				Object::properties.icon = (state->ready() ? "computer" : "computer-fail");
 
-				if(!state->ready()) {
-
-					// The requested state is not ready, activate it.
-					Object::properties.icon = "computer-fail";
-					bool changed = Abstract::Agent::activate(state);
-					return changed;
-
-				}
-
-				if(this->state()->ready()) {
-					// Already ok, do not change.
+				if(!super::set(state)) {
 					return false;
 				}
-
-				Object::properties.icon = "computer";
-				super::activate(stateFromValue());
 
 				return true;
 			}
@@ -245,7 +223,7 @@
 				alert->info() << "Root alert, emitting it on startup" << endl;
 
 				// Can't start now because the main loop is not active, wait 100ms.
-				MainLoop::getInstance().insert(0,100,[alert](){
+				MainLoop::getInstance().TimerFactory(100,[alert](){
 					auto activation = alert->ActivationFactory();
 					Udjat::start(activation);
 					return false;
@@ -262,6 +240,13 @@
 		if(gethostname(hostname, 255)) {
 			cerr << "agent\tError '" << strerror(errno) << "' getting hostname" << endl;
 			strncpy(hostname,Application::Name().c_str(),255);
+		}
+
+		{
+			char *ptr = strchr(hostname,'.');
+			if(ptr) {
+				*ptr = 0;
+			}
 		}
 
 		return make_shared<Agent>(Quark(hostname).c_str());

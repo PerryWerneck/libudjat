@@ -39,12 +39,16 @@
 
 	void Application::set_gettext_package(const char *gettext_package) {
 
+#ifdef HAVE_LIBINTL
+
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
 
 #ifdef DEBUG
 		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << gettext_package << endl;
 #endif // DEBUG
+
+#endif // HAVE_LIBINTL
 
 	}
 
@@ -74,6 +78,31 @@
 
 	Application::DataDir::DataDir() : File::Path{STRINGIZE_VALUE_OF(DATADIR) "/"} {
 		append(program_invocation_short_name);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+	}
+
+	Application::LogDir::LogDir() : File::Path{"/var/log/"} {
+		append(program_invocation_short_name);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+	}
+
+	Application::SystemDataDir::SystemDataDir() : File::Path{"/usr/share/"} {
+		append(program_invocation_short_name);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
 		append("/");
 	}
 
@@ -85,15 +114,6 @@
 			}
 		}
 		append("/");
-	}
-
-	Application::DataFile::DataFile(const char *name) {
-		if(name[0] == '/' || (name[0] == '.' && name[1] == '/')) {
-			assign(name);
-		} else {
-			assign(DataDir());
-			append(name);
-		}
 	}
 
 	Application::LibDir::LibDir() : string{STRINGIZE_VALUE_OF(LIBDIR) "/"} {

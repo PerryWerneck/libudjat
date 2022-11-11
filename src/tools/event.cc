@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	mutex Event::Controller::guard;
+	recursive_mutex Event::Controller::guard;
 
 	Event::Event() {
 	}
@@ -37,7 +37,7 @@
 	void Event::trigger() noexcept {
 
 		{
-			std::lock_guard<std::mutex> lock(Controller::guard);
+			std::lock_guard<recursive_mutex> lock(Controller::guard);
 			string name = to_string();
 
 			listeners.remove_if([name](const Listener &listener){

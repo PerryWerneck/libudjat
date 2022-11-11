@@ -26,6 +26,10 @@
  #include <udjat/tools/timestamp.h>
  #include <list>
 
+ #ifndef _WIN32
+	#include <sys/socket.h>
+ #endif // !_WIN32
+
  namespace Udjat {
 
 	/// @brief Network protocol module.
@@ -96,11 +100,34 @@
 
 			} args;
 
+			/// @brief Get network interface name from IP.
+			void getnic(const sockaddr_storage &addr, std::string &nic);
+
+			/// @brief Get mac address from IP.
+			void getmac(const sockaddr_storage &addr, std::string &mac);
+
 		protected:
+
+			/// @brief Worker name.
+			const char *name = "";
+
+			/// @brief Timeouts
+			struct Timeouts {
+				time_t connect = 30;		///< @brief Connect timeout (in seconds);
+				time_t recv = 30;			///< @brief Receive timeout (in seconds);
+				time_t send = 30;			///< @brief Send timeout (in seconds);
+#ifdef _WIN32
+				time_t resolv = 30;			///< @brief Resolv timeout (in seconds);
+#endif // _WIN32
+
+				/// @brief Setup timeout values from scheme.
+				void setup(const char *scheme) noexcept;
+
+			} timeout;
 
 			/// @brief Output data (To host)
 			struct Out {
-				std::string payload;	///< @brief Request payload.
+				Udjat::String payload;	///< @brief Request payload.
 
 				Out(const char *p) : payload(p) {
 				}
@@ -111,6 +138,16 @@
 			struct In {
 				TimeStamp modification;	///< @brief Last-modified time.
 			} in;
+
+			/// @brief Connected to host, expand network variables in payload string.
+			/// @param sock The connected socket used to get network info.
+			void set_socket(int sock);
+
+			/// @brief Set local addr.
+			void set_local(const sockaddr_storage &addr) noexcept;
+
+			/// @brief Set remote addr.
+			void set_remote(const sockaddr_storage &addr) noexcept;
 
 		public:
 
@@ -230,6 +267,11 @@
 			/// @return The temporary filename.
 			std::string save();
 
+			std::ostream & info() const;
+			std::ostream & warning() const;
+			std::ostream & error() const;
+			std::ostream & trace() const;
+
 		};
 
 		virtual std::shared_ptr<Worker> WorkerFactory() const;
@@ -253,6 +295,7 @@
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
+		std::ostream & trace() const;
 
 		static const Protocol * find(const URL &url);
 		static const Protocol * find(const char *name);

@@ -34,35 +34,33 @@
 		class UDJAT_API Agent : public Udjat::Object {
 		public:
 
-			enum Event : uint8_t {
-				VALUE_CHANGED	= 0,		///< @brief Agent value has changed.
-				STATE_CHANGED	= 1,		///< @brief Agent state has changed.
+			enum Event : uint16_t {
+				STARTED			= 0x0001,		///< @brief Agent was started.
+				STOPPED			= 0x0002,		///< @brief Agent was stopped.
+				VALUE_CHANGED	= 0x0004,		///< @brief Agent value has changed.
+				STATE_CHANGED	= 0x0008,		///< @brief Agent state has changed.
+				LEVEL_CHANGED	= 0x0010,		///< @brief Agent level has changed.
 
-				CUSTOM_EVENT	= 200		///< @brief Custom event (for module use).
+				ALL 			= 0x001F		///< @brief All events.
 			};
 
 			class UDJAT_API EventListener {
 			private:
-				const void *id;
+				friend class Abstract::Agent;
+
+			protected:
 				Event event;
 
 			public:
-				constexpr EventListener(const Event e, const void *i = 0) : id(i),event(e) {
+				constexpr EventListener(const Event e) : event(e) {
 				}
 
-				virtual void trigger(Abstract::Agent &agent) = 0;
-
-				inline bool operator ==(const Event event) const noexcept {
-					return this->event == event;
-				}
-
-				inline bool operator ==(const void *id) const noexcept {
-					return this->id == id;
-				}
+				virtual void trigger(const Event e, Abstract::Agent &agent) = 0;
 
 			};
 
 		private:
+
 			static std::recursive_mutex guard;
 
 			Agent *parent = nullptr;	///< @brief Agent parent.
@@ -100,13 +98,25 @@
 			} children;
 
 			/// @brief Event listeners.
-			std::list<std::shared_ptr<EventListener>> listeners;
+			std::list<EventListener *> listeners;
 
 			/// @brief Child state has changed; compute my new state.
 			void onChildStateChange() noexcept;
 
 			/// @brief Enable disable 'running updates' flag.
-			void updating(bool running);
+			// void updating(bool running);
+
+			/// @brief Load agent properties from XML node.
+			void setup_properties(const pugi::xml_node &node) noexcept;
+
+			/// @brief Load states from XML node.
+			void setup_states(const pugi::xml_node &node) noexcept;
+
+			/// @brief Load alerts from XML node.
+			void setup_alerts(const pugi::xml_node &node) noexcept;
+
+			/// @brief Load children from XML node.
+			void setup_children(const pugi::xml_node &node) noexcept;
 
 		protected:
 
@@ -121,9 +131,13 @@
 			/// @brief Send event to listeners.
 			void notify(const Event event);
 
+			/// @brief Set agent state.
+			/// @return true if the state has changed.
+			virtual bool set(std::shared_ptr<State> state);
+
 			/// @brief Activate a new state.
 			/// @return true if the level has changed.
-			virtual bool activate(std::shared_ptr<State> state);
+			virtual bool UDJAT_DEPRECATED(activate(std::shared_ptr<State> state));
 
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;
@@ -139,12 +153,13 @@
 
 			/// @brief Run update if required.
 			/// @param forward	If true forward update to children.
-			/// @return true if the state was refreshed.
-			bool chk4refresh(bool forward = false);
+			void chk4refresh(bool forward = false) noexcept;
 
 			/// @brief Compute state from agent value.
 			/// @return Computed state or the default one if agents has no state table.
-			virtual std::shared_ptr<Abstract::State> stateFromValue() const;
+			virtual std::shared_ptr<Abstract::State> computeState();
+
+			virtual UDJAT_DEPRECATED(std::shared_ptr<Abstract::State> stateFromValue() const);
 
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
@@ -156,12 +171,6 @@
 			/// @param value New timer interval (0 disable it).
 			inline time_t timer(time_t value) noexcept {
 				return (update.timer = value);
-			}
-
-			/// @brief Reset timestamp for the next update;
-			/// @param value Value for next update.
-			inline time_t reset(time_t timestamp) {
-				return (update.next = timestamp);
 			}
 
 		public:
@@ -183,7 +192,10 @@
 			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
 
 			/// @brief Insert Listener.
-			void push_back(std::shared_ptr<EventListener> listener);
+			void push_back(EventListener *listener);
+
+			/// @brief Remove listener.
+			void remove(EventListener *listener);
 
 			/// @brief Create and insert child.
 			/// @param type The agent type.
@@ -215,8 +227,12 @@
 				return children.objects;
 			}
 
-			/// @brief Load children from xml node.
-			/// @brief node XML node with agent attributes.
+			/// @brief Setup agent from XML node.
+			/// @see setup_properties
+			/// @see setup_states
+			/// @see setup_alerts
+			/// @see setup_children
+			/// @brief node XML node with agent and children definitions.
 			void setup(const pugi::xml_node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
@@ -229,7 +245,19 @@
 
 			/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
 			/// @param seconds Seconds for next refresh.
-			void requestRefresh(time_t seconds = 0);
+			void UDJAT_DEPRECATED(requestRefresh(time_t seconds = 0));
+
+			/// @brief Set time for the next update (force a refresh in the next cicle if seconds=0).
+			/// @param seconds Seconds for next refresh.
+			/// @see reset
+			/// @return Update timestamp after change.
+			time_t sched_update(time_t seconds = 0);
+
+			/// @brief Reset timestamp for the next update;
+			/// @param value Value for next update.
+			/// @see sched_update
+			/// @return Update timestamp after change.
+			time_t reset(time_t timestamp);
 
 			UDJAT_DEPRECATED(inline time_t getUpdateInterval() const noexcept) {
 				return update.timer;
@@ -278,7 +306,7 @@
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
-			void for_each(std::function<void(std::shared_ptr<EventListener> listener)> method);
+			void for_each(const std::function<void(EventListener &listener)> &method);
 
 			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 				return children.agents.begin();
@@ -297,11 +325,19 @@
 			bool operator==(const Abstract::State &state) const noexcept;
 
 			virtual void get(Response &response);
+			virtual void get(Report &report);
 			virtual void get(const Request &request, Response &response);
 			virtual void get(const Request &request, Report &report);
 
 			/// @brief Get formatted value.
-			virtual std::string to_string() const override;
+			virtual std::string to_string() const noexcept override;
+
+			const char * summary() const noexcept override;
+			const char * icon() const noexcept override;
+			const char * label() const noexcept override;
+
+			/// @brief Get smart pointer.
+			std::shared_ptr<Agent> to_shared_ptr();
 
 			/// @brief Assign value from string.
 			virtual bool assign(const char *value);

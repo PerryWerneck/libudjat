@@ -18,30 +18,26 @@
  */
 
  #include <config.h>
- #include "private.h"
+ #include <private/mainloop.h>
  #include <private/misc.h>
+
+ #ifdef _WIN32
+	#include <udjat/win32/exception.h>
+ #endif // _WIN32
 
  namespace Udjat {
 
 	std::mutex MainLoop::guard;
 
 	void MainLoop::quit() {
+#ifdef _WIN32
+		if(!PostMessage(hwnd,WM_STOP,0,0)) {
+			cerr << "MainLoop\tError posting WM_STOP message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
+		}
+#else
 		enabled = false;
 		wakeup();
-	}
-
-	void MainLoop::remove(const void *id) {
-
-		lock_guard<mutex> lock(guard);
-
-		timers.active.remove_if([id](auto timer){
-			return timer->id == id;
-		});
-
-		handlers.remove_if([id](auto handler){
-			return handler->id() == id;
-		});
-
+#endif // _WIN32
 	}
 
 

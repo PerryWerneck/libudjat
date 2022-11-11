@@ -27,6 +27,33 @@
 
  namespace Udjat {
 
+	void Module::Controller::init(const std::string &filename, const pugi::xml_node &node) {
+
+		cout << "module\tLoading '" << filename << "'" << endl;
+
+		// Load module.
+		dlerror();
+		void * handle = dlopen(filename.c_str(),RTLD_NOW|RTLD_LOCAL);
+		if(!handle) {
+			throw runtime_error(dlerror());
+		}
+
+		try {
+
+			auto module = init(handle,node);
+			if(!module) {
+				throw runtime_error("Module initialization has failed");
+			}
+
+		} catch(...) {
+
+			dlclose(handle);
+			throw;
+
+		}
+
+	}
+
 	Module * Module::Controller::init(void *handle, const pugi::xml_node &node) {
 
 		Module * (*init_from_xml)(const pugi::xml_node &node)

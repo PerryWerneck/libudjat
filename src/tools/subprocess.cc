@@ -54,67 +54,25 @@
 
 	/// @brief Called on subprocess stdout.
 	void SubProcess::onStdOut(const char *line) {
-		info() << line << endl;
+		trace() << line << endl;
 	}
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		error() << line << endl;
+		trace() << line << endl;
 	}
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-
-		Logger::Message msg("Process '{}' finishes with rc={}",command,rc);
-
-		if(rc) {
-			onStdOut(msg.c_str());
-		} else {
-			onStdErr(msg.c_str());
-		}
-
+		trace() <<  "Process '" << command << "' finishes with rc=" << rc << endl;
 	}
 
 	/// @brief Called on subprocess abnormal exit.
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void SubProcess::onSignal(int sig) {
-		onStdErr(Logger::Message{"Process '{}' finishes with signal {}",command,std::to_string(sig)}.c_str());
+		trace() << "Process '" << command << "' finishes with signal " << sig << endl;
 	}
 	#pragma GCC diagnostic pop
-
-	void SubProcess::parse(int id) {
-
-		char *from = pipes[id].buffer;
-		char *to = strchr(from,'\n');
-		while(to) {
-
-			*to = 0;
-			if(to > from && *(to-1) == '\r') {
-				*(to-1) = 0;
-			}
-
-			if(id) {
-				onStdErr(from);
-			} else {
-				onStdOut(from);
-			}
-
-			from = to+1;
-			to = strchr(from,'\n');
-		}
-
-		if(from && from != pipes[id].buffer) {
-			pipes[id].length = strlen(from);
-			char *to = pipes[id].buffer;
-			while(*from) {
-				*(to++) = *(from++);
-			}
-			*to = 0;
-		}
-
-		pipes[id].length = strlen(pipes[id].buffer);
-
-	}
 
  }

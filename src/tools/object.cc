@@ -27,17 +27,34 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
  #include <udjat/factory.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(Quark(node.attribute("name").as_string("unnamed")).c_str()) {
+	static const char * NameFactory(const pugi::xml_node &node) noexcept {
+
+		const char *name = node.attribute("name").as_string();
+
+		if(!(name && *name)) {
+			clog << "xml\t<" << node.name() << "> doesn't have the required attribute 'name', using default" << endl;
+			name = node.name();
+		}
+
+		return Quark(name).c_str();
+	}
+
+	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(NameFactory(node)) {
+	}
+
+	const char * NamedObject::name() const noexcept {
+		return objectName;
 	}
 
 	bool NamedObject::set(const pugi::xml_node &node) {
 		if(!(objectName && *objectName)) {
-			objectName = Quark(node.attribute("name").as_string(objectName)).c_str();
+			objectName = NameFactory(node);
 			return true;
 		}
 		return false;
@@ -68,7 +85,7 @@
 		return value;
 	}
 
-	std::string NamedObject::to_string() const {
+	std::string NamedObject::to_string() const noexcept {
 		return c_str();
 	}
 
@@ -125,6 +142,26 @@
 		return value;
 	}
 
+	const char * Object::label() const noexcept {
+		return properties.label;
+	}
+
+	const char * Object::icon() const noexcept {
+		return properties.icon;
+	}
+
+	const char * Object::summary() const noexcept {
+		return properties.summary;
+	}
+
+	const char * Abstract::Object::name() const noexcept {
+		return "";
+	}
+
+	std::string Abstract::Object::to_string() const noexcept {
+		return name();
+	}
+
 	Value & Object::getProperties(Value &value) const noexcept {
 
 		NamedObject::getProperties(value);
@@ -146,11 +183,11 @@
 		if(!strcasecmp(key,"label")) {
 			value = properties.label;
 		} else if(!strcasecmp(key,"summary")) {
-			value = properties.summary;
+			value = summary();
 		} else if(!strcasecmp(key,"url")) {
 			value = properties.url;
 		} else if(!strcasecmp(key,"icon")) {
-			value = properties.icon;
+			value = icon();
 		} else {
 			return false;
 		}
@@ -175,16 +212,20 @@
 		return hash;
 	}
 
-	std::ostream & NamedObject::info() const {
+	std::ostream & Abstract::Object::info() const {
 		return std::cout << name() << "\t";
 	}
 
-	std::ostream & NamedObject::warning() const {
+	std::ostream & Abstract::Object::warning() const {
 		return std::clog << name() << "\t";
 	}
 
-	std::ostream & NamedObject::error() const {
+	std::ostream & Abstract::Object::error() const {
 		return std::cerr << name() << "\t";
+	}
+
+	std::ostream & Abstract::Object::trace() const {
+		return Logger::trace() << name() << "\t";
 	}
 
 	void Abstract::Object::for_each(const pugi::xml_node &root, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler) {

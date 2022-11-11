@@ -42,6 +42,8 @@
 	#undef DEBUG
  #endif // DEBUG
 
+ #define THREAD_ID hex << ((unsigned long long) pthread_self()) << dec
+
  using namespace std;
 
 /*---[ Implement ]----------------------------------------------------------------------------------*/
@@ -52,7 +54,7 @@
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
-				Logger(name).info("Creating standard pool with {} threads",limits.threads);
+				cout << name << "\tCreating standard pool with " << limits.threads << " threads" << endl;
 			}
 		};
 
@@ -96,8 +98,6 @@
 
 	void ThreadPool::stop() {
 
-		Logger logger(name);
-
 		wait();
 
 		// Wait for tasks
@@ -134,28 +134,29 @@
 		return tasks.size();
 	}
 
-	void ThreadPool::wait() {
+	bool ThreadPool::wait() {
+		return wait(Config::get(name,"wait-timeout",5));
+	}
 
-		Logger logger(name);
+	bool ThreadPool::wait(time_t seconds) {
 
 		if(size()) {
 
-			logger.warning("Waiting for {} tasks on pool",tasks.size());
+			clog << "Waiting for " << tasks.size() << " tasks on pool" << endl;
 
-			for(size_t f=0; f < 100000 && size() > 0; f++) {
+			seconds *= ((time_t) 10);
+			for(time_t f=0; f < seconds && size() > 0; f++) {
 				usleep(100);
 			}
 
 			if(size()) {
-				logger.error("Timeout waiting for {} tasks on pool",tasks.size());
+				cerr << "Timeout waiting for " << tasks.size() << " tasks on pool" << endl;
 			}
 
 		}
 
-	}
+		return size() != 0;
 
-	size_t ThreadPool::push(std::function<void()> callback) {
-		return push(this->name,callback);
 	}
 
 	size_t ThreadPool::push(const char *name, std::function<void()> callback) {
@@ -208,15 +209,15 @@
 		pool->threads.active++;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop starts - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop(" << THREAD_ID << ") starts - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
 		while(pool->threads.active <= pool->limits.threads) {
 
-			Task task;
 
 			while(pool->limits.threads) {
 
+				Task task;
 				if(pool->pop(task)) {
 
 					try {
@@ -226,13 +227,13 @@
 						}
 
 #ifdef DEBUG
-						cout << pool->name << "\tRunning worker '" << task.name << "'" << endl;
+						cout << pool->name << "\tRunning worker '" << task.name << "' on MainLoop(" << THREAD_ID << ")" << endl;
 #endif // DEBUG
 
 						task.callback();
 
 #ifdef DEBUG
-						cout << pool->name << "\tWorker '" << task.name << "' is complete" << endl;
+						cout << pool->name << "\tWorker '" << task.name << "' is complete on MainLoop(" << THREAD_ID << ")" << endl;
 #endif // DEBUG
 
 						if(task.name && task.name != pool->name) {
@@ -259,7 +260,7 @@
 
 #ifdef DEBUG
 			cout	<< pool->name
-					<< "\tMainLoop is waiting - ActiveThreads: "
+					<< "\tMainLoop(" << THREAD_ID << ") is waiting - ActiveThreads: "
 					<< pool->threads.active.load() << "/" << pool->limits.threads
 					<< " delay=" << pool->limits.idle << endl;
 #endif // DEBUG
@@ -273,13 +274,13 @@
 
 			if(rc == std::cv_status::timeout) {
 #ifdef DEBUG
-				cout << pool->name << "\tTimeout waiting for tasks" << endl;
+				cout << pool->name << "\tTimeout waiting for tasks on MainLoop(" << THREAD_ID << ")" << endl;
 #endif // DEBUG
 				break;
 			}
 
 #ifdef DEBUG
-			cout << pool->name << "\tMainLoop is waking up - ActiveThreads: " << pool->threads.active.load() << endl;
+			cout << pool->name << "\tMainLoop(" << THREAD_ID << ") is waking up - ActiveThreads: " << pool->threads.active.load() << endl;
 #endif // DEBUG
 
 		}
@@ -287,7 +288,7 @@
 		pool->threads.active--;
 
 #ifdef DEBUG
-		cout << pool->name << "\tMainLoop ends - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
+		cout << pool->name << "\tMainLoop(" << THREAD_ID << ") ends - ActiveThreads: " << pool->threads.active.load() << "/" << pool->limits.threads << endl;
 #endif // DEBUG
 
 	}

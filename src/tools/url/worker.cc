@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/protocol.h>
+ #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -28,6 +29,8 @@
  #include <udjat/tools/file.h>
  #include <udjat/tools/base64.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/ip.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -35,16 +38,86 @@
 
  namespace Udjat {
 
-	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
+
+		if(!args.url.empty()) {
+
+			size_t pos = args.url.find("://");
+			if(pos != string::npos) {
+				timeout.setup(URL::Scheme{args.url.c_str(),pos}.c_str());
+			}
+
+		}
+
 		Protocol::Controller::getInstance().insert(this);
 	}
 
-	Protocol::Worker::Worker(const URL &url, const HTTP::Method method, const char *payload) : args(url, method), out(payload) {
-		Protocol::Controller::getInstance().insert(this);
+	Protocol::Worker::Worker(const char *url, const HTTP::Method method, const char *payload) : Worker(URL(url),method,payload) {
 	}
 
 	Protocol::Worker::~Worker() {
 		Protocol::Controller::getInstance().remove(this);
+	}
+
+	void Protocol::Worker::Timeouts::setup(const char *scheme) noexcept {
+
+		if(scheme && *scheme) {
+
+			debug("Setting worker timeouts for scheme '",scheme,"'");
+
+			connect = Config::Value<time_t>(scheme,"ConnectTimeout",connect);
+			recv = Config::Value<time_t>(scheme,"ReceiveTimeout",recv);
+			send = Config::Value<time_t>(scheme,"SendTimeout",send);
+
+			debug("connect=",connect,", recv=",recv,", send=",send);
+
+#ifdef _WIN32
+			resolv = Config::Value<time_t>(scheme,"ResolveTimeout",resolv);
+#endif // _WIN32
+
+		}
+
+	}
+
+	void Protocol::Worker::set_local(const sockaddr_storage &addr) noexcept {
+
+		out.payload.expand([this,addr](const char *key, std::string &value){
+
+			if(strcasecmp(key,"ipaddr") == 0) {
+				value = to_string(addr);
+				return true;
+			}
+
+			if(strcasecmp(key,"network-interface") == 0) {
+				getnic(addr,value);
+				return true;
+			}
+
+			if(strcasecmp(key,"macaddress") == 0) {
+				getmac(addr,value);
+				return true;
+			}
+
+			return false;
+
+		},false,false);
+
+	}
+
+	/// @brief Set remote addr.
+	void Protocol::Worker::set_remote(const sockaddr_storage &addr) noexcept {
+
+		out.payload.expand([addr](const char *key, std::string &value){
+
+			if(strcasecmp(key,"hostip") == 0) {
+				value = to_string(addr);
+				return true;
+			}
+
+			return false;
+
+		},false,false);
+
 	}
 
 	Protocol::Worker & Protocol::Worker::credentials(const char UDJAT_UNUSED(*user), const char UDJAT_UNUSED(*passwd)) {
@@ -76,6 +149,16 @@
 		}
 
 		args.url = url;
+
+		if(!args.url.empty()) {
+
+			size_t pos = args.url.find("://");
+			if(pos != string::npos) {
+				timeout.setup(URL::Scheme{args.url.c_str(),pos}.c_str());
+			}
+
+		}
+
 		return *this;
 	}
 
@@ -107,34 +190,6 @@
 			.write(get(progress))
 			.save(filename,replace);
 
-		/*
-		String text = get(progress);
-
-		// TODO: Make backup.
-
-		size_t length = text.size();
-		int fd = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0777);
-		if(fd < 0) {
-			throw system_error(errno,system_category(),filename);
-		}
-
-		const char *ptr = text.c_str();
-		while(length) {
-			ssize_t bytes = write(fd,ptr,length);
-			if(bytes < 0) {
-				int err = errno;
-				::close(fd);
-				throw system_error(err,system_category(),filename);
-			} else if(bytes == 0) {
-				::close(fd);
-				throw runtime_error(string{"Unexpected error writing "} + filename);
-			}
-			ptr += bytes;
-			length -= bytes;
-		}
-		::close(fd);
-		*/
-
 		return true;
 	}
 
@@ -148,6 +203,23 @@
 	std::string Protocol::Worker::filename() {
 		return filename(dummy_progress);
 	}
+
+	std::ostream & Protocol::Worker::info() const {
+		return cout << name << "\t";
+	}
+
+	std::ostream & Protocol::Worker::warning() const {
+		return clog << name << "\t";
+	}
+
+	std::ostream & Protocol::Worker::error() const {
+		return cerr << name << "\t";
+	}
+
+	std::ostream & Protocol::Worker::trace() const {
+		return Logger::trace() << name << "\t";
+	}
+
 
  }
 

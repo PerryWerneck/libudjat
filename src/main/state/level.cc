@@ -17,25 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
-
+ #include <config.h>
+ #include <private/state.h>
 
  using namespace std;
 
-//---[ Implement ]------------------------------------------------------------------------------------------
-
-static const char * levelnames[] = {
+ static const char * levelnames[] = {
 	"undefined",
 	"unimportant",
 	"ready",
 	"warning",
 	"error",
 	"critical"
-};
+ };
 
-#define LEVEL_COUNT (sizeof(levelnames)/sizeof(levelnames[0]))
+ #define LEVEL_COUNT (sizeof(levelnames)/sizeof(levelnames[0]))
 
-namespace Udjat {
+ namespace Udjat {
 
 	Level LevelFactory(const pugi::xml_node &node) {
 		return LevelFactory(node.attribute("level").as_string("unimportant"));
@@ -52,9 +50,9 @@ namespace Udjat {
 
 	}
 
-}
+ }
 
-namespace std {
+ namespace std {
 
 	const char * to_string(const Udjat::Level level) {
 		if(level > LEVEL_COUNT)
@@ -62,4 +60,4 @@ namespace std {
 		return levelnames[level];
 	}
 
-}
+ }

@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-08 15:02-0300\n"
-"PO-Revision-Date: 2022-09-08 15:03-0300\n"
+"POT-Creation-Date: 2022-10-19 15:27-0300\n"
+"PO-Revision-Date: 2022-10-17 22:53-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -22,38 +22,127 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
 "X-Generator: Gtranslator 3.38.0\n"
 
-#: src/main/agent/state.cc:80 src/main/agent/state.cc:155
+#: src/main/agent/controller.cc:47
+msgid "Agent controller"
+msgstr "Controlador de agentes"
+
+#: src/main/alert/controller.cc:40
+msgid "Alert controller"
+msgstr "Controlador de alertas"
+
+#: src/main/agent/state.cc:80 src/main/agent/state.cc:153
 msgid "Error switching state"
 msgstr "Erro ao trocar estado"
+
+#: src/tools/os/windows/systemservice.cc:478
+#: src/tools/os/windows/systemservice.cc:483
+msgid "Invalid timer value"
+msgstr "Valor de timer inválido"
+
+#: src/tools/timestamp.cc:61
+msgid "Less than one minute"
+msgstr "Menos de um minuto"
+
+#: src/tools/url/protocols/file.cc:35
+msgid "Local file protocol"
+msgstr "Protocol de arquivo local"
 
 #: src/main/agent/root.cc:147
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/main/agent/root.cc:147
+#: src/main/agent/get.cc:55
+msgid "No reports on this path"
+msgstr "Nenhum relatório no caminho informado"
+
+#: src/tools/url/protocols/script.cc:36
+msgid "Subprocess/Script protocol"
+msgstr "Protocolo para subprocesso ou script"
+
+#: src/tools/systemservice.cc:306 src/main/agent/root.cc:147
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:86 src/main/agent/state.cc:161
+#: src/main/agent/state.cc:86 src/main/agent/state.cc:158
 msgid "Unexpected error switching state"
 msgstr "Erro inesperado ao trocar de estado"
 
-#: src/tools/string/string.cc:210
+#: src/tools/timestamp.cc:88
+msgid "day"
+msgstr "dia"
+
+#: src/tools/timestamp.cc:88
+msgid "days"
+msgstr "dias"
+
+#: src/tools/string/string.cc:216
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:198
+#: src/tools/string/string.cc:204
 msgid "false"
 msgstr "falso"
 
-#: src/tools/string/string.cc:190
+#: src/tools/timestamp.cc:90
+msgid "hour"
+msgstr "hora"
+
+#: src/tools/timestamp.cc:90
+msgid "hours"
+msgstr "horas"
+
+#: src/tools/timestamp.cc:92
+msgid "minute"
+msgstr "minuto"
+
+#: src/tools/timestamp.cc:92
+msgid "minutes"
+msgstr "minutos"
+
+#: src/tools/string/string.cc:53 src/tools/string/string.cc:196
 msgid "no"
 msgstr "não"
 
-#: src/tools/string/string.cc:194
+#: src/main/state/state.cc:258
+msgid "off"
+msgstr "desligado"
+
+#: src/main/state/state.cc:258
+msgid "on"
+msgstr "ligado"
+
+#: src/tools/string/string.cc:200
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:186
+#: src/tools/string/string.cc:53 src/tools/string/string.cc:192
 msgid "yes"
 msgstr "sim"
+
+#: src/tools/timestamp.cc:74
+msgid "{d} {D}"
+msgstr "{d} {D}"
+
+#: src/tools/timestamp.cc:76
+msgid "{d} {D} and {h} {H}"
+msgstr "{d} {D} e {h} {H}"
+
+#: src/tools/timestamp.cc:78
+msgid "{d} {D} and {m} {M}"
+msgstr "{d} {D} e {m} {M}"
+
+#: src/tools/timestamp.cc:80
+msgid "{d} {D}, {h} {H} and {m} {M}"
+msgstr "{d} {D}, {h} {H} e {m} {M}"
+
+#: src/tools/timestamp.cc:75
+msgid "{h} {H}"
+msgstr "{h} {H}"
+
+#: src/tools/timestamp.cc:79
+msgid "{h} {H} and {m} {M}"
+msgstr "{h} {H} e {m} {M}"
+
+#: src/tools/timestamp.cc:77
+msgid "{m} {M}"
+msgstr "{m} {M}"

@@ -17,119 +17,128 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/handler.h>
+ #include <private/mainloop.h>
  #include <private/misc.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
+ #include <fcntl.h>
 
  namespace Udjat {
 
-	void MainLoop::Handler::enable() noexcept {
-		enabled = true;
-		MainLoop::getInstance().wakeup();
-	}
+	MainLoop::Handler::Handler(int f, const Event e) : fd(f), events(e) {
+		MainLoop::getInstance();
 
-	const void * MainLoop::Handler::id() const noexcept {
-		return (void *) this;
-	}
+		// Set the FD to nonblocking mode.
+		// int flags = fcntl(fd, F_GETFL, 0);
+		// fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
-	void MainLoop::Handler::disable() noexcept {
-		enabled = false;
-		MainLoop::getInstance().wakeup();
-	}
-
-	void MainLoop::Handler::clear() noexcept {
-		fd = -1;
-		enabled = false;
-		MainLoop::getInstance().wakeup();
+#ifdef DEBUG
+		cout << "handler\tCreating handler " << hex << ((void *) this) << dec << endl;
+#endif // DEBUG
 	}
 
 	MainLoop::Handler::~Handler() {
+#ifdef DEBUG
+		cout << "handler\tDestroying handler " << hex << ((void *) this) << dec << endl;
+#endif // DEBUG
+		disable();
 	}
 
-	void MainLoop::push_back(std::shared_ptr<MainLoop::Handler> handler) {
+	bool MainLoop::Handler::enabled() const noexcept {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+
+		lock_guard<mutex> lock(mainloop.guard);
+		for(auto handler : mainloop.handlers) {
+			if(handler == this) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	bool MainLoop::Handler::enable() noexcept {
+
+#ifdef DEBUG
+		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << endl;
+#endif // DEBUG
+
+		MainLoop &mainloop{MainLoop::getInstance()};
 
 		{
-			lock_guard<mutex> lock(guard);
-			handlers.push_back(handler);
+			lock_guard<mutex> lock(mainloop.guard);
+
+			// Is the handler enabled?
+			for(auto handler : mainloop.handlers) {
+				if(handler == this) {
+					return false;
+				}
+			}
+
+			mainloop.handlers.push_back(this);
 		}
 
-		wakeup();
+		mainloop.wakeup();
+
+		return true;
+	}
+
+	void MainLoop::Handler::disable() noexcept {
+
+		MainLoop &mainloop{MainLoop::getInstance()};
+		lock_guard<mutex> lock(mainloop.guard);
+
+#ifdef DEBUG
+		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << " count=" << mainloop.handlers.size() << endl;
+#endif // DEBUG
+
+		mainloop.handlers.remove(this);
+		mainloop.wakeup();
 
 	}
 
-	void MainLoop::remove(std::shared_ptr<Handler> handler) {
+	ssize_t MainLoop::Handler::read(void *buf, size_t count) {
+		return ::read(fd,buf,count);
+	}
 
-		{
-			lock_guard<mutex> lock(guard);
-			handlers.remove(handler);
+	void MainLoop::Handler::close() {
+		if(fd != -1) {
+			disable();
+			::close(fd);
+			fd = -1;
+		}
+	}
+
+	void MainLoop::Handler::flush() {
+	}
+
+	void MainLoop::Handler::set(int fd) {
+
+		if(this->fd != -1) {
+			throw system_error(EBUSY,system_category(),"Handler already have a file descriptor");
 		}
 
-		handler->fd = -1;
-		handler->disable();
+		// Set the FD to nonblocking mode.
+		// int flags = fcntl(fd, F_GETFL, 0);
+		// fcntl(fd, F_SETFL, flags | O_NONBLOCK);
+
+		this->fd = fd;
 
 	}
 
-	std::shared_ptr<MainLoop::Handler> MainLoop::insert(const void *id, int fd, const Event event, const function<bool(const Event event)> call) {
-
-		class CallHandler : public MainLoop::Handler {
-		private:
-			const void * identifier;
-			const function<bool(const Event event)> callback;
-
-		protected:
-			bool call(const Event event) override {
-				return callback(event);
-			}
-
-		public:
-			CallHandler(const void *i, int fd, const Event event, const function<bool(const Event event)> c) : Handler(fd,event), identifier(i), callback(c) {
-			}
-
-			const void * id() const noexcept override {
-				return identifier;
-			}
-
-		};
-
-		std::shared_ptr<Handler> handler = make_shared<CallHandler>(id,fd,event,call);
-		push_back(handler);
-		return handler;
-
-	}
-
-
-#ifndef _WIN32
-	nfds_t MainLoop::getHandlers(struct pollfd **fds, nfds_t *length) {
-
-		lock_guard<mutex> lock(guard);
-
-		if(*length <= handlers.size()) {
-			*length = handlers.size()+1;	// 1 extra for the eventfd.
-			*fds = (struct pollfd *) realloc(*fds, sizeof(struct pollfd) * *length);
+	void MainLoop::Handler::set(const Event events) {
+		this->events = events;
+		if(enabled()) {
+			MainLoop::getInstance().wakeup();
 		}
-
-		// Get waiting sockets.
-		nfds_t nfds = 0;
-		for(auto handle : handlers) {
-
-			if(!handle->enabled || handle->fd <=0) {
-				handle->index = -1;
-			} else {
-				handle->index = nfds;
-				(*fds)[nfds].fd = handle->fd;
-				(*fds)[nfds].events = handle->events;
-				(*fds)[nfds].revents = 0;
-				nfds++;
-			}
-
-//#ifdef DEBUG
-//			cout << "Handle " << handle->id() << " fd=" << handle->fd << " index=" << handle->index << " event=" << handle->events << endl;
-//#endif // DEBUG
-
-		}
-
-		return nfds;
 	}
-#endif // _WIN32
 
  }
 

@@ -1,11 +1,32 @@
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
 
-#include "private.h"
-#include <iostream>
-#include <udjat/moduleinfo.h>
+/*
+ * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published
+ * by the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 
-using namespace std;
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <private/factory.h>
+ #include <iostream>
+ #include <udjat/moduleinfo.h>
+ #include <udjat/tools/logger.h>
 
-namespace Udjat {
+ using namespace std;
+
+ namespace Udjat {
 
 	recursive_mutex Factory::Controller::guard;
 
@@ -15,26 +36,9 @@ namespace Udjat {
 		return instance;
 	}
 
-	/*
-	void Factory::Controller::getInfo(Response &response) noexcept {
-
-		response.reset(Value::Array);
-
-		for(auto factory : factories) {
-
-			Value &value  = response.append(Value::Object);
-
-			value["name"] = factory->name();
-			factory->module.get(value);
-
-		}
-
-	}
-	*/
-
 	void Factory::Controller::insert(Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
-		cout << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+		Logger::trace() << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
 		factories.push_back(factory);
 	}
 
@@ -42,10 +46,6 @@ namespace Udjat {
 		lock_guard<recursive_mutex> lock(guard);
 
 		if(name && *name) {
-#ifdef DEBUG
-			cout << "factories\tSearching for '" << name << "' factory" << endl;
-#endif // DEBUG
-
 			for(auto factory : factories) {
 				if(!strcasecmp(factory->name(),name)) {
 					return factory;
@@ -59,7 +59,7 @@ namespace Udjat {
 
 	void Factory::Controller::remove(Factory *factory) {
 
-		cout << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+		Logger::trace() << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
 
 		lock_guard<recursive_mutex> lock(guard);
 		factories.remove_if([factory](const Factory *obj){
@@ -80,4 +80,4 @@ namespace Udjat {
 		return false;
 	}
 
-}
+ }

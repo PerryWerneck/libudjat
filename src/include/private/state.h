@@ -19,16 +19,12 @@
 
  #pragma once
 
- #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
+ #include <config.h>
+ #include <udjat/agent.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
-
- namespace Udjat {
-
- }
 

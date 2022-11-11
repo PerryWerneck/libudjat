@@ -26,54 +26,70 @@
 #include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
 #include <udjat/tools/object.h>
+#include <udjat/tools/logger.h>
 #include <udjat/tools/xml.h>
-
-#ifdef _WIN32
-	#define MODULE_EXT ".dll"
-	#include <udjat/win32/exception.h>
-#else
-	#include <dlfcn.h>
-	#include <unistd.h>
-	#define MODULE_EXT ".so"
-#endif // _WIN32
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
+	bool Module::Controller::load(const pugi::xml_node &node) {
+
+		static const char * attributes[] = {
+			"name",
+			"altname",
+			"fallback-to"
+		};
+
+		for(const char *attribute : attributes) {
+
+			string filename = locate(node.attribute(attribute).as_string());
+
+			if(!filename.empty()) {
+
+				for(auto module : modules) {
+
+					// Check if the module is already loaded.
+					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+						debug("module '",filename,"' is already loaded");
+						return true;
+					}
+
+				}
+
+				init(filename, node);
+				return false;
+
+			}
+
+		}
+
+		// Not found.
+		if(node.attribute("required").as_bool(true)) {
+			throw runtime_error("Cant load required module");
+		}
+
+		return false;
+	}
+
 	bool Module::preload(const char *pathname) noexcept {
 
 		bool rc = true;
 
-		/*
-		// Preload from configuration file.
+		// Preload modules from config
 		{
-			Config::Value<vector<string>> modules("modules","load-at-startup","");
+			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
 
-			if(!modules.empty()) {
+			debug("load-at-startup size=",modules.size());
+			if(modules.size()) {
 				cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
-
-				Config::Value<bool> required("modules","required",false);
-				for(string &module : modules) {
-
-					try {
-
-
-						load(module.c_str(),required);
-
-					} catch(const std::exception &e) {
-
-						cerr << "modules\tCant load '" << module << "': " << e.what() << endl;
-						rc = false;
-
-					}
-
+				for(const std::string &module : modules) {
+					Module::load(module.c_str(),true);
 				}
 			}
-
 		}
-		*/
 
+		// Preload modules from XML
 		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
 
 			// Preload from path.
@@ -107,83 +123,8 @@ namespace Udjat {
 	}
 
 	void Module::load(const char *name, bool required) {
-		pugi::xml_node node;
-		node.append_attribute("required").set_value(required);
-		load(node);
+		throw system_error(ENOTSUP,system_category(),"Non XML module load was not implemented");
 	}
-
-	/*
-	void Module::Controller::load(const pugi::xml_node &node) {
-
-		const char * name = node.attribute("name").as_string();
-
-		if(!(name && *name)) {
-			throw runtime_error("Required attribute 'name' is missing");
-		}
-
-		// Check if the module is already loaded.
-		if(find(name)) {
-#ifdef DEBUG
-			cout << "module\t**** The module '" << name << "' was already loaded" << endl;
-#endif // DEBUG
-			return;
-		}
-
-#ifdef DEBUG
-			cout << "module\t**** Opening module '" << name << "'" << endl;
-#endif // DEBUG
-
-		// Open module.
-		auto handle = open(name,Object::getAttribute(node,"modules","required",true));
-
-		if(handle) {
-
-			try {
-
-				auto module = init(handle,node);
-				module->handle = handle;
-
-			} catch(...) {
-
-				close(handle);
-				throw;
-
-			}
-
-		}
-
-	}
-
-	void Module::Controller::load(const char *name, bool required) {
-
-		// Check if the module is already loaded.
-		if(find(name)) {
-#ifdef DEBUG
-			cout << "module\t**** The module '" << name << "' was already loaded" << endl;
-#endif // DEBUG
-			return;
-		}
-
-		auto handle = open(name,required);
-
-		if(handle) {
-
-			try {
-
-				auto module = init(handle);
-				module->handle = handle;
-
-			} catch(...) {
-
-				close(handle);
-				throw;
-
-			}
-
-		}
-
-	}
-	*/
 
 }
 

@@ -21,6 +21,7 @@
 #include <private/module.h>
 #include <udjat/tools/configuration.h>
 #include <udjat/tools/threadpool.h>
+#include <udjat/tools/logger.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/exception.h>
@@ -38,6 +39,7 @@ namespace Udjat {
 
 	void Module::Controller::unload() {
 
+		debug("Unloading ",modules.size()," modules");
 		while(modules.size()) {
 
 			Module * module;
@@ -57,30 +59,34 @@ namespace Udjat {
 			auto handle = module->handle;
 			auto keep_loaded = module->keep_loaded;
 
+#ifdef DEBUG
+			cout << name << "\tkeep-loaded=" << (keep_loaded ? "ON" : "OFF") << endl;
+#endif // DEBUG
 			cout << name << "\t" << (keep_loaded ? "Deactivating" : "Unloading") << " '" << description << "'" << endl;
 
 			try {
 
 				// First delete module
-#ifdef DEBUG
-				cout << name << "\t**** Deleting module " << hex << module << dec << endl;
-#endif // DEBUG
+
+				debug("Deleting module '",name,"'");
 				delete module;
-#ifdef DEBUG
-				cout << name << "\t**** module " << hex << module << dec << " deleted" << endl;
-#endif // DEBUG
+				debug("Module '",name,"' deleted");
 
 				if(handle) {
 
+					debug("Deinitializing module '",name,"'");
 					if(!deinit(handle)) {
 						clog << name << "\tKeeping module loaded by deinit() request" << endl;
 						continue;
 					}
+					debug("Module '",name,"' deinitialized");
 
 					if(keep_loaded) {
 						clog << name << "\tKeeping module loaded by configuration request" << endl;
 					} else {
+						debug("Unloading module '",name,"'");
 						unload(handle,name,description);
+						debug("Module '",name,"' unloaded");
 					}
 
 				}
@@ -92,6 +98,7 @@ namespace Udjat {
 			}
 
 		}
+		debug("Module unloading complete");
 
 	}
 

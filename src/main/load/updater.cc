@@ -26,6 +26,7 @@
  #include <private/misc.h>
  #include <sys/types.h>
  #include <sys/stat.h>
+ #include <private/logger.h>
  #include <udjat/tools/logger.h>
 
  #ifdef HAVE_SYSTEMD
@@ -44,23 +45,15 @@
 
 	Updater::Updater(const char *pathname) : path{pathname} {
 
-		/*
-		// First scan for modules.
-		if(Config::Value<bool>("modules","preload-from-xml",true)) {
-			cout << "modules\tPreloading from " << path << endl;
-			for_each([](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					Module::load(node);
-				}
-			});
-		}
-		*/
-
 		// Then check for file updates.
 		for_each([this](const char *filename, const pugi::xml_document &doc){
 
 			auto node = doc.document_element();
 
+			/// Setup logger.
+			Logger::setup(node);
+
+			// Check for update timer.
 			const char *url = node.attribute("src").as_string();
 			if(url && *url) {
 
@@ -116,6 +109,8 @@
 			try {
 
 				auto node = doc.document_element();
+				Logger::setup(node);
+
 				const char *path = node.attribute("path").as_string();
 
 				if(path && *path) {
