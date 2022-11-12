@@ -149,5 +149,8 @@
 
 	}
 
+	void Protocol::Worker::expand() noexcept {
+		out.payload.expand(true,true);
+	}
 
  }

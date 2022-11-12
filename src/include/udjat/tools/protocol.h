@@ -149,6 +149,10 @@
 			/// @brief Set remote addr.
 			void set_remote(const sockaddr_storage &addr) noexcept;
 
+			/// @brief Expand payload.
+			/// @return String with expanded payload.
+			const char * get_payload() noexcept;
+
 		public:
 
 			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
