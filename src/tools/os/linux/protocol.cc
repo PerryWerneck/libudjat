@@ -149,8 +149,9 @@
 
 	}
 
-	void Protocol::Worker::expand() noexcept {
+	const char * Protocol::Worker::get_payload() noexcept {
 		out.payload.expand(true,true);
+		return out.payload.c_str();
 	}
 
  }
