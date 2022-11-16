@@ -65,6 +65,10 @@
 #endif // DEBUG
 	}
 
+	void Protocol::setDefault() noexcept {
+		Controller::getInstance().setDefault(this);
+	}
+
 	std::ostream & Protocol::info() const {
 		return cout << name << "\t";
 	}
@@ -81,7 +85,7 @@
 		return Logger::trace() << name << "\t";
 	}
 
-	const Protocol * Protocol::find(const URL &url) {
+	const Protocol * Protocol::find(const URL &url, bool allow_default) {
 		string scheme = url.scheme();
 
 		const char *ptr = strrchr(scheme.c_str(),'+');
@@ -89,12 +93,12 @@
 			scheme.resize(ptr - scheme.c_str());
 		}
 
-		return find(scheme.c_str());
+		return find(scheme.c_str(),allow_default);
 
 	}
 
-	const Protocol * Protocol::find(const char *name) {
-		return Controller::getInstance().find(name);
+	const Protocol * Protocol::find(const char *name, bool allow_default) {
+		return Controller::getInstance().find(name,allow_default);
 	}
 
 	const Protocol * Protocol::verify(const void *protocol) {

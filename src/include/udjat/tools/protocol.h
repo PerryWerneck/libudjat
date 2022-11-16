@@ -44,6 +44,11 @@
 		/// @brief Module information.
 		const ModuleInfo &module;
 
+	protected:
+
+		/// @brief Set current protocol as the default one.
+		void setDefault() noexcept;
+
 	public:
 
 		/// @brief Request header.
@@ -301,8 +306,17 @@
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
-		static const Protocol * find(const URL &url);
-		static const Protocol * find(const char *name);
+		/// @brief Find protocol based on URL.
+		/// @param url The url to search for.
+		/// @param allow_default If true returns the default protocol when not found
+		/// @return Pointer to selected protocol or nullptr.
+		static const Protocol * find(const URL &url, bool allow_default = true);
+
+		/// @brief Find protocol based on protocol name.
+		/// @param url The url to search for.
+		/// @param allow_default If true returns the default protocol when not found.
+		/// @return Pointer to selected protocol or nullptr.
+		static const Protocol * find(const char *name, bool allow_default = true);
 
 		/// @brief Verify protocol pointer.
 		/// @param protocol Pointer to protocol to confirm.
