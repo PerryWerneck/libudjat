@@ -47,6 +47,7 @@
 	#include <udjat/win32/charset.h>
 	#include <udjat/win32/exception.h>
 	#include <udjat/win32/ip.h>
+	#include <udjat/win32/cleanup.h>
 #else
 	#include <unistd.h>
 #endif // _WIN32
@@ -334,6 +335,13 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 	*/
+
+#ifdef _WIN32
+	{
+		udjat_autoptr(HANDLE) hdl{0};
+
+	}
+#endif // _WIN32
 
 	auto rc = Service().run(argc,argv);
 

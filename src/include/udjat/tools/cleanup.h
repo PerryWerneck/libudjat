@@ -17,16 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
+ #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/win32/cleanup.h>
 
- using namespace std;
-
- UDJAT_API void udjat_autoptr_cleanup_HANDLE(HANDLE *handle) {
-	if(*handle) {
-		CloseHandle(*handle);
-		*handle = 0;
-	}
- }
+ #define UDJAT_AUTOPTR_FUNC_NAME(TypeName) udjat_autoptr_cleanup_##TypeName
+ #define udjat_autoptr(TypeName) TypeName __attribute__ ((__cleanup__(UDJAT_AUTOPTR_FUNC_NAME(TypeName))))
+ #define udjat_auto_cleanup(TypeName) TypeName __attribute__ ((__cleanup__(UDJAT_AUTOPTR_FUNC_NAME(TypeName))))
 

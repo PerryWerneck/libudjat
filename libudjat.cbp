@@ -73,6 +73,7 @@
 		<Unit filename="src/include/udjat/alert/proxy.h" />
 		<Unit filename="src/include/udjat/alert/script.h" />
 		<Unit filename="src/include/udjat/alert/url.h" />
+		<Unit filename="src/include/udjat/cleanup.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/module.h" />
@@ -80,6 +81,7 @@
 		<Unit filename="src/include/udjat/request.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/base64.h" />
+		<Unit filename="src/include/udjat/tools/cleanup.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
@@ -112,6 +114,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
+		<Unit filename="src/include/udjat/win32/cleanup.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/ip.h" />
