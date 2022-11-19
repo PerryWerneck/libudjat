@@ -63,6 +63,13 @@
 				unsigned int success = 0;		///< @brief Seconds to wait for reactivate after a successful activation.
 			} restart;
 
+		protected:
+
+			/// @brief Get alert payload.
+			/// @param XML node to scan for payload.
+			/// @return Payload as Quark;
+			const char * getPayload(const pugi::xml_node &node);
+
 		public:
 
 			constexpr Alert(const char *name) : NamedObject(name) {

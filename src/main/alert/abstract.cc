@@ -82,5 +82,30 @@
 		return value;
 	}
 
+	const char * Abstract::Alert::getPayload(const pugi::xml_node &node) {
+
+		String child(node.child_value());
+
+		if(child.empty()) {
+
+			auto payload = node.attribute("payload");
+			if(!payload) {
+				payload = getAttribute(node,"alert-payload",false);
+			}
+
+			if(payload) {
+				child = payload.as_string();
+			}
+
+		}
+
+		if(getAttribute(node,"strip-payload",true).as_bool(true)) {
+			child.strip();
+		}
+
+		return Quark(child.expand(node,"alert-defaults")).c_str();
+
+	}
+
  }
 

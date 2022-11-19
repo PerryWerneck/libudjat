@@ -27,6 +27,10 @@
 
 	</agent>
 
+	<attribute name='alert-type' value='file' />
+	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
+	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
+		
 	<!-- random name='random1' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
 
 		<state name='s0' value='0' summary='Random 0'>
@@ -57,31 +61,14 @@
 		
 	</random -->
 	
-	<random name='random10' update-timer='10' alert-type='file' alert-filename='/tmp/udjat-%d.alerts'>
+	<random name='random10' update-timer='10'>
 
-		<state name='s0' value='0' summary='Random 0'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s1' value='1' summary='Random 1'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s2' value='2' summary='Random 2'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-
-		<state name='s3' value='3' summary='Random 3'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-		
-		<state name='s4' value='4' summary='Random 4'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
-		
-		<state name='s5' value='5' summary='Random 5'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-		</state>
+		<state name='s0' value='0' summary='Random 0' />
+		<state name='s1' value='1' summary='Random 1' />
+		<state name='s2' value='2' summary='Random 2' />
+		<state name='s3' value='3' summary='Random 3' />
+		<state name='s4' value='4' summary='Random 4' />
+		<state name='s5' value='5' summary='Random 5' />
 
 	</random>
 	

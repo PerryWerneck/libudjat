@@ -30,33 +30,28 @@
 
 	Alert::File::File(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
 
-		const char *section = node.attribute("settings-from").as_string(defaults);
+		// Get filename
+		{
+			auto filename = node.attribute("filename");
+			if(!filename) {
+				filename = getAttribute(node,"alert-filename",false);
+			}
 
-		for(auto parent = node.parent();parent && !*filename;parent = parent.parent()) {
-			filename = Quark(parent.attribute("alert-filename").as_string("")).c_str();
-		}
+			if(!filename) {
+				throw runtime_error(string{"Required attribute 'filename' is missing on alert '"} + name() + "'");
+			}
 
-		if(!(filename && *filename)) {
-			filename = getAttribute(node,section,"alert-filename","");
-		}
+			this->filename = Quark(filename.as_string()).c_str();
 
-		if(!(filename && *filename)) {
-			filename = getAttribute(node,section,"filename","");
-		}
+			if(!*this->filename) {
+				throw runtime_error(string{"Required attribute 'filename' is empty on alert '"} + name() + "'");
+			}
 
-
-		if(!(filename && *filename)) {
-			throw runtime_error(string{"Required attribute 'filename' is missing on alert '"} + name() + "'");
 		}
 
 		debug("Alert file set to '",filename,"'");
 
-		String child(node.child_value());
-		if(getAttribute(node,section,"strip-payload",true)) {
-			child.strip();
-		}
-
-		payload = Object::expand(node,section,child.c_str());
+		payload = getPayload(node);
 
 	}
 

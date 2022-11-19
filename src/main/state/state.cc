@@ -87,10 +87,26 @@ namespace Udjat {
 		debug(
 			"name=",node.attribute("name").as_string()," ",
 			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
-			" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
+			" Attibute('alert-type')=",getAttribute(node,"alert-type",false).as_string("")
 		);
 
+		{
+			auto type = getAttribute(node,"alert-type",false);
+			auto enabled = getAttribute(node,"alert",true);
+
+			if(enabled.as_bool(type)) {
+				auto alert = Udjat::AlertFactory(*this, node, type.as_string(""));
+				if(alert) {
+					alerts.push_back(alert);
+				}
+			}
+
+		}
+
+		//	" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
 		// Check for alert.
+
+		/*
 		if(node.attribute("alert").as_bool(node.attribute("alert-type"))) {
 			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string(""));
 			if(alert) {
@@ -102,6 +118,7 @@ namespace Udjat {
 				alerts.push_back(alert);
 			}
 		}
+		*/
 
 	}
 
