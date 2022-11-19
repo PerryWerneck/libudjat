@@ -22,6 +22,7 @@
  #include <udjat/factory.h>
  #include <udjat/alert/url.h>
  #include <udjat/alert/script.h>
+ #include <udjat/alert/file.h>
  #include <udjat/tools/object.h>
  #include <iostream>
 
@@ -34,7 +35,8 @@
 		std::shared_ptr<Abstract::Alert> alert;
 
 		if(!(type && *type)) {
-			type = "default";	// Just in case.
+			// TODO: Scan for global alert definition.
+			type = "default";
 		}
 
 		// debug("Creating alert '",type,"'");
@@ -66,6 +68,10 @@
 			return make_shared<Udjat::Alert::Script>(node);
 		}
 
+		if(!strcasecmp(type,"file")) {
+			return make_shared<Udjat::Alert::File>(node);
+		}
+
 		if(!strcasecmp(type,"default")) {
 
 			//
@@ -79,6 +85,10 @@
 				return make_shared<Udjat::Alert::Script>(node);
 			}
 
+			if(node.attribute("filename")) {
+				return make_shared<Udjat::Alert::Script>(node);
+			}
+
 			//
 			// Do an upsearch.
 			//
@@ -88,6 +98,10 @@
 
 			if(Object::getAttribute(node,"script")) {
 				return make_shared<Udjat::Alert::Script>(node);
+			}
+
+			if(Object::getAttribute(node,"filename")) {
+				return make_shared<Udjat::Alert::File>(node);
 			}
 
 		}

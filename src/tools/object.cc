@@ -322,6 +322,8 @@
 
 		while(node) {
 
+			//debug("Searching '",node.name(),"' for ",key);
+
 			pugi::xml_attribute attribute = node.attribute(key.c_str());
 			if(attribute) {
 				return attribute;
