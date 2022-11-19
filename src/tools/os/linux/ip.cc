@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/ip.h>
+ #include <udjat/linux/network.h>
  #include <sys/socket.h>
  #include <netdb.h>
  #include <stdexcept>
@@ -54,38 +55,63 @@
 
 		return string{host};
 
-		/*
-		char ipaddr[256];
-		memset(ipaddr,0,sizeof(ipaddr));
-
-		switch(addr.ss_family) {
-		case AF_INET:
-			inet_ntop(
-				((const struct sockaddr_in *) &addr)->sin_family,
-				&((const struct sockaddr_in *) &addr)->sin_addr,
-				ipaddr,
-				sizeof(ipaddr)
-			);
-			break;
-
-		case AF_INET6:
-			inet_ntop(
-				((const struct sockaddr_in6 *) &addr)->sin6_family,
-				&((const struct sockaddr_in6 *) &addr)->sin6_addr,
-				ipaddr,
-				sizeof(ipaddr)
-			);
-			break;
-
-		default:
-			throw runtime_error("Unexpected IPADDR family");
-
-		}
-		return string{ipaddr};
-		*/
-
-
 	}
 
  }
 
+ namespace Udjat {
+
+	bool Network::Interface::operator==(const sockaddr_storage &addr) const noexcept {
+
+		if(!ifa_addr || (ifa_addr->sa_family != addr.ss_family)) {
+			return false;
+		}
+
+		switch(ifa_addr->sa_family) {
+		case AF_INET:
+			if( ((const struct sockaddr_in *) &addr)->sin_addr.s_addr == ((const struct sockaddr_in *) ifa_addr)->sin_addr.s_addr) {
+				return true;
+			}
+			break;
+
+		case AF_INET6:
+			if( ((const struct sockaddr_in6 *) &addr)->sin6_addr.s6_addr == ((const struct sockaddr_in6 *) ifa_addr)->sin6_addr.s6_addr) {
+				return true;
+			}
+			break;
+		}
+
+		return false;
+
+	}
+
+	bool for_each(const std::function<bool(const Network::Interface &intf)> &func) {
+
+		bool rc = false;
+
+		struct ifaddrs * interfaces = nullptr;
+		if(getifaddrs(&interfaces) != 0) {
+			throw system_error(errno,system_category(),"Cant get network interfaces");
+		}
+
+		try {
+
+			for(auto *interface = interfaces; interface && !rc; interface = interface->ifa_next) {
+				rc = func(Network::Interface{*interface});
+			}
+
+		} catch(...) {
+
+			freeifaddrs(interfaces);
+			throw;
+
+		}
+
+		freeifaddrs(interfaces);
+
+		return rc;
+
+	}
+
+
+ }

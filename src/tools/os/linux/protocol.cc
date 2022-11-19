@@ -28,6 +28,7 @@
  #include <sys/socket.h>
  #include <ifaddrs.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/linux/network.h>
  #include <iostream>
  #include <linux/if.h>
  #include <sys/ioctl.h>
@@ -41,6 +42,20 @@
 
 	void Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
 
+		nic.clear(); // Just in case.
+
+		for_each([&nic,&addr](const Network::Interface &interface){
+
+			if(interface == addr) {
+				nic = interface.ifa_name;
+				return true;
+			}
+
+			return false;
+
+		});
+
+		/*
 		// Search for interfaces.
 		struct ifaddrs * interfaces = nullptr;
 		if(getifaddrs(&interfaces) != 0) {
@@ -91,6 +106,7 @@
 		}
 
 		freeifaddrs(interfaces);
+		*/
 
 	}
 
