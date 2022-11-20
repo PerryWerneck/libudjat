@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-19 15:27-0300\n"
+"POT-Creation-Date: 2022-10-17 22:51-0300\n"
 "PO-Revision-Date: 2022-10-17 22:53-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -30,12 +30,16 @@ msgstr "Controlador de agentes"
 msgid "Alert controller"
 msgstr "Controlador de alertas"
 
-#: src/main/agent/state.cc:80 src/main/agent/state.cc:153
+#: src/main/agent/state.cc:80 src/main/agent/state.cc:157
 msgid "Error switching state"
 msgstr "Erro ao trocar estado"
 
-#: src/tools/os/windows/systemservice.cc:478
-#: src/tools/os/windows/systemservice.cc:483
+#: src/main/module/module.cc:118
+msgid "I dont know how to execute '{}'"
+msgstr ""
+
+#: src/tools/os/linux/systemservice.cc:121
+#: src/tools/os/linux/systemservice.cc:126
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
 
@@ -47,7 +51,11 @@ msgstr "Menos de um minuto"
 msgid "Local file protocol"
 msgstr "Protocol de arquivo local"
 
-#: src/main/agent/root.cc:147
+#: src/main/module/module.cc:102
+msgid "Module '{}' is not loaded"
+msgstr ""
+
+#: src/main/agent/root.cc:148
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -59,11 +67,11 @@ msgstr "Nenhum relatório no caminho informado"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/systemservice.cc:306 src/main/agent/root.cc:147
+#: src/tools/systemservice.cc:317 src/main/agent/root.cc:148
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:86 src/main/agent/state.cc:158
+#: src/main/agent/state.cc:86 src/main/agent/state.cc:162
 msgid "Unexpected error switching state"
 msgstr "Erro inesperado ao trocar de estado"
 
@@ -103,11 +111,11 @@ msgstr "minutos"
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:258
+#: src/main/state/state.cc:281
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:258
+#: src/main/state/state.cc:281
 msgid "on"
 msgstr "ligado"
 

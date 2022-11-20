@@ -17,45 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
+ #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/tools/ip.h>
- #include <udjat/linux/network.h>
- #include <sys/socket.h>
- #include <netdb.h>
- #include <stdexcept>
- #include <cstring>
- #include <iostream>
+ #include <string>
+ #include <functional>
+ #include <ifaddrs.h>
+ #include <net/if.h>
 
- using namespace std;
+ namespace Udjat {
 
- namespace std {
+ 	namespace Network {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns) {
+		/// @brief Network Interface.
+		class UDJAT_API Interface {
+		public:
 
-		if(addr.ss_family == AF_PACKET) {
-			// TODO: How to get ipaddr on AF_PACKET?
-			return "";
-		}
+			virtual bool operator==(const sockaddr_storage &addr) const noexcept = 0;
 
-		char host[NI_MAXHOST];
-		memset(host,0,sizeof(host));
+			virtual const char * name() const noexcept = 0;
+			virtual bool up() const noexcept = 0;
+			virtual bool loopback() const noexcept = 0;
 
-		int rc = getnameinfo(
-					(sockaddr *) &addr,
-					(addr.ss_family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6)),
-					host, NI_MAXHOST,
-					NULL, 0,
-					(dns ? 0 : NI_NUMERICHOST)
-				);
+			static bool for_each(const std::function<bool(const Interface &intf)> &func);
 
-		if(rc != 0) {
-			throw runtime_error(gai_strerror(rc));
-		}
+		};
 
-		return string{host};
+ 	}
 
-	}
+	/// @return true if 'func' has returned true.
+	UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 
  }
-

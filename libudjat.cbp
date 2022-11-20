@@ -99,6 +99,7 @@
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
+		<Unit filename="src/include/udjat/tools/net/nic.h" />
 		<Unit filename="src/include/udjat/tools/network.h" />
 		<Unit filename="src/include/udjat/tools/object.h" />
 		<Unit filename="src/include/udjat/tools/parse.h" />
@@ -247,6 +248,7 @@
 		<Unit filename="src/tools/os/linux/hostname.cc" />
 		<Unit filename="src/tools/os/linux/ip.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
+		<Unit filename="src/tools/os/linux/nic.cc" />
 		<Unit filename="src/tools/os/linux/protocol.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/handler.cc" />
