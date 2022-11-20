@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <cstring>
  #include <functional>
  #include <ifaddrs.h>
  #include <net/if.h>
@@ -34,6 +35,10 @@
 		public:
 
 			virtual bool operator==(const sockaddr_storage &addr) const noexcept = 0;
+
+			inline bool operator==(const char *str) const noexcept {
+				return strcasecmp(name(),str) == 0;
+			}
 
 			virtual const char * name() const noexcept = 0;
 			virtual bool up() const noexcept = 0;
