@@ -79,6 +79,10 @@ namespace Udjat {
 
 			} properties;
 
+			struct {
+				bool ftc = false;	///< @brief Forward to children?
+			} options;
+
 		public:
 
 			/// @brief Create state using the strings without conversion.
@@ -121,6 +125,12 @@ namespace Udjat {
 			/// @return true if the state is not a problem.
 			inline bool ready() const noexcept {
 				return level() <= Level::ready;
+			}
+
+			/// @brief Forward to children when activated on agent?
+			/// @return true if the option forward to children is enabled.
+			inline bool forwardToChildren() const noexcept {
+				return options.ftc;
 			}
 
 			virtual void get(const Request &request, Response &response) const;

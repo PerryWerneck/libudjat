@@ -74,7 +74,6 @@
 		<Unit filename="src/include/udjat/alert/proxy.h" />
 		<Unit filename="src/include/udjat/alert/script.h" />
 		<Unit filename="src/include/udjat/alert/url.h" />
-		<Unit filename="src/include/udjat/cleanup.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/linux/network.h" />

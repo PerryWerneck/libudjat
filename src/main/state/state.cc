@@ -75,6 +75,7 @@ namespace Udjat {
 
 		properties.level = LevelFactory(node);
 		properties.body = getAttribute(node,section,"body",properties.body);
+		options.ftc = getAttribute(node,section,"forward-to-children",options.ftc);
 
 		for(pugi::xml_node child : node) {
 

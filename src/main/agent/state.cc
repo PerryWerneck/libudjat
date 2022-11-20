@@ -11,6 +11,7 @@
  #include <private/agent.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/alert/activation.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -160,6 +161,22 @@ namespace Udjat {
 
 			error() << "Unexpected error switching state" << endl;
 			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
+
+		}
+
+		if(this->current_state.active->forwardToChildren()) {
+
+			debug("Forwarding state to children");
+
+			for_each([this,state](Abstract::Agent &agent){
+
+				if(agent.update.timer && agent.current_state.active != state) {
+					agent.current_state.active = state;
+					agent.info() << "State set to '" << agent.current_state.active->to_string() << "' (forwarded)" << endl;
+					agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
+				}
+
+			});
 
 		}
 
