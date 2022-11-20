@@ -129,6 +129,12 @@ make all
 %dir %{_includedir}/udjat/agent
 %{_includedir}/udjat/agent/*.h
 
+%dir %{_includedir}/udjat/linux
+%{_includedir}/udjat/linux/*.h
+
+%dir %{_includedir}/udjat/tools/net
+%{_includedir}/udjat/tools/net/*.h
+
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 
 %post -n %{name}%{_libvrs} -p /sbin/ldconfig
