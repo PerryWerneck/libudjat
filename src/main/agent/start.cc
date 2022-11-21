@@ -68,8 +68,6 @@
 				}
 			}
 
-			this->current_state.activation = time(0);
-
 			const char * name = this->current_state.active->name();
 			auto level = this->level();
 			if(name && *name && level != Udjat::unimportant) {

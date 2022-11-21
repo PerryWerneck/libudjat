@@ -58,6 +58,51 @@ namespace Udjat {
 
 	void Abstract::Agent::onChildStateChange() noexcept {
 
+		// Compute my current state based on value.
+		std::shared_ptr<Abstract::State> child_state;
+
+		// Then check the children.
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto child : children.agents) {
+				if(!child_state || child->level() > child_state->level()) {
+					child_state = child->state();
+				}
+			}
+		}
+
+		if(child_state) {
+
+			// Has child state, check for update
+			auto state = computeState();
+
+			if(child_state->level() > state->level()) {
+				state = child_state;
+			}
+
+			if(state.get() != current_state.active.get()) {
+
+				// State was changed.
+				deactivate();
+				auto level = state->level();
+
+				if(this->current_state.active->level() != level) {
+					LogFactory(level)
+						<< name()
+						<< "\tState set to '"
+						<< "' to '"
+						<< state->to_string()
+						<< "' from child (" << level << ")"
+						<< endl;
+				}
+
+				current_state.active = state;
+
+			}
+
+		}
+
+		/*
 		try {
 
 			// Compute my current state based on value.
@@ -88,6 +133,7 @@ namespace Udjat {
 			this->current_state.activation = time(0);
 
 		}
+		*/
 
 	}
 
@@ -146,23 +192,9 @@ namespace Udjat {
 
 		Udjat::Level saved_level = this->level();
 
-		try {
-
-			this->current_state.active->deactivate(*this);
-			this->current_state.active = state;
-			this->current_state.active->activate(*this);
-
-		} catch(const std::exception &e) {
-
-			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,_("Error switching state"));
-
-		} catch(...) {
-
-			error() << "Unexpected error switching state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
-
-		}
+		deactivate();
+		this->current_state.active = state;
+		activate();
 
 		if(this->current_state.active->forwardToChildren()) {
 
@@ -171,6 +203,7 @@ namespace Udjat {
 			for_each([this,state](Abstract::Agent &agent){
 
 				if(agent.update.timer && agent.current_state.active != state) {
+					agent.deactivate();
 					agent.current_state.active = state;
 					agent.info() << "State set to '" << agent.current_state.active->to_string() << "' (forwarded)" << endl;
 					agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
@@ -180,7 +213,6 @@ namespace Udjat {
 
 		}
 
-		this->current_state.activation = time(0);
 		notify(STATE_CHANGED);
 
 		if(saved_level != this->level()) {

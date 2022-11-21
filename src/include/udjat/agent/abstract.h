@@ -81,8 +81,8 @@
 				/// @brief Active state.
 				std::shared_ptr<State> active;
 
-				/// @brief State activation.
-				time_t activation = 0;
+				/// @brief State activation (0 if not activated).
+				time_t activated = 0;
 
 			} current_state;
 
@@ -117,6 +117,12 @@
 
 			/// @brief Load children from XML node.
 			void setup_children(const pugi::xml_node &node) noexcept;
+
+			/// @brief Activate agent state.
+			void activate() noexcept;
+
+			/// @brief Deactivate agent state (if needed).
+			void deactivate() noexcept;
 
 		protected:
 

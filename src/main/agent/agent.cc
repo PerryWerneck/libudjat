@@ -34,6 +34,7 @@
  #include <udjat/tools/event.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/intl.h>
 
 namespace Udjat {
 
@@ -252,5 +253,53 @@ namespace Udjat {
 		return instance;
 	}
 
+	void Abstract::Agent::activate() noexcept {
+
+		try {
+
+			current_state.activated = time(0);
+			current_state.active->activate(*this);
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' activating state" << endl;
+			current_state.activated = 0;
+			this->current_state.active = Udjat::StateFactory(e,_("Error activating state"));
+
+		} catch(...) {
+
+			error() << "Unexpected error activating state" << endl;
+			current_state.activated = 0;
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error activating state"));
+
+		}
+
+	}
+
+	void Abstract::Agent::deactivate() noexcept {
+
+		if(!current_state.activated) {
+			return;
+		}
+
+		current_state.activated = 0;
+
+		try {
+
+			current_state.active->deactivate(*this);
+
+		} catch(const std::exception &e) {
+
+			error() << "Error '" << e.what() << "' deactivating state" << endl;
+			this->current_state.active = Udjat::StateFactory(e,_("Error deactivating state"));
+
+		} catch(...) {
+
+			error() << "Unexpected error deactivating state" << endl;
+			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error deactivating state"));
+
+		}
+
+	}
 
 }
