@@ -89,6 +89,19 @@
 		return c_str();
 	}
 
+	std::ostream & NamedObject::info() const {
+		return cout << objectName << "\t";
+	}
+
+	std::ostream & NamedObject::warning() const {
+		return clog << objectName << "\t";
+	}
+
+	std::ostream & NamedObject::error() const {
+		return cerr << objectName << "\t";
+	}
+
+
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
 		set(node);
 	}

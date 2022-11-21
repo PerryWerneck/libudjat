@@ -28,6 +28,9 @@ using namespace std;
 
 namespace Udjat {
 
+	TimeStamp::TimeStamp(const char *time, const char *format) : value{parse(time,format)} {
+	}
+
 	std::string TimeStamp::to_string(const char *format) const noexcept {
 
 		if(!value)
@@ -122,6 +125,15 @@ namespace Udjat {
 	}
 
 	TimeStamp & TimeStamp::set(const char *time, const char *format) {
+		this->value = parse(time,format);
+		return *this;
+	}
+
+	time_t TimeStamp::parse(const char *time, const char *format) {
+
+		if(!strcasecmp(time,"now")) {
+			return ::time(0);
+		}
 
 		struct tm t;
 		memset(&t,0,sizeof(t));
@@ -160,9 +172,8 @@ namespace Udjat {
 		cout << "day=" << t.tm_mday << " month=" << t.tm_mon << " Year=" << t.tm_year << endl;
 #endif // DEBUG
 
-		this->value = mktime(&t);
+		return mktime(&t);
 
-		return *this;
 	}
 
 }

@@ -123,6 +123,14 @@
 			/// @param system When true use the systemdatadir for file path if necessary.
 			DataFile(const char *name, bool system = false);
 
+			/// @brief Is the file available?
+			/// @return true if the file is available.
+			bool available() const noexcept;
+
+			inline operator bool() const noexcept {
+				return available();
+			}
+
 		};
 
 		class UDJAT_API LibDir : public std::string {
