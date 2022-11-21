@@ -124,6 +124,12 @@
 			/// @brief Deactivate agent state (if needed).
 			void deactivate() noexcept;
 
+			/// @brief Notify state change.
+			/// @param state New agent state.
+			/// @param activate if true the new state will be activated.
+			/// @param message Message for logfile.
+			bool onStateChange(std::shared_ptr<State> state, bool activate, const char *message);
+
 		protected:
 
 			/// @brief Allow use of super:: for accessing abstract::agent methods.

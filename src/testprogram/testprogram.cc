@@ -160,8 +160,9 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			cout << "test\táéióú" << endl;
+			//cout << "test\táéióú" << endl;
 
+			/*
 			MainLoop::getInstance().TimerFactory(2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
@@ -171,6 +172,7 @@ int main(int argc, char **argv) {
 				return false;
 			});
 			cout << "------------------------------------------" << endl;
+			*/
 
 #ifdef _WIN32
 			/*

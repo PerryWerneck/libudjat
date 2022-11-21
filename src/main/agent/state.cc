@@ -77,63 +77,12 @@ namespace Udjat {
 			auto state = computeState();
 
 			if(child_state->level() > state->level()) {
-				state = child_state;
-			}
-
-			if(state.get() != current_state.active.get()) {
-
-				// State was changed.
-				deactivate();
-				auto level = state->level();
-
-				if(this->current_state.active->level() != level) {
-					LogFactory(level)
-						<< name()
-						<< "\tState set to '"
-						<< "' to '"
-						<< state->to_string()
-						<< "' from child (" << level << ")"
-						<< endl;
-				}
-
-				current_state.active = state;
-
+				onStateChange(child_state,false,"State set to '{}' from child ({})");
+			} else {
+				onStateChange(state,true,"State restored to '{}' after child change ({})");
 			}
 
 		}
-
-		/*
-		try {
-
-			// Compute my current state based on value.
-			auto state = computeState();
-
-			// Then check the children.
-			{
-				lock_guard<std::recursive_mutex> lock(guard);
-				for(auto child : children.agents) {
-					if(child->level() > state->level()) {
-						state = child->state();
-					}
-				}
-			}
-
-			set(state);
-
-		} catch(const std::exception &e) {
-
-			error() << "Error '" << e.what() << "' switching state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,_("Error switching state"));
-			this->current_state.activation = time(0);
-
-		} catch(...) {
-
-			cerr << name() << "\tUnexpected error switching state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error switching state"));
-			this->current_state.activation = time(0);
-
-		}
-		*/
 
 	}
 
@@ -166,6 +115,54 @@ namespace Udjat {
 		return set(state);
 	}
 
+	bool Abstract::Agent::onStateChange(std::shared_ptr<State> state, bool activate, const char *message) {
+
+		if(state.get() == this->current_state.active.get()) {
+			debug("Changing to same state, ignored");
+			return false;
+		}
+
+		auto saved_level = level();
+
+		deactivate();
+
+		this->current_state.active = state;
+
+		if(activate) {
+			this->activate();
+		}
+
+		notify(STATE_CHANGED);
+
+		if(saved_level != this->level()) {
+
+			if(message && *message) {
+
+				std::string body{state->to_string()}; // Why is this necessary?
+
+				LogFactory(this->level())
+					<< name()
+					<< "\t"
+					<< Logger::Message{
+							message,
+							body,
+							this->level()
+						}
+					<< endl;
+
+			}
+
+			notify(LEVEL_CHANGED);
+		}
+#ifdef DEBUG
+		else {
+			warning() << "State level stays the same, no message" << endl;
+		}
+#endif // DEBUG
+
+		return true;
+	}
+
 	bool Abstract::Agent::set(std::shared_ptr<State> state) {
 
 		// It's an empty state?.
@@ -173,28 +170,11 @@ namespace Udjat {
 			throw runtime_error("Cant set an empty state");
 		}
 
-		// Return if it's the same.
-		if(state.get() == this->current_state.active.get())
+		debug("--------------- Calling state change");
+
+		if(!onStateChange(state,true,"Current state changed to '{}' ({})")) {
 			return false;
-
-		auto level = state->level();
-
-		if(this->current_state.active->level() != level) {
-			LogFactory(level)
-				<< name()
-				<< "\tCurrent state changes from '"
-				<< this->current_state.active->to_string()
-				<< "' to '"
-				<< state->to_string()
-				<< "' (" << level << ")"
-				<< endl;
 		}
-
-		Udjat::Level saved_level = this->level();
-
-		deactivate();
-		this->current_state.active = state;
-		activate();
 
 		if(this->current_state.active->forwardToChildren()) {
 
@@ -202,21 +182,12 @@ namespace Udjat {
 
 			for_each([this,state](Abstract::Agent &agent){
 
-				if(agent.update.timer && agent.current_state.active != state) {
-					agent.deactivate();
-					agent.current_state.active = state;
-					agent.info() << "State set to '" << agent.current_state.active->to_string() << "' (forwarded)" << endl;
+				if(agent.update.timer && agent.onStateChange(state,false,"State set to '{}' from parent ({})")) {
 					agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
 				}
 
 			});
 
-		}
-
-		notify(STATE_CHANGED);
-
-		if(saved_level != this->level()) {
-			notify(LEVEL_CHANGED);
 		}
 
 		if(parent) {

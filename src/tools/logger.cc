@@ -47,8 +47,6 @@
 
 	void Logger::setup(const pugi::xml_node &node) noexcept {
 
-		debug("LOG SETTINGS:----------------------------------------------");
-
 		static const struct {
 			const char * name;
 			const char * message;
