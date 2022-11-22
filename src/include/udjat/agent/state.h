@@ -115,6 +115,22 @@ namespace Udjat {
 				return properties.level == level;
 			}
 
+			inline bool operator>(const Abstract::State &state) {
+				return properties.level > state.properties.level;
+			}
+
+			inline bool operator<(const Abstract::State &state) {
+				return properties.level < state.properties.level;
+			}
+
+			inline bool operator>=(const Abstract::State &state) {
+				return properties.level >= state.properties.level;
+			}
+
+			inline bool operator<=(const Abstract::State &state) {
+				return properties.level <= state.properties.level;
+			}
+
 			/// @brief Is this state a critical one?
 			/// @return true if the state is critical.
 			inline bool critical() const noexcept {
