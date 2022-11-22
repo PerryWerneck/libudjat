@@ -25,6 +25,7 @@
  #include <cstring>
  #include <list>
  #include <ostream>
+ #include <vector>
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -121,12 +122,26 @@
 #endif // _WIN32
 	}
 
+	void Logger::Controller::remove(Buffer *buffer) noexcept {
+		lock_guard<std::mutex> lock(guard);
+		buffers.remove(buffer);
+	}
+
 	Logger::Controller::~Controller() {
-		while(!buffers.empty()) {
-			Buffer * buffer = buffers.back();
-			buffers.pop_back();
+
+		std::vector<Buffer *> buf;
+
+		{
+			lock_guard<std::mutex> lock(guard);
+			for(auto buffer : this->buffers) {
+				buf.push_back(buffer);
+			}
+		}
+
+		for(auto buffer : buf) {
 			delete buffer;
 		}
+
 #ifndef _WIN32
 		::closelog();
 #endif // _WIN32
@@ -134,6 +149,7 @@
 
 	Logger::Buffer * Logger::Controller::BufferFactory(Level level) {
 
+		lock_guard<std::mutex> lock(guard);
 		for(auto buffer : buffers) {
 			if(buffer->level == level && buffer->thread == pthread_self()) {
 				return buffer;
@@ -142,12 +158,13 @@
 
 		Buffer * bf = new Buffer(pthread_self(),level);
 		buffers.push_back(bf);
+
 		return bf;
 
 	}
 
 	Logger::Buffer::~Buffer() {
-		Controller::getInstance().buffers.remove(this);
+		Controller::getInstance().remove(this);
 	}
 
 	void Logger::enable(Level level, bool enabled) noexcept {
