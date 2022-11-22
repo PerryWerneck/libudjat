@@ -220,6 +220,95 @@ namespace Udjat {
 
 	}
 
+	void Abstract::Agent::Controller::update_agents() {
+
+		time_t now{time(0)};
+		time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
+
+		std::vector<std::shared_ptr<Agent>> updatelist;
+
+		root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
+
+			if(!agent->update.next) {
+				return;
+			}
+
+			// Do the agent requires an update?
+			if(agent->update.next <= now) {
+
+				lock_guard<std::recursive_mutex> lock(agent->guard);
+				if(agent->update.running) {
+
+					//
+					// Agent still updating.
+					//
+					agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
+					agent->update.next = now + 60;
+					next = std::min(next,agent->update.next);
+
+				} else {
+
+					//
+					// Queue agent update.
+					//
+					debug("Agent='",agent->name(),"' is expired by ", (now - agent->update.next)," seconds, adding to the update list");
+					agent->update.running = time(0);
+					updatelist.push_back(agent);
+
+					if(agent->update.timer) {
+						agent->update.next = now + agent->update.timer;
+						next = std::min(next,agent->update.next);
+					} else {
+						agent->update.next = 0;
+					}
+
+				}
+
+			} else {
+				debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
+				next = std::min(next,agent->update.next);
+			}
+		});
+
+		//
+		// Enqueue agent updates
+		//
+		debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
+
+		if(now < next) {
+			MainLoop::Timer::reset((next-now) * 1000);
+		} else {
+			MainLoop::Timer::reset(1000);
+		}
+
+		for(auto agent : updatelist) {
+
+			ThreadPool::getInstance().push(agent->name(),[agent]{
+
+				try {
+
+					agent->refresh(false);
+
+				} catch(const exception &e) {
+
+					agent->failed("Agent update failed",e);
+
+				} catch(...) {
+
+					agent->failed("Unexpected error when updating");
+
+				}
+
+				{
+					lock_guard<std::recursive_mutex> lock(agent->guard);
+					agent->update.running = 0;
+				}
+
+			});
+
+		}
+	}
+
 	void Abstract::Agent::Controller::on_timer() {
 
 		if(!root) {
@@ -227,106 +316,28 @@ namespace Udjat {
 			return;
 		}
 
-		debug("Checking for updates");
-
-		{
-			lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
-			if(updating) {
-				cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
-				return;
-			}
-			updating = time(0);
-		}
-
-		//
-		// Get list of agents to update.
-		//
 		ThreadPool::getInstance().push("agent-updates",[this]() {
 
-			time_t now{time(0)};
-			time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
-
-			std::vector<std::shared_ptr<Agent>> updatelist;
-
-			root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
-
-				if(!agent->update.next) {
+			{
+				lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
+				if(updating) {
+					cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
 					return;
 				}
-
-				// Do the agent requires an update?
-				if(agent->update.next <= now) {
-
-					lock_guard<std::recursive_mutex> lock(agent->guard);
-					if(agent->update.running) {
-
-						//
-						// Agent still updating.
-						//
-						agent->warning() << "Update is active since " << TimeStamp(agent->update.running) << endl;
-						agent->update.next = now + 60;
-						next = std::min(next,agent->update.next);
-
-					} else {
-
-						//
-						// Queue agent update.
-						//
-
-						debug("Agent='",agent->name(),"' is expired by ", (now - agent->update.next)," seconds, adding to the update list");
-						agent->update.running = time(0);
-						updatelist.push_back(agent);
-
-						if(agent->update.timer) {
-							agent->update.next = now + agent->update.timer;
-							next = std::min(next,agent->update.next);
-						} else {
-							agent->update.next = 0;
-						}
-
-					}
-
-				} else {
-					debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
-					next = std::min(next,agent->update.next);
-				}
-			});
-
-			//
-			// Enqueue agent updates
-			//
-			debug(updatelist.size()," agent(s) to update, next update will be ",TimeStamp(next));
-
-			if(now < next) {
-				MainLoop::Timer::reset((next-now) * 1000);
-			} else {
-				MainLoop::Timer::reset(1000);
+				updating = time(0);
 			}
 
-			for(auto agent : updatelist) {
+			try {
 
-				ThreadPool::getInstance().push(agent->name(),[agent]{
+				update_agents();
 
-					try {
+			} catch(const std::exception &e) {
 
-						agent->refresh(false);
+				cerr << "Error updating agents: " << e.what() << endl;
 
-					} catch(const exception &e) {
+			} catch(...) {
 
-						agent->failed("Agent update failed",e);
-
-					} catch(...) {
-
-						agent->failed("Unexpected error when updating");
-
-					}
-
-					{
-						lock_guard<std::recursive_mutex> lock(agent->guard);
-						agent->update.running = 0;
-					}
-
-				});
+				cerr << "Unexpected error updating agents" << endl;
 
 			}
 

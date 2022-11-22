@@ -51,8 +51,9 @@ namespace Udjat {
 		Controller(const Controller *) = delete;
 		Controller();
 
-		//void onTimer(time_t tm) noexcept;
 		void on_timer() override;
+
+		void update_agents();
 
 	public:
 		~Controller();
