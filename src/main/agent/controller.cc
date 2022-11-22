@@ -287,6 +287,7 @@ namespace Udjat {
 
 				try {
 
+					agent->notify(UPDATE_TIMER);
 					agent->refresh(false);
 
 				} catch(const exception &e) {

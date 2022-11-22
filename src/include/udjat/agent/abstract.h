@@ -35,13 +35,16 @@
 		public:
 
 			enum Event : uint16_t {
-				STARTED			= 0x0001,		///< @brief Agent was started.
-				STOPPED			= 0x0002,		///< @brief Agent was stopped.
-				VALUE_CHANGED	= 0x0004,		///< @brief Agent value has changed.
-				STATE_CHANGED	= 0x0008,		///< @brief Agent state has changed.
-				LEVEL_CHANGED	= 0x0010,		///< @brief Agent level has changed.
+				STARTED				= 0x0001,		///< @brief Agent was started.
+				STOPPED				= 0x0002,		///< @brief Agent was stopped.
+				STATE_CHANGED		= 0x0004,		///< @brief Agent state has changed.
+				LEVEL_CHANGED		= 0x0008,		///< @brief Agent level has changed.
+				UPDATE_TIMER		= 0x0010,		///< @brief Agent update starts.
+				VALUE_CHANGED		= 0x0020,		///< @brief Agent value has changed.
+				VALUE_NOT_CHANGED	= 0x0040,		///< @brief Agent value has not changed.
+				UPDATED				= 0x0060,		///< @brief Agent was updated.
 
-				ALL 			= 0x001F		///< @brief All events.
+				ALL 			= 0x001F			///< @brief All events.
 			};
 
 			class UDJAT_API EventListener {

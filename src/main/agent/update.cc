@@ -83,6 +83,7 @@ namespace Udjat {
 		}
 
 		if(!changed) {
+			notify(VALUE_NOT_CHANGED);
 			return false;
 		}
 
