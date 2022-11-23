@@ -192,6 +192,8 @@ namespace Udjat {
 	class UDJAT_API State : public Abstract::State {
 	protected:
 
+		typedef State<T> super;
+
 		/// @brief Minimum value for state activation.
 		T from;
 
@@ -238,6 +240,10 @@ namespace Udjat {
 
 	template <>
 	class UDJAT_API State<std::string> : public Abstract::State, public std::string {
+	protected:
+
+		typedef State<std::string> super;
+
 	public:
 		State(const pugi::xml_node &node) : Abstract::State(node),std::string(Udjat::Attribute(node,"value",false).as_string()) {
 		}
@@ -254,6 +260,10 @@ namespace Udjat {
 
 	template <>
 	class UDJAT_API State<bool> : public Abstract::State {
+	protected:
+
+		typedef State<bool> super;
+
 	private:
 
 		/// @brief State value;
