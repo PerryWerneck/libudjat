@@ -27,6 +27,9 @@
 
  namespace Udjat {
 
+ 	/// @return true if 'func' has returned true.
+	UDJAT_API bool for_each(const std::function<bool(const ifaddrs &intf)> &func);
+
 	/*
  	namespace Network {
 
@@ -81,7 +84,5 @@
 
  	}
 
-	/// @return true if 'func' has returned true.
-	UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 	*/
  }

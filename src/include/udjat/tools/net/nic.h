@@ -25,6 +25,7 @@
  #include <functional>
  #include <ifaddrs.h>
  #include <net/if.h>
+ #include <memory>
 
  namespace Udjat {
 
@@ -34,15 +35,18 @@
 		class UDJAT_API Interface {
 		public:
 
-			virtual bool operator==(const sockaddr_storage &addr) const noexcept = 0;
+			virtual bool operator==(const sockaddr_storage &addr) const = 0;
 
-			inline bool operator==(const char *str) const noexcept {
+			inline bool operator==(const char *str) const {
 				return strcasecmp(name(),str) == 0;
 			}
 
-			virtual const char * name() const noexcept = 0;
-			virtual bool up() const noexcept = 0;
-			virtual bool loopback() const noexcept = 0;
+			virtual const char * name() const = 0;
+			virtual bool found() const = 0;
+			virtual bool up() const = 0;
+			virtual bool loopback() const = 0;
+
+			static std::shared_ptr<Interface> get(const char *name);
 
 			static bool for_each(const std::function<bool(const Interface &intf)> &func);
 
