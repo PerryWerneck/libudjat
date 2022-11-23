@@ -354,6 +354,9 @@
 			/// @brief Get smart pointer.
 			std::shared_ptr<Agent> to_shared_ptr();
 
+			/// @brief Enqueue task.
+			size_t push(const std::function<void(std::shared_ptr<Agent> agent)> &method);
+
 			/// @brief Assign value from string.
 			virtual bool assign(const char *value);
 

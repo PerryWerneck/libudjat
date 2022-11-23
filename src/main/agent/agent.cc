@@ -79,7 +79,7 @@ namespace Udjat {
 
 			if((listener->event & event) != 0) {
 
-				push([this,event,listener]() {
+				NamedObject::push([this,event,listener]() {
 
 					try {
 
@@ -277,6 +277,23 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::deactivate() noexcept {
+
+		if(this->current_state.active->forwardToChildren()) {
+
+			debug("Forwarding inactive state to children");
+
+			Abstract::State *state = this->current_state.active.get();
+			for_each([this,state](Abstract::Agent &agent){
+
+				if(agent.current_state.active.get() == state) {
+					agent.push([](std::shared_ptr<Agent> agent){
+						agent->set(agent->computeState());
+					});
+				}
+
+			});
+
+		}
 
 		if(!current_state.activated) {
 			return;

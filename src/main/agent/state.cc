@@ -170,19 +170,18 @@ namespace Udjat {
 			throw runtime_error("Cant set an empty state");
 		}
 
-		debug("--------------- Calling state change");
-
 		if(!onStateChange(state,true,"Current state changed to '{}' ({})")) {
 			return false;
 		}
 
 		if(this->current_state.active->forwardToChildren()) {
 
-			debug("Forwarding state to children");
+			debug("Forwarding active state to children");
 
 			for_each([this,state](Abstract::Agent &agent){
 
 				if(agent.update.timer && agent.onStateChange(state,false,"State set to '{}' from parent ({})")) {
+					agent.current_state.activated = false;
 					agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
 				}
 

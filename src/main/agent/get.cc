@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/threadpool.h>
  #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -48,6 +49,32 @@
 		}
 
 		throw system_error(EINVAL,system_category(),"Cant get pointer to an invalid agent");
+	}
+
+	size_t Abstract::Agent::push(const std::function<void(std::shared_ptr<Agent> agent)> &method) {
+
+		if(!parent) {
+			throw system_error(EINVAL,system_category(),"Unable to push background tasks on orphaned agents.");
+		}
+
+		auto agent = to_shared_ptr();
+		return ThreadPool::getInstance().push(name(),[agent,method]() {
+
+			try {
+
+				method(agent);
+
+			} catch(const std::exception &e) {
+
+				agent->failed("Background task failed",e);
+
+			} catch(...) {
+
+				agent->failed("Unexpected background task fail","A generic background task has failed in this agent");
+			}
+
+		});
+
 	}
 
 	void Abstract::Agent::get(Report UDJAT_UNUSED(&report)) {
