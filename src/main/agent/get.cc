@@ -54,7 +54,33 @@
 	size_t Abstract::Agent::push(const std::function<void(std::shared_ptr<Agent> agent)> &method) {
 
 		if(!parent) {
-			throw system_error(EINVAL,system_category(),"Unable to push background tasks on orphaned agents.");
+
+			auto agent = root();
+
+			if(agent.get() == this) {
+
+				// Root agent, no parent.
+
+				return ThreadPool::getInstance().push(name(),[agent,method]() {
+
+					try {
+
+						method(agent);
+
+					} catch(const std::exception &e) {
+
+						agent->failed("Background task failed",e);
+
+					} catch(...) {
+
+						agent->failed("Unexpected background task fail","A generic background task has failed in this agent");
+					}
+
+				});
+			}
+
+
+			throw system_error(EINVAL,system_category(),string{"Unable to push background tasks to orphaned agent '"} + name() + "'.");
 		}
 
 		auto agent = to_shared_ptr();
