@@ -42,8 +42,8 @@
 					agent->parent = this;
 					agent->Object::set(node);
 					agent->setup(node);
-					if(!agent->current_state.active) {
-						agent->current_state.active = agent->computeState();
+					if(!agent->current_state.selected) {
+						agent->current_state.set(agent->computeState());
 					}
 					children.agents.push_back(agent);
 					return true;

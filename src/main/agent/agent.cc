@@ -50,7 +50,7 @@ namespace Udjat {
 			Object::properties.summary = summary;
 		}
 
-		current_state.active = Agent::computeState();
+		current_state.set(Agent::computeState());
 
 		try {
 
@@ -257,20 +257,18 @@ namespace Udjat {
 
 		try {
 
-			current_state.activated = time(0);
-			current_state.active->activate(*this);
+			current_state.activation = current_state.Activation::StateWasActivated;
+			current_state.selected->activate(*this);
 
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' activating state" << endl;
-			current_state.activated = 0;
-			this->current_state.active = Udjat::StateFactory(e,_("Error activating state"));
+			current_state.set(Udjat::StateFactory(e,_("Error activating state")));
 
 		} catch(...) {
 
 			error() << "Unexpected error activating state" << endl;
-			current_state.activated = 0;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error activating state"));
+			current_state.set(make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error activating state")));
 
 		}
 
@@ -278,16 +276,43 @@ namespace Udjat {
 
 	void Abstract::Agent::deactivate() noexcept {
 
-		if(this->current_state.active->forwardToChildren()) {
+		if(current_state.activation == current_state.Activation::StateWasActivated) {
 
-			debug("Forwarding inactive state to children");
+			// State was activated, deactivate it.
 
-			Abstract::State *state = this->current_state.active.get();
+			current_state.activation = current_state.Activation::StateWasSet;
+
+			try {
+
+				current_state.selected->deactivate(*this);
+
+			} catch(const std::exception &e) {
+
+				error() << "Error '" << e.what() << "' deactivating state" << endl;
+				current_state.set(Udjat::StateFactory(e,_("Error deactivating state")));
+
+			} catch(...) {
+
+				error() << "Unexpected error deactivating state" << endl;
+				current_state.set(make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error deactivating state")));
+
+			}
+
+		}
+
+		if(this->current_state.selected->forward()) {
+
+			debug("Forwarding deactivate state to children");
+
+			Abstract::State *state = this->current_state.selected.get();
 			for_each([this,state](Abstract::Agent &agent){
 
-				if(agent.current_state.active.get() == state) {
+				if(agent.current_state.selected.get() == state) {
 					agent.push([](std::shared_ptr<Agent> agent){
-						agent->set(agent->computeState());
+						agent->current_state.set(agent->computeState());
+						if(agent->update.timer) {
+							agent->update.next = time(0) + agent->update.timer;
+						}
 					});
 				}
 
@@ -295,27 +320,6 @@ namespace Udjat {
 
 		}
 
-		if(!current_state.activated) {
-			return;
-		}
-
-		current_state.activated = 0;
-
-		try {
-
-			current_state.active->deactivate(*this);
-
-		} catch(const std::exception &e) {
-
-			error() << "Error '" << e.what() << "' deactivating state" << endl;
-			this->current_state.active = Udjat::StateFactory(e,_("Error deactivating state"));
-
-		} catch(...) {
-
-			error() << "Unexpected error deactivating state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error deactivating state"));
-
-		}
 
 	}
 

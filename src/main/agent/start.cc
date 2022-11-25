@@ -34,8 +34,8 @@
 
 				try {
 
-					if(!child->current_state.active) {
-						child->current_state.active = Abstract::Agent::computeState();
+					if(!child->current_state.selected) {
+						child->current_state.set(Abstract::Agent::computeState());
 					}
 
 					child->start();
@@ -52,23 +52,27 @@
 
 		// Update agent state.
 		{
-			this->current_state.active = computeState();
-			if(!this->current_state.active) {
+			auto first_state = computeState();
+
+			if(!first_state) {
 				warning() << "Got an invalid state, switching to the default one" << endl;
-				this->current_state.active = Abstract::Agent::computeState();
+				first_state = Abstract::Agent::computeState();
 			}
+
 
 			// Check for children state
 			{
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children.agents) {
-					if(child->level() > this->level()) {
-						this->current_state.active = child->current_state.active;
+					if(child->level() > first_state->level()) {
+						first_state = child->current_state.selected;
 					}
 				}
 			}
 
-			const char * name = this->current_state.active->name();
+			current_state.set(first_state);
+
+			const char * name = this->current_state.selected->name();
 			auto level = this->level();
 			if(name && *name && level != Udjat::unimportant) {
 
@@ -77,7 +81,7 @@
 				if(value.empty()) {
 
 					info()	<< "Starts with state '"
-							<< this->current_state.active->name()
+							<< this->current_state.selected->name()
 							<< "' and level '"
 							<< level
 							<< "'"
@@ -88,7 +92,7 @@
 					info()	<< "Starts with value '"
 							<< value
 							<< "', state '"
-							<< this->current_state.active->name()
+							<< this->current_state.selected->name()
 							<< "' and level '"
 							<< level
 							<< "'"

@@ -229,7 +229,8 @@ namespace Udjat {
 
 		root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
 
-			if(!agent->update.next) {
+			// Ignore agents without 'next' or with forwarded state.
+			if(!(agent->update.next || agent->current_state.forwarded())) {
 				return;
 			}
 

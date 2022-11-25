@@ -123,7 +123,7 @@ namespace Udjat {
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			set(make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state"));
 
 		}
 

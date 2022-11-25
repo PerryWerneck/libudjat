@@ -117,7 +117,7 @@ namespace Udjat {
 
 	bool Abstract::Agent::onStateChange(std::shared_ptr<State> state, bool activate, const char *message) {
 
-		if(state.get() == this->current_state.active.get()) {
+		if(state.get() == this->current_state.selected.get()) {
 			debug("Changing to same state, ignored");
 			return false;
 		}
@@ -126,7 +126,7 @@ namespace Udjat {
 
 		deactivate();
 
-		this->current_state.active = state;
+		this->current_state.activate(state);
 
 		if(activate) {
 			this->activate();
@@ -170,30 +170,32 @@ namespace Udjat {
 			throw runtime_error("Cant set an empty state");
 		}
 
-		if(!onStateChange(state,true,"Current state changed to '{}' ({})")) {
-			return false;
-		}
-
-		if(this->current_state.active->forwardToChildren()) {
-
-			debug("Forwarding active state to children");
-
-			for_each([this,state](Abstract::Agent &agent){
-
-				if(agent.update.timer && agent.onStateChange(state,false,"State set to '{}' from parent ({})")) {
-					agent.current_state.activated = false;
-					agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
-				}
-
-			});
-
-		}
-
-		if(parent) {
+		if(onStateChange(state,true,"Current state changed to '{}' ({})")) {
 			parent->onChildStateChange();
+
+			if(this->current_state.selected->forward()) {
+
+				debug("Forwarding active state to children");
+
+				for_each([this,state](Abstract::Agent &agent){
+
+					agent.onStateChange(state,false,"State set to '{}' from parent ({})");
+					agent.current_state.activation = agent.current_state.Activation::StateWasForwarded;
+
+					if(agent.update.timer) {
+						agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
+					}
+
+				});
+
+			}
+
+			this->current_state.selected->refresh();
+			return true;
+
 		}
 
-		return true;
+		return false;
 
 	}
 

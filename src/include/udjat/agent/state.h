@@ -67,6 +67,9 @@ namespace Udjat {
 			/// @brief State alerts.
 			std::vector<std::shared_ptr<Abstract::Alert>> alerts;
 
+			/// @brief State agents.
+			std::vector<std::shared_ptr<Abstract::Agent>> agents;
+
 		protected:
 
 			struct Properties {
@@ -80,7 +83,7 @@ namespace Udjat {
 			} properties;
 
 			struct {
-				bool ftc = false;	///< @brief Forward to children?
+				bool forward = false;	///< @brief Forward to children?
 			} options;
 
 		public:
@@ -94,11 +97,19 @@ namespace Udjat {
 			/// @brief Get state values as string.
 			virtual std::string value() const;
 
+			/// @brief Refresh associated agents.
+			void refresh();
+
 			std::string to_string() const noexcept override {
 				return Object::properties.summary;
 			}
 
 			virtual ~State();
+
+			/// @brief Forward state to children?
+			inline bool forward() const noexcept {
+				return options.forward;
+			}
 
 			inline const char * body() const noexcept {
 				return properties.body;
@@ -141,12 +152,6 @@ namespace Udjat {
 			/// @return true if the state is not a problem.
 			inline bool ready() const noexcept {
 				return level() <= Level::ready;
-			}
-
-			/// @brief Forward to children when activated on agent?
-			/// @return true if the option forward to children is enabled.
-			inline bool forwardToChildren() const noexcept {
-				return options.ftc;
 			}
 
 			virtual void get(const Request &request, Response &response) const;

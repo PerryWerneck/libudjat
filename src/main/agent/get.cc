@@ -131,8 +131,8 @@
 
 			// Get agent state.
 			auto &state = value["state"];
-			this->current_state.active->getProperties(state);
-			state["activation"] = TimeStamp(this->current_state.activated);
+			this->current_state.selected->getProperties(state);
+			state["activation"] = TimeStamp(this->current_state.timestamp);
 
 		} catch(const std::exception &e) {
 
@@ -176,7 +176,7 @@
 			return str;
 		}
 
-		return current_state.active->summary();
+		return current_state.selected->summary();
 
 	}
 
@@ -187,7 +187,7 @@
 			return str;
 		}
 
-		return current_state.active->label();
+		return current_state.selected->label();
 
 	}
 
@@ -198,7 +198,7 @@
 			return str;
 		}
 
-		return current_state.active->icon();
+		return current_state.selected->icon();
 
 	}
 

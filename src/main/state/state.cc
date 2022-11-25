@@ -67,6 +67,9 @@ namespace Udjat {
 		return "";
 	}
 
+	void Abstract::State::refresh() {
+	}
+
 	void Abstract::State::set(const pugi::xml_node &node) {
 
 		Object::set(node);
@@ -75,7 +78,7 @@ namespace Udjat {
 
 		properties.level = LevelFactory(node);
 		properties.body = getAttribute(node,section,"body",properties.body);
-		options.ftc = getAttribute(node,section,"forward-to-children",options.ftc);
+		options.forward = getAttribute(node,section,"forward-to-children",options.forward);
 
 		for(pugi::xml_node child : node) {
 

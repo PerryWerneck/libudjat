@@ -82,10 +82,37 @@
 
 			struct {
 				/// @brief Active state.
-				std::shared_ptr<State> active;
+				std::shared_ptr<State> selected;
 
-				/// @brief State activation (0 if not activated).
-				time_t activated = 0;
+				enum Activation : uint8_t {
+					StateWasSet,			///< @brief The current state was set (usually when a parent remove a forwarded state).
+					StateWasActivated,		///< @brief This state was activated.
+					StateWasForwarded,		///< @brief This state was forwarded from parent (disable agent updates).
+				} activation = StateWasSet;
+
+				time_t timestamp = 0;
+
+				inline void set(std::shared_ptr<State> state) noexcept {
+					selected = state;
+					timestamp = time(0);
+					activation = StateWasSet;
+				}
+
+				inline void activate(std::shared_ptr<State> state) noexcept {
+					selected = state;
+					timestamp = time(0);
+					activation = StateWasActivated;
+				}
+
+				inline void forward(std::shared_ptr<State> state) noexcept {
+					selected = state;
+					timestamp = time(0);
+					activation = StateWasForwarded;
+				}
+
+				inline bool forwarded() const noexcept {
+					return (activation == StateWasForwarded);
+				}
 
 			} current_state;
 
@@ -361,17 +388,17 @@
 			virtual bool assign(const char *value);
 
 			UDJAT_DEPRECATED(inline std::shared_ptr<State> getState() const) {
-				return this->current_state.active;
+				return this->current_state.selected;
 			}
 
 			/// @brief Get current state
 			inline std::shared_ptr<State> state() const {
-				return this->current_state.active;
+				return this->current_state.selected;
 			}
 
 			/// @brief Get current level.
 			inline Level level() const {
-				return this->current_state.active->level();
+				return this->current_state.selected->level();
 			}
 
 			/// @brief Create and insert State.
