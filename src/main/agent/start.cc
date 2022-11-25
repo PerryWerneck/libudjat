@@ -25,7 +25,7 @@
 
 	void Abstract::Agent::start() {
 
-		debug("Starting agent '",name(),"' with value ",to_string().c_str());
+		debug("Starting agent '",name(),"' with value '",to_string().c_str(),"'");
 
 		// Start children
 		{
@@ -59,42 +59,57 @@
 				first_state = Abstract::Agent::computeState();
 			}
 
+			if(first_state->forward()) {
 
-			// Check for children state
-			{
+				// Forwart state to children
+				debug("Forwarding first state to children");
+
+				lock_guard<std::recursive_mutex> lock(guard);
+				for(auto child : children.agents) {
+					child->current_state.forward(first_state);
+				}
+
+			} else {
+
+				// Check for children state
+				debug("Checking children first state")
+
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children.agents) {
 					if(child->level() > first_state->level()) {
 						first_state = child->current_state.selected;
 					}
 				}
+
 			}
 
 			current_state.set(first_state);
 
-			const char * name = this->current_state.selected->name();
-			auto level = this->level();
-			if(name && *name && level != Udjat::unimportant) {
+			{
 
 				string value = to_string();
 
 				if(value.empty()) {
 
-					info()	<< "Starts with state '"
-							<< this->current_state.selected->name()
+					LogFactory(this->level())
+							<< this->name()
+							<< "\tStarts with state '"
+							<< this->current_state.selected->summary()
 							<< "' and level '"
-							<< level
+							<< this->level()
 							<< "'"
 							<< endl;
 
 				} else {
 
-					info()	<< "Starts with value '"
+					LogFactory(this->level())
+							<< this->name()
+							<< "\tStarts with value '"
 							<< value
 							<< "', state '"
-							<< this->current_state.selected->name()
+							<< this->current_state.selected->summary()
 							<< "' and level '"
-							<< level
+							<< this->level()
 							<< "'"
 							<< endl;
 

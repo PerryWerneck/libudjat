@@ -131,7 +131,7 @@
 			std::list<EventListener *> listeners;
 
 			/// @brief Child state has changed; compute my new state.
-			void onChildStateChange() noexcept;
+			// void onChildStateChange() noexcept;
 
 			/// @brief Enable disable 'running updates' flag.
 			// void updating(bool running);

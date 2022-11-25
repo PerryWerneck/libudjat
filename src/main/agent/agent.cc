@@ -302,6 +302,8 @@ namespace Udjat {
 
 		if(this->current_state.selected->forward()) {
 
+			// State has forward option, reset children.
+
 			debug("Forwarding deactivate state to children");
 
 			Abstract::State *state = this->current_state.selected.get();

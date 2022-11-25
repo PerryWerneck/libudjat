@@ -56,6 +56,7 @@ namespace Udjat {
 
 	}
 
+	/*
 	void Abstract::Agent::onChildStateChange() noexcept {
 
 		// Compute my current state based on value.
@@ -85,6 +86,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
 		auto activation = alert->ActivationFactory();
@@ -118,15 +120,18 @@ namespace Udjat {
 	bool Abstract::Agent::onStateChange(std::shared_ptr<State> state, bool activate, const char *message) {
 
 		if(state.get() == this->current_state.selected.get()) {
-			debug("Changing to same state, ignored");
+			debug("Changing '",name(),"' to same state, ignored");
 			return false;
 		}
+
+		debug("--------------------------------------------------------------");
 
 		auto saved_level = level();
 
 		deactivate();
 
 		this->current_state.activate(state);
+		auto level = this->level();
 
 		if(activate) {
 			this->activate();
@@ -134,19 +139,22 @@ namespace Udjat {
 
 		notify(STATE_CHANGED);
 
-		if(saved_level != this->level()) {
+		debug("me=",name()," my-state=",level," ",this->current_state.selected->summary());
+		debug("me=",name()," set-state=",state->level()," ",state->summary());
+
+		if(saved_level != level) {
 
 			if(message && *message) {
 
 				std::string body{state->to_string()}; // Why is this necessary?
 
-				LogFactory(this->level())
+				LogFactory(level)
 					<< name()
 					<< "\t"
 					<< Logger::Message{
 							message,
 							body,
-							this->level()
+							level
 						}
 					<< endl;
 
@@ -171,7 +179,6 @@ namespace Udjat {
 		}
 
 		if(onStateChange(state,true,"Current state changed to '{}' ({})")) {
-			parent->onChildStateChange();
 
 			if(this->current_state.selected->forward()) {
 
@@ -191,6 +198,26 @@ namespace Udjat {
 			}
 
 			this->current_state.selected->refresh();
+
+			for(auto parent = this->parent; parent; parent = parent->parent) {
+
+				// Get parent state
+				auto state = parent->computeState();
+
+				// Then check the children.
+				{
+					lock_guard<std::recursive_mutex> lock(guard);
+					for(auto child : parent->children.agents) {
+						if(!state || child->level() > state->level()) {
+							state = child->state();
+						}
+					}
+				}
+
+				parent->onStateChange(state,false,"Current state changed to '{}' by child request ({})");
+
+			}
+
 			return true;
 
 		}

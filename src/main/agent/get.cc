@@ -134,6 +134,21 @@
 			this->current_state.selected->getProperties(state);
 			state["activation"] = TimeStamp(this->current_state.timestamp);
 
+			switch(current_state.activation) {
+			case current_state.Activation::StateWasSet:
+				state["mode"] = "set";
+				break;
+
+			case this->current_state.Activation::StateWasActivated:
+				state["mode"] = "activated";
+				break;
+
+			case this->current_state.Activation::StateWasForwarded:
+				state["mode"] = "forwarded";
+				break;
+
+			}
+
 		} catch(const std::exception &e) {
 
 			error() << "Error '" << e.what() << "' getting agent properties" << endl;

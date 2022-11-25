@@ -230,7 +230,7 @@ namespace Udjat {
 		root->for_each([now,this,&next,&updatelist](std::shared_ptr<Agent> agent) {
 
 			// Ignore agents without 'next' or with forwarded state.
-			if(!(agent->update.next || agent->current_state.forwarded())) {
+			if(!agent->update.next || agent->current_state.forwarded()) {
 				return;
 			}
 
@@ -284,12 +284,19 @@ namespace Udjat {
 
 		for(auto agent : updatelist) {
 
-			ThreadPool::getInstance().push(agent->name(),[agent]{
+			agent->push([](std::shared_ptr<Agent> agent){
 
 				try {
 
+#ifdef DEBUG
+					agent->info() << "Scheduled update begins" << endl;
+#endif // DEBUG
 					agent->notify(UPDATE_TIMER);
 					agent->refresh(false);
+
+#ifdef DEBUG
+					agent->info() << "Scheduled update complete" << endl;
+#endif // DEBUG
 
 				} catch(const exception &e) {
 
