@@ -78,9 +78,9 @@
 			return value.set(this->value);
 		}
 
-		/// @brief Set initial value, doesnt update state.
+		/// @brief Start with value.
 		/// @param value The initial value to set.
-		inline void start(const T value) noexcept {
+		inline void start(const T value) {
 			this->value = value;
 			Abstract::Agent::start();
 		}

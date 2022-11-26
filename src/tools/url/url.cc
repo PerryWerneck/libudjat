@@ -111,13 +111,18 @@
 			const Protocol * protocol = Protocol::find(*this);
 			if(!protocol) {
 				cerr << "url\tCant find a protocol handler for " << *this << endl;
-				return -EINVAL;
+				return EINVAL;
 			}
 
 			auto worker = protocol->WorkerFactory();
 			if(worker) {
-				worker->url(*this);
+				return worker->url(*this).test();
 			}
+
+		} catch(const std::system_error &e) {
+
+			cerr << "url\tError '" << e.what() << "' testing " << *this << endl;
+			return (unsigned short) e.code().value();
 
 		} catch(const std::exception &e) {
 

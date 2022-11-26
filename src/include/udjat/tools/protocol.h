@@ -167,8 +167,11 @@
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
 
-			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
-			/// @return 200 if the file is accessible.
+			/// @brief Test URL access (do a 'head' on http[s], check if file exists in file://
+			/// @return Test result.
+			/// @retval 200 URL is valid.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid protocol.
 			virtual unsigned short test();
 
 			/// @brief Set request payload.

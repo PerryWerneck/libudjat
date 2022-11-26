@@ -125,7 +125,7 @@
 	}
 
 	unsigned short Protocol::Worker::test() {
-		throw system_error(ENOTSUP,system_category(),"No test support on selected worker");
+		throw system_error(ENOTSUP,system_category());
 	}
 
 	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
