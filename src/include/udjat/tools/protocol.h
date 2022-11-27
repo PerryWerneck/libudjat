@@ -167,20 +167,6 @@
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
 
-			/// @brief Test URL access.
-			/// @return Test result.
-			/// @retval 200 URL is valid.
-			/// @retval 404 Not found.
-			/// @retval EINVAL Invalid protocol.
-			virtual unsigned short test(const HTTP::Method method, const char *payload = "");
-
-			/// @brief Test URL access (do a 'head' on http[s], check if file exists in file://
-			/// @return Test result.
-			/// @retval 200 URL is valid.
-			/// @retval 404 Not found.
-			/// @retval EINVAL Invalid protocol.
-			unsigned short test();
-
 			/// @brief Set request payload.
 			inline Worker & payload(const char *payload) noexcept {
 				out.payload = payload;
@@ -250,6 +236,24 @@
 			/// @param progress The download progress notifier.
 			/// @return String with the URL contents.
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
+
+			/// @brief Test URL access (do a 'method' request with 'payload').
+			/// @return URL return code.
+			/// @retval 200 Got response.
+			/// @retval 401 Acess denied.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid method.
+			/// @retval ENOTSUP No support for test in protocol handler.
+			virtual int test(const std::function<bool(double current, double total)> &progress) noexcept;
+
+			/// @brief Test URL access (do a 'method' request with 'payload').
+			/// @return URL return code.
+			/// @retval 200 Got response.
+			/// @retval 401 Acess denied.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid method.
+			/// @retval ENOTSUP No support for test in protocol handler.
+			int test() noexcept;
 
 			/// @brief Call URL, save response as filename.
 			/// @param filename	The file name to save.

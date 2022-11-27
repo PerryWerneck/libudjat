@@ -124,18 +124,8 @@
 		throw system_error(ENOTSUP,system_category(),"No credentials support on selected worker");
 	}
 
-	unsigned short Protocol::Worker::test(const HTTP::Method method, const char *payload) {
-		/*
-		this->method(method);
-		if(payload && *payload) {
-			this->payload(payload);
-		}
-		*/
-		throw system_error(ENOTSUP,system_category());
-	}
-
-	unsigned short Protocol::Worker::test() {
-		return test(HTTP::Head);
+	int Protocol::Worker::test(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) noexcept {
+		return ENOTSUP;
 	}
 
 	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
@@ -174,6 +164,10 @@
 
 	String Protocol::Worker::get() {
 		return get(dummy_progress);
+	}
+
+	int Protocol::Worker::test() noexcept {
+		return test(dummy_progress);
 	}
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> &call) {

@@ -98,10 +98,10 @@
 
 			}
 
-			unsigned short test(const HTTP::Method method, const char UDJAT_UNUSED(*payload)) override {
+			int test(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) noexcept override {
 
-				if(method != HTTP::Get) {
-					throw system_error(EINVAL,system_category());
+				if(method() != HTTP::Get) {
+					return EINVAL;
 				}
 
 				string script = this->path();
