@@ -167,12 +167,19 @@
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
 
+			/// @brief Test URL access.
+			/// @return Test result.
+			/// @retval 200 URL is valid.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid protocol.
+			virtual unsigned short test(const HTTP::Method method, const char *payload = "");
+
 			/// @brief Test URL access (do a 'head' on http[s], check if file exists in file://
 			/// @return Test result.
 			/// @retval 200 URL is valid.
 			/// @retval 404 Not found.
 			/// @retval EINVAL Invalid protocol.
-			virtual unsigned short test();
+			unsigned short test();
 
 			/// @brief Set request payload.
 			inline Worker & payload(const char *payload) noexcept {

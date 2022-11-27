@@ -98,7 +98,11 @@
 
 			}
 
-			unsigned short test() override {
+			unsigned short test(const HTTP::Method method, const char UDJAT_UNUSED(*payload)) override {
+
+				if(method != HTTP::Get) {
+					throw system_error(EINVAL,system_category());
+				}
 
 				string script = this->path();
 
