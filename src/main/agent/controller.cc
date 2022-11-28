@@ -231,6 +231,11 @@ namespace Udjat {
 
 			// Ignore agents without 'next' or with forwarded state.
 			if(!agent->update.next || agent->current_state.forwarded()) {
+				debug(
+					"Agent='",agent->name(),"' will not update. Next=",agent->update.next,
+					" Forwarded=",(agent->current_state.forwarded() ? "Yes" : "No"),
+					" (",agent->current_state.selected->summary(),")"
+				);
 				return;
 			}
 

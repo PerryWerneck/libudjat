@@ -56,38 +56,6 @@ namespace Udjat {
 
 	}
 
-	/*
-	void Abstract::Agent::onChildStateChange() noexcept {
-
-		// Compute my current state based on value.
-		std::shared_ptr<Abstract::State> child_state;
-
-		// Then check the children.
-		{
-			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto child : children.agents) {
-				if(!child_state || child->level() > child_state->level()) {
-					child_state = child->state();
-				}
-			}
-		}
-
-		if(child_state) {
-
-			// Has child state, check for update
-			auto state = computeState();
-
-			if(child_state->level() > state->level()) {
-				onStateChange(child_state,false,"State set to '{}' from child ({})");
-			} else {
-				onStateChange(state,true,"State restored to '{}' after child change ({})");
-			}
-
-		}
-
-	}
-	*/
-
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
 		auto activation = alert->ActivationFactory();
 
@@ -182,15 +150,13 @@ namespace Udjat {
 
 			if(this->current_state.selected->forward()) {
 
-				debug("Forwarding active state to children");
+				debug("Forwarding active state '",this->current_state.selected->summary(),"' from '",name(),"' to children");
 
 				for_each([this,state](Abstract::Agent &agent){
 
-					agent.onStateChange(state,false,"State set to '{}' from parent ({})");
-					agent.current_state.activation = agent.current_state.Activation::StateWasForwarded;
-
-					if(agent.update.timer) {
-						agent.update.next = (max(this->update.next,time(0)) + agent.update.timer);
+					if(&agent != this) {
+						agent.onStateChange(state,false,"State set to '{}' from parent ({})");
+						agent.current_state.activation = agent.current_state.Activation::StateWasForwarded;
 					}
 
 				});

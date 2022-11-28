@@ -257,6 +257,7 @@ namespace Udjat {
 
 		try {
 
+			debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
 			current_state.activation = current_state.Activation::StateWasActivated;
 			current_state.selected->activate(*this);
 
