@@ -72,7 +72,7 @@
 
 			int test(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) noexcept override {
 
-				if(method() != HTTP::Get) {
+				if(method() != HTTP::Head) {
 					return EINVAL;
 				}
 

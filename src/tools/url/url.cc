@@ -104,7 +104,7 @@
 
 	}
 
-	unsigned short URL::test() const noexcept {
+	int URL::test(const HTTP::Method method, const char *payload) const noexcept {
 
 		try {
 
@@ -116,13 +116,15 @@
 
 			auto worker = protocol->WorkerFactory();
 			if(worker) {
+				worker->method(method);
+				worker->payload(payload);
 				return worker->url(*this).test();
 			}
 
 		} catch(const std::system_error &e) {
 
 			cerr << "url\tError '" << e.what() << "' testing " << *this << endl;
-			return (unsigned short) e.code().value();
+			return (int) e.code().value();
 
 		} catch(const std::exception &e) {
 

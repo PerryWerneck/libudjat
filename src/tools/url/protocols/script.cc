@@ -100,15 +100,20 @@
 
 			int test(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) noexcept override {
 
-				if(method() != HTTP::Get) {
+				if(method() != HTTP::Head) {
 					return EINVAL;
 				}
 
 				string script = this->path();
 
-				if(access(script.c_str(),R_OK)) {
+				if(access(script.c_str(),F_OK)) {
 					clog << "script\t" << script << " is not available" << endl;
 					return 404;
+				}
+
+				if(access(script.c_str(),R_OK)) {
+					clog << "script\t" << script << " is not acessible" << endl;
+					return 401;
 				}
 
 				int rc = SubProcess::run(script.c_str());

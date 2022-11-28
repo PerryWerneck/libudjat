@@ -34,6 +34,7 @@
  #include <stdexcept>
  #include <system_error>
  #include <functional>
+ #include <udjat/tools/method.h>
 
  namespace Udjat {
 
@@ -89,8 +90,13 @@
 		static std::string unescape(const char *src);
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
-		/// @return 200 if the file is accessible.
-		unsigned short test() const noexcept;
+		/// @return Test result.
+		/// @retval 200 Got response.
+		/// @retval 401 Acess denied.
+		/// @retval 404 Not found.
+		/// @retval EINVAL Invalid method.
+		/// @retval ENOTSUP No support for test in protocol handler.
+		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const noexcept;
 
 		/// @brief Do a 'get' request.
 		/// @return Server response.
