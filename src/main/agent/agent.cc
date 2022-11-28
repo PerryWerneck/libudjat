@@ -253,13 +253,14 @@ namespace Udjat {
 		return instance;
 	}
 
+	/*
 	void Abstract::Agent::activate() noexcept {
 
 		try {
 
 			debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
-			current_state.activation = current_state.Activation::StateWasActivated;
-			current_state.selected->activate(*this);
+			state()->activate(*this);
+			debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
 
 		} catch(const std::exception &e) {
 
@@ -273,8 +274,12 @@ namespace Udjat {
 
 		}
 
-	}
+		debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
 
+	}
+	*/
+
+	/*
 	void Abstract::Agent::deactivate() noexcept {
 
 		if(current_state.activation == current_state.Activation::StateWasActivated) {
@@ -325,5 +330,6 @@ namespace Udjat {
 
 
 	}
+	*/
 
 }

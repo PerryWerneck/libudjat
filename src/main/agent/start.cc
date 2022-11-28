@@ -64,22 +64,10 @@
 				// Forwart state to children
 				debug("Forwarding first state from '",name(),"' to children");
 
-				for_each([this,first_state](Abstract::Agent &agent){
-
-					if(&agent != this) {
-						debug("Forwarding state '",first_state->summary(),"' to agent '",agent.name(),"'");
-						agent.current_state.forward(first_state);
-					}
-
-				});
-
-				/*
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children.agents) {
-					debug("Forwarding state '",first_state->summary(),"' to agent '",child->name(),"'");
-					child->current_state.forward(first_state);
+					child->forward(first_state);
 				}
-				*/
 
 			} else {
 

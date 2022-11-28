@@ -104,17 +104,22 @@
 					activation = StateWasActivated;
 				}
 
+				/*
 				inline void forward(std::shared_ptr<State> state) noexcept {
 					selected = state;
 					timestamp = time(0);
 					activation = StateWasForwarded;
 				}
+				*/
 
 				inline bool forwarded() const noexcept {
 					return (activation == StateWasForwarded);
 				}
 
 			} current_state;
+
+			/// @brief Set forwarded state on agent and children.
+			void forward(std::shared_ptr<State> state) noexcept;
 
 			/// @brief Agent children.
 			struct {
@@ -130,12 +135,6 @@
 			/// @brief Event listeners.
 			std::list<EventListener *> listeners;
 
-			/// @brief Child state has changed; compute my new state.
-			// void onChildStateChange() noexcept;
-
-			/// @brief Enable disable 'running updates' flag.
-			// void updating(bool running);
-
 			/// @brief Load agent properties from XML node.
 			void setup_properties(const pugi::xml_node &node) noexcept;
 
@@ -149,10 +148,10 @@
 			void setup_children(const pugi::xml_node &node) noexcept;
 
 			/// @brief Activate agent state.
-			void activate() noexcept;
+			//void activate() noexcept;
 
 			/// @brief Deactivate agent state (if needed).
-			void deactivate() noexcept;
+			//void deactivate() noexcept;
 
 			/// @brief Notify state change.
 			/// @param state New agent state.

@@ -88,33 +88,85 @@ namespace Udjat {
 	bool Abstract::Agent::onStateChange(std::shared_ptr<State> state, bool activate, const char *message) {
 
 		if(state.get() == this->current_state.selected.get()) {
-			debug("Changing '",name(),"' to same state, ignored");
+			debug("Changing '",name(),"' to same state (",state->summary(),"), ignored");
 			return false;
 		}
 
-		debug("--------------------------------------------------------------");
-
 		auto saved_level = level();
+		auto level = state->level();
 
-		deactivate();
+		if(current_state.activation == current_state.Activation::StateWasActivated) {
 
-		this->current_state.activate(state);
-		auto level = this->level();
+			debug("Agent '",name(),"' deactivates state '",this->state()->summary(),"'");
 
-		if(activate) {
-			this->activate();
+			try {
+
+				current_state.selected->deactivate(*this);
+
+			} catch(const std::exception &e) {
+
+				error() << "Error '" << e.what() << "' deactivating state" << endl;
+
+			} catch(...) {
+
+				error() << "Unexpected error deactivating state" << endl;
+
+			}
+
 		}
 
-		notify(STATE_CHANGED);
+		if(current_state.selected->forward()) {
 
-		debug("me=",name()," my-state=",level," ",this->current_state.selected->summary());
-		debug("me=",name()," set-state=",state->level()," ",state->summary());
+			debug("Forwarding inactive state '",this->current_state.selected->summary(),"' from '",name(),"' to children");
+
+			for_each([this](Abstract::Agent &agent){
+
+				if(&agent != this && agent.current_state.selected.get() == this->current_state.selected.get()) {
+					debug("Removing forwarded state from agent '",agent.name(),"'");
+					agent.current_state.set(agent.computeState());
+					if(agent.update.timer) {
+						agent.update.next = time(0) + agent.update.timer;
+					}
+				}
+
+			});
+
+		}
+
+		if(activate) {
+
+			try {
+
+				current_state.activate(state);
+				this->state()->activate(*this);
+
+			} catch(const std::exception &e) {
+
+				error() << "Error '" << e.what() << "' activating state" << endl;
+				current_state.set(Udjat::StateFactory(e,_("Error activating state")));
+
+			} catch(...) {
+
+				error() << "Unexpected error activating state" << endl;
+				current_state.set(make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error activating state")));
+
+			}
+
+		} else {
+
+			current_state.set(state);
+
+		}
+
+		debug("New state on '",name(),"' is '",this->state()->summary(),"'");
+
+		notify(STATE_CHANGED);
 
 		if(saved_level != level) {
 
 			if(message && *message) {
 
-				std::string body{state->to_string()}; // Why is this necessary?
+				std::string body{this->state()->to_string()}; // Why is this necessary?
 
 				LogFactory(level)
 					<< name()
@@ -132,7 +184,7 @@ namespace Udjat {
 		}
 #ifdef DEBUG
 		else {
-			warning() << "State level stays the same, no message" << endl;
+			debug("State on  '",name(),"' is now '",state->summary(),"' with same level, no message");
 		}
 #endif // DEBUG
 
@@ -146,41 +198,41 @@ namespace Udjat {
 			throw runtime_error("Cant set an empty state");
 		}
 
+		//debug("New state for '",name(),"' is ",state->summary()," (",state->level(),")");
+
 		if(onStateChange(state,true,"Current state changed to '{}' ({})")) {
 
 			if(this->current_state.selected->forward()) {
 
 				debug("Forwarding active state '",this->current_state.selected->summary(),"' from '",name(),"' to children");
-
-				for_each([this,state](Abstract::Agent &agent){
-
-					if(&agent != this) {
-						agent.onStateChange(state,false,"State set to '{}' from parent ({})");
-						agent.current_state.activation = agent.current_state.Activation::StateWasForwarded;
-					}
-
-				});
+				lock_guard<std::recursive_mutex> lock(guard);
+				for(auto child : children.agents) {
+					child->forward(this->current_state.selected);
+				}
 
 			}
 
 			this->current_state.selected->refresh();
 
+			// Update parent
 			for(auto parent = this->parent; parent; parent = parent->parent) {
 
-				// Get parent state
 				auto state = parent->computeState();
-
-				// Then check the children.
 				{
 					lock_guard<std::recursive_mutex> lock(guard);
 					for(auto child : parent->children.agents) {
-						if(!state || child->level() > state->level()) {
+						if(child->level() > state->level()) {
 							state = child->state();
 						}
 					}
 				}
 
-				parent->onStateChange(state,false,"Current state changed to '{}' by child request ({})");
+				debug("Computed state for '",parent->name(),"' is ",state->summary()," (",state->level(),")");
+
+				if(!parent->onStateChange(state,false,"Current state changed to '{}' by child request ({})")) {
+					debug("No state change on '",parent->name(),"' stop update");
+					break;
+				}
 
 			}
 

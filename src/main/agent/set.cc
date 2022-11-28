@@ -88,4 +88,17 @@
 		sched_update(seconds);
 	}
 
+	void Abstract::Agent::forward(std::shared_ptr<State> state) noexcept {
+
+		if(onStateChange(state,false,"State set to '{}' from parent ({})")) {
+			current_state.activation = current_state.StateWasForwarded;
+			update.next = 0;
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto child : children.agents) {
+				child->forward(state);
+			}
+		}
+
+	}
+
  }
