@@ -122,8 +122,8 @@ namespace Udjat {
 			for_each([this](Abstract::Agent &agent){
 
 				if(&agent != this && agent.current_state.selected.get() == this->current_state.selected.get()) {
-					debug("Removing forwarded state from agent '",agent.name(),"'");
 					agent.current_state.set(agent.computeState());
+					debug("Removing forwarded state from agent '",agent.name(),"', new state is '",agent.current_state.selected->summary(),"'");
 					if(agent.update.timer) {
 						agent.update.next = time(0) + agent.update.timer;
 					}
