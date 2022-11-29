@@ -198,8 +198,8 @@ namespace Udjat {
 			throw runtime_error("Cant set an empty state");
 		}
 
-		if(parent && parent->current_state.selected->forward()) {
-			info() << "Ignoring state '" << state->summary() << "' by parent request" << endl;
+		if(parent && parent->current_state.activated() && parent->current_state.selected->forward()) {
+			info() << "Ignoring state '" << state->summary() << "' by parent (" << parent->name() << ") request" << endl;
 			return false;
 		}
 

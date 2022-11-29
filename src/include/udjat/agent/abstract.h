@@ -112,6 +112,10 @@
 				}
 				*/
 
+				inline bool activated() const noexcept {
+					return (activation == StateWasActivated);
+				}
+
 				inline bool forwarded() const noexcept {
 					return (activation == StateWasForwarded);
 				}
