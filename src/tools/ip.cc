@@ -18,7 +18,6 @@
  */
 
  #include <config.h>
-
  #include <udjat/defs.h>
  #include <udjat/tools/ip.h>
 
@@ -26,37 +25,20 @@
 
  namespace std {
 
- 	UDJAT_API string to_string(const sockaddr_in &addr, bool UDJAT_UNUSED(dns)) {
+	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns) {
 
-		char ipaddr[256];
-		memset(ipaddr,0,sizeof(ipaddr));
+		switch(addr.ss_family) {
+		case AF_INET:
+			return to_string( *((sockaddr_in *) &addr), dns);
 
-		InetNtop(
-			addr.sin_family,
-			&addr.sin_addr,
-			ipaddr,
-			sizeof(ipaddr)
-		);
+		case AF_INET6:
+			return to_string( *((sockaddr_in6 *) &addr), dns);
 
-		return string{ipaddr};
+		}
 
- 	}
+		return "";
 
- 	UDJAT_API string to_string(const sockaddr_in6 &addr, bool UDJAT_UNUSED(dns)) {
-
-		char ipaddr[256];
-		memset(ipaddr,0,sizeof(ipaddr));
-
-		InetNtop(
-			addr.sin6_family,
-			&addr.sin6_addr,
-			ipaddr,
-			sizeof(ipaddr)
-		);
-
-		return string{ipaddr};
-
- 	}
+	}
 
  }
 

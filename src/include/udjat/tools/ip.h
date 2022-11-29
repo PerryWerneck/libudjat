@@ -20,6 +20,7 @@
  #ifdef _WIN32
 	#include <winsock2.h>
 	#include <windows.h>
+	#include <ws2tcpip.h>
  #else
 	#include <arpa/inet.h>
  #endif // _WIN32
@@ -27,12 +28,23 @@
  #include <udjat/defs.h>
  #include <string>
 
-
  namespace std {
 
 	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns = false);
 
 	inline ostream & operator<< (ostream& os, const sockaddr_storage &addr) {
+		return os << to_string(addr);
+	}
+
+	UDJAT_API string to_string(const sockaddr_in &addr, bool dns = false);
+
+	inline ostream & operator<< (ostream& os, const sockaddr_in &addr) {
+		return os << to_string(addr);
+	}
+
+	UDJAT_API string to_string(const sockaddr_in6 &addr, bool dns = false);
+
+	inline ostream & operator<< (ostream& os, const sockaddr_in6 &addr) {
 		return os << to_string(addr);
 	}
 

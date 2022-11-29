@@ -210,6 +210,7 @@
 		<Unit filename="src/tools/http/exception.cc" />
 		<Unit filename="src/tools/http/mimetype.cc" />
 		<Unit filename="src/tools/http/timestamp.cc" />
+		<Unit filename="src/tools/ip.cc" />
 		<Unit filename="src/tools/logger.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />

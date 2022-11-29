@@ -31,19 +31,14 @@
 
  namespace std {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns) {
+ 	UDJAT_API string to_string(const sockaddr_in &addr, bool dns) {
 
-		if(addr.ss_family == AF_PACKET) {
-			// TODO: How to get ipaddr on AF_PACKET?
-			return "";
-		}
-
-		char host[NI_MAXHOST];
+ 		char host[NI_MAXHOST];
 		memset(host,0,sizeof(host));
 
 		int rc = getnameinfo(
 					(sockaddr *) &addr,
-					(addr.ss_family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6)),
+					sizeof(struct sockaddr_in),
 					host, NI_MAXHOST,
 					NULL, 0,
 					(dns ? 0 : NI_NUMERICHOST)
@@ -55,7 +50,29 @@
 
 		return string{host};
 
-	}
+ 	}
+
+ 	UDJAT_API string to_string(const sockaddr_in6 &addr, bool dns) {
+
+ 		char host[NI_MAXHOST];
+		memset(host,0,sizeof(host));
+
+		int rc = getnameinfo(
+					(sockaddr *) &addr,
+					sizeof(struct sockaddr_in6),
+					host, NI_MAXHOST,
+					NULL, 0,
+					(dns ? 0 : NI_NUMERICHOST)
+				);
+
+		if(rc != 0) {
+			throw runtime_error(gai_strerror(rc));
+		}
+
+		return string{host};
+
+ 	}
+
 
  }
 
