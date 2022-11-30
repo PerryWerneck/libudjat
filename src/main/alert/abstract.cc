@@ -30,8 +30,8 @@
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
 		// options.
-		options.verbose = getAttribute(node,section,"verbose",options.verbose);
-		options.verbose = getAttribute(node,section,"asyncronous",options.asyncronous);
+		options.verbose = getAttribute(node,section,"verbose",Logger::enabled(Logger::Trace));
+		options.asyncronous = getAttribute(node,section,"asyncronous",options.asyncronous);
 
 		// Seconds to wait before first activation.
 		timers.start = getAttribute(node,section,"delay-before-start",timers.start);

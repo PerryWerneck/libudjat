@@ -40,8 +40,8 @@
 
 			/// @brief Alert options.
 			struct {
-				bool verbose = false;
-				bool asyncronous = true;
+				bool verbose = false;			///< @brief Action verbosity.
+				bool asyncronous = true;		///< @brief Action syncronicity.
 			} options;
 
 			/// @brief Alert limits.
