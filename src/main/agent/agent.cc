@@ -223,113 +223,63 @@ namespace Udjat {
 		push_back(alert);
 	}
 
-	void Abstract::Agent::push_back(EventListener *listener) {
+	/// @brief Event listener proxy.
+	class UDJAT_PRIVATE ListenerProxy : public Abstract::Agent::EventListener {
+	public:
+
+		EventListener *listener;
+
+		constexpr ListenerProxy(const Abstract::Agent::Event e, EventListener *l) : EventListener{e}, listener{l} {
+		}
+
+		void trigger(const Abstract::Agent::Event event, Abstract::Agent &agent) override {
+			listener->trigger(event,agent);
+		}
+
+	};
+
+	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.push_back(listener);
 	}
 
-	void Abstract::Agent::remove(EventListener *listener) {
-		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.remove(listener);
+	void Abstract::Agent::push_back(EventListener *listener) {
+		push_back(std::make_shared<ListenerProxy>(listener->event,listener));
 	}
 
+	void Abstract::Agent::remove(EventListener *listener) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.remove_if([listener](std::shared_ptr<EventListener> event){
+			if(event.get() == listener) {
+				return true;
+			}
+
+			ListenerProxy *proxy = dynamic_cast<ListenerProxy *>(event.get());
+			if(!proxy) {
+				return false;
+			}
+
+			return proxy->listener == listener;
+
+		});
+
+	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
 
-		// Forward to legacy.
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-		return stateFromValue();
-		#pragma GCC diagnostic pop
-
-	}
-
-	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;
 		if(!instance) {
 			debug("Creating agent default state");
-			instance = make_shared<Abstract::State>("");
+			instance = make_shared<Abstract::State>(
+							_( "default" ),
+							Level::unimportant,
+							_( "Normal" ),
+							_( "Agent has nothing to report" )
+						);
+
 		}
 		return instance;
-	}
-
-	/*
-	void Abstract::Agent::activate() noexcept {
-
-		try {
-
-			debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
-			state()->activate(*this);
-			debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
-
-		} catch(const std::exception &e) {
-
-			error() << "Error '" << e.what() << "' activating state" << endl;
-			current_state.set(Udjat::StateFactory(e,_("Error activating state")));
-
-		} catch(...) {
-
-			error() << "Unexpected error activating state" << endl;
-			current_state.set(make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error activating state")));
-
-		}
-
-		debug("agent='",name(),"' activating state '",current_state.selected->summary(),"'");
 
 	}
-	*/
-
-	/*
-	void Abstract::Agent::deactivate() noexcept {
-
-		if(current_state.activation == current_state.Activation::StateWasActivated) {
-
-			// State was activated, deactivate it.
-
-			current_state.activation = current_state.Activation::StateWasSet;
-
-			try {
-
-				current_state.selected->deactivate(*this);
-
-			} catch(const std::exception &e) {
-
-				error() << "Error '" << e.what() << "' deactivating state" << endl;
-				current_state.set(Udjat::StateFactory(e,_("Error deactivating state")));
-
-			} catch(...) {
-
-				error() << "Unexpected error deactivating state" << endl;
-				current_state.set(make_shared<Abstract::State>("error",Udjat::critical,_("Unexpected error deactivating state")));
-
-			}
-
-		}
-
-		if(this->current_state.selected->forward()) {
-
-			// State has forward option, reset children.
-
-			debug("Forwarding deactivate state to children");
-
-			Abstract::State *state = this->current_state.selected.get();
-			for_each([this,state](Abstract::Agent &agent){
-
-				if(agent.current_state.selected.get() == state) {
-					agent.push([](std::shared_ptr<Agent> agent){
-						agent->current_state.set(agent->computeState());
-						if(agent->update.timer) {
-							agent->update.next = time(0) + agent->update.timer;
-						}
-					});
-				}
-
-			});
-
-		}
-
-
-	}
-	*/
 
 }

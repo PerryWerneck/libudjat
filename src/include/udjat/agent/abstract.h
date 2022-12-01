@@ -104,14 +104,6 @@
 					activation = StateWasActivated;
 				}
 
-				/*
-				inline void forward(std::shared_ptr<State> state) noexcept {
-					selected = state;
-					timestamp = time(0);
-					activation = StateWasForwarded;
-				}
-				*/
-
 				inline bool activated() const noexcept {
 					return (activation == StateWasActivated);
 				}
@@ -137,7 +129,7 @@
 			} children;
 
 			/// @brief Event listeners.
-			std::list<EventListener *> listeners;
+			std::list<std::shared_ptr<EventListener>> listeners;
 
 			/// @brief Load agent properties from XML node.
 			void setup_properties(const pugi::xml_node &node) noexcept;
@@ -204,8 +196,6 @@
 			/// @return Computed state or the default one if agents has no state table.
 			virtual std::shared_ptr<Abstract::State> computeState();
 
-			virtual UDJAT_DEPRECATED(std::shared_ptr<Abstract::State> stateFromValue() const);
-
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
 
@@ -235,6 +225,9 @@
 
 			/// @brief Insert Alert with XML definition.
 			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
+
+			/// @brief Insert listener.
+			void push_back(std::shared_ptr<EventListener> listener);
 
 			/// @brief Insert Listener.
 			void push_back(EventListener *listener);

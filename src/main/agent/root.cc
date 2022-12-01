@@ -141,7 +141,7 @@
 
 			}
 
-			std::shared_ptr<Abstract::State> stateFromValue() const override {
+			std::shared_ptr<Abstract::State> computeState() override {
 
 				class ReadyState : public Abstract::State {
 				public:
@@ -206,7 +206,7 @@
 
 				if(state->level() <= Level::ready) {
 					// It's a 'ready' state, set it to my own default value.
-					state = this->stateFromValue();
+					state = this->computeState();
 					debug("Child state is ready, using the default root state");
 				}
 

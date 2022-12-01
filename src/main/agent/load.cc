@@ -12,6 +12,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/alert/activation.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
 
@@ -99,10 +100,50 @@ namespace Udjat {
 
 				auto alert = AlertFactory(node);
 				if(alert) {
+
+					// Got alert, setup and insert it on agent.
+
+					/// @brief Event listener, forward activity to alert.
+					class Listener : public Abstract::Agent::EventListener {
+					private:
+						std::shared_ptr<Abstract::Alert> alert;
+
+					public:
+						Listener(const Abstract::Agent::Event e, std::shared_ptr<Abstract::Alert> a) : Abstract::Agent::EventListener{e}, alert{a} {
+						}
+
+						void trigger(const Event UDJAT_UNUSED(e), Abstract::Agent &agent) {
+
+							auto activation = alert->ActivationFactory();
+
+							activation->set(agent);
+							activation->set(*agent.state());
+							activation->set(agent.state()->level());
+
+							Udjat::start(activation);
+						}
+
+					};
+
 					alert->setup(node);
-					push_back(node, alert);
+
+					switch(String{node,"activated-by","default"}.select("state-change","level-change",NULL)) {
+					case 0:	// on-state-change
+						push_back(std::make_shared<Listener>(Event::STATE_CHANGED,alert));
+						break;
+
+					case 1:	// on-level-change
+						push_back(std::make_shared<Listener>(Event::LEVEL_CHANGED,alert));
+						break;
+
+					default:
+						push_back(node, alert);
+					}
+
 				} else {
+
 					error() << "Unable to create alert" << endl;
+
 				}
 
 			} catch(const std::exception &e) {
