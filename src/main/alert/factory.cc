@@ -24,55 +24,78 @@
  #include <udjat/alert/script.h>
  #include <udjat/alert/file.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/string.h>
  #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type) {
+	std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *t) {
 
 		std::shared_ptr<Abstract::Alert> alert;
 
-		if(!(type && *type)) {
-			// TODO: Scan for global alert definition.
-			type = "default";
+		String type{t ? t : ""};
+
+		if(type.empty()) {
+
+			if(!strcasecmp(node.name(),"alert")) {
+
+				type = Udjat::Attribute{node,"type","alert-type"}.c_str();
+
+			} else {
+
+				type = Udjat::Attribute{node,"alert-type",true}.c_str();
+
+			}
+
 		}
 
-		// debug("Creating alert '",type,"'");
+		if(type.empty()) {
+			type = Config::Value<string>{"alert-defaults","type","default"};
+		}
+
+		debug("Creating alert '",type.c_str(),"'");
 
 		//
 		// First, try using the type name (even for 'default').
 		//
 		if(Factory::search(node,[&parent,&alert](const Factory &factory, const pugi::xml_node &node){
+
+#ifdef DEBUG
+			factory.info() << "Trying to create alert from node <" << node.name() << ">" << endl;
+#endif // DEBUG
+
 			alert = factory.AlertFactory(parent,node);
 			if(alert) {
 				if(alert->verbose()) {
-					alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
+					alert->trace() << "Using alert engine from '" << factory.name() << "'" << endl;
 				}
 				return true;
 			}
 			return false;
-		},type)) {
+		},type.c_str())) {
 			return alert;
 		}
 
 		//
 		// Try defined types
 		//
-		if(!strcasecmp(type,"url")) {
+		if(type == "url") {
 			return make_shared<Udjat::Alert::URL>(node);
 		}
 
-		if(!strcasecmp(type,"script")) {
+		if(type == "script") {
 			return make_shared<Udjat::Alert::Script>(node);
 		}
 
-		if(!strcasecmp(type,"file")) {
+		if(type == "file") {
 			return make_shared<Udjat::Alert::File>(node);
 		}
 
-		if(!strcasecmp(type,"default")) {
+		if(type == "default") {
 
 			//
 			// Check node attributes.
@@ -106,7 +129,7 @@
 
 		}
 
-		throw runtime_error(Logger::Message("Unable to create an alert type '{}'",type));
+		throw runtime_error(string{"No available factory for '"} + type + "' alerts");
 
 	}
 

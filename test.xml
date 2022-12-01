@@ -65,6 +65,14 @@
 	
 	<random name='random10' update-timer='10'>
 
+		<alert type='d-bus'>
+		
+			<argument type='int16' value='${agent.value}'/>
+			<argument type='string' value='${level}'/>
+			<argument type='string' value='${state.summary}'/>
+				
+		</alert>
+
 		<state name='s0' value='0' summary='Random 0' />
 		<state name='s1' value='1' summary='Random 1' />
 		<state name='s2' value='2' summary='Random 2' />

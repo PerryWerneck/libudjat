@@ -38,7 +38,7 @@
 	/// @param node XML description of the alert.
 	/// @param type Alert type ('url' or 'script' for internal ones, factory name for module based alerts).
 	/// @return Pointer to the new alert.
-	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = "default");
+	UDJAT_API std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
 
 
  }
