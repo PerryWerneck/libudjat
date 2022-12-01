@@ -104,41 +104,19 @@ namespace Udjat {
 
 					// Got alert, setup and insert it on agent.
 
-					/// @brief Event listener, forward activity to alert.
-					class Listener : public Abstract::Agent::EventListener {
-					private:
-						std::shared_ptr<Abstract::Alert> alert;
-
-					public:
-						Listener(const Abstract::Agent::Event e, std::shared_ptr<Abstract::Alert> a) : Abstract::Agent::EventListener{e}, alert{a} {
-						}
-
-						void trigger(const Event UDJAT_UNUSED(e), Abstract::Agent &agent) {
-
-							auto activation = alert->ActivationFactory();
-
-							activation->set(agent);
-							activation->set(*agent.state());
-							activation->set(agent.state()->level());
-
-							Udjat::start(activation);
-						}
-
-					};
-
 					alert->setup(node);
 
 					switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change",NULL)) {
 					case 0:	// on-state-change
-						push_back(std::make_shared<Listener>(Event::STATE_CHANGED,alert));
+						push_back(Event::STATE_CHANGED,alert);
 						break;
 
 					case 1:	// on-level-change
-						push_back(std::make_shared<Listener>(Event::LEVEL_CHANGED,alert));
+						push_back(Event::LEVEL_CHANGED,alert);
 						break;
 
 					case 2:	// on-value-change
-						push_back(std::make_shared<Listener>(Event::VALUE_CHANGED,alert));
+						push_back(Event::VALUE_CHANGED,alert);
 						break;
 
 					default:

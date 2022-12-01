@@ -80,6 +80,7 @@
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/request.h" />
+		<Unit filename="src/include/udjat/tools/activatable.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/base64.h" />
 		<Unit filename="src/include/udjat/tools/cleanup.h" />

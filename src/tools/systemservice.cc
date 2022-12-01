@@ -26,6 +26,7 @@
  #include <iostream>
  #include <private/misc.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/activatable.h>
 
  #ifdef _WIN32
 	#include <direct.h>
@@ -47,7 +48,7 @@
 
 	SystemService * SystemService::instance = nullptr;
 
-	SystemService::SystemService(const char *d) : Abstract::Agent::EventListener((Event) (Event::STARTED|Event::STATE_CHANGED)), definitions(d) {
+	SystemService::SystemService(const char *d) : definitions{d} {
 
 		debug("Creating system service");
 
@@ -166,8 +167,43 @@
 
 		{
 			auto root = Abstract::Agent::root();
+
 			if(root) {
-				root->push_back(this);
+
+				class Listener : public Activatable {
+				public:
+					constexpr Listener() : Activatable("syssrvc") {
+					}
+
+					void activate(const Abstract::Object &object) override {
+
+						auto service = SystemService::getInstance();
+						if(!instance) {
+							return;
+						}
+
+						const Abstract::Agent *agent = dynamic_cast<const Abstract::Agent *>(&object);
+						if(agent) {
+
+							auto state = agent->state();
+
+							if(state->ready()) {
+								service->notify( _( "System is ready" ));
+							} else {
+								String message{state->summary()};
+								if(message.strip().empty()) {
+									service->notify( _( "System is not ready" ) );
+								} else {
+									service->notify(message.c_str());
+								}
+							}
+
+						}
+					}
+
+				};
+
+				root->push_back( (Event) (Event::STARTED|Event::STATE_CHANGED), std::make_shared<Listener>() );
 			}
 		}
 
@@ -306,6 +342,7 @@
 		}
 	}
 
+	/*
 	void SystemService::trigger(Event event, Abstract::Agent &agent) {
 
 		auto state = agent.state();
@@ -321,6 +358,7 @@
 		}
 
 	}
+	*/
 
 
  }

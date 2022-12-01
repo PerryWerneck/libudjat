@@ -24,6 +24,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/activatable.h>
  #include <mutex>
  #include <list>
 
@@ -45,21 +46,6 @@
 				UPDATED				= 0x0060,		///< @brief Agent was updated.
 
 				ALL 			= 0x001F			///< @brief All events.
-			};
-
-			class UDJAT_API EventListener {
-			private:
-				friend class Abstract::Agent;
-
-			protected:
-				Event event;
-
-			public:
-				constexpr EventListener(const Event e) : event(e) {
-				}
-
-				virtual void trigger(const Event e, Abstract::Agent &agent) = 0;
-
 			};
 
 		private:
@@ -128,8 +114,17 @@
 
 			} children;
 
+			struct Listener {
+				const Abstract::Agent::Event event;
+				std::shared_ptr<Activatable> activatable;
+
+				Listener(const Abstract::Agent::Event e, std::shared_ptr<Activatable> a) : event{e}, activatable{a} {
+				}
+
+			};
+
 			/// @brief Event listeners.
-			std::list<std::shared_ptr<EventListener>> listeners;
+			std::list<Listener> listeners;
 
 			/// @brief Load agent properties from XML node.
 			void setup_properties(const pugi::xml_node &node) noexcept;
@@ -227,13 +222,13 @@
 			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
 
 			/// @brief Insert listener.
-			void push_back(std::shared_ptr<EventListener> listener);
-
-			/// @brief Insert Listener.
-			void push_back(EventListener *listener);
+			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Remove listener.
-			void remove(EventListener *listener);
+			void remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
+
+			/// @brief Remove listener.
+			void remove(std::shared_ptr<Activatable> activatable);
 
 			/// @brief Create and insert child.
 			/// @param type The agent type.
@@ -344,7 +339,6 @@
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
-			void for_each(const std::function<void(EventListener &listener)> &method);
 
 			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 				return children.agents.begin();

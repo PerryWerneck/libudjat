@@ -193,14 +193,4 @@
 
 	}
 
-	void Abstract::Agent::for_each(const std::function<void(EventListener &listener)> &method) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto listener : listeners) {
-			method(*listener);
-		}
-
-	}
-
-
  }

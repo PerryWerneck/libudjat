@@ -22,7 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/object.h>
+ #include <udjat/tools/activatable.h>
  #include <udjat/tools/string.h>
  #include <udjat/alert.h>
  #include <udjat/agent/level.h>
@@ -33,7 +33,7 @@
 	namespace Abstract {
 
 		/// @brief Abstract alert.
-		class UDJAT_API Alert : public NamedObject {
+		class UDJAT_API Alert : public Activatable {
 		private:
 
 			friend class Udjat::Alert::Activation;
@@ -72,7 +72,7 @@
 
 		public:
 
-			constexpr Alert(const char *name) : NamedObject(name) {
+			constexpr Alert(const char *name) : Activatable(name) {
 			}
 
 			/// @brief Create alert for xml description.
@@ -91,7 +91,10 @@
 				return options.asyncronous;
 			}
 
-			/// @brief Deactivate an alert.
+			/// @brief Activate alert.
+			void activate(const Abstract::Object &object) override;
+
+			/// @brief Deactivate alert.
 			void deactivate();
 
 			/// @brief Get alert info.

@@ -21,6 +21,7 @@
  #include <private/alert.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/alert/activation.h>
 
  namespace Udjat {
 
@@ -61,6 +62,12 @@
 
 	std::shared_ptr<Udjat::Alert::Activation> Abstract::Alert::ActivationFactory() const {
 		throw runtime_error("Cant activate an abstract alert");
+	}
+
+	void Abstract::Alert::activate(const Abstract::Object &object) {
+		auto activation = ActivationFactory();
+		activation->set(object);
+		Udjat::start(activation);
 	}
 
 	void Abstract::Alert::deactivate() {

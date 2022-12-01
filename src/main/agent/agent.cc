@@ -75,23 +75,25 @@ namespace Udjat {
 	void Abstract::Agent::notify(const Event event) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto listener : listeners) {
+		for(Listener &listener : listeners) {
 
-			if((listener->event & event) != 0) {
+			if((listener.event & event) != 0) {
 
-				NamedObject::push([this,event,listener]() {
+				auto activatable = listener.activatable;
+
+				push([activatable](std::shared_ptr<Agent> agent){
 
 					try {
 
-						listener->trigger(event, *this);
+						activatable->activate(*agent);
 
 					} catch(const std::exception &e) {
 
-						error() << "Error '" << e.what() << "' on event listener" << endl;
+						activatable->error() << "Error activating on agent '" << agent->name() << "': " << e.what() << endl;
 
 					} catch(...) {
 
-						error() << "Unexpected error on event listener" << endl;
+						activatable->error() << "Unexpected error activating on agent '" << agent->name() << "'" << endl;
 
 					}
 
@@ -223,46 +225,23 @@ namespace Udjat {
 		push_back(alert);
 	}
 
-	/// @brief Event listener proxy.
-	class UDJAT_PRIVATE ListenerProxy : public Abstract::Agent::EventListener {
-	public:
-
-		EventListener *listener;
-
-		constexpr ListenerProxy(const Abstract::Agent::Event e, EventListener *l) : EventListener{e}, listener{l} {
-		}
-
-		void trigger(const Abstract::Agent::Event event, Abstract::Agent &agent) override {
-			listener->trigger(event,agent);
-		}
-
-	};
-
-	void Abstract::Agent::push_back(std::shared_ptr<EventListener> listener) {
+	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
 		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.push_back(listener);
+		listeners.emplace_back(event,activatable);
 	}
 
-	void Abstract::Agent::push_back(EventListener *listener) {
-		push_back(std::make_shared<ListenerProxy>(listener->event,listener));
-	}
-
-	void Abstract::Agent::remove(EventListener *listener) {
+	void Abstract::Agent::remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
 		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.remove_if([listener](std::shared_ptr<EventListener> event){
-			if(event.get() == listener) {
-				return true;
-			}
-
-			ListenerProxy *proxy = dynamic_cast<ListenerProxy *>(event.get());
-			if(!proxy) {
-				return false;
-			}
-
-			return proxy->listener == listener;
-
+		listeners.remove_if([event,activatable](Listener &ev){
+			return ev.event == event && ev.activatable.get() == activatable.get();
 		});
+	}
 
+	void Abstract::Agent::remove(std::shared_ptr<Activatable> activatable) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.remove_if([activatable](Listener &ev){
+			return ev.activatable.get() == activatable.get();
+		});
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
