@@ -15,6 +15,7 @@
  #include <udjat/alert/activation.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/logger.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -127,7 +128,7 @@ namespace Udjat {
 
 					alert->setup(node);
 
-					switch(String{node,"activated-by","default"}.select("state-change","level-change",NULL)) {
+					switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change",NULL)) {
 					case 0:	// on-state-change
 						push_back(std::make_shared<Listener>(Event::STATE_CHANGED,alert));
 						break;
@@ -136,7 +137,12 @@ namespace Udjat {
 						push_back(std::make_shared<Listener>(Event::LEVEL_CHANGED,alert));
 						break;
 
+					case 2:	// on-value-change
+						push_back(std::make_shared<Listener>(Event::VALUE_CHANGED,alert));
+						break;
+
 					default:
+						debug("Using alert activation from agent '",name(),"'");
 						push_back(node, alert);
 					}
 
