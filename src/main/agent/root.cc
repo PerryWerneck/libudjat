@@ -38,6 +38,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>
  #include <udjat/alert/abstract.h>
+ #include <udjat/module.h>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -55,6 +56,10 @@
 
 		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << dec << endl;
 		Abstract::Agent::Controller::getInstance().set(agent);
+
+		Module::for_each([agent](Module &module){
+			module.set(agent);
+		});
 
 	}
 

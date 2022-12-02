@@ -133,6 +133,9 @@
 		std::ostream & warning() const;
 		std::ostream & error() const;
 
+		/// @brief Set new root agent.
+		virtual void set(std::shared_ptr<Abstract::Agent> agent) noexcept;
+
 	};
 
  }
