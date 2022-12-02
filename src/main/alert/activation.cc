@@ -118,11 +118,17 @@
 			succeeded = true;
 			timers.next = time(0) + timers.interval;
 		} catch(const exception &e) {
-			error() << "Alert emmission failed with '" << e.what() << "'" << endl;
 			count.failed++;
+			error()
+				<< "Alert emmission failed with '" << e.what()
+				<< "' (" << (count.success + count.failed) << "/" << retry.max << ")"
+				<< endl;
 		} catch(...) {
-			error() << "Unexpected error emitting alert" << endl;
 			count.failed++;
+			error()
+				<< "Unexpected error emitting alert"
+				<< " (" << (count.success + count.failed) << "/" << retry.max << ")"
+				<< endl;
 		}
 
 
@@ -155,21 +161,23 @@
 
 		time_t rst = (count.success ? timers.success : timers.failed);
 
+		debug("msg=",msg);
+
 		if(rst) {
 			state.restarting = true;
 			timers.next = time(0) + rst;
 			if(options.verbose) {
-				LogFactory(count.failed ? Udjat::error : Udjat::ready)
-					<< name << "\t" << msg << ", sleeping until " << TimeStamp(timers.next)
-					<< endl;
+				Logger::String{
+					msg,", sleeping until ",TimeStamp(timers.next).to_string().c_str()
+				}.write(Logger::Trace,name.c_str());
 			}
 		}
 		else {
 			timers.next = 0;
 			if(options.verbose) {
-				LogFactory(count.failed ? Udjat::error : Udjat::ready)
-					<< name << "\t" << msg << ", stopping"
-					<< endl;
+				Logger::String{
+					msg,", stopping"
+				}.write(Logger::Trace,name.c_str());
 			}
 		}
 

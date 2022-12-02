@@ -59,7 +59,7 @@
 
 			/// @brief Restart timers.
 			struct {
-				unsigned int failed = 14400;	///< @brief Seconds to wait for reactivate after a failed activation.
+				unsigned int failed = 0;		///< @brief Seconds to wait for reactivate after a failed activation.
 				unsigned int success = 0;		///< @brief Seconds to wait for reactivate after a successful activation.
 			} restart;
 
