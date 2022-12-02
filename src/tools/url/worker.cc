@@ -170,7 +170,7 @@
 		return test(dummy_progress);
 	}
 
-	void Protocol::Worker::get(const std::function<void(int code, const char *response)> &call) {
+	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
 		throw system_error(ENOTSUP,system_category());
 	}
 

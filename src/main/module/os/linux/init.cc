@@ -71,15 +71,15 @@
 
 			if(node.attribute("verbose").as_bool(true)) {
 				module->info()
-						<< module->moduleinfo.description
-						<< " build " << module->moduleinfo.build << " initialized" << endl;
+						<< module->description()
+						<< " build " << module->build() << " initialized" << endl;
 			}
 
 			module->handle = handle;
 			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
 
-			if(module->moduleinfo.gettext_package && *module->moduleinfo.gettext_package) {
-				Application::set_gettext_package(module->moduleinfo.gettext_package);
+			if(module->_info.gettext_package && *module->_info.gettext_package) {
+				Application::set_gettext_package(module->_info.gettext_package);
 			}
 
 			return module;
@@ -101,8 +101,8 @@
 
 		module->handle = handle;
 
-		if(module->moduleinfo.gettext_package && *module->moduleinfo.gettext_package) {
-			Application::set_gettext_package(module->moduleinfo.gettext_package);
+		if(module->_info.gettext_package && *module->_info.gettext_package) {
+			Application::set_gettext_package(module->_info.gettext_package);
 		}
 
 		return module;

@@ -87,7 +87,7 @@ namespace Udjat {
 			Value &object = response.append(Value::Object);
 
 			object["name"] = module->name;
-			module->moduleinfo.get(object);
+			module->_info.get(object);
 
 			object["filename"] = module->filename();
 

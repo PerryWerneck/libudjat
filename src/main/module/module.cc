@@ -30,7 +30,7 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),moduleinfo(i) {
+	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),_info(i) {
 
 		if(!(name && *name)) {
 			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
@@ -70,7 +70,7 @@ namespace Udjat {
 			return true;
 		}
 
-		return moduleinfo.getProperty(key,value);
+		return _info.getProperty(key,value);
 	}
 
 	std::string Module::operator[](const char *property_name) const noexcept {
