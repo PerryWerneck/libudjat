@@ -40,6 +40,13 @@
 			return true;
 		}
 
+		// State properties
+		if(!strncasecmp(key,"state.",6)) {
+			if(state()->getProperty(key+6,value)) {
+				return true;
+			}
+		}
+
 		if(Object::getProperty(key, value))
 			return true;
 
