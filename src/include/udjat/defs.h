@@ -144,6 +144,7 @@ namespace Udjat {
 	}
 
 	class Value;
+	class Activatable;
 	class TimeStamp;
 	struct ModuleInfo;
 

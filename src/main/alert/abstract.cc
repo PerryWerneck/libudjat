@@ -75,12 +75,6 @@
 		Udjat::start(activation);
 	}
 
-	void Activatable::activate(const Abstract::Object UDJAT_UNUSED(&object)) {
-	}
-
-	void Activatable::deactivate() {
-	}
-
 	void Abstract::Alert::deactivate() {
 		Udjat::Alert::Controller::getInstance().remove(this);
 	}

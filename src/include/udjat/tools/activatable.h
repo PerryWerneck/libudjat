@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/object.h>
+ #include <memory>
 
  namespace Udjat {
 
@@ -32,6 +33,8 @@
 
 		Activatable(const pugi::xml_node &node) : NamedObject(node) {
 		}
+
+		static std::shared_ptr<Activatable> Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
 
 		virtual void activate(const Abstract::Object &object);
 

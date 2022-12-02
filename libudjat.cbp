@@ -199,6 +199,7 @@
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/testprogram/windows/resources.rc" />
+		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application.cc" />
 		<Unit filename="src/tools/base64.cc" />
 		<Unit filename="src/tools/configuration.cc" />
