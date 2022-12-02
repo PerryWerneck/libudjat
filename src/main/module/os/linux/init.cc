@@ -69,21 +69,17 @@
 				throw runtime_error("Can't initialize module");
 			}
 
-			if(node.attribute("quiet").as_bool(true)) {
-				cout	<< "modules\t"
-						<< module->info.description
-						<< " build " << module->info.build << " initialized" << endl;
+			if(node.attribute("verbose").as_bool(true)) {
+				module->info()
+						<< module->moduleinfo.description
+						<< " build " << module->moduleinfo.build << " initialized" << endl;
 			}
 
 			module->handle = handle;
 			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
 
-#ifdef DEBUG
-			cout << module->name << "\t *** Keep-loaded=" << (module->keep_loaded ? "yes" : "no") << endl;
-#endif // DEBUG
-
-			if(module->info.gettext_package && *module->info.gettext_package) {
-				Application::set_gettext_package(module->info.gettext_package);
+			if(module->moduleinfo.gettext_package && *module->moduleinfo.gettext_package) {
+				Application::set_gettext_package(module->moduleinfo.gettext_package);
 			}
 
 			return module;
@@ -105,8 +101,8 @@
 
 		module->handle = handle;
 
-		if(module->info.gettext_package && *module->info.gettext_package) {
-			Application::set_gettext_package(module->info.gettext_package);
+		if(module->moduleinfo.gettext_package && *module->moduleinfo.gettext_package) {
+			Application::set_gettext_package(module->moduleinfo.gettext_package);
 		}
 
 		return module;

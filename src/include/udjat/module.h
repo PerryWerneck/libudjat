@@ -50,19 +50,13 @@
 #endif // _WIN32
 
 		/// @brief Information about the module.
-		const ModuleInfo &info;
+		const ModuleInfo &moduleinfo;
 
 	protected:
 
 		Module(const char *name, const ModuleInfo &info);
 
 		Module(const char *name, const ModuleInfo *info) : Module(name,*info) {
-		}
-
-		UDJAT_DEPRECATED(Module(const Quark &name, const ModuleInfo &info)) : Module(name.c_str(),info) {
-		}
-
-		UDJAT_DEPRECATED(Module(const Quark &name, const ModuleInfo *info)) : Module(name.c_str(),*info) {
 		}
 
 		/// @brief Navigate on module options.
@@ -125,6 +119,10 @@
 
 		/// @brief Execute command.
 		virtual void exec(Udjat::Value &response, const char *name, va_list args) const;
+
+		std::ostream & info() const;
+		std::ostream & warning() const;
+		std::ostream & error() const;
 
 	};
 

@@ -30,26 +30,21 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),info(i) {
+	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),moduleinfo(i) {
 
-#ifdef MINIMAL_MODULE_BUILD
-		if(i.build && i.build < MINIMAL_MODULE_BUILD) {
-			cerr << n << "\tThe module build date " << i.build << " is lower than the expected " << MINIMAL_MODULE_BUILD << endl;
-			throw system_error(EINVAL,system_category(),"Invalid module build date");
+		if(!(name && *name)) {
+			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
 		}
-#endif // MINIMAL_MODULE_BUILD
 
-		if(!name) {
-			throw system_error(EINVAL,system_category(),"Module name cant be null");
+		if(i.build < MINIMAL_MODULE_BUILD) {
+			error()<< "The module build date " << i.build << " is lower than the expected " << MINIMAL_MODULE_BUILD << endl;
+			throw system_error(EINVAL,system_category(),"Invalid module build date");
 		}
 
 		Controller::getInstance().insert(this);
 	}
 
 	Module::~Module() {
-#ifdef DEBUG
-		cout << name << "\t" <<  __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif //
 		Controller::getInstance().remove(this);
 	}
 
@@ -75,7 +70,7 @@ namespace Udjat {
 			return true;
 		}
 
-		return info.getProperty(key,value);
+		return moduleinfo.getProperty(key,value);
 	}
 
 	std::string Module::operator[](const char *property_name) const noexcept {
@@ -124,7 +119,7 @@ namespace Udjat {
 
 			const char *name = child.attribute("name").as_string();
 			if(!(name && *name)) {
-				cerr << "module\tIgnoring unnamed attribute" << endl;
+				cerr << "module\tIgnoring unnamed attribute on node <" << node.name() << ">" << endl;
 				continue;
 			}
 
@@ -135,6 +130,18 @@ namespace Udjat {
 
 		}
 
+	}
+
+	std::ostream & Module::info() const {
+		return cout << name << "\t";
+	}
+
+	std::ostream & Module::warning() const {
+		return clog << name << "\t";
+	}
+
+	std::ostream & Module::error() const {
+		return cerr << name << "\t";
 	}
 
 }

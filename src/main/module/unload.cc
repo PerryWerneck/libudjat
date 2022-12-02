@@ -54,7 +54,7 @@ namespace Udjat {
 
 			// Save module name.
 			string name{module->name};
-			string description{module->info.description};
+			string description{module->moduleinfo.description};
 
 			auto handle = module->handle;
 			auto keep_loaded = module->keep_loaded;
