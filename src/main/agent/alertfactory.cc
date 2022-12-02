@@ -28,6 +28,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <cstring>
+ #include <udjat/alert.h>
 
 namespace Udjat {
 

@@ -21,6 +21,7 @@
  #include <udjat/factory.h>
  #include <udjat/agent/state.h>
  #include <iostream>
+ #include <udjat/alert/abstract.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -37,7 +38,7 @@
 		if(!strcasecmp(type,"alert")) {
 			auto alert = Udjat::AlertFactory(*this, node);
 			if(alert) {
-				alerts.push_back(alert);
+				listeners.push_back(alert);
 				return true;
 			}
 		}
@@ -51,7 +52,7 @@
 					if(alert->verbose()) {
 						alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
 					}
-					alerts.push_back(alert);
+					listeners.push_back(alert);
 					return true;
 				}
 

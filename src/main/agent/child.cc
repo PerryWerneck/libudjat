@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/factory.h>
+ #include <udjat/alert/abstract.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 

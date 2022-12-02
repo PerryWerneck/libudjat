@@ -101,7 +101,7 @@ namespace Udjat {
 			if(enabled.as_bool(type)) {
 				auto alert = Udjat::AlertFactory(*this, node, type.as_string(""));
 				if(alert) {
-					alerts.push_back(alert);
+					listeners.push_back(alert);
 				}
 			}
 
@@ -169,19 +169,15 @@ namespace Udjat {
 
 	void Abstract::State::activate() noexcept {
 
-		for(auto alert : alerts) {
-
-			auto activation = alert->ActivationFactory();
-			activation->set(*this);
-			Udjat::start(activation);
-
+		for(auto listener : listeners) {
+			listener->activate(*this);
 		}
 
 	}
 
 	void Abstract::State::deactivate() noexcept {
-		for(auto alert : alerts) {
-			alert->deactivate();
+		for(auto listener : listeners) {
+			listener->deactivate();
 		}
 	}
 

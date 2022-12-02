@@ -24,6 +24,9 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/object.h>
  #include <unistd.h>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 

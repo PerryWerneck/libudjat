@@ -19,10 +19,7 @@
 
 #include <config.h>
 #include <private/module.h>
-
-//#ifndef _WIN32
-//	#include <dlfcn.h>
-//#endif // _WIN32
+#include <iostream>
 
 using namespace std;
 

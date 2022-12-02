@@ -38,7 +38,7 @@
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
 #include <udjat/request.h>
-#include <udjat/alert/abstract.h>
+#include <udjat/tools/activatable.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/object.h>
 #include <udjat/tools/parse.h>
@@ -65,7 +65,7 @@ namespace Udjat {
 			void set(const pugi::xml_node &node);
 
 			/// @brief State alerts.
-			std::vector<std::shared_ptr<Abstract::Alert>> alerts;
+			std::vector<std::shared_ptr<Activatable>> listeners;
 
 			/// @brief State agents.
 			std::vector<std::shared_ptr<Abstract::Agent>> agents;
@@ -174,8 +174,8 @@ namespace Udjat {
 			Value & getProperties(Value &value) const noexcept override;
 
 			/// @brief Insert alert.
-			inline void push_back(std::shared_ptr<Abstract::Alert> alert) {
-				alerts.push_back(alert);
+			inline void push_back(std::shared_ptr<Activatable> listener) {
+				listeners.push_back(listener);
 			}
 
 			/// @brief Create and insert child.

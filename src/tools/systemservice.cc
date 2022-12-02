@@ -27,6 +27,7 @@
  #include <private/misc.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/activatable.h>
+ #include <udjat/tools/string.h>
 
  #ifdef _WIN32
 	#include <direct.h>
