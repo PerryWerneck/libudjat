@@ -20,9 +20,8 @@
  #include <config.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/factory.h>
- #include <string>
-
- using namespace std;
+ #include <udjat/alert/abstract.h>
+ #include <udjat/alert.h>
 
  namespace Udjat {
 
@@ -47,7 +46,7 @@
 			return activatable;
 		}
 
-		throw runtime_error(string{"No available factory for '"} + type + "' activatable");
+		return AlertFactory(parent,node,type);
 
 	}
 
