@@ -167,38 +167,22 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::State::activate(const Agent &agent) noexcept {
-
-		debug("State '",to_string().c_str(),"' was activated on '",agent.name(),"'");
+	void Abstract::State::activate() noexcept {
 
 		for(auto alert : alerts) {
+
 			auto activation = alert->ActivationFactory();
-
-			const char *description = summary();
-			if(!(description && *description)) {
-				description = agent.summary();
-			}
-			if(description && *description) {
-				activation->set(description);
-			}
-
 			activation->set(*this);
-			activation->set(agent);
-			activation->set(level());
-
 			Udjat::start(activation);
+
 		}
 
 	}
 
-	void Abstract::State::deactivate(const Agent &agent) noexcept {
-
-		debug("State '",to_string().c_str(),"' was deactivated on '",agent.name(),"'");
-
+	void Abstract::State::deactivate() noexcept {
 		for(auto alert : alerts) {
 			alert->deactivate();
 		}
-
 	}
 
 	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {

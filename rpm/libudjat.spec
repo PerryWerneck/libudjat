@@ -72,11 +72,14 @@ Recommends: udjat-module-httpd
 # The information module helps too.
 Recommends: udjat-module-information
 
+# Branding for test pages
+Recommends: udjat-branding
+
 %description -n udjat-devel
 
 Development files for Udjat main library.
 
-%lang_package
+%lang_package -n %{name}%{_libvrs}
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
@@ -105,7 +108,7 @@ make all
 %dir %{_sysconfdir}/udjat.conf.d
 %config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
 
-%files lang -f langfiles
+%files -n %{name}%{_libvrs}-lang -f langfiles
 
 %files -n udjat-devel
 %defattr(-,root,root)

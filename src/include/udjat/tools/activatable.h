@@ -33,7 +33,9 @@
 		Activatable(const pugi::xml_node &node) : NamedObject(node) {
 		}
 
-		virtual void activate(const Abstract::Object &object) = 0;
+		virtual void activate(const Abstract::Object &object);
+
+		virtual void deactivate();
 
 	};
 

@@ -95,7 +95,7 @@
 			void activate(const Abstract::Object &object) override;
 
 			/// @brief Deactivate alert.
-			void deactivate();
+			void deactivate() override;
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const noexcept override;

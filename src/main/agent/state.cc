@@ -58,17 +58,7 @@ namespace Udjat {
 
 	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
 		auto activation = alert->ActivationFactory();
-
-		const char *description = summary();
-		if(!(description && *description)) {
-			description = state()->summary();
-		}
-		if(description && *description) {
-			activation->set(description);
-		}
-
 		activation->set(*this);
-		activation->set(state()->level());
 		Udjat::start(activation);
 	}
 
@@ -97,11 +87,11 @@ namespace Udjat {
 
 		if(current_state.activation == current_state.Activation::StateWasActivated) {
 
-			debug("Agent '",name(),"' deactivates state '",this->state()->summary(),"'");
+			debug("Agent '",name(),"' is deactivating state '",this->state()->summary(),"'");
 
 			try {
 
-				current_state.selected->deactivate(*this);
+				current_state.selected->deactivate();
 
 			} catch(const std::exception &e) {
 
@@ -138,7 +128,8 @@ namespace Udjat {
 			try {
 
 				current_state.activate(state);
-				this->state()->activate(*this);
+				debug("Agent '",name(),"' is activating state '",this->state()->to_string().c_str(),"'");
+				this->state()->activate();
 
 			} catch(const std::exception &e) {
 

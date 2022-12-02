@@ -89,11 +89,7 @@
 		payload.expand();
 
 		if(verbose()) {
-			if(description.empty()) {
-				info() << "Emitting " << filename << endl;
-			} else {
-				info() << description << ": " << filename << endl;
-			}
+			info() << "Emitting " << filename << endl;
 		}
 
 		debug("File=",filename);
