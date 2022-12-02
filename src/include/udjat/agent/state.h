@@ -156,7 +156,7 @@ namespace Udjat {
 
 			virtual void get(const Request &request, Response &response) const;
 
-			virtual void activate() noexcept;
+			virtual void activate(const Abstract::Object &object) noexcept;
 			virtual void deactivate() noexcept;
 
 			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)

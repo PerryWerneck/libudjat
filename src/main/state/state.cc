@@ -167,10 +167,10 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::State::activate() noexcept {
+	void Abstract::State::activate(const Abstract::Object &object) noexcept {
 
 		for(auto listener : listeners) {
-			listener->activate(*this);
+			listener->activate(object);
 		}
 
 	}

@@ -129,7 +129,7 @@ namespace Udjat {
 
 				current_state.activate(state);
 				debug("Agent '",name(),"' is activating state '",this->state()->to_string().c_str(),"'");
-				this->state()->activate();
+				this->state()->activate(*this);
 
 			} catch(const std::exception &e) {
 
