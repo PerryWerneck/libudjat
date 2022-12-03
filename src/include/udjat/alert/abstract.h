@@ -91,6 +91,9 @@
 				return options.asyncronous;
 			}
 
+			/// @brief Is the alert activated?
+			bool activated() const noexcept override;
+
 			/// @brief Activate alert.
 			void activate(const Abstract::Object &object) override;
 

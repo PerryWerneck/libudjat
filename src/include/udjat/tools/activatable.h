@@ -28,17 +28,23 @@
 	class UDJAT_API Activatable : public NamedObject {
 	public:
 
-		constexpr Activatable(const char *name = "") : NamedObject(name) {
+		constexpr Activatable(const char *name = "") : NamedObject{name} {
 		}
 
-		Activatable(const pugi::xml_node &node) : NamedObject(node) {
+		Activatable(const pugi::xml_node &node) : NamedObject{node} {
 		}
 
 		static std::shared_ptr<Activatable> Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
 
 		virtual void activate(const Abstract::Object &object);
-
 		virtual void deactivate();
+
+		/// @brief Is the object activated?
+		virtual bool activated() const noexcept = 0;
+
+		/// @brief Trigger (deactivate/activate).
+		void trigger(const Abstract::Object &object);
+
 
 	};
 

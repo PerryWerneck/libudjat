@@ -55,6 +55,16 @@
 	Alert::Controller::~Controller() {
 	}
 
+	bool Alert::Controller::active(const Abstract::Alert *alert) {
+		lock_guard<mutex> lock(guard);
+		for(auto activation : activations) {
+			if(activation->id == alert) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void Alert::Controller::remove(const Abstract::Alert *alert) {
 
 		lock_guard<mutex> lock(guard);
@@ -73,7 +83,7 @@
 #endif // DEBUG
 			activation->run();
 			return;
-		} else if(!active()) {
+		} else if(!isActive()) {
 
 			// disabled, run syncronous.
 			activation->warning() << "WARNING: The alert controller is disabled, cant retry a failed alert" << endl;

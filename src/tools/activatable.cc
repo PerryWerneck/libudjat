@@ -56,5 +56,15 @@
 	void Activatable::deactivate() {
 	}
 
+	void Activatable::trigger(const Abstract::Object &object) {
+
+		if(activated()) {
+			deactivate();
+		}
+
+		activate(object);
+
+	}
+
  }
 

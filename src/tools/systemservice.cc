@@ -176,6 +176,10 @@
 					constexpr Listener() : Activatable("syssrvc") {
 					}
 
+					bool activated() const noexcept override {
+						return false;
+					}
+
 					void activate(const Abstract::Object &object) override {
 
 						auto service = SystemService::getInstance();

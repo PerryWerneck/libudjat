@@ -69,6 +69,10 @@
 		throw runtime_error("Cant activate an abstract alert");
 	}
 
+	bool Abstract::Alert::activated() const noexcept {
+		return Udjat::Alert::Controller::getInstance().active(this);
+	}
+
 	void Abstract::Alert::activate(const Abstract::Object &object) {
 		auto activation = ActivationFactory();
 		activation->set(object);

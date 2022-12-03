@@ -85,7 +85,7 @@ namespace Udjat {
 
 					try {
 
-						activatable->activate(*agent);
+						activatable->trigger(*agent);
 
 					} catch(const std::exception &e) {
 
