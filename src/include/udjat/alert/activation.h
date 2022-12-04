@@ -45,9 +45,8 @@
 			} retry;
 
 			struct {
-				bool verbose = true;
+				bool verbose = false;
 				bool asyncronous = true;
-//				Udjat::Level level = Udjat::unimportant;
 			} options;
 
 			struct {
@@ -81,6 +80,9 @@
 
 			/// @brief Just emit alert, no update on emission data.
 			virtual void emit();
+
+			/// @brief Stop emissions.
+			void deactivate() noexcept;
 
 		public:
 			Activation(const Abstract::Alert *alert);

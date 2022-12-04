@@ -55,6 +55,21 @@
 	Alert::Activation::~Activation() {
 	}
 
+	void Alert::Activation::deactivate() noexcept {
+		if(verbose()) {
+			info() << "Alert was deactivated" << endl;
+		}
+#ifdef DEBUG
+		else {
+			debug("Deactivating alert '",name,"'");
+		}
+#endif // DEBUG
+		timers.next = 0;
+		timers.interval = 0;
+		timers.failed = 0;
+		timers.success = 0;
+	}
+
 	std::ostream & Alert::Activation::info() const {
 		return cout << name << "\t";
 	}
@@ -92,6 +107,7 @@
 	}
 
 	void Alert::Activation::emit() {
+		deactivate();
 		throw runtime_error("Cant emit an abstract activation");
 	}
 
@@ -111,12 +127,13 @@
 	bool Alert::Activation::run() noexcept {
 
 		bool succeeded = false;
+		timers.last = time(0);
+		timers.next = timers.last + timers.interval;
+
 		try {
-			timers.last = time(0);
 			emit();
 			count.success++;
 			succeeded = true;
-			timers.next = time(0) + timers.interval;
 		} catch(const exception &e) {
 			count.failed++;
 			error()
@@ -147,10 +164,7 @@
 				info() << "Next emission set to " << TimeStamp(timers.next) << endl;
 			}
 		} else {
-			timers.next = 0;
-			if(verbose()) {
-				info() << "No interval, deactivating alert" << endl;
-			}
+			deactivate();
 		}
 
 		return succeeded;
@@ -161,9 +175,8 @@
 
 		time_t rst = (count.success ? timers.success : timers.failed);
 
-		debug("msg=",msg);
-
 		if(rst) {
+			debug("msg=",msg," [SLEEPING]");
 			state.restarting = true;
 			timers.next = time(0) + rst;
 			if(options.verbose) {
@@ -171,14 +184,9 @@
 					msg,", sleeping until ",TimeStamp(timers.next).to_string().c_str()
 				}.write(Logger::Trace,name.c_str());
 			}
-		}
-		else {
-			timers.next = 0;
-			if(options.verbose) {
-				Logger::String{
-					msg,", stopping"
-				}.write(Logger::Trace,name.c_str());
-			}
+		} else {
+			debug("msg=",msg," [DEACTIVATE]");
+			deactivate();
 		}
 
 	}

@@ -31,12 +31,7 @@
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
 		// options.
-#ifdef DEBUG
-		options.verbose = getAttribute(node,section,"verbose",true);
-#else
 		options.verbose = getAttribute(node,section,"verbose",Logger::enabled(Logger::Trace));
-#endif // DEBUG
-
 		options.asyncronous = getAttribute(node,section,"asyncronous",options.asyncronous);
 
 		// Seconds to wait before first activation.
