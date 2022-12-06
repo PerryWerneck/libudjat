@@ -210,7 +210,7 @@
 
 			bool set(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				if(state->level() <= Level::ready) {
+				if(state->ready()) {
 					// It's a 'ready' state, set it to my own default value.
 					state = this->computeState();
 					debug("Child state is ready, using the default root state");
@@ -218,11 +218,8 @@
 
 				Object::properties.icon = (state->ready() ? "computer" : "computer-fail");
 
-				if(!super::set(state)) {
-					return false;
-				}
+				return super::set(state);
 
-				return true;
 			}
 
 			void push_back(std::shared_ptr<Abstract::Alert> alert) {

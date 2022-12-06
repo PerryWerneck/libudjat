@@ -74,8 +74,12 @@ namespace Udjat {
 
 	void Abstract::Agent::notify(const Event event) {
 
+		debug("------------------------------->", listeners.size());
+
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(Listener &listener : listeners) {
+
+			debug("listener=",listener.activatable->name()," event=",event," listener.event=",listener.event," Activate=",(listener.event & event));
 
 			if((listener.event & event) != 0) {
 

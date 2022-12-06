@@ -187,8 +187,6 @@ namespace Udjat {
 
 		cout << "agent\tStarting controller" << endl;
 
-
-
 		MainLoop::Timer::reset(1000);
 		MainLoop::Timer::enable();
 
