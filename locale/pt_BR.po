@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-17 22:51-0300\n"
-"PO-Revision-Date: 2022-10-17 22:53-0300\n"
+"POT-Creation-Date: 2022-12-07 08:14-0300\n"
+"PO-Revision-Date: 2022-12-07 08:18-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -26,24 +26,28 @@ msgstr ""
 msgid "Agent controller"
 msgstr "Controlador de agentes"
 
+#: src/main/agent/agent.cc:263
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
 #: src/main/alert/controller.cc:40
 msgid "Alert controller"
 msgstr "Controlador de alertas"
 
-#: src/main/agent/state.cc:80 src/main/agent/state.cc:157
-msgid "Error switching state"
-msgstr "Erro ao trocar estado"
+#: src/main/agent/state.cc:137
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
 
-#: src/main/module/module.cc:118
+#: src/main/module/module.cc:113
 msgid "I dont know how to execute '{}'"
-msgstr ""
+msgstr "Não sei como executar '{}'"
 
 #: src/tools/os/linux/systemservice.cc:121
 #: src/tools/os/linux/systemservice.cc:126
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
 
-#: src/tools/timestamp.cc:61
+#: src/tools/timestamp.cc:64
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
 
@@ -51,39 +55,47 @@ msgstr "Menos de um minuto"
 msgid "Local file protocol"
 msgstr "Protocol de arquivo local"
 
-#: src/main/module/module.cc:102
+#: src/main/module/module.cc:97
 msgid "Module '{}' is not loaded"
-msgstr ""
+msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:148
+#: src/main/agent/root.cc:154
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/main/agent/get.cc:55
+#: src/main/agent/get.cc:108
 msgid "No reports on this path"
 msgstr "Nenhum relatório no caminho informado"
+
+#: src/main/agent/agent.cc:262
+msgid "Normal"
+msgstr "Normal"
 
 #: src/tools/url/protocols/script.cc:36
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/systemservice.cc:317 src/main/agent/root.cc:148
+#: src/tools/systemservice.cc:200
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
+#: src/tools/systemservice.cc:196 src/main/agent/root.cc:154
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:86 src/main/agent/state.cc:162
-msgid "Unexpected error switching state"
-msgstr "Erro inesperado ao trocar de estado"
+#: src/main/agent/state.cc:142
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
 
-#: src/tools/timestamp.cc:88
+#: src/tools/timestamp.cc:91
 msgid "day"
 msgstr "dia"
 
-#: src/tools/timestamp.cc:88
+#: src/tools/timestamp.cc:91
 msgid "days"
 msgstr "dias"
 
-#: src/tools/string/string.cc:216
+#: src/main/agent/agent.cc:260 src/tools/string/string.cc:216
 msgid "default"
 msgstr "padrão"
 
@@ -91,19 +103,19 @@ msgstr "padrão"
 msgid "false"
 msgstr "falso"
 
-#: src/tools/timestamp.cc:90
+#: src/tools/timestamp.cc:93
 msgid "hour"
 msgstr "hora"
 
-#: src/tools/timestamp.cc:90
+#: src/tools/timestamp.cc:93
 msgid "hours"
 msgstr "horas"
 
-#: src/tools/timestamp.cc:92
+#: src/tools/timestamp.cc:95
 msgid "minute"
 msgstr "minuto"
 
-#: src/tools/timestamp.cc:92
+#: src/tools/timestamp.cc:95
 msgid "minutes"
 msgstr "minutos"
 
@@ -111,11 +123,11 @@ msgstr "minutos"
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:281
+#: src/main/state/state.cc:265
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:281
+#: src/main/state/state.cc:265
 msgid "on"
 msgstr "ligado"
 
@@ -127,30 +139,30 @@ msgstr "verdadeiro"
 msgid "yes"
 msgstr "sim"
 
-#: src/tools/timestamp.cc:74
+#: src/tools/timestamp.cc:77
 msgid "{d} {D}"
 msgstr "{d} {D}"
 
-#: src/tools/timestamp.cc:76
+#: src/tools/timestamp.cc:79
 msgid "{d} {D} and {h} {H}"
 msgstr "{d} {D} e {h} {H}"
 
-#: src/tools/timestamp.cc:78
+#: src/tools/timestamp.cc:81
 msgid "{d} {D} and {m} {M}"
 msgstr "{d} {D} e {m} {M}"
 
-#: src/tools/timestamp.cc:80
+#: src/tools/timestamp.cc:83
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr "{d} {D}, {h} {H} e {m} {M}"
 
-#: src/tools/timestamp.cc:75
+#: src/tools/timestamp.cc:78
 msgid "{h} {H}"
 msgstr "{h} {H}"
 
-#: src/tools/timestamp.cc:79
+#: src/tools/timestamp.cc:82
 msgid "{h} {H} and {m} {M}"
 msgstr "{h} {H} e {m} {M}"
 
-#: src/tools/timestamp.cc:77
+#: src/tools/timestamp.cc:80
 msgid "{m} {M}"
 msgstr "{m} {M}"

@@ -102,8 +102,10 @@ make all
 %defattr(-,root,root)
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
-%dir %{_libdir}/udjat-modules
-%dir %{_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
+%dir %{_libdir}/udjat
+%dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
+%dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
+%dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 
 %dir %{_sysconfdir}/udjat.conf.d
 %config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
