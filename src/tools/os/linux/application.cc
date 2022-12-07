@@ -121,7 +121,7 @@
 
 	Application::LibDir::LibDir(const char *subdir) : LibDir() {
 		append(program_invocation_short_name);
-		append("-");
+		append("/");
 		append(subdir);
 		append("/");
 	}

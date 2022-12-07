@@ -331,12 +331,17 @@ namespace Udjat {
 		ThreadPool::getInstance().push("agent-updates",[this]() {
 
 			{
+				time_t now = time(0);
+
 				lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
 				if(updating) {
-					cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
+					if(updating < now) {
+						cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
+					}
+					reset(500);
 					return;
 				}
-				updating = time(0);
+				updating = now;
 			}
 
 			try {
