@@ -68,15 +68,19 @@
 
 			// No definitions, try to detect.
 			std::string options[] = {
+#ifndef _WIN32
+				string{ string{"/etc/"} + Application::name() + ".xml.d" },
+#endif // _WIN32
 				Application::DataFile{ (Application::name() + ".xml").c_str() },
 				Application::DataFile{"xml.d"},
 			};
 
 			for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
+
 				debug("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
 
 				if(access(options[ix].c_str(), R_OK) == 0) {
-					info() << "Detected service configuration file in '" << options[ix] << "'" << endl;
+					debug("Detected service configuration in '",options[ix],"'");
 					definitions = Quark(options[ix]).c_str();
 					break;
 				}

@@ -24,6 +24,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <errno.h>
  #include <fcntl.h>
  #include <unistd.h>
@@ -43,10 +44,7 @@
 
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
-
-#ifdef DEBUG
-		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << gettext_package << endl;
-#endif // DEBUG
+		debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR),"/",gettext_package);
 
 #endif // HAVE_LIBINTL
 
