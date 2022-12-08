@@ -94,6 +94,16 @@
 		append("/");
 	}
 
+	Application::LogDir::LogDir(const char *subdir) : LogDir() {
+		append(subdir);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+	}
+
 	Application::SystemDataDir::SystemDataDir() : File::Path{"/usr/share/"} {
 		append(program_invocation_short_name);
 		if(mkdir(c_str(),0755)) {

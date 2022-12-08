@@ -275,6 +275,9 @@ install-linux-lib: \
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/lib
 
+	@$(MKDIR) \
+		$(DESTDIR)/var/log/@PRODUCT_NAME@
+
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/@SONAME@ \
 		$(DESTDIR)$(libdir)/@SONAME@

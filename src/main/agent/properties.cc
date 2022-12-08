@@ -28,6 +28,12 @@
 
 	bool Abstract::Agent::getProperty(const char *key, std::string &value) const noexcept {
 
+		// Agent name
+		if( !strcasecmp(key,"agent.name") ) {
+			value = name();
+			return true;
+		}
+
 		// Agent value
 		if( !(strcasecmp(key,"value") && strcasecmp(key,"agent.value")) ) {
 			value = to_string();

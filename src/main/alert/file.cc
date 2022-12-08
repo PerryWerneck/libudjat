@@ -23,6 +23,8 @@
  #include <udjat/tools/logger.h>
  #include <sys/stat.h>
  #include <fstream>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -37,11 +39,11 @@
 				filename = getAttribute(node,"alert-filename",false);
 			}
 
-			if(!filename) {
-				throw runtime_error(string{"Required attribute 'filename' is missing on alert '"} + name() + "'");
+			if(filename) {
+				this->filename = Quark(filename.as_string()).c_str();
+			} else {
+				this->filename = Quark(Application::LogDir("alerts") + "${agent.name}-%u.txt").c_str();
 			}
-
-			this->filename = Quark(filename.as_string()).c_str();
 
 			if(!*this->filename) {
 				throw runtime_error(string{"Required attribute 'filename' is empty on alert '"} + name() + "'");

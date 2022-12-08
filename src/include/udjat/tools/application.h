@@ -92,7 +92,7 @@
 		class UDJAT_API LogDir : public File::Path {
 		public:
 			LogDir();
-
+			LogDir(const char *subdir);
 		};
 
 		/// @brief Application data dir.

@@ -25,6 +25,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/application.h>
 
  using namespace std;
 
@@ -263,6 +264,36 @@
 
 				}
 
+			}
+
+			//
+			// Check internal values
+			//
+			if(!strcasecmp(key.c_str(),"logdir")) {
+				replace(
+					from,
+					(to-from)+1,
+					Application::LogDir()
+				);
+				continue;
+			}
+
+			if(!strcasecmp(key.c_str(),"datadir")) {
+				replace(
+					from,
+					(to-from)+1,
+					Application::DataDir()
+				);
+				continue;
+			}
+
+			if(!strcasecmp(key.c_str(),"cachedir")) {
+				replace(
+					from,
+					(to-from)+1,
+					Application::CacheDir()
+				);
+				continue;
 			}
 
 			//
