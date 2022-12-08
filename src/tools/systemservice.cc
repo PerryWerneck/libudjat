@@ -64,6 +64,14 @@
 		}
 #endif // _WIN32
 
+		// Setup logger
+		for(int level = ((int) Logger::Info); level <= ((int) Logger::Trace); level++) {
+			Logger::enable(
+				(Logger::Level) level,
+				Config::Value<bool>("log",std::to_string((Logger::Level) level),Logger::enabled((Logger::Level) level))
+			);
+		}
+
 		if(!definitions) {
 
 			// No definitions, try to detect.

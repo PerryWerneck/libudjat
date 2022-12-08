@@ -38,13 +38,15 @@
 
  using namespace std;
 
- namespace Udjat {
+ static const char * typenames[] = {
+ 	"info",
+	"warning",
+	"error",
+	"debug",
+	"trace"
+ };
 
-	static const char * typenames[] = {
-		"info",
-		"warning",
-		"error"
-	};
+ namespace Udjat {
 
 	void Logger::setup(const pugi::xml_node &node) noexcept {
 
@@ -344,6 +346,14 @@
 	UDJAT_API std::ostream & Logger::trace() {
 		static std::ostream ctrace{new Writer(Logger::Trace)};
 		return ctrace;
+	}
+
+ }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::Logger::Level level) {
+		return typenames[((size_t) level) % N_ELEMENTS(typenames)];
 	}
 
  }
