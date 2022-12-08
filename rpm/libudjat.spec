@@ -106,6 +106,7 @@ make all
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
+%dir /var/log/udjat
 
 %dir %{_sysconfdir}/udjat.conf.d
 %config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
