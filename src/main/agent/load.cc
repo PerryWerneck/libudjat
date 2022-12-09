@@ -106,7 +106,7 @@ namespace Udjat {
 
 					alert->setup(node);
 
-					switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change",NULL)) {
+					switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change","on-ready-state","on-not-ready-state",NULL)) {
 					case 0:	// on-state-change
 						push_back(Event::STATE_CHANGED,alert);
 						break;
@@ -117,6 +117,14 @@ namespace Udjat {
 
 					case 2:	// on-value-change
 						push_back(Event::VALUE_CHANGED,alert);
+						break;
+
+					case 3:	// on-ready-state
+						push_back(Event::READY,alert);
+						break;
+
+					case 4:	// on-not-ready-state
+						push_back(Event::NOT_READY,alert);
 						break;
 
 					default:

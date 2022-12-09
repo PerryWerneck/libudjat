@@ -38,7 +38,7 @@ msgstr "Controlador de alertas"
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
 
-#: src/main/module/module.cc:113
+#: src/main/module/module.cc:116
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
@@ -55,11 +55,11 @@ msgstr "Menos de um minuto"
 msgid "Local file protocol"
 msgstr "Protocol de arquivo local"
 
-#: src/main/module/module.cc:97
+#: src/main/module/module.cc:100
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:154
+#: src/main/agent/root.cc:85
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -79,7 +79,7 @@ msgstr "Protocolo para subprocesso ou script"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:208 src/main/agent/root.cc:154
+#: src/tools/systemservice.cc:208 src/main/agent/root.cc:85
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 

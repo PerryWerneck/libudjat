@@ -171,7 +171,8 @@ namespace Udjat {
 
 			}
 
-			notify(LEVEL_CHANGED);
+			notify(this->state()->ready() ? READY : NOT_READY);
+
 		}
 #ifdef DEBUG
 		else {
