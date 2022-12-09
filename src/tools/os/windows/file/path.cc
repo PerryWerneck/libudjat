@@ -22,6 +22,7 @@
  #include <dirent.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/path.h>
+ #include <iostream>
 
  namespace Udjat {
 

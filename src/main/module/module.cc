@@ -63,6 +63,9 @@ namespace Udjat {
 		Controller::getInstance().for_each(method);
 	}
 
+	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {
+	}
+
 	bool Module::getProperty(const char *key, std::string &value) const noexcept {
 
 		if(!strcasecmp(key,"filename")) {

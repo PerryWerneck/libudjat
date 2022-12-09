@@ -48,8 +48,5 @@
 		return name;
 	}
 
-	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {
-	}
-
  }
 

@@ -101,8 +101,8 @@
 
 		module->handle = handle;
 
-		if(module->_info.gettext_package && *module->_info.gettext_package) {
-			Application::set_gettext_package(module->_info.gettext_package);
+		if(module->gettext_package() && *module->gettext_package()) {
+			Application::set_gettext_package(module->gettext_package());
 		}
 
 		return module;

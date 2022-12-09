@@ -73,6 +73,10 @@
 			return _info.build;
 		}
 
+		inline const char * gettext_package() const noexcept {
+			return _info.gettext_package;
+		}
+
 		/// @brief Preload modules before the reconfiguration.
 		/// @param pathname The xml definitions file (or folder) path.
 		/// @return true if success.
