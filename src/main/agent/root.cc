@@ -67,12 +67,28 @@
 
 		/// @brief The root agent.
 		class Agent : public Abstract::Agent {
+		private:
+			std::vector<std::shared_ptr<Abstract::State>> states;
+
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
 				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was created" << endl;
 				Object::properties.icon = "computer";
 				Object::properties.url = Quark(string{"http://"} + name).c_str();
+
+				//
+				// Create default 'ready' state.
+				//
+				class ReadyState : public Abstract::State {
+				public:
+					ReadyState() : Abstract::State("ready", Level::ready, _( "System is ready" ), _( "No abnormal state was detected" )) {
+						Object::properties.icon = "computer";
+					}
+
+				};
+
+				states.push_back(make_shared<ReadyState>());
 
 #ifndef _WIN32
 				//
@@ -147,25 +163,35 @@
 
 			}
 
-			std::shared_ptr<Abstract::State> computeState() override {
+			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
 
-				class ReadyState : public Abstract::State {
-				public:
-					ReadyState() : Abstract::State("ready", Level::ready, _( "System is ready" ), _( "No abnormal state was detected" )) {
-						Object::properties.icon = "computer";
+				auto state = make_shared<Abstract::State>(node);
+
+				// Keep only one state for every level.
+				for(auto it = states.begin(); it != states.end(); it++) {
+
+					if((*it)->level() == state->level()) {
+						states.erase(it);
+						break;
 					}
 
-				};
-
-				static shared_ptr<Abstract::State> instance;
-				if(!instance) {
-					debug("Creating root default state");
-					instance = make_shared<ReadyState>();
 				}
 
-				return instance;
-
+				states.push_back(state);
+				return state;
 			}
+
+			std::shared_ptr<Abstract::State> computeState() override {
+
+				for(auto state : states) {
+					if(state->ready()) {
+						return state;
+					}
+				}
+
+				return super::computeState();
+			}
+
 
 			virtual ~Agent() {
 				info() << "Root agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
@@ -210,10 +236,16 @@
 
 			bool set(std::shared_ptr<Abstract::State> state) noexcept override {
 
-				if(state->ready()) {
-					// It's a 'ready' state, set it to my own default value.
-					state = this->computeState();
-					debug("Child state is ready, using the default root state");
+				auto level = state->level();
+				if(level < Level::ready) {
+					level = Level::ready;
+				}
+
+				for(auto st : states) {
+					if(st->level() == level) {
+						state = st;
+						break;
+					}
 				}
 
 				Object::properties.icon = (state->ready() ? "computer" : "computer-fail");
