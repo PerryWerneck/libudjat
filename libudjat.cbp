@@ -202,6 +202,7 @@
 		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application.cc" />
 		<Unit filename="src/tools/base64.cc" />
+		<Unit filename="src/tools/cache.cc" />
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/event.cc" />
 		<Unit filename="src/tools/eventcontroller.cc" />
@@ -234,6 +235,7 @@
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application.cc" />
+		<Unit filename="src/tools/os/linux/cache.cc" />
 		<Unit filename="src/tools/os/linux/econf.cc" />
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />

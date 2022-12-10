@@ -161,6 +161,10 @@
 			CacheDir();
 			CacheDir(const char *subdir);
 
+			/// @brief Build cachename for file
+			/// @param name File or URL name.
+			/// @return Full path for cached file.
+			std::string build_filename(const char *name);
 
 		};
 

@@ -69,6 +69,11 @@
 			/// @brief Get the port number from srvcname.
 			int portnumber() const;
 
+			/// @brief True if the hostname is not empty.
+			inline bool remote() const noexcept {
+				return !hostname.empty();
+			}
+
 		};
 
 		URL() = default;

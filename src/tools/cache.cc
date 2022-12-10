@@ -17,37 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /***
-  * @brief Implement the SubProcess object.
-  *
-  * References:
-  *
-  * <https://opensource.apple.com/source/Libc/Libc-167/gen.subproj/popen.c.auto.html>
-  *
-  */
-
- #include "private.h"
- #include <sys/types.h>
- #include <sys/socket.h>
- #include <unistd.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/handler.h>
- #include <iostream>
- #include <cstring>
- #include <csignal>
- #include <sys/wait.h>
- #include <poll.h>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/logger.h>
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/base64.h>
 
  namespace Udjat {
 
-	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
-		info() << "Running '" << command << "'" << endl;
-	}
-
-	SubProcess::~SubProcess() {
-		debug( "Process '",command,"' removed");
+	std::string Application::CacheDir::build_filename(const char *path) {
+		return *this + Base64::encode(path);
 	}
 
  }
+

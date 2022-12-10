@@ -78,9 +78,7 @@
 
 		if(!activation->options.asyncronous) {
 			// It's a syncronous alert, just emit it.
-#ifdef DEBUG
-			activation->info() << "Running alert in foreground" << endl;
-#endif // DEBUG
+			debug("Running alert '",activation->name,"' in foreground");
 			activation->run();
 			return;
 		} else if(!isActive()) {
@@ -102,9 +100,7 @@
 		// Have mainloop
 		{
 			lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-			activation->info() << "Running alert in background" << endl;
-#endif // DEBUG
+			debug("Running alert '",activation->name,"' in background");
 			activations.push_back(activation);
 		}
 
