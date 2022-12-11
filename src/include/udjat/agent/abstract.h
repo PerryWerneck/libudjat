@@ -40,15 +40,16 @@
 				STOPPED				= 0x0002,		///< @brief Agent was stopped.
 				STATE_CHANGED		= 0x0004,		///< @brief Agent state has changed.
 				UPDATE_TIMER		= 0x0008,		///< @brief Agent update starts.
+
 				VALUE_CHANGED		= 0x0010,		///< @brief Agent value has changed.
 				VALUE_NOT_CHANGED	= 0x0020,		///< @brief Agent value has not changed.
 				UPDATED				= 0x0030,		///< @brief Agent was updated.
 
 				READY				= 0x0040,		///< @brief Agent is ready.
 				NOT_READY			= 0x0080,		///< @brief Agent is not ready.
-				LEVEL_CHANGED		= 0x00C0,		///< @brief Agent level has changed.
+				LEVEL_CHANGED		= 0x0100,		///< @brief Agent level has changed.
 
-				ALL 				= 0x001F		///< @brief All events.
+				ALL 				= 0x011F		///< @brief All events.
 			};
 
 		private:
@@ -392,6 +393,11 @@
 			/// @brief Get current level.
 			inline Level level() const {
 				return this->current_state.selected->level();
+			}
+
+			/// @brief Is agent ready?
+			inline bool ready() const {
+				return this->current_state.selected->ready();
 			}
 
 			/// @brief Create and insert State.

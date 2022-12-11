@@ -83,6 +83,7 @@ namespace Udjat {
 		}
 
 		auto saved_level = level();
+		auto saved_ready = ready();
 		auto level = state->level();
 
 		if(current_state.activation == current_state.Activation::StateWasActivated) {
@@ -171,7 +172,12 @@ namespace Udjat {
 
 			}
 
-			notify(this->state()->ready() ? READY : NOT_READY);
+			notify(LEVEL_CHANGED);
+
+			bool rd = this->ready();
+			if(rd != saved_ready) {
+				notify(rd ? READY : NOT_READY);
+			}
 
 		}
 #ifdef DEBUG
