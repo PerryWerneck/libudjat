@@ -69,7 +69,7 @@ namespace Udjat {
 	}
 
 	Abstract::Agent::Agent(const pugi::xml_node &node) : Object(node) {
-		setup_properties(node);
+		Controller::setup_properties(*this,node);
 	}
 
 	void Abstract::Agent::notify(const Event event) {
@@ -138,8 +138,8 @@ namespace Udjat {
 				if(agent->update.running) {
 
 					if(agent->update.running != time(0)) {
-						
-					} 
+
+					}
 					agent->warning() << "Updating since " << TimeStamp(agent->update.running) << ", waiting" << endl;
 					Config::Value<size_t> delay{"agent-controller","delay-wait-on-stop",100};
 					Config::Value<size_t> max_wait("agent-controller","max-wait-on-stop",1000);

@@ -13,6 +13,7 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
 	$(wildcard src/main/*.cc) \
 	$(wildcard src/main/agent/*.cc) \
+	$(wildcard src/main/agent/setup/*.cc) \
 	$(wildcard src/main/load/*.cc) \
 	$(wildcard src/main/state/*.cc) \
 	$(wildcard src/main/request/*.cc) \

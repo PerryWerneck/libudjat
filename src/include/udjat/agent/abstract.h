@@ -131,16 +131,16 @@
 			std::list<Listener> listeners;
 
 			/// @brief Load agent properties from XML node.
-			void setup_properties(const pugi::xml_node &node) noexcept;
+			// void setup_properties(const pugi::xml_node &node) noexcept;
 
 			/// @brief Load states from XML node.
-			void setup_states(const pugi::xml_node &node) noexcept;
+			// void setup_states(const pugi::xml_node &node) noexcept;
 
 			/// @brief Load alerts from XML node.
-			void setup_alerts(const pugi::xml_node &node) noexcept;
+			// void setup_alerts(const pugi::xml_node &node) noexcept;
 
 			/// @brief Load children from XML node.
-			void setup_children(const pugi::xml_node &node) noexcept;
+			// void setup_children(const pugi::xml_node &node) noexcept;
 
 			/// @brief Activate agent state.
 			//void activate() noexcept;
@@ -178,7 +178,7 @@
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;
 
-			/// @brief Set failed state from known exception
+			/// @brief Set failed state from exception.
 			void failed(const char *summary, const std::exception &e) noexcept;
 
 			/// @brief Set failed state from errno.

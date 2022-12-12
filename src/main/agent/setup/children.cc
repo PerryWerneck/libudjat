@@ -18,8 +18,9 @@
  */
 
 /**
+ * @file
  *
- * @brief Implements the agent alert factory method
+ * @brief Implements the agent setup.
  *
  * @author perry.werneck@gmail.com
  *
@@ -27,14 +28,39 @@
 
  #include <config.h>
  #include <private/agent.h>
- #include <cstring>
- #include <udjat/alert.h>
+ #include <udjat/module.h>
+ #include <udjat/tools/object.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/alert/activation.h>
+ #include <udjat/tools/event.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/logger.h>
+
+//---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
-		return Udjat::AlertFactory(*this,node);
-	}
+	void Abstract::Agent::Controller::setup_children(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
+		for(const pugi::xml_node &node : root) {
 
+			// Check for validation.
+			if(!is_allowed(node)) {
+				continue;
+			}
+
+			// Create child.
+			if(strcasecmp(node.name(),"module") == 0) {
+
+				Module::load(node);
+
+			} else if(strcasecmp(node.name(),"attribute")) {
+
+				// It's not an attribute, check if it's a child node.
+				agent.ChildFactory(node);
+
+			}
+
+		}
+	}
 
 }
