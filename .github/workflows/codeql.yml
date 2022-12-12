@@ -32,6 +32,7 @@ jobs:
           sudo apt-get install --yes gettext libpugixml-dev cmake git make libdbus-1-dev autopoint libsystemd-dev
       - name: After Prepare
         run: |
+          export PRE_REQS_DIR=$(readlink -f .)/pre-reqs && echo "PRE_REQS_DIR=$PRE_REQS_DIR" >> $GITHUB_ENV
           git clone https://github.com/PerryWerneck/vmdetect.git ./vmdetect
           cd vmdetect
           NOCONFIGURE=1 ./autogen.sh
@@ -39,8 +40,8 @@ jobs:
           make all
           make DESTDIR=${PRE_REQS_DIR} install
           cd ..
-          export VMDETECT_CFLAGS="-I${PRE_REQS_DIR}/usr/include"
-          export VMDETECT_LIBS="-L${PRE_REQS_DIR}/usr/lib -lvmdetect"			
+          export UDJAT_CFLAGS="-I${PRE_REQS_DIR}/usr/include" && echo "UDJAT_CFLAGS=$UDJAT_CFLAGS" >> $GITHUB_ENV
+          export UDJAT_LIBS="-L${PRE_REQS_DIR}/usr/lib -ludjat" && echo "UDJAT_LIBS=$UDJAT_LIBS" >> $GITHUB_ENV
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
