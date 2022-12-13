@@ -4,7 +4,7 @@ Version: 1.0-0
 Binary: libvmdetect
 Maintainer: Perry Werneck <perry.werneck@gmail.com>
 Architecture: any
-Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, pkg-config, gettext, libsystemd-dev, libvmdetect-dev, libpugixml-dev
+Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, pkg-config, gettext, libsystemd-dev, libvmdetect-dev, libpugixml-dev, libeconf-dev
 Standards-Version: 3.9.1.0
 DEBTRANSFORM-RELEASE: 1
 Files: 
