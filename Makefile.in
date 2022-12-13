@@ -391,6 +391,9 @@ install-devel-linux: \
 		src/include/udjat/linux/*.h \
 		$(DESTDIR)$(includedir)/udjat/linux
 
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
 	@$(INSTALL_DATA) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
 		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.static.a
