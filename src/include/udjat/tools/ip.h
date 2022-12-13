@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
+
  #ifdef _WIN32
 	#include <winsock2.h>
 	#include <windows.h>

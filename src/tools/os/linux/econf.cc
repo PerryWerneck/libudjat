@@ -547,6 +547,7 @@
 		}
 
 		bool for_each(const char *group,const std::function<void(const char *key, const char *value)> &call) {
+			return false;
 		}
 
 	};
