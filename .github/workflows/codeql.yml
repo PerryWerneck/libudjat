@@ -26,22 +26,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Install Packages
-        run: >
-          sudo apt-get update
-
-          sudo apt-get install --yes gettext libpugixml-dev cmake git make libdbus-1-dev autopoint libsystemd-dev
-      - name: After Prepare
         run: |
-          export PRE_REQS_DIR=$(readlink -f .)/pre-reqs && echo "PRE_REQS_DIR=$PRE_REQS_DIR" >> $GITHUB_ENV
-          git clone https://github.com/PerryWerneck/vmdetect.git ./vmdetect
-          cd vmdetect
-          NOCONFIGURE=1 ./autogen.sh
-          ./configure --prefix=/usr
-          make all
-          make DESTDIR=${PRE_REQS_DIR} install
-          cd ..
-          export UDJAT_CFLAGS="-I${PRE_REQS_DIR}/usr/include" && echo "UDJAT_CFLAGS=$UDJAT_CFLAGS" >> $GITHUB_ENV
-          export UDJAT_LIBS="-L${PRE_REQS_DIR}/usr/lib -ludjat" && echo "UDJAT_LIBS=$UDJAT_LIBS" >> $GITHUB_ENV
+          echo 'deb https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/home:PerryWerneck:udjat.list
+          curl -fsSL https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_PerryWerneck_udjat.gpg > /dev/null
+          sudo apt-get update
+          sudo apt-get install --yes gettext libpugixml-dev cmake git make libdbus-1-dev autopoint libsystemd-dev libvmdetect-dev
       - name: Initialize CodeQL
         uses: github/codeql-action/init@v2
         with:
