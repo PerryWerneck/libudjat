@@ -1,0 +1,28 @@
+Source: libudjat
+Section: unknown
+Priority: optional
+Maintainer: Perry Werneck <perry.werneck@gmail.com>
+Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, pkg-config, gettext, libsystemd-dev, libvmdetect-dev, libpugixml-dev
+
+Package: libudjat
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Provides: libudjat (= ${binary:Version}), libudjat (= 1.0)
+Description: Udjat core library.
+ Udjat core library.
+
+Package: libudjat-dev
+Architecture: any
+Provides: libudjat-dev (= ${binary:Version})
+Section: libdevel
+Depends: ${misc:Depends}, pkg-config, libudjat (= ${binary:Version})
+Description: libudjat development files.
+ Development files for virtual machine detection library
+
+Package: libudjat-dbg
+Architecture: any
+Depends: libudjat (= ${binary:Version})
+Description: Debugging symbols for libudjat
+ This package contains the debugging symbols for libudjat.
+
