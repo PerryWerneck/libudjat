@@ -350,6 +350,13 @@
 
 	}
 
+
+	Application::LogDir::LogDir(const char *subdir) : LogDir() {
+		append(subdir);
+		append("\\");
+		mkdir(c_str());
+	}
+
 	Application::CacheDir::CacheDir() {
 
 		try {
@@ -368,10 +375,9 @@
 	}
 
 	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
-
 		append(subdir);
 		append("\\");
-
+		mkdir(c_str());
 	}
 
  }

@@ -67,6 +67,9 @@ namespace Udjat {
 		return "";
 	}
 
+	void Abstract::State::refresh() {
+	}
+
 	void Abstract::State::set(const pugi::xml_node &node) {
 
 		Object::set(node);
@@ -75,6 +78,7 @@ namespace Udjat {
 
 		properties.level = LevelFactory(node);
 		properties.body = getAttribute(node,section,"body",properties.body);
+		options.forward = getAttribute(node,section,"forward-to-children",options.forward);
 
 		for(pugi::xml_node child : node) {
 
@@ -87,15 +91,38 @@ namespace Udjat {
 		debug(
 			"name=",node.attribute("name").as_string()," ",
 			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
-			" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
+			" Attibute('alert-type')=",getAttribute(node,"alert-type",false).as_string("")
 		);
 
+		{
+			auto type = getAttribute(node,"alert-type",false);
+			auto enabled = getAttribute(node,"alert",true);
+
+			if(enabled.as_bool(type)) {
+				auto alert = Udjat::AlertFactory(*this, node, type.as_string(""));
+				if(alert) {
+					listeners.push_back(alert);
+				}
+			}
+
+		}
+
+		//	" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
+		// Check for alert.
+
+		/*
 		if(node.attribute("alert").as_bool(node.attribute("alert-type"))) {
-			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string("default"));
+			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string(""));
+			if(alert) {
+				alerts.push_back(alert);
+			}
+		} else if(node.attribute("alert").as_bool(node.parent().attribute("alert-type"))) {
+			auto alert = Udjat::AlertFactory(*this, node, node.parent().attribute("alert-type").as_string(""));
 			if(alert) {
 				alerts.push_back(alert);
 			}
 		}
+		*/
 
 	}
 
@@ -140,38 +167,18 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::State::activate(const Agent &agent) noexcept {
+	void Abstract::State::activate(const Abstract::Object &object) noexcept {
 
-		debug("State '",to_string().c_str(),"' was activated on '",agent.name(),"'");
-
-		for(auto alert : alerts) {
-			auto activation = alert->ActivationFactory();
-
-			const char *description = summary();
-			if(!(description && *description)) {
-				description = agent.summary();
-			}
-			if(description && *description) {
-				activation->set(description);
-			}
-
-			activation->set(*this);
-			activation->set(agent);
-			activation->set(level());
-
-			Udjat::start(activation);
+		for(auto listener : listeners) {
+			listener->activate(object);
 		}
 
 	}
 
-	void Abstract::State::deactivate(const Agent &agent) noexcept {
-
-		debug("State '",to_string().c_str(),"' was deactivated on '",agent.name(),"'");
-
-		for(auto alert : alerts) {
-			alert->deactivate();
+	void Abstract::State::deactivate() noexcept {
+		for(auto listener : listeners) {
+			listener->deactivate();
 		}
-
 	}
 
 	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {

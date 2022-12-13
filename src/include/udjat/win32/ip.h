@@ -33,11 +33,13 @@
 
 		/// @brief Navigate on the addresses associated with the adapters on the local computer.
 		/// @param func Will be called on every adapter until it returns 'true'.
-		UDJAT_API void for_each(const std::function<bool(const IP_ADAPTER_ADDRESSES &address)> &func);
+		/// @return true if 'func' has returned true.
+		UDJAT_API bool for_each(const std::function<bool(const IP_ADAPTER_ADDRESSES &address)> &func);
 
 		/// @brief Navigate on the local computer adapters.
 		/// @param func Will be called on every adapter until it returns 'true'.
-		UDJAT_API void for_each(const std::function<bool(const IP_ADAPTER_INFO &info)> &func);
+		/// @return true if 'func' has returned true.
+		UDJAT_API bool for_each(const std::function<bool(const IP_ADAPTER_INFO &info)> &func);
 
 	}
 

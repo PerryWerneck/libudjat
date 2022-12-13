@@ -38,6 +38,8 @@
 
 			constexpr TimeStamp(time_t t = time(nullptr)) : value(t) { }
 
+			explicit TimeStamp(const char *time, const char *format = nullptr);
+
 			std::string to_string(const char *format = "%x %X") const noexcept;
 
 			/// @brief Format as json date/time
@@ -62,6 +64,8 @@
 				value = time(nullptr) + seconds;
 				return *this;
 			}
+
+			static time_t parse(const char *time, const char *format);
 
 			TimeStamp & set(const char *time, const char *format = nullptr);
 

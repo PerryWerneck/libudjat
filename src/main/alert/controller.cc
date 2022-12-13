@@ -55,6 +55,16 @@
 	Alert::Controller::~Controller() {
 	}
 
+	bool Alert::Controller::active(const Abstract::Alert *alert) {
+		lock_guard<mutex> lock(guard);
+		for(auto activation : activations) {
+			if(activation->id == alert) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void Alert::Controller::remove(const Abstract::Alert *alert) {
 
 		lock_guard<mutex> lock(guard);
@@ -68,12 +78,10 @@
 
 		if(!activation->options.asyncronous) {
 			// It's a syncronous alert, just emit it.
-#ifdef DEBUG
-			activation->info() << "Running alert in foreground" << endl;
-#endif // DEBUG
+			debug("Running alert '",activation->name,"' in foreground");
 			activation->run();
 			return;
-		} else if(!active()) {
+		} else if(!isActive()) {
 
 			// disabled, run syncronous.
 			activation->warning() << "WARNING: The alert controller is disabled, cant retry a failed alert" << endl;
@@ -92,9 +100,7 @@
 		// Have mainloop
 		{
 			lock_guard<mutex> lock(guard);
-#ifdef DEBUG
-			activation->info() << "Running alert in background" << endl;
-#endif // DEBUG
+			debug("Running alert '",activation->name,"' in background");
 			activations.push_back(activation);
 		}
 

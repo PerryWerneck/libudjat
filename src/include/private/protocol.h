@@ -40,6 +40,9 @@
 		list<Protocol *> protocols;
 		list<Protocol::Worker *> workers;
 
+		/// @brief The default protocol.
+		Protocol * def = nullptr;
+
 		Controller();
 
 		/// @brief Internal protocol for file://
@@ -65,6 +68,7 @@
 		};
 
 	public:
+
 		static Controller & getInstance();
 		~Controller();
 
@@ -74,10 +78,14 @@
 		void insert(Protocol::Worker *worker);
 		void remove(Protocol::Worker *worker);
 
-		const Protocol * find(const char *name);
+		const Protocol * find(const char *name, bool allow_default);
 		const Protocol * verify(const void *protocol);
 
 		void getInfo(Response &response) noexcept;
+
+		inline void setDefault(Protocol *protocol) noexcept {
+			def = protocol;
+		}
 
 	};
 

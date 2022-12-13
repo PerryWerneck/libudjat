@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/threadpool.h>
  #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -50,6 +51,58 @@
 		throw system_error(EINVAL,system_category(),"Cant get pointer to an invalid agent");
 	}
 
+	size_t Abstract::Agent::push(const std::function<void(std::shared_ptr<Agent> agent)> &method) {
+
+		if(!parent) {
+
+			auto agent = root();
+
+			if(agent.get() == this) {
+
+				// Root agent, no parent.
+
+				return ThreadPool::getInstance().push(name(),[agent,method]() {
+
+					try {
+
+						method(agent);
+
+					} catch(const std::exception &e) {
+
+						agent->failed("Background task failed",e);
+
+					} catch(...) {
+
+						agent->failed("Unexpected background task fail","A generic background task has failed in this agent");
+					}
+
+				});
+			}
+
+
+			throw system_error(EINVAL,system_category(),string{"Unable to push background tasks to orphaned agent '"} + name() + "'.");
+		}
+
+		auto agent = to_shared_ptr();
+		return ThreadPool::getInstance().push(name(),[agent,method]() {
+
+			try {
+
+				method(agent);
+
+			} catch(const std::exception &e) {
+
+				agent->failed("Background task failed",e);
+
+			} catch(...) {
+
+				agent->failed("Unexpected background task fail","A generic background task has failed in this agent");
+			}
+
+		});
+
+	}
+
 	void Abstract::Agent::get(Report UDJAT_UNUSED(&report)) {
 		error() << "Rejecting 'report' request - Not available in this agent" << endl;
 		throw system_error(ENOENT,system_category(),_("No reports on this path") );
@@ -78,8 +131,23 @@
 
 			// Get agent state.
 			auto &state = value["state"];
-			this->current_state.active->getProperties(state);
-			state["activation"] = TimeStamp(this->current_state.activation);
+			this->current_state.selected->getProperties(state);
+			state["activation"] = TimeStamp(this->current_state.timestamp);
+
+			switch(current_state.activation) {
+			case current_state.Activation::StateWasSet:
+				state["mode"] = "set";
+				break;
+
+			case this->current_state.Activation::StateWasActivated:
+				state["mode"] = "activated";
+				break;
+
+			case this->current_state.Activation::StateWasForwarded:
+				state["mode"] = "forwarded";
+				break;
+
+			}
 
 		} catch(const std::exception &e) {
 
@@ -123,7 +191,7 @@
 			return str;
 		}
 
-		return current_state.active->summary();
+		return current_state.selected->summary();
 
 	}
 
@@ -134,7 +202,7 @@
 			return str;
 		}
 
-		return current_state.active->label();
+		return current_state.selected->label();
 
 	}
 
@@ -145,7 +213,7 @@
 			return str;
 		}
 
-		return current_state.active->icon();
+		return current_state.selected->icon();
 
 	}
 

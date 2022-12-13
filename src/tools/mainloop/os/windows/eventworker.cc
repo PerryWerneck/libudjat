@@ -20,6 +20,7 @@
  #include <config.h>
  #include "private.h"
  #include <udjat/win32/exception.h>
+ #include <iostream>
 
  using namespace std;
 

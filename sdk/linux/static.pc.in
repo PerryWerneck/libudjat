@@ -3,9 +3,9 @@ exec_prefix=${prefix}
 libdir=${exec_prefix}/lib64
 includedir=${prefix}/include
 
-product_name=udjat
-product_title=The Eye of Horus
-module_path=${libdir}/@PRODUCT_NAME@-modules/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/
+product_name=@PRODUCT_NAME@
+product_title=@PRODUCT_TITLE@
+module_path=${libdir}/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules/
 
 Name: udjat
 Description: The Eye of Horus

@@ -22,7 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/factory.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/object.h>
+ #include <udjat/tools/activatable.h>
  #include <udjat/tools/string.h>
  #include <udjat/alert.h>
  #include <udjat/agent/level.h>
@@ -33,15 +33,15 @@
 	namespace Abstract {
 
 		/// @brief Abstract alert.
-		class UDJAT_API Alert : public NamedObject {
+		class UDJAT_API Alert : public Activatable {
 		private:
 
 			friend class Udjat::Alert::Activation;
 
 			/// @brief Alert options.
 			struct {
-				bool verbose = false;
-				bool asyncronous = true;
+				bool verbose = false;			///< @brief Action verbosity.
+				bool asyncronous = true;		///< @brief Action syncronicity.
 			} options;
 
 			/// @brief Alert limits.
@@ -59,13 +59,20 @@
 
 			/// @brief Restart timers.
 			struct {
-				unsigned int failed = 14400;	///< @brief Seconds to wait for reactivate after a failed activation.
+				unsigned int failed = 0;		///< @brief Seconds to wait for reactivate after a failed activation.
 				unsigned int success = 0;		///< @brief Seconds to wait for reactivate after a successful activation.
 			} restart;
 
+		protected:
+
+			/// @brief Get alert payload.
+			/// @param XML node to scan for payload.
+			/// @return Payload as Quark;
+			const char * getPayload(const pugi::xml_node &node);
+
 		public:
 
-			constexpr Alert(const char *name) : NamedObject(name) {
+			constexpr Alert(const char *name) : Activatable(name) {
 			}
 
 			/// @brief Create alert for xml description.
@@ -84,8 +91,14 @@
 				return options.asyncronous;
 			}
 
-			/// @brief Deactivate an alert.
-			void deactivate();
+			/// @brief Is the alert activated?
+			bool activated() const noexcept override;
+
+			/// @brief Activate alert.
+			void activate(const Abstract::Object &object) override;
+
+			/// @brief Deactivate alert.
+			void deactivate() override;
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const noexcept override;

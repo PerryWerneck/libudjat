@@ -51,6 +51,10 @@
 		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
+	HTTP::Method HTTP::MethodFactory(const pugi::xml_node &node, const char *def) {
+		return MethodFactory(node.attribute("http-method").as_string(def));
+	}
+
 	Protocol::Protocol(const char *n, const ModuleInfo &i) : name(n), module(i) {
 		Controller::getInstance().insert(this);
 	}
@@ -63,6 +67,10 @@
 #ifdef DEBUG
 				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
 #endif // DEBUG
+	}
+
+	void Protocol::setDefault() noexcept {
+		Controller::getInstance().setDefault(this);
 	}
 
 	std::ostream & Protocol::info() const {
@@ -81,7 +89,7 @@
 		return Logger::trace() << name << "\t";
 	}
 
-	const Protocol * Protocol::find(const URL &url) {
+	const Protocol * Protocol::find(const URL &url, bool allow_default) {
 		string scheme = url.scheme();
 
 		const char *ptr = strrchr(scheme.c_str(),'+');
@@ -89,12 +97,12 @@
 			scheme.resize(ptr - scheme.c_str());
 		}
 
-		return find(scheme.c_str());
+		return find(scheme.c_str(),allow_default);
 
 	}
 
-	const Protocol * Protocol::find(const char *name) {
-		return Controller::getInstance().find(name);
+	const Protocol * Protocol::find(const char *name, bool allow_default) {
+		return Controller::getInstance().find(name,allow_default);
 	}
 
 	const Protocol * Protocol::verify(const void *protocol) {

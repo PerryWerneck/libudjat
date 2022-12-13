@@ -29,7 +29,9 @@
 
  namespace Udjat {
 
-	UDJAT_API void Win32::for_each(const std::function<bool(const IP_ADAPTER_ADDRESSES &address)> &func) {
+	UDJAT_API bool Win32::for_each(const std::function<bool(const IP_ADAPTER_ADDRESSES &address)> &func) {
+
+		bool found = false;
 
 		ULONG ifbuffersize = sizeof(IP_ADAPTER_ADDRESSES)*2;
 
@@ -53,6 +55,7 @@
 
 			for(PIP_ADAPTER_ADDRESSES address = addresses;address;address = address->Next) {
 				if(func(*address)) {
+					found = true;
 					break;
 				}
 			}
@@ -64,13 +67,15 @@
 
 		}
 
-
 		free(addresses);
+		return found;
+
 	}
 
 
-	UDJAT_API void Win32::for_each(const std::function<bool(const IP_ADAPTER_INFO &info)> &func) {
+	UDJAT_API bool Win32::for_each(const std::function<bool(const IP_ADAPTER_INFO &info)> &func) {
 
+		bool found = false;
 		ULONG ifbuffersize = sizeof(IP_ADAPTER_INFO)*2;
 
 		PIP_ADAPTER_INFO infos = (PIP_ADAPTER_INFO) malloc(ifbuffersize+10);
@@ -93,6 +98,7 @@
 
 			for(PIP_ADAPTER_INFO info = infos;info;info = info->Next) {
 				if(func(*info)) {
+					found = true;
 					break;
 				}
 			}
@@ -105,6 +111,8 @@
 		}
 
 		free(infos);
+
+		return found;
 
 	}
 

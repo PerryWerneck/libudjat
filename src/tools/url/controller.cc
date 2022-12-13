@@ -56,18 +56,19 @@
 	}
 
 	void Protocol::Controller::remove(Protocol *protocol) {
-#ifdef DEBUG
-		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
+
 		lock_guard<mutex> lock(guard);
+
 		Logger::trace() << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+
+		if(def == protocol) {
+			def = nullptr;
+		}
+
 		protocols.remove(protocol);
-#ifdef DEBUG
-		cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
 	}
 
-	const Protocol * Protocol::Controller::find(const char *name) {
+	const Protocol * Protocol::Controller::find(const char *name, bool allow_default) {
 
 		{
 			/// @brief Singleton for file protocol.
@@ -84,6 +85,10 @@
 			if(*protocol == name) {
 				return protocol;
 			}
+		}
+
+		if(allow_default) {
+			return def;
 		}
 
 		return nullptr;

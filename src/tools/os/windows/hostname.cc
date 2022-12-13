@@ -17,23 +17,46 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- *
- * @brief Implements the agent alert factory method
- *
- * @author perry.werneck@gmail.com
- *
- */
-
  #include <config.h>
- #include <private/agent.h>
+ #include <unistd.h>
  #include <cstring>
+ #include <udjat/defs.h>
+ #include <udjat/tools/network.h>
+ #include <iostream>
 
-namespace Udjat {
+ using namespace std;
 
-	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
-		return Udjat::AlertFactory(*this,node);
+ namespace Udjat {
+
+	static std::string hostname() noexcept {
+
+		char buffer[255];
+		DWORD bufCharCount = sizeof(buffer) -1;
+
+		if(GetComputerName(buffer,&bufCharCount)) {
+			buffer[bufCharCount] = 0;
+			char *ptr = strchr(buffer,'.');
+			if(ptr) {
+				*ptr = 0;
+			}
+			return buffer;
+		}
+
+		if(gethostname(buffer,sizeof(buffer)) == 0) {
+			char *ptr = strchr(buffer,'.');
+			if(ptr) {
+				*ptr = 0;
+			}
+			return buffer;
+		}
+
+		cerr << "Unable to get system hostname" << endl;
+
+		return "";
+
 	}
 
+	Hostname::Hostname() : std::string{hostname()} {
+	}
 
-}
+ }

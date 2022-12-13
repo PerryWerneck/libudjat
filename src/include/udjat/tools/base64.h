@@ -36,12 +36,17 @@
 
 #include <udjat/defs.h>
 #include <string>
+#include <cstring>
 
 namespace Udjat {
 
 	namespace Base64 {
 
 		std::string UDJAT_API encode(const unsigned char * bytes_to_encode, size_t in_len) noexcept;
+
+		inline std::string encode(const char *str) noexcept {
+			return encode((const unsigned char *) str,strlen(str));
+		}
 
 		inline std::string encode(const std::string &str) noexcept {
 			return encode((const unsigned char *) str.c_str(),str.size());

@@ -66,7 +66,7 @@ namespace Udjat {
 
 		// Not found.
 		if(node.attribute("required").as_bool(true)) {
-			throw runtime_error("Cant load required module");
+			throw runtime_error(string{"Cant load required module '"} + node.attribute(attributes[0]).as_string() + "'");
 		}
 
 		return false;

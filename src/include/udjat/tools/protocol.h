@@ -44,6 +44,11 @@
 		/// @brief Module information.
 		const ModuleInfo &module;
 
+	protected:
+
+		/// @brief Set current protocol as the default one.
+		void setDefault() noexcept;
+
 	public:
 
 		/// @brief Request header.
@@ -149,6 +154,10 @@
 			/// @brief Set remote addr.
 			void set_remote(const sockaddr_storage &addr) noexcept;
 
+			/// @brief Expand payload.
+			/// @return String with expanded payload.
+			const char * get_payload() noexcept;
+
 		public:
 
 			Worker(const char *url = "", const HTTP::Method method = HTTP::Get, const char *payload = "");
@@ -157,10 +166,6 @@
 
 			/// @brief Set request credentials.
 			virtual Worker & credentials(const char *user, const char *passwd);
-
-			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
-			/// @return 200 if the file is accessible.
-			virtual unsigned short test();
 
 			/// @brief Set request payload.
 			inline Worker & payload(const char *payload) noexcept {
@@ -232,6 +237,24 @@
 			/// @return String with the URL contents.
 			virtual String get(const std::function<bool(double current, double total)> &progress) = 0;
 
+			/// @brief Test URL access (do a 'method' request with 'payload').
+			/// @return URL return code.
+			/// @retval 200 Got response.
+			/// @retval 401 Acess denied.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid method.
+			/// @retval ENOTSUP No support for test in protocol handler.
+			virtual int test(const std::function<bool(double current, double total)> &progress) noexcept;
+
+			/// @brief Test URL access (do a 'method' request with 'payload').
+			/// @return URL return code.
+			/// @retval 200 Got response.
+			/// @retval 401 Acess denied.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid method.
+			/// @retval ENOTSUP No support for test in protocol handler.
+			int test() noexcept;
+
 			/// @brief Call URL, save response as filename.
 			/// @param filename	The file name to save.
 			/// @param progress The download progress notifier.
@@ -297,8 +320,17 @@
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
-		static const Protocol * find(const URL &url);
-		static const Protocol * find(const char *name);
+		/// @brief Find protocol based on URL.
+		/// @param url The url to search for.
+		/// @param allow_default If true returns the default protocol when not found
+		/// @return Pointer to selected protocol or nullptr.
+		static const Protocol * find(const URL &url, bool allow_default = true);
+
+		/// @brief Find protocol based on protocol name.
+		/// @param url The url to search for.
+		/// @param allow_default If true returns the default protocol when not found.
+		/// @return Pointer to selected protocol or nullptr.
+		static const Protocol * find(const char *name, bool allow_default = true);
 
 		/// @brief Verify protocol pointer.
 		/// @param protocol Pointer to protocol to confirm.

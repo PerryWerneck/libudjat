@@ -55,6 +55,21 @@
 	Alert::Activation::~Activation() {
 	}
 
+	void Alert::Activation::deactivate() noexcept {
+		if(verbose()) {
+			info() << "Alert was deactivated" << endl;
+		}
+#ifdef DEBUG
+		else {
+			debug("Deactivating alert '",name,"'");
+		}
+#endif // DEBUG
+		timers.next = 0;
+		timers.interval = 0;
+		timers.failed = 0;
+		timers.success = 0;
+	}
+
 	std::ostream & Alert::Activation::info() const {
 		return cout << name << "\t";
 	}
@@ -92,14 +107,13 @@
 	}
 
 	void Alert::Activation::emit() {
+		deactivate();
 		throw runtime_error("Cant emit an abstract activation");
 	}
 
 	Value & Alert::Activation::getProperties(Value &value) const noexcept {
 
 		value["name"] = name;
-		value["level"] = std::to_string(options.level);
-		value["description"] = description;
 		value["next"] = TimeStamp(timers.next);
 		value["last"] = TimeStamp(timers.last);
 		value["failed"] = count.failed;
@@ -113,18 +127,25 @@
 	bool Alert::Activation::run() noexcept {
 
 		bool succeeded = false;
+		timers.last = time(0);
+		timers.next = timers.last + timers.interval;
+
 		try {
-			timers.last = time(0);
 			emit();
 			count.success++;
 			succeeded = true;
-			timers.next = time(0) + timers.interval;
 		} catch(const exception &e) {
-			error() << "Alert emmission failed with '" << e.what() << "'" << endl;
 			count.failed++;
+			error()
+				<< "Alert emmission failed with '" << e.what()
+				<< "' (" << (count.success + count.failed) << "/" << retry.max << ")"
+				<< endl;
 		} catch(...) {
-			error() << "Unexpected error emitting alert" << endl;
 			count.failed++;
+			error()
+				<< "Unexpected error emitting alert"
+				<< " (" << (count.success + count.failed) << "/" << retry.max << ")"
+				<< endl;
 		}
 
 
@@ -143,10 +164,7 @@
 				info() << "Next emission set to " << TimeStamp(timers.next) << endl;
 			}
 		} else {
-			timers.next = 0;
-			if(verbose()) {
-				info() << "No interval, deactivating alert" << endl;
-			}
+			deactivate();
 		}
 
 		return succeeded;
@@ -158,21 +176,17 @@
 		time_t rst = (count.success ? timers.success : timers.failed);
 
 		if(rst) {
+			debug("msg=",msg," [SLEEPING]");
 			state.restarting = true;
 			timers.next = time(0) + rst;
 			if(options.verbose) {
-				LogFactory(count.failed ? Udjat::error : Udjat::ready)
-					<< name << "\t" << msg << ", sleeping until " << TimeStamp(timers.next)
-					<< endl;
+				Logger::String{
+					msg,", sleeping until ",TimeStamp(timers.next).to_string().c_str()
+				}.write(Logger::Trace,name.c_str());
 			}
-		}
-		else {
-			timers.next = 0;
-			if(options.verbose) {
-				LogFactory(count.failed ? Udjat::error : Udjat::ready)
-					<< name << "\t" << msg << ", stopping"
-					<< endl;
-			}
+		} else {
+			debug("msg=",msg," [DEACTIVATE]");
+			deactivate();
 		}
 
 	}

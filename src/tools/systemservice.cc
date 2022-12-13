@@ -26,6 +26,8 @@
  #include <iostream>
  #include <private/misc.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/activatable.h>
+ #include <udjat/tools/string.h>
 
  #ifdef _WIN32
 	#include <direct.h>
@@ -47,7 +49,7 @@
 
 	SystemService * SystemService::instance = nullptr;
 
-	SystemService::SystemService(const char *d) : Abstract::Agent::EventListener((Event) (Event::STARTED|Event::STATE_CHANGED)), definitions(d) {
+	SystemService::SystemService(const char *d) : definitions{d} {
 
 		debug("Creating system service");
 
@@ -62,19 +64,31 @@
 		}
 #endif // _WIN32
 
+		// Setup logger
+		for(int level = ((int) Logger::Info); level <= ((int) Logger::Trace); level++) {
+			Logger::enable(
+				(Logger::Level) level,
+				Config::Value<bool>("log",std::to_string((Logger::Level) level),Logger::enabled((Logger::Level) level))
+			);
+		}
+
 		if(!definitions) {
 
 			// No definitions, try to detect.
 			std::string options[] = {
+#ifndef _WIN32
+				string{ string{"/etc/"} + Application::name() + ".xml.d" },
+#endif // _WIN32
 				Application::DataFile{ (Application::name() + ".xml").c_str() },
 				Application::DataFile{"xml.d"},
 			};
 
 			for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
+
 				debug("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
 
 				if(access(options[ix].c_str(), R_OK) == 0) {
-					info() << "Detected service configuration file in '" << options[ix] << "'" << endl;
+					debug("Detected service configuration in '",options[ix],"'");
 					definitions = Quark(options[ix]).c_str();
 					break;
 				}
@@ -166,8 +180,47 @@
 
 		{
 			auto root = Abstract::Agent::root();
+
 			if(root) {
-				root->push_back(this);
+
+				class Listener : public Activatable {
+				public:
+					constexpr Listener() : Activatable("syssrvc") {
+					}
+
+					bool activated() const noexcept override {
+						return false;
+					}
+
+					void activate(const Abstract::Object &object) override {
+
+						auto service = SystemService::getInstance();
+						if(!instance) {
+							return;
+						}
+
+						const Abstract::Agent *agent = dynamic_cast<const Abstract::Agent *>(&object);
+						if(agent) {
+
+							auto state = agent->state();
+
+							if(state->ready()) {
+								service->notify( _( "System is ready" ));
+							} else {
+								String message{state->summary()};
+								if(message.strip().empty()) {
+									service->notify( _( "System is not ready" ) );
+								} else {
+									service->notify(message.c_str());
+								}
+							}
+
+						}
+					}
+
+				};
+
+				root->push_back( (Event) (Event::STARTED|Event::STATE_CHANGED), std::make_shared<Listener>() );
 			}
 		}
 
@@ -306,6 +359,7 @@
 		}
 	}
 
+	/*
 	void SystemService::trigger(Event event, Abstract::Agent &agent) {
 
 		auto state = agent.state();
@@ -321,6 +375,7 @@
 		}
 
 	}
+	*/
 
 
  }

@@ -22,6 +22,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <iostream>
  #include <fcntl.h>
 
  namespace Udjat {
@@ -71,8 +72,8 @@
 			}
 
 			module->handle = handle;
-			if(module->info.gettext_package && *module->info.gettext_package) {
-				Application::set_gettext_package(module->info.gettext_package);
+			if(module->gettext_package() && *module->gettext_package()) {
+				Application::set_gettext_package(module->gettext_package());
 			}
 
 		} else {
@@ -99,8 +100,8 @@
 		}
 
 		module->handle = handle;
-		if(module->info.gettext_package && *module->info.gettext_package) {
-			Application::set_gettext_package(module->info.gettext_package);
+		if(module->gettext_package() && *module->gettext_package()) {
+			Application::set_gettext_package(module->gettext_package());
 		}
 
 		return module;

@@ -21,6 +21,7 @@
  #include <private/alert.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/alert/activation.h>
 
  namespace Udjat {
 
@@ -30,8 +31,8 @@
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
 		// options.
-		options.verbose = getAttribute(node,section,"verbose",options.verbose);
-		options.verbose = getAttribute(node,section,"asyncronous",options.asyncronous);
+		options.verbose = getAttribute(node,section,"verbose",Logger::enabled(Logger::Trace));
+		options.asyncronous = getAttribute(node,section,"asyncronous",options.asyncronous);
 
 		// Seconds to wait before first activation.
 		timers.start = getAttribute(node,section,"delay-before-start",timers.start);
@@ -63,6 +64,16 @@
 		throw runtime_error("Cant activate an abstract alert");
 	}
 
+	bool Abstract::Alert::activated() const noexcept {
+		return Udjat::Alert::Controller::getInstance().active(this);
+	}
+
+	void Abstract::Alert::activate(const Abstract::Object &object) {
+		auto activation = ActivationFactory();
+		activation->set(object);
+		Udjat::start(activation);
+	}
+
 	void Abstract::Alert::deactivate() {
 		Udjat::Alert::Controller::getInstance().remove(this);
 	}
@@ -80,6 +91,31 @@
 		value["delay"] = restart.success;
 
 		return value;
+	}
+
+	const char * Abstract::Alert::getPayload(const pugi::xml_node &node) {
+
+		String child(node.child_value());
+
+		if(child.empty()) {
+
+			auto payload = node.attribute("payload");
+			if(!payload) {
+				payload = getAttribute(node,"alert-payload",false);
+			}
+
+			if(payload) {
+				child = payload.as_string();
+			}
+
+		}
+
+		if(getAttribute(node,"strip-payload",true).as_bool(true)) {
+			child.strip();
+		}
+
+		return Quark(child.expand(node,"alert-defaults")).c_str();
+
 	}
 
  }

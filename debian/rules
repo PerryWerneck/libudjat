@@ -24,7 +24,7 @@ build-stamp:
 
 	# Add here commands to compile the package.
 	NOCONFIGURE=1 ./autogen.sh 
-	./configure --prefix=/usr --disable-static
+	./configure --prefix=/usr
 	make all
 	# --- end custom part for compiling
 
@@ -67,7 +67,7 @@ binary-arch: build install
 	dh_testdir
 	dh_testroot
 #	dh_installdebconf
-	dh_installdocs AUTHORS LICENSE README.md
+	dh_installdocs LICENSE README.md
 	dh_installexamples
 	dh_installmenu
 #	dh_installlogrotate

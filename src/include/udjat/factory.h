@@ -89,6 +89,10 @@
 		/// @param node XML definition for the new alert.
 		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
 
+		/// @brief Create an activatable from XML node.
+		/// @param node XML definition for the new alert.
+		virtual std::shared_ptr<Activatable> ActivatableFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+
 		/// @brief Parse a XML node.
 		/// @param XML definition for the new element.
 		/// @return true if the node was inserted.

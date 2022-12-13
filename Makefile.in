@@ -13,6 +13,7 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
 	$(wildcard src/main/*.cc) \
 	$(wildcard src/main/agent/*.cc) \
+	$(wildcard src/main/agent/setup/*.cc) \
 	$(wildcard src/main/load/*.cc) \
 	$(wildcard src/main/state/*.cc) \
 	$(wildcard src/main/request/*.cc) \
@@ -270,10 +271,13 @@ install-linux-lib: \
 		$(DESTDIR)$(libdir)
 
 	@$(MKDIR) \
-		$(DESTDIR)$(libdir)/@PRODUCT_NAME@-modules
+		$(DESTDIR)$(libdir)/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules
 
 	@$(MKDIR) \
-		$(DESTDIR)$(libdir)/@PRODUCT_NAME@-modules/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
+		$(DESTDIR)$(libdir)/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/lib
+
+	@$(MKDIR) \
+		$(DESTDIR)/var/log/@PRODUCT_NAME@
 
 	@$(INSTALL_PROGRAM) \
 		$(BINRLS)/@SONAME@ \
@@ -345,6 +349,13 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/net
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/net
+
+	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/agent
 
 	@$(INSTALL_DATA) \
@@ -374,13 +385,19 @@ install-devel-linux: \
 	$(BINRLS)/$(PACKAGE_NAME).a
 
 	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/linux
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/linux/*.h \
+		$(DESTDIR)$(includedir)/udjat/linux
+
+	@$(MKDIR) \
 		$(DESTDIR)$(libdir)
 
 	@$(INSTALL_DATA) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
 		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.static.a
 		
-
 install-devel-windows:
 
 	@$(MKDIR) \
@@ -511,7 +528,7 @@ clean: \
 	cleanRelease
 
 
--include $(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).d)
--include $(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).d)
+-include $(foreach SRC, $(basename $(MAIN_SOURCES) $(TEST_SOURCES)), $(OBJDBG)/$(SRC).d)
+-include $(foreach SRC, $(basename $(MAIN_SOURCES) $(TEST_SOURCES)), $(OBJRLS)/$(SRC).d)
 
 

@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/ip.h>
+ #include <udjat/linux/network.h>
  #include <sys/socket.h>
  #include <netdb.h>
  #include <stdexcept>
@@ -30,19 +31,14 @@
 
  namespace std {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns) {
+ 	UDJAT_API string to_string(const sockaddr_in &addr, bool dns) {
 
-		if(addr.ss_family == AF_PACKET) {
-			// TODO: How to get ipaddr on AF_PACKET?
-			return "";
-		}
-
-		char host[NI_MAXHOST];
+ 		char host[NI_MAXHOST];
 		memset(host,0,sizeof(host));
 
 		int rc = getnameinfo(
 					(sockaddr *) &addr,
-					(addr.ss_family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6)),
+					sizeof(struct sockaddr_in),
 					host, NI_MAXHOST,
 					NULL, 0,
 					(dns ? 0 : NI_NUMERICHOST)
@@ -54,38 +50,29 @@
 
 		return string{host};
 
-		/*
-		char ipaddr[256];
-		memset(ipaddr,0,sizeof(ipaddr));
+ 	}
 
-		switch(addr.ss_family) {
-		case AF_INET:
-			inet_ntop(
-				((const struct sockaddr_in *) &addr)->sin_family,
-				&((const struct sockaddr_in *) &addr)->sin_addr,
-				ipaddr,
-				sizeof(ipaddr)
-			);
-			break;
+ 	UDJAT_API string to_string(const sockaddr_in6 &addr, bool dns) {
 
-		case AF_INET6:
-			inet_ntop(
-				((const struct sockaddr_in6 *) &addr)->sin6_family,
-				&((const struct sockaddr_in6 *) &addr)->sin6_addr,
-				ipaddr,
-				sizeof(ipaddr)
-			);
-			break;
+ 		char host[NI_MAXHOST];
+		memset(host,0,sizeof(host));
 
-		default:
-			throw runtime_error("Unexpected IPADDR family");
+		int rc = getnameinfo(
+					(sockaddr *) &addr,
+					sizeof(struct sockaddr_in6),
+					host, NI_MAXHOST,
+					NULL, 0,
+					(dns ? 0 : NI_NUMERICHOST)
+				);
 
+		if(rc != 0) {
+			throw runtime_error(gai_strerror(rc));
 		}
-		return string{ipaddr};
-		*/
 
+		return string{host};
 
-	}
+ 	}
+
 
  }
 

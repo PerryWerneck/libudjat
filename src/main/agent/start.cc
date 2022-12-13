@@ -25,7 +25,7 @@
 
 	void Abstract::Agent::start() {
 
-		debug("Starting agent '",name(),"' with value ",to_string().c_str());
+		debug("Starting agent '",name(),"' with value '",to_string().c_str(),"'");
 
 		// Start children
 		{
@@ -34,8 +34,8 @@
 
 				try {
 
-					if(!child->current_state.active) {
-						child->current_state.active = Abstract::Agent::computeState();
+					if(!child->current_state.selected) {
+						child->current_state.set(Abstract::Agent::computeState());
 					}
 
 					child->start();
@@ -52,47 +52,64 @@
 
 		// Update agent state.
 		{
-			this->current_state.active = computeState();
-			if(!this->current_state.active) {
+			auto first_state = computeState();
+
+			if(!first_state) {
 				warning() << "Got an invalid state, switching to the default one" << endl;
-				this->current_state.active = Abstract::Agent::computeState();
+				first_state = Abstract::Agent::computeState();
 			}
 
-			// Check for children state
-			{
+			if(first_state->forward()) {
+
+				// Forwart state to children
+				debug("Forwarding first state from '",name(),"' to children");
+
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children.agents) {
-					if(child->level() > this->level()) {
-						this->current_state.active = child->current_state.active;
+					child->forward(first_state);
+				}
+
+			} else {
+
+				// Check for children state
+				debug("Checking children first state")
+
+				lock_guard<std::recursive_mutex> lock(guard);
+				for(auto child : children.agents) {
+					if(child->level() > first_state->level()) {
+						first_state = child->current_state.selected;
 					}
 				}
+
 			}
 
-			this->current_state.activation = time(0);
+			current_state.set(first_state);
 
-			const char * name = this->current_state.active->name();
-			auto level = this->level();
-			if(name && *name && level != Udjat::unimportant) {
+			{
 
 				string value = to_string();
 
 				if(value.empty()) {
 
-					info()	<< "Starts with state '"
-							<< this->current_state.active->name()
+					LogFactory(this->level())
+							<< this->name()
+							<< "\tStarts with state '"
+							<< this->current_state.selected->summary()
 							<< "' and level '"
-							<< level
+							<< this->level()
 							<< "'"
 							<< endl;
 
 				} else {
 
-					info()	<< "Starts with value '"
+					LogFactory(this->level())
+							<< this->name()
+							<< "\tStarts with value '"
 							<< value
 							<< "', state '"
-							<< this->current_state.active->name()
+							<< this->current_state.selected->summary()
 							<< "' and level '"
-							<< level
+							<< this->level()
 							<< "'"
 							<< endl;
 

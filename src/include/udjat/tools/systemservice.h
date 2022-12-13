@@ -30,7 +30,7 @@
  namespace Udjat {
 
 	/// @brief Abstract class for system services.
-	class UDJAT_API SystemService : public Udjat::Application, private Abstract::Agent::EventListener {
+	class UDJAT_API SystemService : public Udjat::Application {
 	private:
 		/// @brief Service instance.
 		static SystemService *instance;
@@ -46,8 +46,6 @@
 
 		/// @brief Set service state message from the root agent.
 		void notify() noexcept;
-
-		void trigger(const Abstract::Agent::Event event, Abstract::Agent &agent) override;
 
 #ifdef _WIN32
 		void registry(const char *name, const char *value);

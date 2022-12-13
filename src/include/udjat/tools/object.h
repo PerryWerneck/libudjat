@@ -197,6 +197,10 @@
 
 		Value & getProperties(Value &value) const noexcept override;
 
+		std::ostream & info() const;
+		std::ostream & warning() const;
+		std::ostream & error() const;
+
 	};
 
 	/// @brief An object with common properties.

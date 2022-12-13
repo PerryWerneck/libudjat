@@ -72,11 +72,14 @@ Recommends: udjat-module-httpd
 # The information module helps too.
 Recommends: udjat-module-information
 
+# Branding for test pages
+Recommends: udjat-branding
+
 %description -n udjat-devel
 
 Development files for Udjat main library.
 
-%lang_package
+%lang_package -n %{name}%{_libvrs}
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
@@ -99,13 +102,16 @@ make all
 %defattr(-,root,root)
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
-%dir %{_libdir}/udjat-modules
-%dir %{_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
+%dir %{_libdir}/udjat
+%dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
+%dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
+%dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
+%dir /var/log/udjat
 
 %dir %{_sysconfdir}/udjat.conf.d
 %config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
 
-%files lang -f langfiles
+%files -n %{name}%{_libvrs}-lang -f langfiles
 
 %files -n udjat-devel
 %defattr(-,root,root)
@@ -128,6 +134,12 @@ make all
 
 %dir %{_includedir}/udjat/agent
 %{_includedir}/udjat/agent/*.h
+
+%dir %{_includedir}/udjat/linux
+%{_includedir}/udjat/linux/*.h
+
+%dir %{_includedir}/udjat/tools/net
+%{_includedir}/udjat/tools/net/*.h
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 

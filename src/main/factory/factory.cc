@@ -21,7 +21,9 @@
  #include <udjat/defs.h>
  #include <private/factory.h>
  #include <udjat/agent.h>
+ #include <udjat/alert/abstract.h>
  #include <udjat/moduleinfo.h>
+ #include <iostream>
 
  using namespace std;
 
@@ -65,6 +67,10 @@
 
 	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
+	}
+
+	std::shared_ptr<Activatable> Factory::ActivatableFactory(const Abstract::Object &parent, const pugi::xml_node UDJAT_UNUSED(&node)) const {
+		return AlertFactory(parent,node);
 	}
 
 	bool Factory::push_back(Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) {

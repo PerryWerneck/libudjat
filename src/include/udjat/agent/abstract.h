@@ -24,6 +24,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
+ #include <udjat/tools/activatable.h>
  #include <mutex>
  #include <list>
 
@@ -35,28 +36,20 @@
 		public:
 
 			enum Event : uint16_t {
-				STARTED			= 0x0001,		///< @brief Agent was started.
-				STOPPED			= 0x0002,		///< @brief Agent was stopped.
-				VALUE_CHANGED	= 0x0004,		///< @brief Agent value has changed.
-				STATE_CHANGED	= 0x0008,		///< @brief Agent state has changed.
-				LEVEL_CHANGED	= 0x0010,		///< @brief Agent level has changed.
+				STARTED				= 0x0001,		///< @brief Agent was started.
+				STOPPED				= 0x0002,		///< @brief Agent was stopped.
+				STATE_CHANGED		= 0x0004,		///< @brief Agent state has changed.
+				UPDATE_TIMER		= 0x0008,		///< @brief Agent update starts.
 
-				ALL 			= 0x001F		///< @brief All events.
-			};
+				VALUE_CHANGED		= 0x0010,		///< @brief Agent value has changed.
+				VALUE_NOT_CHANGED	= 0x0020,		///< @brief Agent value has not changed.
+				UPDATED				= 0x0030,		///< @brief Agent was updated.
 
-			class UDJAT_API EventListener {
-			private:
-				friend class Abstract::Agent;
+				READY				= 0x0040,		///< @brief Agent is ready.
+				NOT_READY			= 0x0080,		///< @brief Agent is not ready.
+				LEVEL_CHANGED		= 0x0100,		///< @brief Agent level has changed.
 
-			protected:
-				Event event;
-
-			public:
-				constexpr EventListener(const Event e) : event(e) {
-				}
-
-				virtual void trigger(const Event e, Abstract::Agent &agent) = 0;
-
+				ALL 				= 0x011F		///< @brief All events.
 			};
 
 		private:
@@ -79,12 +72,40 @@
 
 			struct {
 				/// @brief Active state.
-				std::shared_ptr<State> active;
+				std::shared_ptr<State> selected;
 
-				/// @brief State activation.
-				time_t activation = 0;
+				enum Activation : uint8_t {
+					StateWasSet,			///< @brief The current state was set (usually when a parent remove a forwarded state).
+					StateWasActivated,		///< @brief This state was activated.
+					StateWasForwarded,		///< @brief This state was forwarded from parent (disable agent updates).
+				} activation = StateWasSet;
+
+				time_t timestamp = 0;
+
+				inline void set(std::shared_ptr<State> state) noexcept {
+					selected = state;
+					timestamp = time(0);
+					activation = StateWasSet;
+				}
+
+				inline void activate(std::shared_ptr<State> state) noexcept {
+					selected = state;
+					timestamp = time(0);
+					activation = StateWasActivated;
+				}
+
+				inline bool activated() const noexcept {
+					return (activation == StateWasActivated);
+				}
+
+				inline bool forwarded() const noexcept {
+					return (activation == StateWasForwarded);
+				}
 
 			} current_state;
+
+			/// @brief Set forwarded state on agent and children.
+			void forward(std::shared_ptr<State> state) noexcept;
 
 			/// @brief Agent children.
 			struct {
@@ -97,26 +118,41 @@
 
 			} children;
 
+			struct Listener {
+				const Abstract::Agent::Event event;
+				std::shared_ptr<Activatable> activatable;
+
+				Listener(const Abstract::Agent::Event e, std::shared_ptr<Activatable> a) : event{e}, activatable{a} {
+				}
+
+			};
+
 			/// @brief Event listeners.
-			std::list<EventListener *> listeners;
-
-			/// @brief Child state has changed; compute my new state.
-			void onChildStateChange() noexcept;
-
-			/// @brief Enable disable 'running updates' flag.
-			// void updating(bool running);
+			std::list<Listener> listeners;
 
 			/// @brief Load agent properties from XML node.
-			void setup_properties(const pugi::xml_node &node) noexcept;
+			// void setup_properties(const pugi::xml_node &node) noexcept;
 
 			/// @brief Load states from XML node.
-			void setup_states(const pugi::xml_node &node) noexcept;
+			// void setup_states(const pugi::xml_node &node) noexcept;
 
 			/// @brief Load alerts from XML node.
-			void setup_alerts(const pugi::xml_node &node) noexcept;
+			// void setup_alerts(const pugi::xml_node &node) noexcept;
 
 			/// @brief Load children from XML node.
-			void setup_children(const pugi::xml_node &node) noexcept;
+			// void setup_children(const pugi::xml_node &node) noexcept;
+
+			/// @brief Activate agent state.
+			//void activate() noexcept;
+
+			/// @brief Deactivate agent state (if needed).
+			//void deactivate() noexcept;
+
+			/// @brief Notify state change.
+			/// @param state New agent state.
+			/// @param activate if true the new state will be activated.
+			/// @param message Message for logfile.
+			bool onStateChange(std::shared_ptr<State> state, bool activate, const char *message);
 
 		protected:
 
@@ -142,7 +178,7 @@
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;
 
-			/// @brief Set failed state from known exception
+			/// @brief Set failed state from exception.
 			void failed(const char *summary, const std::exception &e) noexcept;
 
 			/// @brief Set failed state from errno.
@@ -158,8 +194,6 @@
 			/// @brief Compute state from agent value.
 			/// @return Computed state or the default one if agents has no state table.
 			virtual std::shared_ptr<Abstract::State> computeState();
-
-			virtual UDJAT_DEPRECATED(std::shared_ptr<Abstract::State> stateFromValue() const);
 
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
@@ -191,11 +225,14 @@
 			/// @brief Insert Alert with XML definition.
 			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
 
-			/// @brief Insert Listener.
-			void push_back(EventListener *listener);
+			/// @brief Insert listener.
+			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Remove listener.
-			void remove(EventListener *listener);
+			void remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
+
+			/// @brief Remove listener.
+			void remove(std::shared_ptr<Activatable> activatable);
 
 			/// @brief Create and insert child.
 			/// @param type The agent type.
@@ -306,7 +343,6 @@
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
-			void for_each(const std::function<void(EventListener &listener)> &method);
 
 			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
 				return children.agents.begin();
@@ -339,21 +375,29 @@
 			/// @brief Get smart pointer.
 			std::shared_ptr<Agent> to_shared_ptr();
 
+			/// @brief Enqueue task.
+			size_t push(const std::function<void(std::shared_ptr<Agent> agent)> &method);
+
 			/// @brief Assign value from string.
 			virtual bool assign(const char *value);
 
 			UDJAT_DEPRECATED(inline std::shared_ptr<State> getState() const) {
-				return this->current_state.active;
+				return this->current_state.selected;
 			}
 
 			/// @brief Get current state
 			inline std::shared_ptr<State> state() const {
-				return this->current_state.active;
+				return this->current_state.selected;
 			}
 
 			/// @brief Get current level.
 			inline Level level() const {
-				return this->current_state.active->level();
+				return this->current_state.selected->level();
+			}
+
+			/// @brief Is agent ready?
+			inline bool ready() const {
+				return this->current_state.selected->ready();
 			}
 
 			/// @brief Create and insert State.

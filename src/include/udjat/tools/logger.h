@@ -211,3 +211,14 @@
 	#endif // DEBUG
 
  }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::Logger::Level level);
+
+	inline ostream & operator<< (ostream& os, const Udjat::Logger::Level level) {
+		return os << to_string(level);
+	}
+
+ }
+

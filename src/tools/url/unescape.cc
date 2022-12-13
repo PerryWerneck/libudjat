@@ -37,7 +37,7 @@
 			return 10 + (scanner - 'a');
 		}
 
-		throw runtime_error("Invalid escape character");
+		throw runtime_error(string{"Escape character '"} + scanner + "' is invalid");
 	}
 
 	static int unescape_character(const char *scanner) {

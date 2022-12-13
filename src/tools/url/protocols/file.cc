@@ -70,7 +70,11 @@
 				return filepath;
 			}
 
-			unsigned short test() override {
+			int test(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) noexcept override {
+
+				if(method() != HTTP::Head) {
+					return EINVAL;
+				}
 
 				auto filepath = path();
 
@@ -89,7 +93,7 @@
 					return 404;
 				}
 
-				return -1;
+				return 401;
 #endif // _WIN32
 
 

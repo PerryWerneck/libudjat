@@ -136,12 +136,47 @@
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_POWERBROADCAST:
-				Logger::String("WM_POWERBROADCAST").write(Logger::Trace,"win32");
+				switch(wParam) {
+				case PBT_APMPOWERSTATUSCHANGE:
+					Logger::String(
+						"WM_POWERBROADCAST.PBT_APMPOWERSTATUSCHANGE: Power status has changed."
+					).write(Logger::Trace,"win32");
+					break;
+
+				case PBT_APMRESUMEAUTOMATIC:
+					Logger::String(
+						"WM_POWERBROADCAST.PBT_APMRESUMEAUTOMATIC: Operation is resuming automatically from a low-power state."
+					).write(Logger::Trace,"win32");
+					break;
+
+				case PBT_APMRESUMESUSPEND:
+					Logger::String(
+						"WM_POWERBROADCAST.PBT_APMRESUMESUSPEND: Operation is resuming from a low-power state."
+					).write(Logger::Trace,"win32");
+					break;
+
+				case PBT_APMSUSPEND:
+					Logger::String(
+						"WM_POWERBROADCAST.PBT_APMSUSPEND: System is suspending operation."
+					).write(Logger::Trace,"win32");
+					break;
+
+				case PBT_POWERSETTINGCHANGE:
+					Logger::String(
+						"WM_POWERBROADCAST.PBT_POWERSETTINGCHANGE: A power setting change event has been received."
+					).write(Logger::Trace,"win32");
+					break;
+
+				default:
+					Logger::String(
+						"WM_POWERBROADCAST.",((unsigned int) wParam),": Unexpected power event"
+					).write(Logger::Trace,"win32");
+				}
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
-			case WM_DEVICECHANGE:
-				Logger::String("WM_DEVICECHANGE").write(Logger::Trace,"win32");
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+//			case WM_DEVICECHANGE:
+//				Logger::String("WM_DEVICECHANGE").write(Logger::Trace,"win32");
+//				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_DESTROY:
 				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
@@ -151,9 +186,7 @@
 				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
 				controller.start();
-
 				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
-
 				break;
 
 			case WM_STOP:

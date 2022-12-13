@@ -28,6 +28,7 @@
  #include <csignal>
  #include <cstring>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -51,12 +52,16 @@
 	};
 
 	Event::Controller::Signal::Signal(int s) : signum(s) {
-		cout << "signal\tWatching " << strsignal(signum) << " (" << signum << ")" << endl;
+		Logger::String{
+			"Watching ",strsignal(signum)," (",signum,")"
+		}.write(Logger::Debug,"signal");
 		signal(signum,Controller::onSignal);
 	}
 
 	Event::Controller::Signal::~Signal() {
-		cout << "signal\tUnwatching " << strsignal(signum) << " (" << signum << ")" << endl;
+		Logger::String{
+			"Unwatching ",strsignal(signum)," (",signum,")"
+		}.write(Logger::Debug,"signal");
 		signal(signum,SIG_DFL);
 	}
 

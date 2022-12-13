@@ -89,6 +89,19 @@
 		return c_str();
 	}
 
+	std::ostream & NamedObject::info() const {
+		return cout << objectName << "\t";
+	}
+
+	std::ostream & NamedObject::warning() const {
+		return clog << objectName << "\t";
+	}
+
+	std::ostream & NamedObject::error() const {
+		return cerr << objectName << "\t";
+	}
+
+
 	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
 		set(node);
 	}
@@ -321,6 +334,8 @@
 		pugi::xml_node node = n;
 
 		while(node) {
+
+			//debug("Searching '",node.name(),"' for ",key);
 
 			pugi::xml_attribute attribute = node.attribute(key.c_str());
 			if(attribute) {
