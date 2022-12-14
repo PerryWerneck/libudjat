@@ -149,6 +149,10 @@
 
 		bool as_bool(bool def = false);
 
+		/// @brief Convert string to unsigned long long processing 'kb','gb,tb, etc.
+		/// @return Unsigned long long value of string contents.
+		unsigned long long as_ull() const;
+
 		/// @brief Return 'quark' string from value.
 		const char * as_quark() const;
 

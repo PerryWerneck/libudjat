@@ -222,6 +222,49 @@
 		return def;
 	}
 
+	template<typename T>
+	static T convert(const T value, const char *str) {
+
+		while(*str && isspace(*str))
+			str++;
+
+		if(*str) {
+
+			static const char * names[] = { "B", "KB", "GB", "MB", "TB" };
+			T multiplier = 1;
+
+			for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {
+
+				if(!strcasecmp(str,names[ix])) {
+					return multiplier * value;
+				}
+
+				multiplier *= 1024;
+
+			}
+
+		}
+
+		return value;
+
+	}
+
+	unsigned long long String::as_ull() const {
+
+		if(empty()) {
+			return 0;
+		}
+
+		const char *str = c_str();
+		size_t bytes = 0;
+
+		unsigned long long rc = stoll(str,&bytes);
+		str += bytes;
+
+		return convert<unsigned long long>(rc,str+bytes);
+
+	}
+
 	const char * String::as_quark() const {
 		return Quark(*this).c_str();
 	}

@@ -34,6 +34,7 @@
  #include <limits.h>
  #include <udjat/tools/parse.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/string.h>
 
  using namespace std;
 
@@ -172,60 +173,25 @@
 		value = (long) node.attribute("value").as_llong();
 	}
 
-	unsigned long long parse_byte_value(const XML::Attribute &attr) {
-		unsigned long long rc = 0;
-		const char *str = attr.as_string();
-
-		int bytes = sscanf(str,"%llu",&rc);
-		if(bytes == EOF) {
-			throw runtime_error("Unexpected byte value");
-		}
-
-		str += bytes;
-		while(*str && isspace(*str))
-			str++;
-
-		if(*str) {
-
-			static const char * names[] = { "B", "KB", "GB", "MB", "TB" };
-			unsigned long long value = 1;
-
-			for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {
-
-				if(!strcasecmp(str,names[ix])) {
-					return rc * value;
-				}
-
-				value *= 1024;
-
-			}
-
-			throw runtime_error("Unexpected byte unit");
-
-		}
-
-		return rc;
-	}
-
 	void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to) {
 
 		auto value = node.attribute("value");
 
 		if(value) {
-			from = to = parse_byte_value(value);
+			from = to = String{value.as_string()}.as_ull();
 			return;
 		}
 
 		auto f = node.attribute("from-value");
 		if(f) {
-			from = parse_byte_value(f);
+			from = String{f.as_string()}.as_ull();
 		} else {
 			from  = 0;
 		}
 
 		auto t = node.attribute("to-value");
 		if(t) {
-			to = parse_byte_value(t);
+			from = String{t.as_string()}.as_ull();
 		} else {
 			to = ULLONG_MAX;
 		}
