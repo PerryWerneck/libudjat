@@ -16,7 +16,7 @@ Package: libudjat-dev
 Architecture: any
 Provides: libudjat-dev (= ${binary:Version})
 Section: libdevel
-Depends: ${misc:Depends}, pkg-config, libudjat (= ${binary:Version})
+Depends: ${misc:Depends}, pkg-config, libpugixml-dev, libudjat (= ${binary:Version})
 Description: libudjat development files.
  Development files for virtual machine detection library
 
