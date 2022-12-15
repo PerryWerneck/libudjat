@@ -192,6 +192,11 @@ namespace Udjat {
 			return true;
 		}
 
+		if(!strcasecmp(key,"levelnumber")) {
+			value = std::to_string((unsigned int) properties.level);
+			return true;
+		}
+
 		if(!strcasecmp(key,"body")) {
 			value = properties.body;
 			return true;
