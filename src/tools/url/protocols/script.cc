@@ -49,21 +49,10 @@
 
 				const char *url = this->url().c_str();
 
-				/*
-				if(strncasecmp(url,"script://.",10) == 0) {
-					return url+10;
-				}
-
-				if(strncasecmp(url,"script:///",10) == 0) {
-					return url+9;
-				}
-				*/
-
 				if(strncasecmp(url,"script+",7) == 0) {
 
-					// TODO: Download URL, save on cache.
+					// TODO: Download URL+7, save on cache.
 
-					// url += 7;
 
 					throw system_error(ENOTSUP,system_category(),"Script from URL is not implemented");
 

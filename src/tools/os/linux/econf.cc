@@ -107,8 +107,6 @@
 
 			if(!hFile) {
 
-				//cout << program_invocation_short_name << "\tLoading configuration" << endl;
-
 				econf_err err = econf_readDirs(
 					(econf_file **) &hFile,				// key_file
 					"/usr/etc",							// usr_conf_dir
@@ -402,12 +400,12 @@
 
 
 			if(err != ECONF_SUCCESS) {
+
 				if(result) {
 					free(result);
 				}
 
 				if(err == ECONF_NOKEY) {
-	//				cout << "config\tNo configuration for '" << group << "." << name << "'" << endl;
 					return def;
 				}
 

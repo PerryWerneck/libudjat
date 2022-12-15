@@ -201,8 +201,6 @@ namespace Udjat {
 			return false;
 		}
 
-		//debug("New state for '",name(),"' is ",state->summary()," (",state->level(),")");
-
 		if(onStateChange(state,true,"Current state changed to '{}' ({})")) {
 
 			if(this->current_state.selected->forward()) {

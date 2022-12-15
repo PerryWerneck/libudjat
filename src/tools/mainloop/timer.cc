@@ -246,12 +246,6 @@
 				enable();
 			}
 
-//#ifdef DEBUG
-//			virtual ~CallBackTimer() {
-//				debug(__FUNCTION__);
-//			}
-//#endif // DEBUG
-
 		};
 
 		return new CallBackTimer(interval,call);
