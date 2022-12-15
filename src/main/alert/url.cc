@@ -87,12 +87,7 @@
 		payload.expand(true,false);
 
 		if(verbose()) {
-			if(description.empty()) {
-				Logger::String{"Emitting ",action," ",url}.write(Logger::Trace,this->name.c_str());
-			} else {
-				Logger::String{description,": ",action," ",url}.write(Logger::Trace,this->name.c_str());
-			}
-
+			Logger::String{"Emitting ",action," ",url}.write(Logger::Trace,this->name.c_str());
 			if(!payload.empty()) {
 				Logger::String{payload}.write(Logger::Trace,this->name.c_str());
 			}

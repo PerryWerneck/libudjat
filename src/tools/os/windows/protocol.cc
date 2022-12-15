@@ -111,4 +111,81 @@
 
 	}
 
+	static bool valid(const IP_ADAPTER_ADDRESSES &address) noexcept {
+
+		// Ignore loopback interfaces.
+		if(address.IfType == IF_TYPE_SOFTWARE_LOOPBACK) {
+			debug("Interface ",address.AdapterName," is loopback");
+			return false;
+		}
+
+		if(address.OperStatus != IfOperStatusUp) {
+			return false;
+		}
+
+		// Ignore interfaces without physical address.
+		for(UINT ix = 0; ix < address.PhysicalAddressLength; ix++) {
+			if(address.PhysicalAddress[ix]) {
+				debug("Interface ",address.AdapterName," is valid");
+				return true;
+			}
+		}
+
+		return false;
+
+	}
+
+	const char * Protocol::Worker::get_payload() noexcept {
+
+		out.payload.expand([this](const char *key, std::string &value){
+
+			if(strcasecmp(key,"network-interface") == 0) {
+
+				return Win32::for_each([&value](const IP_ADAPTER_ADDRESSES &address){
+
+					if(!valid(address)) {
+						return false;
+					}
+
+					value = address.AdapterName;
+					return true;
+
+				});
+
+			}
+
+			if(strcasecmp(key,"macaddress") == 0) {
+
+				return Win32::for_each([&value](const IP_ADAPTER_ADDRESSES &address){
+
+					if(!valid(address)) {
+						return false;
+					}
+
+					value.clear();
+
+					debug("Getting mac from ",address.AdapterName);
+
+					static const char *digits = "0123456789ABCDEF";
+					for(UINT ix = 0; ix < address.PhysicalAddressLength; ix++) {
+						uint8_t digit = ((unsigned char) address.PhysicalAddress[ix]);
+						value += digits[(digit >> 4) & 0x0f];
+						value += digits[digit & 0x0f];
+					}
+
+					debug("Detected mac was ",value.c_str());
+					return true;
+
+				});
+
+			}
+
+			return false;
+
+		},true,true);
+
+		return out.payload.c_str();
+	}
+
+
  }

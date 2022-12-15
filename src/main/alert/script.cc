@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/alert/script.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -62,11 +63,7 @@
 		cmdline.expand();
 
 		if(verbose()) {
-			if(description.empty()) {
-				info() << "Emitting " << cmdline << endl;
-			} else {
-				info() << description << ": " << cmdline << endl;
-			}
+			info() << "Emitting " << cmdline << endl;
 		}
 
 		SubProcess::run(cmdline.c_str());

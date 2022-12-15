@@ -28,6 +28,7 @@
  #include <sys/socket.h>
  #include <ifaddrs.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/net/nic.h>
  #include <iostream>
  #include <linux/if.h>
  #include <sys/ioctl.h>
@@ -41,56 +42,18 @@
 
 	void Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
 
-		// Search for interfaces.
-		struct ifaddrs * interfaces = nullptr;
-		if(getifaddrs(&interfaces) != 0) {
-			throw system_error(errno,system_category(),"Cant get network interfaces");
-		}
-
 		nic.clear(); // Just in case.
 
-		debug("Searching for interface with ",addr);
+		Network::Interface::for_each([&nic,&addr](const Network::Interface &interface){
 
-		try {
-
-			for(auto *interface = interfaces; interface && nic.empty(); interface = interface->ifa_next) {
-
-#ifdef DEBUG
-				if(interface->ifa_addr) {
-					sockaddr_storage a;
-					memcpy(&a,interface->ifa_addr,sizeof(sockaddr));
-					debug("Testing interface ",interface->ifa_name," - ",to_string(a));
-				}
-#endif // DEBUG
-
-				if(!interface->ifa_addr || (interface->ifa_addr->sa_family != addr.ss_family)) {
-					continue;
-				}
-
-				switch(interface->ifa_addr->sa_family) {
-				case AF_INET:
-					if( ((const struct sockaddr_in *) &addr)->sin_addr.s_addr == ((const struct sockaddr_in *) interface->ifa_addr)->sin_addr.s_addr) {
-						nic = interface->ifa_name;
-					}
-					break;
-
-				case AF_INET6:
-					if( ((const struct sockaddr_in6 *) &addr)->sin6_addr.s6_addr == ((const struct sockaddr_in6 *) interface->ifa_addr)->sin6_addr.s6_addr) {
-						nic = interface->ifa_name;
-					}
-					break;
-				}
-
+			if(interface == addr) {
+				nic = interface.name();
+				return true;
 			}
 
-		} catch(...) {
+			return false;
 
-			freeifaddrs(interfaces);
-			throw;
-
-		}
-
-		freeifaddrs(interfaces);
+		});
 
 	}
 
@@ -149,5 +112,9 @@
 
 	}
 
+	const char * Protocol::Worker::get_payload() noexcept {
+		out.payload.expand(true,true);
+		return out.payload.c_str();
+	}
 
  }

@@ -18,8 +18,11 @@
  */
 
  #include "private.h"
+ #include <iostream>
 
-namespace Udjat {
+ using namespace std;
+
+ namespace Udjat {
 
 	File::Agent::Agent(const Quark &name) {
 

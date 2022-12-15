@@ -13,7 +13,7 @@
 				<Option object_output=".obj/Debug/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option parameters="--force-uninstall" />
+				<Option parameters="--foreground" />
 				<Compiler>
 					<Add option="-g" />
 					<Add option="-DDEBUG=1" />
@@ -70,16 +70,20 @@
 		<Unit filename="src/include/udjat/alert.h" />
 		<Unit filename="src/include/udjat/alert/abstract.h" />
 		<Unit filename="src/include/udjat/alert/activation.h" />
+		<Unit filename="src/include/udjat/alert/file.h" />
 		<Unit filename="src/include/udjat/alert/proxy.h" />
 		<Unit filename="src/include/udjat/alert/script.h" />
 		<Unit filename="src/include/udjat/alert/url.h" />
 		<Unit filename="src/include/udjat/defs.h" />
 		<Unit filename="src/include/udjat/factory.h" />
+		<Unit filename="src/include/udjat/linux/network.h" />
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/request.h" />
+		<Unit filename="src/include/udjat/tools/activatable.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/base64.h" />
+		<Unit filename="src/include/udjat/tools/cleanup.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
@@ -95,6 +99,8 @@
 		<Unit filename="src/include/udjat/tools/logger.h" />
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
+		<Unit filename="src/include/udjat/tools/net/nic.h" />
+		<Unit filename="src/include/udjat/tools/network.h" />
 		<Unit filename="src/include/udjat/tools/object.h" />
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
@@ -111,6 +117,7 @@
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
+		<Unit filename="src/include/udjat/win32/cleanup.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/ip.h" />
@@ -120,18 +127,21 @@
 		<Unit filename="src/include/udjat/win32/service.h" />
 		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
-		<Unit filename="src/main/agent/alertfactory.cc" />
 		<Unit filename="src/main/agent/child.cc" />
 		<Unit filename="src/main/agent/compare.cc" />
 		<Unit filename="src/main/agent/controller.cc" />
 		<Unit filename="src/main/agent/factory.cc" />
 		<Unit filename="src/main/agent/get.cc" />
-		<Unit filename="src/main/agent/load.cc" />
 		<Unit filename="src/main/agent/parse.cc" />
 		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/properties.cc" />
 		<Unit filename="src/main/agent/root.cc" />
 		<Unit filename="src/main/agent/set.cc" />
+		<Unit filename="src/main/agent/setup.cc" />
+		<Unit filename="src/main/agent/setup/alerts.cc" />
+		<Unit filename="src/main/agent/setup/children.cc" />
+		<Unit filename="src/main/agent/setup/properties.cc" />
+		<Unit filename="src/main/agent/setup/states.cc" />
 		<Unit filename="src/main/agent/start.cc" />
 		<Unit filename="src/main/agent/state.cc" />
 		<Unit filename="src/main/agent/test.xml" />
@@ -141,6 +151,7 @@
 		<Unit filename="src/main/alert/activation.cc" />
 		<Unit filename="src/main/alert/controller.cc" />
 		<Unit filename="src/main/alert/factory.cc" />
+		<Unit filename="src/main/alert/file.cc" />
 		<Unit filename="src/main/alert/private.h" />
 		<Unit filename="src/main/alert/script.cc" />
 		<Unit filename="src/main/alert/url.cc" />
@@ -191,8 +202,10 @@
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
 		<Unit filename="src/testprogram/windows/resources.rc" />
+		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application.cc" />
 		<Unit filename="src/tools/base64.cc" />
+		<Unit filename="src/tools/cache.cc" />
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/event.cc" />
 		<Unit filename="src/tools/eventcontroller.cc" />
@@ -203,6 +216,7 @@
 		<Unit filename="src/tools/http/exception.cc" />
 		<Unit filename="src/tools/http/mimetype.cc" />
 		<Unit filename="src/tools/http/timestamp.cc" />
+		<Unit filename="src/tools/ip.cc" />
 		<Unit filename="src/tools/logger.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
@@ -224,6 +238,7 @@
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application.cc" />
+		<Unit filename="src/tools/os/linux/cache.cc" />
 		<Unit filename="src/tools/os/linux/econf.cc" />
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />
@@ -237,8 +252,10 @@
 		<Unit filename="src/tools/os/linux/file/temporary.cc" />
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
+		<Unit filename="src/tools/os/linux/hostname.cc" />
 		<Unit filename="src/tools/os/linux/ip.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
+		<Unit filename="src/tools/os/linux/nic.cc" />
 		<Unit filename="src/tools/os/linux/protocol.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/handler.cc" />
@@ -262,6 +279,7 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/temporary.cc" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
+		<Unit filename="src/tools/os/windows/hostname.cc" />
 		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />

@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <ostream>
+ #include <pugixml.hpp>
 
  namespace Udjat {
 
@@ -40,6 +41,7 @@
 		};
 
 		UDJAT_API Method MethodFactory(const char *name);
+		UDJAT_API Method MethodFactory(const pugi::xml_node &node, const char *def = "get");
 
 	}
 

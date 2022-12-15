@@ -24,6 +24,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/logger.h>
  #include <errno.h>
  #include <fcntl.h>
  #include <unistd.h>
@@ -43,10 +44,7 @@
 
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
-
-#ifdef DEBUG
-		cout << "locale\tInitialized using " << STRINGIZE_VALUE_OF(LOCALEDIR) << "/" << gettext_package << endl;
-#endif // DEBUG
+		debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR),"/",gettext_package);
 
 #endif // HAVE_LIBINTL
 
@@ -96,6 +94,16 @@
 		append("/");
 	}
 
+	Application::LogDir::LogDir(const char *subdir) : LogDir() {
+		append(subdir);
+		if(mkdir(c_str(),0755)) {
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),c_str());
+			}
+		}
+		append("/");
+	}
+
 	Application::SystemDataDir::SystemDataDir() : File::Path{"/usr/share/"} {
 		append(program_invocation_short_name);
 		if(mkdir(c_str(),0755)) {
@@ -121,7 +129,7 @@
 
 	Application::LibDir::LibDir(const char *subdir) : LibDir() {
 		append(program_invocation_short_name);
-		append("-");
+		append("/");
 		append(subdir);
 		append("/");
 	}
@@ -146,52 +154,6 @@
 		append("/");
 		append(subdir);
 		append("/");
-	}
-
-	Application::CacheDir::CacheDir() : string{"/var/cache/"} {
-
-		append(program_invocation_short_name);
-		append("/");
-
-		if(mkdir(c_str(), 0700) == 0)
-			return;
-
-		if(access(c_str(),W_OK) == 0)
-			return;
-
-		const char *homedir = getenv("HOME");
-		if(!homedir)
-			homedir = "~";
-
-		assign(homedir);
-		append("/.cache/");
-
-		append(program_invocation_short_name);
-		append("/");
-
-		if(mkdir(c_str(), 0700) == 0)
-			return;
-
-		if(access(c_str(),W_OK) == 0)
-			return;
-
-		throw system_error(EPERM,system_category(),c_str());
-
-	}
-
-	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
-
-		append(subdir);
-		append("/");
-
-		if(mkdir(c_str(), 0700) == 0)
-			return;
-
-		if(access(c_str(),W_OK) == 0)
-			return;
-
-		throw system_error(EPERM,system_category(),c_str());
-
 	}
 
  }

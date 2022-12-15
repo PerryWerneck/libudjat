@@ -47,26 +47,42 @@
 
 	protected:
 
+		typedef Agent<T> super;
+
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<T>>> states;
+
+		/// @brief Insert State with predefined value.
+		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node, T value) {
+			auto state = std::make_shared<State<T>>(node, value);
+			states.push_back(state);
+			return state;
+		}
+
+		/// @brief Insert State with predefined range.
+		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node, T from, T to) {
+			auto state = std::make_shared<State<T>>(node, from, to);
+			states.push_back(state);
+			return state;
+		}
 
 		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::computeState();
+			return Abstract::Agent::computeState();
 		}
 
 		Udjat::Value & get(Udjat::Value &value) const override {
 			return value.set(this->value);
 		}
 
-		/// @brief Set initial value, doesnt update state.
+		/// @brief Start with value.
 		/// @param value The initial value to set.
-		inline void start(const T value) noexcept {
+		inline void start(const T value) {
 			this->value = value;
-			super::start();
+			Abstract::Agent::start();
 		}
 
 	public:
@@ -136,6 +152,8 @@
 
 	protected:
 
+		typedef Agent<std::string> super;
+
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<std::string>>> states;
 
@@ -144,7 +162,7 @@
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::computeState();
+			return Abstract::Agent::computeState();
 		}
 
 		Udjat::Value & get(Udjat::Value &value) const override {
@@ -219,12 +237,14 @@
 
 	protected:
 
+		typedef Agent<bool> super;
+
 		std::shared_ptr<Abstract::State> computeState() override {
 			for(auto state : states) {
 				if(state->compare(this->value))
 					return state;
 			}
-			return super::computeState();
+			return Abstract::Agent::computeState();
 		}
 
 	public:

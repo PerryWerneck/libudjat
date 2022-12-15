@@ -47,6 +47,7 @@
 	#include <udjat/win32/charset.h>
 	#include <udjat/win32/exception.h>
 	#include <udjat/win32/ip.h>
+	#include <udjat/win32/cleanup.h>
 #else
 	#include <unistd.h>
 #endif // _WIN32
@@ -159,8 +160,9 @@ int main(int argc, char **argv) {
 			});
 			*/
 
-			cout << "test\táéióú" << endl;
+			//cout << "test\táéióú" << endl;
 
+			/*
 			MainLoop::getInstance().TimerFactory(2000,[](){
 #ifdef _WIN32
 				SubProcess::start("subprocess.bat");
@@ -170,6 +172,7 @@ int main(int argc, char **argv) {
 				return false;
 			});
 			cout << "------------------------------------------" << endl;
+			*/
 
 #ifdef _WIN32
 			/*
@@ -334,6 +337,13 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 	*/
+
+#ifdef _WIN32
+	{
+		udjat_autoptr(HANDLE) hdl{0};
+
+	}
+#endif // _WIN32
 
 	auto rc = Service().run(argc,argv);
 

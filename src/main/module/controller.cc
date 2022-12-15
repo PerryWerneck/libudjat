@@ -19,10 +19,7 @@
 
 #include <config.h>
 #include <private/module.h>
-
-//#ifndef _WIN32
-//	#include <dlfcn.h>
-//#endif // _WIN32
+#include <iostream>
 
 using namespace std;
 
@@ -90,7 +87,7 @@ namespace Udjat {
 			Value &object = response.append(Value::Object);
 
 			object["name"] = module->name;
-			module->info.get(object);
+			module->_info.get(object);
 
 			object["filename"] = module->filename();
 

@@ -24,6 +24,7 @@
  #include <udjat/tools/logger.h>
  #include <pugixml.hpp>
  #include <list>
+ #include <mutex>
 
  namespace Udjat {
 
@@ -106,8 +107,11 @@
 		};
 
 		class UDJAT_PRIVATE Controller {
-		public:
+		private:
+			std::mutex guard;
 			std::list<Buffer *> buffers;
+
+		public:
 
 			Controller(const Controller &src) = delete;
 			Controller(const Controller *src) = delete;
@@ -116,9 +120,11 @@
 
 			~Controller();
 
+			Buffer * BufferFactory(Level id);
+			void remove(Buffer *buffer) noexcept;
+
 			static Controller & getInstance();
 
-			Buffer * BufferFactory(Level id);
 
 		};
 

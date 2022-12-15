@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/factory.h>
+ #include <udjat/alert/abstract.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -42,8 +43,8 @@
 					agent->parent = this;
 					agent->Object::set(node);
 					agent->setup(node);
-					if(!agent->current_state.active) {
-						agent->current_state.active = agent->computeState();
+					if(!agent->current_state.selected) {
+						agent->current_state.set(agent->computeState());
 					}
 					children.agents.push_back(agent);
 					return true;
@@ -192,15 +193,5 @@
 		}
 
 	}
-
-	void Abstract::Agent::for_each(const std::function<void(EventListener &listener)> &method) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto listener : listeners) {
-			method(*listener);
-		}
-
-	}
-
 
  }

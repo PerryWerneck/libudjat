@@ -38,7 +38,7 @@
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
 #include <udjat/request.h>
-#include <udjat/alert/abstract.h>
+#include <udjat/tools/activatable.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/object.h>
 #include <udjat/tools/parse.h>
@@ -65,7 +65,10 @@ namespace Udjat {
 			void set(const pugi::xml_node &node);
 
 			/// @brief State alerts.
-			std::vector<std::shared_ptr<Abstract::Alert>> alerts;
+			std::vector<std::shared_ptr<Activatable>> listeners;
+
+			/// @brief State agents.
+			std::vector<std::shared_ptr<Abstract::Agent>> agents;
 
 		protected:
 
@@ -79,6 +82,10 @@ namespace Udjat {
 
 			} properties;
 
+			struct {
+				bool forward = false;	///< @brief Forward to children?
+			} options;
+
 		public:
 
 			/// @brief Create state using the strings without conversion.
@@ -90,11 +97,19 @@ namespace Udjat {
 			/// @brief Get state values as string.
 			virtual std::string value() const;
 
+			/// @brief Refresh associated agents.
+			void refresh();
+
 			std::string to_string() const noexcept override {
 				return Object::properties.summary;
 			}
 
 			virtual ~State();
+
+			/// @brief Forward state to children?
+			inline bool forward() const noexcept {
+				return options.forward;
+			}
 
 			inline const char * body() const noexcept {
 				return properties.body;
@@ -111,6 +126,22 @@ namespace Udjat {
 				return properties.level == level;
 			}
 
+			inline bool operator>(const Abstract::State &state) {
+				return properties.level > state.properties.level;
+			}
+
+			inline bool operator<(const Abstract::State &state) {
+				return properties.level < state.properties.level;
+			}
+
+			inline bool operator>=(const Abstract::State &state) {
+				return properties.level >= state.properties.level;
+			}
+
+			inline bool operator<=(const Abstract::State &state) {
+				return properties.level <= state.properties.level;
+			}
+
 			/// @brief Is this state a critical one?
 			/// @return true if the state is critical.
 			inline bool critical() const noexcept {
@@ -125,8 +156,8 @@ namespace Udjat {
 
 			virtual void get(const Request &request, Response &response) const;
 
-			virtual void activate(const Agent &agent) noexcept;
-			virtual void deactivate(const Agent &agent) noexcept;
+			virtual void activate(const Abstract::Object &object) noexcept;
+			virtual void deactivate() noexcept;
 
 			/// @brief Name of the object icon (https://specifications.freedesktop.org/icon-naming-spec/latest/)
 			const char * icon() const noexcept override;
@@ -143,8 +174,8 @@ namespace Udjat {
 			Value & getProperties(Value &value) const noexcept override;
 
 			/// @brief Insert alert.
-			inline void push_back(std::shared_ptr<Abstract::Alert> alert) {
-				alerts.push_back(alert);
+			inline void push_back(std::shared_ptr<Activatable> listener) {
+				listeners.push_back(listener);
 			}
 
 			/// @brief Create and insert child.
@@ -166,6 +197,8 @@ namespace Udjat {
 	class UDJAT_API State : public Abstract::State {
 	protected:
 
+		typedef State<T> super;
+
 		/// @brief Minimum value for state activation.
 		T from;
 
@@ -179,8 +212,15 @@ namespace Udjat {
 		State(const char *name, const T value, const Level level, const char *summary = "", const char *body = "")
 				: Abstract::State(name,level,summary,body), from(value),to(value) { }
 
-		State(const pugi::xml_node &node) : Abstract::State(node) {
+		State(const pugi::xml_node &node) : Abstract::State{node} {
 			XML::parse(node,from,to);
+		}
+
+		State(const pugi::xml_node &node, T value) : Abstract::State{node}, from{value}, to{value} {
+			from = to = value;
+		}
+
+		State(const pugi::xml_node &node, T from_value, T to_value) : Abstract::State{node}, from{from_value}, to{to_value} {
 		}
 
 		bool compare(T value) {
@@ -205,6 +245,10 @@ namespace Udjat {
 
 	template <>
 	class UDJAT_API State<std::string> : public Abstract::State, public std::string {
+	protected:
+
+		typedef State<std::string> super;
+
 	public:
 		State(const pugi::xml_node &node) : Abstract::State(node),std::string(Udjat::Attribute(node,"value",false).as_string()) {
 		}
@@ -221,6 +265,10 @@ namespace Udjat {
 
 	template <>
 	class UDJAT_API State<bool> : public Abstract::State {
+	protected:
+
+		typedef State<bool> super;
+
 	private:
 
 		/// @brief State value;

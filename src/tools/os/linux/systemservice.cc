@@ -63,15 +63,10 @@
 
 	void SystemService::init() {
 
+		// TODO: Install unhandled exception manager.
+		// https://en.cppreference.com/w/cpp/error/set_terminate
+
 		string appconfig;
-		if(!definitions) {
-			Config::Value<string> config("service","definitions","");
-			if(config.empty()) {
-				definitions = Quark(Application::DataDir("xml.d")).c_str();
-			} else {
-				definitions = Quark(config).c_str();
-			}
-		}
 
 		if(!Module::preload(definitions)) {
 			throw runtime_error("Module preload has failed, aborting service");

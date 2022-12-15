@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2022 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -19,17 +19,14 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/win32/exception.h>
- #include <string>
- #include <string>
+ #include <udjat/win32/cleanup.h>
 
  using namespace std;
 
- namespace Udjat {
-
-	namespace Win32 {
-
-
+ UDJAT_API void udjat_autoptr_cleanup_HANDLE(HANDLE *handle) {
+	if(*handle) {
+		CloseHandle(*handle);
+		*handle = 0;
 	}
-
  }
+

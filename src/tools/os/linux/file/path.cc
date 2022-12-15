@@ -24,6 +24,9 @@
  #include <libgen.h>
  #include <dirent.h>
  #include <fnmatch.h>
+ #include <iostream>
+
+ using namespace std;
 
  namespace Udjat {
 

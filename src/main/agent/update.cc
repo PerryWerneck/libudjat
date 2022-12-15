@@ -83,6 +83,7 @@ namespace Udjat {
 		}
 
 		if(!changed) {
+			notify(VALUE_NOT_CHANGED);
 			return false;
 		}
 
@@ -101,15 +102,17 @@ namespace Udjat {
 			// First get state for current agent value.
 			auto new_state = computeState();
 
-			// Does any children has worst state? if yes; use-it.
-			{
+			if(!new_state->forward()) {
+
+				// Not forward, Does any children has worst state?
+
 				lock_guard<std::recursive_mutex> lock(guard);
 				for(auto child : children.agents) {
-
 					if(child->level() > new_state->level()) {
 						new_state = child->state();
 					}
 				}
+
 			}
 
 			set(new_state);
@@ -122,7 +125,7 @@ namespace Udjat {
 		} catch(...) {
 
 			cerr << name() << "\tUnexpected error switching state" << endl;
-			this->current_state.active = make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state");
+			set(make_shared<Abstract::State>("error",Udjat::critical,"Unexpected error switching state"));
 
 		}
 

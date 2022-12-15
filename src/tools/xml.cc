@@ -38,7 +38,7 @@
 
  namespace Udjat {
 
-	static xml_attribute find(const xml_node &n, const char *name, const char *upsearch) {
+	static XML::Attribute find(const XML::Node &n, const char *name, const char *upsearch) {
 
 		auto node = n;
 

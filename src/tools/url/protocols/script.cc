@@ -47,11 +47,36 @@
 		private:
 			string path() const {
 
-				if(strncasecmp(url().c_str(),"script://.",10) == 0) {
-					return url().c_str()+10;
+				const char *url = this->url().c_str();
+
+				/*
+				if(strncasecmp(url,"script://.",10) == 0) {
+					return url+10;
 				}
 
-				return url().ComponentsFactory().path;
+				if(strncasecmp(url,"script:///",10) == 0) {
+					return url+9;
+				}
+				*/
+
+				if(strncasecmp(url,"script+",7) == 0) {
+
+					// TODO: Download URL, save on cache.
+
+					// url += 7;
+
+					throw system_error(ENOTSUP,system_category(),"Script from URL is not implemented");
+
+				}
+
+				auto components = this->url().ComponentsFactory();
+
+				if(components.remote()) {
+					throw system_error(EINVAL,system_category(),"Dont know hot to handle remote scripts");
+				}
+
+				return components.path;
+
 			}
 
 
@@ -98,13 +123,22 @@
 
 			}
 
-			unsigned short test() override {
+			int test(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) noexcept override {
+
+				if(method() != HTTP::Head) {
+					return EINVAL;
+				}
 
 				string script = this->path();
 
-				if(access(script.c_str(),R_OK)) {
+				if(access(script.c_str(),F_OK)) {
 					clog << "script\t" << script << " is not available" << endl;
 					return 404;
+				}
+
+				if(access(script.c_str(),R_OK)) {
+					clog << "script\t" << script << " is not acessible" << endl;
+					return 401;
 				}
 
 				int rc = SubProcess::run(script.c_str());

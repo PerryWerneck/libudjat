@@ -59,20 +59,21 @@
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		trace() << line << endl;
+		error() << line << endl;
 	}
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		trace() <<  "Process '" << command << "' finishes with rc=" << rc << endl;
+		if(rc) {
+			error() <<  "Process '" << command << "' fails with rc=" << rc << endl;
+		} else {
+			info() <<  "Process '" << command << "' ends" << endl;
+		}
 	}
 
 	/// @brief Called on subprocess abnormal exit.
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	void SubProcess::onSignal(int sig) {
-		trace() << "Process '" << command << "' finishes with signal " << sig << endl;
+		error() << "Process '" << command << "' finishes with signal '" << strsignal(sig) << "' (" << sig << ")" << endl;
 	}
-	#pragma GCC diagnostic pop
 
  }

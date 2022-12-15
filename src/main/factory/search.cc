@@ -23,6 +23,7 @@
  #include <udjat/agent.h>
  #include <iostream>
  #include <udjat/moduleinfo.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -30,7 +31,7 @@
 
 	bool Factory::search(const pugi::xml_node &node, const std::function<bool(Factory &, const pugi::xml_node &)> &call, const char *typeattribute) {
 
-		if(!typeattribute) {
+		if(!(typeattribute && *typeattribute)) {
 			typeattribute = Object::getAttribute(node,(string{node.name()} + "-defaults").c_str(),"type","default");
 		}
 

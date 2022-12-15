@@ -92,7 +92,7 @@
 		class UDJAT_API LogDir : public File::Path {
 		public:
 			LogDir();
-
+			LogDir(const char *subdir);
 		};
 
 		/// @brief Application data dir.
@@ -122,6 +122,14 @@
 			/// @param name	The file name.
 			/// @param system When true use the systemdatadir for file path if necessary.
 			DataFile(const char *name, bool system = false);
+
+			/// @brief Is the file available?
+			/// @return true if the file is available.
+			bool available() const noexcept;
+
+			inline operator bool() const noexcept {
+				return available();
+			}
 
 		};
 
@@ -153,6 +161,10 @@
 			CacheDir();
 			CacheDir(const char *subdir);
 
+			/// @brief Build cachename for file
+			/// @param name File or URL name.
+			/// @return Full path for cached file.
+			std::string build_filename(const char *name);
 
 		};
 

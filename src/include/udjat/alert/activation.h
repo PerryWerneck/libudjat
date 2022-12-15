@@ -45,9 +45,8 @@
 			} retry;
 
 			struct {
-				bool verbose = true;
+				bool verbose = false;
 				bool asyncronous = true;
-				Udjat::Level level = Udjat::unimportant;
 			} options;
 
 			struct {
@@ -79,11 +78,11 @@
 			/// @brief Activation name
 			std::string name;
 
-			/// @brief Activation description.
-			std::string description;
-
 			/// @brief Just emit alert, no update on emission data.
 			virtual void emit();
+
+			/// @brief Stop emissions.
+			void deactivate() noexcept;
 
 		public:
 			Activation(const Abstract::Alert *alert);
@@ -97,18 +96,6 @@
 			/// @param new_name New activation name.
 			inline void rename(const char *new_name) noexcept {
 				this->name = new_name;
-			}
-
-			/// @brief Set description.
-			inline Activation & set(const char *descr) noexcept {
-				description = descr;
-				return *this;
-			}
-
-			/// @brief Set level.
-			inline Activation & set(const Udjat::Level level) noexcept {
-				options.level = level;
-				return *this;
 			}
 
 			/// @brief Set object (expand ${} on strings).

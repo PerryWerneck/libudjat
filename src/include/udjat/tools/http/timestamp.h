@@ -29,7 +29,7 @@
 
 		class UDJAT_API TimeStamp : public Udjat::TimeStamp {
 		public:
-			constexpr TimeStamp() : Udjat::TimeStamp(0) {
+			constexpr TimeStamp() : Udjat::TimeStamp{(time_t) 0} {
 			}
 
 			constexpr TimeStamp(time_t time) : Udjat::TimeStamp(time) {

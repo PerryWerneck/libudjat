@@ -34,6 +34,7 @@
  #include <udjat/tools/event.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/intl.h>
 
 namespace Udjat {
 
@@ -49,7 +50,7 @@ namespace Udjat {
 			Object::properties.summary = summary;
 		}
 
-		current_state.active = Agent::computeState();
+		current_state.set(Agent::computeState());
 
 		try {
 
@@ -68,29 +69,35 @@ namespace Udjat {
 	}
 
 	Abstract::Agent::Agent(const pugi::xml_node &node) : Object(node) {
-		setup_properties(node);
+		Controller::setup_properties(*this,node);
 	}
 
 	void Abstract::Agent::notify(const Event event) {
 
+		debug("------------------------------->", listeners.size());
+
 		lock_guard<std::recursive_mutex> lock(guard);
-		for(auto listener : listeners) {
+		for(Listener &listener : listeners) {
 
-			if((listener->event & event) != 0) {
+			debug("listener=",listener.activatable->name()," event=",event," listener.event=",listener.event," Activate=",(listener.event & event));
 
-				push([this,event,listener]() {
+			if((listener.event & event) != 0) {
+
+				auto activatable = listener.activatable;
+
+				push([activatable](std::shared_ptr<Agent> agent){
 
 					try {
 
-						listener->trigger(event, *this);
+						activatable->trigger(*agent);
 
 					} catch(const std::exception &e) {
 
-						error() << "Error '" << e.what() << "' on event listener" << endl;
+						activatable->error() << "Error activating on agent '" << agent->name() << "': " << e.what() << endl;
 
 					} catch(...) {
 
-						error() << "Unexpected error on event listener" << endl;
+						activatable->error() << "Unexpected error activating on agent '" << agent->name() << "'" << endl;
 
 					}
 
@@ -222,35 +229,40 @@ namespace Udjat {
 		push_back(alert);
 	}
 
-	void Abstract::Agent::push_back(EventListener *listener) {
+	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
 		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.push_back(listener);
+		listeners.emplace_back(event,activatable);
 	}
 
-	void Abstract::Agent::remove(EventListener *listener) {
+	void Abstract::Agent::remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
 		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.remove(listener);
+		listeners.remove_if([event,activatable](Listener &ev){
+			return ev.event == event && ev.activatable.get() == activatable.get();
+		});
 	}
 
+	void Abstract::Agent::remove(std::shared_ptr<Activatable> activatable) {
+		lock_guard<std::recursive_mutex> lock(guard);
+		listeners.remove_if([activatable](Listener &ev){
+			return ev.activatable.get() == activatable.get();
+		});
+	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
 
-		// Forward to legacy.
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-		return stateFromValue();
-		#pragma GCC diagnostic pop
-
-	}
-
-	std::shared_ptr<Abstract::State> Abstract::Agent::stateFromValue() const {
 		static shared_ptr<Abstract::State> instance;
 		if(!instance) {
 			debug("Creating agent default state");
-			instance = make_shared<Abstract::State>("");
+			instance = make_shared<Abstract::State>(
+							_( "default" ),
+							Level::unimportant,
+							_( "Normal" ),
+							_( "Agent has nothing to report" )
+						);
+
 		}
 		return instance;
-	}
 
+	}
 
 }

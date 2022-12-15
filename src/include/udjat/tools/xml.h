@@ -52,6 +52,7 @@
 	/// @return true if the parse was ok.
 	UDJAT_API bool for_each(const char *path, const std::function<void(const char *filename, const pugi::xml_document &document)> &call);
 
+
 	/// @brief Wrapper for XML attribute
 	class UDJAT_API Attribute : public XML::Attribute {
 	private:
@@ -73,9 +74,6 @@
 		operator bool() const {
 			return as_bool();
 		}
-
-		/// @brief Return string value as quark.
-		//Quark as_quark(const char *def = "") const;
 
 		/// @brief Convert string value to quark and return the stored value.
 		const char * c_str(const char *def = "") const;
