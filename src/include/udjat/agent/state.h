@@ -271,7 +271,7 @@ namespace Udjat {
 
 	private:
 
-		/// @brief State value;
+		/// @brief The State value.
 		bool state_value;
 
 	public:

@@ -65,15 +65,19 @@
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
 		if(rc) {
-			error() <<  "Process '" << command << "' fails with rc=" << rc << endl;
+			error() <<  "'" << command << "' fails with rc=" << rc << endl;
 		} else {
-			info() <<  "Process '" << command << "' ends" << endl;
+			info() <<  "'" << command << "' ends" << endl;
 		}
 	}
 
 	/// @brief Called on subprocess abnormal exit.
 	void SubProcess::onSignal(int sig) {
-		error() << "Process '" << command << "' finishes with signal '" << strsignal(sig) << "' (" << sig << ")" << endl;
+#ifdef _WIN32
+		error() << "'" << command << "' finishes with signal '" << sig << "'" << endl;
+#else
+		error() << "'" << command << "' finishes with signal '" << strsignal(sig) << "' (" << sig << ")" << endl;
+#endif // _WIN32
 	}
 
  }
