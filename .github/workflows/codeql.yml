@@ -12,7 +12,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     permissions:
       actions: read
       contents: read
@@ -27,8 +27,8 @@ jobs:
         uses: actions/checkout@v3
       - name: Install Packages
         run: |
-          echo 'deb https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_20.04/ /' | sudo tee /etc/apt/sources.list.d/home:PerryWerneck:udjat.list
-          curl -fsSL https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_20.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_PerryWerneck_udjat.gpg > /dev/null
+          echo 'deb https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_22.04/ /' | sudo tee /etc/apt/sources.list.d/home:PerryWerneck:udjat.list
+          curl -fsSL https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_22.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_PerryWerneck_udjat.gpg > /dev/null
           sudo apt-get update
           sudo apt-get install --yes gettext libpugixml-dev cmake git make libdbus-1-dev autopoint libsystemd-dev libvmdetect-dev
       - name: Initialize CodeQL
