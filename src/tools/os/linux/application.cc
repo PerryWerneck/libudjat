@@ -76,51 +76,31 @@
 
 	Application::DataDir::DataDir() : File::Path{STRINGIZE_VALUE_OF(DATADIR) "/"} {
 		append(program_invocation_short_name);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
+		mkdir();
 		append("/");
 	}
 
 	Application::LogDir::LogDir() : File::Path{"/var/log/"} {
 		append(program_invocation_short_name);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
+		mkdir();
 		append("/");
 	}
 
 	Application::LogDir::LogDir(const char *subdir) : LogDir() {
 		append(subdir);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
+		mkdir();
 		append("/");
 	}
 
 	Application::SystemDataDir::SystemDataDir() : File::Path{"/usr/share/"} {
 		append(program_invocation_short_name);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
+		mkdir();
 		append("/");
 	}
 
 	Application::DataDir::DataDir(const char *subdir) : DataDir() {
 		append(subdir);
-		if(mkdir(c_str(),0755)) {
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),c_str());
-			}
-		}
+		mkdir();
 		append("/");
 	}
 

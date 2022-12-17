@@ -82,7 +82,10 @@
 		}
 	}
 
-	Application::DataFile::DataFile(const XML::Node &node, const char *attrname, bool system) {
+	Application::DataFile::DataFile(const XML::Node &node, const char *attrname, bool system) : DataFile(nullptr,node,attrname,system) {
+	}
+
+	Application::DataFile::DataFile(const char *type, const XML::Node &node, const char *attrname, bool system) {
 
 		const char *name = node.attribute(attrname).as_string("");
 
@@ -99,6 +102,12 @@
 			assign(SystemDataDir());
 		} else {
 			assign(DataDir());
+		}
+
+		if(type) {
+			append(type);
+			File::Path::mkdir(c_str());
+			append("/");
 		}
 
 		append(name);

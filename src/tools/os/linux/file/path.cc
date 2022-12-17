@@ -25,6 +25,7 @@
  #include <dirent.h>
  #include <fnmatch.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -49,6 +50,75 @@
 			contents += wrote;
 
 		}
+	}
+
+	bool File::Path::dir(const char *pathname) {
+		struct stat s;
+		if(stat(pathname,&s) != 0) {
+			if(errno == ENOENT) {
+				return false;
+			}
+			throw system_error(errno,system_category(),pathname);
+		}
+		return (s.st_mode & S_IFDIR) != 0;
+	}
+
+	void File::Path::mkdir(const char *dirname) {
+
+		if(!(dirname && *dirname)) {
+			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
+		}
+
+		// Try to create the full path first.
+		if(!::mkdir(dirname,0755)) {
+			return;
+		} else if(errno == EEXIST) {
+			if(File::Path::dir(dirname)) {
+				return;
+			}
+			throw system_error(ENOTDIR,system_category(),dirname);
+		}
+
+		// walk the full path and try creating each element
+		// Reference: https://github.com/GNOME/glib/blob/main/glib/gfileutils.c
+
+		string path{dirname};
+		if(path[path.size()-1] == '/') {
+			path.resize(path.size()-1);
+		}
+
+		debug("Creating path '",path.c_str(),"'");
+		size_t mark = path.find("/",1);
+		while(mark != string::npos) {
+			path[mark] = 0;
+			debug("Creating '",path.c_str(),"'");
+			if(::mkdir(path.c_str(),0755)) {
+				if(errno == EEXIST) {
+					if(!File::Path::dir(path.c_str())) {
+						throw system_error(ENOTDIR,system_category(),path.c_str());
+					}
+				} else {
+					throw system_error(errno,system_category(),path.c_str());
+				}
+			}
+
+			path[mark] = '/';
+			mark = path.find("/",mark+1);
+		}
+
+		if(::mkdir(path.c_str(),0755)) {
+			if(errno == EEXIST) {
+				if(!File::Path::dir(path.c_str())) {
+					throw system_error(ENOTDIR,system_category(),path.c_str());
+				}
+			} else {
+				throw system_error(errno,system_category(),path.c_str());
+			}
+		}
+	}
+
+	void File::Path::mkdir() const {
+		mkdir(c_str());
 	}
 
 	void File::Path::replace(const char *filename, const char *contents) {

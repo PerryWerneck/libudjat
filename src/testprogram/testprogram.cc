@@ -345,11 +345,16 @@ int main(int argc, char **argv) {
 	}
 #endif // _WIN32
 
-	auto rc = Service().run(argc,argv);
+	/*
+	{
+		auto rc = Service().run(argc,argv);
+		debug("Service exits with rc=",rc);
+		Udjat::Module::unload();
+		return rc;
+	}
+	*/
 
-	debug("Service exits with rc=",rc);
+	Udjat::File::Path::mkdir("/tmp/a/b/c");
 
-	Udjat::Module::unload();
 
-	return rc;
 }

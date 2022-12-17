@@ -64,6 +64,14 @@ namespace Udjat {
 
 			Path(int fd);
 
+			/// @brief Create directory.
+			static void mkdir(const char *dirname);
+
+			static bool dir(const char *pathname);
+
+			/// @brief Create directory.
+			void mkdir() const;
+
 			/// @brief Find file in the path, replace value if found.
 			/// @return true if 'name' was found and the object value was updated.
 			bool find(const char *name, bool recursive = false);

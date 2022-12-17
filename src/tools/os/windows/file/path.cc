@@ -23,6 +23,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/win32/path.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -44,6 +45,69 @@
 			throw Win32::Exception(pathname);
 		}
 		return attr & FILE_ATTRIBUTE_DIRECTORY;
+	}
+
+	bool File::Path::dir(const char *pathname) {
+		DWORD attr = GetFileAttributes(pathname);
+		if(attr == INVALID_FILE_ATTRIBUTES) {
+			throw Win32::Exception(pathname);
+		}
+		return attr & FILE_ATTRIBUTE_DIRECTORY;
+	}
+
+	void File::Path::mkdir(const char *dirname) {
+
+		if(!(dirname && *dirname)) {
+			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
+		}
+
+		Win32::Path path{dirname};
+
+		// Try to create the full path first.
+		if(!::mkdir(path.c_str())) {
+			return;
+		} else if(errno == EEXIST) {
+			if(File::Path::dir(path.c_str())) {
+				return;
+			}
+			throw system_error(ENOTDIR,system_category(),path);
+		}
+
+		// walk the full path and try creating each element
+		// Reference: https://github.com/GNOME/glib/blob/main/glib/gfileutils.c
+
+		debug("Creating path '",path.c_str(),"'");
+		size_t mark = path.find("\\",1);
+		while(mark != string::npos) {
+			path[mark] = 0;
+			debug("Creating '",path.c_str(),"'");
+			if(::mkdir(path.c_str())) {
+				if(errno == EEXIST) {
+					if(!File::Path::dir(path.c_str())) {
+						throw system_error(ENOTDIR,system_category(),path.c_str());
+					}
+				} else {
+					throw system_error(errno,system_category(),path.c_str());
+				}
+			}
+
+			path[mark] = '\\';
+			mark = path.find("\\",mark+1);
+		}
+
+		if(::mkdir(path.c_str())) {
+			if(errno == EEXIST) {
+				if(!File::Path::dir(path.c_str())) {
+					throw system_error(ENOTDIR,system_category(),path.c_str());
+				}
+			} else {
+				throw system_error(errno,system_category(),path.c_str());
+			}
+		}
+	}
+
+	void File::Path::mkdir() const {
+		mkdir(c_str());
 	}
 
 	File::Path::Path(int UDJAT_UNUSED(fd)) {

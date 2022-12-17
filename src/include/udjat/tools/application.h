@@ -118,6 +118,13 @@
 			/// @param system When true use the systemdatadir for file path if necessary.
 			DataFile(const XML::Node &node, const char *attrname = "path", bool system = true);
 
+			/// @brief Create a full path to datafile based on name and XML definition.
+			/// @param type Datafile type (subdirectory).
+			/// @param node XML node for file definition.
+			/// @param attrname Attribute for filename
+			/// @param system When true use the systemdatadir for file path if necessary.
+			DataFile(const char *type, const XML::Node &node, const char *attrname = "path", bool system = true);
+
 			/// @brief Create a full path to datafile.
 			/// @param name	The file name.
 			/// @param system When true use the systemdatadir for file path if necessary.
