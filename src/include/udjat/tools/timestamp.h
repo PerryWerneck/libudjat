@@ -78,7 +78,11 @@
 				return set(time);
 			}
 
-			operator time_t() const noexcept {
+			inline operator time_t() const noexcept {
+				return this->value;
+			}
+
+			inline time_t as_value() const noexcept {
 				return this->value;
 			}
 

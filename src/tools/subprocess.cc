@@ -80,4 +80,28 @@
 #endif // _WIN32
 	}
 
+	SubProcess::Arguments & SubProcess::Arguments::push_back(const char *arg) noexcept {
+		if(args.values) {
+			args.values = (char **) realloc(args.values,(args.count+2) * sizeof(const char *));
+		} else {
+			args.values = (char **) malloc(sizeof(const char *) * 2);
+			args.count = 0;
+		}
+		args.values[args.count++] = strdup(arg);
+		args.values[args.count] = NULL;
+		return *this;
+	}
+
+	SubProcess::Arguments & SubProcess::Arguments::push_back(const std::string &value) noexcept {
+		push_back(value.c_str());
+		return *this;
+	}
+
+	SubProcess::Arguments::~Arguments() {
+		for(size_t ix = 0; ix < args.count; ix++) {
+			free(args.values[ix]);
+		}
+		free(args.values);
+	}
+
  }

@@ -354,7 +354,21 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	Udjat::File::Path::mkdir("/tmp/a/b/c");
+	// Udjat::File::Path::mkdir("/tmp/a/b/c");
+
+	{
+		SubProcess::Arguments args;
+
+		args << "1" << "2" << "3";
+
+		const char **list = args.argv();
+
+		cout << "argcount=" << args.size() << endl;
+		for(size_t ix = 0; list[ix]; ix++) {
+			cout << "arg(" << ix << "): " << list[ix] << endl;
+		}
+
+	}
 
 
 }
