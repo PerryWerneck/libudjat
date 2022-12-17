@@ -38,18 +38,21 @@
 	void SubProcess::Handler::parse() {
 
 		char *from = buffer;
-		char *to = strchr(from,'\n');
-		while(to) {
 
-			*to = 0;
-			if(to > from && *(to-1) == '\r') {
-				*(to-1) = 0;
+		{
+			char *to = strchr(from,'\n');
+			while(to) {
+
+				*to = 0;
+				if(to > from && *(to-1) == '\r') {
+					*(to-1) = 0;
+				}
+
+				on_input(from);
+
+				from = to+1;
+				to = strchr(from,'\n');
 			}
-
-			on_input(from);
-
-			from = to+1;
-			to = strchr(from,'\n');
 		}
 
 		if(from && from != buffer) {

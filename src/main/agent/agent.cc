@@ -74,8 +74,6 @@ namespace Udjat {
 
 	void Abstract::Agent::notify(const Event event) {
 
-		debug("------------------------------->", listeners.size());
-
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(Listener &listener : listeners) {
 
