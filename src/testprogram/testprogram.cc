@@ -370,6 +370,9 @@ int main(int argc, char **argv) {
 
 		cout << "Result: [" << args << "]" << endl;
 
+		cout << "Result2: [" << to_string(SubProcess::Arguments{"'value 1' \"value 2\" 3 4 5"},",") << "]" << endl;
+
+
 	}
 
 

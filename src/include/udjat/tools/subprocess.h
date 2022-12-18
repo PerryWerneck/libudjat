@@ -92,14 +92,41 @@
 				char **values = nullptr;
 			} args;
 
+			void append(char *arg);
+
 		public:
+
+#ifdef _WIN32
+
+#else
+
+			/// @brief Get from application command line.
+			static Arguments from_pid();
+
+			/// @brief Get from application command line from pid.
+			static Arguments from_pid(int pid);
+
+#endif // _WIN32
+
 			constexpr Arguments() {
 			}
+
+			Arguments(const char *cmdline);
 
 			~Arguments();
 
 			Arguments & push_back(const char *arg) noexcept;
 			Arguments & push_back(const std::string &value) noexcept;
+
+			/// @brief Get argument.
+			/// @param argname The argname without '--' or '-'.
+			/// @return The argument value os nullptr if not found.
+			const char * operator[](const char *argname) const;
+
+			/// @brief Get argument.
+			/// @param argname The argname without '--' or '-'.
+			/// @return The argument value os nullptr if not found.
+			const char * operator[](const char argname) const;
 
 			template <typename T>
 			Arguments & push_back(const T &value) {
