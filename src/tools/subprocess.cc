@@ -105,3 +105,19 @@
 	}
 
  }
+
+ namespace std {
+
+ 	string to_string(const Udjat::SubProcess::Arguments &opt, const char *sep) {
+		const char **arg = opt.argv();
+		string result{*(arg++)};
+
+		while(*arg) {
+			result += sep;
+			result += *arg;
+			arg++;
+		}
+		return result;
+	}
+
+ }

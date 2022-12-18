@@ -368,6 +368,8 @@ int main(int argc, char **argv) {
 			cout << "arg(" << ix << "): " << list[ix] << endl;
 		}
 
+		cout << "Result: [" << args << "]" << endl;
+
 	}
 
 

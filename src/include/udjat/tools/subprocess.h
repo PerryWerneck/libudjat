@@ -167,4 +167,10 @@
 			return opt.push_back(value);
 	}
 
+	string to_string(const Udjat::SubProcess::Arguments &opt, const char *sep = " ");
+
+	inline ostream& operator<< (ostream& os, Udjat::SubProcess::Arguments &opt) {
+		return os << to_string(opt);
+	}
+
  }
