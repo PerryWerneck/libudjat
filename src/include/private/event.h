@@ -83,8 +83,6 @@
 		Event & ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler);
 		static BOOL WINAPI ConsoleHandlerRoutine(DWORD dwCtrlType);
 
-		// bool call(DWORD dwCtrlType) noexcept;
-
 #else
 
 		Event & SignalHandler(void *id, int signum, const std::function<bool()> handler);

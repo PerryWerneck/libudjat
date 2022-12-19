@@ -180,7 +180,6 @@
 	/// @brief Writes characters to the associated output sequence from the put area.
 	int Logger::Writer::overflow(int c) {
 
-		// lock_guard<std::mutex> lock(guard);
 		Buffer * buffer = Controller::getInstance().BufferFactory(id);
 
 		if(buffer->push_back(c)) {

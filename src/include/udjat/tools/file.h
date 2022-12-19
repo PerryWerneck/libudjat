@@ -142,13 +142,13 @@ namespace Udjat {
 				/// @brief Pointer to text file contents.
 				const char *text;
 
-				/// @brief Text length;
+				/// @brief Text length.
 				size_t length;
 
 				/// @brief Current position in the text.
 				size_t	offset;
 
-				/// @brief Value of the current row;
+				/// @brief Value of the current row.
 				std::string value;
 
 				Iterator & set(size_t offset);
