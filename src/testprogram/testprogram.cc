@@ -356,6 +356,7 @@ int main(int argc, char **argv) {
 
 	// Udjat::File::Path::mkdir("/tmp/a/b/c");
 
+	/*
 	{
 		SubProcess::Arguments args;
 
@@ -374,6 +375,11 @@ int main(int argc, char **argv) {
 
 
 	}
+	*/
+
+	cout << "Day: " << TimeStamp::parse("1 day") << endl;
+	cout << "Half Day: " << TimeStamp::parse("12 hours") << endl;
+	cout << "Day and half: " << TimeStamp::parse("1 day, 12 hours") << endl;
 
 
 }

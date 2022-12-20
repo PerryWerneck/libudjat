@@ -22,6 +22,7 @@
 #include <cstring>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/logger.h>
+#include <udjat/tools/intl.h>
 #include <iostream>
 
 using namespace std;
@@ -145,34 +146,118 @@ namespace Udjat {
 				throw runtime_error(string{"Can't parse '"} + time + "' in the requested format");
 			}
 
+			return mktime(&t);
+
 		} else {
 
-			// Dont have format, try known ones.
+			// Dont have format, try strptime known ones.
 			static const char *formats[] = {
 				"%Y-%m-%d %T",
 				"%y-%m-%d %T",
 				"%x %X",
 			};
 
-			bool found = false;
 			for(size_t ix = 0; ix < (sizeof(formats)/sizeof(formats[0])); ix++) {
 				if(strptime(time,formats[ix],&t)) {
-					found = true;
-					break;
+					return mktime(&t);
 				}
 			}
 
-			if(!found) {
-				throw runtime_error(string{"Can't parse '"} + time + "' in any known format");
+			// Can't find using strptime, try another way
+			static const struct {
+				time_t value;
+				const char *singular;
+				const char *plural;
+
+				inline size_t compare(const char *str) const noexcept {
+
+					size_t length;
+
+					length = strlen(plural);
+					if(!strncasecmp(str,plural,length)) {
+						return length;
+					}
+
+					// Check value.
+					length = strlen(singular);
+					if(!strncasecmp(str,singular,length)) {
+						return length;
+					}
+
+					// Check translations.
+					#ifdef GETTEXT_PACKAGE
+						const char *translated = dgettext(GETTEXT_PACKAGE,plural);
+
+						length = strlen(translated);
+						if(!strncasecmp(str,translated,length)) {
+							return length;
+						}
+
+						translated = dgettext(GETTEXT_PACKAGE,singular);
+						length = strlen(translated);
+						if(!strncasecmp(str,translated,length)) {
+							return length;
+						}
+
+					#endif // GETTEXT_PACKAGE
+					return 0;
+				}
+
+			} values[] = {
+
+				{ 1,		N_("second"),	N_("seconds")	},
+				{ 60,		N_("minute"),	N_("minutes")	},
+				{ 3600,		N_("hour"),		N_("hours")		},
+				{ 86400,	N_("day"),		N_("days")		},
+
+			};
+
+			time_t value = 0;
+			const char *ptr = time;
+
+			debug("Converting ",ptr);
+			while(*ptr) {
+
+				while(*ptr && (ispunct(*ptr) || isspace(*ptr))) {
+					ptr++;
+				}
+
+				time_t v = 0;
+				while(*ptr && isdigit(*ptr)) {
+					v *= 10;
+					v += (*ptr - '0');
+					ptr++;
+				}
+
+				while(*ptr && (ispunct(*ptr) || isspace(*ptr))) {
+					ptr++;
+				}
+
+				if(*ptr) {
+					size_t len = 0;
+					for(size_t ix=0; ix < N_ELEMENTS(values);ix++) {
+						len = values[ix].compare(ptr);
+						if(len) {
+							ptr += len;
+							debug(v," ",string{ptr,len}.c_str(),"=",(v * values[ix].value));
+							v *= values[ix].value;
+							break;
+						}
+					}
+
+					if(!len) {
+						throw runtime_error(Logger::Message{"Dont know how to translate {}",time});
+					}
+				}
+
+				value += v;
+
 			}
 
+			return value;
 		}
 
-#ifdef DEBUG
-		cout << "day=" << t.tm_mday << " month=" << t.tm_mon << " Year=" << t.tm_year << endl;
-#endif // DEBUG
-
-		return mktime(&t);
+		throw runtime_error(Logger::Message{"Can't parse '{}' in any known format",time});
 
 	}
 

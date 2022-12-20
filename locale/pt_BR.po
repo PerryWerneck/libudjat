@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: 2022-12-07 08:18-0300\n"
+"POT-Creation-Date: 2022-12-20 07:28-0300\n"
+"PO-Revision-Date: 2022-12-20 07:29-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "Agent controller"
 msgstr "Controlador de agentes"
 
-#: src/main/agent/agent.cc:263
+#: src/main/agent/agent.cc:258
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
@@ -34,7 +34,7 @@ msgstr "Agente não tem nada a informar"
 msgid "Alert controller"
 msgstr "Controlador de alertas"
 
-#: src/main/agent/state.cc:137
+#: src/main/agent/state.cc:138
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
 
@@ -47,7 +47,7 @@ msgstr "Não sei como executar '{}'"
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
 
-#: src/tools/timestamp.cc:64
+#: src/tools/timestamp.cc:65
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
 
@@ -67,7 +67,7 @@ msgstr "Nenhum estado anormal foi reportado"
 msgid "No reports on this path"
 msgstr "Nenhum relatório no caminho informado"
 
-#: src/main/agent/agent.cc:262
+#: src/main/agent/agent.cc:257
 msgid "Normal"
 msgstr "Normal"
 
@@ -83,19 +83,19 @@ msgstr "Sistema não está em funcionamento"
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:142
+#: src/main/agent/state.cc:143
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/tools/timestamp.cc:91
+#: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
 msgid "day"
 msgstr "dia"
 
-#: src/tools/timestamp.cc:91
+#: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
 msgid "days"
 msgstr "dias"
 
-#: src/main/agent/agent.cc:260 src/tools/string/string.cc:216
+#: src/main/agent/agent.cc:255 src/tools/string/string.cc:216
 msgid "default"
 msgstr "padrão"
 
@@ -103,19 +103,19 @@ msgstr "padrão"
 msgid "false"
 msgstr "falso"
 
-#: src/tools/timestamp.cc:93
+#: src/tools/timestamp.cc:94 src/tools/timestamp.cc:210
 msgid "hour"
 msgstr "hora"
 
-#: src/tools/timestamp.cc:93
+#: src/tools/timestamp.cc:94 src/tools/timestamp.cc:210
 msgid "hours"
 msgstr "horas"
 
-#: src/tools/timestamp.cc:95
+#: src/tools/timestamp.cc:96 src/tools/timestamp.cc:209
 msgid "minute"
 msgstr "minuto"
 
-#: src/tools/timestamp.cc:95
+#: src/tools/timestamp.cc:96 src/tools/timestamp.cc:209
 msgid "minutes"
 msgstr "minutos"
 
@@ -123,13 +123,21 @@ msgstr "minutos"
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:265
+#: src/main/state/state.cc:253
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:265
+#: src/main/state/state.cc:253
 msgid "on"
 msgstr "ligado"
+
+#: src/tools/timestamp.cc:208
+msgid "second"
+msgstr "segundo"
+
+#: src/tools/timestamp.cc:208
+msgid "seconds"
+msgstr "segundos"
 
 #: src/tools/string/string.cc:200
 msgid "true"
@@ -139,30 +147,30 @@ msgstr "verdadeiro"
 msgid "yes"
 msgstr "sim"
 
-#: src/tools/timestamp.cc:77
+#: src/tools/timestamp.cc:78
 msgid "{d} {D}"
 msgstr "{d} {D}"
 
-#: src/tools/timestamp.cc:79
+#: src/tools/timestamp.cc:80
 msgid "{d} {D} and {h} {H}"
 msgstr "{d} {D} e {h} {H}"
 
-#: src/tools/timestamp.cc:81
+#: src/tools/timestamp.cc:82
 msgid "{d} {D} and {m} {M}"
 msgstr "{d} {D} e {m} {M}"
 
-#: src/tools/timestamp.cc:83
+#: src/tools/timestamp.cc:84
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr "{d} {D}, {h} {H} e {m} {M}"
 
-#: src/tools/timestamp.cc:78
+#: src/tools/timestamp.cc:79
 msgid "{h} {H}"
 msgstr "{h} {H}"
 
-#: src/tools/timestamp.cc:82
+#: src/tools/timestamp.cc:83
 msgid "{h} {H} and {m} {M}"
 msgstr "{h} {H} e {m} {M}"
 
-#: src/tools/timestamp.cc:80
+#: src/tools/timestamp.cc:81
 msgid "{m} {M}"
 msgstr "{m} {M}"
