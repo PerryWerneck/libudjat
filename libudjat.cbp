@@ -155,6 +155,7 @@
 		<Unit filename="src/main/alert/private.h" />
 		<Unit filename="src/main/alert/script.cc" />
 		<Unit filename="src/main/alert/url.cc" />
+		<Unit filename="src/main/application/setup.cc" />
 		<Unit filename="src/main/factory/controller.cc" />
 		<Unit filename="src/main/factory/factory.cc" />
 		<Unit filename="src/main/factory/private.h" />
@@ -204,6 +205,8 @@
 		<Unit filename="src/testprogram/windows/resources.rc" />
 		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application.cc" />
+		<Unit filename="src/tools/application/application.cc" />
+		<Unit filename="src/tools/application/setup.cc" />
 		<Unit filename="src/tools/arguments.cc" />
 		<Unit filename="src/tools/base64.cc" />
 		<Unit filename="src/tools/cache.cc" />

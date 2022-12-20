@@ -26,6 +26,7 @@ MAIN_SOURCES= \
 	$(wildcard src/tools/url/protocols/*.cc) \
 	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
+	$(wildcard src/tools/application/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/alert/*.cc) \
 	$(wildcard src/main/os/@OSNAME@/*.cc) \
