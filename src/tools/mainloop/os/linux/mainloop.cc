@@ -64,13 +64,9 @@
 				cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop using fd " << efd << endl;
 			}
 			evNum++;
+		} else {
+			clog << "MainLoop\tUnexpected call with efd=" << efd << endl;
 		}
-#ifdef DEBUG
-		else {
-			cerr << "MainLoop\t" << __FILE__ << "(" << __LINE__ << "): Unexpected call with efd=" << efd << endl;
-			//abort();
-		}
-#endif // DEBUG
 	}
 
 	bool MainLoop::verify(const Handler *ptr) const noexcept {

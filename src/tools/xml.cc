@@ -97,12 +97,6 @@
 		return value;
 	}
 
-	/*
-	Quark Attribute::as_quark(const char *def) const {
-		return Quark(to_string(def));
-	}
-	*/
-
 	const char * Attribute::c_str(const char *def) const {
 		return Quark(to_string(def)).c_str();
 	}
@@ -161,34 +155,6 @@
 	std::string expand(const pugi::xml_node &node, const char *str) {
 
 		return Udjat::String(str).expand(node);
-
-		/*
-		string text(str);
-
-		expand(text,[node](const char *key, string &value){
-
-			pugi::xml_attribute attribute;
-
-			attribute = Object::getAttribute(node,key);
-			if(attribute) {
-				value = attribute.as_string();
-				return true;
-			}
-
-			attribute = Object::getAttribute(node,key,false);
-			if(attribute) {
-				value = attribute.as_string();
-				return true;
-			}
-
-			// Not expanded
-			return false;
-
-		});
-		return text;
-
-		*/
-
 
 	}
 

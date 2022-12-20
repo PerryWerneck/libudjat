@@ -36,7 +36,6 @@
  #include <unistd.h>
  #include <udjat/tools/event.h>
 
-// #include <cstring>
  #include <csignal>
 
  #ifdef HAVE_SYSTEMD
@@ -83,10 +82,6 @@
 			});
 
 	}
-	/*
-	signal(SIGTERM,onInterruptSignal);
-	signal(SIGINT,onInterruptSignal);
-	*/
 
  	//
  	// Main event loop
@@ -156,7 +151,6 @@
 
 		// Check for event fd.
 		if(fds[0].revents) {
-			// debug("Wake UP received");
 			uint64_t evNum;
 			if(read(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' reading event fd" << endl;
