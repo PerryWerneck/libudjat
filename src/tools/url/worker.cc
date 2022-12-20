@@ -31,6 +31,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/ip.h>
+ #include <udjat/tools/dummy.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -132,10 +133,6 @@
 		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
 	}
 
-	static const std::function<bool(double current, double total)> dummy_progress([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)) {
-		return true;
-	});
-
 	Protocol::Worker & Protocol::Worker::url(const char *url) noexcept {
 
 		const char *scheme = strstr(url,"://");
@@ -163,11 +160,11 @@
 	}
 
 	String Protocol::Worker::get() {
-		return get(dummy_progress);
+		return get(Dummy::progress);
 	}
 
 	int Protocol::Worker::test() noexcept {
-		return test(dummy_progress);
+		return test(Dummy::progress);
 	}
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
@@ -175,11 +172,11 @@
 	}
 
 	bool Protocol::Worker::save(const char *filename, bool replace) {
-		return save(filename, dummy_progress, replace);
+		return save(filename, Dummy::progress, replace);
 	}
 
 	string Protocol::Worker::save() {
-		return save(dummy_progress);
+		return save(Dummy::progress);
 	}
 
 	string Protocol::Worker::save(const std::function<bool(double current, double total)> &progress) {
@@ -205,7 +202,7 @@
 	}
 
 	std::string Protocol::Worker::filename() {
-		return filename(dummy_progress);
+		return filename(Dummy::progress);
 	}
 
 	std::ostream & Protocol::Worker::info() const {
