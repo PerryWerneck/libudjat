@@ -193,7 +193,7 @@
 		} catch(...) {
 
 			::close(fd);
-			remove(tempfile.c_str());
+			::remove(tempfile.c_str());
 			throw;
 		}
 
@@ -204,7 +204,7 @@
 
 			if(::access(filename,F_OK) == 0) {
 				string backup = (string{filename} + "~");
-				if(remove(backup.c_str()) == -1 && errno != ENOENT) {
+				if(::remove(backup.c_str()) == -1 && errno != ENOENT) {
 					cerr << "Error '" << strerror(errno) << "' removing '" << backup.c_str() << "'" << endl;
 				}
 				if(link(filename,backup.c_str()) == -1) {
@@ -212,7 +212,7 @@
 				}
 			}
 
-			remove(filename);
+			::remove(filename);
 			if(link(tempfile.c_str(),filename) == -1) {
 				throw system_error(errno, system_category(), string{"Error saving '"} + filename + "'");
 			}
@@ -225,10 +225,10 @@
 				throw system_error(errno, system_category(), string{"Error setting owner & group on '"} + filename + "'");
 			}
 
-			remove(tempfile.c_str());
+			::remove(tempfile.c_str());
 
 		} catch(...) {
-			remove(tempfile.c_str());
+			::remove(tempfile.c_str());
 			throw;
 		}
 
@@ -236,6 +236,60 @@
 
 	bool File::Path::match(const char *pathname, const char *pattern) noexcept {
 		return fnmatch(pattern,pathname,FNM_CASEFOLD) == 0;
+	}
+
+	void File::Path::remove(bool UDJAT_UNUSED(force)) {
+
+		if(!dir()) {
+			if(unlink(c_str())) {
+				throw system_error(errno,system_category(),*this);
+
+			}
+			return;
+		}
+
+		// It's a folder, navigate.
+		DIR *dir;
+		size_t szPath = strlen(c_str());
+
+		if((*this)[szPath-1] == '/') {
+			szPath--;
+			dir = opendir(string(c_str(),szPath).c_str());
+		} else {
+			dir = opendir(c_str());
+		}
+
+		if(!dir) {
+			throw system_error(errno,system_category(),*this);
+		}
+
+		bool rc = false;
+
+		try {
+
+			struct dirent *de;
+			while(!rc && (de = readdir(dir)) != NULL) {
+
+				if(!de->d_name || de->d_name[0] == '.') {
+					continue;
+				}
+
+				File::Path filename{c_str(),szPath};
+				filename += "/";
+				filename += de->d_name;
+				filename.remove(force);
+
+			}
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
 	}
 
 	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) {

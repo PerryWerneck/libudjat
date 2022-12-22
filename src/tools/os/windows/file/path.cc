@@ -123,6 +123,8 @@
 
 		Win32::Path path{c_str()};
 
+		debug("Scanning '",path.c_str(),"'");
+
 		DIR *dir = opendir(path.c_str());
 
 		if(!dir) {
