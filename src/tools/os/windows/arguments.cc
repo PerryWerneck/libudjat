@@ -33,9 +33,6 @@
 
  namespace Udjat {
 
-	SubProcess::Arguments SubProcess::Arguments::Factory() {
-		throw system_error(ENOTSUP,system_category(),"Cant get application command line");
-	}
 
 
  }

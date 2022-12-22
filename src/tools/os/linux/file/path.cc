@@ -256,15 +256,18 @@
 		}
 
 		if(!dir) {
-			throw system_error(ENOENT,system_category(),*this);
+			if(errno == ENOTDIR) {
+				return false;
+			}
+			throw system_error(errno,system_category(),*this);
 		}
 
-		bool rc = true;
+		bool rc = false;
 
 		try {
 
 			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
+			while(!rc && (de = readdir(dir)) != NULL) {
 
 				if(!de->d_name || de->d_name[0] == '.') {
 					continue;

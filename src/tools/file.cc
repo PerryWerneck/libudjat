@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/file.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -40,12 +41,27 @@
 	}
 
 	bool File::Path::find(const char *name, bool recursive) {
-		return !for_each([this,name](const File::Path &path){
+
+		return for_each([this,name](const File::Path &path){
+			debug("Testing ",path.c_str());
 			if(path.match(name)) {
 				assign(path);
-				return false;
+				debug("Found ",c_str());
+				return true;
 			}
-		});
+			return false;
+		},recursive);
+	}
+
+	bool File::Path::for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive) {
+
+		return for_each([pattern,call](const File::Path &path){
+			if(path.match(pattern)) {
+				return call(path);
+			}
+			return false;
+		},recursive);
+
 	}
 
 	void File::copy(const char *from, const char *to) {

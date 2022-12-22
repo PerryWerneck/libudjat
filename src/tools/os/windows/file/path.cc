@@ -119,38 +119,38 @@
 		throw system_error(ENOTSUP,system_category(),"Not available on windows");
 	}
 
-	bool File::Path::for_each(const char *pathname, const std::function<bool (const char *name, const Stat &stat)> &call) {
+	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) {
 
-		Win32::Path path{pathname};
+		Win32::Path path{c_str()};
 
 		DIR *dir = opendir(path.c_str());
 
 		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
+			throw system_error(errno,system_category(),path);
 		}
 
-		bool rc = true;
+		bool rc = false;
 
 		try {
 
 			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
+			while(!rc && (de = readdir(dir)) != NULL) {
 
 				if(de->d_name[0] == '.') {
 					continue;
 				}
 
-				string filename{path};
+				File::Path filename{path};
 				filename += "\\";
 				filename += de->d_name;
 
-				Stat st;
-				if(stat(filename.c_str(),&st) == -1) {
-					cerr << filename << ": " << strerror(errno) << endl;
-					continue;
+				if(filename.dir()) {
+					if(recursive) {
+						rc = filename.for_each(call,recursive);
+					}
+				} else {
+					rc = call(filename);
 				}
-
-				rc = call(filename.c_str(), st);
 
 			}
 
@@ -165,59 +165,59 @@
 		closedir(dir);
 
 		return rc;
-
 	}
 
 	bool File::Path::match(const char *pathname, const char *pattern) noexcept {
-		return PathMatchSpec(pathname,pattern));
+		return PathMatchSpec(pathname,pattern);
 	}
 
-	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
+	void File::Path::remove(bool force) {
 
-		Win32::Path path{pathname};
+		Win32::Path path{c_str()};
 
 		DIR *dir = opendir(path.c_str());
 
 		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
+			throw system_error(errno,system_category(),path);
 		}
-
-		bool rc = true;
 
 		try {
 
 			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
+			while((de = readdir(dir)) != NULL) {
 
-				if(de->d_name[0] == '.') {
-					continue;
-				}
-
-				string filename{path};
+				File::Path filename{path};
 				filename += "\\";
 				filename += de->d_name;
 
-				if(recursive && Win32::Path::dir(filename.c_str())) {
+				if(filename.dir()) {
 
-					rc = for_each(filename.c_str(), pattern, recursive, call);
+					filename.remove(force);
+					if(RemoveDirectory(filename.c_str()) == 0) {
+						auto rc = GetLastError();
+						if(rc == ERROR_DIR_NOT_EMPTY) {
+							MoveFileEx(filename.c_str(),NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
+							clog << "win32\tDirectory '" << filename << "' will be removed on next reboot" << endl;
+						} else {
+							throw Win32::Exception(filename.c_str(),rc);
+						}
+					}
 
-				} else if(PathMatchSpec(de->d_name,pattern)) {
+				} else {
 
-#ifdef DEBUG
-					cout << "found '" << filename << "'" << endl;
-#endif // DEBUG
-
-					rc = call(filename.c_str());
+					if(DeleteFile(filename.c_str()) == 0) {
+						auto rc = GetLastError();
+						if(rc == ERROR_ACCESS_DENIED) {
+							MoveFileEx(filename.c_str(),NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
+							clog << "win32\tFile '" << filename << "' will be removed on next reboot" << endl;
+						} else {
+							throw Win32::Exception(filename.c_str(),rc);
+						}
+					}
 
 				}
-#ifdef DEBUG
-				else {
-					cout << "Not found '" << filename << "'" << endl;
-				}
-#endif // DEBUG
 
 			}
-
 
 		} catch(...) {
 
@@ -225,71 +225,8 @@
 			throw;
 
 		}
-
 		closedir(dir);
 
-		return rc;
-	}
-
-	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, const std::function<bool (bool, const char *)> &call) {
-
-		Win32::Path path{pathname};
-
-		DIR *dir = opendir(path.c_str());
-
-		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
-		}
-
-		bool rc = true;
-
-		try {
-
-			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
-
-				if(de->d_name[0] == '.') {
-					continue;
-				}
-
-				string filename{path};
-				filename += "\\";
-				filename += de->d_name;
-
-				if(Win32::Path::dir(filename.c_str())) {
-
-					if(recursive) {
-						rc = for_each(filename.c_str(), pattern, recursive, call);
-					}
-
-					if(rc && PathMatchSpec(de->d_name,pattern)) {
-						rc = call(true, filename.c_str());
-					}
-
-				} else if(PathMatchSpec(de->d_name,pattern)) {
-
-					rc = call(false, filename.c_str());
-
-				}
-#ifdef DEBUG
-				else {
-					cout << "Not found '" << filename << "'" << endl;
-				}
-#endif // DEBUG
-
-			}
-
-
-		} catch(...) {
-
-			closedir(dir);
-			throw;
-
-		}
-
-		closedir(dir);
-
-		return rc;
 	}
 
 }

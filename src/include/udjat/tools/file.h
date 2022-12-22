@@ -100,9 +100,23 @@ namespace Udjat {
 			/// @brief Test if the file is valid.
 			operator bool() const noexcept;
 
-			/// @brief Navigate on all directory files.
-			/// @return false if all 'call' actions returned false;
+			/// @brief Navigate on all directory files until lambda returns 'true'
+			/// @param call Lambda for file test.
+			/// @return false if all 'call' actions returned false.
+			/// @retval true call() has returned 'true', scan was finished.
+			/// @retval false All files were scanned, call never returned 'true'.
 			bool for_each(const std::function<bool (const File::Path &path)> &call, bool recursive = false);
+
+			/// @brief Navigate on directory files until lambda returns 'true'
+			/// @param pattern File filter pattern.
+			/// @param call Lambda for file test.
+			/// @return false if all 'call' actions returned false.
+			/// @retval true call() has returned 'true', scan was finished.
+			/// @retval false All files were scanned, call never returned 'true'.
+			bool for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive = false);
+
+			/// @brief Recursive remove of files.
+			void remove(bool force = false);
 
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
