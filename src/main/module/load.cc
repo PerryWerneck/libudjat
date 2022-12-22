@@ -77,17 +77,16 @@ namespace Udjat {
 		bool rc = true;
 
 		// Preload modules from config
+		/*
 		{
 			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
 
 			debug("load-at-startup size=",modules.size());
 			if(modules.size()) {
-				cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
-				for(const std::string &module : modules) {
-					Module::load(module.c_str(),true);
-				}
+				Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
 			}
 		}
+		*/
 
 		// Preload modules from XML
 		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
@@ -122,8 +121,27 @@ namespace Udjat {
 		Controller::getInstance().load(node);
 	}
 
-	void Module::load(const char *name, bool required) {
-		throw system_error(ENOTSUP,system_category(),"Non XML module load was not implemented");
+	void Module::load(const char *path, bool required) {
+
+		File::Path{path}.for_each([required](const File::Path &path){
+
+#ifdef _WIN32
+			if(!path.match("*.dll")) {
+				Logger::String{"Ignoring file '",path,"'"}.trace("module");
+				return true;
+			}
+#else
+			if(!path.match("*.so")) {
+				Logger::String{"Ignoring file '",path,"'"}.trace("module");
+				return true;
+			}
+#endif // _WIN32
+
+			cerr << "Unable to load '" << path << "': " << strerror(ENOTSUP) << endl;
+
+			return true;
+		},true);
+
 	}
 
 }

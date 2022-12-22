@@ -234,73 +234,29 @@
 
 	}
 
-	bool File::Path::for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call) {
-
-		DIR *dir;
-		size_t szPath = strlen(path);
-
-		if(path[szPath-1] == '/') {
-			szPath--;
-			dir = opendir(string(path,szPath).c_str());
-		} else {
-			dir = opendir(path);
-		}
-
-		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
-		}
-
-		bool rc = true;
-
-		try {
-
-			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
-
-				if(!de->d_name) {
-					continue;
-				}
-
-				Stat st;
-				if(fstatat(dirfd(dir),de->d_name,&st,0) == -1) {
-					cerr << path << de->d_name << ": " << strerror(errno) << endl;
-					continue;
-				}
-
-				string filename{path,szPath};
-				filename += "/";
-				filename += de->d_name;
-
-				rc = call(filename.c_str(), st);
-
-			}
-
-		} catch(...) {
-
-			closedir(dir);
-			throw;
-
-		}
-
-		closedir(dir);
-
-		return rc;
+	bool File::Path::match(const char *pathname, const char *pattern) noexcept {
+		return fnmatch(pattern,pathname,FNM_CASEFOLD) == 0;
 	}
 
-	bool File::Path::for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
+	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) {
 
+		if(!dir()) {
+			return call(*this);
+		}
+
+		// It's a folder, navigate.
 		DIR *dir;
-		size_t szPath = strlen(path);
+		size_t szPath = strlen(c_str());
 
-		if(path[szPath-1] == '/') {
+		if((*this)[szPath-1] == '/') {
 			szPath--;
-			dir = opendir(string(path,szPath).c_str());
+			dir = opendir(string(c_str(),szPath).c_str());
 		} else {
-			dir = opendir(path);
+			dir = opendir(c_str());
 		}
 
 		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
+			throw system_error(ENOENT,system_category(),*this);
 		}
 
 		bool rc = true;
@@ -314,26 +270,19 @@
 					continue;
 				}
 
-				string filename(path,szPath);
+				File::Path filename{c_str(),szPath};
 				filename += "/";
 				filename += de->d_name;
 
-				if(recursive && de->d_type == DT_DIR) {
-
-					rc = for_each(filename.c_str(), pattern, recursive, call);
-
-				} else if(fnmatch(pattern,de->d_name,FNM_CASEFOLD) == 0) {
-
-#ifdef DEBUG
-					cout << "found '" << filename << "'" << endl;
-#endif // DEBUG
-
-					rc = call(filename.c_str());
-
+				if(filename.dir()) {
+					if(recursive) {
+						rc = filename.for_each(call,recursive);
+					}
+				} else {
+					rc = call(filename);
 				}
 
 			}
-
 
 		} catch(...) {
 
@@ -346,7 +295,6 @@
 
 		return rc;
 	}
-
 
 
 }

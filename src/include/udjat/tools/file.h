@@ -59,7 +59,13 @@ namespace Udjat {
 			Path(const char *v) : std::string(v) {
 			}
 
+			Path(const char *v, size_t s) : std::string(v,s) {
+			}
+
 			Path(const std::string &v) : std::string(v) {
+			}
+
+			Path(const std::string &v, size_t s) : std::string(v,s) {
 			}
 
 			Path(int fd);
@@ -67,7 +73,22 @@ namespace Udjat {
 			/// @brief Create directory.
 			static void mkdir(const char *dirname);
 
+			/// @brief Check if path is a directory.
+			/// @param pathname the pathname to check;
+			/// @return true if pathname is a directory.
 			static bool dir(const char *pathname);
+
+			inline bool dir() const {
+				return dir(c_str());
+			}
+
+			/// @brief Check if file match wildcard.
+			static bool match(const char *pathname, const char *pattern) noexcept;
+
+			/// @brief Check if file match wildcard.
+			inline bool match(const char *pattern) const noexcept {
+				return match(c_str(),pattern);
+			}
 
 			/// @brief Create directory.
 			void mkdir() const;
@@ -79,33 +100,9 @@ namespace Udjat {
 			/// @brief Test if the file is valid.
 			operator bool() const noexcept;
 
-			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call);
-
 			/// @brief Navigate on all directory files.
-			/// @return false if 'call' has returned false;
-			static bool for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call);
-
-			/// @brief Navigate on all directory files and directories.
-			/// @return false if 'call' has returned false;
-			static bool for_each(const char *pathname, const char *pattern, bool recursive, const std::function<bool (bool isdir, const char *path)> &call);
-
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			inline bool for_each(const char *pattern, bool recursive, std::function<bool (const char *filename)> call) const {
-				return for_each(c_str(),pattern,recursive,call);
-			}
-
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			inline bool for_each(bool recursive, std::function<bool (const char *filename)> call) const {
-				return for_each(c_str(),"*",recursive,call);
-			}
-
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			bool for_each(std::function<bool (const char *filename)> call) {
-				return for_each(c_str(),"*",false,call);
-			}
+			/// @return false if all 'call' actions returned false;
+			bool for_each(const std::function<bool (const File::Path &path)> &call, bool recursive = false);
 
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);

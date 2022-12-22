@@ -40,9 +40,11 @@
 	}
 
 	bool File::Path::find(const char *name, bool recursive) {
-		return !for_each(name,recursive,[this](const char *name){
-			assign(name);
-			return false;
+		return !for_each([this,name](const File::Path &path){
+			if(path.match(name)) {
+				assign(path);
+				return false;
+			}
 		});
 	}
 

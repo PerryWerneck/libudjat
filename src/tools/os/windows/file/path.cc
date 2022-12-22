@@ -168,6 +168,10 @@
 
 	}
 
+	bool File::Path::match(const char *pathname, const char *pattern) noexcept {
+		return PathMatchSpec(pathname,pattern));
+	}
+
 	bool File::Path::for_each(const char *pathname, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
 
 		Win32::Path path{pathname};
