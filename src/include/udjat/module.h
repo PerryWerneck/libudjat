@@ -25,6 +25,7 @@
  #include <udjat/moduleinfo.h>
  #include <udjat/agent.h>
  #include <udjat/request.h>
+ #include <udjat/tools/file.h>
  #include <cstdarg>
 
  namespace Udjat {
@@ -93,7 +94,7 @@
 		/// @brief Load module by path
 		/// @param name path to module filename or directory.
 		/// @param required true if the module is required.
-		static void load(const char *path, bool required = true);
+		static void load(const File::Path &path, bool required = true);
 
 		/// @brief Load module by XML node.
 		static void load(const pugi::xml_node &node);

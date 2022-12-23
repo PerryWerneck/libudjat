@@ -114,6 +114,8 @@ dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 
 esac
 
+AC_DEFINE_UNQUOTED(LIBEXT, "$LIBEXT", [Library extension])
+
 dnl ---------------------------------------------------------------------------
 dnl Check for tools
 dnl ---------------------------------------------------------------------------

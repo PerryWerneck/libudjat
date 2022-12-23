@@ -121,25 +121,28 @@ namespace Udjat {
 		Controller::getInstance().load(node);
 	}
 
-	void Module::load(const char *path, bool required) {
+	void Module::load(const File::Path &path, bool required) {
 
-		File::Path{path}.for_each([required](const File::Path &path){
+		path.for_each("*." LIBEXT, [required](const File::Path &path){
 
-#ifdef _WIN32
-			if(!path.match("*.dll")) {
-				Logger::String{"Ignoring file '",path,"'"}.trace("module");
-				return true;
+			bool already = false;
+			Controller::getInstance().for_each([&already,path](Module &module) {
+				if(!strcasecmp(module.filename().c_str(),path.c_str())) {
+					already = true;
+				}
+			});
+
+			if(already) {
+				cout << "module\tModule '" << path << "' already loaded" << endl;
+				return false;
 			}
-#else
-			if(!path.match("*.so")) {
-				Logger::String{"Ignoring file '",path,"'"}.trace("module");
-				return true;
-			}
-#endif // _WIN32
 
-			cerr << "Unable to load '" << path << "': " << strerror(ENOTSUP) << endl;
+			debug("Loading '",path,"'");
 
-			return true;
+
+
+			return false;
+
 		},true);
 
 	}

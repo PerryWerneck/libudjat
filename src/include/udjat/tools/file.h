@@ -105,7 +105,7 @@ namespace Udjat {
 			/// @return false if all 'call' actions returned false.
 			/// @retval true call() has returned 'true', scan was finished.
 			/// @retval false All files were scanned, call never returned 'true'.
-			bool for_each(const std::function<bool (const File::Path &path)> &call, bool recursive = false);
+			bool for_each(const std::function<bool (const File::Path &path)> &call, bool recursive = false) const;
 
 			/// @brief Navigate on directory files until lambda returns 'true'
 			/// @param pattern File filter pattern.
@@ -113,7 +113,7 @@ namespace Udjat {
 			/// @return false if all 'call' actions returned false.
 			/// @retval true call() has returned 'true', scan was finished.
 			/// @retval false All files were scanned, call never returned 'true'.
-			bool for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive = false);
+			bool for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive = false) const;
 
 			/// @brief Recursive remove of files.
 			void remove(bool force = false);

@@ -292,22 +292,19 @@
 
 	}
 
-	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) {
+	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
 		if(!dir()) {
 			return call(*this);
 		}
 
-		// It's a folder, navigate.
-		DIR *dir;
-		size_t szPath = strlen(c_str());
-
-		if((*this)[szPath-1] == '/') {
-			szPath--;
-			dir = opendir(string(c_str(),szPath).c_str());
-		} else {
-			dir = opendir(c_str());
+		char path[PATH_MAX+1];
+		if(!realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),*this);
 		}
+
+		// It's a folder, navigate.
+		DIR *dir = opendir(path);
 
 		if(!dir) {
 			if(errno == ENOTDIR) {
@@ -327,7 +324,7 @@
 					continue;
 				}
 
-				File::Path filename{c_str(),szPath};
+				File::Path filename{path};
 				filename += "/";
 				filename += de->d_name;
 
