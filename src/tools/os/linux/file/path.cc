@@ -240,27 +240,24 @@
 
 	void File::Path::remove(bool UDJAT_UNUSED(force)) {
 
-		if(!dir()) {
-			if(unlink(c_str())) {
-				throw system_error(errno,system_category(),*this);
+		char path[PATH_MAX+1];
+		if(!realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),*this);
+		}
 
+		if(!dir()) {
+			debug("Removing '",path,"'");
+			if(unlink(path)) {
+				throw system_error(errno,system_category(),path);
 			}
 			return;
 		}
 
 		// It's a folder, navigate.
-		DIR *dir;
-		size_t szPath = strlen(c_str());
-
-		if((*this)[szPath-1] == '/') {
-			szPath--;
-			dir = opendir(string(c_str(),szPath).c_str());
-		} else {
-			dir = opendir(c_str());
-		}
+		DIR *dir = opendir(path);
 
 		if(!dir) {
-			throw system_error(errno,system_category(),*this);
+			throw system_error(errno,system_category(),path);
 		}
 
 		bool rc = false;
@@ -274,7 +271,7 @@
 					continue;
 				}
 
-				File::Path filename{c_str(),szPath};
+				File::Path filename{path};
 				filename += "/";
 				filename += de->d_name;
 				filename.remove(force);
@@ -289,6 +286,11 @@
 		}
 
 		closedir(dir);
+
+		debug("Removing '",path,"'");
+		if(rmdir(path)) {
+			throw system_error(errno,system_category(),path);
+		}
 
 	}
 

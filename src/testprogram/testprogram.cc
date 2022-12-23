@@ -147,6 +147,9 @@ int main(int argc, char **argv) {
 		return false;
 	},true);
 
+
+	File::Path{"/tmp/x"}.remove();
+
 //	return service_test(argc,argv);
 
 }
