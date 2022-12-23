@@ -121,25 +121,31 @@ namespace Udjat {
 		Controller::getInstance().load(node);
 	}
 
+	bool Module::Controller::load(const std::string &filename, bool required) {
+
+		bool already = false;
+		for_each([&already,filename](Module &module) {
+			if(!strcasecmp(module.filename().c_str(),filename.c_str())) {
+				already = true;
+			}
+		});
+
+		if(already) {
+			return true;
+		}
+
+		init(filename,pugi::xml_node{});
+
+		return false;
+	}
+
 	void Module::load(const File::Path &path, bool required) {
 
-		path.for_each("*." LIBEXT, [required](const File::Path &path){
+		path.for_each("*" LIBEXT, [required](const File::Path &path){
 
-			bool already = false;
-			Controller::getInstance().for_each([&already,path](Module &module) {
-				if(!strcasecmp(module.filename().c_str(),path.c_str())) {
-					already = true;
-				}
-			});
-
-			if(already) {
-				cout << "module\tModule '" << path << "' already loaded" << endl;
-				return false;
+			if(Controller::getInstance().load(path,required)) {
+				cout << "Module '" << path.c_str() << "' is already loaded" << endl;
 			}
-
-			debug("Loading '",path,"'");
-
-
 
 			return false;
 

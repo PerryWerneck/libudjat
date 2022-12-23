@@ -142,14 +142,6 @@ static int service_test(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 
-	File::Path{"."}.for_each("*.cc",[](const File::Path &path){
-		cout << path << endl;
-		return false;
-	},true);
-
-
-	File::Path{"/tmp/x"}.remove();
-
-//	return service_test(argc,argv);
+	return service_test(argc,argv);
 
 }

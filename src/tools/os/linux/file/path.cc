@@ -305,6 +305,8 @@
 			throw system_error(errno,system_category(),*this);
 		}
 
+		debug(path);
+
 		// It's a folder, navigate.
 		DIR *dir = opendir(path);
 

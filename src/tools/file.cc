@@ -55,6 +55,8 @@
 
 	bool File::Path::for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
+		debug("pattern=",pattern);
+
 		return for_each([pattern,call](const File::Path &path){
 			if(path.match(pattern)) {
 				return call(path);

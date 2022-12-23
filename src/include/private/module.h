@@ -61,6 +61,7 @@ namespace Udjat {
 		/// @param node Module definitions.
 		/// @return true if the module was already loaded.
 		bool load(const pugi::xml_node &node);
+		bool load(const std::string &filename, bool required);
 
 		const Module * find(const char *name) const noexcept;
 
