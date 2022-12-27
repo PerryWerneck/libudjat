@@ -445,5 +445,14 @@
 
 	}
 
+	const char * Abstract::Object::getChildValue(const pugi::xml_node &node, const char *group) {
+		String text{node.child_value()};
+		text.expand(node,group);
+		text.strip();
+		if(text.empty()) {
+			return "";
+		}
+		return text.as_quark();
+	}
 
  }

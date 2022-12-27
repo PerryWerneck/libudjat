@@ -77,16 +77,33 @@ namespace Udjat {
 		bool rc = true;
 
 		// Preload modules from config
-		/*
 		{
 			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
 
 			debug("load-at-startup size=",modules.size());
 			if(modules.size()) {
 				Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
+
+				for(std::string &module : modules) {
+
+					try {
+
+						Logger::String("Preloading ",module," from configuration file").trace("module");
+						load(File::Path{module});
+
+					} catch(const std::exception &e) {
+
+						cerr << "module\t" << e.what() << endl;
+
+					} catch(...) {
+
+						cerr << "module\tUnexpected error loading module" << endl;
+
+					}
+
+				}
 			}
 		}
-		*/
 
 		// Preload modules from XML
 		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {

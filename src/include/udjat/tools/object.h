@@ -69,6 +69,12 @@
 			/// @return Attribute value converted to quark or def
 			static const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
 
+			/// @brief Get child value from xml node and convert to const string.
+			/// @param node The xml node.
+			/// @param group The configuration group name.
+			/// @return child value converted to quark.
+			static const char * getChildValue(const pugi::xml_node &node, const char *group);
+
 			/// @brief Get property from xml node with fallback to configuration file.
 			/// @param node The xml node.
 			/// @param group The configuration group name.
