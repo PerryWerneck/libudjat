@@ -53,6 +53,11 @@
 	}
 
 	bool File::Path::dir(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return false;
+		}
+
 		struct stat s;
 		if(stat(pathname,&s) != 0) {
 			if(errno == ENOENT) {
@@ -61,6 +66,22 @@
 			throw system_error(errno,system_category(),pathname);
 		}
 		return (s.st_mode & S_IFDIR) != 0;
+	}
+
+	bool File::Path::regular(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return false;
+		}
+
+		struct stat s;
+		if(stat(pathname,&s) != 0) {
+			if(errno == ENOENT) {
+				return false;
+			}
+			throw system_error(errno,system_category(),pathname);
+		}
+		return (s.st_mode & S_IFREG) != 0;
 	}
 
 	void File::Path::mkdir(const char *dirname) {

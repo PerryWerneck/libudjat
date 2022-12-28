@@ -78,8 +78,17 @@ namespace Udjat {
 			/// @return true if pathname is a directory.
 			static bool dir(const char *pathname);
 
+			/// @brief Check if path is a regular file.
+			/// @param pathname the pathname to check;
+			/// @return true if pathname is a regular file.
+			static bool regular(const char *pathname);
+
 			inline bool dir() const {
 				return dir(c_str());
+			}
+
+			inline bool regular() const {
+				return regular(c_str());
 			}
 
 			/// @brief Check if file match wildcard.

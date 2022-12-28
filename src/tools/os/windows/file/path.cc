@@ -48,11 +48,29 @@
 	}
 
 	bool File::Path::dir(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return false;
+		}
+
 		DWORD attr = GetFileAttributes(pathname);
 		if(attr == INVALID_FILE_ATTRIBUTES) {
 			throw Win32::Exception(pathname);
 		}
 		return attr & FILE_ATTRIBUTE_DIRECTORY;
+	}
+
+	bool File::Path::regular(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return false;
+		}
+
+		DWORD attr = GetFileAttributes(pathname);
+		if(attr == INVALID_FILE_ATTRIBUTES) {
+			throw Win32::Exception(pathname);
+		}
+		return attr & FILE_ATTRIBUTE_NORMAL;
 	}
 
 	void File::Path::mkdir(const char *dirname) {
