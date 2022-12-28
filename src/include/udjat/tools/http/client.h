@@ -74,6 +74,10 @@
 				return *this;
 			}
 
+			inline std::string url() const {
+				return worker->url();
+			}
+
 			/// @brief Get Header.
 			/// @param name Header name.
 			/// @return Header info.

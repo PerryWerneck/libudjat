@@ -160,11 +160,13 @@
 	}
 
 	String Protocol::Worker::get() {
-		return get(Dummy::progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return get(Protocol::Watcher::progress);
 	}
 
 	int Protocol::Worker::test() noexcept {
-		return test(Dummy::progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return test(Protocol::Watcher::progress);
 	}
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
@@ -172,11 +174,13 @@
 	}
 
 	bool Protocol::Worker::save(const char *filename, bool replace) {
-		return save(filename, Dummy::progress, replace);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return save(filename, Protocol::Watcher::progress, replace);
 	}
 
 	string Protocol::Worker::save() {
-		return save(Dummy::progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return save(Protocol::Watcher::progress);
 	}
 
 	string Protocol::Worker::save(const std::function<bool(double current, double total)> &progress) {
@@ -202,7 +206,8 @@
 	}
 
 	std::string Protocol::Worker::filename() {
-		return filename(Dummy::progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return filename(Protocol::Watcher::progress);
 	}
 
 	std::ostream & Protocol::Worker::info() const {

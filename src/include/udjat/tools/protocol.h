@@ -51,6 +51,27 @@
 
 	public:
 
+		/// @brief Protocol watched.
+		class UDJAT_API Watcher {
+		private:
+			static Watcher *instance;
+			Watcher * parent = nullptr;
+
+		protected:
+			Watcher();
+
+		public:
+			~Watcher();
+
+			static Watcher & getInstance();
+
+			virtual void set_url(const char *url);
+			virtual void set_progress(double current, double total);
+
+			static const std::function<bool(double current, double total)> progress;
+
+		};
+
 		/// @brief Request header.
 		class UDJAT_API Header : public std::string {
 		private:
