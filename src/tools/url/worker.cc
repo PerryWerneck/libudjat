@@ -31,7 +31,6 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/ip.h>
- #include <udjat/tools/dummy.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
