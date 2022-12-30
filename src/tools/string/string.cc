@@ -251,10 +251,38 @@
 
 	static const char * byte_unit_names[] = { "b", "Kb", "Gb", "Mb", "Tb" };
 
+	String & String::set_byte(double value, int precision) {
+
+		if(value < 0.1) {
+			clear();
+			return *this;
+		}
+
+		double multiplier = 1024.0;
+		double selected = 1.0;
+		const char *name = "";
+		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
+
+			if(value >= multiplier) {
+				selected = multiplier;
+				name = byte_unit_names[ix];
+			}
+
+			multiplier *= 1024.0;
+
+		}
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << " " << name;
+		assign(stream.str());
+
+		return *this;
+	}
+
 	String & String::set_byte(unsigned long long value, int precision) {
 
 		if(!value) {
-			assign("0");
+			clear();
 			return *this;
 		}
 
@@ -273,7 +301,7 @@
 		}
 
 		std::stringstream stream;
-		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << name;
+		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << " " << name;
 		assign(stream.str());
 
 		return *this;
