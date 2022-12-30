@@ -87,7 +87,6 @@
 		<Unit filename="src/include/udjat/tools/cleanup.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
-		<Unit filename="src/include/udjat/tools/dummy.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />

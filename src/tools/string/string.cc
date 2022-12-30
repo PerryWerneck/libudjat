@@ -61,6 +61,27 @@
 		return *this;
 	}
 
+	String & String::markup() {
+
+		static const struct {
+			const char *from;
+			const char *to;
+		} xlat[] = {
+			{ "<b>", 	"\x1b[1m"	},
+			{ "</b>",	"\x1b[0m"	}
+		};
+
+		for(size_t ix=0; ix < N_ELEMENTS(xlat); ix++) {
+			const char *ptr = strcasestr(c_str(),xlat[ix].from);
+			if(ptr) {
+				replace((ptr - c_str()),strlen(xlat[ix].from),xlat[ix].to);
+			}
+		}
+
+		return *this;
+
+	}
+
 	String & String::chug() noexcept {
 		char *ptr = strdup(c_str());
 		assign(Udjat::chug(ptr));
@@ -142,6 +163,10 @@
 		str.assign(buffer);
 		delete[] buffer;
 		return str;
+	}
+
+	std::string markup(const char *text) {
+		return String{text}.markup();
 	}
 
 	std::string UDJAT_API strip(const char *str, ssize_t length) {

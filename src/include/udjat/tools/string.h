@@ -70,6 +70,11 @@
 
 	UDJAT_API std::string strip(const char *str, ssize_t length = -1);
 
+	/// @brief Simple markup expander.
+	/// @param text String to expand.
+	/// @return String with markup expanded.
+	UDJAT_API std::string markup(const char *text);
+
 	/**
 	 * @brief String with 'extras'
 	 *
@@ -127,6 +132,8 @@
 		String & expand(const pugi::xml_node &node,const char *group = "default-attributes");
 
 		String & strip() noexcept;
+
+		String & markup();
 
 		std::vector<String> split(const char *delim);
 
