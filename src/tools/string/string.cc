@@ -24,6 +24,8 @@
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
+ #include <sstream>
+ #include <iomanip>
 
  using namespace std;
 
@@ -247,6 +249,36 @@
 		return def;
 	}
 
+	static const char * byte_unit_names[] = { "b", "Kb", "Gb", "Mb", "Tb" };
+
+	String & String::set_byte(unsigned long long value, int precision) {
+
+		if(!value) {
+			assign("0");
+			return *this;
+		}
+
+		unsigned long long multiplier = 1024;
+		float selected = 1;
+		const char *name = "";
+		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
+
+			if(value >= multiplier) {
+				selected = (float) multiplier;
+				name = byte_unit_names[ix];
+			}
+
+			multiplier *= 1024;
+
+		}
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << name;
+		assign(stream.str());
+
+		return *this;
+	}
+
 	template<typename T>
 	static T convert(const T value, const char *str) {
 
@@ -255,12 +287,11 @@
 
 		if(*str) {
 
-			static const char * names[] = { "B", "KB", "GB", "MB", "TB" };
 			T multiplier = 1;
 
-			for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {
+			for(size_t ix = 0; ix < N_ELEMENTS(byte_unit_names);ix++) {
 
-				if(!strcasecmp(str,names[ix])) {
+				if(!strcasecmp(str,byte_unit_names[ix])) {
 					return multiplier * value;
 				}
 

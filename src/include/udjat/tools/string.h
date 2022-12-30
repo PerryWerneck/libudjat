@@ -160,6 +160,9 @@
 		/// @return Unsigned long long value of string contents.
 		unsigned long long as_ull() const;
 
+		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
+		String & set_byte(unsigned long long value, int precision = 1);
+
 		/// @brief Return 'quark' string from value.
 		const char * as_quark() const;
 
