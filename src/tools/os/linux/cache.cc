@@ -27,12 +27,12 @@
 
  namespace Udjat {
 
-	Application::CacheDir::CacheDir() : string{"/var/cache/"} {
+	Application::CacheDir::CacheDir() : File::Path{"/var/cache/"} {
 
 		append(program_invocation_short_name);
 		append("/");
 
-		if(mkdir(c_str(), 0700) == 0)
+		if(::mkdir(c_str(), 0700) == 0)
 			return;
 
 		if(access(c_str(),W_OK) == 0)
@@ -48,7 +48,7 @@
 		append(program_invocation_short_name);
 		append("/");
 
-		if(mkdir(c_str(), 0700) == 0)
+		if(::mkdir(c_str(), 0700) == 0)
 			return;
 
 		if(access(c_str(),W_OK) == 0)
@@ -63,7 +63,7 @@
 		append(subdir);
 		append("/");
 
-		if(mkdir(c_str(), 0700) == 0)
+		if(::mkdir(c_str(), 0700) == 0)
 			return;
 
 		if(access(c_str(),W_OK) == 0)

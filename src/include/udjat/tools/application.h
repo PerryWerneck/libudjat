@@ -177,7 +177,7 @@
 			SysConfigDir(const char *subdir);
 		};
 
-		class UDJAT_API CacheDir : public std::string {
+		class UDJAT_API CacheDir : public File::Path {
 		public:
 			CacheDir();
 			CacheDir(const char *subdir);
