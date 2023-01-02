@@ -96,7 +96,7 @@
 		/// @brief Create string from xml definition.
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
-		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr);
+		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr, bool upsearch = true);
 
 		inline bool operator ==(const char * str) const noexcept {
 			return strcasecmp(c_str(),str) == 0;
