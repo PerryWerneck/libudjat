@@ -22,34 +22,35 @@
  #include <udjat/tools/application.h>
  #include <fcntl.h>
  #include <unistd.h>
+ #include <sys/types.h>
+
 
  using namespace std;
 
  namespace Udjat {
 
-	Application::CacheDir::CacheDir() : File::Path{"/var/cache/"} {
+ 	static std::string getCacheDir() {
 
-		append(program_invocation_short_name);
-		append("/");
-
-		if(::mkdir(c_str(), 0700) == 0)
-			return;
-
-		if(access(c_str(),W_OK) == 0)
-			return;
+		if(getuid() == 0) {
+			return "/var/cache/";
+		}
 
 		const char *homedir = getenv("HOME");
 		if(!homedir)
 			homedir = "~";
 
-		assign(homedir);
-		append("/.cache/");
+		string cachedir{homedir};
+		cachedir.append("/.cache/");
+
+		return cachedir;
+ 	}
+
+	Application::CacheDir::CacheDir() : File::Path{getCacheDir().c_str()} {
 
 		append(program_invocation_short_name);
 		append("/");
 
-		if(::mkdir(c_str(), 0700) == 0)
-			return;
+		mkdir(0700);
 
 		if(access(c_str(),W_OK) == 0)
 			return;
@@ -63,8 +64,7 @@
 		append(subdir);
 		append("/");
 
-		if(::mkdir(c_str(), 0700) == 0)
-			return;
+		mkdir(0700);
 
 		if(access(c_str(),W_OK) == 0)
 			return;

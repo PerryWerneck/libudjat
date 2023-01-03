@@ -84,14 +84,14 @@
 		return (s.st_mode & S_IFREG) != 0;
 	}
 
-	void File::Path::mkdir(const char *dirname) {
+	void File::Path::mkdir(const char *dirname, int mode) {
 
 		if(!(dirname && *dirname)) {
 			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
 		}
 
 		// Try to create the full path first.
-		if(!::mkdir(dirname,0755)) {
+		if(!::mkdir(dirname,mode)) {
 			return;
 		} else if(errno == EEXIST) {
 			if(File::Path::dir(dirname)) {
@@ -113,7 +113,7 @@
 		while(mark != string::npos) {
 			path[mark] = 0;
 			debug("Creating '",path.c_str(),"'");
-			if(::mkdir(path.c_str(),0755)) {
+			if(::mkdir(path.c_str(),mode)) {
 				if(errno == EEXIST) {
 					if(!File::Path::dir(path.c_str())) {
 						throw system_error(ENOTDIR,system_category(),path.c_str());
@@ -127,7 +127,7 @@
 			mark = path.find("/",mark+1);
 		}
 
-		if(::mkdir(path.c_str(),0755)) {
+		if(::mkdir(path.c_str(),mode)) {
 			if(errno == EEXIST) {
 				if(!File::Path::dir(path.c_str())) {
 					throw system_error(ENOTDIR,system_category(),path.c_str());
@@ -138,8 +138,8 @@
 		}
 	}
 
-	void File::Path::mkdir() const {
-		mkdir(c_str());
+	void File::Path::mkdir(int mode) const {
+		mkdir(c_str(),mode);
 	}
 
 	void File::Path::replace(const char *filename, const char *contents) {

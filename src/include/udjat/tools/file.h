@@ -71,7 +71,7 @@ namespace Udjat {
 			Path(int fd);
 
 			/// @brief Create directory.
-			static void mkdir(const char *dirname);
+			static void mkdir(const char *dirname, int mode = 0755);
 
 			/// @brief Check if path is a directory.
 			/// @param pathname the pathname to check;
@@ -100,7 +100,7 @@ namespace Udjat {
 			}
 
 			/// @brief Create directory.
-			void mkdir() const;
+			void mkdir(int mode = 0755) const;
 
 			/// @brief Find file in the path, replace value if found.
 			/// @return true if 'name' was found and the object value was updated.
