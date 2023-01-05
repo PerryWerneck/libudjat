@@ -31,8 +31,8 @@
 
  namespace Udjat {
 
-	String & String::concat(const bool value) {
-		append(value ? _( "yes" ) : _( "no" ) );
+	String & String::append(const bool value) {
+		std::string::append( (const char *) (value ? _( "yes" ) : _( "no" )) );
 		return *this;
 	}
 

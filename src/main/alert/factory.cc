@@ -54,7 +54,7 @@
 		}
 
 		if(type.empty()) {
-			type = Config::Value<string>{"alert-defaults","type","default"};
+			type.assign(Config::Value<string>{"alert-defaults","type","default"});
 		}
 
 		debug("Creating alert '",type.c_str(),"'");
