@@ -23,7 +23,7 @@
  #include <fcntl.h>
  #include <unistd.h>
  #include <sys/types.h>
-
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -32,6 +32,7 @@
  	static std::string getCacheDir() {
 
 		if(getuid() == 0) {
+			debug("Root user, using /var/cache");
 			return "/var/cache/";
 		}
 
@@ -42,6 +43,7 @@
 		string cachedir{homedir};
 		cachedir.append("/.cache/");
 
+		debug("Non root user, using ",cachedir);
 		return cachedir;
  	}
 

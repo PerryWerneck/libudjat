@@ -155,6 +155,9 @@
 		SubProcess(const NamedObject *obj, const char *command) : SubProcess(obj->name(),command) {
 		}
 
+		SubProcess(const NamedObject &obj, const char *command) : SubProcess(obj.name(),command) {
+		}
+
 		/// @brief Create a sub-process with the default name.
 		SubProcess(const char *command);
 
