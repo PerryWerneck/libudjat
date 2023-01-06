@@ -89,6 +89,10 @@
 		return c_str();
 	}
 
+	std::ostream & NamedObject::trace() const {
+		return Logger::trace() << objectName << "\t";
+	}
+
 	std::ostream & NamedObject::info() const {
 		return cout << objectName << "\t";
 	}

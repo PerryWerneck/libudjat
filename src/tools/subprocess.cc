@@ -54,12 +54,16 @@
 
 	/// @brief Called on subprocess stdout.
 	void SubProcess::onStdOut(const char *line) {
-		trace() << line << endl;
+		if(Logger::enabled(Logger::Trace)) {
+			Logger::String{line}.trace(name());
+		}
 	}
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		error() << line << endl;
+		if(Logger::enabled(Logger::Error)) {
+			Logger::String{line}.error(name());
+		}
 	}
 
 	/// @brief Called on subprocess normal exit.

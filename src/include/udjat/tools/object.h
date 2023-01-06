@@ -24,6 +24,7 @@
  #include <ostream>
  #include <string>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/logger.h>
  #include <cstring>
  #include <functional>
 
@@ -140,7 +141,6 @@
 			/// @param text Text to expand.
 			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
 			/// @param cleanup if true put an empty string in the non existant attributes.
-			/// @return String with the known ${} tags expanded.
 			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
 
 			/// @brief Add object properties to the value.
@@ -203,9 +203,30 @@
 
 		Value & getProperties(Value &value) const noexcept override;
 
+		std::ostream & trace() const;
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
+
+		template<typename... Targs>
+		inline void trace(const char *fmt, Targs... Fargs) const {
+			Logger::Message{fmt, Fargs...}.trace(objectName);
+		}
+
+		template<typename... Targs>
+		inline void info(const char *fmt, Targs... Fargs) const {
+			Logger::Message{fmt, Fargs...}.info(objectName);
+		}
+
+		template<typename... Targs>
+		inline void warning(const char *fmt, Targs... Fargs) const {
+			Logger::Message{fmt, Fargs...}.warning(objectName);
+		}
+
+		template<typename... Targs>
+		inline void error(const char *fmt, Targs... Fargs) const {
+			Logger::Message{fmt, Fargs...}.error(objectName);
+		}
 
 	};
 
