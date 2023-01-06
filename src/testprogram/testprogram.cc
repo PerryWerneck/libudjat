@@ -34,6 +34,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/message.h>
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
@@ -142,6 +143,9 @@ static int service_test(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 
-	return service_test(argc,argv);
+	cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
 
+	//service_test(argc,argv);
+
+	return 0;
 }

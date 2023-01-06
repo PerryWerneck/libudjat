@@ -138,7 +138,7 @@
 		}
 
 		inline String & append(char *str) {
-			std::string::append(str);
+			std::string::append((const char *) str);
 			return *this;
 		}
 
