@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <udjat/tools/string.h>
  #include <iostream>
  #include <mutex>
  #include <pthread.h>
@@ -83,62 +84,18 @@
 		UDJAT_API Level LevelFactory(const char *name) noexcept;
 
 		/// @brief Unformatted Log message.
-		class UDJAT_API String : public std::string {
+		class UDJAT_API String : public Udjat::String {
 		public:
+
+			template<typename... Targs>
+			inline String(Targs... Fargs) : Udjat::String{Fargs...} {
+			}
+
 			void write(const Logger::Level level) const;
 			void write(const Logger::Level level, const char *domain) const;
 
 			inline void trace(const char *domain) const {
 				write(Logger::Trace,domain);
-			}
-
-			String() = default;
-
-			String(const char *str) : std::string(str) {
-			}
-
-			String(const std::string &str) : std::string(str) {
-			};
-
-			template<typename T>
-			String(const T &value) : std::string(std::to_string(value)) {
-			}
-
-			template<typename T, typename... Targs>
-			String(T &value, Targs... Fargs) {
-				append(value);
-				add(Fargs...);
-			}
-
-			String & append(const char *value) {
-				std::string::append(value);
-				return *this;
-			}
-
-			String & append(char *value) {
-				std::string::append(value);
-				return *this;
-			}
-
-			String & append(const std::string &value) {
-				return append(value.c_str());
-			}
-
-			String & append(const std::exception &e);
-
-			String & add() {
-				return *this;
-			}
-
-			template<typename T>
-			String & append(const T &value) {
-				return append(std::to_string(value));
-			}
-
-			template<typename T, typename... Targs>
-			String & add(T &value, Targs... Fargs) {
-				append(value);
-				return add(Fargs...);
 			}
 
 		};

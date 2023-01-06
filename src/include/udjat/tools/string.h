@@ -87,10 +87,22 @@
 		inline String(const char *str) : std::string{str} {
 		}
 
+		inline String(char *str) : std::string{str} {
+		}
+
 		inline String(const char *str, size_t length) : std::string(str,length) {
 		}
 
 		inline String(const std::string &str) : std::string{str} {
+		}
+
+		inline String(std::string &str) : std::string{str} {
+		}
+
+		inline String(const Udjat::String &str) : std::string{str} {
+		}
+
+		inline String(Udjat::String &str) : std::string{str} {
 		}
 
 		template<typename T>
@@ -120,12 +132,32 @@
 		//
 		// Append
 		//
-		String & append(const char *str) {
+		inline String & append(const char *str) {
 			std::string::append(str);
 			return *this;
 		}
 
-		String & append(const std::string &str) {
+		inline String & append(char *str) {
+			std::string::append(str);
+			return *this;
+		}
+
+		inline String & append(const std::string &str) {
+			std::string::append(str);
+			return *this;
+		}
+
+		inline String & append(std::string &str) {
+			std::string::append(str);
+			return *this;
+		}
+
+		inline String & append(const Udjat::String &str) {
+			std::string::append(str);
+			return *this;
+		}
+
+		inline String & append(Udjat::String &str) {
 			std::string::append(str);
 			return *this;
 		}

@@ -66,7 +66,7 @@
 	for(size_t signal = 0; signal < (sizeof(signals)/sizeof(signals[0]));signal++) {
 
 			Logger::String{
-				"Signal '",strsignal(signals[signal]),"' (",signals[signal],") will trigger a controlled stop"
+				"Signal '",(const char *) strsignal(signals[signal]),"' (",signals[signal],") will trigger a controlled stop"
 			}.write(Logger::Trace,"signal");
 
 			Udjat::Event::SignalHandler(this,signals[signal],[this](){

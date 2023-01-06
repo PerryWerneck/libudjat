@@ -59,7 +59,7 @@
 
 		static void handle_reload(int sig) noexcept {
 
-			Logger::String("Reloading configuration by signal '",strsignal(sig),"'").write(Logger::Trace,"econf");
+			Logger::String("Reloading configuration by signal '",(const char *) strsignal(sig),"'").write(Logger::Trace,"econf");
 
 			try {
 
