@@ -21,8 +21,11 @@
 
  #include <udjat/defs.h>
  #include <string>
- #include <iconv.h>
  #include <mutex>
+
+#ifdef HAVE_ICONV
+	#include <iconv.h>
+#endif // HAVE_ICONV
 
  namespace Udjat {
 

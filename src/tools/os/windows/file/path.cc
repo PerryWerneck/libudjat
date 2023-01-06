@@ -73,7 +73,7 @@
 		return attr & FILE_ATTRIBUTE_NORMAL;
 	}
 
-	void File::Path::mkdir(const char *dirname) {
+	void File::Path::mkdir(const char *dirname, int UDJAT_UNUSED(mode)) {
 
 		if(!(dirname && *dirname)) {
 			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
@@ -124,8 +124,8 @@
 		}
 	}
 
-	void File::Path::mkdir() const {
-		mkdir(c_str());
+	void File::Path::mkdir(int mode) const {
+		mkdir(c_str(),mode);
 	}
 
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
@@ -137,7 +137,7 @@
 		throw system_error(ENOTSUP,system_category(),"Not available on windows");
 	}
 
-	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) {
+	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
 		Win32::Path path{c_str()};
 

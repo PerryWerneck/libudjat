@@ -46,6 +46,33 @@
 		return *this;
 	}
 
+	char * String::strcasestr(const char *needle) {
+#ifdef HAVE_STRCASESTR
+
+		return ::strcasestr((char *) c_str(),needle);
+
+#else
+		std::string haystack{c_str()};
+		std::string ndl{needle};
+
+		for(char *ptr = (char *) haystack.c_str();*ptr;ptr++) {
+			*ptr = toupper(*ptr);
+		}
+
+		for(char *ptr = (char *) ndl.c_str();*ptr;ptr++) {
+			*ptr = toupper(*ptr);
+		}
+
+		auto pos = haystack.find(ndl);
+		if(pos == std::string::npos) {
+			return NULL;
+		}
+
+		return ((char *) c_str())+pos;
+
+#endif // HAVE_STRCASESTR
+	}
+
 	String & String::markup() {
 
 		static const struct {
@@ -57,7 +84,7 @@
 		};
 
 		for(size_t ix=0; ix < N_ELEMENTS(xlat); ix++) {
-			const char *ptr = strcasestr(c_str(),xlat[ix].from);
+			const char *ptr = strcasestr(xlat[ix].from);
 			if(ptr) {
 				replace((ptr - c_str()),strlen(xlat[ix].from),xlat[ix].to);
 			}

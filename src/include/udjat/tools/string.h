@@ -196,6 +196,29 @@
 		}
 
 		//
+		// Assign
+		//
+		inline String & operator = (const char *value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (const std::string &value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (const String &value) {
+			assign(value);
+			return *this;
+		}
+
+		template <typename T>
+		inline String & operator = (const T value) {
+			return assign(std::to_string(value));
+		}
+
+		//
 		// Others.
 		//
 		inline bool operator ==(const char * str) const noexcept {
@@ -234,6 +257,10 @@
 		String & strip() noexcept;
 
 		String & markup();
+
+		/// @brief Find first occurrence of substring (case insensitive);
+		/// @return Pointer to first occurrence or NULL if not found.
+		char * strcasestr(const char *needle);
 
 		std::vector<String> split(const char *delim);
 
