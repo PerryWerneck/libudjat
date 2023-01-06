@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	Message & Message::append(const char *str) {
+	void Message::append(const char *str) {
 
 		string key{"{"};
 		key += std::to_string(++index);
@@ -38,7 +38,7 @@
 		size_t from = find(key);
 		if(from != std::string::npos) {
 			replace(from,key.size(),str);
-			return *this;
+			return;
 		}
 
 		from = find("{}");
@@ -49,11 +49,7 @@
 
 		replace(from,2,str);
 
-		return *this;
-	}
-
-	Message & Message::append(const bool value) {
-		return append((const char *) (value ? _("Yes") : _("No")));
+		return;
 	}
 
  }

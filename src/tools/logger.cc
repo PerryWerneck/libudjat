@@ -219,30 +219,6 @@
 		return Logger::Error;
 	}
 
-	//
-	// Log messages.
-	//
-	Logger::Message & Logger::Message::append(const char *value) {
-
-		size_t from = find("{");
-		if(from == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
-		}
-
-		size_t to = find("}",from);
-		if(to == std::string::npos) {
-			throw std::runtime_error("Invalid template string");
-		}
-
-		replace(from,(to-from)+1,value);
-
-		return *this;
-	}
-
-	Logger::Message & Logger::Message::append(const std::exception &e) {
-		return append(e.what());
-	}
-
 	void Logger::redirect(bool console, bool file) {
 
 		static const Level levels[] = { Info,Warning,Error };
@@ -313,17 +289,8 @@
 
 	}
 
-
-	void Logger::String::write(const Logger::Level level) const {
-		Logger::write(level,c_str());
-	}
-
 	void Logger::String::write(const Logger::Level level, const char *domain) const {
 		Logger::write(level,domain,c_str());
-	}
-
-	void Logger::Message::write(const Logger::Level level) const {
-		Logger::write(level,c_str());
 	}
 
 	void Logger::Message::write(const Logger::Level level, const char *domain) const {

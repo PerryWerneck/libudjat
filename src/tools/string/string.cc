@@ -31,9 +31,12 @@
 
  namespace Udjat {
 
-	String & String::append(const bool value) {
-		std::string::append( (const char *) (value ? _( "yes" ) : _( "no" )) );
-		return *this;
+	void String::append(const char *str) {
+		std::string::append(str);
+	}
+
+	void String::append(const bool value) {
+		append( (const char *) (value ? _( "yes" ) : _( "no" )) );
 	}
 
 	String & String::strip() noexcept {

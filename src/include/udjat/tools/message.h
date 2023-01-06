@@ -20,71 +20,23 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/string.h>
  #include <string>
 
  namespace Udjat {
 
-	class UDJAT_API Message : public std::string {
+	class UDJAT_API Message : public String {
 	private:
 		size_t index = 0;
 
 	public:
-		inline Message(const char *fmt) : std::string{fmt} {
-		}
 
 		template<typename... Targs>
-		Message(const char *fmt, Targs... Fargs) : std::string{fmt} {
-			append(Fargs...);
+		inline Message(const char *fmt, Targs... Fargs) : Udjat::String{fmt} {
+			Udjat::String::append(Fargs...);
 		}
 
-		Message & append(const char *str);
-		Message & append(const bool value);
-
-		inline Message & append(char *str) {
-			return append((const char *) str);
-		}
-
-		inline Message & append(const std::string &str) {
-			return append(str.c_str());
-		}
-
-		inline Message & append(std::string &str) {
-			return append(str.c_str());
-		}
-
-		inline Message & append() {
-			return *this;
-		}
-
-		template<typename T>
-		inline Message & append(const T &str) {
-			return append(std::to_string(str).c_str());
-		}
-
-		template<typename... Targs>
-		Message & append(const char *str, Targs... Fargs) {
-			append(str);
-			return append(Fargs...);
-		}
-
-		template<typename... Targs>
-		Message & append(const std::string &str, Targs... Fargs) {
-			append(str.c_str());
-			return append(Fargs...);
-		}
-
-		template<typename... Targs>
-		Message & append(const bool value, Targs... Fargs) {
-			append(value);
-			return append(Fargs...);
-		}
-
-		template<typename T, typename... Targs>
-		Message & append(const T str, Targs... Fargs) {
-			append(str);
-			return append(Fargs...);
-		}
-
+		void append(const char *str) override;
 
 	};
  }

@@ -143,6 +143,7 @@ static int service_test(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 
+	cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
 	cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
 
 	//service_test(argc,argv);

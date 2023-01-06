@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <string>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/message.h>
  #include <iostream>
  #include <mutex>
  #include <pthread.h>
@@ -91,49 +92,51 @@
 			inline String(Targs... Fargs) : Udjat::String{Fargs...} {
 			}
 
-			void write(const Logger::Level level) const;
-			void write(const Logger::Level level, const char *domain) const;
+			void write(const Logger::Level level, const char *domain = "") const;
 
-			inline void trace(const char *domain) const {
+			inline void trace(const char *domain = "") const {
 				write(Logger::Trace,domain);
+			}
+
+			inline void info(const char *domain = "") const {
+				write(Logger::Info,domain);
+			}
+
+			inline void warning(const char *domain = "") const {
+				write(Logger::Warning,domain);
+			}
+
+			inline void error(const char *domain = "") const {
+				write(Logger::Error,domain);
 			}
 
 		};
 
 		/// @brief Formatted Log message.
-		class UDJAT_API Message : public std::string {
+		class UDJAT_API Message : public Udjat::Message {
 		public:
-			template<typename T, typename... Targs>
-			Message(const char *fmt, T &value, Targs... Fargs) : std::string(fmt) {
-				append(value);
-				add(Fargs...);
+
+			template<typename... Targs>
+			inline Message(const char *fmt, Targs... Fargs) : Udjat::Message{fmt, Fargs...} {
 			}
 
-			Message & append(const char *value);
+			void write(const Logger::Level level, const char *domain = "") const;
 
-			Message & append(const std::string &value) {
-				return append(value.c_str());
+			inline void trace(const char *domain = "") const {
+				write(Logger::Trace,domain);
 			}
 
-			Message & append(const std::exception &e);
-
-			Message & add() {
-				return *this;
+			inline void info(const char *domain = "") const {
+				write(Logger::Info,domain);
 			}
 
-			template<typename T>
-			Message & append(const T &value) {
-				return append(std::to_string(value));
+			inline void warning(const char *domain = "") const {
+				write(Logger::Warning,domain);
 			}
 
-			template<typename T, typename... Targs>
-			Message & add(T &value, Targs... Fargs) {
-				append(value);
-				return add(Fargs...);
+			inline void error(const char *domain = "") const {
+				write(Logger::Error,domain);
 			}
-
-			void write(const Logger::Level level) const;
-			void write(const Logger::Level level, const char *domain) const;
 
 		};
 

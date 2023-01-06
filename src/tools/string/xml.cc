@@ -77,5 +77,9 @@
 
 	}
 
+	void String::add(const char *str) {
+		std::string::append(str);
+	}
+
  }
 

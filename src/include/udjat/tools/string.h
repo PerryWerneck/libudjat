@@ -77,6 +77,9 @@
 
 	/// @brief Extended string.
 	class UDJAT_API String : public std::string {
+	protected:
+		virtual void add(const char *str);
+
 	public:
 		//
 		// Construct
@@ -132,70 +135,64 @@
 		//
 		// Append
 		//
-		inline String & append(const char *str) {
-			std::string::append(str);
-			return *this;
+		virtual void append(const char *str);
+
+		inline void append(char *str) {
+			append((const char *) str);
 		}
 
-		inline String & append(char *str) {
-			std::string::append((const char *) str);
-			return *this;
+		inline void append(const std::string &str) {
+			append(str.c_str());
 		}
 
-		inline String & append(const std::string &str) {
-			std::string::append(str);
-			return *this;
+		inline void append(std::string &str) {
+			append(str.c_str());
 		}
 
-		inline String & append(std::string &str) {
-			std::string::append(str);
-			return *this;
+		inline void append(const Udjat::String &str) {
+			append(str.c_str());
 		}
 
-		inline String & append(const Udjat::String &str) {
-			std::string::append(str);
-			return *this;
+		inline void append(Udjat::String &str) {
+			append(str.c_str());
 		}
 
-		inline String & append(Udjat::String &str) {
-			std::string::append(str);
-			return *this;
+		inline void append(const std::exception &e) {
+			append(e.what());
 		}
 
-		String & append(const bool value);
+		void append(const bool value);
 
-		inline String & append() {
-			return *this;
+		inline void append() {
 		}
 
 		template<typename T>
-		inline String & append(const T &str) {
-			std::string::append(std::to_string(str));
-			return *this;
+		inline void append(const T &str) {
+			append(std::to_string(str));
 		}
 
 		template<typename... Targs>
-		String & append(const char *str, Targs... Fargs) {
-			std::string::append(str);
-			return append(Fargs...);
+		void append(const char *str, Targs... Fargs) {
+			append(str);
+			append(Fargs...);
 		}
 
 		template<typename... Targs>
-		String & append(const std::string &str, Targs... Fargs) {
-			std::string::append(str);
-			return append(Fargs...);
+		void append(const std::string &str, Targs... Fargs) {
+			append(str.c_str());
+			append(Fargs...);
 		}
 
 		template<typename... Targs>
-		String & append(const bool value, Targs... Fargs) {
-			String::append(value);
-			return append(Fargs...);
+		void append(const bool value, Targs... Fargs) {
+			append(value);
+			append(Fargs...);
 		}
 
 		template<typename T, typename... Targs>
-		String & append(const T str, Targs... Fargs) {
+		void append(const T str, Targs... Fargs) {
 			append(str);
-			return append(Fargs...);
+			append(Fargs...);
 		}
 
 		//
