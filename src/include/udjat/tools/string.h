@@ -203,12 +203,27 @@
 			return *this;
 		}
 
+		inline String & operator = (char *value) {
+			assign(value);
+			return *this;
+		}
+
 		inline String & operator = (const std::string &value) {
 			assign(value);
 			return *this;
 		}
 
+		inline String & operator = (std::string &value) {
+			assign(value);
+			return *this;
+		}
+
 		inline String & operator = (const String &value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (String &value) {
 			assign(value);
 			return *this;
 		}
