@@ -21,10 +21,10 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <cstring>
  #include <iostream>
  #include <vector>
  #include <functional>
- #include <udjat/tools/object.h>
  #include <udjat/tools/xml.h>
 
  namespace Udjat {
