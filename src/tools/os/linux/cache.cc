@@ -24,6 +24,7 @@
  #include <unistd.h>
  #include <sys/types.h>
  #include <udjat/tools/logger.h>
+ #include <pwd.h>
 
  using namespace std;
 
@@ -31,16 +32,27 @@
 
  	static std::string getCacheDir() {
 
-		if(getuid() == 0) {
+		uid_t uid = getuid();
+
+		if(uid == 0) {
 			debug("Root user, using /var/cache");
 			return "/var/cache/";
 		}
 
-		const char *homedir = getenv("HOME");
-		if(!homedir)
-			homedir = "~";
+		string cachedir;
+		{
+			long strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+			char strbuf[strbuflen+1];
+			struct passwd *pw = NULL;
+			struct passwd pwbuf;
 
-		string cachedir{homedir};
+			if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
+				throw system_error(errno,system_category(),"Error getting user homedir");
+			}
+
+			cachedir = pw->pw_dir;
+		}
+
 		cachedir.append("/.cache/");
 
 		debug("Non root user, using ",cachedir);
