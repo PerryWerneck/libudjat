@@ -22,6 +22,7 @@
  #include <udjat/tools/file.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/protocol.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -66,6 +67,11 @@
 
 	}
 
+	void File::copy(const char *from, const char *to, bool replace) {
+		File::copy(from,to,Protocol::Watcher::progress,replace);
+	}
+
+	/*
 	void File::copy(const char *from, const char *to) {
 
 #ifdef _WIN32
@@ -92,6 +98,7 @@
 		::close(fd);
 
 	}
+	*/
 
 	std::string File::save(const char *contents) {
 

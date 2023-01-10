@@ -42,7 +42,9 @@ namespace Udjat {
 		void save(int fd, const char *filename);
 
 		/// @brief Copy file
-		void copy(const char *from, const char *to);
+		void copy(const char *from, const char *to, bool replace = true);
+
+		void copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace = true);
 
 		/// @brief Save to temporary file.
 		/// @param contents String with file contents.
