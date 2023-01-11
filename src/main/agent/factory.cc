@@ -19,6 +19,7 @@ namespace Udjat {
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const {
 
+		/// @brief Internal agent builders.
 		static const struct
 		{
 			const char *type;
@@ -60,6 +61,7 @@ namespace Udjat {
 				"script",
 				[](const pugi::xml_node &node) {
 
+					/// @brief Agent keeping the value of script return code.
 					class Script : public Udjat::Agent<int32_t> {
 					private:
 						const char *cmdline;
@@ -73,6 +75,8 @@ namespace Udjat {
 						}
 
 						bool refresh(bool UDJAT_UNUSED(ondemand)) {
+
+							// Execute script, save return code.
 
 							int32_t value = -1;
 
@@ -103,6 +107,7 @@ namespace Udjat {
 
 		};
 
+		/// @brief The target agent type.
 		const char *type = node.attribute("type").as_string(builders[0].type);
 
 		if(type && *type) {
@@ -128,6 +133,7 @@ namespace Udjat {
 
 		}
 
+		// No module or internal factory for this type, forward it to next level.
 		return Factory::AgentFactory(parent,node);
 	}
 
