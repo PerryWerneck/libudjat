@@ -44,7 +44,7 @@
 
  namespace std {
 
-	const char * to_string(const Udjat::Level level);
+	UDJAT_API const char * to_string(const Udjat::Level level);
 
 	inline ostream& operator<< (ostream& os, const Udjat::Level level) {
 		return os << to_string(level);

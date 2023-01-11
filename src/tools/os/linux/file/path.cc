@@ -25,6 +25,7 @@
  #include <dirent.h>
  #include <fnmatch.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -49,6 +50,96 @@
 			contents += wrote;
 
 		}
+	}
+
+	bool File::Path::dir(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return false;
+		}
+
+		struct stat s;
+		if(stat(pathname,&s) != 0) {
+			if(errno == ENOENT) {
+				return false;
+			}
+			throw system_error(errno,system_category(),pathname);
+		}
+		return (s.st_mode & S_IFDIR) != 0;
+	}
+
+	bool File::Path::regular(const char *pathname) {
+
+		if(!(pathname && *pathname)) {
+			return false;
+		}
+
+		struct stat s;
+		if(stat(pathname,&s) != 0) {
+			if(errno == ENOENT) {
+				return false;
+			}
+			throw system_error(errno,system_category(),pathname);
+		}
+		return (s.st_mode & S_IFREG) != 0;
+	}
+
+	void File::Path::mkdir(const char *dirname, int mode) {
+
+		if(!(dirname && *dirname)) {
+			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
+		}
+
+		// Try to create the full path first.
+		if(!::mkdir(dirname,mode)) {
+			return;
+		} else if(errno == EEXIST) {
+			if(File::Path::dir(dirname)) {
+				return;
+			}
+			throw system_error(ENOTDIR,system_category(),dirname);
+		}
+
+		// walk the full path and try creating each element
+		// Reference: https://github.com/GNOME/glib/blob/main/glib/gfileutils.c
+
+		string path{dirname};
+		if(path[path.size()-1] == '/') {
+			path.resize(path.size()-1);
+		}
+
+		debug("Creating path '",path.c_str(),"'");
+		size_t mark = path.find("/",1);
+		while(mark != string::npos) {
+			path[mark] = 0;
+			debug("Creating '",path.c_str(),"'");
+			if(::mkdir(path.c_str(),mode)) {
+				if(errno == EEXIST) {
+					if(!File::Path::dir(path.c_str())) {
+						throw system_error(ENOTDIR,system_category(),path.c_str());
+					}
+				} else {
+					throw system_error(errno,system_category(),path.c_str());
+				}
+			}
+
+			path[mark] = '/';
+			mark = path.find("/",mark+1);
+		}
+
+		if(::mkdir(path.c_str(),mode)) {
+			if(errno == EEXIST) {
+				if(!File::Path::dir(path.c_str())) {
+					throw system_error(ENOTDIR,system_category(),path.c_str());
+				}
+			} else {
+				throw system_error(errno,system_category(),path.c_str());
+			}
+		}
+	}
+
+	void File::Path::mkdir(int mode) const {
+		mkdir(c_str(),mode);
 	}
 
 	void File::Path::replace(const char *filename, const char *contents) {
@@ -123,7 +214,7 @@
 		} catch(...) {
 
 			::close(fd);
-			remove(tempfile.c_str());
+			::remove(tempfile.c_str());
 			throw;
 		}
 
@@ -134,7 +225,7 @@
 
 			if(::access(filename,F_OK) == 0) {
 				string backup = (string{filename} + "~");
-				if(remove(backup.c_str()) == -1 && errno != ENOENT) {
+				if(::remove(backup.c_str()) == -1 && errno != ENOENT) {
 					cerr << "Error '" << strerror(errno) << "' removing '" << backup.c_str() << "'" << endl;
 				}
 				if(link(filename,backup.c_str()) == -1) {
@@ -142,7 +233,7 @@
 				}
 			}
 
-			remove(filename);
+			::remove(filename);
 			if(link(tempfile.c_str(),filename) == -1) {
 				throw system_error(errno, system_category(), string{"Error saving '"} + filename + "'");
 			}
@@ -155,115 +246,122 @@
 				throw system_error(errno, system_category(), string{"Error setting owner & group on '"} + filename + "'");
 			}
 
-			remove(tempfile.c_str());
+			::remove(tempfile.c_str());
 
 		} catch(...) {
-			remove(tempfile.c_str());
+			::remove(tempfile.c_str());
 			throw;
 		}
 
 	}
 
-	bool File::Path::for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call) {
+	bool File::Path::match(const char *pathname, const char *pattern) noexcept {
+		return fnmatch(pattern,pathname,FNM_CASEFOLD) == 0;
+	}
 
-		DIR *dir;
-		size_t szPath = strlen(path);
+	void File::Path::remove(bool UDJAT_UNUSED(force)) {
 
-		if(path[szPath-1] == '/') {
-			szPath--;
-			dir = opendir(string(path,szPath).c_str());
-		} else {
-			dir = opendir(path);
+		char path[PATH_MAX+1];
+		if(!realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),*this);
 		}
 
-		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
-		}
-
-		bool rc = true;
-
-		try {
-
-			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
-
-				if(!de->d_name) {
-					continue;
-				}
-
-				Stat st;
-				if(fstatat(dirfd(dir),de->d_name,&st,0) == -1) {
-					cerr << path << de->d_name << ": " << strerror(errno) << endl;
-					continue;
-				}
-
-				string filename{path,szPath};
-				filename += "/";
-				filename += de->d_name;
-
-				rc = call(filename.c_str(), st);
-
+		if(!dir()) {
+			debug("Removing '",path,"'");
+			if(unlink(path)) {
+				throw system_error(errno,system_category(),path);
 			}
-
-		} catch(...) {
-
-			closedir(dir);
-			throw;
-
+			return;
 		}
 
-		closedir(dir);
-
-		return rc;
-	}
-
-	bool File::Path::for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call) {
-
-		DIR *dir;
-		size_t szPath = strlen(path);
-
-		if(path[szPath-1] == '/') {
-			szPath--;
-			dir = opendir(string(path,szPath).c_str());
-		} else {
-			dir = opendir(path);
-		}
+		// It's a folder, navigate.
+		DIR *dir = opendir(path);
 
 		if(!dir) {
-			throw system_error(ENOENT,system_category(),path);
+			throw system_error(errno,system_category(),path);
 		}
 
-		bool rc = true;
+		bool rc = false;
 
 		try {
 
 			struct dirent *de;
-			while(rc && (de = readdir(dir)) != NULL) {
+			while(!rc && (de = readdir(dir)) != NULL) {
 
 				if(!de->d_name || de->d_name[0] == '.') {
 					continue;
 				}
 
-				string filename(path,szPath);
+				File::Path filename{path};
 				filename += "/";
 				filename += de->d_name;
-
-				if(recursive && de->d_type == DT_DIR) {
-
-					rc = for_each(filename.c_str(), pattern, recursive, call);
-
-				} else if(fnmatch(pattern,de->d_name,FNM_CASEFOLD) == 0) {
-
-#ifdef DEBUG
-					cout << "found '" << filename << "'" << endl;
-#endif // DEBUG
-
-					rc = call(filename.c_str());
-
-				}
+				filename.remove(force);
 
 			}
 
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		debug("Removing '",path,"'");
+		if(rmdir(path)) {
+			throw system_error(errno,system_category(),path);
+		}
+
+	}
+
+	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
+
+		if(!dir()) {
+			return call(*this);
+		}
+
+		char path[PATH_MAX+1];
+		if(!realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),*this);
+		}
+
+		debug(path);
+
+		// It's a folder, navigate.
+		DIR *dir = opendir(path);
+
+		if(!dir) {
+			if(errno == ENOTDIR) {
+				return false;
+			}
+			throw system_error(errno,system_category(),*this);
+		}
+
+		bool rc = false;
+
+		try {
+
+			struct dirent *de;
+			while(!rc && (de = readdir(dir)) != NULL) {
+
+				if(!de->d_name || de->d_name[0] == '.') {
+					continue;
+				}
+
+				File::Path filename{path};
+				filename += "/";
+				filename += de->d_name;
+
+				if(filename.dir()) {
+					if(recursive) {
+						rc = filename.for_each(call,recursive);
+					}
+				} else {
+					rc = call(filename);
+				}
+
+			}
 
 		} catch(...) {
 
@@ -276,7 +374,6 @@
 
 		return rc;
 	}
-
 
 
 }

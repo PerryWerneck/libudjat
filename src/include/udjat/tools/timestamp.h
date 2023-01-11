@@ -57,15 +57,19 @@
 				return value != 0;
 			}
 
-			/// @brief Reseta valor com atraso.
-			///
-			/// @param seconds	Nº de segundos após o atual para setar.
+			/// @brief Set a time delay.
+			/// @param seconds	Seconds after current timestamp to set.
 			TimeStamp & reset(const uint32_t seconds) noexcept {
-				value = time(nullptr) + seconds;
+				value = ::time(nullptr) + seconds;
 				return *this;
 			}
 
-			static time_t parse(const char *time, const char *format);
+			TimeStamp & reset(const char *time, const char *format = nullptr) {
+				value = ::time(nullptr) + parse(time,format);
+				return *this;
+			}
+
+			static time_t parse(const char *time, const char *format = nullptr);
 
 			TimeStamp & set(const char *time, const char *format = nullptr);
 
@@ -78,7 +82,11 @@
 				return set(time);
 			}
 
-			operator time_t() const noexcept {
+			inline operator time_t() const noexcept {
+				return this->value;
+			}
+
+			inline time_t as_value() const noexcept {
 				return this->value;
 			}
 

@@ -17,47 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /***
+  * @brief Implement the SubProcess common methods.
+  *
+  */
+
  #include <config.h>
- #include <private/module.h>
- #include <dlfcn.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/application.h>
+ #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
- #include <unistd.h>
+ #include <udjat/tools/intl.h>
+ #include <iostream>
+ #include <udjat/tools/threadpool.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	/*
-	bool Module::Controller::load(const pugi::xml_node &node) {
 
-		string filename = locate(node.attribute("name").as_string());
-
-		if(!filename.empty()) {
-
-			for(auto module : modules) {
-
-				// Check if the module is already loaded.
-				if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
-#ifdef DEBUG
-					debug("module '",filename,"' is already loaded");
-#endif // DEBUG
-					return true;
-				}
-
-			}
-
-			init(filename, node);
-
-		}
-
-		// Not found.
-		if(node.attribute("required").as_bool(true)) {
-			throw runtime_error(string{"Cant load module '"}+node.attribute("name").as_string() + "'");
-		}
-
-		return false;
-	}
-	*/
 
  }
 

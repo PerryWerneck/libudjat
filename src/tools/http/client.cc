@@ -35,10 +35,6 @@
 
 	namespace HTTP {
 
-		static const std::function<bool(double current, double total)> dummy_progress([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)) {
-			return true;
-		});
-
 		static void setup_cache(std::shared_ptr<Protocol::Worker> worker, const char *filename) {
 
 			struct stat st;
@@ -121,7 +117,8 @@
 		}
 
 		String Client::get() {
-			return get(dummy_progress);
+			Protocol::Watcher::getInstance().set_url(worker->url().c_str());
+			return get(Protocol::Watcher::progress);
 		}
 
 		String Client::post(const char *payload, const std::function<bool(double current, double total)> &progress) {
@@ -142,7 +139,8 @@
 		}
 
 		bool Client::save(const char *filename) {
-			return save(filename,dummy_progress);
+			Protocol::Watcher::getInstance().set_url(worker->url().c_str());
+			return save(filename,Protocol::Watcher::progress);
 		}
 
 		bool Client::save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
@@ -155,11 +153,22 @@
 				cout << "http\tCache for '" << filename << "' disabled by XML definition" << endl;
 			}
 
+			Protocol::Watcher::getInstance().set_url(client.worker->url().c_str());
 			return client.worker->save(filename,progress);
 		}
 
 		bool Client::save(const pugi::xml_node &node, const char *filename) {
-			return save(node,filename,dummy_progress);
+
+			Client client(node);
+
+			if(node.attribute("cache").as_bool(true)) {
+				setup_cache(client.worker,filename);
+			} else {
+				cout << "http\tCache for '" << filename << "' disabled by XML definition" << endl;
+			}
+
+			Protocol::Watcher::getInstance().set_url(client.worker->url().c_str());
+			return client.worker->save(filename,Protocol::Watcher::progress);
 		}
 
 		std::string Client::filename(const std::function<bool(double current, double total)> &progress) {

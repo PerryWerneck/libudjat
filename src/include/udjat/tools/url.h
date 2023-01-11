@@ -29,6 +29,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/string.h>
  #include <string>
  #include <cstring>
  #include <stdexcept>
@@ -38,7 +39,7 @@
 
  namespace Udjat {
 
-	class UDJAT_API URL : public std::string {
+	class UDJAT_API URL : public Udjat::String {
 	public:
 
 		class UDJAT_API Scheme : public std::string {
@@ -77,10 +78,10 @@
 		};
 
 		URL() = default;
-		URL(const char *str) : std::string(unescape(str)) {
+		URL(const char *str) : Udjat::String{unescape(str)} {
 		}
 
-		URL(const std::string &str) : URL(str.c_str()) {
+		URL(const std::string &str) : URL{str.c_str()} {
 		}
 
 		URL & operator += (const char *path);

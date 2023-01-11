@@ -124,11 +124,6 @@
 					value.setType(find_start(ptr+5));
 
 				}
-				/*
-				 else if(!strncasecmp(ptr,"Default:",8)) {
-
-				}
-				*/
 
 			} else {
 

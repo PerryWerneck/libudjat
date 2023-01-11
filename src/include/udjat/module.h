@@ -25,6 +25,7 @@
  #include <udjat/moduleinfo.h>
  #include <udjat/agent.h>
  #include <udjat/request.h>
+ #include <udjat/tools/file.h>
  #include <cstdarg>
 
  namespace Udjat {
@@ -90,10 +91,10 @@
 		/// @return Pointer to module or nullptr if not found.
 		static const Module * find(const char *name) noexcept;
 
-		/// @brief Load module by name or alias
-		/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
+		/// @brief Load module by path
+		/// @param name path to module filename or directory.
 		/// @param required true if the module is required.
-		static void load(const char *name, bool required);
+		static void load(const File::Path &path, bool required = true);
 
 		/// @brief Load module by XML node.
 		static void load(const pugi::xml_node &node);

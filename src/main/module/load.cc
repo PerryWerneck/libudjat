@@ -82,9 +82,25 @@ namespace Udjat {
 
 			debug("load-at-startup size=",modules.size());
 			if(modules.size()) {
-				cout << "modules\tPreloading " << modules.size() << " module(s) from configuration file" << endl;
-				for(const std::string &module : modules) {
-					Module::load(module.c_str(),true);
+				Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
+
+				for(std::string &module : modules) {
+
+					try {
+
+						Logger::String("Preloading ",module," from configuration file").trace("module");
+						load(File::Path{module});
+
+					} catch(const std::exception &e) {
+
+						cerr << "module\t" << e.what() << endl;
+
+					} catch(...) {
+
+						cerr << "module\tUnexpected error loading module" << endl;
+
+					}
+
 				}
 			}
 		}
@@ -122,8 +138,36 @@ namespace Udjat {
 		Controller::getInstance().load(node);
 	}
 
-	void Module::load(const char *name, bool required) {
-		throw system_error(ENOTSUP,system_category(),"Non XML module load was not implemented");
+	bool Module::Controller::load(const std::string &filename, bool required) {
+
+		bool already = false;
+		for_each([&already,filename](Module &module) {
+			if(!strcasecmp(module.filename().c_str(),filename.c_str())) {
+				already = true;
+			}
+		});
+
+		if(already) {
+			return true;
+		}
+
+		init(filename,pugi::xml_node{});
+
+		return false;
+	}
+
+	void Module::load(const File::Path &path, bool required) {
+
+		path.for_each("*" LIBEXT, [required](const File::Path &path){
+
+			if(Controller::getInstance().load(path,required)) {
+				cout << "Module '" << path.c_str() << "' is already loaded" << endl;
+			}
+
+			return false;
+
+		},true);
+
 	}
 
 }

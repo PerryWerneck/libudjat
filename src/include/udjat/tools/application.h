@@ -25,6 +25,7 @@
  #include <udjat/tools/xml.h>
  #include <string>
  #include <ostream>
+ #include <memory>
 
  namespace Udjat {
 
@@ -43,6 +44,19 @@
 		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.
 		static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
+
+		/// @brief Load XML application definitions.
+		/// @param pathname Path to a single xml file or a folder with xml files.
+		/// @param force Do a reconfiguration even if the file hasn't change.
+		/// @return Seconds for reconfiguation.
+		static time_t UDJAT_API setup(const char *pathname, bool force = false);
+
+		/// @brief Load XML application definitions.
+		/// @param agent New root agent.
+		/// @param pathname Path to a single xml file or a folder with xml files.
+		/// @param force Do a reconfiguration even if the file hasn't change.
+		/// @return Seconds for file refresh.
+		static time_t UDJAT_API setup(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false);
 
 		/// @brief Finalize application.
 		static int UDJAT_API finalize();
@@ -118,6 +132,13 @@
 			/// @param system When true use the systemdatadir for file path if necessary.
 			DataFile(const XML::Node &node, const char *attrname = "path", bool system = true);
 
+			/// @brief Create a full path to datafile based on name and XML definition.
+			/// @param type Datafile type (subdirectory).
+			/// @param node XML node for file definition.
+			/// @param attrname Attribute for filename
+			/// @param system When true use the systemdatadir for file path if necessary.
+			DataFile(const char *type, const XML::Node &node, const char *attrname = "path", bool system = true);
+
 			/// @brief Create a full path to datafile.
 			/// @param name	The file name.
 			/// @param system When true use the systemdatadir for file path if necessary.
@@ -156,7 +177,7 @@
 			SysConfigDir(const char *subdir);
 		};
 
-		class UDJAT_API CacheDir : public std::string {
+		class UDJAT_API CacheDir : public File::Path {
 		public:
 			CacheDir();
 			CacheDir(const char *subdir);

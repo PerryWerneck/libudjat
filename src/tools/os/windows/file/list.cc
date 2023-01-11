@@ -108,10 +108,14 @@
 	}
 
 	File::List::List(const char *path, const char *pattern, bool recursive) {
-		Path::for_each(path,pattern,recursive,[this](const char *filename){
-			emplace_back(filename);
-			return true;
-		});
+
+		File::Path{path}.for_each([this,pattern](const File::Path &filename){
+			if(filename.match(pattern)) {
+				emplace_back(filename);
+			}
+			return false;
+		},recursive);
+
 	}
 
 	File::List::~List() {

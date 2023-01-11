@@ -137,6 +137,7 @@ namespace Udjat {
 	/// @brief Abstract objects.
 	namespace Abstract {
 
+		class Object;
 		class Agent;
 		class State;
 		class Alert;

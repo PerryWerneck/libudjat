@@ -132,10 +132,6 @@
 		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
 	}
 
-	static const std::function<bool(double current, double total)> dummy_progress([](double UDJAT_UNUSED(current), double UDJAT_UNUSED(total)) {
-		return true;
-	});
-
 	Protocol::Worker & Protocol::Worker::url(const char *url) noexcept {
 
 		const char *scheme = strstr(url,"://");
@@ -163,11 +159,13 @@
 	}
 
 	String Protocol::Worker::get() {
-		return get(dummy_progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return get(Protocol::Watcher::progress);
 	}
 
 	int Protocol::Worker::test() noexcept {
-		return test(dummy_progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return test(Protocol::Watcher::progress);
 	}
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
@@ -175,11 +173,13 @@
 	}
 
 	bool Protocol::Worker::save(const char *filename, bool replace) {
-		return save(filename, dummy_progress, replace);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return save(filename, Protocol::Watcher::progress, replace);
 	}
 
 	string Protocol::Worker::save() {
-		return save(dummy_progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return save(Protocol::Watcher::progress);
 	}
 
 	string Protocol::Worker::save(const std::function<bool(double current, double total)> &progress) {
@@ -205,7 +205,8 @@
 	}
 
 	std::string Protocol::Worker::filename() {
-		return filename(dummy_progress);
+		Protocol::Watcher::getInstance().set_url(args.url.c_str());
+		return filename(Protocol::Watcher::progress);
 	}
 
 	std::ostream & Protocol::Worker::info() const {

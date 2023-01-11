@@ -89,6 +89,10 @@
 		return c_str();
 	}
 
+	std::ostream & NamedObject::trace() const {
+		return Logger::trace() << objectName << "\t";
+	}
+
 	std::ostream & NamedObject::info() const {
 		return cout << objectName << "\t";
 	}
@@ -335,8 +339,6 @@
 
 		while(node) {
 
-			//debug("Searching '",node.name(),"' for ",key);
-
 			pugi::xml_attribute attribute = node.attribute(key.c_str());
 			if(attribute) {
 				return attribute;
@@ -447,5 +449,14 @@
 
 	}
 
+	const char * Abstract::Object::getChildValue(const pugi::xml_node &node, const char *group) {
+		String text{node.child_value()};
+		text.expand(node,group);
+		text.strip();
+		if(text.empty()) {
+			return "";
+		}
+		return text.as_quark();
+	}
 
  }

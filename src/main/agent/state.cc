@@ -78,15 +78,19 @@ namespace Udjat {
 	bool Abstract::Agent::onStateChange(std::shared_ptr<State> state, bool activate, const char *message) {
 
 		if(state.get() == this->current_state.selected.get()) {
+			// It's the same state, just return.
 			debug("Changing '",name(),"' to same state (",state->summary(),"), ignored");
 			return false;
 		}
 
+		// Save current values.
 		auto saved_level = level();
 		auto saved_ready = ready();
 		auto level = state->level();
 
 		if(current_state.activation == current_state.Activation::StateWasActivated) {
+
+			// Current state was activated, deactivate it
 
 			debug("Agent '",name(),"' is deactivating state '",this->state()->summary(),"'");
 
@@ -108,11 +112,16 @@ namespace Udjat {
 
 		if(current_state.selected->forward()) {
 
+			// Current state was forwarded? Check agent children and remove it from them.
+
 			debug("Forwarding inactive state '",this->current_state.selected->summary(),"' from '",name(),"' to children");
 
 			for_each([this](Abstract::Agent &agent){
 
 				if(&agent != this && agent.current_state.selected.get() == this->current_state.selected.get()) {
+
+					// Child is in the forwarded state, change it to default.
+
 					agent.current_state.set(agent.computeState());
 					debug("Removing forwarded state from agent '",agent.name(),"', new state is '",agent.current_state.selected->summary(),"'");
 					if(agent.update.timer) {
@@ -125,6 +134,8 @@ namespace Udjat {
 		}
 
 		if(activate) {
+
+			// Activate new state.
 
 			try {
 
@@ -146,26 +157,29 @@ namespace Udjat {
 
 		} else {
 
+			// Dont activate, just set the new state.
+
 			current_state.set(state);
 
 		}
 
 		debug("New state on '",name(),"' is '",this->state()->summary(),"'");
 
+		// Notify listeners.
 		notify(STATE_CHANGED);
 
 		if(saved_level != level) {
 
-			if(message && *message) {
+			// State level has changed, log and notify.
 
-				std::string body{this->state()->to_string()}; // Why is this necessary?
+			if(message && *message) {
 
 				LogFactory(level)
 					<< name()
 					<< "\t"
 					<< Logger::Message{
 							message,
-							body,
+							this->state()->to_string(),
 							level
 						}
 					<< endl;
@@ -200,8 +214,6 @@ namespace Udjat {
 			info() << "Ignoring state '" << state->summary() << "' by parent (" << parent->name() << ") request" << endl;
 			return false;
 		}
-
-		//debug("New state for '",name(),"' is ",state->summary()," (",state->level(),")");
 
 		if(onStateChange(state,true,"Current state changed to '{}' ({})")) {
 

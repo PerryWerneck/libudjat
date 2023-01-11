@@ -154,25 +154,6 @@
 
 		return protocol->call(url,method,payload);
 
-		/*
-		const Protocol * protocol = nullptr;
-		const char *hostname = strstr(url,"://");
-		const char *prefix = strchr(url,'+');
-
-		if(prefix && prefix < hostname) {
-			protocol = find(string(url,prefix-url).c_str());
-			url = prefix+1;
-		} else {
-			protocol = find(string(url,hostname-url).c_str());
-		}
-
-		if(!protocol) {
-			throw system_error(ENOENT,system_category(),"No available protocol worker");
-		}
-
-		return protocol->call(URL(url),method,payload);
-		*/
-
 	}
 
 	String Protocol::call(const URL &url, const HTTP::Method method, const char *payload) const {

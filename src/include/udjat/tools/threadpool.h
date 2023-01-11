@@ -88,7 +88,6 @@
 			/// @param name Pool name (should be an static string).
 			ThreadPool(const char *name);
 
-			// ThreadPool(const pugi::xml_node &node);
 			~ThreadPool();
 
 			void stop();

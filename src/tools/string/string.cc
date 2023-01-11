@@ -24,34 +24,19 @@
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
+ #include <sstream>
+ #include <iomanip>
 
  using namespace std;
 
  namespace Udjat {
 
-	String::String(const XML::Node &node, const char *attrname, const char *def) {
-
-		auto attribute = node.attribute(attrname);
-
-		if(attribute) {
-			assign(attribute.as_string(def ? def : ""));
-		} else if(def) {
-			assign(def);
-		} else {
-			throw runtime_error(Logger::Message("Required attribute '{}' is missing",attrname));
-		}
-
-		if(empty()) {
-			return;
-		}
-
-		expand(node);
-
+	void String::append(const char *str) {
+		std::string::append(str);
 	}
 
-	String & String::concat(const bool value) {
-		append(value ? _( "yes" ) : _( "no" ) );
-		return *this;
+	void String::append(const bool value) {
+		append( (const char *) (value ? _( "yes" ) : _( "no" )) );
 	}
 
 	String & String::strip() noexcept {
@@ -59,6 +44,54 @@
 		assign(Udjat::strip(ptr));
 		free(ptr);
 		return *this;
+	}
+
+	char * String::strcasestr(const char *needle) {
+#ifdef HAVE_STRCASESTR
+
+		return ::strcasestr((char *) c_str(),needle);
+
+#else
+		std::string haystack{c_str()};
+		std::string ndl{needle};
+
+		for(char *ptr = (char *) haystack.c_str();*ptr;ptr++) {
+			*ptr = toupper(*ptr);
+		}
+
+		for(char *ptr = (char *) ndl.c_str();*ptr;ptr++) {
+			*ptr = toupper(*ptr);
+		}
+
+		auto pos = haystack.find(ndl);
+		if(pos == std::string::npos) {
+			return NULL;
+		}
+
+		return ((char *) c_str())+pos;
+
+#endif // HAVE_STRCASESTR
+	}
+
+	String & String::markup() {
+
+		static const struct {
+			const char *from;
+			const char *to;
+		} xlat[] = {
+			{ "<b>", 	"\x1b[1m"	},
+			{ "</b>",	"\x1b[0m"	}
+		};
+
+		for(size_t ix=0; ix < N_ELEMENTS(xlat); ix++) {
+			const char *ptr = strcasestr(xlat[ix].from);
+			if(ptr) {
+				replace((ptr - c_str()),strlen(xlat[ix].from),xlat[ix].to);
+			}
+		}
+
+		return *this;
+
 	}
 
 	String & String::chug() noexcept {
@@ -144,6 +177,10 @@
 		return str;
 	}
 
+	std::string markup(const char *text) {
+		return String{text}.markup();
+	}
+
 	std::string UDJAT_API strip(const char *str, ssize_t length) {
 
 		if(length < 0) {
@@ -222,6 +259,64 @@
 		return def;
 	}
 
+	static const char * byte_unit_names[] = { "b", "Kb", "Gb", "Mb", "Tb" };
+
+	String & String::set_byte(double value, int precision) {
+
+		if(value < 0.1) {
+			clear();
+			return *this;
+		}
+
+		double multiplier = 1024.0;
+		double selected = 1.0;
+		const char *name = "";
+		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
+
+			if(value >= multiplier) {
+				selected = multiplier;
+				name = byte_unit_names[ix];
+			}
+
+			multiplier *= 1024.0;
+
+		}
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << " " << name;
+		assign(stream.str());
+
+		return *this;
+	}
+
+	String & String::set_byte(unsigned long long value, int precision) {
+
+		if(!value) {
+			clear();
+			return *this;
+		}
+
+		unsigned long long multiplier = 1024;
+		float selected = 1;
+		const char *name = "";
+		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
+
+			if(value >= multiplier) {
+				selected = (float) multiplier;
+				name = byte_unit_names[ix];
+			}
+
+			multiplier *= 1024;
+
+		}
+
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << " " << name;
+		assign(stream.str());
+
+		return *this;
+	}
+
 	template<typename T>
 	static T convert(const T value, const char *str) {
 
@@ -230,12 +325,11 @@
 
 		if(*str) {
 
-			static const char * names[] = { "B", "KB", "GB", "MB", "TB" };
 			T multiplier = 1;
 
-			for(size_t ix = 0; ix < N_ELEMENTS(names);ix++) {
+			for(size_t ix = 0; ix < N_ELEMENTS(byte_unit_names);ix++) {
 
-				if(!strcasecmp(str,names[ix])) {
+				if(!strcasecmp(str,byte_unit_names[ix])) {
 					return multiplier * value;
 				}
 

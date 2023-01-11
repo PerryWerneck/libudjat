@@ -359,23 +359,4 @@
 		}
 	}
 
-	/*
-	void SystemService::trigger(Event event, Abstract::Agent &agent) {
-
-		auto state = agent.state();
-		String message{state->summary()};
-
-		debug("Trigger state ",((int) event)," - ",message);
-
-		if(message.strip().empty()) {
-			notify( _( "System is ready" ));
-		} else {
-			debug("Global state changes to '",message.c_str(),"'");
-			notify(message.c_str());
-		}
-
-	}
-	*/
-
-
  }

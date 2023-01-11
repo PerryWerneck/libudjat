@@ -26,6 +26,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/object.h>
 
  using namespace std;
 

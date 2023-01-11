@@ -42,7 +42,29 @@ namespace Udjat {
 		void save(int fd, const char *filename);
 
 		/// @brief Copy file
-		void copy(const char *from, const char *to);
+		void copy(const char *from, const char *to, bool replace = true);
+
+		void copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace = true);
+
+#ifdef _WIN32
+
+		UDJAT_API int move(const char *from, const char *to, bool replace = false);
+
+#else
+		/// @brief Move file, create 'bak'
+		/// @param from The origin file name.
+		/// @param to The target file name.
+		/// @param no_backup if false '.bak' file will be created with old contents.
+		UDJAT_API int move(const char *from, const char *to, bool no_backup = false);
+
+		/// @brief Move file, create 'bak'
+		/// @param The handle of an open origin file.
+		/// @param to The target file name.
+		/// @param no_backup if false '.bak' file will be created with old contents.
+		UDJAT_API int move(int fd, const char *to, bool no_backup = false);
+
+#endif // _WIN32
+
 
 		/// @brief Save to temporary file.
 		/// @param contents String with file contents.
@@ -59,10 +81,48 @@ namespace Udjat {
 			Path(const char *v) : std::string(v) {
 			}
 
+			Path(const char *v, size_t s) : std::string(v,s) {
+			}
+
 			Path(const std::string &v) : std::string(v) {
 			}
 
+			Path(const std::string &v, size_t s) : std::string(v,s) {
+			}
+
 			Path(int fd);
+
+			/// @brief Create directory.
+			static void mkdir(const char *dirname, int mode = 0755);
+
+			/// @brief Check if path is a directory.
+			/// @param pathname the pathname to check;
+			/// @return true if pathname is a directory.
+			static bool dir(const char *pathname);
+
+			/// @brief Check if path is a regular file.
+			/// @param pathname the pathname to check;
+			/// @return true if pathname is a regular file.
+			static bool regular(const char *pathname);
+
+			inline bool dir() const {
+				return dir(c_str());
+			}
+
+			inline bool regular() const {
+				return regular(c_str());
+			}
+
+			/// @brief Check if file match wildcard.
+			static bool match(const char *pathname, const char *pattern) noexcept;
+
+			/// @brief Check if file match wildcard.
+			inline bool match(const char *pattern) const noexcept {
+				return match(c_str(),pattern);
+			}
+
+			/// @brief Create directory.
+			void mkdir(int mode = 0755) const;
 
 			/// @brief Find file in the path, replace value if found.
 			/// @return true if 'name' was found and the object value was updated.
@@ -71,33 +131,23 @@ namespace Udjat {
 			/// @brief Test if the file is valid.
 			operator bool() const noexcept;
 
-			static bool for_each(const char *path, const char *pattern, bool recursive, std::function<bool (const char *)> call);
+			/// @brief Navigate on all directory files until lambda returns 'true'
+			/// @param call Lambda for file test.
+			/// @return false if all 'call' actions returned false.
+			/// @retval true call() has returned 'true', scan was finished.
+			/// @retval false All files were scanned, call never returned 'true'.
+			bool for_each(const std::function<bool (const File::Path &path)> &call, bool recursive = false) const;
 
-			/// @brief Navigate on all directory files.
-			/// @return false if 'call' has returned false;
-			static bool for_each(const char *path, const std::function<bool (const char *name, const Stat &stat)> &call);
+			/// @brief Navigate on directory files until lambda returns 'true'
+			/// @param pattern File filter pattern.
+			/// @param call Lambda for file test.
+			/// @return false if all 'call' actions returned false.
+			/// @retval true call() has returned 'true', scan was finished.
+			/// @retval false All files were scanned, call never returned 'true'.
+			bool for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive = false) const;
 
-			/// @brief Navigate on all directory files and directories.
-			/// @return false if 'call' has returned false;
-			static bool for_each(const char *pathname, const char *pattern, bool recursive, const std::function<bool (bool isdir, const char *path)> &call);
-
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			inline bool for_each(const char *pattern, bool recursive, std::function<bool (const char *filename)> call) const {
-				return for_each(c_str(),pattern,recursive,call);
-			}
-
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			inline bool for_each(bool recursive, std::function<bool (const char *filename)> call) const {
-				return for_each(c_str(),"*",recursive,call);
-			}
-
-			/// @brief Execute 'call' on every file on the path, until it returns 'false'.
-			/// @return false if 'call' has returned false;
-			bool for_each(std::function<bool (const char *filename)> call) {
-				return for_each(c_str(),"*",false,call);
-			}
+			/// @brief Recursive remove of files.
+			void remove(bool force = false);
 
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
@@ -134,13 +184,13 @@ namespace Udjat {
 				/// @brief Pointer to text file contents.
 				const char *text;
 
-				/// @brief Text length;
+				/// @brief Text length.
 				size_t length;
 
 				/// @brief Current position in the text.
 				size_t	offset;
 
-				/// @brief Value of the current row;
+				/// @brief Value of the current row.
 				std::string value;
 
 				Iterator & set(size_t offset);

@@ -51,7 +51,15 @@
 
  namespace Udjat {
 
-	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
+ 	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
+		return Application::setup(pathname,force);
+ 	}
+
+ 	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
+		return Application::setup(agent,pathname,force);
+ 	}
+
+	UDJAT_API time_t Application::setup(const char *pathname, bool force) {
 
 		Updater update(pathname);
 
@@ -64,7 +72,7 @@
 
 	}
 
-	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
+	UDJAT_API time_t Application::setup(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
 
 		Updater update(pathname);
 

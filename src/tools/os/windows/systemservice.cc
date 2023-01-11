@@ -641,31 +641,7 @@
 			{
 
 				cout << "win32\tRemoving files in '" << instpath << "'" << endl;
-
-				File::Path::for_each(instpath.c_str(),"*",true,[this](bool isdir, const char *path){
-					// https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-deletefile
-					debug("Removing '",path,"'");
-					if(isdir) {
-						if(RemoveDirectory(path) == 0) {
-							auto rc = GetLastError();
-							if(rc == ERROR_DIR_NOT_EMPTY) {
-								MoveFileEx(path,NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
-							} else {
-								error() << Win32::Exception::format(path,rc) << endl;
-							}
-						}
-					} else if(DeleteFile(path) == 0) {
-						auto rc = GetLastError();
-						if(rc == ERROR_ACCESS_DENIED) {
-							MoveFileEx(path,NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
-						} else {
-							error() << Win32::Exception::format(path,rc) << endl;
-						}
-					}
-					return true;
-				});
-
-				MoveFileEx(instpath.c_str(),NULL,MOVEFILE_DELAY_UNTIL_REBOOT);
+				File::Path{instpath}.remove(true);
 
 			}
 

@@ -22,34 +22,49 @@
  #include <udjat/tools/application.h>
  #include <fcntl.h>
  #include <unistd.h>
+ #include <sys/types.h>
+ #include <udjat/tools/logger.h>
+ #include <pwd.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Application::CacheDir::CacheDir() : string{"/var/cache/"} {
+ 	static std::string getCacheDir() {
+
+		uid_t uid = getuid();
+
+		if(uid == 0) {
+			debug("Root user, using /var/cache");
+			return "/var/cache/";
+		}
+
+		string cachedir;
+		{
+			long strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
+			char strbuf[strbuflen+1];
+			struct passwd *pw = NULL;
+			struct passwd pwbuf;
+
+			if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
+				throw system_error(errno,system_category(),"Error getting user homedir");
+			}
+
+			cachedir = pw->pw_dir;
+		}
+
+		cachedir.append("/.cache/");
+
+		debug("Non root user, using ",cachedir);
+		return cachedir;
+ 	}
+
+	Application::CacheDir::CacheDir() : File::Path{getCacheDir().c_str()} {
 
 		append(program_invocation_short_name);
 		append("/");
 
-		if(mkdir(c_str(), 0700) == 0)
-			return;
-
-		if(access(c_str(),W_OK) == 0)
-			return;
-
-		const char *homedir = getenv("HOME");
-		if(!homedir)
-			homedir = "~";
-
-		assign(homedir);
-		append("/.cache/");
-
-		append(program_invocation_short_name);
-		append("/");
-
-		if(mkdir(c_str(), 0700) == 0)
-			return;
+		mkdir(0700);
 
 		if(access(c_str(),W_OK) == 0)
 			return;
@@ -63,8 +78,7 @@
 		append(subdir);
 		append("/");
 
-		if(mkdir(c_str(), 0700) == 0)
-			return;
+		mkdir(0700);
 
 		if(access(c_str(),W_OK) == 0)
 			return;

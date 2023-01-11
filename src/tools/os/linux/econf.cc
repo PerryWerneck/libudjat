@@ -59,7 +59,7 @@
 
 		static void handle_reload(int sig) noexcept {
 
-			Logger::String("Reloading configuration by signal '",strsignal(sig),"'").write(Logger::Trace,"econf");
+			Logger::String("Reloading configuration by signal '",(const char *) strsignal(sig),"'").write(Logger::Trace,"econf");
 
 			try {
 
@@ -106,8 +106,6 @@
 			std::lock_guard<std::recursive_mutex> lock(guard);
 
 			if(!hFile) {
-
-				//cout << program_invocation_short_name << "\tLoading configuration" << endl;
 
 				econf_err err = econf_readDirs(
 					(econf_file **) &hFile,				// key_file
@@ -402,12 +400,12 @@
 
 
 			if(err != ECONF_SUCCESS) {
+
 				if(result) {
 					free(result);
 				}
 
 				if(err == ECONF_NOKEY) {
-	//				cout << "config\tNo configuration for '" << group << "." << name << "'" << endl;
 					return def;
 				}
 

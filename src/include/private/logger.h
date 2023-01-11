@@ -26,6 +26,12 @@
  #include <list>
  #include <mutex>
 
+ #ifdef DEBUG
+	#define DEBUG_ENABLED true
+ #else
+	#define DEBUG_ENABLED false
+ #endif // DEBUG
+
  namespace Udjat {
 
 	namespace Logger {
@@ -47,14 +53,14 @@
 #endif // !_WIN32
 
 			bool enabled[Logger::Trace+2] = {
-				true,		// Informational message.
-				true,		// Warning conditions.
-				true,		// Error conditions.
-				true,		// Debug message.
+				true,				// Informational message.
+				true,				// Warning conditions.
+				true,				// Error conditions.
+				DEBUG_ENABLED,		// Debug message.
 
 				// Allways the last ones.
-				true,		// Trace message.
-				true,		// Notify message.
+				DEBUG_ENABLED,		// Trace message.
+				true,				// Notify message.
 			};
 
 			static Options & getInstance();

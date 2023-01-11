@@ -143,7 +143,7 @@
 
 	Application::DataDir::DataDir(const char *subdir) : DataDir() {
 		append(subdir);
-		mkdir(c_str());
+		File::Path::mkdir(c_str());
 		append("\\");
 	}
 
@@ -189,11 +189,10 @@
 		string result = get_special_folder(known_folder_guid_ptr);
 
 		result.append(Application::Name());
-		mkdir(result.c_str());
-
 		result.append("\\");
 		result.append(subdir);
-		mkdir(result.c_str());
+
+		File::Path::mkdir(result.c_str());
 
 		result.append("\\");
 		return result;
@@ -205,7 +204,7 @@
 
 			assign(Win32::Registry().get("systemdatadir",""));
 			if(!empty()) {
-				mkdir(c_str());
+				mkdir();
 				return;
 			}
 
@@ -216,7 +215,7 @@
 		assign(get_special_folder(FOLDERID_ProgramData));
 
 		append(Application::Name());
-		mkdir(c_str());
+		mkdir();
 		append("\\");
 
 	}
@@ -282,8 +281,8 @@
 
 	Application::LibDir::LibDir(const char *subdir) : Application::LibDir() {
 		append(subdir);
+		File::Path::mkdir(c_str());
 		append("\\");
-		mkdir(c_str());
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {
@@ -328,8 +327,8 @@
 
 	Application::SysConfigDir::SysConfigDir(const char *subdir) : Application::SysConfigDir() {
 		append(subdir);
+		File::Path::mkdir(c_str());
 		append("\\");
-		mkdir(c_str());
 	}
 
 	Application::LogDir::LogDir() {
@@ -338,7 +337,7 @@
 
 			assign(Win32::Registry("log").get("path",""));
 			if(!empty()) {
-				mkdir(c_str());
+				File::Path::mkdir(c_str());
 				return;
 			}
 
@@ -347,14 +346,14 @@
 		}
 
 		assign(get_special_folder(FOLDERID_ProgramData,"logs"));
+		File::Path::mkdir(c_str());
 
 	}
 
-
 	Application::LogDir::LogDir(const char *subdir) : LogDir() {
 		append(subdir);
+		File::Path::mkdir(c_str());
 		append("\\");
-		mkdir(c_str());
 	}
 
 	Application::CacheDir::CacheDir() {
@@ -363,7 +362,7 @@
 
 			assign(Win32::Registry().get("cachedir",""));
 			if(!empty()) {
-				mkdir(c_str());
+				File::Path::mkdir(c_str());
 				return;
 			}
 
@@ -372,12 +371,13 @@
 		}
 
 		assign(get_special_folder(FOLDERID_ProgramData,"cache"));
+		File::Path::mkdir(c_str());
 	}
 
 	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
 		append(subdir);
+		File::Path::mkdir(c_str());
 		append("\\");
-		mkdir(c_str());
 	}
 
  }

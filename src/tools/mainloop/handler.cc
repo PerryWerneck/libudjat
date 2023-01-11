@@ -34,10 +34,6 @@
 	MainLoop::Handler::Handler(int f, const Event e) : fd(f), events(e) {
 		MainLoop::getInstance();
 
-		// Set the FD to nonblocking mode.
-		// int flags = fcntl(fd, F_GETFL, 0);
-		// fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-
 #ifdef DEBUG
 		cout << "handler\tCreating handler " << hex << ((void *) this) << dec << endl;
 #endif // DEBUG
@@ -124,10 +120,6 @@
 		if(this->fd != -1) {
 			throw system_error(EBUSY,system_category(),"Handler already have a file descriptor");
 		}
-
-		// Set the FD to nonblocking mode.
-		// int flags = fcntl(fd, F_GETFL, 0);
-		// fcntl(fd, F_SETFL, flags | O_NONBLOCK);
 
 		this->fd = fd;
 

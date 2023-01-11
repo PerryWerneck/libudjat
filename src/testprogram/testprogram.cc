@@ -34,6 +34,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/message.h>
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
@@ -59,7 +60,7 @@
 
 static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
-int main(int argc, char **argv) {
+static int service_test(int argc, char **argv) {
 
 	class DummyProtocol : public Udjat::Protocol {
 	public:
@@ -118,98 +119,7 @@ int main(int argc, char **argv) {
 	public:
 		/// @brief Initialize service.
 		void init() override {
-
 			SystemService::init();
-
-			if(Module::find("httpd")) {
-
-				if(Module::find("information")) {
-					debug("http://localhost:8989/api/1.0/info/modules.xml");
-					debug("http://localhost:8989/api/1.0/info/workers.xml");
-					debug("http://localhost:8989/api/1.0/info/factories.xml");
-				}
-				debug("http://localhost:8989/api/1.0/alerts.xml");
-
-				{
-					auto root = Udjat::Abstract::Agent::root();
-					if(root) {
-						debug("http://localhost:8989/api/1.0/agent.html");
-						for(auto agent : *root) {
-							debug("http://localhost:8989/api/1.0/agent/",agent->name(),".html");
-						}
-					}
-				}
-
-			}
-
-			// Protocol::call("dummy+http://localhost");
-
-			/*
-			MainLoop::getInstance().insert(0,2000,[](){
-				MainLoop::getInstance().quit();
-				return false;
-			});
-			*/
-
-			/*
-			MainLoop::getInstance().insert(0,2000,[](){
-				cout << "------------------------------------------" << endl;
-				cout << "Cache: " << URL("http://localhost").filename() << endl;
-				cout << "------------------------------------------" << endl;
-				return false;
-			});
-			*/
-
-			//cout << "test\táéióú" << endl;
-
-			/*
-			MainLoop::getInstance().TimerFactory(2000,[](){
-#ifdef _WIN32
-				SubProcess::start("subprocess.bat");
-#else
-				SubProcess::start("ls");
-#endif // _WIN32
-				return false;
-			});
-			cout << "------------------------------------------" << endl;
-			*/
-
-#ifdef _WIN32
-			/*
-			{
-				HANDLE hEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
-
-				cout << "Creating event " << hex << ((unsigned long long) hEvent)<< dec << endl;
-
-				MainLoop::getInstance().insert(hEvent,[](HANDLE handle, bool abandoned){
-
-					if(abandoned) {
-						cout << "event\tEvent was abandoned" << endl;
-					} else {
-						cout << "event\tSignaled" << endl;
-					}
-
-					return true;
-				});
-
-				MainLoop::getInstance().insert(this,1000,[hEvent]() {
-					static int counter = 5;
-					cout << "timer\tEvent " << hex << ((unsigned long long) hEvent) << dec << " (" << counter << ")" << endl;
-					if(--counter > 0) {
-						SetEvent(hEvent);
-					} else {
-						MainLoop::getInstance().remove(hEvent);
-						CloseHandle(hEvent);
-						return false;
-					}
-					return true;
-				});
-			}
-			*/
-#endif // _WIN32
-
-			//Alert::activate("test","dummy+http://localhost");
-
 		}
 
 		/// @brief Deinitialize service.
@@ -223,133 +133,27 @@ int main(int argc, char **argv) {
 
 	};
 
-	// File::copy(argv[0],"/tmp/test");
-
-	// File::List(Application::DataDir("icons"),true);
-	// File::List("/usr/share/icons/","*.png",true);
-	//if(File::Path("/usr/share/icons").find("window-new-symbolic.svg",true)) {
-	//	cout << "FOUND!!!" << endl;
-	//}
-	//return 0;
-
-	/*
-	{
-		URL url{"http://host.domain/sample"};
-
-		url += "newpath";
-		cout << "simple add: '" << url << "'" << endl;
-
-		url += "../otherpath";
-		cout << "upsearch add: '" << url << "'" << endl;
-
-		url += "../../thepath";
-		cout << "double upsearch add: '" << url << "'" << endl;
-
-		url = "https://download.opensuse.net.br/distribution/leap/15.4/repo/oss";
-		url += "/boot/x86_64/loader/linux";
-
-		cout << "Simple concat: '" << url << "'" << endl;
-
-		return 0;
-	}
-	*/
-
-	/*
-#ifdef _WIN32
-	return SubProcess("subprocess.bat").run();
-#else
-	return SubProcess("ls").run();
-#endif // _WIN32
-	*/
-
-	/*
-	{
-		Application::CacheDir cache{"urls"};
-		cout << "Cache set to " << cache << endl;
-	}
-	*/
-
-	/*
-	{
-		cout << "----------------------------" << endl;
-		cout << "Charset=" << Win32::Charset::system() << endl;
-
-		// Udjat::File::Text text("charset.txt");
-		std::string text{"áéíóú"};
-
-		{
-			ofstream file;
-			file.open("source.txt", std::ios::binary);
-			file << text.c_str() << endl;
-		}
-
-		{
-			ofstream file;
-			file.open("to_windows.txt", std::ios::binary);
-			file << Win32::Charset::to_windows(text.c_str()).c_str() << endl;
-		}
-
-		{
-			ofstream file;
-			file.open("from_windows.txt", std::ios::binary);
-			file << Win32::Charset::from_windows(text.c_str()).c_str() << endl;
-		}
-
-		cout << "----------------------------" << endl;
-	}
-	*/
-
-/*
-#ifdef _WIN32
-	{
-		Logger::redirect(true,true);
-		Application::InstallLocation appinstall;
-		debug("AppInstall=",appinstall.c_str());
-		if(appinstall) {
-			cout << "InstalLocation='" << appinstall << "'" << endl;
-		} else {
-			cout << "No install location" << endl;
-		}
-	}
-
-#endif // _WIN32
-*/
-
-	// debug("SystemDatadir=",Application::SystemDataDir().c_str());
-	// debug("CacheDir=",Application::CacheDir().c_str());
-	// debug("LogDir=",Application::LogDir().c_str());
-	// debug("Timestamp=",TimeStamp(90000).to_verbose_string());
-
-	/*
-	{
-		Udjat::Win32::for_each([](const IP_ADAPTER_INFO &adapter) {
-
-			cout << adapter.AdapterName << " " << adapter.IpAddressList.IpAddress.String << " ";
-
-			for(UINT ix = 0; ix < adapter.AddressLength; ix++) {
-				cout << setfill('0') << setw(2) << hex << ((int) adapter.Address[ix]) << dec << " ";
-			}
-
-			cout << endl;
-			return false;
-
-		});
-		exit(-1);
-	}
-	*/
-
-#ifdef _WIN32
-	{
-		udjat_autoptr(HANDLE) hdl{0};
-
-	}
-#endif // _WIN32
-
 	auto rc = Service().run(argc,argv);
-
 	debug("Service exits with rc=",rc);
-
 	Udjat::Module::unload();
 
 	return rc;
+
+}
+
+int main(int argc, char **argv) {
+
+	//cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
+	//cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
+
+	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
+
+	// service_test(argc,argv);
+
+	// auto worker = Protocol::WorkerFactory("file://test.xml");
+	// worker->save("/tmp/test");
+
+	File::copy("test.xml","/tmp/test-copy.xml",false);
+
+	return 0;
 }

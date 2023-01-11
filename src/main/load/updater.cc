@@ -181,77 +181,39 @@
 
 	bool for_each(const char *path, const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
 
-		bool rc = true;
+		return !File::Path{path}.for_each([call](const File::Path &filename){
 
-		struct stat pathstat;
-		if(stat(path, &pathstat) == -1) {
-			throw system_error(errno,system_category(),Logger::Message("Can't load '{}'",path));
-		}
+			if(!filename.match("*.xml")) {
+				Logger::String("Ignoring file '",filename.c_str(),"'").trace("xmldoc");
+				return false;
+			}
 
-		if((pathstat.st_mode & S_IFMT) == S_IFDIR) {
-			//
-			// It's a folder.
-			//
-			File::Path(path).for_each("*.xml",false,[&call,&rc](const char *filename){
-
-				try {
-
-					pugi::xml_document doc;
-					auto result = doc.load_file(filename);
-					if(result.status != pugi::status_ok) {
-						cerr << "xml\t" << filename << ": " << result.description() << endl;
-						rc = false;
-						return true;
-					}
-
-					call(filename,doc);
-
-				} catch(const std::exception &e) {
-
-					cerr << "xml\t" << filename << ": " << e.what() << endl;
-					rc = false;
-
-				} catch(...) {
-
-					cerr << "xml\t" << filename << ": Unexpected error" << endl;
-					rc = false;
-
-				}
-
-				return true;
-
-			});
-
-		} else {
-			//
-			// It's a single file.
-			//
 			try {
 
 				pugi::xml_document doc;
-				auto result = doc.load_file(path);
+				auto result = doc.load_file(filename.c_str());
 				if(result.status != pugi::status_ok) {
-					cerr << "xml\t" << path << ": " << result.description() << endl;
-					return false;
+					cerr << "xmldoc\t" << filename << ": " << result.description() << endl;
+					return true;
 				}
 
-				call(path,doc);
+				call(filename.c_str(),doc);
 
 			} catch(const std::exception &e) {
 
-				cerr << "xml\t" << path << ": " << e.what() << endl;
-				return false;
+				cerr << "xml\t" << filename << ": " << e.what() << endl;
+				return true;
 
 			} catch(...) {
 
-				cerr << "xml\t" << path << ": Unexpected error" << endl;
-				return false;
+				cerr << "xml\t" << filename << ": Unexpected error" << endl;
+				return true;
 
 			}
-		}
 
-		return rc;
+			return false;
 
+		},true);
 	}
 
  }

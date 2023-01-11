@@ -48,7 +48,7 @@
 
 			string path() const {
 
-				if(strncasecmp(url().c_str(),"file://.",8) == 0) {
+				if(strncasecmp(url().c_str(),"file://",7) == 0) {
 					return url().c_str()+7;
 				}
 
@@ -57,6 +57,11 @@
 
 			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
 				return String(Udjat::File::Text(path()).c_str());
+			}
+
+			bool save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace) override {
+				Udjat::File::copy(path().c_str(),filename,progress,replace);
+				return true;
 			}
 
 			std::string filename(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,28 +17,40 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/threadpool.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
-
- #ifdef _WIN32
-	#define WM_CHECK_TIMERS		WM_USER+101
-	#define WM_START			WM_USER+102
-	#define WM_STOP				WM_USER+103
-
-	#define IDT_CHECK_TIMERS	1
- #endif // _WIN32
+ #include <udjat/tools/message.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
+	void Message::append(const char *str) {
+
+		string key{"{"};
+		key += std::to_string(++index);
+		key += "}";
+
+		debug("Key=",key," value=",str);
+
+		size_t from = find(key);
+		if(from != std::string::npos) {
+			replace(from,key.size(),str);
+			return;
+		}
+
+		from = find("{}");
+
+		if(from == std::string::npos) {
+			throw std::runtime_error(_("The message template is invalid"));
+		}
+
+		replace(from,2,str);
+
+		return;
+	}
 
  }
 

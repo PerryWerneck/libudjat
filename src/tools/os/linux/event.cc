@@ -53,14 +53,14 @@
 
 	Event::Controller::Signal::Signal(int s) : signum(s) {
 		Logger::String{
-			"Watching ",strsignal(signum)," (",signum,")"
+			"Watching ",(const char *) strsignal(signum)," (",signum,")"
 		}.write(Logger::Debug,"signal");
 		signal(signum,Controller::onSignal);
 	}
 
 	Event::Controller::Signal::~Signal() {
 		Logger::String{
-			"Unwatching ",strsignal(signum)," (",signum,")"
+			"Unwatching ",(const char *) strsignal(signum)," (",signum,")"
 		}.write(Logger::Debug,"signal");
 		signal(signum,SIG_DFL);
 	}

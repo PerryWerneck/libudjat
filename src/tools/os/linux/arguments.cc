@@ -17,34 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /***
+  * @brief Implement the SubProcess common methods.
+  *
+  */
+
  #include <config.h>
- #include <private/protocol.h>
+ #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
+ #include <iostream>
+ #include <udjat/tools/threadpool.h>
+ #include <sys/types.h>
+ #include <unistd.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	/*
-	/// @brief Connect to host.
-	/// @return Socket connected to host.
-	int URL::connect(time_t timeout) const {
-		return protocol->connect(*this,timeout);
+	SubProcess::Arguments SubProcess::Arguments::from_pid(int pid) {
+		throw system_error(ENOTSUP,system_category(),"Cant get process command line");
 	}
 
-	std::shared_ptr<URL::Response> URL::call(const Method method, const char *mimetype, const char *payload) {
-		return protocol->call(*this,method,mimetype,payload);
+	SubProcess::Arguments SubProcess::Arguments::from_pid() {
+		return from_pid(getpid());
 	}
-
-	std::shared_ptr<URL::Response> URL::call(const char *mname, const char *mimetype, const char *payload) {
-		return protocol->call(*this,Method(mname),mimetype,payload);
-	}
-
-	std::shared_ptr<URL::Response> URL::get(const char *mimetype) const {
-		return protocol->call(*this,URL::Method::Get,mimetype);
-	}
-
-	std::shared_ptr<URL::Response> URL::post(const char *payload, const char *mimetype) const {
-		return protocol->call(*this,URL::Method::Post,mimetype,payload);
-	}
-	*/
 
  }
 

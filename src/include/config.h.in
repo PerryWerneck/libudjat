@@ -45,6 +45,9 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
+/* Do we have strcasestr? */
+#undef HAVE_STRCASESTR
+
 /* Define to 1 if you have the <strings.h> header file. */
 #undef HAVE_STRINGS_H
 
@@ -71,6 +74,9 @@
 
 /* Define as const if the declaration of iconv() needs const. */
 #undef ICONV_CONST
+
+/* Library extension */
+#undef LIBEXT
 
 /* "The required build for modules" */
 #undef MINIMAL_MODULE_BUILD
@@ -104,6 +110,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* The product domain */
+#undef PRODUCT_DOMAIN
 
 /* The product name */
 #undef PRODUCT_NAME

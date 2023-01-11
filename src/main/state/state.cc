@@ -107,23 +107,6 @@ namespace Udjat {
 
 		}
 
-		//	" Attribute('alert-type')=",(node.attribute("alert-type") ? "Yes" : "No"), " ", node.attribute("alert-type").as_string("default")
-		// Check for alert.
-
-		/*
-		if(node.attribute("alert").as_bool(node.attribute("alert-type"))) {
-			auto alert = Udjat::AlertFactory(*this, node, node.attribute("alert-type").as_string(""));
-			if(alert) {
-				alerts.push_back(alert);
-			}
-		} else if(node.attribute("alert").as_bool(node.parent().attribute("alert-type"))) {
-			auto alert = Udjat::AlertFactory(*this, node, node.parent().attribute("alert-type").as_string(""));
-			if(alert) {
-				alerts.push_back(alert);
-			}
-		}
-		*/
-
 	}
 
 	Abstract::State::~State() {
@@ -189,6 +172,11 @@ namespace Udjat {
 
 		if(!strcasecmp(key,"level")) {
 			value = std::to_string(properties.level);
+			return true;
+		}
+
+		if(!strcasecmp(key,"levelnumber")) {
+			value = std::to_string((unsigned int) properties.level);
 			return true;
 		}
 

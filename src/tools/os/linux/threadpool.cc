@@ -163,8 +163,6 @@
 
 		std::lock_guard<std::mutex> lock(this->guard);
 
-//		cout << "Inserting task size=" << tasks.size() << " Limit=" << limits.tasks << endl;
-
 		if(limits.tasks && tasks.size() >= limits.tasks) {
 			string message{"Can't add new task, the queue has reached the limit of "};
 			message += to_string(limits.tasks);

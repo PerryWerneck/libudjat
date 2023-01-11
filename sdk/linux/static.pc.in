@@ -4,6 +4,7 @@ libdir=${exec_prefix}/lib64
 includedir=${prefix}/include
 
 product_name=@PRODUCT_NAME@
+product_id=@PRODUCT_DOMAIN@.@PRODUCT_NAME@
 product_title=@PRODUCT_TITLE@
 module_path=${libdir}/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules/
 

@@ -6,153 +6,9 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  timestamp.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  systemservice.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-08 16:50-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  systemservice.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-08 16:50-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  root.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-09 10:24-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  get.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  controller.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  agent.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  module.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-09 10:24-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  script.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  file.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  string.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-10-06 09:52-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  controller.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-07 08:14-0300\n"
+"POT-Creation-Date: 2022-12-20 07:28-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -165,7 +21,7 @@ msgstr ""
 msgid "Agent controller"
 msgstr ""
 
-#: src/main/agent/agent.cc:263
+#: src/main/agent/agent.cc:258
 msgid "Agent has nothing to report"
 msgstr ""
 
@@ -173,7 +29,7 @@ msgstr ""
 msgid "Alert controller"
 msgstr ""
 
-#: src/main/agent/state.cc:137
+#: src/main/agent/state.cc:138
 msgid "Error activating state"
 msgstr ""
 
@@ -186,7 +42,7 @@ msgstr ""
 msgid "Invalid timer value"
 msgstr ""
 
-#: src/tools/timestamp.cc:64
+#: src/tools/timestamp.cc:65
 msgid "Less than one minute"
 msgstr ""
 
@@ -206,7 +62,7 @@ msgstr ""
 msgid "No reports on this path"
 msgstr ""
 
-#: src/main/agent/agent.cc:262
+#: src/main/agent/agent.cc:257
 msgid "Normal"
 msgstr ""
 
@@ -222,19 +78,19 @@ msgstr ""
 msgid "System is ready"
 msgstr ""
 
-#: src/main/agent/state.cc:142
+#: src/main/agent/state.cc:143
 msgid "Unexpected error activating state"
 msgstr ""
 
-#: src/tools/timestamp.cc:91
+#: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
 msgid "day"
 msgstr ""
 
-#: src/tools/timestamp.cc:91
+#: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
 msgid "days"
 msgstr ""
 
-#: src/main/agent/agent.cc:260 src/tools/string/string.cc:216
+#: src/main/agent/agent.cc:255 src/tools/string/string.cc:216
 msgid "default"
 msgstr ""
 
@@ -242,19 +98,19 @@ msgstr ""
 msgid "false"
 msgstr ""
 
-#: src/tools/timestamp.cc:93
+#: src/tools/timestamp.cc:94 src/tools/timestamp.cc:210
 msgid "hour"
 msgstr ""
 
-#: src/tools/timestamp.cc:93
+#: src/tools/timestamp.cc:94 src/tools/timestamp.cc:210
 msgid "hours"
 msgstr ""
 
-#: src/tools/timestamp.cc:95
+#: src/tools/timestamp.cc:96 src/tools/timestamp.cc:209
 msgid "minute"
 msgstr ""
 
-#: src/tools/timestamp.cc:95
+#: src/tools/timestamp.cc:96 src/tools/timestamp.cc:209
 msgid "minutes"
 msgstr ""
 
@@ -262,12 +118,20 @@ msgstr ""
 msgid "no"
 msgstr ""
 
-#: src/main/state/state.cc:265
+#: src/main/state/state.cc:253
 msgid "off"
 msgstr ""
 
-#: src/main/state/state.cc:265
+#: src/main/state/state.cc:253
 msgid "on"
+msgstr ""
+
+#: src/tools/timestamp.cc:208
+msgid "second"
+msgstr ""
+
+#: src/tools/timestamp.cc:208
+msgid "seconds"
 msgstr ""
 
 #: src/tools/string/string.cc:200
@@ -278,30 +142,30 @@ msgstr ""
 msgid "yes"
 msgstr ""
 
-#: src/tools/timestamp.cc:77
+#: src/tools/timestamp.cc:78
 msgid "{d} {D}"
 msgstr ""
 
-#: src/tools/timestamp.cc:79
+#: src/tools/timestamp.cc:80
 msgid "{d} {D} and {h} {H}"
 msgstr ""
 
-#: src/tools/timestamp.cc:81
+#: src/tools/timestamp.cc:82
 msgid "{d} {D} and {m} {M}"
 msgstr ""
 
-#: src/tools/timestamp.cc:83
+#: src/tools/timestamp.cc:84
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr ""
 
-#: src/tools/timestamp.cc:78
+#: src/tools/timestamp.cc:79
 msgid "{h} {H}"
 msgstr ""
 
-#: src/tools/timestamp.cc:82
+#: src/tools/timestamp.cc:83
 msgid "{h} {H} and {m} {M}"
 msgstr ""
 
-#: src/tools/timestamp.cc:80
+#: src/tools/timestamp.cc:81
 msgid "{m} {M}"
 msgstr ""

@@ -21,6 +21,8 @@
  #include <udjat/defs.h>
  #include <udjat/tools/file.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/protocol.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -40,37 +42,33 @@
 	}
 
 	bool File::Path::find(const char *name, bool recursive) {
-		return !for_each(name,recursive,[this](const char *name){
-			assign(name);
+
+		return for_each([this,name](const File::Path &path){
+			debug("Testing ",path.c_str());
+			if(path.match(name)) {
+				assign(path);
+				debug("Found ",c_str());
+				return true;
+			}
 			return false;
-		});
+		},recursive);
 	}
 
-	void File::copy(const char *from, const char *to) {
+	bool File::Path::for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
-#ifdef _WIN32
-		int fd = open(from,O_RDONLY|O_BINARY);
-#else
-		int fd = open(from,O_RDONLY);
-#endif // _WIN32
+		debug("pattern=",pattern);
 
-		if(fd < 0) {
-			throw system_error(errno,system_category(),string{"Error opening '"} + from + "'");
-		}
+		return for_each([pattern,call](const File::Path &path){
+			if(path.match(pattern)) {
+				return call(path);
+			}
+			return false;
+		},recursive);
 
-		try {
+	}
 
-			save(fd,to);
-
-		} catch(...) {
-
-			::close(fd);
-			throw;
-
-		}
-
-		::close(fd);
-
+	UDJAT_API void File::copy(const char *from, const char *to, bool replace) {
+		File::copy(from,to,Protocol::Watcher::progress,replace);
 	}
 
 	std::string File::save(const char *contents) {

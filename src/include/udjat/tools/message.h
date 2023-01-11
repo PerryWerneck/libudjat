@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -20,25 +20,25 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/threadpool.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
-
- #ifdef _WIN32
-	#define WM_CHECK_TIMERS		WM_USER+101
-	#define WM_START			WM_USER+102
-	#define WM_STOP				WM_USER+103
-
-	#define IDT_CHECK_TIMERS	1
- #endif // _WIN32
-
- using namespace std;
+ #include <udjat/tools/string.h>
+ #include <string>
 
  namespace Udjat {
 
+	class UDJAT_API Message : public String {
+	private:
+		size_t index = 0;
 
+	public:
+
+		template<typename... Targs>
+		inline Message(const char *fmt, Targs... Fargs) : Udjat::String{fmt} {
+			Udjat::String::append(Fargs...);
+		}
+
+		void append(const char *str) override;
+
+	};
  }
+
 

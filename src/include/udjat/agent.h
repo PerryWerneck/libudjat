@@ -29,14 +29,14 @@
 	/// @param pathname Path to a single xml file or a folder with xml files.
 	/// @param force Do a reconfiguration even if the file hasn't change.
 	/// @return Seconds for file refresh.
-	UDJAT_API time_t reconfigure(const char *pathname, bool force = false);
+	UDJAT_API time_t UDJAT_DEPRECATED(reconfigure(const char *pathname, bool force = false));
 
 	/// @brief Load XML application definitions.
 	/// @param agent New root agent.
 	/// @param pathname Path to a single xml file or a folder with xml files.
 	/// @param force Do a reconfiguration even if the file hasn't change.
 	/// @return Seconds for file refresh.
-	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false);
+	UDJAT_API time_t UDJAT_DEPRECATED(reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force = false));
 
 	template <typename T>
 	class UDJAT_API Agent : public Abstract::Agent {

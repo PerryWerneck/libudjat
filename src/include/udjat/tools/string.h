@@ -21,10 +21,10 @@
 
  #include <udjat/defs.h>
  #include <string>
+ #include <cstring>
  #include <iostream>
  #include <vector>
  #include <functional>
- #include <udjat/tools/object.h>
  #include <udjat/tools/xml.h>
 
  namespace Udjat {
@@ -70,29 +70,172 @@
 
 	UDJAT_API std::string strip(const char *str, ssize_t length = -1);
 
-	/**
-	 * @brief String with 'extras'
-	 *
-	 */
+	/// @brief Simple markup expander.
+	/// @param text String to expand.
+	/// @return String with markup expanded.
+	UDJAT_API std::string markup(const char *text);
+
+	/// @brief Extended string.
 	class UDJAT_API String : public std::string {
+	protected:
+		virtual void add(const char *str);
+
 	public:
-		String() : std::string() {
+		//
+		// Construct
+		//
+		inline String() : std::string() {
 		}
 
-		String(const char *str) : std::string(str) {
+		inline String(const char *str) : std::string{str} {
 		}
 
-		String(const char *str, size_t length) : std::string(str,length) {
+		inline String(char *str) : std::string{str} {
 		}
 
-		String(const std::string &str) : std::string(str) {
+		inline String(const char *str, size_t length) : std::string(str,length) {
 		}
 
-		/// @brief Create string from xml definition.
+		inline String(const std::string &str) : std::string{str} {
+		}
+
+		inline String(std::string &str) : std::string{str} {
+		}
+
+		inline String(const Udjat::String &str) : std::string{str} {
+		}
+
+		inline String(Udjat::String &str) : std::string{str} {
+		}
+
+		template<typename T>
+		inline String(const T &str) : std::string{std::to_string(str)} {
+		}
+
+		template<typename... Targs>
+		String(const char *str, Targs... Fargs) : std::string{str} {
+			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		String(const std::string &str, Targs... Fargs) : std::string{str} {
+			append(Fargs...);
+		}
+
+		template<typename T, typename... Targs>
+		String(const T &str, Targs... Fargs) : std::string{std::to_string(str)} {
+			append(Fargs...);
+		}
+
+		/// @brief Construct string from xml definition.
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
-		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr);
+		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr, bool upsearch = true);
 
+		//
+		// Append
+		//
+		virtual void append(const char *str);
+
+		inline void append(char *str) {
+			append((const char *) str);
+		}
+
+		inline void append(const std::string &str) {
+			append(str.c_str());
+		}
+
+		inline void append(std::string &str) {
+			append(str.c_str());
+		}
+
+		inline void append(const Udjat::String &str) {
+			append(str.c_str());
+		}
+
+		inline void append(Udjat::String &str) {
+			append(str.c_str());
+		}
+
+		inline void append(const std::exception &e) {
+			append(e.what());
+		}
+
+		void append(const bool value);
+
+		inline void append() {
+		}
+
+		template<typename T>
+		inline void append(const T &str) {
+			append(std::to_string(str));
+		}
+
+		template<typename... Targs>
+		void append(const char *str, Targs... Fargs) {
+			append(str);
+			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		void append(const std::string &str, Targs... Fargs) {
+			append(str.c_str());
+			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		void append(const bool value, Targs... Fargs) {
+			append(value);
+			append(Fargs...);
+		}
+
+		template<typename T, typename... Targs>
+		void append(const T str, Targs... Fargs) {
+			append(str);
+			append(Fargs...);
+		}
+
+		//
+		// Assign
+		//
+		inline String & operator = (const char *value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (char *value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (const std::string &value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (std::string &value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (const String &value) {
+			assign(value);
+			return *this;
+		}
+
+		inline String & operator = (String &value) {
+			assign(value);
+			return *this;
+		}
+
+		template <typename T>
+		inline String & operator = (const T value) {
+			return assign(std::to_string(value));
+		}
+
+		//
+		// Others.
+		//
 		inline bool operator ==(const char * str) const noexcept {
 			return strcasecmp(c_str(),str) == 0;
 		}
@@ -128,6 +271,12 @@
 
 		String & strip() noexcept;
 
+		String & markup();
+
+		/// @brief Find first occurrence of substring (case insensitive);
+		/// @return Pointer to first occurrence or NULL if not found.
+		char * strcasestr(const char *needle);
+
 		std::vector<String> split(const char *delim);
 
 		/// @brief Remove the leading whitespace from the string.
@@ -153,39 +302,14 @@
 		/// @return Unsigned long long value of string contents.
 		unsigned long long as_ull() const;
 
+		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
+		String & set_byte(unsigned long long value, int precision = 1);
+
+		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
+		String & set_byte(double value, int precision = 1);
+
 		/// @brief Return 'quark' string from value.
 		const char * as_quark() const;
-
-		//
-		// 'concat' templates
-		//
-		String & concat(const char *value) {
-			append(value);
-			return *this;
-		}
-
-		String & concat(const std::string &value) {
-			append(value);
-			return *this;
-		}
-
-		String & concat(const bool value);
-
-		String & concat() {
-			return *this;
-		}
-
-		template<typename T>
-		String & concat(const T &value) {
-			append(std::to_string(value));
-			return *this;
-		}
-
-		template<typename T, typename... Targs>
-		String & concat(T &value, Targs... Fargs) {
-			concat(value);
-			return concat(Fargs...);
-		}
 
 	};
 
