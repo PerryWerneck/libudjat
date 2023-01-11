@@ -46,6 +46,17 @@ namespace Udjat {
 
 		void copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace = true);
 
+#ifndef _WIN32
+
+		/// @brief Hardlink file (Linux only);
+		UDJAT_API int link(const char *from, const char *to, bool replace = false);
+
+		/// @brief Hardlink file (Linux only);
+		UDJAT_API int link(int fd, const char *to, bool replace = false);
+
+#endif // _WIN32
+
+
 		/// @brief Save to temporary file.
 		/// @param contents String with file contents.
 		/// @return Temporary file name.

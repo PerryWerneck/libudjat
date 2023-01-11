@@ -26,6 +26,8 @@
  #include <system_error>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <libgen.h>
+ #include <limits.h>
 
  using namespace std;
 
@@ -44,14 +46,13 @@
 
 		if(replace) {
 
-			dst = open(to,O_WRONLY|O_CREAT|O_TRUNC,0644);
+			dst = open(to,O_WRONLY|O_CREAT|O_TRUNC,0600);
 
 		} else {
 
-			//dst = open(to,O_WRONLY|O_CREAT|O_TRUNC|O_TMPFILE,0644);
-
-			clog << "Copy with backup is not available, replacing " << to << endl;
-			dst = open(to,O_WRONLY|O_CREAT|O_TRUNC,0644);
+			char path[PATH_MAX];
+			strncpy(path,to,PATH_MAX);
+			dst = open(dirname(path),O_WRONLY|O_TMPFILE,0600);
 
 		}
 
@@ -106,16 +107,17 @@
 
 		}
 
+		::close(src);
+
+		// Setup owners and permitions of destination file.
 		fchmod(dst,st.st_mode);
 		fchown(dst,st.st_uid,st.st_gid);
 
-		::close(src);
+		if(!replace) {
+			File::link(dst,to,false);
+		}
+
 		::close(dst);
-
-		//if(!replace) {
-		//
-		//}
-
 	}
 
  }

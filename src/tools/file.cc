@@ -71,35 +71,6 @@
 		File::copy(from,to,Protocol::Watcher::progress,replace);
 	}
 
-	/*
-	void File::copy(const char *from, const char *to) {
-
-#ifdef _WIN32
-		int fd = open(from,O_RDONLY|O_BINARY);
-#else
-		int fd = open(from,O_RDONLY);
-#endif // _WIN32
-
-		if(fd < 0) {
-			throw system_error(errno,system_category(),string{"Error opening '"} + from + "'");
-		}
-
-		try {
-
-			save(fd,to);
-
-		} catch(...) {
-
-			::close(fd);
-			throw;
-
-		}
-
-		::close(fd);
-
-	}
-	*/
-
 	std::string File::save(const char *contents) {
 
 		std::string name = File::Temporary::create();

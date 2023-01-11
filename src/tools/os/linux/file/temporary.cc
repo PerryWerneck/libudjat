@@ -172,50 +172,7 @@
 	}
 
 	void File::Temporary::link(const char *filename) const {
-
-		char tempfile[PATH_MAX];
-		snprintf(tempfile, PATH_MAX,  "/proc/self/fd/%d", fd);
-
-		struct stat st;
-		if(stat(filename, &st) == -1) {
-			if(errno != ENOENT) {
-				throw system_error(errno,system_category(),"Error getting file information");
-			}
-			memset(&st,0,sizeof(st));
-			st.st_mode = 0644;
-		}
-
-		if(linkat(AT_FDCWD, tempfile, AT_FDCWD, filename, AT_SYMLINK_FOLLOW) != 0) {
-			//
-			// Cant link file
-			//
-
-			if(errno != EEXIST) {
-				throw system_error(errno,system_category(),"Error saving file");
-			}
-
-			char bakfile[PATH_MAX];
-			strncpy(bakfile,filename,PATH_MAX);
-			char *ptr = strrchr(bakfile,'.');
-			if(ptr) {
-				*ptr = 0;
-			}
-			strncat(bakfile,".bak",PATH_MAX);
-
-			unlink(bakfile);
-			if(rename(filename, bakfile) != 0) {
-				throw system_error(errno,system_category(),"Cant create backup");
-			}
-
-			if(linkat(AT_FDCWD, tempfile, AT_FDCWD, filename, AT_SYMLINK_FOLLOW) != 0) {
-				throw system_error(errno,system_category(),"Error saving file");
-			}
-
-		}
-
-		chmod(filename,st.st_mode);
-		chown(filename,st.st_uid,st.st_gid);
-
+		File::link(fd,filename);
 	}
 
 	void File::Temporary::save(bool replace) {
