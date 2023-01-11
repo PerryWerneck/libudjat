@@ -67,7 +67,7 @@
 
 	}
 
-	void File::copy(const char *from, const char *to, bool replace) {
+	UDJAT_API void File::copy(const char *from, const char *to, bool replace) {
 		File::copy(from,to,Protocol::Watcher::progress,replace);
 	}
 

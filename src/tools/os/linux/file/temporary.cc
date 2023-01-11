@@ -172,7 +172,7 @@
 	}
 
 	void File::Temporary::link(const char *filename) const {
-		File::link(fd,filename);
+		File::move(fd,filename);
 	}
 
 	void File::Temporary::save(bool replace) {

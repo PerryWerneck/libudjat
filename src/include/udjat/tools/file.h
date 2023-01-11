@@ -46,13 +46,22 @@ namespace Udjat {
 
 		void copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace = true);
 
-#ifndef _WIN32
+#ifdef _WIN32
 
-		/// @brief Hardlink file (Linux only);
-		UDJAT_API int link(const char *from, const char *to, bool replace = false);
+		UDJAT_API int move(const char *from, const char *to, bool replace = false);
 
-		/// @brief Hardlink file (Linux only);
-		UDJAT_API int link(int fd, const char *to, bool replace = false);
+#else
+		/// @brief Move file, create 'bak'
+		/// @param from The origin file name.
+		/// @param to The target file name.
+		/// @param no_backup if false '.bak' file will be created with old contents.
+		UDJAT_API int move(const char *from, const char *to, bool no_backup = false);
+
+		/// @brief Move file, create 'bak'
+		/// @param The handle of an open origin file.
+		/// @param to The target file name.
+		/// @param no_backup if false '.bak' file will be created with old contents.
+		UDJAT_API int move(int fd, const char *to, bool no_backup = false);
 
 #endif // _WIN32
 

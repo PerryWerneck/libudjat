@@ -26,12 +26,51 @@
  #include <system_error>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	void File::copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace) {
+	UDJAT_API int File::move(const char *from, const char *to, bool replace) {
+
+		debug("from=",from);
+		debug("to=",to);
+
+		if(replace) {
+
+			// No backup, just move
+			DeleteFile(to);
+
+		} else {
+
+			// Create backup.
+			char bakfile[PATH_MAX+1];
+			strncpy(bakfile,to,PATH_MAX);
+			char *ptr = strrchr(bakfile,'.');
+			if(ptr) {
+				*ptr = 0;
+			}
+			strncat(bakfile,".bak",PATH_MAX);
+
+			DeleteFile(bakfile);
+			MoveFile(to,bakfile);
+
+		}
+
+		if(MoveFile(from,to)) {
+			return 0;
+		}
+
+		throw Win32::Exception(to);
+
+	}
+
+	UDJAT_API void File::copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace) {
+
+		char tempname[PATH_MAX+1];
+		memset(tempname,0,PATH_MAX+1);
 
 		debug("from=",from);
 		debug("to=",to);
@@ -42,20 +81,38 @@
 			throw system_error(errno,system_category(),from);
 		}
 
-		if(replace) {
+		{
+			char path[PATH_MAX+1];
+			strncpy(path,to,PATH_MAX);
 
-			dst = open(to,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+			char *p0 = strrchr(path,'/');
+			char *p1 = strrchr(path,'\\');
 
-		} else {
+			if(p0 && !p1) {
+				*p0 = 0;
+			} else if(p1 && !p0) {
+				*p1 = 0;
+			} else if(p0 && p1) {
+				*(p0 < p1 ? p0 : p1) = 0;
+			} else {
+				strncpy(path,".",PATH_MAX);
+			}
 
-			clog << "Copy with backup is not available, replacing " << to << endl;
-			dst = open(to,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+			debug("dirname=",path);
+
+			if(GetTempFileName(path,TEXT(Application::Name().c_str()),0,tempname) == 0) {
+				throw Win32::Exception("Unable to create tempfile");
+			}
+
+			debug("Tempname=",tempname);
+			dst = open(tempname,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
 
 		}
 
 		if(dst < 0) {
 			int err = errno;
 			::close(src);
+			DeleteFile(tempname);
 			throw system_error(err,system_category(),to);
 		}
 
@@ -99,6 +156,7 @@
 
 			::close(src);
 			::close(dst);
+			DeleteFile(tempname);
 
 			throw;
 
@@ -107,9 +165,7 @@
 		::close(src);
 		::close(dst);
 
-		//if(!replace) {
-		//
-		//}
+		File::move(tempname,to,replace);
 
 	}
 

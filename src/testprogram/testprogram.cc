@@ -150,9 +150,10 @@ int main(int argc, char **argv) {
 
 	// service_test(argc,argv);
 
-	auto worker = Protocol::WorkerFactory("file://test.xml");
+	// auto worker = Protocol::WorkerFactory("file://test.xml");
+	// worker->save("/tmp/test");
 
-	worker->save("/tmp/test");
+	File::copy("test.xml","/tmp/test-copy.xml",false);
 
 	return 0;
 }

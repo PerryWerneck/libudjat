@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/logger.h>
  #include <cstdio>
  #include <system_error>
  #include <fcntl.h>
@@ -30,7 +31,7 @@
 
  namespace Udjat {
 
-	int File::link(const char *tempfile, const char *filename, bool replace) {
+	int File::move(const char *tempfile, const char *filename, bool replace) {
 
 		struct stat st;
 		if(stat(filename, &st) == -1) {
@@ -51,6 +52,7 @@
 
 			if(replace) {
 
+				debug("Removing ",filename);
 				unlink(filename);
 
 			} else {
@@ -63,6 +65,8 @@
 					*ptr = 0;
 				}
 				strncat(bakfile,".bak",PATH_MAX);
+
+				debug("backup=",bakfile);
 
 				unlink(bakfile);
 				if(rename(filename, bakfile) != 0) {
@@ -83,10 +87,10 @@
 		return 0;
 	}
 
-	int File::link(int fd, const char *to, bool replace) {
+	int File::move(int fd, const char *to, bool replace) {
 		char tempfile[PATH_MAX];
 		snprintf(tempfile, PATH_MAX,  "/proc/self/fd/%d", fd);
-		return link(tempfile,to,replace);
+		return move(tempfile,to,replace);
 	}
 
  }

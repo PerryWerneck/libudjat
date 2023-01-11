@@ -44,16 +44,10 @@
 			throw system_error(errno,system_category(),from);
 		}
 
-		if(replace) {
-
-			dst = open(to,O_WRONLY|O_CREAT|O_TRUNC,0600);
-
-		} else {
-
+		{
 			char path[PATH_MAX];
 			strncpy(path,to,PATH_MAX);
 			dst = open(dirname(path),O_WRONLY|O_TMPFILE,0600);
-
 		}
 
 		if(dst < 0) {
@@ -113,9 +107,7 @@
 		fchmod(dst,st.st_mode);
 		fchown(dst,st.st_uid,st.st_gid);
 
-		if(!replace) {
-			File::link(dst,to,false);
-		}
+		File::move(dst,to,replace);
 
 		::close(dst);
 	}
