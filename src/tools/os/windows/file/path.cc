@@ -139,6 +139,10 @@
 
 	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
+		if(!dir()) {
+			return call(*this);
+		}
+
 		Win32::Path path{c_str()};
 
 		debug("Scanning '",path.c_str(),"'");
