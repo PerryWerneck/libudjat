@@ -220,10 +220,10 @@
 			void push_back(std::shared_ptr<Abstract::Object> object);
 
 			/// @brief Insert Alert.
-			virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
+			virtual void push_back(std::shared_ptr<Activatable> alert);
 
-			/// @brief Insert Alert with XML definition.
-			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
+			/// @brief Insert activatable.
+			void push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> alert);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);

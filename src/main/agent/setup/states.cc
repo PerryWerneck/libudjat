@@ -40,6 +40,7 @@
 
 namespace Udjat {
 
+	/*
 	void Abstract::Agent::Controller::setup_states(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
 
 		// Load agent states.
@@ -65,5 +66,6 @@ namespace Udjat {
 		});
 
 	}
+	*/
 
 }

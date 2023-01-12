@@ -43,7 +43,7 @@ namespace Udjat {
 	void Abstract::Agent::setup(const pugi::xml_node &root, bool upsearch) {
 
 		Controller::setup_properties(*this,root);
-		Controller::setup_states(*this,root);
+		// Controller::setup_states(*this,root);
 		// Controller::setup_alerts(*this,root);
 		// Controller::setup_children(*this,root);
 
@@ -131,6 +131,19 @@ namespace Udjat {
 
 			}
 
+			// It's an alert?
+			if(strcasecmp(node.name(),"alert") == 0) {
+
+				auto alert = Abstract::Alert::Factory(*this, node);
+
+				if(alert) {
+					alert->setup(node);
+					push_back(node,alert);
+					continue;
+				}
+
+			}
+
 			// Run factories.
 			bool success = Udjat::Factory::for_each(node.name(),[this,node](Udjat::Factory &factory) {
 
@@ -151,34 +164,8 @@ namespace Udjat {
 					{
 						auto alert = factory.AlertFactory(*this, node);
 						if(alert) {
-
 							alert->setup(node);
-
-							switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change","ready-state","not-ready-state",NULL)) {
-							case 0:	// state-change
-								push_back(Event::STATE_CHANGED,alert);
-								break;
-
-							case 1:	// level-change
-								push_back(Event::LEVEL_CHANGED,alert);
-								break;
-
-							case 2:	// value-change
-								push_back(Event::VALUE_CHANGED,alert);
-								break;
-
-							case 3:	// ready-state
-								push_back(Event::READY,alert);
-								break;
-
-							case 4:	// not-ready-state
-								push_back(Event::NOT_READY,alert);
-								break;
-
-							default:
-								push_back(node, alert);
-							}
-
+							push_back(node,alert);
 							return true;
 						}
 

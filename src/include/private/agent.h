@@ -73,7 +73,7 @@ namespace Udjat {
 		void stop() noexcept override;
 
 		/// @brief Load agent states from XML node.
-		static void setup_states(Abstract::Agent &agent, const pugi::xml_node &root) noexcept;
+		// static void setup_states(Abstract::Agent &agent, const pugi::xml_node &root) noexcept;
 
 		/// @brief Load alerts from XML node.
 		// static void setup_alerts(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;

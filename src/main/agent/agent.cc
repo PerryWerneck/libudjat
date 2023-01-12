@@ -219,12 +219,37 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Alert> UDJAT_UNUSED(alert)) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow alerts");
+	void Abstract::Agent::push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> alert) {
+
+		switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change","ready-state","not-ready-state",NULL)) {
+		case 0:	// state-change
+			push_back(Event::STATE_CHANGED,alert);
+			break;
+
+		case 1:	// level-change
+			push_back(Event::LEVEL_CHANGED,alert);
+			break;
+
+		case 2:	// value-change
+			push_back(Event::VALUE_CHANGED,alert);
+			break;
+
+		case 3:	// ready-state
+			push_back(Event::READY,alert);
+			break;
+
+		case 4:	// not-ready-state
+			push_back(Event::NOT_READY,alert);
+			break;
+
+		default:
+			push_back(alert);
+		}
+
 	}
 
-	void Abstract::Agent::push_back(const pugi::xml_node UDJAT_UNUSED(&node), std::shared_ptr<Abstract::Alert> alert) {
-		push_back(alert);
+	void Abstract::Agent::push_back(std::shared_ptr<Activatable> UDJAT_UNUSED(alert)) {
+		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' cant handle activations");
 	}
 
 	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {

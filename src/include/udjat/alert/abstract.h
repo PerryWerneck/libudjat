@@ -106,6 +106,13 @@
 			/// @brief Create and activation for this alert.
 			virtual std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const;
 
+			/// @brief Create an alert from XML description;
+			/// @param parent Parent object, usually an agent, scanned for alert attributes.
+			/// @param node XML description of the alert.
+			/// @param type Alert type ('url' or 'script' for internal ones, factory name for module based alerts).
+			/// @return Pointer to the new alert.
+			static std::shared_ptr<Abstract::Alert> Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
+
 		};
 
 	}
