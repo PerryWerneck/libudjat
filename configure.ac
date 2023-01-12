@@ -318,6 +318,7 @@ AC_CONFIG_FILES(locale/Makefile)
 AC_CONFIG_FILES(debian/libudjat.dsc)
 AC_CONFIG_FILES(debian/changelog)
 AC_CONFIG_FILES(debian/shlibs)
+AC_CONFIG_FILES(debian/control)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

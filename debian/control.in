@@ -8,7 +8,7 @@ Package: libudjat
 Architecture: any
 Section: libs
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Provides: libudjat (= ${binary:Version}), libudjat (= 1.1)
+Provides: libudjat (= ${binary:Version}), libudjat (= @PACKAGE_VERSION@)
 Description: Udjat core library.
  Udjat core library.
 
