@@ -93,16 +93,16 @@
 		/// @param node XML definition for the new alert.
 		virtual std::shared_ptr<Activatable> ActivatableFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
 
-		/// @brief Parse a XML node.
+		/// @brief Parse a generic XML node.
 		/// @param XML definition for the new element.
-		/// @return true if the node was inserted.
-		virtual bool push_back(const pugi::xml_node &node);
+		/// @return true if the node was parset.
+		virtual bool generic(const pugi::xml_node &node);
 
 		/// @brief Parse a XML node.
 		/// @param object Parent object.
 		/// @param XML definition for the new element.
 		/// @return true if the node was inserted.
-		virtual bool push_back(Abstract::Object &parent, const pugi::xml_node &node);
+		virtual bool generic(Abstract::Object &parent, const pugi::xml_node &node);
 
 	};
 

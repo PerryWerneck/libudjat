@@ -40,7 +40,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Worker, Factory, private MainLoop::Service, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Worker, private MainLoop::Service, public MainLoop::Timer {
 	private:
 
 		time_t updating = 0;
@@ -69,8 +69,6 @@ namespace Udjat {
 		bool head(Request &request, Response &response) const override;
 		bool work(Request &request, Report &response) const override;
 
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const override;
-
 		void start() noexcept override;
 		void stop() noexcept override;
 
@@ -78,13 +76,13 @@ namespace Udjat {
 		static void setup_states(Abstract::Agent &agent, const pugi::xml_node &root) noexcept;
 
 		/// @brief Load alerts from XML node.
-		static void setup_alerts(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
+		// static void setup_alerts(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
 
 		/// @brief Load agent properties from XML node.
 		static void setup_properties(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
 
 		/// @brief Load children from XML node.
-		static void setup_children(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
+		// static void setup_children(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
 
 	};
 

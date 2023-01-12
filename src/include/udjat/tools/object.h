@@ -38,7 +38,7 @@
 
 			/// @brief Setup object.
 			/// @param node The XML node with the object definitions.
-			virtual void setup(const pugi::xml_node &node);
+			virtual void setup(const pugi::xml_node &node, bool upsearch = true);
 
 			/// @brief Get configuration file group.
 			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");

@@ -46,14 +46,16 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Factory("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
-
-		cout << "agent\tInitializing controller" << endl;
-
+	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
+		Logger::String{
+			"Initializing controller"
+		}.trace("agent");
 	}
 
 	Abstract::Agent::Controller::~Controller() {
-		cout << "agent\tDeinitializing controller" << endl;
+		Logger::String{
+			"Deinitializing controller"
+		}.trace("agent");
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {

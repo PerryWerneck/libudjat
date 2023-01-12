@@ -44,6 +44,7 @@ namespace Udjat {
 		return Udjat::AlertFactory(*this,node);
 	}
 
+	/*
 	void Abstract::Agent::Controller::setup_alerts(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
 
 		// Load agent alerts.
@@ -103,5 +104,5 @@ namespace Udjat {
 
 		});
 	}
-
+	*/
 }

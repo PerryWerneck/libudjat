@@ -51,11 +51,11 @@ namespace Udjat {
 	void Module::set(const pugi::xml_document UDJAT_UNUSED(&document)) {
 	}
 
-	std::shared_ptr<Abstract::Agent> Module::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) {
+	std::shared_ptr<Abstract::Agent> Module::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
-	std::shared_ptr<Abstract::Alert> Module::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) {
+	std::shared_ptr<Abstract::Alert> Module::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 

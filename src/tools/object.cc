@@ -110,35 +110,29 @@
 		set(node);
 	}
 
-	void Abstract::Object::setup(const pugi::xml_node &node) {
+	void Abstract::Object::setup(const pugi::xml_node &node, bool UDJAT_UNUSED(upsearch)) {
 
 		for(pugi::xml_node child : node) {
 
-			const char *name = child.name();
+			Factory::for_each(child.name(),[this,&child](Factory &factory) {
 
-			if(name && *name) {
+				try {
 
-				Factory::for_each(name,[this,name,&child](Factory &factory) {
+					return factory.generic(*this,child);
 
-					try {
+				} catch(const std::exception &e) {
 
-						return factory.push_back(*this,child);
+					factory.error() << "Cant parse node <" << child.name() << ">: " << e.what() << endl;
 
-					} catch(const std::exception &e) {
+				} catch(...) {
 
-						factory.error() << "Cant parse node <" << name << ">: " << e.what() << endl;
+					factory.error() << "Cant parse node <" << child.name() << ">: Unexpected error" << endl;
 
-					} catch(...) {
+				}
 
-						factory.error() << "Cant parse node <" << name << ">: Unexpected error" << endl;
+				return false;
 
-					}
-
-					return false;
-
-				});
-
-			}
+			});
 
 		}
 
