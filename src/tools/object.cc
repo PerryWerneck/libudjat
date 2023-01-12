@@ -269,9 +269,9 @@
 				}
 
 				// Scan for groups.
-				for(pugi::xml_node group = parent.child(group_name.c_str()); group; group = group.next_sibling(group_name.c_str())) {
+				for(pugi::xml_node grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
 
-					for(pugi::xml_node node = group.child(name); node; node = node.next_sibling(name)) {
+					for(pugi::xml_node node = grp.child(name); node; node = node.next_sibling(name)) {
 						handler(node);
 					}
 
