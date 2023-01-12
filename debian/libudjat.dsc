@@ -1,6 +1,6 @@
 Format: 1.0
 Source: libudjat
-Version: @PACKAGE_VERSION@-0
+Version: 1.1-0
 Binary: libudjat
 Maintainer: Perry Werneck <perry.werneck@gmail.com>
 Architecture: any
