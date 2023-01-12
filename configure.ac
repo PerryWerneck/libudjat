@@ -315,6 +315,8 @@ AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(locale/Makefile)
 
+AC_CONFIG_FILES(debian/libudjat.dsc)
+
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
 dnl ---------------------------------------------------------------------------

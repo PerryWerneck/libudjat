@@ -1,4 +1,4 @@
-Format: 1.0
+Format: @PACKAGE_VERSION@
 Source: libudjat
 Version: 1.0-0
 Binary: libvmdetect
