@@ -222,8 +222,13 @@
 			/// @brief Insert Alert.
 			virtual void push_back(std::shared_ptr<Activatable> alert);
 
-			/// @brief Insert activatable.
-			void push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> alert);
+			/// @brief Insert activatable based on xml attributes.
+			/// @param node with activation attribute.
+			/// @param activatable The activatable object.
+			/// @return True if the activatable was inserted.
+			/// @retval true The activatable was inserted as an event listener.
+			/// @retval false The activatable is not event based, insert it using default method.
+			virtual bool push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);

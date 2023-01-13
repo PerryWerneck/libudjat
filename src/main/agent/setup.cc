@@ -131,14 +131,16 @@ namespace Udjat {
 
 			}
 
-			// It's an alert?
-			if(strcasecmp(node.name(),"alert") == 0) {
+			// It's an alert or action?
+			if(strcasecmp(node.name(),"alert") == 0 || strcasecmp(node.name(),"action") == 0) {
 
-				auto alert = Abstract::Alert::Factory(*this, node);
+				std::shared_ptr<Activatable> alert = Abstract::Alert::Factory(*this, node);
 
 				if(alert) {
 					alert->setup(node);
-					push_back(node,alert);
+					if(!push_back(node,alert)) {
+						push_back(alert);
+					}
 					continue;
 				}
 

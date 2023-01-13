@@ -219,7 +219,7 @@ namespace Udjat {
 	}
 	#pragma GCC diagnostic pop
 
-	void Abstract::Agent::push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> alert) {
+	bool Abstract::Agent::push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> alert) {
 
 		switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change","ready-state","not-ready-state",NULL)) {
 		case 0:	// state-change
@@ -243,8 +243,10 @@ namespace Udjat {
 			break;
 
 		default:
-			push_back(alert);
+			return false;
 		}
+
+		return true;
 
 	}
 
