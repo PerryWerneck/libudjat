@@ -75,7 +75,7 @@
 		return *this;
 	}
 
-	Alert::Activation & Alert::Script::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+	Alert::Activation & Alert::Script::Activation::set(const std::function<bool(const char *key, std::string &value)> &expander) {
 		cmdline.expand(expander);
 		return *this;
 	}

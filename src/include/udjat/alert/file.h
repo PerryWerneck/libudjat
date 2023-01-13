@@ -48,7 +48,7 @@
 
 				Value & getProperties(Value &value) const noexcept override;
 				Udjat::Alert::Activation & set(const Abstract::Object &object) override;
-				Udjat::Alert::Activation & expand(const std::function<bool(const char *key, std::string &value)> &expander) override;
+				Udjat::Alert::Activation & set(const std::function<bool(const char *key, std::string &value)> &expander) override;
 
 			};
 

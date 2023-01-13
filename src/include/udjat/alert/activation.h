@@ -105,7 +105,7 @@
 			Activation & apply(const Abstract::Object *object, ...) __attribute__ ((sentinel));
 
 			/// @brief Expand activation strings.
-			virtual Activation & expand(const std::function<bool(const char *key, std::string &value)> &expander);
+			virtual Activation & set(const std::function<bool(const char *key, std::string &value)> &expander);
 
 			inline bool verbose() const noexcept {
 				return options.verbose;

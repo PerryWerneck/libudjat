@@ -68,11 +68,19 @@
 		return Udjat::Alert::Controller::getInstance().active(this);
 	}
 
+	void Abstract::Alert::activate(const std::function<bool(const char *key, std::string &value)> &expander) {
+		auto activation = ActivationFactory();
+		activation->set(expander);
+		Udjat::start(activation);
+	}
+
+	/*
 	void Abstract::Alert::activate(const Abstract::Object &object) {
 		auto activation = ActivationFactory();
 		activation->set(object);
 		Udjat::start(activation);
 	}
+	*/
 
 	void Abstract::Alert::deactivate() {
 		Udjat::Alert::Controller::getInstance().remove(this);

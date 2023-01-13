@@ -95,7 +95,7 @@
 			bool activated() const noexcept override;
 
 			/// @brief Activate alert.
-			void activate(const Abstract::Object &object) override;
+			void activate(const std::function<bool(const char *key, std::string &value)> &expander);
 
 			/// @brief Deactivate alert.
 			void deactivate() override;
