@@ -36,7 +36,12 @@
 
 		static std::shared_ptr<Activatable> Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
 
-		virtual void activate(const Abstract::Object &object);
+		/// @brief Activate object, apply values.
+		virtual void activate(const std::function<bool(const char *key, std::string &value)> &expander) = 0;
+
+		/// @brief Activate object, expand properties.
+		void activate(const Abstract::Object &object);
+
 		virtual void deactivate();
 
 		/// @brief Is the object activated?

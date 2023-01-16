@@ -46,7 +46,7 @@
 			return activatable;
 		}
 
-		return AlertFactory(parent,node,type);
+		return Abstract::Alert::Factory(parent,node,type);
 
 	}
 

@@ -18,7 +18,7 @@ Provides: libudjat-dev (= ${binary:Version})
 Section: libdevel
 Depends: ${misc:Depends}, pkg-config, libpugixml-dev, libudjat (= ${binary:Version})
 Description: libudjat development files.
- Development files for virtual machine detection library
+ Development files for udjat core library
 
 Package: libudjat-dbg
 Architecture: any

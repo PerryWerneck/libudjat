@@ -26,13 +26,14 @@
 
  namespace Udjat {
 
+	/*
 	bool Abstract::Agent::ChildFactory(const pugi::xml_node &node) {
 		return ChildFactory(node.name(),node);
 	}
 
 	bool Abstract::Agent::ChildFactory(const char *type, const pugi::xml_node &node) {
 
-		return Factory::for_each(type,[this,&node](Factory &factory){
+		return Udjat::Factory::for_each(type,[this,&node](Udjat::Factory &factory){
 
 			try {
 
@@ -81,12 +82,13 @@
 		});
 
 	}
+	*/
 
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
 		push_back(child);
 	}
 
-	void Abstract::Agent::push_back(std::shared_ptr<Agent> child) {
+	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
@@ -95,6 +97,11 @@
 		}
 
 		child->parent = this;
+
+		if(!child->current_state.selected) {
+			child->current_state.set(child->computeState());
+		}
+
 		children.agents.push_back(child);
 
 	}

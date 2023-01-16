@@ -154,19 +154,30 @@
 
 			timer.set(update.time());
 
+#ifdef HAVE_SYSTEMD
+			sd_notifyf(0,"STATUS=%s",_("System is configured"));
+#endif // HAVE_SYSTEMD
+
 		} catch(const std::exception &e ) {
 
 			error() << "Reconfiguration has failed: " << e.what() << endl;
 			timer.set(Config::Value<time_t>("service","reconfig-time-when-failed",120000));
+
+#ifdef HAVE_SYSTEMD
+			sd_notifyf(0,"STATUS=%s%s",_("Reconfiguration has failed: "),e.what());
+#endif // HAVE_SYSTEMD
 
 		} catch(...) {
 
 			error() << "Unexpected error during reconfiguration" << endl;
 			timer.set(Config::Value<time_t>("service","reconfig-time-when-failed",120000));
 
-		}
+#ifdef HAVE_SYSTEMD
+			sd_notifyf(0,"STATUS=%s",_("Unexpected error during reconfiguration"));
+#endif // HAVE_SYSTEMD
 
-		notify(Abstract::Agent::root()->state()->to_string().c_str());
+
+		}
 
 	}
 

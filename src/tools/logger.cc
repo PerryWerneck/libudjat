@@ -54,11 +54,11 @@
 			const char * name;
 			const char * message;
 		} attributes[] = {
-			{ "log-info",		"Info messages are {}"		},	// Informational message.
-			{ "log-warning",	"Warning messages are {}"	},	// Warning conditions.
-			{ "log-error",		"Error messages are {}"		},	// Error conditions.
-			{ "log-debug",		"Debug messages are {}"		},	// Debug message.
-			{ "log-trace",		"Trace messages are {}"		},	// Trace message.
+			{ "log-info",		"Info messages are "	},	// Informational message.
+			{ "log-warning",	"Warning messages are "	},	// Warning conditions.
+			{ "log-error",		"Error messages are "	},	// Error conditions.
+			{ "log-debug",		"Debug messages are "	},	// Debug message.
+			{ "log-trace",		"Trace messages are "	},	// Trace message.
 		};
 
 		Logger::Options &options{Logger::Options::getInstance()};
@@ -74,7 +74,6 @@
 			bool enabled = attribute.as_bool(options.enabled[option]);
 
 			if(enabled == options.enabled[option]) {
-				debug("Keeping '",attributes[ix].name,"'");
 				continue;
 			}
 
@@ -84,7 +83,7 @@
 			write(
 				Trace,
 				"logger",
-				Message(attributes[ix].message,text).c_str(),
+				String(attributes[ix].message,text).c_str(),
 				true
 			);
 

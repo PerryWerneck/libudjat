@@ -232,19 +232,19 @@ namespace Udjat {
 			// Update parent
 			for(auto parent = this->parent; parent; parent = parent->parent) {
 
-				auto state = parent->computeState();
+				auto computed_state = parent->computeState();
 				{
 					lock_guard<std::recursive_mutex> lock(guard);
 					for(auto child : parent->children.agents) {
-						if(child->level() > state->level()) {
-							state = child->state();
+						if(child->level() > computed_state->level()) {
+							computed_state = child->state();
 						}
 					}
 				}
 
-				debug("Computed state for '",parent->name(),"' is ",state->summary()," (",state->level(),")");
+				debug("Computed state for '",parent->name(),"' is ",computed_state->summary()," (",computed_state->level(),")");
 
-				if(!parent->onStateChange(state,false,"Current state changed to '{}' by child request ({})")) {
+				if(!parent->onStateChange(computed_state,false,"Current state changed to '{}' by child request ({})")) {
 					debug("No state change on '",parent->name(),"' stop update");
 					break;
 				}

@@ -192,6 +192,30 @@
 						return false;
 					}
 
+					void activate(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) override {
+
+						auto service = SystemService::getInstance();
+						auto agent = Abstract::Agent::root();
+
+						if(instance && agent) {
+
+							auto state = agent->state();
+
+							if(state->ready()) {
+								service->notify( _( "System is ready" ));
+							} else {
+								String message{state->summary()};
+								if(message.strip().empty()) {
+									service->notify( _( "System is not ready" ) );
+								} else {
+									service->notify(message.c_str());
+								}
+							}
+						}
+
+					}
+
+					/*
 					void activate(const Abstract::Object &object) override {
 
 						auto service = SystemService::getInstance();
@@ -217,6 +241,7 @@
 
 						}
 					}
+					*/
 
 				};
 

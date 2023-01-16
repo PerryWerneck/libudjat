@@ -73,11 +73,11 @@
 		return AlertFactory(parent,node);
 	}
 
-	bool Factory::push_back(Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) {
-		return push_back(node);
+	bool Factory::generic(Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) {
+		return generic(node);
 	}
 
-	bool Factory::push_back(const pugi::xml_node UDJAT_UNUSED(&node)) {
+	bool Factory::generic(const pugi::xml_node UDJAT_UNUSED(&node)) {
 		return false;
 	}
 

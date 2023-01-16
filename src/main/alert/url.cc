@@ -112,7 +112,7 @@
 		return *this;
 	}
 
-	Alert::Activation & Alert::URL::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+	Alert::Activation & Alert::URL::Activation::set(const std::function<bool(const char *key, std::string &value)> &expander) {
 
 		debug("URL=",url.c_str());
 		debug("PAYLOAD=",payload.c_str());

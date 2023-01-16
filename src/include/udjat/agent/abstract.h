@@ -220,10 +220,15 @@
 			void push_back(std::shared_ptr<Abstract::Object> object);
 
 			/// @brief Insert Alert.
-			virtual void push_back(std::shared_ptr<Abstract::Alert> alert);
+			virtual void push_back(std::shared_ptr<Activatable> alert);
 
-			/// @brief Insert Alert with XML definition.
-			virtual void push_back(const pugi::xml_node &node, std::shared_ptr<Abstract::Alert> alert);
+			/// @brief Insert activatable based on xml attributes.
+			/// @param node with activation attribute.
+			/// @param activatable The activatable object.
+			/// @return True if the activatable was inserted.
+			/// @retval true The activatable was inserted as an event listener.
+			/// @retval false The activatable is not event based, insert it using default method.
+			virtual bool push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
@@ -234,16 +239,22 @@
 			/// @brief Remove listener.
 			void remove(std::shared_ptr<Activatable> activatable);
 
+			/// @brief Build and agent from type & xml node.
+			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const pugi::xml_node &node);
+
+			/// @brief Build and agent from node.
+			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const pugi::xml_node &node);
+
 			/// @brief Create and insert child.
 			/// @param type The agent type.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool ChildFactory(const char *type, const pugi::xml_node &node);
+			// bool ChildFactory(const char *type, const pugi::xml_node &node);
 
 			/// @brief Create and insert child from XML definition.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool ChildFactory(const pugi::xml_node &node);
+			// bool ChildFactory(const pugi::xml_node &node);
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
@@ -265,12 +276,7 @@
 			}
 
 			/// @brief Setup agent from XML node.
-			/// @see setup_properties
-			/// @see setup_states
-			/// @see setup_alerts
-			/// @see setup_children
-			/// @brief node XML node with agent and children definitions.
-			void setup(const pugi::xml_node &node) override;
+			void setup(const pugi::xml_node &node, bool upsearch = true) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();

@@ -99,7 +99,7 @@ namespace Udjat {
 			auto enabled = getAttribute(node,"alert",true);
 
 			if(enabled.as_bool(type)) {
-				auto alert = Udjat::AlertFactory(*this, node, type.as_string(""));
+				auto alert = Abstract::Alert::Factory(*this, node, type.as_string(""));
 				if(alert) {
 					listeners.push_back(alert);
 				}

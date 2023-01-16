@@ -102,7 +102,7 @@
 		return *this;
 	}
 
-	Alert::Activation & Alert::Activation::expand(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) {
+	Alert::Activation & Alert::Activation::set(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) {
 		return *this;
 	}
 

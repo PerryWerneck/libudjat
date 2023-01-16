@@ -41,9 +41,10 @@
 namespace Udjat {
 
 	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
-		return Udjat::AlertFactory(*this,node);
+		return Abstract::Alert::Factory(*this,node);
 	}
 
+	/*
 	void Abstract::Agent::Controller::setup_alerts(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
 
 		// Load agent alerts.
@@ -103,5 +104,5 @@ namespace Udjat {
 
 		});
 	}
-
+	*/
 }

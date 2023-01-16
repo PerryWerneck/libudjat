@@ -36,7 +36,7 @@
 	bool Abstract::State::push_back(const char *type, const pugi::xml_node &node) {
 
 		if(!strcasecmp(type,"alert")) {
-			auto alert = Udjat::AlertFactory(*this, node);
+			auto alert = Udjat::Abstract::Alert::Factory(*this, node);
 			if(alert) {
 				listeners.push_back(alert);
 				return true;

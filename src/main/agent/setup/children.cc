@@ -40,7 +40,8 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::Controller::setup_children(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
+			/*
+	void Abstract::Agent::Controller::setup_children(Abstract::Agent &parent, const pugi::xml_node &root) noexcept {
 		for(const pugi::xml_node &node : root) {
 
 			// Check for validation.
@@ -50,17 +51,38 @@ namespace Udjat {
 
 			// Create child.
 			if(strcasecmp(node.name(),"module") == 0) {
-
+				//
+				// Load module.
+				//
 				Module::load(node);
+
+			} else if(strcasecmp(node.name(),"agent") == 0) {
+
+				auto agent = Abstract::Agent::Factory(node,parent);
+
+				if(agent) {
+
+					agent->Object::set(node);
+					agent->setup(node);
+
+					parent.push_back(agent);
+
+				} else {
+
+					Logger::String{
+						"Dont know how to create a child of type '",node.attribute("type").as_string(),"', ignoring"
+					}.write(Logger::Debug,agent.name());
+
+				}
 
 			} else if(strcasecmp(node.name(),"attribute")) {
 
-				// It's not an attribute, check if it's a child node.
-				agent.ChildFactory(node);
+				// It's not an attribute, try generic factories.
 
 			}
 
 		}
 	}
+			*/
 
 }

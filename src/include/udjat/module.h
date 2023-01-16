@@ -56,6 +56,8 @@
 
 	protected:
 
+		typedef Udjat::Module super;
+
 		Module(const char *name, const ModuleInfo &info);
 
 		Module(const char *name, const ModuleInfo *info) : Module(name,*info) {
@@ -140,6 +142,12 @@
 
 		/// @brief Set new root agent.
 		virtual void set(std::shared_ptr<Abstract::Agent> agent) noexcept;
+
+		/// @brief Build agent from XML node, used on tag <agent type='module-name'>
+		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+
+		/// @brief Build alert from XML node, used on tag <alert type='module-name'>
+		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
 
 	};
 

@@ -6,7 +6,7 @@ AC_PREREQ(2.59)
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat], [1.0], [perry.werneck@gmail.com], [libudjat], [https://github.com/PerryWerneck/libudjat.git])
+AC_INIT([libudjat], [1.1], [perry.werneck@gmail.com], [libudjat], [https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -314,6 +314,10 @@ AC_CONFIG_FILES(src/include/udjat/version.h)
 AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(locale/Makefile)
+
+dnl AC_CONFIG_FILES(debian/libudjat.dsc)
+dnl AC_CONFIG_FILES(debian/changelog)
+dnl AC_CONFIG_FILES(debian/control)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.

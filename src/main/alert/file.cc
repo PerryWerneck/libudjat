@@ -118,7 +118,7 @@
 		return *this;
 	}
 
-	Alert::Activation & Alert::File::Activation::expand(const std::function<bool(const char *key, std::string &value)> &expander) {
+	Alert::Activation & Alert::File::Activation::set(const std::function<bool(const char *key, std::string &value)> &expander) {
 		filename.expand(expander);
 		return *this;
 	}
