@@ -226,28 +226,41 @@
 			return def;
 		}
 
-		if(!strcasecmp(c_str(),_("yes"))) {
-			return true;
+		static const char * yes[] = {
+			N_("yes"),
+			N_("true"),
+			N_("on"),
+			"1"
+		};
+
+		static const char * no[] = {
+			N_("no"),
+			N_("false"),
+			N_("off"),
+			"0"
+		};
+
+		for(const char *ptr : yes) {
+			if(strcasecmp(c_str(),ptr) == 0) {
+				return true;
+			}
+#ifdef GETTEXT_PACKAGE
+			if(strcasecmp(c_str(),dgettext(GETTEXT_PACKAGE,ptr)) == 0) {
+				return true;
+			}
+#endif // GETTEXT_PACKAGE
 		}
 
-		if(!strcasecmp(c_str(),_("no"))) {
-			return false;
-		}
+		for(const char *ptr : no) {
+			if(strcasecmp(c_str(),ptr) == 0) {
+				return false;
+			}
+#ifdef GETTEXT_PACKAGE
+			if(strcasecmp(c_str(),dgettext(GETTEXT_PACKAGE,ptr)) == 0) {
+				return false;
+			}
+#endif // GETTEXT_PACKAGE
 
-		if(!strcasecmp(c_str(),_("true"))) {
-			return true;
-		}
-
-		if(!strcasecmp(c_str(),_("false"))) {
-			return false;
-		}
-
-		if(at(0) == 's' || at(0) == 'S' || at(0) == 't' || at(0) == 'T' || at(0) == '1') {
-			return true;
-		}
-
-		if(at(0) == 'n' || at(0) == 'N' || at(0) == 'f' || at(0) == 'F' || at(0) == '0') {
-			return false;
 		}
 
 		if(at(0) == '?' || !strcasecmp(c_str(),"default") || !strcasecmp(c_str(),_("default"))) {
@@ -259,7 +272,7 @@
 		return def;
 	}
 
-	static const char * byte_unit_names[] = { "b", "Kb", "Gb", "Mb", "Tb" };
+	static const char * byte_unit_names[] = { N_("b"), N_("Kb"), N_("Gb"), N_("Mb"), N_("Tb") };
 
 	String & String::set_byte(double value, int precision) {
 
@@ -283,7 +296,16 @@
 		}
 
 		std::stringstream stream;
-		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << " " << name;
+
+		stream
+			<< std::fixed << std::setprecision(precision) << (((float) value)/selected)
+			<< " "
+#ifdef GETTEXT_PACKAGE
+			<< dgettext(GETTEXT_PACKAGE,name);
+#else
+			<< name;
+#endif // GETTEXT_PACKAGE
+
 		assign(stream.str());
 
 		return *this;
@@ -311,7 +333,16 @@
 		}
 
 		std::stringstream stream;
-		stream << std::fixed << std::setprecision(precision) << (((float) value)/selected) << " " << name;
+
+		stream
+			<< std::fixed << std::setprecision(precision) << (((float) value)/selected)
+			<< " "
+#ifdef GETTEXT_PACKAGE
+			<< dgettext(GETTEXT_PACKAGE,name);
+#else
+			<< name;
+#endif // GETTEXT_PACKAGE
+
 		assign(stream.str());
 
 		return *this;
