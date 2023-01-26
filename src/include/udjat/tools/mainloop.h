@@ -123,6 +123,9 @@ namespace Udjat {
 		//
 		struct Timers {
 
+			/// @brief Minimal timer value.
+			unsigned long maxwait = 60000;
+
 			/// @brief List of enabled timers.
 			std::list<Timer *> enabled;
 
@@ -167,6 +170,18 @@ namespace Udjat {
 
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
+
+		/// @brief Get poll() timeout.
+		/// @return poll call timeout.
+		inline unsigned long maxwait() const noexcept {
+			return timers.maxwait;
+		}
+
+		/// @brief Set poll() timeout.
+		/// @param value The timeout for poll.
+		inline void maxwait(unsigned long value) noexcept {
+			timers.maxwait = value;
+		}
 
 		/// @brief Run mainloop.
 		int run();

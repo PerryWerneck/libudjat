@@ -71,12 +71,15 @@
 
 			Udjat::Event::SignalHandler(this,signals[signal],[this](){
 
+				std::thread{[](){
+
 #ifdef HAVE_SYSTEMD
-				sd_notify(0,"STATUS=Interrupting by signal");
+					sd_notify(0,"STATUS=Interrupting by signal");
 #endif // HAVE_SYSTEMD
 
-				Udjat::Application::warning() << "Interrupting main loop" << endl;
-				Udjat::MainLoop::getInstance().quit();
+					Udjat::MainLoop::getInstance().quit();
+
+				}}.detach();
 
 				return true;
 			});
@@ -129,7 +132,6 @@
 
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
-
 		if(nSocks == 0) {
 			continue;
 		}

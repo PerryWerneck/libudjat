@@ -37,6 +37,7 @@
 #else
 		enabled = false;
 		wakeup();
+		clog << "MainLoop\tInterrupting as requested" << endl;
 #endif // _WIN32
 	}
 

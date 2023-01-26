@@ -162,7 +162,7 @@
 	unsigned long MainLoop::Timers::run() noexcept {
 
 		unsigned long now = MainLoop::Timer::getCurrentTime();
-		unsigned long next = now + 60000;
+		unsigned long next = now + maxwait;
 
 		//
 		// Get expired timers.
