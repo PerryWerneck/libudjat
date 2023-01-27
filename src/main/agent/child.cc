@@ -26,64 +26,6 @@
 
  namespace Udjat {
 
-	/*
-	bool Abstract::Agent::ChildFactory(const pugi::xml_node &node) {
-		return ChildFactory(node.name(),node);
-	}
-
-	bool Abstract::Agent::ChildFactory(const char *type, const pugi::xml_node &node) {
-
-		return Udjat::Factory::for_each(type,[this,&node](Udjat::Factory &factory){
-
-			try {
-
-				lock_guard<std::recursive_mutex> lock(guard);
-
-				auto agent = factory.AgentFactory(*this,node);
-				if(agent) {
-					agent->parent = this;
-					agent->Object::set(node);
-					agent->setup(node);
-					if(!agent->current_state.selected) {
-						agent->current_state.set(agent->computeState());
-					}
-					children.agents.push_back(agent);
-					return true;
-				}
-
-				auto object = factory.ObjectFactory(*this,node);
-				if(object) {
-					object->setup(node);
-					children.objects.push_back(object);
-					return true;
-				}
-
-				auto alert = factory.AlertFactory(*this,node);
-				if(alert) {
-					alert->setup(node);
-					push_back(alert);
-					return true;
-				}
-
-				return factory.push_back(node);
-
-			} catch(const std::exception &e) {
-
-				factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
-
-			} catch(...) {
-
-				factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
-
-			}
-
-			return false;
-
-		});
-
-	}
-	*/
-
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
 		push_back(child);
 	}

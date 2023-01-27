@@ -22,6 +22,7 @@
  #include <udjat/factory.h>
  #include <udjat/module.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/url.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -139,6 +140,35 @@
 						};
 
 						return make_shared<Script>(node);
+					}
+				},
+
+				{
+					"url",
+					[](const pugi::xml_node &node) {
+
+						/// @brief Agent keeping the value of script return code.
+						class Url : public Udjat::Agent<int32_t> {
+						private:
+							const char *url;
+							HTTP::Method method;
+
+						public:
+							Url(const pugi::xml_node &node) : Udjat::Agent<int32_t>(node), url{Quark(node,"url","",false).c_str()},method{HTTP::MethodFactory(node.attribute("method").as_string("head"))}  {
+
+								if(!(url && *url)) {
+									throw runtime_error("Required attribute 'url' is missing");
+								}
+
+							}
+
+							bool refresh(bool UDJAT_UNUSED(ondemand)) {
+								return set((int32_t) Udjat::URL{this->url}.test(method));
+							};
+
+						};
+
+						return make_shared<Url>(node);
 					}
 				},
 
