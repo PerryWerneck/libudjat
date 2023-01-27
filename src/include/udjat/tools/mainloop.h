@@ -19,6 +19,11 @@
 
 #pragma once
 
+#ifdef _WIN32
+	#include <winsock2.h>	// WSAPOLLFD
+	#include <windows.h>
+#endif // _WIN32
+
 #include <udjat/defs.h>
 #include <udjat/moduleinfo.h>
 

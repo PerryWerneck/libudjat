@@ -212,37 +212,7 @@
 								}
 							}
 						}
-
 					}
-
-					/*
-					void activate(const Abstract::Object &object) override {
-
-						auto service = SystemService::getInstance();
-						if(!instance) {
-							return;
-						}
-
-						const Abstract::Agent *agent = dynamic_cast<const Abstract::Agent *>(&object);
-						if(agent) {
-
-							auto state = agent->state();
-
-							if(state->ready()) {
-								service->notify( _( "System is ready" ));
-							} else {
-								String message{state->summary()};
-								if(message.strip().empty()) {
-									service->notify( _( "System is not ready" ) );
-								} else {
-									service->notify(message.c_str());
-								}
-							}
-
-						}
-					}
-					*/
-
 				};
 
 				root->push_back( (Event) (Event::STARTED|Event::STATE_CHANGED), std::make_shared<Listener>() );
