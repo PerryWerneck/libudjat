@@ -165,16 +165,19 @@
 
 							std::shared_ptr<Abstract::State> computeState() override {
 
-								if(!states.empty()) {
-									return Udjat::Agent<int32_t>::computeState();
+								std::shared_ptr<Abstract::State> state = Udjat::Agent<int32_t>::computeState();
+
+								if(!state) {
+									state = HTTP::Error::StateFactory(this->get());
 								}
 
-								auto state = HTTP::Error::StateFactory(this->get());
-								if(state) {
-									return state;
+								if(!state) {
+									state = Abstract::Agent::computeState();
+
 								}
 
-								return Abstract::Agent::computeState();
+								return state;
+
 							}
 
 							bool refresh(bool UDJAT_UNUSED(ondemand)) {
