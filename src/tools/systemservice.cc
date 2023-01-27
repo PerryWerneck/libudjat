@@ -96,7 +96,7 @@
 			}
 
 			if(!definitions) {
-				throw system_error(ENOENT,system_category(),"Unable to detect service configuration file");
+				throw system_error(ENOENT,system_category(),string{"Cant find '"} + Application::DataFile{"xml.d"} + "'");
 			}
 
 		} else if(definitions[0] != '.' && definitions[0] != '/' && ::access(definitions,F_OK) != 0) {

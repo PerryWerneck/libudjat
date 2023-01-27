@@ -103,7 +103,11 @@
 		/// @brief Send usage help to std::cout
 		virtual void usage() const noexcept;
 
+#ifdef DEBUG
+		SystemService(const char *definitions = "./debug.xml");
+#else
 		SystemService(const char *definitions = nullptr);
+#endif // DEBUG
 
 	public:
 
