@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,38 +18,38 @@
  */
 
  #pragma once
+
  #include <udjat/defs.h>
- #include <pugixml.hpp>
- #include <cstdint>
+ #include <udjat/agent/level.h>
+ #include <memory>
 
  namespace Udjat {
 
-	/// @brief Alert/state level.
-	enum Level : uint8_t {
-		undefined,
-		unimportant,
-		ready,
-		warning,
-		error,
+	namespace HTTP {
 
-		critical		///< @brief Critical level (always the last one)
+		class UDJAT_API Error {
+		private:
 
-	};
+		public:
+			const Udjat::Level level;
+			const char * summary = "";
+			const char * body = "";
 
-	/// @brief Get level from string.
-	UDJAT_API Level LevelFactory(const char *name);
+			constexpr Error(const Udjat::Level l, const char *s, const char *b) : level{l}, summary{s}, body{b} {
+			}
 
-	/// @brief Get level from XML node.
-	UDJAT_API Level LevelFactory(const pugi::xml_node &node);
+			inline operator bool() const noexcept {
+				return summary && *summary;
+			}
 
- }
+			Error Factory(int32_t code);
 
- namespace std {
+			static std::shared_ptr<Abstract::State> StateFactory(int32_t code);
 
-	UDJAT_API const char * to_string(const Udjat::Level level);
+			const char * to_string() const noexcept;
 
-	inline ostream& operator<< (ostream& os, const Udjat::Level level) {
-		return os << to_string(level);
+		};
+
 	}
 
  }

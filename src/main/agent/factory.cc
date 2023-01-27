@@ -23,6 +23,7 @@
  #include <udjat/module.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/http/error.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -160,6 +161,20 @@
 									throw runtime_error("Required attribute 'url' is missing");
 								}
 
+							}
+
+							std::shared_ptr<Abstract::State> computeState() override {
+
+								if(!states.empty()) {
+									return Udjat::Agent<int32_t>::computeState();
+								}
+
+								auto state = HTTP::Error::StateFactory(this->get());
+								if(state) {
+									return state;
+								}
+
+								return Abstract::Agent::computeState();
 							}
 
 							bool refresh(bool UDJAT_UNUSED(ondemand)) {
