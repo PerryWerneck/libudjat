@@ -70,6 +70,8 @@
 
 	UDJAT_API std::string strip(const char *str, ssize_t length = -1);
 
+	UDJAT_API bool isnumber(const char *str);
+
 	/// @brief Simple markup expander.
 	/// @param text String to expand.
 	/// @return String with markup expanded.

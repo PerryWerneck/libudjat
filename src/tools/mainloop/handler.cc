@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
  #include <private/mainloop.h>

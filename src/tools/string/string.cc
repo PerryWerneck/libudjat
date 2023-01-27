@@ -167,6 +167,16 @@
 		return chomp(chug(str));
 	}
 
+	UDJAT_API bool isnumber(const char *str) {
+		for(const char *ptr = str;*ptr;ptr++) {
+			if(!::isdigit(*ptr)) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+
 	std::string & strip(std::string &str) noexcept {
 		char *buffer = new char[str.size()+1];
 		memcpy(buffer,str.c_str(),str.size());

@@ -22,6 +22,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/win32/path.h>
  #include <fcntl.h>
 
  namespace Udjat {
@@ -32,6 +33,12 @@
 
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
 
+#ifdef LIBDIR
+			Config::Value<string>("modules","versioned-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/"),
+			Config::Value<string>("modules","unversioned-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/"),
+#endif // LIBDIR
+
+			/*
 #if defined(__x86_64__)
 			// 64 bit detected
 			Config::Value<string>(
@@ -87,18 +94,25 @@
 				"/mingw32/lib/udjat-modules/"
 			),
 #endif
+			*/
 		};
 
 		if(name && *name) {
 
 			for(const string &path : paths) {
 
-				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".dll";
-				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+				Win32::Path filename{(path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".dll").c_str()};
+
 
 				if(access(filename.c_str(),R_OK) == 0) {
+					debug("Found '",filename.c_str(),"' = ",access(filename.c_str(),R_OK));
 					return filename;
 				}
+#ifdef DEBUG
+				else {
+					debug("Searching '",filename.c_str(),"' = ",access(filename.c_str(),R_OK));
+				}
+#endif // DEBUG
 
 			}
 
