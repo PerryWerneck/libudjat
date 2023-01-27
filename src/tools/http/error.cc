@@ -30,6 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/http/error.h>
+ #include <udjat/tools/http/exception.h>
  #include <udjat/agent/level.h>
 
  using namespace std;
@@ -202,7 +203,16 @@
 	HTTP::Error HTTP::Error::Factory(int32_t code) {
 		for(size_t ix = 0; ix < N_ELEMENTS(error_codes);ix++) {
 			if(code >= error_codes[ix].from && code <= error_codes[ix].to) {
-				return HTTP::Error{error_codes[ix].level,error_codes[ix].summary,error_codes[ix].body};
+				return HTTP::Error{
+							error_codes[ix].level,
+#ifdef GETTEXT_PACKAGE
+							dgettext(GETTEXT_PACKAGE,error_codes[ix].summary),
+							dgettext(GETTEXT_PACKAGE,error_codes[ix].body)
+#else
+							error_codes[ix].summary,
+							error_codes[ix].body
+#endif // GETTEXT_PACKAGE
+						};
 			}
 		}
 		return HTTP::Error{Udjat::critical,_("Unexpected HTTP error code"),_("The HTTP error code is unknown")};

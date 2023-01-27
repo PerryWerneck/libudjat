@@ -173,7 +173,6 @@
 
 								if(!state) {
 									state = Abstract::Agent::computeState();
-
 								}
 
 								return state;
