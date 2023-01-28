@@ -89,16 +89,31 @@
 #ifdef _WIN32
 
 		/// @brief Install win32 service.
+		/// @param display_name Service display name.
 		/// @return 0 when success.
-		virtual int install();
-
-		virtual int install(const char *display_name);
+		virtual int install_service(const char *display_name = nullptr);
 
 		/// @brief Uninstall win32 service.
 		/// @return 0 when success.
-		virtual int uninstall();
+		virtual int uninstall_service();
 
 #endif // _WIN32
+
+		/// @brief Install application (override it with application description).
+		/// @return 0 when success.
+		virtual int install();
+
+		/// @brief Enable autostart.
+		virtual int autostart();
+
+		/// @brief Install application Shortcut.
+		/// @param id The application id.
+		/// @param name The shortcut name.
+		/// @param comment Shortcut comment.
+		/// @param Arguments for application.
+		/// @param autostart When true set application to autostart.
+		/// @return 0 when success.
+		virtual int install_shortcut(const char *id, const char *name, const char *comment, const char *arguments = "", bool autostart = false);
 
 		/// @brief Send usage help to std::cout
 		virtual void usage() const noexcept;

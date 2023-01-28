@@ -542,8 +542,8 @@
 			Logger::redirect(true);
 			mode = SERVICE_MODE_NONE;
 			service_stop(name().c_str());
-			uninstall();
-			install();
+			uninstall_service();
+			install_service();
 			service_start(name().c_str());
 			return 0;
 
@@ -555,7 +555,7 @@
 		case 'u':	// Uninstall service.
 			Logger::redirect(true);
 			mode = SERVICE_MODE_NONE;
-			return uninstall();
+			return uninstall_service();
 
 		}
 
@@ -602,7 +602,7 @@
 			}
 
 			// Uninstall service
-			if(uninstall()) {
+			if(uninstall_service()) {
 				return 3;
 			}
 
@@ -738,13 +738,20 @@
 	}
 
 	int SystemService::install() {
-		return install(Application::Name().c_str());
+		return install_service();
 	}
 
-	/// @brief Install win32 service.
-	int SystemService::install(const char *display_name) {
+	int SystemService::autostart() {
+		return ENOTSUP;
+	}
+
+	int SystemService::install_service(const char *display_name) {
 
 		Application::Name appname;
+
+		if(!display_name) {
+			display_name = appname.c_str();
+		}
 
 		// Get my path
 		TCHAR service_binary[MAX_PATH];
@@ -754,20 +761,18 @@
 
 		Win32::Service::Manager manager;
 
-		cout << "winservice\tInserting '" << display_name << "' service" << endl;
-#ifdef DEBUG
-		cout << "Service binary is '" << service_binary << "'" << endl;
-#endif // DEBUG
+		Logger::String{
+			"Inserting '",display_name,"' service for ", service_binary
+		}.write(Logger::Trace,name().c_str());
 
 		manager.insert(appname.c_str(),display_name,service_binary);
-		cout << "winservice\tService '" << display_name << "' installed" << endl;
 
 		return 0;
 
 	}
 
 	/// @brief Uninstall win32 service.
-	int SystemService::uninstall() {
+	int SystemService::uninstall_service() {
 
 		Application::Name appname;
 

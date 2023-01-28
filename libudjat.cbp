@@ -264,6 +264,7 @@
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/nic.cc" />
 		<Unit filename="src/tools/os/linux/protocol.cc" />
+		<Unit filename="src/tools/os/linux/shortcut.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/controller.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/handler.cc" />
 		<Unit filename="src/tools/os/linux/subprocess/init.cc" />
@@ -294,6 +295,7 @@
 		<Unit filename="src/tools/os/windows/protocol.cc" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
 		<Unit filename="src/tools/os/windows/service.cc" />
+		<Unit filename="src/tools/os/windows/shortcut.cc" />
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />
 		</Unit>
