@@ -20,13 +20,68 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/win32/cleanup.h>
+ #include <udjat/tools/application.h>
+ #include <private/win32.h>
+ #include <stdexcept>
 
  using namespace std;
+ using namespace Udjat;
 
  UDJAT_API void udjat_autoptr_cleanup_HANDLE(HANDLE *handle) {
 	if(*handle) {
 		CloseHandle(*handle);
 		*handle = 0;
 	}
+ }
+
+ /// @brief Get windows special folder.
+ /// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+ /// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c
+ string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr) {
+
+	PWSTR wcp = NULL;
+	string result;
+
+	HRESULT hr = SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp);
+
+	try {
+
+		if (SUCCEEDED(hr)) {
+
+			size_t len = wcslen(wcp) * 2;
+			char buffer[len+1];
+
+			wcstombs(buffer,wcp,len);
+
+			result.assign(buffer);
+
+		} else {
+			throw runtime_error("Can't get known folder path");
+		}
+
+	} catch(...) {
+		CoTaskMemFree (wcp);
+		throw;
+	}
+
+	CoTaskMemFree (wcp);
+
+	result += '\\';
+	return result;
+
+ }
+
+ string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) {
+
+	string result = win32_special_folder(known_folder_guid_ptr);
+
+	result.append(Application::Name());
+	result.append("\\");
+	result.append(subdir);
+
+	File::Path::mkdir(result.c_str());
+
+	result.append("\\");
+	return result;
  }
 

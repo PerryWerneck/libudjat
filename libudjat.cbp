@@ -61,6 +61,7 @@
 		<Unit filename="src/include/private/request.h" />
 		<Unit filename="src/include/private/state.h" />
 		<Unit filename="src/include/private/updater.h" />
+		<Unit filename="src/include/private/win32.h" />
 		<Unit filename="src/include/private/worker.h" />
 		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />

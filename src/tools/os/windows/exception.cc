@@ -25,6 +25,7 @@
  #include <windows.h>
  #include <iostream>
  #include <mutex>
+ #include <wininet.h>
 
  #include <cstring>
  #include <cstdio>
@@ -42,6 +43,13 @@
 		return instance;
  	}
 
+ };
+
+ static const struct {
+	DWORD dwMessageId;
+	const char *message;
+ } windows_errors[] = {
+ 	{ ERROR_INTERNET_TIMEOUT,	N_("The request has timed out.") }
  };
 
  /*
@@ -64,6 +72,16 @@
  */
 
  std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
+
+	for(size_t ix = 0; ix < N_ELEMENTS(windows_errors); ix++) {
+		if(windows_errors[ix].dwMessageId == dwMessageId) {
+#ifdef GETTEXT_PACKAGE
+			return dgettext(GETTEXT_PACKAGE,windows_errors[ix].message);
+#else
+			return windows_errors[ix].message;
+#endif // GETTEXT_PACKAGE
+		}
+	}
 
 	lock_guard<mutex> lock(Guard::getInstance());
 

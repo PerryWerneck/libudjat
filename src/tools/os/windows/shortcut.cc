@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/application.h>
+ #include <private/win32.h>
  #include <winnls.h>
  #include <shobjidl.h>
  #include <objbase.h>
@@ -36,7 +37,6 @@
 	IShellLink*   pShellLink;            // IShellLink object pointer
 	IPersistFile* pPersistFile;          // IPersistFile object pointer
 	wchar_t       wszLinkfile[MAX_PATH]; // pszLinkfile as Unicode string
-	int           iWideCharsWritten;     // Number of wide characters written
 
 	HRESULT hRes =
 		CoCreateInstance(
@@ -89,7 +89,7 @@
 
 
 	if(SUCCEEDED(hRes)) {
-		iWideCharsWritten = MultiByteToWideChar(CP_ACP, 0, pszLinkfile, -1, wszLinkfile, MAX_PATH);
+		MultiByteToWideChar(CP_ACP, 0, pszLinkfile, -1, wszLinkfile, MAX_PATH);
 		hRes = pPersistFile->Save(wszLinkfile, TRUE);
 		pPersistFile->Release();
 	}
@@ -113,6 +113,13 @@
 			NULL,			// pszIconfile
 			0				// iIconindex
 		);
+
+		if(!autostart) {
+			return 0;
+		}
+
+		// Create another shortcut in autostart (FOLDERID_CommonStartup)
+		win32_special_folder(FOLDERID_CommonStartup);
 
 		return 0;
 	}

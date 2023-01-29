@@ -30,12 +30,11 @@
  #include <udjat/win32/charset.h>
  #include <cstring>
  #include <iostream>
+ #include <private/win32.h>
 
  #ifdef HAVE_LIBINTL
 	#include <libintl.h>
  #endif // HAVE_LIBINTL
-
- #include <shlobj.h>
 
  using namespace std;
 
@@ -147,57 +146,6 @@
 		append("\\");
 	}
 
-	/// @brief Get windows special folder.
-	/// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
-	/// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c
-	static string get_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr) {
-
-		PWSTR wcp = NULL;
-		string result;
-
-		HRESULT hr = SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp);
-
-		try {
-
-			if (SUCCEEDED(hr)) {
-
-				size_t len = wcslen(wcp) * 2;
-				char buffer[len+1];
-
-				wcstombs(buffer,wcp,len);
-
-				result.assign(buffer);
-
-			} else {
-				throw runtime_error("Can't get known folder path");
-			}
-
-		} catch(...) {
-			CoTaskMemFree (wcp);
-			throw;
-		}
-
-		CoTaskMemFree (wcp);
-
-		result += '\\';
-		return result;
-
-	}
-
-	static string get_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) {
-
-		string result = get_special_folder(known_folder_guid_ptr);
-
-		result.append(Application::Name());
-		result.append("\\");
-		result.append(subdir);
-
-		File::Path::mkdir(result.c_str());
-
-		result.append("\\");
-		return result;
-	}
-
 	Application::SystemDataDir::SystemDataDir() : File::Path() {
 
 		try {
@@ -212,7 +160,7 @@
 			// Ignore errors.
 		}
 
-		assign(get_special_folder(FOLDERID_ProgramData));
+		assign(win32_special_folder(FOLDERID_ProgramData));
 
 		append(Application::Name());
 		mkdir();
@@ -345,7 +293,7 @@
 			// Ignore errors.
 		}
 
-		assign(get_special_folder(FOLDERID_ProgramData,"logs"));
+		assign(win32_special_folder(FOLDERID_ProgramData,"logs"));
 		File::Path::mkdir(c_str());
 
 	}
@@ -370,7 +318,7 @@
 			// Ignore errors.
 		}
 
-		assign(get_special_folder(FOLDERID_ProgramData,"cache"));
+		assign(win32_special_folder(FOLDERID_ProgramData,"cache"));
 		File::Path::mkdir(c_str());
 	}
 
