@@ -82,13 +82,13 @@
 				//
 				class ReadyState : public Abstract::State {
 				public:
-					ReadyState() : Abstract::State("ready", Level::ready, _( "System is ready" ), _( "No abnormal state was detected" )) {
+					ReadyState(const char *name, const char *summary, const char *body) : Abstract::State(name, Level::ready, summary, body) {
 						Object::properties.icon = "computer";
 					}
 
 				};
 
-				states.push_back(make_shared<ReadyState>());
+				states.push_back(make_shared<ReadyState>(name, _( "System is ready" ), _( "No abnormal state was detected" )));
 
 #ifndef _WIN32
 				//
