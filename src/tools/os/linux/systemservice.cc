@@ -118,6 +118,9 @@
 	int SystemService::cmdline(char key, const char *value) {
 
 		switch(key) {
+		case 'i':	// Install
+			return install();
+
 		case 'T':	// Auto quit
 			{
 				if(!value) {
@@ -170,6 +173,7 @@
 			char option;
 			const char *key;
 		} options[] = {
+			{ 'i', "install" },
 			{ 'C', "core" },
 			{ 'd', "daemon" },
 			{ 'f', "foreground" },
