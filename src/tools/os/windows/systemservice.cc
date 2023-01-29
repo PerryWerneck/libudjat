@@ -310,10 +310,6 @@
 			}
 		}
 
-		if(!Module::preload(definitions)) {
-			throw runtime_error("Module preload has failed, aborting service");
-		}
-
 		if(definitions[0] && strcasecmp(definitions,"none")) {
 
 			info() << "Loading service definitions from " << definitions << endl;

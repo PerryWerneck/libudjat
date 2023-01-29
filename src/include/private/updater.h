@@ -25,9 +25,30 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/xml.h>
  #include <memory>
+ #include <list>
 
  namespace Udjat {
 
+ 	class UDJAT_PRIVATE Updater : private Application, public std::list<std::string> {
+	private:
+		time_t next = 0;
+		time_t update;
+
+	public:
+		Updater(const char *pathname, bool force);
+
+		/// @brief Refresh XML files (if necessary);
+		/// @return true to reconfigure.
+		bool refresh();
+
+		/// @brief Load configuration files.
+		/// @param agent New root agent.
+		/// @return Seconds for next update.
+		time_t load(std::shared_ptr<Abstract::Agent> root);
+
+ 	};
+
+	/*
 	class UDJAT_PRIVATE Updater : private Application {
 	private:
 		bool changed = false;
@@ -57,5 +78,6 @@
 		}
 
 	};
+	*/
 
  }

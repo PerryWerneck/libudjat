@@ -28,6 +28,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/string.h>
+ #include <private/updater.h>
 
  #ifdef _WIN32
 	#include <direct.h>
@@ -111,30 +112,6 @@
 #endif //  _WIN32
 			throw system_error(ENOENT,system_category(),definitions);
 		}
-
-#ifdef _WIN32
-		{
-			WSADATA WSAData;
-			WSAStartup(0x101, &WSAData);
-
-			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
-			SetConsoleOutputCP(CP_UTF8);
-			SetConsoleCP(CP_UTF8);
-
-			if(Config::Value<bool>("service","virtual-terminal-processing",true)) {
-				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-				if(hOut != INVALID_HANDLE_VALUE) {
-					DWORD dwMode = 0;
-					if(GetConsoleMode(hOut, &dwMode)) {
-						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-						SetConsoleMode(hOut,dwMode);
-					}
-				}
-			}
-
-		}
-#endif // _WIN32
 
 		Application::init();
 
@@ -352,6 +329,20 @@
 		if(!message.empty()) {
 			notify(state()->to_string().c_str());
 		}
+	}
+
+	void SystemService::load(std::list<std::string> &files) {
+	}
+
+	void SystemService::setup(bool force) {
+
+		Updater updater{definitions,force};
+		load(updater);
+
+		if(updater.refresh()) {
+			updater.load(RootFactory());
+		}
+
 	}
 
  }

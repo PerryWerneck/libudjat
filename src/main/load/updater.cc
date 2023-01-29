@@ -28,6 +28,7 @@
  #include <sys/stat.h>
  #include <private/logger.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/file.h>
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -43,6 +44,138 @@
 
  namespace Udjat {
 
+	Updater::Updater(const char *pathname,bool force) : update{force} {
+		File::Path{pathname}.for_each("*.xml",[this](const File::Path &path){
+			push_back(path);
+			return false;
+		});
+	}
+
+	bool Updater::refresh() {
+
+		size_t changed = 0;
+
+		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name().c_str());
+		for(std::string &filename : *this) {
+
+			debug("Checking '",filename,"'");
+
+			try {
+
+				pugi::xml_document doc;
+				auto result = doc.load_file(filename.c_str());
+				if(result.status != pugi::status_ok) {
+					warning() << filename << ": " << result.description() << endl;
+					continue;
+				}
+
+				auto node = doc.document_element();
+
+				/// Setup logger.
+				Logger::setup(node);
+
+				// Check for modules.
+				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+					if(node.attribute("preload").as_bool(false)) {
+						Module::load(node);
+					}
+				}
+
+				// Check for update timer.
+				const char *url = node.attribute("src").as_string();
+				if(url && *url) {
+
+					time_t refresh = node.attribute("update-timer").as_uint(0);
+
+					info() << "Updating " << filename << endl;
+
+					try {
+
+						if(HTTP::Client::save(node,filename.c_str())) {
+							changed++;
+						}
+
+					} catch(const std::exception &e) {
+
+						error() << "Error '" << e.what() << "' updating " << filename << endl;
+						refresh = node.attribute("update-when-failed").as_uint(refresh);
+
+					}
+
+					if(refresh) {
+						if(next) {
+							next = std::min(next,refresh);
+						} else {
+							next = refresh;
+						}
+					}
+
+				}
+
+			} catch(const std::exception &e) {
+
+				error() << filename << ": " << e.what() << endl;
+
+			}
+
+		}
+
+		if(changed) {
+			Logger::String(changed, " file(s) changed, requesting full update").write(Logger::Trace,name().c_str());
+			update = true;
+		}
+
+		return update;
+
+	}
+
+	time_t Updater::load(std::shared_ptr<Abstract::Agent> root) {
+
+		for(std::string &filename : *this) {
+
+			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name().c_str());
+
+			try {
+
+				pugi::xml_document doc;
+				auto result = doc.load_file(filename.c_str());
+				if(result.status != pugi::status_ok) {
+					warning() << filename << ": " << result.description() << endl;
+					continue;
+				}
+
+				auto node = doc.document_element();
+
+				Logger::setup(node);
+
+				const char *path = node.attribute("agent-path").as_string();
+
+				if(path && *path) {
+
+					// Has defined root path, find agent.
+					root->find(path,true,true)->setup(node);
+
+				} else {
+
+					// No path, load here.
+					root->setup(node);
+
+				}
+
+			} catch(const std::exception &e) {
+
+				error() << filename << ": " << e.what() << endl;
+
+			}
+
+		}
+
+		// Activate new root agent.
+
+		return next;
+	}
+
+	/*
 	Updater::Updater(const char *pathname) : path{pathname} {
 
 		// Then check for file updates.
@@ -215,5 +348,6 @@
 
 		},true);
 	}
+	*/
 
  }

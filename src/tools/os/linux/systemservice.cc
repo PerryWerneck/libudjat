@@ -68,20 +68,18 @@
 
 		string appconfig;
 
-		if(!Module::preload(definitions)) {
-			throw runtime_error("Module preload has failed, aborting service");
-		}
-
 		if(definitions[0] && strcasecmp(definitions,"none")) {
 
 			info() << "Loading service definitions from " << definitions << endl;
 
-			reconfigure(definitions,true);
+			setup(true);
 
 			Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
 			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
 				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
-					reconfigure(definitions,false);
+					ThreadPool::getInstance().push([this](){
+						setup(false);
+					});
 					return true;
 				});
 				info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;

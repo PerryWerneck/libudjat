@@ -51,6 +51,18 @@
 
  namespace Udjat {
 
+	time_t UDJAT_API Application::setup(const char *pathname, bool force) {
+
+		Updater updater{pathname,force};
+
+		if(updater.refresh()) {
+			updater.load(RootAgentFactory());
+		}
+
+		return 0; // FIX-ME
+	}
+
+	/*
  	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
 		return Application::setup(pathname,force);
  	}
@@ -180,5 +192,6 @@
 		}
 
 	}
+	*/
 
  }

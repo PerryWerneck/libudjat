@@ -61,10 +61,14 @@
 			SERVICE_MODE_DAEMON			///< @brief Run as daemon (Linux only).
 		} mode = SERVICE_MODE_DEFAULT;
 
+		/// @brief Add extended configuration files.
+		/// @param files The list of xml files to load.
+		virtual void load(std::list<std::string> &files);
+
 		/// @brief Reconfigure application from XML files.
 		/// @param force Do a reconfiguration even if the file hasn't change.
-		/// @param pathname Path for a xml file or folder with xml files.
-		virtual void reconfigure(const char *pathname, bool force) noexcept;
+		/// @see Application::setup
+		void setup(bool force);
 
 		/// @brief Factory for the application root.
 		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;

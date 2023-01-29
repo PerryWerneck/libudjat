@@ -80,10 +80,9 @@
 			return _info.gettext_package;
 		}
 
-		/// @brief Preload modules before the reconfiguration.
-		/// @param pathname The xml definitions file (or folder) path.
+		/// @brief Preload modules from configuration file.
 		/// @return true if success.
-		static bool preload(const char *pathname = nullptr) noexcept;
+		static bool preload() noexcept;
 
 		/// @brief Call method on every modules.
 		static void for_each(std::function<void(Module &module)> method);

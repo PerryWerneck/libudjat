@@ -72,62 +72,36 @@ namespace Udjat {
 		return false;
 	}
 
-	bool Module::preload(const char *pathname) noexcept {
+	bool Module::preload() noexcept {
 
 		bool rc = true;
 
-		// Preload modules from config
-		{
-			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
+		Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
 
-			debug("load-at-startup size=",modules.size());
-			if(modules.size()) {
-				Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
+		if(modules.size()) {
 
-				for(std::string &module : modules) {
+			Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
 
-					try {
+			for(std::string &module : modules) {
 
-						Logger::String("Preloading ",module," from configuration file").trace("module");
-						load(File::Path{module});
+				try {
 
-					} catch(const std::exception &e) {
+					Logger::String("Preloading ",module," from configuration file").trace("module");
+					load(File::Path{module});
 
-						cerr << "module\t" << e.what() << endl;
+				} catch(const std::exception &e) {
 
-					} catch(...) {
+					cerr << "module\t" << e.what() << endl;
+					rc = false;
 
-						cerr << "module\tUnexpected error loading module" << endl;
+				} catch(...) {
 
-					}
+					cerr << "module\tUnexpected error loading module" << endl;
+					rc = false;
 
 				}
+
 			}
-		}
-
-		// Preload modules from XML
-		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
-
-			// Preload from path.
-			cout << "modules\tPreloading from " << pathname << endl;
-			Udjat::for_each(pathname, [&rc](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					if(node.attribute("preload").as_bool(false)) {
-
-						try {
-
-							Module::load(node);
-
-						} catch(const std::exception &e) {
-
-							cerr << "modules\t" << e.what() << endl;
-							rc = false;
-
-						}
-
-					}
-				}
-			});
 
 		}
 

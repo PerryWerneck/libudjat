@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/module.h>
  #include <errno.h>
  #include <fcntl.h>
  #include <unistd.h>
@@ -61,6 +62,11 @@
 #endif // GETTEXT_PACKAGE
 			return true;
 		}
+
+		if(!Module::preload()) {
+			throw runtime_error("Module preload has failed, aborting service");
+		}
+
 		return false;
 
 	}

@@ -61,14 +61,41 @@
 	}
 
 	bool Application::init() {
+
 		static bool initialized = false;
 
 		if(!initialized) {
+
 			initialized = true;
+
+			WSADATA WSAData;
+			WSAStartup(0x101, &WSAData);
+
 #ifdef GETTEXT_PACKAGE
 			set_gettext_package(GETTEXT_PACKAGE);
 			setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
+
+			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+			SetConsoleOutputCP(CP_UTF8);
+			SetConsoleCP(CP_UTF8);
+
+			if(Config::Value<bool>("application","virtual-terminal-processing",true)) {
+				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+				if(hOut != INVALID_HANDLE_VALUE) {
+					DWORD dwMode = 0;
+					if(GetConsoleMode(hOut, &dwMode)) {
+						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+						SetConsoleMode(hOut,dwMode);
+					}
+				}
+			}
+
+			if(!Module::preload()) {
+				throw runtime_error("Module preload has failed");
+			}
+
 			return true;
 		}
 		return false;
