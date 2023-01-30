@@ -54,7 +54,7 @@
 
 	void setRootAgent(std::shared_ptr<Abstract::Agent> agent) {
 
-		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << dec << endl;
+		Logger::String{"Activating new root agent"}.trace(Application::Name().c_str());
 		Abstract::Agent::Controller::getInstance().set(agent);
 
 		Module::for_each([agent](Module &module){
@@ -73,7 +73,8 @@
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was created" << endl;
+				Logger::String{"Initializing new root agent"}.trace(Application::Name().c_str());
+
 				Object::properties.icon = "computer";
 				Object::properties.url = Quark(string{"http://"} + name).c_str();
 

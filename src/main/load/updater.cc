@@ -171,6 +171,7 @@
 		}
 
 		// Activate new root agent.
+		Udjat::setRootAgent(root);
 
 		return next;
 	}

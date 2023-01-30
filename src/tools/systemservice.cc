@@ -340,7 +340,31 @@
 		load(updater);
 
 		if(updater.refresh()) {
-			updater.load(RootFactory());
+
+			auto agent = RootFactory();
+			updater.load(agent);
+
+#if defined(HAVE_SYSTEMD)
+
+			sd_notifyf(0,"READY=1\nSTATUS=%s",agent->state()->to_string().c_str());
+
+#elif defined(_WIN32)
+
+			try {
+
+				Win32::Registry registry("service",true);
+
+				registry.set("status",agent->state()->to_string().c_str());
+				registry.set("status_time",TimeStamp().to_string().c_str());
+
+			} catch(const std::exception &e) {
+
+				error() << "Cant update windows registry: " << e.what() << endl;
+
+			}
+
+#endif
+
 		}
 
 	}
