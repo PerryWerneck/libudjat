@@ -120,6 +120,10 @@
 	}
 
 	SystemService::~SystemService() {
+		if(update_timer) {
+			delete update_timer;
+			update_timer = nullptr;
+		}
 		instance = nullptr;
 	}
 
@@ -342,7 +346,35 @@
 		if(updater.refresh()) {
 
 			auto agent = RootFactory();
-			updater.load(agent);
+
+			time_t wait = updater.load(agent);
+
+			if(!wait) {
+
+				Logger::String{"Auto update is disabled"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+
+			} else {
+
+				update_timer = MainLoop::getInstance().TimerFactory(wait * 1000,[this](){
+
+					ThreadPool::getInstance().push([this](){
+
+						Logger::String{"Starting auto update"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+#ifdef HAVE_SYSTEMD
+						sd_notifyf(0,"STATUS=%s","Running auto update");
+#endif // HAVE_SYSTEMD
+
+						setup(false);
+
+					});
+
+					update_timer = nullptr;
+					return false;
+				});
+
+				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+
+			}
 
 #if defined(HAVE_SYSTEMD)
 
@@ -364,6 +396,13 @@
 			}
 
 #endif
+
+		} else {
+
+			Logger::String{"Keeping the actual root agent"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+#ifdef HAVE_SYSTEMD
+			sd_notifyf(0,"READY=1\nSTATUS=%s",Abstract::Agent::root()->state()->to_string().c_str());
+#endif // HAVE_SYSTEMD
 
 		}
 

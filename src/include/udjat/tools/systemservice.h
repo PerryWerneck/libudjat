@@ -47,6 +47,9 @@
 		/// @brief Set service state message from the root agent.
 		void notify() noexcept;
 
+		/// @brief Auto update timer.
+		MainLoop::Timer * update_timer = nullptr;
+
 #ifdef _WIN32
 		void registry(const char *name, const char *value);
 #endif // _WIN32
