@@ -116,6 +116,12 @@
 			SystemDataDir();
 		};
 
+		/// @brief User datadir
+		class UDJAT_API UserDataDir : public File::Path {
+		public:
+			UserDataDir(const char *subdir = "");
+		};
+
 		/// @brief File from the application or system datadir.
 		class UDJAT_API DataFile : public std::string {
 		public:

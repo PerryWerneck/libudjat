@@ -300,8 +300,7 @@
 
 		setlocale( LC_ALL, "" );
 
-		string appconfig;
-		if(!definitions) {
+		if(!(definitions && *definitions)) {
 			Config::Value<string> config("service","definitions","");
 			if(config.empty()) {
 				definitions = Quark(Application::DataDir("xml.d")).c_str();
@@ -310,17 +309,16 @@
 			}
 		}
 
-		if(definitions[0] && strcasecmp(definitions,"none")) {
+		if(*definitions && strcasecmp(definitions,"none")) {
 
 			info() << "Loading service definitions from " << definitions << endl;
-
-			reconfigure(definitions,true);
+			setup(true);
 
 		}
 
 	}
 
-	void SystemService::registry(const char *name, const char *value) {
+	void SystemService::registry(const char *name, const char *value) noexcept {
 
 		try {
 
@@ -796,6 +794,24 @@
 
 		return 0;
 	}
+
+	void SystemService::load(std::list<std::string> &files) {
+
+		if(Config::Value<bool>{"service","XMLFromUserDir",false}) {
+
+			// Load User defined settings.
+			Application::UserDataDir datadir{"xml.d"};
+			info() << "Loading user settings from '" << datadir << "'" << endl;
+
+			datadir.for_each("*.xml",[&files](const File::Path &path){
+				files.push_back(path);
+				return false;
+			});
+
+		}
+
+	}
+
 
  }
 

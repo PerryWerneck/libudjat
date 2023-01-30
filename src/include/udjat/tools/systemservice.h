@@ -51,7 +51,7 @@
 		MainLoop::Timer * update_timer = nullptr;
 
 #ifdef _WIN32
-		void registry(const char *name, const char *value);
+		void registry(const char *name, const char *value) noexcept;
 #endif // _WIN32
 
 	protected:

@@ -227,5 +227,8 @@
 
 	}
 
+	void SystemService::load(std::list<std::string> &files) {
+	}
+
  }
 

@@ -2,14 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Perry Werneck <perry.werneck@gmail.com>, 2022.
+# Perry Werneck <perry.werneck@gmail.com>, 2022-2023.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-12-20 07:28-0300\n"
-"PO-Revision-Date: 2022-12-20 07:29-0300\n"
+"POT-Creation-Date: 2023-01-22 12:55-0300\n"
+"PO-Revision-Date: 2023-01-30 09:49-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -20,13 +20,13 @@ msgstr ""
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 3.38.0\n"
+"X-Generator: Gtranslator 40.0\n"
 
 #: src/main/agent/controller.cc:47
 msgid "Agent controller"
 msgstr "Controlador de agentes"
 
-#: src/main/agent/agent.cc:258
+#: src/main/agent/agent.cc:285
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
@@ -34,18 +34,68 @@ msgstr "Agente não tem nada a informar"
 msgid "Alert controller"
 msgstr "Controlador de alertas"
 
-#: src/main/agent/state.cc:138
+#: src/tools/http/error.cc:97
+msgid "Authentication is required and has failed or has not yet been provided."
+msgstr "Autenticação falhou ou não foi fornecida."
+
+#: src/tools/http/error.cc:89
+msgid "Bad Request"
+msgstr "Requisição inválida"
+
+#: src/tools/http/error.cc:170
+msgid "Bad gateway"
+msgstr "Gateway inválido"
+
+#: src/tools/http/error.cc:145
+msgid "Client error"
+msgstr "Erro de cliente"
+
+#: src/main/agent/state.cc:149
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
 
-#: src/main/module/module.cc:116
+#: src/tools/http/error.cc:103
+msgid "Forbidden"
+msgstr "Proibido"
+
+#: src/tools/http/error.cc:184
+msgid "Gateway timeout"
+msgstr "Timeout no acesso ao gateway"
+
+#: src/tools/string/string.cc:285
+msgid "Gb"
+msgstr ""
+
+#: src/tools/http/error.cc:131
+msgid "Gone"
+msgstr ""
+
+#: src/tools/http/error.cc:191
+msgid "HTTP Version Not Supported"
+msgstr "Versão HTTP não suportada"
+
+#: src/main/module/module.cc:124
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/tools/os/linux/systemservice.cc:116
-#: src/tools/os/linux/systemservice.cc:121
+#: src/tools/http/error.cc:56
+msgid "Information"
+msgstr "Informação"
+
+#: src/tools/http/error.cc:156
+msgid "Internal error"
+msgstr "Erro interno"
+
+#: src/tools/os/linux/systemservice.cc:125
+#: src/tools/os/linux/systemservice.cc:130
+#: src/tools/os/windows/systemservice.cc:496
+#: src/tools/os/windows/systemservice.cc:501
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
+
+#: src/tools/string/string.cc:285
+msgid "Kb"
+msgstr ""
 
 #: src/tools/timestamp.cc:65
 msgid "Less than one minute"
@@ -55,11 +105,15 @@ msgstr "Menos de um minuto"
 msgid "Local file protocol"
 msgstr "Protocol de arquivo local"
 
-#: src/main/module/module.cc:100
+#: src/tools/string/string.cc:285
+msgid "Mb"
+msgstr ""
+
+#: src/main/module/module.cc:108
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:85
+#: src/main/agent/root.cc:91
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -67,25 +121,177 @@ msgstr "Nenhum estado anormal foi reportado"
 msgid "No reports on this path"
 msgstr "Nenhum relatório no caminho informado"
 
-#: src/main/agent/agent.cc:257
+#: src/main/agent/agent.cc:284
 msgid "Normal"
 msgstr "Normal"
+
+#: src/tools/http/error.cc:163
+msgid "Not Implemented"
+msgstr "Não implementado"
+
+#: src/tools/http/error.cc:110
+msgid "Not found"
+msgstr "Não encontrado"
+
+#: src/tools/http/error.cc:67
+msgid "Ok"
+msgstr ""
+
+#: src/tools/http/error.cc:117
+msgid "Proxy Authentication Required"
+msgstr "Proxy exige autenticação"
+
+#: src/tools/application/setup.cc:167
+msgid "Reconfiguration has failed: "
+msgstr "Reconfiguração falhou:"
+
+#: src/tools/http/error.cc:78
+msgid "Redirected"
+msgstr ""
+
+#: src/tools/http/error.cc:124
+msgid "Request Timeout"
+msgstr "Tempo da requisição esgotado"
+
+#: src/tools/http/error.cc:198
+msgid "Server error"
+msgstr "Erro de servidor"
+
+#: src/tools/http/error.cc:177
+msgid "Service Unavailable"
+msgstr "Serviço indisponível"
+
+#: src/tools/http/error.cc:139
+msgid ""
+"Something is making your server work too hard, and it just can’t keep up"
+msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 
 #: src/tools/url/protocols/script.cc:36
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/systemservice.cc:212
+#: src/tools/application/setup.cc:158
+msgid "System is configured"
+msgstr "Sistema está configurado"
+
+#: src/tools/systemservice.cc:186
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:208 src/main/agent/root.cc:85
+#: src/tools/systemservice.cc:182 src/main/agent/root.cc:91
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/main/agent/state.cc:143
+#: src/tools/string/string.cc:285
+msgid "Tb"
+msgstr ""
+
+#: src/tools/http/error.cc:218
+msgid "The HTTP error code is unknown"
+msgstr "Código de erro HTTP desconhecido"
+
+#: src/tools/http/error.cc:192
+msgid "The HTTP version used in the request is not supported by the server."
+msgstr "A versão HTTP usada na requisição não é suportada pelo servidor."
+
+#: src/tools/http/error.cc:125
+msgid ""
+"The client did not produce a request within the time that the server was "
+"prepared to wait."
+msgstr ""
+
+#: src/tools/http/error.cc:118
+msgid "The client must first authenticate itself with the proxy."
+msgstr ""
+
+#: src/tools/message.cc:47
+msgid "The message template is invalid"
+msgstr ""
+
+#: src/tools/http/error.cc:104
+msgid ""
+"The request contained valid data and was understood by the server, but the "
+"server is refusing action."
+msgstr ""
+
+#: src/tools/os/windows/exception.cc:52
+msgid "The request has timed out."
+msgstr ""
+
+#: src/tools/http/error.cc:164
+msgid ""
+"The request method is not supported by the server and cannot be handled."
+msgstr ""
+
+#: src/tools/http/error.cc:68
+msgid "The request succeeded."
+msgstr ""
+
+#: src/tools/http/error.cc:79
+msgid "The request was redirected to another URL."
+msgstr ""
+
+#: src/tools/http/error.cc:111
+msgid ""
+"The requested resource could not be found but may be available in the future."
+msgstr ""
+
+#: src/tools/http/error.cc:132
+msgid ""
+"The resource requested was previously in use but is no longer available and "
+"will not be available again."
+msgstr ""
+
+#: src/tools/http/error.cc:90
+msgid ""
+"The server cannot or will not process the request due to an apparent client "
+"error (e.g., malformed request syntax, size too large, invalid request "
+"message framing, or deceptive request routing)."
+msgstr ""
+
+#: src/tools/http/error.cc:157
+msgid "The server has encountered a situation it does not know how to handle."
+msgstr ""
+
+#: src/tools/http/error.cc:185
+msgid "The server is acting as a gateway and cannot get a response in time."
+msgstr ""
+
+#: src/tools/http/error.cc:178
+msgid ""
+"The server is not ready to handle the request. Common causes are a server "
+"that is down for maintenance or that is overloaded."
+msgstr ""
+
+#: src/tools/http/error.cc:171
+msgid ""
+"The server, while working as a gateway to get a response needed to handle "
+"the request, got an invalid response."
+msgstr ""
+
+#: src/tools/http/error.cc:138
+msgid "Too many requests"
+msgstr ""
+
+#: src/tools/http/error.cc:96
+msgid "Unauthorized"
+msgstr "Não autorizado"
+
+#: src/tools/http/error.cc:218
+msgid "Unexpected HTTP error code"
+msgstr "Código de erro HTTP inesperado"
+
+#: src/main/agent/state.cc:154
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
+
+#: src/tools/application/setup.cc:176
+msgid "Unexpected error during reconfiguration"
+msgstr "Erro inesperado durante a configuração"
+
+#: src/tools/string/string.cc:285
+msgid "b"
+msgstr ""
 
 #: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
 msgid "day"
@@ -95,11 +301,11 @@ msgstr "dia"
 msgid "days"
 msgstr "dias"
 
-#: src/main/agent/agent.cc:255 src/tools/string/string.cc:216
+#: src/main/agent/agent.cc:282 src/tools/string/string.cc:276
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:204
+#: src/tools/string/string.cc:248
 msgid "false"
 msgstr "falso"
 
@@ -119,15 +325,15 @@ msgstr "minuto"
 msgid "minutes"
 msgstr "minutos"
 
-#: src/tools/string/string.cc:53 src/tools/string/string.cc:196
+#: src/tools/string/string.cc:39 src/tools/string/string.cc:247
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:253
+#: src/main/state/state.cc:253 src/tools/string/string.cc:249
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:253
+#: src/main/state/state.cc:253 src/tools/string/string.cc:242
 msgid "on"
 msgstr "ligado"
 
@@ -139,11 +345,11 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
-#: src/tools/string/string.cc:200
+#: src/tools/string/string.cc:241
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:53 src/tools/string/string.cc:192
+#: src/tools/string/string.cc:39 src/tools/string/string.cc:240
 msgid "yes"
 msgstr "sim"
 

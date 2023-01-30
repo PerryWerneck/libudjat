@@ -54,6 +54,7 @@
 	bool Updater::refresh() {
 
 		size_t changed = 0;
+		size_t loaded = 0;
 
 		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name().c_str());
 		for(std::string &filename : *this) {
@@ -69,6 +70,7 @@
 					continue;
 				}
 
+				loaded++;
 				auto node = doc.document_element();
 
 				/// Setup logger.
@@ -120,6 +122,12 @@
 
 		}
 
+		if(!loaded) {
+			next = Config::Value<time_t>("application","update-when-failed",3600);
+			error() << "Unable to load xml definitions, setting refresh timer to " << next << " seconds" << endl;
+			return false;
+		}
+
 		if(changed) {
 			Logger::String(changed, " file(s) changed, requesting full update").write(Logger::Trace,name().c_str());
 			update = true;
@@ -129,9 +137,9 @@
 
 	}
 
-	time_t Updater::load(std::shared_ptr<Abstract::Agent> root) {
+	bool Updater::load(std::shared_ptr<Abstract::Agent> root) const noexcept {
 
-		for(std::string &filename : *this) {
+		for(const std::string &filename : *this) {
 
 			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name().c_str());
 
@@ -140,8 +148,8 @@
 				pugi::xml_document doc;
 				auto result = doc.load_file(filename.c_str());
 				if(result.status != pugi::status_ok) {
-					warning() << filename << ": " << result.description() << endl;
-					continue;
+					error() << filename << ": " << result.description() << endl;
+					return false;
 				}
 
 				auto node = doc.document_element();
@@ -165,6 +173,7 @@
 			} catch(const std::exception &e) {
 
 				error() << filename << ": " << e.what() << endl;
+				return false;
 
 			}
 
@@ -173,7 +182,8 @@
 		// Activate new root agent.
 		Udjat::setRootAgent(root);
 
-		return next;
+		return true;
+
 	}
 
 	/*

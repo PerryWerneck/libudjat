@@ -21,6 +21,8 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/module.h>
  #include <errno.h>
  #include <stdexcept>
  #include <sys/stat.h>
@@ -190,6 +192,38 @@
 		assign(win32_special_folder(FOLDERID_ProgramData));
 
 		append(Application::Name());
+		mkdir();
+		append("\\");
+
+	}
+
+	Application::UserDataDir::UserDataDir(const char *subdir) : File::Path() {
+
+		try {
+
+			assign(Win32::Registry().get("userdatadir",""));
+			if(!empty()) {
+				mkdir();
+				return;
+			}
+
+		} catch(...) {
+			// Ignore errors.
+		}
+
+#ifdef FOLDERID_AppDataDocuments
+		assign(win32_special_folder(FOLDERID_AppDataDocuments));
+#else
+		assign(win32_special_folder(FOLDERID_Documents));
+#endif // FOLDERID_AppDataDocuments
+
+		append(Application::Name());
+
+		if(subdir && *subdir) {
+			append("\\");
+			append(subdir);
+		}
+
 		mkdir();
 		append("\\");
 

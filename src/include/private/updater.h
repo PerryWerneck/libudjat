@@ -31,8 +31,8 @@
 
  	class UDJAT_PRIVATE Updater : private Application, public std::list<std::string> {
 	private:
-		time_t next = 0;
-		time_t update;
+		time_t next = 0;	///< @brief Seconds for next update.
+		bool update;		///< @brief true if an update was requested.
 
 	public:
 		Updater(const char *pathname, bool force);
@@ -43,8 +43,13 @@
 
 		/// @brief Load configuration files.
 		/// @param agent New root agent.
-		/// @return Seconds for next update.
-		time_t load(std::shared_ptr<Abstract::Agent> root);
+		/// @return True on success.
+		bool load(std::shared_ptr<Abstract::Agent> root) const noexcept;
+
+		/// @brief Get seconds for next update.
+		inline time_t wait() const noexcept {
+			return next;
+		}
 
  	};
 

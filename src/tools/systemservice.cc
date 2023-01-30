@@ -32,6 +32,7 @@
 
  #ifdef _WIN32
 	#include <direct.h>
+	#include <udjat/win32/registry.h>
  #endif // _WIN32
 
  #ifdef HAVE_UNISTD_H
@@ -335,9 +336,6 @@
 		}
 	}
 
-	void SystemService::load(std::list<std::string> &files) {
-	}
-
 	void SystemService::setup(bool force) {
 
 		Updater updater{definitions,force};
@@ -347,34 +345,7 @@
 
 			auto agent = RootFactory();
 
-			time_t wait = updater.load(agent);
-
-			if(!wait) {
-
-				Logger::String{"Auto update is disabled"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
-
-			} else {
-
-				update_timer = MainLoop::getInstance().TimerFactory(wait * 1000,[this](){
-
-					ThreadPool::getInstance().push([this](){
-
-						Logger::String{"Starting auto update"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
-#ifdef HAVE_SYSTEMD
-						sd_notifyf(0,"STATUS=%s","Running auto update");
-#endif // HAVE_SYSTEMD
-
-						setup(false);
-
-					});
-
-					update_timer = nullptr;
-					return false;
-				});
-
-				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
-
-			}
+			updater.load(agent);
 
 #if defined(HAVE_SYSTEMD)
 
@@ -405,6 +376,41 @@
 #endif // HAVE_SYSTEMD
 
 		}
+
+		debug("------------------------------------------------------------------------------");
+
+		{
+			time_t wait = updater.wait();
+
+			if(!wait) {
+
+				Logger::String{"Auto update is disabled"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+
+			} else {
+
+				update_timer = MainLoop::getInstance().TimerFactory(wait * 1000,[this](){
+
+					ThreadPool::getInstance().push([this](){
+
+						Logger::String{"Starting auto update"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+#ifdef HAVE_SYSTEMD
+						sd_notifyf(0,"STATUS=%s","Running auto update");
+#endif // HAVE_SYSTEMD
+
+						setup(false);
+
+					});
+
+					update_timer = nullptr;
+					return false;
+				});
+
+				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+
+			}
+
+		}
+
 
 	}
 
