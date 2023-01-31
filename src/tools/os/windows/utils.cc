@@ -34,10 +34,7 @@
 	}
  }
 
- /// @brief Get windows special folder.
- /// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
- /// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c
- string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr) {
+ Udjat::Win32::KnownFolder::KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr) {
 
 	PWSTR wcp = NULL;
 	string result;
@@ -53,7 +50,7 @@
 
 			wcstombs(buffer,wcp,len);
 
-			result.assign(buffer);
+			assign(buffer);
 
 		} else {
 			throw runtime_error("Can't get known folder path");
@@ -66,22 +63,20 @@
 
 	CoTaskMemFree (wcp);
 
-	result += '\\';
-	return result;
+	append("\\");
 
  }
 
- string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) {
+ Udjat::Win32::KnownFolder::KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) : KnownFolder{known_folder_guid_ptr} {
 
-	string result = win32_special_folder(known_folder_guid_ptr);
+	append(Application::Name());
+	mkdir();
 
-	result.append(Application::Name());
-	result.append("\\");
-	result.append(subdir);
+	append("\\");
+	append(subdir);
+	mkdir();
 
-	File::Path::mkdir(result.c_str());
+	append("\\");
 
-	result.append("\\");
-	return result;
  }
 

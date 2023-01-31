@@ -33,7 +33,7 @@
  using namespace std;
  using namespace Udjat;
 
- static void CreateShortCut(const char * pszTargetargs, const char * pszLinkfile, const char * pszDescription, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
+ static void CreateShortCut(const char * pszLinkfile, const char * pszDescription, const char * pszTargetargs, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
 
 	static thread_local bool initialized = false;
 	if(!initialized) {
@@ -47,7 +47,8 @@
 		throw runtime_error("Can't get application filename");
 	}
 
-	debug("Creating shortcut for '",pszTargetfile,"'");
+	debug("Shortcut file is '",pszLinkfile,"'");
+	debug("Shortcut target file is '",pszTargetfile,"'");
 
 	// https://www.codeproject.com/Articles/11467/How-to-create-short-cuts-link-files
 
@@ -131,40 +132,50 @@
 
  namespace Udjat {
 
-	void Application::shortcut(const char UDJAT_UNUSED(*id), const char *description, const char *arguments) {
+	void Application::shortcut(const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
 
-		CreateShortCut(
-			arguments,										// pszTargetargs
-			(string{".\\"} + Name() + ".lnk").c_str(),		// pszLinkfile
-			description,									// pszDescription
-			0,												// iShowmode
-			NULL,											// pszCurdir
-			NULL,											// pszIconfile
-			0												// iIconindex
-		);
+		Win32::KnownFolder linkfile{FOLDERID_CommonPrograms};
 
-
-		/*
-		if(!autostart) {
-			return 0;
+		if(name && *name) {
+			linkfile += name;
+		} else {
+			linkfile += Name();
 		}
+		linkfile += ".lnk";
 
-		// Create another shortcut in autostart (FOLDERID_CommonStartup)
 		CreateShortCut(
-			(win32_special_folder(FOLDERID_CommonStartup) + Application::Name()).c_str(),			// pszTargetfile
-			arguments,		// pszTargetargs
-			name,			// pszLinkfile
-			description,	// pszDescription
-			0,				// iShowmode
-			NULL,			// pszCurdir
-			NULL,			// pszIconfile
-			0				// iIconindex
+			linkfile.c_str(),		// pszLinkfile
+			description,			// pszDescription
+			arguments,				// pszTargetargs
+			0,						// iShowmode
+			NULL,					// pszCurdir
+			NULL,					// pszIconfile
+			0						// iIconindex
 		);
-		*/
 
 	}
 
-	void Application::autostart(const char UDJAT_UNUSED(*id), const char *comment, const char *arguments) {
+	void Application::autostart(const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
+
+		Win32::KnownFolder linkfile{FOLDERID_CommonStartup};
+
+		if(name && *name) {
+			linkfile += name;
+		} else {
+			linkfile += Name();
+		}
+		linkfile += ".lnk";
+
+		CreateShortCut(
+			linkfile.c_str(),		// pszLinkfile
+			description,			// pszDescription
+			arguments,				// pszTargetargs
+			0,						// iShowmode
+			NULL,					// pszCurdir
+			NULL,					// pszIconfile
+			0						// iIconindex
+		);
+
 	}
 
  }

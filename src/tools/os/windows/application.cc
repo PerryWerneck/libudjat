@@ -189,7 +189,7 @@
 			// Ignore errors.
 		}
 
-		assign(win32_special_folder(FOLDERID_ProgramData));
+		assign(Win32::KnownFolder(FOLDERID_ProgramData));
 
 		append(Application::Name());
 		mkdir();
@@ -212,9 +212,9 @@
 		}
 
 #ifdef FOLDERID_AppDataDocuments
-		assign(win32_special_folder(FOLDERID_AppDataDocuments));
+		assign(Win32::KnownFolder(FOLDERID_AppDataDocuments));
 #else
-		assign(win32_special_folder(FOLDERID_Documents));
+		assign(Win32::KnownFolder(FOLDERID_Documents));
 #endif // FOLDERID_AppDataDocuments
 
 		append(Application::Name());
@@ -354,7 +354,7 @@
 			// Ignore errors.
 		}
 
-		assign(win32_special_folder(FOLDERID_ProgramData,"logs"));
+		assign(Win32::KnownFolder(FOLDERID_ProgramData,"logs"));
 		File::Path::mkdir(c_str());
 
 	}
@@ -379,7 +379,7 @@
 			// Ignore errors.
 		}
 
-		assign(win32_special_folder(FOLDERID_ProgramData,"cache"));
+		assign(Win32::KnownFolder(FOLDERID_ProgramData,"cache"));
 		File::Path::mkdir(c_str());
 	}
 

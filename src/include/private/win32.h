@@ -22,8 +22,26 @@
  #include <udjat/defs.h>
  #include <string>
  #include <shlobj.h>
+ #include <udjat/tools/file.h>
+
+ namespace Udjat {
+
+	namespace Win32 {
+
+		/// @brief Windows special folder.
+		/// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+		/// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c
+		class UDJAT_PRIVATE KnownFolder : public File::Path {
+		public:
+			KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr);
+			KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir);
+		};
+
+	}
+
+ }
 
  /// @brief Get Win32 special folder.
- std::string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr);
- std::string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir);
+ // std::string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr);
+ // std::string win32_special_folder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir);
 
