@@ -25,10 +25,10 @@
 
  namespace Udjat {
 
-	int SystemService::install_shortcut(const char *id, const char *name, const char *description, const char *arguments, bool autostart) {
+	void Application::shortcut(const char *id, const char *name, const char *description, const char *arguments) {
+	}
 
-		return 0;
-
+	void Application::autostart(const char *id, const char *name, const char *description, const char *arguments) {
 	}
 
  }

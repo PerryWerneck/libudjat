@@ -91,7 +91,18 @@
 		/// @retval 0 Normal exit.
 		/// @retval -2 Continue as a service.
 		/// @retval ENOENT Invalid option.
+		/// @retval ENOTSUP Unsupported option.
 		virtual int cmdline(const char key, const char *value = nullptr);
+
+		/// @brief Build an autostart shortcut.
+		/// @return 0 if ok, error code if not.
+		/// @retval ENOTSUP No shortcut support on this service.
+		virtual int autostart(const char *value = nullptr);
+
+		/// @brief Build and application shortcut();
+		/// @return 0 if ok, error code if not.
+		/// @retval ENOTSUP No autostart support on this service.
+		virtual int shortcut(const char *value = nullptr);
 
 #ifdef _WIN32
 

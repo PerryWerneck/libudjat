@@ -97,10 +97,6 @@
 		return ENOTSUP;
 	}
 
-	int SystemService::autostart() {
-		return ENOTSUP;
-	}
-
 	void SystemService::stop() {
 		MainLoop::getInstance().quit();
 	}

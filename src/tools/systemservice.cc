@@ -139,6 +139,14 @@
 		return Udjat::RootAgentFactory();
 	}
 
+	int SystemService::autostart(const char *) {
+		return ENOTSUP;
+	}
+
+	int SystemService::shortcut(const char *) {
+		return ENOTSUP;
+	}
+
 	int SystemService::run() noexcept {
 
 		int rc = -1;
