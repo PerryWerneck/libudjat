@@ -36,6 +36,8 @@
 
 	// https://www.codeproject.com/Articles/11467/How-to-create-short-cuts-link-files
 
+	// TODO: CComPtr should be better here but where is it defined?
+
 	IShellLink * pShellLink = NULL;		// IShellLink object pointer
 	Win32::throw_if_fail(
 		CoCreateInstance(
