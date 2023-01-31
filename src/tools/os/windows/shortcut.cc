@@ -27,76 +27,104 @@
  #include <objbase.h>
  #include <objidl.h>
  #include <shlguid.h>
+ #include <udjat/win32/exception.h>
 
  using namespace std;
+ using namespace Udjat;
 
- static HRESULT CreateShortCut(const char * pszTargetfile, const char * pszTargetargs, const char * pszLinkfile, const char * pszDescription, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
+ static void CreateShortCut(const char * pszTargetfile, const char * pszTargetargs, const char * pszLinkfile, const char * pszDescription, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
 
 	// https://www.codeproject.com/Articles/11467/How-to-create-short-cuts-link-files
 
-	IShellLink*   pShellLink;            // IShellLink object pointer
-	IPersistFile* pPersistFile;          // IPersistFile object pointer
-	wchar_t       wszLinkfile[MAX_PATH]; // pszLinkfile as Unicode string
-
-	HRESULT hRes =
+	IShellLink * pShellLink = NULL;		// IShellLink object pointer
+	Win32::throw_if_fail(
 		CoCreateInstance(
 			CLSID_ShellLink,			// predefined CLSID of the IShellLink object
 			NULL,						// pointer to parent interface if part of aggregate
 			CLSCTX_INPROC_SERVER,		// caller and called code are in same process
 			IID_IShellLink,				// predefined interface of the IShellLink object
-			(void **) &pShellLink);		// Returns a pointer to the IShellLink object
+			(void **) &pShellLink		// Returns a pointer to the IShellLink object
+		)
+	);
 
-	if(!SUCCEEDED(hRes)) {
-		return hRes;
-	}
+	try {
 
-	if(pszTargetfile && *pszTargetfile) {
-		hRes = pShellLink->SetPath(pszTargetfile);
-	} else {
-		char filename[MAX_PATH+1];
-		memset(filename,0,MAX_PATH+1);
-		GetModuleFileName(NULL,filename,MAX_PATH);
-		hRes = pShellLink->SetPath(filename);
-	}
+		if(pszTargetfile && *pszTargetfile) {
 
-	if(pszTargetargs) {
-		hRes = pShellLink->SetArguments(pszTargetargs);
-	} else {
-		hRes = pShellLink->SetArguments("");
-	}
+			Win32::throw_if_fail(pShellLink->SetPath(pszTargetfile));
 
-	hRes = pShellLink->SetDescription(pszDescription);
+		} else {
 
-	if(iShowmode > 0) {
-		hRes = pShellLink->SetShowCmd(iShowmode);
-	}
+			char filename[MAX_PATH+1];
+			memset(filename,0,MAX_PATH+1);
+			GetModuleFileName(NULL,filename,MAX_PATH);
 
-	if(pszCurdir && *pszCurdir) {
-		hRes = pShellLink->SetWorkingDirectory(pszCurdir);
-	} else {
-		// g_autofree gchar * appdir = g_win32_get_package_installation_directory_of_module(NULL);
-		hRes = pShellLink->SetWorkingDirectory(Udjat::Application::Path().c_str());
-	}
+			Win32::throw_if_fail(pShellLink->SetPath(filename));
+		}
 
-	if(pszIconfile && *pszIconfile && iIconindex >= 0) {
-		hRes = pShellLink->SetIconLocation(pszIconfile, iIconindex);
-	}
+		if(pszTargetargs) {
 
-	// Use the IPersistFile object to save the shell link
-	hRes = pShellLink->QueryInterface(
-			   IID_IPersistFile,			// pre-defined interface of the IPersistFile object
-			   (void **) &pPersistFile);	// returns a pointer to the IPersistFile object
+			Win32::throw_if_fail(pShellLink->SetArguments(pszTargetargs));
 
+		} else {
 
-	if(SUCCEEDED(hRes)) {
+			Win32::throw_if_fail(pShellLink->SetArguments(""));
+
+		}
+
+		Win32::throw_if_fail(pShellLink->SetDescription(pszDescription));
+
+		if(iShowmode > 0) {
+			Win32::throw_if_fail(pShellLink->SetShowCmd(iShowmode));
+		}
+
+		if(pszCurdir && *pszCurdir) {
+
+			Win32::throw_if_fail(pShellLink->SetWorkingDirectory(pszCurdir));
+
+		} else {
+
+			Win32::throw_if_fail(pShellLink->SetWorkingDirectory(Udjat::Application::Path().c_str()));
+
+		}
+
+		if(pszIconfile && *pszIconfile && iIconindex >= 0) {
+			Win32::throw_if_fail(pShellLink->SetIconLocation(pszIconfile, iIconindex));
+		}
+
+		// Use the IPersistFile object to save the shell link
+		IPersistFile *pPersistFile = NULL;          // IPersistFile object pointer
+		Win32::throw_if_fail(
+				pShellLink->QueryInterface(
+				   IID_IPersistFile,			// pre-defined interface of the IPersistFile object
+				   (void **) &pPersistFile)		// returns a pointer to the IPersistFile object
+		);
+
+		wchar_t wszLinkfile[MAX_PATH+1]; // pszLinkfile as Unicode string
 		MultiByteToWideChar(CP_ACP, 0, pszLinkfile, -1, wszLinkfile, MAX_PATH);
-		hRes = pPersistFile->Save(wszLinkfile, TRUE);
+
+		try {
+
+			Win32::throw_if_fail(pPersistFile->Save(wszLinkfile, TRUE));
+
+		} catch(...) {
+
+			pPersistFile->Release();
+			throw;
+
+		}
+
 		pPersistFile->Release();
+
+	} catch(...) {
+
+		pShellLink->Release();
+		throw;
+
 	}
 
 	pShellLink->Release();
 
-	return hRes;
  }
 
  namespace Udjat {
@@ -119,7 +147,16 @@
 		}
 
 		// Create another shortcut in autostart (FOLDERID_CommonStartup)
-		win32_special_folder(FOLDERID_CommonStartup);
+		CreateShortCut(
+			(win32_special_folder(FOLDERID_CommonStartup) + Application::Name()).c_str(),			// pszTargetfile
+			arguments,		// pszTargetargs
+			name,			// pszLinkfile
+			description,	// pszDescription
+			0,				// iShowmode
+			NULL,			// pszCurdir
+			NULL,			// pszIconfile
+			0				// iIconindex
+		);
 
 		return 0;
 	}

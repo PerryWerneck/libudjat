@@ -26,6 +26,7 @@
  #include <iostream>
  #include <mutex>
  #include <wininet.h>
+ #include <comdef.h>
 
  #include <cstring>
  #include <cstdio>
@@ -45,11 +46,27 @@
 
  };
 
+ /*
+ static const struct {
+	DWORD dwMessageId;
+	int err;
+ } system_errors[] = {
+	{	}
+ }
+ */
+
  static const struct {
 	DWORD dwMessageId;
 	const char *message;
  } windows_errors[] = {
- 	{ ERROR_INTERNET_TIMEOUT,	N_("The request has timed out.") }
+
+ 	// /usr/x86_64-w64-mingw32/sys-root/mingw/include/wininet.h
+ 	{ ERROR_INTERNET_TIMEOUT,	N_("The request has timed out")	},
+
+ 	// http://s.web.umkc.edu/szb53/cs423_sp16/wsock_errors.html
+ 	// /usr/x86_64-w64-mingw32/sys-root/mingw/include/winerror.h
+	{ WSAHOST_NOT_FOUND,		N_("Cant resolve hostname")			},
+
  };
 
  /*
@@ -71,17 +88,37 @@
  }
  */
 
- std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
+ void UDJAT_API Udjat::Win32::throw_if_fail(const DWORD error) {
 
-	for(size_t ix = 0; ix < N_ELEMENTS(windows_errors); ix++) {
-		if(windows_errors[ix].dwMessageId == dwMessageId) {
-#ifdef GETTEXT_PACKAGE
-			return dgettext(GETTEXT_PACKAGE,windows_errors[ix].message);
-#else
-			return windows_errors[ix].message;
-#endif // GETTEXT_PACKAGE
-		}
+	// https://learn.microsoft.com/en-us/windows/win32/learnwin32/error-handling-in-com#throw-on-fail
+
+	if(error) {
+
+		// TODO: Check if 'error' can be translated to std::system_error.
+
+		throw Win32::Exception(error);
 	}
+
+ }
+
+ void UDJAT_API Udjat::Win32::throw_if_fail(const HRESULT result) {
+	if (FAILED(result)) {
+        throw _com_error(result);
+    }
+ }
+
+ void UDJAT_API Udjat::Win32::throw_if_fail(const char *str, const DWORD error) {
+
+	if(error) {
+
+		// TODO: Check if 'error' can be translated to std::system_error.
+
+		throw Win32::Exception(str, error);
+	}
+
+ }
+
+ std::string Udjat::Win32::Exception::format(const DWORD dwMessageId) noexcept {
 
 	lock_guard<mutex> lock(Guard::getInstance());
 
@@ -102,6 +139,19 @@
 		BUFFER_LENGTH,
 		NULL
 	);
+
+	if(retval == 0 || !*buffer) {
+
+		for(size_t ix = 0; ix < N_ELEMENTS(windows_errors); ix++) {
+			if(windows_errors[ix].dwMessageId == dwMessageId) {
+#ifdef GETTEXT_PACKAGE
+				return dgettext(GETTEXT_PACKAGE,windows_errors[ix].message);
+#else
+				return windows_errors[ix].message;
+#endif // GETTEXT_PACKAGE
+			}
+		}
+	}
 
 	if(retval == 0) {
 
@@ -158,6 +208,19 @@
 		BUFFER_LENGTH,
 		NULL
 	);
+
+	if(retval == 0 || !*buffer) {
+
+		for(size_t ix = 0; ix < N_ELEMENTS(windows_errors); ix++) {
+			if(windows_errors[ix].dwMessageId == dwMessageId) {
+#ifdef GETTEXT_PACKAGE
+				return dgettext(GETTEXT_PACKAGE,windows_errors[ix].message);
+#else
+				return windows_errors[ix].message;
+#endif // GETTEXT_PACKAGE
+			}
+		}
+	}
 
 	if(retval == 0 || !*buffer) {
 
