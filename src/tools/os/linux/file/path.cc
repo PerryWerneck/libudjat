@@ -31,6 +31,10 @@
 
  namespace Udjat {
 
+	File::Path::Path(const File::Path::Type type) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
 	}
 

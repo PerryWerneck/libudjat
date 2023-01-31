@@ -24,8 +24,60 @@
  #include <udjat/win32/path.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <shlobj.h>
 
  namespace Udjat {
+
+	File::Path::Path(const File::Path::Type type) {
+
+		// https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+		static REFKNOWNFOLDERID ids[File::Path::Custom] = {
+			FOLDERID_Desktop,				// Desktop,
+			FOLDERID_Downloads,				// Download,
+			FOLDERID_Templates,				// Templates,
+			FOLDERID_PublicDocuments,		// PublicShare,
+			FOLDERID_Documents,				// Documents,
+			FOLDERID_Music,					// Music,
+			FOLDERID_Pictures,				// Pictures,
+			FOLDERID_Videos,				// Videos,
+			FOLDERID_ProgramData,			// SysData
+			FOLDERID_AppDataProgramData,	// UserData
+		};
+
+		if((size_t) type > N_ELEMENTS(ids)) {
+			throw system_error(ENOTSUP,system_category(),"Invalid path type");
+		}
+
+		PWSTR wcp = NULL;
+		string result;
+
+		HRESULT hr = SHGetKnownFolderPath(ids[type], 0, NULL, &wcp);
+
+		try {
+
+			if (SUCCEEDED(hr)) {
+
+				size_t len = wcslen(wcp) * 2;
+				char buffer[len+1];
+
+				wcstombs(buffer,wcp,len);
+
+				assign(buffer);
+
+			} else {
+				throw runtime_error("Can't get known folder path");
+			}
+
+		} catch(...) {
+			CoTaskMemFree (wcp);
+			throw;
+		}
+
+		CoTaskMemFree (wcp);
+
+		append("\\");
+
+	}
 
 	Win32::Path::Path(const char *pathname) : std::string(pathname) {
 		for(char *ptr = (char *) c_str();*ptr;ptr++) {

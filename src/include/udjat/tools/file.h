@@ -75,6 +75,21 @@ namespace Udjat {
 		class UDJAT_API Path : public std::string {
 		public:
 
+			enum Type : uint8_t {
+				Desktop,
+				Download,
+				Templates,
+				PublicShare,
+				Documents,
+				Music,
+				Pictures,
+				Videos,
+				SystemData,	///< @brief System data dir ( /usr/share )
+				UserData,	///< @brief User data dir ( ~/.local/share )
+			};
+
+			Path(const Type type);
+
 			Path() : std::string() {
 			}
 
