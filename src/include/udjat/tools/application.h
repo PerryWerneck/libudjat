@@ -67,6 +67,21 @@
 		/// @brief Write to the 'trace' stream.
 		static std::ostream & trace();
 
+		/// @brief Enable autostart.
+		/// @brief Install application Shortcut.
+		/// @param id The application id.
+		/// @param name The shortcut name.
+		/// @param comment Shortcut comment.
+		/// @param Arguments for application.
+		void autostart(const char *id, const char *comment = "", const char *arguments = "");
+
+		/// @brief Install application Shortcut.
+		/// @param id The application id.
+		/// @param name The shortcut name.
+		/// @param comment Shortcut comment.
+		/// @param Arguments for application.
+		void shortcut(const char *id, const char *comment = "", const char *arguments = "");
+
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {
 		public:

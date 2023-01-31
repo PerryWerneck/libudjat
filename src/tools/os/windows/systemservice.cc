@@ -735,10 +735,6 @@
 		return install_service();
 	}
 
-	int SystemService::autostart() {
-		return ENOTSUP;
-	}
-
 	int SystemService::install_service(const char *display_name) {
 
 		Application::Name appname;

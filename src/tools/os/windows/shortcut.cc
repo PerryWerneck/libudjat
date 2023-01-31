@@ -32,7 +32,15 @@
  using namespace std;
  using namespace Udjat;
 
- static void CreateShortCut(const char * pszTargetfile, const char * pszTargetargs, const char * pszLinkfile, const char * pszDescription, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
+ static void CreateShortCut(const char * pszTargetargs, const char * pszLinkfile, const char * pszDescription, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
+
+	TCHAR pszTargetfile[MAX_PATH];
+
+	if(!GetModuleFileName(NULL, pszTargetfile, MAX_PATH ) ) {
+		throw runtime_error("Can't get application filename");
+	}
+
+	debug("Creating shortcut for '",pszTargetfile,"'");
 
 	// https://www.codeproject.com/Articles/11467/How-to-create-short-cuts-link-files
 
@@ -51,30 +59,15 @@
 
 	try {
 
-		if(pszTargetfile && *pszTargetfile) {
+		Win32::throw_if_fail(pShellLink->SetPath(pszTargetfile));
 
-			Win32::throw_if_fail(pShellLink->SetPath(pszTargetfile));
-
-		} else {
-
-			char filename[MAX_PATH+1];
-			memset(filename,0,MAX_PATH+1);
-			GetModuleFileName(NULL,filename,MAX_PATH);
-
-			Win32::throw_if_fail(pShellLink->SetPath(filename));
-		}
-
-		if(pszTargetargs) {
-
+		if(pszTargetargs && *pszTargetargs) {
 			Win32::throw_if_fail(pShellLink->SetArguments(pszTargetargs));
-
-		} else {
-
-			Win32::throw_if_fail(pShellLink->SetArguments(""));
-
 		}
 
-		Win32::throw_if_fail(pShellLink->SetDescription(pszDescription));
+		if(pszDescription && *pszDescription) {
+			Win32::throw_if_fail(pShellLink->SetDescription(pszDescription));
+		}
 
 		if(iShowmode > 0) {
 			Win32::throw_if_fail(pShellLink->SetShowCmd(iShowmode));
@@ -131,19 +124,19 @@
 
  namespace Udjat {
 
-	int SystemService::install_shortcut(const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments, bool autostart) {
+	void Application::shortcut(const char UDJAT_UNUSED(*id), const char *description, const char *arguments) {
 
 		CreateShortCut(
-			NULL,			// pszTargetfile
-			arguments,		// pszTargetargs
-			name,			// pszLinkfile
-			description,	// pszDescription
-			0,				// iShowmode
-			NULL,			// pszCurdir
-			NULL,			// pszIconfile
-			0				// iIconindex
+			arguments,										// pszTargetargs
+			(string{".\\"} + Name() + ".lnk").c_str(),		// pszLinkfile
+			description,									// pszDescription
+			0,												// iShowmode
+			NULL,											// pszCurdir
+			NULL,											// pszIconfile
+			0												// iIconindex
 		);
 
+		/*
 		if(!autostart) {
 			return 0;
 		}
@@ -159,8 +152,11 @@
 			NULL,			// pszIconfile
 			0				// iIconindex
 		);
+		*/
 
-		return 0;
+	}
+
+	void Application::autostart(const char UDJAT_UNUSED(*id), const char *comment, const char *arguments) {
 	}
 
  }
