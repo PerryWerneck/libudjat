@@ -28,6 +28,7 @@
  #include <objidl.h>
  #include <shlguid.h>
  #include <udjat/win32/exception.h>
+ #include <comdef.h>
 
  using namespace std;
  using namespace Udjat;
@@ -135,6 +136,7 @@
 			NULL,											// pszIconfile
 			0												// iIconindex
 		);
+
 
 		/*
 		if(!autostart) {
