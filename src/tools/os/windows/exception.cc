@@ -61,7 +61,7 @@
 
  namespace Udjat {
 
-	 namespace Win32 {
+	namespace Win32 {
 
 		class UDJAT_PRIVATE Guard : public mutex {
 		public:

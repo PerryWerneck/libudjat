@@ -35,6 +35,12 @@
 
  static void CreateShortCut(const char * pszTargetargs, const char * pszLinkfile, const char * pszDescription, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
 
+	static thread_local bool initialized = false;
+	if(!initialized) {
+		CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+		initialized = true;
+	}
+
 	TCHAR pszTargetfile[MAX_PATH];
 
 	if(!GetModuleFileName(NULL, pszTargetfile, MAX_PATH ) ) {
