@@ -30,28 +30,63 @@
 
 	File::Path::Path(const File::Path::Type type) {
 
-		// https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
-		static REFKNOWNFOLDERID ids[File::Path::Custom] = {
-			FOLDERID_Desktop,				// Desktop,
-			FOLDERID_Downloads,				// Download,
-			FOLDERID_Templates,				// Templates,
-			FOLDERID_PublicDocuments,		// PublicShare,
-			FOLDERID_Documents,				// Documents,
-			FOLDERID_Music,					// Music,
-			FOLDERID_Pictures,				// Pictures,
-			FOLDERID_Videos,				// Videos,
-			FOLDERID_ProgramData,			// SysData
-			FOLDERID_AppDataProgramData,	// UserData
-		};
+		PWSTR wcp = NULL;
+		HRESULT hr;
 
-		if((size_t) type > N_ELEMENTS(ids)) {
-			throw system_error(ENOTSUP,system_category(),"Invalid path type");
+		const char *suffix = "\\";
+
+		// https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+		switch(type) {
+		case Desktop:
+			hr = SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &wcp);
+			break;
+
+		case Download:
+			hr = SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &wcp);
+			break;
+
+		case Templates:
+			hr = SHGetKnownFolderPath(FOLDERID_Templates, 0, NULL, &wcp);
+			break;
+
+		case PublicShare:
+			hr = SHGetKnownFolderPath(FOLDERID_PublicDocuments, 0, NULL, &wcp);
+			break;
+
+		case Documents:
+			hr = SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &wcp);
+			break;
+
+		case Music:
+			hr = SHGetKnownFolderPath(FOLDERID_Music, 0, NULL, &wcp);
+			break;
+
+		case Pictures:
+			hr = SHGetKnownFolderPath(FOLDERID_Pictures, 0, NULL, &wcp);
+			break;
+
+		case Videos:
+			hr = SHGetKnownFolderPath(FOLDERID_Videos, 0, NULL, &wcp);
+			break;
+
+		case SystemData:
+			hr = SHGetKnownFolderPath(FOLDERID_ProgramData, 0, NULL, &wcp);
+			break;
+
+		case UserData:
+#ifdef FOLDERID_AppDataProgramData
+			hr = SHGetKnownFolderPath(FOLDERID_AppDataProgramData, 0, NULL, &wcp);
+#else
+			hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &wcp);
+#endif // FOLDERID_AppDataProgramData
+			break;
+
+		default:
+			throw runtime_error("Unexpected path type");
+
 		}
 
-		PWSTR wcp = NULL;
 		string result;
-
-		HRESULT hr = SHGetKnownFolderPath(ids[type], 0, NULL, &wcp);
 
 		try {
 
@@ -75,7 +110,7 @@
 
 		CoTaskMemFree (wcp);
 
-		append("\\");
+		append(suffix);
 
 	}
 

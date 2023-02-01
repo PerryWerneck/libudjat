@@ -34,6 +34,11 @@
 	class UDJAT_API Application {
 	public:
 
+		enum Type : uint8_t {
+			Generic,		///< @brief Generic application.
+			AdminTool,		///< @brief Administrative tool.
+		};
+
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
@@ -67,20 +72,29 @@
 		/// @brief Write to the 'trace' stream.
 		static std::ostream & trace();
 
-		/// @brief Enable autostart.
-		/// @brief Install application Shortcut.
+		/// @brief Install application shortcut in the autostart folder.
+		/// @param type The application type.
 		/// @param id The application id.
 		/// @param name The shortcut name.
 		/// @param comment Shortcut comment.
 		/// @param Arguments for application.
-		void autostart(const char *id, const char *name = "", const char *comment = "", const char *arguments = "");
+		void autostart(const Type type, const char *id, const char *name = "", const char *comment = "", const char *arguments = "");
+
+		inline void autostart(const char *id, const char *name = "", const char *comment = "", const char *arguments = "") {
+			autostart(Generic,id,name,comment,arguments);
+		}
 
 		/// @brief Install application Shortcut.
+		/// @param type The application type.
 		/// @param id The application id.
 		/// @param name The shortcut name.
 		/// @param comment Shortcut comment.
 		/// @param Arguments for application.
-		void shortcut(const char *id, const char *name = "", const char *comment = "", const char *arguments = "");
+		void shortcut(const Type type, const char *id, const char *name = "", const char *comment = "", const char *arguments = "");
+
+		inline void shortcut(const char *id, const char *name = "", const char *comment = "", const char *arguments = "") {
+			shortcut(Generic,id,name,comment,arguments);
+		}
 
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {

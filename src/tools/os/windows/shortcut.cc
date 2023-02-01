@@ -132,15 +132,31 @@
 
  namespace Udjat {
 
-	void Application::shortcut(const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
+	void Application::shortcut(const Application::Type type, const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
 
-		Win32::KnownFolder linkfile{FOLDERID_CommonPrograms};
+		std::string linkfile;
+
+		// https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+		switch(type) {
+		case Generic:
+			linkfile = Win32::KnownFolder{FOLDERID_CommonPrograms};
+			break;
+
+		case AdminTool:
+			linkfile = Win32::KnownFolder{FOLDERID_CommonAdminTools};
+			break;
+
+		default:
+			throw runtime_error("Unexpected application type");
+
+		}
 
 		if(name && *name) {
 			linkfile += name;
 		} else {
 			linkfile += Name();
 		}
+
 		linkfile += ".lnk";
 
 		CreateShortCut(
@@ -155,7 +171,7 @@
 
 	}
 
-	void Application::autostart(const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
+	void Application::autostart(const Application::Type type, const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
 
 		Win32::KnownFolder linkfile{FOLDERID_CommonStartup};
 

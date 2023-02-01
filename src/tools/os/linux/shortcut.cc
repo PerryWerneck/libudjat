@@ -25,10 +25,10 @@
 
  namespace Udjat {
 
-	void Application::shortcut(const char *id, const char *name, const char *description, const char *arguments) {
+	void Application::shortcut(const Application::Type type, const char *id, const char *name, const char *description, const char *arguments) {
 	}
 
-	void Application::autostart(const char *id, const char *name, const char *description, const char *arguments) {
+	void Application::autostart(Application::Type type, const char *id, const char *name, const char *description, const char *arguments) {
 	}
 
  }
