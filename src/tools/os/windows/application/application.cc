@@ -147,26 +147,7 @@
 	Application::DataDir::DataDir(const char *subdir) : File::Path{Application::Path{subdir}} {
 	}
 
-	Application::SystemDataDir::SystemDataDir() {
-
-		try {
-
-			assign(Win32::Registry().get("systemdatadir",""));
-			if(!empty()) {
-				mkdir();
-				return;
-			}
-
-		} catch(...) {
-			// Ignore errors.
-		}
-
-		assign(Win32::KnownFolder(FOLDERID_ProgramData));
-
-		append(Application::Name());
-		mkdir();
-		append("\\");
-
+	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"systemdata")} {
 	}
 
 	Application::UserDataDir::UserDataDir(const char *subdir) : File::Path() {
