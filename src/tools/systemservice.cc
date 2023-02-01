@@ -31,7 +31,6 @@
  #include <private/updater.h>
 
  #ifdef _WIN32
-	#include <direct.h>
 	#include <udjat/win32/registry.h>
  #endif // _WIN32
 
@@ -58,20 +57,6 @@
 		if(instance) {
 			debug("Instance is not null");
 			throw runtime_error("Can't start more than one system service");
-		}
-
-#ifdef _WIN32
-		{
-			_chdir(Application::Path().c_str());
-		}
-#endif // _WIN32
-
-		// Setup logger
-		for(int level = ((int) Logger::Info); level <= ((int) Logger::Trace); level++) {
-			Logger::enable(
-				(Logger::Level) level,
-				Config::Value<bool>("log",std::to_string((Logger::Level) level),Logger::enabled((Logger::Level) level))
-			);
 		}
 
 		if(!definitions) {
@@ -113,8 +98,6 @@
 #endif //  _WIN32
 			throw system_error(ENOENT,system_category(),definitions);
 		}
-
-		Application::init();
 
 		instance = this;
 

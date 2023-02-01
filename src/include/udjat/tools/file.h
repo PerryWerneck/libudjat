@@ -100,19 +100,6 @@ namespace Udjat {
 
 			void expand();
 
-			/*
-			Path(const char *v) : std::string(v) {
-			}
-
-			Path(const char *v, size_t s) : std::string(v,s) {
-			}
-
-			Path(const std::string &v) : std::string(v) {
-			}
-
-			Path(const std::string &v, size_t s) : std::string(v,s) {
-			}
-			*/
 
 			Path(int fd);
 
@@ -128,6 +115,8 @@ namespace Udjat {
 			/// @param pathname the pathname to check;
 			/// @return true if pathname is a regular file.
 			static bool regular(const char *pathname);
+
+			const char * basename() const noexcept;
 
 			inline bool dir() const {
 				return dir(c_str());

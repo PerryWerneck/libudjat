@@ -33,6 +33,7 @@
 	/// @brief Base class for applications.
 	class UDJAT_API Application {
 	public:
+		Application();
 
 		enum Type : uint8_t {
 			Generic,		///< @brief Generic application.
@@ -42,10 +43,6 @@
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
-
-		/// @brief Initialize application; setup locale.
-		/// @return true if the application was initialized.
-		static bool UDJAT_API init();
 
 		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.

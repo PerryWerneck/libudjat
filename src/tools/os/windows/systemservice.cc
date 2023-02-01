@@ -35,6 +35,7 @@
  #include <direct.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/url.h>
  #include <private/event.h>
 
  using namespace std;

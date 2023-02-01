@@ -294,6 +294,7 @@
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/adapter.cc" />
 		<Unit filename="src/tools/os/windows/application/application.cc" />
+		<Unit filename="src/tools/os/windows/application/init.cc" />
 		<Unit filename="src/tools/os/windows/application/path.cc" />
 		<Unit filename="src/tools/os/windows/application/private.h" />
 		<Unit filename="src/tools/os/windows/application/utils.cc" />

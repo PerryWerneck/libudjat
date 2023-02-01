@@ -33,76 +33,51 @@
 
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
 
-#ifdef LIBDIR
-			Config::Value<string>("modules","versioned-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/"),
-			Config::Value<string>("modules","unversioned-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/"),
-#endif // LIBDIR
-
-			/*
-#if defined(__x86_64__)
-			// 64 bit detected
+#if defined(LIBDIR)
 			Config::Value<string>(
 				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw64\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+				"versioned-path",
+				STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/" PACKAGE_VERSION "/modules/"
 			),
 			Config::Value<string>(
 				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw64\\lib\\udjat-modules\\"
+				"unversioned-path",
+				STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/modules/"
+			),
+#elif defined(__x86_64__)
+			Config::Value<string>(
+				"modules",
+				"versioned-path",
+				"c:\\msys64\\mingw64\\lib\\" STRINGIZE_VALUE_OF(PRODUCT_NAME) "\\" PACKAGE_VERSION "\\modules\\"
 			),
 			Config::Value<string>(
 				"modules",
-				"secondary-path",
-				"/mingw64/lib/udjat-modules/" PACKAGE_VERSION "/"
+				"unversioned-path",
+				"c:\\msys64\\mingw64\\lib\\" STRINGIZE_VALUE_OF(PRODUCT_NAME) "\\modules\\"
 			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw64/lib/udjat-modules/"
-			),
-			Config::Value<string>(
-				"modules",
-				"sysroot",
-				"c:\\msys64\\mingw64\\"
-			) + "lib\\udjat-modules\\" PACKAGE_VERSION "\\",
-			Config::Value<string>(
-				"modules",
-				"sysroot",
-				"c:\\msys64\\mingw64\\"
-			) + "lib\\udjat-modules\\",
 #elif  defined(__i386__)
-			// 32 bit detected
 			Config::Value<string>(
 				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw32\\lib\\udjat-modules\\" PACKAGE_VERSION "\\"
+				"versioned-path",
+				"c:\\msys64\\mingw32\\lib\\" STRINGIZE_VALUE_OF(PRODUCT_NAME) "\\" PACKAGE_VERSION "\\modules\\"
 			),
 			Config::Value<string>(
 				"modules",
-				"secondary-path",
-				"c:\\msys64\\mingw32\\lib\\udjat-modules\\"
+				"unversioned-path",
+				"c:\\msys64\\mingw32\\lib\\" STRINGIZE_VALUE_OF(PRODUCT_NAME) "\\modules\\"
 			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw32/lib/udjat-modules/" PACKAGE_VERSION "/"
-			),
-			Config::Value<string>(
-				"modules",
-				"secondary-path",
-				"/mingw32/lib/udjat-modules/"
-			),
-#endif
-			*/
+#endif // LIBDIR
 		};
 
 		if(name && *name) {
 
 			for(const string &path : paths) {
 
-				Win32::Path filename{(path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".dll").c_str()};
+				if(path.empty()) {
+					continue;
+				}
 
+				Win32::Path filename{(path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".dll").c_str()};
 
 				if(access(filename.c_str(),R_OK) == 0) {
 					debug("Found '",filename.c_str(),"' = ",access(filename.c_str(),R_OK));
