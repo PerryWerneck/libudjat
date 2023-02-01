@@ -51,27 +51,6 @@
 
 	}
 
-	bool Application::init() {
-		static bool initialized = false;
-
-		if(!initialized) {
-			initialized = true;
-#ifdef GETTEXT_PACKAGE
-			set_gettext_package(GETTEXT_PACKAGE);
-			setlocale( LC_ALL, "" );
-#endif // GETTEXT_PACKAGE
-			return true;
-		}
-
-		if(!Module::preload()) {
-			throw runtime_error("Module preload has failed");
-		}
-
-		return false;
-
-	}
-
-
 	Application::Name::Name(bool with_path) : string{with_path ? program_invocation_name : program_invocation_short_name} {
 	}
 

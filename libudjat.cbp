@@ -256,11 +256,10 @@
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/message.cc" />
 		<Unit filename="src/tools/object.cc" />
-		<Unit filename="src/tools/os/linux/application.cc" />
 		<Unit filename="src/tools/os/linux/application/application.cc" />
 		<Unit filename="src/tools/os/linux/application/cache.cc" />
+		<Unit filename="src/tools/os/linux/application/init.cc" />
 		<Unit filename="src/tools/os/linux/arguments.cc" />
-		<Unit filename="src/tools/os/linux/cache.cc" />
 		<Unit filename="src/tools/os/linux/econf.cc" />
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />

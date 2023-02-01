@@ -49,7 +49,7 @@
 	char * String::strcasestr(const char *hs, const char *needle) {
 #ifdef HAVE_STRCASESTR
 
-		return ::strcasestr((char *) haystack,needle);
+		return ::strcasestr((char *) hs,needle);
 
 #else
 		std::string haystack{hs};
