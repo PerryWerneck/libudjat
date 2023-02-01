@@ -114,5 +114,11 @@
 
 	}
 
+	Application::LogDir & Application::LogDir::getInstance() {
+		static LogDir instance;
+		return instance;
+	}
+
+
  }
 

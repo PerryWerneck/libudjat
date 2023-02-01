@@ -293,7 +293,6 @@
 		<Unit filename="src/tools/os/linux/systemservice.cc" />
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/adapter.cc" />
-		<Unit filename="src/tools/os/windows/application.cc" />
 		<Unit filename="src/tools/os/windows/application/application.cc" />
 		<Unit filename="src/tools/os/windows/application/path.cc" />
 		<Unit filename="src/tools/os/windows/application/private.h" />

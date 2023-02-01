@@ -82,16 +82,31 @@
 
 	}
 
+	static void replace_path(Udjat::String &str, const char *key, REFKNOWNFOLDERID id) {
+
+		const char *ptr = str.strcasestr(key);
+		if(ptr) {
+			str.replace(ptr - str.c_str(),strlen(key),Win32::KnownFolder{id});
+		}
+
+	}
+
 	std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir) {
 
 		try {
 
-			String registry{Win32::Registry().get(subdir,(string{subdir}+"dir").c_str())};
+			Udjat::String registry{Win32::Registry{"paths"}.get(subdir,"")};
+
 			if(!registry.empty()) {
-				registry.expand();
-				File::Path::mkdir(registry.c_str());
+
+				// Cant use Udjat::String::expand here due to recursive calls (and dead lock).
+				replace_path(registry,"${home}",FOLDERID_Profile);
+
+				// File::Path::mkdir(registry.c_str());
 				return registry;
 			}
+
+			debug(registry);
 
 		} catch(...) {
 			// Ignore errors.

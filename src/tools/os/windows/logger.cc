@@ -117,7 +117,8 @@ namespace Udjat {
 			//
 			// Write to file.
 			//
-			Application::LogDir filename;
+			File::Path filename{Application::LogDir::getInstance()};
+
 			string format;
 			DWORD keep = 86400;
 

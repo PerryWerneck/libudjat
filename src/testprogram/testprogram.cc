@@ -155,7 +155,7 @@ int main(int argc, char **argv) {
 
 	//File::copy("test.xml","/tmp/test-copy.xml",false);
 
-	cout << "Logdir=" << Application::LogDir() << endl;
+	cout << Application::LogDir() << endl;
 
 	//Application().shortcut("br.eti.werneck.udjat");
 
