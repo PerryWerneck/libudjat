@@ -220,6 +220,10 @@
 
 	void Logger::redirect(bool console, bool file) {
 
+#ifdef WIN32
+		Application::LogDir::getInstance();	// Get log path from registry.
+#endif // WIN32
+
 		static const Level levels[] = { Info,Warning,Error };
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
