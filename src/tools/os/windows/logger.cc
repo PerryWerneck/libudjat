@@ -117,11 +117,7 @@ namespace Udjat {
 			//
 			// Write to file.
 			//
-#ifdef DEBUG
-			string filename{"./"};
-#else
 			File::Path filename{Application::LogDir::getInstance()};
-#endif // DEBUG
 
 			string format;
 			DWORD keep = 86400;
