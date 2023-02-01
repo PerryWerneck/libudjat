@@ -28,6 +28,10 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/object.h>
 
+ #ifdef _WIN32
+	#include <private/win32.h>
+ #endif // _WIN32
+
  using namespace std;
 
  namespace Udjat {
@@ -297,6 +301,17 @@
 				continue;
 			}
 
+#ifdef _WIN32
+			if(!strcasecmp(key.c_str(),"home")) {
+				replace(
+					from,
+					(to-from)+1,
+					Win32::KnownFolder{FOLDERID_Profile}
+				);
+				continue;
+			}
+#endif // _WIN32
+
 			//
 			// If cleanup is set, replace with an empty string, otherwise keep the ${} keyword.
 			//
@@ -307,7 +322,6 @@
 				//
 #ifdef _WIN32
 				// Windows, use the win32 api
-				//const char *env = nullptr;
 				char szEnvironment[4096];
 				memset(szEnvironment,0,sizeof(szEnvironment));
 

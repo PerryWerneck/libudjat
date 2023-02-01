@@ -28,6 +28,7 @@ MAIN_SOURCES= \
 	$(COMMON_SOURCES) \
 	$(wildcard src/tools/os/@OSNAME@/*.cc) \
 	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/application/*.cc) \
 	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
 	$(wildcard src/main/module/os/@OSNAME@/*.cc) \
 	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
@@ -39,6 +40,7 @@ LOCALE_SOURCES= \
 	$(COMMON_SOURCES) \
 	$(wildcard src/tools/os/linux/*.cc) \
 	$(wildcard src/tools/os/linux/configuration/*.cc) \
+	$(wildcard src/tools/os/linux/application/*.cc) \
 	$(wildcard src/tools/mainloop/os/linux/*.cc) \
 	$(wildcard src/main/module/os/linux/*.cc) \
 	$(wildcard src/tools/os/linux/file/*.cc) \
@@ -47,12 +49,12 @@ LOCALE_SOURCES= \
 	$(wildcard src/main/os/linux/*.rc) \
 	$(wildcard src/tools/os/windows/*.cc) \
 	$(wildcard src/tools/os/windows/configuration/*.cc) \
+	$(wildcard src/tools/os/windows/application/*.cc) \
 	$(wildcard src/tools/mainloop/os/windows/*.cc) \
 	$(wildcard src/main/module/os/windows/*.cc) \
 	$(wildcard src/tools/os/windows/file/*.cc) \
 	$(wildcard src/tools/os/windows/subprocess/*.cc) \
-	$(wildcard src/main/os/windows/*.cc) \
-	$(wildcard src/main/os/windows/*.rc)
+	$(wildcard src/main/os/windows/*.cc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc) \

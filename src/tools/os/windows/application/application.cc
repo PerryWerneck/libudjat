@@ -33,6 +33,7 @@
  #include <cstring>
  #include <iostream>
  #include <private/win32.h>
+ #include "private.h"
 
  #ifdef HAVE_LIBINTL
 	#include <libintl.h>
@@ -143,39 +144,10 @@
 		return instance;
 	}
 
-	Application::Path::Path() {
-
-		char *ptr;
-		TCHAR filename[MAX_PATH];
-
-		if(!GetModuleFileName(NULL, filename, MAX_PATH ) ) {
-			throw runtime_error("Can't get module filename");
-		}
-
-		ptr = strrchr(filename,'/');
-		if(ptr) {
-			*(ptr+1) = 0;
-		}
-
-		ptr = strrchr(filename,'\\');
-		if(ptr) {
-			*(ptr+1) = 0;
-		}
-
-		assign(filename);
-
+	Application::DataDir::DataDir(const char *subdir) : File::Path{Application::Path{subdir}} {
 	}
 
-	Application::DataDir::DataDir() : File::Path(Application::Path()) {
-	}
-
-	Application::DataDir::DataDir(const char *subdir) : DataDir() {
-		append(subdir);
-		File::Path::mkdir(c_str());
-		append("\\");
-	}
-
-	Application::SystemDataDir::SystemDataDir() : File::Path() {
+	Application::SystemDataDir::SystemDataDir() {
 
 		try {
 
@@ -229,69 +201,7 @@
 
 	}
 
-	Application::InstallLocation::operator bool() const {
-
-		if(empty()) {
-			return false;
-		}
-
-#ifdef DEBUG
-		cout	<< "InstallLocation='" << c_str() << "'" << endl
-				<< "ApplicationPath='" << Application::Path().c_str() << "'" << endl;
-#endif
-		return strcmp(c_str(),Application::Path().c_str()) == 0;
-
-	}
-
-	Application::InstallLocation::InstallLocation() {
-
-		string path{"Software\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\"};
-		path += Application::Name();
-
-		debug("Searching for 'InstallLocation' in '",path,"'");
-
-		static const DWORD options[] = { KEY_READ|KEY_WOW64_32KEY, KEY_READ|KEY_WOW64_64KEY };
-
-		for(size_t ix = 0; ix < (sizeof(options)/sizeof(options[0])); ix++) {
-			HKEY hKey;
-			LSTATUS rc =
-				RegOpenKeyEx(
-					HKEY_LOCAL_MACHINE,
-					TEXT(path.c_str()),
-					0,
-					options[ix],
-					&hKey
-				);
-
-			if(rc == ERROR_SUCCESS) {
-				Win32::Registry registry{hKey};
-				if(registry.hasValue("InstallLocation")) {
-					assign(registry.get("InstallLocation",""));
-
-					if(at(size()-1) != '\\') {
-						append("\\");
-					}
-
-					debug("InstallLocation='",c_str(),"'");
-					return;
-
-				}
-			} else if(rc != ERROR_FILE_NOT_FOUND) {
-				cerr << "win32\t" << Win32::Exception::format(path.c_str()) << endl;
-			}
-		}
-
-		debug("No 'InstallLocation' registry key");
-
-	}
-
-	Application::LibDir::LibDir() : string(Application::Path()) {
-	}
-
-	Application::LibDir::LibDir(const char *subdir) : Application::LibDir() {
-		append(subdir);
-		File::Path::mkdir(c_str());
-		append("\\");
+	Application::LibDir::LibDir(const char *subdir) : File::Path{Application::Path{subdir}} {
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {
@@ -331,62 +241,23 @@
 		return (access(c_str(), R_OK) == 0);
 	}
 
-	Application::SysConfigDir::SysConfigDir() : string(Application::Path()) {
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : File::Path{Application::Path{subdir}} {
 	}
 
-	Application::SysConfigDir::SysConfigDir(const char *subdir) : Application::SysConfigDir() {
-		append(subdir);
-		File::Path::mkdir(c_str());
-		append("\\");
-	}
-
-	Application::LogDir::LogDir() {
-
-		try {
-
-			assign(Win32::Registry("log").get("path",""));
-			if(!empty()) {
-				File::Path::mkdir(c_str());
-				return;
-			}
-
-		} catch(...) {
-			// Ignore errors.
+	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"log")} {
+		if(subdir && *subdir) {
+			append(subdir);
+			mkdir();
+			append("\\");
 		}
-
-		assign(Win32::KnownFolder(FOLDERID_ProgramData,"logs"));
-		File::Path::mkdir(c_str());
-
 	}
 
-	Application::LogDir::LogDir(const char *subdir) : LogDir() {
-		append(subdir);
-		File::Path::mkdir(c_str());
-		append("\\");
-	}
-
-	Application::CacheDir::CacheDir() {
-
-		try {
-
-			assign(Win32::Registry().get("cachedir",""));
-			if(!empty()) {
-				File::Path::mkdir(c_str());
-				return;
-			}
-
-		} catch(...) {
-			// Ignore errors.
+	Application::CacheDir::CacheDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"cache")} {
+		if(subdir && *subdir) {
+			append(subdir);
+			mkdir();
+			append("\\");
 		}
-
-		assign(Win32::KnownFolder(FOLDERID_ProgramData,"cache"));
-		File::Path::mkdir(c_str());
-	}
-
-	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
-		append(subdir);
-		File::Path::mkdir(c_str());
-		append("\\");
 	}
 
  }

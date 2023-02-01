@@ -59,7 +59,7 @@
 			Registry(bool write = false);
 
 			/// @brief  Open registry on path.
-			/// @param path Registry path.
+			/// @param path Registry path, start it with '\' to full registry path instead of application one.
 			/// @param write true if not read-only.
 			Registry(const char *path, bool write = false);
 

@@ -112,12 +112,12 @@
 		}
 
 #ifdef _WIN32
-		class UDJAT_API Path : public std::string {
+		class UDJAT_API Path : public File::Path {
 		public:
-			Path();
+			Path(const char *subdir = nullptr);
 		};
 
-		class UDJAT_API InstallLocation : public std::string {
+		class UDJAT_API InstallLocation : public File::Path {
 		public:
 			InstallLocation();
 
@@ -128,15 +128,13 @@
 
 		class UDJAT_API LogDir : public File::Path {
 		public:
-			LogDir();
-			LogDir(const char *subdir);
+			LogDir(const char *subdir = nullptr);
 		};
 
 		/// @brief Application data dir.
 		class UDJAT_API DataDir : public File::Path {
 		public:
-			DataDir();
-			DataDir(const char *subdir);
+			DataDir(const char *subdir = nullptr);
 		};
 
 		/// @brief System datadir
@@ -148,11 +146,11 @@
 		/// @brief User datadir
 		class UDJAT_API UserDataDir : public File::Path {
 		public:
-			UserDataDir(const char *subdir = "");
+			UserDataDir(const char *subdir = nullptr);
 		};
 
 		/// @brief File from the application or system datadir.
-		class UDJAT_API DataFile : public std::string {
+		class UDJAT_API DataFile : public File::Path {
 		public:
 
 			/// @brief Create a full path to datafile based on XML definition.
@@ -183,33 +181,26 @@
 
 		};
 
-		class UDJAT_API LibDir : public std::string {
+		class UDJAT_API LibDir : public File::Path {
 		public:
-			LibDir();
+			LibDir(const char *subdir = nullptr);
 
 			/// @brief True if the path exists.
 			operator bool() const noexcept;
-
-			/// @brief Create path to application subdir below the system's library path.
-			LibDir(const char *subdir);
 
 			/// @brief Set application name.
 			void reset(const char *application_name, const char *subdir);
 
 		};
 
-		class UDJAT_API SysConfigDir : public std::string {
+		class UDJAT_API SysConfigDir : public File::Path {
 		public:
-			SysConfigDir();
-
-			/// @brief Create path to application subdir below the system's configuration path.
-			SysConfigDir(const char *subdir);
+			SysConfigDir(const char *subdir = nullptr);
 		};
 
 		class UDJAT_API CacheDir : public File::Path {
 		public:
-			CacheDir();
-			CacheDir(const char *subdir);
+			CacheDir(const char *subdir = nullptr);
 
 			/// @brief Build cachename for file
 			/// @param name File or URL name.
