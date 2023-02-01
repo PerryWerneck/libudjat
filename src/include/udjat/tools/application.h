@@ -140,7 +140,7 @@
 		/// @brief System datadir
 		class UDJAT_API SystemDataDir : public File::Path {
 		public:
-			SystemDataDir();
+			SystemDataDir(const char *subdir = nullptr);
 		};
 
 		/// @brief User datadir

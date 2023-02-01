@@ -64,7 +64,7 @@
 		}
 
 		if(!Module::preload()) {
-			throw runtime_error("Module preload has failed, aborting service");
+			throw runtime_error("Module preload has failed");
 		}
 
 		return false;
@@ -80,44 +80,33 @@
 		return instance;
 	}
 
-	Application::DataDir::DataDir() : File::Path{STRINGIZE_VALUE_OF(DATADIR) "/"} {
-		append(program_invocation_short_name);
-		mkdir();
-		append("/");
+	static std::string PathFactory(const char *path, const char *subdir) {
+
+		std::string response{path};
+
+		response.append(program_invocation_short_name);
+		File::Path::mkdir(response.c_str());
+		response.append("/");
+
+		if(subdir && *subdir) {
+			response.append(subdir);
+			File::Path::mkdir(response.c_str());
+			response.append("/");
+		}
+
+		return response;
 	}
 
-	Application::LogDir::LogDir() : File::Path{"/var/log/"} {
-		append(program_invocation_short_name);
-		mkdir();
-		append("/");
+	Application::DataDir::DataDir(const char *subdir) : File::Path{PathFactory(STRINGIZE_VALUE_OF(DATADIR) "/",subdir)} {
 	}
 
-	Application::LogDir::LogDir(const char *subdir) : LogDir() {
-		append(subdir);
-		mkdir();
-		append("/");
+	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory("/var/log/",subdir)} {
 	}
 
-	Application::SystemDataDir::SystemDataDir() : File::Path{"/usr/share/"} {
-		append(program_invocation_short_name);
-		mkdir();
-		append("/");
+	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir)} {
 	}
 
-	Application::DataDir::DataDir(const char *subdir) : DataDir() {
-		append(subdir);
-		mkdir();
-		append("/");
-	}
-
-	Application::LibDir::LibDir() : string{STRINGIZE_VALUE_OF(LIBDIR) "/"} {
-	}
-
-	Application::LibDir::LibDir(const char *subdir) : LibDir() {
-		append(program_invocation_short_name);
-		append("/");
-		append(subdir);
-		append("/");
+	Application::LibDir::LibDir(const char *subdir) : File::Path{PathFactory(STRINGIZE_VALUE_OF(LIBDIR) "/",subdir)} {
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {
@@ -132,14 +121,8 @@
 		return (access(c_str(), R_OK) == 0);
 	}
 
-	Application::SysConfigDir::SysConfigDir() : string{"/etc/"} {
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : File::Path{PathFactory("/etc/",subdir)} {
 	}
 
-	Application::SysConfigDir::SysConfigDir(const char *subdir) : SysConfigDir() {
-		append(program_invocation_short_name);
-		append("/");
-		append(subdir);
-		append("/");
-	}
 
  }
