@@ -28,6 +28,7 @@
 #include <string>
 #include <cstring>
 #include <sys/stat.h>
+#include <udjat/tools/string.h>
 
 namespace Udjat {
 
@@ -88,11 +89,18 @@ namespace Udjat {
 				UserData,	///< @brief User data dir ( ~/.local/share )
 			};
 
-			Path(const Type type);
+			Path(const Type type, const char *v = nullptr);
 
-			Path() : std::string() {
+			Path(const char *v = nullptr);
+
+			Path(const char *v, size_t s);
+
+			Path(const std::string &v) : Path(v.c_str()) {
 			}
 
+			void expand();
+
+			/*
 			Path(const char *v) : std::string(v) {
 			}
 
@@ -104,6 +112,7 @@ namespace Udjat {
 
 			Path(const std::string &v, size_t s) : std::string(v,s) {
 			}
+			*/
 
 			Path(int fd);
 

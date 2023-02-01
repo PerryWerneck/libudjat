@@ -793,13 +793,13 @@
 
 	void SystemService::load(std::list<std::string> &files) {
 
-		if(Config::Value<bool>{"service","XMLFromUserDir",false}) {
+		Config::Value<File::Path> path{"paths","xml",""};
 
-			// Load User defined settings.
-			Application::UserDataDir datadir{"xml.d"};
-			info() << "Loading user settings from '" << datadir << "'" << endl;
+		if(path.get()) {
 
-			datadir.for_each("*.xml",[&files](const File::Path &path){
+			info() << "Loading extended definitions from '" << path.get() << "'" << endl;
+
+			path.get().for_each("*.xml",[&files](const File::Path &path){
 				files.push_back(path);
 				return false;
 			});
@@ -807,7 +807,6 @@
 		}
 
 	}
-
 
  }
 

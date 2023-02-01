@@ -22,13 +22,33 @@
  #include <dirent.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/path.h>
+ #include <private/win32.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <shlobj.h>
 
  namespace Udjat {
 
-	File::Path::Path(const File::Path::Type type) {
+	static void expand_folder(std::string &str, const char *key, REFKNOWNFOLDERID id) {
+
+		const char *ptr = Udjat::String::strcasestr(str.c_str(),key);
+		if(ptr) {
+			str.replace(ptr - str.c_str(),strlen(key),Win32::KnownFolder{id});
+		}
+
+	}
+
+	void File::Path::expand() {
+
+		if(!empty()) {
+			expand_folder(*this,"${home}",FOLDERID_Profile);
+			expand_folder(*this,"${documents}",FOLDERID_Documents);
+			expand_folder(*this,"${desktop}",FOLDERID_Desktop);
+		}
+
+	}
+
+	File::Path::Path(const File::Path::Type type, const char *str) {
 
 		PWSTR wcp = NULL;
 		HRESULT hr;
@@ -111,7 +131,13 @@
 		CoTaskMemFree (wcp);
 
 		append(suffix);
+		mkdir();
 
+		if(str && *str) {
+			append(str);
+			append("\\");
+			mkdir();
+		}
 	}
 
 	Win32::Path::Path(const char *pathname) : std::string(pathname) {

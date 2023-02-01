@@ -46,13 +46,13 @@
 		return *this;
 	}
 
-	char * String::strcasestr(const char *needle) {
+	char * String::strcasestr(const char *hs, const char *needle) {
 #ifdef HAVE_STRCASESTR
 
-		return ::strcasestr((char *) c_str(),needle);
+		return ::strcasestr((char *) haystack,needle);
 
 #else
-		std::string haystack{c_str()};
+		std::string haystack{hs};
 		std::string ndl{needle};
 
 		for(char *ptr = (char *) haystack.c_str();*ptr;ptr++) {
@@ -68,7 +68,7 @@
 			return NULL;
 		}
 
-		return ((char *) c_str())+pos;
+		return ((char *) hs)+pos;
 
 #endif // HAVE_STRCASESTR
 	}

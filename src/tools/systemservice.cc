@@ -413,7 +413,7 @@
 					return false;
 				});
 
-				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}.to_string()}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
 
 			}
 

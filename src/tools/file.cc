@@ -34,6 +34,14 @@
 
  namespace Udjat {
 
+	File::Path::Path(const char *v) : std::string{v ? v : ""} {
+		expand();
+	}
+
+	File::Path::Path(const char *v, size_t s) : std::string{v,s} {
+		expand();
+	}
+
 	File::Path::operator bool() const noexcept {
 		if(empty()) {
 			return false;

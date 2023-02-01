@@ -69,5 +69,5 @@ app-manifest.xml
 resources.rc
 doxygen/*
 version.h
-
+libtool
 

@@ -277,7 +277,13 @@
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
-		char * strcasestr(const char *needle);
+		static char * strcasestr(const char *haystack, const char *needle);
+
+		/// @brief Find first occurrence of substring (case insensitive);
+		/// @return Pointer to first occurrence or NULL if not found.
+		inline char * strcasestr(const char *needle) {
+			return strcasestr(c_str(),needle);
+		}
 
 		std::vector<String> split(const char *delim);
 

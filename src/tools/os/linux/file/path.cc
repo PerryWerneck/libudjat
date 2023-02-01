@@ -31,11 +31,14 @@
 
  namespace Udjat {
 
-	File::Path::Path(const File::Path::Type type) {
+	File::Path::Path(const File::Path::Type type, const char *v) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
+	}
+
+	void File::Path::expand() {
 	}
 
 	void File::Path::save(int fd, const char *contents) {
