@@ -107,19 +107,20 @@ make all %{?_smp_mflags}
 	.bin/Release/*.dll
 
 %install
-#make DESTDIR=%{buildroot} install
 %_mingw64_make_install
 
-mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules
-mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
+mkdir -p %{buildroot}%{_mingw64_libdir}/udjat
+mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
+mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 
 find %{buildroot}
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
-%dir %{_mingw64_libdir}/udjat-modules
-%dir %{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
 
+%dir %{_mingw64_libdir}/udjat
+%dir %{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
+%dir %{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 %{_mingw64_bindir}/*.dll
 
 %{_mingw64_datadir}/locale/*/LC_MESSAGES/*.mo
@@ -128,6 +129,7 @@ find %{buildroot}
 
 %files devel
 %defattr(-,root,root)
+
 
 %{_mingw64_libdir}/*.a
 
@@ -144,6 +146,9 @@ find %{buildroot}
 
 %dir %{_mingw64_includedir}/udjat/tools/http
 %{_mingw64_includedir}/udjat/tools/http/*.h
+
+%dir %{_mingw64_includedir}/udjat/tools/net
+%{_mingw64_includedir}/udjat/tools/net/*.h
 
 %dir %{_mingw64_includedir}/udjat/win32
 %{_mingw64_includedir}/udjat/win32/*.h
