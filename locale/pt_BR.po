@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-01-22 12:55-0300\n"
+"POT-Creation-Date: 2023-02-01 17:48-0300\n"
 "PO-Revision-Date: 2023-01-30 09:49-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -45,6 +45,10 @@ msgstr "Requisição inválida"
 #: src/tools/http/error.cc:170
 msgid "Bad gateway"
 msgstr "Gateway inválido"
+
+#: src/tools/os/windows/exception.cc:57
+msgid "Cant resolve hostname"
+msgstr ""
 
 #: src/tools/http/error.cc:145
 msgid "Client error"
@@ -86,10 +90,10 @@ msgstr "Informação"
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: src/tools/os/linux/systemservice.cc:125
-#: src/tools/os/linux/systemservice.cc:130
-#: src/tools/os/windows/systemservice.cc:496
-#: src/tools/os/windows/systemservice.cc:501
+#: src/tools/os/linux/systemservice.cc:121
+#: src/tools/os/linux/systemservice.cc:126
+#: src/tools/os/windows/systemservice.cc:495
+#: src/tools/os/windows/systemservice.cc:500
 msgid "Invalid timer value"
 msgstr "Valor de timer inválido"
 
@@ -113,7 +117,7 @@ msgstr ""
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:91
+#: src/main/agent/root.cc:92
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -141,10 +145,6 @@ msgstr ""
 msgid "Proxy Authentication Required"
 msgstr "Proxy exige autenticação"
 
-#: src/tools/application/setup.cc:167
-msgid "Reconfiguration has failed: "
-msgstr "Reconfiguração falhou:"
-
 #: src/tools/http/error.cc:78
 msgid "Redirected"
 msgstr ""
@@ -170,15 +170,11 @@ msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/application/setup.cc:158
-msgid "System is configured"
-msgstr "Sistema está configurado"
-
-#: src/tools/systemservice.cc:186
+#: src/tools/systemservice.cc:182
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:182 src/main/agent/root.cc:91
+#: src/tools/systemservice.cc:178 src/main/agent/root.cc:92
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -214,9 +210,10 @@ msgid ""
 "server is refusing action."
 msgstr ""
 
-#: src/tools/os/windows/exception.cc:52
-msgid "The request has timed out."
-msgstr ""
+#: src/tools/os/windows/exception.cc:53
+#, fuzzy
+msgid "The request has timed out"
+msgstr "Tempo da requisição esgotado"
 
 #: src/tools/http/error.cc:164
 msgid ""
@@ -284,10 +281,6 @@ msgstr "Código de erro HTTP inesperado"
 #: src/main/agent/state.cc:154
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
-
-#: src/tools/application/setup.cc:176
-msgid "Unexpected error during reconfiguration"
-msgstr "Erro inesperado durante a configuração"
 
 #: src/tools/string/string.cc:285
 msgid "b"
@@ -380,3 +373,12 @@ msgstr "{h} {H} e {m} {M}"
 #: src/tools/timestamp.cc:81
 msgid "{m} {M}"
 msgstr "{m} {M}"
+
+#~ msgid "Reconfiguration has failed: "
+#~ msgstr "Reconfiguração falhou:"
+
+#~ msgid "System is configured"
+#~ msgstr "Sistema está configurado"
+
+#~ msgid "Unexpected error during reconfiguration"
+#~ msgstr "Erro inesperado durante a configuração"

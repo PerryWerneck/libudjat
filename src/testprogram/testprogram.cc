@@ -148,9 +148,9 @@ int main(int argc, char **argv) {
 
 	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
 
-	//service_test(argc,argv);
+	service_test(argc,argv);
 
-	cout << Application::LogDir() << endl;
+	// cout << Application::LogDir() << endl;
 
 	// auto worker = Protocol::WorkerFactory("file://test.xml");
 	// worker->save("/tmp/test");
