@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: 2023-01-30 09:49-0300\n"
+"PO-Revision-Date: 2023-02-02 05:25-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -48,7 +48,7 @@ msgstr "Gateway inválido"
 
 #: src/tools/os/windows/exception.cc:57
 msgid "Cant resolve hostname"
-msgstr ""
+msgstr "Não foi possivel resolver nome do host"
 
 #: src/tools/http/error.cc:145
 msgid "Client error"
@@ -68,7 +68,7 @@ msgstr "Timeout no acesso ao gateway"
 
 #: src/tools/string/string.cc:285
 msgid "Gb"
-msgstr ""
+msgstr "Gb"
 
 #: src/tools/http/error.cc:131
 msgid "Gone"
@@ -99,7 +99,7 @@ msgstr "Valor de timer inválido"
 
 #: src/tools/string/string.cc:285
 msgid "Kb"
-msgstr ""
+msgstr "Kb"
 
 #: src/tools/timestamp.cc:65
 msgid "Less than one minute"
@@ -111,7 +111,7 @@ msgstr "Protocol de arquivo local"
 
 #: src/tools/string/string.cc:285
 msgid "Mb"
-msgstr ""
+msgstr "Mb"
 
 #: src/main/module/module.cc:108
 msgid "Module '{}' is not loaded"
@@ -139,7 +139,7 @@ msgstr "Não encontrado"
 
 #: src/tools/http/error.cc:67
 msgid "Ok"
-msgstr ""
+msgstr "Ok"
 
 #: src/tools/http/error.cc:117
 msgid "Proxy Authentication Required"
@@ -147,7 +147,7 @@ msgstr "Proxy exige autenticação"
 
 #: src/tools/http/error.cc:78
 msgid "Redirected"
-msgstr ""
+msgstr "Redirecionado"
 
 #: src/tools/http/error.cc:124
 msgid "Request Timeout"
@@ -180,7 +180,7 @@ msgstr "Sistema em funcionamento"
 
 #: src/tools/string/string.cc:285
 msgid "Tb"
-msgstr ""
+msgstr "Tb"
 
 #: src/tools/http/error.cc:218
 msgid "The HTTP error code is unknown"
@@ -198,7 +198,7 @@ msgstr ""
 
 #: src/tools/http/error.cc:118
 msgid "The client must first authenticate itself with the proxy."
-msgstr ""
+msgstr "O cliente deve primeiro autenticar no proxy"
 
 #: src/tools/message.cc:47
 msgid "The message template is invalid"
@@ -209,9 +209,10 @@ msgid ""
 "The request contained valid data and was understood by the server, but the "
 "server is refusing action."
 msgstr ""
+"A requisição contem dados válidos e foi reconhecida pelo servidor, porem, o "
+"servidor se recusou a atuar."
 
 #: src/tools/os/windows/exception.cc:53
-#, fuzzy
 msgid "The request has timed out"
 msgstr "Tempo da requisição esgotado"
 
@@ -219,14 +220,16 @@ msgstr "Tempo da requisição esgotado"
 msgid ""
 "The request method is not supported by the server and cannot be handled."
 msgstr ""
+"O método usado na requisição não é suportado pelo servidor e não pode ser "
+"atendido."
 
 #: src/tools/http/error.cc:68
 msgid "The request succeeded."
-msgstr ""
+msgstr "Requisição concluída com sucesso."
 
 #: src/tools/http/error.cc:79
 msgid "The request was redirected to another URL."
-msgstr ""
+msgstr "Requisição foi redirecionada para outra URL."
 
 #: src/tools/http/error.cc:111
 msgid ""
@@ -248,17 +251,21 @@ msgstr ""
 
 #: src/tools/http/error.cc:157
 msgid "The server has encountered a situation it does not know how to handle."
-msgstr ""
+msgstr "O servidor encontrou uma situação que ele não sabe como resolver."
 
 #: src/tools/http/error.cc:185
 msgid "The server is acting as a gateway and cannot get a response in time."
 msgstr ""
+"O servidor está atuando como proxy e não conseguiu obter uma resposta no "
+"tempo esperado."
 
 #: src/tools/http/error.cc:178
 msgid ""
 "The server is not ready to handle the request. Common causes are a server "
 "that is down for maintenance or that is overloaded."
 msgstr ""
+"O servidor não está pronto para atender à requisição. Pode estar inativo "
+"para manutenção ou sobrecarregado."
 
 #: src/tools/http/error.cc:171
 msgid ""
@@ -268,7 +275,7 @@ msgstr ""
 
 #: src/tools/http/error.cc:138
 msgid "Too many requests"
-msgstr ""
+msgstr "Muitas requisições"
 
 #: src/tools/http/error.cc:96
 msgid "Unauthorized"
@@ -284,7 +291,7 @@ msgstr "Erro inesperado ao ativar estado"
 
 #: src/tools/string/string.cc:285
 msgid "b"
-msgstr ""
+msgstr "b"
 
 #: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
 msgid "day"
