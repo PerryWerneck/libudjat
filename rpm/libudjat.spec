@@ -66,8 +66,6 @@ Summary: Development files for %{name}
 Requires: %{name}%{_libvrs} = %{version}
 Requires: pkgconfig(pugixml)
 
-Provides: libudjat%{MAJOR_VERSION}%{MINOR_VERSION}-devel
-
 # The http exporter helps debugging of modules.
 Recommends: udjat-module-httpd
 
