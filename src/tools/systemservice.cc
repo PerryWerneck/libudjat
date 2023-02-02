@@ -140,7 +140,13 @@
 		protected:
 			void on_timer() override {
 				if(instance) {
-					sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",instance->state()->to_string().c_str());
+					std::string state{instance->state()->to_string()};
+					sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state.c_str());
+					if(Logger::enabled(Logger::Trace)) {
+						Logger::String{state}.write((Logger::Level) (Logger::Trace+1),"SystemD");
+					}
+				} else {
+					cerr << "SystemD\tNo System service instance while emitting systemd status" << endl;
 				}
 			}
 
@@ -198,20 +204,27 @@
 			{
 				uint64_t watchdog_timer = 0;
 				int status = sd_watchdog_enabled(0,&watchdog_timer);
-				if(status < 0) {
-					warning() << "Can't get SystemD watchdog status: " << strerror(-status) << endl;
-				} else if(status == 0) {
+
 #ifdef DEBUG
-					watchdog.reset(120000L);
-					watchdog.enable();
-					info() << "SystemD watchdog set to " << watchdog.to_string() << endl;
-#else
-					warning() << "SystemD watchdog is not set" << endl;
+				if(status == 0) {
+					watchdog_timer = 120000000L;
+					status = 1;
+				}
 #endif // DEBUG
+				if(status < 0) {
+
+					error() << "Can't get SystemD watchdog status: " << strerror(-status) << endl;
+
+				} else if(status == 0) {
+
+					warning() << "SystemD watchdog is not set" << endl;
+
 				} else {
+
 					watchdog.reset(watchdog_timer/2000L);
 					watchdog.enable();
-					info() << "SystemD watchdog set to " << watchdog.to_string() << endl;
+					Logger::String{"SystemD watchdog set to ",watchdog.to_string()}.trace(name().c_str());
+
 				}
 
 			}

@@ -187,7 +187,9 @@ namespace Udjat {
 
 		}
 
-		cout << "agent\tStarting controller" << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("agent");
 
 		MainLoop::Timer::reset(1000);
 		MainLoop::Timer::enable();
@@ -196,7 +198,9 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::stop() noexcept {
 
-		cout << "agent\tStopping controller" << endl;
+		Logger::String{
+			"Stopping controller"
+		}.trace("agent");
 
 		MainLoop::Timer::disable();
 

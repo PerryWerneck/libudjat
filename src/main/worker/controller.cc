@@ -35,7 +35,9 @@
 	}
 
 	Worker::Controller::Controller() {
-		cout << "workers\tStarting controller" << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("workers");
 	}
 
 	Worker::Controller::~Controller() {

@@ -46,7 +46,9 @@
 	}
 
 	Alert::Controller::Controller() : Udjat::MainLoop::Service("alerts",moduleinfo), Udjat::Worker("alerts",moduleinfo) {
-		cout << "alerts\tInitializing" << endl;
+		Logger::String{
+			"Initializing controller"
+		}.trace("alerts");
 		if(MainLoop::getInstance()) {
 			start();
 		}

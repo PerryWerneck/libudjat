@@ -28,6 +28,7 @@
 
  #include <config.h>
  #include <private/misc.h>
+ #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/handler.h>

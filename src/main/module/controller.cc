@@ -36,7 +36,9 @@ namespace Udjat {
 	}
 
 	Module::Controller::Controller() {
-		cout << "modules\tStarting controller" << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("modules");
 	}
 
 	Module::Controller::~Controller() {

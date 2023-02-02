@@ -63,15 +63,15 @@
 		
 	</random -->
 	
-	<random name='random10' update-timer='10'>
+	<!-- random name='random10' update-timer='10'>
 
-		<!-- alert type='d-bus'>
+		<alert type='d-bus'>
 		
 			<argument type='int16' value='${agent.value}'/>
 			<argument type='string' value='${level}'/>
 			<argument type='string' value='${state.summary}'/>
 				
-		</alert -->
+		</alert>
 
 		<alert type='script' trigger-event='value-change' cmdline='ls -l' />
 
@@ -82,6 +82,6 @@
 		<state name='s4' value='4' summary='Random 4' />
 		<state name='s5' value='5' summary='Random 5' />
 
-	</random>
+	</random -->
 	
 </config>
