@@ -98,8 +98,11 @@ namespace Udjat {
 			Path(const std::string &v) : Path(v.c_str()) {
 			}
 
-			void expand();
+			static void expand(std::string &str);
 
+			inline void expand() {
+				expand(*this);
+			}
 
 			Path(int fd);
 

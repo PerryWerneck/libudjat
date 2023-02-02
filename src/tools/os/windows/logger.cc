@@ -117,9 +117,20 @@ namespace Udjat {
 			//
 			// Write to file.
 			//
-			File::Path filename{Application::LogDir::getInstance()};
+			static std::string path;
+
+			if(path.empty()) {
+				try {
+					path = Application::LogDir();
+				} catch(...) {
+					path = Application::Path("logs");
+				}
+				File::Path::mkdir(path.c_str());
+			}
 
 			string format;
+			string filename{path};
+
 			DWORD keep = 86400;
 
 			try {
@@ -137,8 +148,6 @@ namespace Udjat {
 			if(format.empty()) {
 				format.assign(Application::Name() + "-%d.log");
 			}
-
-			mkdir(filename.c_str());
 
 			// Get logfile path.
 			filename.append(TimeStamp().to_string(format.c_str()));

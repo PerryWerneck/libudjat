@@ -33,19 +33,22 @@
 
 		const char *ptr = Udjat::String::strcasestr(str.c_str(),key);
 		if(ptr) {
-			str.replace(ptr - str.c_str(),strlen(key),Win32::KnownFolder{id});
+			try {
+				str.replace(ptr - str.c_str(),strlen(key),Win32::KnownFolder{id});
+			} catch(const std::exception &e) {
+				throw runtime_error(string{key} + ": " + e.what());
+			}
 		}
 
 	}
 
-	void File::Path::expand() {
-
-		if(!empty()) {
-			expand_folder(*this,"${home}",FOLDERID_Profile);
-			expand_folder(*this,"${documents}",FOLDERID_Documents);
-			expand_folder(*this,"${desktop}",FOLDERID_Desktop);
+	void File::Path::expand(std::string &str) {
+		if(!str.empty()) {
+			expand_folder(str,"${home}",FOLDERID_Profile);
+			expand_folder(str,"${documents}",FOLDERID_Documents);
+			expand_folder(str,"${desktop}",FOLDERID_Desktop);
+			expand_folder(str,"${sysdata}",FOLDERID_ProgramData);
 		}
-
 	}
 
 	File::Path::Path(const File::Path::Type type, const char *str) {
@@ -207,11 +210,9 @@
 		// walk the full path and try creating each element
 		// Reference: https://github.com/GNOME/glib/blob/main/glib/gfileutils.c
 
-		debug("Creating path '",path.c_str(),"'");
 		size_t mark = path.find("\\",1);
 		while(mark != string::npos) {
 			path[mark] = 0;
-			debug("Creating '",path.c_str(),"'");
 			if(::mkdir(path.c_str())) {
 				if(errno == EEXIST) {
 					if(!File::Path::dir(path.c_str())) {

@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/win32/cleanup.h>
  #include <udjat/tools/application.h>
+ #include <udjat/win32/exception.h>
  #include <private/win32.h>
  #include <stdexcept>
 
@@ -39,27 +40,14 @@
 	PWSTR wcp = NULL;
 	string result;
 
-	HRESULT hr = SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp);
+	throw_if_fail(SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp));
 
-	try {
+	size_t len = wcslen(wcp) * 2;
+	char buffer[len+1];
 
-		if (SUCCEEDED(hr)) {
+	wcstombs(buffer,wcp,len);
 
-			size_t len = wcslen(wcp) * 2;
-			char buffer[len+1];
-
-			wcstombs(buffer,wcp,len);
-
-			assign(buffer);
-
-		} else {
-			throw runtime_error("Can't get known folder path");
-		}
-
-	} catch(...) {
-		CoTaskMemFree (wcp);
-		throw;
-	}
+	assign(buffer);
 
 	CoTaskMemFree (wcp);
 

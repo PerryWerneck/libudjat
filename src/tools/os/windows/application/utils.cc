@@ -95,23 +95,10 @@
 
 	std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir) {
 
-		try {
+		File::Path registry{Win32::Registry{"paths"}.get(subdir,"")};
 
-			File::Path registry{Win32::Registry{"paths"}.get(subdir,"")};
-
-			if(!registry.empty()) {
-
-				// Cant use Udjat::String::expand here due to recursive calls (and dead lock).
-				// replace_path(registry,"${home}",FOLDERID_Profile);
-
-				// File::Path::mkdir(registry.c_str());
-				return registry;
-			}
-
-			debug(registry);
-
-		} catch(...) {
-			// Ignore errors.
+		if(!registry.empty()) {
+			return registry;
 		}
 
 		Win32::KnownFolder folder{id,subdir};

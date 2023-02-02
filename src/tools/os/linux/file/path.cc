@@ -115,11 +115,9 @@
 			path.resize(path.size()-1);
 		}
 
-		debug("Creating path '",path.c_str(),"'");
 		size_t mark = path.find("/",1);
 		while(mark != string::npos) {
 			path[mark] = 0;
-			debug("Creating '",path.c_str(),"'");
 			if(::mkdir(path.c_str(),mode)) {
 				if(errno == EEXIST) {
 					if(!File::Path::dir(path.c_str())) {

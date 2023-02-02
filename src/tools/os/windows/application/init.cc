@@ -39,9 +39,6 @@
 		// Go to application path.
 		_chdir(Path().c_str());
 
-		// Initialize logdir.
-		LogDir::getInstance();
-
 		// Initialize log levels.
 		for(int level = ((int) Logger::Info); level <= ((int) Logger::Trace); level++) {
 			Logger::enable(
