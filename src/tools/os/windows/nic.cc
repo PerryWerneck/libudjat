@@ -28,7 +28,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/win32/container.h>
  #include <iphlpapi.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
 
  using namespace std;
 

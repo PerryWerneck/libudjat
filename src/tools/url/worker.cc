@@ -30,7 +30,7 @@
  #include <udjat/tools/base64.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
 
  #ifndef _WIN32
 	#include <unistd.h>

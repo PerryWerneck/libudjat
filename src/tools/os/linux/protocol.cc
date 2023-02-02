@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/protocol.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
  #include <sys/socket.h>
  #include <arpa/inet.h>
  #include <stdexcept>

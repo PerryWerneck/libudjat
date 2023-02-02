@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/win32/ip.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
  #include <malloc.h>

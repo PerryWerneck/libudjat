@@ -102,6 +102,7 @@
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/message.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
+		<Unit filename="src/include/udjat/tools/net/ip.h" />
 		<Unit filename="src/include/udjat/tools/net/nic.h" />
 		<Unit filename="src/include/udjat/tools/network.h" />
 		<Unit filename="src/include/udjat/tools/object.h" />

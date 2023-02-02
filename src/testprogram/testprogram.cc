@@ -43,7 +43,7 @@
  #include <fstream>
  #include <fcntl.h>
  #include <iomanip>
- #include <udjat/tools/net/nic.h>
+ #include <udjat/tools/net/ip.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
@@ -144,12 +144,6 @@ static int service_test(int argc, char **argv) {
 
 int main(int argc, char **argv) {
 
-	Udjat::Network::Interface::for_each([](const Udjat::Network::Interface &intf){
-		cout << intf.name() << endl;
-		return false;
-	});
-
-
 	//cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
 	//cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
 
@@ -157,6 +151,7 @@ int main(int argc, char **argv) {
 
 	// service_test(argc,argv);
 
+	cout << Udjat::IP::Address{"127.0.0.1"} << endl;
 
 	// cout << Application::LogDir() << endl;
 

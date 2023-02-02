@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,17 +18,35 @@
  */
 
  #pragma once
+ #include <udjat/defs.h>
+ #include <string>
 
  #ifdef _WIN32
-	#include <winsock2.h>
-	#include <windows.h>
-	#include <ws2tcpip.h>
+	#include <ws2ipdef.h>
  #else
+	#include <sys/socket.h>
 	#include <arpa/inet.h>
  #endif // _WIN32
 
- #include <udjat/defs.h>
- #include <string>
+ namespace Udjat {
+
+	namespace IP {
+
+		class UDJAT_API Address : public sockaddr_storage {
+		public:
+			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
+			}
+
+			constexpr Address() : sockaddr_storage{} {
+			}
+
+			Address(const char *addr);
+
+		};
+
+	}
+
+ }
 
  namespace std {
 
@@ -51,4 +69,3 @@
 	}
 
  }
-

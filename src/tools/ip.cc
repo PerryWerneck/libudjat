@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/tools/net/ip.h>
 
  using namespace std;
 
