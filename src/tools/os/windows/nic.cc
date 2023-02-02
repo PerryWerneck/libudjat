@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include "private.h"
  #include <udjat/tools/net/nic.h>
  #include <stdexcept>
  #include <cstring>
@@ -92,8 +91,8 @@
 		private:
 			std::string nicname;
 
-			inline bool equal(const IP_ADAPTER_INFO * iface value) const noexcept {
-				return strcasecmp(nicname.c_str(),iface->AdapterName) == 0
+			inline bool equal(const IP_ADAPTER_INFO * iface) const noexcept {
+				return strcasecmp(nicname.c_str(),iface->AdapterName) == 0;
 			}
 
 		public:
@@ -123,6 +122,7 @@
 			}
 
 			bool loopback() const override {
+				Interfaces interfaces;
 				for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {
 					if(equal(iface)) {
 						return iface->Type == MIB_IF_TYPE_LOOPBACK;
