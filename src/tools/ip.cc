@@ -20,8 +20,65 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/net/ip.h>
+ #include <stdexcept>
+ #include <cstring>
 
  using namespace std;
+
+ namespace Udjat {
+
+	IP::Address::Address(const char *addr) : IP::Address{IP::Address::StorageFactory(addr)}{
+	}
+
+	IP::Address & IP::Address::set(const char * value) {
+		*this = StorageFactory(value);
+		return *this;
+	}
+
+	IP::Address & IP::Address::set(const sockaddr_storage & value) {
+		*this = value;
+		return *this;
+	}
+
+	bool IP::Address::equal(const sockaddr_storage &a, const sockaddr_storage &b) {
+
+		if(a.ss_family != b.ss_family) {
+			return false;
+		}
+
+		switch(a.ss_family) {
+		case 0:
+			return true;
+
+		case AF_INET:
+			if( ((sockaddr_in *) &a)->sin_port != ((sockaddr_in *) &b)->sin_port ) {
+				return false;
+			}
+			if( ((sockaddr_in *) &a)->sin_addr.s_addr != ((sockaddr_in *) &b)->sin_addr.s_addr ) {
+				return false;
+			}
+			break;
+
+		case AF_INET6:
+			if( ((sockaddr_in6 *) &a)->sin6_port != ((sockaddr_in6 *) &b)->sin6_port ) {
+				return false;
+			}
+			if( memcmp( &(((sockaddr_in6 *) &a)->sin6_addr), &(((sockaddr_in6 *) &b)->sin6_addr), sizeof(((sockaddr_in6 *) &b)->sin6_addr) ) ) {
+				return false;
+			}
+			break;
+
+		default:
+			throw runtime_error("Invalid network family");
+
+		}
+
+		return true;
+
+	}
+
+
+ }
 
  namespace std {
 

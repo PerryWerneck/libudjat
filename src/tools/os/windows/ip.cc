@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	static sockaddr_storage Factory(const char *addr) {
+	sockaddr_storage IP::Address::StorageFactory(const char *addr) {
 
 		sockaddr_storage storage;
 		memset(&storage,0,sizeof(storage));
@@ -44,9 +44,6 @@
 
 		return storage;
 
-	}
-
-	IP::Address::Address(const char *addr) : IP::Address{Factory(addr)}{
 	}
 
  }

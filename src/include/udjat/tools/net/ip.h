@@ -33,6 +33,9 @@
 	namespace IP {
 
 		class UDJAT_API Address : public sockaddr_storage {
+		private:
+			static sockaddr_storage StorageFactory(const char *addr);
+
 		public:
 			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
 			}
@@ -41,6 +44,40 @@
 			}
 
 			Address(const char *addr);
+
+			static bool equal(const sockaddr_storage &a, const sockaddr_storage &b);
+
+			inline bool operator==(const sockaddr_storage &storage) const noexcept {
+				return equal((sockaddr_storage) *this, storage);
+			}
+
+			inline bool operator==(const Address &addr) const noexcept {
+				return equal((sockaddr_storage) *this, (sockaddr_storage) addr);
+			}
+
+			inline bool empty() const noexcept {
+				return ss_family != 0;
+			}
+
+			inline operator bool() const noexcept {
+				return ss_family != 0;
+			}
+
+			inline Address & clear() noexcept {
+				ss_family = 0;
+				return *this;
+			}
+
+			Address & set(const char * value);
+			Address & set(const sockaddr_storage & value);
+
+			inline Address & operator = (const char * value) {
+				return set(value);
+			}
+
+			inline Address & operator = (const sockaddr_storage & value) {
+				return set(value);
+			}
 
 		};
 
