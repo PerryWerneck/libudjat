@@ -104,6 +104,9 @@
 		/// @retval ENOTSUP No autostart support on this service.
 		virtual int shortcut(const char *value = nullptr);
 
+		/// @brief Process --wake-up request.
+		virtual int wakeup();
+
 #ifdef _WIN32
 
 		/// @brief Install win32 service.

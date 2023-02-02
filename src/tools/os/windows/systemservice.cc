@@ -809,5 +809,9 @@
 
 	}
 
+	int SystemService::wakeup() {
+		return ENOTSUP;
+	}
+
  }
 

@@ -148,7 +148,9 @@ int main(int argc, char **argv) {
 
 	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
 
-	service_test(argc,argv);
+	// service_test(argc,argv);
+
+	Application::signal();
 
 	// cout << Application::LogDir() << endl;
 

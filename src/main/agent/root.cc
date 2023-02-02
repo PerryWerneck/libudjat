@@ -73,10 +73,10 @@
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				Logger::String{"Initializing new root agent"}.trace(Application::Name().c_str());
+				Logger::String{"Initializing new root agent"}.trace(name);
 
 				Object::properties.icon = "computer";
-				Object::properties.url = Quark(string{"http://"} + name).c_str();
+				Object::properties.label = Quark(Hostname()).c_str();
 
 				//
 				// Create default 'ready' state.
@@ -279,7 +279,7 @@
 		// Get controller to initialize it.
 		Abstract::Agent::Controller::getInstance();
 
-		return make_shared<Agent>(Quark(Hostname()).c_str());
+		return make_shared<Agent>(Quark{Application::Name()}.c_str());
 
 	}
 

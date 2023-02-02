@@ -226,5 +226,9 @@
 	void SystemService::load(std::list<std::string> &files) {
 	}
 
+	int SystemService::wakeup() {
+		return ENOTSUP;
+	}
+
  }
 

@@ -121,6 +121,14 @@
 			operator bool() const;
 
 		};
+
+#else
+
+		/// @brief Send signal to all instances of this application.
+		/// @param signo Signal to send (0 to just count instances).
+		/// @return Count of detected instances.
+		static size_t signal(int signum = 0);
+
 #endif // _WIN32
 
 		class UDJAT_API LogDir : public File::Path {

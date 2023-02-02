@@ -34,6 +34,9 @@
  #include <system_error>
  #include <libintl.h>
  #include <iostream>
+ #include <limits>
+ #include <dirent.h>
+ #include <signal.h>
 
  using namespace std;
 
@@ -103,5 +106,55 @@
 	Application::SysConfigDir::SysConfigDir(const char *subdir) : File::Path{PathFactory("/etc/",subdir)} {
 	}
 
+	size_t Application::signal(int signum) {
+
+		string me{to_string(getpid())};
+
+		char exename[PATH_MAX+1];
+		memset(exename,0,PATH_MAX+1);
+
+		if(readlink((string{"/proc/"}+me+"/exe").c_str(), exename, PATH_MAX) < 0) {
+			throw system_error(errno,system_category());
+		}
+
+		debug("Me= '",me,"'");
+		debug("ExeName= '",exename,"'");
+
+		size_t count = 0;
+		DIR *dir = opendir("/proc");
+		if(!dir) {
+			throw system_error(errno,system_category());
+		}
+
+		struct dirent *de;
+		while((de = readdir(dir)) != NULL) {
+
+			if(!de->d_name || de->d_name[0] == '.' || de->d_type != DT_DIR || (strcmp(de->d_name,me.c_str()) == 0))  {
+				continue;
+			}
+
+			char procname[PATH_MAX+1];
+			memset(procname,0,PATH_MAX+1);
+
+			if(readlinkat(dirfd(dir), (string{de->d_name} + "/exe").c_str(), procname, PATH_MAX) < 0) {
+				if(errno != ENOENT) {
+					cerr << "/proc/" << de->d_name << "/exe  " << strerror(errno) << " (rc=" << errno << ")" << endl;
+				}
+				continue;
+			}
+
+			if(!strcmp(procname,exename)) {
+				count++;
+				if(signum) {
+					cout << "Sending signal '" << signum << "' to process " << de->d_name << endl;
+					kill((pid_t) stoi(de->d_name), signum);
+				}
+			}
+
+		}
+		closedir(dir);
+
+		return count;
+	}
 
  }
