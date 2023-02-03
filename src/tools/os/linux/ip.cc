@@ -19,14 +19,13 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/linux/network.h>
  #include <sys/socket.h>
  #include <netdb.h>
  #include <stdexcept>
  #include <cstring>
  #include <iostream>
- #include <udjat/tools/net/ip.h>
 
  using namespace std;
 
@@ -37,12 +36,14 @@
 		sockaddr_storage storage;
 		memset(&storage,0,sizeof(storage));
 
-		if(inet_pton(AF_INET,addr,&((sockaddr_in *) &storage)->sin_addr) != 0) {
-			storage.ss_family = AF_INET;
-		} else if(inet_pton(AF_INET6,addr,&((sockaddr_in6 *) &storage)->sin6_addr) != 0) {
-			storage.ss_family = AF_INET6;
-		} else {
-			throw std::system_error(errno, std::system_category(), addr);
+		if(addr && *addr) {
+			if(inet_pton(AF_INET,addr,&((sockaddr_in *) &storage)->sin_addr) != 0) {
+				storage.ss_family = AF_INET;
+			} else if(inet_pton(AF_INET6,addr,&((sockaddr_in6 *) &storage)->sin6_addr) != 0) {
+				storage.ss_family = AF_INET6;
+			} else {
+				throw std::system_error(errno, std::system_category(), addr);
+			}
 		}
 
 		return storage;

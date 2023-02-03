@@ -43,7 +43,7 @@
  #include <fstream>
  #include <fcntl.h>
  #include <iomanip>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>

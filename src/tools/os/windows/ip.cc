@@ -20,8 +20,7 @@
  #include <config.h>
 
  #include <udjat/defs.h>
- #include <udjat/tools/net/ip.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <ws2tcpip.h>
  #include <system_error>
 
@@ -34,12 +33,14 @@
 		sockaddr_storage storage;
 		memset(&storage,0,sizeof(storage));
 
-		if(InetPton(AF_INET,addr,&((sockaddr_in *) &storage)->sin_addr) != 0) {
-			storage.ss_family = AF_INET;
-		} else if(InetPton(AF_INET6,addr,&((sockaddr_in6 *) &storage)->sin6_addr) != 0) {
-			storage.ss_family = AF_INET6;
-		} else {
-			throw std::system_error(errno, std::system_category(), addr);
+		if(addr && *addr) {
+			if(InetPton(AF_INET,addr,&((sockaddr_in *) &storage)->sin_addr) != 0) {
+				storage.ss_family = AF_INET;
+			} else if(InetPton(AF_INET6,addr,&((sockaddr_in6 *) &storage)->sin6_addr) != 0) {
+				storage.ss_family = AF_INET6;
+			} else {
+				throw std::system_error(errno, std::system_category(), addr);
+			}
 		}
 
 		return storage;

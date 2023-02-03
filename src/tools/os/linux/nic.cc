@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/nic.h>
+ #include <udjat/net/interface.h>
  #include <udjat/linux/network.h>
  #include <sys/socket.h>
  #include <netdb.h>

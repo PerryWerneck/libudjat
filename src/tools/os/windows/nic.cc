@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/nic.h>
+ #include <udjat/net/interface.h>
  #include <stdexcept>
  #include <cstring>
  #include <iostream>
@@ -28,7 +28,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/win32/container.h>
  #include <iphlpapi.h>
- #include <udjat/tools/net/ip.h>
+ #include <udjat/net/ip/address.h>
 
  using namespace std;
 
