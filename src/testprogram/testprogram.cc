@@ -151,7 +151,12 @@ int main(int argc, char **argv) {
 
 	// service_test(argc,argv);
 
-	cout << Udjat::IP::Address{"127.0.0.1"} << endl;
+	{
+		Udjat::IP::Address ipaddr;
+		ipaddr.set("192.168.0.1");
+		cout << ipaddr << endl;
+
+	}
 
 	// cout << Application::LogDir() << endl;
 

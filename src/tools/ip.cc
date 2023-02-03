@@ -22,6 +22,7 @@
  #include <udjat/net/ip/address.h>
  #include <stdexcept>
  #include <cstring>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -31,12 +32,12 @@
 	}
 
 	IP::Address & IP::Address::set(const char * value) {
-		*this = StorageFactory(value);
+		*((sockaddr_storage *) this) = StorageFactory(value);
 		return *this;
 	}
 
 	IP::Address & IP::Address::set(const sockaddr_storage & value) {
-		*this = value;
+		*((sockaddr_storage *) this) = value;
 		return *this;
 	}
 

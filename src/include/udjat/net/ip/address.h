@@ -71,7 +71,15 @@
 			Address & set(const char * value);
 			Address & set(const sockaddr_storage & value);
 
+			inline Address & set(const std::string &value) {
+				return set(value.c_str());
+			}
+
 			inline Address & operator = (const char * value) {
+				return set(value);
+			}
+
+			inline Address & operator = (const std::string &value) {
 				return set(value);
 			}
 
