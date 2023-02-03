@@ -374,11 +374,18 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/net/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		src/include/udjat/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/ip/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/ip
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/agent
