@@ -31,7 +31,7 @@
 
  namespace Udjat {
 
-	sockaddr_storage IP::Address::StorageFactory(const char *addr) {
+	sockaddr_storage IP::Factory(const char *addr) {
 
 		sockaddr_storage storage;
 		memset(&storage,0,sizeof(storage));

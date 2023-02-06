@@ -28,12 +28,54 @@
 
  namespace Udjat {
 
-	IP::Address::Address(const char *addr) : IP::Address{IP::Address::StorageFactory(addr)}{
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr_in *addr) {
+		sockaddr_storage result;
+		memset(&result,0,sizeof(result));
+
+		if(addr) {
+			memcpy(&result,addr,sizeof(sockaddr_in));
+		}
+
+		result.ss_family = AF_INET;
+		return result;
 	}
 
-	IP::Address & IP::Address::set(const char * value) {
-		*((sockaddr_storage *) this) = StorageFactory(value);
-		return *this;
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr_in6 *addr) {
+		sockaddr_storage result;
+		memset(&result,0,sizeof(result));
+
+		if(addr) {
+			memcpy(&result,addr,sizeof(sockaddr_in6));
+		}
+
+		result.ss_family = AF_INET6;
+		return result;
+	}
+
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr *addr) {
+
+		if(!addr) {
+			sockaddr_storage result;
+			memset(&result,0,sizeof(result));
+			return result;
+		}
+
+		switch(addr->sa_family) {
+		case AF_INET:
+			return Factory((const sockaddr_in *) addr);
+
+		case AF_INET6:
+			return Factory((const sockaddr_in6 *) addr);
+
+		default:
+			throw runtime_error("Unexpected address family");
+
+		}
+
+	}
+
+	UDJAT_API sockaddr_storage IP::Factory(const pugi::xml_node &node) {
+		return Factory((const char *) node.attribute("ip").as_string());
 	}
 
 	IP::Address & IP::Address::set(const sockaddr_storage & value) {
@@ -76,6 +118,13 @@
 
 		return true;
 
+	}
+
+	std::string IP::Address::to_string() const noexcept {
+		if(empty()) {
+			return "";
+		}
+		return std::to_string((sockaddr_storage) *this);
 	}
 
 

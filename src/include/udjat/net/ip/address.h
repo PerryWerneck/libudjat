@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <string>
+ #include <pugixml.hpp>
 
  #ifdef _WIN32
 	#include <ws2ipdef.h>
@@ -32,9 +33,14 @@
 
 	namespace IP {
 
+		UDJAT_API sockaddr_storage Factory(const char *addr);
+		UDJAT_API sockaddr_storage Factory(const sockaddr *addr);
+		UDJAT_API sockaddr_storage Factory(const sockaddr_in *addr);
+		UDJAT_API sockaddr_storage Factory(const sockaddr_in6 *addr);
+		UDJAT_API sockaddr_storage Factory(const pugi::xml_node &node);
+
 		class UDJAT_API Address : public sockaddr_storage {
 		private:
-			static sockaddr_storage StorageFactory(const char *addr);
 
 		public:
 			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
@@ -43,7 +49,9 @@
 			constexpr Address() : sockaddr_storage{} {
 			}
 
-			Address(const char *addr);
+			template <typename T>
+			Address(const T *addr) : sockaddr_storage{IP::Factory(addr)} {
+			}
 
 			static bool equal(const sockaddr_storage &a, const sockaddr_storage &b);
 
@@ -68,15 +76,16 @@
 				return *this;
 			}
 
-			Address & set(const char * value);
 			Address & set(const sockaddr_storage & value);
 
 			inline Address & set(const std::string &value) {
 				return set(value.c_str());
 			}
 
-			inline Address & operator = (const char * value) {
-				return set(value);
+			template <typename T>
+			Address & set(const T * value) {
+				*((sockaddr_storage *) this) = IP::Factory(value);
+				return *this;
 			}
 
 			inline Address & operator = (const std::string &value) {
@@ -86,6 +95,13 @@
 			inline Address & operator = (const sockaddr_storage & value) {
 				return set(value);
 			}
+
+			template <typename T>
+			inline Address & operator = (const T * value) {
+				return set(value);
+			}
+
+			std::string to_string() const noexcept;
 
 		};
 
