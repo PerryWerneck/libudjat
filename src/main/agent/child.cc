@@ -60,6 +60,10 @@
 		children.objects.remove(object);
 	}
 
+	bool Abstract::Agent::empty() const noexcept {
+		return children.agents.empty();
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path, bool required, bool autoins) {
 
 		lock_guard<std::recursive_mutex> lock(guard);

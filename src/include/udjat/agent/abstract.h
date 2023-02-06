@@ -130,24 +130,6 @@
 			/// @brief Event listeners.
 			std::list<Listener> listeners;
 
-			/// @brief Load agent properties from XML node.
-			// void setup_properties(const pugi::xml_node &node) noexcept;
-
-			/// @brief Load states from XML node.
-			// void setup_states(const pugi::xml_node &node) noexcept;
-
-			/// @brief Load alerts from XML node.
-			// void setup_alerts(const pugi::xml_node &node) noexcept;
-
-			/// @brief Load children from XML node.
-			// void setup_children(const pugi::xml_node &node) noexcept;
-
-			/// @brief Activate agent state.
-			//void activate() noexcept;
-
-			/// @brief Deactivate agent state (if needed).
-			//void deactivate() noexcept;
-
 			/// @brief Notify state change.
 			/// @param state New agent state.
 			/// @param activate if true the new state will be activated.
@@ -245,17 +227,6 @@
 			/// @brief Build and agent from node.
 			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const pugi::xml_node &node);
 
-			/// @brief Create and insert child.
-			/// @param type The agent type.
-			/// @param node XML agent definitions.
-			/// @return true if the child was created.
-			// bool ChildFactory(const char *type, const pugi::xml_node &node);
-
-			/// @brief Create and insert child from XML definition.
-			/// @param node XML agent definitions.
-			/// @return true if the child was created.
-			// bool ChildFactory(const pugi::xml_node &node);
-
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
 
@@ -319,11 +290,9 @@
 				return !children.agents.empty();
 			}
 
-			/// @brief The agent has children?
+			/// @brief Is the agent empty?
 			/// @return false if the agent have children.
-			bool empty() const noexcept {
-				return children.agents.empty();
-			}
+			virtual bool empty() const noexcept;
 
 			/// @brief Start agent.
 			virtual void start();
@@ -344,7 +313,7 @@
 			/// @param path	Child path.
 			/// @param required Launch exception when search fails.
 			/// @param autoins Insert default child if not found.
-			/// @return Agent pointer.
+			/// @return Agent pointer (empty if not found).
 			virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
 			void for_each(std::function<void(Agent &agent)> method);
