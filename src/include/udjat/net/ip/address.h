@@ -56,7 +56,7 @@
 			}
 
 			inline bool empty() const noexcept {
-				return ss_family != 0;
+				return ss_family == 0;
 			}
 
 			inline operator bool() const noexcept {

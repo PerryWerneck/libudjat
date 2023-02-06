@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: 2023-02-02 05:25-0300\n"
+"POT-Creation-Date: 2023-01-22 12:55-0300\n"
+"PO-Revision-Date: 2023-02-03 15:42-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -145,6 +145,10 @@ msgstr "Ok"
 msgid "Proxy Authentication Required"
 msgstr "Proxy exige autenticação"
 
+#: src/tools/application/setup.cc:167
+msgid "Reconfiguration has failed: "
+msgstr "Reconfiguração falhou:"
+
 #: src/tools/http/error.cc:78
 msgid "Redirected"
 msgstr "Redirecionado"
@@ -170,11 +174,15 @@ msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/systemservice.cc:182
+#: src/tools/application/setup.cc:158
+msgid "System is configured"
+msgstr "Sistema está configurado"
+
+#: src/tools/systemservice.cc:188
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:178 src/main/agent/root.cc:92
+#: src/tools/systemservice.cc:184 src/main/agent/root.cc:92
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -271,7 +279,7 @@ msgstr ""
 msgid ""
 "The server, while working as a gateway to get a response needed to handle "
 "the request, got an invalid response."
-msgstr ""
+msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
 
 #: src/tools/http/error.cc:138
 msgid "Too many requests"
@@ -288,6 +296,10 @@ msgstr "Código de erro HTTP inesperado"
 #: src/main/agent/state.cc:154
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
+
+#: src/tools/application/setup.cc:176
+msgid "Unexpected error during reconfiguration"
+msgstr "Erro inesperado durante a configuração"
 
 #: src/tools/string/string.cc:285
 msgid "b"
@@ -380,12 +392,3 @@ msgstr "{h} {H} e {m} {M}"
 #: src/tools/timestamp.cc:81
 msgid "{m} {M}"
 msgstr "{m} {M}"
-
-#~ msgid "Reconfiguration has failed: "
-#~ msgstr "Reconfiguração falhou:"
-
-#~ msgid "System is configured"
-#~ msgstr "Sistema está configurado"
-
-#~ msgid "Unexpected error during reconfiguration"
-#~ msgstr "Erro inesperado durante a configuração"

@@ -138,8 +138,8 @@ make all
 %dir %{_includedir}/udjat/linux
 %{_includedir}/udjat/linux/*.h
 
-%dir %{_includedir}/udjat/tools/net
-%{_includedir}/udjat/tools/net/*.h
+%dir %{_includedir}/udjat/net
+%{_includedir}/udjat/net/*
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 
