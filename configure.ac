@@ -89,7 +89,7 @@ OPTIONAL_MODULES=""
 case "$host" in
 	*-mingw32|*-pc-msys)
 		# https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-170
-		CFLAGS="$CFLAGS -pthread -DWINVER=0x0A00 -D_WIN32_WINNT=0x0A00"
+		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
 		LIBS="-lws2_32 -lshlwapi $LIBS -lintl -lws2_32 -lntdll -lwtsapi32 -lshell32 -lole32 -loleaut32 -luuid -liphlpapi"		
 		AC_SUBST(LIBEXT,.dll)
