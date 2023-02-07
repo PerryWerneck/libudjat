@@ -91,7 +91,7 @@ case "$host" in
 		# https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-170
 		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
-		LIBS="-lws2_32 -lshlwapi $LIBS -lintl -lws2_32 -lntdll -lwtsapi32 -lshell32 -lole32 -loleaut32 -luuid -liphlpapi"		
+		LIBS="$LIBS -lintl -lshlwapi -lws2_32 -lwtsapi32 -lole32 -loleaut32 -luuid -liphlpapi"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)

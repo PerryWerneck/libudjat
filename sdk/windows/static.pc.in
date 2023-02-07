@@ -13,6 +13,6 @@ module_path=${libdir}/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERS
 Name: udjat
 Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
-Libs: -ludjat @LIBS@ @LIBICONV@ @PUGIXML_LIBS@ @VMDETECT_LIBS@
-Cflags: -I${prefix}/include @PUGIXML_CFLAGS@
+Libs: -pthread -ludjat @LIBS@ @LIBICONV@ @PUGIXML_LIBS@ @VMDETECT_LIBS@
+Cflags: -pthread -I${prefix}/include @PUGIXML_CFLAGS@
 
