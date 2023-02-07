@@ -47,6 +47,8 @@
 			<Add option="-pthread" />
 			<Add library="dl" />
 		</Linker>
+		<Unit filename="Makefile" />
+		<Unit filename="configure.ac" />
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agent.h" />
@@ -183,7 +185,9 @@
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
-		<Unit filename="src/main/os/windows/resources.rc" />
+		<Unit filename="src/main/os/windows/resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="src/main/private.h" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/report.cc" />
@@ -205,7 +209,9 @@
 		<Unit filename="src/private.h" />
 		<Unit filename="src/testprogram/private.h" />
 		<Unit filename="src/testprogram/testprogram.cc" />
-		<Unit filename="src/testprogram/windows/resources.rc" />
+		<Unit filename="src/testprogram/windows/resources.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
 		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application/application.cc" />
 		<Unit filename="src/tools/application/setup.cc" />
