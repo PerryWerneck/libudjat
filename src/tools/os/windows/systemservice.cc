@@ -794,13 +794,15 @@
 
 	void SystemService::load(std::list<std::string> &files) {
 
-		Config::Value<File::Path> path{"paths","xml",""};
+		File::Path path{Config::Value<std::string>{"paths","xml",""}};
 
-		if(path.get()) {
+		if(!path.empty()) {
 
-			info() << "Loading extended definitions from '" << path.get() << "'" << endl;
+			path.mkdir();
 
-			path.get().for_each("*.xml",[&files](const File::Path &path){
+			info() << "Loading extended definitions from '" << path << "'" << endl;
+
+			path.for_each("*.xml",[&files](const File::Path &path){
 				files.push_back(path);
 				return false;
 			});
