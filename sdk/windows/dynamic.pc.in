@@ -15,5 +15,5 @@ Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
 Libs: -ludjat.dll @PUGIXML_LIBS@
 Libs.private: @LIBS@ @LIBICONV@ @VMDETECT_LIBS@
-Cflags: -I@includedir@ @PUGIXML_CFLAGS@
+Cflags: -DWINVER=0x0A00 -D_WIN32_WINNT=0x0A00 -I@includedir@ @PUGIXML_CFLAGS@
 
