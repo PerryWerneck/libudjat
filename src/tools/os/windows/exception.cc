@@ -74,6 +74,21 @@
 
 		};
 
+		Exception::Exception(const char *domain, const char *log, const char *prefix, const DWORD error)
+			: runtime_error{format(prefix,error)} {
+
+			Logger::String message{log};
+
+			message += ": ";
+			message += what();
+			message += " (";
+			message += std::to_string(error);
+			message += ")";
+
+			message.write(Logger::Error,domain);
+
+		}
+
 		std::string Exception::format(const char *what_arg, const DWORD dwMessageId) noexcept {
 			 return string(what_arg) + " - " + format(dwMessageId).c_str();
 		}
