@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <unistd.h>
  #include <cstring>
  #include <udjat/defs.h>

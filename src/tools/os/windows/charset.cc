@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <iconv.h>
  #include <udjat/win32/charset.h>
  #include <udjat/tools/quark.h>

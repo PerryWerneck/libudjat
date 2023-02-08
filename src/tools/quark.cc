@@ -18,6 +18,7 @@
  */
 
 #include <config.h>
+#include <udjat/defs.h>
 #include <iostream>
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
