@@ -153,8 +153,9 @@ int main(int argc, char **argv) {
 	// service_test(argc,argv);
 
 	{
-		Application::ShortCut shortcut;
-		shortcut.desktop();
+		//Application::ShortCut shortcut;
+		// shortcut.desktop();
+		cout << "APP Description: " << Application::Description() << endl;
 	}
 
 	// cout << Application::LogDir() << endl;

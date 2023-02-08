@@ -68,16 +68,19 @@
 		const char *description = nullptr;
 		UINT dwBytes;
 
-		// Try translated version, if failed, try untranslated version.
-		if(!VerQueryValue(pBlock,TEXT(_("\\StringFileInfo\\080904E4\\FileDescription")),(LPVOID *) &description,&dwBytes)) {
-			if(!VerQueryValue(pBlock,TEXT("\\StringFileInfo\\080904E4\\FileDescription"),(LPVOID *) &description,&dwBytes)) {
-				throw system_error(ENODATA,system_category(),"Unable to get application description");
-			}
+		// Try translated version
+		if(VerQueryValue(pBlock,TEXT(_("\\StringFileInfo\\080904B0\\FileDescription")),(LPVOID *) &description,&dwBytes)) {
+			assign(description);
+			return;
 		}
 
-		assign(Win32::Charset::from_windows(description));
+		// Try English version
+		if(VerQueryValue(pBlock,TEXT("\\StringFileInfo\\080904B0\\FileDescription"),(LPVOID *) &description,&dwBytes)) {
+			assign(description);
+			return;
+		}
 
-		debug("Application description is '",c_str(),"'");
+		throw system_error(ENODATA,system_category(),"Unable to get application description");
 
 	}
 
