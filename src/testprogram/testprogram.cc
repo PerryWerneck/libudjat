@@ -44,6 +44,7 @@
  #include <fcntl.h>
  #include <iomanip>
  #include <udjat/net/ip/address.h>
+ #include <udjat/tools/application.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
@@ -152,10 +153,7 @@ int main(int argc, char **argv) {
 	// service_test(argc,argv);
 
 	{
-		Udjat::IP::Address ipaddr;
-		ipaddr.set("192.168.0.1");
-		cout << ipaddr << endl;
-
+		Application::ShortCut shortcut;
 	}
 
 	// cout << Application::LogDir() << endl;

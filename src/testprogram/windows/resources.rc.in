@@ -1,32 +1,42 @@
-/*
-	Recursos para o notificador GSTI
-
-	$URL: http://suportelinux.df.bb.com.br/svn/suporte/aplicativos/gsti/src/tools/os/windows/resources.rc.in $
-	$Author: c1103788 $ $Date: 2022-01-12 08:18:53 -0300 (qua, 12 jan 2022) $ $Rev: 45740 $
-
-	Referências:
-
-	<https://msdn.microsoft.com/en-us/library/windows/desktop/aa381058(v=vs.85).aspx>
-	<https://stackoverflow.com/questions/1022449/how-to-change-an-executables-properties-windows>
-	<https://stackoverflow.com/questions/708238/how-do-i-add-an-icon-to-a-mingw-gcc-compiled-executable>
-
-
-*/
-
-#pragma code_page( 65001 )  // UTF-8
-
 #include <windows.h>
 
-LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
-
-/* CREATEPROCESS_MANIFEST_RESOURCE_ID      RT_MANIFEST "app-manifest.xml" */
-
 VS_VERSION_INFO VERSIONINFO
-PRODUCTVERSION @PACKAGE_MAJOR_VERSION@,@PACKAGE_MINOR_VERSION@
+FILEVERSION     @PACKAGE_MAJOR_VERSION@,@PACKAGE_MINOR_VERSION@
+PRODUCTVERSION  @PACKAGE_MAJOR_VERSION@,@PACKAGE_MINOR_VERSION@
 
 BEGIN
-    BLOCK "VarFileInfo"
-    BEGIN
-        VALUE "Translation", 0x0416, 0x04B0
-    END
+
+	// https://learn.microsoft.com/en-us/windows/win32/menurc/stringfileinfo-block
+	// https://stackoverflow.com/questions/14221918/win32-resource-file-multiple-translations
+	BLOCK "StringFileInfo"
+	BEGIN
+        BLOCK "080904E4"
+		BEGIN
+			VALUE "FileDescription",	"UDJAT Core test application\0"
+			VALUE "FileVersion",		"@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@\0"
+			VALUE "OriginalFilename",	"@SONAME@\0"
+			VALUE "ProductName",		"@PRODUCT_NAME@\0"
+			VALUE "ProductVersion",		"@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@\0"
+		END
+        BLOCK "041604E4"
+		BEGIN
+			VALUE "FileDescription",	"Aplicacao de teste para a libudjat\0"
+			VALUE "FileVersion",		"@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@\0"
+			VALUE "OriginalFilename",	"@SONAME@\0"
+			VALUE "ProductName",		"@PRODUCT_NAME@\0"
+			VALUE "ProductVersion",		"@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@\0"
+		END
+	END
+
+	// https://learn.microsoft.com/en-us/windows/win32/menurc/varfileinfo-block
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x0809, 0x04E4	// English
+	END
+	BLOCK "VarFileInfo"
+	BEGIN
+		VALUE "Translation", 0x0416, 0x04E4	// PT-Br
+	END
+
 END
+

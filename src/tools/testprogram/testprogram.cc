@@ -12,7 +12,8 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/mainloop.h>
-
+ #include <udjat/tools/application.h>
+ 
  using namespace std;
  using namespace Udjat;
 

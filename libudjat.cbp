@@ -288,6 +288,7 @@
 		<Unit filename="src/tools/os/linux/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/adapter.cc" />
 		<Unit filename="src/tools/os/windows/application/application.cc" />
+		<Unit filename="src/tools/os/windows/application/description.cc" />
 		<Unit filename="src/tools/os/windows/application/init.cc" />
 		<Unit filename="src/tools/os/windows/application/path.cc" />
 		<Unit filename="src/tools/os/windows/application/private.h" />
@@ -327,6 +328,7 @@
 		<Unit filename="src/tools/os/windows/threadpool.cc" />
 		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/quark.cc" />
+		<Unit filename="src/tools/shortcut.cc" />
 		<Unit filename="src/tools/string/expand.cc" />
 		<Unit filename="src/tools/string/string.cc" />
 		<Unit filename="src/tools/string/xml.cc" />

@@ -35,11 +35,6 @@
 	public:
 		Application();
 
-		enum Type : uint8_t {
-			Generic,		///< @brief Generic application.
-			AdminTool,		///< @brief Administrative tool.
-		};
-
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
@@ -69,29 +64,38 @@
 		/// @brief Write to the 'trace' stream.
 		static std::ostream & trace();
 
-		/// @brief Install application shortcut in the autostart folder.
-		/// @param type The application type.
-		/// @param id The application id.
-		/// @param name The shortcut name.
-		/// @param comment Shortcut comment.
-		/// @param Arguments for application.
-		void autostart(const Type type, const char *id, const char *name = "", const char *comment = "", const char *arguments = "");
+		/// @brief Application Shortcut.
+		class UDJAT_API ShortCut {
+		public:
 
-		inline void autostart(const char *id, const char *name = "", const char *comment = "", const char *arguments = "") {
-			autostart(Generic,id,name,comment,arguments);
-		}
+			/// @brief The application type.
+			enum Type : uint8_t {
+				Generic,		///< @brief Generic application.
+				AdminTool,		///< @brief Administrative tool.
+			} type = Generic;
 
-		/// @brief Install application Shortcut.
-		/// @param type The application type.
-		/// @param id The application id.
-		/// @param name The shortcut name.
-		/// @param comment Shortcut comment.
-		/// @param Arguments for application.
-		void shortcut(const Type type, const char *id, const char *name = "", const char *comment = "", const char *arguments = "");
+		protected:
 
-		inline void shortcut(const char *id, const char *name = "", const char *comment = "", const char *arguments = "") {
-			shortcut(Generic,id,name,comment,arguments);
-		}
+			std::string id;				///< @brief The application id.
+			std::string name;			///< @brief The shortcut name.
+			std::string description;	///< @brief The shortcut comment or description.
+			std::string arguments;		///< @brief The application arguments.
+
+		public:
+
+			/// @brief Build shortcut.
+			ShortCut(const Type type = Generic, const char *id = "", const char *name = "", const char *description = "", const char *arguments = "");
+
+			/// @brief Save standard shortcut.
+			ShortCut & save();
+
+			/// @brief Save shortcut on autostart folder.
+			ShortCut & autostart();
+
+			/// @brief Save shortcut on desktop folder.
+			ShortCut & desktop();
+
+		};
 
 		/// @brief The application name.
 		class UDJAT_API Name : public std::string {
@@ -109,6 +113,12 @@
 		}
 
 #ifdef _WIN32
+
+		class UDJAT_API Description : public std::string {
+		public:
+			Description();
+		};
+
 		class UDJAT_API Path : public File::Path {
 		public:
 			Path(const char *subdir = nullptr);

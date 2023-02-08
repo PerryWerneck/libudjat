@@ -91,7 +91,7 @@ case "$host" in
 		# https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-170
 		CFLAGS="$CFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
-		LIBS="$LIBS -lintl -lshlwapi -lws2_32 -lwtsapi32 -lole32 -loleaut32 -luuid -liphlpapi"		
+		LIBS="$LIBS -lintl -lshlwapi -lws2_32 -lwtsapi32 -lole32 -loleaut32 -luuid -liphlpapi -lversion"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
@@ -99,7 +99,7 @@ case "$host" in
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		AC_CONFIG_FILES(src/main/os/windows/resources.rc)
-dnl		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
+		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
 dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		;;
 

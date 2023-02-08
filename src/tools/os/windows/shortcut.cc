@@ -28,12 +28,14 @@
  #include <objidl.h>
  #include <shlguid.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/win32/charset.h>
  #include <comdef.h>
 
  using namespace std;
  using namespace Udjat;
+ using namespace Win32;
 
- static void CreateShortCut(const char * pszLinkfile, const char * pszDescription, const char * pszTargetargs, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
+ static void CreateShortCut(const Win32String & Linkfile, const Win32String & Description, const Win32String & Targetargs, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
 
 	static thread_local bool initialized = false;
 	if(!initialized) {
@@ -42,12 +44,11 @@
 	}
 
 	TCHAR pszTargetfile[MAX_PATH];
-
 	if(!GetModuleFileName(NULL, pszTargetfile, MAX_PATH ) ) {
 		throw runtime_error("Can't get application filename");
 	}
 
-	debug("Shortcut file is '",pszLinkfile,"'");
+	debug("Shortcut file is '",Linkfile.c_str(),"'");
 	debug("Shortcut target file is '",pszTargetfile,"'");
 
 	// https://www.codeproject.com/Articles/11467/How-to-create-short-cuts-link-files
@@ -69,12 +70,12 @@
 
 		Win32::throw_if_fail(pShellLink->SetPath(pszTargetfile));
 
-		if(pszTargetargs && *pszTargetargs) {
-			Win32::throw_if_fail(pShellLink->SetArguments(pszTargetargs));
+		if(!Targetargs.empty()) {
+			Win32::throw_if_fail(pShellLink->SetArguments(Targetargs.c_str()));
 		}
 
-		if(pszDescription && *pszDescription) {
-			Win32::throw_if_fail(pShellLink->SetDescription(pszDescription));
+		if(!Description.empty()) {
+			Win32::throw_if_fail(pShellLink->SetDescription(Description.c_str()));
 		}
 
 		if(iShowmode > 0) {
@@ -104,7 +105,7 @@
 		);
 
 		wchar_t wszLinkfile[MAX_PATH+1]; // pszLinkfile as Unicode string
-		MultiByteToWideChar(CP_ACP, 0, pszLinkfile, -1, wszLinkfile, MAX_PATH);
+		MultiByteToWideChar(CP_ACP, 0, Linkfile.c_str(), -1, wszLinkfile, MAX_PATH);
 
 		try {
 
@@ -132,7 +133,16 @@
 
  namespace Udjat {
 
-	void Application::shortcut(const Application::Type type, const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
+ 	Application::ShortCut::ShortCut(const Type t, const char *i, const char *n, const char *c, const char *a)
+		: type{t}, id{i}, name{n}, description{c}, arguments{a} {
+
+		if(name.empty()) {
+			name = Description();
+		}
+
+	}
+
+	Application::ShortCut & Application::ShortCut::save() {
 
 		std::string linkfile;
 
@@ -151,48 +161,57 @@
 
 		}
 
-		if(name && *name) {
-			linkfile += name;
-		} else {
-			linkfile += Name();
-		}
+		linkfile += Win32String{name}.c_str();
+		linkfile += ".lnk";
 
+		CreateShortCut(
+			linkfile,					// pszLinkfile
+			Win32String{description},	// pszDescription
+			Win32String{arguments},		// pszTargetargs
+			0,							// iShowmode
+			NULL,						// pszCurdir
+			NULL,						// pszIconfile
+			0							// iIconindex
+		);
+
+		return *this;
+	}
+
+	Application::ShortCut & Application::ShortCut::autostart() {
+
+		Win32::KnownFolder linkfile{FOLDERID_CommonStartup};
+
+		linkfile += name;
 		linkfile += ".lnk";
 
 		CreateShortCut(
 			linkfile.c_str(),		// pszLinkfile
-			description,			// pszDescription
-			arguments,				// pszTargetargs
+			description.c_str(),	// pszDescription
+			arguments.c_str(),		// pszTargetargs
 			0,						// iShowmode
 			NULL,					// pszCurdir
 			NULL,					// pszIconfile
 			0						// iIconindex
 		);
+
+		return *this;
+	}
+
+	Application::ShortCut & Application::ShortCut::desktop() {
+		return *this;
+	}
+
+	/*
+	void Application::shortcut(const Application::Type type, const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
+
 
 	}
 
 	void Application::autostart(const Application::Type type, const char UDJAT_UNUSED(*id), const char *name, const char *description, const char *arguments) {
 
-		Win32::KnownFolder linkfile{FOLDERID_CommonStartup};
-
-		if(name && *name) {
-			linkfile += name;
-		} else {
-			linkfile += Name();
-		}
-		linkfile += ".lnk";
-
-		CreateShortCut(
-			linkfile.c_str(),		// pszLinkfile
-			description,			// pszDescription
-			arguments,				// pszTargetargs
-			0,						// iShowmode
-			NULL,					// pszCurdir
-			NULL,					// pszIconfile
-			0						// iIconindex
-		);
 
 	}
+	*/
 
  }
 

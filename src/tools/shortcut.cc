@@ -18,6 +18,8 @@
  */
 
  #include <config.h>
+
+ #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
 
@@ -25,17 +27,6 @@
 
  namespace Udjat {
 
-	Application::Shortcut & Application::ShortCut::save() {
-		return *this;
-	}
-
-	Application::ShortCut & Application::ShortCut::autostart() {
-		return *this;
-	}
-
-	Application::ShortCut & Application::ShortCut::desktop() {
-		return *this;
-	}
 
  }
 
