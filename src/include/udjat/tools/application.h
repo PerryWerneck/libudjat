@@ -39,6 +39,9 @@
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
+		/// @brief Run application.
+		int UDJAT_API run(int argc, char **argv, const char *definitions = nullptr);
+
 		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.
 		static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
@@ -150,7 +153,7 @@
 		/// @brief Application data dir.
 		class UDJAT_API DataDir : public File::Path {
 		public:
-			DataDir(const char *subdir = nullptr);
+			DataDir(const char *subdir = nullptr, bool required = true);
 		};
 
 		/// @brief System datadir

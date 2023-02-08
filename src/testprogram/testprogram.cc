@@ -143,7 +143,16 @@ static int service_test(int argc, char **argv) {
 
 }
 
+static int application_test(int argc, char **argv) {
+
+	Logger::redirect();
+	return Application{}.run(argc,argv);
+
+}
+
 int main(int argc, char **argv) {
+
+	return application_test(argc,argv);
 
 	//cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
 	//cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
@@ -151,12 +160,6 @@ int main(int argc, char **argv) {
 	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
 
 	// service_test(argc,argv);
-
-	{
-		//Application::ShortCut shortcut;
-		// shortcut.desktop();
-		cout << "APP Description: " << Application::Description() << endl;
-	}
 
 	// cout << Application::LogDir() << endl;
 

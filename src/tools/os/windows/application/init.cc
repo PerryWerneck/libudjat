@@ -54,7 +54,12 @@
 			initialized = true;
 
 			WSADATA WSAData;
-			WSAStartup(0x101, &WSAData);
+			{
+				int err = WSAStartup(MAKEWORD(2,2), &WSAData);
+				if(err) {
+					throw Win32::Exception(e);
+				}
+			}
 
 #ifdef GETTEXT_PACKAGE
 			set_gettext_package(GETTEXT_PACKAGE);

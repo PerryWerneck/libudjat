@@ -25,7 +25,7 @@
 
  namespace Udjat {
 
-	Application::Shortcut & Application::ShortCut::save() {
+	Application::ShortCut & Application::ShortCut::save() {
 		return *this;
 	}
 

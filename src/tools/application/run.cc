@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,49 +17,47 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/**
- * @file main/load/xml.cc
- *
- * @brief Implements the application settings loader.
- *
- * @author perry.werneck@gmail.com
- *
- */
-
  #include <config.h>
- #include <private/misc.h>
- #include <sys/stat.h>
- #include <udjat/module.h>
+ #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
- #include <udjat/tools/timer.h>
- #include <udjat/module.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/file.h>
- #include <udjat/tools/http/client.h>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/threadpool.h>
  #include <private/updater.h>
- #include <list>
-
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-daemon.h>
- #endif // HAVE_SYSTEMD
+ #include <string>
 
  using namespace std;
 
  namespace Udjat {
 
-	time_t UDJAT_API Application::setup(const char *pathname, bool force) {
+	int Application::run(int argc, char **argv, const char *definitions) {
 
-		Updater updater{pathname,force};
+		int rc = -1;
 
-		if(updater.refresh()) {
-			updater.load(RootAgentFactory());
+		// Check for command line arguments.
+
+		// Initialize
+		try {
+			setup(definitions,true);
+		} catch(const std::exception &e) {
+			cerr << e.what() << endl;
+			return -1;
 		}
 
-		return 0; // FIX-ME
+		// Run
+		{
+			MainLoop::getInstance().run();
+		}
+
+		// Deinitialize
+		{
+
+		}
+
+		return rc;
+
 	}
 
  }
+

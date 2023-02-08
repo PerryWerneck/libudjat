@@ -793,22 +793,6 @@
 	}
 
 	void SystemService::load(std::list<std::string> &files) {
-
-		File::Path path{Config::Value<std::string>{"paths","xml",""}};
-
-		if(!path.empty()) {
-
-			path.mkdir();
-
-			info() << "Loading extended definitions from '" << path << "'" << endl;
-
-			path.for_each("*.xml",[&files](const File::Path &path){
-				files.push_back(path);
-				return false;
-			});
-
-		}
-
 	}
 
 	int SystemService::wakeup() {

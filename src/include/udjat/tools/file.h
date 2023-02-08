@@ -107,7 +107,11 @@ namespace Udjat {
 			Path(int fd);
 
 			/// @brief Create directory.
-			static void mkdir(const char *dirname, int mode = 0755);
+			/// @param dirname The directory name.
+			/// @param required if true launch exception on failure.
+			/// @param mode The directory mode
+			/// @return true if the directory was created.
+			static bool mkdir(const char *dirname, bool required = true, int mode = 0755);
 
 			/// @brief Check if path is a directory.
 			/// @param pathname the pathname to check;

@@ -65,26 +65,17 @@
 
 		// TODO: Install unhandled exception manager.
 		// https://en.cppreference.com/w/cpp/error/set_terminate
+		setup(true);
 
-		string appconfig;
-
-		if(definitions[0] && strcasecmp(definitions,"none")) {
-
-			info() << "Loading service definitions from " << definitions << endl;
-
-			setup(true);
-
-			Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
-			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
-				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
-					ThreadPool::getInstance().push([this](){
-						setup(false);
-					});
-					return true;
+		Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
+		if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
+			Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
+				ThreadPool::getInstance().push([this](){
+					setup(false);
 				});
-				info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
-			}
-
+				return true;
+			});
+			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 		}
 
 	}

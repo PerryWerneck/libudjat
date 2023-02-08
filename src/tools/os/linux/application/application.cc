@@ -62,33 +62,33 @@
 		return instance;
 	}
 
-	static std::string PathFactory(const char *path, const char *subdir) {
+	static std::string PathFactory(const char *path, const char *subdir, bool required) {
 
 		std::string response{path};
 
 		response.append(program_invocation_short_name);
-		File::Path::mkdir(response.c_str());
+		File::Path::mkdir(response.c_str(),required);
 		response.append("/");
 
 		if(subdir && *subdir) {
 			response.append(subdir);
-			File::Path::mkdir(response.c_str());
+			File::Path::mkdir(response.c_str(),required);
 			response.append("/");
 		}
 
 		return response;
 	}
 
-	Application::DataDir::DataDir(const char *subdir) : File::Path{PathFactory(STRINGIZE_VALUE_OF(DATADIR) "/",subdir)} {
+	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{PathFactory(STRINGIZE_VALUE_OF(DATADIR) "/",subdir,required)} {
 	}
 
-	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory("/var/log/",subdir)} {
+	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory("/var/log/",subdir,true)} {
 	}
 
-	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir)} {
+	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir,true)} {
 	}
 
-	Application::LibDir::LibDir(const char *subdir) : File::Path{PathFactory(STRINGIZE_VALUE_OF(LIBDIR) "/",subdir)} {
+	Application::LibDir::LibDir(const char *subdir) : File::Path{PathFactory(STRINGIZE_VALUE_OF(LIBDIR) "/",subdir,true)} {
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {
@@ -103,7 +103,7 @@
 		return (access(c_str(), R_OK) == 0);
 	}
 
-	Application::SysConfigDir::SysConfigDir(const char *subdir) : File::Path{PathFactory("/etc/",subdir)} {
+	Application::SysConfigDir::SysConfigDir(const char *subdir) : File::Path{PathFactory("/etc/",subdir,true)} {
 	}
 
 	size_t Application::signal(int signum) {

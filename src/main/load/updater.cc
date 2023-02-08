@@ -30,25 +30,86 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file.h>
 
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-daemon.h>
- #endif // HAVE_SYSTEMD
-
- #ifdef _WIN32
-	#include <udjat/win32/registry.h>
- #else
-	#include <unistd.h>
- #endif // _WIN32
-
  using namespace std;
 
  namespace Udjat {
 
-	Updater::Updater(const char *pathname,bool force) : update{force} {
-		File::Path{pathname}.for_each("*.xml",[this](const File::Path &path){
-			push_back(path);
-			return false;
-		});
+	Updater::Updater(const char *pathname, bool force) : update{force} {
+
+		if(pathname && *pathname) {
+
+			// Has pathname, use it.
+			Logger::String{"Loading xml definitions from '",pathname,"'"}.trace("settings");
+			File::Path{pathname}.for_each("*.xml",[this](const File::Path &path){
+				push_back(path);
+				return false;
+			});
+
+		} else {
+
+			// No pathname, use the default one.
+			Config::Value<string> config("application","definitions","");
+			if(config.empty()) {
+
+				// No configuration, scan standard paths.
+				std::string options[] = {
+					string{Application::DataDir{nullptr,false} + "settings.xml" },
+					Application::DataDir{"xml.d",false},
+#ifndef _WIN32
+					string{ string{"/etc/"} + Application::name() + ".xml" },
+					string{ string{"/etc/"} + Application::name() + ".xml.d" },
+#endif // _WIN32
+				};
+
+				for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
+
+					File::Path path{options[ix].c_str()};
+
+					if(path) {
+						Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace("settings");
+						path.for_each("*.xml",[this](const File::Path &path){
+							push_back(path);
+							return false;
+						});
+					}
+#ifdef DEBUG
+					else {
+						debug("Cant find ",options[ix].c_str());
+					}
+#endif // DEBUG
+
+				}
+
+			} else {
+
+				// Scan only the configured path.
+				Logger::String{"Loading xml definitions from '",config.c_str(),"'"}.trace("settings");
+				File::Path{config.c_str()}.for_each("*.xml",[this](const File::Path &path){
+					push_back(path);
+					return false;
+				});
+
+			}
+
+		}
+
+		// Check for extra files.
+		{
+			File::Path path{Config::Value<std::string>{"paths","xml",""}};
+			if(!path.empty()) {
+
+				path.mkdir();
+
+				info() << "Loading extended definitions from '" << path << "'" << endl;
+
+				path.for_each("*.xml",[this](const File::Path &path){
+					push_back(path);
+					return false;
+				});
+
+			}
+		}
+
 	}
 
 	bool Updater::refresh() {
@@ -185,180 +246,5 @@
 		return true;
 
 	}
-
-	/*
-	Updater::Updater(const char *pathname) : path{pathname} {
-
-		// Then check for file updates.
-		for_each([this](const char *filename, const pugi::xml_document &doc){
-
-			auto node = doc.document_element();
-
-			/// Setup logger.
-			Logger::setup(node);
-
-			// Check for update timer.
-			const char *url = node.attribute("src").as_string();
-			if(url && *url) {
-
-				time_t refresh = node.attribute("update-timer").as_uint(0);
-
-				try {
-
-					info() << "Updating " << filename << endl;
-					if(HTTP::Client::save(node,filename)) {
-						changed = true;
-					}
-
-				} catch(const std::exception &e) {
-
-					error() << "Error '" << e.what() << "' updating " << filename << endl;
-					refresh = node.attribute("update-when-failed").as_uint(refresh);
-
-				} catch(...) {
-
-					error() << "Unexpected error updating " << filename << endl;
-					refresh = node.attribute("update-when-failed").as_uint(refresh);
-
-				}
-
-				if(refresh) {
-					if(next) {
-						next = std::min(next,refresh);
-					} else {
-						next = refresh;
-					}
-				}
-
-			}
-
-		});
-
-	}
-
-	/// @brief Update agent, set it as a new root.
-	time_t Updater::set(std::shared_ptr<Abstract::Agent> agent) noexcept {
-
-		agent->warning() << "Reconfiguring from " << path << endl;
-
-#ifdef HAVE_SYSTEMD
-		sd_notify(0,"RELOADING=1");
-#endif // HAVE_SYSTEMD
-
-		for_each([agent](const char *filename, const pugi::xml_document &doc){
-
-			agent->info() << "Loading '" << filename << "'" << endl;
-
-			// First setup agent, load modules, etc.
-			try {
-
-				auto node = doc.document_element();
-				Logger::setup(node);
-
-				const char *path = node.attribute("path").as_string();
-
-				if(path && *path) {
-
-					// Has defined root path, find agent.
-					agent->find(path,true,true)->setup(node);
-
-				} else {
-
-					// No path, load here.
-					agent->setup(node);
-
-				}
-
-			} catch(const std::exception &e) {
-
-				agent->error() << filename << ": " << e.what() << endl;
-
-			} catch(...) {
-
-				agent->error() << filename << ": Unexpected error" << endl;
-
-			}
-
-			// Then setup modules.
-			Module::for_each([&doc](Module &module) {
-
-				try {
-
-					module.set(doc);
-
-				} catch(const std::exception &e) {
-
-					cerr << "modules\tError '" << e.what() << "' on module setup" << endl;
-
-				} catch(...) {
-
-					cerr << "modules\tUnexpected error on module setup" << endl;
-
-				}
-
-			});
-
-		});
-
-		setRootAgent(agent);
-
-#if defined(HAVE_SYSTEMD)
-		sd_notifyf(0,"READY=1\nSTATUS=%s",agent->state()->to_string().c_str());
-#elif defined(_WIN32)
-		try {
-
-			Win32::Registry registry("service",true);
-
-			registry.set("status",agent->state()->to_string().c_str());
-			registry.set("status_time",TimeStamp().to_string().c_str());
-
-		} catch(const std::exception &e) {
-
-			error() << "Cant update windows registry: " << e.what() << endl;
-
-		}
-#endif
-
-		return next;
-
-	}
-
-	bool for_each(const char *path, const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
-
-		return !File::Path{path}.for_each([call](const File::Path &filename){
-
-			if(!filename.match("*.xml")) {
-				Logger::String("Ignoring file '",filename.c_str(),"'").trace("xmldoc");
-				return false;
-			}
-
-			try {
-
-				pugi::xml_document doc;
-				auto result = doc.load_file(filename.c_str());
-				if(result.status != pugi::status_ok) {
-					cerr << "xmldoc\t" << filename << ": " << result.description() << endl;
-					return true;
-				}
-
-				call(filename.c_str(),doc);
-
-			} catch(const std::exception &e) {
-
-				cerr << "xml\t" << filename << ": " << e.what() << endl;
-				return true;
-
-			} catch(...) {
-
-				cerr << "xml\t" << filename << ": Unexpected error" << endl;
-				return true;
-
-			}
-
-			return false;
-
-		},true);
-	}
-	*/
 
  }

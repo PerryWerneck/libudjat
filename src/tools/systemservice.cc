@@ -59,6 +59,7 @@
 			throw runtime_error("Can't start more than one system service");
 		}
 
+		/*
 		if(!definitions) {
 
 			// No definitions, try to detect.
@@ -98,6 +99,7 @@
 #endif //  _WIN32
 			throw system_error(ENOENT,system_category(),definitions);
 		}
+		*/
 
 		instance = this;
 

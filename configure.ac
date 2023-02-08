@@ -99,6 +99,7 @@ case "$host" in
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		AC_CONFIG_FILES(src/main/os/windows/resources.rc)
+		AC_CONFIG_FILES(src/main/os/windows/app-manifest.xml)
 		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
 dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		;;
