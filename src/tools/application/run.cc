@@ -24,6 +24,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/module.h>
  #include <private/updater.h>
  #include <string>
 
@@ -46,13 +47,15 @@
 		}
 
 		// Run
-		{
-			MainLoop::getInstance().run();
-		}
+		MainLoop::getInstance().run();
 
 		// Deinitialize
-		{
-
+		try {
+			ThreadPool::getInstance().wait();
+			Module::unload();
+		} catch(const std::exception &e) {
+			cerr << e.what() << endl;
+			return -1;
 		}
 
 		return rc;
