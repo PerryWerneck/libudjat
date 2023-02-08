@@ -55,7 +55,7 @@
 			sd_notifyf(0,"STATUS=%s",message);
 #endif // HAVE_SYSTEMD
 
-			Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
+			Logger::write((Logger::Level) (Logger::Debug+1),name().c_str(),message);
 
 		}
 

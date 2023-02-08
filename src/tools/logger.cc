@@ -48,6 +48,28 @@
 
  namespace Udjat {
 
+	UDJAT_API unsigned short Logger::verbosity() noexcept {
+		for(size_t level = 0; level < N_ELEMENTS(typenames);level++) {
+			if(!enabled((Level) level)) {
+				return level;
+			}
+		}
+		return N_ELEMENTS(typenames);
+	}
+
+	UDJAT_API void Logger::verbosity(unsigned short lvl) noexcept {
+
+		for(size_t level = 0; level < N_ELEMENTS(typenames);level++) {
+			if(lvl > 0) {
+				enable((Level) level,true);
+				lvl--;
+			} else {
+				enable((Level) level,false);
+			}
+		}
+	}
+
+
 	void Logger::setup(const pugi::xml_node &node) noexcept {
 
 		static const struct {

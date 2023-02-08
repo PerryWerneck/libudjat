@@ -59,7 +59,7 @@
 			updater.load(RootAgentFactory());
 		}
 
-		return 0; // FIX-ME
+		return updater.wait();
 	}
 
  }

@@ -52,14 +52,14 @@
 			bool syslog = true;
 #endif // !_WIN32
 
-			bool enabled[Logger::Trace+2] = {
+			bool enabled[Logger::Debug+2] = {
 				true,				// Informational message.
 				true,				// Warning conditions.
 				true,				// Error conditions.
-				DEBUG_ENABLED,		// Debug message.
+				DEBUG_ENABLED,		// Trace message.
 
 				// Allways the last ones.
-				DEBUG_ENABLED,		// Trace message.
+				DEBUG_ENABLED,		// Debug message.
 				true,				// Notify message.
 			};
 

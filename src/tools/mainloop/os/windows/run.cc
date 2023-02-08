@@ -42,9 +42,9 @@
 
 	// Start services
 	/*
-	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting services");
+	Logger::write((Logger::Level) (Logger::Debug+1),"win32","Starting services");
 	start();
-	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting complete");
+	Logger::write((Logger::Level) (Logger::Debug+1),"win32","Starting complete");
 	*/
 
 	if(!PostMessage(hwnd,WM_START,0,0)) {
@@ -56,7 +56,7 @@
 		MSG msg;
 		memset(&msg,0,sizeof(msg));
 
-		Logger::String("Running message loop").write((Logger::Level) (Logger::Trace+1),"win32");
+		Logger::String("Running message loop").write((Logger::Level) (Logger::Debug+1),"win32");
 
 		enabled = true;
 		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
@@ -65,7 +65,7 @@
 		}
 		enabled = false;
 
-		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Trace+1),"win32");
+		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Debug+1),"win32");
 	}
 
 	return rc;

@@ -347,7 +347,7 @@
 				registry.set("status",message);
 				registry.set("status_time",TimeStamp().to_string().c_str());
 
-				Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
+				Logger::write((Logger::Level) (Logger::Debug+1),name().c_str(),message);
 
 			} catch(const std::exception &e) {
 
@@ -653,7 +653,7 @@
 	}
 
 	static void terminate_by_console_event(const char *msg) noexcept {
-		Logger::String(msg).write((Logger::Level) (Logger::Trace+1),"win32");
+		Logger::String(msg).write((Logger::Level) (Logger::Debug+1),"win32");
 		MainLoop &mainloop{MainLoop::getInstance()};
 		if(mainloop) {
 			mainloop.quit();

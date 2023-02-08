@@ -35,14 +35,17 @@
 	namespace Logger {
 
 		enum Level : uint8_t {
-			Info,		///< @brief Informational message.
-			Warning,	///< @brief Warning conditions.
-			Error,		///< @brief Error conditions.
-			Debug,		///< @brief Debug message.
+			Info,		///< @brief Informational message (std::cout>.
+			Warning,	///< @brief Warning conditions (std::clog).
+			Error,		///< @brief Error conditions (std::cerr).
+			Trace,		///< @brief Debug message.
 
-			// Trace should be the last one.
-			Trace		///< @brief Trace message
+			// Debug should be the last one.
+			Debug		///< @brief Trace message
 		};
+
+		UDJAT_API unsigned short verbosity() noexcept;
+		UDJAT_API void verbosity(unsigned short level) noexcept;
 
 		UDJAT_API std::ostream & info();
 		UDJAT_API std::ostream & warning();

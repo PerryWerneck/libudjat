@@ -145,7 +145,7 @@
 					std::string state{instance->state()->to_string()};
 					sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state.c_str());
 					if(Logger::enabled(Logger::Trace)) {
-						Logger::String{state}.write((Logger::Level) (Logger::Trace+1),"SystemD");
+						Logger::String{state}.write((Logger::Level) (Logger::Debug+1),"SystemD");
 					}
 				} else {
 					cerr << "SystemD\tNo System service instance while emitting systemd status" << endl;
@@ -376,7 +376,7 @@
 
 		} else {
 
-			Logger::String{"Keeping the actual root agent"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+			Logger::String{"Keeping the actual root agent"}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
 #ifdef HAVE_SYSTEMD
 			sd_notifyf(0,"READY=1\nSTATUS=%s",Abstract::Agent::root()->state()->to_string().c_str());
 #endif // HAVE_SYSTEMD
@@ -390,7 +390,7 @@
 
 			if(!wait) {
 
-				Logger::String{"Auto update is disabled"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+				Logger::String{"Auto update is disabled"}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
 
 			} else {
 
@@ -398,7 +398,7 @@
 
 					ThreadPool::getInstance().push([this](){
 
-						Logger::String{"Starting auto update"}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+						Logger::String{"Starting auto update"}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
 #ifdef HAVE_SYSTEMD
 						sd_notifyf(0,"STATUS=%s","Running auto update");
 #endif // HAVE_SYSTEMD
@@ -411,7 +411,7 @@
 					return false;
 				});
 
-				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}.to_string()}.write((Logger::Level) (Logger::Trace+1),Application::Name().c_str());
+				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}.to_string()}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
 
 			}
 
