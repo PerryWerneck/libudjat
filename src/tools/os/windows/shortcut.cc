@@ -198,6 +198,21 @@
 	}
 
 	Application::ShortCut & Application::ShortCut::desktop() {
+		Win32::KnownFolder linkfile{FOLDERID_Desktop};
+
+		linkfile += name;
+		linkfile += ".lnk";
+
+		CreateShortCut(
+			linkfile.c_str(),		// pszLinkfile
+			description.c_str(),	// pszDescription
+			arguments.c_str(),		// pszTargetargs
+			0,						// iShowmode
+			NULL,					// pszCurdir
+			NULL,					// pszIconfile
+			0						// iIconindex
+		);
+
 		return *this;
 	}
 

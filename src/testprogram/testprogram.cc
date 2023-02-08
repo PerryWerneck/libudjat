@@ -154,6 +154,7 @@ int main(int argc, char **argv) {
 
 	{
 		Application::ShortCut shortcut;
+		shortcut.desktop();
 	}
 
 	// cout << Application::LogDir() << endl;
