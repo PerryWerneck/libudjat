@@ -23,6 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/timer.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/module.h>
  #include <private/updater.h>
@@ -34,20 +35,29 @@
 
 	int Application::run(int argc, char **argv, const char *definitions) {
 
-		int rc = -1;
+		int rc = 0;
 
 		// Check for command line arguments.
 
 		// Initialize
 		try {
-			setup(definitions,true);
+			time_t timer = setup(definitions,true);
+			if(timer) {
+				info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
+
+				// TODO: Implement auto-refresh timer.
+				error() << "Auto refresh is not implemented, aborting" << endl;
+				rc = -1;
+ 			}
 		} catch(const std::exception &e) {
 			cerr << e.what() << endl;
 			return -1;
 		}
 
 		// Run
-		MainLoop::getInstance().run();
+		if(!rc) {
+			rc = MainLoop::getInstance().run();
+		}
 
 		// Deinitialize
 		try {
