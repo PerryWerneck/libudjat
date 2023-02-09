@@ -60,13 +60,7 @@
 	}
 
 	Protocol::~Protocol() {
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
 		Controller::getInstance().remove(this);
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
 	}
 
 	void Protocol::setDefault() noexcept {

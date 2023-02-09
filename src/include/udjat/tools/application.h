@@ -34,26 +34,34 @@
 	class UDJAT_API Application {
 	public:
 		Application();
+		virtual ~Application();
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
+		/// @brief Parse command line options, run application.
+		virtual int UDJAT_API run(int argc, char **argv, const char *definitions = nullptr);
+
 		/// @brief Run application.
-		int UDJAT_API run(int argc, char **argv, const char *definitions = nullptr);
+		int UDJAT_API run(const char *definitions = nullptr);
 
 		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.
-		static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
+		// static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
 
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @param force Do a reconfiguration even if the file hasn't change.
+		/// @param start True if it's the application/service startup.
 		/// @return Seconds for reconfiguation.
-		static time_t UDJAT_API setup(const char *pathname, bool force = false);
+		virtual time_t UDJAT_API setup(const char *pathname, bool startup = false);
+
+		/// @brief Install application.
+		/// @return 0 when success.
+		virtual int install();
 
 		/// @brief Finalize application.
-		static int UDJAT_API finalize();
+		// static int UDJAT_API finalize();
 
 		/// @brief Write to the 'information' stream.
 		static std::ostream & info();

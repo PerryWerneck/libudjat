@@ -35,21 +35,8 @@
 		return STRINGIZE_VALUE_OF(BUILD_DATE);
 	}
 
-	int UDJAT_API Application::init(int argc, char **argv, const char *definitions) {
-
-		Quark::init(argc,argv);
-
-		if(definitions) {
-			setup(definitions,true);
-		}
-
-		return 0;
-
-	}
-
-	int UDJAT_API Application::finalize() {
+	Application::~Application() {
 		Udjat::Module::unload();
-		return 0;
 	}
 
 	std::ostream & Application::info() {

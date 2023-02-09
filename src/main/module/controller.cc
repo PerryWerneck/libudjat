@@ -46,7 +46,7 @@ namespace Udjat {
 		if(modules.size()) {
 			cerr << "modules\tThe controller was destroyed without deactivation" << endl;
 		} else {
-			cout << "modules\tStopping clean controller" << endl;
+			Logger::String{"Stopping clean controller"}.trace("modules");
 		}
 
 		unload();

@@ -20,8 +20,8 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
- #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/quark.h>
  #include <udjat/module.h>
  #include <stdexcept>
 
@@ -31,34 +31,12 @@
 
 	Application::Application() {
 
-		// Initialize log levels.
-		debug("---------------------------------");
-
-		// Initialize log levels.
-		for(int level = ((int) Logger::Error); level <= ((int) Logger::Trace); level++) {
-			Logger::enable(
-				(Logger::Level) level,
-				Config::Value<bool>("log",std::to_string((Logger::Level) level),Logger::enabled((Logger::Level) level))
-			);
-			debug("---> ",std::to_string((Logger::Level) level)," ",Logger::enabled((Logger::Level) level));
-		}
-
-
-		static bool initialized = false;
-		if(!initialized) {
-
-			initialized = true;
+		Quark::init();
 
 #ifdef GETTEXT_PACKAGE
-			set_gettext_package(GETTEXT_PACKAGE);
-			setlocale( LC_ALL, "" );
+		set_gettext_package(GETTEXT_PACKAGE);
+		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
-
-		}
-
-		if(!Module::preload()) {
-			throw runtime_error("Module preload has failed");
-		}
 
 	}
 

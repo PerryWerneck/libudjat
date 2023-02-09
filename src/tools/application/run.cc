@@ -25,6 +25,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/module.h>
  #include <private/updater.h>
  #include <string>
@@ -36,8 +37,6 @@
 
 	int Application::run(int argc, char **argv, const char *definitions) {
 
-		int rc = 0;
-
 		// Check for command line arguments.
 		{
 			#pragma GCC diagnostic push
@@ -45,14 +44,33 @@
 			static struct option options[] = {
 				{ "verbose",	optional_argument,	0,	'v'	},
 				{ "quiet",		no_argument,		0,	'q'	},
+				{ "install",	no_argument,		0,	'I'	},
+				{ "help",		no_argument,		0,	'h'	},
+				{ "foreground",	no_argument,		0,	'f'	},
 			};
 			#pragma GCC diagnostic pop
 
 			int long_index =0;
 			int opt;
-			while((opt = getopt_long(argc, argv, "vq", options, &long_index )) != -1) {
+			while((opt = getopt_long(argc, argv, "vqIhf", options, &long_index )) != -1) {
 
 				switch(opt) {
+				case 'h':
+					cout 	<< "Usage: " << endl << "  " << argv[0] << " [options]" << endl << endl
+							<< "  --help\t\tShow this message" << endl
+							<< "  --verbose\t\tSet loglevel, enable console output" << endl
+							<< "  --quiet\t\tDisable console output" << endl
+							<< "  --install\t\tInstall application" << endl;
+					return 0;
+
+				case 'f': // For compatibility with SystemService
+					Logger::console(true);
+					Logger::verbosity(9);
+					break;
+
+				case 'I':
+					return install();
+
 				case 'q':
 					Logger::console(false);
 					break;
@@ -63,11 +81,13 @@
 						if(*optarg == 'v') {
 							while(*optarg == 'v') {
 								Logger::verbosity(Logger::verbosity()+1);
-								debug("--->",Logger::verbosity());
 								optarg++;
 							}
-						} else {
+						} else if(optarg[0] >= '0' && optarg[0] <= '9') {
 							Logger::verbosity(std::stoi(optarg));
+						} else {
+							cerr << strerror(EINVAL) << endl;
+							return EINVAL;
 						}
 					} else {
 						Logger::verbosity(Logger::verbosity()+1);
@@ -81,38 +101,43 @@
 
 		}
 
-		// Initialize
-		try {
-			time_t timer = setup(definitions,true);
-			if(timer) {
-				info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
+		return run(definitions);
+	}
 
-				// TODO: Implement auto-refresh timer.
-				error() << "Auto refresh is not implemented, aborting" << endl;
+	int Application::run(const char *definitions) {
+
+			// Initialize
+			{
+				time_t timer = setup(definitions,true);
+				if(timer) {
+					info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
+
+					// TODO: Implement auto-refresh timer.
+					error() << "Auto update is not implemented, aborting" << endl;
+					return ENOTSUP;
+				}
+			}
+
+			int rc = -1;
+
+			try {
+
+				Abstract::Agent::root();
+				rc = MainLoop::getInstance().run();
+				ThreadPool::getInstance().wait();
+				Module::unload();
+
+			} catch(const std::exception &e) {
+
+				error() << e.what() << endl;
 				rc = -1;
- 			}
-		} catch(const std::exception &e) {
-			cerr << e.what() << endl;
-			return -1;
-		}
 
-		// Run
-		if(!rc) {
-			rc = MainLoop::getInstance().run();
-		}
+			}
 
-		// Deinitialize
-		try {
-			ThreadPool::getInstance().wait();
-			Module::unload();
-		} catch(const std::exception &e) {
-			cerr << e.what() << endl;
-			return -1;
-		}
-
-		return rc;
+			return rc;
 
 	}
 
  }
+
 

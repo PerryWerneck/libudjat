@@ -51,9 +51,17 @@
 
  namespace Udjat {
 
-	time_t UDJAT_API Application::setup(const char *pathname, bool force) {
+	int Application::install() {
+		return ENOTSUP;
+	}
 
-		Updater updater{pathname,force};
+	time_t UDJAT_API Application::setup(const char *pathname, bool startup) {
+
+		if(startup && !Module::preload()) {
+			throw runtime_error("Module preload has failed");
+		}
+
+		Updater updater{pathname,startup};
 
 		if(updater.refresh()) {
 			updater.load(RootAgentFactory());

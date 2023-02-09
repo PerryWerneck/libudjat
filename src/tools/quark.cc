@@ -165,7 +165,7 @@ namespace Udjat {
 		this->value = Controller::getInstance().find(Udjat::Attribute(node,name,upsearch).as_string(def),true);
 	}
 
-	void Quark::init(int UDJAT_UNUSED(argc), char UDJAT_UNUSED(**argv)) {
+	void Quark::init() {
 		Controller::getInstance();
 	}
 

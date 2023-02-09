@@ -120,9 +120,9 @@
 
 #endif // _WIN32
 
-		/// @brief Install application (override it with application description).
+		/// @brief Install service.
 		/// @return 0 when success.
-		virtual int install();
+		int install() override;
 
 		/// @brief Send usage help to std::cout
 		virtual void usage() const noexcept;

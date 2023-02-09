@@ -19,10 +19,9 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
- #include <direct.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/quark.h>
  #include <udjat/module.h>
  #include <stdexcept>
 
@@ -36,62 +35,41 @@
 
   	Application::Application() {
 
+  		Quark::init();
+
 		// Go to application path.
 		_chdir(Path().c_str());
 
-		debug("---------------------------------");
-
-		// Initialize log levels.
-		for(int level = ((int) Logger::Error); level <= ((int) Logger::Trace); level++) {
-			Logger::enable(
-				(Logger::Level) level,
-				Config::Value<bool>("log",std::to_string((Logger::Level) level),Logger::enabled((Logger::Level) level))
-			);
-			debug("---> ",std::to_string((Logger::Level) level)," ",Logger::enabled((Logger::Level) level));
-		}
-
-		static bool initialized = false;
-
-		if(!initialized) {
-
-			initialized = true;
-
-			WSADATA WSAData;
-			{
-				int err = WSAStartup(MAKEWORD(2,2), &WSAData);
-				if(err) {
-					throw Win32::Exception(e);
-				}
-			}
-
 #ifdef GETTEXT_PACKAGE
-			set_gettext_package(GETTEXT_PACKAGE);
-			setlocale( LC_ALL, "" );
+		set_gettext_package(GETTEXT_PACKAGE);
+		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
-			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
-			SetConsoleOutputCP(CP_UTF8);
-			SetConsoleCP(CP_UTF8);
-
-			if(Config::Value<bool>("application","virtual-terminal-processing",true)) {
-				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-				if(hOut != INVALID_HANDLE_VALUE) {
-					DWORD dwMode = 0;
-					if(GetConsoleMode(hOut, &dwMode)) {
-						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-						SetConsoleMode(hOut,dwMode);
-					}
-				}
+		WSADATA WSAData;
+		{
+			int err = WSAStartup(MAKEWORD(2,2), &WSAData);
+			if(err) {
+				throw Win32::Exception(e);
 			}
-
-			if(!Module::preload()) {
-				throw runtime_error("Module preload has failed");
-			}
-
 		}
 
- 	}
+		// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+		SetConsoleOutputCP(CP_UTF8);
+		SetConsoleCP(CP_UTF8);
+
+		if(Config::Value<bool>("application","virtual-terminal-processing",true)) {
+			// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+			if(hOut != INVALID_HANDLE_VALUE) {
+				DWORD dwMode = 0;
+				if(GetConsoleMode(hOut, &dwMode)) {
+					dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+					SetConsoleMode(hOut,dwMode);
+				}
+			}
+		}
+
+	}
 
  }
 

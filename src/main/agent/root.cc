@@ -39,6 +39,7 @@
  #include <udjat/tools/network.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/module.h>
+ #include <sstream>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -73,7 +74,11 @@
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				Logger::String{"Initializing new root agent"}.trace(name);
+				{
+					std::stringstream ss;
+					ss << "Building root agent " << hex << ((void *) this) << dec;
+					Logger::String{ss.str()}.trace("agents");
+				}
 
 				Object::properties.icon = "computer";
 				Object::properties.label = Quark(Hostname()).c_str();
@@ -195,7 +200,9 @@
 
 
 			virtual ~Agent() {
-				info() << "Root agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
+				std::stringstream ss;
+				ss << "Root agent " << hex << ((void *) this) << dec << " was destroyed";
+				Logger::String{ss.str()}.trace("agents");
 			}
 
 			Value & getProperties(Value &value) const noexcept override {

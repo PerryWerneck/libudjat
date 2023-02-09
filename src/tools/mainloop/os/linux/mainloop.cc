@@ -41,7 +41,7 @@
 		if(!handlers.empty()) {
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
 		} else {
-			cout << "MainLoop\tDestroying clean service loop" << endl;
+			Logger::String{"Destroying clean service loop"}.trace("MainLoop");
 		}
 
 		enabled = false;
