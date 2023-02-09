@@ -189,7 +189,7 @@
 		return attr & FILE_ATTRIBUTE_NORMAL;
 	}
 
-	void File::Path::mkdir(const char *dirname, int UDJAT_UNUSED(mode)) {
+	bool File::Path::mkdir(const char *dirname, bool required, int UDJAT_UNUSED(mode)) {
 
 		if(!(dirname && *dirname)) {
 			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
@@ -199,10 +199,10 @@
 
 		// Try to create the full path first.
 		if(!::mkdir(path.c_str())) {
-			return;
+			return true;
 		} else if(errno == EEXIST) {
 			if(File::Path::dir(path.c_str())) {
-				return;
+				return true;
 			}
 			throw system_error(ENOTDIR,system_category(),path);
 		}
@@ -218,8 +218,11 @@
 					if(!File::Path::dir(path.c_str())) {
 						throw system_error(ENOTDIR,system_category(),path.c_str());
 					}
-				} else {
+					return true;
+				} else if(required) {
 					throw system_error(errno,system_category(),path.c_str());
+				} else {
+					return false;
 				}
 			}
 
@@ -232,10 +235,16 @@
 				if(!File::Path::dir(path.c_str())) {
 					throw system_error(ENOTDIR,system_category(),path.c_str());
 				}
-			} else {
+				return true;
+
+			} else if(required) {
 				throw system_error(errno,system_category(),path.c_str());
+			} else {
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	void File::Path::mkdir(int mode) const {

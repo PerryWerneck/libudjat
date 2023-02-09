@@ -122,7 +122,8 @@
 
 			try {
 
-				Abstract::Agent::root();
+				Abstract::Agent::root();	// throw if the agent subsystem is inactive.
+
 				rc = MainLoop::getInstance().run();
 				ThreadPool::getInstance().wait();
 				Module::unload();

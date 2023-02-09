@@ -6,6 +6,6 @@
         name="@PRODUCT_DOMAIN@.@PRODUCT_NAME@.@PACKAGE_NAME@"
         type="win32"
     />
-    <description>@PRODUCT_NAME@ core library</description>
+    <description>Core library for @PRODUCT_NAME@</description>
 </assembly>
 

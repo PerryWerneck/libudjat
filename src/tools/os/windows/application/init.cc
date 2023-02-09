@@ -24,6 +24,8 @@
  #include <udjat/tools/quark.h>
  #include <udjat/module.h>
  #include <stdexcept>
+ #include <udjat/win32/exception.h>
+ #include <direct.h>
 
 #ifdef HAVE_LIBINTL
 	#include <libintl.h>
@@ -49,7 +51,7 @@
 		{
 			int err = WSAStartup(MAKEWORD(2,2), &WSAData);
 			if(err) {
-				throw Win32::Exception(e);
+				throw Win32::Exception(err);
 			}
 		}
 

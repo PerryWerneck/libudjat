@@ -103,10 +103,16 @@
 		return instance;
 	}
 
-	Application::DataDir::DataDir(const char *subdir) : File::Path{Application::Path{subdir}} {
+	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{Application::Path{subdir}.c_str(),required} {
 	}
 
 	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"systemdata")} {
+		if(subdir && *subdir) {
+			append("\\");
+			append(subdir);
+			mkdir();
+			append("\\");
+		}
 	}
 
 	Application::UserDataDir::UserDataDir(const char *subdir) : File::Path() {
