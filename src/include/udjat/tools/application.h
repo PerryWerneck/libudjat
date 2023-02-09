@@ -23,6 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/agent/abstract.h>
  #include <list>
  #include <string>
  #include <ostream>
@@ -32,10 +33,11 @@
 
 	/// @brief Base class for applications.
 	class UDJAT_API Application {
+	protected:
 
-		/// @brief Run agent, called after setup.
-		/// @param agent The active root agent.
-		virtual int run(std::shared_ptr<Abstract::Agent> agent);
+		/// @brief Set root agent.
+		/// @param agent The new root agent.
+		virtual void root(std::shared_ptr<Abstract::Agent> agent);
 
 	public:
 		Application();
