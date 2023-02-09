@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<config log-trace='yes' log-debug='yes' src='http://localhost/~perry/libudjat.xml'>
+<config src='http://localhost/~perry/libudjat.xml'>
 
 	<module name='information' required='no' preload='no' />
 	<module name='http' required='yes' />

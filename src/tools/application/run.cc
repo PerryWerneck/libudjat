@@ -28,6 +28,7 @@
  #include <udjat/module.h>
  #include <private/updater.h>
  #include <string>
+ #include <getopt.h>
 
  using namespace std;
 
@@ -38,6 +39,47 @@
 		int rc = 0;
 
 		// Check for command line arguments.
+		{
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+			static struct option options[] = {
+				{ "verbose",	optional_argument,	0,	'v'	},
+				{ "quiet",		no_argument,		0,	'q'	},
+			};
+			#pragma GCC diagnostic pop
+
+			int long_index =0;
+			int opt;
+			while((opt = getopt_long(argc, argv, "vq", options, &long_index )) != -1) {
+
+				switch(opt) {
+				case 'q':
+					Logger::console(false);
+					break;
+
+				case 'v':
+					Logger::console(true);
+					if(optarg) {
+						if(*optarg == 'v') {
+							while(*optarg == 'v') {
+								Logger::verbosity(Logger::verbosity()+1);
+								debug("--->",Logger::verbosity());
+								optarg++;
+							}
+						} else {
+							Logger::verbosity(std::stoi(optarg));
+						}
+					} else {
+						Logger::verbosity(Logger::verbosity()+1);
+					}
+					debug("Verbosity is now '",Logger::verbosity(),"'");
+					break;
+
+				}
+
+			}
+
+		}
 
 		// Initialize
 		try {

@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <udjat/tools/application.h>
  #include <private/logger.h>
@@ -39,11 +40,11 @@
  using namespace std;
 
  static const char * typenames[] = {
- 	"info",
-	"warning",
 	"error",
+	"warning",
+ 	"info",
+	"trace",
 	"debug",
-	"trace"
  };
 
  namespace Udjat {
@@ -67,8 +68,18 @@
 				enable((Level) level,false);
 			}
 		}
-	}
 
+#ifdef DEBUG
+		enable(Debug,true);
+		String{
+			"info=",enabled(Info),
+			" warning=",enabled(Warning),
+			" error=",enabled(Error),
+			" trace=",enabled(Trace),
+		}.write(Debug);
+#endif // DEBUG
+
+	}
 
 	void Logger::setup(const pugi::xml_node &node) noexcept {
 

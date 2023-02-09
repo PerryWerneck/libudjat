@@ -58,7 +58,7 @@ namespace Udjat {
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(options.console) {
+		if(options.console && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
 
 			// Log to console
 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -76,12 +76,12 @@ namespace Udjat {
 						// Allowed, setup console colors.
 						// https://learn.microsoft.com/pt-br/windows/console/console-virtual-terminal-sequences
 						static const char *decorations[] = {
-							"\x1b[92m",	// Info
-							"\x1b[93m",	// Warning
 							"\x1b[91m",	// Error
+							"\x1b[93m",	// Warning
+							"\x1b[92m",	// Info
+							"\x1b[94m",	// Trace
 							"\x1b[95m",	// Debug
 
-							"\x1b[94m",	// Trace
 							"\x1b[96m",	// SysInfo (Allways Trace+1)
 						};
 

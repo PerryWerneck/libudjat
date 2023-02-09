@@ -35,9 +35,9 @@
 	namespace Logger {
 
 		enum Level : uint8_t {
-			Info,		///< @brief Informational message (std::cout>.
-			Warning,	///< @brief Warning conditions (std::clog).
 			Error,		///< @brief Error conditions (std::cerr).
+			Warning,	///< @brief Warning conditions (std::clog).
+			Info,		///< @brief Informational message (std::cout>.
 			Trace,		///< @brief Debug message.
 
 			// Debug should be the last one.

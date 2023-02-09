@@ -146,6 +146,7 @@ static int service_test(int argc, char **argv) {
 static int application_test(int argc, char **argv) {
 
 	Logger::redirect();
+	Logger::verbosity(1);
 	return Application{}.run(argc,argv,"./test.xml");
 
 }
