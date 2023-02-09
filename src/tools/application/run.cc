@@ -35,6 +35,10 @@
 
  namespace Udjat {
 
+	int Application::run(std::shared_ptr<Abstract::Agent>) {
+		int rc = MainLoop::getInstance().run();
+	}
+
 	int Application::run(int argc, char **argv, const char *definitions) {
 
 		// Check for command line arguments.
@@ -122,9 +126,7 @@
 
 			try {
 
-				Abstract::Agent::root();	// throw if the agent subsystem is inactive.
-
-				rc = MainLoop::getInstance().run();
+				rc = run(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
 				ThreadPool::getInstance().wait();
 				Module::unload();
 

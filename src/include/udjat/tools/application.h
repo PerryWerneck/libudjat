@@ -32,6 +32,11 @@
 
 	/// @brief Base class for applications.
 	class UDJAT_API Application {
+
+		/// @brief Run agent, called after setup.
+		/// @param agent The active root agent.
+		virtual int run(std::shared_ptr<Abstract::Agent> agent);
+
 	public:
 		Application();
 		virtual ~Application();
@@ -44,7 +49,7 @@
 		virtual int UDJAT_API run(int argc, char **argv, const char *definitions = nullptr);
 
 		/// @brief Run application.
-		int UDJAT_API run(const char *definitions = nullptr);
+		virtual int UDJAT_API run(const char *definitions = nullptr);
 
 		/// @brief Initialize application; setup locale.
 		/// @param definitions	The xml file for application definitions.

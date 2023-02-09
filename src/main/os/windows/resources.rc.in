@@ -55,7 +55,7 @@ BEGIN
 			VALUE "InternalName",		"@PACKAGE_NAME@\0"
 			VALUE "OriginalFilename",	"@SONAME@\0"
 			VALUE "ProductName",		"@PRODUCT_NAME@\0"
-			VALUE "ProductVersion",		"@PACKAGE_MAJOR_VERSION@,@PACKAGE_MINOR_VERSION@\0"
+			VALUE "ProductVersion",		"@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@\0"
 		END
 		
 		// Brazilian Portuguese
@@ -67,7 +67,7 @@ BEGIN
 			VALUE "InternalName",		"@PACKAGE_NAME@\0"
 			VALUE "OriginalFilename",	"@SONAME@\0"
 			VALUE "ProductName",		"@PRODUCT_NAME@\0"
-			VALUE "ProductVersion",		"@PACKAGE_MAJOR_VERSION@,@PACKAGE_MINOR_VERSION@\0"
+			VALUE "ProductVersion",		"@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@\0"
 		END
 
 	END
