@@ -103,6 +103,10 @@ namespace Udjat {
 
 			}
 
+		} else {
+
+			Logger::String("Preload list is empty").trace("module");
+
 		}
 
 		return rc;

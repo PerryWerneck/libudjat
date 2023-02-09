@@ -19,21 +19,33 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/application.h>
 
  using namespace std;
 
  namespace Udjat {
 
+ 	Application::ShortCut::ShortCut(const Type t, const char *i, const char *n, const char *c, const char *a)
+		: type{t}, id{i}, name{n}, description{c}, arguments{a} {
+	}
+
+	Application::ShortCut & Application::ShortCut::remove() {
+
+		return *this;
+	}
+
 	Application::ShortCut & Application::ShortCut::save() {
+
 		return *this;
 	}
 
 	Application::ShortCut & Application::ShortCut::autostart() {
+
 		return *this;
 	}
 
 	Application::ShortCut & Application::ShortCut::desktop() {
+
 		return *this;
 	}
 

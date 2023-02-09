@@ -70,4 +70,5 @@ resources.rc
 doxygen/*
 version.h
 libtool
+config.h.in
 
