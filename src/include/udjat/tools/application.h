@@ -35,6 +35,8 @@
 	class UDJAT_API Application {
 	protected:
 
+		typedef Udjat::Application super;
+
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
 		virtual void root(std::shared_ptr<Abstract::Agent> agent);

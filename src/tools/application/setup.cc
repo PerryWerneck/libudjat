@@ -52,11 +52,11 @@
  namespace Udjat {
 
 	int Application::install() {
-		return ENOTSUP;
+		return 0;
 	}
 
 	int Application::uninstall() {
-		return ENOTSUP;
+		return 0;
 	}
 
 	time_t UDJAT_API Application::setup(const char *pathname, bool startup) {

@@ -154,16 +154,15 @@ int main(int argc, char **argv) {
 	public:
 		int install() override {
 			ShortCut{}.desktop();
+			return super::install();
 		}
 
 		int uninstall() override {
 			ShortCut{}.remove();
+			return super::uninstall();
 		}
 
 	};
-
-	Logger::redirect();
-	Logger::verbosity(9);
 
 	DummyProtocol protocol;
 	auto rc = Application{}.run(argc,argv,"./test.xml");

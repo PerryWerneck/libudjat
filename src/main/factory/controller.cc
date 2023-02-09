@@ -38,7 +38,11 @@
 
 	void Factory::Controller::insert(Factory *factory) {
 		lock_guard<recursive_mutex> lock(guard);
-		Logger::trace() << "factories\tRegister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+
+		Logger::String {
+			"Register '",factory->name(),"' (",factory->module.description,")"
+		}.trace("factories");
+
 		factories.push_back(factory);
 	}
 
@@ -59,7 +63,9 @@
 
 	void Factory::Controller::remove(Factory *factory) {
 
-		Logger::trace() << "factories\tUnregister '" << factory->name() << "' (" << factory->module.description << ")" << endl;
+		Logger::String {
+			"Unregister '",factory->name(),"' (",factory->module.description,")"
+		}.trace("factories");
 
 		lock_guard<recursive_mutex> lock(guard);
 		factories.remove_if([factory](const Factory *obj){

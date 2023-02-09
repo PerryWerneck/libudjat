@@ -55,10 +55,6 @@
 			bind_textdomain_codeset(gettext_package, "UTF-8");
 		}
 
-#ifdef DEBUG
-		cout << "locale\tInitialized using " << localedir << endl;
-#endif // DEBUG
-
 #endif // HAVE_LIBINTL
 
 	}

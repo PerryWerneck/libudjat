@@ -40,6 +40,8 @@
 
 	int Application::run(int argc, char **argv, const char *definitions) {
 
+		Logger::verbosity(3);
+
 		// Check for command line arguments.
 		{
 			#pragma GCC diagnostic push
@@ -60,11 +62,12 @@
 
 				switch(opt) {
 				case 'h':
-					cout 	<< "Usage: " << endl << "  " << argv[0] << " [options]" << endl << endl
+					cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
 							<< "  --help\t\tShow this message" << endl
 							<< "  --verbose\t\tSet loglevel, enable console output" << endl
 							<< "  --quiet\t\tDisable console output" << endl
-							<< "  --install\t\tInstall application" << endl;
+							<< "  --install\t\tInstall application" << endl
+							<< "  --uninstall\t\tUninstall application" << endl;
 					return 0;
 
 				case 'f': // For compatibility with SystemService
@@ -108,6 +111,7 @@
 
 		}
 
+		Logger::redirect();
 		return run(definitions);
 	}
 
