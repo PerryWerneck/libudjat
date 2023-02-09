@@ -129,6 +129,8 @@
 
 	pShellLink->Release();
 
+	SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSHNOWAIT, Linkfile.c_str(), NULL);
+
  }
 
  namespace Udjat {
