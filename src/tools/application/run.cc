@@ -36,7 +36,7 @@
  namespace Udjat {
 
 	int Application::run(std::shared_ptr<Abstract::Agent>) {
-		int rc = MainLoop::getInstance().run();
+		return MainLoop::getInstance().run();
 	}
 
 	int Application::run(int argc, char **argv, const char *definitions) {
