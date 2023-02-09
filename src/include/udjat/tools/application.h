@@ -67,6 +67,10 @@
 		/// @return 0 when success.
 		virtual int install();
 
+		/// @brief Uninstall application.
+		/// @return 0 when success.
+		virtual int uninstall();
+
 		/// @brief Finalize application.
 		// static int UDJAT_API finalize();
 
@@ -103,6 +107,9 @@
 
 			/// @brief Build shortcut.
 			ShortCut(const Type type = Generic, const char *id = "", const char *name = "", const char *description = "", const char *arguments = "");
+
+			/// @brief Remove all shortcuts (standard, autostart and desktop)
+			ShortCut & remove();
 
 			/// @brief Save standard shortcut.
 			ShortCut & save();

@@ -142,6 +142,50 @@
 
 	}
 
+	Application::ShortCut & Application::ShortCut::remove() {
+
+		int rc = 0;
+
+		std::vector<Win32::KnownFolder> folders;
+
+		folders.emplace_back(FOLDERID_CommonStartup);
+		folders.emplace_back(FOLDERID_Desktop);
+
+		switch(type) {
+		case Generic:
+			folders.emplace_back(FOLDERID_CommonPrograms);
+			break;
+
+		case AdminTool:
+			folders.emplace_back(FOLDERID_CommonAdminTools);
+			break;
+
+		default:
+			throw runtime_error("Unexpected application type");
+
+		}
+
+		for(auto &folder : folders) {
+
+			std::string linkfile{folder.c_str()};
+			linkfile += Win32String{name}.c_str();
+			linkfile += ".lnk";
+
+			if(DeleteFile(linkfile.c_str()) == 0) {
+				auto err = GetLastError();
+				if(err != ERROR_FILE_NOT_FOUND) {
+					cerr << Win32::Exception::format(linkfile.c_str(),err) << endl;
+					rc = err;
+				}
+			} else {
+				SHChangeNotify(SHCNE_DELETE, SHCNF_PATH | SHCNF_FLUSHNOWAIT, linkfile.c_str(), NULL);
+			}
+
+		}
+
+		return *this;
+	}
+
 	Application::ShortCut & Application::ShortCut::save() {
 
 		std::string linkfile;

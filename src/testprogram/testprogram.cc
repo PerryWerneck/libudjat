@@ -150,6 +150,18 @@ int main(int argc, char **argv) {
 #elif defined(APPLICATION_TEST)
 int main(int argc, char **argv) {
 
+	class Application : public Udjat::Application {
+	public:
+		int install() override {
+			ShortCut{}.desktop();
+		}
+
+		int uninstall() override {
+			ShortCut{}.remove();
+		}
+
+	};
+
 	Logger::redirect();
 	Logger::verbosity(9);
 

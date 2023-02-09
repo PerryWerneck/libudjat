@@ -48,6 +48,7 @@
 				{ "verbose",	optional_argument,	0,	'v'	},
 				{ "quiet",		no_argument,		0,	'q'	},
 				{ "install",	no_argument,		0,	'I'	},
+				{ "uninstall",	no_argument,		0,	'U'	},
 				{ "help",		no_argument,		0,	'h'	},
 				{ "foreground",	no_argument,		0,	'f'	},
 			};
@@ -73,6 +74,9 @@
 
 				case 'I':
 					return install();
+
+				case 'U':
+					return uninstall();
 
 				case 'q':
 					Logger::console(false);

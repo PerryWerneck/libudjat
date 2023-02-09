@@ -55,6 +55,10 @@
 		return ENOTSUP;
 	}
 
+	int Application::uninstall() {
+		return ENOTSUP;
+	}
+
 	time_t UDJAT_API Application::setup(const char *pathname, bool startup) {
 
 		if(startup && !Module::preload()) {
