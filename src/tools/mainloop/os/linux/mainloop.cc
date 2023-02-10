@@ -69,6 +69,7 @@
 		}
 	}
 
+	/*
 	bool MainLoop::verify(const Handler *ptr) const noexcept {
 
 		lock_guard<mutex> lock(guard);
@@ -80,6 +81,7 @@
 
 		return false;
 	}
+	*/
 
 	void Linux::MainLoop::push_back(Udjat::MainLoop::Service *service) {
 		services.push_back(service);
@@ -101,6 +103,16 @@
 		return false;
 	}
 
+	bool Linux::MainLoop::enabled(const MainLoop::Handler *handler) const noexcept {
+		lock_guard<mutex> lock(guard);
+		for(auto hdl : handlers) {
+			if(handler == hdl) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
 		timers.enabled.push_back(timer);
@@ -110,6 +122,18 @@
 	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
 		timers.enabled.remove(timer);
+	}
+
+	void Linux::MainLoop::push_back(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.push_back(handler);
+		wakeup();
+	}
+
+	void Linux::MainLoop::remove(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.remove(handler);
+		wakeup();
 	}
 
  }

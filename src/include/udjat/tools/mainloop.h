@@ -56,11 +56,6 @@ namespace Udjat {
 		/// @brief Is the mainloop enabled.
 		bool running = true;
 
-		//
-		// File/socket/Handle management
-		//
-		std::list<Handler *> handlers;
-
 	public:
 
 		MainLoop(const MainLoop &src) = delete;
@@ -71,14 +66,20 @@ namespace Udjat {
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
 
-		virtual void push_back(MainLoop::Service *service) = 0;
-		virtual void remove(MainLoop::Service *service) = 0;
-
 		/// @brief Is timer enabled?
 		virtual bool enabled(const Timer *timer) const noexcept = 0;
 
+		/// @brief Is Handler enabled?
+		virtual bool enabled(const Handler *handler) const noexcept = 0;
+
+		virtual void push_back(MainLoop::Service *service) = 0;
+		virtual void remove(MainLoop::Service *service) = 0;
+
 		virtual void push_back(MainLoop::Timer *timer) = 0;
 		virtual void remove(MainLoop::Timer *timer) = 0;
+
+		virtual void push_back(MainLoop::Handler *handler) = 0;
+		virtual void remove(MainLoop::Handler *handler) = 0;
 
 		/// @brief Run mainloop.
 		virtual int run() = 0;
@@ -87,9 +88,6 @@ namespace Udjat {
 		inline operator bool() const noexcept {
 			return running;
 		}
-
-		/// @brief Check if the handler is enabled.
-		bool verify(const Handler *handler) const noexcept;
 
 		/// @brief Quit mainloop.
 		virtual void quit() = 0;

@@ -52,57 +52,22 @@
 	}
 
 	bool MainLoop::Handler::enabled() const noexcept {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
-		lock_guard<mutex> lock(mainloop.guard);
-		for(auto handler : mainloop.handlers) {
-			if(handler == this) {
-				return true;
-			}
-		}
-
-		return false;
+		return MainLoop::getInstance().enabled(this);
 	}
 
 	bool MainLoop::Handler::enable() noexcept {
 
-#ifdef DEBUG
-		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << endl;
-#endif // DEBUG
-
 		MainLoop &mainloop{MainLoop::getInstance()};
 
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-
-			// Is the handler enabled?
-			for(auto handler : mainloop.handlers) {
-				if(handler == this) {
-					return false;
-				}
-			}
-
-			mainloop.handlers.push_back(this);
+		if(mainloop.enabled(this)) {
+			return false;
 		}
-
-		mainloop.wakeup();
-
+		mainloop.push_back(this);
 		return true;
 	}
 
 	void MainLoop::Handler::disable() noexcept {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-		lock_guard<mutex> lock(mainloop.guard);
-
-#ifdef DEBUG
-		cout << "MainLoop::Handler " << __FUNCTION__ << "(" << __LINE__ << ") " << ((void *) this) << " count=" << mainloop.handlers.size() << endl;
-#endif // DEBUG
-
-		mainloop.handlers.remove(this);
-		mainloop.wakeup();
-
+		MainLoop::getInstance().remove(this);
 	}
 
 	ssize_t MainLoop::Handler::read(void *buf, size_t count) {

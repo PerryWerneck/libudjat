@@ -169,7 +169,7 @@
 
 				if(fds[ix].revents) {
 
-					if(verify(hList[ix])) {
+					if(enabled(hList[ix])) {
 
 						try {
 

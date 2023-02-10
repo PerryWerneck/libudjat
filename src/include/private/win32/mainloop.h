@@ -58,6 +58,9 @@
 			/// @brief Active timers.
 			Timers timers;
 
+			/// @brief Active handlers.
+			std::list<Handler *> handlers;
+
 		public:
 
 			MainLoop();

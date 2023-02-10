@@ -44,6 +44,9 @@ namespace Udjat {
 			/// @brief Active timers.
 			Timers timers;
 
+			/// @brief Active handlers.
+			std::list<Handler *> handlers;
+
 		public:
 			MainLoop();
 			virtual ~MainLoop();
@@ -75,7 +78,11 @@ namespace Udjat {
 			void push_back(MainLoop::Timer *timer) override;
 			void remove(MainLoop::Timer *timer) override;
 
+			void push_back(MainLoop::Handler *handler) override;
+			void remove(MainLoop::Handler *handler) override;
+
 			bool enabled(const Timer *timer) const noexcept override;
+			bool enabled(const Handler *handler) const noexcept override;
 
 		};
 
