@@ -19,6 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <private/mainloop.h>
  #include <udjat/tools/mainloop.h>
 
 // #include <list>
@@ -28,23 +29,6 @@
 // #include <udjat/request.h>
 
 namespace Udjat {
-
-	//
-	// Timer controller
-	//
-	class UDJAT_PRIVATE MainLoop::Timers {
-	public:
-
-		/// @brief Minimal timer value.
-		unsigned long maxwait = 60000;
-
-		/// @brief List of enabled timers.
-		std::list<Timer *> enabled;
-
-		/// @brief Run timers, return miliseconds to next timer.
-		unsigned long run() noexcept;
-
-	};
 
 	namespace Linux {
 
@@ -57,6 +41,7 @@ namespace Udjat {
 			/// @brief Services
 			std::list<Service *> services;
 
+			/// @brief Active timers.
 			Timers timers;
 
 		public:

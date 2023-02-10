@@ -23,7 +23,7 @@
  #include <udjat/tools/logger.h>
 
  #ifdef _WIN32
-	#include <private/windows/mainloop.h>
+	#include <private/win32/mainloop.h>
  #else
 	#include <private/linux/mainloop.h>
  #endif // _WIN32

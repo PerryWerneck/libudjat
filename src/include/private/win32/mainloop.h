@@ -19,8 +19,10 @@
 
  #pragma once
 
+ #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <private/mainloop.h>
 
  #ifdef _WIN32
 	#define WM_CHECK_TIMERS		WM_USER+101
@@ -50,10 +52,24 @@
 			/// @brief get sockets
 			ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
 
+			/// @brief Services
+			std::list<Service *> services;
+
+			/// @brief Active timers.
+			Timers timers;
+
 		public:
 
 			MainLoop();
 			virtual ~MainLoop();
+
+			void push_back(MainLoop::Service *service) override;
+			void remove(MainLoop::Service *service) override;
+
+			bool enabled(const Timer *timer) const noexcept override;
+
+			void push_back(MainLoop::Timer *timer) override;
+			void remove(MainLoop::Timer *timer) override;
 
 			/// @brief Run mainloop.
 			int run() override;
@@ -63,6 +79,15 @@
 
 			/// @brief Quit mainloop.
 			void quit() override;
+
+			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+
+			/// @brief Watch windows object.
+			void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
+
+			static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
+			static void remove(HANDLE handle);
+
 		};
 
 

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,39 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
  #include <config.h>
- #include <private/misc.h>
- #include <iostream>
-
- #ifdef _WIN32
-	#include <udjat/win32/exception.h>
-	#include <private/win32/mainloop.h>
- #else
-	#include <private/linux/mainloop.h>
- #endif // _WIN32
-
- using namespace std;
+ #include <udjat/defs.h>
+ #include <udjat/tools/mainloop.h>
 
  namespace Udjat {
 
-	std::mutex MainLoop::guard;
+	//
+	// Timer controller
+	//
+	class UDJAT_PRIVATE MainLoop::Timers {
+	public:
 
-	MainLoop::~MainLoop() {
-	}
+		/// @brief Minimal timer value.
+		unsigned long maxwait = 60000;
 
-#ifdef _WIN32
-	void Win32::MainLoop::quit() {
-		if(!PostMessage(hwnd,WM_STOP,0,0)) {
-			cerr << "MainLoop\tError posting WM_STOP message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
-		}
-	}
-#else
-	void Linux::MainLoop::quit() {
-		running = false;
-		wakeup();
-		clog << "MainLoop\tInterrupting as requested" << endl;
-	}
-#endif // _WIN32
+		/// @brief List of enabled timers.
+		std::list<Timer *> enabled;
+
+		/// @brief Run timers, return miliseconds to next timer.
+		unsigned long run() noexcept;
+
+	};
+
 
  }
+
+
 

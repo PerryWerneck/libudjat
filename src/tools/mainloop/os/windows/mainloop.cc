@@ -19,11 +19,12 @@
 
  #include <config.h>
  #include "private.h"
- #include <private/mainloop.h>
+ #include <private/win32/mainloop.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
  #include <private/event.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/service.h>
 
  #include <iostream>
 
@@ -31,7 +32,7 @@
 
 	static ATOM	winClass = 0;
 
-	MainLoop::MainLoop() {
+	Win32::MainLoop::MainLoop() {
 
 		if(!winClass) {
 
@@ -80,11 +81,11 @@
 	}
 
 	MainLoop & MainLoop::getInstance() {
-		static MainLoop instance;
+		static Win32::MainLoop instance;
 		return instance;
 	}
 
-	MainLoop::~MainLoop() {
+	Win32::MainLoop::~MainLoop() {
 
 		Udjat::Event::remove(this);
 
@@ -95,24 +96,20 @@
 
 	}
 
-	void MainLoop::wakeup() noexcept {
+	void Win32::MainLoop::wakeup() noexcept {
 		if(!hwnd) {
 			Logger::String("Unexpected call to wakeup() without an active window").write(Logger::Trace,"MainLoop");
 		} else if(!PostMessage(hwnd,WM_CHECK_TIMERS,0,0)) {
 			cerr << "MainLoop\tError posting wake up message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
-#ifdef DEBUG
-		else {
-			debug("WAKE-UP");
-		}
-#endif // DEBUG
+		debug("WAKE-UP");
 	}
 
- 	BOOL MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
+ 	BOOL Win32::MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
  		return PostMessage(hwnd,uMsg,wParam,lParam);
 	}
 
-	LRESULT WINAPI MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	LRESULT WINAPI Win32::MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		MainLoop & controller = *((MainLoop *) GetWindowLongPtr(hWnd,0));
 
@@ -185,7 +182,7 @@
 			case WM_START:
 				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
-				controller.start();
+				Service::start(controller.services);
 				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
 				break;
 
@@ -193,10 +190,10 @@
 
 				KillTimer(hWnd, IDT_CHECK_TIMERS);
 
-				if(controller.enabled) {
+				if(controller.running) {
 					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");
-					controller.enabled = false; // Just in case.
-					controller.stop();
+					controller.running = false; // Just in case.
+					Service::stop(controller.services);
 					ThreadPool::getInstance().stop();
 					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
 						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
@@ -268,6 +265,27 @@
 
 		return 0;
 
+	}
+
+	bool Win32::MainLoop::enabled(const Timer *timer) const noexcept {
+		lock_guard<mutex> lock(guard);
+		for(Timer *tm : timers.enabled) {
+			if(timer == tm) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Win32::MainLoop::push_back(MainLoop::Timer *timer) {
+		lock_guard<mutex> lock(guard);
+		timers.enabled.push_back(timer);
+		wakeup();
+	}
+
+	void Win32::MainLoop::remove(MainLoop::Timer *timer) {
+		lock_guard<mutex> lock(guard);
+		timers.enabled.remove(timer);
 	}
 
  }

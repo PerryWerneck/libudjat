@@ -102,16 +102,6 @@ namespace Udjat {
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
 
-#ifdef _WIN32
-		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
-
-		/// @brief Watch windows object.
-		void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
-
-		static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
-		static void remove(HANDLE handle);
-#endif // _WIN32
-
 	};
 
 }

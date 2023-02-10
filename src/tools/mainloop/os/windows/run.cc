@@ -29,23 +29,16 @@
  #include <config.h>
  #include "private.h"
  #include <private/misc.h>
- #include <private/mainloop.h>
+ #include <private/win32/mainloop.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
 
  using namespace std;
 
- int Udjat::MainLoop::run() {
+ int Udjat::Win32::MainLoop::run() {
 
 	int rc = -1;
-
-	// Start services
-	/*
-	Logger::write((Logger::Level) (Logger::Debug+1),"win32","Starting services");
-	start();
-	Logger::write((Logger::Level) (Logger::Debug+1),"win32","Starting complete");
-	*/
 
 	if(!PostMessage(hwnd,WM_START,0,0)) {
 		cerr << "MainLoop\tError posting WM_START message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
@@ -58,12 +51,12 @@
 
 		Logger::String("Running message loop").write((Logger::Level) (Logger::Debug+1),"win32");
 
-		enabled = true;
+		running = true;
 		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		enabled = false;
+		running = false;
 
 		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Debug+1),"win32");
 	}
