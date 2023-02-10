@@ -33,6 +33,7 @@
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/tools/timer.h>
 
  using namespace std;
 

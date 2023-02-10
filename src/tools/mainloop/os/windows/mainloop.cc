@@ -83,11 +83,6 @@
 
 	}
 
-	MainLoop & MainLoop::getInstance() {
-		static Win32::MainLoop instance;
-		return instance;
-	}
-
 	Win32::MainLoop::~MainLoop() {
 
 		Udjat::Event::remove(this);
@@ -243,7 +238,7 @@
 						controller.timers.maxwait = 1000;
 					}
 
-					unsigned long interval = compute_poll_timeout();
+					unsigned long interval = controller.compute_poll_timeout();
 					if(interval != controller.uElapse) {
 						SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
 					}
