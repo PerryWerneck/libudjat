@@ -241,6 +241,7 @@
 		<Unit filename="src/tools/mainloop/os/linux/handler.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
+		<Unit filename="src/tools/mainloop/os/linux/service.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventworker.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/handler.cc" />

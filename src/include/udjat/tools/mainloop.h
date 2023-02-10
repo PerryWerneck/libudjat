@@ -48,15 +48,6 @@ namespace Udjat {
 
 		MainLoop() {}
 
-		/// @brief Services
-		std::list<Service *> services;
-
-		/// @brief Start services.
-		virtual void start() noexcept;
-
-		/// @brief Stop services.
-		virtual void stop() noexcept;
-
 		/// @brief Mutex
 		static std::mutex guard;
 
@@ -78,23 +69,6 @@ namespace Udjat {
 
 		/// @brief Is the mainloop enabled.
 		bool enabled = true;
-
-#ifdef _WIN32
-		/// @brief Process windows messages.
-		static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-		/// @brief Object window for this loop
-		HWND hwnd = 0;
-
-		/// @brief Current timer value, in milliseconds.
-		UINT uElapse = 0;
-
-		/// @brief get sockets
-		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
-
-#else
-
-#endif // _WIN32
 
 		//
 		// File/socket/Handle management
@@ -123,6 +97,9 @@ namespace Udjat {
 			timers.maxwait = value;
 		}
 
+		virtual void push_back(MainLoop::Service *service) = 0;
+		virtual void remove(MainLoop::Service *service) = 0;
+
 		/// @brief Run mainloop.
 		virtual int run() = 0;
 
@@ -135,7 +112,7 @@ namespace Udjat {
 		bool verify(const Handler *handler) const noexcept;
 
 		/// @brief Quit mainloop.
-		void quit();
+		virtual void quit() = 0;
 
 		/// @brief Wakeup main loop.
 		virtual void wakeup() noexcept = 0;
@@ -146,7 +123,6 @@ namespace Udjat {
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
 
 #ifdef _WIN32
-
 		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
 		/// @brief Watch windows object.
@@ -154,7 +130,6 @@ namespace Udjat {
 
 		static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
 		static void remove(HANDLE handle);
-
 #endif // _WIN32
 
 	};

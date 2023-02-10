@@ -75,6 +75,9 @@
 		/// @brief List services.
 		static void getInfo(Response &response);
 
+		static void start(std::list<Service *> &services) noexcept;
+		static void stop(std::list<Service *> &services) noexcept;
+
 		virtual void start();
 		virtual void stop();
 

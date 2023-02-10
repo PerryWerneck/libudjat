@@ -36,61 +36,6 @@
 
 	mutex MainLoop::Service::guard;
 
-	void MainLoop::start() noexcept {
-
-		ThreadPool::getInstance();
-
-		{
-			lock_guard<mutex> lock(Service::guard);
-			cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-			for(auto service : services) {
-				if(!service->state.active) {
-					try {
-						cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-						service->start();
-						service->state.active = true;
-					} catch(const std::exception &e) {
-						service->error() << "Error '" << e.what() << "' starting service" << endl;
-					} catch(...) {
-						service->error() << "Unexpected error starting service" << endl;
-					}
-				}
-			}
-		}
-	}
-
-	void MainLoop::stop() noexcept {
-
-		{
-			lock_guard<mutex> lock(Service::guard);
-
-			Logger::String("Stopping ",services.size()," service(s)").write(Logger::Trace,"mainloop");
-
-			// Stop services in reverse order.
-			size_t count = 0;
-			for(auto srvc = services.rbegin(); srvc != services.rend(); srvc++) {
-				Service *service = *srvc;
-				if(service->state.active) {
-					try {
-						Logger::String("Stopping '",service->name(),"' (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
-						service->stop();
-					} catch(const std::exception &e) {
-						service->error() << "Error '" << e.what() << "' stopping service" << endl;
-					} catch(...) {
-						service->error() << "Unexpected error stopping service" << endl;
-					}
-					service->state.active = false;
-				}
-				else {
-					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
-				}
-			}
-		}
-
-		ThreadPool::getInstance().wait();
-
-	}
-
 	MainLoop::Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
 		lock_guard<mutex> lock(guard);
 		if(!service_name) {
@@ -101,7 +46,8 @@
 				service_name = module.name;
 			}
 		}
-		MainLoop::getInstance().services.push_back(this);
+
+		MainLoop::getInstance().push_back(this);
 	}
 
 	MainLoop::Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
@@ -109,9 +55,7 @@
 
 	MainLoop::Service::~Service() {
 		lock_guard<mutex> lock(guard);
-		MainLoop::getInstance().services.remove_if([this](Service *s) {
-			return s == this;
-		});
+		MainLoop::getInstance().remove(this);
 	}
 
 	void MainLoop::Service::start() {
@@ -139,6 +83,7 @@
 
 	void MainLoop::Service::getInfo(Response &response) {
 
+		/*
 		lock_guard<mutex> lock(guard);
 		response.reset(Value::Array);
 
@@ -153,6 +98,7 @@
 
 
 		}
+		*/
 	}
 
  }

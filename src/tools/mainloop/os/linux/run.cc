@@ -32,6 +32,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/service.h>
  #include <udjat/tools/logger.h>
  #include <iostream>
  #include <unistd.h>
@@ -59,7 +60,8 @@
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STATUS=Starting up");
 #endif // HAVE_SYSTEMD
-	start();
+
+	Service::start(services);
 
 	//
 	// Capture signals
@@ -207,7 +209,7 @@
 	//
  	// Stop services
  	//
-	stop();
+	Service::stop(services);
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STATUS=Stopped");

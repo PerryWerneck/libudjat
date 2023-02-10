@@ -36,18 +36,19 @@
 	MainLoop::~MainLoop() {
 	}
 
-	void MainLoop::quit() {
 #ifdef _WIN32
+	void Win32::MainLoop::quit() {
 		if(!PostMessage(hwnd,WM_STOP,0,0)) {
 			cerr << "MainLoop\tError posting WM_STOP message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
+	}
 #else
+	void Linux::MainLoop::quit() {
 		enabled = false;
 		wakeup();
 		clog << "MainLoop\tInterrupting as requested" << endl;
-#endif // _WIN32
 	}
-
+#endif // _WIN32
 
  }
 

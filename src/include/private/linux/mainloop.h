@@ -37,6 +37,9 @@ namespace Udjat {
 			/// @brief Event FD.
 			int efd = -1;
 
+			/// @brief Services
+			std::list<Service *> services;
+
 		public:
 			MainLoop();
 			virtual ~MainLoop();
@@ -46,6 +49,12 @@ namespace Udjat {
 
 			/// @brief Wakeup main loop.
 			void wakeup() noexcept override;
+
+			/// @brief Quit mainloop.
+			void quit() override;
+
+			void push_back(Udjat::MainLoop::Service *service) override;
+			void remove(Udjat::MainLoop::Service *service) override;
 
 		};
 

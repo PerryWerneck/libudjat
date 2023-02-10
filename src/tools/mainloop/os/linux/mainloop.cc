@@ -81,4 +81,14 @@
 		return false;
 	}
 
+	void Linux::MainLoop::push_back(Udjat::MainLoop::Service *service) {
+		services.push_back(service);
+	}
+
+	void Linux::MainLoop::remove(Udjat::MainLoop::Service *service) {
+		services.remove_if([service](Service *s) {
+			return s == service;
+		});
+	}
+
  }

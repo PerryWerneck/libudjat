@@ -36,9 +36,33 @@
 	namespace Win32 {
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
+		private:
+
+			/// @brief Process windows messages.
+			static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+			/// @brief Object window for this loop
+			HWND hwnd = 0;
+
+			/// @brief Current timer value, in milliseconds.
+			UINT uElapse = 0;
+
+			/// @brief get sockets
+			ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
+
 		public:
+
 			MainLoop();
 			virtual ~MainLoop();
+
+			/// @brief Run mainloop.
+			int run() override;
+
+			/// @brief Wakeup main loop.
+			void wakeup() noexcept override;
+
+			/// @brief Quit mainloop.
+			void quit() override;
 		};
 
 
