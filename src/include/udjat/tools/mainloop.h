@@ -94,6 +94,9 @@ namespace Udjat {
 		/// @brief Quit mainloop.
 		virtual void quit() = 0;
 
+		/// @brief Quit mainloop.
+		virtual void quit(const char *message);
+
 		/// @brief Wakeup main loop.
 		virtual void wakeup() noexcept = 0;
 

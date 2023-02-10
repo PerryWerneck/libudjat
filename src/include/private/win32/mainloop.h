@@ -84,9 +84,7 @@
 
 			/// @brief Terminate with message
 			/// @param message Message to show (Should be a constant to avoid 'out of scope' on message processing)
-			inline void quit(const char *message) noexcept {
-				post(WM_STOP_WITH_MESSAGE,0,(LPARAM)(LPCTSTR)message);
-			}
+			void quit(const char *message) override;
 
 			/// @brief Watch windows object.
 			void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
