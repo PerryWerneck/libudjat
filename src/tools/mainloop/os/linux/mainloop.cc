@@ -23,6 +23,7 @@
  #include <private/misc.h>
  #include <private/linux/mainloop.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timer.h>
  #include <iostream>
  #include <unistd.h>
 
@@ -117,12 +118,19 @@
 
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "MainLoop\t---> Enabling timer " << hex << ((void *) timer) << dec
+				<< " " << timer->to_string() << endl;
+#endif // DEBUG
 		timers.enabled.push_back(timer);
 		wakeup();
 	}
 
 	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
+#endif // DEBUG
 		timers.enabled.remove(timer);
 	}
 
@@ -148,7 +156,7 @@
 		return false;
 	}
 
-	virtual bool Linux::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
+	bool Linux::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
 		lock_guard<mutex> lock(guard);
 		for(auto timer : timers.enabled) {
 			if(func(*timer)) {

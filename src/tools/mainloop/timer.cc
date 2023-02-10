@@ -136,92 +136,32 @@
 		try {
 
 			if(milliseconds) {
-				next = getCurrentTime() + milliseconds;
+				unsigned long rc = this->next = (getCurrentTime() + milliseconds);
 				on_timer();
-			} else {
-				next = 0;
-				on_timer();
-				disable();
+				return rc;
 			}
+
+			on_timer();
+			disable();
 
 		} catch(const std::exception &e) {
 
 			Application::error() << "Timer disabled: " << e.what() << endl;
 			disable();
-			next = 0;
 
 		} catch(...) {
 
 			Application::error() << "Timer disabled: Unexpected error" << endl;
 			disable();
-			next = 0;
-
 		}
 
-		return next;
+		return 0;
 
 	}
 
 	/// @brief Check if timer is expired, activate it if necessary.
 	/// @return The updated timer value or '0' if timer was disabled.
 	unsigned long check() noexcept;
-
-	/*
-	unsigned long MainLoop::Timers::run() noexcept {
-
-		unsigned long now = MainLoop::Timer::getCurrentTime();
-		unsigned long next = now + maxwait;
-
-		//
-		// Get expired timers.
-		//
-		std::list<Timer *> expired;
-		{
-			lock_guard<mutex> lock(guard);
-			for(Timer *timer : enabled) {
-				if(timer->next <= now) {
-					expired.push_back(timer);
-				} else {
-					next = std::min(next,timer->next);
-				}
-			}
-
-		}
-
-		//
-		// Emit timer events.
-		//
-		for(auto timer : expired) {
-
-			try {
-
-				if(timer->milliseconds) {
-					timer->next = now + timer->milliseconds;
-					next = std::min(next,timer->next);
-					timer->on_timer();
-				} else {
-					timer->disable();
-				}
-
-			} catch(const std::exception &e) {
-
-				Application::error() << "Timer disabled: " << e.what() << endl;
-				timer->disable();
-
-			} catch(...) {
-
-				Application::error() << "Timer disabled: Unexpected error" << endl;
-				timer->disable();
-
-			}
-
-		}
-
-		return next - now;
-
-	}
-	*/
-
 
 	MainLoop::Timer * MainLoop::TimerFactory(unsigned long interval, const std::function<bool()> call) {
 

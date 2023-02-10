@@ -243,35 +243,9 @@
 						controller.timers.maxwait = 1000;
 					}
 
-					unsigned long now = MainLoop::Timer::getCurrentTime();
-					unsigned long next = now + controller.timers.maxwait;
-
-					// Get expired timers.
-					std::list<Timer *> expired;
-					controller.for_each([&expired,&next,now](Timer &timer){
-						if(timer.value() <= now) {
-							expired.push_back(&timer);
-						} else {
-							next = std::min(next,timer.value());
-						}
-						return false;
-					});
-
-					// Run expired timers.
-					for(auto timer : expired) {
-						unsigned long n = timer->activate();
-						if(n) {
-							next = std::min(next,n);
-						}
-					}
-
-					if(next > now) {
-						unsigned long interval = (now - next);
-						if(interval != controller.uElapse) {
-							SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
-						}
-					} else {
-						Logger::String{"Unexpected interval on timer processing"}.write(Logger::Error,"win32");
+					unsigned long interval = compute_poll_timeout();
+					if(interval != controller.uElapse) {
+						SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
 					}
 
 				}

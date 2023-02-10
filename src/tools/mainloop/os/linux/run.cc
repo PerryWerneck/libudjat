@@ -34,6 +34,7 @@
  #include <udjat/tools/handler.h>
  #include <udjat/tools/service.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timer.h>
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>
@@ -102,7 +103,7 @@
  	while(this->running) {
 
 		// Get wait time, update timers.
-		unsigned long wait = timers.run();
+		unsigned long wait = compute_poll_timeout();
 
 		// Get handlers
 		size_t maxfd = handlers.size()+2;
@@ -126,9 +127,7 @@
 			lock_guard<mutex> lock(guard);
 			for(auto handle : handlers) {
 				hList[nfds] = handle;
-				fds[nfds].fd = handle->fd;
-				fds[nfds].events = handle->events;
-				fds[nfds].revents = 0;
+				handle->get(fds[nfds]);
 				nfds++;
 			}
 		}
@@ -173,16 +172,16 @@
 
 						try {
 
-							hList[ix]->handle_event((const Handler::Event) fds[ix].revents);
+							hList[ix]->set(fds[ix]);
 
 						} catch(const std::exception &e) {
 
-							cerr << "MainLoop\tError '" << e.what() << "' processing FD(" << hList[ix]->fd << "), disabling it" << endl;
+							cerr << "MainLoop\tError '" << e.what() << "' processing handler, disabling it" << endl;
 							hList[ix]->disable();
 
 						} catch(...) {
 
-							cerr << "MainLoop\tUnexpected error processing FD(" << hList[ix]->fd << "), disabling it" << endl;
+							cerr << "MainLoop\tUnexpected error processing handler, disabling it" << endl;
 							hList[ix]->disable();
 
 						}
@@ -217,5 +216,39 @@
 
 	return 0;
 
+ }
+
+ unsigned long Udjat::Linux::MainLoop::compute_poll_timeout() noexcept {
+
+	unsigned long now = MainLoop::Timer::getCurrentTime();
+	unsigned long next = now + timers.maxwait;
+
+	// Get expired timers.
+	std::list<Timer *> expired;
+	for_each([&expired,&next,now](Timer &timer){
+		if(timer.value() <= now) {
+			expired.push_back(&timer);
+		} else {
+			next = std::min(next,timer.value());
+		}
+		return false;
+	});
+
+	// Run expired timers.
+	for(auto timer : expired) {
+		unsigned long n = timer->activate();
+		if(n) {
+			next = std::min(next,n);
+		}
+	}
+
+	if(next > now) {
+		debug("Time interval ",(next-now)," ms (",TimeStamp{time(0) + ((time_t) ((next-now)/1000))}.to_string(),")");
+		return (next - now);
+	}
+
+	Logger::String{"Unexpected interval on timer processing, using default"}.write(Logger::Error,"linux");
+
+	return timers.maxwait;
  }
 

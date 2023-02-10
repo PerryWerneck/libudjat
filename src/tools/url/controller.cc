@@ -62,7 +62,7 @@
 		lock_guard<mutex> lock(guard);
 
 		Logger::String {
-			"Unegister '",protocol->name,"' (",protocol->module.description,")"
+			"Unregister '",protocol->name,"' (",protocol->module.description,")"
 		}.trace("protocols");
 
 		if(def == protocol) {

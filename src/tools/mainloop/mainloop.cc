@@ -36,6 +36,13 @@
 
  namespace Udjat {
 
+	MainLoop::MainLoop() {
+		if(instance) {
+			throw system_error(EBUSY,system_category(),"Mainloop was already set");
+		}
+		instance = this;
+	}
+
 	MainLoop::~MainLoop() {
 	}
 

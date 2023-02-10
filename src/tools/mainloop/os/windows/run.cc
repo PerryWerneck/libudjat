@@ -65,3 +65,36 @@
 
  }
 
+ unsigned long Udjat::Win32::MainLoop::compute_poll_timeout() noexcept {
+
+	unsigned long now = MainLoop::Timer::getCurrentTime();
+	unsigned long next = now + timers.maxwait;
+
+	// Get expired timers.
+	std::list<Timer *> expired;
+	for_each([&expired,&next,now](Timer &timer){
+		if(timer.value() <= now) {
+			expired.push_back(&timer);
+		} else {
+			next = std::min(next,timer.value());
+		}
+		return false;
+	});
+
+	// Run expired timers.
+	for(auto timer : expired) {
+		unsigned long n = timer->activate();
+		if(n) {
+			next = std::min(next,n);
+		}
+	}
+
+	if(next > now) {
+		debug("Time interval ",(next-now)," ms (",TimeStamp{time(0) + ((time_t) ((next-now)/1000))}.to_string(),")");
+		return (next - now);
+	}
+
+	Logger::String{"Unexpected interval on timer processing, using default"}.write(Logger::Error,"win32");
+
+	return timers.maxwait;
+ }

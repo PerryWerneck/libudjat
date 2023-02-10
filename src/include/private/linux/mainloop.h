@@ -38,9 +38,6 @@ namespace Udjat {
 			/// @brief Event FD.
 			int efd = -1;
 
-			/// @brief Mutex
-			static std::mutex guard;
-
 			/// @brief Services
 			std::list<Service *> services;
 
@@ -50,7 +47,17 @@ namespace Udjat {
 			/// @brief Active handlers.
 			std::list<Handler *> handlers;
 
+			/// @brief Run timers, compute poll timeout.
+			/// @return The timeout to next 'poll()' call.
+			unsigned long compute_poll_timeout() noexcept;
+
+		protected:
+
+			/// @brief Mutex
+			static std::mutex guard;
+
 		public:
+
 			MainLoop();
 			virtual ~MainLoop();
 

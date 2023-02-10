@@ -66,6 +66,10 @@
 			/// @brief Active handlers.
 			std::list<Handler *> handlers;
 
+			/// @brief Run timers, compute poll timeout.
+			/// @return The timeout to next 'poll()' call.
+			unsigned long compute_poll_timeout() noexcept;
+
 		public:
 
 			MainLoop();

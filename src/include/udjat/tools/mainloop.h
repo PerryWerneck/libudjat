@@ -26,6 +26,9 @@
 namespace Udjat {
 
 	class UDJAT_API MainLoop {
+	private:
+		static MainLoop * instance;
+
 	public:
 
 		class Timer;
@@ -36,7 +39,7 @@ namespace Udjat {
 
 		class Timers;
 
-		MainLoop() {}
+		MainLoop();
 
 		/// @brief Is the mainloop enabled.
 		bool running = true;

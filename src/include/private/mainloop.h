@@ -28,11 +28,15 @@
 	//
 	// Timer controller
 	//
-	class UDJAT_PRIVATE MainLoop::Timers {
+	class UDJAT_API MainLoop::Timers {
 	public:
 
 		/// @brief Minimal timer value.
+#ifdef _WIN32
 		unsigned long maxwait = 1000;
+#else
+		unsigned long maxwait = 60000;
+#endif // _WIN32
 
 		/// @brief List of enabled timers.
 		std::list<Timer *> enabled;
