@@ -46,29 +46,15 @@ namespace Udjat {
 
 	protected:
 
+		class Timers;
+
 		MainLoop() {}
 
 		/// @brief Mutex
 		static std::mutex guard;
 
-		//
-		// Timer controller
-		//
-		struct Timers {
-
-			/// @brief Minimal timer value.
-			unsigned long maxwait = 60000;
-
-			/// @brief List of enabled timers.
-			std::list<Timer *> enabled;
-
-			/// @brief Run timers, return miliseconds to next timer.
-			unsigned long run() noexcept;
-
-		} timers;
-
 		/// @brief Is the mainloop enabled.
-		bool enabled = true;
+		bool running = true;
 
 		//
 		// File/socket/Handle management
@@ -85,27 +71,21 @@ namespace Udjat {
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
 
-		/// @brief Get poll() timeout.
-		/// @return poll call timeout.
-		inline unsigned long maxwait() const noexcept {
-			return timers.maxwait;
-		}
-
-		/// @brief Set poll() timeout.
-		/// @param value The timeout for poll.
-		inline void maxwait(unsigned long value) noexcept {
-			timers.maxwait = value;
-		}
-
 		virtual void push_back(MainLoop::Service *service) = 0;
 		virtual void remove(MainLoop::Service *service) = 0;
+
+		/// @brief Is timer enabled?
+		virtual bool enabled(const Timer *timer) const noexcept = 0;
+
+		virtual void push_back(MainLoop::Timer *timer) = 0;
+		virtual void remove(MainLoop::Timer *timer) = 0;
 
 		/// @brief Run mainloop.
 		virtual int run() = 0;
 
 		/// @brief Is the mainloop active?
 		inline operator bool() const noexcept {
-			return enabled;
+			return running;
 		}
 
 		/// @brief Check if the handler is enabled.

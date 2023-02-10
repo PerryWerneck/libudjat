@@ -93,13 +93,13 @@
  	// Main event loop
  	//
 
- 	this->enabled = true;
+ 	this->running = true;
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"READY=1\nSTATUS=Running");
 #endif // HAVE_SYSTEMD
 
- 	while(this->enabled) {
+ 	while(this->running) {
 
 		// Get wait time, update timers.
 		unsigned long wait = timers.run();
@@ -141,13 +141,13 @@
 
 		if(nSocks < 0) {
 
-			if(!this->enabled) {
+			if(!this->running) {
 				break;
 			}
 
 			if(errno != EINTR) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' (" << errno << ") running mainloop, stopping" << endl;
-				this->enabled = false;
+				this->running = false;
 			}
 
 			continue;

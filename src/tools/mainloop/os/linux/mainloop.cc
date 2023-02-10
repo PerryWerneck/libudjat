@@ -44,7 +44,7 @@
 			Logger::String{"Destroying clean service loop"}.trace("MainLoop");
 		}
 
-		enabled = false;
+		running = false;
 		wakeup();
 
 		{
@@ -89,6 +89,27 @@
 		services.remove_if([service](Service *s) {
 			return s == service;
 		});
+	}
+
+	bool Linux::MainLoop::enabled(const Timer *timer) const noexcept {
+		lock_guard<mutex> lock(guard);
+		for(Timer *tm : timers.enabled) {
+			if(timer == tm) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
+		lock_guard<mutex> lock(guard);
+		timers.enabled.push_back(timer);
+		wakeup();
+	}
+
+	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
+		lock_guard<mutex> lock(guard);
+		timers.enabled.remove(timer);
 	}
 
  }

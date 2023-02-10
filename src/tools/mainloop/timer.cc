@@ -72,20 +72,7 @@
 	}
 
 	bool MainLoop::Timer::enabled() const {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-			for(Timer *timer : mainloop.timers.enabled) {
-				if(timer == this) {
-					return true;
-				}
-			}
-
-		}
-
-		return false;
+		return MainLoop::getInstance().enabled(this);
 	}
 
 	void MainLoop::Timer::enable(unsigned long milliseconds) {
@@ -94,30 +81,15 @@
 	}
 
 	void MainLoop::Timer::enable() {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
 		next = getCurrentTime() + milliseconds;
-
 		if(!enabled()) {
-			lock_guard<mutex> lock(mainloop.guard);
-			mainloop.timers.enabled.push_back(this);
+			MainLoop::getInstance().push_back(this);
 		}
-
-		mainloop.wakeup();
+		MainLoop::getInstance().wakeup();
 	}
 
 	void MainLoop::Timer::disable() {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-			mainloop.timers.enabled.remove(this);
-		}
-
-		// No need for wakeup when a timer is removed.
-		// mainloop.wakeup();
+		MainLoop::getInstance().remove(this);
 	}
 
 	std::string MainLoop::Timer::to_string() const {

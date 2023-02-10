@@ -44,7 +44,7 @@
 	}
 #else
 	void Linux::MainLoop::quit() {
-		enabled = false;
+		running = false;
 		wakeup();
 		clog << "MainLoop\tInterrupting as requested" << endl;
 	}

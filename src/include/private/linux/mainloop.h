@@ -29,6 +29,23 @@
 
 namespace Udjat {
 
+	//
+	// Timer controller
+	//
+	class UDJAT_PRIVATE MainLoop::Timers {
+	public:
+
+		/// @brief Minimal timer value.
+		unsigned long maxwait = 60000;
+
+		/// @brief List of enabled timers.
+		std::list<Timer *> enabled;
+
+		/// @brief Run timers, return miliseconds to next timer.
+		unsigned long run() noexcept;
+
+	};
+
 	namespace Linux {
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
@@ -40,9 +57,23 @@ namespace Udjat {
 			/// @brief Services
 			std::list<Service *> services;
 
+			Timers timers;
+
 		public:
 			MainLoop();
 			virtual ~MainLoop();
+
+			/// @brief Get poll() timeout.
+			/// @return poll call timeout.
+			inline unsigned long maxwait() const noexcept {
+				return timers.maxwait;
+			}
+
+			/// @brief Set poll() timeout.
+			/// @param value The timeout for poll.
+			inline void maxwait(unsigned long value) noexcept {
+				timers.maxwait = value;
+			}
 
 			/// @brief Run mainloop.
 			int run() override;
@@ -55,6 +86,11 @@ namespace Udjat {
 
 			void push_back(Udjat::MainLoop::Service *service) override;
 			void remove(Udjat::MainLoop::Service *service) override;
+
+			void push_back(MainLoop::Timer *timer) override;
+			void remove(MainLoop::Timer *timer) override;
+
+			bool enabled(const Timer *timer) const noexcept override;
 
 		};
 
