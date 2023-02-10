@@ -31,6 +31,11 @@
  #include <string>
  #include <getopt.h>
 
+ #ifdef _WIN32
+	#include <private/win32/mainloop.h>
+	#include <private/event.h>
+ #endif // _WIN32
+
  using namespace std;
 
  namespace Udjat {
@@ -134,6 +139,26 @@
 			try {
 
 				root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
+
+#ifdef _WIN32
+				debug("----------------------------------------------------------------");
+				Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
+					static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by ctrl-c event");
+					return true;
+				});
+
+				Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
+					static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by close event");
+					return true;
+				});
+
+				Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
+					static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by shutdown event");
+					return true;
+				});
+				debug("----------------------------------------------------------------");
+#endif // _WIN32
+
 				MainLoop::getInstance().run();
 				ThreadPool::getInstance().wait();
 				Module::unload();

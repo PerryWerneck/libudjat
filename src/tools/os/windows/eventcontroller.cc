@@ -92,30 +92,9 @@
 
 	}
 
-	/*
-	bool Event::Controller::call(DWORD dwCtrlType) noexcept {
-
-		debug("Will lock");
-		lock_guard<mutex> lock(guard);
-		debug("Locked");
-
-		for(ConsoleHandlerType &type : consolehandlertypes) {
-			if(type.dwCtrlType == dwCtrlType) {
-				debug("Pushing event controller task");
-				ThreadPool::getInstance().push("EventController",[&type]() {
-					debug("Running trigger");
-					type.trigger();
-					debug("Trigger complete");
-				});
-				return true;
-			}
-		}
-		return false;
-	}
-	*/
-
 	BOOL WINAPI Event::Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
 
+		/*
 		BOOL rc = FALSE;
 
 		switch(dwCtrlType) {
@@ -157,6 +136,8 @@
 		}
 
 		return rc;
+		*/
+
 	}
 
  }

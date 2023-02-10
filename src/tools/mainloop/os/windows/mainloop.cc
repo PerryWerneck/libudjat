@@ -186,8 +186,13 @@
 				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
 				break;
 
-			case WM_STOP:
+			case WM_STOP_WITH_MESSAGE:
+				Logger::String{(LPCTSTR)lParam}.write(Logger::Info,"win32");
+				PostMessage(controller.hwnd,WM_STOP,0,0);
+				break;
 
+			case WM_STOP:
+				Logger::String("WM_STOP").write(Logger::Trace,"win32");
 				KillTimer(hWnd, IDT_CHECK_TIMERS);
 
 				if(controller.running) {

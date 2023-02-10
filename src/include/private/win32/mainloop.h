@@ -24,12 +24,12 @@
  #include <udjat/tools/mainloop.h>
  #include <private/mainloop.h>
 
- #ifdef _WIN32
-	#define WM_CHECK_TIMERS		WM_USER+101
-	#define WM_START			WM_USER+102
-	#define WM_STOP				WM_USER+103
-	#define IDT_CHECK_TIMERS	1
- #endif // _WIN32
+ #define WM_CHECK_TIMERS		WM_USER+101
+ #define WM_START				WM_USER+102
+ #define WM_STOP				WM_USER+103
+ #define WM_STOP_WITH_MESSAGE	WM_USER+104	// Terminate by console event.
+
+ #define IDT_CHECK_TIMERS	1
 
  using namespace std;
 
@@ -81,6 +81,12 @@
 			void quit() override;
 
 			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+
+			/// @brief Terminate with message
+			/// @param message Message to show (Should be a constant to avoid 'out of scope' on message processing)
+			inline void quit(const char *message) noexcept {
+				post(WM_STOP_WITH_MESSAGE,0,(LPARAM)(LPCTSTR)message);
+			}
 
 			/// @brief Watch windows object.
 			void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);

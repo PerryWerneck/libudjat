@@ -24,6 +24,7 @@
  #include <iostream>
  #include <system_error>
  #include <udjat/tools/mainloop.h>
+ #include <private/win32/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/win32/exception.h>
@@ -652,6 +653,7 @@
 		return ENOENT;
 	}
 
+	/*
 	static void terminate_by_console_event(const char *msg) noexcept {
 		Logger::String(msg).write((Logger::Level) (Logger::Debug+1),"win32");
 		MainLoop &mainloop{MainLoop::getInstance()};
@@ -659,6 +661,7 @@
 			mainloop.quit();
 		}
 	}
+	*/
 
 	int SystemService::run(int argc, char **argv) {
 
@@ -681,17 +684,17 @@
 			info() << "Running as application with " << PACKAGE_NAME << " revision " << revision() << endl;
 
 			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
-				terminate_by_console_event("Terminating by ctrl-c event");
+				static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by ctrl-c event");
 				return true;
 			});
 
 			Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
-				terminate_by_console_event("Terminating by close event");
+				static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by close event");
 				return true;
 			});
 
 			Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
-				terminate_by_console_event("Terminating by shutdown event");
+				static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by shutdown event");
 				return true;
 			});
 
