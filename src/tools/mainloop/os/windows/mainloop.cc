@@ -25,12 +25,15 @@
  #include <private/event.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/service.h>
+ #include <udjat/tools/timer.h>
 
  #include <iostream>
 
  namespace Udjat {
 
 	static ATOM	winClass = 0;
+
+ 	std::mutex Win32::MainLoop::guard;
 
 	Win32::MainLoop::MainLoop() {
 
@@ -210,7 +213,7 @@
 
 			case WM_TIMER:
 
-				Logger::String("WM_TIMER ", ((unsigned int) wParam)).write(Logger::Debug,"win32");
+				debug("WM_TIMER ", ((unsigned int) wParam));
 
 				if(controller.hwnd) {
 
@@ -235,18 +238,57 @@
 
 			case WM_CHECK_TIMERS:
 				{
-					UINT interval = controller.timers.run();
-					if(!interval) {
-						interval = 1000;
+					if(controller.timers.maxwait > 1000) {
+						Logger::String{"Maxwait cant be greater than 1000, fixing"}.write(Logger::Warning,"win32");
+						controller.timers.maxwait = 1000;
 					}
 
-					if(interval != controller.uElapse) {
-						Logger::String("Reseting timer to ", interval).write(Logger::Debug,"win32");
-						SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
+					unsigned long now = MainLoop::Timer::getCurrentTime();
+					unsigned long next = now + controller.timers.maxwait;
+
+					// Get expired timers.
+					std::list<Timer *> expired;
+					controller.for_each([&expired,&next,now](Timer &timer){
+						if(timer.value() <= now) {
+							expired.push_back(&timer);
+						} else {
+							next = std::min(next,timer.value());
+						}
+						return false;
+					});
+
+					// Run expired timers.
+					for(auto timer : expired) {
+						unsigned long n = timer->activate();
+						if(n) {
+							next = std::min(next,n);
+						}
+					}
+
+					if(next > now) {
+						unsigned long interval = (now - next);
+						if(interval != controller.uElapse) {
+							SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
+						}
 					} else {
-						Logger::String("Keeping timer set to ", interval).write(Logger::Debug,"win32");
+						Logger::String{"Unexpected interval on timer processing"}.write(Logger::Error,"win32");
 					}
 
+				}
+				break;
+
+			case WM_ADD_TIMER:
+				{
+					lock_guard<mutex> lock(controller.guard);
+					controller.timers.enabled.push_back((Timer *) lParam);
+				}
+				SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
+				break;
+
+			case WM_REMOVE_TIMER:
+				{
+					lock_guard<mutex> lock(controller.guard);
+					controller.timers.enabled.remove((Timer *) lParam);
 				}
 				break;
 
@@ -282,15 +324,52 @@
 		return false;
 	}
 
-	void Win32::MainLoop::push_back(MainLoop::Timer *timer) {
+	bool Win32::MainLoop::enabled(const Handler *handler) const noexcept {
 		lock_guard<mutex> lock(guard);
-		timers.enabled.push_back(timer);
-		wakeup();
+		for(Handler *hdl : handlers) {
+			if(handler == hdl) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Win32::MainLoop::push_back(MainLoop::Timer *timer) {
+		post(WM_ADD_TIMER,0,(LPARAM) timer);
 	}
 
 	void Win32::MainLoop::remove(MainLoop::Timer *timer) {
+		post(WM_REMOVE_TIMER,0,(LPARAM) timer);
+	}
+
+	void Win32::MainLoop::push_back(MainLoop::Handler *handler) {
 		lock_guard<mutex> lock(guard);
-		timers.enabled.remove(timer);
+		handlers.push_back(handler);
+	}
+
+	void Win32::MainLoop::remove(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.remove(handler);
+	}
+
+	bool Win32::MainLoop::for_each(const std::function<bool(MainLoop::Service &service)> &func) {
+		lock_guard<mutex> lock(guard);
+		for(auto service : services) {
+			if(func(*service)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Win32::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
+		lock_guard<mutex> lock(guard);
+		for(auto timer : timers.enabled) {
+			if(func(*timer)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
  }

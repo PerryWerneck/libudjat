@@ -19,21 +19,9 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#include <winsock2.h>	// WSAPOLLFD
-	#include <windows.h>
-#else
-	#include <poll.h>
-#endif // _WIN32
-
 #include <udjat/defs.h>
-#include <udjat/moduleinfo.h>
-
-#include <list>
 #include <functional>
 #include <mutex>
-#include <ostream>
-#include <udjat/request.h>
 
 namespace Udjat {
 
@@ -49,9 +37,6 @@ namespace Udjat {
 		class Timers;
 
 		MainLoop() {}
-
-		/// @brief Mutex
-		static std::mutex guard;
 
 		/// @brief Is the mainloop enabled.
 		bool running = true;
@@ -102,6 +87,14 @@ namespace Udjat {
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
+
+		/// @brief Enumerate services.
+		/// @return true if lambda has returned true and loop was ended.
+		virtual bool for_each(const std::function<bool(Service &service)> &func) = 0;
+
+		/// @brief Enumerate timers.
+		/// @return true if lambda has returned true and loop was ended.
+		virtual bool for_each(const std::function<bool(Timer &timer)> &func) = 0;
 
 	};
 

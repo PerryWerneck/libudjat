@@ -20,6 +20,8 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/moduleinfo.h>
+ #include <list>
 
  namespace Udjat {
 
@@ -73,7 +75,7 @@
 		}
 
 		/// @brief List services.
-		static void getInfo(Response &response);
+		//static void getInfo(Response &response);
 
 		static void start(std::list<Service *> &services) noexcept;
 		static void stop(std::list<Service *> &services) noexcept;

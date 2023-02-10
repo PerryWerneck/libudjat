@@ -27,7 +27,9 @@
  #define WM_CHECK_TIMERS		WM_USER+101
  #define WM_START				WM_USER+102
  #define WM_STOP				WM_USER+103
- #define WM_STOP_WITH_MESSAGE	WM_USER+104	// Terminate by console event.
+ #define WM_STOP_WITH_MESSAGE	WM_USER+104	// Terminate by console event or timer
+ #define WM_ADD_TIMER			WM_USER+105
+ #define WM_REMOVE_TIMER		WM_USER+106
 
  #define IDT_CHECK_TIMERS	1
 
@@ -39,6 +41,9 @@
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
+
+			/// @brief Mutex
+			static std::mutex guard;
 
 			/// @brief Process windows messages.
 			static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -94,6 +99,14 @@
 
 			static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
 			static void remove(HANDLE handle);
+
+			bool enabled(const Handler *handler) const noexcept override;
+
+			void push_back(MainLoop::Handler *handler) override;
+			void remove(MainLoop::Handler *handler) override;
+
+			bool for_each(const std::function<bool(Service &service)> &func) override;
+			bool for_each(const std::function<bool(Timer &timer)> &func) override;
 
 		};
 

@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <cstring>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
@@ -81,9 +82,9 @@
 		return cerr;
 	}
 
+	/*
 	void MainLoop::Service::getInfo(Response &response) {
 
-		/*
 		lock_guard<mutex> lock(guard);
 		response.reset(Value::Array);
 
@@ -98,7 +99,7 @@
 
 
 		}
-		*/
 	}
+	*/
 
  }

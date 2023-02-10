@@ -38,6 +38,9 @@ namespace Udjat {
 			/// @brief Event FD.
 			int efd = -1;
 
+			/// @brief Mutex
+			static std::mutex guard;
+
 			/// @brief Services
 			std::list<Service *> services;
 
@@ -83,6 +86,9 @@ namespace Udjat {
 
 			bool enabled(const Timer *timer) const noexcept override;
 			bool enabled(const Handler *handler) const noexcept override;
+
+			bool for_each(const std::function<bool(Service &service)> &func) override;
+			bool for_each(const std::function<bool(Timer &timer)> &func) override;
 
 		};
 

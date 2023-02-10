@@ -21,6 +21,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <list>
 
  namespace Udjat {
 
@@ -31,13 +32,13 @@
 	public:
 
 		/// @brief Minimal timer value.
-		unsigned long maxwait = 60000;
+		unsigned long maxwait = 1000;
 
 		/// @brief List of enabled timers.
 		std::list<Timer *> enabled;
 
 		/// @brief Run timers, return miliseconds to next timer.
-		unsigned long run() noexcept;
+		// unsigned long run() noexcept;
 
 	};
 

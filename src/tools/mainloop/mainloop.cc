@@ -36,8 +36,6 @@
 
  namespace Udjat {
 
-	std::mutex MainLoop::guard;
-
 	MainLoop::~MainLoop() {
 	}
 
@@ -56,7 +54,7 @@
 		}
 	}
 
-	void Win32::MainLoop::quit(const char *message) override {
+	void Win32::MainLoop::quit(const char *message) {
 		post(WM_STOP_WITH_MESSAGE,(WPARAM) (Logger::Debug+1),(LPARAM)(LPCTSTR)message);
 	}
 #else

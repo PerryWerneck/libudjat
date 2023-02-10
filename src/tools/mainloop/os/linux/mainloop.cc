@@ -30,6 +30,8 @@
 
  namespace Udjat {
 
+ 	std::mutex Linux::MainLoop::guard;
+
 	Linux::MainLoop::MainLoop() {
 		efd = eventfd(0,0);
 		if(efd < 0)
@@ -134,6 +136,26 @@
 		lock_guard<mutex> lock(guard);
 		handlers.remove(handler);
 		wakeup();
+	}
+
+	bool Linux::MainLoop::for_each(const std::function<bool(MainLoop::Service &service)> &func) {
+		lock_guard<mutex> lock(guard);
+		for(auto service : services) {
+			if(func(*service)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	virtual bool Linux::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
+		lock_guard<mutex> lock(guard);
+		for(auto timer : timers.enabled) {
+			if(func(*timer)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
  }
