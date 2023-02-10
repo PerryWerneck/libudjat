@@ -17,20 +17,38 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma once
  #include <udjat/defs.h>
- #include <private/misc.h>
- #include <private/linux/mainloop.h>
- #include <cstring>
- #include <iostream>
+ #include <udjat/tools/mainloop.h>
 
- using namespace std;
+// #include <list>
+// #include <functional>
+// #include <mutex>
+// #include <ostream>
+// #include <udjat/request.h>
 
- namespace Udjat {
+namespace Udjat {
 
- 	MainLoop & MainLoop::getInstance() {
-		lock_guard<mutex> lock(guard);
-		static Linux::MainLoop instance;
-		return instance;
-	}
+	namespace Linux {
 
- }
+		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
+		private:
+
+			/// @brief Event FD.
+			int efd = -1;
+
+		public:
+			MainLoop();
+			virtual ~MainLoop();
+
+			/// @brief Run mainloop.
+			int run() override;
+
+			/// @brief Wakeup main loop.
+			void wakeup() noexcept override;
+
+		};
+
+	};
+
+}

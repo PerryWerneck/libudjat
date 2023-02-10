@@ -21,17 +21,11 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
- #include <udjat/tools/threadpool.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
 
  #ifdef _WIN32
 	#define WM_CHECK_TIMERS		WM_USER+101
 	#define WM_START			WM_USER+102
 	#define WM_STOP				WM_USER+103
-
 	#define IDT_CHECK_TIMERS	1
  #endif // _WIN32
 
@@ -39,6 +33,16 @@
 
  namespace Udjat {
 
+	namespace Win32 {
+
+		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
+		public:
+			MainLoop();
+			virtual ~MainLoop();
+		};
+
+
+	}
 
  }
 

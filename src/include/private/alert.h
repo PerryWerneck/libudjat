@@ -28,6 +28,7 @@
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/service.h>
  #include <udjat/alert/abstract.h>
  #include <mutex>
  #include <list>

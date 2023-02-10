@@ -24,6 +24,12 @@
 
  namespace Udjat {
 
+ #ifndef _WIN32
+	namespace Linux {
+		class MainLoop;
+	}
+ #endif // _WIN32
+
 	///< @brief File/Socket handler
 	class UDJAT_API MainLoop::Handler {
 	public:
@@ -43,14 +49,11 @@
 	#endif // WIN32
 		};
 
-
-	private:
+	protected:
 
 #ifndef _WIN32
-		friend class MainLoop;
+		friend class Linux::MainLoop;
 #endif // _WIN32
-
-	protected:
 
 		int fd = -1;
 		Event events = (Event) 0;

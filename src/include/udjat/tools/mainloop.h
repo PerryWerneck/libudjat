@@ -22,14 +22,12 @@
 #ifdef _WIN32
 	#include <winsock2.h>	// WSAPOLLFD
 	#include <windows.h>
+#else
+	#include <poll.h>
 #endif // _WIN32
 
 #include <udjat/defs.h>
 #include <udjat/moduleinfo.h>
-
-#ifndef _WIN32
-	#include <poll.h>
-#endif // _WIN32
 
 #include <list>
 #include <functional>
@@ -44,81 +42,20 @@ namespace Udjat {
 
 		class Timer;
 		class Handler;
+		class Service;
 
-		/// @brief Service who can be started/stopped.
-		class UDJAT_API Service {
-		private:
-			friend class MainLoop;
+	protected:
 
-			/// @brief Mainloop control semaphore
-			static std::mutex guard;
-
-			/// @brief Service state.
-			struct {
-				/// @brief Is the service active?
-				bool active = false;
-			} state;
-
-			/// @brief Service module.
-			const ModuleInfo &module;
-
-		protected:
-			/// @brief Service name.
-			const char *service_name = "service";
-
-		public:
-			Service(const Service &src) = delete;
-			Service(const Service *src) = delete;
-
-			Service(const char *name, const ModuleInfo &module);
-			Service(const ModuleInfo &module);
-			virtual ~Service();
-
-			const char * name() const noexcept {
-				return service_name;
-			}
-
-			inline const char * description() const noexcept {
-				return module.description;
-			}
-
-			inline const char * version() const noexcept {
-				return module.version;
-			}
-
-			inline bool isActive() const noexcept {
-				return state.active;
-			}
-
-			inline bool active() const noexcept {
-				return state.active;
-			}
-
-			/// @brief List services.
-			static void getInfo(Response &response);
-
-			virtual void start();
-			virtual void stop();
-
-			std::ostream & info() const;
-			std::ostream & warning() const;
-			std::ostream & error() const;
-
-		};
-
-	private:
-
-		/// @brief Private constructor, use getInstance() instead.
-		MainLoop();
+		MainLoop() {}
 
 		/// @brief Services
 		std::list<Service *> services;
 
 		/// @brief Start services.
-		void start() noexcept;
+		virtual void start() noexcept;
 
 		/// @brief Stop services.
-		void stop() noexcept;
+		virtual void stop() noexcept;
 
 		/// @brief Mutex
 		static std::mutex guard;
@@ -156,8 +93,6 @@ namespace Udjat {
 		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
 
 #else
-		/// @brief Event FD.
-		int efd = -1;
 
 #endif // _WIN32
 
@@ -171,7 +106,7 @@ namespace Udjat {
 		MainLoop(const MainLoop &src) = delete;
 		MainLoop(const MainLoop *src) = delete;
 
-		~MainLoop();
+		virtual ~MainLoop();
 
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
@@ -189,7 +124,7 @@ namespace Udjat {
 		}
 
 		/// @brief Run mainloop.
-		int run();
+		virtual int run() = 0;
 
 		/// @brief Is the mainloop active?
 		inline operator bool() const noexcept {
@@ -203,7 +138,7 @@ namespace Udjat {
 		void quit();
 
 		/// @brief Wakeup main loop.
-		void wakeup() noexcept;
+		virtual void wakeup() noexcept = 0;
 
 		/// @brief Create timer for callback.
 		/// @param interval	Timer interval on milliseconds.

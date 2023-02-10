@@ -18,10 +18,17 @@
  */
 
  #include <config.h>
- #include <private/mainloop.h>
  #include <cstring>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+
+ #ifdef _WIN32
+	#include <private/windows/mainloop.h>
+ #else
+	#include <private/linux/mainloop.h>
+ #endif // _WIN32
+
+ #include <udjat/tools/service.h>
 
  using namespace std;
 

@@ -18,16 +18,23 @@
  */
 
  #include <config.h>
- #include <private/mainloop.h>
  #include <private/misc.h>
+ #include <iostream>
 
  #ifdef _WIN32
 	#include <udjat/win32/exception.h>
+ #else
+	#include <private/linux/mainloop.h>
  #endif // _WIN32
+
+ using namespace std;
 
  namespace Udjat {
 
 	std::mutex MainLoop::guard;
+
+	MainLoop::~MainLoop() {
+	}
 
 	void MainLoop::quit() {
 #ifdef _WIN32

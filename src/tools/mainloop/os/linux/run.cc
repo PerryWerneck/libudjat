@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include <private/misc.h>
- #include <udjat/tools/mainloop.h>
+ #include <private/linux/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/handler.h>
@@ -47,7 +47,7 @@
 
  static const int signals[] = { SIGTERM, SIGINT };
 
- int Udjat::MainLoop::run() {
+ int Udjat::Linux::MainLoop::run() {
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());

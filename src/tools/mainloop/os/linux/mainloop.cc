@@ -21,7 +21,7 @@
  #include <cstring>
  #include <sys/eventfd.h>
  #include <private/misc.h>
- #include <udjat/tools/mainloop.h>
+ #include <private/linux/mainloop.h>
  #include <udjat/tools/logger.h>
  #include <iostream>
  #include <unistd.h>
@@ -30,13 +30,13 @@
 
  namespace Udjat {
 
-	MainLoop::MainLoop() {
+	Linux::MainLoop::MainLoop() {
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
 	}
 
-	MainLoop::~MainLoop() {
+	Linux::MainLoop::~MainLoop() {
 
 		if(!handlers.empty()) {
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
@@ -57,7 +57,7 @@
 
 	}
 
-	void MainLoop::wakeup() noexcept {
+	void Linux::MainLoop::wakeup() noexcept {
 		if(efd != -1) {
 			static uint64_t evNum = 0;
 			if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {

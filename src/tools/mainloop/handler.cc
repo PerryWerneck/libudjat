@@ -21,14 +21,18 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
- #include <private/mainloop.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/logger.h>
  #include <private/misc.h>
+ #include <iostream>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
 
  #include <fcntl.h>
+
+ using namespace std;
 
  namespace Udjat {
 
