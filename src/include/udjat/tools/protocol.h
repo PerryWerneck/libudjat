@@ -341,6 +341,8 @@
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
+		virtual Value & getProperties(Value &properties) const noexcept;
+
 		/// @brief Find protocol based on URL.
 		/// @param url The url to search for.
 		/// @param allow_default If true returns the default protocol when not found
@@ -357,8 +359,6 @@
 		/// @param protocol Pointer to protocol to confirm.
 		/// @return nullptr if protocol is not valid.
 		static const Protocol * verify(const void *protocol);
-
-		static void getInfo(Udjat::Response &response) noexcept;
 
 		/// @brief Find protocol and call.
 		/// @param url The URL to call.

@@ -71,7 +71,6 @@
 		void remove(const Worker *worker);
 
 		const Worker * find(const char *name) const;
-		void getInfo(Response &response) noexcept;
 
 		void for_each(const std::function<void(const Worker &worker)> &func);
 

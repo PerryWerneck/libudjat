@@ -58,8 +58,7 @@ namespace Udjat {
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Report &response);
 
-		/// @brief Get array with information about all registered worker.
-		static void getInfo(Response &response);
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {

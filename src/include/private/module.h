@@ -4,6 +4,7 @@
 #include <config.h>
 #include <udjat/module.h>
 #include <udjat/tools/mainloop.h>
+#include <udjat/tools/value.h>
 #include <list>
 
 using namespace std;
@@ -64,8 +65,6 @@ namespace Udjat {
 		bool load(const std::string &filename, bool required);
 
 		const Module * find(const char *name) const noexcept;
-
-		void getInfo(Response &response) noexcept;
 
 		void for_each(std::function<void(Module &module)> method);
 	};

@@ -37,12 +37,9 @@
 		Controller::getInstance().remove(this);
 	}
 
-	void Factory::getInfo(Response &response) {
-		response.reset(Value::Array);
-		for_each([&response](const Factory &factory){
-			factory.module.get(response.append(Value::Object))["name"] = factory.name();
-			return false;
-		});
+	Value & Factory::getProperties(Value &properties) const noexcept {
+		properties["name"] = factory_name;
+		return module.getProperties(properties);
 	}
 
 	Factory * Factory::find(const char *name) {

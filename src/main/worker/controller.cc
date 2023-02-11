@@ -90,6 +90,7 @@
 
 	}
 
+	/*
 	void Worker::Controller::getInfo(Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -104,6 +105,7 @@
 		}
 
 	}
+	*/
 
 	void Worker::Controller::for_each(const std::function<void(const Worker &worker)> &func) {
 

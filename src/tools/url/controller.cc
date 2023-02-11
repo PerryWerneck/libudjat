@@ -111,6 +111,7 @@
 		return nullptr;
 	}
 
+	/*
 	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -124,5 +125,6 @@
 		}
 
 	}
+	*/
 
  }

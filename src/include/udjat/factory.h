@@ -57,7 +57,7 @@
 		/// @return The factory with the requested name or nullptr if not found.
 		static Factory * find(const char *name);
 
-		static void getInfo(Response &response);
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		/// @brief Search factory for xml defined element.
 		/// @param node XML node to start searching for.

@@ -30,6 +30,10 @@
  namespace Udjat {
 
 	Value & ModuleInfo::get(Value &value) const {
+		return getProperties(value);
+	}
+
+	Value & ModuleInfo::getProperties(Value &properties) const noexcept {
 
 		struct {
 			const char *name;
@@ -44,18 +48,18 @@
 
 		for(auto &item : info) {
 			if(gettext_package && *gettext_package) {
-				value[item.name] = (const char *) dgettext(gettext_package,item.value);
+				properties[item.name] = (const char *) dgettext(gettext_package,item.value);
 			} else {
-				value[item.name] = item.value;
+				properties[item.name] = item.value;
 			}
 		}
 
-		value["build"] = build;
+		properties["build"] = build;
 		if(gettext_package) {
-			value["locale"] = gettext_package;
+			properties["locale"] = gettext_package;
 		}
 
-		return value;
+		return properties;
 	}
 
 	bool ModuleInfo::getProperty(const char *key, std::string &value) const noexcept {

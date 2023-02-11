@@ -59,9 +59,17 @@ namespace Udjat {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
+	Value & Module::getProperties(Value &properties) const noexcept {
+		properties["name"] = name;
+		properties["filename"] = filename();
+		return _info.getProperties(properties);
+	}
+
+	/*
 	void Module::getInfo(Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
+	*/
 
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);

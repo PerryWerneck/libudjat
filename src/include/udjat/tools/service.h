@@ -74,8 +74,7 @@
 			return state.active;
 		}
 
-		/// @brief List services.
-		//static void getInfo(Response &response);
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		static void start(std::list<Service *> &services) noexcept;
 		static void stop(std::list<Service *> &services) noexcept;

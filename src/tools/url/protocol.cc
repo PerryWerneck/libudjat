@@ -23,6 +23,7 @@
  #include <sys/stat.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/moduleinfo.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -133,8 +134,9 @@
 		return std::shared_ptr<Protocol::Worker>();
 	}
 
-	void Protocol::getInfo(Udjat::Response &response) noexcept {
-		Controller::getInstance().getInfo(response);
+	Value & Protocol::getProperties(Value &properties) const noexcept {
+		properties["name"] = name;
+		return module.getProperties(properties);
 	}
 
 	String Protocol::call(const char *u, const HTTP::Method method, const char *payload) {

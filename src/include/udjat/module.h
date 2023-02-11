@@ -103,9 +103,6 @@
 		/// @brief Unload modules.
 		static void unload();
 
-		/// @brief List modules.
-		static void getInfo(Response &response);
-
 		/// @brief Set XML document
 		/// Called when a XML document is loaded.
 		virtual void set(const pugi::xml_document &document);
@@ -120,6 +117,8 @@
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
 		virtual bool getProperty(const char *key, std::string &value) const noexcept;
+
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		/// @brief Get module property.
 		/// @param property_name The property name.

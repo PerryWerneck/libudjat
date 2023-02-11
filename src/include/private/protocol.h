@@ -81,8 +81,6 @@
 		const Protocol * find(const char *name, bool allow_default);
 		const Protocol * verify(const void *protocol);
 
-		void getInfo(Response &response) noexcept;
-
 		inline void setDefault(Protocol *protocol) noexcept {
 			def = protocol;
 		}

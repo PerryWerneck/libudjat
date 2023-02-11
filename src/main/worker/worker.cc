@@ -40,8 +40,9 @@
 		Controller::getInstance().for_each(func);
 	}
 
-	void Worker::getInfo(Response &response) {
-		Controller::getInstance().getInfo(response);
+	Value & Worker::getProperties(Value &properties) const noexcept {
+		properties["name"] = name;
+		return module.getProperties(properties);
 	}
 
 	const Worker * Worker::find(const char *name) {

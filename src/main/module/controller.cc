@@ -80,6 +80,7 @@ namespace Udjat {
 		}
 	}
 
+	/*
 	void Module::Controller::getInfo(Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -96,6 +97,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 }
 

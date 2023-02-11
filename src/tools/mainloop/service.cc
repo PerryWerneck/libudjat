@@ -22,6 +22,8 @@
  #include <cstring>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/service.h>
 
  #ifdef _WIN32
 	#include <private/win32/mainloop.h>
@@ -80,6 +82,12 @@
 	std::ostream & MainLoop::Service::error() const {
 		cerr << name() << "\t";
 		return cerr;
+	}
+
+	Value & MainLoop::Service::getProperties(Value &properties) const noexcept {
+		properties["name"] = service_name;
+		properties["active"] = state.active;
+		return module.getProperties(properties);
 	}
 
 	/*

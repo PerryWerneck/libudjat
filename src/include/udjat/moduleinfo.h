@@ -19,7 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <string>
+#include <string>
 
  namespace Udjat {
 
@@ -93,13 +93,15 @@
 			name(n), description(d), version(v), bugreport(b), url(u) { }
 #endif
 
-		Udjat::Value & get(Udjat::Value &value) const;
+		UDJAT_DEPRECATED(Udjat::Value & get(Udjat::Value &value) const);
 
 		/// @brief Get property value.
 		/// @param key The property name.
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
 		bool getProperty(const char *key, std::string &value) const noexcept;
+
+		Value & getProperties(Value &properties) const noexcept;
 
 	};
 
