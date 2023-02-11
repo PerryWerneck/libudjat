@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <private/mainloop.h>
+ #include <private/linux/mainloop.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/timer.h>
@@ -72,20 +72,7 @@
 	}
 
 	bool MainLoop::Timer::enabled() const {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-			for(Timer *timer : mainloop.timers.enabled) {
-				if(timer == this) {
-					return true;
-				}
-			}
-
-		}
-
-		return false;
+		return MainLoop::getInstance().enabled(this);
 	}
 
 	void MainLoop::Timer::enable(unsigned long milliseconds) {
@@ -94,30 +81,15 @@
 	}
 
 	void MainLoop::Timer::enable() {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
 		next = getCurrentTime() + milliseconds;
-
 		if(!enabled()) {
-			lock_guard<mutex> lock(mainloop.guard);
-			mainloop.timers.enabled.push_back(this);
+			MainLoop::getInstance().push_back(this);
 		}
-
-		mainloop.wakeup();
+		MainLoop::getInstance().wakeup();
 	}
 
 	void MainLoop::Timer::disable() {
-
-		MainLoop &mainloop{MainLoop::getInstance()};
-
-		{
-			lock_guard<mutex> lock(mainloop.guard);
-			mainloop.timers.enabled.remove(this);
-		}
-
-		// No need for wakeup when a timer is removed.
-		// mainloop.wakeup();
+		MainLoop::getInstance().remove(this);
 	}
 
 	std::string MainLoop::Timer::to_string() const {
@@ -159,60 +131,37 @@
 		return Logger::Message( "{} milliseconds", milliseconds);
 	}
 
-	unsigned long MainLoop::Timers::run() noexcept {
+	unsigned long MainLoop::Timer::activate() noexcept {
 
-		unsigned long now = MainLoop::Timer::getCurrentTime();
-		unsigned long next = now + maxwait;
+		try {
 
-		//
-		// Get expired timers.
-		//
-		std::list<Timer *> expired;
-		{
-			lock_guard<mutex> lock(guard);
-			for(Timer *timer : enabled) {
-				if(timer->next <= now) {
-					expired.push_back(timer);
-				} else {
-					next = std::min(next,timer->next);
-				}
+			if(milliseconds) {
+				unsigned long rc = this->next = (getCurrentTime() + milliseconds);
+				on_timer();
+				return rc;
 			}
 
+			on_timer();
+			disable();
+
+		} catch(const std::exception &e) {
+
+			Application::error() << "Timer disabled: " << e.what() << endl;
+			disable();
+
+		} catch(...) {
+
+			Application::error() << "Timer disabled: Unexpected error" << endl;
+			disable();
 		}
 
-		//
-		// Emit timer events.
-		//
-		for(auto timer : expired) {
-
-			try {
-
-				if(timer->milliseconds) {
-					timer->next = now + timer->milliseconds;
-					next = std::min(next,timer->next);
-					timer->on_timer();
-				} else {
-					timer->disable();
-				}
-
-			} catch(const std::exception &e) {
-
-				Application::error() << "Timer disabled: " << e.what() << endl;
-				timer->disable();
-
-			} catch(...) {
-
-				Application::error() << "Timer disabled: Unexpected error" << endl;
-				timer->disable();
-
-			}
-
-		}
-
-		return next - now;
+		return 0;
 
 	}
 
+	/// @brief Check if timer is expired, activate it if necessary.
+	/// @return The updated timer value or '0' if timer was disabled.
+	unsigned long check() noexcept;
 
 	MainLoop::Timer * MainLoop::TimerFactory(unsigned long interval, const std::function<bool()> call) {
 

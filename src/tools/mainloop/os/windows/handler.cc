@@ -27,36 +27,6 @@
 
  namespace Udjat {
 
-
-	/*
-	void MainLoop::insert(HANDLE handle, std::function<bool(HANDLE handle,bool abandoned)> exec) {
-
-		class Event : public Win32::Event {
-		private:
-			std::function<bool(HANDLE,bool)> exec;
-
-		public:
-			Event(HANDLE handle, std::function<bool(HANDLE,bool)> e) : Win32::Event(handle), exec(e) {
-				start();
-			}
-
-			bool handle(bool abandoned) override {
-				return exec(hEvent,abandoned);
-			}
-
-		};
-
-		new Event(handle,exec);
-	}
-
-	void MainLoop::remove(HANDLE handle) {
-		Win32::Event *event = Win32::Event::Controller::getInstance().find(handle);
-		if(event) {
-			delete event;
-		}
-	}
-	*/
-
 	Win32::Handler::~Handler() {
 		close();
 	}

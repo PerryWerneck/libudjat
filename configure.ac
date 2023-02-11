@@ -101,7 +101,7 @@ case "$host" in
 		AC_CONFIG_FILES(src/main/os/windows/resources.rc)
 		AC_CONFIG_FILES(src/main/os/windows/app-manifest.xml)
 		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
-dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
+		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		;;
 
  	*)
@@ -116,9 +116,12 @@ dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		AC_CONFIG_FILES(sdk/linux/static.pc)
 		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
 
+		AC_CHECK_HEADER(poll.h, [AC_DEFINE(HAVE_POLL_H, 1, [poll.h is available])], [AC_MSG_ERROR([Can't find required header poll.h])])
+
 esac
 
 AC_DEFINE_UNQUOTED(LIBEXT, "$LIBEXT", [Library extension])
+
 
 dnl ---------------------------------------------------------------------------
 dnl Check for tools

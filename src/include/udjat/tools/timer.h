@@ -46,6 +46,15 @@
 		constexpr Timer() {
 		}
 
+		/// @brief Get Timer value.
+		inline unsigned long value() const noexcept {
+			return next;
+		}
+
+		/// @brief Activate timer.
+		/// @return The updated timer value or '0' if timer was disabled.
+		unsigned long activate() noexcept;
+
 		/// @brief Is timer enabled?
 		bool enabled() const;
 

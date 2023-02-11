@@ -18,29 +18,60 @@
  */
 
  #include <config.h>
- #include <private/mainloop.h>
  #include <private/misc.h>
+ #include <iostream>
+ #include <udjat/tools/logger.h>
 
  #ifdef _WIN32
 	#include <udjat/win32/exception.h>
+	#include <private/win32/mainloop.h>
+ #else
+	#include <private/linux/mainloop.h>
  #endif // _WIN32
+
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
+ using namespace std;
 
  namespace Udjat {
 
-	std::mutex MainLoop::guard;
-
-	void MainLoop::quit() {
-#ifdef _WIN32
-		if(!PostMessage(hwnd,WM_STOP,0,0)) {
-			cerr << "MainLoop\tError posting WM_STOP message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
+	MainLoop::MainLoop() {
+		if(instance) {
+			throw system_error(EBUSY,system_category(),"Mainloop was already set");
 		}
-#else
-		enabled = false;
-		wakeup();
-		clog << "MainLoop\tInterrupting as requested" << endl;
-#endif // _WIN32
+		instance = this;
 	}
 
+	MainLoop::~MainLoop() {
+	}
+
+	void MainLoop::quit(const char *message) {
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=%s",message);
+#endif // HAVE_SYSTEMD
+		quit();
+	}
+
+#ifdef _WIN32
+	void Win32::MainLoop::quit() {
+		if(!PostMessage(hwnd,WM_STOP,0,0)) {
+			cerr << "win32\tError posting WM_STOP message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
+		}
+	}
+
+	void Win32::MainLoop::quit(const char *message) {
+		if(!PostMessage(hwnd,WM_STOP_WITH_MESSAGE,(WPARAM) (Logger::Debug+1),(LPARAM)(LPCTSTR)message)) {
+			cerr << "win32\tError posting WM_STOP message('" << message << "') to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
+		}
+	}
+#else
+	void Linux::MainLoop::quit() {
+		running = false;
+		wakeup();
+	}
+#endif // _WIN32
 
  }
 

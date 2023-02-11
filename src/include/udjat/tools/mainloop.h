@@ -19,208 +19,85 @@
 
 #pragma once
 
-#ifdef _WIN32
-	#include <winsock2.h>	// WSAPOLLFD
-	#include <windows.h>
-#endif // _WIN32
-
 #include <udjat/defs.h>
-#include <udjat/moduleinfo.h>
-
-#ifndef _WIN32
-	#include <poll.h>
-#endif // _WIN32
-
-#include <list>
 #include <functional>
 #include <mutex>
-#include <ostream>
-#include <udjat/request.h>
 
 namespace Udjat {
 
 	class UDJAT_API MainLoop {
+	private:
+		static MainLoop * instance;
+
 	public:
 
 		class Timer;
 		class Handler;
+		class Service;
 
-		/// @brief Service who can be started/stopped.
-		class UDJAT_API Service {
-		private:
-			friend class MainLoop;
+	protected:
 
-			/// @brief Mainloop control semaphore
-			static std::mutex guard;
+		class Timers;
 
-			/// @brief Service state.
-			struct {
-				/// @brief Is the service active?
-				bool active = false;
-			} state;
-
-			/// @brief Service module.
-			const ModuleInfo &module;
-
-		protected:
-			/// @brief Service name.
-			const char *service_name = "service";
-
-		public:
-			Service(const Service &src) = delete;
-			Service(const Service *src) = delete;
-
-			Service(const char *name, const ModuleInfo &module);
-			Service(const ModuleInfo &module);
-			virtual ~Service();
-
-			const char * name() const noexcept {
-				return service_name;
-			}
-
-			inline const char * description() const noexcept {
-				return module.description;
-			}
-
-			inline const char * version() const noexcept {
-				return module.version;
-			}
-
-			inline bool isActive() const noexcept {
-				return state.active;
-			}
-
-			inline bool active() const noexcept {
-				return state.active;
-			}
-
-			/// @brief List services.
-			static void getInfo(Response &response);
-
-			virtual void start();
-			virtual void stop();
-
-			std::ostream & info() const;
-			std::ostream & warning() const;
-			std::ostream & error() const;
-
-		};
-
-	private:
-
-		/// @brief Private constructor, use getInstance() instead.
 		MainLoop();
 
-		/// @brief Services
-		std::list<Service *> services;
-
-		/// @brief Start services.
-		void start() noexcept;
-
-		/// @brief Stop services.
-		void stop() noexcept;
-
-		/// @brief Mutex
-		static std::mutex guard;
-
-		//
-		// Timer controller
-		//
-		struct Timers {
-
-			/// @brief Minimal timer value.
-			unsigned long maxwait = 60000;
-
-			/// @brief List of enabled timers.
-			std::list<Timer *> enabled;
-
-			/// @brief Run timers, return miliseconds to next timer.
-			unsigned long run() noexcept;
-
-		} timers;
-
 		/// @brief Is the mainloop enabled.
-		bool enabled = true;
-
-#ifdef _WIN32
-		/// @brief Process windows messages.
-		static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-		/// @brief Object window for this loop
-		HWND hwnd = 0;
-
-		/// @brief Current timer value, in milliseconds.
-		UINT uElapse = 0;
-
-		/// @brief get sockets
-		ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
-
-#else
-		/// @brief Event FD.
-		int efd = -1;
-
-#endif // _WIN32
-
-		//
-		// File/socket/Handle management
-		//
-		std::list<Handler *> handlers;
+		bool running = true;
 
 	public:
 
 		MainLoop(const MainLoop &src) = delete;
 		MainLoop(const MainLoop *src) = delete;
 
-		~MainLoop();
+		virtual ~MainLoop();
 
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
 
-		/// @brief Get poll() timeout.
-		/// @return poll call timeout.
-		inline unsigned long maxwait() const noexcept {
-			return timers.maxwait;
-		}
+		/// @brief Is timer enabled?
+		virtual bool enabled(const Timer *timer) const noexcept = 0;
 
-		/// @brief Set poll() timeout.
-		/// @param value The timeout for poll.
-		inline void maxwait(unsigned long value) noexcept {
-			timers.maxwait = value;
-		}
+		/// @brief Is Handler enabled?
+		virtual bool enabled(const Handler *handler) const noexcept = 0;
+
+		virtual void push_back(MainLoop::Service *service) = 0;
+		virtual void remove(MainLoop::Service *service) = 0;
+
+		virtual void push_back(MainLoop::Timer *timer) = 0;
+		virtual void remove(MainLoop::Timer *timer) = 0;
+
+		virtual void push_back(MainLoop::Handler *handler) = 0;
+		virtual void remove(MainLoop::Handler *handler) = 0;
 
 		/// @brief Run mainloop.
-		int run();
+		virtual int run() = 0;
 
 		/// @brief Is the mainloop active?
 		inline operator bool() const noexcept {
-			return enabled;
+			return running;
 		}
 
-		/// @brief Check if the handler is enabled.
-		bool verify(const Handler *handler) const noexcept;
+		/// @brief Quit mainloop.
+		virtual void quit() = 0;
 
 		/// @brief Quit mainloop.
-		void quit();
+		virtual void quit(const char *message);
 
 		/// @brief Wakeup main loop.
-		void wakeup() noexcept;
+		virtual void wakeup() noexcept = 0;
 
 		/// @brief Create timer for callback.
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
 
-#ifdef _WIN32
+		/// @brief Enumerate services.
+		/// @return true if lambda has returned true and loop was ended.
+		virtual bool for_each(const std::function<bool(Service &service)> &func) = 0;
 
-		BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
-
-		/// @brief Watch windows object.
-		void insert(const void *id, HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> call);
-
-		static void insert(HANDLE handle, const std::function<bool(HANDLE handle,bool abandoned)> exec);
-		static void remove(HANDLE handle);
-
-#endif // _WIN32
+		/// @brief Enumerate timers.
+		/// @return true if lambda has returned true and loop was ended.
+		virtual bool for_each(const std::function<bool(Timer &timer)> &func) = 0;
 
 	};
 

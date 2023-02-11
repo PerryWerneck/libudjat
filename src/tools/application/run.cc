@@ -25,11 +25,17 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/timestamp.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/module.h>
  #include <private/updater.h>
  #include <string>
  #include <getopt.h>
+
+ #ifdef _WIN32
+	#include <private/win32/mainloop.h>
+	#include <private/event.h>
+ #endif // _WIN32
 
  using namespace std;
 
@@ -48,19 +54,28 @@
 			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 			static struct option options[] = {
 				{ "verbose",	optional_argument,	0,	'v'	},
+				{ "verbosity",	optional_argument,	0,	'v'	},
 				{ "quiet",		no_argument,		0,	'q'	},
 				{ "install",	no_argument,		0,	'I'	},
 				{ "uninstall",	no_argument,		0,	'U'	},
 				{ "help",		no_argument,		0,	'h'	},
 				{ "foreground",	no_argument,		0,	'f'	},
+				{ "timer",		required_argument,	0,	'T'	},
 			};
 			#pragma GCC diagnostic pop
 
 			int long_index =0;
 			int opt;
-			while((opt = getopt_long(argc, argv, "vqIhf", options, &long_index )) != -1) {
+			while((opt = getopt_long(argc, argv, "vVqIhfT:", options, &long_index )) != -1) {
 
 				switch(opt) {
+				case 'T':
+					MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){
+						MainLoop::getInstance().quit("Timer expired, exiting");
+						return false;
+					});
+					break;
+
 				case 'h':
 					cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
 							<< "  --help\t\tShow this message" << endl
@@ -86,10 +101,11 @@
 					break;
 
 				case 'v':
+				case 'V':
 					Logger::console(true);
 					if(optarg) {
-						if(*optarg == 'v') {
-							while(*optarg == 'v') {
+						if(toupper(*optarg) == 'V') {
+							while(toupper(*optarg) == 'V') {
 								Logger::verbosity(Logger::verbosity()+1);
 								optarg++;
 							}
@@ -134,6 +150,26 @@
 			try {
 
 				root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
+
+#ifdef _WIN32
+				debug("----------------------------------------------------------------");
+				Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
+					MainLoop::getInstance().quit("Terminating by ctrl-c event");
+					return false;
+				});
+
+				Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
+					MainLoop::getInstance().quit("Terminating by close event");
+					return false;
+				});
+
+				Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
+					MainLoop::getInstance().quit("Terminating by shutdown event");
+					return false;
+				});
+				debug("----------------------------------------------------------------");
+#endif // _WIN32
+
 				MainLoop::getInstance().run();
 				ThreadPool::getInstance().wait();
 				Module::unload();

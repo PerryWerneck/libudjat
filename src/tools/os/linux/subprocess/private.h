@@ -26,6 +26,7 @@
  #include <mutex>
  #include <list>
  #include <mutex>
+ #include <memory>
 
  using namespace std;
 

@@ -18,28 +18,16 @@
  */
 
  #include <config.h>
- #include <udjat/defs.h>
 
  #include <cstring>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/service.h>
- #include <private/win32/mainloop.h>
 
  using namespace std;
 
  namespace Udjat {
-
-	void Win32::MainLoop::push_back(Udjat::MainLoop::Service *service) {
-		services.push_back(service);
-	}
-
-	void Win32::MainLoop::remove(Udjat::MainLoop::Service *service) {
-		services.remove_if([service](Service *s) {
-			return s == service;
-		});
-	}
 
 	void MainLoop::Service::start(std::list<MainLoop::Service *> &services) noexcept {
 

@@ -82,7 +82,7 @@ namespace Udjat {
 							"\x1b[94m",	// Trace
 							"\x1b[95m",	// Debug
 
-							"\x1b[96m",	// SysInfo (Allways Trace+1)
+							"\x1b[96m",	// SysInfo (Allways Debug+1)
 						};
 
 						prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];

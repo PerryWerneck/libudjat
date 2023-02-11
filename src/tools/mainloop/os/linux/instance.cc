@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -19,32 +19,27 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include "private.h"
- #include <csignal>
- #include <cstring>
- #include <iostream>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/event.h>
+ #include <private/mainloop.h>
+ #include <private/linux/mainloop.h>
+ #include <mutex>
+
+ using namespace std;
 
  namespace Udjat {
 
-	/*
-	Win32::MainLoop & Win32::MainLoop::getInstance() {
-		static Win32::MainLoop instance;
-		return instance;
-	}
+	MainLoop * MainLoop::instance = nullptr;
 
- 	MainLoop & MainLoop::getInstance() {
- 		return Win32::MainLoop::getInstance();
-	}
+	MainLoop & MainLoop::getInstance() {
 
-	Win32::MainLoop::MainLoop() : Udjat::MainLoop() {
+		static mutex guard;
+		lock_guard<mutex> lock(guard);
 
-	}
+		if(!instance) {
+			static Linux::MainLoop inst;
+			return inst;
+		}
 
-	Win32::MainLoop::~MainLoop() {
+		return *instance;
 	}
-	*/
 
  }

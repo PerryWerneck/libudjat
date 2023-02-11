@@ -24,7 +24,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <private/mainloop.h>
  #include <private/misc.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>

@@ -30,6 +30,7 @@
 #include <udjat/module.h>
 #include <udjat/factory.h>
 #include <udjat/tools/mainloop.h>
+#include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
 
 #ifdef HAVE_UNISTD_H

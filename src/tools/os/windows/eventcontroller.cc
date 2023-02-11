@@ -22,7 +22,6 @@
  #include <cstring>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
- #include <private/mainloop.h>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
 
@@ -31,24 +30,31 @@
  namespace Udjat {
 
 	Event::Controller::Controller() {
-		cout << "win32\tStarting event controller " << hex << this << dec << endl;
+
+		Logger::String{"Starting event controller"}.trace("win32");
+
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,TRUE)==FALSE) {
-			cerr << "win32\tUnable to install console handler" << endl;
+			Logger::String{
+				"Unable to install console handler: ",
+				Win32::Exception::format(GetLastError()).c_str()
+			}.error("win32");
 		} else {
-			cout << "win32\tConsole handler installed" << endl;
+			Logger::String{"Console handler installed"}.trace("win32");
 		}
 	}
 
 	Event::Controller::~Controller() {
+
 		if(consolehandlertypes.empty()) {
-			cout << "win32\tStopping clean event controller " << hex << this << dec << endl;
+			Logger::String{"Stopping clean event controller"}.trace("win32");
 		} else {
-			cout << "win32\tStopping event controller " << hex << this << dec << " with active handlers" << endl;
+			Logger::String{"Stopping event controller with active handlers"}.error("win32");
 		}
+
 		if (SetConsoleCtrlHandler( (PHANDLER_ROUTINE)ConsoleHandlerRoutine,FALSE)==FALSE) {
-			cerr << "win32\tUnable to remove console handler" << endl;
+			Logger::String{"Unable to remove console handler: ",Win32::Exception::format(GetLastError())}.error("win32");
 		} else {
-			cout << "win32\tConsole handler removed" << endl;
+			Logger::String{"Console handler removed"}.trace("win32");
 		}
 	}
 
@@ -85,28 +91,6 @@
 		});
 
 	}
-
-	/*
-	bool Event::Controller::call(DWORD dwCtrlType) noexcept {
-
-		debug("Will lock");
-		lock_guard<mutex> lock(guard);
-		debug("Locked");
-
-		for(ConsoleHandlerType &type : consolehandlertypes) {
-			if(type.dwCtrlType == dwCtrlType) {
-				debug("Pushing event controller task");
-				ThreadPool::getInstance().push("EventController",[&type]() {
-					debug("Running trigger");
-					type.trigger();
-					debug("Trigger complete");
-				});
-				return true;
-			}
-		}
-		return false;
-	}
-	*/
 
 	BOOL WINAPI Event::Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
 
@@ -151,6 +135,7 @@
 		}
 
 		return rc;
+
 	}
 
  }

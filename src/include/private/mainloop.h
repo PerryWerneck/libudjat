@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,27 +18,36 @@
  */
 
  #pragma once
-
+ #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
- #include <udjat/tools/threadpool.h>
- #include <functional>
- #include <csignal>
- #include <unistd.h>
- #include <iostream>
-
- #ifdef _WIN32
-	#define WM_CHECK_TIMERS		WM_USER+101
-	#define WM_START			WM_USER+102
-	#define WM_STOP				WM_USER+103
-
-	#define IDT_CHECK_TIMERS	1
- #endif // _WIN32
-
- using namespace std;
+ #include <list>
 
  namespace Udjat {
 
+	//
+	// Timer controller
+	//
+	class UDJAT_API MainLoop::Timers {
+	public:
+
+		/// @brief Minimal timer value.
+#ifdef _WIN32
+		unsigned long maxwait = 1000;
+#else
+		unsigned long maxwait = 60000;
+#endif // _WIN32
+
+		/// @brief List of enabled timers.
+		std::list<Timer *> enabled;
+
+		/// @brief Run timers, return miliseconds to next timer.
+		// unsigned long run() noexcept;
+
+	};
+
 
  }
+
+
 

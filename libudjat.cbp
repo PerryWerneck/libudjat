@@ -55,6 +55,7 @@
 		<Unit filename="src/include/private/alert.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/factory.h" />
+		<Unit filename="src/include/private/linux/mainloop.h" />
 		<Unit filename="src/include/private/logger.h" />
 		<Unit filename="src/include/private/mainloop.h" />
 		<Unit filename="src/include/private/misc.h" />
@@ -64,6 +65,8 @@
 		<Unit filename="src/include/private/state.h" />
 		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/private/win32.h" />
+		<Unit filename="src/include/private/win32/mainloop.h" />
+		<Unit filename="src/include/private/windows/mainloop.h" />
 		<Unit filename="src/include/private/worker.h" />
 		<Unit filename="src/include/udjat.h" />
 		<Unit filename="src/include/udjat/agent.h" />
@@ -112,6 +115,7 @@
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
+		<Unit filename="src/include/udjat/tools/service.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
 		<Unit filename="src/include/udjat/tools/subprocess.h" />
 		<Unit filename="src/include/udjat/tools/sysconfig.h" />
@@ -238,6 +242,7 @@
 		<Unit filename="src/tools/mainloop/os/linux/handler.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/run.cc" />
+		<Unit filename="src/tools/mainloop/os/linux/service.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/default.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/eventworker.cc" />
 		<Unit filename="src/tools/mainloop/os/windows/handler.cc" />
