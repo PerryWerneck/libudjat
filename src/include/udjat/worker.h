@@ -43,7 +43,7 @@ namespace Udjat {
 		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
 		}
 
-		static void for_each(const std::function<void(const Worker &worker)> &func);
+		static bool for_each(const std::function<bool(const Worker &worker)> &method);
 
 		std::ostream & info() const;
 		std::ostream & warning() const;

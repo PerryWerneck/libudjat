@@ -66,7 +66,8 @@ namespace Udjat {
 
 		const Module * find(const char *name) const noexcept;
 
-		void for_each(std::function<void(Module &module)> method);
+		bool for_each(const std::function<bool(const Module &module)> &method);
+
 	};
 
 

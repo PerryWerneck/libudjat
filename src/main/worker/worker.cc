@@ -36,8 +36,8 @@
 		Controller::getInstance().remove(this);
 	}
 
-	void Worker::for_each(const std::function<void(const Worker &worker)> &func) {
-		Controller::getInstance().for_each(func);
+	bool Worker::for_each(const std::function<bool(const Worker &worker)> &method) {
+		return Controller::getInstance().for_each(method);
 	}
 
 	Value & Worker::getProperties(Value &properties) const noexcept {

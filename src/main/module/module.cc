@@ -75,8 +75,8 @@ namespace Udjat {
 		return Controller::getInstance().find(name);
 	}
 
-	void Module::for_each(std::function<void(Module &module)> method) {
-		Controller::getInstance().for_each(method);
+	bool Module::for_each(const std::function<bool(const Module &module)> &method) {
+		return Controller::getInstance().for_each(method);
 	}
 
 	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {

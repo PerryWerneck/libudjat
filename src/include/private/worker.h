@@ -72,7 +72,7 @@
 
 		const Worker * find(const char *name) const;
 
-		void for_each(const std::function<void(const Worker &worker)> &func);
+		bool for_each(const std::function<bool(const Worker &worker)> &func);
 
 	};
 

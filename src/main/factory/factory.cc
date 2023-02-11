@@ -46,8 +46,8 @@
 		return Controller::getInstance().find(name);
 	}
 
-	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
-		return Controller::getInstance().for_each(nullptr,func);
+	bool Factory::for_each(const std::function<bool(const Factory &factory)> &func) {
+		return Controller::getInstance().for_each(func);
 	}
 
 	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {

@@ -74,10 +74,14 @@ namespace Udjat {
 		});
 	}
 
-	void Module::Controller::for_each(std::function<void(Module &module)> method) {
+	bool Module::Controller::for_each(const std::function<bool(const Module &module)> &method) {
+		lock_guard<recursive_mutex> lock(guard);
 		for(auto module : this->modules) {
-			method(*module);
+			if(method(*module)) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 	/*

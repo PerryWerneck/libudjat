@@ -107,13 +107,16 @@
 	}
 	*/
 
-	void Worker::Controller::for_each(const std::function<void(const Worker &worker)> &func) {
+	bool Worker::Controller::for_each(const std::function<bool(const Worker &worker)> &func) {
 
 		for(auto worker : workers) {
 
-			func(*worker.second);
+			if(func(*worker.second)) {
+				return true;
+			}
 
 		}
+		return false;
 
 	}
 

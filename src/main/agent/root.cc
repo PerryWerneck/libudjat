@@ -58,8 +58,9 @@
 		Logger::String{"Activating new root agent"}.trace(Application::Name().c_str());
 		Abstract::Agent::Controller::getInstance().set(agent);
 
-		Module::for_each([agent](Module &module){
-			module.set(agent);
+		Module::for_each([agent](const Module &module){
+			const_cast<Module &>(module).set(agent);
+			return false;
 		});
 
 	}

@@ -118,15 +118,10 @@ namespace Udjat {
 
 	bool Module::Controller::load(const std::string &filename, bool required) {
 
-		bool already = false;
-		for_each([&already,filename](Module &module) {
-			if(!strcasecmp(module.filename().c_str(),filename.c_str())) {
-				already = true;
+		for(auto module : this->modules) {
+			if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+				return true;
 			}
-		});
-
-		if(already) {
-			return true;
 		}
 
 		init(filename,pugi::xml_node{});
