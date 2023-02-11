@@ -202,7 +202,9 @@
 
 			case WM_STOP:
 				Logger::String("WM_STOP").write(Logger::Trace,"win32");
+
 				KillTimer(hWnd, IDT_CHECK_TIMERS);
+				Event::clear();
 
 				if(controller.running) {
 					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");

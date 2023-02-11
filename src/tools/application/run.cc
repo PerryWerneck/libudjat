@@ -29,7 +29,6 @@
  #include <udjat/agent/abstract.h>
  #include <udjat/module.h>
  #include <private/updater.h>
- #include <udjat/tools/event.h>
  #include <string>
  #include <getopt.h>
 
@@ -172,7 +171,6 @@
 #endif // _WIN32
 
 				MainLoop::getInstance().run();
-				Event::clear();
 				ThreadPool::getInstance().wait();
 				Module::unload();
 
