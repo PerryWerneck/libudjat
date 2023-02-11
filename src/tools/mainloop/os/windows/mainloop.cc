@@ -26,6 +26,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/service.h>
  #include <udjat/tools/timer.h>
+ #include <private/event.h>
 
  #include <iostream>
 
@@ -87,8 +88,10 @@
 
 		Udjat::Event::remove(this);
 
-		DestroyWindow(hwnd);
-		hwnd = 0;
+		if(hwnd) {
+			DestroyWindow(hwnd);
+			hwnd = 0;
+		}
 
 		debug("Main Object window was destroyed");
 
@@ -118,8 +121,20 @@
 				Logger::String("WM_CREATE").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
+			case WM_DESTROY:
+				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
+				if(controller.running) {
+					Logger::String{"Stopping by system request (WM_DESTROY)"}.write(Logger::Warning,"win32");
+					SendMessage(hWnd,WM_STOP,0,0);
+				}
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
 			case WM_CLOSE:
 				Logger::String("WM_CLOSE").write(Logger::Trace,"win32");
+				if(controller.running) {
+					Logger::String{"Stopping by system request (WM_CLOSE)"}.write(Logger::Warning,"win32");
+					SendMessage(hWnd,WM_STOP,0,0);
+				}
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_QUERYENDSESSION:
@@ -173,10 +188,6 @@
 //				Logger::String("WM_DEVICECHANGE").write(Logger::Trace,"win32");
 //				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
-			case WM_DESTROY:
-				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
-
 			case WM_START:
 				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
@@ -185,7 +196,7 @@
 				break;
 
 			case WM_STOP_WITH_MESSAGE:
-				Logger::String{(LPCTSTR)lParam}.write(Logger::Info,"win32");
+				Logger::String{(LPCTSTR)lParam}.write((Logger::Level) wParam,"win32");
 				PostMessage(controller.hwnd,WM_STOP,0,0);
 				break;
 
@@ -196,13 +207,19 @@
 				if(controller.running) {
 					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");
 					controller.running = false; // Just in case.
+
+					debug("Stopping services");
 					Service::stop(controller.services);
+
+					debug("Stoppping threadpool");
 					ThreadPool::getInstance().stop();
+
+					debug("Posting QUIT message");
 					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
 						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 					}
 				} else {
-					Logger::String("WM_STOP: Already disabled").write(Logger::Trace,"win32");
+					Logger::String("WM_STOP: Already disabled").write(Logger::Warning,"win32");
 				}
 				break;
 

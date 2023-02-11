@@ -29,6 +29,7 @@
  #include <udjat/agent/abstract.h>
  #include <udjat/module.h>
  #include <private/updater.h>
+ #include <udjat/tools/event.h>
  #include <string>
  #include <getopt.h>
 
@@ -54,6 +55,7 @@
 			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 			static struct option options[] = {
 				{ "verbose",	optional_argument,	0,	'v'	},
+				{ "verbosity",	optional_argument,	0,	'v'	},
 				{ "quiet",		no_argument,		0,	'q'	},
 				{ "install",	no_argument,		0,	'I'	},
 				{ "uninstall",	no_argument,		0,	'U'	},
@@ -65,7 +67,7 @@
 
 			int long_index =0;
 			int opt;
-			while((opt = getopt_long(argc, argv, "vqIhfT:", options, &long_index )) != -1) {
+			while((opt = getopt_long(argc, argv, "vVqIhfT:", options, &long_index )) != -1) {
 
 				switch(opt) {
 				case 'T':
@@ -100,10 +102,11 @@
 					break;
 
 				case 'v':
+				case 'V':
 					Logger::console(true);
 					if(optarg) {
-						if(*optarg == 'v') {
-							while(*optarg == 'v') {
+						if(toupper(*optarg) == 'V') {
+							while(toupper(*optarg) == 'V') {
 								Logger::verbosity(Logger::verbosity()+1);
 								optarg++;
 							}
@@ -152,23 +155,24 @@
 #ifdef _WIN32
 				debug("----------------------------------------------------------------");
 				Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
-					static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by ctrl-c event");
-					return true;
+					MainLoop::getInstance().quit("Terminating by ctrl-c event");
+					return false;
 				});
 
 				Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
-					static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by close event");
-					return true;
+					MainLoop::getInstance().quit("Terminating by close event");
+					return false;
 				});
 
 				Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
-					static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by shutdown event");
-					return true;
+					MainLoop::getInstance().quit("Terminating by shutdown event");
+					return false;
 				});
 				debug("----------------------------------------------------------------");
 #endif // _WIN32
 
 				MainLoop::getInstance().run();
+				Event::clear();
 				ThreadPool::getInstance().wait();
 				Module::unload();
 

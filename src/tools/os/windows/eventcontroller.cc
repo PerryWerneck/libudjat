@@ -94,7 +94,6 @@
 
 	BOOL WINAPI Event::Controller::ConsoleHandlerRoutine(DWORD dwCtrlType) {
 
-		/*
 		BOOL rc = FALSE;
 
 		switch(dwCtrlType) {
@@ -136,7 +135,6 @@
 		}
 
 		return rc;
-		*/
 
 	}
 

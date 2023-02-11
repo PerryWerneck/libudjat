@@ -684,17 +684,17 @@
 			info() << "Running as application with " << PACKAGE_NAME << " revision " << revision() << endl;
 
 			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
-				static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by ctrl-c event");
+				MainLoop::getInstance().quit("Terminating by ctrl-c event");
 				return true;
 			});
 
 			Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
-				static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by close event");
+				MainLoop::getInstance().quit("Terminating by close event");
 				return true;
 			});
 
 			Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
-				static_cast<Win32::MainLoop &>(MainLoop::getInstance()).quit("Terminating by shutdown event");
+				MainLoop::getInstance().quit("Terminating by shutdown event");
 				return true;
 			});
 

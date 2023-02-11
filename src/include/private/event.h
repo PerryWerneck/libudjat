@@ -78,6 +78,8 @@
 
 		void remove(void *id);
 
+		void clear();
+
 #ifdef _WIN32
 
 		Event & ConsoleHandler(void *id, DWORD dwCtrlType, const std::function<bool()> handler);

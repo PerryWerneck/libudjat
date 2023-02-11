@@ -34,6 +34,10 @@
 	Event::~Event() {
 	}
 
+	void Event::clear() {
+		Controller::getInstance().clear();
+	}
+
 	void Event::trigger() noexcept {
 
 		{
