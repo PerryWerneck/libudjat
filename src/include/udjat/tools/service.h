@@ -85,6 +85,8 @@
 		std::ostream & warning() const;
 		std::ostream & error() const;
 
+		static bool for_each(const std::function<bool(const Service &service)> &method);
+
 	};
 
  }

@@ -85,6 +85,26 @@
 			def = protocol;
 		}
 
+		inline bool for_each(const std::function<bool(const Protocol &protocol)> &method) {
+			std::lock_guard<std::mutex> lock(guard);
+			for(auto object : protocols) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		inline bool for_each(const std::function<bool(const Worker &worker)> &method) {
+			std::lock_guard<std::mutex> lock(guard);
+			for(auto object : workers) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 	};
 
  }

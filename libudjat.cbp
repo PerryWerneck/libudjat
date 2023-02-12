@@ -99,7 +99,6 @@
 		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
-		<Unit filename="src/include/udjat/tools/genericcontroller.h" />
 		<Unit filename="src/include/udjat/tools/handler.h" />
 		<Unit filename="src/include/udjat/tools/http/client.h" />
 		<Unit filename="src/include/udjat/tools/http/error.h" />

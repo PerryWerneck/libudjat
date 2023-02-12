@@ -59,6 +59,10 @@
 		Service::Controller::getInstance().remove(this);
 	}
 
+	bool Service::for_each(const std::function<bool(const Service &service)> &method) {
+		return Service::Controller::getInstance().for_each(method);
+	}
+
 	void Service::start() {
 		state.active = true;
 	}

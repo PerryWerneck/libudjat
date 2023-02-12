@@ -64,6 +64,10 @@
 		Controller::getInstance().remove(this);
 	}
 
+	bool Protocol::for_each(const std::function<bool(const Protocol &protocol)> &method) {
+		return Controller::getInstance().for_each(method);
+	}
+
 	void Protocol::setDefault() noexcept {
 		Controller::getInstance().setDefault(this);
 	}

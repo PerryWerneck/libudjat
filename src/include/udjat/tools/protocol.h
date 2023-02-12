@@ -328,6 +328,8 @@
 		Protocol(const char *name, const ModuleInfo &module);
 		virtual ~Protocol();
 
+		static bool for_each(const std::function<bool(const Protocol &protocol)> &method);
+
 		inline const char * c_str() const noexcept {
 			return name;
 		}
