@@ -46,7 +46,7 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Service("agents",moduleinfo) {
 		Logger::String{
 			"Initializing controller"
 		}.trace("agent");

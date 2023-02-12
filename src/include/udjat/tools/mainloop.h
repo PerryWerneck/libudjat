@@ -22,6 +22,7 @@
 #include <udjat/defs.h>
 #include <functional>
 #include <mutex>
+#include <udjat/tools/service.h>
 
 namespace Udjat {
 
@@ -33,7 +34,6 @@ namespace Udjat {
 
 		class Timer;
 		class Handler;
-		class Service;
 
 	protected:
 
@@ -59,9 +59,6 @@ namespace Udjat {
 
 		/// @brief Is Handler enabled?
 		virtual bool enabled(const Handler *handler) const noexcept = 0;
-
-		virtual void push_back(MainLoop::Service *service) = 0;
-		virtual void remove(MainLoop::Service *service) = 0;
 
 		virtual void push_back(MainLoop::Timer *timer) = 0;
 		virtual void remove(MainLoop::Timer *timer) = 0;
@@ -90,10 +87,6 @@ namespace Udjat {
 		/// @param interval	Timer interval on milliseconds.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
-
-		/// @brief Enumerate services.
-		/// @return true if lambda has returned true and loop was ended.
-		virtual bool for_each(const std::function<bool(Service &service)> &func) = 0;
 
 		/// @brief Enumerate timers.
 		/// @return true if lambda has returned true and loop was ended.

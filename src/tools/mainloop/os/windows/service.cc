@@ -31,17 +31,17 @@
 
  namespace Udjat {
 
-	void Win32::MainLoop::push_back(Udjat::MainLoop::Service *service) {
+	void Win32::MainLoop::push_back(Udjat::Service *service) {
 		services.push_back(service);
 	}
 
-	void Win32::MainLoop::remove(Udjat::MainLoop::Service *service) {
+	void Win32::MainLoop::remove(Udjat::Service *service) {
 		services.remove_if([service](Service *s) {
 			return s == service;
 		});
 	}
 
-	void MainLoop::Service::start(std::list<MainLoop::Service *> &services) noexcept {
+	void Service::start(std::list<Service *> &services) noexcept {
 
 		ThreadPool::getInstance();
 
@@ -64,7 +64,7 @@
 		}
 	}
 
-	void MainLoop::Service::stop(std::list<MainLoop::Service *> &services) noexcept {
+	void Service::stop(std::list<Service *> &services) noexcept {
 
 		{
 			lock_guard<mutex> lock(Service::guard);

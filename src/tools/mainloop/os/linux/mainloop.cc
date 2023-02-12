@@ -72,30 +72,6 @@
 		}
 	}
 
-	/*
-	bool MainLoop::verify(const Handler *ptr) const noexcept {
-
-		lock_guard<mutex> lock(guard);
-		for(auto handle : handlers) {
-			if(handle == ptr) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-	*/
-
-	void Linux::MainLoop::push_back(Udjat::MainLoop::Service *service) {
-		services.push_back(service);
-	}
-
-	void Linux::MainLoop::remove(Udjat::MainLoop::Service *service) {
-		services.remove_if([service](Service *s) {
-			return s == service;
-		});
-	}
-
 	bool Linux::MainLoop::enabled(const Timer *timer) const noexcept {
 		lock_guard<mutex> lock(guard);
 		for(Timer *tm : timers.enabled) {
@@ -146,7 +122,8 @@
 		wakeup();
 	}
 
-	bool Linux::MainLoop::for_each(const std::function<bool(MainLoop::Service &service)> &func) {
+	/*
+	bool Linux::MainLoop::for_each(const std::function<bool(Service &service)> &func) {
 		lock_guard<mutex> lock(guard);
 		for(auto service : services) {
 			if(func(*service)) {
@@ -155,6 +132,7 @@
 		}
 		return false;
 	}
+	*/
 
 	bool Linux::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
 		lock_guard<mutex> lock(guard);

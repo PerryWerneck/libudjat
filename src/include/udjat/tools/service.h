@@ -19,19 +19,13 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/tools/mainloop.h>
  #include <udjat/moduleinfo.h>
- #include <list>
 
  namespace Udjat {
 
 	/// @brief Service who can be started/stopped.
-	class UDJAT_API MainLoop::Service {
+	class UDJAT_API Service {
 	private:
-		friend class MainLoop;
-
-		/// @brief Mainloop control semaphore
-		static std::mutex guard;
 
 		/// @brief Service state.
 		struct {
@@ -47,6 +41,9 @@
 		const char *service_name = "service";
 
 	public:
+		class Controller;
+		friend class Controller;
+
 		Service(const Service &src) = delete;
 		Service(const Service *src) = delete;
 
@@ -75,9 +72,6 @@
 		}
 
 		virtual Value & getProperties(Value &properties) const noexcept;
-
-		static void start(std::list<Service *> &services) noexcept;
-		static void stop(std::list<Service *> &services) noexcept;
 
 		virtual void start();
 		virtual void stop();

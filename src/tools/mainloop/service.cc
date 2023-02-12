@@ -37,10 +37,7 @@
 
  namespace Udjat {
 
-	mutex MainLoop::Service::guard;
-
-	MainLoop::Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
-		lock_guard<mutex> lock(guard);
+	Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
 		if(!service_name) {
 			service_name = strrchr(module.name,'-');
 			if(service_name) {
@@ -50,64 +47,44 @@
 			}
 		}
 
-		MainLoop::getInstance().push_back(this);
+		Service::Controller::getInstance().push_back(this);
+
 	}
 
-	MainLoop::Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
+	Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
 	}
 
-	MainLoop::Service::~Service() {
-		lock_guard<mutex> lock(guard);
-		MainLoop::getInstance().remove(this);
+	Service::~Service() {
+		Service::Controller::getInstance().remove(this);
 	}
 
-	void MainLoop::Service::start() {
+	void Service::start() {
 		state.active = true;
 	}
 
-	void MainLoop::Service::stop() {
+	void Service::stop() {
 		state.active = false;
 	}
 
-	std::ostream & MainLoop::Service::info() const {
+	std::ostream & Service::info() const {
 		cout << name() << "\t";
 		return cout;
 	}
 
-	std::ostream & MainLoop::Service::warning() const {
+	std::ostream & Service::warning() const {
 		clog << name() << "\t";
 		return clog;
 	}
 
-	std::ostream & MainLoop::Service::error() const {
+	std::ostream & Service::error() const {
 		cerr << name() << "\t";
 		return cerr;
 	}
 
-	Value & MainLoop::Service::getProperties(Value &properties) const noexcept {
+	Value & Service::getProperties(Value &properties) const noexcept {
 		properties["name"] = service_name;
 		properties["active"] = state.active;
 		return module.getProperties(properties);
 	}
-
-	/*
-	void MainLoop::Service::getInfo(Response &response) {
-
-		lock_guard<mutex> lock(guard);
-		response.reset(Value::Array);
-
-		for(auto service : MainLoop::getInstance().services) {
-
-			Value &object = response.append(Value::Object);
-
-			object["name"] = service->service_name;
-			object["active"] = service->state.active;
-
-			service->module.get(object);
-
-
-		}
-	}
-	*/
 
  }
