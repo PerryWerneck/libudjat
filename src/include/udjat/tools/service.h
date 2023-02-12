@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/moduleinfo.h>
+ #include <cstring>
 
  namespace Udjat {
 
@@ -53,6 +54,10 @@
 
 		const char * name() const noexcept {
 			return service_name;
+		}
+
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,service_name) == 0;
 		}
 
 		inline const char * description() const noexcept {

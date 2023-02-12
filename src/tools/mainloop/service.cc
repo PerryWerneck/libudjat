@@ -24,6 +24,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/service.h>
+ #include <private/service.h>
 
  #ifdef _WIN32
 	#include <private/win32/mainloop.h>

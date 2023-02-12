@@ -72,9 +72,6 @@
 			MainLoop();
 			virtual ~MainLoop();
 
-			void push_back(Service *service) override;
-			void remove(Service *service) override;
-
 			bool enabled(const Timer *timer) const noexcept override;
 
 			void push_back(MainLoop::Timer *timer) override;
@@ -106,7 +103,6 @@
 			void push_back(MainLoop::Handler *handler) override;
 			void remove(MainLoop::Handler *handler) override;
 
-			bool for_each(const std::function<bool(Service &service)> &func) override;
 			bool for_each(const std::function<bool(Timer &timer)> &func) override;
 
 		};

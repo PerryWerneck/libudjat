@@ -43,260 +43,265 @@
 
  namespace Udjat {
 
-	namespace Service {
+	namespace Win32 {
 
-		///
-		/// @brief Contains status information for a service.
-		///
-		/// The ControlService, EnumDependentServices, EnumServicesStatus, and QueryServiceStatus
-		/// functions use this structure.
-		///
-		/// A service uses this structure in the SetServiceStatus function to report its
-		/// current status to the service control manager.
-		///
-		/// http://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx
-		///
-		struct UDJAT_API Status : SERVICE_STATUS {
+		namespace Service {
 
-			constexpr Status() {
+			///
+			/// @brief Contains status information for a service.
+			///
+			/// The ControlService, EnumDependentServices, EnumServicesStatus, and QueryServiceStatus
+			/// functions use this structure.
+			///
+			/// A service uses this structure in the SetServiceStatus function to report its
+			/// current status to the service control manager.
+			///
+			/// http://msdn.microsoft.com/en-us/library/windows/desktop/ms685996(v=vs.85).aspx
+			///
+			struct UDJAT_API Status : SERVICE_STATUS {
 
-				/// @brief The type of service.
-				dwServiceType				= SERVICE_WIN32;
+				constexpr Status() {
 
-				/// @brief The current state of the service.
-				dwCurrentState				= SERVICE_STOPPED;
+					/// @brief The type of service.
+					dwServiceType				= SERVICE_WIN32;
 
-				// A service cant accept SERVICE_ACCEPT_SHUTDOWN and SERVICE_ACCEPT_PRESHUTDOWN, just one of them.
-				// From http://msdn.microsoft.com/en-us/library/windows/desktop/ms683241(v=vs.85).aspx
-				//
-				// Referring to SERVICE_CONTROL_PRESHUTDOWN:
-				//
-				// A service that handles this notification blocks system shutdown until the service stops
-				// or the preshutdown time-out interval specified through SERVICE_PRESHUTDOWN_INFO expires.
-				//
-				// In the same page, the section about SERVICE_CONTROL_SHUTDOWN adds:
-				//
-				// Note that services that register for SERVICE_CONTROL_PRESHUTDOWN notifications cannot
-				// receive this notification because they have already stopped.
-				//
-				// So, the correct way is to set the dwControlsAccepted to include either SERVICE_ACCEPT_SHUTDOWN
-				// or SERVICE_ACCEPT_PRESHUTDOWN, depending on your needs, but not to both at the same time.
-				//
-				// But do note that you probably want to accept more controls. You should always allow at least
-				// SERVICE_CONTROL_INTERROGATE, and almost certainly allow SERVICE_CONTROL_STOP, s
-				// ince without the latter the service cannot be stopped (e.g. in order to uninstall the software)
-				// and the process will have to be forcibly terminated (i.e. killed).
+					/// @brief The current state of the service.
+					dwCurrentState				= SERVICE_STOPPED;
 
-				/// @brief The control codes the service accepts and processes in its handler function
-				dwControlsAccepted			=
-					SERVICE_ACCEPT_STOP |
-	#ifdef SERVICE_ACCEPT_PRESHUTDOWN
-					SERVICE_ACCEPT_PRESHUTDOWN |
-	#endif // SERVICE_ACCEPT_PRESHUTDOWN
-					SERVICE_ACCEPT_POWEREVENT |
-					SERVICE_ACCEPT_SESSIONCHANGE;
+					// A service cant accept SERVICE_ACCEPT_SHUTDOWN and SERVICE_ACCEPT_PRESHUTDOWN, just one of them.
+					// From http://msdn.microsoft.com/en-us/library/windows/desktop/ms683241(v=vs.85).aspx
+					//
+					// Referring to SERVICE_CONTROL_PRESHUTDOWN:
+					//
+					// A service that handles this notification blocks system shutdown until the service stops
+					// or the preshutdown time-out interval specified through SERVICE_PRESHUTDOWN_INFO expires.
+					//
+					// In the same page, the section about SERVICE_CONTROL_SHUTDOWN adds:
+					//
+					// Note that services that register for SERVICE_CONTROL_PRESHUTDOWN notifications cannot
+					// receive this notification because they have already stopped.
+					//
+					// So, the correct way is to set the dwControlsAccepted to include either SERVICE_ACCEPT_SHUTDOWN
+					// or SERVICE_ACCEPT_PRESHUTDOWN, depending on your needs, but not to both at the same time.
+					//
+					// But do note that you probably want to accept more controls. You should always allow at least
+					// SERVICE_CONTROL_INTERROGATE, and almost certainly allow SERVICE_CONTROL_STOP, s
+					// ince without the latter the service cannot be stopped (e.g. in order to uninstall the software)
+					// and the process will have to be forcibly terminated (i.e. killed).
 
-				/// @brief The error code the service uses to report an error that occurs when it is starting or stopping.
-				dwWin32ExitCode				= NO_ERROR;
+					/// @brief The control codes the service accepts and processes in its handler function
+					dwControlsAccepted			=
+						SERVICE_ACCEPT_STOP |
+		#ifdef SERVICE_ACCEPT_PRESHUTDOWN
+						SERVICE_ACCEPT_PRESHUTDOWN |
+		#endif // SERVICE_ACCEPT_PRESHUTDOWN
+						SERVICE_ACCEPT_POWEREVENT |
+						SERVICE_ACCEPT_SESSIONCHANGE;
 
-				/// @brief A service-specific error code that the service returns when an error occurs while the service is starting or stopping.
-				dwServiceSpecificExitCode	= 0;
+					/// @brief The error code the service uses to report an error that occurs when it is starting or stopping.
+					dwWin32ExitCode				= NO_ERROR;
 
-				/// @brief The check-point value the service increments periodically to report its progress during a lengthy start, stop, pause, or continue operation.
-				dwCheckPoint				= 0;
+					/// @brief A service-specific error code that the service returns when an error occurs while the service is starting or stopping.
+					dwServiceSpecificExitCode	= 0;
 
-				/// @brief The estimated time required for a pending start, stop, pause, or continue operation, in milliseconds.
-				dwWaitHint					= 0;
+					/// @brief The check-point value the service increments periodically to report its progress during a lengthy start, stop, pause, or continue operation.
+					dwCheckPoint				= 0;
 
-			}
+					/// @brief The estimated time required for a pending start, stop, pause, or continue operation, in milliseconds.
+					dwWaitHint					= 0;
 
-			void set(SERVICE_STATUS_HANDLE handle, DWORD state, DWORD wait = 0) {
+				}
 
-				if(state != dwCurrentState) {
+				void set(SERVICE_STATUS_HANDLE handle, DWORD state, DWORD wait = 0) {
 
-					static const struct _state {
-						DWORD state;
-						const char *msg;
-					} st[] = {
-						{ SERVICE_START_PENDING,	"Service is pending start" },
-						{ SERVICE_STOP_PENDING,		"Service is pending stop"	},
-						{ SERVICE_STOPPED,			"Service is stopped"		},
-						{ SERVICE_RUNNING,			"Service is running"		},
-					};
+					if(state != dwCurrentState) {
 
-					for(size_t f = 1; f < (sizeof(st)/sizeof(st[0]));f++) {
-						if(st[f].state == state) {
-							clog << "service\t" << st[f].msg << endl;
-							break;
+						static const struct _state {
+							DWORD state;
+							const char *msg;
+						} st[] = {
+							{ SERVICE_START_PENDING,	"Service is pending start" },
+							{ SERVICE_STOP_PENDING,		"Service is pending stop"	},
+							{ SERVICE_STOPPED,			"Service is stopped"		},
+							{ SERVICE_RUNNING,			"Service is running"		},
+						};
+
+						for(size_t f = 1; f < (sizeof(st)/sizeof(st[0]));f++) {
+							if(st[f].state == state) {
+								clog << "service\t" << st[f].msg << endl;
+								break;
+							}
 						}
 					}
-				}
 
-				dwCurrentState = state;
-				dwWaitHint = wait;
+					dwCurrentState = state;
+					dwWaitHint = wait;
 
-				if(!SetServiceStatus(handle, (SERVICE_STATUS *) this)) {
-					cerr << "service\tWindows error " << GetLastError() << " in SetServiceStatus(" << state << ")" << endl;
-				}
-
-			}
-
-		};
-
-		/// @brief WIN32 Service controller.
-		///
-		/// Associate an udjat systemservice with the win32 service dispatcher.
-		///
-		class UDJAT_API Controller {
-		private:
-			Status status;
-			SERVICE_STATUS_HANDLE hStatus = 0;
-
-			Controller() {
-			}
-
-			void set(DWORD state, DWORD wait = 0) {
-				status.set(hStatus,state,wait);
-			}
-
-		public:
-			static Controller & getInstance();
-
-			~Controller() {
-			}
-
-			static void WINAPI handler( DWORD CtrlCmd ) {
-
-				Controller &controller = getInstance();
-
-				if(!SystemService::getInstance()) {
-					// FIXME: Report failure.
-					cerr << "winsrvc\tService handler called with cmd " << CtrlCmd << " without an active service" << endl;
-					controller.set(controller.status.dwCurrentState, 0);
-					return;
-				}
-
-				try {
-
-					switch (CtrlCmd) {
-					case SERVICE_CONTROL_SESSIONCHANGE:
-						cout << "win32\tSERVICE_CONTROL_SESSIONCHANGE" << endl;
-						break;
-
-					case SERVICE_CONTROL_POWEREVENT:
-						cout << "win32\tSERVICE_CONTROL_POWEREVENT" << endl;
-						break;
-
-#ifdef SERVICE_CONTROL_PRESHUTDOWN
-					case SERVICE_CONTROL_PRESHUTDOWN:
-						clog << "win32\tSERVICE_CONTROL_PRESHUTDOWN" << endl;
-						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
-						SystemService::getInstance()->stop();
-						break;
-#endif // SERVICE_CONTROL_PRESHUTDOWN
-
-					case SERVICE_CONTROL_SHUTDOWN:
-						clog << "win32\tSERVICE_CONTROL_SHUTDOWN" << endl;
-						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
-						SystemService::getInstance()->stop();
-						break;
-
-					case SERVICE_CONTROL_STOP:
-						cout << "win32\tSERVICE_CONTROL_STOP" << endl;
-						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-						SystemService::getInstance()->stop();
-						break;
-
-					case SERVICE_CONTROL_INTERROGATE:
-						cout << "win32\tSERVICE_CONTROL_INTERROGATE" << endl;
-						controller.set(controller.status.dwCurrentState, 0);
-						break;
-
-					default:
-						clog << "win32\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
-						controller.set(controller.status.dwCurrentState, 0);
+					if(!SetServiceStatus(handle, (SERVICE_STATUS *) this)) {
+						cerr << "service\tWindows error " << GetLastError() << " in SetServiceStatus(" << state << ")" << endl;
 					}
 
-				} catch(const std::exception &e) {
-
-					cerr << "win32\tError '" << e.what() << "' handling service request" << endl;
-					// FIXME: Report failure.
-					controller.set(controller.status.dwCurrentState, 0);
-
-				} catch(...) {
-
-					cerr << "win32\tUnexpected error handling service request" << endl;
-					// FIXME: Report failure.
-					controller.set(controller.status.dwCurrentState, 0);
-
 				}
 
-			}
+			};
 
-			static void dispatcher() {
+			/// @brief WIN32 Service controller.
+			///
+			/// Associate an udjat systemservice with the win32 service dispatcher.
+			///
+			class UDJAT_API Controller {
+			private:
+				Status status;
+				SERVICE_STATUS_HANDLE hStatus = 0;
 
-				Logger::redirect(false,true);
-				cout << "win32\tRegistering " << PACKAGE_NAME << " service dispatcher" << endl;
+				Controller() {
+				}
 
-				Controller &controller = getInstance();
+				void set(DWORD state, DWORD wait = 0) {
+					status.set(hStatus,state,wait);
+				}
 
-				Udjat::Event::ConsoleHandler(&controller,CTRL_SHUTDOWN_EVENT,[](){
-					auto service{SystemService::getInstance()};
-					if(service) {
-						service->trace() << "CTRL_SHUTDOWN_EVENT" << endl;
-						getInstance().set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-						service->stop();
+			public:
+				static Controller & getInstance();
+
+				~Controller() {
+				}
+
+				static void WINAPI handler( DWORD CtrlCmd ) {
+
+					Controller &controller = getInstance();
+
+					if(!SystemService::getInstance()) {
+						// FIXME: Report failure.
+						cerr << "winsrvc\tService handler called with cmd " << CtrlCmd << " without an active service" << endl;
+						controller.set(controller.status.dwCurrentState, 0);
+						return;
 					}
-					return false;
-				});
-
-				// Inicia como serviço
-				controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
-				if(!controller.hStatus) {
-					cerr << "win32\t" << Win32::Exception::format("RegisterServiceCtrlHandler failed") << endl;
-					return;
-				}
-
-				auto service = SystemService::getInstance();
-
-				if(service) {
-
-					service->info() << "Running as windows service" << endl;
 
 					try {
 
-						controller.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
-						service->init();
+						switch (CtrlCmd) {
+						case SERVICE_CONTROL_SESSIONCHANGE:
+							cout << "win32\tSERVICE_CONTROL_SESSIONCHANGE" << endl;
+							break;
 
-						controller.set(SERVICE_RUNNING, 0);
-						service->run();
+						case SERVICE_CONTROL_POWEREVENT:
+							cout << "win32\tSERVICE_CONTROL_POWEREVENT" << endl;
+							break;
+
+	#ifdef SERVICE_CONTROL_PRESHUTDOWN
+						case SERVICE_CONTROL_PRESHUTDOWN:
+							clog << "win32\tSERVICE_CONTROL_PRESHUTDOWN" << endl;
+							controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
+							SystemService::getInstance()->stop();
+							break;
+	#endif // SERVICE_CONTROL_PRESHUTDOWN
+
+						case SERVICE_CONTROL_SHUTDOWN:
+							clog << "win32\tSERVICE_CONTROL_SHUTDOWN" << endl;
+							controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
+							SystemService::getInstance()->stop();
+							break;
+
+						case SERVICE_CONTROL_STOP:
+							cout << "win32\tSERVICE_CONTROL_STOP" << endl;
+							controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
+							SystemService::getInstance()->stop();
+							break;
+
+						case SERVICE_CONTROL_INTERROGATE:
+							cout << "win32\tSERVICE_CONTROL_INTERROGATE" << endl;
+							controller.set(controller.status.dwCurrentState, 0);
+							break;
+
+						default:
+							clog << "win32\tUnexpected win32 service control code: " << ((int) CtrlCmd) << endl;
+							controller.set(controller.status.dwCurrentState, 0);
+						}
 
 					} catch(const std::exception &e) {
 
-						service->error() << "Error '" << e.what() << "' running service" << endl;
+						cerr << "win32\tError '" << e.what() << "' handling service request" << endl;
+						// FIXME: Report failure.
+						controller.set(controller.status.dwCurrentState, 0);
 
 					} catch(...) {
 
-						service->error() << "Unexpected error running service" << endl;
+						cerr << "win32\tUnexpected error handling service request" << endl;
+						// FIXME: Report failure.
+						controller.set(controller.status.dwCurrentState, 0);
 
 					}
 
-					controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-					service->deinit();
 				}
 
-				controller.set(SERVICE_STOPPED, 0);
+				static void dispatcher() {
 
+					Logger::redirect(false,true);
+					cout << "win32\tRegistering " << PACKAGE_NAME << " service dispatcher" << endl;
+
+					Controller &controller = getInstance();
+
+					Udjat::Event::ConsoleHandler(&controller,CTRL_SHUTDOWN_EVENT,[](){
+						auto service{SystemService::getInstance()};
+						if(service) {
+							service->trace() << "CTRL_SHUTDOWN_EVENT" << endl;
+							getInstance().set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
+							service->stop();
+						}
+						return false;
+					});
+
+					// Inicia como serviço
+					controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
+					if(!controller.hStatus) {
+						cerr << "win32\t" << Win32::Exception::format("RegisterServiceCtrlHandler failed") << endl;
+						return;
+					}
+
+					auto service = SystemService::getInstance();
+
+					if(service) {
+
+						service->info() << "Running as windows service" << endl;
+
+						try {
+
+							controller.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
+							service->init();
+
+							controller.set(SERVICE_RUNNING, 0);
+							service->run();
+
+						} catch(const std::exception &e) {
+
+							service->error() << "Error '" << e.what() << "' running service" << endl;
+
+						} catch(...) {
+
+							service->error() << "Unexpected error running service" << endl;
+
+						}
+
+						controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
+						service->deinit();
+					}
+
+					controller.set(SERVICE_STOPPED, 0);
+
+				}
+
+			};
+
+			Controller & Controller::getInstance() {
+				static Controller instance;
+				return instance;
 			}
 
-		};
-
-		Controller & Controller::getInstance() {
-			static Controller instance;
-			return instance;
 		}
 
 	}
+
 
 	void SystemService::init() {
 
@@ -717,7 +722,7 @@
 
 			// Run as service by default.
 			static SERVICE_TABLE_ENTRY DispatchTable[] = {
-				{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Service::Controller::dispatcher },
+				{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Win32::Service::Controller::dispatcher },
 				{ NULL, NULL }
 			};
 

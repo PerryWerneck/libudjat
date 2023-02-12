@@ -24,7 +24,7 @@
  #include <udjat/tools/logger.h>
  #include <private/event.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/service.h>
+ #include <private/service.h>
  #include <udjat/tools/timer.h>
  #include <private/event.h>
 
@@ -191,7 +191,7 @@
 			case WM_START:
 				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
-				Service::start(controller.services);
+				Service::Controller::getInstance().start();
 				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
 				break;
 
@@ -211,7 +211,7 @@
 					controller.running = false; // Just in case.
 
 					debug("Stopping services");
-					Service::stop(controller.services);
+					Service::Controller::getInstance().stop();
 
 					debug("Stoppping threadpool");
 					ThreadPool::getInstance().stop();
@@ -338,16 +338,6 @@
 	void Win32::MainLoop::remove(MainLoop::Handler *handler) {
 		lock_guard<mutex> lock(guard);
 		handlers.remove(handler);
-	}
-
-	bool Win32::MainLoop::for_each(const std::function<bool(Service &service)> &func) {
-		lock_guard<mutex> lock(guard);
-		for(auto service : services) {
-			if(func(*service)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	bool Win32::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
