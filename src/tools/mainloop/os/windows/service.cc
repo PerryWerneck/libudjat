@@ -25,30 +25,20 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/service.h>
- #include <private/win32/mainloop.h>
+ #include <private/service.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	void Win32::MainLoop::push_back(Udjat::MainLoop::Service *service) {
-		services.push_back(service);
-	}
-
-	void Win32::MainLoop::remove(Udjat::MainLoop::Service *service) {
-		services.remove_if([service](Service *s) {
-			return s == service;
-		});
-	}
-
-	void MainLoop::Service::start(std::list<MainLoop::Service *> &services) noexcept {
+	void Service::Controller::start() noexcept {
 
 		ThreadPool::getInstance();
 
 		{
-			lock_guard<mutex> lock(Service::guard);
-			cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-			for(auto service : services) {
+			lock_guard<mutex> lock(guard);
+			cout << "mainloop\tStarting " << objects.size() << " service(s)" << endl;
+			for(auto service : objects) {
 				if(!service->state.active) {
 					try {
 						cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
@@ -64,20 +54,20 @@
 		}
 	}
 
-	void MainLoop::Service::stop(std::list<MainLoop::Service *> &services) noexcept {
+	void Service::Controller::stop() noexcept {
 
 		{
-			lock_guard<mutex> lock(Service::guard);
+			lock_guard<mutex> lock(guard);
 
-			Logger::String("Stopping ",services.size()," service(s)").write(Logger::Trace,"mainloop");
+			Logger::String("Stopping ",objects.size()," service(s)").write(Logger::Trace,"mainloop");
 
 			// Stop services in reverse order.
 			size_t count = 0;
-			for(auto srvc = services.rbegin(); srvc != services.rend(); srvc++) {
+			for(auto srvc = objects.rbegin(); srvc != objects.rend(); srvc++) {
 				Service *service = *srvc;
 				if(service->state.active) {
 					try {
-						Logger::String("Stopping '",service->name(),"' (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
+						Logger::String("Stopping '",service->name(),"' (",(++count),"/",objects.size(),")").write(Logger::Trace,"mainloop");
 						service->stop();
 					} catch(const std::exception &e) {
 						service->error() << "Error '" << e.what() << "' stopping service" << endl;
@@ -87,7 +77,7 @@
 					service->state.active = false;
 				}
 				else {
-					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
+					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",objects.size(),")").write(Logger::Trace,"mainloop");
 				}
 			}
 		}

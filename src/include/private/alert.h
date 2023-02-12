@@ -39,7 +39,7 @@
  namespace Udjat {
 
  	/// @brief Singleton for alert emission.
-	class Alert::Controller : private MainLoop::Service, private Udjat::Worker, private MainLoop::Timer {
+	class Alert::Controller : private Service, private Udjat::Worker, private MainLoop::Timer {
 	private:
 		/// @brief Mutex for serialization
 		static mutex guard;

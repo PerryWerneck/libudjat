@@ -62,6 +62,7 @@
 		<Unit filename="src/include/private/module.h" />
 		<Unit filename="src/include/private/protocol.h" />
 		<Unit filename="src/include/private/request.h" />
+		<Unit filename="src/include/private/service.h" />
 		<Unit filename="src/include/private/state.h" />
 		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/private/win32.h" />
@@ -93,6 +94,7 @@
 		<Unit filename="src/include/udjat/tools/base64.h" />
 		<Unit filename="src/include/udjat/tools/cleanup.h" />
 		<Unit filename="src/include/udjat/tools/configuration.h" />
+		<Unit filename="src/include/udjat/tools/container.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />

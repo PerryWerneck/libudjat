@@ -41,7 +41,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Worker, private MainLoop::Service, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Worker, private Service, public MainLoop::Timer {
 	private:
 
 		time_t updating = 0;

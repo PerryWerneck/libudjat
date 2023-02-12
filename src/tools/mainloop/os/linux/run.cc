@@ -62,7 +62,7 @@
 	sd_notifyf(0,"STATUS=Starting up");
 #endif // HAVE_SYSTEMD
 
-	Service::start(services);
+	Service::Controller::getInstance().start();
 
 	//
 	// Capture signals
@@ -208,7 +208,7 @@
 	//
  	// Stop services
  	//
-	Service::stop(services);
+	Service::Controller::getInstance().stop();
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STATUS=Stopped");

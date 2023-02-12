@@ -21,12 +21,7 @@
  #include <udjat/defs.h>
  #include <private/mainloop.h>
  #include <udjat/tools/mainloop.h>
-
-// #include <list>
-// #include <functional>
-// #include <mutex>
-// #include <ostream>
-// #include <udjat/request.h>
+ #include <private/service.h>
 
 namespace Udjat {
 
@@ -37,9 +32,6 @@ namespace Udjat {
 
 			/// @brief Event FD.
 			int efd = -1;
-
-			/// @brief Services
-			std::list<Service *> services;
 
 			/// @brief Active timers.
 			Timers timers;
@@ -82,9 +74,6 @@ namespace Udjat {
 			/// @brief Quit mainloop.
 			void quit() override;
 
-			void push_back(Udjat::MainLoop::Service *service) override;
-			void remove(Udjat::MainLoop::Service *service) override;
-
 			void push_back(MainLoop::Timer *timer) override;
 			void remove(MainLoop::Timer *timer) override;
 
@@ -94,7 +83,7 @@ namespace Udjat {
 			bool enabled(const Timer *timer) const noexcept override;
 			bool enabled(const Handler *handler) const noexcept override;
 
-			bool for_each(const std::function<bool(Service &service)> &func) override;
+//			bool for_each(const std::function<bool(Service &service)> &func) override;
 			bool for_each(const std::function<bool(Timer &timer)> &func) override;
 
 		};

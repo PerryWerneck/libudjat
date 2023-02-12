@@ -57,9 +57,6 @@
 			/// @brief get sockets
 			ULONG getHandlers(WSAPOLLFD **fds, ULONG *length);
 
-			/// @brief Services
-			std::list<Service *> services;
-
 			/// @brief Active timers.
 			Timers timers;
 
@@ -74,9 +71,6 @@
 
 			MainLoop();
 			virtual ~MainLoop();
-
-			void push_back(MainLoop::Service *service) override;
-			void remove(MainLoop::Service *service) override;
 
 			bool enabled(const Timer *timer) const noexcept override;
 
@@ -109,7 +103,6 @@
 			void push_back(MainLoop::Handler *handler) override;
 			void remove(MainLoop::Handler *handler) override;
 
-			bool for_each(const std::function<bool(Service &service)> &func) override;
 			bool for_each(const std::function<bool(Timer &timer)> &func) override;
 
 		};
