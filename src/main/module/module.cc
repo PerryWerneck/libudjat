@@ -41,7 +41,7 @@ namespace Udjat {
 			throw system_error(EINVAL,system_category(),"Invalid module build date");
 		}
 
-		Controller::getInstance().insert(this);
+		Controller::getInstance().push_back(this);
 	}
 
 	Module::~Module() {

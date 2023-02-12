@@ -34,22 +34,22 @@
 namespace Udjat {
 
 	void Module::unload() {
-		Module::Controller::getInstance().unload();
+		Module::Controller::getInstance().clear();
 	}
 
-	void Module::Controller::unload() {
+	void Module::Controller::clear() {
 
-		debug("Unloading ",modules.size()," modules");
-		while(modules.size()) {
+		debug("Unloading ",objects.size()," modules");
+		while(objects.size()) {
 
 			Module * module;
 			{
-				lock_guard<recursive_mutex> lock(guard);
-				if(modules.empty()) {
+				lock_guard<mutex> lock(guard);
+				if(objects.empty()) {
 					break;
 				}
-				module = modules.back();
-				modules.pop_back();
+				module = objects.back();
+				objects.pop_back();
 			}
 
 			// Save module name.

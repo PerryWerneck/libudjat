@@ -5,19 +5,16 @@
 #include <udjat/module.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
+#include <udjat/tools/singleton.h>
 #include <list>
 
 using namespace std;
 
 namespace Udjat {
 
-	class Module::Controller {
+	class Module::Controller : public Singleton::Container<Module> {
 	private:
 		friend class MainLoop;
-
-		static recursive_mutex guard;
-
-		list<Module *> modules;
 
 		/// @brief Find path from module name.
 		/// @param name Module name.
@@ -51,22 +48,18 @@ namespace Udjat {
 		Controller();
 		~Controller();
 
-		static Controller & getInstance();
+		static Controller & getInstance() {
+			static Controller instance;
+			return instance;
+		}
 
-		void insert(Module *module);
-		void remove(Module *module);
-
-		void unload();
+		void clear() override;
 
 		/// @brief Load module by xml definition.
 		/// @param node Module definitions.
 		/// @return true if the module was already loaded.
 		bool load(const pugi::xml_node &node);
 		bool load(const std::string &filename, bool required);
-
-		const Module * find(const char *name) const noexcept;
-
-		bool for_each(const std::function<bool(const Module &module)> &method);
 
 	};
 

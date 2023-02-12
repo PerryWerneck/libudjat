@@ -68,6 +68,10 @@
 
 	public:
 
+		bool operator==(const char *name) const noexcept {
+			return strcasecmp(this->name,name) == 0;
+		}
+
 		inline const char * description() const noexcept {
 			return _info.description;
 		}

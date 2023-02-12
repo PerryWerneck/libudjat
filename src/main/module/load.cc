@@ -47,7 +47,7 @@ namespace Udjat {
 
 			if(!filename.empty()) {
 
-				for(auto module : modules) {
+				for(auto module : objects) {
 
 					// Check if the module is already loaded.
 					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
@@ -118,7 +118,7 @@ namespace Udjat {
 
 	bool Module::Controller::load(const std::string &filename, bool required) {
 
-		for(auto module : this->modules) {
+		for(auto module : this->objects) {
 			if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
 				return true;
 			}
