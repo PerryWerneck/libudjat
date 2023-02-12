@@ -116,17 +116,17 @@
 
 		template<typename... Targs>
 		String(const char *str, Targs... Fargs) : std::string{str} {
-			append(Fargs...);
+			String::append(Fargs...);
 		}
 
 		template<typename... Targs>
 		String(const std::string &str, Targs... Fargs) : std::string{str} {
-			append(Fargs...);
+			String::append(Fargs...);
 		}
 
 		template<typename T, typename... Targs>
 		String(const T &str, Targs... Fargs) : std::string{std::to_string(str)} {
-			append(Fargs...);
+			String::append(Fargs...);
 		}
 
 		/// @brief Construct string from xml definition.

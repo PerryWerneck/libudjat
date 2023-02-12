@@ -52,7 +52,9 @@
 			Container & operator=(Container &&) = delete;
 
 			virtual ~Container() {
-				clear();
+				for(auto object : objects) {
+					delete object;
+				}
 			}
 
 			/*
