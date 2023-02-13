@@ -33,7 +33,11 @@
 
 	namespace Singleton {
 
-		template <class T, class L = std::list<T *>>
+		/// @brief Template for container of pointers.
+		/// @tparam T The class for container.
+		/// @tparam P The pointer type (T *).
+		/// @tparam L The standard container (std::list<P>)
+		template <class T, class P = T *, class L = std::list<P>>
 		class Container {
 		protected:
 
@@ -67,7 +71,7 @@
 			virtual void clear() {
 
 				while(objects.size()) {
-					T *object = objects.back();
+					P object = objects.back();
 					delete object;
 					{
 						// Just in case.
@@ -82,12 +86,12 @@
 				return objects.size();
 			}
 
-			inline void push_back(T *object) noexcept {
+			inline void push_back(P object) noexcept {
 				std::lock_guard<std::mutex> lock(guard);
 				objects.push_back(object);
 			}
 
-			inline void remove(T *object) noexcept {
+			inline void remove(P object) noexcept {
 				std::lock_guard<std::mutex> lock(guard);
 				objects.remove(object);
 			}
@@ -102,7 +106,7 @@
 				throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find '{}'",name));
 			}
 
-			virtual const T * find(const char *name) const noexcept {
+			virtual const P find(const char *name) const noexcept {
 				std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(&guard)));
 				for(auto object : objects) {
 					if(*object == name) {
@@ -122,10 +126,18 @@
 				return false;
 			}
 
+			inline typename L::iterator begin() {
+				return objects.begin();
+			}
+
+			inline typename L::iterator end() {
+				return objects.end();
+			}
+
 		};
 
-		template <class T, class L = std::list<T *>>
-		class NamedContainer : public Container<T,L> {
+		template <class T, class P = T *, class L = std::list<P>>
+		class NamedContainer : public Container<T,P,L> {
 		private:
 			const char *cntl_name;
 

@@ -70,6 +70,14 @@
 			return false;
 		}
 
+		inline typename L::iterator begin() {
+			return objects.begin();
+		}
+
+		inline typename L::iterator end() {
+			return objects.end();
+		}
+
 	};
 
  }
