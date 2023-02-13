@@ -189,6 +189,11 @@
 			Request(const char *type) : type(HTTP::MethodFactory(type)) {
 			}
 
+			/// @brief is request empty?
+			inline bool empty() const noexcept {
+				return path.empty();
+			}
+
 			/// @brief Get the request method.
 			inline const char * getMethod() const noexcept {
 				return method.c_str();
@@ -198,8 +203,9 @@
 			virtual const std::string getAction();
 
 			/// @brief Select action from list.
-			/// @return Index of the selected action.
-			size_t getAction(const char *name, ...) __attribute__ ((sentinel));
+			/// @return Index of the selected action or -1 if not found.
+			/// @retval -1 The action is not in the list.
+			int select(const char *value, ...) __attribute__ ((sentinel));
 
 			/// @brief Get the request path.
 			inline const char * getPath() const noexcept {
@@ -222,7 +228,8 @@
 
 			/// @brief Pop one element from path, scan the list.
 			/// @return Index of the 'popped' element.
-			size_t pop(const char *name, ...) __attribute__ ((sentinel));
+			/// @retval -1 The element is not in the list.
+			int pop(const char *name, ...) __attribute__ ((sentinel));
 
 			/// @brief Pop one element from path.
 			virtual std::string pop();

@@ -22,6 +22,7 @@
  #include <cstring>
  #include <cstdarg>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
 
  namespace Udjat {
 
@@ -35,13 +36,13 @@
 
 	string Request::pop() {
 
-		if(path.empty()) {
-			throw system_error(ENODATA,system_category(),"This request has no arguments");
+		if(empty()) {
+			throw system_error(ENODATA,system_category(),_("This request has no arguments"));
 		}
 
 		size_t pos = path.find('/');
 		if(pos == string::npos) {
-			string rc = path;
+			string rc{path};
 			path.clear();
 			return rc;
 		}
@@ -53,10 +54,10 @@
 
 	}
 
-	size_t Request::pop(const char *str, ...) {
+	int Request::pop(const char *str, ...) {
 
 		string key = pop();
-		size_t index = 0;
+		int index = 0;
 
 		va_list args;
 		va_start(args, str);
@@ -71,7 +72,8 @@
 			str = va_arg(args, const char *);
 		}
 		va_end(args);
-		throw system_error(ENOENT,system_category(),string{"Cant find '"} + key + "' on request");
+
+		return -1;
 
 	}
 
@@ -81,10 +83,10 @@
 		return rc;
 	}
 
-	size_t Request::getAction(const char *str, ...) {
+	int Request::select(const char *str, ...) {
 
 		string key = getAction();
-		size_t index = 0;
+		int index = 0;
 
 		va_list args;
 		va_start(args, str);
@@ -99,7 +101,8 @@
 			str = va_arg(args, const char *);
 		}
 		va_end(args);
-		throw system_error(ENOENT,system_category(),Logger::Message("The action '{}' is not registered",key));
+
+		return -1;
 
 	}
 

@@ -41,6 +41,7 @@
 
 		if(name && *name) {
 
+			// Try using name
 			for(const string &path : paths) {
 
 				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".so";
@@ -53,6 +54,23 @@
 
 			}
 
+			// Try with the alternative name.
+			Config::Value<string> altname{"modules",name,""};
+
+			if(!altname.empty()) {
+
+				for(const string &path : paths) {
+
+					string filename = path + altname.c_str() + ".so";
+
+					debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+
+					if(access(filename.c_str(),R_OK) == 0) {
+						return filename;
+					}
+
+				}
+			}
 		}
 
 		return "";
