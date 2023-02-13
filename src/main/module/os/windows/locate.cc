@@ -31,7 +31,7 @@
 
 		string paths[] = {
 
-			Config::Value<string>("modules","primary-path",Application::LibDir("modules").c_str()),
+			Config::Value<string>("modules","primary-path",Application::LibDir("modules",false).c_str()),
 
 #if defined(LIBDIR)
 			Config::Value<string>(
@@ -90,6 +90,25 @@
 #endif // DEBUG
 
 			}
+
+			// Try with the alternative name.
+			Config::Value<string> altname{"modules",name,""};
+
+			if(!altname.empty()) {
+
+				for(const string &path : paths) {
+
+					string filename = path + altname.c_str() + ".so";
+
+					debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+
+					if(access(filename.c_str(),R_OK) == 0) {
+						return filename;
+					}
+
+				}
+			}
+
 
 		}
 
