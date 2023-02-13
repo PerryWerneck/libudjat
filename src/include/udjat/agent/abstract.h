@@ -192,6 +192,16 @@
 		public:
 			class Controller;
 
+			Agent(const Agent&) = delete;
+			Agent& operator=(const Agent &) = delete;
+			Agent(Agent &&) = delete;
+			Agent & operator=(Agent &&) = delete;
+
+			Agent(const char *name = "", const char *label = "", const char *summary = "");
+			Agent(const pugi::xml_node &node);
+
+			virtual ~Agent();
+
 			/// @brief Insert child node.
 			void UDJAT_DEPRECATED(insert(std::shared_ptr<Abstract::Agent> child));
 
@@ -229,11 +239,6 @@
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
-
-			Agent(const char *name = "", const char *label = "", const char *summary = "");
-			Agent(const pugi::xml_node &node);
-
-			virtual ~Agent();
 
 			/// @brief Get root agent.
 			static std::shared_ptr<Abstract::Agent> root();
