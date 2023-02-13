@@ -29,10 +29,11 @@
 
  namespace Udjat {
 
- 	class UDJAT_PRIVATE Updater : private Application, public std::list<std::string> {
+ 	class UDJAT_PRIVATE Updater : public std::list<std::string> {
 	private:
-		time_t next = 0;	///< @brief Seconds for next update.
-		bool update;		///< @brief true if an update was requested.
+		time_t next = 0;			///< @brief Seconds for next update.
+		bool update;				///< @brief true if an update was requested.
+		Application::Name name;		///< @brief Application name.
 
 	public:
 		Updater(const char *pathname, bool force);
@@ -51,38 +52,22 @@
 			return next;
 		}
 
+		/// @brief Write to the 'information' stream.
+		inline std::ostream & info() const {
+			return Application::info();
+		}
+
+		/// @brief Write to the 'warning' stream.
+		inline std::ostream & warning() const {
+			return Application::warning();
+		}
+
+		/// @brief Write to the 'error' stream.
+		inline std::ostream & error() const {
+			return Application::error();
+		}
+
+
  	};
-
-	/*
-	class UDJAT_PRIVATE Updater : private Application {
-	private:
-		bool changed = false;
-		time_t next = 0;
-		Application::DataFile path;
-
-	public:
-		Updater(const char *pathname);
-
-		inline void for_each(const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
-			Udjat::for_each(path.c_str(),call);
-		}
-
-		/// @brief Update agent, set it as a new root.
-		time_t set(std::shared_ptr<Abstract::Agent> agent) noexcept;
-
-		inline operator bool() const noexcept {
-			return changed;
-		}
-
-		inline time_t time() const noexcept {
-			return next;
-		}
-
-		inline const char * to_string() const noexcept {
-			return path.c_str();
-		}
-
-	};
-	*/
 
  }

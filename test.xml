@@ -4,9 +4,9 @@
 <config src='http://localhost/~perry/libudjat.xml'>
 
 	<module name='information' required='no' preload='no' />
-	<module name='http' required='yes' />
 
-	<!-- module name='civetweb' required='no' preload='no' / -->
+	<!-- module name='http' required='yes' /-->
+	<module name='civetweb' required='no' preload='no' />
 
 	<attribute-list>
 	

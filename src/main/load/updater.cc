@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/updater.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
  #include <udjat/module.h>
  #include <iostream>
  #include <udjat/tools/http/client.h>
@@ -56,8 +57,8 @@
 					string{Application::DataDir{nullptr,false} + "settings.xml" },
 					Application::DataDir{"xml.d",false},
 #ifndef _WIN32
-					string{ string{"/etc/"} + Application::name() + ".xml" },
-					string{ string{"/etc/"} + Application::name() + ".xml.d" },
+					string{ string{"/etc/"} + name + ".xml" },
+					string{ string{"/etc/"} + name + ".xml.d" },
 #endif // _WIN32
 				};
 
@@ -117,7 +118,7 @@
 		size_t changed = 0;
 		size_t loaded = 0;
 
-		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name().c_str());
+		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name.c_str());
 		for(std::string &filename : *this) {
 
 			debug("Checking '",filename,"'");
@@ -190,7 +191,7 @@
 		}
 
 		if(changed) {
-			Logger::String(changed, " file(s) changed, requesting full update").write(Logger::Trace,name().c_str());
+			Logger::String(changed, " file(s) changed, requesting full update").write(Logger::Trace,name.c_str());
 			update = true;
 		}
 
@@ -202,7 +203,7 @@
 
 		for(const std::string &filename : *this) {
 
-			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name().c_str());
+			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name.c_str());
 
 			try {
 
