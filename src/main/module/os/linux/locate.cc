@@ -32,7 +32,7 @@
 #ifdef MODULES_DIR
 			Config::Value<string>("modules","application-path",STRINGIZE_VALUE_OF(MODULES_DIR)).c_str(),
 #endif // MODULES_DIR
-			Config::Value<string>("modules","path",Application::LibDir(PACKAGE_VERSION "/modules").c_str()),
+			Config::Value<string>("modules","path",Application::LibDir(PACKAGE_VERSION "/modules",false).c_str()),
 #ifdef LIBDIR
 			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/" PACKAGE_VERSION "/modules/").c_str(),
 			Config::Value<string>("modules","compatibility-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),

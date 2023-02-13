@@ -88,7 +88,7 @@
 	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir,true)} {
 	}
 
-	Application::LibDir::LibDir(const char *subdir) : File::Path{PathFactory(STRINGIZE_VALUE_OF(LIBDIR) "/",subdir,true)} {
+	Application::LibDir::LibDir(const char *subdir, bool required) : File::Path{PathFactory(STRINGIZE_VALUE_OF(LIBDIR) "/",subdir,required)} {
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {

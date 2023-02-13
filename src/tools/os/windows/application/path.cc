@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	Application::Path::Path(const char *subdir) {
+	Application::Path::Path(const char *subdir, bool required) {
 
 		char *ptr;
 		TCHAR filename[MAX_PATH];

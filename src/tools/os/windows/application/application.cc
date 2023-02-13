@@ -143,7 +143,7 @@
 
 	}
 
-	Application::LibDir::LibDir(const char *subdir) : File::Path{Application::Path{subdir}} {
+	Application::LibDir::LibDir(const char *subdir, bool required) : File::Path{Application::Path{subdir,required}} {
 	}
 
 	void Application::LibDir::reset(const char *application_name, const char *subdir) {

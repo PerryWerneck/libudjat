@@ -122,18 +122,6 @@
 		wakeup();
 	}
 
-	/*
-	bool Linux::MainLoop::for_each(const std::function<bool(Service &service)> &func) {
-		lock_guard<mutex> lock(guard);
-		for(auto service : services) {
-			if(func(*service)) {
-				return true;
-			}
-		}
-		return false;
-	}
-	*/
-
 	bool Linux::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
 		lock_guard<mutex> lock(guard);
 		for(auto timer : timers.enabled) {

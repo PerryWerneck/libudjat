@@ -180,7 +180,6 @@
 		<Unit filename="src/main/module/module.cc" />
 		<Unit filename="src/main/module/os/linux/close.cc" />
 		<Unit filename="src/main/module/os/linux/init.cc" />
-		<Unit filename="src/main/module/os/linux/load.cc" />
 		<Unit filename="src/main/module/os/linux/locate.cc" />
 		<Unit filename="src/main/module/os/linux/tools.cc" />
 		<Unit filename="src/main/module/os/windows/close.cc" />
@@ -241,7 +240,6 @@
 		<Unit filename="src/tools/logger.cc" />
 		<Unit filename="src/tools/mainloop/handler.cc" />
 		<Unit filename="src/tools/mainloop/mainloop.cc" />
-		<Unit filename="src/tools/mainloop/os/linux/default.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/handler.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/instance.cc" />
 		<Unit filename="src/tools/mainloop/os/linux/mainloop.cc" />

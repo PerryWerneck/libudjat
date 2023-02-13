@@ -150,7 +150,7 @@
 
 		class UDJAT_API Path : public File::Path {
 		public:
-			Path(const char *subdir = nullptr);
+			Path(const char *subdir = nullptr, bool required = true);
 		};
 
 		class UDJAT_API InstallLocation : public File::Path {
@@ -228,7 +228,7 @@
 
 		class UDJAT_API LibDir : public File::Path {
 		public:
-			LibDir(const char *subdir = nullptr);
+			LibDir(const char *subdir = nullptr, bool required = true);
 
 			/// @brief True if the path exists.
 			operator bool() const noexcept;

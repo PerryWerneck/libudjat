@@ -47,13 +47,6 @@
 	MainLoop::~MainLoop() {
 	}
 
-	void MainLoop::quit(const char *message) {
-#ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=%s",message);
-#endif // HAVE_SYSTEMD
-		quit();
-	}
-
 #ifdef _WIN32
 	void Win32::MainLoop::quit() {
 		if(!PostMessage(hwnd,WM_STOP,0,0)) {
@@ -71,7 +64,17 @@
 		running = false;
 		wakeup();
 	}
+
 #endif // _WIN32
+
+	void MainLoop::quit(const char *message) {
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=%s",message);
+#endif // HAVE_SYSTEMD
+		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),"MainLoop");
+		quit();
+	}
+
 
  }
 
