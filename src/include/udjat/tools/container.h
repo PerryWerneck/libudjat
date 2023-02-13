@@ -46,16 +46,27 @@
 		Container & operator=(Container &&) = delete;
 		Container() { }
 
-		inline void size() const noexcept {
+		P back() {
+			std::lock_guard<std::mutex> lock(guard);
+			return objects.back();
+		}
+
+		P front() {
+			std::lock_guard<std::mutex> lock(guard);
+			return objects.front();
+		}
+
+		inline size_t size() noexcept {
+			std::lock_guard<std::mutex> lock(guard);
 			return objects.size();
 		}
 
-		inline void push_back(T *object) noexcept {
+		inline void push_back(P object) noexcept {
 			std::lock_guard<std::mutex> lock(guard);
 			objects.push_back(object);
 		}
 
-		inline void remove(T *object) noexcept {
+		inline void remove(P object) noexcept {
 			std::lock_guard<std::mutex> lock(guard);
 			objects.remove(object);
 		}

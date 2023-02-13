@@ -56,8 +56,10 @@
 			Container & operator=(Container &&) = delete;
 
 			virtual ~Container() {
-				for(auto object : objects) {
+				while(size()) {
+					P object = back();
 					delete object;
+					remove(object); // Just in case.
 				}
 			}
 
@@ -69,20 +71,25 @@
 			*/
 
 			virtual void clear() {
-
-				while(objects.size()) {
-					P object = objects.back();
+				while(size()) {
+					P object = back();
 					delete object;
-					{
-						// Just in case.
-						std::lock_guard<std::mutex> lock(guard);
-						objects.remove(object);
-					}
+					remove(object); // Just in case.
 				}
-
 			}
 
-			inline void size() const noexcept {
+			P back() {
+				std::lock_guard<std::mutex> lock(guard);
+				return objects.back();
+			}
+
+			P front() {
+				std::lock_guard<std::mutex> lock(guard);
+				return objects.front();
+			}
+
+			inline size_t size() noexcept {
+				std::lock_guard<std::mutex> lock(guard);
 				return objects.size();
 			}
 
