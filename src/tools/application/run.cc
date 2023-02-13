@@ -46,8 +46,6 @@
 
 	int Application::run(int argc, char **argv, const char *definitions) {
 
-		Logger::verbosity(3);
-
 		// Check for command line arguments.
 		{
 			#pragma GCC diagnostic push

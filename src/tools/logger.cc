@@ -69,14 +69,21 @@
 			}
 		}
 
+#ifndef _WIN32
+		if(Options::getInstance().syslog) {
+			::syslog(LOG_INFO,"Log verbosity was changed to %s %s %s %s %s",
+				(enabled(Info) ? "info" : "no-info"),
+				(enabled(Warning) ? "warning" : "no-warning"),
+				(enabled(Error) ? "error" : "no-error"),
+				(enabled(Trace) ? "trace" : "no-trace"),
+				(enabled(Debug) ? "debug" : "no-debug")
+			);
+
+		}
+#endif // _WIN32
+
 #ifdef DEBUG
-		enable(Debug,true);
-		String{
-			"info=",enabled(Info),
-			" warning=",enabled(Warning),
-			" error=",enabled(Error),
-			" trace=",enabled(Trace),
-		}.write(Debug);
+		printf("%s\n",String{"info=",enabled(Info)," warning=",enabled(Warning)," error=",enabled(Error)," trace=",enabled(Trace)}.c_str());
 #endif // DEBUG
 
 	}

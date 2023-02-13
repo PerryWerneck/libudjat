@@ -117,7 +117,7 @@ namespace Udjat {
 				LOG_INFO,		// Info
 				LOG_DEBUG,		// Trace
 				LOG_DEBUG,		// Debug
-				LOG_NOTICE		// Trace+1
+				LOG_NOTICE		// Debug+1
 			};
 
 			::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
