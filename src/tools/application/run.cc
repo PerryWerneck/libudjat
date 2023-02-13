@@ -44,6 +44,58 @@
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
 	}
 
+	int Application::argument(char opt, const char *optstring) {
+
+		switch(opt) {
+		case 'T':
+			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optstring}) * 1000,[](){
+				MainLoop::getInstance().quit("Timer expired, exiting");
+				return false;
+			});
+			break;
+
+		case 'f': // For compatibility with SystemService
+			Logger::console(true);
+			Logger::verbosity(9);
+			break;
+
+		case 'I':
+			return install();
+
+		case 'U':
+			return uninstall();
+
+		case 'q':
+			Logger::console(false);
+			break;
+
+		case 'v':
+		case 'V':
+			Logger::console(true);
+			if(optarg) {
+				if(toupper(*optarg) == 'V') {
+					while(toupper(*optarg) == 'V') {
+						Logger::verbosity(Logger::verbosity()+1);
+						optarg++;
+					}
+				} else if(optarg[0] >= '0' && optarg[0] <= '9') {
+					Logger::verbosity(std::stoi(optarg));
+				} else {
+					cerr << strerror(EINVAL) << endl;
+					return EINVAL;
+				}
+			} else {
+				Logger::verbosity(Logger::verbosity()+1);
+			}
+			debug("Verbosity is now '",Logger::verbosity(),"'");
+			break;
+
+		}
+
+		return 1;
+
+	}
+
 	int Application::run(int argc, char **argv, const char *definitions) {
 
 		// Check for command line arguments.
@@ -67,13 +119,6 @@
 			while((opt = getopt_long(argc, argv, "vVqIhfT:", options, &long_index )) != -1) {
 
 				switch(opt) {
-				case 'T':
-					MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){
-						MainLoop::getInstance().quit("Timer expired, exiting");
-						return false;
-					});
-					break;
-
 				case 'h':
 					cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
 							<< "  --help\t\tShow this message" << endl
@@ -83,50 +128,23 @@
 							<< "  --uninstall\t\tUninstall application" << endl;
 					return 0;
 
-				case 'f': // For compatibility with SystemService
-					Logger::console(true);
-					Logger::verbosity(9);
-					break;
 
-				case 'I':
-					return install();
+				default:
+					switch(argument(opt,optarg)) {
+					case 0:
+						return 0;
 
-				case 'U':
-					return uninstall();
-
-				case 'q':
-					Logger::console(false);
-					break;
-
-				case 'v':
-				case 'V':
-					Logger::console(true);
-					if(optarg) {
-						if(toupper(*optarg) == 'V') {
-							while(toupper(*optarg) == 'V') {
-								Logger::verbosity(Logger::verbosity()+1);
-								optarg++;
-							}
-						} else if(optarg[0] >= '0' && optarg[0] <= '9') {
-							Logger::verbosity(std::stoi(optarg));
-						} else {
-							cerr << strerror(EINVAL) << endl;
-							return EINVAL;
-						}
-					} else {
-						Logger::verbosity(Logger::verbosity()+1);
+					case -1:
+						return -1;
 					}
-					debug("Verbosity is now '",Logger::verbosity(),"'");
-					break;
-
 				}
 
 			}
 
 		}
 
-		Logger::redirect();
 		return run(definitions);
+
 	}
 
 	int Application::run(const char *definitions) {

@@ -141,6 +141,9 @@ int main(int argc, char **argv) {
 
 	};
 
+	Logger::redirect();
+	Logger::verbosity(9);
+
 	auto rc = Service().run(argc,argv);
 	debug("Service exits with rc=",rc);
 
@@ -163,6 +166,9 @@ int main(int argc, char **argv) {
 		}
 
 	};
+
+	Logger::redirect();
+	Logger::verbosity(9);
 
 	DummyProtocol protocol;
 	auto rc = Application{}.run(argc,argv,"./test.xml");

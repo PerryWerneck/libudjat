@@ -41,6 +41,12 @@
 		/// @param agent The new root agent.
 		virtual void root(std::shared_ptr<Abstract::Agent> agent);
 
+		/// @brief Parse command line argument.
+		/// @retval 0 Stop application without errors.
+		/// @retval -1 Stop application with error.
+		/// @retval 1 Keep parsing arguments.
+		int argument(char opt, const char *optstring = nullptr);
+
 	public:
 		Application();
 		virtual ~Application();
