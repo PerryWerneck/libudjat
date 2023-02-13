@@ -125,8 +125,6 @@
 					}
 				} else if(required) {
 					throw system_error(errno,system_category(),path.c_str());
-				} else {
-					return false;
 				}
 			}
 

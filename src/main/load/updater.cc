@@ -99,7 +99,7 @@
 			File::Path path{Config::Value<std::string>{"paths","xml",""}};
 			if(!path.empty()) {
 
-				path.mkdir();
+				path.mkdir(true);
 
 				info() << "Loading extended definitions from '" << path << "'" << endl;
 

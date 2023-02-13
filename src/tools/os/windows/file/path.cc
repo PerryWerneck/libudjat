@@ -203,13 +203,14 @@
 		} else if(errno == EEXIST) {
 			if(File::Path::dir(path.c_str())) {
 				return true;
+			} else if(required) {
+				throw system_error(ENOTDIR,system_category(),path);
 			}
-			throw system_error(ENOTDIR,system_category(),path);
+			return false;
 		}
 
 		// walk the full path and try creating each element
 		// Reference: https://github.com/GNOME/glib/blob/main/glib/gfileutils.c
-
 		size_t mark = path.find("\\",1);
 		while(mark != string::npos) {
 			path[mark] = 0;
@@ -218,11 +219,8 @@
 					if(!File::Path::dir(path.c_str())) {
 						throw system_error(ENOTDIR,system_category(),path.c_str());
 					}
-					return true;
 				} else if(required) {
 					throw system_error(errno,system_category(),path.c_str());
-				} else {
-					return false;
 				}
 			}
 
