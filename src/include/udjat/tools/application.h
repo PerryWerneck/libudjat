@@ -55,15 +55,11 @@
 		/// @brief Run application.
 		virtual int UDJAT_API run(const char *definitions = nullptr);
 
-		/// @brief Initialize application; setup locale.
-		/// @param definitions	The xml file for application definitions.
-		// static int UDJAT_API init(int argc, char **argv, const char *definitions = nullptr);
-
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @param start True if it's the application/service startup.
+		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
 		/// @return Seconds for reconfiguation.
-		virtual time_t UDJAT_API setup(const char *pathname, bool startup = false);
+		static time_t UDJAT_API setup(const char *pathname, bool startup = false);
 
 		/// @brief Install application.
 		/// @return 0 when success.

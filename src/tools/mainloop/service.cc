@@ -92,4 +92,8 @@
 		return module.getProperties(properties);
 	}
 
+	const Service * Service::find(const char *name) noexcept {
+		return Controller::getInstance().find(name);
+	}
+
  }

@@ -129,6 +129,29 @@ namespace Udjat {
 		return false;
 	}
 
+	bool Module::load(const char *name, bool required) {
+		return Controller::getInstance().load(name,required);
+	}
+
+	bool Module::Controller::load(const char *name, bool required) {
+
+		string filename = locate(name);
+		if(filename.empty()) {
+			if(required) {
+				throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find module '{}'",name));
+			}
+			return false;
+		}
+
+		if(load(filename,required)) {
+			Logger::String{"Module '",filename.c_str(),"' was already loaded"}.trace("module");
+			return true;
+		}
+
+		return false;
+
+	}
+
 	void Module::load(const File::Path &path, bool required) {
 
 		path.for_each("*" LIBEXT, [required](const File::Path &path){

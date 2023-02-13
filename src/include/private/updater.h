@@ -54,17 +54,17 @@
 
 		/// @brief Write to the 'information' stream.
 		inline std::ostream & info() const {
-			return Application::info();
+			return std::cout << name << "\t";
 		}
 
 		/// @brief Write to the 'warning' stream.
 		inline std::ostream & warning() const {
-			return Application::warning();
+			return std::clog << name << "\t";
 		}
 
 		/// @brief Write to the 'error' stream.
 		inline std::ostream & error() const {
-			return Application::error();
+			return std::cerr << name << "\t";
 		}
 
 

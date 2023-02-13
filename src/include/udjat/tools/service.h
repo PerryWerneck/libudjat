@@ -76,6 +76,11 @@
 			return state.active;
 		}
 
+		/// @brief Get service by name.
+		/// @param name service name.
+		/// @return Pointer to service or nullptr if not found.
+		static const Service * find(const char *name) noexcept;
+
 		virtual Value & getProperties(Value &properties) const noexcept;
 
 		virtual void start();

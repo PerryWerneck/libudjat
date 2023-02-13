@@ -96,10 +96,13 @@
 		/// @return Pointer to module or nullptr if not found.
 		static const Module * find(const char *name) noexcept;
 
-		/// @brief Load module by path
+		/// @brief Load module by path.
 		/// @param name path to module filename or directory.
 		/// @param required true if the module is required.
 		static void load(const File::Path &path, bool required = true);
+
+		/// @brief Load module by name.
+		static bool load(const char *name, bool required = true);
 
 		/// @brief Load module by XML node.
 		static void load(const pugi::xml_node &node);
