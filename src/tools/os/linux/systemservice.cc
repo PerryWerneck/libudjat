@@ -72,6 +72,9 @@
 		if(instance) {
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}
+		if(getenv("INVOCATION_ID")) {
+			Logger::console(false);
+		}
 	}
 
 	SystemService::~SystemService() {
@@ -82,7 +85,27 @@
 
 	int SystemService::argument(char opt, const char *optstring) {
 
-		return Application::argument(opt,optstring);
+		switch(opt) {
+		case 'I':
+		case 'U':
+			cerr << "Not supported on linux, use systemd" << endl;
+			return ENOTSUP;
+
+		case 'f':
+			mode = Foreground;
+			Logger::console(true);
+			break;
+
+		case 'D':
+			mode = Daemon;
+			break;
+
+		default:
+			return Application::argument(opt,optstring);
+
+		}
+
+		return 1;
 	}
 
 	/// @brief Initialize service.
@@ -118,14 +141,13 @@
 		int rc = 0;
 
 		if(mode == Daemon) {
+			Logger::console(false);
 			if(daemon(0,0)) {
 				int err = errno;
 				Logger::String{"Error activating daemon mode: ",strerror(err)," (rc=",err,")"}.error("service");
 				return err;
 			}
 		}
-
-		// Logger::console(mode == Foreground);
 
 		if(mode != None) {
 
@@ -176,7 +198,7 @@
 
 						} else {
 
-							reset(watchdog_timer/2000L);
+							reset(watchdog_timer/3000L);
 							enable();
 							Logger::String{"SystemD watchdog set to ",this->to_string()}.info("systemd");
 

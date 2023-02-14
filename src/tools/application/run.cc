@@ -72,9 +72,8 @@
 			});
 			break;
 
-		case 'f': // For compatibility with SystemService
+		case 'f':
 			Logger::console(true);
-			Logger::verbosity(9);
 			break;
 
 		case 'I':
@@ -123,6 +122,7 @@
 			static struct option options[] = {
 				{ "verbose",	optional_argument,	0,	'v'	},
 				{ "verbosity",	optional_argument,	0,	'v'	},
+				{ "daemon",		no_argument,		0,	'D'	},
 				{ "quiet",		no_argument,		0,	'q'	},
 				{ "install",	no_argument,		0,	'I'	},
 				{ "uninstall",	no_argument,		0,	'U'	},
@@ -150,9 +150,11 @@
 				default:
 					switch(argument(opt,optarg)) {
 					case 0:
+						debug("Argument '",opt,"' returned 0, stopping");
 						return 0;
 
 					case -1:
+						debug("Argument '",opt,"' returned -1, aborting");
 						return -1;
 					}
 				}
@@ -161,6 +163,7 @@
 
 		}
 
+		Logger::redirect();
 		return run(definitions);
 
 	}
@@ -179,8 +182,7 @@
 			root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
 
 #ifdef _WIN32
-			debug("----------------------------------------------------------------");
-			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
+onsoleHandler(this,CTRL_C_EVENT,[](){
 				MainLoop::getInstance().quit("Terminating by ctrl-c event");
 				return false;
 			});
@@ -194,7 +196,6 @@
 				MainLoop::getInstance().quit("Terminating by shutdown event");
 				return false;
 			});
-			debug("----------------------------------------------------------------");
 #endif // _WIN32
 
 			rc = MainLoop::getInstance().run();
