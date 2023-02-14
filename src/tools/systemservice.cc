@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/event.h>
 
  /*
  #include <udjat/tools/application.h>
@@ -45,9 +46,30 @@
 
  namespace Udjat {
 
+	SystemService * SystemService::instance = nullptr;
+
+	SystemService::SystemService() {
+		if(instance) {
+			throw std::system_error(EBUSY,std::system_category(),"System service already active");
+		}
+		Logger::console(false);
+	}
+
+	SystemService::~SystemService() {
+		if(instance == this) {
+			instance = nullptr;
+		}
+	}
+
 	int SystemService::run(int argc, char **argv, const char *definitions) {
 		return Application::run(argc,argv,definitions);
 	}
+
+	int SystemService::deinit(const char *definitions) {
+		Udjat::Event::remove(this);
+		return Application::deinit(definitions);
+	}
+
 
 /*
  	using Event = Abstract::Agent::Event;

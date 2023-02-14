@@ -66,23 +66,6 @@
 
  namespace Udjat {
 
-	SystemService * SystemService::instance = nullptr;
-
-	SystemService::SystemService() {
-		if(instance) {
-			throw std::system_error(EBUSY,std::system_category(),"System service already active");
-		}
-		if(getenv("INVOCATION_ID")) {
-			Logger::console(false);
-		}
-	}
-
-	SystemService::~SystemService() {
-		if(instance == this) {
-			instance = nullptr;
-		}
-	}
-
 	int SystemService::argument(char opt, const char *optstring) {
 
 		switch(opt) {
@@ -93,8 +76,7 @@
 
 		case 'f':
 			mode = Foreground;
-			Logger::console(true);
-			break;
+			return Application::argument(opt,optstring);
 
 		case 'D':
 			mode = Daemon;
@@ -128,12 +110,6 @@
 		}
 
 		return rc;
-	}
-
-	/// @brief Deinitialize service.
-	int SystemService::deinit(const char *definitions) {
-		Udjat::Event::remove(this);
-		return Application::deinit(definitions);
 	}
 
 	int SystemService::run(const char *definitions) {

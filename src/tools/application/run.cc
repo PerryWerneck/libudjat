@@ -141,6 +141,7 @@
 					cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
 							<< "  --help\t\tShow this message" << endl
 							<< "  --verbose\t\tSet loglevel, enable console output" << endl
+							<< "  --timer\t\tExit after the informed time" << endl
 							<< "  --quiet\t\tDisable console output" << endl
 							<< "  --install\t\tInstall application" << endl
 							<< "  --uninstall\t\tUninstall application" << endl;
