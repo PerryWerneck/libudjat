@@ -21,14 +21,65 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
- #include <udjat/agent/abstract.h>
- #include <udjat/agent/state.h>
- #include <udjat/tools/timer.h>
- #include <memory>
- #include <list>
 
  namespace Udjat {
 
+	class UDJAT_API SystemService : public Udjat::Application {
+	private:
+
+		static SystemService *instance;
+
+		enum Mode : uint8_t {
+			Default,		///< @brief Standard service mode based on OS.
+			None,			///< @brief Doesn't run, just quit after parameter parsing.
+			Foreground,		///< @brief Run in foreground as an application.
+			Daemon			///< @brief Run as daemon.
+		} mode = Default;
+
+	protected:
+
+		typedef Udjat::SystemService super;
+
+		/// @brief Parse command line argument.
+		/// @retval 0 Stop application without errors.
+		/// @retval -1 Stop application with error.
+		/// @retval 1 Keep parsing arguments.
+		int argument(char opt, const char *optstring = nullptr) override;
+
+		/// @brief Initialize service.
+		int init(const char *definitions) override;
+
+		/// @brief Deinitialize service.
+		int deinit(const char *definitions) override;
+
+	public:
+		SystemService(const SystemService&) = delete;
+		SystemService& operator=(const SystemService &) = delete;
+		SystemService(SystemService &&) = delete;
+		SystemService & operator=(SystemService &&) = delete;
+
+		SystemService();
+		virtual ~SystemService();
+
+		/// @brief Install service.
+		/// @return 0 when success, errno if failed.
+		/// @retval ENOTSUP No support for this method.
+		// int install() override;
+
+		/// @brief Uninstall service.
+		/// @return 0 when success, errno if failed.
+		/// @retval ENOTSUP No support for this method.
+		// int uninstall() override;
+
+		/// @brief Parse command line options, run application.
+		int run(int argc, char **argv, const char *definitions = nullptr) override;
+
+		/// @brief Run application.
+		int run(const char *definitions = nullptr) override;
+
+	};
+
+/*
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService : public Udjat::Application {
 	private:
@@ -159,6 +210,7 @@
 		virtual int run(int argc, char **argv);
 
 	};
+*/
 
  }
 

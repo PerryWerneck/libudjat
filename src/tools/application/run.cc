@@ -41,6 +41,24 @@
 
  namespace Udjat {
 
+	int Application::init(const char *definitions) {
+		time_t timer = setup(definitions,true);
+		if(timer) {
+			info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
+
+			// TODO: Implement auto-refresh timer.
+			error() << "Auto update is not implemented, aborting" << endl;
+			return ENOTSUP;
+		}
+		return 0;
+	}
+
+	int Application::deinit(const char *) {
+		ThreadPool::getInstance().wait();
+		Module::unload();
+		return 0;
+	}
+
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
 	}
 
@@ -149,55 +167,50 @@
 
 	int Application::run(const char *definitions) {
 
-			// Initialize
-			{
-				time_t timer = setup(definitions,true);
-				if(timer) {
-					info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
+		int rc = -1;
 
-					// TODO: Implement auto-refresh timer.
-					error() << "Auto update is not implemented, aborting" << endl;
-					return ENOTSUP;
-				}
+		try {
+
+			rc = init(definitions);
+			if(rc) {
+				return rc;
 			}
 
-			int rc = -1;
-
-			try {
-
-				root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
+			root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
 
 #ifdef _WIN32
-				debug("----------------------------------------------------------------");
-				Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
-					MainLoop::getInstance().quit("Terminating by ctrl-c event");
-					return false;
-				});
+			debug("----------------------------------------------------------------");
+			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
+				MainLoop::getInstance().quit("Terminating by ctrl-c event");
+				return false;
+			});
 
-				Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
-					MainLoop::getInstance().quit("Terminating by close event");
-					return false;
-				});
+			Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
+				MainLoop::getInstance().quit("Terminating by close event");
+				return false;
+			});
 
-				Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
-					MainLoop::getInstance().quit("Terminating by shutdown event");
-					return false;
-				});
-				debug("----------------------------------------------------------------");
+			Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
+				MainLoop::getInstance().quit("Terminating by shutdown event");
+				return false;
+			});
+			debug("----------------------------------------------------------------");
 #endif // _WIN32
 
-				MainLoop::getInstance().run();
-				ThreadPool::getInstance().wait();
-				Module::unload();
+			rc = MainLoop::getInstance().run();
 
-			} catch(const std::exception &e) {
-
-				error() << e.what() << endl;
+			if(deinit(definitions)) {
 				rc = -1;
-
 			}
 
-			return rc;
+		} catch(const std::exception &e) {
+
+			error() << e.what() << endl;
+			rc = -1;
+
+		}
+
+		return rc;
 
 	}
 

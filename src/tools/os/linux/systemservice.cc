@@ -18,6 +18,24 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/systemservice.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/agent/abstract.h>
+ #include <stdexcept>
+ #include <udjat/tools/event.h>
+ #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/timer.h>
+ #include <udjat/tools/intl.h>
+ #include <unistd.h>
+
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
+ /*
  #include <private/misc.h>
  #include <udjat/tools/systemservice.h>
  #include <iostream>
@@ -38,6 +56,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/application.h>
+ */
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -47,6 +66,150 @@
 
  namespace Udjat {
 
+	SystemService * SystemService::instance = nullptr;
+
+	SystemService::SystemService() {
+		if(instance) {
+			throw std::system_error(EBUSY,std::system_category(),"System service already active");
+		}
+	}
+
+	SystemService::~SystemService() {
+		if(instance == this) {
+			instance = nullptr;
+		}
+	}
+
+	int SystemService::argument(char opt, const char *optstring) {
+
+		return Application::argument(opt,optstring);
+	}
+
+	/// @brief Initialize service.
+	int SystemService::init(const char *definitions) {
+
+		int rc = Application::init(definitions);
+
+		if(!rc) {
+			Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
+			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
+
+				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
+					ThreadPool::getInstance().push([this,definitions](){
+						setup(definitions);
+					});
+					return true;
+				});
+				info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
+			}
+		}
+
+		return rc;
+	}
+
+	/// @brief Deinitialize service.
+	int SystemService::deinit(const char *definitions) {
+		Udjat::Event::remove(this);
+		return Application::deinit(definitions);
+	}
+
+	int SystemService::run(const char *definitions) {
+
+		int rc = 0;
+
+		if(mode == Daemon) {
+			if(daemon(0,0)) {
+				int err = errno;
+				Logger::String{"Error activating daemon mode: ",strerror(err)," (rc=",err,")"}.error("service");
+				return err;
+			}
+		}
+
+		// Logger::console(mode == Foreground);
+
+		if(mode != None) {
+
+			try {
+
+#ifdef HAVE_SYSTEMD
+				class WatchDog : public MainLoop::Timer {
+				protected:
+					void on_timer() override {
+
+						std::string state;
+
+						auto agent = Abstract::Agent::root();
+						if(agent) {
+							state = agent->state()->to_string();
+						} else {
+							state = _("Agent subsystems is not running");
+						}
+
+						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state.c_str());
+
+						if(Logger::enabled(Logger::Info)) {
+							Logger::String{state}.write((Logger::Level) (Logger::Debug+1),"system");
+						}
+
+					}
+
+				public:
+
+					WatchDog() {
+
+						uint64_t watchdog_timer = 0;
+						int status = sd_watchdog_enabled(0,&watchdog_timer);
+
+#ifdef DEBUG
+						if(status == 0) {
+							watchdog_timer = 120000000L;
+							status = 1;
+						}
+#endif // DEBUG
+						if(status < 0) {
+
+							Logger::String{"Can't get SystemD watchdog status: ",strerror(-status)}.error("systemd");
+
+						} else if(status == 0) {
+
+							Logger::String{"SystemD watchdog is not set"}.warning("systemd");
+
+						} else {
+
+							reset(watchdog_timer/2000L);
+							enable();
+							Logger::String{"SystemD watchdog set to ",this->to_string()}.info("systemd");
+
+						}
+
+
+					}
+
+				};
+
+				WatchDog watchdog;
+
+				sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
+				sd_notifyf(0,"STATUS=Starting");
+
+#endif // HAVE_SYSTEMD
+
+				rc = Application::run(definitions);
+
+			} catch(const std::exception &e) {
+
+				error() << e.what() << endl;
+				rc = -1;
+
+			}
+		}
+
+		return rc;
+
+	}
+
+
+ /*
 	void SystemService::notify(const char *message) noexcept {
 
 		if(message && *message) {
@@ -220,6 +383,8 @@
 	int SystemService::wakeup() {
 		return ENOTSUP;
 	}
+
+*/
 
  }
 

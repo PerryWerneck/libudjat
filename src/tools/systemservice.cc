@@ -20,6 +20,8 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
+
+ /*
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/module.h>
@@ -37,16 +39,18 @@
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
-
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-daemon.h>
- #endif // HAVE_SYSTEMD
+ */
 
  using namespace std;
 
  namespace Udjat {
 
-	using Event = Abstract::Agent::Event;
+	int SystemService::run(int argc, char **argv, const char *definitions) {
+		return Application::run(argc,argv,definitions);
+	}
+
+/*
+ 	using Event = Abstract::Agent::Event;
 
 	SystemService * SystemService::instance = nullptr;
 
@@ -58,48 +62,6 @@
 			debug("Instance is not null");
 			throw runtime_error("Can't start more than one system service");
 		}
-
-		/*
-		if(!definitions) {
-
-			// No definitions, try to detect.
-			std::string options[] = {
-#ifndef _WIN32
-				string{ string{"/etc/"} + Application::name() + ".xml.d" },
-#endif // _WIN32
-				Application::DataFile{ (Application::name() + ".xml").c_str() },
-				Application::DataFile{"xml.d"},
-			};
-
-			for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
-
-				debug("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
-
-				if(access(options[ix].c_str(), R_OK) == 0) {
-					debug("Detected service configuration in '",options[ix],"'");
-					definitions = Quark(options[ix]).c_str();
-					break;
-				}
-
-			}
-
-			if(!definitions) {
-				throw system_error(ENOENT,system_category(),string{"Cant find '"} + Application::DataFile{"xml.d"} + "'");
-			}
-
-		} else if(definitions[0] != '.' && definitions[0] != '/' && ::access(definitions,F_OK) != 0) {
-
-			definitions = Quark(Application::DataFile{definitions}).c_str();
-
-		}
-
-		if(::access(definitions,R_OK) != 0) {
-#ifdef _WIN32
-			notify( (string{"Cant find '"} + definitions + "'").c_str() );
-#endif //  _WIN32
-			throw system_error(ENOENT,system_category(),definitions);
-		}
-		*/
 
 		instance = this;
 
@@ -153,7 +115,13 @@
 			}
 
 		public:
-			WatchDog() = default;
+			WatchDog() {
+
+				uint64_t watchdog_timer = 0;
+				int status = sd_watchdog_enabled(0,&watchdog_timer);
+
+
+			}
 		};
 
 		WatchDog watchdog;
@@ -419,5 +387,6 @@
 
 
 	}
+*/
 
  }

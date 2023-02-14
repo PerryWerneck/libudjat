@@ -45,7 +45,15 @@
 		/// @retval 0 Stop application without errors.
 		/// @retval -1 Stop application with error.
 		/// @retval 1 Keep parsing arguments.
-		int argument(char opt, const char *optstring = nullptr);
+		virtual int argument(char opt, const char *optstring = nullptr);
+
+		/// @brief Initialize application.
+		/// @return 0 if ok, errno if not.
+		virtual int init(const char *definitions);
+
+		/// @brief Deinitialize application.
+		/// @return 0 if ok, errno if not.
+		virtual int deinit(const char *definitions);
 
 	public:
 		Application();
@@ -56,10 +64,10 @@
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
 		/// @brief Parse command line options, run application.
-		virtual int UDJAT_API run(int argc, char **argv, const char *definitions = nullptr);
+		virtual int run(int argc, char **argv, const char *definitions = nullptr);
 
 		/// @brief Run application.
-		virtual int UDJAT_API run(const char *definitions = nullptr);
+		virtual int run(const char *definitions = nullptr);
 
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
@@ -68,11 +76,13 @@
 		static time_t UDJAT_API setup(const char *pathname, bool startup = false);
 
 		/// @brief Install application.
-		/// @return 0 when success.
+		/// @return 0 when success, errno if failed.
+		/// @retval ENOTSUP No support for this method.
 		virtual int install();
 
 		/// @brief Uninstall application.
-		/// @return 0 when success.
+		/// @return 0 when success, errno if failed.
+		/// @retval ENOTSUP No support for this method.
 		virtual int uninstall();
 
 		/// @brief Finalize application.
