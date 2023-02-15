@@ -59,16 +59,17 @@ namespace Udjat {
 	public:
 		~Controller();
 
-		static Controller & getInstance();
+		static Controller & getInstance() {
+			static Controller instance;
+			return instance;
+		}
 
 		void set(std::shared_ptr<Abstract::Agent> root);
 
 		std::shared_ptr<Abstract::Agent> get() const;
-		std::shared_ptr<Abstract::Agent> find(const char *path) const;
+		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
 
 		bool get(Request &request, Response &response) const override;
-		bool head(Request &request, Response &response) const override;
-		bool work(Request &request, Report &response) const override;
 
 		void start() noexcept override;
 		void stop() noexcept override;

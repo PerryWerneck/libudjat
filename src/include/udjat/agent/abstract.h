@@ -181,7 +181,7 @@
 			void setOndemand() noexcept;
 
 			/// @brief Set agent details on value.
-			Value & getProperties(Value &response) const noexcept override;
+			Value & getProperties(Value &value) const noexcept override;
 
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
@@ -324,6 +324,13 @@
 			/// @return Agent pointer (empty if not found).
 			virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
+			/// @brief Get child properties by path.
+			/// @param path	Child path.
+			/// @param response Object for child properties.
+			/// @retval true if the child was found.
+			/// @retval false if the child was not found.
+			virtual bool getProperties(const char *path, Value &value) const;
+
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
 
@@ -336,17 +343,10 @@
 			}
 
 			/// @brief Adds cache and update information to the response.
-			void head(ResponseInfo &response);
+			// void head(ResponseInfo &response);
 
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
-
-			// bool operator==(const Abstract::State &state) const noexcept;
-
-			virtual void get(Response &response);
-			virtual void get(Report &report);
-			virtual void get(const Request &request, Response &response);
-			virtual void get(const Request &request, Report &report);
 
 			/// @brief Get formatted value.
 			virtual std::string to_string() const noexcept override;
@@ -372,6 +372,11 @@
 			inline std::shared_ptr<State> state() const {
 				return this->current_state.selected;
 			}
+
+			/// @brief Get State by path, throw if not found.
+			/// @param path	Child path.
+			/// @return state The state.
+			std::shared_ptr<State> state(const char *path) const;
 
 			/// @brief Get current level.
 			inline Level level() const {
