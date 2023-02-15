@@ -48,6 +48,13 @@
 
 	SystemService * SystemService::instance = nullptr;
 
+	SystemService & SystemService::getInstance() {
+		if(instance) {
+			return *instance;
+		}
+		throw std::system_error(EINVAL,std::system_category(),"System service is not active");
+	}
+
 	SystemService::SystemService() {
 		if(instance) {
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");

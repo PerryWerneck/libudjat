@@ -69,8 +69,8 @@
 	int SystemService::argument(char opt, const char *optstring) {
 
 		switch(opt) {
-		case 'I':
-		case 'U':
+		case 'S':
+		case 'Q':
 			cerr << "Not supported on linux, use systemd" << endl;
 			return ENOTSUP;
 

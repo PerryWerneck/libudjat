@@ -41,24 +41,6 @@
 
  namespace Udjat {
 
-	int Application::init(const char *definitions) {
-		time_t timer = setup(definitions,true);
-		if(timer) {
-			info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
-
-			// TODO: Implement auto-refresh timer.
-			error() << "Auto update is not implemented, aborting" << endl;
-			return ENOTSUP;
-		}
-		return 0;
-	}
-
-	int Application::deinit(const char *) {
-		ThreadPool::getInstance().wait();
-		Module::unload();
-		return 0;
-	}
-
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
 	}
 
@@ -70,6 +52,13 @@
 				MainLoop::getInstance().quit("Timer expired, exiting");
 				return false;
 			});
+			break;
+
+		case 'h':
+#ifdef _WIN32
+			cout	<< "  --install\t\tInstall" << endl
+					<< "  --uninstall\t\tUninstall" << endl;
+#endif // _WIN32
 			break;
 
 		case 'f':
@@ -121,7 +110,7 @@
 			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 			static struct option options[] = {
 				{ "verbose",	optional_argument,	0,	'v'	},
-				{ "verbosity",	optional_argument,	0,	'v'	},
+				{ "verbosity",	optional_argument,	0,	'V'	},
 				{ "daemon",		no_argument,		0,	'D'	},
 				{ "quiet",		no_argument,		0,	'q'	},
 				{ "install",	no_argument,		0,	'I'	},
@@ -129,12 +118,14 @@
 				{ "help",		no_argument,		0,	'h'	},
 				{ "foreground",	no_argument,		0,	'f'	},
 				{ "timer",		required_argument,	0,	'T'	},
+				{ "start",	no_argument,			0,	'S'	},
+				{ "stop",	no_argument,			0,	'Q'	},
 			};
 			#pragma GCC diagnostic pop
 
 			int long_index =0;
 			int opt;
-			while((opt = getopt_long(argc, argv, "vVqIhfT:", options, &long_index )) != -1) {
+			while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQ", options, &long_index )) != -1) {
 
 				switch(opt) {
 				case 'h':
@@ -142,11 +133,17 @@
 							<< "  --help\t\tShow this message" << endl
 							<< "  --verbose\t\tSet loglevel, enable console output" << endl
 							<< "  --timer\t\tExit after the informed time" << endl
-							<< "  --quiet\t\tDisable console output" << endl
-							<< "  --install\t\tInstall application" << endl
-							<< "  --uninstall\t\tUninstall application" << endl;
+							<< "  --quiet\t\tDisable console output" << endl;
+					argument(opt,optarg);
 					return 0;
 
+				case 'I':	// Install
+					install();
+					break;
+
+				case 'U':	// Uninstall
+					uninstall();
+					break;
 
 				default:
 					switch(argument(opt,optarg)) {
@@ -182,8 +179,7 @@
 
 			root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
 
-#ifdef _WIN32
-onsoleHandler(this,CTRL_C_EVENT,[](){
+			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
 				MainLoop::getInstance().quit("Terminating by ctrl-c event");
 				return false;
 			});
@@ -197,7 +193,6 @@ onsoleHandler(this,CTRL_C_EVENT,[](){
 				MainLoop::getInstance().quit("Terminating by shutdown event");
 				return false;
 			});
-#endif // _WIN32
 
 			rc = MainLoop::getInstance().run();
 

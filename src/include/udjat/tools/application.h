@@ -76,9 +76,10 @@
 		static time_t UDJAT_API setup(const char *pathname, bool startup = false);
 
 		/// @brief Install application.
+		/// @param name Application name.
 		/// @return 0 when success, errno if failed.
 		/// @retval ENOTSUP No support for this method.
-		virtual int install();
+		virtual int install(const char *name = nullptr);
 
 		/// @brief Uninstall application.
 		/// @return 0 when success, errno if failed.

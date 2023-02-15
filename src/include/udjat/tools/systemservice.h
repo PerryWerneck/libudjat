@@ -31,7 +31,7 @@
 
 		enum Mode : uint8_t {
 			Default,		///< @brief Standard service mode based on OS.
-			None,			///< @brief Doesn't run, just quit after parameter parsing.
+			None,			///< @brief Quit after parameter parsing.
 			Foreground,		///< @brief Run in foreground as an application.
 			Daemon			///< @brief Run as daemon.
 		} mode = Default;
@@ -39,6 +39,8 @@
 	protected:
 
 		typedef Udjat::SystemService super;
+
+		static SystemService & getInstance();
 
 		/// @brief Parse command line argument.
 		/// @retval 0 Stop application without errors.

@@ -51,7 +51,7 @@
 
  namespace Udjat {
 
-	int Application::install() {
+	int Application::install(const char *) {
 		return 0;
 	}
 
