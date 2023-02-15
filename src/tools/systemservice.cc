@@ -46,8 +46,8 @@
 		if(instance) {
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}
+		instance = this;
 		Logger::console(false);
-
 	}
 
 	SystemService::~SystemService() {

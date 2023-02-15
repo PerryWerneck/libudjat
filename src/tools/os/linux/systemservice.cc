@@ -117,19 +117,39 @@
 				protected:
 					void on_timer() override {
 
-						std::string state;
+						try {
 
-						auto agent = Abstract::Agent::root();
-						if(agent) {
-							state = agent->state()->to_string();
-						} else {
-							state = _("Agent subsystems is not running");
-						}
+							SystemService &service = SystemService::getInstance();
 
-						sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state.c_str());
+							try {
 
-						if(Logger::enabled(Logger::Info)) {
-							Logger::String{state}.write((Logger::Level) (Logger::Debug+1),"system");
+								auto agent = Abstract::Agent::root();
+								auto state = agent->state();
+
+								if(state->ready()) {
+									service.status( _( "System is ready" ));
+								} else {
+									String message{state->summary()};
+									if(message.strip().empty()) {
+										service.status( _( "System is not ready" ) );
+									} else {
+										service.status(message.c_str());
+									}
+								}
+
+							} catch(const std::exception &e) {
+
+								service.status(e.what());
+
+							}
+
+						} catch(const std::exception &e) {
+
+#ifdef HAVE_SYSTEMD
+							sd_notifyf(0,"STATUS=%s",e.what());
+#endif // HAVE_SYSTEMD
+							cerr << "service\t" << e.what() << endl;
+
 						}
 
 					}
@@ -198,7 +218,11 @@
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=%s",status);
 #endif // HAVE_SYSTEMD
-		Logger::String{status}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+
+		if(Logger::enabled(Logger::Trace)) {
+			Logger::String{status}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+		}
+
 	}
 
 	int SystemService::uninstall() {
