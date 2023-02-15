@@ -54,6 +54,20 @@
 		if(instance == this) {
 			instance = nullptr;
 		}
+#ifdef _WIN32
+		try {
+
+			Win32::Registry registry("service",true);
+			registry.remove("status");
+			registry.remove("status_time");
+
+		} catch(...) {
+
+			// Ignore errors.
+
+		}
+
+#endif // _WIN32
 	}
 
 	int SystemService::run(int argc, char **argv, const char *definitions) {

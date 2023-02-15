@@ -105,38 +105,6 @@
 
 			};
 
-			/// @brief WIN32 Service controller.
-			///
-			/// Associate an udjat systemservice with the win32 service dispatcher.
-			///
-			class UDJAT_API Controller {
-			private:
-				Status status;
-				SERVICE_STATUS_HANDLE hStatus = 0;
-
-				constexpr Controller() {
-				}
-
-				void set(DWORD state, DWORD wait = 0) {
-					status.set(hStatus,state,wait);
-				}
-
-			public:
-				Controller(const Controller&) = delete;
-				Controller& operator=(const Controller &) = delete;
-				Controller(Controller &&) = delete;
-				Controller & operator=(Controller &&) = delete;
-
-				static Controller & getInstance() {
-					static Controller instance;
-					return instance;
-				}
-
-				static void WINAPI handler( DWORD CtrlCmd );
-				static void dispatcher();
-
-			};
-
 			/// @brief Windows Service Manager.
 			class UDJAT_API Manager {
 			private:

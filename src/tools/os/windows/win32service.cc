@@ -20,7 +20,15 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/win32/service.h>
+ #include <udjat/tools/systemservice.h>
  #include <udjat/tools/logger.h>
+ #include <private/event.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/application.h>
+ #include <stdexcept>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -58,14 +66,14 @@
 
 	}
 
-	void Win32::Service::Controller::dispatcher() {
+	void SystemService::dispatcher() {
 
 		Logger::console(false);
 		Logger::String{"Registering Service dispatcher"}.trace("win32");
 
-		Controller &controller = getInstance();
+		SystemService &service = getInstance();
 
-		Udjat::Event::ConsoleHandler(&controller,CTRL_SHUTDOWN_EVENT,[](){
+		Udjat::Event::ConsoleHandler(&service,CTRL_SHUTDOWN_EVENT,[](){
 			try {
 				getInstance().set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
 				MainLoop::getInstance().quit("CTRL_SHUTDOWN_EVENT");
@@ -76,24 +84,24 @@
 		});
 
 		// Inicia como serviço
-		controller.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
-		if(!controller.hStatus) {
+		service.hStatus = RegisterServiceCtrlHandler(TEXT(Application::Name::getInstance().c_str()),handler);
+		if(!service.hStatus) {
 			Logger::String{Win32::Exception::format("RegisterServiceCtrlHandler failed").c_str()}.error("win32");
 			return;
 		}
 
 		try {
 
-			controller.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
-			if(!SystemService::getInstance().init()) {
+			service.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
+			if(!service.init(service.definitions)) {
 				throw runtime_error("Error initializing service");
 			}
 
-			controller.set(SERVICE_RUNNING, 0);
+			service.set(SERVICE_RUNNING, 0);
 			MainLoop::getInstance().run();
 
-			controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-			SystemService::getInstance().deinit();
+			service.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
+			service.deinit(service.definitions);
 
 		} catch(const std::exception &e) {
 
@@ -101,13 +109,13 @@
 
 		}
 
-		controller.set(SERVICE_STOPPED, 0);
+		service.set(SERVICE_STOPPED, 0);
 
 	}
 
-	void WINAPI Win32::Service::Controller::handler( DWORD CtrlCmd ) {
+	void WINAPI SystemService::handler( DWORD CtrlCmd ) {
 
-		Controller &controller = getInstance();
+		SystemService &controller = getInstance();
 
 		try {
 
@@ -142,25 +150,25 @@
 
 			case SERVICE_CONTROL_INTERROGATE:
 				Logger::String{"SERVICE_CONTROL_INTERROGATE"}.trace("win32");
-				controller.set(controller.status.dwCurrentState, 0);
+				controller.set(controller.service_status.dwCurrentState, 0);
 				break;
 
 			default:
 				Logger::String{"Unexpected win32 service control code: ",((int) CtrlCmd)}.warning("win32");
-				controller.set(controller.status.dwCurrentState, 0);
+				controller.set(controller.service_status.dwCurrentState, 0);
 			}
 
 		} catch(const std::exception &e) {
 
 			Logger::String{"Error '",e.what(),"' handling service request"}.error("win32");
 			// FIXME: Report failure.
-			controller.set(controller.status.dwCurrentState, 0);
+			controller.set(controller.service_status.dwCurrentState, 0);
 
 		} catch(...) {
 
 			Logger::String{"Unexpected error handling service request"}.error("win32");
 			// FIXME: Report failure.
-			controller.set(controller.status.dwCurrentState, 0);
+			controller.set(controller.service_status.dwCurrentState, 0);
 
 		}
 

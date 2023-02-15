@@ -57,11 +57,6 @@
 	Application::Name::Name(bool with_path) : string{with_path ? program_invocation_name : program_invocation_short_name} {
 	}
 
-	const Application::Name & Application::Name::getInstance() {
-		static const Application::Name instance;
-		return instance;
-	}
-
 	static std::string PathFactory(const char *path, const char *subdir, bool required) {
 
 		std::string response{path};

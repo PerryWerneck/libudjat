@@ -22,12 +22,31 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
 
+ #ifdef _WIN32
+	#include <udjat/win32/service.h>
+ #endif // _WIN32
+
  namespace Udjat {
 
 	class UDJAT_API SystemService : public Udjat::Application {
 	private:
 
 		static SystemService *instance;
+
+#ifdef _WIN32
+		const char *definitions = nullptr;
+
+		Win32::Service::Status service_status;
+		SERVICE_STATUS_HANDLE hStatus = 0;
+
+		void set(DWORD state, DWORD wait = 0) {
+			service_status.set(hStatus,state,wait);
+		}
+
+		static void WINAPI handler(DWORD CtrlCmd);
+		static void dispatcher();
+
+#endif // _WIN32
 
 		enum Mode : uint8_t {
 			Default,		///< @brief Standard service mode based on OS.
