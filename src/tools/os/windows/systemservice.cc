@@ -51,6 +51,12 @@
 			mode = Foreground;
 			return Application::argument(opt,optstring);
 
+		case 'S':
+			return start();
+
+		case 'Q':
+			return stop();
+
 		default:
 			return Application::argument(opt,optstring);
 
@@ -84,6 +90,10 @@
 	int SystemService::init(const char *definitions) {
 
 		int rc = Application::init(definitions);
+		if(rc) {
+			debug("Application init rc was ",rc);
+			return rc;
+		}
 
 		try {
 
@@ -156,9 +166,7 @@
 			throw Win32::Exception("Can't get service filename");
 		}
 
-		Logger::String{
-			"Inserting '",display_name,"' service for ", service_binary
-		}.write(Logger::Trace,name().c_str());
+		cout << "Installing service " << appname << " - " << display_name << endl;
 
 		Win32::Service::Manager{}.insert(
 			appname.c_str(),

@@ -67,19 +67,21 @@
 	int SystemService::init(const char *definitions) {
 
 		int rc = Application::init(definitions);
+		if(rc) {
+			debug("Application init rc was ",rc);
+			return rc;
+		}
 
-		if(!rc) {
-			Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
-			if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
+		Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
+		if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
 
-				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
-					ThreadPool::getInstance().push([this,definitions](){
-						setup(definitions,false);
-					});
-					return true;
+			Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
+				ThreadPool::getInstance().push([this,definitions](){
+					setup(definitions,false);
 				});
-				info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
-			}
+				return true;
+			});
+			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 		}
 
 		try {

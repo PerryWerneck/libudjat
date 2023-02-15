@@ -93,7 +93,7 @@
 		try {
 
 			service.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
-			if(!service.init(service.definitions)) {
+			if(service.init(service.definitions)) {
 				throw runtime_error("Error initializing service");
 			}
 
