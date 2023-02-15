@@ -41,6 +41,9 @@
 		/// @param agent The new root agent.
 		virtual void root(std::shared_ptr<Abstract::Agent> agent);
 
+		/// @brief Factory for the application root.
+		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
+
 		/// @brief Parse command line argument.
 		/// @retval 0 Stop application without errors.
 		/// @retval -1 Stop application with error.
@@ -73,7 +76,7 @@
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
 		/// @return Seconds for reconfiguation.
-		static time_t UDJAT_API setup(const char *pathname, bool startup = false);
+		virtual void setup(const char *pathname = nullptr, bool startup = false);
 
 		/// @brief Install application.
 		/// @param name Application name.

@@ -40,19 +40,22 @@
 
 		typedef Udjat::SystemService super;
 
-		static SystemService & getInstance();
-
 		/// @brief Parse command line argument.
 		/// @retval 0 Stop application without errors.
 		/// @retval -1 Stop application with error.
 		/// @retval 1 Keep parsing arguments.
 		int argument(char opt, const char *optstring = nullptr) override;
 
-		/// @brief Initialize service.
-		int init(const char *definitions) override;
+		/// @brief Set root agent.
+		/// @param agent The new root agent.
+		virtual void set(std::shared_ptr<Abstract::Agent> agent);
 
-		/// @brief Deinitialize service.
-		int deinit(const char *definitions) override;
+		/// @brief Set service status.
+		/// @param status The current status.
+		void status(const char *status) noexcept;
+
+		/// @brief Reconfigure service.
+		void setup(const char *pathname, bool startup) noexcept override;
 
 	public:
 		SystemService(const SystemService&) = delete;
@@ -60,18 +63,32 @@
 		SystemService(SystemService &&) = delete;
 		SystemService & operator=(SystemService &&) = delete;
 
+		static SystemService & getInstance();
+
 		SystemService();
 		virtual ~SystemService();
+
+		/// @brief Initialize service.
+		int init(const char *definitions = nullptr) override;
+
+		/// @brief Deinitialize service.
+		int deinit(const char *definitions = nullptr) override;
 
 		/// @brief Install service.
 		/// @return 0 when success, errno if failed.
 		/// @retval ENOTSUP No support for this method.
-		// int install() override;
+		int install(const char *description = nullptr) override;
 
 		/// @brief Uninstall service.
 		/// @return 0 when success, errno if failed.
 		/// @retval ENOTSUP No support for this method.
-		// int uninstall() override;
+		int uninstall() override;
+
+		/// @brief Start service.
+		virtual int start();
+
+		/// @brief Stop service.
+		virtual int stop();
 
 		/// @brief Parse command line options, run application.
 		int run(int argc, char **argv, const char *definitions = nullptr) override;

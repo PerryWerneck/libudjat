@@ -35,33 +35,6 @@
 	#include <systemd/sd-daemon.h>
  #endif // HAVE_SYSTEMD
 
- /*
- #include <private/misc.h>
- #include <udjat/tools/systemservice.h>
- #include <iostream>
- #include <system_error>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/logger.h>
- #include <udjat/module.h>
- #include <unistd.h>
- #include <fstream>
- #include <sys/time.h>
- #include <sys/resource.h>
- #include <locale.h>
- #include <udjat/agent.h>
- #include <csignal>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/intl.h>
- #include <udjat/tools/event.h>
- #include <udjat/tools/application.h>
- */
-
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-daemon.h>
- #endif // HAVE_SYSTEMD
-
  using namespace std;
 
  namespace Udjat {
@@ -101,12 +74,22 @@
 
 				Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
 					ThreadPool::getInstance().push([this,definitions](){
-						setup(definitions);
+						setup(definitions,false);
 					});
 					return true;
 				});
 				info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 			}
+		}
+
+		try {
+
+			set(Abstract::Agent::root());
+
+		} catch(const std::exception &e) {
+
+			status(e.what());
+
 		}
 
 		return rc;
@@ -206,6 +189,32 @@
 
 	}
 
+	int SystemService::install(const char *) {
+		error() << "Not supported on linux, use systemd" << endl;
+		return 0;
+	}
+
+	void SystemService::status(const char *status) noexcept {
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=%s",status);
+#endif // HAVE_SYSTEMD
+		Logger::String{status}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+	}
+
+	int SystemService::uninstall() {
+		error() << "Not supported on linux, use systemd" << endl;
+		return 0;
+	}
+
+	int SystemService::start() {
+		error() << "Not supported on linux, use systemd" << endl;
+		return 0;
+	}
+
+	int SystemService::stop() {
+		error() << "Not supported on linux, use systemd" << endl;
+		return 0;
+	}
 
  /*
 	void SystemService::notify(const char *message) noexcept {
@@ -241,13 +250,6 @@
 
 	}
 
-	void SystemService::deinit() {
-		Udjat::Event::remove(this);
-	}
-
-	int SystemService::install() {
-		return ENOTSUP;
-	}
 
 	void SystemService::stop() {
 		MainLoop::getInstance().quit();

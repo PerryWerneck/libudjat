@@ -35,10 +35,6 @@
 
  namespace Udjat {
 
-	/// @brief Create a root agent.
-	/// @return Pointer with a valid root agent.
-	UDJAT_PRIVATE std::shared_ptr<Abstract::Agent> RootAgentFactory();
-
 	/// @brief Set Root agent.
 	/// @param agent Pointer to a valid root agent.
 	UDJAT_PRIVATE void setRootAgent(std::shared_ptr<Abstract::Agent> agent);

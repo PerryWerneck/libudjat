@@ -32,14 +32,7 @@
 
 	int Application::init(const char *definitions) {
 
-		time_t timer = setup(definitions,true);
-		if(timer) {
-			info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
-
-			// TODO: Implement auto-refresh timer.
-			error() << "Auto update is not implemented, aborting" << endl;
-			return ENOTSUP;
-		}
+		setup(definitions,true);
 
 		return 0;
 	}

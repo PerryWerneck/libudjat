@@ -177,8 +177,7 @@
 				return rc;
 			}
 
-			root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
-
+#ifdef _WIN32
 			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
 				MainLoop::getInstance().quit("Terminating by ctrl-c event");
 				return false;
@@ -193,6 +192,7 @@
 				MainLoop::getInstance().quit("Terminating by shutdown event");
 				return false;
 			});
+#endif // _WIN32
 
 			rc = MainLoop::getInstance().run();
 

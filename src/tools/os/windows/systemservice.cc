@@ -31,105 +31,11 @@
  #include <udjat/tools/intl.h>
  #include <udjat/win32/service.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/activatable.h>
 
  using namespace std;
 
  namespace Udjat {
-
-	void Win32::Service::Status::set(SERVICE_STATUS_HANDLE handle, DWORD state, DWORD wait) noexcept {
-
-		if(state == dwCurrentState) {
-			return;
-		}
-
-		static const struct {
-			DWORD state;
-			const char *msg;
-		} st[] = {
-			{ SERVICE_START_PENDING,	"Service is pending start" },
-			{ SERVICE_STOP_PENDING,		"Service is pending stop"	},
-			{ SERVICE_STOPPED,			"Service is stopped"		},
-			{ SERVICE_RUNNING,			"Service is running"		},
-		};
-
-		if(Logger::enabled(Logger::Trace)) {
-			for(size_t f = 1; f < (sizeof(st)/sizeof(st[0]));f++) {
-				if(st[f].state == state) {
-					Logger::String{st[f].msg}.trace("win32");
-					break;
-				}
-			}
-		}
-
-		dwCurrentState = state;
-		dwWaitHint = wait;
-
-		if(!SetServiceStatus(handle, (SERVICE_STATUS *) this)) {
-			Logger::String{"SetServiceStatus: ",Win32::Exception::format()}.error("win32");
-		}
-
-	}
-
-	void WINAPI Win32::Service::Controller::handler( DWORD CtrlCmd ) {
-
-		Controller &controller = getInstance();
-
-		try {
-
-			switch (CtrlCmd) {
-			case SERVICE_CONTROL_SESSIONCHANGE:
-				Logger::String{"SERVICE_CONTROL_SESSIONCHANGE"}.trace("win32");
-				break;
-
-			case SERVICE_CONTROL_POWEREVENT:
-				Logger::String{"SERVICE_CONTROL_POWEREVENT"}.trace("win32");
-				break;
-
-#ifdef SERVICE_CONTROL_PRESHUTDOWN
-			case SERVICE_CONTROL_PRESHUTDOWN:
-				Logger::String{"SERVICE_CONTROL_PRESHUTDOWN"}.trace("win32");
-				controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","pre-shutdown-timer",30000));
-				MainLoop::getInstance().quit("SERVICE_CONTROL_PRESHUTDOWN");
-				break;
-#endif // SERVICE_CONTROL_PRESHUTDOWN
-
-			case SERVICE_CONTROL_SHUTDOWN:
-				Logger::String{"SERVICE_CONTROL_SHUTDOWN"}.trace("win32");
-				controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
-				MainLoop::getInstance().quit("SERVICE_CONTROL_PRESHUTDOWN");
-				break;
-
-			case SERVICE_CONTROL_STOP:
-				Logger::String{"SERVICE_CONTROL_STOP"}.trace("win32");
-				controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-				MainLoop::getInstance().quit("SERVICE_CONTROL_STOP");
-				break;
-
-			case SERVICE_CONTROL_INTERROGATE:
-				Logger::String{"SERVICE_CONTROL_INTERROGATE"}.trace("win32");
-				controller.set(controller.status.dwCurrentState, 0);
-				break;
-
-			default:
-				Logger::String{"Unexpected win32 service control code: ",((int) CtrlCmd)}.warning("win32");
-				controller.set(controller.status.dwCurrentState, 0);
-			}
-
-		} catch(const std::exception &e) {
-
-			Logger::String{"Error '",e.what(),"' handling service request"}.error("win32");
-			// FIXME: Report failure.
-			controller.set(controller.status.dwCurrentState, 0);
-
-		} catch(...) {
-
-			Logger::String{"Unexpected error handling service request"}.error("win32");
-			// FIXME: Report failure.
-			controller.set(controller.status.dwCurrentState, 0);
-
-		}
-
-	}
 
 	int SystemService::argument(char opt, const char *optstring) {
 
@@ -151,11 +57,40 @@
 		return 1;
 	}
 
+	void SystemService::status(const char *status) noexcept {
+
+		try {
+
+			Win32::Registry registry("service",true);
+
+			registry.set("status",message);
+			registry.set("status_time",TimeStamp().to_string().c_str());
+
+			Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
+
+		} catch(const std::exception &e) {
+
+			error() << "Cant set service state: " << e.what() << endl;
+
+		}
+
+	}
+
+
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {
 
 		int rc = Application::init(definitions);
 
+		try {
+
+			set(Abstract::Agent::root());
+
+		} catch(const std::exception &e) {
+
+			status(e.what());
+
+		}
 
 		return rc;
 	}
@@ -169,12 +104,31 @@
 			rc = Application::run(definitions);
 			break;
 
+		case None:
+			return 0;
+
 		case Default:
 		case Daemon:
+			{
 
-			throw runtime_error("NOT IMPLEMENTED (YET)");
+				static SERVICE_TABLE_ENTRY DispatchTable[] = {
+					{ TEXT(((char *) PACKAGE_NAME)), (LPSERVICE_MAIN_FUNCTION) Win32::Service::Controller::dispatcher },
+					{ NULL, NULL }
+				};
 
+				DispatchTable[0].lpServiceName = TEXT((char *) Application::Name::getInstance().c_str());
+
+				if(!StartServiceCtrlDispatcher( DispatchTable )) {
+					Logger::String{
+						"Failed to start service dispatcher: ",
+						Win32::Exception::format(GetLastError())
+					}.error("win32");
+					return -1;
+				}
+
+			}
 			break;
+
 		}
 
 		return rc;

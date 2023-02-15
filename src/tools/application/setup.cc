@@ -59,7 +59,7 @@
 		return 0;
 	}
 
-	time_t UDJAT_API Application::setup(const char *pathname, bool startup) {
+	void Application::setup(const char *pathname, bool startup) {
 
 		if(startup && !Module::preload()) {
 			throw runtime_error("Module preload has failed");
@@ -68,10 +68,19 @@
 		Updater updater{pathname,startup};
 
 		if(updater.refresh()) {
-			updater.load(RootAgentFactory());
+			updater.load(RootFactory());
 		}
 
-		return updater.wait();
+		time_t timer = updater.wait();
+		if(!timer) {
+			Logger::String{"Auto update is disabled"}.trace(name());
+			return;
+		}
+
+		// Logger::String{"Auto update set to ",TimeStamp{time(0)+timer}.to_string()}.info(name());
+
+		error() << "Auto update was not implemented" << endl;
+
 	}
 
  }

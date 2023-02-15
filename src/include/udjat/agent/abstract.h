@@ -231,6 +231,9 @@
 			/// @brief Remove listener.
 			void remove(std::shared_ptr<Activatable> activatable);
 
+			/// @brief Factory for the default root agent.
+			static std::shared_ptr<Agent> RootFactory();
+
 			/// @brief Build and agent from type & xml node.
 			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const pugi::xml_node &node);
 

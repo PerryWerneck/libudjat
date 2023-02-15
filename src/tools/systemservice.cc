@@ -21,26 +21,13 @@
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/event.h>
-
- /*
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/module.h>
- #include <iostream>
- #include <private/misc.h>
- #include <udjat/tools/logger.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/tools/string.h>
- #include <private/updater.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/agent/abstract.h>
 
  #ifdef _WIN32
 	#include <udjat/win32/registry.h>
  #endif // _WIN32
-
- #ifdef HAVE_UNISTD_H
-	#include <unistd.h>
- #endif // HAVE_UNISTD_H
- */
 
  using namespace std;
 
@@ -60,6 +47,7 @@
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}
 		Logger::console(false);
+
 	}
 
 	SystemService::~SystemService() {
@@ -75,6 +63,78 @@
 	int SystemService::deinit(const char *definitions) {
 		Udjat::Event::remove(this);
 		return Application::deinit(definitions);
+	}
+
+	void SystemService::setup(const char *pathname, bool startup) noexcept {
+
+		try {
+
+			Application::setup(pathname,startup);
+			set(Abstract::Agent::root());
+
+		} catch(const std::exception &e) {
+
+			status(e.what());
+
+		}
+
+	}
+
+	void SystemService::set(std::shared_ptr<Abstract::Agent> agent) {
+
+		class Listener : public Activatable {
+		public:
+			constexpr Listener() : Activatable("syssrvc") {
+			}
+
+			bool activated() const noexcept override {
+				return false;
+			}
+
+			void activate(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) override {
+
+				try {
+
+					SystemService &service = SystemService::getInstance();
+
+					try {
+
+						auto agent = Abstract::Agent::root();
+						auto state = agent->state();
+
+						if(state->ready()) {
+							service.status( _( "System is ready" ));
+						} else {
+							String message{state->summary()};
+							if(message.strip().empty()) {
+								service.status( _( "System is not ready" ) );
+							} else {
+								service.status(message.c_str());
+							}
+						}
+
+					} catch(const std::exception &e) {
+
+						service.status(e.what());
+
+					}
+
+				} catch(const std::exception &e) {
+
+					cerr << "service\tCant update service state:" << e.what() << endl;
+
+				}
+
+			}
+
+
+		};
+
+		agent->push_back(
+				(Abstract::Agent::Event) (Abstract::Agent::Event::STARTED|Abstract::Agent::Event::STATE_CHANGED),
+				std::make_shared<Listener>()
+		);
+
 	}
 
 

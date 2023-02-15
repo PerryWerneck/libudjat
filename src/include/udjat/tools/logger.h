@@ -113,6 +113,23 @@
 				write(Logger::Error,domain);
 			}
 
+			inline void trace(const std::string &domain) const {
+				write(Logger::Trace,domain.c_str());
+			}
+
+			inline void info(const std::string &domain) const {
+				write(Logger::Info,domain.c_str());
+			}
+
+			inline void warning(const std::string &domain) const {
+				write(Logger::Warning,domain.c_str());
+			}
+
+			inline void error(const std::string &domain) const {
+				write(Logger::Error,domain.c_str());
+			}
+
+
 		};
 
 		/// @brief Formatted Log message.
