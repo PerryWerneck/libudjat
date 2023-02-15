@@ -2,11 +2,11 @@
 dnl Process this file with autoconf to produce a configure script.
 
 dnl The minimum version of autoconf required.
-AC_PREREQ(2.59)
+AC_PREREQ([2.69])
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat], [1.1], [perry.werneck@gmail.com], [libudjat], [https://github.com/PerryWerneck/libudjat.git])
+AC_INIT([libudjat],[1.1],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -192,7 +192,7 @@ dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
 dnl ---------------------------------------------------------------------------
 AC_DEFUN([AX_CHECK_COMPILE_FLAG],
-[AC_PREREQ(2.59)dnl for _AC_LANG_PREFIX
+[AC_PREREQ([2.69])dnl for _AC_LANG_PREFIX
 AS_VAR_PUSHDEF([CACHEVAR],[ax_cv_check_[]_AC_LANG_ABBREV[]flags_$4_$1])dnl
 AC_CACHE_CHECK([whether _AC_LANG compiler accepts $1], CACHEVAR, [
   ax_check_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
@@ -221,10 +221,7 @@ AC_MSG_CHECKING(whether $CC accepts -fvisibility=hidden)
 AC_CACHE_VAL(app_cv_fvisibility_ok,
 [ac_save_cc="$CC"
 CC="$CC -fvisibility=hidden"
-AC_TRY_RUN([int main() { return 0; }],
-  app_cv_fvisibility_ok=yes,
-  app_cv_fvisibility_ok=no,
-  app_cv_fvisibility_ok=no)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[int main() { return 0; }]])],[app_cv_fvisibility_ok=yes],[app_cv_fvisibility_ok=no],[app_cv_fvisibility_ok=no])
 CC="$ac_save_cc"])
 AC_MSG_RESULT($app_cv_fvisibility_ok)
 if test $app_cv_fvisibility_ok = yes; then
