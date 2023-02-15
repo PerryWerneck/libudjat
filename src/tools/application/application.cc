@@ -26,6 +26,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/agent/abstract.h>
 
  using namespace std;
 
@@ -37,6 +38,10 @@
 
 	Application::~Application() {
 		Udjat::Module::unload();
+	}
+
+	std::shared_ptr<Abstract::Agent> Application::RootFactory() const {
+		return Abstract::Agent::RootFactory();
 	}
 
 	std::ostream & Application::info() {

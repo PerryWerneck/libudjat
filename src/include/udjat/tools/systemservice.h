@@ -21,14 +21,103 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
- #include <udjat/agent/abstract.h>
- #include <udjat/agent/state.h>
- #include <udjat/tools/timer.h>
- #include <memory>
- #include <list>
+
+ #ifdef _WIN32
+	#include <udjat/win32/service.h>
+ #endif // _WIN32
 
  namespace Udjat {
 
+	class UDJAT_API SystemService : public Udjat::Application {
+	private:
+
+		static SystemService *instance;
+
+#ifdef _WIN32
+		const char *definitions = nullptr;
+
+		Win32::Service::Status service_status;
+		SERVICE_STATUS_HANDLE hStatus = 0;
+
+		void set(DWORD state, DWORD wait = 0) {
+			service_status.set(hStatus,state,wait);
+		}
+
+		static void WINAPI handler(DWORD CtrlCmd);
+		static void dispatcher();
+
+#endif // _WIN32
+
+		enum Mode : uint8_t {
+			Default,		///< @brief Standard service mode based on OS.
+			None,			///< @brief Quit after parameter parsing.
+			Foreground,		///< @brief Run in foreground as an application.
+			Daemon			///< @brief Run as daemon.
+		} mode = Default;
+
+	protected:
+
+		typedef Udjat::SystemService super;
+
+		/// @brief Parse command line argument.
+		/// @retval 0 Stop application without errors.
+		/// @retval -1 Stop application with error.
+		/// @retval 1 Keep parsing arguments.
+		int argument(char opt, const char *optstring = nullptr) override;
+
+		/// @brief Set root agent.
+		/// @param agent The new root agent.
+		virtual void set(std::shared_ptr<Abstract::Agent> agent);
+
+		/// @brief Set service status.
+		/// @param status The current status.
+		void status(const char *status) noexcept;
+
+		/// @brief Reconfigure service.
+		void setup(const char *pathname, bool startup) noexcept override;
+
+	public:
+		SystemService(const SystemService&) = delete;
+		SystemService& operator=(const SystemService &) = delete;
+		SystemService(SystemService &&) = delete;
+		SystemService & operator=(SystemService &&) = delete;
+
+		static SystemService & getInstance();
+
+		SystemService();
+		virtual ~SystemService();
+
+		/// @brief Initialize service.
+		int init(const char *definitions = nullptr) override;
+
+		/// @brief Deinitialize service.
+		int deinit(const char *definitions = nullptr) override;
+
+		/// @brief Install service.
+		/// @return 0 when success, errno if failed.
+		/// @retval ENOTSUP No support for this method.
+		int install(const char *description = nullptr) override;
+
+		/// @brief Uninstall service.
+		/// @return 0 when success, errno if failed.
+		/// @retval ENOTSUP No support for this method.
+		int uninstall() override;
+
+		/// @brief Start service.
+		virtual int start();
+
+		/// @brief Stop service.
+		virtual int stop();
+
+		/// @brief Parse command line options, run application.
+		int run(int argc, char **argv, const char *definitions = nullptr) override;
+
+		/// @brief Run application.
+		int run(const char *definitions = nullptr) override;
+
+	};
+
+/*
 	/// @brief Abstract class for system services.
 	class UDJAT_API SystemService : public Udjat::Application {
 	private:
@@ -159,6 +248,7 @@
 		virtual int run(int argc, char **argv);
 
 	};
+*/
 
  }
 

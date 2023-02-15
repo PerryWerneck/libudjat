@@ -258,7 +258,7 @@
 		return Logger::Error;
 	}
 
-	void Logger::redirect(bool console, bool file) {
+	void Logger::redirect(bool file) {
 
 #ifdef WIN32
 		Application::LogDir::getInstance();	// Get log path from registry.
@@ -268,7 +268,6 @@
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
 		Options &options{Options::getInstance()};
-		options.console = console;
 		options.file = file;
 
 		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {

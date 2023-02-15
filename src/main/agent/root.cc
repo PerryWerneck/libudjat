@@ -65,7 +65,7 @@
 
 	}
 
-	std::shared_ptr<Abstract::Agent> RootAgentFactory() {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::RootFactory() {
 
 		/// @brief The root agent.
 		class Agent : public Abstract::Agent {
@@ -287,7 +287,7 @@
 		// Get controller to initialize it.
 		Abstract::Agent::Controller::getInstance();
 
-		return make_shared<Agent>(Quark{Application::Name()}.c_str());
+		return make_shared<Agent>(Application::Name::getInstance().c_str());
 
 	}
 

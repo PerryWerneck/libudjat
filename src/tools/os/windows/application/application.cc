@@ -94,11 +94,6 @@
 		assign(ptr);
 	}
 
-	const Application::Name & Application::Name::getInstance() {
-		static Application::Name instance;
-		return instance;
-	}
-
 	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{Application::Path{subdir}.c_str(),required} {
 	}
 

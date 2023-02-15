@@ -51,17 +51,6 @@
 
  int Udjat::Linux::MainLoop::run() {
 
-#ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
-#endif // HAVE_SYSTEMD
-
-	//
-	// Start services
-	//
-#ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"STATUS=Starting up");
-#endif // HAVE_SYSTEMD
-
 	Service::Controller::getInstance().start();
 
 	//

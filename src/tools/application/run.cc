@@ -54,9 +54,15 @@
 			});
 			break;
 
-		case 'f': // For compatibility with SystemService
+		case 'h':
+#ifdef _WIN32
+			cout	<< "  --install\t\tInstall" << endl
+					<< "  --uninstall\t\tUninstall" << endl;
+#endif // _WIN32
+			break;
+
+		case 'f':
 			Logger::console(true);
-			Logger::verbosity(9);
 			break;
 
 		case 'I':
@@ -104,100 +110,113 @@
 			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 			static struct option options[] = {
 				{ "verbose",	optional_argument,	0,	'v'	},
-				{ "verbosity",	optional_argument,	0,	'v'	},
+				{ "verbosity",	optional_argument,	0,	'V'	},
+				{ "daemon",		no_argument,		0,	'D'	},
 				{ "quiet",		no_argument,		0,	'q'	},
 				{ "install",	no_argument,		0,	'I'	},
 				{ "uninstall",	no_argument,		0,	'U'	},
 				{ "help",		no_argument,		0,	'h'	},
 				{ "foreground",	no_argument,		0,	'f'	},
 				{ "timer",		required_argument,	0,	'T'	},
+				{ "start",	no_argument,			0,	'S'	},
+				{ "stop",	no_argument,			0,	'Q'	},
 			};
 			#pragma GCC diagnostic pop
 
-			int long_index =0;
-			int opt;
-			while((opt = getopt_long(argc, argv, "vVqIhfT:", options, &long_index )) != -1) {
+			try {
 
-				switch(opt) {
-				case 'h':
-					cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
-							<< "  --help\t\tShow this message" << endl
-							<< "  --verbose\t\tSet loglevel, enable console output" << endl
-							<< "  --quiet\t\tDisable console output" << endl
-							<< "  --install\t\tInstall application" << endl
-							<< "  --uninstall\t\tUninstall application" << endl;
-					return 0;
+				int long_index =0;
+				int opt;
+				while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQ", options, &long_index )) != -1) {
 
-
-				default:
-					switch(argument(opt,optarg)) {
-					case 0:
+					switch(opt) {
+					case 'h':
+						cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
+								<< "  --help\t\tShow this message" << endl
+								<< "  --verbose\t\tSet loglevel, enable console output" << endl
+								<< "  --timer\t\tExit after the informed time" << endl
+								<< "  --quiet\t\tDisable console output" << endl;
+						argument(opt,optarg);
 						return 0;
 
-					case -1:
-						return -1;
+					case 'I':	// Install
+						install();
+						break;
+
+					case 'U':	// Uninstall
+						uninstall();
+						break;
+
+					default:
+						switch(argument(opt,optarg)) {
+						case 0:
+							debug("Argument '",opt,"' returned 0, stopping");
+							return 0;
+
+						case -1:
+							debug("Argument '",opt,"' returned -1, aborting");
+							return -1;
+						}
 					}
+
 				}
+
+			} catch(const std::exception &e) {
+
+				cerr << endl << e.what() << endl << endl;
+				return -1;
 
 			}
 
 		}
 
+		Logger::redirect();
 		return run(definitions);
 
 	}
 
 	int Application::run(const char *definitions) {
 
-			// Initialize
-			{
-				time_t timer = setup(definitions,true);
-				if(timer) {
-					info() << "Auto-refresh set to " << TimeStamp{time(0)+timer} << endl;
+		int rc = -1;
 
-					// TODO: Implement auto-refresh timer.
-					error() << "Auto update is not implemented, aborting" << endl;
-					return ENOTSUP;
-				}
+		try {
+
+			rc = init(definitions);
+			if(rc) {
+				return rc;
 			}
-
-			int rc = -1;
-
-			try {
-
-				root(Abstract::Agent::root());	// throw if the agent subsystem is inactive.
 
 #ifdef _WIN32
-				debug("----------------------------------------------------------------");
-				Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
-					MainLoop::getInstance().quit("Terminating by ctrl-c event");
-					return false;
-				});
+			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
+				MainLoop::getInstance().quit("Terminating by ctrl-c event");
+				return false;
+			});
 
-				Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
-					MainLoop::getInstance().quit("Terminating by close event");
-					return false;
-				});
+			Udjat::Event::ConsoleHandler(this,CTRL_CLOSE_EVENT,[](){
+				MainLoop::getInstance().quit("Terminating by close event");
+				return false;
+			});
 
-				Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
-					MainLoop::getInstance().quit("Terminating by shutdown event");
-					return false;
-				});
-				debug("----------------------------------------------------------------");
+			Udjat::Event::ConsoleHandler(this,CTRL_SHUTDOWN_EVENT,[](){
+				MainLoop::getInstance().quit("Terminating by shutdown event");
+				return false;
+			});
 #endif // _WIN32
 
-				MainLoop::getInstance().run();
-				ThreadPool::getInstance().wait();
-				Module::unload();
+			rc = MainLoop::getInstance().run();
 
-			} catch(const std::exception &e) {
-
-				error() << e.what() << endl;
+			if(deinit(definitions)) {
 				rc = -1;
-
 			}
 
-			return rc;
+		} catch(const std::exception &e) {
+
+			error() << e.what() << endl;
+			rc = -1;
+
+		}
+
+		return rc;
 
 	}
 
