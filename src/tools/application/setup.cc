@@ -52,11 +52,11 @@
  namespace Udjat {
 
 	int Application::install(const char *) {
-		return 0;
+		return 1;
 	}
 
 	int Application::uninstall() {
-		return 0;
+		return 1;
 	}
 
 	void Application::setup(const char *pathname, bool startup) {

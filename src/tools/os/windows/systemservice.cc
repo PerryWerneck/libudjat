@@ -151,6 +151,8 @@
 
 	int SystemService::install(const char *description) {
 
+		mode = None;
+
 		Application::Name appname;
 
 		string display_name;
@@ -174,7 +176,7 @@
 			service_binary
 		);
 
-		return 0;
+		return 1;
 
 	}
 
@@ -182,6 +184,8 @@
 	/// @return 0 when success, errno if failed.
 	/// @retval ENOTSUP No support for this method.
 	int SystemService::uninstall() {
+
+		mode = None;
 
 		Application::Name appname;
 		Win32::Service::Manager manager;
@@ -199,12 +203,14 @@
 		manager.remove(appname.c_str());
 		cout << "Service '" << appname << "' removed" << endl;
 
-		return 0;
+		return 1;
 
 	}
 
 	/// @brief Start service.
 	int SystemService::start() {
+
+		mode = None;
 
 		Application::Name appname;
 		cout << "Starting service '" << appname << "'" << endl;
@@ -220,11 +226,13 @@
 		service.start();
 		cout << "Service '" << appname << "' was started" << endl;
 
-		return 0;
+		return 1;
 
 	}
 
 	int SystemService::stop() {
+
+		mode = None;
 
 		Application::Name appname;
 		cout << "Stopping service '" << appname << "'" << endl;
@@ -243,7 +251,7 @@
 
 		service.stop();
 
-		return 0;
+		return 1;
 
 	}
 

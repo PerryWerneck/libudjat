@@ -123,39 +123,48 @@
 			};
 			#pragma GCC diagnostic pop
 
-			int long_index =0;
-			int opt;
-			while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQ", options, &long_index )) != -1) {
+			try {
 
-				switch(opt) {
-				case 'h':
-					cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
-							<< "  --help\t\tShow this message" << endl
-							<< "  --verbose\t\tSet loglevel, enable console output" << endl
-							<< "  --timer\t\tExit after the informed time" << endl
-							<< "  --quiet\t\tDisable console output" << endl;
-					argument(opt,optarg);
-					return 0;
+				int long_index =0;
+				int opt;
+				while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQ", options, &long_index )) != -1) {
 
-				case 'I':	// Install
-					install();
-					break;
-
-				case 'U':	// Uninstall
-					uninstall();
-					break;
-
-				default:
-					switch(argument(opt,optarg)) {
-					case 0:
-						debug("Argument '",opt,"' returned 0, stopping");
+					switch(opt) {
+					case 'h':
+						cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
+								<< "  --help\t\tShow this message" << endl
+								<< "  --verbose\t\tSet loglevel, enable console output" << endl
+								<< "  --timer\t\tExit after the informed time" << endl
+								<< "  --quiet\t\tDisable console output" << endl;
+						argument(opt,optarg);
 						return 0;
 
-					case -1:
-						debug("Argument '",opt,"' returned -1, aborting");
-						return -1;
+					case 'I':	// Install
+						install();
+						break;
+
+					case 'U':	// Uninstall
+						uninstall();
+						break;
+
+					default:
+						switch(argument(opt,optarg)) {
+						case 0:
+							debug("Argument '",opt,"' returned 0, stopping");
+							return 0;
+
+						case -1:
+							debug("Argument '",opt,"' returned -1, aborting");
+							return -1;
+						}
 					}
+
 				}
+
+			} catch(const std::exception &e) {
+
+				cerr << endl << e.what() << endl << endl;
+				return -1;
 
 			}
 
