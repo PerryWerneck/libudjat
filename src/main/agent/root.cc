@@ -199,7 +199,6 @@
 				return super::computeState();
 			}
 
-
 			virtual ~Agent() {
 				std::stringstream ss;
 				ss << "Root agent " << hex << ((void *) this) << dec << " was destroyed";

@@ -84,9 +84,11 @@
 		return reset(time(nullptr) + seconds);
 	}
 
+	/*
 	void Abstract::Agent::requestRefresh(time_t seconds) {
 		sched_update(seconds);
 	}
+	*/
 
 	void Abstract::Agent::forward(std::shared_ptr<State> state) noexcept {
 

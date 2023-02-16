@@ -116,12 +116,7 @@
 				/// @brief Object children.
 				std::list<std::shared_ptr<Abstract::Object>> objects;
 
-
 			} children;
-
-			/// @brief Find child, update path.
-			/// @return Pointer to child or nullptr.
-			const Abstract::Agent * find(const char **path) const;
 
 			struct Listener {
 				const Abstract::Agent::Event event;
@@ -158,10 +153,6 @@
 			/// @return true if the state has changed.
 			virtual bool set(std::shared_ptr<State> state);
 
-			/// @brief Activate a new state.
-			/// @return true if the level has changed.
-			virtual bool UDJAT_DEPRECATED(activate(std::shared_ptr<State> state));
-
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;
 
@@ -185,7 +176,8 @@
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
 
-			/// @brief Set agent details on value.
+			/// @brief Get agent properties.
+			/// @param value Value to receive the properties.
 			Value & getProperties(Value &value) const noexcept override;
 
 			/// @brief Set update timer interval.
@@ -196,6 +188,7 @@
 
 		public:
 			class Controller;
+			friend class Controller;
 
 			Agent(const Agent&) = delete;
 			Agent& operator=(const Agent &) = delete;
@@ -206,9 +199,6 @@
 			Agent(const pugi::xml_node &node);
 
 			virtual ~Agent();
-
-			/// @brief Insert child node.
-			void UDJAT_DEPRECATED(insert(std::shared_ptr<Abstract::Agent> child));
 
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
@@ -270,10 +260,6 @@
 				return update.timer;
 			}
 
-			/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
-			/// @param seconds Seconds for next refresh.
-			void UDJAT_DEPRECATED(requestRefresh(time_t seconds = 0));
-
 			/// @brief Set time for the next update (force a refresh in the next cicle if seconds=0).
 			/// @param seconds Seconds for next refresh.
 			/// @see reset
@@ -286,22 +272,8 @@
 			/// @return Update timestamp after change.
 			time_t reset(time_t timestamp);
 
-			UDJAT_DEPRECATED(inline time_t getUpdateInterval() const noexcept) {
-				return update.timer;
-			}
-
-			/// @brief Get update timer interval.
-			UDJAT_DEPRECATED(inline time_t updatetimer() const noexcept) {
-				return update.timer;
-			}
-
 			/// @brief Get Agent path.
 			std::string path() const;
-
-			/// @brief The agent has children?
-			UDJAT_DEPRECATED(bool hasChildren() const noexcept) {
-				return !children.agents.empty();
-			}
 
 			/// @brief Is the agent empty?
 			/// @return false if the agent have children.
@@ -339,16 +311,13 @@
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
 
-			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
+			inline auto begin() noexcept {
 				return children.agents.begin();
 			}
 
-			inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
+			inline auto end() noexcept {
 				return children.agents.end();
 			}
-
-			/// @brief Adds cache and update information to the response.
-			// void head(ResponseInfo &response);
 
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
@@ -368,10 +337,6 @@
 
 			/// @brief Assign value from string.
 			virtual bool assign(const char *value);
-
-			UDJAT_DEPRECATED(inline std::shared_ptr<State> getState() const) {
-				return this->current_state.selected;
-			}
 
 			/// @brief Get current state
 			inline std::shared_ptr<State> state() const {
@@ -399,7 +364,7 @@
 			/// @brief Insert Alert.
 			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node);
 
-			/// @brief Get property from the agent os related objects.
+			/// @brief Get agent property.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.

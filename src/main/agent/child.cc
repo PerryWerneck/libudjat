@@ -21,21 +21,22 @@
  #include <private/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert/abstract.h>
-
-//---[ Implement ]------------------------------------------------------------------------------------------
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
+	/*
 	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
 		push_back(child);
 	}
+	*/
 
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
 		if(child->parent) {
-			throw runtime_error(string{"Agent '"} + child->name() + "' is child of '" + child->parent->name() + "'");
+			throw runtime_error(Logger::Message{"Agent {} is child of {}",child->name(),child->parent->name()});
 		}
 
 		child->parent = this;
@@ -62,64 +63,6 @@
 
 	bool Abstract::Agent::empty() const noexcept {
 		return children.agents.empty();
-	}
-
-	const Abstract::Agent * Abstract::Agent::find(const char **path) const {
-
-		const char *ptr = *path;
-
-		if(!(ptr && *ptr)) {
-			throw system_error(EINVAL,system_category());
-		}
-
-		if(*ptr == '/') {
-			ptr++;
-		}
-
-		*path = ptr;
-
-		debug("PATH='",ptr,"'");
-
-		size_t length;
-		ptr = strchr(*path,'/');
-		if(!ptr) {
-			length = strlen(*path);
-		} else {
-			length = ptr - (*path);
-		}
-
-		debug("PATH='",*path,"' length=",length);
-
-		{
-			lock_guard<std::recursive_mutex> lock(guard);
-			for(auto child : children.agents) {
-				if(!strncasecmp(child->name(),*path,length)) {
-					*path = (*path) + length;
-					debug("Found '",child->name(),"'");
-					return child.get();
-				}
-			}
-		}
-
-		return nullptr;
-
-	}
-
-	bool Abstract::Agent::getProperties(const char *path, Value &value) const {
-
-		debug("ME='",name(),"' path='",path,"'");
-
-		if(!*path) {
-			getProperties(value);
-			return true;
-		}
-
-		auto agent = find(&path);
-		if(agent) {
-			return agent->getProperties(path,value);
-		}
-
-		return false;
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::state(const char *path) const {

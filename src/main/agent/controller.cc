@@ -93,9 +93,26 @@ namespace Udjat {
 
 	}
 
+	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
+
+		debug("Getting Cache info for '",request.getPath(),"'");
+
+		// Get cache info.
+		if(!head(get().get(),request.getPath(),response)) {
+			throw std::system_error(ENOENT,std::system_category());
+		}
+
+		return true;
+	}
+
 	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
 
+		// Get cache info.
+		head(request,response);
+
 		debug("Getting properties for '",request.getPath(),"'");
+
+		// Get properties.
 		if(!get()->getProperties(request.getPath(),response)) {
 			throw std::system_error(ENOENT,std::system_category());
 		}
