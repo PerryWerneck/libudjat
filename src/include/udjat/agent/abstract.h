@@ -130,24 +130,6 @@
 			/// @brief Event listeners.
 			std::list<Listener> listeners;
 
-			/// @brief Load agent properties from XML node.
-			// void setup_properties(const pugi::xml_node &node) noexcept;
-
-			/// @brief Load states from XML node.
-			// void setup_states(const pugi::xml_node &node) noexcept;
-
-			/// @brief Load alerts from XML node.
-			// void setup_alerts(const pugi::xml_node &node) noexcept;
-
-			/// @brief Load children from XML node.
-			// void setup_children(const pugi::xml_node &node) noexcept;
-
-			/// @brief Activate agent state.
-			//void activate() noexcept;
-
-			/// @brief Deactivate agent state (if needed).
-			//void deactivate() noexcept;
-
 			/// @brief Notify state change.
 			/// @param state New agent state.
 			/// @param activate if true the new state will be activated.
@@ -170,10 +152,6 @@
 			/// @brief Set agent state.
 			/// @return true if the state has changed.
 			virtual bool set(std::shared_ptr<State> state);
-
-			/// @brief Activate a new state.
-			/// @return true if the level has changed.
-			virtual bool UDJAT_DEPRECATED(activate(std::shared_ptr<State> state));
 
 			/// @brief Activate an alert.
 			void activate(std::shared_ptr<Abstract::Alert> alert) const;
@@ -198,8 +176,9 @@
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
 
-			/// @brief Set agent details on value.
-			Value & getProperties(Value &response) const noexcept override;
+			/// @brief Get agent properties.
+			/// @param value Value to receive the properties.
+			Value & getProperties(Value &value) const noexcept override;
 
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
@@ -209,9 +188,17 @@
 
 		public:
 			class Controller;
+			friend class Controller;
 
-			/// @brief Insert child node.
-			void UDJAT_DEPRECATED(insert(std::shared_ptr<Abstract::Agent> child));
+			Agent(const Agent&) = delete;
+			Agent& operator=(const Agent &) = delete;
+			Agent(Agent &&) = delete;
+			Agent & operator=(Agent &&) = delete;
+
+			Agent(const char *name = "", const char *label = "", const char *summary = "");
+			Agent(const pugi::xml_node &node);
+
+			virtual ~Agent();
 
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
@@ -239,30 +226,17 @@
 			/// @brief Remove listener.
 			void remove(std::shared_ptr<Activatable> activatable);
 
+			/// @brief Factory for the default root agent.
+			static std::shared_ptr<Agent> RootFactory();
+
 			/// @brief Build and agent from type & xml node.
 			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const pugi::xml_node &node);
 
 			/// @brief Build and agent from node.
 			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const pugi::xml_node &node);
 
-			/// @brief Create and insert child.
-			/// @param type The agent type.
-			/// @param node XML agent definitions.
-			/// @return true if the child was created.
-			// bool ChildFactory(const char *type, const pugi::xml_node &node);
-
-			/// @brief Create and insert child from XML definition.
-			/// @param node XML agent definitions.
-			/// @return true if the child was created.
-			// bool ChildFactory(const pugi::xml_node &node);
-
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
-
-			Agent(const char *name = "", const char *label = "", const char *summary = "");
-			Agent(const pugi::xml_node &node);
-
-			virtual ~Agent();
 
 			/// @brief Get root agent.
 			static std::shared_ptr<Abstract::Agent> root();
@@ -286,10 +260,6 @@
 				return update.timer;
 			}
 
-			/// @brief Reset time for the next update (force a refresh in the next cicle if seconds=0).
-			/// @param seconds Seconds for next refresh.
-			void UDJAT_DEPRECATED(requestRefresh(time_t seconds = 0));
-
 			/// @brief Set time for the next update (force a refresh in the next cicle if seconds=0).
 			/// @param seconds Seconds for next refresh.
 			/// @see reset
@@ -302,28 +272,12 @@
 			/// @return Update timestamp after change.
 			time_t reset(time_t timestamp);
 
-			UDJAT_DEPRECATED(inline time_t getUpdateInterval() const noexcept) {
-				return update.timer;
-			}
-
-			/// @brief Get update timer interval.
-			UDJAT_DEPRECATED(inline time_t updatetimer() const noexcept) {
-				return update.timer;
-			}
-
 			/// @brief Get Agent path.
 			std::string path() const;
 
-			/// @brief The agent has children?
-			UDJAT_DEPRECATED(bool hasChildren() const noexcept) {
-				return !children.agents.empty();
-			}
-
-			/// @brief The agent has children?
+			/// @brief Is the agent empty?
 			/// @return false if the agent have children.
-			bool empty() const noexcept {
-				return children.agents.empty();
-			}
+			virtual bool empty() const noexcept;
 
 			/// @brief Start agent.
 			virtual void start();
@@ -344,32 +298,49 @@
 			/// @param path	Child path.
 			/// @param required Launch exception when search fails.
 			/// @param autoins Insert default child if not found.
-			/// @return Agent pointer.
+			/// @return Agent pointer (empty if not found).
 			virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
+
+			/// @brief Get child properties by path.
+			/// @param path	Child path.
+			/// @param value Object for child properties.
+			/// @retval true if the child was found.
+			/// @retval false if the child was not found.
+			virtual bool getProperties(const char *path, Value &value) const;
+
+			/// @brief Get child report by path.
+			/// @param path	Child path.
+			/// @param report The report output.
+			/// @retval true if the child was found.
+			/// @retval false if the child was not found.
+			virtual bool getProperties(const char *path, Report &report) const;
+
+			/// @brief Get State by path, throw if not found.
+			/// @param path	Child path.
+			/// @return state The state.
+			virtual bool getProperties(const char *path, std::shared_ptr<Abstract::State> &state) const;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
 
-			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
+			inline auto begin() noexcept {
 				return children.agents.begin();
 			}
 
-			inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
+			inline auto end() noexcept {
 				return children.agents.end();
 			}
 
-			/// @brief Adds cache and update information to the response.
-			void head(ResponseInfo &response);
+			inline auto begin() const noexcept {
+				return children.agents.begin();
+			}
+
+			inline auto end() const noexcept {
+				return children.agents.end();
+			}
 
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
-
-			// bool operator==(const Abstract::State &state) const noexcept;
-
-			virtual void get(Response &response);
-			virtual void get(Report &report);
-			virtual void get(const Request &request, Response &response);
-			virtual void get(const Request &request, Report &report);
 
 			/// @brief Get formatted value.
 			virtual std::string to_string() const noexcept override;
@@ -386,10 +357,6 @@
 
 			/// @brief Assign value from string.
 			virtual bool assign(const char *value);
-
-			UDJAT_DEPRECATED(inline std::shared_ptr<State> getState() const) {
-				return this->current_state.selected;
-			}
 
 			/// @brief Get current state
 			inline std::shared_ptr<State> state() const {
@@ -412,7 +379,7 @@
 			/// @brief Insert Alert.
 			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node);
 
-			/// @brief Get property from the agent os related objects.
+			/// @brief Get agent property.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.

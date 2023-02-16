@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/net/nic.h>
+ #include <udjat/net/interface.h>
  #include <udjat/linux/network.h>
  #include <sys/socket.h>
  #include <netdb.h>
@@ -33,6 +33,34 @@
  using namespace std;
 
  namespace Udjat {
+
+	UDJAT_API bool Network::for_each(const std::function<bool(const ifaddrs &intf)> &func) {
+
+		bool rc = false;
+
+		struct ifaddrs * interfaces = nullptr;
+		if(getifaddrs(&interfaces) != 0) {
+			throw system_error(errno,system_category(),"Cant get network interfaces");
+		}
+
+		try {
+
+			for(auto *interface = interfaces; interface && !rc; interface = interface->ifa_next) {
+				rc = func(*interface);
+			}
+
+		} catch(...) {
+
+			freeifaddrs(interfaces);
+			throw;
+
+		}
+
+		freeifaddrs(interfaces);
+
+		return rc;
+
+	}
 
 	bool Network::Interface::for_each(const std::function<bool(const Network::Interface &intf)> &func) {
 

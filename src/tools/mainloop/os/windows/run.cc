@@ -29,23 +29,17 @@
  #include <config.h>
  #include "private.h"
  #include <private/misc.h>
- #include <private/mainloop.h>
+ #include <private/win32/mainloop.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>
+ #include <udjat/tools/timer.h>
 
  using namespace std;
 
- int Udjat::MainLoop::run() {
+ int Udjat::Win32::MainLoop::run() {
 
 	int rc = -1;
-
-	// Start services
-	/*
-	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting services");
-	start();
-	Logger::write((Logger::Level) (Logger::Trace+1),"win32","Starting complete");
-	*/
 
 	if(!PostMessage(hwnd,WM_START,0,0)) {
 		cerr << "MainLoop\tError posting WM_START message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
@@ -56,19 +50,52 @@
 		MSG msg;
 		memset(&msg,0,sizeof(msg));
 
-		Logger::String("Running message loop").write((Logger::Level) (Logger::Trace+1),"win32");
+		Logger::String("Running message loop").write((Logger::Level) (Logger::Debug+1),"win32");
 
-		enabled = true;
+		running = true;
 		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		enabled = false;
+		running = false;
 
-		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Trace+1),"win32");
+		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Debug+1),"win32");
 	}
 
 	return rc;
 
  }
 
+ unsigned long Udjat::Win32::MainLoop::compute_poll_timeout() noexcept {
+
+	unsigned long now = MainLoop::Timer::getCurrentTime();
+	unsigned long next = now + timers.maxwait;
+
+	// Get expired timers.
+	std::list<Timer *> expired;
+	for_each([&expired,&next,now](Timer &timer){
+		if(timer.value() <= now) {
+			expired.push_back(&timer);
+		} else {
+			next = std::min(next,timer.value());
+		}
+		return false;
+	});
+
+	// Run expired timers.
+	for(auto timer : expired) {
+		unsigned long n = timer->activate();
+		if(n) {
+			next = std::min(next,n);
+		}
+	}
+
+	if(next > now) {
+		debug("Time interval ",(next-now)," ms (",TimeStamp{time(0) + ((time_t) ((next-now)/1000))}.to_string(),")");
+		return (next - now);
+	}
+
+	Logger::String{"Unexpected interval on timer processing, using default"}.write(Logger::Error,"win32");
+
+	return timers.maxwait;
+ }

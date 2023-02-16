@@ -30,6 +30,11 @@
 		return instance;
 	}
 
+	void Event::Controller::clear() {
+#ifdef _WIN32
+		consolehandlertypes.clear();
+#endif // _WIN32
+	}
 
  }
 

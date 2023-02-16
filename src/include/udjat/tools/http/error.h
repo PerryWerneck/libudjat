@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -19,36 +19,37 @@
 
  #pragma once
 
- #ifdef _WIN32
-	#include <winsock2.h>
-	#include <windows.h>
-	#include <ws2tcpip.h>
- #else
-	#include <arpa/inet.h>
- #endif // _WIN32
-
  #include <udjat/defs.h>
- #include <string>
+ #include <udjat/agent/level.h>
+ #include <memory>
 
- namespace std {
+ namespace Udjat {
 
-	UDJAT_API string to_string(const sockaddr_storage &addr, bool dns = false);
+	namespace HTTP {
 
-	inline ostream & operator<< (ostream& os, const sockaddr_storage &addr) {
-		return os << to_string(addr);
-	}
+		class UDJAT_API Error {
+		private:
 
-	UDJAT_API string to_string(const sockaddr_in &addr, bool dns = false);
+		public:
+			const Udjat::Level level;
+			const char * summary = "";
+			const char * body = "";
 
-	inline ostream & operator<< (ostream& os, const sockaddr_in &addr) {
-		return os << to_string(addr);
-	}
+			constexpr Error(const Udjat::Level l, const char *s, const char *b) : level{l}, summary{s}, body{b} {
+			}
 
-	UDJAT_API string to_string(const sockaddr_in6 &addr, bool dns = false);
+			inline operator bool() const noexcept {
+				return summary && *summary;
+			}
 
-	inline ostream & operator<< (ostream& os, const sockaddr_in6 &addr) {
-		return os << to_string(addr);
+			Error Factory(int32_t code);
+
+			static std::shared_ptr<Abstract::State> StateFactory(int32_t code);
+
+			const char * to_string() const noexcept;
+
+		};
+
 	}
 
  }
-

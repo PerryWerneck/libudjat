@@ -4,13 +4,16 @@ libdir=@libdir@
 includedir=@includedir@
 
 product_name=@PRODUCT_NAME@
+product_id=@PRODUCT_DOMAIN@.@PRODUCT_NAME@
 product_title=@PRODUCT_TITLE@
-module_path=${libdir}/udjat-modules
+product_version=@PACKAGE_MAJOR_VERSION@@PACKAGE_MINOR_VERSION@
+package_name=lib@PRODUCT_NAME@@PACKAGE_MAJOR_VERSION@_@PACKAGE_MINOR_VERSION@
+module_path=${libdir}/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules/
 
 Name: udjat
 Description: @PRODUCT_TITLE@
 Version: @PACKAGE_VERSION@
-Libs: -ludjat.dll
-Libs.private: @LIBS@ @LIBICONV@ @PUGIXML_LIBS@ @VMDETECT_LIBS@
-Cflags: -I@includedir@
+Libs: -pthread -ludjat.dll @PUGIXML_LIBS@
+Libs.private: @LIBS@ @LIBICONV@ @VMDETECT_LIBS@
+Cflags: -pthread -I@includedir@ @PUGIXML_CFLAGS@
 

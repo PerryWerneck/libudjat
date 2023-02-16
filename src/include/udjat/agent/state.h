@@ -88,6 +88,11 @@ namespace Udjat {
 
 		public:
 
+			State(const State&) = delete;
+			State& operator=(const State &) = delete;
+			State(State &&) = delete;
+			State & operator=(State &&) = delete;
+
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
@@ -154,8 +159,6 @@ namespace Udjat {
 				return level() <= Level::ready;
 			}
 
-			virtual void get(const Request &request, Response &response) const;
-
 			virtual void activate(const Abstract::Object &object) noexcept;
 			virtual void deactivate() noexcept;
 
@@ -172,6 +175,13 @@ namespace Udjat {
 			/// @brief Value to receive the properties.
 			/// @return Pointer to value.
 			Value & getProperties(Value &value) const noexcept override;
+
+			/// @brief Get state properties by path.
+			/// @param path	Agent path.
+			/// @param value Object for child properties.
+			/// @retval true if the agent was found.
+			/// @retval false if the agent was not found.
+			static bool getProperties(const char *path, Value &value);
 
 			/// @brief Insert alert.
 			inline void push_back(std::shared_ptr<Activatable> listener) {

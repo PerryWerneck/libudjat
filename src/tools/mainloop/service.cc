@@ -18,74 +18,27 @@
  */
 
  #include <config.h>
- #include <private/mainloop.h>
+ #include <udjat/defs.h>
  #include <cstring>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/service.h>
+ #include <private/service.h>
+
+ #ifdef _WIN32
+	#include <private/win32/mainloop.h>
+ #else
+	#include <private/linux/mainloop.h>
+ #endif // _WIN32
+
+ #include <udjat/tools/service.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	mutex MainLoop::Service::guard;
-
-	void MainLoop::start() noexcept {
-
-		ThreadPool::getInstance();
-
-		{
-			lock_guard<mutex> lock(Service::guard);
-			cout << "mainloop\tStarting " << services.size() << " service(s)" << endl;
-			for(auto service : services) {
-				if(!service->state.active) {
-					try {
-						cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-						service->start();
-						service->state.active = true;
-					} catch(const std::exception &e) {
-						service->error() << "Error '" << e.what() << "' starting service" << endl;
-					} catch(...) {
-						service->error() << "Unexpected error starting service" << endl;
-					}
-				}
-			}
-		}
-	}
-
-	void MainLoop::stop() noexcept {
-
-		{
-			lock_guard<mutex> lock(Service::guard);
-
-			Logger::String("Stopping ",services.size()," service(s)").write(Logger::Trace,"mainloop");
-
-			// Stop services in reverse order.
-			size_t count = 0;
-			for(auto srvc = services.rbegin(); srvc != services.rend(); srvc++) {
-				Service *service = *srvc;
-				if(service->state.active) {
-					try {
-						Logger::String("Stopping '",service->name(),"' (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
-						service->stop();
-					} catch(const std::exception &e) {
-						service->error() << "Error '" << e.what() << "' stopping service" << endl;
-					} catch(...) {
-						service->error() << "Unexpected error stopping service" << endl;
-					}
-					service->state.active = false;
-				}
-				else {
-					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",services.size(),")").write(Logger::Trace,"mainloop");
-				}
-			}
-		}
-
-		ThreadPool::getInstance().wait();
-
-	}
-
-	MainLoop::Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
-		lock_guard<mutex> lock(guard);
+	Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
 		if(!service_name) {
 			service_name = strrchr(module.name,'-');
 			if(service_name) {
@@ -94,58 +47,53 @@
 				service_name = module.name;
 			}
 		}
-		MainLoop::getInstance().services.push_back(this);
+
+		Service::Controller::getInstance().push_back(this);
+
 	}
 
-	MainLoop::Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
+	Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
 	}
 
-	MainLoop::Service::~Service() {
-		lock_guard<mutex> lock(guard);
-		MainLoop::getInstance().services.remove_if([this](Service *s) {
-			return s == this;
-		});
+	Service::~Service() {
+		Service::Controller::getInstance().remove(this);
 	}
 
-	void MainLoop::Service::start() {
+	bool Service::for_each(const std::function<bool(const Service &service)> &method) {
+		return Service::Controller::getInstance().for_each(method);
+	}
+
+	void Service::start() {
 		state.active = true;
 	}
 
-	void MainLoop::Service::stop() {
+	void Service::stop() {
 		state.active = false;
 	}
 
-	std::ostream & MainLoop::Service::info() const {
+	std::ostream & Service::info() const {
 		cout << name() << "\t";
 		return cout;
 	}
 
-	std::ostream & MainLoop::Service::warning() const {
+	std::ostream & Service::warning() const {
 		clog << name() << "\t";
 		return clog;
 	}
 
-	std::ostream & MainLoop::Service::error() const {
+	std::ostream & Service::error() const {
 		cerr << name() << "\t";
 		return cerr;
 	}
 
-	void MainLoop::Service::getInfo(Response &response) {
+	Value & Service::getProperties(Value &properties) const noexcept {
+		properties["name"] = service_name;
+		properties["active"] = state.active;
+		return module.getProperties(properties);
+	}
 
-		lock_guard<mutex> lock(guard);
-		response.reset(Value::Array);
-
-		for(auto service : MainLoop::getInstance().services) {
-
-			Value &object = response.append(Value::Object);
-
-			object["name"] = service->service_name;
-			object["active"] = service->state.active;
-
-			service->module.get(object);
-
-
-		}
+	const Service * Service::find(const char *name) noexcept {
+		return Controller::getInstance().find(name);
 	}
 
  }

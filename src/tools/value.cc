@@ -27,6 +27,40 @@
 
  namespace Udjat {
 
+	std::shared_ptr<Value> Value::Factory() {
+
+		class Dummy : public Udjat::Value {
+		public:
+			bool isNull() const override {
+				return true;
+			}
+
+			Udjat::Value & reset(const Type) override {
+				return *this;
+			}
+
+			Udjat::Value & set(const Udjat::Value &) override {
+				return *this;
+			}
+
+			Udjat::Value & operator[](const char *) override {
+				return *this;
+			}
+
+			Udjat::Value & append(const Type) override {
+				return *this;
+			}
+
+			Udjat::Value & set(const char *, const Type) override {
+				return *this;
+			}
+
+		};
+
+		return make_shared<Dummy>();
+
+	}
+
 	Value & Value::operator[](const char UDJAT_UNUSED(*name)) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}

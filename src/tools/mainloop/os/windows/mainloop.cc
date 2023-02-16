@@ -19,11 +19,14 @@
 
  #include <config.h>
  #include "private.h"
- #include <private/mainloop.h>
+ #include <private/win32/mainloop.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
  #include <private/event.h>
  #include <udjat/tools/configuration.h>
+ #include <private/service.h>
+ #include <udjat/tools/timer.h>
+ #include <private/event.h>
 
  #include <iostream>
 
@@ -31,7 +34,9 @@
 
 	static ATOM	winClass = 0;
 
-	MainLoop::MainLoop() {
+ 	std::mutex Win32::MainLoop::guard;
+
+	Win32::MainLoop::MainLoop() {
 
 		if(!winClass) {
 
@@ -79,40 +84,33 @@
 
 	}
 
-	MainLoop & MainLoop::getInstance() {
-		static MainLoop instance;
-		return instance;
-	}
-
-	MainLoop::~MainLoop() {
+	Win32::MainLoop::~MainLoop() {
 
 		Udjat::Event::remove(this);
 
-		DestroyWindow(hwnd);
-		hwnd = 0;
+		if(hwnd) {
+			DestroyWindow(hwnd);
+			hwnd = 0;
+		}
 
 		debug("Main Object window was destroyed");
 
 	}
 
-	void MainLoop::wakeup() noexcept {
+	void Win32::MainLoop::wakeup() noexcept {
 		if(!hwnd) {
 			Logger::String("Unexpected call to wakeup() without an active window").write(Logger::Trace,"MainLoop");
 		} else if(!PostMessage(hwnd,WM_CHECK_TIMERS,0,0)) {
 			cerr << "MainLoop\tError posting wake up message to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
-#ifdef DEBUG
-		else {
-			debug("WAKE-UP");
-		}
-#endif // DEBUG
+		debug("WAKE-UP");
 	}
 
- 	BOOL MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
+ 	BOOL Win32::MainLoop::post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept {
  		return PostMessage(hwnd,uMsg,wParam,lParam);
 	}
 
-	LRESULT WINAPI MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	LRESULT WINAPI Win32::MainLoop::hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		MainLoop & controller = *((MainLoop *) GetWindowLongPtr(hWnd,0));
 
@@ -123,8 +121,20 @@
 				Logger::String("WM_CREATE").write(Logger::Trace,"win32");
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
+			case WM_DESTROY:
+				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
+				if(controller.running) {
+					Logger::String{"Stopping by system request (WM_DESTROY)"}.write(Logger::Warning,"win32");
+					SendMessage(hWnd,WM_STOP,0,0);
+				}
+				return DefWindowProc(hWnd, uMsg, wParam, lParam);
+
 			case WM_CLOSE:
 				Logger::String("WM_CLOSE").write(Logger::Trace,"win32");
+				if(controller.running) {
+					Logger::String{"Stopping by system request (WM_CLOSE)"}.write(Logger::Warning,"win32");
+					SendMessage(hWnd,WM_STOP,0,0);
+				}
 				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
 			case WM_QUERYENDSESSION:
@@ -178,37 +188,46 @@
 //				Logger::String("WM_DEVICECHANGE").write(Logger::Trace,"win32");
 //				return DefWindowProc(hWnd, uMsg, wParam, lParam);
 
-			case WM_DESTROY:
-				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
-				return DefWindowProc(hWnd, uMsg, wParam, lParam);
-
 			case WM_START:
 				Logger::String("WM_START: Initializing").write(Logger::Trace,"win32");
 				ThreadPool::getInstance();
-				controller.start();
+				Service::Controller::getInstance().start();
 				SetTimer(hWnd,IDT_CHECK_TIMERS,controller.uElapse = 100,(TIMERPROC) NULL);
 				break;
 
+			case WM_STOP_WITH_MESSAGE:
+				Logger::String{(LPCTSTR)lParam}.write((Logger::Level) wParam,"win32");
+				PostMessage(controller.hwnd,WM_STOP,0,0);
+				break;
+
 			case WM_STOP:
+				Logger::String("WM_STOP").write(Logger::Trace,"win32");
 
 				KillTimer(hWnd, IDT_CHECK_TIMERS);
+				Event::clear();
 
-				if(controller.enabled) {
+				if(controller.running) {
 					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");
-					controller.enabled = false; // Just in case.
-					controller.stop();
+					controller.running = false; // Just in case.
+
+					debug("Stopping services");
+					Service::Controller::getInstance().stop();
+
+					debug("Stoppping threadpool");
 					ThreadPool::getInstance().stop();
+
+					debug("Posting QUIT message");
 					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
 						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 					}
 				} else {
-					Logger::String("WM_STOP: Already disabled").write(Logger::Trace,"win32");
+					Logger::String("WM_STOP: Already disabled").write(Logger::Warning,"win32");
 				}
 				break;
 
 			case WM_TIMER:
 
-				Logger::String("WM_TIMER ", ((unsigned int) wParam)).write(Logger::Debug,"win32");
+				debug("WM_TIMER ", ((unsigned int) wParam));
 
 				if(controller.hwnd) {
 
@@ -233,18 +252,31 @@
 
 			case WM_CHECK_TIMERS:
 				{
-					UINT interval = controller.timers.run();
-					if(!interval) {
-						interval = 1000;
+					if(controller.timers.maxwait > 1000) {
+						Logger::String{"Maxwait cant be greater than 1000, fixing"}.write(Logger::Warning,"win32");
+						controller.timers.maxwait = 1000;
 					}
 
+					unsigned long interval = controller.compute_poll_timeout();
 					if(interval != controller.uElapse) {
-						Logger::String("Reseting timer to ", interval).write(Logger::Debug,"win32");
 						SetTimer(controller.hwnd, IDT_CHECK_TIMERS, controller.uElapse = interval, (TIMERPROC) NULL);
-					} else {
-						Logger::String("Keeping timer set to ", interval).write(Logger::Debug,"win32");
 					}
 
+				}
+				break;
+
+			case WM_ADD_TIMER:
+				{
+					lock_guard<mutex> lock(controller.guard);
+					controller.timers.enabled.push_back((Timer *) lParam);
+				}
+				SendMessage(controller.hwnd,WM_CHECK_TIMERS,0,0);
+				break;
+
+			case WM_REMOVE_TIMER:
+				{
+					lock_guard<mutex> lock(controller.guard);
+					controller.timers.enabled.remove((Timer *) lParam);
 				}
 				break;
 
@@ -268,6 +300,54 @@
 
 		return 0;
 
+	}
+
+	bool Win32::MainLoop::enabled(const Timer *timer) const noexcept {
+		lock_guard<mutex> lock(guard);
+		for(Timer *tm : timers.enabled) {
+			if(timer == tm) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Win32::MainLoop::enabled(const Handler *handler) const noexcept {
+		lock_guard<mutex> lock(guard);
+		for(Handler *hdl : handlers) {
+			if(handler == hdl) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Win32::MainLoop::push_back(MainLoop::Timer *timer) {
+		post(WM_ADD_TIMER,0,(LPARAM) timer);
+	}
+
+	void Win32::MainLoop::remove(MainLoop::Timer *timer) {
+		post(WM_REMOVE_TIMER,0,(LPARAM) timer);
+	}
+
+	void Win32::MainLoop::push_back(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.push_back(handler);
+	}
+
+	void Win32::MainLoop::remove(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.remove(handler);
+	}
+
+	bool Win32::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
+		lock_guard<mutex> lock(guard);
+		for(auto timer : timers.enabled) {
+			if(func(*timer)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
  }

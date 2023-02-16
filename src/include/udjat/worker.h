@@ -43,7 +43,7 @@ namespace Udjat {
 		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
 		}
 
-		static void for_each(const std::function<void(const Worker &worker)> &func);
+		static bool for_each(const std::function<bool(const Worker &worker)> &method);
 
 		std::ostream & info() const;
 		std::ostream & warning() const;
@@ -58,8 +58,7 @@ namespace Udjat {
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Report &response);
 
-		/// @brief Get array with information about all registered worker.
-		static void getInfo(Response &response);
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {

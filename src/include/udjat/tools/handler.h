@@ -22,6 +22,10 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
 
+ #ifndef _WIN32
+	#include <poll.h>
+ #endif // _WIN32
+
  namespace Udjat {
 
 	///< @brief File/Socket handler
@@ -29,26 +33,19 @@
 	public:
 
 		enum Event : short {
-	#ifdef _WIN32
+#ifdef _WIN32
 			// https://msdn.microsoft.com/en-us/library/windows/desktop/ms740094(v=vs.85).aspx
 			oninput         = POLLRDNORM,   		///< @brief There is data to read.
 			onoutput        = POLLWRNORM,   		///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
 			onerror         = POLLERR,              ///< @brief Error condition
 			onhangup        = POLLHUP,              ///< @brief Hang  up
-	#else
+#else
 			oninput         = POLLIN,               ///< @brief There is data to read.
 			onoutput        = POLLOUT,              ///< @brief Writing is now possible, though a write larger that the available space in a socket or pipe will still block
 			onerror         = POLLERR,              ///< @brief Error condition
 			onhangup        = POLLHUP,              ///< @brief Hang  up
-	#endif // WIN32
+#endif // WIN32
 		};
-
-
-	private:
-
-#ifndef _WIN32
-		friend class MainLoop;
-#endif // _WIN32
 
 	protected:
 
@@ -64,10 +61,21 @@
 		virtual ~Handler();
 
 		void set(int fd);
-
 		void set(const Event events);
 
 		virtual void flush();
+
+#ifndef _WIN32
+		inline void get(pollfd &pfd) const noexcept {
+			pfd.fd = fd;
+			pfd.events = events;
+			pfd.revents = 0;
+		}
+
+		inline void set(pollfd &pfd) {
+			handle_event((Event) pfd.revents);
+		}
+#endif // _WIN32
 
 		inline Handler & operator = (int fd) {
 			set(fd);
@@ -114,7 +122,6 @@
 		/// @param timeout for poll.
 		/// @return Count of valid handlers (0=none).
 		static size_t flush(Handler **handlers, size_t nfds, int timeout);
-
 
 	};
 

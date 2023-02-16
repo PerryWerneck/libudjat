@@ -20,10 +20,11 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/win32/ip.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/logger.h>
  #include <malloc.h>
+ #include <udjat/win32/container.h>
 
  // #pragma comment(lib, "iphlpapi.lib")
 
@@ -31,88 +32,40 @@
 
 	UDJAT_API bool Win32::for_each(const std::function<bool(const IP_ADAPTER_ADDRESSES &address)> &func) {
 
-		bool found = false;
-
-		ULONG ifbuffersize = sizeof(IP_ADAPTER_ADDRESSES)*2;
-
-		PIP_ADAPTER_ADDRESSES addresses = (PIP_ADAPTER_ADDRESSES) malloc(ifbuffersize+10);
-
-		try {
-
-			memset(addresses,0,ifbuffersize);
-			DWORD rc = GetAdaptersAddresses(AF_INET,0,0,addresses,&ifbuffersize);
-
-			if(rc == ERROR_INSUFFICIENT_BUFFER || rc == ERROR_BUFFER_OVERFLOW) {
-
-				addresses = (PIP_ADAPTER_ADDRESSES) realloc(addresses,ifbuffersize+10);
-				rc = GetAdaptersAddresses(AF_INET,0,0,addresses,&ifbuffersize);
-
+		class Addresses : public Win32::Container<IP_ADAPTER_ADDRESSES> {
+		protected:
+			DWORD load(IP_ADAPTER_ADDRESSES *buffer, ULONG *ifbuffersize) override {
+				return GetAdaptersAddresses(AF_INET,0,0,buffer,ifbuffersize);
 			}
+		} addresses;
 
-			if(rc != NO_ERROR) {
-				throw Win32::Exception("GetAdaptersAddresses() has failed",rc);
+		for(const IP_ADAPTER_ADDRESSES *address = addresses.get();address;address = address->Next) {
+			if(func(*address)) {
+				return true;
 			}
-
-			for(PIP_ADAPTER_ADDRESSES address = addresses;address;address = address->Next) {
-				if(func(*address)) {
-					found = true;
-					break;
-				}
-			}
-
-		} catch(...) {
-
-			free(addresses);
-			throw;
-
 		}
 
-		free(addresses);
-		return found;
+		return false;
 
 	}
 
 
 	UDJAT_API bool Win32::for_each(const std::function<bool(const IP_ADAPTER_INFO &info)> &func) {
 
-		bool found = false;
-		ULONG ifbuffersize = sizeof(IP_ADAPTER_INFO)*2;
-
-		PIP_ADAPTER_INFO infos = (PIP_ADAPTER_INFO) malloc(ifbuffersize+10);
-
-		try {
-
-			memset(infos,0,ifbuffersize);
-			DWORD rc = GetAdaptersInfo(infos,&ifbuffersize);
-
-			if(rc == ERROR_INSUFFICIENT_BUFFER || rc == ERROR_BUFFER_OVERFLOW) {
-
-				infos = (PIP_ADAPTER_INFO) realloc(infos,ifbuffersize+10);
-				rc = GetAdaptersInfo(infos,&ifbuffersize);
-
+		class Infos : public Win32::Container<IP_ADAPTER_INFO> {
+		protected:
+			DWORD load(IP_ADAPTER_INFO *buffer, ULONG *ifbuffersize) override {
+				return GetAdaptersInfo(buffer,ifbuffersize);
 			}
+		} infos;
 
-			if(rc != NO_ERROR) {
-				throw Win32::Exception("GetAdaptersInfo() has failed",rc);
+		for(const IP_ADAPTER_INFO *info = infos.get();info;info = info->Next) {
+			if(func(*info)) {
+				return true;
 			}
-
-			for(PIP_ADAPTER_INFO info = infos;info;info = info->Next) {
-				if(func(*info)) {
-					found = true;
-					break;
-				}
-			}
-
-		} catch(...) {
-
-			free(infos);
-			throw;
-
 		}
 
-		free(infos);
-
-		return found;
+		return false;
 
 	}
 

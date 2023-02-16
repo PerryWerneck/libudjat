@@ -66,8 +66,6 @@ Summary: Development files for %{name}
 Requires: %{name}%{_libvrs} = %{version}
 Requires: pkgconfig(pugixml)
 
-Provides: libudjat%{MAJOR_VERSION}%{MINOR_VERSION}-devel
-
 # The http exporter helps debugging of modules.
 Recommends: udjat-module-httpd
 
@@ -140,8 +138,8 @@ make all
 %dir %{_includedir}/udjat/linux
 %{_includedir}/udjat/linux/*.h
 
-%dir %{_includedir}/udjat/tools/net
-%{_includedir}/udjat/tools/net/*.h
+%dir %{_includedir}/udjat/net
+%{_includedir}/udjat/net/*
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 

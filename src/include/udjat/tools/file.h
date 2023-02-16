@@ -28,6 +28,7 @@
 #include <string>
 #include <cstring>
 #include <sys/stat.h>
+#include <udjat/tools/string.h>
 
 namespace Udjat {
 
@@ -75,25 +76,42 @@ namespace Udjat {
 		class UDJAT_API Path : public std::string {
 		public:
 
-			Path() : std::string() {
+			enum Type : uint8_t {
+				Desktop,
+				Download,
+				Templates,
+				PublicShare,
+				Documents,
+				Music,
+				Pictures,
+				Videos,
+				SystemData,	///< @brief System data dir ( /usr/share )
+				UserData,	///< @brief User data dir ( ~/.local/share )
+			};
+
+			Path(const Type type, const char *v = nullptr);
+
+			Path(const char *v = nullptr);
+
+			Path(const char *v, size_t s);
+
+			Path(const std::string &v) : Path(v.c_str()) {
 			}
 
-			Path(const char *v) : std::string(v) {
-			}
+			static void expand(std::string &str);
 
-			Path(const char *v, size_t s) : std::string(v,s) {
-			}
-
-			Path(const std::string &v) : std::string(v) {
-			}
-
-			Path(const std::string &v, size_t s) : std::string(v,s) {
+			inline void expand() {
+				expand(*this);
 			}
 
 			Path(int fd);
 
 			/// @brief Create directory.
-			static void mkdir(const char *dirname, int mode = 0755);
+			/// @param dirname The directory name.
+			/// @param required if true launch exception on failure.
+			/// @param mode The directory mode
+			/// @return true if the directory was created.
+			static bool mkdir(const char *dirname, bool required = true, int mode = 0755);
 
 			/// @brief Check if path is a directory.
 			/// @param pathname the pathname to check;
@@ -104,6 +122,8 @@ namespace Udjat {
 			/// @param pathname the pathname to check;
 			/// @return true if pathname is a regular file.
 			static bool regular(const char *pathname);
+
+			const char * basename() const noexcept;
 
 			inline bool dir() const {
 				return dir(c_str());

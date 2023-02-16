@@ -77,6 +77,9 @@
 		public:
 			Win32String();
 			Win32String(const char *utfstr);
+			Win32String(const std::string &utfstr) : Win32String{utfstr.c_str()} {
+			}
+
 			~Win32String();
 
 			/// @brief Assign UTF-8 string, will be converted to Win32.

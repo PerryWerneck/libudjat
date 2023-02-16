@@ -2,11 +2,11 @@
 dnl Process this file with autoconf to produce a configure script.
 
 dnl The minimum version of autoconf required.
-AC_PREREQ(2.59)
+AC_PREREQ([2.69])
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat], [1.1], [perry.werneck@gmail.com], [libudjat], [https://github.com/PerryWerneck/libudjat.git])
+AC_INIT([libudjat],[1.1],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -22,6 +22,9 @@ AM_INIT_AUTOMAKE
 
 dnl Check for iconv
 AM_ICONV
+
+LT_INIT
+AC_CONFIG_MACRO_DIRS([m4])
 
 dnl Set gettext version
 AM_GNU_GETTEXT_VERSION([0.14])
@@ -69,7 +72,7 @@ AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
 AC_SUBST(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor")
 
-AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20220909 ])
+AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20230216 ])
 AC_DEFINE_UNQUOTED(MINIMAL_MODULE_BUILD,$app_cv_minbuild,["The required build for modules"])
 AC_SUBST(MINIMAL_MODULE_BUILD,$app_cv_minbuild)
 
@@ -85,10 +88,10 @@ OPTIONAL_MODULES=""
 
 case "$host" in
 	*-mingw32|*-pc-msys)
+		# https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-170
 		CFLAGS="$CFLAGS -pthread"
-		#  -D_WIN32_WINNT=0x0600
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
-		LIBS="-lws2_32 -lshlwapi $LIBS -lintl -lshell32 -lole32 -luuid -liphlpapi"		
+		LIBS="$LIBS -lintl -lshlwapi -lws2_32 -lwtsapi32 -lole32 -loleaut32 -luuid -liphlpapi -lversion"		
 		AC_SUBST(LIBEXT,.dll)
 		AC_SUBST(EXEEXT,.exe)
 		AC_SUBST(SONAME,libudjat.dll)
@@ -96,8 +99,9 @@ case "$host" in
 		AC_CONFIG_FILES(sdk/windows/static.pc)
 		AC_CONFIG_FILES(sdk/windows/dynamic.pc)
 		AC_CONFIG_FILES(src/main/os/windows/resources.rc)
-dnl		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
-dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
+		AC_CONFIG_FILES(src/main/os/windows/app-manifest.xml)
+		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
+		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		;;
 
  	*)
@@ -112,9 +116,12 @@ dnl		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
 		AC_CONFIG_FILES(sdk/linux/static.pc)
 		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
 
+		AC_CHECK_HEADER(poll.h, [AC_DEFINE(HAVE_POLL_H, 1, [poll.h is available])], [AC_MSG_ERROR([Can't find required header poll.h])])
+
 esac
 
 AC_DEFINE_UNQUOTED(LIBEXT, "$LIBEXT", [Library extension])
+
 
 dnl ---------------------------------------------------------------------------
 dnl Check for tools
@@ -185,7 +192,7 @@ dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
 dnl ---------------------------------------------------------------------------
 AC_DEFUN([AX_CHECK_COMPILE_FLAG],
-[AC_PREREQ(2.59)dnl for _AC_LANG_PREFIX
+[AC_PREREQ([2.69])dnl for _AC_LANG_PREFIX
 AS_VAR_PUSHDEF([CACHEVAR],[ax_cv_check_[]_AC_LANG_ABBREV[]flags_$4_$1])dnl
 AC_CACHE_CHECK([whether _AC_LANG compiler accepts $1], CACHEVAR, [
   ax_check_save_flags=$[]_AC_LANG_PREFIX[]FLAGS
@@ -214,10 +221,7 @@ AC_MSG_CHECKING(whether $CC accepts -fvisibility=hidden)
 AC_CACHE_VAL(app_cv_fvisibility_ok,
 [ac_save_cc="$CC"
 CC="$CC -fvisibility=hidden"
-AC_TRY_RUN([int main() { return 0; }],
-  app_cv_fvisibility_ok=yes,
-  app_cv_fvisibility_ok=no,
-  app_cv_fvisibility_ok=no)
+AC_RUN_IFELSE([AC_LANG_SOURCE([[int main() { return 0; }]])],[app_cv_fvisibility_ok=yes],[app_cv_fvisibility_ok=no],[app_cv_fvisibility_ok=no])
 CC="$ac_save_cc"])
 AC_MSG_RESULT($app_cv_fvisibility_ok)
 if test $app_cv_fvisibility_ok = yes; then

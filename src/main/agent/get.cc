@@ -103,23 +103,6 @@
 
 	}
 
-	void Abstract::Agent::get(Report UDJAT_UNUSED(&report)) {
-		error() << "Rejecting 'report' request - Not available in this agent" << endl;
-		throw system_error(ENOENT,system_category(),_("No reports on this path") );
-	}
-
-	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Report &report) {
-		get(report);
-	}
-
-	void Abstract::Agent::get(Response &response) {
-		getProperties(response);
-	}
-
-	void Abstract::Agent::get(const Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) {
-		getProperties(response);
-	}
-
 	Value & Abstract::Agent::getProperties(Value &value) const noexcept {
 
 		Object::getProperties(value);

@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/logger.h>

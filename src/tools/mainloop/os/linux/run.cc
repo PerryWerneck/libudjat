@@ -28,10 +28,13 @@
 
  #include <config.h>
  #include <private/misc.h>
+ #include <private/linux/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/service.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timer.h>
  #include <iostream>
  #include <unistd.h>
  #include <udjat/tools/event.h>
@@ -46,19 +49,9 @@
 
  static const int signals[] = { SIGTERM, SIGINT };
 
- int Udjat::MainLoop::run() {
+ int Udjat::Linux::MainLoop::run() {
 
-#ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
-#endif // HAVE_SYSTEMD
-
-	//
-	// Start services
-	//
-#ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"STATUS=Starting up");
-#endif // HAVE_SYSTEMD
-	start();
+	Service::Controller::getInstance().start();
 
 	//
 	// Capture signals
@@ -71,12 +64,15 @@
 
 			Udjat::Event::SignalHandler(this,signals[signal],[this](){
 
+				std::thread{[](){
+
 #ifdef HAVE_SYSTEMD
-				sd_notify(0,"STATUS=Interrupting by signal");
+					sd_notify(0,"STATUS=Interrupting by signal");
 #endif // HAVE_SYSTEMD
 
-				Udjat::Application::warning() << "Interrupting main loop" << endl;
-				Udjat::MainLoop::getInstance().quit();
+					Udjat::MainLoop::getInstance().quit();
+
+				}}.detach();
 
 				return true;
 			});
@@ -87,16 +83,16 @@
  	// Main event loop
  	//
 
- 	this->enabled = true;
+ 	this->running = true;
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"READY=1\nSTATUS=Running");
 #endif // HAVE_SYSTEMD
 
- 	while(this->enabled) {
+ 	while(this->running) {
 
 		// Get wait time, update timers.
-		unsigned long wait = timers.run();
+		unsigned long wait = compute_poll_timeout();
 
 		// Get handlers
 		size_t maxfd = handlers.size()+2;
@@ -120,29 +116,26 @@
 			lock_guard<mutex> lock(guard);
 			for(auto handle : handlers) {
 				hList[nfds] = handle;
-				fds[nfds].fd = handle->fd;
-				fds[nfds].events = handle->events;
-				fds[nfds].revents = 0;
+				handle->get(fds[nfds]);
 				nfds++;
 			}
 		}
 
 		// Wait for event.
 		int nSocks = poll(fds, nfds, wait);
-
 		if(nSocks == 0) {
 			continue;
 		}
 
 		if(nSocks < 0) {
 
-			if(!this->enabled) {
+			if(!this->running) {
 				break;
 			}
 
 			if(errno != EINTR) {
 				cerr << "MainLoop\tError '" << strerror(errno) << "' (" << errno << ") running mainloop, stopping" << endl;
-				this->enabled = false;
+				this->running = false;
 			}
 
 			continue;
@@ -164,20 +157,20 @@
 
 				if(fds[ix].revents) {
 
-					if(verify(hList[ix])) {
+					if(enabled(hList[ix])) {
 
 						try {
 
-							hList[ix]->handle_event((const Handler::Event) fds[ix].revents);
+							hList[ix]->set(fds[ix]);
 
 						} catch(const std::exception &e) {
 
-							cerr << "MainLoop\tError '" << e.what() << "' processing FD(" << hList[ix]->fd << "), disabling it" << endl;
+							cerr << "MainLoop\tError '" << e.what() << "' processing handler, disabling it" << endl;
 							hList[ix]->disable();
 
 						} catch(...) {
 
-							cerr << "MainLoop\tUnexpected error processing FD(" << hList[ix]->fd << "), disabling it" << endl;
+							cerr << "MainLoop\tUnexpected error processing handler, disabling it" << endl;
 							hList[ix]->disable();
 
 						}
@@ -204,7 +197,7 @@
 	//
  	// Stop services
  	//
-	stop();
+	Service::Controller::getInstance().stop();
 
 #ifdef HAVE_SYSTEMD
 	sd_notifyf(0,"STATUS=Stopped");
@@ -212,5 +205,39 @@
 
 	return 0;
 
+ }
+
+ unsigned long Udjat::Linux::MainLoop::compute_poll_timeout() noexcept {
+
+	unsigned long now = MainLoop::Timer::getCurrentTime();
+	unsigned long next = now + timers.maxwait;
+
+	// Get expired timers.
+	std::list<Timer *> expired;
+	for_each([&expired,&next,now](Timer &timer){
+		if(timer.value() <= now) {
+			expired.push_back(&timer);
+		} else {
+			next = std::min(next,timer.value());
+		}
+		return false;
+	});
+
+	// Run expired timers.
+	for(auto timer : expired) {
+		unsigned long n = timer->activate();
+		if(n) {
+			next = std::min(next,n);
+		}
+	}
+
+	if(next > now) {
+		debug("Time interval ",(next-now)," ms (",TimeStamp{time(0) + ((time_t) ((next-now)/1000))}.to_string(),")");
+		return (next - now);
+	}
+
+	Logger::String{"Unexpected interval on timer processing, using default"}.write(Logger::Error,"linux");
+
+	return timers.maxwait;
  }
 

@@ -19,9 +19,116 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/net/ip/address.h>
+ #include <stdexcept>
+ #include <cstring>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
+
+ namespace Udjat {
+
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr_in *addr) {
+		sockaddr_storage result;
+		memset(&result,0,sizeof(result));
+
+		if(addr) {
+			memcpy(&result,addr,sizeof(sockaddr_in));
+		}
+
+		result.ss_family = AF_INET;
+		return result;
+	}
+
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr_in6 *addr) {
+		sockaddr_storage result;
+		memset(&result,0,sizeof(result));
+
+		if(addr) {
+			memcpy(&result,addr,sizeof(sockaddr_in6));
+		}
+
+		result.ss_family = AF_INET6;
+		return result;
+	}
+
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr *addr) {
+
+		if(!addr) {
+			sockaddr_storage result;
+			memset(&result,0,sizeof(result));
+			return result;
+		}
+
+		switch(addr->sa_family) {
+		case AF_INET:
+			return Factory((const sockaddr_in *) addr);
+
+		case AF_INET6:
+			return Factory((const sockaddr_in6 *) addr);
+
+		default:
+			throw runtime_error("Unexpected address family");
+
+		}
+
+	}
+
+	UDJAT_API sockaddr_storage IP::Factory(const pugi::xml_node &node) {
+		return Factory((const char *) node.attribute("ip").as_string());
+	}
+
+	IP::Address & IP::Address::set(const sockaddr_storage & value) {
+		*((sockaddr_storage *) this) = value;
+		return *this;
+	}
+
+	bool IP::Address::equal(const sockaddr_storage &a, const sockaddr_storage &b) {
+
+		if(a.ss_family != b.ss_family) {
+			return false;
+		}
+
+		switch(a.ss_family) {
+		case 0:
+			return true;
+
+		case AF_INET:
+			if( ((sockaddr_in *) &a)->sin_port != ((sockaddr_in *) &b)->sin_port ) {
+				return false;
+			}
+			if( ((sockaddr_in *) &a)->sin_addr.s_addr != ((sockaddr_in *) &b)->sin_addr.s_addr ) {
+				return false;
+			}
+			break;
+
+		case AF_INET6:
+			if( ((sockaddr_in6 *) &a)->sin6_port != ((sockaddr_in6 *) &b)->sin6_port ) {
+				return false;
+			}
+			if( memcmp( &(((sockaddr_in6 *) &a)->sin6_addr), &(((sockaddr_in6 *) &b)->sin6_addr), sizeof(((sockaddr_in6 *) &b)->sin6_addr) ) ) {
+				return false;
+			}
+			break;
+
+		default:
+			throw runtime_error("Invalid network family");
+
+		}
+
+		return true;
+
+	}
+
+	std::string IP::Address::to_string() const noexcept {
+		if(empty()) {
+			return "";
+		}
+		return std::to_string((sockaddr_storage) *this);
+	}
+
+
+ }
 
  namespace std {
 

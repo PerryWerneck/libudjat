@@ -26,6 +26,7 @@
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/agent/abstract.h>
 
  using namespace std;
 
@@ -35,22 +36,12 @@
 		return STRINGIZE_VALUE_OF(BUILD_DATE);
 	}
 
-	int UDJAT_API Application::init(int argc, char **argv, const char *definitions) {
-
-		init();
-		Quark::init(argc,argv);
-
-		if(definitions) {
-			setup(definitions,true);
-		}
-
-		return 0;
-
+	Application::~Application() {
+		Udjat::Module::unload();
 	}
 
-	int UDJAT_API Application::finalize() {
-		Udjat::Module::unload();
-		return 0;
+	std::shared_ptr<Abstract::Agent> Application::RootFactory() const {
+		return Abstract::Agent::RootFactory();
 	}
 
 	std::ostream & Application::info() {
@@ -113,6 +104,12 @@
 		append(name);
 
 	}
+
+	Application::LogDir & Application::LogDir::getInstance() {
+		static LogDir instance;
+		return instance;
+	}
+
 
  }
 

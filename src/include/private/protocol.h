@@ -81,10 +81,28 @@
 		const Protocol * find(const char *name, bool allow_default);
 		const Protocol * verify(const void *protocol);
 
-		void getInfo(Response &response) noexcept;
-
 		inline void setDefault(Protocol *protocol) noexcept {
 			def = protocol;
+		}
+
+		inline bool for_each(const std::function<bool(const Protocol &protocol)> &method) {
+			std::lock_guard<std::mutex> lock(guard);
+			for(auto object : protocols) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		inline bool for_each(const std::function<bool(const Worker &worker)> &method) {
+			std::lock_guard<std::mutex> lock(guard);
+			for(auto object : workers) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 	};

@@ -51,133 +51,35 @@
 
  namespace Udjat {
 
- 	UDJAT_API time_t reconfigure(const char *pathname, bool force) {
-		return Application::setup(pathname,force);
- 	}
-
- 	UDJAT_API time_t reconfigure(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
-		return Application::setup(agent,pathname,force);
- 	}
-
-	UDJAT_API time_t Application::setup(const char *pathname, bool force) {
-
-		Updater update(pathname);
-
-		if(update || force) {
-			return update.set(RootAgentFactory());
-		}
-
-		Application::info() << "Keeping configuration" << endl;
-		return update.time();
-
+	int Application::install(const char *) {
+		return 1;
 	}
 
-	UDJAT_API time_t Application::setup(std::shared_ptr<Abstract::Agent> agent, const char *pathname, bool force) {
-
-		Updater update(pathname);
-
-		if(update || force) {
-			update.set(agent);
-		} else {
-			Application::info() << "No changes, reconfiguration is not necessary" << endl;
-		}
-
-#ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=%s",Abstract::Agent::root()->state()->to_string().c_str());
-#endif // HAVE_SYSTEMD
-
-		return update.time();
-
+	int Application::uninstall() {
+		return 1;
 	}
 
-	void SystemService::reconfigure(const char *pathname, bool force) noexcept {
+	void Application::setup(const char *pathname, bool startup) {
 
-		// Create reconfig timer.
-		class ReconfigTimer : public MainLoop::Timer {
-		protected:
-			void on_timer() override {
-				ThreadPool::getInstance().push("system-reconfigure",[]{
-					if(instance) {
-						instance->reconfigure(instance->definitions,false);
-					}
-				});
-			}
-
-		public:
-			ReconfigTimer() = default;
-
-			void set(time_t seconds) {
-
-				if(seconds) {
-
-					reset(seconds * 1000);
-					enable();
-
-					TimeStamp next(time(0)+seconds);
-					Application::info() << "Auto reconfiguration set to " << next << endl;
-#ifdef _WIN32
-					SystemService::getInstance()->registry("auto-reconfig",next.to_string().c_str());
-#endif // _WIN32
-
-				} else {
-
-					disable();
-
-					Application::info() << "Auto reconfiguration is not enabled" << endl;
-#ifdef _WIN32
-					SystemService::getInstance()->registry("auto-reconfig","disabled");
-#endif // _WIN32
-				}
-			}
-
-		};
-
-		static ReconfigTimer timer;
-
-		try {
-
-			Updater update(pathname);
-
-			if(update || force) {
-
-				auto agent = RootFactory();
-				update.set(agent);
-
-#ifdef _WIN32
-				registry("last_reconfig",TimeStamp().to_string().c_str());
-#endif // _WIN32
-
-			} else {
-
-				info() << "Reconfiguration is not necessary" << endl;
-			}
-
-			timer.set(update.time());
-
-#ifdef HAVE_SYSTEMD
-			sd_notifyf(0,"STATUS=%s",_("System is configured"));
-#endif // HAVE_SYSTEMD
-
-		} catch(const std::exception &e ) {
-
-			error() << "Reconfiguration has failed: " << e.what() << endl;
-			timer.set(Config::Value<time_t>("service","reconfig-time-when-failed",120000));
-
-#ifdef HAVE_SYSTEMD
-			sd_notifyf(0,"STATUS=%s%s",_("Reconfiguration has failed: "),e.what());
-#endif // HAVE_SYSTEMD
-
-		} catch(...) {
-
-			error() << "Unexpected error during reconfiguration" << endl;
-			timer.set(Config::Value<time_t>("service","reconfig-time-when-failed",120000));
-
-#ifdef HAVE_SYSTEMD
-			sd_notifyf(0,"STATUS=%s",_("Unexpected error during reconfiguration"));
-#endif // HAVE_SYSTEMD
-
-
+		if(startup && !Module::preload()) {
+			throw runtime_error("Module preload has failed");
 		}
+
+		Updater updater{pathname,startup};
+
+		if(updater.refresh()) {
+			updater.load(RootFactory());
+		}
+
+		time_t timer = updater.wait();
+		if(!timer) {
+			Logger::String{"Auto update is disabled"}.trace(name());
+			return;
+		}
+
+		// Logger::String{"Auto update set to ",TimeStamp{time(0)+timer}.to_string()}.info(name());
+
+		error() << "Auto update was not implemented" << endl;
 
 	}
 

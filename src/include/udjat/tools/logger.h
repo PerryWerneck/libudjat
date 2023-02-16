@@ -35,14 +35,17 @@
 	namespace Logger {
 
 		enum Level : uint8_t {
-			Info,		///< @brief Informational message.
-			Warning,	///< @brief Warning conditions.
-			Error,		///< @brief Error conditions.
-			Debug,		///< @brief Debug message.
+			Error,		///< @brief Error conditions (std::cerr).
+			Warning,	///< @brief Warning conditions (std::clog).
+			Info,		///< @brief Informational message (std::cout>.
+			Trace,		///< @brief Debug message.
 
-			// Trace should be the last one.
-			Trace		///< @brief Trace message
+			// Debug should be the last one.
+			Debug		///< @brief Trace message
 		};
+
+		UDJAT_API unsigned short verbosity() noexcept;
+		UDJAT_API void verbosity(unsigned short level) noexcept;
 
 		UDJAT_API std::ostream & info();
 		UDJAT_API std::ostream & warning();
@@ -110,6 +113,23 @@
 				write(Logger::Error,domain);
 			}
 
+			inline void trace(const std::string &domain) const {
+				write(Logger::Trace,domain.c_str());
+			}
+
+			inline void info(const std::string &domain) const {
+				write(Logger::Info,domain.c_str());
+			}
+
+			inline void warning(const std::string &domain) const {
+				write(Logger::Warning,domain.c_str());
+			}
+
+			inline void error(const std::string &domain) const {
+				write(Logger::Error,domain.c_str());
+			}
+
+
 		};
 
 		/// @brief Formatted Log message.
@@ -141,15 +161,11 @@
 		};
 
 		/// @brief Redirect std::cout, std::clog and std::cerr to log file.
-		/// @param console If true send log output to standard out.
-#ifdef DEBUG
-		UDJAT_API void redirect(bool console = true, bool file = true);
-		UDJAT_API void console(bool enable = true);
+		/// @param file If true send log output to file.
+		UDJAT_API void redirect(bool file = true);
 
-#else
-		UDJAT_API void redirect(bool console = false, bool file = true);
-		UDJAT_API void console(bool enable = false);
-#endif // DEBUG
+		/// @brief Enable/Disable console output.
+		UDJAT_API void console(bool enable = true);
 
 		UDJAT_API bool file();
 		UDJAT_API bool console();

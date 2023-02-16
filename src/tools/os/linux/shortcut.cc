@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -19,32 +19,35 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include "private.h"
- #include <csignal>
- #include <cstring>
- #include <iostream>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/event.h>
+ #include <udjat/tools/application.h>
+
+ using namespace std;
 
  namespace Udjat {
 
-	/*
-	Win32::MainLoop & Win32::MainLoop::getInstance() {
-		static Win32::MainLoop instance;
-		return instance;
+ 	Application::ShortCut::ShortCut(const Type t, const char *i, const char *n, const char *c, const char *a)
+		: type{t}, id{i}, name{n}, description{c}, arguments{a} {
 	}
 
- 	MainLoop & MainLoop::getInstance() {
- 		return Win32::MainLoop::getInstance();
+	Application::ShortCut & Application::ShortCut::remove() {
+
+		return *this;
 	}
 
-	Win32::MainLoop::MainLoop() : Udjat::MainLoop() {
+	Application::ShortCut & Application::ShortCut::save() {
 
+		return *this;
 	}
 
-	Win32::MainLoop::~MainLoop() {
+	Application::ShortCut & Application::ShortCut::autostart() {
+
+		return *this;
 	}
-	*/
+
+	Application::ShortCut & Application::ShortCut::desktop() {
+
+		return *this;
+	}
 
  }
+

@@ -1,4 +1,195 @@
 -------------------------------------------------------------------
+Tue Nov 22 18:51:46 UTC 2022 - perry.werneck@gmail.com
+
+- Update to version 1.0+git20221122:
+  * Adding < > >= <= state operators.
+  * Protecting log buffer from concurrency to avoid 'strange' segfaults when getting instances.
+  * Refactoring agent events.
+  * Debugging agent updater.
+  * Small enhancements in timestamp & namedobject.
+  * Fixing state up/down forwarding.
+  * Fixing state alerts.
+  * Allowing agent state forward to children.
+  * Allowing construct of states with pre-defined values.
+  * Updating service.
+  * Fixing package build.
+  * Implementing network interface abstraction (linux only for now).
+  * Exporting function to navigate from active NICs.
+  * Enhancing alert parser.
+  * Implementing file based alerts.
+  * Adding win32 handle auto-cleanup methods.
+  * Allowing default protocol handler.
+  * Fixing package build.
+  * Fixing win32 macaddress & nic scanners.
+  * Using the first active and valid interface to get macaddress on windows due to limitations of winhttp.
+  * Adding missing header, logging windows power events.
+  * Debugging network detection.
+
+-------------------------------------------------------------------
+Tue Nov 08 13:13:04 UTC 2022 - perry.werneck@gmail.com
+
+- Update to version 1.0+git20221108:
+  * Fixing mac address expansion.
+  * Fixing url alerts alert expansion.
+  * Fixing win32 compatiblity for ips and mac address expansion
+  * Expand macaddress and nic on win32 protocol worker.
+  * Adding win32 network adapter methods.
+  * Expanding ${macaddress} using nic from connection.
+  * Implementing windows network info expansion.
+  * Working on 'post-connect' http processing.
+  * Protocol worker now expands connection info (host & remote IPs) on payload.
+  * Avoiding unnecessary calls to win32 settimer().
+  * Fixing log enable/disable.
+  * Logging error when trying to use virtual machine filter without vmdetect.
+  * Fixing URL filter.
+  * Adding filters for os & virtual machine.
+  * Fixing windows package, using another color for debug messages.
+  * Using state label and summary when the agent doesnt have one.
+  * Reloading 'logger' options after xml update.
+  * Removing domain from root agent name.
+  * Forced write of 'logger' options on syslog.
+  * Adding generic 'exec' method for modules.
+  * Adding XML attribute to enable/disable log types.
+  * No need to wakeup() when a timer is disabled.
+  * Fixing win32 shutdown handler.
+  * Monitoring on shutdown when running as windows service.
+  * Moving console handlers to system service.
+  * Fixing windows service startup.
+  * Logging service delete error.
+  * Fixing win32 shutdown handlers.
+  * Adding binary data support in windows registry class.
+  * Using xml tag as name when the attribute 'name=' is missing.
+  * Adding method to navigate on workers.
+  * Fixing module information.
+  * Refactoring win32 module loading.
+  * Implementing verbose format for timestamps.
+  * Adding name() and logger methods on abstract object.
+  * Better and translated responses on module info.
+  * Fixing module property get.
+  * Implementing 'trace' as ostream to be more consistent with info, warning and error.
+  * Fixing service initialization.
+  * Adding pkg-config variable for library name.
+  * Debugging win32 threadpool.
+  * Fixing win32 hang when stopping.
+  * Refactoring agent state emission.
+  * Updating win32 package control file.
+  * Fixing agent startup when some computing is needed to get the first value.
+  * Changing log message for quit by console request
+  * Fixing win32 console handler dead lock.
+  * Adjustments in worker default setup.
+  * Fixing load of worker timeouts.
+  * Adding timeout options in the protocol worker.
+  * Fixing agent update timers.
+  * Refactoring agent update engine.
+  * Debugging agent reset.
+  * Fixing segfault on service exit.
+  * Fixing mimetypes.
+  * Removing unused method from Application().
+  * Adding module properties.
+  * Fixing alertfactory.
+  * stateFromValue is now computeState
+  * Implementing method to get state value or range as string.
+  * Fixing state value parsers.
+  * Implementing converter for win32 double byte charsets.
+  * Adding 'unsigned long long' parser.
+  * Removing systemd/winregistry notifications from default root agent. Is now a SystemService() job.
+  * Refactoring win32 log engine.
+  * Refactoring linux log engine.
+  * Changing log type for URL actions post/response strings.
+  * Fixing 'SIGILL' expanding strings.
+  * Fixing system state on startup.
+  * Updating service status for windows.
+  * Better system state info on linux.
+  * Using default root state when child is 'ready'.
+  * Changing the default 'ready' state to singleton.
+  * Fixing state changes.
+  * Fixing agent update timer.
+  * Fixing notifications on state changes.
+  * Setting state icons based on level value.
+  * Fixing service settings file auto detection.
+  * Agent state cant be null. Using the default one when agent setup dont set it.
+  * Adding library version header.
+  * Allowing construction from DataFile from XML definition.
+  * Moving win32 log to programdata, small fixes on system and data paths.
+  * Allowing redirect of systemdata dir using registry key, moving logs and cache to win32 programdata.
+  * Getting system data path using win32 api.
+  * Decorating linux console.
+  * Replacing log message with the new method trace()
+  * Fixing win32 module load.
+  * Logging library name and revision.
+  * Fixing win32 force uninstall.
+  * Fixing win32 cleanup, allow file log disable.
+  * Implementing test for install location.
+  * Implementing win32 Application::InstallLocation() class.
+  * Adding command line option to clean registry.
+  * Splliting agent xml properties parser.
+  * Implementing uninstall and cleanup.
+  * Implementing method to enable/disable console output.
+  * Adjustment for windows debug.
+  * Adding trace() method for easy debugging.
+  * Fixing service configuration search.
+  * Fixing win32 module loading.
+  * Adding win32 --timer= option.
+  * Adding search paths for Suse cross-compiled modules.
+  * Fixing win32 build.
+  * Fixing win32 charset on error messages.
+  * Allowing console attributes.
+  * Improving win32 console.
+  * Debugging charset conversion.
+  * Working on exception charset.
+  * Fixing msys build.
+  * Adding vscode settings.
+  * Fixing win32 charset and error message formatting.
+  * Removing linux charset conversion.
+  * Refactoring windows error messages.
+  * Refactoring win32 charset conversion.
+  * Updating obs workflow.
+  * Fixing win32 async subprocess.
+  * Refactoring win32 handlers
+  * Implementing shared_ptr from "this" for abstract agents.
+  * Fixing subprocess cleanup.
+  * Fixing load from subprocess streams.
+  * Fixing segfault while processing handler.
+  * enhancing windows & linux service command line parser.
+  * Small refactor in linux service start and command-line parsing.
+  * Debugging linux async subprocess.
+  * Fixing linux handler engine.
+  * Refactoring linux async sub process.
+  * Refactoring linux async subprocess.
+  * Win32 syncronous subprocess refactored.
+  * Refactor of windows handler.
+  * Refactoring windows sub process engine.
+  * Refactoring linux handlers.
+  * Refactoring linux subprocess engine.
+  * Refactoring I/O handlers.
+  * Fixing timer class.
+  * Fixing watchdog timer.
+  * Fixing reconfiguration timer.
+  * Implementing 'auto-exit' option.
+  * Refactoring timer engine.
+  * Adjusting module headers.
+  * Adjustments in windows methods.
+  * Moving private headers.
+  * Moving agent private definitions to src/include/private/agent.h
+  * Fixing task cleanup.
+  * Fixing application startup when using debug mode on modules & libs.
+  * Allowing module debugging in user's home.
+  * Naming background threads.
+
+-------------------------------------------------------------------
+Wed Sep 14 15:41:20 UTC 2022 - perry.werneck@gmail.com
+
+- Update to version 1.0+git20220914:
+  * Investigating 'hanged' agents.
+  * Investigating segfault at service cleanup.
+  * Ignoring unnamed nodes when scanning from object childs.
+  * Adding static method to verify protocol pointer.
+  * Allowing syncronous alerts.
+  * Debugging segfault on service cleanup.
+  * Registering active workers; enabling script alerts in windows.
+  * Waiting for background tasks after stopping agents.
+
+-------------------------------------------------------------------
 Wed Mar 17 22:19:20 UTC 2021 - Perry Werneck <perry.werneck@gmail.com>
 
 - First build on obs. 

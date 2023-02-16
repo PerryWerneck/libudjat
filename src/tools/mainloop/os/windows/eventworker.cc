@@ -31,21 +31,14 @@
 		handlers.push_back(handler);
 
 		std::thread hThread([this]() {
-#ifdef DEBUG
-			cout << "win32\tStarting event monitor thread" << endl;
-#endif // DEBUG
-
+			debug("Starting event monitor thread");
 			while(Controller::getInstance().wait(this)) {
 				if(!MainLoop::getInstance()) {
-					cerr << "win32\tMainloop is dead, disabling event worker" << endl;
+					Logger::String{"Mainloop is dead, disabling event worker"}.trace("win32");
 					break;
 				}
 			}
-
-#ifdef DEBUG
-			cout << "win32\tStopping event monitor thread" << endl;
-#endif // DEBUG
-
+			debug("Stopping event monitor thread");
 			delete this;
 
 		});

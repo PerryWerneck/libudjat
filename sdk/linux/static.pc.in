@@ -7,12 +7,12 @@ product_name=@PRODUCT_NAME@
 product_id=@PRODUCT_DOMAIN@.@PRODUCT_NAME@
 product_title=@PRODUCT_TITLE@
 product_version=@PACKAGE_MAJOR_VERSION@@PACKAGE_MINOR_VERSION@
+package_name=lib@PRODUCT_NAME@@PACKAGE_MAJOR_VERSION@_@PACKAGE_MINOR_VERSION@
 module_path=${libdir}/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules/
 
 Name: udjat
 Description: The Eye of Horus
 Version: @PACKAGE_VERSION@
 Libs: -ludjat.static @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@
-
-Cflags: -I${prefix}/include
+Cflags: -I${prefix}/include @PUGIXML_CFLAGS@
 

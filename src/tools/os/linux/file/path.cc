@@ -31,7 +31,14 @@
 
  namespace Udjat {
 
+	File::Path::Path(const File::Path::Type, const char *) {
+		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	}
+
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
+	}
+
+	void File::Path::expand(std::string &str) {
 	}
 
 	void File::Path::save(int fd, const char *contents) {
@@ -84,7 +91,7 @@
 		return (s.st_mode & S_IFREG) != 0;
 	}
 
-	void File::Path::mkdir(const char *dirname, int mode) {
+	bool File::Path::mkdir(const char *dirname, bool required, int mode) {
 
 		if(!(dirname && *dirname)) {
 			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
@@ -92,10 +99,10 @@
 
 		// Try to create the full path first.
 		if(!::mkdir(dirname,mode)) {
-			return;
+			return true;
 		} else if(errno == EEXIST) {
 			if(File::Path::dir(dirname)) {
-				return;
+				return true;
 			}
 			throw system_error(ENOTDIR,system_category(),dirname);
 		}
@@ -108,17 +115,15 @@
 			path.resize(path.size()-1);
 		}
 
-		debug("Creating path '",path.c_str(),"'");
 		size_t mark = path.find("/",1);
 		while(mark != string::npos) {
 			path[mark] = 0;
-			debug("Creating '",path.c_str(),"'");
 			if(::mkdir(path.c_str(),mode)) {
 				if(errno == EEXIST) {
 					if(!File::Path::dir(path.c_str())) {
 						throw system_error(ENOTDIR,system_category(),path.c_str());
 					}
-				} else {
+				} else if(required) {
 					throw system_error(errno,system_category(),path.c_str());
 				}
 			}
@@ -132,14 +137,17 @@
 				if(!File::Path::dir(path.c_str())) {
 					throw system_error(ENOTDIR,system_category(),path.c_str());
 				}
-			} else {
+			} else if(required) {
 				throw system_error(errno,system_category(),path.c_str());
+			} else {
+				return false;
 			}
 		}
+		return true;
 	}
 
 	void File::Path::mkdir(int mode) const {
-		mkdir(c_str(),mode);
+		mkdir(c_str(),true,mode);
 	}
 
 	void File::Path::replace(const char *filename, const char *contents) {

@@ -20,13 +20,51 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/win32/cleanup.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/win32/exception.h>
+ #include <private/win32.h>
+ #include <stdexcept>
 
  using namespace std;
+ using namespace Udjat;
 
  UDJAT_API void udjat_autoptr_cleanup_HANDLE(HANDLE *handle) {
 	if(*handle) {
 		CloseHandle(*handle);
 		*handle = 0;
 	}
+ }
+
+ Udjat::Win32::KnownFolder::KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr) {
+
+	PWSTR wcp = NULL;
+	string result;
+
+	throw_if_fail(SHGetKnownFolderPath(known_folder_guid_ptr, 0, NULL, &wcp));
+
+	size_t len = wcslen(wcp) * 2;
+	char buffer[len+1];
+
+	wcstombs(buffer,wcp,len);
+
+	assign(buffer);
+
+	CoTaskMemFree (wcp);
+
+	append("\\");
+
+ }
+
+ Udjat::Win32::KnownFolder::KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) : KnownFolder{known_folder_guid_ptr} {
+
+	append(Application::Name());
+	mkdir();
+
+	append("\\");
+	append(subdir);
+	mkdir();
+
+	append("\\");
+
  }
 

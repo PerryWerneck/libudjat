@@ -28,9 +28,25 @@
 
 	namespace Win32 {
 
+		/// @brief Test for exception.
+		void UDJAT_API throw_if_fail(const DWORD error = GetLastError());
+
+		void UDJAT_API throw_if_fail(const HRESULT result);
+
+		/// @brief Test for exception.
+		void UDJAT_API throw_if_fail(const char *str, const DWORD error = GetLastError());
+
 		/// @brief Win32 standard error
 		class UDJAT_API Exception : public std::runtime_error {
 		public:
+
+			/// @brief Write on error log, emit exception.
+			/// @param domain The log domain for message.
+			/// @param log The message for log file only.
+			/// @param prefix The exception prefix.
+			/// @param error The Win32 Error code
+			Exception(const char *domain, const char *log, const char *prefix = "", const DWORD error = GetLastError());
+
 			Exception(const std::string & what_arg, const DWORD error = GetLastError()) : runtime_error(format(what_arg.c_str(),error)) {
 			}
 

@@ -57,7 +57,7 @@
 		/// @return The factory with the requested name or nullptr if not found.
 		static Factory * find(const char *name);
 
-		static void getInfo(Response &response);
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		/// @brief Search factory for xml defined element.
 		/// @param node XML node to start searching for.
@@ -69,7 +69,7 @@
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(const std::function<bool(Factory &factory)> &func);
+		static bool for_each(const std::function<bool(const Factory &factory)> &method);
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param name	Requested factory name.

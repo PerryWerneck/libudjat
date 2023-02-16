@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/protocol.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <sys/socket.h>
  #include <arpa/inet.h>
  #include <stdexcept>
@@ -28,7 +28,7 @@
  #include <sys/socket.h>
  #include <ifaddrs.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/net/nic.h>
+ #include <udjat/net/interface.h>
  #include <iostream>
  #include <linux/if.h>
  #include <sys/ioctl.h>

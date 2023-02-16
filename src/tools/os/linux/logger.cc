@@ -73,18 +73,18 @@ namespace Udjat {
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(options.console) {
+		if(options.console && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
 
 			// Write to console.
 			static bool decorated = (getenv("TERM") != NULL);
 
 			static const char *decorations[] = {
-				"\x1b[92m",	// Info
-				"\x1b[93m",	// Warning
 				"\x1b[91m",	// Error
+				"\x1b[93m",	// Warning
+				"\x1b[92m",	// Info
+				"\x1b[94m",	// Trace
 				"\x1b[95m",	// Debug
 
-				"\x1b[94m",	// Trace
 				"\x1b[96m",	// SysInfo (Allways Trace+1)
 			};
 
@@ -112,13 +112,12 @@ namespace Udjat {
 			// Write to syslog.
 			//
 			static const int priority[] = {
-				LOG_INFO,		// Info
-				LOG_WARNING,	// Warning
 				LOG_ERR,		// Error
-				LOG_DEBUG,		// Debug
-
+				LOG_WARNING,	// Warning
+				LOG_INFO,		// Info
 				LOG_DEBUG,		// Trace
-				LOG_NOTICE		// Trace+1
+				LOG_DEBUG,		// Debug
+				LOG_NOTICE		// Debug+1
 			};
 
 			::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);

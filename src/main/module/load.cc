@@ -47,7 +47,7 @@ namespace Udjat {
 
 			if(!filename.empty()) {
 
-				for(auto module : modules) {
+				for(auto module : objects) {
 
 					// Check if the module is already loaded.
 					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
@@ -72,62 +72,40 @@ namespace Udjat {
 		return false;
 	}
 
-	bool Module::preload(const char *pathname) noexcept {
+	bool Module::preload() noexcept {
 
 		bool rc = true;
 
-		// Preload modules from config
-		{
-			Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
+		Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
 
-			debug("load-at-startup size=",modules.size());
-			if(modules.size()) {
-				Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
+		if(modules.size()) {
 
-				for(std::string &module : modules) {
+			Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
 
-					try {
+			for(std::string &module : modules) {
 
-						Logger::String("Preloading ",module," from configuration file").trace("module");
-						load(File::Path{module});
+				try {
 
-					} catch(const std::exception &e) {
+					Logger::String("Preloading ",module," from configuration file").trace("module");
+					load(File::Path{module});
 
-						cerr << "module\t" << e.what() << endl;
+				} catch(const std::exception &e) {
 
-					} catch(...) {
+					cerr << "module\t" << e.what() << endl;
+					rc = false;
 
-						cerr << "module\tUnexpected error loading module" << endl;
+				} catch(...) {
 
-					}
+					cerr << "module\tUnexpected error loading module" << endl;
+					rc = false;
 
 				}
+
 			}
-		}
 
-		// Preload modules from XML
-		if(pathname && *pathname && Config::Value<bool>("modules","preload-from-xml",true)) {
+		} else {
 
-			// Preload from path.
-			cout << "modules\tPreloading from " << pathname << endl;
-			Udjat::for_each(pathname, [&rc](const char UDJAT_UNUSED(*filename), const pugi::xml_document &doc){
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					if(node.attribute("preload").as_bool(false)) {
-
-						try {
-
-							Module::load(node);
-
-						} catch(const std::exception &e) {
-
-							cerr << "modules\t" << e.what() << endl;
-							rc = false;
-
-						}
-
-					}
-				}
-			});
+			Logger::String("Preload list is empty").trace("module");
 
 		}
 
@@ -140,20 +118,38 @@ namespace Udjat {
 
 	bool Module::Controller::load(const std::string &filename, bool required) {
 
-		bool already = false;
-		for_each([&already,filename](Module &module) {
-			if(!strcasecmp(module.filename().c_str(),filename.c_str())) {
-				already = true;
+		for(auto module : this->objects) {
+			if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+				return true;
 			}
-		});
-
-		if(already) {
-			return true;
 		}
 
 		init(filename,pugi::xml_node{});
 
 		return false;
+	}
+
+	bool Module::load(const char *name, bool required) {
+		return Controller::getInstance().load(name,required);
+	}
+
+	bool Module::Controller::load(const char *name, bool required) {
+
+		string filename = locate(name);
+		if(filename.empty()) {
+			if(required) {
+				throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find module '{}'",name));
+			}
+			return false;
+		}
+
+		if(load(filename,required)) {
+			Logger::String{"Module '",filename.c_str(),"' was already loaded"}.trace("module");
+			return true;
+		}
+
+		return false;
+
 	}
 
 	void Module::load(const File::Path &path, bool required) {

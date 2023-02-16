@@ -28,6 +28,7 @@
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/service.h>
  #include <udjat/alert/abstract.h>
  #include <mutex>
  #include <list>
@@ -38,7 +39,7 @@
  namespace Udjat {
 
  	/// @brief Singleton for alert emission.
-	class Alert::Controller : private MainLoop::Service, private Udjat::Worker, private MainLoop::Timer {
+	class Alert::Controller : private Service, private Udjat::Worker, private MainLoop::Timer {
 	private:
 		/// @brief Mutex for serialization
 		static mutex guard;

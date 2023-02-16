@@ -21,7 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/protocol.h>
- #include <udjat/tools/ip.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/win32/ip.h>
  #include <udjat/tools/logger.h>
  #include <ws2tcpip.h>

@@ -22,6 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/http/exception.h>
+ #include <udjat/tools/http/error.h>
  #include <system_error>
  #include <cstring>
  #include <string>
@@ -98,5 +99,6 @@
 
 	HTTP::Exception::Exception(unsigned int code, const char *url) : Exception(code,url,toSysMessage(code).c_str()) {
 	}
+
 
  }

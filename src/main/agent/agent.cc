@@ -171,6 +171,10 @@ namespace Udjat {
 
 	}
 
+	/*
+
+	// TODO: Move it to Controller, method 'head'.
+
 	void Abstract::Agent::head(ResponseInfo &response) {
 
 		chk4refresh(true);
@@ -211,6 +215,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"

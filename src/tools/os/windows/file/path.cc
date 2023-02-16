@@ -22,10 +22,126 @@
  #include <dirent.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/path.h>
+ #include <private/win32.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <shlobj.h>
 
  namespace Udjat {
+
+	static void expand_folder(std::string &str, const char *key, REFKNOWNFOLDERID id) {
+
+		const char *ptr = Udjat::String::strcasestr(str.c_str(),key);
+		if(ptr) {
+			try {
+				str.replace(ptr - str.c_str(),strlen(key),Win32::KnownFolder{id});
+			} catch(const std::exception &e) {
+				throw runtime_error(string{key} + ": " + e.what());
+			}
+		}
+
+	}
+
+	void File::Path::expand(std::string &str) {
+		if(!str.empty()) {
+			expand_folder(str,"${home}",FOLDERID_Profile);
+			expand_folder(str,"${documents}",FOLDERID_Documents);
+			expand_folder(str,"${desktop}",FOLDERID_Desktop);
+			expand_folder(str,"${sysdata}",FOLDERID_ProgramData);
+		}
+	}
+
+	File::Path::Path(const File::Path::Type type, const char *str) {
+
+		PWSTR wcp = NULL;
+		HRESULT hr;
+
+		const char *suffix = "\\";
+
+		// https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
+		switch(type) {
+		case Desktop:
+			hr = SHGetKnownFolderPath(FOLDERID_Desktop, 0, NULL, &wcp);
+			break;
+
+		case Download:
+			hr = SHGetKnownFolderPath(FOLDERID_Downloads, 0, NULL, &wcp);
+			break;
+
+		case Templates:
+			hr = SHGetKnownFolderPath(FOLDERID_Templates, 0, NULL, &wcp);
+			break;
+
+		case PublicShare:
+			hr = SHGetKnownFolderPath(FOLDERID_PublicDocuments, 0, NULL, &wcp);
+			break;
+
+		case Documents:
+			hr = SHGetKnownFolderPath(FOLDERID_Documents, 0, NULL, &wcp);
+			break;
+
+		case Music:
+			hr = SHGetKnownFolderPath(FOLDERID_Music, 0, NULL, &wcp);
+			break;
+
+		case Pictures:
+			hr = SHGetKnownFolderPath(FOLDERID_Pictures, 0, NULL, &wcp);
+			break;
+
+		case Videos:
+			hr = SHGetKnownFolderPath(FOLDERID_Videos, 0, NULL, &wcp);
+			break;
+
+		case SystemData:
+			hr = SHGetKnownFolderPath(FOLDERID_ProgramData, 0, NULL, &wcp);
+			break;
+
+		case UserData:
+#ifdef FOLDERID_AppDataProgramData
+			hr = SHGetKnownFolderPath(FOLDERID_AppDataProgramData, 0, NULL, &wcp);
+#else
+			hr = SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, NULL, &wcp);
+#endif // FOLDERID_AppDataProgramData
+			break;
+
+		default:
+			throw runtime_error("Unexpected path type");
+
+		}
+
+		string result;
+
+		try {
+
+			if (SUCCEEDED(hr)) {
+
+				size_t len = wcslen(wcp) * 2;
+				char buffer[len+1];
+
+				wcstombs(buffer,wcp,len);
+
+				assign(buffer);
+
+			} else {
+				throw runtime_error("Can't get known folder path");
+			}
+
+		} catch(...) {
+			CoTaskMemFree (wcp);
+			throw;
+		}
+
+		CoTaskMemFree (wcp);
+
+		append(suffix);
+		mkdir();
+
+		if(str && *str) {
+			append(str);
+			append("\\");
+			mkdir();
+		}
+	}
 
 	Win32::Path::Path(const char *pathname) : std::string(pathname) {
 		for(char *ptr = (char *) c_str();*ptr;ptr++) {
@@ -73,7 +189,7 @@
 		return attr & FILE_ATTRIBUTE_NORMAL;
 	}
 
-	void File::Path::mkdir(const char *dirname, int UDJAT_UNUSED(mode)) {
+	bool File::Path::mkdir(const char *dirname, bool required, int UDJAT_UNUSED(mode)) {
 
 		if(!(dirname && *dirname)) {
 			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
@@ -83,28 +199,27 @@
 
 		// Try to create the full path first.
 		if(!::mkdir(path.c_str())) {
-			return;
+			return true;
 		} else if(errno == EEXIST) {
 			if(File::Path::dir(path.c_str())) {
-				return;
+				return true;
+			} else if(required) {
+				throw system_error(ENOTDIR,system_category(),path);
 			}
-			throw system_error(ENOTDIR,system_category(),path);
+			return false;
 		}
 
 		// walk the full path and try creating each element
 		// Reference: https://github.com/GNOME/glib/blob/main/glib/gfileutils.c
-
-		debug("Creating path '",path.c_str(),"'");
 		size_t mark = path.find("\\",1);
 		while(mark != string::npos) {
 			path[mark] = 0;
-			debug("Creating '",path.c_str(),"'");
 			if(::mkdir(path.c_str())) {
 				if(errno == EEXIST) {
 					if(!File::Path::dir(path.c_str())) {
 						throw system_error(ENOTDIR,system_category(),path.c_str());
 					}
-				} else {
+				} else if(required) {
 					throw system_error(errno,system_category(),path.c_str());
 				}
 			}
@@ -118,10 +233,16 @@
 				if(!File::Path::dir(path.c_str())) {
 					throw system_error(ENOTDIR,system_category(),path.c_str());
 				}
-			} else {
+				return true;
+
+			} else if(required) {
 				throw system_error(errno,system_category(),path.c_str());
+			} else {
+				return false;
 			}
 		}
+
+		return true;
 	}
 
 	void File::Path::mkdir(int mode) const {
@@ -251,6 +372,19 @@
 		}
 		closedir(dir);
 
+	}
+
+	const char * File::Path::basename() const noexcept {
+
+		const char *rc = c_str();
+
+		for(const char *ptr = c_str(); *ptr; ptr++) {
+			if(*ptr == '/' && *ptr == '\\') {
+				rc = ptr+1;
+			}
+		}
+
+		return rc;
 	}
 
 }

@@ -70,6 +70,8 @@
 
 	UDJAT_API std::string strip(const char *str, ssize_t length = -1);
 
+	UDJAT_API bool isnumber(const char *str);
+
 	/// @brief Simple markup expander.
 	/// @param text String to expand.
 	/// @return String with markup expanded.
@@ -114,17 +116,17 @@
 
 		template<typename... Targs>
 		String(const char *str, Targs... Fargs) : std::string{str} {
-			append(Fargs...);
+			String::append(Fargs...);
 		}
 
 		template<typename... Targs>
 		String(const std::string &str, Targs... Fargs) : std::string{str} {
-			append(Fargs...);
+			String::append(Fargs...);
 		}
 
 		template<typename T, typename... Targs>
 		String(const T &str, Targs... Fargs) : std::string{std::to_string(str)} {
-			append(Fargs...);
+			String::append(Fargs...);
 		}
 
 		/// @brief Construct string from xml definition.
@@ -275,7 +277,13 @@
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
-		char * strcasestr(const char *needle);
+		static char * strcasestr(const char *haystack, const char *needle);
+
+		/// @brief Find first occurrence of substring (case insensitive);
+		/// @return Pointer to first occurrence or NULL if not found.
+		inline char * strcasestr(const char *needle) {
+			return strcasestr(c_str(),needle);
+		}
 
 		std::vector<String> split(const char *delim);
 

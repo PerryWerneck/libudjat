@@ -22,17 +22,22 @@
  #include <cstring>
  #include <csignal>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
 	Event::Controller::Controller() {
-		cout << "event\tStarting controller " << hex << this << dec << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("event");
 	}
 
 	Event::Controller::~Controller() {
-		cout << "event\tStopping controller " << hex << this << dec << endl;
+		Logger::String{
+			"Stopping controller"
+		}.trace("event");
 	}
 
 	Event::Controller::Signal & Event::Controller::SignalFactory(int signum) {

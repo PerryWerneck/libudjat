@@ -51,7 +51,9 @@
 
 	void Protocol::Controller::insert(Protocol *protocol) {
 		lock_guard<mutex> lock(guard);
-		Logger::trace() << "protocols\tRegister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+		Logger::String {
+			"Register '",protocol->name,"' (",protocol->module.description,")"
+		}.trace("protocols");
 		protocols.push_back(protocol);
 	}
 
@@ -59,7 +61,9 @@
 
 		lock_guard<mutex> lock(guard);
 
-		Logger::trace() << "protocols\tUnregister '" << protocol->name << "' (" << protocol->module.description << ")" << endl;
+		Logger::String {
+			"Unregister '",protocol->name,"' (",protocol->module.description,")"
+		}.trace("protocols");
 
 		if(def == protocol) {
 			def = nullptr;
@@ -107,6 +111,7 @@
 		return nullptr;
 	}
 
+	/*
 	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -120,5 +125,6 @@
 		}
 
 	}
+	*/
 
  }

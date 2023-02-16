@@ -39,6 +39,7 @@
  #include <udjat/tools/network.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/module.h>
+ #include <sstream>
 
  #ifdef HAVE_VMDETECT
 	#include <vmdetect/virtualmachine.h>
@@ -54,16 +55,17 @@
 
 	void setRootAgent(std::shared_ptr<Abstract::Agent> agent) {
 
-		cout << "agent\tActivating root agent " << hex << ((void *) agent.get()) << dec << endl;
+		Logger::String{"Activating new root agent"}.trace(Application::Name().c_str());
 		Abstract::Agent::Controller::getInstance().set(agent);
 
-		Module::for_each([agent](Module &module){
-			module.set(agent);
+		Module::for_each([agent](const Module &module){
+			const_cast<Module &>(module).set(agent);
+			return false;
 		});
 
 	}
 
-	std::shared_ptr<Abstract::Agent> RootAgentFactory() {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::RootFactory() {
 
 		/// @brief The root agent.
 		class Agent : public Abstract::Agent {
@@ -73,22 +75,27 @@
 		public:
 			Agent(const char *name) : Abstract::Agent(name) {
 
-				cout << "agent\tRoot agent " << hex << ((void *) this) << dec << " was created" << endl;
+				{
+					std::stringstream ss;
+					ss << "Building root agent " << hex << ((void *) this) << dec;
+					Logger::String{ss.str()}.trace("agents");
+				}
+
 				Object::properties.icon = "computer";
-				Object::properties.url = Quark(string{"http://"} + name).c_str();
+				Object::properties.label = Quark(Hostname()).c_str();
 
 				//
 				// Create default 'ready' state.
 				//
 				class ReadyState : public Abstract::State {
 				public:
-					ReadyState() : Abstract::State("ready", Level::ready, _( "System is ready" ), _( "No abnormal state was detected" )) {
+					ReadyState(const char *name, const char *summary, const char *body) : Abstract::State(name, Level::ready, summary, body) {
 						Object::properties.icon = "computer";
 					}
 
 				};
 
-				states.push_back(make_shared<ReadyState>());
+				states.push_back(make_shared<ReadyState>(name, _( "System is ready" ), _( "No abnormal state was detected" )));
 
 #ifndef _WIN32
 				//
@@ -192,9 +199,10 @@
 				return super::computeState();
 			}
 
-
 			virtual ~Agent() {
-				info() << "Root agent " << hex << ((void *) this) << dec << " was destroyed" << endl;
+				std::stringstream ss;
+				ss << "Root agent " << hex << ((void *) this) << dec << " was destroyed";
+				Logger::String{ss.str()}.trace("agents");
 			}
 
 			Value & getProperties(Value &value) const noexcept override {
@@ -278,7 +286,7 @@
 		// Get controller to initialize it.
 		Abstract::Agent::Controller::getInstance();
 
-		return make_shared<Agent>(Quark(Hostname()).c_str());
+		return make_shared<Agent>(Application::Name::getInstance().c_str());
 
 	}
 

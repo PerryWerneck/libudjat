@@ -68,6 +68,10 @@
 
 	public:
 
+		bool operator==(const char *name) const noexcept {
+			return strcasecmp(this->name,name) == 0;
+		}
+
 		inline const char * description() const noexcept {
 			return _info.description;
 		}
@@ -80,32 +84,31 @@
 			return _info.gettext_package;
 		}
 
-		/// @brief Preload modules before the reconfiguration.
-		/// @param pathname The xml definitions file (or folder) path.
+		/// @brief Preload modules from configuration file.
 		/// @return true if success.
-		static bool preload(const char *pathname = nullptr) noexcept;
+		static bool preload() noexcept;
 
 		/// @brief Call method on every modules.
-		static void for_each(std::function<void(Module &module)> method);
+		static bool for_each(const std::function<bool(const Module &module)> &method);
 
 		/// @brief Get module by name.
 		/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
 		/// @return Pointer to module or nullptr if not found.
 		static const Module * find(const char *name) noexcept;
 
-		/// @brief Load module by path
+		/// @brief Load module by path.
 		/// @param name path to module filename or directory.
 		/// @param required true if the module is required.
 		static void load(const File::Path &path, bool required = true);
+
+		/// @brief Load module by name.
+		static bool load(const char *name, bool required = true);
 
 		/// @brief Load module by XML node.
 		static void load(const pugi::xml_node &node);
 
 		/// @brief Unload modules.
 		static void unload();
-
-		/// @brief List modules.
-		static void getInfo(Response &response);
 
 		/// @brief Set XML document
 		/// Called when a XML document is loaded.
@@ -121,6 +124,8 @@
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
 		virtual bool getProperty(const char *key, std::string &value) const noexcept;
+
+		virtual Value & getProperties(Value &properties) const noexcept;
 
 		/// @brief Get module property.
 		/// @param property_name The property name.

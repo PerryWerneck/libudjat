@@ -34,6 +34,12 @@
 	Event::~Event() {
 	}
 
+#ifdef _WIN32
+	void Event::clear() {
+		Controller::getInstance().clear();
+	}
+#endif // _WIN32
+
 	void Event::trigger() noexcept {
 
 		{

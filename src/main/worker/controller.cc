@@ -35,14 +35,16 @@
 	}
 
 	Worker::Controller::Controller() {
-		cout << "workers\tStarting controller" << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("workers");
 	}
 
 	Worker::Controller::~Controller() {
 		if(workers.size()) {
 			cerr << "workers\tStopping controller with " << workers.size() << " active worker(s)" << endl;
 		} else {
-			cout << "workers\tStopping clean controller" << endl;
+			Logger::String{"Stopping clean controller"}.trace("workers");
 		}
 
 	}
@@ -58,9 +60,7 @@
 			throw system_error(ENOENT,system_category(),"Unknown action");
 		}
 
-#ifdef DEBUG
-		cout << "Found worker '" << entry->second->c_str() << "'" << endl;
-#endif // DEBUG
+		debug("Found worker '",entry->second->c_str(),"'");
 
 		return entry->second;
 	}
@@ -88,6 +88,7 @@
 
 	}
 
+	/*
 	void Worker::Controller::getInfo(Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -102,14 +103,18 @@
 		}
 
 	}
+	*/
 
-	void Worker::Controller::for_each(const std::function<void(const Worker &worker)> &func) {
+	bool Worker::Controller::for_each(const std::function<bool(const Worker &worker)> &func) {
 
 		for(auto worker : workers) {
 
-			func(*worker.second);
+			if(func(*worker.second)) {
+				return true;
+			}
 
 		}
+		return false;
 
 	}
 

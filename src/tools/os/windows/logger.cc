@@ -58,7 +58,7 @@ namespace Udjat {
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(options.console) {
+		if(options.console && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
 
 			// Log to console
 			HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -76,13 +76,13 @@ namespace Udjat {
 						// Allowed, setup console colors.
 						// https://learn.microsoft.com/pt-br/windows/console/console-virtual-terminal-sequences
 						static const char *decorations[] = {
-							"\x1b[92m",	// Info
-							"\x1b[93m",	// Warning
 							"\x1b[91m",	// Error
+							"\x1b[93m",	// Warning
+							"\x1b[92m",	// Info
+							"\x1b[94m",	// Trace
 							"\x1b[95m",	// Debug
 
-							"\x1b[94m",	// Trace
-							"\x1b[96m",	// SysInfo (Allways Trace+1)
+							"\x1b[96m",	// SysInfo (Allways Debug+1)
 						};
 
 						prefix = decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
@@ -117,8 +117,20 @@ namespace Udjat {
 			//
 			// Write to file.
 			//
-			Application::LogDir filename;
+			static std::string path;
+
+			if(path.empty()) {
+				try {
+					path = Application::LogDir();
+				} catch(...) {
+					path = Application::Path("logs");
+				}
+				File::Path::mkdir(path.c_str());
+			}
+
 			string format;
+			string filename{path};
+
 			DWORD keep = 86400;
 
 			try {
@@ -136,8 +148,6 @@ namespace Udjat {
 			if(format.empty()) {
 				format.assign(Application::Name() + "-%d.log");
 			}
-
-			mkdir(filename.c_str());
 
 			// Get logfile path.
 			filename.append(TimeStamp().to_string(format.c_str()));

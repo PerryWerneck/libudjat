@@ -27,30 +27,33 @@ using namespace std;
 
 namespace Udjat {
 
-	recursive_mutex Module::Controller::guard;
-
+	/*
 	Module::Controller & Module::Controller::getInstance() {
-		lock_guard<recursive_mutex> lock(guard);
+		std::lock_guard<std::mutex> lock(instance_guard);
 		static Controller controller;
 		return controller;
 	}
+	*/
 
 	Module::Controller::Controller() {
-		cout << "modules\tStarting controller" << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("modules");
 	}
 
 	Module::Controller::~Controller() {
 
-		if(modules.size()) {
+		if(objects.size()) {
 			cerr << "modules\tThe controller was destroyed without deactivation" << endl;
 		} else {
-			cout << "modules\tStopping clean controller" << endl;
+			Logger::String{"Stopping clean controller"}.trace("modules");
 		}
 
-		unload();
+		clear();
 
 	}
 
+	/*
 	const Module * Module::Controller::find(const char *name) const noexcept {
 		for(auto module : modules) {
 			if(strcasecmp(module->name,name) == 0) {
@@ -59,25 +62,37 @@ namespace Udjat {
 		}
 		return nullptr;
 	}
+	*/
 
+	/*
 	void Module::Controller::insert(Module *module) {
 		lock_guard<recursive_mutex> lock(guard);
 		modules.push_back(module);
 	}
+	*/
 
+	/*
 	void Module::Controller::remove(Module *module) {
 		lock_guard<recursive_mutex> lock(guard);
 		modules.remove_if([module](Module *entry) {
 			return entry == module;
 		});
 	}
+	*/
 
-	void Module::Controller::for_each(std::function<void(Module &module)> method) {
+	/*
+	bool Module::Controller::for_each(const std::function<bool(const Module &module)> &method) {
+		lock_guard<recursive_mutex> lock(guard);
 		for(auto module : this->modules) {
-			method(*module);
+			if(method(*module)) {
+				return true;
+			}
 		}
+		return false;
 	}
+	*/
 
+	/*
 	void Module::Controller::getInfo(Response &response) noexcept {
 
 		response.reset(Value::Array);
@@ -94,6 +109,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 }
 

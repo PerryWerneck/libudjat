@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/updater.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/application.h>
  #include <udjat/module.h>
  #include <iostream>
  #include <udjat/tools/http/client.h>
@@ -28,192 +29,223 @@
  #include <sys/stat.h>
  #include <private/logger.h>
  #include <udjat/tools/logger.h>
-
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-daemon.h>
- #endif // HAVE_SYSTEMD
-
- #ifdef _WIN32
-	#include <udjat/win32/registry.h>
- #else
-	#include <unistd.h>
- #endif // _WIN32
+ #include <udjat/tools/file.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Updater::Updater(const char *pathname) : path{pathname} {
+	Updater::Updater(const char *pathname, bool force) : update{force} {
 
-		// Then check for file updates.
-		for_each([this](const char *filename, const pugi::xml_document &doc){
+		if(pathname && *pathname) {
 
-			auto node = doc.document_element();
-
-			/// Setup logger.
-			Logger::setup(node);
-
-			// Check for update timer.
-			const char *url = node.attribute("src").as_string();
-			if(url && *url) {
-
-				time_t refresh = node.attribute("update-timer").as_uint(0);
-
-				try {
-
-					info() << "Updating " << filename << endl;
-					if(HTTP::Client::save(node,filename)) {
-						changed = true;
-					}
-
-				} catch(const std::exception &e) {
-
-					error() << "Error '" << e.what() << "' updating " << filename << endl;
-					refresh = node.attribute("update-when-failed").as_uint(refresh);
-
-				} catch(...) {
-
-					error() << "Unexpected error updating " << filename << endl;
-					refresh = node.attribute("update-when-failed").as_uint(refresh);
-
-				}
-
-				if(refresh) {
-					if(next) {
-						next = std::min(next,refresh);
-					} else {
-						next = refresh;
-					}
-				}
-
-			}
-
-		});
-
-	}
-
-	/// @brief Update agent, set it as a new root.
-	time_t Updater::set(std::shared_ptr<Abstract::Agent> agent) noexcept {
-
-		agent->warning() << "Reconfiguring from " << path << endl;
-
-#ifdef HAVE_SYSTEMD
-		sd_notify(0,"RELOADING=1");
-#endif // HAVE_SYSTEMD
-
-		for_each([agent](const char *filename, const pugi::xml_document &doc){
-
-			agent->info() << "Loading '" << filename << "'" << endl;
-
-			// First setup agent, load modules, etc.
-			try {
-
-				auto node = doc.document_element();
-				Logger::setup(node);
-
-				const char *path = node.attribute("path").as_string();
-
-				if(path && *path) {
-
-					// Has defined root path, find agent.
-					agent->find(path,true,true)->setup(node);
-
-				} else {
-
-					// No path, load here.
-					agent->setup(node);
-
-				}
-
-			} catch(const std::exception &e) {
-
-				agent->error() << filename << ": " << e.what() << endl;
-
-			} catch(...) {
-
-				agent->error() << filename << ": Unexpected error" << endl;
-
-			}
-
-			// Then setup modules.
-			Module::for_each([&doc](Module &module) {
-
-				try {
-
-					module.set(doc);
-
-				} catch(const std::exception &e) {
-
-					cerr << "modules\tError '" << e.what() << "' on module setup" << endl;
-
-				} catch(...) {
-
-					cerr << "modules\tUnexpected error on module setup" << endl;
-
-				}
-
+			// Has pathname, use it.
+			Logger::String{"Loading xml definitions from '",pathname,"'"}.trace("settings");
+			File::Path{pathname}.for_each("*.xml",[this](const File::Path &path){
+				push_back(path);
+				return false;
 			});
 
-		});
+		} else {
 
-		setRootAgent(agent);
+			// No pathname, use the default one.
+			Config::Value<string> config("application","definitions","");
+			if(config.empty()) {
 
-#if defined(HAVE_SYSTEMD)
-		sd_notifyf(0,"READY=1\nSTATUS=%s",agent->state()->to_string().c_str());
-#elif defined(_WIN32)
-		try {
+				// No configuration, scan standard paths.
+				std::string options[] = {
+					string{Application::DataDir{nullptr,false} + "settings.xml" },
+					Application::DataDir{"xml.d",false},
+#ifndef _WIN32
+					string{ string{"/etc/"} + name + ".xml" },
+					string{ string{"/etc/"} + name + ".xml.d" },
+#endif // _WIN32
+				};
 
-			Win32::Registry registry("service",true);
+				for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
 
-			registry.set("status",agent->state()->to_string().c_str());
-			registry.set("status_time",TimeStamp().to_string().c_str());
+					File::Path path{options[ix].c_str()};
 
-		} catch(const std::exception &e) {
+					if(path) {
+						Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace("settings");
+						path.for_each("*.xml",[this](const File::Path &path){
+							push_back(path);
+							return false;
+						});
+					}
+#ifdef DEBUG
+					else {
+						debug("Cant find ",options[ix].c_str());
+					}
+#endif // DEBUG
 
-			error() << "Cant update windows registry: " << e.what() << endl;
+				}
+
+			} else {
+
+				// Scan only the configured path.
+				Logger::String{"Loading xml definitions from '",config.c_str(),"'"}.trace("settings");
+				File::Path{config.c_str()}.for_each("*.xml",[this](const File::Path &path){
+					push_back(path);
+					return false;
+				});
+
+			}
 
 		}
-#endif
 
-		return next;
+		// Check for extra files.
+		{
+			File::Path path{Config::Value<std::string>{"paths","xml",""}};
+			if(!path.empty()) {
+
+				path.mkdir(true);
+
+				info() << "Loading extended definitions from '" << path << "'" << endl;
+
+				path.for_each("*.xml",[this](const File::Path &path){
+					push_back(path);
+					return false;
+				});
+
+			}
+		}
 
 	}
 
-	bool for_each(const char *path, const std::function<void(const char *filename, const pugi::xml_document &document)> &call) {
+	bool Updater::refresh() {
 
-		return !File::Path{path}.for_each([call](const File::Path &filename){
+		size_t changed = 0;
+		size_t loaded = 0;
 
-			if(!filename.match("*.xml")) {
-				Logger::String("Ignoring file '",filename.c_str(),"'").trace("xmldoc");
-				return false;
-			}
+		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name.c_str());
+		for(std::string &filename : *this) {
+
+			debug("Checking '",filename,"'");
 
 			try {
 
 				pugi::xml_document doc;
 				auto result = doc.load_file(filename.c_str());
 				if(result.status != pugi::status_ok) {
-					cerr << "xmldoc\t" << filename << ": " << result.description() << endl;
-					return true;
+					warning() << filename << ": " << result.description() << endl;
+					continue;
 				}
 
-				call(filename.c_str(),doc);
+				loaded++;
+				auto node = doc.document_element();
+
+				/// Setup logger.
+				Logger::setup(node);
+
+				// Check for modules.
+				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
+					if(node.attribute("preload").as_bool(false)) {
+						Module::load(node);
+					}
+				}
+
+				// Check for update timer.
+				const char *url = node.attribute("src").as_string();
+				if(url && *url) {
+
+					time_t refresh = node.attribute("update-timer").as_uint(0);
+
+					info() << "Updating " << filename << endl;
+
+					try {
+
+						if(HTTP::Client::save(node,filename.c_str())) {
+							changed++;
+						}
+
+					} catch(const std::exception &e) {
+
+						error() << "Error '" << e.what() << "' updating " << filename << endl;
+						refresh = node.attribute("update-when-failed").as_uint(refresh);
+
+					}
+
+					if(refresh) {
+						if(next) {
+							next = std::min(next,refresh);
+						} else {
+							next = refresh;
+						}
+					}
+
+				}
 
 			} catch(const std::exception &e) {
 
-				cerr << "xml\t" << filename << ": " << e.what() << endl;
-				return true;
-
-			} catch(...) {
-
-				cerr << "xml\t" << filename << ": Unexpected error" << endl;
-				return true;
+				error() << filename << ": " << e.what() << endl;
 
 			}
 
-			return false;
+		}
 
-		},true);
+		if(!loaded) {
+			next = Config::Value<time_t>("application","update-when-failed",3600);
+			error() << "Unable to load xml definitions, setting refresh timer to " << next << " seconds" << endl;
+			return false;
+		}
+
+		if(changed) {
+			Logger::String(changed, " file(s) changed, requesting full update").write(Logger::Trace,name.c_str());
+			update = true;
+		}
+
+		return update;
+
+	}
+
+	bool Updater::load(std::shared_ptr<Abstract::Agent> root) const noexcept {
+
+		for(const std::string &filename : *this) {
+
+			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name.c_str());
+
+			try {
+
+				pugi::xml_document doc;
+				auto result = doc.load_file(filename.c_str());
+				if(result.status != pugi::status_ok) {
+					error() << filename << ": " << result.description() << endl;
+					return false;
+				}
+
+				auto node = doc.document_element();
+
+				Logger::setup(node);
+
+				const char *path = node.attribute("agent-path").as_string();
+
+				if(path && *path) {
+
+					// Has defined root path, find agent.
+					root->find(path,true,true)->setup(node);
+
+				} else {
+
+					// No path, load here.
+					root->setup(node);
+
+				}
+
+			} catch(const std::exception &e) {
+
+				error() << filename << ": " << e.what() << endl;
+				return false;
+
+			}
+
+		}
+
+		// Activate new root agent.
+		Udjat::setRootAgent(root);
+
+		return true;
+
 	}
 
  }

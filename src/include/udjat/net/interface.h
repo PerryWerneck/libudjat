@@ -23,9 +23,11 @@
  #include <string>
  #include <cstring>
  #include <functional>
- #include <ifaddrs.h>
- #include <net/if.h>
  #include <memory>
+
+ #ifndef _WIN32
+	#include <sys/socket.h>
+ #endif // _WIN32
 
  namespace Udjat {
 

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,20 +17,32 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <udjat/defs.h>
- #include <private/misc.h>
- #include <udjat/tools/mainloop.h>
- #include <cstring>
- #include <iostream>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/application.h>
+ #include <private/event.h>
+ #include <private/mainloop.h>
+ #include <udjat/tools/threadpool.h>
+ #include <udjat/module.h>
 
  using namespace std;
 
  namespace Udjat {
 
- 	MainLoop & MainLoop::getInstance() {
-		lock_guard<mutex> lock(guard);
-		static MainLoop instance;
-		return instance;
+	int Application::init(const char *definitions) {
+
+		setup(definitions,true);
+
+		return 0;
+	}
+
+	int Application::deinit(const char *) {
+		ThreadPool::getInstance().wait();
+		Module::unload();
+		return 0;
 	}
 
  }
+
+

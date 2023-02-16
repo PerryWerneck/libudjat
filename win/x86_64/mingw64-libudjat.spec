@@ -16,13 +16,6 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-%define __strip %{_mingw64_strip}
-%define __objdump %{_mingw64_objdump}
-%define __find_requires %{_mingw64_findrequires}
-%define __find_provides %{_mingw64_findprovides}
-%define __os_install_post %{_mingw64_debug_install_post} \
-                          %{_mingw64_install_post}
-
 Summary:		UDJat core library for mingw64
 Name:			mingw64-libudjat
 Version:		1.0
@@ -89,6 +82,8 @@ Provides:	mingw64-udjat-devel = %{version}
 
 Development files for Udjat main library.
 
+%lang_package -n %{name}%{_libvrs}
+
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
 %prep
@@ -107,24 +102,24 @@ make all %{?_smp_mflags}
 	.bin/Release/*.dll
 
 %install
-#make DESTDIR=%{buildroot} install
 %_mingw64_make_install
 
-mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules
-mkdir -p %{buildroot}%{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
-
-find %{buildroot}
+mkdir -p %{buildroot}%{_mingw64_libdir}/udjat
+mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
+mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
-%dir %{_mingw64_libdir}/udjat-modules
-%dir %{_mingw64_libdir}/udjat-modules/%{MAJOR_VERSION}.%{MINOR_VERSION}
 
+%dir %{_mingw64_libdir}/udjat
+%dir %{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
+%dir %{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 %{_mingw64_bindir}/*.dll
 
-%{_mingw64_datadir}/locale/*/LC_MESSAGES/*.mo
-
 %exclude %{_mingw64_sysconfdir}/udjat.conf.d 
+
+%files -n %{name}%{_libvrs}-lang
+%{_mingw64_datadir}/locale/*/LC_MESSAGES/*.mo
 
 %files devel
 %defattr(-,root,root)
@@ -144,6 +139,12 @@ find %{buildroot}
 
 %dir %{_mingw64_includedir}/udjat/tools/http
 %{_mingw64_includedir}/udjat/tools/http/*.h
+
+%dir %{_mingw64_includedir}/udjat/net
+%{_mingw64_includedir}/udjat/net/*.h
+
+%dir %{_mingw64_includedir}/udjat/net/ip
+%{_mingw64_includedir}/udjat/net/ip/*.h
 
 %dir %{_mingw64_includedir}/udjat/win32
 %{_mingw64_includedir}/udjat/win32/*.h

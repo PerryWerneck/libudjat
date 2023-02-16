@@ -143,12 +143,18 @@ namespace Udjat {
 		return value;
 	}
 
-	#pragma GCC diagnostic push
-	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	void Abstract::State::get(const Request &request, Response &response) const {
-		getProperties(response);
+	bool Abstract::State::getProperties(const char *path, Value &value) {
+
+		shared_ptr<Abstract::State> state;
+
+		if(!Abstract::Agent::root()->getProperties(path,state) || !state) {
+			return false;
+		}
+
+		state->getProperties(value);
+
+		return true;
 	}
-	#pragma GCC diagnostic pop
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {
 

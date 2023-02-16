@@ -32,53 +32,48 @@
 
  	static std::string getCacheDir() {
 
+		string cachedir;
 		uid_t uid = getuid();
 
 		if(uid == 0) {
-			debug("Root user, using /var/cache");
-			return "/var/cache/";
-		}
 
-		string cachedir;
-		{
+			// Root user, use standard path.
+			cachedir = "/var/cache/";
+
+		} else {
+
+			// Non root user, use homedir.
+
 			long strbuflen = sysconf(_SC_GETPW_R_SIZE_MAX);
 			char strbuf[strbuflen+1];
 			struct passwd *pw = NULL;
 			struct passwd pwbuf;
 
 			if (getpwuid_r(uid, &pwbuf, strbuf, strbuflen, &pw) != 0 || pw == NULL) {
-				throw system_error(errno,system_category(),"Error getting user homedir");
+				throw system_error(errno,system_category(),"Cant get homedir");
 			}
 
 			cachedir = pw->pw_dir;
+			cachedir.append("/.cache/");
+
 		}
 
-		cachedir.append("/.cache/");
+		File::Path::mkdir(cachedir.c_str());
 
-		debug("Non root user, using ",cachedir);
 		return cachedir;
  	}
 
-	Application::CacheDir::CacheDir() : File::Path{getCacheDir().c_str()} {
+	Application::CacheDir::CacheDir(const char *subdir) : File::Path{getCacheDir().c_str()} {
 
 		append(program_invocation_short_name);
 		append("/");
-
 		mkdir(0700);
 
-		if(access(c_str(),W_OK) == 0)
-			return;
-
-		throw system_error(EPERM,system_category(),c_str());
-
-	}
-
-	Application::CacheDir::CacheDir(const char *subdir) : CacheDir() {
-
-		append(subdir);
-		append("/");
-
-		mkdir(0700);
+		if(subdir && *subdir) {
+			append(subdir);
+			mkdir(0700);
+			append("/");
+		}
 
 		if(access(c_str(),W_OK) == 0)
 			return;

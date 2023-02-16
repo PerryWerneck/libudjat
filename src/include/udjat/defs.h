@@ -30,14 +30,15 @@
 
 	#pragma GCC diagnostic ignored "-Wpedantic"
 
-	#ifndef _WIN32_WINNT
-		#define _WIN32_WINNT 0x0600
-	#endif // _WIN32_WINNT
+	// https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
+	#define WINVER 0x0A00
+	#define _WIN32_WINNT 0x0A00
+	#define NTDDI_VERSION NTDDI_VISTA
 
 	#include <winsock2.h>
+	#include <windows.h>
 
 	#define MSG_NOSIGNAL 0
-
 
 #endif // WIN32
 
@@ -46,7 +47,7 @@
 
 // Branch prediction macros
 //
-// Referências:
+// References:
 //
 // https://stackoverflow.com/questions/1668013/can-likely-unlikely-macros-be-used-in-user-space-code
 // http://www.geeksforgeeks.org/branch-prediction-macros-in-gcc/
@@ -59,20 +60,7 @@
 	#define unlikely(x)     (x)
 #endif
 
-/**
- * @brief Macro para informar que um parâmetro não é utilizado.
- *
- * Macro que informa ao compilador que um parâmetro passado à função não é usado;
- * útil para evitar o warning "unused parameter" em caso de callbacks que possuem
- * argumentos pré-definidos.
- *
- * <http://stackoverflow.com/questions/3417837/what-is-the-best-way-to-supress-unused-variable-x-warning>
- * <http://sourcefrog.net/weblog/software/languages/C/unused.html>
- *
- */
-#ifdef UNUSED
-
-#elif defined(__GNUC__)
+#if defined(__GNUC__)
 
 	#define UDJAT_UNUSED(x) __attribute__((unused)) x
 	#define UDJAT_DEPRECATED(func) func __attribute__ ((deprecated))
@@ -94,7 +82,6 @@
 
 #endif
 
-// Declara símbolos exportados pela biblioteca.
 #if defined(_WIN32)
 
 	#define UDJAT_API	__declspec (dllexport)

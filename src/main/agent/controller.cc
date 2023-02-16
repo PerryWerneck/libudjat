@@ -46,7 +46,7 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), MainLoop::Service("agents",moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Service("agents",moduleinfo) {
 		Logger::String{
 			"Initializing controller"
 		}.trace("agent");
@@ -89,66 +89,45 @@ namespace Udjat {
 		if(this->root)
 			return this->root;
 
-		throw runtime_error("Agent subsystem is inactive");
+		throw runtime_error(_("Agent subsystem is inactive"));
 
 	}
 
-	Abstract::Agent::Controller & Abstract::Agent::Controller::getInstance() {
-		static Controller controller;
-		return controller;
+	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
+
+		debug("Getting Cache info for '",request.getPath(),"'");
+
+		// Get cache info.
+		if(!head(get().get(),request.getPath(),response)) {
+			throw std::system_error(ENOENT,std::system_category());
+		}
+
+		return true;
 	}
 
 	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
 
 #ifdef DEBUG
-		cout << "Finding agent '" << request.getPath() << "'" << endl;
+		// Get cache info.
+		head(request,response);
 #endif // DEBUG
 
-		auto agent = find(request.getPath());
+		debug("Getting properties for '",request.getPath(),"'");
 
-		if(!agent) {
-			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
+		// Get properties.
+		if(!get()->getProperties(request.getPath(),response)) {
+			throw std::system_error(ENOENT,std::system_category());
 		}
-
-		agent->head(response);
-		agent->get(request,response);
 
 		return true;
 	}
 
-	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
-
-		auto agent = find(request.getPath());
-
-		if(!agent) {
-			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
-		}
-
-		agent->head(response);
-
-		return true;
-	}
-
-	bool Abstract::Agent::Controller::work(Request &request, Report &response) const {
-
-		auto agent = find(request.getPath());
-
-		if(!agent) {
-			throw system_error(ENOENT,system_category(),string{"No agent on '"} + request.getPath() + "'");
-		}
-
-		agent->head(response);
-		agent->get(request,response);
-
-		return true;
-	}
-
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path) const {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {
 
 		auto root = get();
 
 		if(path && *path)
-			return root->find(path);
+			return root->find(path,required);
 
 		return root;
 
@@ -187,7 +166,9 @@ namespace Udjat {
 
 		}
 
-		cout << "agent\tStarting controller" << endl;
+		Logger::String{
+			"Starting controller"
+		}.trace("agent");
 
 		MainLoop::Timer::reset(1000);
 		MainLoop::Timer::enable();
@@ -196,7 +177,9 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::stop() noexcept {
 
-		cout << "agent\tStopping controller" << endl;
+		Logger::String{
+			"Stopping controller"
+		}.trace("agent");
 
 		MainLoop::Timer::disable();
 

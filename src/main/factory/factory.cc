@@ -37,20 +37,17 @@
 		Controller::getInstance().remove(this);
 	}
 
-	void Factory::getInfo(Response &response) {
-		response.reset(Value::Array);
-		for_each([&response](const Factory &factory){
-			factory.module.get(response.append(Value::Object))["name"] = factory.name();
-			return false;
-		});
+	Value & Factory::getProperties(Value &properties) const noexcept {
+		properties["name"] = factory_name;
+		return module.getProperties(properties);
 	}
 
 	Factory * Factory::find(const char *name) {
 		return Controller::getInstance().find(name);
 	}
 
-	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
-		return Controller::getInstance().for_each(nullptr,func);
+	bool Factory::for_each(const std::function<bool(const Factory &factory)> &func) {
+		return Controller::getInstance().for_each(func);
 	}
 
 	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {

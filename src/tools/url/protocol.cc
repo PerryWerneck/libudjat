@@ -23,6 +23,7 @@
  #include <sys/stat.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/moduleinfo.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -60,13 +61,11 @@
 	}
 
 	Protocol::~Protocol() {
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
 		Controller::getInstance().remove(this);
-#ifdef DEBUG
-				cout << __FILE__ << "(" << __LINE__ << ")" << endl;
-#endif // DEBUG
+	}
+
+	bool Protocol::for_each(const std::function<bool(const Protocol &protocol)> &method) {
+		return Controller::getInstance().for_each(method);
 	}
 
 	void Protocol::setDefault() noexcept {
@@ -139,8 +138,9 @@
 		return std::shared_ptr<Protocol::Worker>();
 	}
 
-	void Protocol::getInfo(Udjat::Response &response) noexcept {
-		Controller::getInstance().getInfo(response);
+	Value & Protocol::getProperties(Value &properties) const noexcept {
+		properties["name"] = name;
+		return module.getProperties(properties);
 	}
 
 	String Protocol::call(const char *u, const HTTP::Method method, const char *payload) {

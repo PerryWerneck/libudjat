@@ -30,6 +30,7 @@
 #include <udjat/module.h>
 #include <udjat/factory.h>
 #include <udjat/tools/mainloop.h>
+#include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
 
 #ifdef HAVE_UNISTD_H
@@ -40,7 +41,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Worker, private MainLoop::Service, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Worker, private Service, public MainLoop::Timer {
 	private:
 
 		time_t updating = 0;
@@ -58,31 +59,32 @@ namespace Udjat {
 	public:
 		~Controller();
 
-		static Controller & getInstance();
+		static Controller & getInstance() {
+			static Controller instance;
+			return instance;
+		}
 
 		void set(std::shared_ptr<Abstract::Agent> root);
 
 		std::shared_ptr<Abstract::Agent> get() const;
-		std::shared_ptr<Abstract::Agent> find(const char *path) const;
+
+		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
+
+		/// @brief Find child, update path.
+		/// @return Pointer to child or nullptr.
+		static const Abstract::Agent * find(const Abstract::Agent *agent, const char **path);
+
+		/// @brief Get agent's cache properties.
+		static bool head(Abstract::Agent *agent, const char *path, ResponseInfo &response);
 
 		bool get(Request &request, Response &response) const override;
 		bool head(Request &request, Response &response) const override;
-		bool work(Request &request, Report &response) const override;
 
 		void start() noexcept override;
 		void stop() noexcept override;
 
-		/// @brief Load agent states from XML node.
-		// static void setup_states(Abstract::Agent &agent, const pugi::xml_node &root) noexcept;
-
-		/// @brief Load alerts from XML node.
-		// static void setup_alerts(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
-
 		/// @brief Load agent properties from XML node.
 		static void setup_properties(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
-
-		/// @brief Load children from XML node.
-		// static void setup_children(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
 
 	};
 

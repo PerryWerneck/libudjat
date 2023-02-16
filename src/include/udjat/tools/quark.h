@@ -40,7 +40,7 @@
 		public:
 
 			/// @brief Initialize Quark Engine.
-			static void init(int argc, char **argv);
+			static void init();
 
 			static Quark getFromStatic(const char *str);
 

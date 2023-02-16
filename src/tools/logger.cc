@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <udjat/tools/application.h>
  #include <private/logger.h>
@@ -39,14 +40,53 @@
  using namespace std;
 
  static const char * typenames[] = {
- 	"info",
-	"warning",
 	"error",
+	"warning",
+ 	"info",
+	"trace",
 	"debug",
-	"trace"
  };
 
  namespace Udjat {
+
+	UDJAT_API unsigned short Logger::verbosity() noexcept {
+		for(size_t level = 0; level < N_ELEMENTS(typenames);level++) {
+			if(!enabled((Level) level)) {
+				return level;
+			}
+		}
+		return N_ELEMENTS(typenames);
+	}
+
+	UDJAT_API void Logger::verbosity(unsigned short lvl) noexcept {
+
+		for(size_t level = 0; level < N_ELEMENTS(typenames);level++) {
+			if(lvl > 0) {
+				enable((Level) level,true);
+				lvl--;
+			} else {
+				enable((Level) level,false);
+			}
+		}
+
+#ifndef _WIN32
+		if(Options::getInstance().syslog) {
+			::syslog(LOG_INFO,"Log verbosity was changed to %s %s %s %s %s",
+				(enabled(Info) ? "info" : "no-info"),
+				(enabled(Warning) ? "warning" : "no-warning"),
+				(enabled(Error) ? "error" : "no-error"),
+				(enabled(Trace) ? "trace" : "no-trace"),
+				(enabled(Debug) ? "debug" : "no-debug")
+			);
+
+		}
+#endif // _WIN32
+
+#ifdef DEBUG
+		printf("%s\n",String{"info=",enabled(Info)," warning=",enabled(Warning)," error=",enabled(Error)," trace=",enabled(Trace)}.c_str());
+#endif // DEBUG
+
+	}
 
 	void Logger::setup(const pugi::xml_node &node) noexcept {
 
@@ -218,13 +258,16 @@
 		return Logger::Error;
 	}
 
-	void Logger::redirect(bool console, bool file) {
+	void Logger::redirect(bool file) {
+
+#ifdef WIN32
+		Application::LogDir::getInstance();	// Get log path from registry.
+#endif // WIN32
 
 		static const Level levels[] = { Info,Warning,Error };
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
 		Options &options{Options::getInstance()};
-		options.console = console;
 		options.file = file;
 
 		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {

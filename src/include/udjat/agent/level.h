@@ -19,6 +19,8 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <pugixml.hpp>
+ #include <cstdint>
 
  namespace Udjat {
 

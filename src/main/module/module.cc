@@ -41,7 +41,7 @@ namespace Udjat {
 			throw system_error(EINVAL,system_category(),"Invalid module build date");
 		}
 
-		Controller::getInstance().insert(this);
+		Controller::getInstance().push_back(this);
 	}
 
 	Module::~Module() {
@@ -59,16 +59,24 @@ namespace Udjat {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
+	Value & Module::getProperties(Value &properties) const noexcept {
+		properties["name"] = name;
+		properties["filename"] = filename();
+		return _info.getProperties(properties);
+	}
+
+	/*
 	void Module::getInfo(Response &response) {
 		Controller::getInstance().getInfo(response);
 	}
+	*/
 
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
 	}
 
-	void Module::for_each(std::function<void(Module &module)> method) {
-		Controller::getInstance().for_each(method);
+	bool Module::for_each(const std::function<bool(const Module &module)> &method) {
+		return Controller::getInstance().for_each(method);
 	}
 
 	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {

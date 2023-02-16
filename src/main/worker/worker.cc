@@ -36,12 +36,13 @@
 		Controller::getInstance().remove(this);
 	}
 
-	void Worker::for_each(const std::function<void(const Worker &worker)> &func) {
-		Controller::getInstance().for_each(func);
+	bool Worker::for_each(const std::function<bool(const Worker &worker)> &method) {
+		return Controller::getInstance().for_each(method);
 	}
 
-	void Worker::getInfo(Response &response) {
-		Controller::getInstance().getInfo(response);
+	Value & Worker::getProperties(Value &properties) const noexcept {
+		properties["name"] = name;
+		return module.getProperties(properties);
 	}
 
 	const Worker * Worker::find(const char *name) {
@@ -66,12 +67,16 @@
 
 	bool Worker::work(Request &request, Response &response) const {
 
+		debug("-------------------------------------------");
+
 		auto type = request.as_type();
 		switch(type) {
 		case HTTP::Get:
+			debug("HTTP GET");
 			return get(request,response);
 
 		case HTTP::Head:
+			debug("HTTP HEAD");
 			return head(request,response);
 
 		default:

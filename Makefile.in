@@ -4,13 +4,10 @@
 PACKAGE_NAME=@PACKAGE_NAME@
 PRODUCT_NAME=@PRODUCT_NAME@
 
-MAIN_SOURCES= \
+COMMON_SOURCES= \
 	$(wildcard src/tools/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
 	$(wildcard src/tools/mainloop/*.cc) \
 	$(wildcard src/tools/subprocess/*.cc) \
-	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
 	$(wildcard src/main/*.cc) \
 	$(wildcard src/main/agent/*.cc) \
 	$(wildcard src/main/agent/setup/*.cc) \
@@ -19,18 +16,45 @@ MAIN_SOURCES= \
 	$(wildcard src/main/request/*.cc) \
 	$(wildcard src/main/worker/*.cc) \
 	$(wildcard src/main/module/*.cc) \
-	$(wildcard src/main/module/os/@OSNAME@/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/subprocess/*.cc) \
 	$(wildcard src/tools/url/*.cc) \
 	$(wildcard src/tools/url/protocols/*.cc) \
 	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/tools/application/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
-	$(wildcard src/main/alert/*.cc) \
+	$(wildcard src/main/alert/*.cc)
+
+MAIN_SOURCES= \
+	$(COMMON_SOURCES) \
+	$(wildcard src/tools/os/@OSNAME@/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/application/*.cc) \
+	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
+	$(wildcard src/main/module/os/@OSNAME@/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
+	$(wildcard src/tools/os/@OSNAME@/subprocess/*.cc) \
 	$(wildcard src/main/os/@OSNAME@/*.cc) \
 	$(wildcard src/main/os/@OSNAME@/*.rc)
+
+LOCALE_SOURCES= \
+	$(COMMON_SOURCES) \
+	$(wildcard src/tools/os/linux/*.cc) \
+	$(wildcard src/tools/os/linux/configuration/*.cc) \
+	$(wildcard src/tools/os/linux/application/*.cc) \
+	$(wildcard src/tools/mainloop/os/linux/*.cc) \
+	$(wildcard src/main/module/os/linux/*.cc) \
+	$(wildcard src/tools/os/linux/file/*.cc) \
+	$(wildcard src/tools/os/linux/subprocess/*.cc) \
+	$(wildcard src/main/os/linux/*.cc) \
+	$(wildcard src/main/os/linux/*.rc) \
+	$(wildcard src/tools/os/windows/*.cc) \
+	$(wildcard src/tools/os/windows/configuration/*.cc) \
+	$(wildcard src/tools/os/windows/application/*.cc) \
+	$(wildcard src/tools/mainloop/os/windows/*.cc) \
+	$(wildcard src/main/module/os/windows/*.cc) \
+	$(wildcard src/tools/os/windows/file/*.cc) \
+	$(wildcard src/tools/os/windows/subprocess/*.cc) \
+	$(wildcard src/main/os/windows/*.cc)
 
 TEST_SOURCES= \
 	$(wildcard src/testprogram/*.cc) \
@@ -233,7 +257,7 @@ $(BINRLS)/$(PACKAGE_NAME).a: \
 	@$(AR) rcs $@ $^
 
 locale/$(PACKAGE_NAME).pot: \
-	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(POTDIR)/$(SRC).pot)
+	$(foreach SRC, $(basename $(LOCALE_SOURCES)), $(POTDIR)/$(SRC).pot)
 
 	@rm -f $@
 	@$(MKDIR) $(dir $@)
@@ -350,11 +374,18 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(MKDIR) \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/net/*.h \
-		$(DESTDIR)$(includedir)/udjat/tools/net
+		src/include/udjat/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/net/ip/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/ip
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/agent

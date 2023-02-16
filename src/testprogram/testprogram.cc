@@ -17,6 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define SERVICE_TEST 1
+ // #define APPLICATION_TEST 1
+
  #include <config.h>
 
  #include <udjat/tools/logger.h>
@@ -43,6 +46,8 @@
  #include <fstream>
  #include <fcntl.h>
  #include <iomanip>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/tools/application.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
@@ -58,102 +63,131 @@
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
-static const Udjat::ModuleInfo moduleinfo { "Test program" };
+ static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
-static int service_test(int argc, char **argv) {
+ class DummyProtocol : public Udjat::Protocol {
+ public:
+	DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
+	}
 
-	class DummyProtocol : public Udjat::Protocol {
-	public:
-		DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
-		}
+	String call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const override {
+		cout << "**** dummy\t[" << url << "]" << endl;
+		return "";
+	}
 
-		String call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const override {
-			cout << "**** dummy\t[" << url << "]" << endl;
-			return "";
-		}
+ };
 
-	};
+ class RandomFactory : public Udjat::Factory {
+ public:
+	RandomFactory() : Udjat::Factory("random",moduleinfo) {
+		cout << "random agent factory was created" << endl;
+		srand(time(NULL));
+	}
 
-	class RandomFactory : public Udjat::Factory {
-	public:
-		RandomFactory() : Udjat::Factory("random",moduleinfo) {
-			cout << "random agent factory was created" << endl;
-			srand(time(NULL));
-		}
+	std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const override {
 
-		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const override {
+		class RandomAgent : public Agent<unsigned int> {
+		private:
+			unsigned int limit = 5;
 
-			class RandomAgent : public Agent<unsigned int> {
-			private:
-				unsigned int limit = 5;
+		public:
+			RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
+			}
 
-			public:
-				RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
-				}
+			bool refresh() override {
+				debug("Updating agent '",name(),"'");
+				set( ((unsigned int) rand()) % limit );
+				return true;
+			}
 
-				bool refresh() override {
-					debug("Updating agent '",name(),"'");
-					set( ((unsigned int) rand()) % limit );
-					return true;
-				}
+			void start() override {
+				Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
+			}
 
-				void start() override {
-					Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
-				}
+		};
 
-			};
+		return make_shared<RandomAgent>(node);
 
-			return make_shared<RandomAgent>(node);
+	}
 
-		}
+ };
 
-	};
+#if defined(SERVICE_TEST)
+int main(int argc, char **argv) {
 
 	class Service : public SystemService, private RandomFactory {
 	private:
 
 		struct {
-			DummyProtocol protocol;
 		} factories;
 
 	public:
-		/// @brief Initialize service.
-		void init() override {
-			SystemService::init();
-		}
-
-		/// @brief Deinitialize service.
-		void deinit() override {
-			SystemService::deinit();
-			Module::unload();
-		}
-
-		Service() : SystemService{"./test.xml"} {
-		}
 
 	};
 
-	auto rc = Service().run(argc,argv);
+	Logger::verbosity(9);
+
+	DummyProtocol protocol;
+	auto rc = SystemService().run(argc,argv,"./test.xml");
+
 	debug("Service exits with rc=",rc);
-	Udjat::Module::unload();
 
 	return rc;
 
 }
-
+#elif defined(APPLICATION_TEST)
 int main(int argc, char **argv) {
+
+	class Application : public Udjat::Application {
+	public:
+		int install() override {
+			ShortCut{}.desktop();
+			return super::install();
+		}
+
+		int uninstall() override {
+			ShortCut{}.remove();
+			return super::uninstall();
+		}
+
+	};
+
+	Logger::redirect();
+	Logger::verbosity(9);
+
+	DummyProtocol protocol;
+	auto rc = Application{}.run(argc,argv,"./test.xml");
+
+	debug("Application exits with rc=",rc);
+
+	return rc;
+
+}
+#endif // defined
+
+/*
+int main(int argc, char **argv) {
+
+
 
 	//cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
 	//cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
 
 	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
 
-	service_test(argc,argv);
+	return service_test(argc,argv);
+	// return application_test(argc,argv);
+
+
+	// cout << Application::LogDir() << endl;
 
 	// auto worker = Protocol::WorkerFactory("file://test.xml");
 	// worker->save("/tmp/test");
 
 	//File::copy("test.xml","/tmp/test-copy.xml",false);
 
-	return 0;
+	//cout << File::Path{"${documents}test"} << endl;
+
+	//Application().shortcut("br.eti.werneck.udjat");
 }
+*/

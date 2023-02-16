@@ -21,8 +21,9 @@
  #include <cstring>
  #include <sys/eventfd.h>
  #include <private/misc.h>
- #include <udjat/tools/mainloop.h>
+ #include <private/linux/mainloop.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timer.h>
  #include <iostream>
  #include <unistd.h>
 
@@ -30,21 +31,23 @@
 
  namespace Udjat {
 
-	MainLoop::MainLoop() {
+ 	std::mutex Linux::MainLoop::guard;
+
+	Linux::MainLoop::MainLoop() {
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
 	}
 
-	MainLoop::~MainLoop() {
+	Linux::MainLoop::~MainLoop() {
 
 		if(!handlers.empty()) {
 			cerr << "MainLoop\tDestroying mainloop with " << handlers.size() << " pending handler(s)" << endl;
 		} else {
-			cout << "MainLoop\tDestroying clean service loop" << endl;
+			Logger::String{"Destroying clean service loop"}.trace("MainLoop");
 		}
 
-		enabled = false;
+		running = false;
 		wakeup();
 
 		{
@@ -57,7 +60,7 @@
 
 	}
 
-	void MainLoop::wakeup() noexcept {
+	void Linux::MainLoop::wakeup() noexcept {
 		if(efd != -1) {
 			static uint64_t evNum = 0;
 			if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
@@ -69,15 +72,63 @@
 		}
 	}
 
-	bool MainLoop::verify(const Handler *ptr) const noexcept {
-
+	bool Linux::MainLoop::enabled(const Timer *timer) const noexcept {
 		lock_guard<mutex> lock(guard);
-		for(auto handle : handlers) {
-			if(handle == ptr) {
+		for(Timer *tm : timers.enabled) {
+			if(timer == tm) {
 				return true;
 			}
 		}
+		return false;
+	}
 
+	bool Linux::MainLoop::enabled(const MainLoop::Handler *handler) const noexcept {
+		lock_guard<mutex> lock(guard);
+		for(auto hdl : handlers) {
+			if(handler == hdl) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
+		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "MainLoop\t---> Enabling timer " << hex << ((void *) timer) << dec
+				<< " " << timer->to_string() << endl;
+#endif // DEBUG
+		timers.enabled.push_back(timer);
+		wakeup();
+	}
+
+	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
+		lock_guard<mutex> lock(guard);
+#ifdef DEBUG
+		cout << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
+#endif // DEBUG
+		timers.enabled.remove(timer);
+	}
+
+	void Linux::MainLoop::push_back(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.push_back(handler);
+		wakeup();
+	}
+
+	void Linux::MainLoop::remove(MainLoop::Handler *handler) {
+		lock_guard<mutex> lock(guard);
+		handlers.remove(handler);
+		wakeup();
+	}
+
+	bool Linux::MainLoop::for_each(const std::function<bool(Timer &timer)> &func) {
+		lock_guard<mutex> lock(guard);
+		for(auto timer : timers.enabled) {
+			if(func(*timer)) {
+				return true;
+			}
+		}
 		return false;
 	}
 

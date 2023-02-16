@@ -20,32 +20,140 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/systemservice.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/module.h>
- #include <iostream>
- #include <private/misc.h>
- #include <udjat/tools/logger.h>
+ #include <udjat/tools/event.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/tools/string.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/agent/abstract.h>
 
  #ifdef _WIN32
-	#include <direct.h>
+	#include <udjat/win32/registry.h>
  #endif // _WIN32
-
- #ifdef HAVE_UNISTD_H
-	#include <unistd.h>
- #endif // HAVE_UNISTD_H
-
- #ifdef HAVE_SYSTEMD
-	#include <systemd/sd-daemon.h>
- #endif // HAVE_SYSTEMD
 
  using namespace std;
 
  namespace Udjat {
 
-	using Event = Abstract::Agent::Event;
+	SystemService * SystemService::instance = nullptr;
+
+	SystemService & SystemService::getInstance() {
+		if(instance) {
+			return *instance;
+		}
+		throw std::system_error(EINVAL,std::system_category(),"System service is not active");
+	}
+
+	SystemService::SystemService() {
+		if(instance) {
+			throw std::system_error(EBUSY,std::system_category(),"System service already active");
+		}
+		instance = this;
+		Logger::console(false);
+	}
+
+	SystemService::~SystemService() {
+		if(instance == this) {
+			instance = nullptr;
+		}
+#ifdef _WIN32
+		try {
+
+			Win32::Registry registry("service",true);
+			registry.remove("status");
+			registry.remove("status_time");
+
+		} catch(...) {
+
+			// Ignore errors.
+
+		}
+
+#endif // _WIN32
+	}
+
+	int SystemService::run(int argc, char **argv, const char *definitions) {
+		return Application::run(argc,argv,definitions);
+	}
+
+	int SystemService::deinit(const char *definitions) {
+		Udjat::Event::remove(this);
+		return Application::deinit(definitions);
+	}
+
+	void SystemService::setup(const char *pathname, bool startup) noexcept {
+
+		try {
+
+			Application::setup(pathname,startup);
+			set(Abstract::Agent::root());
+
+		} catch(const std::exception &e) {
+
+			status(e.what());
+
+		}
+
+	}
+
+	void SystemService::set(std::shared_ptr<Abstract::Agent> agent) {
+
+		class Listener : public Activatable {
+		public:
+			constexpr Listener() : Activatable("syssrvc") {
+			}
+
+			bool activated() const noexcept override {
+				return false;
+			}
+
+			void activate(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) override {
+
+				try {
+
+					SystemService &service = SystemService::getInstance();
+
+					try {
+
+						auto agent = Abstract::Agent::root();
+						auto state = agent->state();
+
+						if(state->ready()) {
+							service.status( _( "System is ready" ));
+						} else {
+							String message{state->summary()};
+							if(message.strip().empty()) {
+								service.status( _( "System is not ready" ) );
+							} else {
+								service.status(message.c_str());
+							}
+						}
+
+					} catch(const std::exception &e) {
+
+						service.status(e.what());
+
+					}
+
+				} catch(const std::exception &e) {
+
+					cerr << "service\tCant update service state:" << e.what() << endl;
+
+				}
+
+			}
+
+
+		};
+
+		agent->push_back(
+				(Abstract::Agent::Event) (Abstract::Agent::Event::STARTED|Abstract::Agent::Event::STATE_CHANGED),
+				std::make_shared<Listener>()
+		);
+
+	}
+
+
+/*
+ 	using Event = Abstract::Agent::Event;
 
 	SystemService * SystemService::instance = nullptr;
 
@@ -58,91 +166,15 @@
 			throw runtime_error("Can't start more than one system service");
 		}
 
-#ifdef _WIN32
-		{
-			_chdir(Application::Path().c_str());
-		}
-#endif // _WIN32
-
-		// Setup logger
-		for(int level = ((int) Logger::Info); level <= ((int) Logger::Trace); level++) {
-			Logger::enable(
-				(Logger::Level) level,
-				Config::Value<bool>("log",std::to_string((Logger::Level) level),Logger::enabled((Logger::Level) level))
-			);
-		}
-
-		if(!definitions) {
-
-			// No definitions, try to detect.
-			std::string options[] = {
-#ifndef _WIN32
-				string{ string{"/etc/"} + Application::name() + ".xml.d" },
-#endif // _WIN32
-				Application::DataFile{ (Application::name() + ".xml").c_str() },
-				Application::DataFile{"xml.d"},
-			};
-
-			for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
-
-				debug("Searching for '",options[ix].c_str(),"' ",access(options[ix].c_str(), R_OK));
-
-				if(access(options[ix].c_str(), R_OK) == 0) {
-					debug("Detected service configuration in '",options[ix],"'");
-					definitions = Quark(options[ix]).c_str();
-					break;
-				}
-
-			}
-
-			if(!definitions) {
-				throw system_error(ENOENT,system_category(),"Unable to detect service configuration file");
-			}
-
-		} else if(definitions[0] != '.' && definitions[0] != '/' && ::access(definitions,F_OK) != 0) {
-
-			definitions = Quark(Application::DataFile{definitions}).c_str();
-
-		}
-
-		if(::access(definitions,R_OK) != 0) {
-#ifdef _WIN32
-			notify( (string{"Cant find '"} + definitions + "'").c_str() );
-#endif //  _WIN32
-			throw system_error(ENOENT,system_category(),definitions);
-		}
-
-#ifdef _WIN32
-		{
-			WSADATA WSAData;
-			WSAStartup(0x101, &WSAData);
-
-			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
-			SetConsoleOutputCP(CP_UTF8);
-			SetConsoleCP(CP_UTF8);
-
-			if(Config::Value<bool>("service","virtual-terminal-processing",true)) {
-				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
-				HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-				if(hOut != INVALID_HANDLE_VALUE) {
-					DWORD dwMode = 0;
-					if(GetConsoleMode(hOut, &dwMode)) {
-						dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-						SetConsoleMode(hOut,dwMode);
-					}
-				}
-			}
-
-		}
-#endif // _WIN32
-
-		Application::init();
-
 		instance = this;
 
 	}
 
 	SystemService::~SystemService() {
+		if(update_timer) {
+			delete update_timer;
+			update_timer = nullptr;
+		}
 		instance = nullptr;
 	}
 
@@ -157,6 +189,14 @@
 		return Udjat::RootAgentFactory();
 	}
 
+	int SystemService::autostart(const char *) {
+		return ENOTSUP;
+	}
+
+	int SystemService::shortcut(const char *) {
+		return ENOTSUP;
+	}
+
 	int SystemService::run() noexcept {
 
 		int rc = -1;
@@ -167,12 +207,24 @@
 		protected:
 			void on_timer() override {
 				if(instance) {
-					sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",instance->state()->to_string().c_str());
+					std::string state{instance->state()->to_string()};
+					sd_notifyf(0,"WATCHDOG=1\nSTATUS=%s",state.c_str());
+					if(Logger::enabled(Logger::Trace)) {
+						Logger::String{state}.write((Logger::Level) (Logger::Debug+1),"SystemD");
+					}
+				} else {
+					cerr << "SystemD\tNo System service instance while emitting systemd status" << endl;
 				}
 			}
 
 		public:
-			WatchDog() = default;
+			WatchDog() {
+
+				uint64_t watchdog_timer = 0;
+				int status = sd_watchdog_enabled(0,&watchdog_timer);
+
+
+			}
 		};
 
 		WatchDog watchdog;
@@ -212,37 +264,7 @@
 								}
 							}
 						}
-
 					}
-
-					/*
-					void activate(const Abstract::Object &object) override {
-
-						auto service = SystemService::getInstance();
-						if(!instance) {
-							return;
-						}
-
-						const Abstract::Agent *agent = dynamic_cast<const Abstract::Agent *>(&object);
-						if(agent) {
-
-							auto state = agent->state();
-
-							if(state->ready()) {
-								service->notify( _( "System is ready" ));
-							} else {
-								String message{state->summary()};
-								if(message.strip().empty()) {
-									service->notify( _( "System is not ready" ) );
-								} else {
-									service->notify(message.c_str());
-								}
-							}
-
-						}
-					}
-					*/
-
 				};
 
 				root->push_back( (Event) (Event::STARTED|Event::STATE_CHANGED), std::make_shared<Listener>() );
@@ -255,20 +277,27 @@
 			{
 				uint64_t watchdog_timer = 0;
 				int status = sd_watchdog_enabled(0,&watchdog_timer);
-				if(status < 0) {
-					warning() << "Can't get SystemD watchdog status: " << strerror(-status) << endl;
-				} else if(status == 0) {
+
 #ifdef DEBUG
-					watchdog.reset(120000L);
-					watchdog.enable();
-					info() << "SystemD watchdog set to " << watchdog.to_string() << endl;
-#else
-					warning() << "SystemD watchdog is not set" << endl;
+				if(status == 0) {
+					watchdog_timer = 120000000L;
+					status = 1;
+				}
 #endif // DEBUG
+				if(status < 0) {
+
+					error() << "Can't get SystemD watchdog status: " << strerror(-status) << endl;
+
+				} else if(status == 0) {
+
+					warning() << "SystemD watchdog is not set" << endl;
+
 				} else {
+
 					watchdog.reset(watchdog_timer/2000L);
 					watchdog.enable();
-					info() << "SystemD watchdog set to " << watchdog.to_string() << endl;
+					Logger::String{"SystemD watchdog set to ",watchdog.to_string()}.trace(name().c_str());
+
 				}
 
 			}
@@ -383,5 +412,84 @@
 			notify(state()->to_string().c_str());
 		}
 	}
+
+	void SystemService::setup(bool force) {
+
+		Updater updater{definitions,force};
+		load(updater);
+
+		if(updater.refresh()) {
+
+			auto agent = RootFactory();
+
+			updater.load(agent);
+
+#if defined(HAVE_SYSTEMD)
+
+			sd_notifyf(0,"READY=1\nSTATUS=%s",agent->state()->to_string().c_str());
+
+#elif defined(_WIN32)
+
+			try {
+
+				Win32::Registry registry("service",true);
+
+				registry.set("status",agent->state()->to_string().c_str());
+				registry.set("status_time",TimeStamp().to_string().c_str());
+
+			} catch(const std::exception &e) {
+
+				error() << "Cant update windows registry: " << e.what() << endl;
+
+			}
+
+#endif
+
+		} else {
+
+			Logger::String{"Keeping the actual root agent"}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
+#ifdef HAVE_SYSTEMD
+			sd_notifyf(0,"READY=1\nSTATUS=%s",Abstract::Agent::root()->state()->to_string().c_str());
+#endif // HAVE_SYSTEMD
+
+		}
+
+		debug("------------------------------------------------------------------------------");
+
+		{
+			time_t wait = updater.wait();
+
+			if(!wait) {
+
+				Logger::String{"Auto update is disabled"}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
+
+			} else {
+
+				update_timer = MainLoop::getInstance().TimerFactory(wait * 1000,[this](){
+
+					ThreadPool::getInstance().push([this](){
+
+						Logger::String{"Starting auto update"}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
+#ifdef HAVE_SYSTEMD
+						sd_notifyf(0,"STATUS=%s","Running auto update");
+#endif // HAVE_SYSTEMD
+
+						setup(false);
+
+					});
+
+					update_timer = nullptr;
+					return false;
+				});
+
+				Logger::String{"Next auto update set to ",TimeStamp{time(0)+wait}.to_string()}.write((Logger::Level) (Logger::Debug+1),Application::Name().c_str());
+
+			}
+
+		}
+
+
+	}
+*/
 
  }
