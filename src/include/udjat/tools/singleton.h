@@ -141,6 +141,13 @@
 				return objects.end();
 			}
 
+			inline typename L::const_iterator begin() const {
+				return objects.begin();
+			}
+
+			inline typename L::const_iterator end() const {
+				return objects.end();
+			}
 		};
 
 		template <class T, class P = T *, class L = std::list<P>>

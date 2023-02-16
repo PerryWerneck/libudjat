@@ -326,6 +326,14 @@
 				return children.agents.end();
 			}
 
+			inline auto begin() const noexcept {
+				return children.agents.begin();
+			}
+
+			inline auto end() const noexcept {
+				return children.agents.end();
+			}
+
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
 

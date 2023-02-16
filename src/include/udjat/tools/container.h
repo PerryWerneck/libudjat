@@ -89,6 +89,14 @@
 			return objects.end();
 		}
 
+		inline typename L::const_iterator begin() const {
+			return objects.begin();
+		}
+
+		inline typename L::const_iterator end() const {
+			return objects.end();
+		}
+
 	};
 
  }
