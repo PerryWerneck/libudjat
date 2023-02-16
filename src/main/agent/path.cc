@@ -57,7 +57,11 @@
 			lock_guard<std::recursive_mutex> lock(agent->guard);
 			for(auto child : agent->children.agents) {
 				if(!strncasecmp(child->name(),*path,length)) {
-					*path = (*path) + length;
+					ptr = (*path) + length;
+					if(*ptr == '/') {
+						ptr++;
+					}
+					*path = ptr;
 					debug("Found '",child->name(),"'");
 					return child.get();
 				}
@@ -80,6 +84,21 @@
 		auto agent = Controller::find(this, &path);
 		if(agent) {
 			return agent->getProperties(path,value);
+		}
+
+		return false;
+	}
+
+	bool Abstract::Agent::getProperties(const char *path, Report &report) const {
+
+		if(!*path) {
+			// If this method wasnt overrided theres no report, just return false here.
+			return false;
+		}
+
+		auto agent = Controller::find(this, &path);
+		if(agent) {
+			return agent->getProperties(path,report);
 		}
 
 		return false;
@@ -136,26 +155,8 @@
 			return head(const_cast<Abstract::Agent *>(next), path, response);
 		}
 
-		// Check for agents internal children.
-		class Dummy : public Udjat::Value {
-		public:
-			bool isNull() const override {
-				return true;
-			}
-
-			Value & reset(const Type) override {
-				return *this;
-			}
-
-			Value & set(const Value &) {
-				return *this;
-			}
-
-		};
-
-		Dummy dummy;
-		return agent->getProperties(path,dummy);
-
+		auto dummy = Udjat::Value::Factory();
+		return agent->getProperties(path,*dummy);
 
 	}
 

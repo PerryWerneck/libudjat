@@ -25,6 +25,7 @@
  #include <ostream>
  #include <pugixml.hpp>
  #include <functional>
+ #include <memory>
 
  namespace Udjat {
 
@@ -45,6 +46,9 @@
 			Boolean,			///< @brief Bool value.
 			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
 		};
+
+		/// @brief Build dummy object.
+		static std::shared_ptr<Value> Factory();
 
 		/// @brief Has any value?
 		virtual bool isNull() const = 0;

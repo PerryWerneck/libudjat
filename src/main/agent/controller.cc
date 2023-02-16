@@ -107,8 +107,10 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
 
+#ifdef DEBUG
 		// Get cache info.
 		head(request,response);
+#endif // DEBUG
 
 		debug("Getting properties for '",request.getPath(),"'");
 

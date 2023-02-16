@@ -308,6 +308,13 @@
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Value &value) const;
 
+			/// @brief Get child report by path.
+			/// @param path	Child path.
+			/// @param report The report output.
+			/// @retval true if the child was found.
+			/// @retval false if the child was not found.
+			virtual bool getProperties(const char *path, Report &report) const;
+
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
 
