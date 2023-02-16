@@ -67,12 +67,16 @@
 
 	bool Worker::work(Request &request, Response &response) const {
 
+		debug("-------------------------------------------");
+
 		auto type = request.as_type();
 		switch(type) {
 		case HTTP::Get:
+			debug("HTTP GET");
 			return get(request,response);
 
 		case HTTP::Head:
+			debug("HTTP HEAD");
 			return head(request,response);
 
 		default:

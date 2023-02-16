@@ -116,7 +116,12 @@
 				/// @brief Object children.
 				std::list<std::shared_ptr<Abstract::Object>> objects;
 
+
 			} children;
+
+			/// @brief Find child, update path.
+			/// @return Pointer to child or nullptr.
+			const Abstract::Agent * find(const char **path) const;
 
 			struct Listener {
 				const Abstract::Agent::Event event;

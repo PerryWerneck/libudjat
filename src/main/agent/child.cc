@@ -64,48 +64,67 @@
 		return children.agents.empty();
 	}
 
-	static size_t getlength(const char *path) {
+	const Abstract::Agent * Abstract::Agent::find(const char **path) const {
 
-		if(!(path && *path)) {
+		const char *ptr = *path;
+
+		if(!(ptr && *ptr)) {
 			throw system_error(EINVAL,system_category());
 		}
 
-		size_t length;
-		const char *ptr = strchr(path,'/');
-		if(!ptr) {
-			length = strlen(path);
-		} else {
-			length = (ptr - path);
+		if(*ptr == '/') {
+			ptr++;
 		}
 
-		return length;
+		*path = ptr;
+
+		debug("PATH='",ptr,"'");
+
+		size_t length;
+		ptr = strchr(*path,'/');
+		if(!ptr) {
+			length = strlen(*path);
+		} else {
+			length = ptr - (*path);
+		}
+
+		debug("PATH='",*path,"' length=",length);
+
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto child : children.agents) {
+				if(!strncasecmp(child->name(),*path,length)) {
+					*path = (*path) + length;
+					debug("Found '",child->name(),"'");
+					return child.get();
+				}
+			}
+		}
+
+		return nullptr;
+
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Value &value) const {
 
-		lock_guard<std::recursive_mutex> lock(guard);
+		debug("ME='",name(),"' path='",path,"'");
 
-		size_t length = getlength(path);
+		if(!*path) {
+			getProperties(value);
+			return true;
+		}
 
-		for(auto child : children.agents) {
-
-			if(strncasecmp(child->name(),path,length))
-				continue;
-
-			if(*(path+length) == '/' && *(path+length+1)) {
-				return child->getProperties(path+length+1,value);
-			}
-
-			return child->getProperties(value);
-
+		auto agent = find(&path);
+		if(agent) {
+			return agent->getProperties(path,value);
 		}
 
 		return false;
-
 	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::state(const char *path) const {
 
+		/*
 		lock_guard<std::recursive_mutex> lock(guard);
 
 		size_t length = getlength(path);
@@ -122,6 +141,7 @@
 			return child->state();
 
 		}
+		*/
 
 		throw system_error(ENOENT,system_category());
 
@@ -132,35 +152,51 @@
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
-		size_t length = getlength(path);
+		if(!(path && *path)) {
+			throw runtime_error("Invalid request");
+		}
 
-		for(auto child : children.agents) {
+		if(*path == '/')
+			path++;
 
-			if(strncasecmp(child->name(),path,length))
-				continue;
+		// Get name length.
+		size_t length;
+		const char *ptr = strchr(path,'/');
+		if(!ptr) {
+			length = strlen(path);
+		} else {
+			length = (ptr - path);
+		}
 
-			if(*(path+length) == '/' && *(path+length+1)) {
-				return child->find(path+length+1,required,autoins);
+		{
+			for(auto child : children.agents) {
+
+				if(strncasecmp(child->name(),path,length))
+					continue;
+
+				if(ptr && ptr[1]) {
+					return child->find(ptr+1,required,autoins);
+				}
+
+				return child;
 			}
 
-			return child;
 		}
 
 		if(autoins) {
-
 			string name{path,length};
 			auto child = make_shared<Abstract::Agent>(Quark(string(path,length)).c_str());
 			push_back(child);
 
-			if(*(path+length) == '/' && *(path+length+1)) {
-				return child->find(path+length+1,required,autoins);
+			if(ptr && ptr[1]) {
+				return child->find(ptr+1,required,autoins);
 			}
 
 			return child;
 		}
 
 		if(required) {
-			throw system_error(ENOENT,system_category());
+			throw system_error(ENOENT,system_category(),string{"Can't find agent '"} + path);
 		}
 
 		return shared_ptr<Abstract::Agent>();

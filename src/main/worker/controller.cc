@@ -60,9 +60,7 @@
 			throw system_error(ENOENT,system_category(),"Unknown action");
 		}
 
-#ifdef DEBUG
-		cout << "Found worker '" << entry->second->c_str() << "'" << endl;
-#endif // DEBUG
+		debug("Found worker '",entry->second->c_str(),"'");
 
 		return entry->second;
 	}
