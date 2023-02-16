@@ -65,32 +65,6 @@
 		return children.agents.empty();
 	}
 
-	std::shared_ptr<Abstract::State> Abstract::Agent::state(const char *path) const {
-
-		/*
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		size_t length = getlength(path);
-
-		for(auto child : children.agents) {
-
-			if(strncasecmp(child->name(),path,length))
-				continue;
-
-			if(*(path+length) == '/' && *(path+length+1)) {
-				return child->state(path+length+1);
-			}
-
-			return child->state();
-
-		}
-		*/
-
-		throw system_error(ENOENT,system_category());
-
-	}
-
-
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::find(const char *path, bool required, bool autoins) {
 
 		lock_guard<std::recursive_mutex> lock(guard);

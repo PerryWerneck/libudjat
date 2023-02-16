@@ -303,7 +303,7 @@
 
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
-			/// @param response Object for child properties.
+			/// @param value Object for child properties.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Value &value) const;
@@ -314,6 +314,11 @@
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Report &report) const;
+
+			/// @brief Get State by path, throw if not found.
+			/// @param path	Child path.
+			/// @return state The state.
+			virtual bool getProperties(const char *path, std::shared_ptr<Abstract::State> &state) const;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -357,11 +362,6 @@
 			inline std::shared_ptr<State> state() const {
 				return this->current_state.selected;
 			}
-
-			/// @brief Get State by path, throw if not found.
-			/// @param path	Child path.
-			/// @return state The state.
-			std::shared_ptr<State> state(const char *path) const;
 
 			/// @brief Get current level.
 			inline Level level() const {

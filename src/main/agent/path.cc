@@ -87,6 +87,25 @@
 		}
 
 		return false;
+
+	}
+
+	bool Abstract::Agent::getProperties(const char *path, std::shared_ptr<Abstract::State> &state) const {
+
+		debug("ME='",name(),"' path='",path,"'");
+
+		if(!*path) {
+			state = this->state();
+			return true;
+		}
+
+		auto agent = Controller::find(this, &path);
+		if(agent) {
+			return agent->getProperties(path,state);
+		}
+
+		return false;
+
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Report &report) const {
