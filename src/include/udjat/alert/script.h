@@ -23,6 +23,7 @@
  #include <udjat/alert/abstract.h>
  #include <udjat/alert/activation.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -34,11 +35,15 @@
 
 			/// @brief Command line to execute.
 			const char *cmdline = "";
+			Logger::Level out = Logger::Info;
+			Logger::Level err = Logger::Error;
 
 			/// @brief URL based alert activation.
 			class UDJAT_API Activation : public Udjat::Alert::Activation {
 			protected:
 				String cmdline;
+				Logger::Level out = Logger::Info;
+				Logger::Level err = Logger::Error;
 
 			public:
 				Activation(const Udjat::Alert::Script *alert);

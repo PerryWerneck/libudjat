@@ -104,9 +104,15 @@
 						class Script : public Udjat::Agent<int32_t> {
 						private:
 							const char *cmdline;
+							Logger::Level out = Logger::Info;
+							Logger::Level err = Logger::Error;
 
 						public:
-							Script(const pugi::xml_node &node) : Udjat::Agent<int32_t>(node) {
+							Script(const pugi::xml_node &node)
+								: Udjat::Agent<int32_t>(node),
+									out{Logger::LevelFactory(node,"stdout","info")},
+									err{Logger::LevelFactory(node,"stderr","error")}
+							{
 								cmdline = Quark(node,"cmdline","",false).c_str();
 								if(!cmdline) {
 									throw runtime_error("Required attribute 'cmdline' is missing");
@@ -121,7 +127,7 @@
 
 								try {
 
-									value = SubProcess::run(cmdline);
+									value = SubProcess::run(this,cmdline,out,err);
 
 								} catch(const std::exception &e) {
 

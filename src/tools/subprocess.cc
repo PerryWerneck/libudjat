@@ -33,15 +33,19 @@
 
  namespace Udjat {
 
-	SubProcess::SubProcess(const char *c) : SubProcess("subprocess",c) {
+	SubProcess::SubProcess(const char *c, Logger::Level out, Logger::Level err) : SubProcess("subprocess",c,out,err) {
 	}
 
-	int SubProcess::run(const char *command) {
-		return SubProcess(command).run();
+	int SubProcess::run(const char *command, Logger::Level out, Logger::Level err) {
+		return SubProcess{command,out,err}.run();
 	}
 
-	int SubProcess::run(const NamedObject *obj, const char *command) {
-		return SubProcess(obj,command).run();
+	int SubProcess::run(const char *name, const char *command, Logger::Level out, Logger::Level err) {
+		return SubProcess{name,command,out,err}.run();
+	}
+
+	int SubProcess::run(const NamedObject *obj, const char *command, Logger::Level out, Logger::Level err) {
+		return SubProcess(obj,command,out,err).run();
 	}
 
 	void SubProcess::start(const char *command) {
