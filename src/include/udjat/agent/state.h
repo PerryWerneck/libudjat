@@ -233,8 +233,20 @@ namespace Udjat {
 		State(const pugi::xml_node &node, T from_value, T to_value) : Abstract::State{node}, from{from_value}, to{to_value} {
 		}
 
-		bool compare(T value) {
+		inline bool compare(T value) {
 			return value >= from && value <= to;
+		}
+
+		inline bool contains(T value) {
+			return value >= from && value <= to;
+		}
+
+		inline bool operator==(const T value) const noexcept {
+			return value == from && from == to;
+		}
+
+		inline operator T() const noexcept {
+			return from;
 		}
 
 		std::string value() const override {
