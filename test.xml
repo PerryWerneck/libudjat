@@ -15,6 +15,7 @@
 	</attribute-list>
 		
 	<alert name='startup' url='${default-url}/hello' />	
+	<alert name='sscritps' cmdline='ls -l' stdout='error' />	
 	
 	<agent name='intvalue' type='integer' value='0'>
 
