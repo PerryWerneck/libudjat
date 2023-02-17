@@ -23,8 +23,6 @@
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/win32/handler.h>
- #include <memory>
- #include <udjat/win32/exception.h>
 
  using namespace std;
 

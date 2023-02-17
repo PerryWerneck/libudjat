@@ -20,19 +20,12 @@
  /***
   * @brief Implement the Windows SubProcess object.
   *
-  * References:
-  *
-  * <https://docs.microsoft.com/en-us/windows/win32/procthread/creating-a-child-process-with-redirected-input-and-output>
-  *
   */
 
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
- #include <udjat/win32/exception.h>
- #include <system_error>
- #include <iostream>
 
  using namespace std;
 
@@ -40,38 +33,7 @@
 
  namespace Udjat {
 
-	/*
-	SubProcess::Pipe::Pipe() {
-		SECURITY_ATTRIBUTES saAttr;
-
-		saAttr.nLength = sizeof(SECURITY_ATTRIBUTES);
-		saAttr.bInheritHandle = TRUE;
-		saAttr.lpSecurityDescriptor = NULL;
-
-		if(!CreatePipe(&hRead, &hWrite, &saAttr, 0)) {
-			throw runtime_error("Error creating pipe");
-		}
-
-		// Ensure the read handle to the pipe is not inherited.
-		if(!SetHandleInformation(hRead, HANDLE_FLAG_INHERIT, 0)) {
-			CloseHandle(hRead);
-			CloseHandle(hWrite);
-			throw runtime_error("Error in SetHandleInformation");
-		}
-
-	}
-
-	SubProcess::Pipe::~Pipe() {
-		if(hRead)
-			CloseHandle(hRead);
-
-		if(hWrite)
-			CloseHandle(hWrite);
-
-	}
-	*/
-
-	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n),command(c) {
+	SubProcess::SubProcess(const char *n, const char *c, Logger::Level out, Logger::Level err) : NamedObject{n}, command{c}, loglevels{out,err} {
 		info() << "Running '" << command << "'" << endl;
 		ZeroMemory(&piProcInfo,sizeof(piProcInfo));
 	}
@@ -86,53 +48,8 @@
 			CloseHandle(piProcInfo.hThread);
 		}
 
-#ifdef DEBUG
-		info() << "Subprocess was destroyed" << endl;
-#endif // DEBUG
+		debug("Subprocess was destroyed");
+
 	}
-
-	/*
-	bool SubProcess::read(int id) {
-
-		DWORD dwRead = 0;
-
-		BOOL bSuccess =
-				ReadFile(
-					pipes[id].hRead,
-					pipes[id].buffer+pipes[id].length,
-					sizeof(pipes[id].buffer) - (pipes[id].length+1),
-					&dwRead,
-					NULL
-				);
-
-		if(!bSuccess) {
-
-			DWORD errcode = GetLastError();
-
-			if(errcode != ERROR_BROKEN_PIPE) {
-				error() << "Error '" << Win32::Exception::format(errcode) << "' reading from subprocess" << endl;
-			}
-
-#ifdef DEBUG
-			info() << "Pipe " << id << " was closed" << endl;
-#endif // DEBUG
-
-			CloseHandle(pipes[id].hRead);
-			pipes[id].hRead = 0;
-			return false;
-
-		} else if(dwRead) {
-
-			pipes[id].buffer[pipes[id].length+dwRead] = 0;
-			parse(id);
-
-		} else {
-			warning() << "Empty data from subprocess" << endl;
-		}
-
-		return true;
-	}
-	*/
-
 
  }

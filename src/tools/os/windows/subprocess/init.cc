@@ -19,9 +19,11 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <private/win32/subprocess.h>
+
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
- #include "private.h"
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 

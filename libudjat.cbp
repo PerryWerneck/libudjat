@@ -68,6 +68,7 @@
 		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/private/win32.h" />
 		<Unit filename="src/include/private/win32/mainloop.h" />
+		<Unit filename="src/include/private/win32/subprocess.h" />
 		<Unit filename="src/include/private/windows/mainloop.h" />
 		<Unit filename="src/include/private/worker.h" />
 		<Unit filename="src/include/udjat.h" />
