@@ -54,24 +54,24 @@
 
 	/// @brief Called on subprocess stdout.
 	void SubProcess::onStdOut(const char *line) {
-		if(Logger::enabled(Logger::Trace)) {
-			Logger::String{line}.trace(name());
+		if(Logger::enabled(loglevels.out)) {
+			Logger::String{line}.write(loglevels.out,name());
 		}
 	}
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		if(Logger::enabled(Logger::Error)) {
-			Logger::String{line}.error(name());
+		if(Logger::enabled(loglevels.err)) {
+			Logger::String{line}.write(loglevels.err,name());
 		}
 	}
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
 		if(rc) {
-			error() <<  "'" << command << "' fails with rc=" << rc << endl;
+			error() <<  "'" << command << "' failed with rc=" << rc << endl;
 		} else {
-			info() <<  "'" << command << "' ends" << endl;
+			info() <<  "'" << command << "' completed without error (rc=0)" << endl;
 		}
 	}
 

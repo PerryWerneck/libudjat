@@ -127,6 +127,13 @@ int main(int argc, char **argv) {
 
 	Logger::verbosity(9);
 
+	MainLoop::getInstance().TimerFactory(1000,[]{
+		debug("---------------------------------------------------------------------");
+		SubProcess{"test","ls -l",Logger::Warning}.run();
+		debug("---------------------------------------------------------------------");
+		return false;
+	});
+
 	DummyProtocol protocol;
 	auto rc = SystemService().run(argc,argv,"./test.xml");
 

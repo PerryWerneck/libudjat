@@ -26,23 +26,16 @@
   *
   */
 
- #include "private.h"
- #include <sys/types.h>
- #include <sys/socket.h>
- #include <unistd.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/handler.h>
- #include <iostream>
- #include <cstring>
- #include <csignal>
- #include <sys/wait.h>
- #include <poll.h>
- #include <udjat/tools/threadpool.h>
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/object.h>
+ #include <private/linux/subprocess.h>
  #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
-	SubProcess::SubProcess(const char *n, const char *c) : NamedObject(n), command(c) {
+	SubProcess::SubProcess(const char *n, const char *c, Logger::Level o, Logger::Level e)
+		: NamedObject{n}, command{c}, loglevels{o,e} {
 		info() << "Running '" << command << "'" << endl;
 	}
 
