@@ -49,9 +49,14 @@
 		time_t saved = update.next;
 		update.next = timestamp;
 
-		debug("Next update for ",name()," set to ",TimeStamp(update.next).to_string().c_str());
+		debug(
+			"Next update for ",name(),
+			" changes from ",TimeStamp{saved}.to_string(),
+			" to ",TimeStamp{update.next}.to_string(),
+			" (",((int)(update.next - saved))," seconds."
+		);
 
-		if(update.next < saved) {
+		if(update.next < saved || !saved) {
 
 			debug("Agent timer needs reset");
 
@@ -66,7 +71,7 @@
 					}
 				});
 
-				debug("Next agent update will be ",TimeStamp(next));
+				debug("Next agent update will be ",TimeStamp(next)," (",(next-now)," seconds)");
 
 				if(now > next) {
 					Controller::getInstance().reset( (now-next) * 1000);
@@ -76,6 +81,7 @@
 			}
 
 		}
+
 		return update.next;
 	}
 
@@ -83,12 +89,6 @@
 		debug("Agent '",name(),"' will wait for ",seconds," seconds");
 		return reset(time(nullptr) + seconds);
 	}
-
-	/*
-	void Abstract::Agent::requestRefresh(time_t seconds) {
-		sched_update(seconds);
-	}
-	*/
 
 	void Abstract::Agent::forward(std::shared_ptr<State> state) noexcept {
 
