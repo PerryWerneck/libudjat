@@ -288,7 +288,7 @@
 			virtual bool refresh(bool ondemand);
 
 			/// @brief Update agent.
-			/// @return true if the data was updated.
+			/// @return true if the data was changed and the state should be recomputed.
 			virtual bool refresh();
 
 			/// @brief Stop agent.
