@@ -1,6 +1,6 @@
 # The Eye of Horus - Core library
 
-Udjat core library. Implements tool, module loading and operating system abstraction layer.
+Udjat core library. Implements tool, module loading, agent management, xml parsing and operating system abstraction layer used by service [udjat](../../../udjat), agent modules and others.
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 ![CodeQL](https://github.com/PerryWerneck/libudjat/workflows/CodeQL/badge.svg?branch=master)
