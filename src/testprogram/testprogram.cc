@@ -17,8 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
+ // #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -172,29 +173,8 @@ int main(int argc, char **argv) {
 }
 #endif // defined
 
-/*
+#if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
-
-
-
-	//cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
-	//cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
-
-	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
-
-	return service_test(argc,argv);
-	// return application_test(argc,argv);
-
-
-	// cout << Application::LogDir() << endl;
-
-	// auto worker = Protocol::WorkerFactory("file://test.xml");
-	// worker->save("/tmp/test");
-
-	//File::copy("test.xml","/tmp/test-copy.xml",false);
-
-	//cout << File::Path{"${documents}test"} << endl;
-
-	//Application().shortcut("br.eti.werneck.udjat");
+	cout << "---> " << File::Text{String{"/sys/class/net/","wlan0","/carrier"}}.c_str() << endl;
 }
-*/
+#endif // OBJECT_TEST

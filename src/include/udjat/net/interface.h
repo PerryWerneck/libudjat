@@ -44,9 +44,16 @@
 			}
 
 			virtual const char * name() const = 0;
+
+			virtual Value & getProperties(Value &value) const noexcept;
+
+			/// @brief Is the interface active?
+			virtual bool active() const;
+
 			virtual bool found() const = 0;
 			virtual bool up() const = 0;
 			virtual bool loopback() const = 0;
+			virtual bool carrier() const;
 
 			static std::shared_ptr<Interface> get(const char *name);
 

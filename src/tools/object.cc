@@ -179,6 +179,14 @@
 		return name();
 	}
 
+	bool Abstract::Object::getProperty(const char *key, Udjat::Value &value) const noexcept {
+		std::string str;
+		if(getProperty(key,str)) {
+			value = str;
+		}
+		return false;
+	}
+
 	Value & Object::getProperties(Value &value) const noexcept {
 
 		NamedObject::getProperties(value);

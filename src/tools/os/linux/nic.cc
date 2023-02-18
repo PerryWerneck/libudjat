@@ -21,6 +21,8 @@
  #include <udjat/defs.h>
  #include <udjat/net/interface.h>
  #include <udjat/linux/network.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/file.h>
  #include <sys/socket.h>
  #include <netdb.h>
  #include <net/if.h>
@@ -33,6 +35,18 @@
  using namespace std;
 
  namespace Udjat {
+
+	bool Network::Interface::carrier() const {
+
+		try {
+			return stoi(File::Text{String{"/sys/class/net/",name(),"/carrier"}}.c_str()) != 0;
+		} catch(const std::exception &e) {
+			cerr << name() << "\t" << e.what() << endl;
+		} catch(...) {
+			cerr << name() << "\tUnexpected error getting carrier" << endl;
+		}
+		return false;
+	}
 
 	UDJAT_API bool Network::for_each(const std::function<bool(const ifaddrs &intf)> &func) {
 

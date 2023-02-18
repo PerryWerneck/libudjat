@@ -263,6 +263,7 @@
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/message.cc" />
+		<Unit filename="src/tools/nic.cc" />
 		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application/application.cc" />
 		<Unit filename="src/tools/os/linux/application/cache.cc" />
