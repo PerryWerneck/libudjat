@@ -154,11 +154,17 @@
 	}
 
 	const char * Object::label() const noexcept {
-		return properties.label;
+		if(properties.label && *properties.label) {
+			return properties.label;
+		}
+		return name();
 	}
 
 	const char * Object::icon() const noexcept {
-		return properties.icon;
+		if(properties.icon && *properties.icon) {
+			return properties.icon;
+		}
+		return "image-missing";
 	}
 
 	const char * Object::summary() const noexcept {
