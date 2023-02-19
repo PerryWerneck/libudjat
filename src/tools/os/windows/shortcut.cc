@@ -93,28 +93,14 @@
 	}
 
 	// Use the IPersistFile object to save the shell link
-	IPersistFile *pPersistFile = NULL;          // IPersistFile object pointer
-	Win32::throw_if_fail(
-			ishelllink->QueryInterface(
-			   IID_IPersistFile,			// pre-defined interface of the IPersistFile object
-			   (void **) &pPersistFile)		// returns a pointer to the IPersistFile object
-	);
+	Com::Object<IPersistFile> file;
+
+	Win32::throw_if_fail(ishelllink->QueryInterface(IID_IPersistFile,file.ptr()));
 
 	wchar_t wszLinkfile[MAX_PATH+1]; // pszLinkfile as Unicode string
 	MultiByteToWideChar(CP_ACP, 0, Linkfile.c_str(), -1, wszLinkfile, MAX_PATH);
 
-	try {
-
-		Win32::throw_if_fail(pPersistFile->Save(wszLinkfile, TRUE));
-
-	} catch(...) {
-
-		pPersistFile->Release();
-		throw;
-
-	}
-
-	pPersistFile->Release();
+	Win32::throw_if_fail(file->Save(wszLinkfile, TRUE));
 
 	SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSHNOWAIT, Linkfile.c_str(), NULL);
 

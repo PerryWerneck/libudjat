@@ -34,7 +34,7 @@
 			/// @brief Template for Object.
 			template <typename O>
 			class UDJAT_API Object {
-			private:
+			protected:
 				O *object = nullptr;
 
 			public:
@@ -44,14 +44,26 @@
 				constexpr Object(O *o) : object{o} {
 				}
 
-				~Object() {
+				virtual ~Object() {
 					if(object) {
 						object->Release();
 					}
 				}
 
-				inline O * operator->() {
+				inline O * operator->() noexcept {
 					return object;
+				}
+
+				inline O & operator *() noexcept {
+					return *object;
+				}
+
+				inline O & get() noexcept {
+					return *object;
+				}
+
+				inline void ** ptr() noexcept {
+					return (void **) &object;
 				}
 
 			};
@@ -59,9 +71,7 @@
 			/// @brief Template for Instance
 			/// @tparam O The win32 object.
 			template <typename O>
-			class UDJAT_API Instance {
-				O *instance = nullptr;
-
+			class UDJAT_API Instance : public Object<O> {
 			public:
 				Instance(REFCLSID rclsid, DWORD dwClsContext, REFIID riid) {
 					initialize();
@@ -71,19 +81,9 @@
 							NULL,
 							dwClsContext,
 							riid,
-							(void **) &instance
+							this->ptr()
 						)
 					);
-				}
-
-				~Instance() {
-					if(instance) {
-						instance->Release();
-					}
-				}
-
-				inline O * operator->() {
-					return instance;
 				}
 
 			};
