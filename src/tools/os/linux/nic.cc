@@ -36,6 +36,7 @@
 
  namespace Udjat {
 
+	/*
 	bool Network::Interface::carrier() const {
 
 		try {
@@ -47,6 +48,7 @@
 		}
 		return false;
 	}
+	*/
 
 	UDJAT_API bool Network::for_each(const std::function<bool(const ifaddrs &intf)> &func) {
 

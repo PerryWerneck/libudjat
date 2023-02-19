@@ -19,29 +19,16 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/net/interface.h>
- #include <udjat/tools/value.h>
-
- using namespace std;
+ #include <udjat/win32/com.h>
 
  namespace Udjat {
 
-	Value & Network::Interface::getProperties(Value &value) const noexcept {
-
-		value["name"] = name();
-		// value["active"] = active();
-		value["up"] = up();
-		value["loopback"] = loopback();
-		// value["carrier"] = carrier();
-
-		return value;
-
-	}
-
-	/*
-	bool Network::Interface::active() const {
-		return up() && carrier();
-	}
-	*/
+	 void UDJAT_API Win32::Com::initialize() {
+		static thread_local bool initialized = false;
+		if(!initialized) {
+			CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+			initialized = true;
+		}
+	 }
 
  }

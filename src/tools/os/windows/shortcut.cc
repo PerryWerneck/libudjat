@@ -29,6 +29,7 @@
  #include <shlguid.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/charset.h>
+ #include <udjat/win32/com.h>
  #include <comdef.h>
 
  using namespace std;
@@ -36,12 +37,6 @@
  using namespace Win32;
 
  static void CreateShortCut(const Win32String & Linkfile, const Win32String & Description, const Win32String & Targetargs, int iShowmode, const char * pszCurdir, LPSTR pszIconfile, int iIconindex) {
-
-	static thread_local bool initialized = false;
-	if(!initialized) {
-		CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
-		initialized = true;
-	}
 
 	TCHAR pszTargetfile[MAX_PATH];
 	if(!GetModuleFileName(NULL, pszTargetfile, MAX_PATH ) ) {
@@ -54,7 +49,9 @@
 	// https://www.codeproject.com/Articles/11467/How-to-create-short-cuts-link-files
 
 	// TODO: CComPtr should be better here but where is it defined?
+	Win32::Com::Instance<IShellLink> ishelllink{CLSID_ShellLink,CLSCTX_INPROC_SERVER,IID_IShellLink};
 
+	/*
 	IShellLink * pShellLink = NULL;		// IShellLink object pointer
 	Win32::throw_if_fail(
 		CoCreateInstance(
@@ -65,69 +62,59 @@
 			(void **) &pShellLink		// Returns a pointer to the IShellLink object
 		)
 	);
+	*/
+
+	Win32::throw_if_fail(ishelllink->SetPath(pszTargetfile));
+
+	if(!Targetargs.empty()) {
+		Win32::throw_if_fail(ishelllink->SetArguments(Targetargs.c_str()));
+	}
+
+	if(!Description.empty()) {
+		Win32::throw_if_fail(ishelllink->SetDescription(Description.c_str()));
+	}
+
+	if(iShowmode > 0) {
+		Win32::throw_if_fail(ishelllink->SetShowCmd(iShowmode));
+	}
+
+	if(pszCurdir && *pszCurdir) {
+
+		Win32::throw_if_fail(ishelllink->SetWorkingDirectory(pszCurdir));
+
+	} else {
+
+		Win32::throw_if_fail(ishelllink->SetWorkingDirectory(Udjat::Application::Path().c_str()));
+
+	}
+
+	if(pszIconfile && *pszIconfile && iIconindex >= 0) {
+		Win32::throw_if_fail(ishelllink->SetIconLocation(pszIconfile, iIconindex));
+	}
+
+	// Use the IPersistFile object to save the shell link
+	IPersistFile *pPersistFile = NULL;          // IPersistFile object pointer
+	Win32::throw_if_fail(
+			ishelllink->QueryInterface(
+			   IID_IPersistFile,			// pre-defined interface of the IPersistFile object
+			   (void **) &pPersistFile)		// returns a pointer to the IPersistFile object
+	);
+
+	wchar_t wszLinkfile[MAX_PATH+1]; // pszLinkfile as Unicode string
+	MultiByteToWideChar(CP_ACP, 0, Linkfile.c_str(), -1, wszLinkfile, MAX_PATH);
 
 	try {
 
-		Win32::throw_if_fail(pShellLink->SetPath(pszTargetfile));
-
-		if(!Targetargs.empty()) {
-			Win32::throw_if_fail(pShellLink->SetArguments(Targetargs.c_str()));
-		}
-
-		if(!Description.empty()) {
-			Win32::throw_if_fail(pShellLink->SetDescription(Description.c_str()));
-		}
-
-		if(iShowmode > 0) {
-			Win32::throw_if_fail(pShellLink->SetShowCmd(iShowmode));
-		}
-
-		if(pszCurdir && *pszCurdir) {
-
-			Win32::throw_if_fail(pShellLink->SetWorkingDirectory(pszCurdir));
-
-		} else {
-
-			Win32::throw_if_fail(pShellLink->SetWorkingDirectory(Udjat::Application::Path().c_str()));
-
-		}
-
-		if(pszIconfile && *pszIconfile && iIconindex >= 0) {
-			Win32::throw_if_fail(pShellLink->SetIconLocation(pszIconfile, iIconindex));
-		}
-
-		// Use the IPersistFile object to save the shell link
-		IPersistFile *pPersistFile = NULL;          // IPersistFile object pointer
-		Win32::throw_if_fail(
-				pShellLink->QueryInterface(
-				   IID_IPersistFile,			// pre-defined interface of the IPersistFile object
-				   (void **) &pPersistFile)		// returns a pointer to the IPersistFile object
-		);
-
-		wchar_t wszLinkfile[MAX_PATH+1]; // pszLinkfile as Unicode string
-		MultiByteToWideChar(CP_ACP, 0, Linkfile.c_str(), -1, wszLinkfile, MAX_PATH);
-
-		try {
-
-			Win32::throw_if_fail(pPersistFile->Save(wszLinkfile, TRUE));
-
-		} catch(...) {
-
-			pPersistFile->Release();
-			throw;
-
-		}
-
-		pPersistFile->Release();
+		Win32::throw_if_fail(pPersistFile->Save(wszLinkfile, TRUE));
 
 	} catch(...) {
 
-		pShellLink->Release();
+		pPersistFile->Release();
 		throw;
 
 	}
 
-	pShellLink->Release();
+	pPersistFile->Release();
 
 	SHChangeNotify(SHCNE_CREATE, SHCNF_PATH | SHCNF_FLUSHNOWAIT, Linkfile.c_str(), NULL);
 
@@ -145,8 +132,6 @@
 	}
 
 	Application::ShortCut & Application::ShortCut::remove() {
-
-		int rc = 0;
 
 		std::vector<Win32::KnownFolder> folders;
 
@@ -177,7 +162,6 @@
 				auto err = GetLastError();
 				if(err != ERROR_FILE_NOT_FOUND) {
 					cerr << Win32::Exception::format(linkfile.c_str(),err) << endl;
-					rc = err;
 				}
 			} else {
 				SHChangeNotify(SHCNE_DELETE, SHCNF_PATH | SHCNF_FLUSHNOWAIT, linkfile.c_str(), NULL);

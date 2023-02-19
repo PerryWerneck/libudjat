@@ -27,12 +27,19 @@
  #include <iptypes.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/container.h>
+// #include <udjat/win32/network.h>
  #include <iphlpapi.h>
  #include <udjat/net/ip/address.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	/*
+	bool Network::Interface::carrier() const {
+		return Network::Connection::Properties{name()}->Status == NCS_CONNECTED;
+	}
+	*/
 
 	class UDJAT_PRIVATE Interfaces : public Win32::Container<IP_ADAPTER_INFO> {
 	protected:

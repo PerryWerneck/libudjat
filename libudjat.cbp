@@ -134,10 +134,12 @@
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
 		<Unit filename="src/include/udjat/win32/cleanup.h" />
+		<Unit filename="src/include/udjat/win32/com.h" />
 		<Unit filename="src/include/udjat/win32/container.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/ip.h" />
+		<Unit filename="src/include/udjat/win32/network.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
@@ -309,6 +311,7 @@
 		<Unit filename="src/tools/os/windows/application/utils.cc" />
 		<Unit filename="src/tools/os/windows/arguments.cc" />
 		<Unit filename="src/tools/os/windows/charset.cc" />
+		<Unit filename="src/tools/os/windows/com.cc" />
 		<Unit filename="src/tools/os/windows/configvalue.cc" />
 		<Unit filename="src/tools/os/windows/event.cc" />
 		<Unit filename="src/tools/os/windows/eventcontroller.cc" />
@@ -322,6 +325,7 @@
 		<Unit filename="src/tools/os/windows/hostname.cc" />
 		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
+		<Unit filename="src/tools/os/windows/network/connection.cc" />
 		<Unit filename="src/tools/os/windows/nic.cc" />
 		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />
