@@ -129,4 +129,10 @@
 		return os << to_string(addr);
 	}
 
+	UDJAT_API string to_string(const sockaddr &addr, bool dns = false);
+
+	inline ostream & operator<< (ostream& os, const sockaddr &addr) {
+		return os << to_string(addr);
+	}
+
  }

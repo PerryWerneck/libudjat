@@ -23,6 +23,8 @@
  #include <udjat/linux/network.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/net/ip/address.h>
  #include <sys/socket.h>
  #include <netdb.h>
  #include <net/if.h>
@@ -108,6 +110,27 @@
 
 				return false;
 
+			}
+
+			Value & getProperties(Udjat::Value &value) const noexcept override {
+
+				if(ifa_addr) {
+					value["address"] = std::to_string(*ifa_addr);
+				};
+
+				if(ifa_netmask) {
+					value["netmask"]  = std::to_string(*ifa_netmask);
+				}
+
+				if(ifa_ifu.ifu_broadaddr) {
+					value["broadcast"] = std::to_string(*ifa_ifu.ifu_broadaddr);
+				}
+
+				if(ifa_ifu.ifu_dstaddr) {
+					value["dstaddr"] = std::to_string(*ifa_ifu.ifu_dstaddr);
+				}
+
+				return Network::Interface::getProperties(value);
 			}
 
 			bool found() const {
