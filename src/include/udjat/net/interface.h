@@ -47,17 +47,18 @@
 
 			virtual Value & getProperties(Value &value) const noexcept;
 
-			// virtual bool active() const;
-
 			virtual bool found() const = 0;
 			virtual bool up() const = 0;
 			virtual bool loopback() const = 0;
-			// virtual bool carrier() const;
 
-			static std::shared_ptr<Interface> get(const char *name);
+			/// @brief Build interface from nic name.
+			static std::shared_ptr<Interface> Factory(const char *name);
 
 			/// @brief Enumerate all interface names.
 			static bool for_each(const std::function<bool(const char *name)> &func);
+
+			/// @brief Enumerate all interfaces.
+			static bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 
 		};
 

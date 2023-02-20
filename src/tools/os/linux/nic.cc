@@ -99,129 +99,39 @@
 
     }
 
-	/*
-	bool Network::Interface::for_each(const std::function<bool(const Network::Interface &intf)> &func) {
-
-		class IfAddr : public ::ifaddrs, public Network::Interface {
-		public:
-
-			constexpr IfAddr(const ifaddrs &intf) : ifaddrs{intf} {
-			}
-
-			bool operator==(const sockaddr_storage &addr) const override {
-
-				if(!ifa_addr || (ifa_addr->sa_family != addr.ss_family)) {
-					return false;
-				}
-
-				switch(ifa_addr->sa_family) {
-				case AF_INET:
-					if( ((const struct sockaddr_in *) &addr)->sin_addr.s_addr == ((const struct sockaddr_in *) ifa_addr)->sin_addr.s_addr) {
-						return true;
-					}
-					break;
-
-				case AF_INET6:
-					if( ((const struct sockaddr_in6 *) &addr)->sin6_addr.s6_addr == ((const struct sockaddr_in6 *) ifa_addr)->sin6_addr.s6_addr) {
-						return true;
-					}
-					break;
-				}
-
-				return false;
-
-			}
-
-			Value & getProperties(Udjat::Value &value) const noexcept override {
-
-				if(ifa_addr) {
-					value["address"] = std::to_string(*ifa_addr);
-				};
-
-				if(ifa_netmask) {
-					value["netmask"]  = std::to_string(*ifa_netmask);
-				}
-
-				if(ifa_ifu.ifu_broadaddr) {
-					value["broadcast"] = std::to_string(*ifa_ifu.ifu_broadaddr);
-				}
-
-				if(ifa_ifu.ifu_dstaddr) {
-					value["dstaddr"] = std::to_string(*ifa_ifu.ifu_dstaddr);
-				}
-
-				return Network::Interface::getProperties(value);
-			}
-
-			bool found() const {
-				return true;
-			}
-
-			const char * name() const {
-				return ifa_name;
-			}
-
-			// Flags
-			//
-			// IFF_UP			Interface is running.
-			// IFF_BROADCAST	Valid broadcast address set.
-			// IFF_DEBUG		Internal debugging flag.
-			// IFF_LOOPBACK		Interface is a loopback interface.
-			// IFF_POINTOPOINT	Interface is a point-to-point link.
-			// IFF_RUNNING		Resources allocated.
-			// IFF_NOARP		No arp protocol, L2 destination address not
-			//					set.
-			// IFF_PROMISC		Interface is in promiscuous mode.
-			// IFF_NOTRAILERS	Avoid use of trailers.
-			// IFF_ALLMULTI		Receive all multicast packets.
-			// IFF_MASTER		Master of a load balancing bundle.
-			// IFF_SLAVE		Slave of a load balancing bundle.
-			// IFF_MULTICAST	Supports multicast
-			// IFF_PORTSEL		Is able to select media type via ifmap.
-			// IFF_AUTOMEDIA	Auto media selection active.
-			// IFF_DYNAMIC		The addresses are lost when the interface
-			//					goes down.
-			// IFF_LOWER_UP		Driver signals L1 up (since Linux 2.6.17)
-			// IFF_DORMANT		Driver signals dormant (since Linux 2.6.17)
-			// IFF_ECHO			Echo sent packets (since Linux 2.6.25)
-			//
-
-			bool up() const override {
-				return ifa_flags & IFF_UP;
-			}
-
-			bool loopback() const override {
-				return ifa_flags & IFF_LOOPBACK;
-			}
-
-		} ;
+   	bool Network::Interface::for_each(const std::function<bool(const Network::Interface &intf)> &func) {
 
 		bool rc = false;
 
-		struct ifaddrs * interfaces = nullptr;
-		if(getifaddrs(&interfaces) != 0) {
-			throw system_error(errno,system_category(),"Cant get network interfaces");
+		// https://stackoverflow.com/questions/19227781/linux-getting-all-network-interface-names
+		struct if_nameindex *if_nidxs;
+
+		if_nidxs = if_nameindex();
+		if(!if_nidxs) {
+			throw std::system_error(errno,std::system_category());
 		}
 
 		try {
 
-			for(auto *interface = interfaces; interface && !rc; interface = interface->ifa_next) {
-				rc = func(IfAddr{*interface});
+			for(struct if_nameindex *intf = if_nidxs; intf->if_index != 0 || intf->if_name != NULL; intf++) {
+				if(func(*Factory(intf->if_name))) {
+					rc = true;
+					break;
+				}
 			}
 
 		} catch(...) {
 
-			freeifaddrs(interfaces);
+			if_freenameindex(if_nidxs);
 			throw;
 
 		}
 
-		freeifaddrs(interfaces);
-
+		if_freenameindex(if_nidxs);
 		return rc;
 
 	}
-	*/
+
 
 	unsigned int flags_by_name(const char *name) {
 
@@ -247,7 +157,7 @@
 		return rc;
 	}
 
-	std::shared_ptr<Network::Interface> Network::Interface::get(const char *name) {
+	std::shared_ptr<Network::Interface> Network::Interface::Factory(const char *name) {
 
 		class NamedInterface : public Network::Interface {
 		private:

@@ -108,9 +108,9 @@
 		};
 
 		struct Addresses {
-			const char *interface;		///< @brief Interface name.
-			IP::Address address;		///< @brief Interface address.
-			IP::Address netmask;		///< @brief Interface netmask.
+			const char *interface_name;		///< @brief Interface name.
+			IP::Address address;			///< @brief Interface address.
+			IP::Address netmask;			///< @brief Interface netmask.
 		};
 
 		/// @brief Enumerate local IP addresses and interfaces.

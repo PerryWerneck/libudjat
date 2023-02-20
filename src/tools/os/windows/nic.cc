@@ -35,18 +35,26 @@
 
  namespace Udjat {
 
-	/*
-	bool Network::Interface::carrier() const {
-		return Network::Connection::Properties{name()}->Status == NCS_CONNECTED;
-	}
-	*/
-
 	class UDJAT_PRIVATE Interfaces : public Win32::Container<IP_ADAPTER_INFO> {
 	protected:
 		DWORD load(IP_ADAPTER_INFO *buffer, ULONG *ifbuffersize) override {
 			return GetAdaptersInfo(buffer,ifbuffersize);
 		}
 	};
+
+	bool Network::Interface::for_each(const std::function<bool(const char *name)> &func) {
+
+		Interfaces interfaces;
+
+		for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {
+			if(func(iface->AdapterName)) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
 
 	bool Network::Interface::for_each(const std::function<bool(const Network::Interface &intf)> &func) {
 
@@ -92,7 +100,7 @@
 
 	}
 
-	std::shared_ptr<Network::Interface> Network::Interface::get(const char *name) {
+	std::shared_ptr<Network::Interface> Network::Interface::Factory(const char *name) {
 
 		class NamedInterface : public Network::Interface {
 		private:
