@@ -38,21 +38,7 @@
 
  namespace Udjat {
 
-	/*
-	bool Network::Interface::carrier() const {
-
-		try {
-			return stoi(File::Text{String{"/sys/class/net/",name(),"/carrier"}}.c_str()) != 0;
-		} catch(const std::exception &e) {
-			cerr << name() << "\t" << e.what() << endl;
-		} catch(...) {
-			cerr << name() << "\tUnexpected error getting carrier" << endl;
-		}
-		return false;
-	}
-	*/
-
-	UDJAT_API bool Network::for_each(const std::function<bool(const ifaddrs &intf)> &func) {
+	UDJAT_API bool IP::for_each(const std::function<bool(const ifaddrs &intf)> &func) {
 
 		bool rc = false;
 
@@ -80,6 +66,40 @@
 
 	}
 
+	bool Network::Interface::for_each(const std::function<bool(const char *name)> &func) {
+
+		bool rc = false;
+
+		// https://stackoverflow.com/questions/19227781/linux-getting-all-network-interface-names
+		struct if_nameindex *if_nidxs;
+
+		if_nidxs = if_nameindex();
+		if(!if_nidxs) {
+			throw std::system_error(errno,std::system_category());
+		}
+
+		try {
+
+			for(struct if_nameindex *intf = if_nidxs; intf->if_index != 0 || intf->if_name != NULL; intf++) {
+				if(func(intf->if_name)) {
+					rc = true;
+					break;
+				}
+			}
+
+		} catch(...) {
+
+			if_freenameindex(if_nidxs);
+			throw;
+
+		}
+
+		if_freenameindex(if_nidxs);
+		return rc;
+
+    }
+
+	/*
 	bool Network::Interface::for_each(const std::function<bool(const Network::Interface &intf)> &func) {
 
 		class IfAddr : public ::ifaddrs, public Network::Interface {
@@ -201,6 +221,7 @@
 		return rc;
 
 	}
+	*/
 
 	unsigned int flags_by_name(const char *name) {
 
@@ -236,13 +257,13 @@
 			NamedInterface(const char *name) : nicname{name} {
 			}
 
-			bool operator==(const sockaddr_storage &addr) const override {
+			bool operator==(const sockaddr_storage &) const override {
 				throw system_error(ENOTSUP,system_category(),"Unsupported method call");
 			}
 
 			bool found() const {
-				return for_each([this](const Network::Interface &intf) {
-					return strcmp(intf.name(),name()) == 0;
+				return for_each([this](const char *intf) {
+					return strcmp(intf,name()) == 0;
 				});
 			}
 

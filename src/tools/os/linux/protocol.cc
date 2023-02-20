@@ -40,14 +40,14 @@
 
  namespace Udjat {
 
-	void Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
+	bool Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
 
 		nic.clear(); // Just in case.
 
-		Network::Interface::for_each([&nic,&addr](const Network::Interface &interface){
+		return IP::for_each([&nic,&addr](const IP::Addresses &info){
 
-			if(interface == addr) {
-				nic = interface.name();
+			if(info.address == addr) {
+				nic = info.interface;
 				return true;
 			}
 

@@ -56,13 +56,14 @@
 
 			static std::shared_ptr<Interface> get(const char *name);
 
-			static bool for_each(const std::function<bool(const Interface &intf)> &func);
+			/// @brief Enumerate all interface names.
+			static bool for_each(const std::function<bool(const char *name)> &func);
 
 		};
 
  	}
 
 	/// @return true if 'func' has returned true.
-	UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
+	//UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 
  }

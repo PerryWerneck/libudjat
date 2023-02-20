@@ -50,6 +50,22 @@
 
 	}
 
+	bool IP::for_each(const std::function<bool(const IP::Addresses &addr)> &func) {
+
+		return for_each([&func](const ifaddrs &intf){
+
+			IP::Addresses addr;
+
+			addr.interface = intf.ifa_name;
+			addr.address = intf.ifa_addr;
+			addr.netmask = intf.ifa_netmask;
+
+			return func(addr);
+
+		});
+
+	}
+
  }
 
  namespace std {
@@ -131,7 +147,6 @@
 		return string{host};
 
  	}
-
 
  }
 

@@ -21,6 +21,8 @@
  #include <udjat/defs.h>
  #include <string>
  #include <pugixml.hpp>
+ #include <functional>
+ #include <udjat/net/ip/address.h>
 
  #ifdef _WIN32
 	#include <ws2ipdef.h>
@@ -104,6 +106,15 @@
 			std::string to_string() const noexcept;
 
 		};
+
+		struct Addresses {
+			const char *interface;		///< @brief Interface name.
+			IP::Address address;		///< @brief Interface address.
+			IP::Address netmask;		///< @brief Interface netmask.
+		};
+
+		/// @brief Enumerate local IP addresses and interfaces.
+		UDJAT_API bool for_each(const std::function<bool(const Addresses &addr)> &func);
 
 	}
 

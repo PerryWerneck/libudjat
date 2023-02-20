@@ -127,7 +127,8 @@
 			} args;
 
 			/// @brief Get network interface name from IP.
-			void getnic(const sockaddr_storage &addr, std::string &nic);
+			/// @return true if the interface was found.
+			bool getnic(const sockaddr_storage &addr, std::string &nic);
 
 			/// @brief Get mac address from IP.
 			void getmac(const sockaddr_storage &addr, std::string &mac);
