@@ -47,7 +47,7 @@
 		return IP::for_each([&nic,&addr](const IP::Addresses &info){
 
 			if(info.address == addr) {
-				nic = info.interface;
+				nic = info.interface_name;
 				return true;
 			}
 

@@ -56,7 +56,7 @@
 
 			IP::Addresses addr;
 
-			addr.interface = intf.ifa_name;
+			addr.interface_name = intf.ifa_name;
 			addr.address = intf.ifa_addr;
 			addr.netmask = intf.ifa_netmask;
 
