@@ -46,6 +46,25 @@
 
 namespace Udjat {
 
+	/// @brief Get Icon name from state level.
+	static const char * IconNameFactory(const Level level) {
+
+		static const char * names[] = {
+			STRINGIZE_VALUE_OF(PRODUCT_NAME) "-undefined",
+			STRINGIZE_VALUE_OF(PRODUCT_NAME) "-unimportant",
+			STRINGIZE_VALUE_OF(PRODUCT_NAME) "-ready",
+			STRINGIZE_VALUE_OF(PRODUCT_NAME) "-warning",
+			STRINGIZE_VALUE_OF(PRODUCT_NAME) "-error",
+			STRINGIZE_VALUE_OF(PRODUCT_NAME) "-critical"
+		};
+
+		if(((size_t) level) > N_ELEMENTS(names)) {
+			return "image-missing";
+		}
+
+		return names[level];
+	}
+
 	Abstract::State::State(const char *name, const Level level, const char *summary, const char *body) : Object((name && *name) ? name : "unnamed") {
 
 		if(summary && *summary) {
@@ -57,10 +76,21 @@ namespace Udjat {
 		}
 
 		this->properties.level = level;
+
+		if(!(Object::properties.icon && *Object::properties.icon)) {
+			Object::properties.icon = IconNameFactory(properties.level);
+		}
+
 	}
 
 	Abstract::State::State(const pugi::xml_node &node) : Object(node) {
+
 		set(node);
+
+		if(!(Object::properties.icon && *Object::properties.icon)) {
+			Object::properties.icon = IconNameFactory(properties.level);
+		}
+
 	}
 
 	std::string Abstract::State::value() const {

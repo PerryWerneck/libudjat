@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- // #define APPLICATION_TEST 1
- #define OBJECT_TEST 1
+ #define APPLICATION_TEST 1
+ // #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -148,9 +148,9 @@ int main(int argc, char **argv) {
 
 	class Application : public Udjat::Application {
 	public:
-		int install() override {
+		int install(const char *name) override {
 			ShortCut{}.desktop();
-			return super::install();
+			return super::install(name);
 		}
 
 		int uninstall() override {

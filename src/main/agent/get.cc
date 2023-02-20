@@ -191,9 +191,8 @@
 
 	const char * Abstract::Agent::icon() const noexcept {
 
-		const char *str = Udjat::Object::icon();
-		if(str && *str) {
-			return str;
+		if(Object::properties.icon && *Object::properties.icon) {
+			return Object::properties.icon;
 		}
 
 		return current_state.selected->icon();
