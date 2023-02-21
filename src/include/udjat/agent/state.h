@@ -199,6 +199,12 @@ namespace Udjat {
 			/// @return true if the child was created.
 			bool push_back(const pugi::xml_node &node);
 
+			/// @brief Create an state from exception.
+			/// @param except The exception.
+			/// @param summary State summary (for message).
+			/// @return A new state object based on the exception type and message.
+			static std::shared_ptr<Abstract::State> Factory(const std::exception &except, const char *summary);
+
 		};
 
 	}
@@ -279,6 +285,14 @@ namespace Udjat {
 			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
 		}
 
+		inline bool operator==(const std::string &value) {
+			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
+		}
+
+		inline bool operator==(const char *value) {
+			return strcasecmp(this->std::string::c_str(),value) == 0;
+		}
+
 		std::string value() const override {
 			return *this;
 		}
@@ -304,14 +318,12 @@ namespace Udjat {
 			return this->state_value == value;
 		}
 
+		inline bool operator==(const bool value) {
+			return this->state_value == value;
+		}
+
 		std::string value() const override;
 
 	};
-
-	/// @brief Create an state from exception.
-	/// @param except The exception.
-	/// @param summary State summary (for message).
-	/// @return A new state object based on the exception type and message.
-	UDJAT_API std::shared_ptr<Abstract::State> StateFactory(const std::exception &except, const char *summary);
 
 }

@@ -225,7 +225,7 @@ namespace Udjat {
 
 	}
 
-	std::shared_ptr<Abstract::State> StateFactory(const std::exception &except, const char *summary) {
+	std::shared_ptr<Abstract::State> Abstract::State::Factory(const std::exception &except, const char *summary) {
 
 		const std::system_error *syserror = dynamic_cast<const std::system_error *>(&except);
 

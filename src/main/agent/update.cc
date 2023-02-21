@@ -120,7 +120,7 @@ namespace Udjat {
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			set(Udjat::StateFactory(e,"Error switching state"));
+			set(Abstract::State::Factory(e,"Error switching state"));
 
 		} catch(...) {
 
