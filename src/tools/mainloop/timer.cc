@@ -163,6 +163,10 @@
 	/// @return The updated timer value or '0' if timer was disabled.
 	unsigned long check() noexcept;
 
+	MainLoop::Timer * MainLoop::Timer::Factory(unsigned long interval, const std::function<bool()> call) {
+		return MainLoop::getInstance().TimerFactory(interval, call);
+	}
+
 	MainLoop::Timer * MainLoop::TimerFactory(unsigned long interval, const std::function<bool()> call) {
 
 		class CallBackTimer : public Timer {

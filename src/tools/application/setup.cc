@@ -86,9 +86,16 @@
 			return;
 		}
 
-		// Logger::String{"Auto update set to ",TimeStamp{time(0)+timer}.to_string()}.info(name());
+		Logger::String{"Auto update set to ",TimeStamp{time(0)+timer}.to_string()}.info(name());
 
-		error() << "Auto update was not implemented" << endl;
+		this->timer = Timer::Factory(timer*1000,[this,pathname](){
+			this->timer = nullptr;
+			Logger::String{"Requesting auto update"}.info(name());
+			ThreadPool::getInstance().push([this,pathname](){
+				setup(pathname,false);
+			});
+			return false;
+		});
 
 	}
 

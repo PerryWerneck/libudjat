@@ -23,6 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/timer.h>
  #include <udjat/agent/abstract.h>
  #include <list>
  #include <string>
@@ -33,6 +34,9 @@
 
 	/// @brief Base class for applications.
 	class UDJAT_API Application {
+	private:
+		Timer *timer = nullptr;	///< @brief Auto update timer.
+
 	protected:
 
 		typedef Udjat::Application super;

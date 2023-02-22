@@ -37,6 +37,9 @@
 	}
 
 	Application::~Application() {
+		if(timer) {
+			delete timer;
+		}
 		Udjat::Module::unload();
 	}
 

@@ -24,6 +24,8 @@
 
  namespace Udjat {
 
+	using Timer=MainLoop::Timer;
+
 	class UDJAT_API MainLoop::Timer {
 	private:
 
@@ -83,6 +85,12 @@
 
 		/// @brief Get timer as string.
 		std::string to_string() const;
+
+		/// @brief Create timer for callback.
+		/// @param call Method when timer expires, timer will be deleted if it returns 'false'.
+		/// @param interval	Timer interval on milliseconds.
+		/// @return Timer object.
+		static Timer * Factory(unsigned long interval, const std::function<bool()> call);
 
 	};
 
