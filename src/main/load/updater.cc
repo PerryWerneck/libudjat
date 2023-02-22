@@ -43,6 +43,7 @@
 
 			// Has pathname, use it.
 			Logger::String{"Loading xml definitions from '",pathname,"'"}.trace("settings");
+
 			File::Path{pathname}.for_each("*.xml",[this](const File::Path &path){
 				push_back(path);
 				return false;
@@ -115,65 +116,88 @@
 
 	}
 
+	void Updater::push_back(const std::string &filename) {
+
+		pugi::xml_document doc;
+		auto result = doc.load_file(filename.c_str());
+		if(result.status != pugi::status_ok) {
+			error() << filename << ": " << result.description() << endl;
+			return;
+		}
+
+		auto node = doc.document_element();
+
+		/// Setup logger.
+		Logger::setup(node);
+
+		// Check for modules.
+		for(pugi::xml_node child = node.child("module"); child; child = child.next_sibling("module")) {
+			if(child.attribute("preload").as_bool(false)) {
+				Module::load(child);
+			}
+		}
+
+		files.emplace_back(filename,node);
+
+	}
+
 	bool Updater::refresh() {
 
 		size_t changed = 0;
-		size_t loaded = 0;
+		Config::Value<string> xmlname{"application","tagname",Application::Name().c_str()};
 
 		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name.c_str());
-		for(std::string &filename : *this) {
+		for(const Settings &descr : *this) {
 
-			debug("Checking '",filename,"'");
+			debug("Checking '",descr.filename,"'");
 
 			try {
 
-				pugi::xml_document doc;
-				auto result = doc.load_file(filename.c_str());
-				if(result.status != pugi::status_ok) {
-					warning() << filename << ": " << result.description() << endl;
-					continue;
-				}
-
-				loaded++;
-				auto node = doc.document_element();
-
-				/// Setup logger.
-				Logger::setup(node);
-
-				// Check for modules.
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					if(node.attribute("preload").as_bool(false)) {
-						Module::load(node);
-					}
-				}
-
 				// Check for update timer.
-				const char *url = node.attribute("src").as_string();
-				if(url && *url) {
+				if(!descr.url.empty()) {
 
-					time_t refresh = node.attribute("update-timer").as_uint(0);
+					info() << "Updating " << descr.filename << endl;
 
-					info() << "Updating " << filename << endl;
-
+					time_t refresh = descr.ifsuccess;
 					try {
 
-						HTTP::Client client{node};
+						HTTP::Client client{descr.url};
 
 						client.mimetype(MimeType::xml);
 
-						if(node.attribute("cache").as_bool(true)) {
-							client.cache(filename.c_str());
+						if(descr.cache) {
+							client.cache(descr.filename.c_str());
 						} else {
-							cout << "http\tCache for '" << filename << "' disabled by XML definition" << endl;
+							cout << "http\tCache for '" << descr.filename << "' disabled by XML definition" << endl;
 						}
 
 						try {
 
-							File::Text text{filename};
+							File::Text text{descr.filename};
 							text.set(client.get());
 
+							pugi::xml_document doc;
+							auto result = doc.load_string(text.c_str());
+							if(result.status == pugi::status_ok) {
 
-							throw runtime_error("Work in progress");
+								// File is valid, save it.
+								if(strcasecmp(doc.document_element().name(),xmlname.c_str())) {
+
+									error() << "The first node on " << client.url() << " is not <" << xmlname << ">, update is not safe" << endl;
+
+								} else {
+
+									Logger::String{"Got valid response from ",client.url()," updating ",descr.filename}.trace("xml");
+									text.save();
+									changed++;
+
+								}
+
+							} else {
+
+								error() << "Error parsing " << client.url() << ": " << result.description() << endl;
+
+							}
 
 						} catch(HTTP::Exception &e) {
 
@@ -181,7 +205,7 @@
 								throw;
 							}
 
-							cout << "http\t" << filename << " was not modified" << endl;
+							cout << "http\t" << descr.filename << " was not modified" << endl;
 						}
 
 
@@ -193,8 +217,8 @@
 
 					} catch(const std::exception &e) {
 
-						error() << "Error '" << e.what() << "' updating " << filename << endl;
-						refresh = node.attribute("update-when-failed").as_uint(refresh);
+						error() << "Error '" << e.what() << "' updating " << descr.filename << endl;
+						refresh = descr.iffailed;
 
 					}
 
@@ -210,16 +234,10 @@
 
 			} catch(const std::exception &e) {
 
-				error() << filename << ": " << e.what() << endl;
+				error() << descr.filename << ": " << e.what() << endl;
 
 			}
 
-		}
-
-		if(!loaded) {
-			next = Config::Value<time_t>("application","update-when-failed",3600);
-			error() << "Unable to load xml definitions, setting refresh timer to " << next << " seconds" << endl;
-			return false;
 		}
 
 		if(changed) {
@@ -233,16 +251,16 @@
 
 	bool Updater::load(std::shared_ptr<Abstract::Agent> root) const noexcept {
 
-		for(const std::string &filename : *this) {
+		for(const Settings &descr : *this) {
 
-			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name.c_str());
+			Logger::String{"Loading '",descr.filename,"'"}.write(Logger::Trace,name.c_str());
 
 			try {
 
 				pugi::xml_document doc;
-				auto result = doc.load_file(filename.c_str());
+				auto result = doc.load_file(descr.filename.c_str());
 				if(result.status != pugi::status_ok) {
-					error() << filename << ": " << result.description() << endl;
+					error() << descr.filename << ": " << result.description() << endl;
 					return false;
 				}
 
@@ -266,7 +284,7 @@
 
 			} catch(const std::exception &e) {
 
-				error() << filename << ": " << e.what() << endl;
+				error() << descr.filename << ": " << e.what() << endl;
 				return false;
 
 			}
