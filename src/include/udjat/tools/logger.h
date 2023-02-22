@@ -130,7 +130,6 @@
 				write(Logger::Error,domain.c_str());
 			}
 
-
 		};
 
 		/// @brief Formatted Log message.

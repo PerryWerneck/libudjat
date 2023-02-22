@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/http/client.h>
+ #include <udjat/tools/logger.h>
  #include <string>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -45,15 +46,13 @@
 					throw system_error(errno,system_category(),Logger::Message("Can't stat '{}'",filename));
 				}
 
-				cout << "http\tDownloading '" << filename << "'" << endl;
+				// cout << "http\tDownloading '" << filename << "'" << endl;
 
 			} else {
 
 				worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
 
-#ifdef DEBUG
-				cout << "Last modification time: " << worker->header("If-Modified-Since") << endl;
-#endif // DEBUG
+				debug("Last modification time: ",worker->header("If-Modified-Since").c_str());
 
 			}
 		}
@@ -129,6 +128,10 @@
 
 		String Client::post(const char *payload) {
 			return post(payload,[](double UDJAT_UNUSED(current),double UDJAT_UNUSED(total)){return true;});
+		}
+
+		void Client::cache(const char *filename) {
+			setup_cache(worker,filename);
 		}
 
 		bool Client::save(const char *filename, const std::function<bool(double current, double total)> &progress) {

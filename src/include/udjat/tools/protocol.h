@@ -239,6 +239,11 @@
 				return header(name);
 			}
 
+			/// @brief Set request mimetype.
+			/// @param type The mimetype for the request.
+			/// @return 0 if ok, errno if not.
+			virtual int mimetype(const MimeType type);
+
 			/// @brief Set request header.
 			/// @param name Header name.
 			/// @param value Header value;

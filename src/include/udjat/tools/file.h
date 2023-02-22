@@ -416,6 +416,10 @@ namespace Udjat {
 			/// @brief Create temporary file with same path of another one
 			/// @param filename Filename to use as reference.
 			Temporary(const char *filename);
+
+			Temporary(const std::string &filename) : Temporary{filename.c_str()} {
+			}
+
 			~Temporary();
 
 			/// @brief Create an empty temporary file.

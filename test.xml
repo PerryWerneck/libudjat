@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<config src='http://localhost/~perry/libudjat.xml' update-timer='600'>
+<config src='http://ideapad.local/~perry/libudjat.xml' update-timer='600'>
 
 	<module name='information' required='no' preload='no' />
 
 	<!-- module name='http' required='yes' /-->
-	<module name='civetweb' required='no' preload='no' />
+	<module name='civetweb' required='no' preload='yes' />
 
 	<attribute-list>
 	

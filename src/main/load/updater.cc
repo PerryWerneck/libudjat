@@ -31,6 +31,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file.h>
  #include <private/agent.h>
+ #include <udjat/tools/http/exception.h>
 
  using namespace std;
 
@@ -156,9 +157,39 @@
 
 					try {
 
+						HTTP::Client client{node};
+
+						client.mimetype(MimeType::xml);
+
+						if(node.attribute("cache").as_bool(true)) {
+							client.cache(filename.c_str());
+						} else {
+							cout << "http\tCache for '" << filename << "' disabled by XML definition" << endl;
+						}
+
+						try {
+
+							File::Text text{filename};
+							text.set(client.get());
+
+
+							throw runtime_error("Work in progress");
+
+						} catch(HTTP::Exception &e) {
+
+							if(e.codes().http != 304) {
+								throw;
+							}
+
+							cout << "http\t" << filename << " was not modified" << endl;
+						}
+
+
+						/*
 						if(HTTP::Client::save(node,filename.c_str())) {
 							changed++;
 						}
+						*/
 
 					} catch(const std::exception &e) {
 

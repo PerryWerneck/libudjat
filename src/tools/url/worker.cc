@@ -59,6 +59,11 @@
 		Protocol::Controller::getInstance().remove(this);
 	}
 
+	int Protocol::Worker::mimetype(const MimeType type) {
+		header("Content-Type") = std::to_string(type);
+		return 0;
+	}
+
 	void Protocol::Worker::Timeouts::setup(const char *scheme) noexcept {
 
 		if(scheme && *scheme) {
