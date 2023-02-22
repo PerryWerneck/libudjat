@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
+ #define SERVICE_TEST 1
+ // #define APPLICATION_TEST 1
  // #define OBJECT_TEST 1
 
  #include <config.h>
@@ -117,12 +117,12 @@
 int main(int argc, char **argv) {
 
 	class Service : public SystemService, private RandomFactory {
-	private:
-
-		struct {
-		} factories;
-
 	public:
+
+		void root(std::shared_ptr<Abstract::Agent> agent) override {
+			debug("--------------------------------> ",agent->name()," is the new root");
+			SystemService::root(agent);
+		}
 
 	};
 
@@ -136,7 +136,7 @@ int main(int argc, char **argv) {
 	});
 
 	DummyProtocol protocol;
-	auto rc = SystemService().run(argc,argv,"./test.xml");
+	auto rc = Service{}.run(argc,argv,"./test.xml");
 
 	debug("Service exits with rc=",rc);
 
@@ -156,6 +156,10 @@ int main(int argc, char **argv) {
 		int uninstall() override {
 			ShortCut{}.remove();
 			return super::uninstall();
+		}
+
+		void root(std::shared_ptr<Abstract::Agent> agent) override {
+			debug("--------------------------------> ",agent->name()," is the new root");
 		}
 
 	};

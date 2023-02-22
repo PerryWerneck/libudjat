@@ -67,7 +67,7 @@
 
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
-		virtual void set(std::shared_ptr<Abstract::Agent> agent);
+		void root(std::shared_ptr<Abstract::Agent> agent) override;
 
 		/// @brief Set service status.
 		/// @param status The current status.

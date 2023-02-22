@@ -84,7 +84,6 @@
 		try {
 
 			Application::setup(pathname,startup);
-			set(Abstract::Agent::root());
 
 		} catch(const std::exception &e) {
 
@@ -94,7 +93,9 @@
 
 	}
 
-	void SystemService::set(std::shared_ptr<Abstract::Agent> agent) {
+	void SystemService::root(std::shared_ptr<Abstract::Agent> agent) {
+
+		debug("----------------> Adding systemservice listeners on agent ",agent->name());
 
 		class Listener : public Activatable {
 		public:
@@ -148,6 +149,8 @@
 				(Abstract::Agent::Event) (Abstract::Agent::Event::STARTED|Abstract::Agent::Event::STATE_CHANGED),
 				std::make_shared<Listener>()
 		);
+
+		Application::root(agent);
 
 	}
 

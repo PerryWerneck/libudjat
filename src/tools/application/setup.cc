@@ -52,11 +52,11 @@
  namespace Udjat {
 
 	int Application::install(const char *) {
-		return 1;
+		return ENOTSUP;
 	}
 
 	int Application::uninstall() {
-		return 1;
+		return ENOTSUP;
 	}
 
 	void Application::setup(const char *pathname, bool startup) {
@@ -68,7 +68,16 @@
 		Updater updater{pathname,startup};
 
 		if(updater.refresh()) {
-			updater.load(RootFactory());
+			auto root = RootFactory();
+			if(updater.load(root)) {
+				this->root(root);
+			} else {
+				root->error() << "Update failed, agent " << hex << root.get() << dec << " will not be promoted to root" << endl;
+				auto old = Abstract::Agent::root();
+				if(old) {
+					old->warning() << "Keeping agent " << hex << old.get() << dec << " as root" << endl;
+				}
+			}
 		}
 
 		time_t timer = updater.wait();

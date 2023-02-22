@@ -79,9 +79,8 @@ namespace Udjat {
 
 		this->root = root;
 
-		cout << "agent\tAgent '"
-				<< this->root->name()
-				<< "' (" << hex << ((void *) root.get() ) << dec << ") is the new root" << endl;
+		this->root->info()
+				<< "Agent " << hex << ((void *) root.get() ) << dec << " was promoted to root" << endl;
 
 	}
 

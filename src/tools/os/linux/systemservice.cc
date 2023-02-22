@@ -84,6 +84,7 @@
 			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 		}
 
+		/*
 		try {
 
 			set(Abstract::Agent::root());
@@ -93,6 +94,7 @@
 			status(e.what());
 
 		}
+		*/
 
 		return rc;
 	}

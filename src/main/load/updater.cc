@@ -30,6 +30,7 @@
  #include <private/logger.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file.h>
+ #include <private/agent.h>
 
  using namespace std;
 
@@ -242,7 +243,14 @@
 		}
 
 		// Activate new root agent.
-		Udjat::setRootAgent(root);
+		// Udjat::setRootAgent(root);
+		Logger::String{"Activating new root agent"}.trace(Application::Name().c_str());
+		Abstract::Agent::Controller::getInstance().set(root);
+
+		Module::for_each([root](const Module &module){
+			const_cast<Module &>(module).set(root);
+			return false;
+		});
 
 		return true;
 

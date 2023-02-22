@@ -37,7 +37,7 @@
 
 	/// @brief Set Root agent.
 	/// @param agent Pointer to a valid root agent.
-	UDJAT_PRIVATE void setRootAgent(std::shared_ptr<Abstract::Agent> agent);
+	// UDJAT_PRIVATE void setRootAgent(std::shared_ptr<Abstract::Agent> agent);
 
 	/// @brief Load modules from XML definitions.
 	UDJAT_PRIVATE void load_modules(const char *pathname);
