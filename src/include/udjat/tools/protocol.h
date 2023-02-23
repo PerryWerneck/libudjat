@@ -282,6 +282,11 @@
 			/// @retval ENOTSUP No support for test in protocol handler.
 			int test() noexcept;
 
+			/// @brief Set file properties using the http response header.
+			/// @param filename The filename to update.
+			/// @return 0 if ok, errno if not.
+			int set_file_properties(const char *filename);
+
 			/// @brief Call URL, save response as filename.
 			/// @param filename	The file name to save.
 			/// @param progress The download progress notifier.

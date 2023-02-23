@@ -33,9 +33,11 @@
  #include <sys/stat.h>
  #include <fcntl.h>
  #include <iostream>
+ #include <udjat/win32/path.h>
 
  #include <windows.h>
  #include <fileapi.h>
+ #include <pathcch.h>
 
  using namespace std;
 
@@ -91,9 +93,7 @@
 
 		tempname = szTempFileName;
 
-#ifdef DEBUG
-		cout << "Tempname: '" << tempname << "'" << endl;
-#endif // DEBUG
+		debug("Tempname: '",tempname,"'");
 
 		fd = open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
 
@@ -103,8 +103,33 @@
 
 	}
 
-	File::Temporary::Temporary(const char *name) : Temporary() {
-		filename = name;
+	File::Temporary::Temporary(const char *name) : filename{Win32::Path{name}} {
+
+		TCHAR lpTempPathBuffer[PATH_MAX+1];
+		memset(lpTempPathBuffer,0,sizeof(lpTempPathBuffer));
+
+		strncpy(lpTempPathBuffer,filename.c_str(),PATH_MAX);
+		{
+			char *ptr = strrchr(lpTempPathBuffer,'\\');
+			if(ptr) {
+				*(ptr+1) = 0;
+			}
+		}
+
+		TCHAR szTempFileName[MAX_PATH];
+
+		if(GetTempFileName(lpTempPathBuffer,TEXT(Application::Name().c_str()),0,szTempFileName) == 0) {
+			throw Win32::Exception("GetTempFileName has failed");
+		}
+
+		tempname = szTempFileName;
+
+		fd = open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
+
+		if(fd < 0) {
+			throw system_error(errno,system_category(),"Unable to create and open temporary file");
+		}
+
 	}
 
 	File::Temporary::~Temporary() {

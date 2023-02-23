@@ -145,6 +145,7 @@
 
 		size_t changed = 0;
 		Config::Value<string> xmlname{"settings","tagname",Application::Name().c_str()};
+		Config::Value<bool> allow_unsafe{"settings","allow-unsafe-updates",false};
 
 		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name.c_str());
 		for(const Settings &descr : *this) {
@@ -181,14 +182,19 @@
 							if(result.status == pugi::status_ok) {
 
 								// File is valid, save it.
-								if(strcasecmp(doc.document_element().name(),xmlname.c_str())) {
+								if(!allow_unsafe && strcasecmp(doc.document_element().name(),xmlname.c_str())) {
 
-									error() << "The first node on " << client.url() << " is not <" << xmlname << ">, update is not safe" << endl;
+									error() << "The first node on " << client.url() << " is not <" << xmlname << ">, update is unsafe" << endl;
 
 								} else {
 
 									Logger::String{"Got valid response from ",client.url()," updating ",descr.filename}.trace("xml");
 									text.save();
+
+									// Set file timestamp based on http last-modified.
+									client.set_file_properties(descr.filename.c_str());
+
+									// Count changed file.
 									changed++;
 
 								}

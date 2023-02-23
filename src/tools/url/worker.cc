@@ -32,9 +32,14 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/net/ip/address.h>
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <sys/utime.h>
+ #else
 	#include <unistd.h>
+	#include <sys/types.h>
+	#include <utime.h>
  #endif // _WIN32
+
 
  namespace Udjat {
 
@@ -171,6 +176,45 @@
 	int Protocol::Worker::test() noexcept {
 		Protocol::Watcher::getInstance().set_url(args.url.c_str());
 		return test(Protocol::Watcher::progress);
+	}
+
+	int Protocol::Worker::set_file_properties(const char *filename) {
+
+		if(!in.modification) {
+			return ENODATA;
+		}
+
+#ifdef _WIN32
+
+		_utimbuf ub;
+		ub.actime = time(0);
+		ub.modtime = (time_t) in.modification;
+
+		if(_utime(filename,&ub) == -1) {
+			int rc = errno;
+			Logger::String{"Error '",strerror(rc),"' setting timestamp of '",filename,"'"}.write(Logger::Error,"protocol");
+			return rc;
+		}
+
+#else
+
+		utimbuf ub;
+		ub.actime = time(0);
+		ub.modtime = (time_t) in.modification;
+
+		if(utime(filename,&ub) == -1) {
+			int rc = errno;
+			Logger::String{"Error '",strerror(rc),"' setting timestamp of '",filename,"'"}.write(Logger::Error,"protocol");
+			return rc;
+		}
+
+#endif // _WIN32
+
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{"Time of '",filename,"' set to ",std::to_string(in.modification).c_str()}.write(Logger::Debug,"protocol");
+		}
+
+		return 0;
 	}
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
