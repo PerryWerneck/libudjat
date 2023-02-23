@@ -144,7 +144,7 @@
 	bool Updater::refresh() {
 
 		size_t changed = 0;
-		Config::Value<string> xmlname{"application","tagname",Application::Name().c_str()};
+		Config::Value<string> xmlname{"settings","tagname",Application::Name().c_str()};
 
 		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name.c_str());
 		for(const Settings &descr : *this) {
@@ -168,7 +168,7 @@
 						if(descr.cache) {
 							client.cache(descr.filename.c_str());
 						} else {
-							cout << "http\tCache for '" << descr.filename << "' disabled by XML definition" << endl;
+							info() << "Cache for '" << descr.url << "' disabled by XML definition" << endl;
 						}
 
 						try {
