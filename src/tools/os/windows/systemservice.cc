@@ -89,23 +89,8 @@
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {
 
-		int rc = Application::init(definitions);
-		if(rc) {
-			debug("Application init rc was ",rc);
-			return rc;
-		}
+		return Application::init(definitions);
 
-		try {
-
-			set(Abstract::Agent::root());
-
-		} catch(const std::exception &e) {
-
-			status(e.what());
-
-		}
-
-		return rc;
 	}
 
 	int SystemService::run(const char *definitions) {
