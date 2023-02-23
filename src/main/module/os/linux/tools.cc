@@ -31,7 +31,7 @@
 		for(auto module : objects) {
 
 			// Check if the module is already loaded.
-			if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+			if(!strcasecmp(module->filename().c_str(),path)) {
 				return module;
 			}
 
