@@ -23,6 +23,8 @@ namespace Udjat {
 
 		void init(const std::string &filename, const pugi::xml_node &node);
 
+		Module * find_by_filename(const char *filename);
+
 #ifdef _WIN32
 
 		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);

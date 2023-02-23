@@ -26,6 +26,21 @@
 
  namespace Udjat {
 
+	Module * Module::Controller::find_by_filename(const char *path) {
+
+		for(auto module : objects) {
+
+			// Check if the module is already loaded.
+			if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+				return module;
+			}
+
+		}
+
+		return nullptr;
+
+	}
+
 	void * Module::Controller::getSymbol(void *handle, const char *name	, bool required) {
 
 		void * symbol = dlsym(handle,name);

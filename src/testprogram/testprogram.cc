@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
- // #define APPLICATION_TEST 1
+ // #define SERVICE_TEST 1
+ #define APPLICATION_TEST 1
  // #define OBJECT_TEST 1
 
  #include <config.h>
@@ -66,6 +66,7 @@
 
  static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
+ /*
  class DummyProtocol : public Udjat::Protocol {
  public:
 	DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
@@ -77,6 +78,7 @@
 	}
 
  };
+ */
 
  class RandomFactory : public Udjat::Factory {
  public:
@@ -128,14 +130,16 @@ int main(int argc, char **argv) {
 
 	Logger::verbosity(9);
 
+	/*
 	MainLoop::getInstance().TimerFactory(1000,[]{
 		debug("---------------------------------------------------------------------");
 		SubProcess{"test","ls -l",Logger::Warning}.run();
 		debug("---------------------------------------------------------------------");
 		return false;
 	});
+	*/
 
-	DummyProtocol protocol;
+	//DummyProtocol protocol;
 	auto rc = Service{}.run(argc,argv,"./test.xml");
 
 	debug("Service exits with rc=",rc);
@@ -167,7 +171,7 @@ int main(int argc, char **argv) {
 	Logger::redirect();
 	Logger::verbosity(9);
 
-	DummyProtocol protocol;
+	// DummyProtocol protocol;
 	auto rc = Application{}.run(argc,argv,"./test.xml");
 
 	debug("Application exits with rc=",rc);

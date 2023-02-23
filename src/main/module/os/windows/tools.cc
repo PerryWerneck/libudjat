@@ -26,6 +26,29 @@
 
  namespace Udjat {
 
+	Module * Module::Controller::find_by_filename(const char *filename) {
+
+		char path[MAX_PATH+1];
+		memset(path,0,MAX_PATH+1);
+
+		if(!GetFullPathName(filename,MAX_PATH,path,NULL)) {
+			cerr << "module\t" << filename << ": " << Win32::Exception::format(GetLastError()) << endl;
+			strncpy(path,filename,MAX_PATH);
+		}
+
+		for(auto module : objects) {
+
+			// Check if the module is already loaded.
+			if(!strcasecmp(module->filename().c_str(),path)) {
+				return module;
+			}
+
+		}
+
+		return nullptr;
+
+	}
+
 	std::string Module::filename() const {
 		TCHAR path[MAX_PATH];
 		if(GetModuleFileName(this->handle, path, MAX_PATH) ) {
