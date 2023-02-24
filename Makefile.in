@@ -333,7 +333,7 @@ install-windows-lib: \
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/udjat-modules
 
-	@$(INSTALL_PROGRAM) \
+	@$(INSTALL_DATA) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
 		$(DESTDIR)$(libdir)/$(PACKAGE_NAME).a
 
