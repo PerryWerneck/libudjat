@@ -184,9 +184,7 @@ int main(int argc, char **argv) {
 #if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
 
-	Udjat::String str;
-
-	str << "First word " << 10 << " second word";
+	Udjat::Message str{"{} queue is empty","sqlite"};
 
 	cout << "str=" << str << endl;
 

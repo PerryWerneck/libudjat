@@ -33,10 +33,15 @@
 
 		template<typename... Targs>
 		inline Message(const char *fmt, Targs... Fargs) : Udjat::String{fmt} {
-			Udjat::String::append(Fargs...);
+			append(Fargs...);
 		}
 
 		void append(const char *str) override;
+
+		template<typename... Targs>
+		void append(Targs... Fargs) {
+			append(Fargs...);
+		}
 
 	};
  }
