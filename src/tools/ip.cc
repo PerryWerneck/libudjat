@@ -23,7 +23,10 @@
  #include <stdexcept>
  #include <cstring>
  #include <udjat/tools/logger.h>
+
+#ifndef _WIN32
  #include <netpacket/packet.h>
+#endif // _WIN32
 
  using namespace std;
 
@@ -68,6 +71,7 @@
 		case AF_INET6:
 			return Factory((const sockaddr_in6 *) addr);
 
+#ifndef _WIN32
 		case AF_PACKET:
 			{
 				sockaddr_storage result;
@@ -80,6 +84,7 @@
 				result.ss_family = AF_PACKET;
 				return result;
 			}
+#endif // _WIN32
 
 		default:
 			throw runtime_error(Logger::Message{"Dont know how to factory an IP::Address for family '{}'",(int) addr->sa_family});
