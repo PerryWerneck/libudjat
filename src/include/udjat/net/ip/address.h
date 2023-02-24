@@ -29,6 +29,7 @@
  #else
 	#include <sys/socket.h>
 	#include <arpa/inet.h>
+	#include <netpacket/packet.h>
  #endif // _WIN32
 
  namespace Udjat {
@@ -39,6 +40,7 @@
 		UDJAT_API sockaddr_storage Factory(const sockaddr *addr);
 		UDJAT_API sockaddr_storage Factory(const sockaddr_in *addr);
 		UDJAT_API sockaddr_storage Factory(const sockaddr_in6 *addr);
+		UDJAT_API sockaddr_storage Factory(const sockaddr_ll *addr);
 		UDJAT_API sockaddr_storage Factory(const pugi::xml_node &node);
 
 		class UDJAT_API Address : public sockaddr_storage {

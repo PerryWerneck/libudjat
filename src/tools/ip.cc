@@ -52,6 +52,19 @@
 		return result;
 	}
 
+	UDJAT_API sockaddr_storage IP::Factory(const sockaddr_ll *addr) {
+		sockaddr_storage result;
+		memset(&result,0,sizeof(result));
+
+		if(addr) {
+			memcpy(&result,addr,sizeof(sockaddr_ll));
+		}
+
+		result.ss_family = AF_PACKET;
+		return result;
+	}
+
+
 	UDJAT_API sockaddr_storage IP::Factory(const sockaddr *addr) {
 
 		if(!addr) {
@@ -67,8 +80,11 @@
 		case AF_INET6:
 			return Factory((const sockaddr_in6 *) addr);
 
+		case AF_PACKET:
+			return Factory((const sockaddr_ll *) addr);
+
 		default:
-			throw runtime_error("Unexpected address family");
+			throw runtime_error(Logger::Message{"Dont know how to factory an IP::Address for family '{}'",(int) addr->sa_family});
 
 		}
 
@@ -112,7 +128,7 @@
 			break;
 
 		default:
-			throw runtime_error("Invalid network family");
+			throw runtime_error(Logger::Message{"Unexpected address family '{}'",((int) a.ss_family)});
 
 		}
 
