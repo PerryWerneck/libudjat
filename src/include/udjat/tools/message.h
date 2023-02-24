@@ -39,8 +39,14 @@
 		void append(const char *str) override;
 
 		template<typename... Targs>
-		void append(Targs... Fargs) {
+		void append(const char *str, Targs... Fargs) {
+			append(str);
 			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		void append(Targs... Fargs) {
+			String::append(Fargs...);
 		}
 
 	};

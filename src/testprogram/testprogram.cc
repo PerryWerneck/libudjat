@@ -184,9 +184,14 @@ int main(int argc, char **argv) {
 #if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
 
-	Udjat::Message str{"{} queue is empty","sqlite"};
+	cout << Udjat::Message{"{} queue is empty","sqlite"} << endl;
+	cout << Udjat::Message{"{} elements in queue",10} << endl;
 
-	cout << "str=" << str << endl;
+	{
+		Udjat::Message msg{"{} elements in {} queue"};
+		msg << 10 << "sqlite";
+		cout << msg << endl;
+	}
 
 	return 0;
 }
