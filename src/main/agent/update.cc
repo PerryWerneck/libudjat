@@ -75,10 +75,11 @@ namespace Udjat {
 
 		update.last = time(nullptr);
 
-		if(update.timer) {
+		if(update.timer && update.next <= update.last) {
 
 			// Has timer, use it
 			update.next = (update.last + update.timer);
+			debug("Next update for '",name(),"' set to ",TimeStamp{update.next});
 
 		}
 

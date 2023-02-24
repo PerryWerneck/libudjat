@@ -254,8 +254,12 @@ namespace Udjat {
 				}
 
 			} else {
-				debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
 				next = std::min(next,agent->update.next);
+				debug(
+					"Agent='",agent->name(),
+					"' update set to '",TimeStamp(agent->update.next),
+					", global update set to ",TimeStamp(next)
+				);
 			}
 		});
 
@@ -276,7 +280,7 @@ namespace Udjat {
 
 				try {
 
-					debug("Scheduled update begins");
+					debug("Scheduled update of '",agent->name(),"' begin");
 
 					agent->notify(UPDATE_TIMER);
 
@@ -287,7 +291,7 @@ namespace Udjat {
 						agent->updated(false);
 					}
 
-					debug("Scheduled update complete");
+					debug("Scheduled update of '",agent->name(),"' complete");
 
 				} catch(const exception &e) {
 
