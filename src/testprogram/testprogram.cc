@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -183,6 +183,13 @@ int main(int argc, char **argv) {
 
 #if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
-	cout << "---> " << File::Text{String{"/sys/class/net/","wlan0","/carrier"}}.c_str() << endl;
+
+	Udjat::String str;
+
+	str << "First word " << 10 << " second word";
+
+	cout << "str=" << str << endl;
+
+	return 0;
 }
 #endif // OBJECT_TEST
