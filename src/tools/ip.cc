@@ -23,6 +23,7 @@
  #include <stdexcept>
  #include <cstring>
  #include <udjat/tools/logger.h>
+ #include <netpacket/packet.h>
 
  using namespace std;
 
@@ -52,19 +53,6 @@
 		return result;
 	}
 
-	UDJAT_API sockaddr_storage IP::Factory(const sockaddr_ll *addr) {
-		sockaddr_storage result;
-		memset(&result,0,sizeof(result));
-
-		if(addr) {
-			memcpy(&result,addr,sizeof(sockaddr_ll));
-		}
-
-		result.ss_family = AF_PACKET;
-		return result;
-	}
-
-
 	UDJAT_API sockaddr_storage IP::Factory(const sockaddr *addr) {
 
 		if(!addr) {
@@ -81,7 +69,17 @@
 			return Factory((const sockaddr_in6 *) addr);
 
 		case AF_PACKET:
-			return Factory((const sockaddr_ll *) addr);
+			{
+				sockaddr_storage result;
+				memset(&result,0,sizeof(result));
+
+				if(addr) {
+					memcpy(&result,addr,sizeof(sockaddr_ll));
+				}
+
+				result.ss_family = AF_PACKET;
+				return result;
+			}
 
 		default:
 			throw runtime_error(Logger::Message{"Dont know how to factory an IP::Address for family '{}'",(int) addr->sa_family});
@@ -99,7 +97,7 @@
 		return *this;
 	}
 
-	bool IP::Address::equal(const sockaddr_storage &a, const sockaddr_storage &b) {
+	bool IP::Address::equal(const sockaddr_storage &a, const sockaddr_storage &b, bool port) {
 
 		if(a.ss_family != b.ss_family) {
 			return false;
@@ -110,7 +108,8 @@
 			return true;
 
 		case AF_INET:
-			if( ((sockaddr_in *) &a)->sin_port != ((sockaddr_in *) &b)->sin_port ) {
+			if(port && ((sockaddr_in *) &a)->sin_port != ((sockaddr_in *) &b)->sin_port ) {
+				debug("a.port=",((sockaddr_in *) &a)->sin_port," b.port=",((sockaddr_in *) &b)->sin_port)
 				return false;
 			}
 			if( ((sockaddr_in *) &a)->sin_addr.s_addr != ((sockaddr_in *) &b)->sin_addr.s_addr ) {
@@ -119,7 +118,7 @@
 			break;
 
 		case AF_INET6:
-			if( ((sockaddr_in6 *) &a)->sin6_port != ((sockaddr_in6 *) &b)->sin6_port ) {
+			if(port && ((sockaddr_in6 *) &a)->sin6_port != ((sockaddr_in6 *) &b)->sin6_port ) {
 				return false;
 			}
 			if( memcmp( &(((sockaddr_in6 *) &a)->sin6_addr), &(((sockaddr_in6 *) &b)->sin6_addr), sizeof(((sockaddr_in6 *) &b)->sin6_addr) ) ) {

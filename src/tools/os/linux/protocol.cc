@@ -30,11 +30,12 @@
  #include <udjat/tools/logger.h>
  #include <udjat/net/interface.h>
  #include <iostream>
- #include <linux/if.h>
+ #include <net/if.h>
  #include <sys/ioctl.h>
  #include <sstream>
  #include <iomanip>
  #include <unistd.h>
+ #include <netpacket/packet.h>
 
  using namespace std;
 
@@ -44,10 +45,33 @@
 
 		nic.clear(); // Just in case.
 
+		if(addr.ss_family == AF_PACKET) {
+
+			// AF_PACKET, get interface name from index.
+
+			char name[IF_NAMESIZE+1];
+			memset(name,0,IF_NAMESIZE+1);
+
+			char *ifname = if_indextoname(((sockaddr_ll *) &addr)->sll_ifindex,name);
+			if(!ifname) {
+				cerr << "linux\tCant name interface '" << ((sockaddr_ll *) &addr)->sll_ifindex << "': " << strerror(errno) << endl;
+				return false;
+			}
+
+			debug("Got packet interface '",ifname,"'");
+
+			nic = ifname;
+			return true;
+		}
+
 		return IP::for_each([&nic,&addr](const IP::Addresses &info){
+
+			debug("a----------------> ",info.interface_name);
+			debug(std::to_string(info.address)," - ",std::to_string(addr));
 
 			if(info.address == addr) {
 				nic = info.interface_name;
+				debug("Found '",nic,"'");
 				return true;
 			}
 
@@ -59,17 +83,21 @@
 
 	void Protocol::Worker::getmac(const sockaddr_storage &addr, std::string &mac) {
 
+		mac.clear();
+
 		// Get NIC using addr.
 		string nic;
 		getnic(addr,nic);
+		if(nic.empty()) {
+			error() << "Cant identify interface for '" << addr << "'" << endl;
+			return;
+		}
 
 		// Get mac address from NIC
 		struct ifreq ifr;
 
 		memset(&ifr,0,sizeof(ifr));
 		strncpy(ifr.ifr_name, nic.c_str(), sizeof( ifr.ifr_name ) );
-
-		mac.clear();
 
 		{
 			int sock = socket(PF_INET, SOCK_STREAM, 0);

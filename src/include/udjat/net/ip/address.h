@@ -29,7 +29,6 @@
  #else
 	#include <sys/socket.h>
 	#include <arpa/inet.h>
-	#include <netpacket/packet.h>
  #endif // _WIN32
 
  namespace Udjat {
@@ -40,7 +39,6 @@
 		UDJAT_API sockaddr_storage Factory(const sockaddr *addr);
 		UDJAT_API sockaddr_storage Factory(const sockaddr_in *addr);
 		UDJAT_API sockaddr_storage Factory(const sockaddr_in6 *addr);
-		UDJAT_API sockaddr_storage Factory(const sockaddr_ll *addr);
 		UDJAT_API sockaddr_storage Factory(const pugi::xml_node &node);
 
 		class UDJAT_API Address : public sockaddr_storage {
@@ -57,7 +55,13 @@
 			Address(const T *addr) : sockaddr_storage{IP::Factory(addr)} {
 			}
 
-			static bool equal(const sockaddr_storage &a, const sockaddr_storage &b);
+			/// @brief Compare 2 IP Addresses
+			/// @param a First IP address to compare.
+			/// @param b Second IP address to compare.
+			/// @param port If true compare the port numbers.
+			/// @retval true Same addresses (and port numbers).
+			/// @retval false Not the same addresses (or port numbers).
+			static bool equal(const sockaddr_storage &a, const sockaddr_storage &b, bool port = false);
 
 			inline bool operator==(const sockaddr_storage &storage) const noexcept {
 				return equal((sockaddr_storage) *this, storage);
