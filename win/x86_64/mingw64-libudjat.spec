@@ -16,6 +16,14 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
+%define __strip %{_mingw64_strip}
+%define __objdump %{_mingw64_objdump}
+%define __find_requires %{_mingw64_findrequires}
+%define __find_provides %{_mingw64_findprovides}
+%define _use_internal_dependency_generator to 0
+%define __os_install_post %{_mingw64_debug_install_post} \
+                          %{_mingw64_install_post}
+
 Summary:		UDJat core library for mingw64
 Name:			mingw64-libudjat
 Version:		1.0
@@ -42,9 +50,11 @@ BuildRequires:	mingw64-cross-pkg-config
 BuildRequires:	mingw64-filesystem
 BuildRequires:	mingw64-gettext-tools
 
-BuildRequires:	mingw64-pugixml-devel
-BuildRequires:	mingw64-vmdetect-devel
-BuildRequires:	mingw64-libintl-devel
+BuildRequires:	mingw64(pkg:pugixml)
+BuildRequires:	mingw64(pkg:vmdetect)
+BuildRequires:	mingw64(lib:intl)
+
+BuildRequires:	fdupes
 
 %description
 UDJat core library
@@ -59,8 +69,8 @@ Main library for udjat modules.
 
 %package -n %{name}%{_libvrs}
 Summary:	UDJat core library
-Requires:	mingw64-libpugixml
-Requires:	mingw64-libvmdetect
+Provides:	mingw64(lib:udjat.dll)
+Provides:	mingw64(lib:udjat)
 
 %description -n %{name}%{_libvrs}
 UDJat core library
@@ -69,11 +79,15 @@ Main library for udjat modules.
 
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
+%lang_package -n %{name}%{_libvrs}
+
+%{_mingw64_debug_package}
+
 %package devel
 Summary: Development files for %{name}
-Requires:	mingw64-pugixml-devel
-Requires:	mingw64-vmdetect-devel
-Requires:	mingw64-libintl-devel
+Requires:	mingw64(pkg:pugixml)
+Requires:	mingw64(pkg:vmdetect)
+Requires:	mingw64(lib:intl)
 Requires:	%{name}%{_libvrs} = %{version}
 
 Provides:	mingw64-udjat-devel = %{version}
@@ -81,8 +95,6 @@ Provides:	mingw64-udjat-devel = %{version}
 %description devel
 
 Development files for Udjat main library.
-
-%lang_package -n %{name}%{_libvrs}
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
@@ -97,16 +109,16 @@ NOCONFIGURE=1 \
 %build
 make all %{?_smp_mflags}
 
-%{_mingw64_strip} \
-	--strip-all \
-	.bin/Release/*.dll
-
 %install
 %_mingw64_make_install
 
 mkdir -p %{buildroot}%{_mingw64_libdir}/udjat
 mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
 mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
+
+%_mingw64_find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
+
+%fdupes %{buildroot}
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
@@ -118,8 +130,7 @@ mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/
 
 %exclude %{_mingw64_sysconfdir}/udjat.conf.d 
 
-%files -n %{name}%{_libvrs}-lang
-%{_mingw64_datadir}/locale/*/LC_MESSAGES/*.mo
+%files -n %{name}%{_libvrs}-lang -f langfiles
 
 %files devel
 %defattr(-,root,root)

@@ -216,17 +216,18 @@ namespace Udjat {
 
 		}
 
-		/*
 		// Search for common states & alerts.
 		string nodename{root.name()};
 		nodename += "-defaults";
 		for(XML::Node node = root.parent(); node; node = node.parent()) {
+
+			/*
 			for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
 				Controller::setup_states(*this,child);
 				Controller::setup_alerts(*this,child);
 			}
+			*/
 		}
-		*/
 
 	}
 

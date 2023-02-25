@@ -113,7 +113,7 @@
 				throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find '{}'",name));
 			}
 
-			virtual const P find(const char *name) const noexcept {
+			virtual P find(const char *name) const noexcept {
 				std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(&guard)));
 				for(auto object : objects) {
 					if(*object == name) {
