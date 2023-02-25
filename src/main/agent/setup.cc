@@ -43,34 +43,6 @@ namespace Udjat {
 	void Abstract::Agent::setup(const pugi::xml_node &root, bool upsearch) {
 
 		Controller::setup_properties(*this,root);
-		// Controller::setup_states(*this,root);
-		// Controller::setup_alerts(*this,root);
-		// Controller::setup_children(*this,root);
-
-		// Load default values.
-		if(upsearch) {
-
-			string nodename{root.attribute("type").as_string(root.name())};
-			nodename += "-defaults";
-
-			for(XML::Node node = root.parent(); node; node = node.parent()) {
-
-				if(!is_allowed(node)) {
-					continue;
-				}
-
-				for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
-
-					if(!is_allowed(child)) {
-						continue;
-					}
-
-					setup(child,false);
-
-				}
-			}
-
-		}
 
 		// Load children.
 		for(const pugi::xml_node &node : root) {
@@ -202,33 +174,47 @@ namespace Udjat {
 
 			});
 
-#ifdef DEBUG
-			if(!success) {
-				cerr << "Ignoring unknown node <" << node.name() << ">" << endl;
-			}
-#else
 			if(!success && Logger::enabled(Logger::Debug)) {
 				Logger::String{
-					"Ignoring unknown node <",node.name(),">"
+					"Ignoring node <",node.name(),">"
 				}.write(Logger::Debug,name());
 			}
-#endif // DEBUG
 
 		}
 
+		// Load default values.
+		//
 		// Search for common states & alerts.
-		string nodename{root.name()};
-		nodename += "-defaults";
-		for(XML::Node node = root.parent(); node; node = node.parent()) {
+		//
+		// Example:
+		//
+		// <service-defaults>
+		//		<alert type='bla' ... />
+		// </service-defaults>
+		//
+		// <service name='bla1' ... />
+		// <service name='bla2' ... />
+		//
+		// The alert type 'bla' will be loaded in both services.
+		//
+		if(upsearch) {
 
-			/*
-			for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
-				Controller::setup_states(*this,child);
-				Controller::setup_alerts(*this,child);
+			string nodename{root.attribute("type").as_string(root.name())};
+			nodename += "-defaults";
+
+			for(XML::Node node = root.parent(); node; node = node.parent()) {
+
+				if(!is_allowed(node)) {
+					continue;
+				}
+
+				for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
+					if(is_allowed(child)) {
+						setup(child,false);
+					}
+				}
 			}
-			*/
 		}
-
 	}
 
 }
