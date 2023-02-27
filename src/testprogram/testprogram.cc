@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
+ // #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -184,14 +184,7 @@ int main(int argc, char **argv) {
 #if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
 
-	cout << Udjat::Message{"{} queue is empty","sqlite"} << endl;
-	cout << Udjat::Message{"{} elements in queue",10} << endl;
-
-	{
-		Udjat::Message msg{"{} elements in {} queue"};
-		msg << 10 << "sqlite";
-		cout << msg << endl;
-	}
+	cout << "logdir=" << Application::LogDir::getInstance() << endl;
 
 	return 0;
 }

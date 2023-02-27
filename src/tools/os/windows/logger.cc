@@ -47,7 +47,6 @@ namespace Udjat {
 		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
 		domain[14] = 0;
 
-		Win32::Registry registry{"log"};
 		string timestamp{TimeStamp().to_string("%x %X")};
 
 		// Log options.
@@ -117,24 +116,14 @@ namespace Udjat {
 			//
 			// Write to file.
 			//
-			static std::string path;
-
-			if(path.empty()) {
-				try {
-					path = Application::LogDir();
-				} catch(...) {
-					path = Application::Path("logs");
-				}
-				File::Path::mkdir(path.c_str());
-			}
-
 			string format;
-			string filename{path};
+			string filename{Application::LogDir::getInstance()};
 
 			DWORD keep = 86400;
 
 			try {
 
+				Win32::Registry registry{"log"};
 				keep = registry.get("keep",keep);
 				format.assign(registry.get("format",""));
 
