@@ -41,14 +41,14 @@
 
 		DWORD szVersion = GetFileVersionInfoSize(pszTargetfile,NULL);
 		if(!szVersion) {
-			throw Win32::Exception();
+			throw Win32::Exception("GetFileVersionInfoSize");
 		}
 
 		uint8_t pBlock[szVersion+1];
 		memset(pBlock,0,szVersion+1);
 
 		if(GetFileVersionInfo(pszTargetfile,0,szVersion,pBlock) == 0) {
-			throw Win32::Exception();
+			throw Win32::Exception("GetFileVersionInfo");
 		}
 
 		/*
