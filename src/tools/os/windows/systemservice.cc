@@ -43,8 +43,13 @@
 
 		switch(opt) {
 		case 'h':
+#ifdef _WIN32
 			cout	<< "  --start\t\tStart service" << endl
-					<< "  --uninstall\t\tStop service" << endl;
+					<< "  --stop\t\tStop service" << endl;
+			cout	<< "  --install\t\tInstall service" << endl
+					<< "  --uninstall\t\tUninstall service" << endl
+					<< "  --reinstall\t\tReinstall service" << endl;
+#endif // _WIN32
 			break;
 
 		case 'f':
@@ -56,6 +61,13 @@
 
 		case 'Q':
 			return stop();
+
+		case 'R':
+			stop();
+			uninstall();
+			install();
+			start();
+			return 0;
 
 		default:
 			return Application::argument(opt,optstring);
