@@ -38,6 +38,8 @@
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
+		LogDir::getInstance();
+
 	}
 
  }

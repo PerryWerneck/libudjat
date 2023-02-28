@@ -27,9 +27,6 @@
 
 	Application::LogDir::LogDir(const char *subdir) noexcept {
 
-		printf("%s(%d)\n",__FILE__,__LINE__);
-		fflush(stdout);
-
 		try {
 
 			std::string registry{Win32::Registry{"paths"}.get("logs","")};

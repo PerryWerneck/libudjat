@@ -47,6 +47,12 @@
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
+		// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+		SetConsoleOutputCP(CP_UTF8);
+		SetConsoleCP(CP_UTF8);
+
+		LogDir::getInstance();
+
 		WSADATA WSAData;
 		{
 			int err = WSAStartup(MAKEWORD(2,2), &WSAData);
@@ -54,10 +60,6 @@
 				throw Win32::Exception(err);
 			}
 		}
-
-		// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
-		SetConsoleOutputCP(CP_UTF8);
-		SetConsoleCP(CP_UTF8);
 
 		if(Config::Value<bool>("application","virtual-terminal-processing",true)) {
 			// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences

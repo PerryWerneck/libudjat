@@ -168,7 +168,6 @@ int main(int argc, char **argv) {
 
 	};
 
-	Logger::redirect();
 	Logger::verbosity(9);
 
 	// DummyProtocol protocol;
