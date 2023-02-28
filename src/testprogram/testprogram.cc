@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- // #define APPLICATION_TEST 1
- #define OBJECT_TEST 1
+ #define APPLICATION_TEST 1
+ // #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -184,7 +184,9 @@ int main(int argc, char **argv) {
 #if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
 
+	printf("------------------------\n");
 	cout << "logdir=" << Application::LogDir::getInstance() << endl;
+	printf("------------------------\n");
 
 	return 0;
 }

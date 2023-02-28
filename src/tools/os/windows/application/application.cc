@@ -97,7 +97,7 @@
 	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{Application::Path{subdir}.c_str(),required} {
 	}
 
-	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"systemdata")} {
+	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{Win32::PathFactory(FOLDERID_ProgramData,"systemdata")} {
 		if(subdir && *subdir) {
 			append("\\");
 			append(subdir);
@@ -181,34 +181,7 @@
 	Application::SysConfigDir::SysConfigDir(const char *subdir) : File::Path{Application::Path{subdir}} {
 	}
 
-	Application::LogDir::LogDir(const char *subdir)  {
-
-		std::string::assign(Win32::Registry{"log"}.get("path",""));
-		if(std::string::empty()) {
-			std::string::assign(PathFactory(FOLDERID_ProgramData,"logs"));
-		}
-
-		mkdir();
-
-		if(subdir && *subdir) {
-			append(subdir);
-			mkdir();
-			append("\\");
-		}
-
-	}
-
-	/*
-	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"log")} {
-		if(subdir && *subdir) {
-			append(subdir);
-			mkdir();
-			append("\\");
-		}
-	}
-	*/
-
-	Application::CacheDir::CacheDir(const char *subdir) : File::Path{PathFactory(FOLDERID_ProgramData,"cache")} {
+	Application::CacheDir::CacheDir(const char *subdir) : File::Path{Win32::PathFactory(FOLDERID_ProgramData,"cache")} {
 		if(subdir && *subdir) {
 			append(subdir);
 			mkdir();

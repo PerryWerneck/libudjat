@@ -193,7 +193,7 @@
 
 		class UDJAT_API LogDir : public File::Path {
 		public:
-			LogDir(const char *subdir = nullptr);
+			LogDir(const char *subdir = nullptr) noexcept ;
 			static LogDir & getInstance();
 		};
 
