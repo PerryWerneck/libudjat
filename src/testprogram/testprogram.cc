@@ -171,7 +171,8 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	// DummyProtocol protocol;
-	auto rc = Application{}.run(argc,argv,"./test.xml");
+	// auto rc = Application{}.run(argc,argv,"./test.xml");
+	auto rc = Application{}.run(argc,argv,Quark{Application::DataFile{"test.xml"}}.c_str());
 
 	debug("Application exits with rc=",rc);
 

@@ -94,7 +94,7 @@
 		assign(ptr);
 	}
 
-	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{Application::Path{subdir}.c_str(),required} {
+	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{Application::Path{subdir,required}} {
 	}
 
 	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{Win32::PathFactory(FOLDERID_ProgramData,"systemdata")} {

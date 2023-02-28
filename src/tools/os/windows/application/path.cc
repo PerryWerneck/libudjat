@@ -49,8 +49,11 @@
 
 		if(subdir && *subdir) {
 			append(subdir);
-			mkdir();
 			append("\\");
+		}
+
+		if(required) {
+			mkdir();
 		}
 
 	}
