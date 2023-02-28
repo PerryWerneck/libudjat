@@ -38,7 +38,7 @@
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
 	}
 
-	void File::Path::expand(std::string &str) {
+	void File::Path::expand(std::string &) {
 	}
 
 	void File::Path::save(int fd, const char *contents) {
