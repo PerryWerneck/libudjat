@@ -23,6 +23,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
  #include <udjat/module.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
 
  using namespace std;
@@ -38,7 +39,9 @@
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
-		LogDir::getInstance();
+		if(Logger::file()) {
+			LogDir::getInstance();
+		}
 
 	}
 

@@ -141,6 +141,9 @@
 
 	void Logger::file(bool enable) {
 		Options::getInstance().file = enable;
+		if(enable) {
+			Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+		}
 	}
 
 	bool Logger::file() {
@@ -267,17 +270,14 @@
 		return Logger::Error;
 	}
 
-	void Logger::redirect(bool file) {
-
-#ifdef WIN32
-		Application::LogDir::getInstance();	// Get log path from registry.
-#endif // WIN32
+	void Logger::redirect() {
 
 		static const Level levels[] = { Info,Warning,Error };
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
-		Options &options{Options::getInstance()};
-		options.file = file;
+		if(Logger::file()) {
+			Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+		}
 
 		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
 

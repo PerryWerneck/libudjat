@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- // #define SERVICE_TEST 1
+ //#define SERVICE_TEST 1
  #define APPLICATION_TEST 1
  // #define OBJECT_TEST 1
 
@@ -172,7 +172,7 @@ int main(int argc, char **argv) {
 
 	// DummyProtocol protocol;
 	// auto rc = Application{}.run(argc,argv,"./test.xml");
-	auto rc = Application{}.run(argc,argv,Quark{Application::DataFile{"test.xml"}}.c_str());
+	auto rc = Application{}.run(argc,argv,"./test.xml");
 
 	debug("Application exits with rc=",rc);
 

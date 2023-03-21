@@ -161,20 +161,19 @@
 		};
 
 		/// @brief Redirect std::cout, std::clog and std::cerr to log file.
-		/// @param file If true send log output to file.
-		UDJAT_API void redirect(bool file = true);
+		UDJAT_API void redirect();
 
 		/// @brief Enable/Disable console output.
-		UDJAT_API void console(bool enable = true);
+		UDJAT_API void console(bool enable);
 
 		UDJAT_API bool file();
 		UDJAT_API bool console();
 
 #ifdef _WIN32
-		UDJAT_API void file(bool enable = true);
+		UDJAT_API void file(bool enable);
 #else
-		UDJAT_API void file(bool enable = false);
-		UDJAT_API void syslog(bool enable = true);
+		UDJAT_API void file(bool enable);
+		UDJAT_API void syslog(bool enable);
 		UDJAT_API bool syslog();
 #endif // _WIN32
 
