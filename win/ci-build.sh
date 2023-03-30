@@ -26,5 +26,6 @@ cd $(dirname $(dirname $(readlink -f ${0})))
 make clean > $LOGFILE 2>&1 || die "Make clean failure"
 make all  > $LOGFILE 2>&1 || die "Make failure"
 
-echo "Build complete"
+make DESTDIR=.bin/package install
+tar --create --xz --file=${MINGW_PACKAGE_PREFIX}-libudjat.tar.xz --directory=.bin/package --verbose .
 
