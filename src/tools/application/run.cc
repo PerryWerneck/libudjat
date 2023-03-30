@@ -42,6 +42,7 @@
  namespace Udjat {
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
+
 	}
 
 	int Application::argument(char opt, const char *optstring) {

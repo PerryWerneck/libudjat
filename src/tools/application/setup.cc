@@ -59,7 +59,7 @@
 		return ENOTSUP;
 	}
 
-	void Application::setup(const char *pathname, bool startup) {
+	time_t Application::setup(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup) {
 
 		if(startup && !Module::preload()) {
 			throw runtime_error("Module preload has failed");
@@ -68,10 +68,7 @@
 		Updater updater{pathname,startup};
 
 		if(updater.refresh()) {
-			auto root = RootFactory();
-			if(updater.load(root)) {
-				this->root(root);
-			} else {
+			if(!updater.load(root)) {
 				root->error() << "Update failed, agent " << hex << root.get() << dec << " will not be promoted to root" << endl;
 				auto old = Abstract::Agent::root();
 				if(old) {
@@ -80,7 +77,19 @@
 			}
 		}
 
-		time_t timer = updater.wait();
+		return updater.wait();
+	}
+
+	void Application::setup(const char *pathname, bool startup) {
+
+		auto root = RootFactory();
+		time_t timer = setup(root,pathname,startup);
+
+		if(Abstract::Agent::root().get() == root.get()) {
+			Logger::String{"Root agent has changed"}.trace(name());
+			this->root(root);
+		}
+
 		if(!timer) {
 			Logger::String{"Auto update is disabled"}.trace(name());
 			return;

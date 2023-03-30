@@ -171,7 +171,6 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	// DummyProtocol protocol;
-	// auto rc = Application{}.run(argc,argv,"./test.xml");
 	auto rc = Application{}.run(argc,argv,"./test.xml");
 
 	debug("Application exits with rc=",rc);

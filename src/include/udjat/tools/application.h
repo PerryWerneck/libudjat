@@ -70,6 +70,10 @@
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
+		/// @brief Setup libudjat from configuration file.
+		/// @return seconds for next update.
+		static time_t setup(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup = true);
+
 		/// @brief Parse command line options, run application.
 		virtual int run(int argc, char **argv, const char *definitions = nullptr);
 
