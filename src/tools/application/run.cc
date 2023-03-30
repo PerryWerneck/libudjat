@@ -211,6 +211,8 @@
 				rc = -1;
 			}
 
+			finalize();
+
 		} catch(const std::exception &e) {
 
 			error() << e.what() << endl;

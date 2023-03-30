@@ -59,7 +59,7 @@
 		return ENOTSUP;
 	}
 
-	time_t Application::setup(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup) {
+	time_t Application::initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup) {
 
 		if(startup && !Module::preload()) {
 			throw runtime_error("Module preload has failed");
@@ -83,7 +83,7 @@
 	void Application::setup(const char *pathname, bool startup) {
 
 		auto root = RootFactory();
-		time_t timer = setup(root,pathname,startup);
+		time_t timer = initialize(root,pathname,startup);
 
 		if(Abstract::Agent::root().get() == root.get()) {
 			Logger::String{"Root agent has changed"}.trace(name());
