@@ -66,6 +66,9 @@
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {
 
+		// TODO: Install unhandled exception manager.
+		// https://en.cppreference.com/w/cpp/error/set_terminate
+
 		int rc = Application::init(definitions);
 		if(rc) {
 			debug("Application init rc was ",rc);
@@ -83,18 +86,6 @@
 			});
 			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 		}
-
-		/*
-		try {
-
-			set(Abstract::Agent::root());
-
-		} catch(const std::exception &e) {
-
-			status(e.what());
-
-		}
-		*/
 
 		return rc;
 	}
@@ -121,6 +112,9 @@
 				protected:
 					void on_timer() override {
 
+						sd_notify(0,"WATCHDOG=1");
+
+						/*
 						try {
 
 							SystemService &service = SystemService::getInstance();
@@ -131,14 +125,19 @@
 								auto state = agent->state();
 
 								if(state->ready()) {
+
 									service.status( _( "System is ready" ));
+
 								} else {
+
 									String message{state->summary()};
+
 									if(message.strip().empty()) {
 										service.status( _( "System is not ready" ) );
 									} else {
 										service.status(message.c_str());
 									}
+
 								}
 
 							} catch(const std::exception &e) {
@@ -155,6 +154,7 @@
 							cerr << "service\t" << e.what() << endl;
 
 						}
+						*/
 
 					}
 
@@ -187,7 +187,6 @@
 
 						}
 
-
 					}
 
 				};
@@ -219,13 +218,18 @@
 	}
 
 	void SystemService::status(const char *status) noexcept {
+
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=%s",status);
-#endif // HAVE_SYSTEMD
-
+		if(Logger::enabled(Logger::Trace)) {
+			Logger::String{status}.write((Logger::Level) (Logger::Debug+1),"systemd");
+		}
+#else
 		if(Logger::enabled(Logger::Trace)) {
 			Logger::String{status}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
 		}
+#endif // HAVE_SYSTEMD
+
 
 	}
 
