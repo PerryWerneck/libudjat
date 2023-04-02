@@ -86,7 +86,7 @@
  	this->running = true;
 
 #ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"READY=1\nSTATUS=Running");
+	sd_notifyf(0,"READY=1");
 #endif // HAVE_SYSTEMD
 
  	while(this->running) {
@@ -186,7 +186,7 @@
  	}
 
 #ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"STOPPING=1\nSTATUS=Stopping");
+	sd_notifyf(0,"STOPPING=1");
 #endif // HAVE_SYSTEMD
 
  	//
@@ -198,10 +198,6 @@
  	// Stop services
  	//
 	Service::Controller::getInstance().stop();
-
-#ifdef HAVE_SYSTEMD
-	sd_notifyf(0,"STATUS=Stopped");
-#endif // HAVE_SYSTEMD
 
 	return 0;
 

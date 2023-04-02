@@ -69,7 +69,7 @@
 
 	void MainLoop::quit(const char *message) {
 #ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=%s",message);
+		sd_notifyf(0,"STOPPING=1\nSTATUS=%s",message);
 #endif // HAVE_SYSTEMD
 		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),"MainLoop");
 		quit();
