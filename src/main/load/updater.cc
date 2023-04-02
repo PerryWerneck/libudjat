@@ -57,12 +57,12 @@
 
 				// No configuration, scan standard paths.
 				std::string options[] = {
-					string{Application::DataDir{nullptr,false} + "settings.xml" },
-					Application::DataDir{"xml.d",false},
 #ifndef _WIN32
 					string{ string{"/etc/"} + name + ".xml" },
 					string{ string{"/etc/"} + name + ".xml.d" },
 #endif // _WIN32
+					string{Application::DataDir{nullptr,false} + "settings.xml" },
+					Application::DataDir{"xml.d",false},
 				};
 
 				for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
@@ -181,14 +181,22 @@
 							auto result = doc.load_string(text.c_str());
 							if(result.status == pugi::status_ok) {
 
-								// File is valid, save it.
-								if(!allow_unsafe && strcasecmp(doc.document_element().name(),xmlname.c_str())) {
+								bool safe = strcasecmp(doc.document_element().name(),xmlname.c_str());
 
-									error() << "The first node on " << client.url() << " is not <" << xmlname << ">, update is unsafe" << endl;
+								const char *xname = xmlname.c_str();
 
-								} else {
+								if(safe || allow_unsafe) {
 
-									Logger::String{"Got valid response from ",client.url()," updating ",descr.filename}.trace("xml");
+									if(safe) {
+										Logger::String{
+											"Got valid response from ",client.url()," updating ",descr.filename
+										}.trace("xml");
+									} else {
+										Logger::String {
+											"The first node on ",client.url()," is not <",xname,">, doing an unsafe update"
+										}.warning("xml");
+									}
+
 									text.save();
 
 									// Set file timestamp based on http last-modified.
@@ -196,6 +204,12 @@
 
 									// Count changed file.
 									changed++;
+
+								} else {
+
+									Logger::String {
+										"The first node on ",client.url()," is not <",xname,">, update is unsafe"
+									}.error("xml");
 
 								}
 
@@ -215,15 +229,9 @@
 						}
 
 
-						/*
-						if(HTTP::Client::save(node,filename.c_str())) {
-							changed++;
-						}
-						*/
-
 					} catch(const std::exception &e) {
 
-						error() << "Error '" << e.what() << "' updating " << descr.filename << endl;
+						error() << "Error '" << e.what() << "' updating from " << descr.filename << endl;
 						refresh = descr.iffailed;
 
 					}

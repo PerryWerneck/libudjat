@@ -97,6 +97,10 @@
 
 		debug("----------------> Adding systemservice listeners on agent ",agent->name());
 
+#ifdef HAVE_SYSTEMD
+		Logger::String{"Watching global status from '",agent->name(),"'"}.info("systemd");
+#endif // HAVE_SYSTEMD
+
 		class Listener : public Activatable {
 		public:
 			constexpr Listener() : Activatable("syssrvc") {
@@ -107,6 +111,10 @@
 			}
 
 			void activate(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) override {
+				activate();
+			}
+
+			void activate() {
 
 				try {
 
@@ -145,13 +153,16 @@
 
 		};
 
+		auto listener = std::make_shared<Listener>();
+
 		agent->push_back(
 				(Abstract::Agent::Event) (Abstract::Agent::Event::STARTED|Abstract::Agent::Event::STATE_CHANGED),
-				std::make_shared<Listener>()
+				listener
 		);
 
 		Application::root(agent);
 
+		listener->activate();
 	}
 
 
