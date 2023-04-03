@@ -26,6 +26,7 @@ pacman -U --noconfirm *.pkg.tar.zst > $LOGFILE 2>&1 || die "pacman failure"
 #
 # Build
 #
+dos2unix PKGBUILD.mingw
 makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw > $LOGFILE 2>&1 || die "makepkg failure"
 
 echo "Build complete"
