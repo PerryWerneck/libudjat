@@ -26,10 +26,7 @@ pacman -U --noconfirm *.pkg.tar.zst > $LOGFILE 2>&1 || die "pacman failure"
 #
 # Build
 #
-./autogen.sh > $LOGFILE 2>&1 || die "Autogen failure"
-./configure > $LOGFILE 2>&1 || die "Configure failure"
-make clean > $LOGFILE 2>&1 || die "Make clean failure"
-make all  > $LOGFILE 2>&1 || die "Make failure"
+makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw > $LOGFILE 2>&1 || die "makepkg failure"
 
 echo "Build complete"
 
