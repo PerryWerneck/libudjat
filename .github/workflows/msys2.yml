@@ -22,6 +22,11 @@ jobs:
           msystem: mingw64
           update: true
           install: xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel libtool mingw-w64-x86_64-pugixml
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/vmdetect"
+          latest: true
+          fileName: "mingw-w64-x86_64-vmdetect-1.1-1-x86_64.pkg.tar.zst"
       - name: CI-Build
         run: ./win/ci-build.sh
       - uses: ncipollo/release-action@v1
