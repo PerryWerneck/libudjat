@@ -115,3 +115,13 @@
 
  }
 
+ /*
+ namespace std {
+
+	template <typename T>
+	inline string to_string(const Udjat::Config::Value<T> &value) {
+			return value.to_string();
+	}
+
+ }
+ */

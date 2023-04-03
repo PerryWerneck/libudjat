@@ -12,18 +12,9 @@
 # case the license is the MIT License). An "Open Source License" is a
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
-
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
-
-%define __strip %{_mingw64_strip}
-%define __objdump %{_mingw64_objdump}
-%define __find_requires %{_mingw64_findrequires}
-%define __find_provides %{_mingw64_findprovides}
-%define _use_internal_dependency_generator to 0
-%define __os_install_post %{_mingw64_debug_install_post} \
-                          %{_mingw64_install_post}
-
+# Please submit bugfixes or comments via https://github.com/PerryWerneck/libudjat/issues
+#
 Summary:		UDJat core library for mingw64
 Name:			mingw64-libudjat
 Version:		1.0
@@ -43,6 +34,7 @@ BuildRequires:	binutils
 BuildRequires:	coreutils
 BuildRequires:	gcc-c++
 
+BuildRequires:	mingw64-filesystem
 BuildRequires:	mingw64-cross-binutils
 BuildRequires:	mingw64-cross-gcc
 BuildRequires:	mingw64-cross-gcc-c++
@@ -80,8 +72,6 @@ Main library for udjat modules.
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
 %lang_package -n %{name}%{_libvrs}
-
-%{_mingw64_debug_package}
 
 %package devel
 Summary: Development files for %{name}

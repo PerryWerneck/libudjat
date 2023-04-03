@@ -183,8 +183,6 @@
 
 								bool safe = strcasecmp(doc.document_element().name(),xmlname.c_str());
 
-								const char *xname = xmlname.c_str();
-
 								if(safe || allow_unsafe) {
 
 									if(safe) {
@@ -193,7 +191,7 @@
 										}.trace("xml");
 									} else {
 										Logger::String {
-											"The first node on ",client.url()," is not <",xname,">, doing an unsafe update"
+											"The first node on ",client.url()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, doing an unsafe update"
 										}.warning("xml");
 									}
 
@@ -208,7 +206,7 @@
 								} else {
 
 									Logger::String {
-										"The first node on ",client.url()," is not <",xname,">, update is unsafe"
+										"The first node on ",client.url()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, update is unsafe"
 									}.error("xml");
 
 								}
