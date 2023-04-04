@@ -20,8 +20,6 @@ depends=(${MINGW_PACKAGE_PREFIX}-vmdetect)
 makedepends=(autoconf automake make libtool gzip ${MINGW_PACKAGE_PREFIX}-vmdetect)
 checkdepends=()
 
-sha256sums=('SKIP')
-
 provides=($pkgname) 
 conflicts=($pkgname)
 
