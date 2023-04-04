@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<config src='http://localhost/~perry/libudjat.xml'>
+<udjat src='http://ideapad.local/~perry/libudjat.xml' update-timer='600'>
 
 	<module name='information' required='no' preload='no' />
 
-	<!-- module name='http' required='yes' /-->
-	<module name='civetweb' required='no' preload='no' />
+	<module name='http' preload='yes' />
+	<!-- module name='civetweb' required='no' preload='yes' / -->
 
 	<attribute-list>
 	
@@ -14,7 +14,8 @@
 
 	</attribute-list>
 		
-	<alert name='startup' url='${default-url}/hello' />	
+	<!-- alert name='startup' url='${default-url}/hello' / -->	
+	<!-- alert name='sscritps' cmdline='ls -l' stdout='error' / -->	
 	
 	<agent name='intvalue' type='integer' value='0'>
 
@@ -84,4 +85,4 @@
 
 	</random -->
 	
-</config>
+</udjat>

@@ -24,6 +24,7 @@
  #include <private/event.h>
  #include <private/mainloop.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/service.h>
  #include <udjat/module.h>
 
  using namespace std;
@@ -31,15 +32,27 @@
  namespace Udjat {
 
 	int Application::init(const char *definitions) {
-
 		setup(definitions,true);
-
 		return 0;
 	}
 
-	int Application::deinit(const char *) {
+	void Application::finalize() {
+
 		ThreadPool::getInstance().wait();
+
+		Service::for_each([](const Service &service){
+			if(service.active()) {
+				const_cast<Service *>(&service)->stop();
+			}
+			return true;
+		});
+
+		ThreadPool::getInstance().wait();
+
 		Module::unload();
+	}
+
+	int Application::deinit(const char *) {
 		return 0;
 	}
 

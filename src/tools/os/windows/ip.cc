@@ -51,6 +51,40 @@
 
  namespace std {
 
+ 	UDJAT_API string to_string(const sockaddr &addr, bool dns) {
+
+ 		char ipaddr[256];
+		memset(ipaddr,0,sizeof(ipaddr));
+
+		size_t sz;
+		switch(addr.sa_family) {
+		case AF_INET:
+			InetNtop(
+				((const sockaddr_in *) &addr)->sin_family,
+				(void *) &(((const sockaddr_in *) &addr)->sin_addr),
+				ipaddr,
+				sizeof(sockaddr_in)
+			);
+			break;
+
+		case AF_INET6:
+			InetNtop(
+				((const sockaddr_in6 *) &addr)->sin6_family,
+				(void *) &(((const sockaddr_in6 *) &addr)->sin6_addr),
+				ipaddr,
+				sizeof(sockaddr_in6)
+			);
+			break;
+
+		default:
+			throw std::system_error(EINVAL, std::system_category(), "address family");
+		}
+
+
+		return string{ipaddr};
+
+ 	}
+
  	UDJAT_API string to_string(const sockaddr_in &addr, bool UDJAT_UNUSED(dns)) {
 
 		char ipaddr[256];

@@ -34,6 +34,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file.h>
+ #include <udjat/agent/abstract.h>
  #include <unistd.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
@@ -78,9 +79,8 @@ namespace Udjat {
 
 		this->root = root;
 
-		cout << "agent\tAgent '"
-				<< this->root->name()
-				<< "' (" << hex << ((void *) root.get() ) << dec << ") is the new root" << endl;
+		this->root->info()
+				<< "Agent " << hex << ((void *) root.get() ) << dec << " was promoted to root" << endl;
 
 	}
 
@@ -254,8 +254,12 @@ namespace Udjat {
 				}
 
 			} else {
-				debug("Agent='",agent->name(),"' update set to '",TimeStamp(agent->update.next));
 				next = std::min(next,agent->update.next);
+				debug(
+					"Agent='",agent->name(),
+					"' update set to '",TimeStamp(agent->update.next),
+					", global update set to ",TimeStamp(next)
+				);
 			}
 		});
 
@@ -276,15 +280,18 @@ namespace Udjat {
 
 				try {
 
-#ifdef DEBUG
-					agent->info() << "Scheduled update begins" << endl;
-#endif // DEBUG
-					agent->notify(UPDATE_TIMER);
-					agent->refresh(false);
+					debug("Scheduled update of '",agent->name(),"' begin");
 
-#ifdef DEBUG
-					agent->info() << "Scheduled update complete" << endl;
-#endif // DEBUG
+					agent->notify(UPDATE_TIMER);
+
+					if(agent->refresh(false)) {
+						debug("Agent was changed");
+						agent->updated(true);
+					} else {
+						agent->updated(false);
+					}
+
+					debug("Scheduled update of '",agent->name(),"' complete");
 
 				} catch(const exception &e) {
 

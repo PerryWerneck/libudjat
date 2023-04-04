@@ -30,6 +30,8 @@
  #include <private/logger.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file.h>
+ #include <private/agent.h>
+ #include <udjat/tools/http/exception.h>
 
  using namespace std;
 
@@ -41,6 +43,7 @@
 
 			// Has pathname, use it.
 			Logger::String{"Loading xml definitions from '",pathname,"'"}.trace("settings");
+
 			File::Path{pathname}.for_each("*.xml",[this](const File::Path &path){
 				push_back(path);
 				return false;
@@ -54,12 +57,12 @@
 
 				// No configuration, scan standard paths.
 				std::string options[] = {
-					string{Application::DataDir{nullptr,false} + "settings.xml" },
-					Application::DataDir{"xml.d",false},
 #ifndef _WIN32
 					string{ string{"/etc/"} + name + ".xml" },
 					string{ string{"/etc/"} + name + ".xml.d" },
 #endif // _WIN32
+					string{Application::DataDir{nullptr,false} + "settings.xml" },
+					Application::DataDir{"xml.d",false},
 				};
 
 				for(size_t ix=0;ix < (sizeof(options)/sizeof(options[0]));ix++) {
@@ -113,56 +116,121 @@
 
 	}
 
+	void Updater::push_back(const std::string &filename) {
+
+		pugi::xml_document doc;
+		auto result = doc.load_file(filename.c_str());
+		if(result.status != pugi::status_ok) {
+			error() << filename << ": " << result.description() << endl;
+			return;
+		}
+
+		auto node = doc.document_element();
+
+		/// Setup logger.
+		Logger::setup(node);
+
+		// Check for modules.
+		for(pugi::xml_node child = node.child("module"); child; child = child.next_sibling("module")) {
+			if(child.attribute("preload").as_bool(false)) {
+				Module::load(child);
+			}
+		}
+
+		files.emplace_back(filename,node);
+
+	}
+
 	bool Updater::refresh() {
 
 		size_t changed = 0;
-		size_t loaded = 0;
+		Config::Value<string> xmlname{"settings","tagname",Application::Name().c_str()};
+		Config::Value<bool> allow_unsafe{"settings","allow-unsafe-updates",false};
 
 		Logger::String{"Checking ",size()," setup file(s) for update"}.write(Logger::Trace,name.c_str());
-		for(std::string &filename : *this) {
+		for(const Settings &descr : *this) {
 
-			debug("Checking '",filename,"'");
+			debug("Checking '",descr.filename,"'");
 
 			try {
 
-				pugi::xml_document doc;
-				auto result = doc.load_file(filename.c_str());
-				if(result.status != pugi::status_ok) {
-					warning() << filename << ": " << result.description() << endl;
-					continue;
-				}
-
-				loaded++;
-				auto node = doc.document_element();
-
-				/// Setup logger.
-				Logger::setup(node);
-
-				// Check for modules.
-				for(pugi::xml_node node = doc.document_element().child("module"); node; node = node.next_sibling("module")) {
-					if(node.attribute("preload").as_bool(false)) {
-						Module::load(node);
-					}
-				}
-
 				// Check for update timer.
-				const char *url = node.attribute("src").as_string();
-				if(url && *url) {
+				if(!descr.url.empty()) {
 
-					time_t refresh = node.attribute("update-timer").as_uint(0);
+					info() << "Updating " << descr.filename << endl;
 
-					info() << "Updating " << filename << endl;
-
+					time_t refresh = descr.ifsuccess;
 					try {
 
-						if(HTTP::Client::save(node,filename.c_str())) {
-							changed++;
+						HTTP::Client client{descr.url};
+
+						client.mimetype(MimeType::xml);
+
+						if(descr.cache) {
+							client.cache(descr.filename.c_str());
+						} else {
+							info() << "Cache for '" << descr.url << "' disabled by XML definition" << endl;
 						}
+
+						try {
+
+							File::Text text{descr.filename};
+							text.set(client.get());
+
+							pugi::xml_document doc;
+							auto result = doc.load_string(text.c_str());
+							if(result.status == pugi::status_ok) {
+
+								bool safe = strcasecmp(doc.document_element().name(),xmlname.c_str());
+
+								if(safe || allow_unsafe) {
+
+									if(safe) {
+										Logger::String{
+											"Got valid response from ",client.url()," updating ",descr.filename
+										}.trace("xml");
+									} else {
+										Logger::String {
+											"The first node on ",client.url()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, doing an unsafe update"
+										}.warning("xml");
+									}
+
+									text.save();
+
+									// Set file timestamp based on http last-modified.
+									client.set_file_properties(descr.filename.c_str());
+
+									// Count changed file.
+									changed++;
+
+								} else {
+
+									Logger::String {
+										"The first node on ",client.url()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, update is unsafe"
+									}.error("xml");
+
+								}
+
+							} else {
+
+								error() << "Error parsing " << client.url() << ": " << result.description() << endl;
+
+							}
+
+						} catch(HTTP::Exception &e) {
+
+							if(e.codes().http != 304) {
+								throw;
+							}
+
+							cout << "http\t" << descr.filename << " was not modified" << endl;
+						}
+
 
 					} catch(const std::exception &e) {
 
-						error() << "Error '" << e.what() << "' updating " << filename << endl;
-						refresh = node.attribute("update-when-failed").as_uint(refresh);
+						error() << "Error '" << e.what() << "' updating from " << descr.filename << endl;
+						refresh = descr.iffailed;
 
 					}
 
@@ -178,16 +246,10 @@
 
 			} catch(const std::exception &e) {
 
-				error() << filename << ": " << e.what() << endl;
+				error() << descr.filename << ": " << e.what() << endl;
 
 			}
 
-		}
-
-		if(!loaded) {
-			next = Config::Value<time_t>("application","update-when-failed",3600);
-			error() << "Unable to load xml definitions, setting refresh timer to " << next << " seconds" << endl;
-			return false;
 		}
 
 		if(changed) {
@@ -201,16 +263,16 @@
 
 	bool Updater::load(std::shared_ptr<Abstract::Agent> root) const noexcept {
 
-		for(const std::string &filename : *this) {
+		for(const Settings &descr : *this) {
 
-			Logger::String{"Loading '",filename,"'"}.write(Logger::Trace,name.c_str());
+			Logger::String{"Loading '",descr.filename,"'"}.write(Logger::Trace,name.c_str());
 
 			try {
 
 				pugi::xml_document doc;
-				auto result = doc.load_file(filename.c_str());
+				auto result = doc.load_file(descr.filename.c_str());
 				if(result.status != pugi::status_ok) {
-					error() << filename << ": " << result.description() << endl;
+					error() << descr.filename << ": " << result.description() << endl;
 					return false;
 				}
 
@@ -234,7 +296,7 @@
 
 			} catch(const std::exception &e) {
 
-				error() << filename << ": " << e.what() << endl;
+				error() << descr.filename << ": " << e.what() << endl;
 				return false;
 
 			}
@@ -242,7 +304,14 @@
 		}
 
 		// Activate new root agent.
-		Udjat::setRootAgent(root);
+		// Udjat::setRootAgent(root);
+		Logger::String{"Activating new root agent"}.trace(Application::Name().c_str());
+		Abstract::Agent::Controller::getInstance().set(root);
+
+		Module::for_each([root](const Module &module){
+			const_cast<Module &>(module).set(root);
+			return false;
+		});
 
 		return true;
 

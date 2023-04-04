@@ -17,26 +17,56 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
- #include <string>
  #include <udjat/win32/registry.h>
  #include <private/win32.h>
- #include <shlobj.h>
-
- #ifdef HAVE_LIBINTL
-	#include <libintl.h>
- #endif // HAVE_LIBINTL
-
- using namespace std;
 
  namespace Udjat {
 
-	// UDJAT_PRIVATE std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir);
+	Application::LogDir::LogDir(const char *subdir) noexcept {
+
+		try {
+
+			std::string registry{Win32::Registry{"paths"}.get("logs","")};
+
+			if(!registry.empty()) {
+				std::string::assign(registry);
+				mkdir();
+			}
+
+		} catch(...) {
+
+			// Ignore errors (LogDir::getInstance() is called from Logger::write)
+
+		}
+
+		if(std::string::empty()) {
+
+			// No registry, scan for default path.
+			std::string::assign(Win32::PathFactory(FOLDERID_ProgramData,"logs"));
+			mkdir();
+
+		}
+
+		if(subdir && *subdir) {
+			append(subdir);
+			mkdir();
+			append("\\");
+		}
+
+	}
+
+	/*
+	Application::LogDir::LogDir(const char *subdir) : File::Path{Win32::PathFactory(FOLDERID_ProgramData,"logs")} {
+		if(subdir && *subdir) {
+			append(subdir);
+			mkdir();
+			append("\\");
+		}
+	}
+	*/
 
  }
-
-
 

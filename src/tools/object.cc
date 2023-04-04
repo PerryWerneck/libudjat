@@ -154,11 +154,17 @@
 	}
 
 	const char * Object::label() const noexcept {
-		return properties.label;
+		if(properties.label && *properties.label) {
+			return properties.label;
+		}
+		return name();
 	}
 
 	const char * Object::icon() const noexcept {
-		return properties.icon;
+		if(properties.icon && *properties.icon) {
+			return properties.icon;
+		}
+		return "image-missing";
 	}
 
 	const char * Object::summary() const noexcept {
@@ -171,6 +177,14 @@
 
 	std::string Abstract::Object::to_string() const noexcept {
 		return name();
+	}
+
+	bool Abstract::Object::getProperty(const char *key, Udjat::Value &value) const noexcept {
+		std::string str;
+		if(getProperty(key,str)) {
+			value = str;
+		}
+		return false;
 	}
 
 	Value & Object::getProperties(Value &value) const noexcept {

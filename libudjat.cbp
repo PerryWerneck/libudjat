@@ -56,6 +56,7 @@
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/factory.h" />
 		<Unit filename="src/include/private/linux/mainloop.h" />
+		<Unit filename="src/include/private/linux/subprocess.h" />
 		<Unit filename="src/include/private/logger.h" />
 		<Unit filename="src/include/private/mainloop.h" />
 		<Unit filename="src/include/private/misc.h" />
@@ -67,6 +68,7 @@
 		<Unit filename="src/include/private/updater.h" />
 		<Unit filename="src/include/private/win32.h" />
 		<Unit filename="src/include/private/win32/mainloop.h" />
+		<Unit filename="src/include/private/win32/subprocess.h" />
 		<Unit filename="src/include/private/windows/mainloop.h" />
 		<Unit filename="src/include/private/worker.h" />
 		<Unit filename="src/include/udjat.h" />
@@ -132,10 +134,12 @@
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
 		<Unit filename="src/include/udjat/win32/cleanup.h" />
+		<Unit filename="src/include/udjat/win32/com.h" />
 		<Unit filename="src/include/udjat/win32/container.h" />
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/ip.h" />
+		<Unit filename="src/include/udjat/win32/network.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
@@ -261,6 +265,7 @@
 		<Unit filename="src/tools/mainloop/testprogram/testprogram.cc" />
 		<Unit filename="src/tools/mainloop/timer.cc" />
 		<Unit filename="src/tools/message.cc" />
+		<Unit filename="src/tools/nic.cc" />
 		<Unit filename="src/tools/object.cc" />
 		<Unit filename="src/tools/os/linux/application/application.cc" />
 		<Unit filename="src/tools/os/linux/application/cache.cc" />
@@ -301,11 +306,13 @@
 		<Unit filename="src/tools/os/windows/application/application.cc" />
 		<Unit filename="src/tools/os/windows/application/description.cc" />
 		<Unit filename="src/tools/os/windows/application/init.cc" />
+		<Unit filename="src/tools/os/windows/application/logdir.cc" />
 		<Unit filename="src/tools/os/windows/application/path.cc" />
 		<Unit filename="src/tools/os/windows/application/private.h" />
 		<Unit filename="src/tools/os/windows/application/utils.cc" />
 		<Unit filename="src/tools/os/windows/arguments.cc" />
 		<Unit filename="src/tools/os/windows/charset.cc" />
+		<Unit filename="src/tools/os/windows/com.cc" />
 		<Unit filename="src/tools/os/windows/configvalue.cc" />
 		<Unit filename="src/tools/os/windows/event.cc" />
 		<Unit filename="src/tools/os/windows/eventcontroller.cc" />
@@ -319,6 +326,7 @@
 		<Unit filename="src/tools/os/windows/hostname.cc" />
 		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
+		<Unit filename="src/tools/os/windows/network/connection.cc" />
 		<Unit filename="src/tools/os/windows/nic.cc" />
 		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />

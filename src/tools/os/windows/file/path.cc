@@ -144,6 +144,7 @@
 	}
 
 	Win32::Path::Path(const char *pathname) : std::string(pathname) {
+
 		for(char *ptr = (char *) c_str();*ptr;ptr++) {
 			if(*ptr == '/') {
 				*ptr = '\\';
@@ -153,6 +154,15 @@
 		if(at(size()-1) == '\\') {
 			resize(size()-1);
 		}
+
+		char path[MAX_PATH+1];
+		memset(path,0,MAX_PATH+1);
+
+		if(!GetFullPathName(c_str(),MAX_PATH,path,NULL)) {
+			throw Win32::Exception(c_str());
+		}
+
+		assign(path);
 	}
 
 	bool Win32::Path::dir(const char *pathname) {
@@ -254,8 +264,12 @@
 	}
 
 	void File::Path::save(const char *filename, const char *contents) {
-		// Get file information.
-		throw system_error(ENOTSUP,system_category(),"Not available on windows");
+
+		File::Temporary tempfile{filename};
+
+		tempfile.write(contents);
+		tempfile.save();
+
 	}
 
 	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {

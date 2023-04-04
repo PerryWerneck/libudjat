@@ -17,7 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <private/linux/subprocess.h>
+
  #include <sys/types.h>
  #include <sys/socket.h>
  #include <unistd.h>

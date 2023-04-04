@@ -29,11 +29,30 @@
 
  namespace Udjat {
 
- 	class UDJAT_PRIVATE Updater : public std::list<std::string> {
+ 	class UDJAT_PRIVATE Updater  {
 	private:
 		time_t next = 0;			///< @brief Seconds for next update.
 		bool update;				///< @brief true if an update was requested.
 		Application::Name name;		///< @brief Application name.
+
+		struct Settings {
+			std::string filename;	///< @brief The file name.
+			std::string url;		///< @brief The URL for file update.
+			time_t ifsuccess;		///< @brief Time to refresh the file when updated
+			time_t iffailed;		///< @brief Time to refresh the file if the update fails.
+			bool cache;
+
+			Settings(const std::string &f, const pugi::xml_node &node) :
+				filename{f},
+				url{node.attribute("src").as_string()},
+				ifsuccess{node.attribute("update-timer").as_uint(0)},
+				iffailed{node.attribute("update-when-failed").as_uint(ifsuccess)},
+				cache{node.attribute("cache").as_bool(true)} {
+			}
+
+		};
+
+		std::list<Settings> files;
 
 	public:
 		Updater(const char *pathname, bool force);
@@ -41,6 +60,21 @@
 		/// @brief Refresh XML files (if necessary);
 		/// @return true to reconfigure.
 		bool refresh();
+
+		/// @brief Verify and insert file on list.
+		void push_back(const std::string &filename);
+
+		inline size_t size() const noexcept {
+			return files.size();
+		}
+
+		inline auto begin() const noexcept {
+			return files.begin();
+		}
+
+		inline auto end() const noexcept {
+			return files.end();
+		}
 
 		/// @brief Load configuration files.
 		/// @param agent New root agent.

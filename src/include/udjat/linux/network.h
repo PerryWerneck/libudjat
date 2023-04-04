@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	namespace Network {
+	namespace IP {
 
 		/// @brief Navigate thru interface until 'func' returns true.
 		/// @return true if 'func' has returned true.

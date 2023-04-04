@@ -33,15 +33,19 @@
 
  namespace Udjat {
 
-	SubProcess::SubProcess(const char *c) : SubProcess("subprocess",c) {
+	SubProcess::SubProcess(const char *c, Logger::Level out, Logger::Level err) : SubProcess("subprocess",c,out,err) {
 	}
 
-	int SubProcess::run(const char *command) {
-		return SubProcess(command).run();
+	int SubProcess::run(const char *command, Logger::Level out, Logger::Level err) {
+		return SubProcess{command,out,err}.run();
 	}
 
-	int SubProcess::run(const NamedObject *obj, const char *command) {
-		return SubProcess(obj,command).run();
+	int SubProcess::run(const char *name, const char *command, Logger::Level out, Logger::Level err) {
+		return SubProcess{name,command,out,err}.run();
+	}
+
+	int SubProcess::run(const NamedObject *obj, const char *command, Logger::Level out, Logger::Level err) {
+		return SubProcess(obj,command,out,err).run();
 	}
 
 	void SubProcess::start(const char *command) {
@@ -54,24 +58,24 @@
 
 	/// @brief Called on subprocess stdout.
 	void SubProcess::onStdOut(const char *line) {
-		if(Logger::enabled(Logger::Trace)) {
-			Logger::String{line}.trace(name());
+		if(Logger::enabled(loglevels.out)) {
+			Logger::String{line}.write(loglevels.out,name());
 		}
 	}
 
 	/// @brief Called on subprocess stderr.
 	void SubProcess::onStdErr(const char *line) {
-		if(Logger::enabled(Logger::Error)) {
-			Logger::String{line}.error(name());
+		if(Logger::enabled(loglevels.err)) {
+			Logger::String{line}.write(loglevels.err,name());
 		}
 	}
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
 		if(rc) {
-			error() <<  "'" << command << "' fails with rc=" << rc << endl;
+			error() <<  "'" << command << "' failed with rc=" << rc << endl;
 		} else {
-			info() <<  "'" << command << "' ends" << endl;
+			info() <<  "'" << command << "' completed without error (rc=0)" << endl;
 		}
 	}
 

@@ -18,7 +18,7 @@
  */
 
  /***
-  * @brief Implement the Windows SubProcess object.
+  * @brief Implement the Windows SubProcess runner.
   *
   * References:
   *
@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include "private.h"
+ #include <private/win32/subprocess.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <udjat/win32/exception.h>

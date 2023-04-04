@@ -17,26 +17,31 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/application.h>
- #include <string>
- #include <udjat/win32/registry.h>
- #include <private/win32.h>
- #include <shlobj.h>
-
- #ifdef HAVE_LIBINTL
-	#include <libintl.h>
- #endif // HAVE_LIBINTL
+ #include <udjat/net/interface.h>
+ #include <udjat/tools/value.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	// UDJAT_PRIVATE std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir);
+	Value & Network::Interface::getProperties(Value &value) const noexcept {
+
+		value["name"] = name();
+		// value["active"] = active();
+		value["up"] = up();
+		value["loopback"] = loopback();
+		// value["carrier"] = carrier();
+
+		return value;
+
+	}
+
+	/*
+	bool Network::Interface::active() const {
+		return up() && carrier();
+	}
+	*/
 
  }
-
-
-

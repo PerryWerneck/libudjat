@@ -23,6 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/timer.h>
  #include <udjat/agent/abstract.h>
  #include <list>
  #include <string>
@@ -33,6 +34,9 @@
 
 	/// @brief Base class for applications.
 	class UDJAT_API Application {
+	private:
+		Timer *timer = nullptr;	///< @brief Auto update timer.
+
 	protected:
 
 		typedef Udjat::Application super;
@@ -65,6 +69,13 @@
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
+
+		/// @brief Initialize application, load configuration, setup root agent.
+		/// @return seconds for next update.
+		static time_t initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup = true);
+
+		/// @brief Deinitialize application.
+		static void finalize();
 
 		/// @brief Parse command line options, run application.
 		virtual int run(int argc, char **argv, const char *definitions = nullptr);
@@ -189,7 +200,7 @@
 
 		class UDJAT_API LogDir : public File::Path {
 		public:
-			LogDir(const char *subdir = nullptr);
+			LogDir(const char *subdir = nullptr) noexcept ;
 			static LogDir & getInstance();
 		};
 

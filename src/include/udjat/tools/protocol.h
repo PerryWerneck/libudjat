@@ -127,7 +127,8 @@
 			} args;
 
 			/// @brief Get network interface name from IP.
-			void getnic(const sockaddr_storage &addr, std::string &nic);
+			/// @return true if the interface was found.
+			bool getnic(const sockaddr_storage &addr, std::string &nic);
 
 			/// @brief Get mac address from IP.
 			void getmac(const sockaddr_storage &addr, std::string &mac);
@@ -238,6 +239,11 @@
 				return header(name);
 			}
 
+			/// @brief Set request mimetype.
+			/// @param type The mimetype for the request.
+			/// @return 0 if ok, errno if not.
+			virtual int mimetype(const MimeType type);
+
 			/// @brief Set request header.
 			/// @param name Header name.
 			/// @param value Header value;
@@ -275,6 +281,11 @@
 			/// @retval EINVAL Invalid method.
 			/// @retval ENOTSUP No support for test in protocol handler.
 			int test() noexcept;
+
+			/// @brief Set file properties using the http response header.
+			/// @param filename The filename to update.
+			/// @return 0 if ok, errno if not.
+			int set_file_properties(const char *filename);
 
 			/// @brief Call URL, save response as filename.
 			/// @param filename	The file name to save.

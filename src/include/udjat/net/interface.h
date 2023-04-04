@@ -44,19 +44,27 @@
 			}
 
 			virtual const char * name() const = 0;
+
+			virtual Value & getProperties(Value &value) const noexcept;
+
 			virtual bool found() const = 0;
 			virtual bool up() const = 0;
 			virtual bool loopback() const = 0;
 
-			static std::shared_ptr<Interface> get(const char *name);
+			/// @brief Build interface from nic name.
+			static std::shared_ptr<Interface> Factory(const char *name);
 
-			static bool for_each(const std::function<bool(const Interface &intf)> &func);
+			/// @brief Enumerate all interface names.
+			static bool for_each(const std::function<bool(const char *name)> &func);
+
+			/// @brief Enumerate all interfaces.
+			static bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 
 		};
 
  	}
 
 	/// @return true if 'func' has returned true.
-	UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
+	//UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 
  }

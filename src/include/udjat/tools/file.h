@@ -416,6 +416,10 @@ namespace Udjat {
 			/// @brief Create temporary file with same path of another one
 			/// @param filename Filename to use as reference.
 			Temporary(const char *filename);
+
+			Temporary(const std::string &filename) : Temporary{filename.c_str()} {
+			}
+
 			~Temporary();
 
 			/// @brief Create an empty temporary file.
@@ -424,7 +428,13 @@ namespace Udjat {
 			/// @brief Create an empty temporary dir.
 			static std::string mkdir();
 
-#ifndef _WIN32
+#ifdef _WIN32
+
+			inline const char * tempfilename() const noexcept {
+				return tempname.c_str();
+			}
+
+#else
 
 			/// @brief Hardlink tempfile to new filename (Linux only).
 			/// @param filename The hard link name.

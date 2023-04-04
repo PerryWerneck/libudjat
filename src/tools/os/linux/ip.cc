@@ -50,6 +50,22 @@
 
 	}
 
+	bool IP::for_each(const std::function<bool(const IP::Addresses &addr)> &func) {
+
+		return for_each([&func](const ifaddrs &intf){
+
+			IP::Addresses addr;
+
+			addr.interface_name = intf.ifa_name;
+			addr.address = intf.ifa_addr;
+			addr.netmask = intf.ifa_netmask;
+
+			return func(addr);
+
+		});
+
+	}
+
  }
 
  namespace std {
@@ -75,6 +91,42 @@
 
  	}
 
+ 	UDJAT_API string to_string(const sockaddr &addr, bool dns) {
+
+  		char host[NI_MAXHOST];
+		memset(host,0,sizeof(host));
+
+		size_t sz;
+		switch(addr.sa_family) {
+		case AF_INET:
+			sz = sizeof(sockaddr_in);
+			break;
+
+		case AF_INET6:
+			sz = sizeof(sockaddr_in6);
+			break;
+
+		default:
+			throw std::system_error(EINVAL, std::system_category(), "address family");
+		}
+
+		int rc = getnameinfo(
+					&addr,
+					sz,
+					host, NI_MAXHOST,
+					NULL, 0,
+					(dns ? 0 : NI_NUMERICHOST)
+				);
+
+		if(rc != 0) {
+			throw runtime_error(gai_strerror(rc));
+		}
+
+		return string{host};
+
+	}
+
+
  	UDJAT_API string to_string(const sockaddr_in6 &addr, bool dns) {
 
  		char host[NI_MAXHOST];
@@ -95,7 +147,6 @@
 		return string{host};
 
  	}
-
 
  }
 

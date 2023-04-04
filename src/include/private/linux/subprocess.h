@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/container.h>
  #include <private/event.h>
  #include <mutex>
  #include <list>
@@ -64,9 +65,18 @@
 	private:
 		Controller();
 
-		static mutex guard;
+		class Entries : public Container<Entry,Entry> {
+		public:
+			Entries() : Container<Entry,Entry>{} {
+			}
 
-		list<Entry> entries;
+			inline void remove_if(const std::function<bool(const Entry &object)> &method) {
+				std::lock_guard<std::mutex> lock(guard);
+				objects.remove_if(method);
+			}
+
+		} entries;
+
 
 		static void handle_signal(int sig) noexcept;
 
@@ -75,12 +85,18 @@
 	public:
 
 		~Controller();
-		static Controller & getInstance();
+
+		static Controller & getInstance() {
+			static Controller instance;
+			return instance;
+		}
 
 		/// @brief Initialize subprocess.
 		static void init(SubProcess &proc, Handler &out, Handler &err);
 
-		void push_back(Entry &entry);
+		inline void push_back(const Entry &entry) {
+			entries.push_back(entry);
+		}
 
  	};
 

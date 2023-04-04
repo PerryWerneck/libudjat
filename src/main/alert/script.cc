@@ -26,7 +26,8 @@
 
  namespace Udjat {
 
-	Alert::Script::Script(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::Script::Script(const pugi::xml_node &node, const char *defaults)
+		: Abstract::Alert(node), out{Logger::LevelFactory(node,"stdout","info")},err{Logger::LevelFactory(node,"stderr","error")} {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
@@ -54,7 +55,8 @@
 		return value;
 	}
 
-	Alert::Script::Activation::Activation(const Udjat::Alert::Script *alert) : Udjat::Alert::Activation(alert), cmdline(alert->cmdline) {
+	Alert::Script::Activation::Activation(const Udjat::Alert::Script *alert)
+		: Udjat::Alert::Activation{alert}, cmdline{alert->cmdline}, out{alert->out}, err{alert->err} {
 		cmdline.expand(*alert,true,false);
 	}
 
@@ -66,7 +68,7 @@
 			info() << "Emitting " << cmdline << endl;
 		}
 
-		SubProcess::run(cmdline.c_str());
+		SubProcess::run(name.c_str(),cmdline.c_str(),out,err);
 
 	}
 

@@ -93,7 +93,7 @@
 	}
 	*/
 
-	std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir) {
+	std::string Win32::PathFactory(REFKNOWNFOLDERID id, const char *subdir) {
 
 		File::Path registry{Win32::Registry{"paths"}.get(subdir,"")};
 

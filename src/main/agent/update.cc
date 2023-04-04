@@ -75,10 +75,11 @@ namespace Udjat {
 
 		update.last = time(nullptr);
 
-		if(update.timer) {
+		if(update.timer && update.next <= update.last) {
 
 			// Has timer, use it
 			update.next = (update.last + update.timer);
+			debug("Next update for '",name(),"' set to ",TimeStamp{update.next});
 
 		}
 
@@ -120,7 +121,7 @@ namespace Udjat {
 		} catch(const exception &e) {
 
 			error() << "Error '" << e.what() << "' switching state" << endl;
-			set(Udjat::StateFactory(e,"Error switching state"));
+			set(Abstract::State::Factory(e,"Error switching state"));
 
 		} catch(...) {
 

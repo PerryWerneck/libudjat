@@ -28,6 +28,8 @@
 
 	namespace Win32 {
 
+		UDJAT_PRIVATE std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir);
+
 		/// @brief Windows special folder.
 		/// @see https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid
 		/// @see https://gitlab.gnome.org/GNOME/glib/blob/main/glib/gutils.c

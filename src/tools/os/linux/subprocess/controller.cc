@@ -26,7 +26,9 @@
   *
   */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <private/linux/subprocess.h>
  #include <sys/types.h>
  #include <sys/socket.h>
  #include <unistd.h>
@@ -42,24 +44,12 @@
 
  namespace Udjat {
 
-	mutex SubProcess::Controller::guard;
-
 	SubProcess::Controller::Controller() {
 		signal(SIGCHLD,handle_signal);
 	}
 
 	SubProcess::Controller::~Controller() {
 		signal(SIGCHLD,SIG_DFL);
-	}
-
-	void SubProcess::Controller::push_back(SubProcess::Controller::Entry &entry) {
-		std::lock_guard<std::mutex> lock(guard);
-		entries.push_back(entry);
-	}
-
-	SubProcess::Controller & SubProcess::Controller::getInstance() {
-		static Controller instance;
-		return instance;
 	}
 
 	void SubProcess::Controller::handle_signal(int UDJAT_UNUSED(sig)) noexcept {
@@ -75,7 +65,6 @@
 
 	void SubProcess::Controller::child_ended(pid_t pid, int status) noexcept {
 
-		std::lock_guard<std::mutex> lock(guard);
 		entries.remove_if([status,pid](const Entry &entry){
 
 			if(entry.proc->pid != pid) {

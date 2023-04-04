@@ -67,6 +67,16 @@
 
 	protected:
 
+		/// @brief Default outputs (if onStdOut and onStdErr are not overrided).
+		struct LogLevels {
+			Logger::Level out = Logger::Trace;
+			Logger::Level err = Logger::Error;
+
+			constexpr LogLevels(Logger::Level o, Logger::Level e) : out{o}, err{e} {
+			}
+
+		} loglevels;
+
 		/// @brief Called on subprocess output.
 		virtual void onStdOut(const char *line);
 
@@ -150,16 +160,18 @@
 		SubProcess(const SubProcess &) = delete;
 		SubProcess(const SubProcess *) = delete;
 
-		SubProcess(const char *name, const char *command);
+		SubProcess(const char *name, const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error);
 
-		SubProcess(const NamedObject *obj, const char *command) : SubProcess(obj->name(),command) {
+		SubProcess(const NamedObject *obj, const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error)
+			: SubProcess(obj->name(),command,out,err) {
 		}
 
-		SubProcess(const NamedObject &obj, const char *command) : SubProcess(obj.name(),command) {
+		SubProcess(const NamedObject &obj, const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error)
+			: SubProcess(obj.name(),command,out,err) {
 		}
 
 		/// @brief Create a sub-process with the default name.
-		SubProcess(const char *command);
+		SubProcess(const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error);
 
 		virtual ~SubProcess();
 
@@ -179,9 +191,11 @@
 
 		/// @brief Start sub process in foreground using the default object.
 		/// @return Sub process return code.
-		static int run(const char *command);
+		static int run(const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error);
 
-		static int run(const NamedObject *obj, const char *command);
+		static int run(const char *name, const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error);
+
+		static int run(const NamedObject *obj, const char *command, Logger::Level out = Logger::Trace, Logger::Level err = Logger::Error);
 	};
 
  }

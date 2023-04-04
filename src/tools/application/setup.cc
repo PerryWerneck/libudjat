@@ -52,14 +52,14 @@
  namespace Udjat {
 
 	int Application::install(const char *) {
-		return 1;
+		return ENOTSUP;
 	}
 
 	int Application::uninstall() {
-		return 1;
+		return ENOTSUP;
 	}
 
-	void Application::setup(const char *pathname, bool startup) {
+	time_t Application::initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup) {
 
 		if(startup && !Module::preload()) {
 			throw runtime_error("Module preload has failed");
@@ -68,18 +68,43 @@
 		Updater updater{pathname,startup};
 
 		if(updater.refresh()) {
-			updater.load(RootFactory());
+			if(!updater.load(root)) {
+				root->error() << "Update failed, agent " << hex << root.get() << dec << " will not be promoted to root" << endl;
+				auto old = Abstract::Agent::root();
+				if(old) {
+					old->warning() << "Keeping agent " << hex << old.get() << dec << " as root" << endl;
+				}
+			}
 		}
 
-		time_t timer = updater.wait();
+		return updater.wait();
+	}
+
+	void Application::setup(const char *pathname, bool startup) {
+
+		auto root = RootFactory();
+		time_t timer = initialize(root,pathname,startup);
+
+		if(Abstract::Agent::root().get() == root.get()) {
+			Logger::String{"Root agent has changed"}.trace(name());
+			this->root(root);
+		}
+
 		if(!timer) {
 			Logger::String{"Auto update is disabled"}.trace(name());
 			return;
 		}
 
-		// Logger::String{"Auto update set to ",TimeStamp{time(0)+timer}.to_string()}.info(name());
+		Logger::String{"Auto update set to ",TimeStamp{time(0)+timer}.to_string()}.info(name());
 
-		error() << "Auto update was not implemented" << endl;
+		this->timer = Timer::Factory(timer*1000,[this,pathname](){
+			this->timer = nullptr;
+			Logger::String{"Requesting auto update"}.info(name());
+			ThreadPool::getInstance().push([this,pathname](){
+				setup(pathname,false);
+			});
+			return false;
+		});
 
 	}
 

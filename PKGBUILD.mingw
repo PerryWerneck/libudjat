@@ -1,0 +1,49 @@
+# Maintainer: Perry Werneck <perry.werneck@gmail.com>
+# References: https://www.msys2.org/wiki/Creating-Packages/
+
+_realname=libudjat
+pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
+source=()
+
+#pkgver() {
+#  cd ${srcdir}/${_realname}
+#  git describe --long --tags --abbrev=7 | sed 's/\([^-]*-g\)/r\1/;s/-/./g'
+#}
+
+pkgver=1.1
+pkgrel=1
+pkgdesc="Udjat core library"
+url="https://github.com/PerryWerneck/libudjat"
+arch=(i686 x86_64)
+license=(GPL)
+depends=(${MINGW_PACKAGE_PREFIX}-vmdetect)
+makedepends=(autoconf automake make libtool gzip ${MINGW_PACKAGE_PREFIX}-vmdetect)
+checkdepends=()
+
+provides=($pkgname) 
+conflicts=($pkgname)
+
+prepare() {
+  rm -fr "$srcdir/$pkgname"
+  ln -snf "$startdir" "$srcdir/$pkgname"
+}
+
+build() {
+  cd $pkgname
+  ./autogen.sh \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST}
+ 
+  make all
+}
+
+package() {
+  cd $pkgname
+  make DESTDIR="${pkgdir}" install
+  install \
+    -Dm644 \
+    "LICENSE" \
+    "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+}

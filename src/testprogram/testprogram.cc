@@ -19,6 +19,7 @@
 
  #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
+ // #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -65,6 +66,7 @@
 
  static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
+ /*
  class DummyProtocol : public Udjat::Protocol {
  public:
 	DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
@@ -76,6 +78,7 @@
 	}
 
  };
+ */
 
  class RandomFactory : public Udjat::Factory {
  public:
@@ -116,19 +119,28 @@
 int main(int argc, char **argv) {
 
 	class Service : public SystemService, private RandomFactory {
-	private:
-
-		struct {
-		} factories;
-
 	public:
+
+		void root(std::shared_ptr<Abstract::Agent> agent) override {
+			debug("--------------------------------> ",agent->name()," is the new root");
+			SystemService::root(agent);
+		}
 
 	};
 
 	Logger::verbosity(9);
 
-	DummyProtocol protocol;
-	auto rc = SystemService().run(argc,argv,"./test.xml");
+	/*
+	MainLoop::getInstance().TimerFactory(1000,[]{
+		debug("---------------------------------------------------------------------");
+		SubProcess{"test","ls -l",Logger::Warning}.run();
+		debug("---------------------------------------------------------------------");
+		return false;
+	});
+	*/
+
+	//DummyProtocol protocol;
+	auto rc = Service{}.run(argc,argv,"./test.xml");
 
 	debug("Service exits with rc=",rc);
 
@@ -140,9 +152,9 @@ int main(int argc, char **argv) {
 
 	class Application : public Udjat::Application {
 	public:
-		int install() override {
+		int install(const char *name) override {
 			ShortCut{}.desktop();
-			return super::install();
+			return super::install(name);
 		}
 
 		int uninstall() override {
@@ -150,12 +162,15 @@ int main(int argc, char **argv) {
 			return super::uninstall();
 		}
 
+		void root(std::shared_ptr<Abstract::Agent> agent) override {
+			debug("--------------------------------> ",agent->name()," is the new root");
+		}
+
 	};
 
-	Logger::redirect();
 	Logger::verbosity(9);
 
-	DummyProtocol protocol;
+	// DummyProtocol protocol;
 	auto rc = Application{}.run(argc,argv,"./test.xml");
 
 	debug("Application exits with rc=",rc);
@@ -165,29 +180,13 @@ int main(int argc, char **argv) {
 }
 #endif // defined
 
-/*
+#if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
 
+	printf("------------------------\n");
+	cout << "logdir=" << Application::LogDir::getInstance() << endl;
+	printf("------------------------\n");
 
-
-	//cout << Udjat::String{"v1=",1," v2=","2"," v3=",true} << endl;
-	//cout << Udjat::Message{"Template v2={2} v1={1} v3={}",1,2,true} << endl;
-
-	// cout <<  Udjat::String{"Searching for second word"}.strcasestr("SECOND") << endl;
-
-	return service_test(argc,argv);
-	// return application_test(argc,argv);
-
-
-	// cout << Application::LogDir() << endl;
-
-	// auto worker = Protocol::WorkerFactory("file://test.xml");
-	// worker->save("/tmp/test");
-
-	//File::copy("test.xml","/tmp/test-copy.xml",false);
-
-	//cout << File::Path{"${documents}test"} << endl;
-
-	//Application().shortcut("br.eti.werneck.udjat");
+	return 0;
 }
-*/
+#endif // OBJECT_TEST

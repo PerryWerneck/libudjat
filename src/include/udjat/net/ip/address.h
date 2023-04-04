@@ -21,6 +21,8 @@
  #include <udjat/defs.h>
  #include <string>
  #include <pugixml.hpp>
+ #include <functional>
+ #include <udjat/net/ip/address.h>
 
  #ifdef _WIN32
 	#include <ws2ipdef.h>
@@ -53,7 +55,13 @@
 			Address(const T *addr) : sockaddr_storage{IP::Factory(addr)} {
 			}
 
-			static bool equal(const sockaddr_storage &a, const sockaddr_storage &b);
+			/// @brief Compare 2 IP Addresses
+			/// @param a First IP address to compare.
+			/// @param b Second IP address to compare.
+			/// @param port If true compare the port numbers.
+			/// @retval true Same addresses (and port numbers).
+			/// @retval false Not the same addresses (or port numbers).
+			static bool equal(const sockaddr_storage &a, const sockaddr_storage &b, bool port = false);
 
 			inline bool operator==(const sockaddr_storage &storage) const noexcept {
 				return equal((sockaddr_storage) *this, storage);
@@ -105,6 +113,15 @@
 
 		};
 
+		struct Addresses {
+			const char *interface_name;		///< @brief Interface name.
+			IP::Address address;			///< @brief Interface address.
+			IP::Address netmask;			///< @brief Interface netmask.
+		};
+
+		/// @brief Enumerate local IP addresses and interfaces.
+		UDJAT_API bool for_each(const std::function<bool(const Addresses &addr)> &func);
+
 	}
 
  }
@@ -126,6 +143,12 @@
 	UDJAT_API string to_string(const sockaddr_in6 &addr, bool dns = false);
 
 	inline ostream & operator<< (ostream& os, const sockaddr_in6 &addr) {
+		return os << to_string(addr);
+	}
+
+	UDJAT_API string to_string(const sockaddr &addr, bool dns = false);
+
+	inline ostream & operator<< (ostream& os, const sockaddr &addr) {
 		return os << to_string(addr);
 	}
 

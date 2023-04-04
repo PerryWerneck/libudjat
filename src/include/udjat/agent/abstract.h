@@ -249,7 +249,9 @@
 				return children.objects;
 			}
 
-			/// @brief Setup agent from XML node.
+			/// @brief Load agent children, states, alerts, etc. from node.
+			/// @param node The xml node with agent children to build.
+			/// @param upsearch If true search xml parents based for type attribute or node name with '-defaults' and, if found, use them to setup this agent children.
 			void setup(const pugi::xml_node &node, bool upsearch = true) override;
 
 			/// @brief Deinitialize agent subsystem.
@@ -288,7 +290,7 @@
 			virtual bool refresh(bool ondemand);
 
 			/// @brief Update agent.
-			/// @return true if the data was updated.
+			/// @return true if the data was changed and the state should be recomputed.
 			virtual bool refresh();
 
 			/// @brief Stop agent.

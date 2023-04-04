@@ -43,7 +43,7 @@
 			}
 		}
 
-		return Factory::for_each(type,[this,&node](const Factory &factory) {
+		return Udjat::Factory::for_each(type,[this,&node](const Udjat::Factory &factory) {
 
 			try {
 

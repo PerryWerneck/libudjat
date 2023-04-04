@@ -78,6 +78,20 @@
 				return worker->url();
 			}
 
+			inline int mimetype(const MimeType type) {
+				return worker->mimetype(type);
+			}
+			/// @brief Set file properties using the http response header.
+			/// @param filename The filename to update.
+			/// @return 0 if ok, errno if not.
+			int set_file_properties(const char *filename) {
+				return worker->set_file_properties(filename);
+			}
+
+			/// @brief Setup cache headers from filename.
+			/// @param filename The filename for cache information.
+			void cache(const char *filename);
+
 			/// @brief Get Header.
 			/// @param name Header name.
 			/// @return Header info.

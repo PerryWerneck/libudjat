@@ -171,52 +171,6 @@ namespace Udjat {
 
 	}
 
-	/*
-
-	// TODO: Move it to Controller, method 'head'.
-
-	void Abstract::Agent::head(ResponseInfo &response) {
-
-		chk4refresh(true);
-
-		time_t now = time(nullptr);
-
-		// Gets the minor time for the next update.
-		time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
-
-		// Gets the major time from the last update.
-		time_t updated = 0;
-
-		for_each([&next,&updated](Agent &agent){
-
-			if(agent.update.next) {
-				next = std::min(next,agent.update.next);
-			}
-
-			if(agent.update.last) {
-
-				if(updated) {
-					updated = std::max(updated,agent.update.last);
-				} else {
-					updated = agent.update.last;
-				}
-			}
-
-		});
-
-		if(next > now) {
-			response.setExpirationTimestamp(next);
-		} else {
-			response.setExpirationTimestamp(0);
-		}
-
-		if(updated >= now) {
-			response.setModificationTimestamp(updated);
-		}
-
-	}
-	*/
-
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
 	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const pugi::xml_node &node) {

@@ -27,20 +27,12 @@
   */
 
  #include <config.h>
- #include "private.h"
+ #include <udjat/defs.h>
+ #include <private/win32/subprocess.h>
+
  #include <memory>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
-
- /*
- #include <udjat/defs.h>
- #include <udjat/tools/subprocess.h>
- #include <udjat/tools/logger.h>
- #include <udjat/win32/exception.h>
- #include <udjat/win32/event.h>
- #include <system_error>
- #include <iostream>
- */
 
  using namespace std;
 

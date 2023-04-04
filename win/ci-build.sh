@@ -19,12 +19,17 @@ die ( ) {
 cd $(dirname $(dirname $(readlink -f ${0})))
 
 #
+# Install pre-reqs
+#
+echo "Installing pre-reqs..."
+pacman -U --noconfirm *.pkg.tar.zst || die "pacman failure"
+
+#
 # Build
 #
-./autogen.sh > $LOGFILE 2>&1 || die "Autogen failure"
-./configure > $LOGFILE 2>&1 || die "Configure failure"
-make clean > $LOGFILE 2>&1 || die "Make clean failure"
-make all  > $LOGFILE 2>&1 || die "Make failure"
+echo "Building package..."
+dos2unix PKGBUILD.mingw  || die "dos2unix failure"
+makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw || die "makepkg failure"
 
 echo "Build complete"
 

@@ -323,3 +323,13 @@
 
  }
 
+ namespace std {
+
+	template<typename T>
+	inline Udjat::String & operator<< (Udjat::String &str, const T msg) {
+		str.append(msg);
+		return str;
+	}
+
+ }
+

@@ -77,7 +77,7 @@
 	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{PathFactory(STRINGIZE_VALUE_OF(DATADIR) "/",subdir,required)} {
 	}
 
-	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory("/var/log/",subdir,true)} {
+	Application::LogDir::LogDir(const char *subdir) noexcept : File::Path{PathFactory("/var/log/",subdir,true)} {
 	}
 
 	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir,true)} {

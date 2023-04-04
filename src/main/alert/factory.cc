@@ -45,6 +45,18 @@
 
 				type = Udjat::Attribute{node,"type","alert-type"}.c_str();
 
+				if(type.empty()) {
+
+					if(node.attribute("cmdline")) {
+						type = "script";
+					} else if (node.attribute("url")) {
+						type = "url";
+					} else if (node.attribute("filename")) {
+						type = "file";
+					}
+
+				}
+
 			} else {
 
 				type = Udjat::Attribute{node,"alert-type",true}.c_str();

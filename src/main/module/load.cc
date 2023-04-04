@@ -47,14 +47,9 @@ namespace Udjat {
 
 			if(!filename.empty()) {
 
-				for(auto module : objects) {
-
-					// Check if the module is already loaded.
-					if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
-						debug("module '",filename,"' is already loaded");
-						return true;
-					}
-
+				if(find_by_filename(filename.c_str())) {
+					debug("module '",filename,"' is already loaded");
+					return true;
 				}
 
 				init(filename, node);

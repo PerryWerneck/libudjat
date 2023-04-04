@@ -125,6 +125,12 @@
 			/// @return true if the property is valid.
 			virtual bool getProperty(const char *key, std::string &value) const noexcept = 0;
 
+			/// @brief Get property value.
+			/// @param key The property name.
+			/// @param value Object to receive the value.
+			/// @return true if the property is valid.
+			virtual bool getProperty(const char *key, Udjat::Value &value) const noexcept;
+
 			/// @brief Get property.
 			/// @param key The property name.
 			/// @return The property value (empty if invalid key).

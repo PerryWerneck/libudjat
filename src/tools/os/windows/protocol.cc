@@ -32,11 +32,11 @@
 
  namespace Udjat {
 
-	void Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
+	bool Protocol::Worker::getnic(const sockaddr_storage &addr, std::string &nic) {
 
 		string IpAddress{to_string(addr)};
 
-		Win32::for_each([&IpAddress,&nic](const IP_ADAPTER_INFO &adapter) {
+		return Win32::for_each([&IpAddress,&nic](const IP_ADAPTER_INFO &adapter) {
 
 			debug(adapter.AdapterName," ",adapter.IpAddressList.IpAddress.String);
 

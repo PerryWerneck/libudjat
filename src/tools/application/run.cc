@@ -42,6 +42,7 @@
  namespace Udjat {
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
+
 	}
 
 	int Application::argument(char opt, const char *optstring) {
@@ -113,13 +114,14 @@
 				{ "verbosity",	optional_argument,	0,	'V'	},
 				{ "daemon",		no_argument,		0,	'D'	},
 				{ "quiet",		no_argument,		0,	'q'	},
-				{ "install",	no_argument,		0,	'I'	},
-				{ "uninstall",	no_argument,		0,	'U'	},
 				{ "help",		no_argument,		0,	'h'	},
 				{ "foreground",	no_argument,		0,	'f'	},
 				{ "timer",		required_argument,	0,	'T'	},
-				{ "start",	no_argument,			0,	'S'	},
-				{ "stop",	no_argument,			0,	'Q'	},
+				{ "install",	no_argument,		0,	'I'	},
+				{ "uninstall",	no_argument,		0,	'U'	},
+				{ "start",		no_argument,		0,	'S'	},
+				{ "stop",		no_argument,		0,	'Q'	},
+				{ "reinstall",	no_argument,		0,	'R'	},
 			};
 			#pragma GCC diagnostic pop
 
@@ -127,7 +129,7 @@
 
 				int long_index =0;
 				int opt;
-				while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQ", options, &long_index )) != -1) {
+				while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQR", options, &long_index )) != -1) {
 
 					switch(opt) {
 					case 'h':
@@ -208,6 +210,8 @@
 			if(deinit(definitions)) {
 				rc = -1;
 			}
+
+			finalize();
 
 		} catch(const std::exception &e) {
 

@@ -37,6 +37,9 @@
 	}
 
 	Application::~Application() {
+		if(timer) {
+			delete timer;
+		}
 		Udjat::Module::unload();
 	}
 
@@ -109,7 +112,6 @@
 		static LogDir instance;
 		return instance;
 	}
-
 
  }
 

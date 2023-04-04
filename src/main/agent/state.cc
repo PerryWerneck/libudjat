@@ -27,7 +27,7 @@ namespace Udjat {
 			this->update.next = time(nullptr) + update.failed;
 		}
 
-		set(Udjat::StateFactory(e,summary));
+		set(Abstract::State::Factory(e,summary));
 
 	}
 
@@ -148,7 +148,7 @@ namespace Udjat {
 			} catch(const std::exception &e) {
 
 				error() << "Error '" << e.what() << "' activating state" << endl;
-				current_state.set(Udjat::StateFactory(e,_("Error activating state")));
+				current_state.set(Abstract::State::Factory(e,_("Error activating state")));
 
 			} catch(...) {
 

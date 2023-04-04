@@ -27,6 +27,7 @@
  #include <iptypes.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/container.h>
+// #include <udjat/win32/network.h>
  #include <iphlpapi.h>
  #include <udjat/net/ip/address.h>
 
@@ -40,6 +41,20 @@
 			return GetAdaptersInfo(buffer,ifbuffersize);
 		}
 	};
+
+	bool Network::Interface::for_each(const std::function<bool(const char *name)> &func) {
+
+		Interfaces interfaces;
+
+		for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {
+			if(func(iface->AdapterName)) {
+				return true;
+			}
+		}
+
+		return false;
+
+	}
 
 	bool Network::Interface::for_each(const std::function<bool(const Network::Interface &intf)> &func) {
 
@@ -85,7 +100,7 @@
 
 	}
 
-	std::shared_ptr<Network::Interface> Network::Interface::get(const char *name) {
+	std::shared_ptr<Network::Interface> Network::Interface::Factory(const char *name) {
 
 		class NamedInterface : public Network::Interface {
 		private:

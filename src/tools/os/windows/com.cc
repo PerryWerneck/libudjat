@@ -17,26 +17,18 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/application.h>
- #include <string>
- #include <udjat/win32/registry.h>
- #include <private/win32.h>
- #include <shlobj.h>
-
- #ifdef HAVE_LIBINTL
-	#include <libintl.h>
- #endif // HAVE_LIBINTL
-
- using namespace std;
+ #include <udjat/win32/com.h>
 
  namespace Udjat {
 
-	// UDJAT_PRIVATE std::string PathFactory(REFKNOWNFOLDERID id, const char *subdir);
+	 void UDJAT_API Win32::Com::initialize() {
+		static thread_local bool initialized = false;
+		if(!initialized) {
+			CoInitializeEx(NULL, COINIT_APARTMENTTHREADED);
+			initialized = true;
+		}
+	 }
 
  }
-
-
-

@@ -61,6 +61,11 @@
 			return objects.size();
 		}
 
+		inline bool empty() noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			return objects.empty();
+		}
+
 		inline void push_back(P object) noexcept {
 			std::lock_guard<std::mutex> lock(guard);
 			objects.push_back(object);
