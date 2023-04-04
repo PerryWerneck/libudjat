@@ -1,7 +1,7 @@
 # Maintainer: Perry Werneck <perry.werneck@gmail.com>
 # References: https://www.msys2.org/wiki/Creating-Packages/
 
-_realname=vmdetect
+_realname=libudjat
 pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
 source=(git+https://github.com/PerryWerneck/vmdetect#branch=develop)
 
