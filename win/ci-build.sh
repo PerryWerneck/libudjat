@@ -21,11 +21,13 @@ cd $(dirname $(dirname $(readlink -f ${0})))
 #
 # Install pre-reqs
 #
+echo "Installing pre-reqs..."
 pacman -U --noconfirm *.pkg.tar.zst || die "pacman failure"
 
 #
 # Build
 #
+echo "Building package..."
 dos2unix PKGBUILD.mingw  || die "dos2unix failure"
 makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw || die "makepkg failure"
 
