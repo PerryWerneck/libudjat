@@ -17,7 +17,7 @@ url="https://github.com/PerryWerneck/libudjat"
 arch=(i686 x86_64)
 license=(GPL)
 depends=(openssl)
-makedepends=(autoconf automake make libtool gzip vmdetect)
+makedepends=(autoconf automake make libtool gzip ${MINGW_PACKAGE_PREFIX}-vmdetect)
 checkdepends=()
 
 sha256sums=('SKIP')
