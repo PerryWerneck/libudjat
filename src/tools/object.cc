@@ -179,7 +179,11 @@
 		return name();
 	}
 
-	bool Abstract::Object::getProperty(const char *key, Udjat::Value &value) const noexcept {
+	bool Abstract::Object::getProperty(const char *key, std::string &value) const {
+		return false;
+	}
+
+	bool Abstract::Object::getProperty(const char *key, Udjat::Value &value) const {
 		std::string str;
 		if(getProperty(key,str)) {
 			value = str;
@@ -199,7 +203,7 @@
 		return value;
 	}
 
-	bool Object::getProperty(const char *key, std::string &value) const noexcept {
+	bool Object::getProperty(const char *key, std::string &value) const {
 
 		if(NamedObject::getProperty(key,value)) {
 			return true;
@@ -220,7 +224,7 @@
 
 	}
 
-	bool NamedObject::getProperty(const char *key, std::string &value) const noexcept {
+	bool NamedObject::getProperty(const char *key, std::string &value) const {
 		if(!strcasecmp(key,"name")) {
 			value = objectName;
 			return true;
@@ -417,7 +421,7 @@
 		return def;
 	}
 
-	std::string Abstract::Object::operator[](const char *key) const noexcept {
+	std::string Abstract::Object::operator[](const char *key) const {
 		string value;
 		getProperty(key,value);
 		return value;

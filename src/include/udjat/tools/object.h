@@ -57,7 +57,7 @@
 			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
 
 			static bool scan(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call);
-			
+
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
@@ -125,18 +125,18 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			virtual bool getProperty(const char *key, std::string &value) const noexcept = 0;
+			virtual bool getProperty(const char *key, std::string &value) const;
 
 			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value Object to receive the value.
 			/// @return true if the property is valid.
-			virtual bool getProperty(const char *key, Udjat::Value &value) const noexcept;
+			virtual bool getProperty(const char *key, Udjat::Value &value) const;
 
 			/// @brief Get property.
 			/// @param key The property name.
 			/// @return The property value (empty if invalid key).
-			std::string operator[](const char *key) const noexcept;
+			std::string operator[](const char *key) const;
 
 			/// @brief Expand ${} tags using object properties.
 			/// @param text Text to expand.
@@ -187,7 +187,7 @@
 
 	public:
 
-		bool getProperty(const char *key, std::string &value) const noexcept override;
+		bool getProperty(const char *key, std::string &value) const override;
 
 		/// @brief Push a background task.
 		/// @param callback Task method.
@@ -266,7 +266,7 @@
 
 	public:
 
-		bool getProperty(const char *key, std::string &value) const noexcept override;
+		bool getProperty(const char *key, std::string &value) const override;
 
 		virtual const char * label() const noexcept;
 
