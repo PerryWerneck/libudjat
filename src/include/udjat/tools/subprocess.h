@@ -77,6 +77,10 @@
 
 		} loglevels;
 
+		virtual void pre();
+
+		virtual void post(int status);
+
 		/// @brief Called on subprocess output.
 		virtual void onStdOut(const char *line);
 

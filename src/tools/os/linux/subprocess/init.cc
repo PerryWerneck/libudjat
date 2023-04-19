@@ -85,6 +85,22 @@
 				err[1] = STDERR_FILENO;
 			}
 
+			try {
+
+				proc.pre();
+
+			} catch(const std::exception &e) {
+
+				cerr << "Pre script has failed on pid " << proc.pid << ": " << e.what() << endl;
+				_exit(127);
+
+			} catch(...) {
+
+				cerr << "Unexpected error on pre script for pid " << proc.pid << endl;
+				_exit(127);
+
+			}
+
 			execl("/bin/bash", "/bin/bash", "-c", proc.command.c_str(), NULL);
 			_exit(127);
 
