@@ -94,12 +94,16 @@
 		return string(from,to-from);
 	}
 
-	String & String::expand(const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
-		return expand([&object,dynamic,cleanup](const char *key, std::string &str){
+	String & String::expand(char marker, const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
+		return expand(marker,[&object,dynamic,cleanup](const char *key, std::string &str){
 			if(object.getProperty(key,str))
 				return true;
 			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
 		},dynamic,cleanup);
+	}
+
+	String & String::expand(const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
+		return expand('$',object,dynamic,cleanup);
 	}
 
 	String & String::expand(bool dynamic, bool cleanup) {
