@@ -46,7 +46,8 @@
 				Activation(const Udjat::Alert::URL *alert);
 				void emit() override;
 
-				Value & getProperties(Value &value) const noexcept override;
+				Value & getProperties(Value &value) const override;
+
 				Udjat::Alert::Activation & set(const Abstract::Object &object) override;
 				Udjat::Alert::Activation & set(const std::function<bool(const char *key, std::string &value)> &expander) override;
 
@@ -62,7 +63,7 @@
 			URL(const pugi::xml_node &node, const char *defaults = "alert-defaults");
 
 			/// @brief Get alert info.
-			Value & getProperties(Value &value) const noexcept override;
+			Value & getProperties(Value &value) const override;
 
 		};
 

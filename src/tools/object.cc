@@ -80,7 +80,7 @@
 		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
 	}
 
-	Value & NamedObject::getProperties(Value &value) const noexcept {
+	Value & NamedObject::getProperties(Value &value) const {
 		value["name"] = objectName;
 		return value;
 	}
@@ -149,7 +149,7 @@
 
 	}
 
-	Value & Abstract::Object::getProperties(Value &value) const noexcept {
+	Value & Abstract::Object::getProperties(Value &value) const {
 		return value;
 	}
 
@@ -191,7 +191,7 @@
 		return false;
 	}
 
-	Value & Object::getProperties(Value &value) const noexcept {
+	Value & Object::getProperties(Value &value) const {
 
 		NamedObject::getProperties(value);
 

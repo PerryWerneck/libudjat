@@ -33,7 +33,7 @@
 		return getProperties(value);
 	}
 
-	Value & ModuleInfo::getProperties(Value &properties) const noexcept {
+	Value & ModuleInfo::getProperties(Value &properties) const {
 
 		struct {
 			const char *name;

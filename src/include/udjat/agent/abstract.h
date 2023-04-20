@@ -178,7 +178,7 @@
 
 			/// @brief Get agent properties.
 			/// @param value Value to receive the properties.
-			Value & getProperties(Value &value) const noexcept override;
+			Value & getProperties(Value &value) const override;
 
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).

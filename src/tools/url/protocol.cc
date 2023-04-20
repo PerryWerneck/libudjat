@@ -138,7 +138,7 @@
 		return std::shared_ptr<Protocol::Worker>();
 	}
 
-	Value & Protocol::getProperties(Value &properties) const noexcept {
+	Value & Protocol::getProperties(Value &properties) const {
 		properties["name"] = name;
 		return module.getProperties(properties);
 	}

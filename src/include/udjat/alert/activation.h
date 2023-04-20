@@ -117,7 +117,7 @@
 			}
 
 			/// @brief Get activation info.
-			virtual Value & getProperties(Value &value) const noexcept;
+			virtual Value & getProperties(Value &value) const;
 
 			std::ostream & info() const;
 			std::ostream & warning() const;

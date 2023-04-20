@@ -43,13 +43,13 @@
 		return make_shared<Activation>(this);
 	}
 
-	Value & Alert::Script::getProperties(Value &value) const noexcept {
+	Value & Alert::Script::getProperties(Value &value) const {
 		Abstract::Alert::getProperties(value);
 		value["cmdline"] = cmdline;
 		return value;
 	}
 
-	Value & Alert::Script::Activation::getProperties(Value &value) const noexcept {
+	Value & Alert::Script::Activation::getProperties(Value &value) const {
 		Udjat::Alert::Activation::getProperties(value);
 		value["cmdline"] = cmdline.c_str();
 		return value;

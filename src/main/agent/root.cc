@@ -207,7 +207,7 @@
 				Logger::String{ss.str()}.trace("agents");
 			}
 
-			Value & getProperties(Value &value) const noexcept override {
+			Value & getProperties(Value &value) const override {
 
 				Abstract::Agent::getProperties(value);
 

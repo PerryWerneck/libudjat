@@ -59,7 +59,7 @@ namespace Udjat {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
-	Value & Module::getProperties(Value &properties) const noexcept {
+	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = name;
 		properties["filename"] = filename();
 		return _info.getProperties(properties);

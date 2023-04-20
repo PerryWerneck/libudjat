@@ -101,7 +101,7 @@
 		/// @return true if the property is valid.
 		bool getProperty(const char *key, std::string &value) const;
 
-		Value & getProperties(Value &properties) const noexcept;
+		Value & getProperties(Value &properties) const;
 
 	};
 

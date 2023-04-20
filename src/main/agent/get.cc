@@ -103,7 +103,7 @@
 
 	}
 
-	Value & Abstract::Agent::getProperties(Value &value) const noexcept {
+	Value & Abstract::Agent::getProperties(Value &value) const {
 
 		Object::getProperties(value);
 

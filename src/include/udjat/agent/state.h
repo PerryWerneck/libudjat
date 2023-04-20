@@ -174,7 +174,7 @@ namespace Udjat {
 			/// @brief Get the state properties.
 			/// @brief Value to receive the properties.
 			/// @return Pointer to value.
-			Value & getProperties(Value &value) const noexcept override;
+			Value & getProperties(Value &value) const override;
 
 			/// @brief Get state properties by path.
 			/// @param path	Agent path.

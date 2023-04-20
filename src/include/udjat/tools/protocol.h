@@ -354,7 +354,7 @@
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
-		virtual Value & getProperties(Value &properties) const noexcept;
+		virtual Value & getProperties(Value &properties) const;
 
 		/// @brief Find protocol based on URL.
 		/// @param url The url to search for.

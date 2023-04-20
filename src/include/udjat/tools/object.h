@@ -152,7 +152,7 @@
 			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
 
 			/// @brief Add object properties to the value.
-			virtual Value & getProperties(Value &value) const noexcept;
+			virtual Value & getProperties(Value &value) const;
 
 			std::ostream & info() const;
 			std::ostream & warning() const;
@@ -209,7 +209,7 @@
 
 		std::string to_string() const noexcept override;
 
-		Value & getProperties(Value &value) const noexcept override;
+		Value & getProperties(Value &value) const;
 
 		std::ostream & trace() const;
 		std::ostream & info() const;
@@ -284,7 +284,7 @@
 		/// @brief Export all object properties.
 		/// @param Value to receive the properties.
 		/// @return Pointer to value (for reference).
-		Value & getProperties(Value &value) const noexcept override;
+		Value & getProperties(Value &value) const;
 	};
 
  }

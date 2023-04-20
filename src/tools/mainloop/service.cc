@@ -86,7 +86,7 @@
 		return cerr;
 	}
 
-	Value & Service::getProperties(Value &properties) const noexcept {
+	Value & Service::getProperties(Value &properties) const {
 		properties["name"] = service_name;
 		properties["active"] = state.active;
 		return module.getProperties(properties);

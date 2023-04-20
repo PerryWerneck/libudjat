@@ -86,7 +86,7 @@
 		Udjat::Alert::Controller::getInstance().remove(this);
 	}
 
-	Value & Abstract::Alert::getProperties(Value &value) const noexcept {
+	Value & Abstract::Alert::getProperties(Value &value) const {
 
 		NamedObject::getProperties(value);
 
