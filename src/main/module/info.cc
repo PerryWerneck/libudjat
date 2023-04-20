@@ -62,7 +62,7 @@
 		return properties;
 	}
 
-	bool ModuleInfo::getProperty(const char *key, std::string &value) const noexcept {
+	bool ModuleInfo::getProperty(const char *key, std::string &value) const {
 
 		struct {
 			const char *name;

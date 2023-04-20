@@ -82,7 +82,7 @@ namespace Udjat {
 	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {
 	}
 
-	bool Module::getProperty(const char *key, std::string &value) const noexcept {
+	bool Module::getProperty(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"filename")) {
 			value = filename();

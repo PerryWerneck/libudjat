@@ -99,7 +99,7 @@
 		/// @param key The property name.
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
-		bool getProperty(const char *key, std::string &value) const noexcept;
+		bool getProperty(const char *key, std::string &value) const;
 
 		Value & getProperties(Value &properties) const noexcept;
 

@@ -123,7 +123,7 @@
 		/// @param key The property name.
 		/// @param value String to update with the property value.
 		/// @return true if the property is valid.
-		virtual bool getProperty(const char *key, std::string &value) const noexcept;
+		virtual bool getProperty(const char *key, std::string &value) const;
 
 		virtual Value & getProperties(Value &properties) const noexcept;
 

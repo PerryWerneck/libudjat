@@ -385,7 +385,7 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.
-			bool getProperty(const char *key, std::string &value) const noexcept override;
+			bool getProperty(const char *key, std::string &value) const override;
 
 		};
 	}

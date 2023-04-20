@@ -200,7 +200,7 @@ namespace Udjat {
 		}
 	}
 
-	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {
+	bool Abstract::State::getProperty(const char *key, std::string &value) const {
 
 		if(Object::getProperty(key,value)) {
 			return true;
