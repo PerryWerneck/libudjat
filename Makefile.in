@@ -274,13 +274,18 @@ install: \
 install-debug: \
 	install-@OSNAME@-debug
 
-doc:
+doc: \
 	doc/html/index.html
+
+doc/html/index.html:
 	
-	@cd doc ; @DOXYGEN@ doxyfile; cd ..
+	@echo doc/html/index.html ...
+
+	@$(MKDIR) $(dir $@)
+	@DOXYGEN@ doc/doxyfile
 
 install-doc: \
-	doc
+	doc/html/index.html
 
 	@$(MKDIR) \
 		$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html
@@ -543,6 +548,8 @@ endif
 clean: \
 	cleanDebug \
 	cleanRelease
+
+	@rm -fr doc/html
 
 cleanDebug:
 
