@@ -260,8 +260,18 @@
 		/// @param cleanup if true remove the non existent values from string.
 		String & expand(const std::function<bool(const char *key, std::string &value)> &expander, bool dynamic = false, bool cleanup = false);
 
+		/// @brief Expand using customized marker.
+		/// @param expander value expander method.
+		/// @param marker The marker.
+		/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+		/// @param cleanup if true remove the non existent values from string.
+		String & expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic = false, bool cleanup = false);
+
 		/// @brief Expand ${} macros.
 		String & expand(bool dynamic = true, bool cleanup = true);
+
+		/// @brief Expand using customized marker.
+		String & expand(char marker, bool dynamic = true, bool cleanup = true);
 
 		/// @brief Expand ${} macros.
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);

@@ -103,7 +103,11 @@
 	}
 
 	String & String::expand(bool dynamic, bool cleanup) {
-		return expand([dynamic,cleanup](const char *key, std::string &str){
+		return expand('$',dynamic,cleanup);
+	}
+
+	String & String::expand(char marker, bool dynamic, bool cleanup) {
+		return expand(marker,[dynamic,cleanup](const char *key, std::string &str){
 			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
 		},dynamic,cleanup);
 	}
@@ -206,15 +210,20 @@
 
 	}
 
-
 	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+		return expand('$',expander,dynamic,cleanup);
+	}
 
-		auto from = find("${");
+	String & String::expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+
+		char starter[3] = { marker, '{', 0 };
+
+		auto from = find(starter);
 		while(from != string::npos) {
 
 			auto to = find("}",from+3);
 			if(to == string::npos) {
-				throw runtime_error("Invalid ${} usage");
+				throw runtime_error(Logger::String{"Invalid use of '",starter,"}'"});
 			}
 
 			string value;
@@ -232,7 +241,7 @@
 					value.c_str()
 				);
 
-				from = find("${",from);
+				from = find(starter,from);
 				continue;
 
 			}
@@ -248,7 +257,7 @@
 						TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
 					);
 
-					from = find("${",from);
+					from = find(starter,from);
 					continue;
 				}
 
@@ -264,7 +273,7 @@
 						(to-from)+1,
 						expandFromURL(key)
 					);
-					from = find("${",from);
+					from = find(starter,from);
 					continue;
 
 				}
@@ -313,7 +322,7 @@
 #endif // _WIN32
 
 			//
-			// If cleanup is set, replace with an empty string, otherwise keep the ${} keyword.
+			// If cleanup is set, replace with an empty string, otherwise keep the marker.
 			//
 			if(cleanup) {
 
@@ -348,7 +357,7 @@
 						(to-from)+1,
 						env
 					);
-					from = find("${",from);
+					from = find(starter,from);
 					continue;
 				} else {
 					replace(
@@ -359,11 +368,11 @@
 				}
 #endif // _WIN32
 
-				from = find("${",from);
+				from = find(starter,from);
 
 			} else {
 
-				from = find("${",to+1);
+				from = find(starter,to+1);
 
 			}
 
