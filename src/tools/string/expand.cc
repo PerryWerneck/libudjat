@@ -139,9 +139,15 @@
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
 
+		const char *marker = node.attribute("variable-marker").as_string("$");
+
+		if(!(marker && *marker)) {
+			throw system_error(EINVAL,system_category(),"empty 'variable-marker' attribute");
+		}
+
 		group = node.attribute("settings-from").as_string(group);
 
-		return expand([node,dynamic,cleanup,group](const char *key, std::string &value) {
+		return expand(marker[0],[node,dynamic,cleanup,group](const char *key, std::string &value) {
 
 			// Check node attributes
 			{
