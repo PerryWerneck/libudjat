@@ -35,11 +35,15 @@
 
 		struct stat st;
 		if(stat(filename, &st) == -1) {
+
 			if(errno != ENOENT) {
 				throw system_error(errno,system_category(),"Error getting file information");
 			}
-			memset(&st,0,sizeof(st));
-			st.st_mode = 0644;
+
+			if(stat(tempfile,&st) == -1) {
+				throw system_error(errno,system_category(),tempfile);
+			}
+
 		}
 
 		if(linkat(AT_FDCWD, tempfile, AT_FDCWD, filename, AT_SYMLINK_FOLLOW) != 0) {
