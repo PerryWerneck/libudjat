@@ -133,10 +133,18 @@
 			/// @return true if the property is valid.
 			virtual bool getProperty(const char *key, Udjat::Value &value) const;
 
+			/// @brief Get property value.
+			/// @param key The property name.
+			/// @param required if false returns empty if the property cant be found.
+			/// @return The property value or "" if required is false and the property cant be found.
+			std::string getProperty(const char *key, bool required = true) const;
+
 			/// @brief Get property.
 			/// @param key The property name.
-			/// @return The property value (empty if invalid key).
-			std::string operator[](const char *key) const;
+			/// @return The property value (empty if unable to get the propery).
+			inline std::string operator[](const char *key) const {
+				return getProperty(key,false);
+			}
 
 			/// @brief Expand ${} tags using object properties.
 			/// @param text Text to expand.

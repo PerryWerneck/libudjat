@@ -28,6 +28,7 @@
  #include <udjat/tools/expander.h>
  #include <udjat/factory.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -177,6 +178,17 @@
 
 	std::string Abstract::Object::to_string() const noexcept {
 		return name();
+	}
+
+	std::string Abstract::Object::getProperty(const char *key, bool required) const {
+		std::string value;
+		if(getProperty(key,value)) {
+			return value;
+		}
+		if(required) {
+			throw runtime_error(Logger::Message{_("Unable to get value of '{}'"),key});
+		}
+		return "";
 	}
 
 	bool Abstract::Object::getProperty(const char *key, std::string &value) const {
@@ -421,11 +433,13 @@
 		return def;
 	}
 
+	/*
 	std::string Abstract::Object::operator[](const char *key) const {
 		string value;
 		getProperty(key,value);
 		return value;
 	}
+	*/
 
 	string Abstract::Object::expand(const char *text, bool dynamic, bool cleanup) const {
 		return String(text).expand([this](const char *key, std::string &value) {
