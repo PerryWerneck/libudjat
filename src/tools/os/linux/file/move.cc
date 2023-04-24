@@ -53,7 +53,9 @@
 			if(replace) {
 
 				debug("Removing ",filename);
-				unlink(filename);
+				if(unlink(filename) < 0) {
+					Logger::String{"Unable to unlink '",filename,"': ",strerror(errno)," (rc=",errno,")"}.error(PACKAGE_NAME);
+				}
 
 			} else {
 
@@ -68,7 +70,10 @@
 
 				debug("backup=",bakfile);
 
-				unlink(bakfile);
+				if(unlink(bakfile) < 0) {
+					Logger::String{"Unable to unlink '",bakfile,"': ",strerror(errno)," (rc=",errno,")"}.error(PACKAGE_NAME);
+				}
+
 				if(rename(filename, bakfile) != 0) {
 					throw system_error(errno,system_category(),"Cant create backup");
 				}
