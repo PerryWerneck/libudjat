@@ -49,6 +49,7 @@
  #include <iomanip>
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/xml.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
@@ -129,6 +130,11 @@ int main(int argc, char **argv) {
 	};
 
 	Logger::verbosity(9);
+
+	{
+		XML::Document{"test.xml"};
+		return 0;
+	}
 
 	/*
 	MainLoop::getInstance().TimerFactory(1000,[]{

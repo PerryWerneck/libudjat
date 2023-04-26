@@ -37,6 +37,15 @@
 	namespace XML {
 		using Node = pugi::xml_node;
 		using Attribute = pugi::xml_attribute;
+
+		/// @brief XML document
+		class Document : public pugi::xml_document {
+		public:
+			Document(const char *filename);
+
+		};
+
+
 	}
 
 	/// @brief Test common filter options.
@@ -45,12 +54,6 @@
 
 	/// @brief Expand, if possible, values ${} from attribute.
 	UDJAT_API std::string expand(const XML::Node &node, const XML::Attribute &attribute, const char *def);
-
-	/// @brief Scan for xml documents.
-	/// @param path File name or path to scan for XML documents.
-	/// @param call method to call in every filename.
-	/// @return true if the parse was ok.
-	//UDJAT_API bool for_each(const char *path, const std::function<void(const char *filename, const pugi::xml_document &document)> &call);
 
 	/// @brief Wrapper for XML attribute
 	class UDJAT_API Attribute : public XML::Attribute {
