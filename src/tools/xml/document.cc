@@ -22,12 +22,14 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/string.h>
  #include <stdexcept>
 
  using namespace std;
 
  namespace Udjat {
 
+	/// @brief Load XML file, check if it's valid.
  	static void load(XML::Document *document, const char *filename) {
 
 		auto result = document->load_file(filename);
@@ -56,8 +58,12 @@
 
 		Udjat::load(this,filename);
 
+		// TODO: Check file's last write and and update-timer attribute to see if an url check is required.
+
 		const char *url = document_element().attribute("src").as_string();
 		if(url && *url) {
+
+			// TODO: Check for url handler, load it if needed.
 
 			// Update document.
 			HTTP::Client client{url};
@@ -82,10 +88,9 @@
 
 		}
 
-		// TODO: Parse imports.
-
 	}
 
+	// TODO: Parse <include> nodes.
 
  }
 
