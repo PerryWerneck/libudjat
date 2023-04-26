@@ -72,6 +72,11 @@
 		size_t argc = 0;
 
 		while(*line) {
+
+			if(argc > 63) {
+				throw runtime_error("Too many arguments");
+			}
+
 			argv[argc++] = line;
 			while(*line && !isspace(*line)) {
 				line++;
