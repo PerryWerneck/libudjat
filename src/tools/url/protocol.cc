@@ -88,7 +88,7 @@
 		return Logger::trace() << name << "\t";
 	}
 
-	const Protocol * Protocol::find(const URL &url, bool allow_default) {
+	const Protocol * Protocol::find(const URL &url, bool allow_default, bool autoload) {
 		string scheme = url.scheme();
 
 		const char *ptr = strrchr(scheme.c_str(),'+');
@@ -96,12 +96,12 @@
 			scheme.resize(ptr - scheme.c_str());
 		}
 
-		return find(scheme.c_str(),allow_default);
+		return find(scheme.c_str(),allow_default,autoload);
 
 	}
 
-	const Protocol * Protocol::find(const char *name, bool allow_default) {
-		return Controller::getInstance().find(name,allow_default);
+	const Protocol * Protocol::find(const char *name, bool allow_default, bool autoload) {
+		return Controller::getInstance().find(name,allow_default,autoload);
 	}
 
 	const Protocol * Protocol::verify(const void *protocol) {

@@ -68,10 +68,10 @@
 		Client::Client(const pugi::xml_node &node) : Client(node.attribute("src").as_string()) {
 		}
 
-		Client::Client(const URL &url) {
+		Client::Client(const URL &url, bool load) {
 
 			// Find a protocol handler for this URL.
-			const Protocol * protocol = Protocol::find(url);
+			const Protocol * protocol = Protocol::find(url, true, load);
 			if(!protocol) {
 				throw runtime_error(string{"Cant find a protocol handler for "} + url);
 			}
