@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	{
-		XML::Document{"test.xml"};
+		SubProcess{"test","/usr/sbin/grub2-mkconfig -o /tmp/test.txt"}.run();
 		return 0;
 	}
 

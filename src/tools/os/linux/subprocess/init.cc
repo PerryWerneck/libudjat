@@ -26,6 +26,7 @@
  #include <unistd.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/string.h>
  #include <iostream>
  #include <cstring>
  #include <csignal>
@@ -33,6 +34,7 @@
  #include <poll.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <ctype.h>
 
  namespace Udjat {
 
@@ -62,6 +64,33 @@
 			throw system_error(errno,system_category(),Logger::Message{"Can't create stderr pipes for '{}'",proc.command});
 		}
 
+		// Parse arguments
+		// http://www.csl.mtu.edu/cs4411.ck/www/NOTES/process/fork/exec.html
+		char * buffer = strdup(proc.command.c_str());
+		char * line = chug(buffer);
+		char * argv[64];
+		size_t argc = 0;
+
+		while(*line) {
+			argv[argc++] = line;
+			while(*line && !isspace(*line)) {
+				line++;
+			}
+			if(!*line) {
+				break;
+			}
+			*(line++) = 0;
+
+			line = chug(line);
+		}
+		argv[argc] = NULL;
+
+		for(size_t ix=0;ix < argc; ix++) {
+			strip(argv[ix]);
+			debug("argv[",ix,"]='",argv[ix],"'");
+		}
+
+		// Fork new proccess
 		switch (proc.pid = vfork()) {
 		case -1: // Error
 			errcode = errno;
@@ -101,10 +130,12 @@
 
 			}
 
-			execl("/bin/bash", "/bin/bash", "-c", proc.command.c_str(), NULL);
+			execvp(*argv,argv);
 			_exit(127);
 
 		}
+
+		free(buffer);
 
 		// Child started, capture pipes.
 		outpipe.set(out[0]);
