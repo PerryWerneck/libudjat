@@ -23,6 +23,7 @@
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/url.h>
  #include <stdexcept>
 
  using namespace std;
@@ -54,14 +55,16 @@
 
 	XML::Document::Document(const char *filename) {
 
-		Logger::String{"Loading '",filename,"'"}.trace("xml");
+		Logger::String{"Loading '",filename,"'"}.info("xml");
 
 		Udjat::load(this,filename);
 
 		// TODO: Check file's last write and and update-timer attribute to see if an url check is required.
 
-		const char *url = document_element().attribute("src").as_string();
-		if(url && *url) {
+		URL url{document_element()};
+		url.expand();
+
+		if(!url.empty()) {
 
 			// TODO: Check for url handler, load it if needed.
 
@@ -73,13 +76,13 @@
 			if(document_element().attribute("cache").as_bool(true)) {
 				client.cache(filename);
 			} else {
-				Logger::String{"Cache for '",url,"' is disabled"}.trace("xml");
+				Logger::String{"Cache for '",url.c_str(),"' is disabled"}.trace("xml");
 			}
 
 			bool updated = client.save(filename);
 
 			if(updated) {
-				Logger::String{filename," was updated from ",url}.info("xml");
+				Logger::String{filename," was updated from ",url.c_str()}.info("xml");
 				reset();
 				Udjat::load(this,filename);
 			}
