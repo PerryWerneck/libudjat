@@ -69,7 +69,7 @@
 			// TODO: Check for url handler, load it if needed.
 
 			// Update document.
-			HTTP::Client client{url};
+			HTTP::Client client{url,document_element().attribute("module-autoload").as_bool(true)};
 
 			client.mimetype(MimeType::xml);
 

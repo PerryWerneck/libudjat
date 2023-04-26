@@ -86,10 +86,12 @@
 
 		debug("Searching for protocol '",name,"'");
 
-		lock_guard<mutex> lock(guard);
-		for(auto protocol : protocols) {
-			if(*protocol == name) {
-				return protocol;
+		{
+			lock_guard<mutex> lock(guard);
+			for(auto protocol : protocols) {
+				if(*protocol == name) {
+					return protocol;
+				}
 			}
 		}
 
@@ -118,21 +120,5 @@
 
 		return nullptr;
 	}
-
-	/*
-	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
-
-		response.reset(Value::Array);
-
-		for(auto protocol : protocols) {
-
-			Value &object = response.append(Value::Object);
-			object["name"] = protocol->name;
-			protocol->module.get(object);
-
-		}
-
-	}
-	*/
 
  }
