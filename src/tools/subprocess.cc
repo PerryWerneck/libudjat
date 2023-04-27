@@ -78,11 +78,7 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		if(rc) {
-			error() <<  "'" << command << "' failed with rc=" << rc << endl;
-		} else {
-			info() <<  "'" << command << "' completed without error (rc=0)" << endl;
-		}
+		Logger::String{"'",command,"' failed with rc=",rc}.write(rc ? Logger::Error : Logger::Info,name());
 	}
 
 	/// @brief Called on subprocess abnormal exit.
