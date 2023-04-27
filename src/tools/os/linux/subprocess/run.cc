@@ -114,25 +114,32 @@
 		while(running()) {
 
 			int status = 0;
+			pid_t pwait = 0;
 
 			if(Handler::poll(hdl,2,1000)) {
 				// Have active handlers, keep loop running.
-				waitpid(this->pid,&status,WNOHANG);
+				pwait = waitpid(this->pid,&status,WNOHANG);
 			} else {
 				// No more active handlers, wait.
-				waitpid(this->pid,&status,0);
+				pwait = waitpid(this->pid,&status,0);
 			}
 
-			if(WIFEXITED(status)) {
-				rc = WEXITSTATUS(status);
-				onExit(rc);
-				break;
-			}
+			if(pwait == this->pid) {
+				if(WIFEXITED(status)) {
+					rc = WEXITSTATUS(status);
+					onExit(rc);
+					break;
+				}
 
-			if(WIFSIGNALED(status)) {
-				rc = -1;
-				onSignal(WTERMSIG(status));
-				break;
+				if(WIFSIGNALED(status)) {
+					rc = -1;
+					onSignal(WTERMSIG(status));
+					break;
+				}
+			} else if(pwait < 0) {
+
+				Logger::String{strerror(errno)}.error(name());
+
 			}
 
 		}

@@ -124,8 +124,14 @@
 		}
 
 		// Fork new proccess
+		sigset_t mask, omask;
+		sigemptyset(&mask);
+		sigaddset(&mask, SIGCHLD);
+		sigprocmask(SIG_BLOCK, &mask, &omask);
+
 		switch (proc.pid = vfork()) {
 		case -1: // Error
+			sigprocmask(SIG_SETMASK, &omask, NULL);
 			errcode = errno;
 			::close(out[0]);
 			::close(out[1]);
@@ -135,6 +141,7 @@
 
 		case 0:	// child
 
+			sigprocmask(SIG_SETMASK, &omask, NULL);
 			if(out[1] != STDOUT_FILENO) {
 				(void)dup2(out[1], STDOUT_FILENO);
 				(void)close(out[1]);
@@ -168,6 +175,7 @@
 
 		}
 
+		sigprocmask(SIG_SETMASK, &omask, NULL);
 		free(buffer);
 
 		// Child started, capture pipes.
