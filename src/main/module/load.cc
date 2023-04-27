@@ -41,9 +41,15 @@ namespace Udjat {
 				return module;
 			}
 
+#ifdef _WIN32
+			if(String{module->filename()}.has_suffix((string{name} + LIBEXT).c_str(),true)) {
+				return module;
+			}
+#else
 			if(!strcasecmp((string{name} + LIBEXT).c_str(),basename(module->filename().c_str()))) {
 				return module;
 			}
+#endif // _WIN32
 
 		}
 

@@ -131,12 +131,6 @@ int main(int argc, char **argv) {
 
 	Logger::verbosity(9);
 
-	{
-		int rc = SubProcess{"test","su - root --login -- /usr/sbin/grub2-mkconfig -o /tmp/x"}.run();
-		debug("rc=",rc);
-		return 0;
-	}
-
 	/*
 	MainLoop::getInstance().TimerFactory(1000,[]{
 		debug("---------------------------------------------------------------------");

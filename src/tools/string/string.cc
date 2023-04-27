@@ -108,6 +108,40 @@
 		return *this;
 	}
 
+	bool String::has_suffix(const char *suffix, bool ignore_case) const noexcept {
+
+		if(empty() || !(suffix && *suffix)) {
+			return false;
+		}
+
+		size_t str_len = strlen(c_str());
+		size_t suffix_len = strlen (suffix);
+
+		if (str_len < suffix_len)
+			return false;
+
+		if(ignore_case) {
+			return strcasecmp(c_str() + str_len - suffix_len, suffix) == 0;
+		}
+
+		return strcmp(c_str() + str_len - suffix_len, suffix) == 0;
+
+	}
+
+	/// @brief Looks whether the string begins with prefix.
+	bool String::has_prefix(const char *prefix, bool ignore_case) const noexcept {
+
+		if(empty() || !(prefix && *prefix)) {
+			return false;
+		}
+
+		if(ignore_case) {
+			return strncasecmp(c_str(), prefix, strlen (prefix)) == 0;
+		}
+
+		return strncmp(c_str(), prefix, strlen (prefix)) == 0;
+	}
+
 	std::vector<String> String::split(const char *delim) {
 
 		std::vector<String> strings;
