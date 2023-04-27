@@ -178,7 +178,7 @@
 
 			/// @brief Get agent properties.
 			/// @param value Value to receive the properties.
-			Value & getProperties(Value &value) const noexcept override;
+			Value & getProperties(Value &value) const override;
 
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
@@ -385,7 +385,7 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.
-			bool getProperty(const char *key, std::string &value) const noexcept override;
+			bool getProperty(const char *key, std::string &value) const override;
 
 		};
 	}

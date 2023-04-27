@@ -24,6 +24,7 @@
 #include <udjat/tools/logger.h>
 #include <udjat/tools/intl.h>
 #include <iostream>
+#include <time.h>
 
 using namespace std;
 
@@ -42,10 +43,18 @@ namespace Udjat {
 
 		struct tm tm;
 
-#ifdef HAVE_LOCALTIME_R
+#if defined(HAVE_LOCALTIME_R)
+
 		localtime_r(&value,&tm);
+
+#elif defined(_WIN32)
+
+		localtime_s(&tm,&value);
+
 #else
+
 		tm = *localtime(&value);
+
 #endif // HAVE_LOCALTIME_R
 
 		size_t len = strftime(timestamp, 79, format, &tm);

@@ -260,18 +260,32 @@
 		/// @param cleanup if true remove the non existent values from string.
 		String & expand(const std::function<bool(const char *key, std::string &value)> &expander, bool dynamic = false, bool cleanup = false);
 
+		/// @brief Expand using customized marker.
+		/// @param expander value expander method.
+		/// @param marker The marker.
+		/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+		/// @param cleanup if true remove the non existent values from string.
+		String & expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic = false, bool cleanup = false);
+
 		/// @brief Expand ${} macros.
 		String & expand(bool dynamic = true, bool cleanup = true);
 
+		/// @brief Expand using customized marker.
+		String & expand(char marker, bool dynamic = true, bool cleanup = true);
+
+		/// @brief Expand using customized marker.
+		/// @param marker The marker.
+		/// @param object the object to search for properties.
+		String & expand(char marker, const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
+
 		/// @brief Expand ${} macros.
+		/// @param object the object to search for properties.
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
 
 		/// @brief Expand ${} macros.
 		/// @param node XML node from the begin of the value search.
 		/// @param group Group from configuration file to search.
 		String & expand(const pugi::xml_node &node,const char *group = "default-attributes");
-
-		String & strip() noexcept;
 
 		String & markup();
 
@@ -285,22 +299,32 @@
 			return strcasestr(c_str(),needle);
 		}
 
+		/// @brief Splits string using the given delimiter.
+		/// @param delim string which specifies the places at which to split the string. The delimiter is not included in any of the resulting strings.
 		std::vector<String> split(const char *delim);
 
-		/// @brief Remove the leading whitespace from the string.
-		///
-		/// Removes leading white spaces from a string, by moving the rest
-		/// of the characters forward.
-		///
-		/// @see chomp() and strip().
-		///
+		/// @brief Removes leading and trailing white spaces from the string.
+		/// @see chomp()
+		/// @see chug()
+		/// @return The string.
+		String & strip() noexcept;
+
+		/// @brief Remove the leading white space from the string.
+		/// Removes leading white spaces from a string, by moving the rest of the characters forward.
+		/// @see chomp()
+		/// @see strip()
 		/// @return The string.
 		String & chug() noexcept;
 
-		/// @brief Removes trailing white spaces from a string.
-		///
-		/// @see chug() and strip().
-		///
+		/// @brief Looks whether the string ends with suffix.
+		bool has_suffix(const char *suffix, bool ignore_case = false) const noexcept;
+
+		/// @brief Looks whether the string begins with prefix.
+		bool has_prefix(const char *prefix, bool ignore_case = false) const noexcept;
+
+		/// @brief Removes trailing white spaces from the string.
+		/// @see chug()
+		/// @see strip()
 		/// @return The string.
 		String & chomp() noexcept;
 

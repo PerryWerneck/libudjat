@@ -59,7 +59,7 @@ namespace Udjat {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
-	Value & Module::getProperties(Value &properties) const noexcept {
+	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = name;
 		properties["filename"] = filename();
 		return _info.getProperties(properties);
@@ -82,7 +82,7 @@ namespace Udjat {
 	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {
 	}
 
-	bool Module::getProperty(const char *key, std::string &value) const noexcept {
+	bool Module::getProperty(const char *key, std::string &value) const {
 
 		if(!strcasecmp(key,"filename")) {
 			value = filename();

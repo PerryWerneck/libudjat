@@ -77,6 +77,10 @@
 
 		} loglevels;
 
+		virtual void pre();
+
+		virtual void post(int status);
+
 		/// @brief Called on subprocess output.
 		virtual void onStdOut(const char *line);
 
@@ -183,6 +187,11 @@
 		/// @brief Run subprocess in foreground.
 		/// @return Sub process return code.
 		int run();
+
+#ifndef _WIN32
+		/// @brief Run subprocess with popen.
+		int prun();
+#endif // _WIN32
 
 		/// @brief Start sub process in background using the default object.
 		static void start(const char *command);

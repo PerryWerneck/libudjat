@@ -181,7 +181,7 @@
 							auto result = doc.load_string(text.c_str());
 							if(result.status == pugi::status_ok) {
 
-								bool safe = strcasecmp(doc.document_element().name(),xmlname.c_str());
+								bool safe = (strcasecmp(doc.document_element().name(),xmlname.c_str()) == 0);
 
 								if(safe || allow_unsafe) {
 

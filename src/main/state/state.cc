@@ -164,7 +164,7 @@ namespace Udjat {
 		return icon;
 	}
 
-	Value & Abstract::State::getProperties(Value &value) const noexcept {
+	Value & Abstract::State::getProperties(Value &value) const {
 
 		Object::getProperties(value);
 		value["body"] = properties.body;
@@ -200,7 +200,7 @@ namespace Udjat {
 		}
 	}
 
-	bool Abstract::State::getProperty(const char *key, std::string &value) const noexcept {
+	bool Abstract::State::getProperty(const char *key, std::string &value) const {
 
 		if(Object::getProperty(key,value)) {
 			return true;
@@ -270,7 +270,7 @@ namespace Udjat {
 				Object::properties.summary = this->summary.c_str();
 			}
 
-			Value & getProperties(Value &value) const noexcept override {
+			Value & getProperties(Value &value) const override {
 				Abstract::State::getProperties(value);
 				value["syscode"] = code;
 				return value;

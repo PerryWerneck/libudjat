@@ -45,7 +45,7 @@
 
 			virtual const char * name() const = 0;
 
-			virtual Value & getProperties(Value &value) const noexcept;
+			virtual Value & getProperties(Value &value) const;
 
 			virtual bool found() const = 0;
 			virtual bool up() const = 0;

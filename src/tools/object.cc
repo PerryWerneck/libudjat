@@ -28,6 +28,7 @@
  #include <udjat/tools/expander.h>
  #include <udjat/factory.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -80,7 +81,7 @@
 		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
 	}
 
-	Value & NamedObject::getProperties(Value &value) const noexcept {
+	Value & NamedObject::getProperties(Value &value) const {
 		value["name"] = objectName;
 		return value;
 	}
@@ -149,7 +150,7 @@
 
 	}
 
-	Value & Abstract::Object::getProperties(Value &value) const noexcept {
+	Value & Abstract::Object::getProperties(Value &value) const {
 		return value;
 	}
 
@@ -179,7 +180,22 @@
 		return name();
 	}
 
-	bool Abstract::Object::getProperty(const char *key, Udjat::Value &value) const noexcept {
+	std::string Abstract::Object::getProperty(const char *key, bool required) const {
+		std::string value;
+		if(getProperty(key,value)) {
+			return value;
+		}
+		if(required) {
+			throw runtime_error(Logger::Message{_("Unable to get value of '{}'"),key});
+		}
+		return "";
+	}
+
+	bool Abstract::Object::getProperty(const char *key, std::string &value) const {
+		return false;
+	}
+
+	bool Abstract::Object::getProperty(const char *key, Udjat::Value &value) const {
 		std::string str;
 		if(getProperty(key,str)) {
 			value = str;
@@ -187,7 +203,7 @@
 		return false;
 	}
 
-	Value & Object::getProperties(Value &value) const noexcept {
+	Value & Object::getProperties(Value &value) const {
 
 		NamedObject::getProperties(value);
 
@@ -199,7 +215,7 @@
 		return value;
 	}
 
-	bool Object::getProperty(const char *key, std::string &value) const noexcept {
+	bool Object::getProperty(const char *key, std::string &value) const {
 
 		if(NamedObject::getProperty(key,value)) {
 			return true;
@@ -220,7 +236,7 @@
 
 	}
 
-	bool NamedObject::getProperty(const char *key, std::string &value) const noexcept {
+	bool NamedObject::getProperty(const char *key, std::string &value) const {
 		if(!strcasecmp(key,"name")) {
 			value = objectName;
 			return true;
@@ -417,11 +433,13 @@
 		return def;
 	}
 
-	std::string Abstract::Object::operator[](const char *key) const noexcept {
+	/*
+	std::string Abstract::Object::operator[](const char *key) const {
 		string value;
 		getProperty(key,value);
 		return value;
 	}
+	*/
 
 	string Abstract::Object::expand(const char *text, bool dynamic, bool cleanup) const {
 		return String(text).expand([this](const char *key, std::string &value) {

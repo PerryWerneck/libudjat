@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ //
+ // References:
+ //
+ // https://android.googlesource.com/platform/bionic/+/3884bfe9661955543ce203c60f9225bbdf33f6bb/libc/unistd/system.c
+ //
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/linux/subprocess.h>
@@ -26,6 +32,7 @@
  #include <unistd.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/string.h>
  #include <iostream>
  #include <cstring>
  #include <csignal>
@@ -33,6 +40,7 @@
  #include <poll.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <ctype.h>
 
  namespace Udjat {
 
@@ -62,8 +70,68 @@
 			throw system_error(errno,system_category(),Logger::Message{"Can't create stderr pipes for '{}'",proc.command});
 		}
 
+		// Parse arguments
+		// http://www.csl.mtu.edu/cs4411.ck/www/NOTES/process/fork/exec.html
+		char * buffer = strdup(proc.command.c_str());
+		char * line = chug(buffer);
+		char * argv[64];
+		size_t argc = 0;
+
+		while(*line) {
+
+			if(argc > 63) {
+				throw runtime_error("Too many arguments");
+			}
+
+			argv[argc++] = line;
+			while(*line && !isspace(*line)) {
+
+				if(*line == '"') {
+					line = strchr(line+1,'"');
+					if(line) {
+						line++;
+					} else {
+						throw runtime_error("Error parsing argument, mismatched '\"'");
+					}
+				}
+
+				if(*line == '\'') {
+					line = strchr(line+1,'\'');
+					if(line) {
+						line++;
+					} else {
+						throw runtime_error("Error parsing argument, mismatched \"'\"");
+					}
+				}
+
+				if(*line) {
+					line++;
+				}
+
+			}
+			if(!*line) {
+				break;
+			}
+			*(line++) = 0;
+
+			line = chug(line);
+		}
+		argv[argc] = NULL;
+
+		for(size_t ix=0;ix < argc; ix++) {
+			strip(argv[ix]);
+			debug("argv[",ix,"]='",argv[ix],"'");
+		}
+
+		// Fork new proccess
+		sigset_t mask, omask;
+		sigemptyset(&mask);
+		sigaddset(&mask, SIGCHLD);
+		sigprocmask(SIG_BLOCK, &mask, &omask);
+
 		switch (proc.pid = vfork()) {
 		case -1: // Error
+			sigprocmask(SIG_SETMASK, &omask, NULL);
 			errcode = errno;
 			::close(out[0]);
 			::close(out[1]);
@@ -73,6 +141,7 @@
 
 		case 0:	// child
 
+			sigprocmask(SIG_SETMASK, &omask, NULL);
 			if(out[1] != STDOUT_FILENO) {
 				(void)dup2(out[1], STDOUT_FILENO);
 				(void)close(out[1]);
@@ -85,10 +154,29 @@
 				err[1] = STDERR_FILENO;
 			}
 
-			execl("/bin/bash", "/bin/bash", "-c", proc.command.c_str(), NULL);
+			try {
+
+				proc.pre();
+
+			} catch(const std::exception &e) {
+
+				cerr << "Pre script has failed on pid " << proc.pid << ": " << e.what() << endl;
+				_exit(127);
+
+			} catch(...) {
+
+				cerr << "Unexpected error on pre script for pid " << proc.pid << endl;
+				_exit(127);
+
+			}
+
+			execvp(*argv,argv);
 			_exit(127);
 
 		}
+
+		sigprocmask(SIG_SETMASK, &omask, NULL);
+		free(buffer);
 
 		// Child started, capture pipes.
 		outpipe.set(out[0]);

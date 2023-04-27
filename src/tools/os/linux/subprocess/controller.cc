@@ -71,6 +71,20 @@
 				return false;
 			}
 
+			try {
+
+				entry.proc->post(status);
+
+			} catch(const std::exception &e) {
+
+				cerr << "Post script has failed on pid " << pid << ": " << e.what() << endl;
+
+			} catch(...) {
+
+				cerr << "Unexpected error on post script for pid " << pid << endl;
+
+			}
+
 			entry.proc->pid = -1;
 
 			// Disable streams

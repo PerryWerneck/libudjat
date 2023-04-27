@@ -38,16 +38,9 @@
 
 	MainLoop::Handler::Handler(int f, const Event e) : fd(f), events(e) {
 		MainLoop::getInstance();
-
-#ifdef DEBUG
-		cout << "handler\tCreating handler " << hex << ((void *) this) << dec << endl;
-#endif // DEBUG
 	}
 
 	MainLoop::Handler::~Handler() {
-#ifdef DEBUG
-		cout << "handler\tDestroying handler " << hex << ((void *) this) << dec << endl;
-#endif // DEBUG
 		disable();
 	}
 

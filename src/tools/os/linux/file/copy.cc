@@ -33,6 +33,55 @@
 
  namespace Udjat {
 
+	static void do_copy(int from, int to, const std::function<bool(double current, double total)> &progress) {
+
+		struct stat st;
+		if(fstat(from, &st) == -1) {
+			throw system_error(errno,system_category());
+		}
+
+		size_t buflen = (st.st_blksize * 2);
+		char buffer[buflen];
+
+		size_t saved = 0;
+
+		if(!progress(0,0)) {
+			throw system_error(ECANCELED,system_category());
+		}
+
+		while(saved < (size_t) st.st_size) {
+
+			ssize_t bytes = ::read(from,buffer,buflen);
+			if(bytes == 0) {
+				clog << "Unexpected EOF reading from input file" << endl;
+				break;
+			}
+
+			if(bytes < 0) {
+				throw system_error(errno,system_category());
+			}
+
+			if(::write(to,buffer,bytes) != bytes) {
+				throw system_error(errno,system_category());
+			}
+
+			saved += bytes;
+
+			if(!progress((double) saved,(double) st.st_size)) {
+				throw system_error(ECANCELED,system_category());
+			}
+		}
+
+		// Setup owners and permitions of destination file.
+		fchmod(to,st.st_mode);
+		fchown(to,st.st_uid,st.st_gid);
+
+		if(!progress((double) st.st_size,(double) st.st_size)) {
+			throw system_error(ECANCELED,system_category());
+		}
+
+	}
+
 	void File::copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace) {
 
 		debug("from=",from);
@@ -41,7 +90,9 @@
 		int src = open(from,O_RDONLY), dst = -1;
 
 		if(src < 0) {
-			throw system_error(errno,system_category(),from);
+			int err = errno;
+			cerr << PACKAGE_NAME "\tCant open '" << from << "': " << strerror(err) << endl;
+			throw system_error(err,system_category(),from);
 		}
 
 		{
@@ -51,65 +102,59 @@
 		}
 
 		if(dst < 0) {
-			int err = errno;
-			::close(src);
-			throw system_error(err,system_category(),to);
-		}
 
-		struct stat st;
-		try {
-
-			if(fstat(src, &st) == -1) {
-				throw system_error(errno,system_category(),from);
+			if(errno != ENOTSUP || !replace) {
+				auto err = errno;
+				::close(src);
+				cerr << PACKAGE_NAME "\tCant create temp file for '" << from << "': " << strerror(err) << endl;
+				throw system_error(err,system_category(),to);
 			}
 
-			size_t buflen = (st.st_blksize * 2);
-			char buffer[buflen];
-
-			size_t saved = 0;
-			progress(0,0);
-			while(saved < (size_t) st.st_size) {
-
-				ssize_t bytes = ::read(src,buffer,buflen);
-				if(bytes == 0) {
-					clog << "Unexpected EOF reading from " << from << endl;
-					break;
-				}
-
-				if(bytes < 0) {
-					throw system_error(errno,system_category(),from);
-				}
-
-				if(::write(dst,buffer,bytes) != bytes) {
-					throw system_error(errno,system_category(),to);
-				}
-
-				saved += bytes;
-
-				if(!progress((double) saved,(double) st.st_size)) {
-					throw system_error(ECANCELED,system_category(),to);
-				}
+			dst = open(to,O_CREAT|O_TRUNC|O_WRONLY,0644);
+			if(dst < 0) {
+				auto err = errno;
+				::close(src);
+				cerr << PACKAGE_NAME "\tCant create '" << to << "': " << strerror(err) << endl;
+				throw system_error(err,system_category(),to);
 			}
-			progress((double) st.st_size,(double) st.st_size);
 
-		} catch(...) {
+			try {
+
+				do_copy(src,dst,progress);
+
+			} catch(...) {
+
+				::close(src);
+				::close(dst);
+				throw;
+
+			}
 
 			::close(src);
 			::close(dst);
 
-			throw;
+		} else {
+
+			try {
+
+				do_copy(src,dst,progress);
+
+			} catch(...) {
+
+				::close(src);
+				::close(dst);
+
+				throw;
+
+			}
+
+			::close(src);
+
+			File::move(dst,to,replace);
+			::close(dst);
 
 		}
 
-		::close(src);
-
-		// Setup owners and permitions of destination file.
-		fchmod(dst,st.st_mode);
-		fchown(dst,st.st_uid,st.st_gid);
-
-		File::move(dst,to,replace);
-
-		::close(dst);
 	}
 
  }

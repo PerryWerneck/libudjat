@@ -354,19 +354,20 @@
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
-		virtual Value & getProperties(Value &properties) const noexcept;
+		virtual Value & getProperties(Value &properties) const;
 
 		/// @brief Find protocol based on URL.
 		/// @param url The url to search for.
-		/// @param allow_default If true returns the default protocol when not found
+		/// @param allow_default If true returns the default protocol when not found.
+		/// @param autoload If true tries to load a module using the protocol name.
 		/// @return Pointer to selected protocol or nullptr.
-		static const Protocol * find(const URL &url, bool allow_default = true);
+		static const Protocol * find(const URL &url, bool allow_default = true, bool autoload = false);
 
 		/// @brief Find protocol based on protocol name.
 		/// @param url The url to search for.
 		/// @param allow_default If true returns the default protocol when not found.
 		/// @return Pointer to selected protocol or nullptr.
-		static const Protocol * find(const char *name, bool allow_default = true);
+		static const Protocol * find(const char *name, bool allow_default = true, bool autoload = false);
 
 		/// @brief Verify protocol pointer.
 		/// @param protocol Pointer to protocol to confirm.

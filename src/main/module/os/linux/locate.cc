@@ -44,7 +44,11 @@
 			// Try using name
 			for(const string &path : paths) {
 
-				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + ".so";
+				if(path.empty()) {
+					continue;
+				}
+
+				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + LIBEXT;
 
 				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
@@ -61,7 +65,11 @@
 
 				for(const string &path : paths) {
 
-					string filename = path + altname.c_str() + ".so";
+					if(path.empty()) {
+						continue;
+					}
+
+					string filename = path + altname.c_str() + LIBEXT;
 
 					debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
@@ -71,6 +79,24 @@
 
 				}
 			}
+
+			// Last change, use name without product name.
+			for(const string &path : paths) {
+
+				if(path.empty()) {
+					continue;
+				}
+
+				string filename = path + name + LIBEXT;
+
+				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+
+				if(access(filename.c_str(),R_OK) == 0) {
+					return filename;
+				}
+
+			}
+
 		}
 
 		return "";

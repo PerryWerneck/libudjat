@@ -37,7 +37,7 @@
 		Controller::getInstance().remove(this);
 	}
 
-	Value & Factory::getProperties(Value &properties) const noexcept {
+	Value & Factory::getProperties(Value &properties) const {
 		properties["name"] = factory_name;
 		return module.getProperties(properties);
 	}

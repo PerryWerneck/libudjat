@@ -140,6 +140,7 @@ dnl Check for headers
 dnl ---------------------------------------------------------------------------
 
 AC_CHECK_FUNC(localtime_r, AC_DEFINE(HAVE_LOCALTIME_R, [], [Do we have localtime_r?]) )
+AC_CHECK_FUNC(localtime_s, AC_DEFINE(HAVE_LOCALTIME_S, [], [Do we have localtime_s?]) )
 AC_CHECK_FUNC(strcasestr, AC_DEFINE(HAVE_STRCASESTR, [], [Do we have strcasestr?]) )
 
 dnl ---------------------------------------------------------------------------

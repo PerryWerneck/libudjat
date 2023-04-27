@@ -49,6 +49,7 @@
  #include <iomanip>
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/xml.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>

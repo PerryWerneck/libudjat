@@ -94,16 +94,24 @@
 		return string(from,to-from);
 	}
 
-	String & String::expand(const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
-		return expand([&object,dynamic,cleanup](const char *key, std::string &str){
+	String & String::expand(char marker, const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
+		return expand(marker,[&object,dynamic,cleanup](const char *key, std::string &str){
 			if(object.getProperty(key,str))
 				return true;
 			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
 		},dynamic,cleanup);
 	}
 
+	String & String::expand(const Udjat::Abstract::Object &object, bool dynamic, bool cleanup) {
+		return expand('$',object,dynamic,cleanup);
+	}
+
 	String & String::expand(bool dynamic, bool cleanup) {
-		return expand([dynamic,cleanup](const char *key, std::string &str){
+		return expand('$',dynamic,cleanup);
+	}
+
+	String & String::expand(char marker, bool dynamic, bool cleanup) {
+		return expand(marker,[dynamic,cleanup](const char *key, std::string &str){
 			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
 		},dynamic,cleanup);
 	}
@@ -131,9 +139,15 @@
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
 
+		const char *marker = node.attribute("variable-marker").as_string("$");
+
+		if(!(marker && *marker)) {
+			throw system_error(EINVAL,system_category(),"empty 'variable-marker' attribute");
+		}
+
 		group = node.attribute("settings-from").as_string(group);
 
-		return expand([node,dynamic,cleanup,group](const char *key, std::string &value) {
+		return expand(marker[0],[node,dynamic,cleanup,group](const char *key, std::string &value) {
 
 			// Check node attributes
 			{
@@ -206,15 +220,20 @@
 
 	}
 
-
 	String & String::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+		return expand('$',expander,dynamic,cleanup);
+	}
 
-		auto from = find("${");
+	String & String::expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+
+		char starter[3] = { marker, '{', 0 };
+
+		auto from = find(starter);
 		while(from != string::npos) {
 
 			auto to = find("}",from+3);
 			if(to == string::npos) {
-				throw runtime_error("Invalid ${} usage");
+				throw runtime_error(Logger::String{"Invalid use of '",starter,"}'"});
 			}
 
 			string value;
@@ -232,7 +251,7 @@
 					value.c_str()
 				);
 
-				from = find("${",from);
+				from = find(starter,from);
 				continue;
 
 			}
@@ -248,7 +267,7 @@
 						TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
 					);
 
-					from = find("${",from);
+					from = find(starter,from);
 					continue;
 				}
 
@@ -264,7 +283,7 @@
 						(to-from)+1,
 						expandFromURL(key)
 					);
-					from = find("${",from);
+					from = find(starter,from);
 					continue;
 
 				}
@@ -313,7 +332,7 @@
 #endif // _WIN32
 
 			//
-			// If cleanup is set, replace with an empty string, otherwise keep the ${} keyword.
+			// If cleanup is set, replace with an empty string, otherwise keep the marker.
 			//
 			if(cleanup) {
 
@@ -348,7 +367,7 @@
 						(to-from)+1,
 						env
 					);
-					from = find("${",from);
+					from = find(starter,from);
 					continue;
 				} else {
 					replace(
@@ -359,11 +378,11 @@
 				}
 #endif // _WIN32
 
-				from = find("${",from);
+				from = find(starter,from);
 
 			} else {
 
-				from = find("${",to+1);
+				from = find(starter,to+1);
 
 			}
 

@@ -61,13 +61,13 @@
 		return make_shared<Activation>(this);
 	}
 
-	Value & Alert::File::getProperties(Value &value) const noexcept {
+	Value & Alert::File::getProperties(Value &value) const {
 		Abstract::Alert::getProperties(value);
 		value["filename"] = filename;
 		return value;
 	}
 
-	Value & Alert::File::Activation::getProperties(Value &value) const noexcept {
+	Value & Alert::File::Activation::getProperties(Value &value) const {
 		Udjat::Alert::Activation::getProperties(value);
 		value["filename"] = filename.c_str();
 		return value;

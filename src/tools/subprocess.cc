@@ -36,6 +36,12 @@
 	SubProcess::SubProcess(const char *c, Logger::Level out, Logger::Level err) : SubProcess("subprocess",c,out,err) {
 	}
 
+	void SubProcess::pre() {
+	}
+
+	void SubProcess::post(int) {
+	}
+
 	int SubProcess::run(const char *command, Logger::Level out, Logger::Level err) {
 		return SubProcess{command,out,err}.run();
 	}
@@ -72,11 +78,7 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		if(rc) {
-			error() <<  "'" << command << "' failed with rc=" << rc << endl;
-		} else {
-			info() <<  "'" << command << "' completed without error (rc=0)" << endl;
-		}
+		Logger::String{"'",command,"' failed with rc=",rc}.write(rc ? Logger::Error : Logger::Info,name());
 	}
 
 	/// @brief Called on subprocess abnormal exit.

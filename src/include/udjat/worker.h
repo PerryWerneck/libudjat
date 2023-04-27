@@ -58,7 +58,7 @@ namespace Udjat {
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Report &response);
 
-		virtual Value & getProperties(Value &properties) const noexcept;
+		virtual Value & getProperties(Value &properties) const;
 
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {

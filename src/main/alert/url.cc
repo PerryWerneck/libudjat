@@ -61,14 +61,14 @@
 		return make_shared<Activation>(this);
 	}
 
-	Value & Alert::URL::getProperties(Value &value) const noexcept {
+	Value & Alert::URL::getProperties(Value &value) const {
 		Abstract::Alert::getProperties(value);
 		value["url"] = url;
 		value["action"] = std::to_string(action);
 		return value;
 	}
 
-	Value & Alert::URL::Activation::getProperties(Value &value) const noexcept {
+	Value & Alert::URL::Activation::getProperties(Value &value) const {
 		Udjat::Alert::Activation::getProperties(value);
 		value["url"] = url.c_str();
 		value["action"] = std::to_string(action);

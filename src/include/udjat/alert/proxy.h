@@ -61,7 +61,7 @@
 			}
 
 			/// @brief Get alert info.
-			inline Value & getProperties(Value &value) const noexcept {
+			inline Value & getProperties(Value &value) const {
 				return alert->getProperties(value);
 			}
 

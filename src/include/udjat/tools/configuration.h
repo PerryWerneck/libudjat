@@ -101,6 +101,10 @@
 				return c_str();
 			}
 
+			inline const char *c_str() const noexcept {
+				return std::string::c_str();
+			}
+
 		};
 
 		template <>

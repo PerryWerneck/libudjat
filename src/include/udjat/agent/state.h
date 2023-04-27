@@ -169,12 +169,12 @@ namespace Udjat {
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			bool getProperty(const char *key, std::string &value) const noexcept override;
+			bool getProperty(const char *key, std::string &value) const override;
 
 			/// @brief Get the state properties.
 			/// @brief Value to receive the properties.
 			/// @return Pointer to value.
-			Value & getProperties(Value &value) const noexcept override;
+			Value & getProperties(Value &value) const override;
 
 			/// @brief Get state properties by path.
 			/// @param path	Agent path.

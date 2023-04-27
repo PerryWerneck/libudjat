@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	bool Abstract::Agent::getProperty(const char *key, std::string &value) const noexcept {
+	bool Abstract::Agent::getProperty(const char *key, std::string &value) const {
 
 		// Agent name
 		if( !strcasecmp(key,"agent.name") ) {

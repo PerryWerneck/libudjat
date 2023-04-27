@@ -111,7 +111,7 @@
 		throw runtime_error("Cant emit an abstract activation");
 	}
 
-	Value & Alert::Activation::getProperties(Value &value) const noexcept {
+	Value & Alert::Activation::getProperties(Value &value) const {
 
 		value["name"] = name;
 		value["next"] = TimeStamp(timers.next);

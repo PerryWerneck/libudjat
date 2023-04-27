@@ -54,7 +54,11 @@
 
 			static void set(const std::function<bool(double current, double total)> progress);
 
-			Client(const URL &url);
+			/// @brief Build client for URL.
+			/// @param url The url.
+			/// @param autoload If true try to load the required module.
+			Client(const URL &url, bool autoload = false);
+
 			Client(const pugi::xml_node &node);
 
 			Client(const char *url) : Client(URL(url)) {

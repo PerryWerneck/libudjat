@@ -84,9 +84,7 @@ static const u_char *conv_num(const unsigned char *, int *, uint, uint);
 static const u_char *find_string(const u_char *, int *, const char * const *,
 	const char * const *, int);
 
-char *
-strptime(const char *buf, const char *fmt, struct tm *tm)
-{
+char * strptime(const char *buf, const char *fmt, struct tm *tm) {
 	unsigned char c;
 	const unsigned char *bp, *ep;
 	int alt_format, i, split_year = 0, neg = 0, offs;
@@ -282,17 +280,17 @@ recurse:
 					sse *= 10;
 					sse += *bp++ - '0';
 					rulim /= 10;
-				} while ((sse * 10 <= TIME_MAX) &&
-					 rulim && *bp >= '0' && *bp <= '9');
+				} while ((sse * 10 <= TIME_MAX) && rulim && *bp >= '0' && *bp <= '9');
 
 				if (sse < 0 || (uint64_t)sse > TIME_MAX) {
 					bp = NULL;
 					continue;
 				}
 
-				tm = localtime(&sse);
-            if (tm == NULL)
+				if (localtime_s(tm,&sse)) {
 					bp = NULL;
+				}
+
 			}
 			continue;
 

@@ -78,7 +78,7 @@
 		void insert(Protocol::Worker *worker);
 		void remove(Protocol::Worker *worker);
 
-		const Protocol * find(const char *name, bool allow_default);
+		const Protocol * find(const char *name, bool allow_default, bool autoload = false);
 		const Protocol * verify(const void *protocol);
 
 		inline void setDefault(Protocol *protocol) noexcept {

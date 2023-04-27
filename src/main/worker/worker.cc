@@ -40,7 +40,7 @@
 		return Controller::getInstance().for_each(method);
 	}
 
-	Value & Worker::getProperties(Value &properties) const noexcept {
+	Value & Worker::getProperties(Value &properties) const {
 		properties["name"] = name;
 		return module.getProperties(properties);
 	}

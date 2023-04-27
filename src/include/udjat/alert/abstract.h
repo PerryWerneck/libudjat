@@ -101,7 +101,7 @@
 			void deactivate() override;
 
 			/// @brief Get alert info.
-			Value & getProperties(Value &value) const noexcept override;
+			Value & getProperties(Value &value) const override;
 
 			/// @brief Create and activation for this alert.
 			virtual std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const;

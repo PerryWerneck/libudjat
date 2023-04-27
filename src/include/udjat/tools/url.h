@@ -36,6 +36,7 @@
  #include <system_error>
  #include <functional>
  #include <udjat/tools/method.h>
+ #include <pugixml.hpp>
 
  namespace Udjat {
 
@@ -82,6 +83,9 @@
 		}
 
 		URL(const std::string &str) : URL{str.c_str()} {
+		}
+
+		URL(const pugi::xml_node &node) : URL{node.attribute("src").as_string()} {
 		}
 
 		URL & operator += (const char *path);

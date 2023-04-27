@@ -25,6 +25,8 @@ namespace Udjat {
 
 		Module * find_by_filename(const char *filename);
 
+		Module * find_by_name(const char *name);
+
 #ifdef _WIN32
 
 		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);

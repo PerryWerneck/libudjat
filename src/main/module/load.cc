@@ -33,6 +33,30 @@
 
 namespace Udjat {
 
+	Module * Module::Controller::find_by_name(const char *name) {
+
+		for(auto module : objects) {
+
+			if(*module == name) {
+				return module;
+			}
+
+#ifdef _WIN32
+			if(String{module->filename()}.has_suffix((string{name} + LIBEXT).c_str(),true)) {
+				return module;
+			}
+#else
+			if(!strcasecmp((string{name} + LIBEXT).c_str(),basename(module->filename().c_str()))) {
+				return module;
+			}
+#endif // _WIN32
+
+		}
+
+		return nullptr;
+
+	}
+
 	bool Module::Controller::load(const pugi::xml_node &node) {
 
 		static const char * attributes[] = {
@@ -43,7 +67,18 @@ namespace Udjat {
 
 		for(const char *attribute : attributes) {
 
-			string filename = locate(node.attribute(attribute).as_string());
+			const char *name = node.attribute(attribute).as_string();
+
+			if(!(name && *name)) {
+				continue;
+			}
+
+			if(find_by_name(name)) {
+				debug("module '",name,"' is already loaded");
+				return true;
+			}
+
+			string filename = locate(name);
 
 			if(!filename.empty()) {
 

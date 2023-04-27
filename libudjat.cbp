@@ -369,6 +369,7 @@
 		<Unit filename="src/tools/url/worker.cc" />
 		<Unit filename="src/tools/value.cc" />
 		<Unit filename="src/tools/xml.cc" />
+		<Unit filename="src/tools/xml/document.cc" />
 		<Extensions />
 	</Project>
 </CodeBlocks_project_file>

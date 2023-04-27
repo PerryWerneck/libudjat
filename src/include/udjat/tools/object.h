@@ -56,6 +56,8 @@
 			/// @param handler The handler for children.
 			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
 
+			static bool scan(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call);
+
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
@@ -123,18 +125,26 @@
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property is valid.
-			virtual bool getProperty(const char *key, std::string &value) const noexcept = 0;
+			virtual bool getProperty(const char *key, std::string &value) const;
 
 			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value Object to receive the value.
 			/// @return true if the property is valid.
-			virtual bool getProperty(const char *key, Udjat::Value &value) const noexcept;
+			virtual bool getProperty(const char *key, Udjat::Value &value) const;
+
+			/// @brief Get property value.
+			/// @param key The property name.
+			/// @param required if false returns empty if the property cant be found.
+			/// @return The property value or "" if required is false and the property cant be found.
+			std::string getProperty(const char *key, bool required = true) const;
 
 			/// @brief Get property.
 			/// @param key The property name.
-			/// @return The property value (empty if invalid key).
-			std::string operator[](const char *key) const noexcept;
+			/// @return The property value (empty if unable to get the propery).
+			inline std::string operator[](const char *key) const {
+				return getProperty(key,false);
+			}
 
 			/// @brief Expand ${} tags using object properties.
 			/// @param text Text to expand.
@@ -150,7 +160,7 @@
 			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
 
 			/// @brief Add object properties to the value.
-			virtual Value & getProperties(Value &value) const noexcept;
+			virtual Value & getProperties(Value &value) const;
 
 			std::ostream & info() const;
 			std::ostream & warning() const;
@@ -185,7 +195,7 @@
 
 	public:
 
-		bool getProperty(const char *key, std::string &value) const noexcept override;
+		bool getProperty(const char *key, std::string &value) const override;
 
 		/// @brief Push a background task.
 		/// @param callback Task method.
@@ -207,7 +217,7 @@
 
 		std::string to_string() const noexcept override;
 
-		Value & getProperties(Value &value) const noexcept override;
+		Value & getProperties(Value &value) const;
 
 		std::ostream & trace() const;
 		std::ostream & info() const;
@@ -264,7 +274,7 @@
 
 	public:
 
-		bool getProperty(const char *key, std::string &value) const noexcept override;
+		bool getProperty(const char *key, std::string &value) const override;
 
 		virtual const char * label() const noexcept;
 
@@ -282,7 +292,7 @@
 		/// @brief Export all object properties.
 		/// @param Value to receive the properties.
 		/// @return Pointer to value (for reference).
-		Value & getProperties(Value &value) const noexcept override;
+		Value & getProperties(Value &value) const;
 	};
 
  }

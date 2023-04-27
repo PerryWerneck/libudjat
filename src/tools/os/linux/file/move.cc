@@ -35,11 +35,15 @@
 
 		struct stat st;
 		if(stat(filename, &st) == -1) {
+
 			if(errno != ENOENT) {
 				throw system_error(errno,system_category(),"Error getting file information");
 			}
-			memset(&st,0,sizeof(st));
-			st.st_mode = 0644;
+
+			if(stat(tempfile,&st) == -1) {
+				throw system_error(errno,system_category(),tempfile);
+			}
+
 		}
 
 		if(linkat(AT_FDCWD, tempfile, AT_FDCWD, filename, AT_SYMLINK_FOLLOW) != 0) {
@@ -53,7 +57,9 @@
 			if(replace) {
 
 				debug("Removing ",filename);
-				unlink(filename);
+				if(unlink(filename) < 0) {
+					Logger::String{"Unable to unlink '",filename,"': ",strerror(errno)," (rc=",errno,")"}.error(PACKAGE_NAME);
+				}
 
 			} else {
 
@@ -68,7 +74,10 @@
 
 				debug("backup=",bakfile);
 
-				unlink(bakfile);
+				if(unlink(bakfile) < 0) {
+					Logger::String{"Unable to unlink '",bakfile,"': ",strerror(errno)," (rc=",errno,")"}.error(PACKAGE_NAME);
+				}
+
 				if(rename(filename, bakfile) != 0) {
 					throw system_error(errno,system_category(),"Cant create backup");
 				}

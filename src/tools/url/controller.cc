@@ -22,6 +22,8 @@
  #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <udjat/moduleinfo.h>
+ #include <udjat/module.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -72,7 +74,7 @@
 		protocols.remove(protocol);
 	}
 
-	const Protocol * Protocol::Controller::find(const char *name, bool allow_default) {
+	const Protocol * Protocol::Controller::find(const char *name, bool allow_default, bool autoload) {
 
 		{
 			/// @brief Singleton for file protocol.
@@ -84,11 +86,19 @@
 
 		debug("Searching for protocol '",name,"'");
 
-		lock_guard<mutex> lock(guard);
-		for(auto protocol : protocols) {
-			if(*protocol == name) {
-				return protocol;
+		{
+			lock_guard<mutex> lock(guard);
+			for(auto protocol : protocols) {
+				if(*protocol == name) {
+					return protocol;
+				}
 			}
+		}
+
+		if(autoload) {
+			Logger::String{"Autoloading module '",name,"'"}.trace("protocols");
+			Module::load(name);
+			return find(name, allow_default, false);
 		}
 
 		if(allow_default) {
@@ -110,21 +120,5 @@
 
 		return nullptr;
 	}
-
-	/*
-	void Protocol::Controller::getInfo(Udjat::Response &response) noexcept {
-
-		response.reset(Value::Array);
-
-		for(auto protocol : protocols) {
-
-			Value &object = response.append(Value::Object);
-			object["name"] = protocol->name;
-			protocol->module.get(object);
-
-		}
-
-	}
-	*/
 
  }

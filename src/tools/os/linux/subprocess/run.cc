@@ -28,6 +28,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/subprocess.h>
  #include <private/linux/subprocess.h>
 
  #include <sys/types.h>
@@ -42,8 +43,41 @@
  #include <poll.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <cstdio>
 
  namespace Udjat {
+
+	int SubProcess::prun() {
+
+		FILE *p = ::popen(c_str(),"r");
+		if(!p) {
+			throw std::system_error(errno,std::system_category(),c_str());
+		}
+
+		char buffer[1024];
+		int ch;
+		size_t bptr = 0;
+
+		while((ch=fgetc(p)) != EOF) {
+
+			if(ch == '\n' || ch == '\r' || bptr >= 1023) {
+				buffer[bptr] = 0;
+				Logger::String{buffer}.info(name());
+				bptr = 0;
+				continue;
+			}
+
+			buffer[bptr++] = (char) ch;
+
+		}
+
+		if(bptr) {
+			buffer[bptr] = 0;
+			Logger::String{buffer}.info(name());
+		}
+		return pclose(p);
+
+	}
 
 	int SubProcess::run() {
 
@@ -80,25 +114,32 @@
 		while(running()) {
 
 			int status = 0;
+			pid_t pwait = 0;
 
 			if(Handler::poll(hdl,2,1000)) {
 				// Have active handlers, keep loop running.
-				waitpid(this->pid,&status,WNOHANG);
+				pwait = waitpid(this->pid,&status,WNOHANG);
 			} else {
 				// No more active handlers, wait.
-				waitpid(this->pid,&status,0);
+				pwait = waitpid(this->pid,&status,0);
 			}
 
-			if(WIFEXITED(status)) {
-				rc = WEXITSTATUS(status);
-				onExit(rc);
-				break;
-			}
+			if(pwait == this->pid) {
+				if(WIFEXITED(status)) {
+					rc = WEXITSTATUS(status);
+					onExit(rc);
+					break;
+				}
 
-			if(WIFSIGNALED(status)) {
-				rc = -1;
-				onSignal(WTERMSIG(status));
-				break;
+				if(WIFSIGNALED(status)) {
+					rc = -1;
+					onSignal(WTERMSIG(status));
+					break;
+				}
+			} else if(pwait < 0) {
+
+				Logger::String{strerror(errno)}.error(name());
+
 			}
 
 		}
