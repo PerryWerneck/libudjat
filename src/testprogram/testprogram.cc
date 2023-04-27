@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	{
-		SubProcess{"test","/usr/sbin/grub2-mkconfig -o /tmp/test.txt"}.run();
+		SubProcess{"test","su - root --login --command='/usr/sbin/grub2-mkconfig -o /tmp/x'"}.run();
 		return 0;
 	}
 

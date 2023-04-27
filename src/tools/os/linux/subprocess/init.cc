@@ -79,7 +79,29 @@
 
 			argv[argc++] = line;
 			while(*line && !isspace(*line)) {
-				line++;
+
+				if(*line == '"') {
+					line = strchr(line+1,'"');
+					if(line) {
+						line++;
+					} else {
+						throw runtime_error("Error parsing argument, mismatched '\"'");
+					}
+				}
+
+				if(*line == '\'') {
+					line = strchr(line+1,'\'');
+					if(line) {
+						line++;
+					} else {
+						throw runtime_error("Error parsing argument, mismatched \"'\"");
+					}
+				}
+
+				if(*line) {
+					line++;
+				}
+
 			}
 			if(!*line) {
 				break;
