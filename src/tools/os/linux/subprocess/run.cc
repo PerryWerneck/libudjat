@@ -28,6 +28,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/subprocess.h>
  #include <private/linux/subprocess.h>
 
  #include <sys/types.h>
@@ -42,8 +43,41 @@
  #include <poll.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
+ #include <cstdio>
 
  namespace Udjat {
+
+	int SubProcess::prun() {
+
+		FILE *p = ::popen(c_str(),"r");
+		if(!p) {
+			throw std::system_error(errno,std::system_category(),c_str());
+		}
+
+		char buffer[1024];
+		int ch;
+		size_t bptr = 0;
+
+		while((ch=fgetc(p)) != EOF) {
+
+			if(ch == '\n' || ch == '\r' || bptr >= 1023) {
+				buffer[bptr] = 0;
+				Logger::String{buffer}.info(name());
+				bptr = 0;
+				continue;
+			}
+
+			buffer[bptr++] = (char) ch;
+
+		}
+
+		if(bptr) {
+			buffer[bptr] = 0;
+			Logger::String{buffer}.info(name());
+		}
+		return pclose(p);
+
+	}
 
 	int SubProcess::run() {
 

@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ //
+ // References:
+ //
+ // https://android.googlesource.com/platform/bionic/+/3884bfe9661955543ce203c60f9225bbdf33f6bb/libc/unistd/system.c
+ //
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/linux/subprocess.h>
