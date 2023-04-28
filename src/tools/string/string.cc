@@ -316,17 +316,25 @@
 		return def;
 	}
 
-	static const char * byte_unit_names[] = { N_("b"), N_("Kb"), N_("Gb"), N_("Mb"), N_("Tb") };
+	static const char * byte_unit_names[] = { N_("B"), N_("KB"), N_("GB"), N_("MB"), N_("TB") };
 
 	String & String::set_byte(double value, int precision) {
+
+		#error debug
+		/*
+		value=124131476,000000 = MB
+				{ 1073741824.0D, "GB" },
+		{    1048576.0D, "MB" },
+		{       1024.0D, "KB" },
+		*/
 
 		if(value < 0.1) {
 			clear();
 			return *this;
 		}
 
-		double multiplier = 1024.0;
-		double selected = 1.0;
+		double multiplier = 1024.0D;
+		double selected = 1.0D;
 		const char *name = "";
 		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
 
@@ -335,7 +343,7 @@
 				name = byte_unit_names[ix];
 			}
 
-			multiplier *= 1024.0;
+			multiplier *= 1024.0D;
 
 		}
 
@@ -362,8 +370,8 @@
 			return *this;
 		}
 
-		unsigned long long multiplier = 1024;
-		float selected = 1;
+		unsigned long long multiplier = 1024LL;
+		float selected = 1LL;
 		const char *name = "";
 		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
 
@@ -372,7 +380,7 @@
 				name = byte_unit_names[ix];
 			}
 
-			multiplier *= 1024;
+			multiplier *= 1024LL;
 
 		}
 
