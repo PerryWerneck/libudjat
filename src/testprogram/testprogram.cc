@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	{
-		SubProcess{"test","echo ''teste''"}.run();
+		SubProcess{"test","echo \"\"teste\"\""}.run();
 		return 0;
 	}
 

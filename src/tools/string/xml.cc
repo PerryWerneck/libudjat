@@ -31,6 +31,15 @@
 
  namespace Udjat {
 
+	String::String(const char **args, char delimiter) : std::string{args[0]} {
+
+		for(size_t ix = 1; args[ix];ix++) {
+//			std::string::append(delimiter);
+			std::string::append(args[ix]);
+		}
+
+	}
+
 	String::String(const XML::Node &node, const char *attrname, const char *def, bool upsearch) {
 
 		auto attribute = node.attribute(attrname);

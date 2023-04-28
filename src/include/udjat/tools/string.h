@@ -129,6 +129,11 @@
 			String::append(Fargs...);
 		}
 
+		/// @brief Construct string from array.
+		/// @param args null terminate list of elements.
+		/// @param delimiter the delimiter.
+		String(const char **args, char delimiter = ',');
+
 		/// @brief Construct string from xml definition.
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
