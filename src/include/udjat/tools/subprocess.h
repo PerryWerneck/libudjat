@@ -65,6 +65,9 @@
 		/// @brief The command line to start.
 		std::string command;
 
+		/// @brief Parse command-line argument.
+		static char * get_next_argument(char **txtptr);
+
 	protected:
 
 		/// @brief Default outputs (if onStdOut and onStdErr are not overrided).

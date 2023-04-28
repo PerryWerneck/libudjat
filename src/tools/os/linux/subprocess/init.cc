@@ -83,6 +83,14 @@
 				throw runtime_error("Too many arguments");
 			}
 
+			argv[argc++] = get_next_argument(&line);
+
+		}
+
+		/*
+		while(*line) {
+
+
 			argv[argc++] = line;
 			while(*line && !isspace(*line)) {
 
@@ -116,11 +124,12 @@
 
 			line = chug(line);
 		}
+		*/
 		argv[argc] = NULL;
 
 		for(size_t ix=0;ix < argc; ix++) {
 			strip(argv[ix]);
-			debug("argv[",ix,"]='",argv[ix],"'");
+			debug("argv[",ix,"]=[",argv[ix],"]");
 		}
 
 		// Fork new proccess

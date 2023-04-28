@@ -28,6 +28,7 @@
  #include <udjat/tools/intl.h>
  #include <iostream>
  #include <udjat/tools/threadpool.h>
+ #include <ctype.h>
 
  using namespace std;
 
@@ -78,7 +79,11 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		Logger::String{"'",command,"' failed with rc=",rc}.write(rc ? Logger::Error : Logger::Info,name());
+		if(rc) {
+			Logger::String{"'",command,"' failed with rc=",rc}.error(name());
+		} else {
+			Logger::String{"'",command,"' complete with rc=",rc}.info(name());
+		}
 	}
 
 	/// @brief Called on subprocess abnormal exit.
@@ -88,6 +93,44 @@
 #else
 		error() << "'" << command << "' finishes with signal '" << strsignal(sig) << "' (" << sig << ")" << endl;
 #endif // _WIN32
+	}
+
+	static char *extract_delimiter(char *argument) {
+
+		char marker = *(argument++);
+
+		char *ptr = strrchr(argument,marker);
+		if(!ptr) {
+			throw runtime_error("Delimiter mismatch");
+		}
+
+		*ptr = 0;
+
+		return argument;
+	}
+
+	char * SubProcess::get_next_argument(char **txtptr) {
+
+		char *argument = chug(*txtptr);
+
+		char *ptr = argument;
+		while(*ptr && !isspace(*ptr)) {
+			ptr++;
+		}
+		if(*ptr) {
+			*(ptr++) = 0;
+		}
+		*txtptr = ptr;
+
+		argument = strip(argument);
+
+		debug(argument);
+		if(*argument == '\'' || *argument == '"') {
+			argument = extract_delimiter(argument);
+		}
+		debug(argument);
+
+		return argument;
 	}
 
  }
