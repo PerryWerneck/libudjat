@@ -95,40 +95,59 @@
 #endif // _WIN32
 	}
 
-	static char *extract_delimiter(char *argument) {
-
-		char marker = *(argument++);
-
-		char *ptr = strrchr(argument,marker);
-		if(!ptr) {
-			throw runtime_error("Delimiter mismatch");
-		}
-
-		*ptr = 0;
-
-		return argument;
-	}
-
 	char * SubProcess::get_next_argument(char **txtptr) {
 
 		char *argument = chug(*txtptr);
 
-		char *ptr = argument;
-		while(*ptr && !isspace(*ptr)) {
-			ptr++;
-		}
-		if(*ptr) {
-			*(ptr++) = 0;
-		}
-		*txtptr = ptr;
-
-		argument = strip(argument);
-
-		debug(argument);
+		// TODO: Process escape chars.
 		if(*argument == '\'' || *argument == '"') {
-			argument = extract_delimiter(argument);
+			char *ptr = argument+1;
+			while(*ptr != *argument) {
+
+				if(*ptr == '\\') {
+					ptr++;
+					if(!*ptr) {
+						throw runtime_error("Unexpected escape code");
+					}
+				}
+
+				ptr++;
+				if(!*ptr) {
+					throw runtime_error("Invalid argument format");
+				}
+			}
+			argument++;
+			*(ptr++) = 0;
+			*txtptr = ptr;
+
+			debug(argument);
+
+		} else {
+			char *ptr = argument;
+			while(*ptr && !isspace(*ptr)) {
+				ptr++;
+			}
+			if(*ptr) {
+				*(ptr++) = 0;
+			}
+			*txtptr = ptr;
 		}
-		debug(argument);
+
+		// Unescape
+		{
+			char *ptr = argument;
+			while(*ptr) {
+				if(*ptr == '\\') {
+					char *src = ptr+1;
+					char *dst = ptr;
+					while(*src) {
+						*(dst++) = *(src++);
+					}
+					*dst = 0;
+				}
+				ptr++;
+			}
+		}
 
 		return argument;
 	}

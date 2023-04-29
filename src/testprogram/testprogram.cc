@@ -132,7 +132,7 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	{
-		SubProcess{"test","echo su - root --login -- /usr/sbin/grub2-reboot  \"\"teste\"\""}.run();
+		SubProcess{"test","echo su - root --login -- /usr/sbin/grub2-reboot \"\\\"Reinstalar estação de trabalho\\\"\""}.run();
 		return 0;
 	}
 
