@@ -37,6 +37,11 @@
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
 
+		struct {
+			int count = 0;
+			const char **value = nullptr;
+		} args;
+
 	protected:
 
 		typedef Udjat::Application super;
@@ -65,6 +70,9 @@
 	public:
 		Application();
 		virtual ~Application();
+
+		/// @brief Get application property.
+		const char * getProperty(const char *name, const char *def = "") const noexcept;
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.

@@ -105,6 +105,10 @@
 
 	int Application::run(int argc, char **argv, const char *definitions) {
 
+		// Save command line arguments.
+		args.count = argc;
+		args.value = (const char **) argv;
+
 		// Check for command line arguments.
 		{
 			#pragma GCC diagnostic push
