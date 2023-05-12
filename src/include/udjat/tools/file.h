@@ -27,6 +27,7 @@
 #include <mutex>
 #include <string>
 #include <cstring>
+#include <cstdint>
 #include <sys/stat.h>
 #include <udjat/tools/string.h>
 

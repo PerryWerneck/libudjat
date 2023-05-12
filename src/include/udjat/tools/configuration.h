@@ -24,6 +24,7 @@
  #include <mutex>
  #include <vector>
  #include <functional>
+ #include <cstdint>
 
  namespace Udjat {
 
