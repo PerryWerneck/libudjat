@@ -29,6 +29,7 @@
  #include <string>
  #include <ostream>
  #include <memory>
+ #include <cstdint>
 
  namespace Udjat {
 
