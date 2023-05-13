@@ -33,8 +33,12 @@
 
 	String::String(const char **args, char delimiter) : std::string{args[0]} {
 
+		char delim[] = {delimiter,0};
+
 		for(size_t ix = 1; args[ix];ix++) {
-//			std::string::append(delimiter);
+			if(delimiter) {
+				std::string::append(delim);
+			}
 			std::string::append(args[ix]);
 		}
 
