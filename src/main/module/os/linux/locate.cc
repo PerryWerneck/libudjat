@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	std::vector<std::string> Module::search_path() noexcept {
+	std::vector<std::string> Module::search_paths() noexcept {
 
 		return std::vector<string>{
 #ifdef MODULES_DIR
@@ -42,9 +42,7 @@
 
 	}
 
-	std::string Module::Controller::locate(const char *name) noexcept {
-
-		std::vector<std::string> paths{Module::search_path()};
+	std::string Module::Controller::locate(const char *name,const std::vector<std::string> &paths) noexcept {
 
 		if(name && *name) {
 

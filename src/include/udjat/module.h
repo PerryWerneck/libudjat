@@ -98,7 +98,7 @@
 		static const Module * find(const char *name) noexcept;
 
 		/// @brief Get module search paths.
-		static std::vector<std::string> search_path() noexcept;
+		static std::vector<std::string> search_paths() noexcept;
 
 		/// @brief Load module by path.
 		/// @param name path to module filename or directory.
