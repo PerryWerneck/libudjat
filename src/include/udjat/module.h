@@ -26,6 +26,7 @@
  #include <udjat/agent.h>
  #include <udjat/request.h>
  #include <udjat/tools/file.h>
+ #include <vector>
  #include <cstdarg>
 
  namespace Udjat {
@@ -95,6 +96,9 @@
 		/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
 		/// @return Pointer to module or nullptr if not found.
 		static const Module * find(const char *name) noexcept;
+
+		/// @brief Get module search paths.
+		static std::vector<std::string> search_path() noexcept;
 
 		/// @brief Load module by path.
 		/// @param name path to module filename or directory.

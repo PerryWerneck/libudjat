@@ -35,7 +35,7 @@
 
  namespace Udjat {
 
-	SubProcess::Arguments SubProcess::Arguments::from_pid(int pid) {
+	SubProcess::Arguments SubProcess::Arguments::from_pid(int) {
 		throw system_error(ENOTSUP,system_category(),"Cant get process command line");
 	}
 

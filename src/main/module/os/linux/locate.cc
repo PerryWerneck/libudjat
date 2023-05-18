@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/module.h>
+ #include <udjat/module.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
@@ -26,9 +27,9 @@
 
  namespace Udjat {
 
-	std::string Module::Controller::locate(const char *name) noexcept {
+	std::vector<std::string> Module::search_path() noexcept {
 
-		string paths[] = {
+		return std::vector<string>{
 #ifdef MODULES_DIR
 			Config::Value<string>("modules","application-path",STRINGIZE_VALUE_OF(MODULES_DIR)).c_str(),
 #endif // MODULES_DIR
@@ -38,6 +39,12 @@
 			Config::Value<string>("modules","compatibility-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
 #endif //LIBDIR
 		};
+
+	}
+
+	std::string Module::Controller::locate(const char *name) noexcept {
+
+		std::vector<std::string> paths{Module::search_path()};
 
 		if(name && *name) {
 

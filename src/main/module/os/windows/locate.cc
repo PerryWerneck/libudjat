@@ -27,10 +27,9 @@
 
  namespace Udjat {
 
-	std::string Module::Controller::locate(const char *name) noexcept {
+	std::vector<std::string> Module::search_path() noexcept {
 
-		string paths[] = {
-
+		return std::vector<string>{
 			Config::Value<string>("modules","primary-path",Application::LibDir("modules",false).c_str()),
 
 #if defined(LIBDIR)
@@ -68,6 +67,11 @@
 			),
 #endif // LIBDIR
 		};
+
+	}
+	std::string Module::Controller::locate(const char *name) noexcept {
+
+		std::vector<std::string> paths{Module::search_path()};
 
 		if(name && *name) {
 

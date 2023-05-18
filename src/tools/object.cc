@@ -191,7 +191,7 @@
 		return "";
 	}
 
-	bool Abstract::Object::getProperty(const char *key, std::string &value) const {
+	bool Abstract::Object::getProperty(const char *, std::string &) const {
 		return false;
 	}
 
