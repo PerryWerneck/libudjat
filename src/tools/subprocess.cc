@@ -28,6 +28,7 @@
  #include <udjat/tools/intl.h>
  #include <iostream>
  #include <udjat/tools/threadpool.h>
+ #include <ctype.h>
 
  using namespace std;
 
@@ -78,7 +79,11 @@
 
 	/// @brief Called on subprocess normal exit.
 	void SubProcess::onExit(int rc) {
-		Logger::String{"'",command,"' failed with rc=",rc}.write(rc ? Logger::Error : Logger::Info,name());
+		if(rc) {
+			Logger::String{"'",command,"' failed with rc=",rc}.error(name());
+		} else {
+			Logger::String{"'",command,"' complete with rc=",rc}.info(name());
+		}
 	}
 
 	/// @brief Called on subprocess abnormal exit.
@@ -88,6 +93,63 @@
 #else
 		error() << "'" << command << "' finishes with signal '" << strsignal(sig) << "' (" << sig << ")" << endl;
 #endif // _WIN32
+	}
+
+	char * SubProcess::get_next_argument(char **txtptr) {
+
+		char *argument = chug(*txtptr);
+
+		// TODO: Process escape chars.
+		if(*argument == '\'' || *argument == '"') {
+			char *ptr = argument+1;
+			while(*ptr != *argument) {
+
+				if(*ptr == '\\') {
+					ptr++;
+					if(!*ptr) {
+						throw runtime_error("Unexpected escape code");
+					}
+				}
+
+				ptr++;
+				if(!*ptr) {
+					throw runtime_error("Invalid argument format");
+				}
+			}
+			argument++;
+			*(ptr++) = 0;
+			*txtptr = ptr;
+
+			debug(argument);
+
+		} else {
+			char *ptr = argument;
+			while(*ptr && !isspace(*ptr)) {
+				ptr++;
+			}
+			if(*ptr) {
+				*(ptr++) = 0;
+			}
+			*txtptr = ptr;
+		}
+
+		// Unescape
+		{
+			char *ptr = argument;
+			while(*ptr) {
+				if(*ptr == '\\') {
+					char *src = ptr+1;
+					char *dst = ptr;
+					while(*src) {
+						*(dst++) = *(src++);
+					}
+					*dst = 0;
+				}
+				ptr++;
+			}
+		}
+
+		return argument;
 	}
 
  }

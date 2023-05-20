@@ -7,6 +7,7 @@
 #include <udjat/tools/value.h>
 #include <udjat/tools/singleton.h>
 #include <list>
+#include <vector>
 
 using namespace std;
 
@@ -19,7 +20,7 @@ namespace Udjat {
 		/// @brief Find path from module name.
 		/// @param name Module name.
 		/// @return Module path or empty string if not found.
-		static std::string locate(const char *name) noexcept;
+		static std::string locate(const char *name,const std::vector<std::string> &paths) noexcept;
 
 		void init(const std::string &filename, const pugi::xml_node &node);
 

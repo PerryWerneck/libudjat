@@ -43,9 +43,43 @@
 		strncpy(path,name,PATH_MAX);
 
 		fd = open(dirname(path),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR);
-		if(fd < 0) {
+		if(fd > 0) {
+			return;
+		}
+
+		if(errno != ENOTSUP) {
 			throw system_error(errno,system_category(),Logger::Message("Can't create '{}'",filename));
 		}
+
+		strncpy(path,name,PATH_MAX); // Dirname change buffer, copy it again.
+		File::Path directory{dirname(path)};
+		if(!directory.dir()) {
+			throw system_error(ENOTDIR,system_category(),directory);
+		}
+
+		directory += '/';
+
+		unsigned long seq = (unsigned long) time(0);
+
+		for(size_t retry = 0; retry < 1000; retry++) {
+
+			string filename{directory.c_str()};
+			filename += std::to_string(seq--);
+
+			debug("Trying ",filename);
+
+			fd = open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR, S_IRUSR | S_IWUSR);
+			if(fd > 0) {
+				return;
+			}
+
+			if(errno != EEXIST) {
+				throw system_error(errno,system_category(),Logger::Message("Can't create '{}'",filename));
+			}
+
+		}
+
+		throw runtime_error(Logger::Message("Can't create temporary file on '{}'",directory.c_str()));
 
 	}
 
@@ -162,7 +196,22 @@
 		if(linkat(AT_FDCWD, tempfile, AT_FDCWD, filename, AT_SYMLINK_FOLLOW) != 0) {
 
 			// Unable to create hardlink, try to save file.
-			Udjat::File::save(fd,filename);
+			char realname[PATH_MAX];
+			ssize_t namelen = readlink(tempfile,realname,PATH_MAX);
+
+			if(namelen > 0 && namelen < PATH_MAX) {
+
+				realname[namelen] = 0;
+
+				if(rename(realname, filename) != 0) {
+					Udjat::File::save(fd,filename);
+				}
+
+			} else {
+
+				Udjat::File::save(fd,filename);
+
+			}
 
 		}
 

@@ -27,6 +27,7 @@
  #include <udjat/tools/activatable.h>
  #include <mutex>
  #include <list>
+ #include <cstdint>
 
  namespace Udjat {
 

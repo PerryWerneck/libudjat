@@ -113,5 +113,36 @@
 		return instance;
 	}
 
+	const char * Application::getProperty(const char *name, const char *def) const noexcept {
+
+		size_t szname = strlen(name);
+
+		for(int ix = 1; ix < args.count; ix++) {
+
+			const char *ptr = args.value[ix];
+			while(*ptr && *ptr == '-') {
+				ptr++;
+			}
+
+			if(!*ptr || strncasecmp(ptr,name,szname)) {
+				continue;
+			}
+
+			if(ptr[szname]) {
+				if(ptr[szname] != '=') {
+					continue;
+				}
+
+				return ptr+szname+1;
+			}
+
+			return "";
+
+		}
+
+		return def;
+
+	}
+
  }
 

@@ -29,6 +29,7 @@
  #include <string>
  #include <ostream>
  #include <memory>
+ #include <cstdint>
 
  namespace Udjat {
 
@@ -36,6 +37,11 @@
 	class UDJAT_API Application {
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
+
+		struct {
+			int count = 0;
+			const char **value = nullptr;
+		} args;
 
 	protected:
 
@@ -65,6 +71,9 @@
 	public:
 		Application();
 		virtual ~Application();
+
+		/// @brief Get application property.
+		const char * getProperty(const char *name, const char *def = "") const noexcept;
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.

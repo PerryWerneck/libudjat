@@ -27,6 +27,7 @@
  #include <mutex>
  #include <pthread.h>
  #include <pugixml.hpp>
+ #include <cstdint>
 
  namespace Udjat {
 

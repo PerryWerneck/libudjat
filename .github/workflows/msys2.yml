@@ -3,6 +3,7 @@ on:
   pull_request:
     branches:
       - master
+      - develop
 jobs:
   msys2-mingw:
     name: Publish for Windows 64

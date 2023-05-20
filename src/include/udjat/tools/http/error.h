@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/agent/level.h>
  #include <memory>
+ #include <cstdint>
 
  namespace Udjat {
 

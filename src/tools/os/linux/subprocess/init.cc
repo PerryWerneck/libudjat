@@ -83,44 +83,23 @@
 				throw runtime_error("Too many arguments");
 			}
 
-			argv[argc++] = line;
-			while(*line && !isspace(*line)) {
+			argv[argc++] = get_next_argument(&line);
 
-				if(*line == '"') {
-					line = strchr(line+1,'"');
-					if(line) {
-						line++;
-					} else {
-						throw runtime_error("Error parsing argument, mismatched '\"'");
-					}
-				}
-
-				if(*line == '\'') {
-					line = strchr(line+1,'\'');
-					if(line) {
-						line++;
-					} else {
-						throw runtime_error("Error parsing argument, mismatched \"'\"");
-					}
-				}
-
-				if(*line) {
-					line++;
-				}
-
-			}
-			if(!*line) {
-				break;
-			}
-			*(line++) = 0;
-
-			line = chug(line);
 		}
+
 		argv[argc] = NULL;
 
-		for(size_t ix=0;ix < argc; ix++) {
-			strip(argv[ix]);
-			debug("argv[",ix,"]='",argv[ix],"'");
+		{
+			Logger::String logmsg{"Command line: ["};
+			for(size_t ix=0;ix < argc; ix++) {
+				strip(argv[ix]);
+				if(ix) {
+					logmsg.append(" ");
+				}
+				logmsg.append(argv[ix]);
+			}
+			logmsg.append("]");
+			logmsg.trace(proc.name());
 		}
 
 		// Fork new proccess

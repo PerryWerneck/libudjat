@@ -65,6 +65,8 @@ namespace Udjat {
 			"fallback-to"
 		};
 
+		std::vector<std::string> paths{Module::search_paths()};
+
 		for(const char *attribute : attributes) {
 
 			const char *name = node.attribute(attribute).as_string();
@@ -78,7 +80,7 @@ namespace Udjat {
 				return true;
 			}
 
-			string filename = locate(name);
+			string filename = locate(name,paths);
 
 			if(!filename.empty()) {
 
@@ -165,7 +167,7 @@ namespace Udjat {
 
 	bool Module::Controller::load(const char *name, bool required) {
 
-		string filename = locate(name);
+		string filename = locate(name,Module::search_paths());
 		if(filename.empty()) {
 			if(required) {
 				throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find module '{}'",name));

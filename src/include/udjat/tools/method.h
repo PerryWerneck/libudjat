@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <ostream>
  #include <pugixml.hpp>
+ #include <cstdint>
 
  namespace Udjat {
 

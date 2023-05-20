@@ -17,8 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
- // #define APPLICATION_TEST 1
+ // #define SERVICE_TEST 1
+ #define APPLICATION_TEST 1
  // #define OBJECT_TEST 1
 
  #include <config.h>
@@ -132,6 +132,13 @@ int main(int argc, char **argv) {
 	Logger::verbosity(9);
 
 	/*
+	{
+		SubProcess{"test","echo su - root --login -- /usr/sbin/grub2-reboot \"\\\"Reinstalar estação de trabalho\\\"\""}.run();
+		return 0;
+	}
+	*/
+
+	/*
 	MainLoop::getInstance().TimerFactory(1000,[]{
 		debug("---------------------------------------------------------------------");
 		SubProcess{"test","ls -l",Logger::Warning}.run();
@@ -165,6 +172,7 @@ int main(int argc, char **argv) {
 
 		void root(std::shared_ptr<Abstract::Agent> agent) override {
 			debug("--------------------------------> ",agent->name()," is the new root");
+			debug("test-arg='",getProperty("test-arg","default"));
 		}
 
 	};

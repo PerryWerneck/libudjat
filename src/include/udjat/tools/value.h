@@ -26,6 +26,7 @@
  #include <pugixml.hpp>
  #include <functional>
  #include <memory>
+ #include <cstdint>
 
  namespace Udjat {
 

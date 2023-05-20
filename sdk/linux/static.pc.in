@@ -9,6 +9,7 @@ product_title=@PRODUCT_TITLE@
 product_version=@PACKAGE_MAJOR_VERSION@@PACKAGE_MINOR_VERSION@
 package_name=lib@PRODUCT_NAME@@PACKAGE_MAJOR_VERSION@_@PACKAGE_MINOR_VERSION@
 module_path=${libdir}/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules/
+module_version=@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
 
 Name: udjat
 Description: The Eye of Horus

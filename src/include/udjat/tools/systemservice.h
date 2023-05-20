@@ -20,6 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <cstdint>
  #include <udjat/tools/application.h>
 
  #ifdef _WIN32

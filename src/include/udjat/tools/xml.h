@@ -31,6 +31,7 @@
  #include <pugixml.hpp>
  #include <udjat/defs.h>
  #include <functional>
+ #include <cstdint>
 
  namespace Udjat {
 

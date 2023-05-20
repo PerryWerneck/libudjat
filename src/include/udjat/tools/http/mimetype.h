@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <string>
  #include <ostream>
+ #include <cstdint>
 
  namespace Udjat {
 
