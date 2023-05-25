@@ -382,7 +382,7 @@
 		<Unit filename="src/tools/url/watcher.cc" />
 		<Unit filename="src/tools/url/worker.cc" />
 		<Unit filename="src/tools/value.cc" />
-		<Unit filename="src/tools/xml.cc" />
+		<Unit filename="src/tools/xml/attribute.cc" />
 		<Unit filename="src/tools/xml/document.cc" />
 		<Unit filename="src/tools/xml/misc.cc" />
 		<Extensions />

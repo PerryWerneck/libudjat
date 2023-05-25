@@ -30,6 +30,7 @@
 
  #include <pugixml.hpp>
  #include <udjat/defs.h>
+ #include <udjat/tools/quark.h>
  #include <functional>
  #include <cstdint>
 
@@ -46,6 +47,8 @@
 
 		};
 
+		const char * get_attribute(const XML::Node &node, const char *aname, const char *vname = "value");
+		const Quark QuarkFactory(const XML::Node &node, const char *aname, const char *vname = "value");
 
 	}
 
@@ -87,6 +90,11 @@
 
 		std::string to_string(const std::string &def) const;
 
+		/// @brief Search XML tree for attribute.
+		/// @param node the startup node.
+		/// @param aname The required attribute node.
+		/// @param vname The tag on <attribute> to get attribute value.
+		/// @return The value tag from <attribute name=${aname} ${vname}=value /> or <node ${aname}=value /> or other standard searches.
 	};
 
  }
