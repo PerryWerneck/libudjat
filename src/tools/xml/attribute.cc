@@ -53,7 +53,9 @@
 			for(pugi::xml_node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
 
 				const char * name = child.attribute("name").as_string("");
-				if(name && *name && strcasecmp(name,attrname) == 0) {
+
+				// is_allowed should be the last test since it can trigger a network request.
+				if(name && *name && strcasecmp(name,attrname) == 0 && is_allowed(child)) {
 					return String{child.attribute(vname).as_string(def)}.expand(node);
 				}
 
