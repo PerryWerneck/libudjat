@@ -36,7 +36,10 @@
 
  namespace Udjat {
 
+	class String;
+
 	namespace XML {
+
 		using Node = pugi::xml_node;
 		using Attribute = pugi::xml_attribute;
 
@@ -47,8 +50,8 @@
 
 		};
 
-		const char * get_attribute(const XML::Node &node, const char *aname, const char *vname = "value");
-		const Quark QuarkFactory(const XML::Node &node, const char *aname, const char *vname = "value");
+		String StringFactory(const XML::Node &node, const char *aname, const char *vname = "value", const char *def = "");
+		const Quark QuarkFactory(const XML::Node &node, const char *aname, const char *vname = "value", const char *def = "");
 
 	}
 

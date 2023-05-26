@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/string.h>
  #include <cstring>
 
  using namespace std;
@@ -26,17 +27,17 @@
 
  namespace Udjat {
 
-	const Quark XML::QuarkFactory(const XML::Node &node, const char *aname, const char *vname) {
-		return Quark{get_attribute(node,aname,vname)};
+	const Quark XML::QuarkFactory(const XML::Node &node, const char *aname, const char *vname, const char *def) {
+		return StringFactory(node,aname,vname,def).as_quark();
 	}
 
-	const char * XML::get_attribute(const XML::Node &node, const char *aname, const char *vname) {
+	String XML::StringFactory(const XML::Node &node, const char *aname, const char *vname, const char *def) {
 
 		// Search for <node ${aname}="value"
 		{
 			const pugi::xml_attribute &attr = node.attribute(aname);
 			if(attr) {
-				return attr.as_string();
+				return String{attr.as_string(def)}.expand(node);
 			}
 		}
 
@@ -46,15 +47,14 @@
 		upname += aname;
 
 		const char *attrname = aname;
-		for(pugi::xml_node parent = node.parent(); parent ; parent = parent.parent()) {
+		for(pugi::xml_node parent = node; parent ; parent = parent.parent()) {
 
 			// Search for <attribute name='${attrname}' ${vname}="value" />
 			for(pugi::xml_node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
 
 				const char * name = child.attribute("name").as_string("");
 				if(name && *name && strcasecmp(name,attrname) == 0) {
-					return child.attribute(vname).as_string();
-					break;
+					return String{child.attribute(vname).as_string(def)}.expand(node);
 				}
 
 			}
@@ -63,7 +63,7 @@
 			attrname = upname.c_str();
 		}
 
-		return "";
+		return String{def}.expand(node);
 
 	}
 
