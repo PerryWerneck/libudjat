@@ -17,6 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #ifndef _GNU_SOURCE
+	#define _GNU_SOURCE             /* See feature_test_macros(7) */
+ #endif // _GNU_SOURCE
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/file.h>
@@ -118,6 +122,10 @@
 	}
 
 	std::string File::Temporary::create() {
+		return create(0);
+	}
+
+	std::string File::Temporary::create(unsigned long long len) {
 
 		string basename{"/tmp/"};
 		basename += Application::Name();
@@ -132,8 +140,13 @@
 		for(size_t f = 0; f < 1000; f++) {
 
 			string filename = basename + "." + std::to_string(rand()) + ".tmp";
-			int fd = open(filename.c_str(),O_CREAT|O_EXCL,0600);
+			int fd = open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR,0600);
 			if(fd > 0) {
+				if(len && fallocate(fd, 0, 0, len) != 0) {
+					int err = errno;
+					::close(fd);
+					throw system_error(err,system_category(),string{"Can't allocate '"} + filename + "'");
+				}
 				::close(fd);
 				return filename;
 			}

@@ -424,6 +424,10 @@ namespace Udjat {
 			~Temporary();
 
 			/// @brief Create an empty temporary file.
+			/// @param len Required file size.
+			static std::string create(unsigned long long len);
+
+			/// @brief Create an empty temporary file.
 			static std::string create();
 
 			/// @brief Create an empty temporary dir.
