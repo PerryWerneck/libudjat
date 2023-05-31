@@ -41,6 +41,14 @@
 
  namespace Udjat {
 
+	File::Temporary::Temporary() : fd{open("/tmp",O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
+
+		if(fd < 0) {
+			throw system_error(errno,system_category(),"Can't create transient temporary file");
+		}
+
+	}
+
 	File::Temporary::Temporary(const char *name) : filename{name} {
 
 		char path[PATH_MAX];
@@ -246,7 +254,9 @@
 		this->save(filename.c_str(),replace);
 	}
 
-	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
+	ssize_t File::Temporary::write(const void *contents, size_t length) {
+
+		ssize_t rc = length;
 
 		while(length) {
 
@@ -259,9 +269,29 @@
 			contents = (void *) (((uint8_t *) contents) + bytes);
 
 		}
-		return *this;
+
+		return rc;
 
 	}
 
+	ssize_t File::Temporary::read(void *contents, size_t length, bool required) {
+
+		ssize_t complete = 0;
+
+		do {
+
+			ssize_t bytes = ::read(fd,contents,length);
+			if(bytes < 0) {
+				throw system_error(errno,system_category(),"Cant read from temporary file");
+			} else if(bytes == 0) {
+				break;
+			}
+			complete += bytes;
+
+		} while(required && ((size_t) complete) < length);
+
+		return complete;
+
+	}
 
  }

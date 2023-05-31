@@ -239,9 +239,10 @@
 
 	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace) {
 
-		File::Temporary{filename}
-			.write(get(progress))
-			.save(filename,replace);
+		File::Temporary tmpfile{filename};
+
+		tmpfile.write(get(progress));
+		tmpfile.save(filename,replace);
 
 		return true;
 	}

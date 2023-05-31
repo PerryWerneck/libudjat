@@ -403,17 +403,21 @@ namespace Udjat {
 		/// @brief Temporary file.
 		class UDJAT_API Temporary {
 		private:
-			int fd = -1;
-
 			/// @brief The reference filename.
 			std::string filename;
 
 #ifdef _WIN32
-			Temporary();
 			std::string tempname;
 #endif // _WIN32
 
+		protected:
+			int fd = -1;
+
 		public:
+
+			/// @brief Create unnamed temporary file.
+			Temporary();
+
 			/// @brief Create temporary file with same path of another one
 			/// @param filename Filename to use as reference.
 			Temporary(const char *filename);
@@ -456,22 +460,35 @@ namespace Udjat {
 			/// @param replace If true just replace the file, no backup.
 			void save(bool replace = false);
 
-			/// @brief Write data to tempfile.
+			/// @brief Write data to file.
 			/// @param contents Data to write.
 			/// @param length Data length.
-			Temporary & write(const void *contents, size_t length);
+			/// @return Number of bytes written (allways 'length')
+			ssize_t write(const void *contents, size_t length);
 
-			inline Temporary & write(const std::string &str) {
+			/// @brief Read data from file.
+			/// @param contents The buffer for file contents.
+			/// @param length The length of the buffeer.
+			/// @param required when true read 'length' bytes.
+			/// @return Number of bytes read (negative on fail, 0 on eof);
+			ssize_t read(void *contents, size_t length, bool required = false);
+
+			inline ssize_t write(const std::string &str) {
 				return write(str.c_str(),str.size());
 			}
 
-			inline Temporary & write(const char *str) {
+			inline ssize_t write(const char *str) {
 				return write(str,strlen(str));
 			}
 
 			template<typename T>
-			inline Temporary & write(const T &value) {
+			inline ssize_t write(const T &value) {
 				return write((const void *) &value, sizeof(value));
+			}
+
+			template<typename T>
+			inline ssize_t read(T &value) {
+				return read((void *) &value, sizeof(value));
 			}
 
 		};
