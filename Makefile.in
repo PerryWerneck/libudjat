@@ -380,6 +380,12 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/file
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/file/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/file
+	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(INSTALL_DATA) \

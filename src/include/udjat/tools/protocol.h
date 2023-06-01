@@ -294,6 +294,10 @@
 			/// @return true if the file was updated or replaced.
 			virtual bool save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace = false);
 
+			/// @brief Call URL, save response with custom writer.
+			/// @param writer The custom writer.
+			virtual void save(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer);
+
 			/// @brief Get URL, save response to temporary file.
 			/// @return The temporary filename.
 			std::string save(const std::function<bool(double current, double total)> &progress);

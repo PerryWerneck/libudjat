@@ -247,6 +247,10 @@
 		return true;
 	}
 
+	void Protocol::Worker::save(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
+		throw system_error(ENOTSUP,system_category(),"The available backend is unable to manage custom writers");
+	}
+
 	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {
 		Application::CacheDir name{"urls"};
 		name += Base64::encode(url());
