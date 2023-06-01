@@ -251,7 +251,9 @@
 		<Unit filename="src/tools/eventcontroller.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file.cc" />
+		<Unit filename="src/tools/file/abstract.cc" />
 		<Unit filename="src/tools/file/file.cc" />
+		<Unit filename="src/tools/file/path.cc" />
 		<Unit filename="src/tools/file/private.h" />
 		<Unit filename="src/tools/http/client.cc" />
 		<Unit filename="src/tools/http/error.cc" />

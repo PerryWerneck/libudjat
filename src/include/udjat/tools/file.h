@@ -45,7 +45,15 @@ namespace Udjat {
 			constexpr File(int f) : fd{f} {
 			}
 
+			File(const char *filename, bool write = false);
+
 			virtual ~File();
+
+			/// @brief Write data to file at offset.
+			/// @param contents Data to write.
+			/// @param length Data length.
+			/// @return Number of bytes written (allways 'length')
+			ssize_t write(unsigned long long offset, const void *contents, size_t length);
 
 			/// @brief Write data to file.
 			/// @param contents Data to write.
@@ -59,6 +67,13 @@ namespace Udjat {
 			/// @param required when true read 'length' bytes.
 			/// @return Number of bytes read (negative on fail, 0 on eof);
 			ssize_t read(void *contents, size_t length, bool required = false);
+
+			/// @brief Read data from file at offset.
+			/// @param contents The buffer for file contents.
+			/// @param length The length of the buffeer.
+			/// @param required when true read 'length' bytes.
+			/// @return Number of bytes read (negative on fail, 0 on eof);
+			ssize_t read(unsigned long long offset, void *contents, size_t length, bool required = false);
 
 			inline ssize_t write(const std::string &str) {
 				return write(str.c_str(),str.size());
@@ -78,6 +93,8 @@ namespace Udjat {
 				return read((void *) &value, sizeof(value));
 			}
 
+			/// @brief Copy file using custom writer.
+			void save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &write) const;
 
 		};
 
