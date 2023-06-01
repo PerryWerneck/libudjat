@@ -33,6 +33,56 @@
 
 namespace Udjat {
 
+	namespace Abstract {
+
+		class UDJAT_API File {
+		protected:
+			int fd = -1;
+
+		public:
+			constexpr File() = default;
+
+			constexpr File(int f) : fd{f} {
+			}
+
+			virtual ~File();
+
+			/// @brief Write data to file.
+			/// @param contents Data to write.
+			/// @param length Data length.
+			/// @return Number of bytes written (allways 'length')
+			ssize_t write(const void *contents, size_t length);
+
+			/// @brief Read data from file.
+			/// @param contents The buffer for file contents.
+			/// @param length The length of the buffeer.
+			/// @param required when true read 'length' bytes.
+			/// @return Number of bytes read (negative on fail, 0 on eof);
+			ssize_t read(void *contents, size_t length, bool required = false);
+
+			inline ssize_t write(const std::string &str) {
+				return write(str.c_str(),str.size());
+			}
+
+			inline ssize_t write(const char *str) {
+				return write(str,strlen(str));
+			}
+
+			template<typename T>
+			inline ssize_t write(const T &value) {
+				return write((const void *) &value, sizeof(value));
+			}
+
+			template<typename T>
+			inline ssize_t read(T &value) {
+				return read((void *) &value, sizeof(value));
+			}
+
+
+		};
+
+	}
+
 	namespace File {
 
 		using Stat = struct stat;
@@ -401,7 +451,7 @@ namespace Udjat {
 		};
 
 		/// @brief Temporary file.
-		class UDJAT_API Temporary {
+		class UDJAT_API Temporary : public Abstract::File {
 		private:
 			/// @brief The reference filename.
 			std::string filename;
@@ -409,9 +459,6 @@ namespace Udjat {
 #ifdef _WIN32
 			std::string tempname;
 #endif // _WIN32
-
-		protected:
-			int fd = -1;
 
 		public:
 
@@ -459,37 +506,6 @@ namespace Udjat {
 			/// @brief Move temporary file to the reference filename.
 			/// @param replace If true just replace the file, no backup.
 			void save(bool replace = false);
-
-			/// @brief Write data to file.
-			/// @param contents Data to write.
-			/// @param length Data length.
-			/// @return Number of bytes written (allways 'length')
-			ssize_t write(const void *contents, size_t length);
-
-			/// @brief Read data from file.
-			/// @param contents The buffer for file contents.
-			/// @param length The length of the buffeer.
-			/// @param required when true read 'length' bytes.
-			/// @return Number of bytes read (negative on fail, 0 on eof);
-			ssize_t read(void *contents, size_t length, bool required = false);
-
-			inline ssize_t write(const std::string &str) {
-				return write(str.c_str(),str.size());
-			}
-
-			inline ssize_t write(const char *str) {
-				return write(str,strlen(str));
-			}
-
-			template<typename T>
-			inline ssize_t write(const T &value) {
-				return write((const void *) &value, sizeof(value));
-			}
-
-			template<typename T>
-			inline ssize_t read(T &value) {
-				return read((void *) &value, sizeof(value));
-			}
 
 		};
 

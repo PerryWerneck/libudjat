@@ -22,6 +22,7 @@ COMMON_SOURCES= \
 	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/tools/application/*.cc) \
+	$(wildcard src/tools/file/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/alert/*.cc)
 

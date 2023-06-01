@@ -41,7 +41,7 @@
 
  namespace Udjat {
 
-	File::Temporary::Temporary() : fd{open("/tmp",O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
+	File::Temporary::Temporary() : Abstract::File{::open("/tmp",O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),"Can't create transient temporary file");
@@ -64,7 +64,7 @@
 		}
 
 		strncpy(path,name,PATH_MAX); // Dirname change buffer, copy it again.
-		File::Path directory{dirname(path)};
+		Udjat::File::Path directory{dirname(path)};
 		if(!directory.dir()) {
 			throw system_error(ENOTDIR,system_category(),directory);
 		}
@@ -242,7 +242,7 @@
 	}
 
 	void File::Temporary::link(const char *filename) const {
-		File::move(fd,filename);
+		Udjat::File::move(fd,filename);
 	}
 
 	void File::Temporary::save(bool replace) {
@@ -254,44 +254,5 @@
 		this->save(filename.c_str(),replace);
 	}
 
-	ssize_t File::Temporary::write(const void *contents, size_t length) {
-
-		ssize_t rc = length;
-
-		while(length) {
-
-			ssize_t bytes = ::write(fd, contents, length);
-			if(bytes < 1) {
-				throw system_error(errno,system_category(),"Cant write to temporary file");
-			}
-
-			length -= bytes;
-			contents = (void *) (((uint8_t *) contents) + bytes);
-
-		}
-
-		return rc;
-
-	}
-
-	ssize_t File::Temporary::read(void *contents, size_t length, bool required) {
-
-		ssize_t complete = 0;
-
-		do {
-
-			ssize_t bytes = ::read(fd,contents,length);
-			if(bytes < 0) {
-				throw system_error(errno,system_category(),"Cant read from temporary file");
-			} else if(bytes == 0) {
-				break;
-			}
-			complete += bytes;
-
-		} while(required && ((size_t) complete) < length);
-
-		return complete;
-
-	}
 
  }
