@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -34,13 +34,13 @@
 
  namespace Udjat {
 
-	Abstract::File::~File() {
+	File::Handler::~Handler() {
 		if(fd > 0) {
 			::close(fd);
 		}
 	}
 
-	ssize_t Abstract::File::write(unsigned long long offset, const void *contents, size_t length) {
+	ssize_t File::Handler::write(unsigned long long offset, const void *contents, size_t length) {
 
 		ssize_t rc = length;
 
@@ -62,7 +62,7 @@
 
 	}
 
-	ssize_t Abstract::File::write(const void *contents, size_t length) {
+	ssize_t File::Handler::write(const void *contents, size_t length) {
 
 		ssize_t rc = length;
 
@@ -82,7 +82,7 @@
 
 	}
 
-	ssize_t Abstract::File::read(void *contents, size_t length, bool required) {
+	ssize_t File::Handler::read(void *contents, size_t length, bool required) {
 
 		ssize_t complete = 0;
 
@@ -102,7 +102,7 @@
 
 	}
 
-	ssize_t Abstract::File::read(unsigned long long offset, void *contents, size_t length, bool required) {
+	ssize_t File::Handler::read(unsigned long long offset, void *contents, size_t length, bool required) {
 
 		ssize_t complete = 0;
 
@@ -121,7 +121,7 @@
 		return complete;
 
 	}
-	void Abstract::File::save(const std::function<void(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &write) const {
+	void File::Handler::save(const std::function<void(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &write) const {
 
 		struct stat st;
 		if(fstat(fd,&st)) {

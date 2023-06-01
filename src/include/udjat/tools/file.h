@@ -21,7 +21,8 @@
 
 #include <udjat/defs.h>
 #include <udjat/tools/quark.h>
-#include <udjat/tools/file.h>
+#include <udjat/tools/file/handler.h>
+#include <udjat/tools/file/temporary.h>
 #include <list>
 #include <algorithm>
 #include <mutex>
@@ -32,73 +33,6 @@
 #include <udjat/tools/string.h>
 
 namespace Udjat {
-
-	namespace Abstract {
-
-		class UDJAT_API File {
-		protected:
-			int fd = -1;
-
-		public:
-			constexpr File() = default;
-
-			constexpr File(int f) : fd{f} {
-			}
-
-			File(const char *filename, bool write = false);
-
-			virtual ~File();
-
-			/// @brief Write data to file at offset.
-			/// @param contents Data to write.
-			/// @param length Data length.
-			/// @return Number of bytes written (allways 'length')
-			ssize_t write(unsigned long long offset, const void *contents, size_t length);
-
-			/// @brief Write data to file.
-			/// @param contents Data to write.
-			/// @param length Data length.
-			/// @return Number of bytes written (allways 'length')
-			ssize_t write(const void *contents, size_t length);
-
-			/// @brief Read data from file.
-			/// @param contents The buffer for file contents.
-			/// @param length The length of the buffeer.
-			/// @param required when true read 'length' bytes.
-			/// @return Number of bytes read (negative on fail, 0 on eof);
-			ssize_t read(void *contents, size_t length, bool required = false);
-
-			/// @brief Read data from file at offset.
-			/// @param contents The buffer for file contents.
-			/// @param length The length of the buffeer.
-			/// @param required when true read 'length' bytes.
-			/// @return Number of bytes read (negative on fail, 0 on eof);
-			ssize_t read(unsigned long long offset, void *contents, size_t length, bool required = false);
-
-			inline ssize_t write(const std::string &str) {
-				return write(str.c_str(),str.size());
-			}
-
-			inline ssize_t write(const char *str) {
-				return write(str,strlen(str));
-			}
-
-			template<typename T>
-			inline ssize_t write(const T &value) {
-				return write((const void *) &value, sizeof(value));
-			}
-
-			template<typename T>
-			inline ssize_t read(T &value) {
-				return read((void *) &value, sizeof(value));
-			}
-
-			/// @brief Copy file using custom writer.
-			void save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &write) const;
-
-		};
-
-	}
 
 	namespace File {
 
@@ -467,74 +401,6 @@ namespace Udjat {
 
 		};
 
-		/// @brief Temporary file.
-		class UDJAT_API Temporary : public Abstract::File {
-		private:
-			/// @brief The reference filename.
-			std::string filename;
-
-#ifdef _WIN32
-			std::string tempname;
-#endif // _WIN32
-
-		public:
-
-			/// @brief Create unnamed temporary file.
-			Temporary();
-
-			/// @brief Create temporary file with same path of another one
-			/// @param filename Filename to use as reference.
-			Temporary(const char *filename);
-
-			Temporary(const std::string &filename) : Temporary{filename.c_str()} {
-			}
-
-			~Temporary();
-
-			/// @brief Create an empty temporary file.
-			/// @param len Required file size.
-			static std::string create(unsigned long long len);
-
-			/// @brief Create an empty temporary file.
-			static std::string create();
-
-			/// @brief Create an empty temporary dir.
-			static std::string mkdir();
-
-#ifdef _WIN32
-
-			inline const char * tempfilename() const noexcept {
-				return tempname.c_str();
-			}
-
-#else
-
-			/// @brief Hardlink tempfile to new filename (Linux only).
-			/// @param filename The hard link name.
-			void link(const char *filename) const;
-
-#endif // _WIN32
-
-			/// @brief Save tempfile to new filename.
-			/// @param filename The file name.
-			/// @param replace If true just replace the file, no backup.
-			void save(const char *filename, bool replace = false);
-
-			/// @brief Move temporary file to the reference filename.
-			/// @param replace If true just replace the file, no backup.
-			void save(bool replace = false);
-
-		};
-
-	}
-
-}
-
-namespace std {
-
-	template<typename T>
-	inline Udjat::File::Temporary& operator<< (Udjat::File::Temporary &file, const T &value) {
-			return file.write(value);
 	}
 
 }

@@ -116,6 +116,8 @@
 		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
+		<Unit filename="src/include/udjat/tools/file/handler.h" />
+		<Unit filename="src/include/udjat/tools/file/temporary.h" />
 		<Unit filename="src/include/udjat/tools/handler.h" />
 		<Unit filename="src/include/udjat/tools/http/client.h" />
 		<Unit filename="src/include/udjat/tools/http/error.h" />
@@ -253,6 +255,7 @@
 		<Unit filename="src/tools/file.cc" />
 		<Unit filename="src/tools/file/abstract.cc" />
 		<Unit filename="src/tools/file/file.cc" />
+		<Unit filename="src/tools/file/handler.cc" />
 		<Unit filename="src/tools/file/path.cc" />
 		<Unit filename="src/tools/file/private.h" />
 		<Unit filename="src/tools/http/client.cc" />

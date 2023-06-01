@@ -41,7 +41,7 @@
 
  namespace Udjat {
 
-	File::Temporary::Temporary() : Abstract::File{::open("/tmp",O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
+	File::Temporary::Temporary() : File::Handler{::open("/tmp",O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),"Can't create transient temporary file");
