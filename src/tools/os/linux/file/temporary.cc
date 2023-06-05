@@ -41,7 +41,7 @@
 
  namespace Udjat {
 
-	File::Temporary::Temporary() : File::Handler{::open("/tmp",O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
+	File::Temporary::Temporary() : File::Handler{::open(Application::TmpDir{}.c_str(),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),"Can't create transient temporary file");
@@ -101,7 +101,7 @@
 
 	std::string File::Temporary::mkdir() {
 
-		string basename{"/tmp/"};
+		Application::TmpDir basename;
 		basename += Application::Name();
 
 		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
@@ -125,7 +125,7 @@
 
 		}
 
-		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+		throw runtime_error(String{"Too many files in '",Application::TmpDir().c_str(),"'"});
 
 	}
 
@@ -135,7 +135,7 @@
 
 	std::string File::Temporary::create(unsigned long long len) {
 
-		string basename{"/tmp/"};
+		Application::TmpDir basename;
 		basename += Application::Name();
 
 		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
@@ -165,7 +165,7 @@
 
 		}
 
-		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+		throw runtime_error(String{"Too many files in '",Application::TmpDir{}.c_str(),"'"});
 
 	}
 
