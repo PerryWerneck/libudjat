@@ -61,6 +61,12 @@
 
 		std::string response{path};
 
+		if(path[strlen(path)-1] != '/') {
+			response += '/';
+		}
+
+		debug("----------------------> [",response,"]");
+
 		response.append(program_invocation_short_name);
 		File::Path::mkdir(response.c_str(),required);
 		response.append("/");

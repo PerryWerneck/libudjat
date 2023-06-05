@@ -136,7 +136,6 @@
 	std::string File::Temporary::create(unsigned long long len) {
 
 		Application::TmpDir basename;
-		basename += Application::Name();
 
 		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
 			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
