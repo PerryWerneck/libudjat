@@ -46,7 +46,7 @@
 		return Quark(name).c_str();
 	}
 
-	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject(NameFactory(node)) {
+	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject{NameFactory(node)} {
 	}
 
 	const char * NamedObject::name() const noexcept {
