@@ -38,6 +38,40 @@
 		File::copy(from,to,Protocol::Watcher::progress,replace);
 	}
 
+	UDJAT_API void File::copy(const char *filename, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) {
+
+		int fd = open(filename,O_RDONLY);
+		if(fd < 0) {
+			throw system_error(errno,system_category(),String{"Cant open temporary ",filename});
+		}
+
+		struct stat st;
+		if(fstat(fd,&st)) {
+			throw system_error(errno,system_category(),String{"Cant get length of ",filename});
+		}
+
+		unsigned long long offset = 0;
+		char buffer[st.st_blksize+1];
+
+		while(offset < (unsigned long long) st.st_size) {
+
+			ssize_t bytes = pread(fd,buffer,st.st_blksize,offset);
+			if(bytes < 0) {
+				throw system_error(errno,system_category(),"Cant read from file");
+			} else if(bytes == 0) {
+				throw runtime_error("Unexpected EOF reading from file");
+			}
+
+			writer(offset,st.st_size,buffer,bytes);
+
+			offset += bytes;
+
+		}
+
+		::close(fd);
+
+	}
+
 	std::string File::save(const char *contents) {
 
 		std::string name = File::Temporary::create();
@@ -85,19 +119,19 @@
 		return name;
 	}
 
-	void File::save(int fd, const char *filename) {
+	void File::copy(int from, const char *to) {
 
 #ifdef _WIN32
-		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+		int out = open(to,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
 #else
-		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0644);
+		int out = open(to,O_WRONLY|O_CREAT|O_TRUNC,0644);
 #endif // _WIN32
 
 		if(out < 0) {
-			throw system_error(errno,system_category(),string{"Error opening '"} + filename + "'");
+			throw system_error(errno,system_category(),string{"Error opening '"} + to + "'");
 		}
 
-		int in = dup(fd);
+		int in = dup(from);
 
 #ifndef _WIN32
 		fcntl(in,F_SETFL,fcntl(in,F_GETFL,0)|O_RDWR);
@@ -106,7 +140,7 @@
 		try {
 
 			if(lseek(in,0,SEEK_SET) == (off_t) -1) {
-				throw system_error(errno,system_category(),string{"Error positioning '"} + filename + "'");
+				throw system_error(errno,system_category(),string{"Error positioning '"} + to + "'");
 			}
 
 			char buffer[4096];
@@ -115,11 +149,11 @@
 			while(bytes != 0) {
 
 				if(bytes < 0) {
-					throw system_error(errno,system_category(),string{"Error reading source while saving '"} + filename + "'");
+					throw system_error(errno,system_category(),string{"Error reading source while saving '"} + to + "'");
 				}
 
 				if(write(out,buffer,bytes) != bytes) {
-					throw system_error(errno,system_category(),string{"Error saving '"} + filename + "'");
+					throw system_error(errno,system_category(),string{"Error saving '"} + to + "'");
 				}
 
 				bytes = read(in,buffer,4096);

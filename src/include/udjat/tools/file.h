@@ -42,7 +42,14 @@ namespace Udjat {
 		class Controller;
 
 		/// @brief Copy file
-		void save(int fd, const char *filename);
+		void copy(int from, const char *to);
+
+		inline void save(int from, const char *to) {
+			copy(from,to);
+		}
+
+		/// @brief Copy file with custom writer.
+		void copy(const char *from, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer);
 
 		/// @brief Copy file
 		void copy(const char *from, const char *to, bool replace = true);
@@ -176,6 +183,9 @@ namespace Udjat {
 
 			/// @brief Save file to FD.
 			static void save(int fd, const char *contents);
+
+			/// @brief Save file with custom writer.
+			void save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) const;
 
 			/// @brief Replace file without backup
 			static void replace(const char *filename, const char *contents);

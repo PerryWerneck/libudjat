@@ -171,6 +171,10 @@
 
 	}
 
+	void File::Path::save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) const {
+		File::copy(c_str(),writer);
+	}
+
 	void File::Path::save(const char *filename, const char *contents) {
 
 		// Get file information.
