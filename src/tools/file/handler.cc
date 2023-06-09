@@ -36,7 +36,7 @@
 
  namespace Udjat {
 
-	File::Handler::Handler(const char *filename, bool write) : 	Handler{::open(filename,O_TMPFILE|(write ? O_RDWR : O_RDONLY), S_IRUSR | S_IWUSR)} {
+	File::Handler::Handler(const char *filename, bool write) : 	Handler{::open(filename,O_CREAT|(write ? O_RDWR : O_RDONLY), S_IRUSR | S_IWUSR)} {
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),filename);
