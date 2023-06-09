@@ -19,10 +19,12 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/file.h>
+ #include <udjat/tools/file/handler.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/protocol.h>
+ #include <sys/types.h>
+ #include <sys/stat.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -34,15 +36,23 @@
 
  namespace Udjat {
 
+	File::Handler::Handler(const char *filename, bool write) : 	Handler{::open(filename,O_TMPFILE|(write ? O_RDWR : O_RDONLY), S_IRUSR | S_IWUSR)} {
+
+		if(fd < 0) {
+			throw system_error(errno,system_category(),filename);
+		}
+
+	}
+
 	File::Handler::~Handler() {
 		if(fd > 0) {
 			::close(fd);
 		}
 	}
 
-	ssize_t File::Handler::write(unsigned long long offset, const void *contents, size_t length) {
+	size_t File::Handler::write(unsigned long long offset, const void *contents, size_t length) {
 
-		ssize_t rc = length;
+		size_t rc = length;
 
 		while(length) {
 
@@ -62,9 +72,9 @@
 
 	}
 
-	ssize_t File::Handler::write(const void *contents, size_t length) {
+	size_t File::Handler::write(const void *contents, size_t length) {
 
-		ssize_t rc = length;
+		size_t rc = length;
 
 		while(length) {
 
@@ -82,9 +92,9 @@
 
 	}
 
-	ssize_t File::Handler::read(void *contents, size_t length, bool required) {
+	size_t File::Handler::read(void *contents, size_t length, bool required) {
 
-		ssize_t complete = 0;
+		size_t complete = 0;
 
 		do {
 
@@ -102,9 +112,9 @@
 
 	}
 
-	ssize_t File::Handler::read(unsigned long long offset, void *contents, size_t length, bool required) {
+	size_t File::Handler::read(unsigned long long offset, void *contents, size_t length, bool required) {
 
-		ssize_t complete = 0;
+		size_t complete = 0;
 
 		do {
 
@@ -131,7 +141,7 @@
 		unsigned long long offset = 0;
 		char buffer[st.st_blksize+1];
 
-		while(offset < st.st_size) {
+		while(offset < (unsigned long long) st.st_size) {
 
 			ssize_t bytes = pread(fd,buffer,st.st_blksize,offset);
 			if(bytes < 0) {

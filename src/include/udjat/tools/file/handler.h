@@ -19,6 +19,10 @@
 
 #pragma once
 #include <udjat/defs.h>
+#include <cstddef>
+#include <string>
+#include <functional>
+#include <cstring>
 
 namespace Udjat {
 
@@ -44,43 +48,43 @@ namespace Udjat {
 			/// @param contents Data to write.
 			/// @param length Data length.
 			/// @return Number of bytes written (allways 'length')
-			ssize_t write(unsigned long long offset, const void *contents, size_t length);
+			size_t write(unsigned long long offset, const void *contents, size_t length);
 
 			/// @brief Write data to file.
 			/// @param contents Data to write.
 			/// @param length Data length.
 			/// @return Number of bytes written (allways 'length')
-			ssize_t write(const void *contents, size_t length);
+			size_t write(const void *contents, size_t length);
 
 			/// @brief Read data from file.
 			/// @param contents The buffer for file contents.
 			/// @param length The length of the buffeer.
 			/// @param required when true read 'length' bytes.
-			/// @return Number of bytes read (negative on fail, 0 on eof);
-			ssize_t read(void *contents, size_t length, bool required = false);
+			/// @return Number of bytes read (0 on eof);
+			size_t read(void *contents, size_t length, bool required = false);
 
 			/// @brief Read data from file at offset.
 			/// @param contents The buffer for file contents.
 			/// @param length The length of the buffeer.
 			/// @param required when true read 'length' bytes.
-			/// @return Number of bytes read (negative on fail, 0 on eof);
-			ssize_t read(unsigned long long offset, void *contents, size_t length, bool required = false);
+			/// @return Number of bytes read (0 on eof);
+			size_t read(unsigned long long offset, void *contents, size_t length, bool required = false);
 
-			inline ssize_t write(const std::string &str) {
+			inline size_t write(const std::string &str) {
 				return write(str.c_str(),str.size());
 			}
 
-			inline ssize_t write(const char *str) {
+			inline size_t write(const char *str) {
 				return write(str,strlen(str));
 			}
 
 			template<typename T>
-			inline ssize_t write(const T &value) {
+			inline size_t write(const T &value) {
 				return write((const void *) &value, sizeof(value));
 			}
 
 			template<typename T>
-			inline ssize_t read(T &value) {
+			inline size_t read(T &value) {
 				return read((void *) &value, sizeof(value));
 			}
 

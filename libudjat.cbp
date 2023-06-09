@@ -254,7 +254,6 @@
 		<Unit filename="src/tools/eventcontroller.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file.cc" />
-		<Unit filename="src/tools/file/abstract.cc" />
 		<Unit filename="src/tools/file/file.cc" />
 		<Unit filename="src/tools/file/handler.cc" />
 		<Unit filename="src/tools/file/path.cc" />
