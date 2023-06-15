@@ -485,4 +485,18 @@
 		return text.as_quark();
 	}
 
+	bool Abstract::Object::search(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call) {
+
+		for(pugi::xml_node nd = node; nd; nd = nd.parent()) {
+			for(pugi::xml_node child = nd.child(tagname); child; child = child.next_sibling(tagname)) {
+				if(call(child)) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+
+	}
+
  }
