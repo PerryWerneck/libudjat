@@ -30,6 +30,9 @@
 	#include <unistd.h>
  #endif // _WIN32
 
+ #ifndef _GNU_SOURCE
+	#define _GNU_SOURCE
+ #endif // _GNU_SOURCE
  #include <fcntl.h>
 
  using namespace std;
@@ -48,6 +51,26 @@
 		if(fd > 0) {
 			::close(fd);
 		}
+	}
+
+	void File::Handler::allocate(unsigned long long length) {
+
+		if(!length) {
+			return;
+		}
+
+		if(fallocate(fd,0,0,length) != 0) {
+			throw std::system_error(errno,std::system_category());
+		}
+
+	}
+
+	void File::Handler::truncate(unsigned long long length) {
+
+		if(ftruncate(fd,length) != 0) {
+			throw std::system_error(errno,std::system_category());
+		}
+
 	}
 
 	size_t File::Handler::write(unsigned long long offset, const void *contents, size_t length) {

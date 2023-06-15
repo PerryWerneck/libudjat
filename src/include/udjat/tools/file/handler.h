@@ -88,6 +88,13 @@ namespace Udjat {
 				return read((void *) &value, sizeof(value));
 			}
 
+			/// @brief Allocate disk space for file, trigger exception when failed.
+			/// @param length Required space for this file.
+			void allocate(unsigned long long length);
+
+			/// @brief Truncate file to a specified length
+			void truncate(unsigned long long length = 0LL);
+
 			/// @brief Save file using custom writer.
 			void save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &write) const;
 
