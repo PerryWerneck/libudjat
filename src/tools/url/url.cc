@@ -104,7 +104,16 @@
 
 	}
 
+	bool URL::local() const {
+		const char *str = c_str();
+		return str[0] == '/' || str[0] == '.' || strncasecmp(str,"file://",7) == 0;
+	}
+
 	int URL::test(const HTTP::Method method, const char *payload) const noexcept {
+
+		if(empty()) {
+			return ENODATA;
+		}
 
 		try {
 

@@ -194,6 +194,7 @@ int main(int argc, char **argv) {
 
 	printf("------------------------\n");
 	cout << "url=" << Udjat::URL{"http://","www.google.com"} << endl;
+	cout << "url=" << Udjat::URL{"/tmp/test.txt"} << endl;
 	printf("------------------------\n");
 
 	return 0;

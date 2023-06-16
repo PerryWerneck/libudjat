@@ -117,12 +117,21 @@
 		/// @brief Unescape.
 		URL & unescape();
 
-		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
+		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
+		bool local() const;
+
+		/// @brief Test if URL is relative (starts with '/' or '.')
+		inline bool relative() const noexcept {
+			return (c_str()[0] == '/' || c_str()[0] == '.');
+		}
+
+		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.
 		/// @retval 200 Got response.
-		/// @retval 401 Acess denied.
+		/// @retval 401 Access denied.
 		/// @retval 404 Not found.
 		/// @retval EINVAL Invalid method.
+		/// @retval ENODATA Empty URL.
 		/// @retval ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const noexcept;
 
