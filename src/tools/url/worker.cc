@@ -247,7 +247,7 @@
 		return true;
 	}
 
-	void Protocol::Worker::save(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
+	void Protocol::Worker::save(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &) {
 		throw system_error(ENOTSUP,system_category(),"The available backend is unable to manage custom writers");
 	}
 

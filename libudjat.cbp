@@ -49,21 +49,6 @@
 		</Linker>
 		<Unit filename="Makefile" />
 		<Unit filename="configure.ac" />
-		<Unit filename="intl/eval-plural.h" />
-		<Unit filename="intl/gettextP.h" />
-		<Unit filename="intl/gmo.h" />
-		<Unit filename="intl/hash-string.h" />
-		<Unit filename="intl/loadinfo.h" />
-		<Unit filename="intl/localcharset.h" />
-		<Unit filename="intl/os2compat.h" />
-		<Unit filename="intl/plural-exp.h" />
-		<Unit filename="intl/printf-args.h" />
-		<Unit filename="intl/printf-parse.h" />
-		<Unit filename="intl/relocatable.h" />
-		<Unit filename="intl/vasnprintf.h" />
-		<Unit filename="intl/vasnwprintf.h" />
-		<Unit filename="intl/wprintf-parse.h" />
-		<Unit filename="intl/xsize.h" />
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agent.h" />
@@ -145,7 +130,6 @@
 		<Unit filename="src/include/udjat/tools/threadpool.h" />
 		<Unit filename="src/include/udjat/tools/timer.h" />
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
-		<Unit filename="src/include/udjat/tools/tree.h" />
 		<Unit filename="src/include/udjat/tools/url.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />

@@ -88,6 +88,21 @@
 		URL(const pugi::xml_node &node) : URL{node.attribute("src").as_string()} {
 		}
 
+		template<typename... Targs>
+		URL(const char *str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		template<typename... Targs>
+		URL(const std::string &str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		template<typename T, typename... Targs>
+		URL(const T &str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
 		URL & operator += (const char *path);
 
 		/// @brief Get URL scheme.
@@ -98,6 +113,9 @@
 
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
+
+		/// @brief Unescape.
+		URL & unescape();
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
 		/// @return Test result.

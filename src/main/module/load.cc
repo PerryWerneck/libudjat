@@ -157,8 +157,8 @@ namespace Udjat {
 		}
 
 		init(filename,pugi::xml_node{});
-
 		return false;
+
 	}
 
 	bool Module::load(const char *name, bool required) {

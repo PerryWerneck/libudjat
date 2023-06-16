@@ -193,7 +193,7 @@ int main(int argc, char **argv) {
 int main(int argc, char **argv) {
 
 	printf("------------------------\n");
-	cout << "logdir=" << Application::TmpDir() << endl;
+	cout << "url=" << Udjat::URL{"http://","www.google.com"} << endl;
 	printf("------------------------\n");
 
 	return 0;

@@ -145,7 +145,7 @@
 					if(!virtualmachine) {
 
 						try {
-							URL sysid(Config::Value<string>("bare-metal","summary","dmi:///system/sku"));
+							URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
 
 							if(!sysid.empty() && Protocol::find(sysid)) {
 								Object::properties.summary = Quark(sysid.get()).c_str();
