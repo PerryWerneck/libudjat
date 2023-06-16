@@ -157,6 +157,9 @@ namespace Udjat {
 			/// @return true if 'name' was found and the object value was updated.
 			bool find(const char *name, bool recursive = false);
 
+			/// @brief Convert path in the canonicalized absolute pathname.
+			File::Path & realpath();
+
 			/// @brief Test if the file is valid.
 			operator bool() const noexcept;
 
