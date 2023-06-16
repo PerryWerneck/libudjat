@@ -50,8 +50,15 @@
 		URL::Components components;
 
 		const char *ptr;	// Temp pointer.
-
 		size_t from, to;
+
+		ptr = c_str();
+		if(ptr[0] == '/' || ptr[0] == '.') {
+			// Filename, just extract path.
+			components.scheme = "file";
+			components.path = ptr;
+			return components;
+		}
 
 		// Get URL Scheme.
 		from = find("://");
