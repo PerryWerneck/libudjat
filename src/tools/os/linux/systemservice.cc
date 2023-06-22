@@ -37,30 +37,57 @@
 
  using namespace std;
 
+ static const struct {
+	char to;
+	const char *from;
+	const char *help;
+ } options[] = {
+	{ 'd',	"daemon",	"\t\tRun in background" }
+ };
+
  namespace Udjat {
 
-	int SystemService::argument(char opt, const char *optstring) {
+	bool SystemService::argument(const char *opt, const char *optarg) {
+
+		for(auto &option : options) {
+			if(!strcasecmp(opt,option.from)) {
+				return argument(option.to,optarg);
+			}
+		}
+
+		return Application::argument(opt,optarg);
+	}
+
+	/// @brief Set command-line argument.
+	/// @param name argument name.
+	/// @param value argument value.
+	/// @return true if the argument was parsed.
+	bool SystemService::argument(const char opt, const char *optarg) {
 
 		switch(opt) {
-		case 'S':
-		case 'Q':
-			cerr << "Not supported on linux, use systemd" << endl;
-			return ENOTSUP;
-
 		case 'f':
 			mode = Foreground;
-			return Application::argument(opt,optstring);
-
-		case 'D':
-			mode = Daemon;
 			break;
 
-		default:
-			return Application::argument(opt,optstring);
+		case 'd':
+		case 'D':
+			mode = Daemon;
+			return true;
 
 		}
 
-		return 1;
+		return Application::argument(opt,optarg);
+	}
+
+	/// @brief Show help text to stdout.
+	void SystemService::help(std::ostream &out) const noexcept {
+
+		Application::help(out);
+
+		for(auto &option : options) {
+			out << "  --" << option.from << option.help << endl;
+		}
+
 	}
 
 	/// @brief Initialize service.
@@ -92,6 +119,10 @@
 
 	int SystemService::run(const char *definitions) {
 
+		if(!MainLoop::getInstance()) {
+			return 0;
+		}
+
 		int rc = 0;
 
 		if(mode == Daemon) {
@@ -111,51 +142,7 @@
 				class WatchDog : public MainLoop::Timer {
 				protected:
 					void on_timer() override {
-
 						sd_notify(0,"WATCHDOG=1");
-
-						/*
-						try {
-
-							SystemService &service = SystemService::getInstance();
-
-							try {
-
-								auto agent = Abstract::Agent::root();
-								auto state = agent->state();
-
-								if(state->ready()) {
-
-									service.status( _( "System is ready" ));
-
-								} else {
-
-									String message{state->summary()};
-
-									if(message.strip().empty()) {
-										service.status( _( "System is not ready" ) );
-									} else {
-										service.status(message.c_str());
-									}
-
-								}
-
-							} catch(const std::exception &e) {
-
-								service.status(e.what());
-
-							}
-
-						} catch(const std::exception &e) {
-
-#ifdef HAVE_SYSTEMD
-							sd_notifyf(0,"STATUS=%s",e.what());
-#endif // HAVE_SYSTEMD
-							cerr << "service\t" << e.what() << endl;
-
-						}
-						*/
-
 					}
 
 				public:
@@ -248,175 +235,6 @@
 		return 0;
 	}
 
- /*
-	void SystemService::notify(const char *message) noexcept {
-
-		if(message && *message) {
-
-#ifdef HAVE_SYSTEMD
-			sd_notifyf(0,"STATUS=%s",message);
-#endif // HAVE_SYSTEMD
-
-			Logger::write((Logger::Level) (Logger::Debug+1),name().c_str(),message);
-
-		}
-
-	}
-
-	void SystemService::init() {
-
-		// TODO: Install unhandled exception manager.
-		// https://en.cppreference.com/w/cpp/error/set_terminate
-		setup(true);
-
-		Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
-		if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
-			Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this](){
-				ThreadPool::getInstance().push([this](){
-					setup(false);
-				});
-				return true;
-			});
-			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
-		}
-
-	}
-
-
-	void SystemService::stop() {
-		MainLoop::getInstance().quit();
-	}
-
-	void SystemService::usage() const noexcept {
-		cout 	<< "Usage: " << endl << "  " << name() << " [options]" << endl << endl
-				<< "  --core\t\tenable coredumps" << endl
-				<< "  --timer=seconds\tTerminate " << name() << " after 'seconds'" << endl
-				<< "  --daemon\t\tRun " << name() << " service in the background" << endl
-				<< "  --foreground\t\tRun " << name() << " service as application (foreground)" << endl;
-	}
-
-	int SystemService::cmdline(char key, const char *value) {
-
-		switch(key) {
-		case 'i':	// Install
-			return install();
-
-		case 'T':	// Auto quit
-			{
-				if(!value) {
-					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
-				}
-
-				int seconds = atoi(value);
-				if(!seconds) {
-					throw system_error(EINVAL,system_category(),_( "Invalid timer value" ));
-				}
-
-				MainLoop::getInstance().TimerFactory(seconds * 1000,[](){
-					Application::warning() << "Exiting by timer request" << endl;
-					MainLoop::getInstance().quit();
-					return false;
-				});
-
-			}
-			return 0;
-
-		case 'C':	// Enable core dumps.
-			{
-				if(optarg && *optarg) {
-					ofstream ofs;
-					ofs.open("/proc/sys/kernel/core_pattern",ofstream::out);
-					ofs << optarg;
-					ofs.close();
-				}
-
-				// Enable cores
-				struct rlimit core_limits;
-				core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
-
-				if(setrlimit(RLIMIT_CORE, &core_limits)) {
-					error() << "Error \"" << strerror(errno) << "\" activating coredumps" << endl;
-				} else {
-					info() << "Coredumps are active" << endl;
-				}
-			}
-			return -2;
-
-		}
-
-		return ENOENT;
-	}
-
-	int SystemService::cmdline(const char *key, const char *value) {
-
-		static const struct {
-			char option;
-			const char *key;
-		} options[] = {
-			{ 'i', "install" },
-			{ 'C', "core" },
-			{ 'd', "daemon" },
-			{ 'f', "foreground" },
-			{ 'T', "timer" }
-		};
-
-		for(size_t option = 0; option < (sizeof(options)/sizeof(options[0])); option++) {
-			if(!strcasecmp(key,options[option].key)) {
-				return cmdline(options[option].option,value);
-			}
-		}
-
-		return ENOENT;
-	}
-
-	int SystemService::run(int argc, char **argv) {
-
-		int rc = 0;
-
-		if(argc > 1) {
-			rc = cmdline(argc,(const char **) argv);
-			if(rc) {
-				mode = SERVICE_MODE_NONE;
-			}
-		}
-
-		Logger::redirect(mode == SERVICE_MODE_FOREGROUND ? true : false);
-
-		if(mode == SERVICE_MODE_DAEMON) {
-			if(daemon(0,0)) {
-				error() << strerror(errno) << endl;
-				return -1;
-			}
-		}
-
-		if(mode != SERVICE_MODE_NONE) {
-
-			try {
-
-				init();
-				rc = run();
-				deinit();
-
-			} catch(const std::exception &e) {
-
-				error() << e.what() << endl;
-				rc = -1;
-
-			}
-		}
-
-		return rc;
-
-	}
-
-	void SystemService::load(std::list<std::string> &files) {
-	}
-
-	int SystemService::wakeup() {
-		return ENOTSUP;
-	}
-
-*/
 
  }
 

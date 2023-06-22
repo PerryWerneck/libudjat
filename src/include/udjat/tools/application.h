@@ -54,12 +54,6 @@
 		/// @brief Factory for the application root.
 		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
 
-		/// @brief Parse command line argument.
-		/// @retval 0 Stop application without errors.
-		/// @retval -1 Stop application with error.
-		/// @retval 1 Keep parsing arguments.
-		virtual int argument(char opt, const char *optstring = nullptr);
-
 		/// @brief Initialize application.
 		/// @return 0 if ok, errno if not.
 		virtual int init(const char *definitions);
@@ -67,6 +61,27 @@
 		/// @brief Deinitialize application.
 		/// @return 0 if ok, errno if not.
 		virtual int deinit(const char *definitions);
+
+		/// @brief Set command-line argument.
+		/// @param name argument name.
+		/// @param value argument value.
+		/// @return true if the argument was parsed.
+		virtual bool argument(const char *name, const char *value = nullptr);
+
+		/// @brief Set command-line argument.
+		/// @param name argument name.
+		/// @param value argument value.
+		/// @return true if the argument was parsed.
+		virtual bool argument(const char name, const char *value = nullptr);
+
+		/// @brief Set property from command-line argument.
+		/// @param name Property name.
+		/// @param value Property value.
+		/// @return true if the property was set.
+		virtual bool setProperty(const char *name, const char *value);
+
+		/// @brief Show help text to stdout.
+		virtual void help(std::ostream &out) const noexcept;
 
 	public:
 		Application();
@@ -95,7 +110,7 @@
 		/// @brief Load XML application definitions.
 		/// @param pathname Path to a single xml file or a folder with xml files.
 		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
-		/// @return Seconds for reconfiguation.
+		/// @return Seconds for reonfiguration.
 		virtual void setup(const char *pathname = nullptr, bool startup = false);
 
 		/// @brief Install application.

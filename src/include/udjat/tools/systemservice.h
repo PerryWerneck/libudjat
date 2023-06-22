@@ -60,12 +60,6 @@
 
 		typedef Udjat::SystemService super;
 
-		/// @brief Parse command line argument.
-		/// @retval 0 Stop application without errors.
-		/// @retval -1 Stop application with error.
-		/// @retval 1 Keep parsing arguments.
-		int argument(char opt, const char *optstring = nullptr) override;
-
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
 		void root(std::shared_ptr<Abstract::Agent> agent) override;
@@ -76,6 +70,21 @@
 
 		/// @brief Reconfigure service.
 		void setup(const char *pathname, bool startup) noexcept override;
+
+		/// @brief Set command-line argument.
+		/// @param name argument name.
+		/// @param value argument value.
+		/// @return true if the argument was parsed.
+		bool argument(const char *name, const char *value = nullptr) override;
+
+		/// @brief Set command-line argument.
+		/// @param name argument name.
+		/// @param value argument value.
+		/// @return true if the argument was parsed.
+		bool argument(const char name, const char *value = nullptr) override;
+
+		/// @brief Show help text to stdout.
+		void help(std::ostream &out) const noexcept override;
 
 	public:
 		SystemService(const SystemService&) = delete;
