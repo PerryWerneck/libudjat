@@ -119,7 +119,6 @@
 	bool Application::argument(const char *opt, const char *optarg) {
 
 		for(auto &option : options) {
-			debug("opt=",opt," from=",option.from," to=",option.to);
 			if(!strcasecmp(opt,option.from)) {
 				return argument(option.to,optarg);
 			}
