@@ -61,7 +61,7 @@
 
 	}
 
-	size_t Win32::Handler::read(void *buf, size_t count) {
+	ssize_t Win32::Handler::read(void *buf, size_t count) {
 
 		DWORD dwRead = 0;
 
