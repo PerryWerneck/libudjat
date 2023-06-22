@@ -39,6 +39,7 @@
 
  namespace Udjat {
 
+	/*
 	int SystemService::argument(char opt, const char *optstring) {
 
 		switch(opt) {
@@ -62,6 +63,7 @@
 
 		return 1;
 	}
+	*/
 
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {
