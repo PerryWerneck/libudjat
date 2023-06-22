@@ -34,6 +34,7 @@
 
  #ifdef _WIN32
 	#include <private/win32/mainloop.h>
+	#include <udjat/win32/exception.h>
 	#include <private/event.h>
  #endif // _WIN32
 
@@ -173,9 +174,15 @@
 
 		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
 
+#ifdef _WIN32
+		if(!SetEnvironmentVariable(name,value)) {
+			throw Win32::Exception("Unable to set environment variable");
+		}
+#else
 		if(setenv(name, value, 1)) {
 			throw std::system_error(errno,std::system_category(),"Invalid property");
 		}
+#endif // _WIN32
 
 		return true;
 	}
@@ -195,7 +202,8 @@
 			int ix = 1;
 			while(ix < argc) {
 
-				if(!(strcasecmp(argv[ix],"-h") && strcasecmp(argv[ix],"--help"))) {
+//				if(!(strcasecmp(argv[ix],"-h") && strcasecmp(argv[ix],"--help") && strcasecmp(argv[ix],"/?") && strcasecmp(argv[ix],"-?") && strcasecmp(argv[ix],"?"))) {
+				if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
 
 					Logger::console(false);
 					cout << Logger::Message{"Usage:\t{} [options]",argv[0]} << endl << endl;

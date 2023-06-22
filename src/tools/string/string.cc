@@ -242,9 +242,9 @@
 		return rc;
 	}
 
-	size_t String::select(const char *value, ...) {
+	int String::select(const char *value, ...) {
 
-		size_t index = 0;
+		int index = 0;
 
 		va_list args;
 		va_start(args, value);
