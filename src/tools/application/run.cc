@@ -44,6 +44,7 @@
 	const char *from;
 	const char *help;
  } options[] = {
+	{ 'f',	"foreground",	"\t\tRun in foreground with console output" },
 	{ 'q',	"quiet",		"\t\tDisable console output" },
 	{ 'v',	"verbose",		"=level\tSet loglevel, enable console output" },
 	{ 'T',	"timer",		"=time\t\tExit application after \"time\"" },
@@ -130,6 +131,10 @@
 	bool Application::argument(const char opt, const char *optarg) {
 
 		switch(opt) {
+		case 'f':	// Legacy.
+			Logger::console(true);
+			return true;
+
 		case 'T':
 			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){
 				MainLoop::getInstance().quit("Timer expired, exiting");
@@ -266,6 +271,10 @@
 	}
 
 	int Application::run(const char *definitions) {
+
+		if(!MainLoop::getInstance()) {
+			return 0;
+		}
 
 		int rc = -1;
 
