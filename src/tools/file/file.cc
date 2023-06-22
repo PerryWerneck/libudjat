@@ -51,11 +51,22 @@
 		}
 
 		unsigned long long offset = 0;
+#ifdef _WIN32
+		char buffer[512];
+#else
 		char buffer[st.st_blksize+1];
+#endif // _WIN32
 
 		while(offset < (unsigned long long) st.st_size) {
 
+#ifdef _WIN32
+			if(lseek(fd, offset, SEEK_SET) < 0) {
+				throw system_error(errno,system_category(),"Cant set file offset");
+			}
+			ssize_t bytes = ::read(fd,buffer,512);
+#else
 			ssize_t bytes = pread(fd,buffer,st.st_blksize,offset);
+#endif // _WIN32
 			if(bytes < 0) {
 				throw system_error(errno,system_category(),"Cant read from file");
 			} else if(bytes == 0) {
