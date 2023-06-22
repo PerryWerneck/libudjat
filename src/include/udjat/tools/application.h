@@ -74,7 +74,14 @@
 		/// @return true if the argument was parsed.
 		virtual bool argument(const char name, const char *value = nullptr);
 
+		/// @brief Set property from command-line argument.
+		/// @param name Property name.
+		/// @param value Property value.
+		/// @return true if the property was set.
 		virtual bool setProperty(const char *name, const char *value);
+
+		/// @brief Show help text to stdout.
+		virtual void help(std::ostream &out) const noexcept;
 
 	public:
 		Application();

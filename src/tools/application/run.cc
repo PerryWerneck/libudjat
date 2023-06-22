@@ -39,6 +39,16 @@
 
  using namespace std;
 
+ static const struct {
+	char to;
+	const char *from;
+	const char *help;
+ } options[] = {
+	{ 'q',	"quiet",		"\t\tDisable console output" },
+	{ 'v',	"verbose",		"=level\tSet loglevel, enable console output" },
+	{ 'T',	"timer",		"=time\t\tExit application after \"time\"" },
+ };
+
  namespace Udjat {
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
@@ -107,16 +117,6 @@
 
 	bool Application::argument(const char *opt, const char *optarg) {
 
-		static const struct {
-			char to;
-			const char *from;
-		} options[] = {
-			{ 'f',	"foreground" },
-			{ 'q',	"quiet" },
-			{ 'v',	"verbose" },
-			{ 'T',	"timer" },
-		};
-
 		for(auto &option : options) {
 			debug("opt=",opt," from=",option.from," to=",option.to);
 			if(!strcasecmp(opt,option.from)) {
@@ -130,8 +130,11 @@
 	bool Application::argument(const char opt, const char *optarg) {
 
 		switch(opt) {
-		case 'f':
-			Logger::console(true);
+		case 'T':
+			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){
+				MainLoop::getInstance().quit("Timer expired, exiting");
+				return false;
+			});
 			return true;
 
 		case 'q':
@@ -173,6 +176,14 @@
 		return true;
 	}
 
+	void Application::help(std::ostream &out) const noexcept {
+
+		for(auto &option : options) {
+			out << "  --" << option.from << option.help << endl;
+		}
+
+	}
+
 	int Application::run(int argc, char **argv, const char *definitions) {
 
 		// Parse command line arguments.
@@ -180,7 +191,15 @@
 			int ix = 1;
 			while(ix < argc) {
 
-				if(argv[ix][0] == '-' && argv[ix][1] == '-') {
+				if(!(strcasecmp(argv[ix],"-h") && strcasecmp(argv[ix],"--help"))) {
+
+					Logger::console(false);
+					cout << Logger::Message{"Usage:\t{} [options]",argv[0]} << endl << endl;
+					help(cout);
+					cout << endl << endl;
+					return 0;
+
+				} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
 
 					// It's a '--name=' argument.
 					const char *name = argv[ix]+2;
