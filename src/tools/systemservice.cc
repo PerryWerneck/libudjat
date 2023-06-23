@@ -70,10 +70,6 @@
 #endif // _WIN32
 	}
 
-	int SystemService::run(int argc, char **argv, const char *definitions) {
-		return Application::run(argc,argv,definitions);
-	}
-
 	int SystemService::deinit(const char *definitions) {
 		Udjat::Event::remove(this);
 		return Application::deinit(definitions);

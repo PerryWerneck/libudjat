@@ -57,66 +57,6 @@
 
 	}
 
-	/*
-	int Application::argument(char opt, const char *optstring) {
-
-		switch(opt) {
-		case 'T':
-			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optstring}) * 1000,[](){
-				MainLoop::getInstance().quit("Timer expired, exiting");
-				return false;
-			});
-			break;
-
-		case 'h':
-#ifdef _WIN32
-			cout	<< "  --install\t\tInstall" << endl
-					<< "  --uninstall\t\tUninstall" << endl;
-#endif // _WIN32
-			break;
-
-		case 'f':
-			Logger::console(true);
-			break;
-
-		case 'I':
-			return install();
-
-		case 'U':
-			return uninstall();
-
-		case 'q':
-			Logger::console(false);
-			break;
-
-		case 'v':
-		case 'V':
-			Logger::console(true);
-			if(optarg) {
-				if(toupper(*optarg) == 'V') {
-					while(toupper(*optarg) == 'V') {
-						Logger::verbosity(Logger::verbosity()+1);
-						optarg++;
-					}
-				} else if(optarg[0] >= '0' && optarg[0] <= '9') {
-					Logger::verbosity(std::stoi(optarg));
-				} else {
-					cerr << strerror(EINVAL) << endl;
-					return EINVAL;
-				}
-			} else {
-				Logger::verbosity(Logger::verbosity()+1);
-			}
-			debug("Verbosity is now '",Logger::verbosity(),"'");
-			break;
-
-		}
-
-		return 1;
-
-	}
-	*/
-
 	bool Application::argument(const char *opt, const char *optarg) {
 
 		for(auto &option : options) {
@@ -195,79 +135,85 @@
 
 	}
 
-	int Application::run(int argc, char **argv, const char *definitions) {
+	int Application::setup(int argc, char **argv, const char *definitions) {
 
-		// Parse command line arguments.
-		{
-			int ix = 1;
-			while(ix < argc) {
+		int ix = 1;
+		while(ix < argc) {
 
-//				if(!(strcasecmp(argv[ix],"-h") && strcasecmp(argv[ix],"--help") && strcasecmp(argv[ix],"/?") && strcasecmp(argv[ix],"-?") && strcasecmp(argv[ix],"?"))) {
-				if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
+			if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
 
-					Logger::console(false);
-					cout << Logger::Message{"Usage:\t{} [options]",argv[0]} << endl << endl;
-					help(cout);
-					cout << endl << endl;
-					return 0;
+				Logger::console(false);
+				cout << Logger::Message{"Usage:\t{} [options]",argv[0]} << endl << endl;
+				help(cout);
+				cout << endl << endl;
+				return ECANCELED;
 
-				} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
+			} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
 
-					// It's a '--name=' argument.
-					const char *name = argv[ix]+2;
-					const char *value = strchr(name,'=');
+				// It's a '--name=' argument.
+				const char *name = argv[ix]+2;
+				const char *value = strchr(name,'=');
 
-					if(value) {
-						if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-							throw runtime_error(string{name,(size_t) (value-name)} + ": Invalid argument");
-						}
-					} else {
-						if(!argument(name)) {
-							throw runtime_error(string{name} + ": Invalid argument");
-						}
+				if(value) {
+					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
+						throw runtime_error(string{name,(size_t) (value-name)} + ": Invalid argument");
 					}
-
-					ix++;
-				} else if(argv[ix][0] == '-') {
-
-					const char name = argv[ix][1];
-					ix++;
-
-					// It's a '-N value' argument
-					if(ix < argc && argv[ix][0] != '-') {
-						if(!argument(name,argv[ix])) {
-							throw runtime_error("Invalid argument");
-						}
-						ix++;
-					} else {
-						if(!argument(name)) {
-							throw runtime_error(string{name} + ": Invalid argument");
-						}
-					}
-
 				} else {
+					if(!argument(name)) {
+						throw runtime_error(string{name} + ": Invalid argument");
+					}
+				}
 
-					const char * name = argv[ix];
-					const char * value = strchr(argv[ix],'=');
+				ix++;
+			} else if(argv[ix][0] == '-') {
 
-					if(!value) {
+				const char name = argv[ix][1];
+				ix++;
+
+				// It's a '-N value' argument
+				if(ix < argc && argv[ix][0] != '-') {
+					if(!argument(name,argv[ix])) {
 						throw runtime_error("Invalid argument");
 					}
-
-					if(!setProperty(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-						throw runtime_error("Invalid property");
-					}
-
 					ix++;
-
+				} else {
+					if(!argument(name)) {
+						throw runtime_error(string{name} + ": Invalid argument");
+					}
 				}
 
-				if(ix >= argc) {
-					break;
+			} else {
+
+				const char * name = argv[ix];
+				const char * value = strchr(argv[ix],'=');
+
+				if(!value) {
+					throw runtime_error("Invalid argument");
 				}
+
+				if(!setProperty(string{name,(size_t) (value-name)}.c_str(),value+1)) {
+					throw runtime_error("Invalid property");
+				}
+
+				ix++;
 
 			}
 
+			if(ix >= argc) {
+				break;
+			}
+
+		}
+
+		return 0;
+
+	}
+
+	int Application::run(int argc, char **argv, const char *definitions) {
+
+		// Parse command line arguments.
+		if(setup(argc,argv,definitions)) {
+			return 0;
 		}
 
 		Logger::redirect();
