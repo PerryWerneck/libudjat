@@ -32,7 +32,7 @@
 
 	void Module::Controller::init(const std::string &filename, const pugi::xml_node &node) {
 
-		cout << "module\tLoading '" << filename << "'" << endl;
+		Logger::String{"Loading '",filename,"'"}.trace("module");
 
 		// Load module.
 		dlerror();
