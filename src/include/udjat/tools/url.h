@@ -103,6 +103,7 @@
 			String::append(Fargs...);
 		}
 
+		URL operator + (const char *path);
 		URL & operator += (const char *path);
 
 		/// @brief Get URL scheme.

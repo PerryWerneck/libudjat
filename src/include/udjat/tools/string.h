@@ -110,8 +110,7 @@
 		inline String(Udjat::String &str) : std::string{str} {
 		}
 
-		template<typename T>
-		inline String(const T &str) : std::string{std::to_string(str)} {
+		template<typename T>		inline String(const T &str) : std::string{std::to_string(str)} {
 		}
 
 		template<typename... Targs>

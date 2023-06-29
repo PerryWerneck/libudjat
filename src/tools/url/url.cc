@@ -198,6 +198,14 @@
 		return stoi(srvcname);
 	}
 
+	URL URL::operator + (const char *path) {
+
+		URL url{this->c_str()};
+		url += path;
+		return url;
+
+	}
+
 	URL & URL::operator += (const char *path) {
 
 		// TODO: Extract arguments after '?' and rejoin after merge.
