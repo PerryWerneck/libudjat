@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -193,8 +193,8 @@ int main(int argc, char **argv) {
 int main(int argc, char **argv) {
 
 	printf("------------------------\n");
-	cout << "url=" << Udjat::URL{"http://","www.google.com"} << endl;
-	cout << "url=" << Udjat::URL{"/tmp/test.txt"} << endl;
+	cout << String{}.set_byte(10000.0) << endl;
+	cout << String{}.set_byte(0.0) << endl;
 	printf("------------------------\n");
 
 	return 0;
