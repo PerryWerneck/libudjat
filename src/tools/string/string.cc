@@ -31,7 +31,7 @@
 
  namespace Udjat {
 
-	static const char * unit_names[] = { N_("B"), N_("KB"), N_("MB"), N_("GB"), N_("TB") };
+	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {
 		std::string::append(str);
@@ -342,12 +342,7 @@
 			<< std::fixed << std::setprecision(precision) << (((double) value)/selected);
 
 		if(name && *name) {
-			stream << " ";
-#ifdef GETTEXT_PACKAGE
-			stream << dgettext(GETTEXT_PACKAGE,name);
-#else
-			stream << name;
-#endif // GETTEXT_PACKAGE
+			stream << " " << name;
 		}
 
 		return stream.str();
