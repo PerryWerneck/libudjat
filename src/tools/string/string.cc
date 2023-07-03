@@ -324,7 +324,7 @@
 		T multiplier{1024};
 		T selected{1};
 
-		const char *name = "";
+		const char *name = unit_names[0];
 		for(size_t ix = 1; ix < N_ELEMENTS(unit_names);ix++) {
 
 			if(value >= multiplier) {
