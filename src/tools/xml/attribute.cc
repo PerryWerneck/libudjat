@@ -61,7 +61,7 @@
 
 			}
 
-			// Will get up node, replace attrname;
+			// Will get up node, replace attrname
 			attrname = upname.c_str();
 		}
 
