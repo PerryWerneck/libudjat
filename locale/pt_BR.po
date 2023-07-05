@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-06-01 16:53-0300\n"
-"PO-Revision-Date: 2023-02-08 11:58-0300\n"
+"PO-Revision-Date: 2023-07-03 13:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -32,7 +32,7 @@ msgstr "Agente não tem nada a informar"
 
 #: src/main/agent/controller.cc:92
 msgid "Agent subsystem is inactive"
-msgstr ""
+msgstr "Subsistema de agentes está inativo"
 
 #: src/main/alert/controller.cc:40
 msgid "Alert controller"
@@ -41,10 +41,6 @@ msgstr "Controlador de alertas"
 #: src/tools/http/error.cc:97
 msgid "Authentication is required and has failed or has not yet been provided."
 msgstr "Autenticação falhou ou não foi fornecida."
-
-#: src/tools/string/string.cc:319
-msgid "B"
-msgstr ""
 
 #: src/tools/http/error.cc:89
 msgid "Bad Request"
@@ -70,10 +66,6 @@ msgstr "Erro ao ativar estado"
 msgid "Forbidden"
 msgstr "Proibido"
 
-#: src/tools/string/string.cc:319
-msgid "GB"
-msgstr ""
-
 #: src/tools/http/error.cc:184
 msgid "Gateway timeout"
 msgstr "Timeout no acesso ao gateway"
@@ -98,10 +90,6 @@ msgstr "Informação"
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: src/tools/string/string.cc:319
-msgid "KB"
-msgstr ""
-
 #: src/tools/timestamp.cc:74
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
@@ -109,10 +97,6 @@ msgstr "Menos de um minuto"
 #: src/tools/url/protocols/file.cc:35
 msgid "Local file protocol"
 msgstr "Protocol de arquivo local"
-
-#: src/tools/string/string.cc:319
-msgid "MB"
-msgstr ""
 
 #: src/main/module/module.cc:116
 msgid "Module '{}' is not loaded"
@@ -167,17 +151,13 @@ msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/systemservice.cc:133
+#: src/tools/systemservice.cc:129
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:129 src/main/agent/root.cc:100
+#: src/tools/systemservice.cc:125 src/main/agent/root.cc:100
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
-
-#: src/tools/string/string.cc:319
-msgid "TB"
-msgstr ""
 
 #: src/tools/http/error.cc:218
 msgid "The HTTP error code is unknown"
@@ -271,9 +251,8 @@ msgid ""
 msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
 
 #: src/main/request/request.cc:40
-#, fuzzy
 msgid "This request has no arguments"
-msgstr "Tempo da requisição esgotado"
+msgstr "A requisição não tem argumentos"
 
 #: src/tools/http/error.cc:138
 msgid "Too many requests"
@@ -281,7 +260,7 @@ msgstr "Muitas requisições"
 
 #: src/tools/object.cc:189
 msgid "Unable to get value of '{}'"
-msgstr ""
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/tools/http/error.cc:96
 msgid "Unauthorized"
@@ -307,11 +286,11 @@ msgstr "dia"
 msgid "days"
 msgstr "dias"
 
-#: src/main/agent/agent.cc:241 src/tools/string/string.cc:310
+#: src/main/agent/agent.cc:241 src/tools/string/string.cc:312
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:282
+#: src/tools/string/string.cc:284
 msgid "false"
 msgstr "falso"
 
@@ -331,15 +310,15 @@ msgstr "minuto"
 msgid "minutes"
 msgstr "minutos"
 
-#: src/tools/string/string.cc:39 src/tools/string/string.cc:281
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:283
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:283
+#: src/main/state/state.cc:289 src/tools/string/string.cc:285
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:276
+#: src/main/state/state.cc:289 src/tools/string/string.cc:278
 msgid "on"
 msgstr "ligado"
 
@@ -351,11 +330,11 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
-#: src/tools/string/string.cc:275
+#: src/tools/string/string.cc:277
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:39 src/tools/string/string.cc:274
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:276
 msgid "yes"
 msgstr "sim"
 
@@ -386,6 +365,12 @@ msgstr "{h} {H} e {m} {M}"
 #: src/tools/timestamp.cc:90
 msgid "{m} {M}"
 msgstr "{m} {M}"
+
+#~ msgid "B"
+#~ msgstr "B"
+
+#~ msgid "GB"
+#~ msgstr "GB"
 
 #~ msgid "Gb"
 #~ msgstr "Gb"

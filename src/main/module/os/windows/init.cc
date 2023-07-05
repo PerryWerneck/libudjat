@@ -29,7 +29,7 @@
 
 	void Module::Controller::init(const std::string &filename, const pugi::xml_node &node) {
 
-		cout << "module\tLoading '" << filename << "'" << endl;
+		Logger::String{"Loading '",filename,"'"}.trace("module");
 
 		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
 		HMODULE handle = LoadLibrary(filename.c_str());

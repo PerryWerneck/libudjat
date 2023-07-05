@@ -54,7 +54,7 @@
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
-				cout << name << "\tCreating standard pool with " << limits.threads << " threads" << endl;
+				Logger::String{"Creating standard pool with ",limits.threads," threads"}.trace(name);
 			}
 		};
 

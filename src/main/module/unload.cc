@@ -59,10 +59,7 @@ namespace Udjat {
 			auto handle = module->handle;
 			auto keep_loaded = module->keep_loaded;
 
-#ifdef DEBUG
-			cout << name << "\tkeep-loaded=" << (keep_loaded ? "ON" : "OFF") << endl;
-#endif // DEBUG
-			cout << name << "\t" << (keep_loaded ? "Deactivating" : "Unloading") << " '" << description << "'" << endl;
+			Logger::String{(keep_loaded ? "Deactivating" : "Unloading")," '",description,"'"}.trace(name);
 
 			try {
 
@@ -79,7 +76,6 @@ namespace Udjat {
 						clog << name << "\tKeeping module loaded by deinit() request" << endl;
 						continue;
 					}
-					debug("Module '",name,"' deinitialized");
 
 					if(keep_loaded) {
 						clog << name << "\tKeeping module loaded by configuration request" << endl;

@@ -101,6 +101,11 @@
 		/// @brief Deinitialize application.
 		static void finalize();
 
+		/// @brief Parse command line options
+		/// @return 0 if ok, error code if not.
+		/// @retval ECANCELED cancelled by command line argument (--help or other informational options).
+		virtual int setup(int argc, char **argv, const char *definitions = nullptr);
+
 		/// @brief Parse command line options, run application.
 		virtual int run(int argc, char **argv, const char *definitions = nullptr);
 
