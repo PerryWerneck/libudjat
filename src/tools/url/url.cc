@@ -177,7 +177,7 @@
 			throw std::system_error(EINVAL,std::system_category(),message);
 		}
 
-		auto worker = protocol->WorkerFactory();
+		auto worker = protocol->WorkerFactory(c_str());
 
 		if(!worker) {
 			Logger::String message{"Cant get worker for '",c_str(),"'"};
