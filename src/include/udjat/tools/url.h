@@ -145,6 +145,10 @@
 		/// @return Server response.
 		std::string get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
+		/// @brief Do a 'get', save response using custom writer.
+		/// @param writer The custom writer.
+		void get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer);
+
 		/// @brief Do a 'post' request.
 		/// @param payload Post payload.
 		/// @return Server response.
