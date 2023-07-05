@@ -88,6 +88,22 @@
 		URL(const pugi::xml_node &node) : URL{node.attribute("src").as_string()} {
 		}
 
+		template<typename... Targs>
+		URL(const char *str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		template<typename... Targs>
+		URL(const std::string &str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		template<typename T, typename... Targs>
+		URL(const T &str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		URL operator + (const char *path);
 		URL & operator += (const char *path);
 
 		/// @brief Get URL scheme.
@@ -99,12 +115,24 @@
 		/// @brief Unescape URL
 		static std::string unescape(const char *src);
 
-		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://
+		/// @brief Unescape.
+		URL & unescape();
+
+		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
+		bool local() const;
+
+		/// @brief Test if URL is relative (starts with '/' or '.')
+		inline bool relative() const noexcept {
+			return (c_str()[0] == '/' || c_str()[0] == '.');
+		}
+
+		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.
 		/// @retval 200 Got response.
-		/// @retval 401 Acess denied.
+		/// @retval 401 Access denied.
 		/// @retval 404 Not found.
 		/// @retval EINVAL Invalid method.
+		/// @retval ENODATA Empty URL.
 		/// @retval ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const noexcept;
 

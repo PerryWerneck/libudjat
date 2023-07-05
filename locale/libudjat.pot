@@ -6,10 +6,10 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"#-#-#-#-#  message.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  timestamp.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "#-#-#-#-#  systemservice.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 11:08-0300\n"
+"POT-Creation-Date: 2023-07-03 13:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,10 +28,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  timestamp.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  object.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
+"POT-Creation-Date: 2023-07-03 13:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,10 +39,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  agent.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  message.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -50,21 +50,10 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  controller.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 10:40-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  get.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,84 +64,7 @@ msgstr ""
 "#-#-#-#-#  root.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 11:08-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  module.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  file.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  script.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  error.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  string.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-01 17:48-0300\n"
+"POT-Creation-Date: 2023-07-03 13:34-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -163,7 +75,7 @@ msgstr ""
 "#-#-#-#-#  controller.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 10:40-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -171,10 +83,98 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  systemservice.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"#-#-#-#-#  agent.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 11:08-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  state.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  request.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  module.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  script.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  file.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  error.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  string.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-03 13:36-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"#-#-#-#-#  controller.pot (PACKAGE VERSION)  #-#-#-#-#\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,18 +185,7 @@ msgstr ""
 "#-#-#-#-#  exception.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-07 16:07-0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"#-#-#-#-#  systemservice.pot (PACKAGE VERSION)  #-#-#-#-#\n"
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 11:08-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -207,7 +196,7 @@ msgstr ""
 "#-#-#-#-#  description.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-02-09 11:08-0300\n"
+"POT-Creation-Date: 2023-06-01 16:53-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -216,12 +205,16 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: src/main/agent/controller.cc:47
+#: src/main/agent/controller.cc:48
 msgid "Agent controller"
 msgstr ""
 
-#: src/main/agent/agent.cc:285
+#: src/main/agent/agent.cc:244
 msgid "Agent has nothing to report"
+msgstr ""
+
+#: src/main/agent/controller.cc:92
+msgid "Agent subsystem is inactive"
 msgstr ""
 
 #: src/main/alert/controller.cc:40
@@ -248,7 +241,7 @@ msgstr ""
 msgid "Client error"
 msgstr ""
 
-#: src/main/agent/state.cc:149
+#: src/main/agent/state.cc:151
 msgid "Error activating state"
 msgstr ""
 
@@ -260,10 +253,6 @@ msgstr ""
 msgid "Gateway timeout"
 msgstr ""
 
-#: src/tools/string/string.cc:285
-msgid "Gb"
-msgstr ""
-
 #: src/tools/http/error.cc:131
 msgid "Gone"
 msgstr ""
@@ -272,7 +261,7 @@ msgstr ""
 msgid "HTTP Version Not Supported"
 msgstr ""
 
-#: src/main/module/module.cc:124
+#: src/main/module/module.cc:132
 msgid "I dont know how to execute '{}'"
 msgstr ""
 
@@ -284,18 +273,7 @@ msgstr ""
 msgid "Internal error"
 msgstr ""
 
-#: src/tools/os/linux/systemservice.cc:112
-#: src/tools/os/linux/systemservice.cc:117
-#: src/tools/os/windows/systemservice.cc:495
-#: src/tools/os/windows/systemservice.cc:500
-msgid "Invalid timer value"
-msgstr ""
-
-#: src/tools/string/string.cc:285
-msgid "Kb"
-msgstr ""
-
-#: src/tools/timestamp.cc:65
+#: src/tools/timestamp.cc:74
 msgid "Less than one minute"
 msgstr ""
 
@@ -303,23 +281,15 @@ msgstr ""
 msgid "Local file protocol"
 msgstr ""
 
-#: src/tools/string/string.cc:285
-msgid "Mb"
-msgstr ""
-
-#: src/main/module/module.cc:108
+#: src/main/module/module.cc:116
 msgid "Module '{}' is not loaded"
 msgstr ""
 
-#: src/main/agent/root.cc:97
+#: src/main/agent/root.cc:100
 msgid "No abnormal state was detected"
 msgstr ""
 
-#: src/main/agent/get.cc:108
-msgid "No reports on this path"
-msgstr ""
-
-#: src/main/agent/agent.cc:284
+#: src/main/agent/agent.cc:243
 msgid "Normal"
 msgstr ""
 
@@ -364,16 +334,12 @@ msgstr ""
 msgid "Subprocess/Script protocol"
 msgstr ""
 
-#: src/tools/systemservice.cc:190
+#: src/tools/systemservice.cc:129
 msgid "System is not ready"
 msgstr ""
 
-#: src/tools/systemservice.cc:186 src/main/agent/root.cc:97
+#: src/tools/systemservice.cc:125 src/main/agent/root.cc:100
 msgid "System is ready"
-msgstr ""
-
-#: src/tools/string/string.cc:285
-msgid "Tb"
 msgstr ""
 
 #: src/tools/http/error.cc:218
@@ -459,8 +425,16 @@ msgid ""
 "the request, got an invalid response."
 msgstr ""
 
+#: src/main/request/request.cc:40
+msgid "This request has no arguments"
+msgstr ""
+
 #: src/tools/http/error.cc:138
 msgid "Too many requests"
+msgstr ""
+
+#: src/tools/object.cc:189
+msgid "Unable to get value of '{}'"
 msgstr ""
 
 #: src/tools/http/error.cc:96
@@ -471,7 +445,7 @@ msgstr ""
 msgid "Unexpected HTTP error code"
 msgstr ""
 
-#: src/main/agent/state.cc:154
+#: src/main/agent/state.cc:156
 msgid "Unexpected error activating state"
 msgstr ""
 
@@ -479,94 +453,90 @@ msgstr ""
 msgid "\\StringFileInfo\\080904B0\\FileDescription"
 msgstr ""
 
-#: src/tools/string/string.cc:285
-msgid "b"
-msgstr ""
-
-#: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
+#: src/tools/timestamp.cc:101 src/tools/timestamp.cc:220
 msgid "day"
 msgstr ""
 
-#: src/tools/timestamp.cc:92 src/tools/timestamp.cc:211
+#: src/tools/timestamp.cc:101 src/tools/timestamp.cc:220
 msgid "days"
 msgstr ""
 
-#: src/main/agent/agent.cc:282 src/tools/string/string.cc:276
+#: src/main/agent/agent.cc:241 src/tools/string/string.cc:312
 msgid "default"
 msgstr ""
 
-#: src/tools/string/string.cc:248
+#: src/tools/string/string.cc:284
 msgid "false"
 msgstr ""
 
-#: src/tools/timestamp.cc:94 src/tools/timestamp.cc:210
+#: src/tools/timestamp.cc:103 src/tools/timestamp.cc:219
 msgid "hour"
 msgstr ""
 
-#: src/tools/timestamp.cc:94 src/tools/timestamp.cc:210
+#: src/tools/timestamp.cc:103 src/tools/timestamp.cc:219
 msgid "hours"
 msgstr ""
 
-#: src/tools/timestamp.cc:96 src/tools/timestamp.cc:209
+#: src/tools/timestamp.cc:105 src/tools/timestamp.cc:218
 msgid "minute"
 msgstr ""
 
-#: src/tools/timestamp.cc:96 src/tools/timestamp.cc:209
+#: src/tools/timestamp.cc:105 src/tools/timestamp.cc:218
 msgid "minutes"
 msgstr ""
 
-#: src/tools/string/string.cc:39 src/tools/string/string.cc:247
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:283
 msgid "no"
 msgstr ""
 
-#: src/main/state/state.cc:253 src/tools/string/string.cc:249
+#: src/main/state/state.cc:289 src/tools/string/string.cc:285
 msgid "off"
 msgstr ""
 
-#: src/main/state/state.cc:253 src/tools/string/string.cc:242
+#: src/main/state/state.cc:289 src/tools/string/string.cc:278
 msgid "on"
 msgstr ""
 
-#: src/tools/timestamp.cc:208
+#: src/tools/timestamp.cc:217
 msgid "second"
 msgstr ""
 
-#: src/tools/timestamp.cc:208
+#: src/tools/timestamp.cc:217
 msgid "seconds"
 msgstr ""
 
-#: src/tools/string/string.cc:241
+#: src/tools/string/string.cc:277
 msgid "true"
 msgstr ""
 
-#: src/tools/string/string.cc:39 src/tools/string/string.cc:240
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:276
 msgid "yes"
 msgstr ""
 
-#: src/tools/timestamp.cc:78
+#: src/tools/timestamp.cc:87
 msgid "{d} {D}"
 msgstr ""
 
-#: src/tools/timestamp.cc:80
+#: src/tools/timestamp.cc:89
 msgid "{d} {D} and {h} {H}"
 msgstr ""
 
-#: src/tools/timestamp.cc:82
+#: src/tools/timestamp.cc:91
 msgid "{d} {D} and {m} {M}"
 msgstr ""
 
-#: src/tools/timestamp.cc:84
+#: src/tools/timestamp.cc:93
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr ""
 
-#: src/tools/timestamp.cc:79
+#: src/tools/timestamp.cc:88
 msgid "{h} {H}"
 msgstr ""
 
-#: src/tools/timestamp.cc:83
+#: src/tools/timestamp.cc:92
 msgid "{h} {H} and {m} {M}"
 msgstr ""
 
-#: src/tools/timestamp.cc:81
+#: src/tools/timestamp.cc:90
 msgid "{m} {M}"
 msgstr ""

@@ -188,6 +188,7 @@
 
 	}
 
+	/*
 	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
 
 		if(fd < 0) {
@@ -208,6 +209,6 @@
 		return *this;
 
 	}
-
+	*/
 
  }

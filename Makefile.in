@@ -22,6 +22,7 @@ COMMON_SOURCES= \
 	$(wildcard src/tools/http/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/tools/application/*.cc) \
+	$(wildcard src/tools/file/*.cc) \
 	$(wildcard src/main/factory/*.cc) \
 	$(wildcard src/main/alert/*.cc)
 
@@ -378,6 +379,12 @@ install-devel: \
 		src/include/udjat/tools/http/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/file
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/file/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/file
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/net
 

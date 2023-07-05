@@ -177,7 +177,7 @@ namespace Udjat {
 			if(!success && Logger::enabled(Logger::Debug)) {
 				Logger::String{
 					"Ignoring node <",node.name(),">"
-				}.write(Logger::Debug,name());
+				}.write(Logger::Debug,PACKAGE_NAME);
 			}
 
 		}

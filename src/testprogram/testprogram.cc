@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -31,6 +31,7 @@
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert/abstract.h>
@@ -192,8 +193,14 @@ int main(int argc, char **argv) {
 #if defined(OBJECT_TEST)
 int main(int argc, char **argv) {
 
+	bindtextdomain(GETTEXT_PACKAGE, STRINGIZE_VALUE_OF(LOCALEDIR));
+	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
+	debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR),"/",GETTEXT_PACKAGE);
+
 	printf("------------------------\n");
-	cout << "logdir=" << Application::LogDir::getInstance() << endl;
+	cout << String{}.set_byte(10000.0) << endl;
+	cout << String{}.set_byte(0.0) << endl;
+	cout << String{}.set_byte(229.0) << endl;
 	printf("------------------------\n");
 
 	return 0;

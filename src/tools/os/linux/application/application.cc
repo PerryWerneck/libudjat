@@ -61,6 +61,12 @@
 
 		std::string response{path};
 
+		if(path[strlen(path)-1] != '/') {
+			response += '/';
+		}
+
+		debug("----------------------> [",response,"]");
+
 		response.append(program_invocation_short_name);
 		File::Path::mkdir(response.c_str(),required);
 		response.append("/");
@@ -75,6 +81,25 @@
 	}
 
 	Application::DataDir::DataDir(const char *subdir, bool required) : File::Path{PathFactory(STRINGIZE_VALUE_OF(DATADIR) "/",subdir,required)} {
+	}
+
+	static const char * get_tmpdir() {
+
+		static const char *envvars[] = { "TEMP", "TMP", "TMPDIR" };
+
+		for(const char *env : envvars) {
+
+			const char *ptr = getenv(env);
+			if(ptr) {
+				return ptr;
+			}
+
+		}
+
+		return "/tmp";
+	}
+
+	Application::TmpDir::TmpDir(const char *subdir) noexcept : File::Path{PathFactory(get_tmpdir(),subdir,true)} {
 	}
 
 	Application::LogDir::LogDir(const char *subdir) noexcept : File::Path{PathFactory("/var/log/",subdir,true)} {

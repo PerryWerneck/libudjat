@@ -239,11 +239,16 @@
 
 	bool Protocol::Worker::save(const char *filename, const std::function<bool(double current, double total)> &progress, bool replace) {
 
-		File::Temporary{filename}
-			.write(get(progress))
-			.save(filename,replace);
+		File::Temporary tmpfile{filename};
+
+		tmpfile.write(get(progress));
+		tmpfile.save(filename,replace);
 
 		return true;
+	}
+
+	void Protocol::Worker::save(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &) {
+		throw system_error(ENOTSUP,system_category(),"The available backend is unable to manage custom writers");
 	}
 
 	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {

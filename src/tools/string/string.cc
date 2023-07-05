@@ -31,6 +31,8 @@
 
  namespace Udjat {
 
+	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
+
 	void String::append(const char *str) {
 		std::string::append(str);
 	}
@@ -242,9 +244,9 @@
 		return rc;
 	}
 
-	size_t String::select(const char *value, ...) {
+	int String::select(const char *value, ...) {
 
-		size_t index = 0;
+		int index = 0;
 
 		va_list args;
 		va_start(args, value);
@@ -316,23 +318,18 @@
 		return def;
 	}
 
-	static const char * byte_unit_names[] = { N_("B"), N_("KB"), N_("MB"), N_("GB"), N_("TB") };
+	template<typename T>
+	inline string byte_to_string(T value, int precision) {
 
-	String & String::set_byte(double value, int precision) {
+		T multiplier{1024};
+		T selected{1};
 
-		if(value < 0.1) {
-			clear();
-			return *this;
-		}
-
-		double multiplier = 1024.0D;
-		double selected = 1.0D;
-		const char *name = "";
-		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
+		const char *name = unit_names[0];
+		for(size_t ix = 1; ix < N_ELEMENTS(unit_names);ix++) {
 
 			if(value >= multiplier) {
 				selected = multiplier;
-				name = byte_unit_names[ix];
+				name = unit_names[ix];
 			}
 
 			multiplier *= 1024.0D;
@@ -342,58 +339,28 @@
 		std::stringstream stream;
 
 		stream
-			<< std::fixed << std::setprecision(precision) << (((float) value)/selected)
-			<< " "
-#ifdef GETTEXT_PACKAGE
-			<< dgettext(GETTEXT_PACKAGE,name);
-#else
-			<< name;
-#endif // GETTEXT_PACKAGE
+			<< std::fixed << std::setprecision(precision) << (((double) value)/selected);
 
-		assign(stream.str());
+		if(name && *name) {
+			stream << " " << name;
+		}
 
+		return stream.str();
+
+	}
+
+	String & String::set_byte(double value, int precision) {
+		assign(byte_to_string<double>(value,precision));
 		return *this;
 	}
 
 	String & String::set_byte(unsigned long long value, int precision) {
-
-		if(!value) {
-			clear();
-			return *this;
-		}
-
-		unsigned long long multiplier = 1024LL;
-		float selected = 1LL;
-		const char *name = "";
-		for(size_t ix = 1; ix < N_ELEMENTS(byte_unit_names);ix++) {
-
-			if(value >= multiplier) {
-				selected = (float) multiplier;
-				name = byte_unit_names[ix];
-			}
-
-			multiplier *= 1024LL;
-
-		}
-
-		std::stringstream stream;
-
-		stream
-			<< std::fixed << std::setprecision(precision) << (((float) value)/selected)
-			<< " "
-#ifdef GETTEXT_PACKAGE
-			<< dgettext(GETTEXT_PACKAGE,name);
-#else
-			<< name;
-#endif // GETTEXT_PACKAGE
-
-		assign(stream.str());
-
+		assign(byte_to_string<unsigned long long>(value,precision));
 		return *this;
 	}
 
 	template<typename T>
-	static T convert(const T value, const char *str) {
+	static T string_to_byte(const T value, const char *str) {
 
 		while(*str && isspace(*str))
 			str++;
@@ -402,9 +369,9 @@
 
 			T multiplier = 1;
 
-			for(size_t ix = 0; ix < N_ELEMENTS(byte_unit_names);ix++) {
+			for(size_t ix = 0; ix < N_ELEMENTS(unit_names);ix++) {
 
-				if(!strcasecmp(str,byte_unit_names[ix])) {
+				if(!strcasecmp(str,unit_names[ix])) {
 					return multiplier * value;
 				}
 
@@ -430,7 +397,7 @@
 		unsigned long long rc = stoll(str,&bytes);
 		str += bytes;
 
-		return convert<unsigned long long>(rc,str+bytes);
+		return string_to_byte<unsigned long long>(rc,str+bytes);
 
 	}
 

@@ -21,7 +21,8 @@
 
 #include <udjat/defs.h>
 #include <udjat/tools/quark.h>
-#include <udjat/tools/file.h>
+#include <udjat/tools/file/handler.h>
+#include <udjat/tools/file/temporary.h>
 #include <list>
 #include <algorithm>
 #include <mutex>
@@ -41,7 +42,14 @@ namespace Udjat {
 		class Controller;
 
 		/// @brief Copy file
-		void save(int fd, const char *filename);
+		void copy(int from, const char *to);
+
+		inline void save(int from, const char *to) {
+			copy(from,to);
+		}
+
+		/// @brief Copy file with custom writer.
+		void copy(const char *from, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer);
 
 		/// @brief Copy file
 		void copy(const char *from, const char *to, bool replace = true);
@@ -149,6 +157,9 @@ namespace Udjat {
 			/// @return true if 'name' was found and the object value was updated.
 			bool find(const char *name, bool recursive = false);
 
+			/// @brief Convert path in the canonicalized absolute pathname.
+			File::Path & realpath();
+
 			/// @brief Test if the file is valid.
 			operator bool() const noexcept;
 
@@ -175,6 +186,9 @@ namespace Udjat {
 
 			/// @brief Save file to FD.
 			static void save(int fd, const char *contents);
+
+			/// @brief Save file with custom writer.
+			void save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) const;
 
 			/// @brief Replace file without backup
 			static void replace(const char *filename, const char *contents);
@@ -400,87 +414,6 @@ namespace Udjat {
 
 		};
 
-		/// @brief Temporary file.
-		class UDJAT_API Temporary {
-		private:
-			int fd = -1;
-
-			/// @brief The reference filename.
-			std::string filename;
-
-#ifdef _WIN32
-			Temporary();
-			std::string tempname;
-#endif // _WIN32
-
-		public:
-			/// @brief Create temporary file with same path of another one
-			/// @param filename Filename to use as reference.
-			Temporary(const char *filename);
-
-			Temporary(const std::string &filename) : Temporary{filename.c_str()} {
-			}
-
-			~Temporary();
-
-			/// @brief Create an empty temporary file.
-			static std::string create();
-
-			/// @brief Create an empty temporary dir.
-			static std::string mkdir();
-
-#ifdef _WIN32
-
-			inline const char * tempfilename() const noexcept {
-				return tempname.c_str();
-			}
-
-#else
-
-			/// @brief Hardlink tempfile to new filename (Linux only).
-			/// @param filename The hard link name.
-			void link(const char *filename) const;
-
-#endif // _WIN32
-
-			/// @brief Save tempfile to new filename.
-			/// @param filename The file name.
-			/// @param replace If true just replace the file, no backup.
-			void save(const char *filename, bool replace = false);
-
-			/// @brief Move temporary file to the reference filename.
-			/// @param replace If true just replace the file, no backup.
-			void save(bool replace = false);
-
-			/// @brief Write data to tempfile.
-			/// @param contents Data to write.
-			/// @param length Data length.
-			Temporary & write(const void *contents, size_t length);
-
-			inline Temporary & write(const std::string &str) {
-				return write(str.c_str(),str.size());
-			}
-
-			inline Temporary & write(const char *str) {
-				return write(str,strlen(str));
-			}
-
-			template<typename T>
-			inline Temporary & write(const T &value) {
-				return write((const void *) &value, sizeof(value));
-			}
-
-		};
-
-	}
-
-}
-
-namespace std {
-
-	template<typename T>
-	inline Udjat::File::Temporary& operator<< (Udjat::File::Temporary &file, const T &value) {
-			return file.write(value);
 	}
 
 }

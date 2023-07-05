@@ -123,12 +123,12 @@ namespace Udjat {
 
 				} catch(const std::exception &e) {
 
-					cerr << "module\t" << e.what() << endl;
+					Logger::String{module.c_str(),": ",e.what()}.error("module");
 					rc = false;
 
 				} catch(...) {
 
-					cerr << "module\tUnexpected error loading module" << endl;
+					Logger::String{"Unexpected errror loading '",module.c_str(),"'"}.error("module");
 					rc = false;
 
 				}
@@ -157,8 +157,8 @@ namespace Udjat {
 		}
 
 		init(filename,pugi::xml_node{});
-
 		return false;
+
 	}
 
 	bool Module::load(const char *name, bool required) {

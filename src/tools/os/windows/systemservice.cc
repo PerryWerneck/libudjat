@@ -37,44 +37,82 @@
 
  using namespace std;
 
+ static const struct {
+	char to;
+	const char *from;
+	const char *help;
+ } options[] = {
+	{ 'S',	"start",		"\t\tStart service"		},
+	{ 'Q',	"stop",			"\t\tStop service"		},
+	{ 'I',	"install",		"\t\tInstall service"	},
+	{ 'U',	"uninstall",	"\t\tUninstall service"	},
+	{ 'R',	"reinstall",	"\t\tReinstall service"	},
+ };
+
  namespace Udjat {
 
-	int SystemService::argument(char opt, const char *optstring) {
+	bool SystemService::argument(const char *opt, const char *optarg) {
+
+		for(auto &option : options) {
+			if(!strcasecmp(opt,option.from)) {
+				return argument(option.to,optarg);
+			}
+		}
+
+		return Application::argument(opt,optarg);
+	}
+
+	bool SystemService::argument(const char opt, const char *optarg) {
 
 		switch(opt) {
-		case 'h':
-#ifdef _WIN32
-			cout	<< "  --start\t\tStart service" << endl
-					<< "  --stop\t\tStop service" << endl;
-			cout	<< "  --install\t\tInstall service" << endl
-					<< "  --uninstall\t\tUninstall service" << endl
-					<< "  --reinstall\t\tReinstall service" << endl;
-#endif // _WIN32
-			break;
-
 		case 'f':
 			mode = Foreground;
-			return Application::argument(opt,optstring);
+			return Application::argument(opt,optarg);
 
 		case 'S':
-			return start();
+			start();
+			MainLoop::getInstance().quit();
+			break;
 
 		case 'Q':
-			return stop();
+			stop();
+			MainLoop::getInstance().quit();
+			break;
+
+		case 'I':
+			install();
+			MainLoop::getInstance().quit();
+			break;
+
+		case 'U':
+			uninstall();
+			MainLoop::getInstance().quit();
+			break;
 
 		case 'R':
 			stop();
 			uninstall();
 			install();
 			start();
-			return 0;
+			MainLoop::getInstance().quit();
+			break;
 
 		default:
-			return Application::argument(opt,optstring);
+			return Application::argument(opt,optarg);
 
 		}
 
-		return 1;
+		return true;
+	}
+
+	void SystemService::help(std::ostream &out) const noexcept {
+
+		Application::help(out);
+
+		for(auto &option : options) {
+			out << "  --" << option.from << option.help << endl;
+		}
+
 	}
 
 	void SystemService::status(const char *status) noexcept {
@@ -106,6 +144,10 @@
 	}
 
 	int SystemService::run(const char *definitions) {
+
+		if(!MainLoop::getInstance()) {
+			return 0;
+		}
 
 		int rc = 0;
 		this->definitions = definitions;

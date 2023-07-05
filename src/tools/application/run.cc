@@ -34,10 +34,22 @@
 
  #ifdef _WIN32
 	#include <private/win32/mainloop.h>
+	#include <udjat/win32/exception.h>
 	#include <private/event.h>
  #endif // _WIN32
 
  using namespace std;
+
+ static const struct {
+	char to;
+	const char *from;
+	const char *help;
+ } options[] = {
+	{ 'f',	"foreground",	"\t\tRun in foreground with console output" },
+	{ 'q',	"quiet",		"\t\tDisable console output" },
+	{ 'v',	"verbose",		"=level\tSet loglevel, enable console output" },
+	{ 'T',	"timer",		"=time\t\tExit application after \"time\"" },
+ };
 
  namespace Udjat {
 
@@ -45,36 +57,34 @@
 
 	}
 
-	int Application::argument(char opt, const char *optstring) {
+	bool Application::argument(const char *opt, const char *optarg) {
+
+		for(auto &option : options) {
+			if(!strcasecmp(opt,option.from)) {
+				return argument(option.to,optarg);
+			}
+		}
+
+		return false;
+	}
+
+	bool Application::argument(const char opt, const char *optarg) {
 
 		switch(opt) {
+		case 'f':	// Legacy.
+			Logger::console(true);
+			return true;
+
 		case 'T':
-			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optstring}) * 1000,[](){
+			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){
 				MainLoop::getInstance().quit("Timer expired, exiting");
 				return false;
 			});
-			break;
-
-		case 'h':
-#ifdef _WIN32
-			cout	<< "  --install\t\tInstall" << endl
-					<< "  --uninstall\t\tUninstall" << endl;
-#endif // _WIN32
-			break;
-
-		case 'f':
-			Logger::console(true);
-			break;
-
-		case 'I':
-			return install();
-
-		case 'U':
-			return uninstall();
+			return true;
 
 		case 'q':
 			Logger::console(false);
-			break;
+			return true;
 
 		case 'v':
 		case 'V':
@@ -88,100 +98,136 @@
 				} else if(optarg[0] >= '0' && optarg[0] <= '9') {
 					Logger::verbosity(std::stoi(optarg));
 				} else {
-					cerr << strerror(EINVAL) << endl;
-					return EINVAL;
+					throw runtime_error("Invalid argument value");
 				}
 			} else {
 				Logger::verbosity(Logger::verbosity()+1);
 			}
 			debug("Verbosity is now '",Logger::verbosity(),"'");
-			break;
+			return true;
+		}
+
+		return false;
+	}
+
+	bool Application::setProperty(const char *name, const char *value) {
+
+		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
+
+#ifdef _WIN32
+		if(!SetEnvironmentVariable(name,value)) {
+			throw Win32::Exception("Unable to set environment variable");
+		}
+#else
+		if(setenv(name, value, 1)) {
+			throw std::system_error(errno,std::system_category(),"Invalid property");
+		}
+#endif // _WIN32
+
+		return true;
+	}
+
+	void Application::help(std::ostream &out) const noexcept {
+
+		for(auto &option : options) {
+			out << "  --" << option.from << option.help << endl;
+		}
+
+	}
+
+	int Application::setup(int argc, char **argv, const char *definitions) {
+
+		int ix = 1;
+		while(ix < argc) {
+
+			if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
+
+				Logger::console(false);
+				cout << Logger::Message{"Usage:\t{} [options]",argv[0]} << endl << endl;
+				help(cout);
+				cout << endl << endl;
+				return ECANCELED;
+
+			} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
+
+				// It's a '--name=' argument.
+				const char *name = argv[ix]+2;
+				const char *value = strchr(name,'=');
+
+				if(value) {
+					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
+						throw runtime_error(string{name,(size_t) (value-name)} + ": Invalid argument");
+					}
+				} else {
+					if(!argument(name)) {
+						throw runtime_error(string{name} + ": Invalid argument");
+					}
+				}
+
+				ix++;
+			} else if(argv[ix][0] == '-') {
+
+				const char name = argv[ix][1];
+				ix++;
+
+				// It's a '-N value' argument
+				if(ix < argc && argv[ix][0] != '-') {
+					if(!argument(name,argv[ix])) {
+						throw runtime_error("Invalid argument");
+					}
+					ix++;
+				} else {
+					if(!argument(name)) {
+						throw runtime_error(string{name} + ": Invalid argument");
+					}
+				}
+
+			} else {
+
+				const char * name = argv[ix];
+				const char * value = strchr(argv[ix],'=');
+
+				if(!value) {
+					throw runtime_error("Invalid argument");
+				}
+
+				if(!setProperty(string{name,(size_t) (value-name)}.c_str(),value+1)) {
+					throw runtime_error("Invalid property");
+				}
+
+				ix++;
+
+			}
+
+			if(ix >= argc) {
+				break;
+			}
 
 		}
 
-		return 1;
+		return 0;
 
 	}
 
 	int Application::run(int argc, char **argv, const char *definitions) {
 
-		// Save command line arguments.
-		args.count = argc;
-		args.value = (const char **) argv;
-
-		// Check for command line arguments.
-		{
-			#pragma GCC diagnostic push
-			#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-			static struct option options[] = {
-				{ "verbose",	optional_argument,	0,	'v'	},
-				{ "verbosity",	optional_argument,	0,	'V'	},
-				{ "daemon",		no_argument,		0,	'D'	},
-				{ "quiet",		no_argument,		0,	'q'	},
-				{ "help",		no_argument,		0,	'h'	},
-				{ "foreground",	no_argument,		0,	'f'	},
-				{ "timer",		required_argument,	0,	'T'	},
-				{ "install",	no_argument,		0,	'I'	},
-				{ "uninstall",	no_argument,		0,	'U'	},
-				{ "start",		no_argument,		0,	'S'	},
-				{ "stop",		no_argument,		0,	'Q'	},
-				{ "reinstall",	no_argument,		0,	'R'	},
-			};
-			#pragma GCC diagnostic pop
-
-			try {
-
-				int long_index =0;
-				int opt;
-				while((opt = getopt_long(argc, argv, "vVDqIUhfT:SQR", options, &long_index )) != -1) {
-
-					switch(opt) {
-					case 'h':
-						cout 	<< "Usage:\t" << argv[0] << " [options]" << endl << endl
-								<< "  --help\t\tShow this message" << endl
-								<< "  --verbose\t\tSet loglevel, enable console output" << endl
-								<< "  --timer\t\tExit after the informed time" << endl
-								<< "  --quiet\t\tDisable console output" << endl;
-						argument(opt,optarg);
-						return 0;
-
-					case 'I':	// Install
-						install();
-						break;
-
-					case 'U':	// Uninstall
-						uninstall();
-						break;
-
-					default:
-						switch(argument(opt,optarg)) {
-						case 0:
-							debug("Argument '",opt,"' returned 0, stopping");
-							return 0;
-
-						case -1:
-							debug("Argument '",opt,"' returned -1, aborting");
-							return -1;
-						}
-					}
-
-				}
-
-			} catch(const std::exception &e) {
-
-				cerr << endl << e.what() << endl << endl;
-				return -1;
-
-			}
-
+		// Parse command line arguments.
+		if(setup(argc,argv,definitions)) {
+			return 0;
 		}
 
 		Logger::redirect();
 		return run(definitions);
 
+		return 0;
+
 	}
 
 	int Application::run(const char *definitions) {
+
+		if(!MainLoop::getInstance()) {
+			return 0;
+		}
 
 		int rc = -1;
 

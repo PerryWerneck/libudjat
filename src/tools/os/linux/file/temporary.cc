@@ -17,6 +17,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #ifndef _GNU_SOURCE
+	#define _GNU_SOURCE             /* See feature_test_macros(7) */
+ #endif // _GNU_SOURCE
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/file.h>
@@ -37,6 +41,14 @@
 
  namespace Udjat {
 
+	File::Temporary::Temporary() : File::Handler{::open(Application::TmpDir{}.c_str(),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR)} {
+
+		if(fd < 0) {
+			throw system_error(errno,system_category(),"Can't create transient temporary file");
+		}
+
+	}
+
 	File::Temporary::Temporary(const char *name) : filename{name} {
 
 		char path[PATH_MAX];
@@ -52,7 +64,7 @@
 		}
 
 		strncpy(path,name,PATH_MAX); // Dirname change buffer, copy it again.
-		File::Path directory{dirname(path)};
+		Udjat::File::Path directory{dirname(path)};
 		if(!directory.dir()) {
 			throw system_error(ENOTDIR,system_category(),directory);
 		}
@@ -89,7 +101,7 @@
 
 	std::string File::Temporary::mkdir() {
 
-		string basename{"/tmp/"};
+		Application::TmpDir basename;
 		basename += Application::Name();
 
 		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
@@ -113,14 +125,17 @@
 
 		}
 
-		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+		throw runtime_error(String{"Too many files in '",Application::TmpDir().c_str(),"'"});
 
 	}
 
 	std::string File::Temporary::create() {
+		return create(0);
+	}
 
-		string basename{"/tmp/"};
-		basename += Application::Name();
+	std::string File::Temporary::create(unsigned long long len) {
+
+		Application::TmpDir basename;
 
 		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
 			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
@@ -132,8 +147,13 @@
 		for(size_t f = 0; f < 1000; f++) {
 
 			string filename = basename + "." + std::to_string(rand()) + ".tmp";
-			int fd = open(filename.c_str(),O_CREAT|O_EXCL,0600);
+			int fd = open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR,0600);
 			if(fd > 0) {
+				if(len && fallocate(fd, 0, 0, len) != 0) {
+					int err = errno;
+					::close(fd);
+					throw system_error(err,system_category(),string{"Can't allocate '"} + filename + "'");
+				}
 				::close(fd);
 				return filename;
 			}
@@ -144,7 +164,7 @@
 
 		}
 
-		throw runtime_error(string{"Too many files in '/tmp/'" PACKAGE_NAME});
+		throw runtime_error(String{"Too many files in '",Application::TmpDir{}.c_str(),"'"});
 
 	}
 
@@ -221,7 +241,7 @@
 	}
 
 	void File::Temporary::link(const char *filename) const {
-		File::move(fd,filename);
+		Udjat::File::move(fd,filename);
 	}
 
 	void File::Temporary::save(bool replace) {
@@ -231,23 +251,6 @@
 		}
 
 		this->save(filename.c_str(),replace);
-	}
-
-	File::Temporary & File::Temporary::write(const void *contents, size_t length) {
-
-		while(length) {
-
-			ssize_t bytes = ::write(fd, contents, length);
-			if(bytes < 1) {
-				throw system_error(errno,system_category(),"Cant write to temporary file");
-			}
-
-			length -= bytes;
-			contents = (void *) (((uint8_t *) contents) + bytes);
-
-		}
-		return *this;
-
 	}
 
 

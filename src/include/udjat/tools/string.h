@@ -110,8 +110,7 @@
 		inline String(Udjat::String &str) : std::string{str} {
 		}
 
-		template<typename T>
-		inline String(const T &str) : std::string{std::to_string(str)} {
+		template<typename T>		inline String(const T &str) : std::string{std::to_string(str)} {
 		}
 
 		template<typename... Targs>
@@ -253,7 +252,7 @@
 
 		/// @brief Test if the string contains one of the elements of a list.
 		/// @return Index of the matched content (-1 if not found).
-		size_t select(const char *value, ...) __attribute__ ((sentinel));
+		int select(const char *value, ...) __attribute__ ((sentinel));
 
 		/// @brief Insert global expander.
 		/// @param method String expander method (returns 'true' if the value was parsed).

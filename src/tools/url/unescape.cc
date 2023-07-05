@@ -49,6 +49,11 @@
 
 	}
 
+	URL & URL::unescape() {
+		std::string::assign(unescape(c_str()));
+		return *this;
+	}
+
 	std::string URL::unescape(const char *src) {
 
 		char 		* buffer;

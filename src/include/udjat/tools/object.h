@@ -56,7 +56,12 @@
 			/// @param handler The handler for children.
 			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
 
-			static bool scan(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call);
+			/// @brief Navigate thru <tagname> nodes on current and parent nodes until lambda returns 'true'.
+			/// @param node The starting point.
+			/// @param tagname the xml tag to scan.
+			/// @param call lambda to be called on every node.
+			/// @return true if the lambda has returned true.
+			static bool search(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.

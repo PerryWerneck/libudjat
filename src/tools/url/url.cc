@@ -50,8 +50,15 @@
 		URL::Components components;
 
 		const char *ptr;	// Temp pointer.
-
 		size_t from, to;
+
+		ptr = c_str();
+		if(ptr[0] == '/' || ptr[0] == '.') {
+			// Filename, just extract path.
+			components.scheme = "file";
+			components.path = ptr;
+			return components;
+		}
 
 		// Get URL Scheme.
 		from = find("://");
@@ -104,7 +111,16 @@
 
 	}
 
+	bool URL::local() const {
+		const char *str = c_str();
+		return str[0] == '/' || str[0] == '.' || strncasecmp(str,"file://",7) == 0;
+	}
+
 	int URL::test(const HTTP::Method method, const char *payload) const noexcept {
+
+		if(empty()) {
+			return ENODATA;
+		}
 
 		try {
 
@@ -180,6 +196,14 @@
 		}
 
 		return stoi(srvcname);
+	}
+
+	URL URL::operator + (const char *path) {
+
+		URL url{this->c_str()};
+		url += path;
+		return url;
+
 	}
 
 	URL & URL::operator += (const char *path) {

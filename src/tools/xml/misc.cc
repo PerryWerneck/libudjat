@@ -140,8 +140,28 @@
 			return false;
 		}
 
+		str = node.attribute("allow-if").as_string();
+		if(str && *str && URL(str).test() != 200) {
+			return false;
+		}
+
 		// Test if the attribute requirement is not valid.
 		str = node.attribute("not-valid-if").as_string();
+		if(str && *str && URL(str).test() == 200) {
+			return false;
+		}
+
+		str = node.attribute("invalid-if").as_string();
+		if(str && *str && URL(str).test() == 200) {
+			return false;
+		}
+
+		str = node.attribute("ignore-if").as_string();
+		if(str && *str && URL(str).test() == 200) {
+			return false;
+		}
+
+		str = node.attribute("deny-if").as_string();
 		if(str && *str && URL(str).test() == 200) {
 			return false;
 		}

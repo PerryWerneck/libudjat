@@ -39,6 +39,7 @@ BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
 BuildRequires:	pkgconfig(vmdetect)
 BuildRequires:	pkgconfig(libsystemd)
+BuildRequires:	glibc-devel
 
 %description
 UDJat core library
@@ -65,6 +66,7 @@ Main library for udjat modules.
 Summary: Development files for %{name}
 Requires: %{name}%{_libvrs} = %{version}
 Requires: pkgconfig(pugixml)
+Requires: gcc-c++
 
 # The http exporter helps debugging of modules.
 Recommends: udjat-module-httpd

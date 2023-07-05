@@ -171,6 +171,10 @@
 
 	}
 
+	void File::Path::save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) const {
+		File::copy(c_str(),writer);
+	}
+
 	void File::Path::save(const char *filename, const char *contents) {
 
 		// Get file information.
@@ -270,7 +274,7 @@
 	void File::Path::remove(bool UDJAT_UNUSED(force)) {
 
 		char path[PATH_MAX+1];
-		if(!realpath(c_str(),path)) {
+		if(!::realpath(c_str(),path)) {
 			throw system_error(errno,system_category(),*this);
 		}
 
@@ -323,6 +327,15 @@
 
 	}
 
+	File::Path & File::Path::realpath() {
+		char path[PATH_MAX+1];
+		if(!::realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),c_str());
+		}
+		assign(path);
+		return *this;
+	}
+
 	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
 		if(!dir()) {
@@ -330,8 +343,8 @@
 		}
 
 		char path[PATH_MAX+1];
-		if(!realpath(c_str(),path)) {
-			throw system_error(errno,system_category(),*this);
+		if(!::realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),c_str());
 		}
 
 		debug(path);

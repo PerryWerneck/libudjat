@@ -34,49 +34,53 @@
 
  namespace Udjat {
 
-	File::Path::Path(const char *v) : std::string{v ? v : ""} {
-		expand();
-	}
-
-	File::Path::Path(const char *v, size_t s) : std::string{v,s} {
-		expand();
-	}
-
-	File::Path::operator bool() const noexcept {
-		if(empty()) {
-			return false;
-		}
-		return (access(c_str(), R_OK) == 0);
-	}
-
-	bool File::Path::find(const char *name, bool recursive) {
-
-		return for_each([this,name](const File::Path &path){
-			debug("Testing ",path.c_str());
-			if(path.match(name)) {
-				assign(path);
-				debug("Found ",c_str());
-				return true;
-			}
-			return false;
-		},recursive);
-	}
-
-	bool File::Path::for_each(const char *pattern, const std::function<bool (const File::Path &path)> &call, bool recursive) const {
-
-		debug("pattern=",pattern);
-
-		return for_each([pattern,call](const File::Path &path){
-			if(path.match(pattern)) {
-				return call(path);
-			}
-			return false;
-		},recursive);
-
-	}
-
 	UDJAT_API void File::copy(const char *from, const char *to, bool replace) {
 		File::copy(from,to,Protocol::Watcher::progress,replace);
+	}
+
+	UDJAT_API void File::copy(const char *filename, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) {
+
+		int fd = open(filename,O_RDONLY);
+		if(fd < 0) {
+			throw system_error(errno,system_category(),String{"Cant open temporary ",filename});
+		}
+
+		struct stat st;
+		if(fstat(fd,&st)) {
+			throw system_error(errno,system_category(),String{"Cant get length of ",filename});
+		}
+
+		unsigned long long offset = 0;
+#ifdef _WIN32
+		char buffer[512];
+#else
+		char buffer[st.st_blksize+1];
+#endif // _WIN32
+
+		while(offset < (unsigned long long) st.st_size) {
+
+#ifdef _WIN32
+			if(lseek(fd, offset, SEEK_SET) < 0) {
+				throw system_error(errno,system_category(),"Cant set file offset");
+			}
+			ssize_t bytes = ::read(fd,buffer,512);
+#else
+			ssize_t bytes = pread(fd,buffer,st.st_blksize,offset);
+#endif // _WIN32
+			if(bytes < 0) {
+				throw system_error(errno,system_category(),"Cant read from file");
+			} else if(bytes == 0) {
+				throw runtime_error("Unexpected EOF reading from file");
+			}
+
+			writer(offset,st.st_size,buffer,bytes);
+
+			offset += bytes;
+
+		}
+
+		::close(fd);
+
 	}
 
 	std::string File::save(const char *contents) {
@@ -126,19 +130,19 @@
 		return name;
 	}
 
-	void File::save(int fd, const char *filename) {
+	void File::copy(int from, const char *to) {
 
 #ifdef _WIN32
-		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
+		int out = open(to,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
 #else
-		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0644);
+		int out = open(to,O_WRONLY|O_CREAT|O_TRUNC,0644);
 #endif // _WIN32
 
 		if(out < 0) {
-			throw system_error(errno,system_category(),string{"Error opening '"} + filename + "'");
+			throw system_error(errno,system_category(),string{"Error opening '"} + to + "'");
 		}
 
-		int in = dup(fd);
+		int in = dup(from);
 
 #ifndef _WIN32
 		fcntl(in,F_SETFL,fcntl(in,F_GETFL,0)|O_RDWR);
@@ -147,7 +151,7 @@
 		try {
 
 			if(lseek(in,0,SEEK_SET) == (off_t) -1) {
-				throw system_error(errno,system_category(),string{"Error positioning '"} + filename + "'");
+				throw system_error(errno,system_category(),string{"Error positioning '"} + to + "'");
 			}
 
 			char buffer[4096];
@@ -156,11 +160,11 @@
 			while(bytes != 0) {
 
 				if(bytes < 0) {
-					throw system_error(errno,system_category(),string{"Error reading source while saving '"} + filename + "'");
+					throw system_error(errno,system_category(),string{"Error reading source while saving '"} + to + "'");
 				}
 
 				if(write(out,buffer,bytes) != bytes) {
-					throw system_error(errno,system_category(),string{"Error saving '"} + filename + "'");
+					throw system_error(errno,system_category(),string{"Error saving '"} + to + "'");
 				}
 
 				bytes = read(in,buffer,4096);
