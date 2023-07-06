@@ -199,6 +199,14 @@
 
 	}
 
+	int SystemService::run(int argc, char **argv, const char *definitions) {
+		return Application::run(argc,argv,definitions);
+	}
+
+	int SystemService::run(int argc, char **argv) {
+		return Application::run(argc,argv);
+	}
+
 	int SystemService::install(const char *) {
 		error() << "Not supported on linux, use systemd" << endl;
 		return 0;
