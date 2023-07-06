@@ -83,7 +83,6 @@
 					Logger::String{ss.str()}.trace("agents");
 				}
 
-				Object::properties.icon = "computer";
 				Object::properties.label = Quark(Hostname()).c_str();
 
 				//
@@ -92,12 +91,20 @@
 				class ReadyState : public Abstract::State {
 				public:
 					ReadyState(const char *name, const char *summary, const char *body) : Abstract::State(name, Level::ready, summary, body) {
+#ifdef HAVE_VMDETECT
+						VirtualMachine virtualmachine;
+						Object::properties.icon = virtualmachine ? "computer-vm" : "computer";
+#else
 						Object::properties.icon = "computer";
+#endif // HAVE_VMDETECT
 					}
 
 				};
 
-				states.push_back(make_shared<ReadyState>(name, _( "System is ready" ), _( "No abnormal state was detected" )));
+				auto ready = make_shared<ReadyState>(name, _( "System is ready" ), _( "No abnormal state was detected" ));
+				Object::properties.icon = ready->icon();
+
+				states.push_back(ready);
 
 #ifndef _WIN32
 				//
