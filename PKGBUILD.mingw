@@ -2,8 +2,8 @@
 # References: https://www.msys2.org/wiki/Creating-Packages/
 
 # SPDX-License-Identifier: LGPL-3.0-or-later 
-#
-# Copyright (C) 2008 Banco do Brasil S.A.
+
+# Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published
@@ -17,6 +17,7 @@
 #
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 
 _realname=$(grep AC_INIT "${startdir}/configure.ac" | cut -d[ -f2 | cut -d] -f1)
 

@@ -79,8 +79,14 @@ namespace Udjat {
 
 		this->root = root;
 
-		this->root->info()
-				<< "Agent " << hex << ((void *) root.get() ) << dec << " was promoted to root" << endl;
+		Logger::String{
+			"Agent ",
+			std::to_string((unsigned long long) ((void *) root.get())),
+			" was promoted to root"
+		}.trace(root->name());
+
+//		this->root->info()
+//				<< "Agent " << hex << ((void *) root.get() ) << dec << " was promoted to root" << endl;
 
 	}
 
