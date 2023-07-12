@@ -23,6 +23,7 @@
 #include <private/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
+#include <udjat/tools/timestamp.h>
 #include <udjat/win32/charset.h>
 #include <udjat/win32/registry.h>
 #include <mutex>
@@ -40,7 +41,8 @@ namespace Udjat {
 		write(level,domain,text,false);
 	}
 
-	void write_to_console(const Logger::Level level, const char *timestamp, const char *domain, const char *text) {
+	/// @brief Default console writer.
+	static void cwriter(Logger::Level level, const char *domain, const char *text) noexcept {
 
 		// Log to console
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -79,7 +81,28 @@ namespace Udjat {
 				WriteFile(hOut,prefix,strlen(prefix),&dunno,NULL);
 			}
 
-			WriteFile(hOut,timestamp,strlen(timestamp),&dunno,NULL);
+			/*
+			{
+				time_t t = time(0);
+				struct tm tm;
+				localtime_s(&tm,&t);
+
+				char timestr[80];
+				memset(timestr,0,sizeof(timestr));
+
+				size_t len = strftime(timestr, 79, "%x %X", &tm);
+					strncpy(timestr,"--/--/-- --:--:--",79);
+				}
+
+				WriteFile(hOut,timestr,strlen(timestr),&dunno,NULL);
+			}
+			*/
+
+			{
+				std::string timestamp{TimeStamp{}.to_string("%x %X")};
+				WriteFile(hOut,timestamp.c_str(),timestamp.size(),&dunno,NULL);
+			}
+
 			WriteFile(hOut," ",1,&dunno,NULL);
 			WriteFile(hOut,domain,sizeof(domain)-1,&dunno,NULL);
 			WriteFile(hOut," ",1,&dunno,NULL);
@@ -93,6 +116,14 @@ namespace Udjat {
 
 		}
 
+	}
+
+	void Logger::console(bool enable) {
+		if(enable) {
+			Options::getInstance().console = cwriter;
+		} else {
+			Options::getInstance().console = nullptr;
+		}
 	}
 
 	void Logger::write(const Level level, const char *d, const char *text, bool force) noexcept {
@@ -113,7 +144,7 @@ namespace Udjat {
 
 		// Write
 		if(options.console && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
-			write_to_console(level, timestamp.c_str(),domain,text);
+			options.console(level,domain,text);
 		}
 
 		if(options.file && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
@@ -162,12 +193,12 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				write_to_console(Logger::Error, TimeStamp{}.to_string().c_str(),"logger",e.what());
+				cwriter(Logger::Error,"logger",e.what());
 				std::abort();
 
 			} catch(...) {
 
-				write_to_console(Logger::Error, TimeStamp{}.to_string().c_str(),"logger","Unexpected error");
+				cwriter(Logger::Error,"logger","Unexpected error");
 				std::abort();
 
 			}
