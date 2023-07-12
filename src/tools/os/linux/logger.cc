@@ -58,6 +58,48 @@ namespace Udjat {
 		write(level,domain,text,false);
 	}
 
+	/// @brief Default console writer.
+	static void cwriter(Logger::Level level, const char *domain, const char *text) noexcept {
+
+		// Write to console.
+		static bool decorated = (getenv("TERM") != NULL);
+
+		static const char *decorations[] = {
+			"\x1b[91m",	// Error
+			"\x1b[93m",	// Warning
+			"\x1b[92m",	// Info
+			"\x1b[94m",	// Trace
+			"\x1b[95m",	// Debug
+
+			"\x1b[96m",	// SysInfo (Allways Debug+1)
+		};
+
+		if(decorated) {
+			Logger::write(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
+		}
+
+		Logger::timestamp(1);
+
+		Logger::write(1,domain);
+		Logger::write(1," ");
+		Logger::write(1,text);
+
+		if(decorated) {
+			Logger::write(1,"\x1b[0m");
+		}
+
+		Logger::write(1,"\n");
+		fsync(1);
+	}
+
+	void Logger::console(bool enable) {
+		if(enable) {
+			Options::getInstance().console = cwriter;
+		} else {
+			Options::getInstance().console = nullptr;
+		}
+	}
+
 	void Logger::write(Level level, const char *d, const char *text, bool force) noexcept {
 
 		char domain[15];
@@ -74,37 +116,7 @@ namespace Udjat {
 
 		// Write
 		if(options.console && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
-
-			// Write to console.
-			static bool decorated = (getenv("TERM") != NULL);
-
-			static const char *decorations[] = {
-				"\x1b[91m",	// Error
-				"\x1b[93m",	// Warning
-				"\x1b[92m",	// Info
-				"\x1b[94m",	// Trace
-				"\x1b[95m",	// Debug
-
-				"\x1b[96m",	// SysInfo (Allways Trace+1)
-			};
-
-			if(decorated) {
-				Logger::write(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
-			}
-
-			timestamp(1);
-
-			Logger::write(1,domain);
-			Logger::write(1," ");
-			Logger::write(1,text);
-
-			if(decorated) {
-				Logger::write(1,"\x1b[0m");
-			}
-
-			Logger::write(1,"\n");
-			fsync(1);
-
+			options.console(level,domain,text);
 		}
 
 		if(options.syslog && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
