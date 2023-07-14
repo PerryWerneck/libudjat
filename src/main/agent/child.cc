@@ -25,12 +25,6 @@
 
  namespace Udjat {
 
-	/*
-	void Abstract::Agent::insert(std::shared_ptr<Agent> child) {
-		push_back(child);
-	}
-	*/
-
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
 
 		lock_guard<std::recursive_mutex> lock(guard);

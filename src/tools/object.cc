@@ -433,14 +433,6 @@
 		return def;
 	}
 
-	/*
-	std::string Abstract::Object::operator[](const char *key) const {
-		string value;
-		getProperty(key,value);
-		return value;
-	}
-	*/
-
 	string Abstract::Object::expand(const char *text, bool dynamic, bool cleanup) const {
 		return String(text).expand([this](const char *key, std::string &value) {
 			return getProperty(key,value);

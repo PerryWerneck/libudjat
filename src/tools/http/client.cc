@@ -46,8 +46,6 @@
 					throw system_error(errno,system_category(),Logger::Message("Can't stat '{}'",filename));
 				}
 
-				// cout << "http\tDownloading '" << filename << "'" << endl;
-
 			} else {
 
 				worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);

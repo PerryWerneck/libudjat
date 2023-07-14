@@ -71,12 +71,6 @@ namespace Udjat {
 		return cout;
 	}
 
-	/*
-	bool Abstract::Agent::activate(std::shared_ptr<State> state) {
-		return set(state);
-	}
-	*/
-
 	bool Abstract::Agent::onStateChange(std::shared_ptr<State> state, bool activate, const char *message) {
 
 		if(state.get() == this->current_state.selected.get()) {

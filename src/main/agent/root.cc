@@ -53,20 +53,6 @@
 
  namespace Udjat {
 
-	/*
-	void setRootAgent(std::shared_ptr<Abstract::Agent> agent) {
-
-		Logger::String{"Activating new root agent"}.trace(Application::Name().c_str());
-		Abstract::Agent::Controller::getInstance().set(agent);
-
-		Module::for_each([agent](const Module &module){
-			const_cast<Module &>(module).set(agent);
-			return false;
-		});
-
-	}
-	*/
-
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::RootFactory() {
 
 		/// @brief The root agent.
