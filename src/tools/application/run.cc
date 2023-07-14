@@ -210,7 +210,7 @@
 	}
 
 	int Application::run(int argc, char **argv) {
-		run(argc,argv,nullptr);
+		return run(argc,argv,nullptr);
 	}
 
 	int Application::run(int argc, char **argv, const char *definitions) {
