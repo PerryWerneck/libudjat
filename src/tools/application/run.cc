@@ -209,6 +209,10 @@
 
 	}
 
+	int Application::run(int argc, char **argv) {
+		return run(argc,argv,nullptr);
+	}
+
 	int Application::run(int argc, char **argv, const char *definitions) {
 
 		// Parse command line arguments.
@@ -218,8 +222,6 @@
 
 		Logger::redirect();
 		return run(definitions);
-
-		return 0;
 
 	}
 

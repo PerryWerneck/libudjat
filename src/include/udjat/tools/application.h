@@ -107,7 +107,10 @@
 		virtual int setup(int argc, char **argv, const char *definitions = nullptr);
 
 		/// @brief Parse command line options, run application.
-		virtual int run(int argc, char **argv, const char *definitions = nullptr);
+		virtual int run(int argc, char **argv, const char *definitions);
+
+		/// @brief Parse command line options, run application with default definitions.
+		virtual int run(int argc, char **argv);
 
 		/// @brief Run application.
 		virtual int run(const char *definitions = nullptr);

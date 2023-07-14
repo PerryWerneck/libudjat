@@ -119,8 +119,14 @@
 		/// @brief Stop service.
 		virtual int stop();
 
+		/// @brief Parse command line options, run application.
+		virtual int run(int argc, char **argv, const char *definitions);
+
+		/// @brief Parse command line options, run application with default definitions.
+		virtual int run(int argc, char **argv);
+
 		/// @brief Run application.
-		int run(const char *definitions = nullptr) override;
+		virtual int run(const char *definitions = nullptr);
 
 	};
 

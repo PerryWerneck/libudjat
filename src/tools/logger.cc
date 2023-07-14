@@ -131,12 +131,8 @@
 
 	}
 
-	void Logger::console(bool enable) {
-		Options::getInstance().console = enable;
-	}
-
 	bool Logger::console() {
-		return Options::getInstance().console;
+		return (bool) Options::getInstance().console;
 	}
 
 	void Logger::file(bool enable) {

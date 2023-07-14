@@ -41,16 +41,21 @@
 		void timestamp(int fd);
 #endif // !WIN32
 
-		void setup(const pugi::xml_node &node) noexcept;
+		UDJAT_PRIVATE void setup(const pugi::xml_node &node) noexcept;
 
 		struct UDJAT_PRIVATE Options {
-			bool console = true;
+
+			/// @brief Console writer.
+			void (*console)(Level level, const char *domain, const char *text) = nullptr;
+
 #ifdef _WIN32
 			bool file = true;
 #else
 			bool file = false;
 			bool syslog = true;
 #endif // !_WIN32
+
+			void (*cwriter)(Level level, const char *domain, const char *text);
 
 			bool enabled[Logger::Debug+2] = {
 				true,				// Informational message.

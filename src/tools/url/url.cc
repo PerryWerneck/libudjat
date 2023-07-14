@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/protocol.h>
  #include <udjat/tools/http/client.h>
+ #include <udjat/tools/protocol.h>
  #include <cstring>
 
 #ifndef _WIN32
@@ -165,6 +166,28 @@
 
 	bool URL::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
 		return HTTP::Client(*this).save(filename,progress);
+	}
+
+	void URL::get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
+
+		const Protocol * protocol = Protocol::find(*this);
+		if(!protocol) {
+			Logger::String message{"Cant find a protocol handler for '",c_str(),"'"};
+			message.error("url");
+			throw std::system_error(EINVAL,std::system_category(),message);
+		}
+
+		auto worker = protocol->WorkerFactory(c_str());
+
+		if(!worker) {
+			Logger::String message{"Cant get worker for '",c_str(),"'"};
+			message.error("url");
+			throw std::system_error(EINVAL,std::system_category(),message);
+		}
+
+		worker->method(HTTP::Get);
+		worker->save(writer);
+
 	}
 
 	bool URL::get(const char *filename) const {
