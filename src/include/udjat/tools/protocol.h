@@ -23,6 +23,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/string.h>
  #include <udjat/request.h>
+ #include <udjat/tools/file/handler.h>
  #include <udjat/tools/timestamp.h>
  #include <list>
 
@@ -286,6 +287,11 @@
 			/// @param filename The filename to update.
 			/// @return 0 if ok, errno if not.
 			int set_file_properties(const char *filename);
+
+			/// @brief Call URL, save response to file.
+			/// @param File The file handler.
+			/// @param progress The download progress notifier.
+			virtual bool save(File::Handler &file, const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Call URL, save response as filename.
 			/// @param filename	The file name to save.
