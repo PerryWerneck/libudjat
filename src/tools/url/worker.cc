@@ -251,7 +251,9 @@
 
 		File::Temporary tmpfile{filename};
 
+		debug("Saving ",filename);
 		if(save(tmpfile,progress)) {
+			debug("File '",filename,"' was updated");
 			tmpfile.save(filename,replace);
 			return true;
 		}
