@@ -27,6 +27,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/module.h>
  #include <private/updater.h>
  #include <string>
@@ -116,11 +117,11 @@
 
 #ifdef _WIN32
 		if(!SetEnvironmentVariable(name,value)) {
-			throw Win32::Exception("Unable to set environment variable");
+			throw Win32::Exception(_("Unable to set environment variable"));
 		}
 #else
 		if(setenv(name, value, 1)) {
-			throw std::system_error(errno,std::system_category(),"Invalid property");
+			throw std::system_error(errno,std::system_category(),_("Invalid property"));
 		}
 #endif // _WIN32
 
@@ -143,7 +144,7 @@
 			if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
 
 				Logger::console(false);
-				cout << Logger::Message{"Usage:\t{} [options]",argv[0]} << endl << endl;
+				cout << Logger::Message{ _("Usage:\t{} [options]"), argv[0]} << endl << endl;
 				help(cout);
 				cout << endl << endl;
 				return ECANCELED;
@@ -156,11 +157,11 @@
 
 				if(value) {
 					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-						throw runtime_error(string{name,(size_t) (value-name)} + ": Invalid argument");
+						throw std::system_error(EINVAL,std::system_category(),string{name,(size_t) (value-name)});
 					}
 				} else {
 					if(!argument(name)) {
-						throw runtime_error(string{name} + ": Invalid argument");
+						throw std::system_error(EINVAL,std::system_category(),name);
 					}
 				}
 
@@ -173,12 +174,12 @@
 				// It's a '-N value' argument
 				if(ix < argc && argv[ix][0] != '-') {
 					if(!argument(name,argv[ix])) {
-						throw runtime_error("Invalid argument");
+						throw std::system_error(EINVAL,std::system_category());
 					}
 					ix++;
 				} else {
 					if(!argument(name)) {
-						throw runtime_error(string{name} + ": Invalid argument");
+						throw std::system_error(EINVAL,std::system_category());
 					}
 				}
 
@@ -188,11 +189,11 @@
 				const char * value = strchr(argv[ix],'=');
 
 				if(!value) {
-					throw runtime_error("Invalid argument");
+					throw std::system_error(EINVAL,std::system_category());
 				}
 
 				if(!setProperty(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-					throw runtime_error("Invalid property");
+					throw runtime_error(_("Invalid property"));
 				}
 
 				ix++;
