@@ -73,7 +73,7 @@
 
 		};
 
-		/// @brief Request header.
+		/// @brief Request/response header.
 		class UDJAT_API Header : public std::string {
 		private:
 			std::string field_name;
@@ -162,11 +162,6 @@
 
 			} out;
 
-			/// @brief Input data (From host)
-			struct In {
-				TimeStamp modification;	///< @brief Last-modified time.
-			} in;
-
 			/// @brief Connected to host, expand network variables in payload string.
 			/// @param sock The connected socket used to get network info.
 			void set_socket(int sock);
@@ -228,16 +223,21 @@
 				return args.method;
 			}
 
-			/// @brief Get Header.
+			/// @brief Get/Create request header.
 			/// @param name Header name.
-			/// @return Header info.
-			virtual Header & header(const char *name);
+			/// @return The header object.
+			virtual Header & request(const char *name);
+
+			/// @brief Get/Create response header.
+			/// @param name Header name.
+			/// @return The header object.
+			virtual const Header & response(const char *name);
 
 			/// @brief Get header.
 			/// @param key The header name.
 			/// @return The header.
-			inline Header & operator[](const char *name) {
-				return header(name);
+			inline const Header & operator[](const char *name) {
+				return response(name);
 			}
 
 			/// @brief Set request mimetype.
@@ -249,7 +249,7 @@
 			/// @param name Header name.
 			/// @param value Header value;
 			inline void header(const char *name, const char *value) {
-				header(name).assign(value);
+				request(name).assign(value);
 			}
 
 			/// @brief Set request header.
@@ -257,7 +257,7 @@
 			/// @param value Header value;
 			template <typename T>
 			inline void header(const char *name, const T value) {
-				header(name).assign(value);
+				request(name).assign(value);
 			}
 
 			/// @brief Call URL, return response as string.
@@ -286,7 +286,7 @@
 			/// @brief Set file properties using the http response header.
 			/// @param filename The filename to update.
 			/// @return 0 if ok, errno if not.
-			int set_file_properties(const char *filename);
+			//int set_file_properties(const char *filename);
 
 			/// @brief Call URL, save response to file.
 			/// @param File The file handler.

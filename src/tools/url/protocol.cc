@@ -204,14 +204,14 @@
 		Config::for_each(
 			settings.c_str(),
 			[worker](const char *key, const char *value) {
-				worker->header(key) = value;
+				worker->request(key) = value;
 				return true;
 			}
 		);
 
 		if(st.st_mtime) {
-			worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
-			Header &hdr = worker->header("Cache-Control");
+			worker->request("If-Modified-Since") = TimeStamp(st.st_mtime);
+			Header &hdr = worker->request("Cache-Control");
 			if(hdr.empty()) {
 				warning() << "No cache-control in the '" << settings << "' section, using defaults" << endl;
 				hdr = "Cache-Control=public, max-age=31536000";

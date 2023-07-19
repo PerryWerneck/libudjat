@@ -65,7 +65,7 @@
 	}
 
 	int Protocol::Worker::mimetype(const MimeType type) {
-		header("Content-Type") = std::to_string(type);
+		request("Content-Type") = std::to_string(type);
 		return 0;
 	}
 
@@ -138,8 +138,12 @@
 		return ENOTSUP;
 	}
 
-	Protocol::Header & Protocol::Worker::header(const char UDJAT_UNUSED(*name)) {
-		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable do create header '"} + name + "'");
+	Protocol::Header & Protocol::Worker::request(const char *name) {
+		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable to handle '"} + name + "' request");
+	}
+
+	const Protocol::Header & Protocol::Worker::response(const char *name) {
+		throw system_error(ENOTSUP,system_category(),string{"The selected worker was unable to handle '"} + name + "' response");
 	}
 
 	Protocol::Worker & Protocol::Worker::url(const char *url) noexcept {
@@ -178,6 +182,7 @@
 		return test(Protocol::Watcher::progress);
 	}
 
+	/*
 	int Protocol::Worker::set_file_properties(const char *filename) {
 
 		if(!in.modification) {
@@ -216,6 +221,7 @@
 
 		return 0;
 	}
+	*/
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
 		throw system_error(ENOTSUP,system_category());

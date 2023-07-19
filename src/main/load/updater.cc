@@ -32,6 +32,7 @@
  #include <udjat/tools/file.h>
  #include <private/agent.h>
  #include <udjat/tools/http/exception.h>
+ #include <udjat/tools/http/timestamp.h>
 
  using namespace std;
 
@@ -197,8 +198,16 @@
 
 									text.save();
 
-									// Set file timestamp based on http last-modified.
-									client.set_file_properties(descr.filename.c_str());
+									{
+										time_t timestamp = HTTP::TimeStamp{client.response("Last-Modified").c_str()};
+										if(!timestamp) {
+											Logger::String{"No timestamp on ",client.url().c_str()}.warning("xml");
+										} else if(File::mtime(descr.filename.c_str(),timestamp)) {
+											Logger::String{"Cant set timestamp on '",descr.filename,"': ",strerror(errno)}.error("xml");
+										} else if(Logger::enabled(Logger::Trace)) {
+											Logger::String{"Timestamp of '", descr.filename, "' set to ",TimeStamp{timestamp}.to_string()}.trace("xml");
+										}
+									}
 
 									// Count changed file.
 									changed++;
