@@ -22,8 +22,8 @@
   */
 
  #include <config.h>
- #include <udjat/udjat/defs.h
- #include <udjat/tools/udjat/tools/file.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/file.h>
  #include <sys/utime.h>
  #include <udjat/tools/logger.h>
 
@@ -46,6 +46,21 @@
 		}
 
 		return 0;
+
+	}
+
+	time_t File::Temporary::mtime() const {
+
+		struct stat st;
+
+		if(stat(filename.c_str(),&st)) {
+			if(errno == ENOENT) {
+				return 0;
+			}
+			throw std::system_error(errno,std::system_category());
+		}
+
+		return st.st_size ? st.st_mtime : 0;
 
 	}
 

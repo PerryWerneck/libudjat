@@ -54,7 +54,7 @@
 		class Pool : public ThreadPool {
 		public:
 			Pool() : ThreadPool("ThreadPool") {
-				Logger::String{"Creating standard pool with ",limits.threads," threads"}.trace(name);
+				Logger::String{"Creating standard pool with ",limits.threads," threads"}.write(Logger::Debug,name);
 			}
 		};
 
