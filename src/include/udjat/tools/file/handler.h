@@ -49,6 +49,10 @@ namespace Udjat {
 				return fd;
 			}
 
+			/// @brief Get the file's last modification timestamp.
+			/// @return 0 if file is empty or not found.
+			virtual time_t mtime() const;
+
 			/// @brief Write data to file at offset.
 			/// @param contents Data to write.
 			/// @param length Data length.

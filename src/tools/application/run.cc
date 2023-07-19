@@ -136,7 +136,7 @@
 
 	}
 
-	int Application::setup(int argc, char **argv, const char *definitions) {
+	int Application::setup(int argc, char **argv, const char *) {
 
 		int ix = 1;
 		while(ix < argc) {
