@@ -278,6 +278,7 @@
 		<Unit filename="src/tools/os/linux/econf.cc" />
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />
+		<Unit filename="src/tools/os/linux/file.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
 		<Unit filename="src/tools/os/linux/file/controller.cc" />
 		<Unit filename="src/tools/os/linux/file/copy.cc" />
@@ -321,6 +322,7 @@
 		<Unit filename="src/tools/os/windows/event.cc" />
 		<Unit filename="src/tools/os/windows/eventcontroller.cc" />
 		<Unit filename="src/tools/os/windows/exception.cc" />
+		<Unit filename="src/tools/os/windows/file.cc" />
 		<Unit filename="src/tools/os/windows/file/copy.cc" />
 		<Unit filename="src/tools/os/windows/file/list.cc" />
 		<Unit filename="src/tools/os/windows/file/path.cc" />

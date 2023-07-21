@@ -18,7 +18,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version:		1.0
+Version:		1.1
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -127,6 +127,9 @@ make all
 
 %dir %{_includedir}/udjat/tools
 %{_includedir}/udjat/tools/*.h
+
+%dir %{_includedir}/udjat/tools/file
+%{_includedir}/udjat/tools/file/*.h
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h

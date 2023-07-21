@@ -54,6 +54,10 @@ namespace Udjat {
 
 			~Temporary();
 
+			/// @brief Get the reference file last modification timestamp.
+			/// @return 0 if file is empty or not found.
+			time_t mtime() const override;
+
 			/// @brief Create an empty temporary file.
 			/// @param len Required file size.
 			static std::string create(unsigned long long len);

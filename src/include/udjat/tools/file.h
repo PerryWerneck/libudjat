@@ -42,19 +42,23 @@ namespace Udjat {
 		class Controller;
 
 		/// @brief Copy file
-		void copy(int from, const char *to);
+		UDJAT_API void copy(int from, const char *to);
 
 		inline void save(int from, const char *to) {
 			copy(from,to);
 		}
 
 		/// @brief Copy file with custom writer.
-		void copy(const char *from, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer);
+		UDJAT_API void copy(const char *from, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer);
 
 		/// @brief Copy file
-		void copy(const char *from, const char *to, bool replace = true);
+		UDJAT_API void copy(const char *from, const char *to, bool replace = true);
 
-		void copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace = true);
+		UDJAT_API void copy(const char *from, const char *to, const std::function<bool(double current, double total)> &progress, bool replace = true);
+
+		/// @brief Set file modification time.
+		/// @return 0 if ok, non zero if not (sets errno).
+		UDJAT_API int mtime(const char *filename, time_t time);
 
 #ifdef _WIN32
 

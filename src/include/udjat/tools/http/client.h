@@ -88,26 +88,26 @@
 			/// @brief Set file properties using the http response header.
 			/// @param filename The filename to update.
 			/// @return 0 if ok, errno if not.
-			int set_file_properties(const char *filename) {
-				return worker->set_file_properties(filename);
-			}
+			//int set_file_properties(const char *filename) {
+			//	return worker->set_file_properties(filename);
+			//}
 
 			/// @brief Setup cache headers from filename.
 			/// @param filename The filename for cache information.
 			void cache(const char *filename);
 
-			/// @brief Get Header.
+			/// @brief Get/Create request header.
 			/// @param name Header name.
-			/// @return Header info.
-			inline Protocol::Header & header(const char *name) {
-				return worker->header(name);
+			/// @return The header.
+			inline Protocol::Header & request(const char *name) {
+				return worker->request(name);
 			}
 
-			/// @brief Get header.
-			/// @param key The header name.
+			/// @brief Get/Create response header.
+			/// @param name Header name.
 			/// @return The header.
-			inline Protocol::Header & operator[](const char *name) {
-				return worker->header(name);
+			inline const Protocol::Header & response(const char *name) {
+				return worker->response(name);
 			}
 
 			/// @brief Call URL, return response as string.

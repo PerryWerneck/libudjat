@@ -48,9 +48,8 @@
 
 			} else {
 
-				worker->header("If-Modified-Since") = TimeStamp(st.st_mtime);
-
-				debug("Last modification time: ",worker->header("If-Modified-Since").c_str());
+				worker->request("If-Modified-Since") = TimeStamp(st.st_mtime);
+				debug("Last modification time: ",worker->request("If-Modified-Since").c_str());
 
 			}
 		}

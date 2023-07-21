@@ -31,7 +31,6 @@ namespace Udjat {
 		class UDJAT_API Handler {
 		protected:
 			int fd = -1;
-
 			typedef File::Handler super;
 
 		public:
@@ -43,6 +42,16 @@ namespace Udjat {
 			Handler(const char *filename, bool write = false);
 
 			virtual ~Handler();
+
+			/// @brief Convert file handler to int for use with standard C/C++ APIs.
+			/// @return the file handle as int.
+			inline operator int() const noexcept {
+				return fd;
+			}
+
+			/// @brief Get the file's last modification timestamp.
+			/// @return 0 if file is empty or not found.
+			virtual time_t mtime() const;
 
 			/// @brief Write data to file at offset.
 			/// @param contents Data to write.

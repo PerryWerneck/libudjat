@@ -53,6 +53,21 @@
 		}
 	}
 
+	time_t File::Handler::mtime() const {
+
+		struct stat st;
+
+		if(fstat(fd,&st)) {
+			if(errno == ENOENT) {
+				return 0;
+			}
+			throw std::system_error(errno,std::system_category());
+		}
+
+		return st.st_size ? st.st_mtime : 0;
+
+	}
+
 #ifdef _WIN32
 
 	void File::Handler::allocate(unsigned long long) {
