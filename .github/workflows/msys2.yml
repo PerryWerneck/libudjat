@@ -1,8 +1,10 @@
 name: MSYS2
 on:
+  push:
+    branches:
+      - master  
   pull_request:
     branches:
-      - master
       - develop
 jobs:
   msys2-mingw:
