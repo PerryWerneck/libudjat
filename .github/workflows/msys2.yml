@@ -1,8 +1,10 @@
 name: MSYS2
 on:
+  push:
+    branches:
+      - master  
   pull_request:
     branches:
-      - master
       - develop
 jobs:
   msys2-mingw:
@@ -27,7 +29,7 @@ jobs:
         with:
           repository: "PerryWerneck/vmdetect"
           latest: true
-          fileName: "mingw-w64-x86_64-vmdetect-1.1-1-x86_64.pkg.tar.zst"
+          fileName: "mingw-w64-x86_64-vmdetect-1.1-0-x86_64.pkg.tar.zst"
       - name: CI-Build
         run: ./win/ci-build.sh
       - uses: ncipollo/release-action@v1
