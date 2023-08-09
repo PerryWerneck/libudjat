@@ -152,7 +152,7 @@
 
 					} else {
 
-						Object::properties.summary = Quark(Logger::Message("{} virtual machine",virtualmachine.to_string())).c_str();
+						Object::properties.summary = Quark(Logger::Message("{} virtual machine",virtualmachine.name())).c_str();
 
 					}
 

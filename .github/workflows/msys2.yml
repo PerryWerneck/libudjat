@@ -1,11 +1,9 @@
 name: MSYS2
 on:
-  push:
-    branches:
-      - master  
   pull_request:
     branches:
       - develop
+      - master  
 jobs:
   msys2-mingw:
     name: Publish for Windows 64
