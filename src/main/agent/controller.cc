@@ -95,7 +95,7 @@ namespace Udjat {
 		if(this->root)
 			return this->root;
 
-		throw runtime_error(_("Agent subsystem is inactive"));
+		throw runtime_error(_("Core/Module subsystem failed to initialize"));
 
 	}
 
