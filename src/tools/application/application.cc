@@ -140,6 +140,11 @@
 
 		}
 
+		const char *env = getenv(name);
+		if(env) {
+			return env;
+		}
+
 		return def;
 
 	}

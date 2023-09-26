@@ -121,7 +121,7 @@
 		}
 #else
 		if(setenv(name, value, 1)) {
-			throw std::system_error(errno,std::system_category(),_("Invalid property"));
+			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
 		}
 #endif // _WIN32
 

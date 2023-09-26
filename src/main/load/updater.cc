@@ -270,7 +270,29 @@
 
 	}
 
-	bool Updater::load(std::shared_ptr<Abstract::Agent> root) const noexcept {
+	bool Updater::load(std::shared_ptr<Abstract::Agent> root) noexcept {
+
+		files.sort([](const Settings &a, const Settings &b){
+
+			const char *names[] = {
+				a.filename.c_str(),
+				b.filename.c_str()
+			};
+
+			for(size_t ix = 0; ix < 2; ix++) {
+				const char *ptr = strrchr(names[ix],'/');
+				if(ptr) {
+					names[ix] = ptr+1;
+				}
+				ptr = strrchr(names[ix],'\\');
+				if(ptr) {
+					names[ix] = ptr+1;
+				}
+			}
+
+			return strcasecmp(names[0],names[1]) < 0;
+
+		});
 
 		for(const Settings &descr : *this) {
 

@@ -76,10 +76,10 @@
 			return files.end();
 		}
 
-		/// @brief Load configuration files.
+		/// @brief Sort by basename and load configuration files.
 		/// @param agent New root agent.
 		/// @return True on success.
-		bool load(std::shared_ptr<Abstract::Agent> root) const noexcept;
+		bool load(std::shared_ptr<Abstract::Agent> root) noexcept;
 
 		/// @brief Get seconds for next update.
 		inline time_t wait() const noexcept {
