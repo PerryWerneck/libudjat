@@ -141,7 +141,7 @@
 		int ix = 1;
 		while(ix < argc) {
 
-			if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
+			if(String{argv[ix]}.select("-h","--help","/?","-?","/h","help","?",NULL) != -1) {
 
 				Logger::console(false);
 				cout << Logger::Message{ _("Usage:\t{} [options]"), argv[0]} << endl << endl;
@@ -149,6 +149,26 @@
 				cout << endl << endl;
 				return ECANCELED;
 
+#ifdef _WIN32
+			} else if(argv[ix][0] == '/') {
+
+				// It's a '/name=' argument.
+				const char *name = argv[ix]+1;
+				const char *value = strchr(name,'=');
+
+				if(value) {
+					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
+						throw std::system_error(EINVAL,std::system_category(),string{name,(size_t) (value-name)});
+					}
+				} else {
+					if(!argument(name)) {
+						throw std::system_error(EINVAL,std::system_category(),name);
+					}
+				}
+
+				ix++;
+
+#endif // _WIN32
 			} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
 
 				// It's a '--name=' argument.
@@ -166,6 +186,7 @@
 				}
 
 				ix++;
+
 			} else if(argv[ix][0] == '-') {
 
 				const char name = argv[ix][1];
