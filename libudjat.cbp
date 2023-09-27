@@ -338,6 +338,8 @@
 		<Unit filename="src/tools/os/windows/protocol.cc" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
 		<Unit filename="src/tools/os/windows/service.cc" />
+		<Unit filename="src/tools/os/windows/service/handler.cc" />
+		<Unit filename="src/tools/os/windows/service/manager.cc" />
 		<Unit filename="src/tools/os/windows/shortcut.cc" />
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />

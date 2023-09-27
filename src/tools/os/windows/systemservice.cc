@@ -220,27 +220,17 @@
 	}
 
 	/// @brief Uninstall service.
-	/// @return 0 when success, errno if failed.
-	/// @retval ENOTSUP No support for this method.
 	int SystemService::uninstall() {
 
 		mode = None;
 
 		Application::Name appname;
-		Win32::Service::Manager manager;
 
-		if(!Win32::Service::Handler(manager.open(appname.c_str()))) {
-			auto lasterror = GetLastError();
-			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
-				cout << "Service '" << appname << "' does not exist" << endl;
-				return 0;
-			}
-			throw Win32::Exception("Cant open service",lasterror);
+		if(Win32::Service::Manager{}.remove(appname.c_str())) {
+			cout << "Service '" << appname << "' removed" << endl;
+		} else {
+			cout << "Service '" << appname << "' does not exist" << endl;
 		}
-
-		cout << "Removing service '" << appname << "'" << endl;
-		manager.remove(appname.c_str());
-		cout << "Service '" << appname << "' removed" << endl;
 
 		return 1;
 
@@ -252,18 +242,12 @@
 		mode = None;
 
 		Application::Name appname;
-		cout << "Starting service '" << appname << "'" << endl;
 
-		Win32::Service::Manager manager;
-		Win32::Service::Handler service{manager.open(appname.c_str())};
-
-		if(!service) {
-			throw Win32::Exception("Cant start service",GetLastError());
+		if(Win32::Service::Manager{}.start(appname.c_str())) {
+			cout << "Service '" << appname << "' was started" << endl;
+		} else {
+			cerr << "Service '" << appname << "' was NOT started" << endl;
 		}
-
-		cout << "Starting service '" << appname << "'" << endl;
-		service.start();
-		cout << "Service '" << appname << "' was started" << endl;
 
 		return 1;
 
@@ -274,21 +258,12 @@
 		mode = None;
 
 		Application::Name appname;
-		cout << "Stopping service '" << appname << "'" << endl;
 
-		Win32::Service::Manager manager;
-		Win32::Service::Handler service{manager.open(appname.c_str())};
-
-		if(!service) {
-			auto lasterror = GetLastError();
-			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
-				clog << "Service '" << appname << "' does not exist" << endl;
-				return 0;
-			}
-			throw Win32::Exception("Cant stop service",lasterror);
+		if(Win32::Service::Manager{}.stop(appname.c_str())) {
+			cout << "Service '" << appname << "' was stopped" << endl;
+		} else {
+			cerr << "Service '" << appname << "' was NOT stopped" << endl;
 		}
-
-		service.stop();
 
 		return 1;
 
