@@ -121,6 +121,7 @@
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
+		<Unit filename="src/include/udjat/tools/script.h" />
 		<Unit filename="src/include/udjat/tools/service.h" />
 		<Unit filename="src/include/udjat/tools/singleton.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
@@ -356,6 +357,7 @@
 		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/os/windows/win32service.cc" />
 		<Unit filename="src/tools/quark.cc" />
+		<Unit filename="src/tools/script.cc" />
 		<Unit filename="src/tools/shortcut.cc" />
 		<Unit filename="src/tools/singleton.cc" />
 		<Unit filename="src/tools/string/expand.cc" />
