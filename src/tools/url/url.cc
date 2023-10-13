@@ -21,6 +21,7 @@
  #include <private/protocol.h>
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/string.h>
  #include <cstring>
 
 #ifndef _WIN32
@@ -52,6 +53,12 @@
 
 		const char *ptr;	// Temp pointer.
 		size_t from, to;
+
+		// Get query
+		ptr = strchr(c_str(),'?');
+		if(ptr) {
+			components.query = (ptr+1);
+		}
 
 		ptr = c_str();
 		if(ptr[0] == '/' || ptr[0] == '.') {
@@ -91,7 +98,7 @@
 			components.srvcname = (ptr+1);
 		} else {
 			components.hostname = hostname;
-			components.srvcname = components.scheme;
+			components.srvcname.assign(components.scheme);
 		}
 
 		if(to == string::npos) {
@@ -106,7 +113,6 @@
 		}
 
 		components.path.assign(string::c_str()+from,to-from);
-		components.query = string::c_str()+to+1;
 
 		return components;
 
@@ -205,6 +211,34 @@
 	std::string URL::filename() {
 		return HTTP::Client(*this).filename();
 	}
+
+	String URL::argument(const char *name) const {
+
+		String value;
+
+		if(name && *name) {
+
+			size_t szName = strlen(name);
+
+			ComponentsFactory().query.for_each("&",[&value,szName,name](const String &v){
+
+				if(v.size() > szName) {
+
+					if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
+						value = v.c_str()+szName+1;
+						value.strip();
+						return true;
+					}
+				}
+
+				return false;
+			});
+
+		}
+
+		return value;
+	}
+
 
 	int URL::Components::portnumber() const {
 

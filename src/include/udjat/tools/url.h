@@ -63,10 +63,10 @@
 		/// @brief URL Components.
 		struct UDJAT_API Components {
 			Scheme scheme;			///< @brief The scheme name.
-			std::string hostname;	///< @brief The host name.
-			std::string srvcname;	///< @brief The service name or port number.
-			std::string path;		///< @brief The request path.
-			std::string query;		///< @brief Query data.
+			String hostname;		///< @brief The host name.
+			String srvcname;		///< @brief The service name or port number.
+			String path;			///< @brief The request path.
+			String query;			///< @brief Query data.
 
 			/// @brief Get the port number from srvcname.
 			int portnumber() const;
@@ -108,6 +108,13 @@
 
 		/// @brief Get URL scheme.
 		Scheme scheme() const;
+
+		/// @brief Get URL argument.
+		String argument(const char *name) const;
+
+		String operator[](const char *name) const {
+			return argument(name);
+		}
 
 		/// @brief Get URL components.
 		Components ComponentsFactory() const;

@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
+ // #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -197,11 +197,19 @@ int main(int argc, char **argv) {
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR),"/",GETTEXT_PACKAGE);
 
+	/*
 	printf("------------------------\n");
 	cout << String{}.set_byte(10000.0) << endl;
 	cout << String{}.set_byte(0.0) << endl;
 	cout << String{}.set_byte(229.0) << endl;
 	printf("------------------------\n");
+	*/
+
+	URL url{"http://example.com?v1=10&v2=20"};
+
+	cout << "Arg v1='" << url["v1"] << "'" << endl;
+	cout << "Arg v2='" << url["v2"] << "'" << endl;
+
 
 	return 0;
 }

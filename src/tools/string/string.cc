@@ -144,6 +144,33 @@
 		return strncmp(c_str(), prefix, strlen (prefix)) == 0;
 	}
 
+	bool String::for_each(const char *delim, const std::function<bool(const String &value)> &func) {
+
+		const char *ptr = c_str();
+		while(ptr && *ptr) {
+
+			const char *next = strstr(ptr,delim);
+			if(!next) {
+				return func(String{ptr}.strip());
+			}
+
+			while(*next && isspace(*next))
+				next++;
+
+			if(func(String{ptr,(size_t) (next-ptr)}.strip())) {
+				return true;
+			}
+
+			ptr = next+1;
+			while(*ptr && isspace(*ptr)) {
+				ptr++;
+			}
+
+		}
+
+		return false;
+	}
+
 	std::vector<String> String::split(const char *delim) {
 
 		std::vector<String> strings;
