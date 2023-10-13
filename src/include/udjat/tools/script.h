@@ -33,8 +33,6 @@
 	class UDJAT_API Script : public NamedObject {
 	private:
 		const char *cmdline = "";
-		Logger::Level out = Logger::Info;
-		Logger::Level err = Logger::Error;
 
 		int uid = -1;
 		int gid = -1;
@@ -42,19 +40,29 @@
 
 	protected:
 
+		Logger::Level out = Logger::Info;
+		Logger::Level err = Logger::Error;
+
+		const char *title = nullptr;
 		int run(const char *cmdline);
 
 	public:
 
-		constexpr Script(const char *str) : NamedObject{"scipt"}, cmdline{str} {
+		constexpr Script(const char *str) : NamedObject{"script"}, cmdline{str} {
 		}
 
-		Script(const XML::Node &node);
+		Script(const XML::Node &node, const char *title = "");
 		~Script();
 
 		/// @brief Run script in foreground.
 		/// @return Script return code.
 		int run(const Udjat::NamedObject &object);
+
+		/// @brief Get string title.
+		const char *c_str() const noexcept;
+
+		/// @brief Get script title.
+		std::string to_string() const noexcept override;
 
 	};
 

@@ -108,12 +108,13 @@
 
 #endif // _WIN32
 
-	Script::Script(const XML::Node &node)
+	Script::Script(const XML::Node &node, const char *msg)
 		: 	NamedObject{node},
 			cmdline{Quark(node,"cmdline","").c_str()},
 			uid{getuid(node)},
 			gid{getgid(node)},
-			shell{node.attribute("shell").as_bool(false)} {
+			shell{node.attribute("shell").as_bool(false)},
+			title{Quark(node,"title",msg).c_str()} {
 		if(!(cmdline && *cmdline)) {
 			throw runtime_error(_("The required attribute 'cmdline' is missing"));
 		}
@@ -121,6 +122,21 @@
 
 	Script::~Script() {
 	}
+
+	std::string Script::to_string() const noexcept {
+		return c_str();
+	}
+
+	const char * Script::c_str() const noexcept {
+
+		if(title && *title) {
+			return title;
+		}
+
+		return cmdline;
+
+	}
+
 
 	int Script::run(const Udjat::NamedObject &object) {
 		return run(String{cmdline}.expand(object).c_str());
@@ -162,6 +178,9 @@
 			}
 		};
 
+		if(title && *title) {
+			info() << title << endl;
+		}
 		return SubProcess{uid,gid,name(),cmdline}.run();
 
 	}
