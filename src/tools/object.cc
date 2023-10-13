@@ -34,7 +34,7 @@
 
  namespace Udjat {
 
-	static const char * NameFactory(const pugi::xml_node &node) noexcept {
+	static const char * NameFactory(const XML::Node &node) noexcept {
 
 		const char *name = node.attribute("name").as_string();
 
@@ -46,14 +46,14 @@
 		return Quark(name).c_str();
 	}
 
-	NamedObject::NamedObject(const pugi::xml_node &node) : NamedObject{NameFactory(node)} {
+	NamedObject::NamedObject(const XML::Node &node) : NamedObject{NameFactory(node)} {
 	}
 
 	const char * NamedObject::name() const noexcept {
 		return objectName;
 	}
 
-	bool NamedObject::set(const pugi::xml_node &node) {
+	bool NamedObject::set(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
 			return true;
@@ -77,7 +77,7 @@
 		return strcasecmp(c_str(), name) == 0;
 	}
 
-	bool NamedObject::operator==(const pugi::xml_node &node) const noexcept {
+	bool NamedObject::operator==(const XML::Node &node) const noexcept {
 		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
 	}
 
@@ -107,13 +107,17 @@
 	}
 
 
-	Object::Object(const pugi::xml_node &node) : NamedObject(node) {
+	Object::Object(const XML::Node &node) : NamedObject(node) {
 		set(node);
 	}
 
-	void Abstract::Object::setup(const pugi::xml_node &node, bool UDJAT_UNUSED(upsearch)) {
+	void Abstract::Object::setup(const XML::Node &node, bool UDJAT_UNUSED(upsearch)) {
 
-		for(pugi::xml_node child : node) {
+		for(XML::Node child : node) {
+
+			if(!is_allowed(child)) {
+				continue;
+			}
 
 			Factory::for_each(child.name(),[this,&child](Factory &factory) {
 
@@ -139,7 +143,7 @@
 
 	}
 
-	void Object::set(const pugi::xml_node &node) {
+	void Object::set(const XML::Node &node) {
 
 		NamedObject::set(node);
 
@@ -269,9 +273,9 @@
 		return Logger::trace() << name() << "\t";
 	}
 
-	void Abstract::Object::for_each(const pugi::xml_node &root, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler) {
+	void Abstract::Object::for_each(const XML::Node &root, const char *name, const char *group, const std::function<void(const XML::Node &node)> &handler) {
 
-		for(pugi::xml_node node = root.child(name); node; node = node.next_sibling(name)) {
+		for(XML::Node node = root.child(name); node; node = node.next_sibling(name)) {
 			handler(node);
 		}
 
@@ -285,17 +289,17 @@
 			node_name += '-';
 			node_name += name;
 
-			for(pugi::xml_node parent = root.parent(); parent; parent = parent.parent()) {
+			for(XML::Node parent = root.parent(); parent; parent = parent.parent()) {
 
 				// Scan for nodes.
-				for(pugi::xml_node node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
+				for(XML::Node node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
 					handler(node);
 				}
 
 				// Scan for groups.
-				for(pugi::xml_node grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
+				for(XML::Node grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
 
-					for(pugi::xml_node node = grp.child(name); node; node = node.next_sibling(name)) {
+					for(XML::Node node = grp.child(name); node; node = node.next_sibling(name)) {
 						handler(node);
 					}
 
@@ -337,13 +341,13 @@
 		return Quark( (string{node.name()} + "-defaults").c_str() ).c_str();
 	}
 
-	bool Abstract::Object::for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call) {
+	bool Abstract::Object::for_each(const XML::Node &node, const char *tagname, const std::function<bool (const XML::Node &node)> &call) {
 
 		bool rc = false;
 
-		for(pugi::xml_node n = node; n && !rc; n = n.parent()) {
+		for(XML::Node n = node; n && !rc; n = n.parent()) {
 
-			for(pugi::xml_node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
+			for(XML::Node child = n.child(tagname); child && !rc; child = child.next_sibling(tagname)) {
 
 				if(is_allowed(child)) {
 					rc = call(child);
@@ -356,10 +360,10 @@
 		return rc;
 	}
 
-	const pugi::xml_attribute Abstract::Object::getAttribute(const pugi::xml_node &n, const char *name, bool change) {
+	const pugi::xml_attribute Abstract::Object::getAttribute(const XML::Node &n, const char *name, bool change) {
 
 		string key{name};
-		pugi::xml_node node = n;
+		XML::Node node = n;
 
 		while(node) {
 
@@ -391,11 +395,11 @@
 
 	}
 
-	unsigned int Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, unsigned int def) {
+	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const char *name, unsigned int def) {
 		return getAttribute(node,name).as_uint(def);
 	}
 
-	unsigned int Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, unsigned int def) {
+	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const char *group, const char *name, unsigned int def) {
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
 			return attribute.as_uint(def);
@@ -403,7 +407,7 @@
 		return Config::Value<unsigned int>(group,name,def);
 	}
 
-	bool Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, bool def) {
+	bool Abstract::Object::getAttribute(const XML::Node &node, const char *group, const char *name, bool def) {
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
 			return attribute.as_bool(def);
@@ -411,7 +415,7 @@
 		return Config::Value<bool>(group,name,def);
 	}
 
-	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *name, const char *def) {
+	const char * Abstract::Object::getAttribute(const XML::Node &node, const char *name, const char *def) {
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
 			return Quark(Udjat::expand(node,attribute,def)).c_str();
@@ -419,7 +423,7 @@
 		return def;
 	}
 
-	const char * Abstract::Object::getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def) {
+	const char * Abstract::Object::getAttribute(const XML::Node &node, const char *group, const char *name, const char *def) {
 
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
@@ -443,7 +447,7 @@
 		text = expand(text.c_str(),dynamic,cleanup);
 	}
 
-	const char * Abstract::Object::expand(const pugi::xml_node &node, const char *group, const char *value) {
+	const char * Abstract::Object::expand(const XML::Node &node, const char *group, const char *value) {
 
 		String text{value};
 		text.expand([node,group](const char *key, string &value) {
@@ -467,7 +471,7 @@
 
 	}
 
-	const char * Abstract::Object::getChildValue(const pugi::xml_node &node, const char *group) {
+	const char * Abstract::Object::getChildValue(const XML::Node &node, const char *group) {
 		String text{node.child_value()};
 		text.expand(node,group);
 		text.strip();
@@ -477,10 +481,10 @@
 		return text.as_quark();
 	}
 
-	bool Abstract::Object::search(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call) {
+	bool Abstract::Object::search(const XML::Node &node, const char *tagname, const std::function<bool(const XML::Node &node)> &call) {
 
-		for(pugi::xml_node nd = node; nd; nd = nd.parent()) {
-			for(pugi::xml_node child = nd.child(tagname); child; child = child.next_sibling(tagname)) {
+		for(XML::Node nd = node; nd; nd = nd.parent()) {
+			for(XML::Node child = nd.child(tagname); child; child = child.next_sibling(tagname)) {
 				if(call(child)) {
 					return true;
 				}
