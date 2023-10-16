@@ -116,6 +116,14 @@
 			return argument(name);
 		}
 
+		inline const char& operator[] (size_t pos) const {
+			return std::string::operator[](pos);
+		}
+
+		inline char& operator[] (size_t pos) {
+			return std::string::operator[](pos);
+		}
+
 		/// @brief Get URL components.
 		Components ComponentsFactory() const;
 
