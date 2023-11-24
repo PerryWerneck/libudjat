@@ -144,9 +144,8 @@
 		return strncmp(c_str(), prefix, strlen (prefix)) == 0;
 	}
 
-	bool String::for_each(const char *delim, const std::function<bool(const String &value)> &func) {
+	bool String::for_each(const char *ptr, const char *delim, const std::function<bool(const String &value)> &func) {
 
-		const char *ptr = c_str();
 		while(ptr && *ptr) {
 
 			const char *next = strstr(ptr,delim);
@@ -169,6 +168,11 @@
 		}
 
 		return false;
+
+	}
+
+	bool String::for_each(const char *delim, const std::function<bool(const String &value)> &func) {
+		return for_each(c_str(),delim,func);
 	}
 
 	std::vector<String> String::split(const char *delim) {

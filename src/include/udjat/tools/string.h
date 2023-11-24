@@ -309,6 +309,10 @@
 
 		/// @brief Scan string elements until method return 'true'.
 		/// @return true if any call has returned 'true'.
+		static bool for_each(const char *str, const char *delimiter, const std::function<bool(const String &value)> &func);
+
+		/// @brief Scan string elements until method return 'true'.
+		/// @return true if any call has returned 'true'.
 		bool for_each(const char *delimiter, const std::function<bool(const String &value)> &func);
 
 		/// @brief Removes leading and trailing white spaces from the string.
