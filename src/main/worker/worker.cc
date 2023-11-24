@@ -46,11 +46,11 @@
 		return module.getProperties(properties);
 	}
 
-	const Worker * Worker::find(const char *path) noexcept {
+	const Worker * Worker::find(const char *path) {
 
 		const Worker *response = nullptr;
 
-		Worker::Controller::getInstance().for_each([&response,path](const Worker &worker) {
+		if(!Worker::Controller::getInstance().for_each([&response,path](const Worker &worker) {
 
 			if(worker.probe(path)) {
 				response = &worker;
@@ -59,17 +59,21 @@
 
 			return false;
 
-		});
+		})) {
+			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find a worker for '{}'",path));
+		}
 
 		return response;
 	}
 
-	bool Worker::work(const char *name, Request &request, Response &response) {
-		return find(name)->work(request,response);
+	bool Worker::work(const char *path, Request &request, Response &response) {
+		debug("--------------> request.path='",path,"'");
+		return find(path)->work(request,response);
 	}
 
-	bool Worker::work(const char *name, Request &request, Report &response) {
-		return find(name)->work(request,response);
+	bool Worker::work(const char *path, Request &request, Report &response) {
+		debug("--------------> request.path='",path,"'");
+		return find(path)->work(request,response);
 	}
 
 	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
@@ -79,6 +83,7 @@
 	bool Worker::head(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
 		return false;
 	}
+
 
 	bool Worker::work(Request &request, Response &response) const {
 
@@ -104,6 +109,7 @@
 		return false;
 	}
 
+	/*
 	const char * Worker::path(const char *path) const {
 
 		while(*path && isspace(*path)) {
@@ -121,6 +127,7 @@
 
 		return path;
 	}
+	*/
 
 	bool Worker::probe(const char *path) const noexcept {
 
@@ -132,7 +139,7 @@
 			path++;
 		}
 
-		debug("-------> Probing path '",path,"'");
+		debug("-------> Probing path '",path,"' on '",name,"'");
 
 		size_t szname = strlen(name);
 		size_t szpath = strlen(path);
@@ -141,7 +148,7 @@
 			return false;
 		}
 
-		return strncasecmp(this->name,path,szname) == 0 && (szpath == szname || path[szname+1] == '/');
+		return strncasecmp(this->name,path,szname) == 0 && (path[szname] == 0 || path[szname] == '/');
 	}
 
 	std::ostream & Worker::info() const {

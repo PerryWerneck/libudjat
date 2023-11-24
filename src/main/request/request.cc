@@ -23,6 +23,7 @@
  #include <cstdarg>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/request.h>
 
  namespace Udjat {
 
