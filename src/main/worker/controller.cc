@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <private/worker.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <udjat/tools/logger.h>
 
  using namespace std;

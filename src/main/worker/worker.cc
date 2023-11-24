@@ -21,7 +21,7 @@
  #include <private/worker.h>
  #include <udjat/worker.h>
  #include <udjat/tools/logger.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
 
  using namespace std;
 

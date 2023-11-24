@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/intl.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <iostream>
  #include <cstdarg>
 

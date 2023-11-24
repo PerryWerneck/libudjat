@@ -21,8 +21,8 @@
  #include <private/protocol.h>
  #include <udjat/tools/protocol.h>
  #include <cstring>
- #include <udjat/moduleinfo.h>
- #include <udjat/module.h>
+ #include <udjat/module/info.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/logger.h>
 
  namespace Udjat {

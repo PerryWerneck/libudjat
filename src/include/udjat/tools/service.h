@@ -19,7 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <cstring>
 
  namespace Udjat {

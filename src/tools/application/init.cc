@@ -25,7 +25,7 @@
  #include <private/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/service.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
 
  using namespace std;
 

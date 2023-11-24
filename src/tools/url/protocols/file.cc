@@ -22,7 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/intl.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
 
  #ifdef _WIN32
 	#include <shlwapi.h>

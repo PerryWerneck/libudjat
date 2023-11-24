@@ -22,7 +22,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/intl.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <cstdio>
  #include <iostream>
  #include <sstream>

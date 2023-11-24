@@ -35,7 +35,7 @@
  #include <udjat/agent.h>
  #include <udjat/factory.h>
  #include <udjat/alert/abstract.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/subprocess.h>

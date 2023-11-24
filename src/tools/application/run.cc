@@ -28,7 +28,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <private/updater.h>
  #include <string>
  #include <getopt.h>

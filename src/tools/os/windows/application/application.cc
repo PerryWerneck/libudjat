@@ -22,7 +22,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <errno.h>
  #include <stdexcept>
  #include <sys/stat.h>

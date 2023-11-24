@@ -21,7 +21,7 @@
 
 #include <config.h>
 #include <udjat/defs.h>
-#include <udjat/module.h>
+#include <udjat/module/abstract.h>
 #include <udjat/tools/file.h>
 #include <udjat/tools/quark.h>
 #include <list>

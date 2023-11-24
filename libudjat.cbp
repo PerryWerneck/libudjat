@@ -87,6 +87,7 @@
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/linux/network.h" />
 		<Unit filename="src/include/udjat/module.h" />
+		<Unit filename="src/include/udjat/module/abstract.h" />
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/net/interface.h" />
 		<Unit filename="src/include/udjat/net/ip/address.h" />

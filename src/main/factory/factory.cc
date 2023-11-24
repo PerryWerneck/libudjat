@@ -22,7 +22,7 @@
  #include <private/factory.h>
  #include <udjat/agent.h>
  #include <udjat/alert/abstract.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <iostream>
 
  using namespace std;

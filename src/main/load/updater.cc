@@ -21,7 +21,7 @@
  #include <private/updater.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <iostream>
  #include <udjat/tools/http/client.h>
  #include <private/misc.h>

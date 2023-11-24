@@ -20,7 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/factory.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/http/error.h>

@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <private/factory.h>
  #include <iostream>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <udjat/tools/logger.h>
 
  using namespace std;

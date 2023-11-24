@@ -22,7 +22,7 @@
  #include <udjat/alert/abstract.h>
  #include <udjat/agent.h>
  #include <iostream>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <udjat/tools/logger.h>
 
  using namespace std;

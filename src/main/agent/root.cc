@@ -38,7 +38,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>
  #include <udjat/alert/abstract.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <sstream>
 
  #ifdef HAVE_VMDETECT

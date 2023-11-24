@@ -2,7 +2,7 @@
 #pragma once
 
 #include <config.h>
-#include <udjat/module.h>
+#include <udjat/module/abstract.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/singleton.h>

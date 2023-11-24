@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
