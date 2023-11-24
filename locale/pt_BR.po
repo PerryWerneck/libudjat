@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-06-01 16:53-0300\n"
+"POT-Creation-Date: 2023-11-24 19:22-0300\n"
 "PO-Revision-Date: 2023-07-03 13:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -30,10 +30,6 @@ msgstr "Controlador de agentes"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/main/agent/controller.cc:92
-msgid "Agent subsystem is inactive"
-msgstr "Subsistema de agentes está inativo"
-
 #: src/main/alert/controller.cc:40
 msgid "Alert controller"
 msgstr "Controlador de alertas"
@@ -54,11 +50,23 @@ msgstr "Gateway inválido"
 msgid "Cant resolve hostname"
 msgstr "Não foi possivel resolver nome do host"
 
+#: src/tools/script.cc:172
+msgid "Cant set subprocess group id"
+msgstr ""
+
+#: src/tools/script.cc:166
+msgid "Cant set subprocess user id"
+msgstr ""
+
 #: src/tools/http/error.cc:145
 msgid "Client error"
 msgstr "Erro de cliente"
 
-#: src/main/agent/state.cc:151
+#: src/main/agent/controller.cc:98
+msgid "Core/Module subsystem failed to initialize"
+msgstr ""
+
+#: src/main/agent/state.cc:145
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
 
@@ -90,6 +98,10 @@ msgstr "Informação"
 msgid "Internal error"
 msgstr "Erro interno"
 
+#: src/tools/application/run.cc:217
+msgid "Invalid property"
+msgstr ""
+
 #: src/tools/timestamp.cc:74
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
@@ -102,7 +114,7 @@ msgstr "Protocol de arquivo local"
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:100
+#: src/main/agent/root.cc:90
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -151,11 +163,11 @@ msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/tools/systemservice.cc:129
+#: src/tools/systemservice.cc:137
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:125 src/main/agent/root.cc:100
+#: src/tools/systemservice.cc:133 src/main/agent/root.cc:90
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -213,6 +225,10 @@ msgid ""
 "The requested resource could not be found but may be available in the future."
 msgstr ""
 
+#: src/tools/script.cc:119
+msgid "The required attribute 'cmdline' is missing"
+msgstr ""
+
 #: src/tools/http/error.cc:132
 msgid ""
 "The resource requested was previously in use but is no longer available and "
@@ -250,7 +266,7 @@ msgid ""
 "the request, got an invalid response."
 msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
 
-#: src/main/request/request.cc:40
+#: src/main/request/request.cc:41
 msgid "This request has no arguments"
 msgstr "A requisição não tem argumentos"
 
@@ -258,9 +274,13 @@ msgstr "A requisição não tem argumentos"
 msgid "Too many requests"
 msgstr "Muitas requisições"
 
-#: src/tools/object.cc:189
+#: src/tools/object.cc:193
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#: src/tools/application/run.cc:120 src/tools/application/run.cc:124
+msgid "Unable to set environment variable"
+msgstr ""
 
 #: src/tools/http/error.cc:96
 msgid "Unauthorized"
@@ -270,9 +290,13 @@ msgstr "Não autorizado"
 msgid "Unexpected HTTP error code"
 msgstr "Código de erro HTTP inesperado"
 
-#: src/main/agent/state.cc:156
+#: src/main/agent/state.cc:150
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
+
+#: src/tools/application/run.cc:147
+msgid "Usage:\t{} [options]"
+msgstr ""
 
 #: src/tools/os/windows/application/description.cc:72
 msgid "\\StringFileInfo\\080904B0\\FileDescription"
@@ -286,11 +310,11 @@ msgstr "dia"
 msgid "days"
 msgstr "dias"
 
-#: src/main/agent/agent.cc:241 src/tools/string/string.cc:312
+#: src/main/agent/agent.cc:241 src/tools/string/string.cc:343
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:284
+#: src/tools/string/string.cc:315
 msgid "false"
 msgstr "falso"
 
@@ -310,15 +334,15 @@ msgstr "minuto"
 msgid "minutes"
 msgstr "minutos"
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:283
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:314
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:285
+#: src/main/state/state.cc:289 src/tools/string/string.cc:316
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:278
+#: src/main/state/state.cc:289 src/tools/string/string.cc:309
 msgid "on"
 msgstr "ligado"
 
@@ -330,11 +354,11 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
-#: src/tools/string/string.cc:277
+#: src/tools/string/string.cc:308
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:276
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:307
 msgid "yes"
 msgstr "sim"
 
@@ -365,6 +389,9 @@ msgstr "{h} {H} e {m} {M}"
 #: src/tools/timestamp.cc:90
 msgid "{m} {M}"
 msgstr "{m} {M}"
+
+#~ msgid "Agent subsystem is inactive"
+#~ msgstr "Subsistema de agentes está inativo"
 
 #~ msgid "B"
 #~ msgstr "B"
