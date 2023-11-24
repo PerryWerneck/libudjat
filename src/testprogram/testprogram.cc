@@ -207,6 +207,7 @@ int main(int argc, char **argv) {
 
 	URL url{"http://example.com?v1=10&v2=20"};
 
+	cout << "sz=" << url[url.size()-1] << endl;
 	cout << "Arg v1='" << url["v1"] << "'" << endl;
 	cout << "Arg v2='" << url["v2"] << "'" << endl;
 

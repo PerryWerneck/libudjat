@@ -138,11 +138,11 @@
 	}
 
 
-	int Script::run(const Udjat::NamedObject &object) {
+	int Script::run(const Udjat::NamedObject &object) const {
 		return run(String{cmdline}.expand(object).c_str());
 	}
 
-	int Script::run(const char *cmdline) {
+	int Script::run(const char *cmdline) const {
 
 		class SubProcess : public Udjat::SubProcess {
 		private:
@@ -152,6 +152,9 @@
 		protected:
 
 			void pre() override {
+
+				Udjat::SubProcess::pre();
+
 #ifdef _WIN32
 
 				// TODO
@@ -163,6 +166,7 @@
 						throw system_error(errno,system_category(),_("Cant set subprocess user id"));
 					}
 				}
+
 				if(gid != -1) {
 					if(setgid(gid) != 0) {
 						throw system_error(errno,system_category(),_("Cant set subprocess group id"));
@@ -173,15 +177,16 @@
 			}
 
 		public:
-			SubProcess(int u, int g, const char *name, const char *command)
-				: Udjat::SubProcess{name,command,Logger::Info,Logger::Info}, uid{u}, gid{g} {
+			SubProcess(int u, int g, const char *name, const char *command,Logger::Level out, Logger::Level err)
+				: Udjat::SubProcess{name,command,out,err}, uid{u}, gid{g} {
 			}
 		};
 
 		if(title && *title) {
 			info() << title << endl;
 		}
-		return SubProcess{uid,gid,name(),cmdline}.run();
+
+		return SubProcess{uid,gid,name(),cmdline,out,err}.run();
 
 	}
 
