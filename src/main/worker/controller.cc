@@ -49,70 +49,38 @@
 
 	}
 
-	const Worker * Worker::Controller::find(const char *name) const {
+	const Worker * Worker::Controller::find(const char *path) const {
 
 		lock_guard<recursive_mutex> lock(guard);
 
-		auto entry = workers.find(name);
-
-		if(entry == workers.end()) {
-			clog << "Can't find worker '" << name << "'" << endl;
-			throw system_error(ENOENT,system_category(),"Unknown action");
+		for(const Worker *worker : workers) {
+			if(worker->probe(path)) {
+				return worker;
+			}
 		}
 
-		debug("Found worker '",entry->second->c_str(),"'");
-
-		return entry->second;
+		throw system_error(ENOENT,system_category(),String{"Cant handle '",path,"'"});
 	}
 
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
-
-		Logger::trace() << "workers\tRegister '" << worker->name << "' (" << worker->module.description << ") " << endl;
-		workers.insert(make_pair(worker->c_str(),worker));
-
+		Logger::String("Adding '",worker->name,"' (",worker->module.description,")").trace("workers");
+		workers.push_back(worker);
 	}
 
 	void Worker::Controller::remove(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
-
-		auto entry = workers.find(worker->c_str());
-		if(entry == workers.end())
-			return;
-
-		if(entry->second != worker)
-			return;
-
-		Logger::trace() << "workers\tUnregister '" << worker->name << "' (" << worker->module.description << ") " << endl;
-		workers.erase(entry);
-
+		Logger::String("Removing '",worker->name,"' (",worker->module.description,")").trace("workers");
+		workers.remove(worker);
 	}
-
-	/*
-	void Worker::Controller::getInfo(Response &response) noexcept {
-
-		response.reset(Value::Array);
-
-		for(auto worker : workers) {
-
-			Value &object = response.append(Value::Object);
-
-			object["name"] = worker.second->name;
-			worker.second->module.get(object);
-
-		}
-
-	}
-	*/
 
 	bool Worker::Controller::for_each(const std::function<bool(const Worker &worker)> &func) {
 
-		for(auto worker : workers) {
-
-			if(func(*worker.second)) {
+		lock_guard<recursive_mutex> lock(guard);
+		for(const Worker * worker : workers) {
+			if(func(*worker)) {
 				return true;
 			}
-
 		}
 		return false;
 

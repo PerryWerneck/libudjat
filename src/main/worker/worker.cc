@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/worker.h>
+ #include <udjat/worker.h>
  #include <udjat/tools/logger.h>
  #include <udjat/moduleinfo.h>
 
@@ -45,8 +46,22 @@
 		return module.getProperties(properties);
 	}
 
-	const Worker * Worker::find(const char *name) {
-		return Worker::Controller::getInstance().find(name);
+	const Worker * Worker::find(const char *path) noexcept {
+
+		const Worker *response = nullptr;
+
+		Worker::Controller::getInstance().for_each([&response,path](const Worker &worker) {
+
+			if(worker.probe(path)) {
+				response = &worker;
+				return true;
+			}
+
+			return false;
+
+		});
+
+		return response;
 	}
 
 	bool Worker::work(const char *name, Request &request, Response &response) {
@@ -66,8 +81,6 @@
 	}
 
 	bool Worker::work(Request &request, Response &response) const {
-
-		debug("-------------------------------------------");
 
 		auto type = request.as_type();
 		switch(type) {
@@ -91,17 +104,44 @@
 		return false;
 	}
 
-	size_t Worker::hash() const {
+	const char * Worker::path(const char *path) const {
 
-		// https://stackoverflow.com/questions/7666509/hash-function-for-string
-		size_t value = 5381;
-
-		for(const char *ptr = name; *ptr; ptr++) {
-			value = ((value << 5) + value) + tolower(*ptr);
+		while(*path && isspace(*path)) {
+			path++;
 		}
 
-		return value;
+		if(*path == '/') {
+			path++;
+		}
 
+		path += strlen(name);
+		while(*path && *path == '/') {
+			path++;
+		}
+
+		return path;
+	}
+
+	bool Worker::probe(const char *path) const noexcept {
+
+		if(!name && *name) {
+			return false;
+		}
+
+		while(*path && *path == '/') {
+			path++;
+		}
+
+		debug("-------> Probing path '",path,"'");
+
+		size_t szname = strlen(name);
+		size_t szpath = strlen(path);
+
+		if(szpath < szname) {
+			return false;
+		}
+
+		return strncasecmp(this->name,path,szname) == 0 && (szpath == szname || path[szname+1] == '/');
 	}
 
 	std::ostream & Worker::info() const {

@@ -50,6 +50,22 @@ namespace Udjat {
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
+		/// @brief Find worker for path.
+		/// @param path The path from request.
+		/// @return The worker for path, nullptr if not found.
+		/// @retval nullptr Cant find worker for this path.
+		static const Worker * find(const char *path) noexcept;
+
+		/// @brief Test if work can handle path.
+		/// @param path The request path.
+		/// @return true if the worker can handle the path.
+		virtual bool probe(const char *path) const noexcept;
+
+		/// @brief Translate an URL path to worker path (usually extract the worker name).
+		/// @param path The path from request.
+		/// @return The worker internal path.
+		const char * path(const char *path) const;
+
 		/// @brief Execute request, update response
 		/// @return false if the request method was not allowed.
 		static bool work(const char *name, Request &request, Response &response);
@@ -65,9 +81,6 @@ namespace Udjat {
 			return this->module;
 		}
 
-		/// @brief Get Worker by name.
-		static const Worker * find(const char *name);
-
 		/// @brief Process only the 'get' method.
 		/// @return false if the request method was not allowed.
 		virtual bool get(Request &request, Response &response) const;
@@ -75,8 +88,6 @@ namespace Udjat {
 		/// @brief Process only the 'head' method.
 		/// @return false if the request method was not allowed.
 		virtual bool head(Request &request, Response &response) const;
-
-		size_t hash() const;
 
 		inline const char * c_str() const {
 			return name;
