@@ -146,12 +146,15 @@
 
 	bool String::for_each(const char *ptr, const char *delim, const std::function<bool(const String &value)> &func) {
 
+		size_t szdelim = strlen(delim);
+
 		while(ptr && *ptr) {
 
 			const char *next = strstr(ptr,delim);
 			if(!next) {
 				return func(String{ptr}.strip());
 			}
+			next += szdelim;
 
 			while(*next && isspace(*next))
 				next++;
@@ -160,7 +163,7 @@
 				return true;
 			}
 
-			ptr = next+1;
+			ptr = next;
 			while(*ptr && isspace(*ptr)) {
 				ptr++;
 			}
@@ -179,6 +182,12 @@
 
 		std::vector<String> strings;
 
+		for_each(c_str(),delim,[&strings](const String &value){
+			strings.push_back(value);
+			return false;
+		});
+
+		/*
 		const char *ptr = c_str();
 		while(ptr && *ptr) {
 			const char *next = strstr(ptr,delim);
@@ -197,6 +206,7 @@
 			}
 
 		}
+		*/
 
 		return strings;
 

@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- //#define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -205,11 +205,23 @@ int main(int argc, char **argv) {
 	printf("------------------------\n");
 	*/
 
+	/*
 	URL url{"http://example.com?v1=10&v2=20"};
 
 	cout << "sz=" << url[url.size()-1] << endl;
 	cout << "Arg v1='" << url["v1"] << "'" << endl;
 	cout << "Arg v2='" << url["v2"] << "'" << endl;
+	*/
+
+	String test{"create table if not exists urls\n(id integer primary key, inserted timestamp default CURRENT_TIMESTAMP, url text, action text, payload text)"};
+
+	std::vector<String> lines = test.split("\n");
+
+	for(auto &line : lines) {
+		cout << "Line: '" << line << "'" << endl;
+	}
+
+
 
 
 	return 0;
