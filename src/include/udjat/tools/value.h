@@ -48,8 +48,11 @@
 			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
 		};
 
-		/// @brief Build dummy object.
+		/// @brief Build dummy value.
 		static std::shared_ptr<Value> Factory();
+
+		/// @brief Build an object value.
+		static std::shared_ptr<Value> ObjectFactory();
 
 		/// @brief Has any value?
 		virtual bool isNull() const = 0;

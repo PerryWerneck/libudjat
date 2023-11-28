@@ -22,6 +22,8 @@
  #include <sstream>
  #include <iomanip>
  #include <ctype.h>
+ #include <mutex>
+ #include <vector>
 
  using namespace std;
 
@@ -58,6 +60,108 @@
 		};
 
 		return make_shared<Dummy>();
+
+	}
+
+	std::shared_ptr<Value> Value::ObjectFactory() {
+
+		class Object : public Udjat::Value {
+		private:
+
+			class Child : public Udjat::Value {
+			public:
+				std::string name;
+				std::string value;
+
+				Child(const char *n) : name{n} {
+				}
+
+				virtual ~Child() {
+				}
+
+				bool isNull() const override {
+					return false;
+				}
+
+				inline bool operator==(const char *n) const noexcept {
+					return strcasecmp(name.c_str(),n) == 0;
+				}
+
+				Udjat::Value & reset(const Type) override {
+					value.clear();
+					return *this;
+				}
+
+				Udjat::Value & set(const Value &src) override {
+					value = src.as_string();
+					return *this;
+				}
+
+				Udjat::Value & set(const char *src, const Type) override {
+					value = src;
+					return *this;
+				}
+
+				const Value & get(std::string &dst) const override {
+					dst = value;
+					return *this;
+				}
+
+			};
+
+			std::mutex guard;
+
+			std::vector<Child> children;
+
+		public:
+			Object() {
+			}
+
+			virtual ~Object() {
+			}
+
+			bool isNull() const override {
+				return children.empty();
+			}
+
+			Udjat::Value & reset(const Type) override {
+				children.clear();
+				return *this;
+			}
+
+			Udjat::Value & set(const Udjat::Value &) override {
+				throw runtime_error("Cant set unnamed value on object");
+			}
+
+			Udjat::Value & operator[](const char *name) override {
+
+				std::lock_guard<std::mutex> lock(guard);
+
+				for(Child &child : children) {
+					if(child == name) {
+						return child;
+					}
+				}
+
+				children.emplace_back(name);
+
+				return children.back();
+
+			}
+
+			void for_each(const std::function<void(const char *name, const Value &value)> &call) const override {
+
+				std::lock_guard<std::mutex> lock(const_cast<Object *>(this)->guard);
+
+				for(const Child &child : children) {
+					call(child.name.c_str(),child);
+				}
+
+			}
+
+		};
+
+		return make_shared<Object>();
 
 	}
 
