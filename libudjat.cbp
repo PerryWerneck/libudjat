@@ -88,6 +88,7 @@
 		<Unit filename="src/include/udjat/linux/network.h" />
 		<Unit filename="src/include/udjat/module.h" />
 		<Unit filename="src/include/udjat/module/abstract.h" />
+		<Unit filename="src/include/udjat/module/info.h" />
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/net/interface.h" />
 		<Unit filename="src/include/udjat/net/ip/address.h" />
@@ -134,6 +135,7 @@
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/url.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />
+		<Unit filename="src/include/udjat/tools/worker.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
@@ -148,7 +150,6 @@
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
 		<Unit filename="src/include/udjat/win32/service.h" />
-		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/child.cc" />
 		<Unit filename="src/main/agent/controller.cc" />

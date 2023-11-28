@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <private/worker.h>
- #include <udjat/worker.h>
+ #include <udjat/tools/worker.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module/info.h>
 
@@ -46,6 +46,7 @@
 		return module.getProperties(properties);
 	}
 
+	/*
 	const Worker * Worker::find(const char *path) {
 
 		const Worker *response = nullptr;
@@ -65,15 +66,36 @@
 
 		return response;
 	}
+	*/
 
 	bool Worker::work(const char *path, Request &request, Response &response) {
 		debug("--------------> request.path='",path,"'");
-		return find(path)->work(request,response);
+
+		return Worker::for_each([path,&request,&response](const Worker &worker) {
+
+			if(worker.probe(path)) {
+				worker.work(request,response);
+			}
+
+			return false;
+		});
+
+		return false;
 	}
 
 	bool Worker::work(const char *path, Request &request, Report &response) {
 		debug("--------------> request.path='",path,"'");
-		return find(path)->work(request,response);
+
+		return Worker::for_each([path,&request,&response](const Worker &worker) {
+
+			if(worker.probe(path)) {
+				worker.work(request,response);
+			}
+
+			return false;
+		});
+
+		return false;
 	}
 
 	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
@@ -109,46 +131,28 @@
 		return false;
 	}
 
-	/*
-	const char * Worker::path(const char *path) const {
+	const char * Worker::probe(const char *path) const noexcept {
 
-		while(*path && isspace(*path)) {
-			path++;
+		if(!name && *name) {
+			return nullptr;
 		}
 
-		if(*path == '/') {
-			path++;
-		}
-
-		path += strlen(name);
 		while(*path && *path == '/') {
 			path++;
+		}
+
+		size_t szname = strlen(name);
+
+		if(strncasecmp(name,path,szname)) {
+			return nullptr;
+		}
+
+		path += szname;
+		if(*path && *path != '/') {
+			return nullptr;
 		}
 
 		return path;
-	}
-	*/
-
-	bool Worker::probe(const char *path) const noexcept {
-
-		if(!name && *name) {
-			return false;
-		}
-
-		while(*path && *path == '/') {
-			path++;
-		}
-
-		debug("-------> Probing path '",path,"' on '",name,"'");
-
-		size_t szname = strlen(name);
-		size_t szpath = strlen(path);
-
-		if(szpath < szname) {
-			return false;
-		}
-
-		return strncasecmp(this->name,path,szname) == 0 && (path[szname] == 0 || path[szname] == '/');
 	}
 
 	std::ostream & Worker::info() const {

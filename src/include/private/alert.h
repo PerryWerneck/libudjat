@@ -24,7 +24,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/alert/abstract.h>
- #include <udjat/worker.h>
+ #include <udjat/tools/worker.h>
  #include <udjat/factory.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/timer.h>

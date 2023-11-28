@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- // #define APPLICATION_TEST 1
- #define OBJECT_TEST 1
+ #define APPLICATION_TEST 1
+ //#define OBJECT_TEST 1
 
  #include <config.h>
 

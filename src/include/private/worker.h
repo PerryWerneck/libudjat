@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/worker.h>
+ #include <udjat/tools/worker.h>
  #include <udjat/request.h>
  #include <mutex>
  #include <list>

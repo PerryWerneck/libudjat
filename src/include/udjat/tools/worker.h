@@ -53,17 +53,13 @@ namespace Udjat {
 		/// @brief Find worker for path.
 		/// @param path The path from request.
 		/// @return The worker for path, exception if not found.
-		static const Worker * find(const char *path);
+		//static const Worker * find(const char *path);
 
 		/// @brief Test if work can handle path.
-		/// @param path The request path.
-		/// @return true if the worker can handle the path.
-		virtual bool probe(const char *path) const noexcept;
-
-		/// @brief Translate an URL path to worker path (usually extract the worker name).
-		/// @param path The path from request.
-		/// @return The worker internal path.
-		// const char * path(const char *path) const;
+		/// @param path The URL path.
+		/// @return The path for request or nullptr if the worker cant handle this path.
+		/// @retval nullptr This worker is unable to handle the path.
+		virtual const char * probe(const char *path) const noexcept;
 
 		/// @brief Execute request, update response
 		/// @param path The worker path.
