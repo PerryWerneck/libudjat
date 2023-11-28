@@ -18,12 +18,14 @@
  */
 
  #include <udjat/tools/value.h>
+ #include <udjat/tools/string.h>
  #include <string>
  #include <sstream>
  #include <iomanip>
  #include <ctype.h>
  #include <mutex>
  #include <vector>
+ #include <ctype.h>
 
  using namespace std;
 
@@ -163,6 +165,10 @@
 
 		return make_shared<Object>();
 
+	}
+
+	bool Value::isNumber() const {
+		return Udjat::isnumber(as_string().c_str());
 	}
 
 	Value & Value::operator[](const char UDJAT_UNUSED(*name)) {

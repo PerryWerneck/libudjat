@@ -57,6 +57,9 @@
 		/// @brief Has any value?
 		virtual bool isNull() const = 0;
 
+		/// @brief Is this a number?
+		virtual bool isNumber() const;
+
 		/// @brief Convert Value to 'object' and insert child.
 		/// @return Null value inserted to object.
 		virtual Value & operator[](const char *name);
