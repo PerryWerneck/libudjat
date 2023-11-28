@@ -50,15 +50,15 @@ namespace Udjat {
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
-		/// @brief Find worker for path.
-		/// @param path The path from request.
+		/// @brief Find worker by name
+		/// @param name Name of the required worker.
 		/// @return The worker for path, exception if not found.
-		//static const Worker * find(const char *path);
+		static const Worker * find(const char *path);
 
 		/// @brief Test if work can handle path.
 		/// @param path The URL path.
 		/// @return The path for request or nullptr if the worker cant handle this path.
-		/// @retval nullptr This worker is unable to handle the path.
+		/// @retval nullptr This worker is unable to handle this path.
 		virtual const char * probe(const char *path) const noexcept;
 
 		/// @brief Execute request, update response

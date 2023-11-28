@@ -46,14 +46,13 @@
 		return module.getProperties(properties);
 	}
 
-	/*
-	const Worker * Worker::find(const char *path) {
+	const Worker * Worker::find(const char *name) {
 
 		const Worker *response = nullptr;
 
-		if(!Worker::Controller::getInstance().for_each([&response,path](const Worker &worker) {
+		if(!Worker::Controller::getInstance().for_each([&response,name](const Worker &worker) {
 
-			if(worker.probe(path)) {
+			if(!strcasecmp(worker.name,name)) {
 				response = &worker;
 				return true;
 			}
@@ -61,12 +60,11 @@
 			return false;
 
 		})) {
-			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find a worker for '{}'",path));
+			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find worker '{}'",name));
 		}
 
 		return response;
 	}
-	*/
 
 	bool Worker::work(const char *path, Request &request, Response &response) {
 		debug("--------------> request.path='",path,"'");
