@@ -111,3 +111,35 @@
  	}
  	return (Udjat::MimeType) 0;
  }
+
+ Udjat::MimeType Udjat::MimeTypeFactory(const char *str, const Udjat::MimeType def) noexcept {
+
+ 	if(!(str && *str)) {
+		return def;
+ 	}
+
+	// First check for the name
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strcasecmp(str,types[ix].str)) {
+			return (MimeType) ix;
+		}
+ 	}
+
+ 	// Then for the extension
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strcasecmp(str,types[ix].ext)) {
+			return (MimeType) ix;
+		}
+ 	}
+
+ 	// Again, only the length of str.
+ 	size_t length = strlen(str);
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strncasecmp(str,types[ix].str,length)) {
+			return (MimeType) ix;
+		}
+ 	}
+
+ 	// Not found!
+	return def;
+ }
