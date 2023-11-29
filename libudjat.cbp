@@ -206,6 +206,7 @@
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="src/main/private.h" />
+		<Unit filename="src/main/request/exec.cc" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/report.cc" />
 		<Unit filename="src/main/request/request.cc" />
