@@ -183,11 +183,9 @@
 		protected:
 
 		public:
-			Request(const char *p, HTTP::Method m = HTTP::Get) : method{m}, path{p} {
-			}
+			Request(const char *path, HTTP::Method method = HTTP::Get);
 
-			Request(const char *p, const char *m) : method{HTTP::MethodFactory(m)}, path{p} {
-			}
+			Request(const char *path, const char *method);
 
 			/// @brief is request empty?
 			inline bool empty() const noexcept {

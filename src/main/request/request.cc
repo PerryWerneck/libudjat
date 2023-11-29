@@ -28,6 +28,35 @@
 
  namespace Udjat {
 
+	static const char *sanitize(const char *ptr) {
+
+		if(ptr) {
+			const char *mark = strstr(ptr,"://");
+			if(mark) {
+				ptr = mark + 3;
+			}
+
+			while(*ptr && *ptr == '/') {
+				ptr++;
+			}
+		}
+
+		return ptr;
+	}
+
+	Request::Request(const char *p, HTTP::Method m) : method{m}, path{sanitize(p)} {
+
+		if(path.empty()) {
+			throw system_error(EINVAL,system_category(),_("The request path is invalid"));
+		}
+
+		debug("Request path is '",path.c_str(),"'");
+
+	}
+
+	Request::Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
+	}
+
 	String Request::pop() {
 
 		if(path.empty() || popptr == string::npos) {
