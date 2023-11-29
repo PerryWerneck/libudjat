@@ -112,7 +112,7 @@
 		return "";
 	}
 
-	Request & Request::rewind(bool required_versioned_path) {
+	Request & Request::rewind(bool require_versioned_path) {
 
 		static const struct {
 			const char *value;
@@ -157,15 +157,15 @@
 				size_t szValue = strlen(entry.value);
 				if(*request.popptr == '/' && !strncasecmp(request.popptr+1,entry.value,szValue)) {
 					request.popptr += szValue;
-					this->mimetype = entry.mimetype;
-					debug("Mimetype set to '",this->mimetype,"' from URL");
+					this->type = entry.mimetype;
+					debug("Mimetype set to '",this->type,"' from URL");
 					break;
 				}
 			}
 
 			debug("API Version set to '",apiver,"'");
 
-		} else if(required_versioned_path) {
+		} else if(require_versioned_path) {
 
 			throw HTTP::Exception(400,"Request path should be /api/[VERSION]/[REQUEST]");
 
@@ -179,8 +179,8 @@
 				size_t szValue = strlen(entry.value);
 				if(!strncasecmp(request.popptr,entry.value,szValue)) {
 					request.popptr += szValue;
-					this->mimetype = entry.mimetype;
-					debug("Mimetype set to '",this->mimetype,"' from legacy path");
+					this->type = entry.mimetype;
+					debug("Mimetype set to '",this->type,"' from legacy path");
 					break;
 				}
 			}

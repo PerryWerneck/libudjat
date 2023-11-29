@@ -191,10 +191,10 @@
 			unsigned int apiver = 0;
 
 			/// @brief The request mimetype.
-			MimeType mimetype = MimeType::json;
+			MimeType type = MimeType::json;
 
 			/// @brief Reset path processing, go to begin of path, reset api version and mime type from path (if available).
-			Request & rewind(bool required_versioned_path = false);
+			Request & rewind(bool require_versioned_path = false);
 
 			Request(HTTP::Method method = HTTP::Get);
 
@@ -240,6 +240,10 @@
 
 			inline operator HTTP::Method() const noexcept {
 				return request.method;
+			}
+
+			inline operator MimeType() const noexcept {
+				return this->type;
 			}
 
 			inline const char * path() const noexcept {
