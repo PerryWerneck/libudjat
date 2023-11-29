@@ -194,7 +194,7 @@
 			MimeType mimetype = MimeType::json;
 
 			/// @brief Reset path processing, go to begin of path, reset api version and mime type from path (if available).
-			Request & rewind();
+			Request & rewind(bool allow_legacy = false);
 
 			Request(HTTP::Method method = HTTP::Get);
 

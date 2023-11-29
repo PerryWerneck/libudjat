@@ -26,6 +26,8 @@
  #include <udjat/tools/request.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/http/exception.h>
+ #include <udjat/tools/configuration.h>
 
  namespace Udjat {
 
@@ -53,20 +55,19 @@
 	*/
 
 	Request::Request(const HTTP::Method method) : request{method} {
-		rewind();
 	}
 
 	Request::Request(const char *method) : Request{HTTP::MethodFactory(method)} {
 	}
 
-	String Request::getProperty(const char *name, const char *def) const {
+	String Request::getProperty(const char *, const char *def) const {
 		return def;
 	}
 
 	/// @brief Get request property by index.
 	/// @param index The property index
 	/// @param def The default value.
-	String Request::getProperty(size_t index, const char *def) const {
+	String Request::getProperty(size_t, const char *def) const {
 		return def;
 	}
 
@@ -111,7 +112,19 @@
 		return "";
 	}
 
-	Request & Request::rewind() {
+	Request & Request::rewind(bool allow_legacy) {
+
+		static const struct {
+			const char *value;
+			MimeType mimetype;
+		} mimetypes[] {
+			{ "json/",	MimeType::json	},
+			{ "html/",	MimeType::html	},
+			{ "xml/",	MimeType::xml	},
+			{ "yaml/",	MimeType::yaml	},
+			{ "csv/",	MimeType::csv	},
+			{ "sh/",	MimeType::sh	},
+		};
 
 		request.popptr = c_str();
 
@@ -140,28 +153,33 @@
 			}
 
 			// Do we have mimetype on URL?
-			static const struct {
-				const char *value;
-				MimeType mimetype;
-			} mimetypes[] {
-				{ "json/",	MimeType::json	},
-				{ "html/",	MimeType::html	},
-				{ "xml/",	MimeType::xml	},
-				{ "yaml/",	MimeType::yaml	},
-				{ "csv/",	MimeType::csv	},
-				{ "sh/",	MimeType::sh	},
-			};
+			for(const auto &entry : mimetypes) {
+				size_t szValue = strlen(entry.value);
+				if(*request.popptr == '/' && !strncasecmp(request.popptr+1,entry.value,szValue)) {
+					request.popptr += szValue;
+					this->mimetype = entry.mimetype;
+					debug("Mimetype set to '",this->mimetype,"' from URL");
+					break;
+				}
+			}
+
+			debug("API Version set to '",apiver,"'");
+
+		} else if(allow_legacy) {
+
+			// Legacy
+			apiver = 0;
 
 			for(const auto &entry : mimetypes) {
 				size_t szValue = strlen(entry.value);
 				if(!strncasecmp(request.popptr,entry.value,szValue)) {
 					request.popptr += szValue;
 					this->mimetype = entry.mimetype;
+					debug("Mimetype set to '",this->mimetype,"' from legacy path");
 					break;
 				}
 			}
 
-			debug("API Version set to '",apiver,"'");
 		}
 
 		// Start on first argument.
