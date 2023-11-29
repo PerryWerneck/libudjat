@@ -31,29 +31,6 @@
 
  namespace Udjat {
 
-	/*
-	static const std::string sanitize(const char *ptr) {
-
-		if(ptr) {
-			const char *mark = strstr(ptr,"://");
-			if(mark) {
-				ptr = mark + 3;
-			}
-
-			while(*ptr && *ptr == '/') {
-				ptr++;
-			}
-		}
-
-		const char *args = strchr(ptr,'?');
-		if(args) {
-			return String{ptr,args-ptr}.strip();
-		}
-
-		return String{ptr}.strip();
-	}
-	*/
-
 	Request::Request(const HTTP::Method method) : request{method} {
 	}
 

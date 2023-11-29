@@ -30,7 +30,6 @@
 	const char *str;
  } types[] = {
 
-	// 'dat' is allways the first one.
 	{ "bin",	"application/octet-stream" },
 
 	{ "json",	"application/json; charset=utf-8" },
@@ -78,7 +77,9 @@
  Udjat::MimeType Udjat::MimeTypeFactory(const char *str, bool log_def) noexcept {
 
  	if(!(str && *str)) {
-		cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
+		if(log_def) {
+			cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
+		}
 		return (Udjat::MimeType) 0;
  	}
 
