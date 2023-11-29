@@ -159,7 +159,7 @@
 			while(*next && isspace(*next))
 				next++;
 
-			if(func(String{ptr,(size_t) (next-ptr)}.strip())) {
+			if(func(String{ptr,(size_t) ((next-ptr)-1)}.strip())) {
 				return true;
 			}
 
