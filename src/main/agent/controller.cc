@@ -101,10 +101,10 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
 
-		debug("Getting Cache info for '",request.getPath(),"'");
+		debug("Getting Cache info for '",(const char *) request,"'");
 
 		// Get cache info.
-		if(!head(get().get(),request.getPath(),response)) {
+		if(!head(get().get(),(const char *) request,response)) {
 			throw std::system_error(ENOENT,std::system_category());
 		}
 
@@ -118,10 +118,10 @@ namespace Udjat {
 		head(request,response);
 #endif // DEBUG
 
-		debug("Getting properties for '",request.getPath(),"'");
+		debug("Getting properties for '",(const char *) request,"'");
 
 		// Get properties.
-		if(!get()->getProperties(request.getPath(),response)) {
+		if(!get()->getProperties((const char *) request,response)) {
 			throw std::system_error(ENOENT,std::system_category());
 		}
 

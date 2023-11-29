@@ -66,7 +66,9 @@
 		return response;
 	}
 
+	/*
 	bool Worker::work(const char *path, Request &request, Response &response) {
+
 		debug("--------------> request.path='",path,"'");
 
 		return Worker::for_each([path,&request,&response](const Worker &worker) {
@@ -95,6 +97,7 @@
 
 		return false;
 	}
+	*/
 
 	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
 		return false;
@@ -104,11 +107,9 @@
 		return false;
 	}
 
-
 	bool Worker::work(Request &request, Response &response) const {
 
-		auto type = request.as_type();
-		switch(type) {
+		switch((HTTP::Method) request) {
 		case HTTP::Get:
 			debug("HTTP GET");
 			return get(request,response);
@@ -118,7 +119,7 @@
 			return head(request,response);
 
 		default:
-			throw system_error(ENOENT,system_category(),Logger::Message("'{}' request are unavailable here",type));
+			throw system_error(ENOENT,system_category(),Logger::String{"Unable to handle '",(const char *) request,"'"});
 		}
 
 		return false;
@@ -129,7 +130,7 @@
 		return false;
 	}
 
-	const char * Worker::probe(const char *path) const noexcept {
+	const char * Worker::check_path(const char *path) const noexcept {
 
 		if(!name && *name) {
 			return nullptr;
@@ -142,14 +143,20 @@
 		size_t szname = strlen(name);
 
 		if(strncasecmp(name,path,szname)) {
+			debug("Rejecting '",path,"' on worker ",name);
 			return nullptr;
 		}
 
+		debug("Found '",path,"' on worker ",name);
+
 		path += szname;
+
+		debug("Path fixed to '",path,"'");
 		if(*path && *path != '/') {
 			return nullptr;
 		}
 
+		debug("Using path '",path,"' on worker ",name);
 		return path;
 	}
 

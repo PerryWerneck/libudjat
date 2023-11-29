@@ -123,6 +123,7 @@
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
+		<Unit filename="src/include/udjat/tools/request.h" />
 		<Unit filename="src/include/udjat/tools/script.h" />
 		<Unit filename="src/include/udjat/tools/service.h" />
 		<Unit filename="src/include/udjat/tools/singleton.h" />
@@ -150,6 +151,7 @@
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
 		<Unit filename="src/include/udjat/win32/service.h" />
+		<Unit filename="src/include/udjat/worker.h" />
 		<Unit filename="src/main/agent/agent.cc" />
 		<Unit filename="src/main/agent/child.cc" />
 		<Unit filename="src/main/agent/controller.cc" />

@@ -47,8 +47,6 @@
 		void insert(const Worker *worker);
 		void remove(const Worker *worker);
 
-		const Worker * find(const char *name) const;
-
 		bool for_each(const std::function<bool(const Worker &worker)> &func);
 
 	};

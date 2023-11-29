@@ -49,19 +49,6 @@
 
 	}
 
-	const Worker * Worker::Controller::find(const char *path) const {
-
-		lock_guard<recursive_mutex> lock(guard);
-
-		for(const Worker *worker : workers) {
-			if(worker->probe(path)) {
-				return worker;
-			}
-		}
-
-		throw system_error(ENOENT,system_category(),String{"Cant handle '",path,"'"});
-	}
-
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 		Logger::String("Adding '",worker->name,"' (",worker->module.description,")").trace("workers");

@@ -23,87 +23,26 @@
  #include <cstdarg>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/request.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 
-	bool Request::operator ==(const char *key) const noexcept {
+	String Request::pop() {
 
-		if(method.empty())
-			return false;
-
-		return strcasecmp(this->method.c_str(),key) == 0;
-	}
-
-	string Request::pop() {
-
-		if(empty()) {
+		if(path.empty() || popptr == string::npos) {
 			throw system_error(ENODATA,system_category(),_("This request has no arguments"));
 		}
 
-		size_t pos = path.find('/');
+		size_t pos = path.find('/',popptr);
 		if(pos == string::npos) {
-			string rc{path};
-			path.clear();
-			return rc;
+			popptr = pos;
+			return path.c_str()+popptr;
 		}
 
-		string rc{path.c_str(),pos};
-		path.erase(0,pos+1);
-
+		String rc{path.c_str()+popptr,(pos-popptr)};
+		popptr = pos+1;
 		return rc;
-
-	}
-
-	int Request::pop(const char *str, ...) {
-
-		string key = pop();
-		int index = 0;
-
-		va_list args;
-		va_start(args, str);
-		while(str) {
-
-			if(!strcasecmp(key.c_str(),str)) {
-				va_end(args);
-				return index;
-			}
-
-			index++;
-			str = va_arg(args, const char *);
-		}
-		va_end(args);
-
-		return -1;
-
-	}
-
-	const std::string Request::getAction() {
-		string rc;
-		pop(rc);
-		return rc;
-	}
-
-	int Request::select(const char *str, ...) {
-
-		string key = getAction();
-		int index = 0;
-
-		va_list args;
-		va_start(args, str);
-		while(str) {
-
-			if(!strcasecmp(key.c_str(),str)) {
-				va_end(args);
-				return index;
-			}
-
-			index++;
-			str = va_arg(args, const char *);
-		}
-		va_end(args);
-
-		return -1;
 
 	}
 
@@ -115,16 +54,12 @@
 	}
 
 	Request & Request::pop(int &value) {
-		string v;
-		pop(v);
-		value = stoi(v);
+		value = stoi(pop());
 		return *this;
 	}
 
 	Request & Request::pop(unsigned int &value) {
-		string v;
-		pop(v);
-		value = (unsigned int) stoi(v);
+		value = (unsigned int) stoi(pop());
 		return *this;
 	}
 
