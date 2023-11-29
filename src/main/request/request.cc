@@ -112,7 +112,7 @@
 		return "";
 	}
 
-	Request & Request::rewind(bool allow_legacy) {
+	Request & Request::rewind(bool required_versioned_path) {
 
 		static const struct {
 			const char *value;
@@ -165,9 +165,14 @@
 
 			debug("API Version set to '",apiver,"'");
 
-		} else if(allow_legacy) {
+		} else if(required_versioned_path) {
 
-			// Legacy
+			throw HTTP::Exception(400,"Request path should be /api/[VERSION]/[REQUEST]");
+
+		} else {
+
+			// Unversioned path
+
 			apiver = 0;
 
 			for(const auto &entry : mimetypes) {
