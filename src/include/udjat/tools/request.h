@@ -175,7 +175,7 @@
 			const HTTP::Method method;
 
 			/// @brief Request path.
-			std::string path;
+			String path;
 
 			/// @brief Index of arguments from path.
 			size_t popptr = 0;
@@ -190,6 +190,24 @@
 			/// @brief is request empty?
 			inline bool empty() const noexcept {
 				return path.empty();
+			}
+
+			/// @brief Get request property.
+			/// @param name The property name
+			/// @param def The default value.
+			virtual String getProperty(const char *name, const char *def = "") const;
+
+			/// @brief Get request property by index.
+			/// @param index The property index
+			/// @param def The default value.
+			virtual String getProperty(size_t index, const char *def = "") const;
+
+			inline String operator[](const char *name) const {
+				return getProperty(name);
+			}
+
+			inline String operator[](size_t index) const {
+				return getProperty(index);
 			}
 
 			/// @brief Execute request.

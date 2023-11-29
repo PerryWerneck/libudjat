@@ -28,7 +28,7 @@
 
  namespace Udjat {
 
-	static const char *sanitize(const char *ptr) {
+	static const std::string sanitize(const char *ptr) {
 
 		if(ptr) {
 			const char *mark = strstr(ptr,"://");
@@ -41,7 +41,12 @@
 			}
 		}
 
-		return ptr;
+		const char *args = strchr(ptr,'?');
+		if(args) {
+			return String{ptr,args-ptr}.strip();
+		}
+
+		return String{ptr}.strip();
 	}
 
 	Request::Request(const char *p, HTTP::Method m) : method{m}, path{sanitize(p)} {
@@ -56,6 +61,18 @@
 
 	Request::Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
 	}
+
+	String Request::getProperty(const char *name, const char *def) const {
+		return def;
+	}
+
+	/// @brief Get request property by index.
+	/// @param index The property index
+	/// @param def The default value.
+	String Request::getProperty(size_t index, const char *def) const {
+		return def;
+	}
+
 
 	String Request::pop() {
 
