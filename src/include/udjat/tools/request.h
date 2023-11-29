@@ -33,6 +33,7 @@
 	#include <udjat/tools/http/mimetype.h>
 	#include <udjat/tools/method.h>
 	#include <udjat/tools/string.h>
+	#include <udjat/tools/http/mimetype.h>
 
 	namespace Udjat {
 
@@ -171,25 +172,37 @@
 		class UDJAT_API Request {
 		private:
 
-			/// @brief Request method.
-			const HTTP::Method method;
+			/// @brief Data from request path.
+			struct PrivateData {
+				/// @brief Request method.
+				const HTTP::Method method;
 
-			/// @brief Request path.
-			String path;
+				/// @brief Effective request path, after removal of versions, format type, etc.
+				const char *popptr = "";
 
-			/// @brief Index of arguments from path.
-			size_t popptr = 0;
+				constexpr PrivateData(const HTTP::Method m, const char *p = "") : method{m}, popptr{p} {
+				}
+
+			} request;
 
 		protected:
 
+			/// @brief The request API version.
+			unsigned int apiver = 0;
+
+			/// @brief The request mimetype.
+			MimeType mimetype = MimeType::json;
+
+			/// @brief Reset path processing, go to begin of path, reset api version and mime type from path (if available).
+			Request & rewind();
+
+			Request(HTTP::Method method = HTTP::Get);
+
+			Request(const char *method);
+
 		public:
-			Request(const char *path, HTTP::Method method = HTTP::Get);
-
-			Request(const char *path, const char *method);
-
-			/// @brief is request empty?
-			inline bool empty() const noexcept {
-				return path.empty();
+			inline unsigned int version() const noexcept {
+				return apiver;
 			}
 
 			/// @brief Get request property.
@@ -218,24 +231,31 @@
 			/// @param response Object for request response.
 			void exec(Report &response);
 
+			/// @brief Get original request path.
+			virtual const char *c_str() const noexcept;
+
 			inline operator const char *() const noexcept {
-				return path.c_str();
+				return c_str();
 			}
 
 			inline operator HTTP::Method() const noexcept {
-				return this->method;
+				return request.method;
+			}
+
+			inline const char * path() const noexcept {
+				return request.popptr;
 			}
 
 			inline bool operator==(HTTP::Method method) const noexcept {
-				return this->method == method;
+				return this->request.method == method;
 			}
 
 			/// @brief Pop one element from path.
-			virtual String pop();
+			String pop();
 
-			virtual Request & pop(std::string &value);
-			virtual Request & pop(int &value);
-			virtual Request & pop(unsigned int &value);
+			Request & pop(std::string &value);
+			Request & pop(int &value);
+			Request & pop(unsigned int &value);
 
 		};
 

@@ -25,9 +25,11 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/http/mimetype.h>
 
  namespace Udjat {
 
+	/*
 	static const std::string sanitize(const char *ptr) {
 
 		if(ptr) {
@@ -48,18 +50,13 @@
 
 		return String{ptr}.strip();
 	}
+	*/
 
-	Request::Request(const char *p, HTTP::Method m) : method{m}, path{sanitize(p)} {
-
-		if(path.empty()) {
-			throw system_error(EINVAL,system_category(),_("The request path is invalid"));
-		}
-
-		debug("Request path is '",path.c_str(),"'");
-
+	Request::Request(const HTTP::Method method) : request{method} {
+		rewind();
 	}
 
-	Request::Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
+	Request::Request(const char *method) : Request{HTTP::MethodFactory(method)} {
 	}
 
 	String Request::getProperty(const char *name, const char *def) const {
@@ -73,21 +70,21 @@
 		return def;
 	}
 
-
 	String Request::pop() {
 
-		if(path.empty() || popptr == string::npos) {
-			throw system_error(ENODATA,system_category(),_("This request has no arguments"));
+		if(!(request.popptr && *request.popptr)) {
+			return "";
 		}
 
-		size_t pos = path.find('/',popptr);
-		if(pos == string::npos) {
-			popptr = pos;
-			return path.c_str()+popptr;
+		const char *next = strchr(request.popptr,'/');
+		if(next) {
+			String rc{request.popptr,next-request.popptr};
+			request.popptr = next+1;
+			return rc;
 		}
 
-		String rc{path.c_str()+popptr,(pos-popptr)};
-		popptr = pos+1;
+		string rc{request.popptr};
+		request.popptr = "";
 		return rc;
 
 	}
@@ -106,6 +103,74 @@
 
 	Request & Request::pop(unsigned int &value) {
 		value = (unsigned int) stoi(pop());
+		return *this;
+	}
+
+	const char * Request::c_str() const noexcept {
+		Logger::String{"Processing request with no path"}.warning("request");
+		return "";
+	}
+
+	Request & Request::rewind() {
+
+		request.popptr = c_str();
+
+		{
+			const char *mark = strstr(request.popptr,"://");
+			if(mark) {
+				request.popptr = mark + 3;
+			}
+		}
+
+		while(*request.popptr && *request.popptr == '/') {
+			request.popptr++;
+		}
+
+		if(!strncasecmp(request.popptr,"api/",4)) {
+
+			// It's an standard API method.
+			request.popptr += 4;
+
+			while(*request.popptr && *request.popptr != '/') {
+				if(isdigit(*request.popptr)) {
+					apiver *= 10;
+					apiver += (*request.popptr - '0');
+				}
+				request.popptr++;
+			}
+
+			// Do we have mimetype on URL?
+			static const struct {
+				const char *value;
+				MimeType mimetype;
+			} mimetypes[] {
+				{ "json/",	MimeType::json	},
+				{ "html/",	MimeType::html	},
+				{ "xml/",	MimeType::xml	},
+				{ "yaml/",	MimeType::yaml	},
+				{ "csv/",	MimeType::csv	},
+				{ "sh/",	MimeType::sh	},
+			};
+
+			for(const auto &entry : mimetypes) {
+				size_t szValue = strlen(entry.value);
+				if(!strncasecmp(request.popptr,entry.value,szValue)) {
+					request.popptr += szValue;
+					this->mimetype = entry.mimetype;
+					break;
+				}
+			}
+
+			debug("API Version set to '",apiver,"'");
+		}
+
+		// Start on first argument.
+		while(*request.popptr && *request.popptr == '/') {
+			request.popptr++;
+		}
+
+		Logger::String{"Effective request path is '",request.popptr,"'"}.trace("request");
+
 		return *this;
 	}
 

@@ -36,11 +36,11 @@
 
 		const Worker *selected_worker = nullptr;
 
-		debug("Searching worker for '",path.c_str(),"'");
+		debug("Searching worker for '",request.popptr,"'");
 
 		if(!Worker::for_each([this,&selected_worker](const Worker &worker){
 
-			const char *path{worker.check_path(this->path.c_str())};
+			const char *path{worker.check_path(request.popptr)};
 			if(!path) {
 				return false;
 			}
@@ -48,13 +48,13 @@
 			debug("Worker '",worker.c_str(),"' selected path '",path,"'");
 
 			selected_worker = &worker;
-			this->path = path;
+			request.popptr = path;
 
 			return true;
 
 		})) {
 
-			throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",this->path,"'"});
+			throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",c_str(),"'"});
 
 		}
 
@@ -66,11 +66,11 @@
 
 		const Worker *selected_worker = nullptr;
 
-		debug("Searching worker for '",path.c_str(),"'");
+		debug("Searching worker for '",request.popptr,"'");
 
 		if(!Worker::for_each([this,&selected_worker](const Worker &worker){
 
-			const char *path{worker.check_path(this->path.c_str())};
+			const char *path{worker.check_path(request.popptr)};
 			if(!path) {
 				return false;
 			}
@@ -78,13 +78,13 @@
 			debug("Worker '",worker.c_str(),"' selected path '",path,"'");
 
 			selected_worker = &worker;
-			this->path = path;
+			request.popptr = path;
 
 			return true;
 
 		})) {
 
-			throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",this->path,"'"});
+			throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",c_str(),"'"});
 
 		}
 
