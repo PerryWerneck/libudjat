@@ -319,6 +319,7 @@ AC_CONFIG_FILES(src/include/udjat/version.h)
 AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(locale/Makefile)
+AC_CONFIG_FILES(debian/shlibs)
 
 dnl AC_CONFIG_FILES(debian/libudjat.dsc)
 dnl AC_CONFIG_FILES(debian/changelog)
