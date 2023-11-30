@@ -33,13 +33,20 @@
 		Icon(const char *name) : std::string{name} {
 		}
 
+		Icon(const std::string &string) : std::string{name} {
+		}
+
+		inline operator bool() const {
+			return !empty();
+		}
+
 	};
 
  }
 
  namespace std {
 
-	UDJAT_API const char * to_string(const Udjat::Icon &icon) {
+	inline const char * to_string(const Udjat::Icon &icon) {
 		return icon.c_str();
 	}
 
