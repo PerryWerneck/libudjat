@@ -159,7 +159,6 @@
 		<Unit filename="src/main/agent/factory.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/path.cc" />
-		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/properties.cc" />
 		<Unit filename="src/main/agent/root.cc" />
 		<Unit filename="src/main/agent/set.cc" />

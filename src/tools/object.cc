@@ -214,7 +214,7 @@
 		value["summary"] = summary();
 		value["label"] = label();
 		value["url"] = url();
-		value["icon"] = icon();
+		value["icon"].set(icon(),Value::Icon);
 
 		return value;
 	}
