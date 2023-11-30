@@ -366,7 +366,8 @@
 			"unsigned",
 			"real",
 			"boolean",
-			"fraction"
+			"fraction",
+			"icon-name"
 		};
 
 		if( (size_t) type >= (N_ELEMENTS(typenames)) )
