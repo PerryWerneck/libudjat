@@ -151,20 +151,26 @@
 
 			}
 
-			void for_each(const std::function<void(const char *name, const Value &value)> &call) const override {
+			bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const override {
 
 				std::lock_guard<std::mutex> lock(const_cast<Object *>(this)->guard);
 
 				for(const Child &child : children) {
-					call(child.name.c_str(),child);
+					if(call(child.name.c_str(),child))
+						return true;
 				}
 
+				return false;
 			}
 
 		};
 
 		return make_shared<Object>();
 
+	}
+
+	Value::operator Value::Type() const noexcept {
+		return Value::Undefined;
 	}
 
 	bool Value::isNumber() const {
@@ -183,7 +189,7 @@
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 
-	void Value::for_each(const std::function<void(const char *name, const Value &value)> UDJAT_UNUSED(&call)) const {
+	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> UDJAT_UNUSED(&call)) const {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 

@@ -48,6 +48,13 @@
 			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
 		};
 
+		/// @brief Get stored value type.
+		virtual operator Type() const noexcept;
+
+		inline bool operator==(const Type type) const noexcept {
+			return ((Type) *this) == type;
+		}
+
 		/// @brief Build dummy value.
 		static std::shared_ptr<Value> Factory();
 
@@ -64,8 +71,9 @@
 		/// @return Null value inserted to object.
 		virtual Value & operator[](const char *name);
 
-		/// @brief Navigate from all values.
-		virtual void for_each(const std::function<void(const char *name, const Value &value)> &call) const;
+		/// @brief Navigate from all values until 'call' returns true.
+		/// @return true if 'call' has returned true, false if not.
+		virtual bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
 
 		/// @brief Convert Value to 'array' and insert child.
 		/// @return Array entry.
