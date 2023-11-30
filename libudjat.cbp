@@ -138,6 +138,7 @@
 		<Unit filename="src/include/udjat/tools/value.h" />
 		<Unit filename="src/include/udjat/tools/worker.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
+		<Unit filename="src/include/udjat/ui/icon.h" />
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
 		<Unit filename="src/include/udjat/win32/cleanup.h" />

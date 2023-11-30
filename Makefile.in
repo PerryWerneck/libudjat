@@ -440,6 +440,13 @@ install-devel: \
 		src/include/udjat/alert/*.h \
 		$(DESTDIR)$(includedir)/udjat/alert
 
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/ui
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/ui/*.h \
+		$(DESTDIR)$(includedir)/udjat/ui
+
 	# Install PKG-CONFIG files
 	@$(MKDIR) \
 		$(DESTDIR)$(libdir)/pkgconfig

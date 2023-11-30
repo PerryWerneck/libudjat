@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2023-11-24 19:22-0300\n"
-"PO-Revision-Date: 2023-07-03 13:37-0300\n"
+"PO-Revision-Date: 2023-11-30 13:22-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -52,11 +52,11 @@ msgstr "Não foi possivel resolver nome do host"
 
 #: src/tools/script.cc:172
 msgid "Cant set subprocess group id"
-msgstr ""
+msgstr "Incapaz de definir o grupo do subprocesso"
 
 #: src/tools/script.cc:166
 msgid "Cant set subprocess user id"
-msgstr ""
+msgstr "Incapaz de definir o usuário do subprocesso"
 
 #: src/tools/http/error.cc:145
 msgid "Client error"
@@ -64,7 +64,7 @@ msgstr "Erro de cliente"
 
 #: src/main/agent/controller.cc:98
 msgid "Core/Module subsystem failed to initialize"
-msgstr ""
+msgstr "Inicialização do módulo principal falhou"
 
 #: src/main/agent/state.cc:145
 msgid "Error activating state"
@@ -100,7 +100,7 @@ msgstr "Erro interno"
 
 #: src/tools/application/run.cc:217
 msgid "Invalid property"
-msgstr ""
+msgstr "Propriedade inválida"
 
 #: src/tools/timestamp.cc:74
 msgid "Less than one minute"
@@ -184,6 +184,8 @@ msgid ""
 "The client did not produce a request within the time that the server was "
 "prepared to wait."
 msgstr ""
+"O cliente não gerou uma requisição no tempo que o servidor estava preparado "
+"para esperar."
 
 #: src/tools/http/error.cc:118
 msgid "The client must first authenticate itself with the proxy."
@@ -191,7 +193,7 @@ msgstr "O cliente deve primeiro autenticar no proxy"
 
 #: src/tools/message.cc:47
 msgid "The message template is invalid"
-msgstr ""
+msgstr "O template de mensagem não é válido"
 
 #: src/tools/http/error.cc:104
 msgid ""
@@ -224,16 +226,17 @@ msgstr "Requisição foi redirecionada para outra URL."
 msgid ""
 "The requested resource could not be found but may be available in the future."
 msgstr ""
+"O recurso pedido não foi encontrado mas pode ficar disponível no futuro."
 
 #: src/tools/script.cc:119
 msgid "The required attribute 'cmdline' is missing"
-msgstr ""
+msgstr "Atributo necessário 'cmdline' não está disponível"
 
 #: src/tools/http/error.cc:132
 msgid ""
 "The resource requested was previously in use but is no longer available and "
 "will not be available again."
-msgstr ""
+msgstr "O recurso pedido foi usado antes mas não estão mais disponívei."
 
 #: src/tools/http/error.cc:90
 msgid ""
@@ -241,6 +244,9 @@ msgid ""
 "error (e.g., malformed request syntax, size too large, invalid request "
 "message framing, or deceptive request routing)."
 msgstr ""
+"O servidor não pode ou não processará o pedido devido a um possível erro do "
+"cliente, por exemplo, requisição com sintaxe errada, resultado muito grande, "
+"enquadramento inválido or problema de rota."
 
 #: src/tools/http/error.cc:157
 msgid "The server has encountered a situation it does not know how to handle."
@@ -280,7 +286,7 @@ msgstr "Incapaz de obter valor para '{}'"
 
 #: src/tools/application/run.cc:120 src/tools/application/run.cc:124
 msgid "Unable to set environment variable"
-msgstr ""
+msgstr "Incapaz de setar variável de ambiente"
 
 #: src/tools/http/error.cc:96
 msgid "Unauthorized"
@@ -296,7 +302,7 @@ msgstr "Erro inesperado ao ativar estado"
 
 #: src/tools/application/run.cc:147
 msgid "Usage:\t{} [options]"
-msgstr ""
+msgstr "Usage:\t{} [opções]"
 
 #: src/tools/os/windows/application/description.cc:72
 msgid "\\StringFileInfo\\080904B0\\FileDescription"
@@ -310,11 +316,11 @@ msgstr "dia"
 msgid "days"
 msgstr "dias"
 
-#: src/main/agent/agent.cc:241 src/tools/string/string.cc:343
+#: src/main/agent/agent.cc:241 src/tools/string/string.cc:353
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:315
+#: src/tools/string/string.cc:325
 msgid "false"
 msgstr "falso"
 
@@ -334,15 +340,15 @@ msgstr "minuto"
 msgid "minutes"
 msgstr "minutos"
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:314
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:324
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:316
+#: src/main/state/state.cc:289 src/tools/string/string.cc:326
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:309
+#: src/main/state/state.cc:289 src/tools/string/string.cc:319
 msgid "on"
 msgstr "ligado"
 
@@ -354,11 +360,11 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
-#: src/tools/string/string.cc:308
+#: src/tools/string/string.cc:318
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:307
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:317
 msgid "yes"
 msgstr "sim"
 

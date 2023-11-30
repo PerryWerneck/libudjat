@@ -31,7 +31,7 @@ msgstr ""
 "#-#-#-#-#  script.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -42,7 +42,7 @@ msgstr ""
 "#-#-#-#-#  object.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -75,7 +75,7 @@ msgstr ""
 "#-#-#-#-#  root.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,7 +86,7 @@ msgstr ""
 "#-#-#-#-#  controller.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -141,7 +141,7 @@ msgstr ""
 "#-#-#-#-#  script.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -152,7 +152,7 @@ msgstr ""
 "#-#-#-#-#  file.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -174,7 +174,7 @@ msgstr ""
 "#-#-#-#-#  string.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -185,7 +185,7 @@ msgstr ""
 "#-#-#-#-#  run.pot (PACKAGE VERSION)  #-#-#-#-#\n"
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
+"POT-Creation-Date: 2023-11-30 13:16-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -507,11 +507,11 @@ msgstr ""
 msgid "days"
 msgstr ""
 
-#: src/main/agent/agent.cc:241 src/tools/string/string.cc:343
+#: src/main/agent/agent.cc:241 src/tools/string/string.cc:353
 msgid "default"
 msgstr ""
 
-#: src/tools/string/string.cc:315
+#: src/tools/string/string.cc:325
 msgid "false"
 msgstr ""
 
@@ -531,15 +531,15 @@ msgstr ""
 msgid "minutes"
 msgstr ""
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:314
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:324
 msgid "no"
 msgstr ""
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:316
+#: src/main/state/state.cc:289 src/tools/string/string.cc:326
 msgid "off"
 msgstr ""
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:309
+#: src/main/state/state.cc:289 src/tools/string/string.cc:319
 msgid "on"
 msgstr ""
 
@@ -551,11 +551,11 @@ msgstr ""
 msgid "seconds"
 msgstr ""
 
-#: src/tools/string/string.cc:308
+#: src/tools/string/string.cc:318
 msgid "true"
 msgstr ""
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:307
+#: src/tools/string/string.cc:41 src/tools/string/string.cc:317
 msgid "yes"
 msgstr ""
 
