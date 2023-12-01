@@ -91,11 +91,18 @@
 
 		/// @brief Execute request.
 		/// @param response Object for request response.
-		void exec(Response::Value &response);
+		/// @param required if true launch and exception.
+		/// @return true if a worker was found and called.
+		bool exec(Response::Value &response, bool required = true);
 
 		/// @brief Execute request.
 		/// @param response Object for request response.
-		void exec(Response::Table &response);
+		/// @param required if true launch and exception.
+		/// @return true if a worker was found and called.
+		bool exec(Response::Table &response, bool required = true);
+
+		bool exec(const char *name, Response::Value &response, bool required = true);
+		bool exec(const char *name, Response::Table &response, bool required = true);
 
 		/// @brief Get original request path.
 		virtual const char *c_str() const noexcept;
