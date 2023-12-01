@@ -49,7 +49,7 @@
 		constexpr Request(HTTP::Method m = HTTP::Get, const char *path = "") : method{m}, reqpath{path} {
 		}
 
-		Request(const char *method) : Request{HTTP::MethodFactory(method)} {
+		Request(const char *method, const char *path = "") : Request{HTTP::MethodFactory(method),path} {
 		}
 
 		inline unsigned int version() const noexcept {

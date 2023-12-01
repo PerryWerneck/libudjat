@@ -37,13 +37,30 @@
 
 	String Request::getProperty(size_t ix, const char *def) const {
 
-		const char *ptr = reqpath;
+		if(*reqpath != '/') {
+			throw system_error(EINVAL,system_category(),"Request should start with '/' to use indexed parameter");
+		}
+
+		if(!ix) {
+			throw system_error(EINVAL,system_category(),"Request argument index starts with '1'");
+		}
+
+		const char *ptr = reqpath+1;
 		while(*ptr) {
-			const char *next = strchr(argptr,'/');
-			if(!ix--) {
-				return String{ptr,next-ptr};
+
+			const char *next = strchr(ptr,'/');
+			if(!next) {
+				if(ix == 1) {
+					return ptr;
+				}
+				break;
 			}
-			ptr = next;
+
+			if(!--ix) {
+				return String{ptr,(size_t) (next-ptr)};
+			}
+
+			ptr = next+1;
 		}
 
 		return def;
@@ -53,6 +70,10 @@
 
 		if(!argptr) {
 			rewind();
+			if(*argptr != '/') {
+				throw system_error(EINVAL,system_category(),"Request should start with '/' to pop values");
+			}
+			argptr++;
 		}
 
 		if(!*argptr) {
@@ -60,16 +81,16 @@
 		}
 
 		const char *next = strchr(argptr,'/');
-		if(argptr) {
-			String rc{argptr,next-argptr};
-			argptr = next+1;
+		if(!next) {
+			string rc{argptr};
+			argptr = "";
 			return rc;
 		}
 
-		string rc{argptr};
-		argptr = "";
-		return rc;
+		string rc{argptr,(size_t) (next-argptr)};
+		argptr = next+1;
 
+		return rc;
 	}
 
 	Request & Request::pop(std::string &value) {

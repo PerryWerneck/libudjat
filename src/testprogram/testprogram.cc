@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- //#define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -196,6 +196,9 @@ int main(int argc, char **argv) {
 	bindtextdomain(GETTEXT_PACKAGE, STRINGIZE_VALUE_OF(LOCALEDIR));
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
 	debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR),"/",GETTEXT_PACKAGE);
+	Logger::redirect();
+	Logger::verbosity(9);
+	Logger::console(true);
 
 	/*
 	printf("------------------------\n");
@@ -213,6 +216,7 @@ int main(int argc, char **argv) {
 	cout << "Arg v2='" << url["v2"] << "'" << endl;
 	*/
 
+	/*
 	String test{"create table if not exists urls\n(id integer primary key, inserted timestamp default CURRENT_TIMESTAMP, url text, action text, payload text)"};
 
 	std::vector<String> lines = test.split("\n");
@@ -220,9 +224,15 @@ int main(int argc, char **argv) {
 	for(auto &line : lines) {
 		cout << "Line: '" << line << "'" << endl;
 	}
+	*/
 
+	Request request{"get","/1/2/3/4"};
 
-
+	for(size_t ix = 1;ix < 5; ix++) {
+		String s{request[ix]};
+		cout << "Arg[" << ix << "]='" << s << "'" << endl;
+		cout << "pop='" << request.pop() << "'" << endl << endl;
+	}
 
 	return 0;
 }
