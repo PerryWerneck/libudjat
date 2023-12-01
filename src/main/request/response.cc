@@ -20,6 +20,7 @@
  #include <config.h>
  #include <algorithm>
  #include <private/request.h>
+ #include <udjat/tools/response.h>
  #include <ctime>
 
  using namespace std;
@@ -44,6 +45,19 @@
 			modification = time;
 
 	}
+
+	bool Response::Value::isNull() const {
+		return false;
+	}
+
+	Udjat::Value & Response::Value::reset(const Udjat::Value::Type) {
+		throw system_error(EPERM,system_category(),"Response types are fixed");
+	}
+
+	Udjat::Value & Response::Value::set(const Udjat::Value &) {
+		throw system_error(EPERM,system_category(),"Response types are fixed");
+	}
+
 
  }
 

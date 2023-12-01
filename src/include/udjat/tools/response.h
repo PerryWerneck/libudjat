@@ -32,6 +32,10 @@
 			Value(const MimeType mimetype = MimeType::custom) : Abstract::Response{mimetype} {
 			}
 
+			bool isNull() const override;
+			Udjat::Value & reset(const Udjat::Value::Type type) override;
+			Udjat::Value & set(const Udjat::Value &value) override;
+
 		};
 
  	}
