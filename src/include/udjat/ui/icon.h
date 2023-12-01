@@ -33,7 +33,7 @@
 		Icon(const char *name) : std::string{name} {
 		}
 
-		Icon(const std::string &string) : std::string{name} {
+		Icon(const std::string &name) : std::string{name} {
 		}
 
 		inline operator bool() const {
