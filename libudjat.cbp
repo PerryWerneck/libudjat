@@ -101,6 +101,7 @@
 		<Unit filename="src/include/udjat/tools/container.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
+		<Unit filename="src/include/udjat/tools/exception.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/file/handler.h" />
@@ -242,6 +243,7 @@
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/event.cc" />
 		<Unit filename="src/tools/eventcontroller.cc" />
+		<Unit filename="src/tools/exception.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/file.cc" />
 		<Unit filename="src/tools/file/handler.cc" />
