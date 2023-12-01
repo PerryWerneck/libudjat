@@ -20,9 +20,10 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/url.h>
  #include <sstream>
+ #include <memory>
 
  namespace Udjat {
 

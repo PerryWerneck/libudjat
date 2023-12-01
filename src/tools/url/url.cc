@@ -22,6 +22,7 @@
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/protocol.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
  #include <cstring>
 
 #ifndef _WIN32

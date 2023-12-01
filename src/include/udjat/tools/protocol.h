@@ -21,11 +21,16 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/string.h>
- #include <udjat/request.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/file/handler.h>
+ #include <memory>
+
+ /*
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/request.h>
  #include <udjat/tools/timestamp.h>
  #include <list>
+ */
 
  #ifndef _WIN32
 	#include <sys/socket.h>

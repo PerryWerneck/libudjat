@@ -31,38 +31,43 @@
 
  namespace Udjat {
 
-	Request::Request(const HTTP::Method method) : request{method} {
-	}
-
-	Request::Request(const char *method) : Request{HTTP::MethodFactory(method)} {
-	}
-
 	String Request::getProperty(const char *, const char *def) const {
 		return def;
 	}
 
-	/// @brief Get request property by index.
-	/// @param index The property index
-	/// @param def The default value.
-	String Request::getProperty(size_t, const char *def) const {
+	String Request::getProperty(size_t ix, const char *def) const {
+
+		const char *ptr = reqpath;
+		while(*ptr) {
+			const char *next = strchr(argptr,'/');
+			if(!ix--) {
+				return String{ptr,next-ptr};
+			}
+			ptr = next;
+		}
+
 		return def;
 	}
 
 	String Request::pop() {
 
-		if(!(request.popptr && *request.popptr)) {
+		if(!argptr) {
+			rewind();
+		}
+
+		if(!*argptr) {
 			return "";
 		}
 
-		const char *next = strchr(request.popptr,'/');
-		if(next) {
-			String rc{request.popptr,next-request.popptr};
-			request.popptr = next+1;
+		const char *next = strchr(argptr,'/');
+		if(argptr) {
+			String rc{argptr,next-argptr};
+			argptr = next+1;
 			return rc;
 		}
 
-		string rc{request.popptr};
-		request.popptr = "";
+		string rc{argptr};
+		argptr = "";
 		return rc;
 
 	}
@@ -87,91 +92,6 @@
 	const char * Request::c_str() const noexcept {
 		Logger::String{"Processing request with no path"}.warning("request");
 		return "";
-	}
-
-	Request & Request::rewind(bool require_versioned_path) {
-
-		static const struct {
-			const char *value;
-			MimeType mimetype;
-		} mimetypes[] {
-			{ "json/",	MimeType::json	},
-			{ "html/",	MimeType::html	},
-			{ "xml/",	MimeType::xml	},
-			{ "yaml/",	MimeType::yaml	},
-			{ "csv/",	MimeType::csv	},
-			{ "sh/",	MimeType::sh	},
-		};
-
-		request.popptr = c_str();
-
-		{
-			const char *mark = strstr(request.popptr,"://");
-			if(mark) {
-				request.popptr = mark + 3;
-			}
-		}
-
-		while(*request.popptr && *request.popptr == '/') {
-			request.popptr++;
-		}
-
-		if(!strncasecmp(request.popptr,"api/",4)) {
-
-			// It's an standard API method.
-			request.popptr += 4;
-
-			while(*request.popptr && *request.popptr != '/') {
-				if(isdigit(*request.popptr)) {
-					apiver *= 10;
-					apiver += (*request.popptr - '0');
-				}
-				request.popptr++;
-			}
-
-			// Do we have mimetype on URL?
-			for(const auto &entry : mimetypes) {
-				size_t szValue = strlen(entry.value);
-				if(*request.popptr == '/' && !strncasecmp(request.popptr+1,entry.value,szValue)) {
-					request.popptr += szValue;
-					this->type = entry.mimetype;
-					debug("Mimetype set to '",this->type,"' from URL");
-					break;
-				}
-			}
-
-			debug("API Version set to '",apiver,"'");
-
-		} else if(require_versioned_path) {
-
-			throw HTTP::Exception(400,"Request path should be /api/[VERSION]/[REQUEST]");
-
-		} else {
-
-			// Unversioned path
-
-			apiver = 0;
-
-			for(const auto &entry : mimetypes) {
-				size_t szValue = strlen(entry.value);
-				if(!strncasecmp(request.popptr,entry.value,szValue)) {
-					request.popptr += szValue;
-					this->type = entry.mimetype;
-					debug("Mimetype set to '",this->type,"' from legacy path");
-					break;
-				}
-			}
-
-		}
-
-		// Start on first argument.
-		while(*request.popptr && *request.popptr == '/') {
-			request.popptr++;
-		}
-
-		Logger::String{"Effective request path is '",request.popptr,"'"}.trace("request");
-
-		return *this;
 	}
 
  }

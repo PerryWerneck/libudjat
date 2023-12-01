@@ -20,15 +20,15 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/http/client.h>
- #include <udjat/tools/logger.h>
  #include <string>
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timestamp.h>
 
-#ifndef _WIN32
+ #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
-#endif // _WIN32
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
 

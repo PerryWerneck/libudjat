@@ -34,13 +34,14 @@
 
 	void Request::exec(Response &response) {
 
+		const char *saved_path = reqpath;
 		const Worker *selected_worker = nullptr;
 
-		debug("Searching worker for '",request.popptr,"'");
+		debug("Searching worker for '",reqpath,"'");
 
 		if(!Worker::for_each([this,&selected_worker](const Worker &worker){
 
-			const char *path{worker.check_path(request.popptr)};
+			const char *path{worker.check_path(reqpath)};
 			if(!path) {
 				return false;
 			}
@@ -48,7 +49,7 @@
 			debug("Worker '",worker.c_str(),"' selected path '",path,"'");
 
 			selected_worker = &worker;
-			request.popptr = path;
+			reqpath = path;
 
 			return true;
 
@@ -59,18 +60,21 @@
 		}
 
 		selected_worker->work(*this,response);
+
+		reqpath = saved_path;
 
 	}
 
 	void Request::exec(Report &response) {
 
+		const char *saved_path = reqpath;
 		const Worker *selected_worker = nullptr;
 
-		debug("Searching worker for '",request.popptr,"'");
+		debug("Searching worker for '",reqpath,"'");
 
 		if(!Worker::for_each([this,&selected_worker](const Worker &worker){
 
-			const char *path{worker.check_path(request.popptr)};
+			const char *path{worker.check_path(reqpath)};
 			if(!path) {
 				return false;
 			}
@@ -78,7 +82,7 @@
 			debug("Worker '",worker.c_str(),"' selected path '",path,"'");
 
 			selected_worker = &worker;
-			request.popptr = path;
+			reqpath = path;
 
 			return true;
 
@@ -89,6 +93,8 @@
 		}
 
 		selected_worker->work(*this,response);
+
+		reqpath = saved_path;
 
 	}
 

@@ -21,14 +21,17 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
- #include <iostream>
- #include <list>
  #include <mutex>
+ #include <list>
+
+ /*
+ #include <udjat/tools/url.h>
+ #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/factory.h>
- #include <udjat/request.h>
+ #include <udjat/tools/request.h>
+ */
 
  using namespace std;
 

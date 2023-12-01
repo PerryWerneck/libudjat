@@ -24,6 +24,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module/info.h>
+ #include <udjat/tools/value.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
