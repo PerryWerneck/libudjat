@@ -47,6 +47,7 @@
 			Boolean,			///< @brief Bool value.
 			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
 			Icon,				///< @brief Icon name.
+			Url,				///< @brief URL.
 		};
 
 		/// @brief Get stored value type.
