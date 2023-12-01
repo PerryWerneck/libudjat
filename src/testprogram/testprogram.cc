@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	Request request{"get","/1/2/3/4"};
+	Request request{"/1/2/3/4"};
 
 	for(size_t ix = 1;ix < 5; ix++) {
 		String s{request[ix]};
