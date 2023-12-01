@@ -99,7 +99,7 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
+	bool Abstract::Agent::Controller::head(Request &request, Udjat::Response::Value &response) const {
 
 		debug("Getting Cache info for '",(const char *) request.path(),"'");
 
@@ -111,7 +111,7 @@ namespace Udjat {
 		return true;
 	}
 
-	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
+	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
 
 		debug("Getting properties for '",(const char *) request.path(),"'");
 

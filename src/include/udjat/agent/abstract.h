@@ -22,6 +22,7 @@
  #include <udjat/tools/parse.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/activatable.h>
@@ -316,7 +317,7 @@
 			/// @param report The report output.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Report &report) const;
+			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
 
 			/// @brief Get State by path, throw if not found.
 			/// @param path	Child path.

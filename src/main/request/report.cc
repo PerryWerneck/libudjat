@@ -25,20 +25,20 @@
 
  namespace Udjat {
 
-	Report::Report() {
+	Response::Table::Table() {
 	}
 
-	Report::~Report() {
+	Response::Table::~Table() {
 	}
 
-	void Report::start(const char *column_name, ...) {
+	void Response::Table::start(const char *column_name, ...) {
 		va_list args;
 		va_start(args, column_name);
 		set(column_name,args);
 		va_end(args);
 	}
 
-	void Report::start(const std::vector<string> &column_names) {
+	void Response::Table::start(const std::vector<string> &column_names) {
 
 		if(!this->columns.names.empty()) {
 			throw system_error(EBUSY,system_category(),"Report already started");
@@ -49,7 +49,7 @@
 		open();
 	}
 
-	void Report::set(const char *column_name, va_list args) {
+	void Response::Table::set(const char *column_name, va_list args) {
 
 		if(!columns.names.empty()) {
 			throw system_error(EBUSY,system_category(),"Report already started");
@@ -63,7 +63,7 @@
 		open();
 	}
 
-	bool Report::open() {
+	bool Response::Table::open() {
 
 		if(columns.current == columns.names.begin()) {
 			return false;
@@ -73,14 +73,14 @@
 		return true;
 	}
 
-	bool Report::close() {
+	bool Response::Table::close() {
 		if(columns.current == columns.names.begin()) {
 			return false;
 		}
 		return true;
 	}
 
-	std::string Report::next() {
+	std::string Response::Table::next() {
 
 		if(columns.current == columns.names.end()) {
 			close();
@@ -91,50 +91,50 @@
 
 	}
 
-	Report & Report::push_back(const std::string &str) {
+	Response::Table & Response::Table::push_back(const std::string &str) {
 		push_back(str.c_str());
 		return *this;
 	}
 
-	Report & Report::push_back(const short value) {
+	Response::Table & Response::Table::push_back(const short value) {
 		return push_back(std::to_string((int) value));
 	}
 
-	Report & Report::push_back(const unsigned short value) {
+	Response::Table & Response::Table::push_back(const unsigned short value) {
 		return push_back(std::to_string(value));
 	}
 
-	Report & Report::push_back(const int value) {
+	Response::Table & Response::Table::push_back(const int value) {
 		return push_back(std::to_string(value));
 	}
 
-	Report & Report::push_back(const unsigned int value) {
+	Response::Table & Response::Table::push_back(const unsigned int value) {
 		return push_back(std::to_string(value));
 	}
 
-	Report & Report::push_back(const long value) {
+	Response::Table & Response::Table::push_back(const long value) {
 		return push_back(std::to_string(value));
 	}
 
-	Report & Report::push_back(const unsigned long value) {
+	Response::Table & Response::Table::push_back(const unsigned long value) {
 		return push_back(std::to_string(value));
 	}
 
-	Report & Report::push_back(const TimeStamp value) {
+	Response::Table & Response::Table::push_back(const TimeStamp value) {
 		return push_back(value.to_string());
 	}
 
-	Report & Report::push_back(const bool value) {
+	Response::Table & Response::Table::push_back(const bool value) {
 		return push_back(value ? 1 : 0);
 	}
 
-	Report & Report::push_back(const float value) {
+	Response::Table & Response::Table::push_back(const float value) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(2) << value;
 		return push_back(stream.str());
 	}
 
-	Report & Report::push_back(const double value) {
+	Response::Table & Response::Table::push_back(const double value) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(2) << value;
 		return push_back(stream.str());

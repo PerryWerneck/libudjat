@@ -24,6 +24,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
 
  namespace Udjat {
 
@@ -108,7 +109,7 @@
 
 	}
 
-	bool Abstract::Agent::getProperties(const char *path, Report &report) const {
+	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Table &report) const {
 
 		if(!*path) {
 			// If this method wasnt overrided theres no report, just return false here.
@@ -123,7 +124,7 @@
 		return false;
 	}
 
-	bool Abstract::Agent::Controller::head(Abstract::Agent *agent, const char *path, ResponseInfo &response) {
+	bool Abstract::Agent::Controller::head(Abstract::Agent *agent, const char *path, Udjat::Abstract::Response &response) {
 
 		debug("ME='",agent->name(),"' path='",path,"'");
 

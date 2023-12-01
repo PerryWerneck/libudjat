@@ -17,24 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /**
+  * @brief Legacy request/response/report classes.
+  */
+
  #pragma once
 
- #include <udjat/defs.h>
- #include <udjat/tools/abstractresponse.h>
- #include <udjat/tools/value.h>
+ #include <udjat/udjat/defs.h>
+ #include <udjat/tools/udjat/tools/request.h>
+ #include <udjat/tools/udjat/tools/response.h>
+ #include <udjat/tools/udjat/tools/report.h>
 
  namespace Udjat {
 
- 	namespace Response {
-
-		class UDJAT_API Value : public Abstract::Response, public Udjat::Value {
-		public:
-			Value(const MimeType mimetype = MimeType::custom) : Abstract::Response{mimetype} {
-			}
-
-		};
-
- 	}
+	using Response = Udjat::Response::Value;
+	using Report = Udjat::Response::Table;
 
  }
-

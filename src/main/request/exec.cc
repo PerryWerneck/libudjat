@@ -25,6 +25,8 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
+ #include <udjat/tools/report.h>
  #include <udjat/tools/worker.h>
  #include <stdexcept>
 
@@ -32,7 +34,7 @@
 
  namespace Udjat {
 
-	void Request::exec(Response &response) {
+	void Request::exec(Response::Value &response) {
 
 		const char *saved_path = reqpath;
 		const Worker *selected_worker = nullptr;
@@ -65,7 +67,7 @@
 
 	}
 
-	void Request::exec(Report &response) {
+	void Request::exec(Response::Table &response) {
 
 		const char *saved_path = reqpath;
 		const Worker *selected_worker = nullptr;

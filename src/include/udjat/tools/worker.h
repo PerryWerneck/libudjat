@@ -21,6 +21,8 @@
 
 #include <udjat/defs.h>
 #include <udjat/tools/request.h>
+#include <udjat/tools/response.h>
+#include <udjat/tools/report.h>
 #include <udjat/tools/quark.h>
 #include <ostream>
 
@@ -84,11 +86,11 @@ namespace Udjat {
 
 		/// @brief Process only the 'get' method.
 		/// @return false if the request method was not allowed.
-		virtual bool get(Request &request, Response &response) const;
+		virtual bool get(Request &request, Response::Value &response) const;
 
 		/// @brief Process only the 'head' method.
 		/// @return false if the request method was not allowed.
-		virtual bool head(Request &request, Response &response) const;
+		virtual bool head(Request &request, Response::Value &response) const;
 
 		inline const char * c_str() const {
 			return name;
@@ -98,10 +100,10 @@ namespace Udjat {
 
 		/// @brief Process all methods.
 		/// @return true if the method was allowed.
-		virtual bool work(Request &request, Response &response) const;
+		virtual bool work(Request &request, Response::Value &response) const;
 
 		/// @brief Process report method.
-		virtual bool work(Request &request, Report &response) const;
+		virtual bool work(Request &request, Response::Table &response) const;
 
 	};
 

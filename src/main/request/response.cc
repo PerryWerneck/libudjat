@@ -18,25 +18,28 @@
  */
 
  #include <config.h>
+ #include <algorithm>
  #include <private/request.h>
  #include <ctime>
 
+ using namespace std;
+
  namespace Udjat {
 
-	void ResponseInfo::setExpirationTimestamp(const time_t time) {
+	void Abstract::Response::setExpirationTimestamp(const time_t time) {
 
 		if(expiration) {
-			expiration = min(expiration,time);
+			expiration = min((time_t) expiration,time);
 		} else {
 			expiration = time;
 		}
 
 	}
 
-	void ResponseInfo::setModificationTimestamp(const time_t time) {
+	void Abstract::Response::setModificationTimestamp(const time_t time) {
 
 		if(modification)
-			modification = min(modification,time);
+			modification = min((time_t) modification,time);
 		else
 			modification = time;
 

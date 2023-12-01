@@ -32,6 +32,8 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
+#include <udjat/tools/response.h>
+#include <udjat/tools/abstractresponse.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -75,10 +77,10 @@ namespace Udjat {
 		static const Abstract::Agent * find(const Abstract::Agent *agent, const char **path);
 
 		/// @brief Get agent's cache properties.
-		static bool head(Abstract::Agent *agent, const char *path, ResponseInfo &response);
+		static bool head(Abstract::Agent *agent, const char *path, Abstract::Response &response);
 
-		bool get(Request &request, Response &response) const override;
-		bool head(Request &request, Response &response) const override;
+		bool get(Request &request, Udjat::Response::Value &response) const override;
+		bool head(Request &request,  Udjat::Response::Value &response) const override;
 
 		void start() noexcept override;
 		void stop() noexcept override;

@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -20,11 +20,12 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/http/client.h>
  #include <udjat/tools/method.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/report.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 
@@ -90,11 +91,11 @@
 
 		/// @brief Execute request.
 		/// @param response Object for request response.
-		void exec(Response &response);
+		void exec(Response::Value &response);
 
 		/// @brief Execute request.
 		/// @param response Object for request response.
-		void exec(Report &response);
+		void exec(Response::Table &response);
 
 		/// @brief Get original request path.
 		virtual const char *c_str() const noexcept;

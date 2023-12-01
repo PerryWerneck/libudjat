@@ -74,7 +74,7 @@
 		void push_back(shared_ptr<Udjat::Alert::Activation> activation);
 		void remove(const Abstract::Alert *alert);
 		bool active(const Abstract::Alert *alert);
-		bool get(Request &request, Response &response) const override;
+		bool get(Request &request, Response::Value &response) const override;
 
 	};
 

@@ -93,6 +93,7 @@
 		<Unit filename="src/include/udjat/net/interface.h" />
 		<Unit filename="src/include/udjat/net/ip/address.h" />
 		<Unit filename="src/include/udjat/request.h" />
+		<Unit filename="src/include/udjat/tools/abstractresponse.h" />
 		<Unit filename="src/include/udjat/tools/activatable.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/base64.h" />
@@ -124,6 +125,7 @@
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
+		<Unit filename="src/include/udjat/tools/report.h" />
 		<Unit filename="src/include/udjat/tools/request.h" />
 		<Unit filename="src/include/udjat/tools/response.h" />
 		<Unit filename="src/include/udjat/tools/script.h" />

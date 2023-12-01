@@ -99,15 +99,15 @@
 	}
 	*/
 
-	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
+	bool Worker::get(Request &, Response::Value &) const {
 		return false;
 	}
 
-	bool Worker::head(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
+	bool Worker::head(Request &, Response::Value &) const {
 		return false;
 	}
 
-	bool Worker::work(Request &request, Response &response) const {
+	bool Worker::work(Request &request, Response::Value &response) const {
 
 		switch((HTTP::Method) request) {
 		case HTTP::Get:
@@ -126,7 +126,7 @@
 
 	}
 
-	bool Worker::work(Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&response)) const {
+	bool Worker::work(Request &, Response::Table &) const {
 		return false;
 	}
 
