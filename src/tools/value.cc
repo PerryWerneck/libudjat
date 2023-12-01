@@ -177,6 +177,10 @@
 		return Udjat::isnumber(as_string().c_str());
 	}
 
+	bool Value::empty() const noexcept {
+		return true;
+	}
+
 	Value & Value::operator[](const char UDJAT_UNUSED(*name)) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}

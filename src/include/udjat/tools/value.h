@@ -66,6 +66,9 @@
 		/// @brief Has any value?
 		virtual bool isNull() const = 0;
 
+		/// @brief Has any children?
+		virtual bool empty() const noexcept;
+
 		/// @brief Is this a number?
 		virtual bool isNumber() const;
 
