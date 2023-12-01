@@ -46,6 +46,10 @@
 
 	}
 
+	Response::Value::operator Value::Type() const noexcept {
+		return Value::Object;
+	}
+
 	bool Response::Value::isNull() const {
 		return false;
 	}
