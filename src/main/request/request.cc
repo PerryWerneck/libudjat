@@ -31,6 +31,10 @@
 
  namespace Udjat {
 
+	bool Request::cached(const TimeStamp &timestamp) const {
+		return false;
+	}
+
 	String Request::getProperty(const char *, const char *def) const {
 		return def;
 	}

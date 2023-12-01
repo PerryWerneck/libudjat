@@ -24,6 +24,7 @@
  #include <udjat/tools/method.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/timestamp.h>
 
  namespace Udjat {
 
@@ -41,7 +42,7 @@
 		/// @brief The processed request path.
 		const char *reqpath = "";
 
-		/// @brief The request API version.
+		/// @brief The requested API version.
 		unsigned int apiver = 0;
 
 	public:
@@ -55,6 +56,13 @@
 		inline unsigned int version() const noexcept {
 			return apiver;
 		}
+
+		/// @brief Check the cache state.
+		/// @param timestamp Current response timestamp.
+		/// @return True if the cache can be used.
+		/// @retval true The cache contents are valid.
+		/// @retval false The cache must be refreshed.
+		virtual bool cached(const TimeStamp &timestamp) const;
 
 		/// @brief Get request property.
 		/// @param name The property name
@@ -74,7 +82,8 @@
 			return getProperty(index);
 		}
 
-		/// @brief Reset argument parser.
+		/// @brief Reset argument parser, next pop() will return the first element from path.
+		/// @see pop
 		inline void rewind() noexcept {
 			argptr = reqpath;
 		}
