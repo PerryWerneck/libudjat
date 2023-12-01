@@ -47,10 +47,6 @@
 				return *this;
 			}
 
-			Udjat::Value & operator[](const char *) override {
-				return *this;
-			}
-
 			Udjat::Value & append(const Type) override {
 				return *this;
 			}
@@ -135,7 +131,7 @@
 				throw runtime_error("Cant set unnamed value on object");
 			}
 
-			Udjat::Value & operator[](const char *name) override {
+			Udjat::Value & child(const char *name) override {
 
 				std::lock_guard<std::mutex> lock(guard);
 
@@ -181,7 +177,7 @@
 		return true;
 	}
 
-	Value & Value::operator[](const char UDJAT_UNUSED(*name)) {
+	Value & Value::child(const char *) {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 

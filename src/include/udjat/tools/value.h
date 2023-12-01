@@ -72,9 +72,13 @@
 		/// @brief Is this a number?
 		virtual bool isNumber() const;
 
-		/// @brief Convert Value to 'object' and insert child.
+		/// @brief Get child by name, insert it if not found.
 		/// @return Null value inserted to object.
-		virtual Value & operator[](const char *name);
+		virtual Value & child(const char *name);
+
+		inline Value & operator[](const char *name) {
+			return child(name);
+		}
 
 		/// @brief Navigate from all values until 'call' returns true.
 		/// @return true if 'call' has returned true, false if not.
