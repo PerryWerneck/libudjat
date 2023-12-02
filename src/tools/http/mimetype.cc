@@ -34,7 +34,7 @@
 
 	{ "json",	"application/json; charset=utf-8" },
 	{ "csv",	"text/csv; charset=utf-8" },
-	{ "tsv",	"text/csv; charset=utf-8" },
+	{ "tsv",	"text/tab-separated-values; charset=utf-8" }, // https://www.freeformatter.com/mime-types-list.html
 	{ "txt",	"text/plain; charset=utf-8" },
 	{ "xml",	"text/xml; charset=utf-8" },
 	{ "html",	"text/html; charset=utf-8" },
@@ -61,6 +61,14 @@
 	{ "odt",	"application/vnd.oasis.opendocument.text" },
 	{ "ods",	"application/vnd.oasis.opendocument.spreadsheet" },
 	{ "sh",		"application/x-sh" },
+
+	// https://gist.github.com/jimschubert/94894c938d8f9f64c6863b28c70a22cc
+	{ "pdf",	"application/pdf" },
+
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+	{ "rtf",	"text/richtext" },
+	{ "xhtml",	"application/xhtml+xml" },
+	{ "zip",	"application/zip" },
 
  };
 

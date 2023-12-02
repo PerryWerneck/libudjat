@@ -30,7 +30,7 @@
 		custom,					///> @brief Custom
 		json,                   ///> @brief application/json; charset=utf-8
 		csv,                    ///> @brief text/csv; charset=utf-8
-		tsv,                    ///> @brief text/csv; charset=utf-8
+		tsv,                    ///> @brief text/tab-separated-values; charset=utf-8
 		text,                   ///> @brief text/plain; charset=utf-8
 		xml,                    ///> @brief text/xml; charset=utf-8
 		html,                   ///> @brief text/html; charset=utf-8
@@ -50,6 +50,12 @@
 		odt,					///> @brief application/vnd.oasis.opendocument.text
 		ods,					///> @brief application/vnd.oasis.opendocument.spreadsheet
 		sh,						///> @brief application/x-sh
+		pdf,					///> @brief application/pdf
+
+		// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+		rtf,					///> @brief application/rtf
+		xhtml,					///> @brief application/xhtml+xml
+		zip,					///> @brief application/zip
 
 	};
 
