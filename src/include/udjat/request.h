@@ -23,10 +23,10 @@
 
  #pragma once
 
- #include <udjat/udjat/defs.h>
- #include <udjat/tools/udjat/tools/request.h>
- #include <udjat/tools/udjat/tools/response.h>
- #include <udjat/tools/udjat/tools/report.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
+ #include <udjat/tools/report.h>
 
  namespace Udjat {
 
@@ -34,3 +34,4 @@
 	using Report = Udjat::Response::Table;
 
  }
+ 
