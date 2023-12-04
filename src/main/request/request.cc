@@ -59,22 +59,27 @@
 	String Request::getArgument(const char *name, const char *def) const {
 
 		String value{def};
-		size_t szName = strlen(name);
 
-		String{query()}.for_each("&",[&value,szName,name](const String &v){
+		const char *query = this->query();
+		if(query && *query) {
 
-			if(v.size() > szName) {
+			size_t szName = strlen(name);
+			String{query}.for_each("&",[&value,szName,name](const String &v){
 
-				if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
-					value = v.c_str()+szName+1;
-					value.strip();
-					return true;
+				if(v.size() > szName) {
+
+					if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
+						value = v.c_str()+szName+1;
+						value.strip();
+						return true;
+					}
 				}
-			}
 
-			return false;
+				return false;
 
-		});
+			});
+
+		}
 
 		return value;
 	}

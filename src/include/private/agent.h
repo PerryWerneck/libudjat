@@ -33,6 +33,7 @@
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
 #include <udjat/tools/response.h>
+#include <udjat/tools/report.h>
 #include <udjat/tools/abstractresponse.h>
 
 #ifdef HAVE_UNISTD_H
@@ -80,6 +81,7 @@ namespace Udjat {
 		static bool head(Abstract::Agent *agent, const char *path, Abstract::Response &response);
 
 		bool get(Request &request, Udjat::Response::Value &response) const override;
+		bool get(Request &request, Udjat::Response::Table &response) const override;
 		bool head(Request &request,  Udjat::Response::Value &response) const override;
 
 		void start() noexcept override;

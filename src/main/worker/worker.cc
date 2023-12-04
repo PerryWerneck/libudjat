@@ -103,6 +103,10 @@
 		return false;
 	}
 
+	bool Worker::get(Request &, Response::Table &) const {
+		return false;
+	}
+
 	bool Worker::head(Request &, Response::Value &) const {
 		return false;
 	}
@@ -126,8 +130,16 @@
 
 	}
 
-	bool Worker::work(Request &, Response::Table &) const {
+	bool Worker::work(Request &request, Response::Table &response) const {
+
+		if( ((HTTP::Method) request) == HTTP::Get) {
+			return get(request,response);
+		} else {
+			throw system_error(ENOENT,system_category(),Logger::String{"Unable to handle '",(const char *) request,"'"});
+		}
+
 		return false;
+
 	}
 
 	const char * Worker::check_path(const char *path) const noexcept {

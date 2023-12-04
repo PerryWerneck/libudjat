@@ -21,6 +21,8 @@
  #include <private/agent.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/object.h>
+ #include <udjat/tools/report.h>
  #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -30,6 +32,29 @@
 	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
 		value.set(to_string());
 		return value;
+	}
+
+	bool Abstract::Agent::get(Request &, Udjat::Response::Table &response) const {
+
+		response.start(
+			"icon",
+			"name",
+			"label",
+			"summary",
+
+			nullptr
+		);
+
+		for(const auto child : children.agents) {
+
+			response.push_back(child->properties.icon,Value::Icon);
+			response.push_back(child->name());
+			response.push_back(child->properties.label);
+			response.push_back(child->properties.summary);
+
+		}
+
+		return true;
 	}
 
 	std::string Abstract::Agent::to_string() const noexcept {

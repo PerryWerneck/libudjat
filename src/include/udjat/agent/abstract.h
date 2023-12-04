@@ -26,6 +26,7 @@
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/activatable.h>
+ #include <udjat/tools/report.h>
  #include <mutex>
  #include <list>
  #include <cstdint>
@@ -318,6 +319,8 @@
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
+
+			virtual bool get(Request &request, Udjat::Response::Table &response) const;
 
 			/// @brief Get State by path, throw if not found.
 			/// @param path	Child path.

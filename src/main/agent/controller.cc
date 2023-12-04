@@ -121,6 +121,22 @@ namespace Udjat {
 		}
 
 		return true;
+
+	}
+
+	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
+
+		debug("Getting children for '",(const char *) request.path(),"'");
+
+		// Get properties.
+		auto agent = find(request.path());
+		if(!agent){
+			throw std::system_error(ENOENT,std::system_category());
+		}
+
+		agent->get(request,response);
+		return true;
+
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {

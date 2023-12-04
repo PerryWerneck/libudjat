@@ -63,20 +63,6 @@ namespace Udjat {
 		/// @retval nullptr This worker is unable to handle this path.
 		virtual const char * check_path(const char *path) const noexcept;
 
-		/// @brief Execute request, update response
-		/// @param path The worker path.
-		/// @param request The client request.
-		/// @param response The worker response.
-		/// @return false if the request method was not allowed.
-		// static bool work(const char *path, Request &request, Response &response);
-
-		/// @brief Execute request, update response
-		/// @param path The worker path.
-		/// @param request The client request.
-		/// @param response The worker response.
-		/// @return false if the request method was not allowed.
-		// static bool work(const char *path, Request &request, Report &response);
-
 		virtual Value & getProperties(Value &properties) const;
 
 		/// @brief Get module information.
@@ -87,6 +73,7 @@ namespace Udjat {
 		/// @brief Process only the 'get' method.
 		/// @return false if the request method was not allowed.
 		virtual bool get(Request &request, Response::Value &response) const;
+		virtual bool get(Request &request, Response::Table &response) const;
 
 		/// @brief Process only the 'head' method.
 		/// @return false if the request method was not allowed.
