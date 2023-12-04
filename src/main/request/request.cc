@@ -39,6 +39,46 @@
 		return def;
 	}
 
+	const char * Request::query(const char *def) const {
+		return def;
+	}
+
+	String Request::operator[](const char *name) const {
+
+		String value{getArgument(name,"")};
+		if(!value.empty()) {
+			return value;
+		}
+		return getProperty(name);
+
+	}
+
+	/// @brief Get argument.
+	/// @param name The argument name
+	/// @param def The default value.
+	String Request::getArgument(const char *name, const char *def) const {
+
+		String value{def};
+		size_t szName = strlen(name);
+
+		String{query()}.for_each("&",[&value,szName,name](const String &v){
+
+			if(v.size() > szName) {
+
+				if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
+					value = v.c_str()+szName+1;
+					value.strip();
+					return true;
+				}
+			}
+
+			return false;
+
+		});
+
+		return value;
+	}
+
 	String Request::getProperty(size_t ix, const char *def) const {
 
 		if(*reqpath != '/') {

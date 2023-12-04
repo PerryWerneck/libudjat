@@ -226,6 +226,9 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	File::Path{"/usr/share/icons/gnome/"}.find("*/computer-symbolic.svg",true);
+
+	/*
 	Request request{"/1/2/3/4"};
 
 	for(size_t ix = 1;ix < 5; ix++) {
@@ -233,6 +236,7 @@ int main(int argc, char **argv) {
 		cout << "Arg[" << ix << "]='" << s << "'" << endl;
 		cout << "pop='" << request.pop() << "'" << endl << endl;
 	}
+	*/
 
 	return 0;
 }

@@ -65,6 +65,16 @@
 		/// @retval false The cache must be refreshed.
 		virtual bool cached(const TimeStamp &timestamp) const;
 
+		/// @brief Get query.
+		/// @param def The value to return if the string don have query.
+		/// @return The query value or 'def'.
+		virtual const char * query(const char *def = "") const;
+
+		/// @brief Get argument.
+		/// @param name The argument name
+		/// @param def The default value.
+		virtual String getArgument(const char *name, const char *def = "") const;
+
 		/// @brief Get request property.
 		/// @param name The property name
 		/// @param def The default value.
@@ -75,9 +85,10 @@
 		/// @param def The default value.
 		virtual String getProperty(size_t index, const char *def = "") const;
 
-		inline String operator[](const char *name) const {
-			return getProperty(name);
-		}
+		/// @brief Get argument ou property, first search for argument if not found search for property.
+		/// @param name The argument or property name.
+		/// @return The argument or property, empty if not found.
+		String operator[](const char *name) const;
 
 		inline String operator[](size_t index) const {
 			return getProperty(index);
