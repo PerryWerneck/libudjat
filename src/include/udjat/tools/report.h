@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/defs.h>
  #include <udjat/tools/abstractresponse.h>
+ #include <udjat/tools/value.h>
  #include <string>
  #include <vector>
 
@@ -58,7 +59,7 @@
 			/// @brief Get next column title (close and open row if needed).
 			std::string next();
 
-			Table();
+			Table(const MimeType mimetype = MimeType::custom);
 			void set(const char *column_name, va_list args);
 
 		public:
@@ -81,9 +82,9 @@
 
 			virtual ~Table();
 
-			virtual Table & push_back(const char *str) = 0;
+			virtual Table & push_back(const char *str, Udjat::Value::Type type = Udjat::Value::String) = 0;
 
-			virtual Table & push_back(const std::string &value);
+			virtual Table & push_back(const std::string &value, Udjat::Value::Type type = Udjat::Value::String);
 
 			virtual Table & push_back(const short value);
 			virtual Table & push_back(const unsigned short value);

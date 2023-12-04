@@ -19,13 +19,15 @@
 
  #include <config.h>
  #include <private/request.h>
+ #include <udjat/tools/abstractresponse.h>
+ #include <udjat/tools/report.h>
  #include <cstdarg>
  #include <iomanip>
  #include <sstream>
 
  namespace Udjat {
 
-	Response::Table::Table() {
+	Response::Table::Table(const MimeType mimetype) : Abstract::Response{mimetype} {
 	}
 
 	Response::Table::~Table() {
@@ -91,53 +93,53 @@
 
 	}
 
-	Response::Table & Response::Table::push_back(const std::string &str) {
-		push_back(str.c_str());
+	Response::Table & Response::Table::push_back(const std::string &str, Udjat::Value::Type type) {
+		push_back(str.c_str(),type);
 		return *this;
 	}
 
 	Response::Table & Response::Table::push_back(const short value) {
-		return push_back(std::to_string((int) value));
+		return push_back(std::to_string((int) value),Value::Type::Signed);
 	}
 
 	Response::Table & Response::Table::push_back(const unsigned short value) {
-		return push_back(std::to_string(value));
+		return push_back(std::to_string(value),Value::Type::Unsigned);
 	}
 
 	Response::Table & Response::Table::push_back(const int value) {
-		return push_back(std::to_string(value));
+		return push_back(std::to_string(value),Value::Type::Signed);
 	}
 
 	Response::Table & Response::Table::push_back(const unsigned int value) {
-		return push_back(std::to_string(value));
+		return push_back(std::to_string(value),Value::Type::Unsigned);
 	}
 
 	Response::Table & Response::Table::push_back(const long value) {
-		return push_back(std::to_string(value));
+		return push_back(std::to_string(value),Value::Type::Signed);
 	}
 
 	Response::Table & Response::Table::push_back(const unsigned long value) {
-		return push_back(std::to_string(value));
+		return push_back(std::to_string(value),Value::Type::Unsigned);
 	}
 
 	Response::Table & Response::Table::push_back(const TimeStamp value) {
-		return push_back(value.to_string());
+		return push_back(value.to_string(),Value::Type::Timestamp);
 	}
 
 	Response::Table & Response::Table::push_back(const bool value) {
-		return push_back(value ? 1 : 0);
+		return push_back(value ? "1" : "0",Value::Type::Boolean);
 	}
 
 	Response::Table & Response::Table::push_back(const float value) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(2) << value;
-		return push_back(stream.str());
+		return push_back(stream.str(), Value::Type::Real);
 	}
 
 	Response::Table & Response::Table::push_back(const double value) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(2) << value;
-		return push_back(stream.str());
+		return push_back(stream.str(),Value::Type::Real);
 	}
 
  }
