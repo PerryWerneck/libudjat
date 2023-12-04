@@ -79,14 +79,16 @@
 		return value;
 	}
 
-	String Request::getProperty(size_t ix, const char *def) const {
+	String Request::getProperty(int ix, const char *def) const {
+
+		debug("reqpath='",reqpath,"' ix=",ix," def='",def,"'");
 
 		if(*reqpath != '/') {
 			throw system_error(EINVAL,system_category(),"Request should start with '/' to use indexed parameter");
 		}
 
-		if(!ix) {
-			throw system_error(EINVAL,system_category(),"Request argument index starts with '1'");
+		if(ix < 1) {
+			throw system_error(EINVAL,system_category(),"Request argument index should start with '1'");
 		}
 
 		const char *ptr = reqpath+1;

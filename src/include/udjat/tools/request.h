@@ -83,7 +83,7 @@
 		/// @brief Get request property by index.
 		/// @param index The property index
 		/// @param def The default value.
-		virtual String getProperty(size_t index, const char *def = "") const;
+		virtual String getProperty(int index, const char *def = "") const;
 
 		/// @brief Get argument ou property, first search for argument if not found search for property.
 		/// @param name The argument or property name.
