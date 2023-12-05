@@ -152,13 +152,9 @@
 
 		debug("action='",action,"'");
 
-		if(action.empty()) {
-			return -(errno = ENODATA);
-		}
-
 		va_list args;
 		va_start(args, value);
-		int rc = pop().select(value,args);
+		int rc = action.select(value,args);
 		va_end(args);
 		return rc;
 

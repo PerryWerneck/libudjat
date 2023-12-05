@@ -141,13 +141,13 @@
 		int ix = 1;
 		while(ix < argc) {
 
-			if(String{argv[ix]}.select("-h","--help","/?","-?","/h","help","?",NULL) != -1) {
+			if(String{argv[ix]}.select("-h","--help","/?","-?","/h","help","?",NULL) >= 0) {
 
-				Logger::console(false);
+				Logger::console(true);
 				cout << Logger::Message{ _("Usage:\t{} [options]"), argv[0]} << endl << endl;
 				help(cout);
 				cout << endl << endl;
-				return ECANCELED;
+				return (errno = ECANCELED);
 
 #ifdef _WIN32
 			} else if(argv[ix][0] == '/') {
@@ -239,8 +239,9 @@
 
 		// Parse command line arguments.
 		if(setup(argc,argv,definitions)) {
-			return 0;
+			return -1;
 		}
+		debug("c");
 
 		Logger::redirect();
 		return run(definitions);
