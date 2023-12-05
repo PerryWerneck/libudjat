@@ -30,7 +30,6 @@
 
  namespace Udjat {
 
-	using Response = Udjat::Response::Value;
 	using Report = Udjat::Response::Table;
 
  }
