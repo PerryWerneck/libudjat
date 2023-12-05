@@ -58,6 +58,12 @@
 			return apiver;
 		}
 
+		/// @brief Is the request empty?
+		/// @return True if the request path is empty.
+		inline bool empty() const noexcept {
+			return !(reqpath && *reqpath);
+		}
+
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.
 		/// @return True if the cache can be used.
@@ -133,6 +139,12 @@
 		inline bool operator==(HTTP::Method method) const noexcept {
 			return this->method == method;
 		}
+
+		/// @brief pop() first element from path select it from list.
+		/// @return Index of the selected action or -1 if not found.
+		/// @retval -1 The action is not in the list.
+		/// @see pop()
+		int select(const char *value, ...) noexcept __attribute__ ((sentinel));
 
 		/// @brief Pop one element from path.
 		String pop();

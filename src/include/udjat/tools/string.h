@@ -242,17 +242,26 @@
 		//
 		// Others.
 		//
+
+		/// @brief Test if string is equal value (case insensitive).
+		/// @param str string to compare.
+		/// @return true if the string is equal str (case insensitive).
 		inline bool operator ==(const char * str) const noexcept {
 			return strcasecmp(c_str(),str) == 0;
 		}
 
+		/// @brief Test if string is equal value (case insensitive).
+		/// @param str string to compare.
+		/// @return true if the string is equal str (case insensitive).
 		inline bool operator ==(const std::string & str) const noexcept {
 			return strcasecmp(c_str(),str.c_str()) == 0;
 		}
 
+		int select(const char *value, va_list args) const noexcept;
+
 		/// @brief Test if the string contains one of the elements of a list.
 		/// @return Index of the matched content (-1 if not found).
-		int select(const char *value, ...) __attribute__ ((sentinel));
+		int select(const char *value, ...) const noexcept __attribute__ ((sentinel));
 
 		/// @brief Insert global expander.
 		/// @param method String expander method (returns 'true' if the value was parsed).

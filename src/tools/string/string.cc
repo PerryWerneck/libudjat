@@ -285,12 +285,8 @@
 		return rc;
 	}
 
-	int String::select(const char *value, ...) {
-
+	int String::select(const char *value, va_list args) const noexcept {
 		int index = 0;
-
-		va_list args;
-		va_start(args, value);
 		while(value) {
 
 			if(!strcasecmp(c_str(),value)) {
@@ -301,9 +297,17 @@
 			index++;
 			value = va_arg(args, const char *);
 		}
+		return -1;
+	}
+
+	int String::select(const char *value, ...) const noexcept {
+
+		va_list args;
+		va_start(args, value);
+		int rc = select(value,args);
 		va_end(args);
 
-		return -1;
+		return rc;
 
 	}
 

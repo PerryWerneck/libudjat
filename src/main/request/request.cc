@@ -144,6 +144,21 @@
 		return rc;
 	}
 
+	int Request::select(const char *value, ...) noexcept {
+
+ 		if(reqpath && *reqpath) {
+			va_list args;
+			va_start(args, value);
+			int rc = pop().select(value,args);
+			va_end(args);
+			return rc;
+
+		}
+
+		return -1;
+
+	}
+
 	Request & Request::pop(std::string &value) {
 
 		value = pop();
