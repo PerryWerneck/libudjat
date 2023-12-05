@@ -141,8 +141,9 @@
 		}
 
 		/// @brief pop() first element from path select it from list.
-		/// @return Index of the selected action or -1 if not found.
-		/// @retval -1 The action is not in the list.
+		/// @return Index of the selected action or negative if not found.
+		/// @retval -ENODATA The request is empty.
+		/// @retval -ENOENT The action is not in the list.
 		/// @see pop()
 		int select(const char *value, ...) noexcept __attribute__ ((sentinel));
 

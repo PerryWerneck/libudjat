@@ -286,6 +286,11 @@
 	}
 
 	int String::select(const char *value, va_list args) const noexcept {
+
+		if(empty()) {
+			return -(errno = ENODATA);
+		}
+
 		int index = 0;
 		while(value) {
 
@@ -297,7 +302,7 @@
 			index++;
 			value = va_arg(args, const char *);
 		}
-		return -1;
+		return -(errno = ENOENT);
 	}
 
 	int String::select(const char *value, ...) const noexcept {

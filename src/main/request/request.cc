@@ -121,15 +121,17 @@
 
 		if(!argptr) {
 			rewind();
-			if(*argptr != '/') {
-				throw system_error(EINVAL,system_category(),"Request should start with '/' to pop values");
-			}
+		}
+
+		if(*argptr == '/') {
 			argptr++;
 		}
 
 		if(!*argptr) {
 			return "";
 		}
+
+		debug("-----------[",argptr,"]");
 
 		const char *next = strchr(argptr,'/');
 		if(!next) {
@@ -146,16 +148,19 @@
 
 	int Request::select(const char *value, ...) noexcept {
 
- 		if(reqpath && *reqpath) {
-			va_list args;
-			va_start(args, value);
-			int rc = pop().select(value,args);
-			va_end(args);
-			return rc;
+		String action{pop()};
 
+		debug("action='",action,"'");
+
+		if(action.empty()) {
+			return -(errno = ENODATA);
 		}
 
-		return -1;
+		va_list args;
+		va_start(args, value);
+		int rc = pop().select(value,args);
+		va_end(args);
+		return rc;
 
 	}
 

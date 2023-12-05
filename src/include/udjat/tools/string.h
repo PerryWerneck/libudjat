@@ -257,10 +257,16 @@
 			return strcasecmp(c_str(),str.c_str()) == 0;
 		}
 
+		/// @brief Test if the string contains one of the elements of a list.
+		/// @return Index of the matched content (negative if not found).
+		/// @retval -ENODATA The string is empty.
+		/// @retval -ENOENT The string dont match any of the values.
 		int select(const char *value, va_list args) const noexcept;
 
 		/// @brief Test if the string contains one of the elements of a list.
-		/// @return Index of the matched content (-1 if not found).
+		/// @return Index of the matched content (negative if not found).
+		/// @retval -ENODATA The string is empty.
+		/// @retval -ENOENT The string dont match any of the values.
 		int select(const char *value, ...) const noexcept __attribute__ ((sentinel));
 
 		/// @brief Insert global expander.
