@@ -40,17 +40,23 @@
 			"icon",
 			"name",
 			"label",
+			"state",
 			"summary",
+			"body",
 
 			nullptr
 		);
 
 		for(const auto child : children.agents) {
 
-			response.push_back(child->properties.icon,Value::Icon);
+			auto state = child->state();
+
+			response.push_back(child->icon(),Value::Icon);
 			response.push_back(child->name());
-			response.push_back(child->properties.label);
-			response.push_back(child->properties.summary);
+			response.push_back(child->label());
+			response.push_back(std::to_string(state->level()));
+			response.push_back(child->summary());
+			response.push_back(state->body());
 
 		}
 
