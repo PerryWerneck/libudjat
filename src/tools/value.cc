@@ -26,6 +26,8 @@
  #include <mutex>
  #include <vector>
  #include <ctype.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -178,19 +180,19 @@
 	}
 
 	Value & Value::operator[](const char *) {
-		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+		throw system_error(ENOTSUP,system_category(),_("Cant get itens on this value"));
 	}
 
 	const Value & Value::operator[](const char *name) const {
 		return const_cast<Value *>(this)->operator[](name);
 	}
 
-	Value & Value::append(const Type UDJAT_UNUSED(type)) {
-		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	Value & Value::append(const Type type) {
+		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to append '{}' on this value"),std::to_string(type)});
 	}
 
-	Value & Value::set(const char UDJAT_UNUSED(*value), const Type UDJAT_UNUSED(type)) {
-		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
+	Value & Value::set(const char *value, const Type type) {
+		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to set '{}' as '{}' on this value"),value,std::to_string(type)});
 	}
 
 	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> UDJAT_UNUSED(&call)) const {
