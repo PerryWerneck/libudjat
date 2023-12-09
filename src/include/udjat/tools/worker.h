@@ -57,11 +57,17 @@ namespace Udjat {
 		/// @return The worker for path, exception if not found.
 		static const Worker * find(const char *path);
 
-		/// @brief Test and sanitize request path.
-		/// @param path The URL path.
-		/// @return The path for request or nullptr if the worker cant handle this path.
-		/// @retval nullptr This worker is unable to handle this path.
-		virtual const char * check_path(const char *path) const noexcept;
+		/// @brief Test if the request can run on this worker.
+		/// @param request The request.
+		/// @param response The response.
+		/// @return True if the request was fullfiled, false if not.
+		virtual bool exec(Request &request, Response::Value &response) const;
+		virtual bool exec(Request &request, Response::Table &response) const;
+
+		/// @brief Get worker introspection.
+		/// @param value The object for worker introspection.
+		/// @return true if the value was updated.
+		virtual bool introspect(Udjat::Value &value) const;
 
 		virtual Value & getProperties(Value &properties) const;
 

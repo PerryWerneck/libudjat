@@ -66,39 +66,6 @@
 		return response;
 	}
 
-	/*
-	bool Worker::work(const char *path, Request &request, Response &response) {
-
-		debug("--------------> request.path='",path,"'");
-
-		return Worker::for_each([path,&request,&response](const Worker &worker) {
-
-			if(worker.probe(path)) {
-				worker.work(request,response);
-			}
-
-			return false;
-		});
-
-		return false;
-	}
-
-	bool Worker::work(const char *path, Request &request, Report &response) {
-		debug("--------------> request.path='",path,"'");
-
-		return Worker::for_each([path,&request,&response](const Worker &worker) {
-
-			if(worker.probe(path)) {
-				worker.work(request,response);
-			}
-
-			return false;
-		});
-
-		return false;
-	}
-	*/
-
 	bool Worker::get(Request &, Response::Value &) const {
 		return false;
 	}
@@ -109,6 +76,60 @@
 
 	bool Worker::head(Request &, Response::Value &) const {
 		return false;
+	}
+
+	bool Worker::introspect(Udjat::Value &) const {
+		return false;
+	}
+
+	bool Worker::exec(Request &request, Response::Value &response) const {
+
+		//
+		// Execute legacy worker, with name as the first element of path.
+		//
+		size_t szname = strlen(name);
+
+		// Get request path.
+		const char *path = request.path();
+		if(*path == '/')
+			path++;
+
+		size_t szpath = strlen(path);
+
+		if(szpath < (szname+1) || path[szname] != '/' || strncasecmp(path,name,szname)) {
+			return false;
+		}
+
+		// Found valid request, try to fullfill it.
+		request.rewind().pop(); // Extract my name.
+
+		return work(request, response);
+
+	}
+
+	bool Worker::exec(Request &request, Response::Table &response) const {
+
+		//
+		// Execute legacy worker, with name as the first element of path.
+		//
+		size_t szname = strlen(name);
+
+		// Get request path.
+		const char *path = request.path();
+		if(*path == '/')
+			path++;
+
+		size_t szpath = strlen(path);
+
+		if(szpath < (szname+1) || path[szname] != '/' || strncasecmp(path,name,szname)) {
+			return false;
+		}
+
+		// Found valid request, try to fullfill it.
+		request.rewind().pop(); // Extract my name.
+
+		return work(request, response);
+
 	}
 
 	bool Worker::work(Request &request, Response::Value &response) const {
@@ -142,6 +163,7 @@
 
 	}
 
+	/*
 	const char * Worker::check_path(const char *path) const noexcept {
 
 		if(!name && *name) {
@@ -171,6 +193,7 @@
 		debug("Using path '",path,"' on worker ",name);
 		return path;
 	}
+	*/
 
 	std::ostream & Worker::info() const {
 		return cout << name << "\t";

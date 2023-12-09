@@ -29,25 +29,13 @@
  #include <udjat/tools/report.h>
  #include <udjat/tools/worker.h>
  #include <stdexcept>
+ #include <private/worker.h>
 
  using namespace std;
 
  namespace Udjat {
 
- 	bool Request::exec(const char *name, Response::Value &response, bool required) {
-		if(required) {
-			throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",name,"'"});
-		}
-		return false;
- 	}
-
- 	bool Request::exec(const char *name, Response::Table &response, bool required) {
-		if(required) {
-			throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",name,"'"});
-		}
-		return false;
- 	}
-
+	/*
 	bool Request::exec(Response::Value &response, bool required) {
 
 		const char *saved_path = reqpath;
@@ -94,7 +82,9 @@
 		}
 
 	}
+	*/
 
+	/*
 	bool Request::exec(Response::Table &response, bool required) {
 
 		const char *saved_path = reqpath;
@@ -141,5 +131,6 @@
 		}
 
 	}
+	*/
 
  }

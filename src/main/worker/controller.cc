@@ -49,6 +49,19 @@
 
 	}
 
+	/*
+	bool Worker::Controller::exec(Request &request, Response::Value &response) {
+
+		for(const Worker * worker : workers) {
+			if(worker->exec(request,response)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+	*/
+
 	void Worker::Controller::insert(const Worker *worker) {
 		lock_guard<recursive_mutex> lock(guard);
 		Logger::String("Adding '",worker->name,"' (",worker->module.description,")").trace("workers");
