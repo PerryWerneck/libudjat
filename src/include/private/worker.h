@@ -49,6 +49,16 @@
 
 		bool for_each(const std::function<bool(const Worker &worker)> &func);
 
+		template <typename T>
+		inline bool exec(Request &request, T &response) {
+			for(const Worker * worker : workers) {
+				if(worker->exec(request,response)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 	};
 
  }

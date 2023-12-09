@@ -28,11 +28,13 @@
 
 namespace Udjat {
 
+	UDJAT_API bool exec(Request &request, Response::Value &response);
+	UDJAT_API bool exec(Request &request, Response::Table &response);
+	UDJAT_API bool introspect(Udjat::Value &value);
+
 	class UDJAT_API Worker {
 	private:
 		const char * name = "";
-		class Controller;
-		friend class Controller;
 
 	protected:
 
@@ -40,6 +42,9 @@ namespace Udjat {
 		const ModuleInfo &module;
 
 	public:
+		class Controller;
+		friend class Controller;
+
 		Worker(const char *name, const ModuleInfo &info);
 
 		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {

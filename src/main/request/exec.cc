@@ -35,6 +35,30 @@
 
  namespace Udjat {
 
+	UDJAT_API bool exec(Request &request, Response::Value &response) {
+		return Worker::Controller::getInstance().exec<Response::Value>(request,response);
+	}
+
+	UDJAT_API bool exec(Request &request, Response::Table &response) {
+		return Worker::Controller::getInstance().exec<Response::Table>(request,response);
+	}
+
+	UDJAT_API bool introspect(Udjat::Value &value) {
+
+		// TODO: Pending implementation.
+		return false;
+
+		/*
+		bool rc = false;
+		Worker::for_each([&value,&rc](const Worker &worker){
+
+			return false;
+		});
+
+		return rc;
+		*/
+	}
+
 	/*
 	bool Request::exec(Response::Value &response, bool required) {
 
