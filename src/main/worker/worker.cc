@@ -94,16 +94,22 @@
 		if(*path == '/')
 			path++;
 
+		debug("path='",path,"'");
+
 		size_t szpath = strlen(path);
 
-		if(szpath < (szname+1) || path[szname] != '/' || strncasecmp(path,name,szname)) {
-			return false;
+		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
+
+			// Found valid worker, try to fullfill the request.
+			debug("-----------------------------------------------");
+			debug("Worker '",name,"' accepted '",path,"'");
+			request.rewind().pop(); // Extract my name.
+			return work(request, response);
+
 		}
 
-		// Found valid request, try to fullfill it.
-		request.rewind().pop(); // Extract my name.
-
-		return work(request, response);
+		debug("Worker '",name,"' rejected '",path,"'");
+		return false;
 
 	}
 

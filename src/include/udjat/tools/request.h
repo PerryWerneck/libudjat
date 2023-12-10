@@ -118,8 +118,11 @@
 			return this->method;
 		}
 
+		/// @brief Get current request path (after 'pop()').
+		/// @see pop()
+		/// @return The path remaining after 'pop()' calls.
 		inline const char * path() const noexcept {
-			return this->reqpath;
+			return this->argptr;
 		}
 
 		inline bool operator==(HTTP::Method method) const noexcept {
@@ -134,6 +137,8 @@
 		int select(const char *value, ...) noexcept __attribute__ ((sentinel));
 
 		/// @brief Pop one element from path.
+		/// @return The first element from current path.
+		/// @see path()
 		String pop();
 
 		Request & pop(std::string &value);

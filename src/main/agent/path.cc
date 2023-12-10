@@ -77,7 +77,7 @@
 
 		debug("ME='",name(),"' path='",path,"'");
 
-		if(!*path) {
+		if(!(path && *path)) {
 			getProperties(value);
 			return true;
 		}
