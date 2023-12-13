@@ -34,7 +34,9 @@
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {
-		std::string::append(str);
+		if(str) {
+			std::string::append(str);
+		}
 	}
 
 	void String::append(const bool value) {

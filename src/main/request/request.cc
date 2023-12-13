@@ -146,6 +146,35 @@
 		return rc;
 	}
 
+	const char * Request::path() const noexcept {
+		return argptr ? argptr : reqpath;
+	}
+
+	bool Request::operator==(const char *path) const noexcept {
+
+		if(*path == '/') {
+			path++;
+		}
+
+		const char *arg = argptr ? argptr : reqpath;
+		if(*arg == '/') {
+			arg++;
+		}
+
+		size_t szarg = strlen(argptr);
+		size_t szpath = strlen(path);
+
+		if(szarg < szpath) {
+			return false;
+		}
+
+		if(szarg > szpath) {
+			return strncasecmp(arg,path,szpath) == 0 && path[szarg] == '/';
+		}
+
+		return strcasecmp(arg,path) == 0;
+	}
+
 	int Request::select(const char *value, ...) noexcept {
 
 		String action{pop()};

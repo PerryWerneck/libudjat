@@ -121,13 +121,14 @@
 		/// @brief Get current request path (after 'pop()').
 		/// @see pop()
 		/// @return The path remaining after 'pop()' calls.
-		inline const char * path() const noexcept {
-			return this->argptr;
-		}
+		const char * path() const noexcept;
 
 		inline bool operator==(HTTP::Method method) const noexcept {
 			return this->method == method;
 		}
+
+		/// @brief Test if current path is equal path();
+		bool operator==(const char *path) const noexcept;
 
 		/// @brief pop() first element from path select it from list.
 		/// @return Index of the selected action or negative if not found.
