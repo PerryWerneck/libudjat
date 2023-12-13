@@ -337,6 +337,12 @@
 		return rc;
 	}
 
+	std::string Value::to_string(const char *def) const {
+		if(isNull()) {
+			return def;
+		}
+		return to_string();
+	}
 
 	unsigned int Value::as_uint() const {
 		unsigned int rc;

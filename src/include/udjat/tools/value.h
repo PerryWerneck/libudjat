@@ -146,6 +146,7 @@
 		virtual const Value & get(double &value) const;
 
 		std::string to_string() const;
+		std::string to_string(const char *def) const;
 
 		inline std::string as_string() const {
 			return to_string();
