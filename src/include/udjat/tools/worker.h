@@ -74,6 +74,12 @@ namespace Udjat {
 		/// @return true if the value was updated.
 		virtual bool introspect(Udjat::Value &value) const;
 
+		/// @brief Get generic worker data, for example, the favicon.
+		/// @param name The property name.
+		/// @param value The response.
+		/// @return true if the value was set.
+		virtual bool getProperty(const char *name, Value &property) const;
+
 		virtual Value & getProperties(Value &properties) const;
 
 		/// @brief Get module information.

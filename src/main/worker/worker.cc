@@ -46,6 +46,10 @@
 		return module.getProperties(properties);
 	}
 
+	bool Worker::getProperty(const char *, Value &) const {
+		return false;
+	}
+
 	const Worker * Worker::find(const char *name) {
 
 		const Worker *response = nullptr;
