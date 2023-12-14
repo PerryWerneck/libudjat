@@ -40,6 +40,15 @@
 
 #ifdef _WIN32
 
+	Script::Script(const XML::Node &node, const char *msg)
+		: 	NamedObject{node},
+			cmdline{Quark(node,"cmdline","").c_str()},
+			title{Quark(node,"title",msg).c_str()} {
+		if(!(cmdline && *cmdline)) {
+			throw runtime_error(_("The required attribute 'cmdline' is missing"));
+		}
+	}
+
 	// TODO
 	int Script::run(const char *cmdline) const {
 
