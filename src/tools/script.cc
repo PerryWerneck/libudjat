@@ -42,6 +42,9 @@
 
 	// TODO
 	int Script::run(const char *cmdline) const {
+
+		// https://learn.microsoft.com/en-us/windows/win32/procthread/child-processes
+
 		throw system_error(ENOTSUP,system_category(),"Cant run scripts in windows");
 	}
 
