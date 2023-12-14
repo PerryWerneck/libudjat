@@ -45,6 +45,7 @@ BuildRequires:	mingw64-gettext-tools
 BuildRequires:	mingw64(pkg:pugixml)
 BuildRequires:	mingw64(pkg:vmdetect)
 BuildRequires:	mingw64(lib:intl)
+BuildRequires:	mingw64-win_iconv-devel-static
 
 BuildRequires:	fdupes
 
@@ -140,6 +141,9 @@ mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/
 
 %dir %{_mingw64_includedir}/udjat/tools/http
 %{_mingw64_includedir}/udjat/tools/http/*.h
+
+%dir %{_mingw64_includedir}/udjat/tools/file
+%{_mingw64_includedir}/udjat/tools/file/*.h
 
 %dir %{_mingw64_includedir}/udjat/net
 %{_mingw64_includedir}/udjat/net/*.h
