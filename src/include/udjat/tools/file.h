@@ -185,6 +185,9 @@ namespace Udjat {
 			/// @brief Recursive remove of files.
 			void remove(bool force = false);
 
+			/// @brief Load file.
+			String load() const;
+
 			/// @brief Save file.
 			static void save(const char *filename, const char *contents);
 

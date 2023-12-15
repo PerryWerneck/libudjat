@@ -175,6 +175,12 @@
 		File::copy(c_str(),writer);
 	}
 
+	String File::Path::load() const {
+
+		throw system_error(ENOTSUP,system_category());
+
+	}
+
 	void File::Path::save(const char *filename, const char *contents) {
 
 		// Get file information.
