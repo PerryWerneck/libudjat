@@ -176,9 +176,7 @@
 	}
 
 	String File::Path::load() const {
-
-		throw system_error(ENOTSUP,system_category());
-
+		return File::Text(c_str()).c_str();
 	}
 
 	void File::Path::save(const char *filename, const char *contents) {
