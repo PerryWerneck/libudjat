@@ -70,6 +70,9 @@
 	{ "xhtml",	"application/xhtml+xml" },
 	{ "zip",	"application/zip" },
 
+	// Form parser
+	{ "form-urlencoded",	"x-www-form-urlencoded" },
+
  };
 
  const char * std::to_string(const Udjat::MimeType type, bool suffix) {

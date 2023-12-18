@@ -56,6 +56,7 @@
 		rtf,					///> @brief application/rtf
 		xhtml,					///> @brief application/xhtml+xml
 		zip,					///> @brief application/zip
+		form_urlencoded,		///> @brief application/x-www-form-urlencoded
 
 	};
 
