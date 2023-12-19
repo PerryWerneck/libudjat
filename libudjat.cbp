@@ -391,6 +391,7 @@
 		<Unit filename="src/tools/value/csv.cc" />
 		<Unit filename="src/tools/value/html.cc" />
 		<Unit filename="src/tools/value/json.cc" />
+		<Unit filename="src/tools/value/sh.cc" />
 		<Unit filename="src/tools/value/xml.cc" />
 		<Unit filename="src/tools/value/yaml.cc" />
 		<Unit filename="src/tools/xml/attribute.cc" />

@@ -350,6 +350,10 @@
 			to_yaml(out);
 			break;
 
+		case MimeType::sh:
+			to_sh(out);
+			break;
+
 		default:
 			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
 		}

@@ -46,6 +46,29 @@
 
 	}
 
+	void Response::Value::serialize(std::ostream &stream, const MimeType mimetype) const {
+
+		if(mimetype == Udjat::MimeType::xml) {
+			// Format as XML
+			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response";
+
+			if(modification) {
+				stream << " timestamp='" << modification.to_string() << "'";
+			}
+
+			if(expiration) {
+				stream << " expires='" << expiration.to_string() << "'";
+			}
+
+			stream << ">";
+			to_xml(stream);
+			stream << "</response>";
+		} else {
+			Value::serialize(stream,mimetype);
+		}
+
+	}
+
 	Response::Value::operator Value::Type() const noexcept {
 		return Value::Object;
 	}

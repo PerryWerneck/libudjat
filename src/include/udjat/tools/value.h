@@ -150,12 +150,13 @@
 		std::string to_string(const char *def) const;
 		std::string to_string(const MimeType mimetype) const;
 
-		void serialize(std::ostream &out, const MimeType mimetype = MimeType::json) const;
+		virtual void serialize(std::ostream &out, const MimeType mimetype = MimeType::json) const;
 
 		void to_json(std::ostream &out) const;
 		void to_xml(std::ostream &out) const;
 		void to_html(std::ostream &out) const;
 		void to_yaml(std::ostream &out, size_t left_margin = 0) const;
+		void to_sh(std::ostream &stream) const;
 
 		/// @brief Serialize arrays to csv
 		void to_csv(std::ostream &out, char delimiter = ',') const;
