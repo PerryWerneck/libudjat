@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -226,7 +226,7 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	File::Path{"/usr/share/icons/gnome/"}.find("*/computer-symbolic.svg",true);
+	// File::Path{"/usr/share/icons/gnome/"}.find("*/computer-symbolic.svg",true);
 
 	/*
 	Request request{"/1/2/3/4"};
@@ -237,6 +237,13 @@ int main(int argc, char **argv) {
 		cout << "pop='" << request.pop() << "'" << endl << endl;
 	}
 	*/
+
+	{
+		String text{"+Hello cruel world+/How are you today?"};
+
+		cout << "Escaped:   '" << text.escape() << "'" << endl;
+		cout << "Unescaped: '" << text.unescape() << "'" << endl;
+	}
 
 	return 0;
 }

@@ -55,6 +55,44 @@
 		return *this;
 	}
 
+	Udjat::String & Udjat::String::escape(char marker) {
+
+		size_t maxlen = size()*4;
+		char * buffer = new char[maxlen+4];
+		char * dst = buffer;
+		const char *src = c_str();
+
+		size_t index = 0;
+		while(*src) {
+
+			if(index >= maxlen) {
+				delete[] buffer;
+				throw std::logic_error("Escaped string is bigger than expected");
+			}
+
+			if(isalnum(*src) && *src != marker) {
+
+				dst[index++] = *(src++);
+
+			} else {
+				dst[index++] = marker;
+
+				char hexvalue[4];
+				snprintf(hexvalue,3,"%02X",(unsigned int) *(src++));
+				dst[index++] = hexvalue[0];
+				dst[index++] = hexvalue[1];
+
+			}
+
+		}
+		dst[index] = 0;
+		assign(buffer);
+		delete[] buffer;
+
+		return *this;
+
+	}
+
 	Udjat::String & Udjat::String::unescape(char marker) {
 
 		char * buffer = new char[size()+1];

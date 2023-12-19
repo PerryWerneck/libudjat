@@ -293,6 +293,7 @@
 		String & expand(char marker, bool dynamic = true, bool cleanup = true);
 
 		String & unescape(char marker = '%');
+		String & escape(char marker = '%');
 
 		/// @brief Expand using customized marker.
 		/// @param marker The marker.
