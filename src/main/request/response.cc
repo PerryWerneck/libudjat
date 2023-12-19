@@ -46,6 +46,14 @@
 
 	}
 
+	std::string Response::Value::to_string() const {
+		return Udjat::Value::to_string(mimetype);
+	}
+
+	void Response::Value::serialize(std::ostream &stream) const {
+		serialize(stream,this->mimetype);
+	}
+
 	void Response::Value::serialize(std::ostream &stream, const MimeType mimetype) const {
 
 		if(mimetype == Udjat::MimeType::xml) {

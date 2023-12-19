@@ -38,7 +38,10 @@
 			Udjat::Value & reset(const Udjat::Value::Type type) override;
 			Udjat::Value & set(const Udjat::Value &value) override;
 
-			void serialize(std::ostream &out, const MimeType mimetype = MimeType::json) const override;
+			void serialize(std::ostream &out) const;
+			void serialize(std::ostream &out, const MimeType mimetype) const override;
+
+			std::string to_string() const;
 
 		};
 
@@ -46,3 +49,14 @@
 
  }
 
+ namespace std {
+
+	inline string to_string(const Udjat::Response::Value &response) noexcept {
+		return response.to_string();
+	}
+
+	inline ostream & operator<< (ostream& os, const Udjat::Response::Value &response) {
+		return os << response.to_string();
+	}
+
+ }
