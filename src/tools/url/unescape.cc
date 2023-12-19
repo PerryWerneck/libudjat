@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/protocol.h>
+ #include <udjat/tools/string.h>
  #include <cstring>
 
  namespace Udjat {
@@ -51,6 +52,52 @@
 
 	URL & URL::unescape() {
 		std::string::assign(unescape(c_str()));
+		return *this;
+	}
+
+	Udjat::String & Udjat::String::unescape(char marker) {
+
+		char * buffer = new char[size()+1];
+		char * dst = buffer;
+		const char *src = c_str();
+
+		try {
+
+			while(*src) {
+
+				if(*src == marker) {
+
+					if(src[1] && src[2]) {
+
+						*(dst++) = (char) unescape_character(++src);
+						src += 2;
+
+					} else {
+
+						throw runtime_error("Unexpected escape sequence");
+
+					}
+
+				} else {
+
+					*(dst++) = *(src++);
+
+				}
+
+			}
+
+			*dst = 0;
+
+		} catch(...) {
+
+			delete[] buffer;
+			throw;
+
+		}
+
+		assign(buffer);
+		delete[] buffer;
+
 		return *this;
 	}
 

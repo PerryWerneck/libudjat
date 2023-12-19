@@ -292,6 +292,8 @@
 		/// @brief Expand using customized marker.
 		String & expand(char marker, bool dynamic = true, bool cleanup = true);
 
+		String & unescape(char marker = '%');
+
 		/// @brief Expand using customized marker.
 		/// @param marker The marker.
 		/// @param object the object to search for properties.
