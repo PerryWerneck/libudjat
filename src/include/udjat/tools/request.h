@@ -64,6 +64,10 @@
 			return !(reqpath && *reqpath);
 		}
 
+		/// @brief Is this request authenticated?
+		/// @return True if the request has user credentials.
+		virtual bool authenticated() const noexcept;
+
 		/// @brief Check the cache state.
 		/// @param timestamp Current response timestamp.
 		/// @return True if the cache can be used.

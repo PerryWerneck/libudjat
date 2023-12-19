@@ -43,6 +43,10 @@
 		return def;
 	}
 
+	bool Request::authenticated() const noexcept {
+		return false;
+	}
+
 	String Request::operator[](const char *name) const {
 
 		String value{getArgument(name,"")};
