@@ -387,6 +387,11 @@
 		<Unit filename="src/tools/url/watcher.cc" />
 		<Unit filename="src/tools/url/worker.cc" />
 		<Unit filename="src/tools/value.cc" />
+		<Unit filename="src/tools/value/abstract.cc" />
+		<Unit filename="src/tools/value/html.cc" />
+		<Unit filename="src/tools/value/json.cc" />
+		<Unit filename="src/tools/value/xml.cc" />
+		<Unit filename="src/tools/value/yaml.cc" />
 		<Unit filename="src/tools/xml/attribute.cc" />
 		<Unit filename="src/tools/xml/document.cc" />
 		<Unit filename="src/tools/xml/misc.cc" />

@@ -331,6 +331,31 @@
 		return *this;
 	}
 
+	void Value::serialize(std::ostream &out, const MimeType mimetype) const {
+
+		switch(mimetype) {
+		case MimeType::html:
+			to_html(out);
+			break;
+
+		case MimeType::json:
+			to_json(out);
+			break;
+
+		case MimeType::xml:
+			to_xml(out);
+			break;
+
+		case MimeType::yaml:
+			to_yaml(out);
+			break;
+
+		default:
+			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
+		}
+
+	}
+
 	std::string Value::to_string() const {
 		std::string rc;
 		get(rc);
