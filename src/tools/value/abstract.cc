@@ -362,6 +362,12 @@
 		return rc;
 	}
 
+	std::string Value::to_string(const MimeType mimetype) const {
+		stringstream stream;
+		serialize(stream,mimetype);
+		return stream.str();
+	}
+
 	std::string Value::to_string(const char *def) const {
 		if(isNull()) {
 			return def;

@@ -148,6 +148,7 @@
 
 		std::string to_string() const;
 		std::string to_string(const char *def) const;
+		std::string to_string(const MimeType mimetype) const;
 
 		void serialize(std::ostream &out, const MimeType mimetype = MimeType::json) const;
 
