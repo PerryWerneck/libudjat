@@ -156,6 +156,9 @@
 		void to_html(std::ostream &out) const;
 		void to_yaml(std::ostream &out, size_t left_margin = 0) const;
 
+		/// @brief Serialize arrays to csv
+		void to_csv(std::ostream &out, char delimiter = ',') const;
+
 		inline std::string as_string() const {
 			return to_string();
 		}
