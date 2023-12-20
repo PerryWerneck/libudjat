@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/abstractresponse.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <string>
  #include <vector>
 
@@ -62,6 +63,8 @@
 			Table(const MimeType mimetype = MimeType::custom);
 			void set(const char *column_name, va_list args);
 
+			virtual void for_each(const std::function<void(const Value::Type type, const char *value)> &func) const = 0;
+
 		public:
 
 			/// @brief Set report title.
@@ -69,6 +72,8 @@
 			inline void caption(const char *value) noexcept {
 				info.caption = value;
 			}
+
+			virtual bool empty() const = 0;
 
 			/// @brief Open report, define column names.
 			/// @param name	Report	name.
@@ -79,6 +84,12 @@
 			/// @brief Open report, define column names.
 			/// @param column_names	The column names.
 			void start(const std::vector<std::string> &column_names);
+
+			void serialize(std::ostream &out) const;
+			void serialize(std::ostream &out, const MimeType mimetype) const;
+
+			std::string to_string() const;
+			std::string to_string(const MimeType mimetype) const;
 
 			virtual ~Table();
 
@@ -117,6 +128,14 @@
 	template <typename T>
 	inline Udjat::Response::Table & operator<<(Udjat::Response::Table &out, T value) {
 		return out.push_back(value);
+	}
+
+	inline string to_string(const Udjat::Response::Table &response) noexcept {
+		return response.to_string();
+	}
+
+	inline ostream & operator<< (ostream& os, const Udjat::Response::Table &response) {
+		return os << response.to_string();
 	}
 
  }

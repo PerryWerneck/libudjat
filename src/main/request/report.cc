@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/request.h>
  #include <udjat/tools/abstractresponse.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/report.h>
  #include <cstdarg>
  #include <iomanip>
@@ -31,6 +32,192 @@
 	}
 
 	Response::Table::~Table() {
+	}
+
+	void Response::Table::serialize(std::ostream &out) const {
+		serialize(out,mimetype);
+	}
+
+	std::string Response::Table::to_string() const {
+		return to_string(mimetype);
+	}
+
+	std::string Response::Table::to_string(const MimeType mimetype) const {
+		std::stringstream out;
+		serialize(out,mimetype);
+		return out.str();
+	}
+
+	void Response::Table::serialize(std::ostream &stream, const MimeType mimetype) const {
+
+		switch(mimetype) {
+		case MimeType::xml:
+			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response";
+
+			if(modification) {
+				stream << " timestamp='" << modification.to_string() << "'";
+			}
+
+			if(expiration) {
+				stream << " expires='" << expiration.to_string() << "'";
+			}
+
+			stream << ">";
+
+			if(!info.caption.empty()) {
+				stream << "<caption>" << info.caption << "</caption>";
+			}
+
+			if(empty()) {
+
+				stream << "<contents />";
+
+			} else {
+
+				stream << "<contents><item>";
+
+				auto column = columns.names.begin();
+				for_each([this, &stream, &column](const Value::Type, const char *value){
+
+					if(column == columns.names.end()) {
+						stream << "</item><item>";
+						column = columns.names.begin();
+					}
+					stream << "<" << *column << ">" << value << "</" << *column << ">";
+					column++;
+
+				});
+
+				stream << "</item></contents>";
+			}
+
+			stream << "</response>";
+			break;
+
+		case Udjat::MimeType::json:
+			{
+
+				stream << "[{";
+
+				bool sep = false;
+				auto column = columns.names.begin();
+				for_each([this, &stream, &column,&sep](const Value::Type type, const char *value){
+
+					if(column == columns.names.end()) {
+						stream << "},{";
+						column = columns.names.begin();
+						sep = false;
+					}
+
+					if(sep) {
+						stream << ',';
+					}
+					sep = true;
+
+					stream << "\"" << column->c_str() << "\":";
+
+					switch(type) {
+					case Value::Undefined:
+					case Value::Array:
+					case Value::Object:
+						stream << "false";
+						break;
+
+					case Value::Signed:
+					case Value::Unsigned:
+					case Value::Real:
+					case Value::Fraction:
+						stream << value;
+						break;
+
+					default:
+						stream << "\"" << value << "\"";
+
+					}
+
+					stream << endl;
+					column++;
+
+				});
+
+				stream << "}]";
+
+			}
+			break;
+		/*
+		case Udjat::MimeType::html:
+			{
+				ss << "<table><thead>";
+
+				if(!info.caption.empty()) {
+					ss << "<caption>" << info.caption << "</caption>";
+				}
+
+				ss << "<tr>";
+
+				for(auto column : columns.names) {
+					ss << "<th>" << column << "</th>";
+				}
+
+				ss << "</tr></thead><tbody><tr>";
+
+				auto column = columns.names.begin();
+				for(auto value : values) {
+					if(column == columns.names.end()) {
+						ss << "</tr><tr>";
+						column = columns.names.begin();
+					}
+					ss << "<td>" << value.to_string() << "</td>";
+					column++;
+				}
+
+				ss << "</tr></tbody></table>";
+			}
+			break;
+
+		case Udjat::MimeType::csv:
+			{
+				bool sep{false};
+				for(auto column : columns.names) {
+					if(sep) {
+						ss << ",";
+					}
+					sep = true;
+					ss << column;
+				}
+				ss << endl;
+
+				sep = false;
+
+				auto column = columns.names.begin();
+				for(auto value : values) {
+					if(column == columns.names.end()) {
+						ss << endl;
+						sep = false;
+					}
+					if(sep) {
+						ss << ",";
+					}
+					sep = true;
+
+					if(value == Udjat::Value::Signed || value == Udjat::Value::Unsigned || value == Udjat::Value::Real || value == Udjat::Value::Boolean || value == Udjat::Value::Fraction) {
+						ss << value.to_string();
+					} else {
+						ss << "\"" << value.to_string() << "\"";
+					}
+
+					column++;
+				}
+
+				ss << endl;
+			}
+			break;
+		*/
+
+		default:
+			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
+		}
+
 	}
 
 	void Response::Table::start(const char *column_name, ...) {
