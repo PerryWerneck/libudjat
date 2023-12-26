@@ -238,11 +238,20 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		String text{"+Hello cruel world+/How are you today?"};
 
 		cout << "Escaped:   '" << text.escape() << "'" << endl;
 		cout << "Unescaped: '" << text.unescape() << "'" << endl;
+	}
+	*/
+
+	{
+		enum Test{ v1, v2, v3 };
+
+		Udjat::Agent<Test> ag{"test",v1};
+
 	}
 
 	return 0;

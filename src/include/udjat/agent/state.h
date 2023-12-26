@@ -45,6 +45,7 @@
 #include <cstring>
 #include <ostream>
 #include <udjat/agent/level.h>
+#include <udjat/tools/converters.h>
 
 namespace Udjat {
 
@@ -226,14 +227,11 @@ namespace Udjat {
 				: Abstract::State(name,level,summary,body), from(f),to(t) { }
 
 		State(const char *name, const T value, const Level level, const char *summary = "", const char *body = "")
-				: Abstract::State(name,level,summary,body), from(value),to(value) { }
+				: Abstract::State{name,level,summary,body}, from{value},to{value} { }
 
-		State(const pugi::xml_node &node) : Abstract::State{node} {
-			XML::parse(node,from,to);
-		}
-
-		State(const pugi::xml_node &node, T value) : Abstract::State{node}, from{value}, to{value} {
-			from = to = value;
+		State(const pugi::xml_node &node, const T v = (T) 0) : Abstract::State{node}, from{(T) to_value(node, v)}, to{(T) to_value(node, v)} {
+			from = (T) to_value(node,from,"from");
+			to = (T) to_value(node,to,"to");
 		}
 
 		State(const pugi::xml_node &node, T from_value, T to_value) : Abstract::State{node}, from{from_value}, to{to_value} {

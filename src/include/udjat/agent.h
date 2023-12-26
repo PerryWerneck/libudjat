@@ -74,7 +74,7 @@
 
 	public:
 
-		Agent(const XML::Node &node, const T v = 0) : Abstract::Agent{node}, value{to_value(node, v)} {
+		Agent(const XML::Node &node, const T v = 0) : Abstract::Agent{node}, value{(T) to_value(node, v)} {
 		}
 
 		Agent(const char *name = "") : Abstract::Agent{name}, value{0} {
@@ -93,7 +93,7 @@
 		}
 
 		bool assign(const char *value) override {
-			return set(to_value(value,this->value));
+			return set((T) to_value(value,this->value));
 		}
 
 		inline bool operator ==(const T value) const noexcept {

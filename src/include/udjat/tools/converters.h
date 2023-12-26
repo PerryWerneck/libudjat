@@ -25,72 +25,72 @@
 
  namespace Udjat {
 
-	inline int to_value(const char *str, const int value) {
+	inline int to_value(const char *str, const int) {
 		return std::stoi(str);
 	}
 
-	inline unsigned int to_value(const char *str, const unsigned int value) {
+	inline unsigned int to_value(const char *str, const unsigned int) {
 		return (unsigned int) std::stoul(str);
 	}
 
-	inline short to_value(const char *str, const short value) {
+	inline short to_value(const char *str, const short) {
 		return (short) std::stoi(str);
 	}
 
-	inline unsigned short to_value(const char *str, const unsigned short value) {
+	inline unsigned short to_value(const char *str, const unsigned short) {
 		return (unsigned short) std::stoi(str);
 	}
 
-	inline long to_value(const char *str, const long value) {
+	inline long to_value(const char *str, const long) {
 		return std::stol(str);
 	}
 
-	inline unsigned long to_value(const char *str, const unsigned long value) {
+	inline unsigned long to_value(const char *str, const unsigned long) {
 		return std::stoul(str);
 	}
 
-	inline long long to_value(const char *str, const long long value) {
+	inline long long to_value(const char *str, const long long) {
 		return std::stoll(str);
 	}
 
-	inline unsigned long long to_value(const char *str, const unsigned long long value) {
+	inline unsigned long long to_value(const char *str, const unsigned long long) {
 		return std::stoull(str);
 	}
 
-	inline float to_value(const char *str, const float value) {
+	inline float to_value(const char *str, const float) {
 		return std::stof(str);
 	}
 
-	inline double to_value(const char *str, const double value) {
+	inline double to_value(const char *str, const double) {
 		return std::stod(str);
 	}
 
-	inline int to_value(const pugi::xml_node &node, const int value) {
-		return node.attribute("value").as_int(value);
+	inline int to_value(const pugi::xml_node &node, const int value, const char *attrname = "value") {
+		return node.attribute(attrname).as_int(value);
 	}
 
-	inline unsigned int to_value(const pugi::xml_node &node, const unsigned int value) {
-		return node.attribute("value").as_uint(value);
+	inline unsigned int to_value(const pugi::xml_node &node, const unsigned int value, const char *attrname = "value") {
+		return node.attribute(attrname).as_uint(value);
 	}
 
-	inline unsigned short to_value(const pugi::xml_node &node, const unsigned short value) {
-		return (unsigned short) node.attribute("value").as_int(value);
+	inline unsigned short to_value(const pugi::xml_node &node, const unsigned short value, const char *attrname = "value") {
+		return (unsigned short) node.attribute(attrname).as_int(value);
 	}
 
-	inline float to_value(const pugi::xml_node &node, const float value) {
-		return node.attribute("value").as_float(value);
+	inline float to_value(const pugi::xml_node &node, const float value, const char *attrname = "value") {
+		return node.attribute(attrname).as_float(value);
 	}
 
-	inline double to_value(const pugi::xml_node &node, const double value) {
-		return node.attribute("value").as_double(value);
+	inline double to_value(const pugi::xml_node &node, const double value, const char *attrname = "value") {
+		return node.attribute(attrname).as_double(value);
 	}
 
-	inline unsigned long to_value(const pugi::xml_node &node, const unsigned long value) {
-		return (unsigned long) node.attribute("value").as_uint(value);
+	inline unsigned long to_value(const pugi::xml_node &node, const unsigned long value, const char *attrname = "value") {
+		return (unsigned long) node.attribute(attrname).as_uint(value);
 	}
 
-	inline long to_value(const pugi::xml_node &node, const long value) {
-		return (long) node.attribute("value").as_int(value);
+	inline long to_value(const pugi::xml_node &node, const long value, const char *attrname = "value") {
+		return (long) node.attribute(attrname).as_int(value);
 	}
 
  }
