@@ -25,44 +25,44 @@
 
  namespace Udjat {
 
-	inline int to_value(const char *str, int &value) {
-		return (value = std::stoi(str));
+	inline int to_value(const char *str, const int value) {
+		return std::stoi(str);
 	}
 
-	inline unsigned int to_value(const char *str, unsigned int &value) {
-		return (value = (unsigned int) std::stoul(str));
+	inline unsigned int to_value(const char *str, const unsigned int value) {
+		return (unsigned int) std::stoul(str);
 	}
 
-	inline short to_value(const char *str, short &value) {
-		return (value = (short) std::stoi(str));
+	inline short to_value(const char *str, const short value) {
+		return (short) std::stoi(str);
 	}
 
-	inline unsigned short to_value(const char *str, unsigned short &value) {
-		return (value = (unsigned short) std::stoi(str));
+	inline unsigned short to_value(const char *str, const unsigned short value) {
+		return (unsigned short) std::stoi(str);
 	}
 
-	inline long to_value(const char *str, long &value) {
-		return (value = std::stol(str));
+	inline long to_value(const char *str, const long value) {
+		return std::stol(str);
 	}
 
-	inline unsigned long to_value(const char *str, unsigned long &value) {
-		return (value = std::stoul(str));
+	inline unsigned long to_value(const char *str, const unsigned long value) {
+		return std::stoul(str);
 	}
 
-	inline long long to_value(const char *str, long long &value) {
-		return (value = std::stoll(str));
+	inline long long to_value(const char *str, const long long value) {
+		return std::stoll(str);
 	}
 
-	inline unsigned long long to_value(const char *str, unsigned long long &value) {
-		return (value = std::stoull(str));
+	inline unsigned long long to_value(const char *str, const unsigned long long value) {
+		return std::stoull(str);
 	}
 
-	inline float to_value(const char *str, float &value) {
-		return (value = std::stof(str));
+	inline float to_value(const char *str, const float value) {
+		return std::stof(str);
 	}
 
-	inline double to_value(const char *str, double &value) {
-		return (value = std::stod(str));
+	inline double to_value(const char *str, const double value) {
+		return std::stod(str);
 	}
 
 	inline int to_value(const pugi::xml_node &node, const int value) {
