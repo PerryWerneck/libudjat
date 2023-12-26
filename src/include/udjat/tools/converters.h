@@ -65,32 +65,32 @@
 		return (value = std::stod(str));
 	}
 
-	inline int to_value(const pugi::xml_node &node, int &value) {
-		return (value = node.attribute("value").as_int(value));
+	inline int to_value(const pugi::xml_node &node, const int value) {
+		return node.attribute("value").as_int(value);
 	}
 
-	inline unsigned int to_value(const pugi::xml_node &node, unsigned int &value) {
-		return (value = node.attribute("value").as_uint(value));
+	inline unsigned int to_value(const pugi::xml_node &node, const unsigned int value) {
+		return node.attribute("value").as_uint(value);
 	}
 
-	inline unsigned short to_value(const pugi::xml_node &node, unsigned short &value) {
-		return (value = (unsigned short) node.attribute("value").as_int(value));
+	inline unsigned short to_value(const pugi::xml_node &node, const unsigned short value) {
+		return (unsigned short) node.attribute("value").as_int(value);
 	}
 
-	inline float to_value(const pugi::xml_node &node, float &value) {
-		return (value = node.attribute("value").as_float(value));
+	inline float to_value(const pugi::xml_node &node, const float value) {
+		return node.attribute("value").as_float(value);
 	}
 
-	inline double to_value(const pugi::xml_node &node, double &value) {
-		return (value = node.attribute("value").as_double(value));
+	inline double to_value(const pugi::xml_node &node, const double value) {
+		return node.attribute("value").as_double(value);
 	}
 
-	inline unsigned long to_value(const pugi::xml_node &node, unsigned long &value) {
-		return (value = (unsigned long) node.attribute("value").as_uint(value));
+	inline unsigned long to_value(const pugi::xml_node &node, const unsigned long value) {
+		return (unsigned long) node.attribute("value").as_uint(value);
 	}
 
-	inline long to_value(const pugi::xml_node &node, long &value) {
-		return (value = (long) node.attribute("value").as_int(value));
+	inline long to_value(const pugi::xml_node &node, const long value) {
+		return (long) node.attribute("value").as_int(value);
 	}
 
  }

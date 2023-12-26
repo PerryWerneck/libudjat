@@ -96,6 +96,10 @@
 		/// @brief Set string to value
 		virtual Value & set(const char *value, const Type type = String);
 
+		/// @brief Emit event, allowing modules to change value contents.
+		/// @param event_name The event name that will be passed to listeners.
+		void emit_event(const char *event_name, const char *event_data = nullptr);
+
 		/// @brief Set a percentual from 0.0 to 1.0
 		virtual Value & setFraction(const float fraction);
 

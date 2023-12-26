@@ -74,14 +74,13 @@
 
 	public:
 
-		Agent(const pugi::xml_node &node, const T v = 0) : Abstract::Agent(node), value(v) {
-			to_value(node, value);
+		Agent(const XML::Node &node, const T v = 0) : Abstract::Agent{node}, value{to_value(node, v)} {
 		}
 
-		Agent(const char *name = "") : Abstract::Agent(name), value(0) {
+		Agent(const char *name = "") : Abstract::Agent{name}, value{0} {
 		}
 
-		Agent(const char *name, const T v) : Abstract::Agent(name), value(v) {
+		Agent(const char *name, const T v) : Abstract::Agent{name}, value{v} {
 		}
 
 		bool set(const T &value) {
