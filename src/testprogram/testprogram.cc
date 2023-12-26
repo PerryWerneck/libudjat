@@ -247,12 +247,17 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	{
 		enum Test{ v1, v2, v3 };
 
 		Udjat::Agent<Test> ag{"test",v1};
 
 	}
+	*/
+
+	File::Path file{"/tmp/xpto.txt"};
+	cout << file.name() << endl;
 
 	return 0;
 }

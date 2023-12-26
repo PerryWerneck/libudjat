@@ -136,7 +136,7 @@ namespace Udjat {
 			/// @return true if pathname is a regular file.
 			static bool regular(const char *pathname);
 
-			const char * basename() const noexcept;
+			const char * name() const noexcept;
 
 			inline bool dir() const {
 				return dir(c_str());
