@@ -22,46 +22,62 @@
  #include <udjat/defs.h>
  #include <string>
  #include <cstdlib>
+ #include <stdexcept>
 
  namespace Udjat {
 
-	inline int to_value(const char *str, const int) {
+	template <typename T>
+	inline T from_string(const char *str) {
+		throw std::logic_error("No converter for this data format");
+	}
+
+ 	template <>
+	inline int from_string<int>(const char *str) {
 		return std::stoi(str);
 	}
 
-	inline unsigned int to_value(const char *str, const unsigned int) {
+ 	template <>
+	inline unsigned int from_string<unsigned int>(const char *str) {
 		return (unsigned int) std::stoul(str);
 	}
 
-	inline short to_value(const char *str, const short) {
+ 	template <>
+	inline short from_string<short>(const char *str) {
 		return (short) std::stoi(str);
 	}
 
-	inline unsigned short to_value(const char *str, const unsigned short) {
+ 	template <>
+	inline unsigned short from_string<unsigned short>(const char *str) {
 		return (unsigned short) std::stoi(str);
 	}
 
-	inline long to_value(const char *str, const long) {
+ 	template <>
+	inline long from_string<long>(const char *str) {
 		return std::stol(str);
 	}
 
-	inline unsigned long to_value(const char *str, const unsigned long) {
+ 	template <>
+	inline unsigned long from_string<unsigned long>(const char *str) {
 		return std::stoul(str);
 	}
 
-	inline long long to_value(const char *str, const long long) {
+ 	template <>
+	inline long long from_string<long long>(const char *str) {
 		return std::stoll(str);
 	}
 
-	inline unsigned long long to_value(const char *str, const unsigned long long) {
+ 	template <>
+	inline unsigned long long from_string<unsigned long long>(const char *str) {
 		return std::stoull(str);
 	}
 
-	inline float to_value(const char *str, const float) {
+ 	template <>
+	inline float from_string<float>(const char *str) {
 		return std::stof(str);
 	}
 
-	inline double to_value(const char *str, const double) {
+ 	template <>
+	inline double from_string<double>(const char *str) {
 		return std::stod(str);
 	}
 

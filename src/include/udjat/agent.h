@@ -93,7 +93,7 @@
 		}
 
 		bool assign(const char *value) override {
-			return set((T) to_value(value,this->value));
+			return set(from_string<T>(value));
 		}
 
 		inline bool operator ==(const T value) const noexcept {
