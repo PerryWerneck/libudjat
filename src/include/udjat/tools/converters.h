@@ -23,6 +23,7 @@
  #include <string>
  #include <cstdlib>
  #include <stdexcept>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
 
@@ -81,31 +82,31 @@
 		return std::stod(str);
 	}
 
-	inline int to_value(const pugi::xml_node &node, const int value, const char *attrname = "value") {
+	inline int to_value(const XML::Node &node, const int value, const char *attrname = "value") {
 		return node.attribute(attrname).as_int(value);
 	}
 
-	inline unsigned int to_value(const pugi::xml_node &node, const unsigned int value, const char *attrname = "value") {
+	inline unsigned int to_value(const XML::Node &node, const unsigned int value, const char *attrname = "value") {
 		return node.attribute(attrname).as_uint(value);
 	}
 
-	inline unsigned short to_value(const pugi::xml_node &node, const unsigned short value, const char *attrname = "value") {
+	inline unsigned short to_value(const XML::Node &node, const unsigned short value, const char *attrname = "value") {
 		return (unsigned short) node.attribute(attrname).as_int(value);
 	}
 
-	inline float to_value(const pugi::xml_node &node, const float value, const char *attrname = "value") {
+	inline float to_value(const XML::Node &node, const float value, const char *attrname = "value") {
 		return node.attribute(attrname).as_float(value);
 	}
 
-	inline double to_value(const pugi::xml_node &node, const double value, const char *attrname = "value") {
+	inline double to_value(const XML::Node &node, const double value, const char *attrname = "value") {
 		return node.attribute(attrname).as_double(value);
 	}
 
-	inline unsigned long to_value(const pugi::xml_node &node, const unsigned long value, const char *attrname = "value") {
+	inline unsigned long to_value(const XML::Node &node, const unsigned long value, const char *attrname = "value") {
 		return (unsigned long) node.attribute(attrname).as_uint(value);
 	}
 
-	inline long to_value(const pugi::xml_node &node, const long value, const char *attrname = "value") {
+	inline long to_value(const XML::Node &node, const long value, const char *attrname = "value") {
 		return (long) node.attribute(attrname).as_int(value);
 	}
 
