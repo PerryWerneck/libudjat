@@ -72,7 +72,7 @@
 			to_xml(stream);
 			stream << "</response>";
 		} else {
-			Value::serialize(stream,mimetype);
+			Udjat::Value::serialize(stream,mimetype);
 		}
 
 	}
