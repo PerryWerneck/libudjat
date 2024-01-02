@@ -229,12 +229,12 @@ namespace Udjat {
 		State(const char *name, const T value, const Level level, const char *summary = "", const char *body = "")
 				: Abstract::State{name,level,summary,body}, from{value},to{value} { }
 
-		State(const pugi::xml_node &node, const T v = (T) 0) : Abstract::State{node}, from{(T) to_value(node, v)}, to{(T) to_value(node, v)} {
-			from = (T) to_value(node,from,"from");
-			to = (T) to_value(node,to,"to");
+		State(const pugi::xml_node &node, const T v = (T) 0) : Abstract::State{node}, from{from_xml<T>(node, v)}, to{from_xml<T>(node, v)} {
+			from = from_xml<T>(node,from,"from");
+			to = from_xml<T>(node,to,"to");
 		}
 
-		State(const pugi::xml_node &node, T from_value, T to_value) : Abstract::State{node}, from{from_value}, to{to_value} {
+		State(const pugi::xml_node &node, T from_value, T to_value) : Abstract::State{node}, from{from_xml<T>(node, from_value)}, to{from_xml<T>(node, to_value)} {
 		}
 
 		inline bool compare(T value) {

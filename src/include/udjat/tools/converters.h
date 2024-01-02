@@ -43,6 +43,9 @@
 	}
 
  	template <>
+	UDJAT_API bool from_string<bool>(const char *str);
+
+ 	template <>
 	inline short from_string<short>(const char *str) {
 		return (short) std::stoi(str);
 	}
@@ -82,6 +85,43 @@
 		return std::stod(str);
 	}
 
+	template <typename T>
+	inline T from_xml(const XML::Node &node, const T def, const char *attrname = "value") {
+		throw std::logic_error("No XML converter for this data format");
+	}
+
+	template <>
+	inline int from_xml<int>(const XML::Node &node, const int def, const char *attrname) {
+		return node.attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline unsigned int from_xml<unsigned int>(const XML::Node &node, const unsigned int def, const char *attrname) {
+		return node.attribute(attrname).as_uint(def);
+	}
+
+	template <>
+	inline long from_xml<long>(const XML::Node &node, const long def, const char *attrname) {
+		return (long) node.attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline unsigned long from_xml<unsigned long>(const XML::Node &node, const unsigned long def, const char *attrname) {
+		return (unsigned long) node.attribute(attrname).as_uint(def);
+	}
+
+	template <>
+	inline float from_xml<float>(const XML::Node &node, const float def, const char *attrname) {
+		return node.attribute(attrname).as_float(def);
+	}
+
+	template <>
+	inline double from_xml<double>(const XML::Node &node, const double def, const char *attrname) {
+		return node.attribute(attrname).as_double(def);
+	}
+
+
+	/*
 	inline int to_value(const XML::Node &node, const int value, const char *attrname = "value") {
 		return node.attribute(attrname).as_int(value);
 	}
@@ -109,6 +149,7 @@
 	inline long to_value(const XML::Node &node, const long value, const char *attrname = "value") {
 		return (long) node.attribute(attrname).as_int(value);
 	}
+	*/
 
  }
 

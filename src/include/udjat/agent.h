@@ -74,7 +74,7 @@
 
 	public:
 
-		Agent(const XML::Node &node, const T v = 0) : Abstract::Agent{node}, value{(T) to_value(node, v)} {
+		Agent(const XML::Node &node, const T v = 0) : Abstract::Agent{node}, value{from_xml<T>(node, v)} {
 		}
 
 		Agent(const char *name = "") : Abstract::Agent{name}, value{0} {

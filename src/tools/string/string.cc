@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/converters.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
@@ -319,55 +320,10 @@
 	}
 
 	bool String::as_bool(bool def) {
-
 		if(empty()) {
 			return def;
 		}
-
-		static const char * yes[] = {
-			N_("yes"),
-			N_("true"),
-			N_("on"),
-			"1"
-		};
-
-		static const char * no[] = {
-			N_("no"),
-			N_("false"),
-			N_("off"),
-			"0"
-		};
-
-		for(const char *ptr : yes) {
-			if(strcasecmp(c_str(),ptr) == 0) {
-				return true;
-			}
-#ifdef GETTEXT_PACKAGE
-			if(strcasecmp(c_str(),dgettext(GETTEXT_PACKAGE,ptr)) == 0) {
-				return true;
-			}
-#endif // GETTEXT_PACKAGE
-		}
-
-		for(const char *ptr : no) {
-			if(strcasecmp(c_str(),ptr) == 0) {
-				return false;
-			}
-#ifdef GETTEXT_PACKAGE
-			if(strcasecmp(c_str(),dgettext(GETTEXT_PACKAGE,ptr)) == 0) {
-				return false;
-			}
-#endif // GETTEXT_PACKAGE
-
-		}
-
-		if(at(0) == '?' || !strcasecmp(c_str(),"default") || !strcasecmp(c_str(),_("default"))) {
-			return def;
-		}
-
-		clog << "Unexpected boolean keyword '" << c_str() << "', assuming '" << (def ? "true" : "false") << "'" << endl;
-
-		return def;
+		return from_string<bool>(c_str());
 	}
 
 	template<typename T>
