@@ -139,21 +139,15 @@
 			time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
 
 			// Gets the major time from the last update.
-			time_t updated = 0;
+			response.last_modified(agent->last_modified());
 
-			agent->for_each([&next,&updated](Agent &agent){
+			agent->for_each([&next,&response](Agent &agent){
 
 				if(agent.update.next) {
 					next = std::min(next,agent.update.next);
 				}
 
-				if(agent.update.last) {
-					if(updated) {
-						updated = std::max(updated,agent.update.last);
-					} else {
-						updated = agent.update.last;
-					}
-				}
+				response.last_modified(agent.last_modified());
 
 			});
 
@@ -161,10 +155,6 @@
 				response.setExpirationTimestamp(next);
 			} else {
 				response.setExpirationTimestamp(0);
-			}
-
-			if(updated >= now) {
-				response.setModificationTimestamp(updated);
 			}
 
 			return true;

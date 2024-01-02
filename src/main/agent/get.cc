@@ -45,10 +45,7 @@
 	bool Abstract::Agent::get(Request &request, Udjat::Response::Value &response) const {
 
 		if(get(response)) {
-			time_t timestamp = last_modified();
-			if(timestamp) {
-				response.setModificationTimestamp(timestamp);
-			}
+			response.last_modified(last_modified());
 			return true;
 		}
 
@@ -69,13 +66,13 @@
 			nullptr
 		);
 
-		response.setModificationTimestamp(last_modified());
+		response.last_modified(last_modified());
 
 		for(const auto child : children.agents) {
 
 			auto state = child->state();
 
-			response.setModificationTimestamp(child->last_modified());
+			response.last_modified(child->last_modified());
 
 			response.push_back(child->icon(),Value::Icon);
 			response.push_back(child->name());

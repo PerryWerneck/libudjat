@@ -37,12 +37,14 @@
 
 	}
 
-	void Abstract::Response::setModificationTimestamp(const time_t time) {
+	time_t Abstract::Response::last_modified(const time_t tm) {
 
-		if(modification)
-			modification = min((time_t) modification,time);
-		else
-			modification = time;
+		if(tm && tm <= time(0)) {
+			if(!modification || modification > tm)
+				modification = tm;
+		}
+
+		return (time_t) modification;
 
 	}
 

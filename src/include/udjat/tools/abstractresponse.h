@@ -62,8 +62,9 @@
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(const time_t time);
 
-			/// @brief Set timestamp for data.
-			void setModificationTimestamp(const time_t time);
+			/// @brief Set timestamp for data, ignore zeros.
+			/// @return Current value.
+			time_t last_modified(const time_t time = 0);
 
 		};
 
