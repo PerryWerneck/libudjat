@@ -320,6 +320,7 @@
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
 
+			virtual bool get(Request &request, Udjat::Response::Value &response) const;
 			virtual bool get(Request &request, Udjat::Response::Table &response) const;
 
 			/// @brief Get State by path, throw if not found.
@@ -391,6 +392,11 @@
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.
 			bool getProperty(const char *key, std::string &value) const override;
+
+			/// @brief get time of the last modification on this agent.
+			/// @return Timestamp of last modification.
+			/// @retval 0 The last modification time was not available.
+			virtual time_t last_modified() const noexcept;
 
 		};
 	}

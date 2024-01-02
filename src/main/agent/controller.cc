@@ -101,7 +101,7 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::head(Request &request, Udjat::Response::Value &response) const {
 
-		debug("Getting Cache info for '",(const char *) request.path(),"'");
+		debug("-[ HEAD(",request.path(),") ]----------------------");
 
 		// Get cache info.
 		if(!head(get().get(),request.path(),response)) {
@@ -113,12 +113,16 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
 
-		debug("Getting properties for '",(const char *) request.path(),"'");
+		debug("-[ GET(",request.path(),") ]----------------------");
 
 		// Get properties.
-		if(!get()->getProperties(request.path(),response)) {
+		// Get properties.
+		auto agent = find(request.path());
+		if(!agent){
 			throw std::system_error(ENOENT,std::system_category());
 		}
+
+		agent->get(request,response);
 
 		return true;
 
@@ -126,7 +130,7 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
 
-		debug("Getting children for '",(const char *) request.path(),"'");
+		debug("-[ GET-ARRAY(",request.path(),") ]----------------------");
 
 		// Get properties.
 		auto agent = find(request.path());

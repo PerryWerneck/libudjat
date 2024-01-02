@@ -67,7 +67,6 @@
 		<Unit filename="intl/dngettext.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/eval-plural.h" />
 		<Unit filename="intl/explodename.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -77,23 +76,18 @@
 		<Unit filename="intl/gettext.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/gettextP.h" />
-		<Unit filename="intl/gmo.h" />
-		<Unit filename="intl/hash-string.h" />
 		<Unit filename="intl/intl-compat.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="intl/l10nflist.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/loadinfo.h" />
 		<Unit filename="intl/loadmsgcat.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="intl/localcharset.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/localcharset.h" />
 		<Unit filename="intl/localealias.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -109,42 +103,33 @@
 		<Unit filename="intl/os2compat.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/os2compat.h" />
 		<Unit filename="intl/osdep.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="intl/plural-exp.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/plural-exp.h" />
 		<Unit filename="intl/plural.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="intl/printf-args.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/printf-args.h" />
 		<Unit filename="intl/printf-parse.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/printf-parse.h" />
 		<Unit filename="intl/printf.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="intl/relocatable.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/relocatable.h" />
 		<Unit filename="intl/textdomain.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="intl/vasnprintf.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="intl/vasnprintf.h" />
-		<Unit filename="intl/vasnwprintf.h" />
-		<Unit filename="intl/wprintf-parse.h" />
-		<Unit filename="intl/xsize.h" />
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agent.h" />

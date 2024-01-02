@@ -23,15 +23,37 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/report.h>
+ #include <udjat/tools/response.h>
  #include <list>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
  namespace Udjat {
 
+	time_t Abstract::Agent::last_modified() const noexcept {
+		if(update.timer) {
+			return update.last;
+		}
+		return 0;
+	}
+
 	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
 		value.set(to_string());
 		return value;
+	}
+
+	bool Abstract::Agent::get(Request &request, Udjat::Response::Value &response) const {
+
+		if(get(response)) {
+			time_t timestamp = last_modified();
+			if(timestamp) {
+				response.setModificationTimestamp(timestamp);
+			}
+			return true;
+		}
+
+		return false;
+
 	}
 
 	bool Abstract::Agent::get(Request &, Udjat::Response::Table &response) const {
@@ -47,9 +69,13 @@
 			nullptr
 		);
 
+		response.setModificationTimestamp(last_modified());
+
 		for(const auto child : children.agents) {
 
 			auto state = child->state();
+
+			response.setModificationTimestamp(child->last_modified());
 
 			response.push_back(child->icon(),Value::Icon);
 			response.push_back(child->name());

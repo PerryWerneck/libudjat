@@ -126,7 +126,7 @@
 
 	bool Abstract::Agent::Controller::head(Abstract::Agent *agent, const char *path, Udjat::Abstract::Response &response) {
 
-		debug("ME='",agent->name(),"' path='",path,"'");
+		debug("-[HEAD]----------------------> ME='",agent->name(),"' path='",path,"'");
 
 		if(!*path) {
 
