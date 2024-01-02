@@ -152,4 +152,10 @@
 		return os << to_string(addr);
 	}
 
+	UDJAT_API string to_string(const in_addr &addr, bool dns = false);
+
+	inline ostream & operator<< (ostream& os, const in_addr &addr) {
+		return os << to_string(addr);
+	}
+
  }

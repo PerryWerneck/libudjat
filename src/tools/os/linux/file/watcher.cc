@@ -21,6 +21,7 @@
  #include <unistd.h>
  #include <cstring>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/file.h>
  #include <sched.h>
  #include <sys/types.h>
  #include <sys/stat.h>

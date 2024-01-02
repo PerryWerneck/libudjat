@@ -327,10 +327,8 @@ namespace Udjat {
 			struct File {
 				void *id;
 				std::function<void (const Udjat::File::Text &file)> callback;
-
 				File(void *i, std::function<void (const Udjat::File::Text &)> c) : id(i), callback(c) {
 				}
-
 			};
 
 			/// @brief Text file watchers.
@@ -380,7 +378,7 @@ namespace Udjat {
 
 		/// @brief Text file agent.
 		///
-		/// Monitor a local file and call 'load' method when it changes.
+		/// Monitor a local file and activate when it changes.
 		///
 		class UDJAT_API Agent {
 		private:
