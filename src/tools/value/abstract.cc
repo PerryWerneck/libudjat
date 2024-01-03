@@ -188,11 +188,11 @@
 	}
 
 	Value & Value::append(const Type type) {
-		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to append '{}' on this value"),std::to_string(type)});
+		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to append '{}' on abstract value"),std::to_string(type)});
 	}
 
 	Value & Value::set(const char *value, const Type type) {
-		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to set '{}' as '{}' on this value"),value,std::to_string(type)});
+		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to set '{}' as '{}' on abstract value"),value,std::to_string(type)});
 	}
 
 	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> UDJAT_UNUSED(&call)) const {

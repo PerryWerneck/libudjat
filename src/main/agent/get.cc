@@ -42,14 +42,11 @@
 		return value;
 	}
 
-	bool Abstract::Agent::get(Request &request, Udjat::Response::Value &response) const {
+	bool Abstract::Agent::get(Request &, Udjat::Response::Value &response) const {
 
-		if(get(response)) {
-			response.last_modified(last_modified());
-			return true;
-		}
-
-		return false;
+		response.last_modified(last_modified());
+		getProperties(response);
+		return true;
 
 	}
 
