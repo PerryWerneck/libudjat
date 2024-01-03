@@ -394,6 +394,13 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools
 
 	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/abstract
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/abstract/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/abstract
+
+	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(INSTALL_DATA) \

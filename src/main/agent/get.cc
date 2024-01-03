@@ -31,10 +31,10 @@
  namespace Udjat {
 
 	time_t Abstract::Agent::last_modified() const noexcept {
-		if(update.timer) {
+		if(update.last) {
 			return update.last;
 		}
-		return 0;
+		return current_state.timestamp;
 	}
 
 	time_t Abstract::Agent::expires() const noexcept {

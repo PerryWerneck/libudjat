@@ -34,7 +34,7 @@
 #include <udjat/tools/timer.h>
 #include <udjat/tools/response.h>
 #include <udjat/tools/report.h>
-#include <udjat/tools/abstractresponse.h>
+#include <udjat/tools/abstract/response.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>

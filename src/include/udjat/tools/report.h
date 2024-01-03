@@ -21,7 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/defs.h>
- #include <udjat/tools/abstractresponse.h>
+ #include <udjat/tools/abstract/response.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/http/mimetype.h>
  #include <string>
