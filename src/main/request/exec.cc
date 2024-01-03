@@ -28,6 +28,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/report.h>
  #include <udjat/tools/worker.h>
+ #include <udjat/tools/intl.h>
  #include <stdexcept>
  #include <private/worker.h>
 
@@ -35,12 +36,51 @@
 
  namespace Udjat {
 
-	UDJAT_API bool exec(Request &request, Response::Value &response) {
-		return Worker::Controller::getInstance().exec<Response::Value>(request,response);
+	UDJAT_API bool exec(Request &request, Response::Value &response) noexcept {
+
+		try {
+
+			return Worker::Controller::getInstance().exec<Response::Value>(request,response);
+
+		} catch(const std::system_error &e) {
+
+			response.failed(e);
+
+		} catch(const std::exception &e) {
+
+			response.failed(e);
+
+		} catch(...) {
+
+			response.failed(_("Unexpected error processing request"));
+
+		}
+
+		return true;
 	}
 
-	UDJAT_API bool exec(Request &request, Response::Table &response) {
-		return Worker::Controller::getInstance().exec<Response::Table>(request,response);
+	UDJAT_API bool exec(Request &request, Response::Table &response) noexcept {
+
+		try {
+
+			return Worker::Controller::getInstance().exec<Response::Table>(request,response);
+
+		} catch(const std::system_error &e) {
+
+			response.failed(e);
+
+		} catch(const std::exception &e) {
+
+			response.failed(e);
+
+		} catch(...) {
+
+			response.failed(_("Unexpected error processing request"));
+
+		}
+
+		return true;
+
 	}
 
 	UDJAT_API bool introspect(Udjat::Value &value) {

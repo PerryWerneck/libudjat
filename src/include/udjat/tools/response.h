@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/abstractresponse.h>
  #include <udjat/tools/value.h>
+ #include <stdexcept>
 
  namespace Udjat {
 

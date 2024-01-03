@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <stdexcept>
  #include <ctime>
 
  namespace Udjat {
@@ -73,6 +74,8 @@
 			}
 
 			void failed(const char *message, int code = 0) noexcept;
+			void failed(const std::system_error &e) noexcept;
+			void failed(const std::exception &e) noexcept;
 
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(const time_t time);

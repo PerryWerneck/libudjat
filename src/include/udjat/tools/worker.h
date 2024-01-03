@@ -28,8 +28,8 @@
 
 namespace Udjat {
 
-	UDJAT_API bool exec(Request &request, Response::Value &response);
-	UDJAT_API bool exec(Request &request, Response::Table &response);
+	UDJAT_API bool exec(Request &request, Response::Value &response) noexcept;
+	UDJAT_API bool exec(Request &request, Response::Table &response) noexcept;
 	UDJAT_API bool introspect(Udjat::Value &value);
 
 	class UDJAT_API Worker {

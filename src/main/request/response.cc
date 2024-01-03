@@ -53,6 +53,14 @@
 
 	}
 
+	void Abstract::Response::failed(const std::system_error &e) noexcept {
+		failed(e.what(),e.code().value());
+	}
+
+	void Abstract::Response::failed(const std::exception &e) noexcept {
+		failed(e.what());
+	}
+
 	std::string Response::Value::to_string() const {
 		return Udjat::Value::to_string(mimetype);
 	}
