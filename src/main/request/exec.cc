@@ -40,7 +40,10 @@
 
 		try {
 
-			return Worker::Controller::getInstance().exec<Response::Value>(request,response);
+			if(!Worker::Controller::getInstance().exec<Response::Value>(request,response)) {
+				response.failed(ENOENT);
+				return false;
+			}
 
 		} catch(const std::system_error &e) {
 
@@ -63,7 +66,9 @@
 
 		try {
 
-			return Worker::Controller::getInstance().exec<Response::Table>(request,response);
+			if(!Worker::Controller::getInstance().exec<Response::Table>(request,response)) {
+				response.failed(ENOENT);
+			}
 
 		} catch(const std::system_error &e) {
 

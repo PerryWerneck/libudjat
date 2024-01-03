@@ -78,6 +78,7 @@
 				return this->mimetype != mimetype;
 			}
 
+			void failed(int code = errno) noexcept;
 			void failed(const char *message, int code = 0) noexcept;
 			void failed(const std::system_error &e) noexcept;
 			void failed(const std::exception &e) noexcept;

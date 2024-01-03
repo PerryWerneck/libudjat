@@ -32,6 +32,11 @@
 		status.code = code;
 	}
 
+	void Abstract::Response::failed(int code) noexcept {
+		status.message = strerror(code);
+		status.code = code;
+	}
+
 	time_t Abstract::Response::expires(const time_t tm) noexcept {
 
 		if(tm && tm > time(0)) {
