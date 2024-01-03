@@ -175,6 +175,9 @@ namespace Udjat {
 
 	bool Abstract::State::getProperties(const char *path, Value &value) {
 
+		// TODO: Refactor
+
+		/*
 		shared_ptr<Abstract::State> state;
 
 		if(!Abstract::Agent::root()->getProperties(path,state) || !state) {
@@ -184,6 +187,10 @@ namespace Udjat {
 		state->getProperties(value);
 
 		return true;
+		*/
+
+		return false;
+
 	}
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {

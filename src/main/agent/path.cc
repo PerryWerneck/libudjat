@@ -28,143 +28,50 @@
 
  namespace Udjat {
 
-	const Abstract::Agent * Abstract::Agent::Controller::find(const Abstract::Agent *agent, const char **path) {
+	template <typename T>
+	bool getFromPath(const Abstract::Agent &agent, const char *path, T &value) {
 
-		const char *ptr = *path;
-
-		if(!(ptr && *ptr)) {
-			throw system_error(EINVAL,system_category());
+		if(!(path && *path)) {
+			return agent.get(value);
 		}
 
-		if(*ptr == '/') {
-			ptr++;
-		}
+		const char *name = path;
+		size_t len;
 
-		*path = ptr;
-
-		debug("PATH='",ptr,"'");
-
-		size_t length;
-		ptr = strchr(*path,'/');
-		if(!ptr) {
-			length = strlen(*path);
+		path = strchr(path,'/');
+		if(path) {
+			len = path-name;
+			path++;
 		} else {
-			length = ptr - (*path);
+			len = strlen(name);
+			path = "";
 		}
 
-		debug("PATH='",*path,"' length=",length);
+		debug("Searching for child '",string{name,len}.c_str(),"' on agent '",agent.name(),"'");
 
-		{
-			lock_guard<std::recursive_mutex> lock(agent->guard);
-			for(auto child : agent->children.agents) {
-				if(!strncasecmp(child->name(),*path,length)) {
-					ptr = (*path) + length;
-					if(*ptr == '/') {
-						ptr++;
-					}
-					*path = ptr;
-					debug("Found '",child->name(),"'");
-					return child.get();
-				}
+		for(auto child : agent) {
+			if(!strncasecmp(name,child->name(),len)) {
+				debug("Found child '",child->name(),"'");
+				return child->getProperties(path,value);
 			}
 		}
 
-		return nullptr;
-
+		debug("Cant find child '",string{name,len}.c_str(),"'");
+		return false;
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Value &value) const {
-
-		debug("ME='",name(),"' path='",path,"'");
-
-		if(!(path && *path)) {
-			getProperties(value);
-			return true;
-		}
-
-		auto agent = Controller::find(this, &path);
-		if(agent) {
-			return agent->getProperties(path,value);
-		}
-
-		return false;
-
+		return getFromPath(*this,path,value);
 	}
 
-	bool Abstract::Agent::getProperties(const char *path, std::shared_ptr<Abstract::State> &state) const {
-
-		debug("ME='",name(),"' path='",path,"'");
-
-		if(!*path) {
-			state = this->state();
-			return true;
-		}
-
-		auto agent = Controller::find(this, &path);
-		if(agent) {
-			return agent->getProperties(path,state);
-		}
-
-		return false;
-
+	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Value &value) const {
+		return getFromPath(*this,path,value);
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Table &report) const {
-
-		if(!*path) {
-			// If this method wasnt overrided theres no report, just return false here.
-			return false;
-		}
-
-		auto agent = Controller::find(this, &path);
-		if(agent) {
-			return agent->getProperties(path,report);
-		}
-
-		return false;
+		return getFromPath(*this,path,report);
 	}
 
-	bool Abstract::Agent::Controller::head(Abstract::Agent *agent, const char *path, Udjat::Abstract::Response &response) {
-
-		debug("-[HEAD]----------------------> ME='",agent->name(),"' path='",path,"'");
-
-		if(!*path) {
-
-			// Found agent, get cache info.
-			agent->chk4refresh(true);
-
-			time_t now = time(nullptr);
-
-			// Gets the minor time for the next update.
-			time_t next{now+Config::Value<time_t>("agent","min-update-time",600)};
-
-			// Gets the major time from the last update.
-			response.last_modified(agent->last_modified());
-
-			agent->for_each([&next,&response](Agent &agent){
-
-				if(agent.update.next) {
-					next = std::min(next,agent.update.next);
-				}
-
-				response.last_modified(agent.last_modified());
-
-			});
-
-			response.expires(next);
-
-			return true;
-		}
-
-		auto next = Controller::find(agent, &path);
-		if(next) {
-			return head(const_cast<Abstract::Agent *>(next), path, response);
-		}
-
-		auto dummy = Udjat::Value::Factory();
-		return agent->getProperties(path,*dummy);
-
-	}
 
  }
 

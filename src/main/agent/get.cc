@@ -37,20 +37,28 @@
 		return 0;
 	}
 
+	time_t Abstract::Agent::expires() const noexcept {
+		if(update.next > time(0)) {
+			return update.next;
+		}
+		return 0;
+	}
+
 	Udjat::Value & Abstract::Agent::get(Udjat::Value &value) const {
 		value.set(to_string());
 		return value;
 	}
 
-	bool Abstract::Agent::get(Request &, Udjat::Response::Value &response) const {
+	bool Abstract::Agent::get(Udjat::Response::Value &response) const {
 
 		response.last_modified(last_modified());
-		getProperties(response);
+		response.expires(expires());
+		getProperties((Udjat::Value &) response);
 		return true;
 
 	}
 
-	bool Abstract::Agent::get(Request &, Udjat::Response::Table &response) const {
+	bool Abstract::Agent::get(Udjat::Response::Table &response) const {
 
 		response.start(
 			"icon",
@@ -64,6 +72,7 @@
 		);
 
 		response.last_modified(last_modified());
+		response.expires(expires());
 
 		for(const auto child : children.agents) {
 

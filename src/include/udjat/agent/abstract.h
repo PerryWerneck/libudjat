@@ -179,10 +179,6 @@
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
 
-			/// @brief Get agent properties.
-			/// @param value Value to receive the properties.
-			Value & getProperties(Value &value) const override;
-
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
 			inline time_t timer(time_t value) noexcept {
@@ -306,6 +302,13 @@
 			/// @return Agent pointer (empty if not found).
 			virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
+			/// @brief Get agent properties.
+			/// @param value Value to receive the properties.
+			Value & getProperties(Value &value) const override;
+
+			bool get(Udjat::Response::Value &value) const;
+			bool get(Udjat::Response::Table &value) const;
+
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
 			/// @param value Object for child properties.
@@ -313,20 +316,19 @@
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Value &value) const;
 
+			/// @brief Get child properties by path.
+			/// @param path	Child path.
+			/// @param report The report output.
+			/// @retval true if the child was found.
+			/// @retval false if the child was not found.
+			virtual bool getProperties(const char *path, Udjat::Response::Value &value) const;
+
 			/// @brief Get child report by path.
 			/// @param path	Child path.
 			/// @param report The report output.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
-
-			virtual bool get(Request &request, Udjat::Response::Value &response) const;
-			virtual bool get(Request &request, Udjat::Response::Table &response) const;
-
-			/// @brief Get State by path, throw if not found.
-			/// @param path	Child path.
-			/// @return state The state.
-			virtual bool getProperties(const char *path, std::shared_ptr<Abstract::State> &state) const;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
@@ -397,6 +399,10 @@
 			/// @return Timestamp of last modification.
 			/// @retval 0 The last modification time was not available.
 			virtual time_t last_modified() const noexcept;
+
+			/// @brief get expiration time for this agent data.
+			/// @retval 0 The expiration time is not available.
+			virtual time_t expires() const noexcept;
 
 		};
 	}
