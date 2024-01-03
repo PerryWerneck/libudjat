@@ -41,12 +41,23 @@
 			/// @brief Timestamp of data.
 			TimeStamp modification = 0;
 
-			/// @brief Is the request suceeded?
-			bool success = true;
+			/// @brief Response result.
+			struct {
+
+				/// @brief Is the request suceeded?
+				bool success = true;
+
+				/// @brief Request error message.
+				std::string message;
+
+				/// @brief Error code.
+				int code = 0;
+
+			} status;
 
 		public:
 
-			constexpr Response(const MimeType m = MimeType::custom) : mimetype(m) {
+			Response(const MimeType m = MimeType::custom) : mimetype(m) {
 			}
 
 			inline operator MimeType() const noexcept {
@@ -61,6 +72,7 @@
 				return this->mimetype != mimetype;
 			}
 
+			void failed(const char *message, int code = 0) noexcept;
 
 			/// @brief Set timestamp for cache the response.
 			void setExpirationTimestamp(const time_t time);

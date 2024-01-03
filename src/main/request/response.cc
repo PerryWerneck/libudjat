@@ -27,6 +27,11 @@
 
  namespace Udjat {
 
+	void Abstract::Response::failed(const char *message, int code) noexcept {
+		status.message = message;
+		status.code = code;
+	}
+
 	void Abstract::Response::setExpirationTimestamp(const time_t time) {
 
 		if(expiration) {
@@ -64,7 +69,7 @@
 			// Format as XML
 
 			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
-					<< (this->success ? "success" : "failed") << "'";
+					<< (this->status.success ? "success" : "failed") << "'";
 
 			if(modification) {
 				stream << " timestamp='" << modification.to_string() << "'";
@@ -87,8 +92,19 @@
 
 			// https://github.com/omniti-labs/jsend
 			stream << "{\"status\":\"";
-			stream << this->success ? "success" : "failed";
- 			stream << "\",\"data\":";
+
+			if(status.success) {
+				stream << "success\"";
+			} else if(status.message.empty()) {
+				stream << "fail\"";
+			} else {
+				stream << "error\",\"message\":\"" << status.message << "\"";
+				if(status.code) {
+					stream << ",\"code\":" << status.code;
+				}
+			}
+
+			stream << ",\"data\":";
 			Udjat::Value::serialize(stream,mimetype);
 			stream << "}";
 
