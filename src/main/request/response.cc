@@ -20,7 +20,10 @@
  #include <config.h>
  #include <algorithm>
  #include <private/request.h>
+ #include <udjat/tools/abstract/response.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/application.h>
  #include <ctime>
 
  using namespace std;
@@ -69,6 +72,11 @@
 
 	void Abstract::Response::failed(const std::exception &e) noexcept {
 		failed(e.what());
+	}
+
+	std::string Abstract::Response::to_string() const {
+		Logger::String{"Unable to convert abstract response to string, using an empty one"}.trace(Application::Name().c_str());
+		return "";
 	}
 
 	std::string Response::Value::to_string() const {

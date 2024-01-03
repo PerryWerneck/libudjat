@@ -25,6 +25,7 @@
  #include <udjat/tools/http/exception.h>
  #include <stdexcept>
  #include <ctime>
+ #include <string>
 
  namespace Udjat {
 
@@ -83,6 +84,9 @@
 			void failed(const std::system_error &e) noexcept;
 			void failed(const std::exception &e) noexcept;
 			virtual void failed(const HTTP::Exception &e) noexcept;
+
+			/// @brief Convert response to formatted string.
+			virtual std::string to_string() const;
 
 			/// @brief Set timestamp for data, ignore zeros.
 			/// @return Current value.
