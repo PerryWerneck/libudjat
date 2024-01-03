@@ -52,7 +52,8 @@
 
 		switch(mimetype) {
 		case MimeType::xml:
-			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response";
+			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
+					<< (this->status.success ? "success" : "failed") << "'";
 
 			if(modification) {
 				stream << " timestamp='" << modification.to_string() << "'";
@@ -96,8 +97,24 @@
 
 		case Udjat::MimeType::json:
 			{
+				// Format as json
+				// https://stackoverflow.com/questions/12806386/is-there-any-standard-for-json-api-response-format
 
-				stream << "[{";
+				// https://github.com/omniti-labs/jsend
+				stream << "{\"status\":\"";
+
+				if(status.success) {
+					stream << "success\"";
+				} else if(status.message.empty()) {
+					stream << "fail\"";
+				} else {
+					stream << "error\",\"message\":\"" << status.message << "\"";
+					if(status.code) {
+						stream << ",\"code\":" << status.code;
+					}
+				}
+
+				stream << ",\"data\":[{";
 
 				bool sep = false;
 				auto column = columns.names.begin();
@@ -140,79 +157,10 @@
 
 				});
 
-				stream << "}]";
+				stream << "}]}";
 
 			}
 			break;
-		/*
-		case Udjat::MimeType::html:
-			{
-				ss << "<table><thead>";
-
-				if(!info.caption.empty()) {
-					ss << "<caption>" << info.caption << "</caption>";
-				}
-
-				ss << "<tr>";
-
-				for(auto column : columns.names) {
-					ss << "<th>" << column << "</th>";
-				}
-
-				ss << "</tr></thead><tbody><tr>";
-
-				auto column = columns.names.begin();
-				for(auto value : values) {
-					if(column == columns.names.end()) {
-						ss << "</tr><tr>";
-						column = columns.names.begin();
-					}
-					ss << "<td>" << value.to_string() << "</td>";
-					column++;
-				}
-
-				ss << "</tr></tbody></table>";
-			}
-			break;
-
-		case Udjat::MimeType::csv:
-			{
-				bool sep{false};
-				for(auto column : columns.names) {
-					if(sep) {
-						ss << ",";
-					}
-					sep = true;
-					ss << column;
-				}
-				ss << endl;
-
-				sep = false;
-
-				auto column = columns.names.begin();
-				for(auto value : values) {
-					if(column == columns.names.end()) {
-						ss << endl;
-						sep = false;
-					}
-					if(sep) {
-						ss << ",";
-					}
-					sep = true;
-
-					if(value == Udjat::Value::Signed || value == Udjat::Value::Unsigned || value == Udjat::Value::Real || value == Udjat::Value::Boolean || value == Udjat::Value::Fraction) {
-						ss << value.to_string();
-					} else {
-						ss << "\"" << value.to_string() << "\"";
-					}
-
-					column++;
-				}
-
-				ss << endl;
-			}
-			break;
-		*/
 
 		default:
 			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
