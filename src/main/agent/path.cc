@@ -151,11 +151,7 @@
 
 			});
 
-			if(next > now) {
-				response.setExpirationTimestamp(next);
-			} else {
-				response.setExpirationTimestamp(0);
-			}
+			response.expires(next);
 
 			return true;
 		}

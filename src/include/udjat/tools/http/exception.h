@@ -54,6 +54,11 @@
 				return error;
 			}
 
+			/// @brief Get corresponding system code.
+			inline int syscode() const noexcept {
+				return error.system.value();
+			}
+
 			/// @brief Translate system error to http.
 			/// @param syscode system error code.
 			/// @return The corresponding http error code (or 500 if there's no one).

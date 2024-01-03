@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/http/exception.h>
  #include <stdexcept>
  #include <ctime>
 
@@ -61,6 +62,10 @@
 			Response(const MimeType m = MimeType::custom) : mimetype(m) {
 			}
 
+			inline int status_code() const noexcept {
+				return status.code;
+			}
+
 			inline operator MimeType() const noexcept {
 				return this->mimetype;
 			}
@@ -76,13 +81,23 @@
 			void failed(const char *message, int code = 0) noexcept;
 			void failed(const std::system_error &e) noexcept;
 			void failed(const std::exception &e) noexcept;
-
-			/// @brief Set timestamp for cache the response.
-			void setExpirationTimestamp(const time_t time);
+			virtual void failed(const HTTP::Exception &e) noexcept;
 
 			/// @brief Set timestamp for data, ignore zeros.
 			/// @return Current value.
-			time_t last_modified(const time_t time = 0);
+			time_t last_modified(const time_t time) noexcept;
+
+			/// @brief Set response expiration time, ignore zeros.
+			/// @return Current expiration time.
+			time_t expires(const time_t time) noexcept;
+
+			inline time_t last_modified() const noexcept {
+				return (time_t) modification;
+			}
+
+			inline time_t expires() const noexcept {
+				return (time_t) expiration;
+			}
 
 		};
 

@@ -32,17 +32,18 @@
 		status.code = code;
 	}
 
-	void Abstract::Response::setExpirationTimestamp(const time_t time) {
+	time_t Abstract::Response::expires(const time_t tm) noexcept {
 
-		if(expiration) {
-			expiration = min((time_t) expiration,time);
-		} else {
-			expiration = time;
+		if(tm && tm > time(0)) {
+			if(!expiration || expiration > tm)
+				expiration = tm;
 		}
+
+		return (time_t) expiration;
 
 	}
 
-	time_t Abstract::Response::last_modified(const time_t tm) {
+	time_t Abstract::Response::last_modified(const time_t tm) noexcept {
 
 		if(tm && tm <= time(0)) {
 			if(!modification || modification > tm)
@@ -55,6 +56,10 @@
 
 	void Abstract::Response::failed(const std::system_error &e) noexcept {
 		failed(e.what(),e.code().value());
+	}
+
+	void Abstract::Response::failed(const HTTP::Exception &e) noexcept {
+		failed(e.what(),e.syscode());
 	}
 
 	void Abstract::Response::failed(const std::exception &e) noexcept {
