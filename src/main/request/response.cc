@@ -58,6 +58,47 @@
 
 	void Response::Value::serialize(std::ostream &stream, const MimeType mimetype) const {
 
+		switch(mimetype) {
+		case Udjat::MimeType::xml:
+
+			// Format as XML
+
+			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
+					<< (this->success ? "success" : "failed") << "'";
+
+			if(modification) {
+				stream << " timestamp='" << modification.to_string() << "'";
+			}
+
+			if(expiration) {
+				stream << " expires='" << expiration.to_string() << "'";
+			}
+
+			stream << ">";
+			to_xml(stream);
+			stream << "</response>";
+
+			break;
+
+		case Udjat::MimeType::json:
+
+			// Format as json
+			// https://stackoverflow.com/questions/12806386/is-there-any-standard-for-json-api-response-format
+
+			// https://github.com/omniti-labs/jsend
+			stream << "{\"status\":\"";
+			stream << this->success ? "success" : "failed";
+ 			stream << "\",\"data\":";
+			Udjat::Value::serialize(stream,mimetype);
+			stream << "}";
+
+			break;
+
+		default:
+			Udjat::Value::serialize(stream,mimetype);
+		}
+
+		/*
 		if(mimetype == Udjat::MimeType::xml) {
 			// Format as XML
 			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response";
@@ -76,6 +117,7 @@
 		} else {
 			Udjat::Value::serialize(stream,mimetype);
 		}
+		*/
 
 	}
 

@@ -41,6 +41,9 @@
 			/// @brief Timestamp of data.
 			TimeStamp modification = 0;
 
+			/// @brief Is the request suceeded?
+			bool success = true;
+
 		public:
 
 			constexpr Response(const MimeType m = MimeType::custom) : mimetype(m) {
