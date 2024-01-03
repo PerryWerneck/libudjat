@@ -53,6 +53,9 @@
 				/// @brief Request error message.
 				std::string message;
 
+				/// @brief Extended error message.
+				std::string body;
+
 				/// @brief Error code.
 				int code = 0;
 
@@ -61,6 +64,10 @@
 		public:
 
 			Response(const MimeType m = MimeType::custom) : mimetype(m) {
+			}
+
+			inline operator bool() const noexcept {
+				return status.success;
 			}
 
 			inline int status_code() const noexcept {
@@ -102,6 +109,14 @@
 
 			inline time_t expires() const noexcept {
 				return (time_t) expiration;
+			}
+
+			inline const char * message() const noexcept {
+				return status.message.c_str();
+			}
+
+			inline const char * body() const noexcept {
+				return status.body.c_str();
 			}
 
 		};
