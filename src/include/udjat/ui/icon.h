@@ -36,6 +36,9 @@
 		Icon(const std::string &name) : std::string{name} {
 		}
 
+		/// @brief Get icon filename.
+		std::string filename() const;
+
 		inline operator bool() const {
 			return !empty();
 		}
