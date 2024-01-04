@@ -91,7 +91,7 @@
 				}
 #endif // DEBUG
 			} catch(const std::exception &e) {
-				cerr << "icon\t" << e.what() << endl;
+				Logger::String{"Icon '",c_str(),"': ",e.what()}.error("ui");
 			}
 
 		}
