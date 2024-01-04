@@ -34,7 +34,7 @@
 
 	// https://en.wikipedia.org/wiki/List_of_HTTP_status_codes
 	static const struct {
-		unsigned int http;
+		int http;
 		int syscode;
 	} syscodes[] = {
 		{ 200, 0			},
@@ -50,19 +50,26 @@
 		{ 503, EBUSY	 	},
 	};
 
-	int HTTP::Exception::translate(int syscode) noexcept {
-
-		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
-			if(syscodes[ix].syscode == syscode) {
-				return syscodes[ix].http;
+	int HTTP::Exception::code(int syscode) noexcept {
+		for(const auto &code : syscodes) {
+			if(code.syscode == syscode) {
+				return code.http;
 			}
 		}
-
 		return 500;
 	}
 
-	int HTTP::Exception::translate(const system_error &except) noexcept {
-		return translate(except.code().value());
+	int HTTP::Exception::syscode(int httpcode) noexcept {
+		for(const auto &code : syscodes) {
+			if(code.http == httpcode) {
+				return code.syscode;
+			}
+		}
+		return -1;
+	}
+
+	int HTTP::Exception::code(const system_error &except) noexcept {
+		return code(except.code().value());
 	}
 
 	static int toSysError(unsigned int http) {
