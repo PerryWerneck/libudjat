@@ -37,6 +37,7 @@
 		unsigned int http;
 		int syscode;
 	} syscodes[] = {
+		{ 200, 0			},
 		{ 401, EPERM 		},
 		{ 403, EPERM 		},
 		{ 404, ENOENT		},
