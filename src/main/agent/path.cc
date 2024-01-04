@@ -56,6 +56,16 @@
 			}
 		}
 
+		/*
+		if(len == 5 && name[5] == 0 && !strcasecmp(name,"state")) {
+			auto state = agent.state();
+			if(state) {
+				state->getProperties(value);
+				return true;
+			}
+		}
+		*/
+
 		debug("Cant find child '",string{name,len}.c_str(),"'");
 		return false;
 	}

@@ -30,14 +30,15 @@
 
  namespace Udjat {
 
-	void Abstract::Response::failed(const char *message, int code) noexcept {
-		status.message = message;
+	Abstract::Response & Abstract::Response::failed(int code, const char *message, const char *body) noexcept {
 		status.code = code;
+		status.message = message;
+		status.body = body;
+		return *this;
 	}
 
-	void Abstract::Response::failed(int code) noexcept {
-		status.message = strerror(code);
-		status.code = code;
+	Abstract::Response & Abstract::Response::failed(int code) noexcept {
+		return failed(code,strerror(code));
 	}
 
 	time_t Abstract::Response::expires(const time_t tm) noexcept {
@@ -62,16 +63,20 @@
 
 	}
 
-	void Abstract::Response::failed(const std::system_error &e) noexcept {
-		failed(e.what(),e.code().value());
+	Abstract::Response & Abstract::Response::failed(const std::system_error &e) noexcept {
+		return failed(e.code().value(),e.what());
 	}
 
-	void Abstract::Response::failed(const HTTP::Exception &e) noexcept {
-		failed(e.what(),e.syscode());
+	Abstract::Response & Abstract::Response::failed(const HTTP::Exception &e) noexcept {
+		return failed(e.syscode(),e.what());
 	}
 
-	void Abstract::Response::failed(const std::exception &e) noexcept {
-		failed(e.what());
+	Abstract::Response & Abstract::Response::failed(const std::exception &e) noexcept {
+		return failed(-1,e.what());
+	}
+
+	Abstract::Response & Abstract::Response::failed(const char *message, const char *body) noexcept {
+		return failed(-1,message);
 	}
 
 	std::string Abstract::Response::to_string() const {

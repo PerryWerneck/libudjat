@@ -86,11 +86,12 @@
 				return this->mimetype != mimetype;
 			}
 
-			void failed(int code = errno) noexcept;
-			void failed(const char *message, int code = 0) noexcept;
-			void failed(const std::system_error &e) noexcept;
-			void failed(const std::exception &e) noexcept;
-			virtual void failed(const HTTP::Exception &e) noexcept;
+			Response & failed(int code = errno) noexcept;
+			Response & failed(const char *message, const char *body = "") noexcept;
+			Response & failed(int code, const char *message, const char *body = "") noexcept;
+			Response & failed(const std::system_error &e) noexcept;
+			Response & failed(const std::exception &e) noexcept;
+			virtual Response & failed(const HTTP::Exception &e) noexcept;
 
 			/// @brief Convert response to formatted string.
 			virtual std::string to_string() const;

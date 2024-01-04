@@ -174,7 +174,7 @@
 		<Unit filename="src/include/udjat/net/interface.h" />
 		<Unit filename="src/include/udjat/net/ip/address.h" />
 		<Unit filename="src/include/udjat/request.h" />
-		<Unit filename="src/include/udjat/tools/abstractresponse.h" />
+		<Unit filename="src/include/udjat/tools/abstract/response.h" />
 		<Unit filename="src/include/udjat/tools/activatable.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/base64.h" />
