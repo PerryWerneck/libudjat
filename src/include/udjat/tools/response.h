@@ -42,7 +42,7 @@
 			void serialize(std::ostream &out) const;
 			void serialize(std::ostream &out, const MimeType mimetype) const override;
 
-			std::string to_string() const;
+			std::string to_string() const override;
 
 		};
 
