@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
+ // #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -51,6 +51,7 @@
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/ui/icon.h>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
@@ -147,6 +148,7 @@ int main(int argc, char **argv) {
 		return false;
 	});
 	*/
+
 
 	//DummyProtocol protocol;
 	auto rc = Service{}.run(argc,argv,"./test.xml");
@@ -256,8 +258,14 @@ int main(int argc, char **argv) {
 	}
 	*/
 
+	/*
 	File::Path file{"/tmp/xpto.txt"};
 	cout << file.name() << endl;
+	*/
+
+	string name = Udjat::Icon{"computer"}.filename();
+
+	cout << name << endl;
 
 	return 0;
 }

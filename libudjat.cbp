@@ -385,6 +385,7 @@
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/hostname.cc" />
+		<Unit filename="src/tools/os/linux/iconcache.h" />
 		<Unit filename="src/tools/os/linux/ip.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/nic.cc" />
