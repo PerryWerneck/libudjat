@@ -21,8 +21,12 @@
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/ui/icon.h>
  #include <iostream>
  #include <vector>
+ #include <udjat/tools/file.h>
 
  using namespace std;
 
@@ -86,113 +90,134 @@
 		case Udjat::Value::Unsigned:
 		case Udjat::Value::Real:
 		case Udjat::Value::Fraction:
-			ss << "<strong class='numeric-value'>" << to_string() << "</strong>";
+			try {
+				Udjat::String tmpl{Config::Value<string>{"html","numeric-template","<strong class='numeric-value'>${value}</strong>"}.c_str()};
+
+				ss << tmpl.expand([this](const char *key, std::string &value){
+
+					if(!strcasecmp(key,"value")) {
+						value = to_string();
+						return true;
+					}
+
+					return false;
+
+				},true,false);
+
+			} catch(const std::exception &e) {
+				Logger::String(to_string(),": ",e.what()).error("numeric");
+			}
 			break;
 
 		case Udjat::Value::Boolean:
-			ss << "<strong class='" << (as_bool() ? "true-value" : "false-value") << "'>" << to_string() << "</strong>";
+			try {
+				Udjat::String tmpl{Config::Value<string>{"html","boolean-template","<strong class='${type}-value'>${value}</strong>"}.c_str()};
+
+				ss << tmpl.expand([this](const char *key, std::string &value){
+
+					if(!strcasecmp(key,"value")) {
+						value = to_string();
+						return true;
+					} else if(!strcasecmp(key,"type")) {
+						value = (as_bool() ? "true" : "false");
+						return true;
+					}
+
+					return false;
+
+				},true,false);
+
+			} catch(const std::exception &e) {
+				Logger::String(to_string(),": ",e.what()).error("icon");
+			}
 			break;
 
 		case Udjat::Value::Url:
-			ss << "<strong class='string-value'>";
-			if(!empty()) {
-				ss << "<a href='" << to_string() << "'>" << to_string() << "</a>";
+			try {
+				if(!empty()) {
+
+					Udjat::String tmpl{Config::Value<string>{"html","link-template","<strong class='string-value'><a href='${link}'>${link}</a>"}.c_str()};
+
+					ss << tmpl.expand([this](const char *key, std::string &value){
+
+						if(!strcasecmp(key,"link")) {
+							value = to_string();
+							return true;
+						}
+
+						return false;
+
+					},true,false);
+
+				} else {
+
+					ss << "&nbsp;";
+
+				}
+			} catch(const std::exception &e) {
+				Logger::String(to_string(),": ",e.what()).error("link");
 			}
-			ss << "</strong>";
+			break;
+
+		case Udjat::Value::Icon:
+			try {
+				Udjat::String tmpl{Config::Value<string>{"html","icon-template","<strong class='icon-name'>${icon-name}</strong>"}.c_str()};
+
+				tmpl.expand([this](const char *key, std::string &value){
+
+					if(!strcasecmp(key,"icon-name")) {
+						value = to_string();
+						return true;
+					}
+
+					return false;
+
+				},true,false);
+
+				if(!strcasecmp(tmpl.c_str(),"embed")) {
+
+					// Embed icon.
+					File::Text path{Udjat::Icon{to_string().c_str()}.filename()};
+
+					if(path.regular()) {
+						ss << path.c_str();
+					}
+
+				} else {
+
+					ss << tmpl;
+
+				}
+
+			} catch(const std::exception &e) {
+				Logger::String(to_string(),": ",e.what()).error("icon");
+			}
 			break;
 
 		default:
-			ss << "<strong class='string-value'>" << to_string() << "</strong>";
+			try {
+				Udjat::String tmpl{Config::Value<string>{"html","string-template","<strong class='string-value'>${value}</strong>"}.c_str()};
+
+				ss << tmpl.expand([this](const char *key, std::string &value){
+
+					if(!strcasecmp(key,"value")) {
+						value = to_string();
+						return true;
+					}
+
+					return false;
+
+				},true,false);
+
+			} catch(const std::exception &e) {
+				Logger::String(to_string(),": ",e.what()).error("icon");
+			}
+
 
 		}
 		#pragma GCC diagnostic pop
 
 	}
-
-	/*
- #include <udjat/civetweb.h>
- #include <udjat/tools/http/value.h>
- #include <iostream>
- #include <iomanip>
- #include <vector>
-
- using namespace std;
-
- namespace Udjat {
-
-	void HTTP::Value::html(std::stringstream &ss) const {
-
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wswitch"
-		switch(this->type) {
-		case Udjat::Value::Object:
-			{
-				ss << "<ul>";
-				for(auto &child : children) {
-					ss << "<li><label>" << child.first << ":&nbsp;";
-					if(child.second->type == Udjat::Value::Object || child.second->type == Udjat::Value::Array ) {
-						child.second->html(ss);
-					} else if(child.second->type == Udjat::Value::Fraction ) {
-						ss << "<strong>" << child.second->to_string() << "%</strong>";
-					} else {
-						ss << "<strong>" << child.second->to_string() << "</strong>";
-					}
-
-					ss << "</label></li>";
-				}
-				ss << "</ul>";
-			}
-			break;
-
-		case Udjat::Value::Array:
-
-			if(!children.empty()) {
-
-				ss << "<table>";
-
-				// Get column names.
-				vector<string> colnames;
-				{
-					const Value &first = *children.begin()->second;
-					if(!first.children.empty()) {
-						ss << "<thead><tr>";
-						for(auto &col : first.children) {
-							ss << "<th>";
-							colnames.push_back(col.first);
-							ss << col.first;
-							ss << "</th>";
-						}
-						ss << "</tr></thead>";
-					}
-				}
-
-				// Get column contents.
-				ss << "<tbody>";
-				{
-					for(auto &row : children) {
-						if(!row.second->children.empty()) {
-							ss << "<tr>";
-							for(string &colname : colnames) {
-								auto value = row.second->children.find(colname.c_str());
-								ss << "<td>";
-								if(value != row.second->children.end()) {
-									ss << value->second->to_string();
-								}
-								ss << "</td>";
-							}
-							ss << "</tr>";
-						}
-					}
-				}
-				ss << "</tbody></table>";
-			}
-			break;
-
-		}
-		#pragma GCC diagnostic pop
-
-	}
- */
 
  }
 
