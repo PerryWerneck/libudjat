@@ -36,52 +36,21 @@
 
  namespace Udjat {
 
-	UDJAT_API bool exec(Request &request, Response::Value &response) noexcept {
+	UDJAT_API bool exec(Request &request, Response::Value &response) {
 
-		try {
-
-			if(!Worker::Controller::getInstance().exec<Response::Value>(request,response)) {
-				response.failed(ENOENT);
-				return false;
-			}
-
-		} catch(const std::system_error &e) {
-
-			response.failed(e);
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
-
-		} catch(...) {
-
-			response.failed(_("Unexpected error processing request"));
-
+		if(!Worker::Controller::getInstance().exec<Response::Value>(request,response)) {
+			response.failed(ENOENT);
+			return false;
 		}
 
 		return true;
 	}
 
-	UDJAT_API bool exec(Request &request, Response::Table &response) noexcept {
+	UDJAT_API bool exec(Request &request, Response::Table &response) {
 
-		try {
-
-			if(!Worker::Controller::getInstance().exec<Response::Table>(request,response)) {
-				response.failed(ENOENT);
-			}
-
-		} catch(const std::system_error &e) {
-
-			response.failed(e);
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
-
-		} catch(...) {
-
-			response.failed(_("Unexpected error processing request"));
-
+		if(!Worker::Controller::getInstance().exec<Response::Table>(request,response)) {
+			response.failed(ENOENT);
+			return false;
 		}
 
 		return true;
@@ -104,102 +73,5 @@
 		*/
 	}
 
-	/*
-	bool Request::exec(Response::Value &response, bool required) {
-
-		const char *saved_path = reqpath;
-
-		try {
-
-			const Worker *selected_worker = nullptr;
-
-			debug("Searching worker for '",reqpath,"'");
-
-			bool found = Worker::for_each([this,&selected_worker](const Worker &worker){
-
-				const char *path{worker.check_path(reqpath)};
-				if(!path) {
-					return false;
-				}
-
-				debug("Worker '",worker.c_str(),"' selected path '",path,"'");
-
-				selected_worker = &worker;
-				reqpath = path;
-
-				return true;
-
-			});
-
-			if(found) {
-
-				selected_worker->work(*this,response);
-
-			} else if(required) {
-
-				throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",c_str(),"'"});
-
-			}
-
-			return found;
-
-		} catch(...) {
-
-			reqpath = saved_path;
-			throw;
-
-		}
-
-	}
-	*/
-
-	/*
-	bool Request::exec(Response::Table &response, bool required) {
-
-		const char *saved_path = reqpath;
-
-		try {
-
-			const Worker *selected_worker = nullptr;
-
-			debug("Searching worker for '",reqpath,"'");
-
-			bool found = Worker::for_each([this,&selected_worker](const Worker &worker){
-
-				const char *path{worker.check_path(reqpath)};
-				if(!path) {
-					return false;
-				}
-
-				debug("Worker '",worker.c_str(),"' selected path '",path,"'");
-
-				selected_worker = &worker;
-				reqpath = path;
-
-				return true;
-
-			});
-
-			if(found) {
-
-				selected_worker->work(*this,response);
-
-			} else if(required) {
-
-				throw system_error(ENOENT,system_category(),Logger::String{"Cant handle '",c_str(),"'"});
-
-			}
-
-			return found;
-
-		} catch(...) {
-
-			reqpath = saved_path;
-			throw;
-
-		}
-
-	}
-	*/
 
  }
