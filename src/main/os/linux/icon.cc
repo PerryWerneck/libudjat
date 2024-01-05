@@ -46,14 +46,41 @@
 
  /// @brief Icon Cache file.
  class UDJAT_PRIVATE Cache {
+	//
+	// References:
+	//
+ 	// https://github.com/GNOME/gtk/blob/main/docs/iconcache.txt
+	// https://github.com/GNOME/gtk/blob/main/gtk/gtkiconcache.c
+	//
  private:
 
- 	// https://github.com/GNOME/gtk/blob/main/docs/iconcache.txt
+	enum Flag {
+		NONE = 0,
+		XPM_SUFFIX = 1 << 0,
+		SVG_SUFFIX = 1 << 1,
+		PNG_SUFFIX = 1 << 2,
+		HAS_ICON_FILE = 1 << 3,
+		SYMBOLIC_PNG_SUFFIX = 1 << 4,
+	};
 
  	size_t length = 0;
  	uint8_t *data = nullptr;
 
- public:
+ 	inline uint32_t get_uint32(uint32_t offset) const {
+		return htonl(*((uint32_t *)(data+offset)));
+ 	}
+
+  	inline uint32_t get_uint16(uint32_t offset) const {
+		return htons(*((uint16_t *)(data+offset)));
+ 	}
+
+  	inline const char * get_string_ptr(uint32_t offset) const {
+		return (const char *) (data+offset);
+ 	}
+
+  public:
+
+	/// @brief Build cache from index file.
 	Cache(const char *filename) {
 
 		int fd = open(filename,O_RDONLY);
@@ -79,53 +106,70 @@
 
 		close(fd);
 
-		debug(filename,": ",get_u16(0),".",get_u16(2));
+		debug(filename,": ",get_uint16(0),".",get_uint16(2));
 
 	}
-
- 	uint16_t get_u16(uint32_t offset) const {
-		return htons(*((uint16_t *) (data + offset)));
- 	}
-
-  	uint32_t get_u32(uint32_t offset) const {
-		return htonl(*((uint32_t *) (data + offset)));
- 	}
-
-	template <typename T>
-	inline const T * get_ptr(size_t offset) const {
-		return (T *) (data+offset);
-	}
-
-	/*
-	const char * directory(uint32_t index) const {
-		uint32_t offset = get_u32(8);
-		uint32_t items = get_u32(offset);
-		if(index >= items) {
-			return nullptr;
-		}
-		offset += 4;
-		return get_ptr(get_u32(offset+(index*4)));
-	}
-	*/
-
-	/*
-	uint32_t bucket(uint32_t index) const {
-		uint32_t offset = get_u32(4);
-		uint32_t items = get_u32(offset);
-		if(index >= items) {
-			return 0;
-		}
-		offset += 4;
-		return get_u32(offset+(index*4));
-	}
-	*/
 
 	~Cache() {
 		if(data) {
 			munmap(data,length);
 		}
 	}
+
+	/// @brief Get directory from index.
+	const char * dirname(const uint16_t index) const {
+
+		auto dir_list_offset = get_uint32(8);
+		auto n_dirs = get_uint32(dir_list_offset);
+		if(index > n_dirs) {
+			throw runtime_error("Unexpected directory index");
+		}
+
+		auto dir_name_offset = get_uint32(dir_list_offset + 4 + (index*4));
+		return get_string_ptr(dir_name_offset);
+
+	}
+
+	void buckets() const {
+
+		auto hash_offset = get_uint32(4);
+		auto n_buckets = get_uint32(hash_offset);
+
+		for (uint32_t i = 0; i < n_buckets; i++) {
+
+			auto chain_offset = get_uint32(hash_offset + 4 + 4 * i);
+			while (chain_offset != 0xffffffff) {
+
+				auto name_offset = get_uint32(chain_offset + 4);
+				debug("- ",get_string_ptr(name_offset));
+
+				// TODO: Check it this is the icon I want.
+
+				auto image_list_offset = get_uint32(chain_offset + 8);
+				auto n_images = get_uint32(image_list_offset);
+				for(uint32_t j = 0; j < n_images; j++) {
+					auto flags = get_uint16(image_list_offset + 4 + 8 * j + 2);
+#ifdef DEBUG
+					cout 	<< "-    Flags: "
+							<< (flags & XPM_SUFFIX ? "xpm " : "")
+							<< (flags & SVG_SUFFIX ? "svg " : "")
+							<< (flags & PNG_SUFFIX ? "png " : "")
+							<< (flags & HAS_ICON_FILE ? "icon " : "")
+							<< (flags & SYMBOLIC_PNG_SUFFIX ? "symbolicpng " : "")
+							<< "(" << flags << ")" << endl
+							<< "-    Path: " << dirname(get_uint16(image_list_offset + 4 + 8 * j)) << endl;
+#endif // DEBUG
+
+
+				}
+				chain_offset = get_uint32(chain_offset);
+			}
+
+		}
+	}
+
  };
+
 
  namespace Udjat {
 
@@ -144,134 +188,9 @@
 		Config::Value<std::vector<string>> paths("theme","iconpath",defpaths);
 
 #ifdef DEBUG
-		//
-		// Search on cached themes
-		//
-		for(string &path : paths) {
+		Cache cache{"/usr/share/icons/Adwaita/icon-theme.cache"};
 
-			string filename{path + "icon-theme.cache"};
-
-			if(access(filename.c_str(),R_OK) == 0) {
-
-				Cache cache{filename.c_str()};
-
-//#ifdef DEBUG
-//				cout << "Hash offset: " << hex << cache.get_u32(4) << " " << cache.get_u32(cache.get_u32(4)) << dec << " items" << endl;
-//				cout << "Directory offset: " << hex << cache.get_u32(8) << " " << cache.get_u32(cache.get_u32(8)) << dec << " items" << endl;
-//
-
-/*
- 00 00 02 2d <-- Tamanho
- 00 00 08 c4
- 00 00 09 d8
- 00 00 0a 58
- 00 00 0a e4
- 00 00 0c b0
- 00 00 0d cc
- 00 00 0e 48
- 00 00 0f 10
- 00 00 0f 6c
- 00 00 10 2c
- 00 00 12 30
- 00 00 13 1c
- 00 00 13 60
- 00 00 13 f0
- 00 00 15 08
- 00 00 15 54
- 00 00 17 3c
- 00 00 17 a4
- 00 00 18 14
- 00 00 18 50
- 00 00 19 08
- 00 00 19 50
- 00 00 19 8c
- 00 00 1a 50
- 1b 24 00 00
- 1c bc 00 00
- 1e 54 00 00
- 1f d0 00 00
- 20 1c ff ff
-*/
-
-//#endif // DEBUG
-
-				{
-					const uint32_t *hashptr = cache.get_ptr<uint32_t>(cache.get_u32(4));
-					uint32_t items = htonl(*(hashptr++));
-
-					cout << "Items: " << items << hex << "  first offset=" << cache.get_u32(cache.get_u32(4)) << dec << endl;
-
-					uint32_t offset = cache.get_u32(4);
-					if(cache.get_u32(offset) != items) {
-						throw runtime_error("Items não bate");
-					}
-
-					offset += 4;
-
-					//items = 2;
-					for(uint32_t item = 0; item < items; item++) {
-						const uint32_t *recptr = cache.get_ptr<uint32_t>(htonl(*(hashptr++)));
-
-						const uint32_t recoffset = cache.get_u32(offset);
-						cout << item << hex << " offset=" << offset << " [ ";
-
-						auto cptr = cache.get_ptr<uint8_t>(offset);
-						for(int x = 0; x < 4; x++) {
-							cout << " " << setfill('0') << setw(2) << (int) *(cptr++);
-						}
-						cout << " ]";
-
-
-						cout << dec << endl;
-						offset += 4;
-					}
-
-
-					/*
-
-01/04/24 20:03:06                Hash offset: c 22d items
-01/04/24 20:03:06                Directory offset: 1c2f4 60 items
-01/04/24 20:03:06                Hash[0]: 8c8
-01/04/24 20:03:06                0 = 16x16/actions
-01/04/24 20:03:06                1 = 16x16/apps
-01/04/24 20:03:06                2 = 16x16/categories
-01/04/24 20:03:06                3 = 16x16/devices
-01/04/24 20:03:06                4 = 16x16/emblems
-
-					uint32_t items = cache.get_u32(offset);
-					items = 2;
-					while(items-- > 0) {
-						offset += 4;
-						const uint32_t *item = cache.get_ptr<uint32_t>(cache.get_u32(offset));
-						cout 	<< "item: " << items << hex << item[1] << dec << endl;
-					}
-					*/
-				}
-
-
-
-				/*
-				for(size_t ix = 0; cache.directory(ix);ix++) {
-					cout << ix << " = " << cache.directory(ix) << endl;
-				}
-				*/
-
-				/*
-				uint32_t offset = cache.get_u32(4);
-				uint32_t items = cache.get_u32(offset);
-				debug("items=",items);
-				while(items--) {
-					offset += 4;
-
-					debug("offset=",cache.get_u32(offset));
-
-				}
-				debug("--");
-				*/
-
-
-			}
-		}
+		cache.buckets();
 
 		return "";
 #endif // DEBUG
