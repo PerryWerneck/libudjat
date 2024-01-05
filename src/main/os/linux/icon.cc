@@ -143,6 +143,7 @@
 
 		Config::Value<std::vector<string>> paths("theme","iconpath",defpaths);
 
+#ifdef DEBUG
 		//
 		// Search on cached themes
 		//
@@ -272,7 +273,6 @@
 			}
 		}
 
-#ifdef DEBUG
 		return "";
 #endif // DEBUG
 
