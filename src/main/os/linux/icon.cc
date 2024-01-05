@@ -52,7 +52,7 @@
  	// https://github.com/GNOME/gtk/blob/main/docs/iconcache.txt
 	// https://github.com/GNOME/gtk/blob/main/gtk/gtkiconcache.c
 	//
- private:
+ public:
 
 	enum Flag {
 		NONE = 0,
@@ -63,8 +63,11 @@
 		SYMBOLIC_PNG_SUFFIX = 1 << 4,
 	};
 
- 	size_t length = 0;
+ private:
+
+	size_t length = 0;
  	uint8_t *data = nullptr;
+ 	std::string path;
 
  	inline uint32_t get_uint32(uint32_t offset) const {
 		return htonl(*((uint32_t *)(data+offset)));
@@ -81,7 +84,14 @@
   public:
 
 	/// @brief Build cache from index file.
-	Cache(const char *filename) {
+	Cache(const char *filename) : path{filename} {
+
+		{
+			auto lptr = path.rfind('/');
+			if(lptr != string::npos) {
+				path.resize(lptr+1);
+			}
+		}
 
 		int fd = open(filename,O_RDONLY);
 		if(fd < 0) {
@@ -130,7 +140,16 @@
 
 	}
 
-	void buckets() const {
+	std::string find(const char *id, Flag required_flags = SVG_SUFFIX) const {
+
+		const char *name = strchr(id,'/');
+		if(name) {
+			name++;
+		} else {
+			name = id;
+		}
+
+		debug("Searching for icon '",name,"'");
 
 		auto hash_offset = get_uint32(4);
 		auto n_buckets = get_uint32(hash_offset);
@@ -141,31 +160,58 @@
 			while (chain_offset != 0xffffffff) {
 
 				auto name_offset = get_uint32(chain_offset + 4);
+
 				debug("- ",get_string_ptr(name_offset));
+				if(!strcasecmp(name,get_string_ptr(name_offset))) {
 
-				// TODO: Check it this is the icon I want.
-
-				auto image_list_offset = get_uint32(chain_offset + 8);
-				auto n_images = get_uint32(image_list_offset);
-				for(uint32_t j = 0; j < n_images; j++) {
-					auto flags = get_uint16(image_list_offset + 4 + 8 * j + 2);
+					auto image_list_offset = get_uint32(chain_offset + 8);
+					auto n_images = get_uint32(image_list_offset);
+					for(uint32_t j = 0; j < n_images; j++) {
+						auto flags = get_uint16(image_list_offset + 4 + 8 * j + 2);
 #ifdef DEBUG
-					cout 	<< "-    Flags: "
-							<< (flags & XPM_SUFFIX ? "xpm " : "")
-							<< (flags & SVG_SUFFIX ? "svg " : "")
-							<< (flags & PNG_SUFFIX ? "png " : "")
-							<< (flags & HAS_ICON_FILE ? "icon " : "")
-							<< (flags & SYMBOLIC_PNG_SUFFIX ? "symbolicpng " : "")
-							<< "(" << flags << ")" << endl
-							<< "-    Path: " << dirname(get_uint16(image_list_offset + 4 + 8 * j)) << endl;
+						cout 	<< "-    Flags: "
+								<< (flags & XPM_SUFFIX ? "xpm " : "")
+								<< (flags & SVG_SUFFIX ? "svg " : "")
+								<< (flags & PNG_SUFFIX ? "png " : "")
+								<< (flags & HAS_ICON_FILE ? "icon " : "")
+								<< (flags & SYMBOLIC_PNG_SUFFIX ? "symbolicpng " : "")
+								<< "(" << flags << ")" << endl
+								<< "-    Path: " << dirname(get_uint16(image_list_offset + 4 + 8 * j)) << endl;
 #endif // DEBUG
 
+						if(flags & required_flags) {
+							string filename{this->path};
+							filename += dirname(get_uint16(image_list_offset + 4 + 8 * j));
+							filename += "/";
+							filename += get_string_ptr(name_offset);
+							filename += '.';
+							if(flags & SVG_SUFFIX) {
+								filename += "svg";
+							} else if(flags & PNG_SUFFIX) {
+								filename += "png";
+							} else if(flags & XPM_SUFFIX) {
+								filename += "xpm";
+							} else {
+								throw runtime_error("Unsupported image format");
+							}
+							if(access(filename.c_str(),R_OK) == 0) {
+								return filename;
+							} else {
+								cerr << "Cant find '" << filename << "'" << endl;
+							}
+						}
 
+					}
+
+					return "";
 				}
+
 				chain_offset = get_uint32(chain_offset);
 			}
 
 		}
+
+		return "";
 	}
 
  };
@@ -187,13 +233,22 @@
 
 		Config::Value<std::vector<string>> paths("theme","iconpath",defpaths);
 
-#ifdef DEBUG
-		Cache cache{"/usr/share/icons/Adwaita/icon-theme.cache"};
+		//
+		// Search cache files
+		//
+		for(string &path : paths) {
 
-		cache.buckets();
+			// Search for file.
+			string filename{path + "icon-theme.cache"};
 
-		return "";
-#endif // DEBUG
+			if(access(filename.c_str(),R_OK) == 0) {
+				filename = Cache{filename.c_str()}.find(c_str());
+				if(!filename.empty()) {
+					return filename;
+				}
+			}
+
+		}
 
 		string name{c_str()};
 		if(!strchr(name.c_str(),'.')) {

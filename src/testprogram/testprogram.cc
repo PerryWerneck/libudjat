@@ -265,7 +265,7 @@ int main(int argc, char **argv) {
 
 	string name = Udjat::Icon{"computer"}.filename();
 
-	cout << name << endl;
+	cout << "Found: '" << name << "'" << endl;
 
 	return 0;
 }
