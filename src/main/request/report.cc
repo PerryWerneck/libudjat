@@ -50,6 +50,8 @@
 
 	void Response::Table::serialize(std::ostream &stream, const MimeType mimetype) const {
 
+		debug(__FUNCTION__,": Serializing table");
+
 		switch(mimetype) {
 		case MimeType::xml:
 			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
@@ -162,8 +164,43 @@
 			}
 			break;
 
+		case Udjat::MimeType::html:
+			{
+				stream << "<table>";
+				if(!info.caption.empty()) {
+					stream << "<caption>" << info.caption << "</caption>";
+				}
+				stream << "<thead><tr>";
+
+				for(const auto &column : columns.names) {
+					stream << "<th>" << column << "</th>";
+				}
+
+				stream << "<</tr></thead><tbody>";
+
+				auto column = columns.names.begin();
+				stream << "<tr>";
+				for_each([this, &stream, &column](const Value::Type type, const char *value){
+					if(column == columns.names.end()) {
+						stream << "</tr><tr>";
+						column = columns.names.begin();
+					}
+					stream << "<td>";
+					stream << value;
+					stream << "</td>";
+					column++;
+				});
+				stream << "</tr>";
+
+				stream << "</tbody></table>";
+
+				debug("Serialized");
+
+			}
+			break;
+
 		default:
-			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
+			throw runtime_error(Logger::String{"Unable to serialize table to ",std::to_string(mimetype)});
 		}
 
 	}

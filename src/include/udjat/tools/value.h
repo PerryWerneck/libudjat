@@ -31,7 +31,7 @@
 
  namespace Udjat {
 
-	/// @brief Abstract value holding untyped data.
+	/// @brief Abstract value holding multiple types of data.
 	class UDJAT_API Value {
 	public:
 
@@ -49,6 +49,7 @@
 			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
 			Icon,				///< @brief Icon name.
 			Url,				///< @brief URL.
+			State,				///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error, etc)
 		};
 
 		/// @brief Get stored value type.
@@ -77,7 +78,13 @@
 		/// @return Null value inserted to object.
 		virtual Value & operator[](const char *name);
 
+		/// @brief Get child by name.
+		/// @return First child with required name. Exception if not found.
 		const Value & operator[](const char *name) const;
+
+		/// @brief Get child by type.
+		/// @return First child with required type. Exception if not found.
+		const Value & operator[](Type type) const;
 
 		/// @brief Navigate from all values until 'call' returns true.
 		/// @return true if 'call' has returned true, false if not.

@@ -183,8 +183,43 @@
 		throw system_error(ENOTSUP,system_category(),_("Cant get itens on this value"));
 	}
 
+	const Value & Value::operator[](const Value::Type type) const {
+
+		const Value *value = nullptr;
+
+		if(!for_each([&value,type](const char *, const Value &v) {
+
+			if(v == type) {
+				value = &v;
+				return true;
+			}
+			return false;
+
+		})) {
+			throw runtime_error("Cant find value of required type");
+		}
+
+		return *value;
+
+	}
+
 	const Value & Value::operator[](const char *name) const {
-		return const_cast<Value *>(this)->operator[](name);
+
+		const Value *value = nullptr;
+
+		if(!for_each([&value,name](const char *vname, const Value &v) {
+
+			if(strcasecmp(name,vname) == 0) {
+				value = &v;
+				return true;
+			}
+			return false;
+
+		})) {
+			throw runtime_error(Logger::Message(_("Cant find child '{}'"),name));
+		}
+
+		return *value;
 	}
 
 	Value & Value::append(const Type type) {
