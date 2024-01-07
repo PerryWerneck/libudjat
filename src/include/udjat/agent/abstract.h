@@ -309,6 +309,10 @@
 			bool get(Udjat::Response::Value &value) const;
 			bool get(Udjat::Response::Table &value) const;
 
+			virtual bool getState(Udjat::Value &value) const;
+			virtual bool getState(Udjat::Response::Value &value) const;
+			virtual bool getState(Udjat::Response::Table &value) const;
+
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
 			/// @param value Object for child properties.
