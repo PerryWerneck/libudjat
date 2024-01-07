@@ -88,6 +88,8 @@
 
 	bool Worker::exec(Request &request, Response::Value &response) const {
 
+		debug("Running default exec for value response on worker '",name,"'");
+
 		//
 		// Execute legacy worker, with name as the first element of path.
 		//
@@ -105,7 +107,6 @@
 		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
 
 			// Found valid worker, try to fullfill the request.
-			debug("-----------------------------------------------");
 			debug("Worker '",name,"' accepted '",path,"'");
 			request.rewind().pop(); // Extract my name.
 			return work(request, response);
@@ -119,6 +120,7 @@
 
 	bool Worker::exec(Request &request, Response::Table &response) const {
 
+		debug("Running default exec for table response on worker '",name,"'");
 		//
 		// Execute legacy worker, with name as the first element of path.
 		//
@@ -131,14 +133,17 @@
 
 		size_t szpath = strlen(path);
 
-		if(szpath < (szname+1) || path[szname] != '/' || strncasecmp(path,name,szname)) {
-			return false;
+		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
+
+			// Found valid worker, try to fullfill the request.
+			debug("Worker '",name,"' accepted '",path,"'");
+			request.rewind().pop(); // Extract my name.
+			return work(request, response);
+
 		}
 
-		// Found valid request, try to fullfill it.
-		request.rewind().pop(); // Extract my name.
-
-		return work(request, response);
+		debug("Worker '",name,"' rejected '",path,"'");
+		return false;
 
 	}
 
@@ -164,6 +169,7 @@
 	bool Worker::work(Request &request, Response::Table &response) const {
 
 		if( ((HTTP::Method) request) == HTTP::Get) {
+			debug("HTTP GET");
 			return get(request,response);
 		} else {
 			throw system_error(ENOENT,system_category(),Logger::String{"Unable to handle '",(const char *) request,"'"});

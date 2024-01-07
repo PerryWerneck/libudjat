@@ -101,9 +101,22 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
 
-		debug("-[ GET(",request.path(),") ]----------------------");
+		debug("-[ GET('",request.path(),"',value) ]----------------------");
 		return root->getProperties(request.path(),response);
 
+	}
+
+	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
+
+		debug("-[ GET('",request.path(),"',table) ]----------------------");
+
+		auto agent = find(request.path());
+		if(!agent){
+			throw std::system_error(ENOENT,std::system_category());
+		}
+
+		agent->get(response);
+		return true;
 	}
 
 	/*

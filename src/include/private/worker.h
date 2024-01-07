@@ -56,6 +56,7 @@
 					return true;
 				}
 			}
+
 			response.failed(ENOENT);
 			return false;
 		}

@@ -94,7 +94,7 @@ namespace Udjat {
 
 		// Worker
 		bool get(Request &request, Udjat::Response::Value &response) const override;
-		// bool get(Request &request, Udjat::Response::Table &response) const override;
+		bool get(Request &request, Udjat::Response::Table &response) const override;
 
 	};
 
