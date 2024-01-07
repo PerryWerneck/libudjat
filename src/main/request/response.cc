@@ -100,7 +100,11 @@
 			// Format as XML
 
 			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
-					<< (this->status.success ? "success" : "failed") << "'";
+					<< status.code << "'";
+
+			if(!status.message.empty()) {
+				stream << " message='" << status.message << "'";
+			}
 
 			if(modification) {
 				stream << " timestamp='" << modification.to_string() << "'";
@@ -124,7 +128,7 @@
 			// https://github.com/omniti-labs/jsend
 			stream << "{\"status\":\"";
 
-			if(status.success) {
+			if(status.code == 0) {
 				stream << "success\"";
 			} else if(status.message.empty()) {
 				stream << "fail\"";

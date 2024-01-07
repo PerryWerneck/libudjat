@@ -38,6 +38,7 @@
 		int syscode;
 	} syscodes[] = {
 		{ 200, 0			},
+		{ 204, ENODATA		},
 		{ 401, EPERM 		},
 		{ 403, EPERM 		},
 		{ 404, ENOENT		},
@@ -75,7 +76,7 @@
 	static int toSysError(unsigned int http) {
 
 		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
-			if(syscodes[ix].http == http) {
+			if(syscodes[ix].http == (int) http) {
 				return syscodes[ix].syscode;
 			}
 		}
@@ -86,7 +87,7 @@
 	static string toSysMessage(unsigned int http) {
 
 		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
-			if(syscodes[ix].http == http) {
+			if(syscodes[ix].http == (int) http) {
 				return string{strerror(syscodes[ix].syscode)};
 			}
 		}

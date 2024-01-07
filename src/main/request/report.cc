@@ -43,8 +43,15 @@
 	}
 
 	std::string Response::Table::to_string(const MimeType mimetype) const {
+
+		if(empty()) {
+			return "";
+		}
+
 		std::stringstream out;
+		debug(__FUNCTION__,": Serializing table");
 		serialize(out,mimetype);
+		debug("Serialized");
 		return out.str();
 	}
 
@@ -55,7 +62,11 @@
 		switch(mimetype) {
 		case MimeType::xml:
 			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
-					<< (this->status.success ? "success" : "failed") << "'";
+					<< status.code << "'";
+
+			if(!status.message.empty()) {
+				stream << " message='" << status.message << "'";
+			}
 
 			if(modification) {
 				stream << " timestamp='" << modification.to_string() << "'";
@@ -105,7 +116,7 @@
 				// https://github.com/omniti-labs/jsend
 				stream << "{\"status\":\"";
 
-				if(status.success) {
+				if(status.code == 0) {
 					stream << "success\"";
 				} else if(status.message.empty()) {
 					stream << "fail\"";
@@ -176,7 +187,7 @@
 					stream << "<th>" << column << "</th>";
 				}
 
-				stream << "<</tr></thead><tbody>";
+				stream << "</tr></thead><tbody>";
 
 				auto column = columns.names.begin();
 				stream << "<tr>";

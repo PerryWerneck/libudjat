@@ -47,9 +47,6 @@
 			/// @brief Response result.
 			struct {
 
-				/// @brief Is the request suceeded?
-				bool success = true;
-
 				/// @brief Request error message.
 				std::string message;
 
@@ -67,7 +64,7 @@
 			}
 
 			inline operator bool() const noexcept {
-				return status.success;
+				return status.code == 0;
 			}
 
 			inline int status_code() const noexcept {

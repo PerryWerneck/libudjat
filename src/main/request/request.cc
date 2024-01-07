@@ -135,8 +135,6 @@
 			return "";
 		}
 
-		debug("-----------[",argptr,"]");
-
 		const char *next = strchr(argptr,'/');
 		if(!next) {
 			string rc{argptr};
