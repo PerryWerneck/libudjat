@@ -69,7 +69,10 @@
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Value &value) const {
-		return getFromPath(*this,path,value);
+		if(getFromPath(*this,path,value)) {
+			return true;
+		}
+		return getFromPath(*this,path,(Udjat::Value &) value);
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Table &report) const {

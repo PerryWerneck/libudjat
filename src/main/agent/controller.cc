@@ -101,7 +101,6 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
 
-		debug("-[ GET('",request.path(),"',value) ]----------------------");
 		return root->getProperties(request.path(),response);
 
 	}
