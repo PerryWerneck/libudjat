@@ -56,6 +56,17 @@
 		if(Object::getProperty(key, value))
 			return true;
 
+		// Not found, search children
+		{
+			lock_guard<std::recursive_mutex> lock(guard);
+			for(auto child : children.agents) {
+				if(!strcasecmp(key,child->name())) {
+					value = child->to_string();
+					return true;
+				}
+			}
+		}
+
 		// Not found, search related objects.
 		{
 			lock_guard<std::recursive_mutex> lock(guard);

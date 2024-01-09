@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/agent.h>
+ #include <udjat/tools/object.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
@@ -56,27 +57,49 @@
 			}
 		}
 
-		if(len == 5 && name[5] == 0 && !strcasecmp(name,"state")) {
-			agent.getState(value);
-		}
-
 		debug("Cant find child '",string{name,len}.c_str(),"'");
 		return false;
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Value &value) const {
-		return getFromPath(*this,path,value);
+
+		if(getFromPath(*this,path,value)) {
+			return true;
+		}
+
+		if(!strcasecmp(path,"state") && strlen(path) == 5 && current_state.selected) {
+			current_state.selected->getProperties(value);
+			return true;
+		}
+
+		if(Abstract::Object::getProperty(path,value)) {
+			return true;
+		}
+
+		return false;
+
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Value &value) const {
 		if(getFromPath(*this,path,value)) {
 			return true;
 		}
-		return getFromPath(*this,path,(Udjat::Value &) value);
+		debug("Cant find Response::Value('",path,"'), trying with Udjat::Value('",path,"')");
+		return getProperties(path,(Udjat::Value &) value);
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Table &report) const {
-		return getFromPath(*this,path,report);
+
+		if(getFromPath(*this,path,report)) {
+			return true;
+		}
+
+		if(!strcasecmp(path,"states")) {
+			getStates(report);
+			return true;
+		}
+
+		return false;
 	}
 
 

@@ -39,6 +39,12 @@
 		/// @brief Agent states.
 		std::vector<std::shared_ptr<State<T>>> states;
 
+		void for_each(const std::function<void(const Abstract::State &state)> &method) const override {
+			for(auto state : states) {
+				method(*state);
+			}
+		}
+
 		/// @brief Insert State with predefined value.
 		std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node, T value) {
 			auto state = std::make_shared<State<T>>(node, value);

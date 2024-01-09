@@ -92,30 +92,7 @@
 		return true;
 	}
 
-	bool Abstract::Agent::getState(Udjat::Value &value) const {
-		if(!current_state.selected) {
-			return false;
-		}
-		current_state.selected->getProperties(value);
-		return true;
-	}
-
-	bool Abstract::Agent::getState(Udjat::Response::Value &response) const {
-		if(!current_state.selected) {
-			return false;
-		}
-		if(current_state.timestamp) {
-			response.last_modified(current_state.timestamp);
-		} else {
-			response.last_modified(last_modified());
-		}
-		response.expires(expires());
-		current_state.selected->getProperties(response);
-		return true;
-	}
-
-	bool Abstract::Agent::getState(Udjat::Response::Table &) const {
-		return false;
+	void Abstract::Agent::getStates(Udjat::Response::Table &report) const {
 	}
 
 	std::string Abstract::Agent::to_string() const noexcept {
