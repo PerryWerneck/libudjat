@@ -135,7 +135,7 @@
 			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value Object to receive the value.
-			/// @return true if the property is valid.
+			/// @return true if the property is valid and value was updated.
 			virtual bool getProperty(const char *key, Udjat::Value &value) const;
 
 			/// @brief Get property value.

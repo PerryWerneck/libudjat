@@ -73,9 +73,11 @@
 		}
 
 		if(Abstract::Object::getProperty(path,value)) {
+			debug("Found property '",path,"'");
 			return true;
 		}
 
+		debug("Unable to find property '",path,"'");
 		return false;
 
 	}

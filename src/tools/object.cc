@@ -203,6 +203,7 @@
 		std::string str;
 		if(getProperty(key,str)) {
 			value = str;
+			return true;
 		}
 		return false;
 	}
