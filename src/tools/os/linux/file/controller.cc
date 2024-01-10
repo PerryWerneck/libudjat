@@ -30,6 +30,7 @@
 
  namespace Udjat {
 
+	/*
  	File::Controller & File::Controller::getInstance() {
 		static Controller instance;
 		return instance;
@@ -179,5 +180,6 @@
 		}
 
 	}
+	*/
 
  }

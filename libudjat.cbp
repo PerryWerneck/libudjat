@@ -136,6 +136,7 @@
 		<Unit filename="src/include/private/alert.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/factory.h" />
+		<Unit filename="src/include/private/filewatcher.h" />
 		<Unit filename="src/include/private/linux/mainloop.h" />
 		<Unit filename="src/include/private/linux/subprocess.h" />
 		<Unit filename="src/include/private/logger.h" />
@@ -188,6 +189,7 @@
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/file/handler.h" />
 		<Unit filename="src/include/udjat/tools/file/temporary.h" />
+		<Unit filename="src/include/udjat/tools/file/watcher.h" />
 		<Unit filename="src/include/udjat/tools/handler.h" />
 		<Unit filename="src/include/udjat/tools/http/client.h" />
 		<Unit filename="src/include/udjat/tools/http/error.h" />
@@ -334,6 +336,7 @@
 		<Unit filename="src/tools/file/handler.cc" />
 		<Unit filename="src/tools/file/path.cc" />
 		<Unit filename="src/tools/file/private.h" />
+		<Unit filename="src/tools/file/watcher.cc" />
 		<Unit filename="src/tools/http/client.cc" />
 		<Unit filename="src/tools/http/error.cc" />
 		<Unit filename="src/tools/http/exception.cc" />
@@ -384,6 +387,7 @@
 		<Unit filename="src/tools/os/linux/file/temporary.cc" />
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
+		<Unit filename="src/tools/os/linux/file/watcher_deprecated.cc" />
 		<Unit filename="src/tools/os/linux/hostname.cc" />
 		<Unit filename="src/tools/os/linux/iconcache.h" />
 		<Unit filename="src/tools/os/linux/ip.cc" />

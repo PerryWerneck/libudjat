@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,50 +17,41 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+ /**
+  * @brief Declare the file watcher.
+  */
 
-#include <config.h>
-#include <udjat/module/abstract.h>
-#include <udjat/tools/file.h>
-#include <udjat/tools/quark.h>
-#include <udjat/tools/handler.h>
-#include <unistd.h>
-#include <list>
-#include <sys/inotify.h>
+ #pragma once
+ #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
 
-using namespace std;
-
-namespace Udjat {
+ namespace Udjat {
 
 	namespace File {
 
-		/*
-		class Controller : private MainLoop::Handler {
+		class UDJAT_API Watcher {
 		private:
-			Controller();
-
-			/// @brief Active watches
-			list<Watcher *> watchers;
-
-			void onEvent(struct inotify_event *event) noexcept;
+			class Controller;
+			friend class Controller;
 
 		protected:
 
-			void handle_event(const MainLoop::Handler::Event event) override;
+			/// @brief The file/directory path.
+			const char *pathname;
 
 		public:
-			static Controller & getInstance();
-			~Controller();
 
-			Watcher * find(const char *name);
-			Watcher * find(const Quark &name);
+			/// @brief Build a watcher from path.
+			/// @param path The file or directory to watch.
+			Watcher(const char *pathname);
 
-			void insert(Watcher *watcher);
-			void remove(Watcher *watcher);
+			/// @brief Build a watcher from XML definition.
+			Watcher(const XML::Node &node, const char *attrname = "path");
+
+			~Watcher();
 
 		};
-		*/
 
 	}
 
-}
+ }
