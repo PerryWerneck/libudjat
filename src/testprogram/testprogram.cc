@@ -179,7 +179,7 @@ int main(int argc, char **argv) {
 			debug("--------------------------------> ",agent->name()," is the new root");
 			debug("test-arg='",getProperty("test-arg","default"));
 			debug("-------------------------------------------------------");
-			new File::Watcher("test.xml");
+			new File::Watcher(".");
 			debug("-------------------------------------------------------");
 		}
 

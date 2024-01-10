@@ -30,16 +30,15 @@
 	namespace File {
 
 		class UDJAT_API Watcher {
-		private:
-			class Controller;
-			friend class Controller;
-
-		protected:
-
-			/// @brief The file/directory path.
-			const char *pathname;
-
 		public:
+
+			enum Event : uint8_t {
+				Modified,
+				Created,
+				Deleted,
+				MovedFrom,
+				MovedTo
+			};
 
 			/// @brief Build a watcher from path.
 			/// @param path The file or directory to watch.
@@ -49,6 +48,17 @@
 			Watcher(const XML::Node &node, const char *attrname = "path");
 
 			~Watcher();
+
+		protected:
+
+			/// @brief The file/directory path.
+			const char *pathname;
+
+			virtual void updated(const Event event, const char *filename);
+
+		private:
+			class Controller;
+			friend class Controller;
 
 		};
 

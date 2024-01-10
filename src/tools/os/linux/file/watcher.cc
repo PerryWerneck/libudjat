@@ -187,16 +187,64 @@
 		std::lock_guard<std::mutex> lock(guard);
 
 		auto mask = event->mask;
+		auto filename = make_shared<string>(event->name);
+
 		for(auto &handler : handlers) {
 
 			if(handler.wd == event->wd) {
+
+				if(mask & IN_IGNORED) {
+					handler.wd = -1;
+				}
+
 				for(auto file : handler.files) {
 
-					ThreadPool::getInstance().push([mask,file](){
-						debug("Event on '",file->pathname);
+					ThreadPool::getInstance().push("FileWatcherEvent",[mask,file,filename](){
+
+						const char *name = filename->empty() ? file->pathname : filename->c_str();
+
+						debug("Event on '",name,"'");
+
+						sched_yield();
+						sched_yield();
+						sched_yield();
+
+						try {
+
+							if(mask & IN_CLOSE_WRITE) {
+								Logger::String{"File '",name,"' was changed"}.trace("file-watcher");
+								file->updated(Modified,name);
+							}
+
+							if(mask & (IN_DELETE_SELF|IN_DELETE)) {
+								Logger::String{"File '",name,"' was deleted"}.trace("file-watcher");
+								file->updated(Deleted,name);
+							}
+
+							if(mask & IN_MOVE_SELF) {
+								Logger::String{"File '",name,"' was moved"}.trace("file-watcher");
+								file->updated(MovedFrom,name);
+							}
+
+							if(mask & IN_CREATE) {
+								Logger::String{"File '",name,"' was created on '",file->pathname,"'"}.trace("file-watcher");
+								file->updated(Created,name);
+							}
+
+							if(mask & IN_MOVED_TO) {
+								Logger::String{"File '",name,"' was moved to '",file->pathname,"'"}.trace("file-watcher");
+								file->updated(MovedTo,name);
+							}
+
+						} catch(const std::exception &e) {
+
+							Logger::String{"File '",name,"': ",e.what()}.error("file-watcher");
+
+						}
 
 					});
 				}
+
 				return;
 			}
 

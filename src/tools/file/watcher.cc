@@ -40,5 +40,8 @@
 		Controller::getInstance().remove(this);
 	}
 
+	void File::Watcher::updated(const Event, const char *) {
+	}
+
  }
 
