@@ -110,7 +110,7 @@
 		} else if( (st.st_mode & S_IFLNK)) {
 
 			// Symbolic link
-			throw runtime_error(Logger::String{"Unable to watch symlink '",watcher->pathname,"'"});
+			watch_file(watcher);
 
 		} else {
 
@@ -146,11 +146,47 @@
 	}
 
 	void File::Watcher::Controller::watch_directory(File::Watcher *watcher) {
+
+		// Is this path being watched?
+		for(Handler &handler : handlers) {
+			for(File::Watcher *file : handler.files) {
+				if(!strcmp(file->pathname,watcher->pathname)) {
+					handler.files.push_back(watcher);
+					return;
+				}
+			}
+		}
+
+		// Add a new handler.
+		Handler handler;
+		handler.files.push_back(watcher);
+
+		handler.wd = inotify_add_watch(MainLoop::Handler::fd,watcher->pathname,IN_CREATE|IN_DELETE|IN_DELETE_SELF|IN_MOVE_SELF|IN_MOVED_TO);
+		if(handler.wd == -1) {
+			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->pathname + "'");
+		}
+
+		handlers.push_back(handler);
+
 	}
 
 	void File::Watcher::Controller::remove(File::Watcher *watcher) {
 
 		std::lock_guard<std::mutex> lock(guard);
+
+		handlers.remove_if([this,watcher](Handler &handler) {
+
+			handler.files.remove_if([watcher](File::Watcher *f) {
+				return f == watcher;
+			});
+
+			// Remove handler if empty.
+			if(handler.files.empty() && handler.wd != -1) {
+				inotify_rm_watch(MainLoop::Handler::fd, handler.wd);
+				handler.wd = -1;
+			}
+			return handler.wd == -1;
+		});
 
 	}
 
