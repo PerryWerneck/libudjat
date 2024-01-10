@@ -30,6 +30,8 @@
 
  #ifdef _WIN32
 	#include <udjat/win32/handler.h>
+ #else
+	#include <sys/inotify.h>
  #endif // _WIN32
 
  #include <mutex>
@@ -95,7 +97,7 @@
 			std::mutex guard;
 
 			Controller();
-			void onEvent(const struct ::inotify_event *event) noexcept;
+			void onEvent(const struct inotify_event *event) noexcept;
 
 			void watch_file(File::Watcher *watcher);
 			void watch_directory(File::Watcher *watcher);

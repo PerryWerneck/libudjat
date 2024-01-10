@@ -51,6 +51,12 @@
 
 			~Watcher();
 
+			/// @brief Start file watching.
+			Watcher & watch();
+
+			/// @brief Stop file watching.
+			Watcher & unwatch();
+
 		protected:
 
 			/// @brief The file/directory path.

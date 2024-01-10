@@ -29,18 +29,33 @@
  namespace Udjat {
 
 	File::Watcher::Watcher(const char *p) : pathname{p} {
-		Controller::getInstance().insert(this);
 	}
 
 	File::Watcher::Watcher(const XML::Node &node, const char *attrname)
 		: File::Watcher{Object::getAttribute(node, attrname, "")} {
+
+		if(node.attribute("watch-file-changes").as_bool(true)) {
+			watch();
+		}
+
 	}
 
 	File::Watcher::~Watcher() {
-		Controller::getInstance().remove(this);
+		unwatch();
 	}
 
 	void File::Watcher::updated(const Event, const char *) {
+	}
+
+	File::Watcher & File::Watcher::watch() {
+		Controller::getInstance().remove(this); // Close watch handlers (Just in case).
+		Controller::getInstance().insert(this);	// Open watch handlers.
+		return *this;
+	}
+
+	File::Watcher & File::Watcher::unwatch() {
+		Controller::getInstance().remove(this);	// Close watch handlers.
+		return *this;
 	}
 
  }
