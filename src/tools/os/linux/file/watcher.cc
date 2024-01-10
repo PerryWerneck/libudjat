@@ -25,6 +25,7 @@
  #include <private/filewatcher.h>
  #include <sys/inotify.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/threadpool.h>
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <stdexcept>
@@ -43,7 +44,7 @@
 
 	File::Watcher::Controller::Controller() {
 
-		Logger::String{"Starting file watcher"}.trace("services");
+		Logger::String{"Starting service"}.trace("file-watcher");
 
 		MainLoop::Handler::fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
 		if(MainLoop::Handler::fd == -1) {
@@ -65,17 +66,6 @@
 			}
 			return true;
 		});
-
-		/*
-		for(auto watcher : watchers) {
-
-			if(watcher->wd != -1) {
-				inotify_rm_watch(MainLoop::Handler::fd, watcher->wd);
-				watcher->wd = -1;
-			}
-
-		}
-		*/
 
 		MainLoop::Handler::disable();
 		::close(MainLoop::Handler::fd);
@@ -117,6 +107,8 @@
 			throw runtime_error(Logger::String{"File '",watcher->pathname,"' has unexpected type"});
 
 		}
+
+		Logger::String{"Watching '",watcher->pathname,"'"}.trace("file-watcher");
 
 	}
 
@@ -191,6 +183,24 @@
 	}
 
 	void File::Watcher::Controller::onEvent(const ::inotify_event *event) noexcept {
+
+		std::lock_guard<std::mutex> lock(guard);
+
+		auto mask = event->mask;
+		for(auto &handler : handlers) {
+
+			if(handler.wd == event->wd) {
+				for(auto file : handler.files) {
+
+					ThreadPool::getInstance().push([mask,file](){
+						debug("Event on '",file->pathname);
+
+					});
+				}
+				return;
+			}
+
+		}
 
 	}
 

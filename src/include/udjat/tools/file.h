@@ -305,6 +305,7 @@ namespace Udjat {
 		};
 
 		/// @brief File watcher.
+		/*
 		class UDJAT_API Watcher {
 		private:
 
@@ -358,6 +359,7 @@ namespace Udjat {
 
 		/// @brief Insert a file/folder watcher.
 		UDJAT_API Watcher * watch(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback);
+		*/
 
 		/// @brief Directory contents.
 		class UDJAT_API List : public std::list<std::string> {
@@ -376,6 +378,7 @@ namespace Udjat {
 
 		};
 
+		/*
 		/// @brief Text file agent.
 		///
 		/// Monitor a local file and activate when it changes.
@@ -418,6 +421,7 @@ namespace Udjat {
 			virtual ~Agent();
 
 		};
+		*/
 
 	}
 

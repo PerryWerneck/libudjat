@@ -24,6 +24,7 @@
 
  namespace Udjat {
 
+	/*
 	File::Agent::Agent(const Quark &name) {
 
 		watcher = watch(this, name, [this](const Udjat::File::Text &file) {
@@ -61,5 +62,6 @@
 #endif // DEBUG
 
 	}
+	*/
 
 }

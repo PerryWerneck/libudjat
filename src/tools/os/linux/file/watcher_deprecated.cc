@@ -35,6 +35,7 @@
 
  namespace Udjat {
 
+	/*
 	File::Watcher * File::watch(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback) {
 		throw runtime_error("Deprecated");
 	}
@@ -46,6 +47,7 @@
 	void File::Watcher::remove(void *id) {
 		throw runtime_error("Deprecated");
 	}
+	*/
 
 	/*
 	std::mutex File::Watcher::guard;
