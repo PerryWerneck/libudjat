@@ -27,6 +27,7 @@
  #include <udjat/tools/file/watcher.h>
  #include <udjat/tools/handler.h>
  #include <sys/inotify.h>
+ #include <list>
 
  #include <mutex>
 
@@ -42,13 +43,21 @@
 		class UDJAT_PRIVATE Watcher::Controller : private MainLoop::Handler {
 		private:
 
+			/// @brief A watch handler.
+			struct Handler {
+				int wd = -1;
+				std::list<File::Watcher *> files;
+			};
+
+			std::list<Handler> handlers;
+
 			std::mutex guard;
 
 			Controller();
 			void onEvent(const struct ::inotify_event *event) noexcept;
 
-			void watch_file(const char *path, File::Watcher *watcher);
-			void watch_directory(const char *path, File::Watcher *watcher);
+			void watch_file(File::Watcher *watcher);
+			void watch_directory(File::Watcher *watcher);
 
 		protected:
 

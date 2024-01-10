@@ -58,6 +58,13 @@
 	File::Watcher::Controller::~Controller() {
 
 		std::lock_guard<std::mutex> lock(guard);
+		handlers.remove_if([this](Handler &handler) {
+			if(handler.wd != -1) {
+				inotify_rm_watch(MainLoop::Handler::fd, handler.wd);
+				handler.wd = -1;
+			}
+			return true;
+		});
 
 		/*
 		for(auto watcher : watchers) {
@@ -82,6 +89,8 @@
 
 	void File::Watcher::Controller::insert(File::Watcher *watcher) {
 
+		std::lock_guard<std::mutex> lock(guard);
+
 		struct stat st;
 		if(stat(watcher->pathname, &st)) {
 			throw std::system_error(errno,std::system_category(),watcher->pathname);
@@ -91,12 +100,12 @@
 		if((st.st_mode & S_IFDIR)) {
 
 			// Directory watch
-			watch_directory(watcher->pathname,watcher);
+			watch_directory(watcher);
 
 		} else if( (st.st_mode & S_IFREG)) {
 
 			// File watch.
-			watch_file(watcher->pathname,watcher);
+			watch_file(watcher);
 
 		} else if( (st.st_mode & S_IFLNK)) {
 
@@ -111,13 +120,38 @@
 
 	}
 
-	void File::Watcher::Controller::watch_file(const char *path, File::Watcher *watcher) {
+	void File::Watcher::Controller::watch_file(File::Watcher *watcher) {
+
+		// Is this path being watched?
+		for(Handler &handler : handlers) {
+			for(File::Watcher *file : handler.files) {
+				if(!strcmp(file->pathname,watcher->pathname)) {
+					handler.files.push_back(watcher);
+					return;
+				}
+			}
+		}
+
+		// Add a new handler.
+		Handler handler;
+		handler.files.push_back(watcher);
+
+		handler.wd = inotify_add_watch(MainLoop::Handler::fd,watcher->pathname,IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
+		if(handler.wd == -1) {
+			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->pathname + "'");
+		}
+
+		handlers.push_back(handler);
+
 	}
 
-	void File::Watcher::Controller::watch_directory(const char *path, File::Watcher *watcher) {
+	void File::Watcher::Controller::watch_directory(File::Watcher *watcher) {
 	}
 
 	void File::Watcher::Controller::remove(File::Watcher *watcher) {
+
+		std::lock_guard<std::mutex> lock(guard);
+
 	}
 
 	void File::Watcher::Controller::onEvent(const ::inotify_event *event) noexcept {
@@ -145,6 +179,18 @@
 		}
 
 		delete[] buffer;
+
+		// Cleanup
+		{
+			std::lock_guard<std::mutex> lock(guard);
+			handlers.remove_if([this](Handler &handler) {
+				if(handler.files.empty() && handler.wd != -1) {
+					inotify_rm_watch(MainLoop::Handler::fd, handler.wd);
+					handler.wd = -1;
+				}
+				return handler.wd == -1;
+			});
+		}
 
 	}
 
