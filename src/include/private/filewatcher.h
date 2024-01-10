@@ -26,8 +26,11 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/file/watcher.h>
  #include <udjat/tools/handler.h>
- #include <sys/inotify.h>
  #include <list>
+
+ #ifdef _WIN32
+	#include <udjat/win32/handler.h>
+ #endif // _WIN32
 
  #include <mutex>
 
@@ -38,7 +41,46 @@
 #ifdef _WIN32
 
 		// TODO: Windows version
+		class UDJAT_PRIVATE Watcher::Controller {
+		private:
 
+			class Handler : private Win32::Handler {
+			public:
+				File::Watcher *file;
+				DWORD dwNotifyFilter;
+
+				Handler(File::Watcher *f,DWORD dw, HANDLE handle) : Win32::Handler{handle}, file{f}, dwNotifyFilter{dw} {
+					enable();
+				}
+
+				void handle(bool abandoned) override;
+
+				void close() override {
+					if(hEvent) {
+						FindCloseChangeNotification(hEvent);
+						Win32::Handler::close();
+					}
+				}
+
+			};
+
+			std::list<Handler> handlers;
+			std::mutex guard;
+
+			void add_watch(File::Watcher *watcher, const char *path, BOOL bWatchSubtree, DWORD dwNotifyFilter);
+			void watch_file(File::Watcher *watcher);
+			void watch_directory(File::Watcher *watcher);
+
+			Controller();
+
+		public:
+			static Controller & getInstance();
+			~Controller();
+
+			void insert(File::Watcher *watcher);
+			void remove(File::Watcher *watcher);
+
+		};
 #else
 		class UDJAT_PRIVATE Watcher::Controller : private MainLoop::Handler {
 		private:
@@ -50,7 +92,6 @@
 			};
 
 			std::list<Handler> handlers;
-
 			std::mutex guard;
 
 			Controller();

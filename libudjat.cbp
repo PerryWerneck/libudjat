@@ -375,7 +375,6 @@
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />
 		<Unit filename="src/tools/os/linux/file.cc" />
-		<Unit filename="src/tools/os/linux/file/agent.cc" />
 		<Unit filename="src/tools/os/linux/file/copy.cc" />
 		<Unit filename="src/tools/os/linux/file/list.cc" />
 		<Unit filename="src/tools/os/linux/file/move.cc" />
@@ -425,6 +424,7 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/temporary.cc" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
+		<Unit filename="src/tools/os/windows/file/watcher.cc" />
 		<Unit filename="src/tools/os/windows/hostname.cc" />
 		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />

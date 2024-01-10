@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/tools/http/icon.h>
+ #include <udjat/ui/icon.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/application.h>
@@ -30,9 +30,11 @@
 
 	std::string Icon::filename() const {
 
+		debug("Getting file for icon '",c_str(),"'");
+
 		Application::DataDir file{"icons"};
 
-		if(file.find((string{name} + ".svg").c_str(),true)) {
+		if(file.find((string{c_str()} + ".svg").c_str(),true)) {
 			return file;
 		}
 
