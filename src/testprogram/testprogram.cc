@@ -176,11 +176,7 @@ int main(int argc, char **argv) {
 		}
 
 		void root(std::shared_ptr<Abstract::Agent> agent) override {
-			debug("--------------------------------> ",agent->name()," is the new root");
 			debug("test-arg='",getProperty("test-arg","default"));
-			debug("-------------------------------------------------------");
-			new File::Watcher(".");
-			debug("-------------------------------------------------------");
 		}
 
 	};

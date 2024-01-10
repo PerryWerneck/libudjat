@@ -29,15 +29,17 @@
 
 	namespace File {
 
+		/// @brief File watcher, launch events when a file/directory changes.
 		class UDJAT_API Watcher {
 		public:
 
+			/// @brief File watcher event codes.
 			enum Event : uint8_t {
-				Modified,
-				Created,
-				Deleted,
-				MovedFrom,
-				MovedTo
+				Modified,	///< @brief File was modified.
+				Created,	///< @brief File was created.
+				Deleted,	///< @brief File was deleted.
+				MovedFrom,	///< @brief Generated for the directory containing the old filename when a file is renamed.
+				MovedTo		///< @brief Generated for the directory containing the new filename when a file is renamed.
 			};
 
 			/// @brief Build a watcher from path.
@@ -54,6 +56,7 @@
 			/// @brief The file/directory path.
 			const char *pathname;
 
+			/// @brief Launch file event.
 			virtual void updated(const Event event, const char *filename);
 
 		private:

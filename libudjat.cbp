@@ -376,7 +376,6 @@
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />
 		<Unit filename="src/tools/os/linux/file.cc" />
 		<Unit filename="src/tools/os/linux/file/agent.cc" />
-		<Unit filename="src/tools/os/linux/file/controller.cc" />
 		<Unit filename="src/tools/os/linux/file/copy.cc" />
 		<Unit filename="src/tools/os/linux/file/list.cc" />
 		<Unit filename="src/tools/os/linux/file/move.cc" />
@@ -387,7 +386,6 @@
 		<Unit filename="src/tools/os/linux/file/temporary.cc" />
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
-		<Unit filename="src/tools/os/linux/file/watcher_deprecated.cc" />
 		<Unit filename="src/tools/os/linux/hostname.cc" />
 		<Unit filename="src/tools/os/linux/iconcache.h" />
 		<Unit filename="src/tools/os/linux/ip.cc" />

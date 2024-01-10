@@ -378,51 +378,6 @@ namespace Udjat {
 
 		};
 
-		/*
-		/// @brief Text file agent.
-		///
-		/// Monitor a local file and activate when it changes.
-		///
-		class UDJAT_API Agent {
-		private:
-
-			/// @brief The file watcher
-			Watcher * watcher = nullptr;
-
-		protected:
-
-			/// @brief Called wihen the file changes.
-			virtual void set(const File::Text &file);
-
-			/// @brief Called when the file changes.
-			/// @param The file contents.
-			virtual void set(const char *contents);
-
-			/// @brief Reload file contents (if necessary).
-			inline bool update(bool force = false) {
-				return watcher->update(force);
-			}
-
-		public:
-			Agent(const char *name);
-			Agent(const Quark &name);
-			Agent(const pugi::xml_node &node);
-			Agent(const pugi::xml_node &node, const char *attribute);
-			Agent(const pugi::xml_attribute &attribute);
-
-			inline const char * c_str() const {
-				return watcher->c_str();
-			}
-
-			inline const char * getPath() const {
-				return watcher->c_str();
-			}
-
-			virtual ~Agent();
-
-		};
-		*/
-
 	}
 
 }
