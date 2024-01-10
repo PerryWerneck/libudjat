@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,32 +17,47 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#pragma once
+ /**
+  * @brief Declares the file watcher controller.
+  */
 
-#include <config.h>
-#include <udjat/module/abstract.h>
-#include <udjat/tools/file.h>
-#include <udjat/tools/quark.h>
-#include <udjat/tools/handler.h>
-#include <unistd.h>
-#include <list>
-#include <sys/inotify.h>
+ #pragma once
+ #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/file/watcher.h>
+ #include <udjat/tools/handler.h>
+ #include <sys/inotify.h>
+ #include <list>
 
-using namespace std;
+ #include <mutex>
 
-namespace Udjat {
+ namespace Udjat {
 
 	namespace File {
 
-		/*
-		class Controller : private MainLoop::Handler {
+#ifdef _WIN32
+
+		// TODO: Windows version
+
+#else
+		class UDJAT_PRIVATE Watcher::Controller : private MainLoop::Handler {
 		private:
+
+			/// @brief A watch handler.
+			struct Handler {
+				int wd = -1;
+				std::list<File::Watcher *> files;
+			};
+
+			std::list<Handler> handlers;
+
+			std::mutex guard;
+
 			Controller();
+			void onEvent(const struct ::inotify_event *event) noexcept;
 
-			/// @brief Active watches
-			list<Watcher *> watchers;
-
-			void onEvent(struct inotify_event *event) noexcept;
+			void watch_file(File::Watcher *watcher);
+			void watch_directory(File::Watcher *watcher);
 
 		protected:
 
@@ -52,15 +67,13 @@ namespace Udjat {
 			static Controller & getInstance();
 			~Controller();
 
-			Watcher * find(const char *name);
-			Watcher * find(const Quark &name);
-
-			void insert(Watcher *watcher);
-			void remove(Watcher *watcher);
+			void insert(File::Watcher *watcher);
+			void remove(File::Watcher *watcher);
 
 		};
-		*/
+
+#endif // _WIN32
 
 	}
 
-}
+ }

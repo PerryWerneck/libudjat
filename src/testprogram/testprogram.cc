@@ -40,6 +40,7 @@
  #include <udjat/tools/file.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/message.h>
+ #include <udjat/tools/file/watcher.h>
  #include <iostream>
  #include <udjat/tools/file.h>
  #include <memory>
@@ -163,6 +164,7 @@ int main(int argc, char **argv) {
 
 	class Application : public Udjat::Application {
 	public:
+
 		int install(const char *name) override {
 			ShortCut{}.desktop();
 			return super::install(name);
@@ -174,13 +176,14 @@ int main(int argc, char **argv) {
 		}
 
 		void root(std::shared_ptr<Abstract::Agent> agent) override {
-			debug("--------------------------------> ",agent->name()," is the new root");
 			debug("test-arg='",getProperty("test-arg","default"));
 		}
 
 	};
 
 	Logger::verbosity(9);
+	Logger::redirect();
+
 
 	// DummyProtocol protocol;
 	auto rc = Application{}.run(argc,argv,"./test.xml");
@@ -263,9 +266,11 @@ int main(int argc, char **argv) {
 	cout << file.name() << endl;
 	*/
 
+	/*
 	string name = Udjat::Icon{"computer"}.filename();
-
 	cout << "Found: '" << name << "'" << endl;
+	*/
+
 
 	return 0;
 }
