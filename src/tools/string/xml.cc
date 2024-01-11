@@ -26,6 +26,7 @@
  #include <udjat/tools/quark.h>
  #include <sstream>
  #include <iomanip>
+ #include <stdexcept>
 
  using namespace std;
 
@@ -44,6 +45,61 @@
 
 	}
 
+	String::String(const XML::Node &node, const char *attrname, bool required) {
+
+		auto attribute = node.attribute(attrname);
+		if(attribute) {
+			assign(attribute.as_string());
+			expand(node);
+			return;
+		}
+
+		debug("Doing a XML search for '",attrname,"'");
+		for(XML::Node parent = node;parent;parent = parent.parent()) {
+			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+				if(!strcasecmp(child.attribute("name").as_string(""),attrname)) {
+					// Found attribute
+					assign(child.attribute("value").as_string());
+					expand(node);
+					return;
+				}
+			}
+		}
+
+		// Not found.
+		if(required) {
+			throw runtime_error(Logger::Message{_("Required attribute '{}' was missing"),attrname});
+		}
+
+	}
+
+	String::String(const XML::Node &node, const char *attrname, const char *def) {
+
+		auto attribute = node.attribute(attrname);
+		if(attribute) {
+			assign(attribute.as_string());
+			expand(node);
+			return;
+		}
+
+		debug("Doing a XML search for '",attrname,"'");
+		for(XML::Node parent = node;parent;parent = parent.parent()) {
+			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+				if(!strcasecmp(child.attribute("name").as_string(""),attrname)) {
+					// Found attribute
+					assign(child.attribute("value").as_string());
+					expand(node);
+					return;
+				}
+			}
+		}
+
+		assign(def);
+		expand(node);
+
+	}
+
+	/*
 	String::String(const XML::Node &node, const char *attrname, const char *def, bool upsearch) {
 
 		auto attribute = node.attribute(attrname);
@@ -82,7 +138,7 @@
 			assign(def);
 
 		} else {
-			throw runtime_error(Logger::Message("Required attribute '{}' is missing",attrname));
+			throw runtime_error(Logger::Message(_("Required attribute '{}' is missing"),attrname));
 		}
 
 		// And, for last, expand the string.
@@ -91,6 +147,7 @@
 		}
 
 	}
+	*/
 
 	void String::add(const char *str) {
 		std::string::append(str);

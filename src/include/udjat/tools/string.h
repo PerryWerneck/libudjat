@@ -136,7 +136,15 @@
 		/// @brief Construct string from xml definition.
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
-		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr, bool upsearch = true);
+		/// @param def Default value if not found.
+		/// @param upsearch Search upper levels for attribute.
+		String(const XML::Node &node, const char *attrname, const char *def);
+
+		/// @brief Construct string from xml definition.
+		/// @param node XML node with string definitions.
+		/// @param attrname XML attribute name for the string value.
+		/// @param required if true will throw exception if the attribute is not found.
+		String(const XML::Node &node, const char *attrname = "value", bool required = false);
 
 		//
 		// Append
@@ -309,11 +317,11 @@
 		/// @param group Group from configuration file to search.
 		String & expand(const XML::Node &node,const char *group = "default-attributes");
 
-		String & markup();
-
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
 		static char * strcasestr(const char *haystack, const char *needle);
+
+		String & markup();
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
