@@ -31,10 +31,10 @@
 		constexpr Activatable(const char *name = "") : NamedObject{name} {
 		}
 
-		Activatable(const pugi::xml_node &node) : NamedObject{node} {
+		Activatable(const XML::Node &node) : NamedObject{node} {
 		}
 
-		static std::shared_ptr<Activatable> Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
+		static std::shared_ptr<Activatable> Factory(const Abstract::Object &parent, const XML::Node &node, const char *type = nullptr);
 
 		/// @brief Activate object, apply values.
 		virtual void activate(const std::function<bool(const char *key, std::string &value)> &expander) = 0;

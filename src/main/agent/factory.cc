@@ -29,11 +29,11 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory(const Abstract::Object &parent, const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory(const Abstract::Object &parent, const XML::Node &node) {
 		return Factory(node.attribute("type").as_string(node.name()),parent,node);
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory(const char *type, const Abstract::Object &parent, const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory(const char *type, const Abstract::Object &parent, const XML::Node &node) {
 
 		// Check for standard factory.
 		{
@@ -62,43 +62,43 @@
 			static const struct
 			{
 				const char *type;
-				function< std::shared_ptr<Abstract::Agent>(const pugi::xml_node &node)> build;
+				function< std::shared_ptr<Abstract::Agent>(const XML::Node &node)> build;
 			} builders[] = {
 
 				{
 					"int32",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 						return make_shared<Udjat::Agent<int32_t>>(node);
 					}
 				},
 				{
 					"uint32",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 						return make_shared<Udjat::Agent<uint32_t>>(node);
 					}
 				},
 				{
 					"integer",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 						return make_shared<Udjat::Agent<int>>(node);
 					}
 
 				},
 				{
 					"boolean",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 						return make_shared<Udjat::Agent<bool>>(node);
 					}
 				},
 				{
 					"string",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 						return make_shared<Udjat::Agent<std::string>>(node);
 					}
 				},
 				{
 					"script",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 
 						/// @brief Agent keeping the value of script return code.
 						class Script : public Udjat::Agent<int32_t> {
@@ -108,7 +108,7 @@
 							Logger::Level err = Logger::Error;
 
 						public:
-							Script(const pugi::xml_node &node)
+							Script(const XML::Node &node)
 								: Udjat::Agent<int32_t>(node),
 									out{Logger::LevelFactory(node,"stdout","info")},
 									err{Logger::LevelFactory(node,"stderr","error")}
@@ -152,7 +152,7 @@
 
 				{
 					"url",
-					[](const pugi::xml_node &node) {
+					[](const XML::Node &node) {
 
 						/// @brief Agent keeping the value of script return code.
 						class Url : public Udjat::Agent<int32_t> {
@@ -161,7 +161,7 @@
 							HTTP::Method method;
 
 						public:
-							Url(const pugi::xml_node &node) : Udjat::Agent<int32_t>(node), url{Quark(node,"url","",false).c_str()},method{HTTP::MethodFactory(node.attribute("method").as_string("head"))}  {
+							Url(const XML::Node &node) : Udjat::Agent<int32_t>(node), url{Quark(node,"url","",false).c_str()},method{HTTP::MethodFactory(node.attribute("method").as_string("head"))}  {
 
 								if(!(url && *url)) {
 									throw runtime_error("Required attribute 'url' is missing");

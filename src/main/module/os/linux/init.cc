@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	void Module::Controller::init(const std::string &filename, const pugi::xml_node &node) {
+	void Module::Controller::init(const std::string &filename, const XML::Node &node) {
 
 		Logger::String{"Loading '",filename,"'"}.trace("module");
 
@@ -57,10 +57,10 @@
 
 	}
 
-	Module * Module::Controller::init(void *handle, const pugi::xml_node &node) {
+	Module * Module::Controller::init(void *handle, const XML::Node &node) {
 
-		Module * (*init_from_xml)(const pugi::xml_node &node)
-				= (Module * (*)(const pugi::xml_node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
+		Module * (*init_from_xml)(const XML::Node &node)
+				= (Module * (*)(const XML::Node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
 
 		if(init_from_xml) {
 

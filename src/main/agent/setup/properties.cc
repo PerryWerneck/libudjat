@@ -40,7 +40,7 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::Controller::setup_properties(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
+	void Abstract::Agent::Controller::setup_properties(Abstract::Agent &agent, const XML::Node &root) noexcept {
 
 		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 

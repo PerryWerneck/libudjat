@@ -91,14 +91,14 @@
 		srand(time(NULL));
 	}
 
-	std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) const override {
+	std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node &node) const override {
 
 		class RandomAgent : public Agent<unsigned int> {
 		private:
 			unsigned int limit = 5;
 
 		public:
-			RandomAgent(const pugi::xml_node &node) : Agent<unsigned int>(node) {
+			RandomAgent(const XML::Node &node) : Agent<unsigned int>(node) {
 			}
 
 			bool refresh() override {

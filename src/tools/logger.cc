@@ -88,7 +88,7 @@
 
 	}
 
-	void Logger::setup(const pugi::xml_node &node) noexcept {
+	void Logger::setup(const XML::Node &node) noexcept {
 
 		static const struct {
 			const char * name;
@@ -247,7 +247,7 @@
 		return false;
 	}
 
-	Logger::Level Logger::LevelFactory(const pugi::xml_node &node, const char *attr, const char *def) {
+	Logger::Level Logger::LevelFactory(const XML::Node &node, const char *attr, const char *def) {
 		const char *name = node.attribute(attr).as_string(def);
 		for(uint8_t ix = 0; ix < (sizeof(typenames)/sizeof(typenames[0])); ix++) {
 			if(!strcasecmp(typenames[ix],name)) {

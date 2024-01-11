@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	Alert::File::File(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::File::File(const XML::Node &node, const char *defaults) : Abstract::Alert(node) {
 
 		// Get filename
 		{

@@ -40,12 +40,12 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::setup(const pugi::xml_node &root, bool upsearch) {
+	void Abstract::Agent::setup(const XML::Node &root, bool upsearch) {
 
 		Controller::setup_properties(*this,root);
 
 		// Load children.
-		for(const pugi::xml_node &node : root) {
+		for(const XML::Node &node : root) {
 
 			// It's an attribute?
 			if(!(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"attribute-list"))) {

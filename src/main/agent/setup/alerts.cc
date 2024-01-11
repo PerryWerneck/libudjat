@@ -40,7 +40,7 @@
 
 namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const XML::Node &node) {
 		return Abstract::Alert::Factory(*this,node);
 	}
 

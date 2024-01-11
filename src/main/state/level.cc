@@ -35,7 +35,7 @@
 
  namespace Udjat {
 
-	Udjat::Level LevelFactory(const pugi::xml_node &node) {
+	Udjat::Level LevelFactory(const XML::Node &node) {
 		return LevelFactory(node.attribute("level").as_string("unimportant"));
 	}
 

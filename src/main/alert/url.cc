@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	Alert::URL::URL(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::URL::URL(const XML::Node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 

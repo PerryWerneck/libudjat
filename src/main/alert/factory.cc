@@ -33,7 +33,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> Abstract::Alert::Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *t) {
+	std::shared_ptr<Abstract::Alert> Abstract::Alert::Factory(const Abstract::Object &parent, const XML::Node &node, const char *t) {
 
 		std::shared_ptr<Abstract::Alert> alert;
 
@@ -74,7 +74,7 @@
 		//
 		// First, try using the type name (even for 'default').
 		//
-		if(Udjat::Factory::search(node,[&parent,&alert](const Udjat::Factory &factory, const pugi::xml_node &node){
+		if(Udjat::Factory::search(node,[&parent,&alert](const Udjat::Factory &factory, const XML::Node &node){
 
 #ifdef DEBUG
 			factory.info() << "Trying to create alert from node <" << node.name() << ">" << endl;

@@ -62,7 +62,7 @@
 			return Client(url).save(filename);
 		}
 
-		Client::Client(const pugi::xml_node &node) : Client(node.attribute("src").as_string()) {
+		Client::Client(const XML::Node &node) : Client(node.attribute("src").as_string()) {
 		}
 
 		Client::Client(const URL &url, bool load) {
@@ -143,7 +143,7 @@
 			return save(filename,Protocol::Watcher::progress);
 		}
 
-		bool Client::save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
+		bool Client::save(const XML::Node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
 
 			Client client(node);
 
@@ -157,7 +157,7 @@
 			return client.worker->save(filename,progress);
 		}
 
-		bool Client::save(const pugi::xml_node &node, const char *filename) {
+		bool Client::save(const XML::Node &node, const char *filename) {
 
 			Client client(node);
 

@@ -19,13 +19,14 @@
 
  #include <config.h>
  #include <private/alert.h>
+ #include <udjat/tools/xml.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/alert/activation.h>
 
  namespace Udjat {
 
-	Abstract::Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
+	Abstract::Alert::Alert(const XML::Node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
 
 		// Get section from configuration file with the defaults.
 		const char *section = node.attribute("settings-from").as_string(defaults);
@@ -101,7 +102,7 @@
 		return value;
 	}
 
-	const char * Abstract::Alert::getPayload(const pugi::xml_node &node) {
+	const char * Abstract::Alert::getPayload(const XML::Node &node) {
 
 		String child(node.child_value());
 

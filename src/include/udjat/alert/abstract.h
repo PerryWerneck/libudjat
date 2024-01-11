@@ -68,7 +68,7 @@
 			/// @brief Get alert payload.
 			/// @param XML node to scan for payload.
 			/// @return Payload as Quark;
-			const char * getPayload(const pugi::xml_node &node);
+			const char * getPayload(const XML::Node &node);
 
 		public:
 
@@ -78,7 +78,7 @@
 			/// @brief Create alert for xml description.
 			/// @param node XML node with the alert description.
 			/// @param defaults Section on configuration file for the alert default options (can be overrided by xml attribute 'settings-from'.
-			Alert(const pugi::xml_node &node, const char *defaults = "alert-defaults");
+			Alert(const XML::Node &node, const char *defaults = "alert-defaults");
 			virtual ~Alert();
 
 			/// @brief Is the alert in verbose mode?
@@ -111,7 +111,7 @@
 			/// @param node XML description of the alert.
 			/// @param type Alert type ('url' or 'script' for internal ones, factory name for module based alerts).
 			/// @return Pointer to the new alert.
-			static std::shared_ptr<Abstract::Alert> Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type = nullptr);
+			static std::shared_ptr<Abstract::Alert> Factory(const Abstract::Object &parent, const XML::Node &node, const char *type = nullptr);
 
 		};
 

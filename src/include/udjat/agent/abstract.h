@@ -196,7 +196,7 @@
 			Agent & operator=(Agent &&) = delete;
 
 			Agent(const char *name = "", const char *label = "", const char *summary = "");
-			Agent(const pugi::xml_node &node);
+			Agent(const XML::Node &node);
 
 			virtual ~Agent();
 
@@ -215,7 +215,7 @@
 			/// @return True if the activatable was inserted.
 			/// @retval true The activatable was inserted as an event listener.
 			/// @retval false The activatable is not event based, insert it using default method.
-			virtual bool push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> activatable);
+			virtual bool push_back(const XML::Node &node, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
@@ -230,10 +230,10 @@
 			static std::shared_ptr<Agent> RootFactory();
 
 			/// @brief Build and agent from type & xml node.
-			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const pugi::xml_node &node);
+			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const XML::Node &node);
 
 			/// @brief Build and agent from node.
-			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const pugi::xml_node &node);
+			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const XML::Node &node);
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
@@ -252,7 +252,7 @@
 			/// @brief Load agent children, states, alerts, etc. from node.
 			/// @param node The xml node with agent children to build.
 			/// @param upsearch If true search xml parents based for type attribute or node name with '-defaults' and, if found, use them to setup this agent children.
-			void setup(const pugi::xml_node &node, bool upsearch = true) override;
+			void setup(const XML::Node &node, bool upsearch = true) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();
@@ -388,10 +388,10 @@
 			}
 
 			/// @brief Create and insert State.
-			virtual std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
+			virtual std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node);
 
 			/// @brief Insert Alert.
-			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node);
+			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const XML::Node &node);
 
 			/// @brief Get agent property.
 			/// @param key The property name.

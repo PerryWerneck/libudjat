@@ -287,7 +287,7 @@
 		return Value::set(std::to_string(value), Real);
 	}
 
-	Value & Value::set(const pugi::xml_node &node) {
+	Value & Value::set(const XML::Node &node) {
 		Value &object = *this;
 		for(auto child = node.child("value"); child; child = child.next_sibling("value")) {
 			object[child.attribute("name").as_string("unnamed")] = child.attribute("value").as_string();

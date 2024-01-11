@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/quark.h>
  #include <udjat/tools/string.h>
  #include <cstring>
 
@@ -47,10 +48,10 @@
 		upname += aname;
 
 		const char *attrname = aname;
-		for(pugi::xml_node parent = node; parent ; parent = parent.parent()) {
+		for(XML::Node parent = node; parent ; parent = parent.parent()) {
 
 			// Search for <attribute name='${attrname}' ${vname}="value" />
-			for(pugi::xml_node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
 
 				const char * name = child.attribute("name").as_string("");
 

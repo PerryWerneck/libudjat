@@ -53,7 +53,7 @@
 		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
-	HTTP::Method HTTP::MethodFactory(const pugi::xml_node &node, const char *def) {
+	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *def) {
 		return MethodFactory(node.attribute("http-method").as_string(def));
 	}
 

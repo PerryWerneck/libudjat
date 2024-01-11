@@ -62,7 +62,7 @@
 			constexpr Script(const char *name, const char *c) : Abstract::Alert(name), cmdline(c) {
 			}
 
-			Script(const pugi::xml_node &node, const char *defaults = "alert-defaults");
+			Script(const XML::Node &node, const char *defaults = "alert-defaults");
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const override;

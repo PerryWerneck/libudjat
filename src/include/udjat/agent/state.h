@@ -63,7 +63,7 @@ namespace Udjat {
 		private:
 
 			/// @brief Parse XML node
-			void set(const pugi::xml_node &node);
+			void set(const XML::Node &node);
 
 			/// @brief State alerts.
 			std::vector<std::shared_ptr<Activatable>> listeners;
@@ -98,7 +98,7 @@ namespace Udjat {
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
 
 			/// @brief Create state from xml node
-			State(const pugi::xml_node &node);
+			State(const XML::Node &node);
 
 			/// @brief Get state values as string.
 			virtual std::string value() const;
@@ -193,12 +193,12 @@ namespace Udjat {
 			/// @param type The agent type.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const char *type, const pugi::xml_node &node);
+			bool push_back(const char *type, const XML::Node &node);
 
 			/// @brief Create and insert child from XML definition.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const pugi::xml_node &node);
+			bool push_back(const XML::Node &node);
 
 			/// @brief Create an state from exception.
 			/// @param except The exception.
@@ -229,12 +229,12 @@ namespace Udjat {
 		State(const char *name, const T value, const Level level, const char *summary = "", const char *body = "")
 				: Abstract::State{name,level,summary,body}, from{value},to{value} { }
 
-		State(const pugi::xml_node &node, const T v = (T) 0) : Abstract::State{node}, from{from_xml<T>(node, v)}, to{from_xml<T>(node, v)} {
+		State(const XML::Node &node, const T v = (T) 0) : Abstract::State{node}, from{from_xml<T>(node, v)}, to{from_xml<T>(node, v)} {
 			from = from_xml<T>(node,from,"from");
 			to = from_xml<T>(node,to,"to");
 		}
 
-		State(const pugi::xml_node &node, T from_value, T to_value) : Abstract::State{node}, from{from_xml<T>(node, from_value)}, to{from_xml<T>(node, to_value)} {
+		State(const XML::Node &node, T from_value, T to_value) : Abstract::State{node}, from{from_xml<T>(node, from_value)}, to{from_xml<T>(node, to_value)} {
 		}
 
 		inline bool compare(T value) {
@@ -276,7 +276,7 @@ namespace Udjat {
 		typedef State<std::string> super;
 
 	public:
-		State(const pugi::xml_node &node) : Abstract::State(node),std::string(Udjat::Attribute(node,"value",false).as_string()) {
+		State(const XML::Node &node) : Abstract::State(node),std::string(Udjat::Attribute(node,"value",false).as_string()) {
 		}
 
 		bool compare(const std::string &value) {
@@ -309,7 +309,7 @@ namespace Udjat {
 		bool state_value;
 
 	public:
-		State(const pugi::xml_node &node) : Abstract::State(node),state_value(Udjat::Attribute(node,"value",false).as_bool()) {
+		State(const XML::Node &node) : Abstract::State(node),state_value(Udjat::Attribute(node,"value",false).as_bool()) {
 		}
 
 		bool compare(const bool value) {

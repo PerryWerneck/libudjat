@@ -51,11 +51,11 @@ namespace Udjat {
 	void Module::set(const pugi::xml_document UDJAT_UNUSED(&document)) {
 	}
 
-	std::shared_ptr<Abstract::Agent> Module::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Agent> Module::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
-	std::shared_ptr<Abstract::Alert> Module::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Alert> Module::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
@@ -132,9 +132,9 @@ namespace Udjat {
 		throw system_error(ENOTSUP,system_category(),Logger::Message(_("I dont know how to execute '{}'"),name));
 	}
 
-	void Module::options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call) {
+	void Module::options(const XML::Node &node, std::function<void(const char *name, const char *value)> call) {
 
-		for(pugi::xml_node child = node.child("option"); child; child = child.next_sibling("option")) {
+		for(XML::Node child = node.child("option"); child; child = child.next_sibling("option")) {
 
 			const char *name = child.attribute("name").as_string();
 			if(!(name && *name)) {

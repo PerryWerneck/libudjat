@@ -20,6 +20,7 @@
 #pragma once
 
  #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/value.h>
  #include <udjat/module/info.h>
@@ -68,7 +69,7 @@
 		}
 
 		/// @brief Navigate on module options.
-		static void options(const pugi::xml_node &node, std::function<void(const char *name, const char *value)> call);
+		static void options(const XML::Node &node, std::function<void(const char *name, const char *value)> call);
 
 	public:
 
@@ -112,7 +113,7 @@
 		static bool load(const char *name, bool required = true);
 
 		/// @brief Load module by XML node.
-		static void load(const pugi::xml_node &node);
+		static void load(const XML::Node &node);
 
 		/// @brief Unload modules.
 		static void unload();
@@ -156,10 +157,10 @@
 		virtual void set(std::shared_ptr<Abstract::Agent> agent) noexcept;
 
 		/// @brief Build agent from XML node, used on tag <agent type='module-name'>
-		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Build alert from XML node, used on tag <alert type='module-name'>
-		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 	};
 
@@ -176,7 +177,7 @@
 
 	/// @brief Initialize module from XML node.
 	/// @return Module controller.
-	UDJAT_API Udjat::Module * udjat_module_init_from_xml(const pugi::xml_node &node);
+	UDJAT_API Udjat::Module * udjat_module_init_from_xml(const Udjat::XML::Node &node);
 
 	/// @brief Deinitialize the module.
 	/// @return true if the module can be unloaded.

@@ -85,7 +85,7 @@
 		URL(const std::string &str) : URL{str.c_str()} {
 		}
 
-		URL(const pugi::xml_node &node) : URL{node.attribute("src").as_string()} {
+		URL(const XML::Node &node) : URL{node.attribute("src").as_string()} {
 		}
 
 		template<typename... Targs>

@@ -307,7 +307,7 @@
 		/// @brief Expand ${} macros.
 		/// @param node XML node from the begin of the value search.
 		/// @param group Group from configuration file to search.
-		String & expand(const pugi::xml_node &node,const char *group = "default-attributes");
+		String & expand(const XML::Node &node,const char *group = "default-attributes");
 
 		String & markup();
 

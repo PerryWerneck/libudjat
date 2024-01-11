@@ -20,7 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <string>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <functional>
  #include <udjat/net/ip/address.h>
 
@@ -39,7 +39,7 @@
 		UDJAT_API sockaddr_storage Factory(const sockaddr *addr);
 		UDJAT_API sockaddr_storage Factory(const sockaddr_in *addr);
 		UDJAT_API sockaddr_storage Factory(const sockaddr_in6 *addr);
-		UDJAT_API sockaddr_storage Factory(const pugi::xml_node &node);
+		UDJAT_API sockaddr_storage Factory(const XML::Node &node);
 
 		class UDJAT_API Address : public sockaddr_storage {
 		private:

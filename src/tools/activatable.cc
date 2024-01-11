@@ -25,7 +25,7 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const pugi::xml_node &node, const char *type) {
+	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const XML::Node &node, const char *type) {
 
 		std::shared_ptr<Activatable> activatable;
 
@@ -33,7 +33,7 @@
 			type = "default";
 		}
 
-		if(Udjat::Factory::search(node,[&parent,&activatable](const Udjat::Factory &factory, const pugi::xml_node &node){
+		if(Udjat::Factory::search(node,[&parent,&activatable](const Udjat::Factory &factory, const XML::Node &node){
 
 			activatable = factory.ActivatableFactory(parent,node);
 			if(activatable) {

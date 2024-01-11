@@ -42,7 +42,7 @@
 			time_t iffailed;		///< @brief Time to refresh the file if the update fails.
 			bool cache;
 
-			Settings(const std::string &f, const pugi::xml_node &node) :
+			Settings(const std::string &f, const XML::Node &node) :
 				filename{f},
 				url{node.attribute("src").as_string()},
 				ifsuccess{node.attribute("update-timer").as_uint(0)},

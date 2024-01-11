@@ -83,7 +83,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const pugi::xml_node &node) : Object(node) {
+	Abstract::State::State(const XML::Node &node) : Object(node) {
 
 		set(node);
 
@@ -100,7 +100,7 @@ namespace Udjat {
 	void Abstract::State::refresh() {
 	}
 
-	void Abstract::State::set(const pugi::xml_node &node) {
+	void Abstract::State::set(const XML::Node &node) {
 
 		Object::set(node);
 
@@ -110,7 +110,7 @@ namespace Udjat {
 		properties.body = getAttribute(node,section,"body",properties.body);
 		options.forward = getAttribute(node,section,"forward-to-children",options.forward);
 
-		for(pugi::xml_node child : node) {
+		for(XML::Node child : node) {
 
 			if(strcasecmp(child.name(),"attribute")) {
 				push_back(child);

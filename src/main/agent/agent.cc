@@ -68,7 +68,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const pugi::xml_node &node) : Object(node) {
+	Abstract::Agent::Agent(const XML::Node &node) : Object(node) {
 		Controller::setup_properties(*this,node);
 	}
 
@@ -173,12 +173,12 @@ namespace Udjat {
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wunused-parameter"
-	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const XML::Node &node) {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
 
-	bool Abstract::Agent::push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> alert) {
+	bool Abstract::Agent::push_back(const XML::Node &node, std::shared_ptr<Activatable> alert) {
 
 		switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change","ready-state","not-ready-state",NULL)) {
 		case 0:	// state-change

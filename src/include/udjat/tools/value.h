@@ -24,7 +24,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/mimetype.h>
  #include <ostream>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <functional>
  #include <memory>
  #include <cstdint>
@@ -128,7 +128,7 @@
 		virtual Value & set(const double value);
 
 		/// @brief Load tags <value name='name' value='value' /> into value.
-		virtual Value & set(const pugi::xml_node &node);
+		virtual Value & set(const XML::Node &node);
 
 		template <typename T>
 		Value & set(const T value) {

@@ -60,10 +60,10 @@
 			bool searching = true;
 
 			debug("Doing an upsearch for '",upname.c_str(),"'");
-			for(pugi::xml_node parent = node.parent(); parent  && searching; parent = parent.parent()) {
+			for(XML::Node parent = node.parent(); parent  && searching; parent = parent.parent()) {
 
 				// Search for an attribute '${upname}'
-				for(pugi::xml_node child = parent.child("attribute"); child && searching; child = child.next_sibling("attribute")) {
+				for(XML::Node child = parent.child("attribute"); child && searching; child = child.next_sibling("attribute")) {
 
 					const char * name = child.attribute("name").as_string("");
 

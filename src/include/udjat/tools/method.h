@@ -20,7 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <ostream>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <cstdint>
 
  namespace Udjat {
@@ -42,7 +42,7 @@
 		};
 
 		UDJAT_API Method MethodFactory(const char *name);
-		UDJAT_API Method MethodFactory(const pugi::xml_node &node, const char *def = "get");
+		UDJAT_API Method MethodFactory(const XML::Node &node, const char *def = "get");
 
 	}
 

@@ -90,7 +90,7 @@ namespace Udjat {
 		void stop() noexcept override;
 
 		/// @brief Load agent properties from XML node.
-		static void setup_properties(Abstract::Agent &agent, const pugi::xml_node &node) noexcept;
+		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
 
 		// Worker
 		bool get(Request &request, Udjat::Response::Value &response) const override;

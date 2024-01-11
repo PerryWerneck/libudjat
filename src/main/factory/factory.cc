@@ -54,27 +54,27 @@
 		return Controller::getInstance().for_each(name,func);
 	}
 
-	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
-	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Object>();
 	}
 
-	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
-	std::shared_ptr<Activatable> Factory::ActivatableFactory(const Abstract::Object &parent, const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Activatable> Factory::ActivatableFactory(const Abstract::Object &parent, const XML::Node UDJAT_UNUSED(&node)) const {
 		return AlertFactory(parent,node);
 	}
 
-	bool Factory::generic(Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) {
+	bool Factory::generic(Abstract::Object UDJAT_UNUSED(&parent), const XML::Node &node) {
 		return generic(node);
 	}
 
-	bool Factory::generic(const pugi::xml_node UDJAT_UNUSED(&node)) {
+	bool Factory::generic(const XML::Node UDJAT_UNUSED(&node)) {
 		return false;
 	}
 

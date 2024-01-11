@@ -41,7 +41,7 @@
 		void timestamp(int fd);
 #endif // !WIN32
 
-		UDJAT_PRIVATE void setup(const pugi::xml_node &node) noexcept;
+		UDJAT_PRIVATE void setup(const XML::Node &node) noexcept;
 
 		struct UDJAT_PRIVATE Options {
 

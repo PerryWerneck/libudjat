@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	bool Factory::search(const pugi::xml_node &node, const std::function<bool(Factory &, const pugi::xml_node &)> &call, const char *typeattribute) {
+	bool Factory::search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute) {
 
 		if(!(typeattribute && *typeattribute)) {
 			typeattribute = Object::getAttribute(node,(string{node.name()} + "-defaults").c_str(),"type","default");

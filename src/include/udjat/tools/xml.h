@@ -30,13 +30,13 @@
 
  #include <pugixml.hpp>
  #include <udjat/defs.h>
- #include <udjat/tools/quark.h>
  #include <functional>
  #include <cstdint>
 
  namespace Udjat {
 
 	class String;
+	class Quark;
 
 	namespace XML {
 

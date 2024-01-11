@@ -60,7 +60,7 @@
 			constexpr URL(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
 			}
 
-			URL(const pugi::xml_node &node, const char *defaults = "alert-defaults");
+			URL(const XML::Node &node, const char *defaults = "alert-defaults");
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const override;

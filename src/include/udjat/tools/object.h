@@ -38,7 +38,7 @@
 
 			/// @brief Setup object.
 			/// @param node The XML node with the object definitions.
-			virtual void setup(const pugi::xml_node &node, bool upsearch = true);
+			virtual void setup(const XML::Node &node, bool upsearch = true);
 
 			/// @brief Get configuration file group.
 			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");
@@ -47,41 +47,41 @@
 			/// @param node The xml node.
 			/// @param tagname The tagname.
 			/// @return true if method has returned 'true'.
-			static bool for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call);
+			static bool for_each(const XML::Node &node, const char *tagname, const std::function<bool (const XML::Node &node)> &call);
 
 			/// @brief Navigate thru XML nodes, including groups.
 			/// @param node The XML node to start search.
 			/// @param name The child node name.
 			/// @param group The child group node name, usually the plural of name (optional).
 			/// @param handler The handler for children.
-			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
+			static void for_each(const XML::Node &node, const char *name, const char *group, const std::function<void(const XML::Node &node)> &handler);
 
 			/// @brief Navigate thru <tagname> nodes on current and parent nodes until lambda returns 'true'.
 			/// @param node The starting point.
 			/// @param tagname the xml tag to scan.
 			/// @param call lambda to be called on every node.
 			/// @return true if the lambda has returned true.
-			static bool search(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call);
+			static bool search(const XML::Node &node, const char *tagname, const std::function<bool(const XML::Node &node)> &call);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param change If true add the node name as prefix on the attribute name for upsearch.
 			/// @return XML Attribute.
-			static const pugi::xml_attribute getAttribute(const pugi::xml_node &n, const char *name, bool change = true);
+			static const pugi::xml_attribute getAttribute(const XML::Node &n, const char *name, bool change = true);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param def The default value (should be constant).
 			/// @return Attribute value converted to quark or def
-			static const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
+			static const char * getAttribute(const XML::Node &node, const char *name, const char *def);
 
 			/// @brief Get child value from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param group The configuration group name.
 			/// @return child value converted to quark.
-			static const char * getChildValue(const pugi::xml_node &node, const char *group);
+			static const char * getChildValue(const XML::Node &node, const char *group);
 
 			/// @brief Get property from xml node with fallback to configuration file.
 			/// @param node The xml node.
@@ -89,14 +89,14 @@
 			/// @param name The property name.
 			/// @param def The default value (should be constant).
 			/// @return Attribute value converted to quark or def
-			static const char * getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def);
+			static const char * getAttribute(const XML::Node &node, const char *group, const char *name, const char *def);
 
 			/// @brief Get property from xml node.
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param def The default value.
 			/// @return Attribute value.
-			static unsigned int getAttribute(const pugi::xml_node &node, const char *name, unsigned int def);
+			static unsigned int getAttribute(const XML::Node &node, const char *name, unsigned int def);
 
 			/// @brief Get property from xml node with fallback to configuration file.
 			/// @param node The xml node.
@@ -104,10 +104,10 @@
 			/// @param name The property name.
 			/// @param def The default value.
 			/// @return Attribute value.
-			static unsigned int getAttribute(const pugi::xml_node &node, const char *group, const char *name, unsigned int def);
-			static bool getAttribute(const pugi::xml_node &node, const char *group, const char *name, bool def);
+			static unsigned int getAttribute(const XML::Node &node, const char *group, const char *name, unsigned int def);
+			static bool getAttribute(const XML::Node &node, const char *group, const char *name, bool def);
 
-			static inline unsigned int getAttribute(const pugi::xml_node &node, const std::string &group, const char *name, unsigned int def) {
+			static inline unsigned int getAttribute(const XML::Node &node, const std::string &group, const char *name, unsigned int def) {
 				return getAttribute(node,group.c_str(),name,def);
 			}
 
@@ -116,9 +116,9 @@
 			/// @param group Configuration file group to get values.
 			/// @param value String to expand.
 			/// @return 'quarked' string with the expanded value.
-			static const char * expand(const pugi::xml_node &node, const char *group, const char *value);
+			static const char * expand(const XML::Node &node, const char *group, const char *value);
 
-			static inline const char * expand(const pugi::xml_node &node, const std::string &group, const char *value) {
+			static inline const char * expand(const XML::Node &node, const std::string &group, const char *value) {
 				return expand(node,group.c_str(),value);
 			}
 
@@ -185,12 +185,12 @@
 	protected:
 
 		constexpr NamedObject(const char *name = "") : objectName(name) {}
-		NamedObject(const pugi::xml_node &node);
+		NamedObject(const XML::Node &node);
 
 		/// @brief Set object properties from XML node.
 		/// @param node XML node for the object properties
 		/// @return true if the value was updated.
-		bool set(const pugi::xml_node &node);
+		bool set(const XML::Node &node);
 
 		inline void rename(const char *name) {
 			objectName = name;
@@ -215,7 +215,7 @@
 		const char * name() const noexcept override;
 
 		bool operator==(const char *name) const noexcept;
-		bool operator==(const pugi::xml_node &node) const noexcept;
+		bool operator==(const XML::Node &node) const noexcept;
 		size_t hash() const noexcept;
 
 		const char * c_str() const noexcept;
@@ -274,8 +274,8 @@
 		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
-		Object(const pugi::xml_node &node);
-		void set(const pugi::xml_node &node);
+		Object(const XML::Node &node);
+		void set(const XML::Node &node);
 
 	public:
 

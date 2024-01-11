@@ -88,7 +88,7 @@
 		stop();
 	}
 
-	void ThreadPool::set(const pugi::xml_node &node) {
+	void ThreadPool::set(const XML::Node &node) {
 
 		limits.threads	= node.attribute("max-threads").as_uint(limits.threads);
 		limits.tasks	= node.attribute("max-tasks").as_uint(limits.tasks);

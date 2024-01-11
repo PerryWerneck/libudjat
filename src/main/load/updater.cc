@@ -132,7 +132,7 @@
 		Logger::setup(node);
 
 		// Check for modules.
-		for(pugi::xml_node child = node.child("module"); child; child = child.next_sibling("module")) {
+		for(XML::Node child = node.child("module"); child; child = child.next_sibling("module")) {
 			if(child.attribute("preload").as_bool(false)) {
 				Module::load(child);
 			}

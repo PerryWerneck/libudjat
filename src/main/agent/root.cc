@@ -165,7 +165,7 @@
 
 			}
 
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
+			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override {
 
 				auto state = make_shared<Abstract::State>(node);
 

@@ -29,11 +29,11 @@
 
  namespace Udjat {
 
-	bool Abstract::State::push_back(const pugi::xml_node &node) {
+	bool Abstract::State::push_back(const XML::Node &node) {
 		return push_back(node.name(),node);
 	}
 
-	bool Abstract::State::push_back(const char *type, const pugi::xml_node &node) {
+	bool Abstract::State::push_back(const char *type, const XML::Node &node) {
 
 		if(!strcasecmp(type,"alert")) {
 			auto alert = Udjat::Abstract::Alert::Factory(*this, node);

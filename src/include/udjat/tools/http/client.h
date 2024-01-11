@@ -60,7 +60,7 @@
 			/// @param autoload If true try to load the required module.
 			Client(const URL &url, bool autoload = false);
 
-			Client(const pugi::xml_node &node);
+			Client(const XML::Node &node);
 
 			Client(const char *url) : Client(URL(url)) {
 			}
@@ -127,12 +127,12 @@
 			/// @brief Save filename based on XML definitions.
 			/// @param node XML node with URL & download settings.
 			/// @return true if the file was updated.
-			static bool save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress);
+			static bool save(const XML::Node &node, const char *filename, const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Save filename based on XML definitions.
 			/// @param node XML node with URL & download settings.
 			/// @return true if the file was updated.
-			static bool save(const pugi::xml_node &node, const char *filename);
+			static bool save(const XML::Node &node, const char *filename);
 
 			/// @brief Get URL, save response to cache file.
 			/// @param progress The download progress notifier.

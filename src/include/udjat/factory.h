@@ -64,7 +64,7 @@
 		/// @param call Lamba call to test for valid factory.
 		/// @param typeattribute The name of the optional attribute with the factory name.
 		/// @return true if the lambda has returned true.
-		static bool search(const pugi::xml_node &node, const std::function<bool(Factory &, const pugi::xml_node &)> &call, const char *typeattribute = "type");
+		static bool search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute = "type");
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
@@ -79,30 +79,30 @@
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
-		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Create a child object from XML node.
 		/// @param node XML definition for the new state.
-		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Create an alert from XML node.
 		/// @param node XML definition for the new alert.
-		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Create an activatable from XML node.
 		/// @param node XML definition for the new alert.
-		virtual std::shared_ptr<Activatable> ActivatableFactory(const Abstract::Object &parent, const pugi::xml_node &node) const;
+		virtual std::shared_ptr<Activatable> ActivatableFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Parse a generic XML node.
 		/// @param XML definition for the new element.
 		/// @return true if the node was parset.
-		virtual bool generic(const pugi::xml_node &node);
+		virtual bool generic(const XML::Node &node);
 
 		/// @brief Parse a XML node.
 		/// @param object Parent object.
 		/// @param XML definition for the new element.
 		/// @return true if the node was inserted.
-		virtual bool generic(Abstract::Object &parent, const pugi::xml_node &node);
+		virtual bool generic(Abstract::Object &parent, const XML::Node &node);
 
 	};
 

@@ -59,7 +59,7 @@
 
 #else
 
- 	static int getuid(const pugi::xml_node &node) {
+ 	static int getuid(const XML::Node &node) {
 
  		const char *user = node.attribute("user").as_string("");
 
@@ -90,7 +90,7 @@
 
  	}
 
- 	static int getgid(const pugi::xml_node &node) {
+ 	static int getgid(const XML::Node &node) {
 
  		const char *group = node.attribute("group").as_string("");
 
