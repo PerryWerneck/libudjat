@@ -137,6 +137,7 @@
 			/// @param state New agent state.
 			/// @param activate if true the new state will be activated.
 			/// @param message Message for logfile.
+			/// @return true if the state was really changed.
 			bool onStateChange(std::shared_ptr<State> state, bool activate, const char *message);
 
 		protected:

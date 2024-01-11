@@ -164,37 +164,33 @@ namespace Udjat {
 		// Notify listeners.
 		notify(STATE_CHANGED);
 
+		if(message && *message) {
+
+			LogFactory(level)
+				<< name()
+				<< "\t"
+				<< Logger::Message{
+						message,
+						this->state()->to_string(),
+						level
+					}
+				<< endl;
+
+		}
+
 		if(saved_level != level) {
-
-			// State level has changed, log and notify.
-
-			if(message && *message) {
-
-				LogFactory(level)
-					<< name()
-					<< "\t"
-					<< Logger::Message{
-							message,
-							this->state()->to_string(),
-							level
-						}
-					<< endl;
-
-			}
-
 			notify(LEVEL_CHANGED);
-
 			bool rd = this->ready();
 			if(rd != saved_ready) {
 				notify(rd ? READY : NOT_READY);
 			}
+		}
 
-		}
-#ifdef DEBUG
-		else {
-			debug("State on  '",name(),"' is now '",state->summary(),"' with same level, no message");
-		}
-#endif // DEBUG
+//#ifdef DEBUG
+//		else {
+//			debug("State on  '",name(),"' is now '",state->summary(),"' with same level, no message");
+//		}
+//#endif // DEBUG
 
 		return true;
 	}
