@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	Abstract::Alert::Alert(const XML::Node &node,const char *defaults) : Alert(Quark(node,"name","alert").c_str()) {
+	Abstract::Alert::Alert(const XML::Node &node, const char *defaults) : Activatable{node} {
 
 		// Get section from configuration file with the defaults.
 		const char *section = node.attribute("settings-from").as_string(defaults);
@@ -89,7 +89,7 @@
 
 	Value & Abstract::Alert::getProperties(Value &value) const {
 
-		NamedObject::getProperties(value);
+		Activatable::getProperties(value);
 
 		value["minretry"] = retry.min;
 		value["maxretry"] = retry.max;
@@ -123,7 +123,7 @@
 			child.strip();
 		}
 
-		return Quark(child.expand(node,"alert-defaults")).c_str();
+		return Quark{child.expand(node,"alert-defaults")}.c_str();
 
 	}
 
