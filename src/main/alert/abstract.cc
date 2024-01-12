@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	Abstract::Alert::Alert(const XML::Node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
+	Abstract::Alert::Alert(const XML::Node &node,const char *defaults) : Alert(Quark(node,"name","alert").c_str()) {
 
 		// Get section from configuration file with the defaults.
 		const char *section = node.attribute("settings-from").as_string(defaults);

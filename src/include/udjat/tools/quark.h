@@ -57,7 +57,7 @@
 			/// @param Attribute name.
 			/// @param def Default value.
 			/// @param upsearch If true search the parent nodes.
-			Quark(const XML::Node &node,const char *name,const char *def="",bool upsearch = true);
+			Quark(const XML::Node &node,const char *name,const char *def="");
 
 			Quark & operator=(const char *str);
 			Quark & operator=(const std::string &str);

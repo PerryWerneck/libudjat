@@ -113,7 +113,7 @@
 									out{Logger::LevelFactory(node,"stdout","info")},
 									err{Logger::LevelFactory(node,"stderr","error")}
 							{
-								cmdline = Quark(node,"cmdline","",false).c_str();
+								cmdline = Quark(node,"cmdline","").c_str();
 								if(!cmdline) {
 									throw runtime_error("Required attribute 'cmdline' is missing");
 								}
@@ -161,7 +161,7 @@
 							HTTP::Method method;
 
 						public:
-							Url(const XML::Node &node) : Udjat::Agent<int32_t>(node), url{Quark(node,"url","",false).c_str()},method{HTTP::MethodFactory(node.attribute("method").as_string("head"))}  {
+							Url(const XML::Node &node) : Udjat::Agent<int32_t>(node), url{Quark(node,"url","").c_str()},method{HTTP::MethodFactory(node.attribute("method").as_string("head"))}  {
 
 								if(!(url && *url)) {
 									throw runtime_error("Required attribute 'url' is missing");
