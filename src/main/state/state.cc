@@ -121,12 +121,12 @@ namespace Udjat {
 		debug(
 			"name=",node.attribute("name").as_string()," ",
 			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
-			" Attibute('alert-type')=",getAttribute(node,"alert-type",false).as_string("")
+			" Attibute('alert-type')=",getAttribute(node,"alert-type").as_string("")
 		);
 
 		{
-			auto type = getAttribute(node,"alert-type",false);
-			auto enabled = getAttribute(node,"alert",true);
+			XML::Attribute type = getAttribute(node,"alert-type");
+			XML::Attribute enabled = getAttribute(node,"alert");
 
 			if(enabled.as_bool(type)) {
 				auto alert = Abstract::Alert::Factory(*this, node, type.as_string(""));

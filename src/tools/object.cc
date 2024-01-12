@@ -147,10 +147,10 @@
 
 		NamedObject::set(node);
 
-		properties.label = getAttribute(node,"label",properties.label);
-		properties.summary = getAttribute(node,"summary",properties.summary);
-		properties.url = getAttribute(node,"url",properties.url);
-		properties.icon = getAttribute(node,"icon",properties.icon);
+		properties.label = String{node,"label",properties.label}.as_quark();
+		properties.summary = String{node,"summary",properties.summary}.as_quark();
+		properties.url = String{node,"url",properties.url}.as_quark();
+		properties.icon = String{node,"icon",properties.icon}.as_quark();
 
 	}
 
@@ -361,39 +361,8 @@
 		return rc;
 	}
 
-	const pugi::xml_attribute Abstract::Object::getAttribute(const XML::Node &n, const char *name, bool change) {
-
-		string key{name};
-		XML::Node node = n;
-
-		while(node) {
-
-			pugi::xml_attribute attribute = node.attribute(key.c_str());
-			if(attribute) {
-				return attribute;
-			}
-
-			for(auto child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
-
-				if(strcasecmp(key.c_str(),child.attribute("name").as_string()) == 0) {
-					return child.attribute("value");
-				}
-
-			}
-
-			if(change) {
-				change = false;
-				key = node.name();
-				key += "-";
-				key += name;
-			}
-
-			node = node.parent();
-
-		}
-
-		return pugi::xml_attribute();
-
+	const XML::Attribute Abstract::Object::getAttribute(const XML::Node &n, const char *name) {
+		return XML::AttributeFactory(n,name);
 	}
 
 	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const char *name, unsigned int def) {

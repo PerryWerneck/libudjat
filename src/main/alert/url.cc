@@ -47,7 +47,7 @@
 		{
 			// Get alert action.
 			// (Dont use the default getAttribute to avoid the creation of a new 'quark')
-			auto attribute = getAttribute(node,"action",true);
+			XML::Attribute attribute = getAttribute(node,"action");
 			if(attribute) {
 				action = HTTP::MethodFactory(attribute.as_string("get"));
 			} else {

@@ -68,7 +68,7 @@
 			/// @param name The property name.
 			/// @param change If true add the node name as prefix on the attribute name for upsearch.
 			/// @return XML Attribute.
-			static const pugi::xml_attribute getAttribute(const XML::Node &n, const char *name, bool change = true);
+			static const XML::Attribute getAttribute(const XML::Node &n, const char *name);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.

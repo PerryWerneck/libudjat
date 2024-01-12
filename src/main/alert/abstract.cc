@@ -108,9 +108,9 @@
 
 		if(child.empty()) {
 
-			auto payload = node.attribute("payload");
+			XML::Attribute payload = node.attribute("payload");
 			if(!payload) {
-				payload = getAttribute(node,"alert-payload",false);
+				payload = getAttribute(node,"alert-payload");
 			}
 
 			if(payload) {
@@ -119,7 +119,7 @@
 
 		}
 
-		if(getAttribute(node,"strip-payload",true).as_bool(true)) {
+		if(getAttribute(node,"strip-payload").as_bool(true)) {
 			child.strip();
 		}
 
