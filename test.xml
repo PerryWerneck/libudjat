@@ -28,11 +28,13 @@
 
 	</agent>
 
-	<!--
 	<attribute name='alert-type' value='file' />
 	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
 	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
-	-->
+
+	<alert name='r0.0' type='file' strip-payload='yes'>
+		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
+	</alert>
 		
 	<!-- random name='random1' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
 

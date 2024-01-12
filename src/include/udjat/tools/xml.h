@@ -50,8 +50,18 @@
 
 		};
 
-		String StringFactory(const XML::Node &node, const char *aname, const char *vname = "value", const char *def = "");
-		const Quark QuarkFactory(const XML::Node &node, const char *aname, const char *vname = "value", const char *def = "");
+		/// @brief Search 'node' and up stream for 'attrname'.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @return The attribute (empty if not found).
+		UDJAT_API XML::Attribute AttributeFactory(const XML::Node &node, const char *attrname);
+
+		/// @brief Search 'node' and up stream for 'attrname'.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @param def default value if nullptr the attribute is required.
+		/// @return The attribute value (def if not found).
+		UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
 	}
 
@@ -68,6 +78,7 @@
 		std::string value;
 
 	public:
+
 		Attribute(const XML::Node &node, const char *name, const char *upsearch);
 		Attribute(const XML::Node &node, const char *name, bool upsearch);
 		Attribute(const XML::Node &node, const char *name);

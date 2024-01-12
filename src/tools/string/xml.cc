@@ -22,6 +22,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/xml.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
  #include <sstream>
@@ -32,125 +33,14 @@
 
  namespace Udjat {
 
-	String::String(const char **args, char delimiter) : std::string{args[0]} {
-
-		char delim[] = {delimiter,0};
-
-		for(size_t ix = 1; args[ix];ix++) {
-			if(delimiter) {
-				std::string::append(delim);
-			}
-			std::string::append(args[ix]);
-		}
-
-	}
-
-	String::String(const XML::Node &node, const char *attrname, bool required) {
-
-		auto attribute = node.attribute(attrname);
-		if(attribute) {
-			assign(attribute.as_string());
-			expand(node);
-			return;
-		}
-
-		debug("Doing a XML search for '",attrname,"'");
-		for(XML::Node parent = node;parent;parent = parent.parent()) {
-			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
-				if(!strcasecmp(child.attribute("name").as_string(""),attrname)) {
-					// Found attribute
-					assign(child.attribute("value").as_string());
-					expand(node);
-					return;
-				}
-			}
-		}
-
-		// Not found.
-		if(required) {
-			throw runtime_error(Logger::Message{_("Required attribute '{}' was missing"),attrname});
-		}
-
-	}
-
-	String::String(const XML::Node &node, const char *attrname, const char *def) {
-
-		auto attribute = node.attribute(attrname);
-		if(attribute) {
-			assign(attribute.as_string());
-			expand(node);
-			return;
-		}
-
-		debug("Doing a XML search for '",attrname,"'");
-		for(XML::Node parent = node;parent;parent = parent.parent()) {
-			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
-				if(!strcasecmp(child.attribute("name").as_string(""),attrname)) {
-					// Found attribute
-					assign(child.attribute("value").as_string());
-					expand(node);
-					return;
-				}
-			}
-		}
-
-		assign(def);
+	String::String(const XML::Node &node, const char *attrname, bool required)
+		: String{XML::StringFactory(node,attrname,required ? nullptr : "")} {
 		expand(node);
-
 	}
 
-	/*
-	String::String(const XML::Node &node, const char *attrname, const char *def, bool upsearch) {
-
-		auto attribute = node.attribute(attrname);
-		if(attribute) {
-			// Found attribute
-			assign(attribute.as_string(def ? def : ""));
-
-		} else if(upsearch) {
-
-			// Mount attribute name.
-			String upname{node.name()};
-			upname += "-";
-			upname += attrname;
-			bool searching = true;
-
-			debug("Doing an upsearch for '",upname.c_str(),"'");
-			for(XML::Node parent = node.parent(); parent  && searching; parent = parent.parent()) {
-
-				// Search for an attribute '${upname}'
-				for(XML::Node child = parent.child("attribute"); child && searching; child = child.next_sibling("attribute")) {
-
-					const char * name = child.attribute("name").as_string("");
-
-					// is_allowed should be the last test since it can trigger a network request.
-					if(name && *name && strcasecmp(name,upname.c_str()) == 0 && is_allowed(child)) {
-						assign(child.attribute("value").as_string(def ? def : ""));
-						searching = false;
-						break;
-					}
-
-				}
-			}
-
-		} else if(def) {
-
-			assign(def);
-
-		} else {
-			throw runtime_error(Logger::Message(_("Required attribute '{}' is missing"),attrname));
-		}
-
-		// And, for last, expand the string.
-		if(!empty()) {
-			expand(node);
-		}
-
-	}
-	*/
-
-	void String::add(const char *str) {
-		std::string::append(str);
+	String::String(const XML::Node &node, const char *attrname, const char *def)
+		: String{XML::StringFactory(node,attrname,def)} {
+		expand(node);
 	}
 
  }

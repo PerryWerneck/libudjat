@@ -32,6 +32,23 @@
 
  namespace Udjat {
 
+	String::String(const char **args, char delimiter) : std::string{args[0]} {
+
+		char delim[] = {delimiter,0};
+
+		for(size_t ix = 1; args[ix];ix++) {
+			if(delimiter) {
+				std::string::append(delim);
+			}
+			std::string::append(args[ix]);
+		}
+
+	}
+
+	void String::add(const char *str) {
+		std::string::append(str);
+	}
+
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {

@@ -206,7 +206,7 @@
 			/// @brief Insert object.
 			void push_back(std::shared_ptr<Abstract::Object> object);
 
-			/// @brief Insert Alert.
+			/// @brief Insert Activatable.
 			virtual void push_back(std::shared_ptr<Activatable> alert);
 
 			/// @brief Insert activatable based on xml attributes.
