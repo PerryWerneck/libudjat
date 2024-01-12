@@ -38,7 +38,6 @@
 		int syscode;
 	} syscodes[] = {
 		{ 200, 0			},
-		{ 204, ENODATA		},
 		{ 401, EPERM 		},
 		{ 403, EPERM 		},
 		{ 404, ENOENT		},
@@ -49,6 +48,7 @@
 #endif // ETIMEDOUT
 		{ 501, ENOTSUP		},
 		{ 503, EBUSY	 	},
+		{ 404, ENODATA		},
 	};
 
 	int HTTP::Exception::code(int syscode) noexcept {
