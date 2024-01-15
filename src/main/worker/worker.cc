@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	Worker::Worker(const char *n, const ModuleInfo &i, Worker::Type t) : name(n), module(i), type{t} {
+	Worker::Worker(const char *n, const ModuleInfo &i) : name(n), module(i) {
 		Controller::getInstance().insert(this);
 	}
 
@@ -107,8 +107,11 @@
 		return false;
 	}
 
-	bool Worker::probe(const Request &request) const noexcept {
+	Worker::ResponseType Worker::probe(const Request &request) const noexcept {
+		return probe(request,ResponseType::Value);
+	}
 
+	Worker::ResponseType Worker::probe(const Request &request, ResponseType type) const noexcept {
 		//
 		// Execute legacy worker, with name as the first element of path.
 		//
@@ -125,10 +128,10 @@
 
 		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
 			debug("Worker '",name,"' accepted '",request.path(),"'");
-			return true;
+			return type;
 		}
 
-		return false;
+		return ResponseType::None;
 	}
 
 	bool Worker::exec(Request &request, Response::Value &response) const {

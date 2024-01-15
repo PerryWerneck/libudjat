@@ -73,19 +73,6 @@ namespace Udjat {
 
 		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
 
-		/// @brief Find child, update path.
-		/// @brief agent Pointer to root agent.
-		/// @brief path pointer to child path.
-		/// @return Pointer to child or nullptr.
-		//static const Abstract::Agent * find(const Abstract::Agent *agent, const char * &path);
-
-		/*
-		/// @brief Get agent's cache properties.
-		static bool head(Abstract::Agent *agent, const char *path, Abstract::Response &response);
-
-		bool head(Request &request,  Udjat::Response::Value &response) const override;
-		*/
-
 		void start() noexcept override;
 		void stop() noexcept override;
 
@@ -95,6 +82,7 @@ namespace Udjat {
 		// Worker
 		bool get(Request &request, Udjat::Response::Value &response) const override;
 		bool get(Request &request, Udjat::Response::Table &response) const override;
+		Worker::ResponseType probe(const Request &request) const noexcept override;
 
 	};
 

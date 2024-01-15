@@ -43,22 +43,22 @@ namespace Udjat {
 		const ModuleInfo &module;
 
 		/// @brief Worker response type.
-		enum Type {
-			Value,	///< @brief The worker standard response is value.
-			Table,	///< @brief The worker standard response is table.
-		} type = Value;
+		enum ResponseType : uint8_t {
+			None	= 0,	///< @brief The worker cant handle this request.
+			Value	= 1,	///< @brief The worker response for this request is a value.
+			Table	= 2,	///< @brief The worker response for this request is a table.
+			Both	= 3,	///< @brief The worker response can be value, table or both.
+		};
+
+		ResponseType probe(const Request &request, ResponseType type) const noexcept;
 
 	public:
 		class Controller;
 		friend class Controller;
 
-		Worker(const char *name, const ModuleInfo &info, const Type type = Value);
+		Worker(const char *name, const ModuleInfo &info);
 
-		Worker(const Quark &name, const ModuleInfo &info, const Type type = Value) : Worker(name.c_str(),info,type) {
-		}
-
-		inline Type response_type() const noexcept {
-			return type;
+		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
 		}
 
 		static bool for_each(const std::function<bool(const Worker &worker)> &method);
@@ -80,8 +80,8 @@ namespace Udjat {
 
 		/// @brief Test if the request can run on this worker.
 		/// @param request The request.
-		/// @return True if the request can be fullfiled, false if not.
-		virtual bool probe(const Request &request) const noexcept;
+		/// @return The response type for this request.
+		virtual ResponseType probe(const Request &request) const noexcept;
 
 		/// @brief Test if the request can run on this worker.
 		/// @param request The request.

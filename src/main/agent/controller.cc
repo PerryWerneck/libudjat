@@ -99,10 +99,12 @@ namespace Udjat {
 
 	}
 
+	Worker::ResponseType Abstract::Agent::Controller::probe(const Request &request) const noexcept {
+		return Worker::probe(request,Worker::ResponseType::Both);
+	}
+
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
-
 		return root->getProperties(request.path(),response);
-
 	}
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
