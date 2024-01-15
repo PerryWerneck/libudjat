@@ -30,7 +30,7 @@ namespace Udjat {
 
 	UDJAT_API bool exec(Request &request, Response::Value &response);
 	UDJAT_API bool exec(Request &request, Response::Table &response);
-	
+
 	UDJAT_API bool introspect(Udjat::Value &value);
 
 	class UDJAT_API Worker {
@@ -42,13 +42,23 @@ namespace Udjat {
 		/// @brief Information about the worker module.
 		const ModuleInfo &module;
 
+		/// @brief Worker response type.
+		enum Type {
+			Value,	///< @brief The worker standard response is value.
+			Table,	///< @brief The worker standard response is table.
+		} type = Value;
+
 	public:
 		class Controller;
 		friend class Controller;
 
-		Worker(const char *name, const ModuleInfo &info);
+		Worker(const char *name, const ModuleInfo &info, const Type type = Value);
 
-		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info) {
+		Worker(const Quark &name, const ModuleInfo &info, const Type type = Value) : Worker(name.c_str(),info,type) {
+		}
+
+		inline Type response_type() const noexcept {
+			return type;
 		}
 
 		static bool for_each(const std::function<bool(const Worker &worker)> &method);
@@ -58,10 +68,20 @@ namespace Udjat {
 		std::ostream & error() const;
 		std::ostream & trace() const;
 
-		/// @brief Find worker by name
+		/// @brief Find worker by path
 		/// @param name Name of the required worker.
 		/// @return The worker for path, exception if not found.
-		static const Worker * find(const char *path);
+		static const Worker & find(const char *path);
+
+		/// @brief Find worker by request
+		/// @param name Name of the required worker.
+		/// @return The worker for request, exception if not found.
+		static const Worker & find(const Request &request);
+
+		/// @brief Test if the request can run on this worker.
+		/// @param request The request.
+		/// @return True if the request can be fullfiled, false if not.
+		virtual bool probe(const Request &request) const noexcept;
 
 		/// @brief Test if the request can run on this worker.
 		/// @param request The request.
@@ -79,9 +99,9 @@ namespace Udjat {
 		/// @param name The property name.
 		/// @param value The response.
 		/// @return true if the value was set.
-		virtual bool getProperty(const char *name, Value &property) const;
+		virtual bool getProperty(const char *name, Udjat::Value &property) const;
 
-		virtual Value & getProperties(Value &properties) const;
+		virtual Udjat::Value & getProperties(Udjat::Value &properties) const;
 
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {

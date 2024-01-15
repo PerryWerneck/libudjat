@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	Worker::Worker(const char *n, const ModuleInfo &i) : name(n), module(i) {
+	Worker::Worker(const char *n, const ModuleInfo &i, Worker::Type t) : name(n), module(i), type{t} {
 		Controller::getInstance().insert(this);
 	}
 
@@ -41,16 +41,16 @@
 		return Controller::getInstance().for_each(method);
 	}
 
-	Value & Worker::getProperties(Value &properties) const {
+	Udjat::Value & Worker::getProperties(Udjat::Value &properties) const {
 		properties["name"] = name;
 		return module.getProperties(properties);
 	}
 
-	bool Worker::getProperty(const char *, Value &) const {
+	bool Worker::getProperty(const char *, Udjat::Value &) const {
 		return false;
 	}
 
-	const Worker * Worker::find(const char *name) {
+	const Worker & Worker::find(const char *name) {
 
 		const Worker *response = nullptr;
 
@@ -67,8 +67,29 @@
 			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find worker '{}'",name));
 		}
 
-		return response;
+		return *response;
 	}
+
+	const Worker & Worker::find(const Request &request) {
+
+		const Worker *response = nullptr;
+
+		if(!Worker::Controller::getInstance().for_each([&response,&request](const Worker &worker) {
+
+			if(worker.probe(request)) {
+				response = &worker;
+				return true;
+			}
+
+			return false;
+
+		})) {
+			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find worker for '{}'",request.path()));
+		}
+
+		return *response;
+	}
+
 
 	bool Worker::get(Request &, Response::Value &) const {
 		return false;
@@ -86,9 +107,7 @@
 		return false;
 	}
 
-	bool Worker::exec(Request &request, Response::Value &response) const {
-
-		debug("Running default exec for value response on worker '",name,"'");
+	bool Worker::probe(const Request &request) const noexcept {
 
 		//
 		// Execute legacy worker, with name as the first element of path.
@@ -105,45 +124,36 @@
 		size_t szpath = strlen(path);
 
 		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
-
-			// Found valid worker, try to fullfill the request.
-			debug("Worker '",name,"' accepted '",path,"'");
-			request.rewind().pop(); // Extract my name.
-			return work(request, response);
-
+			debug("Worker '",name,"' accepted '",request.path(),"'");
+			return true;
 		}
 
-		debug("Worker '",name,"' rejected '",path,"'");
 		return false;
+	}
+
+	bool Worker::exec(Request &request, Response::Value &response) const {
+
+		debug("Running default exec for value response on worker '",name,"'");
+
+		if(!probe(request)) {
+			return false;
+		}
+
+		// Found valid worker, try to fullfill the request.
+		request.rewind().pop(); // Extract my name.
+		return work(request, response);
 
 	}
 
 	bool Worker::exec(Request &request, Response::Table &response) const {
 
-		debug("Running default exec for table response on worker '",name,"'");
-		//
-		// Execute legacy worker, with name as the first element of path.
-		//
-		size_t szname = strlen(name);
-
-		// Get request path.
-		const char *path = request.path();
-		if(*path == '/')
-			path++;
-
-		size_t szpath = strlen(path);
-
-		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
-
-			// Found valid worker, try to fullfill the request.
-			debug("Worker '",name,"' accepted '",path,"'");
-			request.rewind().pop(); // Extract my name.
-			return work(request, response);
-
+		if(!probe(request)) {
+			return false;
 		}
 
-		debug("Worker '",name,"' rejected '",path,"'");
-		return false;
+		// Found valid worker, try to fullfill the request.
+		request.rewind().pop(); // Extract my name.
+		return work(request, response);
 
 	}
 
