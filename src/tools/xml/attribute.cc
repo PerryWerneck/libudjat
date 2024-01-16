@@ -34,6 +34,7 @@
 
 		XML::Attribute attribute{node.attribute(attrname)};
 		if(attribute) {
+			debug("Found '",attrname,"' in node '",node.name(),"'");
 			return attribute;
 		}
 
@@ -48,7 +49,7 @@
 		{
 			String key{node.name(),"-",attrname};
 			for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
-				for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+				for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
 					if(!strcasecmp(child.attribute("name").as_string(""),key.c_str()) && is_allowed(child)) {
 						return child.attribute("value");
 					}
@@ -58,7 +59,7 @@
 
 		// Search parents for <attribute name='${attrname}' value= />
 		for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
-			for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
 				if(!strcasecmp(child.attribute("name").as_string(""),attrname) && is_allowed(child)) {
 					return child.attribute("value");
 				}
