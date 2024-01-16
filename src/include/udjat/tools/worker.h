@@ -37,10 +37,7 @@ namespace Udjat {
 	private:
 		const char * name = "";
 
-	protected:
-
-		/// @brief Information about the worker module.
-		const ModuleInfo &module;
+	public:
 
 		/// @brief Worker response type.
 		enum ResponseType : uint8_t {
@@ -50,9 +47,6 @@ namespace Udjat {
 			Both	= 3,	///< @brief The worker response can be value, table or both.
 		};
 
-		ResponseType probe(const Request &request, ResponseType type) const noexcept;
-
-	public:
 		class Controller;
 		friend class Controller;
 
@@ -129,6 +123,13 @@ namespace Udjat {
 
 		/// @brief Process report method.
 		virtual bool work(Request &request, Response::Table &response) const;
+
+	protected:
+
+		/// @brief Information about the worker module.
+		const ModuleInfo &module;
+
+		ResponseType probe(const Request &request, ResponseType type) const noexcept;
 
 	};
 
