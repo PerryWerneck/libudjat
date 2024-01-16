@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/factory.h>
  #include <udjat/alert/url.h>
  #include <udjat/alert/script.h>
@@ -112,36 +113,21 @@
 			//
 			// Check node attributes.
 			//
-			if(node.attribute("url")) {
+			if(XML::AttributeFactory(node,"url")) {
 				return make_shared<Udjat::Alert::URL>(node);
 			}
 
-			if(node.attribute("script")) {
+			if(XML::AttributeFactory(node,"script")) {
 				return make_shared<Udjat::Alert::Script>(node);
 			}
 
-			if(node.attribute("filename")) {
+			if(XML::AttributeFactory(node,"filename")) {
 				return make_shared<Udjat::Alert::Script>(node);
-			}
-
-			//
-			// Do an upsearch.
-			//
-			if(Object::getAttribute(node,"url")) {
-				return make_shared<Udjat::Alert::URL>(node);
-			}
-
-			if(Object::getAttribute(node,"script")) {
-				return make_shared<Udjat::Alert::Script>(node);
-			}
-
-			if(Object::getAttribute(node,"filename")) {
-				return make_shared<Udjat::Alert::File>(node);
 			}
 
 		}
 
-		throw runtime_error(string{"No available factory for '"} + type + "' alerts");
+		throw runtime_error(Logger::Message{_("Cant determine the type of alert '{}'"),node.attribute("name").as_string("unnamed")});
 
 	}
 
