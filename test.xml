@@ -32,7 +32,7 @@
 	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
 	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
 
-	<alert name='r0.0' type='file' strip-payload='yes'>
+	<alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert>
 		

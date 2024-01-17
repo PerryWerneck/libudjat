@@ -38,6 +38,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>
  #include <udjat/alert/abstract.h>
+ #include <udjat/alert/activation.h>
  #include <udjat/module/abstract.h>
  #include <sstream>
 
@@ -267,6 +268,7 @@
 					Abstract::Alert *alert = dynamic_cast<Abstract::Alert *>(activatable.get());
 					if(alert) {
 						auto activation = alert->ActivationFactory();
+						activation->set(*Abstract::Agent::root());
 						Udjat::start(activation);
 					} else {
 						activatable->activate(*this);
