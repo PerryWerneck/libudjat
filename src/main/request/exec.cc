@@ -37,17 +37,21 @@
  namespace Udjat {
 
 	UDJAT_API bool exec(Request &request, Response::Value &response) {
-		if(!Worker::Controller::getInstance().exec<Response::Value>(request,response)) {
+		return Worker::for_each([&request,&response](const Worker &worker) {
+			if(worker.probe(request) & Worker::Value) {
+				return worker.work(request,response);
+			}
 			return false;
-		}
-		return true;
+		});
 	}
 
 	UDJAT_API bool exec(Request &request, Response::Table &response) {
-		if(!Worker::Controller::getInstance().exec<Response::Table>(request,response)) {
+		return Worker::for_each([&request,&response](const Worker &worker) {
+			if(worker.probe(request) & Worker::Table) {
+				return worker.work(request,response);
+			}
 			return false;
-		}
-		return true;
+		});
 	}
 
 	UDJAT_API bool introspect(Udjat::Value &value) {

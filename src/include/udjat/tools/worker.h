@@ -85,8 +85,8 @@ namespace Udjat {
 		/// @param request The request.
 		/// @param response The response.
 		/// @return True if the request was fullfiled, false if not.
-		virtual bool exec(Request &request, Response::Value &response) const;
-		virtual bool exec(Request &request, Response::Table &response) const;
+		// virtual bool exec(Request &request, Response::Value &response) const;
+		// virtual bool exec(Request &request, Response::Table &response) const;
 
 		/// @brief Get worker introspection.
 		/// @param value The object for worker introspection.
@@ -121,11 +121,12 @@ namespace Udjat {
 
 		virtual ~Worker();
 
-		/// @brief Process all methods.
-		/// @return true if the method was allowed.
+		/// @brief Process request, get response as value.
+		/// @return true if the response was updated.
 		virtual bool work(Request &request, Response::Value &response) const;
 
-		/// @brief Process report method.
+		/// @brief Process request, get response as table.
+		/// @return true if the response was updated.
 		virtual bool work(Request &request, Response::Table &response) const;
 
 	protected:

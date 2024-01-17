@@ -108,6 +108,7 @@
 	}
 
 	Worker::ResponseType Worker::probe(const Request &request) const noexcept {
+		debug(__FUNCTION__,"(",request.path(),")");
 		return probe(request,ResponseType::Value);
 	}
 
@@ -134,15 +135,13 @@
 		return ResponseType::None;
 	}
 
+	/*
 	bool Worker::exec(Request &request, Response::Value &response) const {
 
 		debug("Running default exec for value response on worker '",name,"'");
 
-		if(!probe(request)) {
-			return false;
-		}
-
 		// Found valid worker, try to fullfill the request.
+		debug("Worker ",name," accepted ",request.path());
 		request.rewind().pop(); // Extract my name.
 		return work(request, response);
 
@@ -150,17 +149,18 @@
 
 	bool Worker::exec(Request &request, Response::Table &response) const {
 
-		if(!probe(request)) {
-			return false;
-		}
+		debug("Running default exec for table response on worker '",name,"'");
 
 		// Found valid worker, try to fullfill the request.
 		request.rewind().pop(); // Extract my name.
 		return work(request, response);
 
 	}
+	*/
 
 	bool Worker::work(Request &request, Response::Value &response) const {
+
+		debug(__FUNCTION__,"(",request.path(),")");
 
 		switch((HTTP::Method) request) {
 		case HTTP::Get:
@@ -180,6 +180,8 @@
 	}
 
 	bool Worker::work(Request &request, Response::Table &response) const {
+
+		debug(__FUNCTION__,"(",request.path(),")");
 
 		if( ((HTTP::Method) request) == HTTP::Get) {
 			debug("HTTP GET");
