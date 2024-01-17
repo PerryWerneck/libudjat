@@ -32,10 +32,13 @@
 
  namespace Udjat {
 
-	Abstract::Response & Abstract::Response::failed(int code, const char *message, const char *body) noexcept {
-		status.code = code;
-		status.message = message;
-		status.body = body;
+	Abstract::Response & Abstract::Response::failed(int code, const char *message, const char *body, const char *url) noexcept {
+		if(!status.code) {
+			status.code = code;
+			status.message = message;
+			status.body = body;
+			status.url = url;
+		}
 		return *this;
 	}
 
@@ -67,22 +70,36 @@
 
 	void Abstract::Response::for_each(const std::function<void(const char *property_name, const char *property_value)> &call) const noexcept {
 
-		time_t now = time(0);
+		if(status.code == 0) {
 
-		time_t modtime = this->last_modified();
-		if(!modtime) {
-			modtime = now;
-		}
-		call("Last-Modified", HTTP::TimeStamp{modtime}.to_string().c_str());
+			// No error.
 
-		time_t expires = this->expires();
-		if(expires && expires >= now) {
+			time_t now = time(0);
 
-			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-			call("Cache-Control", Udjat::String{"max-age=",(unsigned int) (now-expires),", must-revalidate, private"}.c_str());
-			call("Expires", HTTP::TimeStamp{expires}.to_string().c_str());
+			time_t modtime = this->last_modified();
+			if(!modtime) {
+				modtime = now;
+			}
+
+			call("Last-Modified", HTTP::TimeStamp{modtime}.to_string().c_str());
+
+			time_t expires = this->expires();
+			if(expires && expires >= now) {
+
+				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+				call("Cache-Control", Udjat::String{"max-age=",(unsigned int) (now-expires),", must-revalidate, private"}.c_str());
+				call("Expires", HTTP::TimeStamp{expires}.to_string().c_str());
+
+			} else {
+
+				call("Cache-Control", "no-cache, no-store, must-revalidate, private, max-age=0");
+				call("Expires", "0");
+
+			}
 
 		} else {
+
+			// Error response, setup cache.
 
 			call("Cache-Control", "no-cache, no-store, must-revalidate, private, max-age=0");
 			call("Expires", "0");
@@ -111,8 +128,8 @@
 		return failed(-1,e.what());
 	}
 
-	Abstract::Response & Abstract::Response::failed(const char *message, const char *body) noexcept {
-		return failed(-1,message);
+	Abstract::Response & Abstract::Response::failed(const char *message, const char *body, const char *url) noexcept {
+		return failed(-1,message,body,url);
 	}
 
 	std::string Abstract::Response::to_string() const {
@@ -169,10 +186,10 @@
 			} else if(status.message.empty()) {
 				stream << "fail\"";
 			} else {
-				stream << "error\",\"message\":\"" << status.message << "\"";
-				if(status.code) {
-					stream << ",\"code\":" << status.code;
-				}
+				stream	<< "error\",\"message\":\"" << status.message << "\""
+						<< ",\"code\":" << status.code
+						<< ",\"body\":\"" << status.body << "\""
+						<< ",\"url\":\"" << status.url << "\"";
 			}
 
 			stream << ",\"data\":";
@@ -184,27 +201,6 @@
 		default:
 			Udjat::Value::serialize(stream,mimetype);
 		}
-
-		/*
-		if(mimetype == Udjat::MimeType::xml) {
-			// Format as XML
-			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response";
-
-			if(modification) {
-				stream << " timestamp='" << modification.to_string() << "'";
-			}
-
-			if(expiration) {
-				stream << " expires='" << expiration.to_string() << "'";
-			}
-
-			stream << ">";
-			to_xml(stream);
-			stream << "</response>";
-		} else {
-			Udjat::Value::serialize(stream,mimetype);
-		}
-		*/
 
 	}
 

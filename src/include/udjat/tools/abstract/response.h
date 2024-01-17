@@ -23,6 +23,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/http/exception.h>
+ #include <functional>
  #include <stdexcept>
  #include <ctime>
  #include <string>
@@ -52,6 +53,9 @@
 
 				/// @brief Extended error message.
 				std::string body;
+
+				/// @brief URL for more information.
+				std::string url;
 
 				/// @brief Error code.
 				int code = 0;
@@ -84,8 +88,8 @@
 			}
 
 			Response & failed(int code = errno) noexcept;
-			Response & failed(const char *message, const char *body = "") noexcept;
-			Response & failed(int code, const char *message, const char *body = "") noexcept;
+			Response & failed(const char *message, const char *body = "", const char *url = "") noexcept;
+			Response & failed(int code, const char *message, const char *body = "", const char *url = "") noexcept;
 			Response & failed(const std::system_error &e) noexcept;
 			Response & failed(const std::exception &e) noexcept;
 			virtual Response & failed(const HTTP::Exception &e) noexcept;
@@ -122,12 +126,19 @@
 				return (time_t) expiration;
 			}
 
+			/// @brief Get the message of the first failure on this response.
 			inline const char * message() const noexcept {
 				return status.message.c_str();
 			}
 
+			/// @brief Get the body of the first failure on this response.
 			inline const char * body() const noexcept {
 				return status.body.c_str();
+			}
+
+			/// @brief Get the url for more information about the first failure on this response.
+			inline const char * url() const noexcept {
+				return status.url.c_str();
 			}
 
 		};
