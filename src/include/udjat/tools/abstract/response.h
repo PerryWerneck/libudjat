@@ -90,6 +90,9 @@
 			Response & failed(const std::exception &e) noexcept;
 			virtual Response & failed(const HTTP::Exception &e) noexcept;
 
+			/// @brief Enumerate response properties (http headers).
+			virtual void for_each(const std::function<void(const char *property_name, const char *property_value)> &call) const noexcept;
+
 			/// @brief Set item count for this response.
 			/// @param value The item count (for X-Total-Count http header).
 			virtual void count(size_t value) noexcept;

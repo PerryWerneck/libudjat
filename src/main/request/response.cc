@@ -21,9 +21,11 @@
  #include <algorithm>
  #include <private/request.h>
  #include <udjat/tools/abstract/response.h>
+ #include <udjat/tools/http/timestamp.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/string.h>
  #include <ctime>
 
  using namespace std;
@@ -60,6 +62,32 @@
 		}
 
 		return (time_t) modification;
+
+	}
+
+	void Abstract::Response::for_each(const std::function<void(const char *property_name, const char *property_value)> &call) const noexcept {
+
+		time_t now = time(0);
+
+		time_t modtime = this->last_modified();
+		if(!modtime) {
+			modtime = now;
+		}
+		call("Last-Modified", HTTP::TimeStamp{modtime}.to_string().c_str());
+
+		time_t expires = this->expires();
+		if(expires && expires >= now) {
+
+			// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+			call("Cache-Control", Udjat::String{"max-age=",(unsigned int) (now-expires),", must-revalidate, private"}.c_str());
+			call("Expires", HTTP::TimeStamp{expires}.to_string().c_str());
+
+		} else {
+
+			call("Cache-Control", "no-cache, no-store, must-revalidate, private, max-age=0");
+			call("Expires", "0");
+
+		}
 
 	}
 
