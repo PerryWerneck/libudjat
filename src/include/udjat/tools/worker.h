@@ -113,7 +113,7 @@ namespace Udjat {
 
 		/// @brief Process only the 'head' method.
 		/// @return false if the request method was not allowed.
-		virtual bool head(Request &request, Response::Value &response) const;
+		virtual bool head(Request &request, Abstract::Response &response) const;
 
 		inline const char * c_str() const {
 			return name;

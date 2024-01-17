@@ -99,7 +99,7 @@
 		return false;
 	}
 
-	bool Worker::head(Request &, Response::Value &) const {
+	bool Worker::head(Request &, Abstract::Response &) const {
 		return false;
 	}
 
@@ -128,37 +128,18 @@
 		size_t szpath = strlen(path);
 
 		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
-			debug("Worker '",name,"' accepted '",request.path(),"'");
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,name);
+			}
 			return type;
 		}
 
 		return ResponseType::None;
 	}
 
-	/*
-	bool Worker::exec(Request &request, Response::Value &response) const {
-
-		debug("Running default exec for value response on worker '",name,"'");
-
-		// Found valid worker, try to fullfill the request.
-		debug("Worker ",name," accepted ",request.path());
-		request.rewind().pop(); // Extract my name.
-		return work(request, response);
-
-	}
-
-	bool Worker::exec(Request &request, Response::Table &response) const {
-
-		debug("Running default exec for table response on worker '",name,"'");
-
-		// Found valid worker, try to fullfill the request.
-		request.rewind().pop(); // Extract my name.
-		return work(request, response);
-
-	}
-	*/
-
 	bool Worker::work(Request &request, Response::Value &response) const {
+
+		request.pop(); // Remove first element.
 
 		debug(__FUNCTION__,"(",request.path(),")");
 
@@ -172,59 +153,25 @@
 			return head(request,response);
 
 		default:
-			throw system_error(ENOENT,system_category(),Logger::String{"Unable to handle '",(const char *) request,"'"});
+			return false;
 		}
-
-		return false;
 
 	}
 
 	bool Worker::work(Request &request, Response::Table &response) const {
+
+		request.pop(); // Remove first element.
 
 		debug(__FUNCTION__,"(",request.path(),")");
 
 		if( ((HTTP::Method) request) == HTTP::Get) {
 			debug("HTTP GET");
 			return get(request,response);
-		} else {
-			throw system_error(ENOENT,system_category(),Logger::String{"Unable to handle '",(const char *) request,"'"});
 		}
 
 		return false;
 
 	}
-
-	/*
-	const char * Worker::check_path(const char *path) const noexcept {
-
-		if(!name && *name) {
-			return nullptr;
-		}
-
-		while(*path && *path == '/') {
-			path++;
-		}
-
-		size_t szname = strlen(name);
-
-		if(strncasecmp(name,path,szname)) {
-			debug("Rejecting '",path,"' on worker ",name);
-			return nullptr;
-		}
-
-		debug("Found '",path,"' on worker ",name);
-
-		path += szname;
-
-		debug("Path fixed to '",path,"'");
-		if(*path && *path != '/') {
-			return nullptr;
-		}
-
-		debug("Using path '",path,"' on worker ",name);
-		return path;
-	}
-	*/
 
 	std::ostream & Worker::info() const {
 		return cout << name << "\t";

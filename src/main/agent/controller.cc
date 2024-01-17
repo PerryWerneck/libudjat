@@ -120,54 +120,6 @@ namespace Udjat {
 		return true;
 	}
 
-	/*
-	bool Abstract::Agent::Controller::head(Request &request, Udjat::Response::Value &response) const {
-
-		debug("-[ HEAD(",request.path(),") ]----------------------");
-
-		// Get cache info.
-		if(!head(get().get(),request.path(),response)) {
-			throw std::system_error(ENOENT,std::system_category());
-		}
-
-		return true;
-	}
-
-	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
-
-		debug("-[ GET(",request.path(),") ]----------------------");
-
-
-		// Get properties.
-
-		auto agent = find(request.path());
-		if(!agent){
-			debug("Cant find '",request.path());
-			throw std::system_error(ENOENT,std::system_category());
-		}
-
-		agent->get(request,response);
-
-		return true;
-
-	}
-
-	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
-
-		debug("-[ GET-ARRAY(",request.path(),") ]----------------------");
-
-		// Get properties.
-		auto agent = find(request.path());
-		if(!agent){
-			throw std::system_error(ENOENT,std::system_category());
-		}
-
-		agent->get(request,response);
-		return true;
-
-	}
-	*/
-
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {
 
 		auto root = get();
