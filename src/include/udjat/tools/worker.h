@@ -57,6 +57,10 @@ namespace Udjat {
 
 		static bool for_each(const std::function<bool(const Worker &worker)> &method);
 
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->name) == 0;
+		}
+
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;

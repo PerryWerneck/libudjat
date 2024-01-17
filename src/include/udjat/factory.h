@@ -40,6 +40,10 @@
 		Factory(const char *name, const ModuleInfo &module);
 		virtual ~Factory();
 
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->factory_name) == 0;
+		}
+
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
