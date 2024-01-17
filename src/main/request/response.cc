@@ -63,6 +63,14 @@
 
 	}
 
+	void Abstract::Response::count(size_t) noexcept {
+		// https://stackoverflow.com/questions/3715981/what-s-the-best-restful-method-to-return-total-number-of-items-in-an-object
+	}
+
+	void Abstract::Response::content_range(size_t, size_t, size_t) noexcept {
+		// https://stackoverflow.com/questions/3715981/what-s-the-best-restful-method-to-return-total-number-of-items-in-an-object
+	}
+
 	Abstract::Response & Abstract::Response::failed(const std::system_error &e) noexcept {
 		return failed(e.code().value(),e.what());
 	}

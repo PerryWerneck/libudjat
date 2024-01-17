@@ -90,6 +90,16 @@
 			Response & failed(const std::exception &e) noexcept;
 			virtual Response & failed(const HTTP::Exception &e) noexcept;
 
+			/// @brief Set item count for this response.
+			/// @param value The item count (for X-Total-Count http header).
+			virtual void count(size_t value) noexcept;
+
+			/// @brief Set range for this response (Content-Range http header).
+			/// @param from First item.
+			/// @param to Last item.
+			/// @param total Item count.
+			virtual void content_range(size_t from, size_t to, size_t total) noexcept;
+
 			/// @brief Convert response to formatted string.
 			virtual std::string to_string() const;
 
