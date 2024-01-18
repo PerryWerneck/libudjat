@@ -90,9 +90,12 @@
 			Response & failed(int code = errno) noexcept;
 			Response & failed(const char *message, const char *body = "", const char *url = "") noexcept;
 			Response & failed(int code, const char *message, const char *body = "", const char *url = "") noexcept;
-			Response & failed(const std::system_error &e) noexcept;
+
 			Response & failed(const std::exception &e) noexcept;
-			virtual Response & failed(const HTTP::Exception &e) noexcept;
+
+			// Deprecated.
+			Response & failed(const std::system_error &e) noexcept;
+			Response & failed(const HTTP::Exception &e) noexcept;
 
 			/// @brief Enumerate response properties (http headers).
 			virtual void for_each(const std::function<void(const char *property_name, const char *property_value)> &call) const noexcept;

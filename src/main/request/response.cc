@@ -26,6 +26,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/exception.h>
  #include <ctime>
 
  using namespace std;
@@ -125,6 +126,32 @@
 	}
 
 	Abstract::Response & Abstract::Response::failed(const std::exception &e) noexcept {
+
+		// Is it an Udjat::Exception?
+		{
+			const Udjat::Exception *err = dynamic_cast<const Udjat::Exception *>(&e);
+			if(err) {
+				return failed(err->syscode(), err->what(), err->body(), err->url());
+			}
+		}
+
+		// Is it a HTTP:Exception?
+		{
+			const HTTP::Exception *err = dynamic_cast<const HTTP::Exception *>(&e);
+			if(err) {
+				return failed(err->syscode(),err->what());
+			}
+		}
+
+		// Is it a system error?
+		{
+			const std::system_error *err = dynamic_cast<const std::system_error *>(&e);
+			if(err) {
+				return failed(err->code().value(),err->what());
+			}
+		}
+
+		// Regular exception.
 		return failed(-1,e.what());
 	}
 

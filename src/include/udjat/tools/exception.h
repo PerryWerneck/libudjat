@@ -26,26 +26,67 @@
  #include <udjat/tools/intl.h>
  #include <stdexcept>
  #include <string>
+ #include <cstring>
+ #include <cerrno>
 
  namespace Udjat {
 
 	class UDJAT_API Exception : public std::runtime_error {
 	protected:
 
-		/// @brief The exception title.
-		std::string title;
+		struct Info {
 
-		/// @brief The detailed explanation.
-		std::string body;
+			/// @brief Error code.
+			int code = -1;
+
+			/// @brief The exception title.
+			std::string title;
+
+			/// @brief Error explanation.
+			std::string body;
+
+			/// @brief URL for more information.
+			std::string url;
+
+			Info(int code, const char *title, const char *body, const char *url = "");
+			Info(int code, const std::string &title, const std::string &body, const std::string &url = "");
+
+		} info;
+
 
 	public:
+
+		Exception(int code, const std::string &message, const std::string &body = "", const std::string &url = "");
+		Exception(int code, const char *message, const std::string &body = "", const std::string &url = "");
+		Exception(int code = errno, const char *message = strerror(errno), const char *body = "", const char *url = "");
+
 		/// @brief Create simple exception.
 		/// @param message The error message.
 		/// @param body The message body.
-		Exception(const char *m, const char *b = "");
+		Exception(const char *message, const char *body = "");
 
 		/// @brief Exception from system error.
-		Exception(int code, const char *b = "");
+		Exception(int code, const char *body = "");
+
+		/// @brief The system code.
+		inline int syscode() const noexcept {
+			return info.code;
+		}
+
+		/// @brief The exception title.
+		inline const char *title() const noexcept {
+			return info.title.c_str();
+		}
+
+		/// @brief Error explanation.
+		inline const char *body() const noexcept {
+			return info.body.c_str();
+		}
+
+		/// @brief URL for more information.
+		inline const char *url() const noexcept {
+			return info.url.c_str();
+		}
 
 	};
 
