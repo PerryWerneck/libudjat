@@ -39,11 +39,13 @@
 			/// @brief Response type.
 			MimeType mimetype = MimeType::custom;
 
-			/// @brief Expiration timestamp (For cache headers)
-			TimeStamp expiration = 0;
+			struct {
+				/// @brief The expiration time.
+				TimeStamp expires = 0;
 
-			/// @brief Timestamp of data.
-			TimeStamp modification = 0;
+				/// @brief The last update time.
+				TimeStamp last_modified = 0;
+			} timestamp;
 
 			/// @brief Response result.
 			struct {
@@ -59,6 +61,9 @@
 
 				/// @brief Error code.
 				int code = 0;
+
+				/// @brief The cache status, used to handle http cache.
+				bool not_modified = false;
 
 			} status;
 
@@ -114,8 +119,14 @@
 			virtual std::string to_string() const;
 
 			/// @brief Set 'not-modified' status.
-			/// @return always 'true'.
-			virtual bool not_modified() noexcept;
+			inline void not_modified(bool state) noexcept {
+				status.not_modified = state;
+			}
+
+			/// @brief Get 'not-modified' status.
+			inline bool not_modified() const noexcept {
+				return status.not_modified;
+			}
 
 			/// @brief Set timestamp for data, ignore zeros.
 			/// @return Current value.
@@ -126,11 +137,11 @@
 			time_t expires(const time_t time) noexcept;
 
 			inline time_t last_modified() const noexcept {
-				return (time_t) modification;
+				return (time_t) timestamp.last_modified;
 			}
 
 			inline time_t expires() const noexcept {
-				return (time_t) expiration;
+				return (time_t) timestamp.expires;
 			}
 
 			/// @brief Get the message of the first failure on this response.
@@ -147,6 +158,8 @@
 			inline const char * url() const noexcept {
 				return status.url.c_str();
 			}
+
+			virtual void serialize(std::ostream &stream, const MimeType mimetype) const;
 
 		};
 

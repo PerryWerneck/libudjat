@@ -57,26 +57,12 @@
 
 	void Response::Table::serialize(std::ostream &stream, const MimeType mimetype) const {
 
-		debug(__FUNCTION__,": Serializing table");
+		Abstract::Response::serialize(stream,mimetype);
 
 		switch(mimetype) {
 		case MimeType::xml:
-			stream	<< "<?xml version=\"1.0\" encoding=\"UTF-8\"?><response status='"
-					<< status.code << "'";
 
-			if(!status.message.empty()) {
-				stream << " message='" << status.message << "'";
-			}
-
-			if(modification) {
-				stream << " timestamp='" << modification.to_string() << "'";
-			}
-
-			if(expiration) {
-				stream << " expires='" << expiration.to_string() << "'";
-			}
-
-			stream << ">";
+			stream << "</response>";
 
 			if(!info.caption.empty()) {
 				stream << "<caption>" << info.caption << "</caption>";
@@ -110,24 +96,7 @@
 
 		case Udjat::MimeType::json:
 			{
-				// Format as json
-				// https://stackoverflow.com/questions/12806386/is-there-any-standard-for-json-api-response-format
-
-				// https://github.com/omniti-labs/jsend
-				stream << "{\"status\":\"";
-
-				if(status.code == 0) {
-					stream << "success\"";
-				} else if(status.message.empty()) {
-					stream << "fail\"";
-				} else {
-					stream << "error\",\"message\":\"" << status.message << "\"";
-					if(status.code) {
-						stream << ",\"code\":" << status.code;
-					}
-				}
-
-				stream << ",\"data\":[{";
+				stream << "[{";
 
 				bool sep = false;
 				auto column = columns.names.begin();

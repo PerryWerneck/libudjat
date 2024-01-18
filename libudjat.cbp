@@ -318,6 +318,7 @@
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="src/testprogram/windows/resources.rc.in" />
+		<Unit filename="src/tools/abstract/response.cc" />
 		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application/application.cc" />
 		<Unit filename="src/tools/application/init.cc" />

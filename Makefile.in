@@ -39,6 +39,7 @@ COMMON_SOURCES= \
 	$(wildcard src/tools/xml/*.cc) \
 	$(wildcard src/tools/url/protocols/*.cc) \
 	$(wildcard src/tools/http/*.cc) \
+	$(wildcard src/tools/abstract/*.cc) \
 	$(wildcard src/tools/string/*.cc) \
 	$(wildcard src/tools/application/*.cc) \
 	$(wildcard src/tools/file/*.cc) \
