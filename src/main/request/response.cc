@@ -34,12 +34,8 @@
  namespace Udjat {
 
 	void Response::Value::serialize(std::ostream &stream) const {
-		serialize(stream,this->mimetype);
-	}
 
-	void Response::Value::serialize(std::ostream &stream, const MimeType mimetype) const {
-
-		Abstract::Response::serialize(stream,mimetype);
+		Abstract::Response::serialize(stream);
 
 		switch(mimetype) {
 		case Udjat::MimeType::xml:

@@ -85,8 +85,7 @@
 			/// @param column_names	The column names.
 			void start(const std::vector<std::string> &column_names);
 
-			void serialize(std::ostream &out) const;
-			void serialize(std::ostream &out, const MimeType mimetype) const;
+			void serialize(std::ostream &out) const override;
 
 			std::string to_string() const;
 			std::string to_string(const MimeType mimetype) const;

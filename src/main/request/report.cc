@@ -34,10 +34,6 @@
 	Response::Table::~Table() {
 	}
 
-	void Response::Table::serialize(std::ostream &out) const {
-		serialize(out,mimetype);
-	}
-
 	std::string Response::Table::to_string() const {
 		return to_string(mimetype);
 	}
@@ -50,14 +46,14 @@
 
 		std::stringstream out;
 		debug(__FUNCTION__,": Serializing table");
-		serialize(out,mimetype);
+		serialize(out);
 		debug("Serialized");
 		return out.str();
 	}
 
-	void Response::Table::serialize(std::ostream &stream, const MimeType mimetype) const {
+	void Response::Table::serialize(std::ostream &stream) const {
 
-		Abstract::Response::serialize(stream,mimetype);
+		Abstract::Response::serialize(stream);
 
 		switch(mimetype) {
 		case MimeType::xml:

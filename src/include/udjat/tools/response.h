@@ -39,8 +39,7 @@
 			Udjat::Value & reset(const Udjat::Value::Type type) override;
 			Udjat::Value & set(const Udjat::Value &value) override;
 
-			void serialize(std::ostream &out) const;
-			void serialize(std::ostream &out, const MimeType mimetype) const override;
+			void serialize(std::ostream &out) const override;
 
 			std::string to_string() const override;
 

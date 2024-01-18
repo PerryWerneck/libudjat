@@ -109,6 +109,8 @@
 
 		}
 
+		call("Content-Type",std::to_string(mimetype));
+
 	}
 
 	void Abstract::Response::count(size_t) noexcept {
@@ -166,7 +168,7 @@
 		return "";
 	}
 
-	void Abstract::Response::serialize(std::ostream &stream, const MimeType mimetype) const {
+	void Abstract::Response::serialize(std::ostream &stream) const {
 
 		debug(__FUNCTION__,": Serializing response");
 

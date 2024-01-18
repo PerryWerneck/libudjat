@@ -159,7 +159,8 @@
 				return status.url.c_str();
 			}
 
-			virtual void serialize(std::ostream &stream, const MimeType mimetype) const;
+			/// @brief Serialize according to the mimetype.
+			virtual void serialize(std::ostream &stream) const;
 
 		};
 
