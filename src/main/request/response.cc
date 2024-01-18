@@ -58,6 +58,10 @@
 
 	}
 
+	bool Abstract::Response::not_modified() noexcept {
+		return true;
+	}
+
 	time_t Abstract::Response::last_modified(const time_t tm) noexcept {
 
 		if(tm && tm <= time(0)) {

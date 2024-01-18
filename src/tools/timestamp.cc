@@ -23,6 +23,8 @@
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/intl.h>
+#include <udjat/tools/xml.h>
+#include <udjat/tools/string.h>
 #include <iostream>
 #include <time.h>
 
@@ -31,6 +33,10 @@ using namespace std;
 namespace Udjat {
 
 	TimeStamp::TimeStamp(const char *time, const char *format) : value{parse(time,format)} {
+	}
+
+	TimeStamp::TimeStamp(const XML::Node &node, const char *attrname, const char *def)
+		: TimeStamp{Udjat::String{node,attrname,def}.c_str()} {
 	}
 
 	std::string TimeStamp::to_string(const char *format) const noexcept {

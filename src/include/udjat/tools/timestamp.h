@@ -19,10 +19,11 @@
 
  #pragma once
 
-#include <udjat/defs.h>
-#include <ctime>
-#include <string>
-#include <cstdint>
+ #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
+ #include <ctime>
+ #include <string>
+ #include <cstdint>
 
  namespace Udjat {
 
@@ -38,6 +39,8 @@
 		constexpr TimeStamp(time_t t = time(nullptr)) : value(t) { }
 
 		explicit TimeStamp(const char *time, const char *format = nullptr);
+
+		TimeStamp(const XML::Node &node, const char *attrname, const char *def = "");
 
 		std::string to_string(const char *format = "%x %X") const noexcept;
 

@@ -113,6 +113,10 @@
 			/// @brief Convert response to formatted string.
 			virtual std::string to_string() const;
 
+			/// @brief Set 'not-modified' status.
+			/// @return always 'true'.
+			virtual bool not_modified() noexcept;
+
 			/// @brief Set timestamp for data, ignore zeros.
 			/// @return Current value.
 			time_t last_modified(const time_t time) noexcept;
