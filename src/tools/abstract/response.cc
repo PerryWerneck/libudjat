@@ -30,6 +30,7 @@
  #include <udjat/tools/http/timestamp.h>
  #include <udjat/tools/exception.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/configuration.h>
 
  using namespace std;
 
@@ -79,7 +80,7 @@
 
 			time_t now = time(0);
 
-			time_t modtime = this->last_modified();
+			time_t modtime = last_modified();
 			if(!modtime) {
 				modtime = now;
 			}
@@ -87,15 +88,21 @@
 			call("Last-Modified", HTTP::TimeStamp{modtime}.to_string().c_str());
 
 			time_t expires = this->expires();
-			if(expires && expires >= now) {
+			if(expires >= now) {
 
 				// https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
-				call("Cache-Control", Udjat::String{"max-age=",(unsigned int) (now-expires),", must-revalidate, private"}.c_str());
+				call("Cache-Control", Udjat::String{"max-age=",(unsigned int) (expires-now),", private"}.c_str());
 				call("Expires", HTTP::TimeStamp{expires}.to_string().c_str());
 
 			} else {
 
-				call("Cache-Control", "no-cache, no-store, must-revalidate, private, max-age=0");
+				// https://stackoverflow.com/questions/18148884/difference-between-no-cache-and-must-revalidate-for-cache-control
+				if(last_modified()) {
+					call("Cache-Control", "must-revalidate, private, max-age=0");
+				} else {
+					call("Cache-Control", "no-cache, no-store, must-revalidate, private, max-age=0");
+				}
+
 				call("Expires", "0");
 
 			}
@@ -110,6 +117,12 @@
 		}
 
 		call("Content-Type",std::to_string(mimetype));
+
+		// Add standard headers from configuration.
+		Config::for_each("response-headers",[&call](const char *key, const char *value) {
+			call(key,value);
+			return false;
+		});
 
 	}
 
