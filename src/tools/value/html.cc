@@ -111,16 +111,35 @@
 
 		case Udjat::Value::Boolean:
 			try {
-				Udjat::String tmpl{Config::Value<string>{"html","boolean-template","<strong class='${type}-value'>${value}</strong>"}.c_str()};
+				Udjat::String tmpl{Config::Value<string>{"html","boolean-template","<strong class='${type}-value'>${symbol}</strong>"}.c_str()};
 
 				ss << tmpl.expand([this](const char *key, std::string &value){
 
 					if(!strcasecmp(key,"value")) {
+
 						value = to_string();
 						return true;
+
+					} else if(!strcasecmp(key,"symbol-true")) {
+
+						value = (as_bool() ? "&#9745;" : "&nbsp;");
+						return true;
+
+					} else if(!strcasecmp(key,"symbol-false")) {
+
+						value = (as_bool() ? "&nbsp;" : "&#9746;");
+						return true;
+
+					} else if(!strcasecmp(key,"symbol")) {
+
+						value = (as_bool() ? "&#9745;" : "&#9746;");
+						return true;
+
 					} else if(!strcasecmp(key,"type")) {
+
 						value = (as_bool() ? "true" : "false");
 						return true;
+
 					}
 
 					return false;
@@ -128,7 +147,9 @@
 				},true,false);
 
 			} catch(const std::exception &e) {
+
 				Logger::String(to_string(),": ",e.what()).error("icon");
+
 			}
 			break;
 
