@@ -47,6 +47,9 @@ namespace Udjat {
 			Both	= 3,	///< @brief The worker response can be value, table or both.
 		};
 
+		static ResponseType ResponseTypeFactory(const char *name);
+		static ResponseType ResponseTypeFactory(const XML::Node &node, const char *attrname = "response-type", const char *def = "None");
+
 		class Controller;
 		friend class Controller;
 

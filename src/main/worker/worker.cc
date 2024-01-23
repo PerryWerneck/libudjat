@@ -22,12 +22,39 @@
  #include <udjat/tools/worker.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module/info.h>
+ #include <udjat/tools/string.h>
+ #include <stdexcept>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
  namespace Udjat {
+
+	Worker::ResponseType Worker::ResponseTypeFactory(const char *name) {
+
+		static const char * response_type_names[] = {
+			"None",
+			"Value",
+			"Table",
+			"Both"
+		};
+
+		int type = (Worker::ResponseType) 0;
+		for(const char *type_name : response_type_names) {
+			if(!strcasecmp(name,type_name)) {
+				return (Worker::ResponseType) type;
+			}
+			type++;
+		}
+
+		throw runtime_error(_("Invalid response type"));
+	}
+
+	Worker::ResponseType Worker::ResponseTypeFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return ResponseTypeFactory(String{node,attrname,def}.c_str());
+	}
 
 	Worker::Worker(const char *n, const ModuleInfo &i) : name(n), module(i) {
 		Controller::getInstance().insert(this);
