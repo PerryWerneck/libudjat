@@ -133,8 +133,9 @@
 			time_t last_modified(const time_t time) noexcept;
 
 			/// @brief Set response expiration time, ignore zeros.
+			/// @param timestamp Timestamp of response expiration, should be greater than time(0)
 			/// @return Current expiration time.
-			time_t expires(const time_t time) noexcept;
+			time_t expires(const time_t timestamp) noexcept;
 
 			inline time_t last_modified() const noexcept {
 				return (time_t) timestamp.last_modified;
