@@ -49,6 +49,9 @@
 
 	}
 
+	void Module::trace_paths(const char *) const noexcept {
+	}
+
 	std::string Module::filename() const {
 		TCHAR path[MAX_PATH];
 		if(GetModuleFileName(this->handle, path, MAX_PATH) ) {

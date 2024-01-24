@@ -124,6 +124,10 @@
 
 		virtual ~Module();
 
+		/// @brief Write Module paths on trace file.
+		/// @param url_prefix Prefix for URL (built by server module);
+		virtual void trace_paths(const char *url_prefix) const noexcept;
+
 		/// @brief Get module filename.
 		std::string filename() const;
 
