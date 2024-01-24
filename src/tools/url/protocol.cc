@@ -25,6 +25,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/module/info.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/string.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -53,8 +54,16 @@
 		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
+	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return MethodFactory(String{node,attrname,def}.c_str());
+	}
+
 	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *def) {
-		return MethodFactory(node.attribute("http-method").as_string(def));
+		return MethodFactory(node,"http-method",def);
+	}
+
+	HTTP::Method HTTP::MethodFactory(const XML::Node &node) {
+		return MethodFactory(node,"http-method","get");
 	}
 
 	Protocol::Protocol(const char *n, const ModuleInfo &i) : name(n), module(i) {
