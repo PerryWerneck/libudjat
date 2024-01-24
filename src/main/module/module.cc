@@ -98,6 +98,9 @@ namespace Udjat {
 		return value;
 	}
 
+	void Module::trace_paths(const char *) const noexcept {
+	}
+
 	void Module::exec(Udjat::Value &response, const char *name,...) const {
 		va_list args;
 		va_start(args, name);
