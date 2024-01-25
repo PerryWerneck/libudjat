@@ -172,6 +172,36 @@
 
 	}
 
+	bool Request::pop(const char *path) noexcept {
+
+		if(!(path && *path)) {
+			return false;
+		}
+
+		if(*path == '/') {
+			path++;
+		}
+
+		if(!argptr) {
+			rewind();
+		}
+
+		const char *ptr = argptr;
+		if(*ptr == '/') {
+			ptr++;
+		}
+
+		int szPath = strlen(path);
+		int szArg = strlen(ptr);
+
+		if(szArg > szPath && ptr[szPath] == '/' && strncasecmp(path,ptr,szPath) == 0) {
+			argptr = (ptr + szPath);
+			return true;
+		}
+
+		return false;
+	}
+
 	String Request::pop() {
 
 		if(!argptr) {

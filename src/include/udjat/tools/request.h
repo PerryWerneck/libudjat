@@ -144,6 +144,11 @@
 		/// @see pop()
 		int select(const char *value, ...) noexcept __attribute__ ((sentinel));
 
+		/// @brief Check if request path is 'path' (ignoring the first '/'), extract it if equal
+		/// @param path The path to check.
+		/// @return true if the path was removed.
+		bool pop(const char *path) noexcept;
+
 		/// @brief Pop one element from path.
 		/// @return The first element from current path.
 		/// @see path()
