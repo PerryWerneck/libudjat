@@ -62,30 +62,44 @@
 	/// @param def The default value.
 	String Request::getArgument(const char *name, const char *def) const {
 
-		String value{def};
+		// First check for query.
+		{
+			const char *query = this->query();
+			if(query && *query) {
 
-		const char *query = this->query();
-		if(query && *query) {
+				size_t szName = strlen(name);
+				String value;
 
-			size_t szName = strlen(name);
-			String{query}.for_each("&",[&value,szName,name](const String &v){
+				if(String{query}.for_each("&",[&value,szName,name](const String &v){
 
-				if(v.size() > szName) {
+					if(v.size() > szName) {
 
-					if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
-						value = v.c_str()+szName+1;
-						value.strip();
-						return true;
+						if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
+							value = v.c_str()+szName+1;
+							value.strip();
+							return true;
+						}
 					}
-				}
 
-				return false;
+					return false;
 
-			});
+				})) {
+					return value;
+				};
 
+			}
 		}
 
-		return value;
+		if(isdigit(name[0])) {
+			return getProperty((size_t) atoi(name),def);
+		}
+
+		if(!def) {
+			throw system_error(EINVAL,system_category(),Logger::Message{_("Required argument '{}' is missing"),name});
+		}
+
+		return def;
+
 	}
 
 	String Request::getProperty(int ix, const char *def) const {
@@ -116,6 +130,10 @@
 			}
 
 			ptr = next+1;
+		}
+
+		if(!def) {
+			throw system_error(EINVAL,system_category(),Logger::Message{_("Required argument '{}' is missing"),ix});
 		}
 
 		return def;

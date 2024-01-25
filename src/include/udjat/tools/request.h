@@ -83,7 +83,8 @@
 		/// @brief Get argument.
 		/// @param name The argument name
 		/// @param def The default value.
-		virtual String getArgument(const char *name, const char *def = "") const;
+		/// @return The argument value if found, exception if def is nullptr, def if not null.
+		virtual String getArgument(const char *name, const char *def = nullptr) const;
 
 		/// @brief Get request property.
 		/// @param name The property name
@@ -93,7 +94,8 @@
 		/// @brief Get request property by index.
 		/// @param index The property index
 		/// @param def The default value.
-		virtual String getProperty(int index, const char *def = "") const;
+		/// @return The argument value if found, exception if def is nullptr, def if not null.
+		virtual String getProperty(int index, const char *def = nullptr) const;
 
 		/// @brief Get argument ou property, first search for argument if not found search for property.
 		/// @param name The argument or property name.
