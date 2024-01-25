@@ -244,7 +244,7 @@
 			arg++;
 		}
 
-		size_t szarg = strlen(argptr);
+		size_t szarg = strlen(arg);
 		size_t szpath = strlen(path);
 
 		if(szarg < szpath) {
