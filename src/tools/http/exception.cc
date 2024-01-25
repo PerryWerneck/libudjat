@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/exception.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/error.h>
  #include <system_error>
@@ -60,7 +61,7 @@
 		return 500;
 	}
 
-	int HTTP::Exception::syscode(int httpcode) noexcept {
+	int HTTP::Exception::syscode(unsigned int httpcode) noexcept {
 		for(const auto &code : syscodes) {
 			if(code.http == httpcode) {
 				return code.syscode;
@@ -95,18 +96,18 @@
 		return string{"HTTP error " + to_string(http)};
 	}
 
-	HTTP::Exception::Exception(const char *u, const char *message) : runtime_error(message), url(u) {
-#ifdef DEBUG
-		cerr << "Exception(" << url << "): " << message << endl;
-#endif // DEBUG
+	HTTP::Exception::Exception(const char *url, const char *message) : Udjat::Exception{message}, http_code{500} {
+		info.url = url;
 	}
 
-	HTTP::Exception::Exception(unsigned int code, const char *url, const char *message) : Exception(url,message) {
-		error.http = code;
-		error.system = error_code(toSysError(code),system_category());
+	/*
+	HTTP::Exception::Exception(unsigned int code, const char *url, const char *message) : Udjat::Exception{syscode(code),message} : http_code{code} {
+		info.url = url;
 	}
+	*/
 
-	HTTP::Exception::Exception(unsigned int code, const char *url) : Exception(code,url,toSysMessage(code).c_str()) {
+	HTTP::Exception::Exception(unsigned int code, const char *url) : Udjat::Exception(syscode(code),toSysMessage(code).c_str()) {
+		info.url = url;
 	}
 
 

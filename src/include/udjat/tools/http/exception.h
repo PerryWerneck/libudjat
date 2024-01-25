@@ -22,13 +22,14 @@
  #include <udjat/defs.h>
  #include <system_error>
  #include <string>
+ #include <udjat/tools/exception.h>
 
  namespace Udjat {
 
 	namespace HTTP {
 
 		/// @brief HTTP exception.
-		class UDJAT_API Exception : public std::runtime_error {
+		class UDJAT_API Exception : public Udjat::Exception {
 		public:
 
 			/// @brief Error codes.
@@ -42,27 +43,24 @@
 			};
 
 		protected:
-			std::string url;
-			Codes error;
+			/// @brief HTTP error code.
+			unsigned int http_code;
 
 		public:
+			Exception(unsigned int http_code);
 			Exception(const char *url, const char *message);
-			Exception(unsigned int code, const char *url, const char *message);
-			Exception(unsigned int code, const char *url);
+			Exception(unsigned int http_code, const char *url, const char *message);
+			Exception(unsigned int http_code, const char *url);
 
-			inline const Codes & codes() const noexcept {
-				return error;
+			/// @brief Get http error code.
+			inline unsigned int code() const noexcept {
+				return http_code;
 			}
 
-			/// @brief Get corresponding system code.
-			inline int syscode() const noexcept {
-				return error.system.value();
-			}
-
-			/// @brief Translate http error to system http.
-			/// @param httpcode http error code.
+			/// @brief Translate http error to system error.
+			/// @param http_code http error code.
 			/// @return The corresponding system error code (or -1 if there's no one).
-			static int syscode(int code) noexcept;
+			static int syscode(unsigned int http_code) noexcept;
 
 			/// @brief Translate system error to http.
 			/// @param syscode system error code.

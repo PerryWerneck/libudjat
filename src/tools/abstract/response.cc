@@ -139,7 +139,7 @@
 	}
 
 	Abstract::Response & Abstract::Response::failed(const HTTP::Exception &e) noexcept {
-		return failed(e.syscode(),e.what());
+		return failed(e.Udjat::Exception::syscode(),e.what());
 	}
 
 	Abstract::Response & Abstract::Response::failed(const std::exception &e) noexcept {
@@ -149,14 +149,6 @@
 			const Udjat::Exception *err = dynamic_cast<const Udjat::Exception *>(&e);
 			if(err) {
 				return failed(err->syscode(), err->what(), err->body(), err->url());
-			}
-		}
-
-		// Is it a HTTP:Exception?
-		{
-			const HTTP::Exception *err = dynamic_cast<const HTTP::Exception *>(&e);
-			if(err) {
-				return failed(err->syscode(),err->what());
 			}
 		}
 

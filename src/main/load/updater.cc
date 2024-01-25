@@ -228,7 +228,7 @@
 
 						} catch(HTTP::Exception &e) {
 
-							if(e.codes().http != 304) {
+							if(e.code() != 304) {
 								throw;
 							}
 

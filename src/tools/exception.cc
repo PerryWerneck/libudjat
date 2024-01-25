@@ -57,8 +57,8 @@
 		:	Exception{-1,message,body} {
 	}
 
-	Udjat::Exception::Exception(int code, const char *body)
-		:	std::runtime_error{strerror(code)}, info{code,_("System Error"),body} {
+	Udjat::Exception::Exception(int code)
+		:	std::runtime_error{strerror(code)}, info{code,_("System Error"),""} {
 	}
 
  }

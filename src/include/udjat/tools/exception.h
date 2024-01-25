@@ -56,9 +56,9 @@
 
 	public:
 
-		Exception(int code, const std::string &message, const std::string &body = "", const std::string &url = "");
-		Exception(int code, const char *message, const std::string &body = "", const std::string &url = "");
-		Exception(int code = errno, const char *message = strerror(errno), const char *body = "", const char *url = "");
+		Exception(int code, const std::string &message, const std::string &body, const std::string &url = "");
+		Exception(int code, const char *message, const std::string &body, const std::string &url = "");
+		Exception(int code, const char *message, const char *body = "", const char *url = "");
 
 		/// @brief Create simple exception.
 		/// @param message The error message.
@@ -66,7 +66,7 @@
 		Exception(const char *message, const char *body = "");
 
 		/// @brief Exception from system error.
-		Exception(int code, const char *body = "");
+		Exception(int code = errno);
 
 		/// @brief The system code.
 		inline int syscode() const noexcept {
