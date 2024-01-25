@@ -140,7 +140,9 @@
 
 	bool Request::getProperty(size_t ix, std::string &value) const {
 
-		if(*reqpath != '/') {
+		const char *txtptr = argptr ? argptr : reqpath;
+
+		if(*txtptr != '/') {
 			throw system_error(EINVAL,system_category(),"Request should start with '/' to use indexed parameter");
 		}
 
@@ -148,7 +150,7 @@
 			throw system_error(EINVAL,system_category(),"Request argument index should start with '1'");
 		}
 
-		const char *ptr = reqpath+1;
+		const char *ptr = txtptr+1;
 		while(*ptr) {
 
 			const char *next = strchr(ptr,'/');
@@ -174,6 +176,8 @@
 
 	const char * Request::chk_prefix(const char *prefix) const noexcept {
 
+		debug(__FUNCTION__,"('",prefix,"')");
+
 		//
 		// Get requested prefix.
 		//
@@ -190,6 +194,9 @@
 		//
 		const char *path = argptr ? argptr : reqpath;
 
+		debug("Path= '",path,"'");
+		debug("Prefix= '",prefix,"'");
+
 		if(*path == '/') {
 			path++;
 		}
@@ -205,6 +212,7 @@
 		}
 
 		if( (path[szPrefix] == '/' || path[szPrefix] == 0) && strncasecmp(prefix,path,szPrefix) == 0) {
+			debug("Arguments: '",(path+szPrefix),"'");
 			return path + szPrefix;
 		}
 
