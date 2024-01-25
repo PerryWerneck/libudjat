@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 
@@ -134,15 +135,15 @@
 
 			/// @brief Get property value.
 			/// @param key The property name.
-			/// @param required if false returns empty if the property cant be found.
-			/// @return The property value or "" if required is false and the property cant be found.
-			std::string getProperty(const char *key, bool required = true) const;
+			/// @param def Default value (nullptr if the property is required).
+			/// @return The property value or def.
+			String getProperty(const char *key, const char *def = nullptr) const;
 
 			/// @brief Get property.
 			/// @param key The property name.
 			/// @return The property value (empty if unable to get the propery).
-			inline std::string operator[](const char *key) const {
-				return getProperty(key,false);
+			inline String operator[](const char *key) const {
+				return getProperty(key,"");
 			}
 
 			/// @brief Expand ${} tags using object properties.

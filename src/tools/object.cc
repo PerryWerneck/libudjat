@@ -184,15 +184,19 @@
 		return name();
 	}
 
-	std::string Abstract::Object::getProperty(const char *key, bool required) const {
-		std::string value;
+	String Abstract::Object::getProperty(const char *key, const char *def) const {
+
+		String value;
 		if(getProperty(key,value)) {
 			return value;
 		}
-		if(required) {
-			throw runtime_error(Logger::Message{_("Unable to get value of '{}'"),key});
+
+		if(def) {
+			return def;
 		}
-		return "";
+
+		throw runtime_error(Logger::Message{_("Unable to get value of '{}'"),key});
+
 	}
 
 	bool Abstract::Object::getProperty(const char *, std::string &) const {
