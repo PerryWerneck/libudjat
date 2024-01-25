@@ -35,10 +35,6 @@
 		return false;
 	}
 
-	String Request::getProperty(const char *, const char *def) const {
-		return def;
-	}
-
 	const char * Request::query(const char *def) const {
 		return def;
 	}
@@ -49,62 +45,100 @@
 
 	String Request::operator[](const char *name) const {
 
-		String value{getArgument(name,"")};
-		if(!value.empty()) {
-			return value;
-		}
-		return getProperty(name);
+		String rc;
 
-	}
-
-	/// @brief Get argument.
-	/// @param name The argument name
-	/// @param def The default value.
-	String Request::getArgument(const char *name, const char *def) const {
-
-		// First check for query.
-		{
-			const char *query = this->query();
-			if(query && *query) {
-
-				size_t szName = strlen(name);
-				String value;
-
-				if(String{query}.for_each("&",[&value,szName,name](const String &v){
-
-					if(v.size() > szName) {
-
-						if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
-							value = v.c_str()+szName+1;
-							value.strip();
-							return true;
-						}
-					}
-
-					return false;
-
-				})) {
-					return value;
-				};
-
+		if(isdigit(*name)) {
+			int ix = atoi(name);
+			if(ix > 0) {
+				if(getProperty((size_t) ix, rc)) {
+					return rc;
+				}
 			}
 		}
 
-		if(isdigit(name[0])) {
-			return getProperty((size_t) atoi(name),def);
-		}
+		for_each([&rc,name](const char *n, const char *v) {
+			if(!strcasecmp(n,name)) {
+				rc = v;
+				return true;
+			}
+			return false;
+		});
 
-		if(!def) {
-			throw system_error(EINVAL,system_category(),Logger::Message{_("Required argument '{}' is missing"),name});
-		}
+		return rc;
+	}
 
-		return def;
+	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
+
+		// Split query arguments.
+		const char *args = query();
+		if(args && *args) {
+
+			return String{args}.for_each("&",[&call](const String &arg) {
+
+				const char *n = arg.c_str();
+				const char *v = strchr(n,'=');
+
+				if(v && call(string{n,(size_t)(v-n)}.c_str(),v+1)) {
+					return true;
+				}
+
+				return false;
+
+			});
+		}
+		return false;
 
 	}
 
-	String Request::getProperty(int ix, const char *def) const {
+	bool Request::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {
 
-		debug("reqpath='",reqpath,"' ix=",ix," def='",def,"'");
+		return for_each([call](const char *name, const char *value){
+
+			auto vptr = Value::Factory(value);
+
+			if(call(name,*vptr)) {
+				return true;
+			}
+
+			return false;
+		});
+
+		return false;
+	}
+
+	bool Request::getProperty(const char *key, Udjat::Value &value) const {
+		return for_each([key,&value](const char *n, const Udjat::Value &v){
+
+			if(!strcasecmp(n,key)) {
+				value = v;
+				return true;
+			}
+
+			return false;
+		});
+	}
+
+	bool Request::getProperty(const char *key, std::string &value) const {
+
+		if(isdigit(*key)) {
+			int ix = atoi(key);
+			if(ix > 0) {
+				if(getProperty((size_t) ix, value)) {
+					return true;
+				}
+			}
+		}
+
+		return for_each([key,&value](const char *n, const char *v){
+			if(!strcasecmp(n,key)) {
+				value = v;
+				return true;
+			}
+			return false;
+		});
+	}
+
+	bool Request::getProperty(size_t ix, std::string &value) const {
 
 		if(*reqpath != '/') {
 			throw system_error(EINVAL,system_category(),"Request should start with '/' to use indexed parameter");
@@ -120,23 +154,22 @@
 			const char *next = strchr(ptr,'/');
 			if(!next) {
 				if(ix == 1) {
-					return ptr;
+					value = ptr;
+					return true;
 				}
 				break;
 			}
 
 			if(!--ix) {
-				return String{ptr,(size_t) (next-ptr)};
+				value = string{ptr,(size_t) (next-ptr)};
+				return true;
 			}
 
 			ptr = next+1;
 		}
 
-		if(!def) {
-			throw system_error(EINVAL,system_category(),Logger::Message{_("Required argument '{}' is missing"),ix});
-		}
+		return false;
 
-		return def;
 	}
 
 	String Request::pop() {

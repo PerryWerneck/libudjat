@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/method.h>
+ #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/report.h>
@@ -29,7 +30,7 @@
 
  namespace Udjat {
 
-	class UDJAT_API Request {
+	class UDJAT_API Request : public Abstract::Object {
 	private:
 
 		/// @brief Request method.
@@ -80,31 +81,31 @@
 		/// @return The query value or 'def'.
 		virtual const char * query(const char *def = "") const;
 
-		/// @brief Get argument.
-		/// @param name The argument name
-		/// @param def The default value.
-		/// @return The argument value if found, exception if def is nullptr, def if not null.
-		virtual String getArgument(const char *name, const char *def = nullptr) const;
+		/// @brief Navigate from all arguments and properties until 'call' returns true.
+		/// @return true if 'call' has returned true, false if not.
+		virtual bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
 
-		/// @brief Get request property.
-		/// @param name The property name
-		/// @param def The default value.
-		virtual String getProperty(const char *name, const char *def = "") const;
+		/// @brief Navigate from all arguments and properties until 'call' returns true.
+		/// @return true if 'call' has returned true, false if not.
+		virtual bool for_each(const std::function<bool(const char *name, const char *value)> &call) const;
 
-		/// @brief Get request property by index.
-		/// @param index The property index
-		/// @param def The default value.
-		/// @return The argument value if found, exception if def is nullptr, def if not null.
-		virtual String getProperty(int index, const char *def = nullptr) const;
+		/// @brief Get property/argument value.
+		/// @param key The property name or index.
+		/// @param value String to update with the property value.
+		/// @return true if the property is valid.
+		bool getProperty(const char *key, std::string &value) const override;
+		virtual bool getProperty(size_t ix, std::string &value) const;
 
-		/// @brief Get argument ou property, first search for argument if not found search for property.
-		/// @param name The argument or property name.
-		/// @return The argument or property, empty if not found.
-		String operator[](const char *name) const;
+		/// @brief Get property value.
+		/// @param key The property name.
+		/// @param value Object to receive the value.
+		/// @return true if the property is valid and value was updated.
+		bool getProperty(const char *key, Udjat::Value &value) const override;
 
-		inline String operator[](size_t index) const {
-			return getProperty(index);
-		}
+		/// @brief Get property value.
+		/// @param key The property name.
+		/// @return String with property value or empty if not found.
+		virtual String operator[](const char *key) const;
 
 		/// @brief Reset argument parser, next pop() will return the first element from path.
 		/// @see pop

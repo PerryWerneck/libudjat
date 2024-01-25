@@ -175,7 +175,7 @@ int main(int argc, char **argv) {
 			return super::uninstall();
 		}
 
-		void root(std::shared_ptr<Abstract::Agent> agent) override {
+		void root(std::shared_ptr<Abstract::Agent>) override {
 			debug("test-arg='",getProperty("test-arg","default"));
 		}
 

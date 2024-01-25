@@ -33,6 +33,35 @@
 
  namespace Udjat {
 
+	std::shared_ptr<Value> Value::Factory(const char *str) {
+
+		class TextValue : public Udjat::Value, public std::string {
+		public:
+			TextValue(const char *str) : std::string{str} {
+			}
+
+			bool isNull() const override {
+				return false;
+			}
+
+			const Value & get(std::string &value) const override {
+				value = this->c_str();
+				return *this;
+			}
+
+			Value & reset(const Type) {
+				throw runtime_error("Unsupported method");
+			}
+
+			Value & set(const Value &) {
+				throw runtime_error("Value is read-only");
+			}
+
+		};
+
+		return make_shared<TextValue>(str);
+	}
+
 	std::shared_ptr<Value> Value::Factory() {
 
 		class Dummy : public Udjat::Value {

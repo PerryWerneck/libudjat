@@ -60,6 +60,9 @@
 			return ((Type) *this) == type;
 		}
 
+		/// @brief Build simple string value.
+		static std::shared_ptr<Value> Factory(const char *str);
+
 		/// @brief Build dummy value.
 		static std::shared_ptr<Value> Factory();
 
