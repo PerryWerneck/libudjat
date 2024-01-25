@@ -73,7 +73,7 @@
 		throw system_error(EPERM,system_category(),"Response types are fixed");
 	}
 
-	std::string Response::Value::to_string() const {
+	std::string Response::Value::to_string() const noexcept {
 		return Udjat::Value::to_string(mimetype);
 	}
 

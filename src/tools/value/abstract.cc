@@ -395,7 +395,17 @@
 
 	}
 
-	std::string Value::to_string() const {
+	bool Value::getProperty(const char *key, std::string &value) const {
+		return for_each([&key,&value](const char *n, const Value &v){
+			if(!strcasecmp(key,n)) {
+				value = v.to_string();
+				return true;
+			}
+			return false;
+		});
+	}
+
+	std::string Value::to_string() const noexcept {
 		std::string rc;
 		get(rc);
 		return rc;

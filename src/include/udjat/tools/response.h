@@ -41,7 +41,7 @@
 
 			void serialize(std::ostream &out) const override;
 
-			std::string to_string() const override;
+			std::string to_string() const noexcept override;
 
 		};
 

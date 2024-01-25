@@ -23,6 +23,7 @@
  #include <string.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/abstract/object.h>
  #include <ostream>
  #include <udjat/tools/xml.h>
  #include <functional>
@@ -32,7 +33,7 @@
  namespace Udjat {
 
 	/// @brief Abstract value holding multiple types of data.
-	class UDJAT_API Value {
+	class UDJAT_API Value : public Abstract::Object {
 	public:
 
 		/// @brief Value type.
@@ -157,9 +158,15 @@
 		virtual const Value & get(float &value) const;
 		virtual const Value & get(double &value) const;
 
-		std::string to_string() const;
+		std::string to_string() const noexcept override;
 		std::string to_string(const char *def) const;
 		std::string to_string(const MimeType mimetype) const;
+
+		/// @brief Get child value.
+		/// @param key The child name.
+		/// @param value String to update with the property value.
+		/// @return true if the property is valid.
+		bool getProperty(const char *key, std::string &value) const override;
 
 		virtual void serialize(std::ostream &out, const MimeType mimetype = MimeType::json) const;
 
