@@ -39,6 +39,8 @@
 		/// @brief Current argument.
 		const char *argptr = nullptr;
 
+		const char * chk_prefix(const char *arg) const noexcept;
+
 	protected:
 
 		/// @brief The processed request path.
@@ -134,8 +136,12 @@
 			return this->method == method;
 		}
 
-		/// @brief Test if current path is equal path();
-		bool operator==(const char *path) const noexcept;
+		/// @brief Test if the request can handle the path.
+		/// @param prefix The path being searched.
+		/// @return true if the request path starts with prefix.
+		inline bool operator==(const char *prefix) const noexcept {
+			return chk_prefix(prefix) != nullptr;
+		}
 
 		/// @brief pop() first element from path select it from list.
 		/// @return Index of the selected action or negative if not found.
@@ -144,9 +150,9 @@
 		/// @see pop()
 		int select(const char *value, ...) noexcept __attribute__ ((sentinel));
 
-		/// @brief Check if request path is 'path' (ignoring the first '/'), extract it if equal
+		/// @brief Test and extract request path.
 		/// @param path The path to check.
-		/// @return true if the path was removed.
+		/// @return true if the request path was equal and it was removed, request is now at first parameter.
 		bool pop(const char *path) noexcept;
 
 		/// @brief Pop one element from path.

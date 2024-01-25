@@ -172,34 +172,56 @@
 
 	}
 
-	bool Request::pop(const char *path) noexcept {
+	const char * Request::chk_prefix(const char *prefix) const noexcept {
 
-		if(!(path && *path)) {
-			return false;
+		//
+		// Get requested prefix.
+		//
+		if(!(prefix && *prefix)) {
+			return nullptr;
 		}
+
+		if(*prefix == '/') {
+			prefix++;
+		}
+
+		//
+		// Get request path.
+		//
+		const char *path = argptr ? argptr : reqpath;
 
 		if(*path == '/') {
 			path++;
 		}
 
-		if(!argptr) {
-			rewind();
+		//
+		// Check if 'path' begins with 'prefix'
+		//
+		size_t szPath = strlen(path);
+		size_t szPrefix = strlen(prefix);
+
+		if(szPath < szPrefix) {
+			return nullptr;
 		}
 
-		const char *ptr = argptr;
-		if(*ptr == '/') {
-			ptr++;
+		if( (path[szPrefix] == '/' || path[szPrefix] == 0) && strncasecmp(prefix,path,szPrefix) == 0) {
+			return path + szPrefix;
 		}
 
-		int szPath = strlen(path);
-		int szArg = strlen(ptr);
+		return nullptr;
 
-		if(szArg > szPath && ptr[szPath] == '/' && strncasecmp(path,ptr,szPath) == 0) {
-			argptr = (ptr + szPath);
-			return true;
+	}
+
+	bool Request::pop(const char *prefix) noexcept {
+
+		const char * ptr = chk_prefix(prefix);
+		if(!ptr) {
+			return false;
 		}
 
-		return false;
+		argptr = ptr;
+		return true;
+
 	}
 
 	String Request::pop() {
@@ -231,31 +253,6 @@
 
 	const char * Request::path() const noexcept {
 		return argptr ? argptr : reqpath;
-	}
-
-	bool Request::operator==(const char *path) const noexcept {
-
-		if(*path == '/') {
-			path++;
-		}
-
-		const char *arg = argptr ? argptr : reqpath;
-		if(*arg == '/') {
-			arg++;
-		}
-
-		size_t szarg = strlen(arg);
-		size_t szpath = strlen(path);
-
-		if(szarg < szpath) {
-			return false;
-		}
-
-		if(szarg > szpath) {
-			return strncasecmp(arg,path,szpath) == 0 && path[szarg] == '/';
-		}
-
-		return strcasecmp(arg,path) == 0;
 	}
 
 	int Request::select(const char *value, ...) noexcept {
