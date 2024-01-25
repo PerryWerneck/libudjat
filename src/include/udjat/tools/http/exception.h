@@ -48,9 +48,8 @@
 
 		public:
 			Exception(unsigned int http_code);
-			Exception(const char *url, const char *message);
-			Exception(unsigned int http_code, const char *url, const char *message);
-			Exception(unsigned int http_code, const char *url);
+			Exception(unsigned int http_code, const char *message);
+			Exception(const char *message);
 
 			/// @brief Get http error code.
 			inline unsigned int code() const noexcept {

@@ -96,18 +96,18 @@
 		return string{"HTTP error " + to_string(http)};
 	}
 
-	HTTP::Exception::Exception(const char *url, const char *message) : Udjat::Exception{message}, http_code{500} {
-		info.url = url;
+	HTTP::Exception::Exception(unsigned int hc)
+		: Udjat::Exception{syscode(hc)}, http_code{hc} {
+
 	}
 
-	/*
-	HTTP::Exception::Exception(unsigned int code, const char *url, const char *message) : Udjat::Exception{syscode(code),message} : http_code{code} {
-		info.url = url;
-	}
-	*/
+	HTTP::Exception::Exception(unsigned int hc, const char *message)
+		: Udjat::Exception{syscode(hc),message}, http_code{hc} {
 
-	HTTP::Exception::Exception(unsigned int code, const char *url) : Udjat::Exception(syscode(code),toSysMessage(code).c_str()) {
-		info.url = url;
+	}
+	HTTP::Exception::Exception(const char *message)
+		: Udjat::Exception{message}, http_code{500} {
+
 	}
 
 
