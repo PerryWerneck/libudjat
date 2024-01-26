@@ -29,7 +29,7 @@
  #include <udjat/tools/url.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/tools/request.h>
  */
 

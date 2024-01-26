@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <udjat/tools/quark.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <list>
  #include <mutex>
  #include <udjat/tools/request.h>

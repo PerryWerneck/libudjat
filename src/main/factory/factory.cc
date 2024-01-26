@@ -37,6 +37,27 @@
 		Controller::getInstance().remove(this);
 	}
 
+	bool Factory::probe(const XML::Node &node) const noexcept {
+
+		static const char *typed_nodes[] = {
+			"agent",
+			"alert",
+			"object"
+		};
+
+		if(strcasecmp(node.name(),factory_name) == 0) {
+			return true;
+		}
+
+		for(const char *typed_node : typed_nodes) {
+			if(strcasecmp(node.name(),typed_node) == 0 && strcasecmp(node.attribute("type",factory_name)) == 0) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	Value & Factory::getProperties(Value &properties) const {
 		properties["name"] = factory_name;
 		return module.getProperties(properties);

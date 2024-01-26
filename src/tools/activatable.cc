@@ -19,7 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/alert.h>
 
@@ -29,6 +29,18 @@
 
 		std::shared_ptr<Activatable> activatable;
 
+		Udjat::Factory::for_each([&parent,&activatable,&node](Udjat::Factory &factory){
+
+			if(factory.probe(node)) {
+				activatable = factory.ActivatableFactory(parent,node);
+				return (bool) activatable;
+			}
+
+			return false;
+
+		});
+
+		/*
 		if(!(type && *type)) {
 			type = "default";
 		}
@@ -43,6 +55,11 @@
 
 
 		},type)) {
+			return activatable;
+		}
+		*/
+
+		if(activatable) {
 			return activatable;
 		}
 

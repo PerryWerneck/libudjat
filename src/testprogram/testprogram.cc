@@ -33,7 +33,7 @@
  #include <udjat/tools/file.h>
  #include <udjat/tools/intl.h>
  #include <udjat/agent.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/module/abstract.h>
  #include <udjat/tools/url.h>

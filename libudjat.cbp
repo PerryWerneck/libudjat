@@ -175,6 +175,7 @@
 		<Unit filename="src/include/udjat/net/interface.h" />
 		<Unit filename="src/include/udjat/net/ip/address.h" />
 		<Unit filename="src/include/udjat/request.h" />
+		<Unit filename="src/include/udjat/tools/abstract/object.h" />
 		<Unit filename="src/include/udjat/tools/abstract/response.h" />
 		<Unit filename="src/include/udjat/tools/activatable.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
@@ -186,6 +187,7 @@
 		<Unit filename="src/include/udjat/tools/event.h" />
 		<Unit filename="src/include/udjat/tools/exception.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
+		<Unit filename="src/include/udjat/tools/factory.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/file/handler.h" />
 		<Unit filename="src/include/udjat/tools/file/temporary.h" />

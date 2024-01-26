@@ -26,7 +26,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
 
@@ -116,28 +116,31 @@
 		for(XML::Node child : node) {
 
 			if(!is_allowed(child)) {
-				continue;
+
+				Factory::for_each([this,&child](Factory &factory){
+
+					if(factory.probe(child)) {
+
+						try {
+
+							return factory.generic(*this,child);
+
+						} catch(const std::exception &e) {
+
+							factory.error() << "Cant parse node <" << child.name() << ">: " << e.what() << endl;
+
+						} catch(...) {
+
+							factory.error() << "Cant parse node <" << child.name() << ">: Unexpected error" << endl;
+
+						}
+
+					}
+
+					return false;
+				});
+
 			}
-
-			Factory::for_each(child.name(),[this,&child](Factory &factory) {
-
-				try {
-
-					return factory.generic(*this,child);
-
-				} catch(const std::exception &e) {
-
-					factory.error() << "Cant parse node <" << child.name() << ">: " << e.what() << endl;
-
-				} catch(...) {
-
-					factory.error() << "Cant parse node <" << child.name() << ">: Unexpected error" << endl;
-
-				}
-
-				return false;
-
-			});
 
 		}
 

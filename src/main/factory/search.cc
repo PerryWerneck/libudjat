@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/agent.h>
  #include <iostream>

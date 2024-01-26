@@ -35,7 +35,7 @@
  #include <udjat/alert/activation.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>

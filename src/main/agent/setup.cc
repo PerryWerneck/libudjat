@@ -119,7 +119,11 @@ namespace Udjat {
 			}
 
 			// Run factories.
-			bool success = Udjat::Factory::for_each(node.name(),[this,node](Udjat::Factory &factory) {
+			bool success = Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
+
+				if(!factory.probe(node)) {
+					return false;
+				}
 
 				try {
 

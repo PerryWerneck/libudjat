@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/url.h>
  #include <udjat/alert/script.h>
  #include <udjat/alert/file.h>

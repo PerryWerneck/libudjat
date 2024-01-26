@@ -40,17 +40,19 @@
 		Factory(const char *name, const ModuleInfo &module);
 		virtual ~Factory();
 
-		inline bool operator==(const char *name) const noexcept {
-			return strcasecmp(name,this->factory_name) == 0;
-		}
+		//inline bool operator==(const char *name) const noexcept {
+		//	return strcasecmp(name,this->factory_name) == 0;
+		//}
+
+		virtual bool probe(const XML::Node &node) const noexcept;
 
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
 
-		inline const char * getName() const {
-			return factory_name;
-		}
+		//inline const char * getName() const {
+		//	return factory_name;
+		//}
 
 		inline const char * name() const {
 			return factory_name;
@@ -59,7 +61,7 @@
 		/// @brief Find factory by name.
 		/// @param name Factory name.
 		/// @return The factory with the requested name or nullptr if not found.
-		static Factory * find(const char *name);
+		// static Factory * find(const char *name);
 
 		virtual Value & getProperties(Value &properties) const;
 
@@ -68,18 +70,18 @@
 		/// @param call Lamba call to test for valid factory.
 		/// @param typeattribute The name of the optional attribute with the factory name.
 		/// @return true if the lambda has returned true.
-		static bool search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute = "type");
+		//static bool search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute = "type");
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(const std::function<bool(const Factory &factory)> &method);
+		static bool for_each(const std::function<bool(Factory &factory)> &method);
 
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param name	Requested factory name.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
+		//static bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
