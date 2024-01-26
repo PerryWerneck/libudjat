@@ -24,7 +24,7 @@
  #include <udjat/alert/abstract.h>
  #include <udjat/tools/logger.h>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ //---[ Implement ]------------------------------------------------------------------------------------------
 
  using namespace std;
 
@@ -34,60 +34,12 @@
 
 		return Udjat::Factory::for_each([this,&node](const Udjat::Factory &factory) {
 
-			if(factory.probe(node)) {
-
-				try {
-
-					auto alert = factory.AlertFactory(*this,node);
-					if(alert) {
-						if(Logger::enabled(Logger::Trace)) {
-							alert->trace() << "Using '" << factory.name() << "' alert engine" << endl;
-						}
-						listeners.push_back(alert);
-						return true;
-					}
-
-					return false;
-
-				} catch(const std::exception &e) {
-
-					factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
-
-				} catch(...) {
-
-					factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
-
-				}
-
-				return false;
-
-			}
-
-			return false;
-
-		});
-
-	}
-
-	/*
-	bool Abstract::State::push_back(const char *type, const XML::Node &node) {
-
-		if(!strcasecmp(type,"alert")) {
-			auto alert = Udjat::Abstract::Alert::Factory(*this, node);
-			if(alert) {
-				listeners.push_back(alert);
-				return true;
-			}
-		}
-
-		return Udjat::Factory::for_each(type,[this,&node](const Udjat::Factory &factory) {
-
-			try {
+			if(factory == node.attribute("type").as_string("default")) {
 
 				auto alert = factory.AlertFactory(*this,node);
 				if(alert) {
-					if(alert->verbose()) {
-						alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
+					if(Logger::enabled(Logger::Trace)) {
+						alert->trace() << "Using '" << factory.name() << "' alert engine" << endl;
 					}
 					listeners.push_back(alert);
 					return true;
@@ -95,14 +47,6 @@
 
 				return false;
 
-			} catch(const std::exception &e) {
-
-				factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
-
-			} catch(...) {
-
-				factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
-
 			}
 
 			return false;
@@ -110,6 +54,5 @@
 		});
 
 	}
-	*/
 
  }

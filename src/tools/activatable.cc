@@ -31,7 +31,7 @@
 
 		if(Udjat::Factory::for_each([&parent,&activatable,&node](Udjat::Factory &factory){
 
-			if(factory.probe(node)) {
+			if(factory == node.attribute("type").as_string("default")) {
 				activatable = factory.ActivatableFactory(parent,node);
 				return (bool) activatable;
 			}
@@ -43,25 +43,6 @@
 			return activatable;
 
 		}
-
-		/*
-		if(!(type && *type)) {
-			type = "default";
-		}
-
-		if(Udjat::Factory::search(node,[&parent,&activatable](const Udjat::Factory &factory, const XML::Node &node){
-
-			activatable = factory.ActivatableFactory(parent,node);
-			if(activatable) {
-				return true;
-			}
-			return false;
-
-
-		},type)) {
-			return activatable;
-		}
-		*/
 
 		return Abstract::Alert::Factory(parent,node);
 

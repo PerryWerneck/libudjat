@@ -111,30 +111,22 @@
 		set(node);
 	}
 
-	void Abstract::Object::setup(const XML::Node &node, bool UDJAT_UNUSED(upsearch)) {
+	void Abstract::Object::setup(const XML::Node &node) {
 
 		for(XML::Node child : node) {
 
 			if(!is_allowed(child)) {
 
-				Factory::for_each([this,&child](Factory &factory){
+				const char *type = child.attribute("type").as_string("default");
 
-					if(factory.probe(child)) {
+				Factory::for_each([this,type,&child](Factory &factory){
 
-						try {
+					if(factory == type && factory.CustomFactory(child)) {
+						return true;
+					}
 
-							return factory.generic(*this,child);
-
-						} catch(const std::exception &e) {
-
-							factory.error() << "Cant parse node <" << child.name() << ">: " << e.what() << endl;
-
-						} catch(...) {
-
-							factory.error() << "Cant parse node <" << child.name() << ">: Unexpected error" << endl;
-
-						}
-
+					if(factory == child.name() && factory.NodeFactory(child)) {
+						return true;
 					}
 
 					return false;

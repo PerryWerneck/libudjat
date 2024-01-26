@@ -37,48 +37,14 @@
 		Controller::getInstance().remove(this);
 	}
 
-	bool Factory::probe(const XML::Node &node) const noexcept {
-
-		static const char *typed_nodes[] = {
-			"agent",
-			"alert",
-			"object",
-			"action"
-		};
-
-		if(strcasecmp(node.name(),factory_name) == 0) {
-			return true;
-		}
-
-		for(const char *typed_node : typed_nodes) {
-			if(strcasecmp(node.name(),typed_node) == 0 && strcasecmp(node.attribute("type").as_string(""),factory_name) == 0) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	Value & Factory::getProperties(Value &properties) const {
 		properties["name"] = factory_name;
 		return module.getProperties(properties);
 	}
 
-	/*
-	Factory * Factory::find(const char *name) {
-		return Controller::getInstance().find(name);
-	}
-	*/
-
 	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(func);
 	}
-
-	/*
-	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
-		return Controller::getInstance().for_each(name,func);
-	}
-	*/
 
 	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
@@ -96,11 +62,36 @@
 		return AlertFactory(parent,node);
 	}
 
-	bool Factory::generic(Abstract::Object UDJAT_UNUSED(&parent), const XML::Node &node) {
-		return generic(node);
+	bool Factory::CustomFactory(const XML::Node &) {
+		return false;
 	}
 
-	bool Factory::generic(const XML::Node UDJAT_UNUSED(&node)) {
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	bool Factory::NodeFactory(const XML::Node &node) {
+		return generic(node);
+	}
+	#pragma GCC diagnostic pop
+
+	bool Factory::CustomFactory(Abstract::Object &, const XML::Node &node) {
+		return CustomFactory(node);
+	}
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	bool Factory::NodeFactory(Abstract::Object &parent, const XML::Node &node) {
+		return generic(parent,node);
+	}
+	#pragma GCC diagnostic pop
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	bool Factory::generic(Abstract::Object &, const XML::Node &node) {
+		return generic(node);
+	}
+	#pragma GCC diagnostic pop
+
+	bool Factory::generic(const XML::Node &) {
 		return false;
 	}
 

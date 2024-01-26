@@ -59,7 +59,7 @@
 			constexpr File(const char *name, const char *f, const char *p = "") : Abstract::Alert(name), filename(f), payload(p) {
 			}
 
-			File(const XML::Node &node, const char *defaults = "alert-defaults");
+			File(const XML::Node &node);
 
 			/// @brief Get alert info.
 			Value & getProperties(Value &value) const override;

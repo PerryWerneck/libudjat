@@ -36,7 +36,7 @@
 		// Check for standard factories.
 		if(Udjat::Factory::for_each([&node, &agent, &parent](Udjat::Factory &factory){
 
-			if(factory.probe(node)) {
+			if(factory == node.attribute("type").as_string("default")) {
 				agent = factory.AgentFactory(parent,node);
 				return (bool) agent;
 			}

@@ -33,7 +33,7 @@
 
 			/// @brief Setup object.
 			/// @param node The XML node with the object definitions.
-			virtual void setup(const XML::Node &node, bool upsearch = true);
+			virtual void setup(const XML::Node &node);
 
 			/// @brief Get configuration file group.
 			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");
