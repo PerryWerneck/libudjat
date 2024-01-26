@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/url.h>
  #include <udjat/alert/script.h>
  #include <udjat/alert/file.h>
@@ -34,100 +34,89 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> Abstract::Alert::Factory(const Abstract::Object &parent, const XML::Node &node, const char *t) {
+	std::shared_ptr<Abstract::Alert> Abstract::Alert::Factory(const Abstract::Object &parent, const XML::Node &node) {
 
-		std::shared_ptr<Abstract::Alert> alert;
+		static const struct {
+			const char *attrname;
+			const char *type;
+			const std::function<std::shared_ptr<Abstract::Alert>(const XML::Node &node)> factory;
+		} internal_types[] = {
+			{
+				"cmdline", "script",
+				[](const XML::Node &node){
+					return make_shared<Udjat::Alert::Script>(node);
+				}
+			},
+			{
+				"url", "url",
+				[](const XML::Node &node){
+					return make_shared<Udjat::Alert::URL>(node);
+				}
+			},
+			{
+				"filename", "file",
+				[](const XML::Node &node){
+					return make_shared<Udjat::Alert::File>(node);
+				}
+			},
+		};
 
-		String type{t ? t : ""};
+		const char *type = node.attribute(strcasecmp(node.name(),"alert") == 0 ? "type" : "alert-type")
+								.as_string(Config::Value<string>{"alert-defaults","type","default"}.c_str());
 
-		if(type.empty()) {
 
-			if(!strcasecmp(node.name(),"alert")) {
+		if(!strcasecmp(type,"internal")) {
 
-				type = Udjat::Attribute{node,"type","alert-type"}.c_str();
+			// Try to identify internal alert using attributes.
+			for(auto internal_type : internal_types) {
+				if(node.attribute(internal_type.attrname)) {
+					Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
+					return internal_type.factory(node);
+				}
+			}
 
-				if(type.empty()) {
+			throw runtime_error(Logger::Message{_("Unable to determine internal alert type for node <{}>"),node.name()});
 
-					if(node.attribute("cmdline")) {
-						type = "script";
-					} else if (node.attribute("url")) {
-						type = "url";
-					} else if (node.attribute("filename")) {
-						type = "file";
+		}
+
+		// Check factories.
+		{
+			std::shared_ptr<Abstract::Alert> alert;
+			if(Udjat::Factory::for_each([&parent,&node,&alert,type](Udjat::Factory &factory) {
+
+				if(factory == type) {
+					alert = factory.AlertFactory(parent,node);
+					if(alert) {
+						if(Logger::enabled(Logger::Trace)) {
+							alert->trace() << "Using '" << factory.name() << "' alert engine" << endl;
+						}
+						return true;
 					}
-
 				}
+				return false;
 
-			} else {
+			})) {
+				return alert;
+			};
+		}
 
-				type = Udjat::Attribute{node,"alert-type",true}.c_str();
-
+		// Try internal types.
+		for(auto internal_type : internal_types) {
+			if(strcasecmp(internal_type.type,type) == 0) {
+				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
+				return internal_type.factory(node);
 			}
-
 		}
 
-		if(type.empty()) {
-			type.assign(Config::Value<string>{"alert-defaults","type","default"});
-		}
-
-		debug("Creating alert '",type.c_str(),"'");
-
-		//
-		// First, try using the type name (even for 'default').
-		//
-		if(Udjat::Factory::search(node,[&parent,&alert](const Udjat::Factory &factory, const XML::Node &node){
-
-#ifdef DEBUG
-			factory.info() << "Trying to create alert from node <" << node.name() << ">" << endl;
-#endif // DEBUG
-
-			alert = factory.AlertFactory(parent,node);
-			if(alert) {
-				if(alert->verbose()) {
-					alert->trace() << "Using alert engine from '" << factory.name() << "'" << endl;
-				}
-				return true;
+		// Last chance, try to identify internal alert using attributes.
+		for(auto internal_type : internal_types) {
+			if(node.attribute(internal_type.attrname)) {
+				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
+				return internal_type.factory(node);
 			}
-			return false;
-		},type.c_str())) {
-			return alert;
 		}
 
-		//
-		// Try defined types
-		//
-		if(type == "url") {
-			return make_shared<Udjat::Alert::URL>(node);
-		}
-
-		if(type == "script") {
-			return make_shared<Udjat::Alert::Script>(node);
-		}
-
-		if(type == "file") {
-			return make_shared<Udjat::Alert::File>(node);
-		}
-
-		if(type == "default") {
-
-			//
-			// Check node attributes.
-			//
-			if(XML::AttributeFactory(node,"url")) {
-				return make_shared<Udjat::Alert::URL>(node);
-			}
-
-			if(XML::AttributeFactory(node,"script")) {
-				return make_shared<Udjat::Alert::Script>(node);
-			}
-
-			if(XML::AttributeFactory(node,"filename")) {
-				return make_shared<Udjat::Alert::Script>(node);
-			}
-
-		}
-
-		throw runtime_error(Logger::Message{_("Cant determine the type of alert '{}'"),node.attribute("name").as_string("unnamed")});
+		throw runtime_error(Logger::Message{_("Unable to determine alert type for node <{}>"),node.name()});
 
 	}
 

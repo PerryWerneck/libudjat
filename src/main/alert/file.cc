@@ -31,7 +31,7 @@
 
  namespace Udjat {
 
-	Alert::File::File(const XML::Node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::File::File(const XML::Node &node) : Abstract::Alert(node) {
 
 		// Get filename
 		{

@@ -28,7 +28,7 @@
 #include <pugixml.hpp>
 #include <udjat/tools/worker.h>
 #include <udjat/module/abstract.h>
-#include <udjat/factory.h>
+#include <udjat/tools/factory.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>

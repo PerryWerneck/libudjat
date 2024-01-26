@@ -27,7 +27,7 @@
 	#include <unistd.h>
  #endif // _WIN32
 
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>

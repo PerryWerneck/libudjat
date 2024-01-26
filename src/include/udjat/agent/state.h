@@ -193,7 +193,7 @@ namespace Udjat {
 			/// @param type The agent type.
 			/// @param node XML agent definitions.
 			/// @return true if the child was created.
-			bool push_back(const char *type, const XML::Node &node);
+			// bool push_back(const char *type, const XML::Node &node);
 
 			/// @brief Create and insert child from XML definition.
 			/// @param node XML agent definitions.

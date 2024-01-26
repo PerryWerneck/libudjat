@@ -20,7 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/string.h>

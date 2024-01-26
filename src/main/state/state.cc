@@ -35,7 +35,7 @@
  #include <udjat/alert/activation.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
@@ -129,7 +129,7 @@ namespace Udjat {
 			XML::Attribute enabled = getAttribute(node,"alert");
 
 			if(enabled.as_bool(type)) {
-				auto alert = Abstract::Alert::Factory(*this, node, type.as_string(""));
+				auto alert = Abstract::Alert::Factory(*this, node);
 				if(alert) {
 					listeners.push_back(alert);
 				}

@@ -18,7 +18,7 @@
  */
 
  #include <config.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/agent.h>
  #include <iostream>
@@ -29,6 +29,7 @@
 
  namespace Udjat {
 
+	/*
 	bool Factory::search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute) {
 
 		if(!(typeattribute && *typeattribute)) {
@@ -81,5 +82,6 @@
 		return false;
 
 	}
+	*/
 
  }

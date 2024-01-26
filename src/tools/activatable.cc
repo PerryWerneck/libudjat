@@ -19,34 +19,32 @@
 
  #include <config.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/alert.h>
 
  namespace Udjat {
 
-	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const XML::Node &node, const char *type) {
+	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const XML::Node &node) {
 
 		std::shared_ptr<Activatable> activatable;
 
-		if(!(type && *type)) {
-			type = "default";
-		}
+		if(Udjat::Factory::for_each([&parent,&activatable,&node](Udjat::Factory &factory){
 
-		if(Udjat::Factory::search(node,[&parent,&activatable](const Udjat::Factory &factory, const XML::Node &node){
-
-			activatable = factory.ActivatableFactory(parent,node);
-			if(activatable) {
-				return true;
+			if(factory == node.attribute("type").as_string("default")) {
+				activatable = factory.ActivatableFactory(parent,node);
+				return (bool) activatable;
 			}
+
 			return false;
 
+		})) {
 
-		},type)) {
 			return activatable;
+
 		}
 
-		return Abstract::Alert::Factory(parent,node,type);
+		return Abstract::Alert::Factory(parent,node);
 
 	}
 

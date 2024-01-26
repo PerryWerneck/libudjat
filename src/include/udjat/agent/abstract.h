@@ -230,7 +230,7 @@
 			static std::shared_ptr<Agent> RootFactory();
 
 			/// @brief Build and agent from type & xml node.
-			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const XML::Node &node);
+			//static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const XML::Node &node);
 
 			/// @brief Build and agent from node.
 			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const XML::Node &node);
@@ -252,7 +252,7 @@
 			/// @brief Load agent children, states, alerts, etc. from node.
 			/// @param node The xml node with agent children to build.
 			/// @param upsearch If true search xml parents based for type attribute or node name with '-defaults' and, if found, use them to setup this agent children.
-			void setup(const XML::Node &node, bool upsearch = true) override;
+			void setup(const XML::Node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();
