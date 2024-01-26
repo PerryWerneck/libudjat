@@ -29,6 +29,7 @@
 
  namespace Udjat {
 
+	/*
 	bool Factory::search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute) {
 
 		if(!(typeattribute && *typeattribute)) {
@@ -81,5 +82,6 @@
 		return false;
 
 	}
+	*/
 
  }

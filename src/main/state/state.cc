@@ -129,7 +129,7 @@ namespace Udjat {
 			XML::Attribute enabled = getAttribute(node,"alert");
 
 			if(enabled.as_bool(type)) {
-				auto alert = Abstract::Alert::Factory(*this, node, type.as_string(""));
+				auto alert = Abstract::Alert::Factory(*this, node);
 				if(alert) {
 					listeners.push_back(alert);
 				}

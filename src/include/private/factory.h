@@ -51,8 +51,7 @@
 		void insert(Factory *factory);
 		void remove(Factory *factory);
 
-		bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
-		bool for_each(const std::function<bool(const Factory &factory)> &func);
+		bool for_each(const std::function<bool(Factory &factory)> &func);
 
 	};
 

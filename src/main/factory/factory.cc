@@ -42,7 +42,8 @@
 		static const char *typed_nodes[] = {
 			"agent",
 			"alert",
-			"object"
+			"object",
+			"action"
 		};
 
 		if(strcasecmp(node.name(),factory_name) == 0) {
@@ -50,7 +51,7 @@
 		}
 
 		for(const char *typed_node : typed_nodes) {
-			if(strcasecmp(node.name(),typed_node) == 0 && strcasecmp(node.attribute("type",factory_name)) == 0) {
+			if(strcasecmp(node.name(),typed_node) == 0 && strcasecmp(node.attribute("type").as_string(""),factory_name) == 0) {
 				return true;
 			}
 		}
@@ -63,17 +64,21 @@
 		return module.getProperties(properties);
 	}
 
+	/*
 	Factory * Factory::find(const char *name) {
 		return Controller::getInstance().find(name);
 	}
+	*/
 
-	bool Factory::for_each(const std::function<bool(const Factory &factory)> &func) {
+	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(func);
 	}
 
+	/*
 	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(name,func);
 	}
+	*/
 
 	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();

@@ -40,9 +40,9 @@
 		Factory(const char *name, const ModuleInfo &module);
 		virtual ~Factory();
 
-		//inline bool operator==(const char *name) const noexcept {
-		//	return strcasecmp(name,this->factory_name) == 0;
-		//}
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->factory_name) == 0;
+		}
 
 		virtual bool probe(const XML::Node &node) const noexcept;
 

@@ -22,6 +22,7 @@
  #include <udjat/agent/state.h>
  #include <iostream>
  #include <udjat/alert/abstract.h>
+ #include <udjat/tools/logger.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -30,9 +31,45 @@
  namespace Udjat {
 
 	bool Abstract::State::push_back(const XML::Node &node) {
-		return push_back(node.name(),node);
+
+		return Udjat::Factory::for_each([this,&node](const Udjat::Factory &factory) {
+
+			if(factory.probe(node)) {
+
+				try {
+
+					auto alert = factory.AlertFactory(*this,node);
+					if(alert) {
+						if(Logger::enabled(Logger::Trace)) {
+							alert->trace() << "Using '" << factory.name() << "' alert engine" << endl;
+						}
+						listeners.push_back(alert);
+						return true;
+					}
+
+					return false;
+
+				} catch(const std::exception &e) {
+
+					factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
+
+				} catch(...) {
+
+					factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
+
+				}
+
+				return false;
+
+			}
+
+			return false;
+
+		});
+
 	}
 
+	/*
 	bool Abstract::State::push_back(const char *type, const XML::Node &node) {
 
 		if(!strcasecmp(type,"alert")) {
@@ -73,5 +110,6 @@
 		});
 
 	}
+	*/
 
  }

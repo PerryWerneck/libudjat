@@ -25,11 +25,11 @@
 
  namespace Udjat {
 
-	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const XML::Node &node, const char *type) {
+	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const XML::Node &node) {
 
 		std::shared_ptr<Activatable> activatable;
 
-		Udjat::Factory::for_each([&parent,&activatable,&node](Udjat::Factory &factory){
+		if(Udjat::Factory::for_each([&parent,&activatable,&node](Udjat::Factory &factory){
 
 			if(factory.probe(node)) {
 				activatable = factory.ActivatableFactory(parent,node);
@@ -38,7 +38,11 @@
 
 			return false;
 
-		});
+		})) {
+
+			return activatable;
+
+		}
 
 		/*
 		if(!(type && *type)) {
@@ -59,11 +63,7 @@
 		}
 		*/
 
-		if(activatable) {
-			return activatable;
-		}
-
-		return Abstract::Alert::Factory(parent,node,type);
+		return Abstract::Alert::Factory(parent,node);
 
 	}
 

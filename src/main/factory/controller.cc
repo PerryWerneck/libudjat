@@ -74,7 +74,7 @@
 
 	}
 
-	bool Factory::Controller::for_each(const std::function<bool(const Factory &factory)> &method) {
+	bool Factory::Controller::for_each(const std::function<bool(Factory &factory)> &method) {
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto factory : factories) {
 			if(method(*factory)) {
@@ -84,6 +84,7 @@
 		return false;
 	}
 
+	/*
 	bool Factory::Controller::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
 
 		debug("Seaching for factory '",name,"'");
@@ -101,5 +102,6 @@
 		}
 		return false;
 	}
+	*/
 
  }
