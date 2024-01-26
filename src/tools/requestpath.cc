@@ -26,6 +26,7 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
 
  using namespace std;
@@ -55,18 +56,26 @@
 		return false;
 	}
 
-	bool RequestPath::operator==(const char *path) const noexcept {
+	bool RequestPath::operator==(const char *request_path) const noexcept {
 
-		if(*path == '/') {
-			path++;
+		if(*request_path == '/') {
+			request_path++;
 		}
 
 		size_t szPath = strlen(object_path);
-		return szPath >= strlen(path) && (path[szPath] == '/' || path[szPath] == 0) && strncasecmp(object_path,path,szPath) == 0;
+
+		debug("path='",object_path,"' request='",request_path,"' szPath=",szPath);
+
+		return szPath <= strlen(request_path) && (request_path[szPath] == '/' || request_path[szPath] == 0) && strncasecmp(request_path,object_path,szPath) == 0;
 
 	}
 
 	bool RequestPath::operator==(const Request &request) const noexcept {
+
+		debug("------------------------------------------------------");
+
+		debug(name()," method is",((request == method) ? "equal" : "not equal"));
+
 		return request == method && *this == request.path();
 	}
 
