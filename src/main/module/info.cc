@@ -55,9 +55,7 @@
 		}
 
 		properties["build"] = build;
-		if(gettext_package) {
-			properties["locale"] = gettext_package;
-		}
+		properties["locale"] = gettext_package ? gettext_package : "";
 
 		return properties;
 	}
