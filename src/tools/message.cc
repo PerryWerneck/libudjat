@@ -44,6 +44,7 @@
 		from = find("{}");
 
 		if(from == std::string::npos) {
+			cerr << "logger\tInvalid template appending '" << str << "' on '" << c_str() << "'" << endl;
 			throw std::runtime_error(_("The message template is invalid"));
 		}
 
