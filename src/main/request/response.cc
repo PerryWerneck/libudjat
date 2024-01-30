@@ -74,7 +74,18 @@
 	}
 
 	std::string Response::Value::to_string() const noexcept {
-		return Udjat::Value::to_string(mimetype);
+
+		try {
+
+			return Udjat::Value::to_string(mimetype);
+
+		} catch(const std::exception &e) {
+
+			Logger::String{e.what()}.error(STRINGIZE_VALUE_OF(PRODUCT_NAME));
+
+		}
+
+		return "";
 	}
 
 
