@@ -28,6 +28,10 @@
  #include <udjat/tools/quark.h>
  #include <udjat/agent/abstract.h>
 
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
  using namespace std;
 
  namespace Udjat {
@@ -106,6 +110,10 @@
 
 		append(name);
 
+	}
+
+	bool Application::DataFile::available() const noexcept {
+		return access(c_str(),R_OK) == 0;
 	}
 
 	Application::LogDir & Application::LogDir::getInstance() {
