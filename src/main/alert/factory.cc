@@ -34,6 +34,37 @@
 
  namespace Udjat {
 
+	static const char * get_alert_type(const XML::Node &node) {
+
+		const char *type;
+		const char *attrname = (strcasecmp(node.name(),"alert") == 0 ? "type" : "alert-type");
+
+		type = node.attribute(attrname).as_string("");
+		if(type[0]) {
+			return type;
+		}
+
+		if(!strcasecmp(node.parent().name(),"agent")) {
+			// The parent node is an agent, use their type.
+			type = node.parent().attribute("type").as_string();
+			if(type[0]) {
+				return type;
+			}
+		}
+
+		for(auto parent = node.parent();parent;parent = node.parent()) {
+
+			type = parent.attribute("alert-type").as_string();
+			if(type[0]) {
+				return type;
+			}
+
+		}
+
+		throw runtime_error(Logger::Message{_("Unable to determine alert type for node <{}>"),node.name()});
+
+	}
+
 	std::shared_ptr<Abstract::Alert> Abstract::Alert::Factory(const Abstract::Object &parent, const XML::Node &node) {
 
 		static const struct {
@@ -61,9 +92,7 @@
 			},
 		};
 
-		const char *type = node.attribute(strcasecmp(node.name(),"alert") == 0 ? "type" : "alert-type")
-								.as_string(Config::Value<string>{"alert-defaults","type","default"}.c_str());
-
+		const char *type = get_alert_type(node);
 
 		if(!strcasecmp(type,"internal")) {
 
@@ -116,7 +145,7 @@
 			}
 		}
 
-		throw runtime_error(Logger::Message{_("Unable to determine alert type for node <{}>"),node.name()});
+		throw runtime_error(Logger::Message{_("Unable to create alert for node <{}>"),node.name()});
 
 	}
 

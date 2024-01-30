@@ -88,7 +88,11 @@
 			void serialize(std::ostream &out) const override;
 
 			std::string to_string() const;
-			std::string to_string(const MimeType mimetype) const;
+			// std::string to_string(const MimeType mimetype) const;
+
+			/// @brief Get row values from object.
+			/// @param values Object with column values.
+			Table & push_back(const Udjat::Value &values);
 
 			virtual ~Table();
 

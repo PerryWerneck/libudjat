@@ -104,7 +104,7 @@
 		/// @brief Convert value to 'object' and insert child.
 		virtual Value & set(const Value &value) = 0;
 
-		/// @brief Set string to value
+		/// @brief Set valuse as string and type.
 		virtual Value & set(const char *value, const Type type = String);
 
 		/// @brief Emit event, allowing modules to change value contents.

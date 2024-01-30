@@ -35,9 +35,14 @@
 	}
 
 	std::string Response::Table::to_string() const {
-		return to_string(mimetype);
+		std::stringstream out;
+		debug(__FUNCTION__,": Serializing table");
+		serialize(out);
+		debug("Serialized");
+		return out.str();
 	}
 
+	/*
 	std::string Response::Table::to_string(const MimeType mimetype) const {
 
 		if(empty()) {
@@ -50,6 +55,7 @@
 		debug("Serialized");
 		return out.str();
 	}
+	*/
 
 	void Response::Table::serialize(std::ostream &stream) const {
 
@@ -156,7 +162,7 @@
 
 				auto column = columns.names.begin();
 				stream << "<tr>";
-				for_each([this, &stream, &column](const Value::Type type, const char *value){
+				for_each([this, &stream, &column](const Value::Type, const char *value){
 					if(column == columns.names.end()) {
 						stream << "</tr><tr>";
 						column = columns.names.begin();
@@ -238,6 +244,33 @@
 		}
 
 		return (columns.current++)->c_str();
+
+	}
+
+	Response::Table & Response::Table::push_back(const Udjat::Value &values) {
+
+		for(const std::string &column : columns.names) {
+
+			if(!values.for_each([this,&column](const char *name, const Udjat::Value &value){
+
+				if(strcasecmp(name,column.c_str())) {
+					return false;
+				}
+
+				// Found, insert it.
+				this->push_back(value.to_string(),(Value::Type) value);
+				return true;
+
+			})) {
+
+				// Not found, insert 'null' value.
+				this->push_back("",Udjat::Value::Undefined);
+
+			}
+
+		}
+
+		return *this;
 
 	}
 
