@@ -330,6 +330,7 @@
 		<Unit filename="src/tools/arguments.cc" />
 		<Unit filename="src/tools/base64.cc" />
 		<Unit filename="src/tools/cache.cc" />
+		<Unit filename="src/tools/config.cc" />
 		<Unit filename="src/tools/configuration.cc" />
 		<Unit filename="src/tools/converters.cc" />
 		<Unit filename="src/tools/event.cc" />
