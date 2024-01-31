@@ -224,9 +224,9 @@
 		debug("Getting file for icon '",c_str(),"'");
 
 		static const char * defpaths =
+				"/usr/share/icons/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/," \
 				"/usr/share/icons/Adwaita/," \
 				"/usr/share/icons/," \
-				"/usr/share/icons/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/," \
 				"/usr/share/icons/gnome/," \
 				"/usr/share/icons/hicolor/," \
 				"/usr/share/icons/HighContrast/";

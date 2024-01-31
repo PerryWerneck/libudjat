@@ -18,8 +18,8 @@
  */
 
  // #define SERVICE_TEST 1
- #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ // #define APPLICATION_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -266,10 +266,8 @@ int main(int argc, char **argv) {
 	cout << file.name() << endl;
 	*/
 
-	/*
-	string name = Udjat::Icon{"computer"}.filename();
+	string name = Udjat::Icon{"udjat"}.filename();
 	cout << "Found: '" << name << "'" << endl;
-	*/
 
 
 	return 0;
