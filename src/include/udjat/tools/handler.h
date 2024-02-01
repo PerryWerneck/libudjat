@@ -60,7 +60,9 @@
 		Handler(int fd, const Event event);
 		virtual ~Handler();
 
-		void set(int fd);
+		/// @brief Set file handler to new value.
+		/// @return true if the handler was changed.
+		bool set(int fd);
 		void set(const Event events);
 
 		virtual void flush();
