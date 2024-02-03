@@ -194,10 +194,6 @@
 		File::copy(c_str(),writer);
 	}
 
-	String File::Path::load() const {
-		return File::Text(c_str()).c_str();
-	}
-
 	void File::Path::save(const char *filename, const char *contents) {
 
 		// Get file information.
