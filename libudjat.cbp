@@ -235,7 +235,6 @@
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/ip.h" />
-		<Unit filename="src/include/udjat/win32/network.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
@@ -438,8 +437,10 @@
 		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
+		<Unit filename="src/tools/os/windows/securityidentifier.cc" />
 		<Unit filename="src/tools/os/windows/service/handler.cc" />
 		<Unit filename="src/tools/os/windows/service/manager.cc" />
+		<Unit filename="src/tools/os/windows/service/security.cc" />
 		<Unit filename="src/tools/os/windows/shortcut.cc" />
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />

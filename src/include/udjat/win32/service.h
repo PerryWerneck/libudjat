@@ -187,6 +187,29 @@
 				void stop(bool wait = true);
 			};
 
+			/// @brief Service security handler.
+			class UDJAT_API Security {
+			private:
+				SC_HANDLE handle;
+				PSECURITY_DESCRIPTOR	pSD;
+
+			public:
+				Security(SC_HANDLE handle);
+				~Security();
+
+				/// @brief Apply ACLs.
+				void set(PEXPLICIT_ACCESS acl, size_t cCountOfExplicitEntries);
+
+				/// @brief Apply ACLs to object.
+				/// @param permissions	Array with the permissions to set.
+				/// @param length		Length of the permissions array.
+				void set(const Permission *permissions, size_t length);
+
+				/// @brief Disable 'net stop' for all users.
+				void setUnStoppable();
+
+			};
+
 		}
 
 	}
