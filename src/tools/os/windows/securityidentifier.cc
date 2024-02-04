@@ -26,6 +26,7 @@
  #include <udjat/win32/security.h>
  #include <udjat/win32/exception.h>
  #include <system_error>
+ #include <sddl.h>
 
  using namespace std;
 
