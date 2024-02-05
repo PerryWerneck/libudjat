@@ -52,6 +52,9 @@
 
 	Win32::Service::Security::~Security() {
 		LocalFree(pSD);
+		if(handle) {
+			CloseServiceHandle(handle);
+		}
 	}
 
 	void Win32::Service::Security::set(PEXPLICIT_ACCESS acl, size_t cCountOfExplicitEntries) {

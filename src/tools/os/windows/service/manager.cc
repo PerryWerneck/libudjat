@@ -114,6 +114,24 @@
 
 	}
 
+	bool Win32::Service::Manager::setUnStoppable(const char *name) {
+
+		SC_HANDLE hService = OpenService(handle, TEXT(name), SERVICE_ALL_ACCESS);
+		if(!hService) {
+			auto lasterror = GetLastError();
+			if(lasterror == ERROR_SERVICE_DOES_NOT_EXIST) {
+				clog << "Service '" << name << "' does not exist" << endl;
+				return false;
+			}
+			throw Win32::Exception("Cant protect service",lasterror);
+		}
+
+		Win32::Service::Security{hService}.setUnStoppable();
+
+		return true;
+
+	}
+
 	bool Win32::Service::Manager::stop(const char *name) {
 
 		SC_HANDLE hService = OpenService(handle, TEXT(name), SERVICE_ALL_ACCESS);

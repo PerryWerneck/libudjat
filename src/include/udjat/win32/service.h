@@ -140,6 +140,13 @@
 				/// @retval true The service was stopped.
 				/// @retval false The service was not found.
 				bool stop(const char *name);
+
+				/// @brief Disable 'net stop' for all users.
+				/// @param name The service name.
+				/// @retval true The service was protected.
+				/// @retval false The service was not protected.
+				bool setUnStoppable(const char *name);
+
 			};
 
 			class UDJAT_API Handler {

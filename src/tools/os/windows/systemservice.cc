@@ -42,11 +42,12 @@
 	const char *from;
 	const char *help;
  } options[] = {
-	{ 'S',	"start",		"\t\tStart service"		},
-	{ 'Q',	"stop",			"\t\tStop service"		},
-	{ 'I',	"install",		"\t\tInstall service"	},
-	{ 'U',	"uninstall",	"\t\tUninstall service"	},
-	{ 'R',	"reinstall",	"\t\tReinstall service"	},
+	{ 'S',	"start",		N_("\t\tStart service")									},
+	{ 'Q',	"stop",			N_("\t\tStop service")									},
+	{ 'I',	"install",		N_("\t\tInstall service")								},
+	{ 'U',	"uninstall",	N_("\t\tUninstall service")								},
+	{ 'R',	"reinstall",	N_("\t\tReinstall service")								},
+	{ 'L',	"unstoppable",	N_("\t\tBlock access to 'net stop' on this request")	},
  };
 
  namespace Udjat {
@@ -97,6 +98,13 @@
 			MainLoop::getInstance().quit();
 			break;
 
+		case 'L':	// Unstoppable
+			{
+				Application::Name appname;
+				Win32::Service::Manager{}.setUnStoppable(appname.c_str());
+			}
+			break;
+
 		default:
 			return Application::argument(opt,optarg);
 
@@ -110,7 +118,12 @@
 		Application::help(out);
 
 		for(auto &option : options) {
+#ifdef GETTEXT_PACKAGE
+			out << "  --" << option.from << dgettext(GETTEXT_PACKAGE,option.help) << endl;
+#else
 			out << "  --" << option.from << option.help << endl;
+#endif // GETTEXT_PACKAGE
+
 		}
 
 	}
