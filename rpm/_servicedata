@@ -1,4 +1,4 @@
 <servicedata>
 <service name="tar_scm">
                 <param name="url">https://github.com/PerryWerneck/libudjat.git</param>
-              <param name="changesrevision">9dd591671e0864e6fc4100213106cbcd3b0cb92a</param></service></servicedata>
+              <param name="changesrevision">c5f2ff8bd0beebf65f896fc26d752f3d4452f359</param></service></servicedata>

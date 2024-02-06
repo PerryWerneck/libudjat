@@ -1,4 +1,444 @@
 -------------------------------------------------------------------
+Mon Feb  5 18:57:16 UTC 2024 - Perry Werneck <perry.werneck@gmail.com>
+
+- Last minute fixes
+  * Allow-changing-of-handler-file-description.patch fix a problem with d-bus socket handlers.
+  * add_version_check_macro.patch Allow modules to detect the core library version and adjust themselfs.
+
+-------------------------------------------------------------------
+Mon Feb 05 15:49:14 UTC 2024 - perry.werneck@gmail.com
+
+- Update to version 1.1+git20230808:
+  * Update codeql.yml
+  * Update msys2.yml
+  * Updating to latest vmdetect.
+  * Update msys2.yml
+  * Fixing win32 package.
+  * Adding methods to get file's modification timestamp.
+  * Fixing modtime.
+  * Refactoring protocol worker.
+  * Updating rpm control file.
+  * Allowing conversion of File::Handle to system handler (int) for use with standard C APIs.
+  * Debugging protocol worker.
+  * Better protocol worker.
+  * Fixing a few codeql warnings.
+  * Fixing codeql alert.
+
+-------------------------------------------------------------------
+Wed Jul 12 14:38:41 UTC 2023 - perry.werneck@gmail.com
+
+- Update to version 1.1+git20230712:
+  * Updating win32 package.
+  * Allowing custom console writer.
+  * Updating license file, converting agent promotion message to trace.
+  * Fixing system service class.
+  * Readding method for compatibility.
+  * Changing service icon when running on virtual machine.
+  * Adding custom writer method on URL.
+  * Fixing codeql alert.
+  * Better log messages.
+  * Debugging byte value parser.
+  * Better unit names.
+  * Fixing byte converters.
+  * Implementing operator '+' on URLs.
+  * Better log messages.
+  * Sppliting command line parser.
+  * Backporting to win32.
+  * Refactoring service command line parser.
+  * Adding '-f' option.
+  * Refactoring command line argument parser.
+  * Adding 'realpath' method on file::path
+  * Better decoding of filename urls.
+  * Adding convenience methods and more constructors on URL.
+  * Adding xml search method.
+  * Adding file allocate/truncate methods.
+  * Fixing file handler class.
+  * Adding more custom writer based methods.
+  * Small adjustment.
+  * Better tempdir.
+  * Fixing package, protocol worker now has a customized writer option.
+  * Better name for File::Handler.
+  * Adding file save with custom writer.
+  * Creating 'abstract::file' with some convenience methods.
+  * Adding method to create and allocate temporary file.
+  * Better attribute allow/deny options.
+  * Better string factory from xml.
+  * Fixing package build.
+  * Adding XML::QuarkFactory.
+  * Using module search paths.
+  * Adding public method to get module search paths.
+  * Adding module version on pkg-config files.
+  * Fixing codeql warning and string build from array.
+  * Debugging mingw package.
+  * Fixing temporary files on fat disks.
+  * Adding command-line argument parser.
+
+-------------------------------------------------------------------
+Sat Apr 29 15:04:02 UTC 2023 - perry.werneck@gmail.com
+
+- Update to version 1.1.0+git20230429:
+  * Fixing argument parser.
+  * Debugging subprocess.
+  * Fixing byte value conversion.
+  * Fixing progress dialog.
+  * Better command line parser.
+  * Better subprocess argument parser.
+  * Fixing win32 package.
+  * Fixing subproccess.
+  * Adding popen() alternative for sub process.
+  * Fixing subproccess argument list.
+  * Better log on subprocess exit.
+  * Subprocess except on too many arguments.
+  * Debugging subprocess.
+  * Fixing protocol auto loader.
+  * Allowing optional auto loading of protocol handlers.
+  * Implementing xml document loader.
+  * Removing unused code.
+  * Testing if module is already loaded by name.
+  * Adding convenience method for object properties.
+  * File::move now uses stats from origin when target not exists.
+  * Better log entries on file::move.
+  * Adding mingw package control file.
+  * Updating doc builder.
+  * Getting marker from xml node.
+  * Better document.
+  * Allowing customized marker on string expander.
+  * Allowing exceptions on getProperties().
+  * Allowing exception on all getProperties methods.
+  * Allowing exceptions in Object::getProperty().
+  * Adding pre/post methods on Udjat::SubProcess
+  * Fixing problem with O_TMPFILE.
+  * Allowing modules withou product name.
+  * Fixing safe update flag.
+  * Using localtime_s on windows.
+  * Build mingw package only on 'master' PRs
+  * Update PKGBUILD.mingw
+  * Update ci-build.sh
+  * Using packages instead of .tar.xz files.
+  * Enabling msys build on every develop push.
+  * Using packages on ci-build.
+  * Debugging xml validation.
+  * Better systemd status messages.
+  * Better auto-update, fixing systemd status, removing unused code.
+  * Fixing systemd watchdog.
+  * Update msys2.yml
+  * Updating win32 workflow.
+  * Adding application initialize/finalize methods.
+  * Adding static Application::setup method.
+
+-------------------------------------------------------------------
+Mon Mar 27 13:08:59 UTC 2023 - perry.werneck@gmail.com
+
+- Update to version 1.1+git20230321:
+  * Fixing exception when starting as a user.
+  * Fixing Win32 Application::DataFile class.
+  * Fixing linux build.
+  * Fixing logfile abend on windows.
+  * Debugging win32 logdir management.
+  * Allow customizing of win32 application log path.
+  * Better error messagem on app description failures.
+  * Fixing win32 service help, adding --reinstall service option.
+  * Default states must be loaded after the defined ones.
+  * Fixing CodeQL alerts.
+  * Fixing permissions.
+  * Fixing win32 build.
+  * Still fixing Udjat::Message.
+  * Fixing Logger::Message
+  * Removing unused code, Only reset agent update timer on return of 'refresh()' if the value is expired to avoid reset timers set by agent during the call of refresh().
+  * Enhancing Udjat::String.
+  * Fixing MAC address detection on linux.
+  * Adding IP::Address factory for AF_PACKET sockets.
+  * Fixing auto-update.
+  * Fixing linux package.
+  * Debugging win32 core.
+  * Fixing win32 build.
+  * Small adjustment.
+  * Better error control on auto-update.
+  * Better error control in auto-update.
+  * Refactoring auto-update.
+  * Fixing root agent change notifications.
+  * Renaming StateFactory to Abstract::State::Factory.
+  * Fixing agent icon.
+  * Fixing package build.
+  * Updating win32 network methods.
+  * Refactoring linux network 'for_each' methods.
+  * Adding to_string(sockaddr) and linux interface getProperties().
+  * Better com object.
+  * Simple com wrapper.
+  * Implementing linux carrier method for network interface, enhanding Udjat::Object.
+  * Better label & icon on objects.
+  * Fixing agent timers.
+  * Adding more inline methods on Abstract::State.
+  * Fixing win32 package.
+  * Better script alert.
+  * Improving alert/agent scripts.
+  * Enhancing subprocess tool.
+  * Fixing scheduled update.
+  * Adding 'empty' method to container.
+  * Updating Abstract::State
+  * Updating windows resources.
+  * Adding const iterators.
+  * Refactoring agent report generator.
+  * Update README.md
+  * Better agent path management, removing deprecated methods.
+  * Fixing properties by path.
+  * Refactoring agent paths and responses.
+  * Debugging system service.
+  * Updating configure.ac
+  * Reverting autoupdate.
+  * Updating configure.ac, debugging win32 service start,stop,install & uninstall.
+  * Refactoring win32 install, uninstall, start and stop service.
+  * Fixing instance and timed service status.
+  * Fixing linux system service.
+  * Refactoring win32 system service.
+  * Fixing common methods and console output.
+  * Refactoring service.
+  * Refactoring linux system service.
+  * Fixing win32 module loading.
+  * Fixing mkdir.
+  * Update codeql.yml
+  * Fixing module scan.
+  * Copy abstract agents or passing them by value to methods can cause a lot of strange behaviors.
+  * Enhancing containers.
+  * Enhancing singleton container.
+  * Fixing log verbosity and command line parser.
+  * Fixing log verbosity.
+  * Commenting unused method.
+  * Adding helpers for setup & module load.
+  * better string selection on request, using alternative names on linux module search.
+  * Fixing module startup.
+  * Implementing protocol's standard 'for_each' method.
+  * Fixing CodeQL warnings.
+  * Adding missing include.
+  * Refactoring win32 service.
+  * Decoupling service objects from mainloop.
+  * Adding simple template for container.
+  * Implementing template for the singleton controllers.
+  * Implementing standar for_each method in containers.
+  * Replacing the old 'getinfo' for the more standard method 'getproperties'.
+  * Fixing linux version.
+  * Debugging win32 mainloop.
+  * Debugging timers.
+  * Refactoring linux timers.
+  * Refactoring win32 timers.
+  * Moving linux handler management to internal mainloop class.
+  * Adding method to quit mainloop with message.
+  * Refactoring win32 mainloop
+  * Refactoring linux mainloop.
+  * Moving services for OS mainloop.
+  * Refactoring mainloop.
+  * Fixing linux build.
+  * Debuggin win32 package.
+  * Debugging win32 shortcuts
+  * Debugging win32 shorcuts
+  * Improving application mode.
+  * Fixing win32 build.
+  * Adjustments in application mode.
+  * Better test program.
+  * Updating win32 application mode.
+  * Refactoring application mode.
+  * Fixing verbosity.
+  * Implementing application mode.
+  * Implementing log verbosity options.
+  * Updating translation.
+  * Fixing windows resource file translation info.
+  * Debuggin shortcut class.
+  * Implementing win32 shortcut.
+  * Debugging on windows/msys
+  * Removing unused libraries.
+  * Debugging windows.
+  * Fixing load settings from userdir.
+  * Better win32 error logging.
+  * Setting windows version in 'defs' include.
+  * Updating windows versions.
+  * Reactivating linux ifaddr for_each tool.
+  * Better IP::Address constructors.
+  * Removing unused code, allowing override of agent::empty method.
+  * Updating win32 packate control file.
+  * Fixing IP:Address, updating translation and package control file.
+  * Fixing package build.
+  * Debugging IP address abstraction.
+  * Fixing network abstraction classes.
+  * Improving IP::Address
+  * Implementing ip address abstraction.
+  * Fixing changelog.
+  * Updating package control files.
+  * Fixing win32 package.
+  * Implementing NIC abstraction for windows.
+  * Adding method to send signal do all instances of process.
+  * Fixing log messages.
+  * Updating translation.
+  * msys debug.
+  * Fixing linux build.
+  * Fixing win32 log path.
+  * Debugging win32 logger.
+  * Fixing logger initialization.
+  * Better application initialization on linux.
+  * Better application initialization on windows.
+  * Refactoring File::Path to allow using a limited set of ${} macros.
+  * Fixing win32 logdir.
+  * Fixing win32 package.
+  * Refactoring linux application paths.
+  * Refactoring win32 application paths.
+  * Updating win64 control files.
+  * Adding application and folder types.
+  * Implementing File::Path by datatype.
+  * Adding placeholders for linux shortcuts.
+  * Implementing windows shortcut.
+  * Initializing win32 comm.
+  * Better win32::COM exception handler.
+  * Working on shortcut abstraction.
+  * Adding 'todo' note.
+  * Better error handling on win32.
+  * Debugging new windows & linux auto update. Updating some pt-br translations.
+  * Refactoring auto update.
+  * Refactoring agent builder.
+  * Refactoring xml parser.
+  * Improving win32 methods.
+  * Adding linux parser for option --install
+  * Better root state.
+  * Adding option for win32 shortcut.
+  * Updating pkg-config files, fixing win32 module loader.
+  * Translating HTTP error code.
+  * Better states for URL Agent.
+  * Implementing http error code handler.
+  * Adding default 'url' type agent.
+  * Setting default xml service definition to './debug.xml' when compiling with -DDEBUG, better error message when unable to find the service definitions.
+  * Fixing windows include.
+  * Debuggin interrupt handler.
+  * Refactor string to bool conversion.
+  * Refactoring activation ${} parser.
+  * Disabling auto update of deb control files.
+  * Fixing agent/action parser.
+  * Version adjustments.
+  * Updating readme.
+  * Updating deb control files.
+  * Updating 'deb' control files.
+  * Renaming deb control files.
+  * Fixing startup notifications.
+  * Refactoring xml based factories.
+  * Refactoring agent loader.
+  * Adding agent and alert factories directly from module.
+  * Fixing CodeQL alerts.
+  * Fixing window file 'for_each'.
+  * Fixing file copy/move.
+  * Fixing CodeQL alert.
+  * Adjustments in 'script://' handler.
+  * Updating msys2 workflow adding 'bak' option in File::copy.
+  * Adding mingw build action.
+  * Fixing file copy.
+  * Getting homedir with uid api instead of getenv to fix alert from CodeQL.
+  * Changing README.md
+  * debug and trace messages are now disabled by default.
+  * Fixing win32 library.
+  * Fixing windows package build.
+  * Implementing message based logging in namedobject, changing subprocess class to use them.
+  * Adjustments in include files.
+  * Refactoring log message.
+  * Implementing standard message object.
+  * Refactoring 'Logger::String'.
+  * Refactoring string templates.
+  * Small adjustments.
+  * Update README.md
+  * Adding badges
+  * Using ~/.cache/appname for non-root users.
+  * Better 'string from xml' construtor.
+  * CacheDir is now a File::Path.
+  * Implementing double value version for String::set_byte().
+  * Adding byte value conversion on string.
+  * Adding simple parser for <b> markup.
+  * Implementing test for regular files.
+  * Removing unused header.
+  * Allowing hook on protocol actions for use with gui applications.
+  * Re-enabling module preload from configuration file.
+  * class URL is now a Udjat::String.
+  * Implementing module load by file/path name.
+  * Fixing linux File::Path::remove().
+  * Expanding filename to real path on File::Path::for_each
+  * Implementing linux version of File::Path::remove()
+  * Refactoring win32 version of File::Path
+  * Refactoring File::Path 'for_each' method.
+  * Moving application methods do their own path.
+  * Exporting 'dummy' progress method to allow use on applications.
+  * Adding CHANGELOG.
+  * Adding a configurable D-Bus product id.
+  * Enhancing timestamp parser, fixing some CodeQL alerts.
+  * Fixing some CodeQL alerts.
+  * Fixing CodeQL alerts.
+  * Enhancing argument parser.
+  * Implementing 'to_string' on subprocess::argument.
+  * Implementing argument list class.
+  * Better 'mkdir()' method.
+  * Removing unnecessary debug message, fixing codeql alert.
+  * Fixing CodeQL warnings.
+  * Fixing codeql workflow
+  * Adding 'levelnumber' property on abstract state.
+  * Fixing CodeQL warnings.
+  * Fixing deb dependencies.
+  * Update codeql.yml
+  * Better suprocess logging.
+  * Fixing some CodeQL warnings.
+  * Adding converter from text to value applying byte units ('kb','gb','tb') conversions.
+  * Fixing some CodeQL alerts.
+  * Implementing 'deb' files.
+  * Working on deb package.
+  * Working on deb package.
+  * Adding codeql workflow.
+  * Moving child setups to agent controller.
+  * Fixing ready/not-ready notifications.
+  * Small fixes on script alert, implementing cache filenames.
+  * Fixing trigger names.
+  * Allowing alerts on ready/not-ready agent states.
+  * Fixing win32 build.
+  * Changing logtype of signal messages.
+  * Allowing customization of root agent states.
+  * Updating package control file.
+  * Adding logdir subdirectory, implementing default filename for alerts.
+  * Allowing set of log levels using configuration file.
+  * Fixing default xml path.
+  * Fixing module path.
+  * Updating translation, packaging with new module path
+  * Moving modules to new path.
+  * Debugging alert emission.
+  * Implementing method to deactivate an active alert-activation.
+  * Enhancing activatable class.
+  * Acessing state properties from agent object.
+  * State requires agent during activation.
+  * Fallback to alert on activatable factory.
+  * Implementing 'Activatable' factory as an option for alerts.
+  * Small fixes on alert emission.
+  * Notifing module on root agent changes.
+  * Fixing module builds.
+  * Small refactor on module class & controller.
+  * state class is now using 'activatables' in place of 'alerts'.
+  * Refactoring state activation/deactivation.
+  * Refactoring agent listener.
+  * Fixing alert factory.
+  * Debugging alert factories.
+  * Using shared_ptr on eventlistener, removing deprecated method.
+  * Fixing alert initialization.
+  * Fixing state restore after forward.
+  * Adding more 'ip2string' methods.
+  * Removing unused code.
+  * Debugging state forwarder.
+  * Adding debug message.
+  * Refactoring state forwarder.
+  * Fixing first agent state forwarding.
+  * Fixing state forwarding.
+  * Adding module name in 'cant load' exception.
+  * Adding xml based http method factory.
+  * Allowing method and payload in URL test().
+  * Refactoring url tester.
+  * Refactoring URL tester.
+  * Fixing url test() method.
+  * Debugging state forwarder.
+  * Refactoring state machine.
+  * Fixing background tasks on root agent.
+  * Improving agent and state templates.
+  * Getting NIC object by interface name.
+  * Reverting to default state when a forwarded agent is disabled.
+
+-------------------------------------------------------------------
 Tue Nov 22 18:51:46 UTC 2022 - perry.werneck@gmail.com
 
 - Update to version 1.0+git20221122:
