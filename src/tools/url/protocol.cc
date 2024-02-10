@@ -102,6 +102,7 @@
 		return Logger::trace() << name << "\t";
 	}
 
+	/*
 	const Protocol * Protocol::find(const URL &url, bool allow_default, bool autoload) {
 		string scheme = url.scheme();
 
@@ -113,16 +114,19 @@
 		return find(scheme.c_str(),allow_default,autoload);
 
 	}
+	*/
 
+	/*
 	const Protocol * Protocol::find(const char *name, bool allow_default, bool autoload) {
 		return Controller::getInstance().find(name,allow_default,autoload);
 	}
+	*/
 
 	const Protocol * Protocol::verify(const void *protocol) {
 		return Controller::getInstance().verify(protocol);
 	}
 
-	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url) {
+	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url, bool allow_default, bool autoload) {
 
 		string name{url};
 
@@ -135,7 +139,16 @@
 
 		// 1 - check for registered protocol.
 		{
-			const Protocol * protocol = Protocol::find(name.c_str());
+			const Protocol * protocol = nullptr;
+
+			Protocol::for_each([&protocol,name](const Protocol &p){
+				if(p == name.c_str()) {
+					protocol = &p;
+					return true;
+				}
+				return false;
+			});
+
 			if(protocol) {
 
 				auto worker = protocol->WorkerFactory();
@@ -202,10 +215,11 @@
 					MimeType mime = MimeType::json;
 
 				public:
-					Proxy(const Udjat::Worker *w, const char *path)
-						: worker{w}, request{path ? path+4 : ""}, type{worker->probe(request)} {
+					Proxy(const Udjat::Worker *w, const char *url, const char *path)
+						: worker{w}, request{path ? path+3 : ""}, type{worker->probe(request)} {
+						this->url(url);
 						if(type == Udjat::Worker::None) {
-							throw runtime_error("Cant handle url");
+							throw runtime_error(Logger::String{"Cant handle ",url});
 						}
 					}
 
@@ -239,8 +253,30 @@
 
 				};
 
-				return make_shared<Proxy>(worker,strstr(url,":///"));
+				debug("--------------------------------[",url,"]");
+				auto proxy = make_shared<Proxy>(worker,url,strstr(url,":///"));
+				return proxy;
 
+			}
+
+		}
+
+		// 4 - Check for available module
+		// TODO: Check if there's a module with protocol name, load it if necessary.
+
+		// 5 - Use the default protocol handler
+		if(allow_default) {
+
+			const Protocol *def = Controller::getInstance().getDefault();
+
+			if(def) {
+				auto worker = def->WorkerFactory();
+				if(!worker) {
+					throw runtime_error(String{"Cant get default worker for ",url});
+				}
+
+				worker->url(url);
+				return worker;
 			}
 
 		}
@@ -250,9 +286,39 @@
 	}
 
 	/// @brief Create a worker for this protocol.
-	/// @return Worker for this protocol or empty shared pointer if the protocol cant factory workers.
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
-		return std::shared_ptr<Protocol::Worker>();
+
+		//
+		// This protocol is unable to create a worker, use a proxy to the 'old' API.
+		//
+		warning() << "No worker factory (old version?) using proxy worker" << endl;
+
+		class Proxy : public Protocol::Worker {
+		private:
+			const Protocol *protocol;
+
+		public:
+			Proxy(const Protocol *p) : protocol{p} {
+			}
+
+			virtual ~Proxy() {
+			}
+
+			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+				if(!verify(protocol)) {
+					throw runtime_error("Protocol is no longer available");
+				}
+				return protocol->call(url().c_str(),method(),out.payload.c_str());
+			}
+
+			bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress), bool UDJAT_UNUSED(replace)) override {
+				throw runtime_error("The selected protocol is unable to save files");
+			}
+
+		};
+
+		return make_shared<Proxy>(this);
+
 	}
 
 	Value & Protocol::getProperties(Value &properties) const {
@@ -260,16 +326,14 @@
 		return module.getProperties(properties);
 	}
 
-	String Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
+	String Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
 
-		URL url{u};
-		const Protocol * protocol = find(url);
+		auto worker = Protocol::WorkerFactory(url);
 
-		if(!protocol) {
-			throw runtime_error(string{"Can't handle '"} + url + "' - no protocol handler");
-		}
-
-		return protocol->call(url,method,payload);
+		worker->url(url);
+		worker->method(method);
+		worker->payload(payload);
+		return worker->get();
 
 	}
 

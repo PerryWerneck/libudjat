@@ -133,18 +133,10 @@
 
 		try {
 
-			const Protocol * protocol = Protocol::find(*this);
-			if(!protocol) {
-				cerr << "url\tCant find a protocol handler for " << *this << endl;
-				return EINVAL;
-			}
-
-			auto worker = protocol->WorkerFactory();
-			if(worker) {
-				worker->method(method);
-				worker->payload(payload);
-				return worker->url(*this).test();
-			}
+			auto worker = Protocol::WorkerFactory(c_str());
+			worker->method(method);
+			worker->payload(payload);
+			return worker->url(*this).test();
 
 		} catch(const std::system_error &e) {
 
@@ -178,21 +170,7 @@
 
 	void URL::get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
 
-		const Protocol * protocol = Protocol::find(*this);
-		if(!protocol) {
-			Logger::String message{"Cant find a protocol handler for '",c_str(),"'"};
-			message.error("url");
-			throw std::system_error(EINVAL,std::system_category(),message);
-		}
-
-		auto worker = protocol->WorkerFactory(c_str());
-
-		if(!worker) {
-			Logger::String message{"Cant get worker for '",c_str(),"'"};
-			message.error("url");
-			throw std::system_error(EINVAL,std::system_category(),message);
-		}
-
+		auto worker = Protocol::WorkerFactory(c_str());
 		worker->method(HTTP::Get);
 		worker->save(writer);
 

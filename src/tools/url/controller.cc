@@ -74,6 +74,7 @@
 		protocols.remove(protocol);
 	}
 
+	/*
 	const Protocol * Protocol::Controller::find(const char *name, bool allow_default, bool autoload) {
 
 		debug("Searching for protocol '",name,"'");
@@ -100,6 +101,7 @@
 		return nullptr;
 
 	}
+	*/
 
 	const Protocol * Protocol::Controller::verify(const void *protocol) {
 

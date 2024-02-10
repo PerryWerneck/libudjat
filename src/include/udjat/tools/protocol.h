@@ -345,7 +345,7 @@
 
 		virtual std::shared_ptr<Worker> WorkerFactory() const;
 
-		static std::shared_ptr<Worker> WorkerFactory(const char *url);
+		static std::shared_ptr<Worker> WorkerFactory(const char *url, bool allow_default = true, bool autoload = true);
 
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;
@@ -375,13 +375,13 @@
 		/// @param allow_default If true returns the default protocol when not found.
 		/// @param autoload If true tries to load a module using the protocol name.
 		/// @return Pointer to selected protocol or nullptr.
-		static const Protocol * find(const URL &url, bool allow_default = true, bool autoload = false);
+		// static const Protocol * find(const URL &url, bool allow_default = true, bool autoload = false);
 
 		/// @brief Find protocol based on protocol name.
 		/// @param url The url to search for.
 		/// @param allow_default If true returns the default protocol when not found.
 		/// @return Pointer to selected protocol or nullptr.
-		static const Protocol * find(const char *name, bool allow_default = true, bool autoload = false);
+		// static const Protocol * find(const char *name, bool allow_default = true, bool autoload = false);
 
 		/// @brief Verify protocol pointer.
 		/// @param protocol Pointer to protocol to confirm.

@@ -65,45 +65,8 @@
 		Client::Client(const XML::Node &node) : Client(node.attribute("src").as_string()) {
 		}
 
-		Client::Client(const URL &url, bool load) {
-
-			// Find a protocol handler for this URL.
-			const Protocol * protocol = Protocol::find(url, true, load);
-			if(!protocol) {
-				throw runtime_error(string{"Cant find a protocol handler for "} + url);
-			}
-
-			worker = protocol->WorkerFactory();
-			if(worker) {
-				worker->url(url);
-				return;
-			}
-
-			//
-			// The protocol was unable to create a worker, use a proxy to the 'old' API.
-			//
-			protocol->warning() << "No worker factory (old version?) using proxy worker" << endl;
-
-			class Proxy : public Protocol::Worker {
-			public:
-				Proxy(const URL &url) : Protocol::Worker(url) {
-				}
-
-				virtual ~Proxy() {
-				}
-
-				String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
-					return Udjat::Protocol::call(url().c_str(),method(),out.payload.c_str());
-				}
-
-				bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress), bool UDJAT_UNUSED(replace)) override {
-					throw runtime_error("The selected protocol is unable to save files");
-				}
-
-			};
-
-			worker = make_shared<Proxy>(url);
-
+		Client::Client(const URL &url, bool load) : worker{Protocol::WorkerFactory(url.c_str(),true,load)} {
+			worker->url(url);
 		}
 
 		String Client::get(const std::function<bool(double current, double total)> &progress) {
