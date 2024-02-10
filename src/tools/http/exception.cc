@@ -63,7 +63,7 @@
 
 	int HTTP::Exception::syscode(unsigned int httpcode) noexcept {
 		for(const auto &code : syscodes) {
-			if(code.http == httpcode) {
+			if((unsigned int) code.http == httpcode) {
 				return code.syscode;
 			}
 		}
@@ -74,6 +74,7 @@
 		return code(except.code().value());
 	}
 
+	/*
 	static int toSysError(unsigned int http) {
 
 		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
@@ -84,7 +85,9 @@
 
 		return -1;
 	}
+	*/
 
+	/*
 	static string toSysMessage(unsigned int http) {
 
 		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
@@ -95,6 +98,7 @@
 
 		return string{"HTTP error " + to_string(http)};
 	}
+	*/
 
 	HTTP::Exception::Exception(unsigned int hc)
 		: Udjat::Exception{syscode(hc)}, http_code{hc} {

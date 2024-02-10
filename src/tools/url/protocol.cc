@@ -23,9 +23,13 @@
  #include <sys/stat.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/worker.h>
  #include <udjat/module/info.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
+ #include <udjat/tools/report.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -127,19 +131,93 @@
 			name.resize(pos);
 		}
 
-		const Protocol * protocol = Protocol::find(name.c_str());
-		if(!protocol) {
-			throw runtime_error(string{"Cant find a protocol handler for "} + url);
+		// First, check for registered protocol.
+		{
+			const Protocol * protocol = Protocol::find(name.c_str());
+			if(protocol) {
+
+				auto worker = protocol->WorkerFactory();
+				if(!worker) {
+					throw runtime_error(String{"Cant create protocol worker for ",url});
+				}
+
+				worker->url(url);
+				return worker;
+			}
 		}
 
-		auto worker = protocol->WorkerFactory();
-		if(!worker) {
-			throw runtime_error(string{"Cant create protocol worker for "} + url);
+		// Second, check for worker.
+		{
+			const Udjat::Worker *worker = nullptr;
+
+			Udjat::Worker::for_each([&worker,name](const Udjat::Worker &w){
+
+				if(w == name.c_str()) {
+					worker = &w;
+					return true;
+				}
+				return false;
+
+			});
+
+			if(worker) {
+
+				// Got worker for url, check if it can be used.
+
+				/// @brief Proxy forwarding URL requests to worker.
+				class Proxy : public Protocol::Worker {
+				private:
+					const Udjat::Worker *worker;
+					Udjat::Request request;
+					Udjat::Worker::ResponseType type;
+					MimeType mime = MimeType::json;
+
+				public:
+					Proxy(const Udjat::Worker *w, const char *path)
+						: worker{w}, request{path ? path+4 : ""}, type{worker->probe(request)} {
+						if(type == Udjat::Worker::None) {
+							throw runtime_error("Cant handle url");
+						}
+					}
+
+					int mimetype(const MimeType type) override {
+						mime = type;
+						return 0;
+					}
+
+					String get(const std::function<bool(double current, double total)> &progress) override {
+
+						progress(0,0);
+
+						String str;
+						if(type == Udjat::Worker::Table) {
+
+							throw system_error(ENOTSUP,system_category(),"Cant handle worker response type (yet)");
+
+						} else {
+
+							Response::Value response{mime};
+							if(worker->get(request,response)) {
+								str = response.to_string();
+							}
+
+						}
+
+						progress(str.size(),str.size());
+						return str;
+					}
+
+
+				};
+
+				return make_shared<Proxy>(worker,strstr(url,":///"));
+
+			}
+
 		}
 
-		worker->url(url);
+		throw runtime_error(String{"Cant find a protocol handler for ",url});
 
-		return worker;
 	}
 
 	/// @brief Create a worker for this protocol.

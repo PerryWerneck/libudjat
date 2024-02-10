@@ -84,13 +84,6 @@ namespace Udjat {
 		/// @return The response type for this request.
 		virtual ResponseType probe(const Request &request) const noexcept;
 
-		/// @brief Test if the request can run on this worker.
-		/// @param request The request.
-		/// @param response The response.
-		/// @return True if the request was fullfiled, false if not.
-		// virtual bool exec(Request &request, Response::Value &response) const;
-		// virtual bool exec(Request &request, Response::Table &response) const;
-
 		/// @brief Get worker introspection.
 		/// @param value The object for worker introspection.
 		/// @return true if the value was updated.
