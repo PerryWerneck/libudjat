@@ -76,14 +76,6 @@
 
 	const Protocol * Protocol::Controller::find(const char *name, bool allow_default, bool autoload) {
 
-		{
-			/// @brief Singleton for file protocol.
-			static File file;
-#ifndef _WIN32
-			static Script script;
-#endif // !_WIN32
-		}
-
 		debug("Searching for protocol '",name,"'");
 
 		{

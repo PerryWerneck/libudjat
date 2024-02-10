@@ -141,14 +141,15 @@ int main(int argc, char **argv) {
 	}
 	*/
 
-	/*
 	MainLoop::getInstance().TimerFactory(1000,[]{
 		debug("---------------------------------------------------------------------");
-		SubProcess{"test","ls -l",Logger::Warning}.run();
+		// SubProcess{"test","ls -l",Logger::Warning}.run();
+
+		cout << URL{"agent:///intvalue"}.get() << endl;
+
 		debug("---------------------------------------------------------------------");
 		return false;
 	});
-	*/
 
 
 	//DummyProtocol protocol;

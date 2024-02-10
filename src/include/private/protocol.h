@@ -25,17 +25,27 @@
  #include <mutex>
  #include <list>
 
- /*
- #include <udjat/tools/url.h>
- #include <iostream>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/factory.h>
- #include <udjat/tools/request.h>
- */
-
  using namespace std;
 
  namespace Udjat {
+
+	/*
+	/// @brief Internal protocol for file://
+	class Protocol::File : public Udjat::Protocol {
+	public:
+		File();
+		virtual ~File();
+
+		String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
+
+		std::shared_ptr<Protocol::Worker> WorkerFactory() const;
+
+		static File & getInstance();
+
+	};
+
+	/// @brief Internal protocol for script://
+	*/
 
 	class Protocol::Controller {
 	private:
@@ -47,28 +57,6 @@
 		Protocol * def = nullptr;
 
 		Controller();
-
-		/// @brief Internal protocol for file://
-		class File : public Udjat::Protocol {
-		public:
-			File();
-			virtual ~File();
-
-			String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
-
-			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
-
-		};
-
-		/// @brief Internal protocol for script://
-		class Script : public Udjat::Protocol {
-		public:
-			Script();
-			virtual ~Script();
-
-			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
-
-		};
 
 	public:
 

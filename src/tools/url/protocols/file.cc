@@ -32,19 +32,13 @@
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo { N_( "Local file protocol" ) };
+	Protocol & Protocol::FileHandlerFactory() {
 
-	Protocol::Controller::File::File() : Udjat::Protocol((const char *) "file",moduleinfo) {
-	}
+		static const ModuleInfo moduleinfo { N_( "File protocol" ) };
 
-	Protocol::Controller::File::~File() {
-	}
-
-	std::shared_ptr<Protocol::Worker> Protocol::Controller::File::WorkerFactory() const {
-
-		class Worker : public Protocol::Worker {
+		class FileWorker : public Protocol::Worker {
 		public:
-			Worker() = default;
+			FileWorker() = default;
 
 			string path() const {
 
@@ -106,14 +100,30 @@
 
 		};
 
-		return make_shared<Worker>();
-	}
+		class Handler : public Udjat::Protocol {
+		public:
+			Handler() : Udjat::Protocol((const char *) "file",moduleinfo) {
+			}
 
-	String Protocol::Controller::File::call(const URL &url, const HTTP::Method method, const char UDJAT_UNUSED(*payload)) const {
-		if(method != HTTP::Get) {
-			throw system_error(EINVAL,system_category(),"Invalid request method");
-		}
-		return String(Udjat::File::Text(url.ComponentsFactory().path.c_str()).c_str());
+			~Handler() {
+			}
+
+			String call(const URL &url, const HTTP::Method method, const char *) const override {
+				if(method != HTTP::Get) {
+					throw system_error(EINVAL,system_category(),"Invalid request method");
+				}
+				return String(Udjat::File::Text(url.ComponentsFactory().path.c_str()).c_str());
+			}
+
+			std::shared_ptr<Protocol::Worker> WorkerFactory() const {
+				return make_shared<FileWorker>();
+			}
+
+		};
+
+		static Handler instance;
+		return instance;
+
 	}
 
  }

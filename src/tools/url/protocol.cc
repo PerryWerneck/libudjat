@@ -131,7 +131,9 @@
 			name.resize(pos);
 		}
 
-		// First, check for registered protocol.
+		debug("Searching for protocol '",name.c_str(),"'");
+
+		// 1 - check for registered protocol.
 		{
 			const Protocol * protocol = Protocol::find(name.c_str());
 			if(protocol) {
@@ -146,11 +148,38 @@
 			}
 		}
 
-		// Second, check for worker.
+		// 2 - Check for internal protocols.
+		if(!strcasecmp(name.c_str(),"file")) {
+
+			auto worker = Protocol::FileHandlerFactory().WorkerFactory();
+			if(!worker) {
+				throw runtime_error(String{"Cant create file worker for ",url});
+			}
+
+			worker->url(url);
+			return worker;
+
+		}
+
+		if(!strcasecmp(name.c_str(),"script")) {
+
+			auto worker = Protocol::ScriptHandlerFactory().WorkerFactory();
+			if(!worker) {
+				throw runtime_error(String{"Cant create script worker for ",url});
+			}
+
+			worker->url(url);
+			return worker;
+
+		}
+
+		// 3 - check for worker.
 		{
 			const Udjat::Worker *worker = nullptr;
 
 			Udjat::Worker::for_each([&worker,name](const Udjat::Worker &w){
+
+				cout << "---> " << w.c_str() << " - " <<name.c_str() << endl;
 
 				if(w == name.c_str()) {
 					worker = &w;

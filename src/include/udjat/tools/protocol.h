@@ -50,6 +50,12 @@
 
 	public:
 
+		/// @brief Get handler for file:///
+		static Protocol & FileHandlerFactory();
+
+		/// @brief Get handler for script:///
+		static Protocol & ScriptHandlerFactory();
+
 		/// @brief Protocol watched.
 		class UDJAT_API Watcher {
 		private:
