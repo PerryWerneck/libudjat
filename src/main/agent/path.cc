@@ -33,9 +33,34 @@
 	bool getFromPath(const Abstract::Agent &agent, const char *path, T &value) {
 
 		if(!(path && *path)) {
+			debug("Got agent '",agent.name(),"', asking for properties");
 			return agent.get(value);
 		}
 
+		if(*path == '/') {
+			path++;
+		}
+
+		size_t len;
+		const char *next = strchr(path,'/');
+		if(next) {
+			len = path-next;
+			next++;
+		} else {
+			len = strlen(path);
+			next = "";
+		}
+
+		debug("Searching for child '",string{path,len}.c_str(),"' on agent '",agent.name(),"'");
+
+		for(auto child : agent) {
+			if(!strncasecmp(path,child->name(),len)) {
+				debug("Found child '",child->name(),"' (next='",next,"')");
+				return child->getProperties(next,value);
+			}
+		}
+
+		/*
 		const char *name = path;
 		size_t len;
 
@@ -58,6 +83,8 @@
 		}
 
 		debug("Cant find child '",string{name,len}.c_str(),"'");
+		*/
+
 		return false;
 	}
 

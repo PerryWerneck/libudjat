@@ -62,31 +62,32 @@ namespace Udjat {
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
 
 		if(root && root->parent) {
-			throw system_error(EINVAL,system_category(),"Child agent cant be set as root");
+			throw logic_error("Child agent cant be promoted to root");
+		}
+
+		if(this->root) {
+			Logger::String{
+				"Root gent ",
+				std::to_string((unsigned long long) ((void *) this->root.get())),
+				" was demoted"
+			}.trace(this->root->name());
 		}
 
 		if(!root) {
 
-			if(this->root) {
-				cout << "agent\tRemoving root agent '"
-						<< this->root->name()
-						<< "' (" << hex << ((void *) this->root.get()) << dec << ")"
-						<< endl;
-				this->root.reset();
-			}
-			return;
+			this->root.reset();
+
+		} else {
+
+			this->root = root;
+
+			Logger::String{
+				"Agent ",
+				std::to_string((unsigned long long) ((void *) root.get())),
+				" was promoted to root"
+			}.trace(root->name());
+
 		}
-
-		this->root = root;
-
-		Logger::String{
-			"Agent ",
-			std::to_string((unsigned long long) ((void *) root.get())),
-			" was promoted to root"
-		}.trace(root->name());
-
-//		this->root->info()
-//				<< "Agent " << hex << ((void *) root.get() ) << dec << " was promoted to root" << endl;
 
 	}
 
@@ -100,16 +101,36 @@ namespace Udjat {
 	}
 
 	Worker::ResponseType Abstract::Agent::Controller::probe(const Request &request) const noexcept {
-		return Worker::probe(request,Worker::ResponseType::Both);
+
+		// Get request path.
+		const char *path = request.path();
+		if(*path == '/')
+			path++;
+
+		if(!strncasecmp(path,"agent/",6)) {
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,Worker::c_str());
+			}
+			return Worker::ResponseType::Both;
+		}
+
+		debug("probing agent path='",path,"'");
+
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,Worker::c_str());
+		}
+
+		return Worker::ResponseType::Both;
 	}
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
+		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',value) ]----------------------");
 		return root->getProperties(request.path(),response);
 	}
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
 
-		debug("-[ GET('",request.path(),"',table) ]----------------------");
+		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',table) ]----------------------");
 
 		auto agent = find(request.path());
 		if(!agent){

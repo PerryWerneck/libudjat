@@ -209,7 +209,7 @@
 	}
 
 	Value & Value::operator[](const char *) {
-		throw system_error(ENOTSUP,system_category(),_("Cant get itens on this value"));
+		throw system_error(ENOTSUP,system_category(),_("Abstract value is unable to handle items"));
 	}
 
 	const Value & Value::operator[](const Value::Type type) const {
