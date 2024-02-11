@@ -2,14 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# Perry Werneck <perry.werneck@gmail.com>, 2022-2023.
+# Perry Werneck <perry.werneck@gmail.com>, 2022-2024.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-24 19:22-0300\n"
-"PO-Revision-Date: 2023-11-30 13:22-0300\n"
+"POT-Creation-Date: 2024-02-11 09:48-0300\n"
+"PO-Revision-Date: 2024-02-11 09:55-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -20,7 +20,35 @@ msgstr ""
 "X-Poedit-Country: BRAZIL\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
-"X-Generator: Gtranslator 40.0\n"
+"X-Generator: Gtranslator 41.0\n"
+
+#: src/tools/os/windows/systemservice.cc:50
+msgid "\t\tBlock access to 'net stop' on this request"
+msgstr "\t\tBloquear acesso a 'net stop' no serviço"
+
+#: src/tools/os/windows/systemservice.cc:47
+msgid "\t\tInstall service"
+msgstr "\t\tInstalar serviço"
+
+#: src/tools/os/windows/systemservice.cc:49
+msgid "\t\tReinstall service"
+msgstr "\t\tReinstalar serviço"
+
+#: src/tools/os/windows/systemservice.cc:45
+msgid "\t\tStart service"
+msgstr "\t\tIniciar serviço"
+
+#: src/tools/os/windows/systemservice.cc:46
+msgid "\t\tStop service"
+msgstr "\t\tParar serviço"
+
+#: src/tools/os/windows/systemservice.cc:48
+msgid "\t\tUninstall service"
+msgstr "\t\tDesinstalar serviço"
+
+#: src/tools/value/abstract.cc:212
+msgid "Abstract value is unable to handle items"
+msgstr "Valor abstrato não consegue manipular items"
 
 #: src/main/agent/controller.cc:48
 msgid "Agent controller"
@@ -46,15 +74,19 @@ msgstr "Requisição inválida"
 msgid "Bad gateway"
 msgstr "Gateway inválido"
 
+#: src/tools/value/abstract.cc:248
+msgid "Cant find child '{}'"
+msgstr "Não encontrei elemento '{}'"
+
 #: src/tools/os/windows/exception.cc:57
 msgid "Cant resolve hostname"
 msgstr "Não foi possivel resolver nome do host"
 
-#: src/tools/script.cc:172
+#: src/tools/script.cc:157
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
-#: src/tools/script.cc:166
+#: src/tools/script.cc:151
 msgid "Cant set subprocess user id"
 msgstr "Incapaz de definir o usuário do subprocesso"
 
@@ -62,13 +94,17 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 msgid "Client error"
 msgstr "Erro de cliente"
 
-#: src/main/agent/controller.cc:98
+#: src/main/agent/controller.cc:99
 msgid "Core/Module subsystem failed to initialize"
 msgstr "Inicialização do módulo principal falhou"
 
 #: src/main/agent/state.cc:145
 msgid "Error activating state"
 msgstr "Erro ao ativar estado"
+
+#: src/tools/url/protocols/file.cc:37
+msgid "File protocol"
+msgstr "Protocolo de arquivo"
 
 #: src/tools/http/error.cc:103
 msgid "Forbidden"
@@ -86,7 +122,7 @@ msgstr ""
 msgid "HTTP Version Not Supported"
 msgstr "Versão HTTP não suportada"
 
-#: src/main/module/module.cc:132
+#: src/main/module/module.cc:137
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
@@ -102,19 +138,19 @@ msgstr "Erro interno"
 msgid "Invalid property"
 msgstr "Propriedade inválida"
 
-#: src/tools/timestamp.cc:74
+#: src/main/worker/worker.cc:52
+msgid "Invalid response type"
+msgstr "Resposta de tipo inválido"
+
+#: src/tools/timestamp.cc:89
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
 
-#: src/tools/url/protocols/file.cc:35
-msgid "Local file protocol"
-msgstr "Protocol de arquivo local"
-
-#: src/main/module/module.cc:116
+#: src/main/module/module.cc:121
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:90
+#: src/main/agent/root.cc:91
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -134,6 +170,11 @@ msgstr "Não encontrado"
 msgid "Ok"
 msgstr "Ok"
 
+#: src/tools/exception.cc:45 src/tools/exception.cc:49
+#: src/tools/exception.cc:53
+msgid "Operation has failed"
+msgstr "Operação falhou"
+
 #: src/tools/http/error.cc:117
 msgid "Proxy Authentication Required"
 msgstr "Proxy exige autenticação"
@@ -145,6 +186,10 @@ msgstr "Redirecionado"
 #: src/tools/http/error.cc:124
 msgid "Request Timeout"
 msgstr "Tempo da requisição esgotado"
+
+#: src/tools/xml/attribute.cc:81
+msgid "Required attribute '{}' is missing"
+msgstr "Atributo necessário '{}' não foi encontrado"
 
 #: src/tools/http/error.cc:198
 msgid "Server error"
@@ -159,15 +204,19 @@ msgid ""
 "Something is making your server work too hard, and it just can’t keep up"
 msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 
-#: src/tools/url/protocols/script.cc:36
+#: src/tools/url/protocols/script.cc:39
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
+
+#: src/tools/exception.cc:61
+msgid "System Error"
+msgstr "Erro de sistema"
 
 #: src/tools/systemservice.cc:137
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:133 src/main/agent/root.cc:90
+#: src/tools/systemservice.cc:133 src/main/agent/root.cc:91
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -191,7 +240,7 @@ msgstr ""
 msgid "The client must first authenticate itself with the proxy."
 msgstr "O cliente deve primeiro autenticar no proxy"
 
-#: src/tools/message.cc:47
+#: src/tools/message.cc:48
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
@@ -228,7 +277,7 @@ msgid ""
 msgstr ""
 "O recurso pedido não foi encontrado mas pode ficar disponível no futuro."
 
-#: src/tools/script.cc:119
+#: src/tools/script.cc:48 src/tools/script.cc:132
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
 
@@ -280,9 +329,29 @@ msgstr "A requisição não tem argumentos"
 msgid "Too many requests"
 msgstr "Muitas requisições"
 
+#: src/tools/value/abstract.cc:255
+msgid "Unable to append '{}' on abstract value"
+msgstr "Incapaz de adicionar '{}' em um valor abstrato"
+
+#: src/main/alert/factory.cc:148
+msgid "Unable to create alert for node <{}>"
+msgstr "Incapaz de criar alerta para o nó <{}>"
+
+#: src/main/alert/factory.cc:64
+msgid "Unable to determine alert type for node <{}>"
+msgstr "Incapaz de determinar o tipo de alerta para o nó <{}>"
+
+#: src/main/alert/factory.cc:107
+msgid "Unable to determine internal alert type for node <{}>"
+msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
+
 #: src/tools/object.cc:193
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#: src/tools/value/abstract.cc:259
+msgid "Unable to set '{}' as '{}' on abstract value"
+msgstr "Incapaz de setar '{}' como '{}' em um valor abstrato"
 
 #: src/tools/application/run.cc:120 src/tools/application/run.cc:124
 msgid "Unable to set environment variable"
@@ -308,91 +377,91 @@ msgstr "Usage:\t{} [opções]"
 msgid "\\StringFileInfo\\080904B0\\FileDescription"
 msgstr "\\StringFileInfo\\041604B0\\FileDescription"
 
-#: src/tools/timestamp.cc:101 src/tools/timestamp.cc:220
+#: src/tools/timestamp.cc:116 src/tools/timestamp.cc:235
 msgid "day"
 msgstr "dia"
 
-#: src/tools/timestamp.cc:101 src/tools/timestamp.cc:220
+#: src/tools/timestamp.cc:116 src/tools/timestamp.cc:235
 msgid "days"
 msgstr "dias"
 
-#: src/main/agent/agent.cc:241 src/tools/string/string.cc:353
+#: src/main/agent/agent.cc:241
 msgid "default"
 msgstr "padrão"
 
-#: src/tools/string/string.cc:325
+#: src/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
 
-#: src/tools/timestamp.cc:103 src/tools/timestamp.cc:219
+#: src/tools/timestamp.cc:118 src/tools/timestamp.cc:234
 msgid "hour"
 msgstr "hora"
 
-#: src/tools/timestamp.cc:103 src/tools/timestamp.cc:219
+#: src/tools/timestamp.cc:118 src/tools/timestamp.cc:234
 msgid "hours"
 msgstr "horas"
 
-#: src/tools/timestamp.cc:105 src/tools/timestamp.cc:218
+#: src/tools/timestamp.cc:120 src/tools/timestamp.cc:233
 msgid "minute"
 msgstr "minuto"
 
-#: src/tools/timestamp.cc:105 src/tools/timestamp.cc:218
+#: src/tools/timestamp.cc:120 src/tools/timestamp.cc:233
 msgid "minutes"
 msgstr "minutos"
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:324
+#: src/tools/converters.cc:47 src/tools/string/string.cc:61
 msgid "no"
 msgstr "não"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:326
+#: src/tools/converters.cc:49 src/main/state/state.cc:296
 msgid "off"
 msgstr "desligado"
 
-#: src/main/state/state.cc:289 src/tools/string/string.cc:319
+#: src/tools/converters.cc:42 src/main/state/state.cc:296
 msgid "on"
 msgstr "ligado"
 
-#: src/tools/timestamp.cc:217
+#: src/tools/timestamp.cc:232
 msgid "second"
 msgstr "segundo"
 
-#: src/tools/timestamp.cc:217
+#: src/tools/timestamp.cc:232
 msgid "seconds"
 msgstr "segundos"
 
-#: src/tools/string/string.cc:318
+#: src/tools/converters.cc:41
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/string/string.cc:41 src/tools/string/string.cc:317
+#: src/tools/converters.cc:40 src/tools/string/string.cc:61
 msgid "yes"
 msgstr "sim"
 
-#: src/tools/timestamp.cc:87
+#: src/tools/timestamp.cc:102
 msgid "{d} {D}"
 msgstr "{d} {D}"
 
-#: src/tools/timestamp.cc:89
+#: src/tools/timestamp.cc:104
 msgid "{d} {D} and {h} {H}"
 msgstr "{d} {D} e {h} {H}"
 
-#: src/tools/timestamp.cc:91
+#: src/tools/timestamp.cc:106
 msgid "{d} {D} and {m} {M}"
 msgstr "{d} {D} e {m} {M}"
 
-#: src/tools/timestamp.cc:93
+#: src/tools/timestamp.cc:108
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr "{d} {D}, {h} {H} e {m} {M}"
 
-#: src/tools/timestamp.cc:88
+#: src/tools/timestamp.cc:103
 msgid "{h} {H}"
 msgstr "{h} {H}"
 
-#: src/tools/timestamp.cc:92
+#: src/tools/timestamp.cc:107
 msgid "{h} {H} and {m} {M}"
 msgstr "{h} {H} e {m} {M}"
 
-#: src/tools/timestamp.cc:90
+#: src/tools/timestamp.cc:105
 msgid "{m} {M}"
 msgstr "{m} {M}"
 
@@ -419,9 +488,6 @@ msgstr "{m} {M}"
 
 #~ msgid "No reports on this path"
 #~ msgstr "Nenhum relatório no caminho informado"
-
-#~ msgid "Reconfiguration has failed: "
-#~ msgstr "Reconfiguração falhou:"
 
 #~ msgid "System is configured"
 #~ msgstr "Sistema está configurado"

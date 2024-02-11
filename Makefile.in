@@ -402,6 +402,13 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat/tools/abstract
 
 	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/response
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/tools/response/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/response
+
+	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(INSTALL_DATA) \
