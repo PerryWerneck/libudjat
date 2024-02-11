@@ -27,7 +27,7 @@
 	#include <unistd.h>
  #endif // _WIN32
 
- #include <udjat/tools/factory.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
@@ -141,9 +141,32 @@
 						try {
 							URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
 
-							if(!sysid.empty() && Protocol::find(sysid)) {
+							if(!sysid.empty()) {
+								const Module *module = Module::find(sysid.scheme().c_str());
+								if(module) {
+									std::string value;
+
+									try {
+
+										module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
+										Object::properties.summary = Quark(value.c_str()).c_str();
+
+									} catch(const std::exception &e) {
+
+										Logger::String{e.what()}.warning(name);
+
+									}
+
+
+								}
+
+							}
+
+							/*
+							if(!sysid.empty() && Protocol::find(sysid,false)) {
 								Object::properties.summary = Quark(sysid.get()).c_str();
 							}
+							*/
 
 						} catch(const std::exception &e) {
 

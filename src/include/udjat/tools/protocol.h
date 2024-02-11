@@ -375,7 +375,7 @@
 		/// @param allow_default If true returns the default protocol when not found.
 		/// @param autoload If true tries to load a module using the protocol name.
 		/// @return Pointer to selected protocol or nullptr.
-		// static const Protocol * find(const URL &url, bool allow_default = true, bool autoload = false);
+		static const Protocol * find(const URL &url, bool allow_default = true, bool autoload = false);
 
 		/// @brief Find protocol based on protocol name.
 		/// @param url The url to search for.
