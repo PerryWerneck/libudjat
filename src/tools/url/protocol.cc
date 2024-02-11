@@ -28,8 +28,9 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/request.h>
- #include <udjat/tools/response.h>
- #include <udjat/tools/report.h>
+ #include <udjat/tools/response/value.h>
+ #include <udjat/tools/response/table.h>
+ #include <udjat/tools/response/object.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -239,7 +240,7 @@
 
 						} else {
 
-							Response::Value response{mime};
+							Response::Object response;
 							if(worker->get(request,response)) {
 								str = response.to_string();
 							}

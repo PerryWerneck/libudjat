@@ -21,7 +21,7 @@
  #include <private/request.h>
  #include <udjat/tools/abstract/response.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/report.h>
+ #include <udjat/tools/response/table.h>
  #include <cstdarg>
  #include <iomanip>
  #include <sstream>

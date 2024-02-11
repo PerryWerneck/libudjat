@@ -23,8 +23,8 @@
  #include <udjat/tools/method.h>
  #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/request.h>
- #include <udjat/tools/response.h>
- #include <udjat/tools/report.h>
+ #include <udjat/tools/response/value.h>
+ #include <udjat/tools/response/table.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
 

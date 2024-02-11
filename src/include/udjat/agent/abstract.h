@@ -22,11 +22,11 @@
  #include <udjat/tools/parse.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
- #include <udjat/tools/report.h>
+ #include <udjat/tools/response/table.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/tools/report.h>
+ #include <udjat/tools/response/table.h>
  #include <mutex>
  #include <list>
  #include <cstdint>

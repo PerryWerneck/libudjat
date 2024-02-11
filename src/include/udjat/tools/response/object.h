@@ -21,27 +21,36 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/abstract/response.h>
+ #include <udjat/tools/response/value.h>
  #include <udjat/tools/value.h>
- #include <stdexcept>
+ #include <map>
 
  namespace Udjat {
 
  	namespace Response {
 
-		class UDJAT_API Value : public Abstract::Response, public Udjat::Value {
+		/// @brief Object response.
+		class UDJAT_API Object : public Value {
+		private:
+
+			class Value;
+			Udjat::Value::Type type = Udjat::Value::Object;
+			std::map<std::string,Value> children;
+
 		public:
-			Value(const MimeType mimetype = MimeType::custom) : Abstract::Response{mimetype} {
-			}
+			Object(const MimeType mimetype = MimeType::json);
+			virtual ~Object();
 
-			operator Value::Type() const noexcept override;
+			operator Type() const noexcept override;
 
-			bool isNull() const override;
+			bool empty() const noexcept override;
+
+			bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override;
+			Udjat::Value & operator[](const char *name) override;
+
+			Udjat::Value & append(const Udjat::Value::Type type = Udjat::Value::Object) override;
 			Udjat::Value & reset(const Udjat::Value::Type type) override;
-			Udjat::Value & set(const Udjat::Value &value) override;
-
-			void serialize(std::ostream &out) const override;
-
-			std::string to_string() const noexcept override;
+			Udjat::Value & set(const char *value, const Type type = String) override;
 
 		};
 
@@ -49,14 +58,3 @@
 
  }
 
- namespace std {
-
-	inline string to_string(const Udjat::Response::Value &response) noexcept {
-		return response.to_string();
-	}
-
-	inline ostream & operator<< (ostream& os, const Udjat::Response::Value &response) {
-		return os << response.to_string();
-	}
-
- }

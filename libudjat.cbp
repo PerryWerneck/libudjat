@@ -212,6 +212,9 @@
 		<Unit filename="src/include/udjat/tools/report.h" />
 		<Unit filename="src/include/udjat/tools/request.h" />
 		<Unit filename="src/include/udjat/tools/response.h" />
+		<Unit filename="src/include/udjat/tools/response/object.h" />
+		<Unit filename="src/include/udjat/tools/response/table.h" />
+		<Unit filename="src/include/udjat/tools/response/value.h" />
 		<Unit filename="src/include/udjat/tools/script.h" />
 		<Unit filename="src/include/udjat/tools/service.h" />
 		<Unit filename="src/include/udjat/tools/singleton.h" />
@@ -300,6 +303,7 @@
 		<Unit filename="src/main/request/report.cc" />
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
+		<Unit filename="src/main/request/responseobject.cc" />
 		<Unit filename="src/main/service/private.h" />
 		<Unit filename="src/main/state/child.cc" />
 		<Unit filename="src/main/state/level.cc" />

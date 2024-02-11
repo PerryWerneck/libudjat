@@ -22,7 +22,7 @@
  #include <private/request.h>
  #include <udjat/tools/abstract/response.h>
  #include <udjat/tools/http/timestamp.h>
- #include <udjat/tools/response.h>
+ #include <udjat/tools/response/value.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/string.h>
@@ -88,6 +88,62 @@
 		return "";
 	}
 
+	/*
+	std::shared_ptr<Response::Value> Response::Value::Factory(Udjat::MimeType mimetype) {
+
+		class UDJAT_API Value : public Udjat::Response::Value {
+		private:
+
+			class Child : public Udjat::Value {
+			};
+
+			Value::Type type = Value::Object;
+			std::map<std::string,Child> children;
+
+		public:
+			Value(Udjat::MimeType mimetype) : Response::Value{mimetype} {
+			}
+
+			bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override {
+				for(const auto& [name, value] : children)	{
+					if(call(name.c_str(),(Udjat::Value &) value)) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			Udjat::Value & operator[](const char *name) override {
+				return children[name];
+			}
+
+			Udjat::Value & append(const Type type) override {
+				reset(Value::Array);
+				return children[std::to_string((int) children.size()).c_str()];
+			}
+
+			Udjat::Value & reset(const Udjat::Value::Type type) override {
+				if(type != Value::Array && type != Value::Object) {
+					throw runtime_error(Logger::String{"Cant handle '",std::to_string(type),"' at this level"});
+				}
+
+				if(type != this->type) {
+					debug("Response reset to '",std::to_string(type),"'");
+
+					this->type = type;
+					children.clear();
+				}
+				return *this;
+			}
+
+			Udjat::Value & set(const char *value, const Type type = String) override {
+			}
+
+		}
+
+		return make_shared<Value>(mimetype);
+	}
+	*/
 
  }
 

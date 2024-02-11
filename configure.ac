@@ -122,7 +122,6 @@ case "$host" in
 
  	*)
 		CFLAGS="$CFLAGS -pthread -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
-		CXXFLAGS="$CXXFLAGS -ffat-lto-objects -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
 		LDFLAGS="$LDFLAGS -pthread"
 		LIBS="$LIBS -ldl"
 		AC_SUBST(LIBEXT,.so)
@@ -224,7 +223,7 @@ AS_IF([test x"AS_VAR_GET(CACHEVAR)" = xyes],
 AS_VAR_POPDEF([CACHEVAR])dnl
 ])dnl AX_CHECK_COMPILE_FLAGS
 
-AX_CHECK_COMPILE_FLAG([-std=c++1z], [CPPFLAGS="$CPPFLAGS -std=c++1z"], [AC_MSG_ERROR(["C++ 17 is required"])])
+AX_CHECK_COMPILE_FLAG([-std=c++1z], [CLAGS="$CFLAGS -std=c++1z"], [AC_MSG_ERROR(["C++ 17 is required"])])
 
 dnl ---------------------------------------------------------------------------
 dnl Set the ELF symbol visibility support
