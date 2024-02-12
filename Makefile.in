@@ -135,9 +135,7 @@ DEPENDS= \
 	src/include/udjat/tools/*.h
 
 CFLAGS= \
-	@CXXFLAGS@ \
-	-fPIC \
-	-Isrc/include \
+	@CPPFLAGS@ \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	-DLIBDIR=$(libdir) \
 	-DLOCALEDIR=$(localedir) \

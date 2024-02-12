@@ -99,13 +99,13 @@ dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
 dnl ---------------------------------------------------------------------------
 
-CFLAGS="$CFLAGS -I$ac_pwd/src/include"
+CPPFLAGS="$CPPFLAGS -I$ac_pwd/src/include"
 OPTIONAL_MODULES=""
 
 case "$host" in
 	*-mingw32|*-pc-msys)
 		# https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt?view=msvc-170
-		CFLAGS="$CFLAGS -pthread"
+		CPPFLAGS="$CPPFLAGS -pthread"
 		LDFLAGS="$LDFLAGS -pthread -Wl,--output-def,\$(@D)/\$(PACKAGE_NAME).def"
 		LIBS="$LIBS -lintl -lshlwapi -lws2_32 -lwtsapi32 -lole32 -loleaut32 -luuid -liphlpapi -lversion -lnetshell -lpathcch"		
 		AC_SUBST(LIBEXT,.dll)
@@ -121,7 +121,7 @@ case "$host" in
 		;;
 
  	*)
-		CFLAGS="$CFLAGS -pthread -ffat-lto-objects -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
+		CPPFLAGS="$CPPFLAGS -pthread -ffat-lto-objects -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
 		LDFLAGS="$LDFLAGS -pthread"
 		LIBS="$LIBS -ldl"
 		AC_SUBST(LIBEXT,.so)
@@ -223,7 +223,7 @@ AS_IF([test x"AS_VAR_GET(CACHEVAR)" = xyes],
 AS_VAR_POPDEF([CACHEVAR])dnl
 ])dnl AX_CHECK_COMPILE_FLAGS
 
-AX_CHECK_COMPILE_FLAG([-std=c++1z], [CLAGS="$CFLAGS -std=c++1z"], [AC_MSG_ERROR(["C++ 17 is required"])])
+AX_CHECK_COMPILE_FLAG([-std=c++1z], [CLAGS="$CPPFLAGS -std=c++1z"], [AC_MSG_ERROR(["C++ 17 is required"])])
 
 dnl ---------------------------------------------------------------------------
 dnl Set the ELF symbol visibility support
@@ -241,7 +241,7 @@ AC_RUN_IFELSE([AC_LANG_SOURCE([[int main() { return 0; }]])],[app_cv_fvisibility
 CC="$ac_save_cc"])
 AC_MSG_RESULT($app_cv_fvisibility_ok)
 if test $app_cv_fvisibility_ok = yes; then
-  CFLAGS="$CFLAGS -fvisibility=hidden"
+  CPPFLAGS="$CPPFLAGS -fvisibility=hidden"
 fi
 
 dnl ---------------------------------------------------------------------------
@@ -268,7 +268,7 @@ AC_ARG_ENABLE([pic],
 ])
 
 if test "$app_cv_pic" == "yes"; then
-	CFLAGS="$CFLAGS -fPIC"
+	CPPFLAGS="$CPPFLAGS -fPIC"
 fi
 
 dnl ---------------------------------------------------------------------------
