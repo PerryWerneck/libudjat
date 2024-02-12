@@ -146,16 +146,8 @@
 								if(module) {
 									std::string value;
 
-									try {
-
-										module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
-										Object::properties.summary = Quark(value.c_str()).c_str();
-
-									} catch(const std::exception &e) {
-
-										Logger::String{e.what()}.warning(name);
-
-									}
+									module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
+									Object::properties.summary = Quark(value.c_str()).c_str();
 
 
 								}
@@ -170,7 +162,7 @@
 
 						} catch(const std::exception &e) {
 
-							clog << Object::name() << "\t" << e.what() << endl;
+							Logger::String{e.what()}.warning(Object::name());
 
 						}
 

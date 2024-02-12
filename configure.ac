@@ -121,7 +121,7 @@ case "$host" in
 		;;
 
  	*)
-		CFLAGS="$CFLAGS -pthread -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
+		CFLAGS="$CFLAGS -pthread -ffat-lto-objects -DLIBDIR=\"\$(libdir)\" -DDATADIR=\"\$(datarootdir)\""
 		LDFLAGS="$LDFLAGS -pthread"
 		LIBS="$LIBS -ldl"
 		AC_SUBST(LIBEXT,.so)
