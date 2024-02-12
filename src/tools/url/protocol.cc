@@ -349,6 +349,10 @@
 		return worker->get();
 	}
 
+	bool Protocol::call(const URL &, Udjat::Value &, const HTTP::Method, const char *) const {
+		return false;
+	}
+
 	String Protocol::call(const URL &url, const char *method, const char *payload) const {
 		return call(url,HTTP::MethodFactory(method), payload);
 	}

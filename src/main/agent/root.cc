@@ -142,14 +142,18 @@
 							URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
 
 							if(!sysid.empty()) {
-								const Module *module = Module::find(sysid.scheme().c_str());
-								if(module) {
-									std::string value;
 
-									module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
-									Object::properties.summary = Quark(value.c_str()).c_str();
+								auto value = Udjat::Value::Factory();
 
-
+								if(sysid.get(*value)) {
+									Object::properties.summary = Quark{value->to_string().c_str()}.c_str();
+								} else {
+									const Module *module = Module::find(sysid.scheme().c_str());
+									if(module) {
+										std::string value;
+										module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
+										Object::properties.summary = Quark(value.c_str()).c_str();
+									}
 								}
 
 							}

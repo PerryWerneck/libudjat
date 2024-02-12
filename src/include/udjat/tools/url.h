@@ -155,6 +155,11 @@
 		/// @return Server response.
 		std::string get() const;
 
+		/// @brief Get value.
+		/// @param Value the response.
+		/// @return true if value was updated.
+		bool get(Udjat::Value &value) const;
+
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
 		/// @return Server response.

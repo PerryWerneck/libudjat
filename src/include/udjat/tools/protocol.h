@@ -406,6 +406,14 @@
 		/// @param url The URL to call.
 		/// @param method Required method.
 		/// @param payload request payload.
+		/// @param value Value for response.
+		/// @return true if the value was updated.
+		virtual bool call(const URL &url, Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const;
+
+		/// @brief Call protocol method.
+		/// @param url The URL to call.
+		/// @param method Required method.
+		/// @param payload request payload.
 		/// @return Host response.
 		String call(const URL &url, const char *method, const char *payload = "") const;
 

@@ -160,6 +160,16 @@
 		return HTTP::Client(*this).get();
 	}
 
+	bool URL::get(Udjat::Value &value) const {
+		Scheme scheme = this->scheme();
+		return Protocol::for_each([this,&scheme,&value](const Protocol &protocol){
+			if(protocol == scheme.c_str()) {
+				return protocol.call(*this,value);
+			}
+			return false;
+		});
+	}
+
 	std::string URL::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
 		return HTTP::Client(*this).get(progress);
 	}
