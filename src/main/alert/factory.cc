@@ -39,11 +39,19 @@
 		const char *type;
 		const char *attrname = (strcasecmp(node.name(),"alert") == 0 ? "type" : "alert-type");
 
+		debug("attrname='",attrname,"'");
+
 		type = node.attribute(attrname).as_string("");
 		if(type[0]) {
 			return type;
 		}
 
+		auto attr = XML::AttributeFactory(node,"alert-type");
+		if(attr) {
+			return attr.as_string();
+		}
+
+		/*
 		if(!strcasecmp(node.parent().name(),"agent")) {
 			// The parent node is an agent, use their type.
 			type = node.parent().attribute("type").as_string();
@@ -60,6 +68,7 @@
 			}
 
 		}
+		*/
 
 		throw runtime_error(Logger::Message{_("Unable to determine alert type for node <{}>"),node.name()});
 
@@ -92,7 +101,9 @@
 			},
 		};
 
+		const char *name = node.attribute("name").as_string(node.name());
 		const char *type = get_alert_type(node);
+		debug("Alert-type='",type,"'");
 
 		if(!strcasecmp(type,"internal")) {
 
@@ -111,13 +122,13 @@
 		// Check factories.
 		{
 			std::shared_ptr<Abstract::Alert> alert;
-			if(Udjat::Factory::for_each([&parent,&node,&alert,type](Udjat::Factory &factory) {
+			if(Udjat::Factory::for_each([&parent,&node,&alert,type,&name](Udjat::Factory &factory) {
 
 				if(factory == type) {
 					alert = factory.AlertFactory(parent,node);
 					if(alert) {
 						if(Logger::enabled(Logger::Trace)) {
-							alert->trace() << "Using '" << factory.name() << "' alert engine" << endl;
+							Logger::String{"Alert built using '",factory.name(),"' engine"}.trace(name);
 						}
 						return true;
 					}
@@ -132,7 +143,7 @@
 		// Try internal types.
 		for(auto internal_type : internal_types) {
 			if(strcasecmp(internal_type.type,type) == 0) {
-				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
+				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace(name);
 				return internal_type.factory(node);
 			}
 		}
@@ -141,12 +152,12 @@
 		for(auto internal_type : internal_types) {
 			debug("Attribute '",internal_type.attrname,"': ",(node.attribute(internal_type.attrname) ? "Found" : "Not found"));
 			if(node.attribute(internal_type.attrname)) {
-				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
+				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace(name);
 				return internal_type.factory(node);
 			}
 		}
 
-		throw runtime_error(Logger::Message{_("Unable to create alert for node <{}>"),node.name()});
+		throw runtime_error(Logger::Message{_("Unable to create alert for node <{}>"),name});
 
 	}
 

@@ -124,7 +124,7 @@ namespace Udjat {
 			" Attibute('alert-type')=",getAttribute(node,"alert-type").as_string("")
 		);
 
-		if(getAttribute(node,"alert").as_bool(false)) {
+		if(node.attribute("alert").as_bool(XML::AttributeFactory(node,"alert-type"))) {
 			auto alert = Abstract::Alert::Factory(*this, node);
 			if(alert) {
 				listeners.push_back(alert);

@@ -9,6 +9,10 @@
 	<!-- module name='http' preload='yes' / -->
 	<module name='civetweb' required='no' preload='yes' />
 
+	<attribute name='alert-type' value='file' />
+	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
+	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
+
 	<attribute-list>
 	
 		<attribute name='default-url' value='http://localhost' />
@@ -28,10 +32,6 @@
 		<state name='sample' value='0' summary='The intvalue is 0' level='ready' />
 
 	</agent>
-
-	<attribute name='alert-type' value='file' />
-	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
-	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
 
 	<alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
