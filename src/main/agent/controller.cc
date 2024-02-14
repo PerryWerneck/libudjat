@@ -125,6 +125,9 @@ namespace Udjat {
 
 	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
 		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',value) ]----------------------");
+		if(!root) {
+			throw std::system_error(ENOENT,std::system_category(),"No agents");
+		}
 		return root->getProperties(request.path(),response);
 	}
 
