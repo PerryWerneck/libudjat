@@ -139,6 +139,7 @@
 
 		// Last chance, try to identify internal alert using attributes.
 		for(auto internal_type : internal_types) {
+			debug("Attribute '",internal_type.attrname,"': ",(node.attribute(internal_type.attrname) ? "Found" : "Not found"));
 			if(node.attribute(internal_type.attrname)) {
 				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
 				return internal_type.factory(node);

@@ -166,13 +166,13 @@ $(OBJDBG)/%.o: \
 
 	@$(CXX) \
 		$(CFLAGS) \
-		-DDEBUG=1 \
+		-ggdb -DDEBUG=1 \
 		-MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
 
 	@$(CXX) \
 		$(CFLAGS) \
 		-Wall -Wextra -fstack-check \
-		-DDEBUG=1 \
+		-ggdb -DDEBUG=1 \
 		-DMODULES_DIR=@MODULE_DEBUG_PATH@ \
 		-o $@ \
 		-c $<
