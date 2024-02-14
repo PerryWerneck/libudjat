@@ -55,7 +55,7 @@
 
 				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + LIBEXT;
 
-				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+//				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
 				if(access(filename.c_str(),R_OK) == 0) {
 					return filename;
@@ -76,7 +76,7 @@
 
 					string filename = path + altname.c_str() + LIBEXT;
 
-					debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+//					debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
 					if(access(filename.c_str(),R_OK) == 0) {
 						return filename;
@@ -94,7 +94,7 @@
 
 				string filename = path + name + LIBEXT;
 
-				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+//				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
 				if(access(filename.c_str(),R_OK) == 0) {
 					return filename;

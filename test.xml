@@ -4,6 +4,7 @@
 <udjat src='http://ideapad.local/~perry/libudjat.xml' update-timer='600'>
 
 	<module name='information' required='no' preload='no' />
+	<module name='dmi' required='no' preload='no' />
 
 	<!-- module name='http' preload='yes' / -->
 	<module name='civetweb' required='no' preload='yes' />
