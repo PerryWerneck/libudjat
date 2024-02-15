@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<udjat src='http://ideapad.local/~perry/libudjat.xml' update-timer='600'>
+<udjat src='http://127.0.0.1/~perry/libudjat.xml' update-timer='600'>
 
 	<module name='information' required='no' preload='no' />
 	<module name='dmi' required='no' preload='no' />

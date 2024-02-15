@@ -72,6 +72,7 @@
 		}
 
 		Udjat::Value & operator[](const char *name) override {
+			reset(Value::Object);
 			return children[name];
 		}
 
@@ -180,6 +181,7 @@
 	}
 
 	Udjat::Value & Response::Object::operator[](const char *name) {
+		reset(Value::Object);
 		return children[name];
 	}
 
