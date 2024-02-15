@@ -19,6 +19,8 @@
 
  #include <config.h>
  #include <private/agent.h>
+ #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/object.h>
@@ -93,6 +95,37 @@
 	}
 
 	void Abstract::Agent::getStates(Udjat::Response::Table &report) const {
+
+		report.last_modified(last_modified());
+		report.expires(expires());
+
+		report.start(
+			"name",
+			"active",
+			"value",
+			"summary",
+			"label",
+			"url",
+			"icon",
+			"body",
+			"level",
+			NULL
+		);
+
+		for_each([&report,this](const Abstract::State &state) {
+
+			report.push_back(state.name());
+			report.push_back(&state == this->state().get());
+			report.push_back(state.value());
+			report.push_back(state.summary());
+			report.push_back(state.label());
+			report.push_back(state.url());
+			report.push_back(state.icon());
+			report.push_back(state.body());
+			report.push_back(std::to_string(state.level()));
+
+		});
+
 	}
 
 	std::string Abstract::Agent::to_string() const noexcept {
