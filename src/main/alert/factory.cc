@@ -51,16 +51,7 @@
 			return attr.as_string();
 		}
 
-		/*
-		if(!strcasecmp(node.parent().name(),"agent")) {
-			// The parent node is an agent, use their type.
-			type = node.parent().attribute("type").as_string();
-			if(type[0]) {
-				return type;
-			}
-		}
-
-		for(auto parent = node.parent();parent;parent = node.parent()) {
+		for(auto parent = node.parent();parent;parent = parent.parent()) {
 
 			type = parent.attribute("alert-type").as_string();
 			if(type[0]) {
@@ -68,9 +59,8 @@
 			}
 
 		}
-		*/
 
-		throw runtime_error(Logger::Message{_("Unable to determine alert type for node <{}>"),node.name()});
+		return "";
 
 	}
 
@@ -105,23 +95,25 @@
 		const char *type = get_alert_type(node);
 		debug("Alert-type='",type,"'");
 
-		if(!strcasecmp(type,"internal")) {
+		// Check factories.
+		if(type && *type) {
 
-			// Try to identify internal alert using attributes.
-			for(auto internal_type : internal_types) {
-				if(node.attribute(internal_type.attrname)) {
-					Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
-					return internal_type.factory(node);
+			if(!strcasecmp(type,"internal")) {
+
+				// Try to identify internal alert using attributes.
+				for(auto internal_type : internal_types) {
+					if(node.attribute(internal_type.attrname)) {
+						Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
+						return internal_type.factory(node);
+					}
 				}
+
+				throw runtime_error(Logger::Message{_("Unable to determine internal alert type for node <{}>"),node.name()});
+
 			}
 
-			throw runtime_error(Logger::Message{_("Unable to determine internal alert type for node <{}>"),node.name()});
-
-		}
-
-		// Check factories.
-		{
 			std::shared_ptr<Abstract::Alert> alert;
+
 			if(Udjat::Factory::for_each([&parent,&node,&alert,type,&name](Udjat::Factory &factory) {
 
 				if(factory == type) {
@@ -138,6 +130,7 @@
 			})) {
 				return alert;
 			};
+
 		}
 
 		// Try internal types.
