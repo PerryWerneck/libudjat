@@ -131,9 +131,15 @@
 
 		string name{url};
 
-		auto pos = name.find(":");
-		if(pos != string::npos) {
-			name.resize(pos);
+		{
+			auto pos = name.find(":");
+			if(pos != string::npos) {
+				name.resize(pos);
+				pos = name.find("+");
+				if(pos != string::npos) {
+					name.resize(pos);
+				}
+			}
 		}
 
 		debug("Searching for protocol '",name.c_str(),"'");
@@ -193,7 +199,7 @@
 
 			Udjat::Worker::for_each([&worker,name](const Udjat::Worker &w){
 
-				cout << "---> " << w.c_str() << " - " <<name.c_str() << endl;
+				debug("---> ",w.c_str()," - ",name.c_str());
 
 				if(w == name.c_str()) {
 					worker = &w;
