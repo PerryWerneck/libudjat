@@ -179,6 +179,9 @@
 					}
 
 				}
+
+				super::start();
+
 			}
 
 			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override {

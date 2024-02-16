@@ -168,6 +168,7 @@ namespace Udjat {
 		if(root) {
 
 			try {
+
 				root->start();
 
 				// Setup next update on all children.
@@ -178,7 +179,7 @@ namespace Udjat {
 				});
 
 			} catch(const std::exception &e) {
-				cerr << root->name() << "\tError '" << e.what() << "' starting root agent" << endl;
+				cerr << root->name() << "\tError '" << e.what() << "' starting agents" << endl;
 				return;
 			}
 
