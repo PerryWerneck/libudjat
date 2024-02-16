@@ -135,10 +135,6 @@
 			auto pos = name.find(":");
 			if(pos != string::npos) {
 				name.resize(pos);
-				pos = name.find("+");
-				if(pos != string::npos) {
-					name.resize(pos);
-				}
 			}
 		}
 
@@ -148,8 +144,18 @@
 		{
 			const Protocol * protocol = nullptr;
 
-			Protocol::for_each([&protocol,name](const Protocol &p){
-				if(p == name.c_str()) {
+			// Split composed protocol name, just valid here since internal and worker
+			// protocol cant handle composed schemes.
+			string pname{name};
+			{
+				auto pos = pname.find("+");
+				if(pos != string::npos) {
+					pname.resize(pos);
+				}
+			}
+
+			Protocol::for_each([&protocol,&pname](const Protocol &p){
+				if(p == pname.c_str()) {
 					protocol = &p;
 					return true;
 				}
