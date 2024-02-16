@@ -44,7 +44,7 @@
 		size_t len;
 		const char *next = strchr(path,'/');
 		if(next) {
-			len = path-next;
+			len = next-path;
 			next++;
 		} else {
 			len = strlen(path);
@@ -60,35 +60,12 @@
 			}
 		}
 
-		/*
-		const char *name = path;
-		size_t len;
-
-		path = strchr(path,'/');
-		if(path) {
-			len = path-name;
-			path++;
-		} else {
-			len = strlen(name);
-			path = "";
-		}
-
-		debug("Searching for child '",string{name,len}.c_str(),"' on agent '",agent.name(),"'");
-
-		for(auto child : agent) {
-			if(!strncasecmp(name,child->name(),len)) {
-				debug("Found child '",child->name(),"'");
-				return child->getProperties(path,value);
-			}
-		}
-
-		debug("Cant find child '",string{name,len}.c_str(),"'");
-		*/
-
 		return false;
 	}
 
 	bool Abstract::Agent::getProperties(const char *path, Value &value) const {
+
+		debug("path: '",path,"'");
 
 		if(getFromPath(*this,path,value)) {
 			return true;
@@ -101,6 +78,18 @@
 
 		if(Abstract::Object::getProperty(path,value)) {
 			debug("Found property '",path,"'");
+			return true;
+		}
+
+		if(!strcasecmp(path,"states")) {
+
+			// value.reset(Value::Array);
+			for_each([this,&value](const Abstract::State &state) {
+				auto &row = value.append(Value::Object);
+				state.getProperties(row);
+				row["active"] = (&state == current_state.selected.get());
+			});
+
 			return true;
 		}
 
