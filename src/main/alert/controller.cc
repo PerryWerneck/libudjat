@@ -279,7 +279,7 @@
 
 	}
 
-	bool Alert::Controller::get(Request UDJAT_UNUSED(&request), Response &response) const {
+	bool Alert::Controller::get(Request &, Response::Value &response) const {
 
 		response.reset(Value::Array);
 

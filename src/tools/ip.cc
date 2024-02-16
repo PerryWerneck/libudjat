@@ -93,7 +93,7 @@
 
 	}
 
-	UDJAT_API sockaddr_storage IP::Factory(const pugi::xml_node &node) {
+	UDJAT_API sockaddr_storage IP::Factory(const XML::Node &node) {
 		return Factory((const char *) node.attribute("ip").as_string());
 	}
 

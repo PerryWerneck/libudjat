@@ -49,12 +49,94 @@
 		</Linker>
 		<Unit filename="Makefile" />
 		<Unit filename="configure.ac" />
+		<Unit filename="intl/bindtextdom.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/dcgettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/dcigettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/dcngettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/dgettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/dngettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/explodename.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/finddomain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/gettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/intl-compat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/l10nflist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/loadmsgcat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/localcharset.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/localealias.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/localename.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/log.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/ngettext.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/os2compat.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/osdep.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/plural-exp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/plural.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/printf-args.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/printf-parse.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/printf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/relocatable.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/textdomain.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="intl/vasnprintf.c">
+			<Option compilerVar="CC" />
+		</Unit>
 		<Unit filename="sdk/pkg-config.pc.in" />
 		<Unit filename="src/include/config.h" />
 		<Unit filename="src/include/private/agent.h" />
 		<Unit filename="src/include/private/alert.h" />
 		<Unit filename="src/include/private/event.h" />
 		<Unit filename="src/include/private/factory.h" />
+		<Unit filename="src/include/private/filewatcher.h" />
 		<Unit filename="src/include/private/linux/mainloop.h" />
 		<Unit filename="src/include/private/linux/subprocess.h" />
 		<Unit filename="src/include/private/logger.h" />
@@ -87,10 +169,15 @@
 		<Unit filename="src/include/udjat/factory.h" />
 		<Unit filename="src/include/udjat/linux/network.h" />
 		<Unit filename="src/include/udjat/module.h" />
+		<Unit filename="src/include/udjat/module/abstract.h" />
+		<Unit filename="src/include/udjat/module/info.h" />
 		<Unit filename="src/include/udjat/moduleinfo.h" />
 		<Unit filename="src/include/udjat/net/interface.h" />
 		<Unit filename="src/include/udjat/net/ip/address.h" />
 		<Unit filename="src/include/udjat/request.h" />
+		<Unit filename="src/include/udjat/tools/abstract/object.h" />
+		<Unit filename="src/include/udjat/tools/abstract/request-path.h" />
+		<Unit filename="src/include/udjat/tools/abstract/response.h" />
 		<Unit filename="src/include/udjat/tools/activatable.h" />
 		<Unit filename="src/include/udjat/tools/application.h" />
 		<Unit filename="src/include/udjat/tools/base64.h" />
@@ -99,10 +186,13 @@
 		<Unit filename="src/include/udjat/tools/container.h" />
 		<Unit filename="src/include/udjat/tools/converters.h" />
 		<Unit filename="src/include/udjat/tools/event.h" />
+		<Unit filename="src/include/udjat/tools/exception.h" />
 		<Unit filename="src/include/udjat/tools/expander.h" />
+		<Unit filename="src/include/udjat/tools/factory.h" />
 		<Unit filename="src/include/udjat/tools/file.h" />
 		<Unit filename="src/include/udjat/tools/file/handler.h" />
 		<Unit filename="src/include/udjat/tools/file/temporary.h" />
+		<Unit filename="src/include/udjat/tools/file/watcher.h" />
 		<Unit filename="src/include/udjat/tools/handler.h" />
 		<Unit filename="src/include/udjat/tools/http/client.h" />
 		<Unit filename="src/include/udjat/tools/http/error.h" />
@@ -114,13 +204,18 @@
 		<Unit filename="src/include/udjat/tools/mainloop.h" />
 		<Unit filename="src/include/udjat/tools/message.h" />
 		<Unit filename="src/include/udjat/tools/method.h" />
-		<Unit filename="src/include/udjat/tools/net/ip.h" />
-		<Unit filename="src/include/udjat/tools/net/nic.h" />
 		<Unit filename="src/include/udjat/tools/network.h" />
 		<Unit filename="src/include/udjat/tools/object.h" />
 		<Unit filename="src/include/udjat/tools/parse.h" />
 		<Unit filename="src/include/udjat/tools/protocol.h" />
 		<Unit filename="src/include/udjat/tools/quark.h" />
+		<Unit filename="src/include/udjat/tools/report.h" />
+		<Unit filename="src/include/udjat/tools/request.h" />
+		<Unit filename="src/include/udjat/tools/response.h" />
+		<Unit filename="src/include/udjat/tools/response/object.h" />
+		<Unit filename="src/include/udjat/tools/response/table.h" />
+		<Unit filename="src/include/udjat/tools/response/value.h" />
+		<Unit filename="src/include/udjat/tools/script.h" />
 		<Unit filename="src/include/udjat/tools/service.h" />
 		<Unit filename="src/include/udjat/tools/singleton.h" />
 		<Unit filename="src/include/udjat/tools/string.h" />
@@ -132,7 +227,9 @@
 		<Unit filename="src/include/udjat/tools/timestamp.h" />
 		<Unit filename="src/include/udjat/tools/url.h" />
 		<Unit filename="src/include/udjat/tools/value.h" />
+		<Unit filename="src/include/udjat/tools/worker.h" />
 		<Unit filename="src/include/udjat/tools/xml.h" />
+		<Unit filename="src/include/udjat/ui/icon.h" />
 		<Unit filename="src/include/udjat/version.h" />
 		<Unit filename="src/include/udjat/win32/charset.h" />
 		<Unit filename="src/include/udjat/win32/cleanup.h" />
@@ -141,7 +238,6 @@
 		<Unit filename="src/include/udjat/win32/exception.h" />
 		<Unit filename="src/include/udjat/win32/handler.h" />
 		<Unit filename="src/include/udjat/win32/ip.h" />
-		<Unit filename="src/include/udjat/win32/network.h" />
 		<Unit filename="src/include/udjat/win32/path.h" />
 		<Unit filename="src/include/udjat/win32/registry.h" />
 		<Unit filename="src/include/udjat/win32/security.h" />
@@ -153,7 +249,6 @@
 		<Unit filename="src/main/agent/factory.cc" />
 		<Unit filename="src/main/agent/get.cc" />
 		<Unit filename="src/main/agent/path.cc" />
-		<Unit filename="src/main/agent/private.h" />
 		<Unit filename="src/main/agent/properties.cc" />
 		<Unit filename="src/main/agent/root.cc" />
 		<Unit filename="src/main/agent/set.cc" />
@@ -196,15 +291,19 @@
 		<Unit filename="src/main/module/os/windows/tools.cc" />
 		<Unit filename="src/main/module/private.h" />
 		<Unit filename="src/main/module/unload.cc" />
+		<Unit filename="src/main/os/linux/icon.cc" />
 		<Unit filename="src/main/os/linux/module/private.h" />
+		<Unit filename="src/main/os/windows/icon.cc" />
 		<Unit filename="src/main/os/windows/resources.rc">
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="src/main/private.h" />
+		<Unit filename="src/main/request/exec.cc" />
 		<Unit filename="src/main/request/private.h" />
 		<Unit filename="src/main/request/report.cc" />
 		<Unit filename="src/main/request/request.cc" />
 		<Unit filename="src/main/request/response.cc" />
+		<Unit filename="src/main/request/responseobject.cc" />
 		<Unit filename="src/main/service/private.h" />
 		<Unit filename="src/main/state/child.cc" />
 		<Unit filename="src/main/state/level.cc" />
@@ -225,6 +324,7 @@
 			<Option compilerVar="WINDRES" />
 		</Unit>
 		<Unit filename="src/testprogram/windows/resources.rc.in" />
+		<Unit filename="src/tools/abstract/response.cc" />
 		<Unit filename="src/tools/activatable.cc" />
 		<Unit filename="src/tools/application/application.cc" />
 		<Unit filename="src/tools/application/init.cc" />
@@ -233,14 +333,18 @@
 		<Unit filename="src/tools/arguments.cc" />
 		<Unit filename="src/tools/base64.cc" />
 		<Unit filename="src/tools/cache.cc" />
+		<Unit filename="src/tools/config.cc" />
 		<Unit filename="src/tools/configuration.cc" />
+		<Unit filename="src/tools/converters.cc" />
 		<Unit filename="src/tools/event.cc" />
 		<Unit filename="src/tools/eventcontroller.cc" />
+		<Unit filename="src/tools/exception.cc" />
 		<Unit filename="src/tools/expand.cc" />
 		<Unit filename="src/tools/file/file.cc" />
 		<Unit filename="src/tools/file/handler.cc" />
 		<Unit filename="src/tools/file/path.cc" />
 		<Unit filename="src/tools/file/private.h" />
+		<Unit filename="src/tools/file/watcher.cc" />
 		<Unit filename="src/tools/http/client.cc" />
 		<Unit filename="src/tools/http/error.cc" />
 		<Unit filename="src/tools/http/exception.cc" />
@@ -279,8 +383,6 @@
 		<Unit filename="src/tools/os/linux/event.cc" />
 		<Unit filename="src/tools/os/linux/eventcontroller.cc" />
 		<Unit filename="src/tools/os/linux/file.cc" />
-		<Unit filename="src/tools/os/linux/file/agent.cc" />
-		<Unit filename="src/tools/os/linux/file/controller.cc" />
 		<Unit filename="src/tools/os/linux/file/copy.cc" />
 		<Unit filename="src/tools/os/linux/file/list.cc" />
 		<Unit filename="src/tools/os/linux/file/move.cc" />
@@ -292,6 +394,7 @@
 		<Unit filename="src/tools/os/linux/file/text.cc" />
 		<Unit filename="src/tools/os/linux/file/watcher.cc" />
 		<Unit filename="src/tools/os/linux/hostname.cc" />
+		<Unit filename="src/tools/os/linux/iconcache.h" />
 		<Unit filename="src/tools/os/linux/ip.cc" />
 		<Unit filename="src/tools/os/linux/logger.cc" />
 		<Unit filename="src/tools/os/linux/nic.cc" />
@@ -329,6 +432,7 @@
 		<Unit filename="src/tools/os/windows/file/private.h" />
 		<Unit filename="src/tools/os/windows/file/temporary.cc" />
 		<Unit filename="src/tools/os/windows/file/text.cc" />
+		<Unit filename="src/tools/os/windows/file/watcher.cc" />
 		<Unit filename="src/tools/os/windows/hostname.cc" />
 		<Unit filename="src/tools/os/windows/ip.cc" />
 		<Unit filename="src/tools/os/windows/logger.cc" />
@@ -337,7 +441,10 @@
 		<Unit filename="src/tools/os/windows/private.h" />
 		<Unit filename="src/tools/os/windows/protocol.cc" />
 		<Unit filename="src/tools/os/windows/registry.cc" />
-		<Unit filename="src/tools/os/windows/service.cc" />
+		<Unit filename="src/tools/os/windows/securityidentifier.cc" />
+		<Unit filename="src/tools/os/windows/service/handler.cc" />
+		<Unit filename="src/tools/os/windows/service/manager.cc" />
+		<Unit filename="src/tools/os/windows/service/security.cc" />
 		<Unit filename="src/tools/os/windows/shortcut.cc" />
 		<Unit filename="src/tools/os/windows/strptime.cc">
 			<Option compilerVar="CC" />
@@ -354,6 +461,8 @@
 		<Unit filename="src/tools/os/windows/utils.cc" />
 		<Unit filename="src/tools/os/windows/win32service.cc" />
 		<Unit filename="src/tools/quark.cc" />
+		<Unit filename="src/tools/requestpath.cc" />
+		<Unit filename="src/tools/script.cc" />
 		<Unit filename="src/tools/shortcut.cc" />
 		<Unit filename="src/tools/singleton.cc" />
 		<Unit filename="src/tools/string/expand.cc" />
@@ -364,7 +473,6 @@
 		<Unit filename="src/tools/timestamp.cc" />
 		<Unit filename="src/tools/url/controller.cc" />
 		<Unit filename="src/tools/url/header.cc" />
-		<Unit filename="src/tools/url/private.h" />
 		<Unit filename="src/tools/url/protocol.cc" />
 		<Unit filename="src/tools/url/protocols/file.cc" />
 		<Unit filename="src/tools/url/protocols/script.cc" />
@@ -372,7 +480,13 @@
 		<Unit filename="src/tools/url/url.cc" />
 		<Unit filename="src/tools/url/watcher.cc" />
 		<Unit filename="src/tools/url/worker.cc" />
-		<Unit filename="src/tools/value.cc" />
+		<Unit filename="src/tools/value/abstract.cc" />
+		<Unit filename="src/tools/value/csv.cc" />
+		<Unit filename="src/tools/value/html.cc" />
+		<Unit filename="src/tools/value/json.cc" />
+		<Unit filename="src/tools/value/sh.cc" />
+		<Unit filename="src/tools/value/xml.cc" />
+		<Unit filename="src/tools/value/yaml.cc" />
 		<Unit filename="src/tools/xml/attribute.cc" />
 		<Unit filename="src/tools/xml/document.cc" />
 		<Unit filename="src/tools/xml/misc.cc" />

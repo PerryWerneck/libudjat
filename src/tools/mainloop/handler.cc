@@ -78,13 +78,16 @@
 	void MainLoop::Handler::flush() {
 	}
 
-	void MainLoop::Handler::set(int fd) {
+	bool MainLoop::Handler::set(int fd) {
 
-		if(this->fd != -1) {
-			throw system_error(EBUSY,system_category(),"Handler already have a file descriptor");
+		if(this->fd == fd) {
+			return false;
 		}
 
 		this->fd = fd;
+		MainLoop::getInstance().wakeup();
+
+		return true;
 
 	}
 

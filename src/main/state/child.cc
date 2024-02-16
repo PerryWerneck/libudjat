@@ -18,53 +18,34 @@
  */
 
  #include <config.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/agent/state.h>
  #include <iostream>
  #include <udjat/alert/abstract.h>
+ #include <udjat/tools/logger.h>
 
-//---[ Implement ]------------------------------------------------------------------------------------------
+ //---[ Implement ]------------------------------------------------------------------------------------------
 
  using namespace std;
 
  namespace Udjat {
 
-	bool Abstract::State::push_back(const pugi::xml_node &node) {
-		return push_back(node.name(),node);
-	}
+	bool Abstract::State::push_back(const XML::Node &node) {
 
-	bool Abstract::State::push_back(const char *type, const pugi::xml_node &node) {
+		return Udjat::Factory::for_each([this,&node](const Udjat::Factory &factory) {
 
-		if(!strcasecmp(type,"alert")) {
-			auto alert = Udjat::Abstract::Alert::Factory(*this, node);
-			if(alert) {
-				listeners.push_back(alert);
-				return true;
-			}
-		}
-
-		return Udjat::Factory::for_each(type,[this,&node](const Udjat::Factory &factory) {
-
-			try {
+			if(factory == node.attribute("type").as_string("default")) {
 
 				auto alert = factory.AlertFactory(*this,node);
 				if(alert) {
-					if(alert->verbose()) {
-						alert->info() << "Using alert engine from '" << factory.name() << "'" << endl;
+					if(Logger::enabled(Logger::Trace)) {
+						alert->trace() << "Using '" << factory.name() << "' alert engine" << endl;
 					}
 					listeners.push_back(alert);
 					return true;
 				}
 
 				return false;
-
-			} catch(const std::exception &e) {
-
-				factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
-
-			} catch(...) {
-
-				factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
 
 			}
 

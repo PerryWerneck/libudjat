@@ -63,10 +63,10 @@
 		/// @brief URL Components.
 		struct UDJAT_API Components {
 			Scheme scheme;			///< @brief The scheme name.
-			std::string hostname;	///< @brief The host name.
-			std::string srvcname;	///< @brief The service name or port number.
-			std::string path;		///< @brief The request path.
-			std::string query;		///< @brief Query data.
+			String hostname;		///< @brief The host name.
+			String srvcname;		///< @brief The service name or port number.
+			String path;			///< @brief The request path.
+			String query;			///< @brief Query data.
 
 			/// @brief Get the port number from srvcname.
 			int portnumber() const;
@@ -85,7 +85,7 @@
 		URL(const std::string &str) : URL{str.c_str()} {
 		}
 
-		URL(const pugi::xml_node &node) : URL{node.attribute("src").as_string()} {
+		URL(const XML::Node &node) : URL{node.attribute("src").as_string()} {
 		}
 
 		template<typename... Targs>
@@ -108,6 +108,21 @@
 
 		/// @brief Get URL scheme.
 		Scheme scheme() const;
+
+		/// @brief Get URL argument.
+		String argument(const char *name) const;
+
+		String operator[](const char *name) const {
+			return argument(name);
+		}
+
+		inline const char& operator[] (size_t pos) const {
+			return std::string::operator[](pos);
+		}
+
+		inline char& operator[] (size_t pos) {
+			return std::string::operator[](pos);
+		}
 
 		/// @brief Get URL components.
 		Components ComponentsFactory() const;
@@ -139,6 +154,11 @@
 		/// @brief Do a 'get' request.
 		/// @return Server response.
 		std::string get() const;
+
+		/// @brief Get value.
+		/// @param Value the response.
+		/// @return true if value was updated.
+		bool get(Udjat::Value &value) const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.

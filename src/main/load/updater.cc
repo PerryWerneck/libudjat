@@ -21,7 +21,7 @@
  #include <private/updater.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <iostream>
  #include <udjat/tools/http/client.h>
  #include <private/misc.h>
@@ -132,7 +132,7 @@
 		Logger::setup(node);
 
 		// Check for modules.
-		for(pugi::xml_node child = node.child("module"); child; child = child.next_sibling("module")) {
+		for(XML::Node child = node.child("module"); child; child = child.next_sibling("module")) {
 			if(child.attribute("preload").as_bool(false)) {
 				Module::load(child);
 			}
@@ -228,7 +228,7 @@
 
 						} catch(HTTP::Exception &e) {
 
-							if(e.codes().http != 304) {
+							if(e.code() != 304) {
 								throw;
 							}
 
@@ -270,7 +270,29 @@
 
 	}
 
-	bool Updater::load(std::shared_ptr<Abstract::Agent> root) const noexcept {
+	bool Updater::load(std::shared_ptr<Abstract::Agent> root) noexcept {
+
+		files.sort([](const Settings &a, const Settings &b){
+
+			const char *names[] = {
+				a.filename.c_str(),
+				b.filename.c_str()
+			};
+
+			for(size_t ix = 0; ix < 2; ix++) {
+				const char *ptr = strrchr(names[ix],'/');
+				if(ptr) {
+					names[ix] = ptr+1;
+				}
+				ptr = strrchr(names[ix],'\\');
+				if(ptr) {
+					names[ix] = ptr+1;
+				}
+			}
+
+			return strcasecmp(names[0],names[1]) < 0;
+
+		});
 
 		for(const Settings &descr : *this) {
 

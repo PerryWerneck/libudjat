@@ -25,7 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <errno.h>
  #include <fcntl.h>
  #include <unistd.h>

@@ -40,7 +40,7 @@
 	UDJAT_API Level LevelFactory(const char *name);
 
 	/// @brief Get level from XML node.
-	UDJAT_API Level LevelFactory(const pugi::xml_node &node);
+	UDJAT_API Level LevelFactory(const XML::Node &node);
 
  }
 

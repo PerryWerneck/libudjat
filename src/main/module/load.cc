@@ -57,7 +57,7 @@ namespace Udjat {
 
 	}
 
-	bool Module::Controller::load(const pugi::xml_node &node) {
+	bool Module::Controller::load(const XML::Node &node) {
 
 		static const char * attributes[] = {
 			"name",
@@ -144,7 +144,7 @@ namespace Udjat {
 		return rc;
 	}
 
-	void Module::load(const pugi::xml_node &node) {
+	void Module::load(const XML::Node &node) {
 		Controller::getInstance().load(node);
 	}
 
@@ -156,7 +156,7 @@ namespace Udjat {
 			}
 		}
 
-		init(filename,pugi::xml_node{});
+		init(filename,XML::Node{});
 		return false;
 
 	}

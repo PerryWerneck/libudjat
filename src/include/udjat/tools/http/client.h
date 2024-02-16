@@ -20,9 +20,10 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/url.h>
  #include <sstream>
+ #include <memory>
 
  namespace Udjat {
 
@@ -59,7 +60,7 @@
 			/// @param autoload If true try to load the required module.
 			Client(const URL &url, bool autoload = false);
 
-			Client(const pugi::xml_node &node);
+			Client(const XML::Node &node);
 
 			Client(const char *url) : Client(URL(url)) {
 			}
@@ -85,12 +86,6 @@
 			inline int mimetype(const MimeType type) {
 				return worker->mimetype(type);
 			}
-			/// @brief Set file properties using the http response header.
-			/// @param filename The filename to update.
-			/// @return 0 if ok, errno if not.
-			//int set_file_properties(const char *filename) {
-			//	return worker->set_file_properties(filename);
-			//}
 
 			/// @brief Setup cache headers from filename.
 			/// @param filename The filename for cache information.
@@ -132,12 +127,12 @@
 			/// @brief Save filename based on XML definitions.
 			/// @param node XML node with URL & download settings.
 			/// @return true if the file was updated.
-			static bool save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress);
+			static bool save(const XML::Node &node, const char *filename, const std::function<bool(double current, double total)> &progress);
 
 			/// @brief Save filename based on XML definitions.
 			/// @param node XML node with URL & download settings.
 			/// @return true if the file was updated.
-			static bool save(const pugi::xml_node &node, const char *filename);
+			static bool save(const XML::Node &node, const char *filename);
 
 			/// @brief Get URL, save response to cache file.
 			/// @param progress The download progress notifier.

@@ -32,6 +32,7 @@
 
 #include <config.h>
 #include <udjat/tools/base64.h>
+#include <udjat/tools/string.h>
 #include <cstring>
 
 namespace Udjat {
@@ -48,7 +49,7 @@ namespace Udjat {
 		  return (isalnum(c) || (c == '+') || (c == '/'));
 		}
 
-		std::string encode(const unsigned char * bytes_to_encode, size_t in_len) noexcept {
+		String encode(const unsigned char * bytes_to_encode, size_t in_len) noexcept {
 		  std::string ret;
 		  int i = 0;
 		  int j = 0;

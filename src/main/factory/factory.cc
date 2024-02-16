@@ -22,7 +22,7 @@
  #include <private/factory.h>
  #include <udjat/agent.h>
  #include <udjat/alert/abstract.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <iostream>
 
  using namespace std;
@@ -42,39 +42,56 @@
 		return module.getProperties(properties);
 	}
 
-	Factory * Factory::find(const char *name) {
-		return Controller::getInstance().find(name);
-	}
-
-	bool Factory::for_each(const std::function<bool(const Factory &factory)> &func) {
+	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(func);
 	}
 
-	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
-		return Controller::getInstance().for_each(name,func);
-	}
-
-	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
-	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Object>();
 	}
 
-	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
 	}
 
-	std::shared_ptr<Activatable> Factory::ActivatableFactory(const Abstract::Object &parent, const pugi::xml_node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Activatable> Factory::ActivatableFactory(const Abstract::Object &parent, const XML::Node UDJAT_UNUSED(&node)) const {
 		return AlertFactory(parent,node);
 	}
 
-	bool Factory::generic(Abstract::Object UDJAT_UNUSED(&parent), const pugi::xml_node &node) {
-		return generic(node);
+	bool Factory::CustomFactory(const XML::Node &) {
+		return false;
 	}
 
-	bool Factory::generic(const pugi::xml_node UDJAT_UNUSED(&node)) {
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	bool Factory::NodeFactory(const XML::Node &node) {
+		return generic(node);
+	}
+	#pragma GCC diagnostic pop
+
+	bool Factory::CustomFactory(Abstract::Object &, const XML::Node &node) {
+		return CustomFactory(node);
+	}
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	bool Factory::NodeFactory(Abstract::Object &parent, const XML::Node &node) {
+		return generic(parent,node);
+	}
+	#pragma GCC diagnostic pop
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	bool Factory::generic(Abstract::Object &, const XML::Node &node) {
+		return generic(node);
+	}
+	#pragma GCC diagnostic pop
+
+	bool Factory::generic(const XML::Node &) {
 		return false;
 	}
 

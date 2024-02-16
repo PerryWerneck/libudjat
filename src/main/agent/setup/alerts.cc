@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include <private/agent.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/alert/activation.h>
@@ -40,7 +40,7 @@
 
 namespace Udjat {
 
-	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const pugi::xml_node &node) {
+	std::shared_ptr<Abstract::Alert> Abstract::Agent::AlertFactory(const XML::Node &node) {
 		return Abstract::Alert::Factory(*this,node);
 	}
 

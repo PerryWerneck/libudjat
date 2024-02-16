@@ -21,6 +21,9 @@
  #include <private/protocol.h>
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/url.h>
  #include <cstring>
 
 #ifndef _WIN32
@@ -52,6 +55,12 @@
 
 		const char *ptr;	// Temp pointer.
 		size_t from, to;
+
+		// Get query
+		ptr = strchr(c_str(),'?');
+		if(ptr) {
+			components.query = (ptr+1);
+		}
 
 		ptr = c_str();
 		if(ptr[0] == '/' || ptr[0] == '.') {
@@ -91,7 +100,7 @@
 			components.srvcname = (ptr+1);
 		} else {
 			components.hostname = hostname;
-			components.srvcname = components.scheme;
+			components.srvcname.assign(components.scheme);
 		}
 
 		if(to == string::npos) {
@@ -106,7 +115,6 @@
 		}
 
 		components.path.assign(string::c_str()+from,to-from);
-		components.query = string::c_str()+to+1;
 
 		return components;
 
@@ -125,18 +133,10 @@
 
 		try {
 
-			const Protocol * protocol = Protocol::find(*this);
-			if(!protocol) {
-				cerr << "url\tCant find a protocol handler for " << *this << endl;
-				return EINVAL;
-			}
-
-			auto worker = protocol->WorkerFactory();
-			if(worker) {
-				worker->method(method);
-				worker->payload(payload);
-				return worker->url(*this).test();
-			}
+			auto worker = Protocol::WorkerFactory(c_str());
+			worker->method(method);
+			worker->payload(payload);
+			return worker->url(*this).test();
 
 		} catch(const std::system_error &e) {
 
@@ -160,6 +160,16 @@
 		return HTTP::Client(*this).get();
 	}
 
+	bool URL::get(Udjat::Value &value) const {
+		Scheme scheme = this->scheme();
+		return Protocol::for_each([this,&scheme,&value](const Protocol &protocol){
+			if(protocol == scheme.c_str()) {
+				return protocol.call(*this,value);
+			}
+			return false;
+		});
+	}
+
 	std::string URL::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
 		return HTTP::Client(*this).get(progress);
 	}
@@ -170,21 +180,7 @@
 
 	void URL::get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
 
-		const Protocol * protocol = Protocol::find(*this);
-		if(!protocol) {
-			Logger::String message{"Cant find a protocol handler for '",c_str(),"'"};
-			message.error("url");
-			throw std::system_error(EINVAL,std::system_category(),message);
-		}
-
-		auto worker = protocol->WorkerFactory(c_str());
-
-		if(!worker) {
-			Logger::String message{"Cant get worker for '",c_str(),"'"};
-			message.error("url");
-			throw std::system_error(EINVAL,std::system_category(),message);
-		}
-
+		auto worker = Protocol::WorkerFactory(c_str());
 		worker->method(HTTP::Get);
 		worker->save(writer);
 
@@ -205,6 +201,34 @@
 	std::string URL::filename() {
 		return HTTP::Client(*this).filename();
 	}
+
+	String URL::argument(const char *name) const {
+
+		String value;
+
+		if(name && *name) {
+
+			size_t szName = strlen(name);
+
+			ComponentsFactory().query.for_each("&",[&value,szName,name](const String &v){
+
+				if(v.size() > szName) {
+
+					if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
+						value = v.c_str()+szName+1;
+						value.strip();
+						return true;
+					}
+				}
+
+				return false;
+			});
+
+		}
+
+		return value;
+	}
+
 
 	int URL::Components::portnumber() const {
 

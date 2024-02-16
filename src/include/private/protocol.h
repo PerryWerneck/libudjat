@@ -21,18 +21,31 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/url.h>
  #include <udjat/tools/protocol.h>
- #include <iostream>
- #include <list>
  #include <mutex>
- #include <udjat/tools/logger.h>
- #include <udjat/factory.h>
- #include <udjat/request.h>
+ #include <list>
 
  using namespace std;
 
  namespace Udjat {
+
+	/*
+	/// @brief Internal protocol for file://
+	class Protocol::File : public Udjat::Protocol {
+	public:
+		File();
+		virtual ~File();
+
+		String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
+
+		std::shared_ptr<Protocol::Worker> WorkerFactory() const;
+
+		static File & getInstance();
+
+	};
+
+	/// @brief Internal protocol for script://
+	*/
 
 	class Protocol::Controller {
 	private:
@@ -45,28 +58,6 @@
 
 		Controller();
 
-		/// @brief Internal protocol for file://
-		class File : public Udjat::Protocol {
-		public:
-			File();
-			virtual ~File();
-
-			String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
-
-			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
-
-		};
-
-		/// @brief Internal protocol for script://
-		class Script : public Udjat::Protocol {
-		public:
-			Script();
-			virtual ~Script();
-
-			std::shared_ptr<Protocol::Worker> WorkerFactory() const;
-
-		};
-
 	public:
 
 		static Controller & getInstance();
@@ -78,11 +69,15 @@
 		void insert(Protocol::Worker *worker);
 		void remove(Protocol::Worker *worker);
 
-		const Protocol * find(const char *name, bool allow_default, bool autoload = false);
+		// const Protocol * find(const char *name, bool allow_default, bool autoload = false);
 		const Protocol * verify(const void *protocol);
 
 		inline void setDefault(Protocol *protocol) noexcept {
 			def = protocol;
+		}
+
+		inline const Protocol * getDefault() const noexcept {
+			return def;
 		}
 
 		inline bool for_each(const std::function<bool(const Protocol &protocol)> &method) {

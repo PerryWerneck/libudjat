@@ -27,7 +27,7 @@
 	#include <unistd.h>
  #endif // _WIN32
 
- #include <udjat/factory.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/sysconfig.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
@@ -37,8 +37,11 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>
+ #include <udjat/tools/response/object.h>
  #include <udjat/alert/abstract.h>
- #include <udjat/module.h>
+ #include <udjat/alert/activation.h>
+ #include <udjat/module/abstract.h>
+ #include <udjat/agent/abstract.h>
  #include <sstream>
 
  #ifdef HAVE_VMDETECT
@@ -125,47 +128,63 @@
 				}
 #endif // _WIN32
 
+			}
+
+			void start() override {
+
+				if(Object::properties.summary && *Object::properties.summary) {
+					return;
+				}
+
 #ifdef HAVE_VMDETECT
-				{
-					//
-					// Detect virtualization.
-					//
-					VirtualMachine virtualmachine;
-
-					//
-					// Get machine information
-					//
-					if(!virtualmachine) {
-
-						try {
-							URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
-
-							if(!sysid.empty() && Protocol::find(sysid)) {
-								Object::properties.summary = Quark(sysid.get()).c_str();
-							}
-
-						} catch(const std::exception &e) {
-
-							clog << Object::name() << "\t" << e.what() << endl;
-
-						}
-
-					} else {
-
-						Object::properties.summary = Quark(Logger::Message("{} virtual machine",virtualmachine.name())).c_str();
-
-					}
-
-					if(*Object::properties.summary) {
-						cout << Object::name() << "\t" << Object::properties.summary << endl;
-					}
-
+				VirtualMachine vm;
+				if(vm) {
+					Object::properties.summary = Quark(Logger::Message("{} virtual machine",vm.name())).c_str();
+					return;
 				}
 #endif // HAVE_VMDETECT
 
+				URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
+
+				if(!sysid.empty()) {
+
+					try {
+
+						Udjat::Response::Object value;
+						if(sysid.get(value)) {
+							Object::properties.summary = Quark{value["value"].to_string().c_str()}.c_str();
+							debug(Object::properties.summary);
+							return;
+						}
+
+					} catch(const std::exception &e) {
+
+						Logger::String{e.what()}.trace(Object::name());
+
+					}
+
+					try {
+
+						const Module *module = Module::find(sysid.scheme().c_str());
+						if(module) {
+							std::string value;
+							module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
+							Object::properties.summary = Quark(value.c_str()).c_str();
+						}
+
+					} catch(const std::exception &e) {
+
+						Logger::String{e.what()}.trace(Object::name());
+
+					}
+
+				}
+
+				super::start();
+
 			}
 
-			std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node) override {
+			std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node) override {
 
 				auto state = make_shared<Abstract::State>(node);
 
@@ -267,6 +286,7 @@
 					Abstract::Alert *alert = dynamic_cast<Abstract::Alert *>(activatable.get());
 					if(alert) {
 						auto activation = alert->ActivationFactory();
+						activation->set(*Abstract::Agent::root());
 						Udjat::start(activation);
 					} else {
 						activatable->activate(*this);

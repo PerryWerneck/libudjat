@@ -22,6 +22,7 @@
 #include <iostream>
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
+#include <udjat/tools/string.h>
 #include <mutex>
 #include <unordered_set>
 
@@ -161,8 +162,8 @@ namespace Udjat {
 		this->value = Controller::getInstance().find(attribute.as_string(),true);
 	}
 
-	Quark::Quark(const pugi::xml_node &node,const char *name,const char *def,bool upsearch) {
-		this->value = Controller::getInstance().find(Udjat::Attribute(node,name,upsearch).as_string(def),true);
+	Quark::Quark(const XML::Node &node,const char *name,const char *def) {
+		this->value = Controller::getInstance().find(String{node,name,def}.c_str(),true);
 	}
 
 	void Quark::init() {
@@ -250,7 +251,7 @@ namespace Udjat {
 	}
 
 #ifdef HAVE_PUGIXML
-	const Quark & Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
+	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
 
 		if(!node)
 			return *this;
@@ -263,7 +264,7 @@ namespace Udjat {
 		}
 
 		// Check children for <attribute name=>
-		for(pugi::xml_node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+		for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
 
 			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
 				set(child.attribute("value").as_string(),translate);
@@ -281,7 +282,7 @@ namespace Udjat {
 
 	}
 
-	const Quark & Quark::set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch) {
+	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch) {
 
 		if(!node)
 			return *this;
@@ -294,7 +295,7 @@ namespace Udjat {
 		}
 
 		// Check children for <attribute name=>
-		for(pugi::xml_node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+		for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
 
 			if(strcasecmp(xml_attribute,child.attribute("name").as_string()) == 0) {
 				set(child.attribute("value").as_string());

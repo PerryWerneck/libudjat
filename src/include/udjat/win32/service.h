@@ -108,72 +108,44 @@
 			/// @brief Windows Service Manager.
 			class UDJAT_API Manager {
 			private:
-				SC_HANDLE handle;
-
-			public:
-				Manager(DWORD dwDesiredAccess = SC_MANAGER_ALL_ACCESS) {
-					handle = OpenSCManager(NULL, NULL, dwDesiredAccess);
-					if(!handle) {
-						throw Win32::Exception("Can't open windows service manager");
-					}
-				}
-
-				~Manager() {
-					CloseServiceHandle(handle);
-				}
+				SC_HANDLE handle;	///< @brief Handle to the service control manager database.
 
 				/// @brief Open Service.
-				SC_HANDLE open(const char *name, DWORD dwDesiredAccess = SERVICE_ALL_ACCESS) {
-					return OpenService(handle, name, dwDesiredAccess);
-				}
+				SC_HANDLE open(const char *name, DWORD dwDesiredAccess = SERVICE_ALL_ACCESS);
+
+			public:
+				Manager(const Manager &m) = delete;
+				Manager(const Manager *m) = delete;
+
+				Manager(DWORD dwDesiredAccess = SC_MANAGER_ALL_ACCESS);
+				~Manager();
 
 				/// @brief Create windows service.
-				void insert(const char *name, const char *display_name, const char *service_binary) {
+				void insert(const char *name, const char *display_name, const char *service_binary);
 
-					// http://msdn.microsoft.com/en-us/library/windows/desktop/ms682450(v=vs.85).aspx
-					SC_HANDLE hService = CreateService(	handle,
-														TEXT(name),	 							// Service name
-														TEXT(display_name),						// Service display name
-														SERVICE_ALL_ACCESS,						// Includes STANDARD_RIGHTS_REQUIRED in addition to all access rights in this table.
-														SERVICE_WIN32_OWN_PROCESS,				// Service that runs in its own process..
-														SERVICE_AUTO_START,						// A service started automatically by the service control manager during system startup.
-														SERVICE_ERROR_NORMAL,					// The severity of the error, and action taken, if this service fails to start.
-														service_binary,							// The fully-qualified path to the service binary file.
-														NULL,									// Load order group
-														NULL,									// Group member tab
-														NULL,									// Dependencies
-														NULL,									// Account
-														NULL									// Password
-													);
+				/// @brief Remove windows service.
+				/// @param name The service name.
+				/// @retval true The service was removed.
+				/// @retval false The service was not found.
+				bool remove(const char *name);
 
-					if(!hService) {
-						throw Win32::Exception("Can't create service");
-					}
+				/// @brief Start windows service.
+				/// @param name The service name.
+				/// @retval true The service was started.
+				/// @retval false The service was not found.
+				bool start(const char *name);
 
-					CloseServiceHandle(hService);
+				/// @brief Stop windows service.
+				/// @param name The service name.
+				/// @retval true The service was stopped.
+				/// @retval false The service was not found.
+				bool stop(const char *name);
 
-				}
-
-				/// @brief Remove service
-				void remove(const char *name) {
-
-					SC_HANDLE hService = OpenService(handle, TEXT(name), SERVICE_ALL_ACCESS);
-					if(!hService) {
-						if(GetLastError() == ERROR_SERVICE_DOES_NOT_EXIST) {
-							return;
-						}
-						throw Win32::Exception("Can't open service");
-					}
-
-					if(!DeleteService(hService)) {
-						// Não consegui remover o serviço
-						CloseServiceHandle(hService);
-						throw Win32::Exception("Can't delete service");
-					}
-
-					CloseServiceHandle(hService);
-
-				}
+				/// @brief Disable 'net stop' for all users.
+				/// @param name The service name.
+				/// @retval true The service was protected.
+				/// @retval false The service was not protected.
+				bool setUnStoppable(const char *name);
 
 			};
 
@@ -182,6 +154,11 @@
 				SC_HANDLE handle;
 
 			public:
+				Handler(const Handler &h) = delete;
+				Handler(const Handler *h) = delete;
+
+//				Handler(const char *name);
+
 				constexpr Handler() : handle(0) {
 				}
 
@@ -211,14 +188,33 @@
 				}
 
 				/// @brief Start service
-				void start() {
-					if(!StartService(handle,0,NULL)) {
-						throw Win32::Exception("Can't start service");
-					}
-				}
+				void start();
 
 				/// @brief Stop service.
 				void stop(bool wait = true);
+			};
+
+			/// @brief Service security handler.
+			class UDJAT_API Security {
+			private:
+				SC_HANDLE handle;
+				PSECURITY_DESCRIPTOR	pSD;
+
+			public:
+				Security(SC_HANDLE handle);
+				~Security();
+
+				/// @brief Apply ACLs.
+				void set(PEXPLICIT_ACCESS acl, size_t cCountOfExplicitEntries);
+
+				/// @brief Apply ACLs to object.
+				/// @param permissions	Array with the permissions to set.
+				/// @param length		Length of the permissions array.
+				void set(const Permission *permissions, size_t length);
+
+				/// @brief Disable 'net stop' for all users.
+				void setUnStoppable();
+
 			};
 
 		}

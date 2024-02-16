@@ -49,6 +49,10 @@
 		return (access(c_str(), R_OK) == 0);
 	}
 
+	String File::Path::load() const {
+		return File::Text{c_str()}.c_str();
+	}
+
 	bool File::Path::find(const char *name, bool recursive) {
 
 		return for_each([this,name](const File::Path &path){

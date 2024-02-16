@@ -62,31 +62,32 @@ namespace Udjat {
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
 
 		if(root && root->parent) {
-			throw system_error(EINVAL,system_category(),"Child agent cant be set as root");
+			throw logic_error("Child agent cant be promoted to root");
+		}
+
+		if(this->root) {
+			Logger::String{
+				"Root gent ",
+				std::to_string((unsigned long long) ((void *) this->root.get())),
+				" was demoted"
+			}.trace(this->root->name());
 		}
 
 		if(!root) {
 
-			if(this->root) {
-				cout << "agent\tRemoving root agent '"
-						<< this->root->name()
-						<< "' (" << hex << ((void *) this->root.get()) << dec << ")"
-						<< endl;
-				this->root.reset();
-			}
-			return;
+			this->root.reset();
+
+		} else {
+
+			this->root = root;
+
+			Logger::String{
+				"Agent ",
+				std::to_string((unsigned long long) ((void *) root.get())),
+				" was promoted to root"
+			}.trace(root->name());
+
 		}
-
-		this->root = root;
-
-		Logger::String{
-			"Agent ",
-			std::to_string((unsigned long long) ((void *) root.get())),
-			" was promoted to root"
-		}.trace(root->name());
-
-//		this->root->info()
-//				<< "Agent " << hex << ((void *) root.get() ) << dec << " was promoted to root" << endl;
 
 	}
 
@@ -95,36 +96,51 @@ namespace Udjat {
 		if(this->root)
 			return this->root;
 
-		throw runtime_error(_("Agent subsystem is inactive"));
+		throw runtime_error(_("Core/Module subsystem failed to initialize"));
 
 	}
 
-	bool Abstract::Agent::Controller::head(Request &request, Response &response) const {
+	Worker::ResponseType Abstract::Agent::Controller::probe(const Request &request) const noexcept {
 
-		debug("Getting Cache info for '",request.getPath(),"'");
+		// Get request path.
+		const char *path = request.path();
+		if(*path == '/')
+			path++;
 
-		// Get cache info.
-		if(!head(get().get(),request.getPath(),response)) {
-			throw std::system_error(ENOENT,std::system_category());
+		if(!strncasecmp(path,"agent/",6)) {
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,Worker::c_str());
+			}
+			return Worker::ResponseType::Both;
 		}
 
-		return true;
+		debug("probing agent path='",path,"'");
+
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,Worker::c_str());
+		}
+
+		return Worker::ResponseType::Both;
 	}
 
-	bool Abstract::Agent::Controller::get(Request &request, Response &response) const {
+	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
+		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',value) ]----------------------");
+		if(!root) {
+			throw std::system_error(ENOENT,std::system_category(),"No agents");
+		}
+		return root->getProperties(request.path(),response);
+	}
 
-#ifdef DEBUG
-		// Get cache info.
-		head(request,response);
-#endif // DEBUG
+	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
 
-		debug("Getting properties for '",request.getPath(),"'");
+		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',table) ]----------------------");
 
-		// Get properties.
-		if(!get()->getProperties(request.getPath(),response)) {
+		auto agent = find(request.path());
+		if(!agent){
 			throw std::system_error(ENOENT,std::system_category());
 		}
 
+		agent->get(response);
 		return true;
 	}
 
@@ -152,6 +168,7 @@ namespace Udjat {
 		if(root) {
 
 			try {
+
 				root->start();
 
 				// Setup next update on all children.
@@ -162,7 +179,7 @@ namespace Udjat {
 				});
 
 			} catch(const std::exception &e) {
-				cerr << root->name() << "\tError '" << e.what() << "' starting root agent" << endl;
+				cerr << root->name() << "\tError '" << e.what() << "' starting agents" << endl;
 				return;
 			}
 

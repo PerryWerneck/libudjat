@@ -28,6 +28,15 @@
 
  namespace Udjat {
 
+	//Win32::Service::Handler::Handler(const char *name) : handle{Manager{}.open(name)} {
+	//}
+
+	void Win32::Service::Handler::start() {
+		if(!StartService(handle,0,NULL)) {
+			throw Win32::Exception("Can't start service");
+		}
+	}
+
 	void Win32::Service::Handler::stop(bool wait) {
 
 		SERVICE_STATUS status;

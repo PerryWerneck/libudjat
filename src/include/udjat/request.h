@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,244 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifndef UDJAT_REQUEST_H_INCLUDED
+ /**
+  * @brief Legacy request/response/report classes.
+  */
 
-	#define UDJAT_REQUEST_H_INCLUDED
+ #pragma once
 
-	#include <udjat/defs.h>
-	#include <udjat/tools/quark.h>
-	#include <string>
-	#include <cstring>
-	#include <functional>
-	#include <vector>
-	#include <udjat/tools/timestamp.h>
-	#include <udjat/tools/value.h>
-	#include <memory>
-	#include <udjat/tools/http/mimetype.h>
-	#include <udjat/tools/method.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response/value.h>
+ #include <udjat/tools/response/table.h>
 
-	namespace Udjat {
+ namespace Udjat {
 
-		/// @brief Cache information for http responses.
-		class UDJAT_API ResponseInfo {
-		protected:
-			/// @brief Expiration timestamp (For cache headers)
-			time_t expiration = 0;
+	using Report = Udjat::Response::Table;
 
-			/// @brief Timestamp of data.
-			time_t modification = 0;
+ }
 
-		public:
-			constexpr ResponseInfo() {
-			}
-
-			/// @brief Set timestamp for cache the response.
-			void setExpirationTimestamp(const time_t time);
-
-			/// @brief Set timestamp for data.
-			void setModificationTimestamp(const time_t time);
-
-		};
-
-		/// @brief Report in the format row/col.
-		class UDJAT_API Report : public ResponseInfo {
-		protected:
-
-			struct {
-				std::string caption;
-			} info;
-
-			struct {
-
-				/// @brief Column names.
-				std::vector<std::string> names;
-
-				/// @brief Next column name.
-				std::vector<std::string>::iterator current;
-
-			} columns;
-
-			/// @brief Start a new row.
-			/// @return true if the row was open.
-			virtual bool open();
-
-			/// @brief End row.
-			/// @return true if the row have columns.
-			virtual bool close();
-
-			/// @brief Get next column title (close and open row if needed).
-			std::string next();
-
-			Report();
-			void set(const char *column_name, va_list args);
-
-		public:
-
-			/// @brief Set report title.
-			/// @param caption	The report title.
-			inline void caption(const char *value) noexcept {
-				info.caption = value;
-			}
-
-			/// @brief Open report, define column names.
-			/// @param name	Report	name.
-			/// @param column_name	First column name.
-			/// @param ...			Subsequent column names.
-			void start(const char *column_name, ...) __attribute__ ((sentinel));
-
-			/// @brief Open report, define column names.
-			/// @param column_names	The column names.
-			void start(const std::vector<std::string> &column_names);
-
-			virtual ~Report();
-
-			virtual Report & push_back(const char *str) = 0;
-
-			virtual Report & push_back(const std::string &value);
-
-			virtual Report & push_back(const short value);
-			virtual Report & push_back(const unsigned short value);
-
-			virtual Report & push_back(const int value);
-			virtual Report & push_back(const unsigned int value);
-
-			virtual Report & push_back(const long value);
-			virtual Report & push_back(const unsigned long value);
-
-			virtual Report & push_back(const TimeStamp value);
-			virtual Report & push_back(const bool value);
-
-			virtual Report & push_back(const float value);
-			virtual Report & push_back(const double value);
-
-			template <typename T>
-			Report & push_back(const T &value) {
-				return this->push_back(std::to_string(value));
-			}
-
-		};
-
-		class UDJAT_API Response : public ResponseInfo, public Udjat::Value {
-		public:
-		protected:
-
-			/// @brief Response type.
-			MimeType type = MimeType::custom;
-
-			/// @brief is the response valid?
-			bool valid = true;
-
-		public:
-
-			constexpr Response(const MimeType m = MimeType::custom)
-			: type(m) { }
-
-			inline bool operator ==(const MimeType type) const noexcept {
-				return this->type == type;
-			}
-
-			inline bool operator !=(const MimeType type) const noexcept {
-				return this->type != type;
-			}
-
-			inline MimeType getType() const noexcept {
-				return this->type;
-			}
-
-			inline operator MimeType() const noexcept {
-				return this->type;
-			}
-
-		};
-
-		class UDJAT_API Request {
-		private:
-			HTTP::Method type = HTTP::Get;
-
-		protected:
-
-			/// @brief Method name.
-			std::string method;
-
-			/// @brief Request path.
-			std::string path;
-
-		public:
-			Request() {
-			}
-
-			Request(HTTP::Method t) : type(t) {
-			}
-
-			Request(const char *type) : type(HTTP::MethodFactory(type)) {
-			}
-
-			/// @brief is request empty?
-			inline bool empty() const noexcept {
-				return path.empty();
-			}
-
-			/// @brief Get the request method.
-			inline const char * getMethod() const noexcept {
-				return method.c_str();
-			}
-
-			/// @brief Get the requested action.
-			virtual const std::string getAction();
-
-			/// @brief Select action from list.
-			/// @return Index of the selected action or -1 if not found.
-			/// @retval -1 The action is not in the list.
-			int select(const char *value, ...) __attribute__ ((sentinel));
-
-			/// @brief Get the request path.
-			inline const char * getPath() const noexcept {
-				return path.c_str();
-			}
-
-			inline bool operator==(HTTP::Method type) const noexcept {
-				return this->type == type;
-			}
-
-			inline bool operator!=(HTTP::Method type) const noexcept {
-				return this->type != type;
-			}
-
-			inline HTTP::Method as_type() const noexcept {
-				return type;
-			}
-
-			bool operator ==(const char *key) const noexcept;
-
-			/// @brief Pop one element from path, scan the list.
-			/// @return Index of the 'popped' element.
-			/// @retval -1 The element is not in the list.
-			int pop(const char *name, ...) __attribute__ ((sentinel));
-
-			/// @brief Pop one element from path.
-			virtual std::string pop();
-
-			virtual Request & pop(std::string &value);
-			virtual Request & pop(int &value);
-			virtual Request & pop(unsigned int &value);
-
-		};
-
-	}
-
-	namespace std {
-
-		template <typename T>
-		inline Udjat::Report & operator<<(Udjat::Report &out, T value) {
-			return out.push_back(value);
-		}
-
-		template <typename T>
-		inline Udjat::Request & operator>>(Udjat::Request &in, T &value) {
-			return in.pop(value);
-		}
-
-	}
-
-
-#endif // UDJAT_REQUEST_H_INCLUDED

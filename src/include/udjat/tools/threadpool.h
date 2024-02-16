@@ -12,13 +12,13 @@
 	#define UDJAT_THREADPOOL_H_INCLUDED
 
 	#include <udjat/defs.h>
+	#include <udjat/tools/xml.h>
 	#include <thread>
 	#include <mutex>
 	#include <atomic>
 	#include <queue>
 	#include <condition_variable>
 	#include <functional>
-	#include <pugixml.hpp>
 
 	namespace Udjat {
 
@@ -91,7 +91,7 @@
 			~ThreadPool();
 
 			void stop();
-			void set(const pugi::xml_node &node);
+			void set(const XML::Node &node);
 
 			inline void setMaxThreads(size_t maxthreads) {
 				limits.threads = maxthreads;

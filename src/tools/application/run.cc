@@ -28,7 +28,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <private/updater.h>
  #include <string>
  #include <getopt.h>
@@ -121,7 +121,7 @@
 		}
 #else
 		if(setenv(name, value, 1)) {
-			throw std::system_error(errno,std::system_category(),_("Invalid property"));
+			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
 		}
 #endif // _WIN32
 
@@ -141,14 +141,34 @@
 		int ix = 1;
 		while(ix < argc) {
 
-			if(String{argv[ix]}.select("-h","--help","/?","-?","help","?",NULL) != -1) {
+			if(String{argv[ix]}.select("-h","--help","/?","-?","/h","help","?",NULL) >= 0) {
 
-				Logger::console(false);
+				Logger::console(true);
 				cout << Logger::Message{ _("Usage:\t{} [options]"), argv[0]} << endl << endl;
 				help(cout);
 				cout << endl << endl;
-				return ECANCELED;
+				return (errno = ECANCELED);
 
+#ifdef _WIN32
+			} else if(argv[ix][0] == '/') {
+
+				// It's a '/name=' argument.
+				const char *name = argv[ix]+1;
+				const char *value = strchr(name,'=');
+
+				if(value) {
+					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
+						throw std::system_error(EINVAL,std::system_category(),string{name,(size_t) (value-name)});
+					}
+				} else {
+					if(!argument(name)) {
+						throw std::system_error(EINVAL,std::system_category(),name);
+					}
+				}
+
+				ix++;
+
+#endif // _WIN32
 			} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
 
 				// It's a '--name=' argument.
@@ -166,6 +186,7 @@
 				}
 
 				ix++;
+
 			} else if(argv[ix][0] == '-') {
 
 				const char name = argv[ix][1];
@@ -218,8 +239,9 @@
 
 		// Parse command line arguments.
 		if(setup(argc,argv,definitions)) {
-			return 0;
+			return -1;
 		}
+		debug("c");
 
 		Logger::redirect();
 		return run(definitions);

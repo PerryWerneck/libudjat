@@ -30,12 +30,11 @@
 	const char *str;
  } types[] = {
 
-	// 'dat' is allways the first one.
 	{ "bin",	"application/octet-stream" },
 
 	{ "json",	"application/json; charset=utf-8" },
 	{ "csv",	"text/csv; charset=utf-8" },
-	{ "tsv",	"text/csv; charset=utf-8" },
+	{ "tsv",	"text/tab-separated-values; charset=utf-8" }, // https://www.freeformatter.com/mime-types-list.html
 	{ "txt",	"text/plain; charset=utf-8" },
 	{ "xml",	"text/xml; charset=utf-8" },
 	{ "html",	"text/html; charset=utf-8" },
@@ -63,6 +62,17 @@
 	{ "ods",	"application/vnd.oasis.opendocument.spreadsheet" },
 	{ "sh",		"application/x-sh" },
 
+	// https://gist.github.com/jimschubert/94894c938d8f9f64c6863b28c70a22cc
+	{ "pdf",	"application/pdf" },
+
+	// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
+	{ "rtf",	"text/richtext" },
+	{ "xhtml",	"application/xhtml+xml" },
+	{ "zip",	"application/zip" },
+
+	// Form parser
+	{ "form-urlencoded",	"x-www-form-urlencoded" },
+
  };
 
  const char * std::to_string(const Udjat::MimeType type, bool suffix) {
@@ -78,7 +88,9 @@
  Udjat::MimeType Udjat::MimeTypeFactory(const char *str, bool log_def) noexcept {
 
  	if(!(str && *str)) {
-		cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
+		if(log_def) {
+			cerr << "http\tEmpty mimetype, assuming '" << types[0].str << "'" << endl;
+		}
 		return (Udjat::MimeType) 0;
  	}
 
@@ -109,4 +121,36 @@
 		clog << "http\tUnknown mimetype '" << str << "' assuming '" << types[0].str << "'" << endl;
  	}
  	return (Udjat::MimeType) 0;
+ }
+
+ Udjat::MimeType Udjat::MimeTypeFactory(const char *str, const Udjat::MimeType def) noexcept {
+
+ 	if(!(str && *str)) {
+		return def;
+ 	}
+
+	// First check for the name
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strcasecmp(str,types[ix].str)) {
+			return (MimeType) ix;
+		}
+ 	}
+
+ 	// Then for the extension
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strcasecmp(str,types[ix].ext)) {
+			return (MimeType) ix;
+		}
+ 	}
+
+ 	// Again, only the length of str.
+ 	size_t length = strlen(str);
+	for(size_t ix = 0; ix < (sizeof(types)/sizeof(types[0])); ix++) {
+		if(!strncasecmp(str,types[ix].str,length)) {
+			return (MimeType) ix;
+		}
+ 	}
+
+ 	// Not found!
+	return def;
  }

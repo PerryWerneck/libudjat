@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	Alert::Script::Script(const pugi::xml_node &node, const char *defaults)
+	Alert::Script::Script(const XML::Node &node, const char *defaults)
 		: Abstract::Alert(node), out{Logger::LevelFactory(node,"stdout","info")},err{Logger::LevelFactory(node,"stderr","error")} {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);

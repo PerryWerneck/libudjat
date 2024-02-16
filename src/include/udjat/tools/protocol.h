@@ -21,11 +21,9 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/string.h>
- #include <udjat/request.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/file/handler.h>
- #include <udjat/tools/timestamp.h>
- #include <list>
+ #include <memory>
 
  #ifndef _WIN32
 	#include <sys/socket.h>
@@ -51,6 +49,12 @@
 		void setDefault() noexcept;
 
 	public:
+
+		/// @brief Get handler for file:///
+		static Protocol & FileHandlerFactory();
+
+		/// @brief Get handler for script:///
+		static Protocol & ScriptHandlerFactory();
 
 		/// @brief Protocol watched.
 		class UDJAT_API Watcher {
@@ -341,7 +345,7 @@
 
 		virtual std::shared_ptr<Worker> WorkerFactory() const;
 
-		static std::shared_ptr<Worker> WorkerFactory(const char *url);
+		static std::shared_ptr<Worker> WorkerFactory(const char *url, bool allow_default = true, bool autoload = true);
 
 		Protocol(const Protocol &) = delete;
 		Protocol(const Protocol *) = delete;
@@ -377,7 +381,7 @@
 		/// @param url The url to search for.
 		/// @param allow_default If true returns the default protocol when not found.
 		/// @return Pointer to selected protocol or nullptr.
-		static const Protocol * find(const char *name, bool allow_default = true, bool autoload = false);
+		// static const Protocol * find(const char *name, bool allow_default = true, bool autoload = false);
 
 		/// @brief Verify protocol pointer.
 		/// @param protocol Pointer to protocol to confirm.
@@ -397,6 +401,14 @@
 		/// @param payload request payload.
 		/// @return Host response.
 		virtual String call(const URL &url, const HTTP::Method method, const char *payload = "") const;
+
+		/// @brief Call protocol method.
+		/// @param url The URL to call.
+		/// @param method Required method.
+		/// @param payload request payload.
+		/// @param value Value for response.
+		/// @return true if the value was updated.
+		virtual bool call(const URL &url, Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		/// @brief Call protocol method.
 		/// @param url The URL to call.

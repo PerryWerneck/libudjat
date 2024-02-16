@@ -17,195 +17,276 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
- #include <unistd.h>
- #include <cstring>
+ /**
+  * @brief Implements linux file watcher.
+  */
+
+ #include <config.h>
+ #include <private/filewatcher.h>
+ #include <sys/inotify.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
- #include <sched.h>
  #include <sys/types.h>
  #include <sys/stat.h>
- #include <unistd.h>
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <fcntl.h>
- #include <iostream>
+ #include <stdexcept>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
+ #define INOTIFY_EVENT_SIZE ( sizeof (inotify_event) )
+ #define INOTIFY_EVENT_BUF_LEN ( 1024 * ( INOTIFY_EVENT_SIZE + 16 ) )
 
  using namespace std;
 
  namespace Udjat {
 
-	std::mutex File::Watcher::guard;
 
-	File::Watcher::Watcher(const Quark &n) : name(n) {
-		Controller::getInstance().insert(this);
-	}
+	File::Watcher::Controller::Controller() {
 
-	File::Watcher::~Watcher() {
-		Controller::getInstance().remove(this);
-	}
+		Logger::String{"Starting service"}.trace("file-watcher");
 
-	File::Watcher * File::watch(void *id, const char *name, std::function<void (const Udjat::File::Text &)> callback) {
-
-		Watcher * watcher =  Controller::getInstance().find(name);
-		watcher->push_back(id,callback);
-		return watcher;
-
-	}
-
-	File::Watcher * File::watch(void *id, const Quark &name, std::function<void (const Udjat::File::Text &)> callback) {
-
-		Watcher * watcher =  Controller::getInstance().find(name.c_str());
-		watcher->push_back(id,callback);
-		return watcher;
-
-	}
-
-	void File::Watcher::remove(void *id) {
-		std::lock_guard<std::mutex> lock(guard);
-
-		files.remove_if([id](const File &file) {
-			return file.id == id;
-		});
-
-		if(files.size())
-			return;
-
-		delete this;
-	}
-
-	bool File::Watcher::update(bool force) {
-
-		if(updated && !force) {
-			return false;
+		MainLoop::Handler::fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
+		if(MainLoop::Handler::fd == -1) {
+			throw system_error(errno,system_category(),"Can't initialize inotify");
 		}
 
-		try {
+		MainLoop::Handler::events = MainLoop::Handler::oninput;
+		MainLoop::Handler::enable();
 
-#ifdef DEBUG
-			cout << "Inotify\tLoading '" << name.c_str() << "' for " << files.size() << " file(s)" << endl;
-#endif // DEBUG
+	}
 
-			// Open file
-			int fd = open(name.c_str(),O_RDONLY);
-			if(fd < 0) {
-				throw system_error(errno, system_category(), (string{"Can't open '"} + name.c_str() + "'"));
+	File::Watcher::Controller::~Controller() {
+
+		std::lock_guard<std::mutex> lock(guard);
+		handlers.remove_if([this](Handler &handler) {
+			if(handler.wd != -1) {
+				inotify_rm_watch(MainLoop::Handler::fd, handler.wd);
+				handler.wd = -1;
 			}
+			return true;
+		});
 
-			try {
+		MainLoop::Handler::disable();
+		::close(MainLoop::Handler::fd);
 
-				struct stat st;
-				if(fstat(fd, &st)) {
-					throw system_error(errno, system_category(), (string{"Can't get stats of '"} + name.c_str() + "'"));
+	}
+
+	File::Watcher::Controller & File::Watcher::Controller::getInstance() {
+		static File::Watcher::Controller instance;
+		return instance;
+	}
+
+	void File::Watcher::Controller::insert(File::Watcher *watcher) {
+
+		std::lock_guard<std::mutex> lock(guard);
+
+		struct stat st;
+		if(stat(watcher->pathname, &st)) {
+			throw std::system_error(errno,std::system_category(),watcher->pathname);
+
+		}
+
+		if((st.st_mode & S_IFDIR)) {
+
+			// Directory watch
+			watch_directory(watcher);
+
+		} else if( (st.st_mode & S_IFREG)) {
+
+			// File watch.
+			watch_file(watcher);
+
+		} else if( (st.st_mode & S_IFLNK)) {
+
+			// Symbolic link
+			watch_file(watcher);
+
+		} else {
+
+			throw runtime_error(Logger::String{"File '",watcher->pathname,"' has unexpected type"});
+
+		}
+
+		Logger::String{"Watching '",watcher->pathname,"'"}.trace("file-watcher");
+
+	}
+
+	void File::Watcher::Controller::watch_file(File::Watcher *watcher) {
+
+		// Is this path being watched?
+		for(Handler &handler : handlers) {
+			for(File::Watcher *file : handler.files) {
+				if(!strcmp(file->pathname,watcher->pathname)) {
+					handler.files.push_back(watcher);
+					return;
+				}
+			}
+		}
+
+		// Add a new handler.
+		Handler handler;
+		handler.files.push_back(watcher);
+
+		handler.wd = inotify_add_watch(MainLoop::Handler::fd,watcher->pathname,IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
+		if(handler.wd == -1) {
+			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->pathname + "'");
+		}
+
+		handlers.push_back(handler);
+
+	}
+
+	void File::Watcher::Controller::watch_directory(File::Watcher *watcher) {
+
+		// Is this path being watched?
+		for(Handler &handler : handlers) {
+			for(File::Watcher *file : handler.files) {
+				if(!strcmp(file->pathname,watcher->pathname)) {
+					handler.files.push_back(watcher);
+					return;
+				}
+			}
+		}
+
+		// Add a new handler.
+		Handler handler;
+		handler.files.push_back(watcher);
+
+		handler.wd = inotify_add_watch(MainLoop::Handler::fd,watcher->pathname,IN_CREATE|IN_DELETE|IN_DELETE_SELF|IN_MOVE_SELF|IN_MOVED_TO);
+		if(handler.wd == -1) {
+			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->pathname + "'");
+		}
+
+		handlers.push_back(handler);
+
+	}
+
+	void File::Watcher::Controller::remove(File::Watcher *watcher) {
+
+		std::lock_guard<std::mutex> lock(guard);
+
+		handlers.remove_if([this,watcher](Handler &handler) {
+
+			handler.files.remove_if([watcher](File::Watcher *f) {
+				return f == watcher;
+			});
+
+			// Remove handler if empty.
+			if(handler.files.empty() && handler.wd != -1) {
+				inotify_rm_watch(MainLoop::Handler::fd, handler.wd);
+				handler.wd = -1;
+			}
+			return handler.wd == -1;
+		});
+
+	}
+
+	void File::Watcher::Controller::onEvent(const ::inotify_event *event) noexcept {
+
+		std::lock_guard<std::mutex> lock(guard);
+
+		auto mask = event->mask;
+		auto filename = make_shared<string>(event->name);
+
+		for(auto &handler : handlers) {
+
+			if(handler.wd == event->wd) {
+
+				if(mask & IN_IGNORED) {
+					handler.wd = -1;
 				}
 
-				if(st.st_mtime == this->mtime) {
-#ifdef DEBUG
-					cout << "File was not modified" << endl;
-#endif // DEBUG
-					::close(fd);
-					return false;
-				}
+				for(auto file : handler.files) {
 
-				this->mtime = st.st_mtime;
+					ThreadPool::getInstance().push("FileWatcherEvent",[mask,file,filename](){
 
-				if(files.size()) {
+						const char *name = filename->empty() ? file->pathname : filename->c_str();
 
-					Udjat::File::Text file(fd,st.st_size);
+						debug("Event on '",name,"'");
 
-					for(auto f = files.begin(); f != files.end(); f++) {
+						sched_yield();
+						sched_yield();
+						sched_yield();
 
 						try {
 
-							f->callback(file);
+							if(mask & IN_CLOSE_WRITE) {
+								Logger::String{"File '",name,"' was changed"}.trace("file-watcher");
+								file->updated(Modified,name);
+							}
 
-						} catch(const exception &e) {
+							if(mask & (IN_DELETE_SELF|IN_DELETE)) {
+								Logger::String{"File '",name,"' was deleted"}.trace("file-watcher");
+								file->updated(Deleted,name);
+							}
 
-							cerr << "inotify\tError '" << e.what() << "' updating file '" << this->name.c_str() << "'" << endl;
+							if(mask & IN_MOVE_SELF) {
+								Logger::String{"File '",name,"' was moved"}.trace("file-watcher");
+								file->updated(MovedFrom,name);
+							}
+
+							if(mask & IN_CREATE) {
+								Logger::String{"File '",name,"' was created on '",file->pathname,"'"}.trace("file-watcher");
+								file->updated(Created,name);
+							}
+
+							if(mask & IN_MOVED_TO) {
+								Logger::String{"File '",name,"' was moved to '",file->pathname,"'"}.trace("file-watcher");
+								file->updated(MovedTo,name);
+							}
+
+						} catch(const std::exception &e) {
+
+							Logger::String{"File '",name,"': ",e.what()}.error("file-watcher");
 
 						}
 
-					}
-
+					});
 				}
 
-			} catch(...) {
-
-				::close(fd);
-				throw;
+				return;
 			}
-
-			::close(fd);
-
-		} catch(const exception &e) {
-
-			cerr << "inotify\tError '" << e.what() << "' loading '" << this->name.c_str() << "'" << endl;
 
 		}
 
-		return updated = true;
-
 	}
 
-	void File::Watcher::onChanged() noexcept {
+	void File::Watcher::Controller::handle_event(const MainLoop::Handler::Event) {
 
-		Controller::getInstance().remove(this);
+		char * buffer = new char[INOTIFY_EVENT_BUF_LEN];
+		memset(buffer,0,INOTIFY_EVENT_BUF_LEN);
 
-		ThreadPool::getInstance().push("FileWatcher",[this]() {
+		ssize_t bytes = read(buffer, INOTIFY_EVENT_BUF_LEN);
 
-			sched_yield();
+		while(bytes > 0) {
 
-			if(::access(this->name.c_str(),F_OK) == -1) {
+			ssize_t	bufPtr	= 0;
 
-				cerr << "inotify\tFile '" << name.c_str() << "': " << strerror(errno) << endl;
-
-			} else {
-
-				update(true);
-				Controller::getInstance().insert(this);
-
+			while(bufPtr < bytes) {
+				const ::inotify_event *pevent = (::inotify_event *) &buffer[bufPtr];
+				onEvent(pevent);
+				bufPtr += (offsetof (::inotify_event, name) + pevent->len);
 			}
 
-		});
-
-	}
-
-	void File::Watcher::onEvent(const uint32_t event) noexcept {
-
-		if(event & IN_IGNORED) {
-
-			// Watch  was  removed  explicitly or automatically (file  was  deleted, or filesystem was unmounted)
-			cout << "inotify\tFile '" << this->name.c_str() << "' was ignored" << endl;
-			this->wd = -1;
-			onChanged();
+			bytes = read(buffer, INOTIFY_EVENT_BUF_LEN);
 		}
 
-		if(event & IN_CLOSE_WRITE) {
-			cout << "inotify\tFile '" << this->name.c_str() << "' was changed" << endl;
-			ThreadPool::getInstance().push("FileWatcherEvent",[this]() {
-				sched_yield();
-				update(true);
-				Controller::getInstance().insert(this);
+		delete[] buffer;
+
+		// Cleanup
+		{
+			std::lock_guard<std::mutex> lock(guard);
+			handlers.remove_if([this](Handler &handler) {
+				if(handler.files.empty() && handler.wd != -1) {
+					inotify_rm_watch(MainLoop::Handler::fd, handler.wd);
+					handler.wd = -1;
+				}
+				return handler.wd == -1;
 			});
 		}
 
-		if(event & IN_DELETE_SELF) {
-			cout << "inotify\tFile '" << this->name.c_str() << "' was deleted" << endl;
-		}
-
-		if(event & IN_MOVE_SELF) {
-			cout << "inotify\tFile '" << this->name.c_str() << "' was moved" << endl;
-			onChanged();
-		}
-
 	}
-
-	void File::Watcher::push_back(void *id, std::function<void (const Udjat::File::Text &)> callback) {
-
-		std::lock_guard<std::mutex> lock(guard);
-		File file(id,callback);
-		files.push_back(file);
-
-	}
-
 
  }
+

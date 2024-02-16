@@ -21,8 +21,8 @@
  #include <private/protocol.h>
  #include <udjat/tools/protocol.h>
  #include <cstring>
- #include <udjat/moduleinfo.h>
- #include <udjat/module.h>
+ #include <udjat/module/info.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/logger.h>
 
  namespace Udjat {
@@ -74,15 +74,8 @@
 		protocols.remove(protocol);
 	}
 
+	/*
 	const Protocol * Protocol::Controller::find(const char *name, bool allow_default, bool autoload) {
-
-		{
-			/// @brief Singleton for file protocol.
-			static File file;
-#ifndef _WIN32
-			static Script script;
-#endif // !_WIN32
-		}
 
 		debug("Searching for protocol '",name,"'");
 
@@ -108,6 +101,7 @@
 		return nullptr;
 
 	}
+	*/
 
 	const Protocol * Protocol::Controller::verify(const void *protocol) {
 

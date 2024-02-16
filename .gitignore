@@ -70,5 +70,10 @@ resources.rc
 doxygen/*
 version.h
 libtool
+*.patch
+
 config.h.in
+
+test.xml
+
 

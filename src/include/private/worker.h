@@ -21,10 +21,10 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/worker.h>
- #include <udjat/request.h>
+ #include <udjat/tools/worker.h>
+ #include <udjat/tools/request.h>
  #include <mutex>
- #include <unordered_map>
+ #include <list>
  #include <iostream>
 
  using namespace std;
@@ -39,38 +39,13 @@
 		Controller();
 		~Controller();
 
-		// Hash method
-		class Hash {
-		public:
-			inline size_t operator() (const char * str) const {
-				// https://stackoverflow.com/questions/7666509/hash-function-for-string
-				size_t value = 5381;
-
-				for(const char *ptr = str; *ptr; ptr++) {
-					value = ((value << 5) + value) + tolower(*ptr);
-				}
-
-				return value;
-			}
-		};
-
-		// Equal method
-		class Equal {
-		public:
-			inline bool operator() (const char *a, const char *b) const {
-				return strcasecmp(a,b) == 0;
-			}
-		};
-
-		std::unordered_map<const char *, const Worker *, Hash, Equal> workers;
+		std::list<const Worker *> workers;
 
 	public:
 		static Controller & getInstance();
 
 		void insert(const Worker *worker);
 		void remove(const Worker *worker);
-
-		const Worker * find(const char *name) const;
 
 		bool for_each(const std::function<bool(const Worker &worker)> &func);
 

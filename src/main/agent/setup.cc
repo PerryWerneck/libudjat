@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include <private/agent.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/alert/activation.h>
@@ -40,15 +40,15 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::setup(const pugi::xml_node &root, bool upsearch) {
+	void Abstract::Agent::setup(const XML::Node &root) {
 
 		Controller::setup_properties(*this,root);
 
 		// Load children.
-		for(const pugi::xml_node &node : root) {
+		for(const XML::Node &node : root) {
 
 			// It's an attribute?
-			if(!(strcasecmp(node.name(),"attribute") && strcasecmp(node.name(),"attribute-list"))) {
+			if(!(strncasecmp(node.name(),"attribute",9))) {
 				continue;
 			}
 
@@ -95,7 +95,7 @@ namespace Udjat {
 				if(agent) {
 
 					agent->Object::set(node);
-					agent->setup(node,true);
+					agent->setup(node);
 					push_back(agent);
 					continue;
 
@@ -119,102 +119,30 @@ namespace Udjat {
 			}
 
 			// Run factories.
-			bool success = Udjat::Factory::for_each(node.name(),[this,node](Udjat::Factory &factory) {
+			if(Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
 
-				try {
+				if(factory == node.attribute("type").as_string("default") && factory.CustomFactory(*this,node)) {
+					return true;
+				}
 
-					// It's an agent?
-					{
-						auto agent = factory.AgentFactory(*this,node);
-						if(agent) {
-							agent->Object::set(node);
-							agent->setup(node,true);
-							push_back(agent);
-							return true;
-						}
-					}
-
-					// It's an alert?
-					{
-						auto alert = factory.AlertFactory(*this, node);
-						if(alert) {
-							alert->setup(node);
-							push_back(node,alert);
-							return true;
-						}
-
-					}
-
-					// It's an object?
-					{
-						auto object = factory.ObjectFactory(*this,node);
-						if(object) {
-							lock_guard<std::recursive_mutex> lock(guard);
-							object->setup(node);
-							children.objects.push_back(object);
-							return true;
-						}
-
-					}
-
-					// Try generic parser.
-					return factory.generic(*this, node);
-
-				} catch(const std::exception &e) {
-
-					factory.error() << "Error '" << e.what() << "' parsing node <" << node.name() << ">" << endl;
-
-				} catch(...) {
-
-					factory.error() << "Unexpected error parsing node <" << node.name() << ">" << endl;
-
+				if(factory == node.name() && factory.NodeFactory(*this,node)) {
+					return true;
 				}
 
 				return false;
 
-			});
+			})) {
 
-			if(!success && Logger::enabled(Logger::Debug)) {
-				Logger::String{
-					"Ignoring node <",node.name(),">"
-				}.write(Logger::Debug,PACKAGE_NAME);
+				continue;
+
+			}
+
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Ignoring node <",node.name(),">"}.write(Logger::Debug,PACKAGE_NAME);
 			}
 
 		}
 
-		// Load default values.
-		//
-		// Search for common states & alerts.
-		//
-		// Example:
-		//
-		// <service-defaults>
-		//		<alert type='bla' ... />
-		// </service-defaults>
-		//
-		// <service name='bla1' ... />
-		// <service name='bla2' ... />
-		//
-		// The alert type 'bla' will be loaded in both services.
-		//
-		if(upsearch) {
-
-			string nodename{root.attribute("type").as_string(root.name())};
-			nodename += "-defaults";
-
-			for(XML::Node node = root.parent(); node; node = node.parent()) {
-
-				if(!is_allowed(node)) {
-					continue;
-				}
-
-				for(auto child = node.child(nodename.c_str()); child; child = child.next_sibling(nodename.c_str())) {
-					if(is_allowed(child)) {
-						setup(child,false);
-					}
-				}
-			}
-		}
 	}
 
 }

@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/converters.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
@@ -31,10 +32,29 @@
 
  namespace Udjat {
 
+	String::String(const char **args, char delimiter) : std::string{args[0]} {
+
+		char delim[] = {delimiter,0};
+
+		for(size_t ix = 1; args[ix];ix++) {
+			if(delimiter) {
+				std::string::append(delim);
+			}
+			std::string::append(args[ix]);
+		}
+
+	}
+
+	void String::add(const char *str) {
+		std::string::append(str);
+	}
+
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {
-		std::string::append(str);
+		if(str) {
+			std::string::append(str);
+		}
 	}
 
 	void String::append(const bool value) {
@@ -144,10 +164,50 @@
 		return strncmp(c_str(), prefix, strlen (prefix)) == 0;
 	}
 
+	bool String::for_each(const char *ptr, const char *delim, const std::function<bool(const String &value)> &func) {
+
+		size_t szdelim = strlen(delim);
+
+		while(ptr && *ptr) {
+
+			const char *next = strstr(ptr,delim);
+			if(!next) {
+				return func(String{ptr}.strip());
+			}
+			next += szdelim;
+
+			while(*next && isspace(*next))
+				next++;
+
+			if(func(String{ptr,(size_t) ((next-ptr)-1)}.strip())) {
+				return true;
+			}
+
+			ptr = next;
+			while(*ptr && isspace(*ptr)) {
+				ptr++;
+			}
+
+		}
+
+		return false;
+
+	}
+
+	bool String::for_each(const char *delim, const std::function<bool(const String &value)> &func) {
+		return for_each(c_str(),delim,func);
+	}
+
 	std::vector<String> String::split(const char *delim) {
 
 		std::vector<String> strings;
 
+		for_each(c_str(),delim,[&strings](const String &value){
+			strings.push_back(value);
+			return false;
+		});
+
+		/*
 		const char *ptr = c_str();
 		while(ptr && *ptr) {
 			const char *next = strstr(ptr,delim);
@@ -166,6 +226,7 @@
 			}
 
 		}
+		*/
 
 		return strings;
 
@@ -244,12 +305,13 @@
 		return rc;
 	}
 
-	int String::select(const char *value, ...) {
+	int String::select(const char *value, va_list args) const noexcept {
+
+		if(empty()) {
+			return -(errno = ENODATA);
+		}
 
 		int index = 0;
-
-		va_list args;
-		va_start(args, value);
 		while(value) {
 
 			if(!strcasecmp(c_str(),value)) {
@@ -260,62 +322,25 @@
 			index++;
 			value = va_arg(args, const char *);
 		}
+		return -(errno = ENOENT);
+	}
+
+	int String::select(const char *value, ...) const noexcept {
+
+		va_list args;
+		va_start(args, value);
+		int rc = select(value,args);
 		va_end(args);
 
-		return -1;
+		return rc;
 
 	}
 
 	bool String::as_bool(bool def) {
-
 		if(empty()) {
 			return def;
 		}
-
-		static const char * yes[] = {
-			N_("yes"),
-			N_("true"),
-			N_("on"),
-			"1"
-		};
-
-		static const char * no[] = {
-			N_("no"),
-			N_("false"),
-			N_("off"),
-			"0"
-		};
-
-		for(const char *ptr : yes) {
-			if(strcasecmp(c_str(),ptr) == 0) {
-				return true;
-			}
-#ifdef GETTEXT_PACKAGE
-			if(strcasecmp(c_str(),dgettext(GETTEXT_PACKAGE,ptr)) == 0) {
-				return true;
-			}
-#endif // GETTEXT_PACKAGE
-		}
-
-		for(const char *ptr : no) {
-			if(strcasecmp(c_str(),ptr) == 0) {
-				return false;
-			}
-#ifdef GETTEXT_PACKAGE
-			if(strcasecmp(c_str(),dgettext(GETTEXT_PACKAGE,ptr)) == 0) {
-				return false;
-			}
-#endif // GETTEXT_PACKAGE
-
-		}
-
-		if(at(0) == '?' || !strcasecmp(c_str(),"default") || !strcasecmp(c_str(),_("default"))) {
-			return def;
-		}
-
-		clog << "Unexpected boolean keyword '" << c_str() << "', assuming '" << (def ? "true" : "false") << "'" << endl;
-
-		return def;
+		return from_string<bool>(c_str());
 	}
 
 	template<typename T>

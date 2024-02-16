@@ -19,14 +19,42 @@
 
  #include <config.h>
  #include <private/worker.h>
+ #include <udjat/tools/worker.h>
  #include <udjat/tools/logger.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
+ #include <udjat/tools/string.h>
+ #include <stdexcept>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
  namespace Udjat {
+
+	Worker::ResponseType Worker::ResponseTypeFactory(const char *name) {
+
+		static const char * response_type_names[] = {
+			"None",
+			"Value",
+			"Table",
+			"Both"
+		};
+
+		int type = (Worker::ResponseType) 0;
+		for(const char *type_name : response_type_names) {
+			if(!strcasecmp(name,type_name)) {
+				return (Worker::ResponseType) type;
+			}
+			type++;
+		}
+
+		throw runtime_error(_("Invalid response type"));
+	}
+
+	Worker::ResponseType Worker::ResponseTypeFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return ResponseTypeFactory(String{node,attrname,def}.c_str());
+	}
 
 	Worker::Worker(const char *n, const ModuleInfo &i) : name(n), module(i) {
 		Controller::getInstance().insert(this);
@@ -40,37 +68,109 @@
 		return Controller::getInstance().for_each(method);
 	}
 
-	Value & Worker::getProperties(Value &properties) const {
+	Udjat::Value & Worker::getProperties(Udjat::Value &properties) const {
 		properties["name"] = name;
 		return module.getProperties(properties);
 	}
 
-	const Worker * Worker::find(const char *name) {
-		return Worker::Controller::getInstance().find(name);
-	}
-
-	bool Worker::work(const char *name, Request &request, Response &response) {
-		return find(name)->work(request,response);
-	}
-
-	bool Worker::work(const char *name, Request &request, Report &response) {
-		return find(name)->work(request,response);
-	}
-
-	bool Worker::get(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
+	bool Worker::getProperty(const char *, Udjat::Value &) const {
 		return false;
 	}
 
-	bool Worker::head(Request UDJAT_UNUSED(&request), Response UDJAT_UNUSED(&response)) const {
+	const Worker & Worker::find(const char *name) {
+
+		const Worker *response = nullptr;
+
+		if(!Worker::Controller::getInstance().for_each([&response,name](const Worker &worker) {
+
+			if(!strcasecmp(worker.name,name)) {
+				response = &worker;
+				return true;
+			}
+
+			return false;
+
+		})) {
+			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find worker '{}'",name));
+		}
+
+		return *response;
+	}
+
+	const Worker & Worker::find(const Request &request) {
+
+		const Worker *response = nullptr;
+
+		if(!Worker::Controller::getInstance().for_each([&response,&request](const Worker &worker) {
+
+			if(worker.probe(request)) {
+				response = &worker;
+				return true;
+			}
+
+			return false;
+
+		})) {
+			throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find worker for '{}'",request.path()));
+		}
+
+		return *response;
+	}
+
+
+	bool Worker::get(Request &, Response::Value &) const {
 		return false;
 	}
 
-	bool Worker::work(Request &request, Response &response) const {
+	bool Worker::get(Request &, Response::Table &) const {
+		return false;
+	}
 
-		debug("-------------------------------------------");
+	bool Worker::head(Request &, Abstract::Response &) const {
+		return false;
+	}
 
-		auto type = request.as_type();
-		switch(type) {
+	bool Worker::introspect(Udjat::Value &) const {
+		return false;
+	}
+
+	Worker::ResponseType Worker::probe(const Request &request) const noexcept {
+		debug(__FUNCTION__,"(",request.path(),")");
+		return probe(request,ResponseType::Value);
+	}
+
+	Worker::ResponseType Worker::probe(const Request &request, ResponseType type) const noexcept {
+		//
+		// Execute legacy worker, with name as the first element of path.
+		//
+		size_t szname = strlen(name);
+
+		// Get request path.
+		const char *path = request.path();
+		if(*path == '/')
+			path++;
+
+		debug("path='",path,"'");
+
+		size_t szpath = strlen(path);
+
+		if(szpath >= szname && (path[szname] == '/' || !path[szname]) && !strncasecmp(path,name,szname)) {
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,name);
+			}
+			return type;
+		}
+
+		return ResponseType::None;
+	}
+
+	bool Worker::work(Request &request, Response::Value &response) const {
+
+		request.pop(); // Remove first element.
+
+		debug(__FUNCTION__,"(",request.path(),")");
+
+		switch((HTTP::Method) request) {
 		case HTTP::Get:
 			debug("HTTP GET");
 			return get(request,response);
@@ -80,27 +180,23 @@
 			return head(request,response);
 
 		default:
-			throw system_error(ENOENT,system_category(),Logger::Message("'{}' request are unavailable here",type));
+			return false;
 		}
-
-		return false;
 
 	}
 
-	bool Worker::work(Request UDJAT_UNUSED(&request), Report UDJAT_UNUSED(&response)) const {
-		return false;
-	}
+	bool Worker::work(Request &request, Response::Table &response) const {
 
-	size_t Worker::hash() const {
+		request.pop(); // Remove first element.
 
-		// https://stackoverflow.com/questions/7666509/hash-function-for-string
-		size_t value = 5381;
+		debug(__FUNCTION__,"(",request.path(),")");
 
-		for(const char *ptr = name; *ptr; ptr++) {
-			value = ((value << 5) + value) + tolower(*ptr);
+		if( ((HTTP::Method) request) == HTTP::Get) {
+			debug("HTTP GET");
+			return get(request,response);
 		}
 
-		return value;
+		return false;
 
 	}
 

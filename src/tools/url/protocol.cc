@@ -23,7 +23,14 @@
  #include <sys/stat.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/tools/worker.h>
+ #include <udjat/module/info.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response/value.h>
+ #include <udjat/tools/response/table.h>
+ #include <udjat/tools/response/object.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -52,8 +59,16 @@
 		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
-	HTTP::Method HTTP::MethodFactory(const pugi::xml_node &node, const char *def) {
-		return MethodFactory(node.attribute("http-method").as_string(def));
+	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return MethodFactory(String{node,attrname,def}.c_str());
+	}
+
+	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *def) {
+		return MethodFactory(node,"http-method",def);
+	}
+
+	HTTP::Method HTTP::MethodFactory(const XML::Node &node) {
+		return MethodFactory(node,"http-method","get");
 	}
 
 	Protocol::Protocol(const char *n, const ModuleInfo &i) : name(n), module(i) {
@@ -88,6 +103,7 @@
 		return Logger::trace() << name << "\t";
 	}
 
+	/*
 	const Protocol * Protocol::find(const URL &url, bool allow_default, bool autoload) {
 		string scheme = url.scheme();
 
@@ -99,43 +115,223 @@
 		return find(scheme.c_str(),allow_default,autoload);
 
 	}
+	*/
 
+	/*
 	const Protocol * Protocol::find(const char *name, bool allow_default, bool autoload) {
 		return Controller::getInstance().find(name,allow_default,autoload);
 	}
+	*/
 
 	const Protocol * Protocol::verify(const void *protocol) {
 		return Controller::getInstance().verify(protocol);
 	}
 
-	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url) {
+	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory(const char *url, bool allow_default, bool autoload) {
 
 		string name{url};
 
-		auto pos = name.find(":");
-		if(pos != string::npos) {
-			name.resize(pos);
+		{
+			auto pos = name.find(":");
+			if(pos != string::npos) {
+				name.resize(pos);
+			}
 		}
 
-		const Protocol * protocol = Protocol::find(name.c_str());
-		if(!protocol) {
-			throw runtime_error(string{"Cant find a protocol handler for "} + url);
+		debug("Searching for protocol '",name.c_str(),"'");
+
+		// 1 - check for registered protocol.
+		{
+			const Protocol * protocol = nullptr;
+
+			// Split composed protocol name, just valid here since internal and worker
+			// protocol cant handle composed schemes.
+			string pname{name};
+			{
+				auto pos = pname.find("+");
+				if(pos != string::npos) {
+					pname.resize(pos);
+				}
+			}
+
+			Protocol::for_each([&protocol,&pname](const Protocol &p){
+				if(p == pname.c_str()) {
+					protocol = &p;
+					return true;
+				}
+				return false;
+			});
+
+			if(protocol) {
+
+				auto worker = protocol->WorkerFactory();
+				if(!worker) {
+					throw runtime_error(String{"Cant create protocol worker for ",url});
+				}
+
+				worker->url(url);
+				return worker;
+			}
 		}
 
-		auto worker = protocol->WorkerFactory();
-		if(!worker) {
-			throw runtime_error(string{"Cant create protocol worker for "} + url);
+		// 2 - Check for internal protocols.
+		if(!strcasecmp(name.c_str(),"file")) {
+
+			auto worker = Protocol::FileHandlerFactory().WorkerFactory();
+			if(!worker) {
+				throw runtime_error(String{"Cant create file worker for ",url});
+			}
+
+			worker->url(url);
+			return worker;
+
 		}
 
-		worker->url(url);
+		if(!strcasecmp(name.c_str(),"script")) {
 
-		return worker;
+			auto worker = Protocol::ScriptHandlerFactory().WorkerFactory();
+			if(!worker) {
+				throw runtime_error(String{"Cant create script worker for ",url});
+			}
+
+			worker->url(url);
+			return worker;
+
+		}
+
+		// 3 - check for worker.
+		{
+			const Udjat::Worker *worker = nullptr;
+
+			Udjat::Worker::for_each([&worker,name](const Udjat::Worker &w){
+
+				debug("---> ",w.c_str()," - ",name.c_str());
+
+				if(w == name.c_str()) {
+					worker = &w;
+					return true;
+				}
+				return false;
+
+			});
+
+			if(worker) {
+
+				// Got worker for url, check if it can be used.
+
+				/// @brief Proxy forwarding URL requests to worker.
+				class Proxy : public Protocol::Worker {
+				private:
+					const Udjat::Worker *worker;
+					Udjat::Request request;
+					Udjat::Worker::ResponseType type;
+					MimeType mime = MimeType::json;
+
+				public:
+					Proxy(const Udjat::Worker *w, const char *url, const char *path)
+						: worker{w}, request{path ? path+3 : ""}, type{worker->probe(request)} {
+						this->url(url);
+						if(type == Udjat::Worker::None) {
+							throw runtime_error(Logger::String{"Cant handle ",url});
+						}
+					}
+
+					int mimetype(const MimeType type) override {
+						mime = type;
+						return 0;
+					}
+
+					String get(const std::function<bool(double current, double total)> &progress) override {
+
+						progress(0,0);
+
+						String str;
+						if(type == Udjat::Worker::Table) {
+
+							throw system_error(ENOTSUP,system_category(),"Cant handle worker response type (yet)");
+
+						} else {
+
+							Response::Object response;
+							if(worker->get(request,response)) {
+								str = response.to_string();
+							}
+
+						}
+
+						progress(str.size(),str.size());
+						return str;
+					}
+
+
+				};
+
+				debug("--------------------------------[",url,"]");
+				auto proxy = make_shared<Proxy>(worker,url,strstr(url,":///"));
+				return proxy;
+
+			}
+
+		}
+
+		// 4 - Check for available module
+		// TODO: Check if there's a module with protocol name, load it if necessary.
+
+		// 5 - Use the default protocol handler
+		if(allow_default) {
+
+			const Protocol *def = Controller::getInstance().getDefault();
+
+			if(def) {
+				auto worker = def->WorkerFactory();
+				if(!worker) {
+					throw runtime_error(String{"Cant get default worker for ",url});
+				}
+
+				worker->url(url);
+				return worker;
+			}
+
+		}
+
+		throw runtime_error(String{"Cant find a protocol handler for ",url});
+
 	}
 
 	/// @brief Create a worker for this protocol.
-	/// @return Worker for this protocol or empty shared pointer if the protocol cant factory workers.
 	std::shared_ptr<Protocol::Worker> Protocol::WorkerFactory() const {
-		return std::shared_ptr<Protocol::Worker>();
+
+		//
+		// This protocol is unable to create a worker, use a proxy to the 'old' API.
+		//
+		warning() << "No worker factory (old version?) using proxy worker" << endl;
+
+		class Proxy : public Protocol::Worker {
+		private:
+			const Protocol *protocol;
+
+		public:
+			Proxy(const Protocol *p) : protocol{p} {
+			}
+
+			virtual ~Proxy() {
+			}
+
+			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
+				if(!verify(protocol)) {
+					throw runtime_error("Protocol is no longer available");
+				}
+				return protocol->call(url().c_str(),method(),out.payload.c_str());
+			}
+
+			bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress), bool UDJAT_UNUSED(replace)) override {
+				throw runtime_error("The selected protocol is unable to save files");
+			}
+
+		};
+
+		return make_shared<Proxy>(this);
+
 	}
 
 	Value & Protocol::getProperties(Value &properties) const {
@@ -143,16 +339,14 @@
 		return module.getProperties(properties);
 	}
 
-	String Protocol::call(const char *u, const HTTP::Method method, const char *payload) {
+	String Protocol::call(const char *url, const HTTP::Method method, const char *payload) {
 
-		URL url{u};
-		const Protocol * protocol = find(url);
+		auto worker = Protocol::WorkerFactory(url);
 
-		if(!protocol) {
-			throw runtime_error(string{"Can't handle '"} + url + "' - no protocol handler");
-		}
-
-		return protocol->call(url,method,payload);
+		worker->url(url);
+		worker->method(method);
+		worker->payload(payload);
+		return worker->get();
 
 	}
 
@@ -165,6 +359,10 @@
 		worker->method(method);
 		worker->payload(payload);
 		return worker->get();
+	}
+
+	bool Protocol::call(const URL &, Udjat::Value &, const HTTP::Method, const char *) const {
+		return false;
 	}
 
 	String Protocol::call(const URL &url, const char *method, const char *payload) const {

@@ -28,7 +28,7 @@
 
  #include <config.h>
  #include <private/agent.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/alert/activation.h>
@@ -40,7 +40,7 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::Controller::setup_properties(Abstract::Agent &agent, const pugi::xml_node &root) noexcept {
+	void Abstract::Agent::Controller::setup_properties(Abstract::Agent &agent, const XML::Node &root) noexcept {
 
 		const char *section = root.attribute("settings-from").as_string("agent-defaults");
 

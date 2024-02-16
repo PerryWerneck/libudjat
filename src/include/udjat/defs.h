@@ -121,6 +121,7 @@
 
 namespace Udjat {
 
+
 	/// @brief Abstract objects.
 	namespace Abstract {
 

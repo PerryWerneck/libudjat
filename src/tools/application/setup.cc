@@ -29,11 +29,11 @@
  #include <config.h>
  #include <private/misc.h>
  #include <sys/stat.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/timer.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/http/client.h>

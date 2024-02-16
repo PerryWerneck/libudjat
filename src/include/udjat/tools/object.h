@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/abstract/object.h>
  #include <ostream>
  #include <string>
  #include <udjat/tools/xml.h>
@@ -30,153 +31,6 @@
 
  namespace Udjat {
 
-	namespace Abstract {
-
-		/// @brief Abstract object with properties.
-		class UDJAT_API Object {
-		public:
-
-			/// @brief Setup object.
-			/// @param node The XML node with the object definitions.
-			virtual void setup(const pugi::xml_node &node, bool upsearch = true);
-
-			/// @brief Get configuration file group.
-			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");
-
-			/// @brief Call method on every ocorrence of 'tagname' until method returns 'true'.
-			/// @param node The xml node.
-			/// @param tagname The tagname.
-			/// @return true if method has returned 'true'.
-			static bool for_each(const pugi::xml_node &node, const char *tagname, const std::function<bool (const pugi::xml_node &node)> &call);
-
-			/// @brief Navigate thru XML nodes, including groups.
-			/// @param node The XML node to start search.
-			/// @param name The child node name.
-			/// @param group The child group node name, usually the plural of name (optional).
-			/// @param handler The handler for children.
-			static void for_each(const pugi::xml_node &node, const char *name, const char *group, const std::function<void(const pugi::xml_node &node)> &handler);
-
-			/// @brief Navigate thru <tagname> nodes on current and parent nodes until lambda returns 'true'.
-			/// @param node The starting point.
-			/// @param tagname the xml tag to scan.
-			/// @param call lambda to be called on every node.
-			/// @return true if the lambda has returned true.
-			static bool search(const pugi::xml_node &node, const char *tagname, const std::function<bool(const pugi::xml_node &node)> &call);
-
-			/// @brief Get property from xml node and convert to const string.
-			/// @param node The xml node.
-			/// @param name The property name.
-			/// @param change If true add the node name as prefix on the attribute name for upsearch.
-			/// @return XML Attribute.
-			static const pugi::xml_attribute getAttribute(const pugi::xml_node &n, const char *name, bool change = true);
-
-			/// @brief Get property from xml node and convert to const string.
-			/// @param node The xml node.
-			/// @param name The property name.
-			/// @param def The default value (should be constant).
-			/// @return Attribute value converted to quark or def
-			static const char * getAttribute(const pugi::xml_node &node, const char *name, const char *def);
-
-			/// @brief Get child value from xml node and convert to const string.
-			/// @param node The xml node.
-			/// @param group The configuration group name.
-			/// @return child value converted to quark.
-			static const char * getChildValue(const pugi::xml_node &node, const char *group);
-
-			/// @brief Get property from xml node with fallback to configuration file.
-			/// @param node The xml node.
-			/// @param group The configuration group name.
-			/// @param name The property name.
-			/// @param def The default value (should be constant).
-			/// @return Attribute value converted to quark or def
-			static const char * getAttribute(const pugi::xml_node &node, const char *group, const char *name, const char *def);
-
-			/// @brief Get property from xml node.
-			/// @param node The xml node.
-			/// @param name The property name.
-			/// @param def The default value.
-			/// @return Attribute value.
-			static unsigned int getAttribute(const pugi::xml_node &node, const char *name, unsigned int def);
-
-			/// @brief Get property from xml node with fallback to configuration file.
-			/// @param node The xml node.
-			/// @param group The configuration group name.
-			/// @param name The property name.
-			/// @param def The default value.
-			/// @return Attribute value.
-			static unsigned int getAttribute(const pugi::xml_node &node, const char *group, const char *name, unsigned int def);
-			static bool getAttribute(const pugi::xml_node &node, const char *group, const char *name, bool def);
-
-			static inline unsigned int getAttribute(const pugi::xml_node &node, const std::string &group, const char *name, unsigned int def) {
-				return getAttribute(node,group.c_str(),name,def);
-			}
-
-			/// @brief Expand string using XML definitions and configuration file.
-			/// @param node Reference node.
-			/// @param group Configuration file group to get values.
-			/// @param value String to expand.
-			/// @return 'quarked' string with the expanded value.
-			static const char * expand(const pugi::xml_node &node, const char *group, const char *value);
-
-			static inline const char * expand(const pugi::xml_node &node, const std::string &group, const char *value) {
-				return expand(node,group.c_str(),value);
-			}
-
-			virtual const char * name() const noexcept;
-
-			virtual std::string to_string() const noexcept;
-
-			/// @brief Get property value.
-			/// @param key The property name.
-			/// @param value String to update with the property value.
-			/// @return true if the property is valid.
-			virtual bool getProperty(const char *key, std::string &value) const;
-
-			/// @brief Get property value.
-			/// @param key The property name.
-			/// @param value Object to receive the value.
-			/// @return true if the property is valid.
-			virtual bool getProperty(const char *key, Udjat::Value &value) const;
-
-			/// @brief Get property value.
-			/// @param key The property name.
-			/// @param required if false returns empty if the property cant be found.
-			/// @return The property value or "" if required is false and the property cant be found.
-			std::string getProperty(const char *key, bool required = true) const;
-
-			/// @brief Get property.
-			/// @param key The property name.
-			/// @return The property value (empty if unable to get the propery).
-			inline std::string operator[](const char *key) const {
-				return getProperty(key,false);
-			}
-
-			/// @brief Expand ${} tags using object properties.
-			/// @param text Text to expand.
-			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
-			/// @param cleanup if true put an empty string in the non existant attributes.
-			/// @return String with the known ${} tags expanded.
-			std::string expand(const char *text, bool dynamic = false, bool cleanup = false) const;
-
-			/// @brief Expand ${} tags using object properties.
-			/// @param text Text to expand.
-			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
-			/// @param cleanup if true put an empty string in the non existant attributes.
-			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
-
-			/// @brief Add object properties to the value.
-			virtual Value & getProperties(Value &value) const;
-
-			std::ostream & info() const;
-			std::ostream & warning() const;
-			std::ostream & error() const;
-			std::ostream & trace() const;
-
-		};
-
-
-	}
-
 	/// @brief An object with name.
 	class UDJAT_API NamedObject : public Abstract::Object {
 	private:
@@ -185,12 +39,12 @@
 	protected:
 
 		constexpr NamedObject(const char *name = "") : objectName(name) {}
-		NamedObject(const pugi::xml_node &node);
+		NamedObject(const XML::Node &node);
 
 		/// @brief Set object properties from XML node.
 		/// @param node XML node for the object properties
 		/// @return true if the value was updated.
-		bool set(const pugi::xml_node &node);
+		bool set(const XML::Node &node);
 
 		inline void rename(const char *name) {
 			objectName = name;
@@ -215,7 +69,7 @@
 		const char * name() const noexcept override;
 
 		bool operator==(const char *name) const noexcept;
-		bool operator==(const pugi::xml_node &node) const noexcept;
+		bool operator==(const XML::Node &node) const noexcept;
 		size_t hash() const noexcept;
 
 		const char * c_str() const noexcept;
@@ -274,8 +128,8 @@
 		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
-		Object(const pugi::xml_node &node);
-		void set(const pugi::xml_node &node);
+		Object(const XML::Node &node);
+		void set(const XML::Node &node);
 
 	public:
 

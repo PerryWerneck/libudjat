@@ -20,15 +20,15 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/http/client.h>
- #include <udjat/tools/logger.h>
  #include <string>
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/timestamp.h>
 
-#ifndef _WIN32
+ #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
-#endif // _WIN32
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
 
@@ -62,48 +62,11 @@
 			return Client(url).save(filename);
 		}
 
-		Client::Client(const pugi::xml_node &node) : Client(node.attribute("src").as_string()) {
+		Client::Client(const XML::Node &node) : Client(node.attribute("src").as_string()) {
 		}
 
-		Client::Client(const URL &url, bool load) {
-
-			// Find a protocol handler for this URL.
-			const Protocol * protocol = Protocol::find(url, true, load);
-			if(!protocol) {
-				throw runtime_error(string{"Cant find a protocol handler for "} + url);
-			}
-
-			worker = protocol->WorkerFactory();
-			if(worker) {
-				worker->url(url);
-				return;
-			}
-
-			//
-			// The protocol was unable to create a worker, use a proxy to the 'old' API.
-			//
-			protocol->warning() << "No worker factory (old version?) using proxy worker" << endl;
-
-			class Proxy : public Protocol::Worker {
-			public:
-				Proxy(const URL &url) : Protocol::Worker(url) {
-				}
-
-				virtual ~Proxy() {
-				}
-
-				String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) override {
-					return Udjat::Protocol::call(url().c_str(),method(),out.payload.c_str());
-				}
-
-				bool save(const char UDJAT_UNUSED(*filename), const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress), bool UDJAT_UNUSED(replace)) override {
-					throw runtime_error("The selected protocol is unable to save files");
-				}
-
-			};
-
-			worker = make_shared<Proxy>(url);
-
+		Client::Client(const URL &url, bool load) : worker{Protocol::WorkerFactory(url.c_str(),true,load)} {
+			worker->url(url);
 		}
 
 		String Client::get(const std::function<bool(double current, double total)> &progress) {
@@ -143,7 +106,7 @@
 			return save(filename,Protocol::Watcher::progress);
 		}
 
-		bool Client::save(const pugi::xml_node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
+		bool Client::save(const XML::Node &node, const char *filename, const std::function<bool(double current, double total)> &progress) {
 
 			Client client(node);
 
@@ -157,7 +120,7 @@
 			return client.worker->save(filename,progress);
 		}
 
-		bool Client::save(const pugi::xml_node &node, const char *filename) {
+		bool Client::save(const XML::Node &node, const char *filename) {
 
 			Client client(node);
 

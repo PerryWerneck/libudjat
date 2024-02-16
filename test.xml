@@ -1,12 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
-<udjat src='http://ideapad.local/~perry/libudjat.xml' update-timer='600'>
+<udjat src='http://127.0.0.1/~perry/libudjat.xml' update-timer='600'>
 
 	<module name='information' required='no' preload='no' />
+	<module name='dmi' required='no' preload='no' />
 
-	<module name='http' preload='yes' />
-	<!-- module name='civetweb' required='no' preload='yes' / -->
+	<!-- module name='http' preload='yes' / -->
+	<module name='civetweb' required='no' preload='yes' />
+
+	<attribute name='alert-type' value='file' />
+	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
+	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
 
 	<attribute-list>
 	
@@ -28,11 +33,9 @@
 
 	</agent>
 
-	<!--
-	<attribute name='alert-type' value='file' />
-	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
-	<attribute name='alert-payload' value='${timestamp(%Y/%m/%d %H:%M:%S)},${summary}' />
-	-->
+	<alert name='orphaned' type='file' strip-payload='yes'>
+		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
+	</alert>
 		
 	<!-- random name='random1' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
 

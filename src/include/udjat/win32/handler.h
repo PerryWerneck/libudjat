@@ -54,8 +54,9 @@
 
 			void enable();
 			void disable();
+
 			void set(HANDLE handle);
-			void close();
+			virtual void close();
 			ssize_t read(void *buf, size_t count);
 
 			/// @brief Handle activity.

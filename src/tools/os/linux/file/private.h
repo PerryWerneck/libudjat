@@ -20,7 +20,7 @@
 #pragma once
 
 #include <config.h>
-#include <udjat/module.h>
+#include <udjat/module/abstract.h>
 #include <udjat/tools/file.h>
 #include <udjat/tools/quark.h>
 #include <udjat/tools/handler.h>
@@ -34,6 +34,7 @@ namespace Udjat {
 
 	namespace File {
 
+		/*
 		class Controller : private MainLoop::Handler {
 		private:
 			Controller();
@@ -58,6 +59,7 @@ namespace Udjat {
 			void remove(Watcher *watcher);
 
 		};
+		*/
 
 	}
 

@@ -2,7 +2,7 @@
 #pragma once
 
 #include <config.h>
-#include <udjat/module.h>
+#include <udjat/module/abstract.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/singleton.h>
@@ -22,7 +22,7 @@ namespace Udjat {
 		/// @return Module path or empty string if not found.
 		static std::string locate(const char *name,const std::vector<std::string> &paths) noexcept;
 
-		void init(const std::string &filename, const pugi::xml_node &node);
+		void init(const std::string &filename, const XML::Node &node);
 
 		Module * find_by_filename(const char *filename);
 
@@ -32,7 +32,7 @@ namespace Udjat {
 
 		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);
 		static Module * init(HMODULE hModule);
-		static Module * init(HMODULE hModule, const pugi::xml_node &node);
+		static Module * init(HMODULE hModule, const XML::Node &node);
 
 		void close(HMODULE module);
 		bool deinit(HMODULE handle);
@@ -42,7 +42,7 @@ namespace Udjat {
 
 		static void * getSymbol(void *handle, const char *name, bool required = true);
 		static Module * init(void *handle);
-		static Module * init(void *handle, const pugi::xml_node &node);
+		static Module * init(void *handle, const XML::Node &node);
 
 		bool deinit(void *handle);
 		void unload(void *handle, const string &name, const string &description) const;
@@ -63,7 +63,7 @@ namespace Udjat {
 		/// @brief Load module by xml definition.
 		/// @param node Module definitions.
 		/// @return true if the module was already loaded.
-		bool load(const pugi::xml_node &node);
+		bool load(const XML::Node &node);
 
 		/// @brief Load module by filename.
 		/// @param filename The module filename.

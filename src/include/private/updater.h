@@ -42,7 +42,7 @@
 			time_t iffailed;		///< @brief Time to refresh the file if the update fails.
 			bool cache;
 
-			Settings(const std::string &f, const pugi::xml_node &node) :
+			Settings(const std::string &f, const XML::Node &node) :
 				filename{f},
 				url{node.attribute("src").as_string()},
 				ifsuccess{node.attribute("update-timer").as_uint(0)},
@@ -76,10 +76,10 @@
 			return files.end();
 		}
 
-		/// @brief Load configuration files.
+		/// @brief Sort by basename and load configuration files.
 		/// @param agent New root agent.
 		/// @return True on success.
-		bool load(std::shared_ptr<Abstract::Agent> root) const noexcept;
+		bool load(std::shared_ptr<Abstract::Agent> root) noexcept;
 
 		/// @brief Get seconds for next update.
 		inline time_t wait() const noexcept {

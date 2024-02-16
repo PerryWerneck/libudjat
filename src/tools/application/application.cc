@@ -21,12 +21,16 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
- #include <udjat/module.h>
+ #include <udjat/module/abstract.h>
  #include <iostream>
  #include <sys/stat.h>
  #include <sys/types.h>
  #include <udjat/tools/quark.h>
  #include <udjat/agent/abstract.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
 
@@ -108,6 +112,10 @@
 
 	}
 
+	bool Application::DataFile::available() const noexcept {
+		return access(c_str(),R_OK) == 0;
+	}
+
 	Application::LogDir & Application::LogDir::getInstance() {
 		static LogDir instance;
 		return instance;
@@ -138,6 +146,11 @@
 
 			return "";
 
+		}
+
+		const char *env = getenv(name);
+		if(env) {
+			return env;
 		}
 
 		return def;

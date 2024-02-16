@@ -19,7 +19,10 @@
 
  #include <config.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/quark.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/intl.h>
  #include <cstring>
 
  using namespace std;
@@ -27,46 +30,58 @@
 
  namespace Udjat {
 
-	const Quark XML::QuarkFactory(const XML::Node &node, const char *aname, const char *vname, const char *def) {
-		return StringFactory(node,aname,vname,def).as_quark();
+	XML::Attribute XML::AttributeFactory(const XML::Node &node, const char *attrname) {
+
+		XML::Attribute attribute{node.attribute(attrname)};
+		if(attribute) {
+			debug("Found '",attrname,"' in node '",node.name(),"'");
+			return attribute;
+		}
+
+		// Search on node children for <attribute name='${attrname}' value= />
+		for(XML::Node child = node.child("attribute"); child; child = child.next_sibling("attribute")) {
+			if(!strcasecmp(child.attribute("name").as_string(""),attrname) && is_allowed(child)) {
+				return child.attribute("value");
+			}
+		}
+
+		// Search parents from <attribute name='${node.name()}-${attrname}' value= />
+		{
+			String key{node.name(),"-",attrname};
+			for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
+				for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+					if(!strcasecmp(child.attribute("name").as_string(""),key.c_str()) && is_allowed(child)) {
+						return child.attribute("value");
+					}
+				}
+			}
+		}
+
+		// Search parents for <attribute name='${attrname}' value= />
+		for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
+			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+				if(!strcasecmp(child.attribute("name").as_string(""),attrname) && is_allowed(child)) {
+					return child.attribute("value");
+				}
+			}
+		}
+
+		return XML::Attribute{};
+
 	}
 
-	String XML::StringFactory(const XML::Node &node, const char *aname, const char *vname, const char *def) {
+	const char * XML::StringFactory(const XML::Node &node, const char *attrname, const char *def) {
 
-		// Search for <node ${aname}="value"
-		{
-			const pugi::xml_attribute &attr = node.attribute(aname);
-			if(attr) {
-				return String{attr.as_string(def)}.expand(node);
-			}
+		XML::Attribute attr{AttributeFactory(node,attrname)};
+		if(attr) {
+			return attr.as_string();
 		}
 
-		// Scan upper nodes.
-		string upname{node.name()};
-		upname += "-";
-		upname += aname;
-
-		const char *attrname = aname;
-		for(pugi::xml_node parent = node; parent ; parent = parent.parent()) {
-
-			// Search for <attribute name='${attrname}' ${vname}="value" />
-			for(pugi::xml_node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
-
-				const char * name = child.attribute("name").as_string("");
-
-				// is_allowed should be the last test since it can trigger a network request.
-				if(name && *name && strcasecmp(name,attrname) == 0 && is_allowed(child)) {
-					return String{child.attribute(vname).as_string(def)}.expand(node);
-				}
-
-			}
-
-			// Will get up node, replace attrname
-			attrname = upname.c_str();
+		if(!def) {
+			throw runtime_error(Logger::Message(_("Required attribute '{}' is missing"),attrname));
 		}
 
-		return String{def}.expand(node);
-
+		return def;
 	}
 
  }

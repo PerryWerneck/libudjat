@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	Alert::URL::URL(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::URL::URL(const XML::Node &node, const char *defaults) : Abstract::Alert(node) {
 
 		const char *section = node.attribute("settings-from").as_string(defaults);
 
@@ -47,7 +47,7 @@
 		{
 			// Get alert action.
 			// (Dont use the default getAttribute to avoid the creation of a new 'quark')
-			auto attribute = getAttribute(node,"action",true);
+			XML::Attribute attribute = getAttribute(node,"action");
 			if(attribute) {
 				action = HTTP::MethodFactory(attribute.as_string("get"));
 			} else {

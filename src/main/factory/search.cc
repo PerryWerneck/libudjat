@@ -18,18 +18,19 @@
  */
 
  #include <config.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/agent.h>
  #include <iostream>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
  #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	bool Factory::search(const pugi::xml_node &node, const std::function<bool(Factory &, const pugi::xml_node &)> &call, const char *typeattribute) {
+	/*
+	bool Factory::search(const XML::Node &node, const std::function<bool(Factory &, const XML::Node &)> &call, const char *typeattribute) {
 
 		if(!(typeattribute && *typeattribute)) {
 			typeattribute = Object::getAttribute(node,(string{node.name()} + "-defaults").c_str(),"type","default");
@@ -81,5 +82,6 @@
 		return false;
 
 	}
+	*/
 
  }

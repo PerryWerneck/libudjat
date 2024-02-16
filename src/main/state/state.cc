@@ -35,7 +35,7 @@
  #include <udjat/alert/activation.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
@@ -83,7 +83,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const pugi::xml_node &node) : Object(node) {
+	Abstract::State::State(const XML::Node &node) : Object(node) {
 
 		set(node);
 
@@ -100,7 +100,7 @@ namespace Udjat {
 	void Abstract::State::refresh() {
 	}
 
-	void Abstract::State::set(const pugi::xml_node &node) {
+	void Abstract::State::set(const XML::Node &node) {
 
 		Object::set(node);
 
@@ -110,7 +110,7 @@ namespace Udjat {
 		properties.body = getAttribute(node,section,"body",properties.body);
 		options.forward = getAttribute(node,section,"forward-to-children",options.forward);
 
-		for(pugi::xml_node child : node) {
+		for(XML::Node child : node) {
 
 			if(strcasecmp(child.name(),"attribute")) {
 				push_back(child);
@@ -121,20 +121,14 @@ namespace Udjat {
 		debug(
 			"name=",node.attribute("name").as_string()," ",
 			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
-			" Attibute('alert-type')=",getAttribute(node,"alert-type",false).as_string("")
+			" Attibute('alert-type')=",getAttribute(node,"alert-type").as_string("")
 		);
 
-		{
-			auto type = getAttribute(node,"alert-type",false);
-			auto enabled = getAttribute(node,"alert",true);
-
-			if(enabled.as_bool(type)) {
-				auto alert = Abstract::Alert::Factory(*this, node, type.as_string(""));
-				if(alert) {
-					listeners.push_back(alert);
-				}
+		if(node.attribute("alert").as_bool(XML::AttributeFactory(node,"alert-type"))) {
+			auto alert = Abstract::Alert::Factory(*this, node);
+			if(alert) {
+				listeners.push_back(alert);
 			}
-
 		}
 
 	}
@@ -166,15 +160,22 @@ namespace Udjat {
 
 	Value & Abstract::State::getProperties(Value &value) const {
 
+		debug("properties");
 		Object::getProperties(value);
+		debug("body");
 		value["body"] = properties.body;
+		debug("level");
 		value["level"] = std::to_string(properties.level);
+		debug("---------");
 
 		return value;
 	}
 
 	bool Abstract::State::getProperties(const char *path, Value &value) {
 
+		// TODO: Refactor
+
+		/*
 		shared_ptr<Abstract::State> state;
 
 		if(!Abstract::Agent::root()->getProperties(path,state) || !state) {
@@ -184,6 +185,10 @@ namespace Udjat {
 		state->getProperties(value);
 
 		return true;
+		*/
+
+		return false;
+
 	}
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {

@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <private/protocol.h>
+ #include <udjat/tools/string.h>
  #include <cstring>
 
  namespace Udjat {
@@ -51,6 +52,90 @@
 
 	URL & URL::unescape() {
 		std::string::assign(unescape(c_str()));
+		return *this;
+	}
+
+	Udjat::String & Udjat::String::escape(char marker) {
+
+		size_t maxlen = size()*4;
+		char * buffer = new char[maxlen+4];
+		char * dst = buffer;
+		const char *src = c_str();
+
+		size_t index = 0;
+		while(*src) {
+
+			if(index >= maxlen) {
+				delete[] buffer;
+				throw std::logic_error("Escaped string is bigger than expected");
+			}
+
+			if(isalnum(*src) && *src != marker) {
+
+				dst[index++] = *(src++);
+
+			} else {
+				dst[index++] = marker;
+
+				char hexvalue[4];
+				snprintf(hexvalue,3,"%02X",(unsigned int) *(src++));
+				dst[index++] = hexvalue[0];
+				dst[index++] = hexvalue[1];
+
+			}
+
+		}
+		dst[index] = 0;
+		assign(buffer);
+		delete[] buffer;
+
+		return *this;
+
+	}
+
+	Udjat::String & Udjat::String::unescape(char marker) {
+
+		char * buffer = new char[size()+1];
+		char * dst = buffer;
+		const char *src = c_str();
+
+		try {
+
+			while(*src) {
+
+				if(*src == marker) {
+
+					if(src[1] && src[2]) {
+
+						*(dst++) = (char) unescape_character(++src);
+						src += 2;
+
+					} else {
+
+						throw runtime_error("Unexpected escape sequence");
+
+					}
+
+				} else {
+
+					*(dst++) = *(src++);
+
+				}
+
+			}
+
+			*dst = 0;
+
+		} catch(...) {
+
+			delete[] buffer;
+			throw;
+
+		}
+
+		assign(buffer);
+		delete[] buffer;
+
 		return *this;
 	}
 

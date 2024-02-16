@@ -128,6 +128,9 @@ make all
 %dir %{_includedir}/udjat/tools
 %{_includedir}/udjat/tools/*.h
 
+%dir %{_includedir}/udjat/tools/abstract
+%{_includedir}/udjat/tools/abstract/*.h
+
 %dir %{_includedir}/udjat/tools/file
 %{_includedir}/udjat/tools/file/*.h
 
@@ -145,6 +148,12 @@ make all
 
 %dir %{_includedir}/udjat/net
 %{_includedir}/udjat/net/*
+
+%dir %{_includedir}/udjat/module
+%{_includedir}/udjat/module/*
+
+%dir %{_includedir}/udjat/ui
+%{_includedir}/udjat/ui/*
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 

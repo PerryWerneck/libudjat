@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -22,7 +22,8 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/intl.h>
- #include <udjat/moduleinfo.h>
+ #include <udjat/module/info.h>
+ #include <udjat/tools/intl.h>
  #include <cstdio>
  #include <iostream>
  #include <sstream>
@@ -33,18 +34,12 @@
 
  namespace Udjat {
 
-	static const ModuleInfo moduleinfo { N_("Subprocess/Script protocol" ) };
+	Protocol & Protocol::ScriptHandlerFactory() {
 
-	Protocol::Controller::Script::Script() : Udjat::Protocol((const char *) "script",moduleinfo) {
-	}
-
-	Protocol::Controller::Script::~Script() {
-	}
-
-	std::shared_ptr<Protocol::Worker> Protocol::Controller::Script::WorkerFactory() const {
+		static const ModuleInfo moduleinfo { N_("Subprocess/Script protocol" ) };
 
 		/// @brief Script worker.
-		class Worker : public Protocol::Worker {
+		class ScriptWorker : public Protocol::Worker {
 		private:
 
 			/// @brief Get script path, download it to cache if necessary.
@@ -55,7 +50,6 @@
 				if(strncasecmp(url,"script+",7) == 0) {
 
 					// TODO: Download URL+7, save on cache.
-
 
 					throw system_error(ENOTSUP,system_category(),"Script from URL is not implemented");
 
@@ -73,7 +67,7 @@
 
 
 		public:
-			Worker() = default;
+			ScriptWorker() = default;
 
 			/// @brief Run script, capture output.
 			String get(const std::function<bool(double current, double total)> UDJAT_UNUSED(&progress)) {
@@ -156,8 +150,25 @@
 
 		};
 
-		return make_shared<Worker>();
+		class Handler : public Udjat::Protocol {
+		public:
+			Handler() : Udjat::Protocol((const char *) "script",moduleinfo) {
+			}
+
+			~Handler() {
+			}
+
+			std::shared_ptr<Protocol::Worker> WorkerFactory() const {
+				return make_shared<ScriptWorker>();
+			}
+
+		};
+
+		static Handler instance;
+		return instance;
+
 	}
+
 
  }
 

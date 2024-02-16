@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/alert/file.h>
+ #include <udjat/alert/activation.h>
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <sys/stat.h>
@@ -30,7 +31,7 @@
 
  namespace Udjat {
 
-	Alert::File::File(const pugi::xml_node &node, const char *defaults) : Abstract::Alert(node) {
+	Alert::File::File(const XML::Node &node) : Abstract::Alert(node) {
 
 		// Get filename
 		{
@@ -83,6 +84,7 @@
 		}
 
 		filename.expand(*alert,true,false);
+
 	}
 
 	void Alert::File::Activation::emit() {
@@ -115,12 +117,12 @@
 
 	Alert::Activation & Alert::File::Activation::set(const Abstract::Object &object) {
 		filename.expand(object);
-		return *this;
+		return Udjat::Alert::Activation::set(object);
 	}
 
 	Alert::Activation & Alert::File::Activation::set(const std::function<bool(const char *key, std::string &value)> &expander) {
 		filename.expand(expander);
-		return *this;
+		return Udjat::Alert::Activation::set(expander);
 	}
 
  }

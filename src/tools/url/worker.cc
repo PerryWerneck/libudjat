@@ -18,7 +18,17 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/protocol.h>
  #include <private/protocol.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/tools/file.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/base64.h>
+ #include <udjat/net/ip/address.h>
+
+ /*
  #include <udjat/tools/protocol.h>
  #include <cstring>
  #include <sys/types.h>
@@ -26,11 +36,7 @@
  #include <fcntl.h>
  #include <sys/stat.h>
  #include <sys/types.h>
- #include <udjat/tools/file.h>
- #include <udjat/tools/base64.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/net/ip/address.h>
+ */
 
  #ifdef _WIN32
 	#include <sys/utime.h>
@@ -181,47 +187,6 @@
 		Protocol::Watcher::getInstance().set_url(args.url.c_str());
 		return test(Protocol::Watcher::progress);
 	}
-
-	/*
-	int Protocol::Worker::set_file_properties(const char *filename) {
-
-		if(!in.modification) {
-			return ENODATA;
-		}
-
-#ifdef _WIN32
-
-		_utimbuf ub;
-		ub.actime = time(0);
-		ub.modtime = (time_t) in.modification;
-
-		if(_utime(filename,&ub) == -1) {
-			int rc = errno;
-			Logger::String{"Error '",strerror(rc),"' setting timestamp of '",filename,"'"}.write(Logger::Error,"protocol");
-			return rc;
-		}
-
-#else
-
-		utimbuf ub;
-		ub.actime = time(0);
-		ub.modtime = (time_t) in.modification;
-
-		if(utime(filename,&ub) == -1) {
-			int rc = errno;
-			Logger::String{"Error '",strerror(rc),"' setting timestamp of '",filename,"'"}.write(Logger::Error,"protocol");
-			return rc;
-		}
-
-#endif // _WIN32
-
-		if(Logger::enabled(Logger::Debug)) {
-			Logger::String{"Time of '",filename,"' set to ",std::to_string(in.modification).c_str()}.write(Logger::Debug,"protocol");
-		}
-
-		return 0;
-	}
-	*/
 
 	void Protocol::Worker::get(const std::function<void(int code, const char *response)> UDJAT_UNUSED(&call)) {
 		throw system_error(ENOTSUP,system_category());

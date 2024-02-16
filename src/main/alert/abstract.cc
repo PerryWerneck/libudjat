@@ -19,13 +19,14 @@
 
  #include <config.h>
  #include <private/alert.h>
+ #include <udjat/tools/xml.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/alert/activation.h>
 
  namespace Udjat {
 
-	Abstract::Alert::Alert(const pugi::xml_node &node,const char *defaults) : Alert(Quark(node,"name","alert",false).c_str()) {
+	Abstract::Alert::Alert(const XML::Node &node, const char *defaults) : Activatable{node} {
 
 		// Get section from configuration file with the defaults.
 		const char *section = node.attribute("settings-from").as_string(defaults);
@@ -88,7 +89,7 @@
 
 	Value & Abstract::Alert::getProperties(Value &value) const {
 
-		NamedObject::getProperties(value);
+		Activatable::getProperties(value);
 
 		value["minretry"] = retry.min;
 		value["maxretry"] = retry.max;
@@ -101,15 +102,15 @@
 		return value;
 	}
 
-	const char * Abstract::Alert::getPayload(const pugi::xml_node &node) {
+	const char * Abstract::Alert::getPayload(const XML::Node &node) {
 
 		String child(node.child_value());
 
 		if(child.empty()) {
 
-			auto payload = node.attribute("payload");
+			XML::Attribute payload = node.attribute("payload");
 			if(!payload) {
-				payload = getAttribute(node,"alert-payload",false);
+				payload = getAttribute(node,"alert-payload");
 			}
 
 			if(payload) {
@@ -118,11 +119,11 @@
 
 		}
 
-		if(getAttribute(node,"strip-payload",true).as_bool(true)) {
+		if(getAttribute(node,"strip-payload").as_bool(true)) {
 			child.strip();
 		}
 
-		return Quark(child.expand(node,"alert-defaults")).c_str();
+		return Quark{child.expand(node,"alert-defaults")}.c_str();
 
 	}
 

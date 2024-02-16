@@ -88,7 +88,11 @@
 		virtual ~Application();
 
 		/// @brief Get application property.
-		const char * getProperty(const char *name, const char *def = "") const noexcept;
+		virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
+
+		inline const char * operator[](const char *property_name) const noexcept {
+			return getProperty(property_name);
+		}
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
@@ -102,17 +106,20 @@
 		static void finalize();
 
 		/// @brief Parse command line options
+		/// @param definitions Path to a single xml file or a folder with xml files.
 		/// @return 0 if ok, error code if not.
 		/// @retval ECANCELED cancelled by command line argument (--help or other informational options).
 		virtual int setup(int argc, char **argv, const char *definitions = nullptr);
 
 		/// @brief Parse command line options, run application.
+		/// @param definitions Path to a single xml file or a folder with xml files.
 		virtual int run(int argc, char **argv, const char *definitions);
 
 		/// @brief Parse command line options, run application with default definitions.
 		virtual int run(int argc, char **argv);
 
 		/// @brief Run application.
+		/// @param definitions Path to a single xml file or a folder with xml files.
 		virtual int run(const char *definitions = nullptr);
 
 		/// @brief Load XML application definitions.

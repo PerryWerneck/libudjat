@@ -110,7 +110,7 @@
 		inline String(Udjat::String &str) : std::string{str} {
 		}
 
-		template<typename T>		inline String(const T &str) : std::string{std::to_string(str)} {
+		template<typename T> inline String(const T &str) : std::string{std::to_string(str)} {
 		}
 
 		template<typename... Targs>
@@ -136,7 +136,15 @@
 		/// @brief Construct string from xml definition.
 		/// @param node XML node with string definitions.
 		/// @param attrname XML attribute name for the string value.
-		String(const XML::Node &node, const char *attrname = "value", const char *def = nullptr, bool upsearch = true);
+		/// @param def Default value if not found.
+		/// @param upsearch Search upper levels for attribute.
+		String(const XML::Node &node, const char *attrname, const char *def);
+
+		/// @brief Construct string from xml definition.
+		/// @param node XML node with string definitions.
+		/// @param attrname XML attribute name for the string value.
+		/// @param required if true will throw exception if the attribute is not found.
+		String(const XML::Node &node, const char *attrname = "value", bool required = false);
 
 		//
 		// Append
@@ -242,17 +250,32 @@
 		//
 		// Others.
 		//
+
+		/// @brief Test if string is equal value (case insensitive).
+		/// @param str string to compare.
+		/// @return true if the string is equal str (case insensitive).
 		inline bool operator ==(const char * str) const noexcept {
 			return strcasecmp(c_str(),str) == 0;
 		}
 
+		/// @brief Test if string is equal value (case insensitive).
+		/// @param str string to compare.
+		/// @return true if the string is equal str (case insensitive).
 		inline bool operator ==(const std::string & str) const noexcept {
 			return strcasecmp(c_str(),str.c_str()) == 0;
 		}
 
 		/// @brief Test if the string contains one of the elements of a list.
-		/// @return Index of the matched content (-1 if not found).
-		int select(const char *value, ...) __attribute__ ((sentinel));
+		/// @return Index of the matched content (negative if not found).
+		/// @retval -ENODATA The string is empty.
+		/// @retval -ENOENT The string dont match any of the values.
+		int select(const char *value, va_list args) const noexcept;
+
+		/// @brief Test if the string contains one of the elements of a list.
+		/// @return Index of the matched content (negative if not found).
+		/// @retval -ENODATA The string is empty.
+		/// @retval -ENOENT The string dont match any of the values.
+		int select(const char *value, ...) const noexcept __attribute__ ((sentinel));
 
 		/// @brief Insert global expander.
 		/// @param method String expander method (returns 'true' if the value was parsed).
@@ -277,6 +300,9 @@
 		/// @brief Expand using customized marker.
 		String & expand(char marker, bool dynamic = true, bool cleanup = true);
 
+		String & unescape(char marker = '%');
+		String & escape(char marker = '%');
+
 		/// @brief Expand using customized marker.
 		/// @param marker The marker.
 		/// @param object the object to search for properties.
@@ -289,13 +315,13 @@
 		/// @brief Expand ${} macros.
 		/// @param node XML node from the begin of the value search.
 		/// @param group Group from configuration file to search.
-		String & expand(const pugi::xml_node &node,const char *group = "default-attributes");
-
-		String & markup();
+		String & expand(const XML::Node &node,const char *group = "default-attributes");
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
 		static char * strcasestr(const char *haystack, const char *needle);
+
+		String & markup();
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
@@ -306,6 +332,14 @@
 		/// @brief Splits string using the given delimiter.
 		/// @param delim string which specifies the places at which to split the string. The delimiter is not included in any of the resulting strings.
 		std::vector<String> split(const char *delim);
+
+		/// @brief Scan string elements until method return 'true'.
+		/// @return true if any call has returned 'true'.
+		static bool for_each(const char *str, const char *delimiter, const std::function<bool(const String &value)> &func);
+
+		/// @brief Scan string elements until method return 'true'.
+		/// @return true if any call has returned 'true'.
+		bool for_each(const char *delimiter, const std::function<bool(const String &value)> &func);
 
 		/// @brief Removes leading and trailing white spaces from the string.
 		/// @see chomp()

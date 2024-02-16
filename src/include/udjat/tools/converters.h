@@ -22,76 +22,134 @@
  #include <udjat/defs.h>
  #include <string>
  #include <cstdlib>
+ #include <stdexcept>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
 
-	inline int to_value(const char *str, int &value) {
-		return (value = std::stoi(str));
+	template <typename T>
+	inline T from_string(const char *str) {
+		throw std::logic_error("No converter for this data format");
 	}
 
-	inline unsigned int to_value(const char *str, unsigned int &value) {
-		return (value = (unsigned int) std::stoul(str));
+ 	template <>
+	inline int from_string<int>(const char *str) {
+		return std::stoi(str);
 	}
 
-	inline short to_value(const char *str, short &value) {
-		return (value = (short) std::stoi(str));
+ 	template <>
+	inline unsigned int from_string<unsigned int>(const char *str) {
+		return (unsigned int) std::stoul(str);
 	}
 
-	inline unsigned short to_value(const char *str, unsigned short &value) {
-		return (value = (unsigned short) std::stoi(str));
+ 	template <>
+	UDJAT_API bool from_string<bool>(const char *str);
+
+ 	template <>
+	inline short from_string<short>(const char *str) {
+		return (short) std::stoi(str);
 	}
 
-	inline long to_value(const char *str, long &value) {
-		return (value = std::stol(str));
+ 	template <>
+	inline unsigned short from_string<unsigned short>(const char *str) {
+		return (unsigned short) std::stoi(str);
 	}
 
-	inline unsigned long to_value(const char *str, unsigned long &value) {
-		return (value = std::stoul(str));
+ 	template <>
+	inline long from_string<long>(const char *str) {
+		return std::stol(str);
 	}
 
-	inline long long to_value(const char *str, long long &value) {
-		return (value = std::stoll(str));
+ 	template <>
+	inline unsigned long from_string<unsigned long>(const char *str) {
+		return std::stoul(str);
 	}
 
-	inline unsigned long long to_value(const char *str, unsigned long long &value) {
-		return (value = std::stoull(str));
+ 	template <>
+	inline long long from_string<long long>(const char *str) {
+		return std::stoll(str);
 	}
 
-	inline float to_value(const char *str, float &value) {
-		return (value = std::stof(str));
+ 	template <>
+	inline unsigned long long from_string<unsigned long long>(const char *str) {
+		return std::stoull(str);
 	}
 
-	inline double to_value(const char *str, double &value) {
-		return (value = std::stod(str));
+ 	template <>
+	inline float from_string<float>(const char *str) {
+		return std::stof(str);
 	}
 
-	inline int to_value(const pugi::xml_node &node, int &value) {
-		return (value = node.attribute("value").as_int(value));
+ 	template <>
+	inline double from_string<double>(const char *str) {
+		return std::stod(str);
 	}
 
-	inline unsigned int to_value(const pugi::xml_node &node, unsigned int &value) {
-		return (value = node.attribute("value").as_uint(value));
+	template <typename T>
+	inline T from_xml(const XML::Node &node, const T def, const char *attrname = "value") {
+		throw std::logic_error("No XML converter for this data format");
 	}
 
-	inline unsigned short to_value(const pugi::xml_node &node, unsigned short &value) {
-		return (value = (unsigned short) node.attribute("value").as_int(value));
+	template <>
+	inline int from_xml<int>(const XML::Node &node, const int def, const char *attrname) {
+		return node.attribute(attrname).as_int(def);
 	}
 
-	inline float to_value(const pugi::xml_node &node, float &value) {
-		return (value = node.attribute("value").as_float(value));
+	template <>
+	inline unsigned int from_xml<unsigned int>(const XML::Node &node, const unsigned int def, const char *attrname) {
+		return node.attribute(attrname).as_uint(def);
 	}
 
-	inline double to_value(const pugi::xml_node &node, double &value) {
-		return (value = node.attribute("value").as_double(value));
+	template <>
+	inline long from_xml<long>(const XML::Node &node, const long def, const char *attrname) {
+		return (long) node.attribute(attrname).as_int(def);
 	}
 
-	inline unsigned long to_value(const pugi::xml_node &node, unsigned long &value) {
-		return (value = (unsigned long) node.attribute("value").as_uint(value));
+	template <>
+	inline unsigned long from_xml<unsigned long>(const XML::Node &node, const unsigned long def, const char *attrname) {
+		return (unsigned long) node.attribute(attrname).as_uint(def);
 	}
 
-	inline long to_value(const pugi::xml_node &node, long &value) {
-		return (value = (long) node.attribute("value").as_int(value));
+	template <>
+	inline float from_xml<float>(const XML::Node &node, const float def, const char *attrname) {
+		return node.attribute(attrname).as_float(def);
 	}
+
+	template <>
+	inline double from_xml<double>(const XML::Node &node, const double def, const char *attrname) {
+		return node.attribute(attrname).as_double(def);
+	}
+
+
+	/*
+	inline int to_value(const XML::Node &node, const int value, const char *attrname = "value") {
+		return node.attribute(attrname).as_int(value);
+	}
+
+	inline unsigned int to_value(const XML::Node &node, const unsigned int value, const char *attrname = "value") {
+		return node.attribute(attrname).as_uint(value);
+	}
+
+	inline unsigned short to_value(const XML::Node &node, const unsigned short value, const char *attrname = "value") {
+		return (unsigned short) node.attribute(attrname).as_int(value);
+	}
+
+	inline float to_value(const XML::Node &node, const float value, const char *attrname = "value") {
+		return node.attribute(attrname).as_float(value);
+	}
+
+	inline double to_value(const XML::Node &node, const double value, const char *attrname = "value") {
+		return node.attribute(attrname).as_double(value);
+	}
+
+	inline unsigned long to_value(const XML::Node &node, const unsigned long value, const char *attrname = "value") {
+		return (unsigned long) node.attribute(attrname).as_uint(value);
+	}
+
+	inline long to_value(const XML::Node &node, const long value, const char *attrname = "value") {
+		return (long) node.attribute(attrname).as_int(value);
+	}
+	*/
 
  }
 

@@ -1,6 +1,6 @@
 Format: 1.0
 Source: libudjat
-Version: 1.0-0
+Version: 1.1+git20230808-0
 Binary: libvmdetect
 Maintainer: Perry Werneck <perry.werneck@gmail.com>
 Architecture: any

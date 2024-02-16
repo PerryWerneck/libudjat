@@ -26,6 +26,7 @@
  #include <fnmatch.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/file.h>
 
  using namespace std;
 
@@ -89,6 +90,24 @@
 			throw system_error(errno,system_category(),pathname);
 		}
 		return (s.st_mode & S_IFREG) != 0;
+	}
+
+	const char * File::Path::name() const noexcept {
+		const char *rc = strrchr(c_str(),'/');
+#ifdef _WIN32
+		{
+			const char *w = strrchr(c_str(),'\\');
+			if(!rc || (w > rc)) {
+				rc = w;
+			}
+		}
+#endif // _WIN32
+
+		if(rc) {
+			return rc+1;
+		}
+		return c_str();
+
 	}
 
 	bool File::Path::mkdir(const char *dirname, bool required, int mode) {

@@ -388,18 +388,5 @@
 
 	}
 
-	const char * File::Path::basename() const noexcept {
-
-		const char *rc = c_str();
-
-		for(const char *ptr = c_str(); *ptr; ptr++) {
-			if(*ptr == '/' && *ptr == '\\') {
-				rc = ptr+1;
-			}
-		}
-
-		return rc;
-	}
-
 }
 

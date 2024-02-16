@@ -22,9 +22,11 @@
  #include <udjat/tools/parse.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/response/table.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/activatable.h>
+ #include <udjat/tools/response/table.h>
  #include <mutex>
  #include <list>
  #include <cstdint>
@@ -135,6 +137,7 @@
 			/// @param state New agent state.
 			/// @param activate if true the new state will be activated.
 			/// @param message Message for logfile.
+			/// @return true if the state was really changed.
 			bool onStateChange(std::shared_ptr<State> state, bool activate, const char *message);
 
 		protected:
@@ -177,10 +180,6 @@
 			/// @brief Set 'on-demand' option.
 			void setOndemand() noexcept;
 
-			/// @brief Get agent properties.
-			/// @param value Value to receive the properties.
-			Value & getProperties(Value &value) const override;
-
 			/// @brief Set update timer interval.
 			/// @param value New timer interval (0 disable it).
 			inline time_t timer(time_t value) noexcept {
@@ -197,7 +196,7 @@
 			Agent & operator=(Agent &&) = delete;
 
 			Agent(const char *name = "", const char *label = "", const char *summary = "");
-			Agent(const pugi::xml_node &node);
+			Agent(const XML::Node &node);
 
 			virtual ~Agent();
 
@@ -207,7 +206,7 @@
 			/// @brief Insert object.
 			void push_back(std::shared_ptr<Abstract::Object> object);
 
-			/// @brief Insert Alert.
+			/// @brief Insert Activatable.
 			virtual void push_back(std::shared_ptr<Activatable> alert);
 
 			/// @brief Insert activatable based on xml attributes.
@@ -216,7 +215,7 @@
 			/// @return True if the activatable was inserted.
 			/// @retval true The activatable was inserted as an event listener.
 			/// @retval false The activatable is not event based, insert it using default method.
-			virtual bool push_back(const pugi::xml_node &node, std::shared_ptr<Activatable> activatable);
+			virtual bool push_back(const XML::Node &node, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
@@ -231,10 +230,10 @@
 			static std::shared_ptr<Agent> RootFactory();
 
 			/// @brief Build and agent from type & xml node.
-			static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const pugi::xml_node &node);
+			//static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const XML::Node &node);
 
 			/// @brief Build and agent from node.
-			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const pugi::xml_node &node);
+			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const XML::Node &node);
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
@@ -253,7 +252,7 @@
 			/// @brief Load agent children, states, alerts, etc. from node.
 			/// @param node The xml node with agent children to build.
 			/// @param upsearch If true search xml parents based for type attribute or node name with '-defaults' and, if found, use them to setup this agent children.
-			void setup(const pugi::xml_node &node, bool upsearch = true) override;
+			void setup(const XML::Node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();
@@ -304,6 +303,13 @@
 			/// @return Agent pointer (empty if not found).
 			virtual std::shared_ptr<Agent> find(const char *path, bool required = true, bool autoins = false);
 
+			/// @brief Get agent properties.
+			/// @param value Value to receive the properties.
+			Value & getProperties(Value &value) const override;
+
+			bool get(Udjat::Response::Value &value) const;
+			bool get(Udjat::Response::Table &value) const;
+
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
 			/// @param value Object for child properties.
@@ -311,20 +317,25 @@
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Value &value) const;
 
+			/// @brief Get child properties by path.
+			/// @param path	Child path.
+			/// @param report The report output.
+			/// @retval true if the child was found.
+			/// @retval false if the child was not found.
+			virtual bool getProperties(const char *path, Udjat::Response::Value &value) const;
+
 			/// @brief Get child report by path.
 			/// @param path	Child path.
 			/// @param report The report output.
 			/// @retval true if the child was found.
 			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Report &report) const;
+			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
 
-			/// @brief Get State by path, throw if not found.
-			/// @param path	Child path.
-			/// @return state The state.
-			virtual bool getProperties(const char *path, std::shared_ptr<Abstract::State> &state) const;
+			void getStates(Udjat::Response::Table &report) const;
 
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
+			virtual void for_each(const std::function<void(const Abstract::State &state)> &method) const;
 
 			inline auto begin() noexcept {
 				return children.agents.begin();
@@ -377,16 +388,25 @@
 			}
 
 			/// @brief Create and insert State.
-			virtual std::shared_ptr<Abstract::State> StateFactory(const pugi::xml_node &node);
+			virtual std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node);
 
 			/// @brief Insert Alert.
-			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const pugi::xml_node &node);
+			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const XML::Node &node);
 
 			/// @brief Get agent property.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
 			/// @return true if the property was found.
 			bool getProperty(const char *key, std::string &value) const override;
+
+			/// @brief get time of the last modification on this agent.
+			/// @return Timestamp of last modification.
+			/// @retval 0 The last modification time was not available.
+			virtual time_t last_modified() const noexcept;
+
+			/// @brief get expiration time for this agent data.
+			/// @retval 0 The expiration time is not available.
+			virtual time_t expires() const noexcept;
 
 		};
 	}

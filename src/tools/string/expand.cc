@@ -116,7 +116,7 @@
 		},dynamic,cleanup);
 	}
 
-	static bool check_node(pugi::xml_node &xml, const char *key, std::string &value) {
+	static bool check_node(XML::Node &xml, const char *key, std::string &value) {
 
 		for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
 
@@ -134,7 +134,7 @@
 		return false;
 	}
 
-	String & String::expand(const pugi::xml_node &node, const char *group) {
+	String & String::expand(const XML::Node &node, const char *group) {
 
 		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
 		bool cleanup = node.attribute("clear-undefined").as_bool(false);
@@ -159,7 +159,7 @@
 			}
 
 			// Search the XML tree for an attribute with the required name.
-			for(pugi::xml_node xml = node;xml;xml = xml.parent()) {
+			for(XML::Node xml = node;xml;xml = xml.parent()) {
 
 				if(is_allowed(xml)) {
 

@@ -67,7 +67,7 @@
 		return xml_attribute();
 	}
 
-	Attribute::Attribute(const pugi::xml_node &node, const char *name, const char *upsearch) : xml_attribute(find(node, name, upsearch)) {
+	Attribute::Attribute(const XML::Node &node, const char *name, const char *upsearch) : xml_attribute(find(node, name, upsearch)) {
 
 		value = this->as_string();
 
@@ -88,7 +88,7 @@
 	Attribute::Attribute(const xml_node &node, const char *name, bool upsearch) : Attribute(node,name,(upsearch ? name : nullptr)) {
 	}
 
-	Attribute::Attribute(const pugi::xml_node &node, const char *name) : Attribute(node,name,node.attribute("allow-upsearch").as_bool(true)) {
+	Attribute::Attribute(const XML::Node &node, const char *name) : Attribute(node,name,node.attribute("allow-upsearch").as_bool(true)) {
 	}
 
 	std::string Attribute::to_string(const string &def) const {
@@ -102,7 +102,7 @@
 		return Quark(to_string(def)).c_str();
 	}
 
-	bool is_allowed(const pugi::xml_node &node) {
+	bool is_allowed(const XML::Node &node) {
 
 		const char *str;
 
@@ -169,11 +169,11 @@
 		return true;
 	}
 
-	std::string expand(const pugi::xml_node &node, const pugi::xml_attribute &attribute, const char *def) {
+	std::string expand(const XML::Node &node, const pugi::xml_attribute &attribute, const char *def) {
 		return Udjat::String(attribute.as_string(def)).expand(node);
 	}
 
-	std::string expand(const pugi::xml_node &node, const char *str) {
+	std::string expand(const XML::Node &node, const char *str) {
 
 		return Udjat::String(str).expand(node);
 

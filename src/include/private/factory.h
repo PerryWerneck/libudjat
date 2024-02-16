@@ -21,10 +21,10 @@
 
  #include <config.h>
  #include <udjat/tools/quark.h>
- #include <udjat/factory.h>
+ #include <udjat/tools/factory.h>
  #include <list>
  #include <mutex>
- #include <udjat/request.h>
+ #include <udjat/tools/request.h>
 
  using namespace std;
 
@@ -51,8 +51,7 @@
 		void insert(Factory *factory);
 		void remove(Factory *factory);
 
-		bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
-		bool for_each(const std::function<bool(const Factory &factory)> &func);
+		bool for_each(const std::function<bool(Factory &factory)> &func);
 
 	};
 

@@ -22,7 +22,7 @@
 	#define QUARK_H_INCLUDED
 
 	#include <udjat/defs.h>
-	#include <pugixml.hpp>
+	#include <udjat/tools/xml.h>
 	#include <cstring>
 	#include <functional>
 	#include <ostream>
@@ -57,7 +57,7 @@
 			/// @param Attribute name.
 			/// @param def Default value.
 			/// @param upsearch If true search the parent nodes.
-			Quark(const pugi::xml_node &node,const char *name,const char *def="",bool upsearch = true);
+			Quark(const XML::Node &node,const char *name,const char *def="");
 
 			Quark & operator=(const char *str);
 			Quark & operator=(const std::string &str);
@@ -97,8 +97,8 @@
 			const Quark & set(const char *str, const std::function<const char * (const char *key)> translate);
 
 #ifdef HAVE_PUGIXML
-			const Quark & set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch = false);
-			const Quark & set(const pugi::xml_node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
+			const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch = false);
+			const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
 #endif // HAVE_PUGIXML
 
 		};
