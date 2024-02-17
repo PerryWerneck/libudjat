@@ -1,12 +1,11 @@
-name: MSYS2
+name: WindowsBuild
 on:
-  pull_request:
+  push:
     branches:
-      - develop
-      - master  
+      - win
+
 jobs:
   msys2-mingw:
-    name: Publish for Windows 64
     runs-on: windows-latest
     defaults:
       run:
@@ -16,7 +15,7 @@ jobs:
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libudjat
+          repository: PerryWerneck/libudjat	
           releases-only: true
       - uses: msys2/setup-msys2@v2
         with:
@@ -27,17 +26,10 @@ jobs:
         with:
           repository: "PerryWerneck/vmdetect"
           latest: true
-          fileName: "mingw-w64-x86_64-vmdetect-1.1-0-x86_64.pkg.tar.zst"
+          fileName: "mingw-w64-x86_64-vmdetect-1.2-0-x86_64.pkg.tar.zst"      
       - name: CI-Build
-        run: ./win/ci-build.sh
-      - uses: ncipollo/release-action@v1
-        with:
-          tag: ${{ steps.gettag.outputs.tag }}
-          artifacts: "*-libudjat-*.pkg.tar.zst"
-          allowUpdates: true
-          draft: false
-          makeLatest: true
-          omitBody: true
-          omitPrereleaseDuringUpdate: true
-          replacesArtifacts: true
+        run: |
+          pacman -U --noconfirm *.pkg.tar.zst
+          dos2unix PKGBUILD.mingw
+          makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
 
