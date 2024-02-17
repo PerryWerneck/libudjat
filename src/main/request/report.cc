@@ -42,21 +42,6 @@
 		return out.str();
 	}
 
-	/*
-	std::string Response::Table::to_string(const MimeType mimetype) const {
-
-		if(empty()) {
-			return "";
-		}
-
-		std::stringstream out;
-		debug(__FUNCTION__,": Serializing table");
-		serialize(out);
-		debug("Serialized");
-		return out.str();
-	}
-	*/
-
 	void Response::Table::serialize(std::ostream &stream) const {
 
 		Abstract::Response::serialize(stream);

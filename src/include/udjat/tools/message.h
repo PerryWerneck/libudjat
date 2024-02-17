@@ -33,7 +33,7 @@
 
 		template<typename... Targs>
 		inline Message(const char *fmt, Targs... Fargs) : Udjat::String{fmt} {
-			append(Fargs...);
+			Message::append(Fargs...);
 		}
 
 		void append(const char *str) override;

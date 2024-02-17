@@ -75,14 +75,6 @@
 		Udjat::start(activation);
 	}
 
-	/*
-	void Abstract::Alert::activate(const Abstract::Object &object) {
-		auto activation = ActivationFactory();
-		activation->set(object);
-		Udjat::start(activation);
-	}
-	*/
-
 	void Abstract::Alert::deactivate() {
 		Udjat::Alert::Controller::getInstance().remove(this);
 	}

@@ -83,7 +83,6 @@
 
 		if(!strcasecmp(path,"states")) {
 
-			// value.reset(Value::Array);
 			for_each([this,&value](const Abstract::State &state) {
 				auto &row = value.append(Value::Object);
 				state.getProperties(row);
