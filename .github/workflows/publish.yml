@@ -1,0 +1,47 @@
+name: Publish
+on:
+  push:
+    branches:
+      - win
+    tags:
+      - '*'
+  
+jobs:
+  msys2-mingw:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: msys2 {0}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: oprypin/find-latest-tag@v1
+        id: gettag
+        with:
+          repository: PerryWerneck/vmdetect
+          releases-only: true
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw64
+          update: true
+          install: dos2unix xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel libtool mingw-w64-x86_64-pugixml
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/vmdetect"
+          latest: true
+          fileName: "mingw-w64-x86_64-vmdetect-1.2-0-x86_64.pkg.tar.zst"      
+      - name: CI-Build
+        run: |
+          pacman -U --noconfirm *.pkg.tar.zst
+          dos2unix PKGBUILD.mingw
+          makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.gettag.outputs.tag }}
+          artifacts: "*udjat*.pkg.tar.zst"
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          omitBody: true
+          omitPrereleaseDuringUpdate: true
+          replacesArtifacts: true
+
