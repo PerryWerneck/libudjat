@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - win
+      - master
 
 jobs:
   msys2-build:
