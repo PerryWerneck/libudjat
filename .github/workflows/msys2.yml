@@ -1,8 +1,9 @@
-name: WindowsBuild
+name: check-msys2
 on:
   push:
     branches:
       - win
+      - master
 
 jobs:
   msys2-build:

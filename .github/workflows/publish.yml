@@ -7,7 +7,7 @@ on:
       - '*'
   
 jobs:
-  msys2-mingw:
+  publish-mingw:
     runs-on: windows-latest
     defaults:
       run:
