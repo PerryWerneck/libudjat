@@ -5,7 +5,7 @@ on:
       - win
 
 jobs:
-  msys2-mingw:
+  msys2-build:
     runs-on: windows-latest
     defaults:
       run:
