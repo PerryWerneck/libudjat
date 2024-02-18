@@ -1,9 +1,9 @@
 name: check-msys2
 on:
   push:
-    branches:
-      - win
-      - master
+    branches: [ "win" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   msys2-build:
@@ -16,7 +16,7 @@ jobs:
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libudjat	
+          repository: PerryWerneck/libudjat
           releases-only: true
       - uses: msys2/setup-msys2@v2
         with:
