@@ -1,9 +1,11 @@
-name: WindowsBuild
+name: Publish
 on:
   push:
     branches:
       - win
-
+    tags:
+      - '*'
+  
 jobs:
   msys2-mingw:
     runs-on: windows-latest
@@ -15,7 +17,7 @@ jobs:
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libudjat	
+          repository: PerryWerneck/vmdetect
           releases-only: true
       - uses: msys2/setup-msys2@v2
         with:
@@ -32,4 +34,14 @@ jobs:
           pacman -U --noconfirm *.pkg.tar.zst
           dos2unix PKGBUILD.mingw
           makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.gettag.outputs.tag }}
+          artifacts: "*udjat*.pkg.tar.zst"
+          allowUpdates: true
+          draft: false
+          makeLatest: true
+          omitBody: true
+          omitPrereleaseDuringUpdate: true
+          replacesArtifacts: true
 
