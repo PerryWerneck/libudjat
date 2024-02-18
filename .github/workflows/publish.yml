@@ -1,13 +1,11 @@
 name: Publish
 on:
   push:
-    branches:
-      - win
-    tags:
-      - '*'
+    branches: [ "win" ]
+    tags: [ "*" ]
   
 jobs:
-  publish-mingw:
+  mingw-publish:
     runs-on: windows-latest
     defaults:
       run:
