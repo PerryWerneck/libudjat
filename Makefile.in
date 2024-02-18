@@ -18,90 +18,6 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-#---[ Library configuration ]------------------------------------------------------------
-
-PACKAGE_NAME=@PACKAGE_NAME@
-PRODUCT_NAME=@PRODUCT_NAME@
-
-COMMON_SOURCES= \
-	$(wildcard src/tools/*.cc) \
-	$(wildcard src/tools/mainloop/*.cc) \
-	$(wildcard src/tools/subprocess/*.cc) \
-	$(wildcard src/main/*.cc) \
-	$(wildcard src/main/agent/*.cc) \
-	$(wildcard src/main/agent/setup/*.cc) \
-	$(wildcard src/main/load/*.cc) \
-	$(wildcard src/main/state/*.cc) \
-	$(wildcard src/main/request/*.cc) \
-	$(wildcard src/main/worker/*.cc) \
-	$(wildcard src/main/module/*.cc) \
-	$(wildcard src/tools/url/*.cc) \
-	$(wildcard src/tools/xml/*.cc) \
-	$(wildcard src/tools/url/protocols/*.cc) \
-	$(wildcard src/tools/http/*.cc) \
-	$(wildcard src/tools/abstract/*.cc) \
-	$(wildcard src/tools/string/*.cc) \
-	$(wildcard src/tools/application/*.cc) \
-	$(wildcard src/tools/file/*.cc) \
-	$(wildcard src/tools/value/*.cc) \
-	$(wildcard src/main/factory/*.cc) \
-	$(wildcard src/main/alert/*.cc)
-
-MAIN_SOURCES= \
-	$(COMMON_SOURCES) \
-	$(wildcard src/tools/os/@OSNAME@/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/configuration/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/application/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/service/*.cc) \
-	$(wildcard src/tools/mainloop/os/@OSNAME@/*.cc) \
-	$(wildcard src/main/module/os/@OSNAME@/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/file/*.cc) \
-	$(wildcard src/tools/os/@OSNAME@/subprocess/*.cc) \
-	$(wildcard src/main/os/@OSNAME@/*.cc) \
-	$(wildcard src/main/os/@OSNAME@/*.rc)
-
-LOCALE_SOURCES= \
-	$(COMMON_SOURCES) \
-	$(wildcard src/tools/os/linux/*.cc) \
-	$(wildcard src/tools/os/linux/configuration/*.cc) \
-	$(wildcard src/tools/os/linux/application/*.cc) \
-	$(wildcard src/tools/mainloop/os/linux/*.cc) \
-	$(wildcard src/main/module/os/linux/*.cc) \
-	$(wildcard src/tools/os/linux/file/*.cc) \
-	$(wildcard src/tools/os/linux/subprocess/*.cc) \
-	$(wildcard src/main/os/linux/*.cc) \
-	$(wildcard src/main/os/linux/*.rc) \
-	$(wildcard src/tools/os/windows/*.cc) \
-	$(wildcard src/tools/os/windows/configuration/*.cc) \
-	$(wildcard src/tools/os/windows/application/*.cc) \
-	$(wildcard src/tools/mainloop/os/windows/*.cc) \
-	$(wildcard src/main/module/os/windows/*.cc) \
-	$(wildcard src/tools/os/windows/file/*.cc) \
-	$(wildcard src/tools/os/windows/subprocess/*.cc) \
-	$(wildcard src/main/os/windows/*.cc)
-
-TEST_SOURCES= \
-	$(wildcard src/testprogram/*.cc) \
-	$(wildcard src/testprogram/@OSNAME@/*.rc)
-	
-TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@ locale
-
-#---[ Tools ]----------------------------------------------------------------------------
-
-CXX=@CXX@
-LD=@CXX@
-LN_S=@LN_S@
-MKDIR=@MKDIR_P@
-INSTALL=@INSTALL@
-INSTALL_DATA=@INSTALL_DATA@
-INSTALL_PROGRAM=@INSTALL_PROGRAM@
-XGETTEXT=@XGETTEXT@
-MSGCAT=@MSGCAT@
-WINDRES=@WINDRES@
-AR=@AR@
-VALGRIND=@VALGRIND@
-DLLTOOL=@DLLTOOL@
-
 #---[ Paths ]----------------------------------------------------------------------------
 
 prefix=@prefix@
@@ -126,16 +42,96 @@ BINRLS=$(BINDIR)/Release
 
 POTDIR=.pot
 
-#---[ Rules ]----------------------------------------------------------------------------
+#---[ Library configuration ]------------------------------------------------------------
 
-DEPENDS= \
-	Makefile \
-	src/include/*.h \
-	src/include/udjat/*.h \
-	src/include/udjat/tools/*.h
+PACKAGE_NAME=@PACKAGE_NAME@
+PRODUCT_NAME=@PRODUCT_NAME@
+
+COMMON_SOURCES= \
+	$(wildcard $(srcdir)/src/tools/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/*.cc) \
+	$(wildcard $(srcdir)/src/tools/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/*.cc) \
+	$(wildcard $(srcdir)/src/main/agent/*.cc) \
+	$(wildcard $(srcdir)/src/main/agent/setup/*.cc) \
+	$(wildcard $(srcdir)/src/main/load/*.cc) \
+	$(wildcard $(srcdir)/src/main/state/*.cc) \
+	$(wildcard $(srcdir)/src/main/request/*.cc) \
+	$(wildcard $(srcdir)/src/main/worker/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/*.cc) \
+	$(wildcard $(srcdir)/src/tools/url/*.cc) \
+	$(wildcard $(srcdir)/src/tools/xml/*.cc) \
+	$(wildcard $(srcdir)/src/tools/url/protocols/*.cc) \
+	$(wildcard $(srcdir)/src/tools/http/*.cc) \
+	$(wildcard $(srcdir)/src/tools/abstract/*.cc) \
+	$(wildcard $(srcdir)/src/tools/string/*.cc) \
+	$(wildcard $(srcdir)/src/tools/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/value/*.cc) \
+	$(wildcard $(srcdir)/src/main/factory/*.cc) \
+	$(wildcard $(srcdir)/src/main/alert/*.cc)
+
+MAIN_SOURCES= \
+	$(COMMON_SOURCES) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/configuration/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/service/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/@OSNAME@/*.rc)
+
+LOCALE_SOURCES= \
+	$(COMMON_SOURCES) \
+	$(wildcard $(srcdir)/src/tools/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/configuration/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/linux/*.rc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/configuration/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/os/windows/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/os/windows/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/windows/*.cc)
+
+TEST_SOURCES= \
+	$(wildcard $(srcdir)/src/testprogram/*.cc) \
+	$(wildcard $(srcdir)/src/testprogram/@OSNAME@/*.rc)
+	
+TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@ locale
+
+#---[ Tools ]----------------------------------------------------------------------------
+
+CXX=@CXX@
+LD=@CXX@
+LN_S=@LN_S@
+MKDIR=@MKDIR_P@
+INSTALL=@INSTALL@
+INSTALL_DATA=@INSTALL_DATA@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+XGETTEXT=@XGETTEXT@
+MSGCAT=@MSGCAT@
+WINDRES=@WINDRES@
+AR=@AR@
+VALGRIND=@VALGRIND@
+DLLTOOL=@DLLTOOL@
+
+#---[ Rules ]----------------------------------------------------------------------------
 
 CFLAGS= \
 	@CPPFLAGS@ \
+	-Isrc/include \
+	-I$(srcdir)/src/include \
 	-DBUILD_DATE=`date +%Y%m%d` \
 	-DLIBDIR=$(libdir) \
 	-DLOCALEDIR=$(localedir) \
@@ -158,8 +154,7 @@ LIBS= \
 #---[ Debug Rules ]----------------------------------------------------------------------
 
 $(OBJDBG)/%.o: \
-	%.cc \
-	$(DEPENDS)
+	%.cc
 
 	@echo $< ...
 	@$(MKDIR) $(@D)
@@ -190,8 +185,7 @@ $(OBJDBG)/%.o: \
 #---[ Release Rules ]--------------------------------------------------------------------
 
 $(OBJRLS)/%.o: \
-	%.cc \
-	$(DEPENDS)
+	%.cc
 
 	@echo $< ...
 	@$(MKDIR) $(@D)
@@ -255,7 +249,7 @@ Release: \
 
 $(BINRLS)/@SONAME@: \
 	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o) \
-	$(foreach SRC, $(basename $(wildcard src/main/os/@OSNAME@/*.rc)), $(OBJRLS)/$(SRC).o)
+	$(foreach SRC, $(basename $(wildcard $(srcdir)/src/main/os/@OSNAME@/*.rc)), $(OBJRLS)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...
@@ -382,83 +376,83 @@ install-devel: \
 		$(DESTDIR)$(includedir)/udjat
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/*.h \
+		$(srcdir)/src/include/udjat/*.h \
 		$(DESTDIR)$(includedir)/udjat
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/*.h \
+		$(srcdir)/src/include/udjat/tools/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools/abstract
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/abstract/*.h \
+		$(srcdir)/src/include/udjat/tools/abstract/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/abstract
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools/response
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/response/*.h \
+		$(srcdir)/src/include/udjat/tools/response/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/response
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/http/*.h \
+		$(srcdir)/src/include/udjat/tools/http/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/http
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/module
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/module/*.h \
+		$(srcdir)/src/include/udjat/module/*.h \
 		$(DESTDIR)$(includedir)/udjat/module
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools/file
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/tools/file/*.h \
+		$(srcdir)/src/include/udjat/tools/file/*.h \
 		$(DESTDIR)$(includedir)/udjat/tools/file
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/net/*.h \
+		$(srcdir)/src/include/udjat/net/*.h \
 		$(DESTDIR)$(includedir)/udjat/net
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/net/ip
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/net/ip/*.h \
+		$(srcdir)/src/include/udjat/net/ip/*.h \
 		$(DESTDIR)$(includedir)/udjat/net/ip
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/agent
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/agent/*.h \
+		$(srcdir)/src/include/udjat/agent/*.h \
 		$(DESTDIR)$(includedir)/udjat/agent
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/alert
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/alert/*.h \
+		$(srcdir)/src/include/udjat/alert/*.h \
 		$(DESTDIR)$(includedir)/udjat/alert
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/ui
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/ui/*.h \
+		$(srcdir)/src/include/udjat/ui/*.h \
 		$(DESTDIR)$(includedir)/udjat/ui
 
 	# Install PKG-CONFIG files
@@ -480,7 +474,7 @@ install-devel-linux: \
 		$(DESTDIR)$(includedir)/udjat/linux
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/linux/*.h \
+		$(srcdir)/src/include/udjat/linux/*.h \
 		$(DESTDIR)$(includedir)/udjat/linux
 
 	@$(MKDIR) \
@@ -496,7 +490,7 @@ install-devel-windows:
 		$(DESTDIR)$(includedir)/udjat/win32
 
 	@$(INSTALL_DATA) \
-		src/include/udjat/win32/*.h \
+		$(srcdir)/src/include/udjat/win32/*.h \
 		$(DESTDIR)$(includedir)/udjat/win32
 
 install-conf:
@@ -505,7 +499,7 @@ install-conf:
 		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).conf.d
 
 	@$(INSTALL_DATA) \
-		conf.d/00-defaults.conf \
+		$(srcdir)/conf.d/00-defaults.conf \
 		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).conf.d/00-$(PACKAGE_NAME)-defaults.conf
 
 #---[ Uninstall Targets ]----------------------------------------------------------------
@@ -568,7 +562,7 @@ $(BINDBG)/udjat@EXEEXT@: \
 
 $(BINDBG)/@SONAME@: \
 	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
-	$(foreach SRC, $(basename $(wildcard src/main/os/@OSNAME@/*.rc)), $(OBJDBG)/$(SRC).o)
+	$(foreach SRC, $(basename $(wildcard $(srcdir)/src/main/os/@OSNAME@/*.rc)), $(OBJDBG)/$(SRC).o)
 
 	@$(MKDIR) $(@D)
 	@echo $< ...

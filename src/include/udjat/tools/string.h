@@ -79,9 +79,6 @@
 
 	/// @brief Extended string.
 	class UDJAT_API String : public std::string {
-	protected:
-		virtual void add(const char *str);
-
 	public:
 		//
 		// Construct

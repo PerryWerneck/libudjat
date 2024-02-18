@@ -454,13 +454,13 @@
 			for(size_t ix = 0;ix < length && next; ix++) {
 
 				char *value = nullptr;
-				econf_err err = econf_getStringValueDef(
-									(econf_file *) hFile,
-									group,
-									keys[ix],
-									&value,
-									(char *) ""		// It should be const here but, it isnt in libeconf.
-								);
+				err = econf_getStringValueDef(
+							(econf_file *) hFile,
+							group,
+							keys[ix],
+							&value,
+							(char *) ""		// It should be const here but, it isnt in libeconf.
+						);
 
 				if(err == ECONF_SUCCESS) {
 					try {
@@ -471,7 +471,7 @@
 						cerr << "config\tError '" << e.what() << "' navigating from configuration" << endl;
 						next = false;
 					} catch(...) {
-						cerr << "config\tUnexpected errro navigating from configuration" << endl;
+						cerr << "config\tUnexpected error navigating from configuration" << endl;
 						next = false;
 					}
 

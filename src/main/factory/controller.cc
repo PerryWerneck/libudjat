@@ -84,24 +84,4 @@
 		return false;
 	}
 
-	/*
-	bool Factory::Controller::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
-
-		debug("Seaching for factory '",name,"'");
-
-		lock_guard<recursive_mutex> lock(guard);
-		for(auto factory : factories) {
-
-			debug("Testing factory '",factory->name());
-
-			if(!(name && *name && strcasecmp(factory->name(),name))) {
-				if(func(*factory)) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	*/
-
  }
