@@ -379,6 +379,10 @@ install-devel: \
 		$(srcdir)/src/include/udjat/*.h \
 		$(DESTDIR)$(includedir)/udjat
 
+	@$(INSTALL_DATA) \
+		src/include/udjat/*.h \
+		$(DESTDIR)$(includedir)/udjat
+
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/tools
 

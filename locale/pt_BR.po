@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-11 09:48-0300\n"
+"POT-Creation-Date: 2024-02-19 13:17-0300\n"
 "PO-Revision-Date: 2024-02-11 09:55-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -150,7 +150,7 @@ msgstr "Menos de um minuto"
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:91
+#: src/main/agent/root.cc:93
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -216,7 +216,7 @@ msgstr "Erro de sistema"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:133 src/main/agent/root.cc:91
+#: src/tools/systemservice.cc:133 src/main/agent/root.cc:93
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -321,10 +321,6 @@ msgid ""
 "the request, got an invalid response."
 msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
 
-#: src/main/request/request.cc:41
-msgid "This request has no arguments"
-msgstr "A requisição não tem argumentos"
-
 #: src/tools/http/error.cc:138
 msgid "Too many requests"
 msgstr "Muitas requisições"
@@ -333,15 +329,11 @@ msgstr "Muitas requisições"
 msgid "Unable to append '{}' on abstract value"
 msgstr "Incapaz de adicionar '{}' em um valor abstrato"
 
-#: src/main/alert/factory.cc:148
+#: src/main/alert/factory.cc:153
 msgid "Unable to create alert for node <{}>"
 msgstr "Incapaz de criar alerta para o nó <{}>"
 
-#: src/main/alert/factory.cc:64
-msgid "Unable to determine alert type for node <{}>"
-msgstr "Incapaz de determinar o tipo de alerta para o nó <{}>"
-
-#: src/main/alert/factory.cc:107
+#: src/main/alert/factory.cc:111
 msgid "Unable to determine internal alert type for node <{}>"
 msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
 
@@ -409,15 +401,15 @@ msgstr "minuto"
 msgid "minutes"
 msgstr "minutos"
 
-#: src/tools/converters.cc:47 src/tools/string/string.cc:61
+#: src/tools/converters.cc:47 src/tools/string/string.cc:57
 msgid "no"
 msgstr "não"
 
-#: src/tools/converters.cc:49 src/main/state/state.cc:296
+#: src/tools/converters.cc:49 src/main/state/state.cc:294
 msgid "off"
 msgstr "desligado"
 
-#: src/tools/converters.cc:42 src/main/state/state.cc:296
+#: src/tools/converters.cc:42 src/main/state/state.cc:294
 msgid "on"
 msgstr "ligado"
 
@@ -433,7 +425,7 @@ msgstr "segundos"
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/tools/converters.cc:40 src/tools/string/string.cc:61
+#: src/tools/converters.cc:40 src/tools/string/string.cc:57
 msgid "yes"
 msgstr "sim"
 
@@ -494,6 +486,12 @@ msgstr "{m} {M}"
 
 #~ msgid "Tb"
 #~ msgstr "Tb"
+
+#~ msgid "This request has no arguments"
+#~ msgstr "A requisição não tem argumentos"
+
+#~ msgid "Unable to determine alert type for node <{}>"
+#~ msgstr "Incapaz de determinar o tipo de alerta para o nó <{}>"
 
 #~ msgid "Unexpected error during reconfiguration"
 #~ msgstr "Erro inesperado durante a configuração"
