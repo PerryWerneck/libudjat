@@ -23,6 +23,7 @@
  #include <udjat/net/ip/address.h>
  #include <ws2tcpip.h>
  #include <system_error>
+ #include <udjat/win32/exception.h>
 
  using namespace std;
 
@@ -39,7 +40,7 @@
 			} else if(InetPton(AF_INET6,addr,&((sockaddr_in6 *) &storage)->sin6_addr) != 0) {
 				storage.ss_family = AF_INET6;
 			} else {
-				throw std::system_error(errno, std::system_category(), addr);
+				throw Win32::WSA::Exception(addr);
 			}
 		}
 
