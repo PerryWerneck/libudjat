@@ -52,6 +52,17 @@
 
  namespace std {
 
+	UDJAT_API string to_string(const in_addr &addr, bool dns) {
+
+		sockaddr_in ip;
+		memset(&ip,0,sizeof(ip));
+		ip.sin_family = AF_INET;
+		ip.sin_addr = addr;
+
+		return to_string(ip,dns);
+
+	}
+
  	UDJAT_API string to_string(const sockaddr &addr, bool dns) {
 
  		char ipaddr[256];
