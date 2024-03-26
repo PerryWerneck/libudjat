@@ -239,12 +239,12 @@
 
 		class UDJAT_API TmpDir : public File::Path {
 		public:
-			TmpDir(const char *subdir = nullptr) noexcept;
+			TmpDir(const char *subdir = nullptr);
 		};
 
 		class UDJAT_API LogDir : public File::Path {
 		public:
-			LogDir(const char *subdir = nullptr) noexcept ;
+			LogDir(const char *subdir = nullptr);
 			static LogDir & getInstance();
 		};
 

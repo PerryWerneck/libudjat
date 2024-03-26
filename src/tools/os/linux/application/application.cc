@@ -99,10 +99,10 @@
 		return "/tmp";
 	}
 
-	Application::TmpDir::TmpDir(const char *subdir) noexcept : File::Path{PathFactory(get_tmpdir(),subdir,true)} {
+	Application::TmpDir::TmpDir(const char *subdir) : File::Path{PathFactory(get_tmpdir(),subdir,true)} {
 	}
 
-	Application::LogDir::LogDir(const char *subdir) noexcept : File::Path{PathFactory("/var/log/",subdir,true)} {
+	Application::LogDir::LogDir(const char *subdir) : File::Path{PathFactory("/var/log/",subdir,true)} {
 	}
 
 	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir,true)} {
