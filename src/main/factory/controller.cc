@@ -84,4 +84,20 @@
 		return false;
 	}
 
+
+	bool Factory::Controller::for_each(const char *name, const std::function<bool(Factory &factory)> &method) {
+		lock_guard<recursive_mutex> lock(guard);
+		for(auto factory : factories) {
+
+			if(strcasecmp(name,factory->name())) {
+				continue;
+			}
+
+			if(method(*factory)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
  }

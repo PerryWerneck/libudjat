@@ -42,6 +42,10 @@
 		return module.getProperties(properties);
 	}
 
+	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
+		return Controller::getInstance().for_each(name,func);
+	}
+
 	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(func);
 	}
