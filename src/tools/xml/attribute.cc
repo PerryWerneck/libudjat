@@ -84,5 +84,9 @@
 		return def;
 	}
 
+	const char * XML::QuarkFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return Quark{StringFactory(node,attrname,def)}.c_str();
+	}
+
  }
 
