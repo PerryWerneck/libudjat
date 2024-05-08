@@ -144,7 +144,11 @@
 				}
 #endif // HAVE_VMDETECT
 
-				URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
+				URL sysid;
+
+				if(Module::find("dmi")) {
+					sysid = Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str();
+				}
 
 				if(!sysid.empty()) {
 
