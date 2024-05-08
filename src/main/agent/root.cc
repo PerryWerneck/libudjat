@@ -81,7 +81,7 @@
 				public:
 					ReadyState(const char *name, const char *summary, const char *body) : Abstract::State(name, Level::ready, summary, body) {
 #ifdef HAVE_VMDETECT
-						VirtualMachine virtualmachine;
+						VirtualMachine virtualmachine{Logger::enabled(Logger::Debug)};
 						Object::properties.icon = virtualmachine ? "computer-vm" : "computer";
 #else
 						Object::properties.icon = "computer";
