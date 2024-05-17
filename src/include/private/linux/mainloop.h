@@ -83,8 +83,7 @@ namespace Udjat {
 			bool enabled(const Timer *timer) const noexcept override;
 			bool enabled(const Handler *handler) const noexcept override;
 
-//			bool for_each(const std::function<bool(Service &service)> &func) override;
-			bool for_each(const std::function<bool(Timer &timer)> &func) override;
+			bool for_each(const std::function<bool(Timer &timer)> &func);
 
 		};
 

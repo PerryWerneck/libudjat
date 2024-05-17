@@ -26,6 +26,7 @@
 
 namespace Udjat {
 
+	/// @brief Abstract main loop.
 	class UDJAT_API MainLoop {
 	private:
 		static MainLoop * instance;
@@ -88,10 +89,6 @@ namespace Udjat {
 		/// @param call Method when timer expires, timer will be deleted if it returns 'false'.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
-
-		/// @brief Enumerate timers.
-		/// @return true if lambda has returned true and loop was ended.
-		virtual bool for_each(const std::function<bool(Timer &timer)> &func) = 0;
 
 	};
 

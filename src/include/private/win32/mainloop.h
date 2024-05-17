@@ -103,7 +103,7 @@
 			void push_back(MainLoop::Handler *handler) override;
 			void remove(MainLoop::Handler *handler) override;
 
-			bool for_each(const std::function<bool(Timer &timer)> &func) override;
+			bool for_each(const std::function<bool(Timer &timer)> &func);
 
 		};
 
