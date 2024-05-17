@@ -29,8 +29,6 @@
 	class UDJAT_API MainLoop::Timer {
 	private:
 
-		friend class MainLoop::Timers;
-
 		/// @brief The time of next call.
 		unsigned long next = 0;
 

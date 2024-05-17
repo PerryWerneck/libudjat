@@ -38,8 +38,6 @@ namespace Udjat {
 
 	protected:
 
-		class Timers;
-
 		MainLoop();
 
 		/// @brief Is the mainloop enabled.

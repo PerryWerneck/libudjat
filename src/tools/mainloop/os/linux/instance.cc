@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <private/mainloop.h>
  #include <private/linux/mainloop.h>
  #include <mutex>
 

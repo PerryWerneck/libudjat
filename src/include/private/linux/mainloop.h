@@ -19,7 +19,6 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <private/mainloop.h>
  #include <udjat/tools/mainloop.h>
  #include <private/service.h>
 
@@ -29,6 +28,17 @@ namespace Udjat {
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
+
+			class UDJAT_PRIVATE Timers {
+			public:
+
+				/// @brief Minimal timer value.
+				unsigned long maxwait = 60000;
+
+				/// @brief List of enabled timers.
+				std::list<Timer *> enabled;
+
+			};
 
 			/// @brief Event FD.
 			int efd = -1;
