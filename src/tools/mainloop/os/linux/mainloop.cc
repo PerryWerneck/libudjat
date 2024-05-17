@@ -92,6 +92,10 @@
 		return false;
 	}
 
+	bool Linux::MainLoop::active() const noexcept {
+		return this->running;
+	}
+
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
 #ifdef DEBUG

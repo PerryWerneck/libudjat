@@ -29,6 +29,9 @@ namespace Udjat {
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
 
+			/// @brief Is the mainloop enabled.
+			bool running = true;
+
 			class UDJAT_PRIVATE Timers {
 			public:
 
@@ -77,6 +80,8 @@ namespace Udjat {
 
 			/// @brief Run mainloop.
 			int run() override;
+
+			bool active() const noexcept override;
 
 			/// @brief Wakeup main loop.
 			void wakeup() noexcept override;

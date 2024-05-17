@@ -40,9 +40,6 @@ namespace Udjat {
 
 		MainLoop();
 
-		/// @brief Is the mainloop enabled.
-		bool running = true;
-
 	public:
 
 		MainLoop(const MainLoop &src) = delete;
@@ -69,8 +66,10 @@ namespace Udjat {
 		virtual int run() = 0;
 
 		/// @brief Is the mainloop active?
+		virtual bool active() const noexcept = 0;
+
 		inline operator bool() const noexcept {
-			return running;
+			return active();
 		}
 
 		/// @brief Quit mainloop.

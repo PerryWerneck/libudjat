@@ -22,7 +22,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
- #include <private/mainloop.h>
+ #include <list>
 
  #define WM_CHECK_TIMERS		WM_USER+101
  #define WM_START				WM_USER+102
@@ -96,6 +96,8 @@
 
 			/// @brief Quit mainloop.
 			void quit() override;
+
+			bool active() const noexcept override;
 
 			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 

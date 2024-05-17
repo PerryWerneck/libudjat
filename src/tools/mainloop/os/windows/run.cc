@@ -52,12 +52,10 @@
 
 		Logger::String("Running message loop").write((Logger::Level) (Logger::Debug+1),"win32");
 
-		running = true;
 		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		running = false;
 
 		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Debug+1),"win32");
 	}
