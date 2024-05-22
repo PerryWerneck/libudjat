@@ -337,6 +337,70 @@
 		return *this;
 	}
 
+	bool File::Path::for_each(const std::function<bool (const File::Path &path, const File::Stat &st)> &call) const {
+
+		char path[PATH_MAX+1];
+		if(!::realpath(c_str(),path)) {
+			throw system_error(errno,system_category(),c_str());
+		}
+
+		debug(path);
+
+		if(!dir()) {
+			struct stat s;
+			if(stat(this->c_str(),&s) != 0) {
+				throw system_error(errno,system_category(),this->c_str());
+			}
+			return call(*this,s);
+		}
+
+		// It's a folder, navigate.
+		DIR *dir = opendir(path);
+
+		if(!dir) {
+			if(errno == ENOTDIR) {
+				return false;
+			}
+			throw system_error(errno,system_category(),*this);
+		}
+
+		bool rc = false;
+
+		try {
+
+			struct dirent *de;
+			while(!rc && (de = readdir(dir)) != NULL) {
+
+				if(!de->d_name || de->d_name[0] == '.') {
+					continue;
+				}
+
+				File::Path filename{path};
+				filename += "/";
+				filename += de->d_name;
+
+				struct stat s;
+				if(stat(filename.c_str(),&s) != 0) {
+					throw system_error(errno,system_category(),filename.c_str());
+				}
+
+				call(filename,s);
+
+			}
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		return rc;
+
+	}
+
 	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
 		if(!dir()) {
@@ -378,6 +442,8 @@
 				if(filename.dir()) {
 					if(recursive) {
 						rc = filename.for_each(call,recursive);
+					} else {
+						call(filename);
 					}
 				} else {
 					rc = call(filename);
