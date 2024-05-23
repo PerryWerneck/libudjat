@@ -28,17 +28,26 @@ namespace Udjat {
 
 	/// @brief Abstract main loop.
 	class UDJAT_API MainLoop {
-	private:
-		static MainLoop * instance;
-
 	public:
 
 		class Timer;
 		class Handler;
 
+		enum Type : uint8_t {
+			Undefined,
+			Pool,			///< @brief Internal mainloop.
+			WinMsg,			///< @brief Win32 Object Window.
+			GLib,			///< @brief GLib based mainloop.
+			Custom
+		};
+
+	private:
+		static MainLoop * instance;
+		Type mtype;
+
 	protected:
 
-		MainLoop();
+		MainLoop(Type type);
 
 	public:
 
@@ -46,6 +55,14 @@ namespace Udjat {
 		MainLoop(const MainLoop *src) = delete;
 
 		virtual ~MainLoop();
+
+		inline Type type() const noexcept {
+			return mtype;
+		}
+
+		inline bool operator ==(const Type type) const noexcept {
+			return this->mtype == type;
+		}
 
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();

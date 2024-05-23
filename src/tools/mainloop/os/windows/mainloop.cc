@@ -36,7 +36,7 @@
 
  	std::mutex Win32::MainLoop::guard;
 
-	Win32::MainLoop::MainLoop() {
+	Win32::MainLoop::MainLoop() : Udjat::MainLoop{MainLoop::WinMsg} {
 
 		if(!winClass) {
 

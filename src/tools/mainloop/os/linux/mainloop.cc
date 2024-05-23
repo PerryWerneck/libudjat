@@ -33,7 +33,7 @@
 
  	std::mutex Linux::MainLoop::guard;
 
-	Linux::MainLoop::MainLoop() {
+	Linux::MainLoop::MainLoop() : Udjat::MainLoop{MainLoop::Pool} {
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
