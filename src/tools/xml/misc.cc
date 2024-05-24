@@ -122,7 +122,6 @@
 
 #ifdef HAVE_VMDETECT
 
-		debug("---");
 		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
 			return false;
 		}

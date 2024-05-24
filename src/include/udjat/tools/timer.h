@@ -29,11 +29,15 @@
 	class UDJAT_API MainLoop::Timer {
 	private:
 
-		/// @brief The time of next call.
-		unsigned long next = 0;
+		struct {
 
-		/// @brief The interval in milliseconds.
-		unsigned long milliseconds = 0;
+			/// @brief The timestamp, in getCurrentTime() units, for next activation.
+			unsigned long activation_time = 0;
+
+			/// @brief The interval in milliseconds.
+			unsigned long interval = 0;
+
+		} values;
 
 	protected:
 
@@ -46,13 +50,22 @@
 		constexpr Timer() {
 		}
 
-		/// @brief Get Timer value.
-		inline unsigned long value() const noexcept {
-			return next;
+		/// @brief The timestamp, in getCurrentTime() units, for next activation.
+		inline unsigned long activation_time() const noexcept {
+			return values.activation_time;
 		}
 
+		inline unsigned long interval() const noexcept {
+			return values.interval;
+		}
+
+		/// @brief Get Timer value.
+		// inline unsigned long value() const noexcept {
+		//	return next;
+		//}
+
 		/// @brief Activate timer.
-		/// @return The updated timer value or '0' if timer was disabled.
+		/// @return The timestamp, in getCurrentTime() units, for next activation (or '0' if timer was disabled).
 		unsigned long activate() noexcept;
 
 		/// @brief Is timer enabled?
@@ -77,9 +90,19 @@
 		/// @brief Get current timer.
 		static unsigned long getCurrentTime();
 
-		/// @brief Reset timer.
-		/// @param milliseconds The new timer value or '0' to activate timer on next cicle.
-		void reset(unsigned long milliseconds = 0);
+		/// @brief Set new interval timer.
+		/// @param milliseconds The new timer value.
+		/// @return true if the interval was changed.
+		bool set(const unsigned long milliseconds);
+
+		inline void reset(const unsigned long milliseconds) {
+			set(milliseconds);
+		}
+
+		inline Timer & operator = (const unsigned long milliseconds) {
+			set(milliseconds);
+			return *this;
+		}
 
 		/// @brief Get timer as string.
 		std::string to_string() const;

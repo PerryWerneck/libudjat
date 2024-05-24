@@ -107,9 +107,12 @@
 	}
 
 	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
+#ifdef DEBUG
+		clog << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
+#endif // DEBUG
 		lock_guard<mutex> lock(guard);
 #ifdef DEBUG
-		cout << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
+		clog << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
 #endif // DEBUG
 		timers.enabled.remove(timer);
 	}

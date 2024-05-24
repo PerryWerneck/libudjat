@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
- // #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ // #define SERVICE_TEST 1
+ #define APPLICATION_TEST 1
+ //#define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -267,9 +267,17 @@ int main(int argc, char **argv) {
 	cout << file.name() << endl;
 	*/
 
+	/*
 	string name = Udjat::Icon{"udjat"}.filename();
 	cout << "Found: '" << name << "'" << endl;
+	*/
 
+	MainLoop::getInstance().TimerFactory(1000,[]{
+		cout << "timer\tActivated!" << endl;
+		return true;
+	});
+
+	MainLoop::getInstance().run();
 
 	return 0;
 }

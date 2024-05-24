@@ -76,6 +76,12 @@ namespace Udjat {
 		virtual void push_back(MainLoop::Timer *timer) = 0;
 		virtual void remove(MainLoop::Timer *timer) = 0;
 
+		/// @brief Timer interval was changed.
+		/// @param timer The updated timer.
+		/// @param from The original interval in milliseconds.
+		/// @param to The new interval in milliseconds.
+		virtual void updated(MainLoop::Timer *timer, unsigned long from, unsigned long to);
+
 		virtual void push_back(MainLoop::Handler *handler) = 0;
 		virtual void remove(MainLoop::Handler *handler) = 0;
 

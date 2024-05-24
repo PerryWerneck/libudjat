@@ -211,17 +211,22 @@
 	// Get expired timers.
 	std::list<Timer *> expired;
 	for_each([&expired,&next,now](Timer &timer){
-		if(timer.value() <= now) {
+		if(timer.activation_time() <= now) {
+			debug("activation=",timer.activation_time());
 			expired.push_back(&timer);
 		} else {
-			next = std::min(next,timer.value());
+			next = std::min(next,timer.activation_time());
+			debug("next=",now-next);
 		}
 		return false;
 	});
 
+	debug("expired=",expired.size());
+
 	// Run expired timers.
 	for(auto timer : expired) {
 		unsigned long n = timer->activate();
+		debug("after activation=",now-n);
 		if(n) {
 			next = std::min(next,n);
 		}
