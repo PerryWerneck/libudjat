@@ -72,10 +72,10 @@
 	// Get expired timers.
 	std::list<Timer *> expired;
 	for_each([&expired,&next,now](Timer &timer){
-		if(timer.value() <= now) {
+		if(timer.activation_time() <= now) {
 			expired.push_back(&timer);
 		} else {
-			next = std::min(next,timer.value());
+			next = std::min(next,timer.activation_time());
 		}
 		return false;
 	});
