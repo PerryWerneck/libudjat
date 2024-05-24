@@ -49,8 +49,18 @@
 
 	protected:
 
-		int fd = -1;
-		Event events = (Event) 0;
+		struct Values {
+			int fd = -1;
+			Event events = (Event) 0;
+
+			constexpr Values(int f, Event e) : fd{f}, events{e} {
+			}
+
+			constexpr Values() {
+			}
+
+		} values;
+
 		virtual void handle_event(const Event event) = 0;
 
 	public:
@@ -69,8 +79,8 @@
 
 #ifndef _WIN32
 		inline void get(pollfd &pfd) const noexcept {
-			pfd.fd = fd;
-			pfd.events = events;
+			pfd.fd = values.fd;
+			pfd.events = values.events;
 			pfd.revents = 0;
 		}
 
@@ -90,11 +100,19 @@
 		}
 
 		inline operator bool() const noexcept {
-			return fd != -1;
+			return values.fd != -1;
 		}
 
 		inline operator int() const noexcept {
-			return fd;
+			return values.fd;
+		}
+
+		inline int fd() const noexcept {
+			return values.fd;
+		}
+
+		inline Event events() const noexcept {
+			return values.events;
 		}
 
 		/// @brief Is handler enabled?

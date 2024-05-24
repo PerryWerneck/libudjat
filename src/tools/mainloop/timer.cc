@@ -46,7 +46,7 @@
 		disable();
 	}
 
-	void MainLoop::updated(MainLoop::Timer *, unsigned long from_value, unsigned long to_value) {
+	void MainLoop::changed(MainLoop::Timer *, unsigned long from_value, unsigned long to_value) {
 		if(to_value < from_value) {
 			wakeup();
 		}
@@ -62,7 +62,7 @@
 		values.interval = milliseconds;
 		if(values.interval) {
 			values.activation_time = getCurrentTime() + milliseconds;
-			MainLoop::getInstance().updated(this,saved,values.activation_time);
+			MainLoop::getInstance().changed(this,saved,values.activation_time);
 		}
 
 		return true;

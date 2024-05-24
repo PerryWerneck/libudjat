@@ -39,10 +39,10 @@
 			valid_handlers = 0;
 			for(size_t ix = 0; ix < nfds; ix++) {
 
-				if(handlers[ix]->fd != -1) {
+				if(handlers[ix]->values.fd != -1) {
 					index[valid_handlers] = handlers[ix];
-					fds[valid_handlers].fd = handlers[ix]->fd;
-					fds[valid_handlers].events = handlers[ix]->events;
+					fds[valid_handlers].fd = handlers[ix]->values.fd;
+					fds[valid_handlers].events = handlers[ix]->values.events;
 					fds[valid_handlers].revents = 0;
 					valid_handlers++;
 				}
@@ -96,10 +96,10 @@
 
 		for(size_t ix = 0; ix < nfds; ix++) {
 
-			if(handlers[ix]->fd != -1) {
+			if(handlers[ix]->values.fd != -1) {
 				index[valid_handlers] = handlers[ix];
-				fds[valid_handlers].fd = handlers[ix]->fd;
-				fds[valid_handlers].events = handlers[ix]->events;
+				fds[valid_handlers].fd = handlers[ix]->values.fd;
+				fds[valid_handlers].events = handlers[ix]->values.events;
 				fds[valid_handlers].revents = 0;
 				valid_handlers++;
 			}

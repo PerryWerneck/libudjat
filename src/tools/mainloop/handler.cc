@@ -36,7 +36,7 @@
 
  namespace Udjat {
 
-	MainLoop::Handler::Handler(int f, const Event e) : fd(f), events(e) {
+	MainLoop::Handler::Handler(int f, const Event e) : values{f,e} {
 		MainLoop::getInstance();
 	}
 
@@ -64,14 +64,14 @@
 	}
 
 	ssize_t MainLoop::Handler::read(void *buf, size_t count) {
-		return ::read(fd,buf,count);
+		return ::read(values.fd,buf,count);
 	}
 
 	void MainLoop::Handler::close() {
-		if(fd != -1) {
+		if(values.fd != -1) {
 			disable();
-			::close(fd);
-			fd = -1;
+			::close(values.fd);
+			values.fd = -1;
 		}
 	}
 
@@ -80,23 +80,28 @@
 
 	bool MainLoop::Handler::set(int fd) {
 
-		if(this->fd == fd) {
+		if(values.fd == fd) {
 			return false;
 		}
 
-		this->fd = fd;
-		MainLoop::getInstance().wakeup();
+		values.fd = fd;
+		MainLoop::getInstance().changed(this);
 
 		return true;
 
 	}
 
 	void MainLoop::Handler::set(const Event events) {
-		this->events = events;
-		if(enabled()) {
-			MainLoop::getInstance().wakeup();
+		values.events = events;
+		MainLoop::getInstance().changed(this);
+	}
+
+	void MainLoop::changed(MainLoop::Handler *handler) {
+		if(handler->enabled()) {
+			wakeup();
 		}
 	}
+
 
  }
 
