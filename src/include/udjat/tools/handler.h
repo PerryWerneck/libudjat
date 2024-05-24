@@ -77,6 +77,8 @@
 
 		virtual void flush();
 
+		void handle(const Event event) noexcept;
+
 #ifndef _WIN32
 		inline void get(pollfd &pfd) const noexcept {
 			pfd.fd = values.fd;

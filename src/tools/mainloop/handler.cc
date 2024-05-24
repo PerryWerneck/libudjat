@@ -96,6 +96,25 @@
 		MainLoop::getInstance().changed(this);
 	}
 
+	void MainLoop::Handler::handle(const Event event) noexcept {
+
+		try {
+
+			handle_event(event);
+
+		} catch(const std::exception &e) {
+
+			cerr << "MainLoop\tError handling socket " << values.fd << ": " << e.what() << endl;
+
+		} catch(...) {
+
+			cerr << "MainLoop\tUnexpected error handling socket " << values.fd << endl;
+
+		}
+
+	}
+
+
 	void MainLoop::changed(MainLoop::Handler *handler) {
 		if(handler->enabled()) {
 			wakeup();
