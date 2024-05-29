@@ -118,14 +118,22 @@ namespace Udjat {
 
 			}
 
+			// Run node based factories.
+			if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
+
+				return factory.NodeFactory(*this,node);
+
+			})) {
+
+				continue;
+
+			}
+
+
 			// Run factories.
 			if(Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
 
 				if(factory == node.attribute("type").as_string("default") && factory.CustomFactory(*this,node)) {
-					return true;
-				}
-
-				if(factory == node.name() && factory.NodeFactory(*this,node)) {
 					return true;
 				}
 

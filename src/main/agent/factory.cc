@@ -203,7 +203,6 @@
 		return agent;
 	}
 
-
 	/*
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory(const Abstract::Object &parent, const XML::Node &node) {
 		return Factory(node.attribute("type").as_string(node.name()),parent,node);

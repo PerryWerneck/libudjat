@@ -37,6 +37,14 @@
 		Controller::getInstance().remove(this);
 	}
 
+	int Factory::compare(const char *name) const noexcept {
+		return strcasecmp(name,factory_name);
+	}
+
+	int Factory::compare(const XML::Node &node) const noexcept {
+		return strcasecmp(node.name(),factory_name);
+	}
+
 	Value & Factory::getProperties(Value &properties) const {
 		properties["name"] = factory_name;
 		return module.getProperties(properties);
@@ -48,6 +56,10 @@
 
 	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(func);
+	}
+
+	bool Factory::for_each(const XML::Node &node, const std::function<bool(Factory &factory)> &func) {
+		return Controller::getInstance().for_each(node,func);
 	}
 
 	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {

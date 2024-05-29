@@ -89,7 +89,22 @@
 		lock_guard<recursive_mutex> lock(guard);
 		for(auto factory : factories) {
 
-			if(strcasecmp(name,factory->name())) {
+			if(factory->compare(name)) {
+				continue;
+			}
+
+			if(method(*factory)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Factory::Controller::for_each(const XML::Node &node, const std::function<bool(Factory &factory)> &method) {
+		lock_guard<recursive_mutex> lock(guard);
+		for(auto factory : factories) {
+
+			if(factory->compare(node)) {
 				continue;
 			}
 
