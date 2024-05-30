@@ -42,7 +42,7 @@
 	}
 
 	int Factory::compare(const XML::Node &node) const noexcept {
-		return strcasecmp(node.name(),factory_name);
+		return compare(node.name());
 	}
 
 	Value & Factory::getProperties(Value &properties) const {
