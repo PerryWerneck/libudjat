@@ -121,7 +121,11 @@ namespace Udjat {
 			// Run node based factories.
 			if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
 
-				return factory.NodeFactory(*this,node);
+				if(factory.NodeFactory(*this,node)) {
+					return true;
+				}
+
+				return factory.NodeFactory(node);
 
 			})) {
 

@@ -91,6 +91,11 @@
 		}
 #endif // _WIN32
 
+		inline Handler & fd(int v) noexcept {
+			set(v);
+			return *this;
+		}
+
 		inline Handler & operator = (int fd) {
 			set(fd);
 			return *this;

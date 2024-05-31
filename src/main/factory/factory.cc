@@ -79,23 +79,27 @@
 	}
 
 	bool Factory::CustomFactory(const XML::Node &) {
+		debug("Calling default custom factory on '",name(),"'");
 		return false;
 	}
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	bool Factory::NodeFactory(const XML::Node &node) {
+		debug("Calling default node factory on '",name(),"'");
 		return generic(node);
 	}
 	#pragma GCC diagnostic pop
 
 	bool Factory::CustomFactory(Abstract::Object &, const XML::Node &node) {
+		debug("Calling default custom factory on '",name(),"'");
 		return CustomFactory(node);
 	}
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	bool Factory::NodeFactory(Abstract::Object &parent, const XML::Node &node) {
+		debug("Calling default Node/object factory on '",name(),"'");
 		return generic(parent,node);
 	}
 	#pragma GCC diagnostic pop
