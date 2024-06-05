@@ -66,9 +66,19 @@
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Object>();
 	}
+	#pragma GCC diagnostic pop
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object &parent, const XML::Node &node) {
+		return ((const Factory *) this)->ObjectFactory(parent,node);
+	}
+	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();

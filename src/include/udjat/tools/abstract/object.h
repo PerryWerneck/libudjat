@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/string.h>
+ #include <memory>
 
  namespace Udjat {
 
@@ -34,6 +35,9 @@
 			/// @brief Setup object.
 			/// @param node The XML node with the object definitions.
 			virtual void setup(const XML::Node &node);
+
+			/// @brief Add child object (if supported).
+			virtual void push_back(std::shared_ptr<Abstract::Object> child);
 
 			/// @brief Get configuration file group.
 			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");

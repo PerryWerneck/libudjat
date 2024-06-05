@@ -83,7 +83,9 @@
 
 		/// @brief Create a child object from XML node.
 		/// @param node XML definition for the new state.
-		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const;
+		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node);
+
+		UDJAT_DEPRECATED(virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const);
 
 		/// @brief Create an alert from XML node.
 		/// @param node XML definition for the new alert.

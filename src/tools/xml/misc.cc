@@ -102,6 +102,15 @@
 		return Quark(to_string(def)).c_str();
 	}
 
+	bool is_reserved(const XML::Node &node) {
+
+		if(!(strncasecmp(node.name(),"attribute",9))) {
+			return true;
+		}
+
+		return false;
+	}
+
 	bool is_allowed(const XML::Node &node) {
 
 		const char *str;
@@ -136,33 +145,33 @@
 
 		// Test if the attribute requirement is valid.
 		str = node.attribute("valid-if").as_string();
-		if(str && *str && URL(str).test() != 200) {
+		if(str && *str && URL{str}.test() != 200) {
 			return false;
 		}
 
 		str = node.attribute("allow-if").as_string();
-		if(str && *str && URL(str).test() != 200) {
+		if(str && *str && URL{str}.test() != 200) {
 			return false;
 		}
 
 		// Test if the attribute requirement is not valid.
 		str = node.attribute("not-valid-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 
 		str = node.attribute("invalid-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 
 		str = node.attribute("ignore-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 
 		str = node.attribute("deny-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 

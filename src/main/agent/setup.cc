@@ -48,12 +48,7 @@ namespace Udjat {
 		for(const XML::Node &node : root) {
 
 			// It's an attribute?
-			if(!(strncasecmp(node.name(),"attribute",9))) {
-				continue;
-			}
-
-			// Is this node allowed?
-			if(!is_allowed(node)) {
+			if(is_reserved(node) || !is_allowed(node)) {
 				continue;
 			}
 

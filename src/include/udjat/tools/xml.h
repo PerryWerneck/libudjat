@@ -76,6 +76,10 @@
 	/// @return true if the node is valid.
 	UDJAT_API bool is_allowed(const XML::Node &node);
 
+	/// @brief Test reserved node names.
+	/// @return true if the node is valid.
+	UDJAT_API bool is_reserved(const XML::Node &node);
+
 	/// @brief Expand, if possible, values ${} from attribute.
 	UDJAT_API std::string expand(const XML::Node &node, const XML::Attribute &attribute, const char *def);
 

@@ -111,28 +111,43 @@
 		set(node);
 	}
 
+	void Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {
+		throw logic_error("Object is unable to handle children");
+	}
+
 	void Abstract::Object::setup(const XML::Node &node) {
 
 		for(XML::Node child : node) {
 
-			if(!is_allowed(child)) {
-
-				const char *type = child.attribute("type").as_string("default");
-
-				Factory::for_each([this,type,&child](Factory &factory){
-
-					if(factory == type && factory.CustomFactory(child)) {
-						return true;
-					}
-
-					if(factory == child.name() && factory.NodeFactory(child)) {
-						return true;
-					}
-
-					return false;
-				});
-
+			if(is_reserved(node) || !is_allowed(node)) {
+				continue;
 			}
+
+			const char *type = child.attribute("type").as_string("default");
+
+			Factory::for_each([this,type,&child](Factory &factory){
+
+				if(factory == child.name()) {
+
+					auto object = factory.ObjectFactory(*this,child);
+					if(object) {
+						push_back(object);
+						return true;
+					}
+
+					if(factory.NodeFactory(child)) {
+						return true;
+					}
+
+				}
+
+				if(factory == type && factory.CustomFactory(child)) {
+					return true;
+				}
+
+				return false;
+
+			});
 
 		}
 
