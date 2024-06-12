@@ -115,6 +115,10 @@
 		throw logic_error("Object is unable to handle children");
 	}
 
+	void Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
+		push_back(child);
+	}
+
 	void Abstract::Object::setup(const XML::Node &node) {
 
 		for(XML::Node child : node) {
@@ -131,7 +135,11 @@
 
 					auto object = factory.ObjectFactory(*this,child);
 					if(object) {
-						push_back(object);
+						push_back(child,object);
+						return true;
+					}
+
+					if(factory.NodeFactory(*this,child)) {
 						return true;
 					}
 
