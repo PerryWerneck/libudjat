@@ -61,6 +61,8 @@
 			return apiver;
 		}
 
+		UDJAT_DEPRECATED(const char * getPath() const noexcept);
+
 		/// @brief Is the request empty?
 		/// @return True if the request path is empty.
 		inline bool empty() const noexcept {
