@@ -129,6 +129,14 @@
 			return this->method;
 		}
 
+		inline HTTP::Method verb() const noexcept {
+			return this->method;
+		}
+
+		UDJAT_DEPRECATED(inline HTTP::Method as_type() const noexcept) {
+			return this->method;
+		}
+
 		/// @brief Get current request path (after 'pop()').
 		/// @see pop()
 		/// @return The path remaining after 'pop()' calls.
