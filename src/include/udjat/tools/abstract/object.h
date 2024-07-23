@@ -138,6 +138,22 @@
 				return strcasecmp(name(),object->name()) == 0;
 			}
 
+			inline bool operator < (const Object &object) const noexcept {
+				return strcasecmp(name(),object.name()) < 0;
+			}
+
+			inline bool operator < (const Object *object) const noexcept {
+				return strcasecmp(name(),object->name()) < 0;
+			}
+
+			inline bool operator > (const Object &object) const noexcept {
+				return strcasecmp(name(),object.name()) > 0;
+			}
+
+			inline bool operator > (const Object *object) const noexcept {
+				return strcasecmp(name(),object->name()) > 0;
+			}
+
 			virtual std::string to_string() const noexcept;
 
 			/// @brief Get property value.
