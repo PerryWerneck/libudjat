@@ -126,6 +126,18 @@
 
 			virtual const char * name() const noexcept;
 
+			inline bool operator ==(const char * obj) const noexcept {
+				return strcasecmp(name(),obj) == 0;
+			}
+
+			inline bool operator ==(const Object &object) const noexcept {
+				return strcasecmp(name(),object.name()) == 0;
+			}
+
+			inline bool operator ==(const Object *object) const noexcept {
+				return strcasecmp(name(),object->name()) == 0;
+			}
+
 			virtual std::string to_string() const noexcept;
 
 			/// @brief Get property value.
@@ -180,4 +192,16 @@
 	}
 
  }
+
+ namespace std {
+
+	template <>
+	struct hash<Udjat::Abstract::Object> {
+		inline size_t operator() (const Udjat::Abstract::Object &obj) const {
+			return std::hash<const char *>{}(obj.name());
+		}
+	};
+
+ }
+
 

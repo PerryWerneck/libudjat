@@ -53,6 +53,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/xml.h>
  #include <udjat/ui/icon.h>
+ #include <set>
 
 #ifdef _WIN32
 	#include <udjat/win32/charset.h>
@@ -290,6 +291,23 @@ int main(int argc, char **argv) {
 		url = "file:///tmp/xa/xb/";
 		url += "xc";
 		cout << "URL= '" << url.c_str() << "'" << endl;
+	}
+
+	{
+		set<String> strings;
+		strings.emplace("test");
+		strings.emplace("second");
+		strings.emplace("Test");
+		strings.emplace("aaa");
+
+		for(auto &str : strings) {
+			cout << "--> '" << str << "'" << endl;
+		}
+
+		String v1{"teste"}, v2{"Teste"};
+
+		cout << (v1 == v2 ? "equal" : "not equal") << endl;
+
 	}
 
 	/*

@@ -396,5 +396,12 @@
 		return str;
 	}
 
+	template <>
+	struct hash<Udjat::String> {
+		inline size_t operator() (const Udjat::String &str) const {
+			return std::hash<std::string>{}(str);
+		}
+	};
+
  }
 
