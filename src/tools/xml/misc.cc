@@ -30,9 +30,9 @@
  #include <iostream>
  #include <cstdarg>
 
-#ifdef HAVE_VMDETECT
- #include <vmdetect/virtualmachine.h>
-#endif // HAVE_VMDETECT
+ #ifdef HAVE_VMDETECT
+	#include <vmdetect/virtualmachine.h>
+ #endif // HAVE_VMDETECT
 
  using namespace std;
  using namespace pugi;
@@ -113,8 +113,6 @@
 
 	bool is_allowed(const XML::Node &node) {
 
-		const char *str;
-
 #ifdef _WIN32
 
 		if(!node.attribute("allowed-in-windows").as_bool(true)) {
@@ -143,6 +141,11 @@
 
 #endif // HAVE_VMDETECT
 
+		if(XML::test(node, "valid-if", false) || (XML::test(node, "allow-if", false))) {
+			return true;
+		}
+
+		/*
 		// Test if the attribute requirement is valid.
 		str = node.attribute("valid-if").as_string();
 		if(str && *str && URL{str}.test() != 200) {
@@ -174,6 +177,7 @@
 		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
+		*/
 
 		return true;
 	}
