@@ -23,6 +23,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/url.h>
  #include <cstring>
 
  using namespace std;
@@ -82,6 +83,47 @@
 		}
 
 		return def;
+	}
+
+	UDJAT_API bool XML::test(const XML::Node &node, const char *attrname, bool defvalue) {
+
+		XML::Attribute attr{AttributeFactory(node,attrname)};
+		if(!attr) {
+			return defvalue;
+		}
+
+		const char *str = attr.as_string("");
+		if(str && *str && strstr(str,"://")) {
+			// It's an URL, test it.
+			return URL{str}.test();
+		}
+
+		if(!strcasecmp(str,"only-on-virtual-machine")) {
+#ifdef HAVE_VMDETECT
+		return VirtualMachine{Logger::enabled(Logger::Debug)};
+#else
+		Logger::String{"Library built without virtual machine support, ignoring '",str,"' attribute"}.warning(PACKAGE_NAME);
+		return defvalue;
+#endif
+		}
+
+#ifdef _WIN32
+		if(!strcasecmp(str,"only-on-windows")) {
+			return true;
+		}
+		if(!strcasecmp(str,"only-on-linux")) {
+			return false;
+		}
+#else
+		if(!strcasecmp(str,"only-on-windows")) {
+			return false;
+		}
+		if(!strcasecmp(str,"only-on-linux")) {
+			return true;
+		}
+#endif // _WIN32
+
+		return attr.as_bool(defvalue);
 	}
 
 	const char * XML::QuarkFactory(const XML::Node &node, const char *attrname, const char *def) {

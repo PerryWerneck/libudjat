@@ -50,6 +50,13 @@
 
 		};
 
+		/// @brief Test if attribute is 'true', parse URL is necessary.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @param defvalue The default value.
+		/// @return The attribute parsed as boolean.
+		UDJAT_API bool test(const XML::Node &node, const char *attrname, bool defvalue = false);
+
 		/// @brief Search 'node' and up stream for 'attrname'.
 		/// @param node Start node.
 		/// @param attrname Attribute name.
