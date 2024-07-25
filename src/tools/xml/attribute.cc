@@ -132,7 +132,7 @@
 
 		if(!(strcasecmp(str,"only-on-virtual-machine") && strcasecmp(str,"virtual-machine"))) {
 #ifdef HAVE_VMDETECT
-			return VirtualMachine{Logger::enabled(Logger::Debug)} ? allow : deny;
+			return VirtualMachine{Logger::enabled(Logger::Debug)} ? allow : !allow;
 #else
 			Logger::String{"Library built without virtual machine support, ignoring '",str,"' attribute"}.warning(PACKAGE_NAME);
 			return defvalue;
