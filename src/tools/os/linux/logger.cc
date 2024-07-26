@@ -88,7 +88,7 @@ namespace Udjat {
 			Logger::write(1,"\x1b[0m");
 		}
 
-		Logger::write(1,"\n");
+		Logger::write(1,"\r\n");
 		fsync(1);
 	}
 
@@ -115,24 +115,28 @@ namespace Udjat {
 		lock_guard<mutex> lock(mtx);
 
 		// Write
-		if(options.console && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
-			options.console(level,domain,text);
-		}
+		if((options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
 
-		if(options.syslog && (options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
-			//
-			// Write to syslog.
-			//
-			static const int priority[] = {
-				LOG_ERR,		// Error
-				LOG_WARNING,	// Warning
-				LOG_INFO,		// Info
-				LOG_DEBUG,		// Trace
-				LOG_DEBUG,		// Debug
-				LOG_NOTICE		// Debug+1
-			};
+			if(options.console) {
+				options.console(level,domain,text);
+			}
 
-			::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
+			if(options.syslog) {
+				//
+				// Write to syslog.
+				//
+				static const int priority[] = {
+					LOG_ERR,		// Error
+					LOG_WARNING,	// Warning
+					LOG_INFO,		// Info
+					LOG_DEBUG,		// Trace
+					LOG_DEBUG,		// Debug
+					LOG_NOTICE		// Debug+1
+				};
+
+				::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
+			}
+
 		}
 
 		// TODO: Optional write to file.
