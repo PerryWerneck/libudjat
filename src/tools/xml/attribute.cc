@@ -140,7 +140,7 @@
 		}
 
 #ifdef _WIN32
-		if(!(strcasecmp(str,"only-on-windows") && strcasecmp(str,"windows"))) {}
+		if(!(strcasecmp(str,"only-on-windows") && strcasecmp(str,"windows"))) {
 			return allow;
 		}
 		if(!(strcasecmp(str,"only-on-linux") && strcasecmp(str,"linux"))){
