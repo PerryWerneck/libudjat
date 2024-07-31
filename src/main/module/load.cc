@@ -156,7 +156,24 @@ namespace Udjat {
 			}
 		}
 
-		init(filename,XML::Node{});
+		if(required) {
+
+			init(filename,XML::Node{});
+
+		} else {
+
+			try {
+
+				init(filename,XML::Node{});
+
+			} catch(const std::exception &e) {
+
+				Logger::String{filename.c_str(),": ",e.what()}.error(PACKAGE_NAME);
+
+			}
+
+		}
+
 		return false;
 
 	}

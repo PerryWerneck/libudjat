@@ -291,8 +291,18 @@ int main(int argc, char **argv) {
 		url = "file:///tmp/xa/xb/";
 		url += "xc";
 		cout << "URL= '" << url.c_str() << "'" << endl;
+
+		url = "file:///tmp/xa/xb/";
+		url += "./xc";
+		cout << "URL= '" << url.c_str() << "'" << endl;
+
+		url = "file:///tmp/xa/xb";
+		url += "./xc";
+		cout << "URL= '" << url.c_str() << "'" << endl;
+
 	}
 
+	/*
 	{
 		set<String> strings;
 		strings.emplace("test");
@@ -309,6 +319,7 @@ int main(int argc, char **argv) {
 		cout << (v1 == v2 ? "equal" : "not equal") << endl;
 
 	}
+	*/
 
 	/*
 	MainLoop::getInstance().TimerFactory(1000,[]{
