@@ -61,6 +61,8 @@
 			return apiver;
 		}
 
+		UDJAT_DEPRECATED(const char * getPath() const noexcept);
+
 		/// @brief Is the request empty?
 		/// @return True if the request path is empty.
 		inline bool empty() const noexcept {
@@ -124,6 +126,14 @@
 		}
 
 		inline operator HTTP::Method() const noexcept {
+			return this->method;
+		}
+
+		inline HTTP::Method verb() const noexcept {
+			return this->method;
+		}
+
+		UDJAT_DEPRECATED(inline HTTP::Method as_type() const noexcept) {
 			return this->method;
 		}
 

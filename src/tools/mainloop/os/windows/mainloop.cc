@@ -36,7 +36,7 @@
 
  	std::mutex Win32::MainLoop::guard;
 
-	Win32::MainLoop::MainLoop() {
+	Win32::MainLoop::MainLoop() : Udjat::MainLoop{MainLoop::WinMsg} {
 
 		if(!winClass) {
 
@@ -123,7 +123,7 @@
 
 			case WM_DESTROY:
 				Logger::String("WM_DESTROY").write(Logger::Trace,"win32");
-				if(controller.running) {
+				if(controller.hwnd) {
 					Logger::String{"Stopping by system request (WM_DESTROY)"}.write(Logger::Warning,"win32");
 					SendMessage(hWnd,WM_STOP,0,0);
 				}
@@ -131,7 +131,7 @@
 
 			case WM_CLOSE:
 				Logger::String("WM_CLOSE").write(Logger::Trace,"win32");
-				if(controller.running) {
+				if(controller.hwnd) {
 					Logger::String{"Stopping by system request (WM_CLOSE)"}.write(Logger::Warning,"win32");
 					SendMessage(hWnd,WM_STOP,0,0);
 				}
@@ -206,9 +206,8 @@
 				KillTimer(hWnd, IDT_CHECK_TIMERS);
 				Event::clear();
 
-				if(controller.running) {
+				if(controller.hwnd) {
 					Logger::String("WM_STOP: Terminating").write(Logger::Trace,"win32");
-					controller.running = false; // Just in case.
 
 					debug("Stopping services");
 					Service::Controller::getInstance().stop();
@@ -220,6 +219,7 @@
 					if(!PostMessage(controller.hwnd,WM_QUIT,0,0)) {
 						cerr << "win32\tError posting WM_QUIT message to " << hex << controller.hwnd << dec << " : " << Win32::Exception::format() << endl;
 					}
+					controller.hwnd = 0;
 				} else {
 					Logger::String("WM_STOP: Already disabled").write(Logger::Warning,"win32");
 				}
@@ -310,6 +310,10 @@
 			}
 		}
 		return false;
+	}
+
+	bool Win32::MainLoop::active() const noexcept {
+		return hwnd != 0;
 	}
 
 	bool Win32::MainLoop::enabled(const Handler *handler) const noexcept {

@@ -251,7 +251,6 @@
 
 			/// @brief Load agent children, states, alerts, etc. from node.
 			/// @param node The xml node with agent children to build.
-			/// @param upsearch If true search xml parents based for type attribute or node name with '-defaults' and, if found, use them to setup this agent children.
 			void setup(const XML::Node &node) override;
 
 			/// @brief Deinitialize agent subsystem.

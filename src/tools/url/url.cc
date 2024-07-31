@@ -273,11 +273,18 @@
 			path++;
 		}
 
-		if(path[0] != '/') {
-			append("/");
+		if(empty()) {
+			*this = path;
+		} else if(at(size()-1) == '/') {
+			// URL end with '/'
+			append(path+(path[0] == '/' ? 1 : 0));
+		} else {
+			// URL *not* end with '/'
+			if(path[0] != '/') {
+				append("/");
+			}
+			append(path);
 		}
-
-		append(path);
 
 		return *this;
 	}

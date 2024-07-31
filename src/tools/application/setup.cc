@@ -18,7 +18,6 @@
  */
 
 /**
- * @file main/load/xml.cc
  *
  * @brief Implements the application settings loader.
  *

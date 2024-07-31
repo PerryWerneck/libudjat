@@ -25,7 +25,7 @@
 
  namespace Udjat {
 
-	Application::LogDir::LogDir(const char *subdir) noexcept {
+	Application::LogDir::LogDir(const char *subdir) {
 
 		try {
 
@@ -57,16 +57,6 @@
 		}
 
 	}
-
-	/*
-	Application::LogDir::LogDir(const char *subdir) : File::Path{Win32::PathFactory(FOLDERID_ProgramData,"logs")} {
-		if(subdir && *subdir) {
-			append(subdir);
-			mkdir();
-			append("\\");
-		}
-	}
-	*/
 
  }
 

@@ -22,7 +22,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
- #include <private/mainloop.h>
+ #include <list>
 
  #define WM_CHECK_TIMERS		WM_USER+101
  #define WM_START				WM_USER+102
@@ -41,6 +41,17 @@
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
+
+			class UDJAT_PRIVATE Timers {
+			public:
+
+				/// @brief Minimal timer value.
+				unsigned long maxwait = 1000;
+
+				/// @brief List of enabled timers.
+				std::list<Timer *> enabled;
+
+			};
 
 			/// @brief Mutex
 			static std::mutex guard;
@@ -86,6 +97,8 @@
 			/// @brief Quit mainloop.
 			void quit() override;
 
+			bool active() const noexcept override;
+
 			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
 			/// @brief Terminate with message
@@ -103,7 +116,7 @@
 			void push_back(MainLoop::Handler *handler) override;
 			void remove(MainLoop::Handler *handler) override;
 
-			bool for_each(const std::function<bool(Timer &timer)> &func) override;
+			bool for_each(const std::function<bool(Timer &timer)> &func);
 
 		};
 

@@ -80,19 +80,20 @@
 				class ReadyState : public Abstract::State {
 				public:
 					ReadyState(const char *name, const char *summary, const char *body) : Abstract::State(name, Level::ready, summary, body) {
+					}
+
+					const char * icon() const noexcept override {
 #ifdef HAVE_VMDETECT
-						VirtualMachine virtualmachine;
-						Object::properties.icon = virtualmachine ? "computer-vm" : "computer";
-#else
-						Object::properties.icon = "computer";
+						if(VirtualMachine{Logger::enabled(Logger::Debug)}) {
+							return "computer-vm";
+						}
 #endif // HAVE_VMDETECT
+						return "computer";
 					}
 
 				};
 
 				auto ready = make_shared<ReadyState>(name, _( "System is ready" ), _( "No abnormal state was detected" ));
-				Object::properties.icon = ready->icon();
-
 				states.push_back(ready);
 
 #ifndef _WIN32
@@ -130,21 +131,28 @@
 
 			}
 
+			const char * summary() const noexcept override {
+#ifdef HAVE_VMDETECT
+				debug("---");
+				VirtualMachine vm{Logger::enabled(Logger::Debug)};
+				if(vm) {
+					return Quark{Logger::Message("{} virtual machine",vm.name())}.c_str();
+				}
+#endif // HAVE_VMDETECT
+				return super::summary();
+			}
+
 			void start() override {
 
 				if(Object::properties.summary && *Object::properties.summary) {
 					return;
 				}
 
-#ifdef HAVE_VMDETECT
-				VirtualMachine vm;
-				if(vm) {
-					Object::properties.summary = Quark(Logger::Message("{} virtual machine",vm.name())).c_str();
-					return;
-				}
-#endif // HAVE_VMDETECT
+				URL sysid;
 
-				URL sysid{Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str()};
+				if(Module::find("dmi")) {
+					sysid = Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str();
+				}
 
 				if(!sysid.empty()) {
 

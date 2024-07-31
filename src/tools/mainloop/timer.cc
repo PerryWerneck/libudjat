@@ -39,23 +39,33 @@
 	}
 
 	MainLoop::Timer::~Timer() {
+#ifdef DEBUG
+		clog << "MainLoop\t---> Timer " << hex << ((void *) this) << dec
+				<< " was deleted and will be disabled" << endl;
+#endif // DEBUG
 		disable();
 	}
 
-	void MainLoop::Timer::reset(unsigned long milliseconds) {
+	void MainLoop::changed(MainLoop::Timer *, unsigned long from_value, unsigned long to_value) {
+		if(to_value < from_value) {
+			wakeup();
+		}
+	}
 
-		auto saved = next;
+	bool MainLoop::Timer::set(const unsigned long milliseconds) {
 
-		if(milliseconds) {
-			this->milliseconds = milliseconds;
-			next = getCurrentTime() + milliseconds;
-		} else {
-			next = getCurrentTime();
+		if(values.interval == milliseconds) {
+			return false;
 		}
 
-		if(next < saved) {
-			MainLoop::getInstance().wakeup();
+		auto saved = values.activation_time;
+		values.interval = milliseconds;
+		if(values.interval) {
+			values.activation_time = getCurrentTime() + milliseconds;
+			MainLoop::getInstance().changed(this,saved,values.activation_time);
 		}
+
+		return true;
 
 	}
 
@@ -76,12 +86,12 @@
 	}
 
 	void MainLoop::Timer::enable(unsigned long milliseconds) {
-		this->milliseconds = milliseconds;
+		values.interval = milliseconds;
 		enable();
 	}
 
 	void MainLoop::Timer::enable() {
-		next = getCurrentTime() + milliseconds;
+		values.activation_time = getCurrentTime() + values.interval;
 		if(!enabled()) {
 			MainLoop::getInstance().push_back(this);
 		}
@@ -94,53 +104,54 @@
 
 	std::string MainLoop::Timer::to_string() const {
 
-		if(!milliseconds) {
+		if(!values.interval) {
 			return "none";
 		}
 
-		if(!(milliseconds%1000L)) {
+		if(!(values.interval%1000L)) {
 
 			// In seconds.
-			unsigned long seconds{milliseconds/1000L};
+			unsigned long seconds{values.interval/1000L};
 
 			if(seconds == 1) {
-				return "one second";
+				return _( "one second" );
 			}
 
 			if(!(seconds%3600)) {
 				unsigned long hours{seconds/3600};
 				if(hours == 1) {
-					return "one hour";
+					return _( "one hour" );
 				}
 
-				return Logger::Message("{} hours",hours);
+				return Logger::Message(_( "{} hours" ),hours);
 			}
 
 			if(!(seconds%60)) {
 				unsigned long minutes{seconds/60};
 				if(minutes == 1) {
-					return "one minute";
+					return _( "one minute" );
 				}
 
-				return Logger::Message("{} minutes",minutes);
+				return Logger::Message(_( "{} minutes" ),minutes);
 			}
 
-			return Logger::Message("{} seconds",seconds);
+			return Logger::Message(_( " {} seconds" ),seconds);
 		}
 
-		return Logger::Message( "{} milliseconds", milliseconds);
+		return Logger::Message( _( " {} milliseconds" ), values.interval);
 	}
 
 	unsigned long MainLoop::Timer::activate() noexcept {
 
 		try {
 
-			if(milliseconds) {
-				unsigned long rc = this->next = (getCurrentTime() + milliseconds);
+			if(values.interval) {
+				unsigned long rc = values.activation_time = (getCurrentTime() + values.interval);
 				on_timer();
 				return rc;
 			}
 
+			debug("No interval, deactivating");
 			on_timer();
 			disable();
 
@@ -176,6 +187,11 @@
 		protected:
 			void on_timer() override {
 
+#ifdef DEBUG
+				clog << "MainLoop\t---> Activating timer " << hex << ((void *) this) << dec
+						<< " " << this->to_string() << endl;
+#endif // DEBUG
+
 				bool success = true;
 
 				try {
@@ -189,13 +205,26 @@
 				}
 
 				if(!success) {
+#ifdef DEBUG
+					clog << "MainLoop\t---> Factored timer " << hex << ((void *) this) << dec
+							<< " has failed and will be deleted" << endl;
+#endif // DEBUG
 					delete this;
+					return;
 				}
+
+#ifdef DEBUG
+				clog << "MainLoop\t---> Factored timer " << hex << ((void *) this) << dec
+						<< " still active" << this->to_string() << endl;
+#endif // DEBUG
 			}
 
 		public:
 			CallBackTimer(unsigned long milliseconds, const std::function<bool()> c) : Timer(milliseconds), callback(c) {
-				debug(__FUNCTION__);
+#ifdef DEBUG
+			clog << "MainLoop\t---> Factoring timer " << hex << ((void *) this) << dec
+					<< " " << this->to_string() << endl;
+#endif // DEBUG
 				enable();
 			}
 

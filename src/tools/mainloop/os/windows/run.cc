@@ -52,12 +52,10 @@
 
 		Logger::String("Running message loop").write((Logger::Level) (Logger::Debug+1),"win32");
 
-		running = true;
 		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
-		running = false;
 
 		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Debug+1),"win32");
 	}
@@ -74,10 +72,10 @@
 	// Get expired timers.
 	std::list<Timer *> expired;
 	for_each([&expired,&next,now](Timer &timer){
-		if(timer.value() <= now) {
+		if(timer.activation_time() <= now) {
 			expired.push_back(&timer);
 		} else {
-			next = std::min(next,timer.value());
+			next = std::min(next,timer.activation_time());
 		}
 		return false;
 	});

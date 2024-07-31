@@ -259,6 +259,10 @@
 		return rc;
 	}
 
+	const char * Request::getPath() const noexcept {
+		return argptr ? argptr : reqpath;
+	}
+
 	const char * Request::path() const noexcept {
 		return argptr ? argptr : reqpath;
 	}

@@ -19,7 +19,6 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <private/mainloop.h>
  #include <udjat/tools/mainloop.h>
  #include <private/service.h>
 
@@ -29,6 +28,20 @@ namespace Udjat {
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
+
+			/// @brief Is the mainloop enabled.
+			bool running = true;
+
+			class UDJAT_PRIVATE Timers {
+			public:
+
+				/// @brief Minimal timer value.
+				unsigned long maxwait = 60000;
+
+				/// @brief List of enabled timers.
+				std::list<Timer *> enabled;
+
+			};
 
 			/// @brief Event FD.
 			int efd = -1;
@@ -68,6 +81,8 @@ namespace Udjat {
 			/// @brief Run mainloop.
 			int run() override;
 
+			bool active() const noexcept override;
+
 			/// @brief Wakeup main loop.
 			void wakeup() noexcept override;
 
@@ -83,8 +98,7 @@ namespace Udjat {
 			bool enabled(const Timer *timer) const noexcept override;
 			bool enabled(const Handler *handler) const noexcept override;
 
-//			bool for_each(const std::function<bool(Service &service)> &func) override;
-			bool for_each(const std::function<bool(Timer &timer)> &func) override;
+			bool for_each(const std::function<bool(Timer &timer)> &func);
 
 		};
 

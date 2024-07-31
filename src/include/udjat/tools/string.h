@@ -310,9 +310,15 @@
 		String & expand(const Udjat::Abstract::Object &object, bool dynamic = false, bool cleanup = false);
 
 		/// @brief Expand ${} macros.
+		/// @param marker The marker.
 		/// @param node XML node from the begin of the value search.
 		/// @param group Group from configuration file to search.
-		String & expand(const XML::Node &node,const char *group = "default-attributes");
+		String & expand(char marker, const XML::Node &node, const char *group = "default-attributes");
+
+		/// @brief Expand ${} macros.
+		/// @param node XML node from the begin of the value search.
+		/// @param group Group from configuration file to search.
+		String & expand(const XML::Node &node, const char *group = "default-attributes");
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
@@ -389,6 +395,13 @@
 		str.append(msg);
 		return str;
 	}
+
+	template <>
+	struct hash<Udjat::String> {
+		inline size_t operator() (const Udjat::String &str) const {
+			return std::hash<std::string>{}(str);
+		}
+	};
 
  }
 

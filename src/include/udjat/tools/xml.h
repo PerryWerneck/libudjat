@@ -50,6 +50,13 @@
 
 		};
 
+		/// @brief Test if attribute is 'true', parse URL is necessary.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @param defvalue The default value.
+		/// @return The attribute parsed as boolean.
+		UDJAT_API bool test(const XML::Node &node, const char *attrname, bool defvalue = false);
+
 		/// @brief Search 'node' and up stream for 'attrname'.
 		/// @param node Start node.
 		/// @param attrname Attribute name.
@@ -63,11 +70,22 @@
 		/// @return The attribute value (def if not found).
 		UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
+		/// @brief Search 'node' and up stream for 'attrname'.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @param def default value if nullptr the attribute is required.
+		/// @return Quark with attribute value or 'def' if not found.
+		UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
+
 	}
 
 	/// @brief Test common filter options.
 	/// @return true if the node is valid.
 	UDJAT_API bool is_allowed(const XML::Node &node);
+
+	/// @brief Test reserved node names.
+	/// @return true if the node is valid.
+	UDJAT_API bool is_reserved(const XML::Node &node);
 
 	/// @brief Expand, if possible, values ${} from attribute.
 	UDJAT_API std::string expand(const XML::Node &node, const XML::Attribute &attribute, const char *def);

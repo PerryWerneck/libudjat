@@ -37,22 +37,48 @@
 		Controller::getInstance().remove(this);
 	}
 
+	int Factory::compare(const char *name) const noexcept {
+		return strcasecmp(name,factory_name);
+	}
+
+	int Factory::compare(const XML::Node &node) const noexcept {
+		return compare(node.name());
+	}
+
 	Value & Factory::getProperties(Value &properties) const {
 		properties["name"] = factory_name;
 		return module.getProperties(properties);
+	}
+
+	bool Factory::for_each(const char *name, const std::function<bool(Factory &factory)> &func) {
+		return Controller::getInstance().for_each(name,func);
 	}
 
 	bool Factory::for_each(const std::function<bool(Factory &factory)> &func) {
 		return Controller::getInstance().for_each(func);
 	}
 
+	bool Factory::for_each(const XML::Node &node, const std::function<bool(Factory &factory)> &func) {
+		return Controller::getInstance().for_each(node,func);
+	}
+
 	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Object>();
 	}
+	#pragma GCC diagnostic pop
+
+	#pragma GCC diagnostic push
+	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object &parent, const XML::Node &node) {
+		return ((const Factory *) this)->ObjectFactory(parent,node);
+	}
+	#pragma GCC diagnostic pop
 
 	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
 		return std::shared_ptr<Abstract::Alert>();
@@ -63,23 +89,27 @@
 	}
 
 	bool Factory::CustomFactory(const XML::Node &) {
+		debug("Calling default custom factory on '",name(),"'");
 		return false;
 	}
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	bool Factory::NodeFactory(const XML::Node &node) {
+		debug("Calling default node factory on '",name(),"'");
 		return generic(node);
 	}
 	#pragma GCC diagnostic pop
 
 	bool Factory::CustomFactory(Abstract::Object &, const XML::Node &node) {
+		debug("Calling default custom factory on '",name(),"'");
 		return CustomFactory(node);
 	}
 
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	bool Factory::NodeFactory(Abstract::Object &parent, const XML::Node &node) {
+		debug("Calling default Node/object factory on '",name(),"'");
 		return generic(parent,node);
 	}
 	#pragma GCC diagnostic pop

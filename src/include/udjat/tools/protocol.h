@@ -56,7 +56,7 @@
 		/// @brief Get handler for script:///
 		static Protocol & ScriptHandlerFactory();
 
-		/// @brief Protocol watched.
+		/// @brief Protocol watcher.
 		class UDJAT_API Watcher {
 		private:
 			static Watcher *instance;
@@ -143,6 +143,9 @@
 			/// @brief Worker name.
 			const char *name = "";
 
+			/// @brief Status of last operation.
+			unsigned int status_code = 0;
+
 			/// @brief Timeouts
 			struct Timeouts {
 				time_t connect = 30;		///< @brief Connect timeout (in seconds).
@@ -225,6 +228,13 @@
 
 			inline HTTP::Method method() const noexcept {
 				return args.method;
+			}
+
+			/// @brief Get status of last operation.
+			/// @retval 0 No status.
+			/// @retval 200 Ok.
+			inline unsigned int result_code() const noexcept {
+				return status_code;
 			}
 
 			/// @brief Get/Create request header.

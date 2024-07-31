@@ -30,9 +30,9 @@
  #include <iostream>
  #include <cstdarg>
 
-#ifdef HAVE_VMDETECT
- #include <vmdetect/virtualmachine.h>
-#endif // HAVE_VMDETECT
+ #ifdef HAVE_VMDETECT
+	#include <vmdetect/virtualmachine.h>
+ #endif // HAVE_VMDETECT
 
  using namespace std;
  using namespace pugi;
@@ -102,9 +102,16 @@
 		return Quark(to_string(def)).c_str();
 	}
 
-	bool is_allowed(const XML::Node &node) {
+	bool is_reserved(const XML::Node &node) {
 
-		const char *str;
+		if(!(strncasecmp(node.name(),"attribute",9))) {
+			return true;
+		}
+
+		return false;
+	}
+
+	bool is_allowed(const XML::Node &node) {
 
 #ifdef _WIN32
 
@@ -122,7 +129,7 @@
 
 #ifdef HAVE_VMDETECT
 
-		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine()) ) {
+		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
 			return false;
 		}
 
@@ -134,37 +141,43 @@
 
 #endif // HAVE_VMDETECT
 
+		if(XML::test(node, "valid-if", false) || (XML::test(node, "allow-if", false))) {
+			return true;
+		}
+
+		/*
 		// Test if the attribute requirement is valid.
 		str = node.attribute("valid-if").as_string();
-		if(str && *str && URL(str).test() != 200) {
+		if(str && *str && URL{str}.test() != 200) {
 			return false;
 		}
 
 		str = node.attribute("allow-if").as_string();
-		if(str && *str && URL(str).test() != 200) {
+		if(str && *str && URL{str}.test() != 200) {
 			return false;
 		}
 
 		// Test if the attribute requirement is not valid.
 		str = node.attribute("not-valid-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 
 		str = node.attribute("invalid-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 
 		str = node.attribute("ignore-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
 
 		str = node.attribute("deny-if").as_string();
-		if(str && *str && URL(str).test() == 200) {
+		if(str && *str && URL{str}.test() == 200) {
 			return false;
 		}
+		*/
 
 		return true;
 	}

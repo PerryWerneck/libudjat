@@ -22,7 +22,6 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
  #include <private/event.h>
- #include <private/mainloop.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/service.h>
  #include <udjat/module/abstract.h>

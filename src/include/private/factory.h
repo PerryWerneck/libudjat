@@ -52,6 +52,8 @@
 		void remove(Factory *factory);
 
 		bool for_each(const std::function<bool(Factory &factory)> &func);
+		bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
+		bool for_each(const XML::Node &node, const std::function<bool(Factory &factory)> &func);
 
 	};
 

@@ -48,12 +48,7 @@ namespace Udjat {
 		for(const XML::Node &node : root) {
 
 			// It's an attribute?
-			if(!(strncasecmp(node.name(),"attribute",9))) {
-				continue;
-			}
-
-			// Is this node allowed?
-			if(!is_allowed(node)) {
+			if(is_reserved(node) || !is_allowed(node)) {
 				continue;
 			}
 
@@ -118,14 +113,26 @@ namespace Udjat {
 
 			}
 
+			// Run node based factories.
+			if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
+
+				if(factory.NodeFactory(*this,node)) {
+					return true;
+				}
+
+				return factory.NodeFactory(node);
+
+			})) {
+
+				continue;
+
+			}
+
+
 			// Run factories.
 			if(Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
 
 				if(factory == node.attribute("type").as_string("default") && factory.CustomFactory(*this,node)) {
-					return true;
-				}
-
-				if(factory == node.name() && factory.NodeFactory(*this,node)) {
 					return true;
 				}
 

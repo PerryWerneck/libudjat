@@ -33,10 +33,15 @@
  #include <string>
  #include <getopt.h>
 
+ #include <iostream>     // std::cout, std::ostream, std::ios
+ #include <fstream>      // std::filebuf
+
  #ifdef _WIN32
 	#include <private/win32/mainloop.h>
 	#include <udjat/win32/exception.h>
 	#include <private/event.h>
+ #else
+	#include <sys/resource.h>
  #endif // _WIN32
 
  using namespace std;
@@ -49,6 +54,9 @@
 	{ 'f',	"foreground",	"\t\tRun in foreground with console output" },
 	{ 'q',	"quiet",		"\t\tDisable console output" },
 	{ 'v',	"verbose",		"=level\tSet loglevel, enable console output" },
+#ifndef _WIN32
+	{ 'C',	"coredump",		"=pattern\tEnable coredump" },
+#endif // _WIN32
 	{ 'T',	"timer",		"=time\t\tExit application after \"time\"" },
  };
 
@@ -75,6 +83,36 @@
 		case 'f':	// Legacy.
 			Logger::console(true);
 			return true;
+
+#ifndef _WIN32
+		case 'C':	// Enable coredump.
+			{
+				// Reference script:
+				//
+				// ulimit -c unlimited
+				// install -m 1777 -d /var/local/dumps
+				// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
+				// rcapparmor stop
+				// sysctl -w kernel.suid_dumpable=2
+				//
+
+				struct rlimit core_limits;
+				memset(&core_limits,0,sizeof(core_limits));
+
+				core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+				setrlimit(RLIMIT_CORE, &core_limits);
+
+				if(optarg && *optarg) {
+					// Set corepattern
+					std::filebuf fb;
+					fb.open ("/proc/sys/kernel/core_pattern",std::ios::out);
+					std::ostream os(&fb);
+					os << optarg << "\n";
+					fb.close();
+				}
+			}
+			return true;
+#endif // _WIN32
 
 		case 'T':
 			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){

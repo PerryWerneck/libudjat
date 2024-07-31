@@ -27,7 +27,7 @@ jobs:
         with:
           repository: "PerryWerneck/vmdetect"
           latest: true
-          fileName: "mingw-w64-x86_64-vmdetect-1.2-0-x86_64.pkg.tar.zst"      
+          fileName: "mingw-w64-x86_64-vmdetect-1.3-0-x86_64.pkg.tar.zst"      
       - name: CI-Build
         run: |
           pacman -U --noconfirm *.pkg.tar.zst

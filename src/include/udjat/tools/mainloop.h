@@ -26,23 +26,28 @@
 
 namespace Udjat {
 
+	/// @brief Abstract main loop.
 	class UDJAT_API MainLoop {
-	private:
-		static MainLoop * instance;
-
 	public:
 
 		class Timer;
 		class Handler;
 
+		enum Type : uint8_t {
+			Undefined,
+			Pool,			///< @brief Internal mainloop.
+			WinMsg,			///< @brief Win32 Object Window.
+			GLib,			///< @brief GLib based mainloop.
+			Custom
+		};
+
+	private:
+		static MainLoop * instance;
+		Type mtype;
+
 	protected:
 
-		class Timers;
-
-		MainLoop();
-
-		/// @brief Is the mainloop enabled.
-		bool running = true;
+		MainLoop(Type type);
 
 	public:
 
@@ -50,6 +55,14 @@ namespace Udjat {
 		MainLoop(const MainLoop *src) = delete;
 
 		virtual ~MainLoop();
+
+		inline Type type() const noexcept {
+			return mtype;
+		}
+
+		inline bool operator ==(const Type type) const noexcept {
+			return this->mtype == type;
+		}
 
 		/// @brief Get default mainloop.
 		static MainLoop & getInstance();
@@ -63,6 +76,16 @@ namespace Udjat {
 		virtual void push_back(MainLoop::Timer *timer) = 0;
 		virtual void remove(MainLoop::Timer *timer) = 0;
 
+		/// @brief Timer has changed.
+		/// @param timer The updated timer.
+		/// @param from The original interval in milliseconds.
+		/// @param to The new interval in milliseconds.
+		virtual void changed(MainLoop::Timer *timer, unsigned long from, unsigned long to);
+
+		/// @brief Handler has changed.
+		/// @param handler The updated handler.
+		virtual void changed(MainLoop::Handler *handler);
+
 		virtual void push_back(MainLoop::Handler *handler) = 0;
 		virtual void remove(MainLoop::Handler *handler) = 0;
 
@@ -70,8 +93,10 @@ namespace Udjat {
 		virtual int run() = 0;
 
 		/// @brief Is the mainloop active?
+		virtual bool active() const noexcept = 0;
+
 		inline operator bool() const noexcept {
-			return running;
+			return active();
 		}
 
 		/// @brief Quit mainloop.
@@ -88,10 +113,6 @@ namespace Udjat {
 		/// @param call Method when timer expires, timer will be deleted if it returns 'false'.
 		/// @return Timer object.
 		Timer * TimerFactory(unsigned long interval, const std::function<bool()> call);
-
-		/// @brief Enumerate timers.
-		/// @return true if lambda has returned true and loop was ended.
-		virtual bool for_each(const std::function<bool(Timer &timer)> &func) = 0;
 
 	};
 

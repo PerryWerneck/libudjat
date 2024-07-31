@@ -40,22 +40,20 @@
 		Factory(const char *name, const ModuleInfo &module);
 		virtual ~Factory();
 
+		virtual int compare(const char *name) const noexcept;
+		virtual int compare(const XML::Node &node) const noexcept;
+
 		inline bool operator==(const char *name) const noexcept {
-			return strcasecmp(name,this->factory_name) == 0;
+			return compare(name) == 0;
 		}
 
-		/// @brief Test if this factory can handle the XML node.
-		/// @param node XML node to test.
-		/// @return true if the factory can handle node.
-		//virtual bool probe(const XML::Node &node) const noexcept;
+		inline bool operator==(const XML::Node &node) const noexcept {
+			return compare(node) == 0;
+		}
 
 		std::ostream & info() const;
 		std::ostream & warning() const;
 		std::ostream & error() const;
-
-		//inline const char * getName() const {
-		//	return factory_name;
-		//}
 
 		inline const char * name() const {
 			return factory_name;
@@ -66,7 +64,18 @@
 		/// @brief Execute function in all registered factories until it returns true.
 		/// @param func	Function to execute.
 		/// @return false if the function doesnt returned true for any element.
-		static bool for_each(const std::function<bool(Factory &factory)> &method);
+		static bool for_each(const std::function<bool(Factory &factory)> &func);
+
+		/// @brief Execute function in all factories with 'name' until it returns true.
+		/// @param func	Function to execute.
+		/// @return false if the function doesnt returned true for any element.
+		static bool for_each(const char *name, const std::function<bool(Factory &factory)> &func);
+
+		/// @brief Execute function in all factories who suports the node until it returns true.
+		/// @param node The XML node to check.
+		/// @param func	Function to execute.
+		/// @return false if the function doesnt returned true for any element.
+		static bool for_each(const XML::Node &node, const std::function<bool(Factory &factory)> &func);
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
@@ -74,7 +83,9 @@
 
 		/// @brief Create a child object from XML node.
 		/// @param node XML definition for the new state.
-		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const;
+		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node);
+
+		UDJAT_DEPRECATED(virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const);
 
 		/// @brief Create an alert from XML node.
 		/// @param node XML definition for the new alert.

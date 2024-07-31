@@ -33,7 +33,7 @@
 
  	std::mutex Linux::MainLoop::guard;
 
-	Linux::MainLoop::MainLoop() {
+	Linux::MainLoop::MainLoop() : Udjat::MainLoop{MainLoop::Pool} {
 		efd = eventfd(0,0);
 		if(efd < 0)
 			throw system_error(errno,system_category(),"eventfd() has failed");
@@ -92,6 +92,10 @@
 		return false;
 	}
 
+	bool Linux::MainLoop::active() const noexcept {
+		return this->running;
+	}
+
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
 		lock_guard<mutex> lock(guard);
 #ifdef DEBUG
@@ -103,9 +107,12 @@
 	}
 
 	void Linux::MainLoop::remove(MainLoop::Timer *timer) {
+#ifdef DEBUG
+		clog << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
+#endif // DEBUG
 		lock_guard<mutex> lock(guard);
 #ifdef DEBUG
-		cout << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
+		clog << "MainLoop\t---> Disabling timer " << hex << ((void *) timer) << dec << endl;
 #endif // DEBUG
 		timers.enabled.remove(timer);
 	}

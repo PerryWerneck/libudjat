@@ -23,7 +23,22 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/url.h>
  #include <cstring>
+
+ #ifdef HAVE_VMDETECT
+	#include <vmdetect/virtualmachine.h>
+ #endif // HAVE_VMDETECT
+
+ #ifndef _WIN32
+	#include <grp.h>
+	#include <sys/types.h>
+	#include <pwd.h>
+ #endif // _WIN32
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
  using namespace pugi;
@@ -82,6 +97,106 @@
 		}
 
 		return def;
+	}
+
+	UDJAT_API bool XML::test(const XML::Node &node, const char *attrname, bool defvalue) {
+
+		bool allow = true;
+
+		XML::Attribute attr{AttributeFactory(node,attrname)};
+		if(!attr) {
+			return defvalue;
+		}
+
+		const char *str = attr.as_string("");
+		if(*str == '!') {
+			str++;
+			allow = !allow;
+		} else if(strncasecmp(str,"not ",4)) {
+			str += 4;
+			allow = !allow;
+			while(*str && isspace(*str)) {
+				str++;
+			}
+		}
+
+		if(!str && *str) {
+			Logger::String{"Invalid XML filter on attribute '",attrname,"', ignoring"}.warning(PACKAGE_NAME);
+			return defvalue;
+		}
+
+		if(strstr(str,"://")) {
+			// It's an URL, test it.
+			return (URL{str}.test() == 200) ? allow : !allow;
+		}
+
+		if(!(strcasecmp(str,"only-on-virtual-machine") && strcasecmp(str,"virtual-machine"))) {
+#ifdef HAVE_VMDETECT
+			return VirtualMachine{Logger::enabled(Logger::Debug)} ? allow : !allow;
+#else
+			Logger::String{"Library built without virtual machine support, ignoring '",str,"' attribute"}.warning(PACKAGE_NAME);
+			return defvalue;
+#endif
+		}
+
+#ifdef _WIN32
+		if(!(strcasecmp(str,"only-on-windows") && strcasecmp(str,"windows"))) {
+			return allow;
+		}
+		if(!(strcasecmp(str,"only-on-linux") && strcasecmp(str,"linux"))){
+			return !allow;
+		}
+#else
+		if(!(strcasecmp(str,"only-on-windows") && strcasecmp(str,"windows"))) {
+			return !allow;
+		}
+		if(!(strcasecmp(str,"only-on-linux") && strcasecmp(str,"linux"))){
+			return allow;
+		}
+
+		if(!strncasecmp(str,"groups:",6)) {
+
+			auto names=String{str+6}.split(",");
+
+			struct passwd *pw = getpwuid(getuid());
+			if(!pw) {
+				Logger::String{"Cant get current user groups"}.warning(PACKAGE_NAME);
+				return false;
+			}
+
+			int ngroups = 0;
+			getgrouplist(pw->pw_name, pw->pw_gid, NULL, &ngroups);
+			if(!ngroups) {
+				Logger::String{"User group list is empty"}.warning(PACKAGE_NAME);
+				return false;
+			}
+
+			gid_t groups[ngroups];
+			getgrouplist(pw->pw_name, pw->pw_gid, groups, &ngroups);
+
+			for (int i = 0; i < ngroups; i++){
+				struct group* gr = getgrgid(groups[i]);
+				if(gr == NULL){
+					Logger::String{"getgrgid error: ",strerror(errno)}.warning(PACKAGE_NAME);
+					continue;
+				}
+				for(const auto &name : names) {
+					if(!strcasecmp(name.c_str(),gr->gr_name)) {
+						return allow;
+					}
+				}
+			}
+
+			return !allow;
+		}
+
+#endif // _WIN32
+
+		return attr.as_bool(defvalue);
+	}
+
+	const char * XML::QuarkFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return Quark{StringFactory(node,attrname,def)}.c_str();
 	}
 
  }

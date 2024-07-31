@@ -83,7 +83,7 @@ namespace Udjat {
 		/// @brief Save to temporary file.
 		/// @param contents String with file contents.
 		/// @return Temporary file name.
-		std::string save(const char *contents);
+		UDJAT_API std::string save(const char *contents);
 
 		/// @brief File Path.
 		class UDJAT_API Path : public std::string {
@@ -166,6 +166,13 @@ namespace Udjat {
 
 			/// @brief Test if the file is valid.
 			operator bool() const noexcept;
+
+			/// @brief Navigate on all directory files until lambda returns 'true'
+			/// @param call Lambda for file test.
+			/// @return false if all 'call' actions returned false.
+			/// @retval true call() has returned 'true', scan was finished.
+			/// @retval false All files were scanned, call never returned 'true'.
+			bool for_each(const std::function<bool (const File::Path &path, const Stat &st)> &call) const;
 
 			/// @brief Navigate on all directory files until lambda returns 'true'
 			/// @param call Lambda for file test.

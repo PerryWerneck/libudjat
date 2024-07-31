@@ -107,9 +107,19 @@
 
 			if(!hFile) {
 
+				string userconfdir{"/usr/etc"};
+				if(getuid() != 0) {
+					const char *homedir = getenv("HOME");
+					if(homedir) {
+						userconfdir = homedir;
+						userconfdir += "/.local/etc";
+						Logger::String{"Loading user configuration from '",userconfdir.c_str(),"'"}.trace("econf");
+					}
+				}
+
 				econf_err err = econf_readDirs(
 					(econf_file **) &hFile,				// key_file
-					"/usr/etc",							// usr_conf_dir
+					userconfdir.c_str(),				// usr_conf_dir
 					"/etc",								// etc_conf_dir
 					program_invocation_short_name,		// Application name
 					".conf",							// config_suffis
