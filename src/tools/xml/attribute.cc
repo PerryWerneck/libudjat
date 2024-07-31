@@ -109,20 +109,20 @@
 		}
 
 		const char *str = attr.as_string("");
+		if(!str && *str) {
+			Logger::String{"Invalid XML filter on attribute '",attrname,"', ignoring"}.warning(PACKAGE_NAME);
+			return defvalue;
+		}
+
 		if(*str == '!') {
 			str++;
 			allow = !allow;
-		} else if(strncasecmp(str,"not ",4)) {
+		} else if(!strncasecmp(str,"not ",4)) {
 			str += 4;
 			allow = !allow;
 			while(*str && isspace(*str)) {
 				str++;
 			}
-		}
-
-		if(!str && *str) {
-			Logger::String{"Invalid XML filter on attribute '",attrname,"', ignoring"}.warning(PACKAGE_NAME);
-			return defvalue;
 		}
 
 		if(strstr(str,"://")) {
@@ -141,16 +141,20 @@
 
 #ifdef _WIN32
 		if(!(strcasecmp(str,"only-on-windows") && strcasecmp(str,"windows"))) {
+			debug("Got windows filter (",(allow ? "allow" : "deny"));
 			return allow;
 		}
 		if(!(strcasecmp(str,"only-on-linux") && strcasecmp(str,"linux"))){
+			debug("Got linux filter (",(allow ? "allow" : "deny"));
 			return !allow;
 		}
 #else
 		if(!(strcasecmp(str,"only-on-windows") && strcasecmp(str,"windows"))) {
+			debug("Got windows filter (",(allow ? "allow" : "deny"));
 			return !allow;
 		}
 		if(!(strcasecmp(str,"only-on-linux") && strcasecmp(str,"linux"))){
+			debug("Got linux filter (",(allow ? "allow" : "deny"));
 			return allow;
 		}
 
