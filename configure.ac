@@ -311,6 +311,15 @@ AC_SUBST(VMDETECT_LIBS)
 AC_SUBST(VMDETECT_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
+dnl test for dmiget
+dnl ---------------------------------------------------------------------------
+
+PKG_CHECK_MODULES(SMBIOS, dmiget, AC_DEFINE(HAVE_SMBIOS,[],[Do we have libdmiget?]),AC_MSG_NOTICE(No smbios library))
+
+AC_SUBST(SMBIOS_LIBS)
+AC_SUBST(SMBIOS_CFLAGS)
+
+dnl ---------------------------------------------------------------------------
 dnl Output config
 dnl ---------------------------------------------------------------------------
 
