@@ -234,6 +234,27 @@
 
 	}
 
+	unsigned long long File::Handler::length() const {
+
+		struct stat st;
+		if(fstat(fd,&st)) {
+			throw system_error(errno,system_category(),"Cant get file length");
+		}
+
+		return st.st_size;
+	}
+
+	unsigned long long File::Handler::block_size() const {
+
+		struct stat st;
+		if(fstat(fd,&st)) {
+			throw system_error(errno,system_category(),"Cant get block size");
+		}
+
+		return st.st_blksize;
+
+	}
+
 	void File::Handler::save(const std::function<void(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &write) const {
 
 		struct stat st;

@@ -107,6 +107,16 @@ namespace Udjat {
 			/// @brief Save file using custom writer.
 			void save(const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &write) const;
 
+			/// @brief Get the file size.
+			unsigned long long length() const;
+
+			inline unsigned long long size() const {
+				return length();
+			}
+
+			/// @brief Get the preferred block size.
+			unsigned long long block_size() const;
+
 		};
 
 	}
