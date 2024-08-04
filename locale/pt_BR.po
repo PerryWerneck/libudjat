@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-19 13:17-0300\n"
+"POT-Creation-Date: 2024-08-04 14:33-0300\n"
 "PO-Revision-Date: 2024-02-11 09:55-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -45,6 +45,16 @@ msgstr "\t\tParar serviço"
 #: src/tools/os/windows/systemservice.cc:48
 msgid "\t\tUninstall service"
 msgstr "\t\tDesinstalar serviço"
+
+#: src/tools/mainloop/timer.cc:141
+#, fuzzy
+msgid " {} milliseconds"
+msgstr "segundos"
+
+#: src/tools/mainloop/timer.cc:138
+#, fuzzy
+msgid " {} seconds"
+msgstr "segundos"
 
 #: src/tools/value/abstract.cc:212
 msgid "Abstract value is unable to handle items"
@@ -134,7 +144,7 @@ msgstr "Informação"
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: src/tools/application/run.cc:217
+#: src/tools/application/run.cc:255
 msgid "Invalid property"
 msgstr "Propriedade inválida"
 
@@ -150,7 +160,7 @@ msgstr "Menos de um minuto"
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/main/agent/root.cc:93
+#: src/main/agent/root.cc:96
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -187,7 +197,7 @@ msgstr "Redirecionado"
 msgid "Request Timeout"
 msgstr "Tempo da requisição esgotado"
 
-#: src/tools/xml/attribute.cc:81
+#: src/tools/xml/attribute.cc:96
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
@@ -216,7 +226,7 @@ msgstr "Erro de sistema"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/tools/systemservice.cc:133 src/main/agent/root.cc:93
+#: src/tools/systemservice.cc:133 src/main/agent/root.cc:96
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -337,7 +347,7 @@ msgstr "Incapaz de criar alerta para o nó <{}>"
 msgid "Unable to determine internal alert type for node <{}>"
 msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
 
-#: src/tools/object.cc:193
+#: src/tools/object.cc:216
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
@@ -345,7 +355,7 @@ msgstr "Incapaz de obter valor para '{}'"
 msgid "Unable to set '{}' as '{}' on abstract value"
 msgstr "Incapaz de setar '{}' como '{}' em um valor abstrato"
 
-#: src/tools/application/run.cc:120 src/tools/application/run.cc:124
+#: src/tools/application/run.cc:158 src/tools/application/run.cc:162
 msgid "Unable to set environment variable"
 msgstr "Incapaz de setar variável de ambiente"
 
@@ -361,7 +371,7 @@ msgstr "Código de erro HTTP inesperado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/tools/application/run.cc:147
+#: src/tools/application/run.cc:185
 msgid "Usage:\t{} [options]"
 msgstr "Usage:\t{} [opções]"
 
@@ -413,6 +423,21 @@ msgstr "desligado"
 msgid "on"
 msgstr "ligado"
 
+#: src/tools/mainloop/timer.cc:123
+#, fuzzy
+msgid "one hour"
+msgstr "hora"
+
+#: src/tools/mainloop/timer.cc:132
+#, fuzzy
+msgid "one minute"
+msgstr "minuto"
+
+#: src/tools/mainloop/timer.cc:117
+#, fuzzy
+msgid "one second"
+msgstr "segundo"
+
 #: src/tools/timestamp.cc:232
 msgid "second"
 msgstr "segundo"
@@ -456,6 +481,16 @@ msgstr "{h} {H} e {m} {M}"
 #: src/tools/timestamp.cc:105
 msgid "{m} {M}"
 msgstr "{m} {M}"
+
+#: src/tools/mainloop/timer.cc:126
+#, fuzzy
+msgid "{} hours"
+msgstr "horas"
+
+#: src/tools/mainloop/timer.cc:135
+#, fuzzy
+msgid "{} minutes"
+msgstr "minutos"
 
 #~ msgid "Agent subsystem is inactive"
 #~ msgstr "Subsistema de agentes está inativo"

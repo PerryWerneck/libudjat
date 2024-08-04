@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-02-19 13:17-0300\n"
+"POT-Creation-Date: 2024-08-04 14:33-0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -39,6 +39,14 @@ msgstr ""
 
 #: src/tools/os/windows/systemservice.cc:48
 msgid "\t\tUninstall service"
+msgstr ""
+
+#: src/tools/mainloop/timer.cc:141
+msgid " {} milliseconds"
+msgstr ""
+
+#: src/tools/mainloop/timer.cc:138
+msgid " {} seconds"
 msgstr ""
 
 #: src/tools/value/abstract.cc:212
@@ -129,7 +137,7 @@ msgstr ""
 msgid "Internal error"
 msgstr ""
 
-#: src/tools/application/run.cc:217
+#: src/tools/application/run.cc:255
 msgid "Invalid property"
 msgstr ""
 
@@ -145,7 +153,7 @@ msgstr ""
 msgid "Module '{}' is not loaded"
 msgstr ""
 
-#: src/main/agent/root.cc:93
+#: src/main/agent/root.cc:96
 msgid "No abnormal state was detected"
 msgstr ""
 
@@ -182,7 +190,7 @@ msgstr ""
 msgid "Request Timeout"
 msgstr ""
 
-#: src/tools/xml/attribute.cc:81
+#: src/tools/xml/attribute.cc:96
 msgid "Required attribute '{}' is missing"
 msgstr ""
 
@@ -211,7 +219,7 @@ msgstr ""
 msgid "System is not ready"
 msgstr ""
 
-#: src/tools/systemservice.cc:133 src/main/agent/root.cc:93
+#: src/tools/systemservice.cc:133 src/main/agent/root.cc:96
 msgid "System is ready"
 msgstr ""
 
@@ -318,7 +326,7 @@ msgstr ""
 msgid "Unable to determine internal alert type for node <{}>"
 msgstr ""
 
-#: src/tools/object.cc:193
+#: src/tools/object.cc:216
 msgid "Unable to get value of '{}'"
 msgstr ""
 
@@ -326,7 +334,7 @@ msgstr ""
 msgid "Unable to set '{}' as '{}' on abstract value"
 msgstr ""
 
-#: src/tools/application/run.cc:120 src/tools/application/run.cc:124
+#: src/tools/application/run.cc:158 src/tools/application/run.cc:162
 msgid "Unable to set environment variable"
 msgstr ""
 
@@ -342,7 +350,7 @@ msgstr ""
 msgid "Unexpected error activating state"
 msgstr ""
 
-#: src/tools/application/run.cc:147
+#: src/tools/application/run.cc:185
 msgid "Usage:\t{} [options]"
 msgstr ""
 
@@ -394,6 +402,18 @@ msgstr ""
 msgid "on"
 msgstr ""
 
+#: src/tools/mainloop/timer.cc:123
+msgid "one hour"
+msgstr ""
+
+#: src/tools/mainloop/timer.cc:132
+msgid "one minute"
+msgstr ""
+
+#: src/tools/mainloop/timer.cc:117
+msgid "one second"
+msgstr ""
+
 #: src/tools/timestamp.cc:232
 msgid "second"
 msgstr ""
@@ -436,4 +456,12 @@ msgstr ""
 
 #: src/tools/timestamp.cc:105
 msgid "{m} {M}"
+msgstr ""
+
+#: src/tools/mainloop/timer.cc:126
+msgid "{} hours"
+msgstr ""
+
+#: src/tools/mainloop/timer.cc:135
+msgid "{} minutes"
 msgstr ""

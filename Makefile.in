@@ -486,9 +486,10 @@ install-devel-linux: \
 
 	@$(INSTALL_DATA) \
 		$(BINRLS)/$(PACKAGE_NAME).a \
-		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.static.a
+		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.a
 		
-install-devel-windows:
+install-devel-windows: \
+	$(BINRLS)/$(PACKAGE_NAME).a
 
 	@$(MKDIR) \
 		$(DESTDIR)$(includedir)/udjat/win32
@@ -496,6 +497,13 @@ install-devel-windows:
 	@$(INSTALL_DATA) \
 		$(srcdir)/src/include/udjat/win32/*.h \
 		$(DESTDIR)$(includedir)/udjat/win32
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/$(PACKAGE_NAME).a \
+		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.a
 
 install-conf:
 

@@ -15,6 +15,6 @@ module_version=@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@
 Name: udjat
 Description: The Eye of Horus
 Version: @PACKAGE_VERSION@
-Libs: -ludjat.static @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@
+Libs: -l:libudjat.a @LIBICONV@ @ECONF_LIBS@ @PUGIXML_LIBS@ @VMDETECT_LIBS@
 Cflags: -I${prefix}/include @PUGIXML_CFLAGS@
 
