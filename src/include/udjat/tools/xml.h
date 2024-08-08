@@ -77,6 +77,14 @@
 		/// @return Quark with attribute value or 'def' if not found.
 		UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
+		/// @brief Navigate from document until callback returns true.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @return Test result.
+		/// @retval false if test function returned false in all nodes.
+		/// @retval true if test function returned true.
+		UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const XML::Node &node)> &test);
+
 	}
 
 	/// @brief Test common filter options.
