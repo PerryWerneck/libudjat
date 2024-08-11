@@ -23,6 +23,7 @@ AC_PREREQ([2.69])
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
 AC_INIT([libudjat],[1.2],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
+app_vrs_patch=1
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -59,7 +60,6 @@ dnl ---------------------------------------------------------------------------
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
-app_vrs_patch=1
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
 AC_ARG_WITH([product-id], [AS_HELP_STRING([--with-product-domain], [Set product domain])], [ app_cv_domain="$withval" ],[ app_cv_domain="br.eti.werneck" ])

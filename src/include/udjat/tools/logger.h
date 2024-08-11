@@ -97,6 +97,26 @@
 			inline String(Targs... Fargs) : Udjat::String{Fargs...} {
 			}
 
+#ifdef PACKAGE_NAME
+			void write(const Logger::Level level, const char *domain = PACKAGE_NAME) const;
+
+			inline void trace(const char *domain = PACKAGE_NAME) const {
+				write(Logger::Trace,domain);
+			}
+
+			inline void info(const char *domain = PACKAGE_NAME) const {
+				write(Logger::Info,domain);
+			}
+
+			inline void warning(const char *domain = PACKAGE_NAME) const {
+				write(Logger::Warning,domain);
+			}
+
+			inline void error(const char *domain = PACKAGE_NAME) const {
+				write(Logger::Error,domain);
+			}
+
+#else
 			void write(const Logger::Level level, const char *domain = "") const;
 
 			inline void trace(const char *domain = "") const {
@@ -114,6 +134,8 @@
 			inline void error(const char *domain = "") const {
 				write(Logger::Error,domain);
 			}
+
+#endif // PACKAGE_NAME
 
 			inline void trace(const std::string &domain) const {
 				write(Logger::Trace,domain.c_str());
