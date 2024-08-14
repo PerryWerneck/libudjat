@@ -72,6 +72,10 @@
 
 	UDJAT_API bool isnumber(const char *str);
 
+	UDJAT_API bool has_suffix(const char *str, const char *suffix, bool ignore_case = false) noexcept;
+
+	UDJAT_API bool has_prefix(const char *str, const char *prefix, bool ignore_case = false) noexcept;
+
 	/// @brief Simple markup expander.
 	/// @param text String to expand.
 	/// @return String with markup expanded.
@@ -358,10 +362,14 @@
 		String & chug() noexcept;
 
 		/// @brief Looks whether the string ends with suffix.
-		bool has_suffix(const char *suffix, bool ignore_case = false) const noexcept;
+		inline bool has_suffix(const char *suffix, bool ignore_case = false) const noexcept {
+			return Udjat::has_suffix(c_str(),suffix,ignore_case);
+		}
 
 		/// @brief Looks whether the string begins with prefix.
-		bool has_prefix(const char *prefix, bool ignore_case = false) const noexcept;
+		inline bool has_prefix(const char *prefix, bool ignore_case = false) const noexcept {
+			return Udjat::has_prefix(c_str(),prefix,ignore_case);
+		}
 
 		/// @brief Removes trailing white spaces from the string.
 		/// @see chug()
