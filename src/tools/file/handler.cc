@@ -246,6 +246,12 @@
 
 	unsigned long long File::Handler::block_size() const {
 
+#ifdef _WIN32
+
+		return 512ULL;
+
+#else
+
 		struct stat st;
 		if(fstat(fd,&st)) {
 			throw system_error(errno,system_category(),"Cant get block size");
@@ -253,6 +259,7 @@
 
 		return st.st_blksize;
 
+#endif // _WIN32
 	}
 
 	void File::Handler::save(const std::function<void(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &write) const {
