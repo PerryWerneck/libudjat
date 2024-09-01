@@ -186,16 +186,19 @@
 		/// @brief Redirect std::cout, std::clog and std::cerr to log file.
 		UDJAT_API void redirect();
 
-		/// @brief Enable/Disable console output.
+		/// @brief Enable/Disable default console writer.
 		UDJAT_API void console(bool enable);
-
-		UDJAT_API bool file();
 		UDJAT_API bool console();
 
-#ifdef _WIN32
+		/// @brief Enable/Disable default file writer.
+		UDJAT_API bool file();
 		UDJAT_API void file(bool enable);
-#else
-		UDJAT_API void file(bool enable);
+
+		/// @brief Replace console/file writers.
+		UDJAT_API void console(void (*writer)(Level, const char *, const char *));
+		UDJAT_API void file(void (*writer)(Level, const char *, const char *));
+
+#ifndef _WIN32
 		UDJAT_API void syslog(bool enable);
 		UDJAT_API bool syslog();
 #endif // _WIN32

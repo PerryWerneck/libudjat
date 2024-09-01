@@ -3,11 +3,14 @@
 #include <private/logger.h>
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
+#include <udjat/tools/configuration.h>
 #include <mutex>
 #include <unistd.h>
 #include <syslog.h>
 #include <udjat/tools/quark.h>
 #include <algorithm>
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -58,8 +61,70 @@ namespace Udjat {
 		write(level,domain,text,false);
 	}
 
+	/// @brief Default file writer.
+	void Logger::file_writer(Level, const char *domain, const char *text) noexcept {
+
+		static string format;
+		static unsigned int keep = 0;
+
+		string filename{Application::LogDir::getInstance().c_str()};
+
+		if(format.empty()) {
+
+			try {
+
+				keep = Config::Value<unsigned int>("logfile","max-age",86400).get();
+				format = Config::Value<std::string>("logfile","name-format", (Application::Name() + "-%d.log").c_str()).c_str();
+
+			} catch(...) {
+
+				// On error assume defaults.
+				keep = 86400;
+				format = (Application::Name() + "-%d.log");
+
+			}
+
+		}
+
+		// Current timestamp.
+		TimeStamp timestamp;
+
+		// Get logfile path.
+
+		filename.append(timestamp.to_string(format.c_str()));
+
+		struct stat st;
+		if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+			// More than one day, remove it
+			remove(filename.c_str());
+		}
+
+		try {
+
+			// Open file
+			std::ofstream ofs;
+			ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+			ofs.open(filename, ofstream::out | ofstream::app);
+			ofs << timestamp << " " << domain << " " << text << endl;
+			ofs.close();
+
+		} catch(const std::exception &e) {
+
+			console_writer(Logger::Error,"logger",e.what());
+			std::abort();
+
+		} catch(...) {
+
+			console_writer(Logger::Error,"logger","Unexpected error");
+			std::abort();
+
+		}
+
+	}
+
 	/// @brief Default console writer.
-	static void cwriter(Logger::Level level, const char *domain, const char *text) noexcept {
+	void Logger::console_writer(Logger::Level level, const char *domain, const char *text) noexcept {
 
 		// Write to console.
 		static bool decorated = (getenv("TERM") != NULL);
@@ -92,56 +157,6 @@ namespace Udjat {
 		fsync(1);
 	}
 
-	void Logger::console(bool enable) {
-		if(enable) {
-			Options::getInstance().console = cwriter;
-		} else {
-			Options::getInstance().console = nullptr;
-		}
-	}
-
-	void Logger::write(Level level, const char *d, const char *text, bool force) noexcept {
-
-		char domain[15];
-		memset(domain,' ',15);
-		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
-		domain[14] = 0;
-
-		// Log options.
-		Logger::Options &options{Options::getInstance()};
-
-		// Serialize
-		static mutex mtx;
-		lock_guard<mutex> lock(mtx);
-
-		// Write
-		if((options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
-
-			if(options.console) {
-				options.console(level,domain,text);
-			}
-
-			if(options.syslog) {
-				//
-				// Write to syslog.
-				//
-				static const int priority[] = {
-					LOG_ERR,		// Error
-					LOG_WARNING,	// Warning
-					LOG_INFO,		// Info
-					LOG_DEBUG,		// Trace
-					LOG_DEBUG,		// Debug
-					LOG_NOTICE		// Debug+1
-				};
-
-				::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
-			}
-
-		}
-
-		// TODO: Optional write to file.
-
-	}
 
 }
 

@@ -1,272 +1,28 @@
 -------------------------------------------------------------------
-Thu Jul 18 11:05:23 UTC 2024 - perry.werneck@gmail.com
+Mon Feb  5 18:57:16 UTC 2024 - Perry Werneck <perry.werneck@gmail.com>
 
-- Update to version 1.2+git20240718:
-  * Adding string expansion based on xml + custom marker.
-  * Updating package control files.
-
--------------------------------------------------------------------
-Wed Jul 17 15:47:28 UTC 2024 - perry.werneck@gmail.com
-
-- Update to version 1.2+git20240715:
-  * Fixing legacy builds.
+- Last minute fixes
+  * Allow-changing-of-handler-file-description.patch fix a problem with d-bus socket handlers.
+  * add_version_check_macro.patch Allow modules to detect the core library version and adjust themselfs.
 
 -------------------------------------------------------------------
-Mon Jul 15 17:18:42 UTC 2024 - perry.werneck@gmail.com
+Mon Feb 05 15:49:14 UTC 2024 - perry.werneck@gmail.com
 
-- Update to version 1.2+git20240712:
-  * Fixing missing export.
-  * Fixing URL concatenation.
-  * Fixing build of legacy application.
-  * Adding command-line option to enable coredump (for legacy compatibility)
-  * Adding placeholder to append object with settings.
-  * Working on abstract object setup.
-  * Debugging node factory.
-  * Fixing factory controller.
-  * Allowing multiple factories in the same object.
-  * Adding convenience handler method.
-  * Refactoring I/O handler abstraction.
-  * Fixing win32 build.
-  * Updating module build requirement.
-  * Small refactor on timer controller.
-  * Adding mainloop type.
-  * Adding convenience method for file/directory enumeration.
-  * Setting 'minimal build' version for modules.
-  * Adjustments in abstract mainloop.
-  * Removing unnecessary methods from abstract mainloop.
-  * Removing internal method from abstract mainloop.
-  * Delaying test for virtual machine.
-  * Updating libvmdetect to enable verbose mode when debug log is enabled.
-  * Fixing win64 build.
-  * Adding placeholder and method to get http status code of last operation.
-  * Reimplementing XML::QuarkFactory
-  * Fixing build of legacy applications.
-  * When running as user scan configuration from $HOME/.local/etc
-  * Fixing abend on log folder permissions.
-  * Implementing missing win32 function.
-  * Fixing undefine symbol in win32
-  * Fixing exception on bad ip addr.
-  * CodeQL workflow should run on master branch pushes.
-  * Fixing publish action.
-  * Debugging workflows.
-  * Update msys2.yml & publish.yml
-  * Renaming msys build.
-  * Updating CodeQL workflow, adding msys/mingw package.
-  * Debugging windows package.
-  * Updating autogen
-  * Fixing warnings, cleaning code.
-  * Removing old codeql workflow.
-  * Fixing agent startup.
-  * Fixing composed protocol names.
-  * Fixing url scheme search.
-  * Fixing alert factory.
-  * Fixing exception on agent query, implementing query [agent-path]/states to get agent internal state list.
-  * Fixing http responses.
-  * Fixing response object.
-  * Fixing segfault when there's no root agent.
-  * Better state alerts.
-  * Fixing smbios summary.
-  * Allowing get 'formatted' values from URLs.:
-  * Fixing package & legacy builds.
-  * Refactoring response types, adding Response::Object
-  * Refactoring agent searcher.
-  * Better protocol handler.
-  * Better handlers for file:/// & script:///
-  * Implementing proxy to allow using URLs [WORKER-NAME]:///[WORKER-PATH]
-  * Updating package control files.
-  * Implementing option to block net-stop.
-  * Fixing build error.
-  * Importing windows security classes.
-  * Adding version macro.
-  * Allowing change of handler's file description without exception.
-  * Searching product icons first.
-  * Fixing segfault on invalid http request.
-  * Implementing missing method.
-  * Adding convenience method.
-  * Enhancing Report::Table.
-  * Better logging when message parser fails.
-  * Fixing unexpected exception on protocol information.
-  * Debugging request-path.
-  * Implementing convenience class for customized api calls.
-  * Refactoring factories.
-  * Fixing legacy builds.
-  * Refactoring factories.
-  * Better handling of request paths.
-  * Fixing segfault on request test.
-  * Implementing convenience method to extract path from request.
-  * Better property handling on abstract::object.
-  * Better http exceptions.
-  * Refactoring request as Abstract::Object.
-  * Refactoring HTTP::Exception as an Udjat::Exception.
-  * Value is now an abstract::object.
-  * Using numeric names for path based arguments on Request::';
-  * Better documentation on expires.
-  * Better Method and TimeStamp builders.
-  * Fixing package.
-  * Adding trace method placeholder on Module::
-  * Implement response type factories.
-  * Using symbols for boolean values on html output.
-  * Better cache headers, allowing extra customized headers on response.
-  * Better response serialization.
-  * Better response formatting.
-  * Working on cache options.
-  * Better exception handling.
-  * Better error output.
-  * Adding cache headers in abstract response.
-  * Adding placeholders for count & range headers on abstract::response.
-  * Fixing orphaned alert activation.
-  * Fixing worker::work
-  * Debugging worker::exec
-  * Adding convenience method.
-  * Fixing attribute search.
-  * Better log message when alert build fails.
-  * Worker::ResponseType should be public.
-  * Enhancing Worker::probe.
-  * Allowing the worker to decide the response type.
-  * Fixing HTTP error codes.
-  * Fixing alert constructor.
-  * Refactoring quark from XML to use string expansion.
-  * Small refactor on XML parser.
-  * Refactoring xml parser.
-  * Better string from XML.
-  * Using alias to xml node.
-  * Debugging state changes.
-  * Allowing enabling/disabling file watchers.
-  * Implementing win32 file watcher.
-  * Cleaning code, adding some docs.
-  * Refactoring file watcher.
-  * Fixing get properties.
-  * Enhancing agent query by path.
-  * Debugging getproperties by path.
-  * Adding path to get only the agent state.
-  * Refactoring table response.
-  * Letting the application handle exceptions in exec(request,response).
-  * Implementing templates for simple html response.
-  * Searching icons first on cache.
-  * Playing with icon cache.
-  * Commenting 'playground' block
-  * Playing with icon cache.
-  * Fixing response header.
-  * Better logging while searching for icon.
-  * Adding method to get icon filename.
-  * Better response failed states.
-  * Better http-error-code<->system-error-code conversion.
-  * Mapping errno == 0 to http state 200.
-  * Better abstract response.
-  * Better error management while executing requests.
-  * Using state time as last_modified when update time is not available.
-  * Better cache information.
-  * Better request/response error management.
-  * Using jsend for json responses. (Reference: https://github.com/omniti-labs/jsend)
-  * Fixing getproperties.
-  * Better detection of 'last-modified' header.
-  * Debugging request/response engine.
-  * Better XML converters.
-  * Implementing sockaddr_in to_string.
-  * Better converters.
-  * Fixing file basename()
-  * Better conversions.
-  * Refactoring report.
-  * Better response.
-  * Implementing convenience method to serialize  values to strings.
-  * Implementing CSV exporter.
-  * Implementing value serialization.
-  * Adding authentication test for Request::
-  * Implementing String::escape().
-  * Implementing String::unescape.
-  * Adding form mimetype.
-  * Implementing simple File::Path::load();
-  * Updating File::Path.
-  * Adjustment on base64 class.
-  * Fixing win32 package.
-  * Implementing toString() with default value in Udjat::Value.
-  * Adding method to get generic properties from worker.
-  * Adjustments in the new Worker class methods.
-  * Better request/response engine.
-  * Better error messages.
-  * Fixing argument parser.
-  * Better select() no string, adding select() on request.
-  * Fixing request.h
-  * Working on agent list.
-  * Reactivating report output.
-  * Debugging request parameters.
-  * Refactoring report.
-  * Implementing argument parser for Request.
-  * Fixing module build.
-  * Adding more mime types.
-  * Managing operator[] on const values.
-  * Replacing operator [] from method child on Value class.
-  * Implementing dummy Value::Empty().
-  * Fixing Response::Value type.
-  * Refactoring response.
-  * Adding URL data type.
-  * Adding more ways to exec a request.
-  * Refactoring response.
-  * Better parameter order for request{}
-  * Adding method to test for cache state.
-  * Refactoring request.
-  * Cleaning some includes.
-  * Adding exception whith title, message and body.
-  * Fixing icon definition.
-  * Fixing ui::Icon
-  * Fixing name of icon type.
-  * Adding special type for icon values.
-  * Updating debian shlib.
-  * Updating translation; adding 'Icon' class.
-  * Updating C++ level, better for each and type tests on Value class.
-  * Fixing string split.
-  * Implementing missing mimetype factory.
-  * Small fix in mimetypes.
-  * Fixing agent data request.
-  * Refactoring Request class.
-  * Fixing package build.
-  * Adding compatility header.
-  * Reactivating Worker::find().
-  * Restoring version.
-  * Small refactor in worker engine.
-  * Adding Value::isNumber() method.
-  * Implementing generic object.
-  * Fixing String::split().
-  * Fixing package build.
-  * Adjustments in 'Udjat::Module'.
-  * Fixing worker identification.
-  * Allowing multiple paths on worker.
-  * Adding const string splitter.
-  * Adjustments in script runner.
-  * Fixing string compatibility.
-  * Adding URL query parser.
-  * Fixing node parser.
-  * Debugging xml based scripts.
-  * Implementing script helper.
-  * Update README.md
-  * Better windows command line parser.
-  * Better windows service management.
-  * Better message on initialization failure.
-  * Sorting XMLs before loading.
+- Update to version 1.1+git20230808:
   * Update codeql.yml
   * Update msys2.yml
   * Updating to latest vmdetect.
+  * Update msys2.yml
   * Fixing win32 package.
   * Adding methods to get file's modification timestamp.
   * Fixing modtime.
   * Refactoring protocol worker.
   * Updating rpm control file.
   * Allowing conversion of File::Handle to system handler (int) for use with standard C APIs.
+  * Debugging protocol worker.
   * Better protocol worker.
+  * Fixing a few codeql warnings.
   * Fixing codeql alert.
-
--------------------------------------------------------------------
-Thu May 16 00:20:21 UTC 2024 - Alexandre Perry De Souza Werneck <c1103788@interno.bb.com.br>
-
-- Fixes d-bus connection. 
-
--------------------------------------------------------------------
-Fri Feb  9 18:12:53 UTC 2024 - Alexandre Perry De Souza Werneck <c1103788@interno.bb.com.br>
-
-- Update to version 1.1.1+git20230712:
-  * Adding method to allow clients to check library version (add_version_check_macro.patch)
-  * Fixing exception when dbus changes handler 'fd' (Allow-changing-of-handler-file-description.patch)
-  * Requiring vmdetect with fixed d-bus connection
 
 -------------------------------------------------------------------
 Wed Jul 12 14:38:41 UTC 2023 - perry.werneck@gmail.com
@@ -859,11 +615,6 @@ Tue Nov 08 13:13:04 UTC 2022 - perry.werneck@gmail.com
   * Fixing application startup when using debug mode on modules & libs.
   * Allowing module debugging in user's home.
   * Naming background threads.
-
--------------------------------------------------------------------
-Thu Sep 15 02:09:28 UTC 2022 - Alexandre Perry de Souza Werneck <c1103788@interno.bb.com.br>
-
-- Ticket #5284: fix-thread-cleanup.patch corrige segfaults na finalização do userinfo. 
 
 -------------------------------------------------------------------
 Wed Sep 14 15:41:20 UTC 2022 - perry.werneck@gmail.com

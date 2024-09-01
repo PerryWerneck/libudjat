@@ -135,15 +135,36 @@
 		return (bool) Options::getInstance().console;
 	}
 
+	void Logger::dummy_writer(Level, const char *, const char *) noexcept {
+	}
+
+	void Logger::console(bool enable) {
+		if(enable) {
+			Options::getInstance().console = console_writer;
+		} else {
+			Options::getInstance().console = dummy_writer;
+		}
+	}
+
 	void Logger::file(bool enable) {
-		Options::getInstance().file = enable;
 		if(enable) {
 			Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+			Options::getInstance().file = file_writer;
+		} else {
+			Options::getInstance().file = dummy_writer;
 		}
 	}
 
 	bool Logger::file() {
 		return Options::getInstance().file;
+	}
+
+	UDJAT_API void Logger::console(void (*writer)(Level, const char *, const char *)) {
+		Options::getInstance().console = writer;
+	}
+
+	UDJAT_API void Logger::file(void (*writer)(Level, const char *, const char *)) {
+		Options::getInstance().file = writer;
 	}
 
 	Logger::Options & Logger::Options::getInstance() {
@@ -304,6 +325,49 @@
 		}
 
 		write(level, domain, text);
+
+	}
+
+	void Logger::write(Level level, const char *d, const char *text, bool force) noexcept {
+
+		char domain[15];
+		memset(domain,' ',15);
+		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		domain[14] = 0;
+
+		// Log options.
+		Logger::Options &options{Options::getInstance()};
+
+		// Serialize
+		static mutex mtx;
+		lock_guard<mutex> lock(mtx);
+
+		// Write
+		if((options.enabled[level % N_ELEMENTS(options.enabled)] || force)) {
+
+			// Write to console
+			options.console(level,domain,text);
+
+			if(options.syslog) {
+				//
+				// Write to syslog.
+				//
+				static const int priority[] = {
+					LOG_ERR,		// Error
+					LOG_WARNING,	// Warning
+					LOG_INFO,		// Info
+					LOG_DEBUG,		// Trace
+					LOG_DEBUG,		// Debug
+					LOG_NOTICE		// Debug+1
+				};
+
+				::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
+			}
+
+			// Write to file
+			options.file(level,domain,text);
+
+		}
 
 	}
 

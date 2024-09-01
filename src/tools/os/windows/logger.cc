@@ -126,6 +126,9 @@ namespace Udjat {
 		}
 	}
 
+	static void file_writer(const Level level, const char *domain, const char *text) {
+	}
+	
 	void Logger::write(const Level level, const char *d, const char *text, bool force) noexcept {
 
 		char domain[15];
@@ -204,7 +207,6 @@ namespace Udjat {
 			}
 
 		}
-
 
 	}
 
