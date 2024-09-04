@@ -364,8 +364,19 @@
 				::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
 			}
 
-			// Write to file
-			options.file(level,domain,text);
+			if(options.file) {
+
+				try {
+
+					// Write to file
+					options.file(level,domain,text);
+
+				} catch(...) {
+
+					// Ignore errors.
+
+				}
+			}
 
 		}
 

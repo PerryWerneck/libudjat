@@ -52,8 +52,8 @@
 			/// @brief Console writer.
 			void (*console)(Level level, const char *domain, const char *text) = console_writer;
 
-			/// @brief File writer
-			void (*file)(Level level, const char *domain, const char *text) = dummy_writer;
+			/// @brief File writer (disabled by default).
+			void (*file)(Level level, const char *domain, const char *text) = nullptr;
 
 #ifndef _WIN32
 			bool syslog = true;

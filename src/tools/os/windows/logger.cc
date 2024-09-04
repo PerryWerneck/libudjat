@@ -128,8 +128,10 @@ namespace Udjat {
 
 	static void file_writer(const Level level, const char *domain, const char *text) {
 	}
-	
+
 	void Logger::write(const Level level, const char *d, const char *text, bool force) noexcept {
+
+		#error Need refactor to use logger calbacks
 
 		char domain[15];
 		memset(domain,' ',15);
