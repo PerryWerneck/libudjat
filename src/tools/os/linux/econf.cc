@@ -113,7 +113,6 @@
 					if(homedir) {
 						userconfdir = homedir;
 						userconfdir += "/.local/etc";
-						Logger::String{"Loading user configuration from '",userconfdir.c_str(),"'"}.trace("econf");
 					}
 				}
 
@@ -129,7 +128,9 @@
 
 				if(err != ECONF_SUCCESS) {
 					hFile = nullptr;
-					cerr << "econf\t" << econf_errString(err) << endl;;
+					Logger::String{"Cant load configuration from ",userconfdir.c_str()," (",econf_errString(err),"), using defaults"}.warning("econf");
+				} else {
+					Logger::String{"Using configuration from '",userconfdir.c_str(),"'"}.trace("econf");
 				}
 
 			}
