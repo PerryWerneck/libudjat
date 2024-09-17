@@ -109,7 +109,6 @@
 
 				string userconfdir{"/usr/etc"};
 
-				debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 				if(access((userconfdir + "/" + program_invocation_short_name).c_str(),R_OK) != 0 && getuid() != 0) {
 					const char *homedir = getenv("HOME");
 					if(homedir) {
