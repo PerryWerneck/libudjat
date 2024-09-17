@@ -108,7 +108,9 @@
 			if(!hFile) {
 
 				string userconfdir{"/usr/etc"};
-				if(getuid() != 0) {
+
+				debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+				if(access((userconfdir + "/" + program_invocation_short_name).c_str(),R_OK) != 0 && getuid() != 0) {
 					const char *homedir = getenv("HOME");
 					if(homedir) {
 						userconfdir = homedir;
@@ -128,9 +130,9 @@
 
 				if(err != ECONF_SUCCESS) {
 					hFile = nullptr;
-					Logger::String{"Cant load configuration from ",userconfdir.c_str()," (",econf_errString(err),"), using defaults"}.warning("econf");
+					Logger::String{"Cant load configuration from ",userconfdir.c_str(),"/",program_invocation_short_name," (",econf_errString(err),"), using defaults"}.warning("econf");
 				} else {
-					Logger::String{"Using configuration from '",userconfdir.c_str(),"'"}.trace("econf");
+					Logger::String{"Using configuration from '",userconfdir.c_str(),"/",program_invocation_short_name,"'"}.trace("econf");
 				}
 
 			}
