@@ -348,6 +348,7 @@
 			// Write to console
 			options.console(level,domain,text);
 
+#ifndef _WIN32
 			if(options.syslog) {
 				//
 				// Write to syslog.
@@ -363,6 +364,7 @@
 
 				::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
 			}
+#endif // _WIN32
 
 			if(options.file) {
 
