@@ -24,6 +24,7 @@
 #include <udjat/tools/timestamp.h>
 #include <udjat/tools/application.h>
 #include <udjat/tools/timestamp.h>
+#include <udjat/tools/configuration.h>
 #include <udjat/win32/charset.h>
 #include <udjat/win32/registry.h>
 #include <mutex>
@@ -42,10 +43,11 @@ namespace Udjat {
 	}
 
 	/// @brief Default console writer.
-	static void cwriter(Logger::Level level, const char *domain, const char *text) noexcept {
+	void Logger::console_writer(Logger::Level level, const char *domain, const char *text) noexcept {
 
 		// Log to console
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		DWORD dunno;
 
 		if(hOut != INVALID_HANDLE_VALUE) {
 
@@ -76,27 +78,9 @@ namespace Udjat {
 
 			}
 
-			DWORD dunno;
 			if(*prefix) {
 				WriteFile(hOut,prefix,strlen(prefix),&dunno,NULL);
 			}
-
-			/*
-			{
-				time_t t = time(0);
-				struct tm tm;
-				localtime_s(&tm,&t);
-
-				char timestr[80];
-				memset(timestr,0,sizeof(timestr));
-
-				size_t len = strftime(timestr, 79, "%x %X", &tm);
-					strncpy(timestr,"--/--/-- --:--:--",79);
-				}
-
-				WriteFile(hOut,timestr,strlen(timestr),&dunno,NULL);
-			}
-			*/
 
 			{
 				std::string timestamp{TimeStamp{}.to_string("%x %X")};
@@ -118,17 +102,69 @@ namespace Udjat {
 
 	}
 
-	void Logger::console(bool enable) {
-		if(enable) {
-			Options::getInstance().console = cwriter;
-		} else {
-			Options::getInstance().console = nullptr;
+	/// @brief Default file writer.
+	void Logger::file_writer(Level, const char *domain, const char *text) noexcept {
+
+		static string format;
+		static unsigned int keep = 0;
+
+		try {
+
+			string filename{Application::LogDir::getInstance().c_str()};
+
+			if(format.empty()) {
+
+				try {
+
+					keep = Config::Value<unsigned int>("logfile","max-age",86400).get();
+					format = Config::Value<std::string>("logfile","name-format", (Application::Name() + "-%d.log").c_str()).c_str();
+
+				} catch(...) {
+
+					// On error assume defaults.
+					keep = 86400;
+					format = (Application::Name() + "-%d.log");
+
+				}
+
+			}
+
+			// Current timestamp.
+			TimeStamp timestamp;
+
+			// Get logfile path.
+
+			filename.append(timestamp.to_string(format.c_str()));
+
+			struct stat st;
+			if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+				// More than one day, remove it
+				remove(filename.c_str());
+			}
+
+			// Open file
+			std::ofstream ofs;
+			ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+
+			ofs.open(filename, ofstream::out | ofstream::app);
+			ofs << timestamp << " " << domain << " " << text << endl;
+			ofs.close();
+
+		} catch(const std::exception &e) {
+
+			console_writer(Logger::Error,"logger",e.what());
+			std::abort();
+
+		} catch(...) {
+
+			console_writer(Logger::Error,"logger","Unexpected error");
+			std::abort();
+
 		}
+
 	}
 
-	static void file_writer(const Level level, const char *domain, const char *text) {
-	}
-
+	/*
 	void Logger::write(const Level level, const char *d, const char *text, bool force) noexcept {
 
 		#error Need refactor to use logger calbacks
@@ -211,6 +247,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 }
 
