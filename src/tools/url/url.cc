@@ -178,6 +178,10 @@
 		return HTTP::Client(*this).save(filename,progress);
 	}
 
+	bool URL::get(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
+		return HTTP::Client(*this).save(filename,writer);
+	}
+
 	void URL::get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
 
 		auto worker = Protocol::WorkerFactory(c_str());

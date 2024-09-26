@@ -181,9 +181,15 @@
 
 		/// @brief Download/update a file with progress callback.
 		/// @param filename The fullpath for the file.
-		/// @param progress progress callback.
+		/// @param progress progress. callback.
 		/// @return true if the file was updated.
 		bool get(const char *filename,const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
+
+		/// @brief Download/update a file with secondary writer.
+		/// @param filename The fullpath for the file.
+		/// @param writer The secondary writer.
+		/// @return true if the file was updated.
+		bool get(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer);
 
 		/// @brief Get URL, save response to cache file.
 		/// @param progress The download progress notifier.

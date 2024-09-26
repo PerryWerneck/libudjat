@@ -39,8 +39,8 @@
 		const char *name = node.attribute("name").as_string();
 
 		if(!(name && *name)) {
-			clog << "xml\t<" << node.name() << "> doesn't have the required attribute 'name', using default" << endl;
 			name = node.name();
+			Logger::String{"<",node.name(),"> doesn't have the required attribute 'name', using default '",name,"'"}.trace("xml");
 		}
 
 		return Quark(name).c_str();

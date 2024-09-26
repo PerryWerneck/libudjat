@@ -101,6 +101,13 @@
 			return worker->save(filename,progress);
 		}
 
+		bool Client::save(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
+			worker->payload(payload.str());
+			worker->method(Get);
+			setup_cache(worker,filename);
+			return worker->save(filename,writer);
+		}
+
 		bool Client::save(const char *filename) {
 			Protocol::Watcher::getInstance().set_url(worker->url().c_str());
 			return save(filename,Protocol::Watcher::progress);

@@ -120,6 +120,9 @@
 			/// @brief Call URL, save response as filename.
 			bool save(const char *filename, const std::function<bool(double current, double total)> &progress);
 
+			/// @brief Save to file and secondary writer.
+			bool save(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer);
+
 			/// @brief Call URL, save response as filename.
 			/// @return true if the file was updated.
 			bool save(const char *filename);

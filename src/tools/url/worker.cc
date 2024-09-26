@@ -237,6 +237,36 @@
 		throw system_error(ENOTSUP,system_category(),"The available backend is unable to manage custom writers");
 	}
 
+	bool Protocol::Worker::save(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
+
+		File::Temporary tmpfile{filename};
+
+		bool saved = true;
+		bool alloc = true;
+
+		save([&tmpfile,&writer,&saved,&alloc](unsigned long long current, unsigned long long total, const void *buf, size_t length){
+
+			if(total && !alloc) {
+				tmpfile.allocate(total);
+				alloc = false;
+			}
+
+			tmpfile.write(current,buf,length);
+			if(!writer(current,total,buf,length)) {
+				saved = false;
+			}
+
+			return saved;
+
+		});
+
+		if(saved) {
+			tmpfile.save(filename,true);
+		}
+
+		return saved;
+	}
+
 	std::string Protocol::Worker::filename(const std::function<bool(double current, double total)> &progress) {
 		Application::CacheDir name{"urls"};
 		name += Base64::encode(url());

@@ -33,24 +33,24 @@
 
  namespace Udjat {
 
-	Udjat::Exception::Info::Info(int c, const char *t, const char *b, const char *u)
-		: code{c}, title{t}, body{b}, url{u} {
+	Udjat::Exception::Info::Info(int c, const char *t, const char *b, const char *u, const char *d)
+		: code{c}, title{t}, body{b}, url{u}, domain{d} {
 	}
 
-	Udjat::Exception::Info::Info(int c, const std::string &t, const std::string &b, const std::string &u)
-		: code{c}, title{t}, body{b}, url{u} {
+	Udjat::Exception::Info::Info(int c, const std::string &t, const std::string &b, const std::string &u, const char *d)
+		: code{c}, title{t}, body{b}, url{u}, domain{d} {
 	}
 
-	Udjat::Exception::Exception(int code, const char *message, const char *body, const char *url)
-		: std::runtime_error(message), info{code,_("Operation has failed"),body,url} {
+	Udjat::Exception::Exception(int code, const char *message, const char *body, const char *url, const char *domain)
+		: std::runtime_error(message), info{code,_("Operation has failed"),body,url,domain} {
 	}
 
-	Udjat::Exception::Exception(int code, const std::string &message, const std::string &body, const std::string &url)
-		: std::runtime_error(message), info{code,_("Operation has failed"),body,url} {
+	Udjat::Exception::Exception(int code, const std::string &message, const std::string &body, const std::string &url, const char *domain)
+		: std::runtime_error(message), info{code,_("Operation has failed"),body,url,domain} {
 	}
 
-	Udjat::Exception::Exception(int code, const char *message, const std::string &body, const std::string &url)
-		: std::runtime_error(message), info{code,_("Operation has failed"),body,url} {
+	Udjat::Exception::Exception(int code, const char *message, const std::string &body, const std::string &url, const char *domain)
+		: std::runtime_error(message), info{code,_("Operation has failed"),body,url,domain} {
 	}
 
 	Udjat::Exception::Exception(const char *message, const char *body)
@@ -60,6 +60,33 @@
 	Udjat::Exception::Exception(int code)
 		:	std::runtime_error{strerror(code)}, info{code,_("System Error"),""} {
 	}
+
+	void Udjat::Exception::write(const Logger::Level level) const noexcept {
+
+		try {
+
+			Logger::String message{info.title.c_str()};
+
+			if(info.code != -1) {
+				message += " (rc=";
+				message += std::to_string(info.code);
+				message += ")";
+			}
+
+			message.write(level,info.domain.c_str());
+
+			if(!info.body.empty()) {
+				Logger::String{info.body.c_str()}.write(level,info.domain.c_str());
+			}
+
+		} catch(...) {
+
+			// TODO: Find something to do here
+
+		}
+
+	}
+
 
  }
 

@@ -43,19 +43,21 @@
 
 		UDJAT_PRIVATE void setup(const XML::Node &node) noexcept;
 
+		UDJAT_PRIVATE void dummy_writer(Level level, const char *domain, const char *text) noexcept;
+		UDJAT_PRIVATE void file_writer(Level level, const char *domain, const char *text) noexcept;
+		UDJAT_PRIVATE void console_writer(Level level, const char *domain, const char *text) noexcept;
+
 		struct UDJAT_PRIVATE Options {
 
 			/// @brief Console writer.
-			void (*console)(Level level, const char *domain, const char *text) = nullptr;
+			void (*console)(Level level, const char *domain, const char *text) = console_writer;
 
-#ifdef _WIN32
-			bool file = true;
-#else
-			bool file = false;
+			/// @brief File writer (disabled by default).
+			void (*file)(Level level, const char *domain, const char *text) = nullptr;
+
+#ifndef _WIN32
 			bool syslog = true;
 #endif // !_WIN32
-
-			void (*cwriter)(Level level, const char *domain, const char *text);
 
 			bool enabled[Logger::Debug+2] = {
 				true,				// Informational message.

@@ -51,8 +51,6 @@
 		SetConsoleOutputCP(CP_UTF8);
 		SetConsoleCP(CP_UTF8);
 
-		LogDir::getInstance();
-
 		WSADATA WSAData;
 		{
 			int err = WSAStartup(MAKEWORD(2,2), &WSAData);

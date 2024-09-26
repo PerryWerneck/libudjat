@@ -39,10 +39,6 @@
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
-		if(Logger::file()) {
-			LogDir::getInstance();
-		}
-
 	}
 
  }

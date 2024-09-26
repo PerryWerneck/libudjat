@@ -23,7 +23,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
  #include <string>
  #include <cstring>
@@ -48,17 +48,20 @@
 			/// @brief URL for more information.
 			std::string url;
 
-			Info(int code, const char *title, const char *body, const char *url = "");
-			Info(int code, const std::string &title, const std::string &body, const std::string &url = "");
+			/// @brief Domain (For logging).
+			std::string domain;
+
+			Info(int code, const char *title, const char *body, const char *url = "", const char *domain = "");
+			Info(int code, const std::string &title, const std::string &body, const std::string &url = "", const char *domain = "");
 
 		} info;
 
 
 	public:
 
-		Exception(int code, const std::string &message, const std::string &body, const std::string &url = "");
-		Exception(int code, const char *message, const std::string &body, const std::string &url = "");
-		Exception(int code, const char *message, const char *body = "", const char *url = "");
+		Exception(int code, const std::string &message, const std::string &body, const std::string &url = "", const char *domain = "");
+		Exception(int code, const char *message, const std::string &body, const std::string &url = "", const char *domain = "");
+		Exception(int code, const char *message, const char *body = "", const char *url = "", const char *domain = "");
 
 		/// @brief Create simple exception.
 		/// @param message The error message.
@@ -83,10 +86,21 @@
 			return info.body.c_str();
 		}
 
+		/// @brief The message domain.
+		inline const char *domain() const noexcept {
+			return info.domain.c_str();
+		}
+
+		inline void domain(const char *value) noexcept {
+			info.domain.assign(value);
+		}
+
 		/// @brief URL for more information.
 		inline const char *url() const noexcept {
 			return info.url.c_str();
 		}
+
+		virtual void write(const Logger::Level level = Logger::Error) const noexcept;
 
 	};
 

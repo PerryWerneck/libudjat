@@ -37,7 +37,7 @@ BuildRequires:	gcc-c++
 
 BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
-BuildRequires:	pkgconfig(vmdetect)
+BuildRequires:	pkgconfig(vmdetect) >= 1.3
 BuildRequires:	pkgconfig(libsystemd)
 BuildRequires:	glibc-devel
 
@@ -136,6 +136,9 @@ make all
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h
+
+%dir %{_includedir}/udjat/tools/response
+%{_includedir}/udjat/tools/response/*.h
 
 %dir %{_includedir}/udjat/alert
 %{_includedir}/udjat/alert/*.h

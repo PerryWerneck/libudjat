@@ -23,6 +23,7 @@ AC_PREREQ([2.69])
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
 AC_INIT([libudjat],[1.2],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
+app_vrs_patch=1
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -59,7 +60,6 @@ dnl ---------------------------------------------------------------------------
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
-app_vrs_patch=1
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
 AC_ARG_WITH([product-id], [AS_HELP_STRING([--with-product-domain], [Set product domain])], [ app_cv_domain="$withval" ],[ app_cv_domain="br.eti.werneck" ])
@@ -118,6 +118,7 @@ case "$host" in
 		AC_CONFIG_FILES(src/main/os/windows/app-manifest.xml)
 		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
 		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
+		
 		;;
 
  	*)
@@ -130,7 +131,6 @@ case "$host" in
 		AC_SUBST(OSNAME,linux)
 		AC_CONFIG_FILES(sdk/linux/static.pc)
 		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
-
 		AC_CHECK_HEADER(poll.h, [AC_DEFINE(HAVE_POLL_H, 1, [poll.h is available])], [AC_MSG_ERROR([Can't find required header poll.h])])
 
 esac
@@ -305,10 +305,33 @@ dnl ---------------------------------------------------------------------------
 dnl test for vmdetect
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES(VMDETECT, vmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
+case "$host" in
+	*-mingw32|*-pc-msys)
+		PKG_CHECK_MODULES(VMDETECT, vmdetect-static, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
+	;;
+
+	*)
+		PKG_CHECK_MODULES(VMDETECT, vmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
+esac
 
 AC_SUBST(VMDETECT_LIBS)
 AC_SUBST(VMDETECT_CFLAGS)
+
+dnl ---------------------------------------------------------------------------
+dnl test for dmiget
+dnl ---------------------------------------------------------------------------
+
+case "$host" in
+	*-mingw32|*-pc-msys)
+		PKG_CHECK_MODULES(SMBIOS, dmiget-static, AC_DEFINE(HAVE_SMBIOS,[],[Do we have libdmiget?]),AC_MSG_NOTICE(No smbios library))
+	;;
+
+	*)
+		PKG_CHECK_MODULES(SMBIOS, dmiget, AC_DEFINE(HAVE_SMBIOS,[],[Do we have libdmiget?]),AC_MSG_NOTICE(No smbios library))
+esac
+
+AC_SUBST(SMBIOS_LIBS)
+AC_SUBST(SMBIOS_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Output config
