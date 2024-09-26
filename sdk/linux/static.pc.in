@@ -16,6 +16,6 @@ Name: udjat
 Description: The Eye of Horus core library
 Version: @PACKAGE_VERSION@
 Requires: vmdetect-static libeconf pugixml
-Libs: -l:libudjat.a
-Cflags: -I${prefix}/include
+Libs: -l:libudjat.a -ldl -pthread
+Cflags: -I${prefix}/include -pthread
 
