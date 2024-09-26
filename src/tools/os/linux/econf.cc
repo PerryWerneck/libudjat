@@ -129,9 +129,9 @@
 
 				if(err != ECONF_SUCCESS) {
 					hFile = nullptr;
-					Logger::String{"Cant load configuration from ",userconfdir.c_str(),"/",program_invocation_short_name," (",econf_errString(err),"), using defaults"}.warning("econf");
+					Logger::String{"Cant load configuration from ",userconfdir.c_str(),"/",program_invocation_short_name,".conf.d (",econf_errString(err),"), using defaults"}.warning("econf");
 				} else {
-					Logger::String{"Using configuration from '",userconfdir.c_str(),"/",program_invocation_short_name,"'"}.trace("econf");
+					Logger::String{"Using configuration from '",userconfdir.c_str(),"/",program_invocation_short_name,".conf.d'"}.trace("econf");
 				}
 
 			}
