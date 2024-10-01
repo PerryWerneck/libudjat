@@ -272,6 +272,62 @@
 
 	}
 
+	bool File::Path::for_each(const std::function<bool (const File::Path &path, const File::Stat &st)> &call) const {
+
+		Win32::Path path{c_str()};
+
+		if(!dir()) {
+			struct stat s;
+			if(stat(path.c_str(),&s) != 0) {
+				throw system_error(errno,system_category(),this->c_str());
+			}
+			return call(*this,s);
+		}
+
+		DIR *dir = opendir(path.c_str());
+
+		if(!dir) {
+			throw system_error(errno,system_category(),path);
+		}
+
+		bool rc = false;
+
+		try {
+
+			struct dirent *de;
+			while(!rc && (de = readdir(dir)) != NULL) {
+
+				if(de->d_name[0] == '.') {
+					continue;
+				}
+
+				File::Path filename{path};
+				filename += "\\";
+				filename += de->d_name;
+
+				struct stat s;
+				if(stat(filename.c_str(),&s) != 0) {
+					throw system_error(errno,system_category(),filename.c_str());
+				}
+
+				call(filename,s);
+
+			}
+
+
+		} catch(...) {
+
+			closedir(dir);
+			throw;
+
+		}
+
+		closedir(dir);
+
+		return rc;
+
+	}
+
 	bool File::Path::for_each(const std::function<bool (const File::Path &path)> &call, bool recursive) const {
 
 		if(!dir()) {
