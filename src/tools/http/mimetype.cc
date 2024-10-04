@@ -70,6 +70,9 @@
 	{ "xhtml",	"application/xhtml+xml" },
 	{ "zip",	"application/zip" },
 
+	// SSL & cia
+	{ "cacert",	"application/x-x509-ca-cert" },
+
 	// Form parser
 	{ "form-urlencoded",	"x-www-form-urlencoded" },
 
