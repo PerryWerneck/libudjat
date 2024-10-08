@@ -555,7 +555,8 @@ uninstall-conf:
 #---[ Debug Targets ]--------------------------------------------------------------------
 
 Debug: \
-	$(BINDBG)/udjat@EXEEXT@
+	$(BINDBG)/udjat@EXEEXT@ \
+	$(BINDBG)/$(PACKAGE_NAME).a
 
 $(BINDBG)/udjat@EXEEXT@: \
 	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
@@ -586,6 +587,12 @@ $(BINDBG)/@SONAME@: \
 		$^ \
 		$(LIBS)
 
+$(BINDBG)/$(PACKAGE_NAME).a: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o)
+
+	@echo $@ ...
+	@$(MKDIR) $(dir $@)
+	@$(AR) rcs $@ $^
 
 run: \
 	$(BINDBG)/udjat@EXEEXT@

@@ -45,11 +45,15 @@
 			throw system_error(errno,system_category(),filename);
 		}
 
+		debug(filename,"=",fd);
+
 	}
 
 	File::Handler::~Handler() {
 		if(fd > 0) {
+			debug("Closing ---------------------->",fd);
 			::close(fd);
+			fd = -1;
 		}
 	}
 

@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
+ // #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
- // #define OBJECT_TEST 1
+ #define OBJECT_TEST 1
 
  #include <config.h>
 
@@ -329,6 +329,8 @@ int main(int argc, char **argv) {
 
 	MainLoop::getInstance().run();
 	*/
+
+	debug("User data dir is '",Application::UserDataDir{"test"}.c_str(),"'");
 
 	return 0;
 }

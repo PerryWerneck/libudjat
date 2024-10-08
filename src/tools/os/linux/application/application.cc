@@ -59,7 +59,21 @@
 
 	static std::string PathFactory(const char *path, const char *subdir, bool required) {
 
-		std::string response{path};
+		std::string response;
+
+		if(path[0] == '~') {
+			const char *homedir = getenv("HOME");
+			if(!homedir) {
+				throw logic_error("HOME is undefined");
+			}
+			response.assign(homedir);
+			if(path[1] != '/') {
+				response += "/";
+			}
+			response += (path+1);
+		} else {
+			response.assign(path);
+		}
 
 		if(path[strlen(path)-1] != '/') {
 			response += '/';
@@ -106,6 +120,9 @@
 	}
 
 	Application::SystemDataDir::SystemDataDir(const char *subdir) : File::Path{PathFactory("/usr/share/",subdir,true)} {
+	}
+
+	Application::UserDataDir::UserDataDir(const char *subdir) : File::Path{PathFactory("~/.local/share/",subdir,true)} {
 	}
 
 	Application::LibDir::LibDir(const char *subdir, bool required) : File::Path{PathFactory(STRINGIZE_VALUE_OF(LIBDIR) "/",subdir,required)} {
