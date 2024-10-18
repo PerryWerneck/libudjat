@@ -73,6 +73,14 @@
 		return module.getProperties(properties);
 	}
 
+	int Worker::call(const char *method, const char *path, Udjat::Value &response) const {
+		if(!(strcasecmp(method,"get") || strcasecmp(path,"/"))) {
+			getProperties(response);
+			return 0;
+		}
+		return ESRCH;
+	}
+
 	bool Worker::getProperty(const char *, Udjat::Value &) const {
 		return false;
 	}

@@ -77,3 +77,4 @@ config.h.in
 test.xml
 
 
+*.mo

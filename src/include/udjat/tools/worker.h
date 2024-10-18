@@ -97,6 +97,19 @@ namespace Udjat {
 
 		virtual Udjat::Value & getProperties(Udjat::Value &properties) const;
 
+		/// @brief Call worker method.
+		/// @param method The requested method (get,post,put,delete,etc)
+		/// @param path The object path.
+		/// @param response The value for response.
+		/// @return Status code.
+		/// @retval 0 Success.
+		/// @retval -1 Failed
+		/// @retval ESRCH Method not found.
+		/// @retval EPERM Access to method was denied.
+		/// @retval ENOENT Path not found (Unknown object).
+		/// @retval ENOTSUP Unsupported method.
+		virtual int call(const char *method, const char *path, Udjat::Value &response) const;
+
 		/// @brief Get module information.
 		inline const ModuleInfo & getModuleInfo() const noexcept {
 			return this->module;
