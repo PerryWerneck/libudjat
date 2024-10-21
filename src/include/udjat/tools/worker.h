@@ -24,6 +24,7 @@
 #include <udjat/tools/response/value.h>
 #include <udjat/tools/response/table.h>
 #include <udjat/tools/quark.h>
+#include <udjat/tools/string.h>
 #include <ostream>
 
 namespace Udjat {
@@ -32,6 +33,7 @@ namespace Udjat {
 	UDJAT_API bool exec(Request &request, Response::Table &response);
 
 	UDJAT_API bool introspect(Udjat::Value &value);
+	UDJAT_API bool introspect(Udjat::String &xmldata);
 
 	class UDJAT_API Worker {
 	private:
@@ -88,6 +90,11 @@ namespace Udjat {
 		/// @param value The object for worker introspection.
 		/// @return true if the value was updated.
 		virtual bool introspect(Udjat::Value &value) const;
+
+		/// @brief Get worker introspection.
+		/// @param xmldata The string for XML data introspection.
+		/// @return true if the value was updated.
+		virtual bool introspect(Udjat::String &xmldata) const;
 
 		/// @brief Get generic worker data, for example, the favicon.
 		/// @param name The property name.
