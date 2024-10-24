@@ -68,6 +68,10 @@
 		Module(const char *name, const ModuleInfo *info) : Module(name,*info) {
 		}
 
+		inline operator	const ModuleInfo &() const noexcept {
+			return _info;
+		}
+
 		/// @brief Navigate on module options.
 		static void options(const XML::Node &node, std::function<void(const char *name, const char *value)> call);
 
