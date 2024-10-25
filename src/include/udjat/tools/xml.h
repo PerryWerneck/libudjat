@@ -58,7 +58,7 @@
 		UDJAT_API bool test(const XML::Node &node, const char *attrname, bool defvalue = false);
 
 		/// @brief Navigate on node options.
-		void options(const XML::Node &node, const std::function<void(const char *name, const char *value)> &call);
+		UDJAT_API void options(const XML::Node &node, const std::function<void(const char *name, const char *value)> &call);
 
 		/// @brief Search 'node' and up stream for 'attrname'.
 		/// @param node Start node.
