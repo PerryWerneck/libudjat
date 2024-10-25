@@ -229,4 +229,23 @@
 
 	}
 
+	void XML::options(const XML::Node &node, const std::function<void(const char *name, const char *value)> &call) {
+
+		for(XML::Node child = node.child("option"); child; child = child.next_sibling("option")) {
+
+			const char *name = child.attribute("name").as_string();
+			if(!(name && *name)) {
+				Logger::String{"Ignoring unnamed option"}.warning("xml");
+				continue;
+			}
+
+			call(
+				name,
+				String(child.attribute("value").as_string()).expand(child).c_str()
+			);
+
+		}
+
+	}
+
  };

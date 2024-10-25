@@ -138,22 +138,7 @@ namespace Udjat {
 	}
 
 	void Module::options(const XML::Node &node, std::function<void(const char *name, const char *value)> call) {
-
-		for(XML::Node child = node.child("option"); child; child = child.next_sibling("option")) {
-
-			const char *name = child.attribute("name").as_string();
-			if(!(name && *name)) {
-				cerr << "module\tIgnoring unnamed attribute on node <" << node.name() << ">" << endl;
-				continue;
-			}
-
-			call(
-				name,
-				String(child.attribute("value").as_string()).expand(child).c_str()
-			);
-
-		}
-
+		XML::options(node,call);
 	}
 
 	std::ostream & Module::info() const {
