@@ -428,6 +428,7 @@ install_headers(
   'src/include/udjat/module.h',
   'src/include/udjat/moduleinfo.h',
   'src/include/udjat/request.h',
+  'src/include/udjat/tests.h',
   subdir: 'udjat'  
 )
 
