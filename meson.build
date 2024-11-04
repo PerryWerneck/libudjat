@@ -247,9 +247,10 @@ lib_src += [
 ]
 
 test_src = [
-  'src/testprogram/testprogram.cc',
   'src/testprogram/randomfactory.cc',
   'src/testprogram/service.cc',
+  'src/testprogram/application.cc',
+  'src/testprogram/run.cc',
 ]
 
 #
@@ -376,11 +377,19 @@ static_library(
   include_directories: includes_dir
 )
 
+tests = static_library(
+  meson.project_name() + 'test', 
+  config_src + test_src,
+  install: true,
+  dependencies: lib_deps,
+  include_directories: includes_dir
+)
+
 executable(
   'udjat',
-  config_src + test_src,
+  config_src + [ 'src/testprogram/testprogram.cc' ],
   install: false,
-  link_with : [ dynamic ],
+  link_with : [ tests, dynamic ],
   dependencies: lib_deps,
   include_directories: includes_dir
 )

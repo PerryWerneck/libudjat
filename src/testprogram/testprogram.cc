@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,54 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #define SERVICE_TEST 1
+ // #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
  // #define OBJECT_TEST 1
 
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tests.h>
-
- #include <udjat/tools/logger.h>
- #include <udjat/tools/systemservice.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/tools/protocol.h>
- #include <udjat/tools/subprocess.h>
- #include <udjat/tools/file.h>
- #include <udjat/tools/intl.h>
- #include <udjat/agent.h>
- #include <udjat/tools/factory.h>
- #include <udjat/alert/abstract.h>
- #include <udjat/module/abstract.h>
- #include <udjat/tools/url.h>
- #include <udjat/tools/file.h>
- #include <udjat/tools/subprocess.h>
- #include <udjat/tools/message.h>
- #include <udjat/tools/file/watcher.h>
- #include <iostream>
- #include <udjat/tools/file.h>
- #include <memory>
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <fstream>
- #include <fcntl.h>
- #include <iomanip>
- #include <udjat/net/ip/address.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/xml.h>
- #include <udjat/ui/icon.h>
- #include <set>
-
-#ifdef _WIN32
-	#include <udjat/win32/charset.h>
-	#include <udjat/win32/exception.h>
-	#include <udjat/win32/ip.h>
-	#include <udjat/win32/cleanup.h>
-#else
-	#include <unistd.h>
-#endif // _WIN32
 
  using namespace std;
  using namespace Udjat;
@@ -74,48 +33,17 @@
  static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
 #if defined(SERVICE_TEST)
-int main(int argc, char **argv) {
+ int main(int argc, char **argv) {
 	return Testing::Service::run_tests(argc,argv,moduleinfo);
-}
+ }
 
 #elif defined(APPLICATION_TEST)
-int main(int argc, char **argv) {
+ int main(int argc, char **argv) {
+	return Testing::Application::run_tests(argc,argv,moduleinfo);
+ }
 
-	class Application : public Udjat::Application {
-	public:
-
-		int install(const char *name) override {
-			ShortCut{}.desktop();
-			return super::install(name);
-		}
-
-		int uninstall() override {
-			ShortCut{}.remove();
-			return super::uninstall();
-		}
-
-		void root(std::shared_ptr<Abstract::Agent>) override {
-			debug("test-arg='",getProperty("test-arg","default"));
-		}
-
-	};
-
-	Logger::verbosity(9);
-	Logger::redirect();
-
-
-	// DummyProtocol protocol;
-	auto rc = Application{}.run(argc,argv,"./test.xml");
-
-	debug("Application exits with rc=",rc);
-
-	return rc;
-
-}
-#endif // defined
-
-#if defined(OBJECT_TEST)
-int main(int argc, char **argv) {
+#elif defined(OBJECT_TEST)
+ int main(int argc, char **argv) {
 
 	bindtextdomain(GETTEXT_PACKAGE, STRINGIZE_VALUE_OF(LOCALEDIR));
 	bind_textdomain_codeset(GETTEXT_PACKAGE, "UTF-8");
@@ -251,4 +179,8 @@ int main(int argc, char **argv) {
 
 	return 0;
 }
-#endif // OBJECT_TEST
+#else
+ int main(int argc, char **argv) {
+	return Testing::run(argc,argv,moduleinfo);
+ }
+#endif

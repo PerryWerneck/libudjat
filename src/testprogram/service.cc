@@ -30,7 +30,9 @@
 
 	int Testing::Service::run_tests(int argc, char **argv, const Udjat::ModuleInfo &info) {
 
+		Logger::redirect();
 		Logger::verbosity(9);
+		Logger::console(true);
 
 		/*
 		class DummyProtocol : public Udjat::Protocol {
@@ -77,6 +79,11 @@
 
 	Testing::Service::Service(const Udjat::ModuleInfo &info)
 		: RandomFactory{info} {
+	}
+
+	Testing::Service::Service(const Udjat::ModuleInfo &info, const std::function<void()> &initialize)
+		: Service{info} {
+		initialize();
 	}
 
 	void Testing::Service::root(std::shared_ptr<Abstract::Agent> agent) {
