@@ -17,11 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- // #define SERVICE_TEST 1
+ #define SERVICE_TEST 1
  // #define APPLICATION_TEST 1
- #define OBJECT_TEST 1
+ // #define OBJECT_TEST 1
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tests.h>
 
  #include <udjat/tools/logger.h>
  #include <udjat/tools/systemservice.h>
@@ -71,96 +73,11 @@
 
  static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
- /*
- class DummyProtocol : public Udjat::Protocol {
- public:
-	DummyProtocol() : Udjat::Protocol("dummy",moduleinfo) {
-	}
-
-	String call(const URL &url, const HTTP::Method UDJAT_UNUSED(method), const char UDJAT_UNUSED(*payload)) const override {
-		cout << "**** dummy\t[" << url << "]" << endl;
-		return "";
-	}
-
- };
- */
-
- class RandomFactory : public Udjat::Factory {
- public:
-	RandomFactory() : Udjat::Factory("random",moduleinfo) {
-		cout << "random agent factory was created" << endl;
-		srand(time(NULL));
-	}
-
-	std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node &node) const override {
-
-		class RandomAgent : public Agent<unsigned int> {
-		private:
-			unsigned int limit = 5;
-
-		public:
-			RandomAgent(const XML::Node &node) : Agent<unsigned int>(node) {
-			}
-
-			bool refresh() override {
-				debug("Updating agent '",name(),"'");
-				set( ((unsigned int) rand()) % limit );
-				return true;
-			}
-
-			void start() override {
-				Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
-			}
-
-		};
-
-		return make_shared<RandomAgent>(node);
-
-	}
-
- };
-
 #if defined(SERVICE_TEST)
 int main(int argc, char **argv) {
-
-	class Service : public SystemService, private RandomFactory {
-	public:
-
-		void root(std::shared_ptr<Abstract::Agent> agent) override {
-			debug("--------------------------------> ",agent->name()," is the new root");
-			SystemService::root(agent);
-		}
-
-	};
-
-	Logger::verbosity(9);
-
-	/*
-	{
-		SubProcess{"test","echo su - root --login -- /usr/sbin/grub2-reboot \"\\\"Reinstalar estação de trabalho\\\"\""}.run();
-		return 0;
-	}
-	*/
-
-	MainLoop::getInstance().TimerFactory(1000,[]{
-		debug("---------------------------------------------------------------------");
-		// SubProcess{"test","ls -l",Logger::Warning}.run();
-
-		cout << URL{"agent:///intvalue"}.get() << endl;
-
-		debug("---------------------------------------------------------------------");
-		return false;
-	});
-
-
-	//DummyProtocol protocol;
-	auto rc = Service{}.run(argc,argv,"./test.xml");
-
-	debug("Service exits with rc=",rc);
-
-	return rc;
-
+	return Testing::Service::run_tests(argc,argv,moduleinfo);
 }
+
 #elif defined(APPLICATION_TEST)
 int main(int argc, char **argv) {
 

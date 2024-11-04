@@ -247,7 +247,9 @@ lib_src += [
 ]
 
 test_src = [
-  'src/testprogram/testprogram.cc'
+  'src/testprogram/testprogram.cc',
+  'src/testprogram/randomfactory.cc',
+  'src/testprogram/service.cc',
 ]
 
 #
@@ -379,6 +381,7 @@ executable(
   config_src + test_src,
   install: false,
   link_with : [ dynamic ],
+  dependencies: lib_deps,
   include_directories: includes_dir
 )
 
