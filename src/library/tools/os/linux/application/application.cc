@@ -166,7 +166,7 @@
 		struct dirent *de;
 		while((de = readdir(dir)) != NULL) {
 
-			if(!de->d_name || de->d_name[0] == '.' || de->d_type != DT_DIR || (strcmp(de->d_name,me.c_str()) == 0))  {
+			if(de->d_name[0] == '.' || de->d_type != DT_DIR || (strcmp(de->d_name,me.c_str()) == 0))  {
 				continue;
 			}
 

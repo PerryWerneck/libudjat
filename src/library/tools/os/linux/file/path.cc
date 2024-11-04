@@ -301,7 +301,7 @@
 			struct dirent *de;
 			while(!rc && (de = readdir(dir)) != NULL) {
 
-				if(!de->d_name || de->d_name[0] == '.') {
+				if(de->d_name[0] == '.') {
 					continue;
 				}
 
@@ -371,7 +371,7 @@
 			struct dirent *de;
 			while(!rc && (de = readdir(dir)) != NULL) {
 
-				if(!de->d_name || de->d_name[0] == '.') {
+				if(de->d_name[0] == '.') {
 					continue;
 				}
 
@@ -431,7 +431,7 @@
 			struct dirent *de;
 			while(!rc && (de = readdir(dir)) != NULL) {
 
-				if(!de->d_name || de->d_name[0] == '.') {
+				if(de->d_name[0] == '.') {
 					continue;
 				}
 

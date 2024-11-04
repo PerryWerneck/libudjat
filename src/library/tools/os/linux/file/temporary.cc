@@ -208,7 +208,7 @@
 		} else {
 
 			// Not replace, create '.bak' file.
-			char bakfile[PATH_MAX];
+			char bakfile[PATH_MAX+1];
 			strncpy(bakfile,filename,PATH_MAX);
 			char *ptr = strrchr(bakfile,'.');
 			if(ptr) {

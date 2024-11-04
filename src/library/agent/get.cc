@@ -76,7 +76,7 @@
 		response.last_modified(last_modified());
 		response.expires(expires());
 
-		for(const auto child : children.agents) {
+		for(const auto &child : children.agents) {
 
 			auto state = child->state();
 

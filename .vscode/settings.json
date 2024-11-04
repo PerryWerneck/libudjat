@@ -16,5 +16,7 @@
 		"streambuf": "cpp",
 		"type_traits": "cpp",
 		"utility": "cpp"
-	}
+	},
+	"C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
+	"C_Cpp.default.compileCommands": "/home/perry/project/udjat/libudjat/.build/compile_commands.json"
 }
