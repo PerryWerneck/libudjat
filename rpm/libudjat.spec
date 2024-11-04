@@ -18,7 +18,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version:		1.1
+Version: 1.2.0
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -28,18 +28,25 @@ URL:			https://github.com/PerryWerneck/udjat
 Group:			Development/Libraries/C and C++
 BuildRoot:		/var/tmp/%{name}-%{version}
 
-BuildRequires:	autoconf >= 2.61
-BuildRequires:	automake
-BuildRequires:	libtool
 BuildRequires:	binutils
 BuildRequires:	coreutils
-BuildRequires:	gcc-c++
+
+%if "%{_vendor}" == "debbuild"
+BuildRequires:  meson-deb-macros
+%else
+BuildRequires:	gcc-c++ >= 5
+%endif
+
+%if 0%{?suse_version} == 01500
+BuildRequires:  meson = 0.61.4
+%else
+BuildRequires:  meson
+%endif
 
 BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
 BuildRequires:	pkgconfig(vmdetect) >= 1.3
 BuildRequires:	pkgconfig(libsystemd)
-BuildRequires:	glibc-devel
 
 %description
 UDJat core library
@@ -68,15 +75,6 @@ Requires: %{name}%{_libvrs} = %{version}
 Requires: pkgconfig(pugixml)
 Requires: gcc-c++
 
-# The http exporter helps debugging of modules.
-Recommends: udjat-module-httpd
-
-# The information module helps too.
-Recommends: udjat-module-information
-
-# Branding for test pages
-Recommends: udjat-branding
-
 %description -n udjat-devel
 
 Development files for Udjat main library.
@@ -85,19 +83,15 @@ Development files for Udjat main library.
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
-%prep
-%setup
-
-NOCONFIGURE=1 \
-	./autogen.sh
-
-%configure
+%%prep
+%autosetup
+%meson
 
 %build
-make all
+%meson_build
 
 %install
-%makeinstall
+%meson_install
 %find_lang %{name}-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files -n %{name}%{_libvrs}
