@@ -254,84 +254,6 @@ test_src = [
 # Headers
 #
 sdk_headers = [
-  'src/include/udjat.h',
-  'src/include/udjat/agent.h',
-  'src/include/udjat/agent/level.h',
-  'src/include/udjat/agent/state.h',
-  'src/include/udjat/agent/abstract.h',
-  'src/include/udjat/alert.h',
-  'src/include/udjat/alert/abstract.h',
-  'src/include/udjat/alert/activation.h',
-  'src/include/udjat/alert/file.h',
-  'src/include/udjat/alert/proxy.h',
-  'src/include/udjat/alert/script.h',
-  'src/include/udjat/alert/url.h',
-  'src/include/udjat/defs.h',
-  'src/include/udjat/factory.h',
-  'src/include/udjat/linux/network.h',
-  'src/include/udjat/module.h',
-  'src/include/udjat/module/info.h',
-  'src/include/udjat/module/abstract.h',
-  'src/include/udjat/moduleinfo.h',
-  'src/include/udjat/net/interface.h',
-  'src/include/udjat/net/ip/address.h',
-  'src/include/udjat/request.h',
-  'src/include/udjat/tools/abstract/request-path.h',
-  'src/include/udjat/tools/abstract/response.h',
-  'src/include/udjat/tools/abstract/object.h',
-  'src/include/udjat/tools/activatable.h',
-  'src/include/udjat/tools/base64.h',
-  'src/include/udjat/tools/cleanup.h',
-  'src/include/udjat/tools/configuration.h',
-  'src/include/udjat/tools/container.h',
-  'src/include/udjat/tools/converters.h',
-  'src/include/udjat/tools/event.h',
-  'src/include/udjat/tools/expander.h',
-  'src/include/udjat/tools/file/temporary.h',
-  'src/include/udjat/tools/file/watcher.h',
-  'src/include/udjat/tools/file/handler.h',
-  'src/include/udjat/tools/http/error.h',
-  'src/include/udjat/tools/http/exception.h',
-  'src/include/udjat/tools/http/timestamp.h',
-  'src/include/udjat/tools/http/client.h',
-  'src/include/udjat/tools/http/mimetype.h',
-  'src/include/udjat/tools/intl.h',
-  'src/include/udjat/tools/message.h',
-  'src/include/udjat/tools/method.h',
-  'src/include/udjat/tools/network.h',
-  'src/include/udjat/tools/object.h',
-  'src/include/udjat/tools/parse.h',
-  'src/include/udjat/tools/quark.h',
-  'src/include/udjat/tools/report.h',
-  'src/include/udjat/tools/response.h',
-  'src/include/udjat/tools/response/object.h',
-  'src/include/udjat/tools/response/table.h',
-  'src/include/udjat/tools/response/value.h',
-  'src/include/udjat/tools/script.h',
-  'src/include/udjat/tools/service.h',
-  'src/include/udjat/tools/singleton.h',
-  'src/include/udjat/tools/subprocess.h',
-  'src/include/udjat/tools/sysconfig.h',
-  'src/include/udjat/tools/systemservice.h',
-  'src/include/udjat/tools/threadpool.h',
-  'src/include/udjat/tools/timestamp.h',
-  'src/include/udjat/tools/value.h',
-  'src/include/udjat/tools/application.h',
-  'src/include/udjat/tools/exception.h',
-  'src/include/udjat/tools/factory.h',
-  'src/include/udjat/tools/file.h',
-  'src/include/udjat/tools/handler.h',
-  'src/include/udjat/tools/logger.h',
-  'src/include/udjat/tools/mainloop.h',
-  'src/include/udjat/tools/protocol.h',
-  'src/include/udjat/tools/request.h',
-  'src/include/udjat/tools/string.h',
-  'src/include/udjat/tools/timer.h',
-  'src/include/udjat/tools/url.h',
-  'src/include/udjat/tools/xml.h',
-  'src/include/udjat/tools/worker.h',
-  'src/include/udjat/ui/icon.h',
-  'src/include/udjat/worker.h',
 ]
 
 #
@@ -348,7 +270,7 @@ if host_machine.system() == 'windows'
     dependency('vmdetect-static'),
   ]
 
-  sdk_headers += [
+  install_headers(
     'src/include/udjat/win32/charset.h',
     'src/include/udjat/win32/cleanup.h',
     'src/include/udjat/win32/com.h',
@@ -359,8 +281,9 @@ if host_machine.system() == 'windows'
     'src/include/udjat/win32/path.h',
     'src/include/udjat/win32/registry.h',
     'src/include/udjat/win32/security.h',
-    'src/include/udjat/win32/service.h'
-  ]
+    'src/include/udjat/win32/service.h',
+    subdir: 'udjat/win32'  
+  )
 
   lib_src += [
   ]
@@ -371,9 +294,10 @@ else
   sdk_conf.set('STATICLIBS','-l:libudjat.a')
   app_conf.set_quoted('LIBEXT', '.so')
 
-  sdk_headers += [
-   'src/include/udjat/linux/network.h',
-  ]
+  install_headers(
+    'src/include/udjat/linux/network.h',
+    subdir: 'udjat/linux'  
+  )
 
   lib_src += [
     'src/library/module/os/linux/close.cc',
@@ -433,7 +357,7 @@ config_src = [
 
 dynamic = shared_library(
   meson.project_name(), 
-  config_src + sdk_headers + lib_src,
+  config_src + lib_src,
   install: true,
   version : libversion,
   soversion : libversion,
@@ -444,7 +368,7 @@ dynamic = shared_library(
 
 static_library(
   meson.project_name(), 
-  config_src + sdk_headers + lib_src,
+  config_src + lib_src,
   install: true,
   dependencies: lib_deps,
   include_directories: includes_dir
@@ -452,7 +376,7 @@ static_library(
 
 executable(
   'udjat',
-  config_src + sdk_headers + test_src,
+  config_src + test_src,
   install: false,
   link_with : [ dynamic ],
   include_directories: includes_dir
@@ -483,6 +407,126 @@ configure_file(
 )
 
 install_headers(
-  sdk_headers,
+  'src/include/udjat.h',
+  'src/include/udjat/worker.h',
+  'src/include/udjat/agent.h',
+  'src/include/udjat/alert.h',
+  'src/include/udjat/defs.h',
+  'src/include/udjat/factory.h',
+  'src/include/udjat/module.h',
+  'src/include/udjat/moduleinfo.h',
+  'src/include/udjat/request.h',
   subdir: 'udjat'  
+)
+
+install_headers(
+  'src/include/udjat/agent/level.h',
+  'src/include/udjat/agent/state.h',
+  'src/include/udjat/agent/abstract.h',
+  subdir: 'udjat/agent'  
+)
+
+install_headers(
+  'src/include/udjat/alert/abstract.h',
+  'src/include/udjat/alert/activation.h',
+  'src/include/udjat/alert/file.h',
+  'src/include/udjat/alert/proxy.h',
+  'src/include/udjat/alert/script.h',
+  'src/include/udjat/alert/url.h',
+  subdir: 'udjat/alert'  
+)
+
+install_headers(
+  'src/include/udjat/module/info.h',
+  'src/include/udjat/module/abstract.h',
+  subdir: 'udjat/module'  
+)
+
+install_headers(
+  'src/include/udjat/net/interface.h',
+  subdir: 'udjat/net'  
+)
+
+install_headers(
+  'src/include/udjat/net/ip/address.h',
+  subdir: 'udjat/net/ip'  
+)
+
+install_headers(
+  'src/include/udjat/tools/abstract/request-path.h',
+  'src/include/udjat/tools/abstract/response.h',
+  'src/include/udjat/tools/abstract/object.h',
+  subdir: 'udjat/tools/abstract'  
+)
+
+install_headers(
+  'src/include/udjat/tools/activatable.h',
+  'src/include/udjat/tools/base64.h',
+  'src/include/udjat/tools/cleanup.h',
+  'src/include/udjat/tools/configuration.h',
+  'src/include/udjat/tools/container.h',
+  'src/include/udjat/tools/converters.h',
+  'src/include/udjat/tools/event.h',
+  'src/include/udjat/tools/expander.h',
+  'src/include/udjat/tools/intl.h',
+  'src/include/udjat/tools/message.h',
+  'src/include/udjat/tools/method.h',
+  'src/include/udjat/tools/network.h',
+  'src/include/udjat/tools/object.h',
+  'src/include/udjat/tools/parse.h',
+  'src/include/udjat/tools/quark.h',
+  'src/include/udjat/tools/report.h',
+  'src/include/udjat/tools/response.h',
+  'src/include/udjat/tools/script.h',
+  'src/include/udjat/tools/service.h',
+  'src/include/udjat/tools/singleton.h',
+  'src/include/udjat/tools/subprocess.h',
+  'src/include/udjat/tools/sysconfig.h',
+  'src/include/udjat/tools/systemservice.h',
+  'src/include/udjat/tools/threadpool.h',
+  'src/include/udjat/tools/timestamp.h',
+  'src/include/udjat/tools/value.h',
+  'src/include/udjat/tools/application.h',
+  'src/include/udjat/tools/exception.h',
+  'src/include/udjat/tools/factory.h',
+  'src/include/udjat/tools/file.h',
+  'src/include/udjat/tools/handler.h',
+  'src/include/udjat/tools/logger.h',
+  'src/include/udjat/tools/mainloop.h',
+  'src/include/udjat/tools/protocol.h',
+  'src/include/udjat/tools/request.h',
+  'src/include/udjat/tools/string.h',
+  'src/include/udjat/tools/timer.h',
+  'src/include/udjat/tools/url.h',
+  'src/include/udjat/tools/xml.h',
+  'src/include/udjat/tools/worker.h',
+  subdir: 'udjat/tools'  
+)
+
+install_headers(
+  'src/include/udjat/tools/file/temporary.h',
+  'src/include/udjat/tools/file/watcher.h',
+  'src/include/udjat/tools/file/handler.h',
+  subdir: 'udjat/tools/file'  
+)
+
+install_headers(
+  'src/include/udjat/tools/http/error.h',
+  'src/include/udjat/tools/http/exception.h',
+  'src/include/udjat/tools/http/timestamp.h',
+  'src/include/udjat/tools/http/client.h',
+  'src/include/udjat/tools/http/mimetype.h',
+  subdir: 'udjat/tools/http'  
+)
+
+install_headers(
+  'src/include/udjat/tools/response/object.h',
+  'src/include/udjat/tools/response/table.h',
+  'src/include/udjat/tools/response/value.h',
+  subdir: 'udjat/tools/response'  
+)
+
+install_headers(
+  'src/include/udjat/ui/icon.h',
+  subdir: 'udjat/ui'  
 )
