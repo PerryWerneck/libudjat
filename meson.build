@@ -25,6 +25,7 @@ project(
 	license: 'GPL-3.0-or-later',
 )
 
+module_build=20240725
 project_description = 'UDJat core library'
 product_name = 'udjat'
 product_domain = 'br.eti.werneck'
@@ -62,6 +63,7 @@ lib_deps = [
 #
 cxx = meson.get_compiler('cpp')
 enable_debug = get_option('debug') or get_option('buildtype').contains('debug')
+core_build = run_command('date','+%Y%m%d').stdout().strip()
 
 compiler_flags = [
   '-ggdb3',
@@ -71,7 +73,7 @@ compiler_flags = [
   '-fPIC',
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
-  '-DBUILD_DATE='+run_command('date','+%Y%m%d').stdout().strip(),
+  '-DBUILD_DATE='+core_build,
 ]
 
 if enable_debug
@@ -96,7 +98,7 @@ app_conf.set_quoted('PACKAGE_DESCRIPTION', project_description)
 app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
-app_conf.set('MINIMAL_MODULE_BUILD', 20240725)
+app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
 
@@ -119,6 +121,8 @@ sdk_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 sdk_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 sdk_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 sdk_conf.set('PACKAGE_DESCRIPTION','HTTP module and library for udjat')
+sdk_conf.set('PACKAGE_CORE_BUILD',core_build)
+sdk_conf.set('MODULE_ENGINE_BUILD',module_build)
 sdk_conf.set('prefix',get_option('prefix'))
 sdk_conf.set('exec_prefix',get_option('prefix'))
 sdk_conf.set('includedir',get_option('includedir'))
@@ -328,7 +332,6 @@ sdk_headers = [
   'src/include/udjat/tools/worker.h',
   'src/include/udjat/ui/icon.h',
   'src/include/udjat/worker.h',
-  'src/include/udjat/version.h',
 ]
 
 #
@@ -468,6 +471,14 @@ configure_file(
   output : 'udjat-static.pc',
   install: true,
   install_dir: get_option('libdir') + '/pkgconfig',
+  configuration : sdk_conf
+)
+
+configure_file(
+  input : 'src/include/udjat/version.h.in',
+  output : 'version.h',
+  install: true,
+  install_dir: get_option('includedir') + '/udjat',
   configuration : sdk_conf
 )
 
