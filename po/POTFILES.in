@@ -1,3 +1,8 @@
+src/testprogram/testprogram.cc
+src/testprogram/randomfactory.cc
+src/testprogram/service.cc
+src/testprogram/application.cc
+src/testprogram/run.cc
 src/library/agent/agent.cc
 src/library/agent/child.cc
 src/library/agent/controller.cc
@@ -88,6 +93,7 @@ src/library/tools/mainloop/os/windows/instance.cc
 src/library/tools/mainloop/os/windows/mainloop.cc
 src/library/tools/mainloop/os/windows/run.cc
 src/library/tools/mainloop/service.cc
+src/library/tools/mainloop/testprogram/testprogram.cc
 src/library/tools/mainloop/handler.cc
 src/library/tools/mainloop/mainloop.cc
 src/library/tools/mainloop/timer.cc
