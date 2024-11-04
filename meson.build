@@ -53,8 +53,6 @@ subdir('po')
 # Dependencies
 #
 lib_deps = [
-  dependency('libeconf'),
-  dependency('libsystemd'),
   dependency('pugixml'),  
 ]
 
@@ -101,6 +99,11 @@ app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
+app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
+app_conf.set('HAVE_LOCALTIME_R', cxx.has_function('localtime_r'))
+
+app_conf.set('HAVE_PUGIXML', 1)
+app_conf.set('HAVE_LIBINTL', 1)
 
 app_conf.set_quoted('PRODUCT_TITLE', product_title)
 app_conf.set('PRODUCT_NAME',product_name)
@@ -134,6 +137,30 @@ sdk_conf.set('PRODUCT_DOMAIN',product_domain)
 sdk_conf.set_quoted('PRODUCT_TITLE',product_title)
 
 includes_dir = include_directories('../src/include')
+
+#
+# EConf
+#
+econf_dep = dependency('libeconf-static', required: false)
+if econf_dep.found()
+  app_conf.set('HAVE_ECONF', 2)
+  lib_deps += econf_dep
+else
+  econf_dep = dependency('libeconf', required: false)
+  if econf_dep.found()
+    app_conf.set('HAVE_ECONF', 1)
+    lib_deps += econf_dep
+  endif
+endif
+
+#
+# SystemD
+#
+systemd_dep = dependency('libsystemd', required: false  )
+if systemd_dep.found()
+  app_conf.set('HAVE_SYSTEMD', 1)
+  lib_deps += systemd_dep
+endif 
 
 #
 # Sources
