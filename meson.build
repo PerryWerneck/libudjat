@@ -449,7 +449,7 @@ static_library(
 )
 
 tests = static_library(
-  'lib' + meson.project_name() + '-testing', 
+  meson.project_name() + '-testing', 
   config_src + test_src,
   install: true,
   dependencies: lib_deps,
