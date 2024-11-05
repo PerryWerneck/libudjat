@@ -42,10 +42,10 @@
 			Config::Value<string> xml{"test-mode","xml_path","./test.xml"};
 
 			if(strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"application")) {
-				auto rc = Testing::Service{info}.run(1,argv,xml.c_str());
+				rc = Testing::Service{info}.run(1,argv,xml.c_str());
 				Logger::String{"Service exits with rc=",rc}.info("test");
 			} else {
-				auto rc = Testing::Application{info}.run(1,argv,xml.c_str());
+				rc = Testing::Application{info}.run(1,argv,xml.c_str());
 				Logger::String{"Application exits with rc=",rc}.info("test");
 			}
 
