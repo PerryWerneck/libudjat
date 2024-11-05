@@ -441,7 +441,7 @@ static_library(
 )
 
 tests = static_library(
-  meson.project_name() + 'test', 
+  'lib' + meson.project_name() + '-testing', 
   config_src + test_src,
   install: true,
   dependencies: lib_deps,
@@ -449,7 +449,7 @@ tests = static_library(
 )
 
 executable(
-  'udjat',
+  meson.project_name(),
   config_src + [ 'src/testprogram/testprogram.cc' ],
   install: false,
   link_with : [ tests, dynamic ],
@@ -459,7 +459,7 @@ executable(
 
 configure_file(
   input : 'sdk/dynamic.pc.in',
-  output : 'udjat.pc',
+  output : 'lib' + meson.project_name() + '.pc',
   install: true,
   install_dir: get_option('libdir') + '/pkgconfig',
   configuration : sdk_conf
@@ -467,7 +467,7 @@ configure_file(
 
 configure_file(
   input : 'sdk/static.pc.in',
-  output : 'udjat-static.pc',
+  output : 'lib' + meson.project_name() + '-static.pc',
   install: true,
   install_dir: get_option('libdir') + '/pkgconfig',
   configuration : sdk_conf
