@@ -33,8 +33,8 @@
 		Config::allow_user_homedir(true);
 
 		Logger::redirect();
-		Logger::verbosity(9);
-		Logger::console(true);
+		Logger::verbosity(Config::Value<unsigned int>{"test-mode","verbose",9}.get());
+		Logger::console(Config::Value<bool>{"test-mode","console",true}.get());
 
 		if(argc == 1) {
 
