@@ -140,6 +140,9 @@ sdk_conf.set_quoted('PRODUCT_TITLE',product_title)
 
 includes_dir = include_directories('../src/include')
 
+#
+# Optional libraries
+#
 sdk_requires = 'pugixml'
 
 #
@@ -152,7 +155,7 @@ if vmdetect_dep.found()
   lib_deps += vmdetect_dep
 else
   vmdetect_dep = dependency('vmdetect', required: false)
-  if econf_dep.found()
+  if vmdetect_dep.found()
     app_conf.set('HAVE_VMDETECT', 1)
     lib_deps += vmdetect_dep
   endif
@@ -167,7 +170,7 @@ if dmiget_dep.found()
   sdk_requires += ' dmiget-static'
   lib_deps += dmiget_dep
 else
-  econf_dep = dependency('dmiget', required: false)
+  dmiget_dep = dependency('dmiget', required: false)
   if dmiget_dep.found()
     app_conf.set('HAVE_SMBIOS', 1)
     lib_deps += dmiget_dep
