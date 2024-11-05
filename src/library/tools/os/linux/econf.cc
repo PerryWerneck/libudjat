@@ -23,6 +23,7 @@
 
  #include <config.h>
  #include <errno.h>
+ #include <private/configuration.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/logger.h>
@@ -52,10 +53,15 @@
 	//
 	// Use libeconf as back-end
 	//
-
 	class Controller {
 	private:
-		void *hFile = nullptr;	///< @brief Configuration file handle.
+		void *hFile = nullptr;		///< @brief Configuration file handle.
+
+#ifdef DEBUG
+		bool user_files = true;	///< @brief Search user's home dir
+#else
+		bool user_files = false;	///< @brief Search user's home dir
+#endif
 
 		static void handle_reload(int sig) noexcept {
 
@@ -116,6 +122,8 @@
 
 				econf_err err = ECONF_ERROR;
 
+				debug("--------------------------------------------------");
+
 #ifdef ECONF_HAVE_READ_CONFIG_WITH_CALLBACK
 				err = econf_readConfigWithCallback(
 					(econf_file **) &hFile,
@@ -127,6 +135,28 @@
 					checkFile,
 					NULL
 				);
+
+				debug("err=",err);
+				if(err == ECONF_NOFILE && user_files) {
+					const char *homedir = getenv("HOME");
+					if(homedir) {
+						if(hFile) {
+							econf_freeFile((econf_file *) hFile);
+							hFile = nullptr;
+						}
+						debug("Trying user's home dir");
+						err = econf_readConfigWithCallback(
+							(econf_file **) &hFile,
+							NULL,
+							String{(const char *) homedir,"/.local/etc"}.c_str(),
+							program_invocation_short_name,
+							"conf",
+							"=", "#",
+							checkFile,
+							NULL
+						);
+					}
+				}
 #else
 				err = econf_readDirs(
 					(econf_file **) &hFile,				// key_file
@@ -143,7 +173,7 @@
 						econf_freeFile((econf_file *) hFile);
 						hFile = nullptr;
 					}
-					Logger::String{"Cant load configuration, using defaults"}.warning("econf");
+					Logger::String{"Cant load configuration (",econf_errString(err),"), using defaults"}.warning("econf");
 				}
 			}
 
