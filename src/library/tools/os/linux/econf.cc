@@ -101,39 +101,50 @@
 			open();
 		}
 
+#ifdef ECONF_HAVE_READ_CONFIG_WITH_CALLBACK
+		static bool checkFile(const char *filename, const void *) {
+			Logger::String{"Loading '",filename,"'"}.trace("econf");
+			return true;
+		}
+#endif
+
 		void open() {
 
 			std::lock_guard<std::recursive_mutex> lock(guard);
 
 			if(!hFile) {
 
-				string userconfdir{"/usr/etc"};
+				econf_err err = ECONF_ERROR;
 
-				if(access((userconfdir + "/" + program_invocation_short_name).c_str(),R_OK) != 0 && getuid() != 0) {
-					const char *homedir = getenv("HOME");
-					if(homedir) {
-						userconfdir = homedir;
-						userconfdir += "/.local/etc";
-					}
-				}
-
-				econf_err err = econf_readDirs(
+#ifdef ECONF_HAVE_READ_CONFIG_WITH_CALLBACK
+				err = econf_readConfigWithCallback(
+					(econf_file **) &hFile,
+					NULL,
+					"/usr/lib",
+					program_invocation_short_name,
+					"conf",
+					"=", "#",
+					checkFile,
+					NULL
+				);
+#else
+				err = econf_readDirs(
 					(econf_file **) &hFile,				// key_file
-					userconfdir.c_str(),				// usr_conf_dir
+					"/usr/etc",							// usr_conf_dir
 					"/etc",								// etc_conf_dir
 					program_invocation_short_name,		// Application name
 					".conf",							// config_suffis
 					"=",								// delim
 					"#"									// comment
 				);
-
+#endif
 				if(err != ECONF_SUCCESS) {
-					hFile = nullptr;
-					Logger::String{"Cant load configuration from ",userconfdir.c_str(),"/",program_invocation_short_name,".conf.d (",econf_errString(err),"), using defaults"}.warning("econf");
-				} else {
-					Logger::String{"Using configuration from '",userconfdir.c_str(),"/",program_invocation_short_name,".conf.d'"}.trace("econf");
+					if(hFile) {
+						econf_freeFile((econf_file *) hFile);
+						hFile = nullptr;
+					}
+					Logger::String{"Cant load configuration, using defaults"}.warning("econf");
 				}
-
 			}
 
 		}

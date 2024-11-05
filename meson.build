@@ -197,6 +197,10 @@ else
   endif
 endif
 
+if econf_dep.found() and cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
+  app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+endif
+
 #
 # SystemD
 #
