@@ -47,6 +47,11 @@
  namespace Udjat {
 
 	static recursive_mutex guard;
+	static bool allow_user_config = false;
+
+	void Config::allow_user_homedir(bool allow) noexcept {
+		allow_user_config = allow;
+	}
 
 #if defined(HAVE_ECONF)
 
@@ -56,12 +61,6 @@
 	class Controller {
 	private:
 		void *hFile = nullptr;		///< @brief Configuration file handle.
-
-#ifdef DEBUG
-		bool user_files = true;	///< @brief Search user's home dir
-#else
-		bool user_files = false;	///< @brief Search user's home dir
-#endif
 
 		static void handle_reload(int sig) noexcept {
 
@@ -137,7 +136,7 @@
 				);
 
 				debug("err=",err);
-				if(err == ECONF_NOFILE && user_files) {
+				if(err == ECONF_NOFILE && allow_user_config) {
 					const char *homedir = getenv("HOME");
 					if(homedir) {
 						if(hFile) {

@@ -23,12 +23,15 @@
  #include <udjat/tools/xml.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/configuration.h>
 
  using namespace std;
 
  namespace Udjat {
 
 	int Testing::Application::run_tests(int argc, char **argv, const Udjat::ModuleInfo &info) {
+
+		Config::allow_user_homedir(true);
 
 		Logger::redirect();
 		Logger::verbosity(9);

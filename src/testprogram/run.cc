@@ -22,6 +22,7 @@
  #include <udjat/tests.h>
  #include <iostream>
  #include <string.h>
+ #include <udjat/tools/configuration.h>
  
  using namespace std;
 
@@ -29,13 +30,25 @@
 
 	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info) {
 
+		Config::allow_user_homedir(true);
+
 		Logger::redirect();
 		Logger::verbosity(9);
 		Logger::console(true);
 
 		if(argc == 1) {
-			auto rc = Testing::Application{info}.run(1,argv,"./test.xml");
-			Logger::String{"Application exits with rc=",rc}.info("test");
+
+			int rc = -1;
+			Config::Value<string> xml{"test-mode","xml_path","./test.xml"};
+
+			if(strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"application")) {
+				auto rc = Testing::Service{info}.run(1,argv,xml.c_str());
+				Logger::String{"Service exits with rc=",rc}.info("test");
+			} else {
+				auto rc = Testing::Application{info}.run(1,argv,xml.c_str());
+				Logger::String{"Application exits with rc=",rc}.info("test");
+			}
+
 			return rc;
 		}
 

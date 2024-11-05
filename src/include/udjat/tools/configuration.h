@@ -40,6 +40,10 @@
 		UDJAT_API std::string get(const std::string &group, const std::string &name, const std::string &def);
 		UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
 
+		/// @brief Enable loading of configuration from user's home dir.
+		///	This method should be called BEFORE any other one, it doesnt work if file was already loaded.
+		UDJAT_API void allow_user_homedir(bool allow = false) noexcept;
+
 		/// @brief Navigate from all group keys.
 		/// @param group Group name.
 		/// @param call function to call on every group key until it returns 'false'.

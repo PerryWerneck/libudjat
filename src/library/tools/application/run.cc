@@ -279,7 +279,6 @@
 		if(setup(argc,argv,definitions)) {
 			return -1;
 		}
-		debug("c");
 
 		Logger::redirect();
 		return run(definitions);
