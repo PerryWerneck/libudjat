@@ -20,28 +20,14 @@ jobs:
           msystem: mingw64
           update: true
           install: dos2unix xz mingw-w64-x86_64-gcc pkgconf mingw-w64-x86_64-gettext mingw-w64-x86_64-meson gettext-devel
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/vmdetect"
+          latest: true
+          fileName: "mingw-w64-x86_64-vmdetect-1.3.3-0-x86_64.pkg.tar.zst"
       - name: Run Build
         run: |
+          pacman -U --noconfirm *.pkg.tar.zst
           dos2unix PKGBUILD.mingw
           makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
   
-  check-msvc:
-    # https://dvdhrm.github.io/2021/04/21/meson-msvc-github-actions/
-    runs-on: windows-latest
-    steps:
-      - name: Fetch Sources
-        uses: actions/checkout@v3
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.x'
-      - name: Install Python Dependencies
-        run: pip install meson ninja
-      - name: Prepare MSVC
-        uses: bus1/cabuild/action/msdevshell@v1
-        with:
-          architecture: x64
-      - name: Prepare Build
-        run: meson setup build
-      - name: Run Build
-        run: meson compile -v -C build udjat:static_library
