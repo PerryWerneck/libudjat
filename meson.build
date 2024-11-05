@@ -61,6 +61,8 @@ lib_deps = [
 #
 cxx = meson.get_compiler('cpp')
 enable_debug = get_option('debug') or get_option('buildtype').contains('debug')
+
+# TODO: Use SOURCE_DATE_EPOCH
 core_build = run_command('date','+%Y%m%d').stdout().strip()
 
 compiler_flags = [
@@ -118,12 +120,12 @@ endif
 # SDK
 #
 sdk_conf = configuration_data()
-sdk_conf.set('PACKAGE_NAME', 'udjathttp')
+sdk_conf.set_quoted('PACKAGE_NAME', meson.project_name())
 sdk_conf.set('PACKAGE_VERSION', meson.project_version())
 sdk_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 sdk_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 sdk_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
-sdk_conf.set('PACKAGE_DESCRIPTION','HTTP module and library for udjat')
+sdk_conf.set('PACKAGE_DESCRIPTION',project_description)
 sdk_conf.set('PACKAGE_CORE_BUILD',core_build)
 sdk_conf.set('MODULE_ENGINE_BUILD',module_build)
 sdk_conf.set('prefix',get_option('prefix'))
@@ -138,12 +140,47 @@ sdk_conf.set_quoted('PRODUCT_TITLE',product_title)
 
 includes_dir = include_directories('../src/include')
 
+sdk_requires = 'pugixml'
+
+#
+# VMDetect
+#
+vmdetect_dep = dependency('vmdetect-static', required: false)
+if vmdetect_dep.found()
+  app_conf.set('HAVE_VMDETECT', 2)
+  sdk_requires += ' vmdetect-static'
+  lib_deps += vmdetect_dep
+else
+  vmdetect_dep = dependency('vmdetect', required: false)
+  if econf_dep.found()
+    app_conf.set('HAVE_VMDETECT', 1)
+    lib_deps += vmdetect_dep
+  endif
+endif
+
+#
+# DMIGet
+#
+dmiget_dep = dependency('dmiget-static', required: false)
+if dmiget_dep.found()
+  app_conf.set('HAVE_SMBIOS', 2)
+  sdk_requires += ' dmiget-static'
+  lib_deps += dmiget_dep
+else
+  econf_dep = dependency('dmiget', required: false)
+  if dmiget_dep.found()
+    app_conf.set('HAVE_SMBIOS', 1)
+    lib_deps += dmiget_dep
+  endif
+endif
+
 #
 # EConf
 #
 econf_dep = dependency('libeconf-static', required: false)
 if econf_dep.found()
   app_conf.set('HAVE_ECONF', 2)
+  sdk_requires += ' libeconf-static'
   lib_deps += econf_dep
 else
   econf_dep = dependency('libeconf', required: false)
@@ -159,6 +196,7 @@ endif
 systemd_dep = dependency('libsystemd', required: false  )
 if systemd_dep.found()
   app_conf.set('HAVE_SYSTEMD', 1)
+  sdk_requires += ' libsystemd'
   lib_deps += systemd_dep
 endif 
 
@@ -289,16 +327,12 @@ sdk_headers = [
 #
 # OS dependencies
 #
+sdk_conf.set('REQUIRES',sdk_requires)
+
 if host_machine.system() == 'windows'
-  sdk_conf.set('REQUIRES','vmdetect-static pugixml')
   sdk_conf.set('DYNLIBS','-ludjathttp.dll -lws2_32 -lwinhttp')
   sdk_conf.set('STATICLIBS','-ludjathttp -lws2_32 -lwinhttp')
   app_conf.set_quoted('LIBEXT', '.dll')
-
-  lib_deps = [
-    dependency('dmiget-static'),
-    dependency('vmdetect-static'),
-  ]
 
   install_headers(
     'src/include/udjat/win32/charset.h',
@@ -319,7 +353,6 @@ if host_machine.system() == 'windows'
   ]
 
 else
-  sdk_conf.set('REQUIRES','vmdetect-static libeconf pugixml')
   sdk_conf.set('DYNLIBS','-ludjat')
   sdk_conf.set('STATICLIBS','-l:libudjat.a')
   app_conf.set_quoted('LIBEXT', '.so')
