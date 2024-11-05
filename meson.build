@@ -71,6 +71,7 @@ compiler_flags = [
   '-fvisibility=hidden',
   '-pthread',
   '-fPIC',
+  '-std=c++1z',
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
   '-DBUILD_DATE='+core_build,
@@ -157,6 +158,7 @@ else
   vmdetect_dep = dependency('vmdetect', required: false)
   if vmdetect_dep.found()
     app_conf.set('HAVE_VMDETECT', 1)
+    sdk_requires += ' vmdetect'
     lib_deps += vmdetect_dep
   endif
 endif
@@ -173,6 +175,7 @@ else
   dmiget_dep = dependency('dmiget', required: false)
   if dmiget_dep.found()
     app_conf.set('HAVE_SMBIOS', 1)
+    sdk_requires += ' dmiget'
     lib_deps += dmiget_dep
   endif
 endif
@@ -189,6 +192,7 @@ else
   econf_dep = dependency('libeconf', required: false)
   if econf_dep.found()
     app_conf.set('HAVE_ECONF', 1)
+    sdk_requires += ' libeconf'
     lib_deps += econf_dep
   endif
 endif
