@@ -21,6 +21,7 @@ module_version=@PACKAGE_VERSION_MAJOR@.@PACKAGE_VERSION_MINOR@
 Name: @PACKAGE_NAME@
 Description: @PACKAGE_DESCRIPTION@
 Version: @PACKAGE_VERSION@
+Requires: pugixml
 Libs: @DYNLIBS@
 Cflags: -I${includedir}/@PACKAGE_NAME@
 
