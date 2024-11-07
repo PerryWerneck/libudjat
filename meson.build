@@ -347,37 +347,37 @@ pkg_variables = [
 if host_machine.system() == 'windows'
 
   pkg.generate(
-    name: meson.project_name(),
+    name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
     requires: [ 'pugixml' ],
-    libraries: [ '-ludjat.dll' ]
+    libraries: [ '-l' + meson.project_name() + '.dll' ]
   )
 
   pkg.generate(
-    name: meson.project_name() + '-static',
+    name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
     requires: [ sdk_requires ],
-    libraries: [ '-ludjat' ]
+    libraries: [ '-l' + meson.project_name() ]
   )
 
 else
 
   pkg.generate(
-    name: meson.project_name(),
+    name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
     requires: [ 'pugixml' ],
-    libraries: [ '-ludjat' ]
+    libraries: [ '-l' + meson.project_name() ]
   )
 
   pkg.generate(
-    name: meson.project_name() + '-static',
+    name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
     requires: [ sdk_requires ],
-    libraries: [ '-l:libudjat.a' ]
+    libraries: [ '-l:lib' + meson.project_name() + '.a' ]
   )
 
 endif
