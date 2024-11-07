@@ -117,34 +117,12 @@ if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
   app_conf.set('HAVE_UNISTD_H', 1)
 endif
 
-#
-# SDK
-#
-sdk_conf = configuration_data()
-sdk_conf.set_quoted('PACKAGE_NAME', meson.project_name())
-sdk_conf.set('PACKAGE_VERSION', meson.project_version())
-sdk_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
-sdk_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
-sdk_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
-sdk_conf.set('PACKAGE_DESCRIPTION',project_description)
-sdk_conf.set('PACKAGE_CORE_BUILD',core_build)
-sdk_conf.set('MODULE_ENGINE_BUILD',module_build)
-sdk_conf.set('prefix',get_option('prefix'))
-sdk_conf.set('exec_prefix',get_option('prefix'))
-sdk_conf.set('includedir',get_option('includedir'))
-sdk_conf.set('libdir',get_option('libdir'))
-
-sdk_conf.set('PRODUCT_TITLE', product_title)
-sdk_conf.set('PRODUCT_NAME',product_name)
-sdk_conf.set('PRODUCT_DOMAIN',product_domain)
-sdk_conf.set_quoted('PRODUCT_TITLE',product_title)
-
 includes_dir = include_directories('../src/include')
 
 #
 # Optional libraries
 #
-sdk_requires = 'pugixml'
+sdk_requires = [ 'pugixml' ]
 
 #
 # VMDetect
@@ -152,13 +130,13 @@ sdk_requires = 'pugixml'
 vmdetect_dep = dependency('vmdetect-static', required: false)
 if vmdetect_dep.found()
   app_conf.set('HAVE_VMDETECT', 2)
-  sdk_requires += ' vmdetect-static'
+  sdk_requires += [ 'vmdetect-static' ]
   lib_deps += vmdetect_dep
 else
   vmdetect_dep = dependency('vmdetect', required: false)
   if vmdetect_dep.found()
     app_conf.set('HAVE_VMDETECT', 1)
-    sdk_requires += ' vmdetect'
+    sdk_requires += [ 'vmdetect' ]
     lib_deps += vmdetect_dep
   endif
 endif
@@ -169,13 +147,13 @@ endif
 dmiget_dep = dependency('dmiget-static', required: false)
 if dmiget_dep.found()
   app_conf.set('HAVE_SMBIOS', 2)
-  sdk_requires += ' dmiget-static'
+  sdk_requires += [ 'dmiget-static' ]
   lib_deps += dmiget_dep
 else
   dmiget_dep = dependency('dmiget', required: false)
   if dmiget_dep.found()
     app_conf.set('HAVE_SMBIOS', 1)
-    sdk_requires += ' dmiget'
+    sdk_requires += [ 'dmiget' ]
     lib_deps += dmiget_dep
   endif
 endif
@@ -192,7 +170,7 @@ else
   econf_dep = dependency('libeconf', required: false)
   if econf_dep.found()
     app_conf.set('HAVE_ECONF', 1)
-    sdk_requires += ' libeconf'
+    sdk_requires += [ 'libeconf' ]
     lib_deps += econf_dep
   endif
 endif
@@ -207,7 +185,7 @@ endif
 systemd_dep = dependency('libsystemd', required: false  )
 if systemd_dep.found()
   app_conf.set('HAVE_SYSTEMD', 1)
-  sdk_requires += ' libsystemd'
+  sdk_requires += [ 'libsystemd' ]
   lib_deps += systemd_dep
 endif 
 
@@ -338,11 +316,95 @@ sdk_headers = [
 #
 # OS dependencies
 #
-sdk_conf.set('REQUIRES',sdk_requires)
+#
+# SDK
+#
+# https://mesonbuild.com/Pkgconfig-module.html
+#
+pkg = import('pkgconfig')
+
+pkg_variables = [
+
+  'version_major=@0@'.format(pkg_major_version),
+  'version_minor=@0@'.format(pkg_minor_version),
+  'version_micro=@0@'.format(pkg_micro_version),
+
+  'product_name=@0@'.format(product_name),
+  'product_id=@0@.@1@'.format(product_domain,product_name),
+  'product_title=@0@'.format(product_title),
+  'product_version=@0@@1@'.format(pkg_major_version,pkg_minor_version),
+
+  'build_id=@0@'.format(core_build),
+
+  'package_name=lib@0@@1@_@2@'.format(product_name,pkg_major_version,pkg_minor_version),
+  'module_path=${libdir}/@0@/@1@.@2@/modules/'.format(
+    product_name,pkg_major_version,pkg_minor_version,
+  ),
+  'module_version=@0@.@1@'.format(pkg_major_version,pkg_minor_version),
+
+]
 
 if host_machine.system() == 'windows'
-  sdk_conf.set('DYNLIBS','-ludjathttp.dll -lws2_32 -lwinhttp')
-  sdk_conf.set('STATICLIBS','-ludjathttp -lws2_32 -lwinhttp')
+
+  pkg.generate(
+    name: meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: [ 'pugixml' ],
+    libraries: [ '-udjat.dll' ]
+  )
+
+  pkg.generate(
+    name: meson.project_name() + '-static',
+    description: project_description,
+    extra_cflags: [ '-I${includedir}/dmiget' ],
+    variables: pkg_variables,
+    requires: [ sdk_requires ],
+    libraries: [ '-ludjat' ]
+  )
+
+else
+
+  pkg.generate(
+    name: meson.project_name(),
+    description: project_description,
+    extra_cflags: [ '-I${includedir}/dmiget' ],
+    variables: pkg_variables,
+    requires: [ 'pugixml' ],
+    libraries: [ '-ludjat' ]
+  )
+
+  pkg.generate(
+    name: meson.project_name() + '-static',
+    description: project_description,
+    extra_cflags: [ '-I${includedir}/dmiget' ],
+    variables: pkg_variables,
+    requires: [ sdk_requires ],
+    libraries: [ '-l:libudjat.a' ]
+  )
+
+endif
+
+#sdk_conf = configuration_data()
+#sdk_conf.set_quoted('PACKAGE_NAME', meson.project_name())
+#sdk_conf.set('PACKAGE_VERSION', meson.project_version())
+#sdk_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
+#sdk_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
+#sdk_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
+#sdk_conf.set('PACKAGE_DESCRIPTION',project_description)
+#sdk_conf.set('PACKAGE_CORE_BUILD',core_build)
+#sdk_conf.set('MODULE_ENGINE_BUILD',module_build)
+#sdk_conf.set('prefix',get_option('prefix'))
+#sdk_conf.set('exec_prefix',get_option('prefix'))
+#sdk_conf.set('includedir',get_option('includedir'))
+#sdk_conf.set('libdir',get_option('libdir'))
+#
+#sdk_conf.set('PRODUCT_TITLE', product_title)
+#sdk_conf.set('PRODUCT_NAME',product_name)
+#sdk_conf.set('PRODUCT_DOMAIN',product_domain)
+#sdk_conf.set_quoted('PRODUCT_TITLE',product_title)
+
+if host_machine.system() == 'windows'
   app_conf.set_quoted('LIBEXT', '.dll')
 
   install_headers(
@@ -364,8 +426,6 @@ if host_machine.system() == 'windows'
   ]
 
 else
-  sdk_conf.set('DYNLIBS','-ludjat')
-  sdk_conf.set('STATICLIBS','-l:libudjat.a')
   app_conf.set_quoted('LIBEXT', '.so')
 
   install_headers(
@@ -463,30 +523,6 @@ executable(
   link_with : [ tests, dynamic ],
   dependencies: lib_deps,
   include_directories: includes_dir
-)
-
-configure_file(
-  input : 'sdk/dynamic.pc.in',
-  output : 'lib' + meson.project_name() + '.pc',
-  install: true,
-  install_dir: get_option('libdir') + '/pkgconfig',
-  configuration : sdk_conf
-)
-
-configure_file(
-  input : 'sdk/static.pc.in',
-  output : 'lib' + meson.project_name() + '-static.pc',
-  install: true,
-  install_dir: get_option('libdir') + '/pkgconfig',
-  configuration : sdk_conf
-)
-
-configure_file(
-  input : 'src/include/udjat/version.h.in',
-  output : 'version.h',
-  install: true,
-  install_dir: get_option('includedir') + '/udjat',
-  configuration : sdk_conf
 )
 
 install_headers(
