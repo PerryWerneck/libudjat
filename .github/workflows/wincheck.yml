@@ -25,6 +25,11 @@ jobs:
           repository: "PerryWerneck/vmdetect"
           latest: true
           fileName: "mingw-w64-x86_64-vmdetect-1.3.3-0-x86_64.pkg.tar.zst"
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/dmiget"
+          latest: true
+          fileName: "mingw-w64-x86_64-dmiget-1.2.6-0-x86_64.pkg.tar.zst"
       - name: Run Build
         run: |
           pacman -U --noconfirm *.pkg.tar.zst
