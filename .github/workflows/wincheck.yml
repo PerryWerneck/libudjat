@@ -1,7 +1,7 @@
 name: check-win64
 on:
   push:
-    branches: [ "win" ]
+    branches: [ "win", "meson" ]
   pull_request:
     branches: [ "master" ]
 
