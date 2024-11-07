@@ -100,6 +100,7 @@ app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
+app_conf.set('PACKAGE_CORE_BUILD', core_build)
 
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
 app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
@@ -503,6 +504,12 @@ executable(
   include_directories: includes_dir
 )
 
+version_file = configure_file(
+  input : 'src/include/udjat/version.h.in',
+  output : 'version.h',
+  configuration : app_conf
+)
+
 install_headers(
   'src/include/udjat.h',
   'src/include/udjat/worker.h',
@@ -514,6 +521,7 @@ install_headers(
   'src/include/udjat/moduleinfo.h',
   'src/include/udjat/request.h',
   'src/include/udjat/tests.h',
+  version_file,
   subdir: 'udjat'  
 )
 
