@@ -351,13 +351,12 @@ if host_machine.system() == 'windows'
     description: project_description,
     variables: pkg_variables,
     requires: [ 'pugixml' ],
-    libraries: [ '-udjat.dll' ]
+    libraries: [ '-ludjat.dll' ]
   )
 
   pkg.generate(
     name: meson.project_name() + '-static',
     description: project_description,
-    extra_cflags: [ '-I${includedir}/dmiget' ],
     variables: pkg_variables,
     requires: [ sdk_requires ],
     libraries: [ '-ludjat' ]
@@ -368,7 +367,6 @@ else
   pkg.generate(
     name: meson.project_name(),
     description: project_description,
-    extra_cflags: [ '-I${includedir}/dmiget' ],
     variables: pkg_variables,
     requires: [ 'pugixml' ],
     libraries: [ '-ludjat' ]
@@ -377,32 +375,12 @@ else
   pkg.generate(
     name: meson.project_name() + '-static',
     description: project_description,
-    extra_cflags: [ '-I${includedir}/dmiget' ],
     variables: pkg_variables,
     requires: [ sdk_requires ],
     libraries: [ '-l:libudjat.a' ]
   )
 
 endif
-
-#sdk_conf = configuration_data()
-#sdk_conf.set_quoted('PACKAGE_NAME', meson.project_name())
-#sdk_conf.set('PACKAGE_VERSION', meson.project_version())
-#sdk_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
-#sdk_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
-#sdk_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
-#sdk_conf.set('PACKAGE_DESCRIPTION',project_description)
-#sdk_conf.set('PACKAGE_CORE_BUILD',core_build)
-#sdk_conf.set('MODULE_ENGINE_BUILD',module_build)
-#sdk_conf.set('prefix',get_option('prefix'))
-#sdk_conf.set('exec_prefix',get_option('prefix'))
-#sdk_conf.set('includedir',get_option('includedir'))
-#sdk_conf.set('libdir',get_option('libdir'))
-#
-#sdk_conf.set('PRODUCT_TITLE', product_title)
-#sdk_conf.set('PRODUCT_NAME',product_name)
-#sdk_conf.set('PRODUCT_DOMAIN',product_domain)
-#sdk_conf.set_quoted('PRODUCT_TITLE',product_title)
 
 if host_machine.system() == 'windows'
   app_conf.set_quoted('LIBEXT', '.dll')
