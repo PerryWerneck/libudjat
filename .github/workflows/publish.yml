@@ -1,7 +1,7 @@
 name: publish
 on:
   push:
-    branches: [ "publisher", "develop" ]
+    branches: [ "publisher" ]
     tags:
       - '*'
 jobs:
@@ -42,7 +42,7 @@ jobs:
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.gettag.outputs.tag }}
-          artifacts: "*.pkg.tar.zst"
+          artifacts: "(*-libudjat-*.pkg.tar.zst"
           allowUpdates: true
           draft: false
           makeLatest: true
