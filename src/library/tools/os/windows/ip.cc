@@ -68,7 +68,6 @@
  		char ipaddr[256];
 		memset(ipaddr,0,sizeof(ipaddr));
 
-		size_t sz;
 		switch(addr.sa_family) {
 		case AF_INET:
 			InetNtop(

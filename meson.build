@@ -71,7 +71,6 @@ compiler_flags = [
   '-fvisibility=hidden',
   '-pthread',
   '-fPIC',
-  '-std=c++1z',
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
   '-DBUILD_DATE='+core_build,
@@ -113,10 +112,6 @@ app_conf.set_quoted('PRODUCT_TITLE', product_title)
 app_conf.set('PRODUCT_NAME',product_name)
 app_conf.set('PRODUCT_DOMAIN',product_domain)
 app_conf.set_quoted('PRODUCT_TITLE',product_title)
-
-if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
-  app_conf.set('HAVE_UNISTD_H', 1)
-endif
 
 includes_dir = include_directories('src/include')
 
@@ -360,7 +355,21 @@ if host_machine.system() == 'windows'
     description: project_description,
     variables: pkg_variables,
     requires: [ sdk_requires ],
-    libraries: [ '-l' + meson.project_name() ]
+    libraries: [ 
+      '-l' + meson.project_name(),
+      '-lintl', 
+      '-lshlwapi', 
+      '-lws2_32',
+      '-lwtsapi32', 
+      '-lole32', 
+      '-loleaut32', 
+      '-luuid', 
+      '-liphlpapi', 
+      '-lversion', 
+      '-lnetshell', 
+      '-lpathcch',
+      '-l:libiconv.a',
+    ]
   )
 
 else
@@ -384,6 +393,10 @@ else
 endif
 
 if host_machine.system() == 'windows'
+
+  # Supplied by win_iconv-devel-static
+  app_conf.set('HAVE_ICONV',1)
+
   app_conf.set_quoted('LIBEXT', '.dll')
 
   install_headers(
@@ -402,9 +415,70 @@ if host_machine.system() == 'windows'
   )
 
   lib_src += [
+    'src/library/module/os/windows/close.cc',
+    'src/library/module/os/windows/init.cc',
+    'src/library/module/os/windows/load.cc',
+    'src/library/module/os/windows/locate.cc',
+    'src/library/module/os/windows/tools.cc',
+    'src/library/os/windows/icon.cc',
+    'src/library/tools/mainloop/os/windows/eventworker.cc',
+    'src/library/tools/mainloop/os/windows/handler.cc',
+    'src/library/tools/mainloop/os/windows/handlercontroller.cc',
+    'src/library/tools/mainloop/os/windows/service.cc',
+    'src/library/tools/mainloop/os/windows/instance.cc',
+    'src/library/tools/mainloop/os/windows/mainloop.cc',
+    'src/library/tools/mainloop/os/windows/run.cc',
+    'src/library/tools/os/windows/adapter.cc',
+    'src/library/tools/os/windows/application/application.cc',
+    'src/library/tools/os/windows/application/description.cc',
+    'src/library/tools/os/windows/application/path.cc',
+    'src/library/tools/os/windows/application/utils.cc',
+    'src/library/tools/os/windows/application/init.cc',
+    'src/library/tools/os/windows/application/logdir.cc',
+    'src/library/tools/os/windows/arguments.cc',
+    'src/library/tools/os/windows/charset.cc',
+    'src/library/tools/os/windows/com.cc',
+    'src/library/tools/os/windows/configvalue.cc',
+    'src/library/tools/os/windows/event.cc',
+    'src/library/tools/os/windows/eventcontroller.cc',
+    'src/library/tools/os/windows/exception.cc',
+    'src/library/tools/os/windows/file.cc',
+    'src/library/tools/os/windows/file/copy.cc',
+    'src/library/tools/os/windows/file/list.cc',
+    'src/library/tools/os/windows/file/temporary.cc',
+    'src/library/tools/os/windows/file/text.cc',
+    'src/library/tools/os/windows/file/watcher.cc',
+    'src/library/tools/os/windows/file/path.cc',
+    'src/library/tools/os/windows/hostname.cc',
+    'src/library/tools/os/windows/nic.cc',
+    'src/library/tools/os/windows/protocol.cc',
+    'src/library/tools/os/windows/registry.cc',
+    'src/library/tools/os/windows/securityidentifier.cc',
+    'src/library/tools/os/windows/service/handler.cc',
+    'src/library/tools/os/windows/service/manager.cc',
+    'src/library/tools/os/windows/service/security.cc',
+    'src/library/tools/os/windows/shortcut.cc',
+    'src/library/tools/os/windows/strptime.cc',
+    'src/library/tools/os/windows/subprocess/handler.cc',
+    'src/library/tools/os/windows/subprocess/init.cc',
+    'src/library/tools/os/windows/subprocess/run.cc',
+    'src/library/tools/os/windows/subprocess/start.cc',
+    'src/library/tools/os/windows/subprocess/subprocess.cc',
+    'src/library/tools/os/windows/subprocess/watcher.cc',
+    'src/library/tools/os/windows/systemservice.cc',
+    'src/library/tools/os/windows/threadpool.cc',
+    'src/library/tools/os/windows/utils.cc',
+    'src/library/tools/os/windows/win32service.cc',
+    'src/library/tools/os/windows/ip.cc',
+    'src/library/tools/os/windows/logger.cc',
   ]
 
 else
+
+  if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
+    app_conf.set('HAVE_UNISTD_H', 1)
+  endif
+
   app_conf.set_quoted('LIBEXT', '.so')
 
   install_headers(
@@ -468,16 +542,49 @@ config_src = [
   )
 ]
 
-dynamic = shared_library(
-  meson.project_name(), 
-  config_src + lib_src,
-  install: true,
-  version : libversion,
-  soversion : libversion,
-  gnu_symbol_visibility: 'hidden',
-  dependencies: lib_deps,
-  include_directories: includes_dir
-)
+if host_machine.system() == 'windows'
+
+  dynamic = shared_library(
+    meson.project_name(), 
+    config_src + lib_src,
+    install: true,
+    gnu_symbol_visibility: 'hidden',
+    dependencies: lib_deps,
+    include_directories: includes_dir,
+    link_args: [
+      '-lintl', 
+      '-lshlwapi', 
+      '-lws2_32',
+      '-lwtsapi32', 
+      '-lole32', 
+      '-loleaut32', 
+      '-luuid', 
+      '-liphlpapi', 
+      '-lversion', 
+      '-lnetshell', 
+      '-lpathcch',
+      '-l:libiconv.a',
+    ]
+  )
+
+else
+
+  lib_deps += [
+    dependency('iconv', required: true)
+  ]
+
+  dynamic = shared_library(
+    meson.project_name(), 
+    config_src + lib_src,
+    install: true,
+    version : libversion,
+    soversion : libversion,
+    gnu_symbol_visibility: 'hidden',
+    dependencies: lib_deps,
+    include_directories: includes_dir
+  )
+
+endif
 
 static_library(
   meson.project_name(), 

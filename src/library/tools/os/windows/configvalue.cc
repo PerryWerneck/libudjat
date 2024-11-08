@@ -44,6 +44,9 @@
 
  namespace Udjat {
 
+	UDJAT_API void Config::allow_user_homedir(bool) noexcept {
+	}
+
 	UDJAT_API bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
 		return Win32::Registry().for_each(group,call);
 	}

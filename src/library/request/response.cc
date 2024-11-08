@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
  #include <algorithm>
  #include <private/request.h>
  #include <udjat/tools/abstract/response.h>
