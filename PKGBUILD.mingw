@@ -20,9 +20,11 @@
 
 _realname="libudjat"
 pkgver="1.2.0"
+pkgrel=0
+
+pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}
 source=()
 
-pkgrel=0
 pkgdesc="Udjat core library"
 url="https://github.com/PerryWerneck/${_realname}"
 arch=(i686 x86_64)
