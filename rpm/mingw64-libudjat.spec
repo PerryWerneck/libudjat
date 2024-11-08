@@ -17,7 +17,7 @@
 #
 Summary:		UDJat core library for mingw64
 Name:			mingw64-libudjat
-Version: 1.2.0
+Version:		1.0
 Release:		0
 License:		LGPL-3.0
 Source:			libudjat-%{version}.tar.xz
@@ -81,7 +81,8 @@ Requires:	mingw64(pkg:vmdetect)
 Requires:	mingw64(lib:intl)
 Requires:	%{name}%{_libvrs} = %{version}
 
-Provides:	mingw64-udjat-devel = %{version}
+Provides:	mingw64(lib:udjat) = %{version}
+Provides:	mingw64(lib::libudjat.a)
 
 %description devel
 
@@ -145,6 +146,9 @@ mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/
 %dir %{_mingw64_includedir}/udjat/tools/file
 %{_mingw64_includedir}/udjat/tools/file/*.h
 
+%dir %{_mingw64_includedir}/udjat/tools/response
+%{_mingw64_includedir}/udjat/tools/response/*.h
+
 %dir %{_mingw64_includedir}/udjat/net
 %{_mingw64_includedir}/udjat/net/*.h
 
@@ -154,8 +158,17 @@ mkdir -p %{buildroot}%{_mingw64_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/
 %dir %{_mingw64_includedir}/udjat/win32
 %{_mingw64_includedir}/udjat/win32/*.h
 
+%dir %{_mingw64_includedir}/udjat/tools/abstract/
+%{_mingw64_includedir}/udjat/tools/abstract/*.h
+
 %dir %{_mingw64_includedir}/udjat/agent
 %{_mingw64_includedir}/udjat/agent/*.h
+
+%dir %{_mingw64_includedir}/udjat/module
+%{_mingw64_includedir}/udjat/module/*.h
+
+%dir %{_mingw64_includedir}/udjat/ui
+%{_mingw64_includedir}/udjat/ui/*.h
 
 %changelog
 

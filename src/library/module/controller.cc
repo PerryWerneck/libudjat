@@ -27,14 +27,6 @@ using namespace std;
 
 namespace Udjat {
 
-	/*
-	Module::Controller & Module::Controller::getInstance() {
-		std::lock_guard<std::mutex> lock(instance_guard);
-		static Controller controller;
-		return controller;
-	}
-	*/
-
 	Module::Controller::Controller() {
 		Logger::String{
 			"Starting controller"

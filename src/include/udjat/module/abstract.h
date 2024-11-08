@@ -77,6 +77,9 @@
 
 	public:
 
+		/// @brief Build module from filename.
+		static Module * factory(const char *filename);
+
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->name,name) == 0;
 		}
@@ -163,12 +166,6 @@
 
 		/// @brief Set new root agent.
 		virtual void set(std::shared_ptr<Abstract::Agent> agent) noexcept;
-
-		/// @brief Build agent from XML node, used on tag <agent type='module-name'>
-		// virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const;
-
-		/// @brief Build alert from XML node, used on tag <alert type='module-name'>
-		// virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 	};
 

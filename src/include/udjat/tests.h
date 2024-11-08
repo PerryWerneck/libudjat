@@ -36,8 +36,8 @@ namespace Udjat {
 
 	namespace Testing {
 
-		int run(int argc, char **argv, const Udjat::ModuleInfo &info);
-		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void()> &initialize);
+		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const char *xml = "./test.xml");
+		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void()> &initialize, const char *xml = "./test.xml");
 
 		/// @brief Test agent, reports a random unsignet int value
 		class UDJAT_PRIVATE RandomFactory : public Udjat::Factory {

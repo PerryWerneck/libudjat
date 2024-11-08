@@ -31,8 +31,6 @@ namespace Udjat {
 #ifdef _WIN32
 
 		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);
-		static Module * init(HMODULE hModule);
-		static Module * init(HMODULE hModule, const XML::Node &node);
 
 		void close(HMODULE module);
 		bool deinit(HMODULE handle);
@@ -41,8 +39,6 @@ namespace Udjat {
 #else
 
 		static void * getSymbol(void *handle, const char *name, bool required = true);
-		static Module * init(void *handle);
-		static Module * init(void *handle, const XML::Node &node);
 
 		bool deinit(void *handle);
 		void unload(void *handle, const string &name, const string &description) const;
@@ -52,6 +48,14 @@ namespace Udjat {
 	public:
 		Controller();
 		~Controller();
+
+#ifdef _WIN32
+		static Module * init(HMODULE hModule);
+		static Module * init(HMODULE hModule, const XML::Node &node);
+#else
+		static Module * init(void *handle);
+		static Module * init(void *handle, const XML::Node &node);
+#endif
 
 		static Controller & getInstance() {
 			static Controller instance;

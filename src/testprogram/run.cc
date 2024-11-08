@@ -28,24 +28,25 @@
 
  namespace Udjat {
 
-	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info) {
+	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const char *xml) {
 
 		Config::allow_user_homedir(true);
 
 		Logger::redirect();
 		Logger::verbosity(Config::Value<unsigned int>{"test-mode","verbose",9}.get());
 		Logger::console(Config::Value<bool>{"test-mode","console",true}.get());
+		
+		Config::Value<string> setup{"test-mode","xml_path",xml};
 
 		if(argc == 1) {
 
 			int rc = -1;
-			Config::Value<string> xml{"test-mode","xml_path","./test.xml"};
 
 			if(strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"application")) {
-				rc = Testing::Service{info}.run(1,argv,xml.c_str());
+				rc = Testing::Service{info}.run(1,argv,setup.c_str());
 				Logger::String{"Service exits with rc=",rc}.info("test");
 			} else {
-				rc = Testing::Application{info}.run(1,argv,xml.c_str());
+				rc = Testing::Application{info}.run(1,argv,setup.c_str());
 				Logger::String{"Application exits with rc=",rc}.info("test");
 			}
 
@@ -61,13 +62,13 @@
 
 			if(!strcasecmp(ptr,"application")) {
 
-				auto rc = Testing::Application{info}.run(1,argv,"./test.xml");
+				auto rc = Testing::Application{info}.run(1,argv,setup);
 				Logger::String{"Application exits with rc=",rc}.info("test");
 				return rc;
 
 			} else if(!strcasecmp(ptr,"service")) {
 
-				auto rc = Testing::Service{info}.run(1,argv,"./test.xml");
+				auto rc = Testing::Service{info}.run(1,argv,setup);
 				Logger::String{"Service exits with rc=",rc}.info("test");
 				return rc;
 
@@ -80,14 +81,16 @@
 
 	}
 
-	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void()> &initialize) {
+	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void()> &initialize, const char *xml) {
 
 		Logger::redirect();
 		Logger::verbosity(9);
 		Logger::console(true);
 
+		Config::Value<string> setup{"test-mode","xml_path",xml};
+
 		if(argc == 1) {
-			auto rc = Testing::Application{info,initialize}.run(1,argv,"./test.xml");
+			auto rc = Testing::Application{info,initialize}.run(1,argv,setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 			return rc;
 		}
@@ -101,13 +104,13 @@
 
 			if(!strcasecmp(ptr,"application")) {
 
-				auto rc = Testing::Application{info,initialize}.run(1,argv,"./test.xml");
+				auto rc = Testing::Application{info,initialize}.run(1,argv,setup.c_str());
 				Logger::String{"Application exits with rc=",rc}.info("test");
 				return rc;
 
 			} else if(!strcasecmp(ptr,"service")) {
 
-				auto rc = Testing::Service{info,initialize}.run(1,argv,"./test.xml");
+				auto rc = Testing::Service{info,initialize}.run(1,argv,setup.c_str());
 				Logger::String{"Service exits with rc=",rc}.info("test");
 				return rc;
 

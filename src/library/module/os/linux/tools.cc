@@ -26,6 +26,27 @@
 
  namespace Udjat {
 
+	Module * Module::factory(const char *filename) {
+
+		dlerror();
+		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
+		if(!handle) {
+			throw runtime_error(dlerror());
+		}
+
+		try {
+
+			return Controller::init(handle);
+
+		} catch(...) {
+
+			dlclose(handle);
+			throw;
+
+		}
+
+	}
+
 	Module * Module::Controller::find_by_filename(const char *path) {
 
 		for(auto module : objects) {
