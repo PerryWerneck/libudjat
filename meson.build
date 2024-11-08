@@ -118,7 +118,7 @@ if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
   app_conf.set('HAVE_UNISTD_H', 1)
 endif
 
-includes_dir = include_directories('../src/include')
+includes_dir = include_directories('src/include')
 
 #
 # Optional libraries
