@@ -1,7 +1,7 @@
 name: publish
 on:
   push:
-    branches: [ "publisher" ]
+    branches: [ "publisher", "develop" ]
     tags:
       - '*'
 jobs:
@@ -37,12 +37,13 @@ jobs:
       - name: Run Build
         run: |
           pacman -U --noconfirm *.pkg.tar.zst
+          rm -f *.pkg.tar.zst
           dos2unix PKGBUILD.mingw
           makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.gettag.outputs.tag }}
-          artifacts: "(*-libudjat-*.pkg.tar.zst"
+          artifacts: "*.pkg.tar.zst"
           allowUpdates: true
           draft: false
           makeLatest: true
