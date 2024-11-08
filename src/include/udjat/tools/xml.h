@@ -28,6 +28,7 @@
 
  #pragma once
 
+ #include <udjat/defs.h>
  #include <pugixml.hpp>
  #include <udjat/defs.h>
  #include <functional>
