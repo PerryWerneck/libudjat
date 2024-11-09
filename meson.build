@@ -399,6 +399,23 @@ if host_machine.system() == 'windows'
 
   app_conf.set_quoted('LIBEXT', '.dll')
 
+  configure_file(
+    input : 'src/library/os/windows/resources.rc.in',
+    output : 'resources.rc',
+    configuration : app_conf
+  )
+
+  configure_file(
+    input : 'src/library/os/windows/app-manifest.xml.in',
+    output : 'app-manifest.xml',
+    configuration : app_conf
+  )
+
+  windows = import('windows')
+  windows.compile_resources(
+    'resources.rc'
+  )
+
   install_headers(
     'src/include/udjat/win32/charset.h',
     'src/include/udjat/win32/cleanup.h',
