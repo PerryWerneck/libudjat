@@ -84,9 +84,9 @@
 		: RandomFactory{info} {
 	}
 
-	Testing::Service::Service(const Udjat::ModuleInfo &info, const std::function<void()> &initialize)
+	Testing::Service::Service(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize)
 		: Service{info} {
-		initialize();
+		initialize(*this);
 	}
 
 	void Testing::Service::root(std::shared_ptr<Abstract::Agent> agent) {

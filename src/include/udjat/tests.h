@@ -37,7 +37,7 @@ namespace Udjat {
 	namespace Testing {
 
 		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const char *xml = "./test.xml");
-		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void()> &initialize, const char *xml = "./test.xml");
+		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize, const char *xml = "./test.xml");
 
 		/// @brief Test agent, reports a random unsignet int value
 		class UDJAT_PRIVATE RandomFactory : public Udjat::Factory {
@@ -51,7 +51,7 @@ namespace Udjat {
 		class UDJAT_PRIVATE Service : public SystemService, private RandomFactory {
 		public:
 			Service(const Udjat::ModuleInfo &info);
-			Service(const Udjat::ModuleInfo &info, const std::function<void()> &initialize);
+			Service(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize);
 			static int run_tests(int argc, char **argv, const Udjat::ModuleInfo &info);
 			void root(std::shared_ptr<Abstract::Agent> agent);
 
@@ -62,7 +62,7 @@ namespace Udjat {
 		class Application : public Udjat::Application, private RandomFactory {
 		public:
 			Application(const Udjat::ModuleInfo &info);
-			Application(const Udjat::ModuleInfo &info, const std::function<void()> &initialize);
+			Application(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize);
 			static int run_tests(int argc, char **argv, const Udjat::ModuleInfo &info);
 			int install(const char *name) override;
 			int uninstall() override;

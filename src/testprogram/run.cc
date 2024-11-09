@@ -81,7 +81,7 @@
 
 	}
 
-	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void()> &initialize, const char *xml) {
+	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize, const char *xml) {
 
 		Logger::redirect();
 		Logger::verbosity(9);

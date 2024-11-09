@@ -48,9 +48,9 @@
 
 	}
 
-	Testing::Application::Application(const Udjat::ModuleInfo &info, const std::function<void()> &initialize)
+	Testing::Application::Application(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize)
 		: Application{info} {
-		initialize();
+		initialize(*this);
 	}
 
 	int Testing::Application::install(const char *name) {
@@ -63,8 +63,9 @@
 		return super::uninstall();
 	}
 
-	void Testing::Application::root(std::shared_ptr<Abstract::Agent>) {
-		debug("test-arg='",getProperty("test-arg","default"));
+	void Testing::Application::root(std::shared_ptr<Abstract::Agent> agent) {
+		Logger::String{"The agent '",agent->name(),"' is the new root"}.info("application");
+		super::root(agent);
 	}
 
 
