@@ -345,6 +345,20 @@ pkg_variables = [
 
 if host_machine.system() == 'windows'
 
+  winlibs = [
+      '-lintl', 
+      '-lshlwapi', 
+      '-lws2_32',
+      '-lwtsapi32', 
+      '-lole32', 
+      '-loleaut32', 
+      '-luuid', 
+      '-liphlpapi', 
+      '-lversion', 
+      '-lnetshell', 
+      '-lpathcch',
+  ]
+
   pkg.generate(
     name: 'lib' + meson.project_name(),
     description: project_description,
@@ -360,18 +374,7 @@ if host_machine.system() == 'windows'
     requires: [ sdk_requires ],
     libraries: [ 
       '-l' + meson.project_name(),
-      '-lintl', 
-      '-lshlwapi', 
-      '-lws2_32',
-      '-lwtsapi32', 
-      '-lole32', 
-      '-loleaut32', 
-      '-luuid', 
-      '-liphlpapi', 
-      '-lversion', 
-      '-lnetshell', 
-      '-lpathcch',
-    ]
+    ] + winlibs
   )
 
 else
@@ -569,19 +572,7 @@ if host_machine.system() == 'windows'
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps,
     include_directories: includes_dir,
-    link_args: [
-      '-lintl', 
-      '-lshlwapi', 
-      '-lws2_32',
-      '-lwtsapi32', 
-      '-lole32', 
-      '-loleaut32', 
-      '-luuid', 
-      '-liphlpapi', 
-      '-lversion', 
-      '-lnetshell', 
-      '-lpathcch',
-    ]
+    link_args: winlibs,
   )
 
 else
