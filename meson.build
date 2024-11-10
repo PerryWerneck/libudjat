@@ -54,6 +54,7 @@ subdir('po')
 #
 lib_deps = [
   dependency('pugixml'),  
+  dependency('iconv'),
 ]
 
 #
@@ -370,7 +371,6 @@ if host_machine.system() == 'windows'
       '-lversion', 
       '-lnetshell', 
       '-lpathcch',
-      '-l:libiconv.a',
     ]
   )
 
@@ -581,15 +581,10 @@ if host_machine.system() == 'windows'
       '-lversion', 
       '-lnetshell', 
       '-lpathcch',
-      '-l:libiconv.a',
     ]
   )
 
 else
-
-  lib_deps += [
-    dependency('iconv', required: true)
-  ]
 
   dynamic = shared_library(
     meson.project_name(), 
