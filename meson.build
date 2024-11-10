@@ -62,8 +62,10 @@ lib_deps = [
 cxx = meson.get_compiler('cpp')
 enable_debug = get_option('debug') or get_option('buildtype').contains('debug')
 
-# TODO: Use SOURCE_DATE_EPOCH
-core_build = run_command('date','+%Y%m%d').stdout().strip()
+time_epoch = run_command('sh', '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
+if time_epoch == ''
+  time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
+endif
 
 compiler_flags = [
   '-ggdb3',
@@ -73,7 +75,7 @@ compiler_flags = [
   '-fPIC',
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
-  '-DBUILD_DATE='+core_build,
+  '-DBUILD_DATE='+time_epoch,
 ]
 
 if enable_debug
@@ -99,7 +101,7 @@ app_conf.set('PACKAGE_VERSION_MAJOR', pkg_major_version)
 app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
-app_conf.set('PACKAGE_CORE_BUILD', core_build)
+app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
 app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
@@ -330,7 +332,7 @@ pkg_variables = [
   'product_title=@0@'.format(product_title),
   'product_version=@0@@1@'.format(pkg_major_version,pkg_minor_version),
 
-  'build_id=@0@'.format(core_build),
+  'build_id=@0@'.format(time_epoch),
 
   'package_name=lib@0@@1@_@2@'.format(product_name,pkg_major_version,pkg_minor_version),
   'module_path=${libdir}/@0@/@1@.@2@/modules/'.format(
@@ -411,6 +413,7 @@ if host_machine.system() == 'windows'
     configuration : app_conf
   )
 
+  # https://mesonbuild.com/Windows-module.html
   windows = import('windows')
   windows.compile_resources(
     'resources.rc'
