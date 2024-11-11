@@ -104,6 +104,20 @@ app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
+app_conf.set('LIBDIR', 
+  '@0@/@1@'.format(
+    get_option('prefix'),
+    get_option('libdir')
+  )
+)
+
+app_conf.set('DATADIR', 
+  '@0@/@1@'.format(
+    get_option('prefix'),
+    get_option('datadir')
+  )
+)
+
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
 app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
 app_conf.set('HAVE_LOCALTIME_R', cxx.has_function('localtime_r'))
