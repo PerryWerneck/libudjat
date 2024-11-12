@@ -104,19 +104,23 @@ app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
-app_conf.set('LIBDIR', 
-  '@0@/@1@'.format(
-    get_option('prefix'),
-    get_option('libdir')
-  )
-)
+if host_machine.system() != 'windows'
 
-app_conf.set('DATADIR', 
-  '@0@/@1@'.format(
-    get_option('prefix'),
-    get_option('datadir')
+  app_conf.set('LIBDIR', 
+    '@0@/@1@'.format(
+      get_option('prefix'),
+      get_option('libdir')
+    )
   )
-)
+
+  app_conf.set('DATADIR', 
+    '@0@/@1@'.format(
+      get_option('prefix'),
+      get_option('datadir')
+    )
+  )
+
+endif
 
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
 app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
@@ -133,12 +137,12 @@ app_conf.set_quoted('PRODUCT_TITLE',product_title)
 includes_dir = include_directories('src/include')
 
 #
-# Optional libraries
+# Libraries
 #
 sdk_requires = [ 'pugixml' ]
 
 #
-# VMDetect
+# VMDetect (optional)
 #
 vmdetect_dep = dependency('vmdetect-static', required: false)
 if vmdetect_dep.found()
@@ -155,7 +159,7 @@ else
 endif
 
 #
-# DMIGet
+# DMIGet (optional)
 #
 dmiget_dep = dependency('dmiget-static', required: false)
 if dmiget_dep.found()
@@ -172,7 +176,7 @@ else
 endif
 
 #
-# EConf
+# EConf (optional)
 #
 econf_dep = dependency('libeconf-static', required: false)
 if econf_dep.found()
@@ -193,7 +197,7 @@ if econf_dep.found() and cxx.has_header_symbol('libeconf.h','econf_readConfigWit
 endif
 
 #
-# SystemD
+# SystemD  (optional)
 #
 systemd_dep = dependency('libsystemd', required: false  )
 if systemd_dep.found()
@@ -321,17 +325,7 @@ test_src = [
 ]
 
 #
-# Headers
-#
-sdk_headers = [
-]
-
-#
-# OS dependencies
-#
-#
 # SDK
-#
 # https://mesonbuild.com/Pkgconfig-module.html
 #
 pkg = import('pkgconfig')
