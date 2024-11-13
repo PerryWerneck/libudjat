@@ -725,6 +725,7 @@ install_headers(
   'src/include/udjat/tools/url.h',
   'src/include/udjat/tools/xml.h',
   'src/include/udjat/tools/worker.h',
+  'src/include/udjat/tools/system.h',
   subdir: 'udjat/tools'  
 )
 
