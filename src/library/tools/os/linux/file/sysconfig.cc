@@ -19,7 +19,7 @@
 
  #include <iostream>
  #include <udjat/tools/string.h>
- #include <udjat/tools/sysconfig.h>
+ #include <udjat/tools/system.h>
  #include <udjat/tools/file.h>
  #include <udjat/tools/string.h>
 
@@ -27,11 +27,11 @@
 
  namespace Udjat {
 
-	SysConfig::File::File() {
+	System::Config::File::File() {
 		this->separator = '=';
 	}
 
-	SysConfig::File::File(const char *filename, const char *separator) {
+	System::Config::File::File(const char *filename, const char *separator) {
 
 	 	if(separator[0]) {
 			this->separator = separator[0];
@@ -44,7 +44,7 @@
 		set(Udjat::File::Text(filename).c_str());
 	}
 
-	std::string SysConfig::File::name() const {
+	std::string System::Config::File::name() const {
 
 		char * filename = strdup(path.c_str());
 
@@ -72,7 +72,7 @@
 		return response;
 	}
 
-	SysConfig::Value SysConfig::File::find(const char *key) const noexcept {
+	System::Config::File::Value System::Config::File::find(const char *key) const noexcept {
 
 		for(auto value : values) {
 			if(!strcasecmp(value.name.c_str(),key))
@@ -82,7 +82,7 @@
 		return Value();
 	}
 
-	void SysConfig::File::forEach(std::function<void(const SysConfig::Value &value)> callback) const {
+	void System::Config::File::forEach(std::function<void(const System::Config::File::Value &value)> callback) const {
 		for(auto value : values) {
 			callback(value);
 		}
@@ -95,7 +95,7 @@
 		return ptr;
 	}
 
-	SysConfig::File & SysConfig::File::set(const char *contents) {
+	System::Config::File & System::Config::File::set(const char *contents) {
 
 		Value value;
 

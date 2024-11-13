@@ -28,7 +28,7 @@
  #endif // _WIN32
 
  #include <udjat/module/abstract.h>
- #include <udjat/tools/sysconfig.h>
+ #include <udjat/tools/system.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/intl.h>
@@ -112,9 +112,7 @@
 				//
 				try {
 
-					SysConfig::File osrelease("/etc/os-release","=");
-
-					string label = osrelease["PRETTY_NAME"].value;
+					string label = System::Config::File{"/etc/os-release","="}["PRETTY_NAME"].value;
 					if(uts.machine[0]) {
 						label += " ";
 						label += uts.machine;

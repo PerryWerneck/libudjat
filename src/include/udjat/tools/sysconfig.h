@@ -29,41 +29,7 @@ namespace Udjat {
 
 	namespace SysConfig {
 
-		/// @brief SysConfig Value
-		class UDJAT_API Value {
-		public:
-
-			/// @brief The input type.
-			enum Type {
-				Boolean,
-				Integer,
-				String
-			} type = String;
-
-			/// @brief The default value.
-			std::string def = "";
-
-			/// @brief The value name.
-			std::string name = "";
-
-			/// @brief The value.
-			std::string value = "";
-
-			void clear();
-			void setType(const char *name);
-
-			/// @brief Convenience method for agent 'get()' method.
-			Udjat::Value & get(Udjat::Value &value) const;
-
-			operator bool() const noexcept {
-				return !value.empty();
-			}
-
-			operator const char *() const {
-				return value.c_str();
-			}
-
-		};
+		/*
 
 		/// @brief SysConfig file parser.
 		class UDJAT_API File {
@@ -115,6 +81,7 @@ namespace Udjat {
 			}
 
 		};
+		*/
 
 
 	}

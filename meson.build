@@ -161,19 +161,19 @@ endif
 #
 # DMIGet (optional)
 #
-dmiget_dep = dependency('dmiget-static', required: false)
-if dmiget_dep.found()
-  app_conf.set('HAVE_SMBIOS', 2)
-  sdk_requires += [ 'dmiget-static' ]
-  lib_deps += dmiget_dep
-else
-  dmiget_dep = dependency('dmiget', required: false)
-  if dmiget_dep.found()
-    app_conf.set('HAVE_SMBIOS', 1)
-    sdk_requires += [ 'dmiget' ]
-    lib_deps += dmiget_dep
-  endif
-endif
+#dmiget_dep = dependency('dmiget-static', required: false)
+#if dmiget_dep.found()
+#  app_conf.set('HAVE_SMBIOS', 2)
+#  sdk_requires += [ 'dmiget-static' ]
+#  lib_deps += dmiget_dep
+#else
+#  dmiget_dep = dependency('dmiget', required: false)
+#  if dmiget_dep.found()
+#    app_conf.set('HAVE_SMBIOS', 1)
+#    sdk_requires += [ 'dmiget' ]
+#    lib_deps += dmiget_dep
+#  endif
+#endif
 
 #
 # EConf (optional)

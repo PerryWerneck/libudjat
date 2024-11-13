@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <udjat/tools/sysconfig.h>
+ #include <udjat/tools/system.h>
  #include <udjat/tools/value.h>
  #include <iostream>
  #include <cstring>
@@ -26,14 +26,14 @@
 
  namespace Udjat {
 
-	void SysConfig::Value::clear() {
+	void System::Config::File::Value::clear() {
 		type = String;
 		def.clear();
 		name.clear();
 		value.clear();
 	}
 
-	void SysConfig::Value::setType(const char *name) {
+	void System::Config::File::Value::setType(const char *name) {
 		static const struct {
 			const char *name;
 			Type type;
@@ -60,7 +60,7 @@
 		type = String;
 	}
 
-	Udjat::Value & SysConfig::Value::get(Udjat::Value &value) const {
+	Udjat::Value & System::Config::File::Value::get(Udjat::Value &value) const {
 
 		switch(type) {
 		case Value::Boolean:
