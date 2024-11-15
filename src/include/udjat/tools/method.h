@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,45 +17,66 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /**
+  * @brief Declares an API call.
+  */
+
  #pragma once
+
  #include <udjat/defs.h>
- #include <ostream>
  #include <udjat/tools/xml.h>
- #include <cstdint>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/request.h>
+ #include <udjat/tools/response/value.h>
+ #include <vector>
 
  namespace Udjat {
 
-	namespace HTTP {
+	/// @brief Convenience class for XML defined methods.
+	class UDJAT_API Method {
+	private:
 
-		/// @brief Protocol Method.
-		/// <https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods>
-		enum Method : uint8_t {
-			Get,		///< @brief Requests a representation of the specified resource.
-			Head,		///< @brief Asks for a response identical to that of a GET request, but without the response body.
-			Post,		///< @brief Submit an entity to the specified resource, often causing a change in state or side effects on the server.
-			Put,		///< @brief Replaces all current representations of the target resource with the request payload.
-			Delete,		///< @brief Deletes the specified resource.
-			Connect,	///< @brief Establishes a tunnel to the server identified by the target resource.
-			Options,	///< @brief Describe the communication options for the target resource.
-			Trace,		///< @brief Performs a message loop-back test along the path to the target resource.
-			Patch,		///< @brief Apply partial modifications to a resource.
+		struct Argument {
+			const char *name = nullptr;
+			const Value::Type type = Value::Undefined;
+			bool input = true;
+
+			constexpr Argument(const char *n, Value::Type t, bool i)
+				: name{n}, type{t}, input{i} {
+			}
+			
+			Argument(const XML::Node &node, bool input);
 		};
 
-		UDJAT_API Method MethodFactory(const char *name);
-		UDJAT_API Method MethodFactory(const XML::Node &node, const char *attrname, const char *def);
-		UDJAT_API Method MethodFactory(const XML::Node &node, const char *def);
-		UDJAT_API Method MethodFactory(const XML::Node &node);
+		std::vector<Argument> args;
 
-	}
+	protected:
 
- }
+		typedef Method Super;
+		Method(const XML::Node &node);
 
- namespace std {
+	public:
+		virtual ~Method();
+	
+		size_t size() const {
+			return args.size();
+		}
 
-	UDJAT_API const char * to_string(const Udjat::HTTP::Method method);
+		/// @brief Get index from argument name.
+		/// @param name The argument name.
+		/// @param insert if true the argument will be inserted if not found.
+		/// @return The argument index.
+		size_t index(const char *name, bool insert = false, bool input = false);
 
-	inline ostream& operator<< (ostream& os, const Udjat::HTTP::Method method) {
-		return os << to_string(method);
-	}
+		/// @brief Get index from argument name.
+		/// @param name The argument name.
+		/// @return The argument index.
+		size_t index(const char *name) const;
+
+		bool for_each(const std::function<bool(const size_t index, const char *name, const Value::Type type)> &call) const;
+		bool for_each_input(const std::function<bool(const size_t index, const char *name, const Value::Type type)> &call) const;
+		bool for_each_output(const std::function<bool(const size_t index, const char *name, const Value::Type type)> &call) const;
+
+	};
 
  }

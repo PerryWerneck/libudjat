@@ -23,10 +23,15 @@
 #include <string>
 #include <vector>
 #include <functional>
+#include <udjat/tools/string.h>
 
 namespace Udjat {
 
 	namespace System {
+
+		/// @brief Get this system Common Platform Enumeration (CPE) 
+		/// @return The CPE for this system.
+		UDJAT_API String cpe();
 
 		namespace Config {
 

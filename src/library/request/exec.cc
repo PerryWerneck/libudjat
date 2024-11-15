@@ -54,6 +54,7 @@
 		});
 	}
 
+	/*
 	UDJAT_API bool introspect(Udjat::Value &value) {
 		bool rc = false;
 		Worker::for_each([&value,&rc](const Worker &worker){
@@ -64,7 +65,9 @@
 		});
 		return rc;
 	}
+	*/
 
+	/*
 	UDJAT_API bool introspect(Udjat::String &xmldata) {
 		bool rc = false;
 		Worker::for_each([&xmldata,&rc](const Worker &worker){
@@ -75,5 +78,6 @@
 		});
 		return rc;
 	}
+	*/
 
  }

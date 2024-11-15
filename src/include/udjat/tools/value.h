@@ -38,20 +38,24 @@
 
 		/// @brief Value type.
 		enum Type : uint8_t {
-			Undefined,			///< @brief 'null' value.
-			Array,				///< @brief Array value (ordered list).
-			Object,				///< @brief Object value (collection of name/value pairs).
-			String,				///< @brief UTF-8 string value.
-			Timestamp,			///< @brief Timestamp value.
-			Signed,				///< @brief Signed integer value.
-			Unsigned,			///< @brief Unsigned integer value.
-			Real,				///< @brief Double value.
-			Boolean,			///< @brief Bool value.
-			Fraction,			///< @brief Fraction value (Float from 0.0 to 1.0).
-			Icon,				///< @brief Icon name.
-			Url,				///< @brief URL.
-			State,				///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error, etc)
+			Undefined	= '\0',			///< @brief 'null' value.
+			Array		= 'a',			///< @brief Array value (ordered list).
+			Object		= 'O',			///< @brief Object value (collection of name/value pairs).
+			String		= 's',			///< @brief UTF-8 string value.
+			Timestamp	= 'T',			///< @brief Timestamp value.
+			Signed		= 'S',			///< @brief Signed integer value.
+			Unsigned	= 'U',			///< @brief Unsigned integer value.
+			Real		= 'd',			///< @brief Double value.
+			Boolean		= 'b',			///< @brief Bool value.
+			Fraction	= 'F',			///< @brief Fraction value (Float from 0.0 to 1.0).
+			Icon		= 'I',			///< @brief Icon name.
+			Url			= '@',			///< @brief URL.
+			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error, etc)
 		};
+
+		/// @brief Type factory.
+		static Type TypeFactory(const XML::Node &node, const char *attrname = "value-type");
+		static Type TypeFactory(const char *name);
 
 		/// @brief Get stored value type.
 		virtual operator Type() const noexcept;

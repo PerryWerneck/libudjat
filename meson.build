@@ -315,6 +315,7 @@ lib_src += [
   'src/library/tools/exception.cc',
   'src/library/tools/logger.cc',
   'src/library/tools/object.cc',
+  'src/library/tools/method.cc',
 ]
 
 test_src = [
@@ -484,6 +485,7 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/win32service.cc',
     'src/library/tools/os/windows/ip.cc',
     'src/library/tools/os/windows/logger.cc',
+    'src/library/tools/os/windows/system.cc',
   ]
 
 else
@@ -541,6 +543,7 @@ else
     'src/library/tools/os/linux/threadpool.cc',
     'src/library/tools/os/linux/econf.cc',
     'src/library/tools/os/linux/logger.cc',
+    'src/library/tools/os/linux/system.cc',
   ]
 
 endif
@@ -726,6 +729,7 @@ install_headers(
   'src/include/udjat/tools/xml.h',
   'src/include/udjat/tools/worker.h',
   'src/include/udjat/tools/system.h',
+  'src/include/udjat/tools/method.h',
   subdir: 'udjat/tools'  
 )
 

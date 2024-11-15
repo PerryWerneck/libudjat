@@ -17,6 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/intl.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/string.h>
  #include <string>
@@ -32,6 +35,52 @@
  using namespace std;
 
  namespace Udjat {
+
+	static const struct {
+		Value::Type type;
+		const char *name;
+	} typenames[] = {
+		{ Value::Type::Undefined,	N_("Undefined") },
+		{ Value::Type::Array,		N_("Array") 	},
+		{ Value::Type::Object,		N_("Object") 	},
+		{ Value::Type::String,		N_("String") 	},
+		{ Value::Type::Timestamp,	N_("Timestamp") },
+		{ Value::Type::Signed,		N_("Signed") 	},
+		{ Value::Type::Unsigned,	N_("Unsigned") 	},
+		{ Value::Type::Real,		N_("Real") 		},
+		{ Value::Type::Boolean,		N_("Boolean") 	},
+		{ Value::Type::Fraction,	N_("Fraction") 	},
+		{ Value::Type::Icon,		N_("Icon") 		},
+		{ Value::Type::Url,			N_("Url") 		},
+		{ Value::Type::State,		N_("State") 	},
+
+		{ Value::Type::Signed,		N_("int") 		},
+		{ Value::Type::Signed,		N_("integer") 	},
+		{ Value::Type::Signed,		N_("number") 	},
+	};
+
+	Value::Type Value::TypeFactory(const char *name) {
+
+		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
+			if(!strcasecmp(typenames[ix].name,name)) {
+				return typenames[ix].type;
+			}
+		}
+
+		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
+			if(!strcasecmp(dgettext(GETTEXT_PACKAGE,typenames[ix].name),name)) {
+				return typenames[ix].type;
+			}
+		}
+
+		Logger::String{"Unknown type '",name,"' assuming undefined"}.warning();
+
+		return Value::Undefined;
+	}
+
+	Value::Type Value::TypeFactory(const XML::Node &node, const char *attrname) {
+		return Value::TypeFactory(Udjat::String{node,attrname,"Undefined"}.c_str());
+	}
 
 	std::shared_ptr<Value> Value::Factory(const char *str) {
 

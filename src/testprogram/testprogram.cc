@@ -24,6 +24,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tests.h>
+ #include <udjat/tools/system.h>
 
  using namespace std;
  using namespace Udjat;
@@ -181,6 +182,10 @@
 }
 #else
  int main(int argc, char **argv) {
-	return Testing::run(argc,argv,moduleinfo);
+	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
+
+		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
+
+	});
  }
 #endif
