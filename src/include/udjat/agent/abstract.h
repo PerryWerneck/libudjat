@@ -22,11 +22,9 @@
  #include <udjat/tools/parse.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
- #include <udjat/tools/response/table.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/tools/response/table.h>
  #include <mutex>
  #include <list>
  #include <cstdint>
@@ -306,9 +304,6 @@
 			/// @param value Value to receive the properties.
 			Value & getProperties(Value &value) const override;
 
-			bool get(Udjat::Response::Value &value) const;
-			bool get(Udjat::Response::Table &value) const;
-
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
 			/// @param value Object for child properties.
@@ -316,24 +311,9 @@
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Value &value) const;
 
-			/// @brief Get child properties by path.
-			/// @param path	Child path.
-			/// @param report The report output.
-			/// @retval true if the child was found.
-			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Udjat::Response::Value &value) const;
-
-			/// @brief Get child report by path.
-			/// @param path	Child path.
-			/// @param report The report output.
-			/// @retval true if the child was found.
-			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
-
-			void getStates(Udjat::Response::Table &report) const;
-
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
+
 			virtual void for_each(const std::function<void(const Abstract::State &state)> &method) const;
 
 			inline auto begin() noexcept {

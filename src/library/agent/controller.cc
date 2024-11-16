@@ -47,7 +47,7 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Worker("agent",moduleinfo), Service("agents",moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Service("agents",moduleinfo) {
 		Logger::String{
 			"Initializing controller"
 		}.trace("agent");
@@ -98,50 +98,6 @@ namespace Udjat {
 
 		throw runtime_error(_("Core/Module subsystem failed to initialize"));
 
-	}
-
-	Worker::ResponseType Abstract::Agent::Controller::probe(const Request &request) const noexcept {
-
-		// Get request path.
-		const char *path = request.path();
-		if(*path == '/')
-			path++;
-
-		if(!strncasecmp(path,"agent/",6)) {
-			if(Logger::enabled(Logger::Debug)) {
-				Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,Worker::c_str());
-			}
-			return Worker::ResponseType::Both;
-		}
-
-		debug("probing agent path='",path,"'");
-
-		if(Logger::enabled(Logger::Debug)) {
-			Logger::String{"Accepting '",request.path(),"'"}.write(Logger::Debug,Worker::c_str());
-		}
-
-		return Worker::ResponseType::Both;
-	}
-
-	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Value &response) const {
-		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',value) ]----------------------");
-		if(!root) {
-			throw std::system_error(ENOENT,std::system_category(),"No agents");
-		}
-		return root->getProperties(request.path(),response);
-	}
-
-	bool Abstract::Agent::Controller::get(Request &request, Udjat::Response::Table &response) const {
-
-		debug("-[ GET('",Worker::c_str(),"://",request.path(),"',table) ]----------------------");
-
-		auto agent = find(request.path());
-		if(!agent){
-			throw std::system_error(ENOENT,std::system_category());
-		}
-
-		agent->get(response);
-		return true;
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {

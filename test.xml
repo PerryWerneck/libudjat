@@ -33,9 +33,9 @@
 
 	</agent>
 
-	<alert name='orphaned' type='file' strip-payload='yes'>
+	<!-- alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-	</alert>
+	</alert -->
 		
 	<!-- random name='random1' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
 

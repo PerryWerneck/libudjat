@@ -25,8 +25,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/value.h>
- #include <udjat/tools/response/table.h>
-
+ 
  namespace Udjat {
 
 	template <typename T>
@@ -96,29 +95,6 @@
 		return false;
 
 	}
-
-	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Value &value) const {
-		if(getFromPath(*this,path,value)) {
-			return true;
-		}
-		debug("Cant find Response::Value('",path,"'), trying with Udjat::Value('",path,"')");
-		return getProperties(path,(Udjat::Value &) value);
-	}
-
-	bool Abstract::Agent::getProperties(const char *path, Udjat::Response::Table &report) const {
-
-		if(getFromPath(*this,path,report)) {
-			return true;
-		}
-
-		if(!strcasecmp(path,"states")) {
-			getStates(report);
-			return true;
-		}
-
-		return false;
-	}
-
 
  }
 
