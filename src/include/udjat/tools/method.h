@@ -29,15 +29,13 @@
  #include <udjat/tools/request.h>
  #include <udjat/tools/response/value.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/abstract/object.h>
  #include <vector>
  #include <memory>
 
  namespace Udjat {
 
 	/// @brief Generic API method.
-	///
-	/// Send output in jsend format (https://github.com/omniti-labs/jsend)
-	///
 	class UDJAT_API Method {
 	private:
 
@@ -53,6 +51,11 @@
 		/// @param path The path for object request.
 		/// @param values The in/out values.
 		virtual void call(const char *path, Udjat::Value &values);
+
+		/// @brief Copy output values from single object to value.
+		/// @param object The source object
+		/// @param value The destination object, will receive the output properties from object.
+		void success(const Abstract::Object &object, Udjat::Value &value) const;
 		
 	public:
 		Method(const char *name);
