@@ -743,6 +743,7 @@ install_headers(
 install_headers(
   'src/include/udjat/tools/http/error.h',
   'src/include/udjat/tools/http/exception.h',
+  'src/include/udjat/tools/http/method.h',
   'src/include/udjat/tools/http/timestamp.h',
   'src/include/udjat/tools/http/client.h',
   'src/include/udjat/tools/http/mimetype.h',
