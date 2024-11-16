@@ -54,30 +54,4 @@
 		});
 	}
 
-	/*
-	UDJAT_API bool introspect(Udjat::Value &value) {
-		bool rc = false;
-		Worker::for_each([&value,&rc](const Worker &worker){
-			if(worker.introspect(value)) {
-				rc = true;
-			}
-			return false;
-		});
-		return rc;
-	}
-	*/
-
-	/*
-	UDJAT_API bool introspect(Udjat::String &xmldata) {
-		bool rc = false;
-		Worker::for_each([&xmldata,&rc](const Worker &worker){
-			if(worker.introspect(xmldata)) {
-				rc = true;
-			}
-			return false;
-		});
-		return rc;
-	}
-	*/
-
  }

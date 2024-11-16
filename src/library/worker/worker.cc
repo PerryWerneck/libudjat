@@ -138,18 +138,6 @@
 		return false;
 	}
 
-	/*
-	bool Worker::introspect(Udjat::Value &) const {
-		return false;
-	}
-	*/
-
-	/*
-	bool Worker::introspect(Udjat::String &) const {
-		return false;
-	}
-	*/
-
 	Worker::ResponseType Worker::probe(const Request &request) const noexcept {
 		debug(__FUNCTION__,"(",request.path(),")");
 		return probe(request,ResponseType::Value);

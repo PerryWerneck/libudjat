@@ -28,12 +28,88 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/string.h>
- #include <vector>
+ #include <udjat/tools/intl.h>
+ #include <list>
 
  using namespace std;
 
  namespace Udjat {
 
+	class Method::Controller {
+	private:
+		std::list<Method *> methods;
+		static std::mutex guard;
+
+		Controller() {
+		}
+
+	public:
+		static Controller & getInstance();
+
+		inline const Method & find(const char *name) const {
+			std::lock_guard<std::mutex> lock(guard);
+			for(const Method *method : methods) {
+				if(!strcasecmp(method->_name,name)) {
+					return *method;
+				}
+			}
+			throw system_error(ENOENT,system_category(),_( "Unable to handle request, no method"));		
+		}
+
+		inline void push_back(Method * method) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			methods.push_back(method);
+		}
+
+		inline void remove(Method * method) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			methods.remove(method);
+		}
+
+	};
+
+	std::mutex Method::Controller::guard;
+	Method::Controller & Method::Controller::getInstance() {
+		std::lock_guard<std::mutex> lock(guard);
+		static Controller instance;
+		return instance;
+	}
+
+	const Method & Method::find(const char *name) {
+		return Controller::getInstance().find(name);		
+	}
+
+	Method::Method(const char *n) : _name{n} {
+		Controller::getInstance().push_back(this);
+	}
+
+	Method::Method(const XML::Node &node) : Method{String{node,"name",true}.as_quark()} {
+	}
+
+	Method::~Method() {
+		Controller::getInstance().remove(this);
+	}
+
+	void Method::call(const char *, Udjat::Value &) {
+		throw system_error(ENOTSUP,system_category(),_( "Unable to handle request, no backend"));		
+	}
+
+	void Method::introspect(Udjat::Value &input, Udjat::Value &output) {
+
+		for_each([&input,&output](const size_t, bool in, const char *name, const Value::Type type){
+
+			if(input) {
+				input.append(name,type);
+			} else {
+				output.append(name,type);
+			}
+
+			return false;
+		});
+		
+	}
+
+	/*
 	Method::Method(const XML::Node &node) {
 
 		for(XML::Node child = node.child("input"); child; child = child.next_sibling("input")) {
@@ -109,5 +185,6 @@
 		}
 		return false;
 	}
+	*/
 
  }

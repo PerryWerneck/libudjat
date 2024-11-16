@@ -98,8 +98,12 @@
 		/// @return true if 'call' has returned true, false if not.
 		virtual bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
 
+		/// @brief Convert Value to 'object' and insert child.
+		/// @return The inserted value.
+		virtual Value & append(const char *name, const Type type = Object, const char *value = nullptr);
+
 		/// @brief Convert Value to 'array' and insert child.
-		/// @return Array entry.
+		/// @return The inserted value.
 		virtual Value & append(const Type type = Object);
 
 		/// @brief Clear contents, set value type.

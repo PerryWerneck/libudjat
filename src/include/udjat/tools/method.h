@@ -28,12 +28,78 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response/value.h>
+ #include <udjat/tools/container.h>
  #include <vector>
+ #include <memory>
 
  namespace Udjat {
 
-	/// @brief Convenience class for XML defined methods.
+	/// @brief Generic API method.
+	///
+	/// Send output in jsend format (https://github.com/omniti-labs/jsend)
+	///
 	class UDJAT_API Method {
+	private:
+
+		/// @brief The method name.
+		const char *_name;
+		class Controller;
+
+	protected:
+
+		typedef Method Super;
+
+		/// @brief Execute method.
+		/// @param path The path for object request.
+		/// @param values The in/out values.
+		virtual void call(const char *path, Udjat::Value &values);
+		
+	public:
+		Method(const char *name);
+		Method(const XML::Node &node);
+		virtual ~Method();
+
+		static const Method & find(const char *name);
+
+		inline const char * name() const noexcept {
+			return _name;
+		}
+
+#if __cplusplus >= 202002L
+		auto operator <=>(const char *n) const noexcept {
+			return strcasecmp(n,this->_name);
+		}
+#endif
+
+		/// @brief Get object introspections.
+		/// @param input The value to receive method inputs.
+		/// @param output The value to receive method outputs.
+		virtual void introspect(Value &input, Value &output);
+
+		/// @brief Enum method properties.
+		/// @param call The callback to handle property, returns true to interrupt the loop.
+		/// @return true if the loop was interrupted
+		virtual bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const = 0;
+
+	};
+
+	/*
+	/// @brief XML defined methods.
+	///
+	/// Send output in jsend format (https://github.com/omniti-labs/jsend)
+	///
+	class UDJAT_API Method {
+	public:
+
+		/// @brief The API call worker method.
+		struct Worker {
+
+			/// @brief Execute script, update value.
+			/// @param value The values for the worker.
+			virtual void call(Udjat::Value &value) = 0;
+
+		};
+
 	private:
 
 		struct Argument {
@@ -50,12 +116,18 @@
 
 		std::vector<Argument> args;
 
+		std::vector<std::shared_ptr<Worker>> workers;
+
 	protected:
 
 		typedef Method Super;
-		Method(const XML::Node &node);
+
+		/// @brief Run workers, update values.
+		/// @param values The set of value to read/update.
+		void call(Udjat::Value &values);
 
 	public:
+		Method(const XML::Node &node);
 		virtual ~Method();
 	
 		size_t size() const {
@@ -78,5 +150,6 @@
 		bool for_each_output(const std::function<bool(const size_t index, const char *name, const Value::Type type)> &call) const;
 
 	};
+	*/
 
  }

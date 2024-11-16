@@ -300,6 +300,10 @@
 		return *value;
 	}
 
+	Value & Value::append(const char *name, const Type, const char *) {
+		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to append '{}' on abstract value"),name});
+	}
+
 	Value & Value::append(const Type type) {
 		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to append '{}' on abstract value"),std::to_string(type)});
 	}

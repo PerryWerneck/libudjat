@@ -32,9 +32,6 @@ namespace Udjat {
 	UDJAT_API bool exec(Request &request, Response::Value &response);
 	UDJAT_API bool exec(Request &request, Response::Table &response);
 
-	// UDJAT_API bool introspect(Udjat::Value &value);
-	// UDJAT_API bool introspect(Udjat::String &xmldata);
-
 	class UDJAT_API Worker {
 	private:
 		const char * name = "";
@@ -85,16 +82,6 @@ namespace Udjat {
 		/// @param request The request.
 		/// @return The response type for this request.
 		virtual ResponseType probe(const Request &request) const noexcept;
-
-		/// @brief Get worker introspection.
-		/// @param value The object for worker introspection.
-		/// @return true if the value was updated.
-		// virtual bool introspect(Udjat::Value &value) const;
-
-		/// @brief Get worker introspection.
-		/// @param xmldata The string for XML data introspection.
-		/// @return true if the value was updated.
-		// virtual bool introspect(Udjat::String &xmldata) const;
 
 		/// @brief Get generic worker data, for example, the favicon.
 		/// @param name The property name.
