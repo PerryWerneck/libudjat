@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-12 00:47-0300\n"
+"POT-Creation-Date: 2024-11-16 03:04-0300\n"
 "PO-Revision-Date: 2024-08-15 01:13-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -470,21 +470,88 @@ msgstr "Protocolo de arquivo"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
-#: src/library/tools/value/abstract.cc:212
+#: src/library/tools/value/abstract.cc:43
+msgid "Undefined"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:44
+msgid "Array"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:45
+msgid "Object"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:46
+msgid "String"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:47
+msgid "Timestamp"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:48
+msgid "Signed"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:49
+msgid "Unsigned"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:50
+msgid "Real"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:51
+msgid "Boolean"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:52
+#, fuzzy
+msgid "Fraction"
+msgstr "Informação"
+
+#: src/library/tools/value/abstract.cc:53
+msgid "Icon"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:54
+msgid "Url"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:55
+msgid "State"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:57
+#, fuzzy
+msgid "int"
+msgstr "minuto"
+
+#: src/library/tools/value/abstract.cc:58
+msgid "integer"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:59
+msgid "number"
+msgstr ""
+
+#: src/library/tools/value/abstract.cc:261
 msgid "Abstract value is unable to handle items"
 msgstr "Valor abstrato não consegue manipular items"
 
-#: src/library/tools/value/abstract.cc:248
+#: src/library/tools/value/abstract.cc:297
 #, c++-format
 msgid "Cant find child '{}'"
 msgstr "Não encontrei elemento '{}'"
 
-#: src/library/tools/value/abstract.cc:255
+#: src/library/tools/value/abstract.cc:304
+#: src/library/tools/value/abstract.cc:308
 #, c++-format
 msgid "Unable to append '{}' on abstract value"
 msgstr "Incapaz de adicionar '{}' em um valor abstrato"
 
-#: src/library/tools/value/abstract.cc:259
+#: src/library/tools/value/abstract.cc:312
 #, c++-format
 msgid "Unable to set '{}' as '{}' on abstract value"
 msgstr "Incapaz de setar '{}' como '{}' em um valor abstrato"
