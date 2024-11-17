@@ -21,16 +21,14 @@
 
 #include <udjat/defs.h>
 #include <udjat/tools/request.h>
-#include <udjat/tools/response/value.h>
-#include <udjat/tools/response/table.h>
+#include <udjat/tools/response.h>
 #include <udjat/tools/quark.h>
 #include <udjat/tools/string.h>
 #include <ostream>
 
 namespace Udjat {
 
-	UDJAT_API bool exec(Request &request, Response::Value &response);
-	UDJAT_API bool exec(Request &request, Response::Table &response);
+	UDJAT_API bool exec(const Request &request, Response &response);
 
 	class UDJAT_API Worker {
 	private:
@@ -111,12 +109,11 @@ namespace Udjat {
 
 		/// @brief Process only the 'get' method.
 		/// @return false if the request method was not allowed.
-		virtual bool get(Request &request, Response::Value &response) const;
-		virtual bool get(Request &request, Response::Table &response) const;
+		virtual bool get(Request &request, Response &response) const;
 
 		/// @brief Process only the 'head' method.
 		/// @return false if the request method was not allowed.
-		virtual bool head(Request &request, Abstract::Response &response) const;
+		virtual bool head(Request &request, Response &response) const;
 
 		inline const char * c_str() const {
 			return name;
@@ -124,13 +121,9 @@ namespace Udjat {
 
 		virtual ~Worker();
 
-		/// @brief Process request, get response as value.
+		/// @brief Process request, get response.
 		/// @return true if the response was updated.
-		virtual bool work(Request &request, Response::Value &response) const;
-
-		/// @brief Process request, get response as table.
-		/// @return true if the response was updated.
-		virtual bool work(Request &request, Response::Table &response) const;
+		virtual bool work(Request &request, Response &response) const;
 
 	protected:
 

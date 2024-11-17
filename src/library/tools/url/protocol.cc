@@ -28,10 +28,8 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/request.h>
- #include <udjat/tools/response/value.h>
- #include <udjat/tools/response/table.h>
- #include <udjat/tools/response/object.h>
-
+ #include <udjat/tools/response.h>
+ 
  #ifndef _WIN32
 	#include <unistd.h>
  #endif // _WIN32
@@ -246,17 +244,10 @@
 						progress(0,0);
 
 						String str;
-						if(type == Udjat::Worker::Table) {
-
-							throw system_error(ENOTSUP,system_category(),"Cant handle worker response type (yet)");
-
-						} else {
-
-							Response::Object response;
-							if(worker->get(request,response)) {
-								str = response.to_string();
-							}
-
+						Response response;
+						
+						if(worker->get(request,response)) {
+							str = response.to_string();
 						}
 
 						progress(str.size(),str.size());

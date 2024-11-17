@@ -25,6 +25,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/value.h>
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/configuration.h>

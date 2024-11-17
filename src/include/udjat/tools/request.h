@@ -23,8 +23,6 @@
  #include <udjat/tools/http/method.h>
  #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/request.h>
- #include <udjat/tools/response/value.h>
- #include <udjat/tools/response/table.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
 
@@ -60,8 +58,6 @@
 		inline unsigned int version() const noexcept {
 			return apiver;
 		}
-
-		UDJAT_DEPRECATED(const char * getPath() const noexcept);
 
 		/// @brief Is the request empty?
 		/// @return True if the request path is empty.

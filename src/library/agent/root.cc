@@ -37,7 +37,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>
- #include <udjat/tools/response/object.h>
+ #include <udjat/tools/response.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/alert/activation.h>
  #include <udjat/module/abstract.h>
@@ -146,6 +146,8 @@
 					return;
 				}
 
+				// TODO: Check HAVE_SMBIOS, use it if available
+				/*
 				URL sysid;
 
 				if(Module::find("dmi")) {
@@ -156,7 +158,7 @@
 
 					try {
 
-						Udjat::Response::Object value;
+						Udjat::Response value;
 						if(sysid.get(value)) {
 							Object::properties.summary = Quark{value["value"].to_string().c_str()}.c_str();
 							debug(Object::properties.summary);
@@ -185,6 +187,7 @@
 					}
 
 				}
+				*/
 
 				super::start();
 

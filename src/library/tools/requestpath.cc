@@ -21,6 +21,7 @@
   * @brief Brief description of this source.
   */
 
+/*
  #include <config.h>
  #include <udjat/tools/abstract/request-path.h>
  #include <udjat/tools/xml.h>
@@ -80,3 +81,4 @@
 	}
 
  }
+*/

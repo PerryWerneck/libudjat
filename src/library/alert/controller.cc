@@ -279,7 +279,7 @@
 
 	}
 
-	bool Alert::Controller::get(Request &, Response::Value &response) const {
+	bool Alert::Controller::get(Request &, Response &response) const {
 
 		response.reset(Value::Array);
 

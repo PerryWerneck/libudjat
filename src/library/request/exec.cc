@@ -25,8 +25,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/request.h>
- #include <udjat/tools/response/value.h>
- #include <udjat/tools/response/table.h>
+ #include <udjat/tools/response.h>
  #include <udjat/tools/worker.h>
  #include <udjat/tools/intl.h>
  #include <stdexcept>
@@ -36,6 +35,7 @@
 
  namespace Udjat {
 
+	/*
 	UDJAT_API bool exec(Request &request, Response::Value &response) {
 		return Worker::for_each([&request,&response](const Worker &worker) {
 			if(worker.probe(request) & Worker::Value) {
@@ -53,5 +53,6 @@
 			return false;
 		});
 	}
+	*/
 
  }

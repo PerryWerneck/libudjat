@@ -21,6 +21,7 @@
   * @brief Implement response object.
   */
 
+/*
  #include <config.h>
  #include <udjat/tools/abstract/response.h>
  #include <udjat/tools/response/value.h>
@@ -215,3 +216,4 @@
  }
 
 
+*/
