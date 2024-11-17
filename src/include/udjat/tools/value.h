@@ -115,6 +115,10 @@
 		/// @brief Set valuse as string and type.
 		virtual Value & set(const char *value, const Type type = String);
 
+		inline Value & set(char *value, const Type type = String) {
+			return set((const char *) value, type);
+		}
+
 		/// @brief Emit event, allowing modules to change value contents.
 		/// @param event_name The event name that will be passed to listeners.
 		void emit_event(const char *event_name, const char *event_data = nullptr);

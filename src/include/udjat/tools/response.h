@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,10 +17,162 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /**
-  * @brief Legacy header.
-  */
-
  #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/tools/response/value.h>
+ #include <udjat/tools/value.h>
+ #include <string>
+ #include <map>
+
+ namespace Udjat {
+
+	/// @brief Object response.
+	/// Response for api call in format jsexec (https://github.com/omniti-labs/jsend)
+	class UDJAT_API Response : public Value {
+	public:
+		enum State : uint8_t {
+			Success = 0,
+			Error = 1,
+			Failure = 2
+		};
+
+	protected:
+
+		class Value : public Udjat::Value {
+		private:
+			std::map<std::string,Value> children;
+
+		public:
+			Value();
+			virtual ~Value();
+
+			operator Type() const noexcept override;
+
+			bool empty() const noexcept override;
+			bool isNull() const override;
+
+			bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override;
+			Udjat::Value & operator[](const char *name) override;
+
+			Udjat::Value & append(const Udjat::Value::Type type = Udjat::Value::Undefined) override;
+			Udjat::Value & reset(const Udjat::Value::Type type) override;
+			Udjat::Value & set(const char *value, const Type type = String) override;
+			Udjat::Value & set(const Udjat::Value &value) override;
+
+		};
+
+		Value data;	/// @brief The response data.
+
+		/// @brief Response type.
+		MimeType mimetype = MimeType::custom;
+
+		/// @brief Caching information.
+		struct {
+			/// @brief The expiration time.
+			TimeStamp expires = 0;
+
+			/// @brief The last update time.
+			TimeStamp last_modified = 0;
+		} timestamp;
+
+		struct {
+			State value = Success;
+			int code = 0;
+			bool not_modified = false;
+			size_t total_count = 0;	/// @brief The item count (for X-Total-Count http header)
+			std::string message;
+		} status;
+
+		void failed(const std::exception &e) noexcept;
+
+	public:
+		Response(const MimeType m = MimeType::json) : mimetype(m) {
+		}
+
+		virtual ~Response();
+
+		operator Value::Type() const noexcept override;
+
+		inline operator MimeType() const noexcept {
+			return this->mimetype;
+		}
+
+		inline bool operator ==(const MimeType mimetype) const noexcept {
+			return this->mimetype == mimetype;
+		}
+
+		inline bool operator !=(const MimeType mimetype) const noexcept {
+			return this->mimetype != mimetype;
+		}
+
+		inline operator bool() const noexcept {
+			return status.code == 0;
+		}
+
+		inline int status_code() const noexcept {
+			return status.code;
+		}
+
+		bool empty() const noexcept override;
+
+		/// @brief Enumerate contents.
+		/// @param call Method to call on every 'data' element.
+		/// @return true if que enumeration was interrupted by a return 'true' on call.
+		bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override;
+
+		/// @brief Get data value by name
+		/// @param name Name of the requested value.
+		/// @return The data[name] object.
+		Udjat::Value & operator[](const char *name) override;
+
+		inline Udjat::Value & contents() {
+			return data;
+		}
+
+		/// @brief Set item count for this response.
+		/// @param value The item count (for X-Total-Count http header).
+		inline void count(size_t value) noexcept {
+			status.total_count = value;
+		}
+
+		inline size_t count() const noexcept {
+			return status.total_count;
+		}
+
+		/// @brief Convert response to formatted string.
+		virtual std::string to_string() const noexcept;
+
+		/// @brief Set 'not-modified' status.
+		inline void not_modified(bool state) noexcept {
+			status.not_modified = state;
+		}
+
+		/// @brief Get 'not-modified' status.
+		inline bool not_modified() const noexcept {
+			return status.not_modified;
+		}
+
+		/// @brief Set timestamp for data, ignore zeros.
+		/// @return Current value.
+		time_t last_modified(const time_t time) noexcept;
+
+		/// @brief Set response expiration time, ignore zeros.
+		/// @param timestamp Timestamp of response expiration, should be greater than time(0)
+		/// @return Current expiration time.
+		time_t expires(const time_t timestamp) noexcept;
+
+		inline time_t last_modified() const noexcept {
+			return (time_t) timestamp.last_modified;
+		}
+
+		inline time_t expires() const noexcept {
+			return (time_t) timestamp.expires;
+		}
+
+		/// @brief Serialize according to the mimetype.
+		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
+		void serialize(std::ostream &stream) const;
+
+	};
+
+ }

@@ -19,21 +19,118 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <algorithm>
- #include <private/request.h>
- #include <udjat/tools/abstract/response.h>
- #include <udjat/tools/http/timestamp.h>
- #include <udjat/tools/response/value.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/string.h>
+ #include <udjat/tools/response.h>
  #include <udjat/tools/exception.h>
+ #include <udjat/tools/intl.h>
  #include <ctime>
+ #include <stdexcept>
 
  using namespace std;
 
  namespace Udjat {
 
+	Response::~Response() {
+	}
+
+	Response::operator Value::Type() const noexcept {
+		return (Value::Type) data;
+	}
+
+	bool Response::empty() const noexcept {
+		return data.empty();
+	}
+
+	bool Response::for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const {
+		return data.for_each(call);
+	}
+
+	Udjat::Value & Response::operator[](const char *name) {
+		return data[name];
+	}
+
+	std::string Response::to_string() const noexcept {
+		return data.to_string();
+	}
+
+	void Response::failed(const std::exception &e) noexcept {
+
+		data.reset(Value::Object);
+		status.message = e.what();
+		status.value = State::Failure;
+
+		{
+			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
+			if(except) {
+				status.code = except->syscode();
+				data["title"] = except->title();
+				data["body"] = except->body();
+				data["domain"] = except->domain();
+				data["url"] = except->url();
+				return;
+			}
+		}
+
+		{
+			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
+			if(except) {
+				status.code = except->code().value();
+				data["title"] = _("System error");
+				data["category"] = except->code().category().name();
+				data["body"] = except->code().message();
+				return;
+			}
+		}
+
+		status.code = -1;
+	}
+
+	void Response::serialize(std::ostream &stream) const {
+
+		// https://github.com/omniti-labs/jsend
+
+		static const char * status_names[] = {
+			"success",
+			"error",
+			"failure"
+		};
+
+		switch(mimetype) {
+		case Udjat::Value::Undefined:
+			throw runtime_error("Unable to serialize undefined value");
+			break;
+
+		case Udjat::MimeType::xml:
+			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status>";
+			stream << status_names[status.value] << "</status>";
+			if(status.code) {
+				stream << "<code>" << status.code << "</code>";
+			}
+			if(!status.message.empty()) {
+				stream << "<message>" << status.message << "</message>";
+			}
+
+			stream << "<data>";
+			data.to_xml(stream);
+			stream << "</data></response>";
+			break;
+
+		case Udjat::MimeType::json:
+			break;
+
+		case Udjat::MimeType::yaml:
+			break;
+
+		case MimeType::sh:
+			break;
+
+		default:
+			data.serialize(stream,mimetype);
+		}
+
+	}
+
+
+	/*
 	void Response::Value::serialize(std::ostream &stream) const {
 
 		Abstract::Response::serialize(stream);
@@ -88,6 +185,7 @@
 
 		return "";
 	}
+	*/
 
  }
 

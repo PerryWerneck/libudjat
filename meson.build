@@ -251,7 +251,6 @@ lib_src += [
   'src/library/state/state.cc',
   'src/library/worker/controller.cc',
   'src/library/worker/worker.cc',
-  'src/library/tools/abstract/response.cc',
   'src/library/tools/activatable.cc',
   'src/library/tools/application/application.cc',
   'src/library/tools/application/init.cc',
@@ -682,7 +681,6 @@ install_headers(
 
 install_headers(
   'src/include/udjat/tools/abstract/request-path.h',
-  'src/include/udjat/tools/abstract/response.h',
   'src/include/udjat/tools/abstract/object.h',
   subdir: 'udjat/tools/abstract'  
 )
@@ -748,13 +746,6 @@ install_headers(
   'src/include/udjat/tools/http/client.h',
   'src/include/udjat/tools/http/mimetype.h',
   subdir: 'udjat/tools/http'  
-)
-
-install_headers(
-  'src/include/udjat/tools/response/object.h',
-  'src/include/udjat/tools/response/table.h',
-  'src/include/udjat/tools/response/value.h',
-  subdir: 'udjat/tools/response'  
 )
 
 install_headers(
