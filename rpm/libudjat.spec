@@ -18,7 +18,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.0.0
+Version:		1.1
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -32,9 +32,21 @@ BuildRequires:	binutils
 BuildRequires:	coreutils
 
 %if "%{_vendor}" == "debbuild"
-BuildRequires:  meson-deb-macros
+BuildRequires:	meson-deb-macros
+BuildRequires:	libeconf-dev
+BuildRequires:	libpugixml-dev
+BuildRequires:	libvmdetect-dev
+BuildRequires:	libdmiget-dev
+BuildRequires:	libsystemd-dev
+BuildRequires:	pkg-config
+BuildRequires:	libsystemd-dev
 %else
-BuildRequires:	gcc-c++ >= 5
+BuildRequires:	gcc-c++
+BuildRequires:	pkgconfig(libeconf)
+BuildRequires:	pkgconfig(pugixml)
+BuildRequires:	pkgconfig(dmiget)
+BuildRequires:	pkgconfig(libsystemd)
+BuildRequires:	pkgconfig(vmdetect) >= 1.3
 %endif
 
 %if 0%{?suse_version} == 01500
@@ -43,10 +55,6 @@ BuildRequires:  meson = 0.61.4
 BuildRequires:  meson
 %endif
 
-BuildRequires:	pkgconfig(libeconf)
-BuildRequires:	pkgconfig(pugixml)
-BuildRequires:	pkgconfig(vmdetect) >= 1.3
-BuildRequires:	pkgconfig(libsystemd)
 
 %description
 UDJat core library
@@ -61,6 +69,14 @@ Main library for udjat modules.
 
 %package -n %{name}%{_libvrs}
 Summary: UDJat core library
+Provides:	%{name}%{MAJOR_VERSION}_%{MINOR_VERSION} = %{version}
+
+%if "%{_vendor}" == "debbuild"
+Requires:	libeconf0
+Requires:	libvmdetect1-3
+Requires:	libdmiget1
+Requires:	libpugixml1v5
+%endif
 
 %description -n %{name}%{_libvrs}
 UDJat core library
@@ -69,21 +85,35 @@ Main library for udjat modules.
 
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
-%package -n udjat-devel
-Summary: Development files for %{name}
-Requires: %{name}%{_libvrs} = %{version}
-Requires: pkgconfig(pugixml)
-Requires: gcc-c++
+%package devel
+Summary:	Development files for %{name}
+Requires:	%{name}%{_libvrs} = %{version}
 
-%description -n udjat-devel
+Provides:	udjat-devel
+Provides:	udjat-%{MAJOR_VERSION}-%{MINOR_VERSION}-devel
+
+%if "%{_vendor}" == "debbuild"
+Provides:	%{name}-dev
+Provides:	pkgconfig(%{name})
+Provides:	pkgconfig(%{name}-static)
+Requires:	libpugixml-dev
+Requires:	libvmdetect-dev
+Requires:	libdmiget-dev
+%else
+Requires:	pkgconfig(pugixml)
+%endif
+
+%description devel
 
 Development files for Udjat main library.
 
+%if "%{_vendor}" != "debbuild"
 %lang_package -n %{name}%{_libvrs}
+%endif
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
-%%prep
+%prep
 %autosetup
 %meson
 
@@ -92,24 +122,23 @@ Development files for Udjat main library.
 
 %install
 %meson_install
-%find_lang %{name}-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
+
+mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
+mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
+
+%find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
-%{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
-
 %dir %{_libdir}/udjat
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
-%dir /var/log/udjat
-
-%dir %{_sysconfdir}/udjat.conf.d
-%config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
+%{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
 %files -n %{name}%{_libvrs}-lang -f langfiles
 
-%files -n udjat-devel
+%files devel
 %defattr(-,root,root)
 
 %{_libdir}/*.so
@@ -130,9 +159,6 @@ Development files for Udjat main library.
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h
-
-%dir %{_includedir}/udjat/tools/response
-%{_includedir}/udjat/tools/response/*.h
 
 %dir %{_includedir}/udjat/alert
 %{_includedir}/udjat/alert/*.h

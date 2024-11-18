@@ -82,9 +82,17 @@
 			State value = Success;
 			int code = 0;
 			bool not_modified = false;
-			size_t total_count = 0;	/// @brief The item count (for X-Total-Count http header)
+			size_t total_count = 0;	
 			std::string message;
 		} status;
+
+		/// @brief Values for content-range & X-Total-Count headers.
+		struct {
+			size_t from = 0;
+			size_t to = 0;
+			size_t total = 0;
+			size_t count = 0; ///< @brief The item count (for X-Total-Count http header)
+		} range;
 
 	public:
 		Response(const MimeType m = MimeType::json) : mimetype(m) {
@@ -139,11 +147,21 @@
 		/// @brief Set item count for this response.
 		/// @param value The item count (for X-Total-Count http header).
 		inline void count(size_t value) noexcept {
-			status.total_count = value;
+			range.count = value;
 		}
 
 		inline size_t count() const noexcept {
-			return status.total_count;
+			return range.count;
+		}
+
+		/// @brief Set range for this response (Content-Range http header).
+		/// @param from First item.
+		/// @param to Last item.
+		/// @param total Item count.
+		inline void content_range(size_t from, size_t to, size_t total) noexcept {
+			range.from = from;
+			range.to = to;
+			range.total = total;
 		}
 
 		/// @brief Convert response to formatted string.
