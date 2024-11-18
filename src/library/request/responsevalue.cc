@@ -79,8 +79,14 @@
 	}
 
 	Udjat::Value & Response::Value::set(const char *value, const Type type) {
+		debug("set(",std::to_string(type),")='",value,"'");
 		this->type = type;
 		this->value = value;
+		return *this;
+	}
+
+	const Udjat::Value & Response::Value::get(std::string &value) const {
+		value = this->value;
 		return *this;
 	}
 

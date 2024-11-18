@@ -46,9 +46,9 @@
 	public:
 		static Controller & getInstance();
 
-		inline const Method & find(const char *name) const {
+		inline Method & find(const char *name) const {
 			std::lock_guard<std::mutex> lock(guard);
-			for(const Method *method : methods) {
+			for(Method *method : methods) {
 				if(!strcasecmp(method->_name,name)) {
 					return *method;
 				}
@@ -75,7 +75,7 @@
 		return instance;
 	}
 
-	const Method & Method::find(const char *name) {
+	Method & Method::find(const char *name) {
 		return Controller::getInstance().find(name);		
 	}
 
@@ -88,6 +88,10 @@
 
 	Method::~Method() {
 		Controller::getInstance().remove(this);
+	}
+
+	void Method::call(const char *name, const char *path, Udjat::Value &values) {
+		find(name).call(path,values);
 	}
 
 	void Method::call(const char *, Udjat::Value &) {

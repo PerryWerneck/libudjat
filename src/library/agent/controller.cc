@@ -47,7 +47,7 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Service("agents",moduleinfo) {
+	Abstract::Agent::Controller::Controller() : Service{"agents",moduleinfo}, Method{"agent"} {
 		Logger::String{
 			"Initializing controller"
 		}.trace("agent");
@@ -290,6 +290,15 @@ namespace Udjat {
 			});
 
 		}
+	}
+
+	bool Abstract::Agent::Controller::for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const {
+		// TODO: Enum agent standard properties.
+		return false;	
+	}
+
+	void Abstract::Agent::Controller::call(const char *path, Udjat::Value &values) {
+		find(path,true)->getProperties(values);
 	}
 
 	void Abstract::Agent::Controller::on_timer() {

@@ -25,14 +25,13 @@
 #include <udjat/agent.h>
 #include <unordered_map>
 #include <udjat/tools/quark.h>
-#include <pugixml.hpp>
-#include <udjat/tools/worker.h>
+#include <udjat/tools/xml.h>
 #include <udjat/module/abstract.h>
 #include <udjat/tools/factory.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
-#include <udjat/tools/worker.h>
+#include <udjat/tools/method.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -42,7 +41,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Service, private Method, public MainLoop::Timer {
 	private:
 
 		time_t updating = 0;
@@ -76,6 +75,11 @@ namespace Udjat {
 
 		/// @brief Load agent properties from XML node.
 		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
+
+		// Method
+		bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const override;
+		void call(const char *path, Udjat::Value &values) override;
+
 
 	};
 

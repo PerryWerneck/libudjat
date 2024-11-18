@@ -18,7 +18,7 @@
  */
 
  /**
-  * @brief Declares an API call.
+  * @brief Declares a method call.
   */
 
  #pragma once
@@ -47,11 +47,6 @@
 
 		typedef Method Super;
 
-		/// @brief Execute method.
-		/// @param path The path for object request.
-		/// @param values The in/out values.
-		virtual void call(const char *path, Udjat::Value &values);
-
 		/// @brief Copy output values from single object to value.
 		/// @param object The source object
 		/// @param value The destination object, will receive the output properties from object.
@@ -62,7 +57,7 @@
 		Method(const XML::Node &node);
 		virtual ~Method();
 
-		static const Method & find(const char *name);
+		static Method & find(const char *name);
 
 		inline const char * name() const noexcept {
 			return _name;
@@ -83,6 +78,16 @@
 		/// @param call The callback to handle property, returns true to interrupt the loop.
 		/// @return true if the loop was interrupted
 		virtual bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const = 0;
+
+		/// @brief Execute method.
+		/// @param path The path for object request.
+		/// @param values The in/out values.
+		static void call(const char *name, const char *path, Udjat::Value &values);
+
+		/// @brief Execute method.
+		/// @param path The path for object request.
+		/// @param values The in/out values.
+		virtual void call(const char *path, Udjat::Value &values) = 0;
 
 	};
 

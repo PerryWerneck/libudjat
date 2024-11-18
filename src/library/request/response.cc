@@ -40,6 +40,14 @@
 		return data.empty();
 	}
 
+	bool Response::isNull() const {
+		return data.isNull();
+	}
+
+	Udjat::Value & Response::reset(const Udjat::Value::Type type) {
+		return data.reset(type);
+	}
+
 	bool Response::for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const {
 		return data.for_each(call);
 	}
@@ -100,7 +108,7 @@
 			break;
 
 		case Udjat::MimeType::xml:
-			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status>";
+			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status type='String'>";
 			stream << status_names[status.value] << "</status>";
 			if(status.code) {
 				stream << "<code>" << status.code << "</code>";

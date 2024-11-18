@@ -34,30 +34,30 @@
 
  using namespace std;
 
+ static const struct {
+	Udjat::Value::Type type;
+	const char *name;
+ } typenames[] = {
+	{ Udjat::Value::Type::Undefined,	N_("Undefined") },	// Allways the first one
+	{ Udjat::Value::Type::Array,		N_("Array") 	},
+	{ Udjat::Value::Type::Object,		N_("Object") 	},
+	{ Udjat::Value::Type::String,		N_("String") 	},
+	{ Udjat::Value::Type::Timestamp,	N_("Timestamp") },
+	{ Udjat::Value::Type::Signed,		N_("Signed") 	},
+	{ Udjat::Value::Type::Unsigned,		N_("Unsigned") 	},
+	{ Udjat::Value::Type::Real,			N_("Real") 		},
+	{ Udjat::Value::Type::Boolean,		N_("Boolean") 	},
+	{ Udjat::Value::Type::Fraction,		N_("Fraction") 	},
+	{ Udjat::Value::Type::Icon,			N_("Icon") 		},
+	{ Udjat::Value::Type::Url,			N_("Url") 		},
+	{ Udjat::Value::Type::State,		N_("State") 	},
+
+	{ Udjat::Value::Type::Signed,		N_("int") 		},
+	{ Udjat::Value::Type::Signed,		N_("integer") 	},
+	{ Udjat::Value::Type::Signed,		N_("number") 	},
+ };
+
  namespace Udjat {
-
-	static const struct {
-		Value::Type type;
-		const char *name;
-	} typenames[] = {
-		{ Value::Type::Undefined,	N_("Undefined") },
-		{ Value::Type::Array,		N_("Array") 	},
-		{ Value::Type::Object,		N_("Object") 	},
-		{ Value::Type::String,		N_("String") 	},
-		{ Value::Type::Timestamp,	N_("Timestamp") },
-		{ Value::Type::Signed,		N_("Signed") 	},
-		{ Value::Type::Unsigned,	N_("Unsigned") 	},
-		{ Value::Type::Real,		N_("Real") 		},
-		{ Value::Type::Boolean,		N_("Boolean") 	},
-		{ Value::Type::Fraction,	N_("Fraction") 	},
-		{ Value::Type::Icon,		N_("Icon") 		},
-		{ Value::Type::Url,			N_("Url") 		},
-		{ Value::Type::State,		N_("State") 	},
-
-		{ Value::Type::Signed,		N_("int") 		},
-		{ Value::Type::Signed,		N_("integer") 	},
-		{ Value::Type::Signed,		N_("number") 	},
-	};
 
 	Value::Type Value::TypeFactory(const char *name) {
 
@@ -534,27 +534,14 @@
 
  	const char * to_string(Udjat::Value::Type type) noexcept {
 
-		static const char *typenames[] = {
-			"undefined",
-			"array",
-			"object",
-			"string",
-			"timestamp",
-			"signed",
-			"unsigned",
-			"real",
-			"boolean",
-			"fraction",
-			"icon-name"
-		};
-
-		if( (size_t) type >= (N_ELEMENTS(typenames)) )
-			return "unknown";
-
-		return typenames[type];
-
- 	}
-
+		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
+			if(typenames[ix].type == type) {
+				return dgettext(GETTEXT_PACKAGE,typenames[ix].name);
+			}
+		}
+		return _( "Unknown" );
+	}
+	
  }
 
 

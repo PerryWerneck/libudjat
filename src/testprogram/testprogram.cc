@@ -25,6 +25,8 @@
  #include <udjat/defs.h>
  #include <udjat/tests.h>
  #include <udjat/tools/system.h>
+ #include <udjat/tools/method.h>
+ #include <udjat/tools/response.h>
 
  using namespace std;
  using namespace Udjat;
@@ -185,6 +187,18 @@
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
+
+		MainLoop::getInstance().TimerFactory(1000,[]{
+			cout << "-[ On Timer ]---------------------------------------------------" << endl;
+
+			Response response{Udjat::xml};			
+			Method::call("agent","",response);
+			response.serialize(cout);
+			cout << endl;
+
+			cout << "----------------------------------------------------------------" << endl;
+			return false;
+		});
 
 	});
  }

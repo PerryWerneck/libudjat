@@ -53,6 +53,8 @@
 			bool empty() const noexcept override;
 			bool isNull() const override;
 
+			const Udjat::Value & get(std::string &value) const override;
+
 			bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override;
 			Udjat::Value & operator[](const char *name) override;
 
@@ -91,6 +93,9 @@
 		}
 
 		virtual ~Response();
+
+		bool isNull() const override;
+		Udjat::Value & reset(const Udjat::Value::Type type) override;
 
 		operator Value::Type() const noexcept override;
 
