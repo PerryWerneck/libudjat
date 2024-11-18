@@ -123,12 +123,28 @@
 			break;
 
 		case Udjat::MimeType::json:
+			stream << "{\"status\":\"" << status_names[status.value] << "\",\"data\":";
+			data.to_json(stream);
+			stream << "}";
 			break;
 
 		case Udjat::MimeType::yaml:
+			stream << "status: " << status_names[status.value] << endl << "data:" << endl;
+			data.to_yaml(stream,4);
+			break;
+
+		case Udjat::MimeType::html:
+			stream << "<!doctype html xmlns=\"http://www.w3.org/1999/xhtml\">" \
+						"<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>"
+					<< (status.message.empty() ? "Response" : status.message)
+					<< "</title></head><body>";
+			data.to_html(stream);
+			stream << "</body></html>";
 			break;
 
 		case MimeType::sh:
+			stream << "status=\"" << status_names[status.value] << "\"" << endl;
+			data.to_sh(stream);
 			break;
 
 		default:
