@@ -110,7 +110,7 @@
 		virtual Value & reset(const Type type = Undefined) = 0;
 
 		/// @brief Convert value to 'object' and insert child.
-		virtual Value & set(const Value &value) = 0;
+		virtual Value & set(const Value &value);
 
 		/// @brief Set valuse as string and type.
 		virtual Value & set(const char *value, const Type type = String);

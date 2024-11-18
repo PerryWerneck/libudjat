@@ -312,7 +312,11 @@
 		throw system_error(ENOTSUP,system_category(),Logger::Message{_("Unable to set '{}' as '{}' on abstract value"),value,std::to_string(type)});
 	}
 
-	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> UDJAT_UNUSED(&call)) const {
+	Value & Value::set(const Value &value) {
+		return set(value.to_string().c_str(),(Type) value);
+	}
+
+	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> &) const {
 		throw system_error(ENOTSUP,system_category(),"Invalid operation for this value");
 	}
 

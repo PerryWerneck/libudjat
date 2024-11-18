@@ -27,7 +27,7 @@
  namespace Udjat {
 
 	/// @brief Object response.
-	/// Response for api call in format jsexec (https://github.com/omniti-labs/jsend)
+	/// Response for api call in format jsend (https://github.com/omniti-labs/jsend)
 	class UDJAT_API Response : public Value {
 	public:
 		enum State : uint8_t {
@@ -40,7 +40,9 @@
 
 		class Value : public Udjat::Value {
 		private:
+			Udjat::Value::Type type = Udjat::Value::Object;
 			std::map<std::string,Value> children;
+			std::string value;
 
 		public:
 			Value();
@@ -57,7 +59,6 @@
 			Udjat::Value & append(const Udjat::Value::Type type = Udjat::Value::Undefined) override;
 			Udjat::Value & reset(const Udjat::Value::Type type) override;
 			Udjat::Value & set(const char *value, const Type type = String) override;
-			Udjat::Value & set(const Udjat::Value &value) override;
 
 		};
 

@@ -315,6 +315,7 @@ lib_src += [
   'src/library/tools/logger.cc',
   'src/library/tools/object.cc',
   'src/library/tools/method.cc',
+  'src/library/request/responsevalue.cc',
 ]
 
 test_src = [

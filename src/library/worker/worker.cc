@@ -126,15 +126,11 @@
 	}
 
 
-	bool Worker::get(Request &, Response::Value &) const {
+	bool Worker::get(Request &, Response &) const {
 		return false;
 	}
 
-	bool Worker::get(Request &, Response::Table &) const {
-		return false;
-	}
-
-	bool Worker::head(Request &, Abstract::Response &) const {
+	bool Worker::head(Request &, Response &) const {
 		return false;
 	}
 
@@ -168,7 +164,7 @@
 		return ResponseType::None;
 	}
 
-	bool Worker::work(Request &request, Response::Value &response) const {
+	bool Worker::work(Request &request, Response &response) const {
 
 		request.pop(); // Remove first element.
 
@@ -188,22 +184,7 @@
 		}
 
 	}
-
-	bool Worker::work(Request &request, Response::Table &response) const {
-
-		request.pop(); // Remove first element.
-
-		debug(__FUNCTION__,"(",request.path(),")");
-
-		if( ((HTTP::Method) request) == HTTP::Get) {
-			debug("HTTP GET");
-			return get(request,response);
-		}
-
-		return false;
-
-	}
-
+	
 	std::ostream & Worker::info() const {
 		return cout << name << "\t";
 	}

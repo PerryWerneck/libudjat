@@ -196,7 +196,10 @@
 			return worker;
 
 		}
+ 
+		// TODO: Check for method.
 
+		/*
 		// 3 - check for worker.
 		{
 			const Udjat::Worker *worker = nullptr;
@@ -220,7 +223,7 @@
 				/// @brief Proxy forwarding URL requests to worker.
 				class Proxy : public Protocol::Worker {
 				private:
-					const Udjat::Worker *worker;
+					const Protocol::Worker *worker;
 					Udjat::Request request;
 					Udjat::Worker::ResponseType type;
 					MimeType mime = MimeType::json;
@@ -244,7 +247,7 @@
 						progress(0,0);
 
 						String str;
-						Response response;
+						Udjat::Response response;
 						
 						if(worker->get(request,response)) {
 							str = response.to_string();
@@ -264,6 +267,7 @@
 			}
 
 		}
+			*/
 
 		// 4 - Check for available module
 		// TODO: Check if there's a module with protocol name, load it if necessary.
