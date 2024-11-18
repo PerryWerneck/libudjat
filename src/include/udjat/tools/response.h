@@ -86,13 +86,14 @@
 			std::string message;
 		} status;
 
-		void failed(const std::exception &e) noexcept;
-
 	public:
 		Response(const MimeType m = MimeType::json) : mimetype(m) {
 		}
 
 		virtual ~Response();
+
+		void failed(const std::exception &e) noexcept;
+
 
 		bool isNull() const override;
 		Udjat::Value & reset(const Udjat::Value::Type type) override;
@@ -180,5 +181,15 @@
 		void serialize(std::ostream &stream) const;
 
 	};
+
+ }
+
+ namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::Response::State state);
+
+	inline ostream& operator<< (ostream& os, Udjat::Response::State state) {
+			return os << to_string(state);
+	}
 
  }

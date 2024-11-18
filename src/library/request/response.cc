@@ -96,12 +96,6 @@
 
 		// https://github.com/omniti-labs/jsend
 
-		static const char * status_names[] = {
-			"success",
-			"error",
-			"failure"
-		};
-
 		switch(mimetype) {
 		case Udjat::Value::Undefined:
 			throw runtime_error("Unable to serialize undefined value");
@@ -109,7 +103,7 @@
 
 		case Udjat::MimeType::xml:
 			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><response><status type='String'>";
-			stream << status_names[status.value] << "</status>";
+			stream << status.value << "</status>";
 			if(status.code) {
 				stream << "<code>" << status.code << "</code>";
 			}
@@ -123,13 +117,13 @@
 			break;
 
 		case Udjat::MimeType::json:
-			stream << "{\"status\":\"" << status_names[status.value] << "\",\"data\":";
+			stream << "{\"status\":\"" << status.value << "\",\"data\":";
 			data.to_json(stream);
 			stream << "}";
 			break;
 
 		case Udjat::MimeType::yaml:
-			stream << "status: " << status_names[status.value] << endl << "data:" << endl;
+			stream << "status: \"" << status.value << "\"" << endl << "data:" << endl;
 			data.to_yaml(stream,4);
 			break;
 
@@ -143,7 +137,7 @@
 			break;
 
 		case MimeType::sh:
-			stream << "status=\"" << status_names[status.value] << "\"" << endl;
+			stream << "status=\"" << status.value << "\"" << endl;
 			data.to_sh(stream);
 			break;
 
@@ -153,63 +147,24 @@
 
 	}
 
-
-	/*
-	void Response::Value::serialize(std::ostream &stream) const {
-
-		Abstract::Response::serialize(stream);
-
-		switch(mimetype) {
-		case Udjat::MimeType::xml:
-
-			// Format as XML
-			to_xml(stream);
-			stream << "</response>";
-
-			break;
-
-		case Udjat::MimeType::json:
-			Udjat::Value::serialize(stream,mimetype);
-			stream << "}";
-			break;
-
-		default:
-			Udjat::Value::serialize(stream,mimetype);
-		}
-
-	}
-
-	Response::Value::operator Value::Type() const noexcept {
-		return Value::Object;
-	}
-
-	bool Response::Value::isNull() const {
-		return false;
-	}
-
-	Udjat::Value & Response::Value::reset(const Udjat::Value::Type) {
-		throw system_error(EPERM,system_category(),"Response types are fixed");
-	}
-
-	Udjat::Value & Response::Value::set(const Udjat::Value &) {
-		throw system_error(EPERM,system_category(),"Response types are fixed");
-	}
-
-	std::string Response::Value::to_string() const noexcept {
-
-		try {
-
-			return Udjat::Value::to_string(mimetype);
-
-		} catch(const std::exception &e) {
-
-			Logger::String{e.what()}.error(STRINGIZE_VALUE_OF(PRODUCT_NAME));
-
-		}
-
-		return "";
-	}
-	*/
-
  }
 
+namespace std {
+
+	UDJAT_API const char * to_string(const Udjat::Response::State state) {
+
+		static const char * names[] = {
+			"success",
+			"error",
+			"failure"
+		};
+
+		if( ((size_t) state) >= N_ELEMENTS(names)) {
+			return "failure";
+		}
+
+		return names[state];
+
+	}
+
+ }

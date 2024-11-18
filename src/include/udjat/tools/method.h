@@ -82,12 +82,22 @@
 		/// @brief Execute method.
 		/// @param path The path for object request.
 		/// @param values The in/out values.
-		static void call(const char *name, const char *path, Udjat::Value &values);
+		virtual void call(const char *path, Udjat::Value &values) = 0;
+
+		/// @brief Execute method.
+		/// @param request The client request.
+		/// @param response The response.
+		virtual void call(Request &request, Response &response);
 
 		/// @brief Execute method.
 		/// @param path The path for object request.
 		/// @param values The in/out values.
-		virtual void call(const char *path, Udjat::Value &values) = 0;
+		static void call(const char *name, const char *path, Udjat::Value &values);
+
+		/// @brief Execute method.
+		/// @param request The client request.
+		/// @param response The response.
+		static void call(const char *name, Request &request, Response &response);
 
 	};
 

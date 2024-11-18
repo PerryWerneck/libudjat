@@ -94,6 +94,10 @@
 		find(name).call(path,values);
 	}
 
+	void Method::call(const char *name, Request &request, Response &response) {
+		find(name).call(request,response);
+	}
+
 	void Method::call(const char *, Udjat::Value &) {
 		throw system_error(ENOTSUP,system_category(),_( "Unable to handle request, no backend"));		
 	}
@@ -128,6 +132,21 @@
 			return false;
 		});
 	}
+
+	void Method::call(Request &request, Response &response) {
+
+		try {
+
+			call(request.path(),response);
+
+		} catch(const std::exception &e) {
+
+			response.failed(e);
+
+		}
+
+	}
+
 
 	/*
 	Method::Method(const XML::Node &node) {
