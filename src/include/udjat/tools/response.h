@@ -82,7 +82,6 @@
 			State value = Success;
 			int code = 0;
 			bool not_modified = false;
-			size_t total_count = 0;	
 			std::string message;
 		} status;
 
@@ -101,7 +100,11 @@
 		virtual ~Response();
 
 		void failed(const std::exception &e) noexcept;
+		void failed(const char *message) noexcept;
 
+		inline void failed(const std::string &string) noexcept {
+			failed(string.c_str());
+		}
 
 		bool isNull() const override;
 		Udjat::Value & reset(const Udjat::Value::Type type) override;
