@@ -298,6 +298,7 @@ namespace Udjat {
 	}
 
 	void Abstract::Agent::Controller::call(Request &request, Response &response) {
+		
 		try {
 
 			auto agent = find(request.path(),true);

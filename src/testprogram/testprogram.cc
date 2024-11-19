@@ -193,8 +193,7 @@
 
 			Response response{Udjat::xml};			
 			Method::call("agent","",response);
-			response.serialize(cout);
-			cout << endl;
+			cout << "Response:" << endl << response << endl;
 
 			cout << "----------------------------------------------------------------" << endl;
 			return false;

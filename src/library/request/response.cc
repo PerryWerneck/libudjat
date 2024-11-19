@@ -24,6 +24,7 @@
  #include <udjat/tools/intl.h>
  #include <ctime>
  #include <stdexcept>
+ #include <sstream>
 
  using namespace std;
 
@@ -71,7 +72,16 @@
 	}
 
 	std::string Response::to_string() const noexcept {
-		return data.to_string();
+		try {
+			std::ostringstream out;
+			serialize(out);
+			return out.str();
+		} catch(const std::exception &e) {
+			Logger::String{"Error serializing response: ",e.what()}.error();
+		} catch(...) {
+			Logger::String{"Unexpected error serializing response"}.error();
+		}
+		return "";
 	}
 
 	Response & Response::failed(const char *message, const char *details) noexcept {

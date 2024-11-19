@@ -202,7 +202,12 @@
 		}
 
 		/// @brief Convert response to formatted string.
-		virtual std::string to_string() const noexcept;
+		/// @see serialize.
+		std::string to_string() const noexcept;
+
+		/// @brief Serialize according to the mimetype.
+		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
+		void serialize(std::ostream &stream) const;
 
 		/// @brief Set 'not-modified' status.
 		inline void not_modified(bool state) noexcept {
@@ -231,10 +236,6 @@
 			return (time_t) timestamp.expires;
 		}
 
-		/// @brief Serialize according to the mimetype.
-		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
-		void serialize(std::ostream &stream) const;
-
 	};
 
  }
@@ -243,8 +244,17 @@
 
 	UDJAT_API const char * to_string(const Udjat::Response::State state);
 
+	inline std::string to_string(const Udjat::Response &response) {
+		return response.to_string();
+	}
+
 	inline ostream& operator<< (ostream& os, Udjat::Response::State state) {
 			return os << to_string(state);
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::Response &response) {
+		response.serialize(os);
+		return os;
 	}
 
  }
