@@ -82,7 +82,9 @@
 			State value = Success;
 			int code = 0;
 			bool not_modified = false;
-			std::string message;
+			std::string title;			///< @brief The response title.
+			std::string message;		///< @brief The status message.
+			std::string details;		///< @brief The status details.
 		} status;
 
 		/// @brief Values for content-range & X-Total-Count headers.
@@ -99,11 +101,11 @@
 
 		virtual ~Response();
 
-		void failed(const std::exception &e) noexcept;
-		void failed(const char *message) noexcept;
+		Response & failed(const std::exception &e) noexcept;
+		Response & failed(const char *message) noexcept;
 
-		inline void failed(const std::string &string) noexcept {
-			failed(string.c_str());
+		inline Response & failed(const std::string &string) noexcept {
+			return failed(string.c_str());
 		}
 
 		bool isNull() const override;
@@ -155,6 +157,28 @@
 
 		inline size_t count() const noexcept {
 			return range.count;
+		}
+
+		/// @brief Set response title.
+		inline void title(const char *title) noexcept {
+			status.title = title;
+		}
+
+		/// @brief Get response title.
+		/// @return The response title.
+		inline const char *title() const noexcept {
+			return status.title.c_str();
+		}
+
+		/// @brief Set response details.
+		inline void details(const char *details) noexcept {
+			status.details = details;
+		}
+
+		/// @brief Get response details.
+		/// @return The response details.
+		inline const char * details() const noexcept {
+			return status.details.c_str();
 		}
 
 		/// @brief Set range for this response (Content-Range http header).

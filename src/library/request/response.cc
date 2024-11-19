@@ -60,7 +60,7 @@
 		return data.to_string();
 	}
 
-	void Response::failed(const std::exception &e) noexcept {
+	Response & Response::failed(const std::exception &e) noexcept {
 
 		data.reset(Value::Object);
 		status.message = e.what();
@@ -69,12 +69,14 @@
 		{
 			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
 			if(except) {
+				status.title = except->title();
+				status.details = except->body();
 				status.code = except->syscode();
-				data["title"] = except->title();
-				data["body"] = except->body();
+				data["title"] = status.title;
+				data["details"] = status.details;
 				data["domain"] = except->domain();
 				data["url"] = except->url();
-				return;
+				return *this;
 			}
 		}
 
@@ -82,14 +84,21 @@
 			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
 			if(except) {
 				status.code = except->code().value();
-				data["title"] = _("System error");
+				status.title = _("System error");
+				status.details = except->code().message();
+
+				data["title"] = status.title;
+				data["details"] = status.details;
 				data["category"] = except->code().category().name();
-				data["body"] = except->code().message();
-				return;
+				return *this;
 			}
 		}
 
 		status.code = -1;
+		status.title.clear();
+		status.details.clear();
+
+		return *this;
 	}
 
 	void Response::serialize(std::ostream &stream) const {
