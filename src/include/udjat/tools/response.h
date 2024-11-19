@@ -160,6 +160,15 @@
 			return range.count;
 		}
 
+		/// @brief Set response message.
+		inline void message(const char *message) noexcept {
+			status.message = message;
+		}
+
+		/// @brief Get response message.
+		/// @return The response message (Ok if empty).
+		const char *message() const noexcept;
+
 		/// @brief Set response title.
 		inline void title(const char *title) noexcept {
 			status.title = title;

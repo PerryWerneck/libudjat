@@ -297,6 +297,26 @@ namespace Udjat {
 		return false;	
 	}
 
+	void Abstract::Agent::Controller::call(Request &request, Response &response) {
+		try {
+
+			auto agent = find(request.path(),true);
+			agent->getProperties(response);
+
+			if(agent->update.next) {
+				response.expires(agent->update.next);
+			}
+
+			response.message(agent->state()->to_string().c_str());
+
+		} catch(const std::exception &e) {
+
+			response.failed(e);
+
+		}
+
+	}
+
 	void Abstract::Agent::Controller::call(const char *path, Udjat::Value &values) {
 		find(path,true)->getProperties(values);
 	}

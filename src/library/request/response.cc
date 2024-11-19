@@ -52,6 +52,20 @@
 		return data.for_each(call);
 	}
 
+	time_t Response::expires(const time_t tm) noexcept {
+		if(!timestamp.expires || timestamp.expires > tm) {
+			timestamp.expires = tm;
+		}
+		return timestamp.expires;
+	}
+
+	const char * Response::message() const noexcept {
+		if(status.message.empty()) {
+			return "Ok";
+		}
+		return status.message.c_str();
+	}
+
 	Udjat::Value & Response::operator[](const char *name) {
 		return data[name];
 	}

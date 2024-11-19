@@ -78,6 +78,7 @@ namespace Udjat {
 
 		// Method
 		bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const override;
+		void call(Request &request, Response &response) override;
 		void call(const char *path, Udjat::Value &values) override;
 
 
