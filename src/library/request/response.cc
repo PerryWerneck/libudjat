@@ -60,22 +60,59 @@
 		return data.to_string();
 	}
 
+	Response & Response::failed(const char *message, const char *details) noexcept {
+		return failed("",message,details);
+	}
+
+	Response & Response::failed(const char *title,  const char *message, const char *details) noexcept {
+
+		status.value = State::Failure;
+		data.reset(Value::Object);
+
+		status.message = message;
+		status.code = 0;
+
+		if(title && *title) {
+			status.title = title;
+			data["title"] = status.title;
+		} else {
+			status.title.clear();
+		}
+
+		if(details && *details) {
+			data["details"] = status.details;
+			status.details = details;
+		} else {
+			status.details.clear();
+		}
+
+		return *this;
+
+	}
+
 	Response & Response::failed(const std::exception &e) noexcept {
 
-		data.reset(Value::Object);
-		status.message = e.what();
 		status.value = State::Failure;
+		data.reset(Value::Object);
+
+		status.message = e.what();
+		status.title.clear();
+		status.details.clear();
+		status.code = 0;
 
 		{
 			const Udjat::Exception *except = dynamic_cast<const Udjat::Exception *>(&e);
 			if(except) {
+
 				status.title = except->title();
 				status.details = except->body();
 				status.code = except->syscode();
+
 				data["title"] = status.title;
 				data["details"] = status.details;
 				data["domain"] = except->domain();
 				data["url"] = except->url();
+
 				return *this;
 			}
 		}
@@ -83,6 +120,7 @@
 		{
 			const std::system_error *except = dynamic_cast<const std::system_error *>(&e);
 			if(except) {
+
 				status.code = except->code().value();
 				status.title = _("System error");
 				status.details = except->code().message();
@@ -90,13 +128,11 @@
 				data["title"] = status.title;
 				data["details"] = status.details;
 				data["category"] = except->code().category().name();
+				
 				return *this;
+
 			}
 		}
-
-		status.code = -1;
-		status.title.clear();
-		status.details.clear();
 
 		return *this;
 	}

@@ -102,7 +102,8 @@
 		virtual ~Response();
 
 		Response & failed(const std::exception &e) noexcept;
-		Response & failed(const char *message) noexcept;
+		Response & failed(const char *message, const char *details = nullptr) noexcept;
+		Response & failed(const char *title,  const char *message, const char *details) noexcept;
 
 		inline Response & failed(const std::string &string) noexcept {
 			return failed(string.c_str());
