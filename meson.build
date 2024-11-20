@@ -702,7 +702,6 @@ install_headers(
   'src/include/udjat/tools/object.h',
   'src/include/udjat/tools/parse.h',
   'src/include/udjat/tools/quark.h',
-  'src/include/udjat/tools/report.h',
   'src/include/udjat/tools/response.h',
   'src/include/udjat/tools/script.h',
   'src/include/udjat/tools/service.h',
