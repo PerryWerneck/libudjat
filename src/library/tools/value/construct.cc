@@ -32,6 +32,10 @@
 		memset(&content,0,sizeof(content));
 	}
 
+	Value::Value(Type type) : Value{} {
+		clear(type);
+	}
+
 	Value::~Value() {
 		clear();
 	}

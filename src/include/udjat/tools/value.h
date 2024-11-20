@@ -36,11 +36,6 @@
 	class UDJAT_API Value : public Abstract::Object {
 	public:
 
-		Value();
-		~Value();
-
-		bool as_bool() const;
-
 		/// @brief Value type.
 		enum Type : uint8_t {
 			Undefined	= '\0',			///< @brief 'null' value.
@@ -57,6 +52,13 @@
 			Url			= '@',			///< @brief URL.
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
 		};
+
+		Value();
+		Value(Type type);
+		
+		~Value();
+
+		bool as_bool() const;
 
 		/// @brief Type factory.
 		static Type TypeFactory(const XML::Node &node, const char *attrname = "value-type");
@@ -80,6 +82,14 @@
 
 		/// @brief Get item count.
 		size_t size() const;
+
+		/// @brief Append item to array.
+		/// @return The item.
+		Value & append(Value::Type type = Undefined);
+
+		/// @brief Append item to object.
+		/// @return The item.
+		Value & append(const char *name, Value::Type type = Undefined);
 
 		/// @brief Get item.
 		/// @return The item.
@@ -179,6 +189,7 @@
 		bool getProperty(const char *key, std::string &value) const override;
 
 		void serialize(std::ostream &out) const;
+		void serialize(std::ostream &out, const MimeType mimetype) const;
 
 		void to_json(std::ostream &out) const;
 		void to_xml(std::ostream &out) const;
@@ -195,9 +206,12 @@
 
 	private:
 
+		class Getter;
+		friend class Getter;
+	
 		Type type = Undefined;
 
-		union {
+		union Content {
 			time_t timestamp;
 			int sig;
 			unsigned int unsig;
@@ -229,7 +243,8 @@
 	}
 
 	inline ostream & operator<< (ostream& os, const Udjat::Value &value) {
-		return os << value.to_string();
+		value.serialize(os);
+		return os;
 	}
 
  }

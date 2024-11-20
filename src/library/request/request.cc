@@ -91,6 +91,7 @@
 
 	}
 
+/*
 	bool Request::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {
 
 		return for_each([call](const char *name, const char *value){
@@ -106,6 +107,7 @@
 
 		return false;
 	}
+*/
 
 	bool Request::getProperty(const char *key, Udjat::Value &value) const {
 		return for_each([key,&value](const char *n, const Udjat::Value &v){

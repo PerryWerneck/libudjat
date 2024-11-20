@@ -49,7 +49,11 @@
 		case String:
 		case Icon:
 		case Url:
-			value = (const char *) content.ptr;
+			if(content.ptr) {
+				value = (const char *) content.ptr;
+			} else {
+				value.clear();
+			}
 			break;
 
 		case Timestamp:
@@ -87,58 +91,65 @@
 		return *this;
 	}
 
-	template <typename T>
-	static const Value & convert(const Value &src, T &dst) {
+	class Value::Getter {
+	public:
+		const Value &src;
 
-		switch(type) {
-		case Undefined:
-			throw logic_error("The value is undefined");
-			break;
-
-		case Array:
-		case Object:
-		case Icon:
-		case Url:
-		case String:
-			throw logic_error("Unable to convert value");
-			break;
-
-		case String:
-			value = (T) stoi((const char *) content.ptr);
-			break;
-
-		case Timestamp:
-			value = (T) content.timestamp;
-			break;
-
-		case Signed:
-		case Boolean:
-			value = (T) content.sig;
-			break;
-
-		case Unsigned:
-		case State:
-			value = (T) content.unsig;
-			break;
-
-		case Real:
-		case Fraction:
-			value = (T) content.dbl;
-			break;
-
-		default:
-			throw logic_error("The value type to get is unexpected or invalid");
+		constexpr Getter(const Value &value) : src{value} {
 		}
 
+		template <typename T>
+		inline const Value & get(T &dst) const {
 
-	}
+			switch((Value::Type) src) {
+			case Value::Undefined:
+				throw logic_error("The value is undefined");
+				break;
+
+			case Value::Array:
+			case Value::Object:
+				throw logic_error("Unable to convert value");
+				break;
+
+			case Value::Icon:
+			case Value::Url:
+			case Value::String:
+				dst = (T) stoi((const char *) src.content.ptr);
+				break;
+
+			case Value::Timestamp:
+				dst = (T) src.content.timestamp;
+				break;
+
+			case Value::Signed:
+			case Value::Boolean:
+				dst = (T) src.content.sig;
+				break;
+
+			case Value::Unsigned:
+			case Value::State:
+				dst = (T) src.content.unsig;
+				break;
+
+			case Value::Real:
+			case Value::Fraction:
+				dst = (T) src.content.dbl;
+				break;
+
+			default:
+				throw logic_error("The value type to get is unexpected or invalid");
+			}
+
+			return src;
+		}
+	};
 
 	const Value & Value::get(short &value) const {
 		if(type == String) {
 			value = (short) atoi((const char *) content.ptr);
 			return *this;
 		}
-		return convert<short>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(unsigned short &value) const {
@@ -146,7 +157,7 @@
 			value = (unsigned short) atoi((const char *) content.ptr);
 			return *this;
 		}
-		return convert<unsigned short>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(int &value) const {
@@ -154,7 +165,7 @@
 			value = (int) atoi((const char *) content.ptr);
 			return *this;
 		}
-		return convert<int>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(unsigned int &value) const {
@@ -162,7 +173,7 @@
 			value = (unsigned int) atol((const char *) content.ptr);
 			return *this;
 		}
-		return convert<unsigned int>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(long &value) const {
@@ -170,7 +181,7 @@
 			value = (long) atol((const char *) content.ptr);
 			return *this;
 		}
-		return convert<long>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(unsigned long &value) const {
@@ -178,16 +189,16 @@
 			value = (unsigned long) atol((const char *) content.ptr);
 			return *this;
 		}
-		return convert<unsigned long>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(TimeStamp &value) const {
 		if(type == String) {
-			value = TimeStamp((const char *) content.ptr));
+			value = TimeStamp{(const char *) content.ptr};
 		} else {
-			unsigned long tm;
+			time_t tm;
 			get(tm);
-			value = TimeStamp(tm);
+			value = TimeStamp{tm};
 		}
 		return *this;
 	}
@@ -197,7 +208,7 @@
 			value = Udjat::String{(const char *) content.ptr}.as_bool();
 			return *this;
 		}
-		return convert<bool>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(float &value) const {
@@ -205,7 +216,7 @@
 			value = atof((const char *) content.ptr);
 			return *this;
 		}
-		return convert<float>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	const Value & Value::get(double &value) const {
@@ -213,11 +224,10 @@
 			value = atof((const char *) content.ptr);
 			return *this;
 		}
-		return convert<double>(*this,value);
+		return Getter{*this}.get(value);
 	}
 
 	size_t Value::size() const {
-
 		if(type == Array) {
 			return ((vector<Value> *) content.ptr)->size();
 		} else if(type == Object) {
@@ -225,12 +235,15 @@
 		} else if(type == Undefined) {
 			return 0;
 		}
-
 		return 1;
 	}
 
 	Value & Value::operator[](int ix) {
 		
+		if(type == Undefined) {
+			clear(Array);
+		}
+
 		if(type == Array) {
 
 			return ((vector<Value> *) content.ptr)->at(ix);
@@ -251,11 +264,11 @@
 		}
 	
 		throw out_of_range("The value is not an array");
-		
+
 	}
 
 	const Value & Value::operator[](int ix) const {
-		
+
 		if(type == Array) {
 
 			return ((const vector<Value> *) content.ptr)->at(ix);
@@ -279,9 +292,15 @@
 	}
 
 	Value & Value::operator[](const char *name) {
+
+		if(type == Undefined) {
+			clear(Object);
+		}
+
 		if(type == Object) {
 			return (*((map<std::string,Value> *) content.ptr))[name];
 		}
+
 		throw logic_error("The value is not an object");
 	}
 
@@ -312,13 +331,19 @@
 	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {
 
 		if(type == Array) {
+			if(!content.ptr) {
+				return *this;
+			}
 			size_t ix = 0;
-			for(const auto item : *((vector<Value> *) content.ptr)) {
+			for(const auto &item : *((vector<Value> *) content.ptr)) {
 				if(call(std::to_string(ix++).c_str(),item)) {
 					return true;
 				}
 			}
 		} else if(type == Object) {
+			if(!content.ptr) {
+				return *this;
+			}
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(call(key.c_str(),value)) {
                 	return true;
@@ -335,12 +360,18 @@
 	bool Value::for_each(const std::function<bool(const Value &value)> &call) const {
 
 		if(type == Array) {
-			for(const auto item : *((vector<Value> *) content.ptr)) {
+			if(!content.ptr) {
+				return *this;
+			}
+			for(const auto &item : *((vector<Value> *) content.ptr)) {
 				if(call(item)) {
 					return true;
 				}
 			}
 		} else if(type == Object) {
+			if(!content.ptr) {
+				return *this;
+			}
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(call(value)) {
                 	return true;

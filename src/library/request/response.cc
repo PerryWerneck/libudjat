@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -33,26 +33,6 @@
 	Response::~Response() {
 	}
 
-	Response::operator Value::Type() const noexcept {
-		return (Value::Type) data;
-	}
-
-	bool Response::empty() const noexcept {
-		return data.empty();
-	}
-
-	bool Response::isNull() const {
-		return data.isNull();
-	}
-
-	Udjat::Value & Response::reset(const Udjat::Value::Type type) {
-		return data.reset(type);
-	}
-
-	bool Response::for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const {
-		return data.for_each(call);
-	}
-
 	time_t Response::expires(const time_t tm) noexcept {
 		if(!timestamp.expires || timestamp.expires > tm) {
 			timestamp.expires = tm;
@@ -65,10 +45,6 @@
 			return "Ok";
 		}
 		return status.message.c_str();
-	}
-
-	Udjat::Value & Response::operator[](const char *name) {
-		return data[name];
 	}
 
 	std::string Response::to_string() const noexcept {

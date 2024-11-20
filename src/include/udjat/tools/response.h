@@ -38,32 +38,6 @@
 
 	protected:
 
-		class Value : public Udjat::Value {
-		private:
-			Udjat::Value::Type type = Udjat::Value::Object;
-			std::map<std::string,Value> children;
-			std::string value;
-
-		public:
-			Value();
-			virtual ~Value();
-
-			operator Type() const noexcept override;
-
-			bool empty() const noexcept override;
-			bool isNull() const override;
-
-			const Udjat::Value & get(std::string &value) const override;
-
-			bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override;
-			Udjat::Value & operator[](const char *name) override;
-
-			Udjat::Value & append(const Udjat::Value::Type type = Udjat::Value::Undefined) override;
-			Udjat::Value & reset(const Udjat::Value::Type type) override;
-			Udjat::Value & set(const char *value, const Type type = String) override;
-
-		};
-
 		Value data;	/// @brief The response data.
 
 		/// @brief Response type.
@@ -109,11 +83,6 @@
 			return failed(string.c_str());
 		}
 
-		bool isNull() const override;
-		Udjat::Value & reset(const Udjat::Value::Type type) override;
-
-		operator Value::Type() const noexcept override;
-
 		inline operator MimeType() const noexcept {
 			return this->mimetype;
 		}
@@ -133,18 +102,6 @@
 		inline int status_code() const noexcept {
 			return status.code;
 		}
-
-		bool empty() const noexcept override;
-
-		/// @brief Enumerate contents.
-		/// @param call Method to call on every 'data' element.
-		/// @return true if que enumeration was interrupted by a return 'true' on call.
-		bool for_each(const std::function<bool(const char *name, const Udjat::Value &value)> &call) const override;
-
-		/// @brief Get data value by name
-		/// @param name Name of the requested value.
-		/// @return The data[name] object.
-		Udjat::Value & operator[](const char *name) override;
 
 		inline Udjat::Value & contents() {
 			return data;

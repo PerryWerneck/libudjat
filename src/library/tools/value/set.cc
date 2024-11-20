@@ -87,6 +87,26 @@
 		return *this;
 	}
 
+	Value & Value::append(Value::Type item_type) {
+		if(type == Undefined) {
+			clear(Array);
+		}
+
+		if(type != Array) {
+			throw logic_error("The value is not an array");
+		}
+
+		if(!content.ptr) {
+			throw runtime_error("Invalid object");
+		}
+
+		vector<Value> *children = ((vector<Value> *) content.ptr);
+
+		children->emplace_back(item_type);
+		return children->back();
+
+	}
+
 	Value & Value::setFraction(const float fraction) {
 		reset(Fraction);
 		content.dbl = fraction;
