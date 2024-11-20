@@ -53,6 +53,22 @@
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
 		};
 
+	private:
+
+		class Getter;
+		friend class Getter;
+	
+		Type type = Undefined;
+
+		union Content {
+			time_t timestamp;
+			int sig;
+			unsigned int unsig;
+			double dbl;
+			void *ptr;
+		} content;
+
+	public:
 		Value();
 		Value(Type type);
 		
@@ -65,10 +81,12 @@
 		static Type TypeFactory(const char *name);
 
 		/// @brief Get stored value type.
-		operator Type() const noexcept;
+		inline operator Type() const noexcept {
+			return this->type;
+		}
 
 		inline bool operator==(const Type type) const noexcept {
-			return ((Type) *this) == type;
+			return this->type == type;
 		}
 
 		/// @brief Has any value?
@@ -203,21 +221,6 @@
 		inline std::string as_string() const {
 			return to_string();
 		}
-
-	private:
-
-		class Getter;
-		friend class Getter;
-	
-		Type type = Undefined;
-
-		union Content {
-			time_t timestamp;
-			int sig;
-			unsigned int unsig;
-			double dbl;
-			void *ptr;
-		} content;
 
 	};
 

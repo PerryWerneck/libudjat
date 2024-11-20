@@ -304,6 +304,7 @@ lib_src += [
   'src/library/tools/value/construct.cc',
   'src/library/tools/value/set.cc',
   'src/library/tools/value/get.cc',
+  'src/library/tools/value/type.cc',
   'src/library/tools/value/csv.cc',
   'src/library/tools/value/html.cc',
   'src/library/tools/value/json.cc',

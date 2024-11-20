@@ -33,6 +33,26 @@
 
  namespace Udjat {
  
+ 	bool Value::empty() const noexcept {
+
+		if(type == Array) {
+			if(!content.ptr) {
+				return true;
+			}
+			return ((vector<Value> *) content.ptr)->empty();
+		} else if(type == Object) {
+			if(!content.ptr) {
+				return true;
+			}
+			return (((map<std::string,Value> *) content.ptr))->empty();
+		} else if(type == Undefined) {
+			return true;
+		}
+
+		return false;
+
+	}
+
 	const Value & Value::get(std::string &value) const {
 
 		switch(type) {
