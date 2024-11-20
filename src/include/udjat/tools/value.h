@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -36,6 +36,11 @@
 	class UDJAT_API Value : public Abstract::Object {
 	public:
 
+		Value();
+		~Value();
+
+		bool as_bool() const;
+
 		/// @brief Value type.
 		enum Type : uint8_t {
 			Undefined	= '\0',			///< @brief 'null' value.
@@ -50,7 +55,7 @@
 			Fraction	= 'F',			///< @brief Fraction value (Float from 0.0 to 1.0).
 			Icon		= 'I',			///< @brief Icon name.
 			Url			= '@',			///< @brief URL.
-			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error, etc)
+			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
 		};
 
 		/// @brief Type factory.
@@ -58,33 +63,35 @@
 		static Type TypeFactory(const char *name);
 
 		/// @brief Get stored value type.
-		virtual operator Type() const noexcept;
+		operator Type() const noexcept;
 
 		inline bool operator==(const Type type) const noexcept {
 			return ((Type) *this) == type;
 		}
 
-		/// @brief Build simple string value.
-		static std::shared_ptr<Value> Factory(const char *str);
-
-		/// @brief Build dummy value.
-		static std::shared_ptr<Value> Factory();
-
-		/// @brief Build an object value.
-		static std::shared_ptr<Value> ObjectFactory();
-
 		/// @brief Has any value?
-		virtual bool isNull() const = 0;
+		bool isNull() const;
 
 		/// @brief Has any children?
-		virtual bool empty() const noexcept;
+		bool empty() const noexcept;
 
 		/// @brief Is this a number?
-		virtual bool isNumber() const;
+		bool isNumber() const;
+
+		/// @brief Get item count.
+		size_t size() const;
+
+		/// @brief Get item.
+		/// @return The item.
+		Value & operator[](int ix);
+
+		/// @brief Get item.
+		/// @return The item.
+		const Value & operator[](int ix) const;
 
 		/// @brief Get child by name, insert it if not found.
 		/// @return Null value inserted to object.
-		virtual Value & operator[](const char *name);
+		Value & operator[](const char *name);
 
 		/// @brief Get child by name.
 		/// @return First child with required name. Exception if not found.
@@ -92,59 +99,52 @@
 
 		/// @brief Get child by type.
 		/// @return First child with required type. Exception if not found.
-		const Value & operator[](Type type) const;
+		// const Value & operator[](Type type) const;
 
 		/// @brief Navigate from all values until 'call' returns true.
 		/// @return true if 'call' has returned true, false if not.
-		virtual bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
+		bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
 
-		/// @brief Convert Value to 'object' and insert child.
-		/// @return The inserted value.
-		virtual Value & append(const char *name, const Type type = Object, const char *value = nullptr);
-
-		/// @brief Convert Value to 'array' and insert child.
-		/// @return The inserted value.
-		virtual Value & append(const Type type = Object);
+		/// @brief Navigate from all values until 'call' returns true.
+		/// @return true if 'call' has returned true, false if not.
+		bool for_each(const std::function<bool(const Value &value)> &call) const;
 
 		/// @brief Clear contents, set value type.
-		virtual Value & reset(const Type type = Undefined) = 0;
+		Value & clear(const Type type = Undefined);
 
-		/// @brief Convert value to 'object' and insert child.
-		virtual Value & set(const Value &value);
+		/// @brief For legacy use only.
+		inline Value & reset(const Type type = Undefined) {
+			return clear(type);
+		}
 
-		/// @brief Set valuse as string and type.
-		virtual Value & set(const char *value, const Type type = String);
+		/// @brief Set value and type.
+		Value & set(const char *value, const Type type = String);
 
 		inline Value & set(char *value, const Type type = String) {
 			return set((const char *) value, type);
 		}
 
+		inline Value & set(const std::string &value, const Type type = String) {
+			return set(value.c_str(),type);
+		}
+
 		/// @brief Emit event, allowing modules to change value contents.
 		/// @param event_name The event name that will be passed to listeners.
-		void emit_event(const char *event_name, const char *event_data = nullptr);
+		// void emit_event(const char *event_name, const char *event_data = nullptr);
 
 		/// @brief Set a percentual from 0.0 to 1.0
-		virtual Value & setFraction(const float fraction);
+		Value & setFraction(const float fraction);
+		Value & set(const short value);
+		Value & set(const unsigned short value);
+		Value & set(const int value);
+		Value & set(const unsigned int value);
+		Value & set(const TimeStamp value);
+		Value & set(const bool value);
+		Value & set(const float value);
+		Value & set(const double value);
 
-		virtual Value & set(const std::string &value, const Type type = String);
-
-		virtual Value & set(const short value);
-		virtual Value & set(const unsigned short value);
-
-		virtual Value & set(const int value);
-		virtual Value & set(const unsigned int value);
-
-		virtual Value & set(const long value);
-		virtual Value & set(const unsigned long value);
-
-		virtual Value & set(const TimeStamp value);
-		virtual Value & set(const bool value);
-
-		virtual Value & set(const float value);
-		virtual Value & set(const double value);
-
-		/// @brief Load tags <value name='name' value='value' /> into value.
-		virtual Value & set(const XML::Node &node);
+		/// @brief Load tags <value name='name' value='value' type='type' /> into value.
+		Value & set(const XML::Node &node);
 
 		template <typename T>
 		Value & set(const T value) {
@@ -156,22 +156,17 @@
 			return set(value);
 		}
 
-		virtual const Value & get(std::string &value) const;
-
-		virtual const Value & get(short &value) const;
-		virtual const Value & get(unsigned short &value) const;
-
-		virtual const Value & get(int &value) const;
-		virtual const Value & get(unsigned int &value) const;
-
-		virtual const Value & get(long &value) const;
-		virtual const Value & get(unsigned long &value) const;
-
-		virtual const Value & get(TimeStamp &value) const;
-		virtual const Value & get(bool &value) const;
-
-		virtual const Value & get(float &value) const;
-		virtual const Value & get(double &value) const;
+		const Value & get(std::string &value) const;
+		const Value & get(short &value) const;
+		const Value & get(unsigned short &value) const;
+		const Value & get(int &value) const;
+		const Value & get(unsigned int &value) const;
+		const Value & get(long &value) const;
+		const Value & get(unsigned long &value) const;
+		const Value & get(TimeStamp &value) const;
+		const Value & get(bool &value) const;
+		const Value & get(float &value) const;
+		const Value & get(double &value) const;
 
 		std::string to_string() const noexcept override;
 		std::string to_string(const char *def) const;
@@ -183,7 +178,7 @@
 		/// @return true if the property is valid.
 		bool getProperty(const char *key, std::string &value) const override;
 
-		virtual void serialize(std::ostream &out, const MimeType mimetype = MimeType::json) const;
+		void serialize(std::ostream &out) const;
 
 		void to_json(std::ostream &out) const;
 		void to_xml(std::ostream &out) const;
@@ -198,27 +193,31 @@
 			return to_string();
 		}
 
-		unsigned int as_uint() const;
-		int as_int() const;
-		bool as_bool() const;
+	private:
 
-		inline operator bool() const {
-			return as_bool();
-		}
+		Type type = Undefined;
+
+		union {
+			time_t timestamp;
+			int sig;
+			unsigned int unsig;
+			double dbl;
+			void *ptr;
+		} content;
 
 	};
 
-	template <typename T>
-	inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
-		return out.set(value);
-	}
+ }
 
-	template <typename T>
-	inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
-		in.get(value);
-		return in;
-	}
+ template <typename T>
+ inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
+	return out.set(value);
+ }
 
+ template <typename T>
+ inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
+	in.get(value);
+	return in;
  }
 
  namespace std {

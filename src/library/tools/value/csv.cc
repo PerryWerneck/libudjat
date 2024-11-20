@@ -18,7 +18,7 @@
  */
 
  /**
-  * @brief Brief description of this source.
+  * @brief Brief Convert value to CSV string.
   */
 
  #include <config.h>

@@ -17,44 +17,47 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /**
-  * @brief Brief Convert value to XML string.
-  */
-
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
- #include <iostream>
+ #include <map>
+ #include <vector>
+ #include <string.h>
+
+ using namespace std;
 
  namespace Udjat {
+ 
+	Value::Value() {
+		memset(&content,0,sizeof(content));
+	}
 
-	void Value::to_xml(std::ostream &ss) const {
+	Value::~Value() {
+		clear();
+	}
 
-		switch((Value::Type) *this) {
-		case Udjat::Value::Undefined:
-			break;
+	Value & Value::clear(const Type new_type) {
 
-		case Udjat::Value::Array:
-			for_each([&ss](const char *key, const Value &value){
-				ss << "<item name='" << key << "' type='" << std::to_string((Udjat::Value::Type) value) << "'"<< ">";
-				value.to_xml(ss);
-				ss << "</item>";
-				return false;
-			});
-			break;
-
-		case Udjat::Value::Object:
-			for_each([&ss](const char *key, const Value &value){
-				ss << "<" << key << " type='" << std::to_string((Udjat::Value::Type) value) << "'"<< ">";
-				value.to_xml(ss);
-				ss << "</" << key << ">";
-				return false;
-			});
-			break;
-
-		default:
-			ss << to_string();
+		if(content.ptr) {
+			if(type == String || type == Url || type == Icon) {
+				free(content.ptr);
+				content.ptr = NULL;
+			} else if(type == Array) {
+				delete ((vector<Value> *) content.ptr);
+			} else if(type == Object) {
+				delete ((map<std::string,Value> *) content.ptr);
+			}
 		}
+
+		type = new_type;
+
+		if(type == Array) {
+			content.ptr = (void *) new vector<Value>();
+		} else if(type == Object) {
+			content.ptr = (void *) new map<std::string,Value>();
+		}
+
+		return *this;
 
 	}
 

@@ -18,7 +18,7 @@
  */
 
  /**
-  * @brief Brief description of this source.
+  * @brief Brief Convert value to name=value list.
   */
 
  #include <config.h>

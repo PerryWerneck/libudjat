@@ -22,6 +22,11 @@
  #include <udjat/tools/value.h>
  #include <iostream>
 
+  /**
+  * @brief Brief Convert value to JSON string.
+  */
+
+
  namespace Udjat {
 
 	void Value::to_json(std::ostream &output) const {

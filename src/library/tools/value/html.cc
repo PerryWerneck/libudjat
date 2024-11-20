@@ -17,6 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /**
+  * @brief Brief Convert value to HTML string.
+  */
+
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
