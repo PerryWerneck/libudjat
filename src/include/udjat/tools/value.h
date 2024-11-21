@@ -206,8 +206,7 @@
 		/// @return true if the property is valid.
 		bool getProperty(const char *key, std::string &value) const override;
 
-		void serialize(std::ostream &out) const;
-		void serialize(std::ostream &out, const MimeType mimetype) const;
+		virtual void serialize(std::ostream &out, const MimeType mimetype) const;
 
 		void to_json(std::ostream &out) const;
 		void to_xml(std::ostream &out) const;
@@ -217,10 +216,6 @@
 
 		/// @brief Serialize arrays to csv
 		void to_csv(std::ostream &out, char delimiter = ',') const;
-
-		inline std::string as_string() const {
-			return to_string();
-		}
 
 	};
 
@@ -243,11 +238,6 @@
 
 	inline string to_string(const Udjat::Value &value) noexcept {
 		return value.to_string();
-	}
-
-	inline ostream & operator<< (ostream& os, const Udjat::Value &value) {
-		value.serialize(os);
-		return os;
 	}
 
  }

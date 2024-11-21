@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
  #include <udjat/agent/level.h>
  #include <udjat/tools/string.h>
@@ -28,6 +29,7 @@
  #include <vector>
  #include <functional>
  #include <stdexcept>
+ #include <sstream>
 
  using namespace std;
 
@@ -403,6 +405,41 @@
 
 		return call(*this);
 
+	}
+
+	void Value::serialize(std::ostream &out, const MimeType mimetype) const {
+
+		switch(mimetype) {
+		case MimeType::html:
+			to_html(out);
+			break;
+
+		case MimeType::json:
+			to_json(out);
+			break;
+
+		case MimeType::xml:
+			to_xml(out);
+			break;
+
+		case MimeType::yaml:
+			to_yaml(out);
+			break;
+
+		case MimeType::sh:
+			to_sh(out);
+			break;
+
+		default:
+			throw runtime_error(Logger::String{"Unable to serialize value to ",std::to_string(mimetype)});
+		}
+
+	}
+
+	std::string Value::to_string(const MimeType mimetype) const {
+		stringstream stream;
+		serialize(stream,mimetype);
+		return stream.str();
 	}
 
  }
