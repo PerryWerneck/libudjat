@@ -191,8 +191,9 @@
 		MainLoop::getInstance().TimerFactory(1000,[]{
 			cout << "-[ On Timer ]---------------------------------------------------" << endl;
 
+			Request request{"/"};
 			Response response{Udjat::sh};			
-			Method::call("agent","",response);
+			Method::find("agent").call(request,response);
 			cout << "Response:" << endl << response << endl;
 
 			cout << "----------------------------------------------------------------" << endl;

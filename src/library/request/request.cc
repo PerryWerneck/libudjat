@@ -32,6 +32,9 @@
 
  namespace Udjat {
 
+	Request::~Request() {
+	}
+
 	bool Request::cached(const TimeStamp &) const {
 		return false;
 	}
