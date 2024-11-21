@@ -139,6 +139,14 @@
 		/// @return The item.
 		Value & append(const char *name, Value::Type type = Undefined);
 
+		/// @brief Convert this value to report.
+		/// @return The report handler.
+		Udjat::Report & ReportFactory(const char *column_name, ... ) __attribute__ ((sentinel));
+
+		/// @brief Add report node to object value.
+		/// @return The report handler.
+		Udjat::Report & ReportChildFactory(const char *name, const char *column_name, ... ) __attribute__ ((sentinel));
+
 		/// @brief Get item.
 		/// @return The item.
 		Value & operator[](int ix);

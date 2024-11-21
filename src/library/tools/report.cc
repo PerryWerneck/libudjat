@@ -190,7 +190,9 @@
 				}
 				sep = true;
 
-				if(cell.type == Value::String || cell.type == Value::Url || cell.type == Value::Icon) {
+				out << "\"" << *column << "\":";
+
+				if(cell.type == Value::String || cell.type == Value::Url || cell.type == Value::Icon || cell.type == Value::Timestamp) {
 					out << "\"";
 					cell.serialize(out);
 					out << "\"";
@@ -219,15 +221,11 @@
 			out << "<caption>" << field.caption << "</caption>";
 		}
 
-		if(cells.empty()) {
-
-			out << "<contents />";
-
-		} else {
+		if(!cells.empty()) {
 
 			auto column = headers.begin();
 
-			out << "<contents><item>";
+			out << "<item>";
 			for(const auto &cell : cells ) {
 
 				if(column == headers.end()) {
@@ -242,7 +240,7 @@
 				column++;
 			}
 
-			out << "</item></contents>";
+			out << "</item>";
 
 		}
 	}

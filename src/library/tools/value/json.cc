@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
  #include <iostream>
 
   /**
@@ -75,6 +76,14 @@
 		case Udjat::Value::Boolean:
 		case Udjat::Value::Fraction:
 			output << to_string();
+			break;
+
+		case Udjat::Value::Report:
+			if(content.ptr) {
+				((const Udjat::Report *) content.ptr)->to_json(output);
+			} else {
+				output << "[]";
+			}
 			break;
 
 		default:

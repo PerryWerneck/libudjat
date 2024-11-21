@@ -24,6 +24,8 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
+ #include <udjat/tools/logger.h>
  #include <iostream>
 
  namespace Udjat {
@@ -45,11 +47,25 @@
 
 		case Udjat::Value::Object:
 			for_each([&ss](const char *key, const Value &value){
-				ss << "<" << key << " type='" << std::to_string((Udjat::Value::Type) value) << "'"<< ">";
+				ss << "<" << key << " type='"; 
+				if(value != Report) {
+					ss << std::to_string((Udjat::Value::Type) value);
+				} else {
+					ss << std::to_string(Udjat::Value::Array);
+				}
+				ss << "'"<< ">";
 				value.to_xml(ss);
 				ss << "</" << key << ">";
 				return false;
 			});
+			break;
+
+		case Udjat::Value::Report:
+			if(content.ptr) {
+				((const Udjat::Report *) content.ptr)->to_xml(ss);
+			} else {
+				ss << "<contents />";
+			}
 			break;
 
 		default:

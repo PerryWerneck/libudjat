@@ -27,6 +27,7 @@
  #include <udjat/tools/system.h>
  #include <udjat/tools/method.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/report.h>
 
  using namespace std;
  using namespace Udjat;
@@ -192,8 +193,17 @@
 			cout << "-[ On Timer ]---------------------------------------------------" << endl;
 
 			Request request{"/"};
-			Response response{Udjat::sh};			
+			Response response{Udjat::json};			
 			Method::find("agent").call(request,response);
+
+			auto &report = response.ReportChildFactory("report","a","b","c",nullptr);
+
+			report.push_back("String");
+			report.push_back(TimeStamp{});
+			for(unsigned ix = 0; ix < 10;ix++) {
+				report.push_back(ix);
+			}
+
 			cout << "Response:" << endl << response << endl;
 
 			cout << "----------------------------------------------------------------" << endl;

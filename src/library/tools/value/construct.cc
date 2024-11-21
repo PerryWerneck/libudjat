@@ -162,4 +162,42 @@
 
 	}
 
+	/// @brief Convert this value to report.
+	/// @return The report handler.
+	Udjat::Report & Value::ReportFactory(const char *column_name, ... ) {
+
+		clear();
+
+		va_list args;
+		va_start(args, column_name);
+		Udjat::Report *worker = new Udjat::Report(column_name,args);
+		va_end(args);		
+
+		type = Report;
+		content.ptr = (void *) worker;
+
+		return *worker;
+
+	}
+
+	/// @brief Add report node to object value.
+	/// @return The report handler.
+	Udjat::Report & Value::ReportChildFactory(const char *name, const char *column_name, ... ) {
+
+		Udjat::Value &val = (*this)[name];
+
+		val.clear();
+
+		va_list args;
+		va_start(args, column_name);
+		Udjat::Report *worker = new Udjat::Report(column_name,args);
+		va_end(args);		
+
+		val.type = Report;
+		val.content.ptr = (void *) worker;
+
+		return *worker;
+
+	}
+
  }
