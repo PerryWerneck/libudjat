@@ -73,9 +73,15 @@
 		} content;
 
 	public:
+
 		constexpr Value() : type{Undefined} {
 		}
 		
+		Value(const Value *value) : Value{*value} {
+		}
+		
+		Value(const Value &value);
+
 		Value(Type type);
 		
 		~Value();
@@ -184,7 +190,7 @@
 		Value & set(const unsigned short value);
 		Value & set(const int value);
 		Value & set(const unsigned int value);
-		Value & set(const TimeStamp value);
+		Value & set(const TimeStamp &value);
 		Value & set(const bool value);
 		Value & set(const float value);
 		Value & set(const double value);

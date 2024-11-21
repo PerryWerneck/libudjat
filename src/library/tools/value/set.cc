@@ -136,7 +136,7 @@
 		return *this;
 	}
 
-	Value & Value::set(const TimeStamp value) {
+	Value & Value::set(const TimeStamp &value) {
 		reset(Timestamp);
 		content.timestamp = value;
 		return *this;

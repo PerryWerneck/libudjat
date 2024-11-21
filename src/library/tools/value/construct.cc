@@ -28,6 +28,63 @@
 
  namespace Udjat {
  
+	Value::Value(const Value &src) : Value{} {
+
+		type = src.type;
+
+		switch(type) {
+		case Undefined:
+			break;
+
+		case String:
+		case Icon:
+		case Url:
+			if(src.content.ptr) {
+				content.ptr = strdup((const char *) src.content.ptr);
+			} else {
+				content.ptr = nullptr;
+			}
+			break;
+
+		case Array:
+			if(src.content.ptr) {
+				content.ptr = (void *) new vector<Value>(*((vector<Value> *) src.content.ptr));
+			} else {
+				content.ptr = (void *) new vector<Value>();
+			}
+			break;
+
+		case Object:
+			if(src.content.ptr) {
+				content.ptr = (void *) new map<std::string,Value>(*(( map<std::string,Value> *) src.content.ptr));
+			} else {
+				content.ptr = (void *) new map<std::string,Value>();
+			}
+			break;
+
+		case Timestamp:
+			content.timestamp = src.content.timestamp;
+			break;
+
+		case Signed:
+		case Boolean:
+			content.sig = src.content.sig;
+			break;
+
+		case Unsigned:
+		case State:
+			content.unsig = src.content.unsig;
+			break;
+
+		case Real:
+		case Fraction:
+			content.dbl = src.content.dbl;
+			break;
+
+		}
+
+	}
+
 	Value::Value(Type type) : Value{} {
 		clear(type);
 	}

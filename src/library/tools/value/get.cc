@@ -250,12 +250,12 @@
 	}
 
 	const Value & Value::get(TimeStamp &value) const {
-		if(type == String) {
+		if(likely(type == Timestamp)) {
+			value = TimeStamp{content.timestamp};
+		} else if(type == String) {
 			value = TimeStamp{(const char *) content.ptr};
 		} else {
-			time_t tm;
-			get(tm);
-			value = TimeStamp{tm};
+			throw logic_error("The value doesnt contains a timestamp");
 		}
 		return *this;
 	}
