@@ -30,6 +30,7 @@
  #include <functional>
  #include <stdexcept>
  #include <sstream>
+ #include <iomanip>
 
  using namespace std;
 
@@ -38,21 +39,45 @@
  	bool Value::empty() const noexcept {
 
 		if(type == Array) {
+
 			if(!content.ptr) {
 				return true;
 			}
 			return ((vector<Value> *) content.ptr)->empty();
+
 		} else if(type == Object) {
 			if(!content.ptr) {
 				return true;
 			}
 			return (((map<std::string,Value> *) content.ptr))->empty();
+
+		} else if(type == String) {
+
+			return !(content.ptr && *((char *) content.ptr)); 
+
 		} else if(type == Undefined) {
+
 			return true;
+
 		}
 
 		return false;
 
+	}
+
+	bool Value::isNull() const noexcept {
+		return (type == Undefined) || ((type == String || type == Icon || type == Url) && !content.ptr);
+	}
+
+	bool Value::isString() const noexcept {
+		return (type == String || type == Icon || type == Url) && content.ptr;
+	}
+
+	const char * Value::c_str() const noexcept {
+		if(isString()) {
+			return (const char *) content.ptr;
+		}
+		return "";
 	}
 
 	const Value & Value::get(std::string &value) const {
@@ -79,7 +104,7 @@
 			break;
 
 		case Timestamp:
-			value = TimeStamp{content.timestamp}.to_string();
+			value = TimeStamp{content.timestamp}.to_string(TIMESTAMP_FORMAT_JSON);
 			break;
 
 		case Signed:
@@ -91,11 +116,21 @@
 			break;
 
 		case Real:
-			value = std::to_string(content.dbl);
+			{
+				std::stringstream out;
+				out.imbue(std::locale("C"));
+				out << std::fixed << std::setprecision(2) << content.dbl;
+				value = out.str();
+			}
 			break;
 
 		case Fraction:
-			value = std::to_string(content.dbl);
+			{
+				std::stringstream out;
+				out.imbue(std::locale("C"));
+				out << std::fixed << std::setprecision(2) << (content.dbl *100) << "%";
+				value = out.str();
+			}
 			break;
 
 		case Boolean:
@@ -347,15 +382,16 @@
 	}
 
 	bool Value::getProperty(const char *key, std::string &value) const {
-		if(type == Object) {
+		if(type == Object && content.ptr) {
 			const map<std::string,Value> &children = *((map<std::string,Value> *) content.ptr);
 			auto it = children.find(key);
 			if(it == children.end()) {
 				return false;
 			}
 			value = it->second.to_string();
+			return true;
 		}
-		return false;
+		return Object::getProperty(key,value);
 	}
 
 	const Value & Value::operator[](const char *name) const {

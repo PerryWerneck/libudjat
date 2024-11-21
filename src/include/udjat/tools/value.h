@@ -95,10 +95,22 @@
 			return this->type == type;
 		}
 
-		/// @brief Has any value?
-		bool isNull() const;
+		/// @brief Convenience method to compare string values.
+		/// @return true if value is string and contents match with str (case insensitive).
+		bool operator==(const char *str) const;
 
-		/// @brief Has any children?
+		/// @brief Test if value contains a valid string.
+		/// @return true if value is a string type and not null.
+		bool isString() const noexcept;
+
+		/// @brief Convenient method to get string contents.
+		/// @return The contents if value is a string type, empty string if not.
+		const char *c_str() const noexcept;
+
+		/// @brief Has any value?
+		bool isNull() const noexcept;
+
+		/// @brief Is the value empty?
 		bool empty() const noexcept;
 
 		/// @brief Is this a number?
@@ -129,7 +141,7 @@
 
 		/// @brief Get child by name.
 		/// @return First child with required name. Exception if not found.
-		const Value & operator[](const char *name) const;
+		virtual const Value & operator[](const char *name) const;
 
 		/// @brief Get child by type.
 		/// @return First child with required type. Exception if not found.

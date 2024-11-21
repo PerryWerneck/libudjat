@@ -55,15 +55,29 @@
 		Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
 		}
 
+		virtual ~Request();
+
 		inline unsigned int version() const noexcept {
 			return apiver;
 		}
+
+		/// @brief Get request header.
+		/// @param name Name of the header.
+		/// @return The header value of "" if not found.
+		virtual const char * header(const char *name) const noexcept;
+
+		/// @brief Enumerate all request properties.
+		/// @param call Method to call in every request property.
+		/// @return True if the enumeration was interrupt with return 'true' from call();
+		virtual bool for_each(const std::function<bool(const char *name, const char *value)> &call) const;
 
 		/// @brief Is the request empty?
 		/// @return True if the request path is empty.
 		inline bool empty() const noexcept {
 			return !(reqpath && *reqpath);
 		}
+
+		bool getProperty(const char *key, std::string &value) const override;
 
 		/// @brief Is this request authenticated?
 		/// @return True if the request has user credentials.

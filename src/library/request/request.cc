@@ -44,6 +44,35 @@
 		return false;
 	}
 
+	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
+		return Value::for_each([call](const char *name, const Value &value){
+			if(value.isString()) {
+				return call(name,value.c_str());
+			}
+			return false;	
+		});
+	}
+
+	bool Request::getProperty(const char *key, std::string &value) const {
+
+		if(!strcasecmp(key,"path")) {
+			value = path();
+			return true;
+		}
+
+		if(!strcasecmp(key,"apiver")) {
+			value = std::to_string(apiver);
+			return true;
+		}
+
+		return Value::getProperty(key,value);
+	}
+
+	const char * Request::header(const char *name) const noexcept {
+		Logger::String{"Returning empty value for header '",name,"'"}.trace();
+		return "";
+	}
+
 	const char * Request::chk_prefix(const char *prefix) const noexcept {
 
 		debug(__FUNCTION__,"('",prefix,"')");
