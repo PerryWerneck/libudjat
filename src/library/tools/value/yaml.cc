@@ -24,6 +24,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
  #include <iostream>
 
  using namespace std;
@@ -68,6 +69,12 @@
 		case Udjat::Value::Boolean:
 		case Udjat::Value::Fraction:
 			ss << " " << to_string() << endl;
+			break;
+
+		case Udjat::Value::Report:
+			if(content.ptr) {
+				((const Udjat::Report *) content.ptr)->to_yaml(ss,left_margin+4);
+			}
 			break;
 
 		default:

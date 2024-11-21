@@ -193,7 +193,7 @@
 			cout << "-[ On Timer ]---------------------------------------------------" << endl;
 
 			Request request{"/"};
-			Response response{Udjat::json};			
+			Response response{Udjat::html};			
 			Method::find("agent").call(request,response);
 
 			auto &report = response.ReportChildFactory("report","a","b","c",nullptr);

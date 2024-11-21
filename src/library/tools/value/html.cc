@@ -25,6 +25,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
@@ -217,6 +218,12 @@
 
 			} catch(const std::exception &e) {
 				Logger::String(to_string(),": ",e.what()).error("icon");
+			}
+			break;
+
+		case Udjat::Value::Report:
+			if(content.ptr) {
+				((const Udjat::Report *) content.ptr)->to_html(ss);
 			}
 			break;
 

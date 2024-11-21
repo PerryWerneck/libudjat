@@ -266,7 +266,7 @@
 
 			auto column = headers.begin();
 
-			out << "<contents><item>";
+			out << "<tr>";
 			for(const auto &cell : cells ) {
 
 				if(column == headers.end()) {
@@ -275,12 +275,9 @@
 				}
 
 				if(cell.type == Value::Boolean) {
-
-					out << "<td class=\"" << (cell.data.sig ? "true-value" : "false-value") << ">";
-
+					out << "<td class=\"" << (cell.data.sig ? "true-value" : "false-value") << "\">";
 				} else {
-
-					out << "<td class=\"" << cell.type << ">";
+					out << "<td class=\"" << std::to_string(cell.type) << "\">";
 				}
 
 				cell.serialize(out);
