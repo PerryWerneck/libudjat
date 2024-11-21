@@ -21,6 +21,7 @@
   * @brief Implement response value.
   */
 
+/*
  #include <config.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/value.h>
@@ -91,3 +92,4 @@
 	}
 
  }
+ */
