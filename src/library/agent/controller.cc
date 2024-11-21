@@ -302,6 +302,15 @@ namespace Udjat {
 		try {
 
 			auto agent = find(request.path(),true);
+
+			time_t timestamp = agent->last_modified();
+			if(timestamp) {
+				if(request.cached(timestamp)) {
+					return;
+				}
+				response.last_modified(timestamp);
+			}
+
 			agent->getProperties(response);
 
 			if(agent->update.next) {

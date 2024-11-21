@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
+ #include <udjat/tools/report.h>
  #include <map>
  #include <vector>
  #include <string.h>
@@ -61,6 +62,9 @@
 				content.ptr = (void *) new map<std::string,Value>();
 			}
 			break;
+
+		case Report:
+			throw runtime_error("Cant copy report");
 
 		case Timestamp:
 			content.timestamp = src.content.timestamp;
@@ -106,6 +110,8 @@
 				delete ((vector<Value> *) content.ptr);
 			} else if(type == Object) {
 				delete ((map<std::string,Value> *) content.ptr);
+			} else if(type == Report) {
+				delete ((Udjat::Report *) content.ptr);
 			}
 			content.ptr = nullptr;
 		}
@@ -113,6 +119,9 @@
 		type = new_type;
 
 		switch(type) {
+		case Report:
+			throw logic_error("Unable to set value type to reserved value");
+			
 		case Undefined:
 		case String:
 		case Icon:

@@ -34,10 +34,17 @@
 	}
 
 	time_t Response::expires(const time_t tm) noexcept {
-		if(!timestamp.expires || timestamp.expires > tm) {
+		if(tm && (!timestamp.expires || timestamp.expires > tm)) {
 			timestamp.expires = tm;
 		}
 		return timestamp.expires;
+	}
+
+	time_t Response::last_modified(const time_t tm) noexcept {
+		if(tm && (!timestamp.last_modified || timestamp.last_modified < tm)) {
+			timestamp.last_modified = tm;
+		}
+		return timestamp.last_modified;
 	}
 
 	const char * Response::message() const noexcept {

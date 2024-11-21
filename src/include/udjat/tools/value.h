@@ -29,8 +29,12 @@
  #include <functional>
  #include <memory>
  #include <cstdint>
+ #include <vector>
+ #include <list>
 
  namespace Udjat {
+
+	class Report;
 
 	/// @brief Abstract value holding multiple types of data.
 	class UDJAT_API Value : public Abstract::Object {
@@ -51,6 +55,8 @@
 			Icon		= 'I',			///< @brief Icon name.
 			Url			= '@',			///< @brief URL.
 			State		= 'A',			///< @brief Level name ('undefined', 'unimportant', 'ready', 'warning', 'error', etc)
+
+			Report		= 'R',			///< @brief The value contains a report (internal use only).
 		};
 
 	private:

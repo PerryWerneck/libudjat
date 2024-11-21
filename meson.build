@@ -317,6 +317,7 @@ lib_src += [
   'src/library/tools/exception.cc',
   'src/library/tools/logger.cc',
   'src/library/tools/object.cc',
+  'src/library/tools/report.cc',
   'src/library/tools/method.cc',
   'src/library/request/responsevalue.cc',
 ]
@@ -731,6 +732,7 @@ install_headers(
   'src/include/udjat/tools/worker.h',
   'src/include/udjat/tools/system.h',
   'src/include/udjat/tools/method.h',
+  'src/include/udjat/tools/report.h',
   subdir: 'udjat/tools'  
 )
 
