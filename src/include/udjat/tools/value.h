@@ -66,10 +66,16 @@
 			unsigned int unsig;
 			double dbl;
 			void *ptr;
+
+			constexpr Content() : ptr{nullptr} {
+			}
+
 		} content;
 
 	public:
-		Value();
+		constexpr Value() : type{Undefined} {
+		}
+		
 		Value(Type type);
 		
 		~Value();
@@ -231,13 +237,17 @@
 	in.get(value);
 	return in;
  }
-
+ 
  namespace std {
 
 	UDJAT_API const char * to_string(Udjat::Value::Type type) noexcept;
 
 	inline string to_string(const Udjat::Value &value) noexcept {
 		return value.to_string();
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::Value &value) {
+		return os << value.to_string();
 	}
 
  }

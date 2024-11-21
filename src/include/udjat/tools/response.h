@@ -38,8 +38,6 @@
 
 	protected:
 
-		Value data;	/// @brief The response data.
-
 		/// @brief Response type.
 		MimeType mimetype = MimeType::custom;
 
@@ -101,10 +99,6 @@
 
 		inline int status_code() const noexcept {
 			return status.code;
-		}
-
-		inline Udjat::Value & contents() {
-			return data;
 		}
 
 		/// @brief Set item count for this response.

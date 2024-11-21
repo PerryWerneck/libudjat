@@ -28,10 +28,6 @@
 
  namespace Udjat {
  
-	Value::Value() {
-		memset(&content,0,sizeof(content));
-	}
-
 	Value::Value(Type type) : Value{} {
 		clear(type);
 	}
@@ -51,6 +47,7 @@
 			} else if(type == Object) {
 				delete ((map<std::string,Value> *) content.ptr);
 			}
+			content.ptr = nullptr;
 		}
 
 		type = new_type;

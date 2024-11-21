@@ -44,139 +44,6 @@
 		return false;
 	}
 
-	String Request::operator[](const char *name) const {
-
-		String rc;
-
-		if(isdigit(*name)) {
-			int ix = atoi(name);
-			if(ix > 0) {
-				if(getProperty((size_t) ix, rc)) {
-					return rc;
-				}
-			}
-		}
-
-		for_each([&rc,name](const char *n, const char *v) {
-			if(!strcasecmp(n,name)) {
-				rc = v;
-				return true;
-			}
-			return false;
-		});
-
-		return rc;
-	}
-
-	bool Request::for_each(const std::function<bool(const char *name, const char *value)> &call) const {
-
-		// Split query arguments.
-		const char *args = query();
-		if(args && *args) {
-
-			return String{args}.for_each("&",[&call](const String &arg) {
-
-				const char *n = arg.c_str();
-				const char *v = strchr(n,'=');
-
-				if(v && call(string{n,(size_t)(v-n)}.c_str(),v+1)) {
-					return true;
-				}
-
-				return false;
-
-			});
-		}
-		return false;
-
-	}
-
-/*
-	bool Request::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {
-
-		return for_each([call](const char *name, const char *value){
-
-			auto vptr = Value::Factory(value);
-
-			if(call(name,*vptr)) {
-				return true;
-			}
-
-			return false;
-		});
-
-		return false;
-	}
-*/
-
-	bool Request::getProperty(const char *key, Udjat::Value &value) const {
-		return for_each([key,&value](const char *n, const Udjat::Value &v){
-
-			if(!strcasecmp(n,key)) {
-				value = v;
-				return true;
-			}
-
-			return false;
-		});
-	}
-
-	bool Request::getProperty(const char *key, std::string &value) const {
-
-		if(isdigit(*key)) {
-			int ix = atoi(key);
-			if(ix > 0) {
-				if(getProperty((size_t) ix, value)) {
-					return true;
-				}
-			}
-		}
-
-		return for_each([key,&value](const char *n, const char *v){
-			if(!strcasecmp(n,key)) {
-				value = v;
-				return true;
-			}
-			return false;
-		});
-	}
-
-	bool Request::getProperty(size_t ix, std::string &value) const {
-
-		const char *txtptr = argptr ? argptr : reqpath;
-
-		if(*txtptr != '/') {
-			throw system_error(EINVAL,system_category(),"Request should start with '/' to use indexed parameter");
-		}
-
-		if(ix < 1) {
-			throw system_error(EINVAL,system_category(),"Request argument index should start with '1'");
-		}
-
-		const char *ptr = txtptr+1;
-		while(*ptr) {
-
-			const char *next = strchr(ptr,'/');
-			if(!next) {
-				if(ix == 1) {
-					value = ptr;
-					return true;
-				}
-				break;
-			}
-
-			if(!--ix) {
-				value = string{ptr,(size_t) (next-ptr)};
-				return true;
-			}
-
-			ptr = next+1;
-		}
-
-		return false;
-
-	}
-
 	const char * Request::chk_prefix(const char *prefix) const noexcept {
 
 		debug(__FUNCTION__,"('",prefix,"')");
@@ -262,21 +129,13 @@
 		return rc;
 	}
 
-	/*
-	const char * Request::getPath() const noexcept {
-		return argptr ? argptr : reqpath;
-	}
-	*/
-
 	const char * Request::path() const noexcept {
 		return argptr ? argptr : reqpath;
 	}
 
 	int Request::select(const char *value, ...) noexcept {
 
-		String action{pop()};
-
-		debug("action='",action,"'");
+		Udjat::String action{pop()};
 
 		va_list args;
 		va_start(args, value);

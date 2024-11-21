@@ -32,8 +32,7 @@
 
 	Value & Value::set(const char *value, const Type type) {
 
-		reset(type);
-		memset(&content,0,sizeof(content));
+		clear(type);
 
 		if(!(value && *value)) {
 			return *this;

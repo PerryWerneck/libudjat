@@ -27,19 +27,19 @@
 	Udjat::Value::Type type;
 	const char *name;
  } typenames[] = {
-	{ Udjat::Value::Type::Undefined,	N_("Undefined") },	// Allways the first one
-	{ Udjat::Value::Type::Array,		N_("Array") 	},
-	{ Udjat::Value::Type::Object,		N_("Object") 	},
-	{ Udjat::Value::Type::String,		N_("String") 	},
-	{ Udjat::Value::Type::Timestamp,	N_("Timestamp") },
-	{ Udjat::Value::Type::Signed,		N_("Signed") 	},
-	{ Udjat::Value::Type::Unsigned,		N_("Unsigned") 	},
-	{ Udjat::Value::Type::Real,			N_("Real") 		},
-	{ Udjat::Value::Type::Boolean,		N_("Boolean") 	},
-	{ Udjat::Value::Type::Fraction,		N_("Fraction") 	},
-	{ Udjat::Value::Type::Icon,			N_("Icon") 		},
-	{ Udjat::Value::Type::Url,			N_("Url") 		},
-	{ Udjat::Value::Type::State,		N_("State") 	},
+	{ Udjat::Value::Type::Undefined,	N_("undefined") },	// Allways the first one
+	{ Udjat::Value::Type::Array,		N_("array") 	},
+	{ Udjat::Value::Type::Object,		N_("object") 	},
+	{ Udjat::Value::Type::String,		N_("string") 	},
+	{ Udjat::Value::Type::Timestamp,	N_("timestamp") },
+	{ Udjat::Value::Type::Signed,		N_("signed") 	},
+	{ Udjat::Value::Type::Unsigned,		N_("unsigned") 	},
+	{ Udjat::Value::Type::Real,			N_("real") 		},
+	{ Udjat::Value::Type::Boolean,		N_("boolean") 	},
+	{ Udjat::Value::Type::Fraction,		N_("fraction") 	},
+	{ Udjat::Value::Type::Icon,			N_("icon") 		},
+	{ Udjat::Value::Type::Url,			N_("url") 		},
+	{ Udjat::Value::Type::State,		N_("state") 	},
 
 	{ Udjat::Value::Type::Signed,		N_("int") 		},
 	{ Udjat::Value::Type::Signed,		N_("integer") 	},

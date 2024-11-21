@@ -22,13 +22,13 @@
  #include <udjat/defs.h>
  #include <udjat/tools/http/method.h>
  #include <udjat/tools/abstract/object.h>
- #include <udjat/tools/request.h>
+ #include <udjat/tools/value.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
 
  namespace Udjat {
 
-	class UDJAT_API Request : public Abstract::Object {
+	class UDJAT_API Request : public Udjat::Value {
 	private:
 
 		/// @brief Request method.
@@ -77,35 +77,9 @@
 		virtual bool cached(const TimeStamp &timestamp) const;
 
 		/// @brief Get query.
-		/// @param def The value to return if the string don have query.
+		/// @param def The value to return if the string dont have query.
 		/// @return The query value or 'def'.
 		virtual const char * query(const char *def = "") const;
-
-		/// @brief Navigate from all arguments and properties until 'call' returns true.
-		/// @return true if 'call' has returned true, false if not.
-		virtual bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
-
-		/// @brief Navigate from all arguments and properties until 'call' returns true.
-		/// @return true if 'call' has returned true, false if not.
-		virtual bool for_each(const std::function<bool(const char *name, const char *value)> &call) const;
-
-		/// @brief Get property/argument value.
-		/// @param key The property name or index.
-		/// @param value String to update with the property value.
-		/// @return true if the property is valid.
-		bool getProperty(const char *key, std::string &value) const override;
-		virtual bool getProperty(size_t ix, std::string &value) const;
-
-		/// @brief Get property value.
-		/// @param key The property name.
-		/// @param value Object to receive the value.
-		/// @return true if the property is valid and value was updated.
-		bool getProperty(const char *key, Udjat::Value &value) const override;
-
-		/// @brief Get property value.
-		/// @param key The property name.
-		/// @return String with property value or empty if not found.
-		virtual String operator[](const char *key) const;
 
 		/// @brief Reset argument parser, next pop() will return the first element from path.
 		/// @see pop
@@ -129,10 +103,6 @@
 			return this->method;
 		}
 
-		UDJAT_DEPRECATED(inline HTTP::Method as_type() const noexcept) {
-			return this->method;
-		}
-
 		/// @brief Get current request path (after 'pop()').
 		/// @see pop()
 		/// @return The path remaining after 'pop()' calls.
@@ -149,7 +119,7 @@
 			return chk_prefix(prefix) != nullptr;
 		}
 
-		/// @brief pop() first element from path select it from list.
+		/// @brief pop() first element from path, select it from list.
 		/// @return Index of the selected action or negative if not found.
 		/// @retval -ENODATA The request is empty.
 		/// @retval -ENOENT The action is not in the list.
@@ -164,7 +134,7 @@
 		/// @brief Pop one element from path.
 		/// @return The first element from current path.
 		/// @see path()
-		String pop();
+		Udjat::String pop();
 
 		Request & pop(std::string &value);
 		Request & pop(int &value);

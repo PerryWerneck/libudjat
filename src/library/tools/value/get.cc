@@ -225,6 +225,12 @@
 		return *this;
 	}
 
+	bool Value::as_bool() const {
+		bool rc;
+		get(rc);
+		return rc;
+	}
+
 	const Value & Value::get(bool &value) const {
 		if(type == String) {
 			value = Udjat::String{(const char *) content.ptr}.as_bool();
@@ -313,6 +319,20 @@
 		throw out_of_range("The value is not an array");
 	}
 
+	Value & Value::append(const char *name, Value::Type type) {
+		
+		if(type == Undefined) {
+			clear(Object);
+		}
+
+		if(type != Object) {
+			throw logic_error("The value is not an object");
+		}
+			
+		return (*((map<std::string,Value> *) content.ptr))[name].clear(type);
+
+	}
+
 	Value & Value::operator[](const char *name) {
 
 		if(type == Undefined) {
@@ -371,11 +391,11 @@
                 	return true;
                 }
 			}
-		} else if(type == Undefined) {
-			return false;
+		} else if(type != Undefined) {
+			return call("",*this);
 		}
 
-		return call("",*this);
+		return false;
 
 	}
 
@@ -399,15 +419,17 @@
                 	return true;
                 }
 			}
-		} else if(type == Undefined) {
-			return false;
+		} else if(type != Undefined) {
+			return call(*this);
 		}
 
-		return call(*this);
+		return false;
 
 	}
 
 	void Value::serialize(std::ostream &out, const MimeType mimetype) const {
+
+		debug("Serializing value");
 
 		switch(mimetype) {
 		case MimeType::html:
@@ -440,6 +462,19 @@
 		stringstream stream;
 		serialize(stream,mimetype);
 		return stream.str();
+	}
+
+	std::string Value::to_string() const noexcept {
+		string value;
+		get(value);
+		return value;
+	}
+
+	std::string Value::to_string(const char *def) const {
+		if(type == Undefined || type == Array || type == Object) {
+			return def;
+		}
+		return to_string();
 	}
 
  }
