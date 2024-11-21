@@ -55,7 +55,6 @@ src/library/state/parse.cc
 src/library/state/state.cc
 src/library/worker/controller.cc
 src/library/worker/worker.cc
-src/library/tools/abstract/response.cc
 src/library/tools/activatable.cc
 src/library/tools/application/application.cc
 src/library/tools/application/init.cc
