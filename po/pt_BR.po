@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-21 09:03-0300\n"
+"POT-Creation-Date: 2024-11-21 16:15-0300\n"
 "PO-Revision-Date: 2024-08-15 01:13-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -80,7 +80,7 @@ msgstr "Modulo '{}' não foi carregado"
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/library/request/response.cc:125
+#: src/library/request/response.cc:132
 #, fuzzy
 msgid "System error"
 msgstr "Erro de sistema"
