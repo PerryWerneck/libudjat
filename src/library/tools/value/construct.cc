@@ -36,6 +36,10 @@
 		clear();
 	}
 
+	bool Value::operator==(const char *str) const {
+		return isString() && strcasecmp((const char *) content.ptr,str) == 0;
+	}
+
 	Value & Value::clear(const Type new_type) {
 
 		if(content.ptr) {
