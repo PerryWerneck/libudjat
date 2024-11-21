@@ -41,7 +41,6 @@
 		if(content.ptr) {
 			if(type == String || type == Url || type == Icon) {
 				free(content.ptr);
-				content.ptr = NULL;
 			} else if(type == Array) {
 				delete ((vector<Value> *) content.ptr);
 			} else if(type == Object) {
@@ -52,10 +51,41 @@
 
 		type = new_type;
 
-		if(type == Array) {
+		switch(type) {
+		case Undefined:
+		case String:
+		case Icon:
+		case Url:
+			content.ptr = nullptr;
+			break;
+
+		case Array:
 			content.ptr = (void *) new vector<Value>();
-		} else if(type == Object) {
+			break;
+
+		case Object:
 			content.ptr = (void *) new map<std::string,Value>();
+			break;
+
+		case Timestamp:
+			content.timestamp = 0;
+			break;
+
+		case Signed:
+		case Boolean:
+			content.sig = 0;
+			break;
+
+		case Unsigned:
+		case State:
+			content.unsig = 0;
+			break;
+
+		case Real:
+		case Fraction:
+			content.dbl = 0;
+			break;
+
 		}
 
 		return *this;
