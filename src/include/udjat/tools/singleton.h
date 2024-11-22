@@ -63,12 +63,10 @@
 				}
 			}
 
-			/*
 			static Container<T> & getInstance() {
 				static Container<T> instance;
 				return instance;
 			}
-			*/
 
 			virtual void clear() {
 				while(size()) {

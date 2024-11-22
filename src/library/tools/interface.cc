@@ -29,27 +29,27 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/container.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/application.h>
  #include <list>
 
  using namespace std;
 
  namespace Udjat {
 
-	class Interface::Controller {
+	class Interface::Controller : public Container<Interface> {
 	private:
-		std::list<Interface *> interfaces;
-		static std::mutex guard;
-
 		Controller() {
 		}
 
 	public:
 		static Controller & getInstance();
 
-		inline Interface & find(const char *name) const {
-			std::lock_guard<std::mutex> lock(guard);
-			for(Interface *intf : interfaces) {
-				if(!strcasecmp(intf->_name,name)) {
+		inline Interface & find(const char *name) {
+			std::lock_guard<std::mutex> lock(this->guard);
+			for(Interface *intf : objects) {
+				if(*intf == name) {
 					return *intf;
 				}
 			}
@@ -60,31 +60,15 @@
 				);		
 		}
 
-		inline void push_back(Interface * intf) noexcept {
-			std::lock_guard<std::mutex> lock(guard);
-			interfaces.push_back(intf);
-		}
-
-		inline void remove(Interface * intf) noexcept {
-			std::lock_guard<std::mutex> lock(guard);
-			interfaces.remove(intf);
-		}
-
-		inline const auto begin() {
-			return interfaces.begin();
-		} 
-
-		inline const auto end() {
-			return interfaces.end();
-		} 
-
 	};
 
-	std::mutex Interface::Controller::guard;
 	Interface::Controller & Interface::Controller::getInstance() {
-		std::lock_guard<std::mutex> lock(guard);
 		static Controller instance;
 		return instance;
+	}
+
+	std::string Interface::to_string() const {
+		return String{STRINGIZE_VALUE_OF(PRODUCT_DOMAIN),".",Application::Name().c_str(),".",_name};
 	}
 
 	Interface & Interface::find(const char *name) {

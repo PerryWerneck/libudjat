@@ -61,7 +61,7 @@
 		Interface(const XML::Node &node);
 
 	public:
-	
+
 		virtual ~Interface();
 
 		static Interface & find(const char *name);
@@ -70,9 +70,17 @@
 			return _name;
 		}
 
+		/// @brief Get full name of interface (example: br.eti.werneck.udjat.agent)
+		/// @return The full name of this interface.
+		std::string to_string() const;
+
 #if __cplusplus >= 202002L
-		auto operator <=>(const char *n) const noexcept {
-			return strcasecmp(n,this->_name);
+		inline auto operator <=>(const char *name) const noexcept {
+			return strcasecmp(name,this->_name);
+		}
+#else
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->_name) == 0;
 		}
 #endif
 
