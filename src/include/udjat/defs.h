@@ -60,6 +60,10 @@
 	#define unlikely(x)     (x)
 #endif
 
+/*
+
+	Using [[deprecated("message")]] now
+
 #if defined(__GNUC__)
 
 	#define UDJAT_UNUSED(x) __attribute__((unused)) x
@@ -72,7 +76,7 @@
 
 #elif defined(__LCLINT__)
 
-	#define UDJAT_UNUSED(x) /*@unused@*/ x
+	#define UDJAT_UNUSED(x)
 	#define UDJAT_DEPRECATED(func) func
 
 #else
@@ -81,6 +85,7 @@
 	#define UDJAT_DEPRECATED(func) func
 
 #endif
+*/
 
 #if defined(_WIN32)
 
