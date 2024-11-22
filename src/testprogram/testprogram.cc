@@ -25,7 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/tests.h>
  #include <udjat/tools/system.h>
- #include <udjat/tools/method.h>
+ #include <udjat/tools/interface.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/report.h>
 
@@ -194,7 +194,7 @@
 
 			Request request{"/"};
 			Response response{Udjat::html};			
-			Method::find("agent").call(request,response);
+			Interface::find("agent").call(request,response);
 
 			auto &report = response.ReportChildFactory("report","a","b","c",nullptr);
 

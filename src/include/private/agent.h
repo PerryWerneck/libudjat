@@ -31,7 +31,7 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
-#include <udjat/tools/method.h>
+#include <udjat/tools/interface.h>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -41,7 +41,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, private Method, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Service, private Interface, public MainLoop::Timer {
 	private:
 
 		time_t updating = 0;
@@ -76,7 +76,7 @@ namespace Udjat {
 		/// @brief Load agent properties from XML node.
 		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
 
-		// Method
+		// Interface
 		bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const override;
 		void call(Request &request, Response &response) override;
 		void call(const char *path, Udjat::Value &values) override;

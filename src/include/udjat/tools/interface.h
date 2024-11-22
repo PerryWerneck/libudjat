@@ -18,7 +18,7 @@
  */
 
  /**
-  * @brief Declares a method call.
+  * @brief Declares the abstract interface for API calls.
   */
 
  #pragma once
@@ -35,8 +35,8 @@
 
  namespace Udjat {
 
-	/// @brief Generic API method.
-	class UDJAT_API Method {
+	/// @brief Abstract interface for API calls.
+	class UDJAT_API Interface {
 	private:
 
 		/// @brief The method name.
@@ -45,19 +45,25 @@
 
 	protected:
 
-		typedef Method Super;
+		typedef Interface Super;
 
 		/// @brief Copy output values from single object to value.
 		/// @param object The source object
 		/// @param value The destination object, will receive the output properties from object.
 		void success(const Abstract::Object &object, Udjat::Value &value) const;
-		
-	public:
-		Method(const char *name);
-		Method(const XML::Node &node);
-		virtual ~Method();
 
-		static Method & find(const char *name);
+		/// @brief Build an interface.
+		/// @param name The interface name in (A single word).
+		Interface(const char *name);
+
+		/// @brief Build an interface from XML description
+		/// @param name The interface declaration.
+		Interface(const XML::Node &node);
+
+	public:
+		virtual ~Interface();
+
+		static Interface & find(const char *name);
 
 		inline const char * name() const noexcept {
 			return _name;
@@ -69,32 +75,29 @@
 		}
 #endif
 
-		/// @brief Get object introspections.
-		/// @param input The value to receive method inputs.
-		/// @param output The value to receive method outputs.
-		virtual void introspect(Value &input, Value &output);
-
-		/// @brief Enum method properties.
+		/// @brief Enum interface properties.
 		/// @param call The callback to handle property, returns true to interrupt the loop.
 		/// @return true if the loop was interrupted
 		virtual bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const = 0;
 
-		/// @brief Execute method.
+		/// @brief Execute chained action (for scripts using multiple interfaces).
 		/// @param path The path for object request.
 		/// @param values The in/out values.
 		virtual void call(const char *path, Udjat::Value &values) = 0;
 
-		/// @brief Execute method.
+		/// @brief Execute request, return response.
 		/// @param request The client request.
 		/// @param response The response.
 		virtual void call(Request &request, Response &response);
 
-		/// @brief Execute method.
+		/// @brief Execute chained action (for scripts using multiple interfaces).
+		/// @param name The interface name.
 		/// @param path The path for object request.
 		/// @param values The in/out values.
 		static void call(const char *name, const char *path, Udjat::Value &values);
 
-		/// @brief Execute method.
+		/// @brief Execute request, return response.
+		/// @param name The interface name.
 		/// @param request The client request.
 		/// @param response The response.
 		static void call(const char *name, Request &request, Response &response);

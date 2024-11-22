@@ -318,7 +318,7 @@ lib_src += [
   'src/library/tools/logger.cc',
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
-  'src/library/tools/method.cc',
+  'src/library/tools/interface.cc',
   'src/library/request/responsevalue.cc',
 ]
 
@@ -701,7 +701,7 @@ install_headers(
   'src/include/udjat/tools/expander.h',
   'src/include/udjat/tools/intl.h',
   'src/include/udjat/tools/message.h',
-  'src/include/udjat/tools/method.h',
+  'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/network.h',
   'src/include/udjat/tools/object.h',
   'src/include/udjat/tools/parse.h',
@@ -731,7 +731,7 @@ install_headers(
   'src/include/udjat/tools/xml.h',
   'src/include/udjat/tools/worker.h',
   'src/include/udjat/tools/system.h',
-  'src/include/udjat/tools/method.h',
+  'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/report.h',
   subdir: 'udjat/tools'  
 )
