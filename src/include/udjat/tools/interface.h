@@ -47,10 +47,10 @@
 
 		typedef Interface Super;
 
-		/// @brief Copy output values from single object to value.
-		/// @param object The source object
-		/// @param value The destination object, will receive the output properties from object.
-		void success(const Abstract::Object &object, Udjat::Value &value) const;
+		/// @brief Copy input values from object to value.
+		/// @param in The object to get the input properties
+		/// @param out The 'worker' object, will receive the input properties.
+		void get_inputs(const Abstract::Object &in, Udjat::Value &out) const;
 
 		/// @brief Build an interface.
 		/// @param name The interface name in (A single word).
@@ -61,6 +61,7 @@
 		Interface(const XML::Node &node);
 
 	public:
+	
 		virtual ~Interface();
 
 		static Interface & find(const char *name);

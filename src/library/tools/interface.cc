@@ -127,17 +127,15 @@
 		return false;
 	}
 
-	void Interface::success(const Abstract::Object &object, Udjat::Value &value) const {
+	void Interface::get_inputs(const Abstract::Object &from, Udjat::Value &to) const {
 
-		value.reset(Value::Object);
-		for_each([&object,&value](const size_t, bool in, const char *name, const Value::Type){
-			if(!in) {
+		for_each([&from,&to](const size_t, bool in, const char *name, const Value::Type){
+			if(in) {
 
 				// Is an output value, get it.
-				if(!object.getProperty(name,value[name])) {
+				if(!from.getProperty(name,to[name])) {
 					throw runtime_error(Logger::Message(_("Unable to get value for '{}"),name));
 				}
-
 			}
 			return false;
 		});
