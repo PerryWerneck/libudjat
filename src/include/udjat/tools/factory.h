@@ -86,7 +86,7 @@
 		/// @param node XML definition for the new state.
 		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node);
 
-		UDJAT_DEPRECATED(virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const);
+		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const [[deprecated]];
 
 		/// @brief Create an alert from XML node.
 		/// @param node XML definition for the new alert.
@@ -107,13 +107,13 @@
 		/// @brief Parse a generic XML node.
 		/// @param XML definition for the new element.
 		/// @return true if the node was parsed.
-		UDJAT_DEPRECATED(virtual bool generic(const XML::Node &node));
+		virtual bool generic(const XML::Node &node) [[deprecated]];
 
 		/// @brief Parse a XML node.
 		/// @param object Parent object.
 		/// @param XML definition for the new element.
 		/// @return true if the node was inserted.
-		UDJAT_DEPRECATED(virtual bool generic(Abstract::Object &parent, const XML::Node &node));
+		virtual bool generic(Abstract::Object &parent, const XML::Node &node) [[deprecated]];
 
 	};
 

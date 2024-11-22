@@ -63,7 +63,7 @@
 		return Controller::getInstance().for_each(node,func);
 	}
 
-	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
+	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object &, const XML::Node &) const {
 		return std::shared_ptr<Abstract::Agent>();
 	}
 

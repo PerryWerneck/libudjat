@@ -98,7 +98,7 @@
 			name(n), description(d), version(v), bugreport(b), url(u) { }
 #endif
 
-		UDJAT_DEPRECATED(Udjat::Value & get(Udjat::Value &value) const);
+		Udjat::Value & get(Udjat::Value &value) const [[deprecated]];
 
 		/// @brief Get property value.
 		/// @param key The property name.
