@@ -211,6 +211,7 @@ endif
 #
 lib_src += [
   'src/library/agent/agent.cc',
+  'src/library/agent/factory.cc',
   'src/library/agent/child.cc',
   'src/library/agent/controller.cc',
   'src/library/agent/get.cc',
@@ -222,7 +223,6 @@ lib_src += [
   'src/library/agent/start.cc',
   'src/library/agent/state.cc',
   'src/library/agent/update.cc',
-  'src/library/agent/factory.cc',
   'src/library/agent/root.cc',
   'src/library/agent/setup.cc',
   'src/library/alert/abstract.cc',
@@ -285,7 +285,6 @@ lib_src += [
   'src/library/tools/requestpath.cc',
   'src/library/tools/script.cc',
   'src/library/tools/shortcut.cc',
-  'src/library/tools/singleton.cc',
   'src/library/tools/string/xml.cc',
   'src/library/tools/string/expand.cc',
   'src/library/tools/string/string.cc',

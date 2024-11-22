@@ -86,14 +86,12 @@ namespace Udjat {
 			// It's an agent?
 			if(strcasecmp(node.name(),"agent") == 0) {
 
-				auto agent = Abstract::Agent::Factory(*this,node);
+				auto agent = Abstract::Agent::Factory::build(*this,node);
 				if(agent) {
-
 					agent->Object::set(node);
 					agent->setup(node);
 					push_back(agent);
 					continue;
-
 				}
 
 			}

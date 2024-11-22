@@ -22,12 +22,13 @@
  #include <udjat/defs.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/object.h>
+ #include <udjat/agent/abstract.h>
 
  namespace Udjat {
 
 	/// @brief Object factory.
 	/// Create objects from XML definition.
-	class UDJAT_API Factory {
+	class UDJAT_API Factory : public Abstract::Agent::Factory {
 	private:
 		class Controller;
 
@@ -79,7 +80,7 @@
 
 		/// @brief Create an agent from XML node.
 		/// @param node XML definition for the new agent.
-		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const;
+		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const override;
 
 		/// @brief Create a child object from XML node.
 		/// @param node XML definition for the new state.

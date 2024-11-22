@@ -36,6 +36,27 @@
 		class UDJAT_API Agent : public Udjat::Object {
 		public:
 
+			/// @brief Agent factory
+			class UDJAT_API Factory {
+			private:
+				const char *name;
+
+			public:
+				Factory(const char *name);
+				virtual ~Factory();
+
+				inline bool operator==(const char *n) const noexcept {
+					return strcasecmp(n,name) == 0;
+				}
+
+				/// @brief Create an agent from XML node.
+				/// @param node XML definition for the new agent.
+				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const = 0;
+
+				static std::shared_ptr<Abstract::Agent> build(const Abstract::Object &parent, const XML::Node &node);
+
+			};
+
 			enum Event : uint16_t {
 				STARTED				= 0x0001,		///< @brief Agent was started.
 				STOPPED				= 0x0002,		///< @brief Agent was stopped.
@@ -226,12 +247,6 @@
 
 			/// @brief Factory for the default root agent.
 			static std::shared_ptr<Agent> RootFactory();
-
-			/// @brief Build and agent from type & xml node.
-			//static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const XML::Node &node);
-
-			/// @brief Build and agent from node.
-			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const XML::Node &node);
 
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);

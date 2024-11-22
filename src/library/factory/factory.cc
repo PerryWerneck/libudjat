@@ -22,6 +22,7 @@
  #include <private/factory.h>
  #include <udjat/agent.h>
  #include <udjat/alert/abstract.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/module/info.h>
  #include <iostream>
 
@@ -29,7 +30,7 @@
 
  namespace Udjat {
 
-	Factory::Factory(const char *n, const ModuleInfo &i) : factory_name(n), module(i) {
+	Factory::Factory(const char *n, const ModuleInfo &i) : Abstract::Agent::Factory{n}, factory_name(n), module(i) {
 		Controller::getInstance().insert(this);
 	}
 
