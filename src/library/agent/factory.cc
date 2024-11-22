@@ -167,7 +167,7 @@
 				"url",
 				[](const XML::Node &node) {
 
-					/// @brief Agent keeping the value of script return code.
+					/// @brief Agent keeping the value of url status code.
 					class Url : public Udjat::Agent<int32_t> {
 					private:
 						const char *url;
@@ -198,7 +198,7 @@
 
 						}
 
-						bool refresh(bool UDJAT_UNUSED(ondemand)) {
+						bool refresh(bool) {
 							return set((int32_t) Udjat::URL{this->url}.test(method));
 						};
 
@@ -217,7 +217,7 @@
 			}
 		}
 
-		Logger::String{"Cant find a valid factory for agent type '",type,"'"}.trace();
+		Logger::String{"Cant find a valid factory for agent type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
 
 		// Return empty agent, for legacy compatibility.
 		return std::shared_ptr<Abstract::Agent>();
