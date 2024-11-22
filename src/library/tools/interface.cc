@@ -102,6 +102,10 @@
 		find(name).call(request,response);
 	}
 
+	bool Interface::for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &) const {
+		return false;		
+	}
+
 	void Interface::call(const char *, Udjat::Value &) {
 		throw system_error(ENOTSUP,system_category(),_( "Unable to handle request, no backend"));		
 	}

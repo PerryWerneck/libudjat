@@ -78,7 +78,7 @@
 		/// @brief Enum interface properties.
 		/// @param call The callback to handle property, returns true to interrupt the loop.
 		/// @return true if the loop was interrupted
-		virtual bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const = 0;
+		virtual bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const;
 
 		/// @brief Execute chained action (for scripts using multiple interfaces).
 		/// @param path The path for object request.
