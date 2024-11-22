@@ -70,6 +70,14 @@
 			interfaces.remove(intf);
 		}
 
+		inline const auto begin() {
+			return interfaces.begin();
+		} 
+
+		inline const auto end() {
+			return interfaces.end();
+		} 
+
 	};
 
 	std::mutex Interface::Controller::guard;
@@ -108,6 +116,15 @@
 
 	void Interface::call(const char *, Udjat::Value &) {
 		throw system_error(ENOTSUP,system_category(),_( "Unable to handle request, no backend"));		
+	}
+
+	bool Interface::for_each(const std::function<bool(const Interface &intf)> &call) {
+		for(const Interface *intf : Controller::getInstance()) {
+			if(call(*intf)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void Interface::success(const Abstract::Object &object, Udjat::Value &value) const {

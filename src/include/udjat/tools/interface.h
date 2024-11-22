@@ -75,6 +75,11 @@
 		}
 #endif
 
+		/// @brief Enum interfaces.
+		/// @param call The callback, returns true to interrupt the loop.
+		/// @return true if the loop was interrupted
+		static bool for_each(const std::function<bool(const Interface &intf)> &call);
+
 		/// @brief Enum interface properties.
 		/// @param call The callback to handle property, returns true to interrupt the loop.
 		/// @return true if the loop was interrupted
