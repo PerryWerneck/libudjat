@@ -637,7 +637,6 @@ version_file = configure_file(
 
 install_headers(
   'src/include/udjat.h',
-  'src/include/udjat/worker.h',
   'src/include/udjat/agent.h',
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
