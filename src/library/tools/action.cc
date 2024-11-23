@@ -89,11 +89,11 @@
 				}
 
 				void call(Udjat::Value &response) override {
-					int rc = SubProcess::run(name,cmdline,out,err);
+					int rc = SubProcess::run(name(),cmdline,out,err);
 					if(rc && except) {
 						throw runtime_error(Logger::Message{"Subprocess failed with rc {}",rc});
 					}
-					response[name] = rc;
+					response[name()] = rc;
 				}
 
 			};
@@ -110,7 +110,7 @@
 	}
 
 	Action::Action(const XML::Node &node)
-		: name{String{node,"name"}.as_quark()}, title{String{node,"title"}.as_quark()} {
+		: NamedObject{node}, title{String{node,"title"}.as_quark()} {
 	}
 	
 	Action::~Action() {

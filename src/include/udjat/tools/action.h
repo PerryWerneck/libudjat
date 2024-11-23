@@ -28,12 +28,12 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/object.h>
 
  namespace Udjat {
 
-	class UDJAT_API Action {
+	class UDJAT_API Action : public NamedObject {
 	protected:
-		const char *name;
 		const char *title;
 
 	public:
