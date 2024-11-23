@@ -29,12 +29,19 @@
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/object.h>
+ #include <functional>
 
  namespace Udjat {
 
 	class UDJAT_API Action : public NamedObject {
 	protected:
 		const char *title;
+
+		/// @brief Convenience function to get payload from xml
+		static const char * payload(const XML::Node &node, const char *attrname = "payload");
+
+		/// @brief Convenience method to capture and translate exceptions.
+		int exec(Udjat::Value &value, bool except, const std::function<int()> &func);
 
 	public:
 
