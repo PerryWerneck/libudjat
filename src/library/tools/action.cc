@@ -29,11 +29,16 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/script.h>
  #include <list>
 
  using namespace std;
 
  namespace Udjat {
+
+#ifdef _WIN32
+#else
+#endif
 
 	static Container<Action::Factory> & Factories() {
 		static Container<Action::Factory> instance;
@@ -65,47 +70,15 @@
 		//
 		// Build internal actions
 		//
-		if(!strcasecmp(type,"shell")) {
-
-			class UDJAT_PRIVATE ScriptAction : public Action {
-			private:
-				const char *cmdline;
-				Logger::Level out = Logger::Info;
-				Logger::Level err = Logger::Error;
-				bool except = false;
-
-			public:
-				ScriptAction(const XML::Node &node) 
-					:	Action{node},
-						cmdline{String{node,"cmdline"}.as_quark()}, 
-						out{Logger::LevelFactory(node,"stdout","info")},
-						err{Logger::LevelFactory(node,"stderr","error")},
-						except{String{node,"abort-on-failure","0"}.as_bool()} {
-
-					if(!(cmdline && *cmdline)) {
-						throw runtime_error("Required attribute 'cmdline' is missing");
-					}
-
-				}
-
-				void call(Udjat::Value &response) override {
-					int rc = SubProcess::run(name(),cmdline,out,err);
-					if(rc && except) {
-						throw runtime_error(Logger::Message{"Subprocess failed with rc {}",rc});
-					}
-					response[name()] = rc;
-				}
-
-			};
-
-			return make_shared<ScriptAction>(node);
+		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0) {
+			return make_shared<Script>(node);
 		}
 
 		//
 		// Cant find factory, return empty action.
 		//
 		Logger::String{"Cant find a valid factory for action type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
-		return std::shared_ptr<Action>();
+		return std::shared_ptr<Action>(); // Legacy
 
 	}
 

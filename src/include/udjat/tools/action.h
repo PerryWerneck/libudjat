@@ -59,12 +59,18 @@
 
 		};
 
+		constexpr Action(const char *n, const char *t = "") : NamedObject{n}, title{t} {
+		} 
+
 		Action(const XML::Node &node);
 		virtual ~Action();
 
 		/// @brief Execute action
 		/// @param value The in/out values.
-		virtual void call(Udjat::Value &value) = 0;
+		/// @param except If true the action will launch exception on failure.
+		/// @return The return code.
+		/// @retval 0 Success.
+		virtual int call(Udjat::Value &value, bool except = true) = 0;
 
 		/// @brief Execute action.
 		/// @param request The client request.

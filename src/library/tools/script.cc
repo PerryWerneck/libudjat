@@ -41,13 +41,21 @@
 #ifdef _WIN32
 
 	Script::Script(const XML::Node &node, const char *msg)
-		: 	NamedObject{node},
+		: 	Action{node},
 			cmdline{Quark(node,"cmdline","").c_str()},
-			title{Quark(node,"title",msg).c_str()} {
+			uid{getuid(node)},
+			gid{getgid(node)},
+			shell{node.attribute("shell").as_bool(false)} {
+
 		if(!(cmdline && *cmdline)) {
 			throw runtime_error(_("The required attribute 'cmdline' is missing"));
 		}
 	}
+
+	Script::Script(const XML::Node &node, const char *title)
+		: 	Action{node},
+			cmdline{String{node,"cmdline",""}.as_quark()},
+			title{String{node,"title",""}.as_quark()}, {
 
 	// TODO
 	int Script::run(const char *cmdline) const {
@@ -121,13 +129,14 @@
 
  	}
 
-	Script::Script(const XML::Node &node, const char *msg)
-		: 	NamedObject{node},
-			cmdline{Quark(node,"cmdline","").c_str()},
+	Script::Script(const XML::Node &node, const char *title)
+		: 	Action{node},
+			cmdline{String{node,"cmdline",""}.as_quark()},
+			title{String{node,"title",""}.as_quark()},
 			uid{getuid(node)},
 			gid{getgid(node)},
-			shell{node.attribute("shell").as_bool(false)},
-			title{Quark(node,"title",msg).c_str()} {
+			shell{node.attribute("shell").as_bool(false)} {
+
 		if(!(cmdline && *cmdline)) {
 			throw runtime_error(_("The required attribute 'cmdline' is missing"));
 		}
@@ -184,17 +193,27 @@
 	}
 
 	const char * Script::c_str() const noexcept {
-
 		if(title && *title) {
 			return title;
 		}
-
 		return cmdline;
-
 	}
 
-	int Script::run(const Udjat::NamedObject &object) const {
-		return run(String{cmdline}.expand(object).c_str());
+	int Script::run(const Udjat::NamedObject &object, bool except) const {
+		int rc = run(String{cmdline}.expand(object).c_str());
+		if(except) {
+			throw runtime_error(Logger::Message{"Script failed with rc {}",rc});
+		}
+		return rc;
+	}
+
+	int Script::call(Udjat::Value &value, bool except) {
+		int rc = run(String{cmdline}.expand(value).c_str());
+		value[name()] = rc;
+		if(except) {
+			throw runtime_error(Logger::Message{"Script failed with rc {}",rc});
+		}
+		return rc;
 	}
 
  }
