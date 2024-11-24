@@ -80,7 +80,7 @@
 		//
 		// Build internal actions
 		//
-		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0) {
+		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script")) {
 			// Script action.
 			return make_shared<Script>(node);
 		}

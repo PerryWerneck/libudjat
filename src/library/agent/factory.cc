@@ -32,6 +32,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/http/error.h>
  #include <udjat/tools/action.h>
+ #include <udjat/tools/script.h>
 
  #include <cstring>
  #include <list>
@@ -59,7 +60,6 @@
 		const char *type = node.attribute("type").as_string("default");
 
 		for(const auto factory : Factories()) {
-			debug("=====================> ",factory->name);
 			if(strcasecmp(type,factory->name)) {
 				continue;
 			}
@@ -69,10 +69,28 @@
 				debug("Got agent '",type,"'")
 				return agent;
 			}
-
 		}
 
 		// Try internal types
+		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script")) {
+
+			/// @brief Agent keeping the value of script return code.
+			class Script : public Udjat::Agent<int32_t>, private Udjat::Script {
+			public:
+				Script(const XML::Node &node) : Udjat::Script{node} {
+				}
+
+				bool refresh(bool) {
+					return Udjat::Agent<int32_t>::set(
+						(int32_t) Udjat::Script::run(*((Udjat::Agent<int32_t> *)this),false)
+					);
+				};
+
+			};
+
+			return make_shared<Script>(node);
+		}
+
 		static const struct
 		{
 			const char *type;
@@ -108,59 +126,6 @@
 				"string",
 				[](const XML::Node &node) {
 					return make_shared<Udjat::Agent<std::string>>(node);
-				}
-			},
-			{
-				"script",
-				[](const XML::Node &node) {
-
-					/// @brief Agent keeping the value of script return code.
-					class Script : public Udjat::Agent<int32_t> {
-					private:
-						const char *cmdline;
-						Logger::Level out = Logger::Info;
-						Logger::Level err = Logger::Error;
-
-					public:
-						Script(const XML::Node &node)
-							: Udjat::Agent<int32_t>(node),
-								out{Logger::LevelFactory(node,"stdout","info")},
-								err{Logger::LevelFactory(node,"stderr","error")}
-						{
-							cmdline = Quark(node,"cmdline","").c_str();
-							if(!cmdline) {
-								throw runtime_error("Required attribute 'cmdline' is missing");
-							}
-						}
-
-						bool refresh(bool) {
-
-							// Execute script, save return code.
-
-							int32_t value = -1;
-
-							try {
-
-								value = SubProcess::run(this,cmdline,out,err);
-
-							} catch(const std::exception &e) {
-
-								value = -1;
-								error() << "Error '" << e.what() << "' running script" << endl;
-
-							} catch(...) {
-
-								error() << "Unexpected error running script" << endl;
-								value = -1;
-
-							}
-
-							return set(value);
-						};
-
-					};
-
-					return make_shared<Script>(node);
 				}
 			},
 
