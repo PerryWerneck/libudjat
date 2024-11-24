@@ -320,6 +320,7 @@ lib_src += [
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',
+  'src/library/tools/action.cc',
   'src/library/request/responsevalue.cc',
 ]
 
@@ -732,6 +733,7 @@ install_headers(
   'src/include/udjat/tools/system.h',
   'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/report.h',
+  'src/include/udjat/tools/action.h',
   subdir: 'udjat/tools'  
 )
 

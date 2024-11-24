@@ -299,6 +299,10 @@ namespace Udjat {
 
 	void Abstract::Agent::Controller::call(Request &request, Response &response) {
 		
+		if(((HTTP::Method) request) != HTTP::Get) {
+			throw system_error(ENOTSUP,system_category(),_( "Unsupported method"));	
+		}
+
 		try {
 
 			auto agent = find(request.path(),true);

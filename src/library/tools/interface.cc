@@ -32,6 +32,7 @@
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/request.h>
  #include <list>
 
  using namespace std;
@@ -86,6 +87,38 @@
 		Controller::getInstance().remove(this);
 	}
 
+	void Interface::call(Request &request, Response &response) {
+
+		try {
+
+			switch((HTTP::Method) request) {
+			case HTTP::Get:
+				call(request.path(),response);
+				break;
+
+			case HTTP::Head:
+			case HTTP::Post:
+			case HTTP::Put:
+			case HTTP::Delete:
+			case HTTP::Connect:
+			case HTTP::Options:
+			case HTTP::Trace:
+			case HTTP::Patch:
+				throw system_error(ENOTSUP,system_category(),_( "Unsupported method"));
+
+			default:
+				throw runtime_error("Unexpected method");
+			}
+
+		} catch(const std::exception &e) {
+
+			response.failed(e);
+
+		}
+
+
+	}
+
 	void Interface::call(const char *name, const char *path, Udjat::Value &values) {
 		find(name).call(path,values);
 	}
@@ -125,18 +158,5 @@
 		});
 	}
 
-	void Interface::call(Request &request, Response &response) {
-
-		try {
-
-			call(request.path(),response);
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
-
-		}
-
-	}
 
  }
