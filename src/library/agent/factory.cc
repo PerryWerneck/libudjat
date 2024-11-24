@@ -31,6 +31,7 @@
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/http/error.h>
+ #include <udjat/tools/action.h>
 
  #include <cstring>
  #include <list>
@@ -214,6 +215,35 @@
 			if(!strcasecmp(type,builder.type)) {
 				Logger::String{"Building agent using internal type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
 				return builder.build(node);
+			}
+		}
+
+		// Try actions
+		{
+			class ActionAgent : public Udjat::Agent<int> {
+			private:
+				std::shared_ptr<Action> action;
+				Udjat::Value result;
+
+			public:
+				ActionAgent(const XML::Node &node, std::shared_ptr<Action> a) : Udjat::Agent<int>{node}, action{a} {
+				}
+
+				bool refresh() override {
+					return set(action->call(result,false));
+				}
+
+				Value & getProperties(Value &value) const override {
+					value = result;
+					return value;
+				}
+
+			};
+
+			std::shared_ptr<Action> action = Action::Factory::build(node);
+			if(action) {
+				Logger::String{"Building agent using action '",action->name(),"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
+				return make_shared<ActionAgent>(node,action);
 			}
 		}
 

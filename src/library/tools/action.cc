@@ -32,6 +32,7 @@
  #include <udjat/tools/script.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/http/exception.h>
  #include <list>
  #include <sys/stat.h>
  #include <fstream>
@@ -52,6 +53,14 @@
 
 	Action::Factory::~Factory() {
 		Factories().remove(this);
+	}
+
+	const std::list<Action::Factory *>::const_iterator Action::Factory::begin() {
+		return Factories().begin();
+	}
+
+	const std::list<Action::Factory *>::const_iterator Action::Factory::end() {
+		return Factories().end();
 	}
 
 	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node) {
@@ -233,6 +242,15 @@
 			int rc = func();
 			value[name()] = rc;
 			return rc;
+
+		} catch(const HTTP::Exception &e) {
+
+			value[name()] = e.code(); 
+			if(except) {
+				throw;
+			}
+			error() << e.what() << endl;
+			return e.code();
 
 		} catch(const std::system_error &e) {
 

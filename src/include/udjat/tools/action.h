@@ -30,6 +30,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/object.h>
  #include <functional>
+ #include <list>
 
  namespace Udjat {
 
@@ -62,7 +63,13 @@
 			/// @param node XML definition for the new action.
 			virtual std::shared_ptr<Action> ActionFactory(const XML::Node &node) const = 0;
 
+			/// @brief Try to build an action from XML definition.
+			/// @param node Action definition.
+			/// @return Pointer to new action (empty if not found).
 			static std::shared_ptr<Action> build(const XML::Node &node);
+
+			static const std::list<Action::Factory *>::const_iterator begin();
+			static const std::list<Action::Factory *>::const_iterator end();
 
 		};
 
