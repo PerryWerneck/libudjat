@@ -195,7 +195,7 @@
 				}
 
 				bool refresh() override {
-					return set(action->call(result,false));
+					return set(action->call(result,result,false));
 				}
 
 				Value & getProperties(Value &value) const override {

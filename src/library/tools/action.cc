@@ -108,9 +108,9 @@
 					}
 				}
 
-				int call(Udjat::Value &value, bool except) override {
+				int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
 
-					return exec(value,except,[&]() {
+					return exec(response,except,[&]() {
 
 						// Get filename
 						String name{filename};
@@ -118,7 +118,7 @@
 							// Expand filename.
 							name = TimeStamp().to_string(name);
 						}
-						name.expand(value);
+						name.expand(request);
 
 						// Check filename age, if necessary
 						struct stat st;
@@ -132,9 +132,9 @@
 						ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 						ofs.open(name, ofstream::out | ofstream::app);
 						if(text && *text) {
-							ofs << String{text}.expand(value) << endl;
+							ofs << String{text}.expand(request) << endl;
 						} else {
-							value.serialize(ofs,mimetype);
+							request.serialize(ofs,mimetype);
 							ofs << endl;
 						}
 						ofs.close();
@@ -170,20 +170,20 @@
 					}
 				}
 
-				int call(Udjat::Value &value, bool except) override {
+				int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
 
-					return exec(value,except,[&](){
+					return exec(response,except,[&](){
 
 						// Get payload
 						String payload{text};
 						if(payload.empty()) {
-							payload = value.to_string(mimetype);
+							payload = request.to_string(mimetype);
 						} else {
-							payload.expand(value);
+							payload.expand(request);
 						}
 
 						String response = Protocol::call(
-												String{url}.expand(value).c_str(),
+												String{url}.expand(request).c_str(),
 												method,
 												payload.c_str()
 											);
@@ -220,7 +220,7 @@
 	/// @param request The client request.
 	/// @param response The response to client.
 	void Action::call(Udjat::Request &, Udjat::Response &response) {
-		call(response);
+		call(response,response);
 	}
 
 	const char * Action::payload(const XML::Node &node, const char *attrname) {

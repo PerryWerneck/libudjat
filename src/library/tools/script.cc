@@ -208,9 +208,9 @@
 		return rc;
 	}
 
-	int Script::call(Udjat::Value &value, bool except) {
-		int rc = run(String{cmdline}.expand(value).c_str());
-		value[name()] = rc;
+	int Script::call(const Udjat::Value &request, Udjat::Value &response, bool except) {
+		int rc = run(String{cmdline}.expand(request).c_str());
+		response[name()] = rc;
 		if(except) {
 			throw runtime_error(Logger::Message{"Script failed with rc {}",rc});
 		}

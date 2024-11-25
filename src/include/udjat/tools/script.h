@@ -58,11 +58,12 @@
 		~Script();
 
 		/// @brief Run script in foreground.
-		/// @param value The values for cmdline expansion and store return code.
+		/// @param request The values for cmdline expansion and store return code.
+		/// @param response The value to receive the return code.
 		/// @param except If true the action will launch exception on failure.
 		/// @return The return code.
 		/// @retval 0 Success.
-		int call(Udjat::Value &value, bool except = false) override;
+		int call(const Udjat::Value &request, Udjat::Value &response, bool except = false) override;
 
 		/// @brief Run script in foreground.
 		/// @param object The object for cmdline expansion.

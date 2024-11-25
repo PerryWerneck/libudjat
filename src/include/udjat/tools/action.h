@@ -42,7 +42,7 @@
 		static const char * payload(const XML::Node &node, const char *attrname = "payload");
 
 		/// @brief Convenience method to capture and translate exceptions.
-		int exec(Udjat::Value &value, bool except, const std::function<int()> &func);
+		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
 
 	public:
 
@@ -84,7 +84,7 @@
 		/// @param except If true the action will launch exception on failure.
 		/// @return The return code.
 		/// @retval 0 Success.
-		virtual int call(Udjat::Value &value, bool except = true) = 0;
+		virtual int call(const Udjat::Value &request, Udjat::Value &response, bool except = true) = 0;
 
 		/// @brief Execute action.
 		/// @param request The client request.
