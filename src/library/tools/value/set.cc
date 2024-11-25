@@ -25,6 +25,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
  #include <udjat/agent/level.h>
+ #include <map>
 
  using namespace std;
 
@@ -104,6 +105,62 @@
 		children->emplace_back(item_type);
 		return children->back();
 
+	}
+
+	Value & Value::merge(const Value &src) {
+
+		if(src.type != Object || type != Object) {
+			throw runtime_error("Merging is only allowed for objects");
+		}
+
+		for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{
+			(*this)[key.c_str()].set(value);
+		}
+
+		return *this;
+	}
+
+	Value & Value::set(const Value &src) {
+
+		reset(src.type);
+		switch(src.type) {
+		case Value::Undefined:
+			break;
+
+		case Value::Object:
+			merge(src);
+			break;
+
+		case Value::String:
+		case Value::Icon:
+		case Value::Url:
+			content.ptr = strdup((const char *) src.content.ptr);
+			break;
+
+		case Value::Timestamp:
+			content.timestamp = src.content.timestamp;
+			break;
+
+		case Value::Signed:
+		case Value::Boolean:
+			content.sig = src.content.sig;
+			break;
+
+		case Value::Unsigned:
+		case Value::State:
+			content.unsig = src.content.unsig;
+			break;
+
+		case Value::Real:
+		case Value::Fraction:
+			content.dbl = src.content.dbl;
+			break;
+
+		default:
+			throw runtime_error("Invalid value type");
+		}
+
+		return *this;
 	}
 
 	Value & Value::setFraction(const float fraction) {

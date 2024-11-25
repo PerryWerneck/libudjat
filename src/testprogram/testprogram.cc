@@ -196,7 +196,7 @@
 			Response response{Udjat::html};			
 			Interface::find("agent").call(request,response);
 
-			auto &report = response.ReportChildFactory("report","a","b","c",nullptr);
+			auto &report = response["resultset"].ReportFactory("a","b","c",nullptr);
 
 			report.push_back("String");
 			report.push_back(TimeStamp{});

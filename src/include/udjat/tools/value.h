@@ -139,19 +139,17 @@
 		/// @return The item.
 		Value & append(const char *name, Value::Type type = Undefined);
 
-		/// @brief Convert this value to report.
+		/// @brief Merge another value.
+		Value & merge(const Value &src);
+
+		/// @brief Convert this value to an empty report with defined columns.
 		/// @return The report handler.
 		Udjat::Report & ReportFactory(const char *column_name, ... ) __attribute__ ((sentinel));
 
-		/// @brief Add report node to object value.
-		/// @return The report handler.
-		Udjat::Report & ReportChildFactory(const char *name, const char *column_name, ... ) __attribute__ ((sentinel));
-
-		/// @brief Add report node from value
-		/// @param name The node name
+		/// @brief Convert this value to report, add first row.
 		/// @param first_row The first row of the report.
 		/// @return The report handler.
-		Udjat::Report & ReportChildFactory(const char *name, const Value &first_row );
+		Udjat::Report & ReportFactory(const Value &first_row);
 
 		/// @brief Get item.
 		/// @return The item.
@@ -204,6 +202,8 @@
 		/// @param event_name The event name that will be passed to listeners.
 		// void emit_event(const char *event_name, const char *event_data = nullptr);
 
+		Value & set(const Value &value);
+		
 		/// @brief Set a percentual from 0.0 to 1.0
 		Value & setFraction(const float fraction);
 		Value & set(const short value);
