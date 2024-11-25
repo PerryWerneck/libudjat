@@ -368,6 +368,22 @@
 
 	}
 
+	const Value & Value::operator[](const char *name) const {
+
+		if(type != Object) {
+			throw runtime_error(Logger::String{"Cant get child '",name,"': Value is not an object"});
+		}
+
+		const auto &children = *((map<std::string,Value> *) content.ptr);
+
+		auto it = children.find(name);
+		if(it == children.end()) {
+			throw runtime_error(Logger::String{"Cant get child '",name,"': Object not found"});
+		}
+
+		return it->second;
+	}
+
 	Value & Value::operator[](const char *name) {
 
 		if(type == Undefined) {

@@ -165,6 +165,10 @@
 		/// @return Null value inserted to object.
 		Value & operator[](const char *name);
 
+		/// @brief Get child by name, exception it if not found.
+		/// @return The child value.
+		const Value & operator[](const char *name) const;
+
 		/// @brief Get child by name.
 		/// @return First child with required name. Exception if not found.
 		virtual const Value & operator[](const char *name) const;
@@ -263,7 +267,7 @@
 
 	};
 
- }
+ };
 
  template <typename T>
  inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
