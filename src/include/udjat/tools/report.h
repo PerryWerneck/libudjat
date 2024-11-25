@@ -54,6 +54,8 @@
 				return set(value.c_str());
 			}
 
+			void set(const Value &value);
+
 			void set(const short value);
 			void set(const unsigned short value);
 			void set(const int value);
@@ -86,6 +88,8 @@
 		Report(const char *column_name, va_list args) {
 			set_headers(column_name, args);
 		}
+
+		Report(const Udjat::Value &first_row);
 
 		Report(const char *column_name, ...) __attribute__ ((sentinel));
 		~Report();

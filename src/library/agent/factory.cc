@@ -72,7 +72,7 @@
 		}
 
 		// Try internal types
-		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script")) {
+		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script") == 0) {
 
 			/// @brief Agent keeping the value of script return code.
 			class Script : public Udjat::Agent<int32_t>, private Udjat::Script {

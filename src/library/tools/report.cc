@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/report.h>
+ #include <udjat/tools/value.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <stdexcept>
@@ -34,6 +35,16 @@
 		va_start(args, column_name);
 		set_headers(column_name,args);
 		va_end(args);		
+	}
+
+	Report::Report(const Udjat::Value &first_row) {
+		first_row.for_each([&](const char *name, const Value &value){
+			headers.emplace_back(name);
+			auto cell = cells.emplace_back();
+			cell.set(value);
+			return false;
+		});
+
 	}
 
 	Report::~Report() {
@@ -64,6 +75,46 @@
 			data.ptr = nullptr;
 		}
 	}
+
+	void Report::Cell::set(const Value &value) {
+		clear();
+		type = (Value::Type) value;
+		switch(type) {
+		case Value::Undefined:
+			break;
+
+		case Value::String:
+		case Value::Icon:
+		case Value::Url:
+			data.ptr = strdup(value.c_str());
+			break;
+
+		case Value::Timestamp:
+			value.get(data.timestamp);
+			break;
+
+		case Value::State:
+		case Value::Signed:
+			value.get(data.sig);
+			break;
+
+		case Value::Unsigned:
+		case Value::Boolean:
+			value.get(data.unsig);
+			break;
+
+		case Value::Real:
+		case Value::Fraction:
+			value.get(data.dbl);
+			break;
+
+		default:
+			throw logic_error("Invalid value type for report cell");
+
+		}
+
+	}
+
 
 	void Report::Cell::set(const char *value) {
 		clear();

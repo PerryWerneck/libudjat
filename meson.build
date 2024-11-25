@@ -311,6 +311,7 @@ lib_src += [
   'src/library/tools/value/json.cc',
   'src/library/tools/value/sh.cc',
   'src/library/tools/value/xml.cc',
+  'src/library/tools/value/report.cc',
   'src/library/tools/value/yaml.cc',
   'src/library/tools/xml/document.cc',
   'src/library/tools/xml/attribute.cc',

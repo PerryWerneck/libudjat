@@ -147,6 +147,12 @@
 		/// @return The report handler.
 		Udjat::Report & ReportChildFactory(const char *name, const char *column_name, ... ) __attribute__ ((sentinel));
 
+		/// @brief Add report node from value
+		/// @param name The node name
+		/// @param first_row The first row of the report.
+		/// @return The report handler.
+		Udjat::Report & ReportChildFactory(const char *name, const Value &first_row );
+
 		/// @brief Get item.
 		/// @return The item.
 		Value & operator[](int ix);

@@ -138,6 +138,7 @@
 			shell{node.attribute("shell").as_bool(false)} {
 
 		if(!(cmdline && *cmdline)) {
+			Logger::String{"Missing cmdline attribute on node <",node.name(),">"}.error(node.attribute("name").as_string());
 			throw runtime_error(_("The required attribute 'cmdline' is missing"));
 		}
 	}
