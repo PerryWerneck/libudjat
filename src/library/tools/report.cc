@@ -47,6 +47,12 @@
 
 	}
 
+	Report::Report(const std::vector<string> &names) {
+		for(const auto &name : names) {
+			headers.emplace_back(name);
+		}
+	}
+
 	Report::~Report() {
 	}
 
@@ -65,6 +71,16 @@
 
 	Report::Cell::~Cell() {
 		clear();
+	}
+
+	void Report::push_back(const Value &value) {
+		if(value == Value::Object) {
+			for(const auto &name : headers) {
+				cells.emplace_back().set(value[name.c_str()]);			
+			}
+		} else {
+			cells.emplace_back().set(value);			
+		}
 	}
 
 	void Report::Cell::clear() noexcept {
@@ -114,7 +130,6 @@
 		}
 
 	}
-
 
 	void Report::Cell::set(const char *value) {
 		clear();

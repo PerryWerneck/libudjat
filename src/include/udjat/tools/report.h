@@ -89,6 +89,7 @@
 			set_headers(column_name, args);
 		}
 
+		Report(const std::vector<std::string> &column_names);
 		Report(const Udjat::Value &first_row);
 
 		Report(const char *column_name, ...) __attribute__ ((sentinel));
@@ -101,6 +102,8 @@
 		inline const char *caption() const noexcept {
 			return field.caption.c_str();
 		}
+
+		void push_back(const Value &value);
 
 		template <typename T>
 		void push_back(const T &value) {

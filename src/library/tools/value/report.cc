@@ -45,6 +45,18 @@
 
 	}
 
+	Udjat::Report & Value::ReportFactory(const std::vector<std::string> &column_names) {
+
+		clear();
+
+		Udjat::Report *worker = new Udjat::Report(column_names);
+		type = Report;
+		content.ptr = (void *) worker;
+
+		return *worker;
+
+	}
+
 	Udjat::Report & Value::ReportFactory(const Value &first_row) {
 
 		clear();

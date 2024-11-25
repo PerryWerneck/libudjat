@@ -151,6 +151,8 @@
 		/// @return The report handler.
 		Udjat::Report & ReportFactory(const Value &first_row);
 
+		Udjat::Report & ReportFactory(const std::vector<std::string> &column_names);
+
 		/// @brief Get item.
 		/// @return The item.
 		Value & operator[](int ix);
