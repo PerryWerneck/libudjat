@@ -368,6 +368,17 @@
 
 	}
 
+	bool Value::contains(const char *name) const noexcept {
+
+		if(type != Object) {
+			return false;
+		}
+
+		const map<std::string,Value> &children = *((map<std::string,Value> *) content.ptr);
+		return children.find(name) != children.end();
+
+	}
+
 	Value & Value::operator[](const char *name) {
 
 		if(type == Undefined) {
@@ -400,14 +411,8 @@
 			throw runtime_error(Logger::String{"Cant get child '",name,"': Value is not an object"});
 		}
 
-		const auto &children = *((map<std::string,Value> *) content.ptr);
-
-		auto it = children.find(name);
-		if(it == children.end()) {
-			throw runtime_error(Logger::String{"Cant get child '",name,"': Object not found"});
-		}
-
-		return it->second;
+		return ((map<std::string,Value> *) content.ptr)->at(name);
+		
 	}
 
 	bool Value::for_each(const std::function<bool(const char *name, const Value &value)> &call) const {

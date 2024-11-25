@@ -159,6 +159,8 @@
 		/// @return The item.
 		const Value & operator[](int ix) const;
 
+		bool contains(const char *name) const noexcept;
+
 		/// @brief Get child by name, insert it if not found.
 		/// @return Null value inserted to object.
 		Value & operator[](const char *name);
@@ -203,7 +205,7 @@
 		// void emit_event(const char *event_name, const char *event_data = nullptr);
 
 		Value & set(const Value &value);
-		
+
 		/// @brief Set a percentual from 0.0 to 1.0
 		Value & setFraction(const float fraction);
 		Value & set(const short value);
