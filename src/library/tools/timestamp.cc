@@ -48,6 +48,22 @@ namespace Udjat {
 		: TimeStamp{Udjat::String{node,attrname,def}.c_str()} {
 	}
 
+	TimeStamp::operator struct tm() const noexcept {
+
+		struct tm tm;
+
+#if defined(HAVE_LOCALTIME_R)
+		localtime_r(&value,&tm);
+#elif defined(_WIN32)
+		localtime_s(&tm,&value);
+#else
+		tm = *localtime(&value);
+#endif // HAVE_LOCALTIME_R
+
+		return tm;
+
+	}
+
 	std::string TimeStamp::to_string(const char *format) const noexcept {
 
 		if(!value)

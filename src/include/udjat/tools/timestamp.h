@@ -24,6 +24,7 @@
  #include <ctime>
  #include <string>
  #include <cstdint>
+ #include <time.h>
 
  namespace Udjat {
 
@@ -59,6 +60,8 @@
 		inline operator bool() const noexcept {
 			return value != 0;
 		}
+
+		operator struct tm() const noexcept;
 
 		/// @brief Set a time delay.
 		/// @param seconds	Seconds after current timestamp to set.
