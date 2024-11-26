@@ -59,7 +59,11 @@
 				return strcasecmp(n,name) == 0;
 			}
 
-			/// @brief Create an action from XML node.
+			/// @brief Run action from XML node, usually called by XML tag <init type=>
+			/// @return true if run.
+			virtual bool call(const XML::Node &node);
+
+			/// @brief Build an action from XML node.
 			/// @param node XML definition for the new action.
 			virtual std::shared_ptr<Action> ActionFactory(const XML::Node &node) const = 0;
 
@@ -70,6 +74,8 @@
 
 			static const std::list<Action::Factory *>::const_iterator begin();
 			static const std::list<Action::Factory *>::const_iterator end();
+
+			static bool for_each(const std::function<bool(Action::Factory &factory)> &func) noexcept;
 
 		};
 

@@ -35,6 +35,7 @@
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/action.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -109,6 +110,18 @@ namespace Udjat {
 					continue;
 				}
 
+			}
+
+			if(strcasecmp(node.name(),"init") == 0) {
+				const char *type = node.attribute("type").as_string();
+				if(Action::Factory::for_each([&](Action::Factory &factory){
+					if(factory == type) {
+						return factory.call(node);
+					}
+					return false;
+				})) {
+					continue;
+				}
 			}
 
 			// Run node based factories.

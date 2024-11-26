@@ -63,6 +63,36 @@
 		return Factories().end();
 	}
 
+	bool Action::Factory::for_each(const std::function<bool(Action::Factory &factory)> &func) noexcept {
+
+		for(auto factory : Factories()) {
+
+			try {
+
+				if(func(*factory)) {
+					return true;
+				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{e.what()}.error(factory->name);
+
+			} catch(...) {
+
+				Logger::String{"Unexpected error"}.error(factory->name);
+
+			}
+
+
+		}
+
+		return false;
+	}
+
+	bool Action::Factory::call(const XML::Node &node) {
+		return false;
+	}
+
 	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node) {
 
 		const char *type = node.attribute("type").as_string("shell");
