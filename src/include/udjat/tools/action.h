@@ -59,10 +59,6 @@
 				return strcasecmp(n,name) == 0;
 			}
 
-			/// @brief Run action from XML node, usually called by XML tag <init type=>
-			/// @return true if run.
-			virtual bool call(const XML::Node &node);
-
 			/// @brief Build an action from XML node.
 			/// @param node XML definition for the new action.
 			virtual std::shared_ptr<Action> ActionFactory(const XML::Node &node) const = 0;
@@ -70,7 +66,7 @@
 			/// @brief Try to build an action from XML definition.
 			/// @param node Action definition.
 			/// @return Pointer to new action (empty if not found).
-			static std::shared_ptr<Action> build(const XML::Node &node);
+			static std::shared_ptr<Action> build(const XML::Node &node, const char *attrname = "type", bool except = false);
 
 			static const std::list<Action::Factory *>::const_iterator begin();
 			static const std::list<Action::Factory *>::const_iterator end();
@@ -96,6 +92,9 @@
 		/// @param request The client request.
 		/// @param response The response to client.
 		virtual void call(Udjat::Request &request, Udjat::Response &response);
+
+		/// @brief Run action from XML node, usually called by XML tag <init type=>
+		virtual void call(const XML::Node &node);
 
 	};
 

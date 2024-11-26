@@ -113,15 +113,17 @@ namespace Udjat {
 			}
 
 			if(strcasecmp(node.name(),"init") == 0) {
-				const char *type = node.attribute("type").as_string();
-				if(Action::Factory::for_each([&](Action::Factory &factory){
-					if(factory == type) {
-						return factory.call(node);
+				try {
+					auto action = Action::Factory::build(node,"type",true);
+					if(action) {
+						action->call(node);
 					}
-					return false;
-				})) {
-					continue;
+				} catch(const std::exception &e) {
+					Logger::String{"Initialization failure: ",e.what()}.error(node.attribute("name").as_string("action"));
+				} catch(...) {
+					Logger::String{"Initialization failure: Unexpected error"}.error(node.attribute("name").as_string("action"));
 				}
+				continue;
 			}
 
 			// Run node based factories.

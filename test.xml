@@ -33,6 +33,12 @@
 
 	</agent>
 
+	<init name='dummy' type='dummy' />
+
+	<init name='file' type='file'>
+		${timestamp(%Y/%m/%d %H:%M:%S)}
+	</init>
+
 	<!-- alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert -->

@@ -89,152 +89,189 @@
 		return false;
 	}
 
-	bool Action::Factory::call(const XML::Node &node) {
-		return false;
-	}
+	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node, const char *attrname, bool except) {
 
-	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node) {
+		const char *type = node.attribute(attrname).as_string();
 
-		const char *type = node.attribute("type").as_string("shell");
-
-		for(const auto factory : Factories()) {
-			if(strcasecmp(type,factory->name)) {
-				continue;
+		if(!(type && *type)) {
+			Logger::String message{"Required attribute '",attrname,"' is missing or empty"};
+			if(except) {
+				throw logic_error(message);
 			}
-			auto action = factory->ActionFactory(node);
-			if(action) {
-				return action;
+			message.warning(node.attribute("name").as_string(PACKAGE_NAME));
+			return std::shared_ptr<Action>();
+		}
+
+		debug("Searching for action backend '",type,"'");
+
+		try {
+
+			//
+			// Check for factories
+			//
+			for(const auto factory : Factories()) {
+				if(strcasecmp(type,factory->name)) {
+					continue;
+				}
+				
+				auto action = factory->ActionFactory(node);
+				if(action) {
+					return action;
+				}
 			}
-		}
 
-		//
-		// Build internal actions
-		//
-		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script")) {
-			// Script action.
-			return make_shared<Script>(node);
-		}
+			//
+			// Build internal actions
+			//
+			if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script") == 0) {
+				// Script action.
+				return make_shared<Script>(node);
+			}
 
-		if(strcasecmp(type,"file") == 0) {
+			if(strcasecmp(type,"file") == 0) {
 
-			/// @brief Update filename when activated.
-			class FileAction : public Action {
-			private:
-				const char *filename;
-				const char *text = "";
-				const MimeType mimetype;
-				const time_t maxage;
+				/// @brief Update filename when activated.
+				class FileAction : public Action {
+				private:
+					const char *filename;
+					const char *text = "";
+					const MimeType mimetype;
+					const time_t maxage;
 
-			public:
-				FileAction(const XML::Node &node) 
-					: 	Action{node}, 
-						filename{String{node,"path"}.as_quark()},
-						text{payload(node)}, 
-						mimetype{MimeTypeFactory(String{node,"output-format","text"}.c_str())},
-						maxage{(time_t) TimeStamp{node,"max-age",(time_t) 0}}  {
+				public:
+					FileAction(const XML::Node &node) 
+						: 	Action{node}, 
+							filename{String{node,"path"}.as_quark()},
+							text{payload(node)}, 
+							mimetype{MimeTypeFactory(String{node,"output-format","text"}.c_str())},
+							maxage{(time_t) TimeStamp{node,"max-age",(time_t) 0}}  {
 
-					if(!filename && *filename) {
-						throw runtime_error("Required attribute 'filename' is missing or empty");
+						if(!filename && *filename) {
+							throw runtime_error("Required attribute 'filename' is missing or empty");
+						}
 					}
-				}
 
-				int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
+					int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
 
-					return exec(response,except,[&]() {
+						return exec(response,except,[&]() {
 
-						// Get filename
-						String name{filename};
-						if(strchr(name.c_str(),'%')) {
-							// Expand filename.
-							name = TimeStamp().to_string(name);
-						}
-						name.expand(request);
+							// Get filename
+							String name{filename};
+							if(strchr(name.c_str(),'%')) {
+								// Expand filename.
+								name = TimeStamp().to_string(name);
+							}
+							name.expand(request);
 
-						// Check filename age, if necessary
-						struct stat st;
-						if(maxage && !stat(name.c_str(),&st) && (time(nullptr) - st.st_mtime) > maxage) {
-							// Its an old file, remove it
-							info() << "Removing " << name << endl;
-							remove(name.c_str());
-						}
+							// Check filename age, if necessary
+							struct stat st;
+							if(maxage && !stat(name.c_str(),&st) && (time(nullptr) - st.st_mtime) > maxage) {
+								// Its an old file, remove it
+								info() << "Removing " << name << endl;
+								remove(name.c_str());
+							}
 
-						std::ofstream ofs;
-						ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-						ofs.open(name, ofstream::out | ofstream::app);
-						if(text && *text) {
-							ofs << String{text}.expand(request) << endl;
-						} else {
-							request.serialize(ofs,mimetype);
-							ofs << endl;
-						}
-						ofs.close();
-						return 0;
-						
-					});
-				}
-
-			};
-			return make_shared<FileAction>(node);
-		}
-
-		if(strcasecmp(type,"url") == 0) {
-
-			/// @brief Call URL when activated.
-			class URLAction : public Action {
-			private:
-				const char *url;
-				const HTTP::Method method;
-				const char *text = "";
-				const MimeType mimetype;
-
-			public:
-				URLAction(const XML::Node &node) 
-					: 	Action{node}, 
-						url{String{node,"url"}.as_quark()},
-						method{HTTP::MethodFactory(node,"get")},
-						text{payload(node)}, 
-						mimetype{MimeTypeFactory(String{node,"payload-format","json"}.c_str())} {
-
-					if(!url && *url) {
-						throw runtime_error("Required attribute 'url' is missing or empty");
+							std::ofstream ofs;
+							ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+							ofs.open(name, ofstream::out | ofstream::app);
+							if(text && *text) {
+								ofs << String{text}.expand(request) << endl;
+							} else {
+								request.serialize(ofs,mimetype);
+								ofs << endl;
+							}
+							ofs.close();
+							return 0;
+							
+						});
 					}
-				}
 
-				int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
+				};
+				return make_shared<FileAction>(node);
+			}
 
-					return exec(response,except,[&](){
+			if(strcasecmp(type,"url") == 0) {
 
-						// Get payload
-						String payload{text};
-						if(payload.empty()) {
-							payload = request.to_string(mimetype);
-						} else {
-							payload.expand(request);
+				/// @brief Call URL when activated.
+				class URLAction : public Action {
+				private:
+					const char *url;
+					const HTTP::Method method;
+					const char *text = "";
+					const MimeType mimetype;
+
+				public:
+					URLAction(const XML::Node &node) 
+						: 	Action{node}, 
+							url{String{node,"url"}.as_quark()},
+							method{HTTP::MethodFactory(node,"get")},
+							text{payload(node)}, 
+							mimetype{MimeTypeFactory(String{node,"payload-format","json"}.c_str())} {
+
+						if(!url && *url) {
+							throw runtime_error("Required attribute 'url' is missing or empty");
 						}
+					}
 
-						String response = Protocol::call(
-												String{url}.expand(request).c_str(),
-												method,
-												payload.c_str()
-											);
+					int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
 
-						if(!response.empty()) {
-							Logger::String{response.c_str()}.write(Logger::Trace,name());
-						}
+						return exec(response,except,[&](){
 
-						return 0;
-					});
+							// Get payload
+							String payload{text};
+							if(payload.empty()) {
+								payload = request.to_string(mimetype);
+							} else {
+								payload.expand(request);
+							}
 
-				}
+							String response = Protocol::call(
+													String{url}.expand(request).c_str(),
+													method,
+													payload.c_str()
+												);
 
-			};
-			return make_shared<URLAction>(node);
+							if(!response.empty()) {
+								Logger::String{response.c_str()}.write(Logger::Trace,name());
+							}
+
+							return 0;
+						});
+
+					}
+
+				};
+				return make_shared<URLAction>(node);
+			}
+
+		} catch(const std::exception &e) {
+
+			if(except) {
+				throw;
+			}
+			Logger::Message{e.what()}.warning(node.attribute("name").as_string(PACKAGE_NAME));
+			return std::shared_ptr<Action>();
+
+		} catch(...) {
+
+			Logger::Message message{"Unexpected error building action"};
+			if(except) {
+				throw logic_error(message);
+			}
+			message.warning(node.attribute("name").as_string(PACKAGE_NAME));
+			return std::shared_ptr<Action>();
+
 		}
 
 		//
 		// Cant find factory, return empty action.
 		//
-		Logger::String{"Cant find a valid factory for action type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
+		Logger::String message{"Cant find backend for action type '",type,"'"};
+		
+		if(except) {
+			throw logic_error(message);
+		}
+		message.warning(node.attribute("name").as_string(PACKAGE_NAME));
 		return std::shared_ptr<Action>(); // Legacy
 
 	}
@@ -246,11 +283,12 @@
 	Action::~Action() {
 	}
 
-	/// @brief Execute action.
-	/// @param request The client request.
-	/// @param response The response to client.
 	void Action::call(Udjat::Request &, Udjat::Response &response) {
 		call(response,response);
+	}
+
+	void Action::call(const XML::Node &node) {
+		throw logic_error(Logger::String{"The selected backend is unable to perform this request"});
 	}
 
 	const char * Action::payload(const XML::Node &node, const char *attrname) {
