@@ -83,6 +83,11 @@
 		Factories().remove(this);
 	}
 
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::AgentFactory(const Abstract::Object &parent, const XML::Node &node) const {
+		// Abstract factory, return empty agent.
+		return std::shared_ptr<Abstract::Agent>();
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const Abstract::Object &parent, const XML::Node &node) {
 
 		const char *type = node.attribute("type").as_string("default");
