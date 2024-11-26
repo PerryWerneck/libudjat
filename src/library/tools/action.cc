@@ -141,7 +141,7 @@
 				public:
 					FileAction(const XML::Node &node) 
 						: 	Action{node}, 
-							filename{String{node,"path"}.as_quark()},
+							filename{String{node,"filename"}.as_quark()},
 							text{payload(node)}, 
 							mimetype{MimeTypeFactory(String{node,"output-format","text"}.c_str())},
 							maxage{(time_t) TimeStamp{node,"max-age",(time_t) 0}}  {
@@ -178,7 +178,7 @@
 							ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 							ofs.open(name, ofstream::out | ofstream::app);
 							if(text && *text) {
-								ofs << String{text}.expand(request) << endl;
+								ofs << String{text}.expand(request,true,false) << endl;
 							} else {
 								request.serialize(ofs,mimetype);
 								ofs << endl;
