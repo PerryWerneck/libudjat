@@ -146,7 +146,7 @@
 							mimetype{MimeTypeFactory(String{node,"output-format","text"}.c_str())},
 							maxage{(time_t) TimeStamp{node,"max-age",(time_t) 0}}  {
 
-						if(!filename && *filename) {
+						if(!(filename && *filename)) {
 							throw runtime_error("Required attribute 'filename' is missing or empty");
 						}
 					}
@@ -161,7 +161,10 @@
 								// Expand filename.
 								name = TimeStamp().to_string(name);
 							}
-							name.expand(request);
+							name.expand(request).strip();
+							if(name.empty()) {
+								throw runtime_error("The target filename is empty");
+							}
 
 							// Check filename age, if necessary
 							struct stat st;
@@ -288,7 +291,8 @@
 	}
 
 	void Action::call(const XML::Node &node) {
-		throw logic_error(Logger::String{"The selected backend is unable to perform this request"});
+		Udjat::Value value;
+		call(value,value);
 	}
 
 	const char * Action::payload(const XML::Node &node, const char *attrname) {
