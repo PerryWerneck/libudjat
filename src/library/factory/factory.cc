@@ -63,10 +63,6 @@
 		return Controller::getInstance().for_each(node,func);
 	}
 
-	std::shared_ptr<Abstract::Agent> Factory::AgentFactory(const Abstract::Object &, const XML::Node &) const {
-		return std::shared_ptr<Abstract::Agent>();
-	}
-
 	#pragma GCC diagnostic push
 	#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 	std::shared_ptr<Abstract::Object> Factory::ObjectFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {

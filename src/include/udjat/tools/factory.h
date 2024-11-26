@@ -78,10 +78,6 @@
 		/// @return false if the function doesnt returned true for any element.
 		static bool for_each(const XML::Node &node, const std::function<bool(Factory &factory)> &func);
 
-		/// @brief Create an agent from XML node.
-		/// @param node XML definition for the new agent.
-		virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const override;
-
 		/// @brief Create a child object from XML node.
 		/// @param node XML definition for the new state.
 		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node);
