@@ -95,7 +95,7 @@
 		bool as_bool() const;
 
 		/// @brief Type factory.
-		static Type TypeFactory(const XML::Node &node, const char *attrname = "value-type");
+		static Type TypeFactory(const XML::Node &node, const char *attrname = "value-type", const char *def = "Undefined");
 		static Type TypeFactory(const char *name);
 
 		/// @brief Get stored value type.

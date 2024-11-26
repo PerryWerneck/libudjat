@@ -33,6 +33,7 @@
  #include <udjat/tools/http/error.h>
  #include <udjat/tools/action.h>
  #include <udjat/tools/script.h>
+ #include <udjat/tools/value.h>
 
  #include <cstring>
  #include <list>
@@ -41,6 +42,33 @@
  using namespace std;
 
  namespace Udjat {
+
+	/// @brief Agent using the action engine to get value.
+	template <typename T>
+	class ActionAgent : public Udjat::Agent<T> {
+	private:
+		std::shared_ptr<Action> action;
+		const char *valuename;	///< @brief name of the field for agent value.
+
+	public:
+		ActionAgent(const XML::Node &node, std::shared_ptr<Action> a) 
+		: Udjat::Agent<T>{node}, action{a}, valuename{String{node,"value-from","value"}.as_quark()} {
+		}
+
+		bool refresh() override {
+			
+			Value values;
+			T val = this->get();
+
+			values[valuename] = val;
+
+			action->call(values,values,true);
+
+			values[valuename].get(val);
+			return this->set(val);
+		}
+
+	};
 
 	static Container<Abstract::Agent::Factory> & Factories() {
 		static Container<Abstract::Agent::Factory> instance;
@@ -185,30 +213,33 @@
 
 		// Try actions
 		{
-			class ActionAgent : public Udjat::Agent<int> {
-			private:
-				std::shared_ptr<Action> action;
-				Udjat::Value result;
 
-			public:
-				ActionAgent(const XML::Node &node, std::shared_ptr<Action> a) : Udjat::Agent<int>{node}, action{a} {
-				}
-
-				bool refresh() override {
-					return set(action->call(result,result,false));
-				}
-
-				Value & getProperties(Value &value) const override {
-					value = result;
-					return value;
-				}
-
-			};
-
-			std::shared_ptr<Action> action = Action::Factory::build(node);
+			std::shared_ptr<Action> action = Action::Factory::build(node,"type",false);
 			if(action) {
+
 				Logger::String{"Building agent using action '",action->name(),"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
-				return make_shared<ActionAgent>(node,action);
+
+				switch(Value::TypeFactory(node,"value-type","int")) {
+				case Value::String:
+					return make_shared<ActionAgent<string>>(node,action);
+
+				case Value::Signed:
+					return make_shared<ActionAgent<int>>(node,action);
+
+				case Value::Unsigned:
+					return make_shared<ActionAgent<unsigned int>>(node,action);
+
+				case Value::Real:
+				case Value::Fraction:
+					return make_shared<ActionAgent<double>>(node,action);
+
+				case Value::Boolean:
+					return make_shared<ActionAgent<bool>>(node,action);
+
+				default:
+					throw logic_error("Invalid attribute: value-type");
+				}
+
 			}
 		}
 

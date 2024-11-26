@@ -48,8 +48,8 @@
 
  namespace Udjat {
 
-	Value::Type Value::TypeFactory(const XML::Node &node, const char *attrname) {
-		return Value::TypeFactory(Udjat::String{node,attrname,"Undefined"}.c_str());
+	Value::Type Value::TypeFactory(const XML::Node &node, const char *attrname, const char *def) {
+		return Value::TypeFactory(Udjat::String{node,attrname,def}.c_str());
 	}
 
 	Value::Type Value::TypeFactory(const char *name) {
