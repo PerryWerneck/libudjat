@@ -24,6 +24,7 @@
  #include <string.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
  #include <udjat/agent/level.h>
  #include <map>
 
@@ -113,8 +114,18 @@
 			clear(Object);
 		}
 
+		if(src.type == Undefined) {
+			return *this;
+		}
+		
 		if(src.type != Object || type != Object) {
-			throw runtime_error("Merging is only allowed for objects");
+			throw runtime_error(
+				Logger::Message(
+					"Unable to merge '{}' into '{}'",
+						std::to_string(src.type),
+						std::to_string(type)
+				)
+			);
 		}
 
 		for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{

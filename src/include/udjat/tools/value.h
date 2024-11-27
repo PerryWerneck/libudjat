@@ -269,20 +269,20 @@
 
  };
 
- template <typename T>
- inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
-	return out.set(value);
- }
-
- template <typename T>
- inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
-	in.get(value);
-	return in;
- }
- 
  namespace std {
 
-	UDJAT_API const char * to_string(Udjat::Value::Type type) noexcept;
+	template <typename T>
+	inline Udjat::Value & operator<<(Udjat::Value &out, T value) {
+		return out.set(value);
+	}
+
+	template <typename T>
+	inline const Udjat::Value & operator>> (const Udjat::Value &in, T &value ) {
+		in.get(value);
+		return in;
+	}
+
+	UDJAT_API const char * to_string(const Udjat::Value::Type type) noexcept;
 
 	inline string to_string(const Udjat::Value &value) noexcept {
 		return value.to_string();
