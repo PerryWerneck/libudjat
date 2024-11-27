@@ -39,6 +39,8 @@
 
 		constexpr TimeStamp(time_t t = time(nullptr)) : value(t) { }
 
+		explicit TimeStamp(struct ::tm &tm) : value{mktime(&tm)} { }
+
 		explicit TimeStamp(const char *time, const char *format = nullptr);
 
 		TimeStamp(const XML::Node &node, const char *attrname, const char *def = "");
