@@ -91,8 +91,12 @@
 
 	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node, const char *attrname, bool except) {
 
-		const char *type = node.attribute(attrname).as_string();
-
+		const char *type = nullptr;
+		
+		for(XML::Node nd = node; nd && !(type && *type);nd = nd.parent()) {
+			type = nd.attribute(attrname).as_string();
+		}
+		
 		if(!(type && *type)) {
 			Logger::String message{"Required attribute '",attrname,"' is missing or empty"};
 			if(except) {
