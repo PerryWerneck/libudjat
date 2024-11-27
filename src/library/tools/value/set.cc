@@ -109,6 +109,10 @@
 
 	Value & Value::merge(const Value &src) {
 
+		if(type == Undefined) {
+			clear(Object);
+		}
+
 		if(src.type != Object || type != Object) {
 			throw runtime_error("Merging is only allowed for objects");
 		}
