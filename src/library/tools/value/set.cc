@@ -149,7 +149,11 @@
 		case Value::String:
 		case Value::Icon:
 		case Value::Url:
-			content.ptr = strdup((const char *) src.content.ptr);
+			if(src.content.ptr) {
+				content.ptr = strdup((const char *) src.content.ptr);
+			} else {
+				content.ptr = nullptr;
+			}
 			break;
 
 		case Value::Timestamp:
