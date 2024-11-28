@@ -93,15 +93,31 @@
 		const char *type = node.attribute("type").as_string("default");
 
 		for(const auto factory : Factories()) {
+
 			if(strcasecmp(type,factory->name)) {
 				continue;
 			}
 
-			auto agent = factory->AgentFactory(parent,node);
-			if(agent) {
-				debug("Got agent '",type,"'")
-				return agent;
+			try {
+
+				auto agent = factory->AgentFactory(parent,node);
+				if(agent) {
+					debug("Got agent '",type,"'")
+					return agent;
+				}
+
+				Logger::String{"Empty response from module while building agent '",type,"', ignoring"}.warning();
+
+			} catch(const std::exception &e) {
+
+				Logger::String{"External module failed build agent '",type,"': ",e.what()}.error();
+
+			} catch(...) {
+
+				Logger::String{"Unexpected error building agent '",type,"'"}.error();
+
 			}
+
 		}
 
 		// Try internal types
@@ -161,7 +177,7 @@
 					return make_shared<Udjat::Agent<std::string>>(node);
 				}
 			},
-
+			
 			{
 				"url",
 				[](const XML::Node &node) {
@@ -218,11 +234,10 @@
 
 		// Try actions
 		{
-
 			std::shared_ptr<Action> action = Action::Factory::build(node,"type",false);
 			if(action) {
 
-				Logger::String{"Building agent using action '",action->name(),"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
+				Logger::String{"Building action based agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
 
 				switch(Value::TypeFactory(node,"value-type","int")) {
 				case Value::String:
@@ -246,6 +261,7 @@
 				}
 
 			}
+
 		}
 
 		Logger::String{"Cant find a valid factory for agent type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));

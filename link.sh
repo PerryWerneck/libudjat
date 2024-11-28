@@ -1,11 +1,14 @@
 #!/bin/bash
-make Debug
+
+build
 if [ "$?" != "0" ]; then
 	exit -1
 fi
 
-if [ -e .bin/Debug/*.so.* ]; then
-	sudo ln -sf $(readlink -f .bin/Debug/*.so.*) /usr/lib64
+VERSION=$(meson introspect --projectinfo .build | jq -r '.version' | cut -d. -f1-2)
+
+if [ -e .build/*.so.${VERSION} ]; then
+	sudo ln -sf $(readlink -f .build/*.so.${VERSION}) /usr/lib64
 	if [ "$?" != "0" ]; then
 		exit -1
 	fi

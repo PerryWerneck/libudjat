@@ -119,9 +119,23 @@
 					continue;
 				}
 				
-				auto action = factory->ActionFactory(node);
-				if(action) {
-					return action;
+				try {
+
+					auto action = factory->ActionFactory(node);
+					if(action) {
+						return action;
+					}
+
+					Logger::String{"Empty response from module while building action '",type,"', ignoring"}.warning();
+
+				} catch(const std::exception &e) {
+
+					Logger::String{"External module failed build action '",type,"': ",e.what()}.error();
+
+				} catch(...) {
+
+					Logger::String{"Unexpected error building action '",type,"'"}.error();
+
 				}
 			}
 
@@ -275,13 +289,10 @@
 		//
 		// Cant find factory, return empty action.
 		//
-		Logger::String message{"Cant find backend for action type '",type,"'"};
-		
 		if(except) {
-			throw logic_error(message);
+			throw logic_error(Logger::String{"Cant find backend for action type '",type,"'"});
 		}
-		message.warning(node.attribute("name").as_string(PACKAGE_NAME));
-		return std::shared_ptr<Action>(); // Legacy
+		return std::shared_ptr<Action>();
 
 	}
 
