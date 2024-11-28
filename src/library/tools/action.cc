@@ -114,6 +114,7 @@
 			// Check for factories
 			//
 			for(const auto factory : Factories()) {
+				
 				if(strcasecmp(type,factory->name)) {
 					continue;
 				}
@@ -129,6 +130,7 @@
 			//
 			if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script") == 0) {
 				// Script action.
+				// TODO: Check for <script />, if found build an action to run multiple scripts.
 				return make_shared<Script>(node);
 			}
 

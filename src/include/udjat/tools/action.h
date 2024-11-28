@@ -59,6 +59,10 @@
 				return strcasecmp(n,name) == 0;
 			}
 
+			inline const char *c_str() const noexcept {
+				return name;
+			}
+
 			/// @brief Build an action from XML node.
 			/// @param node XML definition for the new action.
 			virtual std::shared_ptr<Action> ActionFactory(const XML::Node &node) const = 0;
