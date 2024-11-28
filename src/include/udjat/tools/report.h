@@ -34,7 +34,7 @@
 	class UDJAT_API Report {
 	private:
 
-		struct Cell {
+		struct UDJAT_API Cell {
 			Value::Type type = Value::Undefined;
 			union {
 				time_t timestamp;

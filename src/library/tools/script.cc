@@ -42,20 +42,18 @@
 
 	Script::Script(const XML::Node &node, const char *msg)
 		: 	Action{node},
-			cmdline{Quark(node,"cmdline","").c_str()},
+#ifdef _WIN32
+			cmdline{Quark(node,"cmdline","").c_str()} {
+#else
 			uid{getuid(node)},
 			gid{getgid(node)},
 			shell{node.attribute("shell").as_bool(false)} {
+#endif // !WIN32
 
 		if(!(cmdline && *cmdline)) {
 			throw runtime_error(_("The required attribute 'cmdline' is missing"));
 		}
 	}
-
-	Script::Script(const XML::Node &node, const char *title)
-		: 	Action{node},
-			cmdline{String{node,"cmdline",""}.as_quark()},
-			title{String{node,"title",""}.as_quark()}, {
 
 	// TODO
 	int Script::run(const char *cmdline) const {

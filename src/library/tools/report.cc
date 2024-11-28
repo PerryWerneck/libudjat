@@ -106,7 +106,11 @@
 			break;
 
 		case Value::Timestamp:
-			value.get(data.timestamp);
+			{
+				TimeStamp timestamp{(time_t) 0};
+				value.get(timestamp);
+				data.timestamp = (time_t) timestamp;
+			}
 			break;
 
 		case Value::State:
