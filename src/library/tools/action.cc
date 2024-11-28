@@ -142,9 +142,69 @@
 			//
 			// Build internal actions
 			//
-			if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script") == 0) {
+			if(strcasecmp(type,"script") == 0) {
+
+				// It's script, check for multiple actions.
+				std::vector<std::shared_ptr<Action>> actions;
+				for(const char *nodename : { "action", "script" }) {
+					for(auto child = node.child(nodename); child; child = child.next_sibling(nodename)) {
+						if(strcasecmp(child.attribute("type").as_string(),"script") == 0 || strcasecmp(child.attribute("type").as_string(),"action")) {
+							throw logic_error(
+								Logger::Message{
+									"Cant put '",
+									child.attribute("type").as_string(),
+									"' inside of '",
+									node.attribute("type").as_string(),
+									"'"
+								}
+							);
+						}
+						actions.push_back(
+							Action::Factory::build(child,nodename,except)
+						);
+					}
+				}
+
+				if(actions.empty()) {
+					return make_shared<Script>(node);
+				}
+
+				/// @brief Action with multiple scripts.
+				class ActionContainer : public Action {
+				private:
+					std::vector<std::shared_ptr<Action>> actions;
+
+				public:
+					ActionContainer(const XML::Node &node, std::vector<std::shared_ptr<Action>> a) : Action{node}, actions{a} {
+					} 
+
+					int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
+						return exec(response,except,[&]() {
+							for(const auto &action : actions) {
+								int rc = action->call(request,response,except);
+								if(rc != 0) {
+									return rc;
+								}
+							}
+							return 0;
+						});
+					}
+
+				};
+
+				if(!actions.empty()) {
+					if(actions.size() == 1) {
+						Logger::String{"Building script using a single action, consider using regular actions"}.warning();
+					} else {
+						Logger::String{"Building script with ",actions.size()," actions"}.trace();
+					}
+					return make_shared<ActionContainer>(node,actions);
+				}
+
+			}
+
+			if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"shell-script") == 0) {
 				// Script action.
-				// TODO: Check for <script />, if found build an action to run multiple scripts.
 				return make_shared<Script>(node);
 			}
 
