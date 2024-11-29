@@ -36,6 +36,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/action.h>
+ #include <udjat/tools/interface.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -95,6 +96,12 @@ namespace Udjat {
 					continue;
 				}
 
+			}
+
+			// It's an interface?
+			if(strcasecmp(node.name(),"interface") == 0) {
+				Interface::Factory::build(node);
+				continue;
 			}
 
 			// It's an alert or action?

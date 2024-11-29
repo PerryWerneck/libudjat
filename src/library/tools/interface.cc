@@ -24,139 +24,117 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/interface.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/value.h>
- #include <udjat/tools/string.h>
- #include <udjat/tools/intl.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/request.h>
- #include <list>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	class Interface::Controller : public Container<Interface> {
-	private:
-		Controller() {
-		}
-
-	public:
-		static Controller & getInstance();
-
-		inline Interface & find(const char *name) {
-			std::lock_guard<std::mutex> lock(this->guard);
-			for(Interface *intf : objects) {
-				if(*intf == name) {
-					return *intf;
-				}
-			}
-			throw system_error(
-					ENOENT,
-					system_category(),
-					Logger::Message{_("Cant find interface '{}'"),name}
-				);		
-		}
-
-	};
-
-	Interface::Controller & Interface::Controller::getInstance() {
-		static Controller instance;
+	static Container<Interface::Factory> & Factories() {
+		static Container<Interface::Factory> instance;
 		return instance;
 	}
 
-	std::string Interface::to_string() const {
-		return String{STRINGIZE_VALUE_OF(PRODUCT_DOMAIN),".",Application::Name().c_str(),".",_name};
-	}
+	void Interface::Factory::build(const XML::Node &node) noexcept {
 
-	Interface & Interface::find(const char *name) {
-		return Controller::getInstance().find(name);		
-	}
+		for(String &name : String{node,"type"}.split(",")) {
 
-	Interface::Interface(const char *n) : _name{n} {
-		Controller::getInstance().push_back(this);
-	}
+			for(auto &factory : Factories()) {
 
-	Interface::Interface(const XML::Node &node) : Interface{String{node,"name",true}.as_quark()} {
-	}
+				if(*factory == name.c_str()) {
 
-	Interface::~Interface() {
-		Controller::getInstance().remove(this);
-	}
+					try {
 
-	void Interface::call(Request &request, Response &response) {
+						factory->InterfaceFactory(node);
 
-		try {
+					} catch(const std::exception &e) {
 
-			switch((HTTP::Method) request) {
-			case HTTP::Get:
-				call(request.path(),response);
-				break;
+						Logger::String{e.what()}.error(name.c_str());
 
-			case HTTP::Head:
-			case HTTP::Post:
-			case HTTP::Put:
-			case HTTP::Delete:
-			case HTTP::Connect:
-			case HTTP::Options:
-			case HTTP::Trace:
-			case HTTP::Patch:
-				throw system_error(ENOTSUP,system_category(),_( "Unsupported method"));
+					} catch(...) {
 
-			default:
-				throw runtime_error("Unexpected method");
+						Logger::String{"Unexpected error build interface"}.error(name.c_str());
+
+					}
+
+				}
+
 			}
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
 
 		}
 
-
 	}
 
-	void Interface::call(const char *name, const char *path, Udjat::Value &values) {
-		find(name).call(path,values);
+	Interface::Factory::Factory(const char *n) : _name {n} {
+		Factories().push_back(this);
 	}
 
-	void Interface::call(const char *name, Request &request, Response &response) {
-		find(name).call(request,response);
+	Interface::Factory::~Factory() {
+		Factories().remove(this);
 	}
 
-	bool Interface::for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &) const {
-		return false;		
-	}
-
-	void Interface::call(const char *, Udjat::Value &) {
-		throw system_error(ENOTSUP,system_category(),_( "Unable to handle request, no backend"));		
-	}
-
-	bool Interface::for_each(const std::function<bool(const Interface &intf)> &call) {
-		for(const Interface *intf : Controller::getInstance()) {
-			if(call(*intf)) {
+	bool Interface::Factory::for_each(const std::function<bool(Interface::Factory &interface)> &method) {
+		for(Interface::Factory *intf : Factories()) {
+			if(method(*intf)) {
 				return true;
-			}
+			} 
 		}
 		return false;
 	}
 
-	void Interface::get_inputs(const Abstract::Object &from, Udjat::Value &to) const {
+	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
+		: type{Value::TypeFactory(node)}, name{String{node,"name"}.as_quark()} {
 
-		for_each([&from,&to](const size_t, bool in, const char *name, const Value::Type){
-			if(in) {
+		int dir = String{node,"direction","out"}.select("both","in","out",nullptr);
+		if(dir < 0) {
+			throw runtime_error("Invalid direction, should be both, in or out");
+		}
 
-				// Is an output value, get it.
-				if(!from.getProperty(name,to[name])) {
-					throw runtime_error(Logger::Message(_("Unable to get value for '{}"),name));
-				}
-			}
-			return false;
-		});
+		direction = (Direction) dir;
+
 	}
 
+	Interface::Handler::Handler(const XML::Node &node) : _name{String{node,"name"}.as_quark()} {
+		for(XML::Node child = node.child("arg"); child; child = child.next_sibling("arg")) {
+			introspection.emplace_back(child);
+		}
+	}
+
+	Interface::Handler::~Handler() {
+	}
+
+	void Interface::Handler::clear(Udjat::Value &request, Udjat::Value &response) const {
+		request.clear(Value::Object);
+		response.clear(Value::Object);
+		for(auto val : introspection) {
+			if(val.direction == Introspection::Input || val.direction == Introspection::Both) {
+				request[val.name].clear(val.type);
+			}
+			if(val.direction == Introspection::Output || val.direction == Introspection::Both) {
+				response[val.name].clear(val.type);
+			}
+		}
+	}
+
+	Interface::Interface(const XML::Node &node) {
+
+		// Try type based name
+		String attr{node.attribute("type").as_string("default"),"-name"};
+		_name = String{node,attr.c_str()}.as_quark();
+		if(_name && *_name) {
+			return;
+		}
+
+		_name = String{node,"name"}.as_quark();
+		if(!(_name && *_name)) {
+			throw runtime_error("Required attribute 'name' is missing or empty");
+		}
+
+	}
+
+	Interface::~Interface() {
+	}
 
  }
