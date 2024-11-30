@@ -90,6 +90,10 @@
 			Handler(const char *name, const XML::Node &node);
 			virtual ~Handler();
 
+			inline const char * c_str() const noexcept {
+				return _name;
+			}
+
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
 				return strcasecmp(name,this->_name);
