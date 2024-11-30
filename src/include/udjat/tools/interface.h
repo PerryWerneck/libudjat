@@ -65,10 +65,7 @@
 
 		/// @brief A request handler method.
 		class UDJAT_API Handler {
-		private:
-			const char *_name;
-
-		protected:
+		public:
 
 			/// @brief Interface method introspection.
 			struct Introspection {
@@ -83,9 +80,6 @@
 				Introspection(const XML::Node &node);
 			};
 
-			std::vector<Introspection> introspection;
-
-		public:
 			Handler(const XML::Node &node);
 			Handler(const char *name, const XML::Node &node);
 			virtual ~Handler();
@@ -93,6 +87,8 @@
 			inline const char * c_str() const noexcept {
 				return _name;
 			}
+
+			bool for_each(const std::function<bool(const Introspection &instrospection)> &call) const;
 
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
@@ -113,6 +109,15 @@
 			/// @param response The response for this interface.
 			void clear(Udjat::Value &request, Udjat::Value &response) const;
 
+			/// @brief Create children if not exists.
+			/// @param request The request for this interface.
+			/// @param response The response for this interface.
+			void setup(Udjat::Value &request, Udjat::Value &response) const;
+
+		private:
+			const char *_name;
+			std::vector<Introspection> introspection;
+			
 		};
 
 	public:

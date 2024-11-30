@@ -108,14 +108,43 @@
 	Interface::Handler::~Handler() {
 	}
 
+	bool Interface::Handler::for_each(const std::function<bool(const Introspection &instrospection)> &call) const {
+		for(const auto &val : introspection) {
+			if(call(val)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	void Interface::Handler::clear(Udjat::Value &request, Udjat::Value &response) const {
 		request.clear(Value::Object);
 		response.clear(Value::Object);
-		for(auto val : introspection) {
+		for(auto &val : introspection) {
 			if(val.direction == Introspection::Input || val.direction == Introspection::Both) {
 				request[val.name].clear(val.type);
 			}
 			if(val.direction == Introspection::Output || val.direction == Introspection::Both) {
+				response[val.name].clear(val.type);
+			}
+		}
+	}
+
+	void Interface::Handler::setup(Udjat::Value &request, Udjat::Value &response) const {
+
+		if(request != Value::Object) {
+			request.clear(Value::Object);
+		}
+
+		if(response != Value::Object) {
+			response.clear(Value::Object);
+		}
+
+		for(auto &val : introspection) {
+			if((val.direction == Introspection::Input || val.direction == Introspection::Both) && !request.contains(val.name)) {
+				request[val.name].clear(val.type);
+			}
+			if((val.direction == Introspection::Output || val.direction == Introspection::Both) && !response.contains(val.name)) {
 				response[val.name].clear(val.type);
 			}
 		}
