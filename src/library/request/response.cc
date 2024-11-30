@@ -67,6 +67,15 @@
 		return "";
 	}
 
+	Response & Response::failed(int syscode) noexcept {
+		status.code = syscode;
+		status.title = _("System error");
+		status.details = strerror(syscode);
+		(*this)["title"] = status.title;
+		(*this)["details"] = status.details;
+		return *this;
+	}
+
 	Response & Response::failed(const char *message, const char *details) noexcept {
 		return failed("",message,details);
 	}

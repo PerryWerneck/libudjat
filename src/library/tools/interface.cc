@@ -96,10 +96,13 @@
 
 	}
 
-	Interface::Handler::Handler(const XML::Node &node) : _name{String{node,"name"}.as_quark()} {
+	Interface::Handler::Handler(const char *name, const XML::Node &node) : _name{name} {
 		for(XML::Node child = node.child("arg"); child; child = child.next_sibling("arg")) {
 			introspection.emplace_back(child);
 		}
+	}
+
+	Interface::Handler::Handler(const XML::Node &node) : Handler{String{node,"name"}.as_quark(),node} {
 	}
 
 	Interface::Handler::~Handler() {

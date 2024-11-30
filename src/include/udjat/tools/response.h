@@ -73,6 +73,7 @@
 
 		virtual ~Response();
 
+		Response & failed(int syscode) noexcept;
 		Response & failed(const std::exception &e) noexcept;
 		Response & failed(const char *message, const char *details = nullptr) noexcept;
 		Response & failed(const char *title,  const char *message, const char *details) noexcept;

@@ -87,6 +87,7 @@
 
 		public:
 			Handler(const XML::Node &node);
+			Handler(const char *name, const XML::Node &node);
 			virtual ~Handler();
 
 #if __cplusplus >= 202002L
@@ -98,6 +99,10 @@
 				return strcasecmp(name,this->_name) == 0;
 			}
 #endif
+
+			/// @brief Extract args from path.
+			/// @return The path after argument extraction.
+			const char * set_args_from_path(const char *path);
 
 			/// @brief Clear objects, build children.
 			/// @param request The request for this interface.
