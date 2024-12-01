@@ -181,7 +181,27 @@
 						"<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>"
 					<< (status.message.empty() ? "Response" : status.message)
 					<< "</title></head><body>";
-			to_html(stream);
+
+			if(status.value == Success) {
+				// Show values
+				to_html(stream);
+			} else {
+				stream << "<section id='error-box'><h1 id='error-title'>" << (status.title.empty() ? _("Operation failed") : status.title.c_str()) << "</h1>";
+				if(!status.message.empty()) {
+					stream << "<p id='error-message'>" << status.message << "</p>";
+				} else if(status.code) {
+					stream << "<p id='error-code'>" << "Error " << status.code << "</p>";
+				}
+				if(!status.details.empty()) {
+					stream << "<small id='error-details'>" << status.details << "</small>";
+				}
+				if(!empty()) {
+					stream << "<div id='error-extra'>";
+					to_html(stream);
+					stream << "</div>";
+				}
+				stream << "</section>";
+			}
 			stream << "</body></html>";
 			break;
 
