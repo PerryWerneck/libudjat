@@ -54,19 +54,6 @@
 		return status.message.c_str();
 	}
 
-	std::string Response::to_string() const noexcept {
-		try {
-			std::ostringstream out;
-			serialize(out);
-			return out.str();
-		} catch(const std::exception &e) {
-			Logger::String{"Error serializing response: ",e.what()}.error();
-		} catch(...) {
-			Logger::String{"Unexpected error serializing response"}.error();
-		}
-		return "";
-	}
-
 	Response & Response::failed(int syscode) noexcept {
 		status.value = State::Failure;
 		clear(Value::Object);

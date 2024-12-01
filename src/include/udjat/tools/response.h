@@ -153,10 +153,6 @@
 			range.total = total;
 		}
 
-		/// @brief Convert response to formatted string.
-		/// @see serialize.
-		std::string to_string() const noexcept;
-
 		/// @brief Serialize according to the mimetype.
 		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.
 		void serialize(std::ostream &stream) const;
