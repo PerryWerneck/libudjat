@@ -68,11 +68,10 @@
 	}
 
 	Response & Response::failed(int syscode) noexcept {
+		status.value = State::Failure;
+		clear(Value::Object);
+		status.message = strerror(syscode);
 		status.code = syscode;
-		status.title = _("System error");
-		status.details = strerror(syscode);
-		(*this)["title"] = status.title;
-		(*this)["details"] = status.details;
 		return *this;
 	}
 

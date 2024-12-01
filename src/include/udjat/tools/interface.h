@@ -107,7 +107,11 @@
 			/// @param response The response for this interface.
 			void clear(Udjat::Value &request, Udjat::Value &response) const;
 
-			int call(Udjat::Value &request, Udjat::Value &response) const;
+			/// @brief Call handler actions.
+			/// @param request The request data.
+			/// @param response The response data.
+			/// @return The return code of the first action to fail.
+			/// @retval Complete without failures.
 			int call(Udjat::Request &request, Udjat::Response &response) const;
 
 		private:

@@ -150,18 +150,6 @@
 		}
 	}
 
-	int Interface::Handler::call(Udjat::Value &request, Udjat::Value &response) const {
-		prepare(request,response);
-		for(auto action : actions) {
-			int rc = action->call(request,response);
-			if(rc) {
-				Logger::String{"Action failed with rc=",rc}.trace(_name);
-				return rc;
-			}
-		}
-		return 0;
-	}
-
 	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
 		prepare(request,response);
 		for(auto action : actions) {
