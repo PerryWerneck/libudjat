@@ -95,10 +95,12 @@
 		/// @brief Execute action.
 		/// @param request The client request.
 		/// @param response The response to client.
-		virtual void call(Udjat::Request &request, Udjat::Response &response);
+		/// @return The return code.
+		/// @retval 0 Success.
+		virtual int call(Udjat::Request &request, Udjat::Response &response);
 
 		/// @brief Run action from XML node, usually called by XML tag <init type=>
-		virtual void call(const XML::Node &node);
+		virtual int call(bool except = true);
 
 	};
 

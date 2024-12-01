@@ -130,7 +130,7 @@
 		}
 	}
 
-	void Interface::Handler::setup(Udjat::Value &request, Udjat::Value &response) const {
+	void Interface::Handler::prepare(Udjat::Value &request, Udjat::Value &response) const {
 
 		if(request != Value::Object) {
 			request.clear(Value::Object);
@@ -148,6 +148,30 @@
 				response[val.name].clear(val.type);
 			}
 		}
+	}
+
+	int Interface::Handler::call(Udjat::Value &request, Udjat::Value &response) const {
+		prepare(request,response);
+		for(auto action : actions) {
+			int rc = action->call(request,response);
+			if(rc) {
+				Logger::String{"Action failed with rc=",rc}.trace(_name);
+				return rc;
+			}
+		}
+		return 0;
+	}
+
+	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
+		prepare(request,response);
+		for(auto action : actions) {
+			int rc = action->call(request,response);
+			if(rc) {
+				Logger::String{"Action failed with rc=",rc}.trace(_name);
+				return rc;
+			}
+		}
+		return 0;
 	}
 
 	Interface::Interface(const XML::Node &node) {

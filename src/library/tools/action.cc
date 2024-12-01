@@ -363,13 +363,13 @@
 	Action::~Action() {
 	}
 
-	void Action::call(Udjat::Request &, Udjat::Response &response) {
-		call(response,response);
+	int Action::call(Udjat::Request &request, Udjat::Response &response) {
+		return call((Udjat::Value &) request, (Udjat::Value &) response, true);
 	}
 
-	void Action::call(const XML::Node &node) {
+	int Action::call(bool except) {
 		Udjat::Value value;
-		call(value,value);
+		return call(value,value,except);
 	}
 
 	const char * Action::payload(const XML::Node &node, const char *attrname) {

@@ -27,9 +27,11 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/request.h>
+ #include <udjat/tools/response.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/action.h>
  #include <vector>
  #include <memory>
  #include <vector>
@@ -100,24 +102,24 @@
 			}
 #endif
 
-			/// @brief Extract args from path.
-			/// @return The path after argument extraction.
-			const char * set_args_from_path(const char *path);
-
 			/// @brief Clear objects, build children.
 			/// @param request The request for this interface.
 			/// @param response The response for this interface.
 			void clear(Udjat::Value &request, Udjat::Value &response) const;
 
-			/// @brief Create children if not exists.
-			/// @param request The request for this interface.
-			/// @param response The response for this interface.
-			void setup(Udjat::Value &request, Udjat::Value &response) const;
+			int call(Udjat::Value &request, Udjat::Value &response) const;
+			int call(Udjat::Request &request, Udjat::Response &response) const;
 
 		private:
 			const char *_name;
 			std::vector<Introspection> introspection;
-			
+			std::vector<std::shared_ptr<Action>> actions;
+
+			/// @brief Create children if not exists.
+			/// @param request The request for this interface.
+			/// @param response The response for this interface.
+			void prepare(Udjat::Value &request, Udjat::Value &response) const;
+
 		};
 
 	public:
