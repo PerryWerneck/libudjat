@@ -85,6 +85,7 @@
 				Introspection(const XML::Node &node);
 			};
 
+			Handler(const char *name = "unnamed");
 			Handler(const XML::Node &node);
 			Handler(const char *name, const XML::Node &node);
 			virtual ~Handler();

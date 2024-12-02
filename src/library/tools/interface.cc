@@ -105,7 +105,10 @@
 
 	}
 
-	Interface::Handler::Handler(const char *name, const XML::Node &node) : _name{name} {
+	Interface::Handler::Handler(const char *name) : _name{name} {
+	}
+
+	Interface::Handler::Handler(const char *name, const XML::Node &node) : Handler{name} {
 		for(XML::Node child = node.child("arg"); child; child = child.next_sibling("arg")) {
 			introspection.emplace_back(child);
 		}
