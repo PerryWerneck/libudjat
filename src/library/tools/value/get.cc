@@ -472,6 +472,12 @@
 
 	}
 
+	std::string Value::serialize(const MimeType mimetype) const {
+		stringstream stream;
+		serialize(stream,mimetype);
+		return stream.str();
+	}
+
 	void Value::serialize(std::ostream &out, const MimeType mimetype) const {
 
 		debug("Serializing value");
