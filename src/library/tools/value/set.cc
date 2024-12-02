@@ -42,6 +42,7 @@
 
 		switch(type) {
 		case Undefined:
+			Logger::String{"Ignoring set('",value,"') on undefined value"}.warning();
 			break;
 
 		case Array:
@@ -53,6 +54,9 @@
 		case String:
 		case Icon:
 		case Url:
+			if(content.ptr) {
+				free(content.ptr);
+			}
 			content.ptr = strdup(value);
 			break;
 

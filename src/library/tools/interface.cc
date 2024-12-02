@@ -85,19 +85,23 @@
 	}
 
 	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
-		: type{Value::TypeFactory(node)}, name{String{node,"name"}.as_quark()} {
+		: type{Value::TypeFactory(node,"type")}, name{String{node,"name"}.as_quark()} {
 
 		int dir = String{node,"direction","out"}.select("none","in","out","both",nullptr);
 		if(dir < 0) {
 			throw runtime_error("Invalid direction, should be none, in, out or both");
 		}
 
-		switch(String{"node","value-from","none"}.select("none","path",nullptr)) {
+		switch(String{node,"value-from","none"}.select("none","path",nullptr)) {
 		case 0:	// none
 			break;
 
-		case 1:	// From path
-			dir |= FromPath;			
+		case 1:	// path
+			dir |= FromPath;
+			break;
+
+		default:
+			throw runtime_error(Logger::String{"Unexpected value '",String{node,"value-from"}.c_str(),"' on value-from attribute"});			
 		}
 
 		direction = (Direction) dir;
@@ -157,10 +161,12 @@
 		// Setup request/response
 		//
 		if(request != Value::Object) {
+			debug("Cleaning request");
 			request.clear(Value::Object);
 		}
 
 		if(response != Value::Object) {
+			debug("Cleaning response");
 			response.clear(Value::Object);
 		}
 
@@ -170,6 +176,7 @@
 			bool frompath = (val.direction & Introspection::FromPath);
 			string value;
 			if(frompath) {
+				debug("Getting '",val.name,"' from path");
 				request.pop(value);
 			}
 
@@ -177,14 +184,14 @@
 
 				// It's an input, update request.
 				request[val.name].set(value.c_str(),val.type);
-
+				debug("request[",val.name,"]='",value.c_str(),"' '",std::to_string(request[val.name]).c_str(),"'");
 			}
 
 			if( (val.direction & Introspection::Output) && (!response.contains(val.name) || frompath)) {
 
 				// It's an output, update response.
 				response[val.name].set(value.c_str(),val.type);
-
+				debug("response[",val.name,"]='",value.c_str(),"'");
 			}
 
 		}
@@ -192,9 +199,16 @@
 		//
 		// Call actions
 		//
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{
+				"Handling '",request.path(),"'\n",
+				"Request:\n",request.Udjat::Value::serialize(MimeType::yaml).c_str()
+			}.trace(_name);
+		}
+
 		if(actions.empty()) {
 
-			Logger::String{"Empty handler, just merging request into response"}.trace();
+			Logger::String{"Empty handler, just merging request into response"}.trace(_name);
 			response.merge(request);
 
 		} else {
@@ -212,8 +226,7 @@
 
 		if(Logger::enabled(Logger::Debug)) {
 			Logger::String{
-				"Request:\n",request.serialize(MimeType::sh).c_str(),
-				"\nResponse:\n",response.Udjat::Value::serialize(MimeType::sh).c_str()
+				"Action suceedeed\nResponse:\n",response.Udjat::Value::serialize(MimeType::yaml).c_str()
 			}.trace(_name);
 		}
 
