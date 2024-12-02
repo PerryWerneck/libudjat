@@ -209,6 +209,14 @@
 			}
 			
 		}
+
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{
+				"Request:\n",request.serialize(MimeType::sh).c_str(),
+				"\nResponse:\n",response.Udjat::Value::serialize(MimeType::sh).c_str()
+			}.trace(_name);
+		}
+
 		return 0;
 	}
 
