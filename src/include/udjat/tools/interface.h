@@ -71,12 +71,15 @@
 
 			/// @brief Interface method introspection.
 			struct Introspection {
-				/// @brief The value direction.
+				/// @brief The value direction (bitmask).
 				enum Direction : uint8_t {
-					Both,
-					Input,
-					Output
-				} direction;
+					None		= 0x00,	///< @brief No direction, calculated value.
+					Input		= 0x01,	///< @brief It's an input parameter.
+					Output		= 0x02,	///< @brief It's an output parameter.
+					Both		= 0x03,	///< @brief It's an input/output parameter.
+
+					FromPath	= 0x80,	///< @brief Extract input from path.
+				} direction = None;
 				Value::Type type;	///< @brief The type value.
 				const char *name;	///< @brief The argument name.
 				Introspection(const XML::Node &node);
@@ -102,11 +105,6 @@
 			}
 #endif
 
-			/// @brief Clear objects, build children.
-			/// @param request The request for this interface.
-			/// @param response The response for this interface.
-			void clear(Udjat::Value &request, Udjat::Value &response) const;
-
 			/// @brief Call handler actions.
 			/// @param request The request data.
 			/// @param response The response data.
@@ -118,11 +116,6 @@
 			const char *_name;
 			std::vector<Introspection> introspection;
 			std::vector<std::shared_ptr<Action>> actions;
-
-			/// @brief Create children if not exists.
-			/// @param request The request for this interface.
-			/// @param response The response for this interface.
-			void prepare(Udjat::Value &request, Udjat::Value &response) const;
 
 		};
 

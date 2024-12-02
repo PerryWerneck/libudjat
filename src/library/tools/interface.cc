@@ -87,12 +87,21 @@
 	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
 		: type{Value::TypeFactory(node)}, name{String{node,"name"}.as_quark()} {
 
-		int dir = String{node,"direction","out"}.select("both","in","out",nullptr);
+		int dir = String{node,"direction","out"}.select("none","in","out","both",nullptr);
 		if(dir < 0) {
-			throw runtime_error("Invalid direction, should be both, in or out");
+			throw runtime_error("Invalid direction, should be none, in, out or both");
+		}
+
+		switch(String{"node","value-from","none"}.select("none","path",nullptr)) {
+		case 0:	// none
+			break;
+
+		case 1:	// From path
+			dir |= FromPath;			
 		}
 
 		direction = (Direction) dir;
+
 
 	}
 
@@ -117,21 +126,33 @@
 		return false;
 	}
 
+	/*
 	void Interface::Handler::clear(Udjat::Value &request, Udjat::Value &response) const {
 		request.clear(Value::Object);
 		response.clear(Value::Object);
 		for(auto &val : introspection) {
-			if(val.direction == Introspection::Input || val.direction == Introspection::Both) {
+			if(val.direction & Introspection::Input) {
 				request[val.name].clear(val.type);
 			}
-			if(val.direction == Introspection::Output || val.direction == Introspection::Both) {
+			if(val.direction & Introspection::Output) {
 				response[val.name].clear(val.type);
 			}
 		}
 	}
+	*/
 
-	void Interface::Handler::prepare(Udjat::Value &request, Udjat::Value &response) const {
+	/*
+	void Interface::Handler::prepare(Udjat::Request &request, Udjat::Response &response) const {
 
+
+	}
+	*/
+
+	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
+
+		//
+		// Setup request/response
+		//
 		if(request != Value::Object) {
 			request.clear(Value::Object);
 		}
@@ -140,24 +161,50 @@
 			response.clear(Value::Object);
 		}
 
+		request.rewind();
 		for(auto &val : introspection) {
-			if((val.direction == Introspection::Input || val.direction == Introspection::Both) && !request.contains(val.name)) {
-				request[val.name].clear(val.type);
-			}
-			if((val.direction == Introspection::Output || val.direction == Introspection::Both) && !response.contains(val.name)) {
-				response[val.name].clear(val.type);
-			}
-		}
-	}
 
-	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
-		prepare(request,response);
-		for(auto action : actions) {
-			int rc = action->call(request,response);
-			if(rc) {
-				Logger::String{"Action failed with rc=",rc}.trace(_name);
-				return rc;
+			bool frompath = (val.direction & Introspection::FromPath);
+			string value;
+			if(frompath) {
+				request.pop(value);
 			}
+
+			if( (val.direction & Introspection::Input) && (!request.contains(val.name) || frompath)) {
+
+				// It's an input, update request.
+				request[val.name].set(value.c_str(),val.type);
+
+			}
+
+			if( (val.direction & Introspection::Output) && (!response.contains(val.name) || frompath)) {
+
+				// It's an output, update response.
+				response[val.name].set(value.c_str(),val.type);
+
+			}
+
+		}
+
+		//
+		// Call actions
+		//
+		if(actions.empty()) {
+
+			Logger::String{"Empty handler, just merging request into response"}.trace();
+			response.merge(request);
+
+		} else {
+
+			for(auto action : actions) {
+				request.rewind();
+				int rc = action->call(request,response);
+				if(rc) {
+					Logger::String{"Action failed with rc=",rc}.trace(_name);
+					return rc;
+				}
+			}
+			
 		}
 		return 0;
 	}
@@ -173,7 +220,7 @@
 
 		_name = String{node,"name"}.as_quark();
 		if(!(_name && *_name)) {
-			throw runtime_error("Required attribute 'name' is missing or empty");
+			throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
 		}
 
 	}
