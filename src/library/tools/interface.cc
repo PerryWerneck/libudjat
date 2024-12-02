@@ -24,139 +24,232 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/interface.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/value.h>
- #include <udjat/tools/string.h>
- #include <udjat/tools/intl.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/request.h>
- #include <list>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	class Interface::Controller : public Container<Interface> {
-	private:
-		Controller() {
-		}
-
-	public:
-		static Controller & getInstance();
-
-		inline Interface & find(const char *name) {
-			std::lock_guard<std::mutex> lock(this->guard);
-			for(Interface *intf : objects) {
-				if(*intf == name) {
-					return *intf;
-				}
-			}
-			throw system_error(
-					ENOENT,
-					system_category(),
-					Logger::Message{_("Cant find interface '{}'"),name}
-				);		
-		}
-
-	};
-
-	Interface::Controller & Interface::Controller::getInstance() {
-		static Controller instance;
+	static Container<Interface::Factory> & Factories() {
+		static Container<Interface::Factory> instance;
 		return instance;
 	}
 
-	std::string Interface::to_string() const {
-		return String{STRINGIZE_VALUE_OF(PRODUCT_DOMAIN),".",Application::Name().c_str(),".",_name};
-	}
+	void Interface::Factory::build(const XML::Node &node) noexcept {
 
-	Interface & Interface::find(const char *name) {
-		return Controller::getInstance().find(name);		
-	}
+		for(String &name : String{node,"type"}.split(",")) {
 
-	Interface::Interface(const char *n) : _name{n} {
-		Controller::getInstance().push_back(this);
-	}
+			for(auto &factory : Factories()) {
 
-	Interface::Interface(const XML::Node &node) : Interface{String{node,"name",true}.as_quark()} {
-	}
+				if(*factory == name.c_str()) {
 
-	Interface::~Interface() {
-		Controller::getInstance().remove(this);
-	}
+					try {
 
-	void Interface::call(Request &request, Response &response) {
+						factory->InterfaceFactory(node);
 
-		try {
+					} catch(const std::exception &e) {
 
-			switch((HTTP::Method) request) {
-			case HTTP::Get:
-				call(request.path(),response);
-				break;
+						Logger::String{e.what()}.error(name.c_str());
 
-			case HTTP::Head:
-			case HTTP::Post:
-			case HTTP::Put:
-			case HTTP::Delete:
-			case HTTP::Connect:
-			case HTTP::Options:
-			case HTTP::Trace:
-			case HTTP::Patch:
-				throw system_error(ENOTSUP,system_category(),_( "Unsupported method"));
+					} catch(...) {
 
-			default:
-				throw runtime_error("Unexpected method");
+						Logger::String{"Unexpected error build interface"}.error(name.c_str());
+
+					}
+
+				}
+
 			}
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
 
 		}
 
+	}
+
+	Interface::Factory::Factory(const char *n) : _name {n} {
+		Factories().push_back(this);
+	}
+
+	Interface::Factory::~Factory() {
+		Factories().remove(this);
+	}
+
+	bool Interface::Factory::for_each(const std::function<bool(Interface::Factory &interface)> &method) {
+		for(Interface::Factory *intf : Factories()) {
+			if(method(*intf)) {
+				return true;
+			} 
+		}
+		return false;
+	}
+
+	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
+		: type{Value::TypeFactory(node,"type")}, name{String{node,"name"}.as_quark()} {
+
+		int dir = String{node,"direction","out"}.select("none","in","out","both",nullptr);
+		if(dir < 0) {
+			throw runtime_error("Invalid direction, should be none, in, out or both");
+		}
+
+		switch(String{node,"value-from","none"}.select("none","path",nullptr)) {
+		case 0:	// none
+			break;
+
+		case 1:	// path
+			dir |= FromPath;
+			break;
+
+		default:
+			throw runtime_error(Logger::String{"Unexpected value '",String{node,"value-from"}.c_str(),"' on value-from attribute"});			
+		}
+
+		direction = (Direction) dir;
+
 
 	}
 
-	void Interface::call(const char *name, const char *path, Udjat::Value &values) {
-		find(name).call(path,values);
+	Interface::Handler::Handler(const char *name) : _name{name} {
 	}
 
-	void Interface::call(const char *name, Request &request, Response &response) {
-		find(name).call(request,response);
+	Interface::Handler::Handler(const char *name, const XML::Node &node) : Handler{name} {
+		for(XML::Node child = node.child("arg"); child; child = child.next_sibling("arg")) {
+			introspection.emplace_back(child);
+		}
 	}
 
-	bool Interface::for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &) const {
-		return false;		
+	Interface::Handler::Handler(const XML::Node &node) : Handler{String{node,"name"}.as_quark(),node} {
 	}
 
-	void Interface::call(const char *, Udjat::Value &) {
-		throw system_error(ENOTSUP,system_category(),_( "Unable to handle request, no backend"));		
+	Interface::Handler::~Handler() {
 	}
 
-	bool Interface::for_each(const std::function<bool(const Interface &intf)> &call) {
-		for(const Interface *intf : Controller::getInstance()) {
-			if(call(*intf)) {
+	bool Interface::Handler::for_each(const std::function<bool(const Introspection &instrospection)> &call) const {
+		for(const auto &val : introspection) {
+			if(call(val)) {
 				return true;
 			}
 		}
 		return false;
 	}
 
-	void Interface::get_inputs(const Abstract::Object &from, Udjat::Value &to) const {
+	/*
+	void Interface::Handler::clear(Udjat::Value &request, Udjat::Value &response) const {
+		request.clear(Value::Object);
+		response.clear(Value::Object);
+		for(auto &val : introspection) {
+			if(val.direction & Introspection::Input) {
+				request[val.name].clear(val.type);
+			}
+			if(val.direction & Introspection::Output) {
+				response[val.name].clear(val.type);
+			}
+		}
+	}
+	*/
 
-		for_each([&from,&to](const size_t, bool in, const char *name, const Value::Type){
-			if(in) {
+	/*
+	void Interface::Handler::prepare(Udjat::Request &request, Udjat::Response &response) const {
 
-				// Is an output value, get it.
-				if(!from.getProperty(name,to[name])) {
-					throw runtime_error(Logger::Message(_("Unable to get value for '{}"),name));
+
+	}
+	*/
+
+	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
+
+		//
+		// Setup request/response
+		//
+		if(request != Value::Object) {
+			debug("Cleaning request");
+			request.clear(Value::Object);
+		}
+
+		if(response != Value::Object) {
+			debug("Cleaning response");
+			response.clear(Value::Object);
+		}
+
+		request.rewind();
+		for(auto &val : introspection) {
+
+			bool frompath = (val.direction & Introspection::FromPath);
+			string value;
+			if(frompath) {
+				debug("Getting '",val.name,"' from path");
+				request.pop(value);
+			}
+
+			if( (val.direction & Introspection::Input) && (!request.contains(val.name) || frompath)) {
+
+				// It's an input, update request.
+				request[val.name].set(value.c_str(),val.type);
+				debug("request[",val.name,"]='",value.c_str(),"' '",std::to_string(request[val.name]).c_str(),"'");
+			}
+
+			if( (val.direction & Introspection::Output) && (!response.contains(val.name) || frompath)) {
+
+				// It's an output, update response.
+				response[val.name].set(value.c_str(),val.type);
+				debug("response[",val.name,"]='",value.c_str(),"'");
+			}
+
+		}
+
+		//
+		// Call actions
+		//
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{
+				"Handling '",request.path(),"'\n",
+				"Request:\n",request.Udjat::Value::serialize(MimeType::yaml).c_str()
+			}.trace(_name);
+		}
+
+		if(actions.empty()) {
+
+			Logger::String{"Empty handler, just merging request into response"}.trace(_name);
+			response.merge(request);
+
+		} else {
+
+			for(auto action : actions) {
+				request.rewind();
+				int rc = action->call(request,response);
+				if(rc) {
+					Logger::String{"Action failed with rc=",rc}.trace(_name);
+					return rc;
 				}
 			}
-			return false;
-		});
+			
+		}
+
+		if(Logger::enabled(Logger::Debug)) {
+			Logger::String{
+				"Action suceedeed\nResponse:\n",response.Udjat::Value::serialize(MimeType::yaml).c_str()
+			}.trace(_name);
+		}
+
+		return 0;
 	}
 
+	Interface::Interface(const XML::Node &node) {
+
+		// Try type based name
+		String attr{node.attribute("type").as_string("default"),"-name"};
+		_name = String{node,attr.c_str()}.as_quark();
+		if(_name && *_name) {
+			return;
+		}
+
+		_name = String{node,"name"}.as_quark();
+		if(!(_name && *_name)) {
+			throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
+		}
+
+	}
+
+	Interface::~Interface() {
+	}
 
  }

@@ -23,56 +23,37 @@
 
  #pragma once
 
+ #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/value.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/value.h>
  #include <udjat/tools/container.h>
- #include <udjat/tools/abstract/object.h>
+ #include <udjat/tools/action.h>
  #include <vector>
  #include <memory>
+ #include <vector>
 
  namespace Udjat {
 
-	/// @brief Abstract interface for API calls.
+	/// @brief Abstract handler.
 	class UDJAT_API Interface {
 	private:
-
-		/// @brief The method name.
 		const char *_name;
-		class Controller;
 
 	protected:
 
 		typedef Interface Super;
 
-		/// @brief Copy input values from object to value.
-		/// @param in The object to get the input properties
-		/// @param out The 'worker' object, will receive the input properties.
-		void get_inputs(const Abstract::Object &in, Udjat::Value &out) const;
-
-		/// @brief Build an interface.
-		/// @param name The interface name in (A single word).
-		Interface(const char *name);
-
 		/// @brief Build an interface from XML description
 		/// @param name The interface declaration.
 		Interface(const XML::Node &node);
 
-	public:
-
-		virtual ~Interface();
-
-		static Interface & find(const char *name);
-
-		inline const char * name() const noexcept {
+		inline const char * c_str() const noexcept {
 			return _name;
 		}
-
-		/// @brief Get full name of interface (example: br.eti.werneck.udjat.agent)
-		/// @return The full name of this interface.
-		std::string to_string() const;
 
 #if __cplusplus >= 202002L
 		inline auto operator <=>(const char *name) const noexcept {
@@ -84,37 +65,90 @@
 		}
 #endif
 
-		/// @brief Enum interfaces.
-		/// @param call The callback, returns true to interrupt the loop.
-		/// @return true if the loop was interrupted
-		static bool for_each(const std::function<bool(const Interface &intf)> &call);
+		/// @brief A request handler method.
+		class UDJAT_API Handler {
+		public:
 
-		/// @brief Enum interface properties.
-		/// @param call The callback to handle property, returns true to interrupt the loop.
-		/// @return true if the loop was interrupted
-		virtual bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const;
+			/// @brief Interface method introspection.
+			struct Introspection {
+				/// @brief The value direction (bitmask).
+				enum Direction : uint8_t {
+					None		= 0x00,	///< @brief No direction, calculated value.
+					Input		= 0x01,	///< @brief It's an input parameter.
+					Output		= 0x02,	///< @brief It's an output parameter.
+					Both		= 0x03,	///< @brief It's an input/output parameter.
 
-		/// @brief Execute chained action (for scripts using multiple interfaces).
-		/// @param path The path for object request.
-		/// @param values The in/out values.
-		virtual void call(const char *path, Udjat::Value &values) = 0;
+					FromPath	= 0x80,	///< @brief Extract input from path.
+				} direction = None;
+				Value::Type type;	///< @brief The type value.
+				const char *name;	///< @brief The argument name.
+				Introspection(const XML::Node &node);
+			};
 
-		/// @brief Execute request, return response.
-		/// @param request The client request.
-		/// @param response The response.
-		virtual void call(Request &request, Response &response);
+			Handler(const char *name = "unnamed");
+			Handler(const XML::Node &node);
+			Handler(const char *name, const XML::Node &node);
+			virtual ~Handler();
 
-		/// @brief Execute chained action (for scripts using multiple interfaces).
-		/// @param name The interface name.
-		/// @param path The path for object request.
-		/// @param values The in/out values.
-		static void call(const char *name, const char *path, Udjat::Value &values);
+			inline const char * c_str() const noexcept {
+				return _name;
+			}
 
-		/// @brief Execute request, return response.
-		/// @param name The interface name.
-		/// @param request The client request.
-		/// @param response The response.
-		static void call(const char *name, Request &request, Response &response);
+			bool for_each(const std::function<bool(const Introspection &instrospection)> &call) const;
+
+#if __cplusplus >= 202002L
+			inline auto operator <=>(const char *name) const noexcept {
+				return strcasecmp(name,this->_name);
+			}
+#else
+			inline bool operator==(const char *name) const noexcept {
+				return strcasecmp(name,this->_name) == 0;
+			}
+#endif
+
+			/// @brief Call handler actions.
+			/// @param request The request data.
+			/// @param response The response data.
+			/// @return The return code of the first action to fail.
+			/// @retval Complete without failures.
+			int call(Udjat::Request &request, Udjat::Response &response) const;
+
+		private:
+			const char *_name;
+			std::vector<Introspection> introspection;
+			std::vector<std::shared_ptr<Action>> actions;
+
+		};
+
+	public:
+
+		class UDJAT_API Factory {
+		private:
+			const char *_name;
+
+		public:
+			Factory(const char *name);
+			virtual ~Factory();
+
+#if __cplusplus >= 202002L
+			inline auto operator <=>(const char *_name) const noexcept {
+				return strcasecmp(name,this->_name);
+			}
+#else
+			inline bool operator==(const char *name) const noexcept {
+				return strcasecmp(name,this->_name) == 0;
+			}
+#endif
+
+			static void build(const XML::Node &node) noexcept;
+
+			static bool for_each(const std::function<bool(Interface::Factory &interface)> &method);
+
+			virtual Interface & InterfaceFactory(const XML::Node &node) = 0;
+
+		};
+
+		virtual ~Interface();
 
 	};
 

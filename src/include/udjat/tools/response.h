@@ -73,6 +73,7 @@
 
 		virtual ~Response();
 
+		Response & failed(int syscode) noexcept;
 		Response & failed(const std::exception &e) noexcept;
 		Response & failed(const char *message, const char *details = nullptr) noexcept;
 		Response & failed(const char *title,  const char *message, const char *details) noexcept;
@@ -151,10 +152,6 @@
 			range.to = to;
 			range.total = total;
 		}
-
-		/// @brief Convert response to formatted string.
-		/// @see serialize.
-		std::string to_string() const noexcept;
 
 		/// @brief Serialize according to the mimetype.
 		/// Uses jsend format (https://github.com/omniti-labs/jsend) for xml, yaml & json.

@@ -256,6 +256,8 @@
 
 		virtual void serialize(std::ostream &out, const MimeType mimetype) const;
 
+		std::string serialize(const MimeType mimetype = MimeType::json) const;
+
 		void to_json(std::ostream &out) const;
 		void to_xml(std::ostream &out) const;
 		void to_html(std::ostream &out) const;

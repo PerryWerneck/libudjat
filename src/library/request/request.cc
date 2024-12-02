@@ -195,7 +195,10 @@
 	}
 
 	const char * Request::c_str() const noexcept {
-		Logger::String{"Processing request with no path"}.warning("request");
+		if(reqpath && *reqpath) {
+			return reqpath;
+		}
+		Logger::String{"The request path is empty"}.trace();
 		return "";
 	}
 

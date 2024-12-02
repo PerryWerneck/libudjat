@@ -54,17 +54,12 @@
 		return status.message.c_str();
 	}
 
-	std::string Response::to_string() const noexcept {
-		try {
-			std::ostringstream out;
-			serialize(out);
-			return out.str();
-		} catch(const std::exception &e) {
-			Logger::String{"Error serializing response: ",e.what()}.error();
-		} catch(...) {
-			Logger::String{"Unexpected error serializing response"}.error();
-		}
-		return "";
+	Response & Response::failed(int syscode) noexcept {
+		status.value = State::Failure;
+		clear(Value::Object);
+		status.message = strerror(syscode);
+		status.code = syscode;
+		return *this;
 	}
 
 	Response & Response::failed(const char *message, const char *details) noexcept {
@@ -186,7 +181,27 @@
 						"<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"><title>"
 					<< (status.message.empty() ? "Response" : status.message)
 					<< "</title></head><body>";
-			to_html(stream);
+
+			if(status.value == Success) {
+				// Show values
+				to_html(stream);
+			} else {
+				stream << "<section id='error-box'><h1 id='error-title'>" << (status.title.empty() ? _("Operation failed") : status.title.c_str()) << "</h1>";
+				if(!status.message.empty()) {
+					stream << "<p id='error-message'>" << status.message << "</p>";
+				} else if(status.code) {
+					stream << "<p id='error-code'>" << "Error " << status.code << "</p>";
+				}
+				if(!status.details.empty()) {
+					stream << "<small id='error-details'>" << status.details << "</small>";
+				}
+				if(!empty()) {
+					stream << "<div id='error-extra'>";
+					to_html(stream);
+					stream << "</div>";
+				}
+				stream << "</section>";
+			}
 			stream << "</body></html>";
 			break;
 
