@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-11-21 18:13-0300\n"
+"POT-Creation-Date: 2024-12-02 08:57-0300\n"
 "PO-Revision-Date: 2024-08-15 01:13-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -32,13 +32,13 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:48
-msgid "Agent controller"
-msgstr "Controlador de agentes"
+#: src/library/agent/root.cc:96 src/library/tools/systemservice.cc:133
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
 
-#: src/library/agent/controller.cc:99
-msgid "Core/Module subsystem failed to initialize"
-msgstr "Inicialização do módulo principal falhou"
+#: src/library/agent/root.cc:96
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
 
 #: src/library/agent/state.cc:145
 msgid "Error activating state"
@@ -48,13 +48,17 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/agent/root.cc:96 src/library/tools/systemservice.cc:133
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
+#: src/library/agent/controller.cc:48
+msgid "Agent controller"
+msgstr "Controlador de agentes"
 
-#: src/library/agent/root.cc:96
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
+#: src/library/agent/controller.cc:99
+msgid "Core/Module subsystem failed to initialize"
+msgstr "Inicialização do módulo principal falhou"
+
+#: src/library/agent/controller.cc:303
+msgid "Unsupported method"
+msgstr ""
 
 #: src/library/alert/controller.cc:40
 msgid "Alert controller"
@@ -80,10 +84,15 @@ msgstr "Modulo '{}' não foi carregado"
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
 
-#: src/library/request/response.cc:132
+#: src/library/request/response.cc:127
 #, fuzzy
 msgid "System error"
 msgstr "Erro de sistema"
+
+#: src/library/request/response.cc:189
+#, fuzzy
+msgid "Operation failed"
+msgstr "Operação falhou"
 
 #: src/library/state/state.cc:294 src/library/tools/converters.cc:42
 msgid "on"
@@ -92,10 +101,6 @@ msgstr "ligado"
 #: src/library/state/state.cc:294 src/library/tools/converters.cc:49
 msgid "off"
 msgstr "desligado"
-
-#: src/library/worker/worker.cc:52
-msgid "Invalid response type"
-msgstr "Resposta de tipo inválido"
 
 #: src/library/tools/application/run.cc:158
 #: src/library/tools/application/run.cc:162
@@ -126,6 +131,15 @@ msgstr "não"
 #: src/library/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
+
+#: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
+#: src/library/tools/exception.cc:53
+msgid "Operation has failed"
+msgstr "Operação falhou"
+
+#: src/library/tools/exception.cc:61
+msgid "System Error"
+msgstr "Erro de sistema"
 
 #: src/library/tools/http/error.cc:56
 msgid "Information"
@@ -341,6 +355,11 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
+#: src/library/tools/object.cc:216
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
+
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72
 msgid "\\StringFileInfo\\080904B0\\FileDescription"
@@ -381,15 +400,24 @@ msgstr "\t\tReinstalar serviço"
 msgid "\t\tBlock access to 'net stop' on this request"
 msgstr "\t\tBloquear acesso a 'net stop' no serviço"
 
-#: src/library/tools/script.cc:48 src/library/tools/script.cc:132
+#: src/library/tools/report.cc:219
+#, fuzzy
+msgid "Yes"
+msgstr "sim"
+
+#: src/library/tools/report.cc:219
+msgid "No"
+msgstr ""
+
+#: src/library/tools/script.cc:54 src/library/tools/script.cc:140
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
 
-#: src/library/tools/script.cc:151
+#: src/library/tools/script.cc:159
 msgid "Cant set subprocess user id"
 msgstr "Incapaz de definir o usuário do subprocesso"
 
-#: src/library/tools/script.cc:157
+#: src/library/tools/script.cc:165
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
@@ -397,73 +425,73 @@ msgstr "Incapaz de definir o grupo do subprocesso"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/timestamp.cc:89
+#: src/library/tools/timestamp.cc:105
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
 
-#: src/library/tools/timestamp.cc:102
+#: src/library/tools/timestamp.cc:118
 msgid "{d} {D}"
 msgstr "{d} {D}"
 
 #. Only days.
-#: src/library/tools/timestamp.cc:103
+#: src/library/tools/timestamp.cc:119
 msgid "{h} {H}"
 msgstr "{h} {H}"
 
 #. Only hours.
-#: src/library/tools/timestamp.cc:104
+#: src/library/tools/timestamp.cc:120
 msgid "{d} {D} and {h} {H}"
 msgstr "{d} {D} e {h} {H}"
 
 #. Days and hours.
-#: src/library/tools/timestamp.cc:105
+#: src/library/tools/timestamp.cc:121
 msgid "{m} {M}"
 msgstr "{m} {M}"
 
 #. Only minutes.
-#: src/library/tools/timestamp.cc:106
+#: src/library/tools/timestamp.cc:122
 msgid "{d} {D} and {m} {M}"
 msgstr "{d} {D} e {m} {M}"
 
 #. Days and minutes.
-#: src/library/tools/timestamp.cc:107
+#: src/library/tools/timestamp.cc:123
 msgid "{h} {H} and {m} {M}"
 msgstr "{h} {H} e {m} {M}"
 
 #. Hours and minutes.
-#: src/library/tools/timestamp.cc:108
+#: src/library/tools/timestamp.cc:124
 msgid "{d} {D}, {h} {H} and {m} {M}"
 msgstr "{d} {D}, {h} {H} e {m} {M}"
 
-#: src/library/tools/timestamp.cc:116 src/library/tools/timestamp.cc:235
+#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
 msgid "days"
 msgstr "dias"
 
-#: src/library/tools/timestamp.cc:116 src/library/tools/timestamp.cc:235
+#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
 msgid "day"
 msgstr "dia"
 
-#: src/library/tools/timestamp.cc:118 src/library/tools/timestamp.cc:234
+#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
 msgid "hours"
 msgstr "horas"
 
-#: src/library/tools/timestamp.cc:118 src/library/tools/timestamp.cc:234
+#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
 msgid "hour"
 msgstr "hora"
 
-#: src/library/tools/timestamp.cc:120 src/library/tools/timestamp.cc:233
+#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
 msgid "minutes"
 msgstr "minutos"
 
-#: src/library/tools/timestamp.cc:120 src/library/tools/timestamp.cc:233
+#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
 msgid "minute"
 msgstr "minuto"
 
-#: src/library/tools/timestamp.cc:232
+#: src/library/tools/timestamp.cc:248
 msgid "second"
 msgstr "segundo"
 
-#: src/library/tools/timestamp.cc:232
+#: src/library/tools/timestamp.cc:248
 msgid "seconds"
 msgstr "segundos"
 
@@ -475,32 +503,85 @@ msgstr "Protocolo de arquivo"
 msgid "Subprocess/Script protocol"
 msgstr "Protocolo para subprocesso ou script"
 
+#: src/library/tools/value/type.cc:30
+msgid "undefined"
+msgstr ""
+
+#. Allways the first one
+#: src/library/tools/value/type.cc:31
+msgid "array"
+msgstr ""
+
+#: src/library/tools/value/type.cc:32
+msgid "object"
+msgstr ""
+
+#: src/library/tools/value/type.cc:33
+msgid "string"
+msgstr ""
+
+#: src/library/tools/value/type.cc:34
+msgid "timestamp"
+msgstr ""
+
+#: src/library/tools/value/type.cc:35
+msgid "signed"
+msgstr ""
+
+#: src/library/tools/value/type.cc:36
+msgid "unsigned"
+msgstr ""
+
+#: src/library/tools/value/type.cc:37
+msgid "real"
+msgstr ""
+
+#: src/library/tools/value/type.cc:38
+msgid "boolean"
+msgstr ""
+
+#: src/library/tools/value/type.cc:39
+#, fuzzy
+msgid "fraction"
+msgstr "Informação"
+
+#: src/library/tools/value/type.cc:40
+msgid "icon"
+msgstr ""
+
+#: src/library/tools/value/type.cc:41
+msgid "url"
+msgstr ""
+
+#: src/library/tools/value/type.cc:42
+msgid "state"
+msgstr ""
+
+#: src/library/tools/value/type.cc:44
+#, fuzzy
+msgid "int"
+msgstr "minuto"
+
+#: src/library/tools/value/type.cc:45
+msgid "integer"
+msgstr ""
+
+#: src/library/tools/value/type.cc:46
+msgid "number"
+msgstr ""
+
+#: src/library/tools/value/type.cc:86
+msgid "Unknown"
+msgstr ""
+
 #: src/library/tools/xml/attribute.cc:96
 #, c++-format
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
-#: src/library/tools/exception.cc:53
-msgid "Operation has failed"
-msgstr "Operação falhou"
-
-#: src/library/tools/exception.cc:61
-msgid "System Error"
-msgstr "Erro de sistema"
-
-#: src/library/tools/object.cc:216
-#, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
-
-#, fuzzy
-#~ msgid "Fraction"
-#~ msgstr "Informação"
-
-#, fuzzy
-#~ msgid "int"
-#~ msgstr "minuto"
+#: src/library/worker/worker.cc:52
+msgid "Invalid response type"
+msgstr "Resposta de tipo inválido"
 
 #~ msgid "Abstract value is unable to handle items"
 #~ msgstr "Valor abstrato não consegue manipular items"
