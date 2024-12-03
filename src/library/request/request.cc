@@ -76,6 +76,7 @@
 		return "";
 	}
 
+	/*
 	const char * Request::chk_prefix(const char *prefix) const noexcept {
 
 		debug(__FUNCTION__,"('",prefix,"')");
@@ -121,15 +122,34 @@
 		return nullptr;
 
 	}
+	*/
 
-	bool Request::pop(const char *prefix) noexcept {
+	bool Request::has_prefix(const char *prefix) const noexcept {
 
-		const char * ptr = chk_prefix(prefix);
-		if(!ptr) {
+		if(!(prefix && *prefix)) {
 			return false;
 		}
 
-		argptr = ptr;
+		if(!(argptr && *argptr)) {
+			return false;
+		}
+
+		return (strncasecmp(argptr,prefix,strlen(prefix)) == 0);
+
+	}
+
+	bool Request::pop(const char *prefix) noexcept {
+
+		if(!has_prefix(prefix)) {
+			return false;
+		}
+
+		size_t szprefix = strlen(prefix);
+		if(strlen(argptr) < szprefix || argptr[szprefix] != '/') {
+			return false;
+		}
+
+		argptr += szprefix;
 		return true;
 
 	}

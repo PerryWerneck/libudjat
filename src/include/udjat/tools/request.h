@@ -28,31 +28,35 @@
 
  namespace Udjat {
 
+	/// @brief Base API request.
 	class UDJAT_API Request : public Udjat::Value {
 	private:
 
-		/// @brief Request method.
-		const HTTP::Method method;
-
 		/// @brief Current argument.
-		const char *argptr = nullptr;
-
-		const char * chk_prefix(const char *arg) const noexcept;
-
-	protected:
+		const char *argptr = "";
 
 		/// @brief The processed request path.
 		const char *reqpath = "";
+
+		/// @brief Looks whether the request path begins with prefix.
+		/// @param prefix to check.
+		/// @return true if the request path begins with the argument.
+		bool has_prefix(const char *prefix) const noexcept;
+
+	protected:
+
+		/// @brief Set request path.
+		/// @param path The new request path.
+		inline void reset(const char *path = "") noexcept {
+			argptr = reqpath = path;
+		}
 
 		/// @brief The requested API version.
 		unsigned int apiver = 0;
 
 	public:
 
-		constexpr Request(const char *path = "", HTTP::Method m = HTTP::Get) : method{m}, reqpath{path} {
-		}
-
-		Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
+		constexpr Request(const char *path = "") : argptr{path}, reqpath{path} {
 		}
 
 		virtual ~Request();
@@ -103,18 +107,10 @@
 		}
 
 		/// @brief Get original request path.
-		virtual const char *c_str() const noexcept;
+		const char *c_str() const noexcept;
 
 		inline operator const char *() const noexcept {
 			return c_str();
-		}
-
-		inline operator HTTP::Method() const noexcept {
-			return this->method;
-		}
-
-		inline HTTP::Method verb() const noexcept {
-			return this->method;
 		}
 
 		/// @brief Get current request path (after 'pop()').
@@ -122,15 +118,11 @@
 		/// @return The path remaining after 'pop()' calls.
 		const char * path() const noexcept;
 
-		inline bool operator==(HTTP::Method method) const noexcept {
-			return this->method == method;
-		}
-
 		/// @brief Test if the request can handle the path.
 		/// @param prefix The path being searched.
 		/// @return true if the request path starts with prefix.
 		inline bool operator==(const char *prefix) const noexcept {
-			return chk_prefix(prefix) != nullptr;
+			return has_prefix(prefix);
 		}
 
 		/// @brief pop() first element from path, select it from list.
@@ -142,7 +134,7 @@
 
 		/// @brief Test and extract request path.
 		/// @param path The path to check.
-		/// @return true if the request path was equal and it was removed, request is now at first parameter.
+		/// @return true if the request path was equal and it was removed, request is now at next parameter.
 		bool pop(const char *path) noexcept;
 
 		/// @brief Pop one element from path.

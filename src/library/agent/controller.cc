@@ -292,17 +292,8 @@ namespace Udjat {
 		}
 	}
 
-	bool Abstract::Agent::Controller::for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const {
-		// TODO: Enum agent standard properties.
-		return false;	
-	}
-
-	void Abstract::Agent::Controller::call(Request &request, Response &response) {
+	void Abstract::Agent::Controller::call(Request &request, Response &response) noexcept {
 		
-		if(((HTTP::Method) request) != HTTP::Get) {
-			throw system_error(ENOTSUP,system_category(),_( "Unsupported method"));	
-		}
-
 		try {
 
 			auto agent = find(request.path(),true);

@@ -77,9 +77,7 @@ namespace Udjat {
 		/// @brief Load agent properties from XML node.
 		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
 
-		// TODO: Find another way to export agent info (Maybee using action class).
-		bool for_each(const std::function<bool(const size_t index, bool input, const char *name, const Value::Type type)> &call) const;
-		void call(Request &request, Response &response);
+		void call(Request &request, Response &response) noexcept;
 		void call(const char *path, Udjat::Value &values);
 
 	};

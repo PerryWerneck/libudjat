@@ -169,19 +169,7 @@
 		request.pop(); // Remove first element.
 
 		debug(__FUNCTION__,"(",request.path(),")");
-
-		switch((HTTP::Method) request) {
-		case HTTP::Get:
-			debug("HTTP GET");
-			return get(request,response);
-
-		case HTTP::Head:
-			debug("HTTP HEAD");
-			return head(request,response);
-
-		default:
-			return false;
-		}
+		return get(request,response);
 
 	}
 	
