@@ -65,6 +65,8 @@
 		}
 #endif
 
+	public:
+
 		/// @brief A request handler method.
 		class UDJAT_API Handler {
 		public:
@@ -119,8 +121,6 @@
 			std::vector<std::shared_ptr<Action>> actions;
 
 		};
-
-	public:
 
 		class UDJAT_API Factory {
 		private:
