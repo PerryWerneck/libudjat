@@ -63,7 +63,7 @@
 		/// @param except If true the action will launch exception on failure.
 		/// @return The return code.
 		/// @retval 0 Success.
-		int call(const Udjat::Value &request, Udjat::Value &response, bool except = false) override;
+		int call(Udjat::Request &request, Udjat::Response &response, bool except = false) override;
 
 		/// @brief Run script in foreground.
 		/// @param object The object for cmdline expansion.

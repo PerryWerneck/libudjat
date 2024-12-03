@@ -57,14 +57,19 @@
 
 		bool refresh() override {
 			
-			Value values;
+			Request request;
+			Response response;
+
+			this->getProperties(request);
+
 			T val = this->get();
 
-			values[valuename] = val;
+			request[valuename] = val;
+			response[valuename] = val;
 
-			action->call(values,values,true);
+			action->call(request,response,true);
 
-			values[valuename].get(val);
+			response[valuename].get(val);
 			return this->set(val);
 		}
 

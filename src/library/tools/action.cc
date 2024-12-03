@@ -178,7 +178,7 @@
 					ActionContainer(const XML::Node &node, std::vector<std::shared_ptr<Action>> a) : Action{node}, actions{a} {
 					} 
 
-					int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
+					int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
 						return exec(response,except,[&]() {
 							for(const auto &action : actions) {
 								int rc = action->call(request,response,except);
@@ -231,7 +231,7 @@
 						}
 					}
 
-					int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
+					int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
 
 						return exec(response,except,[&]() {
 
@@ -296,7 +296,7 @@
 						}
 					}
 
-					int call(const Udjat::Value &request, Udjat::Value &response, bool except) override {
+					int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
 
 						return exec(response,except,[&](){
 
@@ -349,9 +349,11 @@
 		//
 		// Cant find factory, return empty action.
 		//
+		Logger::String error_message{"Cant find backend for action type '",type,"'"};
 		if(except) {
-			throw logic_error(Logger::String{"Cant find backend for action type '",type,"'"});
+			throw logic_error(error_message);
 		}
+		error_message.warning();
 		return std::shared_ptr<Action>();
 
 	}
@@ -363,13 +365,10 @@
 	Action::~Action() {
 	}
 
-	int Action::call(Udjat::Request &request, Udjat::Response &response) {
-		return call((Udjat::Value &) request, (Udjat::Value &) response, true);
-	}
-
 	int Action::call(bool except) {
-		Udjat::Value value;
-		return call(value,value,except);
+		Udjat::Request request;
+		Udjat::Response response;
+		return call(request,response,except);
 	}
 
 	const char * Action::payload(const XML::Node &node, const char *attrname) {

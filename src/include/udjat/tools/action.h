@@ -85,19 +85,13 @@
 		Action(const XML::Node &node);
 		virtual ~Action();
 
-		/// @brief Execute action
-		/// @param value The in/out values.
-		/// @param except If true the action will launch exception on failure.
-		/// @return The return code.
-		/// @retval 0 Success.
-		virtual int call(const Udjat::Value &request, Udjat::Value &response, bool except = true) = 0;
-
 		/// @brief Execute action.
 		/// @param request The client request.
 		/// @param response The response to client.
+		/// @param except If false will not launche exception, just return an error code.
 		/// @return The return code.
 		/// @retval 0 Success.
-		virtual int call(Udjat::Request &request, Udjat::Response &response);
+		virtual int call(Udjat::Request &request, Udjat::Response &response, bool except = true) = 0;
 
 		/// @brief Run action from XML node, usually called by XML tag <init type=>
 		virtual int call(bool except = true);

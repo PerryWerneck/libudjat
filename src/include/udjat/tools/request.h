@@ -49,7 +49,7 @@
 
 	public:
 
-		constexpr Request(const char *path, HTTP::Method m = HTTP::Get) : method{m}, reqpath{path} {
+		constexpr Request(const char *path = "", HTTP::Method m = HTTP::Get) : method{m}, reqpath{path} {
 		}
 
 		Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
