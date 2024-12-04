@@ -32,6 +32,8 @@
 		class UDJAT_API Object {
 		public:
 
+			virtual ~Object();
+
 			/// @brief Setup object.
 			/// @param node The XML node with the object definitions.
 			virtual void setup(const XML::Node &node);
@@ -70,14 +72,14 @@
 			/// @param name The property name.
 			/// @param change If true add the node name as prefix on the attribute name for upsearch.
 			/// @return XML Attribute.
-			static const XML::Attribute getAttribute(const XML::Node &n, const char *name);
+			static const XML::Attribute getAttribute(const XML::Node &n, const char *name) [[deprecated("Use XML::AttributeFactory")]];
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param def The default value (should be constant).
 			/// @return Attribute value converted to quark or def
-			static const char * getAttribute(const XML::Node &node, const char *name, const char *def);
+			static const char * getAttribute(const XML::Node &node, const char *name, const char *def) [[deprecated("Use Udjat::String")]];
 
 			/// @brief Get child value from xml node and convert to const string.
 			/// @param node The xml node.
@@ -118,9 +120,9 @@
 			/// @param group Configuration file group to get values.
 			/// @param value String to expand.
 			/// @return 'quarked' string with the expanded value.
-			static const char * expand(const XML::Node &node, const char *group, const char *value);
+			static const char * expand(const XML::Node &node, const char *group, const char *value) [[deprecated("Use Udjat::String")]];
 
-			static inline const char * expand(const XML::Node &node, const std::string &group, const char *value) {
+			static inline const char * expand(const XML::Node &node, const std::string &group, const char *value) [[deprecated("Use Udjat::String")]]{
 				return expand(node,group.c_str(),value);
 			}
 
