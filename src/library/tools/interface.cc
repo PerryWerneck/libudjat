@@ -59,7 +59,7 @@
 
 					} catch(...) {
 
-						Logger::String{"Unexpected error build interface"}.error(name.c_str());
+						Logger::String{"Unexpected error building interface"}.error(name.c_str());
 
 					}
 
@@ -83,7 +83,7 @@
 		Factories().remove(this);
 	}
 
-	bool Interface::Factory::for_each(const std::function<bool(Interface::Factory &interface)> &method) {
+	bool Interface::Factory::for_each(const std::function<bool(Interface::Factory &intf)> &method) {
 		for(Interface::Factory *intf : Factories()) {
 			if(method(*intf)) {
 				return true;

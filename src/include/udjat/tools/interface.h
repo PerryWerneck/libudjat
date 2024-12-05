@@ -35,6 +35,7 @@
  #include <vector>
  #include <memory>
  #include <vector>
+ #include <functional>
 
  namespace Udjat {
 
@@ -153,7 +154,7 @@
 
 			static void build(const XML::Node &node) noexcept;
 
-			static bool for_each(const std::function<bool(Interface::Factory &interface)> &method);
+			static bool for_each(const std::function<bool(Interface::Factory &intf)> &method);
 
 			virtual Interface & InterfaceFactory(const XML::Node &node) = 0;
 
