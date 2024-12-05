@@ -47,9 +47,16 @@
 
 		typedef Interface Super;
 
+		constexpr Interface(const char *name) : _name{name} {
+		}
+
 		/// @brief Build an interface from XML description
 		/// @param name The interface declaration.
 		Interface(const XML::Node &node);
+
+		inline const char * name() const noexcept {
+			return _name;
+		}
 
 		inline const char * c_str() const noexcept {
 			return _name;

@@ -72,7 +72,7 @@
 	}
 
 	bool Interface::push_back(const XML::Node &, std::shared_ptr<Action>) {
-		Logger::String{"This interface is unable to direct handle actions"}.warning(c_str());
+		Logger::String{"This interface is unable to handle actions"}.error(c_str());
 		return false;
 	}
 
@@ -229,15 +229,16 @@
 			return;
 		}
 
-		_name = String{node,"name"}.as_quark();
-		if(_name && *_name) {
-			return;
+		for(const char *attrname : { "name", "action-name"}) {
+
+			_name = String{node,attrname}.as_quark();
+			if(_name && *_name) {
+				return;
+			}
+
 		}
 
-		_name = String{node,"action-name"}.as_quark();
-		if(!(_name && *_name)) {
-			throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
-		}
+		throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
 
 	}
 
