@@ -72,7 +72,7 @@
 	}
 
 	bool Interface::push_back(const XML::Node &, std::shared_ptr<Action>) {
-		Logger::String{"This interface is unable to handle actions"}.error(c_str());
+		Logger::String{"This interface is unable to handle actions"}.error(name());
 		return false;
 	}
 
@@ -229,13 +229,12 @@
 			return;
 		}
 
+		// Check names.
 		for(const char *attrname : { "name", "action-name"}) {
-
 			_name = String{node,attrname}.as_quark();
 			if(_name && *_name) {
 				return;
 			}
-
 		}
 
 		throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
