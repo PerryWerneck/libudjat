@@ -33,6 +33,8 @@
 #include <udjat/tools/timer.h>
 #include <udjat/tools/request.h>
 #include <udjat/tools/response.h>
+#include <udjat/tools/action.h>
+#include <memory>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -42,7 +44,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory {
 	private:
 
 		time_t updating = 0;
@@ -80,7 +82,9 @@ namespace Udjat {
 		void call(Request &request, Response &response) noexcept;
 		void call(const char *path, Udjat::Value &values);
 
-	};
+		// ActionFactory
+		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;
 
+	};
 
 }

@@ -47,7 +47,7 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Service{"agents",moduleinfo} {
+	Abstract::Agent::Controller::Controller() : Service{"agents",moduleinfo}, Action::Factory{"agent"} {
 		Logger::String{
 			"Initializing controller"
 		}.trace("agent");
@@ -67,7 +67,7 @@ namespace Udjat {
 
 		if(this->root) {
 			Logger::String{
-				"Root gent ",
+				"Root agent ",
 				std::to_string((unsigned long long) ((void *) this->root.get())),
 				" was demoted"
 			}.trace(this->root->name());
@@ -370,6 +370,48 @@ namespace Udjat {
 
 		});
 
+
+	}
+
+	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const XML::Node &) const {
+
+		/// @brief Action to get agent properties.
+		class AgentProperties : public Udjat::Action {
+		public:
+			AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
+			} 
+
+			int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
+
+				return exec(response, except, [&]() {
+
+					auto agent = Abstract::Agent::Controller::getInstance().find(request.path(),true);
+
+					time_t timestamp = agent->last_modified();
+					if(timestamp) {
+						if(request.cached(timestamp)) {
+							return 0;
+						}
+						response.last_modified(timestamp);
+					}
+
+					agent->getProperties(response);
+
+					if(agent->update.next) {
+						response.expires(agent->update.next);
+					}
+
+					response.message(agent->state()->to_string().c_str());
+
+					return 0;
+				});
+
+
+			}
+
+		};
+
+		return make_shared<AgentProperties>();
 
 	}
 
