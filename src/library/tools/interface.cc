@@ -55,11 +55,11 @@
 
 					} catch(const std::exception &e) {
 
-						Logger::String{e.what()}.error(name.c_str());
+						Logger::String{e.what()}.error(factory->_name);
 
 					} catch(...) {
 
-						Logger::String{"Unexpected error building interface"}.error(name.c_str());
+						Logger::String{"Unexpected error building interface"}.error(factory->_name);
 
 					}
 
