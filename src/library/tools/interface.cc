@@ -72,8 +72,7 @@
 	}
 
 	bool Interface::push_back(const XML::Node &, std::shared_ptr<Action>) {
-		Logger::String{"This interface is unable to handle actions"}.error(name());
-		return false;
+		throw logic_error("This interface is unable to handle actions");
 	}
 
 	Interface::Factory::Factory(const char *n) : _name {n} {
