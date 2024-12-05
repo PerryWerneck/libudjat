@@ -141,6 +141,10 @@
 		return false;
 	}
 
+	void Interface::Handler::push_back(std::shared_ptr<Action> action) {
+		actions.push_back(action);
+	}
+
 	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
 
 		//

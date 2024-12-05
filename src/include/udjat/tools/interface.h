@@ -109,6 +109,8 @@
 			/// @retval Complete without failures.
 			int call(Udjat::Request &request, Udjat::Response &response) const;
 
+			void push_back(std::shared_ptr<Action> action);
+
 		private:
 			const char *_name;
 			std::vector<Introspection> introspection;
