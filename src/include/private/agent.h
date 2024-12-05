@@ -31,8 +31,6 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
-#include <udjat/tools/request.h>
-#include <udjat/tools/response.h>
 #include <udjat/tools/action.h>
 #include <memory>
 
@@ -70,7 +68,6 @@ namespace Udjat {
 		void set(std::shared_ptr<Abstract::Agent> root);
 
 		std::shared_ptr<Abstract::Agent> get() const;
-
 		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
 
 		void start() noexcept override;
@@ -78,9 +75,6 @@ namespace Udjat {
 
 		/// @brief Load agent properties from XML node.
 		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
-
-		void call(Request &request, Response &response) noexcept;
-		void call(const char *path, Udjat::Value &values);
 
 		// ActionFactory
 		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;

@@ -65,6 +65,10 @@
 		}
 #endif
 
+		/// @brief Push back single action handler.
+		/// @param action The action to push back.
+		virtual bool push_back(const XML::Node &node, std::shared_ptr<Action> action);
+
 	public:
 
 		/// @brief A request handler method.

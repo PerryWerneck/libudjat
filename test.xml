@@ -39,6 +39,8 @@
 		${timestamp(%Y/%m/%d %H:%M:%S)}
 	</init>
 
+	<interface type='*' action-name='agent' />
+
 	<!-- alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert -->

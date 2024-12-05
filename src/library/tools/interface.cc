@@ -43,11 +43,15 @@
 
 			for(auto &factory : Factories()) {
 
-				if(*factory == name.c_str()) {
+				if(strcmp(name.c_str(),"*") == 0 || strcasecmp(name.c_str(),"all") == 0 || *factory == name.c_str()) {
 
 					try {
 
-						factory->InterfaceFactory(node);
+						Interface &intf = factory->InterfaceFactory(node);
+
+						if(!String{node,"action-name"}.empty()) {
+							intf.push_back(node,Action::Factory::build(node,"action-name",true));
+						}
 
 					} catch(const std::exception &e) {
 
@@ -65,6 +69,11 @@
 
 		}
 
+	}
+
+	bool Interface::push_back(const XML::Node &, std::shared_ptr<Action>) {
+		Logger::String{"This interface is unable to direct handle actions"}.warning(c_str());
+		return false;
 	}
 
 	Interface::Factory::Factory(const char *n) : _name {n} {
@@ -132,28 +141,6 @@
 		}
 		return false;
 	}
-
-	/*
-	void Interface::Handler::clear(Udjat::Value &request, Udjat::Value &response) const {
-		request.clear(Value::Object);
-		response.clear(Value::Object);
-		for(auto &val : introspection) {
-			if(val.direction & Introspection::Input) {
-				request[val.name].clear(val.type);
-			}
-			if(val.direction & Introspection::Output) {
-				response[val.name].clear(val.type);
-			}
-		}
-	}
-	*/
-
-	/*
-	void Interface::Handler::prepare(Udjat::Request &request, Udjat::Response &response) const {
-
-
-	}
-	*/
 
 	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
 
@@ -243,6 +230,11 @@
 		}
 
 		_name = String{node,"name"}.as_quark();
+		if(_name && *_name) {
+			return;
+		}
+
+		_name = String{node,"action-name"}.as_quark();
 		if(!(_name && *_name)) {
 			throw runtime_error(Logger::String{"Required attribute 'name' or '",node.attribute("type").as_string("default"),"-name","' is missing or empty"});
 		}

@@ -292,6 +292,7 @@ namespace Udjat {
 		}
 	}
 
+	/*
 	void Abstract::Agent::Controller::call(Request &request, Response &response) noexcept {
 		
 		try {
@@ -321,10 +322,13 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
+	/*
 	void Abstract::Agent::Controller::call(const char *path, Udjat::Value &values) {
 		find(path,true)->getProperties(values);
 	}
+	*/
 
 	void Abstract::Agent::Controller::on_timer() {
 
@@ -374,6 +378,8 @@ namespace Udjat {
 	}
 
 	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const XML::Node &) const {
+
+		debug("Build agent action");
 
 		/// @brief Action to get agent properties.
 		class AgentProperties : public Udjat::Action {
