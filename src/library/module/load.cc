@@ -81,7 +81,7 @@ namespace Udjat {
 			}
 
 			string filename = locate(name,paths);
-
+			
 			if(!filename.empty()) {
 
 				if(find_by_filename(filename.c_str())) {

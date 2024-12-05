@@ -27,16 +27,17 @@
 
  namespace Udjat {
 
+	#define MODULE_VERSION STRINGIZE_VALUE_OF(PACKAGE_VERSION_MAJOR) "."  STRINGIZE_VALUE_OF(PACKAGE_VERSION_MINOR)
 	std::vector<std::string> Module::search_paths() noexcept {
 
 		return std::vector<string>{
 #ifdef MODULES_DIR
 			Config::Value<string>("modules","application-path",STRINGIZE_VALUE_OF(MODULES_DIR)).c_str(),
 #endif // MODULES_DIR
-			Config::Value<string>("modules","path",Application::LibDir(PACKAGE_VERSION "/modules",false).c_str()),
+			Config::Value<string>("modules","path",Application::LibDir(MODULE_VERSION "/modules",false).c_str()),
 #ifdef LIBDIR
-			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/" PACKAGE_VERSION "/modules/").c_str(),
-			Config::Value<string>("modules","compatibility-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "-modules/" PACKAGE_VERSION "/").c_str(),
+			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(MODULE_VERSION) "/" PACKAGE_VERSION "/modules/").c_str(),
+			Config::Value<string>("modules","compatibility-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(MODULE_VERSION) "-modules/" PACKAGE_VERSION "/").c_str(),
 #endif //LIBDIR
 		};
 
@@ -55,7 +56,7 @@
 
 				string filename = path + STRINGIZE_VALUE_OF(PRODUCT_NAME) "-module-" + name + LIBEXT;
 
-//				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
+				debug("Searching '",filename,"' = ",access(filename.c_str(),R_OK));
 
 				if(access(filename.c_str(),R_OK) == 0) {
 					return filename;
