@@ -55,24 +55,6 @@
 		/// @param name The interface declaration.
 		Interface(const XML::Node &node);
 
-		inline const char * name() const noexcept {
-			return _name;
-		}
-
-		inline const char * c_str() const noexcept {
-			return _name;
-		}
-
-#if __cplusplus >= 202002L
-		inline auto operator <=>(const char *name) const noexcept {
-			return strcasecmp(name,this->_name);
-		}
-#else
-		inline bool operator==(const char *name) const noexcept {
-			return strcasecmp(name,this->_name) == 0;
-		}
-#endif
-
 		/// @brief Push back single action handler.
 		/// @param action The action to push back.
 		virtual bool push_back(const XML::Node &node, std::shared_ptr<Action> action);
@@ -159,6 +141,24 @@
 			virtual Interface & InterfaceFactory(const XML::Node &node) = 0;
 
 		};
+
+		inline const char * name() const noexcept {
+			return _name;
+		}
+
+		inline const char * c_str() const noexcept {
+			return _name;
+		}
+
+#if __cplusplus >= 202002L
+		inline auto operator <=>(const char *name) const noexcept {
+			return strcasecmp(name,this->_name);
+		}
+#else
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,this->_name) == 0;
+		}
+#endif
 
 		virtual ~Interface();
 
