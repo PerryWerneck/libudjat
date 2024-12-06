@@ -361,7 +361,7 @@
 		}
 
 		if(type != Object) {
-			throw logic_error("The value is not an object");
+			throw logic_error(Logger::String{"Unable to append element into a value type '",std::to_string(type),"'"});
 		}
 			
 		return (*((map<std::string,Value> *) content.ptr))[name].clear(type);
@@ -389,7 +389,7 @@
 			return (*((map<std::string,Value> *) content.ptr))[name];
 		}
 
-		throw logic_error("The value is not an object");
+		throw logic_error(Logger::String{"Unable to get children from a value type '",std::to_string(type),"'"});
 	}
 
 	bool Value::getProperty(const char *key, std::string &value) const {
