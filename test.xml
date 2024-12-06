@@ -3,10 +3,8 @@
 <!-- config src='http://localhost/~perry/libudjat.xml' update-timer='600' -->
 <udjat src='http://127.0.0.1/~perry/libudjat.xml' update-timer='600'>
 
-	<module name='information' required='no' preload='no' />
 	<module name='dmi' required='no' preload='no' />
-
-	<!-- module name='http' preload='yes' / -->
+	<module name='information' required='no' preload='no' />
 	<module name='civetweb' required='no' preload='yes' />
 
 	<attribute name='alert-type' value='file' />
@@ -40,6 +38,7 @@
 	</init>
 
 	<interface type='*' action-name='agent' />
+	<interface type='web' action-name='appinfo' required='no' />
 
 	<!-- alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}

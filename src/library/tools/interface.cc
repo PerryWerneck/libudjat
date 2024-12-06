@@ -39,6 +39,26 @@
 
 	void Interface::Factory::build(const XML::Node &node) noexcept {
 
+		std::shared_ptr<Action> action;
+		if(!String{node,"action-name"}.empty()) {
+
+			try {
+
+				action = Action::Factory::build(node,"action-name",true);
+
+			} catch(const std::exception &e) {
+
+				Logger::String{e.what()}.error(String{node,"action-name"}.c_str());
+				return;
+
+			} catch(...) {
+
+				Logger::String{"Unexpected error building action"}.error(String{node,"action-name"}.c_str());
+				return;
+
+			}
+		}
+
 		for(String &name : String{node,"type"}.split(",")) {
 
 			for(auto &factory : Factories()) {
@@ -49,8 +69,8 @@
 
 						Interface &intf = factory->InterfaceFactory(node);
 
-						if(!String{node,"action-name"}.empty()) {
-							intf.push_back(node,Action::Factory::build(node,"action-name",true));
+						if(action) {
+							intf.push_back(node,action);
 						}
 
 					} catch(const std::exception &e) {
@@ -245,6 +265,7 @@
 	}
 
 	Interface::~Interface() {
+		debug("Deleting interface '",name(),"'");	
 	}
 
  }

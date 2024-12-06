@@ -25,6 +25,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/service.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/module/abstract.h>
 
  using namespace std;
 
@@ -44,6 +45,11 @@
 				const_cast<Service *>(&service)->stop();
 			}
 			return true;
+		});
+
+		Module::for_each([](Module &module){
+			module.finalize();
+			return false;
 		});
 
 		ThreadPool::getInstance().wait();

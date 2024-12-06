@@ -76,7 +76,7 @@
 			}
 
 			module->handle = handle;
-			module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
+			module->keep_loaded = node.attribute("keep-loaded").as_bool(false) || Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
 
 			if(module->_info.gettext_package && *module->_info.gettext_package) {
 				Application::set_gettext_package(module->_info.gettext_package);

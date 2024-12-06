@@ -48,18 +48,11 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
+	void Module::finalize() {
+	}
+
 	void Module::set(const pugi::xml_document UDJAT_UNUSED(&document)) {
 	}
-
-	/*
-	std::shared_ptr<Abstract::Agent> Module::AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
-		return std::shared_ptr<Abstract::Agent>();
-	}
-
-	std::shared_ptr<Abstract::Alert> Module::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
-		return std::shared_ptr<Abstract::Alert>();
-	}
-	*/
 
 	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = name;
@@ -67,18 +60,26 @@ namespace Udjat {
 		return _info.getProperties(properties);
 	}
 
-	/*
-	void Module::getInfo(Response &response) {
-		Controller::getInstance().getInfo(response);
-	}
-	*/
-
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
 	}
 
 	bool Module::for_each(const std::function<bool(const Module &module)> &method) {
-		return Controller::getInstance().for_each(method);
+		for(const auto &module : Controller::getInstance()) {
+			if(method(*module)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	bool Module::for_each(const std::function<bool(Module &module)> &method) {
+		for(auto &module : Controller::getInstance()) {
+			if(method(*module)) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {

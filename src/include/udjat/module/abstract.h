@@ -102,6 +102,7 @@
 
 		/// @brief Call method on every modules.
 		static bool for_each(const std::function<bool(const Module &module)> &method);
+		static bool for_each(const std::function<bool(Module &module)> &method);
 
 		/// @brief Get module by name.
 		/// @param name Module name without path or extension (ex: "udjat-module-civetweb") or alias (ex: "http").
@@ -128,6 +129,9 @@
 		/// @brief Set XML document
 		/// Called when a XML document is loaded.
 		virtual void set(const pugi::xml_document &document);
+
+		/// @brief Called when application is finishing to cleanup module data after unloading.
+		virtual void finalize();
 
 		virtual ~Module();
 

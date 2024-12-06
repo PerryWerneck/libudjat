@@ -40,6 +40,19 @@ namespace Udjat {
 	void Module::Controller::clear() {
 
 		debug("Unloading ",objects.size()," modules");
+#ifdef DEBUG
+		{
+			string names;
+			for(auto module : objects) {
+				if(!names.empty()) {
+					names += " ";
+				}
+				names += module->name;
+			}
+			debug("----> Modules to remove: ",names.c_str());
+		}
+#endif
+
 		while(objects.size()) {
 
 			Module * module;

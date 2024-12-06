@@ -387,13 +387,10 @@
 
 		try {
 
-			int rc = func();
-			value[name()] = rc;
-			return rc;
+			return func();
 
 		} catch(const HTTP::Exception &e) {
 
-			value[name()] = e.code(); 
 			if(except) {
 				throw;
 			}
@@ -402,7 +399,6 @@
 
 		} catch(const std::system_error &e) {
 
-			value[name()] = e.code().value(); 
 			if(except) {
 				throw;
 			}
@@ -411,7 +407,6 @@
 
 		} catch(const std::exception &e) {
 
-			value[name()] = -1; 
 			if(except) {
 				throw;
 			}
@@ -419,7 +414,6 @@
 
 		} catch(...) {
 
-			value[name()] = -1; 
 			if(except) {
 				throw;
 			}
