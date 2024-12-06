@@ -39,6 +39,10 @@
 
 	void Interface::Factory::build(const XML::Node &node) noexcept {
 
+		//
+		// If interface has the 'action-name' atribute will build one
+		// single action for all related interfaces.
+		//
 		std::shared_ptr<Action> action;
 		if(!String{node,"action-name"}.empty()) {
 
