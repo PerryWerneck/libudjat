@@ -395,10 +395,12 @@ namespace Udjat {
 
 					time_t timestamp = agent->last_modified();
 					if(timestamp) {
+						debug("last-modified: ",TimeStamp{timestamp});
+						response.last_modified(timestamp);
 						if(request.cached(timestamp)) {
+							response.not_modified(true);
 							return 0;
 						}
-						response.last_modified(timestamp);
 					}
 
 					agent->getProperties(response);

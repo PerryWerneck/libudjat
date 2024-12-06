@@ -158,7 +158,7 @@
 		void serialize(std::ostream &stream) const;
 
 		/// @brief Set 'not-modified' status.
-		inline void not_modified(bool state) noexcept {
+		inline void not_modified(bool state = true) noexcept {
 			status.not_modified = state;
 		}
 
