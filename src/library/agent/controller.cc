@@ -417,7 +417,13 @@ namespace Udjat {
 
 		};
 
-		return make_shared<AgentProperties>();
+		static std::shared_ptr<Action> instance;
+		if(!instance) {
+			Logger::String{"Building singleton for agent actions"}.trace();
+			instance = make_shared<AgentProperties>();
+		}
+
+		return instance;
 
 	}
 
