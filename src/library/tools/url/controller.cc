@@ -74,35 +74,6 @@
 		protocols.remove(protocol);
 	}
 
-	/*
-	const Protocol * Protocol::Controller::find(const char *name, bool allow_default, bool autoload) {
-
-		debug("Searching for protocol '",name,"'");
-
-		{
-			lock_guard<mutex> lock(guard);
-			for(auto protocol : protocols) {
-				if(*protocol == name) {
-					return protocol;
-				}
-			}
-		}
-
-		if(autoload) {
-			Logger::String{"Autoloading module '",name,"'"}.trace("protocols");
-			Module::load(name);
-			return find(name, allow_default, false);
-		}
-
-		if(allow_default) {
-			return def;
-		}
-
-		return nullptr;
-
-	}
-	*/
-
 	const Protocol * Protocol::Controller::verify(const void *protocol) {
 
 		lock_guard<mutex> lock(guard);

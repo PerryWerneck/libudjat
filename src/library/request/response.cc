@@ -172,7 +172,7 @@
 			break;
 
 		case Udjat::MimeType::yaml:
-			stream << "status: \"" << status.value << "\"" << endl << "data:" << endl;
+			stream << "status: \"" << status.value << "\"" << endl << "data:";
 			to_yaml(stream,4);
 			break;
 

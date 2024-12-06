@@ -20,6 +20,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/agent/state.h>
  #include <udjat/agent.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/threadpool.h>
@@ -130,24 +131,43 @@
 			get(value["value"]);
 
 			// Get agent state.
-			auto &state = value["state"];
-			this->current_state.selected->getProperties(state);
-			state["activation"] = TimeStamp(this->current_state.timestamp);
+			{
+				auto &state = value["state"];
+		
+				// Set contents based on pre-defined response type.
+				switch((Value::Type) state) {
+				case Value::String:
+					state = std::to_string(this->current_state.selected->level());
+					break;
 
-			switch(current_state.activation) {
-			case current_state.Activation::StateWasSet:
-				state["mode"] = "set";
-				break;
+				case Value::Signed:
+				case Value::Unsigned:
+					state = (int) this->current_state.selected->level();
+					break;
 
-			case this->current_state.Activation::StateWasActivated:
-				state["mode"] = "activated";
-				break;
+				default:
+				
+					// Get the entire object..
+					this->current_state.selected->getProperties(state);
+					state["activation"] = TimeStamp(this->current_state.timestamp);
 
-			case this->current_state.Activation::StateWasForwarded:
-				state["mode"] = "forwarded";
-				break;
+					switch(current_state.activation) {
+					case current_state.Activation::StateWasSet:
+						state["mode"] = "set";
+						break;
 
+					case this->current_state.Activation::StateWasActivated:
+						state["mode"] = "activated";
+						break;
+
+					case this->current_state.Activation::StateWasForwarded:
+						state["mode"] = "forwarded";
+						break;
+
+					}
+				}
 			}
+
 
 		} catch(const std::exception &e) {
 
