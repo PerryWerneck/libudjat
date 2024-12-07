@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <private/module.h>
+#include <udjat/module/abstract.h>
 #include <udjat/tools/string.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/intl.h>
@@ -62,15 +63,6 @@ namespace Udjat {
 
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
-	}
-
-	bool Module::for_each(const std::function<bool(const Module &module)> &method) {
-		for(const auto &module : Controller::getInstance()) {
-			if(method(*module)) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	bool Module::for_each(const std::function<bool(Module &module)> &method) {

@@ -79,11 +79,11 @@
 
 					} catch(const std::exception &e) {
 
-						Logger::String{e.what()}.error(factory->_name);
+						Logger::String{e.what()}.error(factory->name);
 
 					} catch(...) {
 
-						Logger::String{"Unexpected error building interface"}.error(factory->_name);
+						Logger::String{"Unexpected error building interface"}.error(factory->name);
 
 					}
 
@@ -99,7 +99,7 @@
 		throw logic_error("This interface is unable to handle actions");
 	}
 
-	Interface::Factory::Factory(const char *n) : _name {n} {
+	Interface::Factory::Factory(const char *n, const char *d) : name {n}, description{d} {
 		Factories().push_back(this);
 	}
 
@@ -114,6 +114,11 @@
 			} 
 		}
 		return false;
+	}
+
+	void Interface::Factory::getProperties(Udjat::Value &value) const {
+		value["name"] = name;
+		value["description"] = description;
 	}
 
 	Interface::Handler::Introspection::Introspection(const XML::Node &node) 

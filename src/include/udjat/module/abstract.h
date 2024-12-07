@@ -101,7 +101,6 @@
 		static bool preload() noexcept;
 
 		/// @brief Call method on every modules.
-		static bool for_each(const std::function<bool(const Module &module)> &method);
 		static bool for_each(const std::function<bool(Module &module)> &method);
 
 		/// @brief Get module by name.

@@ -120,25 +120,28 @@
 
 		class UDJAT_API Factory {
 		private:
-			const char *_name;
+			const char *name;
+			const char *description;
 
 		public:
-			Factory(const char *name);
+			Factory(const char *name,const char *description = "");
 			virtual ~Factory();
 
 #if __cplusplus >= 202002L
-			inline auto operator <=>(const char *_name) const noexcept {
-				return strcasecmp(name,this->_name);
+			inline auto operator <=>(const char *name) const noexcept {
+				return strcasecmp(name,this->name);
 			}
 #else
 			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,this->_name) == 0;
+				return strcasecmp(name,this->name) == 0;
 			}
 #endif
 
 			static void build(const XML::Node &node) noexcept;
 
 			static bool for_each(const std::function<bool(Interface::Factory &intf)> &method);
+
+			virtual void getProperties(Udjat::Value &value) const;
 
 			virtual Interface & InterfaceFactory(const XML::Node &node) = 0;
 
