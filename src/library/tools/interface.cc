@@ -79,11 +79,11 @@
 
 					} catch(const std::exception &e) {
 
-						Logger::String{e.what()}.error(factory->name);
+						Logger::String{e.what()}.error(factory->name());
 
 					} catch(...) {
 
-						Logger::String{"Unexpected error building interface"}.error(factory->name);
+						Logger::String{"Unexpected error building interface"}.error(factory->name());
 
 					}
 
@@ -99,7 +99,7 @@
 		throw logic_error("This interface is unable to handle actions");
 	}
 
-	Interface::Factory::Factory(const char *n, const char *d) : name {n}, description{d} {
+	Interface::Factory::Factory(const char *name, const char *description) : factory_name{name}, factory_description{description} {
 		Factories().push_back(this);
 	}
 
@@ -117,8 +117,8 @@
 	}
 
 	void Interface::Factory::getProperties(Udjat::Value &value) const {
-		value["name"] = name;
-		value["description"] = description;
+		value["name"] = name();
+		value["description"] = description();
 	}
 
 	Interface::Handler::Introspection::Introspection(const XML::Node &node) 
@@ -146,7 +146,7 @@
 
 	}
 
-	Interface::Handler::Handler(const char *name) : _name{name} {
+	Interface::Handler::Handler(const char *name) : handler_name{name} {
 	}
 
 	Interface::Handler::Handler(const char *name, const XML::Node &node) : Handler{name} {
@@ -222,12 +222,12 @@
 			Logger::String{
 				"Handling '",request.path(),"'\n",
 				"Request:\n",request.Udjat::Value::serialize(MimeType::yaml).c_str()
-			}.trace(_name);
+			}.trace(name());
 		}
 
 		if(actions.empty()) {
 
-			Logger::String{"Empty handler, just merging request into response"}.trace(_name);
+			Logger::String{"Empty handler, just merging request into response"}.trace(name());
 			response.merge(request);
 
 		} else {
@@ -236,7 +236,7 @@
 				request.rewind();
 				int rc = action->call(request,response);
 				if(rc) {
-					Logger::String{"Action failed with rc=",rc}.trace(_name);
+					Logger::String{"Action failed with rc=",rc}.trace(name());
 					return rc;
 				}
 			}
@@ -246,7 +246,7 @@
 		if(Logger::enabled(Logger::Debug)) {
 			Logger::String{
 				"Action suceedeed\nResponse:\n",response.Udjat::Value::serialize(MimeType::yaml).c_str()
-			}.trace(_name);
+			}.trace(name());
 		}
 
 		return 0;
@@ -256,15 +256,15 @@
 
 		// Try type based name
 		String attr{node.attribute("type").as_string("default"),"-name"};
-		_name = String{node,attr.c_str()}.as_quark();
-		if(_name && *_name) {
+		interface_name = String{node,attr.c_str()}.as_quark();
+		if(interface_name && *interface_name) {
 			return;
 		}
 
 		// Check names.
 		for(const char *attrname : { "name", "action-name"}) {
-			_name = String{node,attrname}.as_quark();
-			if(_name && *_name) {
+			interface_name = String{node,attrname}.as_quark();
+			if(interface_name && *interface_name) {
 				return;
 			}
 		}

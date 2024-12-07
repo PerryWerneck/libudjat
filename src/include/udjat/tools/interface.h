@@ -42,13 +42,13 @@
 	/// @brief Abstract handler.
 	class UDJAT_API Interface {
 	private:
-		const char *_name;
+		const char *interface_name;
 
 	protected:
 
 		typedef Interface Super;
 
-		constexpr Interface(const char *name) : _name{name} {
+		constexpr Interface(const char *name) : interface_name{name} {
 		}
 
 		/// @brief Build an interface from XML description
@@ -87,7 +87,11 @@
 			virtual ~Handler();
 
 			inline const char * c_str() const noexcept {
-				return _name;
+				return handler_name;
+			}
+
+			inline const char * name() const noexcept {
+				return handler_name;
 			}
 
 			bool for_each(const std::function<bool(const Introspection &instrospection)> &call) const;
@@ -98,7 +102,7 @@
 			}
 #else
 			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,this->_name) == 0;
+				return strcasecmp(name,handler_name) == 0;
 			}
 #endif
 
@@ -112,7 +116,7 @@
 			void push_back(std::shared_ptr<Action> action);
 
 		private:
-			const char *_name;
+			const char *handler_name;
 			std::vector<Introspection> introspection;
 			std::vector<std::shared_ptr<Action>> actions;
 
@@ -120,12 +124,20 @@
 
 		class UDJAT_API Factory {
 		private:
-			const char *name;
-			const char *description;
+			const char * factory_name;
+			const char * factory_description;
 
 		public:
 			Factory(const char *name,const char *description = "");
 			virtual ~Factory();
+
+			inline const char *name() const noexcept {
+				return factory_name;
+			}
+
+			inline const char *description() const noexcept {
+				return factory_description;
+			}
 
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
@@ -133,7 +145,7 @@
 			}
 #else
 			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,this->name) == 0;
+				return strcasecmp(name,factory_name) == 0;
 			}
 #endif
 
@@ -148,11 +160,11 @@
 		};
 
 		inline const char * name() const noexcept {
-			return _name;
+			return interface_name;
 		}
 
 		inline const char * c_str() const noexcept {
-			return _name;
+			return interface_name;
 		}
 
 #if __cplusplus >= 202002L
@@ -161,7 +173,7 @@
 		}
 #else
 		inline bool operator==(const char *name) const noexcept {
-			return strcasecmp(name,this->_name) == 0;
+			return strcasecmp(name,interface_name) == 0;
 		}
 #endif
 
