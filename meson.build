@@ -408,7 +408,7 @@ else
     description: project_description,
     variables: pkg_variables,
     requires: [ sdk_requires ],
-    libraries: [ '-l:lib' + meson.project_name() + '.a' ]
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl' ]
   )
 
 endif
@@ -602,8 +602,11 @@ else
     version : libversion,
     soversion : libversion,
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps,
-    include_directories: includes_dir
+    dependencies: lib_deps + [ dependency('threads') ],
+    include_directories: includes_dir,
+    link_args: [
+      '-ldl'
+    ]
   )
 
 endif

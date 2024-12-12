@@ -1,0 +1,28 @@
+Source: libudjat
+Section: unknown
+Priority: optional
+Maintainer: Perry Werneck <perry.werneck@gmail.com>
+Build-Depends: debhelper (>= 7), meson, pkg-config, libeconf-dev, libpugixml-dev, libsystemd-dev
+
+Package: libudjat
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Provides: libudjat (= ${binary:Version})
+Description: Udjat core library.
+ Udjat core library.
+
+Package: libudjat-dev
+Architecture: any
+Provides: libudjat-dev (= ${binary:Version})
+Section: libdevel
+Depends: ${misc:Depends}, pkg-config, libudjat (= ${binary:Version})
+Description: Libudjat development files.
+ Development headers for libudjat
+
+Package: libudjat-dbg
+Architecture: any
+Depends: libudjat (= ${binary:Version})
+Description: Debugging symbols for libudjat
+ This package contains the debugging symbols for libudjat.
+

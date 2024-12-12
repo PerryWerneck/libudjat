@@ -86,7 +86,7 @@
 			std::string name;
 
 		public:
-			Value(const char *g, const char *n, const char *d)
+			Value(const char *g, const char *n, const char *d = "")
 				: std::string(Config::get(g,n,d)),group(g),name(n) {
 			}
 

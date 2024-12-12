@@ -18,7 +18,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.0.0
+Version:		2.0
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -30,31 +30,13 @@ BuildRoot:		/var/tmp/%{name}-%{version}
 
 BuildRequires:	binutils
 BuildRequires:	coreutils
-
-%if "%{_vendor}" == "debbuild"
-BuildRequires:	meson-deb-macros
-BuildRequires:	libeconf-dev
-BuildRequires:	libpugixml-dev
-BuildRequires:	libvmdetect-dev
-BuildRequires:	libdmiget-dev
-BuildRequires:	libsystemd-dev
-BuildRequires:	pkg-config
-BuildRequires:	libsystemd-dev
-%else
 BuildRequires:	gcc-c++
 BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
 BuildRequires:	pkgconfig(dmiget)
 BuildRequires:	pkgconfig(libsystemd)
 BuildRequires:	pkgconfig(vmdetect) >= 1.3
-%endif
-
-%if 0%{?suse_version} == 01500
-BuildRequires:  meson = 0.61.4
-%else
-BuildRequires:  meson
-%endif
-
+BuildRequires:	meson >= 0.61.4
 
 %description
 UDJat core library
@@ -72,10 +54,7 @@ Summary: UDJat core library
 Provides:	%{name}%{MAJOR_VERSION}_%{MINOR_VERSION} = %{version}
 
 %if "%{_vendor}" == "debbuild"
-Requires:	libeconf0
-Requires:	libvmdetect1-3
-Requires:	libdmiget1
-Requires:	libpugixml1v5
+Depends:	${misc:Depends}, ${shlibs:Depends}  
 %endif
 
 %description -n %{name}%{_libvrs}
