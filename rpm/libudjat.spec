@@ -68,6 +68,7 @@ Main library for udjat modules.
 Summary:	Development files for %{name}
 Requires:	%{name}%{_libvrs} = %{version}
 
+Provides:	libudjat%{MAJOR_VERSION}-devel
 Provides:	udjat-devel
 Provides:	udjat-%{MAJOR_VERSION}-%{MINOR_VERSION}-devel
 
