@@ -7,3 +7,6 @@ Udjat core library. Implements tool, module loading, agent management, xml parsi
 ![CodeQL](https://github.com/PerryWerneck/libudjat/workflows/CodeQL/badge.svg?branch=master)
 [![build result](https://build.opensuse.org/projects/home:PerryWerneck:udjat/packages/libudjat/badge.svg?type=percent)](https://build.opensuse.org/package/show/home:PerryWerneck:udjat/libudjat)
 
+## Installation
+
+You can download installation package for supported linux distributions in [Open Build Service](https://software.opensuse.org/download.html?project=home%3APerryWerneck%3Audjat&package=libudjat)

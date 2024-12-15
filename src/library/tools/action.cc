@@ -142,6 +142,7 @@
 			//
 			// Build internal actions
 			//
+			/*
 			if(strcasecmp(type,"script") == 0) {
 
 				// It's script, check for multiple actions.
@@ -202,6 +203,7 @@
 				}
 
 			}
+			*/
 
 			if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"shell-script") == 0) {
 				// Script action.

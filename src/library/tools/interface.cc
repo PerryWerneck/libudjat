@@ -77,6 +77,16 @@
 							intf.push_back(node,action);
 						}
 
+						// Insert handlers
+						for(auto hdl = node.child("handler"); hdl; hdl = hdl.next_sibling("handler")) {
+							auto &handler = intf.push_back(hdl);
+							for(const char *nodename : { "action", "script" }) {
+								for(auto act = hdl.child(nodename); hdl; hdl = hdl.next_sibling(nodename)) {
+									handler.push_back(act);
+								}
+							}
+						}
+
 					} catch(const std::exception &e) {
 
 						Logger::String{e.what()}.error(factory->name());
@@ -174,6 +184,10 @@
 		actions.push_back(action);
 	}
 
+	void Interface::Handler::push_back(const XML::Node &node) {
+		push_back(Action::Factory::build(node,"name",true));
+	}
+	
 	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
 
 		//

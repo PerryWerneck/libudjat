@@ -113,6 +113,7 @@
 			/// @retval Complete without failures.
 			int call(Udjat::Request &request, Udjat::Response &response) const;
 
+			void push_back(const XML::Node &node);
 			void push_back(std::shared_ptr<Action> action);
 
 		private:
@@ -176,6 +177,10 @@
 			return strcasecmp(name,interface_name) == 0;
 		}
 #endif
+
+		/// @brief Insert interface handler.
+		/// @param node The handler description.
+		virtual Handler & push_back(const XML::Node &node) = 0;
 
 		virtual ~Interface();
 
