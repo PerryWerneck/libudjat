@@ -85,6 +85,10 @@
 		Action(const XML::Node &node);
 		virtual ~Action();
 
+		/// @brief Get action instrospection.
+		/// @param call Callback to receive instrospection data.
+		virtual void introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const;
+
 		/// @brief Execute action.
 		/// @param request The client request.
 		/// @param response The response to client.

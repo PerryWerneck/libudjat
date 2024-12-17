@@ -180,6 +180,37 @@
 		return false;
 	}
 
+	void Interface::Handler::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const {
+
+		if(introspection.empty()) {
+
+			for(const auto &action : actions) {
+				action->introspect(call);
+			}
+
+		} else {
+
+			for(const auto &val : introspection) {
+
+				if(val.direction & Introspection::FromPath) {
+					continue;
+				}
+
+				if(val.direction & Introspection::Input) {
+					call(val.name,val.type,true);
+				}
+
+				if(val.direction & Introspection::Input) {
+					call(val.name,val.type,false);
+				}
+
+			}
+
+
+		}
+
+	}
+
 	void Interface::Handler::push_back(std::shared_ptr<Action> action) {
 		actions.push_back(action);
 	}

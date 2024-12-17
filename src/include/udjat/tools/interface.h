@@ -94,6 +94,10 @@
 				return handler_name;
 			}
 
+			/// @brief Get handler introspection.
+			/// @param call Callback to receive instrospection data.
+			void introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const;
+
 			bool for_each(const std::function<bool(const Introspection &instrospection)> &call) const;
 
 #if __cplusplus >= 202002L

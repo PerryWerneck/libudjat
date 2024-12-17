@@ -373,6 +373,9 @@
 		return call(request,response,except);
 	}
 
+	void Action::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &) const {
+	}
+
 	const char * Action::payload(const XML::Node &node, const char *attrname) {
 		String child(node.child_value());
 		if(child.empty()) {
