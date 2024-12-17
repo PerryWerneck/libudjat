@@ -292,7 +292,10 @@ namespace Udjat {
 		}
 	}
 
+
+
 	/*
+
 	void Abstract::Agent::Controller::call(Request &request, Response &response) noexcept {
 		
 		try {
@@ -386,6 +389,19 @@ namespace Udjat {
 		public:
 			AgentProperties() : Udjat::Action{"agent",_("Get agent properties")} {
 			} 
+
+			void introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &call) const override {
+
+				call("icon", Udjat::Value::Icon, false);
+				call("label", Udjat::Value::String, false);
+				call("name", Udjat::Value::String, false);
+				call("state", Udjat::Value::String, false);
+				call("summary", Udjat::Value::String, false);
+				call("system", Udjat::Value::String, false);
+				call("url", Udjat::Value::Url, false);
+				call("value", Udjat::Value::String, false);
+
+			}
 
 			int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
 
