@@ -338,7 +338,7 @@
 
 		/// @brief Splits string using the given delimiter.
 		/// @param delim string which specifies the places at which to split the string. The delimiter is not included in any of the resulting strings.
-		std::vector<String> split(const char *delim);
+		std::vector<String> split(const char *delim) const;
 
 		/// @brief Scan string elements until method return 'true'.
 		/// @return true if any call has returned 'true'.
@@ -346,7 +346,7 @@
 
 		/// @brief Scan string elements until method return 'true'.
 		/// @return true if any call has returned 'true'.
-		bool for_each(const char *delimiter, const std::function<bool(const String &value)> &func);
+		bool for_each(const char *delimiter, const std::function<bool(const String &value)> &func) const;
 
 		/// @brief Removes leading and trailing white spaces from the string.
 		/// @see chomp()

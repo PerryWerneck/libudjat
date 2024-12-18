@@ -133,6 +133,7 @@
 		ssize_t in;
 		ssize_t szBuffer = 4096;
 		length = 0;
+		
 		contents = (char *) malloc(szBuffer);
 
 		char * ptr = (char *) contents;

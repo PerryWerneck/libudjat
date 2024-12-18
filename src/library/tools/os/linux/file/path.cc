@@ -153,11 +153,7 @@
 
 	void File::Path::replace(const char *filename, const char *contents) {
 
-#ifdef _WIN32
-		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC|O_BINARY,0644);
-#else
 		int out = open(filename,O_WRONLY|O_CREAT|O_TRUNC,0644);
-#endif // _WIN32
 
 		try {
 

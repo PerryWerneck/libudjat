@@ -190,11 +190,11 @@
 
 	}
 
-	bool String::for_each(const char *delim, const std::function<bool(const String &value)> &func) {
+	bool String::for_each(const char *delim, const std::function<bool(const String &value)> &func) const {
 		return for_each(c_str(),delim,func);
 	}
 
-	std::vector<String> String::split(const char *delim) {
+	std::vector<String> String::split(const char *delim) const {
 
 		std::vector<String> strings;
 
@@ -202,27 +202,6 @@
 			strings.push_back(value);
 			return false;
 		});
-
-		/*
-		const char *ptr = c_str();
-		while(ptr && *ptr) {
-			const char *next = strstr(ptr,delim);
-			if(!next) {
-				strings.push_back(String(ptr).strip());
-				break;
-			}
-
-			while(*next && isspace(*next))
-				next++;
-
-			strings.push_back(String(ptr,(size_t) (next-ptr)).strip());
-			ptr = next+1;
-			while(*ptr && isspace(*ptr)) {
-				ptr++;
-			}
-
-		}
-		*/
 
 		return strings;
 

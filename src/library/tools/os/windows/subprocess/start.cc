@@ -64,7 +64,6 @@
 
 		};
 
-
 		if(!MainLoop::getInstance()) {
 			delete this;
 			throw runtime_error("Cant start async subprocess without an active main loop");
@@ -79,27 +78,6 @@
 		if(*out && *err) {
 			new Watcher(proc,out,err);
 		}
-
-		/*
-		init();
-
-		new Watcher(this,0);
-		new Watcher(this,1);
-
-		MainLoop::insert(piProcInfo.hProcess, [this](HANDLE handle,bool abandoned) {
-			DWORD rc;
-			if(GetExitCodeProcess(piProcInfo.hProcess,&rc) != STILL_ACTIVE) {
-				onExit(exitcode = rc);
-				CloseHandle(piProcInfo.hProcess);
-				piProcInfo.hProcess = 0;
-				if(!running()) {
-					delete this;
-				}
-				return false;
-			}
-			return true;
-		});
-		*/
 
 	}
 
