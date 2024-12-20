@@ -383,11 +383,16 @@ if host_machine.system() == 'windows'
     libraries: [ '-l' + meson.project_name() + '.dll' ]
   )
 
+  # https://mesonbuild.com/Pkgconfig-module.html
   pkg.generate(
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
     requires: [ sdk_requires ],
+    extra_cflags: [
+      '-DUDJAT_STATIC',
+      '-pthread',
+    ],
     libraries: [ 
       '-l' + meson.project_name(),
     ] + winlibs
@@ -408,6 +413,10 @@ else
     description: project_description,
     variables: pkg_variables,
     requires: [ sdk_requires ],
+    extra_cflags: [
+      '-DUDJAT_STATIC',
+      '-pthread',
+    ],
     libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl' ]
   )
 
