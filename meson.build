@@ -227,7 +227,7 @@ lib_src += [
   'src/library/agent/update.cc',
   'src/library/agent/root.cc',
   'src/library/agent/setup.cc',
-  'src/library/alert/abstract.cc',
+  'src/library/alert/construct.cc',
   'src/library/alert/activation.cc',
   'src/library/alert/controller.cc',
   'src/library/alert/factory.cc',

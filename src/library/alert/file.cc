@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
  #include <config.h>
  #include <udjat/alert/file.h>
  #include <udjat/alert/activation.h>
@@ -128,3 +129,4 @@
  }
 
 
+*/

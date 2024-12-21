@@ -20,18 +20,96 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <memory>
+ #include <udjat/tools/object.h>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
 
-	namespace Alert {
-
+	class UDJAT_API Alert {
+	private:
 		class Controller;
-		class Activation;
+		friend class Controller;
 
-	}
+		const char *name;
 
-	/// @brief Start alert activation.
-	UDJAT_API void start(std::shared_ptr<Udjat::Alert::Activation> activation);
+	protected:
+
+		/// @brief Alert limits.
+		struct {
+			unsigned int min = 1;		///< @brief How many success emissions after deactivation or sleep?
+			unsigned int max = 3;		///< @brief How many retries (success+fails) after deactivation or sleep?
+		} retry;
+
+		/// @brief Alert timers.
+		struct {
+			unsigned int start = 0;		///< @brief Seconds to wait before first activation.
+			unsigned int interval = 60;	///< @brief Seconds to wait on every try.
+			unsigned int busy = 60;		///< @brief Seconds to wait if the alert is busy when activated.
+		} timers;
+
+		/// @brief Restart timers.
+		struct {
+			unsigned int failed = 0;	///< @brief Seconds to wait for reactivate after a failed activation.
+			unsigned int success = 0;	///< @brief Seconds to wait for reactivate after a successful activation.
+		} restart;
+
+		/// @brief Alert activation.
+		struct {
+			bool enabled = false;		///< @brief True if the alert is enabled.
+			bool running = false;		///< @brief True if the alert is running.
+			unsigned int suceeded = 0;	///< @brief Number of successful activations.
+			unsigned int failed = 0;	///< @brief Number of failed activations.
+			time_t next = 0;			///< @brief Next activation time (0 = inactive).	
+		} activation;
+
+		/// @brief Emit an alert.
+		/// @reuturn 0 on success, error code when failed.
+		virtual int emit() = 0;
+
+		void failed(const char *message) noexcept;
+		void success() noexcept;
+
+	public:
+		/// @brief Alert Factory.
+		class UDJAT_API Factory {
+		private:
+			const char *name;
+
+		public:
+			Factory(const char *name);
+			virtual ~Factory();
+
+			inline bool operator==(const char *n) const noexcept {
+				return strcasecmp(n,name) == 0;
+			}
+
+			/// @brief Create an agent from XML node.
+			/// @param node XML definition for the new alert.
+			virtual std::shared_ptr<Abstract::Agent> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
+
+			static std::shared_ptr<Abstract::Agent> build(const Abstract::Object &parent, const XML::Node &node);
+
+		};
+
+		Alert(const char *name);
+		Alert(const XML::Node &node);
+
+		virtual ~Alert();
+
+		/// @brief Activate an alert.
+		/// @return true if the alert was activated, false if already active.
+		bool activate() noexcept;
+
+		/// @brief Activate an alert, scheduling the next activation.
+		void activate(time_t next) noexcept;
+
+		/// @brief Deactivate an alert.
+		/// @return true if the alert was deactivated, false if already inactive.
+		bool deactivate() noexcept;
+
+
+	};
 
 
  }

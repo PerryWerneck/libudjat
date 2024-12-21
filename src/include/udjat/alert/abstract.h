@@ -19,6 +19,7 @@
 
  #pragma once
 
+/*
  #include <udjat/defs.h>
  #include <udjat/tools/factory.h>
  #include <udjat/tools/url.h>
@@ -117,3 +118,4 @@
 	}
 
  }
+*/

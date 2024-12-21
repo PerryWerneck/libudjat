@@ -71,6 +71,11 @@
 			objects.push_back(object);
 		}
 
+		inline void add(P object) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			objects.push_back(object);
+		}
+
 		inline void remove(P object) noexcept {
 			std::lock_guard<std::mutex> lock(guard);
 			objects.remove(object);

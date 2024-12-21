@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
  #include <config.h>
  #include <private/alert.h>
  #include <udjat/tools/mainloop.h>
@@ -294,4 +295,5 @@
 
  }
 
+*/
 
