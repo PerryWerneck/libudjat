@@ -148,6 +148,10 @@
 		// How many seconds to restart when suceeded?
 		restart.success = XML::AttributeFactory(node,"restart-when-succeeded").as_uint(restart.success);
 
+		if(XML::AttributeFactory(node,"enabled").as_bool(false)) {
+			activate();
+		}
+
 	}
 
 	bool Alert::activate() noexcept {

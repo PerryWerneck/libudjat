@@ -73,21 +73,25 @@
 		/// @brief Alert Factory.
 		class UDJAT_API Factory {
 		private:
-			const char *name;
+			const char *factory_name;
 
 		public:
 			Factory(const char *name);
 			virtual ~Factory();
 
 			inline bool operator==(const char *n) const noexcept {
-				return strcasecmp(n,name) == 0;
+				return strcasecmp(n,factory_name) == 0;
 			}
 
+			inline const char *name() const noexcept {
+				return factory_name;
+			}
+			
 			/// @brief Create an agent from XML node.
 			/// @param node XML definition for the new alert.
-			virtual std::shared_ptr<Abstract::Agent> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
+			virtual std::shared_ptr<Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
-			static std::shared_ptr<Abstract::Agent> build(const Abstract::Object &parent, const XML::Node &node);
+			static std::shared_ptr<Alert> build(const Abstract::Object &parent, const XML::Node &node);
 
 		};
 
