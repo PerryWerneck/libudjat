@@ -129,6 +129,25 @@
 	}
 
 	Alert::Alert(const XML::Node &node) : Alert(String{node,"name","unnamed"}.as_quark()) {
+
+		// Seconds to wait before first activation.
+		timers.start = XML::AttributeFactory(node,"delay-before-start").as_uint(timers.start);
+
+		// Seconds to wait on every try.
+		timers.interval = XML::AttributeFactory(node,"delay-before-retry").as_uint(timers.interval);
+
+		// How many success emissions after deactivation or sleep?
+		retry.min = XML::AttributeFactory(node,"min-retries").as_uint(retry.min);
+
+		// How many retries (success+fails) after deactivation or sleep?
+		retry.max = XML::AttributeFactory(node,"max-retries").as_uint(retry.max);
+
+		// How many seconds to restart when failed?
+		restart.failed = XML::AttributeFactory(node,"restart-when-failed").as_uint(restart.failed);
+
+		// How many seconds to restart when suceeded?
+		restart.success = XML::AttributeFactory(node,"restart-when-succeeded").as_uint(restart.success);
+
 	}
 
 	bool Alert::activate() noexcept {
@@ -154,12 +173,20 @@
 	}
 
 	bool Alert::deactivate() noexcept {
+
 		if(!activation.enabled) {
 			return false;
 		}
+
+		if(activation.running) {
+			Logger::String{"Deactivating alert while running"}.warning(name);
+		}
+
 		activation.enabled = false;
 		activation.next = 0;
+
 		Controller::getInstance().wakeup();
+
 		return true;
 	}
 

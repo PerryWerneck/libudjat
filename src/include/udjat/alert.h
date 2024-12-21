@@ -45,7 +45,6 @@
 		struct {
 			unsigned int start = 0;		///< @brief Seconds to wait before first activation.
 			unsigned int interval = 60;	///< @brief Seconds to wait on every try.
-			unsigned int busy = 60;		///< @brief Seconds to wait if the alert is busy when activated.
 		} timers;
 
 		/// @brief Restart timers.
