@@ -31,6 +31,7 @@
  #include <udjat/tools/object.h>
  #include <functional>
  #include <list>
+ #include <vector>
 
  namespace Udjat {
 
@@ -82,8 +83,14 @@
 		constexpr Action(const char *n, const char *t = "") : NamedObject{n}, title{t} {
 		} 
 
-		Action(const XML::Node &node);
+		Action(const XML::Node &
+		node);
 		virtual ~Action();
+
+		///	@brief Load actions
+		/// @param node The XML node describing actions.
+		/// @param actions The vector to receive new actions.
+		static void load(const XML::Node &node, std::vector<std::shared_ptr<Action>> &actions);
 
 		/// @brief Get action instrospection.
 		/// @param call Callback to receive instrospection data.

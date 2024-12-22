@@ -52,17 +52,31 @@
 
 		class ActionAlert : public Alert {
 		private:
-			std::shared_ptr<Action> action;
+			std::vector<std::shared_ptr<Action>> actions;
 
 		public:
-			ActionAlert(const XML::Node &node, std::shared_ptr<Action> a) : Alert{node}, action{a} {
+			ActionAlert(const XML::Node &node, std::shared_ptr<Action> action) : Alert{node} {
 				if(!action) {
+					throw runtime_error("Action alert requires an action");
+				}
+				actions.push_back(action);
+			}
+
+			ActionAlert(const XML::Node &node, std::shared_ptr<Action> action) : Alert{node} {
+				Action::load(node,actions);
+				if(!actions.empty()) {
 					throw runtime_error("Action alert requires an action");
 				}
 			}
 
 			int emit() override {
-				return action->call();
+				for(auto action : actions) {
+					int rc = action->call();
+					if(rc) {
+						return rc;
+					}
+				}
+				return 0;
 			}
 
 		};
@@ -99,7 +113,7 @@
 
 		}
 
-		return make_shared<ActionAlert>(node,Action::Factory::build(node));
+		return make_shared<ActionAlert>(node);
 
 	}
 
