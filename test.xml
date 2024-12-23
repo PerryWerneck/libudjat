@@ -31,8 +31,6 @@
 
 	</agent>
 
-	<init name='dummy' type='dummy' />
-
 	<init name='file' type='file' filename='/tmp/test.log'>
 		${timestamp(%Y/%m/%d %H:%M:%S)}
 	</init>
@@ -49,7 +47,8 @@
 		<state name='s0' value='0' summary='Random 0' action-type='shell' cmdline='ls -l'>
 		</state>
 
-		<state name='s1' value='1' summary='Random 1'>
+		<state name='s1' value='1' summary='Random 1' alert='yes' type='file' filename='/tmp/udjat-alerts.txt'>
+			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 		</state>
 
 		<state name='s2' value='2' summary='Random 2'>

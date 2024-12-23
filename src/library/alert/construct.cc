@@ -164,6 +164,10 @@
 		activation.suceeded = 0;
 		activation.failed = 0;
 		activation.next = time(0)+timers.start;
+		Logger::String{
+			"Alert activation scheduled to ",
+			TimeStamp(activation.next).to_string().c_str()
+		}.info(name());
 		Controller::getInstance().wakeup();
 		return true;
 	}
@@ -171,9 +175,18 @@
 	void Alert::activate(time_t next) noexcept {
 		activation.next = next;
 		if(!activation.enabled) {
+			Logger::String{
+				"Alert activation scheduled to ",
+				TimeStamp(activation.next).to_string().c_str()
+			}.info(name());
 			activation.enabled = true;
 			activation.suceeded = 0;
 			activation.failed = 0;
+		} else {
+			Logger::String{
+				"Alert activation re-scheduled to ",
+				TimeStamp(activation.next).to_string().c_str()
+			}.info(name());
 		}
 		Controller::getInstance().wakeup();
 	}
