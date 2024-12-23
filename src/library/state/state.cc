@@ -169,14 +169,14 @@ namespace Udjat {
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {
 		for(auto listener : listeners) {
-			debug("---> Activating listener '",listener->name(),"'");
+			Logger::String{"Activating listener '",listener->name(),"' for object '",object.name(),"'"}.trace(name());
 			listener->activate(object);
 		}
 	}
 
 	void Abstract::State::deactivate() noexcept {
 		for(auto listener : listeners) {
-			debug("---> Dectivating listener '",listener->name(),"'");
+			Logger::String{"Deactivating listener '",listener->name(),"'"}.trace(name());
 			listener->deactivate();
 		}
 	}

@@ -48,10 +48,14 @@
 		</state>
 
 		<state name='s1' value='1' summary='Random 1' alert='yes' type='file' filename='/tmp/udjat-alerts.txt'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
+			${timestamp(%Y/%m/%d %H:%M:%S)},${summary},S1
 		</state>
 
 		<state name='s2' value='2' summary='Random 2'>
+			<alert name='s2a' type='file' filename='/tmp/udjat-alerts.txt'>
+				${timestamp(%Y/%m/%d %H:%M:%S)},${summary},S2
+			</alert>
+			<alert name='s2b' type='shell' cmdline='ls -l' />
 		</state>
 
 		<state name='s3' value='3' summary='Random 3'>
