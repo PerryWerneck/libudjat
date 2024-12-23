@@ -175,7 +175,7 @@
 		};
 
 		if(title && *title) {
-			info() << title << endl;
+			Logger::String{title}.info(name());
 		}
 
 		return SubProcess{uid,gid,name(),cmdline,out,err}.run();

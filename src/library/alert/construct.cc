@@ -18,10 +18,12 @@
  */
 
  #include <config.h>
+
+ #undef LOG_DOMAIN
+ #define LOG_DOMAIN "alert"
+
  #include <udjat/defs.h>
  #include <udjat/alert.h>
-
- #define LOG_DOMAIN "alert"
  #include <udjat/tools/logger.h>
 
  #include <udjat/tools/xml.h>
@@ -120,7 +122,7 @@
 
 	};
 
-	Alert::Alert(const char *n) : name{n} {
+	Alert::Alert(const char *n) : Activatable{n} {
 		Controller::getInstance().add(this);
 	}
 
@@ -183,7 +185,7 @@
 		}
 
 		if(activation.running) {
-			Logger::String{"Deactivating alert while running"}.warning(name);
+			Logger::String{"Deactivating alert while running"}.warning(name());
 		}
 
 		activation.enabled = false;
@@ -206,7 +208,7 @@
 				"Alert will retry at ",
 				TimeStamp(activation.next).to_string().c_str(),
 				" (",activation.suceeded,"/",retry.min,")"
-			}.info(name);
+			}.info(name());
 
 		} else if(restart.success) {
 
@@ -217,7 +219,7 @@
 			Logger::String{
 				"Alert will be reactivated at ",
 				TimeStamp(activation.next).to_string().c_str()
-			}.info(name);
+			}.info(name());
 
 		} else {
 
@@ -227,7 +229,7 @@
 			Logger::String{
 				"Alert deactivated after ",
 				activation.suceeded," successful activations"
-			}.info(name);
+			}.info(name());
 
 		}
 
@@ -238,7 +240,7 @@
 	void Alert::failed(const char *message) noexcept {
 
 		activation.failed++;
-		Logger::String{message," (",activation.failed,"/",retry.max,")"}.error(name);
+		Logger::String{message," (",activation.failed,"/",retry.max,")"}.error(name());
 
 		if(activation.failed < retry.max) {
 
@@ -248,7 +250,7 @@
 				"Alert will retry at ",
 				TimeStamp(activation.next).to_string().c_str(),
 				" (",activation.failed,"/",retry.max,")"
-			}.info(name);
+			}.info(name());
 
 		} else if(restart.failed) {
 
@@ -259,7 +261,7 @@
 			Logger::String{
 				"Alert will be reactivated at ",
 				TimeStamp(activation.next).to_string().c_str()
-			}.info(name);
+			}.info(name());
 
 		} else {
 
@@ -269,7 +271,7 @@
 			Logger::String{
 				"Alert deactivated after ",
 				activation.failed," failed activations"
-			}.info(name);
+			}.info(name());
 
 		}
 
