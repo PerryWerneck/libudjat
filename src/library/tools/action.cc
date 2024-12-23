@@ -304,7 +304,17 @@
 					for(auto action : actions) {
 						int rc = action->call(except);
 						if(rc) {
-							rc;
+							return rc;
+						}
+					}
+					return 0;
+				}
+
+				int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
+					for(auto action : actions) {
+						int rc = action->call(request,response,except);
+						if(rc) {
+							return rc;
 						}
 					}
 					return 0;
@@ -313,11 +323,27 @@
 			};
 
 			return make_shared<MultiAction>(node);
+
 		}
 
 		// Check for action-type attribute.
 		{
 			String type{node,"action-type"};
+			if(!type.empty()) {
+				return build_action(node,type.c_str(),except);
+			}
+		}
+
+		// Check for action-name attribute.
+		{
+			String type{node,"action-name"};
+			if(!type.empty()) {
+				return build_action(node,type.c_str(),except);
+			}
+		}
+
+		if(!strcasecmp(node.name(),"action")) {
+			String type{node,"name"};
 			if(!type.empty()) {
 				return build_action(node,type.c_str(),except);
 			}

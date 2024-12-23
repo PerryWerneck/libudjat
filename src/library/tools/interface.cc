@@ -48,7 +48,7 @@
 
 			try {
 
-				action = Action::Factory::build(node,"action-name",true);
+				action = Action::Factory::build(node,true);
 
 			} catch(const std::exception &e) {
 
@@ -216,7 +216,7 @@
 	}
 
 	void Interface::Handler::push_back(const XML::Node &node) {
-		push_back(Action::Factory::build(node,"name",true));
+		push_back(Action::Factory::build(node,true));
 	}
 	
 	int Interface::Handler::call(Udjat::Request &request, Udjat::Response &response) const {
