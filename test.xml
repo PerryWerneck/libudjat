@@ -46,7 +46,7 @@
 
 	<agent name='random' type='random' update-timer='10' update-signal='reload'>
 
-		<state name='s0' value='0' summary='Random 0'>
+		<state name='s0' value='0' summary='Random 0' action-type='shell' cmdline='ls -l'>
 		</state>
 
 		<state name='s1' value='1' summary='Random 1'>

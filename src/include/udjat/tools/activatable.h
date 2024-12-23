@@ -37,11 +37,11 @@
 		Activatable(const XML::Node &node);
 		virtual ~Activatable();
 
+	public:
+
 		inline const char *name() const noexcept {
 			return object_name;
 		}
-
-	public:
 
 		/// @brief Activate object.
 		/// @return true if the object was activated, false if already active.

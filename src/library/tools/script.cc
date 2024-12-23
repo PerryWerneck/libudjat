@@ -200,7 +200,7 @@
 
 	int Script::run(const Udjat::NamedObject &object, bool except) const {
 		int rc = run(String{cmdline}.expand(object).c_str());
-		if(except) {
+		if(rc && except) {
 			throw runtime_error(Logger::Message{"Script failed with rc {}",rc});
 		}
 		return rc;
@@ -209,11 +209,13 @@
 	int Script::call(Udjat::Request &request, Udjat::Response &response, bool except) {
 		int rc = run(String{cmdline}.expand(request).c_str());
 		response[name()] = rc;
-		Logger::Message error_message{"Script failed with rc {}",rc};
-		if(except) {
-			throw runtime_error(error_message);
+		if(rc) {
+			Logger::Message error_message{"Script failed with rc {}",rc};
+			if(except) {
+				throw runtime_error(error_message);
+			}
+			error_message.error(name());
 		}
-		error_message.error(name());
 		return rc;
 	}
 

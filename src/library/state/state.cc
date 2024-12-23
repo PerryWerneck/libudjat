@@ -37,6 +37,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/factory.h>
  #include <udjat/tools/action.h>
+ #include <udjat/tools/activatable.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
@@ -98,6 +99,8 @@ namespace Udjat {
 
 		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
 			listeners.push_back(Alert::Factory::build(*this, node));
+		} else if(node.attribute("action-type")) {
+			listeners.push_back(Action::Factory::build(node,true));
 		}
 
 	}
@@ -166,12 +169,14 @@ namespace Udjat {
 
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {
 		for(auto listener : listeners) {
+			debug("---> Activating listener '",listener->name(),"'");
 			listener->activate(object);
 		}
 	}
 
 	void Abstract::State::deactivate() noexcept {
 		for(auto listener : listeners) {
+			debug("---> Dectivating listener '",listener->name(),"'");
 			listener->deactivate();
 		}
 	}
