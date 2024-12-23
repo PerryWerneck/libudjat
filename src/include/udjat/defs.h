@@ -130,12 +130,11 @@ namespace Udjat {
 		class Object;
 		class Agent;
 		class State;
-		class Alert;
 
 	}
 
+	class Alert;
 	class Value;
-	class Activatable;
 	class TimeStamp;
 	struct ModuleInfo;
 

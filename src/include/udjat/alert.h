@@ -23,15 +23,14 @@
  #include <memory>
  #include <udjat/tools/object.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/activatable.h>
 
  namespace Udjat {
 
-	class UDJAT_API Alert {
+	class UDJAT_API Alert : public Activatable {
 	private:
 		class Controller;
 		friend class Controller;
-
-		const char *name;
 
 	protected:
 
@@ -63,7 +62,7 @@
 		} activation;
 
 		/// @brief Emit an alert.
-		/// @reuturn 0 on success, error code when failed.
+		/// @return 0 on success, error code when failed.
 		virtual int emit() = 0;
 
 		void failed(const char *message) noexcept;
@@ -102,14 +101,14 @@
 
 		/// @brief Activate an alert.
 		/// @return true if the alert was activated, false if already active.
-		bool activate() noexcept;
-
-		/// @brief Activate an alert, scheduling the next activation.
-		void activate(time_t next) noexcept;
+		bool activate() noexcept override;
 
 		/// @brief Deactivate an alert.
 		/// @return true if the alert was deactivated, false if already inactive.
-		bool deactivate() noexcept;
+		bool deactivate() noexcept override;
+
+		/// @brief Activate an alert, scheduling the next activation.
+		void activate(time_t next) noexcept;
 
 
 	};

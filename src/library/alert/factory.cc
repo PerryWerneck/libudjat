@@ -50,68 +50,53 @@
 
 	std::shared_ptr<Alert> Alert::Factory::build(const Abstract::Object &parent, const XML::Node &node) {
 
+		String type{node,"type"};
+		if(!type.empty()) {
+
+			for(Alert::Factory *factory : Factories()) {
+
+				if(*factory == type.c_str()) {
+
+					try {
+
+						std::shared_ptr<Alert> alert = factory->AlertFactory(parent,node);
+
+						if(alert) {
+							return alert;
+						}
+
+					} catch(const std::exception &e) {
+
+						Logger::String{e.what()}.error(factory->name());
+
+					} catch(...) {
+
+						Logger::String{"Unexpected error building alert"}.error(factory->name());
+
+					}
+
+				}
+
+			}
+		}
+
+		// Create a default one.
 		class ActionAlert : public Alert {
 		private:
-			std::vector<std::shared_ptr<Action>> actions;
+			std::shared_ptr<Action> action;
 
 		public:
-			ActionAlert(const XML::Node &node, std::shared_ptr<Action> action) : Alert{node} {
+			ActionAlert(const XML::Node &node) : Alert{node}, action{Action::Factory::build(node)} {
 				if(!action) {
-					throw runtime_error("Action alert requires an action");
-				}
-				actions.push_back(action);
-			}
-
-			ActionAlert(const XML::Node &node, std::shared_ptr<Action> action) : Alert{node} {
-				Action::load(node,actions);
-				if(!actions.empty()) {
 					throw runtime_error("Action alert requires an action");
 				}
 			}
 
 			int emit() override {
-				for(auto action : actions) {
-					int rc = action->call();
-					if(rc) {
-						return rc;
-					}
-				}
-				return 0;
+				return action->call();
 			}
 
 		};
-
-		if(!String{node,"action-type"}.empty()) {
-			return make_shared<ActionAlert>(node,Action::Factory::build(node,"action-type",true));
-		}
-
-		String type{node,"type","default"};
-
-		for(Alert::Factory *factory : Factories()) {
-
-			if(*factory == type.c_str()) {
-
-				try {
-
-					std::shared_ptr<Alert> alert = factory->AlertFactory(parent,node);
-
-					if(alert) {
-						return alert;
-					}
-
-				} catch(const std::exception &e) {
-
-					Logger::String{e.what()}.error(factory->name());
-
-				} catch(...) {
-
-					Logger::String{"Unexpected error building alert"}.error(factory->name());
-
-				}
-
-			}
-
-		}
 
 		return make_shared<ActionAlert>(node);
 

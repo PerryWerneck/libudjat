@@ -23,12 +23,13 @@
  #include <udjat/tools/request.h>
  #include <udjat/tools/object.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/alert.h>
 
  namespace Udjat {
 
 	/// @brief Object factory.
 	/// Create objects from XML definition.
-	class UDJAT_API Factory : public Abstract::Agent::Factory {
+	class UDJAT_API Factory : public Abstract::Agent::Factory, public Alert::Factory {
 	private:
 		class Controller;
 
@@ -83,14 +84,6 @@
 		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node);
 
 		virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const [[deprecated]];
-
-		/// @brief Create an alert from XML node.
-		/// @param node XML definition for the new alert.
-		virtual std::shared_ptr<Abstract::Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;
-
-		/// @brief Create an activatable from XML node.
-		/// @param node XML definition for the new alert.
-		virtual std::shared_ptr<Activatable> ActivatableFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Create an element from xml node (called on any node with attribute type = 'factory_name').
 		virtual bool CustomFactory(const XML::Node &node);

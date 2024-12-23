@@ -18,7 +18,32 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/object.h>
  #include <udjat/tools/activatable.h>
+ #include <udjat/tools/string.h>
+
+ namespace Udjat {
+
+	Activatable::Activatable(const XML::Node &node) : object_name{String{node,"name"}.as_quark()} {
+	}
+
+	Activatable::~Activatable() {
+	}
+
+	bool Activatable::activate(const Udjat::Abstract::Object &) noexcept {
+		return activate();
+	}
+
+	bool deactivate() noexcept {
+		return false;	// Allways return false if the object cant be deactivated.
+	}
+
+ }
+
+
+/*
  #include <udjat/tools/factory.h>
  #include <udjat/alert/abstract.h>
  #include <udjat/alert.h>
@@ -66,3 +91,4 @@
 
  }
 
+*/

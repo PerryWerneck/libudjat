@@ -21,7 +21,7 @@
  #include <udjat/defs.h>
  #include <private/factory.h>
  #include <udjat/agent.h>
- #include <udjat/alert/abstract.h>
+ #include <udjat/alert.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/module/info.h>
  #include <iostream>
@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	Factory::Factory(const char *n, const ModuleInfo &i) : Abstract::Agent::Factory{n}, factory_name(n), module(i) {
+	Factory::Factory(const char *n, const ModuleInfo &i) : Abstract::Agent::Factory{n}, Alert::Factory{n}, factory_name(n), module(i) {
 		Controller::getInstance().insert(this);
 	}
 
@@ -76,14 +76,6 @@
 		return ((const Factory *) this)->ObjectFactory(parent,node);
 	}
 	#pragma GCC diagnostic pop
-
-	std::shared_ptr<Abstract::Alert> Factory::AlertFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node UDJAT_UNUSED(&node)) const {
-		return std::shared_ptr<Abstract::Alert>();
-	}
-
-	std::shared_ptr<Activatable> Factory::ActivatableFactory(const Abstract::Object &parent, const XML::Node UDJAT_UNUSED(&node)) const {
-		return AlertFactory(parent,node);
-	}
 
 	bool Factory::CustomFactory(const XML::Node &) {
 		debug("Calling default custom factory on '",name(),"'");

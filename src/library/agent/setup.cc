@@ -28,15 +28,17 @@
 
  #include <config.h>
  #include <private/agent.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/alert/activation.h>
+ #include <udjat/tools/action.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/action.h>
  #include <udjat/tools/interface.h>
+ #include <udjat/alert.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -61,18 +63,24 @@ namespace Udjat {
 
 					auto state = StateFactory(node);
 					if(state) {
-						state->setup(node);
+						for(XML::Node child : node) {
+
+							if(is_reserved(node) || !is_allowed(node)) {
+								continue;
+							}
+							state->push_back(child);
+						}
 					} else {
-						error() << "Unable to create agent state" << endl;
+						Logger::String{"Unable to create agent state"}.error(name());
 					}
 
 				} catch(const std::exception &e) {
 
-					error() << "Cant parse <" << node.name() << ">: " << e.what() << endl;
+					Logger::String{"Cant parse <",node.name(),">: ",e.what()}.error(name());
 
 				} catch(...) {
 
-					error() << "Unexpected error parsing <" << node.name() << ">" << endl;
+					Logger::String{"Unexpected error parsing <",node.name(),">"}.error(name());
 
 				}
 
@@ -104,24 +112,9 @@ namespace Udjat {
 				continue;
 			}
 
-			// It's an alert or action?
-			if(strcasecmp(node.name(),"alert") == 0 || strcasecmp(node.name(),"action") == 0) {
-
-				std::shared_ptr<Activatable> alert = Abstract::Alert::Factory(*this, node);
-
-				if(alert) {
-					alert->setup(node);
-					if(!push_back(node,alert)) {
-						push_back(alert);
-					}
-					continue;
-				}
-
-			}
-
 			if(strcasecmp(node.name(),"init") == 0) {
 				try {
-					auto action = Action::Factory::build(node,"type",true);
+					auto action = Action::Factory::build(node,true);
 					if(action) {
 						action->call(node);
 					}

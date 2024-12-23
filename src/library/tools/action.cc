@@ -89,54 +89,41 @@
 		return false;
 	}
 
-	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node, const char *attrname, bool except) {
-
-		const char *type = nullptr;
-		
-		for(XML::Node nd = node; nd && !(type && *type);nd = nd.parent()) {
-			type = nd.attribute(attrname).as_string();
-		}
-		
-		if(!(type && *type)) {
-			Logger::String message{"Required attribute '",attrname,"' is missing or empty"};
-			if(except) {
-				throw logic_error(message);
-			}
-			message.warning(node.attribute("name").as_string(PACKAGE_NAME));
-			return std::shared_ptr<Action>();
-		}
-
-		debug("Searching for action backend '",type,"'");
+	static std::shared_ptr<Action> build_action(const XML::Node &node, const char *type, bool except) {
 
 		try {
+
+			if(!(type && *type)) {
+				throw runtime_error("Action type is missing or empty");
+			}
 
 			//
 			// Check for factories
 			//
 			for(const auto factory : Factories()) {
 				
-				if(strcasecmp(type,factory->name)) {
-					continue;
+				if(*factory == type) {
+
+					try {
+
+						auto action = factory->ActionFactory(node);
+						if(action) {
+							return action;
+						}
+
+						Logger::String{"Empty response from module while building action '",type,"', ignoring"}.warning();
+
+					} catch(const std::exception &e) {
+
+						Logger::String{"External module failed build action '",type,"': ",e.what()}.error();
+
+					} catch(...) {
+
+						Logger::String{"Unexpected error building action '",type,"'"}.error();
+
+					}
 				}
 				
-				try {
-
-					auto action = factory->ActionFactory(node);
-					if(action) {
-						return action;
-					}
-
-					Logger::String{"Empty response from module while building action '",type,"', ignoring"}.warning();
-
-				} catch(const std::exception &e) {
-
-					Logger::String{"External module failed build action '",type,"': ",e.what()}.error();
-
-				} catch(...) {
-
-					Logger::String{"Unexpected error building action '",type,"'"}.error();
-
-				}
 			}
 
 			if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"shell-script") == 0) {
@@ -186,7 +173,7 @@
 							struct stat st;
 							if(maxage && !stat(name.c_str(),&st) && (time(nullptr) - st.st_mtime) > maxage) {
 								// Its an old file, remove it
-								info() << "Removing " << name << endl;
+								Logger::String{"Removing ",name}.info(Activatable::name());
 								remove(name.c_str());
 							}
 
@@ -294,32 +281,145 @@
 
 	}
 
-	Action::Action(const XML::Node &node)
-		: NamedObject{node}, title{String{node,"title"}.as_quark()} {
-	}
-	
-	Action::~Action() {
-	}
+	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node, bool except) {
 
-	void Action::load(const XML::Node &node, std::vector<std::shared_ptr<Action>> &actions) {
+		// Check for action/script children
+		if(node.child("script") || node.child("action")) {
 
-		if(!String{node,"action-type"}.empty()) {
-			actions.push_back(Action::Factory::build(node,"action-type",true));
-			return;
+			/// @brief Execute multiple actions.
+			class MultiAction : public Action {
+			private:
+ 				std::vector<std::shared_ptr<Action>> actions;
+
+			public:
+				MultiAction(const XML::Node &node) : Action{node} {
+					for(const char *nodename : { "action", "script" }) {
+						for(auto action = node.child(nodename); action; action = action.next_sibling(nodename)) {
+							actions.push_back(build_action(action,String{action,"type"}.c_str(),true));
+						}
+					}
+				}
+
+				int call(bool except) override {
+					for(auto action : actions) {
+						int rc = action->call(except);
+						if(rc) {
+							rc;
+						}
+					}
+					return 0;
+				}
+
+			};
+
+			return make_shared<MultiAction>(node);
 		}
 
-		for(const char *nodename : { "action", "script" }) {
-			for(auto action = node.child(nodename); action; action = action.next_sibling(nodename)) {
-				actions.push_back(Action::Factory::build(node,nodename,true));
+		// Check for action-type attribute.
+		{
+			String type{node,"action-type"};
+			if(!type.empty()) {
+				return build_action(node,type.c_str(),except);
 			}
 		}
 
+		// Check for 'type' attribute.
+		{
+			String type{node,"type"};
+			if(!type.empty()) {
+				return build_action(node,type.c_str(),except);
+			}
+		}
+	
+		const char *type = nullptr;		
+		for(XML::Node nd = node; nd && !(type && *type);nd = nd.parent()) {
+			type = nd.attribute("action-type").as_string();
+		}
+		
+		if(!(type && *type)) {
+			Logger::String message{"Required attribute 'type' is missing or empty"};
+			if(except) {
+				throw logic_error(message);
+			}
+			message.warning(node.attribute("name").as_string(PACKAGE_NAME));
+			return std::shared_ptr<Action>();
+		}
+
+		debug("Searching for action backend '",type,"'");
+
+		return build_action(node,type,except);
+
+	}
+
+	Action::Action(const XML::Node &node)
+		: Activatable{node}, title{String{node,"title"}.as_quark()} {
+	}
+	
+	Action::~Action() {
 	}
 
 	int Action::call(bool except) {
 		Udjat::Request request;
 		Udjat::Response response;
 		return call(request,response,except);
+	}
+
+	bool Action::activate(const Udjat::Abstract::Object &object) noexcept {
+
+		try {
+
+			Udjat::Request request;
+			object.getProperties(request);
+
+			Udjat::Response response;
+			int rc = call(request,response,true);
+			if(rc) {
+				Logger::String{"Action failed with code ",rc}.error(name());
+				return false;
+			}
+
+		} catch(const std::exception &e) {
+
+			Logger::String{e.what()}.error(name());
+			return false;
+
+		} catch(...) {
+
+			Logger::String{"Unexpected error"}.error(name());
+			return false;
+
+		}
+
+		return true;
+
+	}
+
+	bool Action::activate() noexcept {
+
+		try {
+
+			Udjat::Request request;
+			Udjat::Response response;
+			int rc = call(request,response,true);
+			if(rc) {
+				Logger::String{"Action failed with code ",rc}.error(name());
+				return false;
+			}
+
+		} catch(const std::exception &e) {
+
+			Logger::String{e.what()}.error(name());
+			return false;
+
+		} catch(...) {
+
+			Logger::String{"Unexpected error"}.error(name());
+			return false;
+
+		}
+
+		return true;
+
 	}
 
 	void Action::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &) const {
@@ -331,7 +431,7 @@
 			child = node.attribute("payload").as_string();
 		}
 		child.expand(node);
-		if(getAttribute(node,"strip-payload").as_bool(true)) {
+		if(node.attribute("strip-payload").as_bool(true)) {
 			child.strip();
 		}
 		return child.as_quark();
@@ -348,7 +448,7 @@
 			if(except) {
 				throw;
 			}
-			error() << e.what() << endl;
+			Logger::String{e.what()}.error(name());
 			return e.code();
 
 		} catch(const std::system_error &e) {
@@ -356,7 +456,7 @@
 			if(except) {
 				throw;
 			}
-			error() << e.what() << endl;
+			Logger::String{e.what()}.error(name());
 			return e.code().value();
 
 		} catch(const std::exception &e) {
@@ -364,6 +464,7 @@
 			if(except) {
 				throw;
 			}
+			Logger::String{e.what()}.error(name());
 			return -1;
 
 		} catch(...) {
@@ -371,6 +472,7 @@
 			if(except) {
 				throw;
 			}
+			Logger::String{"Unexpected error"}.error(name());
 			return -1;
 
 		}

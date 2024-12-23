@@ -24,7 +24,7 @@
  #include <udjat/tools/value.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
- #include <udjat/tools/activatable.h>
+ #include <udjat/alert.h>
  #include <mutex>
  #include <list>
  #include <cstdint>
@@ -176,9 +176,6 @@
 			/// @return true if the state has changed.
 			virtual bool set(std::shared_ptr<State> state);
 
-			/// @brief Activate an alert.
-			void activate(std::shared_ptr<Abstract::Alert> alert) const;
-
 			/// @brief Set failed state from exception.
 			void failed(const char *summary, const std::exception &e) noexcept;
 
@@ -225,8 +222,8 @@
 			/// @brief Insert object.
 			void push_back(std::shared_ptr<Abstract::Object> object);
 
-			/// @brief Insert Activatable.
-			virtual void push_back(std::shared_ptr<Activatable> alert);
+			/// @brief Insert alert.
+			virtual void push_back(std::shared_ptr<Alert> alert);
 
 			/// @brief Insert activatable based on xml attributes.
 			/// @param node with activation attribute.
@@ -383,9 +380,6 @@
 
 			/// @brief Create and insert State.
 			virtual std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node);
-
-			/// @brief Insert Alert.
-			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const XML::Node &node);
 
 			/// @brief Get agent property.
 			/// @param key The property name.
