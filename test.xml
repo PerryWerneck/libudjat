@@ -43,6 +43,25 @@
 	<!-- alert name='orphaned' type='file' strip-payload='yes'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert -->
+
+	<agent name='random' type='random' update-timer='10' update-signal='reload'>
+
+		<state name='s0' value='0' summary='Random 0'>
+		</state>
+
+		<state name='s1' value='1' summary='Random 1'>
+		</state>
+
+		<state name='s2' value='2' summary='Random 2'>
+		</state>
+
+		<state name='s3' value='3' summary='Random 3'>
+		</state>
+
+		<state name='s4' value='4' summary='Random 4'>
+		</state>
+
+	</agent>
 		
 	<!-- random name='random1' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
 
