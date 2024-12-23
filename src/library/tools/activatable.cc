@@ -36,7 +36,7 @@
 		return activate();
 	}
 
-	bool deactivate() noexcept {
+	bool Activatable::deactivate() noexcept {
 		return false;	// Allways return false if the object cant be deactivated.
 	}
 

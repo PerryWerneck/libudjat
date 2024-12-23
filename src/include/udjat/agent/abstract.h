@@ -24,7 +24,6 @@
  #include <udjat/tools/value.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
- #include <udjat/alert.h>
  #include <mutex>
  #include <list>
  #include <cstdint>
@@ -221,9 +220,6 @@
 
 			/// @brief Insert object.
 			void push_back(std::shared_ptr<Abstract::Object> object);
-
-			/// @brief Insert alert.
-			virtual void push_back(std::shared_ptr<Alert> alert);
 
 			/// @brief Insert activatable based on xml attributes.
 			/// @param node with activation attribute.
