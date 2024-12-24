@@ -17,112 +17,64 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/alert.h>
  #include <udjat/alert/url.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/configuration.h>
+ #include <sys/stat.h>
+ #include <fstream>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/timestamp.h>
  #include <udjat/tools/protocol.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Alert::URL::URL(const XML::Node &node, const char *defaults) : Abstract::Alert(node) {
-
-		const char *section = node.attribute("settings-from").as_string(defaults);
-
-		url = getAttribute(node,section,"url","");
-
+	URLAlert::URLAlert(const XML::Node &node) 
+		: Udjat::Alert{node}, url{String{node,"url"}.as_quark()}, action{HTTP::MethodFactory(node)}, payload{Activatable::payload(node)} {
 		if(!(url && *url)) {
-			throw runtime_error(string{"Required attribute 'url' is missing on alert '"} + name() + "'");
-		}
-
-		String child(node.child_value());
-		if(getAttribute(node,section,"strip-payload",true)) {
-			child.strip();
-		}
-
-		payload = Object::expand(node,section,child.c_str());
-
-		{
-			// Get alert action.
-			// (Dont use the default getAttribute to avoid the creation of a new 'quark')
-			XML::Attribute attribute = getAttribute(node,"action");
-			if(attribute) {
-				action = HTTP::MethodFactory(attribute.as_string("get"));
-			} else {
-				action = HTTP::MethodFactory(Config::Value<string>(section,"action","get"));
-			}
+			throw runtime_error(String{"Required attribute 'url' is empty on alert '",name(),"'"});
 		}
 
 	}
 
-	std::shared_ptr<Udjat::Alert::Activation> Alert::URL::ActivationFactory() const {
-		return make_shared<Activation>(this);
+	URLAlert::~URLAlert() {
 	}
 
-	Value & Alert::URL::getProperties(Value &value) const {
-		Abstract::Alert::getProperties(value);
-		value["url"] = url;
-		value["action"] = std::to_string(action);
-		return value;
+	void URLAlert::reset(bool active) noexcept {
+		if(!active) {
+			payload.value.clear();
+		}
+		super::reset(active);
 	}
 
-	Value & Alert::URL::Activation::getProperties(Value &value) const {
-		Udjat::Alert::Activation::getProperties(value);
-		value["url"] = url.c_str();
-		value["action"] = std::to_string(action);
-		return value;
+	bool URLAlert::activate() noexcept {
+		payload.value = payload.tmpl;
+		payload.value.expand();
+		return super::activate();
 	}
 
-	Alert::URL::Activation::Activation(const Udjat::Alert::URL *alert) : Udjat::Alert::Activation(alert), url(alert->url), action(alert->action), payload(alert->payload) {
-		url.expand(*alert,true,false);
-		payload.expand(*alert,true,false);
+	bool URLAlert::activate(const Udjat::Abstract::Object &object) noexcept {
+		payload.value = payload.tmpl;
+		payload.value.expand(object,true,false);
+		return super::activate();
 	}
 
+	int URLAlert::emit() {
 
-	void Alert::URL::Activation::emit() {
-
+		String url{this->url};
 		url.expand(true,false);
-		payload.expand(true,false);
 
-		if(verbose()) {
-			Logger::String{"Emitting ",action," ",url}.write(Logger::Trace,this->name.c_str());
-			if(!payload.empty()) {
-				Logger::String{payload}.write(Logger::Trace,this->name.c_str());
-			}
+		String response = Protocol::call(url.c_str(),action,payload.value.c_str());
+
+		if(!response.empty()) {
+			Logger::String{response.c_str()}.write(Logger::Trace,name());
 		}
 
-		String response = Protocol::call(url.c_str(),action,payload.c_str());
-
-		if(verbose() && !response.empty()) {
-			Logger::String{response.c_str()}.write(Logger::Trace,this->name.c_str());
-		}
-
-	}
-
-	Alert::Activation & Alert::URL::Activation::set(const Abstract::Object &object) {
-
-		debug("URL=",url.c_str());
-		debug("PAYLOAD=",payload.c_str());
-
-		url.expand(object);
-		payload.expand(object);
-
-		return *this;
-	}
-
-	Alert::Activation & Alert::URL::Activation::set(const std::function<bool(const char *key, std::string &value)> &expander) {
-
-		debug("URL=",url.c_str());
-		debug("PAYLOAD=",payload.c_str());
-
-		url.expand(expander);
-		payload.expand(expander);
-		return *this;
+		return 0;
 	}
 
  }
-
-*/

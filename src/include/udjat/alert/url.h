@@ -21,53 +21,45 @@
 
  #include <udjat/defs.h>
  #include <udjat/alert.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/http/method.h>
+ #include <udjat/tools/abstract/object.h>
  
- /*
  namespace Udjat {
 
-	namespace Alert {
+	/// @brief Alert updating a file when activated.
+	class UDJAT_API URLAlert : public Alert {
+	protected:
 
-		/// @brief Default alert (based on URL and payload).
-		class UDJAT_API URL : public Abstract::Alert {
-		protected:
+		const char *url = "";
+		HTTP::Method action = HTTP::Get;
 
-			const char *url = "";
-			HTTP::Method action = HTTP::Get;
-			const char *payload = "";
+		struct Payload {
+			const char *tmpl;		///< @brief Template to payload.
+			String value;			///< @brief Current payload.
 
-			/// @brief URL based alert activation.
-			class UDJAT_API Activation : public Udjat::Alert::Activation {
-			protected:
-				String url;
-				HTTP::Method action;
-				String payload;
-
-			public:
-				Activation(const Udjat::Alert::URL *alert);
-				void emit() override;
-
-				Value & getProperties(Value &value) const override;
-
-				Udjat::Alert::Activation & set(const Abstract::Object &object) override;
-				Udjat::Alert::Activation & set(const std::function<bool(const char *key, std::string &value)> &expander) override;
-
-			};
-
-			std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const override;
-
-		public:
-
-			constexpr URL(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") : Abstract::Alert(name), url(u), action(a), payload(p) {
+			Payload(const char *t = "") : tmpl{t} {
 			}
 
-			URL(const XML::Node &node, const char *defaults = "alert-defaults");
+		} payload;
 
-			/// @brief Get alert info.
-			Value & getProperties(Value &value) const override;
+		void reset(bool active) noexcept override;
 
-		};
+		int emit() override;
 
-	}
+	public:
 
+		URLAlert(const XML::Node &node);
+
+		URLAlert(const char *name, const char *u, const HTTP::Method a = HTTP::Get, const char *p = "") 
+			: Alert{name}, url{u}, action{a}, payload{p} {
+		}
+
+		virtual ~URLAlert();
+
+		bool activate() noexcept override;
+		bool activate(const Udjat::Abstract::Object &object) noexcept override;
+
+	};
+ 
  }
- */

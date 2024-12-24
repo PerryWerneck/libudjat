@@ -22,7 +22,8 @@
  #include <udjat/defs.h>
  #include <udjat/alert.h>
  #include <udjat/tools/string.h>
- 
+ #include <udjat/tools/abstract/object.h>
+
  namespace Udjat {
 
 	/// @brief Alert updating a file when activated.
