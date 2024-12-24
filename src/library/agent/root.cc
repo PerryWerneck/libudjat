@@ -38,8 +38,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>
  #include <udjat/tools/response.h>
- #include <udjat/alert/abstract.h>
- #include <udjat/alert/activation.h>
+ #include <udjat/alert.h>
  #include <udjat/module/abstract.h>
  #include <udjat/agent/abstract.h>
  #include <sstream>
@@ -282,26 +281,6 @@
 				Object::properties.icon = (state->ready() ? "computer" : "computer-fail");
 
 				return super::set(state);
-
-			}
-
-			void push_back(std::shared_ptr<Activatable> activatable) override {
-
-				// Can't start now because the main loop is not active, wait 100ms.
-				MainLoop::getInstance().TimerFactory(100,[this,activatable](){
-
-					activatable->info() << "Orphaned action, activating on startup" << endl;
-
-					Abstract::Alert *alert = dynamic_cast<Abstract::Alert *>(activatable.get());
-					if(alert) {
-						auto activation = alert->ActivationFactory();
-						activation->set(*Abstract::Agent::root());
-						Udjat::start(activation);
-					} else {
-						activatable->activate(*this);
-					}
-					return false;
-				});
 
 			}
 

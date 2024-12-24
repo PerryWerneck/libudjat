@@ -17,11 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
  #include <config.h>
  #include <udjat/tools/factory.h>
  #include <udjat/agent/state.h>
  #include <iostream>
- #include <udjat/alert/abstract.h>
+ #include <udjat/alert.h>
  #include <udjat/tools/logger.h>
 
  //---[ Implement ]------------------------------------------------------------------------------------------
@@ -56,3 +57,4 @@
 	}
 
  }
+*/

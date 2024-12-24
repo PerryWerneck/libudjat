@@ -76,7 +76,7 @@
 		const char *c_str() const noexcept;
 
 		/// @brief Get script title.
-		std::string to_string() const noexcept override;
+		std::string to_string() const noexcept;
 
 	};
 

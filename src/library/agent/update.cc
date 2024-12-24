@@ -8,7 +8,6 @@
  */
 
  #include <private/agent.h>
- #include <udjat/alert/abstract.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
 

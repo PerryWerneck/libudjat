@@ -18,140 +18,101 @@
  */
 
  #include <config.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/intl.h>
- #include <udjat/tools/factory.h>
- #include <udjat/alert/url.h>
- #include <udjat/alert/script.h>
+ #include <udjat/alert.h>
  #include <udjat/alert/file.h>
- #include <udjat/tools/object.h>
- #include <udjat/tools/xml.h>
- #include <udjat/tools/configuration.h>
+ #include <udjat/alert/url.h>
+ #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
- #include <iostream>
+ #include <udjat/tools/action.h>
+ #include <stdexcept>
+
+ #undef LOG_DOMAIN
+ #define LOG_DOMAIN "alert"
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	static const char * get_alert_type(const XML::Node &node) {
-
-		const char *type;
-		const char *attrname = (strcasecmp(node.name(),"alert") == 0 ? "type" : "alert-type");
-
-		debug("attrname='",attrname,"'");
-
-		type = node.attribute(attrname).as_string("");
-		if(type[0]) {
-			return type;
-		}
-
-		auto attr = XML::AttributeFactory(node,"alert-type");
-		if(attr) {
-			return attr.as_string();
-		}
-
-		for(auto parent = node.parent();parent;parent = parent.parent()) {
-
-			type = parent.attribute("alert-type").as_string();
-			if(type[0]) {
-				return type;
-			}
-
-		}
-
-		return "";
-
+	static Container<Alert::Factory> & Factories() {
+		static Container<Alert::Factory> instance;
+		return instance;
 	}
 
-	std::shared_ptr<Abstract::Alert> Abstract::Alert::Factory(const Abstract::Object &parent, const XML::Node &node) {
+	Alert::Factory::Factory(const char *name) : factory_name{name} {
+		Factories().push_back(this);
+	}
 
-		static const struct {
-			const char *attrname;
-			const char *type;
-			const std::function<std::shared_ptr<Abstract::Alert>(const XML::Node &node)> factory;
-		} internal_types[] = {
-			{
-				"cmdline", "script",
-				[](const XML::Node &node){
-					return make_shared<Udjat::Alert::Script>(node);
+	Alert::Factory::~Factory() {
+		Factories().remove(this);
+	}
+
+	std::shared_ptr<Alert> Alert::Factory::AlertFactory(const Abstract::Object &parent, const XML::Node &node) const {
+		return std::shared_ptr<Alert>();
+	}
+
+	std::shared_ptr<Alert> Alert::Factory::build(const Abstract::Object &parent, const XML::Node &node) {
+
+		String type{node,"type"};
+		if(!type.empty()) {
+
+			for(Alert::Factory *factory : Factories()) {
+
+				if(*factory == type.c_str()) {
+
+					try {
+
+						std::shared_ptr<Alert> alert = factory->AlertFactory(parent,node);
+
+						if(alert) {
+							return alert;
+						}
+
+					} catch(const std::exception &e) {
+
+						Logger::String{e.what()}.error(factory->name());
+
+					} catch(...) {
+
+						Logger::String{"Unexpected error building alert"}.error(factory->name());
+
+					}
+
 				}
-			},
-			{
-				"url", "url",
-				[](const XML::Node &node){
-					return make_shared<Udjat::Alert::URL>(node);
+
+			}
+
+			if(!strcasecmp(type.c_str(),"file")) {
+				return make_shared<FileAlert>(node);
+			}
+
+			if(!strcasecmp(type.c_str(),"url")) {
+				return make_shared<URLAlert>(node);
+			}
+
+		}
+
+		// Create a default one.
+		class ActionAlert : public Alert {
+		private:
+			std::shared_ptr<Action> action;
+
+		public:
+			ActionAlert(const XML::Node &node) : Alert{node}, action{Action::Factory::build(node)} {
+				if(!action) {
+					throw runtime_error("Action alert requires an action");
 				}
-			},
-			{
-				"filename", "file",
-				[](const XML::Node &node){
-					return make_shared<Udjat::Alert::File>(node);
-				}
-			},
+			}
+
+			int emit() override {
+				return action->call();
+			}
+
 		};
 
-		const char *name = node.attribute("name").as_string(node.name());
-		const char *type = get_alert_type(node);
-		debug("Alert-type='",type,"'");
-
-		// Check factories.
-		if(type && *type) {
-
-			if(!strcasecmp(type,"internal")) {
-
-				// Try to identify internal alert using attributes.
-				for(auto internal_type : internal_types) {
-					if(node.attribute(internal_type.attrname)) {
-						Logger::String{"Building internal '",internal_type.type,"' alert."}.trace("alert");
-						return internal_type.factory(node);
-					}
-				}
-
-				throw runtime_error(Logger::Message{_("Unable to determine internal alert type for node <{}>"),node.name()});
-
-			}
-
-			std::shared_ptr<Abstract::Alert> alert;
-
-			if(Udjat::Factory::for_each([&parent,&node,&alert,type,&name](Udjat::Factory &factory) {
-
-				if(factory == type) {
-					alert = factory.AlertFactory(parent,node);
-					if(alert) {
-						if(Logger::enabled(Logger::Trace)) {
-							Logger::String{"Alert built using '",factory.name(),"' engine"}.trace(name);
-						}
-						return true;
-					}
-				}
-				return false;
-
-			})) {
-				return alert;
-			};
-
-		}
-
-		// Try internal types.
-		for(auto internal_type : internal_types) {
-			if(strcasecmp(internal_type.type,type) == 0) {
-				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace(name);
-				return internal_type.factory(node);
-			}
-		}
-
-		// Last chance, try to identify internal alert using attributes.
-		for(auto internal_type : internal_types) {
-			debug("Attribute '",internal_type.attrname,"': ",(node.attribute(internal_type.attrname) ? "Found" : "Not found"));
-			if(node.attribute(internal_type.attrname)) {
-				Logger::String{"Building internal '",internal_type.type,"' alert."}.trace(name);
-				return internal_type.factory(node);
-			}
-		}
-
-		throw runtime_error(Logger::Message{_("Unable to create alert for node <{}>"),name});
+		return make_shared<ActionAlert>(node);
 
 	}
 
  }
+

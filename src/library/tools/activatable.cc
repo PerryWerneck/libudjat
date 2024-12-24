@@ -18,51 +18,38 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/object.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/tools/factory.h>
- #include <udjat/alert/abstract.h>
- #include <udjat/alert.h>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 
-	std::shared_ptr<Activatable> Activatable::Factory(const Abstract::Object &parent, const XML::Node &node) {
+	Activatable::Activatable(const XML::Node &node) : object_name{String{node,"name"}.as_quark()} {
+	}
 
-		std::shared_ptr<Activatable> activatable;
+	Activatable::~Activatable() {
+	}
 
-		if(Udjat::Factory::for_each([&parent,&activatable,&node](Udjat::Factory &factory){
+	bool Activatable::activate(const Udjat::Abstract::Object &) noexcept {
+		return activate();
+	}
 
-			if(factory == node.attribute("type").as_string("default")) {
-				activatable = factory.ActivatableFactory(parent,node);
-				return (bool) activatable;
-			}
+	bool Activatable::deactivate() noexcept {
+		return false;	// Allways return false if the object cant be deactivated.
+	}
 
-			return false;
-
-		})) {
-
-			return activatable;
-
+	const char * Activatable::payload(const XML::Node &node) {
+		String child(node.child_value());
+		if(child.empty()) {
+			child = node.attribute("payload").as_string();
 		}
-
-		return Abstract::Alert::Factory(parent,node);
-
-	}
-
-	void Activatable::activate(const Abstract::Object UDJAT_UNUSED(&object)) {
-	}
-
-	void Activatable::deactivate() {
-	}
-
-	void Activatable::trigger(const Abstract::Object &object) {
-
-		if(activated()) {
-			deactivate();
+		child.expand(node);
+		if(node.attribute("strip-payload").as_bool(true)) {
+			child.strip();
 		}
-
-		activate(object);
-
+		return child.as_quark();
 	}
 
  }
-

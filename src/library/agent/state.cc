@@ -12,7 +12,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
- #include <udjat/alert/activation.h>
+ #include <udjat/alert.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
@@ -54,12 +54,6 @@ namespace Udjat {
 
 		set(make_shared<Abstract::State>("error",Udjat::critical,summary,body));
 
-	}
-
-	void Abstract::Agent::activate(std::shared_ptr<Abstract::Alert> alert) const {
-		auto activation = alert->ActivationFactory();
-		activation->set(*this);
-		Udjat::start(activation);
 	}
 
 	std::ostream & LogFactory(Udjat::Level level) {

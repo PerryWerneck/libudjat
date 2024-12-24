@@ -28,14 +28,16 @@
 
  #include <config.h>
  #include <private/state.h>
+ #include <udjat/agent/state.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/expander.h>
- #include <udjat/alert/abstract.h>
- #include <udjat/alert/activation.h>
+ #include <udjat/alert.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/factory.h>
+ #include <udjat/tools/action.h>
+ #include <udjat/tools/activatable.h>
  #include <iostream>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
@@ -91,6 +93,33 @@ namespace Udjat {
 			Object::properties.icon = IconNameFactory(properties.level);
 		}
 
+		properties.level = LevelFactory(node);
+		properties.body = String{node,"body",properties.body}.as_quark();
+		options.forward = node.attribute("forward-to-children").as_bool(options.forward);
+
+		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
+			listeners.push_back(Alert::Factory::build(*this, node));
+		} else if(node.attribute("action-type")) {
+			listeners.push_back(Action::Factory::build(node,true));
+		}
+
+	}
+
+	bool Abstract::State::push_back(const XML::Node &node) {
+
+		if(strcasecmp(node.name(),"alert") == 0) {
+			listeners.push_back(Alert::Factory::build(*this,node));
+			return true;
+		}
+
+		for(const char *nodename : { "action", "script"} ) {
+			if(strcasecmp(node.name(),nodename) == 0) {
+				listeners.push_back(Action::Factory::build(node));
+				return true;
+			}	
+		}
+
+		return false;
 	}
 
 	std::string Abstract::State::value() const {
@@ -98,39 +127,6 @@ namespace Udjat {
 	}
 
 	void Abstract::State::refresh() {
-	}
-
-	void Abstract::State::set(const XML::Node &node) {
-
-		Object::set(node);
-
-		const char *section = node.attribute("settings-from").as_string("state-defaults");
-
-		properties.level = LevelFactory(node);
-		properties.body = getAttribute(node,section,"body",properties.body);
-		options.forward = getAttribute(node,section,"forward-to-children",options.forward);
-
-		for(XML::Node child : node) {
-
-			if(strcasecmp(child.name(),"attribute")) {
-				push_back(child);
-			}
-
-		}
-
-		debug(
-			"name=",node.attribute("name").as_string()," ",
-			"Attribute('alert')=",(node.attribute("alert").as_bool(false) ? "Yes" : "No"),
-			" Attibute('alert-type')=",getAttribute(node,"alert-type").as_string("")
-		);
-
-		if(node.attribute("alert").as_bool(XML::AttributeFactory(node,"alert-type"))) {
-			auto alert = Abstract::Alert::Factory(*this, node);
-			if(alert) {
-				listeners.push_back(alert);
-			}
-		}
-
 	}
 
 	Abstract::State::~State() {
@@ -171,36 +167,16 @@ namespace Udjat {
 		return value;
 	}
 
-	bool Abstract::State::getProperties(const char *path, Value &value) {
-
-		// TODO: Refactor
-
-		/*
-		shared_ptr<Abstract::State> state;
-
-		if(!Abstract::Agent::root()->getProperties(path,state) || !state) {
-			return false;
-		}
-
-		state->getProperties(value);
-
-		return true;
-		*/
-
-		return false;
-
-	}
-
 	void Abstract::State::activate(const Abstract::Object &object) noexcept {
-
 		for(auto listener : listeners) {
+			Logger::String{"Activating listener '",listener->name(),"' for object '",object.name(),"'"}.trace(name());
 			listener->activate(object);
 		}
-
 	}
 
 	void Abstract::State::deactivate() noexcept {
 		for(auto listener : listeners) {
+			Logger::String{"Deactivating listener '",listener->name(),"'"}.trace(name());
 			listener->deactivate();
 		}
 	}
@@ -224,6 +200,12 @@ namespace Udjat {
 		if(!strcasecmp(key,"body")) {
 			value = properties.body;
 			return true;
+		}
+
+		for(const auto &agent : agents) {
+			if(agent->getProperty(key,value)) {
+				return true;
+			}
 		}
 
 		return false;

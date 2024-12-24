@@ -105,20 +105,13 @@
 		Logger::String{"Watching global status from '",agent->name(),"'"}.info("systemd");
 #endif // HAVE_SYSTEMD
 
+		/// @brief Listen for root agent state changes, update service status.
 		class Listener : public Activatable {
 		public:
 			constexpr Listener() : Activatable("syssrvc") {
 			}
 
-			bool activated() const noexcept override {
-				return false;
-			}
-
-			void activate(const std::function<bool(const char *key, std::string &value)> UDJAT_UNUSED(&expander)) override {
-				activate();
-			}
-
-			void activate() {
+			bool activate() noexcept override {
 
 				try {
 
@@ -149,8 +142,11 @@
 				} catch(const std::exception &e) {
 
 					cerr << "service\tCant update service state:" << e.what() << endl;
+					return false;
 
 				}
+
+				return true;
 
 			}
 

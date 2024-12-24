@@ -29,17 +29,16 @@
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/activatable.h>
  #include <functional>
  #include <list>
+ #include <vector>
 
  namespace Udjat {
 
-	class UDJAT_API Action : public NamedObject {
+	class UDJAT_API Action : public Activatable {
 	protected:
 		const char *title;
-
-		/// @brief Convenience function to get payload from xml
-		static const char * payload(const XML::Node &node, const char *attrname = "payload");
 
 		/// @brief Convenience method to capture and translate exceptions.
 		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
@@ -70,7 +69,7 @@
 			/// @brief Try to build an action from XML definition.
 			/// @param node Action definition.
 			/// @return Pointer to new action (empty if not found).
-			static std::shared_ptr<Action> build(const XML::Node &node, const char *attrname = "type", bool except = false);
+			static std::shared_ptr<Action> build(const XML::Node &node, bool except = false);
 
 			static const std::list<Action::Factory *>::const_iterator begin();
 			static const std::list<Action::Factory *>::const_iterator end();
@@ -79,7 +78,7 @@
 
 		};
 
-		constexpr Action(const char *n, const char *t = "") : NamedObject{n}, title{t} {
+		constexpr Action(const char *n, const char *t = "") : Activatable{n}, title{t} {
 		} 
 
 		Action(const XML::Node &node);
@@ -99,6 +98,9 @@
 
 		/// @brief Run action from XML node, usually called by XML tag <init type=>
 		virtual int call(bool except = true);
+
+		bool activate(const Udjat::Abstract::Object &object) noexcept override;
+		bool activate() noexcept override;
 
 	};
 

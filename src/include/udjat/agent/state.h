@@ -29,7 +29,7 @@
 #pragma once
 
 #include <string>
-#include <pugixml.hpp>
+#include <udjat/tools/xml.h>
 #include <memory>
 #include <vector>
 #include <mutex>
@@ -61,16 +61,13 @@ namespace Udjat {
 
 		private:
 
-			/// @brief Parse XML node
-			void set(const XML::Node &node);
-
-			/// @brief State alerts.
-			std::vector<std::shared_ptr<Activatable>> listeners;
-
 			/// @brief State agents.
 			std::vector<std::shared_ptr<Abstract::Agent>> agents;
 
 		protected:
+
+			/// @brief State alerts.
+			std::vector<std::shared_ptr<Udjat::Activatable>> listeners;
 
 			struct Properties {
 
@@ -92,6 +89,11 @@ namespace Udjat {
 			State& operator=(const State &) = delete;
 			State(State &&) = delete;
 			State & operator=(State &&) = delete;
+
+			/// @brief Append state child based on XML definition.
+			/// @param node The XML definition.
+			/// @return true if the child was appended.
+			virtual bool push_back(const XML::Node &node);
 
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
@@ -175,23 +177,6 @@ namespace Udjat {
 			/// @brief Value to receive the properties.
 			/// @return Pointer to value.
 			Value & getProperties(Value &value) const override;
-
-			/// @brief Get state properties by path.
-			/// @param path	Agent path.
-			/// @param value Object for child properties.
-			/// @retval true if the agent was found.
-			/// @retval false if the agent was not found.
-			static bool getProperties(const char *path, Value &value);
-
-			/// @brief Insert alert.
-			inline void push_back(std::shared_ptr<Activatable> listener) {
-				listeners.push_back(listener);
-			}
-
-			/// @brief Create and insert child from XML definition.
-			/// @param node XML agent definitions.
-			/// @return true if the child was created.
-			bool push_back(const XML::Node &node);
 
 			/// @brief Create an state from exception.
 			/// @param except The exception.

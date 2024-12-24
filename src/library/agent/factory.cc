@@ -239,7 +239,7 @@
 
 		// Try actions
 		{
-			std::shared_ptr<Action> action = Action::Factory::build(node,"type",false);
+			std::shared_ptr<Action> action = Action::Factory::build(node,false);
 			if(action) {
 
 				Logger::String{"Building action based agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));

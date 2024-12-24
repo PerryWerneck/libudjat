@@ -23,6 +23,7 @@
  #include <udjat/tools/factory.h>
  #include <udjat/tools/xml.h>
  #include <udjat/agent.h>
+ #include <udjat/agent/abstract.h>
  #include <iostream>
 
  using namespace std;
@@ -46,8 +47,13 @@
 
 			bool refresh() override {
 				debug("Updating agent '",name(),"'");
-				set( ((unsigned int) rand()) % limit );
-				return true;
+				unsigned int value = ((unsigned int) rand()) % limit;
+				if(set(value)) {
+					Logger::String{"Agent '",name(),"' updated to ",value}.info();
+					return true;
+				}
+				Logger::String{"Agent '",name(),"' keep value ",value}.info();
+				return false;
 			}
 
 			void start() override {

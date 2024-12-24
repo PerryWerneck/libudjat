@@ -76,31 +76,11 @@ namespace Udjat {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 		for(Listener &listener : listeners) {
-
-			debug("listener=",listener.activatable->name()," event=",event," listener.event=",listener.event," Activate=",(listener.event & event));
-
 			if((listener.event & event) != 0) {
-
 				auto activatable = listener.activatable;
-
 				push([activatable](std::shared_ptr<Agent> agent){
-
-					try {
-
-						activatable->trigger(*agent);
-
-					} catch(const std::exception &e) {
-
-						activatable->error() << "Error activating on agent '" << agent->name() << "': " << e.what() << endl;
-
-					} catch(...) {
-
-						activatable->error() << "Unexpected error activating on agent '" << agent->name() << "'" << endl;
-
-					}
-
+					activatable->activate(*agent);
 				});
-
 			}
 		}
 	}
@@ -202,15 +182,12 @@ namespace Udjat {
 			break;
 
 		default:
+			Logger::String{"Required attribute 'trigger-event' not found or invalid, ignoring node <",node.name(),">"}.warning(name());
 			return false;
 		}
 
 		return true;
 
-	}
-
-	void Abstract::Agent::push_back(std::shared_ptr<Activatable> UDJAT_UNUSED(alert)) {
-		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' cant handle activations");
 	}
 
 	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {

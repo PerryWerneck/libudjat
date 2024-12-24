@@ -18,113 +18,85 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/alert.h>
  #include <udjat/alert/file.h>
- #include <udjat/alert/activation.h>
- #include <udjat/tools/subprocess.h>
  #include <udjat/tools/logger.h>
  #include <sys/stat.h>
  #include <fstream>
- #include <udjat/tools/application.h>
- #include <udjat/tools/intl.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/timestamp.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	Alert::File::File(const XML::Node &node) : Abstract::Alert(node) {
+	FileAlert::FileAlert(const XML::Node &node) : Alert{node},
+		filename{String{node,"filename"}.as_quark()}, maxage{node.attribute("maxage").as_uint(86400)}, 
+		payload{Activatable::payload(node)} {
 
-		// Get filename
-		{
-			auto filename = node.attribute("filename");
-			if(!filename) {
-				filename = getAttribute(node,"alert-filename",false);
-			}
+		if(!(filename && *filename)) {
+			throw runtime_error(String{"Required attribute 'filename' is empty on alert '",name(),"'"});
+		}
 
-			if(filename) {
-				this->filename = Quark(filename.as_string()).c_str();
-			} else {
-				this->filename = Quark(Application::LogDir("alerts") + "${agent.name}-%u.txt").c_str();
-			}
-
-			if(!*this->filename) {
-				throw runtime_error(string{"Required attribute 'filename' is empty on alert '"} + name() + "'");
-			}
-
+		if(!(payload.tmpl && *payload.tmpl)) {
+			throw runtime_error(String{"Required payload is empty on alert '",name(),"'"});
 		}
 
 		debug("Alert file set to '",filename,"'");
 
-		payload = getPayload(node);
-
 	}
 
-	std::shared_ptr<Udjat::Alert::Activation> Alert::File::ActivationFactory() const {
-		return make_shared<Activation>(this);
+	FileAlert::~FileAlert() {
+	}	
+
+	void FileAlert::reset(bool active) noexcept {
+		if(!active) {
+			payload.value.clear();
+		}
+		super::reset(active);
 	}
 
-	Value & Alert::File::getProperties(Value &value) const {
-		Abstract::Alert::getProperties(value);
-		value["filename"] = filename;
-		return value;
+	bool FileAlert::activate() noexcept {
+		payload.value = payload.tmpl;
+		payload.value.expand();
+		return super::activate();
 	}
 
-	Value & Alert::File::Activation::getProperties(Value &value) const {
-		Udjat::Alert::Activation::getProperties(value);
-		value["filename"] = filename.c_str();
-		return value;
+	bool FileAlert::activate(const Udjat::Abstract::Object &object) noexcept {
+		payload.value = payload.tmpl;
+		payload.value.expand(object,true,false);
+		return super::activate();
 	}
 
-	Alert::File::Activation::Activation(const Udjat::Alert::File *alert) : Udjat::Alert::Activation(alert), filename(alert->filename), maxage(alert->maxage), payload(alert->payload) {
+	int FileAlert::emit() {
 
-		payload.expand(*alert,true,false);
+		String name{filename};
+		name.expand();
 
-		if(strchr(filename.c_str(),'%')) {
-			// Expand filename.
-			filename = TimeStamp().to_string(filename);
+		if(strchr(name.c_str(),'%')) {
+			name = TimeStamp().to_string(name.c_str());
 		}
 
-		filename.expand(*alert,true,false);
-
-	}
-
-	void Alert::File::Activation::emit() {
-
-		filename.expand();
-		payload.expand();
-
-		if(verbose()) {
-			info() << "Emitting " << filename << endl;
-		}
-
-		debug("File=",filename);
-		debug("Payload='",payload,"'");
-
-		struct stat st;
-		if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > maxage) {
-			// Its an old file, remove it
-			info() << "Removing " << filename << endl;
-			remove(filename.c_str());
+		if(maxage) {
+			struct stat st;
+			if(!stat(name.c_str(),&st) && (time(nullptr) - st.st_mtime) > maxage) {
+				// Its an old file, remove it
+				Logger::String{"Removing ",name.c_str()}.info(this->name());
+				remove(name.c_str());
+			}
 		}
 
 		std::ofstream ofs;
 		ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 
-		ofs.open(filename, ofstream::out | ofstream::app);
-		ofs << payload << endl;
+		ofs.open(name, ofstream::out | ofstream::app);
+		ofs << payload.value << endl;
 		ofs.close();
 
-	}
+		return 0;
 
-	Alert::Activation & Alert::File::Activation::set(const Abstract::Object &object) {
-		filename.expand(object);
-		return Udjat::Alert::Activation::set(object);
-	}
-
-	Alert::Activation & Alert::File::Activation::set(const std::function<bool(const char *key, std::string &value)> &expander) {
-		filename.expand(expander);
-		return Udjat::Alert::Activation::set(expander);
 	}
 
  }
-
-
