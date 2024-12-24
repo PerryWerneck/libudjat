@@ -230,7 +230,6 @@ lib_src += [
   'src/library/alert/construct.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
-  'src/library/alert/script.cc',
   'src/library/alert/url.cc',
   'src/library/factory/controller.cc',
   'src/library/factory/factory.cc',
@@ -676,7 +675,6 @@ install_headers(
 
 install_headers(
   'src/include/udjat/alert/file.h',
-  'src/include/udjat/alert/script.h',
   'src/include/udjat/alert/url.h',
   subdir: 'udjat/alert'  
 )
