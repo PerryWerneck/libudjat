@@ -61,9 +61,6 @@ namespace Udjat {
 
 		private:
 
-			/// @brief Parse XML node
-			// void set(const XML::Node &node) override;
-
 			/// @brief State agents.
 			std::vector<std::shared_ptr<Abstract::Agent>> agents;
 

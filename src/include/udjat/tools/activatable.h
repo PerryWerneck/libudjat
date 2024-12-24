@@ -31,6 +31,9 @@
 		const char *object_name;
 
 	protected:
+
+		bool object_active = false;
+
 		constexpr Activatable(const char *name = "") : object_name{name} {
 		}
 	
@@ -41,6 +44,10 @@
 
 		inline const char *name() const noexcept {
 			return object_name;
+		}
+
+		inline bool active() const noexcept {
+			return object_active;
 		}
 
 		/// @brief Activate object.

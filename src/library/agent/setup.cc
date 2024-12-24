@@ -106,6 +106,26 @@ namespace Udjat {
 
 			}
 
+			// It's an alert?
+			if(strcasecmp(node.name(),"alert") == 0) {
+				try {
+					push_back(node,Alert::Factory::build(*this,node));
+				} catch(const std::exception &e) {
+					Logger::String{"Alert creation failure: ",e.what()}.error(name());
+				}
+				continue;
+			}
+
+			// It's an action?
+			if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
+				try {
+					push_back(node,Action::Factory::build(node,true));
+				} catch(const std::exception &e) {
+					Logger::String{"Action creation failure: ",e.what()}.error(name());
+				}
+				continue;
+			}
+
 			// It's an interface?
 			if(strcasecmp(node.name(),"interface") == 0) {
 				Interface::Factory::build(node);

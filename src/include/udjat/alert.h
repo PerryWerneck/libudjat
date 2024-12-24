@@ -31,8 +31,11 @@
 	private:
 		class Controller;
 		friend class Controller;
-
 	protected:
+
+		/// @brief Clear activation parameters.
+		/// @param active True if the alert is being activated.
+		virtual void reset(bool active) noexcept;
 
 		/// @brief Alert limits.
 		struct {
@@ -54,7 +57,6 @@
 
 		/// @brief Alert activation.
 		struct {
-			bool enabled = false;		///< @brief True if the alert is enabled.
 			bool running = false;		///< @brief True if the alert is running.
 			unsigned int suceeded = 0;	///< @brief Number of successful activations.
 			unsigned int failed = 0;	///< @brief Number of failed activations.

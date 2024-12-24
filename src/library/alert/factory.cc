@@ -24,6 +24,7 @@
  #include <udjat/tools/action.h>
  #include <stdexcept>
 
+ #undef LOG_DOMAIN
  #define LOG_DOMAIN "alert"
  #include <udjat/tools/logger.h>
 

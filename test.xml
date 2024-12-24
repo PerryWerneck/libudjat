@@ -38,22 +38,20 @@
 	<interface type='*' action-name='agent' />
 	<interface type='web' action-name='appinfo' required='no' />
 
-	<!-- alert name='orphaned' type='file' strip-payload='yes'>
-		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
-	</alert -->
-
 	<agent name='random' type='random' update-timer='10' update-signal='reload'>
+
+		<script name='updated' trigger-event='value-change' type='shell' cmdline='echo VALUE HAS CHANGED' />
 
 		<state name='s0' value='0' summary='Random 0' action-type='shell' cmdline='ls -l'>
 		</state>
 
 		<state name='s1' value='1' summary='Random 1' alert='yes' type='file' filename='/tmp/udjat-alerts.txt'>
-			${timestamp(%Y/%m/%d %H:%M:%S)},${summary},S1
+			${timestamp(%Y/%m/%d %H:%M:%S)},S1
 		</state>
 
 		<state name='s2' value='2' summary='Random 2'>
 			<alert name='s2a' type='file' filename='/tmp/udjat-alerts.txt'>
-				${timestamp(%Y/%m/%d %H:%M:%S)},${summary},S2
+				${timestamp(%Y/%m/%d %H:%M:%S)},S2
 			</alert>
 			<alert name='s2b' type='shell' cmdline='ls -l' />
 		</state>

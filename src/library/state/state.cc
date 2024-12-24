@@ -202,6 +202,12 @@ namespace Udjat {
 			return true;
 		}
 
+		for(const auto &agent : agents) {
+			if(agent->getProperty(key,value)) {
+				return true;
+			}
+		}
+
 		return false;
 
 	}

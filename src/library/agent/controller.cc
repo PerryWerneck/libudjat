@@ -36,7 +36,11 @@
  #include <udjat/tools/file.h>
  #include <udjat/agent/abstract.h>
  #include <unistd.h>
+
+ #undef LOG_DOMAIN
+ #define LOG_DOMAIN "agent"
  #include <udjat/tools/logger.h>
+
  #include <udjat/tools/intl.h>
 
  using namespace std;

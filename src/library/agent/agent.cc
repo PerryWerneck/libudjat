@@ -182,6 +182,7 @@ namespace Udjat {
 			break;
 
 		default:
+			Logger::String{"Required attribute 'trigger-event' not found or invalid, ignoring node <",node.name(),">"}.warning(name());
 			return false;
 		}
 

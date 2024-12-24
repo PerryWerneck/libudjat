@@ -83,7 +83,7 @@
 
 			for(Alert *alert : *this) {
 
-				if(!(alert->activation.next && alert->activation.enabled)) {
+				if(!(alert->activation.next && alert->active())) {
 					continue;
 				}
 
@@ -156,13 +156,17 @@
 
 	}
 
+	void Alert::reset(bool active) noexcept {
+		object_active = active;
+		activation.suceeded = 0;
+		activation.failed = 0;	
+	}
+
 	bool Alert::activate() noexcept {
-		if(activation.enabled) {
+		if(active()) {
 			return false;
 		}
-		activation.enabled = true;
-		activation.suceeded = 0;
-		activation.failed = 0;
+		reset(true);
 		activation.next = time(0)+timers.start;
 		Logger::String{
 			"Alert activation scheduled to ",
@@ -174,14 +178,12 @@
 
 	void Alert::activate(time_t next) noexcept {
 		activation.next = next;
-		if(!activation.enabled) {
+		if(!active()) {
 			Logger::String{
 				"Alert activation scheduled to ",
 				TimeStamp(activation.next).to_string().c_str()
 			}.info(name());
-			activation.enabled = true;
-			activation.suceeded = 0;
-			activation.failed = 0;
+			reset(true);
 		} else {
 			Logger::String{
 				"Alert activation re-scheduled to ",
@@ -193,15 +195,17 @@
 
 	bool Alert::deactivate() noexcept {
 
-		if(!activation.enabled) {
+		if(!active()) {
 			return false;
 		}
 
 		if(activation.running) {
 			Logger::String{"Deactivating alert while running"}.warning(name());
+		} else {
+			Logger::String{"Deactivating alert"}.info(name());
 		}
 
-		activation.enabled = false;
+		reset(false);
 		activation.next = 0;
 
 		Controller::getInstance().wakeup();
@@ -226,9 +230,8 @@
 		} else if(restart.success) {
 
 			// Reactivate.
+			reset(true);
 			activation.next = time(0) + restart.success;
-			activation.suceeded = 0;
-			activation.failed = 0;
 			Logger::String{
 				"Alert will be reactivated at ",
 				TimeStamp(activation.next).to_string().c_str()
@@ -237,12 +240,13 @@
 		} else {
 
 			// Deactivate
-			activation.enabled = false;
-			activation.next = 0;
 			Logger::String{
 				"Alert deactivated after ",
 				activation.suceeded," successful activations"
 			}.info(name());
+
+			reset(false);
+			activation.next = 0;
 
 		}
 
@@ -269,22 +273,21 @@
 
 			// Reactivate.
 			activation.next = time(0) + restart.failed;
-			activation.suceeded = 0;
-			activation.failed = 0;
+			reset(true);
 			Logger::String{
 				"Alert will be reactivated at ",
 				TimeStamp(activation.next).to_string().c_str()
 			}.info(name());
-
+	
 		} else {
 
 			// Deactivate
-			activation.enabled = false;
-			activation.next = 0;
 			Logger::String{
 				"Alert deactivated after ",
 				activation.failed," failed activations"
 			}.info(name());
+			reset(false);
+			activation.next = 0;
 
 		}
 
@@ -293,104 +296,4 @@
 	}
 
  }
-
-
-/*
- namespace Udjat {
-
-	Abstract::Alert::Alert(const XML::Node &node, const char *defaults) : Activatable{node} {
-
-		// Get section from configuration file with the defaults.
-		const char *section = node.attribute("settings-from").as_string(defaults);
-
-		// options.
-		options.verbose = getAttribute(node,section,"verbose",Logger::enabled(Logger::Trace));
-		options.asyncronous = getAttribute(node,section,"asyncronous",options.asyncronous);
-
-		// Seconds to wait before first activation.
-		timers.start = getAttribute(node,section,"delay-before-start",timers.start);
-
-		// Seconds to wait on every try.
-		timers.interval = getAttribute(node,section,"delay-before-retry",timers.interval);
-
-		// Seconds to wait if busy.
-		timers.busy = getAttribute(node,section,"delay-when-busy",timers.busy);
-
-		// How many success emissions after deactivation or sleep?
-		retry.min = getAttribute(node,section,"min-retries",retry.min);
-
-		// How many retries (success+fails) after deactivation or sleep?
-		retry.max = getAttribute(node,section,"max-retries",retry.max);
-
-		// How many seconds to restart when failed?
-		restart.failed = getAttribute(node,section,"restart-when-failed",restart.failed);
-
-		// How many seconds to restart when suceeded?
-		restart.success = getAttribute(node,section,"restart-when-succeeded",restart.success);
-
-	}
-
-	Abstract::Alert::~Alert() {
-	}
-
-	std::shared_ptr<Udjat::Alert::Activation> Abstract::Alert::ActivationFactory() const {
-		throw runtime_error("Cant activate an abstract alert");
-	}
-
-	bool Abstract::Alert::activated() const noexcept {
-		return Udjat::Alert::Controller::getInstance().active(this);
-	}
-
-	void Abstract::Alert::activate(const std::function<bool(const char *key, std::string &value)> &expander) {
-		auto activation = ActivationFactory();
-		activation->set(expander);
-		Udjat::start(activation);
-	}
-
-	void Abstract::Alert::deactivate() {
-		Udjat::Alert::Controller::getInstance().remove(this);
-	}
-
-	Value & Abstract::Alert::getProperties(Value &value) const {
-
-		Activatable::getProperties(value);
-
-		value["minretry"] = retry.min;
-		value["maxretry"] = retry.max;
-		value["startdelay"] = timers.start;
-		value["busydelay"] = timers.busy;
-		value["interval"] = timers.interval;
-		value["faildelay"] = restart.failed;
-		value["delay"] = restart.success;
-
-		return value;
-	}
-
-	const char * Abstract::Alert::getPayload(const XML::Node &node) {
-
-		String child(node.child_value());
-
-		if(child.empty()) {
-
-			XML::Attribute payload = node.attribute("payload");
-			if(!payload) {
-				payload = getAttribute(node,"alert-payload");
-			}
-
-			if(payload) {
-				child = payload.as_string();
-			}
-
-		}
-
-		if(getAttribute(node,"strip-payload").as_bool(true)) {
-			child.strip();
-		}
-
-		return Quark{child.expand(node,"alert-defaults")}.c_str();
-
-	}
-
- }
-*/
 
