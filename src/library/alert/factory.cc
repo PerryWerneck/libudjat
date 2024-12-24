@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/alert.h>
+ #include <udjat/alert/file.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/action.h>
@@ -79,6 +80,11 @@
 				}
 
 			}
+
+			if(!strcasecmp(type.c_str(),"file")) {
+				return make_shared<FileAlert>(node);
+			}
+			
 		}
 
 		// Create a default one.

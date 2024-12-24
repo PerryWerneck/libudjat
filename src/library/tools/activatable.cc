@@ -40,4 +40,16 @@
 		return false;	// Allways return false if the object cant be deactivated.
 	}
 
+	const char * Activatable::payload(const XML::Node &node) {
+		String child(node.child_value());
+		if(child.empty()) {
+			child = node.attribute("payload").as_string();
+		}
+		child.expand(node);
+		if(node.attribute("strip-payload").as_bool(true)) {
+			child.strip();
+		}
+		return child.as_quark();
+	}
+
  }

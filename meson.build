@@ -228,8 +228,6 @@ lib_src += [
   'src/library/agent/root.cc',
   'src/library/agent/setup.cc',
   'src/library/alert/construct.cc',
-  'src/library/alert/activation.cc',
-  'src/library/alert/controller.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
   'src/library/alert/script.cc',
@@ -677,10 +675,7 @@ install_headers(
 )
 
 install_headers(
-  'src/include/udjat/alert/abstract.h',
-  'src/include/udjat/alert/activation.h',
   'src/include/udjat/alert/file.h',
-  'src/include/udjat/alert/proxy.h',
   'src/include/udjat/alert/script.h',
   'src/include/udjat/alert/url.h',
   subdir: 'udjat/alert'  

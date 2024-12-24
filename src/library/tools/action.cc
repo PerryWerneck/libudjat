@@ -451,18 +451,6 @@
 	void Action::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &) const {
 	}
 
-	const char * Action::payload(const XML::Node &node, const char *attrname) {
-		String child(node.child_value());
-		if(child.empty()) {
-			child = node.attribute("payload").as_string();
-		}
-		child.expand(node);
-		if(node.attribute("strip-payload").as_bool(true)) {
-			child.strip();
-		}
-		return child.as_quark();
-	}
-
 	int Action::exec(Udjat::Value &value, bool except, const std::function<int()> &func) {
 
 		try {

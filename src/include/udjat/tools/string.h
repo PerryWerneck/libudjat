@@ -87,8 +87,7 @@
 		//
 		// Construct
 		//
-		inline String() : std::string() {
-		}
+		String() = default;
 
 		inline String(const char *str) : std::string{str} {
 		}

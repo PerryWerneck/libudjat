@@ -40,9 +40,6 @@
 	protected:
 		const char *title;
 
-		/// @brief Convenience function to get payload from xml
-		static const char * payload(const XML::Node &node, const char *attrname = "payload");
-
 		/// @brief Convenience method to capture and translate exceptions.
 		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
 

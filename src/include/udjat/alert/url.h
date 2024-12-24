@@ -20,9 +20,9 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/alert/abstract.h>
- #include <udjat/alert/activation.h>
-
+ #include <udjat/alert.h>
+ 
+ /*
  namespace Udjat {
 
 	namespace Alert {
@@ -70,3 +70,4 @@
 	}
 
  }
+ */

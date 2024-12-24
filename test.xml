@@ -45,7 +45,7 @@
 		<state name='s0' value='0' summary='Random 0' action-type='shell' cmdline='ls -l'>
 		</state>
 
-		<state name='s1' value='1' summary='Random 1' alert='yes' type='file' filename='/tmp/udjat-alerts.txt'>
+		<state name='s1' value='1' summary='Random 1' alert='yes' type='file' filename='/tmp/udjat-alerts-%d.txt'>
 			${timestamp(%Y/%m/%d %H:%M:%S)},S1
 		</state>
 

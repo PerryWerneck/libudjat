@@ -40,6 +40,9 @@
 		Activatable(const XML::Node &node);
 		virtual ~Activatable();
 
+		/// @brief Convenience method to get payload from xml
+		static const char * payload(const XML::Node &node);
+
 	public:
 
 		inline const char *name() const noexcept {

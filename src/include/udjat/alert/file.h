@@ -20,52 +20,44 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/alert/abstract.h>
- #include <udjat/alert/activation.h>
-
+ #include <udjat/alert.h>
+ #include <udjat/tools/string.h>
+ 
  namespace Udjat {
 
-	namespace Alert {
+	/// @brief Alert updating a file when activated.
+	class UDJAT_API FileAlert : public Alert {
+	protected:
 
-		/// @brief Default alert (based on URL and payload).
-		class UDJAT_API File : public Abstract::Alert {
-		protected:
+		const char *filename = "";	///< @brief File to update.
+		time_t maxage = 86400;		///< @brief Maximum age for the file.
 
-			const char *filename = "";
-			time_t maxage = 86400;
-			const char *payload = "";
+		struct Payload {
+			const char *tmpl;		///< @brief Template to payload.
+			String value;			///< @brief Current payload.
 
-			/// @brief URL based alert activation.
-			class UDJAT_API Activation : public Udjat::Alert::Activation {
-			protected:
-				String filename;
-				time_t maxage = 86400;
-				String payload;
-
-			public:
-				Activation(const Udjat::Alert::File *alert);
-				void emit() override;
-
-				Value & getProperties(Value &value) const override;
-				Udjat::Alert::Activation & set(const Abstract::Object &object) override;
-				Udjat::Alert::Activation & set(const std::function<bool(const char *key, std::string &value)> &expander) override;
-
-			};
-
-			std::shared_ptr<Udjat::Alert::Activation> ActivationFactory() const override;
-
-		public:
-
-			constexpr File(const char *name, const char *f, const char *p = "") : Abstract::Alert(name), filename(f), payload(p) {
+			Payload(const char *t = "") : tmpl{t} {
 			}
 
-			File(const XML::Node &node);
+		} payload;
 
-			/// @brief Get alert info.
-			Value & getProperties(Value &value) const override;
+		void reset(bool active) noexcept override;
 
-		};
+		int emit() override;
 
-	}
+	public:
+
+		FileAlert(const char *name, const char *f, const char *p = "") : Alert{name}, filename{f}, payload{p} {
+		}
+
+		FileAlert(const XML::Node &node);
+
+		virtual ~FileAlert();
+
+		bool activate() noexcept override;
+		bool activate(const Udjat::Abstract::Object &object) noexcept override;
+
+	};
 
  }
+ 

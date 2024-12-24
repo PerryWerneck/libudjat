@@ -31,7 +31,6 @@
  #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/alert/activation.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
