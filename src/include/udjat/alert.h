@@ -33,7 +33,7 @@
 		friend class Controller;
 	protected:
 
-		typedef Udjat::Alert super;
+		typedef Alert super;
 
 		/// @brief Clear activation parameters.
 		/// @param active True if the alert is being activated.

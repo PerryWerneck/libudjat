@@ -32,6 +32,8 @@
 
 	protected:
 
+		typedef Activatable super;
+
 		bool object_active = false;
 
 		constexpr Activatable(const char *name = "") : object_name{name} {
