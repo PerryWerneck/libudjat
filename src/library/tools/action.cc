@@ -115,7 +115,7 @@
 
 					} catch(const std::exception &e) {
 
-						Logger::String{"External module failed build action '",type,"': ",e.what()}.error();
+						Logger::String{"External module failed building action '",type,"': ",e.what()}.error();
 
 					} catch(...) {
 
@@ -361,14 +361,35 @@
 		for(XML::Node nd = node; nd && !(type && *type);nd = nd.parent()) {
 			type = nd.attribute("action-type").as_string();
 		}
-		
+
 		if(!(type && *type)) {
-			Logger::String message{"Required attribute 'type' is missing or empty"};
-			if(except) {
-				throw logic_error(message);
+			
+			const char *name = node.attribute("name").as_string(PACKAGE_NAME);
+
+			if(node.attribute("url")) {
+
+				type = "url";
+
+			} else if(node.attribute("cmdline")) {
+
+				type = "shell";
+
+			} else if(node.attribute("filename")) {
+
+				type = "file";
+
+			} else {
+
+				Logger::String message{"Required attribute 'type' is missing or empty"};
+				if(except) {
+					throw logic_error(message);
+				}
+				message.warning(name);
+				return std::shared_ptr<Action>();
+
 			}
-			message.warning(node.attribute("name").as_string(PACKAGE_NAME));
-			return std::shared_ptr<Action>();
+
+			Logger::String{"Required type attribute is missing or empty, using '",type,"'"}.warning(name);
 		}
 
 		debug("Searching for action backend '",type,"'");
