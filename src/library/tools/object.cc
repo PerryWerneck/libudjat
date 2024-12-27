@@ -29,6 +29,7 @@
  #include <udjat/tools/factory.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
+ #include <cstdarg>
 
  using namespace std;
 
@@ -111,6 +112,39 @@
 		set(node);
 	}
 
+	std::shared_ptr<Abstract::Object> Abstract::Object::Factory(const Object *object, ...) noexcept {
+
+		class Object : public Udjat::NamedObject {
+		public:
+			vector<const Udjat::Abstract::Object *> items;
+
+			Object(const Udjat::Abstract::Object *object) : NamedObject{object->name()} {
+			}
+
+			bool getProperty(const char *key, Udjat::Value &value) const override {
+				for(const auto item : items) {
+					if(item->getProperty(key,value)) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+		};
+
+		auto obj = make_shared<Object>(object);
+
+		va_list args;
+		va_start(args, object);
+		while(object) {
+			obj->items.push_back(object);
+			object = va_arg(args, const Udjat::Abstract::Object *);
+		}
+
+		return obj;
+		
+	}
+
 	Abstract::Object::~Object() {
 	}
 
@@ -132,7 +166,7 @@
 
 			const char *type = child.attribute("type").as_string("default");
 
-			Factory::for_each([this,type,&child](Factory &factory){
+			Factory::for_each([this,type,&child](Udjat::Factory &factory){
 
 				if(factory == child.name()) {
 

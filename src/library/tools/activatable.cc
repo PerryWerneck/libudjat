@@ -21,8 +21,13 @@
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/string.h>
+ #include <vector>
+ #include <cstdarg>
+
+ using namespace std;
 
  namespace Udjat {
 
