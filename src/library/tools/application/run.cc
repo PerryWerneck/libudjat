@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/logger.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/mainloop.h>
@@ -32,6 +31,10 @@
  #include <private/updater.h>
  #include <string>
  #include <getopt.h>
+
+ #undef LOG_DOMAIN
+ #define LOG_DOMAIN Application::Name();
+ #include <udjat/tools/logger.h>
 
  #include <iostream>     // std::cout, std::ostream, std::ios
  #include <fstream>      // std::filebuf
@@ -63,7 +66,6 @@
  namespace Udjat {
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
-
 	}
 
 	bool Application::argument(const char *opt, const char *optarg) {
@@ -72,6 +74,12 @@
 			if(!strcasecmp(opt,option.from)) {
 				return argument(option.to,optarg);
 			}
+		}
+
+		if(!strcasecmp(opt,"load-module")) {
+			Logger::String{"Loading module '",optarg,"' by command-line request"}.info();
+			Module::load(optarg,true);
+			return true;
 		}
 
 		return false;

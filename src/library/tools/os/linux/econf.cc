@@ -121,8 +121,6 @@
 
 				econf_err err = ECONF_ERROR;
 
-				debug("--------------------------------------------------");
-
 #ifdef ECONF_HAVE_READ_CONFIG_WITH_CALLBACK
 				err = econf_readConfigWithCallback(
 					(econf_file **) &hFile,

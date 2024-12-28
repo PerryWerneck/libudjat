@@ -30,6 +30,11 @@
 
 	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const char *xml) {
 
+		return run(argc,argv,info,[](Udjat::Application &){
+
+		},xml);
+
+		/*
 		Config::allow_user_homedir(true);
 
 		Logger::redirect();
@@ -76,12 +81,14 @@
 
 		}
 
-		Logger::String{"Unexpected arguments"}.error("test");
 		return -1;
+		*/
 
 	}
 
 	int Testing::run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize, const char *xml) {
+
+		int rc = -1;
 
 		Logger::redirect();
 		Logger::verbosity(9);
@@ -90,7 +97,7 @@
 		Config::Value<string> setup{"test-mode","xml_path",xml};
 
 		if(argc == 1) {
-			auto rc = Testing::Application{info,initialize}.run(1,argv,setup.c_str());
+			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 			return rc;
 		}
@@ -104,13 +111,13 @@
 
 			if(!strcasecmp(ptr,"application")) {
 
-				auto rc = Testing::Application{info,initialize}.run(1,argv,setup.c_str());
+				rc = Testing::Application{info,initialize}.run(1,argv,setup.c_str());
 				Logger::String{"Application exits with rc=",rc}.info("test");
 				return rc;
 
 			} else if(!strcasecmp(ptr,"service")) {
 
-				auto rc = Testing::Service{info,initialize}.run(1,argv,setup.c_str());
+				rc = Testing::Service{info,initialize}.run(1,argv,setup.c_str());
 				Logger::String{"Service exits with rc=",rc}.info("test");
 				return rc;
 
@@ -118,9 +125,16 @@
 
 		}
 
-		Logger::String{"Unexpected arguments"}.error("test");
-		return -1;
+		if(strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"application")) {
+			rc = Testing::Service{info}.run(argc,argv,setup.c_str());
+			Logger::String{"Service exits with rc=",rc}.info("test");
+		} else {
+			rc = Testing::Application{info}.run(argc,argv,setup.c_str());
+			Logger::String{"Application exits with rc=",rc}.info("test");
+		}
 
+		return rc;
+		
 	}
 
  }
