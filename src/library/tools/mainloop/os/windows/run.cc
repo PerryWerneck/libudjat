@@ -93,7 +93,7 @@
 		return (next - now);
 	}
 
-	Logger::String{"Unexpected interval on timer processing, using default"}.write(Logger::Error,"win32");
+	Logger::String{"Unexpected interval '",((int) (next - now)),"' on timer processing, using default"}.error();
 
 	return timers.maxwait;
  }

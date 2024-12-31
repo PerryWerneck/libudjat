@@ -24,6 +24,7 @@
  #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/http/exception.h>
  #include <vector>
  #include <cstdarg>
 
@@ -35,6 +36,14 @@
 	}
 
 	Activatable::~Activatable() {
+	}
+
+	bool Activatable::active(bool value) noexcept {
+		if(value) {
+			return activate();
+		} else {
+			return deactivate();
+		}
 	}
 
 	bool Activatable::activate(const Udjat::Abstract::Object &) noexcept {
@@ -55,6 +64,48 @@
 			child.strip();
 		}
 		return child.as_quark();
+	}
+
+	int Activatable::exec(Udjat::Value &value, bool except, const std::function<int()> &func) {
+
+		try {
+
+			return func();
+
+		} catch(const HTTP::Exception &e) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{e.what()}.error(name());
+			return e.code();
+
+		} catch(const std::system_error &e) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{e.what()}.error(name());
+			return e.code().value();
+
+		} catch(const std::exception &e) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{e.what()}.error(name());
+			return -1;
+
+		} catch(...) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{"Unexpected error"}.error(name());
+			return -1;
+
+		}
+
 	}
 
  }

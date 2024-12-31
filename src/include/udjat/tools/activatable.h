@@ -34,8 +34,6 @@
 
 		typedef Activatable super;
 
-		bool object_active = false;
-
 		constexpr Activatable(const char *name = "") : object_name{name} {
 		}
 	
@@ -45,15 +43,23 @@
 		/// @brief Convenience method to get payload from xml
 		static const char * payload(const XML::Node &node);
 
+		/// @brief Convenience method to capture and translate exceptions.
+		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
+
 	public:
 
 		inline const char *name() const noexcept {
 			return object_name;
 		}
 
-		inline bool active() const noexcept {
-			return object_active;
+		inline const char *c_str() const noexcept {
+			return object_name;
 		}
+
+		/// @brief Activate/deactivate by parameter.
+		/// @param value true to activate, false to deactivate.
+		/// @return true if the state was changed.
+		bool active(bool value) noexcept;
 
 		/// @brief Activate object.
 		/// @return true if the object was activated, false if already active.

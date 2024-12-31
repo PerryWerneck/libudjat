@@ -44,11 +44,11 @@
 	URLAlert::~URLAlert() {
 	}
 
-	void URLAlert::reset(bool active) noexcept {
-		if(!active) {
+	void URLAlert::reset(time_t next) noexcept {
+		if(!next) {
 			payload.value.clear();
 		}
-		super::reset(active);
+		super::reset(next);
 	}
 
 	bool URLAlert::activate() noexcept {

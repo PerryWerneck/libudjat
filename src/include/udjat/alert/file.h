@@ -42,7 +42,7 @@
 
 		} payload;
 
-		void reset(bool active) noexcept override;
+		void reset(time_t next) noexcept override;
 
 		int emit() override;
 

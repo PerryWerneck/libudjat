@@ -51,11 +51,11 @@
 	FileAlert::~FileAlert() {
 	}	
 
-	void FileAlert::reset(bool active) noexcept {
-		if(!active) {
+	void FileAlert::reset(time_t next) noexcept {
+		if(!next) {
 			payload.value.clear();
 		}
-		super::reset(active);
+		super::reset(next);
 	}
 
 	bool FileAlert::activate() noexcept {

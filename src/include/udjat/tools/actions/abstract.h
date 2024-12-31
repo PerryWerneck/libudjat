@@ -40,9 +40,6 @@
 	protected:
 		const char *title;
 
-		/// @brief Convenience method to capture and translate exceptions.
-		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
-
 	public:
 
 		/// @brief The action factory.

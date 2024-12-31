@@ -770,6 +770,6 @@ install_headers(
 )
 
 install_headers(
-  'src/include/udjat/tools/action/abstract.h',
-  subdir: 'udjat/tools/action'  
+  'src/include/udjat/tools/actions/abstract.h',
+  subdir: 'udjat/tools/actions'  
 )

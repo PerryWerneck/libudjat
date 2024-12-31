@@ -83,15 +83,15 @@
 
 			for(Alert *alert : *this) {
 
-				if(!(alert->activation.next && alert->active())) {
+				if(!alert->activation.next) {
 					continue;
 				}
 
 				if(alert->activation.next <= now) {	
 
 					// Emit alert.
-					alert->activation.next = 0;
 					alert->activation.running = true;
+					alert->activation.next = 0;
 					ThreadPool::getInstance().push([alert](){
 						try {
 							int result = alert->emit();
@@ -156,18 +156,22 @@
 
 	}
 
-	void Alert::reset(bool active) noexcept {
-		object_active = active;
+	void Alert::reset(time_t next) noexcept {
 		activation.suceeded = 0;
-		activation.failed = 0;	
+		activation.failed = 0;
+		activation.next = next;
+	}
+
+	bool Alert::active() const noexcept {
+		return activation.next != 0 || activation.running;
 	}
 
 	bool Alert::activate() noexcept {
 		if(active()) {
+			errno = EALREADY;
 			return false;
 		}
-		reset(true);
-		activation.next = time(0)+timers.start;
+		reset(time(0)+timers.start);
 		Logger::String{
 			"Alert activation scheduled to ",
 			TimeStamp(activation.next).to_string().c_str()
@@ -177,14 +181,14 @@
 	}
 
 	void Alert::activate(time_t next) noexcept {
-		activation.next = next;
 		if(!active()) {
+			reset(next);
 			Logger::String{
 				"Alert activation scheduled to ",
 				TimeStamp(activation.next).to_string().c_str()
 			}.info(name());
-			reset(true);
 		} else {
+			activation.next = next;
 			Logger::String{
 				"Alert activation re-scheduled to ",
 				TimeStamp(activation.next).to_string().c_str()
@@ -205,9 +209,7 @@
 			Logger::String{"Deactivating alert"}.info(name());
 		}
 
-		reset(false);
-		activation.next = 0;
-
+		reset(0);
 		Controller::getInstance().wakeup();
 
 		return true;
@@ -230,8 +232,7 @@
 		} else if(restart.success) {
 
 			// Reactivate.
-			reset(true);
-			activation.next = time(0) + restart.success;
+			reset(time(0) + restart.success);
 			Logger::String{
 				"Alert will be reactivated at ",
 				TimeStamp(activation.next).to_string().c_str()
@@ -245,8 +246,7 @@
 				activation.suceeded," successful activations"
 			}.info(name());
 
-			reset(false);
-			activation.next = 0;
+			reset(0);
 
 		}
 
@@ -272,8 +272,7 @@
 		} else if(restart.failed) {
 
 			// Reactivate.
-			activation.next = time(0) + restart.failed;
-			reset(true);
+			reset(time(0) + restart.failed);
 			Logger::String{
 				"Alert will be reactivated at ",
 				TimeStamp(activation.next).to_string().c_str()
@@ -286,8 +285,7 @@
 				"Alert deactivated after ",
 				activation.failed," failed activations"
 			}.info(name());
-			reset(false);
-			activation.next = 0;
+			reset(0);
 
 		}
 

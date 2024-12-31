@@ -31,13 +31,14 @@
 	private:
 		class Controller;
 		friend class Controller;
+
 	protected:
 
 		typedef Alert super;
 
 		/// @brief Clear activation parameters.
-		/// @param active True if the alert is being activated.
-		virtual void reset(bool active) noexcept;
+		/// @param next Timestamp for next activation (0 to deactivate).
+		virtual void reset(time_t next = 0) noexcept;
 
 		/// @brief Alert limits.
 		struct {
@@ -102,6 +103,10 @@
 		Alert(const XML::Node &node);
 
 		virtual ~Alert();
+
+		/// @brief Is alert active?
+		/// @return true if the alert is active.
+		bool active() const noexcept;
 
 		/// @brief Activate an alert.
 		/// @return true if the alert was activated, false if already active.

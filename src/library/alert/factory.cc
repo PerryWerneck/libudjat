@@ -23,7 +23,7 @@
  #include <udjat/alert/url.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
- #include <udjat/tools/action/abstract.h>
+ #include <udjat/tools/actions/abstract.h>
  #include <stdexcept>
 
  #undef LOG_DOMAIN

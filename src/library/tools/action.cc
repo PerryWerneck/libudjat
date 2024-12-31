@@ -23,7 +23,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/action/abstract.h>
+ #include <udjat/tools/actions/abstract.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/value.h>
@@ -470,48 +470,6 @@
 	}
 
 	void Action::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &) const {
-	}
-
-	int Action::exec(Udjat::Value &value, bool except, const std::function<int()> &func) {
-
-		try {
-
-			return func();
-
-		} catch(const HTTP::Exception &e) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{e.what()}.error(name());
-			return e.code();
-
-		} catch(const std::system_error &e) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{e.what()}.error(name());
-			return e.code().value();
-
-		} catch(const std::exception &e) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{e.what()}.error(name());
-			return -1;
-
-		} catch(...) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{"Unexpected error"}.error(name());
-			return -1;
-
-		}
-
 	}
 
  }
