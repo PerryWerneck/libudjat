@@ -744,7 +744,6 @@ install_headers(
   'src/include/udjat/tools/system.h',
   'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/report.h',
-  'src/include/udjat/tools/action.h',
   subdir: 'udjat/tools'  
 )
 
@@ -768,4 +767,9 @@ install_headers(
 install_headers(
   'src/include/udjat/ui/icon.h',
   subdir: 'udjat/ui'  
+)
+
+install_headers(
+  'src/include/udjat/tools/action/abstract.h',
+  subdir: 'udjat/tools/action'  
 )

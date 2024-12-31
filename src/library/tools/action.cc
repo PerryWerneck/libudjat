@@ -23,7 +23,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/action.h>
+ #include <udjat/tools/action/abstract.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/value.h>

@@ -32,11 +32,11 @@
  #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/action.h>
+ #include <udjat/tools/action/abstract.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/action.h>
+ #include <udjat/tools/action/abstract.h>
  #include <udjat/tools/interface.h>
  #include <udjat/alert.h>
 
