@@ -55,7 +55,7 @@
 			Container & operator=(Container &&) = delete;
 
 			virtual ~Container() {
-				clear()
+				clear();
 			}
 
 			static Container<T> & getInstance() {
