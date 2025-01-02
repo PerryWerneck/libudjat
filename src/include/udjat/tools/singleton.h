@@ -42,13 +42,12 @@
 		protected:
 
 			L objects;
-
 			std::mutex guard;
+
+		public:
 
 			Container() {
 			}
-
-		public:
 
 			Container(const Container&) = delete;
 			Container& operator=(const Container &) = delete;
@@ -56,11 +55,7 @@
 			Container & operator=(Container &&) = delete;
 
 			virtual ~Container() {
-				while(size()) {
-					P object = back();
-					delete object;
-					remove(object); // Just in case.
-				}
+				clear()
 			}
 
 			static Container<T> & getInstance() {
