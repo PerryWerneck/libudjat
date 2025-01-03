@@ -19,6 +19,8 @@
 
  /// @brief Declares percentage agent.
  
+ #pragma once
+
  #include <udjat/defs.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/xml.h>
