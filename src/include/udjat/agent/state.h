@@ -26,27 +26,28 @@
  *
  */
 
-#pragma once
+ #pragma once
 
-#include <string>
-#include <udjat/tools/xml.h>
-#include <memory>
-#include <vector>
-#include <mutex>
-#include <functional>
-#include <udjat/defs.h>
-#include <udjat/tools/quark.h>
-#include <udjat/tools/xml.h>
-#include <udjat/tools/activatable.h>
-#include <udjat/tools/value.h>
-#include <udjat/tools/object.h>
-#include <udjat/tools/parse.h>
-#include <cstring>
-#include <ostream>
-#include <udjat/agent/level.h>
-#include <udjat/tools/converters.h>
+ #include <string>
+ #include <udjat/tools/xml.h>
+ #include <memory>
+ #include <vector>
+ #include <mutex>
+ #include <functional>
+ #include <iostream>
+ #include <udjat/defs.h>
+ #include <udjat/tools/quark.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/activatable.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/object.h>
+ #include <udjat/tools/parse.h>
+ #include <cstring>
+ #include <ostream>
+ #include <udjat/agent/level.h>
+ #include <udjat/tools/converters.h>
 
-namespace Udjat {
+ namespace Udjat {
 
 	/// @brief Get OStream from level.
 	UDJAT_API std::ostream & LogFactory(Udjat::Level level);
@@ -129,6 +130,17 @@ namespace Udjat {
 				return properties.level;
 			}
 
+#if __cplusplus >= 202002L
+
+			inline int operator <=>(const Level level) const noexcept {
+				return properties.level - level;
+			}
+
+			inline int operator <=>(const Abstract::State &state) const noexcept {
+				return properties.level - state.properties.level;
+			}
+
+#else
 			inline bool operator ==(const Level level) const noexcept {
 				return properties.level == level;
 			}
@@ -148,6 +160,7 @@ namespace Udjat {
 			inline bool operator<=(const Abstract::State &state) {
 				return properties.level <= state.properties.level;
 			}
+#endif
 
 			/// @brief Is this state a critical one?
 			/// @return true if the state is critical.
@@ -261,6 +274,18 @@ namespace Udjat {
 			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
 		}
 
+#if __cplusplus >= 202002L
+
+			inline int operator <=>(const std::string &value) const noexcept {
+				return strcasecmp(this->std::string::c_str(),value.c_str());
+			}
+
+			inline int operator <=>(const char *value) const noexcept {
+				return strcasecmp(this->std::string::c_str(),value);
+			}
+
+#else
+
 		inline bool operator==(const std::string &value) {
 			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
 		}
@@ -268,6 +293,8 @@ namespace Udjat {
 		inline bool operator==(const char *value) {
 			return strcasecmp(this->std::string::c_str(),value) == 0;
 		}
+
+#endif
 
 		std::string value() const override {
 			return *this;
@@ -302,4 +329,16 @@ namespace Udjat {
 
 	};
 
-}
+ }
+
+ namespace std {
+
+	inline std::string to_string(const Udjat::Abstract::State &state) noexcept {
+		return state.to_string();
+	}
+
+	inline ostream& operator<< (ostream& os, Udjat::Abstract::State state) noexcept {
+			return os << to_string(state);
+	}
+
+ }

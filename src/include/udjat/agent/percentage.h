@@ -17,7 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- /// @brief Declares agent with a percentage.
+ /// @brief Declares percentage agent.
  
  #include <udjat/defs.h>
  #include <udjat/agent/abstract.h>
@@ -37,7 +37,7 @@
 	private:
 
 		/// @brief Agent value.
-		Percentage value;
+		Percentage value = 0.0;
 
 	protected:
 
@@ -83,27 +83,6 @@
 		inline void start(const Percentage value) {
 			this->value = value;
 			Abstract::Agent::start();
-		}
-
-		struct StateDescription {
-			float value;			///< @brief State max value.
-			const char * name;		///< @brief State name.
-			Udjat::Level level;		///< @brief State level.
-			const char * summary;	///< @brief State summary.
-			const char * body;		///< @brief State description
-		};
-
-		inline void append(const StateDescription &state, float &current) {
-			this->push_back(
-				std::make_shared<State<float>>(
-					state.name,
-					current,
-					state.value,
-					state.level,
-					state.summary,
-					state.body
-				)
-			);
 		}
 
 	public:

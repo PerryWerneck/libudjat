@@ -34,6 +34,7 @@
  #include <udjat/tools/actions/abstract.h>
  #include <udjat/tools/script.h>
  #include <udjat/tools/value.h>
+ #include <udjat/agent/percentage.h>
 
  #include <cstring>
  #include <list>
@@ -182,6 +183,18 @@
 					return make_shared<Udjat::Agent<std::string>>(node);
 				}
 			},
+			{
+				"percentage",
+				[](const XML::Node &node) {
+					return make_shared<Udjat::Agent<Percentage>>(node);
+				}
+			},
+			{
+				"%",
+				[](const XML::Node &node) {
+					return make_shared<Udjat::Agent<Percentage>>(node);
+				}
+			},
 			
 			{
 				"url",
@@ -204,17 +217,16 @@
 
 						std::shared_ptr<Abstract::State> computeState() override {
 
-							std::shared_ptr<Abstract::State> state = Udjat::Agent<int32_t>::computeState();
-
-							if(!state) {
-								state = HTTP::Error::StateFactory(this->get());
+							if(!states.empty()) {
+								return Udjat::Agent<int32_t>::computeState();
 							}
 
-							if(!state) {
-								state = Abstract::Agent::computeState();
+							std::shared_ptr<Abstract::State> state = HTTP::Error::StateFactory(this->get());
+							if(state) {
+								return state;
 							}
 
-							return state;
+							return Abstract::Agent::computeState();
 
 						}
 

@@ -31,6 +31,9 @@
 
 	</agent>
 
+	<agent name='percent' type='%'>
+	</agent>
+
 	<init name='file' type='file' filename='/tmp/test.log'>
 		${timestamp(%Y/%m/%d %H:%M:%S)}
 	</init>

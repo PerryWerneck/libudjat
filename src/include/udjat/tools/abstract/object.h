@@ -129,6 +129,22 @@
 
 			virtual const char * name() const noexcept;
 
+#if __cplusplus >= 202002L
+
+			inline auto operator <=>(const char *obj) const noexcept {
+				return strcasecmp(name(),obj);
+			}
+
+			inline auto operator <=>(const Object &object) const noexcept {
+				return strcasecmp(name(),object.name());
+			}
+
+			inline auto operator <=>(const Object *object) const noexcept {
+				return strcasecmp(name(),object->name());
+			}
+
+#else
+
 			inline bool operator ==(const char * obj) const noexcept {
 				return strcasecmp(name(),obj) == 0;
 			}
@@ -156,6 +172,8 @@
 			inline bool operator > (const Object *object) const noexcept {
 				return strcasecmp(name(),object->name()) > 0;
 			}
+
+#endif
 
 			virtual std::string to_string() const noexcept;
 
