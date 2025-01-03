@@ -123,7 +123,7 @@
 			/// @return 'quarked' string with the expanded value.
 			static const char * expand(const XML::Node &node, const char *group, const char *value) [[deprecated("Use Udjat::String")]];
 
-			static inline const char * expand(const XML::Node &node, const std::string &group, const char *value) [[deprecated("Use Udjat::String")]]{
+			static inline const char * expand(const XML::Node &node, const std::string &group, const char *value) [[deprecated("Use Udjat::String")]] {
 				return expand(node,group.c_str(),value);
 			}
 
@@ -189,13 +189,17 @@
 			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
 			/// @param cleanup if true put an empty string in the non existant attributes.
 			/// @return String with the known ${} tags expanded.
-			std::string expand(const char *text, bool dynamic = false, bool cleanup = false) const;
+			inline std::string expand(const char *text, bool dynamic = false, bool cleanup = false) const [[deprecated("Use Udjat::String")]] {
+				return String{text}.expand(*this,dynamic,cleanup);
+			}
 
 			/// @brief Expand ${} tags using object properties.
 			/// @param text Text to expand.
 			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
 			/// @param cleanup if true put an empty string in the non existant attributes.
-			void expand(std::string &text, bool dynamic = false, bool cleanup = false) const;
+			inline void expand(std::string &text, bool dynamic = false, bool cleanup = false) const [[deprecated("Use Udjat::String")]] {
+				text = String{text.c_str()}.expand(*this,dynamic,cleanup);
+			}
 
 			/// @brief Add object properties to the value.
 			virtual Value & getProperties(Value &value) const;

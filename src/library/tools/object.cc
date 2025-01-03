@@ -121,6 +121,13 @@
 			Object(const Udjat::Abstract::Object *object) : NamedObject{object->name()} {
 			}
 
+			Value & getProperties(Value &value) const override {
+				for(const auto item : items) {
+					item->getProperties(value);
+				}
+				return value;
+			}
+
 			bool getProperty(const char *key, Udjat::Value &value) const override {
 				for(const auto item : items) {
 					if(item->getProperty(key,value)) {
@@ -464,16 +471,6 @@
 		}
 
 		return def;
-	}
-
-	string Abstract::Object::expand(const char *text, bool dynamic, bool cleanup) const {
-		return String(text).expand([this](const char *key, std::string &value) {
-			return getProperty(key,value);
-		},dynamic,cleanup);
-	}
-
-	void Abstract::Object::expand(std::string &text, bool dynamic, bool cleanup) const {
-		text = expand(text.c_str(),dynamic,cleanup);
 	}
 
 	const char * Abstract::Object::expand(const XML::Node &node, const char *group, const char *value) {
