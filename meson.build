@@ -227,7 +227,6 @@ lib_src += [
   'src/library/agent/update.cc',
   'src/library/agent/root.cc',
   'src/library/agent/setup.cc',
-  'src/library/agent/percentage.cc',
   'src/library/alert/construct.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
@@ -746,6 +745,7 @@ install_headers(
   'src/include/udjat/tools/system.h',
   'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/report.h',
+  'src/include/udjat/tools/percentage.h',
   subdir: 'udjat/tools'  
 )
 
