@@ -222,7 +222,7 @@ namespace Udjat {
 
 		public:
 			State(const char *name, const Udjat::Level level, int c, const char *s, const char *b) 
-			 : Abstract::State{"name",level}, code{c}, summary{s}, body{b} {
+			 : Abstract::State{name,level}, code{c}, summary{s}, body{b} {
 
 				Abstract::State::properties.body = this->body.c_str();
 				Object::properties.summary = this->summary.c_str();
