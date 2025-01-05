@@ -212,63 +212,69 @@ namespace Udjat {
 
 	}
 
+	std::shared_ptr<Abstract::State> Abstract::State::Factory(const char *name, const Udjat::Level level, int code, const char *summary, const char *body) {
+
+		class State : public Abstract::State {
+		private:
+			int code;
+			string summary;
+			string body;
+
+		public:
+			State(const char *name, const Udjat::Level level, int c, const char *s, const char *b) 
+			 : Abstract::State{"name",level}, code{c}, summary{s}, body{b} {
+
+				Abstract::State::properties.body = this->body.c_str();
+				Object::properties.summary = this->summary.c_str();
+
+				// https://specifications.freedesktop.org/icon-naming-spec/latest/#names
+				switch(level) {
+				case Level::unimportant:
+				case Level::undefined:
+				case Level::ready:
+					Object::properties.icon = "dialog-information";
+					break;
+
+				case Level::warning:
+					Object::properties.icon = "dialog-warning";
+					break;
+
+				case Level::error:
+				case Level::critical:
+					Object::properties.icon = "dialog-error";
+					break;
+
+				}
+			}
+		};
+
+		return make_shared<State>(name,level,code,summary,body);
+
+	}
+		
+
 	std::shared_ptr<Abstract::State> Abstract::State::Factory(const std::exception &except, const char *summary) {
 
 		const std::system_error *syserror = dynamic_cast<const std::system_error *>(&except);
 
-		if(!syserror) {
-
-			// It's not a system error
-
-			/// @brief Exception state.
-			class Error : public Abstract::State {
-			private:
-
-				// Use string to keep the contents.
-				string summary;
-				string body;
-
-			public:
-				Error(const char *s, const exception &e) : Abstract::State("error",Udjat::critical), summary(s), body(e.what()) {
-					Abstract::State::properties.body = this->body.c_str();
-					Object::properties.icon = "dialog-error";
-					Object::properties.summary = this->summary.c_str();
-				}
-
-			};
-
-			return make_shared<Error>(summary,except);
-
+		if(syserror) {
+			return Factory(
+				"error",
+				Udjat::critical,
+				syserror->code().value(),
+				summary,
+				syserror->what()
+			);
 		}
 
-		/// @brief System Error State
-		class SysError : public Abstract::State {
-		private:
-
-			// Use string to keep the contents.
-			string summary;
-			string body;
-			int code;
-
-		public:
-			SysError(const char *s, const system_error *e) : Abstract::State("error",Udjat::critical), summary(s), body(e->what()), code(e->code().value()) {
-				Abstract::State::properties.body = this->body.c_str();
-				Object::properties.icon = "dialog-error";
-				Object::properties.summary = this->summary.c_str();
-			}
-
-			Value & getProperties(Value &value) const override {
-				Abstract::State::getProperties(value);
-				value["syscode"] = code;
-				return value;
-			}
-
-		};
-
-		// It's a system error, create state from it.
-		// id = code.value()
-		// body = code.message();
-		return make_shared<SysError>(summary,syserror);
+		// It's not a system error
+		return Factory(
+			"error",
+			Udjat::critical,
+			-1,
+			summary,
+			except.what()
+		);
 
 	}
 

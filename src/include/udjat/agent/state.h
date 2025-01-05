@@ -197,6 +197,9 @@
 			/// @return A new state object based on the exception type and message.
 			static std::shared_ptr<Abstract::State> Factory(const std::exception &except, const char *summary);
 
+			/// @brief Create an state.
+			static std::shared_ptr<Abstract::State> Factory(const char *name, const Udjat::Level level, int code = 0, const char *summary = "", const char *body = "");
+
 		};
 
 	}
