@@ -155,15 +155,9 @@ namespace Udjat {
 	}
 
 	Value & Abstract::State::getProperties(Value &value) const {
-
-		debug("properties");
 		Object::getProperties(value);
-		debug("body");
 		value["body"] = properties.body;
-		debug("level");
 		value["level"] = std::to_string(properties.level);
-		debug("---------");
-
 		return value;
 	}
 
