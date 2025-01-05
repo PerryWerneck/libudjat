@@ -135,23 +135,25 @@ namespace Udjat {
 
 	const char * Abstract::State::icon() const noexcept {
 		const char *icon = Object::icon();
-		if(!(icon && *icon)) {
-
-			// Set icon based on level
-			static const char * names[] = {
-				"dialog-information",	// undefined,
-				"dialog-information",	// unimportant,
-				"dialog-information",	// ready,
-				"dialog-warning",		// warning,
-				"dialog-error",			// error,
-				"dialog-error",			// critical
-			};
-
-			if( ((size_t) properties.level) < (sizeof(names)/sizeof(names[0]))) {
-				icon = names[properties.level];
-			}
+		if((icon && *icon)) {
+			return "";
 		}
-		return icon;
+
+		// Set icon based on level
+		static const char * names[] = {
+			"dialog-information",	// undefined,
+			"dialog-information",	// unimportant,
+			"dialog-information",	// ready,
+			"dialog-warning",		// warning,
+			"dialog-error",			// error,
+			"dialog-error",			// critical
+		};
+
+		if( ((size_t) properties.level) < (sizeof(names)/sizeof(names[0]))) {
+			return names[properties.level];
+		}
+
+		return "";
 	}
 
 	Value & Abstract::State::getProperties(Value &value) const {
@@ -217,28 +219,8 @@ namespace Udjat {
 		public:
 			State(const char *name, const Udjat::Level level, int c, const char *s, const char *b) 
 			 : Abstract::State{name,level}, code{c}, summary{s}, body{b} {
-
 				Abstract::State::properties.body = this->body.c_str();
 				Object::properties.summary = this->summary.c_str();
-
-				// https://specifications.freedesktop.org/icon-naming-spec/latest/#names
-				switch(level) {
-				case Level::unimportant:
-				case Level::undefined:
-				case Level::ready:
-					Object::properties.icon = "dialog-information";
-					break;
-
-				case Level::warning:
-					Object::properties.icon = "dialog-warning";
-					break;
-
-				case Level::error:
-				case Level::critical:
-					Object::properties.icon = "dialog-error";
-					break;
-
-				}
 			}
 		};
 
