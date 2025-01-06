@@ -101,6 +101,16 @@
 	}
 
 	template <>
+	inline short from_xml<short>(const XML::Node &node, const short def, const char *attrname) {
+		return (short) node.attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline unsigned short from_xml<unsigned short>(const XML::Node &node, const unsigned short def, const char *attrname) {
+		return (unsigned short) node.attribute(attrname).as_int(def);
+	}
+
+	template <>
 	inline long from_xml<long>(const XML::Node &node, const long def, const char *attrname) {
 		return (long) node.attribute(attrname).as_int(def);
 	}
@@ -119,37 +129,6 @@
 	inline double from_xml<double>(const XML::Node &node, const double def, const char *attrname) {
 		return node.attribute(attrname).as_double(def);
 	}
-
-
-	/*
-	inline int to_value(const XML::Node &node, const int value, const char *attrname = "value") {
-		return node.attribute(attrname).as_int(value);
-	}
-
-	inline unsigned int to_value(const XML::Node &node, const unsigned int value, const char *attrname = "value") {
-		return node.attribute(attrname).as_uint(value);
-	}
-
-	inline unsigned short to_value(const XML::Node &node, const unsigned short value, const char *attrname = "value") {
-		return (unsigned short) node.attribute(attrname).as_int(value);
-	}
-
-	inline float to_value(const XML::Node &node, const float value, const char *attrname = "value") {
-		return node.attribute(attrname).as_float(value);
-	}
-
-	inline double to_value(const XML::Node &node, const double value, const char *attrname = "value") {
-		return node.attribute(attrname).as_double(value);
-	}
-
-	inline unsigned long to_value(const XML::Node &node, const unsigned long value, const char *attrname = "value") {
-		return (unsigned long) node.attribute(attrname).as_uint(value);
-	}
-
-	inline long to_value(const XML::Node &node, const long value, const char *attrname = "value") {
-		return (long) node.attribute(attrname).as_int(value);
-	}
-	*/
 
  }
 
