@@ -27,6 +27,7 @@
  #include <udjat/tools/report.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
+ #include <udjat/agent/percentage.h>
 
  using namespace std;
  using namespace Udjat;
@@ -39,6 +40,17 @@
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
 
 		Agent<unsigned short> test{"test-agent",XML::Node{}};
+
+		{
+			Agent<Percentage> percent{"test-percent",0.1};
+
+			string str;
+			percent.getProperty("value",str);
+			debug("PERCENT------------------> ",str.c_str());
+
+			debug("Expanding----> '",String{"The percent value is ${value}"}.expand(percent).c_str(),"'");
+			
+		}
 
 		MainLoop::getInstance().TimerFactory(1000,[]{
 
