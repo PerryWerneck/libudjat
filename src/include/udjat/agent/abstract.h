@@ -201,6 +201,13 @@
 				return (update.timer = value);
 			}
 
+			/// @brief Convenience method to build custom state.
+			/// @param name	State name (should be constant).
+			/// @param level The state level.
+			/// @param summary State summary, will be expanded with agent properties.
+			/// @param summary State body, will be expanded with agent properties.
+			std::shared_ptr<Abstract::State> StateFactory(const char *name, const Udjat::Level level, const char *summary = "", const char *body = "");
+
 		public:
 			class Controller;
 			friend class Controller;

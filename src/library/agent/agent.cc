@@ -226,4 +226,27 @@ namespace Udjat {
 
 	}
 
+	std::shared_ptr<Abstract::State> Abstract::Agent::StateFactory(const char *name, const Udjat::Level level, const char *summary, const char *body) {
+
+		class State : public Abstract::State {
+		private:
+			String summary;
+			String body;
+
+		public:
+			State(const Udjat::Object &object, const char *name, const Udjat::Level level, const char *s, const char *b) 
+			 : Abstract::State{name,level}, summary{s}, body{b} {
+
+				summary.expand(object);
+				body.expand(object);
+				
+				Abstract::State::properties.body = this->body.c_str();
+				Object::properties.summary = this->summary.c_str();
+			}
+		};
+
+		return make_shared<State>(*this, name, level,summary,body);
+
+	}
+
 }
