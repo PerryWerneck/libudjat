@@ -50,6 +50,9 @@
 	NamedObject::NamedObject(const XML::Node &node) : NamedObject{NameFactory(node)} {
 	}
 
+	NamedObject::NamedObject(const char *name, const XML::Node &) : NamedObject{name} {
+	}
+
 	const char * NamedObject::name() const noexcept {
 		return objectName;
 	}
@@ -109,6 +112,10 @@
 
 
 	Object::Object(const XML::Node &node) : NamedObject(node) {
+		set(node);
+	}
+
+	Object::Object(const char *name, const XML::Node &node) : NamedObject(name, node) {
 		set(node);
 	}
 

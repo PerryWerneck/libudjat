@@ -218,6 +218,7 @@
 			Agent & operator=(Agent &&) = delete;
 
 			Agent(const char *name = "", const char *label = "", const char *summary = "");
+			Agent(const char *name, const XML::Node &node);
 			Agent(const XML::Node &node);
 
 			virtual ~Agent();

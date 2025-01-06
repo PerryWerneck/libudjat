@@ -68,6 +68,10 @@ namespace Udjat {
 
 	}
 
+	Abstract::Agent::Agent(const char *name, const XML::Node &node) : Object(name, node) {
+		Controller::setup_properties(*this,node);
+	}
+
 	Abstract::Agent::Agent(const XML::Node &node) : Object(node) {
 		Controller::setup_properties(*this,node);
 	}

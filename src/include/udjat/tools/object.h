@@ -39,6 +39,7 @@
 	protected:
 
 		constexpr NamedObject(const char *name = "") : objectName(name) {}
+		NamedObject(const char *name, const XML::Node &node);
 		NamedObject(const XML::Node &node);
 
 		/// @brief Set object properties from XML node.
@@ -128,6 +129,7 @@
 		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
+		Object(const char *name, const XML::Node &node);
 		Object(const XML::Node &node);
 		void set(const XML::Node &node);
 

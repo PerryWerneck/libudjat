@@ -25,6 +25,8 @@
  #include <udjat/tools/interface.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/report.h>
+ #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
 
  using namespace std;
  using namespace Udjat;
@@ -35,6 +37,8 @@
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
+
+		Agent<unsigned short> test{"test-agent",XML::Node{}};
 
 		MainLoop::getInstance().TimerFactory(1000,[]{
 
