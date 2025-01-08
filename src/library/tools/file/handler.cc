@@ -25,6 +25,7 @@
  #include <udjat/tools/protocol.h>
  #include <sys/types.h>
  #include <sys/stat.h>
+ #include <udjat/tools/string.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -39,7 +40,8 @@
 
  namespace Udjat {
 
-	File::Handler::Handler(const char *filename, bool write) : 	Handler{::open(filename,O_CREAT|(write ? O_RDWR : O_RDONLY), S_IRUSR | S_IWUSR)} {
+	File::Handler::Handler(const char *filename, bool write) 
+		: 	Handler{::open(String{filename}.expand().c_str(),O_CREAT|(write ? O_RDWR : O_RDONLY), S_IRUSR | S_IWUSR)} {
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),filename);
