@@ -85,17 +85,19 @@
 		return MainLoop::getInstance().enabled(this);
 	}
 
-	void MainLoop::Timer::enable(unsigned long milliseconds) {
+	bool MainLoop::Timer::enable(unsigned long milliseconds) {
 		values.interval = milliseconds;
-		enable();
+		return enable();
 	}
 
-	void MainLoop::Timer::enable() {
+	bool MainLoop::Timer::enable() {
 		values.activation_time = getCurrentTime() + values.interval;
 		if(!enabled()) {
 			MainLoop::getInstance().push_back(this);
+			return true;
 		}
 		MainLoop::getInstance().wakeup();
+		return false;
 	}
 
 	void MainLoop::Timer::disable() {

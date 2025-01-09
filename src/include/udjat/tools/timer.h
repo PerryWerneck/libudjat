@@ -72,11 +72,17 @@
 		bool enabled() const;
 
 		/// @brief Enable timer.
-		void enable();
+		/// @return true if the timer was enabled.
+		/// @retval true The timer was enabled.
+		/// @retval false The timer was already enabled.
+		bool enable();
 
 		/// @brief Enable timer.
 		/// @param interval Timer value in milliseconds.
-		void enable(unsigned long milliseconds);
+		/// @return true if the timer was enabled.
+		/// @retval true The timer was enabled.
+		/// @retval false The timer was already enabled.
+		bool enable(unsigned long milliseconds);
 
 		/// @brief Disable timer
 		void disable();
