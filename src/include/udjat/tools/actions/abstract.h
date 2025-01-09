@@ -88,7 +88,7 @@
 		/// @brief Execute action.
 		/// @param request The client request.
 		/// @param response The response to client.
-		/// @param except If false will not launche exception, just return an error code.
+		/// @param except If false will not launch exception, just return an error code.
 		/// @return The return code.
 		/// @retval 0 Success.
 		virtual int call(Udjat::Request &request, Udjat::Response &response, bool except = true) = 0;

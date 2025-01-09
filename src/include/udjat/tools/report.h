@@ -119,6 +119,13 @@
 
 	};
 
-
  }
 
+ namespace std {
+
+	template <typename T>
+	inline Udjat::Report & operator<<(Udjat::Report &report, T value) {
+		return report.push_back(value);
+	}
+
+ }
