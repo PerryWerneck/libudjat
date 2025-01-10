@@ -45,6 +45,12 @@
 
 	}
 
+	String String::Factory(float value, int precision) {
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(precision) << value;
+		return String{stream.str()};
+	}
+
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
 
 	void String::append(const char *str) {

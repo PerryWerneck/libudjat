@@ -110,6 +110,8 @@
 		inline String(Udjat::String &str) : std::string{str} {
 		}
 
+		String Factory(float value, int precision = 2);
+
 		template<typename T> inline String(const T &str) : std::string{std::to_string(str)} {
 		}
 
