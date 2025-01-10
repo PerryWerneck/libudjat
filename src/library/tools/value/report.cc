@@ -31,6 +31,19 @@
  
 	Udjat::Report & Value::ReportFactory(const char *column_name, ... ) {
 
+		vector<string> headers;
+
+		va_list args;
+		va_start(args, column_name);
+		while(column_name) {
+			headers.emplace_back(column_name);
+			column_name = va_arg(args, const char *);
+		}
+		va_end(args);		
+
+		return ReportFactory(headers);
+
+		/*
 		clear();
 
 		va_list args;
@@ -42,6 +55,34 @@
 		content.ptr = (void *) worker;
 
 		return *worker;
+		*/
+
+	}
+
+	Udjat::Report & Value::ReportFactory(const Value &first_row) {
+
+		if(first_row == Value::Object) {
+			throw runtime_error("Unable to convert value");
+		}
+
+		vector<string> headers;
+
+		first_row.for_each([&](const char *name, const Value &value){
+			headers.emplace_back(name);
+			return false;
+		});
+
+		return ReportFactory(headers);
+		
+/*
+		clear();
+
+		Udjat::Report *worker = new Udjat::Report(first_row);
+		type = Report;
+		content.ptr = (void *) worker;
+
+		return *worker;
+*/
 
 	}
 
@@ -50,18 +91,6 @@
 		clear();
 
 		Udjat::Report *worker = new Udjat::Report(column_names);
-		type = Report;
-		content.ptr = (void *) worker;
-
-		return *worker;
-
-	}
-
-	Udjat::Report & Value::ReportFactory(const Value &first_row) {
-
-		clear();
-
-		Udjat::Report *worker = new Udjat::Report(first_row);
 		type = Report;
 		content.ptr = (void *) worker;
 
