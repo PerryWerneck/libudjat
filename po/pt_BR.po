@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-02 08:57-0300\n"
+"POT-Creation-Date: 2025-01-10 15:07-0300\n"
 "PO-Revision-Date: 2024-08-15 01:13-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,66 +20,52 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.4.4\n"
 
-#: src/library/agent/agent.cc:241
+#: src/library/agent/agent.cc:222
 msgid "default"
 msgstr "padrão"
 
-#: src/library/agent/agent.cc:243
+#: src/library/agent/agent.cc:224
 msgid "Normal"
 msgstr "Normal"
 
-#: src/library/agent/agent.cc:244
+#: src/library/agent/agent.cc:225
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/root.cc:96 src/library/tools/systemservice.cc:133
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
-
-#: src/library/agent/root.cc:96
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/state.cc:145
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:150
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/agent/controller.cc:48
+#: src/library/agent/controller.cc:52
 msgid "Agent controller"
 msgstr "Controlador de agentes"
 
-#: src/library/agent/controller.cc:99
+#: src/library/agent/controller.cc:103
 msgid "Core/Module subsystem failed to initialize"
 msgstr "Inicialização do módulo principal falhou"
 
-#: src/library/agent/controller.cc:303
-msgid "Unsupported method"
+#: src/library/agent/controller.cc:394
+msgid "Get agent properties"
 msgstr ""
 
-#: src/library/alert/controller.cc:40
-msgid "Alert controller"
-msgstr "Controlador de alertas"
+#: src/library/agent/root.cc:95 src/library/tools/systemservice.cc:126
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
 
-#: src/library/alert/factory.cc:111
-#, c++-format
-msgid "Unable to determine internal alert type for node <{}>"
-msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
+#: src/library/agent/root.cc:95
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
 
-#: src/library/alert/factory.cc:153
-#, c++-format
-msgid "Unable to create alert for node <{}>"
-msgstr "Incapaz de criar alerta para o nó <{}>"
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
 
-#: src/library/module/module.cc:121
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/module/module.cc:114
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:137
+#: src/library/module/module.cc:130
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
@@ -94,29 +80,29 @@ msgstr "Erro de sistema"
 msgid "Operation failed"
 msgstr "Operação falhou"
 
-#: src/library/state/state.cc:294 src/library/tools/converters.cc:42
+#: src/library/state/state.cc:258 src/library/tools/converters.cc:42
 msgid "on"
 msgstr "ligado"
 
-#: src/library/state/state.cc:294 src/library/tools/converters.cc:49
+#: src/library/state/state.cc:258 src/library/tools/converters.cc:49
 msgid "off"
 msgstr "desligado"
 
-#: src/library/tools/application/run.cc:158
-#: src/library/tools/application/run.cc:162
+#: src/library/tools/application/run.cc:166
+#: src/library/tools/application/run.cc:170
 msgid "Unable to set environment variable"
 msgstr "Incapaz de setar variável de ambiente"
 
-#: src/library/tools/application/run.cc:185
+#: src/library/tools/application/run.cc:193
 #, c++-format
 msgid "Usage:\t{} [options]"
 msgstr "Usage:\t{} [opções]"
 
-#: src/library/tools/application/run.cc:255
+#: src/library/tools/application/run.cc:263
 msgid "Invalid property"
 msgstr "Propriedade inválida"
 
-#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:57
+#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:63
 msgid "yes"
 msgstr "sim"
 
@@ -124,7 +110,7 @@ msgstr "sim"
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:57
+#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:63
 msgid "no"
 msgstr "não"
 
@@ -319,34 +305,34 @@ msgstr "Código de erro HTTP inesperado"
 msgid "The HTTP error code is unknown"
 msgstr "Código de erro HTTP desconhecido"
 
-#: src/library/tools/mainloop/timer.cc:117
+#: src/library/tools/mainloop/timer.cc:158
 msgid "one second"
 msgstr "um segundo"
 
-#: src/library/tools/mainloop/timer.cc:123
+#: src/library/tools/mainloop/timer.cc:164
 msgid "one hour"
 msgstr "uma hora"
 
-#: src/library/tools/mainloop/timer.cc:126
+#: src/library/tools/mainloop/timer.cc:167
 #, c++-format
 msgid "{} hours"
 msgstr "{} horas"
 
-#: src/library/tools/mainloop/timer.cc:132
+#: src/library/tools/mainloop/timer.cc:173
 msgid "one minute"
 msgstr "um minuto"
 
-#: src/library/tools/mainloop/timer.cc:135
+#: src/library/tools/mainloop/timer.cc:176
 #, c++-format
 msgid "{} minutes"
 msgstr "{} minutos"
 
-#: src/library/tools/mainloop/timer.cc:138
+#: src/library/tools/mainloop/timer.cc:179
 #, c++-format
 msgid " {} seconds"
 msgstr " {} segundos"
 
-#: src/library/tools/mainloop/timer.cc:141
+#: src/library/tools/mainloop/timer.cc:182
 #, c++-format
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
@@ -355,7 +341,7 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/object.cc:216
+#: src/library/tools/object.cc:267
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
@@ -400,30 +386,14 @@ msgstr "\t\tReinstalar serviço"
 msgid "\t\tBlock access to 'net stop' on this request"
 msgstr "\t\tBloquear acesso a 'net stop' no serviço"
 
-#: src/library/tools/report.cc:219
+#: src/library/tools/report.cc:220
 #, fuzzy
 msgid "Yes"
 msgstr "sim"
 
-#: src/library/tools/report.cc:219
+#: src/library/tools/report.cc:220
 msgid "No"
 msgstr ""
-
-#: src/library/tools/script.cc:54 src/library/tools/script.cc:140
-msgid "The required attribute 'cmdline' is missing"
-msgstr "Atributo necessário 'cmdline' não está disponível"
-
-#: src/library/tools/script.cc:159
-msgid "Cant set subprocess user id"
-msgstr "Incapaz de definir o usuário do subprocesso"
-
-#: src/library/tools/script.cc:165
-msgid "Cant set subprocess group id"
-msgstr "Incapaz de definir o grupo do subprocesso"
-
-#: src/library/tools/systemservice.cc:137
-msgid "System is not ready"
-msgstr "Sistema não está em funcionamento"
 
 #: src/library/tools/timestamp.cc:105
 msgid "Less than one minute"
@@ -579,9 +549,36 @@ msgstr ""
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
+#: src/library/tools/script.cc:54 src/library/tools/script.cc:140
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
+
+#: src/library/tools/script.cc:159
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/script.cc:165
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/systemservice.cc:130
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
 #: src/library/worker/worker.cc:52
 msgid "Invalid response type"
 msgstr "Resposta de tipo inválido"
+
+#~ msgid "Alert controller"
+#~ msgstr "Controlador de alertas"
+
+#, c++-format
+#~ msgid "Unable to determine internal alert type for node <{}>"
+#~ msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
+
+#, c++-format
+#~ msgid "Unable to create alert for node <{}>"
+#~ msgstr "Incapaz de criar alerta para o nó <{}>"
 
 #~ msgid "Abstract value is unable to handle items"
 #~ msgstr "Valor abstrato não consegue manipular items"
