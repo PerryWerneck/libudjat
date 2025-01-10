@@ -73,7 +73,7 @@
 		clear();
 	}
 
-	void Report::push_back(const Value &value) {
+	Report & Report::push_back(const Value &value) {
 		if(value == Value::Object) {
 			for(const auto &name : headers) {
 				cells.emplace_back().set(value[name.c_str()]);			
@@ -81,6 +81,7 @@
 		} else {
 			cells.emplace_back().set(value);			
 		}
+		return *this;
 	}
 
 	void Report::Cell::clear() noexcept {

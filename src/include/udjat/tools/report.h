@@ -103,11 +103,12 @@
 			return field.caption.c_str();
 		}
 
-		void push_back(const Value &value);
+		Report & push_back(const Value &value);
 
 		template <typename T>
-		void push_back(const T &value) {
+		Report & push_back(const T &value) {
 			cells.emplace_back().set(value);
+			return *this;
 		}
 
 		void to_json(std::ostream &out) const;
