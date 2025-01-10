@@ -24,6 +24,9 @@
  #include <udjat/tools/timer.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/string.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/timestamp.h>
  #include <sys/time.h>
  #include <iostream>
 
@@ -102,6 +105,42 @@
 
 	void MainLoop::Timer::disable() {
 		MainLoop::getInstance().remove(this);
+	}
+
+	bool MainLoop::Timer::set(const XML::Node &xml, const char *attrname) {
+
+		String attr{xml,attrname};
+		if(attr.empty()) {
+			return false;
+		}
+
+		const char *ptr = attr.c_str();
+		while(*ptr && isdigit(*ptr)) {
+			ptr++;
+		}
+
+		unsigned long interval = atol(attr.c_str());
+		if(*ptr) {
+
+			ptr = chomp(chug((char *)ptr));
+
+			if(!strcasecmp(ptr,"ms")) {
+				return set(interval);
+			}
+			if(!strcasecmp(ptr,"s")) {
+				return set(interval * 1000);
+			}
+			if(!strcasecmp(ptr,"m")) {
+				return set(interval * 60000);
+			}
+			if(!strcasecmp(ptr,"h")) {
+				return set(interval * 3600000);
+			}
+			throw system_error(EINVAL,system_category(),"Invalid timer unit");
+		}
+
+		return set(interval * 1000);
+
 	}
 
 	std::string MainLoop::Timer::to_string() const {

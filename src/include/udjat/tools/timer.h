@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
 
@@ -95,6 +96,11 @@
 
 		/// @brief Get current timer.
 		static unsigned long getCurrentTime();
+
+		/// @brief Set new interval timer from XML definition.
+		/// @param xml XML node with timer definition.
+		/// @return true if the interval was changed.
+		bool set(const XML::Node &xml, const char *attrname = "timer-interval");
 
 		/// @brief Set new interval timer.
 		/// @param milliseconds The new timer value.
