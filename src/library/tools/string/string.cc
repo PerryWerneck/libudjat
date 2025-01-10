@@ -45,7 +45,7 @@
 
 	}
 
-	String String::Factory(float value, int precision) {
+	UDJAT_API String String::Factory(float value, int precision) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(precision) << value;
 		return String{stream.str()};
