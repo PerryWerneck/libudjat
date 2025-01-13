@@ -344,15 +344,14 @@ pkg_variables = [
   'product_name=@0@'.format(product_name),
   'product_id=@0@.@1@'.format(product_domain,product_name),
   'product_title=@0@'.format(product_title),
-  'product_version=@0@@1@'.format(pkg_major_version,pkg_minor_version),
-
   'build_id=@0@'.format(time_epoch),
 
   'package_name=lib@0@@1@_@2@'.format(product_name,pkg_major_version,pkg_minor_version),
+
   'module_path=${libdir}/@0@/@1@.@2@/modules/'.format(
     product_name,pkg_major_version,pkg_minor_version,
   ),
-  'module_version=@0@.@1@'.format(pkg_major_version,pkg_minor_version),
+  'module_version=@0@_@1@'.format(pkg_major_version,pkg_minor_version),
 
 ]
 
