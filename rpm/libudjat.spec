@@ -18,10 +18,12 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.0.0
+Version:		2.0
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
+
+Source1:		rpm.macros
 
 URL:			https://github.com/PerryWerneck/udjat
 
@@ -106,6 +108,9 @@ Development files for Udjat main library.
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 
+mkdir -p %{buildroot}%{_rpmmacrodir}
+install --mode=644 %{S:1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+
 %find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files -n %{name}%{_libvrs}
@@ -124,6 +129,7 @@ mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
+%{_rpmmacrodir}/macros.%{name}
 
 %dir %{_includedir}/udjat
 %{_includedir}/udjat/*.h
@@ -139,6 +145,9 @@ mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h
+
+%dir %{_includedir}/udjat/tools/actions
+%{_includedir}/udjat/tools/actions/*.h
 
 %dir %{_includedir}/udjat/alert
 %{_includedir}/udjat/alert/*.h

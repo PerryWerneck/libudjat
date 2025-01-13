@@ -1,0 +1,20 @@
+#
+# RPM Macros for packaging libudjat applications
+#
+
+%udjat_product_name		%(pkg-config --variable=product_name libudjat)
+%udjat_product_version	%(pkg-config --variable=product_version libudjat)
+%udjat_module_version	%(pkg-config --variable=module_version libudjat)
+%udjat_module_path		%(pkg-config --variable=module_path libudjat)
+
+%udjat_module_package(n:) \
+%package -n %{udjat_product_name}%{module_version}-%{-n:-n %{-n*}} \
+Summary: %{udjat_product_name} module for %{name} \
+Group: Development/Libraries/C and C++ \
+%description -n %{udjat_product_name}%{module_version}-%{-n:-n %{-n*}} \
+This package provides the dynamic module for %{name}.\
+%files -n %{udjat_product_name}%{module_version}-%{-n:-n %{-n*}} \
+%defattr(-,root,root)\
+%{udjat_module_path}/*.so \
+%{nil}
+
