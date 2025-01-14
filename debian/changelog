@@ -1,5 +1,7 @@
-libudjat (5.5.0-1) UNRELEASED; urgency=medium
+libudjat (2.0.0) unstable; urgency=low
 
-  * Initial release. (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial Release
 
- -- root <root@unknown>  Thu, 12 Dec 2024 17:52:49 -0300
+ -- Perry Werneck <perry.werneck@gmail.com>  Wed, 12 Dec 2024 14:27:00 -0300
+
+

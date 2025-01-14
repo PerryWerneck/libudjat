@@ -1,30 +1,28 @@
 Source: libudjat
-Section: libs
+Section: unknown
 Priority: optional
-Maintainer: root <root@unknown>
-Rules-Requires-Root: no
-Build-Depends:
- debhelper-compat (= 13),
-Standards-Version: 4.6.2
-Homepage: <insert the upstream URL, if relevant>
-#Vcs-Browser: https://salsa.debian.org/debian/libudjat
-#Vcs-Git: https://salsa.debian.org/debian/libudjat.git
+Maintainer: Perry Werneck <perry.werneck@gmail.com>
+Build-Depends: debhelper (>= 7), meson, pkg-config, libeconf-dev, libpugixml-dev, libsystemd-dev, libdmiget-dev, libvmdetect-dev
+
+Package: libudjat
+Architecture: any
+Section: libs
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Provides: libudjat (= ${binary:Version}), libudjat2 (= ${binary:Version})
+Description: Udjat core library.
+ Udjat core library.
 
 Package: libudjat-dev
+Architecture: any
+Provides: libudjat-dev (= ${binary:Version}), libudjat2-dev (= ${binary:Version})
 Section: libdevel
-Architecture: any
-Multi-Arch: same
-Depends:
- libudjatBROKEN (= ${binary:Version}),
- ${misc:Depends},
-Description: <insert up to 60 chars description>
- <Insert long description, indented with spaces.>
+Depends: ${misc:Depends}, libudjat (= ${binary:Version}), pkg-config, libpugixml-dev, libdmiget-dev, libvmdetect-dev 
+Description: Libudjat development files.
+ Development headers for libudjat
 
-Package: libudjatBROKEN
+Package: libudjat-dbg
 Architecture: any
-Multi-Arch: same
-Depends:
- ${shlibs:Depends},
- ${misc:Depends},
-Description: <insert up to 60 chars description>
- <Insert long description, indented with spaces.>
+Depends: libudjat (= ${binary:Version})
+Description: Debugging symbols for libudjat
+ This package contains the debugging symbols for libudjat.
+

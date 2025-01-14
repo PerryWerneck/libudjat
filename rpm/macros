@@ -25,8 +25,11 @@
 %udjat_library %{name}%{udjat_major}_%{udjat_minor}
 
 %udjat_devel_requires \
-Requires:	%{udjat_library} = %{version}
+Requires:	%{udjat_library} = %{version} \
 Provides:	%{name}%{udjat_major}-devel = %{version}
+
+%udjat_module_requires (n:) \
+Provides: %{udjat_product_name}-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version}
 
 %udjat_module_package(n:) \
 %package -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \

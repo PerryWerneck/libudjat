@@ -1,8 +1,7 @@
 #
 # spec file for package libudjat
 #
-# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
-# Copyright (C) <2008> <Banco do Brasil S.A.>
+# Copyright (c) <2024> Perry Werneck <perry.werneck@gmail.com>.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -13,19 +12,19 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://github.com/PerryWerneck/libudjat/issues
 #
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.0.0
+Version:		2.0
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
 
 Source1:		rpm.macros
 
-URL:			https://github.com/PerryWerneck/udjat
+URL:			https://github.com/PerryWerneck/libudjat
 
 Group:			Development/Libraries/C and C++
 BuildRoot:		/var/tmp/%{name}-%{version}
@@ -55,10 +54,6 @@ Main library for udjat modules.
 Summary: UDJat core library
 Provides:	%{name}%{MAJOR_VERSION}_%{MINOR_VERSION} = %{version}
 
-%if "%{_vendor}" == "debbuild"
-Depends:	${misc:Depends}, ${shlibs:Depends}  
-%endif
-
 %description -n %{name}%{_libvrs}
 UDJat core library
 
@@ -70,28 +65,15 @@ Main library for udjat modules.
 Summary:	Development files for %{name}
 Requires:	%{name}%{_libvrs} = %{version}
 
-Provides:	libudjat%{MAJOR_VERSION}-devel
-Provides:	udjat-devel
-Provides:	udjat-%{MAJOR_VERSION}-%{MINOR_VERSION}-devel
-
-%if "%{_vendor}" == "debbuild"
-Provides:	%{name}-dev
-Provides:	pkgconfig(%{name})
-Provides:	pkgconfig(%{name}-static)
-Requires:	libpugixml-dev
-Requires:	libvmdetect-dev
-Requires:	libdmiget-dev
-%else
-Requires:	pkgconfig(pugixml)
-%endif
+Provides:	libudjat%{MAJOR_VERSION}-devel = %{version}
+Provides:	udjat-devel = %{version}
+Provides:	udjat%{_libvrs}-devel = %{version}
 
 %description devel
 
 Development files for Udjat main library.
 
-%if "%{_vendor}" != "debbuild"
 %lang_package -n %{name}%{_libvrs}
-%endif
 
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
@@ -139,6 +121,9 @@ install --mode=644 %{S:1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %dir %{_includedir}/udjat/tools/abstract
 %{_includedir}/udjat/tools/abstract/*.h
+
+%dir %{_includedir}/udjat/tools/actions
+%{_includedir}/udjat/tools/actions/*.h
 
 %dir %{_includedir}/udjat/tools/file
 %{_includedir}/udjat/tools/file/*.h
