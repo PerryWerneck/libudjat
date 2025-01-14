@@ -1,5 +1,18 @@
 #
-# RPM Macros for packaging libudjat applications
+# RPM Macros for packaging libudjat applications & modules
+#
+# Copyright (c) <2025> Perry Werneck <perry.werneck@gmail.com>.
+#
+# All modifications and additions to the file contributed by third parties
+# remain the property of their copyright owners, unless otherwise agreed
+# upon. The license for this file, and modifications and additions to the
+# file, is the same license as for the pristine package itself (unless the
+# license for the pristine package is not an Open Source License, in which
+# case the license is the MIT License). An "Open Source License" is a
+# license that conforms to the Open Source Definition (Version 1.9)
+# published by the Open Source Initiative.
+
+# Please submit bugfixes or comments via https://github.com/PerryWerneck/libudjat/issues
 #
 
 %udjat_product_name		%(pkg-config --variable=product_name libudjat)
@@ -7,14 +20,24 @@
 %udjat_module_version	%(pkg-config --variable=module_version libudjat)
 %udjat_module_path		%(pkg-config --variable=module_path libudjat)
 
+%udjat_major %(echo %{version} | cut -d. -f1)
+%udjat_minor %(echo %{version} | cut -d. -f2 | cut -d+ -f1)
+%udjat_library %{name}%{udjat_major}_%{udjat_minor}
+
+%udjat_devel_requires \
+Requires:	%{udjat_library} = %{version}
+Provides:	%{name}%{udjat_major}-devel = %{version}
+
 %udjat_module_package(n:) \
-%package -n %{udjat_product_name}%{module_version}-%{-n:-n %{-n*}} \
+%package -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
 Summary: %{udjat_product_name} module for %{name} \
-Group: Development/Libraries/C and C++ \
-%description -n %{udjat_product_name}%{module_version}-%{-n:-n %{-n*}} \
+Group: Unspecified \
+Provides: %{udjat_product_name}-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version} \
+%description -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
 This package provides the dynamic module for %{name}.\
-%files -n %{udjat_product_name}%{module_version}-%{-n:-n %{-n*}} \
+%files -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
 %defattr(-,root,root)\
 %{udjat_module_path}/*.so \
 %{nil}
+
 
