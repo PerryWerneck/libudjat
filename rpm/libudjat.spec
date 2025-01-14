@@ -66,8 +66,8 @@ Summary:	Development files for %{name}
 Requires:	%{name}%{_libvrs} = %{version}
 
 Provides:	libudjat%{MAJOR_VERSION}-devel = %{version}
+Provides:	libudjat%{_libvrs}-devel = %{version}
 Provides:	udjat-devel = %{version}
-Provides:	udjat%{_libvrs}-devel = %{version}
 
 %description devel
 
@@ -130,9 +130,6 @@ install --mode=644 %{S:1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h
-
-%dir %{_includedir}/udjat/tools/actions
-%{_includedir}/udjat/tools/actions/*.h
 
 %dir %{_includedir}/udjat/alert
 %{_includedir}/udjat/alert/*.h
