@@ -60,7 +60,7 @@ jobs:
         echo 'deb https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_24.04/ /' | sudo tee /etc/apt/sources.list.d/home:PerryWerneck:udjat.list
         curl -fsSL https://download.opensuse.org/repositories/home:/PerryWerneck:/udjat/xUbuntu_24.04/Release.key | gpg --dearmor | sudo tee /etc/apt/trusted.gpg.d/home_PerryWerneck_udjat.gpg > /dev/null
         sudo apt-get update
-        sudo apt-get install --yes meson pkg-config gettext libsystemd-dev libvmdetect-dev libpugixml-dev python3-dev
+        sudo apt-get install --yes meson pkg-config gettext dmiget-dev libsystemd-dev libvmdetect-dev libpugixml-dev python3-dev
 
     # Initializes the CodeQL tools for scanning.
     - name: Initialize CodeQL
