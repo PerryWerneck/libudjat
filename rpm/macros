@@ -26,18 +26,19 @@
 
 %udjat_devel_requires \
 Requires:	%{udjat_library} = %{version} \
-Provides:	%{name}%{udjat_major}-devel = %{version}
+Provides:	%{name}%{udjat_major}-devel = %{version} \
+Provides:	%{udjat_library}-devel = %{version}
 
-%udjat_module_requires (n:) \
+%udjat_module_requires(n:) \
 Provides: %{udjat_product_name}-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version}
 
 %udjat_module_package(n:) \
 %package -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
-Summary: %{udjat_product_name} module for %{name} \
-Group: Unspecified \
+Summary: Dynamic loading of %{name} \
+Group: Development/Libraries/Other \
 Provides: %{udjat_product_name}-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version} \
 %description -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
-This package provides the dynamic module for %{name}.\
+This package provides the dynamic loading of %{name} on %{udjat_product_name}.\
 %files -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
 %defattr(-,root,root)\
 %{udjat_module_path}/*.so \
