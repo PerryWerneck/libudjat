@@ -654,23 +654,29 @@ version_file = configure_file(
 
 #
 # RPM Macros
-#
-macros_conf = configuration_data()
-macros_conf.set('PRODUCT_NAME',product_name)
-macros_conf.set('PRODUCT_VERSION', meson.project_version())
-macros_conf.set('PRODUCT_VERSION_MAJOR', pkg_major_version)
-macros_conf.set('PRODUCT_VERSION_MINOR', pkg_minor_version)
-macros_conf.set('PRODUCT_VERSION_MICRO', pkg_micro_version)
+#  
+if find_program('rpm', required: false).found()
+ 
+  macros_conf = configuration_data()
+  macros_conf.set('PRODUCT_NAME',product_name)
+  macros_conf.set('PRODUCT_VERSION', meson.project_version())
+  macros_conf.set('PRODUCT_VERSION_MAJOR', pkg_major_version)
+  macros_conf.set('PRODUCT_VERSION_MINOR', pkg_minor_version)
+  macros_conf.set('PRODUCT_VERSION_MICRO', pkg_micro_version)
 
-macros_conf.set('MODULE_VERSION', '@0@_@1@'.format(pkg_major_version,pkg_minor_version))
-macros_conf.set('PREFIX',get_option('prefix'))
-macros_conf.set('LIBDIR',get_option('libdir'))
-  
-configure_file(
-  input : 'rpm/macros.in',
-  output : 'macros.rpm',
-  configuration : macros_conf
-)
+  macros_conf.set('MODULE_VERSION', '@0@_@1@'.format(pkg_major_version,pkg_minor_version))
+  macros_conf.set('PREFIX',get_option('prefix'))
+  macros_conf.set('LIBDIR',get_option('libdir'))
+
+  configure_file(
+    input : 'rpm/macros.in',
+    output : 'macros.@0@'.format(product_name),
+    install: true,
+    install_dir: '@0@/lib/rpm/macros.d'.format(get_option('prefix')), 
+    configuration : macros_conf
+  )
+
+endif
 
 install_headers(
   'src/include/udjat.h',

@@ -22,8 +22,6 @@ Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
 
-Source1:		rpm.macros
-
 URL:			https://github.com/PerryWerneck/libudjat
 
 Group:			Development/Libraries/C and C++
@@ -68,6 +66,7 @@ Requires:	%{name}%{_libvrs} = %{version}
 Provides:	libudjat%{MAJOR_VERSION}-devel = %{version}
 Provides:	libudjat%{_libvrs}-devel = %{version}
 Provides:	udjat-devel = %{version}
+Provides:	udjat-rpm-macros = %{version}
 
 %description devel
 
@@ -91,7 +90,7 @@ mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 
 mkdir -p %{buildroot}%{_rpmmacrodir}
-install --mode=644 %{S:1} %{buildroot}%{_rpmmacrodir}/macros.%{name}
+install --mode=644 %{_vpath_builddir}/macros.rpm %{buildroot}%{_rpmmacrodir}/macros.%{name}
 
 %find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
