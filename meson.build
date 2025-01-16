@@ -652,6 +652,26 @@ version_file = configure_file(
   configuration : app_conf
 )
 
+#
+# RPM Macros
+#
+macros_conf = configuration_data()
+macros_conf.set('PRODUCT_NAME',product_name)
+macros_conf.set('PRODUCT_VERSION', meson.project_version())
+macros_conf.set('PRODUCT_VERSION_MAJOR', pkg_major_version)
+macros_conf.set('PRODUCT_VERSION_MINOR', pkg_minor_version)
+macros_conf.set('PRODUCT_VERSION_MICRO', pkg_micro_version)
+
+macros_conf.set('MODULE_VERSION', '@0@_@1@'.format(pkg_major_version,pkg_minor_version))
+macros_conf.set('PREFIX',get_option('prefix'))
+macros_conf.set('LIBDIR',get_option('libdir'))
+  
+configure_file(
+  input : 'rpm/macros.in',
+  output : 'macros.rpm',
+  configuration : macros_conf
+)
+
 install_headers(
   'src/include/udjat.h',
   'src/include/udjat/agent.h',

@@ -15,18 +15,20 @@
 # Please submit bugfixes or comments via https://github.com/PerryWerneck/libudjat/issues
 #
 
-%udjat_product_name		%(pkg-config --variable=product_name libudjat)
-%udjat_product_version	%(pkg-config --variable=product_version libudjat)
-%udjat_module_version	%(pkg-config --variable=module_version libudjat)
-%udjat_module_path		%(pkg-config --variable=module_path libudjat)
+%udjat_product_name @PRODUCT_NAME@
+%udjat_product_version @PRODUCT_VERSION@
+%udjat_module_version @MODULE_VERSION@
+%udjat_module_path @PREFIX@/@LIBDIR@/@PRODUCT_NAME@/@PRODUCT_VERSION_MAJOR@.@PRODUCT_VERSION_MINOR@/modules
 
-%udjat_major %(echo %{version} | cut -d. -f1)
-%udjat_minor %(echo %{version} | cut -d. -f2 | cut -d+ -f1)
-%udjat_library %{name}%{udjat_major}_%{udjat_minor}
+%udjat_module() %{udjat_product_name}%{udjat_module_version}-module-%{**}
+
+%udjat_package_major %(echo %{version} | cut -d. -f1)
+%udjat_package_minor %(echo %{version} | cut -d. -f2 | cut -d+ -f1)
+%udjat_library %{name}%{udjat_package_major}_%{udjat_package_minor}
 
 %udjat_devel_requires \
 Requires:	%{udjat_library} = %{version} \
-Provides:	%{name}%{udjat_major}-devel = %{version} \
+Provides:	%{name}%{udjat_package_major}-devel = %{version} \
 Provides:	%{udjat_library}-devel = %{version}
 
 %udjat_module_requires(n:) \
