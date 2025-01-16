@@ -655,7 +655,8 @@ version_file = configure_file(
 #
 # RPM Macros
 #  
-if find_program('rpm', required: false).found()
+rpm = find_program('rpm', required: false)
+if rpm.found()
  
   macros_conf = configuration_data()
   macros_conf.set('PRODUCT_NAME',product_name)
@@ -672,7 +673,7 @@ if find_program('rpm', required: false).found()
     input : 'rpm/macros.in',
     output : 'macros.@0@'.format(product_name),
     install: true,
-    install_dir: '@0@/lib/rpm/macros.d'.format(get_option('prefix')), 
+    install_dir: run_command(rpm, '--eval', '%{_rpmmacrodir}', check: true).stdout().strip(), 
     configuration : macros_conf
   )
 
