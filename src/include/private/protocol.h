@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
  #pragma once
 
  #include <config.h>
@@ -28,24 +29,6 @@
  using namespace std;
 
  namespace Udjat {
-
-	/*
-	/// @brief Internal protocol for file://
-	class Protocol::File : public Udjat::Protocol {
-	public:
-		File();
-		virtual ~File();
-
-		String call(const URL &url, const HTTP::Method method, const char *payload = "") const override;
-
-		std::shared_ptr<Protocol::Worker> WorkerFactory() const;
-
-		static File & getInstance();
-
-	};
-
-	/// @brief Internal protocol for script://
-	*/
 
 	class Protocol::Controller {
 	private:
@@ -103,3 +86,4 @@
 	};
 
  }
+*/

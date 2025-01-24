@@ -33,6 +33,7 @@
 	/// @brief Load XML file, check if it's valid.
  	static void load(XML::Document *document, const char *filename) {
 
+		/*
 		auto result = document->load_file(filename);
 		if(result.status != pugi::status_ok) {
 			throw runtime_error(Logger::String{filename,": ",result.description()});
@@ -50,11 +51,13 @@
 				}
 			);
 		}
+		*/
 
  	}
 
 	XML::Document::Document(const char *filename) {
 
+		/*
 		Logger::String{"Loading '",filename,"'"}.info("xml");
 
 		Udjat::load(this,filename);
@@ -90,10 +93,12 @@
 			document_element().append_attribute("updated").set_value(updated);
 
 		}
+		*/
+
+		// TODO: Parse <include> nodes.
 
 	}
 
-	// TODO: Parse <include> nodes.
 
  }
 

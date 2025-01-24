@@ -206,7 +206,7 @@
 
 		try {
 
-			auto lines = HTTP::Client(url).get().split("\n");
+			auto lines = URL{url}.get().split("\n");
 			if(!lines.empty()) {
 				return *lines.begin();
 			}

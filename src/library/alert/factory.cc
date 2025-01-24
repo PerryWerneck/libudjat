@@ -86,9 +86,9 @@
 				return make_shared<FileAlert>(node);
 			}
 
-			if(!strcasecmp(type.c_str(),"url")) {
-				return make_shared<URLAlert>(node);
-			}
+			//if(!strcasecmp(type.c_str(),"url")) {
+			//	return make_shared<URLAlert>(node);
+			//}
 
 		}
 

@@ -39,7 +39,7 @@
  namespace Udjat {
 
 	Updater::Updater(const char *pathname, bool force) : update{force} {
-
+/*
 		if(pathname && *pathname) {
 
 			// Has pathname, use it.
@@ -114,11 +114,12 @@
 
 			}
 		}
+*/
 
 	}
 
 	void Updater::push_back(const std::string &filename) {
-
+/*
 		pugi::xml_document doc;
 		auto result = doc.load_file(filename.c_str());
 		if(result.status != pugi::status_ok) {
@@ -139,11 +140,12 @@
 		}
 
 		files.emplace_back(filename,node);
+*/
 
 	}
 
 	bool Updater::refresh() {
-
+/*
 		size_t changed = 0;
 		Config::Value<string> xmlname{"settings","tagname",Application::Name().c_str()};
 		Config::Value<bool> allow_unsafe{"settings","allow-unsafe-updates",false};
@@ -267,11 +269,12 @@
 		}
 
 		return update;
+*/
 
 	}
 
 	bool Updater::load(std::shared_ptr<Abstract::Agent> root) noexcept {
-
+/*
 		files.sort([](const Settings &a, const Settings &b){
 
 			const char *names[] = {
@@ -345,6 +348,7 @@
 		});
 
 		return true;
+*/
 
 	}
 

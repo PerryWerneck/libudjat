@@ -43,6 +43,77 @@
 	class UDJAT_API URL : public Udjat::String {
 	public:
 
+		class UDJAT_API Handler {
+		private:
+			const char *handler_name;
+
+		public:
+			Handler(const char *name);
+			virtual ~Handler();
+
+			virtual int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
+			virtual String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
+			virtual String get() const;
+
+		};
+
+		URL() = default;
+
+		URL(const char *str) : Udjat::String{str} {
+			unescape();
+		}
+
+		URL(const std::string &str) : URL{str.c_str()} {
+		}
+
+		URL(const XML::Node &node) : URL{node.attribute("src").as_string()} {
+		}
+
+		template<typename... Targs>
+		URL(const char *str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		template<typename... Targs>
+		URL(const std::string &str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		template<typename T, typename... Targs>
+		URL(const T &str, Targs... Fargs) : String{str} {
+			String::append(Fargs...);
+		}
+
+		const String scheme() const;
+
+		URL operator + (const char *path);
+		URL & operator += (const char *path);
+
+		const Handler & handler() const;
+
+		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
+		/// @return Test result.
+		/// @retval 200 Got response.
+		/// @retval 401 Access denied.
+		/// @retval 404 Not found.
+		/// @retval EINVAL Invalid method.
+		/// @retval ENODATA Empty URL.
+		/// @retval ENOTSUP No support for test in protocol handler.
+		inline int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
+			return handler().test(method,payload);
+		}
+
+		/// @brief Do a 'get' request.
+		/// @return Server response.
+		inline String get() const {
+			return handler().get();
+		}
+
+		inline String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
+			return handler().call(method,payload);
+		}
+
+		/*
 		class UDJAT_API Scheme : public std::string {
 		public:
 			Scheme() : std::string() {
@@ -82,29 +153,6 @@
 		URL(const char *str) : Udjat::String{unescape(str)} {
 		}
 
-		URL(const std::string &str) : URL{str.c_str()} {
-		}
-
-		URL(const XML::Node &node) : URL{node.attribute("src").as_string()} {
-		}
-
-		template<typename... Targs>
-		URL(const char *str, Targs... Fargs) : String{str} {
-			String::append(Fargs...);
-		}
-
-		template<typename... Targs>
-		URL(const std::string &str, Targs... Fargs) : String{str} {
-			String::append(Fargs...);
-		}
-
-		template<typename T, typename... Targs>
-		URL(const T &str, Targs... Fargs) : String{str} {
-			String::append(Fargs...);
-		}
-
-		URL operator + (const char *path);
-		URL & operator += (const char *path);
 
 		/// @brief Get URL scheme.
 		Scheme scheme() const;
@@ -151,9 +199,6 @@
 		/// @retval ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const noexcept;
 
-		/// @brief Do a 'get' request.
-		/// @return Server response.
-		std::string get() const;
 
 		/// @brief Get value.
 		/// @param Value the response.
@@ -199,6 +244,7 @@
 		/// @brief Get URL, save response to cache file.
 		/// @return The cached filename.
 		std::string filename();
+		*/
 
 	};
 
@@ -206,7 +252,9 @@
 
  namespace std {
 
-	UDJAT_API string to_string(const Udjat::URL &url);
+ 	inline const char * to_string(const Udjat::URL &url) {
+		return url.c_str();
+ 	}
 
 	inline ostream& operator<< (ostream& os, const Udjat::URL &url) {
 		return os << to_string(url);

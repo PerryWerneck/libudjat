@@ -33,6 +33,7 @@
 
  namespace Udjat {
 
+/*
 	URLAlert::URLAlert(const XML::Node &node) 
 		: Udjat::Alert{node}, url{String{node,"url"}.as_quark()}, action{HTTP::MethodFactory(node)}, payload{Activatable::payload(node)} {
 		if(!(url && *url)) {
@@ -76,5 +77,6 @@
 
 		return 0;
 	}
+*/
 
  }
