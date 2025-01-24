@@ -37,10 +37,16 @@
 
  int main(int argc, char **argv) {
 
-	Udjat::URL url{"http://www.google.com"};
+	Udjat::URL url{"http://localhost/p1"};
 
 	cout << url << " scheme is " << url.scheme() << endl;
+	cout << url << " hostname is " << url.hostname() << endl;
+	cout << url << " servicename is " << url.servicename() << endl;
 	
+	url += "/test";
+	cout << "---> " << url << endl;
+
+
 	return 0;
 
 	/*

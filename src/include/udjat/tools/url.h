@@ -85,6 +85,8 @@
 		}
 
 		const String scheme() const;
+		const String hostname() const;
+		const String servicename() const;
 
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
