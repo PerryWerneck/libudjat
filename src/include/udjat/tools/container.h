@@ -91,22 +91,23 @@
 			return false;
 		}
 
-		inline typename L::iterator begin() {
+		inline auto begin() {
 			return objects.begin();
 		}
 
-		inline typename L::iterator end() {
+		inline auto end() {
 			return objects.end();
 		}
 
-		inline typename L::const_iterator begin() const {
+		inline auto begin() const {
 			return objects.begin();
 		}
 
-		inline typename L::const_iterator end() const {
+		inline auto end() const {
 			return objects.end();
 		}
 
+	
 	};
 
  }

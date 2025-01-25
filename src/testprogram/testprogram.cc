@@ -37,7 +37,7 @@
 
  int main(int argc, char **argv) {
 
-	Udjat::URL url{"http://localhost/p1"};
+	Udjat::URL url{"http://localhost/p1?v1=30&v2=15&v3=0"};
 
 	cout << url << " scheme is " << url.scheme() << endl;
 	cout << url << " hostname is " << url.hostname() << endl;
@@ -45,6 +45,10 @@
 	
 	url += "/test";
 	cout << "---> " << url << endl;
+
+	cout << "  v1= '" << url["v1"].c_str() << "'" << endl;
+	cout << "  v2= '" << url["v2"].c_str() << "'" << endl;
+	cout << "  v3= '" << url["v3"].c_str() << "'" << endl;
 
 
 	return 0;

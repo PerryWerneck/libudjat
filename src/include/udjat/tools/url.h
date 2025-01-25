@@ -51,9 +51,13 @@
 			Handler(const char *name);
 			virtual ~Handler();
 
+			inline bool operator ==(const char *name) const noexcept {
+				return strcasecmp(name,handler_name) == 0;
+			}
+
 			virtual int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
 			virtual String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
-			virtual String get() const;
+			virtual String get() const = 0;
 
 		};
 
@@ -91,7 +95,23 @@
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
 
-		const Handler & handler() const;
+		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
+		bool local() const;
+
+		/// @brief Iterate over query
+		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
+
+		String argument(const char *name) const;
+
+		inline String operator[](const char *name) const {
+			return argument(name);
+		}
+
+		static const Handler & handler(const char *name);
+
+		inline const Handler & handler() const {
+			return handler(scheme().c_str());
+		}
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.

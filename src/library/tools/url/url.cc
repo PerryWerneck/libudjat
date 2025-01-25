@@ -25,23 +25,30 @@
  #include <stdexcept>
  #include <string>
  #include <list>
+ #include <memory>
 
  using namespace std;
 
  namespace Udjat {
 
+	struct ParsedUri : UriUriA {
+		ParsedUri(const std::string &str) {
+			const char * errorPos;
+			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
+				throw std::invalid_argument("Invalid URL");
+			}
+		}
 
+		~ParsedUri() {
+			uriFreeUriMembersA(this);
+		}
+	};
 
 	const String URL::servicename() const {
 		
-		UriUriA uri;
-		const char * errorPos;
-		if(uriParseSingleUriA(&uri, c_str(), &errorPos) != URI_SUCCESS) {
-			throw std::invalid_argument("Invalid URL");
-		}
+		ParsedUri uri{*this};
 
 		String result{uri.portText.first, (size_t) (uri.portText.afterLast - uri.portText.first)};
-		uriFreeUriMembersA(&uri);
 
 		if(result.empty()) {
 			return scheme();
@@ -52,30 +59,16 @@
 
 	const String URL::hostname() const {
 		
-		UriUriA uri;
-		const char * errorPos;
-		if(uriParseSingleUriA(&uri, c_str(), &errorPos) != URI_SUCCESS) {
-			throw std::invalid_argument("Invalid URL");
-		}
+		ParsedUri uri{*this};
+		return String{uri.hostText.first, (size_t) (uri.hostText.afterLast - uri.hostText.first)};
 
-		String result{uri.hostText.first, (size_t) (uri.hostText.afterLast - uri.hostText.first)};
-		uriFreeUriMembersA(&uri);
-
-		return result;
 	}
 
 	const String URL::scheme() const {
 
-        UriUriA uri;
-        const char * errorPos;
-        if(uriParseSingleUriA(&uri, c_str(), &errorPos) != URI_SUCCESS) {
-			throw std::invalid_argument("Invalid URL");
-        }
+		ParsedUri uri{*this};
+		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
 
-		String result{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
-		uriFreeUriMembersA(&uri);
-
-		return result;
 /*
 		size_t pos = find("://");
 
@@ -89,14 +82,7 @@
 
 	URL & URL::operator += (const char *path) {
 
-		UriUriA uri;
-		UriParserStateA state;
-		state.uri = &uri;
-
-		if (uriParseUriA(&state, c_str()) != URI_SUCCESS) {
-			uriFreeUriMembersA(&uri);
-			throw std::invalid_argument("Invalid URL");
-		}
+		ParsedUri uri{*this};
 
 		std::string newUri;
 
@@ -120,7 +106,8 @@
 		std::list<string> segments;
 		if (uri.pathHead) {
 			for(UriPathSegmentA *pathSegment = uri.pathHead; pathSegment; pathSegment = pathSegment->next) {
-				segments.push_back(string{pathSegment->text.first, pathSegment->text.afterLast - pathSegment->text.first});
+				size_t len =  (size_t) (pathSegment->text.afterLast - pathSegment->text.first);
+				segments.emplace_back(pathSegment->text.first,len);
 			}
 		}
 
@@ -155,15 +142,53 @@
 			newUri.append(ptr);
 		}
 
-		uriFreeUriMembersA(&uri);
-
+		if(uri.query.first) {
+			newUri.append("?");
+			newUri.append(uri.query.first, uri.query.afterLast - uri.query.first);
+		}
+	
 		*this = newUri;
 
 		return *this;
 	}
 
-	const URL::Handler & URL::handler() const {
-		throw std::invalid_argument("Unsupported URL scheme");
+	bool URL::for_each(const std::function<bool(const char *key, const char *value)> &func) const {
+		ParsedUri uri{*this};
+		UriQueryListA *queryList = nullptr;
+		int items = 0; 
+		bool rc = false;
+
+		if(!uri.query.first) {
+			return false;
+		}
+
+		if(uriDissectQueryMallocA(&queryList, &items, uri.query.first, uri.query.afterLast) != URI_SUCCESS) {
+			throw runtime_error("Unexpected error on uriDissectQueryMallocA");
+		}
+
+		for (UriQueryListA *node = queryList; node && !rc; node = node->next) {
+			rc = func(node->key, node->value);
+		}
+
+		uriFreeQueryListA(queryList);
+
+		return rc;
+	}
+
+	String URL::argument(const char *name) const {
+
+		String result;
+
+		for_each([&result,name](const char *key, const char *value) -> bool {
+			if(!strcasecmp(key,name)) {
+				result = value;
+				return true;
+			}
+			return false;
+		});
+
+    	return result;
+
 	}
 
 

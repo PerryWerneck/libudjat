@@ -280,6 +280,7 @@ lib_src += [
   'src/library/tools/systemservice.cc',
   'src/library/tools/timestamp.cc',
   'src/library/tools/url/methodfactory.cc',
+  'src/library/tools/url/handler.cc',
   'src/library/tools/url/controller.cc',
   'src/library/tools/url/header.cc',
   'src/library/tools/url/protocol.cc',
