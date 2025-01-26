@@ -66,6 +66,8 @@
 			/// @retval ENOTSUP No support for test in protocol handler.
 			virtual int test(const URL &url, const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
 
+			virtual void call(const URL &url, const HTTP::Method method, const MimeType mimetype, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) const = 0;
+
 			/// @brief Get value.
 			/// @param Value the response.
 			/// @return true if value was updated.
@@ -74,9 +76,7 @@
 			/// @brief Do a 'get' request.
 			/// @param progress progress callback.
 			/// @return Server response.
-			virtual String call(const URL &url, const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
-
-			virtual String get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const = 0;
+			virtual String get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const;
 
 			String get(const URL &url, const MimeType mimetype = MimeType::none) const;
 
@@ -168,9 +168,7 @@
 			return handler().test(*this,method,payload);
 		}
 
-		inline String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
-			return handler().call(*this,method,payload);
-		}
+		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const MimeType mimetype = MimeType::none) const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.

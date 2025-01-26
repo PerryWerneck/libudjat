@@ -20,7 +20,9 @@
  #include <config.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/container.h>
-
+ #include <sstream>
+ #include <udjat/tools/file/handler.h>
+ 
  using namespace std;
 
  namespace Udjat {
@@ -55,9 +57,41 @@
 		return get(url, filename, [](uint64_t current, uint64_t total){return false;},mimetype);
 	}
 
-	bool URL::Handler::get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) const {
-		throw system_error(ENOTSUP,system_category(),"No support for get");
+	String URL::Handler::get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const {
+		stringstream str;
+		call(
+			url, 
+			HTTP::Get, 
+			mimetype, 
+			"", 
+			[&str,&progress](uint64_t current, uint64_t total, const char *data, size_t){
+				str << data;
+				return progress(current,total);
+			}
+		);
+		return String{str.str()};
 	}
+
+	bool URL::Handler::get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) const {
+
+		File::Handler file{filename,true};
+		file.truncate();
+
+		call(
+			url, 
+			HTTP::Get, 
+			mimetype, 
+			"", 
+			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
+				file.write(current,data,len);
+				return progress(current,total);
+			}
+		);
+
+		return true;
+
+	}
+
 
  }
 
