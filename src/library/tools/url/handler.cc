@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/url.h>
+ #include <list>
  #include <udjat/tools/container.h>
  #include <sstream>
  #include <udjat/tools/file/handler.h>
@@ -27,40 +28,46 @@
 
  namespace Udjat {
 
-	static Container<URL::Handler> & Controller() {
-		static Container<URL::Handler> instance;
-		return instance;
+	Container<URL::Handler::Factory> & factories() {
+		static Container<URL::Handler::Factory> factories;
+		return factories;
 	}
 
-	const URL::Handler & URL::handler(const char *name) {
-		for(const URL::Handler *handler : Controller()) {
-			if(*handler == name) {
-				return *handler;
+	URL::Handler::Factory::Factory(const char *n) : name{n} {
+		factories().push_back(this);
+	}
+
+	URL::Handler::Factory::~Factory() {
+		factories().remove(this);
+	}
+
+	std::shared_ptr<URL::Handler> URL::handler() const {
+		auto scheme = this->scheme();
+		for(const auto factory : factories()) {
+			if(*factory == scheme.c_str()) {
+				return factory->HandlerFactory(*this);
 			}
 		}
-		throw runtime_error(String{"Unable to handle '",name,"' urls"});
+		throw invalid_argument(String{"Cant handle ",c_str()});
 	}
 
-	URL::Handler::Handler(const char *name) : handler_name{name} {
-		Controller().push_back(this);
+	URL::Handler::Handler(const URL &url) : url{url} {
 	}
 
 	URL::Handler::~Handler() {
-		Controller().remove(this);
 	}
 
-	String URL::Handler::get(const URL &url, const MimeType mimetype) const {
-		return get(url, [](uint64_t current, uint64_t total){return false;},mimetype);
+	int URL::Handler::test(const HTTP::Method method, const char *payload) {
+		return ENOTSUP;
 	}
 
-	bool URL::Handler::get(const URL &url, const char *filename, const MimeType mimetype) const {
-		return get(url, filename, [](uint64_t current, uint64_t total){return false;},mimetype);
+	bool URL::Handler::get(Udjat::Value &value) {
+		return false;
 	}
 
-	String URL::Handler::get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const {
+	String URL::Handler::get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) {
 		stringstream str;
 		call(
-			url, 
 			HTTP::Get, 
 			mimetype, 
 			"", 
@@ -72,13 +79,10 @@
 		return String{str.str()};
 	}
 
-	bool URL::Handler::get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) const {
-
+	bool URL::Handler::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) {
 		File::Handler file{filename,true};
 		file.truncate();
-
 		call(
-			url, 
 			HTTP::Get, 
 			mimetype, 
 			"", 
@@ -87,11 +91,17 @@
 				return progress(current,total);
 			}
 		);
-
 		return true;
 
 	}
 
+	String URL::Handler::get(const MimeType mimetype) {
+		return get([](uint64_t,uint64_t){ return false; },mimetype);
+	}
+
+	bool URL::Handler::get(const char *filename, const MimeType mimetype) {
+		return get(filename,[](uint64_t,uint64_t){ return false; },mimetype);
+	}
 
  }
 

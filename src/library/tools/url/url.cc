@@ -214,12 +214,11 @@
 
 	String URL::call(const HTTP::Method method, const char *payload, const MimeType mimetype) const {
 		stringstream str;
-		handler().call(
-			*this, 
+		handler()->call(
 			method, 
 			mimetype, 
 			payload, 
-			[&str](uint64_t, uint64_t, const char *data){
+			[&str](uint64_t, uint64_t, const char *data, size_t){
 				str << data;
 				return false;
 			}
