@@ -36,6 +36,7 @@
  #include <system_error>
  #include <functional>
  #include <udjat/tools/http/method.h>
+ #include <udjat/tools/http/mimetype.h>
  #include <pugixml.hpp>
 
  namespace Udjat {
@@ -55,22 +56,49 @@
 				return strcasecmp(name,handler_name) == 0;
 			}
 
-			virtual int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
-			virtual String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
-			virtual String get() const = 0;
+			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
+			/// @return Test result.
+			/// @retval 200 Got response.
+			/// @retval 401 Access denied.
+			/// @retval 404 Not found.
+			/// @retval EINVAL Invalid method.
+			/// @retval ENODATA Empty URL.
+			/// @retval ENOTSUP No support for test in protocol handler.
+			virtual int test(const URL &url, const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
+
+			/// @brief Get value.
+			/// @param Value the response.
+			/// @return true if value was updated.
+			virtual bool get(const URL &url, Udjat::Value &value) const;
+
+			/// @brief Do a 'get' request.
+			/// @param progress progress callback.
+			/// @return Server response.
+			virtual String call(const URL &url, const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
+
+			virtual String get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) const = 0;
+
+			String get(const URL &url, const MimeType mimetype = MimeType::undefined) const;
+
+			/// @brief Download/update a file with progress.
+			/// @param filename The fullpath for the file.
+			/// @param writer The secondary writer.
+			/// @return true if the file was updated.
+			virtual bool get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) const;
+
+			bool get(const URL &url, const char *filename, const MimeType mimetype = MimeType::undefined) const;
 
 		};
 
 		URL() = default;
 
 		URL(const char *str) : Udjat::String{str} {
-			unescape();
 		}
 
-		URL(const std::string &str) : URL{str.c_str()} {
+		URL(const std::string &str) : String{str} {
 		}
 
-		URL(const XML::Node &node) : URL{node.attribute("src").as_string()} {
+		URL(const XML::Node &node, const char *attrname = "src", bool required = false) : String{node,attrname,required} {
 		}
 
 		template<typename... Targs>
@@ -95,8 +123,15 @@
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
 
+		/// @brief Connect to host
+		/// @return A non-blocking, connected socket.
+		int connect(time_t timeout = 0);
+
+		/// @brief Connect to host, async
+		void connect(time_t timeout, const std::function<void(int socket)> &func);
+
 		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
-		bool local() const;
+		inline bool local() const;
 
 		/// @brief Iterate over query
 		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
@@ -113,6 +148,13 @@
 			return handler(scheme().c_str());
 		}
 
+		/// @brief Get value.
+		/// @param Value the response.
+		/// @return true if value was updated.
+		inline bool get(Udjat::Value &value) const {
+			return handler().get(this,value);
+		}
+
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.
 		/// @retval 200 Got response.
@@ -122,17 +164,30 @@
 		/// @retval ENODATA Empty URL.
 		/// @retval ENOTSUP No support for test in protocol handler.
 		inline int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
-			return handler().test(method,payload);
+			return handler().test(*this,method,payload);
 		}
 
 		/// @brief Do a 'get' request.
+		/// @param progress progress callback.
 		/// @return Server response.
-		inline String get() const {
-			return handler().get();
+		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) const {
+			return handler().get(*this,progress,mimetype);
 		}
 
-		inline String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
-			return handler().call(method,payload);
+		inline String get(const MimeType mimetype = MimeType::undefined) const {
+			return handler().get(*this,mimetype);
+		}
+
+		/// @brief Download/update a file with progress.
+		/// @param filename The fullpath for the file.
+		/// @param writer The secondary writer.
+		/// @return true if the file was updated.
+		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) {
+			return handler().get(*this,filename,progress,mimetype);
+		}
+
+		inline bool get(const char *filename, const MimeType mimetype = MimeType::undefined) {
+			return handler().get(*this,filename,mimetype);
 		}
 
 		/*

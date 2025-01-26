@@ -123,7 +123,7 @@
 				}
 				ptr += 3;
 			} else {
-				break;
+				throw invalid_argument("Bad format");
 			} 
 		}
 

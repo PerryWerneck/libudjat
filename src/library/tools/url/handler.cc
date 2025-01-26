@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -45,6 +45,14 @@
 
 	URL::Handler::~Handler() {
 		Controller().remove(this);
+	}
+
+	String URL::Handler::get(const URL &url, const MimeType mimetype) const {
+		return get(&url, [](uint64_t current, uint64_t total){return false;},mimetype);
+	}
+
+	bool URL::Handler::get(const URL &url, const char *filename, const MimeType mimetype) const {
+		return get(&url, filename, [](uint64_t current, uint64_t total){return false;},mimetype);
 	}
 
  }
