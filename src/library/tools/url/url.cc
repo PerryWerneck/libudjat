@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -68,17 +68,25 @@
 
 		ParsedUri uri{*this};
 		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+	}
 
-/*
-		size_t pos = find("://");
+	const String URL::path() const {
 
-		if(pos == string::npos) {
-			return "";
+		ParsedUri uri{*this};
+
+		String result;
+
+		if (uri.pathHead) {
+			for(UriPathSegmentA *pathSegment = uri.pathHead; pathSegment; pathSegment = pathSegment->next) {
+				result += '/';
+				size_t len =  (size_t) (pathSegment->text.afterLast - pathSegment->text.first);
+				result += string{pathSegment->text.first,len};
+			}
 		}
 
-		return substr(0,pos);
-*/
+		return result;
 	}
+
 
 	URL & URL::operator += (const char *path) {
 
@@ -191,6 +199,17 @@
 
 	}
 
+	bool URL::local() const {
+
+		ParsedUri uri{*this};
+		String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+
+		if(scheme.empty() || strcasecmp(scheme.c_str(),"file") == 0) {
+			return true;
+		}
+	
+		return false;
+	}
 
  }
 

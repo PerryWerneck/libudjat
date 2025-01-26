@@ -39,7 +39,7 @@
 	protected:
 
 		/// @brief Response type.
-		MimeType mimetype = MimeType::custom;
+		MimeType mimetype = MimeType::none;
 
 		/// @brief Caching information.
 		struct {

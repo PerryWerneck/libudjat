@@ -48,11 +48,15 @@
 	}
 
 	String URL::Handler::get(const URL &url, const MimeType mimetype) const {
-		return get(&url, [](uint64_t current, uint64_t total){return false;},mimetype);
+		return get(url, [](uint64_t current, uint64_t total){return false;},mimetype);
 	}
 
 	bool URL::Handler::get(const URL &url, const char *filename, const MimeType mimetype) const {
-		return get(&url, filename, [](uint64_t current, uint64_t total){return false;},mimetype);
+		return get(url, filename, [](uint64_t current, uint64_t total){return false;},mimetype);
+	}
+
+	bool URL::Handler::get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) const {
+		throw system_error(ENOTSUP,system_category(),"No support for get");
 	}
 
  }

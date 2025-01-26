@@ -42,6 +42,7 @@
 	cout << url << " scheme is " << url.scheme() << endl;
 	cout << url << " hostname is " << url.hostname() << endl;
 	cout << url << " servicename is " << url.servicename() << endl;
+	cout << url << " path is " << url.path() << endl;
 	
 	url += "/test";
 	cout << "---> " << url << endl;

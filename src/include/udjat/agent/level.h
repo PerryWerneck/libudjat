@@ -19,7 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <cstdint>
 
  namespace Udjat {

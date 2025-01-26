@@ -69,24 +69,24 @@
 			/// @brief Get value.
 			/// @param Value the response.
 			/// @return true if value was updated.
-			virtual bool get(const URL &url, Udjat::Value &value) const;
+			virtual bool get(const URL &url, Udjat::Value &value) const = 0;
 
 			/// @brief Do a 'get' request.
 			/// @param progress progress callback.
 			/// @return Server response.
 			virtual String call(const URL &url, const HTTP::Method method = HTTP::Head, const char *payload = "") const = 0;
 
-			virtual String get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) const = 0;
+			virtual String get(const URL &url, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const = 0;
 
-			String get(const URL &url, const MimeType mimetype = MimeType::undefined) const;
+			String get(const URL &url, const MimeType mimetype = MimeType::none) const;
 
 			/// @brief Download/update a file with progress.
 			/// @param filename The fullpath for the file.
 			/// @param writer The secondary writer.
 			/// @return true if the file was updated.
-			virtual bool get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) const;
+			virtual bool get(const URL &url, const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const;
 
-			bool get(const URL &url, const char *filename, const MimeType mimetype = MimeType::undefined) const;
+			bool get(const URL &url, const char *filename, const MimeType mimetype = MimeType::none) const;
 
 		};
 
@@ -119,6 +119,7 @@
 		const String scheme() const;
 		const String hostname() const;
 		const String servicename() const;
+		const String path() const;
 
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
@@ -131,7 +132,7 @@
 		void connect(time_t timeout, const std::function<void(int socket)> &func);
 
 		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
-		inline bool local() const;
+		bool local() const;
 
 		/// @brief Iterate over query
 		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
@@ -152,7 +153,7 @@
 		/// @param Value the response.
 		/// @return true if value was updated.
 		inline bool get(Udjat::Value &value) const {
-			return handler().get(this,value);
+			return handler().get(*this,value);
 		}
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
@@ -167,14 +168,18 @@
 			return handler().test(*this,method,payload);
 		}
 
+		inline String call(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
+			return handler().call(*this,method,payload);
+		}
+
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
 		/// @return Server response.
-		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) const {
+		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const {
 			return handler().get(*this,progress,mimetype);
 		}
 
-		inline String get(const MimeType mimetype = MimeType::undefined) const {
+		inline String get(const MimeType mimetype = MimeType::none) const {
 			return handler().get(*this,mimetype);
 		}
 
@@ -182,11 +187,11 @@
 		/// @param filename The fullpath for the file.
 		/// @param writer The secondary writer.
 		/// @return true if the file was updated.
-		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::undefined) {
+		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) {
 			return handler().get(*this,filename,progress,mimetype);
 		}
 
-		inline bool get(const char *filename, const MimeType mimetype = MimeType::undefined) {
+		inline bool get(const char *filename, const MimeType mimetype = MimeType::none) {
 			return handler().get(*this,filename,mimetype);
 		}
 
