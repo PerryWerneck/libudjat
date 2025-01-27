@@ -55,7 +55,7 @@
 		public:
 			virtual ~Handler();
 
-			virtual Handler & mimetype(const MimeType t);
+			virtual Handler & set(const MimeType mimetype);
 
 			/// @brief Get header sent by host.
 			/// @param name The header name

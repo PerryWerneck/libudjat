@@ -161,7 +161,7 @@
 					try {
 
 						auto handler = URL{descr.url}.handler();
-						handler->mimetype(MimeType::xml);
+						handler->set(MimeType::xml);
 
 						try {
 

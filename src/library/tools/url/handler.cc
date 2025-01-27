@@ -66,7 +66,7 @@
 	URL::Handler::~Handler() {
 	}
 
-	URL::Handler & URL::Handler::mimetype(const MimeType) {
+	URL::Handler & URL::Handler::set(const MimeType) {
 		return *this;
 	}
 

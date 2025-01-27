@@ -66,7 +66,7 @@
 
 		if(!url.empty()) {
 
-			bool updated = url.get(filename,MimeType::xml);
+			bool updated = url.handler()->set(MimeType::xml).get(filename);
 
 			if(updated) {
 				Logger::String{filename," was updated from ",url.c_str()}.info("xml");
