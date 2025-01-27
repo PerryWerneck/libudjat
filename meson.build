@@ -309,6 +309,7 @@ lib_src += [
   'src/library/tools/interface.cc',
   'src/library/tools/action.cc',
   'src/library/request/responsevalue.cc',
+  'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
 ]
 
 test_src = [
