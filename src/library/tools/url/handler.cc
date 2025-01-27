@@ -48,6 +48,15 @@
 				return factory->HandlerFactory(*this);
 			}
 		}
+
+		/*
+		if(!strcasecmp(scheme.c_str(),"file")) {
+		}
+
+		if(!strcasecmp(scheme.c_str(),"script")) {
+		}
+		*/
+
 		throw invalid_argument(String{"Cant handle ",c_str()});
 	}
 
@@ -55,6 +64,14 @@
 	}
 
 	URL::Handler::~Handler() {
+	}
+
+	URL::Handler & URL::Handler::mimetype(const MimeType) {
+		return *this;
+	}
+
+	String URL::Handler::response(const char *name) const {
+		return "";
 	}
 
 	int URL::Handler::test(const HTTP::Method method, const char *payload) {
@@ -65,11 +82,10 @@
 		return false;
 	}
 
-	String URL::Handler::get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) {
+	String URL::Handler::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		stringstream str;
 		call(
 			HTTP::Get, 
-			mimetype, 
 			"", 
 			[&str,&progress](uint64_t current, uint64_t total, const char *data, size_t){
 				str << data;
@@ -79,12 +95,11 @@
 		return String{str.str()};
 	}
 
-	bool URL::Handler::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype) {
+	bool URL::Handler::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		File::Handler file{filename,true};
 		file.truncate();
 		call(
 			HTTP::Get, 
-			mimetype, 
 			"", 
 			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
 				file.write(current,data,len);
@@ -95,12 +110,12 @@
 
 	}
 
-	String URL::Handler::get(const MimeType mimetype) {
-		return get([](uint64_t,uint64_t){ return false; },mimetype);
+	String URL::Handler::get() {
+		return get([](uint64_t,uint64_t){ return false; });
 	}
 
-	bool URL::Handler::get(const char *filename, const MimeType mimetype) {
-		return get(filename,[](uint64_t,uint64_t){ return false; },mimetype);
+	bool URL::Handler::get(const char *filename) {
+		return get(filename,[](uint64_t,uint64_t){ return false; });
 	}
 
  }

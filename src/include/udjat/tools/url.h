@@ -48,12 +48,23 @@
 		class UDJAT_API Handler {
 		private:
 			const URL &url;
-
+	
 		protected:
 			Handler(const URL &url);
 
 		public:
 			virtual ~Handler();
+
+			virtual Handler & mimetype(const MimeType t);
+
+			/// @brief Get header sent by host.
+			/// @param name The header name
+			/// @return The header value.
+			virtual String response(const char *name) const;
+
+			inline const char * c_str() const {
+				return url.c_str();
+			}
 
 			class Factory {
 			private:
@@ -81,7 +92,7 @@
 			/// @retval ENOTSUP This handler cannot manage test.
 			virtual int test(const HTTP::Method method = HTTP::Head, const char *payload = "");
 
-			virtual void call(const HTTP::Method method, const MimeType mimetype, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) = 0;
+			virtual void call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) = 0;
 
 			/// @brief Get value.
 			/// @param Value the response.
@@ -91,17 +102,17 @@
 			/// @brief Do a 'get' request.
 			/// @param progress progress callback.
 			/// @return Server response.
-			virtual String get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none);
+			virtual String get(const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
 			/// @brief Download/update a file with progress.
 			/// @param filename The fullpath for the file.
 			/// @param writer The secondary writer.
 			/// @return true if the file was updated.
-			virtual bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none);
+			virtual bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
-			String get(const MimeType mimetype = MimeType::none);
+			String get();
 
-			bool get(const char *filename, const MimeType mimetype = MimeType::none);
+			bool get(const char *filename);
 
 		};
 
@@ -179,29 +190,29 @@
 			return handler()->test(method,payload);
 		}
 
-		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const MimeType mimetype = MimeType::none) const;
+		String call(const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
 		/// @return Server response.
-		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) const {
-			return handler()->get(progress,mimetype);
+		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
+			return handler()->get(progress);
 		}
 
-		inline String get(const MimeType mimetype = MimeType::none) const {
-			return handler()->get(mimetype);
+		inline String get() const {
+			return handler()->get();
 		}
 
 		/// @brief Download/update a file with progress.
 		/// @param filename The fullpath for the file.
 		/// @param writer The secondary writer.
 		/// @return true if the file was updated.
-		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress, const MimeType mimetype = MimeType::none) {
-			return handler()->get(filename,progress,mimetype);
+		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
+			return handler()->get(filename,progress);
 		}
 
-		inline bool get(const char *filename, const MimeType mimetype = MimeType::none) {
-			return handler()->get(filename,mimetype);
+		inline bool get(const char *filename) {
+			return handler()->get(filename);
 		}
 
 	};

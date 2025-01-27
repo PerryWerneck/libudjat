@@ -33,7 +33,6 @@
 	/// @brief Load XML file, check if it's valid.
  	static void load(XML::Document *document, const char *filename) {
 
-		/*
 		auto result = document->load_file(filename);
 		if(result.status != pugi::status_ok) {
 			throw runtime_error(Logger::String{filename,": ",result.description()});
@@ -51,13 +50,11 @@
 				}
 			);
 		}
-		*/
 
  	}
 
 	XML::Document::Document(const char *filename) {
 
-		/*
 		Logger::String{"Loading '",filename,"'"}.info("xml");
 
 		Udjat::load(this,filename);
@@ -69,20 +66,7 @@
 
 		if(!url.empty()) {
 
-			// TODO: Check for url handler, load it if needed.
-
-			// Update document.
-			HTTP::Client client{url,document_element().attribute("module-autoload").as_bool(true)};
-
-			client.mimetype(MimeType::xml);
-
-			if(document_element().attribute("cache").as_bool(true)) {
-				client.cache(filename);
-			} else {
-				Logger::String{"Cache for '",url.c_str(),"' is disabled"}.trace("xml");
-			}
-
-			bool updated = client.save(filename);
+			bool updated = url.get(filename,MimeType::xml);
 
 			if(updated) {
 				Logger::String{filename," was updated from ",url.c_str()}.info("xml");
@@ -93,7 +77,6 @@
 			document_element().append_attribute("updated").set_value(updated);
 
 		}
-		*/
 
 		// TODO: Parse <include> nodes.
 
