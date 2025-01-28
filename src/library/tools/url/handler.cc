@@ -76,7 +76,8 @@
 	}
 
 	URL::Handler & URL::Handler::set(const MimeType mimetype) {
-		header("Content-Type",std::to_string(mimetype));
+		// https://www.rfc-editor.org/rfc/rfc7231#section-5.3.2
+		header("Accept",std::to_string(mimetype));
 		return *this;
 	}
 
@@ -102,7 +103,7 @@
 	}
 
 	int URL::Handler::except(int code, const char *message) {
-		
+
 		if(code >= 200 && code <= 299) {
 			return code;
 		}
