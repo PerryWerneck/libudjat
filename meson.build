@@ -763,6 +763,7 @@ install_headers(
   'src/include/udjat/tools/interface.h',
   'src/include/udjat/tools/report.h',
   'src/include/udjat/tools/percentage.h',
+  'src/include/udjat/tools/socket.h',
   subdir: 'udjat/tools'  
 )
 

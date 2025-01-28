@@ -123,6 +123,26 @@
 		close();
 	}
 
+	void Socket::blocking(int sock, bool enable) {
+		
+		int flags = fcntl(sock, F_GETFL, 0);
+		
+		if(flags < 0) {
+			throw system_error(errno,system_category(),"Failed to get socket flags");
+		}
+
+		if(enable) {
+			flags &= ~O_NDELAY;
+		} else {
+			flags |= O_NDELAY;
+		}
+
+		if(fcntl(sock, F_SETFL, flags) < 0) {
+			throw system_error(errno,system_category(),"Failed to set socket flags");
+		}
+
+	}
+
 	void Socket::handle_event(const Event event) {
 
 		try {

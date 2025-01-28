@@ -34,6 +34,7 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/handler.h>
+ #include <udjat/tools/socket.h>
  #include <poll.h>
 
  using namespace std;
@@ -73,21 +74,7 @@
 				continue;
 			}
 
-			int f;
-            if ((f = fcntl(pfd.fd, F_GETFL, 0)) == -1) {
-				error = errno;
-				close(pfd.fd);
-				pfd.fd = -1;
-				continue;
-			}
-
-  			f |= O_NDELAY;
-            if (fcntl(pfd.fd, F_SETFL, f) < 0) {
-				error = errno;
-				close(pfd.fd);
-				pfd.fd = -1;
-				continue;
-			}
+			Socket::blocking(pfd.fd,false);
 
 			if(::connect(pfd.fd,rp->ai_addr, rp->ai_addrlen) && errno != EINPROGRESS) {
 				error = errno;

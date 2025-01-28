@@ -51,6 +51,11 @@
 
 		virtual ~Socket();
 
+		static void blocking(int sock, bool enable = true);
+
+		inline void blocking(bool enable) {
+			blocking(values.fd,enable);
+		}
 	};
 
  }
