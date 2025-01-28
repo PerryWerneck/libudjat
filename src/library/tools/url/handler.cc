@@ -23,6 +23,8 @@
  #include <udjat/tools/container.h>
  #include <sstream>
  #include <udjat/tools/file/handler.h>
+ #include <udjat/tools/logger.h>
+ #include <udjat/tools/http/exception.h>
  
  using namespace std;
 
@@ -75,6 +77,15 @@
 	}
 
 	int URL::Handler::test(const HTTP::Method method, const char *payload) {
+
+		if(url.empty()) {
+			return ENODATA;
+		}
+
+		if(method > HTTP::Patch || method == HTTP::Delete || method == HTTP::Connect || method == HTTP::Options || method == HTTP::Trace) {
+			return EINVAL;
+		}
+
 		return ENOTSUP;
 	}
 
@@ -82,9 +93,27 @@
 		return false;
 	}
 
+	int URL::Handler::except(int code, const char *message) {
+		if(code >= 200 && code <= 299) {
+			return code;
+		}
+
+		if(code == 304) {        // Not modified.
+			Logger::String{url.c_str()," was not modified"}.trace("url");
+			return 304;
+		}
+
+		if(message && *message) {
+			throw HTTP::Exception((unsigned int) code, message);
+		}
+
+		throw HTTP::Exception((unsigned int) code);
+
+	}
+
 	String URL::Handler::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		stringstream str;
-		call(
+		int rc = perform(
 			HTTP::Get, 
 			"", 
 			[&str,&progress](uint64_t current, uint64_t total, const char *data, size_t){
@@ -92,13 +121,14 @@
 				return progress(current,total);
 			}
 		);
+		except(rc);
 		return String{str.str()};
 	}
 
 	bool URL::Handler::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		File::Handler file{filename,true};
 		file.truncate();
-		call(
+		int rc = perform(
 			HTTP::Get, 
 			"", 
 			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
@@ -106,6 +136,7 @@
 				return progress(current,total);
 			}
 		);
+		except(rc);
 		return true;
 
 	}

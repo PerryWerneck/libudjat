@@ -214,7 +214,7 @@
 
 	String URL::call(const HTTP::Method method, const char *payload) const {
 		stringstream str;
-		handler()->call(
+		handler()->perform(
 			method, 
 			payload, 
 			[&str](uint64_t, uint64_t, const char *data, size_t){

@@ -52,6 +52,9 @@
 		protected:
 			Handler(const URL &url);
 
+			/// @brief Launch exception on failure code.
+			int except(int code, const char *message = "");
+
 		public:
 			virtual ~Handler();
 
@@ -82,17 +85,25 @@
 
 			};
 
+			/// @brief Perform request.
+			/// @param method The HTTP method to use.
+			/// @param payload The payload to send.
+			/// @param progress The progress callback.
+			/// @return HTTP return code.
+			/// @retval 200 OK.
+			/// @retval 401 Unauthorized.
+			/// @retval 404 Not found.			
+			virtual int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) = 0;
+
 			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 			/// @return Test result.
-			/// @retval 200 Got response.
-			/// @retval 401 Access denied.
-			/// @retval 404 Not found.
+			/// @retval 200 OK.
+			/// @retval 401 Unauthorized.
+			/// @retval 404 Not found.			
 			/// @retval EINVAL Invalid method.
 			/// @retval ENODATA Empty URL.
 			/// @retval ENOTSUP This handler cannot manage test.
 			virtual int test(const HTTP::Method method = HTTP::Head, const char *payload = "");
-
-			virtual void call(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) = 0;
 
 			/// @brief Get value.
 			/// @param Value the response.
