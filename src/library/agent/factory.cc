@@ -196,6 +196,7 @@
 				}
 			},
 			
+			/*
 			{
 				"url",
 				[](const XML::Node &node) {
@@ -239,6 +240,7 @@
 					return make_shared<Url>(node);
 				}
 			},
+			*/
 
 		};
 

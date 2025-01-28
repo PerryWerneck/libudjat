@@ -66,20 +66,7 @@
 
 		if(!url.empty()) {
 
-			// TODO: Check for url handler, load it if needed.
-
-			// Update document.
-			HTTP::Client client{url,document_element().attribute("module-autoload").as_bool(true)};
-
-			client.mimetype(MimeType::xml);
-
-			if(document_element().attribute("cache").as_bool(true)) {
-				client.cache(filename);
-			} else {
-				Logger::String{"Cache for '",url.c_str(),"' is disabled"}.trace("xml");
-			}
-
-			bool updated = client.save(filename);
+			bool updated = url.handler()->set(MimeType::xml).get(filename);
 
 			if(updated) {
 				Logger::String{filename," was updated from ",url.c_str()}.info("xml");
@@ -91,9 +78,10 @@
 
 		}
 
+		// TODO: Parse <include> nodes.
+
 	}
 
-	// TODO: Parse <include> nodes.
 
  }
 

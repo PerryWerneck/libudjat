@@ -20,7 +20,10 @@
  #include <config.h>
  #include <private/protocol.h>
  #include <udjat/tools/string.h>
+ #include <stdexcept>
  #include <cstring>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -50,10 +53,12 @@
 
 	}
 
+	/*
 	URL & URL::unescape() {
 		std::string::assign(unescape(c_str()));
 		return *this;
 	}
+	*/
 
 	Udjat::String & Udjat::String::escape(char marker) {
 
@@ -139,6 +144,7 @@
 		return *this;
 	}
 
+	/*
 	std::string URL::unescape(const char *src) {
 
 		char 		* buffer;
@@ -186,6 +192,6 @@
 		return rc;
 
 	}
+*/
 
  }
-

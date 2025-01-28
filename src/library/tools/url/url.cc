@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,287 +18,212 @@
  */
 
  #include <config.h>
- #include <private/protocol.h>
- #include <udjat/tools/http/client.h>
- #include <udjat/tools/protocol.h>
+ #include <udjat/tools/url.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/url.h>
- #include <cstring>
-
-#ifndef _WIN32
-	#include <netdb.h>
-#endif // _WIN32
+ #include <uriparser/Uri.h>
+ #include <stdexcept>
+ #include <string>
+ #include <list>
+ #include <memory>
+ #include <sstream>
 
  using namespace std;
 
  namespace Udjat {
 
-	URL::Scheme URL::scheme() const {
-
-		if(empty()) {
-			throw runtime_error("Can't get scheme on empty URL");
-		}
-
-		size_t pos = find("://");
-		if(pos == string::npos) {
-			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
-		}
-
-		return URL::Scheme{string::c_str(),pos};
-
-	}
-
-	URL::Components URL::ComponentsFactory() const {
-
-		URL::Components components;
-
-		const char *ptr;	// Temp pointer.
-		size_t from, to;
-
-		// Get query
-		ptr = strchr(c_str(),'?');
-		if(ptr) {
-			components.query = (ptr+1);
-		}
-
-		ptr = c_str();
-		if(ptr[0] == '/' || ptr[0] == '.') {
-			// Filename, just extract path.
-			components.scheme = "file";
-			components.path = ptr;
-			return components;
-		}
-
-		// Get URL Scheme.
-		from = find("://");
-		if(from == string::npos) {
-			throw runtime_error(string{"Can't decode URL scheme on '"} + c_str() + "'");
-		}
-		from += 3;
-
-		string scheme{string::c_str(),from-3};
-		ptr = strrchr(scheme.c_str(),'+');
-		if(ptr) {
-			components.scheme.assign(ptr+1);
-		} else {
-			components.scheme.assign(scheme);
-		}
-
-		// Get hostname.
-		string hostname;
-		to = find("/",from);
-		if(to == string::npos) {
-			hostname.assign(string::c_str()+from);
-		} else {
-			hostname.assign(string::c_str()+from,to-from);
-		}
-
-		ptr = strrchr(hostname.c_str(),':');
-		if(ptr) {
-			components.hostname.assign(hostname.c_str(),(size_t) (ptr - hostname.c_str()));
-			components.srvcname = (ptr+1);
-		} else {
-			components.hostname = hostname;
-			components.srvcname.assign(components.scheme);
-		}
-
-		if(to == string::npos) {
-			return components;
-		}
-
-		from = to;
-		to = find("?",from);
-		if(to == string::npos) {
-			components.path.assign(string::c_str()+from);
-			return components;
-		}
-
-		components.path.assign(string::c_str()+from,to-from);
-
-		return components;
-
-	}
-
-	bool URL::local() const {
-		const char *str = c_str();
-		return str[0] == '/' || str[0] == '.' || strncasecmp(str,"file://",7) == 0;
-	}
-
-	int URL::test(const HTTP::Method method, const char *payload) const noexcept {
-
-		if(empty()) {
-			return ENODATA;
-		}
-
-		try {
-
-			auto worker = Protocol::WorkerFactory(c_str());
-			worker->method(method);
-			worker->payload(payload);
-			return worker->url(*this).test();
-
-		} catch(const std::system_error &e) {
-
-			cerr << "url\tError '" << e.what() << "' testing " << *this << endl;
-			return (int) e.code().value();
-
-		} catch(const std::exception &e) {
-
-			cerr << "url\tError '" << e.what() << "' testing " << *this << endl;
-
-		} catch(...) {
-
-			cerr << "url\tUnexpected error testing " << *this << endl;
-
-		}
-
-		return -1;
-	}
-
-	std::string URL::get() const {
-		return HTTP::Client(*this).get();
-	}
-
-	bool URL::get(Udjat::Value &value) const {
-		Scheme scheme = this->scheme();
-		return Protocol::for_each([this,&scheme,&value](const Protocol &protocol){
-			if(protocol == scheme.c_str()) {
-				return protocol.call(*this,value);
-			}
-			return false;
-		});
-	}
-
-	std::string URL::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
-		return HTTP::Client(*this).get(progress);
-	}
-
-	bool URL::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
-		return HTTP::Client(*this).save(filename,progress);
-	}
-
-	bool URL::get(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
-		return HTTP::Client(*this).save(filename,writer);
-	}
-
-	void URL::get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer) {
-
-		auto worker = Protocol::WorkerFactory(c_str());
-		worker->method(HTTP::Get);
-		worker->save(writer);
-
-	}
-
-	bool URL::get(const char *filename) const {
-		return HTTP::Client(*this).save(filename);
-	}
-
-	std::string URL::post(const char *payload) const {
-		return HTTP::Client(*this).post(payload);
-	}
-
-	std::string URL::filename(const std::function<bool(double current, double total)> &progress) {
-		return HTTP::Client(*this).filename(progress);
-	}
-
-	std::string URL::filename() {
-		return HTTP::Client(*this).filename();
-	}
-
-	String URL::argument(const char *name) const {
-
-		String value;
-
-		if(name && *name) {
-
-			size_t szName = strlen(name);
-
-			ComponentsFactory().query.for_each("&",[&value,szName,name](const String &v){
-
-				if(v.size() > szName) {
-
-					if(v[szName] == '=' && strncasecmp(v.c_str(),name,szName) == 0) {
-						value = v.c_str()+szName+1;
-						value.strip();
-						return true;
-					}
-				}
-
-				return false;
-			});
-
-		}
-
-		return value;
-	}
-
-
-	int URL::Components::portnumber() const {
-
-		for(const char *ptr = srvcname.c_str(); *ptr; ptr++) {
-			if(!isdigit(*ptr)) {
-				struct servent *se = getservbyname(srvcname.c_str(),NULL);
-				if(se) {
-					return htons(se->s_port);
-				}
-				throw system_error(EINVAL,system_category(),string{"The service '"} + srvcname.c_str() + "' is invalid");
+	struct ParsedUri : UriUriA {
+		ParsedUri(const std::string &str) {
+			const char * errorPos;
+			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
+				throw std::invalid_argument("Invalid URL");
 			}
 		}
 
-		return stoi(srvcname);
+		~ParsedUri() {
+			uriFreeUriMembersA(this);
+		}
+	};
+
+	const String URL::servicename() const {
+		
+		ParsedUri uri{*this};
+
+		String result{uri.portText.first, (size_t) (uri.portText.afterLast - uri.portText.first)};
+
+		if(result.empty()) {
+			return scheme();
+		}
+
+		return result;
 	}
 
-	URL URL::operator + (const char *path) {
-
-		URL url{this->c_str()};
-		url += path;
-		return url;
+	const String URL::hostname() const {
+		
+		ParsedUri uri{*this};
+		return String{uri.hostText.first, (size_t) (uri.hostText.afterLast - uri.hostText.first)};
 
 	}
+
+	const String URL::scheme() const {
+
+		ParsedUri uri{*this};
+		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+	}
+
+	const String URL::path() const {
+
+		ParsedUri uri{*this};
+
+		String result;
+
+		if (uri.pathHead) {
+			for(UriPathSegmentA *pathSegment = uri.pathHead; pathSegment; pathSegment = pathSegment->next) {
+				result += '/';
+				size_t len =  (size_t) (pathSegment->text.afterLast - pathSegment->text.first);
+				result += string{pathSegment->text.first,len};
+			}
+		}
+
+		return result;
+	}
+
 
 	URL & URL::operator += (const char *path) {
 
-		// TODO: Extract arguments after '?' and rejoin after merge.
+		ParsedUri uri{*this};
 
-		while(!strncmp(path,"../",3)) {
+		std::string newUri;
 
-			auto pos = rfind('/');
-			if(pos == string::npos) {
-				throw system_error(EINVAL,system_category(),"Cant merge path on URL");
+		// Scheme
+		if (uri.scheme.first) {
+			newUri.append(uri.scheme.first, uri.scheme.afterLast - uri.scheme.first);
+			newUri.append("://");
+		}
+
+		// Hostname
+		if (uri.hostText.first) {
+			newUri.append(uri.hostText.first, uri.hostText.afterLast - uri.hostText.first);
+		}
+
+		if (uri.portText.first) {
+			newUri.append(":");
+			newUri.append(uri.portText.first, uri.portText.afterLast - uri.portText.first);
+		}
+
+		// Path
+		std::list<string> segments;
+		if (uri.pathHead) {
+			for(UriPathSegmentA *pathSegment = uri.pathHead; pathSegment; pathSegment = pathSegment->next) {
+				size_t len =  (size_t) (pathSegment->text.afterLast - pathSegment->text.first);
+				segments.emplace_back(pathSegment->text.first,len);
 			}
-
-			resize(pos);
-			path += 3;
-
 		}
 
-		if(!strncmp(path,"./",2)) {
-			path++;
+		const char *ptr = path;
+		while(*ptr == '.') {
+			if(!strncmp(ptr,"./",2)) {
+				// Just extract.
+				ptr += 2;
+			} else if(!strncmp(ptr,"../",3)) {
+				// Remove last segment.
+				if(!segments.empty()) {
+					segments.pop_back();
+				}
+				ptr += 3;
+			} else {
+				throw invalid_argument("Bad format");
+			} 
 		}
 
-		if(empty()) {
-			*this = path;
-		} else if(at(size()-1) == '/') {
-			// URL end with '/'
-			append(path+(path[0] == '/' ? 1 : 0));
-		} else {
-			// URL *not* end with '/'
-			if(path[0] != '/') {
-				append("/");
-			}
-			append(path);
+		// Concatenate path.
+		for(const string &segment : segments) {
+			newUri.append("/");
+			newUri.append(segment);
 		}
+		
+		if(*ptr == '/') {
+			ptr++;
+		}
+		
+		if(*ptr) {
+			newUri.append("/");
+			newUri.append(ptr);
+		}
+
+		if(uri.query.first) {
+			newUri.append("?");
+			newUri.append(uri.query.first, uri.query.afterLast - uri.query.first);
+		}
+	
+		*this = newUri;
 
 		return *this;
 	}
 
+	bool URL::for_each(const std::function<bool(const char *key, const char *value)> &func) const {
+		ParsedUri uri{*this};
+		UriQueryListA *queryList = nullptr;
+		int items = 0; 
+		bool rc = false;
+
+		if(!uri.query.first) {
+			return false;
+		}
+
+		if(uriDissectQueryMallocA(&queryList, &items, uri.query.first, uri.query.afterLast) != URI_SUCCESS) {
+			throw runtime_error("Unexpected error on uriDissectQueryMallocA");
+		}
+
+		for (UriQueryListA *node = queryList; node && !rc; node = node->next) {
+			rc = func(node->key, node->value);
+		}
+
+		uriFreeQueryListA(queryList);
+
+		return rc;
+	}
+
+	String URL::argument(const char *name) const {
+
+		String result;
+
+		for_each([&result,name](const char *key, const char *value) -> bool {
+			if(!strcasecmp(key,name)) {
+				result = value;
+				return true;
+			}
+			return false;
+		});
+
+    	return result;
+
+	}
+
+	bool URL::local() const {
+
+		ParsedUri uri{*this};
+		String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+
+		if(scheme.empty() || strcasecmp(scheme.c_str(),"file") == 0) {
+			return true;
+		}
+	
+		return false;
+	}
+
+	String URL::call(const HTTP::Method method, const char *payload) const {
+		stringstream str;
+		handler()->call(
+			method, 
+			payload, 
+			[&str](uint64_t, uint64_t, const char *data, size_t){
+				str << data;
+				return false;
+			}
+		);
+		return String{str.str()};		
+	}
+
  }
 
- namespace std {
-
- 	string to_string(const Udjat::URL &url) {
-		return string(url);
- 	}
-
- }

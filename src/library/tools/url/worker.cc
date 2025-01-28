@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+/*
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/protocol.h>
@@ -27,16 +28,6 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/base64.h>
  #include <udjat/net/ip/address.h>
-
- /*
- #include <udjat/tools/protocol.h>
- #include <cstring>
- #include <sys/types.h>
- #include <sys/stat.h>
- #include <fcntl.h>
- #include <sys/stat.h>
- #include <sys/types.h>
- */
 
  #ifdef _WIN32
 	#include <sys/utime.h>
@@ -297,5 +288,5 @@
 
 
  }
-
+*/
 

@@ -28,6 +28,7 @@
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
  #include <udjat/agent/percentage.h>
+ #include <udjat/tools/url.h>
 
  using namespace std;
  using namespace Udjat;
@@ -35,6 +36,7 @@
  static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
  int main(int argc, char **argv) {
+
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
@@ -71,4 +73,5 @@
 		});
 
 	});
+
  }

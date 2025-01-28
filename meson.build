@@ -52,9 +52,10 @@ subdir('po')
 #
 # Dependencies
 #
+iconv = dependency('iconv')
 lib_deps = [
   dependency('pugixml'),  
-  dependency('iconv'),
+  dependency('liburiparser', method : 'pkg-config'),
 ]
 
 #
@@ -139,23 +140,16 @@ app_conf.set_quoted('LOG_DOMAIN','lib' + product_name)
 includes_dir = include_directories('src/include')
 
 #
-# Libraries
-#
-sdk_requires = [ 'pugixml' ]
-
-#
 # VMDetect (optional)
 #
 vmdetect_dep = dependency('vmdetect-static', required: false)
 if vmdetect_dep.found()
   app_conf.set('HAVE_VMDETECT', 2)
-  sdk_requires += [ 'vmdetect-static' ]
   lib_deps += vmdetect_dep
 else
   vmdetect_dep = dependency('vmdetect', required: false)
   if vmdetect_dep.found()
     app_conf.set('HAVE_VMDETECT', 1)
-    sdk_requires += [ 'vmdetect' ]
     lib_deps += vmdetect_dep
   endif
 endif
@@ -166,13 +160,11 @@ endif
 dmiget_dep = dependency('dmiget-static', required: false)
 if dmiget_dep.found()
   app_conf.set('HAVE_SMBIOS', 2)
-  sdk_requires += [ 'dmiget-static' ]
   lib_deps += dmiget_dep
 else
   dmiget_dep = dependency('dmiget', required: false)
   if dmiget_dep.found()
     app_conf.set('HAVE_SMBIOS', 1)
-    sdk_requires += [ 'dmiget' ]
     lib_deps += dmiget_dep
   endif
 endif
@@ -183,13 +175,11 @@ endif
 econf_dep = dependency('libeconf-static', required: false)
 if econf_dep.found()
   app_conf.set('HAVE_ECONF', 2)
-  sdk_requires += ' libeconf-static'
   lib_deps += econf_dep
 else
   econf_dep = dependency('libeconf', required: false)
   if econf_dep.found()
     app_conf.set('HAVE_ECONF', 1)
-    sdk_requires += [ 'libeconf' ]
     lib_deps += econf_dep
   endif
 endif
@@ -204,7 +194,6 @@ endif
 systemd_dep = dependency('libsystemd', required: false  )
 if systemd_dep.found()
   app_conf.set('HAVE_SYSTEMD', 1)
-  sdk_requires += [ 'libsystemd' ]
   lib_deps += systemd_dep
 endif 
 
@@ -290,11 +279,11 @@ lib_src += [
   'src/library/tools/subprocess.cc',
   'src/library/tools/systemservice.cc',
   'src/library/tools/timestamp.cc',
+  'src/library/tools/url/methodfactory.cc',
+  'src/library/tools/url/handler.cc',
   'src/library/tools/url/controller.cc',
   'src/library/tools/url/header.cc',
   'src/library/tools/url/protocol.cc',
-  'src/library/tools/url/protocols/file.cc',
-  'src/library/tools/url/protocols/script.cc',
   'src/library/tools/url/unescape.cc',
   'src/library/tools/url/watcher.cc',
   'src/library/tools/url/url.cc',
@@ -320,6 +309,8 @@ lib_src += [
   'src/library/tools/interface.cc',
   'src/library/tools/action.cc',
   'src/library/request/responsevalue.cc',
+  'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
+  'src/library/tools/os/' + host_machine.system() + '/socket.cc',
 ]
 
 test_src = [
@@ -384,7 +375,7 @@ if host_machine.system() == 'windows'
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    requires: [ sdk_requires ],
+    requires: [ lib_deps ],
     extra_cflags: [
       '-DUDJAT_STATIC',
       '-pthread',
@@ -409,7 +400,7 @@ else
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    requires: [ sdk_requires ],
+    requires: [ lib_deps ],
     extra_cflags: [
       '-DUDJAT_STATIC',
       '-pthread',
@@ -598,7 +589,7 @@ if host_machine.system() == 'windows'
     config_src + lib_src + resources,
     install: true,
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps,
+    dependencies: lib_deps + [ iconv ],
     include_directories: includes_dir,
     link_args: winlibs,
   )
@@ -612,7 +603,7 @@ else
     version : libversion,
     soversion : libversion,
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps + [ dependency('threads') ],
+    dependencies: lib_deps + [ dependency('threads'), iconv ],
     include_directories: includes_dir,
     link_args: [
       '-ldl'
@@ -625,7 +616,7 @@ static_library(
   meson.project_name(), 
   config_src + lib_src,
   install: true,
-  dependencies: lib_deps,
+  dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
 )
 
@@ -633,7 +624,7 @@ tests = static_library(
   meson.project_name() + '-testing', 
   config_src + test_src,
   install: true,
-  dependencies: lib_deps,
+  dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
 )
 

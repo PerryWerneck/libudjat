@@ -23,7 +23,7 @@
  #include <udjat/tools/application.h>
  #include <udjat/module/abstract.h>
  #include <iostream>
- #include <udjat/tools/http/client.h>
+ #include <udjat/tools/url.h>
  #include <private/misc.h>
  #include <sys/types.h>
  #include <sys/stat.h>
@@ -39,7 +39,6 @@
  namespace Udjat {
 
 	Updater::Updater(const char *pathname, bool force) : update{force} {
-
 		if(pathname && *pathname) {
 
 			// Has pathname, use it.
@@ -118,7 +117,6 @@
 	}
 
 	void Updater::push_back(const std::string &filename) {
-
 		pugi::xml_document doc;
 		auto result = doc.load_file(filename.c_str());
 		if(result.status != pugi::status_ok) {
@@ -143,7 +141,6 @@
 	}
 
 	bool Updater::refresh() {
-
 		size_t changed = 0;
 		Config::Value<string> xmlname{"settings","tagname",Application::Name().c_str()};
 		Config::Value<bool> allow_unsafe{"settings","allow-unsafe-updates",false};
@@ -163,20 +160,13 @@
 					time_t refresh = descr.ifsuccess;
 					try {
 
-						HTTP::Client client{descr.url};
-
-						client.mimetype(MimeType::xml);
-
-						if(descr.cache) {
-							client.cache(descr.filename.c_str());
-						} else {
-							info() << "Cache for '" << descr.url << "' disabled by XML definition" << endl;
-						}
+						auto handler = URL{descr.url}.handler();
+						handler->set(MimeType::xml);
 
 						try {
 
+							handler->get(descr.filename.c_str());
 							File::Text text{descr.filename};
-							text.set(client.get());
 
 							pugi::xml_document doc;
 							auto result = doc.load_string(text.c_str());
@@ -188,20 +178,20 @@
 
 									if(safe) {
 										Logger::String{
-											"Got valid response from ",client.url()," updating ",descr.filename
+											"Got valid response from ",handler->c_str()," updating ",descr.filename
 										}.trace("xml");
 									} else {
 										Logger::String {
-											"The first node on ",client.url()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, doing an unsafe update"
+											"The first node on ",handler->c_str()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, doing an unsafe update"
 										}.warning("xml");
 									}
 
 									text.save();
 
 									{
-										time_t timestamp = HTTP::TimeStamp{client.response("Last-Modified").c_str()}.as_value();
+										time_t timestamp = HTTP::TimeStamp{handler->response("Last-Modified").c_str()}.as_value();
 										if(!timestamp) {
-											Logger::String{"No timestamp on ",client.url().c_str()}.warning("xml");
+											Logger::String{"No timestamp on ",handler->c_str()}.warning("xml");
 										} else if(File::mtime(descr.filename.c_str(),timestamp)) {
 											Logger::String{"Cant set timestamp on '",descr.filename,"': ",strerror(errno)}.error("xml");
 										} else if(Logger::enabled(Logger::Trace)) {
@@ -215,14 +205,14 @@
 								} else {
 
 									Logger::String {
-										"The first node on ",client.url()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, update is unsafe"
+										"The first node on ",handler->c_str()," is <",doc.document_element().name(),">, expecting <",xmlname.c_str(),">, update is unsafe"
 									}.error("xml");
 
 								}
 
 							} else {
 
-								error() << "Error parsing " << client.url() << ": " << result.description() << endl;
+								error() << "Error parsing " << handler->c_str() << ": " << result.description() << endl;
 
 							}
 

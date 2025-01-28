@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,38 +18,40 @@
  */
 
  #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/tools/xml.h>
- #include <cstdint>
+ #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/handler.h>
+ #include <udjat/tools/url.h>
 
  namespace Udjat {
 
-	/// @brief Alert/state level.
-	enum Level : uint8_t {
-		undefined,
-		unimportant,
-		ready,
-		warning,
-		error,
+	class UDJAT_API Socket : public MainLoop::Handler {
+	private:
+		bool connecting = false;
+	
+	protected:
+		void handle_event(const Event event) override;
 
-		critical		///< @brief Critical level (always the last one)
+		virtual void handle_connect();
+		virtual void handle_disconnect();
+		virtual void handle_read_ok();
+		virtual void handle_write_ok();
+		virtual void handle_error(int code);
+
+	public:
+
+		/// @brief Connect to URL
+		/// @param url URL to connect
+		Socket(const URL &url, unsigned int msec = 0);
+
+		/// @brief Handle connected socket.
+		/// @param fd The socket to handle.
+		Socket(int fd);
+
+		virtual ~Socket();
 
 	};
 
-	/// @brief Get level from string.
-	UDJAT_API Level LevelFactory(const char *name);
-
-	/// @brief Get level from XML node.
-	UDJAT_API Level LevelFactory(const XML::Node &node);
-
  }
 
- namespace std {
-
-	UDJAT_API const char * to_string(const Udjat::Level level);
-
-	inline ostream& operator<< (ostream& os, const Udjat::Level level) {
-		return os << to_string(level);
-	}
-
- }

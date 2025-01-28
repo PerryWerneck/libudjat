@@ -31,7 +31,7 @@
  #include <udjat/tools/subprocess.h>
  #include <udjat/tools/script.h>
  #include <udjat/tools/timestamp.h>
- #include <udjat/tools/protocol.h>
+ #include <udjat/tools/url.h>
  #include <udjat/tools/http/exception.h>
  #include <list>
  #include <sys/stat.h>
@@ -231,11 +231,10 @@
 								payload.expand(request);
 							}
 
-							String response = Protocol::call(
-													String{url}.expand(request).c_str(),
-													method,
-													payload.c_str()
-												);
+							URL url{this->url};
+							url.expand(request);
+
+							String response = url.call(method,payload.c_str());
 
 							if(!response.empty()) {
 								Logger::String{response.c_str()}.write(Logger::Trace,name());

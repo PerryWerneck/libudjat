@@ -27,7 +27,7 @@
  namespace Udjat {
 
 	enum MimeType : uint8_t {
-		custom,					///> @brief Custom
+		none,					///> @brief Custom
 		json,                   ///> @brief application/json; charset=utf-8
 		csv,                    ///> @brief text/csv; charset=utf-8
 		tsv,                    ///> @brief text/tab-separated-values; charset=utf-8
@@ -60,6 +60,8 @@
 
 		form_urlencoded,		///> @brief application/x-www-form-urlencoded
 
+
+	
 	};
 
 	/// @brief Create mimetype from string.
