@@ -27,29 +27,29 @@
  namespace Udjat {
 
 	class UDJAT_API Socket : public MainLoop::Handler {
+	private:
+		bool connecting = false;
+	
 	protected:
-		int fd = -1;
+		void handle_event(const Event event) override;
 
-		void handle_event(const Event event) noexcept override;
-
-		virtual void handle_connect() noexcept;
-		virtual void handle_disconnect(int code) noexcept;
-		virtual void handle_read() noexcept;
-		virtual void handle_error(int code) noexcept;
+		virtual void handle_connect();
+		virtual void handle_disconnect();
+		virtual void handle_read_ok();
+		virtual void handle_write_ok();
+		virtual void handle_error(int code);
 
 	public:
 
 		/// @brief Connect to URL
 		/// @param url URL to connect
-		Socket(const URL &url);
+		Socket(const URL &url, unsigned int msec = 0);
 
 		/// @brief Handle connected socket.
 		/// @param fd The socket to handle.
 		Socket(int fd);
 
 		virtual ~Socket();
-
-		void close();
 
 	};
 

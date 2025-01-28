@@ -310,6 +310,7 @@ lib_src += [
   'src/library/tools/action.cc',
   'src/library/request/responsevalue.cc',
   'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
+  'src/library/tools/os/' + host_machine.system() + '/socket.cc',
 ]
 
 test_src = [
