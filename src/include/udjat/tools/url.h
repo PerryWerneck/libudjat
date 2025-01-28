@@ -52,11 +52,22 @@
 		protected:
 			Handler(const URL &url);
 
+		public:
+
+			virtual ~Handler();
+
 			/// @brief Launch exception on failure code.
 			int except(int code, const char *message = "");
 
-		public:
-			virtual ~Handler();
+			/// @brief Set output header.
+			/// @param name The header name.
+			/// @param value The header value.
+			virtual void header(const char *name, const char *value);
+
+			/// @brief Get input header.
+			/// @param name The header name.
+			/// @return The header value, "" if not found.
+			virtual const char * header(const char *name);
 
 			virtual Handler & set(const MimeType mimetype);
 

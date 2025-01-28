@@ -214,7 +214,8 @@
 
 	String URL::call(const HTTP::Method method, const char *payload) const {
 		stringstream str;
-		handler()->perform(
+		auto hdr = handler();
+		int rc = hdr->perform(
 			method, 
 			payload, 
 			[&str](uint64_t, uint64_t, const char *data, size_t){
@@ -222,6 +223,7 @@
 				return false;
 			}
 		);
+		hdr->except(rc);
 		return String{str.str()};		
 	}
 

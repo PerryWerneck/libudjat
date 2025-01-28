@@ -68,7 +68,15 @@
 	URL::Handler::~Handler() {
 	}
 
-	URL::Handler & URL::Handler::set(const MimeType) {
+	void URL::Handler::header(const char *, const char *) {
+	}
+
+	const char * URL::Handler::header(const char *) {
+		return "";
+	}
+
+	URL::Handler & URL::Handler::set(const MimeType mimetype) {
+		header("Content-Type",std::to_string(mimetype));
 		return *this;
 	}
 
@@ -94,6 +102,7 @@
 	}
 
 	int URL::Handler::except(int code, const char *message) {
+		
 		if(code >= 200 && code <= 299) {
 			return code;
 		}
