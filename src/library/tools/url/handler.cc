@@ -68,14 +68,15 @@
 	URL::Handler::~Handler() {
 	}
 
-	void URL::Handler::socket(int sock) {
+	void URL::Handler::socket(int) {
 		
 	}
 
-	void URL::Handler::header(const char *, const char *) {
+	URL::Handler & URL::Handler::header(const char *, const char *) {
+		return *this;
 	}
 
-	const char * URL::Handler::header(const char *) {
+	const char * URL::Handler::header(const char *) const {
 		return "";
 	}
 
@@ -83,10 +84,6 @@
 		// https://www.rfc-editor.org/rfc/rfc7231#section-5.3.2
 		header("Accept",std::to_string(mimetype));
 		return *this;
-	}
-
-	String URL::Handler::response(const char *name) const {
-		return "";
 	}
 
 	int URL::Handler::test(const HTTP::Method method, const char *payload) {
@@ -104,9 +101,6 @@
 
 	bool URL::Handler::get(Udjat::Value &value) {
 		return false;
-	}
-
-	void URL::Handler::length(uint64_t) {
 	}
 
 	int URL::Handler::except(int code, const char *message) {
@@ -149,6 +143,11 @@
 			HTTP::Get, 
 			"", 
 			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
+
+				if(current == 0 && total) {
+					file.allocate(total);
+				}
+				
 				file.write(current,data,len);
 				return progress(current,total);
 			}

@@ -55,32 +55,28 @@
 			/// @brief Set connected socket.
 			void socket(int sock);
 
-			/// @brief Set length, called when Content-Length is received.
-			virtual void length(uint64_t len);
-			
 		public:
 
 			virtual ~Handler();
 
-			/// @brief Launch exception on failure code.
-			int except(int code, const char *message = "");
-
 			/// @brief Set output header.
 			/// @param name The header name.
 			/// @param value The header value.
-			virtual void header(const char *name, const char *value);
+			/// @return This handler.
+			virtual Handler & header(const char *name, const char *value);
 
 			/// @brief Get input header.
 			/// @param name The header name.
 			/// @return The header value, "" if not found.
-			virtual const char * header(const char *name);
+			virtual const char * header(const char *name) const;
 
+			/// @brief Set requested mime-type.
+			/// @param mimetype The mimetype to set.
+			/// @return This handler.
 			virtual Handler & set(const MimeType mimetype);
 
-			/// @brief Get header sent by host.
-			/// @param name The header name
-			/// @return The header value.
-			virtual String response(const char *name) const;
+			/// @brief Launch exception on failure code.
+			int except(int code, const char *message = "");
 
 			inline const char * c_str() const {
 				return url.c_str();

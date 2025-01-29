@@ -189,7 +189,7 @@
 									text.save();
 
 									{
-										time_t timestamp = HTTP::TimeStamp{handler->response("Last-Modified").c_str()}.as_value();
+										time_t timestamp = HTTP::TimeStamp{handler->header("Last-Modified")}.as_value();
 										if(!timestamp) {
 											Logger::String{"No timestamp on ",handler->c_str()}.warning("xml");
 										} else if(File::mtime(descr.filename.c_str(),timestamp)) {
