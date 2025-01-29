@@ -148,8 +148,12 @@
 					file.allocate(total);
 				}
 				
-				file.write(current,data,len);
+				if(len && data) {
+					file.write(current,data,len);
+				}
+				
 				return progress(current,total);
+
 			}
 		);
 		except(rc);
