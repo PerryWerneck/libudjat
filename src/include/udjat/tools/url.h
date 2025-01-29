@@ -177,7 +177,7 @@
 
 		/// @brief Connect to host
 		/// @return A non-blocking, connected socket.
-		int connect(unsigned int msec = 0);
+		int connect(unsigned int seconds = 0);
 
 		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
 		bool local() const;

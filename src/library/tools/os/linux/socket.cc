@@ -27,6 +27,7 @@
  #include <udjat/tools/handler.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/exception.h>
+ #include <udjat/tools/socket.h>
  
  #include <netdb.h>
  #include <stdio.h>
@@ -43,10 +44,10 @@
 
  namespace Udjat {
 
-	Socket::Socket(const URL &url, unsigned int msec) {
+	Socket::Socket(const URL &url, unsigned int seconds) {
 
-		if(msec < 1) {
-			msec = Config::Value<unsigned int>("network","timeout",5000).get();
+		if(seconds < 1) {
+			seconds = Config::Value<unsigned int>("network","timeout",5000).get();
 		}
 
         struct addrinfo   hints;
@@ -140,6 +141,71 @@
 		if(fcntl(sock, F_SETFL, flags) < 0) {
 			throw system_error(errno,system_category(),"Failed to set socket flags");
 		}
+
+	}
+
+	int Socket::wait_for_connection(int sock, unsigned int seconds) {
+
+		if(seconds < 1) {
+			seconds = Config::Value<unsigned int>("network","timeout",10).get();
+		}
+
+		unsigned long timer = (seconds * 100);
+		MainLoop &mainloop = MainLoop::getInstance();
+
+		struct pollfd pfd;
+		while(timer > 0) {
+
+			pfd.fd = sock;
+			pfd.revents = 0;
+			pfd.events = POLLOUT|POLLERR|POLLHUP;
+			auto rc = ::poll(&pfd,1,10);
+			if(rc == -1) {
+
+				int error = errno;
+				::close(sock);
+				errno = error;
+				return -1;
+				
+			} else if(rc == 1) {
+
+				if(pfd.revents & POLLERR) {
+
+					int error = EINVAL;
+					socklen_t errlen = sizeof(error);
+					if(getsockopt(sock, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+						error = errno;
+					}
+					::close(sock);
+					errno = error;
+					return -1;
+				}
+
+				if(pfd.revents & POLLHUP) {
+					::close(sock);
+					errno = ECONNRESET;
+					return -1;
+				}
+
+				if(pfd.revents & POLLOUT) {
+					return sock;
+				}
+
+			} else if(!mainloop) {
+				::close(sock);
+				errno = ECONNABORTED;
+				return -1;
+
+			} else {
+
+				timer--;
+
+			}
+
+		}
+
+		errno = ETIMEDOUT;
+		return -1;
 
 	}
 

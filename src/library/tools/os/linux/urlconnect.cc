@@ -41,16 +41,10 @@
 
  namespace Udjat {
 
-	int URL::connect(unsigned int msec) {
+	int URL::connect(unsigned int seconds) {
 
 		int rc;
-
-		struct pollfd pfd;
-		memset(&pfd,0,sizeof(pfd));
-
-		if(msec < 1) {
-			msec = Config::Value<unsigned int>("network","timeout",5000).get();
-		}
+		int sock;
 
         struct addrinfo   hints;
         struct addrinfo * result        = NULL;
@@ -69,17 +63,17 @@
 		int error = 0;
 		for(struct addrinfo *rp = result; rp; rp = rp->ai_next) {
 
-			pfd.fd = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-			if(pfd.fd < 0) {
+			sock = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+			if(sock < 0) {
 				continue;
 			}
 
-			Socket::blocking(pfd.fd,false);
+			Socket::blocking(sock,false);
 
-			if(::connect(pfd.fd,rp->ai_addr, rp->ai_addrlen) && errno != EINPROGRESS) {
+			if(::connect(sock,rp->ai_addr, rp->ai_addrlen) && errno != EINPROGRESS) {
 				error = errno;
-				close(pfd.fd);
-				pfd.fd = -1;
+				close(sock);
+				sock = -1;
 				continue;
 			}
 
@@ -88,7 +82,7 @@
 
 		freeaddrinfo(result);
 
-		if(pfd.fd < 0 && error > 0) {
+		if(sock < 0 && error > 0) {
 
 			if(error > 0) {
 				throw system_error(error,system_category(),Logger::String{"Failed to connect to '",c_str(),"'"});
@@ -97,19 +91,11 @@
 			throw runtime_error(Logger::String{"Failed to connect to '",c_str(),"'"});
 		}
 
-		pfd.events = POLLOUT;
-
-		rc = poll(&pfd,1,msec);
-		if(rc < 0) {
-			throw system_error(errno,system_category(),Logger::String{"Failed to poll socket to '",c_str(),"'"});
+		if(Socket::wait_for_connection(sock,seconds) < 0) {
+			throw system_error(error,system_category(),Logger::String{"Failed to connect to '",c_str(),"'"});
 		}
 
-		if(rc == 0) {
-			throw system_error(ETIMEDOUT,system_category(),Logger::String{"Timeout connecting to '",c_str(),"'"});
-		}
-
-		return pfd.fd;
-
+		return sock;
 	}
 
 

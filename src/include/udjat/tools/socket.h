@@ -43,7 +43,7 @@
 
 		/// @brief Connect to URL
 		/// @param url URL to connect
-		Socket(const URL &url, unsigned int msec = 0);
+		Socket(const URL &url, unsigned int seconds = 0);
 
 		/// @brief Handle connected socket.
 		/// @param fd The socket to handle.
@@ -56,6 +56,16 @@
 		inline void blocking(bool enable) {
 			blocking(values.fd,enable);
 		}
+
+		/// @brief Wait for the connection to establish.
+		/// @param timeout Timeout in milliseconds.
+		/// @return sock if the connection is established, -1 otherwise (set errno).
+		static int wait_for_connection(int sock, unsigned int seconds);
+
+		inline int wait_for_connection(unsigned int seconds) {
+			return wait_for_connection(values.fd, seconds);
+		}
+
 	};
 
  }
