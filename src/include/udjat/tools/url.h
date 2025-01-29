@@ -52,6 +52,9 @@
 		protected:
 			Handler(const URL &url);
 
+			/// @brief Set connected socket.
+			void socket(int sock);
+
 		public:
 
 			virtual ~Handler();

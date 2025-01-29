@@ -68,6 +68,10 @@
 	URL::Handler::~Handler() {
 	}
 
+	void URL::Handler::socket(int sock) {
+		
+	}
+
 	void URL::Handler::header(const char *, const char *) {
 	}
 
