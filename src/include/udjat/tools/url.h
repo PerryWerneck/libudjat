@@ -55,6 +55,9 @@
 			/// @brief Set connected socket.
 			void socket(int sock);
 
+			/// @brief Set length, called when Content-Length is received.
+			virtual void length(uint64_t len);
+			
 		public:
 
 			virtual ~Handler();

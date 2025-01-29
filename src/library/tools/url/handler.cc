@@ -106,6 +106,9 @@
 		return false;
 	}
 
+	void URL::Handler::length(uint64_t) {
+	}
+
 	int URL::Handler::except(int code, const char *message) {
 
 		if(code >= 200 && code <= 299) {
