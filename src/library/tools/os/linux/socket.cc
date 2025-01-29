@@ -124,6 +124,19 @@
 		close();
 	}
 
+	void Socket::close() {
+		close(values.fd);
+		values.fd = -1;
+	}
+
+	void Socket::close(int sock) noexcept {
+		if(sock >= 0) {
+			if(::close(sock)) {
+				Logger::String{"Error '",strerror(errno),"' closing socket ",sock}.warning();
+			}
+		}
+	}
+
 	void Socket::blocking(int sock, bool enable) {
 		
 		int flags = fcntl(sock, F_GETFL, 0);

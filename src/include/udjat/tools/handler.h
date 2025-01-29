@@ -134,7 +134,7 @@
 
 		ssize_t read(void *buf, size_t count);
 
-		void close();
+		virtual void close();
 
 		/// @brief Process handlers.
 		/// @param handlers	List of handlers to poll.

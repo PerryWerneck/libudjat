@@ -57,6 +57,10 @@
 			blocking(values.fd,enable);
 		}
 
+		static void close(int sock) noexcept;
+
+		void close() override;
+
 		/// @brief Wait for the connection to establish.
 		/// @param timeout Timeout in milliseconds.
 		/// @return sock if the connection is established, -1 otherwise (set errno).
