@@ -6,7 +6,7 @@ on:
     tags:
       - "*"
 jobs:
-  mingw64:
+  Win64Pkg:
     runs-on: windows-latest
     defaults:
       run:
