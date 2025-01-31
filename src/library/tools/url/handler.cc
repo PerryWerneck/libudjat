@@ -176,14 +176,13 @@
 		int rc = perform(
 			method, 
 			payload, 
-			[&str](uint64_t, uint64_t, const char *data, size_t){
-				str << data;
+			[&str](uint64_t, uint64_t, const char *data, size_t len){
+				str.write(data,len);
 				return false;
 			}
 		);
-		debug(to_string(method),"(",url.c_str(),")=",rc);
 		except(rc);
-		return String{str.str()};
+		return str.str();
 	}
 
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload) {
