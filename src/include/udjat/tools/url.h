@@ -110,6 +110,7 @@
 			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 			/// @return Test result.
 			/// @retval 200 OK.
+			/// @retval 302 OK with redirection.
 			/// @retval 401 Unauthorized.
 			/// @retval 404 Not found.			
 			/// @retval EINVAL Invalid method.
@@ -132,8 +133,6 @@
 			/// @param writer The secondary writer.
 			/// @return true if the file was updated.
 			virtual bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
-
-			String get();
 
 			virtual String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
 
@@ -191,7 +190,10 @@
 			return argument(name);
 		}
 
-		std::shared_ptr<Handler> handler() const;
+		/// @brief Retrieves a shared pointer to a Handler object for this URL.
+		/// @param allow_default A boolean flag indicating whether to allow use of default handler.
+		/// @return std::shared_ptr<Handler> A shared pointer to the Handler object.
+		std::shared_ptr<Handler> handler(bool allow_default = true) const;
 
 		/// @brief Get value from host.
 		/// @param Value the response.

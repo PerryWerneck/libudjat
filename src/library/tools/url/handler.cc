@@ -43,7 +43,7 @@
 		factories().remove(this);
 	}
 
-	std::shared_ptr<URL::Handler> URL::handler() const {
+	std::shared_ptr<URL::Handler> URL::handler(bool allow_default) const {
 		auto scheme = this->scheme();
 		for(const auto factory : factories()) {
 			if(*factory == scheme.c_str()) {
@@ -58,6 +58,15 @@
 		if(!strcasecmp(scheme.c_str(),"script")) {
 		}
 		*/
+
+		// Get default handler
+		if(allow_default) {
+			for(const auto factory : factories()) {
+				if(*factory == "default") {
+					return factory->HandlerFactory(*this);
+				}
+			}
+		}
 
 		throw invalid_argument(String{"Cant handle ",c_str()});
 	}
