@@ -95,7 +95,8 @@
 		return ENOTSUP;
 	}
 
-	bool URL::Handler::get(Udjat::Value &value) {
+	bool URL::Handler::get(Udjat::Value &value, const HTTP::Method method, const char *payload) {
+		errno = ENOTSUP;
 		return false;
 	}
 
@@ -132,6 +133,10 @@
 		return String{str.str()};
 	}
 
+	URL::Handler & URL::Handler::credentials(const char *, const char *) {
+		return *this;
+	}
+
 	bool URL::Handler::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		File::Handler file{filename,true};
 		file.truncate();
@@ -154,15 +159,44 @@
 		);
 		except(rc);
 		return true;
-
 	}
 
-	String URL::Handler::get() {
-		return get([](uint64_t,uint64_t){ return false; });
+	String URL::Handler::get(const HTTP::Method method, const char *payload) {
+		stringstream str;
+		int rc = perform(
+			method, 
+			payload, 
+			[&str](uint64_t, uint64_t, const char *data, size_t){
+				str << data;
+				return false;
+			}
+		);
+		except(rc);
+		return String{str.str()};
 	}
 
-	bool URL::Handler::get(const char *filename) {
-		return get(filename,[](uint64_t,uint64_t){ return false; });
+	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload) {
+		File::Handler file{filename,true};
+		file.truncate();
+		int rc = perform(
+			method, 
+			payload, 
+			[&file](uint64_t current, uint64_t total, const char *data, size_t len){
+
+				if(current == 0 && total) {
+					file.allocate(total);
+				}
+				
+				if(len && data) {
+					file.write(current,data,len);
+				}
+				
+				return false;
+
+			}
+		);
+		except(rc);
+		return true;
 	}
 
  }

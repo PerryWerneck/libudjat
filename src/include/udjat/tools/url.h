@@ -72,6 +72,8 @@
 			/// @return This handler.
 			virtual Handler & set(const MimeType mimetype);
 
+			virtual Handler & credentials(const char *user, const char *passwd);
+
 			/// @brief Launch exception on failure code.
 			int except(int code, const char *message = "");
 
@@ -118,7 +120,7 @@
 			/// @brief Get value.
 			/// @param Value the response.
 			/// @return true if value was updated.
-			virtual bool get(Udjat::Value &value);
+			virtual bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 			/// @brief Do a 'get' request.
 			/// @param progress progress callback.
@@ -133,7 +135,9 @@
 
 			String get();
 
-			bool get(const char *filename);
+			virtual String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
+
+			virtual bool get(const char *filename, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		};
 
@@ -189,11 +193,13 @@
 
 		std::shared_ptr<Handler> handler() const;
 
-		/// @brief Get value.
+		/// @brief Get value from host.
 		/// @param Value the response.
+		/// @param method The HTTP method to use.
+		/// @param payload The payload to send.
 		/// @return true if value was updated.
-		inline bool get(Udjat::Value &value) const {
-			return handler()->get(value);
+		inline bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const {
+			return handler()->get(value,method,payload);
 		}
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
@@ -217,8 +223,8 @@
 			return handler()->get(progress);
 		}
 
-		inline String get() const {
-			return handler()->get();
+		inline String get(const HTTP::Method method = HTTP::Get, const char *payload = "") const {
+			return handler()->get(method,payload);
 		}
 
 		/// @brief Download/update a file with progress.
@@ -229,8 +235,8 @@
 			return handler()->get(filename,progress);
 		}
 
-		inline bool get(const char *filename) {
-			return handler()->get(filename);
+		inline bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "") {
+			return handler()->get(filename,method,payload);
 		}
 
 	};
