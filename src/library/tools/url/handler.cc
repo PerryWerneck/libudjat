@@ -120,11 +120,12 @@
 			return 304;
 		}
 
-		if(message && *message) {
-			throw HTTP::Exception((unsigned int) code, message);
+		if(code > 300 && code <= 399) { // Redirected.
+			return code;
 		}
 
-		throw HTTP::Exception((unsigned int) code);
+		debug("code=",code," message='",message,"'");
+		throw HTTP::Exception((unsigned int) code, message);
 
 	}
 
@@ -180,6 +181,7 @@
 				return false;
 			}
 		);
+		debug(to_string(method),"(",url.c_str(),")=",rc);
 		except(rc);
 		return String{str.str()};
 	}

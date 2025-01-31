@@ -74,43 +74,25 @@
 		return code(except.code().value());
 	}
 
-	/*
-	static int toSysError(unsigned int http) {
-
-		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
-			if(syscodes[ix].http == (int) http) {
-				return syscodes[ix].syscode;
-			}
-		}
-
-		return -1;
-	}
-	*/
-
-	/*
-	static string toSysMessage(unsigned int http) {
-
-		for(size_t ix = 0; ix < (sizeof(syscodes)/sizeof(syscodes[0])); ix++) {
-			if(syscodes[ix].http == (int) http) {
-				return string{strerror(syscodes[ix].syscode)};
-			}
-		}
-
-		return string{"HTTP error " + to_string(http)};
-	}
-	*/
 
 	HTTP::Exception::Exception(unsigned int hc)
 		: Udjat::Exception{syscode(hc)}, http_code{hc} {
 
 	}
 
+	static string check_message(unsigned int hc, const char *message) {
+		if(message && *message) {
+			return message;
+		}
+		return Logger::Message{"HTTP error {}",hc};
+	}
+
 	HTTP::Exception::Exception(unsigned int hc, const char *message)
-		: Udjat::Exception{syscode(hc),message}, http_code{hc} {
+		: Udjat::Exception{syscode(hc),check_message(hc,message).c_str()}, http_code{hc} {
 
 	}
 	HTTP::Exception::Exception(const char *message)
-		: Udjat::Exception{message}, http_code{500} {
+		: Udjat::Exception{check_message(500,message).c_str()}, http_code{500} {
 
 	}
 
