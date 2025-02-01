@@ -76,7 +76,11 @@
 			}
 
 			void onSignal(int sig) override {
-				this->rc = -sig;
+				if(sig == SIGTERM) {
+					this->rc = ECANCELED;
+				} else {
+					this->rc = -sig;
+				}
 			}
 
 		};
