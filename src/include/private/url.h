@@ -25,9 +25,23 @@
 
 namespace Udjat {
 
+	/// @brief Handle File:// URL.
 	class UDJAT_PRIVATE FileURLHandler : public URL::Handler {	
 	public:
 		FileURLHandler(const URL &url) : URL::Handler{url} {
+		}
+
+		int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) override;
+
+		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") override;
+
+
+	};
+
+	/// @brief Handle script:// URL.
+	class UDJAT_PRIVATE ScriptURLHandler : public URL::Handler {	
+	public:
+		ScriptURLHandler(const URL &url) : URL::Handler{url} {
 		}
 
 		int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) override;

@@ -45,7 +45,7 @@
 	}
 
 	std::shared_ptr<URL::Handler> URL::handler(bool allow_default) const {
-		
+
 		auto scheme = this->scheme();
 		for(const auto factory : factories()) {
 			if(*factory == scheme.c_str()) {
@@ -57,10 +57,9 @@
 			return make_shared<FileURLHandler>(*this);
 		}
 
-		/*
 		if(!strcasecmp(scheme.c_str(),"script")) {
+			return make_shared<ScriptURLHandler>(*this);
 		}
-		*/
 
 		// Get default handler
 		if(allow_default) {

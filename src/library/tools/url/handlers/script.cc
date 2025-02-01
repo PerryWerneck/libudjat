@@ -18,6 +18,110 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/tools/subprocess.h>
+ #include <private/url.h>
+ #include <errno.h>
+
+ #ifndef _WIN32
+	#include <signal.h>
+ #endif
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
+ namespace Udjat {
+
+	int ScriptURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) {
+
+		/// @brief Run script, capture output to lambda.
+		class Worker : public SubProcess {
+		public:
+			int rc = 0;
+			size_t current = 0;
+			const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress;
+
+			Worker(const char *command, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &p) : SubProcess{command}, progress{p} {
+			}
+
+		private:
+			void onStdOut(const char *line) override {
+#ifdef _WIN32
+				progress(current,0,line,strlen(line));
+#else
+				if(progress(current,0,line,strlen(line))) {
+					kill(SIGTERM,getpid());
+				}
+
+#endif
+				current += strlen(line);
+			}
+
+			void onStdErr(const char *line) override {
+#ifdef _WIN32
+				progress(current,0,line,strlen(line));
+#else
+				if(progress(current,0,line,strlen(line))) {
+					kill(SIGTERM,getpid());
+				}
+
+#endif
+				current += strlen(line);
+			}
+
+			void onExit(int rc) override {
+				this->rc = rc;
+			}
+
+			void onSignal(int sig) override {
+				this->rc = -sig;
+			}
+
+		};
+
+		int rc = test();
+		if(rc != 200) {
+			return rc;
+		}
+
+		rc = Worker{this->path().c_str(),progress}.run();
+		if(rc == 0) {
+			return 200;
+		}
+
+		return rc;
+
+	}
+
+	int ScriptURLHandler::test(const HTTP::Method, const char *) {
+
+		String path{this->path()};
+
+#ifdef _WIN32
+		if(!PathFileExists(path.c_str())) {
+			return 404;
+		}
+
+		return 200;
+#else
+		if(access(path.c_str(),R_OK) == 0) {
+			return 200;
+		}
+
+		if(access(path.c_str(),F_OK) != 0) {
+			return 404;
+		}
+
+		return 401;
+#endif // _WIN32
+
+	}
+
+
+/*
+ #include <config.h>
  #include <private/protocol.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/subprocess.h>
@@ -169,6 +273,8 @@
 
 	}
 
+
+*/
 
  }
 
