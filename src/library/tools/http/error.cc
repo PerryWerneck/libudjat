@@ -30,6 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/agent/state.h>
  #include <udjat/tools/http/error.h>
+ #include <udjat/tools/url.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/agent/level.h>
 
@@ -201,18 +202,19 @@
 	};
 
 	HTTP::Error HTTP::Error::Factory(int32_t code) {
-		for(size_t ix = 0; ix < N_ELEMENTS(error_codes);ix++) {
-			if(code >= error_codes[ix].from && code <= error_codes[ix].to) {
+
+		for(const auto &error : error_codes) {
+			if(code >= error.from && code <= error.to) {
 				return HTTP::Error{
-							error_codes[ix].level,
+						error.level,
 #ifdef GETTEXT_PACKAGE
-							dgettext(GETTEXT_PACKAGE,error_codes[ix].summary),
-							dgettext(GETTEXT_PACKAGE,error_codes[ix].body)
+						dgettext(GETTEXT_PACKAGE,error.summary),
+						dgettext(GETTEXT_PACKAGE,error.body)
 #else
-							error_codes[ix].summary,
-							error_codes[ix].body
+						error.summary,
+						error[.body
 #endif // GETTEXT_PACKAGE
-						};
+				};
 			}
 		}
 		return HTTP::Error{Udjat::critical,_("Unexpected HTTP error code"),_("The HTTP error code is unknown")};
@@ -227,26 +229,73 @@
 
 	std::shared_ptr<Abstract::State> HTTP::Error::StateFactory(int32_t code) {
 
-		for(size_t ix = 0; ix < N_ELEMENTS(error_codes);ix++) {
-
-			if(code >= error_codes[ix].from && code <= error_codes[ix].to) {
+		for(const auto &error : error_codes) {
+			if(code >= error.from && code <= error.to) {
 				return make_shared<Abstract::State>(
-						error_codes[ix].name,
-						error_codes[ix].level,
+						error.name,
+						error.level,
 #ifdef GETTEXT_PACKAGE
-						dgettext(GETTEXT_PACKAGE,error_codes[ix].summary),
-						dgettext(GETTEXT_PACKAGE,error_codes[ix].body)
+						dgettext(GETTEXT_PACKAGE,error.summary),
+						dgettext(GETTEXT_PACKAGE,error.body)
 #else
-						error_codes[ix].summary,
-						error_codes[ix].body
+						error.summary,
+						error.body
 #endif // GETTEXT_PACKAGE
 					);
-
 			}
-
 		}
 
 		return std::shared_ptr<Abstract::State>();
+
+	}
+
+	std::shared_ptr<Abstract::State> URL::StateFactory(int code, const char *summary) {
+
+		if(code < 0) {
+
+			if(summary && *summary) {
+				return Abstract::State::Factory(
+					"url-error",
+					Udjat::error,
+					-code,
+					summary,
+					Logger::Message{_("System error {} ({}) acessing {}"),-code,strerror(-code),c_str()}.c_str()
+				);
+			}
+
+			return Abstract::State::Factory(
+				"url-error",
+				Udjat::error,
+				-code,
+				strerror(-code),
+				Logger::Message{_("System error {} acessing {}"),-code,c_str()}.c_str()
+			);
+		}
+
+		for(const auto &error : error_codes) {
+			if(code >= error.from && code <= error.to) {
+				return Abstract::State::Factory(
+					"url-error",
+					error.level,
+					code,
+#ifdef GETTEXT_PACKAGE
+					(summary && *summary) ? summary : dgettext(GETTEXT_PACKAGE,error.summary),
+					dgettext(GETTEXT_PACKAGE,error.body)
+#else
+					(summary && *summary) ? summary : error.summary,
+					error.body
+#endif // GETTEXT_PACKAGE
+				);
+			}
+		}
+
+		return Abstract::State::Factory(
+			"url-error",
+			Udjat::error,
+			code,
+			(summary && *summary) ? summary : Logger::Message{_("HTTP error code {}"),code}.c_str(),
+			Logger::Message{_("Unexpected error {} acessing {}"),code,c_str()}.c_str()
+		);
 
 	}
 

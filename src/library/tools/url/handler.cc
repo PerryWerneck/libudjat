@@ -96,14 +96,14 @@
 	int URL::Handler::test(const HTTP::Method method, const char *payload) {
 
 		if(url.empty()) {
-			return ENODATA;
+			return -EBADMSG;
 		}
 
 		if(method > HTTP::Patch || method == HTTP::Delete || method == HTTP::Connect || method == HTTP::Options || method == HTTP::Trace) {
-			return EINVAL;
+			return -EINVAL;
 		}
 
-		return ENOTSUP;
+		return -ENOTSUP;
 	}
 
 	bool URL::Handler::get(Udjat::Value &value, const HTTP::Method method, const char *payload) {

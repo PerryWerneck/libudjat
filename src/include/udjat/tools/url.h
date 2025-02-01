@@ -195,6 +195,12 @@
 			return argument(name);
 		}
 
+		/// @brief Build state object for this URL based on HTTP code.
+		/// @param code The http/system error code.
+		/// @param msg The error summary.
+		/// @return New state based on URL & code.
+		std::shared_ptr<Abstract::State> StateFactory(int code, const char *summary = "");
+
 		/// @brief Retrieves a shared pointer to a Handler object for this URL.
 		/// @param allow_default A boolean flag indicating whether to allow use of default handler.
 		/// @return std::shared_ptr<Handler> A shared pointer to the Handler object.
@@ -214,9 +220,9 @@
 		/// @retval 200 Got response.
 		/// @retval 401 Access denied.
 		/// @retval 404 Not found.
-		/// @retval EINVAL Invalid method.
-		/// @retval ENODATA Empty URL.
-		/// @retval ENOTSUP No support for test in protocol handler.
+		/// @retval -EINVAL Invalid method.
+		/// @retval -ENODATA Empty URL.
+		/// @retval -ENOTSUP No support for test in protocol handler.
 		inline int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
 			return handler()->test(method,payload);
 		}
