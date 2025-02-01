@@ -18,6 +18,75 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/tools/file/handler.h>
+ #include <private/url.h>
+ #include <errno.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
+ namespace Udjat {
+
+
+	int FileURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) {
+
+		File::Handler file{path().c_str()};
+
+		size_t block_size = file.block_size();
+		char buffer[block_size];
+
+		uint64_t total = file.length();
+		uint64_t current = 0;
+
+		while(current < total) {
+
+			size_t len = file.read((void *) buffer,block_size,false);
+			if(!len) {
+				break;
+			}
+
+			if(!progress(current,total,buffer,len)) {
+				return ECANCELED;
+			}
+
+			current += len;
+
+		}
+
+		return 200;
+
+	}
+
+	int FileURLHandler::test(const HTTP::Method, const char *) {
+
+		String path{this->path()};
+
+#ifdef _WIN32
+		if(!PathFileExists(path.c_str())) {
+			return 404;
+		}
+
+		return 200;
+#else
+		if(access(path.c_str(),R_OK) == 0) {
+			return 200;
+		}
+
+		if(access(path.c_str(),F_OK) != 0) {
+			return 404;
+		}
+
+		return 401;
+#endif // _WIN32
+
+	}
+
+
+/*
+
  #include <private/protocol.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file.h>
@@ -29,9 +98,6 @@
  #else
 	#include <unistd.h>
  #endif // _WIN32
-
- namespace Udjat {
-
 	Protocol & Protocol::FileHandlerFactory() {
 
 		static const ModuleInfo moduleinfo { N_( "File protocol" ) };
@@ -125,6 +191,7 @@
 		return instance;
 
 	}
+*/
 
  }
 

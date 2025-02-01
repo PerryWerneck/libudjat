@@ -77,6 +77,10 @@
 			/// @brief Launch exception on failure code.
 			int except(int code, const char *message = "");
 
+			inline const auto path() const {
+				return url.path();
+			}
+
 			inline const char * c_str() const {
 				return url.c_str();
 			}
@@ -104,7 +108,8 @@
 			/// @return HTTP return code.
 			/// @retval 200 OK.
 			/// @retval 401 Unauthorized.
-			/// @retval 404 Not found.			
+			/// @retval 404 Not found.	
+			/// @retval ECANCELLED Operation was cancelled.		
 			virtual int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) = 0;
 
 			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)

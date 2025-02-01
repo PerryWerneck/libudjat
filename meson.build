@@ -311,6 +311,7 @@ lib_src += [
   'src/library/request/responsevalue.cc',
   'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
   'src/library/tools/os/' + host_machine.system() + '/socket.cc',
+  'src/library/tools/url/handlers/file.cc',
 ]
 
 test_src = [

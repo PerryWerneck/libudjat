@@ -25,6 +25,7 @@
  #include <udjat/tools/file/handler.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/exception.h>
+ #include <private/url.h>
  
  using namespace std;
 
@@ -44,6 +45,7 @@
 	}
 
 	std::shared_ptr<URL::Handler> URL::handler(bool allow_default) const {
+		
 		auto scheme = this->scheme();
 		for(const auto factory : factories()) {
 			if(*factory == scheme.c_str()) {
@@ -51,10 +53,11 @@
 			}
 		}
 
-		/*
 		if(!strcasecmp(scheme.c_str(),"file")) {
+			return make_shared<FileURLHandler>(*this);
 		}
 
+		/*
 		if(!strcasecmp(scheme.c_str(),"script")) {
 		}
 		*/
