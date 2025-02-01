@@ -64,9 +64,9 @@
 		/// @brief Wait for the connection to establish.
 		/// @param timeout Timeout in milliseconds.
 		/// @return sock if the connection is established, -1 otherwise (set errno).
-		static int wait_for_connection(int sock, unsigned int seconds);
+		static int wait_for_connection(int sock, unsigned int seconds = 0);
 
-		inline int wait_for_connection(unsigned int seconds) {
+		inline int wait_for_connection(unsigned int seconds = 0) {
 			return wait_for_connection(values.fd, seconds);
 		}
 

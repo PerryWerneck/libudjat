@@ -163,16 +163,22 @@
 			seconds = Config::Value<unsigned int>("network","timeout",10).get();
 		}
 
-		unsigned long timer = (seconds * 100);
+		debug("Will wait for ",seconds," seconds to connect to ",sock);
+		
+		time_t timeout = time(0) + seconds;
 		MainLoop &mainloop = MainLoop::getInstance();
 
 		struct pollfd pfd;
-		while(timer > 0) {
+		while(time(0) < timeout) {
 
 			pfd.fd = sock;
 			pfd.revents = 0;
 			pfd.events = POLLOUT|POLLERR|POLLHUP;
-			auto rc = ::poll(&pfd,1,10);
+#ifdef DEBUG
+			auto rc = ::poll(&pfd,1,1000);
+#else
+			auto rc = ::poll(&pfd,1,100);
+#endif // DEBUG
 			if(rc == -1) {
 
 				int error = errno;
@@ -201,6 +207,7 @@
 				}
 
 				if(pfd.revents & POLLOUT) {
+					debug("Connected to ",sock);
 					return sock;
 				}
 
@@ -209,13 +216,14 @@
 				errno = ECONNABORTED;
 				return -1;
 
-			} else {
-
-				timer--;
-
 			}
 
+			debug("Wait for ",(timeout - time(0))," seconds to connect to ",sock);	
+
 		}
+
+		debug("Timeout connecting to ",sock);
+		::close(sock);
 
 		errno = ETIMEDOUT;
 		return -1;
