@@ -25,6 +25,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/agent/state.h>
  #include <udjat/agent.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/logger.h>
@@ -216,14 +217,18 @@
 
 						std::shared_ptr<Abstract::State> computeState() override {
 
-							if(!states.empty()) {
-								return Udjat::Agent<int32_t>::computeState();
+							int32_t value = Udjat::Agent<int32_t>::get();
+
+							for(auto state : states) {
+								if(state->compare(value))
+									return state;
 							}
 
-							std::shared_ptr<Abstract::State> state = HTTP::Error::StateFactory(this->get());
+							std::shared_ptr<Abstract::State> state = HTTP::Error::StateFactory(value);
 							if(state) {
 								return state;
 							}
+
 
 							return Abstract::Agent::computeState();
 
