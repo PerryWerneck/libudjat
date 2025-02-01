@@ -49,6 +49,7 @@
 		private:
 			void onStdOut(const char *line) override {
 #ifdef _WIN32
+
 				progress(current,0,line,strlen(line));
 #else
 				if(progress(current,0,line,strlen(line))) {

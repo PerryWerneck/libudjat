@@ -194,9 +194,7 @@
 				[](const XML::Node &node) {
 					return make_shared<Udjat::Agent<Percentage>>(node);
 				}
-			},
-			
-			/*
+			},		
 			{
 				"url",
 				[](const XML::Node &node) {
@@ -240,7 +238,6 @@
 					return make_shared<Url>(node);
 				}
 			},
-			*/
 
 		};
 
