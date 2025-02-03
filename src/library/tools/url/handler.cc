@@ -22,6 +22,7 @@
  #include <list>
  #include <udjat/tools/container.h>
  #include <sstream>
+ #include <udjat/tools/file.h>
  #include <udjat/tools/file/handler.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/exception.h>
@@ -181,7 +182,12 @@
 		debug("File updated exits with ",rc);
 
 		except(rc);
-		return true;
+
+		if(rc != 304) {
+			return true;
+		}
+
+		return false;
 	}
 
 	bool URL::Handler::get(File::Handler &file, const HTTP::Method method, const char *payload) {
@@ -189,8 +195,26 @@
 	}
 
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
-		File::Handler file{filename,true};
-		return get(file,method,payload,progress);
+		
+		int rc = false;
+		{
+			File::Handler file{filename,true};
+			rc = get(file,method,payload,progress);
+		}
+
+		if(rc) {
+			// Set file modification time
+			HTTP::TimeStamp timestamp{header("Last-Modified")};
+			debug("timestamp=",timestamp.to_string());
+			if(timestamp) {
+				Logger::String{"Timestamp of ",filename," set to ",timestamp.to_string()}.trace();
+				File::mtime(filename, (time_t) timestamp);
+			}
+
+		}
+
+		return rc;
+
 	}
 
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload) {

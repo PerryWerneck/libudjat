@@ -138,8 +138,13 @@
 
 			bool get(File::Handler &file, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
+			/// @brief Download or update a file with progress, setting the last modified time to the value sent by the host.
+			/// @param filename The fullpath for the file.
+			/// @param progress The progress callback.
+			/// @return true if the file was updated.
 			bool get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
+			/// @brief Download or update a file with progress, setting the last modified time to the value sent by the host.
 			bool get(const char *filename, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		};
