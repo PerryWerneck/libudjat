@@ -37,6 +37,7 @@
  #include <functional>
  #include <udjat/tools/http/method.h>
  #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/file/handler.h>
  #include <udjat/tools/xml.h>
  #include <memory>
 
@@ -125,17 +126,21 @@
 			/// @brief Do a 'get' request.
 			/// @param progress progress callback.
 			/// @return Server response.
-			virtual String get(const std::function<bool(uint64_t current, uint64_t total)> &progress);
+			String get(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
+
+			String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 			/// @brief Download/update a file with progress.
 			/// @param filename The fullpath for the file.
 			/// @param writer The secondary writer.
 			/// @return true if the file was updated.
-			virtual bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
+			bool get(File::Handler &file, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
-			virtual String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
+			bool get(File::Handler &file, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
-			virtual bool get(const char *filename, const HTTP::Method method = HTTP::Get, const char *payload = "");
+			bool get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
+
+			bool get(const char *filename, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		};
 
@@ -228,7 +233,7 @@
 		/// @param progress progress callback.
 		/// @return Server response.
 		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
-			return handler()->get(progress);
+			return handler()->get(HTTP::Get,"",progress);
 		}
 
 		inline String get(const HTTP::Method method = HTTP::Get, const char *payload = "") const {
@@ -240,7 +245,7 @@
 		/// @param writer The secondary writer.
 		/// @return true if the file was updated.
 		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
-			return handler()->get(filename,progress);
+			return handler()->get(filename,HTTP::Get,"",progress);
 		}
 
 		inline bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "") {
