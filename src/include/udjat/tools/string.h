@@ -372,6 +372,10 @@
 			return Udjat::has_prefix(c_str(),prefix,ignore_case);
 		}
 
+		inline bool isnumber() const {
+			return Udjat::isnumber(c_str());
+		}
+
 		/// @brief Removes trailing white spaces from the string.
 		/// @see chug()
 		/// @see strip()

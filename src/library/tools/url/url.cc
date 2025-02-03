@@ -27,6 +27,7 @@
  #include <list>
  #include <memory>
  #include <sstream>
+ #include <netdb.h>
 
  using namespace std;
 
@@ -56,6 +57,28 @@
 		}
 
 		return result;
+	}
+
+	const int URL::port(const char *proto) const {
+
+		#include <udjat/tools/string.h>
+
+		ParsedUri uri{*this};
+		String result{uri.portText.first, (size_t) (uri.portText.afterLast - uri.portText.first)};
+
+		if(result.empty()) {
+			result = scheme();
+		} else if(result.isnumber()) {
+			return atoi(result.c_str());
+		}
+
+		struct servent *service = getservbyname(result.c_str(),proto);
+		if (service) {
+			return ntohs(service->s_port);
+		}
+
+		throw system_error(ENXIO, system_category(), String{"Service '",result.c_str(),"' not found"});
+
 	}
 
 	const String URL::hostname() const {

@@ -175,6 +175,7 @@
 		const String hostname() const;
 		const String servicename() const;
 		const String path() const;
+		const int port(const char *proto = "tcp") const;
 
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
