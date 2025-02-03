@@ -241,8 +241,16 @@
 			return handler()->get(HTTP::Get,"",progress);
 		}
 
+		inline String post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
+			return handler()->get(HTTP::Post,payload,progress);
+		}
+
 		inline String get(const HTTP::Method method = HTTP::Get, const char *payload = "") const {
 			return handler()->get(method,payload);
+		}
+
+		inline String post(const char *payload) const {
+			return handler()->get(HTTP::Post,payload);
 		}
 
 		/// @brief Download/update a file with progress.
@@ -257,6 +265,7 @@
 			return handler()->get(filename,method,payload);
 		}
 
+		
 	};
 
  }
