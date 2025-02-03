@@ -46,10 +46,8 @@
 	public:
 
 		class UDJAT_API Handler {
-		private:
-			const URL &url;
-	
 		protected:
+			const URL &url;
 			Handler(const URL &url);
 
 		public:
@@ -76,10 +74,6 @@
 
 			/// @brief Launch exception on failure code.
 			int except(int code, const char *message = "");
-
-			inline const auto path() const {
-				return url.path();
-			}
 
 			inline const char * c_str() const {
 				return url.c_str();

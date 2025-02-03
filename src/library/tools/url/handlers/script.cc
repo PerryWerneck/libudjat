@@ -91,7 +91,7 @@
 			return rc;
 		}
 
-		rc = Worker{this->path().c_str(),progress}.run();
+		rc = Worker{url.path().c_str(),progress}.run();
 		if(rc == 0) {
 			return 200;
 		}
@@ -102,7 +102,7 @@
 
 	int ScriptURLHandler::test(const HTTP::Method, const char *) {
 
-		String path{this->path()};
+		String path{url.path()};
 
 #ifdef _WIN32
 		if(!PathFileExists(path.c_str())) {
