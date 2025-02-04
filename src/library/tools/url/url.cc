@@ -28,23 +28,12 @@
  #include <memory>
  #include <sstream>
  #include <netdb.h>
+ #include <private/urlparser.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	struct ParsedUri : UriUriA {
-		ParsedUri(const std::string &str) {
-			const char * errorPos;
-			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
-				throw std::invalid_argument("Invalid URL");
-			}
-		}
-
-		~ParsedUri() {
-			uriFreeUriMembersA(this);
-		}
-	};
 
 	const String URL::servicename() const {
 		

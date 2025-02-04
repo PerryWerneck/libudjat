@@ -28,10 +28,12 @@
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/timestamp.h>
  #include <private/url.h>
- 
+ #include <uriparser/Uri.h>
+ #include <private/urlparser.h>
+
  using namespace std;
 
- namespace Udjat {
+ namespace  Udjat {
 
 	Container<URL::Handler::Factory> & factories() {
 		static Container<URL::Handler::Factory> factories;
@@ -49,6 +51,23 @@
 	std::shared_ptr<URL::Handler> URL::handler(bool allow_default) const {
 
 		auto scheme = this->scheme();
+		auto mark = scheme.find('+');
+
+		if(mark != string::npos) {
+			//
+			// It's a combined scheme, remove the first part.
+			//
+			scheme.resize(mark);
+
+			for(const auto factory : factories()) {
+				if(*factory == scheme.c_str()) {
+					return factory->HandlerFactory(URL{(this->c_str() + mark + 1)});
+				}
+			}
+
+			throw runtime_error(Logger::String{"Unable to find url handler for '",scheme.c_str(),"'"});
+		}
+
 		for(const auto factory : factories()) {
 			if(*factory == scheme.c_str()) {
 				return factory->HandlerFactory(*this);
