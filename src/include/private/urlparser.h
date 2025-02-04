@@ -27,6 +27,24 @@
  namespace Udjat {
 
 	struct ParsedUri : UriUriA {
+		UriParserStateA state;
+
+		ParsedUri(const std::string &str) {
+
+			state.uri = this;
+
+			if(uriParseUriA(&state, str.c_str()) != URI_SUCCESS) {
+				uriFreeUriMembersA(state.uri);
+				throw std::invalid_argument("Invalid URL");
+			}
+
+		}
+
+		~ParsedUri() {
+			uriFreeUriMembersA(state.uri);
+		}
+
+/*
 		ParsedUri(const std::string &str) {
 			const char * errorPos;
 			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
@@ -37,6 +55,7 @@
 		~ParsedUri() {
 			uriFreeUriMembersA(this);
 		}
+*/
 		
 	};
 

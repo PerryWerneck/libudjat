@@ -54,6 +54,18 @@
 			
 		}
 
+		{
+			URL url{"http://www.google.com:8080/path/to/somewhere?name=value&name2=value2"};
+			debug("URL----------------------> ",url.c_str());
+			debug("Hostname----------------> ",url.hostname().c_str());
+			debug("Scheme------------------> ",url.scheme().c_str());
+			debug("Path--------------------> ",url.path().c_str());
+
+			url += "./another/path";
+			debug("URL----------------------> ",url.c_str());
+				
+		}
+
 		MainLoop::getInstance().TimerFactory(1000,[]{
 
 			// cout << "-[ On Timer ]---------------------------------------------------" << endl;
