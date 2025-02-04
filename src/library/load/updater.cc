@@ -160,7 +160,8 @@
 					time_t refresh = descr.ifsuccess;
 					try {
 
-						auto handler = URL{descr.url}.handler();
+
+						auto handler = descr.url.handler();
 						handler->set(MimeType::xml);
 
 						try {
