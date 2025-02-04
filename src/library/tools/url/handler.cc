@@ -57,11 +57,16 @@
 			//
 			// It's a combined scheme, remove the first part.
 			//
+			URL url{(this->c_str() + mark + 1)};
 			scheme.resize(mark);
+
+			if(!strcasecmp(url.scheme().c_str(),scheme.c_str())) {
+				throw logic_error(Logger::String{"Circular reference on ",this->c_str()});
+			}
 
 			for(const auto factory : factories()) {
 				if(*factory == scheme.c_str()) {
-					return factory->HandlerFactory(URL{(this->c_str() + mark + 1)});
+					return factory->HandlerFactory(url);
 				}
 			}
 

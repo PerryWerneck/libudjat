@@ -76,19 +76,6 @@ namespace Udjat {
 		Controller::setup_properties(*this,node);
 	}
 
-	void Abstract::Agent::notify(const Event event) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-		for(Listener &listener : listeners) {
-			if((listener.event & event) != 0) {
-				auto activatable = listener.activatable;
-				push([activatable](std::shared_ptr<Agent> agent){
-					activatable->activate(*agent);
-				});
-			}
-		}
-	}
-
 	Abstract::Agent::~Agent() {
 
 		debug("Cleaning up agent ",name());
@@ -161,57 +148,6 @@ namespace Udjat {
 		throw system_error(EPERM,system_category(),string{"Agent '"} + name() + "' doesnt allow states");
 	}
 	#pragma GCC diagnostic pop
-
-	bool Abstract::Agent::push_back(const XML::Node &node, std::shared_ptr<Activatable> alert) {
-
-		switch(String{node,"trigger-event","default"}.select("state-change","level-change","value-change","ready-state","not-ready-state",NULL)) {
-		case 0:	// state-change
-			push_back(Event::STATE_CHANGED,alert);
-			break;
-
-		case 1:	// level-change
-			push_back(Event::LEVEL_CHANGED,alert);
-			break;
-
-		case 2:	// value-change
-			push_back(Event::VALUE_CHANGED,alert);
-			break;
-
-		case 3:	// ready-state
-			push_back(Event::READY,alert);
-			break;
-
-		case 4:	// not-ready-state
-			push_back(Event::NOT_READY,alert);
-			break;
-
-		default:
-			Logger::String{"Required attribute 'trigger-event' not found or invalid, ignoring node <",node.name(),">"}.warning(name());
-			return false;
-		}
-
-		return true;
-
-	}
-
-	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
-		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.emplace_back(event,activatable);
-	}
-
-	void Abstract::Agent::remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
-		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.remove_if([event,activatable](Listener &ev){
-			return ev.event == event && ev.activatable.get() == activatable.get();
-		});
-	}
-
-	void Abstract::Agent::remove(std::shared_ptr<Activatable> activatable) {
-		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.remove_if([activatable](Listener &ev){
-			return ev.activatable.get() == activatable.get();
-		});
-	}
 
 	std::shared_ptr<Abstract::State> Abstract::Agent::computeState() {
 

@@ -33,7 +33,7 @@
 
 	</agent>
 
-	<alert name='orphaned' type='file' strip-payload='yes'>
+	<alert name='orphaned' type='file' strip-payload='yes' trigger-event='start'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert>
 		

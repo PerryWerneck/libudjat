@@ -34,7 +34,6 @@
 
  namespace Udjat {
 
-
 	const String URL::servicename() const {
 		
 		ParsedUri uri{*this};

@@ -73,6 +73,8 @@
 				ALL 				= 0x011F		///< @brief All events.
 			};
 
+			static Event EventFactory(const XML::Node &node, const char *attrname = "event");
+
 		private:
 
 			static std::recursive_mutex guard;

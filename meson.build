@@ -203,6 +203,7 @@ endif
 lib_src += [
   'src/library/agent/agent.cc',
   'src/library/agent/factory.cc',
+  'src/library/agent/event.cc',
   'src/library/agent/child.cc',
   'src/library/agent/controller.cc',
   'src/library/agent/get.cc',
