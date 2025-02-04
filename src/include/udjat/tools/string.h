@@ -110,7 +110,8 @@
 		inline String(Udjat::String &str) : std::string{str} {
 		}
 
-		String Factory(float value, int precision = 2);
+		String(float value, int precision = 2);
+		String(double value, int precision = 2);
 
 		template<typename T> inline String(const T &str) : std::string{std::to_string(str)} {
 		}
@@ -252,7 +253,19 @@
 		//
 		// Others.
 		//
+		inline operator bool() const noexcept {
+			return !empty();
+		}
 
+#if __cplusplus >= 202002L
+		inline int operator <=>(const char *str) const noexcept {
+			return strcasecmp(c_str(),str);
+		}
+
+		inline int operator <=>(const std::string &str) const noexcept {
+			return strcasecmp(c_str(),str.c_str());
+		}
+#else
 		/// @brief Test if string is equal value (case insensitive).
 		/// @param str string to compare.
 		/// @return true if the string is equal str (case insensitive).
@@ -266,6 +279,7 @@
 		inline bool operator ==(const std::string & str) const noexcept {
 			return strcasecmp(c_str(),str.c_str()) == 0;
 		}
+#endif
 
 		/// @brief Test if the string contains one of the elements of a list.
 		/// @return Index of the matched content (negative if not found).

@@ -45,10 +45,16 @@
 
 	}
 
-	UDJAT_API String String::Factory(float value, int precision) {
+	String::String(double value, int precision) {
 		std::stringstream stream;
 		stream << std::fixed << std::setprecision(precision) << value;
-		return String{stream.str()};
+		assign(stream.str());
+	}
+
+	String::String(float value, int precision) {
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(precision) << value;
+		assign(stream.str());
 	}
 
 	static const char * unit_names[] = { "B", "KB", "MB", "GB", "TB" };
