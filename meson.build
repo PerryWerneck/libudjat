@@ -53,9 +53,10 @@ subdir('po')
 # Dependencies
 #
 iconv = dependency('iconv')
+uriparser = dependency('liburiparser', method : 'pkg-config')
 lib_deps = [
   dependency('pugixml'),  
-  dependency('liburiparser', method : 'pkg-config'),
+  uriparser,
 ]
 
 #
@@ -104,6 +105,17 @@ app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
+
+if uriparser.found()
+  app_conf.set('HAVE_URIPARSER', 1)
+  uri_version = uriparser.version().split('.')
+  uri_major_version = uri_version[0].to_int()
+  uri_minor_version = uri_version[1].to_int()
+  uri_micro_version = uri_version[2].to_int()
+  app_conf.set('URI_VERSION_MAJOR', uri_major_version)
+  app_conf.set('URI_VERSION_MINOR', uri_minor_version)
+  app_conf.set('URI_VERSION_MICRO', uri_micro_version)
+endif
 
 if host_machine.system() != 'windows'
 

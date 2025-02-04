@@ -24,9 +24,31 @@
  #include <udjat/tools/url.h>
  #include <uriparser/Uri.h>
 
+ #define URI_CHECK_VERSION(major,minor,micro) \
+	(URI_VERSION_MAJOR > (major) || \
+	(URI_VERSION_MAJOR == (major) && URI_VERSION_MINOR > (minor)) || \
+	(URI_VERSION_MAJOR == (major) && URI_VERSION_MINOR == (minor) && \
+	URI_VERSION_MICRO >= (micro)))
+
  namespace Udjat {
 
 	struct ParsedUri : UriUriA {
+
+#if URI_CHECK_VERSION(0,9,0)
+
+		ParsedUri(const std::string &str) {
+			const char * errorPos;
+			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
+				throw std::invalid_argument("Invalid URL");
+			}
+		}
+
+		~ParsedUri() {
+			uriFreeUriMembersA(this);
+		}
+
+#else
+
 		UriParserStateA state;
 
 		ParsedUri(const std::string &str) {
@@ -43,19 +65,7 @@
 		~ParsedUri() {
 			uriFreeUriMembersA(state.uri);
 		}
-
-/*
-		ParsedUri(const std::string &str) {
-			const char * errorPos;
-			if(uriParseSingleUriA(this, str.c_str(), &errorPos) != URI_SUCCESS) {
-				throw std::invalid_argument("Invalid URL");
-			}
-		}
-
-		~ParsedUri() {
-			uriFreeUriMembersA(this);
-		}
-*/
+#endif
 		
 	};
 
