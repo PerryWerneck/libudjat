@@ -111,7 +111,7 @@ namespace Udjat {
 				try {
 					push_back(node,Alert::Factory::build(*this,node));
 				} catch(const std::exception &e) {
-					Logger::String{"Alert creation failure: ",e.what()}.error(name());
+					Logger::String{"Alert creation failure: ",e.what()}.error(node.attribute("name").as_string(name()));
 				}
 				continue;
 			}

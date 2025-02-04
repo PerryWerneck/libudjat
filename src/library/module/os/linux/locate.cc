@@ -31,13 +31,9 @@
 	std::vector<std::string> Module::search_paths() noexcept {
 
 		return std::vector<string>{
-#ifdef MODULES_DIR
-			Config::Value<string>("modules","application-path",STRINGIZE_VALUE_OF(MODULES_DIR)).c_str(),
-#endif // MODULES_DIR
 			Config::Value<string>("modules","path",Application::LibDir(MODULE_VERSION "/modules",false).c_str()),
 #ifdef LIBDIR
-			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(MODULE_VERSION) "/" PACKAGE_VERSION "/modules/").c_str(),
-			Config::Value<string>("modules","compatibility-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(MODULE_VERSION) "-modules/" PACKAGE_VERSION "/").c_str(),
+			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" PACKAGE_NAME "/" MODULE_VERSION "/modules/").c_str(),
 #endif //LIBDIR
 		};
 

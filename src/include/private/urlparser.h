@@ -65,6 +65,7 @@
 		~ParsedUri() {
 			uriFreeUriMembersA(state.uri);
 		}
+		
 #endif
 		
 	};
