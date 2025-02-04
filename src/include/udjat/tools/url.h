@@ -51,6 +51,11 @@
 			const URL &url;
 			Handler(const URL &url);
 
+			struct {
+				int code = 0;	///< @brief HTTP status code;
+				String message;	///< @brief HTTP status message;
+			} status;
+
 		public:
 
 			virtual ~Handler();

@@ -24,6 +24,7 @@
  #include <sstream>
  #include <udjat/tools/file.h>
  #include <udjat/tools/file/handler.h>
+ #include <udjat/tools/file/temporary.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/timestamp.h>
@@ -220,14 +221,44 @@
 
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		
-		int rc = false;
+		// Download to temporary file.
+		File::Temporary file{filename};
+
 		{
-			File::Handler file{filename,true};
-			rc = get(file,method,payload,progress);
+			time_t mtime = file.mtime();
+			if(mtime) {
+				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());
+			}
 		}
 
-		if(rc) {
-			// Set file modification time
+		status.code = perform(
+			method, 
+			payload, 
+			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
+
+				if(len && data) {
+					file.write(current,data,len);
+				} else if(current == 0 && total) {
+					file.allocate(total);
+				}
+				
+				return progress(current,total);
+			}
+		);
+
+		debug("Update of ",filename," exits with ",status.code);
+		if(status.code == 304) {
+			return false;
+		}
+
+		except(status.code);
+
+		if(status.code >= 200 && status.code <= 299) {
+
+			// Save temporary file.
+			file.save(filename,true);
+
+			// Set file modification time.
 			HTTP::TimeStamp timestamp{header("Last-Modified")};
 			debug("timestamp=",timestamp.to_string());
 			if(timestamp) {
@@ -235,9 +266,10 @@
 				File::mtime(filename, (time_t) timestamp);
 			}
 
+			return true;
 		}
 
-		return rc;
+		return false;
 
 	}
 
