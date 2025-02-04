@@ -44,14 +44,12 @@ namespace Udjat {
 		}
 	}
 
-	Abstract::Agent::Event Abstract::Agent::EventFactory(const XML::Node &node, const char *attrname) {
+	Abstract::Agent::Event Abstract::Agent::EventFactory(const char *name) {
 
-		String name{node,attrname,""};
-
-		if(name.empty()) {
-			throw runtime_error(Logger::String{"Required attribute '",attrname,"' is missing or empty"});
+		if(!(name && *name)) {
+			throw runtime_error("Event name is empty");
 		}
-
+		
 		static const struct {
 			Event id;
 			const char *name;
@@ -73,12 +71,24 @@ namespace Udjat {
 		};
 
 		for(const auto &event : events) {
-			if(!strcasecmp(event.name,name.c_str())) {
+			if(!strcasecmp(event.name,name)) {
 				return event.id;
 			}
 		}
 
-		throw runtime_error(Logger::String{"Unexpected event '",name.c_str(),"'"});
+		throw runtime_error(Logger::String{"Unexpected event '",name,"'"});
+
+	}
+
+	Abstract::Agent::Event Abstract::Agent::EventFactory(const XML::Node &node, const char *attrname) {
+
+		String name{node,attrname,""};
+
+		if(name.empty()) {
+			throw runtime_error(Logger::String{"Required attribute '",attrname,"' is missing or empty"});
+		}
+
+		return EventFactory(name.c_str());
 
 	}
 

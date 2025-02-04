@@ -74,6 +74,7 @@
 			};
 
 			static Event EventFactory(const XML::Node &node, const char *attrname = "event");
+			static Event EventFactory(const char *name);
 
 		private:
 
