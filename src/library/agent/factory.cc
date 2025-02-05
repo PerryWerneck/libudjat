@@ -117,11 +117,12 @@
 
 			} catch(const std::exception &e) {
 
-				Logger::String{"External module failed build agent '",type,"': ",e.what()}.error();
+				Logger::String{
+					"Error building '",type,"' agent: ",e.what()}.error(node.attribute("name").as_string(PACKAGE_NAME));
 
 			} catch(...) {
 
-				Logger::String{"Unexpected error building agent '",type,"'"}.error();
+				Logger::String{"Unexpected error building agent '",type,"'"}.error(node.attribute("name").as_string(PACKAGE_NAME));
 
 			}
 

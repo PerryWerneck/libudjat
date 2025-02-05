@@ -115,11 +115,11 @@
 
 					} catch(const std::exception &e) {
 
-						Logger::String{"External module failed building action '",type,"': ",e.what()}.error();
+						Logger::String{"Error building '",type,"' action: ",e.what()}.error(node.attribute("name").as_string(PACKAGE_NAME));
 
 					} catch(...) {
 
-						Logger::String{"Unexpected error building action '",type,"'"}.error();
+						Logger::String{"Unexpected error building '",type,"' action"}.error(node.attribute("name").as_string(PACKAGE_NAME));
 
 					}
 				}

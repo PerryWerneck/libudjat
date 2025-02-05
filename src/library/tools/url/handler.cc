@@ -42,10 +42,12 @@
 	}
 
 	URL::Handler::Factory::Factory(const char *n) : name{n} {
+		Logger::String{"Registering URL handler '",name,"'"}.write(Logger::Debug);
 		factories().push_back(this);
 	}
 
 	URL::Handler::Factory::~Factory() {
+		Logger::String{"Removing URL handler '",name,"'"}.write(Logger::Debug);
 		factories().remove(this);
 	}
 
