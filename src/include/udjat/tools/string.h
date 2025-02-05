@@ -104,10 +104,10 @@
 		inline String(std::string &str) : std::string{str} {
 		}
 
-		inline String(const Udjat::String &str) : std::string{str} {
+		inline String(const Udjat::String &str) : std::string{str.c_str()} {
 		}
 
-		inline String(Udjat::String &str) : std::string{str} {
+		inline String(Udjat::String &str) : std::string{str.c_str()} {
 		}
 
 		String(float value, int precision = 2);
@@ -416,6 +416,18 @@
  }
 
  namespace std {
+
+	inline const char * to_string(Udjat::String &str) {
+		return str.c_str();
+	}
+
+	inline const char * to_string(const Udjat::String &str) {
+		return str.c_str();
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::String str) {
+		return os << str.c_str();
+	}
 
 	template<typename T>
 	inline Udjat::String & operator<< (Udjat::String &str, const T msg) {

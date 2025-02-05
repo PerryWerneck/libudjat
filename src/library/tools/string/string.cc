@@ -211,7 +211,7 @@
 		std::vector<String> strings;
 
 		for_each(c_str(),delim,[&strings](const String &value){
-			strings.push_back(value);
+			strings.emplace_back(value.c_str());
 			return false;
 		});
 

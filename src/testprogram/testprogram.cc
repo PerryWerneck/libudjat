@@ -55,6 +55,20 @@
 		}
 
 		{
+			debug("-------------------> String split");
+			String test{"create table if not exists alerts (id integer primary key, url text, action text, payload text)"};
+
+			std::vector<String> lines = test.split("\n");
+			debug("----> '",lines[0].c_str(),"'");
+
+			if(lines[0].size() != test.size()) {
+				throw runtime_error("Split failed");
+			}
+
+		}
+
+		{
+			debug("-------------------> URL test");
 			URL url{"http://www.google.com:8080/path/to/somewhere?name=value&name2=value2"};
 			debug("URL----------------------> ",url.c_str());
 			debug("Hostname----------------> ",url.hostname().c_str());
