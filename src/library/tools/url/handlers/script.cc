@@ -34,6 +34,10 @@
 
  namespace Udjat {
 
+	const char * ScriptURLHandler::c_str() const noexcept {
+		return path.c_str();
+	}
+
 	int ScriptURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) {
 
 		/// @brief Run script, capture output to lambda.
@@ -91,7 +95,7 @@
 			return rc;
 		}
 
-		rc = Worker{url.path().c_str(),progress}.run();
+		rc = Worker{path.c_str(),progress}.run();
 		if(rc == 0) {
 			return 200;
 		}
@@ -102,8 +106,6 @@
 
 	int ScriptURLHandler::test(const HTTP::Method, const char *) {
 
-		String path{url.path()};
-
 #ifdef _WIN32
 		if(!PathFileExists(path.c_str())) {
 			return 404;
@@ -111,7 +113,7 @@
 
 		return 200;
 #else
-		if(access(path.c_str(),R_OK) == 0) {
+		if(access(path.c_str(),X_OK) == 0) {
 			return 200;
 		}
 

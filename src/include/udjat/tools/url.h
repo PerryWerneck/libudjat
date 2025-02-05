@@ -48,8 +48,7 @@
 
 		class UDJAT_API Handler {
 		protected:
-			const URL &url;
-			Handler(const URL &url);
+			Handler() = default;
 
 			struct {
 				int code = 0;	///< @brief HTTP status code;
@@ -59,6 +58,9 @@
 		public:
 
 			virtual ~Handler();
+
+			/// @brief Get handler description, usually the URL
+			virtual const char * c_str() const noexcept = 0;
 
 			/// @brief Set output header.
 			/// @param name The header name.
@@ -80,10 +82,6 @@
 
 			/// @brief Launch exception on failure code.
 			int except(int code, const char *message = "");
-
-			inline const char * c_str() const {
-				return url.c_str();
-			}
 
 			class Factory {
 			private:

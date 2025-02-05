@@ -30,9 +30,13 @@
 
  namespace Udjat {
 
+	const char * FileURLHandler::c_str() const noexcept {
+		return path.c_str();
+	}
+
 	int FileURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) {
 
-		File::Handler file{url.path().c_str()};
+		File::Handler file{path.c_str()};
 
 		size_t block_size = file.block_size();
 		char buffer[block_size];
@@ -60,8 +64,6 @@
 	}
 
 	int FileURLHandler::test(const HTTP::Method, const char *) {
-
-		String path{url.path()};
 
 #ifdef _WIN32
 		if(!PathFileExists(path.c_str())) {

@@ -102,9 +102,6 @@
 		throw invalid_argument(String{"Cant handle ",c_str()});
 	}
 
-	URL::Handler::Handler(const URL &url) : url{url} {
-	}
-
 	URL::Handler::~Handler() {
 	}
 
@@ -124,10 +121,6 @@
 
 	int URL::Handler::test(const HTTP::Method method, const char *payload) {
 
-		if(url.empty()) {
-			return -EBADMSG;
-		}
-
 		if(method > HTTP::Patch || method == HTTP::Delete || method == HTTP::Connect || method == HTTP::Options || method == HTTP::Trace) {
 			return -EINVAL;
 		}
@@ -142,7 +135,6 @@
 		}
 
 		if(code == 304) {        // Not modified.
-			Logger::String{url.c_str()," was not modified"}.trace("url");
 			return 304;
 		}
 
