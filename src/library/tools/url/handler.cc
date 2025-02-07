@@ -28,6 +28,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/timestamp.h>
+ #include <udjat/module/abstract.h>
  #include <private/url.h>
  #include <uriparser/Uri.h>
  #include <private/urlparser.h>
@@ -51,7 +52,7 @@
 		factories().remove(this);
 	}
 
-	std::shared_ptr<URL::Handler> URL::handler(bool allow_default) const {
+	std::shared_ptr<URL::Handler> URL::handler(bool allow_default, bool autoload) const {
 
 		auto scheme = this->scheme();
 		auto mark = scheme.find('+');
@@ -88,6 +89,32 @@
 
 		if(!strcasecmp(scheme.c_str(),"script")) {
 			return make_shared<ScriptURLHandler>(*this);
+		}
+
+		if(autoload) {
+
+			// Try to load a module using the handler name.
+			try {
+
+				if(Module::load(scheme.c_str(),false)) {
+
+					Logger::String{"Module for ",scheme.c_str()," handler loaded"}.trace();
+
+					for(const auto factory : factories()) {
+						if(*factory == scheme.c_str()) {
+							return factory->HandlerFactory(*this);
+						}
+					}
+
+				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{"Failed to load module for ",scheme.c_str()," handler: ",e.what()}.trace();
+			
+			}
+
+
 		}
 
 		// Get default handler

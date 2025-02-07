@@ -211,8 +211,9 @@
 
 		/// @brief Retrieves a shared pointer to a Handler object for this URL.
 		/// @param allow_default A boolean flag indicating whether to allow use of default handler.
+		/// @param autoload A boolean flat indicating whether to try load a module using the handler name.
 		/// @return std::shared_ptr<Handler> A shared pointer to the Handler object.
-		std::shared_ptr<Handler> handler(bool allow_default = true) const;
+		std::shared_ptr<Handler> handler(bool allow_default = true, bool autoload = false) const;
 
 		/// @brief Get value from host.
 		/// @param Value the response.
