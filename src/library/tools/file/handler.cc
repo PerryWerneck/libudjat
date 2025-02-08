@@ -178,6 +178,63 @@
 
 	}
 
+	void File::Handler::append(void *contents, size_t length) {
+		
+		off_t to = lseek(fd,0,SEEK_END);
+		if(to == (off_t) -1) {
+			throw system_error(errno,system_category(),_("Cant set file offset"));
+		}
+
+		size_t bsize = block_size();
+	
+		while(length) {
+
+			ssize_t bytes = (length > bsize) ? bsize : length;
+
+			if(pwrite(fd,contents,bytes,to) < 0) {
+				throw system_error(errno,system_category(),_("Cant write to file"));
+			}
+
+			to += bytes;
+			contents = (void *) (((uint8_t *) contents) + bytes);
+			length -= bytes;
+
+		}
+
+	}
+
+	void File::Handler::append(const File::Handler &file, size_t offset) {
+
+		off_t to = lseek(fd,0,SEEK_END);
+		if(to == (off_t) -1) {
+			throw system_error(errno,system_category(),_("Cant set file offset"));
+		}
+
+		off_t from = lseek(file.fd,offset,SEEK_SET);
+		if(to == (off_t) -1) {
+			throw system_error(errno,system_category(),_("Cant set file offset"));
+		}
+
+		size_t bsize = file.block_size();
+		char buffer[bsize];
+	
+		while(ssize_t bytes = pread(file.fd,buffer,bsize,from)) {
+
+			if(bytes < 0) {
+				throw system_error(errno,system_category(),_("Cant read from file"));
+			}
+
+			if(pwrite(fd,buffer,bytes,to) < 0) {
+				throw system_error(errno,system_category(),_("Cant write to file"));
+			}
+
+			to += bytes;
+			from += bytes;
+
+		}
+
+	}
+
 	size_t File::Handler::read(unsigned long long offset, void *contents, size_t length, bool required) {
 
 		size_t complete = 0;

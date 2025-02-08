@@ -86,6 +86,9 @@ namespace Udjat {
 			/// @return The file contents.
 			String read(unsigned long long offset = 0, ssize_t length = -1);
 
+			void append(const File::Handler &file, size_t offset = 0);
+			void append(void *contents, size_t length);
+
 			inline size_t write(const std::string &str) {
 				return write(str.c_str(),str.size());
 			}
