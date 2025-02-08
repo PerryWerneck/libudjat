@@ -23,6 +23,7 @@
 #include <string>
 #include <functional>
 #include <cstring>
+#include <udjat/tools/string.h>
 
 namespace Udjat {
 
@@ -78,6 +79,12 @@ namespace Udjat {
 			/// @param required when true read 'length' bytes.
 			/// @return Number of bytes read (0 on eof);
 			size_t read(unsigned long long offset, void *contents, size_t length, bool required = false);
+
+			/// @brief Load file to string.
+			/// @param offset start reading from this offset.
+			/// @param length read this amount of bytes (-1 = Read entire file).
+			/// @return The file contents.
+			String read(unsigned long long offset = 0, ssize_t length = -1);
 
 			inline size_t write(const std::string &str) {
 				return write(str.c_str(),str.size());

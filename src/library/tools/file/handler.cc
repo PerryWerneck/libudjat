@@ -23,9 +23,11 @@
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/intl.h>
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <udjat/tools/string.h>
+ #include <sstream>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -53,7 +55,6 @@
 
 	File::Handler::~Handler() {
 		if(fd > 0) {
-			debug("Closing ---------------------->",fd);
 			::close(fd);
 			fd = -1;
 		}
@@ -185,7 +186,7 @@
 
 			ssize_t bytes = ::pread(fd,contents,length,offset);
 			if(bytes < 0) {
-				throw system_error(errno,system_category(),"Cant read from file");
+				throw system_error(errno,system_category(),_("Cant read from file"));
 			} else if(bytes == 0) {
 				break;
 			}
@@ -208,7 +209,7 @@
 
 			ssize_t bytes = ::write(fd, contents, length);
 			if(bytes < 1) {
-				throw system_error(errno,system_category(),"Cant write to file");
+				throw system_error(errno,system_category(),_("Cant write to file"));
 			}
 
 			length -= bytes;
@@ -220,6 +221,21 @@
 
 	}
 
+	String File::Handler::read(unsigned long long offset, ssize_t length) {
+		
+		if(length < 0) {
+			length = this->length();
+		}
+
+		char buffer[length+1];
+		buffer[length] = 0;
+
+		size_t bytes = read(offset,buffer,length,true);
+		buffer[bytes] = 0;
+
+		return String{buffer};
+	}
+
 	size_t File::Handler::read(void *contents, size_t length, bool required) {
 
 		size_t complete = 0;
@@ -228,11 +244,14 @@
 
 			ssize_t bytes = ::read(fd,contents,length);
 			if(bytes < 0) {
-				throw system_error(errno,system_category(),"Cant read from file");
+				throw system_error(errno,system_category(),_("Cant read from file"));
 			} else if(bytes == 0) {
 				break;
 			}
+
+			contents = (void *) (((uint8_t *) contents) + bytes);
 			complete += bytes;
+			length -= bytes;
 
 		} while(required && ((size_t) complete) < length);
 
@@ -244,7 +263,7 @@
 
 		struct stat st;
 		if(fstat(fd,&st)) {
-			throw system_error(errno,system_category(),"Cant get file length");
+			throw system_error(errno,system_category(),_("Cant get file length"));
 		}
 
 		return st.st_size;
@@ -260,7 +279,7 @@
 
 		struct stat st;
 		if(fstat(fd,&st)) {
-			throw system_error(errno,system_category(),"Cant get block size");
+			throw system_error(errno,system_category(),_("Cant get block size"));
 		}
 
 		return st.st_blksize;
@@ -272,7 +291,7 @@
 
 		struct stat st;
 		if(fstat(fd,&st)) {
-			throw system_error(errno,system_category(),"Cant get file length");
+			throw system_error(errno,system_category(),_("Cant get file length"));
 		}
 
 		unsigned long long offset = 0;
@@ -286,16 +305,16 @@
 
 #ifdef _WIN32
 			if(lseek(fd, offset, SEEK_SET) < 0) {
-				throw system_error(errno,system_category(),"Cant set file offset");
+				throw system_error(errno,system_category(),_("Cant set file offset"));
 			}
 			ssize_t bytes = ::read(fd,buffer,512);
 #else
 			ssize_t bytes = pread(fd,buffer,st.st_blksize,offset);
 #endif // _WIN32
 			if(bytes < 0) {
-				throw system_error(errno,system_category(),"Cant read from file");
+				throw system_error(errno,system_category(),_("Cant read from file"));
 			} else if(bytes == 0) {
-				throw runtime_error("Unexpected EOF reading from file");
+				throw runtime_error(_("Unexpected EOF reading from file"));
 			}
 
 			write(offset,st.st_size,buffer,bytes);

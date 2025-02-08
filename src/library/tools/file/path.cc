@@ -70,16 +70,16 @@
 		expand(*this);
 		String::expand();
 
-		auto pos = find("\\");
-		while(pos != String::npos) {
+		auto pos = std::string::find("\\");
+		while(pos != string::npos) {
 			std::string::replace(pos,1,"/");
-			pos = find("\\");
+			pos = std::string::find("\\");
 		}
 
-		pos = find("//");
-		while(pos != String::npos) {
+		pos = std::string::find("//");
+		while(pos != string::npos) {
 			std::string::replace(pos,2,"/");
-			pos = find("//");
+			pos = std::string::find("//");
 		}
 
 		return *this;
