@@ -265,9 +265,11 @@
 		int rc = hdr->perform(
 			method, 
 			payload, 
-			[&str](uint64_t, uint64_t, const char *data, size_t){
-				str << data;
-				return false;
+			[&str](uint64_t, uint64_t, const char *data, size_t len){
+				if(data && len) {
+					str.write(data,len);
+					return false;
+				}
 			}
 		);
 		hdr->except(rc);
