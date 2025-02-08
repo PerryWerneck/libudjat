@@ -178,11 +178,18 @@
 			String::append(Fargs...);
 		}
 
-		const String scheme() const;
-		const String hostname() const;
-		const String servicename() const;
-		const String path() const;
-		const int port(const char *proto = "tcp") const;
+		String scheme() const;
+		String hostname() const;
+		String servicename() const;
+		String path() const;
+		String name() const;
+		String dirname() const;
+
+		/// @brief Extract mimetype from URL path.
+		/// @return The mimetype, 'none' if URL has no extension.
+		MimeType mimetype() const;
+		
+		int port(const char *proto = "tcp") const;
 
 		URL operator + (const char *path);
 		URL & operator += (const char *path);

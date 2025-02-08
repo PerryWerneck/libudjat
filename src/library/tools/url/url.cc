@@ -29,12 +29,13 @@
  #include <sstream>
  #include <netdb.h>
  #include <private/urlparser.h>
+ #include <libgen.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	const String URL::servicename() const {
+	String URL::servicename() const {
 		
 		ParsedUri uri{*this};
 
@@ -47,7 +48,7 @@
 		return result;
 	}
 
-	const int URL::port(const char *proto) const {
+	int URL::port(const char *proto) const {
 
 		#include <udjat/tools/string.h>
 
@@ -69,20 +70,20 @@
 
 	}
 
-	const String URL::hostname() const {
+	String URL::hostname() const {
 		
 		ParsedUri uri{*this};
 		return String{uri.hostText.first, (size_t) (uri.hostText.afterLast - uri.hostText.first)};
 
 	}
 
-	const String URL::scheme() const {
+	String URL::scheme() const {
 
 		ParsedUri uri{*this};
 		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
 	}
 
-	const String URL::path() const {
+	String URL::path() const {
 
 		ParsedUri uri{*this};
 
@@ -99,6 +100,41 @@
 		return result;
 	}
 
+	String URL::name() const {
+
+		String path{this->path()};
+
+		char buffer[path.size()+1];
+		strncpy(buffer,path.c_str(),path.size());
+		buffer[path.size()] = 0;
+
+		return basename(buffer);
+
+	}
+
+	String URL::dirname() const {
+		
+		String path{this->path()};
+
+		char buffer[path.size()+1];
+		strncpy(buffer,path.c_str(),path.size());
+		buffer[path.size()] = 0;
+
+		return ::dirname(buffer);
+	}
+
+	MimeType URL::mimetype() const {
+
+		String path{this->path()};
+
+		const char *ptr = strrchr(path.c_str(),'.');
+		if(ptr && *ptr) {
+			return MimeTypeFactory(ptr+1);
+		}
+
+		return MimeType::none;
+
+	}
 
 	URL & URL::operator += (const char *path) {
 
