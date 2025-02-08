@@ -39,7 +39,26 @@
 	File::Path::Path(int UDJAT_UNUSED(fd)) {
 	}
 
-	void File::Path::expand(std::string &) {
+	static void expand_folder(std::string &str, const char *key, const char *path) {
+
+		if(path && *path) {
+			const char *ptr = Udjat::String::strcasestr(str.c_str(),key);
+			if(ptr) {
+				try {
+					str.replace(ptr - str.c_str(),strlen(key),path);
+				} catch(const std::exception &e) {
+					throw runtime_error(string{key} + ": " + e.what());
+				}
+			}
+		}
+
+	}
+
+	void File::Path::expand(std::string &str) {
+		expand_folder(str,"${home}",getenv("HOME"));
+		expand_folder(str,"${documents}",getenv("XDG_DOCUMENTS_DIR"));
+		expand_folder(str,"${desktop}",getenv("XDG_DESKTOP_DIR"));
+		
 	}
 
 	void File::Path::save(int fd, const char *contents) {

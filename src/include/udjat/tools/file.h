@@ -86,7 +86,7 @@ namespace Udjat {
 		UDJAT_API std::string save(const char *contents);
 
 		/// @brief File Path.
-		class UDJAT_API Path : public std::string {
+		class UDJAT_API Path : public Udjat::String {
 		public:
 
 			enum Type : uint8_t {
@@ -108,14 +108,14 @@ namespace Udjat {
 
 			Path(const char *v, size_t s);
 
+			Path(const char *dir, const char *name);
+			
 			Path(const std::string &v) : Path(v.c_str()) {
 			}
 
 			static void expand(std::string &str);
 
-			inline void expand() {
-				expand(*this);
-			}
+			File::Path & expand();
 
 			Path(int fd);
 

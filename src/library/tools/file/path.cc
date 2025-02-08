@@ -23,6 +23,7 @@
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/protocol.h>
+ #include <udjat/tools/string.h>
 
  #ifndef _WIN32
 	#include <unistd.h>
@@ -34,11 +35,15 @@
 
  namespace Udjat {
 
-	File::Path::Path(const char *v) : std::string{v ? v : ""} {
+	File::Path::Path(const char *dir, const char *name) : String{dir,"/",name} {
+		expand();
+	}	
+
+	File::Path::Path(const char *v) : String{v ? v : ""} {
 		expand();
 	}
 
-	File::Path::Path(const char *v, size_t s) : std::string{v,s} {
+	File::Path::Path(const char *v, size_t s) : String{v,s} {
 		expand();
 	}
 
@@ -58,6 +63,26 @@
 		}
 		return c_str();
 
+	}
+
+	File::Path & File::Path::expand() {
+
+		expand(*this);
+		String::expand();
+
+		auto pos = find("\\");
+		while(pos != String::npos) {
+			std::string::replace(pos,1,"/");
+			pos = find("\\");
+		}
+
+		pos = find("//");
+		while(pos != String::npos) {
+			std::string::replace(pos,2,"/");
+			pos = find("//");
+		}
+
+		return *this;
 	}
 
 	File::Path::operator bool() const noexcept {
