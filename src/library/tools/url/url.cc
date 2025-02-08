@@ -128,7 +128,7 @@
 		String path{this->path()};
 
 		const char *ptr = strrchr(path.c_str(),'.');
-		if(ptr && *ptr) {
+		if(ptr && *(ptr+1)) {
 			return MimeTypeFactory(ptr+1);
 		}
 
