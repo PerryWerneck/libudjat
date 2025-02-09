@@ -735,6 +735,11 @@ install_headers(
 )
 
 install_headers(
+  'src/include/udjat/tools/url/handler.h',
+  subdir: 'udjat/tools/url'  
+)
+
+install_headers(
   'src/include/udjat/tools/activatable.h',
   'src/include/udjat/tools/base64.h',
   'src/include/udjat/tools/cleanup.h',

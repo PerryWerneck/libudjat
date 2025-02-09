@@ -24,6 +24,7 @@
  #include <udjat/module/abstract.h>
  #include <iostream>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/url/handler.h>
  #include <private/misc.h>
  #include <sys/types.h>
  #include <sys/stat.h>

@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/url/handler.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <uriparser/Uri.h>
@@ -274,6 +275,34 @@
 		);
 		hdr->except(rc);
 		return String{str.str()};		
+	}
+
+	bool URL::get(Udjat::Value &value, const HTTP::Method method, const char *payload) const {
+		return handler()->get(value,method,payload);
+	}
+
+	int URL::test(const HTTP::Method method, const char *payload) const {
+		return handler()->test(method,payload);
+	}
+
+	String URL::get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
+		return handler()->get(HTTP::Get,"",progress);
+	}
+
+	String URL::post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
+		return handler()->get(HTTP::Post,payload,progress);
+	}
+
+	String URL::get(const HTTP::Method method, const char *payload) const {
+		return handler()->get(method,payload);
+	}
+
+	bool URL::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
+		return handler()->get(filename,HTTP::Get,"",progress);
+	}
+
+	bool URL::get(const char *filename,const HTTP::Method method, const char *payload) {
+		return handler()->get(filename,method,payload);
 	}
 
  }

@@ -46,111 +46,7 @@
 	class UDJAT_API URL : public Udjat::String {
 	public:
 
-		class UDJAT_API Handler {
-		protected:
-			Handler() = default;
-
-			struct {
-				int code = 0;	///< @brief HTTP status code;
-				String message;	///< @brief HTTP status message;
-			} status;
-
-		public:
-
-			virtual ~Handler();
-
-			/// @brief Get handler description, usually the URL
-			virtual const char * c_str() const noexcept = 0;
-
-			/// @brief Set output header.
-			/// @param name The header name.
-			/// @param value The header value.
-			/// @return This handler.
-			virtual Handler & header(const char *name, const char *value);
-
-			/// @brief Get input header.
-			/// @param name The header name.
-			/// @return The header value, "" if not found.
-			virtual const char * header(const char *name) const;
-
-			/// @brief Set requested mime-type.
-			/// @param mimetype The mimetype to set.
-			/// @return This handler.
-			virtual Handler & set(const MimeType mimetype);
-
-			virtual Handler & credentials(const char *user, const char *passwd);
-
-			/// @brief Launch exception on failure code.
-			int except(int code, const char *message = "");
-
-			class Factory {
-			private:
-				const char *name;
-
-			public:
-				Factory(const char *n);
-				virtual ~Factory();
-
-				inline bool operator ==(const char *n) const noexcept {
-					return strcasecmp(n,name) == 0;
-				}
-
-				virtual std::shared_ptr<Handler> HandlerFactory(const URL &url) const = 0;
-
-			};
-
-			/// @brief Perform request.
-			/// @param method The HTTP method to use.
-			/// @param payload The payload to send.
-			/// @param progress The progress callback.
-			/// @return HTTP return code.
-			/// @retval 200 OK.
-			/// @retval 401 Unauthorized.
-			/// @retval 404 Not found.	
-			/// @retval ECANCELLED Operation was cancelled.		
-			virtual int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) = 0;
-
-			/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
-			/// @return Test result.
-			/// @retval 200 OK.
-			/// @retval 302 OK with redirection.
-			/// @retval 401 Unauthorized.
-			/// @retval 404 Not found.			
-			/// @retval EINVAL Invalid method.
-			/// @retval ENODATA Empty URL.
-			/// @retval ENOTSUP This handler cannot manage test.
-			virtual int test(const HTTP::Method method = HTTP::Head, const char *payload = "");
-
-			/// @brief Get value.
-			/// @param Value the response.
-			/// @return true if value was updated.
-			virtual bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "");
-
-			/// @brief Do a 'get' request.
-			/// @param progress progress callback.
-			/// @return Server response.
-			String get(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
-
-			String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
-
-			/// @brief Download/update a file with progress.
-			/// @param filename The fullpath for the file.
-			/// @param writer The secondary writer.
-			/// @return true if the file was updated.
-			bool get(File::Handler &file, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
-
-			bool get(File::Handler &file, const HTTP::Method method = HTTP::Get, const char *payload = "");
-
-			/// @brief Download or update a file with progress, setting the last modified time to the value sent by the host.
-			/// @param filename The fullpath for the file.
-			/// @param progress The progress callback.
-			/// @return true if the file was updated.
-			bool get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
-
-			/// @brief Download or update a file with progress, setting the last modified time to the value sent by the host.
-			bool get(const char *filename, const HTTP::Method method = HTTP::Get, const char *payload = "");
-
-		};
+		class Handler;
 
 		URL() = default;
 
@@ -227,9 +123,7 @@
 		/// @param method The HTTP method to use.
 		/// @param payload The payload to send.
 		/// @return true if value was updated.
-		inline bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const {
-			return handler()->get(value,method,payload);
-		}
+		bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.
@@ -239,43 +133,30 @@
 		/// @retval -EINVAL Invalid method.
 		/// @retval -ENODATA Empty URL.
 		/// @retval -ENOTSUP No support for test in protocol handler.
-		inline int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const {
-			return handler()->test(method,payload);
-		}
+		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const;
 
 		String call(const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
 		/// @return Server response.
-		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
-			return handler()->get(HTTP::Get,"",progress);
-		}
+		String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
-		inline String post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const {
-			return handler()->get(HTTP::Post,payload,progress);
-		}
+		String post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
-		inline String get(const HTTP::Method method = HTTP::Get, const char *payload = "") const {
-			return handler()->get(method,payload);
-		}
+		String get(const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		inline String post(const char *payload) const {
-			return handler()->get(HTTP::Post,payload);
+			return get(HTTP::Post,payload);
 		}
 
 		/// @brief Download/update a file with progress.
 		/// @param filename The fullpath for the file.
 		/// @param writer The secondary writer.
 		/// @return true if the file was updated.
-		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
-			return handler()->get(filename,HTTP::Get,"",progress);
-		}
+		bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
-		inline bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "") {
-			return handler()->get(filename,method,payload);
-		}
-
+		bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "");
 		
 	};
 

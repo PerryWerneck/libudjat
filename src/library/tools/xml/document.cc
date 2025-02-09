@@ -24,6 +24,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/url/handler.h>
  #include <stdexcept>
 
  using namespace std;
