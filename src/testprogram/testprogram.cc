@@ -29,6 +29,7 @@
  #include <udjat/agent.h>
  #include <udjat/agent/percentage.h>
  #include <udjat/tools/url.h>
+ #include <udjat/net/ip/address.h>
 
  using namespace std;
  using namespace Udjat;
@@ -42,6 +43,11 @@
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
 
 		Agent<unsigned short> test{"test-agent",XML::Node{}};
+
+		debug("-------------------------")
+		debug("NIC=",IP::Address{"192.168.0.17"}.nic().c_str());
+		debug("MAC=",IP::Address{"192.168.0.17"}.macaddress().c_str());
+
 
 		{
 			Agent<Percentage> percent{"test-percent",0.1};

@@ -50,6 +50,7 @@
 			virtual bool found() const = 0;
 			virtual bool up() const = 0;
 			virtual bool loopback() const = 0;
+			virtual std::string macaddress() const = 0;
 
 			/// @brief Build interface from nic name.
 			static std::shared_ptr<Interface> Factory(const char *name);

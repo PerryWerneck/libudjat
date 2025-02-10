@@ -132,7 +132,6 @@
 
 	}
 
-
 	unsigned int flags_by_name(const char *name) {
 
 		int sock = socket(PF_INET, SOCK_STREAM, 0);
@@ -167,7 +166,7 @@
 			NamedInterface(const char *name) : nicname{name} {
 			}
 
-			bool operator==(const sockaddr_storage &) const override {
+			bool operator==(const sockaddr_storage &addr) const override {
 				throw system_error(ENOTSUP,system_category(),"Unsupported method call");
 			}
 
@@ -187,6 +186,36 @@
 
 			bool loopback() const override {
 				return flags_by_name(nicname.c_str()) & IFF_LOOPBACK;
+			}
+
+			std::string macaddress() const override {
+				
+				int sock = socket(PF_INET, SOCK_STREAM, 0);
+				if(sock < 0) {
+					throw system_error(errno,system_category(),"Cant get PF_INET socket");
+				}
+
+				struct ifreq ifr;
+				memset(&ifr,0,sizeof(ifr));
+				strncpy(ifr.ifr_name,nicname.c_str(),sizeof(ifr.ifr_name)-1);
+
+				if(ioctl(sock, SIOCGIFHWADDR, (caddr_t)&ifr) < 0) {
+					int err = errno;
+					::close(sock);
+					throw system_error(err,system_category(),"SIOCGIFHWADDR");
+				}
+
+				::close(sock);
+
+				std::string mac;
+				static const char *digits = "0123456789ABCDEF";
+				for(size_t ix = 0; ix < 6; ix++) {
+					uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
+					mac += digits[(digit >> 4) & 0x0f];
+					mac += digits[digit & 0x0f];
+				}
+
+				return mac;
 			}
 
 		};

@@ -32,6 +32,7 @@
 		// value["active"] = active();
 		value["up"] = up();
 		value["loopback"] = loopback();
+		value["macaddress"] = macaddress();
 		// value["carrier"] = carrier();
 
 		return value;

@@ -45,6 +45,9 @@
 		private:
 
 		public:
+			Address(const char *ip) : sockaddr_storage{IP::Factory(ip)} {
+			}
+
 			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
 			}
 
@@ -110,6 +113,9 @@
 			}
 
 			std::string to_string() const noexcept;
+
+			std::string nic() const;
+			std::string macaddress() const;
 
 		};
 

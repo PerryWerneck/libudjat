@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/net/ip/address.h>
+ #include <udjat/net/interface.h>
  #include <stdexcept>
  #include <cstring>
  #include <udjat/tools/logger.h>
@@ -147,6 +148,42 @@
 		return std::to_string((sockaddr_storage) *this);
 	}
 
+	std::string IP::Address::nic() const {
+
+		string nic;
+
+		IP::for_each([&](const IP::Addresses &info) -> bool {
+
+			if(info.address == *this) {
+				nic = info.interface_name;
+				return true;
+			}
+
+			return false;
+
+		});		
+
+		return nic;
+	}
+
+	std::string IP::Address::macaddress() const {
+
+		string macaddr;
+
+		IP::for_each([&](const IP::Addresses &info) -> bool {
+
+			if(info.address == *this) {
+				macaddr = Network::Interface::Factory(info.interface_name)->macaddress();
+				return true;
+			}
+
+			return false;
+
+		});		
+
+		return macaddr;
+
+	}
 
  }
 
