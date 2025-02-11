@@ -19,7 +19,9 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/mainloop.h>
  #include <private/glib/mainloop.h>
+ #include <udjat/tools/timer.h>
  #include <dlfcn.h>
 
  namespace Udjat {
@@ -29,25 +31,27 @@
 		METHOD_G_SOURCE_ATTACH,
 		METHOD_G_SOURCE_ADD_POLL,
 		METHOD_G_SOURCE_DESTROY,
-		METHOD_G_TIMEOUT_ADD_FULL
+		METHOD_G_TIMEOUT_ADD_FULL,
+		METHOD_G_SOURCE_REMOVE
 	};
 
-	static const char *required_methods[] = {
+	static const char *names[] = {
 		"g_source_new",
 		"g_source_attach",
 		"g_source_add_poll",
 		"g_source_destroy",
-		"g_timeout_add_full"
+		"g_timeout_add_full",
+		"g_source_remove"
 	};
 
-	static void *methods[sizeof(required_methods)/sizeof(required_methods[0])];
+	static void *methods[sizeof(names)/sizeof(names[0])];
 
 	bool Glib::MainLoop::available() noexcept {
 
-		for(size_t ix = 0; ix < sizeof(required_methods)/sizeof(required_methods[0]); ix++) {
+		for(size_t ix = 0; ix < sizeof(names)/sizeof(names[0]); ix++) {
 
 			dlerror();
-			methods[ix] = dlsym(RTLD_DEFAULT, required_methods[ix]);
+			methods[ix] = dlsym(RTLD_DEFAULT, names[ix]);
 
 			if(dlerror()) {
 				return false;
@@ -81,27 +85,73 @@
 	void Glib::MainLoop::quit() {
 	}
 
-	void Glib::MainLoop::push_back(MainLoop::Timer *timer) {
+	static int do_timer(Udjat::MainLoop::Timer *timer) {
+
+		if(!timer->activate()) {
+			return 0;
+		}
+
+		return -1;
+	}
+
+	void Glib::MainLoop::on_timer_removed(Udjat::MainLoop::Timer *timer) {
+		Glib::MainLoop *mainloop = dynamic_cast<Glib::MainLoop *>(&Udjat::MainLoop::getInstance());
+		if(mainloop) {
+			mainloop->timers.remove_if([timer](const Timer &t) {
+				return t.timer == timer;
+			});
+		}
+	}
+
+	void Glib::MainLoop::push_back(Udjat::MainLoop::Timer *timer) {
+
+		unsigned int (*g_timeout_add_full)(int priority, unsigned int interval, void *function, void *data, void *notify)
+			= (unsigned int (*)(int, unsigned int, void *, void *, void *)) methods[METHOD_G_TIMEOUT_ADD_FULL];
+
+		unsigned int id = 
+			g_timeout_add_full(
+				0, // G_PRIORITY_DEFAULT, 
+				timer->interval(), 
+				(void *) do_timer, 
+				(void *) timer, 
+				(void *) on_timer_removed
+		);
+
+		timers.emplace_back(id,timer);
 
 	}
 
-	void Glib::MainLoop::remove(MainLoop::Timer *timer) {
+	void Glib::MainLoop::remove(Udjat::MainLoop::Timer *tm) {
+
+		int (*g_source_remove)(unsigned int id) = (int (*)(unsigned int)) methods[METHOD_G_SOURCE_REMOVE];
+
+		for(auto &timer : timers) {
+			if(timer.timer == tm) {
+				g_source_remove(timer.id);
+				break;
+			}
+		}
 
 	}
 
-	void Glib::MainLoop::push_back(MainLoop::Handler *handler) {
+	void Glib::MainLoop::push_back(Udjat::MainLoop::Handler *handler) {
 
 	}
 
-	void Glib::MainLoop::remove(MainLoop::Handler *handler) {
+	void Glib::MainLoop::remove(Udjat::MainLoop::Handler *handler) {
 
 	}
 
-	bool Glib::MainLoop::enabled(const Timer *timer) const noexcept {
-
+	bool Glib::MainLoop::enabled(const Udjat::MainLoop::Timer *tm) const noexcept {
+		for(auto &timer : timers) {
+			if(timer.timer == tm) {
+				return true;
+			}
+		}
+		return false;
 	}
 
-	bool Glib::MainLoop::enabled(const Handler *handler) const noexcept {
+	bool Glib::MainLoop::enabled(const Udjat::MainLoop::Handler *handler) const noexcept {
 
 	}
 

@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <private/service.h>
+ #include <list>
 
 namespace Udjat {
 
@@ -28,6 +29,18 @@ namespace Udjat {
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
+
+			struct Timer {
+				unsigned int id;
+				Udjat::MainLoop::Timer *timer;
+
+				constexpr Timer(unsigned int id, Udjat::MainLoop::Timer *timer) : id{id}, timer{timer} {}
+
+			};
+
+			std::list <Timer> timers;
+
+			static void on_timer_removed(Udjat::MainLoop::Timer *timer);
 
 		public:
 
@@ -49,14 +62,14 @@ namespace Udjat {
 			/// @brief Quit mainloop.
 			void quit() override;
 
-			void push_back(MainLoop::Timer *timer) override;
-			void remove(MainLoop::Timer *timer) override;
+			void push_back(Udjat::MainLoop::Timer *timer) override;
+			void remove(Udjat::MainLoop::Timer *timer) override;
 
-			void push_back(MainLoop::Handler *handler) override;
-			void remove(MainLoop::Handler *handler) override;
+			void push_back(Udjat::MainLoop::Handler *handler) override;
+			void remove(Udjat::MainLoop::Handler *handler) override;
 
-			bool enabled(const Timer *timer) const noexcept override;
-			bool enabled(const Handler *handler) const noexcept override;
+			bool enabled(const Udjat::MainLoop::Timer *timer) const noexcept override;
+			bool enabled(const Udjat::MainLoop::Handler *handler) const noexcept override;
 
 		};
 
