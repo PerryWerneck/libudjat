@@ -208,7 +208,16 @@
 				}
 
 				if(pfd.revents & POLLOUT) {
-					debug("Connected to ",sock);
+					int error = 0;
+					socklen_t errlen = sizeof(error);
+					if(getsockopt(sock, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+						error = errno;
+					}
+					if(error) {
+						::close(sock);
+						errno = error;
+						return -1;
+					}
 					return sock;
 				}
 
