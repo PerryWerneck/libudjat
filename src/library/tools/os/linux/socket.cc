@@ -208,16 +208,37 @@
 				}
 
 				if(pfd.revents & POLLOUT) {
+
+					// Check socket error
+					struct sockaddr_storage addr;
+					socklen_t len = sizeof(addr);
 					int error = 0;
 					socklen_t errlen = sizeof(error);
+
 					if(getsockopt(sock, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+
 						error = errno;
+
+					} else if (getpeername(sock, (struct sockaddr *)&addr, &len) == -1) {
+
+						error = errno;
+
+					} else if(Logger::enabled(Logger::Trace)) {
+
+						char host[NI_MAXHOST];
+						if (getnameinfo((struct sockaddr *) &addr, sizeof(addr), host, sizeof(host), NULL, 0, NI_NUMERICHOST) == 0) {
+							Logger::String{"Connected to ",host}.trace();
+						}
+
 					}
+
 					if(error) {
 						::close(sock);
 						errno = error;
 						return -1;
 					}
+
+
 					return sock;
 				}
 
@@ -251,10 +272,27 @@
 					set((Event) (MainLoop::Handler::oninput|MainLoop::Handler::onhangup|MainLoop::Handler::onerror));
 					connecting = false;
 
+					struct sockaddr_storage addr;
+					socklen_t len = sizeof(addr);
+
 					int error = 0;
 					socklen_t errlen = sizeof(error);
+
 					if(getsockopt(values.fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+
 						error = errno;
+
+					} else if (getpeername(values.fd, (struct sockaddr *)&addr, &len) == -1) {
+
+						error = errno;
+
+					} else if(Logger::enabled(Logger::Trace)) {
+
+						char host[NI_MAXHOST];
+						if (getnameinfo((struct sockaddr *) &addr, sizeof(addr), host, sizeof(host), NULL, 0, NI_NUMERICHOST) == 0) {
+							Logger::String{"Connected to ",host}.trace();
+						}
+
 					}
 
 					if(error) {
