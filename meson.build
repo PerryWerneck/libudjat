@@ -567,6 +567,7 @@ else
     'src/library/tools/os/linux/econf.cc',
     'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
+    'src/library/tools/mainloop/glib.cc',
   ]
 
 endif

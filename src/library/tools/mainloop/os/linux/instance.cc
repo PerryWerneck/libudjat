@@ -20,7 +20,9 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/linux/mainloop.h>
+ #include <private/glib/mainloop.h>
  #include <mutex>
+ #include <dlfcn.h>
 
  using namespace std;
 
@@ -34,6 +36,12 @@
 		lock_guard<mutex> lock(guard);
 
 		if(!instance) {
+
+			if(Glib::MainLoop::available()) {
+				static Glib::MainLoop inst;
+				return inst;
+			}
+
 			static Linux::MainLoop inst;
 			return inst;
 		}
