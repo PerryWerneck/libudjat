@@ -27,6 +27,7 @@
  #include <list>
  #include <ostream>
  #include <vector>
+ #include <dlfcn.h>
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -287,6 +288,54 @@
 		return Logger::Error;
 	}
 
+	typedef enum
+	{
+		// log flags
+		G_LOG_FLAG_RECURSION          = 1 << 0,
+		G_LOG_FLAG_FATAL              = 1 << 1,
+
+		// GLib log levels
+		G_LOG_LEVEL_ERROR             = 1 << 2,       /* always fatal */
+		G_LOG_LEVEL_CRITICAL          = 1 << 3,
+		G_LOG_LEVEL_WARNING           = 1 << 4,
+		G_LOG_LEVEL_MESSAGE           = 1 << 5,
+		G_LOG_LEVEL_INFO              = 1 << 6,
+		G_LOG_LEVEL_DEBUG             = 1 << 7,
+
+		G_LOG_LEVEL_MASK              = ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL)
+	} GLogLevelFlags;
+
+	typedef void (*GLogFunc)(const char *log_domain, GLogLevelFlags log_level, const char *message, void *user_data);
+
+	static void g_syslog(const char *domain, GLogLevelFlags level, const char *message, void *userdata) {
+
+		static const struct Type {
+			GLogLevelFlags          level;
+			Udjat::Logger::Level    lvl;
+		} types[] = {
+			{ G_LOG_FLAG_RECURSION, Udjat::Logger::Info             },
+			{ G_LOG_FLAG_FATAL,     Udjat::Logger::Error            },
+
+			// GLib log levels
+			{ G_LOG_LEVEL_ERROR,    Udjat::Logger::Error            },
+			{ G_LOG_LEVEL_CRITICAL, Udjat::Logger::Error            },
+			{ G_LOG_LEVEL_WARNING,  Udjat::Logger::Warning          },
+			{ G_LOG_LEVEL_MESSAGE,  Udjat::Logger::Info             },
+			{ G_LOG_LEVEL_INFO,     Udjat::Logger::Info             },
+			{ G_LOG_LEVEL_DEBUG,    Udjat::Logger::Debug            },
+		};
+
+		for(const auto &type : types) {
+			if(type.level == level) {
+				Udjat::Logger::String{message}.write(type.lvl,(domain && *domain) ? domain : "gtk");
+				return;
+			}
+		}
+
+		Udjat::Logger::String{message}.error(domain ? domain : "gtk");
+
+	}
+
 	void Logger::redirect() {
 
 		static const Level levels[] = { Info,Warning,Error };
@@ -303,6 +352,17 @@
 				streams[ix]->rdbuf(new Writer(levels[ix]));
 			}
 
+		}
+
+		// Check for glib presence.
+		dlerror();
+
+		void (*g_log_set_default_handler)(GLogFunc, void *)
+			= (void (*)(GLogFunc,void *)) dlsym(RTLD_DEFAULT, "g_log_set_default_handler");
+
+		if(!dlerror()) {
+			// GLib is present, capture logs.
+			g_log_set_default_handler(g_syslog,NULL);
 		}
 
 	}
