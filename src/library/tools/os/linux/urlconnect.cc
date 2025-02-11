@@ -55,6 +55,7 @@
         hints.ai_flags          = AI_PASSIVE;   // For wildcard IP address
         hints.ai_protocol       = 0;                    // Any protocol
 
+		// TODO: Use getaddrinfo_a to resolve in parallel
         rc = getaddrinfo(hostname().c_str(), servicename().c_str(), &hints, &result);
         if(rc) {
 			throw Exception(rc, Logger::String{"Failed to resolve '",c_str(),"'"},gai_strerror(rc));

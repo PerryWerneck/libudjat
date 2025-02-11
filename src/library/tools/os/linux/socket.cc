@@ -59,6 +59,7 @@
         hints.ai_flags          = AI_PASSIVE;   // For wildcard IP address
         hints.ai_protocol       = 0;            // Any protocol
 
+		// TODO: Use getaddrinfo_a to resolve in parallel
         int rc = getaddrinfo(url.hostname().c_str(), url.servicename().c_str(), &hints, &result);
         if(rc) {
 			throw Exception(rc, Logger::String{"Failed to resolve '",url.c_str(),"'"},gai_strerror(rc));
@@ -235,12 +236,29 @@
 		try {
 
 			if(event & MainLoop::Handler::onoutput) {
+
 				if(connecting) {
+
 					set((Event) (MainLoop::Handler::oninput|MainLoop::Handler::onhangup|MainLoop::Handler::onerror));
 					connecting = false;
-					handle_connect();
+
+					int error = 0;
+					socklen_t errlen = sizeof(error);
+					if(getsockopt(values.fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+						error = errno;
+					}
+
+					if(error) {
+						disable();
+						close();
+					}
+
+					handle_connect(error);
+
 				} else {
+
 					handle_write_ok();
+
 				}
 				return;
 			}
@@ -273,7 +291,7 @@
 
 	}
 
-	void Socket::handle_connect() {
+	void Socket::handle_connect(int error) {
 	}
 
 	void Socket::handle_disconnect() {

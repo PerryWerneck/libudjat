@@ -33,7 +33,10 @@
 	protected:
 		void handle_event(const Event event) override;
 
-		virtual void handle_connect();
+		/// @brief Handle connection to URL
+		/// @param error_code The error code, non zero if connection has failed and socket is now closed.
+		virtual void handle_connect(int error_code);
+		
 		virtual void handle_disconnect();
 		virtual void handle_read_ok();
 		virtual void handle_write_ok();
