@@ -18,6 +18,7 @@
  */
 
 #ifdef DEBUG 
+
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
