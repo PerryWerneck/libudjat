@@ -27,21 +27,21 @@
  namespace Udjat {
 
 	enum methods {
-		METHOD_G_SOURCE_NEW,
-		METHOD_G_SOURCE_ATTACH,
-		METHOD_G_SOURCE_ADD_POLL,
-		METHOD_G_SOURCE_DESTROY,
 		METHOD_G_TIMEOUT_ADD_FULL,
-		METHOD_G_SOURCE_REMOVE
+		METHOD_G_SOURCE_REMOVE,
+		METHOD_G_IO_CHANNEL_UNIX_NEW,
+		METHOD_G_IO_CHANNEL_UNREF,
+		METHOD_G_IO_CHANNEL_SET_ENCODING,
+		METHOD_G_IO_ADD_WATCH,
 	};
 
 	static const char *names[] = {
-		"g_source_new",
-		"g_source_attach",
-		"g_source_add_poll",
-		"g_source_destroy",
 		"g_timeout_add_full",
-		"g_source_remove"
+		"g_source_remove",
+		"g_io_channel_unix_new",			// https://docs.gtk.org/glib/ctor.IOChannel.unix_new.html
+		"g_io_channel_unref",				// https://docs.gtk.org/glib/method.IOChannel.unref.html
+		"g_io_channel_set_encoding",
+		"g_io_add_watch",
 	};
 
 	static void *methods[sizeof(names)/sizeof(names[0])];
@@ -65,9 +65,11 @@
 
 	Glib::MainLoop::MainLoop() : Udjat::MainLoop(MainLoop::GLib) {
 
+		
 	}
 
 	Glib::MainLoop::~MainLoop() {
+
 
 	}
 
@@ -153,6 +155,7 @@
 
 	bool Glib::MainLoop::enabled(const Udjat::MainLoop::Handler *handler) const noexcept {
 
+		return false;
 	}
 
  }

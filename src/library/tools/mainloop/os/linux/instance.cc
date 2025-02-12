@@ -20,10 +20,13 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/linux/mainloop.h>
- #include <private/glib/mainloop.h>
  #include <mutex>
  #include <dlfcn.h>
 
+ #ifdef DEBUG
+	#include <private/glib/mainloop.h>
+ #endif // DEBUG
+ 
  using namespace std;
 
  namespace Udjat {
@@ -37,10 +40,12 @@
 
 		if(!instance) {
 
+#ifdef DEBUG
 			if(Glib::MainLoop::available()) {
 				static Glib::MainLoop inst;
 				return inst;
 			}
+#endif 
 
 			static Linux::MainLoop inst;
 			return inst;

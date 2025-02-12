@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#ifdef DEBUG 
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
@@ -30,15 +31,24 @@ namespace Udjat {
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
 
+			/// @brief The MainLoop GSource.
+			void *source;
+
 			struct Timer {
 				unsigned int id;
 				Udjat::MainLoop::Timer *timer;
-
 				constexpr Timer(unsigned int id, Udjat::MainLoop::Timer *timer) : id{id}, timer{timer} {}
-
 			};
 
-			std::list <Timer> timers;
+			std::list<Timer> timers;
+
+			struct Handler {
+				Udjat::MainLoop::Handler *handler;
+				unsigned int id;	// The event source id.
+				void *channel;		// The IOChannel.
+			};
+
+			std::list<Handler> handlers;
 
 			static void on_timer_removed(Udjat::MainLoop::Timer *timer);
 
@@ -76,3 +86,4 @@ namespace Udjat {
 	};
 
 }
+#endif 
