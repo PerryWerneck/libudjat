@@ -152,12 +152,11 @@
 					try {
 						
 						String sysid = URL{Config::Value<string>{"bare-metal","summary","dmi:///system/sku"}.c_str()}.get();
-
 						Object::properties.summary = sysid.split("\n",2)[0].as_quark();
 
 					} catch(const std::exception &e) {
 
-						Logger::String{e.what()}.trace();
+						Logger::String{e.what()}.write(Logger::Debug);
 
 					}
 
