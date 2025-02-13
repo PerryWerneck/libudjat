@@ -150,9 +150,26 @@
 				} else {
 
 					try {
-						
-						String sysid = URL{Config::Value<string>{"bare-metal","summary","dmi:///system/sku"}.c_str()}.get();
-						Object::properties.summary = sysid.split("\n",2)[0].as_quark();
+
+#ifdef HAVE_SMBIOS
+						Config::Value<string> sysid{"bare-metal","summary","dmi:///system/sku"};
+#else
+						Config::Value<string> sysid{"bare-metal","summary",""};
+#endif // HAVE_SMBIOS
+
+						if(!sysid.empty()) {
+
+							if(strstr(sysid.c_str(),"://")) {
+									
+								Object::properties.summary = URL{sysid.c_str()}.get().split("\n",2)[0].as_quark();
+
+							} else {
+
+								Object::properties.summary = Quark{sysid}.c_str();
+
+							}
+
+						}
 
 					} catch(const std::exception &e) {
 
