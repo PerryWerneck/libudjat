@@ -206,14 +206,37 @@
 		return for_each(c_str(),delim,func);
 	}
 
-	std::vector<String> String::split(const char *delim) const {
+	std::vector<String> String::split(const char *delim, int max) const {
 
 		std::vector<String> strings;
 
-		for_each(c_str(),delim,[&strings](const String &value){
-			strings.emplace_back(value.c_str());
-			return false;
-		});
+		size_t szdelim = strlen(delim)-1;
+		const char *ptr = c_str();
+		if(max > 0) {
+			max--;
+		}
+
+		while(ptr && *ptr) {
+
+			const char *next = strstr(ptr,delim);
+			if(!next || (max > 0 && strings.size() >= ((size_t) max))) {
+				strings.emplace_back(ptr).strip();
+				break;
+			}
+
+			next++;
+			strings.emplace_back(ptr,(size_t) ((next-ptr)-1)).strip();
+
+			next += szdelim;
+			while(*next && isspace(*next))
+				next++;
+
+			ptr = next;
+			while(*ptr && isspace(*ptr)) {
+				ptr++;
+			}
+
+		}
 
 		return strings;
 

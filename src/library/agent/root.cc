@@ -47,6 +47,10 @@
 	#include <vmdetect/virtualmachine.h>
  #endif // HAVE_VMDETECT
 
+ #ifdef HAVE_SMBIOS
+	#include <smbios/value.h>
+ #endif // HAVE_SMBIOS
+
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
  #endif // HAVE_SYSTEMD
@@ -143,50 +147,21 @@
 
 				if(Object::properties.summary && *Object::properties.summary) {
 					return;
-				}
-
-				// TODO: Check HAVE_SMBIOS, use it if available
-				/*
-				URL sysid;
-
-				if(Module::find("dmi")) {
-					sysid = Config::Value<string>("bare-metal","summary","dmi:///system/sku").c_str();
-				}
-
-				if(!sysid.empty()) {
+				} else {
 
 					try {
+						
+						String sysid = URL{Config::Value<string>{"bare-metal","summary","dmi:///system/sku"}.c_str()}.get();
 
-						Udjat::Response value;
-						if(sysid.get(value)) {
-							Object::properties.summary = Quark{value["value"].to_string().c_str()}.c_str();
-							debug(Object::properties.summary);
-							return;
-						}
+						Object::properties.summary = sysid.split("\n",2)[0].as_quark();
 
 					} catch(const std::exception &e) {
 
-						Logger::String{e.what()}.trace(Object::name());
-
-					}
-
-					try {
-
-						const Module *module = Module::find(sysid.scheme().c_str());
-						if(module) {
-							std::string value;
-							module->getProperty(sysid.ComponentsFactory().path.c_str(),value);
-							Object::properties.summary = Quark(value.c_str()).c_str();
-						}
-
-					} catch(const std::exception &e) {
-
-						Logger::String{e.what()}.trace(Object::name());
+						Logger::String{e.what()}.trace();
 
 					}
 
 				}
-				*/
 
 				super::start();
 

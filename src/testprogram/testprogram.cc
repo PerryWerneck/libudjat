@@ -48,6 +48,28 @@
 		debug("NIC=",IP::Address{"192.168.0.17"}.nic().c_str());
 		debug("MAC=",IP::Address{"192.168.0.17"}.macaddress().c_str());
 
+		{
+			String str{"line1,line2, line3 , line4"};
+	
+			debug("Split test:");
+			auto lines = str.split(",");
+			for(auto &line : lines) {
+				debug("LINE----> '",line.c_str(),"'");
+			}
+			if(lines.size() != 4) {
+				throw runtime_error("Split failed");
+			}
+
+			debug("Split with length test:");
+			lines = str.split(",",2);
+			for(auto &line : lines) {
+				debug("LINE----> '",line.c_str(),"'");
+			}
+			if(lines.size() != 2) {
+				throw runtime_error("Split with length failed");
+			}
+
+		}
 
 		{
 			Agent<Percentage> percent{"test-percent",0.1};
