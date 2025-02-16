@@ -408,6 +408,8 @@ else
     description: project_description,
     variables: pkg_variables,
     requires: [ 'pugixml' ],
+    requires_private: [ lib_deps ],
+    libraries_private: [ lib_deps ],
     libraries: [ '-l' + meson.project_name() ]
   )
 
