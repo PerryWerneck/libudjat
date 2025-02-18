@@ -17,12 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-/*
  #include <config.h>
- #include "private.h"
  #include <udjat/win32/exception.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/win32/handler.h>
+ #include <private/win32/mainloop.h>
 
  using namespace std;
 
@@ -187,5 +187,4 @@
 	}
 
  }
-*/
 

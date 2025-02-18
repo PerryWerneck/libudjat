@@ -30,7 +30,7 @@
  #include <sys/stat.h>
  #include <private/logger.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/file.h>
+ #include <udjat/tools/file/text.h>
  #include <private/agent.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/timestamp.h>

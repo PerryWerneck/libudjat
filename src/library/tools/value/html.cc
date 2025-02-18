@@ -32,7 +32,7 @@
  #include <udjat/ui/icon.h>
  #include <iostream>
  #include <vector>
- #include <udjat/tools/file.h>
+ #include <udjat/tools/file/text.h>
 
  using namespace std;
 

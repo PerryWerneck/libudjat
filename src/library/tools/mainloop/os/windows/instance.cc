@@ -26,19 +26,14 @@
 
  namespace Udjat {
 
-	MainLoop * MainLoop::instance = nullptr;
-
 	MainLoop & MainLoop::getInstance() {
 
 		static mutex guard;
 		lock_guard<mutex> lock(guard);
 
-		if(!instance) {
-			static Win32::MainLoop inst;
-			return inst;
-		}
+		static Win32::MainLoop inst;
+		return inst;
 
-		return *instance;
 	}
 
  }

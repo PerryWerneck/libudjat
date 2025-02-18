@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,26 +17,23 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-
-/*
  #pragma once
 
  #include <config.h>
- #include <udjat/defs.h>
- #include <private/misc.h>
- #include <udjat/tools/mainloop.h>
- #include <udjat/win32/handler.h>
- #include <thread>
- #include <list>
- #include <mutex>
+ #include <winsock2.h>
+ #include <windows.h>
 
- using namespace std;
+ #include <udjat/defs.h>
+ #include <udjat/tools/mainloop.h>
+ #include <list>
+
+ #define IDT_CHECK_TIMERS	1
 
  namespace Udjat {
 
 	namespace Win32 {
 
-		class UDJAT_API Handler::Controller {
+		class UDJAT_PRIVATE Handler::Controller {
 		public:
 
 			/// @brief Object to manage a list of handlers.
@@ -79,7 +76,8 @@
 
 		};
 
+
 	}
 
  }
-*/
+

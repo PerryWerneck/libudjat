@@ -20,7 +20,7 @@
  #include <iostream>
  #include <udjat/tools/string.h>
  #include <udjat/tools/system.h>
- #include <udjat/tools/file.h>
+ #include <udjat/tools/file/text.h>
  #include <udjat/tools/string.h>
 
  using namespace std;

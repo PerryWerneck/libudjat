@@ -17,42 +17,33 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <udjat/defs.h>
- #include <sys/types.h>
- #include <udjat/tools/file/list.h>
+#pragma once
 
- #include "private.h"
+#include <udjat/defs.h>
+#include <list>
+#include <udjat/tools/string.h>
 
- using namespace std;
+namespace Udjat {
 
- namespace Udjat {
+	namespace File {
 
+		/// @brief Directory contents.
+		class UDJAT_API List : public std::list<String> {
+		public:
+			List(const char *path, const char *pattern, bool recursive=false);
+			List(const char *path, bool recursive=false);
 
-	File::List::List(const char *fpath, bool recursive) : List(fpath,"*",recursive) {
-	}
-
-	File::List::List(const char *path, const char *pattern, bool recursive) {
-
-		File::Path{path}.for_each([this,pattern](const File::Path &filename){
-			if(filename.match(pattern)) {
-				emplace_back(filename);
+			List(const std::string &pattern, bool recursive=false) : List(pattern.c_str(),recursive) {
 			}
-			return false;
-		},recursive);
+
+			~List();
+
+			/// @brief Navigate for all files until lambda returns 'false'.
+			/// @return true if the lambda doesnt returns 'false' on any file.
+			bool for_each(std::function<bool (const char *filename)> call);
+
+		};
 
 	}
 
-	File::List::~List() {
-	}
-
-	bool File::List::for_each(std::function<bool (const char *filename)> call) {
-		for(auto ix = begin(); ix != end(); ix++)  {
-			if(!call( (*ix).c_str())) {
-				return false;
-			}
-		}
-		return true;
-	}
-
- }
+}

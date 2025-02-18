@@ -51,8 +51,6 @@
 			/// @brief A class atom that uniquely identifies the class being registered.
 			::ATOM identifier;
 
-			MainLoop();
-
 			class UDJAT_PRIVATE Timers {
 			public:
 
@@ -93,9 +91,8 @@
 			static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 		public:
+			MainLoop();
 			virtual ~MainLoop();
-
-			static MainLoop & getInstance();
 
 			bool enabled(const Timer *timer) const noexcept override;
 

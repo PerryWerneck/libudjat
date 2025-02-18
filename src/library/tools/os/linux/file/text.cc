@@ -17,13 +17,17 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/file/text.h>
  #include <sys/mman.h>
  #include <sys/stat.h>
  #include <fcntl.h>
  #include <unistd.h>
  #include <libgen.h>
  #include <iostream>
+
+ #include "private.h"
 
  using namespace std;
 

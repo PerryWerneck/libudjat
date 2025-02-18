@@ -794,6 +794,9 @@ install_headers(
   'src/include/udjat/tools/file/temporary.h',
   'src/include/udjat/tools/file/watcher.h',
   'src/include/udjat/tools/file/handler.h',
+  'src/include/udjat/tools/file/path.h',
+  'src/include/udjat/tools/file/text.h',
+  'src/include/udjat/tools/file/list.h',
   subdir: 'udjat/tools/file'  
 )
 

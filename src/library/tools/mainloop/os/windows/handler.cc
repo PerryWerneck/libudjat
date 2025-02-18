@@ -18,10 +18,10 @@
  */
 
  #include <config.h>
- #include "private.h"
  #include <udjat/win32/handler.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/threadpool.h>
+ #include <private/win32/mainloop.h>
 
  using namespace std;
 
