@@ -467,6 +467,7 @@ if host_machine.system() == 'windows'
     'src/library/tools/mainloop/os/windows/instance.cc',
     'src/library/tools/mainloop/os/windows/mainloop.cc',
     'src/library/tools/mainloop/os/windows/run.cc',
+    'src/library/tools/mainloop/os/windows/hwndproc.cc',
     'src/library/tools/os/windows/adapter.cc',
     'src/library/tools/os/windows/application/application.cc',
     'src/library/tools/os/windows/application/description.cc',
