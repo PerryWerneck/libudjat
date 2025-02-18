@@ -27,7 +27,6 @@
  #include <list>
  #include <ostream>
  #include <vector>
- #include <dlfcn.h>
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -36,6 +35,7 @@
  #else
 	#include <unistd.h>
 	#include <syslog.h>
+	#include <dlfcn.h>
  #endif // _WIN32
 
  using namespace std;
@@ -288,6 +288,7 @@
 		return Logger::Error;
 	}
 
+#ifndef _WIN32
 	typedef enum
 	{
 		// log flags
@@ -335,6 +336,7 @@
 		Udjat::Logger::String{message}.error(domain ? domain : "gtk");
 
 	}
+#endif // !_WIN32
 
 	void Logger::redirect() {
 
@@ -355,6 +357,12 @@
 		}
 
 		// Check for glib presence.
+#ifdef _WIN32
+
+		//TODO: Is this possible in windows?
+
+
+#else
 		dlerror();
 
 		void (*g_log_set_default_handler)(GLogFunc, void *)
@@ -364,6 +372,7 @@
 			// GLib is present, capture logs.
 			g_log_set_default_handler(g_syslog,NULL);
 		}
+#endif // _WIN32
 
 	}
 

@@ -490,7 +490,6 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/file/path.cc',
     'src/library/tools/os/windows/hostname.cc',
     'src/library/tools/os/windows/nic.cc',
-    'src/library/tools/os/windows/protocol.cc',
     'src/library/tools/os/windows/registry.cc',
     'src/library/tools/os/windows/securityidentifier.cc',
     'src/library/tools/os/windows/service/handler.cc',

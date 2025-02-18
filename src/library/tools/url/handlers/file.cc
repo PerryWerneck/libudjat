@@ -24,6 +24,10 @@
  #include <private/url.h>
  #include <errno.h>
 
+ #ifdef _WIN32
+	#include <shlwapi.h>
+ #endif
+
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H

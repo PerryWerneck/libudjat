@@ -24,7 +24,9 @@
  #include <private/url.h>
  #include <errno.h>
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <shlwapi.h>
+ #else
 	#include <signal.h>
  #endif
 

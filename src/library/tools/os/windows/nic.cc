@@ -35,6 +35,17 @@
 
  namespace Udjat {
 
+	static std::string get_macaddress(const IP_ADAPTER_INFO *iface) {
+		string rc;
+		for (UINT i = 0; i < iface->AddressLength; i++) {
+			char buffer[4];
+			snprintf(buffer,3,"%02X",(int) iface->Address[i]);
+			buffer[4] = 0;
+			rc += buffer;
+		}
+		return rc;
+	}
+
 	class UDJAT_PRIVATE Interfaces : public Win32::Container<IP_ADAPTER_INFO> {
 	protected:
 		DWORD load(IP_ADAPTER_INFO *buffer, ULONG *ifbuffersize) override {
@@ -68,6 +79,10 @@
 
 			const char * name() const override {
 				return iface->AdapterName;
+			}
+
+			std::string macaddress() const override {
+				return get_macaddress(iface);
 			}
 
 			bool operator==(const sockaddr_storage &addr) const override {
@@ -134,6 +149,16 @@
 
 			bool up() const override {
 				return true;
+			}
+
+			std::string macaddress() const override {
+				Interfaces interfaces;
+				for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {
+					if(equal(iface)) {
+						return get_macaddress(iface);
+					}
+				}
+				return "";
 			}
 
 			bool loopback() const override {

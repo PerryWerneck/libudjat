@@ -28,9 +28,12 @@
  #include <list>
  #include <memory>
  #include <sstream>
- #include <netdb.h>
  #include <private/urlparser.h>
  #include <libgen.h>
+
+ #ifndef _WIN32
+	#include <netdb.h>
+ #endif // _WIN32
 
  using namespace std;
 
