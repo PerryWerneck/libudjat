@@ -126,7 +126,7 @@
 		assign(Win32::KnownFolder(FOLDERID_Documents));
 #endif // FOLDERID_AppDataDocuments
 
-		append(Application::Name());
+		append(Application::Name().c_str());
 
 		if(subdir && *subdir) {
 			append("\\");

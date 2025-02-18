@@ -57,7 +57,7 @@
 
  Udjat::Win32::KnownFolder::KnownFolder(REFKNOWNFOLDERID known_folder_guid_ptr, const char *subdir) : KnownFolder{known_folder_guid_ptr} {
 
-	append(Application::Name());
+	append(Application::Name().c_str());
 	mkdir();
 
 	append("\\");
