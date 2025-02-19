@@ -110,6 +110,10 @@
 		return hwnd != 0;
 	}
 
+	void Linux::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
+		#error Implement this
+	}
+
 	bool Win32::MainLoop::enabled(const Handler *handler) const noexcept {
 		lock_guard<mutex> lock(guard);
 		for(Handler *hdl : handlers) {

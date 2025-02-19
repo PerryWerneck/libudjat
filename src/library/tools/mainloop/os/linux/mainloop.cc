@@ -21,6 +21,7 @@
  #include <cstring>
  #include <sys/eventfd.h>
  #include <private/misc.h>
+ #include <udjat/tools/mainloop.h>
  #include <private/linux/mainloop.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/timer.h>
@@ -94,6 +95,10 @@
 
 	bool Linux::MainLoop::active() const noexcept {
 		return this->running;
+	}
+
+	void Linux::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
+		call(msg);
 	}
 
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {

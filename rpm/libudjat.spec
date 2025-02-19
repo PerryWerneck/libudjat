@@ -34,6 +34,7 @@ BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
 BuildRequires:	pkgconfig(dmiget)
 BuildRequires:	pkgconfig(libsystemd)
+BuildRequires:	pkgconfig(liburiparser)
 BuildRequires:	pkgconfig(vmdetect) >= 1.3
 BuildRequires:	meson >= 0.61.4
 
@@ -89,9 +90,6 @@ Development files for Udjat main library.
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 
-mkdir -p %{buildroot}%{_rpmmacrodir}
-install --mode=644 %{_vpath_builddir}/macros.rpm %{buildroot}%{_rpmmacrodir}/macros.%{name}
-
 %find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files -n %{name}%{_libvrs}
@@ -110,7 +108,7 @@ install --mode=644 %{_vpath_builddir}/macros.rpm %{buildroot}%{_rpmmacrodir}/mac
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
-%{_rpmmacrodir}/macros.%{name}
+%{_rpmmacrodir}/macros.*
 
 %dir %{_includedir}/udjat
 %{_includedir}/udjat/*.h
@@ -147,6 +145,9 @@ install --mode=644 %{_vpath_builddir}/macros.rpm %{buildroot}%{_rpmmacrodir}/mac
 
 %dir %{_includedir}/udjat/ui
 %{_includedir}/udjat/ui/*
+
+%dir %{_includedir}/udjat/tools/url
+%{_includedir}/udjat/tools/url/*
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 

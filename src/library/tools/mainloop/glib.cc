@@ -35,6 +35,7 @@
 		METHOD_G_IO_CHANNEL_UNREF,
 		METHOD_G_IO_CHANNEL_SET_ENCODING,
 		METHOD_G_IO_ADD_WATCH,
+		METHOD_G_IDLE_ADD_ONCE,
 	};
 
 	static const char *names[] = {
@@ -44,6 +45,7 @@
 		"g_io_channel_unref",				// https://docs.gtk.org/glib/method.IOChannel.unref.html
 		"g_io_channel_set_encoding",
 		"g_io_add_watch",
+		"g_idle_add_once",
 	};
 
 	static void *methods[sizeof(names)/sizeof(names[0])];
@@ -81,6 +83,29 @@
 
 	bool Glib::MainLoop::active() const noexcept {
 		return true;
+	}
+
+	struct bgcal {
+		std::function<void(const void *)> call;
+		char buffer[0];
+	};
+
+	static void do_bgcall(struct bgcal *data) {
+		data->call(data->buffer);
+		free(data);
+	}
+
+	void Glib::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
+
+		unsigned int (*g_idle_add_once)(void *function, void * data) =
+			(unsigned int (*)(void *function, void * data)) methods[METHOD_G_IDLE_ADD_ONCE];
+		
+		struct bgcal *bgcal = (struct bgcal *) malloc(sizeof(struct bgcal) + msglen + 1);
+		bgcal->call = call;
+		memcpy(bgcal->buffer,msg,msglen);
+
+		g_idle_add_once((void *) do_bgcall, (void *) bgcal);
+
 	}
 
 	void Glib::MainLoop::wakeup() noexcept {

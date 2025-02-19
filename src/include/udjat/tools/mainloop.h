@@ -95,6 +95,19 @@ namespace Udjat {
 		/// @brief Is the mainloop active?
 		virtual bool active() const noexcept = 0;
 
+		/// @brief Post message to mainloop
+		/// @param msg Message to be posted (will be cloned with malloc if necessary).
+		/// @param msglen Message length.
+		/// @param call Callback to be called when message is processed.
+		virtual void post(void *msg, size_t msglen, const std::function<void(const void *)> &call) = 0;
+
+		template <typename T>
+		inline void post(const T value, const std::function<void(const T &msg)> &call) {
+			post(&value, sizeof(T), [call](void *msg) {
+				call(*((T *) msg));
+			});
+		}
+
 		inline operator bool() const noexcept {
 			return active();
 		}

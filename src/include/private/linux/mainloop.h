@@ -83,6 +83,8 @@ namespace Udjat {
 
 			bool active() const noexcept override;
 
+			void post(void *msg, size_t msglen, const std::function<void(const void *)> &call) override;
+
 			/// @brief Wakeup main loop.
 			void wakeup() noexcept override;
 
