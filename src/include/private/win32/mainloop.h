@@ -110,7 +110,7 @@
 
 			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
-			void post(Message *message) override;
+			void post(Message *message) noexcept override;
 
 			/// @brief Terminate with message
 			/// @param message Message to show (Should be a constant to avoid 'out of scope' on message processing)

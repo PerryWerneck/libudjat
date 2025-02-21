@@ -97,8 +97,17 @@
 		return this->running;
 	}
 
-	void Linux::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
-		call(msg);
+	void Linux::MainLoop::post(Message *message) noexcept {
+
+		try {
+			message->execute();
+		} catch(const std::exception &e) {
+			Logger::String{"Error processing posted message: ",e.what()}.error();
+		} catch(...) {
+			Logger::String{"Unexpected rror processing posted message"}.error();
+		}
+		delete message;
+
 	}
 
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {

@@ -52,6 +52,8 @@ namespace Udjat {
 			std::list<Handler> handlers;
 
 			static void on_timer_removed(Udjat::MainLoop::Timer *timer);
+			static void on_posted_message(MainLoop::Message *message);
+
 
 		public:
 
@@ -67,7 +69,7 @@ namespace Udjat {
 
 			bool active() const noexcept override;
 
-			void post(void *msg, size_t msglen, const std::function<void(const void *)> &call) override;
+			void post(MainLoop::Message *message) noexcept override;
 
 			/// @brief Wakeup main loop.
 			void wakeup() noexcept override;

@@ -110,10 +110,10 @@
 		return hwnd != 0;
 	}
 
-	void Win32::MainLoop::post(MainLoop::Message *message) {
+	void Win32::MainLoop::post(MainLoop::Message *message) noexcept {
 		if(!PostMessage(hwnd,WM_PROCESS_POSTED_MESSAGE,0,(LPARAM) message)) {
 			delete message;
-			throw Win32::Exception("Error posting message");
+			Logger::String{"Error posting message"}.error();
 		}
 	}
 

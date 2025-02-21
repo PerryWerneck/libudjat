@@ -104,7 +104,7 @@ namespace Udjat {
 
 		/// @brief Post message to mainloop.
 		/// @param message Message to be posted, will be deleted after processing.
-		virtual void post(Message *message) = 0;
+		virtual void post(Message *message) noexcept = 0;
 
 		template <class T>
 		inline void post(const T &value, const std::function<void(T &msg)> &call) {

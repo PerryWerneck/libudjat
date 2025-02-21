@@ -85,21 +85,25 @@
 		return true;
 	}
 
+	void Glib::MainLoop::on_posted_message(MainLoop::Message *message) {
 
-	void Glib::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
-
-		unsigned int (*g_idle_add_once)(void *function, void * data) =
-			(unsigned int (*)(void *function, void * data)) methods[METHOD_G_IDLE_ADD_ONCE];
-
-		#error Refactor using PostedMessage
-		
-		struct bgcal *bgcal = (struct bgcal *) malloc(sizeof(struct bgcal) + msglen + 1);
-		bgcal->call = call;
-		memcpy(bgcal->buffer,msg,msglen);
-
-		g_idle_add_once((void *) do_bgcall, (void *) bgcal);
+		try {
+			message->execute();
+		} catch(const std::exception &e) {
+			Logger::String{"Error processing posted message: ",e.what()}.error();
+		} catch(...) {
+			Logger::String{"Unexpected rror processing posted message"}.error();
+		}
+		delete message;
 
 	}
+
+	void Glib::MainLoop::post(MainLoop::Message *message) noexcept {
+		unsigned int (*g_idle_add_once)(void *function, void * data) =
+			(unsigned int (*)(void *function, void * data)) methods[METHOD_G_IDLE_ADD_ONCE];
+		g_idle_add_once((void *) on_posted_message, (void *) message);
+	}
+
 
 	void Glib::MainLoop::wakeup() noexcept {
 	}
