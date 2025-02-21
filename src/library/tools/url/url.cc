@@ -22,6 +22,7 @@
  #include <udjat/tools/url/handler.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/file/temporary.h>
  #include <uriparser/Uri.h>
  #include <stdexcept>
  #include <string>
@@ -320,7 +321,20 @@
 		return name;
 	}
 
+	std::string URL::tempfile(const std::function<bool(double current, double total)> &progress) {
+		
+		string name = File::Temporary::create();
+		handler()->get(name.c_str(),HTTP::Get,"",progress);
+
+		return name;
+	}
+
+
 	std::string URL::cache() {
+		return cache([](double,double) -> bool { return false; });
+	}
+
+	std::string URL::tempfile() {
 		return cache([](double,double) -> bool { return false; });
 	}
 
