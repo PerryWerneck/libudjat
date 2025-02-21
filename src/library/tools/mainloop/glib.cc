@@ -36,6 +36,10 @@
 		METHOD_G_IO_CHANNEL_SET_ENCODING,
 		METHOD_G_IO_ADD_WATCH,
 		METHOD_G_IDLE_ADD_ONCE,
+		METHOD_G_MAIN_LOOP_NEW,
+		METHOD_G_MAIN_CONTEXT_DEFAULT,
+		METHOD_G_MAIN_LOOP_RUN,
+		METHOD_G_MAIN_LOOP_UNREF
 	};
 
 	static const char *names[] = {
@@ -46,6 +50,10 @@
 		"g_io_channel_set_encoding",
 		"g_io_add_watch",
 		"g_idle_add_once",
+		"g_main_loop_new",
+		"g_main_context_default",
+		"g_main_loop_run",
+		"g_main_loop_unref"
 	};
 
 	static void *methods[sizeof(names)/sizeof(names[0])];
@@ -68,17 +76,31 @@
 	}
 
 	Glib::MainLoop::MainLoop() : Udjat::MainLoop(MainLoop::GLib) {
-
-		
 	}
 
 	Glib::MainLoop::~MainLoop() {
-
-
 	}
 
 	int Glib::MainLoop::run() {
-		return ENOTSUP;
+
+		void * (*g_main_loop_new)(void * context, int is_running) 
+			= (void * (*)(void *, int)) methods[METHOD_G_MAIN_LOOP_NEW];	
+
+		void * (*g_main_context_default)(void) 
+			= (void * (*)(void)) methods[METHOD_G_MAIN_CONTEXT_DEFAULT];
+
+		void (*g_main_loop_run)(void* loop)
+			= (void (*)(void *)) methods[METHOD_G_MAIN_LOOP_RUN];
+
+		void (*g_main_loop_unref)(void* loop)
+			= (void (*)(void *)) methods[METHOD_G_MAIN_LOOP_UNREF];
+
+		void *loop = g_main_loop_new(g_main_context_default(), 0);
+		g_main_loop_run(loop);
+		g_main_loop_unref(loop);
+	
+		return 0;
+	
 	}
 
 	bool Glib::MainLoop::active() const noexcept {
