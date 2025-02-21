@@ -30,6 +30,8 @@
  #include <sstream>
  #include <private/urlparser.h>
  #include <libgen.h>
+ #include <udjat/tools/application.h>
+ #include <udjat/tools/base64.h>
 
  #ifndef _WIN32
 	#include <netdb.h>
@@ -306,6 +308,20 @@
 
 	bool URL::get(const char *filename,const HTTP::Method method, const char *payload) {
 		return handler()->get(filename,method,payload);
+	}
+
+	std::string URL::cache(const std::function<bool(double current, double total)> &progress) {
+
+		Application::CacheDir name{"urls"};
+		name += Base64::encode(c_str());
+
+		handler()->get(name.c_str(),HTTP::Get,"",progress);
+
+		return name;
+	}
+
+	std::string URL::cache() {
+		return cache([](double,double) -> bool { return false; });
 	}
 
  }
