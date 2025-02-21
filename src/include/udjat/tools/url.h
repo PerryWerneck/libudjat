@@ -163,7 +163,7 @@
 		/// @return The cached filename.
 		std::string cache(const std::function<bool(double current, double total)> &progress);
 
-		/// @brief Get URL, save response to cache file.
+		/// @brief Get URL, save contents to cache file, update it if necessary.
 		/// @return The cached filename.
 		std::string cache();
 
