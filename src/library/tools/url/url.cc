@@ -34,6 +34,10 @@
  #include <udjat/tools/application.h>
  #include <udjat/tools/base64.h>
 
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
  #ifndef _WIN32
 	#include <netdb.h>
  #endif // _WIN32
@@ -322,9 +326,15 @@
 	}
 
 	std::string URL::tempfile(const std::function<bool(double current, double total)> &progress) {
-		
+
 		string name = File::Temporary::create();
-		handler()->get(name.c_str(),HTTP::Get,"",progress);
+
+		try {
+			handler()->get(name.c_str(),HTTP::Get,"",progress);
+		} catch(...) {
+			unlink(name.c_str());
+			throw;
+		}
 
 		return name;
 	}
