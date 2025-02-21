@@ -47,6 +47,13 @@ namespace Udjat {
 
 	protected:
 
+		class Message {
+		public:
+			Message();
+			virtual ~Message();
+			virtual void execute() = 0;
+		};
+
 		MainLoop(Type type);
 
 	public:
@@ -95,17 +102,26 @@ namespace Udjat {
 		/// @brief Is the mainloop active?
 		virtual bool active() const noexcept = 0;
 
-		/// @brief Post message to mainloop
-		/// @param msg Message to be posted (will be cloned with malloc if necessary).
-		/// @param msglen Message length.
-		/// @param call Callback to be called when message is processed.
-		virtual void post(void *msg, size_t msglen, const std::function<void(const void *)> &call) = 0;
+		/// @brief Post message to mainloop.
+		/// @param message Message to be posted, will be deleted after processing.
+		virtual void post(Message *message) = 0;
 
-		template <typename T>
-		inline void post(const T value, const std::function<void(const T &msg)> &call) {
-			post(&value, sizeof(T), [call](void *msg) {
-				call(*((T *) msg));
-			});
+		template <class T>
+		inline void post(const T &value, const std::function<void(T &msg)> &call) {
+			class Msg : public Message, private T {
+			private:
+				std::function<void(T &msg)> cbk;
+			public:
+				Msg(const T &value, const std::function<void(T &msg)> &call) : T{value}, cbk{call} {}
+				virtual ~Msg() {
+				}
+				void execute() override {
+					cbk(*this);
+				}
+			};
+
+			post(new Msg{value,call});
+
 		}
 
 		inline operator bool() const noexcept {

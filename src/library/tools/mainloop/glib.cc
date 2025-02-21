@@ -85,20 +85,13 @@
 		return true;
 	}
 
-	struct bgcal {
-		std::function<void(const void *)> call;
-		char buffer[0];
-	};
-
-	static void do_bgcall(struct bgcal *data) {
-		data->call(data->buffer);
-		free(data);
-	}
 
 	void Glib::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
 
 		unsigned int (*g_idle_add_once)(void *function, void * data) =
 			(unsigned int (*)(void *function, void * data)) methods[METHOD_G_IDLE_ADD_ONCE];
+
+		#error Refactor using PostedMessage
 		
 		struct bgcal *bgcal = (struct bgcal *) malloc(sizeof(struct bgcal) + msglen + 1);
 		bgcal->call = call;

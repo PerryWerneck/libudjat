@@ -110,8 +110,11 @@
 		return hwnd != 0;
 	}
 
-	void Linux::MainLoop::post(void *msg, size_t msglen, const std::function<void(const void *)> &call) {
-		#error Implement this
+	void Win32::MainLoop::post(MainLoop::Message *message) {
+		if(!PostMessage(hwnd,WM_PROCESS_POSTED_MESSAGE,0,(LPARAM) message)) {
+			delete message;
+			throw Win32::Exception("Error posting message");
+		}
 	}
 
 	bool Win32::MainLoop::enabled(const Handler *handler) const noexcept {

@@ -209,7 +209,15 @@
 				}
 				break;
 
-			default:
+			case WM_PROCESS_POSTED_MESSAGE:
+				{
+					Message *message = (Message *) lParam;
+					message->execute();
+					delete message;
+				}
+				break;	
+
+				default:
 #ifdef DEBUG
 				Logger::trace() << "win32\tuMsg=" << hex << uMsg << dec << endl;
 #endif // DEBUG

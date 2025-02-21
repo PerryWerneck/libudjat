@@ -37,14 +37,15 @@
 		private:
 
 			enum MessageTypes : UINT {
-				WM_CHECK_TIMERS			= WM_USER+101,
-				WM_START				= WM_USER+102,
-				WM_STOP					= WM_USER+103,
-				WM_STOP_WITH_MESSAGE	= WM_USER+104,	///< @brief Terminate by console event or timer.
-				WM_ADD_TIMER			= WM_USER+105,
-				WM_REMOVE_TIMER			= WM_USER+106,
-				WM_ADD_SOCKET			= WM_USER+107,
-				WM_REMOVE_SOCKET		= WM_USER+108
+				WM_CHECK_TIMERS				= WM_USER+101,
+				WM_START					= WM_USER+102,
+				WM_STOP						= WM_USER+103,
+				WM_STOP_WITH_MESSAGE		= WM_USER+104,	///< @brief Terminate by console event or timer.
+				WM_ADD_TIMER				= WM_USER+105,
+				WM_REMOVE_TIMER				= WM_USER+106,
+				WM_ADD_SOCKET				= WM_USER+107,
+				WM_REMOVE_SOCKET			= WM_USER+108,
+				WM_PROCESS_POSTED_MESSAGE	= WM_USER+109,
 
 			};
 
@@ -87,9 +88,6 @@
 			/// @return The timeout to next 'poll()' call.
 			unsigned long compute_poll_timeout() noexcept;
 
-			/// @brief Process windows messages.
-			static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
 		public:
 			MainLoop();
 			virtual ~MainLoop();
@@ -111,6 +109,8 @@
 			bool active() const noexcept override;
 
 			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
+
+			void post(Message *message) override;
 
 			/// @brief Terminate with message
 			/// @param message Message to show (Should be a constant to avoid 'out of scope' on message processing)

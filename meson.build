@@ -279,7 +279,7 @@ lib_src += [
   'src/library/tools/mainloop/service.cc',
   'src/library/tools/mainloop/handler.cc',
   'src/library/tools/mainloop/mainloop.cc',
-  'src/library/tools/mainloop/timer.cc',
+  'src/library/tools/mainloop/os/' + host_machine.system() + '/timer.cc',
   'src/library/tools/message.cc',
   'src/library/tools/nic.cc',
   'src/library/tools/quark.cc',
