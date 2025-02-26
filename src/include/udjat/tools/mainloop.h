@@ -56,6 +56,10 @@ namespace Udjat {
 
 		MainLoop(Type type);
 
+		/// @brief Process message, delete it after processing.
+		/// @param message The message to process.
+		static void on_posted_message(Message *message) noexcept;
+
 	public:
 
 		MainLoop(const MainLoop &src) = delete;

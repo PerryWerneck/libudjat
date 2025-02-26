@@ -52,8 +52,6 @@ namespace Udjat {
 			std::list<Handler> handlers;
 
 			static void on_timer_removed(Udjat::MainLoop::Timer *timer);
-			static void on_posted_message(MainLoop::Message *message);
-
 
 		public:
 

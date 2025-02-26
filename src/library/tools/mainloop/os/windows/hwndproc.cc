@@ -210,12 +210,8 @@
 				break;
 
 			case WM_PROCESS_POSTED_MESSAGE:
-				{
-					Message *message = (Message *) lParam;
-					message->execute();
-					delete message;
-				}
-				break;	
+				on_posted_message((Message *) lParam);
+				break;
 
 				default:
 #ifdef DEBUG

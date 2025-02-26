@@ -98,16 +98,7 @@
 	}
 
 	void Linux::MainLoop::post(Message *message) noexcept {
-
-		try {
-			message->execute();
-		} catch(const std::exception &e) {
-			Logger::String{"Error processing posted message: ",e.what()}.error();
-		} catch(...) {
-			Logger::String{"Unexpected rror processing posted message"}.error();
-		}
-		delete message;
-
+		on_posted_message(message);
 	}
 
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {
