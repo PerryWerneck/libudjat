@@ -35,29 +35,19 @@
 
  #define BUFFER_LENGTH 1024
 
- /*
- static const struct {
-	DWORD dwMessageId;
-	int err;
- } system_errors[] = {
-	{	}
- }
- */
-
  static const struct {
 	DWORD dwMessageId;
 	const char *message;
  } windows_errors[] = {
 
  	// /usr/x86_64-w64-mingw32/sys-root/mingw/include/wininet.h
- 	{ ERROR_INTERNET_TIMEOUT,	N_("The request has timed out")	},
+ 	{ ERROR_INTERNET_TIMEOUT,	N_("The request has timed out. Possible causes are slow or intermittent internet connection, Antivirus software, Firewall, and Proxy settings.") },
 
  	// http://s.web.umkc.edu/szb53/cs423_sp16/wsock_errors.html
  	// /usr/x86_64-w64-mingw32/sys-root/mingw/include/winerror.h
-	{ WSAHOST_NOT_FOUND,		N_("Cant resolve hostname")			},
+	{ WSAHOST_NOT_FOUND,		N_("No such host is known. The name is not an official host name or alias, or it cannot be found in the database(s) being queried.") },
 
  };
-
 
  namespace Udjat {
 

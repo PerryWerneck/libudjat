@@ -537,6 +537,7 @@ else
     'src/library/tools/mainloop/os/linux/instance.cc',
     'src/library/tools/mainloop/os/linux/mainloop.cc',
     'src/library/tools/mainloop/os/linux/run.cc',
+    'src/library/tools/mainloop/os/linux/glib.cc',
     'src/library/tools/os/linux/application/cache.cc',
     'src/library/tools/os/linux/application/init.cc',
     'src/library/tools/os/linux/application/application.cc',
@@ -569,7 +570,6 @@ else
     'src/library/tools/os/linux/econf.cc',
     'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
-    'src/library/tools/mainloop/glib.cc',
   ]
 
 endif
