@@ -315,6 +315,14 @@
 		return handler()->get(filename,method,payload);
 	}
 
+	int URL::get(const std::function<bool(uint64_t current, uint64_t total, const char *buf, size_t length)> &writer) {
+		return handler()->perform(
+			HTTP::Get,
+			"",
+			writer
+		);	
+	}
+
 	std::string URL::cache(const std::function<bool(double current, double total)> &progress) {
 
 		Application::CacheDir name{"urls"};
