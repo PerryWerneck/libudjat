@@ -34,7 +34,7 @@
  namespace Udjat {
 
 	UDJAT_API void File::copy(const char *from, const char *to, bool replace) {
-		// File::copy(from,to,Protocol::Watcher::progress,replace);
+		File::copy(from,to,[](unsigned long long, unsigned long long) { return false; },replace);
 	}
 
 	UDJAT_API void File::copy(const char *filename, const std::function<void(unsigned long long offset, unsigned long long total, const void *buf, size_t length)> &writer) {

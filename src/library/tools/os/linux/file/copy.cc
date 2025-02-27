@@ -67,7 +67,7 @@
 
 			saved += bytes;
 
-			if(!progress((double) saved,(double) st.st_size)) {
+			if(progress((double) saved,(double) st.st_size)) {
 				throw system_error(ECANCELED,system_category());
 			}
 		}
@@ -76,7 +76,7 @@
 		fchmod(to,st.st_mode);
 		fchown(to,st.st_uid,st.st_gid);
 
-		if(!progress((double) st.st_size,(double) st.st_size)) {
+		if(progress((double) st.st_size,(double) st.st_size)) {
 			throw system_error(ECANCELED,system_category());
 		}
 
