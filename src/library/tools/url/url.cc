@@ -276,9 +276,9 @@
 		int rc = hdr->perform(
 			method, 
 			payload, 
-			[&str](uint64_t, uint64_t, const char *data, size_t len) -> bool {
+			[&str](uint64_t, uint64_t, const void *data, size_t len) -> bool {
 				if(data && len) {
-					str.write(data,len);
+					str.write((const char *) data,len);
 				}
 				return false;
 			}
@@ -315,7 +315,7 @@
 		return handler()->get(filename,method,payload);
 	}
 
-	int URL::get(const std::function<bool(uint64_t current, uint64_t total, const char *buf, size_t length)> &writer) {
+	int URL::get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
 		return handler()->perform(
 			HTTP::Get,
 			"",

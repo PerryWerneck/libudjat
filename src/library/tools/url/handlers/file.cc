@@ -38,7 +38,7 @@
 		return path.c_str();
 	}
 
-	int FileURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const char *data, size_t len)> &progress) {
+	int FileURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const void *data, size_t len)> &progress) {
 
 		File::Handler file{path.c_str()};
 

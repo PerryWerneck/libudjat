@@ -188,8 +188,8 @@
 		int rc = perform(
 			method, 
 			payload, 
-			[&str,&progress](uint64_t current, uint64_t total, const char *data, size_t){
-				str << data;
+			[&str,&progress](uint64_t current, uint64_t total, const void *data, size_t){
+				str << (const char *) data;
 				return progress(current,total);
 			}
 		);
@@ -213,7 +213,7 @@
 		int rc = perform(
 			method, 
 			payload, 
-			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
+			[&file,&progress](uint64_t current, uint64_t total, const void *data, size_t len){
 
 				if(len && data) {
 					file.write(current,data,len);
@@ -255,7 +255,7 @@
 		status.code = perform(
 			method, 
 			payload, 
-			[&file,&progress](uint64_t current, uint64_t total, const char *data, size_t len){
+			[&file,&progress](uint64_t current, uint64_t total, const void *data, size_t len){
 
 				if(len && data) {
 					file.write(current,data,len);
