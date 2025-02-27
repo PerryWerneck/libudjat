@@ -45,7 +45,7 @@
 
 		size_t saved = 0;
 
-		if(!progress(0,0)) {
+		if(progress(0,0)) {
 			throw system_error(ECANCELED,system_category());
 		}
 

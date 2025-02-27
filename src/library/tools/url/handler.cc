@@ -188,12 +188,16 @@
 		int rc = perform(
 			method, 
 			payload, 
-			[&str,&progress](uint64_t current, uint64_t total, const void *data, size_t){
-				str << (const char *) data;
+			[&str,&progress](uint64_t current, uint64_t total, const void *data, size_t len){
+				str.write((const char *) data,len);
 				return progress(current,total);
 			}
 		);
+
+		debug("rc=",rc);
 		except(rc);
+		debug("str=\n",str.str());
+
 		return String{str.str()};
 	}
 
