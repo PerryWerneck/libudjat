@@ -36,7 +36,10 @@ namespace Udjat {
 	Module::Controller::~Controller() {
 
 		if(objects.size()) {
-			cerr << "modules\tThe controller was destroyed without deactivation" << endl;
+			Logger::String{"The controller was destroyed without deactivation"}.error("modules");
+			for(auto object : objects) {
+				Logger::String{"Module ",object->name," is still active"}.error("modules");
+			}
 		} else {
 			Logger::String{"Stopping clean controller"}.trace("modules");
 		}
