@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2025-03-01 11:23-0300\n"
-"PO-Revision-Date: 2025-01-10 15:10-0300\n"
+"PO-Revision-Date: 2025-03-01 11:28-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -128,30 +128,29 @@ msgstr "Erro de sistema"
 #: src/library/tools/file/handler.cc:185 src/library/tools/file/handler.cc:210
 #: src/library/tools/file/handler.cc:215 src/library/tools/file/handler.cc:365
 msgid "Cant set file offset"
-msgstr ""
+msgstr "Não foi possível posicionar arquivo"
 
 #: src/library/tools/file/handler.cc:195 src/library/tools/file/handler.cc:228
 #: src/library/tools/file/handler.cc:269
 msgid "Cant write to file"
-msgstr ""
+msgstr "Não foi possível escrever no arquivo"
 
 #: src/library/tools/file/handler.cc:224 src/library/tools/file/handler.cc:246
 #: src/library/tools/file/handler.cc:304 src/library/tools/file/handler.cc:372
 msgid "Cant read from file"
-msgstr ""
+msgstr "Não foi possível ler do arquivo"
 
 #: src/library/tools/file/handler.cc:323 src/library/tools/file/handler.cc:351
 msgid "Cant get file length"
-msgstr ""
+msgstr "Não foi possível obter o tamanho do arquivo"
 
 #: src/library/tools/file/handler.cc:339
-#, fuzzy
 msgid "Cant get block size"
-msgstr "Incapaz de definir o usuário do subprocesso"
+msgstr "Não foi possível obter o tamanho de bloco"
 
 #: src/library/tools/file/handler.cc:374
 msgid "Unexpected EOF reading from file"
-msgstr ""
+msgstr "Fim de arquivo inesperado lendo arquivo"
 
 #: src/library/tools/http/error.cc:57
 msgid "Information"
@@ -334,22 +333,22 @@ msgstr "Código de erro HTTP desconhecido"
 #: src/library/tools/http/error.cc:262
 #, c++-format
 msgid "System error {} ({}) acessing {}"
-msgstr ""
+msgstr "Essoe de sistem {} ({}) acessando {}"
 
 #: src/library/tools/http/error.cc:271
-#, fuzzy, c++-format
+#, c++-format
 msgid "System error {} acessing {}"
-msgstr "Erro de sistema"
+msgstr "Erro de sistema {} acessando {}"
 
 #: src/library/tools/http/error.cc:296
-#, fuzzy, c++-format
+#, c++-format
 msgid "HTTP error code {}"
-msgstr "Código de erro HTTP inesperado"
+msgstr "Erro HTTP {}"
 
 #: src/library/tools/http/error.cc:297
-#, fuzzy, c++-format
+#, c++-format
 msgid "Unexpected error {} acessing {}"
-msgstr "Erro inesperado ao ativar estado"
+msgstr "Erro inesperado {} acessando {}"
 
 #: src/library/tools/mainloop/os/linux/timer.cc:158
 #: src/library/tools/mainloop/os/windows/timer.cc:158
@@ -410,6 +409,8 @@ msgid ""
 "The request has timed out. Possible causes are slow or intermittent internet "
 "connection, Antivirus software, Firewall, and Proxy settings."
 msgstr ""
+"Timeout na requisição. As causas possíveis são conexão de internet lenta ou "
+"falhando, software antivírus ou configurações de firewall e proxy."
 
 #. http://s.web.umkc.edu/szb53/cs423_sp16/wsock_errors.html
 #. /usr/x86_64-w64-mingw32/sys-root/mingw/include/winerror.h
@@ -418,6 +419,8 @@ msgid ""
 "No such host is known. The name is not an official host name or alias, or it "
 "cannot be found in the database(s) being queried."
 msgstr ""
+"Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
+"pôde ser encontrado nas bases de dados consultadas."
 
 #: src/library/tools/os/windows/systemservice.cc:45
 msgid "\t\tStart service"
