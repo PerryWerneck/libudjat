@@ -242,14 +242,48 @@
 			}
 
 			string value;
-			string key(c_str()+from+2,(to-from)-2);
+			string key{c_str()+from+2,(to-from)-2};
+			size_t split[] = {0,0};
 
+			size_t ix = key.find('[');
+			if(ix != string::npos) {
+				ix++;
+				size_t iy = key.find(']',ix);
+				if(iy == string::npos) {
+					throw runtime_error(Logger::String{"Invalid use of '[' in '",key,"'"});
+				}
+
+				auto vals = String{key.c_str()+ix,iy-ix}.split(":");
+				if(vals.size() < 2) {
+					throw runtime_error(Logger::String{"Invalid use of '[' in '",key,"'"});
+				}
+			
+				if(!(vals[0].isnumber() && vals[1].isnumber())) {
+					throw runtime_error(Logger::String{"Invalid use of '[' in '",key,"': non numeric values"});
+				}
+
+				split[0] = atoi(vals[0].c_str());
+				split[1] = atoi(vals[1].c_str());
+
+				if(split[0] == split[1]) {
+					throw runtime_error(Logger::String{"Invalid use of '[' in '",key,"': invalid range"});
+				}
+
+				key = key.substr(0,ix-1);
+
+				debug("--------------> key: '",key,"' ",split[0]," ",split[1]);
+
+			}
+			
 			//
 			// First, try the supplied expand callback.
 			//
 			if(expander(key.c_str(),value)) {
 
-				// Got value, apply it.
+				if(split[1] > split[0]) {
+					value = value.substr(split[0],split[1]-split[0]);
+				}
+
 				replace(
 					from,
 					(to-from)+1,

@@ -72,6 +72,25 @@
 		}
 
 		{
+			String test{"The value 1:6 is '${value[1:6]}'"};
+			
+			test.expand([&test](const char *key, std::string &str){
+				if(!strcasecmp(key,"value")) {
+					str = "0123456789abcdefghijklmno";
+					return true;
+				}
+				return false;
+			});
+
+			debug("result='",test.c_str(),"'");
+
+			if(strcmp(test.c_str(),"The value 1:6 is '12345'") != 0) {
+				throw runtime_error("Expand failed");
+			}
+
+		}
+
+		{
 			Agent<Percentage> percent{"test-percent",0.1};
 
 			string str;
