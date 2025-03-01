@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-13 22:59-0300\n"
+"POT-Creation-Date: 2025-03-01 11:23-0300\n"
 "PO-Revision-Date: 2025-01-10 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,15 +20,15 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.5\n"
 
-#: src/library/agent/agent.cc:222
+#: src/library/agent/agent.cc:158
 msgid "default"
 msgstr "padrão"
 
-#: src/library/agent/agent.cc:224
+#: src/library/agent/agent.cc:160
 msgid "Normal"
 msgstr "Normal"
 
-#: src/library/agent/agent.cc:225
+#: src/library/agent/agent.cc:161
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
@@ -44,11 +44,11 @@ msgstr "Inicialização do módulo principal falhou"
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 
-#: src/library/agent/root.cc:95 src/library/tools/systemservice.cc:126
+#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:126
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
-#: src/library/agent/root.cc:95
+#: src/library/agent/root.cc:99
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -100,7 +100,7 @@ msgstr "Usage:\t{} [opções]"
 msgid "Invalid property"
 msgstr "Propriedade inválida"
 
-#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:63
+#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
 msgstr "sim"
 
@@ -108,7 +108,7 @@ msgstr "sim"
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:63
+#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:69
 msgid "no"
 msgstr "não"
 
@@ -125,31 +125,59 @@ msgstr "Operação falhou"
 msgid "System Error"
 msgstr "Erro de sistema"
 
-#: src/library/tools/http/error.cc:56
+#: src/library/tools/file/handler.cc:185 src/library/tools/file/handler.cc:210
+#: src/library/tools/file/handler.cc:215 src/library/tools/file/handler.cc:365
+msgid "Cant set file offset"
+msgstr ""
+
+#: src/library/tools/file/handler.cc:195 src/library/tools/file/handler.cc:228
+#: src/library/tools/file/handler.cc:269
+msgid "Cant write to file"
+msgstr ""
+
+#: src/library/tools/file/handler.cc:224 src/library/tools/file/handler.cc:246
+#: src/library/tools/file/handler.cc:304 src/library/tools/file/handler.cc:372
+msgid "Cant read from file"
+msgstr ""
+
+#: src/library/tools/file/handler.cc:323 src/library/tools/file/handler.cc:351
+msgid "Cant get file length"
+msgstr ""
+
+#: src/library/tools/file/handler.cc:339
+#, fuzzy
+msgid "Cant get block size"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/file/handler.cc:374
+msgid "Unexpected EOF reading from file"
+msgstr ""
+
+#: src/library/tools/http/error.cc:57
 msgid "Information"
 msgstr "Informação"
 
-#: src/library/tools/http/error.cc:67
+#: src/library/tools/http/error.cc:68
 msgid "Ok"
 msgstr "Ok"
 
-#: src/library/tools/http/error.cc:68
+#: src/library/tools/http/error.cc:69
 msgid "The request succeeded."
 msgstr "Requisição concluída com sucesso."
 
-#: src/library/tools/http/error.cc:78
+#: src/library/tools/http/error.cc:79
 msgid "Redirected"
 msgstr "Redirecionado"
 
-#: src/library/tools/http/error.cc:79
+#: src/library/tools/http/error.cc:80
 msgid "The request was redirected to another URL."
 msgstr "Requisição foi redirecionada para outra URL."
 
-#: src/library/tools/http/error.cc:89
+#: src/library/tools/http/error.cc:90
 msgid "Bad Request"
 msgstr "Requisição inválida"
 
-#: src/library/tools/http/error.cc:90
+#: src/library/tools/http/error.cc:91
 msgid ""
 "The server cannot or will not process the request due to an apparent client "
 "error (e.g., malformed request syntax, size too large, invalid request "
@@ -159,19 +187,19 @@ msgstr ""
 "cliente, por exemplo, requisição com sintaxe errada, resultado muito grande, "
 "enquadramento inválido or problema de rota."
 
-#: src/library/tools/http/error.cc:96
+#: src/library/tools/http/error.cc:97
 msgid "Unauthorized"
 msgstr "Não autorizado"
 
-#: src/library/tools/http/error.cc:97
+#: src/library/tools/http/error.cc:98
 msgid "Authentication is required and has failed or has not yet been provided."
 msgstr "Autenticação falhou ou não foi fornecida."
 
-#: src/library/tools/http/error.cc:103
+#: src/library/tools/http/error.cc:104
 msgid "Forbidden"
 msgstr "Proibido"
 
-#: src/library/tools/http/error.cc:104
+#: src/library/tools/http/error.cc:105
 msgid ""
 "The request contained valid data and was understood by the server, but the "
 "server is refusing action."
@@ -179,29 +207,29 @@ msgstr ""
 "A requisição contem dados válidos e foi reconhecida pelo servidor, porem, o "
 "servidor se recusou a atuar."
 
-#: src/library/tools/http/error.cc:110
+#: src/library/tools/http/error.cc:111
 msgid "Not found"
 msgstr "Não encontrado"
 
-#: src/library/tools/http/error.cc:111
+#: src/library/tools/http/error.cc:112
 msgid ""
 "The requested resource could not be found but may be available in the future."
 msgstr ""
 "O recurso pedido não foi encontrado mas pode ficar disponível no futuro."
 
-#: src/library/tools/http/error.cc:117
+#: src/library/tools/http/error.cc:118
 msgid "Proxy Authentication Required"
 msgstr "Proxy exige autenticação"
 
-#: src/library/tools/http/error.cc:118
+#: src/library/tools/http/error.cc:119
 msgid "The client must first authenticate itself with the proxy."
 msgstr "O cliente deve primeiro autenticar no proxy."
 
-#: src/library/tools/http/error.cc:124
+#: src/library/tools/http/error.cc:125
 msgid "Request Timeout"
 msgstr "Tempo da requisição esgotado"
 
-#: src/library/tools/http/error.cc:125
+#: src/library/tools/http/error.cc:126
 msgid ""
 "The client did not produce a request within the time that the server was "
 "prepared to wait."
@@ -209,63 +237,63 @@ msgstr ""
 "O cliente não gerou uma requisição no tempo que o servidor estava preparado "
 "para esperar."
 
-#: src/library/tools/http/error.cc:131
+#: src/library/tools/http/error.cc:132
 msgid "Gone"
 msgstr "Gone"
 
-#: src/library/tools/http/error.cc:132
+#: src/library/tools/http/error.cc:133
 msgid ""
 "The resource requested was previously in use but is no longer available and "
 "will not be available again."
 msgstr "O recurso pedido foi usado antes mas não estão mais disponívei."
 
-#: src/library/tools/http/error.cc:138
+#: src/library/tools/http/error.cc:139
 msgid "Too many requests"
 msgstr "Muitas requisições"
 
-#: src/library/tools/http/error.cc:139
+#: src/library/tools/http/error.cc:140
 msgid ""
 "Something is making your server work too hard, and it just can’t keep up"
 msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 
-#: src/library/tools/http/error.cc:145
+#: src/library/tools/http/error.cc:146
 msgid "Client error"
 msgstr "Erro de cliente"
 
-#: src/library/tools/http/error.cc:156
+#: src/library/tools/http/error.cc:157
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: src/library/tools/http/error.cc:157
+#: src/library/tools/http/error.cc:158
 msgid "The server has encountered a situation it does not know how to handle."
 msgstr "O servidor encontrou uma situação que ele não sabe como resolver."
 
-#: src/library/tools/http/error.cc:163
+#: src/library/tools/http/error.cc:164
 msgid "Not Implemented"
 msgstr "Não implementado"
 
-#: src/library/tools/http/error.cc:164
+#: src/library/tools/http/error.cc:165
 msgid ""
 "The request method is not supported by the server and cannot be handled."
 msgstr ""
 "O método usado na requisição não é suportado pelo servidor e não pode ser "
 "atendido."
 
-#: src/library/tools/http/error.cc:170
+#: src/library/tools/http/error.cc:171
 msgid "Bad gateway"
 msgstr "Gateway inválido"
 
-#: src/library/tools/http/error.cc:171
+#: src/library/tools/http/error.cc:172
 msgid ""
 "The server, while working as a gateway to get a response needed to handle "
 "the request, got an invalid response."
 msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
 
-#: src/library/tools/http/error.cc:177
+#: src/library/tools/http/error.cc:178
 msgid "Service Unavailable"
 msgstr "Serviço indisponível"
 
-#: src/library/tools/http/error.cc:178
+#: src/library/tools/http/error.cc:179
 msgid ""
 "The server is not ready to handle the request. Common causes are a server "
 "that is down for maintenance or that is overloaded."
@@ -273,64 +301,91 @@ msgstr ""
 "O servidor não está pronto para atender à requisição. Pode estar inativo "
 "para manutenção ou sobrecarregado."
 
-#: src/library/tools/http/error.cc:184
+#: src/library/tools/http/error.cc:185
 msgid "Gateway timeout"
 msgstr "Timeout no acesso ao gateway"
 
-#: src/library/tools/http/error.cc:185
+#: src/library/tools/http/error.cc:186
 msgid "The server is acting as a gateway and cannot get a response in time."
 msgstr ""
 "O servidor está atuando como proxy e não conseguiu obter uma resposta no "
 "tempo esperado."
 
-#: src/library/tools/http/error.cc:191
+#: src/library/tools/http/error.cc:192
 msgid "HTTP Version Not Supported"
 msgstr "Versão HTTP não suportada"
 
-#: src/library/tools/http/error.cc:192
+#: src/library/tools/http/error.cc:193
 msgid "The HTTP version used in the request is not supported by the server."
 msgstr "A versão HTTP usada na requisição não é suportada pelo servidor."
 
-#: src/library/tools/http/error.cc:198
+#: src/library/tools/http/error.cc:199
 msgid "Server error"
 msgstr "Erro de servidor"
 
-#: src/library/tools/http/error.cc:218
+#: src/library/tools/http/error.cc:220
 msgid "Unexpected HTTP error code"
 msgstr "Código de erro HTTP inesperado"
 
-#: src/library/tools/http/error.cc:218
+#: src/library/tools/http/error.cc:220
 msgid "The HTTP error code is unknown"
 msgstr "Código de erro HTTP desconhecido"
 
-#: src/library/tools/mainloop/timer.cc:158
+#: src/library/tools/http/error.cc:262
+#, c++-format
+msgid "System error {} ({}) acessing {}"
+msgstr ""
+
+#: src/library/tools/http/error.cc:271
+#, fuzzy, c++-format
+msgid "System error {} acessing {}"
+msgstr "Erro de sistema"
+
+#: src/library/tools/http/error.cc:296
+#, fuzzy, c++-format
+msgid "HTTP error code {}"
+msgstr "Código de erro HTTP inesperado"
+
+#: src/library/tools/http/error.cc:297
+#, fuzzy, c++-format
+msgid "Unexpected error {} acessing {}"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:158
+#: src/library/tools/mainloop/os/windows/timer.cc:158
 msgid "one second"
 msgstr "um segundo"
 
-#: src/library/tools/mainloop/timer.cc:164
+#: src/library/tools/mainloop/os/linux/timer.cc:164
+#: src/library/tools/mainloop/os/windows/timer.cc:164
 msgid "one hour"
 msgstr "uma hora"
 
-#: src/library/tools/mainloop/timer.cc:167
+#: src/library/tools/mainloop/os/linux/timer.cc:167
+#: src/library/tools/mainloop/os/windows/timer.cc:167
 #, c++-format
 msgid "{} hours"
 msgstr "{} horas"
 
-#: src/library/tools/mainloop/timer.cc:173
+#: src/library/tools/mainloop/os/linux/timer.cc:173
+#: src/library/tools/mainloop/os/windows/timer.cc:173
 msgid "one minute"
 msgstr "um minuto"
 
-#: src/library/tools/mainloop/timer.cc:176
+#: src/library/tools/mainloop/os/linux/timer.cc:176
+#: src/library/tools/mainloop/os/windows/timer.cc:176
 #, c++-format
 msgid "{} minutes"
 msgstr "{} minutos"
 
-#: src/library/tools/mainloop/timer.cc:179
+#: src/library/tools/mainloop/os/linux/timer.cc:179
+#: src/library/tools/mainloop/os/windows/timer.cc:179
 #, c++-format
 msgid " {} seconds"
 msgstr " {} segundos"
 
-#: src/library/tools/mainloop/timer.cc:182
+#: src/library/tools/mainloop/os/linux/timer.cc:182
+#: src/library/tools/mainloop/os/windows/timer.cc:182
 #, c++-format
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
@@ -350,15 +405,19 @@ msgid "\\StringFileInfo\\080904B0\\FileDescription"
 msgstr "\\StringFileInfo\\041604B0\\FileDescription"
 
 #. /usr/x86_64-w64-mingw32/sys-root/mingw/include/wininet.h
-#: src/library/tools/os/windows/exception.cc:53
-msgid "The request has timed out"
-msgstr "Tempo da requisição esgotado"
+#: src/library/tools/os/windows/exception.cc:44
+msgid ""
+"The request has timed out. Possible causes are slow or intermittent internet "
+"connection, Antivirus software, Firewall, and Proxy settings."
+msgstr ""
 
 #. http://s.web.umkc.edu/szb53/cs423_sp16/wsock_errors.html
 #. /usr/x86_64-w64-mingw32/sys-root/mingw/include/winerror.h
-#: src/library/tools/os/windows/exception.cc:57
-msgid "Cant resolve hostname"
-msgstr "Não foi possivel resolver nome do host"
+#: src/library/tools/os/windows/exception.cc:48
+msgid ""
+"No such host is known. The name is not an official host name or alias, or it "
+"cannot be found in the database(s) being queried."
+msgstr ""
 
 #: src/library/tools/os/windows/systemservice.cc:45
 msgid "\t\tStart service"
@@ -462,14 +521,6 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
-#: src/library/tools/url/protocols/file.cc:37
-msgid "File protocol"
-msgstr "Protocolo de arquivo"
-
-#: src/library/tools/url/protocols/script.cc:39
-msgid "Subprocess/Script protocol"
-msgstr "Protocolo para subprocesso ou script"
-
 #: src/library/tools/value/type.cc:30
 msgid "undefined"
 msgstr "indefinido"
@@ -563,6 +614,18 @@ msgstr "Sistema não está em funcionamento"
 #: src/library/worker/worker.cc:52
 msgid "Invalid response type"
 msgstr "Resposta de tipo inválido"
+
+#~ msgid "The request has timed out"
+#~ msgstr "Tempo da requisição esgotado"
+
+#~ msgid "Cant resolve hostname"
+#~ msgstr "Não foi possivel resolver nome do host"
+
+#~ msgid "File protocol"
+#~ msgstr "Protocolo de arquivo"
+
+#~ msgid "Subprocess/Script protocol"
+#~ msgstr "Protocolo para subprocesso ou script"
 
 #~ msgid "Alert controller"
 #~ msgstr "Controlador de alertas"
