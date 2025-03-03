@@ -38,7 +38,6 @@
 
 	protected:
 
-		constexpr NamedObject(const char *name = "") : objectName(name) {}
 		NamedObject(const char *name, const XML::Node &node);
 		NamedObject(const XML::Node &node);
 
@@ -54,6 +53,8 @@
 		typedef NamedObject Super;
 
 	public:
+
+		constexpr NamedObject(const char *name = "") : objectName(name) {}
 
 		bool getProperty(const char *key, std::string &value) const override;
 
@@ -126,14 +127,14 @@
 
 		} properties;
 
-		constexpr Object(const char *name) : NamedObject(name) {
-		}
-
 		Object(const char *name, const XML::Node &node);
 		Object(const XML::Node &node);
 		void set(const XML::Node &node);
 
 	public:
+
+		constexpr Object(const char *name) : NamedObject(name) {
+		}
 
 		bool getProperty(const char *key, std::string &value) const override;
 
