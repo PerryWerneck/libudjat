@@ -73,7 +73,6 @@
 				if(progress(current,0,line,strlen(line))) {
 					kill(SIGTERM,getpid());
 				}
-
 #endif
 				current += strlen(line);
 			}

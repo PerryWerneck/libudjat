@@ -21,7 +21,9 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/file/handler.h>
+ #include <udjat/tools/logger.h>
  #include <private/url.h>
+ #include <stdexcept>
  #include <errno.h>
 
  #ifdef _WIN32
@@ -32,6 +34,8 @@
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
 
+ using namespace std;
+
  namespace Udjat {
 
 	const char * FileURLHandler::c_str() const noexcept {
@@ -39,6 +43,8 @@
 	}
 
 	int FileURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const void *data, size_t len)> &progress) {
+
+		debug("-----------> Loading '",path.c_str(),"'");
 
 		File::Handler file{path.c_str()};
 
@@ -55,8 +61,9 @@
 				break;
 			}
 
-			if(!progress(current,total,buffer,len)) {
-				return ECANCELED;
+			if(progress(current,total,buffer,len)) {
+				Logger::String{"Loading of '",path.c_str(),"' was canceled"}.trace();
+				throw system_error(ECANCELED,system_category());
 			}
 
 			current += len;

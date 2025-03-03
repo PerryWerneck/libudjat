@@ -199,6 +199,13 @@
 			N_("Server error"),
 			""
 		},
+		{
+			"CancelByUser",
+			ECANCELED,ECANCELED,
+			Udjat::error,
+			N_("Request canceled"),
+			N_("The request was canceled by the user")
+		},
 	};
 
 	HTTP::Error HTTP::Error::Factory(int32_t code) {
@@ -217,6 +224,7 @@
 				};
 			}
 		}
+
 		return HTTP::Error{Udjat::critical,_("Unexpected HTTP error code"),_("The HTTP error code is unknown")};
 	}
 

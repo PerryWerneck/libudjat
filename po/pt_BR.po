@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-01 11:23-0300\n"
-"PO-Revision-Date: 2025-03-01 11:28-0300\n"
+"POT-Creation-Date: 2025-03-03 18:14-0300\n"
+"PO-Revision-Date: 2025-03-03 18:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -322,30 +322,38 @@ msgstr "A versão HTTP usada na requisição não é suportada pelo servidor."
 msgid "Server error"
 msgstr "Erro de servidor"
 
-#: src/library/tools/http/error.cc:220
+#: src/library/tools/http/error.cc:206
+msgid "Request canceled"
+msgstr "Requisição cancelada"
+
+#: src/library/tools/http/error.cc:207
+msgid "The request was canceled by the user"
+msgstr "A operação foi cancelada pelo usuário"
+
+#: src/library/tools/http/error.cc:228
 msgid "Unexpected HTTP error code"
 msgstr "Código de erro HTTP inesperado"
 
-#: src/library/tools/http/error.cc:220
+#: src/library/tools/http/error.cc:228
 msgid "The HTTP error code is unknown"
 msgstr "Código de erro HTTP desconhecido"
 
-#: src/library/tools/http/error.cc:262
+#: src/library/tools/http/error.cc:270
 #, c++-format
 msgid "System error {} ({}) acessing {}"
 msgstr "Essoe de sistem {} ({}) acessando {}"
 
-#: src/library/tools/http/error.cc:271
+#: src/library/tools/http/error.cc:279
 #, c++-format
 msgid "System error {} acessing {}"
 msgstr "Erro de sistema {} acessando {}"
 
-#: src/library/tools/http/error.cc:296
+#: src/library/tools/http/error.cc:304
 #, c++-format
 msgid "HTTP error code {}"
 msgstr "Erro HTTP {}"
 
-#: src/library/tools/http/error.cc:297
+#: src/library/tools/http/error.cc:305
 #, c++-format
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"

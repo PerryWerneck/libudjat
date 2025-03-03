@@ -84,6 +84,9 @@
 		if(message && *message) {
 			return message;
 		}
+		if(hc == ECANCELED) {
+			return strerror(hc);
+		}
 		return Logger::Message{"HTTP error {}",hc};
 	}
 
