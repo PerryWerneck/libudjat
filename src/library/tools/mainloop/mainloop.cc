@@ -78,7 +78,7 @@
 		quit();
 	}
 
-	void MainLoop::on_posted_message(MainLoop::Message *message) noexcept {
+	void MainLoop::Message::on_posted(MainLoop::Message *message) noexcept {
 
 		try {
 			message->execute();

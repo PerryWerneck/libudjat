@@ -97,8 +97,8 @@
 		return this->running;
 	}
 
-	void Linux::MainLoop::post(Message *message) noexcept {
-		on_posted_message(message);
+	void Linux::MainLoop::post(MainLoop::Message *message) noexcept {
+		MainLoop::Message::on_posted(message);
 	}
 
 	void Linux::MainLoop::push_back(MainLoop::Timer *timer) {

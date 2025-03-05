@@ -47,18 +47,7 @@ namespace Udjat {
 
 	protected:
 
-		class Message {
-		public:
-			Message();
-			virtual ~Message();
-			virtual void execute() = 0;
-		};
-
 		MainLoop(Type type);
-
-		/// @brief Process message, delete it after processing.
-		/// @param message The message to process.
-		static void on_posted_message(Message *message) noexcept;
 
 	public:
 
@@ -106,6 +95,17 @@ namespace Udjat {
 		/// @brief Is the mainloop active?
 		virtual bool active() const noexcept = 0;
 
+		class Message {
+		public:
+			Message();
+			virtual ~Message();
+			virtual void execute() = 0;
+
+			/// @brief Called by mainloop when the message is posted.
+			/// @param message The message to execute.
+			static void on_posted(Message *message) noexcept;
+		};
+		
 		/// @brief Post message to mainloop.
 		/// @param message Message to be posted, will be deleted after processing.
 		virtual void post(Message *message) noexcept = 0;

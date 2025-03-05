@@ -110,7 +110,7 @@
 	void Glib::MainLoop::post(MainLoop::Message *message) noexcept {
 		unsigned int (*g_idle_add_once)(void *function, void * data) =
 			(unsigned int (*)(void *function, void * data)) methods[METHOD_G_IDLE_ADD_ONCE];
-		g_idle_add_once((void *) on_posted_message, (void *) message);
+		g_idle_add_once((void *) MainLoop::Message::on_posted, (void *) message);
 	}
 
 	void Glib::MainLoop::wakeup() noexcept {

@@ -210,7 +210,7 @@
 				break;
 
 			case WM_PROCESS_POSTED_MESSAGE:
-				on_posted_message((Message *) lParam);
+				MainLoop::Message::on_posted((Message *) lParam);
 				break;
 
 				default:
