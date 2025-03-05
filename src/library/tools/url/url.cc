@@ -94,6 +94,16 @@
 		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
 	}
 
+	static void sanitize(std::string &path) {
+		for(const char *filter : { "//", "\\\\"}) {
+			size_t pos;
+			while((pos = path.find(filter)) != string::npos) {
+				char buffer[] = { filter[0], 0 };
+				path.replace(pos,2,buffer);
+			}
+		}
+	}
+
 	String URL::path() const {
 
 		ParsedUri uri{*this};
@@ -107,6 +117,8 @@
 				result += string{pathSegment->text.first,len};
 			}
 		}
+
+		sanitize(result);
 
 		return result;
 	}
@@ -195,18 +207,25 @@
 		}
 
 		// Concatenate path.
-		for(const string &segment : segments) {
-			newUri.append("/");
-			newUri.append(segment);
-		}
-		
-		if(*ptr == '/') {
-			ptr++;
-		}
-		
-		if(*ptr) {
-			newUri.append("/");
-			newUri.append(ptr);
+		{
+			string new_path;
+			for(const string &segment : segments) {
+				new_path.append("/");
+				new_path.append(segment);
+			}
+			
+			if(*ptr == '/') {
+				ptr++;
+			}
+			
+			if(*ptr) {
+				new_path.append("/");
+				new_path.append(ptr);
+			}
+
+			sanitize(new_path);
+			newUri.append(new_path);
+
 		}
 
 		if(uri.query.first) {

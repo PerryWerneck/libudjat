@@ -123,7 +123,10 @@
 			debug("Path--------------------> ",url.path().c_str());
 
 			url += "./another/path";
-			debug("URL----------------------> ",url.c_str());
+			
+			if(strcmp(url.c_str(),"http://www.google.com:8080/path/to/somewhere/another/path?name=value&name2=value2")) {
+				throw runtime_error("URL append failed");
+			} 
 				
 		}
 

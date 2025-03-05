@@ -227,7 +227,7 @@
 
 						char host[NI_MAXHOST];
 						if (getnameinfo((struct sockaddr *) &addr, sizeof(addr), host, sizeof(host), NULL, 0, NI_NUMERICHOST) == 0) {
-							Logger::String{"Connected to ",host," using socket ",sock}.trace();
+							Logger::String{"Connecting to ",host," using socket ",sock}.trace();
 						}
 
 					}
@@ -290,7 +290,7 @@
 
 						char host[NI_MAXHOST];
 						if (getnameinfo((struct sockaddr *) &addr, sizeof(addr), host, sizeof(host), NULL, 0, NI_NUMERICHOST) == 0) {
-							Logger::String{"Connected to ",host," using socket ",values.fd}.trace();
+							Logger::String{"Connecting to ",host," using socket ",values.fd}.trace();
 						}
 
 					}
