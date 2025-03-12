@@ -27,7 +27,6 @@
  #include <iptypes.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/container.h>
-// #include <udjat/win32/network.h>
  #include <iphlpapi.h>
  #include <udjat/net/ip/address.h>
 
@@ -101,6 +100,14 @@
 				return iface->Type == MIB_IF_TYPE_LOOPBACK;
 			}
 
+			IP::Address address() const override {
+				return IP::Address{iface->IpAddressList.IpAddress.String};
+			};
+
+			IP::Address netmask() const override {
+				return IP::Address{iface->IpAddressList.IpMask.String};
+			};
+
 		};
 
 		Interfaces interfaces;
@@ -160,6 +167,26 @@
 				}
 				return "";
 			}
+
+			IP::Address address() const override {
+				Interfaces interfaces;
+				for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {
+					if(equal(iface)) {
+						return IP::Address{iface->CurrentIpAddress->IpAddress.String};
+					}
+				}
+				return IP::Address{};
+			};
+
+			IP::Address netmask() const override {
+				Interfaces interfaces;
+				for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {
+					if(equal(iface)) {
+						return IP::Address{iface->CurrentIpAddress->IpMask.String};
+					}
+				}
+				return IP::Address{};
+			};
 
 			bool loopback() const override {
 				Interfaces interfaces;

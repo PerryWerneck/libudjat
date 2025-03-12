@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/net/ip/address.h>
+ #include <udjat/net/interface.h>
  #include <ws2tcpip.h>
  #include <system_error>
  #include <udjat/win32/exception.h>
@@ -45,6 +46,22 @@
 		}
 
 		return storage;
+
+	}
+
+	bool IP::for_each(const std::function<bool(const IP::Addresses &addr)> &func) {
+
+		return Network::Interface::for_each([&func](const Network::Interface &intf) {
+
+			IP::Addresses addr;
+
+			addr.interface_name = intf.name();
+			addr.address = intf.address();
+			addr.netmask = intf.netmask();
+
+			return func(addr);
+
+		});
 
 	}
 

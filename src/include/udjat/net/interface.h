@@ -24,6 +24,7 @@
  #include <cstring>
  #include <functional>
  #include <memory>
+ #include <udjat/net/ip/address.h>
 
  #ifndef _WIN32
 	#include <sys/socket.h>
@@ -51,6 +52,8 @@
 			virtual bool up() const = 0;
 			virtual bool loopback() const = 0;
 			virtual std::string macaddress() const = 0;
+			virtual IP::Address address() const = 0;			///< @brief Interface address.
+			virtual IP::Address netmask() const = 0;			///< @brief Interface netmask.
 
 			/// @brief Build interface from nic name.
 			static std::shared_ptr<Interface> Factory(const char *name);
