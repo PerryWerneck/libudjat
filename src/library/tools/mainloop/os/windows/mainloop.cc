@@ -97,7 +97,7 @@
 	}
 
 	bool Win32::MainLoop::enabled(const Timer *timer) const noexcept {
-		lock_guard<mutex> lock(guard);
+		lock_guard<mutex> lock(const_cast<Win32::MainLoop *>(this)->guard);
 		for(Timer *tm : timers.enabled) {
 			if(timer == tm) {
 				return true;
@@ -118,7 +118,7 @@
 	}
 
 	bool Win32::MainLoop::enabled(const Handler *handler) const noexcept {
-		lock_guard<mutex> lock(guard);
+		lock_guard<mutex> lock(const_cast<Win32::MainLoop *>(this)->guard);
 		for(Handler *hdl : handlers) {
 			if(handler == hdl) {
 				return true;

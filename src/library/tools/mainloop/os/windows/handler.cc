@@ -22,6 +22,7 @@
  #include <udjat/win32/exception.h>
  #include <udjat/tools/threadpool.h>
  #include <private/win32/mainloop.h>
+ #include <private/win32/handler.h>
 
  using namespace std;
 

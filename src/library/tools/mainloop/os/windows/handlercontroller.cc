@@ -23,12 +23,11 @@
  #include <udjat/tools/logger.h>
  #include <udjat/win32/handler.h>
  #include <private/win32/mainloop.h>
+ #include <private/win32/handler.h>
 
  using namespace std;
 
  namespace Udjat {
-
-	mutex Win32::Handler::Controller::guard;
 
 	Win32::Handler::Controller::Controller() {
 		cout << "win32\tStarting handler controller" << endl;
@@ -43,7 +42,6 @@
 	}
 
 	Win32::Handler::Controller & Win32::Handler::Controller::getInstance() {
-		lock_guard<mutex> lock(guard);
 		static Win32::Handler::Controller instance;
 		return instance;
 	}
@@ -101,7 +99,7 @@
 
 	Win32::Handler * Win32::Handler::Controller::find(Worker *worker, HANDLE handle) noexcept {
 
-		lock_guard<mutex> lock(guard);
+		lock_guard<mutex> lock(getInstance().guard);
 
 		for(auto handler : worker->handlers) {
 			if(handler->hEvent == handle) {

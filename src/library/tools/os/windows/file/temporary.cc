@@ -25,6 +25,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+
  #include <udjat/tools/file.h>
  #include <udjat/win32/exception.h>
  #include <udjat/tools/application.h>

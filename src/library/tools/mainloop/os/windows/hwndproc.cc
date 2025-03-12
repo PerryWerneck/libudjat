@@ -23,8 +23,6 @@
  // https://learn.microsoft.com/en-us/previous-versions/windows/desktop/legacy/ms742267(v=vs.85)
  //
 
- #define LOG_DOMAIN "win32"
-
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/win32/mainloop.h>
@@ -34,6 +32,12 @@
  #include <private/event.h>
  #include <iostream>
  #include <udjat/win32/exception.h>
+
+ #ifdef LOG_DOMAIN
+	#undef LOG_DOMAIN
+ #endif // LOG_DOMAIN
+
+ #define LOG_DOMAIN "win32"
 
  using namespace std;
 

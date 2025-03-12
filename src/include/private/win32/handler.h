@@ -25,59 +25,56 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/win32/handler.h>
  #include <list>
+ #include <mutex>
 
  #define IDT_CHECK_TIMERS	1
 
  namespace Udjat {
 
-	namespace Win32 {
+	class UDJAT_PRIVATE Win32::Handler::Controller {
+	public:
 
-		class UDJAT_PRIVATE Handler::Controller {
-		public:
-
-			/// @brief Object to manage a list of handlers.
-			class Worker {
-			private:
-				~Worker();	// Will be deleted when worker thread finishes.
-
-			public:
-				Worker(Win32::Handler *handler);
-
-				std::list<Win32::Handler *> handlers;
-
-				// Disable copy.
-				Worker(const Worker &) = delete;
-				Worker(const Worker *) = delete;
-
-			};
-
-			static Win32::Handler * find(Worker *worker, HANDLE handle) noexcept;
-
-			bool wait(Worker *worker) noexcept;
-			void call(HANDLE handle, bool abandoned) noexcept;
-
+		/// @brief Object to manage a list of handlers.
+		class Worker {
 		private:
-
-			std::list<Worker *> workers;
-
-			static std::mutex guard;
-
-			Controller();
-			~Controller();
+			~Worker();	// Will be deleted when worker thread finishes.
 
 		public:
-			static Controller & getInstance();
+			Worker(Win32::Handler *handler);
 
-			void insert(Handler *handler);
-			void remove(Handler *handler);
+			std::list<Win32::Handler *> handlers;
 
-			Win32::Handler * find(HANDLE handle) noexcept;
+			// Disable copy.
+			Worker(const Worker &) = delete;
+			Worker(const Worker *) = delete;
 
 		};
 
+		static Win32::Handler * find(Worker *worker, HANDLE handle) noexcept;
 
-	}
+		bool wait(Worker *worker) noexcept;
+		void call(HANDLE handle, bool abandoned) noexcept;
+
+	private:
+
+		std::list<Worker *> workers;
+
+		std::mutex guard;
+
+		Controller();
+		~Controller();
+
+	public:
+		static Controller & getInstance();
+
+		void insert(Handler *handler);
+		void remove(Handler *handler);
+
+		Win32::Handler * find(HANDLE handle) noexcept;
+
+	};
 
  }
 

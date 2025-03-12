@@ -17,10 +17,19 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/module/abstract.h>
+ #include <udjat/tools/quark.h>
+
  #include <sys/stat.h>
+ #include <udjat/tools/file/text.h>
  #include <fcntl.h>
  #include <libgen.h>
+
+ #include <list>
+
+ using namespace std;
 
  namespace Udjat {
 

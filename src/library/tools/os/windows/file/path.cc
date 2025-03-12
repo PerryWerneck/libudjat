@@ -17,15 +17,20 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include "private.h"
+ #include <config.h>
+ #include <udjat/defs.h>
+ 
  #include <shlwapi.h>
  #include <dirent.h>
  #include <udjat/win32/exception.h>
  #include <udjat/win32/path.h>
+ #include <udjat/tools/file/path.h>
  #include <private/win32.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <shlobj.h>
+ 
+ using namespace std;
 
  namespace Udjat {
 

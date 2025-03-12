@@ -37,6 +37,8 @@
 
  namespace Udjat {
 
+	MainLoop * MainLoop::instance = nullptr;
+
 	MainLoop::MainLoop(MainLoop::Type type) : mtype{type} {
 		if(instance) {
 			throw system_error(EBUSY,system_category(),"Mainloop was already set");

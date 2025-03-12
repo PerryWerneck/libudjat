@@ -21,6 +21,10 @@
  #include "private.h"
  #include <udjat/win32/exception.h>
  #include <iostream>
+ #include <private/win32/handler.h>
+ #include <udjat/tools/logger.h>
+
+ #include <thread>
 
  using namespace std;
 
