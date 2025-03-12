@@ -188,6 +188,14 @@
 				return flags_by_name(nicname.c_str()) & IFF_LOOPBACK;
 			}
 
+			IP::Address address() const override {
+				throw system_error(ENOTSUP,system_category(),"Cant get IP address on linux");
+			}
+
+			IP::Address netmask() const override {
+				throw system_error(ENOTSUP,system_category(),"Cant get netmask on linux");
+			}
+
 			std::string macaddress() const override {
 				
 				int sock = socket(PF_INET, SOCK_STREAM, 0);

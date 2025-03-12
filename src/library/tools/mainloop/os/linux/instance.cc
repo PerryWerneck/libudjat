@@ -31,8 +31,6 @@
 
  namespace Udjat {
 
-	MainLoop * MainLoop::instance = nullptr;
-
 	MainLoop & MainLoop::getInstance() {
 
 		static mutex guard;
