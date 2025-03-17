@@ -359,6 +359,9 @@
 		try {
 			handler()->get(name.c_str(),HTTP::Get,"",progress);
 		} catch(...) {
+			if(Logger::enabled(Logger::Level::Debug)) {
+				Logger::String("Download failed, removing ",name.c_str()).write(Logger::Debug);
+			}	
 			unlink(name.c_str());
 			throw;
 		}
