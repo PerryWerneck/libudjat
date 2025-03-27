@@ -31,6 +31,10 @@
  #include <udjat/tools/url.h>
  #include <udjat/net/ip/address.h>
 
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
  using namespace std;
  using namespace Udjat;
 
@@ -38,6 +42,14 @@
 
  int main(int argc, char **argv) {
 
+	cout << endl << endl << endl;
+	for(size_t ix = 0; ix < 1000; ix++) {
+		URL::progress_to_console("(001/001)","http://www.google.com",ix,1000);
+		usleep(1500);
+	}
+	cout << endl << endl << endl;
+
+	/*
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
@@ -149,5 +161,6 @@
 		});
 
 	});
+	*/
 
  }

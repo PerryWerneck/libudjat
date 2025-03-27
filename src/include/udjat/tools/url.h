@@ -181,6 +181,7 @@
 		/// @brief Convenience method for progress feedback on console apps.
 		static bool progress_to_console(const char *url,uint64_t current, uint64_t total) noexcept;
 
+		static bool progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	};
 
  }

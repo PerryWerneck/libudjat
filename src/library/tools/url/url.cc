@@ -390,6 +390,10 @@
 	}
 
 	bool URL::progress_to_console(const char *url, uint64_t current, uint64_t total) noexcept {
+		return progress_to_console("",url,current,total);
+	}
+
+	bool URL::progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
 
 #ifdef _WIN32
 		
@@ -408,18 +412,25 @@
 	// 012345678901234567890123456789012345678901234567890123456789012345678901234567890
 	// URL.................................... [################################] 100.0%
 
+	size_t plen = strlen(prefix ? prefix : "");
 	size_t ulen = strlen(url);
 
 	if(w.ws_col >= 40) {
 
 		size_t pos = (w.ws_col/2);
 		{
-			if(ulen >= (pos-1)) {
-				strncpy(line,url,pos);
-				memcpy(line+(pos-4),"... ",4);
+			memcpy(line, prefix, plen);
+			
+			plen++;
+			int spc = (pos - plen);
+			if(spc > ulen) {
+				memcpy(line+plen, url, ulen);
 			} else {
-				strncpy(line,url,ulen);
+				memcpy(line+plen,"...",3);
+				spc -= 4;
+				memcpy(line+plen+3, url+(ulen-spc), spc);
 			}
+
 		}
 
 		line[pos++] = '[';
@@ -460,10 +471,10 @@
 		}
 
 		char text[10];
-		float progress = (float) current / (float) total;
 		if(current >= total) {
 			snprintf(text,10,"100.0%%");
 		} else {
+			float progress = (float) current / (float) total;
 			snprintf(text,10,"%3.1f%%",progress * 100.0);
 		}
 
