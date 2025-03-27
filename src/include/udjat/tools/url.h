@@ -161,12 +161,12 @@
 		bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "");
 		
 		/// @brief Get URL, save response to cache file.
-		/// @param progress The download progress notifier.
+		/// @param progress The download progress notifier (return true to abort transfer).
 		/// @return The cached filename.
 		std::string cache(const std::function<bool(double current, double total)> &progress);
 
 		/// @brief Get URL, save response to cache file.
-		/// @param progress The download progress notifier.
+		/// @param progress The download progress notifier (return true to abort transfer).
 		/// @return The cached filename.
 		std::string tempfile(const std::function<bool(double current, double total)> &progress);
 
@@ -174,9 +174,12 @@
 		/// @return The cached filename.
 		std::string cache();
 
-				/// @brief Get URL, save contents to temporary file.
+		/// @brief Get URL, save contents to temporary file.
 		/// @return The temporary filename.
 		std::string tempfile();
+
+		/// @brief Convenience method for progress feedback on console apps.
+		static bool progress_to_console(const char *url, uint64_t current, uint64_t total) noexcept;
 
 	};
 
