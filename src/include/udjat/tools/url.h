@@ -135,7 +135,7 @@
 		/// @retval -ENOTSUP No support for test in protocol handler.
 		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const;
 
-		String call(const HTTP::Method method = HTTP::Get, const char *payload = "") const;
+		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const bool console = false) const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
@@ -144,12 +144,12 @@
 
 		String post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
-		String get(const HTTP::Method method = HTTP::Get, const char *payload = "") const;
+		String get(const bool console = false) const;
 
 		int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
-		inline String post(const char *payload) const {
-			return get(HTTP::Post,payload);
+		inline String post(const char *payload, const bool console = false) const {
+			return call(HTTP::Post,payload,console);
 		}
 
 		/// @brief Download/update a file with progress.
@@ -179,7 +179,7 @@
 		std::string tempfile();
 
 		/// @brief Convenience method for progress feedback on console apps.
-		static bool progress_to_console(const char *url, uint64_t current, uint64_t total) noexcept;
+		static bool progress_to_console(const char *url,uint64_t current, uint64_t total) noexcept;
 
 	};
 

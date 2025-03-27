@@ -292,15 +292,18 @@
 		return false;
 	}
 
-	String URL::call(const HTTP::Method method, const char *payload) const {
+	String URL::call(const HTTP::Method method, const char *payload, const bool console) const {
 		stringstream str;
 		auto hdr = handler();
 		int rc = hdr->perform(
 			method, 
 			payload, 
-			[&str](uint64_t, uint64_t, const void *data, size_t len) -> bool {
+			[this,&str,console](uint64_t current, uint64_t total, const void *data, size_t len) -> bool {
 				if(data && len) {
 					str.write((const char *) data,len);
+				}
+				if(console) {
+					URL::progress_to_console(this->c_str(),current,total);
 				}
 				return false;
 			}
@@ -325,8 +328,13 @@
 		return handler()->get(HTTP::Post,payload,progress);
 	}
 
-	String URL::get(const HTTP::Method method, const char *payload) const {
-		return handler()->get(method,payload);
+	String URL::get(bool console) const {
+		return get([&](uint64_t current, uint64_t total) {
+			if(console) {
+				URL::progress_to_console(this->c_str(),current,total);
+			}
+			return false;
+		});
 	}
 
 	bool URL::get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
