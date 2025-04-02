@@ -271,8 +271,6 @@
 
 				key = key.substr(0,ix-1);
 
-				debug("--------------> key: '",key,"' ",split[0]," ",split[1]);
-
 			}
 			
 			//
@@ -355,6 +353,15 @@
 					from,
 					(to-from)+1,
 					Application::CacheDir()
+				);
+				continue;
+			}
+
+			if(!strcasecmp(key.c_str(),"appname")) {
+				replace(
+					from,
+					(to-from)+1,
+					Application::Name()
 				);
 				continue;
 			}
