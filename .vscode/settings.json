@@ -69,7 +69,8 @@
 		"cinttypes": "cpp",
 		"typeinfo": "cpp",
 		"variant": "cpp",
-		"text_encoding": "cpp"
+		"text_encoding": "cpp",
+		"ranges": "cpp"
 	},
 	"C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
 	"C_Cpp.default.compileCommands": "/home/perry/project/udjat/libudjat/.build/compile_commands.json"

@@ -21,15 +21,16 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
  #include <udjat/tools/worker.h>
+ 
  #include <udjat/tools/request.h>
  #include <mutex>
  #include <list>
  #include <iostream>
 
  using namespace std;
-
- #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 
  namespace Udjat {
 
