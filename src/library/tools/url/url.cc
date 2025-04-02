@@ -423,7 +423,7 @@
 			
 			plen++;
 			int spc = (pos - plen);
-			if(spc > ulen) {
+			if(spc > (int) ulen) {
 				memcpy(line+plen, url, ulen);
 			} else {
 				memcpy(line+plen,"...",3);
@@ -437,7 +437,7 @@
 		float progress_len = (float) w.ws_col - (pos + 7);
 
 		char text[10];
-		memset(text,10,0);
+		memset(text,0,10);
 
 		if(total) {
 
@@ -463,7 +463,7 @@
 
 	} else {
 
-		if(ulen >= (w.ws_col-8)) {
+		if(ulen >= (size_t) (w.ws_col-8)) {
 			strncpy(line,url,w.ws_col-12);
 			memcpy(line+(w.ws_col-12),"... ",4);
 		} else {

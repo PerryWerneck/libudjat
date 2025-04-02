@@ -30,7 +30,7 @@ namespace Udjat {
 
 	UDJAT_API bool exec(const Request &request, Response &response);
 
-	class UDJAT_API Worker {
+	[[deprecated("Use Interface")]] class UDJAT_API Worker {
 	private:
 		const char * name = "";
 
@@ -50,44 +50,44 @@ namespace Udjat {
 		class Controller;
 		friend class Controller;
 
-		Worker(const char *name, const ModuleInfo &info) [[deprecated("Use Interface")]];
+		Worker(const char *name, const ModuleInfo &info);
 
-		Worker(const Quark &name, const ModuleInfo &info) [[deprecated("Use Interface")]] : Worker(name.c_str(),info)  {
+		Worker(const Quark &name, const ModuleInfo &info) : Worker(name.c_str(),info)  {
 		}
 
-		static bool for_each(const std::function<bool(const Worker &worker)> &method) [[deprecated("Use Interface")]];
+		static bool for_each(const std::function<bool(const Worker &worker)> &method);
 
-		inline bool operator==(const char *name) const noexcept [[deprecated("Use Interface")]]{
+		inline bool operator==(const char *name) const noexcept {
 			return strcasecmp(name,this->name) == 0;
 		}
 
-		std::ostream & info() const [[deprecated("Use Interface")]];
-		std::ostream & warning() const [[deprecated("Use Interface")]];
-		std::ostream & error() const [[deprecated("Use Interface")]];
-		std::ostream & trace() const [[deprecated("Use Interface")]];
+		std::ostream & info() const;
+		std::ostream & warning() const;
+		std::ostream & error() const;
+		std::ostream & trace() const;
 
 		/// @brief Find worker by path
 		/// @param name Name of the required worker.
 		/// @return The worker for path, exception if not found.
-		static const Worker & find(const char *path) [[deprecated("Use Interface")]];
+		static const Worker & find(const char *path);
 
 		/// @brief Find worker by request
 		/// @param name Name of the required worker.
 		/// @return The worker for request, exception if not found.
-		static const Worker & find(const Request &request) [[deprecated("Use Interface")]];
+		static const Worker & find(const Request &request);
 
 		/// @brief Test if the request can run on this worker.
 		/// @param request The request.
 		/// @return The response type for this request.
-		virtual ResponseType probe(const Request &request) const noexcept [[deprecated("Use Interface")]];
+		virtual ResponseType probe(const Request &request) const noexcept;
 
 		/// @brief Get generic worker data, for example, the favicon.
 		/// @param name The property name.
 		/// @param value The response.
 		/// @return true if the value was set.
-		virtual bool getProperty(const char *name, Udjat::Value &property) const [[deprecated("Use Interface")]];
+		virtual bool getProperty(const char *name, Udjat::Value &property) const;
 
-		virtual Udjat::Value & getProperties(Udjat::Value &properties) const [[deprecated("Use Interface")]];
+		virtual Udjat::Value & getProperties(Udjat::Value &properties) const;
 
 		/// @brief Call worker method.
 		/// @param method The requested method (get,post,put,delete,etc)
@@ -100,22 +100,22 @@ namespace Udjat {
 		/// @retval EPERM Access to method was denied.
 		/// @retval ENOENT Path not found (Unknown object).
 		/// @retval ENOTSUP Unsupported method.
-		virtual int call(const char *method, const char *path, Udjat::Value &response) const [[deprecated("Use Interface")]];
+		virtual int call(const char *method, const char *path, Udjat::Value &response) const;
 
 		/// @brief Get module information.
-		inline const ModuleInfo & getModuleInfo() const noexcept [[deprecated("Use Interface")]] {
+		inline const ModuleInfo & getModuleInfo() const noexcept {
 			return this->module;
 		}
 
 		/// @brief Process only the 'get' method.
 		/// @return false if the request method was not allowed.
-		virtual bool get(Request &request, Response &response) const [[deprecated("Use Interface")]];
+		virtual bool get(Request &request, Response &response) const;
 
 		/// @brief Process only the 'head' method.
 		/// @return false if the request method was not allowed.
-		virtual bool head(Request &request, Response &response) const [[deprecated("Use Interface")]];
+		virtual bool head(Request &request, Response &response) const;
 
-		inline const char * c_str() const [[deprecated("Use Interface")]]{
+		inline const char * c_str() const{
 			return name;
 		}
 
@@ -123,7 +123,7 @@ namespace Udjat {
 
 		/// @brief Process request, get response.
 		/// @return true if the response was updated.
-		virtual bool work(Request &request, Response &response) const [[deprecated("Use Interface")]];
+		virtual bool work(Request &request, Response &response) const;
 
 	protected:
 

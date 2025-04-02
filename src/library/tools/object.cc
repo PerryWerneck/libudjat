@@ -31,6 +31,8 @@
  #include <udjat/tools/intl.h>
  #include <cstdarg>
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+  
  using namespace std;
 
  namespace Udjat {
@@ -480,6 +482,7 @@
 		return def;
 	}
 
+	/*
 	const char * Abstract::Object::expand(const XML::Node &node, const char *group, const char *value) {
 
 		String text{value};
@@ -503,6 +506,7 @@
 		return Quark(text).c_str();
 
 	}
+	*/
 
 	const char * Abstract::Object::getChildValue(const XML::Node &node, const char *group) {
 		String text{node.child_value()};

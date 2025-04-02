@@ -27,6 +27,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/string.h>
  #include <signal.h>
  #include <iostream>
  #include <cstring>
@@ -430,7 +431,7 @@
 
 		}
 
-		std::string get(const std::string &group, const std::string &name, const char *def) const {
+		Udjat::String get(const std::string &group, const std::string &name, const char *def) const {
 
 			if(!hFile) {
 				return def;
@@ -474,7 +475,7 @@
 
 		}
 
-		std::string get(const std::string &group, const std::string &name, const std::string &def) const {
+		Udjat::String get(const std::string &group, const std::string &name, const std::string &def) const {
 			return get(group,name,def.c_str());
 		}
 
@@ -581,12 +582,12 @@
 			return false;
 		}
 
-		std::string get(const std::string &group, const std::string &name, const char *def) const {
-			return string(def);
+		Udjat::string get(const std::string &group, const std::string &name, const char *def) const {
+			return Udjat::String(def);
 		}
 
-		std::string get(const std::string &group, const std::string &name, const std::string &def) const {
-			return string(def);
+		Udjat::string get(const std::string &group, const std::string &name, const std::string &def) const {
+			return Udjat::string(def);
 		}
 
 		template<typename T>
@@ -637,12 +638,12 @@
 		return Controller::getInstance().get(group,name,def);
 	}
 
-	std::string Config::get(const std::string &group, const std::string &name, const char *def) {
-		return Controller::getInstance().get(group,name,def);
+	Udjat::String Config::get(const std::string &group, const std::string &name, const char *def) {
+		return Controller::getInstance().get(group,name,def).expand(true,false);
 	}
 
-	std::string Config::get(const std::string &group, const std::string &name, const std::string &def) {
-		return Controller::getInstance().get(group,name,def);
+	Udjat::String Config::get(const std::string &group, const std::string &name, const std::string &def) {
+		return Controller::getInstance().get(group,name,def).expand(true,false);
 	}
 
 	bool Config::get(const std::string &group, const std::string &name, const bool def) {

@@ -73,7 +73,7 @@
 		}
 
 		/// @brief Navigate on module options DEPRECATED, use XML::options
-		static void options(const XML::Node &node, std::function<void(const char *name, const char *value)> call) [[deprecated("Use XML::options")]];
+		[[deprecated("Use XML::options")]] static void options(const XML::Node &node, std::function<void(const char *name, const char *value)> call);
 
 	public:
 
