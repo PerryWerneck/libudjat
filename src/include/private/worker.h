@@ -29,6 +29,8 @@
 
  using namespace std;
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
  namespace Udjat {
 
 	class Worker::Controller {

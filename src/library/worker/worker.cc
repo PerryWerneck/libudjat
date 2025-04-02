@@ -26,6 +26,8 @@
  #include <stdexcept>
  #include <udjat/tools/intl.h>
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
  using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------

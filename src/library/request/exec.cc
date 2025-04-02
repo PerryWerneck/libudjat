@@ -26,7 +26,6 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/response.h>
- #include <udjat/tools/worker.h>
  #include <udjat/tools/intl.h>
  #include <stdexcept>
  #include <private/worker.h>

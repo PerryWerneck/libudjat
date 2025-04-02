@@ -22,6 +22,8 @@
  #include <udjat/module/info.h>
  #include <udjat/tools/logger.h>
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
  using namespace std;
 
  namespace Udjat {
