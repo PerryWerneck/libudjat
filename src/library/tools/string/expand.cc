@@ -229,6 +229,95 @@
 		return expand('$',expander,dynamic,cleanup);
 	}
 
+	static bool expand_value(const char *key, std::string &value, bool dynamic, bool cleanup) {
+
+		// Check the attribute name.
+		if(!strcasecmp(key,"logdir")) {
+			value = Application::LogDir();
+			return true;
+		}
+
+		if(!strcasecmp(key,"datadir")) {
+			value = Application::DataDir();
+			return true;
+		}
+
+		if(!strcasecmp(key,"cachedir")) {
+			value = Application::CacheDir();
+			return true;
+		}
+
+		if(!strcasecmp(key,"appname")) {
+			value = Application::Name();
+			return true;
+		}
+
+		//
+		// If requested, expand dynamic values (timestamp, environment & url).
+		//
+		if(dynamic) {
+
+			if(strncasecmp(key,"timestamp",9) == 0) {
+				value = TimeStamp().to_string(getarguments(key,"%x %X")).c_str();
+				return true;
+			}
+
+			const char *sep = strstr(key,"://");
+			if(sep) {
+				value = expandFromURL(key);
+				return true;
+			}
+
+		}
+
+#ifdef _WIN32
+		if(!strcasecmp(key,"home")) {
+			replace(
+				from,
+				(to-from)+1,
+				Win32::KnownFolder{FOLDERID_Profile}
+			);
+			continue;
+		}
+#endif // _WIN32
+
+		//
+		// If cleanup is set, replace with an empty string, otherwise keep the marker.
+		//
+		if(cleanup) {
+
+			//
+			// Last resource, search the environment, if not available clean the value.
+			//
+
+#ifdef _WIN32
+			// Windows, use the win32 api
+			char szEnvironment[4096];
+			memset(szEnvironment,0,sizeof(szEnvironment));
+
+			if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
+				value = szEnvironment;
+				return true;
+			}
+
+#else
+
+			// Linux, use standard getenv.
+			const char *env = getenv(key);
+			if(env) {
+				value = env;
+				return true;
+			}
+#endif // _WIN32
+
+			value = "";
+			return true;
+
+		}
+
+		return false;
+	}
+
 	String & String::expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 
 		char starter[3] = { marker, '{', 0 };
@@ -241,7 +330,6 @@
 				throw runtime_error(Logger::String{"Invalid use of '",starter,"}'"});
 			}
 
-			string value;
 			string key{c_str()+from+2,(to-from)-2};
 			size_t split[] = {0,0};
 
@@ -273,10 +361,8 @@
 
 			}
 			
-			//
-			// First, try the supplied expand callback.
-			//
-			if(expander(key.c_str(),value)) {
+			string value;
+			if(expander(key.c_str(),value) || expand_value(key.c_str(),value,dynamic,cleanup)) {
 
 				if(split[1] > split[0]) {
 					value = value.substr(split[0],split[1]-split[0]);
@@ -289,149 +375,13 @@
 				);
 
 				from = find(starter,from);
-				continue;
-
-			}
-
-			//
-			// If requested, expand dynamic values (timestamp, environment & url).
-			//
-			if(dynamic) {
-				if(strncasecmp(key.c_str(),"timestamp",9) == 0) {
-					replace(
-						from,
-						(to-from)+1,
-						TimeStamp().to_string(getarguments(key,"%x %X")).c_str()
-					);
-
-					from = find(starter,from);
-					continue;
-				}
-
-				//
-				// Search for URL identifier.
-				//
-				const char *sep = strstr(key.c_str(),"://");
-
-				if(sep) {
-
-					replace(
-						from,
-						(to-from)+1,
-						expandFromURL(key)
-					);
-					from = find(starter,from);
-					continue;
-
-				}
-
-			}
-
-			//
-			// Check internal values
-			//
-			if(!strcasecmp(key.c_str(),"logdir")) {
-				replace(
-					from,
-					(to-from)+1,
-					Application::LogDir()
-				);
-				continue;
-			}
-
-			if(!strcasecmp(key.c_str(),"datadir")) {
-				replace(
-					from,
-					(to-from)+1,
-					Application::DataDir()
-				);
-				continue;
-			}
-
-			if(!strcasecmp(key.c_str(),"cachedir")) {
-				replace(
-					from,
-					(to-from)+1,
-					Application::CacheDir()
-				);
-				continue;
-			}
-
-			if(!strcasecmp(key.c_str(),"appname")) {
-				replace(
-					from,
-					(to-from)+1,
-					Application::Name()
-				);
-				continue;
-			}
-
-#ifdef _WIN32
-			if(!strcasecmp(key.c_str(),"home")) {
-				replace(
-					from,
-					(to-from)+1,
-					Win32::KnownFolder{FOLDERID_Profile}
-				);
-				continue;
-			}
-#endif // _WIN32
-
-			//
-			// If cleanup is set, replace with an empty string, otherwise keep the marker.
-			//
-			if(cleanup) {
-
-				//
-				// Last resource, search the environment, if not available clean the value.
-				//
-#ifdef _WIN32
-				// Windows, use the win32 api
-				char szEnvironment[4096];
-				memset(szEnvironment,0,sizeof(szEnvironment));
-
-				if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
-					replace(
-						from,
-						(to-from)+1,
-						szEnvironment
-					);
-				} else {
-					replace(
-						from,
-						(to-from)+1,
-						""
-					);
-				}
-
-#else
-				// Linux, use standard getenv.
-				const char *env = getenv(key.c_str());
-				if(env) {
-					replace(
-						from,
-						(to-from)+1,
-						env
-					);
-					from = find(starter,from);
-					continue;
-				} else {
-					replace(
-						from,
-						(to-from)+1,
-						""
-					);
-				}
-#endif // _WIN32
-
-				from = find(starter,from);
 
 			} else {
 
 				from = find(starter,to+1);
 
 			}
-
+					
 		}
 
 		return *this;
