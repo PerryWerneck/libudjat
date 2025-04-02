@@ -30,7 +30,7 @@ namespace Udjat {
 
 	UDJAT_API bool exec(const Request &request, Response &response);
 
-	[[deprecated("Use Interface")]] class UDJAT_API Worker {
+	class [[deprecated("Use Interface")]] UDJAT_API Worker {
 	private:
 		const char * name = "";
 

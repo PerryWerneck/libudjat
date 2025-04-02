@@ -582,12 +582,12 @@
 			return false;
 		}
 
-		Udjat::string get(const std::string &group, const std::string &name, const char *def) const {
-			return Udjat::String(def);
+		Udjat::String get(const std::string &group, const std::string &name, const char *def) const {
+			return Udjat::String{def};
 		}
 
-		Udjat::string get(const std::string &group, const std::string &name, const std::string &def) const {
-			return Udjat::string(def);
+		Udjat::String get(const std::string &group, const std::string &name, const std::string &def) const {
+			return Udjat::String{def};
 		}
 
 		template<typename T>
