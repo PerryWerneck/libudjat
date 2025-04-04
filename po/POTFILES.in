@@ -190,10 +190,10 @@ src/library/tools/url/header.cc
 src/library/tools/url/methodfactory.cc
 src/library/tools/url/protocol.cc
 src/library/tools/url/unescape.cc
-src/library/tools/url/url.cc
 src/library/tools/url/watcher.cc
 src/library/tools/url/worker.cc
 src/library/tools/url/handler.cc
+src/library/tools/url/url.cc
 src/library/tools/value/abstract.cc
 src/library/tools/value/construct.cc
 src/library/tools/value/csv.cc

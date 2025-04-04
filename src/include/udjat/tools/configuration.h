@@ -84,19 +84,15 @@
 		class UDJAT_API Value<Udjat::String> : public Udjat::String {
 		public:
 			Value(const char *g, const char *n, const char *d = "")
-				: Udjat::String{Config::get(g,n,d)} {
+				: Udjat::String{Config::get(g,n,d).c_str()} {
 			}
 		};
 
 		template <>
 		class UDJAT_API Value<std::string> : public std::string {
-		private:
-			std::string group;
-			std::string name;
-
 		public:
 			Value(const char *g, const char *n, const char *d = "")
-				: std::string{Config::get(g,n,d)},group(g),name(n) {
+				: std::string{Config::get(g,n,d).c_str()} {
 			}
 
 			/// @brief Translate block ${name} in the string to *value.

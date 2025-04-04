@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-04 09:34-0300\n"
+"POT-Creation-Date: 2025-04-03 17:22-0300\n"
 "PO-Revision-Date: 2025-03-03 18:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -401,7 +401,7 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/object.cc:267
+#: src/library/tools/object.cc:269
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
@@ -622,7 +622,7 @@ msgstr "Incapaz de definir o grupo do subprocesso"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/worker/worker.cc:52
+#: src/library/worker/worker.cc:54
 msgid "Invalid response type"
 msgstr "Resposta de tipo inválido"
 
