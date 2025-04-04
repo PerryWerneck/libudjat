@@ -84,6 +84,22 @@
 		File::Path::replace(filename,contents);
 	}
 
+	File::Text & File::Text::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+		return expand('$',expander,dynamic,cleanup);
+	}
+
+	File::Text & File::Text::expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+
+		if(!(contents && *contents)) {
+			return *this;
+		}
+
+		String text{contents};
+		text.expand(marker,expander,dynamic,cleanup);
+
+		return set(text.c_str());
+	}
+
 	File::Text & File::Text::set(const char *contents) {
 
 		unload();

@@ -114,6 +114,19 @@ namespace Udjat {
 				for_each(contents,call);
 			}
 
+			/// @brief Expand ${} macros.
+			/// @param expander value expander method.
+			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+			/// @param cleanup if true remove the non existent values from string.
+			Text & expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic = false, bool cleanup = false);
+
+			/// @brief Expand using customized marker.
+			/// @param expander value expander method.
+			/// @param marker The marker.
+			/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
+			/// @param cleanup if true remove the non existent values from string.
+			Text & expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic = false, bool cleanup = false);
+
 			/// @brief Save file contents.
 			void save() const;
 
