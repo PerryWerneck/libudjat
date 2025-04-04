@@ -80,6 +80,10 @@
 		File::Path::save(contents);
 	}
 
+	void File::Text::save(const char *name) {
+		File::Path::save(name,contents);
+	}
+
 	void File::Text::replace(const char *filename) {
 		File::Path::replace(filename,contents);
 	}

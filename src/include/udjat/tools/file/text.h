@@ -130,6 +130,9 @@ namespace Udjat {
 			/// @brief Save file contents.
 			void save() const;
 
+			/// @brief Save file contents with a new name.
+			void save(const char *name);
+
 			/// @brief Replace file contents without backup.
 			/// @param filename The new filename.
 			void replace(const char *filename);
