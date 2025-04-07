@@ -17,6 +17,12 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+
+ // References:
+ //
+ // https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+ //
+
 #include <config.h>
 #include <private/misc.h>
 #include <cstring>
@@ -68,6 +74,7 @@ namespace Udjat {
 	}
 
 	UI::Console::~Console() {
+		*this << "\x1B[0m";
 		Logger::console(enabled);
 	}
 
@@ -179,10 +186,18 @@ namespace Udjat {
 
 	}
 
-	UI::Console & UI::Console::set(const Color color) {
+	UI::Console & UI::Console::set(const Foreground color) {
+		*this << "\x1B[" << (int) color << "m";
 		return *this;
 	}
 
+	void UI::Console::bold(bool on) {
+		*this << "\x1B[" << (on ? "1" : "22") << "m";
+	}
+
+	void UI::Console::faint(bool on) {
+		*this << "\x1B[" << (on ? "2" : "22") << "m";
+	}
 
 
 }

@@ -49,10 +49,12 @@
 		UI::Console console;
 		console << "Testing simple line writer" << endl;
 		console << endl << endl << endl;
+		console.faint(true);
 		for(size_t ix = 0; ix < 1000; ix++) {
-			URL::progress_to_console("(001/001)","http://www.google.com",ix,1000);
+			console.progress("(001/001)","http://www.google.com",ix,1000);
 			usleep(1500);
 		}
+		console.faint(false);
 		console << endl << endl << endl;
 	}
 

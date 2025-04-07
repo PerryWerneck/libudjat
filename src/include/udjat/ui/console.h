@@ -39,7 +39,8 @@
 			
 		public:
 
-			enum Color : uint8_t {
+			enum Foreground : uint8_t {
+				Default = 39,
 				Black = 30,
 				Red = 31,
 				Green = 32,
@@ -53,7 +54,7 @@
 			Console();
 			~Console();
 
-			Console & set(const Color color);
+			Console & set(const Foreground color);
 
 			/// @brief Console writer.
 			/// @param message The message to write.
@@ -63,10 +64,16 @@
 			//	std::cout << "\033[" << color << "m" << icon << " " << message << "\033[0m" << std::endl;
 			//}
 
+			/// @brief set bold mode.
+			void bold(bool on);
+
+			/// @brief set dim/faint mode.
+			void faint(bool on);
+			
 			unsigned short width() const noexcept;
 
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
-			
+
 			
 		};
 

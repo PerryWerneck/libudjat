@@ -397,6 +397,5 @@
 		return UI::Console{}.progress(prefix,url,current,total);
 	}
 
-
  }
 
