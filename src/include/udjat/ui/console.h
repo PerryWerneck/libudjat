@@ -69,7 +69,10 @@
 
 			/// @brief set dim/faint mode.
 			void faint(bool on);
-			
+
+			/// @brief set italic mode.
+			void italic(bool on);
+
 			unsigned short width() const noexcept;
 
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
@@ -82,4 +85,11 @@
 
  }
 
- 
+ namespace std {
+
+	inline Udjat::UI::Console & operator<< (Udjat::UI::Console &os, const Udjat::UI::Console::Foreground fg) {
+		os.set(fg);
+		return os;
+	}
+
+ }

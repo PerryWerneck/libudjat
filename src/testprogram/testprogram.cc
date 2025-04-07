@@ -49,7 +49,9 @@
 		UI::Console console;
 		console << "Testing simple line writer" << endl;
 		console << endl << endl << endl;
+		console << UI::Console::Foreground::Yellow;
 		console.faint(true);
+		console.italic(true);
 		for(size_t ix = 0; ix < 1000; ix++) {
 			console.progress("(001/001)","http://www.google.com",ix,1000);
 			usleep(1500);

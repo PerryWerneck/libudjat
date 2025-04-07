@@ -199,5 +199,8 @@ namespace Udjat {
 		*this << "\x1B[" << (on ? "2" : "22") << "m";
 	}
 
+	void UI::Console::italic(bool on) {
+		*this << "\x1B[" << (on ? "3" : "23") << "m";
+	}
 
 }
