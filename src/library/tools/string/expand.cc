@@ -327,7 +327,7 @@
 
 			auto to = find("}",from+3);
 			if(to == string::npos) {
-				throw runtime_error(Logger::String{"Invalid use of '",starter,"}'"});
+				throw runtime_error(Logger::String{"Invalid use of '",starter,"}' on '",c_str(),"' at ",from});
 			}
 
 			string key{c_str()+from+2,(to-from)-2};
