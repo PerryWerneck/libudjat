@@ -23,6 +23,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file/temporary.h>
+ #include <udjat/ui/console.h>
  #include <uriparser/Uri.h>
  #include <stdexcept>
  #include <string>
@@ -33,7 +34,6 @@
  #include <libgen.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/base64.h>
- #include <sys/ioctl.h>
  #include <algorithm>
 
  #ifdef HAVE_UNISTD_H
@@ -394,101 +394,7 @@
 	}
 
 	bool URL::progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
-
-#ifdef _WIN32
-		
-		// Not implemented
-
-#else
-
-	struct winsize w;
-	ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-
-	char line[w.ws_col+1];
-	memset(line,' ',w.ws_col+1);
-	line[w.ws_col] = 0;	
-
-	// 000000000011111111112222222222333333333344444444445555555555666666666677777777778
-	// 012345678901234567890123456789012345678901234567890123456789012345678901234567890
-	// URL.................................... [################################] 100.0%
-
-	size_t plen = strlen(prefix ? prefix : "");
-	size_t ulen = strlen(url);
-
-	if(w.ws_col >= 40) {
-
-		size_t pos = (w.ws_col/2);
-		{
-			memcpy(line, prefix, plen);
-			
-			plen++;
-			int spc = (pos - plen);
-			if(spc > (int) ulen) {
-				memcpy(line+plen, url, ulen);
-			} else {
-				memcpy(line+plen,"...",3);
-				spc -= 4;
-				memcpy(line+plen+3, url+(ulen-spc), spc);
-			}
-
-		}
-
-		line[pos++] = '[';
-		float progress_len = (float) w.ws_col - (pos + 7);
-
-		char text[10];
-		memset(text,0,10);
-
-		if(total) {
-
-			float progress = (float) current / (float) total;
-			if(current >= total) {
-				snprintf(text,10,"100.0%%");
-			} else {
-				snprintf(text,10,"%3.1f%%",progress * 100.0);
-			}
-	
-			size_t p = (size_t) (progress_len * progress);
-			memset(line+pos,'#',p);
-
-		} else {
-
-			snprintf(text,10,"0.0%%");
-		}
-
-		memcpy(line+w.ws_col-strlen(text),text,strlen(text));
-
-		pos += (progress_len-1);
-		line[pos++] = ']';
-
-	} else {
-
-		if(ulen >= (size_t) (w.ws_col-8)) {
-			strncpy(line,url,w.ws_col-12);
-			memcpy(line+(w.ws_col-12),"... ",4);
-		} else {
-			strncpy(line,url,ulen);
-		}
-
-		char text[10];
-		if(current >= total) {
-			snprintf(text,10,"100.0%%");
-		} else {
-			float progress = (float) current / (float) total;
-			snprintf(text,10,"%3.1f%%",progress * 100.0);
-		}
-
-		memcpy(line+w.ws_col-strlen(text),text,strlen(text));
-
-	}
-
-	write(STDOUT_FILENO,"\r\x1B[0K",5);
-	write(STDOUT_FILENO,line,strlen(line));
-	write(STDOUT_FILENO,"\r",1);
-	
-#endif
-
-		return false;
+		return UI::Console{}.progress(prefix,url,current,total);
 	}
 
 

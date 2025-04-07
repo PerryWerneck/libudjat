@@ -326,6 +326,7 @@ lib_src += [
   'src/library/tools/os/' + host_machine.system() + '/socket.cc',
   'src/library/tools/url/handlers/file.cc',
   'src/library/tools/url/handlers/script.cc',
+  'src/library/tools/console.cc',
 ]
 
 test_src = [

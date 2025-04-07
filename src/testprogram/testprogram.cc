@@ -31,6 +31,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/ui/console.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -43,19 +44,25 @@
 
  int main(int argc, char **argv) {
 
-	/*
-	cout << endl << endl << endl;
-	for(size_t ix = 0; ix < 1000; ix++) {
-		URL::progress_to_console("(001/001)","http://www.google.com",ix,1000);
-		usleep(1500);
-	}
-	cout << endl << endl << endl;
-	*/
+	{
 
+		UI::Console console;
+		console << "Testing simple line writer" << endl;
+		console << endl << endl << endl;
+		for(size_t ix = 0; ix < 1000; ix++) {
+			URL::progress_to_console("(001/001)","http://www.google.com",ix,1000);
+			usleep(1500);
+		}
+		console << endl << endl << endl;
+	}
+
+
+	/*
 	{
 		Config::Value<string> config{"test-config", "test-value","default-value"};
 		debug("Config value: ",config.c_str()," len=",config.size()," value[0]=",config[0]);
 	}
+	*/
 
 	/*
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
