@@ -73,6 +73,9 @@
 			/// @brief set italic mode.
 			void italic(bool on);
 
+			/// @brief Show/Hide cursor.
+			void cursor(bool on);
+
 			unsigned short width() const noexcept;
 
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;

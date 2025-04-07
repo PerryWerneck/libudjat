@@ -47,6 +47,10 @@
 		UDJAT_PRIVATE void file_writer(Level level, const char *domain, const char *text) noexcept;
 		UDJAT_PRIVATE void console_writer(Level level, const char *domain, const char *text) noexcept;
 
+#ifndef _WIN32
+		UDJAT_PRIVATE const char * decoration(Level level) noexcept;
+#endif // _WIN32
+
 		struct UDJAT_PRIVATE Options {
 
 			/// @brief Console writer.

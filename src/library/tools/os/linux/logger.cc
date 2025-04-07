@@ -123,11 +123,7 @@ namespace Udjat {
 
 	}
 
-	/// @brief Default console writer.
-	void Logger::console_writer(Logger::Level level, const char *domain, const char *text) noexcept {
-
-		// Write to console.
-		static bool decorated = (getenv("TERM") != NULL);
+	UDJAT_PRIVATE const char * Logger::decoration(Level level) noexcept {
 
 		static const char *decorations[] = {
 			"\x1b[91m",	// Error
@@ -139,8 +135,18 @@ namespace Udjat {
 			"\x1b[96m",	// SysInfo (Allways Debug+1)
 		};
 
+		return decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))];
+
+	}
+
+	/// @brief Default console writer.
+	void Logger::console_writer(Logger::Level level, const char *domain, const char *text) noexcept {
+
+		// Write to console.
+		static bool decorated = (getenv("TERM") != NULL);
+
 		if(decorated) {
-			Logger::write(1,decorations[((size_t) level) % (sizeof(decorations)/sizeof(decorations[0]))]);
+			Logger::write(1,decoration(level));
 		}
 
 		Logger::timestamp(1);

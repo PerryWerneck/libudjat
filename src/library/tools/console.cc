@@ -71,9 +71,11 @@ namespace Udjat {
 		static ConsoleWriter writer;
 		Logger::console(false);
 		this->rdbuf(&writer);
+		cursor(false);
 	}
 
 	UI::Console::~Console() {
+		cursor(true);
 		*this << "\x1B[0m";
 		Logger::console(enabled);
 	}
@@ -201,6 +203,10 @@ namespace Udjat {
 
 	void UI::Console::italic(bool on) {
 		*this << "\x1B[" << (on ? "3" : "23") << "m";
+	}
+
+	void UI::Console::cursor(bool on) {
+		*this << "\x1B[" << (on ? "?25h" : "?25l");
 	}
 
 }
