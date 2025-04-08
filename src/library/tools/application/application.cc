@@ -130,7 +130,7 @@
 
 	}
 
-	bool Application::popup(int &argc, char **argv, char shortname, const char *longname) {
+	bool Application::pop(int argc, char **argv, char shortname, const char *longname) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -168,7 +168,7 @@
 		return false;
 	}
 
-	bool Application::popup(int &argc, char **argv, char shortname, const char *longname, std::string value) {
+	bool Application::pop(int argc, char **argv, char shortname, const char *longname, std::string value) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -217,6 +217,7 @@
 
 	}
 
+	/*
 	const char * Application::getProperty(const char *name, const char *def) const noexcept {
 
 		size_t szname = strlen(name);
@@ -252,6 +253,7 @@
 		return def;
 
 	}
+	*/
 
  }
 

@@ -128,60 +128,61 @@
 
 #endif // !_WIN32
 
-	int Application::setup(int argc, char **argv, const char *) {
+	int Application::setup(const char *) {
 
 		debug("---> Running ",__FUNCTION__);
 
 		string argvalue;
 
-		while(popup(argc,argv,'v',"verbose")) {
+		while(pop('v',"verbose")) {
 			Logger::verbosity(Logger::verbosity()+1);
 		}
 
-		if(popup(argc,argv,'f',"foreground")) {
+		if(pop('f',"foreground")) {
 			Logger::console(true);
 		}
 
-		if(popup(argc,argv,0,"debug")) {
+		if(pop(0,"debug")) {
 			Logger::enable(Logger::Debug);
 		}
 
-		if(popup(argc,argv,0,"trace")) {
+		if(pop(0,"trace")) {
 			Logger::enable(Logger::Trace);
 		}
 
-		if(popup(argc,argv,'q',"quiet")) {
+		if(pop('q',"quiet")) {
 			Logger::console(false);
 		}
 
 #ifndef _WIN32
-		if(popup(argc,argv,'C',"coredump")) {
+		if(pop('C',"coredump")) {
 			setup_coredump();
 		}
 		
-		if(popup(argc,argv,'C',"coredump",argvalue)) {
+		if(pop('C',"coredump",argvalue)) {
 			setup_coredump(argvalue.c_str());
 		}
 #endif // _WIN32
 
-		if(popup(argc,argv,'T',"timer",argvalue)) {
+		if(pop('T',"timer",argvalue)) {
 			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
 				MainLoop::getInstance().quit("Timer expired, exiting");
 				return false;
 			});
 		}
 
+		if(pop(0,"version",argvalue)) {
+			UI::Console{} << name().c_str() << " Vrs. " << PACKAGE_VERSION << endl;
+			return -1;
+		}
+				
 		return 0;
 
 	}
 
-	int Application::run(int argc, char **argv) {
-		return run(argc,argv,nullptr);
-	}
+	int Application::run(const char *definitions) {
 
-	int Application::run(int argc, char **argv, const char *definitions) {
-
-		if(popup(argc,argv,'h',"help")) {
+		if(pop('h',"help")) {
 
 			// Show help text.
 			Udjat::UI::Console console;
@@ -190,23 +191,16 @@
 			help(console);
 			console << "     --debug               Enable debug messages" << endl;
 			console << "     --trace               Enable trace messages" << endl;
-	//		console << "     --version             Show version" << endl;
+			console << "     --version             Show version" << endl;
 			return -2;
 		}
 
-		Logger::redirect();
+		Logger::redirect();	
 
 		// Parse command line arguments.
-		if(setup(argc,argv,definitions)) {
+		if(setup(definitions)) {
 			return -1;
 		}
-
-		Logger::redirect();
-		return run(definitions);
-
-	}
-
-	int Application::run(const char *definitions) {
 
 		if(!MainLoop::getInstance()) {
 			return 0;

@@ -22,6 +22,7 @@
  #include <udjat/tests.h>
  #include <iostream>
  #include <string.h>
+ #include <udjat/tools/application.h>
  #include <udjat/tools/configuration.h>
  
  using namespace std;
@@ -91,21 +92,21 @@
 		int rc = -1;
 
 		// Logger::redirect();
-		// Logger::verbosity(9);
-		// Logger::console(true);
+		Logger::verbosity(9);
+		Logger::console(true);
 
 		Config::Value<string> setup{"test-mode","xml_path",xml};
 
-		if(Application::popup(argc,argv,0,"service")) {
+		if(Application::pop(argc,argv,0,"service") || !strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"service")) {
 
 			// Run as service.
-			rc = Testing::Service{info,initialize}.run(argc,argv,setup.c_str());
+			rc = Testing::Service{argc,argv,info,initialize}.run(setup.c_str());
 			Logger::String{"Service exits with rc=",rc}.info("test");
 
 		} else {
 
 			// Run as application
-			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
+			rc = Testing::Application{argc,argv,info,initialize}.run(setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 
 		}
@@ -113,7 +114,7 @@
 		return rc;
 
 		/*
-		if(argc == 1 && Application::popup(argc,argv,0,"application")) {
+		if(argc == 1 && Application::pop(argc,argv,0,"application")) {
 			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 			return rc;

@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	Application::Application() {
+	Application::Application(int c, char **v) : argc{c}, argv{v} {
 
 		Quark::init();
 
@@ -38,6 +38,7 @@
 		set_gettext_package(GETTEXT_PACKAGE);
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
+
 
 	}
 

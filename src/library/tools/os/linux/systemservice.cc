@@ -29,6 +29,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timer.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/ui/console.h>
  #include <unistd.h>
 
  #ifdef HAVE_SYSTEMD
@@ -49,59 +50,24 @@
 
  namespace Udjat {
 
-	int SystemService::setup(int argc, char **argv, const char *definitions) {
+	int SystemService::setup(const char *definitions) {
 
-		if(popup(argc,argv,'d',"daemon")) {
+		if(pop('d',"daemon")) {
 			mode = Daemon;
 		}
 
-		if(popup(argc,argv,'f',"foreground")) {
+		if(pop('f',"foreground")) {
 			mode = Foreground;
 		}
 
-		return Application::setup(argc,argv,definitions);
+		return Application::setup(definitions);
 	}
 
-
-	/*
-	bool SystemService::argument(const char *opt, const char *optarg) {
-
-		for(auto &option : options) {
-			if(!strcasecmp(opt,option.from)) {
-				return argument(option.to,optarg);
-			}
-		}
-
-		return Application::argument(opt,optarg);
-	}
-
-	/// @brief Set command-line argument.
-	/// @param name argument name.
-	/// @param value argument value.
-	/// @return true if the argument was parsed.
-	bool SystemService::argument(const char opt, const char *optarg) {
-
-		switch(opt) {
-		case 'f':
-			mode = Foreground;
-			break;
-
-		case 'd':
-		case 'D':
-			mode = Daemon;
-			return true;
-
-		}
-
-		return Application::argument(opt,optarg);
-	}
-	*/
-
-	/// @brief Show help text to stdout.
+	/// @brief Show help text to stream.
+	/// @param out The stream for help.
 	void SystemService::help(std::ostream &out) const noexcept {
 		Application::help(out);
 		out << "  -d --daemon              Run in background" << endl;
-
 	}
 
 	/// @brief Initialize service.
@@ -133,8 +99,21 @@
 
 	int SystemService::run(const char *definitions) {
 
+		if(pop('h',"help")) {
+
+			// Show help text.
+			Udjat::UI::Console console;
+
+			console << "Usage: " << argv[0] << " [options]" << endl << endl << "Options:" << endl;			
+			help(console);
+			console << "     --debug               Enable debug messages" << endl;
+			console << "     --trace               Enable trace messages" << endl;
+			console << "     --version             Show version" << endl;
+			return -2;
+		}
+
 		if(!MainLoop::getInstance()) {
-			return 0;
+			return -1;
 		}
 
 		int rc = 0;

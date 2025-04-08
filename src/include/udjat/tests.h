@@ -50,23 +50,25 @@ namespace Udjat {
 		/// @brief System service tester.
 		class UDJAT_PRIVATE Service : public SystemService, private RandomFactory {
 		public:
-			Service(const Udjat::ModuleInfo &info);
-			Service(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize);
-			static int run_tests(int argc, char **argv, const Udjat::ModuleInfo &info);
+			Service(int argc, char **argv, const Udjat::ModuleInfo &info);
+			Service(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize);
 			void root(std::shared_ptr<Abstract::Agent> agent);
 
+			static int run_tests(int argc, char **argv, const Udjat::ModuleInfo &info);
 			
 		};
 
 		/// @brief Application tester.
 		class Application : public Udjat::Application, private RandomFactory {
 		public:
-			Application(const Udjat::ModuleInfo &info);
-			Application(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize);
-			static int run_tests(int argc, char **argv, const Udjat::ModuleInfo &info);
+			Application(int argc, char **argv, const Udjat::ModuleInfo &info);
+			Application(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize);
+			void root(std::shared_ptr<Abstract::Agent>);
+
 			int install(const char *name) override;
 			int uninstall() override;
-			void root(std::shared_ptr<Abstract::Agent>);
+
+			static int run_tests(int argc, char **argv, const Udjat::ModuleInfo &info);
 
 		};
 

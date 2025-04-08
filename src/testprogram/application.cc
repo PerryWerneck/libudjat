@@ -37,19 +37,20 @@
 		Logger::verbosity(9);
 		Logger::console(true);
 
-		auto rc = Testing::Application{info}.run(argc,argv,"./test.xml");
+		auto rc = Testing::Application{argc,argv,info}.run("./test.xml");
 
 		Logger::String{"Application exits with rc=",rc}.info("test");
 		return rc;
 
 	}
 
-	Testing::Application::Application(const Udjat::ModuleInfo &info) :RandomFactory{info} {
+	Testing::Application::Application(int argc, char **argv, const Udjat::ModuleInfo &info) 
+		: Udjat::Application{argc,argv}, RandomFactory{info} {
 
 	}
 
-	Testing::Application::Application(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize)
-		: Application{info} {
+	Testing::Application::Application(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize)
+		: Testing::Application{argc,argv,info} {
 		initialize(*this);
 	}
 

@@ -73,19 +73,19 @@
 
 		//DummyProtocol protocol;
 
-		auto rc = Testing::Service{info}.run(argc,argv,"./test.xml");
+		auto rc = Testing::Service{argc,argv,info}.run("./test.xml");
 
 		Logger::String{"Service exits with rc=",rc}.info("test");
 		return rc;
 
 	}
 
-	Testing::Service::Service(const Udjat::ModuleInfo &info)
-		: RandomFactory{info} {
+	Testing::Service::Service(int argc, char **argv, const Udjat::ModuleInfo &info)
+		: Udjat::SystemService{argc,argv},RandomFactory{info} {
 	}
 
-	Testing::Service::Service(const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize)
-		: Service{info} {
+	Testing::Service::Service(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize)
+		: Service{argc,argv,info} {
 		initialize(*this);
 	}
 

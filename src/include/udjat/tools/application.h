@@ -38,14 +38,19 @@
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
 
+		/*
 		struct {
 			int count = 0;
 			const char **value = nullptr;
 		} args;
+		*/
 
 	protected:
 
 		typedef Udjat::Application super;
+
+		int argc;
+		char **argv;
 
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
@@ -72,22 +77,29 @@
 		virtual void help(std::ostream &out) const noexcept;
 
 	public:
-		Application();
+		Application(int argc, char **argv);
 		virtual ~Application();
+
+		static bool pop(int argc, char **argv, char shortname, const char *longname);
+		static bool pop(int argc, char **argv, char shortname, const char *longname, std::string value);
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.
 		/// @return true if the argument was found
-		static bool popup(int &argc, char **argv, char shortname, const char *longname);
+		inline bool pop(char shortname, const char *longname) {
+			return pop(argc, argv, shortname, longname);
+		}
 
-		static bool popup(int &argc, char **argv, char shortname, const char *longname, std::string value);
+		inline bool pop(char shortname, const char *longname, std::string value) {
+			return pop(argc, argv, shortname, longname, value);
+		}
 
 		/// @brief Get application property.
-		virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
+		// virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
 
-		inline const char * operator[](const char *property_name) const noexcept {
-			return getProperty(property_name);
-		}
+		//inline const char * operator[](const char *property_name) const noexcept {
+		//	return getProperty(property_name);
+		//}
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
@@ -104,24 +116,16 @@
 		/// @param definitions Path to a single xml file or a folder with xml files.
 		/// @return 0 if ok, error code if not.
 		/// @retval ECANCELED cancelled by command line argument (--help or other informational options).
-		virtual int setup(int argc, char **argv, const char *definitions = nullptr);
+		virtual int setup(const char *definitions = nullptr);
 
 		/// @brief Parse command line options, run application.
-		/// @param definitions Path to a single xml file or a folder with xml files.
-		virtual int run(int argc, char **argv, const char *definitions);
-
-		/// @brief Parse command line options, run application with default definitions.
-		virtual int run(int argc, char **argv);
-
-		/// @brief Run application.
 		/// @param definitions Path to a single xml file or a folder with xml files.
 		virtual int run(const char *definitions = nullptr);
 
 		/// @brief Load XML application definitions.
-		/// @param pathname Path to a single xml file or a folder with xml files.
+		/// @param definitions Path to a single xml file or a folder with xml files.
 		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
-		/// @return Seconds for reonfiguration.
-		virtual void setup(const char *pathname = nullptr, bool startup = false);
+		virtual void setup(const char *definitions, bool startup);
 
 		/// @brief Install application.
 		/// @param name Application name.

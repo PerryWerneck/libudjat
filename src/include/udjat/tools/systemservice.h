@@ -74,7 +74,7 @@
 		/// @brief Show help text to stdout.
 		void help(std::ostream &out) const noexcept override;
 
-		int setup(int argc, char **argv, const char *definitions = nullptr) override;
+		int setup(const char *definitions = nullptr) override;
 
 	public:
 		SystemService(const SystemService&) = delete;
@@ -84,7 +84,7 @@
 
 		static SystemService & getInstance();
 
-		SystemService();
+		SystemService(int argc, char **argv);
 		virtual ~SystemService();
 
 		/// @brief Initialize service.
@@ -110,13 +110,7 @@
 		virtual int stop();
 
 		/// @brief Parse command line options, run application.
-		virtual int run(int argc, char **argv, const char *definitions);
-
-		/// @brief Parse command line options, run application with default definitions.
-		virtual int run(int argc, char **argv);
-
-		/// @brief Run application.
-		virtual int run(const char *definitions = nullptr);
+		int run(const char *definitions = nullptr) override;
 
 	};
 
