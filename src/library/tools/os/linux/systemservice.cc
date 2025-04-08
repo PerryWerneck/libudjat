@@ -73,8 +73,16 @@
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {
 
-		// TODO: Install unhandled exception manager.
+		// Install unhandled exception manager.
 		// https://en.cppreference.com/w/cpp/error/set_terminate
+		std::set_terminate([]() {
+#ifdef HAVE_SYSTEMD
+			sd_notify(0,"STATUS=Unhandled exception");
+			sd_notify(0,"STOPPING=1");
+#endif // HAVE_SYSTEMD
+			Logger::String{"Unhandled exception"}.error(PACKAGE_NAME);
+			std::abort();
+		});
 
 		int rc = Application::init(definitions);
 		if(rc) {
