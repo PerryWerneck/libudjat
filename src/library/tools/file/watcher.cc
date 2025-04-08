@@ -32,7 +32,7 @@
 	}
 
 	File::Watcher::Watcher(const XML::Node &node, const char *attrname)
-		: File::Watcher{Object::getAttribute(node, attrname, "")} {
+		: File::Watcher{String{node,attrname,""}.as_quark()} {
 
 		if(node.attribute("watch-file-changes").as_bool(true)) {
 			watch();
