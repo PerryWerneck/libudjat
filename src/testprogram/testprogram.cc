@@ -45,6 +45,19 @@
  int main(int argc, char **argv) {
 
 	{
+		std::string value;
+
+		Application::popup_arg(argc,argv,'h',"help");
+		Application::popup_arg(argc,argv,'v',"verbose",value);
+
+		for(int ix = 1; ix < argc; ix++) {
+			debug("Arg unprocessed: '",argv[ix]);
+		}
+
+		return 0;
+	}
+
+	{
 
 		UI::Console console;
 		console << "Testing simple line writer" << endl;

@@ -87,6 +87,13 @@
 		Application();
 		virtual ~Application();
 
+		/// @brief Pop command line argument. 
+		/// @details Scan command line options from arguments, if found extract it.
+		/// @return true if the argument was found
+		static bool popup_arg(int &argc, char **argv, char shortname, const char *longname);
+
+		static bool popup_arg(int &argc, char **argv, char shortname, const char *longname, std::string value);
+
 		/// @brief Get application property.
 		virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
 

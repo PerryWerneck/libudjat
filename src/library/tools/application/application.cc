@@ -121,6 +121,102 @@
 		return instance;
 	}
 
+	static void extract(int dst, int &argc, char **argv) {
+
+		for(int src = dst+1; src < argc; src++) {
+			argv[dst++] = argv[src];		
+		}
+		argc--;
+
+	}
+
+	bool Application::popup_arg(int &argc, char **argv, char shortname, const char *longname) {
+
+		debug("Argc=",argc);
+		size_t szlong = 0;
+		if(longname && *longname) {
+			szlong = strlen(longname);
+		}
+
+		for(int ix = 1; ix < argc; ix++) {
+
+			debug("ix=",ix," arg='",argv[ix],"'");
+
+			if(argv[ix][0] != '-') {
+				continue;
+			}
+
+			if(shortname && argv[ix][1] == shortname && !argv[ix][2]) {
+				debug("Found short arg '",argv[ix],"'");
+				extract(ix,argc,argv);
+				return true;
+			
+			}
+
+			if(!szlong) {
+				continue;
+			}
+
+			if(argv[ix][1] == '-' && !strcmp(longname,(argv[ix]+2)) && argv[ix][szlong+2] == 0) {
+				debug("Found long arg '",(argv[ix]+2),"'");
+				extract(ix,argc,argv);
+				return true;			
+			}
+
+		}
+
+		return false;
+	}
+
+	bool Application::popup_arg(int &argc, char **argv, char shortname, const char *longname, std::string value) {
+
+		debug("Argc=",argc);
+		size_t szlong = 0;
+		if(longname && *longname) {
+			szlong = strlen(longname);
+		}
+
+		for(int ix = 1; ix < argc; ix++) {
+
+			debug("ix=",ix," arg='",argv[ix],"'");
+
+			if(argv[ix][0] != '-') {
+				continue;
+			}
+
+			if(shortname && argv[ix][1] == shortname && !argv[ix][2]) {
+				debug("ix=",ix," argc=",argc);
+				if(ix == (argc-1) || argv[ix+1][0] == '-') {
+					debug("Ignoring short arg '",argv[ix],"'");
+					continue;
+				}
+				value = argv[ix+1];
+				extract(ix,argc,argv);
+				debug("--------------> ",ix," ",argv[ix]);
+				extract(ix,argc,argv);
+				debug("--------------> ",ix," ",argv[ix]);
+				debug("Found short arg '",shortname,"'='",value,"'");
+				return true;
+			
+			}
+
+			if(!szlong) {
+				continue;
+			}
+
+			if(argv[ix][1] == '-' && !strncmp(longname,(argv[ix]+2),szlong) && argv[ix][szlong+2] == '=') {
+				value=argv[ix]+szlong+3;
+				extract(ix,argc,argv);
+				debug("Found long arg '",longname,"'='",value,"'");
+				return true;			
+			}
+
+		}
+
+		return false;
+
+	}
+
 	const char * Application::getProperty(const char *name, const char *def) const noexcept {
 
 		size_t szname = strlen(name);
