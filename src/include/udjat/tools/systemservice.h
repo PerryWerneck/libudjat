@@ -71,20 +71,10 @@
 		/// @brief Reconfigure service.
 		void setup(const char *pathname, bool startup) noexcept override;
 
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		bool argument(const char *name, const char *value = nullptr) override;
-
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		bool argument(const char name, const char *value = nullptr) override;
-
 		/// @brief Show help text to stdout.
 		void help(std::ostream &out) const noexcept override;
+
+		int setup(int argc, char **argv, const char *definitions = nullptr) override;
 
 	public:
 		SystemService(const SystemService&) = delete;

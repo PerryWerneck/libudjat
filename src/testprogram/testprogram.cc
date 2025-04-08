@@ -44,19 +44,7 @@
 
  int main(int argc, char **argv) {
 
-	{
-		std::string value;
-
-		Application::popup_arg(argc,argv,'h',"help");
-		Application::popup_arg(argc,argv,'v',"verbose",value);
-
-		for(int ix = 1; ix < argc; ix++) {
-			debug("Arg unprocessed: '",argv[ix]);
-		}
-
-		return 0;
-	}
-
+	/*
 	{
 
 		UI::Console console;
@@ -72,7 +60,7 @@
 		console.faint(false);
 		console << endl << endl << endl;
 	}
-
+	*/
 
 	/*
 	{
@@ -81,7 +69,8 @@
 	}
 	*/
 
-	/*
+	debug("Argc=",argc);
+	
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
@@ -193,6 +182,5 @@
 		});
 
 	});
-	*/
 
  }

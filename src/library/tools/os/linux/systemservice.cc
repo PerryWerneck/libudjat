@@ -37,6 +37,7 @@
 
  using namespace std;
 
+ /*
  static const struct {
 	char to;
 	const char *from;
@@ -44,9 +45,25 @@
  } options[] = {
 	{ 'd',	"daemon",	"\t\tRun in background" }
  };
+ */
 
  namespace Udjat {
 
+	int SystemService::setup(int argc, char **argv, const char *definitions) {
+
+		if(popup(argc,argv,'d',"daemon")) {
+			mode = Daemon;
+		}
+
+		if(popup(argc,argv,'f',"foreground")) {
+			mode = Foreground;
+		}
+
+		return Application::setup(argc,argv,definitions);
+	}
+
+
+	/*
 	bool SystemService::argument(const char *opt, const char *optarg) {
 
 		for(auto &option : options) {
@@ -78,15 +95,12 @@
 
 		return Application::argument(opt,optarg);
 	}
+	*/
 
 	/// @brief Show help text to stdout.
 	void SystemService::help(std::ostream &out) const noexcept {
-
 		Application::help(out);
-
-		for(auto &option : options) {
-			out << "  --" << option.from << option.help << endl;
-		}
+		out << "  -d --daemon              Run in background" << endl;
 
 	}
 

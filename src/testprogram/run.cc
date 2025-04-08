@@ -32,7 +32,7 @@
 
 		return run(argc,argv,info,[](Udjat::Application &){
 
-		},xml);
+	},xml);
 
 		/*
 		Config::allow_user_homedir(true);
@@ -90,13 +90,30 @@
 
 		int rc = -1;
 
-		Logger::redirect();
-		Logger::verbosity(9);
-		Logger::console(true);
+		// Logger::redirect();
+		// Logger::verbosity(9);
+		// Logger::console(true);
 
 		Config::Value<string> setup{"test-mode","xml_path",xml};
 
-		if(argc == 1) {
+		if(Application::popup(argc,argv,0,"service")) {
+
+			// Run as service.
+			rc = Testing::Service{info,initialize}.run(argc,argv,setup.c_str());
+			Logger::String{"Service exits with rc=",rc}.info("test");
+
+		} else {
+
+			// Run as application
+			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
+			Logger::String{"Application exits with rc=",rc}.info("test");
+
+		}
+
+		return rc;
+
+		/*
+		if(argc == 1 && Application::popup(argc,argv,0,"application")) {
 			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 			return rc;
@@ -132,7 +149,8 @@
 			rc = Testing::Application{info}.run(argc,argv,setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 		}
-
+	*/
+	
 		return rc;
 		
 	}

@@ -28,6 +28,7 @@
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/ui/console.h>
  #include <private/updater.h>
  #include <string>
  #include <getopt.h>
@@ -49,6 +50,7 @@
 
  using namespace std;
 
+ /*
  static const struct {
 	char to;
 	const char *from;
@@ -62,99 +64,11 @@
 #endif // _WIN32
 	{ 'T',	"timer",		"=time\t\tExit application after \"time\"" },
  };
+ */
 
  namespace Udjat {
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
-	}
-
-	bool Application::argument(const char *opt, const char *optarg) {
-
-		for(auto &option : options) {
-			if(!strcasecmp(opt,option.from)) {
-				return argument(option.to,optarg);
-			}
-		}
-
-		if(!strcasecmp(opt,"load-module")) {
-			Logger::String{"Loading module '",optarg,"' by command-line request"}.info();
-			Module::load(optarg,true);
-			return true;
-		}
-
-		return false;
-	}
-
-	bool Application::argument(const char opt, const char *optarg) {
-
-		switch(opt) {
-		case 'f':	// Legacy.
-			Logger::console(true);
-			return true;
-
-#ifndef _WIN32
-		case 'C':	// Enable coredump.
-			{
-				// Reference script:
-				//
-				// ulimit -c unlimited
-				// install -m 1777 -d /var/local/dumps
-				// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
-				// rcapparmor stop
-				// sysctl -w kernel.suid_dumpable=2
-				//
-
-				struct rlimit core_limits;
-				memset(&core_limits,0,sizeof(core_limits));
-
-				core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
-				setrlimit(RLIMIT_CORE, &core_limits);
-
-				if(optarg && *optarg) {
-					// Set corepattern
-					std::filebuf fb;
-					fb.open ("/proc/sys/kernel/core_pattern",std::ios::out);
-					std::ostream os(&fb);
-					os << optarg << "\n";
-					fb.close();
-				}
-			}
-			return true;
-#endif // _WIN32
-
-		case 'T':
-			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{optarg}) * 1000,[](){
-				MainLoop::getInstance().quit("Timer expired, exiting");
-				return false;
-			});
-			return true;
-
-		case 'q':
-			Logger::console(false);
-			return true;
-
-		case 'v':
-		case 'V':
-			Logger::console(true);
-			if(optarg) {
-				if(toupper(*optarg) == 'V') {
-					while(toupper(*optarg) == 'V') {
-						Logger::verbosity(Logger::verbosity()+1);
-						optarg++;
-					}
-				} else if(optarg[0] >= '0' && optarg[0] <= '9') {
-					Logger::verbosity(std::stoi(optarg));
-				} else {
-					throw runtime_error("Invalid argument value");
-				}
-			} else {
-				Logger::verbosity(Logger::verbosity()+1);
-			}
-			debug("Verbosity is now '",Logger::verbosity(),"'");
-			return true;
-		}
-
-		return false;
 	}
 
 	bool Application::setProperty(const char *name, const char *value) {
@@ -176,101 +90,85 @@
 
 	void Application::help(std::ostream &out) const noexcept {
 
-		for(auto &option : options) {
-			out << "  --" << option.from << option.help << endl;
-		}
+		out << "  -h --help                Show this help" << endl;
+		out << "  -f --foreground          Run in foreground with console output" << endl;
+		out << "  -q --quiet               Disable console output" << endl;
+		out << "  -v --verbose[=level]     Set loglevel, enable console output" << endl;
+		out << "  -C --coredump[=pattern]  Enable coredump" << endl;
+		out << "  -T --time=time           Exit application after \"time\"" << endl;
 
 	}
 
+#ifndef _WIN32
+	static void setup_coredump(const char *pattern = nullptr) {
+		// Reference script:
+		//
+		// ulimit -c unlimited
+		// install -m 1777 -d /var/local/dumps
+		// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
+		// rcapparmor stop
+		// sysctl -w kernel.suid_dumpable=2
+		//
+
+		struct rlimit core_limits;
+		memset(&core_limits,0,sizeof(core_limits));
+
+		core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+		setrlimit(RLIMIT_CORE, &core_limits);
+
+		if(pattern && *pattern) {
+			// Set corepattern
+			std::filebuf fb;
+			fb.open ("/proc/sys/kernel/core_pattern",std::ios::out);
+			std::ostream os(&fb);
+			os << pattern << "\n";
+			fb.close();
+		}
+	}
+
+#endif // !_WIN32
+
 	int Application::setup(int argc, char **argv, const char *) {
 
-		int ix = 1;
-		while(ix < argc) {
+		debug("---> Running ",__FUNCTION__);
 
-			if(String{argv[ix]}.select("-h","--help","/?","-?","/h","help","?",NULL) >= 0) {
+		string argvalue;
 
-				Logger::console(true);
-				cout << Logger::Message{ _("Usage:\t{} [options]"), argv[0]} << endl << endl;
-				help(cout);
-				cout << endl << endl;
-				return (errno = ECANCELED);
+		while(popup(argc,argv,'v',"verbose")) {
+			Logger::verbosity(Logger::verbosity()+1);
+		}
 
-#ifdef _WIN32
-			} else if(argv[ix][0] == '/') {
+		if(popup(argc,argv,'f',"foreground")) {
+			Logger::console(true);
+		}
 
-				// It's a '/name=' argument.
-				const char *name = argv[ix]+1;
-				const char *value = strchr(name,'=');
+		if(popup(argc,argv,0,"debug")) {
+			Logger::enable(Logger::Debug);
+		}
 
-				if(value) {
-					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-						throw std::system_error(EINVAL,std::system_category(),string{name,(size_t) (value-name)});
-					}
-				} else {
-					if(!argument(name)) {
-						throw std::system_error(EINVAL,std::system_category(),name);
-					}
-				}
+		if(popup(argc,argv,0,"trace")) {
+			Logger::enable(Logger::Trace);
+		}
 
-				ix++;
+		if(popup(argc,argv,'q',"quiet")) {
+			Logger::console(false);
+		}
 
+#ifndef _WIN32
+		if(popup(argc,argv,'C',"coredump")) {
+			setup_coredump();
+		}
+		
+		if(popup(argc,argv,'C',"coredump",argvalue)) {
+			setup_coredump(argvalue.c_str());
+		}
 #endif // _WIN32
-			} else if(argv[ix][0] == '-' && argv[ix][1] == '-') {
 
-				// It's a '--name=' argument.
-				const char *name = argv[ix]+2;
-				const char *value = strchr(name,'=');
-
-				if(value) {
-					if(!argument(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-						throw std::system_error(EINVAL,std::system_category(),string{name,(size_t) (value-name)});
-					}
-				} else {
-					if(!argument(name)) {
-						throw std::system_error(EINVAL,std::system_category(),name);
-					}
-				}
-
-				ix++;
-
-			} else if(argv[ix][0] == '-') {
-
-				const char name = argv[ix][1];
-				ix++;
-
-				// It's a '-N value' argument
-				if(ix < argc && argv[ix][0] != '-') {
-					if(!argument(name,argv[ix])) {
-						throw std::system_error(EINVAL,std::system_category());
-					}
-					ix++;
-				} else {
-					if(!argument(name)) {
-						throw std::system_error(EINVAL,std::system_category());
-					}
-				}
-
-			} else {
-
-				const char * name = argv[ix];
-				const char * value = strchr(argv[ix],'=');
-
-				if(!value) {
-					throw std::system_error(EINVAL,std::system_category());
-				}
-
-				if(!setProperty(string{name,(size_t) (value-name)}.c_str(),value+1)) {
-					throw runtime_error(_("Invalid property"));
-				}
-
-				ix++;
-
-			}
-
-			if(ix >= argc) {
-				break;
-			}
-
+		if(popup(argc,argv,'T',"timer",argvalue)) {
+			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
+				MainLoop::getInstance().quit("Timer expired, exiting");
+				return false;
+			});
 		}
 
 		return 0;
@@ -282,6 +180,21 @@
 	}
 
 	int Application::run(int argc, char **argv, const char *definitions) {
+
+		if(popup(argc,argv,'h',"help")) {
+
+			// Show help text.
+			Udjat::UI::Console console;
+
+			console << "Usage: " << argv[0] << " [options]" << endl << endl << "Options:" << endl;			
+			help(console);
+			console << "     --debug               Enable debug messages" << endl;
+			console << "     --trace               Enable trace messages" << endl;
+	//		console << "     --version             Show version" << endl;
+			return -2;
+		}
+
+		Logger::redirect();
 
 		// Parse command line arguments.
 		if(setup(argc,argv,definitions)) {

@@ -62,18 +62,6 @@
 		/// @return 0 if ok, errno if not.
 		virtual int deinit(const char *definitions);
 
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		virtual bool argument(const char *name, const char *value = nullptr);
-
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		virtual bool argument(const char name, const char *value = nullptr);
-
 		/// @brief Set property from command-line argument.
 		/// @param name Property name.
 		/// @param value Property value.
@@ -90,9 +78,9 @@
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.
 		/// @return true if the argument was found
-		static bool popup_arg(int &argc, char **argv, char shortname, const char *longname);
+		static bool popup(int &argc, char **argv, char shortname, const char *longname);
 
-		static bool popup_arg(int &argc, char **argv, char shortname, const char *longname, std::string value);
+		static bool popup(int &argc, char **argv, char shortname, const char *longname, std::string value);
 
 		/// @brief Get application property.
 		virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
