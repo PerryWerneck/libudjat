@@ -24,7 +24,7 @@
  #include <config.h>
  #include <udjat/tools/file/watcher.h>
  #include <private/filewatcher.h>
- #include <udjat/tools/object.h>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 

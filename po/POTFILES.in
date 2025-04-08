@@ -98,7 +98,6 @@ src/library/tools/os/linux/application/application.cc
 src/library/tools/os/linux/application/cache.cc
 src/library/tools/os/linux/application/init.cc
 src/library/tools/os/linux/arguments.cc
-src/library/tools/os/linux/econf.cc
 src/library/tools/os/linux/event.cc
 src/library/tools/os/linux/eventcontroller.cc
 src/library/tools/os/linux/file.cc
@@ -128,6 +127,7 @@ src/library/tools/os/linux/threadpool.cc
 src/library/tools/os/linux/protocol.cc
 src/library/tools/os/linux/urlconnect.cc
 src/library/tools/os/linux/socket.cc
+src/library/tools/os/linux/econf.cc
 src/library/tools/os/windows/adapter.cc
 src/library/tools/os/windows/application/application.cc
 src/library/tools/os/windows/application/description.cc
@@ -214,5 +214,6 @@ src/library/tools/interface.cc
 src/library/tools/script.cc
 src/library/tools/systemservice.cc
 src/library/tools/action.cc
+src/library/tools/console.cc
 src/library/worker/controller.cc
 src/library/worker/worker.cc

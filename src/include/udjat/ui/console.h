@@ -56,14 +56,6 @@
 
 			Console & set(const Foreground color);
 
-			/// @brief Console writer.
-			/// @param message The message to write.
-			/// @param color The color of the message.
-			/// @param icon The icon to use.
-			/// void write(const std::string &message, const std::string &color, const std::string &icon) {
-			//	std::cout << "\033[" << color << "m" << icon << " " << message << "\033[0m" << std::endl;
-			//}
-
 			/// @brief set bold mode.
 			void bold(bool on);
 
@@ -78,13 +70,17 @@
 
 			unsigned short width() const noexcept;
 
+			/// @brief Show progress bar at cursor line.
+			/// @param prefix Small text on the left.
+			/// @param url The URL.
+			/// @param current Downloaded size.
+			/// @param total Total size.
+			/// @return Allways false.
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
-
-			
+	
 		};
 
 	}
-
 
  }
 

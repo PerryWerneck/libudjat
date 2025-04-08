@@ -813,6 +813,7 @@ install_headers(
 
 install_headers(
   'src/include/udjat/ui/icon.h',
+  'src/include/udjat/ui/console.h',
   subdir: 'udjat/ui'  
 )
 
