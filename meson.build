@@ -814,6 +814,7 @@ install_headers(
 install_headers(
   'src/include/udjat/ui/icon.h',
   'src/include/udjat/ui/console.h',
+  'src/include/udjat/ui/progress.h',
   subdir: 'udjat/ui'  
 )
 
