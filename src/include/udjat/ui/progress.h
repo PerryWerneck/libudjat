@@ -26,54 +26,60 @@
  #include <cstdint>
  #include <cstddef>
  #include <memory>
+ #include <string>
+
+ #include <private/dialog.h>
 
  namespace Udjat {
 
 	namespace Dialog {
 
-		/// @brief Progress dialog.
-		/// @details Abstract progress dialog, the implementation depends on the application.
+		/// @brief Progress bar.
+		/// @details Abstract progress bar, the implementation depends on the application.
 		class UDJAT_API Progress {
 		protected:
 			Progress();
 		  
 		public:
 
-			class Factory {
+			class UDJAT_API Factory {
 			private:
 				static Factory *instance;
-		  
+				Factory *parent;
+			
 			public:
+
+				static Factory & getInstance();
+
 				Factory();
 				virtual ~Factory();
 				virtual std::shared_ptr<Progress> ProgressFactory() const = 0;
 
 			};
 
-			static std::shared_ptr<Progress> Factory();
-
 			Progress(const Progress &other) = delete;
 			Progress(Progress *other) = delete;
 
+			/// @brief Get a new instance of dialog progress.
+			/// @return The dialog progress to use (if it's a new one or an already built depends on the factory).
+			static std::shared_ptr<Progress> getInstance();
+
 			virtual ~Progress();
 		
-			virtual Progress & title(const char *text);
-			virtual Progress & message(const char *text);
-			virtual Progress & body(const char *text);
-			virtual Progress & icon_name(const char *name);
-			virtual Progress & show();
-			virtual Progress & hide();
 			virtual Progress & item(const size_t current = 0, const size_t total = 0);
+			virtual void set(uint64_t current = 0, uint64_t total = 0);
 	
 			/// @brief Set progress bar URL.
 			virtual Progress & url(const char *url);
-	
-			virtual void set(uint64_t current = 0, uint64_t total = 0);
-	
-			inline Progress & operator = (const char *text) {
-				return body(text);
+		
+			inline Progress & operator = (const char *u) {
+				return url(u);
 			}
-	
+
+			inline Progress & operator = (const std::string &s) {
+				return url(s.c_str());
+			}
+			
 		};
 
 	}

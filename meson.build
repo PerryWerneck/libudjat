@@ -327,6 +327,8 @@ lib_src += [
   'src/library/tools/url/handlers/file.cc',
   'src/library/tools/url/handlers/script.cc',
   'src/library/tools/console.cc',
+  'src/library/ui/dialog.cc',
+  'src/library/ui/progress.cc',
 ]
 
 test_src = [

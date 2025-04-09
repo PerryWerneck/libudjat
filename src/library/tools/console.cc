@@ -68,16 +68,18 @@ namespace Udjat {
 	};
 
 	UI::Console::Console() : enabled{Logger::console()} {
+		debug("Console was build");
 		static ConsoleWriter writer;
-		Logger::console(false);
 		this->rdbuf(&writer);
+		Logger::console(false);
 		cursor(false);
 	}
 
 	UI::Console::~Console() {
-		cursor(true);
 		*this << "\x1B[0m";
+		cursor(true);
 		Logger::console(enabled);
+		debug("Console was deleted");
 	}
 
 	unsigned short UI::Console::width() const noexcept {

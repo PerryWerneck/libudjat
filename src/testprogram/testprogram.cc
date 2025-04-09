@@ -32,6 +32,8 @@
  #include <udjat/net/ip/address.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/ui/console.h>
+ #include <udjat/ui/progress.h>
+ #include <private/dialog.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -43,6 +45,20 @@
  static const Udjat::ModuleInfo moduleinfo { "Test program" };
 
  int main(int argc, char **argv) {
+
+	Logger::verbosity(9);
+	Logger::redirect();
+	Logger::console(true);
+
+	{
+		Udjat::UI::Dialog d1;
+		Udjat::UI::Dialog d2;
+
+	}
+
+	debug("Sleeping");
+	sleep(5);
+	debug("Complete");
 
 	/*
 	{
@@ -69,6 +85,8 @@
 	}
 	*/
 
+
+	/*
 	debug("Argc=",argc);
 	
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
@@ -182,5 +200,6 @@
 		});
 
 	});
+	*/
 
  }
