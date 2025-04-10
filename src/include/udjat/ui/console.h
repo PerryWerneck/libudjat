@@ -68,6 +68,12 @@
 			/// @brief Show/Hide cursor.
 			void cursor(bool on);
 
+			/// @brief Moves cursor up.
+			void up(size_t lines);
+
+			/// @brief Moves cursor down.
+			void down(size_t lines);
+
 			unsigned short width() const noexcept;
 
 			/// @brief Show progress bar at cursor line.

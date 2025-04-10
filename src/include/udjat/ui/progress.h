@@ -66,7 +66,7 @@
 
 			virtual ~Progress();
 		
-			virtual Progress & item(const size_t current = 0, const size_t total = 0);
+			virtual Progress & item(const short current = 0, const short total = 0);
 			virtual void set(uint64_t current = 0, uint64_t total = 0);
 	
 			/// @brief Set progress bar URL.

@@ -30,12 +30,63 @@
  #include <stdexcept>
  #include <memory>
  #include <mutex>
+ #include <string>
 
- /*
+
  using namespace std;
 
  namespace Udjat {
 
+	/// @brief Text mode progress dialog.
+	class UDJAT_PRIVATE TextProgress : public Dialog::Progress, private UI::Dialog {
+	private:
+		size_t line = 1;
+		string prefix;
+		string text;
+		uint64_t current = 0;
+		uint64_t total = 0;
+
+		void update() const {
+			static mutex guard;
+			lock_guard<mutex> lock(guard);
+			console->up(line);
+			console->faint(true);
+			console->progress(prefix.c_str(), text.c_str(), current, total);
+			console->faint(false);
+			console->down(line);
+		}
+		
+	public:
+		TextProgress() {
+			*console << "\n\r";
+			update();
+		}
+
+		~TextProgress() override {
+		}
+		
+		Udjat::Dialog::Progress & item(const short current, const short total) override {
+			char buffer[15];
+			snprintf(buffer,14,"%03d/%03d",(int) current, (int) total);
+			prefix = buffer;
+			update();
+			return *this;
+		}
+		
+		void set(uint64_t c, uint64_t t) {
+			current = c;
+			total = t;
+			update();
+		}
+
+		/// @brief Set progress bar URL.
+		Udjat::Dialog::Progress & url(const char *url) {
+			text = url;
+			update();
+			return *this;
+		}
+
+	};
 
 	Dialog::Progress::Factory * Dialog::Progress::Factory::instance = nullptr;
 	
@@ -86,7 +137,7 @@
 		instance = parent;
 	}
 
-	Dialog::Progress & Dialog::Progress::item(const size_t, const size_t) {
+	Dialog::Progress & Dialog::Progress::item(const short, const short) {
 		return *this;
 	}
 
@@ -98,5 +149,3 @@
 	}
 
  }
-
- */
