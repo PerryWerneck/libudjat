@@ -40,6 +40,7 @@
 	/// @brief Text mode progress dialog.
 	class UDJAT_PRIVATE TextProgress : public Dialog::Progress, private UI::Dialog {
 	private:
+		static mutex guard;
 		size_t line = 1;
 		string prefix;
 		string text;
@@ -47,7 +48,6 @@
 		uint64_t total = 0;
 
 		void update() const {
-			static mutex guard;
 			lock_guard<mutex> lock(guard);
 			console->up(line);
 			console->faint(true);
@@ -87,6 +87,8 @@
 		}
 
 	};
+
+	mutex TextProgress::guard;
 
 	Dialog::Progress::Factory * Dialog::Progress::Factory::instance = nullptr;
 	
