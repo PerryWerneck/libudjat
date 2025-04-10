@@ -28,8 +28,6 @@
  #include <memory>
  #include <string>
 
- #include <private/dialog.h>
-
  namespace Udjat {
 
 	namespace Dialog {
