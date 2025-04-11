@@ -87,10 +87,17 @@ namespace Udjat {
 	unsigned short UI::Console::width() const noexcept {
 #ifdef _WIN32
 
+		// https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
+		CONSOLE_SCREEN_BUFFER_INFO csbi;
+		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		return (csbi.srWindow.Right - csbi.srWindow.Left + 1);		
+
 #else
+
 		struct winsize w;
 		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
 		return w.ws_col;
+
 #endif // _WIN32
 	}
 

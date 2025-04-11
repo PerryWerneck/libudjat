@@ -35,7 +35,6 @@
 		lock_guard<mutex> lock(guard);
 
 		if(!instance) {
-
 			if(Glib::MainLoop::available()) {
 				static Glib::MainLoop inst;
 				debug("Using GLib main loop - ", (int) inst.type() == MainLoop::GLib ? "GLib" : "Unknown");
