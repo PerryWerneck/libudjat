@@ -17,8 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef DEBUG 
-
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
@@ -89,4 +87,3 @@ namespace Udjat {
 	};
 
 }
-#endif 
