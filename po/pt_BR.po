@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 22:36-0300\n"
+"POT-Creation-Date: 2025-04-11 04:43-0300\n"
 "PO-Revision-Date: 2025-03-03 18:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -44,7 +44,7 @@ msgstr "Inicialização do módulo principal falhou"
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 
-#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:126
+#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:118
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -86,19 +86,10 @@ msgstr "ligado"
 msgid "off"
 msgstr "desligado"
 
-#: src/library/tools/application/run.cc:166
-#: src/library/tools/application/run.cc:170
+#: src/library/tools/application/run.cc:80
+#: src/library/tools/application/run.cc:84
 msgid "Unable to set environment variable"
 msgstr "Incapaz de setar variável de ambiente"
-
-#: src/library/tools/application/run.cc:193
-#, c++-format
-msgid "Usage:\t{} [options]"
-msgstr "Usage:\t{} [opções]"
-
-#: src/library/tools/application/run.cc:263
-msgid "Invalid property"
-msgstr "Propriedade inválida"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -618,13 +609,20 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
-#: src/library/tools/systemservice.cc:130
+#: src/library/tools/systemservice.cc:122
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
 #: src/library/worker/worker.cc:54
 msgid "Invalid response type"
 msgstr "Resposta de tipo inválido"
+
+#, c++-format
+#~ msgid "Usage:\t{} [options]"
+#~ msgstr "Usage:\t{} [opções]"
+
+#~ msgid "Invalid property"
+#~ msgstr "Propriedade inválida"
 
 #~ msgid "The request has timed out"
 #~ msgstr "Tempo da requisição esgotado"

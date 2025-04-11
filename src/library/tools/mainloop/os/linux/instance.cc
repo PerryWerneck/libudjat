@@ -23,10 +23,7 @@
  #include <udjat/tools/logger.h>
  #include <mutex>
  #include <dlfcn.h>
-
- #ifdef DEBUG
-	#include <private/glib/mainloop.h>
- #endif // DEBUG
+ #include <private/glib/mainloop.h>
  
  using namespace std;
 
