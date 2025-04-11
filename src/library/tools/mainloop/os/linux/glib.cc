@@ -17,8 +17,6 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#ifdef DEBUG 
-
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
@@ -192,5 +190,3 @@
 	}
 
  }
-
-#endif // DEBUG

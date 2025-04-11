@@ -44,7 +44,7 @@
 	int URL::connect(unsigned int seconds) {
 
 		int rc;
-		int sock;
+		int sock = -1;
 
         struct addrinfo   hints;
         struct addrinfo * result        = NULL;

@@ -134,7 +134,7 @@
 
 	Dialog::Progress::Factory::~Factory() {
 		if(instance != this) {
-			throw logic_error("Progress factory not destroyed in the right order");
+			Logger::String{"Progress factory not destroyed in the right order"}.error();
 		}
 		instance = parent;
 	}

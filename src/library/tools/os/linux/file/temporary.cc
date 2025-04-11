@@ -52,7 +52,7 @@
 	File::Temporary::Temporary(const char *name) : filename{name} {
 
 		char path[PATH_MAX];
-		strncpy(path,name,PATH_MAX);
+		strncpy(path,name,PATH_MAX-1);
 
 		fd = open(dirname(path),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR);
 		if(fd > 0) {
@@ -63,7 +63,7 @@
 			throw system_error(errno,system_category(),Logger::Message("Can't create '{}'",filename));
 		}
 
-		strncpy(path,name,PATH_MAX); // Dirname change buffer, copy it again.
+		strncpy(path,name,PATH_MAX-1); // Dirname change buffer, copy it again.
 		Udjat::File::Path directory{dirname(path)};
 		if(!directory.dir()) {
 			throw system_error(ENOTDIR,system_category(),directory);
@@ -250,8 +250,13 @@
 
 		}
 
-		chmod(filename,st.st_mode);
-		chown(filename,st.st_uid,st.st_gid);
+		if(chmod(filename,st.st_mode)) {
+			Logger::String{"Error setting permissions for '",filename,"': ",strerror(errno)}.warning();
+		}
+		
+		if(chown(filename,st.st_uid,st.st_gid)) {
+			Logger::String{"Error setting user for '",filename,"': ",strerror(errno)}.warning();
+		}
 
 	}
 
