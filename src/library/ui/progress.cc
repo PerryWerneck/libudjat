@@ -143,11 +143,11 @@
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::set(uint64_t, uint64_t) {
+	Dialog::Progress & Dialog::Progress::set(uint64_t, uint64_t, bool) {
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::url(const char *) {
+	Dialog::Progress & Dialog::Progress::set(const char *) {
 		return *this;
 	}
 

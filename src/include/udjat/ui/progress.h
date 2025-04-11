@@ -65,17 +65,21 @@
 			virtual ~Progress();
 		
 			virtual Progress & item(const short current = 0, const short total = 0);
-			virtual Progress & set(uint64_t current = 0, uint64_t total = 0);
+			virtual Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true);
 	
 			/// @brief Set progress bar URL.
-			virtual Progress & url(const char *url);
+			virtual Progress & set(const char *url);
 		
+			inline Progress & set(const std::string &s) {
+				return set(s.c_str());
+			}
+
 			inline Progress & operator = (const char *u) {
-				return url(u);
+				return set(u);
 			}
 
 			inline Progress & operator = (const std::string &s) {
-				return url(s.c_str());
+				return set(s.c_str());
 			}
 			
 		};

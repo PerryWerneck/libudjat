@@ -53,7 +53,7 @@
 	{
 		auto dialog = Dialog::Progress::getInstance();
 		dialog->item(1,1);
-		dialog->url("http://www.google.com");
+		dialog->set("http://www.google.com");
 
 		for(size_t ix = 0; ix < 1000; ix++) {
 			dialog->set(ix,1000);
