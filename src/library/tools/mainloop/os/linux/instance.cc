@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <private/linux/mainloop.h>
+ #include <udjat/tools/logger.h>
  #include <mutex>
  #include <dlfcn.h>
 
@@ -38,17 +39,17 @@
 
 		if(!instance) {
 
-#ifdef DEBUG
 			if(Glib::MainLoop::available()) {
 				static Glib::MainLoop inst;
+				debug("Using GLib main loop - ", (int) inst.type() == MainLoop::GLib ? "GLib" : "Unknown");
+				Logger::String{"GLib mainloop is available"}.write(Logger::Debug);
 				return inst;
 			}
-#endif 
-
 			static Linux::MainLoop inst;
 			return inst;
 		}
 
+		debug("Returning existing main loop - ", (int) instance->type() == MainLoop::GLib ? "GLib" : "Unknown");
 		return *instance;
 	}
 

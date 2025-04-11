@@ -71,11 +71,12 @@
 
 		}
 
-		Logger::String{"GLib mainloop is available"}.trace();
-		return false;
+		debug("GLib mainloop is available");
+		return true;
 	}
 
 	Glib::MainLoop::MainLoop() : Udjat::MainLoop(MainLoop::GLib) {
+		debug("Glib::MainLoop::MainLoop() - ", (int) type() == MainLoop::GLib ? "GLib" : "Unknown");
 	}
 
 	Glib::MainLoop::~MainLoop() {
