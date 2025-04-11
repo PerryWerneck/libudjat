@@ -72,7 +72,7 @@
 			return *this;
 		}
 		
-		Udjat::Dialog::Progress & set(uint64_t c, uint64_t t) {
+		Udjat::Dialog::Progress & set(uint64_t c, uint64_t t, bool) override {
 			current = c;
 			total = t;
 			update();
@@ -80,7 +80,7 @@
 		}
 
 		/// @brief Set progress bar URL.
-		Udjat::Dialog::Progress & url(const char *url) {
+		Udjat::Dialog::Progress & set(const char *url) override {
 			text = url;
 			update();
 			return *this;
