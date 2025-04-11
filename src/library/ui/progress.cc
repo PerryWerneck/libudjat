@@ -32,7 +32,6 @@
  #include <mutex>
  #include <string>
 
-
  using namespace std;
 
  namespace Udjat {
@@ -73,10 +72,11 @@
 			return *this;
 		}
 		
-		void set(uint64_t c, uint64_t t) {
+		Udjat::Dialog::Progress & set(uint64_t c, uint64_t t) {
 			current = c;
 			total = t;
 			update();
+			return *this;
 		}
 
 		/// @brief Set progress bar URL.
@@ -143,7 +143,8 @@
 		return *this;
 	}
 
-	void Dialog::Progress::set(uint64_t, uint64_t) {
+	Dialog::Progress & Dialog::Progress::set(uint64_t, uint64_t) {
+		return *this;
 	}
 
 	Dialog::Progress & Dialog::Progress::url(const char *) {
