@@ -52,7 +52,9 @@ namespace Udjat {
 
 			if(c && c != EOF) {
 				char chr = (char) c;
-				write(STDOUT_FILENO,&chr,1);
+				if(write(STDOUT_FILENO,&chr,1) != 1) {
+					return EOF;
+				}
 			}
 
 			return c;
@@ -159,7 +161,7 @@ namespace Udjat {
 				strncpy(line,url,width-12);
 				memcpy(line+(width-12),"... ",4);
 			} else {
-				strncpy(line,url,ulen);
+				memcpy(line,url,ulen);
 			}
 
 			char text[10];
