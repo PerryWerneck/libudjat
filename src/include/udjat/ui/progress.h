@@ -63,7 +63,8 @@
 			static std::shared_ptr<Progress> getInstance();
 
 			virtual ~Progress();
-		
+
+			virtual Progress & title(const char *title);
 			virtual Progress & item(const short current = 0, const short total = 0);
 			virtual Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true);
 	

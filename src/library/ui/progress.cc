@@ -63,7 +63,7 @@
 
 		~TextProgress() override {
 		}
-		
+
 		Udjat::Dialog::Progress & item(const short current, const short total) override {
 			char buffer[15];
 			snprintf(buffer,14,"%03d/%03d",(int) current, (int) total);
@@ -137,6 +137,10 @@
 			Logger::String{"Progress factory not destroyed in the right order"}.error();
 		}
 		instance = parent;
+	}
+
+	Dialog::Progress & Dialog::Progress::title(const char *) {
+		return *this;
 	}
 
 	Dialog::Progress & Dialog::Progress::item(const short, const short) {
