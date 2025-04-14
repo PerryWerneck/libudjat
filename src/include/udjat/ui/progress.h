@@ -68,6 +68,9 @@
 			virtual Progress & item(const short current = 0, const short total = 0);
 			virtual Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true);
 	
+			virtual Progress & show();
+			virtual Progress & hide();
+
 			/// @brief Set progress bar URL.
 			virtual Progress & set(const char *url);
 		
