@@ -58,6 +58,9 @@
 			/// @brief Build interface from nic name.
 			static std::shared_ptr<Interface> Factory(const char *name);
 
+			/// @brief Builde default interface.
+			static std::shared_ptr<Interface> Default();
+
 			/// @brief Enumerate all interface names.
 			static bool for_each(const std::function<bool(const char *name)> &func);
 

@@ -128,6 +128,10 @@
 		/// @brief Enumerate local IP addresses and interfaces.
 		UDJAT_API bool for_each(const std::function<bool(const Addresses &addr)> &func);
 
+		/// @brief Get default gateway.
+		/// @return The default gateway address.
+		UDJAT_API IP::Address gateway();
+
 	}
 
  }

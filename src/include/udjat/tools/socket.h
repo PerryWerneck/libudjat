@@ -23,6 +23,8 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
  #include <udjat/tools/url.h>
+ #include <sys/ioctl.h>
+ #include <system_error>
 
  namespace Udjat {
 
@@ -52,6 +54,12 @@
 		/// @param fd The socket to handle.
 		Socket(int fd);
 
+		/// @brief Create socket from definition.
+		/// @param domain A communication domain.
+		/// @param type The communication semantics.
+		/// @param protocol A particular protocol to be used with the socket.
+		Socket(int domain, int type, int protocol);
+
 		virtual ~Socket();
 
 		static void blocking(int sock, bool enable = true);
@@ -72,6 +80,14 @@
 		inline int wait_for_connection(unsigned int seconds = 0) {
 			return wait_for_connection(values.fd, seconds);
 		}
+
+		template <typename T>
+		inline void ioctl(unsigned long op, T &val) const {
+			if(::ioctl(fd(), op, (caddr_t)&val) < 0) {
+				throw std::system_error(errno,std::system_category(),"ioctl error");
+			}
+		}
+
 
 	};
 

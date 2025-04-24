@@ -33,11 +33,125 @@
  #include <cstring>
  #include <iostream>
  #include <unistd.h>
+ #include <system_error>
 
  using namespace std;
 
- namespace Udjat {
+ /// @brief Simple socket wrapper.
+ /// @details This class is used to create a socket and perform ioctl operations
+ struct UDJAT_PRIVATE Socket {
 
+	int fd;
+
+	Socket(int domain = PF_INET, int type = SOCK_STREAM, int protocol = 0) : fd{socket(domain,type,protocol)} {
+		if(fd < 0) {
+			throw system_error(errno,system_category(),"Cant get PF_INET socket");
+		}
+	}
+
+	~Socket() {
+		::close(fd);
+	}
+
+	inline operator int() const noexcept {
+		return fd;
+	}
+
+	template <typename T>
+	inline void ioctl(unsigned long op, T &val) const {
+		if(::ioctl(this->fd, op, (caddr_t)&val) < 0) {
+			throw system_error(errno,system_category(),"ioctl error");
+		}
+	}
+
+ };
+
+ /// @brief Network interface implementation.
+ /// @details This class is used to get network interface properties based on nicname.
+ class UDJAT_PRIVATE NamedInterface : public Udjat::Network::Interface {
+ private:
+
+	void get(struct ifreq &ifr) const noexcept {
+		memset(&ifr,0,sizeof(ifr));
+		strncpy(ifr.ifr_name,nicname.c_str(),sizeof(ifr.ifr_name)-1);
+	}
+
+	std::string nicname;
+
+	unsigned int flags() const {
+		Socket sock;
+		struct ifreq ifr;
+		get(ifr);
+		sock.ioctl(SIOCGIFFLAGS, ifr);
+		return ifr.ifr_flags;
+	 }
+	
+public:
+	NamedInterface(const char *name) : nicname{name} {
+	}
+
+	bool operator==(const sockaddr_storage &addr) const override {
+		throw system_error(ENOTSUP,system_category(),"Unsupported method call");
+	}
+
+	bool found() const {
+		return for_each([this](const char *intf) {
+			return strcmp(intf,name()) == 0;
+		});
+	}
+
+	const char * name() const override {
+		return nicname.c_str();
+	}
+
+	bool up() const override {
+		return flags() & IFF_UP;
+	}
+
+	bool loopback() const override {
+		return flags() & IFF_LOOPBACK;
+	}
+
+	Udjat::IP::Address address() const override {
+		Socket sock;
+		struct ifreq ifr;
+		get(ifr);
+		sock.ioctl(SIOCGIFADDR,ifr);
+		return Udjat::IP::Address{&ifr.ifr_addr};
+	}
+
+	Udjat::IP::Address netmask() const override {
+		Socket sock;
+		struct ifreq ifr;
+		get(ifr);
+		sock.ioctl(SIOCGIFNETMASK,ifr);
+		return Udjat::IP::Address{&ifr.ifr_netmask};
+	}
+
+	std::string macaddress() const override {
+		
+		Socket sock;
+
+		struct ifreq ifr;
+		get(ifr);
+
+		sock.ioctl(SIOCGIFHWADDR,ifr);
+
+		std::string mac;
+		static const char *digits = "0123456789ABCDEF";
+		for(size_t ix = 0; ix < 6; ix++) {
+			uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
+			mac += digits[(digit >> 4) & 0x0f];
+			mac += digits[digit & 0x0f];
+		}
+
+		return mac;
+	}
+
+ };
+
+ namespace Udjat {
+	
 	UDJAT_API bool IP::for_each(const std::function<bool(const ifaddrs &intf)> &func) {
 
 		bool rc = false;
@@ -132,102 +246,11 @@
 
 	}
 
-	unsigned int flags_by_name(const char *name) {
+	std::shared_ptr<Network::Interface> Network::Interface::Default() {
 
-		int sock = socket(PF_INET, SOCK_STREAM, 0);
-		if(sock < 0) {
-			throw system_error(errno,system_category(),"Cant get PF_INET socket");
-		}
-
-		struct ifreq ifr;
-		memset(&ifr,0,sizeof(ifr));
-		strncpy(ifr.ifr_name,name,sizeof(ifr.ifr_name)-1);
-
-		if(ioctl(sock, SIOCGIFFLAGS, (caddr_t)&ifr) < 0) {
-			int err = errno;
-			::close(sock);
-			throw system_error(err,system_category(),"SIOCGIFFLAGS");
-		}
-
-		unsigned int rc = ifr.ifr_flags;
-
-		::close(sock);
-
-		return rc;
 	}
 
 	std::shared_ptr<Network::Interface> Network::Interface::Factory(const char *name) {
-
-		class NamedInterface : public Network::Interface {
-		private:
-			std::string nicname;
-
-		public:
-			NamedInterface(const char *name) : nicname{name} {
-			}
-
-			bool operator==(const sockaddr_storage &addr) const override {
-				throw system_error(ENOTSUP,system_category(),"Unsupported method call");
-			}
-
-			bool found() const {
-				return for_each([this](const char *intf) {
-					return strcmp(intf,name()) == 0;
-				});
-			}
-
-			const char * name() const override {
-				return nicname.c_str();
-			}
-
-			bool up() const override {
-				return flags_by_name(nicname.c_str()) & IFF_UP;
-			}
-
-			bool loopback() const override {
-				return flags_by_name(nicname.c_str()) & IFF_LOOPBACK;
-			}
-
-			IP::Address address() const override {
-				throw system_error(ENOTSUP,system_category(),"Cant get IP address on linux");
-			}
-
-			IP::Address netmask() const override {
-				throw system_error(ENOTSUP,system_category(),"Cant get netmask on linux");
-			}
-
-			std::string macaddress() const override {
-				
-				int sock = socket(PF_INET, SOCK_STREAM, 0);
-				if(sock < 0) {
-					throw system_error(errno,system_category(),"Cant get PF_INET socket");
-				}
-
-				struct ifreq ifr;
-				memset(&ifr,0,sizeof(ifr));
-				strncpy(ifr.ifr_name,nicname.c_str(),sizeof(ifr.ifr_name)-1);
-
-				if(ioctl(sock, SIOCGIFHWADDR, (caddr_t)&ifr) < 0) {
-					int err = errno;
-					::close(sock);
-					throw system_error(err,system_category(),"SIOCGIFHWADDR");
-				}
-
-				::close(sock);
-
-				std::string mac;
-				static const char *digits = "0123456789ABCDEF";
-				for(size_t ix = 0; ix < 6; ix++) {
-					uint8_t digit = * (((unsigned char *) ifr.ifr_hwaddr.sa_data+ix));
-					mac += digits[(digit >> 4) & 0x0f];
-					mac += digits[digit & 0x0f];
-				}
-
-				return mac;
-			}
-
-		};
-
 		return make_shared<NamedInterface>(name);
 	}
 

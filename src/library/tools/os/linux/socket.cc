@@ -120,6 +120,20 @@
 
 	Socket::Socket(int fd) : MainLoop::Handler(fd,(Event) (MainLoop::Handler::oninput|MainLoop::Handler::onhangup|MainLoop::Handler::onerror)) {
 	}
+
+	Socket::Socket(int domain, int type, int protocol) {
+
+		int sock = ::socket(domain,type,protocol);
+		
+		if(sock < 0) {
+			throw system_error(errno,system_category(),"Cant get socket");
+		}
+
+		set(sock);
+		set(Handler::oninput|Handler::onhangup|Handler::onerror);
+		enable();
+
+	}
 		
 	Socket::~Socket() {
 		close();

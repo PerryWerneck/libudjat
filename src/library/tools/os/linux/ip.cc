@@ -26,6 +26,11 @@
  #include <stdexcept>
  #include <cstring>
  #include <iostream>
+ #include <unistd.h>
+ #include <linux/netlink.h>
+ #include <linux/rtnetlink.h>
+
+ #include <private/linux/netlink.h>
 
  using namespace std;
 
@@ -63,6 +68,25 @@
 			return func(addr);
 
 		});
+
+	}
+
+	UDJAT_API IP::Address IP::gateway() {
+
+		struct sockaddr_in gateway;
+		memset(&gateway,0,sizeof(gateway));
+
+		if(!netlink_routes([&](const struct rtattr *rtAttr) -> bool {
+			if(rtAttr->rta_type == RTA_GATEWAY) {
+				gateway.sin_addr.s_addr = *(unsigned int *) RTA_DATA(rtAttr);
+				return true;
+			}
+			return false;
+		})) {
+			throw runtime_error("Unable to find default gateway");
+		}
+
+		return IP::Address{&gateway};
 
 	}
 
