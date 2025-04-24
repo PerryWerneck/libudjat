@@ -222,43 +222,33 @@ public:
 
 	std::shared_ptr<Network::Interface> Network::Interface::Default() {
 
-		std::string nicname;
+		char ifname[IF_NAMESIZE];
 
-		if(!netlink_routes([&](const struct nlmsghdr *hdr) -> bool {
+		if(!netlink_routes([&](const struct nlmsghdr *nlh) -> bool {
 
-			/*
-			if(rtAttr->rta_type == RTM_NEWROUTE) {
+			struct rtmsg *rtm = (struct rtmsg *)NLMSG_DATA(nlh);
+            struct rtattr *rta = (struct rtattr *)((char *)rtm +sizeof(struct rtmsg));
 
-				struct rtmsg *rtm = (struct rtmsg *) NLMSG_DATA(rtattr);
-				struct rtattr *rta = (struct rtattr *)((char *)rtm + NLMSG_ALIGN(sizeof(struct rtmsg)));
-	
-				// Iterate over route attributes
-				while (RTA_OK(rta, nlh->nlmsg_len - (rta - (struct rtattr *)rtm))) {
-					if (rta->rta_type == RTA_OIF) {
-						int ifindex = *(int *)RTA_DATA(rta);
-						if (if_indextoname(ifindex, ifname) == NULL) {
-							perror("if_indextoname");
-							close(sock);
-							return 1;
-						}
-						printf("Default gateway interface: %s\n", ifname);
-						close(sock);
-						return 0;
+            // Iterate over route attributes
+            while (RTA_OK(rta, nlh->nlmsg_len - (rta - (struct rtattr *)rtm))) {
+                if (rta->rta_type == RTA_OIF) {
+                    int ifindex = *(int *)RTA_DATA(rta);
+                    if (if_indextoname(ifindex, ifname) != NULL) {
+						return true;
 					}
-					rta = RTA_NEXT(rta, nlh->nlmsg_len - (rta - (struct rtattr *)rtm));
-				}
-	
-				return true;
-			}
-			*/
-	
+                }
+
+				size_t attrlen = nlh->nlmsg_len - (rta - (struct rtattr *)rtm);
+                rta = RTA_NEXT(rta, attrlen);
+            }
+
 			return false;
 	
 		})) {
 			throw runtime_error("Unable to find default interface");
 		}
 
-		return make_shared<NamedInterface>(nicname.c_str());
+		return make_shared<NamedInterface>(ifname);
 
 	}
 

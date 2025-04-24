@@ -35,6 +35,7 @@
  #include <udjat/ui/progress.h>
  #include <private/dialog.h>
  #include <udjat/net/ip/address.h>
+ #include <udjat/net/interface.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -52,7 +53,7 @@
 	Logger::console(true);
 
 	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
-
+	cout << "---------------> INTERFACE=" << Network::Interface::Default()->address().to_string() << endl;
 	{
 		auto dialog = Dialog::Progress::getInstance();
 		dialog->item(1,1);
