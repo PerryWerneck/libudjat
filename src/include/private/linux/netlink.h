@@ -26,6 +26,7 @@
  #include <unistd.h>
  #include <functional>
  #include <linux/rtnetlink.h>
+ #include <sys/ioctl.h>
 
  using namespace std;
 
@@ -49,6 +50,13 @@
 		return fd;
 	}
 
+	template <typename T>
+	inline void ioctl(unsigned long op, T &val) const {
+		if(::ioctl(this->fd, op, (caddr_t)&val) < 0) {
+			throw system_error(errno,system_category(),"ioctl error");
+		}
+	}
+
  };
 
- UDJAT_PRIVATE bool netlink_routes(const std::function<bool(const struct rtattr *rtAttr)> &func);
+ UDJAT_PRIVATE bool netlink_routes(const std::function<bool(const struct nlmsghdr *msg)> &func);

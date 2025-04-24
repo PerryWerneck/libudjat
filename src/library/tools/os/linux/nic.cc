@@ -34,37 +34,11 @@
  #include <iostream>
  #include <unistd.h>
  #include <system_error>
+ #include <linux/netlink.h>
+ #include <linux/rtnetlink.h>
+ #include <private/linux/netlink.h>
 
  using namespace std;
-
- /// @brief Simple socket wrapper.
- /// @details This class is used to create a socket and perform ioctl operations
- struct UDJAT_PRIVATE Socket {
-
-	int fd;
-
-	Socket(int domain = PF_INET, int type = SOCK_STREAM, int protocol = 0) : fd{socket(domain,type,protocol)} {
-		if(fd < 0) {
-			throw system_error(errno,system_category(),"Cant get PF_INET socket");
-		}
-	}
-
-	~Socket() {
-		::close(fd);
-	}
-
-	inline operator int() const noexcept {
-		return fd;
-	}
-
-	template <typename T>
-	inline void ioctl(unsigned long op, T &val) const {
-		if(::ioctl(this->fd, op, (caddr_t)&val) < 0) {
-			throw system_error(errno,system_category(),"ioctl error");
-		}
-	}
-
- };
 
  /// @brief Network interface implementation.
  /// @details This class is used to get network interface properties based on nicname.
@@ -79,7 +53,7 @@
 	std::string nicname;
 
 	unsigned int flags() const {
-		Socket sock;
+		Socket sock{PF_INET,SOCK_STREAM,0};
 		struct ifreq ifr;
 		get(ifr);
 		sock.ioctl(SIOCGIFFLAGS, ifr);
@@ -113,7 +87,7 @@ public:
 	}
 
 	Udjat::IP::Address address() const override {
-		Socket sock;
+		Socket sock{PF_INET,SOCK_STREAM,0};
 		struct ifreq ifr;
 		get(ifr);
 		sock.ioctl(SIOCGIFADDR,ifr);
@@ -121,7 +95,7 @@ public:
 	}
 
 	Udjat::IP::Address netmask() const override {
-		Socket sock;
+		Socket sock{PF_INET,SOCK_STREAM,0};
 		struct ifreq ifr;
 		get(ifr);
 		sock.ioctl(SIOCGIFNETMASK,ifr);
@@ -130,7 +104,7 @@ public:
 
 	std::string macaddress() const override {
 		
-		Socket sock;
+		Socket sock{PF_INET,SOCK_STREAM,0};
 
 		struct ifreq ifr;
 		get(ifr);
@@ -247,6 +221,44 @@ public:
 	}
 
 	std::shared_ptr<Network::Interface> Network::Interface::Default() {
+
+		std::string nicname;
+
+		if(!netlink_routes([&](const struct nlmsghdr *hdr) -> bool {
+
+			/*
+			if(rtAttr->rta_type == RTM_NEWROUTE) {
+
+				struct rtmsg *rtm = (struct rtmsg *) NLMSG_DATA(rtattr);
+				struct rtattr *rta = (struct rtattr *)((char *)rtm + NLMSG_ALIGN(sizeof(struct rtmsg)));
+	
+				// Iterate over route attributes
+				while (RTA_OK(rta, nlh->nlmsg_len - (rta - (struct rtattr *)rtm))) {
+					if (rta->rta_type == RTA_OIF) {
+						int ifindex = *(int *)RTA_DATA(rta);
+						if (if_indextoname(ifindex, ifname) == NULL) {
+							perror("if_indextoname");
+							close(sock);
+							return 1;
+						}
+						printf("Default gateway interface: %s\n", ifname);
+						close(sock);
+						return 0;
+					}
+					rta = RTA_NEXT(rta, nlh->nlmsg_len - (rta - (struct rtattr *)rtm));
+				}
+	
+				return true;
+			}
+			*/
+	
+			return false;
+	
+		})) {
+			throw runtime_error("Unable to find default interface");
+		}
+
+		return make_shared<NamedInterface>(nicname.c_str());
 
 	}
 

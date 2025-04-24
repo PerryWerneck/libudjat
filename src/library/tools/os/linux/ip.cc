@@ -29,6 +29,7 @@
  #include <unistd.h>
  #include <linux/netlink.h>
  #include <linux/rtnetlink.h>
+ #include <udjat/tools/intl.h>
 
  #include <private/linux/netlink.h>
 
@@ -76,11 +77,33 @@
 		struct sockaddr_in gateway;
 		memset(&gateway,0,sizeof(gateway));
 
-		if(!netlink_routes([&](const struct rtattr *rtAttr) -> bool {
-			if(rtAttr->rta_type == RTA_GATEWAY) {
-				gateway.sin_addr.s_addr = *(unsigned int *) RTA_DATA(rtAttr);
-				return true;
+		if(!netlink_routes([&](const struct nlmsghdr *nlh) -> bool {
+
+			struct rtmsg *route_entry = (struct rtmsg *) NLMSG_DATA(nlh);
+
+			// We are just interested in main routing table
+			if (route_entry->rtm_table != RT_TABLE_MAIN) {
+				return false;
+			}	
+
+			struct rtattr *route_attribute = (struct rtattr *) RTM_RTA(route_entry);
+			size_t route_attribute_len = RTM_PAYLOAD(nlh);
+
+			for(;RTA_OK(route_attribute, route_attribute_len); route_attribute = RTA_NEXT(route_attribute, route_attribute_len)) {
+				if(route_attribute->rta_type == RTA_GATEWAY) {
+
+					if((unsigned) route_attribute_len > sizeof(struct sockaddr_in)) {
+						throw runtime_error(_("Invalid size on RTA_GATEWAY"));
+					}
+
+					gateway.sin_family = AF_INET;
+					memcpy(&gateway.sin_addr,RTA_DATA(route_attribute),sizeof(gateway.sin_addr));
+
+					return true;
+
+				}
 			}
+			
 			return false;
 		})) {
 			throw runtime_error("Unable to find default gateway");
