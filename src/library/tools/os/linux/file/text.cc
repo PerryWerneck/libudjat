@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/file/text.h>
+ #include <udjat/tools/string.h>
  #include <sys/mman.h>
  #include <sys/stat.h>
  #include <fcntl.h>
@@ -90,6 +91,19 @@
 
 	File::Text & File::Text::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 		return expand('$',expander,dynamic,cleanup);
+	}
+
+	File::Text & File::Text::expand(char marker, bool dynamic, bool cleanup) {
+
+		if(!(contents && *contents)) {
+			return *this;
+		}
+
+		String text{contents};
+		text.expand(marker,dynamic,cleanup);
+
+		return set(text.c_str());
+
 	}
 
 	File::Text & File::Text::expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {

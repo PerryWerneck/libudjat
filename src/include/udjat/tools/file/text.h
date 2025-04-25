@@ -127,6 +127,13 @@ namespace Udjat {
 			/// @param cleanup if true remove the non existent values from string.
 			Text & expand(char marker, const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic = false, bool cleanup = false);
 
+			Text & expand(char marker, bool dynamic = true, bool cleanup = true);
+
+			inline Text & expand(bool dynamic = true, bool cleanup = true) {
+				return expand('$',dynamic,cleanup);
+			}
+
+			
 			/// @brief Save file contents.
 			void save() const;
 
