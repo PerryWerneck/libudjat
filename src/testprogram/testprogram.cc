@@ -52,6 +52,7 @@
 	Logger::redirect();
 	Logger::console(true);
 
+	/*
 	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
 	cout << "---------------> INTERFACE=" << Network::Interface::Default()->address().to_string() << endl;
 	{
@@ -69,6 +70,7 @@
 	debug("Sleeping");
 	sleep(5);
 	debug("Complete");
+	*/
 
 	/*
 	{
@@ -98,7 +100,8 @@
 
 	/*
 	debug("Argc=",argc);
-	
+	*/
+
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
@@ -191,6 +194,7 @@
 				
 		}
 
+		/*
 		MainLoop::getInstance().TimerFactory(1000,[]{
 
 			// cout << "-[ On Timer ]---------------------------------------------------" << endl;
@@ -208,8 +212,8 @@
 			
 			return false;
 		});
+		*/
 
 	});
-	*/
 
  }

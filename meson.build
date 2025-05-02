@@ -182,23 +182,28 @@ else
 endif
 
 #
-# EConf (optional)
+# Configuration library (optional)
 #
-econf_dep = dependency('libeconf-static', required: false)
-if econf_dep.found()
-  app_conf.set('HAVE_ECONF', 2)
-  lib_deps += econf_dep
-else
-  econf_dep = dependency('libeconf', required: false)
-  if econf_dep.found()
-    app_conf.set('HAVE_ECONF', 1)
-    lib_deps += econf_dep
-  endif
-endif
+#conf_dep = dependency('libeconf-static', required: false, method : 'pkg-config')
+#if not conf_dep.found()
+#  conf_dep = dependency('libeconf', required: false, method : 'pkg-config')
+#endif
+#
+#if conf_dep.found() 
+#  app_conf.set('HAVE_ECONF', 1)
+#  if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
+#    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+#  endif
+#else 
+#  conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
+#  if econf_dep.found()
+#    app_conf.set('HAVE_INIPARSER', 1)
+#  endif
+#endif
 
-if econf_dep.found() and cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
-  app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-endif
+app_conf.set('HAVE_INIPARSER', 1)
+conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
+lib_deps += conf_dep
 
 #
 # SystemD  (optional)
@@ -570,7 +575,7 @@ else
     'src/library/tools/os/linux/subprocess/subprocess.cc',
     'src/library/tools/os/linux/systemservice.cc',
     'src/library/tools/os/linux/threadpool.cc',
-    'src/library/tools/os/linux/econf.cc',
+    'src/library/tools/os/linux/configfile.cc',
     'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',

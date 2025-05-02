@@ -35,10 +35,11 @@
  #include <unistd.h>
 
  // https://github.com/openSUSE/libeconf
- #ifdef HAVE_ECONF
+ #if defined(HAVE_ECONF)
  extern "C" {
 	#include <libeconf.h>
- }
+ #elif defined(HAVE_INIPARSER)
+	#include <iniparser/iniparser.h>
  #endif // HAVE_ECONF
 
  using namespace std;
@@ -542,6 +543,150 @@
 	};
 
 
+#elif defined(HAVE_INIPARSER)
+
+	//
+	// Use iniparser as back-end
+	//
+	class Controller {
+		private:
+			dictionary  *ini;
+
+			Controller() : ini{iniparser_load(String{"/etc",program_invocation_short_name,".conf"}.c_str())} {
+				if(!ini) {
+					Logger::String{"Cant load /etc/",program_invocation_short_name,".conf, using default configuration"}.warning("iniparser");
+				} else if(Logger::enabled(Logger::Trace)) {
+					Logger::String{"Got configuration from /etc/",program_invocation_short_name,".conf'"}.trace("iniparser");
+				}
+			}
+
+			Udjat::String key(const char *group, const char *key) const {
+				return Udjat::String{group,":",key};
+			}
+
+		public:
+			~Controller() {
+				if(ini) {
+					iniparser_freedict(ini);
+					ini = nullptr;
+				}
+			}
+	
+			static Controller & getInstance() {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				static Controller instance;
+				return instance;
+			}
+	
+			void reload() {
+			}
+	
+			void open() {
+			}
+	
+			void close() {
+			}
+	
+			bool hasGroup(const char *group) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return false;
+				}
+				return (iniparser_getsecnkeys(ini,group) != 0);
+			}
+	
+			bool hasKey(const char *group, const char *key) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				return true;
+			}
+	
+			Udjat::String get(const char *group, const char *name, const std::string &def) const {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getstring(ini,key(group,name).c_str(),def.c_str());
+			}
+	
+			int32_t get(const char *group, const char *name, const int32_t def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getint(ini,key(group,name).c_str(),def);
+			}
+		
+			int64_t get(const char *group, const char *name, const int64_t def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getint64(ini,key(group,name).c_str(),def);
+			}
+		
+			uint32_t get(const char *group, const char *name, const uint32_t def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getint(ini,key(group,name).c_str(),def);
+			}
+		
+			uint64_t get(const char *group, const char *name, const uint64_t def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getuint64(ini,key(group,name).c_str(),def);
+			}
+		
+			bool get(const char *group, const char *name, const bool def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getboolean(ini,key(group,name).c_str(),def);
+			}
+			
+			float get(const char *group, const char *name, const float def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getdouble(ini,key(group,name).c_str(),def);
+			}
+		
+			double get(const char *group, const char *name, const double def) {
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(!ini) {
+					return def;
+				}
+				return iniparser_getdouble(ini,key(group,name).c_str(),def);
+			}
+		
+			bool for_each(const char *group,const std::function<void(const char *key, const char *value)> &call) {
+
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				if(ini) {
+					size_t items = iniparser_getsecnkeys(ini,group);
+					if(items) {
+						const char *keys[items];
+						if(iniparser_getseckeys(ini,group,keys)) {
+							for(size_t ix = 0; ix < items; ix++) {
+								const char *value = iniparser_getstring(ini,keys[ix],"");
+								call(keys[ix],value);
+							}
+						} else {
+							Logger::String {"Error getting keys from section '",group,"'"}.error("iniparser");
+						}
+					}
+				}
+
+				return false;
+			}
+	
+		};
+	
 #else
 
 	//
@@ -582,16 +727,12 @@
 			return false;
 		}
 
-		Udjat::String get(const std::string &group, const std::string &name, const char *def) const {
-			return Udjat::String{def};
-		}
-
-		Udjat::String get(const std::string &group, const std::string &name, const std::string &def) const {
+		Udjat::String get(const char *group, const char *name, const char *def) const {
 			return Udjat::String{def};
 		}
 
 		template<typename T>
-		T get(const std::string &group, const std::string &name, const T def) const {
+		T get(const char *group, const char *name, const T def) const {
 			return def;
 		}
 
@@ -615,39 +756,40 @@
 	}
 
 	int32_t Config::get(const std::string &group, const std::string &name, const int32_t def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
 	int64_t Config::get(const std::string &group, const std::string &name, const int64_t def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
 	uint32_t Config::get(const std::string &group, const std::string &name, const uint32_t def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
 	uint64_t Config::get(const std::string &group, const std::string &name, const uint64_t def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
 	float Config::get(const std::string &group, const std::string &name, const float def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
 	double Config::get(const std::string &group, const std::string &name, const double def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
 	Udjat::String Config::get(const std::string &group, const std::string &name, const char *def) {
-		return Controller::getInstance().get(group,name,def).expand(true,false);
+		String s = Controller::getInstance().get(group.c_str(),name.c_str(),def);
+		return s.expand(true,false);
 	}
 
 	Udjat::String Config::get(const std::string &group, const std::string &name, const std::string &def) {
-		return Controller::getInstance().get(group,name,def).expand(true,false);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def).expand(true,false);
 	}
 
 	bool Config::get(const std::string &group, const std::string &name, const bool def) {
-		return Controller::getInstance().get(group,name,def);
+		return Controller::getInstance().get(group.c_str(),name.c_str(),def);
 	}
 
  }
