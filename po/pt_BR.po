@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-11 04:43-0300\n"
+"POT-Creation-Date: 2025-05-02 16:25-0300\n"
 "PO-Revision-Date: 2025-03-03 18:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -396,6 +396,22 @@ msgstr "O template de mensagem não é válido"
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#: src/library/tools/os/linux/ip.cc:96
+msgid "Invalid size on RTA_GATEWAY"
+msgstr ""
+
+#: src/library/tools/os/linux/netlink_routes.cc:68
+msgid "Cant send netlink message"
+msgstr ""
+
+#: src/library/tools/os/linux/netlink_routes.cc:80
+msgid "Cant receive netlink response"
+msgstr ""
+
+#: src/library/tools/os/linux/netlink_routes.cc:87
+msgid "Error in received packet"
+msgstr ""
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72

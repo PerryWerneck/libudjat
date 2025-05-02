@@ -238,7 +238,7 @@
 			return rc;
 		}
 
-		int32_t get(const std::string &group, const std::string &name, const int32_t def) const {
+		int32_t get(const char *group, const char *name, const int32_t def) const {
 
 			if(!hFile) {
 				return def;
@@ -250,8 +250,8 @@
 
 			econf_err err = econf_getIntValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -266,7 +266,7 @@
 
 		}
 
-		int64_t get(const std::string &group, const std::string &name, const int64_t def) const {
+		int64_t get(const char *group, const char *name, const int64_t def) const {
 
 			if(!hFile) {
 				return def;
@@ -278,8 +278,8 @@
 
 			econf_err err = econf_getInt64ValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -294,7 +294,7 @@
 
 		}
 
-		uint32_t get(const std::string &group, const std::string &name, const uint32_t def) const {
+		uint32_t get(const char *group, const char *name, const uint32_t def) const {
 
 			if(!hFile) {
 				return def;
@@ -306,8 +306,8 @@
 
 			econf_err err = econf_getUIntValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -321,7 +321,7 @@
 			return result;
 		}
 
-		uint64_t get(const std::string &group, const std::string &name, const uint64_t def) const {
+		uint64_t get(const char *group, const char *name, const uint64_t def) const {
 
 			if(!hFile) {
 				return def;
@@ -333,8 +333,8 @@
 
 			econf_err err = econf_getUInt64ValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -348,7 +348,7 @@
 			return result;
 		}
 
-		float get(const std::string &group, const std::string &name, const float def) const {
+		float get(const char *group, const char *name, const float def) const {
 
 			if(!hFile) {
 				return def;
@@ -360,8 +360,8 @@
 
 			econf_err err = econf_getFloatValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -375,7 +375,7 @@
 			return result;
 		}
 
-		double get(const std::string &group, const std::string &name, const double def) const {
+		double get(const char *group, const char *name, const double def) const {
 
 			if(!hFile) {
 				return def;
@@ -387,8 +387,8 @@
 
 			econf_err err = econf_getDoubleValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -403,7 +403,7 @@
 
 		}
 
-		bool get(const std::string &group, const std::string &name, const bool def) const {
+		bool get(const char *group, const char *name, const bool def) const {
 
 			if(!hFile) {
 				return def;
@@ -415,8 +415,8 @@
 
 			econf_err err = econf_getBoolValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								def
 							);
@@ -431,7 +431,7 @@
 
 		}
 
-		Udjat::String get(const std::string &group, const std::string &name, const char *def) const {
+		Udjat::String get(const char *group, const char *name, const char *def) const {
 
 			if(!hFile) {
 				return def;
@@ -443,8 +443,8 @@
 
 			econf_err err = econf_getStringValueDef(
 								(econf_file *) hFile,
-								group.c_str(),
-								name.c_str(),
+								group,
+								name,
 								&result,
 								(char *) def
 							);
@@ -473,10 +473,6 @@
 			cout << "config\tEmpty value for '" << group << "." << name << "'" << endl;
 			return def;
 
-		}
-
-		Udjat::String get(const std::string &group, const std::string &name, const std::string &def) const {
-			return get(group,name,def.c_str());
 		}
 
 		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
@@ -779,12 +775,13 @@
 	}
 
 	Udjat::String Config::get(const std::string &group, const std::string &name, const char *def) {
-		String s = Controller::getInstance().get(group.c_str(),name.c_str(),def);
-		return s.expand(true,false);
+		String str = Controller::getInstance().get(group.c_str(),name.c_str(),def);
+		return str.expand(true,false);
 	}
 
 	Udjat::String Config::get(const std::string &group, const std::string &name, const std::string &def) {
-		return Controller::getInstance().get(group.c_str(),name.c_str(),def).expand(true,false);
+		String str = Controller::getInstance().get(group.c_str(),name.c_str(),def.c_str());
+		return str.expand(true,false);
 	}
 
 	bool Config::get(const std::string &group, const std::string &name, const bool def) {

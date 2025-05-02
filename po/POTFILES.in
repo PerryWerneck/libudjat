@@ -127,7 +127,8 @@ src/library/tools/os/linux/threadpool.cc
 src/library/tools/os/linux/protocol.cc
 src/library/tools/os/linux/urlconnect.cc
 src/library/tools/os/linux/socket.cc
-src/library/tools/os/linux/econf.cc
+src/library/tools/os/linux/netlink_routes.cc
+src/library/tools/os/linux/configfile.cc
 src/library/tools/os/windows/adapter.cc
 src/library/tools/os/windows/application/application.cc
 src/library/tools/os/windows/application/description.cc
@@ -217,13 +218,14 @@ src/library/tools/action.cc
 src/library/tools/console.cc
 src/library/worker/controller.cc
 src/library/worker/worker.cc
-src/library/ui/progress.cc
 src/library/ui/dialog.cc
+src/library/ui/progress.cc
 src/include/private/event.h
 src/include/private/factory.h
 src/include/private/filewatcher.h
 src/include/private/linux/mainloop.h
 src/include/private/linux/subprocess.h
+src/include/private/linux/netlink.h
 src/include/private/logger.h
 src/include/private/misc.h
 src/include/private/request.h
