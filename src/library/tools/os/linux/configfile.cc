@@ -38,13 +38,12 @@
  #if defined(HAVE_ECONF)
  extern "C" {
 	#include <libeconf.h>
+ }
  #elif defined(HAVE_INIPARSER)
 	#include <iniparser/iniparser.h>
  #endif // HAVE_ECONF
 
  using namespace std;
-
-/*---[ Implement ]----------------------------------------------------------------------------------*/
 
  namespace Udjat {
 

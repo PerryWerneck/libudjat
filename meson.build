@@ -184,25 +184,27 @@ endif
 #
 # Configuration library (optional)
 #
-#conf_dep = dependency('libeconf-static', required: false, method : 'pkg-config')
-#if not conf_dep.found()
-#  conf_dep = dependency('libeconf', required: false, method : 'pkg-config')
-#endif
-#
-#if conf_dep.found() 
-#  app_conf.set('HAVE_ECONF', 1)
-#  if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
-#    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-#  endif
-#else 
-#  conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
-#  if econf_dep.found()
-#    app_conf.set('HAVE_INIPARSER', 1)
-#  endif
-#endif
+conf_dep = dependency('libeconf-static', required: false, method : 'pkg-config')
+if not conf_dep.found()
+  conf_dep = dependency('libeconf', required: false, method : 'pkg-config')
+endif
 
-app_conf.set('HAVE_INIPARSER', 1)
-conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
+if conf_dep.found() 
+
+  app_conf.set('HAVE_ECONF', 1)
+  if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
+    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+  endif
+
+else 
+
+  conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
+  if conf_dep.found()
+    app_conf.set('HAVE_INIPARSER', 1)
+  endif
+
+endif
+
 lib_deps += conf_dep
 
 #
