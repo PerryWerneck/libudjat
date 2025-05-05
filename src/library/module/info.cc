@@ -18,6 +18,7 @@
  */
 
  #include <config.h>
+ #include <iconv.h>
  #include <udjat/defs.h>
  #include <udjat/tools/value.h>
  #include <udjat/tools/intl.h>
@@ -47,11 +48,15 @@
 		};
 
 		for(auto &item : info) {
+#ifdef HAVE_ICONV
 			if(gettext_package && *gettext_package) {
 				properties[item.name] = (const char *) dgettext(gettext_package,item.value);
 			} else {
 				properties[item.name] = item.value;
 			}
+#else
+			properties[item.name] = item.value;
+#endif
 		}
 
 		properties["build"] = build;
@@ -75,11 +80,15 @@
 
 		for(auto &item : info) {
 			if(!strcasecmp(key,item.name)) {
+#ifdef HAVE_ICONV
 				if(gettext_package && *gettext_package) {
 					value = dgettext(gettext_package,item.value);
 				} else {
 					value = item.value;
 				}
+#else
+				value = item.value;
+#endif
 				return true;
 			}
 		}

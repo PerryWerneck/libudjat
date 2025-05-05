@@ -22,8 +22,9 @@
  #include <udjat/tools/value.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
+ #include <libintl.h>
  
-  static const struct {
+ static const struct {
 	Udjat::Value::Type type;
 	const char *name;
  } typenames[] = {
@@ -60,11 +61,13 @@
 			}
 		}
 
+#ifdef GETTEXT_PACKAGE
 		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
 			if(!strcasecmp(dgettext(GETTEXT_PACKAGE,typenames[ix].name),name)) {
 				return typenames[ix].type;
 			}
 		}
+#endif
 
 		Logger::String{"Unknown type '",name,"' assuming undefined"}.warning();
 
@@ -80,7 +83,11 @@
 
 		for(size_t ix = 0; ix < N_ELEMENTS(typenames); ix++) {
 			if(typenames[ix].type == type) {
+#ifdef GETTEXT_PACKAGE
 				return dgettext(GETTEXT_PACKAGE,typenames[ix].name);
+#else
+				return typenames[ix].name;
+#endif
 			}
 		}
 		return _( "Unknown" );

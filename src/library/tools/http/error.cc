@@ -33,6 +33,7 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/agent/level.h>
+ #include <cstdint>
 
  using namespace std;
 
@@ -219,7 +220,7 @@
 						dgettext(GETTEXT_PACKAGE,error.body)
 #else
 						error.summary,
-						error[.body
+						error.body
 #endif // GETTEXT_PACKAGE
 				};
 			}

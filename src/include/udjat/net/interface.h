@@ -38,6 +38,8 @@
 		class UDJAT_API Interface {
 		public:
 
+			virtual ~Interface() = default;
+			
 			virtual bool operator==(const sockaddr_storage &addr) const = 0;
 
 			inline bool operator==(const char *str) const {

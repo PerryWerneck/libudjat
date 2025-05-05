@@ -88,6 +88,7 @@
 		// Construct
 		//
 		String() = default;
+		virtual ~String() = default;
 
 		inline String(const char *str) : std::string{str} {
 		}
