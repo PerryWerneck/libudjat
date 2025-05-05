@@ -23,7 +23,7 @@
  #include <udjat/tools/mainloop.h>
 
  #ifndef _WIN32
-	#include <poll.h>
+	#include <sys/poll.h>
  #endif // _WIN32
 
  namespace Udjat {

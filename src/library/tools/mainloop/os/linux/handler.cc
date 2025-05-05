@@ -20,7 +20,7 @@
  #include <config.h>
  #include <private/linux/mainloop.h>
  #include <udjat/tools/handler.h>
- #include <poll.h>
+ #include <sys/poll.h>
  #include <system_error>
  #include <iostream>
 

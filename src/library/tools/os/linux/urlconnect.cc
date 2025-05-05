@@ -35,7 +35,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/handler.h>
  #include <udjat/tools/socket.h>
- #include <poll.h>
+ #include <sys/poll.h>
 
  using namespace std;
 

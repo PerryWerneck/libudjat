@@ -39,7 +39,7 @@
  #include <cstring>
  #include <csignal>
  #include <sys/wait.h>
- #include <poll.h>
+ #include <sys/poll.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/logger.h>
 
