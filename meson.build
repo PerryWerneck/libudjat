@@ -685,7 +685,6 @@ if rpm.found()
   macros_conf.set('PRODUCT_VERSION_MINOR', pkg_minor_version)
   macros_conf.set('PRODUCT_VERSION_MICRO', pkg_micro_version)
 
-  macros_conf.set('MODULE_VERSION', '@0@_@1@'.format(pkg_major_version,pkg_minor_version))
   macros_conf.set('PREFIX',get_option('prefix'))
   macros_conf.set('LIBDIR',get_option('libdir'))
 

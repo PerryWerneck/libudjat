@@ -17,7 +17,7 @@
 
 %udjat_product_name @PRODUCT_NAME@
 %udjat_product_version @PRODUCT_VERSION@
-%udjat_module_version @MODULE_VERSION@
+%udjat_module_version @PRODUCT_VERSION_MAJOR@_@PRODUCT_VERSION_MINOR@
 %udjat_module_path @PREFIX@/@LIBDIR@/@PRODUCT_NAME@/@PRODUCT_VERSION_MAJOR@.@PRODUCT_VERSION_MINOR@/modules
 
 %udjat_module() %{udjat_product_name}%{udjat_module_version}-module-%{**}
@@ -32,7 +32,7 @@ Provides:	%{name}%{udjat_package_major}-devel = %{version} \
 Provides:	%{udjat_library}-devel = %{version}
 
 %udjat_module_requires(n:) \
-Provides: %{udjat_product_name}-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version}
+Provides: %{udjat_product_name}@PRODUCT_VERSION_MAJOR@-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version}
 
 %udjat_module_package(n:) \
 %package -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
