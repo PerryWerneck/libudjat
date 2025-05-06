@@ -18,7 +18,7 @@
 %udjat_product_name @PRODUCT_NAME@
 %udjat_product_version @PRODUCT_VERSION@
 %udjat_module_version @PRODUCT_VERSION_MAJOR@_@PRODUCT_VERSION_MINOR@
-%udjat_module_path @PREFIX@/@LIBDIR@/@PRODUCT_NAME@/@PRODUCT_VERSION_MAJOR@.@PRODUCT_VERSION_MINOR@/modules
+%udjat_module_path %{_libdir}/@PRODUCT_NAME@/@PRODUCT_VERSION_MAJOR@.@PRODUCT_VERSION_MINOR@/modules
 
 %udjat_module() %{udjat_product_name}%{udjat_module_version}-module-%{**}
 
