@@ -38,7 +38,7 @@ Provides: %{udjat_product_name}@PRODUCT_VERSION_MAJOR@-module-%{-n:%{-n*}}%{!-n:
 %package -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
 Summary: Dynamic loading of %{name} \
 Group: Development/Libraries/Other \
-Provides: %{udjat_product_name}-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version} \
+Provides: %{udjat_product_name}@PRODUCT_VERSION_MAJOR@-module-%{-n:%{-n*}}%{!-n:%{name}} = %{version} \
 %description -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
 This package provides the dynamic loading of %{name} on %{udjat_product_name}.\
 %files -n %{udjat_product_name}%{udjat_module_version}-module-%{-n:%{-n*}}%{!-n:%{name}} \
