@@ -652,6 +652,7 @@ static_library(
 tests = static_library(
   meson.project_name() + '-testing', 
   config_src + test_src,
+  c_args: [ '-DSTATIC_LIBRARY=1', '-ffat-lto-objects' ],
   install: true,
   dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
