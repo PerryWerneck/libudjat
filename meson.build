@@ -142,10 +142,9 @@ app_conf.set('HAVE_LOCALTIME_R', cxx.has_function('localtime_r'))
 app_conf.set('HAVE_PUGIXML', 1)
 app_conf.set('HAVE_LIBINTL', 1)
 
-app_conf.set_quoted('PRODUCT_TITLE', product_title)
+app_conf.set('PRODUCT_TITLE', product_title)
 app_conf.set('PRODUCT_NAME',product_name)
 app_conf.set('PRODUCT_DOMAIN',product_domain)
-app_conf.set_quoted('PRODUCT_TITLE',product_title)
 
 app_conf.set_quoted('LOG_DOMAIN','lib' + product_name)
 
