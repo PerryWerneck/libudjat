@@ -28,7 +28,10 @@
  #include <udjat/tools/logger.h>
  #include <vector>
  #include <libgen.h>
- #include <filesystem>
+
+ #ifdef HAVE_FILESYSTEM_H
+	 #include <filesystem>
+ #endif
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -89,11 +92,11 @@
 		if(Application::pop(argc,argv,'S',"service",argvalue)) {
 			mode = Service;
 		}
-
 	}
 
 	Logger::String{"Loading definitions from '" + config_file + "'"}.info();
 
+#ifdef HAVE_FILESYSTEM_H
 	{
 		string testmodule{".build/testmodule" LIBEXT};
 
@@ -106,8 +109,8 @@
 			}
 			modules.back()->test_mode();
 		}
-
 	}
+#endif
 
 	switch(mode) {
 	case Application:

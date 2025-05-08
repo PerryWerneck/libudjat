@@ -529,6 +529,10 @@ else
     app_conf.set('HAVE_UNISTD_H', 1)
   endif
 
+  if cxx.compiles('#include <filesystem>', name : 'filesystem')
+    app_conf.set('HAVE_FILESYSTEM_H', 1)
+  endif
+
   app_conf.set_quoted('LIBEXT', '.so')
 
   install_headers(
