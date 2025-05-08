@@ -72,7 +72,6 @@ endif
 
 compiler_flags = [
   '-ggdb3',
-  '-ffat-lto-objects',
   '-fvisibility=hidden',
   '-pthread',
   '-fPIC',
@@ -634,6 +633,7 @@ else
     install: true,
     version : libversion,
     soversion : libversion,
+    cpp_args: [ '-ffat-lto-objects' ],
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps + [ dependency('threads'), iconv ],
     include_directories: includes_dir,
@@ -648,6 +648,7 @@ static_library(
   meson.project_name(), 
   config_h + lib_src,
   install: true,
+  cpp_args: [ '-fno-lto' ],
   dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
 )
@@ -655,7 +656,7 @@ static_library(
 tests = static_library(
   meson.project_name() + '-testing', 
   config_h + test_src,
-  c_args: [ '-DSTATIC_LIBRARY=1', '-ffat-lto-objects' ],
+  cpp_args: [ '-fno-lto' ],
   install: true,
   dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
