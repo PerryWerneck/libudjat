@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-02 16:25-0300\n"
+"POT-Creation-Date: 2025-05-08 10:48-0300\n"
 "PO-Revision-Date: 2025-03-03 18:14-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -19,72 +19,6 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.5\n"
-
-#: src/library/agent/agent.cc:158
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:160
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:161
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:52
-msgid "Agent controller"
-msgstr "Controlador de agentes"
-
-#: src/library/agent/controller.cc:103
-msgid "Core/Module subsystem failed to initialize"
-msgstr "Inicialização do módulo principal falhou"
-
-#: src/library/agent/controller.cc:394
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
-#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:118
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
-
-#: src/library/agent/root.cc:99
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/state.cc:139
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:144
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/module/module.cc:114
-#, c++-format
-msgid "Module '{}' is not loaded"
-msgstr "Modulo '{}' não foi carregado"
-
-#: src/library/module/module.cc:130
-#, c++-format
-msgid "I dont know how to execute '{}'"
-msgstr "Não sei como executar '{}'"
-
-#: src/library/request/response.cc:127
-msgid "System error"
-msgstr "Erro de sistema"
-
-#: src/library/request/response.cc:189
-msgid "Operation failed"
-msgstr "Operação falhou"
-
-#: src/library/state/state.cc:258 src/library/tools/converters.cc:42
-msgid "on"
-msgstr "ligado"
-
-#: src/library/state/state.cc:258 src/library/tools/converters.cc:49
-msgid "off"
-msgstr "desligado"
 
 #: src/library/tools/application/run.cc:80
 #: src/library/tools/application/run.cc:84
@@ -99,6 +33,10 @@ msgstr "sim"
 msgid "true"
 msgstr "verdadeiro"
 
+#: src/library/tools/converters.cc:42 src/library/state/state.cc:258
+msgid "on"
+msgstr "ligado"
+
 #: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:69
 msgid "no"
 msgstr "não"
@@ -106,6 +44,10 @@ msgstr "não"
 #: src/library/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
+
+#: src/library/tools/converters.cc:49 src/library/state/state.cc:258
+msgid "off"
+msgstr "desligado"
 
 #: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
 #: src/library/tools/exception.cc:53
@@ -143,31 +85,31 @@ msgstr "Não foi possível obter o tamanho de bloco"
 msgid "Unexpected EOF reading from file"
 msgstr "Fim de arquivo inesperado lendo arquivo"
 
-#: src/library/tools/http/error.cc:57
+#: src/library/tools/http/error.cc:58
 msgid "Information"
 msgstr "Informação"
 
-#: src/library/tools/http/error.cc:68
+#: src/library/tools/http/error.cc:69
 msgid "Ok"
 msgstr "Ok"
 
-#: src/library/tools/http/error.cc:69
+#: src/library/tools/http/error.cc:70
 msgid "The request succeeded."
 msgstr "Requisição concluída com sucesso."
 
-#: src/library/tools/http/error.cc:79
+#: src/library/tools/http/error.cc:80
 msgid "Redirected"
 msgstr "Redirecionado"
 
-#: src/library/tools/http/error.cc:80
+#: src/library/tools/http/error.cc:81
 msgid "The request was redirected to another URL."
 msgstr "Requisição foi redirecionada para outra URL."
 
-#: src/library/tools/http/error.cc:90
+#: src/library/tools/http/error.cc:91
 msgid "Bad Request"
 msgstr "Requisição inválida"
 
-#: src/library/tools/http/error.cc:91
+#: src/library/tools/http/error.cc:92
 msgid ""
 "The server cannot or will not process the request due to an apparent client "
 "error (e.g., malformed request syntax, size too large, invalid request "
@@ -177,19 +119,19 @@ msgstr ""
 "cliente, por exemplo, requisição com sintaxe errada, resultado muito grande, "
 "enquadramento inválido or problema de rota."
 
-#: src/library/tools/http/error.cc:97
+#: src/library/tools/http/error.cc:98
 msgid "Unauthorized"
 msgstr "Não autorizado"
 
-#: src/library/tools/http/error.cc:98
+#: src/library/tools/http/error.cc:99
 msgid "Authentication is required and has failed or has not yet been provided."
 msgstr "Autenticação falhou ou não foi fornecida."
 
-#: src/library/tools/http/error.cc:104
+#: src/library/tools/http/error.cc:105
 msgid "Forbidden"
 msgstr "Proibido"
 
-#: src/library/tools/http/error.cc:105
+#: src/library/tools/http/error.cc:106
 msgid ""
 "The request contained valid data and was understood by the server, but the "
 "server is refusing action."
@@ -197,29 +139,29 @@ msgstr ""
 "A requisição contem dados válidos e foi reconhecida pelo servidor, porem, o "
 "servidor se recusou a atuar."
 
-#: src/library/tools/http/error.cc:111
+#: src/library/tools/http/error.cc:112
 msgid "Not found"
 msgstr "Não encontrado"
 
-#: src/library/tools/http/error.cc:112
+#: src/library/tools/http/error.cc:113
 msgid ""
 "The requested resource could not be found but may be available in the future."
 msgstr ""
 "O recurso pedido não foi encontrado mas pode ficar disponível no futuro."
 
-#: src/library/tools/http/error.cc:118
+#: src/library/tools/http/error.cc:119
 msgid "Proxy Authentication Required"
 msgstr "Proxy exige autenticação"
 
-#: src/library/tools/http/error.cc:119
+#: src/library/tools/http/error.cc:120
 msgid "The client must first authenticate itself with the proxy."
 msgstr "O cliente deve primeiro autenticar no proxy."
 
-#: src/library/tools/http/error.cc:125
+#: src/library/tools/http/error.cc:126
 msgid "Request Timeout"
 msgstr "Tempo da requisição esgotado"
 
-#: src/library/tools/http/error.cc:126
+#: src/library/tools/http/error.cc:127
 msgid ""
 "The client did not produce a request within the time that the server was "
 "prepared to wait."
@@ -227,63 +169,63 @@ msgstr ""
 "O cliente não gerou uma requisição no tempo que o servidor estava preparado "
 "para esperar."
 
-#: src/library/tools/http/error.cc:132
+#: src/library/tools/http/error.cc:133
 msgid "Gone"
 msgstr "Gone"
 
-#: src/library/tools/http/error.cc:133
+#: src/library/tools/http/error.cc:134
 msgid ""
 "The resource requested was previously in use but is no longer available and "
 "will not be available again."
 msgstr "O recurso pedido foi usado antes mas não estão mais disponívei."
 
-#: src/library/tools/http/error.cc:139
+#: src/library/tools/http/error.cc:140
 msgid "Too many requests"
 msgstr "Muitas requisições"
 
-#: src/library/tools/http/error.cc:140
+#: src/library/tools/http/error.cc:141
 msgid ""
 "Something is making your server work too hard, and it just can’t keep up"
 msgstr "Algo está fazendo seu servidor trabalhar além do limite"
 
-#: src/library/tools/http/error.cc:146
+#: src/library/tools/http/error.cc:147
 msgid "Client error"
 msgstr "Erro de cliente"
 
-#: src/library/tools/http/error.cc:157
+#: src/library/tools/http/error.cc:158
 msgid "Internal error"
 msgstr "Erro interno"
 
-#: src/library/tools/http/error.cc:158
+#: src/library/tools/http/error.cc:159
 msgid "The server has encountered a situation it does not know how to handle."
 msgstr "O servidor encontrou uma situação que ele não sabe como resolver."
 
-#: src/library/tools/http/error.cc:164
+#: src/library/tools/http/error.cc:165
 msgid "Not Implemented"
 msgstr "Não implementado"
 
-#: src/library/tools/http/error.cc:165
+#: src/library/tools/http/error.cc:166
 msgid ""
 "The request method is not supported by the server and cannot be handled."
 msgstr ""
 "O método usado na requisição não é suportado pelo servidor e não pode ser "
 "atendido."
 
-#: src/library/tools/http/error.cc:171
+#: src/library/tools/http/error.cc:172
 msgid "Bad gateway"
 msgstr "Gateway inválido"
 
-#: src/library/tools/http/error.cc:172
+#: src/library/tools/http/error.cc:173
 msgid ""
 "The server, while working as a gateway to get a response needed to handle "
 "the request, got an invalid response."
 msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
 
-#: src/library/tools/http/error.cc:178
+#: src/library/tools/http/error.cc:179
 msgid "Service Unavailable"
 msgstr "Serviço indisponível"
 
-#: src/library/tools/http/error.cc:179
+#: src/library/tools/http/error.cc:180
 msgid ""
 "The server is not ready to handle the request. Common causes are a server "
 "that is down for maintenance or that is overloaded."
@@ -291,60 +233,60 @@ msgstr ""
 "O servidor não está pronto para atender à requisição. Pode estar inativo "
 "para manutenção ou sobrecarregado."
 
-#: src/library/tools/http/error.cc:185
+#: src/library/tools/http/error.cc:186
 msgid "Gateway timeout"
 msgstr "Timeout no acesso ao gateway"
 
-#: src/library/tools/http/error.cc:186
+#: src/library/tools/http/error.cc:187
 msgid "The server is acting as a gateway and cannot get a response in time."
 msgstr ""
 "O servidor está atuando como proxy e não conseguiu obter uma resposta no "
 "tempo esperado."
 
-#: src/library/tools/http/error.cc:192
+#: src/library/tools/http/error.cc:193
 msgid "HTTP Version Not Supported"
 msgstr "Versão HTTP não suportada"
 
-#: src/library/tools/http/error.cc:193
+#: src/library/tools/http/error.cc:194
 msgid "The HTTP version used in the request is not supported by the server."
 msgstr "A versão HTTP usada na requisição não é suportada pelo servidor."
 
-#: src/library/tools/http/error.cc:199
+#: src/library/tools/http/error.cc:200
 msgid "Server error"
 msgstr "Erro de servidor"
 
-#: src/library/tools/http/error.cc:206
+#: src/library/tools/http/error.cc:207
 msgid "Request canceled"
 msgstr "Requisição cancelada"
 
-#: src/library/tools/http/error.cc:207
+#: src/library/tools/http/error.cc:208
 msgid "The request was canceled by the user"
 msgstr "A operação foi cancelada pelo usuário"
 
-#: src/library/tools/http/error.cc:228
+#: src/library/tools/http/error.cc:229
 msgid "Unexpected HTTP error code"
 msgstr "Código de erro HTTP inesperado"
 
-#: src/library/tools/http/error.cc:228
+#: src/library/tools/http/error.cc:229
 msgid "The HTTP error code is unknown"
 msgstr "Código de erro HTTP desconhecido"
 
-#: src/library/tools/http/error.cc:270
+#: src/library/tools/http/error.cc:271
 #, c++-format
 msgid "System error {} ({}) acessing {}"
 msgstr "Essoe de sistem {} ({}) acessando {}"
 
-#: src/library/tools/http/error.cc:279
+#: src/library/tools/http/error.cc:280
 #, c++-format
 msgid "System error {} acessing {}"
 msgstr "Erro de sistema {} acessando {}"
 
-#: src/library/tools/http/error.cc:304
+#: src/library/tools/http/error.cc:305
 #, c++-format
 msgid "HTTP error code {}"
 msgstr "Erro HTTP {}"
 
-#: src/library/tools/http/error.cc:305
+#: src/library/tools/http/error.cc:306
 #, c++-format
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
@@ -469,6 +411,26 @@ msgstr "Sim"
 msgid "No"
 msgstr "Não"
 
+#: src/library/tools/script.cc:54 src/library/tools/script.cc:140
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
+
+#: src/library/tools/script.cc:159
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/script.cc:165
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/systemservice.cc:118 src/library/agent/root.cc:99
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/tools/systemservice.cc:122
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
 #: src/library/tools/timestamp.cc:105
 msgid "Less than one minute"
 msgstr "Menos de um minuto"
@@ -539,72 +501,72 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
-#: src/library/tools/value/type.cc:30
+#: src/library/tools/value/type.cc:31
 msgid "undefined"
 msgstr "indefinido"
 
 #. Allways the first one
-#: src/library/tools/value/type.cc:31
+#: src/library/tools/value/type.cc:32
 msgid "array"
 msgstr ""
 
-#: src/library/tools/value/type.cc:32
+#: src/library/tools/value/type.cc:33
 msgid "object"
 msgstr "objeto"
 
-#: src/library/tools/value/type.cc:33
+#: src/library/tools/value/type.cc:34
 msgid "string"
 msgstr "texto"
 
-#: src/library/tools/value/type.cc:34
+#: src/library/tools/value/type.cc:35
 msgid "timestamp"
 msgstr ""
 
-#: src/library/tools/value/type.cc:35
+#: src/library/tools/value/type.cc:36
 msgid "signed"
 msgstr "com sinal"
 
-#: src/library/tools/value/type.cc:36
+#: src/library/tools/value/type.cc:37
 msgid "unsigned"
 msgstr "sem sinal"
 
-#: src/library/tools/value/type.cc:37
+#: src/library/tools/value/type.cc:38
 msgid "real"
 msgstr "ponto flutuante"
 
-#: src/library/tools/value/type.cc:38
+#: src/library/tools/value/type.cc:39
 msgid "boolean"
 msgstr "condicional"
 
-#: src/library/tools/value/type.cc:39
+#: src/library/tools/value/type.cc:40
 msgid "fraction"
 msgstr "fração"
 
-#: src/library/tools/value/type.cc:40
+#: src/library/tools/value/type.cc:41
 msgid "icon"
 msgstr "ícone"
 
-#: src/library/tools/value/type.cc:41
+#: src/library/tools/value/type.cc:42
 msgid "url"
 msgstr ""
 
-#: src/library/tools/value/type.cc:42
+#: src/library/tools/value/type.cc:43
 msgid "state"
 msgstr ""
 
-#: src/library/tools/value/type.cc:44
+#: src/library/tools/value/type.cc:45
 msgid "int"
 msgstr ""
 
-#: src/library/tools/value/type.cc:45
+#: src/library/tools/value/type.cc:46
 msgid "integer"
 msgstr "inteiro"
 
-#: src/library/tools/value/type.cc:46
+#: src/library/tools/value/type.cc:47
 msgid "number"
 msgstr "numérico"
 
-#: src/library/tools/value/type.cc:86
+#: src/library/tools/value/type.cc:93
 msgid "Unknown"
 msgstr "Desconhecido"
 
@@ -613,21 +575,59 @@ msgstr "Desconhecido"
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/tools/script.cc:54 src/library/tools/script.cc:140
-msgid "The required attribute 'cmdline' is missing"
-msgstr "Atributo necessário 'cmdline' não está disponível"
+#: src/library/agent/agent.cc:158
+msgid "default"
+msgstr "padrão"
 
-#: src/library/tools/script.cc:159
-msgid "Cant set subprocess user id"
-msgstr "Incapaz de definir o usuário do subprocesso"
+#: src/library/agent/agent.cc:160
+msgid "Normal"
+msgstr "Normal"
 
-#: src/library/tools/script.cc:165
-msgid "Cant set subprocess group id"
-msgstr "Incapaz de definir o grupo do subprocesso"
+#: src/library/agent/agent.cc:161
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
 
-#: src/library/tools/systemservice.cc:122
-msgid "System is not ready"
-msgstr "Sistema não está em funcionamento"
+#: src/library/agent/controller.cc:52
+msgid "Agent controller"
+msgstr "Controlador de agentes"
+
+#: src/library/agent/controller.cc:103
+msgid "Core/Module subsystem failed to initialize"
+msgstr "Inicialização do módulo principal falhou"
+
+#: src/library/agent/controller.cc:394
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
+
+#: src/library/agent/root.cc:99
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
+
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/module/module.cc:114
+#, c++-format
+msgid "Module '{}' is not loaded"
+msgstr "Modulo '{}' não foi carregado"
+
+#: src/library/module/module.cc:130
+#, c++-format
+msgid "I dont know how to execute '{}'"
+msgstr "Não sei como executar '{}'"
+
+#: src/library/request/response.cc:127
+msgid "System error"
+msgstr "Erro de sistema"
+
+#: src/library/request/response.cc:189
+msgid "Operation failed"
+msgstr "Operação falhou"
 
 #: src/library/worker/worker.cc:54
 msgid "Invalid response type"
