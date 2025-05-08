@@ -81,7 +81,7 @@
 		virtual ~Application();
 
 		static bool pop(int argc, char **argv, char shortname, const char *longname);
-		static bool pop(int argc, char **argv, char shortname, const char *longname, std::string value);
+		static bool pop(int argc, char **argv, char shortname, const char *longname, std::string &value);
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.

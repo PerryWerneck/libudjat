@@ -168,7 +168,7 @@
 		return false;
 	}
 
-	bool Application::pop(int argc, char **argv, char shortname, const char *longname, std::string value) {
+	bool Application::pop(int argc, char **argv, char shortname, const char *longname, std::string &value) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;

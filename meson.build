@@ -588,7 +588,7 @@ endif
 #
 # Targets
 #
-config_src = [
+config_h = [
   configure_file(
       output : 'config.h', 
       configuration : app_conf
@@ -615,7 +615,7 @@ if host_machine.system() == 'windows'
 
   dynamic = shared_library(
     meson.project_name(), 
-    config_src + lib_src + resources,
+    config_h + lib_src + resources,
     install: true,
     gnu_symbol_visibility: 'hidden',
     dependencies: lib_deps + [ iconv ],
@@ -627,7 +627,7 @@ else
 
   dynamic = shared_library(
     meson.project_name(), 
-    config_src + lib_src,
+    config_h + lib_src,
     install: true,
     version : libversion,
     soversion : libversion,
@@ -643,7 +643,7 @@ endif
 
 static_library(
   meson.project_name(), 
-  config_src + lib_src,
+  config_h + lib_src,
   install: true,
   dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
@@ -651,7 +651,7 @@ static_library(
 
 tests = static_library(
   meson.project_name() + '-testing', 
-  config_src + test_src,
+  config_h + test_src,
   c_args: [ '-DSTATIC_LIBRARY=1', '-ffat-lto-objects' ],
   install: true,
   dependencies: lib_deps + [ iconv ],
@@ -660,7 +660,7 @@ tests = static_library(
 
 executable(
   meson.project_name(),
-  config_src + [ 'src/testprogram/testprogram.cc' ],
+  config_h + [ 'src/testprogram/testprogram.cc' ],
   install: false,
   link_with : [ tests, dynamic ],
   dependencies: lib_deps,
