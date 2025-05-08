@@ -80,6 +80,9 @@
 		/// @brief Build module from filename.
 		static Module * factory(const char *filename);
 
+		/// @brief Called when module is loaded by test application.
+		virtual void test_mode();
+
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->name,name) == 0;
 		}

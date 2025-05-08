@@ -667,6 +667,15 @@ executable(
   include_directories: includes_dir
 )
 
+executable(
+  meson.project_name() + '-loader',
+  config_h + [ 'src/testprogram/loader.cc' ],
+  install: true,
+  link_with : [ tests, dynamic ],
+  dependencies: lib_deps,
+  include_directories: includes_dir
+)
+
 version_file = configure_file(
   input : 'src/include/udjat/version.h.in',
   output : 'version.h',

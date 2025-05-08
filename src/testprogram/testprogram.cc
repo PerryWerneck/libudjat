@@ -19,111 +19,201 @@
 
 
  #include <config.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/service.h>
+ #include <udjat/defs.h>
+ #include <udjat/tests.h>
+ #include <udjat/tools/system.h>
+ #include <udjat/tools/interface.h>
+ #include <udjat/tools/response.h>
+ #include <udjat/tools/report.h>
+ #include <udjat/agent/abstract.h>
+ #include <udjat/agent.h>
+ #include <udjat/agent/percentage.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/net/ip/address.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/module/abstract.h>
- #include <string>
- #include <iostream>
- #include <udjat/tools/logger.h>
- #include <vector>
- #include <libgen.h>
- #include <filesystem>
+ #include <udjat/ui/console.h>
+ #include <udjat/ui/progress.h>
+ #include <private/dialog.h>
+ #include <udjat/net/ip/address.h>
+ #include <udjat/net/interface.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
- #endif
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
  using namespace Udjat;
 
+ static const Udjat::ModuleInfo moduleinfo { "Test program" };
+
  int main(int argc, char **argv) {
 
-	// Check for help
-	if(Application::pop(argc,argv,'h',"help")) {
-		static const string help_text = 
-			"\t-m, --module <module>        Load module\n"
-			"\t-c, --config <file or path>  XML definitions\n"
-			"\t-h, --help                   Show this help message\n";
-		
-		cout << "Usage: " << argv[0] << " [options]" << endl << endl << help_text;
-		return 0;
-	}
-
-	Config::allow_user_homedir(true);
 	Logger::verbosity(9);
 	Logger::redirect();
 	Logger::console(true);
 
-	// Test mode
-	enum Mode {
-		Application,	// Run as application
-		Service,		// Run as service
-	} mode = Application;
-
-	// Configuration file (or path)
-	string config_file = "./test.xml";
-
-	// Loaded modules
-	vector<Module *> modules;
-
-	// Check arguments
+	/*
+	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
+	cout << "---------------> INTERFACE=" << Network::Interface::Default()->address().to_string() << endl;
 	{
-		string argvalue;
+		auto dialog = Dialog::Progress::getInstance();
+		dialog->item(1,1);
+		dialog->set("http://www.google.com");
 
-		if(Application::pop(argc,argv,'m',"module",argvalue)) {
-			Logger::String{"Loading module '" + argvalue + "'"}.info();
-			modules.push_back(Module::factory(argvalue.c_str()));
-			if(modules.back() == nullptr) {
-				Logger::String{"Module '" + argvalue + "' not found"}.error();
-				return -1;
-			}
+		for(size_t ix = 0; ix < 1000; ix++) {
+			dialog->set(ix,1000);
+			usleep(1500);
 		}
+
+	}
+
+	debug("Sleeping");
+	sleep(5);
+	debug("Complete");
+	*/
+
+	/*
+	{
+
+		UI::Console console;
+		console << "Testing simple line writer" << endl;
+		console << endl << endl << endl;
+		console << UI::Console::Foreground::Green;
+		console.bold(true);
+		console.italic(true);
+		for(size_t ix = 0; ix < 1000; ix++) {
+			console.progress("(001/001)","http://www.google.com",ix,1000);
+			usleep(1500);
+		}
+		console.faint(false);
+		console << endl << endl << endl;
+	}
+	*/
+
+	/*
+	{
+		Config::Value<string> config{"test-config", "test-value","default-value"};
+		debug("Config value: ",config.c_str()," len=",config.size()," value[0]=",config[0]);
+	}
+	*/
+
+
+	/*
+	debug("Argc=",argc);
+	*/
+
+	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
+
+		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
+
+		Agent<unsigned short> test{"test-agent",XML::Node{}};
+
+		debug("-------------------------")
+		debug("NIC=",IP::Address{"192.168.0.17"}.nic().c_str());
+		debug("MAC=",IP::Address{"192.168.0.17"}.macaddress().c_str());
+
+		{
+			String str{"line1,line2, line3 , line4"};
 	
-		if(Application::pop(argc,argv,'c',"config",argvalue)) {
-			config_file = argvalue;
-		}
-
-	}
-
-	Logger::String{"Loading definitions from '" + config_file + "'"}.info();
-
-	{
-		string testmodule{".build/testmodule" LIBEXT};
-
-		if(access(testmodule.c_str(),R_OK) == 0) {
-			Logger::String{"Loading test module from '" + testmodule + "'"}.info();
-			modules.push_back(Module::factory(testmodule.c_str()));
-			if(modules.back() == nullptr) {
-				Logger::String{"Module '" + testmodule + "' not found"}.error();
-				return -1;
+			debug("Split test:");
+			auto lines = str.split(",");
+			for(auto &line : lines) {
+				debug("LINE----> '",line.c_str(),"'");
 			}
+			if(lines.size() != 4) {
+				throw runtime_error("Split failed");
+			}
+
+			debug("Split with length test:");
+			lines = str.split(",",2);
+			for(auto &line : lines) {
+				debug("LINE----> '",line.c_str(),"'");
+			}
+			if(lines.size() != 2) {
+				throw runtime_error("Split with length failed");
+			}
+
 		}
 
-	}
-
-	switch(mode) {
-	case Application:
 		{
-			// Run as application
-			Udjat::Application app{argc,argv};
-			int rc = app.run(config_file.c_str());
-			if(rc != 0) {
-				Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
-				return rc;
-			}	
-		}
-		break;
+			String test{"The value 1:6 is '${value[1:6]}'"};
+			
+			test.expand([&test](const char *key, std::string &str){
+				if(!strcasecmp(key,"value")) {
+					str = "0123456789abcdefghijklmno";
+					return true;
+				}
+				return false;
+			});
 
-	case Service:
+			debug("result='",test.c_str(),"'");
+
+			if(strcmp(test.c_str(),"The value 1:6 is '12345'") != 0) {
+				throw runtime_error("Expand failed");
+			}
+
+		}
+
 		{
-			// Run as service
-			// Udjat::Service srvc{argc,argv};
+			Agent<Percentage> percent{"test-percent",0.1};
+
+			string str;
+			percent.getProperty("value",str);
+			debug("PERCENT------------------> ",str.c_str());
+
+			debug("Expanding----> '",String{"The percent value is ${value}"}.expand(percent).c_str(),"'");
+			
+		}
+
+		{
+			debug("-------------------> String split");
+			String test{"create table if not exists alerts (id integer primary key, url text, action text, payload text)"};
+
+			std::vector<String> lines = test.split("\n");
+			debug("----> '",lines[0].c_str(),"'");
+
+			if(lines[0].size() != test.size()) {
+				throw runtime_error("Split failed");
+			}
 
 		}
-		break;
-	}
 
-	return 0;
+		{
+			debug("-------------------> URL test");
+			URL url{"http://www.google.com:8080/path/to/somewhere?name=value&name2=value2"};
+			debug("URL----------------------> ",url.c_str());
+			debug("Hostname----------------> ",url.hostname().c_str());
+			debug("Scheme------------------> ",url.scheme().c_str());
+			debug("Path--------------------> ",url.path().c_str());
+
+			url += "./another/path";
+			
+			if(strcmp(url.c_str(),"http://www.google.com:8080/path/to/somewhere/another/path?name=value&name2=value2")) {
+				throw runtime_error("URL append failed");
+			} 
+				
+		}
+
+		/*
+		MainLoop::getInstance().TimerFactory(1000,[]{
+
+			// cout << "-[ On Timer ]---------------------------------------------------" << endl;
+			// Request request{"/"};
+			// Response response{Udjat::html};			
+			// Interface::find("agent").call(request,response);
+			// auto &report = response["resultset"].ReportFactory("a","b","c",nullptr);
+			// report.push_back("String");
+			// report.push_back(TimeStamp{});
+			// for(unsigned ix = 0; ix < 10;ix++) {
+			//	report.push_back(ix);
+			// }
+			//cout << "Response:" << endl << response << endl;
+			// cout << "----------------------------------------------------------------" << endl;
+			
+			return false;
+		});
+		*/
+
+	});
 
  }
