@@ -648,7 +648,7 @@ static_library(
   meson.project_name(), 
   config_h + lib_src,
   install: true,
-  cpp_args: [ '-fno-lto' ],
+  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
   dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
 )
