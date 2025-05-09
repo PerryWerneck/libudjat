@@ -77,6 +77,17 @@
 		virtual void help(std::ostream &out) const noexcept;
 
 	public:
+
+		struct Option {
+			char shortname;				///< @brief Short name of the option.
+			const char *longname;		///< @brief Long name of the option.
+			const char *description;	///< @brief Description of the option.
+
+			constexpr Option(char s, const char *l, const char *d) :
+				shortname{s}, longname{l}, description{d} {
+			}
+		};
+
 		Application(int argc, char **argv);
 		virtual ~Application();
 
@@ -86,7 +97,7 @@
 		/// @brief Show help text to stream.
 		/// @param out The output stream.
 		/// @return true if the help was shown.
-		static bool help(int argc, char **argv, std::ostream &out, const char *text = nullptr, size_t width = 15) noexcept;
+		static bool help(int argc, char **argv, std::ostream &out, const Option *options = nullptr, size_t width = 15) noexcept;
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.

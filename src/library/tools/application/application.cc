@@ -218,14 +218,17 @@
 
 	}
 
-	bool Application::help(int argc, char **argv, std::ostream &out, const char *text, size_t width) noexcept {
+	bool Application::help(int argc, char **argv, std::ostream &out, const Application::Option *options, size_t width) noexcept {
 
-		static const struct {
-			char shortname;
-			const char *longname;
-			const char *description;
-		} headers[] = {
+		static const Option appoptions[] = {
 			{ 'h', "help", _("Show this help message") },
+		};
+
+		static const Option logoptions[] = {
+			{ 'v', "verbose", _("Verbose output") },
+			{ 'q', "quiet", _("Quiet output") },
+			{ 'l', "logfile file", _("Save log to file") },
+			{ 'L', "loglevel value", _("Set log level to value") },
 		};
 
 		if(!pop(argc,argv,'h',"help")) {
@@ -235,22 +238,62 @@
 		out << _("Usage:") << "\n  " << argv[0]
 			<< " " << _("[OPTION..]") << "\n\n" << _("Application options:");
 
-		for(const auto &header : headers) {
-			out << "\n  -" << header.shortname << ", --";			
-			string text{header.longname};
+		for(const auto &appoption : appoptions) {
+			out << "\n  -" << appoption.shortname << ", --";			
+			string text{appoption.longname};
 			text.resize(width,' ');
-			out << text << " " << header.description;
+			out << text << " " << appoption.description;
 		};
 
-		if(text) {
-			out << "\n" << text;
+		if(options) {
+			for(const Option *option = options; option->description; option++) {
+				out << "\n  -" << option->shortname << ", --";			
+				string text{option->longname};
+				text.resize(width,' ');
+				out << text << " " << option->description;
+			};
 		}
+
+		cout << "\n\n" << _("Log options:");
+		for(const auto &logoption : logoptions) {
+			out << "\n  -" << logoption.shortname << ", --";			
+			string text{logoption.longname};
+			text.resize(width,' ');
+			out << text << " " << logoption.description;
+		};
 
 		out << "\n\n";
 
 		return true;
 
 	}
+
+		/*
+	bool Application::help(int argc, char **argv, std::ostream &out, const char *text, size_t width) noexcept {
+
+		static const struct {
+			char shortname;
+			const char *longname;
+			const char *description;
+		} appoptions[] = {
+			{ 'h', "help", _("Show this help message") },
+		};
+
+		static const struct {
+			char shortname;
+			const char *longname;
+			const char *description;
+		} logoptions[] = {
+			{ 'v', "verbose", _("Verbose output") },
+			{ 'd', "debug", _("Debug output") },
+			{ 'q', "quiet", _("Quiet output") },
+			{ 'l', "logfile file", _("Save log to file") },
+			{ 'L', "loglevel value", _("Set log level to value") },
+		};
+
+
+	}
+		*/
 
 	/*
 	const char * Application::getProperty(const char *name, const char *def) const noexcept {
