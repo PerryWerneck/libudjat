@@ -232,6 +232,21 @@
 		};
 
 		if(!pop(argc,argv,'h',"help")) {
+
+			String optarg;
+
+			if(pop(argc,argv,'q',"quiet")) {
+				Logger::console(false);
+			} else if(pop(argc,argv,'v',"verbose")) {
+				Logger::console(true);
+			}
+
+			if(pop(argc,argv,'l',"logfile",optarg)) {
+			}
+
+			if(pop(argc,argv,'L',"loglevel",optarg)) {
+			}
+
 			return false;
 		}
 
