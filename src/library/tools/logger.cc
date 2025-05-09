@@ -147,6 +147,13 @@
 		}
 	}
 
+	void Logger::verbosity(const char *level) {
+		
+	}
+
+	void Logger::file(const char *filename) {
+	}
+
 	void Logger::file(bool enable) {
 		if(enable) {
 			Application::LogDir::getInstance();	// Get log path, mkdir if necessary.

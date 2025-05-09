@@ -218,6 +218,14 @@
 
 	}
 
+	std::ostream & Application::Option::print(std::ostream &out, size_t width) const {
+		out << "  -" << shortname << ", --";			
+		string text{longname};
+		text.resize(width,' ');
+		out << text << " " << description;
+		return out;
+	}
+
 	bool Application::help(int argc, char **argv, std::ostream &out, const Application::Option *options, size_t width) noexcept {
 
 		static const Option appoptions[] = {
@@ -225,7 +233,7 @@
 		};
 
 		static const Option logoptions[] = {
-			{ 'v', "verbose", _("Verbose output") },
+			{ 'v', "verbose", _("Enable log output") },
 			{ 'q', "quiet", _("Quiet output") },
 			{ 'l', "logfile file", _("Save log to file") },
 			{ 'L', "loglevel value", _("Set log level to value") },
@@ -237,14 +245,18 @@
 
 			if(pop(argc,argv,'q',"quiet")) {
 				Logger::console(false);
-			} else if(pop(argc,argv,'v',"verbose")) {
+			} 
+			
+			if(pop(argc,argv,'v',"verbose")) {
 				Logger::console(true);
 			}
 
 			if(pop(argc,argv,'l',"logfile",optarg)) {
+				Logger::file(optarg.c_str());
 			}
 
 			if(pop(argc,argv,'L',"loglevel",optarg)) {
+				Logger::verbosity(optarg.c_str());
 			}
 
 			return false;
@@ -254,27 +266,21 @@
 			<< " " << _("[OPTION..]") << "\n\n" << _("Application options:");
 
 		for(const auto &appoption : appoptions) {
-			out << "\n  -" << appoption.shortname << ", --";			
-			string text{appoption.longname};
-			text.resize(width,' ');
-			out << text << " " << appoption.description;
+			out << "\n";
+			appoption.print(out,width);
 		};
 
 		if(options) {
 			for(const Option *option = options; option->description; option++) {
-				out << "\n  -" << option->shortname << ", --";			
-				string text{option->longname};
-				text.resize(width,' ');
-				out << text << " " << option->description;
+				out << "\n" ;
+				option->print(out,width);
 			};
 		}
 
 		cout << "\n\n" << _("Log options:");
 		for(const auto &logoption : logoptions) {
-			out << "\n  -" << logoption.shortname << ", --";			
-			string text{logoption.longname};
-			text.resize(width,' ');
-			out << text << " " << logoption.description;
+			out << "\n";
+			logoption.print(out,width);
 		};
 
 		out << "\n\n";

@@ -86,6 +86,9 @@
 			constexpr Option(char s, const char *l, const char *d) :
 				shortname{s}, longname{l}, description{d} {
 			}
+
+			std::ostream & print(std::ostream &out, size_t width = 15) const;
+
 		};
 
 		Application(int argc, char **argv);
@@ -342,6 +345,14 @@
 		};
 
 	};
+
+ }
+
+ namespace std {
+
+	inline ostream& operator<< (ostream& os, const Udjat::Application::Option &opt) {
+			return opt.print(os);
+	}
 
  }
 

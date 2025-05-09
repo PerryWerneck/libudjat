@@ -56,6 +56,7 @@
 
 		UDJAT_API unsigned short verbosity() noexcept;
 		UDJAT_API void verbosity(unsigned short level) noexcept;
+		UDJAT_API void verbosity(const char *level);
 
 		UDJAT_API std::ostream & info();
 		UDJAT_API std::ostream & warning();
@@ -221,6 +222,7 @@
 
 		/// @brief Enable/Disable default file writer.
 		UDJAT_API bool file();
+		UDJAT_API void file(const char *filename);
 		UDJAT_API void file(bool enable);
 
 		/// @brief Replace console/file writers.
