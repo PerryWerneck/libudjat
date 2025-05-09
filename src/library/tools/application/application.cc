@@ -27,6 +27,7 @@
  #include <sys/types.h>
  #include <udjat/tools/quark.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/tools/intl.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -214,6 +215,40 @@
 		}
 
 		return false;
+
+	}
+
+	bool Application::help(int argc, char **argv, std::ostream &out, const char *text, size_t width) noexcept {
+
+		static const struct {
+			char shortname;
+			const char *longname;
+			const char *description;
+		} headers[] = {
+			{ 'h', "help", _("Show this help message") },
+		};
+
+		if(!pop(argc,argv,'h',"help")) {
+			return false;
+		}
+
+		out << _("Usage:") << "\n  " << argv[0]
+			<< " " << _("[OPTION..]") << "\n\n" << _("Application options:");
+
+		for(const auto &header : headers) {
+			out << "\n  -" << header.shortname << ", --";			
+			string text{header.longname};
+			text.resize(width,' ');
+			out << text << " " << header.description;
+		};
+
+		if(text) {
+			out << "\n" << text;
+		}
+
+		out << "\n\n";
+
+		return true;
 
 	}
 

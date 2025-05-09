@@ -83,6 +83,11 @@
 		static bool pop(int argc, char **argv, char shortname, const char *longname);
 		static bool pop(int argc, char **argv, char shortname, const char *longname, std::string &value);
 
+		/// @brief Show help text to stream.
+		/// @param out The output stream.
+		/// @return true if the help was shown.
+		static bool help(int argc, char **argv, std::ostream &out, const char *text = nullptr, size_t width = 15) noexcept;
+
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.
 		/// @return true if the argument was found

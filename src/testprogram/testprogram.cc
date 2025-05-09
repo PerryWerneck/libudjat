@@ -48,6 +48,10 @@
 
  int main(int argc, char **argv) {
 
+	if(Application::help(argc,argv,cout)) {
+		return 0;
+	}
+
 	Logger::verbosity(9);
 	Logger::redirect();
 	Logger::console(true);
