@@ -35,7 +35,7 @@
 		argc--;
 	}
 		
-	bool Application::pop(int argc, char **argv, char shortname, const char *longname) {
+	bool Application::pop(int &argc, char **argv, char shortname, const char *longname) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -73,7 +73,7 @@
 		return false;
 	}
 
-	bool Application::pop(int argc, char **argv, char shortname, const char *longname, std::string &value) {
+	bool Application::pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -130,23 +130,6 @@
 		return out;
 	}
 
-	static void dbgoptions(size_t width) {
-		static const Application::Option values[] = {
-#ifndef _WIN32
-			{ 'C', "coredump pattern", _("Enable coredump") },
-#endif // _WIN32
-		};
-
-		cout << _("Debug options:\n");
-		for(const auto &value : values) {
-			value.print(cout,width);
-			cout << "\n";
-		};
-
-		cout << "\n";
-
-	}
-
 	static void apphelp(size_t width) {
 		static const Application::Option values[] = {
 			{ 'h', "help", _("Show this help message") },
@@ -162,52 +145,16 @@
 
 	}
 
-	static void logoptions(size_t width) {
-		static const Application::Option values[] = {
-			{ 'v', "verbose", _("Enable log output") },
-			{ 'q', "quiet", _("Quiet output") },
-			{ 'l', "logfile file", _("Save log to file") },
-			{ 'L', "loglevel value", _("Set log level to value") },
-		};
-	
-		cout << _("Log options:\n");
-		for(const auto &value : values) {
-			value.print(cout,width);
-			cout << "\n";
-		};
-
-		cout << "\n";
-
-	}
-
 	void Application::help(size_t width) const noexcept {
 
 		apphelp(width);
 
 	}
 
-	bool Application::options(int argc, char **argv, const Application::Option *options, size_t width) noexcept {
+	bool Application::options(int &argc, char **argv, const Application::Option *options, size_t width) noexcept {
 
 		if(!pop(argc,argv,'h',"help")) {
-
-			String optarg;
-
-			if(pop(argc,argv,'q',"quiet")) {
-				Logger::console(false);
-			} 
-			
-			if(pop(argc,argv,'v',"verbose")) {
-				Logger::console(true);
-			}
-
-			if(pop(argc,argv,'l',"logfile",optarg)) {
-				Logger::file(optarg.c_str());
-			}
-
-			if(pop(argc,argv,'L',"loglevel",optarg)) {
-				Logger::verbosity(optarg.c_str());
-			}
-
+			Logger::setup(argc,argv);
 			return false;
 		}
 
@@ -223,8 +170,7 @@
 			};
 		}
 
-		logoptions(width);
-		dbgoptions(width);
+		Logger::help(width);
 
 		cout << "\n\n";
 

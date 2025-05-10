@@ -23,10 +23,12 @@
  #include <udjat/tools/application.h>
  #include <private/logger.h>
  #include <udjat/tools/quark.h>
+ #include <udjat/tools/intl.h>
  #include <cstring>
  #include <list>
  #include <ostream>
  #include <vector>
+ #include <fstream>      // std::filebuf
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -36,6 +38,7 @@
 	#include <unistd.h>
 	#include <syslog.h>
 	#include <dlfcn.h>
+	#include <sys/resource.h>
  #endif // _WIN32
 
  using namespace std;
@@ -234,6 +237,91 @@
 
 	Logger::Buffer::~Buffer() {
 		Controller::getInstance().remove(this);
+	}
+
+#ifndef _WIN32
+	static void setup_coredump(const char *pattern = nullptr) {
+		// Reference script:
+		//
+		// ulimit -c unlimited
+		// install -m 1777 -d /var/local/dumps
+		// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
+		// rcapparmor stop
+		// sysctl -w kernel.suid_dumpable=2
+		//
+
+		struct rlimit core_limits;
+		memset(&core_limits,0,sizeof(core_limits));
+
+		core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+		setrlimit(RLIMIT_CORE, &core_limits);
+
+		if(pattern && *pattern) {
+			// Set corepattern
+			std::filebuf fb;
+			fb.open ("/proc/sys/kernel/core_pattern",std::ios::out);
+			std::ostream os(&fb);
+			os << pattern << "\n";
+			fb.close();
+		}
+	}
+
+#endif // !_WIN32
+
+	void Logger::setup(int &argc, char **argv) {
+
+		String optarg;
+
+		if(Application::pop(argc,argv,'q',"quiet")) {
+			Logger::console(false);
+		} 
+		
+		if(Application::pop(argc,argv,'v',"verbose")) {
+			Logger::console(true);
+		}
+
+		if(Application::pop(argc,argv,'l',"logfile",optarg)) {
+			Logger::file(optarg.c_str());
+		}
+
+		if(Application::pop(argc,argv,'V',"verbosity",optarg)) {
+			Logger::verbosity(optarg.c_str());
+		}
+
+#ifndef _WIN32		
+		if(Application::pop(argc,argv,'C',"coredump")) {
+			setup_coredump();			
+			Logger::String{"Coredump enabled using default pattern"}.info();
+		}
+
+		if(Application::pop(argc,argv,'C',"coredump",optarg)) {
+			setup_coredump(optarg.c_str());			
+			Logger::String{"Coredump enabled using pattern '",optarg.c_str(),"'"}.info();
+		}
+#endif // !_WIN32
+
+	}
+
+	void Logger::help(size_t width) noexcept {
+
+		static const Application::Option values[] = {
+			{ 'v', "verbose", _("Send log to console") },
+			{ 'q', "quiet", _("Quiet output") },
+			{ 'l', "logfile file", _("Save log to file") },
+			{ 'V', "verbosity value", _("Set log level to value") },
+#ifndef _WIN32
+			{ 'C', "coredump [pattern]", _("Enable coredump") },
+#endif // _WIN32
+		};
+	
+		cout << _("Log/Debug options:\n");
+		for(const auto &value : values) {
+			value.print(cout,width);
+			cout << "\n";
+		};
+
+		cout << "\n";
+
 	}
 
 	void Logger::enable(Level level, bool enabled) noexcept {

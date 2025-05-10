@@ -73,8 +73,9 @@
 		/// @return true if the property was set.
 		virtual bool setProperty(const char *name, const char *value);
 
-		/// @brief Check command-line options.
-		/// @return true if the help was show.
+		/// @brief Show help messages.
+		/// @param width The width of the left part of the help text.
+		/// @details This method is called when the application is started with the '--help' option.
 		virtual void help(size_t width = 20) const noexcept;
 
 	public:
@@ -99,8 +100,8 @@
 		Application(int argc, char **argv);
 		virtual ~Application();
 
-		static bool pop(int argc, char **argv, char shortname, const char *longname);
-		static bool pop(int argc, char **argv, char shortname, const char *longname, std::string &value);
+		static bool pop(int &argc, char **argv, char shortname, const char *longname);
+		static bool pop(int &argc, char **argv, char shortname, const char *longname, std::string &value);
 
 		/// @brief Parse command line options.
 		/// @details Scan command line options from arguments, if found show help.
@@ -109,7 +110,7 @@
 		/// @param options The list of options to show. 
 		/// @param width The width of the left part of the help text.
 		/// @return true if the help was show.
-		static bool options(int argc, char **argv, const Option *options = nullptr, size_t width = 20) noexcept;
+		static bool options(int &argc, char **argv, const Option *options = nullptr, size_t width = 20) noexcept;
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.

@@ -63,6 +63,16 @@
 		UDJAT_API std::ostream & error();
 		UDJAT_API std::ostream & trace();
 
+		/// @brief Show help messages.
+		/// @param width The width of the left part of the help text.
+		/// @details This method is called when the application is started with the '--help' option.
+		UDJAT_API void help(size_t width = 20) noexcept;
+
+		/// @brief Setup logger from command line.
+		/// @param argc	 The number of arguments. 
+		/// @param argv  The command line arguments.
+		UDJAT_API void setup(int &argc, char **argv);
+
 		/// @brief Enable/Disable write to file.
 		/// @param Log level.
 		/// @param enabled true to enable write to file in label.
