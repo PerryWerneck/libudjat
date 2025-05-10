@@ -282,11 +282,20 @@
 			Logger::file(true);
 		}
 
+		if(Application::pop(argc,argv,'L',"loglevel")) {
+			Logger::verbosity(Logger::Debug);
+		}
+
+		if(Application::pop(argc,argv,'v',"verbose",optarg)) {
+			Logger::console(true);
+			Logger::verbosity(optarg.c_str());
+		}
+
 		if(Application::pop(argc,argv,'l',"logfile",optarg)) {
 			Logger::file(optarg.c_str());
 		}
 
-		if(Application::pop(argc,argv,'V',"verbosity",optarg)) {
+		if(Application::pop(argc,argv,'L',"loglevel",optarg)) {
 			Logger::verbosity(optarg.c_str());
 		}
 
@@ -308,8 +317,8 @@
 
 		static const Application::Option values[] = {
 			{ 'l', "logfile[=file]", _("Save log to file") },
-			{ 'v', "verbose", _("Send log to console") },
-			{ 'V', "verbosity=value", _("Set log level to value") },
+			{ 'v', "verbose[=verbosity]", _("Send log to console") },
+			{ 'L', "loglevel[=verbosity]", _("Set log level to value") },
 			{ 'q', "quiet", _("Quiet output") },
 #ifndef _WIN32
 			{ 'C', "coredump[=pattern]", _("Enable coredump") },
