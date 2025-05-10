@@ -72,7 +72,7 @@
 		void setup(const char *pathname, bool startup) noexcept override;
 
 		/// @brief Show help text to stdout.
-		void help(std::ostream &out) const noexcept override;
+		void help(size_t width) const noexcept override;
 
 		int setup(const char *definitions = nullptr) override;
 

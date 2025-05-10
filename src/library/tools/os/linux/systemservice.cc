@@ -65,9 +65,16 @@
 
 	/// @brief Show help text to stream.
 	/// @param out The stream for help.
-	void SystemService::help(std::ostream &out) const noexcept {
-		Application::help(out);
-		out << "  -d --daemon              Run in background" << endl;
+	void SystemService::help(size_t width) const noexcept {
+
+		Application::help(width);
+
+		static const Application::Option values[] = {
+			{ 'd', "daemon", _("Run in the background") },
+		};
+		
+		values[0].print(cout,width);
+
 	}
 
 	/// @brief Initialize service.
@@ -109,15 +116,7 @@
 
 		if(pop('h',"help")) {
 
-			// Show help text.
-			Udjat::UI::Console console;
-
-			console << "Usage: " << argv[0] << " [options]" << endl << endl << "Options:" << endl;			
-			help(console);
-			console << "     --debug               Enable debug messages" << endl;
-			console << "     --trace               Enable trace messages" << endl;
-			console << "     --version             Show version" << endl;
-			return -2;
+			return 0;
 		}
 
 		if(!MainLoop::getInstance()) {

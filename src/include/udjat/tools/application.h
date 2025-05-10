@@ -73,13 +73,14 @@
 		/// @return true if the property was set.
 		virtual bool setProperty(const char *name, const char *value);
 
-		/// @brief Show help text to stdout.
-		virtual void help(std::ostream &out) const noexcept;
+		/// @brief Check command-line options.
+		/// @return true if the help was show.
+		virtual void help(size_t width = 20) const noexcept;
 
 	public:
 
 		struct Option {
-			char shortname;				///< @brief Short name of the option.
+			const char shortname;		///< @brief Short name of the option.
 			const char *longname;		///< @brief Long name of the option.
 			const char *description;	///< @brief Description of the option.
 
@@ -87,7 +88,11 @@
 				shortname{s}, longname{l}, description{d} {
 			}
 
-			std::ostream & print(std::ostream &out, size_t width = 15) const;
+			constexpr Option() :
+				shortname{0}, longname{nullptr}, description{nullptr} {
+			}
+
+			std::ostream & print(std::ostream &out, size_t width = 20) const;
 
 		};
 
@@ -97,10 +102,14 @@
 		static bool pop(int argc, char **argv, char shortname, const char *longname);
 		static bool pop(int argc, char **argv, char shortname, const char *longname, std::string &value);
 
-		/// @brief Show help text to stream.
-		/// @param out The output stream.
-		/// @return true if the help was shown.
-		static bool help(int argc, char **argv, std::ostream &out, const Option *options = nullptr, size_t width = 15) noexcept;
+		/// @brief Parse command line options.
+		/// @details Scan command line options from arguments, if found show help.
+		/// @param argc The number of arguments.
+		/// @param argv The command line arguments.
+		/// @param options The list of options to show. 
+		/// @param width The width of the left part of the help text.
+		/// @return true if the help was show.
+		static bool options(int argc, char **argv, const Option *options = nullptr, size_t width = 20) noexcept;
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.

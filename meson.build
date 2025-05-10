@@ -260,6 +260,7 @@ lib_src += [
   'src/library/tools/activatable.cc',
   'src/library/tools/application/application.cc',
   'src/library/tools/application/init.cc',
+  'src/library/tools/application/cmdline.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',
   'src/library/tools/arguments.cc',

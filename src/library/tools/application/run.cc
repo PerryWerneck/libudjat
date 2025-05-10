@@ -88,6 +88,7 @@
 		return true;
 	}
 
+	/*
 	void Application::help(std::ostream &out) const noexcept {
 
 		out << "  -h --help                Show this help" << endl;
@@ -98,6 +99,7 @@
 		out << "  -T --time=time           Exit application after \"time\"" << endl;
 
 	}
+	*/
 
 #ifndef _WIN32
 	static void setup_coredump(const char *pattern = nullptr) {
@@ -184,15 +186,13 @@
 
 		if(pop('h',"help")) {
 
-			// Show help text.
-			Udjat::UI::Console console;
+			cout << _("Usage:") << "\n  " << argv[0]
+				<< " " << _("[OPTION..]") << "\n\n" << _("Application options:");
 
-			console << "Usage: " << argv[0] << " [options]" << endl << endl << "Options:" << endl;			
-			help(console);
-			console << "     --debug               Enable debug messages" << endl;
-			console << "     --trace               Enable trace messages" << endl;
-			console << "     --version             Show version" << endl;
-			return -2;
+			help();
+
+			return 0;
+
 		}
 
 		Logger::redirect();	

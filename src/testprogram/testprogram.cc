@@ -48,7 +48,7 @@
 
  int main(int argc, char **argv) {
 
-	if(Application::help(argc,argv,cout)) {
+	if(Application::options(argc,argv)) {
 		return 0;
 	}
 
