@@ -119,7 +119,7 @@
 			return pop(argc, argv, shortname, longname);
 		}
 
-		inline bool pop(char shortname, const char *longname, std::string value) {
+		inline bool pop(char shortname, const char *longname, std::string &value) {
 			return pop(argc, argv, shortname, longname, value);
 		}
 

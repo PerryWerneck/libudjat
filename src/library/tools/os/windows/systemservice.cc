@@ -158,6 +158,19 @@
 
 	int SystemService::run(const char *definitions) {
 
+		if(pop('h',"help")) {
+
+			cout << _("Usage:") << "\n  " << argv[0]
+				<< " " << _("[OPTION..]") << "\n\n";
+
+			help();
+			cout << "\n";
+			
+			Logger::help();
+
+			return 0;
+		}
+
 		if(!MainLoop::getInstance()) {
 			return 0;
 		}

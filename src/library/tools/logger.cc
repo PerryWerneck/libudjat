@@ -307,12 +307,12 @@
 	void Logger::help(size_t width) noexcept {
 
 		static const Application::Option values[] = {
-			{ 'l', "logfile [file]", _("Save log to file") },
+			{ 'l', "logfile[=file]", _("Save log to file") },
 			{ 'v', "verbose", _("Send log to console") },
-			{ 'V', "verbosity value", _("Set log level to value") },
+			{ 'V', "verbosity=value", _("Set log level to value") },
 			{ 'q', "quiet", _("Quiet output") },
 #ifndef _WIN32
-			{ 'C', "coredump [pattern]", _("Enable coredump") },
+			{ 'C', "coredump[=pattern]", _("Enable coredump") },
 #endif // _WIN32
 		};
 	

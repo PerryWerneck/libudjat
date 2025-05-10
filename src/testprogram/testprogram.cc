@@ -48,13 +48,9 @@
 
  int main(int argc, char **argv) {
 
-	if(Application::options(argc,argv)) {
-		return 0;
-	}
-
 	Logger::verbosity(9);
-	Logger::redirect();
-	Logger::console(true);
+	// Logger::redirect();
+	// Logger::console(true);
 
 	/*
 	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;

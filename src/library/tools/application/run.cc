@@ -101,34 +101,6 @@
 	}
 	*/
 
-#ifndef _WIN32
-	static void setup_coredump(const char *pattern = nullptr) {
-		// Reference script:
-		//
-		// ulimit -c unlimited
-		// install -m 1777 -d /var/local/dumps
-		// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
-		// rcapparmor stop
-		// sysctl -w kernel.suid_dumpable=2
-		//
-
-		struct rlimit core_limits;
-		memset(&core_limits,0,sizeof(core_limits));
-
-		core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
-		setrlimit(RLIMIT_CORE, &core_limits);
-
-		if(pattern && *pattern) {
-			// Set corepattern
-			std::filebuf fb;
-			fb.open ("/proc/sys/kernel/core_pattern",std::ios::out);
-			std::ostream os(&fb);
-			os << pattern << "\n";
-			fb.close();
-		}
-	}
-
-#endif // !_WIN32
 
 	int Application::setup(const char *) {
 
@@ -136,46 +108,12 @@
 
 		string argvalue;
 
-		while(pop('v',"verbose")) {
-			Logger::verbosity(Logger::verbosity()+1);
-		}
-
-		if(pop('f',"foreground")) {
-			Logger::console(true);
-		}
-
-		if(pop(0,"debug")) {
-			Logger::enable(Logger::Debug);
-		}
-
-		if(pop(0,"trace")) {
-			Logger::enable(Logger::Trace);
-		}
-
-		if(pop('q',"quiet")) {
-			Logger::console(false);
-		}
-
-#ifndef _WIN32
-		if(pop('C',"coredump")) {
-			setup_coredump();
-		}
-		
-		if(pop('C',"coredump",argvalue)) {
-			setup_coredump(argvalue.c_str());
-		}
-#endif // _WIN32
-
 		if(pop('T',"timer",argvalue)) {
+			debug("aaaaaaaaaaaaaaaaa Timer: ",argvalue," -> ",TimeStamp{argvalue.c_str()}.to_string().c_str());
 			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
 				MainLoop::getInstance().quit("Timer expired, exiting");
 				return false;
 			});
-		}
-
-		if(pop(0,"version",argvalue)) {
-			UI::Console{} << name().c_str() << " Vrs. " << PACKAGE_VERSION << endl;
-			return -1;
 		}
 				
 		return 0;
@@ -187,15 +125,21 @@
 		if(pop('h',"help")) {
 
 			cout << _("Usage:") << "\n  " << argv[0]
-				<< " " << _("[OPTION..]") << "\n\n" << _("Application options:");
+				<< " " << _("[OPTION..]") << "\n\n";
 
 			help();
+			cout << "\n";
+
+			Logger::help();
 
 			return 0;
 
 		}
 
 		Logger::redirect();	
+#ifdef DEBUG 
+		Logger::console(true);
+#endif // DEBUG
 
 		// Parse command line arguments.
 		if(setup(definitions)) {

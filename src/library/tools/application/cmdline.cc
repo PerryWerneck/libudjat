@@ -130,6 +130,7 @@
 		return out;
 	}
 
+	/// @brief Common help message for all applications.
 	static void apphelp(size_t width) {
 		static const Application::Option values[] = {
 			{ 'h', "help", _("Show this help message") },
@@ -141,13 +142,20 @@
 			cout << "\n";
 		};
 
-		cout << "\n";
-
 	}
 
 	void Application::help(size_t width) const noexcept {
 
 		apphelp(width);
+
+		static const Application::Option values[] = {
+			{ 'T', "timer=seconds", _("Quit after \"seconds\"") },
+		};
+
+		for(const auto &value : values) {
+			value.print(cout,width);
+			cout << "\n";
+		};
 
 	}
 
@@ -162,6 +170,7 @@
 			<< " " << _("[OPTION..]") << "\n\n";
 
 		apphelp(width);
+		cout << "\n";
 
 		if(options) {
 			for(const Option *option = options; option->description; option++) {

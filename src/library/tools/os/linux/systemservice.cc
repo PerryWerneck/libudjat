@@ -71,9 +71,13 @@
 
 		static const Application::Option values[] = {
 			{ 'd', "daemon", _("Run in the background") },
+			{ 'f', "foreground", _("Run in the foreground") },
 		};
 		
-		values[0].print(cout,width);
+		for(const auto &value : values) {
+			value.print(cout,20);
+			cout << "\n";
+		};
 
 	}
 
@@ -116,8 +120,21 @@
 
 		if(pop('h',"help")) {
 
+			cout << _("Usage:") << "\n  " << argv[0]
+				<< " " << _("[OPTION..]") << "\n\n";
+
+			help();
+			cout << "\n";
+			
+			Logger::help();
+
 			return 0;
 		}
+
+		Logger::redirect();
+#ifdef DEBUG 
+		Logger::console(true);
+#endif // DEBUG
 
 		if(!MainLoop::getInstance()) {
 			return -1;
