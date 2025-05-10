@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-08 10:48-0300\n"
-"PO-Revision-Date: 2025-03-03 18:14-0300\n"
+"POT-Creation-Date: 2025-05-10 11:04-0300\n"
+"PO-Revision-Date: 2025-05-10 11:07-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -24,6 +24,32 @@ msgstr ""
 #: src/library/tools/application/run.cc:84
 msgid "Unable to set environment variable"
 msgstr "Incapaz de setar variável de ambiente"
+
+#: src/library/tools/application/run.cc:127
+#: src/library/tools/application/cmdline.cc:169
+#: src/library/tools/os/linux/systemservice.cc:123
+#: src/library/tools/os/windows/systemservice.cc:163
+msgid "Usage:"
+msgstr "Uso:"
+
+#: src/library/tools/application/run.cc:128
+#: src/library/tools/application/cmdline.cc:170
+#: src/library/tools/os/linux/systemservice.cc:124
+#: src/library/tools/os/windows/systemservice.cc:164
+msgid "[OPTION..]"
+msgstr "[OPÇÕES..]"
+
+#: src/library/tools/application/cmdline.cc:136
+msgid "Show this help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/application/cmdline.cc:139
+msgid "Application options:\n"
+msgstr "Opções da aplicação\n"
+
+#: src/library/tools/application/cmdline.cc:152
+msgid "Quit after \"seconds\""
+msgstr "Encerra após \"seconds\""
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -291,6 +317,30 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
+#: src/library/tools/logger.cc:310
+msgid "Save log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger.cc:311
+msgid "Send log to console"
+msgstr "Envia log para o console"
+
+#: src/library/tools/logger.cc:312
+msgid "Set log level to value"
+msgstr "Define nível de log para 'value'"
+
+#: src/library/tools/logger.cc:313
+msgid "Quiet output"
+msgstr "Inibe saídas para console"
+
+#: src/library/tools/logger.cc:315
+msgid "Enable coredump"
+msgstr "Habilita coredump"
+
+#: src/library/tools/logger.cc:319
+msgid "Log/Debug options:\n"
+msgstr "Opções de log/debug:\n"
+
 #: src/library/tools/mainloop/os/linux/timer.cc:158
 #: src/library/tools/mainloop/os/windows/timer.cc:158
 msgid "one second"
@@ -353,6 +403,14 @@ msgstr ""
 
 #: src/library/tools/os/linux/netlink_routes.cc:87
 msgid "Error in received packet"
+msgstr ""
+
+#: src/library/tools/os/linux/systemservice.cc:73
+msgid "Run in the background"
+msgstr "Rodar no background"
+
+#: src/library/tools/os/linux/systemservice.cc:74
+msgid "Run in the foreground"
 msgstr ""
 
 #. Try translated version
