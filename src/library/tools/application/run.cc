@@ -50,22 +50,6 @@
 
  using namespace std;
 
- /*
- static const struct {
-	char to;
-	const char *from;
-	const char *help;
- } options[] = {
-	{ 'f',	"foreground",	"\t\tRun in foreground with console output" },
-	{ 'q',	"quiet",		"\t\tDisable console output" },
-	{ 'v',	"verbose",		"=level\tSet loglevel, enable console output" },
-#ifndef _WIN32
-	{ 'C',	"coredump",		"=pattern\tEnable coredump" },
-#endif // _WIN32
-	{ 'T',	"timer",		"=time\t\tExit application after \"time\"" },
- };
- */
-
  namespace Udjat {
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
@@ -109,7 +93,6 @@
 		string argvalue;
 
 		if(pop('T',"timer",argvalue)) {
-			debug("aaaaaaaaaaaaaaaaa Timer: ",argvalue," -> ",TimeStamp{argvalue.c_str()}.to_string().c_str());
 			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
 				MainLoop::getInstance().quit("Timer expired, exiting");
 				return false;
@@ -137,6 +120,7 @@
 		}
 
 		Logger::redirect();	
+
 #ifdef DEBUG 
 		Logger::console(true);
 #endif // DEBUG

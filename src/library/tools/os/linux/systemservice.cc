@@ -132,13 +132,6 @@
 		}
 
 		Logger::redirect();
-#ifdef DEBUG 
-		Logger::console(true);
-#endif // DEBUG
-
-		if(!MainLoop::getInstance()) {
-			return -1;
-		}
 
 		int rc = 0;
 

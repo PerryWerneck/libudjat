@@ -33,6 +33,7 @@
 	Application::Application(int c, char **v) : argc{c}, argv{v} {
 
 		Quark::init();
+		Logger::setup(argc,argv);
 
 #ifdef GETTEXT_PACKAGE
 		set_gettext_package(GETTEXT_PACKAGE);

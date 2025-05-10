@@ -62,6 +62,29 @@
 		return N_ELEMENTS(typenames);
 	}
 
+	void Logger::verbosity(const char *level) {
+		
+		if(*level >= '0' && *level <= '9') {
+			verbosity((unsigned short) atoi(level));
+			return;
+		}
+
+		/*
+		auto levels = String{level}.split(",");
+
+		for(auto &level : levels) {
+			if(!level.strip().empty()) {
+				for(uint8_t ix = 0; ix < (sizeof(typenames)/sizeof(typenames[0])); ix++) {
+					if(!strcasecmp(typenames[ix],name)) {
+						enable(Logger::Level) ix;
+					}
+				}		
+			}
+		}
+		*/
+
+	}
+
 	UDJAT_API void Logger::verbosity(unsigned short lvl) noexcept {
 
 		for(size_t level = 0; level < N_ELEMENTS(typenames);level++) {
@@ -148,10 +171,6 @@
 		} else {
 			Options::getInstance().console = dummy_writer;
 		}
-	}
-
-	void Logger::verbosity(const char *level) {
-		
 	}
 
 	void Logger::file(const char *filename) {

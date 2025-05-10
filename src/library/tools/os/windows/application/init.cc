@@ -38,6 +38,7 @@
 	Application::Application(int c, char **v) : argc{c}, argv{v} {
 
   		Quark::init();
+		Logger::setup(argc,argv);
 
 		// Go to application path.
 		_chdir(Path().c_str());
