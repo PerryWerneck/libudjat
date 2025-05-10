@@ -85,36 +85,46 @@
 
 			debug("ix=",ix," arg='",argv[ix],"'");
 
-			if(argv[ix][0] != '-') {
+			if(argv[ix][0] != '-' || argv[ix][1] == 0) {
 				continue;
 			}
 
-			if(shortname && argv[ix][1] == shortname && !argv[ix][2]) {
-				debug("ix=",ix," argc=",argc);
-				if(ix == (argc-1) || argv[ix+1][0] == '-') {
-					debug("Ignoring short arg '",argv[ix],"'");
-					continue;
-				}
-				value = argv[ix+1];
+			if(argv[ix][1] == '-' && argv[ix][2] && szlong && !strncasecmp(longname,(argv[ix]+2),szlong) && argv[ix][szlong+2] == '=') {
+				value.assign(argv[ix]+szlong+3);
 				extract(ix,argc,argv);
-				debug("--------------> ",ix," ",argv[ix]);
-				extract(ix,argc,argv);
-				debug("--------------> ",ix," ",argv[ix]);
-				debug("Found short arg '",shortname,"'='",value,"'");
-				return true;
-			
-			}
-
-			if(!szlong) {
-				continue;
-			}
-
-			if(argv[ix][1] == '-' && !strncmp(longname,(argv[ix]+2),szlong) && argv[ix][szlong+2] == '=') {
-				value=argv[ix]+szlong+3;
+				debug("Found long arg '",longname,"'='",value,"'");
+				return true;			
+			} else if(szlong && !strncasecmp(longname,(argv[ix]+1),szlong) && argv[ix][szlong+1] == '=') {
+				value.assign(argv[ix]+szlong+2);
 				extract(ix,argc,argv);
 				debug("Found long arg '",longname,"'='",value,"'");
 				return true;			
 			}
+
+			if(!shortname || argv[ix][1] != shortname) {
+				continue;
+			}
+
+			debug("Found short arg '",argv[ix],"'");
+
+			if(argv[ix][2] != 0) {
+				value.assign(argv[ix]+2);
+				extract(ix,argc,argv);
+				debug("Found short arg '",shortname,"'='",value,"'");
+				return true;
+			}
+
+			if(ix == (argc-1) || argv[ix+1][0] == '-') {
+				debug("Ignoring short arg '",argv[ix],"'");
+				continue;
+			}
+
+			value = argv[ix+1];
+			extract(ix,argc,argv);
+			extract(ix,argc,argv);
+
+			debug("Found short arg '",shortname,"'='",value,"'");
+			return true;
 
 		}
 

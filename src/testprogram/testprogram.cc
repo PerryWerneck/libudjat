@@ -49,8 +49,6 @@
  int main(int argc, char **argv) {
 
 	Logger::verbosity(9);
-	// Logger::redirect();
-	// Logger::console(true);
 
 	/*
 	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
@@ -194,25 +192,6 @@
 				
 		}
 
-		/*
-		MainLoop::getInstance().TimerFactory(1000,[]{
-
-			// cout << "-[ On Timer ]---------------------------------------------------" << endl;
-			// Request request{"/"};
-			// Response response{Udjat::html};			
-			// Interface::find("agent").call(request,response);
-			// auto &report = response["resultset"].ReportFactory("a","b","c",nullptr);
-			// report.push_back("String");
-			// report.push_back(TimeStamp{});
-			// for(unsigned ix = 0; ix < 10;ix++) {
-			//	report.push_back(ix);
-			// }
-			//cout << "Response:" << endl << response << endl;
-			// cout << "----------------------------------------------------------------" << endl;
-			
-			return false;
-		});
-		*/
 
 	});
 
