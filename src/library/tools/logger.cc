@@ -249,7 +249,6 @@
 		// rcapparmor stop
 		// sysctl -w kernel.suid_dumpable=2
 		//
-
 		struct rlimit core_limits;
 		memset(&core_limits,0,sizeof(core_limits));
 
@@ -265,7 +264,6 @@
 			fb.close();
 		}
 	}
-
 #endif // !_WIN32
 
 	void Logger::setup(int &argc, char **argv) {
@@ -278,6 +276,10 @@
 		
 		if(Application::pop(argc,argv,'v',"verbose")) {
 			Logger::console(true);
+		}
+
+		if(Application::pop(argc,argv,'l',"logfile")) {
+			Logger::file(true);
 		}
 
 		if(Application::pop(argc,argv,'l',"logfile",optarg)) {
@@ -305,10 +307,10 @@
 	void Logger::help(size_t width) noexcept {
 
 		static const Application::Option values[] = {
+			{ 'l', "logfile [file]", _("Save log to file") },
 			{ 'v', "verbose", _("Send log to console") },
-			{ 'q', "quiet", _("Quiet output") },
-			{ 'l', "logfile file", _("Save log to file") },
 			{ 'V', "verbosity value", _("Set log level to value") },
+			{ 'q', "quiet", _("Quiet output") },
 #ifndef _WIN32
 			{ 'C', "coredump [pattern]", _("Enable coredump") },
 #endif // _WIN32
