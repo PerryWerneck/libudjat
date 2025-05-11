@@ -33,6 +33,10 @@
 	Application::Application(int c, char **v) : argc{c}, argv{v} {
 
 		Quark::init();
+
+#ifdef DEBUG 
+		Logger::console(true);
+#endif
 		Logger::setup(argc,argv);
 
 #ifdef GETTEXT_PACKAGE

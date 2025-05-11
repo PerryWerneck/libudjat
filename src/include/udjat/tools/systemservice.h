@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	class UDJAT_API SystemService : public Udjat::Application {
+	class UDJAT_API SystemService : public Udjat::Application, private MainLoop::Timer {
 	private:
 
 		static SystemService *instance;
@@ -49,16 +49,12 @@
 
 #endif // _WIN32
 
-		enum Mode : uint8_t {
-			Default,		///< @brief Standard service mode based on OS.
-			None,			///< @brief Quit after parameter parsing.
-			Foreground,		///< @brief Run in foreground as an application.
-			Daemon			///< @brief Run as daemon.
-		} mode = Default;
-
 	protected:
 
 		typedef Udjat::SystemService super;
+
+		/// @brief Watchdog timer.
+		void on_timer() override;
 
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
@@ -108,9 +104,6 @@
 
 		/// @brief Stop service.
 		virtual int stop();
-
-		/// @brief Parse command line options, run application.
-		int run(const char *definitions = nullptr) override;
 
 	};
 

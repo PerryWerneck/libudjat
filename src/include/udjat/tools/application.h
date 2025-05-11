@@ -144,12 +144,11 @@
 		/// @brief Parse command line options
 		/// @param definitions Path to a single xml file or a folder with xml files.
 		/// @return 0 if ok, error code if not.
-		/// @retval ECANCELED cancelled by command line argument (--help or other informational options).
 		virtual int setup(const char *definitions = nullptr);
 
 		/// @brief Parse command line options, run application.
 		/// @param definitions Path to a single xml file or a folder with xml files.
-		virtual int run(const char *definitions = nullptr);
+		int run(const char *definitions = nullptr);
 
 		/// @brief Load XML application definitions.
 		/// @param definitions Path to a single xml file or a folder with xml files.

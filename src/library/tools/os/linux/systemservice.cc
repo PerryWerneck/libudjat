@@ -38,27 +38,9 @@
 
  using namespace std;
 
- /*
- static const struct {
-	char to;
-	const char *from;
-	const char *help;
- } options[] = {
-	{ 'd',	"daemon",	"\t\tRun in background" }
- };
- */
-
  namespace Udjat {
 
 	int SystemService::setup(const char *definitions) {
-
-		if(pop('d',"daemon")) {
-			mode = Daemon;
-		}
-
-		if(pop('f',"foreground")) {
-			mode = Foreground;
-		}
 
 		return Application::setup(definitions);
 	}
@@ -71,7 +53,6 @@
 
 		static const Application::Option values[] = {
 			{ 'd', "daemon", _("Run in the background") },
-			{ 'f', "foreground", _("Run in the foreground") },
 		};
 		
 		for(const auto &value : values) {
@@ -83,6 +64,24 @@
 
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {
+
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=Starting");
+#endif // HAVE_SYSTEMD
+
+		if(pop('d',"daemon")) {
+			Logger::console(false);
+			if(daemon(0,0)) {
+				int err = errno;
+				Logger::String{"Error activating daemon mode: ",strerror(err)," (rc=",err,")"}.error("service");
+				return err;
+			}
+			Logger::console(false);
+		}
+
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
+#endif // HAVE_SYSTEMD
 
 		// Install unhandled exception manager.
 		// https://en.cppreference.com/w/cpp/error/set_terminate
@@ -113,99 +112,49 @@
 			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
 		}
 
+#ifdef HAVE_SYSTEMD
+		{
+			uint64_t watchdog_timer = 0;
+			int status = sd_watchdog_enabled(0,&watchdog_timer);
+
+#ifdef DEBUG
+			if(status == 0) {
+				watchdog_timer = 120000000L;
+				status = 1;
+			}
+#endif // DEBUG
+
+			if(status < 0) {
+
+				Logger::String{"Can't get watchdog status: ",strerror(-status)}.error("systemd");
+
+			} else if(status == 0) {
+
+				Logger::String{"Watchdog is not set"}.warning("systemd");
+
+			} else {
+
+				reset(watchdog_timer/3000L);
+				MainLoop::Timer::enable();
+				Logger::String{"Watchdog set to ",MainLoop::Timer::to_string()}.write((Logger::Level) (Logger::Debug+1),"systemd");
+
+			}
+
+		}
+#endif // HAVE_SYSTEMD
+		
 		return rc;
 	}
 
-	int SystemService::run(const char *definitions) {
+	void SystemService::on_timer() {
 
-		if(pop('h',"help")) {
-
-			cout << _("Usage:") << "\n  " << argv[0]
-				<< " " << _("[OPTION..]") << "\n\n";
-
-			help();
-			cout << "\n";
-			
-			Logger::help();
-
-			return 0;
-		}
-
-		Logger::redirect();
-
-		int rc = 0;
-
-		if(mode == Daemon) {
-			Logger::console(false);
-			if(daemon(0,0)) {
-				int err = errno;
-				Logger::String{"Error activating daemon mode: ",strerror(err)," (rc=",err,")"}.error("service");
-				return err;
-			}
-		}
-
-		if(mode != None) {
-
-			try {
-
+		debug("Watchdog timer expired");
+		
 #ifdef HAVE_SYSTEMD
-				class WatchDog : public MainLoop::Timer {
-				protected:
-					void on_timer() override {
-						sd_notify(0,"WATCHDOG=1");
-					}
-
-				public:
-
-					WatchDog() {
-
-						uint64_t watchdog_timer = 0;
-						int status = sd_watchdog_enabled(0,&watchdog_timer);
-
-#ifdef DEBUG
-						if(status == 0) {
-							watchdog_timer = 120000000L;
-							status = 1;
-						}
-#endif // DEBUG
-						if(status < 0) {
-
-							Logger::String{"Can't get SystemD watchdog status: ",strerror(-status)}.error("systemd");
-
-						} else if(status == 0) {
-
-							Logger::String{"SystemD watchdog is not set"}.warning("systemd");
-
-						} else {
-
-							reset(watchdog_timer/3000L);
-							enable();
-							Logger::String{"SystemD watchdog set to ",this->to_string()}.info("systemd");
-
-						}
-
-					}
-
-				};
-
-				WatchDog watchdog;
-
-				sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
-				sd_notifyf(0,"STATUS=Starting");
-
+		// Notify systemd that we are alive.
+		// https://www.freedesktop.org/software
+		sd_notify(0,"WATCHDOG=1");
 #endif // HAVE_SYSTEMD
-
-				rc = Application::run(definitions);
-
-			} catch(const std::exception &e) {
-
-				error() << e.what() << endl;
-				rc = -1;
-
-			}
-		}
-
-		return rc;
 
 	}
 
@@ -226,7 +175,6 @@
 			Logger::String{status}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
 		}
 #endif // HAVE_SYSTEMD
-
 
 	}
 
