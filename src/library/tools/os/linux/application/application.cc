@@ -44,11 +44,11 @@
 
 	void Application::set_gettext_package(const char *gettext_package) {
 
-#ifdef HAVE_LIBINTL
+#if defined(HAVE_LIBINTL) and defined(LOCALEDIR)
 
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
-		debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR),"/",gettext_package);
+		debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR)," - ",gettext_package);
 
 #endif // HAVE_LIBINTL
 
