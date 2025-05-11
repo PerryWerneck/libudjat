@@ -132,6 +132,13 @@ if host_machine.system() != 'windows'
     )
   )
 
+  app_conf.set('LOCALEDIR', 
+    '@0@/@1@'.format(
+      get_option('prefix'),
+      get_option('localedir')
+    )
+  )
+
 endif
 
 app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
