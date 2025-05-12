@@ -22,7 +22,8 @@
  #include <udjat/defs.h>
  #include <sstream>
  #include <iomanip>
- 
+
+ #if __GNUC__ > 10
  namespace Udjat {
 
 	typedef float Percentage;
@@ -43,5 +44,53 @@
 	}
 
  }
+ #else
+
+ namespace Udjat {
+
+	struct UDJAT_API Percentage {
+		float value = 0.0;
+
+		constexpr Percentage(int v) : value{(float) v} {
+		}
+
+		constexpr Percentage(float v) : value{v} {
+		}
+
+		constexpr Percentage(double v) : value{(float) v} {
+		}
+	
+		template <typename T>
+		inline Percentage& operator=(const T v) {
+			value = (float) v;
+			return *this;
+		}
+
+		inline operator float() const noexcept {
+			return value;
+		}
+
+	};
+
+
+	
+ }
+
+ namespace std {
+
+	inline string to_string(const Udjat::Percentage &percentage) {
+		std::stringstream stream;
+		stream << std::fixed << std::setprecision(2) << (((float) (percentage.value)) * 100.0) << "%";
+		return stream.str();
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::Percentage &percentage ) {
+		os << std::fixed << std::setprecision(2) << (((float) (percentage.value)) * 100.0) << "%";
+		return os;
+	}
+
+  }
+ 
+ #endif // __GCC__ > 10
 
 
