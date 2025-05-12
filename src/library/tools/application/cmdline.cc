@@ -180,8 +180,6 @@
 			<< " " << _("[OPTION..]") << "\n\n";
 
 		apphelp(width);
-		cout << "\n";
-
 		if(options) {
 			for(const Option *option = options; option->description; option++) {
 				option->print(cout,width);
@@ -189,6 +187,7 @@
 			};
 		}
 
+		cout << "\n";
 		Logger::help(width);
 
 		cout << "\n\n";
