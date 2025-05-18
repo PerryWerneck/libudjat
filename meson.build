@@ -328,6 +328,7 @@ lib_src += [
   'src/library/tools/xml/document.cc',
   'src/library/tools/xml/attribute.cc',
   'src/library/tools/xml/misc.cc',
+  'src/library/tools/xml/load.cc',
   'src/library/tools/exception.cc',
   'src/library/tools/logger.cc',
   'src/library/tools/object.cc',

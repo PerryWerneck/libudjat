@@ -57,22 +57,22 @@
 			Console & set(const Foreground color);
 
 			/// @brief set bold mode.
-			void bold(bool on);
+			Console & bold(bool on);
 
 			/// @brief set dim/faint mode.
-			void faint(bool on);
+			Console & faint(bool on);
 
 			/// @brief set italic mode.
-			void italic(bool on);
+			Console & italic(bool on);
 
 			/// @brief Show/Hide cursor.
-			void cursor(bool on);
+			Console & cursor(bool on);
 
 			/// @brief Moves cursor up.
-			void up(size_t lines);
+			Console & up(size_t lines);
 
 			/// @brief Moves cursor down.
-			void down(size_t lines);
+			Console & down(size_t lines);
 
 			unsigned short width() const noexcept;
 

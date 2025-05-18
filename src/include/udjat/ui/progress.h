@@ -46,8 +46,7 @@
 				Factory *parent;
 			
 			public:
-
-				static Factory & getInstance();
+				static Factory * getInstance();
 
 				Factory();
 				virtual ~Factory();

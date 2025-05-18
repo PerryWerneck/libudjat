@@ -49,6 +49,10 @@
 		public:
 			Document(const char *filename);
 
+			/// @brief Load document, build objects.
+			/// @return Timestamp for the next reload.
+			time_t ObjectFactory() const;
+
 		};
 
 		/// @brief Test if attribute is 'true', parse URL is necessary.
@@ -89,6 +93,15 @@
 		/// @retval true if test function returned true.
 		UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const XML::Node &node)> &test);
 
+		/// @brief Load default XML files.
+		/// @param path Path for configuration file or directory.
+		/// @return Timestamp for the next reload.
+		/// @retval 0 if no reload is required.
+		UDJAT_API time_t load(const char *path = nullptr);
+
+		/// @brief Load xml options below node.
+		UDJAT_API bool load(const XML::Node &node);
+	
 	}
 
 	/// @brief Test common filter options.

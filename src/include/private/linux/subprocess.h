@@ -65,18 +65,7 @@
 	private:
 		Controller();
 
-		class Entries : public Container<Entry,Entry> {
-		public:
-			Entries() : Container<Entry,Entry>{} {
-			}
-
-			inline void remove_if(const std::function<bool(const Entry &object)> &method) {
-				std::lock_guard<std::mutex> lock(guard);
-				objects.remove_if(method);
-			}
-
-		} entries;
-
+		Container<Entry,Entry> entries;
 
 		static void handle_signal(int sig) noexcept;
 

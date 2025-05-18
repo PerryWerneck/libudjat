@@ -194,28 +194,34 @@ namespace Udjat {
 		return *this;
 	}
 
-	void UI::Console::bold(bool on) {
+	UI::Console & UI::Console::bold(bool on) {
 		*this << "\x1B[" << (on ? "1" : "22") << "m";
+		return *this;
 	}
 
-	void UI::Console::faint(bool on) {
+	UI::Console & UI::Console::faint(bool on) {
 		*this << "\x1B[" << (on ? "2" : "22") << "m";
+		return *this;
 	}
 
-	void UI::Console::italic(bool on) {
+	UI::Console & UI::Console::italic(bool on) {
 		*this << "\x1B[" << (on ? "3" : "23") << "m";
+		return *this;
 	}
 
-	void UI::Console::cursor(bool on) {
+	UI::Console & UI::Console::cursor(bool on) {
 		*this << "\x1B[" << (on ? "?25h" : "?25l");
+		return *this;
 	}
 
-	void UI::Console::up(size_t lines) {
+	UI::Console & UI::Console::up(size_t lines) {
 		*this << "\x1B[" << lines << "F";
+		return *this;
 	}
 
-	void UI::Console::down(size_t lines) {
+	UI::Console & UI::Console::down(size_t lines) {
 		*this << "\x1B[" << lines << "E";
+		return *this;
 	}
 
 }

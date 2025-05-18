@@ -31,64 +31,92 @@
  #include <memory>
  #include <mutex>
  #include <string>
+ #include <udjat/tools/container.h>
 
  using namespace std;
+ using namespace Udjat;
+
+ class ProgressBar;
+	
+ class UDJAT_PRIVATE Controller : public Dialog::Progress::Factory, public Container<ProgressBar> {
+ public:
+	Controller() = default;
+
+	~Controller() override {
+	}
+
+	shared_ptr<Dialog::Progress> ProgressFactory() const override;
+
+ };
+
+ /// @brief Text mode progress dialog.
+ class UDJAT_PRIVATE ProgressBar : public Dialog::Progress, private UI::Dialog {
+ private:
+
+	Controller *controller;
+	size_t line = 0;
+	string prefix;
+	string text;
+	uint64_t current = 0;
+	uint64_t total = 0;
+
+	void update() const {
+		lock_guard<mutex> lock((std::mutex &) *controller);
+		console->up(line);
+		console->faint(true);
+		console->progress(prefix.c_str(), text.c_str(), current, total);
+		console->faint(false);
+		console->down(line);
+	}
+	
+ public:
+	ProgressBar(Controller *cntrl) : controller{cntrl} {
+
+		controller->push_back(this);
+		controller->for_each([this](ProgressBar &object) -> bool {
+			object.line++;
+			return false;
+		});
+
+		update();
+	}
+
+	~ProgressBar() override {
+		controller->remove(this);		
+		if(controller->empty()) {
+			delete controller;
+		}
+	}
+
+	Udjat::Dialog::Progress & item(const short current, const short total) override {
+		char buffer[15];
+		snprintf(buffer,14,"%03d/%03d",(int) current, (int) total);
+		prefix = buffer;
+		update();
+		return *this;
+	}
+	
+	Udjat::Dialog::Progress & set(uint64_t c, uint64_t t, bool) override {
+		current = c;
+		total = t;
+		update();
+		return *this;
+	}
+
+	/// @brief Set progress bar URL.
+	Udjat::Dialog::Progress & set(const char *url) override {
+		text = url;
+		update();
+		return *this;
+	}
+
+ };
+
+ shared_ptr<Dialog::Progress> Controller::ProgressFactory() const {
+	return make_shared<ProgressBar>(const_cast<Controller *>(this));
+ }
 
  namespace Udjat {
-
-	/// @brief Text mode progress dialog.
-	class UDJAT_PRIVATE TextProgress : public Dialog::Progress, private UI::Dialog {
-	private:
-		static mutex guard;
-		size_t line = 1;
-		string prefix;
-		string text;
-		uint64_t current = 0;
-		uint64_t total = 0;
-
-		void update() const {
-			lock_guard<mutex> lock(guard);
-			console->up(line);
-			console->faint(true);
-			console->progress(prefix.c_str(), text.c_str(), current, total);
-			console->faint(false);
-			console->down(line);
-		}
-		
-	public:
-		TextProgress() {
-			*console << "\n\r";
-			update();
-		}
-
-		~TextProgress() override {
-		}
-
-		Udjat::Dialog::Progress & item(const short current, const short total) override {
-			char buffer[15];
-			snprintf(buffer,14,"%03d/%03d",(int) current, (int) total);
-			prefix = buffer;
-			update();
-			return *this;
-		}
-		
-		Udjat::Dialog::Progress & set(uint64_t c, uint64_t t, bool) override {
-			current = c;
-			total = t;
-			update();
-			return *this;
-		}
-
-		/// @brief Set progress bar URL.
-		Udjat::Dialog::Progress & set(const char *url) override {
-			text = url;
-			update();
-			return *this;
-		}
-
-	};
-
-	mutex TextProgress::guard;
 
 	Dialog::Progress::Factory * Dialog::Progress::Factory::instance = nullptr;
 	
@@ -98,34 +126,15 @@
 	Dialog::Progress::~Progress() {
 	}
 
-	std::shared_ptr<Dialog::Progress> Dialog::Progress::getInstance() {
-		return Factory::getInstance().ProgressFactory();
+	Dialog::Progress::Factory * Dialog::Progress::Factory::getInstance() {
+		if(!instance) {
+			new Controller();
+		}
+		return instance;
 	}
 
-	Dialog::Progress::Factory & Dialog::Progress::Factory::getInstance() {
-
-		if(instance) {
-			return *instance;
-		}
-
-		// Create default (text-mode) progress factory.
-		class TextFactory : public Dialog::Progress::Factory {
-		public:
-			TextFactory() {
-			}
-
-			~TextFactory() override {
-			}
-
-			shared_ptr<Progress> ProgressFactory() const override {
-				return make_shared<TextProgress>();
-			}
-
-		};
-
-		static TextFactory textFactory;
-		return textFactory;
-
+	std::shared_ptr<Dialog::Progress> Dialog::Progress::getInstance() {
+		return Factory::getInstance()->ProgressFactory();
 	}
 
 	Dialog::Progress::Factory::Factory() : parent{instance} {

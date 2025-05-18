@@ -50,6 +50,8 @@
 
 	Logger::verbosity(9);
 
+	XML::load("test.xml");
+
 	/*
 	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
 	cout << "---------------> INTERFACE=" << Network::Interface::Default()->address().to_string() << endl;
@@ -100,6 +102,7 @@
 	debug("Argc=",argc);
 	*/
 
+	/*
 	return Testing::run(argc,argv,moduleinfo,[](Udjat::Application &){
 
 		Logger::String{"----> System CPE is '",Udjat::System::cpe().c_str(),"'"}.trace();
@@ -194,5 +197,6 @@
 
 
 	});
+	*/
 
  }

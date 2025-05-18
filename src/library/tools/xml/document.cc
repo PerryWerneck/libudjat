@@ -18,14 +18,25 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+
+ #ifdef LOG_DOMAIN
+	#undef LOG_DOMAIN
+ #endif
+ #define LOG_DOMAIN "xml"
+ #include <udjat/tools/logger.h>
+
  #include <udjat/tools/xml.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
+ #include <udjat/tools/factory.h>
  #include <udjat/tools/url/handler.h>
  #include <stdexcept>
+ #include <private/logger.h>
+ #include <udjat/module/abstract.h>
 
  using namespace std;
 
@@ -40,7 +51,7 @@
 		}
 
 		Config::Value<string> tagname{"xml","tagname",Application::Name().c_str()};
-		Config::Value<bool> allow_unsafe{"xml","allow-unsafe-updates",false};
+		Config::Value<bool> allow_unsafe{"xml","allow-unsafe-updates",true};
 
 		bool safe = (strcasecmp(document->document_element().name(),tagname.c_str()) == 0);
 
@@ -56,9 +67,17 @@
 
 	XML::Document::Document(const char *filename) {
 
-		Logger::String{"Loading '",filename,"'"}.info("xml");
-
 		Udjat::load(this,filename);
+
+		// Preload modules
+		for(XML::Node child = document_element().child("module"); child; child = child.next_sibling("module")) {
+			if(child.attribute("preload").as_bool(false)) {
+				Logger::String{"Preloading module '",child.attribute("name").as_string(),"'"}.trace();
+				Module::load(child);
+			}		
+		}
+
+		// Check for update.
 
 		// TODO: Check file's last write and and update-timer attribute to see if an url check is required.
 
@@ -83,6 +102,44 @@
 
 	}
 
+	time_t XML::Document::ObjectFactory() const {
+
+		auto root = document_element();
+		Logger::setup(root);
+
+		for(const XML::Node &node : root) {
+			XML::load(node);
+		}
+
+		return 0;
+	}
+
+	bool XML::load(const XML::Node &node) {
+
+		// It's an attribute?
+		if(is_reserved(node) || !is_allowed(node)) {
+			return false;
+		}
+
+		const char *name = node.name();
+		if(!strcasecmp(name,"module")) {
+
+			if(node.attribute("preload").as_bool(false)) {
+				return false;
+			}
+
+			Logger::String{"Loading module '",node.attribute("name").as_string(),"'"}.trace();
+			Module::load(node);
+			return true;
+
+		}
+	
+		debug("Processing node <",node.name(),">");
+		return Factory::for_each(name,[&node](Factory &factory) -> bool {
+			return factory.NodeFactory(node);
+		});
+
+	}
 
  }
 

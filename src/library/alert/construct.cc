@@ -75,7 +75,7 @@
 		/// @brief Check for active alerts, emit if necessary, reset timer for next alert.
 		void wakeup() {
 
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
 			debug("Waking up alert controller");
 
 			time_t now = time(0);
