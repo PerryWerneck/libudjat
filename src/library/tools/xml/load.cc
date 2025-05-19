@@ -20,6 +20,9 @@
  #include <config.h>
  #include <udjat/defs.h>
 
+ #ifdef LOG_DOMAIN
+ 	#undef LOG_DOMAIN
+ #endif
  #define LOG_DOMAIN "xml"
  #include <udjat/tools/logger.h>
 
@@ -27,9 +30,14 @@
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/intl.h>
  #include <string>
  #include <udjat/tools/string.h>
  #include <stdexcept>
+
+ #ifdef HAVE_UNISTD_H
+ 	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
  using namespace std;
 
@@ -42,6 +50,7 @@
 		if(p && *p) {
 
 			// Use requested path
+			debug("------------------> Using path '",p,"'");
 			path.assign(p);
 
 		} else {
@@ -55,24 +64,26 @@
 			} else {
 
 				Application::Name name;
+				Application::DataDir datadir{nullptr,false};
 
 				String options[] = {
 #ifndef _WIN32
 					String{"/etc/",name.c_str(),"/xml"},
 					String{"/etc/",name.c_str(),".xml.d"},
 #endif // _WIN32
-					String{Application::DataDir{}.c_str(),"settings.xml"},
-					String{Application::DataDir{}.c_str(),"xml.d"}
-
+					String{datadir.c_str(),"settings.xml"},
+					String{datadir.c_str(),"xml.d"},
 				};
 
 				for(const String &option : options) {
-					path.assign(option.c_str());
-					debug("Searching for '",path.c_str(),"'");
-					if(path) {
-						break;
+					debug("Checking '",option.c_str(),"'");
+					if(access(option.c_str(),R_OK) == 0) {
+						debug("Found '",option.c_str(),"'");
+						path.assign(option.c_str());
+						if(path) {
+							break;
+						}
 					}
-
 				}
 
 			}
@@ -80,7 +91,7 @@
 		}
 
 		if(!path) {
-			throw std::system_error(ENOENT,std::system_category(),"Cant load configuration");
+			throw std::system_error(ENOENT,std::system_category(), _("Configuration file not found"));
 		}
 
 		time_t next = 0;
