@@ -71,7 +71,12 @@
 		/// @brief Setup logger from command line.
 		/// @param argc	 The number of arguments. 
 		/// @param argv  The command line arguments.
-		UDJAT_API void setup(int &argc, char **argv);
+		/// @param dbg True to use debug mode defaults.
+#ifdef DEBUG
+		UDJAT_API void setup(int &argc, char **argv, bool dbg = true);
+#else
+		UDJAT_API void setup(int &argc, char **argv, bool dbg = false);
+#endif // DEBUG
 
 		/// @brief Enable/Disable write to file.
 		/// @param Log level.

@@ -108,9 +108,14 @@
 		/// @param argc The number of arguments.
 		/// @param argv The command line arguments.
 		/// @param options The list of options to show. 
+		/// @param dbg True to use debug mode defaults.
 		/// @param width The width of the left part of the help text.
 		/// @return true if the help was show.
-		static bool options(int &argc, char **argv, const Option *options = nullptr, size_t width = 20) noexcept;
+#ifdef DEBUG
+		static bool options(int &argc, char **argv, const Option *options = nullptr, bool dbg=true, size_t width = 20) noexcept;
+#else
+		static bool options(int &argc, char **argv, const Option *options = nullptr, bool dbg=false, size_t width = 20) noexcept;
+#endif // DEBUG
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.

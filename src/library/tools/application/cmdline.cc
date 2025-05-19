@@ -169,10 +169,10 @@
 
 	}
 
-	bool Application::options(int &argc, char **argv, const Application::Option *options, size_t width) noexcept {
+	bool Application::options(int &argc, char **argv, const Application::Option *options, bool dbg, size_t width) noexcept {
 
 		if(!pop(argc,argv,'h',"help")) {
-			Logger::setup(argc,argv);
+			Logger::setup(argc,argv,dbg);
 			return false;
 		}
 

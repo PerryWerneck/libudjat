@@ -285,9 +285,14 @@
 	}
 #endif // !_WIN32
 
-	void Logger::setup(int &argc, char **argv) {
+	void Logger::setup(int &argc, char **argv, bool dbg) {
 
 		String optarg;
+
+		if(dbg) {
+			verbosity(9);
+			console(true);
+		}
 
 		if(Application::pop(argc,argv,'q',"quiet")) {
 			Logger::console(false);
