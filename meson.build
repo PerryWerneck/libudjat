@@ -796,7 +796,6 @@ install_headers(
   'src/include/udjat/tools/service.h',
   'src/include/udjat/tools/singleton.h',
   'src/include/udjat/tools/subprocess.h',
-  'src/include/udjat/tools/sysconfig.h',
   'src/include/udjat/tools/systemservice.h',
   'src/include/udjat/tools/threadpool.h',
   'src/include/udjat/tools/timestamp.h',
