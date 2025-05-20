@@ -51,7 +51,7 @@
 
 			/// @brief Load document, build objects.
 			/// @return Timestamp for the next reload.
-			time_t ObjectFactory() const;
+			time_t parse() const;
 
 		};
 
@@ -97,10 +97,10 @@
 		/// @param path Path for configuration file or directory.
 		/// @return Timestamp for the next reload.
 		/// @retval 0 if no reload is required.
-		UDJAT_API time_t load(const char *path = nullptr);
+		UDJAT_API time_t parse(const char *path = nullptr);
 
 		/// @brief Load xml options below node.
-		UDJAT_API bool load(const XML::Node &node);
+		UDJAT_API bool parse(const XML::Node &node);
 	
 	}
 

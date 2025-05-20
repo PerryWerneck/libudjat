@@ -49,6 +49,7 @@
 
  int main(int argc, char **argv) {
 
+	/*
 	Logger::verbosity(9);
 
 	Config::for_each("cacerts", [](const char *name, const char *value) ->bool {
@@ -57,8 +58,9 @@
 	});
 
 	exit(0);
+	*/
 
-	XML::load("test.xml");
+	XML::parse("test.xml");
 
 	/*
 	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;

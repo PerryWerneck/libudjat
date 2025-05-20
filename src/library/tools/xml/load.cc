@@ -43,7 +43,7 @@
 
  namespace Udjat {
 
-	time_t XML::load(const char *p) {
+	time_t XML::parse(const char *p) {
 
 		File::Path path;
 
@@ -100,7 +100,7 @@
 
 			// Is a directory, scan for files
 			path.for_each("*.xml",[&next](const File::Path &path) -> bool {
-				time_t result = XML::load(path.c_str());
+				time_t result = XML::parse(path.c_str());
 				if(result && (result < next || next == 0)) {
 					next = result;
 				}
@@ -110,8 +110,8 @@
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace("settings");
-			next = Document{path.c_str()}.ObjectFactory();
+			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace();
+			next = Document{path.c_str()}.parse();
 
 		}
 
