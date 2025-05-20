@@ -616,7 +616,7 @@
 				if(!ini) {
 					return def;
 				}
-				return iniparser_getint64(ini,key(group,name).c_str(),def);
+				return iniparser_getint(ini,key(group,name).c_str(),def);
 			}
 		
 			uint32_t get(const char *group, const char *name, const uint32_t def) {
@@ -632,7 +632,7 @@
 				if(!ini) {
 					return def;
 				}
-				return iniparser_getuint64(ini,key(group,name).c_str(),def);
+				return (unsigned int) iniparser_getuint(ini,key(group,name).c_str(),def);
 			}
 		
 			bool get(const char *group, const char *name, const bool def) {
