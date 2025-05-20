@@ -104,7 +104,7 @@
 	}
 
 	/// @brief Set progress bar URL.
-	Udjat::Dialog::Progress & set(const char *url) override {
+	Udjat::Dialog::Progress & url(const char *url) override {
 		text = url;
 		update();
 		return *this;
@@ -168,7 +168,11 @@
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::set(const char *) {
+	Dialog::Progress & Dialog::Progress::url(const char *) {
+		return *this;
+	}
+
+	Dialog::Progress & Dialog::Progress::message(const char *) {
 		return *this;
 	}
 

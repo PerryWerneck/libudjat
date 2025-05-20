@@ -70,11 +70,21 @@
 			virtual Progress & show();
 			virtual Progress & hide();
 
+			virtual Progress & message(const char *message);
+
 			/// @brief Set progress bar URL.
-			virtual Progress & set(const char *url);
+			virtual Progress & url(const char *url);
+
+			inline Progress & url(const std::string &s) {
+				return url(s.c_str());
+			}
+
+			inline Progress & set(const char *u) {
+				return url(u);
+			}
 		
 			inline Progress & set(const std::string &s) {
-				return set(s.c_str());
+				return url(s.c_str());
 			}
 
 			inline Progress & operator = (const char *u) {
