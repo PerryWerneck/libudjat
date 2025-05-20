@@ -40,7 +40,7 @@
 	#include <libeconf.h>
  }
  #elif defined(HAVE_INIPARSER)
-	#include <iniparser/iniparser.h>
+	#include <iniparser.h>
  #endif // HAVE_ECONF
 
  using namespace std;
