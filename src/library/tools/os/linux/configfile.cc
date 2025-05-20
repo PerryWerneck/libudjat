@@ -632,7 +632,7 @@
 				if(!ini) {
 					return def;
 				}
-				return (unsigned int) iniparser_getuint(ini,key(group,name).c_str(),def);
+				return (unsigned int) iniparser_getint(ini,key(group,name).c_str(),def);
 			}
 		
 			bool get(const char *group, const char *name, const bool def) {
