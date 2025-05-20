@@ -25,6 +25,7 @@
  #include <udjat/tools/interface.h>
  #include <udjat/tools/response.h>
  #include <udjat/tools/report.h>
+ #include <udjat/tools/logger.h>	
  #include <udjat/agent/abstract.h>
  #include <udjat/agent.h>
  #include <udjat/agent/percentage.h>
@@ -49,6 +50,13 @@
  int main(int argc, char **argv) {
 
 	Logger::verbosity(9);
+
+	Config::for_each("keys", [](const char *name, const char *value) ->bool {
+		debug(name,"=",value);
+		return false;
+	});
+
+	exit(0);
 
 	XML::load("test.xml");
 

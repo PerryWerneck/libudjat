@@ -668,8 +668,8 @@
 						const char *keys[items];
 						if(iniparser_getseckeys(ini,group,keys)) {
 							for(size_t ix = 0; ix < items; ix++) {
-								const char *value = iniparser_getstring(ini,keys[ix],"");
-								call(keys[ix],value);
+								std::string value{iniparser_getstring(ini,keys[ix],"")};
+								call(keys[ix],value.c_str());
 							}
 						} else {
 							Logger::String {"Error getting keys from section '",group,"'"}.error("iniparser");
