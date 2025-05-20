@@ -547,7 +547,7 @@
 		private:
 			dictionary  *ini;
 
-			Controller() : ini{iniparser_load(String{"/etc",program_invocation_short_name,".conf"}.c_str())} {
+			Controller() : ini{iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str())} {
 				if(!ini) {
 					Logger::String{"Cant load /etc/",program_invocation_short_name,".conf, using default configuration"}.warning("iniparser");
 				} else if(Logger::enabled(Logger::Trace)) {
