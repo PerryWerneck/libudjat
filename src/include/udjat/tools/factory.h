@@ -86,17 +86,19 @@
 		[[deprecated]] virtual std::shared_ptr<Abstract::Object> ObjectFactory(const Abstract::Object &parent, const XML::Node &node) const;
 
 		/// @brief Create an element from xml node (called on any node with attribute type = 'factory_name').
-		virtual bool CustomFactory(const XML::Node &node);
+		[[deprecated("use parse()")]] virtual bool CustomFactory(const XML::Node &node);
 		virtual bool CustomFactory(Abstract::Object &parent, const XML::Node &node);
 
 		/// @brief Create a custom element from xml (called on any node <factory_name>).
-		virtual bool NodeFactory(const XML::Node &node);
+		virtual bool parse(const XML::Node &node);
+
+		[[deprecated("use parse()")]] virtual bool NodeFactory(const XML::Node &node);
 		virtual bool NodeFactory(Abstract::Object &parent, const XML::Node &node);
 
 		/// @brief Parse a generic XML node.
 		/// @param XML definition for the new element.
 		/// @return true if the node was parsed.
-		[[deprecated]] virtual bool generic(const XML::Node &node);
+		[[deprecated("Use parse()")]] virtual bool generic(const XML::Node &node);
 
 		/// @brief Parse a XML node.
 		/// @param object Parent object.

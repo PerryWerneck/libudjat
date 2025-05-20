@@ -102,19 +102,19 @@
 
 	}
 
-	time_t XML::Document::ObjectFactory() const {
+	time_t XML::Document::parse() const {
 
 		auto root = document_element();
 		Logger::setup(root);
 
 		for(const XML::Node &node : root) {
-			XML::load(node);
+			XML::parse(node);
 		}
 
 		return 0;
 	}
 
-	bool XML::load(const XML::Node &node) {
+	bool XML::parse(const XML::Node &node) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
@@ -136,7 +136,7 @@
 	
 		debug("Processing node <",node.name(),">");
 		return Factory::for_each(name,[&node](Factory &factory) -> bool {
-			return factory.NodeFactory(node);
+			return factory.parse(node);
 		});
 
 	}

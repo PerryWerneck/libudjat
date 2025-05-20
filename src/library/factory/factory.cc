@@ -110,8 +110,12 @@
 	}
 	#pragma GCC diagnostic pop
 
-	bool Factory::generic(const XML::Node &) {
+	bool Factory::parse(const XML::Node &) {
 		return false;
+	}
+
+	bool Factory::generic(const XML::Node &node) {
+		return parse(node);
 	}
 
 	std::ostream & Factory::info() const {
