@@ -189,9 +189,9 @@ endif
 #
 # Configuration library (optional)
 #
-conf_dep = dependency('xlibeconf-static', required: false, method : 'pkg-config')
+conf_dep = dependency('libeconf-static', required: false, method : 'pkg-config')
 if not conf_dep.found()
-  conf_dep = dependency('xlibeconf', required: false, method : 'pkg-config')
+  conf_dep = dependency('libeconf', required: false, method : 'pkg-config')
 endif
 
 if conf_dep.found() 

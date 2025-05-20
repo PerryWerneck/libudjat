@@ -703,11 +703,10 @@
 	//
 	// No Back-end, Use a dumb controller.
 	//
-
 	class Controller {
 	private:
 		Controller() {
-			cerr << "config\tNo config file backend, using internal defaults" << endl;
+			Logger::String{"No configuration file back-end, using internal defaults"}.warning("config");
 		}
 
 

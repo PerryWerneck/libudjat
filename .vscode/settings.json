@@ -70,7 +70,9 @@
 		"typeinfo": "cpp",
 		"variant": "cpp",
 		"text_encoding": "cpp",
-		"ranges": "cpp"
+		"ranges": "cpp",
+		"codecvt": "cpp",
+		"queue": "cpp"
 	},
 	"C_Cpp.default.configurationProvider": "mesonbuild.mesonbuild",
 	"C_Cpp.default.compileCommands": "/home/perry/project/udjat/libudjat/.build/compile_commands.json"
