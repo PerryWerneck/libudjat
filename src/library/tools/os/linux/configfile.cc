@@ -595,18 +595,22 @@
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				return true;
 			}
-	
-			Udjat::String get(const char *group, const char *name, const std::string &def) const {
+
+			Udjat::String get_string(const char *group, const char *name, const char *def) const {
 				std::lock_guard<std::recursive_mutex> lock(guard);
 
 				debug("group='",group,"' name='",name,"'");
 				if(!ini) {
-					return def;
+					return Udjat::String{def};
 				}
-				String str{iniparser_getstring(ini,key(group,name).c_str(),def.c_str())};
+				String str{iniparser_getstring(ini,key(group,name).c_str(),def)};
 
 				debug(group,":",name,"='",str.c_str(),"'");
 				return str;
+			}
+			
+			Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
+				return get_string(group,name,def.c_str());
 			}
 	
 			int32_t get(const char *group, const char *name, const int32_t def) {
@@ -669,7 +673,6 @@
 
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				if(ini) {
-					vector<string> keys;
 					size_t items = iniparser_getsecnkeys(ini,group);
 					if(items) {
 						const char *k[items];
@@ -677,18 +680,14 @@
 							for(size_t ix = 0; ix < items; ix++) {
 								const char *ptr = strchr(k[ix],':');
 								if(ptr) {
-									keys.emplace_back(ptr+1);
+									ptr++;
+									if(call(ptr,Config::get(group,ptr,"").c_str())) {
+										return true;
+									}
 								}
 							}
 						} else {
 							Logger::String {"Error getting keys from section '",group,"'"}.error("iniparser");
-						}
-					}
-
-					string def;
-					for(const string &key : keys) {
-						if(call(key.c_str(),get(group, key.c_str(), def).c_str())) {
-							return true;
 						}
 					}
 
@@ -791,12 +790,12 @@
 	}
 
 	Udjat::String Config::get(const std::string &group, const std::string &name, const char *def) {
-		String str = Controller::getInstance().get(group.c_str(),name.c_str(),def);
+		String str = Controller::getInstance().get_string(group.c_str(),name.c_str(),def);
 		return str.expand(true,false);
 	}
 
 	Udjat::String Config::get(const std::string &group, const std::string &name, const std::string &def) {
-		String str = Controller::getInstance().get(group.c_str(),name.c_str(),def.c_str());
+		String str = Controller::getInstance().get_string(group.c_str(),name.c_str(),def);
 		return str.expand(true,false);
 	}
 
