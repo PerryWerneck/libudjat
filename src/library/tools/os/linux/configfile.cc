@@ -432,7 +432,7 @@
 
 		}
 
-		Udjat::String get(const char *group, const char *name, const char *def) const {
+		Udjat::String get_string(const char *group, const char *name, const char *def) const {
 
 			if(!hFile) {
 				return def;
@@ -474,6 +474,10 @@
 			cout << "config\tEmpty value for '" << group << "." << name << "'" << endl;
 			return def;
 
+		}
+
+		inline Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
+			return get_string(group,name,def.c_str());
 		}
 
 		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
