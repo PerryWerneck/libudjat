@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-10 11:04-0300\n"
-"PO-Revision-Date: 2025-05-10 11:07-0300\n"
+"POT-Creation-Date: 2025-05-21 19:57-0300\n"
+"PO-Revision-Date: 2025-05-21 19:58-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -20,36 +20,100 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.5\n"
 
-#: src/library/tools/application/run.cc:80
-#: src/library/tools/application/run.cc:84
-msgid "Unable to set environment variable"
-msgstr "Incapaz de setar variável de ambiente"
+#: src/library/agent/agent.cc:158
+msgid "default"
+msgstr "padrão"
 
-#: src/library/tools/application/run.cc:127
-#: src/library/tools/application/cmdline.cc:169
-#: src/library/tools/os/linux/systemservice.cc:123
+#: src/library/agent/agent.cc:160
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:161
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/controller.cc:52
+msgid "Agent controller"
+msgstr "Controlador de agentes"
+
+#: src/library/agent/controller.cc:103
+msgid "Core/Module subsystem failed to initialize"
+msgstr "Inicialização do módulo principal falhou"
+
+#: src/library/agent/controller.cc:394
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
+
+#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:118
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:99
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
+
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/module/module.cc:114
+#, c++-format
+msgid "Module '{}' is not loaded"
+msgstr "Modulo '{}' não foi carregado"
+
+#: src/library/module/module.cc:130
+#, c++-format
+msgid "I dont know how to execute '{}'"
+msgstr "Não sei como executar '{}'"
+
+#: src/library/request/response.cc:127
+msgid "System error"
+msgstr "Erro de sistema"
+
+#: src/library/request/response.cc:189
+msgid "Operation failed"
+msgstr "Operação falhou"
+
+#: src/library/state/state.cc:258 src/library/tools/converters.cc:42
+msgid "on"
+msgstr "ligado"
+
+#: src/library/state/state.cc:258 src/library/tools/converters.cc:49
+msgid "off"
+msgstr "desligado"
+
+#: src/library/tools/application/cmdline.cc:146
+msgid "Show this help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/application/cmdline.cc:149
+msgid "Application options:\n"
+msgstr "Opções da aplicação\n"
+
+#: src/library/tools/application/cmdline.cc:162
+msgid "Quit after \"seconds\""
+msgstr "Encerra após \"seconds\""
+
+#: src/library/tools/application/cmdline.cc:179
+#: src/library/tools/application/run.cc:110
 #: src/library/tools/os/windows/systemservice.cc:163
 msgid "Usage:"
 msgstr "Uso:"
 
-#: src/library/tools/application/run.cc:128
-#: src/library/tools/application/cmdline.cc:170
-#: src/library/tools/os/linux/systemservice.cc:124
+#: src/library/tools/application/cmdline.cc:180
+#: src/library/tools/application/run.cc:111
 #: src/library/tools/os/windows/systemservice.cc:164
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#: src/library/tools/application/cmdline.cc:136
-msgid "Show this help message"
-msgstr "Mostra essa mensagem de help"
-
-#: src/library/tools/application/cmdline.cc:139
-msgid "Application options:\n"
-msgstr "Opções da aplicação\n"
-
-#: src/library/tools/application/cmdline.cc:152
-msgid "Quit after \"seconds\""
-msgstr "Encerra após \"seconds\""
+#: src/library/tools/application/run.cc:64
+#: src/library/tools/application/run.cc:68
+msgid "Unable to set environment variable"
+msgstr "Incapaz de setar variável de ambiente"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -59,10 +123,6 @@ msgstr "sim"
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/library/tools/converters.cc:42 src/library/state/state.cc:258
-msgid "on"
-msgstr "ligado"
-
 #: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:69
 msgid "no"
 msgstr "não"
@@ -70,10 +130,6 @@ msgstr "não"
 #: src/library/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
-
-#: src/library/tools/converters.cc:49 src/library/state/state.cc:258
-msgid "off"
-msgstr "desligado"
 
 #: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
 #: src/library/tools/exception.cc:53
@@ -317,27 +373,27 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/logger.cc:310
+#: src/library/tools/logger.cc:343
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger.cc:311
+#: src/library/tools/logger.cc:344
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger.cc:312
+#: src/library/tools/logger.cc:345
 msgid "Set log level to value"
 msgstr "Define nível de log para 'value'"
 
-#: src/library/tools/logger.cc:313
+#: src/library/tools/logger.cc:346
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger.cc:315
+#: src/library/tools/logger.cc:348
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger.cc:319
+#: src/library/tools/logger.cc:352
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
@@ -391,27 +447,23 @@ msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/tools/os/linux/ip.cc:96
 msgid "Invalid size on RTA_GATEWAY"
-msgstr ""
+msgstr "Tamanho inválido em RTA_GATEWAY"
 
 #: src/library/tools/os/linux/netlink_routes.cc:68
 msgid "Cant send netlink message"
-msgstr ""
+msgstr "Não consegui enviar mensagem 'netlink'"
 
 #: src/library/tools/os/linux/netlink_routes.cc:80
 msgid "Cant receive netlink response"
-msgstr ""
+msgstr "Não consegui receber mensagem 'netlink'"
 
 #: src/library/tools/os/linux/netlink_routes.cc:87
 msgid "Error in received packet"
-msgstr ""
+msgstr "Erro no pacote recebido"
 
-#: src/library/tools/os/linux/systemservice.cc:73
+#: src/library/tools/os/linux/systemservice.cc:55
 msgid "Run in the background"
 msgstr "Rodar no background"
-
-#: src/library/tools/os/linux/systemservice.cc:74
-msgid "Run in the foreground"
-msgstr ""
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72
@@ -480,10 +532,6 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 #: src/library/tools/script.cc:165
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
-
-#: src/library/tools/systemservice.cc:118 src/library/agent/root.cc:99
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
 
 #: src/library/tools/systemservice.cc:122
 msgid "System is not ready"
@@ -633,59 +681,9 @@ msgstr "Desconhecido"
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/agent/agent.cc:158
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:160
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:161
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:52
-msgid "Agent controller"
-msgstr "Controlador de agentes"
-
-#: src/library/agent/controller.cc:103
-msgid "Core/Module subsystem failed to initialize"
-msgstr "Inicialização do módulo principal falhou"
-
-#: src/library/agent/controller.cc:394
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
-#: src/library/agent/root.cc:99
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/state.cc:139
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:144
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/module/module.cc:114
-#, c++-format
-msgid "Module '{}' is not loaded"
-msgstr "Modulo '{}' não foi carregado"
-
-#: src/library/module/module.cc:130
-#, c++-format
-msgid "I dont know how to execute '{}'"
-msgstr "Não sei como executar '{}'"
-
-#: src/library/request/response.cc:127
-msgid "System error"
-msgstr "Erro de sistema"
-
-#: src/library/request/response.cc:189
-msgid "Operation failed"
-msgstr "Operação falhou"
+#: src/library/tools/xml/load.cc:94
+msgid "Configuration file not found"
+msgstr "Arquivo de configuração não encontrado"
 
 #: src/library/worker/worker.cc:54
 msgid "Invalid response type"
