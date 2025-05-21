@@ -52,7 +52,7 @@
 	/*
 	Logger::verbosity(9);
 
-	Config::for_each("keys", [](const char *name, const char *value) ->bool {
+	Config::for_each("cacerts", [](const char *name, const char *value) ->bool {
 		debug(name,"=",value);
 		return false;
 	});
