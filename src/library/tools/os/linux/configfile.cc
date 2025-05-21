@@ -26,7 +26,13 @@
  #include <private/configuration.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
+
+ #ifdef LOG_DOMAIN
+	#undef LOG_DOMAIN
+ #endif
+ #define LOG_DOMAIN "config"
  #include <udjat/tools/logger.h>
+ 
  #include <udjat/tools/string.h>
  #include <signal.h>
  #include <iostream>
@@ -476,7 +482,7 @@
 
 		}
 
-		inline Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
+		Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
 			return get_string(group,name,def.c_str());
 		}
 
@@ -607,10 +613,6 @@
 				if(!ini) {
 					return Udjat::String{def};
 				}
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> refs/remotes/origin/develop
 				String str{iniparser_getstring(ini,key(group,name).c_str(),def)};
 
 				debug(group,":",name,"='",str.c_str(),"'");
@@ -619,15 +621,6 @@
 			
 			Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
 				return get_string(group,name,def.c_str());
-<<<<<<< HEAD
-=======
-				String str{iniparser_getstring(ini,key(group,name).c_str(),def.c_str())};
-
-				debug(group,":",name,"='",str.c_str(),"'");
-				return str;
->>>>>>> 6d6f8a9b (Debugging iniparser.)
-=======
->>>>>>> refs/remotes/origin/develop
 			}
 	
 			int32_t get(const char *group, const char *name, const int32_t def) {
@@ -690,7 +683,6 @@
 
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				if(ini) {
-					vector<string> keys;
 					size_t items = iniparser_getsecnkeys(ini,group);
 					if(items) {
 						const char *k[items];
@@ -698,20 +690,10 @@
 							for(size_t ix = 0; ix < items; ix++) {
 								const char *ptr = strchr(k[ix],':');
 								if(ptr) {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> refs/remotes/origin/develop
 									ptr++;
 									if(call(ptr,Config::get(group,ptr,"").c_str())) {
 										return true;
 									}
-<<<<<<< HEAD
-=======
-									keys.emplace_back(ptr+1);
->>>>>>> 6d6f8a9b (Debugging iniparser.)
-=======
->>>>>>> refs/remotes/origin/develop
 								}
 							}
 						} else {
@@ -719,19 +701,6 @@
 						}
 					}
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-					string def;
-					for(const string &key : keys) {
-						if(call(key.c_str(),get(group, key.c_str(), def).c_str())) {
-							return true;
-						}
-					}
-
->>>>>>> 6d6f8a9b (Debugging iniparser.)
-=======
->>>>>>> refs/remotes/origin/develop
 				}
 
 				return false;
@@ -748,7 +717,7 @@
 	class Controller {
 	private:
 		Controller() {
-			cerr << "config\tNo config file backend, using internal defaults" << endl;
+			Logger::String{"No config file backend, using internal defaults"}.warning();
 		}
 
 
@@ -779,8 +748,12 @@
 			return false;
 		}
 
-		Udjat::String get(const char *group, const char *name, const char *def) const {
+		Udjat::String get_string(const char *group, const char *name, const char *def) const {
 			return Udjat::String{def};
+		}
+
+		inline Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
+			return Udjat::String{def.c_str()};
 		}
 
 		template<typename T>
