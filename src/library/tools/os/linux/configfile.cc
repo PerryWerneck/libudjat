@@ -608,6 +608,9 @@
 					return Udjat::String{def};
 				}
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> refs/remotes/origin/develop
 				String str{iniparser_getstring(ini,key(group,name).c_str(),def)};
 
 				debug(group,":",name,"='",str.c_str(),"'");
@@ -616,12 +619,15 @@
 			
 			Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
 				return get_string(group,name,def.c_str());
+<<<<<<< HEAD
 =======
 				String str{iniparser_getstring(ini,key(group,name).c_str(),def.c_str())};
 
 				debug(group,":",name,"='",str.c_str(),"'");
 				return str;
 >>>>>>> 6d6f8a9b (Debugging iniparser.)
+=======
+>>>>>>> refs/remotes/origin/develop
 			}
 	
 			int32_t get(const char *group, const char *name, const int32_t def) {
@@ -693,13 +699,19 @@
 								const char *ptr = strchr(k[ix],':');
 								if(ptr) {
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> refs/remotes/origin/develop
 									ptr++;
 									if(call(ptr,Config::get(group,ptr,"").c_str())) {
 										return true;
 									}
+<<<<<<< HEAD
 =======
 									keys.emplace_back(ptr+1);
 >>>>>>> 6d6f8a9b (Debugging iniparser.)
+=======
+>>>>>>> refs/remotes/origin/develop
 								}
 							}
 						} else {
@@ -707,6 +719,7 @@
 						}
 					}
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 					string def;
@@ -717,6 +730,8 @@
 					}
 
 >>>>>>> 6d6f8a9b (Debugging iniparser.)
+=======
+>>>>>>> refs/remotes/origin/develop
 				}
 
 				return false;
