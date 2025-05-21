@@ -33,6 +33,7 @@
  #include <cstring>
  #include <limits.h>
  #include <unistd.h>
+ #include <vector>
 
  // https://github.com/openSUSE/libeconf
  #if defined(HAVE_ECONF)
@@ -590,17 +591,22 @@
 				return (iniparser_getsecnkeys(ini,group) != 0);
 			}
 	
-			bool hasKey(const char *group, const char *key) {
+			bool hasKey(const char *, const char *) {
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				return true;
 			}
 	
 			Udjat::String get(const char *group, const char *name, const std::string &def) const {
 				std::lock_guard<std::recursive_mutex> lock(guard);
+
+				debug("group='",group,"' name='",name,"'");
 				if(!ini) {
 					return def;
 				}
-				return iniparser_getstring(ini,key(group,name).c_str(),def.c_str());
+				String str{iniparser_getstring(ini,key(group,name).c_str(),def.c_str())};
+
+				debug(group,":",name,"='",str.c_str(),"'");
+				return str;
 			}
 	
 			int32_t get(const char *group, const char *name, const int32_t def) {
@@ -659,22 +665,33 @@
 				return iniparser_getdouble(ini,key(group,name).c_str(),def);
 			}
 		
-			bool for_each(const char *group,const std::function<void(const char *key, const char *value)> &call) {
+			bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
 
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				if(ini) {
+					vector<string> keys;
 					size_t items = iniparser_getsecnkeys(ini,group);
 					if(items) {
-						const char *keys[items];
-						if(iniparser_getseckeys(ini,group,keys)) {
+						const char *k[items];
+						if(iniparser_getseckeys(ini,group,k)) {
 							for(size_t ix = 0; ix < items; ix++) {
-								std::string value{iniparser_getstring(ini,keys[ix],"")};
-								call(keys[ix],value.c_str());
+								const char *ptr = strchr(k[ix],':');
+								if(ptr) {
+									keys.emplace_back(ptr+1);
+								}
 							}
 						} else {
 							Logger::String {"Error getting keys from section '",group,"'"}.error("iniparser");
 						}
 					}
+
+					string def;
+					for(const string &key : keys) {
+						if(call(key.c_str(),get(group, key.c_str(), def).c_str())) {
+							return true;
+						}
+					}
+
 				}
 
 				return false;
