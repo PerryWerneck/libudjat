@@ -49,17 +49,6 @@
 
  int main(int argc, char **argv) {
 
-	{
-		Logger::verbosity(9);
-
-		Config::for_each("cacerts", [](const char *name, const char *value) ->bool {
-			debug(name,"=",value);
-			return false;
-		});
-
-		exit(0);
-	}
-
 	XML::parse("test.xml");
 
 	/*

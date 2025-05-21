@@ -100,7 +100,7 @@
 		UDJAT_API time_t parse(const char *path = nullptr);
 
 		/// @brief Load xml options below node.
-		UDJAT_API bool parse(const XML::Node &node);
+		UDJAT_API bool parse(const XML::Node &node, bool recursive = true);
 	
 	}
 

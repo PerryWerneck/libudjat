@@ -114,7 +114,7 @@
 		return 0;
 	}
 
-	bool XML::parse(const XML::Node &node) {
+	bool XML::parse(const XML::Node &node, bool recursive) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
@@ -135,10 +135,23 @@
 		}
 	
 		debug("Processing node <",node.name(),">");
-		return Factory::for_each(name,[&node](Factory &factory) -> bool {
+		bool rc = Factory::for_each(name,[&node](Factory &factory) -> bool {
 			return factory.parse(node);
 		});
 
+		if(!rc) {
+			Logger::String{"No factory for node <",node.name(),">, ignoring it"}.write(Logger::Debug);
+			return false;
+		}
+
+		if(recursive) {
+			// Parse children.
+			for(const XML::Node &child : node) {
+				parse(child,recursive);
+			}
+		}
+
+		return true;
 	}
 
  }
