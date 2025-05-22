@@ -76,6 +76,9 @@ namespace Udjat {
 		virtual void push_back(MainLoop::Timer *timer) = 0;
 		virtual void remove(MainLoop::Timer *timer) = 0;
 
+		/// @brief Run task in the main thread, wait for it to finish.
+		virtual void run(const std::function<void()> &method) = 0;
+
 		/// @brief Timer has changed.
 		/// @param timer The updated timer.
 		/// @param from The original interval in milliseconds.

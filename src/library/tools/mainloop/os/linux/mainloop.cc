@@ -61,6 +61,10 @@
 
 	}
 
+	void Linux::MainLoop::run(const std::function<void()> &method) {
+		method();
+	}
+
 	void Linux::MainLoop::wakeup() noexcept {
 		if(efd != -1) {
 			static uint64_t evNum = 0;

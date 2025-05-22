@@ -22,6 +22,7 @@
  #include <udjat/tools/mainloop.h>
  #include <private/glib/mainloop.h>
  #include <udjat/tools/timer.h>
+ #include <semaphore.h>
  #include <dlfcn.h>
 
  namespace Udjat {
@@ -78,6 +79,37 @@
 	}
 
 	Glib::MainLoop::~MainLoop() {
+	}
+
+	struct Task {
+		sem_t semaphore;
+		const std::function<void()> &task;
+		Task(const std::function<void()> &t) : task(t) {
+			sem_init(&semaphore,0,0);
+		}
+	};
+
+	static void run_task(Task *task) {
+		try {
+			task->task();
+		} catch(const std::exception &e) {
+			Logger::String{e.what()}.error("Glib::MainLoop::run_task");
+		} catch(...) {
+			Logger::String{"Unexpected error in Glib::MainLoop::run_task"}.error();
+		}
+		sem_post(&task->semaphore);
+	}
+
+	void Glib::MainLoop::run(const std::function<void()> &method) {
+		unsigned int (*g_idle_add_once)(void *function, void * data) =
+			(unsigned int (*)(void *function, void * data)) methods[METHOD_G_IDLE_ADD_ONCE];
+		
+		Task task{method};
+
+		g_idle_add_once((void *) run_task, (void *) &task);
+
+		sem_wait(&task.semaphore);
+
 	}
 
 	int Glib::MainLoop::run() {

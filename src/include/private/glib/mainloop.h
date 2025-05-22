@@ -63,6 +63,8 @@ namespace Udjat {
 			/// @brief Run mainloop.
 			int run() override;
 
+			void run(const std::function<void()> &method) override;
+
 			bool active() const noexcept override;
 
 			void post(MainLoop::Message *message) noexcept override;
