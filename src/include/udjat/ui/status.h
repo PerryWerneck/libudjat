@@ -47,7 +47,13 @@
 
 			virtual Status & title(const char *text);
 			virtual Status & sub_title(const char *text);
+			virtual Status & icon(const char *icon_name);
 
+			inline Status & operator = (const char *text) {
+				sub_title(text);
+				return *this;
+			}
+			
 			virtual Status & show();
 			virtual Status & hide();
 			

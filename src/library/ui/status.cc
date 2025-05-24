@@ -47,11 +47,15 @@
 		return *instance;
 	}
 
-	Dialog::Status & Dialog::Status::title(const char *text) {
+	Dialog::Status & Dialog::Status::title(const char *) {
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::sub_title(const char *text) {
+	Dialog::Status & Dialog::Status::sub_title(const char *) {
+		return *this;
+	}
+
+	Dialog::Status & Dialog::Status::icon(const char *) {
 		return *this;
 	}
 
