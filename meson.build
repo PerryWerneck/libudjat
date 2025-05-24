@@ -343,6 +343,7 @@ lib_src += [
   'src/library/tools/console.cc',
   'src/library/ui/dialog.cc',
   'src/library/ui/progress.cc',
+  'src/library/ui/status.cc',
 ]
 
 test_src = [
@@ -846,6 +847,7 @@ install_headers(
   'src/include/udjat/ui/icon.h',
   'src/include/udjat/ui/console.h',
   'src/include/udjat/ui/progress.h',
+  'src/include/udjat/ui/status.h',
   subdir: 'udjat/ui'  
 )
 
