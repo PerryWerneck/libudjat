@@ -38,13 +38,6 @@
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
 
-		/*
-		struct {
-			int count = 0;
-			const char **value = nullptr;
-		} args;
-		*/
-
 	protected:
 
 		typedef Udjat::Application super;
@@ -128,13 +121,6 @@
 			return pop(argc, argv, shortname, longname, value);
 		}
 
-		/// @brief Get application property.
-		// virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
-
-		//inline const char * operator[](const char *property_name) const noexcept {
-		//	return getProperty(property_name);
-		//}
-
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
@@ -171,19 +157,16 @@
 		/// @retval ENOTSUP No support for this method.
 		virtual int uninstall();
 
-		/// @brief Finalize application.
-		// static int UDJAT_API finalize();
-
-		/// @brief Write to the 'information' stream.
+		/// @brief The 'information' stream.
 		static std::ostream & info();
 
-		/// @brief Write to the 'warning' stream.
+		/// @brief The 'warning' stream.
 		static std::ostream & warning();
 
-		/// @brief Write to the 'error' stream.
+		/// @brief The 'error' stream.
 		static std::ostream & error();
 
-		/// @brief Write to the 'trace' stream.
+		/// @brief The 'trace' stream.
 		static std::ostream & trace();
 
 		/// @brief Application Shortcut.

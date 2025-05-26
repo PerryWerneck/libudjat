@@ -76,6 +76,14 @@
 		return *this;
 	}
 
+	String & String::erase(const char *str) {
+		size_t len = strlen(str);
+		for(auto pos = find(str); pos != string::npos; pos = find(str)) {
+			std::string::erase(pos, len);
+		}
+		return *this;
+	}
+
 	char * String::strcasestr(const char *hs, const char *needle) {
 #ifdef HAVE_STRCASESTR
 

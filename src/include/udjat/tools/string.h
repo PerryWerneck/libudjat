@@ -298,6 +298,9 @@
 		/// @param method String expander method (returns 'true' if the value was parsed).
 		static void push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method);
 
+		/// @brief Remove contents.
+		String & erase(const char *str);
+
 		/// @brief Expand ${} macros.
 		/// @param expander value expander method.
 		/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.

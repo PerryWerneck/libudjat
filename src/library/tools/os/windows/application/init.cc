@@ -27,9 +27,9 @@
  #include <udjat/win32/exception.h>
  #include <direct.h>
 
-#ifdef HAVE_LIBINTL
+ #ifdef HAVE_LIBINTL
 	#include <libintl.h>
-#endif // HAVE_LIBINTL
+ #endif // HAVE_LIBINTL
 
  using namespace std;
 
