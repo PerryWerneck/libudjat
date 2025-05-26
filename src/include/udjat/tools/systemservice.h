@@ -60,10 +60,6 @@
 		/// @param agent The new root agent.
 		void root(std::shared_ptr<Abstract::Agent> agent) override;
 
-		/// @brief Set service status.
-		/// @param status The current status.
-		void status(const char *status) noexcept;
-
 		/// @brief Reconfigure service.
 		void setup(const char *pathname, bool startup) noexcept override;
 
@@ -82,6 +78,12 @@
 
 		SystemService(int argc, char **argv);
 		virtual ~SystemService();
+
+		/// @brief Set service state.
+		/// @param level The current service level.
+		/// @param message The message to be shown.
+		/// @return Dialog status.
+		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
 		/// @brief Initialize service.
 		int init(const char *definitions = nullptr) override;

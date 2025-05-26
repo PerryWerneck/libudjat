@@ -24,6 +24,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <memory>
+ #include <udjat/agent/level.h>
 
  namespace Udjat {
 
@@ -48,6 +49,8 @@
 			virtual Status & title(const char *text) noexcept;
 			virtual Status & sub_title(const char *text) noexcept;
 			virtual Status & icon(const char *icon_name) noexcept;
+			virtual Status & state(const char *text) noexcept;
+			virtual Status & state(const Level level, const char *message) noexcept;
 
 			/// @brief Set the step in the current operation.
 			/// @details This method is used to update the current step in a multi-step operation.
@@ -56,7 +59,7 @@
 			virtual Status & step(unsigned int current = 0, unsigned int total = 0) noexcept;
 
 			inline Status & operator = (const char *text) noexcept{
-				sub_title(text);
+				state(text);
 				return *this;
 			}
 			

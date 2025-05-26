@@ -83,7 +83,7 @@
 
 		} catch(const std::exception &e) {
 
-			status(e.what());
+			state(Level::undefined,e.what());
 
 		}
 
@@ -115,19 +115,19 @@
 						auto state = agent->state();
 
 						if(state->ready()) {
-							service.status( _( "System is ready" ));
+							service.state(Level::ready, _( "System is ready" ));
 						} else {
 							String message{state->summary()};
 							if(message.strip().empty()) {
-								service.status( _( "System is not ready" ) );
+								service.state(state->level(), _( "System is not ready" ) );
 							} else {
-								service.status(message.c_str());
+								service.state(state->level(), message.c_str());
 							}
 						}
 
 					} catch(const std::exception &e) {
 
-						service.status(e.what());
+						service.state(Level::error,e.what());
 
 					}
 

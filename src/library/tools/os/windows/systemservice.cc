@@ -128,7 +128,7 @@
 
 	}
 
-	void SystemService::status(const char *status) noexcept {
+	Dialog::Status & SystemService::state(const Level, const char *status) noexcept {
 
 		Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),status);
 
@@ -146,8 +146,8 @@
 
 		}
 
+		return Application::state(level,message);
 	}
-
 
 	/// @brief Initialize service.
 	int SystemService::init(const char *definitions) {

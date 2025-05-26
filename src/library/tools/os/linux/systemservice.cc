@@ -163,19 +163,11 @@
 		return 0;
 	}
 
-	void SystemService::status(const char *status) noexcept {
-
+	Dialog::Status & SystemService::state(const Level level, const char *message) noexcept {
 #ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=%s",status);
-		if(Logger::enabled(Logger::Trace)) {
-			Logger::String{status}.write((Logger::Level) (Logger::Debug+1),"systemd");
-		}
-#else
-		if(Logger::enabled(Logger::Trace)) {
-			Logger::String{status}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
-		}
+		sd_notifyf(0,"STATUS=%s",message);
 #endif // HAVE_SYSTEMD
-
+		return Application::state(level,message);
 	}
 
 	int SystemService::uninstall() {

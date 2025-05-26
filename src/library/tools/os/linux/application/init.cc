@@ -47,4 +47,9 @@
 
 	}
 
+	Dialog::Status & Application::state(const Level, const char *message) noexcept {
+		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+		return *this;
+	}
+
  }

@@ -24,6 +24,7 @@
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/ui/status.h>
  #include <udjat/agent/abstract.h>
  #include <list>
  #include <string>
@@ -34,7 +35,7 @@
  namespace Udjat {
 
 	/// @brief Base class for applications.
-	class UDJAT_API Application {
+	class UDJAT_API Application : public Udjat::Dialog::Status {
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
 
@@ -95,6 +96,8 @@
 
 		static bool pop(int &argc, char **argv, char shortname, const char *longname);
 		static bool pop(int &argc, char **argv, char shortname, const char *longname, std::string &value);
+
+		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
 		/// @brief Parse command line options.
 		/// @details Scan command line options from arguments, if found show help.

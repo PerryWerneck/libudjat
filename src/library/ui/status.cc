@@ -55,6 +55,14 @@
 		return *this;
 	}
 
+	Dialog::Status & Dialog::Status::state(const Level level, const char *text) noexcept {
+		return sub_title(text);
+	}
+
+	Dialog::Status & Dialog::Status::state(const char *text) noexcept {
+		return state(Level::undefined, text);
+	}
+
 	Dialog::Status & Dialog::Status::icon(const char *) noexcept{
 		return *this;
 	}
