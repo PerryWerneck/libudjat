@@ -47,23 +47,27 @@
 		return *instance;
 	}
 
-	Dialog::Status & Dialog::Status::title(const char *) {
+	Dialog::Status & Dialog::Status::title(const char *) noexcept {
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::sub_title(const char *) {
+	Dialog::Status & Dialog::Status::sub_title(const char *) noexcept{
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::icon(const char *) {
+	Dialog::Status & Dialog::Status::icon(const char *) noexcept{
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::show() {
+	Dialog::Status & Dialog::Status::show() noexcept {
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::hide() {	
+	Dialog::Status & Dialog::Status::hide() noexcept {	
+		return *this;
+	}
+
+	Dialog::Status & Dialog::Status::step(unsigned int, unsigned int) noexcept{
 		return *this;
 	}
 

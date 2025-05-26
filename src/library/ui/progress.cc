@@ -60,7 +60,7 @@
 	uint64_t current = 0;
 	uint64_t total = 0;
 
-	void update() const {
+	void update() const noexcept {
 		lock_guard<mutex> lock((std::mutex &) *controller);
 		console->up(line);
 		console->faint(true);
@@ -88,15 +88,15 @@
 		}
 	}
 
-	Udjat::Dialog::Progress & item(const short current, const short total) override {
+	Udjat::Dialog::Progress & step(const unsigned int current, const unsigned int total) noexcept override {
 		char buffer[15];
-		snprintf(buffer,14,"%03d/%03d",(int) current, (int) total);
+		snprintf(buffer,14,"%03u/%03u",current, total);
 		prefix = buffer;
 		update();
 		return *this;
 	}
 	
-	Udjat::Dialog::Progress & set(uint64_t c, uint64_t t, bool) override {
+	Udjat::Dialog::Progress & set(uint64_t c, uint64_t t, bool) noexcept override {
 		current = c;
 		total = t;
 		update();
@@ -104,7 +104,7 @@
 	}
 
 	/// @brief Set progress bar URL.
-	Udjat::Dialog::Progress & url(const char *url) override {
+	Udjat::Dialog::Progress & url(const char *url) noexcept override {
 		text = url;
 		update();
 		return *this;
@@ -148,31 +148,31 @@
 		instance = parent;
 	}
 
-	Dialog::Progress & Dialog::Progress::show() {
+	Dialog::Progress & Dialog::Progress::show() noexcept{
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::hide() {
+	Dialog::Progress & Dialog::Progress::hide() noexcept {
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::title(const char *) {
+	Dialog::Progress & Dialog::Progress::title(const char *) noexcept{
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::item(const short, const short) {
+	Dialog::Progress & Dialog::Progress::step(const unsigned int, const unsigned int) noexcept {
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::set(uint64_t, uint64_t, bool) {
+	Dialog::Progress & Dialog::Progress::set(uint64_t, uint64_t, bool) noexcept {
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::url(const char *) {
+	Dialog::Progress & Dialog::Progress::url(const char *) noexcept{
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::message(const char *) {
+	Dialog::Progress & Dialog::Progress::message(const char *) noexcept {
 		return *this;
 	}
 

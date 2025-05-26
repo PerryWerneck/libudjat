@@ -63,35 +63,41 @@
 
 			virtual ~Progress();
 
-			virtual Progress & title(const char *title);
-			virtual Progress & item(const short current = 0, const short total = 0);
-			virtual Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true);
-	
-			virtual Progress & show();
-			virtual Progress & hide();
+			virtual Progress & title(const char *title) noexcept;
 
-			virtual Progress & message(const char *message);
+			/// @brief Set the step in the current operation.
+			/// @details This method is used to update the current step in a multi-step operation.
+			/// @param current The current step number.
+			/// @param total The total number of steps in the operation.
+			virtual Progress & step(const unsigned int current = 0, const unsigned int total = 0) noexcept;
+
+			virtual Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true) noexcept;
+	
+			virtual Progress & show() noexcept;
+			virtual Progress & hide() noexcept;
+
+			virtual Progress & message(const char *message) noexcept;
 
 			/// @brief Set progress bar URL.
-			virtual Progress & url(const char *url);
+			virtual Progress & url(const char *url) noexcept;
 
-			inline Progress & url(const std::string &s) {
+			inline Progress & url(const std::string &s) noexcept{
 				return url(s.c_str());
 			}
 
-			inline Progress & set(const char *u) {
+			inline Progress & set(const char *u) noexcept{
 				return url(u);
 			}
 		
-			inline Progress & set(const std::string &s) {
+			inline Progress & set(const std::string &s) noexcept{
 				return url(s.c_str());
 			}
 
-			inline Progress & operator = (const char *u) {
+			inline Progress & operator = (const char *u) noexcept {
 				return set(u);
 			}
 
-			inline Progress & operator = (const std::string &s) {
+			inline Progress & operator = (const std::string &s) noexcept {
 				return set(s.c_str());
 			}
 			

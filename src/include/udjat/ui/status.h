@@ -45,17 +45,23 @@
 
 			static Status & getInstance();
 
-			virtual Status & title(const char *text);
-			virtual Status & sub_title(const char *text);
-			virtual Status & icon(const char *icon_name);
+			virtual Status & title(const char *text) noexcept;
+			virtual Status & sub_title(const char *text) noexcept;
+			virtual Status & icon(const char *icon_name) noexcept;
 
-			inline Status & operator = (const char *text) {
+			/// @brief Set the step in the current operation.
+			/// @details This method is used to update the current step in a multi-step operation.
+			/// @param current The current step number.
+			/// @param total The total number of steps in the operation.
+			virtual Status & step(unsigned int current = 0, unsigned int total = 0) noexcept;
+
+			inline Status & operator = (const char *text) noexcept{
 				sub_title(text);
 				return *this;
 			}
 			
-			virtual Status & show();
-			virtual Status & hide();
+			virtual Status & show() noexcept;
+			virtual Status & hide() noexcept;
 			
 		};
 
