@@ -224,4 +224,9 @@ namespace Udjat {
 		return *this;
 	}
 
+	UI::Console & UI::Console::erase_line() {
+		*this << "\x1B[2K";
+		return *this;
+	}
+
 }

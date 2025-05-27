@@ -69,10 +69,13 @@
 			Console & cursor(bool on);
 
 			/// @brief Moves cursor up.
-			Console & up(size_t lines);
+			Console & up(size_t lines = 1);
 
 			/// @brief Moves cursor down.
-			Console & down(size_t lines);
+			Console & down(size_t lines = 1);
+
+			/// @brief Erase the entire line
+			Console & erase_line();
 
 			unsigned short width() const noexcept;
 
