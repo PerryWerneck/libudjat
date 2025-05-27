@@ -76,6 +76,9 @@
 			virtual Progress & show() noexcept;
 			virtual Progress & hide() noexcept;
 
+			virtual Progress & sucess() noexcept;
+			virtual Progress & failed() noexcept;
+
 			virtual Progress & message(const char *message) noexcept;
 
 			/// @brief Set progress bar URL.

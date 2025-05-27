@@ -60,13 +60,11 @@
 	uint64_t current = 0;
 	uint64_t total = 0;
 
-	void update() const noexcept {
+	void update(const Udjat::UI::Console::Foreground color = Udjat::UI::Console::White) const noexcept {
 		lock_guard<mutex> lock((std::mutex &) *controller);
-		console->up(line);
-		console->faint(true);
+		console->up(line).set(color).faint(true);
 		console->progress(prefix.c_str(), text.c_str(), current, total);
-		console->faint(false);
-		console->down(line);
+		console->faint(false).down(line);
 	}
 	
  public:
@@ -78,7 +76,6 @@
 			return false;
 		});
 
-		update();
 	}
 
 	~ProgressBar() override {
@@ -103,10 +100,20 @@
 		return *this;
 	}
 
+	Udjat::Dialog::Progress & sucess() noexcept override {
+		current = total;
+		update(Udjat::UI::Console::Green);
+		return *this;
+	}
+	
+	Udjat::Dialog::Progress & failed() noexcept override {
+		update(Udjat::UI::Console::Red);
+		return *this;
+	}
+
 	/// @brief Set progress bar URL.
 	Udjat::Dialog::Progress & url(const char *url) noexcept override {
 		text = url;
-		update();
 		return *this;
 	}
 
@@ -153,6 +160,14 @@
 	}
 
 	Dialog::Progress & Dialog::Progress::hide() noexcept {
+		return *this;
+	}
+
+	Dialog::Progress & Dialog::Progress::sucess() noexcept {
+		return *this;
+	}
+
+	Dialog::Progress & Dialog::Progress::failed() noexcept {
 		return *this;
 	}
 
