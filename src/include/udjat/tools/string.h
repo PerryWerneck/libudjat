@@ -301,6 +301,11 @@
 		/// @brief Remove contents.
 		String & erase(const char *str);
 
+		inline String & erase(size_t pos = 0, size_t len = npos) {
+			std::string::erase(pos,len);
+			return *this;
+		}
+
 		/// @brief Expand ${} macros.
 		/// @param expander value expander method.
 		/// @param dynamic if true expands the dynamic values like ${timestamp(format)}.
