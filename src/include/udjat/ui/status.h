@@ -51,6 +51,12 @@
 			virtual Status & icon(const char *icon_name) noexcept;
 			virtual Status & state(const char *text) noexcept;
 			virtual Status & state(const Level level, const char *message) noexcept;
+			virtual Status & busy(bool enable = true) noexcept;
+
+			/// @brief Set the busy state with a message.
+			/// @param text The message to display while busy, nullptr to disable the busy state.
+			/// @details This method is used to indicate that the application is busy with an operation.
+			virtual Status & busy(const char *text) noexcept;
 
 			/// @brief Set the step in the current operation.
 			/// @details This method is used to update the current step in a multi-step operation.

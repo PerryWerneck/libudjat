@@ -79,6 +79,14 @@
 		return *this;
 	}
 
+	Dialog::Status & Dialog::Status::busy(bool) noexcept {
+		return *this;
+	}
+
+	Dialog::Status & Dialog::Status::busy(const char *text) noexcept {
+		return busy((text && *text));
+	}
+
 }
 
 

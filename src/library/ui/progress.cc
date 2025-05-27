@@ -64,7 +64,7 @@
 		lock_guard<mutex> lock((std::mutex &) *controller);
 		console->up(line).set(color).faint(true);
 		console->progress(prefix.c_str(), text.c_str(), current, total);
-		console->faint(false).down(line);
+		console->faint(false).set(Udjat::UI::Console::White).down(line);
 	}
 	
  public:
