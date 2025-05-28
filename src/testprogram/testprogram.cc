@@ -49,22 +49,25 @@
 
  int main(int argc, char **argv) {
 
-	XML::parse("test.xml");
+//	XML::parse("test.xml");
 
-	/*
-	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
-	cout << "---------------> INTERFACE=" << Network::Interface::Default()->address().to_string() << endl;
 	{
 		auto dialog = Dialog::Progress::getInstance();
-		dialog->item(1,1);
-		dialog->set("http://www.google.com");
+		dialog->url("http://www.google.com");
 
 		for(size_t ix = 0; ix < 1000; ix++) {
 			dialog->set(ix,1000);
 			usleep(1500);
 		}
+		dialog->done();
 
+		exit(-1);
 	}
+
+
+	/*
+	cout << "---------------> GATEWAY=" << IP::gateway().to_string() << endl;
+	cout << "---------------> INTERFACE=" << Network::Interface::Default()->address().to_string() << endl;
 
 	debug("Sleeping");
 	sleep(5);

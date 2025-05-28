@@ -100,6 +100,15 @@
 		return *this;
 	}
 
+	Udjat::Dialog::Progress & url(const char *u) noexcept override {
+		if(!u) {
+			text.clear();
+		} else {
+			text = u;
+		}
+		return *this;
+	}
+
 	Udjat::Dialog::Progress & done(bool success) noexcept override {
 		current = total;
 		update(success ? Udjat::UI::Console::Green : Udjat::UI::Console::Red);
