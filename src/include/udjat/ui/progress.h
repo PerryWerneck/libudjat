@@ -76,8 +76,19 @@
 			virtual Progress & show() noexcept;
 			virtual Progress & hide() noexcept;
 
-			virtual Progress & sucess() noexcept;
-			virtual Progress & failed() noexcept;
+			/// @brief Operation is done, set the success or failure state.
+			/// @details This method is used to indicate that the operation represented by the progress bar is complete.	
+			/// @param success True if the operation was successful, false otherwise.
+			/// @note This method should be called when the operation is finished, regardless of its outcome.
+			virtual Progress & done(bool success = true) noexcept;
+
+			inline Progress & success() noexcept {
+				return done(true);
+			}
+
+			inline Progress & failed() noexcept {
+				return done(false);
+			}
 
 			virtual Progress & message(const char *message) noexcept;
 

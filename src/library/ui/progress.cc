@@ -62,9 +62,9 @@
 
 	void update(const Udjat::UI::Console::Foreground color = Udjat::UI::Console::White) const noexcept {
 		lock_guard<mutex> lock((std::mutex &) *controller);
-		console->up(line).set(color).faint(true);
+		console->up(line).set(color);
 		console->progress(prefix.c_str(), text.c_str(), current, total);
-		console->faint(false).set(Udjat::UI::Console::White).down(line);
+		console->set(Udjat::UI::Console::White).down(line);
 	}
 	
  public:
@@ -100,23 +100,12 @@
 		return *this;
 	}
 
-	Udjat::Dialog::Progress & sucess() noexcept override {
+	Udjat::Dialog::Progress & done(bool success) noexcept override {
 		current = total;
-		update(Udjat::UI::Console::Green);
+		update(success ? Udjat::UI::Console::Green : Udjat::UI::Console::Red);
 		return *this;
 	}
 	
-	Udjat::Dialog::Progress & failed() noexcept override {
-		update(Udjat::UI::Console::Red);
-		return *this;
-	}
-
-	/// @brief Set progress bar URL.
-	Udjat::Dialog::Progress & url(const char *url) noexcept override {
-		text = url;
-		return *this;
-	}
-
  };
 
  shared_ptr<Dialog::Progress> Controller::ProgressFactory() const {
@@ -163,11 +152,7 @@
 		return *this;
 	}
 
-	Dialog::Progress & Dialog::Progress::sucess() noexcept {
-		return *this;
-	}
-
-	Dialog::Progress & Dialog::Progress::failed() noexcept {
+	Dialog::Progress & Dialog::Progress::done(bool) noexcept {
 		return *this;
 	}
 
