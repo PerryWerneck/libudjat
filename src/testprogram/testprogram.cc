@@ -51,7 +51,7 @@
 
 //	XML::parse("test.xml");
 
-	{
+	for(size_t ix = 0; ix < 3; ix++) {
 		auto dialog = Dialog::Progress::getInstance();
 		dialog->url("http://www.google.com");
 
@@ -61,8 +61,8 @@
 		}
 		dialog->done();
 
-		exit(-1);
 	}
+	exit(-1);
 
 
 	/*

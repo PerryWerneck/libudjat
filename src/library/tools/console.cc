@@ -81,7 +81,7 @@ namespace Udjat {
 		*this << "\x1B[0m";
 		cursor(true);
 		Logger::console(enabled);
-		debug("Console was deleted");
+//		debug("Console was deleted");
 	}
 
 	unsigned short UI::Console::width() const noexcept {
@@ -120,9 +120,11 @@ namespace Udjat {
 
 			size_t pos = (width/2);
 			{
-				memcpy(line, prefix, plen);
+				if(plen) {
+					memcpy(line, prefix, plen);			
+					plen++;
+				}
 				
-				plen++;
 				int spc = (pos - plen);
 				if(spc > (int) ulen) {
 					memcpy(line+plen, url, ulen);
@@ -140,7 +142,7 @@ namespace Udjat {
 			char text[10];
 			memset(text,0,10);
 
-			if(total) {
+			if(	total) {
 
 				float progress = (float) current / (float) total;
 				if(current >= total) {
