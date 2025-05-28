@@ -59,6 +59,7 @@
 	Logger::String{"Test program started"}.info();
 	cout << "-- Separator" << endl;
 
+	Logger::redirect();
 	Logger::verbosity((unsigned short) 0);
 
 	{

@@ -69,7 +69,7 @@
  public:
 	ProgressBar(Controller *cntrl) : controller{cntrl} {
 
-		cout << "\n";
+		*controller << "\n";
 		controller->push_back(this);
 		controller->for_each([this](ProgressBar &object) -> bool {
 			object.line++;
