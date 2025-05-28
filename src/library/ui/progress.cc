@@ -26,7 +26,6 @@
  #include <udjat/tools/logger.h>
  #include <udjat/ui/console.h>
  #include <udjat/ui/progress.h>
- #include <private/dialog.h>
  #include <stdexcept>
  #include <memory>
  #include <mutex>
@@ -38,7 +37,7 @@
 
  class ProgressBar;
 	
- class UDJAT_PRIVATE Controller : public Dialog::Progress::Factory, public Container<ProgressBar> {
+ class UDJAT_PRIVATE Controller : public Dialog::Progress::Factory, public Container<ProgressBar>, public UI::Console {
  public:
 	Controller() = default;
 
@@ -50,7 +49,7 @@
  };
 
  /// @brief Text mode progress dialog.
- class UDJAT_PRIVATE ProgressBar : public Dialog::Progress, private UI::Dialog {
+ class UDJAT_PRIVATE ProgressBar : public Dialog::Progress {
  private:
 
 	Controller *controller;
@@ -62,9 +61,9 @@
 
 	void update(const Udjat::UI::Console::Foreground color = Udjat::UI::Console::White) const noexcept {
 		lock_guard<mutex> lock((std::mutex &) *controller);
-		console->up(line).set(color);
-		console->progress(prefix.c_str(), text.c_str(), current, total);
-		console->set(Udjat::UI::Console::White).down(line);
+		controller->up(line).set(color);
+		controller->progress(prefix.c_str(), text.c_str(), current, total);
+		controller->set(Udjat::UI::Console::White).down(line);
 	}
 	
  public:

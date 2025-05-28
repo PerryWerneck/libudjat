@@ -34,7 +34,6 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/ui/console.h>
  #include <udjat/ui/progress.h>
- #include <private/dialog.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/interface.h>
 
@@ -59,16 +58,23 @@
 
 	Logger::String{"Test program started"}.info();
 	cout << "-- Separator" << endl;
-	for(size_t ix = 0; ix < 3; ix++) {
-		auto dialog = Dialog::Progress::getInstance();
-		dialog->url("http://www.google.com");
 
-		for(size_t ix = 0; ix < 1000; ix++) {
-			dialog->set(ix,1000);
-			usleep(1500);
+	{
+		std::shared_ptr<Dialog::Progress> dialog[] = {
+			Dialog::Progress::getInstance(),
+			Dialog::Progress::getInstance(),
+			Dialog::Progress::getInstance()
+		};
+
+		for(size_t l = 0; l < 3; l++) {
+			size_t row = 2-l;
+			dialog[row]->url("http://www.google.com");
+			for(size_t ix = 0; ix < 1000; ix++) {
+				dialog[row]->set(ix,1000);
+				usleep(1500);
+			}
+			dialog[row]->done();
 		}
-		dialog->done();
-
 	}
 	cout << "-- Separator" << endl;
 	Logger::String{"Test program finished"}.info();

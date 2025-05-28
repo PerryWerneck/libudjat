@@ -40,10 +40,9 @@
         
         private:
             static std::mutex guard;
-            static std::shared_ptr<Console> sptr;
 
         protected:
-            std::shared_ptr<Console> console;
+            static std::shared_ptr<Console> console;
 
         };
             
