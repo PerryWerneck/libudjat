@@ -51,6 +51,14 @@
 
 //	XML::parse("test.xml");
 
+
+	Logger::console(false);
+	if(Logger::console()) {
+		exit(-1);
+	}
+
+	Logger::String{"Test program started"}.info();
+	cout << "-- Separator" << endl;
 	for(size_t ix = 0; ix < 3; ix++) {
 		auto dialog = Dialog::Progress::getInstance();
 		dialog->url("http://www.google.com");
@@ -62,6 +70,8 @@
 		dialog->done();
 
 	}
+	cout << "-- Separator" << endl;
+	Logger::String{"Test program finished"}.info();
 	exit(-1);
 
 

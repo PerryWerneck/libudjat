@@ -70,7 +70,7 @@ namespace Udjat {
 	};
 
 	UI::Console::Console() : enabled{Logger::console()} {
-		debug("Console was build");
+		debug("Console was build logging=%s", enabled ? "true" : "false");
 		static ConsoleWriter writer;
 		this->rdbuf(&writer);
 		Logger::console(false);
@@ -142,7 +142,7 @@ namespace Udjat {
 			char text[10];
 			memset(text,0,10);
 
-			if(	total) {
+			if(total) {
 
 				float progress = (float) current / (float) total;
 				if(current >= total) {

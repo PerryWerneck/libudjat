@@ -158,11 +158,11 @@
 
 	}
 
-	bool Logger::console() {
-		return (bool) Options::getInstance().console;
+	void Logger::dummy_writer(Level, const char *, const char *) noexcept {
 	}
 
-	void Logger::dummy_writer(Level, const char *, const char *) noexcept {
+	bool Logger::console() {
+		return (Options::getInstance().console != dummy_writer);
 	}
 
 	void Logger::console(bool enable) {
