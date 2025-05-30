@@ -30,7 +30,7 @@
 
  namespace Udjat {
 
-	Application::Application(int c, char **v) : argc{c}, argv{v} {
+	Application::Application(int &argc, char **argv) : CommandLineParser(argc, argv) {
 
 		Quark::init();
 

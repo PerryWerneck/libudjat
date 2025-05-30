@@ -24,6 +24,7 @@
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/commandlineparser.h>
  #include <udjat/ui/status.h>
  #include <udjat/agent/abstract.h>
  #include <list>
@@ -35,16 +36,13 @@
  namespace Udjat {
 
 	/// @brief Base class for applications.
-	class UDJAT_API Application : public Udjat::Dialog::Status {
+	class UDJAT_API Application : public CommandLineParser, Dialog::Status {
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
 
 	protected:
 
 		typedef Udjat::Application super;
-
-		int argc;
-		char **argv;
 
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
@@ -91,11 +89,8 @@
 
 		};
 
-		Application(int argc, char **argv);
+		Application(int &argc, char **argv);
 		virtual ~Application();
-
-		static bool pop(int &argc, char **argv, char shortname, const char *longname);
-		static bool pop(int &argc, char **argv, char shortname, const char *longname, std::string &value);
 
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
@@ -112,17 +107,6 @@
 #else
 		static bool options(int &argc, char **argv, const Option *options = nullptr, bool dbg=false, size_t width = 20) noexcept;
 #endif // DEBUG
-
-		/// @brief Pop command line argument. 
-		/// @details Scan command line options from arguments, if found extract it.
-		/// @return true if the argument was found
-		inline bool pop(char shortname, const char *longname) {
-			return pop(argc, argv, shortname, longname);
-		}
-
-		inline bool pop(char shortname, const char *longname, std::string &value) {
-			return pop(argc, argv, shortname, longname, value);
-		}
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.

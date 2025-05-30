@@ -19,6 +19,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/commandlineparser.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
@@ -35,7 +36,7 @@
 		argc--;
 	}
 		
-	bool Application::pop(int &argc, char **argv, char shortname, const char *longname) {
+	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -73,7 +74,7 @@
 		return false;
 	}
 
-	bool Application::pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) {
+	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) {
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -176,7 +177,8 @@
 			return false;
 		}
 
-		cout << _("Usage:") << "\n  " << argv[0]
+		cout	
+			<< _("Usage:") << "\n  " << argv[0]
 			<< " " << _("[OPTION..]") << "\n\n";
 
 		apphelp(width);

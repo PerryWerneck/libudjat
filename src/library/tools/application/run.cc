@@ -25,6 +25,7 @@
  #include <udjat/tools/timer.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
+ #include <udjat/tools/commandlineparser.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
  #include <udjat/module/abstract.h>
@@ -72,20 +73,6 @@
 		return true;
 	}
 
-	/*
-	void Application::help(std::ostream &out) const noexcept {
-
-		out << "  -h --help                Show this help" << endl;
-		out << "  -f --foreground          Run in foreground with console output" << endl;
-		out << "  -q --quiet               Disable console output" << endl;
-		out << "  -v --verbose[=level]     Set loglevel, enable console output" << endl;
-		out << "  -C --coredump[=pattern]  Enable coredump" << endl;
-		out << "  -T --time=time           Exit application after \"time\"" << endl;
-
-	}
-	*/
-
-
 	int Application::setup(const char *) {
 
 		debug("---> Running ",__FUNCTION__);
@@ -107,7 +94,7 @@
 
 		if(pop('h',"help")) {
 
-			cout << _("Usage:") << "\n  " << argv[0]
+			cout << _("Usage:") << "\n  " << appname()
 				<< " " << _("[OPTION..]") << "\n\n";
 
 			help();
