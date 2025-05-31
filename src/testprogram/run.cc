@@ -97,7 +97,7 @@
 
 		Config::Value<string> setup{"test-mode","xml_path",xml};
 
-		if(CommandLineParser::pop(argc,argv,0,"service") || !strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"service")) {
+		if(CommandLineParser::has_argument(argc,argv,0,"service",true) || !strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"service")) {
 
 			// Run as service.
 			rc = Testing::Service{argc,argv,info,initialize}.run(setup.c_str());
@@ -111,47 +111,6 @@
 
 		}
 
-		return rc;
-
-		/*
-		if(argc == 1 && CommandLineParser::pop(argc,argv,0,"application")) {
-			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
-			Logger::String{"Application exits with rc=",rc}.info("test");
-			return rc;
-		}
-
-		for(int opt = 1; opt < argc; opt++) {
-
-			const char *ptr = argv[opt];
-			while(*ptr && *ptr == '-') {
-				ptr++;
-			}
-
-			if(!strcasecmp(ptr,"application")) {
-
-				rc = Testing::Application{info,initialize}.run(1,argv,setup.c_str());
-				Logger::String{"Application exits with rc=",rc}.info("test");
-				return rc;
-
-			} else if(!strcasecmp(ptr,"service")) {
-
-				rc = Testing::Service{info,initialize}.run(1,argv,setup.c_str());
-				Logger::String{"Service exits with rc=",rc}.info("test");
-				return rc;
-
-			}
-
-		}
-
-		if(strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"application")) {
-			rc = Testing::Service{info}.run(argc,argv,setup.c_str());
-			Logger::String{"Service exits with rc=",rc}.info("test");
-		} else {
-			rc = Testing::Application{info}.run(argc,argv,setup.c_str());
-			Logger::String{"Application exits with rc=",rc}.info("test");
-		}
-	*/
-	
 		return rc;
 		
 	}

@@ -50,6 +50,8 @@
 
 //	XML::parse("test.xml");
 
+	Logger::verbosity(9);
+	Logger::console(true);
 	return Application{argc, argv}.run("test.xml");
 
 	/*

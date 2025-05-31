@@ -79,7 +79,7 @@
 
 		string argvalue;
 
-		if(CommandLineParser::pop(argc,argv,'T',"timer",argvalue)) {
+		if(CommandLineParser::get_argument(argc,argv,'T',"timer",argvalue)) {
 			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
 				MainLoop::getInstance().quit("Timer expired, exiting");
 				return false;
@@ -92,7 +92,7 @@
 
 	int Application::run(const char *definitions) {
 
-		if(CommandLineParser::pop(argc,argv,'h',"help")) {
+		if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
 
 			cout << _("Usage:") << "\n  " << argv[0]
 				<< " " << _("[OPTION..]") << "\n\n";
@@ -106,6 +106,8 @@
 
 		}
 
+		exit(-1);
+		
 		Logger::redirect();	
 
 #ifdef DEBUG 

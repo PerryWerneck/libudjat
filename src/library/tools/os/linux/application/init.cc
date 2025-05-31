@@ -37,7 +37,6 @@
 #ifdef DEBUG 
 		Logger::console(true);
 #endif
-		Logger::setup(argc,argv);
 
 #ifdef GETTEXT_PACKAGE
 		set_gettext_package(GETTEXT_PACKAGE);

@@ -22,6 +22,7 @@
 #include <config.h>
 #include <udjat/defs.h>
 #include <string>
+#include <iostream>
 
 namespace Udjat {
 
@@ -57,16 +58,9 @@ namespace Udjat {
 			return argv[0];
 		}
 
-		static bool pop(int &argc, char **argv, char shortname, const char *longname) noexcept;
-		static bool pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) noexcept;
+		static bool has_argument(int &argc, char **argv, char shortname, const char *longname, bool extract=true) noexcept;
 
-		static inline bool has_argument(int &argc, char **argv, char shortname, const char *longname) noexcept {
-			return pop(argc, argv, shortname, longname);
-		}
-
-		static inline bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value) noexcept {
-			return pop(argc, argv, shortname, longname, value);
-		}
+		static bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept;
 
 		static bool options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept;
 
@@ -74,13 +68,12 @@ namespace Udjat {
 		/// @details Scan command line options from arguments, if found extract it.
 		/// @return true if the argument was found
 		inline bool pop(char shortname, const char *longname) {
-			return pop(argc, argv, shortname, longname);
+			return has_argument(argc, argv, shortname, longname, true);
 		}
 
 		inline bool pop(char shortname, const char *longname, std::string &value) {
-			return pop(argc, argv, shortname, longname, value);
+			return get_argument(argc, argv, shortname, longname, value, true);
 		}
-
 
 	};
 

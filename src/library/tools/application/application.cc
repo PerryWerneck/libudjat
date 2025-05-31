@@ -69,11 +69,11 @@
 	}
 
 	bool Application::has_argument(char shortname, const char *longname) noexcept{
-		return CommandLineParser::pop(argc,argv,shortname,longname);
+		return CommandLineParser::has_argument(argc,argv,shortname,longname,true);
 	}
 
 	bool Application::get_argument(char shortname, const char *longname, std::string &value) noexcept{
-		return CommandLineParser::pop(argc,argv,shortname,longname,value);
+		return CommandLineParser::get_argument(argc,argv,shortname,longname,value,true);
 	}
 
 	Application::DataFile::DataFile(const char *name, bool system) {

@@ -36,9 +36,9 @@
 		argc--;
 	}
 		
-	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname) noexcept{
+	bool CommandLineParser::has_argument(int &argc, char **argv, char shortname, const char *longname, bool remove) noexcept{
 
-		if(argc <= 2) {
+		if(argc < 2) {
 			debug("No arguments to parse searching for '",longname,"' (argc=",argc,")");
 			return false;
 		}
@@ -59,9 +59,10 @@
 
 			if(shortname && argv[ix][1] == shortname && !argv[ix][2]) {
 				debug("Found short arg '",argv[ix],"'");
-				extract(ix,argc,argv);
+				if(remove) {
+					extract(ix,argc,argv);
+				}
 				return true;
-			
 			}
 
 			if(!szlong) {
@@ -70,7 +71,9 @@
 
 			if(argv[ix][1] == '-' && !strcmp(longname,(argv[ix]+2)) && argv[ix][szlong+2] == 0) {
 				debug("Found long arg '",(argv[ix]+2),"'");
-				extract(ix,argc,argv);
+				if(remove) {
+					extract(ix,argc,argv);
+				}
 				return true;			
 			}
 
@@ -79,11 +82,11 @@
 		return false;
 	}
 
-	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) noexcept {
+	bool CommandLineParser::get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool remove) noexcept {
 
 		value.clear();
 
-		if(argc <= 2) {
+		if(argc < 2) {
 			debug("No arguments to parse searching for '",longname,"' (argc=",argc,")");
 			return false;
 		}
@@ -104,12 +107,16 @@
 
 			if(argv[ix][1] == '-' && argv[ix][2] && szlong && !strncasecmp(longname,(argv[ix]+2),szlong) && argv[ix][szlong+2] == '=') {
 				value.assign(argv[ix]+szlong+3);
-				extract(ix,argc,argv);
+				if(remove) {
+					extract(ix,argc,argv);
+				}
 				debug("Found long arg '",longname,"'='",value,"'");
 				return true;			
 			} else if(szlong && !strncasecmp(longname,(argv[ix]+1),szlong) && argv[ix][szlong+1] == '=') {
 				value.assign(argv[ix]+szlong+2);
-				extract(ix,argc,argv);
+				if(remove) {
+					extract(ix,argc,argv);
+				}
 				debug("Found long arg '",longname,"'='",value,"'");
 				return true;			
 			}
@@ -122,7 +129,9 @@
 
 			if(argv[ix][2] != 0) {
 				value.assign(argv[ix]+2);
-				extract(ix,argc,argv);
+				if(remove) {
+					extract(ix,argc,argv);
+				}
 				debug("Found short arg '",shortname,"'='",value,"'");
 				return true;
 			}
@@ -133,8 +142,10 @@
 			}
 
 			value = argv[ix+1];
-			extract(ix,argc,argv);
-			extract(ix,argc,argv);
+			if(remove) {
+				extract(ix,argc,argv);
+				extract(ix,argc,argv);
+			}
 
 			debug("Found short arg '",shortname,"'='",value,"'");
 			return true;
@@ -143,14 +154,6 @@
 
 		return false;
 
-	}
-
-	std::ostream & CommandLineParser::Argument::print(std::ostream &out, size_t width) const {
-		out << "  -" << shortname << ", --";			
-		string text{longname};
-		text.resize(width,' ');
-		out << text << " " << description;
-		return out;
 	}
 
 	/// @brief Common help message for all applications.
@@ -184,7 +187,7 @@
 
 	bool CommandLineParser::options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept {
 
-		if(!pop(argc,argv,'h',"help")) {
+		if(!has_argument(argc,argv,'h',"help",true)) {
 			Logger::setup(argc,argv,dbg);
 			return false;
 		}
@@ -210,6 +213,14 @@
 
 	}
 
+	std::ostream & Udjat::CommandLineParser::Argument::print(std::ostream &out, size_t width) const {
+		out << "  -" << shortname << ", --";			
+		string text{longname};
+		text.resize(width,' ');
+		out << text << " " << description;
+		return out;
+	}
 
  }
+
 

@@ -286,7 +286,7 @@
 	}
 #endif // !_WIN32
 
-	void Logger::setup(int &argc, char **argv, bool dbg) {
+	void Logger::setup(int &argc, char **argv, bool extract, bool dbg) {
 
 		String optarg;
 
@@ -295,42 +295,40 @@
 			console(true);
 		}
 
-		if(CommandLineParser::pop(argc,argv,'q',"quiet")) {
+		if(CommandLineParser::has_argument(argc,argv,'q',"quiet",extract)) {
 			Logger::console(false);
 		} 
 		
-		if(CommandLineParser::pop(argc,argv,'v',"verbose")) {
+		if(CommandLineParser::has_argument(argc,argv,'v',"verbose",extract)) {
 			Logger::console(true);
 		}
 
-		if(CommandLineParser::pop(argc,argv,'l',"logfile")) {
+		if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
 			Logger::file(true);
 		}
 
-		if(CommandLineParser::pop(argc,argv,'L',"loglevel")) {
+		if(CommandLineParser::has_argument(argc,argv,'L',"loglevel",extract)) {
 			Logger::verbosity(Logger::Debug);
 		}
 
-		if(CommandLineParser::pop(argc,argv,'v',"verbose",optarg)) {
+		if(CommandLineParser::get_argument(argc,argv,'v',"verbose",optarg,extract)) {
 			Logger::console(true);
 			Logger::verbosity(optarg.c_str());
 		}
 
-		if(CommandLineParser::pop(argc,argv,'l',"logfile",optarg)) {
+		if(CommandLineParser::get_argument(argc,argv,'l',"logfile",optarg,extract)) {
 			Logger::file(optarg.c_str());
 		}
 
-		if(CommandLineParser::pop(argc,argv,'L',"loglevel",optarg)) {
+		if(CommandLineParser::get_argument(argc,argv,'L',"loglevel",optarg,extract)) {
 			Logger::verbosity(optarg.c_str());
 		}
 
 #ifndef _WIN32		
-		if(CommandLineParser::pop(argc,argv,'C',"coredump")) {
+		if(CommandLineParser::has_argument(argc,argv,'C',"coredump",extract)) {
 			setup_coredump();			
 			Logger::String{"Coredump enabled using default pattern"}.info();
-		}
-
-		if(CommandLineParser::pop(argc,argv,'C',"coredump",optarg)) {
+		} else if(CommandLineParser::get_argument(argc,argv,'C',"coredump",optarg,extract)) {
 			setup_coredump(optarg.c_str());			
 			Logger::String{"Coredump enabled using pattern '",optarg.c_str(),"'"}.info();
 		}

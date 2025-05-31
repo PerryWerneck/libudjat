@@ -43,7 +43,7 @@
  int main(int argc, char **argv) {
 
 	// Check for help
-	if(CommandLineParser::pop(argc,argv,'h',"help")) {
+	if(CommandLineParser::has_argument(argc,argv,'h',"help")) {
 		static const string help_text = 
 			"\t-m, --module <module>        Load module\n"
 			"\t-c, --config <file or path>  XML definitions\n"
@@ -75,7 +75,7 @@
 	{
 		string argvalue;
 
-		if(CommandLineParser::pop(argc,argv,'m',"module",argvalue)) {
+		if(CommandLineParser::get_argument(argc,argv,'m',"module",argvalue)) {
 			Logger::String{"Loading module '" + argvalue + "'"}.info();
 			modules.push_back(Module::factory(argvalue.c_str()));
 			if(modules.back() == nullptr) {
@@ -85,11 +85,11 @@
 			modules.back()->test_mode();
 		}
 	
-		if(CommandLineParser::pop(argc,argv,'c',"config",argvalue)) {
+		if(CommandLineParser::get_argument(argc,argv,'c',"config",argvalue)) {
 			config_file = argvalue;
 		}
 
-		if(CommandLineParser::pop(argc,argv,'S',"service",argvalue)) {
+		if(CommandLineParser::get_argument(argc,argv,'S',"service",argvalue)) {
 			mode = Service;
 		}
 	}
