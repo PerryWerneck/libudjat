@@ -51,7 +51,7 @@
 
 		Application::help(width);
 
-		static const Application::Option values[] = {
+		static const CommandLineParser::Argument values[] = {
 			{ 'd', "daemon", _("Run in the background") },
 		};
 		
@@ -69,7 +69,7 @@
 		sd_notifyf(0,"STATUS=Starting");
 #endif // HAVE_SYSTEMD
 
-		if(pop('d',"daemon")) {
+		if(has_argument('d',"daemon")) {
 			Logger::console(false);
 			if(daemon(0,0)) {
 				int err = errno;

@@ -36,9 +36,11 @@
  namespace Udjat {
 
 	/// @brief Base class for applications.
-	class UDJAT_API Application : public CommandLineParser, Dialog::Status {
+	class UDJAT_API Application : public Dialog::Status {
 	private:
 		Timer *timer = nullptr;	///< @brief Auto update timer.
+		int &argc;
+		char **argv;				///< @brief Command line arguments.
 
 	protected:
 
@@ -72,41 +74,10 @@
 
 	public:
 
-		struct Option {
-			const char shortname;		///< @brief Short name of the option.
-			const char *longname;		///< @brief Long name of the option.
-			const char *description;	///< @brief Description of the option.
-
-			constexpr Option(char s, const char *l, const char *d) :
-				shortname{s}, longname{l}, description{d} {
-			}
-
-			constexpr Option() :
-				shortname{0}, longname{nullptr}, description{nullptr} {
-			}
-
-			std::ostream & print(std::ostream &out, size_t width = 20) const;
-
-		};
-
 		Application(int &argc, char **argv);
 		virtual ~Application();
 
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
-
-		/// @brief Parse command line options.
-		/// @details Scan command line options from arguments, if found show help.
-		/// @param argc The number of arguments.
-		/// @param argv The command line arguments.
-		/// @param options The list of options to show. 
-		/// @param dbg True to use debug mode defaults.
-		/// @param width The width of the left part of the help text.
-		/// @return true if the help was show.
-#ifdef DEBUG
-		static bool options(int &argc, char **argv, const Option *options = nullptr, bool dbg=true, size_t width = 20) noexcept;
-#else
-		static bool options(int &argc, char **argv, const Option *options = nullptr, bool dbg=false, size_t width = 20) noexcept;
-#endif // DEBUG
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
@@ -155,6 +126,9 @@
 
 		/// @brief The 'trace' stream.
 		static std::ostream & trace();
+
+		bool has_argument(char shortname, const char *longname) noexcept;
+		bool get_argument(char shortname, const char *longname, std::string &value) noexcept;
 
 		/// @brief Application Shortcut.
 		class UDJAT_API ShortCut {
@@ -329,14 +303,6 @@
 		};
 
 	};
-
- }
-
- namespace std {
-
-	inline ostream& operator<< (ostream& os, const Udjat::Application::Option &opt) {
-			return opt.print(os);
-	}
 
  }
 

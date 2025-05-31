@@ -97,7 +97,7 @@
 
 		Config::Value<string> setup{"test-mode","xml_path",xml};
 
-		if(Application::pop(argc,argv,0,"service") || !strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"service")) {
+		if(CommandLineParser::pop(argc,argv,0,"service") || !strcasecmp(Config::Value<string>{"test-mode","run-as","application"}.c_str(),"service")) {
 
 			// Run as service.
 			rc = Testing::Service{argc,argv,info,initialize}.run(setup.c_str());
@@ -114,7 +114,7 @@
 		return rc;
 
 		/*
-		if(argc == 1 && Application::pop(argc,argv,0,"application")) {
+		if(argc == 1 && CommandLineParser::pop(argc,argv,0,"application")) {
 			rc = Testing::Application{info,initialize}.run(argc,argv,setup.c_str());
 			Logger::String{"Application exits with rc=",rc}.info("test");
 			return rc;

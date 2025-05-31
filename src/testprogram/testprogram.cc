@@ -50,7 +50,9 @@
 
 //	XML::parse("test.xml");
 
+	return Application{argc, argv}.run("test.xml");
 
+	/*
 	Logger::console(false);
 	if(Logger::console()) {
 		exit(-1);
@@ -96,6 +98,7 @@
 
 	Logger::String{"Test program finished"}.info();
 	exit(-1);
+	*/
 
 
 	/*

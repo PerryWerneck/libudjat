@@ -29,14 +29,19 @@
 
  namespace Udjat {
 
-	static void extract(int dst, int &argc, char **argv) {
+	static void extract(int dst, int &argc, char **argv) noexcept {
 		for(int src = dst+1; src < argc; src++) {
 			argv[dst++] = argv[src];                
 		}
 		argc--;
 	}
 		
-	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname) {
+	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname) noexcept{
+
+		if(argc <= 2) {
+			debug("No arguments to parse searching for '",longname,"' (argc=",argc,")");
+			return false;
+		}
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -74,7 +79,14 @@
 		return false;
 	}
 
-	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) {
+	bool CommandLineParser::pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) noexcept {
+
+		value.clear();
+
+		if(argc <= 2) {
+			debug("No arguments to parse searching for '",longname,"' (argc=",argc,")");
+			return false;
+		}
 
 		debug("Argc=",argc);
 		size_t szlong = 0;
@@ -133,7 +145,7 @@
 
 	}
 
-	std::ostream & Application::Option::print(std::ostream &out, size_t width) const {
+	std::ostream & CommandLineParser::Argument::print(std::ostream &out, size_t width) const {
 		out << "  -" << shortname << ", --";			
 		string text{longname};
 		text.resize(width,' ');
@@ -143,7 +155,7 @@
 
 	/// @brief Common help message for all applications.
 	static void apphelp(size_t width) {
-		static const Application::Option values[] = {
+		static const CommandLineParser::Argument values[] = {
 			{ 'h', "help", _("Show this help message") },
 		};
 
@@ -159,7 +171,7 @@
 
 		apphelp(width);
 
-		static const Application::Option values[] = {
+		static const CommandLineParser::Argument values[] = {
 			{ 'T', "timer=seconds", _("Quit after \"seconds\"") },
 		};
 
@@ -170,7 +182,7 @@
 
 	}
 
-	bool Application::options(int &argc, char **argv, const Application::Option *options, bool dbg, size_t width) noexcept {
+	bool CommandLineParser::options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept {
 
 		if(!pop(argc,argv,'h',"help")) {
 			Logger::setup(argc,argv,dbg);
@@ -183,7 +195,7 @@
 
 		apphelp(width);
 		if(options) {
-			for(const Option *option = options; option->description; option++) {
+			for(const Argument *option = options; option->description; option++) {
 				option->print(cout,width);
 				cout << "\n" ;
 			};

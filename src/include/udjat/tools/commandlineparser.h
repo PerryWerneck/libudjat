@@ -32,6 +32,24 @@ namespace Udjat {
 		char **argv;
 
 	public:
+
+		struct Argument {
+			const char shortname;		///< @brief Short name of the option.
+			const char *longname;		///< @brief Long name of the option.
+			const char *description;	///< @brief Description of the option.
+
+			constexpr Argument(char s, const char *l, const char *d) :
+				shortname{s}, longname{l}, description{d} {
+			}
+
+			constexpr Argument() :
+				shortname{0}, longname{nullptr}, description{nullptr} {
+			}
+
+			std::ostream & print(std::ostream &out, size_t width = 20) const;
+
+		};
+
 		constexpr CommandLineParser(int c, char **v) : argc(c), argv(v) {
 		}
 
@@ -39,8 +57,18 @@ namespace Udjat {
 			return argv[0];
 		}
 
-		static bool pop(int &argc, char **argv, char shortname, const char *longname);
-		static bool pop(int &argc, char **argv, char shortname, const char *longname, std::string &value);
+		static bool pop(int &argc, char **argv, char shortname, const char *longname) noexcept;
+		static bool pop(int &argc, char **argv, char shortname, const char *longname, std::string &value) noexcept;
+
+		static inline bool has_argument(int &argc, char **argv, char shortname, const char *longname) noexcept {
+			return pop(argc, argv, shortname, longname);
+		}
+
+		static inline bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value) noexcept {
+			return pop(argc, argv, shortname, longname, value);
+		}
+
+		static bool options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept;
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.
@@ -56,5 +84,13 @@ namespace Udjat {
 
 	};
 
-
 }
+
+ namespace std {
+
+	inline ostream& operator<< (ostream& os, const Udjat::CommandLineParser::Argument &opt) {
+			return opt.print(os);
+	}
+
+ }
+

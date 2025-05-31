@@ -21,6 +21,7 @@
  #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/commandlineparser.h>
  #include <private/logger.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/intl.h>
@@ -294,42 +295,42 @@
 			console(true);
 		}
 
-		if(Application::pop(argc,argv,'q',"quiet")) {
+		if(CommandLineParser::pop(argc,argv,'q',"quiet")) {
 			Logger::console(false);
 		} 
 		
-		if(Application::pop(argc,argv,'v',"verbose")) {
+		if(CommandLineParser::pop(argc,argv,'v',"verbose")) {
 			Logger::console(true);
 		}
 
-		if(Application::pop(argc,argv,'l',"logfile")) {
+		if(CommandLineParser::pop(argc,argv,'l',"logfile")) {
 			Logger::file(true);
 		}
 
-		if(Application::pop(argc,argv,'L',"loglevel")) {
+		if(CommandLineParser::pop(argc,argv,'L',"loglevel")) {
 			Logger::verbosity(Logger::Debug);
 		}
 
-		if(Application::pop(argc,argv,'v',"verbose",optarg)) {
+		if(CommandLineParser::pop(argc,argv,'v',"verbose",optarg)) {
 			Logger::console(true);
 			Logger::verbosity(optarg.c_str());
 		}
 
-		if(Application::pop(argc,argv,'l',"logfile",optarg)) {
+		if(CommandLineParser::pop(argc,argv,'l',"logfile",optarg)) {
 			Logger::file(optarg.c_str());
 		}
 
-		if(Application::pop(argc,argv,'L',"loglevel",optarg)) {
+		if(CommandLineParser::pop(argc,argv,'L',"loglevel",optarg)) {
 			Logger::verbosity(optarg.c_str());
 		}
 
 #ifndef _WIN32		
-		if(Application::pop(argc,argv,'C',"coredump")) {
+		if(CommandLineParser::pop(argc,argv,'C',"coredump")) {
 			setup_coredump();			
 			Logger::String{"Coredump enabled using default pattern"}.info();
 		}
 
-		if(Application::pop(argc,argv,'C',"coredump",optarg)) {
+		if(CommandLineParser::pop(argc,argv,'C',"coredump",optarg)) {
 			setup_coredump(optarg.c_str());			
 			Logger::String{"Coredump enabled using pattern '",optarg.c_str(),"'"}.info();
 		}
@@ -339,7 +340,7 @@
 
 	void Logger::help(size_t width) noexcept {
 
-		static const Application::Option values[] = {
+		static const CommandLineParser::Argument values[] = {
 			{ 'l', "logfile[=file]", _("Save log to file") },
 			{ 'v', "verbose[=verbosity]", _("Send log to console") },
 			{ 'L', "loglevel[=verbosity]", _("Set log level to value") },
