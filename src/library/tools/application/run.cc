@@ -106,8 +106,6 @@
 
 		}
 
-		exit(-1);
-		
 		Logger::redirect();	
 
 #ifdef DEBUG 
