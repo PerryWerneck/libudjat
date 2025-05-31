@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-21 19:57-0300\n"
-"PO-Revision-Date: 2025-05-21 19:58-0300\n"
+"POT-Creation-Date: 2025-05-31 11:45-0300\n"
+"PO-Revision-Date: 2025-05-31 11:45-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -86,34 +86,22 @@ msgstr "ligado"
 msgid "off"
 msgstr "desligado"
 
-#: src/library/tools/application/cmdline.cc:146
-msgid "Show this help message"
-msgstr "Mostra essa mensagem de help"
+#: src/library/tools/application/run.cc:65
+#: src/library/tools/application/run.cc:69
+msgid "Unable to set environment variable"
+msgstr "Incapaz de setar variável de ambiente"
 
-#: src/library/tools/application/cmdline.cc:149
-msgid "Application options:\n"
-msgstr "Opções da aplicação\n"
-
-#: src/library/tools/application/cmdline.cc:162
-msgid "Quit after \"seconds\""
-msgstr "Encerra após \"seconds\""
-
-#: src/library/tools/application/cmdline.cc:179
-#: src/library/tools/application/run.cc:110
+#: src/library/tools/application/run.cc:97
 #: src/library/tools/os/windows/systemservice.cc:163
+#: src/library/tools/commandlineparser.cc:196
 msgid "Usage:"
 msgstr "Uso:"
 
-#: src/library/tools/application/cmdline.cc:180
-#: src/library/tools/application/run.cc:111
+#: src/library/tools/application/run.cc:98
 #: src/library/tools/os/windows/systemservice.cc:164
+#: src/library/tools/commandlineparser.cc:197
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
-
-#: src/library/tools/application/run.cc:64
-#: src/library/tools/application/run.cc:68
-msgid "Unable to set environment variable"
-msgstr "Incapaz de setar variável de ambiente"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -372,30 +360,6 @@ msgstr "Erro HTTP {}"
 #, c++-format
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
-
-#: src/library/tools/logger.cc:343
-msgid "Save log to file"
-msgstr "Envia log para arquivo"
-
-#: src/library/tools/logger.cc:344
-msgid "Send log to console"
-msgstr "Envia log para o console"
-
-#: src/library/tools/logger.cc:345
-msgid "Set log level to value"
-msgstr "Define nível de log para 'value'"
-
-#: src/library/tools/logger.cc:346
-msgid "Quiet output"
-msgstr "Inibe saídas para console"
-
-#: src/library/tools/logger.cc:348
-msgid "Enable coredump"
-msgstr "Habilita coredump"
-
-#: src/library/tools/logger.cc:352
-msgid "Log/Debug options:\n"
-msgstr "Opções de log/debug:\n"
 
 #: src/library/tools/mainloop/os/linux/timer.cc:158
 #: src/library/tools/mainloop/os/windows/timer.cc:158
@@ -658,7 +622,7 @@ msgstr ""
 
 #: src/library/tools/value/type.cc:43
 msgid "state"
-msgstr ""
+msgstr "estado"
 
 #: src/library/tools/value/type.cc:45
 msgid "int"
@@ -684,6 +648,42 @@ msgstr "Atributo necessário '{}' não foi encontrado"
 #: src/library/tools/xml/load.cc:94
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
+
+#: src/library/tools/logger.cc:342
+msgid "Save log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger.cc:343
+msgid "Send log to console"
+msgstr "Envia log para o console"
+
+#: src/library/tools/logger.cc:344
+msgid "Set log level to value"
+msgstr "Define nível de log para 'value'"
+
+#: src/library/tools/logger.cc:345
+msgid "Quiet output"
+msgstr "Inibe saídas para console"
+
+#: src/library/tools/logger.cc:347
+msgid "Enable coredump"
+msgstr "Habilita coredump"
+
+#: src/library/tools/logger.cc:351
+msgid "Log/Debug options:\n"
+msgstr "Opções de log/debug:\n"
+
+#: src/library/tools/commandlineparser.cc:162
+msgid "Show this help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/commandlineparser.cc:165
+msgid "Application options:\n"
+msgstr "Opções da aplicação\n"
+
+#: src/library/tools/commandlineparser.cc:178
+msgid "Quit after \"seconds\""
+msgstr "Encerra após \"seconds\""
 
 #: src/library/worker/worker.cc:54
 msgid "Invalid response type"

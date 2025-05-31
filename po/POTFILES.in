@@ -50,10 +50,9 @@ src/library/state/state.cc
 src/library/tools/action.cc
 src/library/tools/activatable.cc
 src/library/tools/application/application.cc
-src/library/tools/application/cmdline.cc
 src/library/tools/application/init.cc
-src/library/tools/application/run.cc
 src/library/tools/application/setup.cc
+src/library/tools/application/run.cc
 src/library/tools/arguments.cc
 src/library/tools/base64.cc
 src/library/tools/cache.cc
@@ -76,7 +75,6 @@ src/library/tools/http/mimetype.cc
 src/library/tools/http/timestamp.cc
 src/library/tools/interface.cc
 src/library/tools/ip.cc
-src/library/tools/logger.cc
 src/library/tools/mainloop/handler.cc
 src/library/tools/mainloop/mainloop.cc
 src/library/tools/mainloop/os/linux/glib.cc
@@ -103,6 +101,7 @@ src/library/tools/os/linux/application/application.cc
 src/library/tools/os/linux/application/cache.cc
 src/library/tools/os/linux/application/init.cc
 src/library/tools/os/linux/arguments.cc
+src/library/tools/os/linux/configfile.cc
 src/library/tools/os/linux/event.cc
 src/library/tools/os/linux/eventcontroller.cc
 src/library/tools/os/linux/file.cc
@@ -133,7 +132,6 @@ src/library/tools/os/linux/system.cc
 src/library/tools/os/linux/systemservice.cc
 src/library/tools/os/linux/threadpool.cc
 src/library/tools/os/linux/urlconnect.cc
-src/library/tools/os/linux/configfile.cc
 src/library/tools/os/windows/adapter.cc
 src/library/tools/os/windows/application/application.cc
 src/library/tools/os/windows/application/description.cc
@@ -218,8 +216,10 @@ src/library/tools/xml/attribute.cc
 src/library/tools/xml/document.cc
 src/library/tools/xml/load.cc
 src/library/tools/xml/misc.cc
-src/library/ui/dialog.cc
+src/library/tools/logger.cc
+src/library/tools/commandlineparser.cc
 src/library/ui/progress.cc
+src/library/ui/status.cc
 src/library/worker/controller.cc
 src/library/worker/worker.cc
 src/include/private/event.h
@@ -292,7 +292,6 @@ src/include/udjat/tools/subprocess.h
 src/include/udjat/tools/threadpool.h
 src/include/udjat/tools/actions/abstract.h
 src/include/udjat/tools/activatable.h
-src/include/udjat/tools/application.h
 src/include/udjat/tools/configuration.h
 src/include/udjat/tools/container.h
 src/include/udjat/tools/converters.h
@@ -313,7 +312,6 @@ src/include/udjat/tools/singleton.h
 src/include/udjat/tools/socket.h
 src/include/udjat/tools/string.h
 src/include/udjat/tools/system.h
-src/include/udjat/tools/systemservice.h
 src/include/udjat/tools/timer.h
 src/include/udjat/tools/timestamp.h
 src/include/udjat/tools/url.h
@@ -321,9 +319,13 @@ src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/worker.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/systemservice.h
+src/include/udjat/tools/application.h
+src/include/udjat/tools/commandlineparser.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/progress.h
+src/include/udjat/ui/status.h
 src/include/udjat/win32/charset.h
 src/include/udjat/win32/cleanup.h
 src/include/udjat/win32/com.h
@@ -335,12 +337,10 @@ src/include/udjat/win32/path.h
 src/include/udjat/win32/registry.h
 src/include/udjat/win32/security.h
 src/include/udjat/win32/service.h
-src/include/udjat/version.h
 src/include/udjat/agent.h
 src/include/udjat/alert.h
 src/include/udjat/defs.h
 src/include/udjat/tests.h
-src/include/config.h
 src/library/private.h
 src/library/tools/mainloop/os/windows/private.h
 src/library/tools/os/linux/file/private.h
