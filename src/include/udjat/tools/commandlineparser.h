@@ -72,7 +72,11 @@ namespace Udjat {
 		/// @param dbg true if debug mode is enabled, false otherwise.
 		/// @param width Width of the left part of the help text.
 		/// @return false if the '--help' option was found, processed and the application should not run, true otherwise.
-		static bool options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept;
+#ifdef DEBUG 
+		static bool options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg = true, size_t width = 20) noexcept;
+#else
+		static bool options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg = false, size_t width = 20) noexcept;
+#endif
 
 		/// @brief Pop command line argument. 
 		/// @details Scan command line options from arguments, if found extract it.
