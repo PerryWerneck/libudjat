@@ -341,7 +341,7 @@
 		static const CommandLineParser::Argument values[] = {
 			{ 'l', "logfile[=file]", _("Save log to file") },
 			{ 'v', "verbose[=verbosity]", _("Send log to console") },
-			{ 'L', "loglevel[=verbosity]", _("Set log level to value") },
+			{ 'L', "loglevel[=verbosity]", _("Set log level to 'verbosity'") },
 			{ 'q', "quiet", _("Quiet output") },
 #ifndef _WIN32
 			{ 'C', "coredump[=pattern]", _("Enable coredump") },

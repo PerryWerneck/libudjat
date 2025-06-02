@@ -34,7 +34,10 @@ namespace Udjat {
 
 	public:
 
+		/// @brief Command line argument.
+		/// @details This structure is used to define command line options for 'help' output.
 		struct Argument {
+
 			const char shortname;		///< @brief Short name of the option.
 			const char *longname;		///< @brief Long name of the option.
 			const char *description;	///< @brief Description of the option.
@@ -62,6 +65,13 @@ namespace Udjat {
 
 		static bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept;
 
+		/// @brief Check standard command line options.
+		/// @param argc Number of command line arguments.
+		/// @param argv The command line arguments.
+		/// @param options Argument definitions for command line options.
+		/// @param dbg true if debug mode is enabled, false otherwise.
+		/// @param width Width of the left part of the help text.
+		/// @return false if the '--help' option was found, processed and the application should not run, true otherwise.
 		static bool options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept;
 
 		/// @brief Pop command line argument. 

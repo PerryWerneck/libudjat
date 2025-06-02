@@ -658,8 +658,8 @@ msgid "Send log to console"
 msgstr "Envia log para o console"
 
 #: src/library/tools/logger.cc:344
-msgid "Set log level to value"
-msgstr "Define nível de log para 'value'"
+msgid "Set log level to 'verbosity'"
+msgstr "Define nível de log para 'verbosity'"
 
 #: src/library/tools/logger.cc:345
 msgid "Quiet output"
