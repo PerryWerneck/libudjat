@@ -336,6 +336,10 @@ lib_src += [
   'src/library/tools/interface.cc',
   'src/library/tools/action.cc',
   'src/library/request/responsevalue.cc',
+  'src/library/module/os/' + host_machine.system() + '/close.cc',
+  'src/library/module/os/' + host_machine.system() + '/init.cc',
+  'src/library/module/os/' + host_machine.system() + '/locate.cc',
+  'src/library/module/os/' + host_machine.system() + '/tools.cc',
   'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
   'src/library/tools/os/' + host_machine.system() + '/socket.cc',
   'src/library/tools/os/' + host_machine.system() + '/console.cc',
@@ -471,11 +475,6 @@ if host_machine.system() == 'windows'
   )
 
   lib_src += [
-    'src/library/module/os/windows/close.cc',
-    'src/library/module/os/windows/init.cc',
-    'src/library/module/os/windows/load.cc',
-    'src/library/module/os/windows/locate.cc',
-    'src/library/module/os/windows/tools.cc',
     'src/library/os/windows/icon.cc',
     'src/library/tools/mainloop/os/windows/eventworker.cc',
     'src/library/tools/mainloop/os/windows/handler.cc',
@@ -548,10 +547,6 @@ else
   )
 
   lib_src += [
-    'src/library/module/os/linux/close.cc',
-    'src/library/module/os/linux/init.cc',
-    'src/library/module/os/linux/locate.cc',
-    'src/library/module/os/linux/tools.cc',
     'src/library/os/linux/icon.cc',
     'src/library/tools/mainloop/os/linux/service.cc',
     'src/library/tools/mainloop/os/linux/handler.cc',

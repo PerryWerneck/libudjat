@@ -52,6 +52,10 @@ namespace Udjat {
 	void Module::finalize() {
 	}
 
+	void Module::test_mode() {
+		// Do nothing
+	}
+
 	void Module::set(const pugi::xml_document UDJAT_UNUSED(&document)) {
 	}
 

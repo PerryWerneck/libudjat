@@ -26,6 +26,35 @@
 
  namespace Udjat {
 
+	Module * Module::factory(const char *filename) {
+		
+		TCHAR path[MAX_PATH+1];
+		memset(path,0,MAX_PATH+1);
+
+		if(!GetFullPathName(filename,MAX_PATH,path,NULL)) {
+			cerr << "module\t" << filename << ": " << Win32::Exception::format(GetLastError()) << endl;
+			strncpy(path,filename,MAX_PATH);
+		}
+
+		HMODULE handle = LoadLibraryEx(path,NULL,LOAD_WITH_ALTERED_SEARCH_PATH);
+		if(!handle) {
+			throw Win32::Exception(string{"Can't load module '"} + filename + "'");
+		}
+
+		try {
+
+			return Controller::init(handle);
+
+		} catch(...) {
+
+			FreeLibrary(handle);
+			throw;
+
+		}
+
+
+	}
+
 	Module * Module::Controller::find_by_filename(const char *filename) {
 
 		char path[MAX_PATH+1];

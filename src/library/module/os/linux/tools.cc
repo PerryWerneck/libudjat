@@ -26,10 +26,6 @@
 
  namespace Udjat {
 
-	void Module::test_mode() {
-		// Do nothing
-	}
-
 	Module * Module::factory(const char *filename) {
 
 		dlerror();
