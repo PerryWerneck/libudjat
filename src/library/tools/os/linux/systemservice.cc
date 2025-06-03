@@ -73,6 +73,10 @@
 			Logger::console(false);
 		}
 
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
+#endif // HAVE_SYSTEMD
+
 		return Application::run(definitions);
 
 	}
@@ -82,10 +86,6 @@
 
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=Starting");
-#endif // HAVE_SYSTEMD
-
-#ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
 #endif // HAVE_SYSTEMD
 
 		// Install unhandled exception manager.
