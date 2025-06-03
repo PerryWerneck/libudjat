@@ -72,14 +72,6 @@
 		/// @details This method is called when the application is started with the '--help' option.
 		virtual void help(size_t width = 20) const noexcept;
 
-		inline bool has_argument(char shortname, const char *longname, bool extract=true) noexcept {
-			return CommandLineParser::has_argument(argc, argv, shortname, longname, extract);
-		}
-
-		inline bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept {
-			return CommandLineParser::get_argument(argc, argv, shortname, longname, value, extract);
-		}
-
 	public:
 
 		Application(int &argc, char **argv);
@@ -135,8 +127,13 @@
 		/// @brief The 'trace' stream.
 		static std::ostream & trace();
 
-		bool has_argument(char shortname, const char *longname) noexcept;
-		bool get_argument(char shortname, const char *longname, std::string &value) noexcept;
+		inline bool has_argument(char shortname, const char *longname, bool extract=true) noexcept {
+			return CommandLineParser::has_argument(argc, argv, shortname, longname, extract);
+		}
+
+		inline bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept {
+			return CommandLineParser::get_argument(argc, argv, shortname, longname, value, extract);
+		}
 
 		/// @brief Application Shortcut.
 		class UDJAT_API ShortCut {

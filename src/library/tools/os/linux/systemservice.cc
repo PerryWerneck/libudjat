@@ -62,15 +62,9 @@
 
 	}
 
-	/// @brief Initialize service.
-	int SystemService::init(const char *definitions) {
-
-#ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=Starting");
-#endif // HAVE_SYSTEMD
+	int SystemService::run(const char *definitions) {
 
 		if(has_argument('d',"daemon")) {
-			Logger::console(false);
 			if(daemon(0,0)) {
 				int err = errno;
 				Logger::String{"Error activating daemon mode: ",strerror(err)," (rc=",err,")"}.error("service");
@@ -78,6 +72,17 @@
 			}
 			Logger::console(false);
 		}
+
+		return Application::run(definitions);
+
+	}
+
+	/// @brief Initialize service.
+	int SystemService::init(const char *definitions) {
+
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=Starting");
+#endif // HAVE_SYSTEMD
 
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
