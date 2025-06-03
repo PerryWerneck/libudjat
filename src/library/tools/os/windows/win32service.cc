@@ -68,6 +68,7 @@
 
 	void SystemService::dispatcher() {
 
+		Logger::redirect();
 		Logger::console(false);
 		Logger::String{"Registering Service dispatcher"}.trace("win32");
 
@@ -139,7 +140,7 @@
 			case SERVICE_CONTROL_SHUTDOWN:
 				Logger::String{"SERVICE_CONTROL_SHUTDOWN"}.trace("win32");
 				controller.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","shutdown-timer",30000));
-				MainLoop::getInstance().quit("SERVICE_CONTROL_PRESHUTDOWN");
+				MainLoop::getInstance().quit("SERVICE_CONTROL_SHUTDOWN");
 				break;
 
 			case SERVICE_CONTROL_STOP:

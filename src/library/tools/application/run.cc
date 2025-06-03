@@ -92,18 +92,11 @@
 
 	int Application::run(const char *definitions) {
 
-		if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
-
-			cout << _("Usage:") << "\n  " << argv[0]
-				<< " " << _("[OPTION..]") << "\n\n";
-
+		if(has_argument('h',"help",true)) {
 			help();
 			cout << "\n";
-
 			Logger::help();
-
 			return 0;
-
 		}
 
 		Logger::redirect();	

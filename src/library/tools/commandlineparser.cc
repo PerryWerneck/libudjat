@@ -172,6 +172,9 @@
 
 	void Application::help(size_t width) const noexcept {
 
+		cout 	<< _("Usage:") << "\n  " << argv[0]
+				<< " " << _("[OPTION..]") << "\n\n";
+
 		apphelp(width);
 
 		static const CommandLineParser::Argument values[] = {

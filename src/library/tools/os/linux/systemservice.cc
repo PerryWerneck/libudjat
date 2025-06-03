@@ -158,16 +158,16 @@
 
 	}
 
-	int SystemService::install(const char *) {
-		error() << "Not supported on linux, use systemd" << endl;
-		return 0;
-	}
-
 	Dialog::Status & SystemService::state(const Level level, const char *message) noexcept {
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STATUS=%s",message);
 #endif // HAVE_SYSTEMD
 		return Application::state(level,message);
+	}
+
+	int SystemService::install(const char *) {
+		error() << "Not supported on linux, use systemd" << endl;
+		return 0;
 	}
 
 	int SystemService::uninstall() {

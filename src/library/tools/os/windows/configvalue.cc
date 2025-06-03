@@ -67,12 +67,14 @@
 		return (uint32_t) Win32::Registry(group.c_str()).get(name.c_str(),(DWORD) def);
 	}
 
-	UDJAT_API std::string Config::get(const std::string &group, const std::string &name, const char *def) {
-		return Win32::Registry(group.c_str()).get(name.c_str(),def);
+	UDJAT_API Udjat::String Config::get(const std::string &group, const std::string &name, const char *def) {
+		String str = Win32::Registry(group.c_str()).get(name.c_str(),def);
+		return str.expand(true,false);
 	}
 
-	UDJAT_API std::string Config::get(const std::string &group, const std::string &name, const std::string &def) {
-		return get(group,name,def.c_str());
+	UDJAT_API Udjat::String Config::get(const std::string &group, const std::string &name, const std::string &def) {
+		String str = Win32::Registry(group.c_str()).get(name.c_str(),def.c_str());
+		return str.expand(true,false);
 	}
 
 	UDJAT_API bool Config::get(const std::string &group, const std::string &name, const bool def) {

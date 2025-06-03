@@ -79,6 +79,10 @@
 		SystemService(int argc, char **argv);
 		virtual ~SystemService();
 
+		/// @brief Parse command line options, run service.
+		/// @param definitions Path to a single xml file or a folder with xml files.
+		int run(const char *definitions = nullptr);
+
 		/// @brief Set service state.
 		/// @param level The current service level.
 		/// @param message The message to be shown.

@@ -70,11 +70,8 @@
 				}
 			}
 		}
-	}
 
-		if(Logger::enabled(Logger::Trace)) {
-			Logger::String{message}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
-		}
+	}
 
  }
 
