@@ -35,7 +35,7 @@
 
  namespace Udjat {
 
-	Application::Application(int c, char **v) : argc{c}, argv{v} {
+	Application::Application(int &c, char **v) : argc{c}, argv{v} {
 
   		Quark::init();
 

@@ -24,16 +24,13 @@
  //
 
 #include <config.h>
+#include <udjat/defs.h>
 #include <private/misc.h>
 #include <cstring>
 #include <udjat/ui/console.h>
 #include <udjat/tools/logger.h>
 #include <cstdio>
-#include <sys/ioctl.h>
-
-#ifdef HAVE_UNISTD_H
-	#include <unistd.h>
-#endif 
+#include <windows.h>
 
 using namespace std;
 
@@ -50,6 +47,9 @@ namespace Udjat {
 		/// @brief Writes characters to the associated output sequence from the put area.
 		int overflow(int c) override {
 
+			// FIXME: Use win32 console API to write characters.
+
+			/*
 			if(c && c != EOF) {
 				char chr = (char) c;
 				if(write(STDOUT_FILENO,&chr,1) != 1) {
@@ -58,6 +58,9 @@ namespace Udjat {
 			}
 
 			return c;
+			*/
+
+			return EOF;
 		}
 
 	public:
@@ -85,20 +88,10 @@ namespace Udjat {
 	}
 
 	unsigned short UI::Console::width() const noexcept {
-#ifdef _WIN32
-
 		// https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 		return (csbi.srWindow.Right - csbi.srWindow.Left + 1);		
-
-#else
-
-		struct winsize w;
-		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-		return w.ws_col;
-
-#endif // _WIN32
 	}
 
 	bool UI::Console::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {

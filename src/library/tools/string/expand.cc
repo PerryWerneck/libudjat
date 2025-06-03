@@ -272,12 +272,8 @@
 
 #ifdef _WIN32
 		if(!strcasecmp(key,"home")) {
-			replace(
-				from,
-				(to-from)+1,
-				Win32::KnownFolder{FOLDERID_Profile}
-			);
-			continue;
+			value = Win32::KnownFolder{FOLDERID_Profile};
+			return true;
 		}
 #endif // _WIN32
 
@@ -295,7 +291,7 @@
 			char szEnvironment[4096];
 			memset(szEnvironment,0,sizeof(szEnvironment));
 
-			if(GetEnvironmentVariable(key.c_str(), szEnvironment, sizeof(szEnvironment)-1) != 0) {
+			if(GetEnvironmentVariable(key, szEnvironment, sizeof(szEnvironment)-1) != 0) {
 				value = szEnvironment;
 				return true;
 			}

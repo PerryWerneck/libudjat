@@ -129,6 +129,8 @@
 
 			bool for_each(const std::function<bool(Timer &timer)> &func);
 
+			void run(const std::function<void()> &method) override;
+
 		};
 
 	}
