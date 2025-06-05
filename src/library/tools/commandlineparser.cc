@@ -188,10 +188,77 @@
 
 	}
 
+	/*
+	static void setProperty(const char *name, const char *value) {
+
+		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
+
+#ifdef _WIN32
+		if(!SetEnvironmentVariable(name,value)) {
+			throw Win32::Exception(_("Unable to set environment variable"));
+		}
+#else
+		if(setenv(name, value, 1)) {
+			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
+		}
+#endif // _WIN32
+
+	}
+	*/
+
+	void CommandLineParser::setup(int &argc, char **argv, bool dbg) noexcept {
+
+		// Setup logger
+		Logger::setup(argc,argv,dbg);
+		Logger::redirect();	
+
+		if(dbg) {
+			Logger::console(true);
+		}
+
+		// Setup properties
+		{
+			int ix = 1;
+			while(ix < argc) {
+
+				const char *eq = strchr(argv[ix],'=');
+
+				if(argv[ix][0] == '-' || !eq) {
+					ix++;
+					continue;
+				}
+
+				string name{argv[ix],(size_t) (eq-argv[ix])};
+				eq++;
+
+				String value{eq};
+				value.expand();
+
+				extract(ix,argc,argv);
+
+#ifdef _WIN32
+				if(!SetEnvironmentVariable(name,value)) {
+					Logger::String{"Unable to set property '",name.c_str(),"' to '",value.c_str(),"'"}.error();
+				} else {
+					Logger::String{"Property '",name.c_str(),"' set to '",value.c_str(),"'"}.trace();
+				}
+#else
+				if(setenv(name.c_str(), value.c_str(), 1)) {
+					Logger::String{"Unable to set property '",name.c_str(),"' to '",value.c_str(),"'"}.error();
+				} else {
+					Logger::String{"Property '",name.c_str(),"' set to '",value.c_str(),"'"}.trace();
+				}
+#endif // _WIN32
+			}
+		}
+
+	}
+
 	bool CommandLineParser::options(int &argc, char **argv, const CommandLineParser::Argument *options, bool dbg, size_t width) noexcept {
 
 		if(!has_argument(argc,argv,'h',"help",true)) {
-			Logger::setup(argc,argv,dbg);
+
+			CommandLineParser::setup(argc,argv,dbg);
 			return false;
 		}
 

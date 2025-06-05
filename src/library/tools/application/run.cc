@@ -99,11 +99,7 @@
 			return 0;
 		}
 
-		Logger::redirect();	
-
-#ifdef DEBUG 
-		Logger::console(true);
-#endif // DEBUG
+		CommandLineParser::setup(argc,argv);
 
 		// Parse command line arguments.
 		if(setup(definitions)) {

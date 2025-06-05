@@ -65,6 +65,17 @@ namespace Udjat {
 
 		static bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept;
 
+
+		/// @brief Parse standard command line options.
+		/// @param argc Number of command line arguments.
+		/// @param argv The command line arguments.
+		/// @param dbg true if debug mode is enabled, false otherwise.
+#ifdef DEBUG 
+		static void setup(int &argc, char **argv, bool dbg = true) noexcept;
+#else
+		static void setup(int &argc, char **argv, bool dbg = false) noexcept;
+#endif
+
 		/// @brief Check standard command line options.
 		/// @param argc Number of command line arguments.
 		/// @param argv The command line arguments.
