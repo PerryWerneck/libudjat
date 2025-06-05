@@ -42,8 +42,12 @@
 		return factories;
 	}
 
-	URL::Handler::Factory::Factory(const char *n) : name{n} {
-		Logger::String{"Registering URL handler '",name,"'"}.write(Logger::Debug);
+	URL::Handler::Factory::Factory(const char *n, const char *description) : name{n} {
+		if(description && *description && Logger::enabled(Logger::Trace)) {
+			Logger::String{"Registering URL handler '",name,"' - ",description}.trace();
+		} else {
+			Logger::String{"Registering URL handler '",name,"'"}.trace();
+		}
 		factories().push_back(this);
 	}
 

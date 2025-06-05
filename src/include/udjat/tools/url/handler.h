@@ -86,7 +86,7 @@
 			const char *name;
 
 		public:
-			Factory(const char *n);
+			Factory(const char *name, const char *description = nullptr);
 			virtual ~Factory();
 
 			inline bool operator ==(const char *n) const noexcept {
