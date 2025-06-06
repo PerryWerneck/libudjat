@@ -164,15 +164,6 @@
 	Abstract::Object::~Object() {
 	}
 
-	bool Abstract::Object::push_back(const XML::Node &node) {
-		
-		if(is_reserved(node) || !is_allowed(node)) {
-			return true; // Ignore reserved nodes.
-		}
-
-		return false;	// Not handled, maybe the caller can handle it.
-	}
-
 	void Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {
 		throw logic_error("Object is unable to handle children");
 	}
@@ -181,12 +172,21 @@
 		push_back(child);
 	}
 
-	void Abstract::Object::setup(const XML::Node &node) {
+	bool Abstract::Object::parse_child(const XML::Node &node) {
+		
+		if(is_reserved(node) || !is_allowed(node)) {
+			return true; // Ignore reserved nodes.
+		}
+
+		return false;	// Not handled, maybe the caller can handle it.
+	}
+
+	void Abstract::Object::parse(const XML::Node &node) {
 
 		for(XML::Node child : node) {
 
-			if(is_reserved(node) || !is_allowed(node)) {
-				continue;
+			if(parse_child(child)) {
+				continue; // Child was handled.
 			}
 
 			const char *type = child.attribute("type").as_string("default");
@@ -223,7 +223,7 @@
 
 	}
 
-	void Object::set(const XML::Node &node) {
+	void Object::parse(const XML::Node &node) {
 
 		NamedObject::set(node);
 
@@ -232,6 +232,7 @@
 		properties.url = String{node,"url",properties.url}.as_quark();
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
 
+		NamedObject::parse(node);
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {

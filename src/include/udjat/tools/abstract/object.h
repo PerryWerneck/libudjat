@@ -35,14 +35,15 @@
 
 			virtual ~Object();
 
-			/// @brief Setup object.
+			/// @brief Parse object, build children.
 			/// @param node The XML node with the object definitions.
-			virtual void setup(const XML::Node &node);
+			virtual void parse(const XML::Node &node);
 
-			/// @brief Build and add child object.
+			/// @brief Build and setup child object.
+			/// @details This method is called by parse() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool push_back(const XML::Node &node);
+			virtual bool parse_child(const XML::Node &node);
 
 			/// @brief Add child object (if supported).
 			virtual void push_back(std::shared_ptr<Abstract::Object> child);
