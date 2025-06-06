@@ -20,7 +20,7 @@
 /**
  * @file
  *
- * @brief Implements the agent setup.
+ * @brief Implements XML parser for Abstract::Agent.
  *
  * @author perry.werneck@gmail.com
  *
@@ -62,7 +62,7 @@ namespace Udjat {
 					if(is_reserved(node) || !is_allowed(node)) {
 						continue;
 					}
-					state->push_back(child);
+					state->parse_child(child);
 				}
 			} else {
 				Logger::String{"Unable to create agent state"}.error(name());
@@ -70,7 +70,6 @@ namespace Udjat {
 
 			return true;
 		}
-
 
 		// It's an agent?
 		if(strcasecmp(node.name(),"agent") == 0) {
@@ -87,6 +86,7 @@ namespace Udjat {
 				return true; // Handled by agent.
 			}
 
+			return false; // Unable to create agent.
 		}
 
 		// It's an alert?

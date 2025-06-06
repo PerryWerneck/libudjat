@@ -258,7 +258,6 @@ lib_src += [
   'src/library/request/response.cc',
   'src/library/request/responseobject.cc',
   'src/library/request/request.cc',
-  'src/library/state/child.cc',
   'src/library/state/level.cc',
   'src/library/state/parse.cc',
   'src/library/state/state.cc',

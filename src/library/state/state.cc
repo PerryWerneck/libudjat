@@ -105,7 +105,7 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::State::push_back(const XML::Node &node) {
+	bool Abstract::State::parse_child(const XML::Node &node) {
 
 		if(strcasecmp(node.name(),"alert") == 0) {
 			listeners.push_back(Alert::Factory::build(*this,node));
