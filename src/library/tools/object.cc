@@ -165,10 +165,12 @@
 	}
 
 	bool Abstract::Object::push_back(const XML::Node &node) {
-		if(!(is_reserved(node) || !is_allowed(node))) {
-			Logger::String{"<",node.name(),"> is not supported here, ignoring it"}.trace(name());
+		
+		if(is_reserved(node) || !is_allowed(node)) {
+			return true; // Ignore reserved nodes.
 		}
-		return false;
+
+		return false;	// Not handled, maybe the caller can handle it.
 	}
 
 	void Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {

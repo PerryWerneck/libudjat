@@ -40,6 +40,8 @@
 			virtual void setup(const XML::Node &node);
 
 			/// @brief Build and add child object.
+			/// @param node The XML node with the child definitions.
+			/// @return true if the node was parsed and should be ignored by the caller.
 			virtual bool push_back(const XML::Node &node);
 
 			/// @brief Add child object (if supported).
