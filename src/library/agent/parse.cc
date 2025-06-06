@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -44,40 +44,28 @@ namespace Udjat {
 
 	void Abstract::Agent::parse(const XML::Node &node) {
 		Controller::setup_properties(*this,node);
-		super::parse(node);
+		Udjat::Object::parse(node);
 	}
 
 	bool Abstract::Agent::parse_child(const XML::Node &node) {
 
-		if(super::parse_child(node)) {
+		if(Udjat::Object::parse_child(node)) {
 			return true;
 		}
 
 		// It's a state?
 		if(strcasecmp(node.name(),"state") == 0) {
 
-			try {
-
-				auto state = StateFactory(node);
-				if(state) {
-					for(XML::Node child : node) {
-						if(is_reserved(node) || !is_allowed(node)) {
-							continue;
-						}
-						state->push_back(child);
+			auto state = StateFactory(node);
+			if(state) {
+				for(XML::Node child : node) {
+					if(is_reserved(node) || !is_allowed(node)) {
+						continue;
 					}
-				} else {
-					Logger::String{"Unable to create agent state"}.error(name());
+					state->push_back(child);
 				}
-
-			} catch(const std::exception &e) {
-
-				Logger::String{"Cant parse <",node.name(),">: ",e.what()}.error(name());
-
-			} catch(...) {
-
-				Logger::String{"Unexpected error parsing <",node.name(),">"}.error(name());
-
+			} else {
+				Logger::String{"Unable to create agent state"}.error(name());
 			}
 
 			return true;
@@ -89,10 +77,11 @@ namespace Udjat {
 
 			auto agent = Abstract::Agent::Factory::build(*this,node);
 			if(agent) {
-				agent->Object::set(node);
-				agent->parse(node);
 
 				// TODO: Check agent-path attribute and change parent if needed.
+
+				// Parse children, insert into child list.
+				agent->parse(node);
 				push_back(agent);
 
 				return true; // Handled by agent.
@@ -102,21 +91,13 @@ namespace Udjat {
 
 		// It's an alert?
 		if(strcasecmp(node.name(),"alert") == 0) {
-			try {
-				push_back(node,Alert::Factory::build(*this,node));
-			} catch(const std::exception &e) {
-				Logger::String{"Alert creation failure: ",e.what()}.error(node.attribute("name").as_string(name()));
-			}
+			push_back(node,Alert::Factory::build(*this,node));
 			return true; // Handled by alert.
 		}
 
 		// It's an action?
 		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-			try {
-				push_back(node,Action::Factory::build(node,true));
-			} catch(const std::exception &e) {
-				Logger::String{"Action creation failure: ",e.what()}.error(name());
-			}
+			push_back(node,Action::Factory::build(node,true));
 			return true; // Handled by action.
 		}
 

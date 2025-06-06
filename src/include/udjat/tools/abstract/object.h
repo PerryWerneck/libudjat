@@ -30,6 +30,9 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
+		protected:
+			typedef Object Super;
+
 		public:
 			static std::shared_ptr<Object> Factory(const Object *object, ...) noexcept __attribute__ ((sentinel));
 

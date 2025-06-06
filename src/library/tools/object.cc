@@ -62,12 +62,11 @@
 		return objectName;
 	}
 
-	bool NamedObject::set(const XML::Node &node) {
+	void NamedObject::parse(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
-			return true;
 		}
-		return false;
+		Abstract::Object::parse(node);
 	}
 
 	const char * NamedObject::c_str() const noexcept {
@@ -113,15 +112,6 @@
 
 	std::ostream & NamedObject::error() const {
 		return cerr << objectName << "\t";
-	}
-
-
-	Object::Object(const XML::Node &node) : NamedObject(node) {
-		set(node);
-	}
-
-	Object::Object(const char *name, const XML::Node &node) : NamedObject(name, node) {
-		set(node);
 	}
 
 	std::shared_ptr<Abstract::Object> Abstract::Object::Factory(const Object *object, ...) noexcept {
@@ -194,15 +184,9 @@
 		}
 
 		if(strcasecmp(node.name(),"init") == 0) {
-			try {
-				auto action = Action::Factory::build(node,true);
-				if(action) {
-					action->call(node);
-				}
-			} catch(const std::exception &e) {
-				Logger::String{"Initialization failure: ",e.what()}.error(node.attribute("name").as_string("action"));
-			} catch(...) {
-				Logger::String{"Initialization failure: Unexpected error"}.error(node.attribute("name").as_string("action"));
+			auto action = Action::Factory::build(node,true);
+			if(action) {
+				action->call(node);
 			}
 			return true; // Handled by action.
 		}
@@ -290,14 +274,13 @@
 
 	void Object::parse(const XML::Node &node) {
 
-		NamedObject::set(node);
-
 		properties.label = String{node,"label",properties.label}.as_quark();
 		properties.summary = String{node,"summary",properties.summary}.as_quark();
 		properties.url = String{node,"url",properties.url}.as_quark();
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
 
 		NamedObject::parse(node);
+
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {

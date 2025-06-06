@@ -240,7 +240,7 @@ lib_src += [
   'src/library/agent/state.cc',
   'src/library/agent/update.cc',
   'src/library/agent/root.cc',
-  'src/library/agent/setup.cc',
+  'src/library/agent/parse.cc',
   'src/library/alert/construct.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',

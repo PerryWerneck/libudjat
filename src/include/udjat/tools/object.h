@@ -44,13 +44,13 @@
 		/// @brief Set object properties from XML node.
 		/// @param node XML node for the object properties
 		/// @return true if the value was updated.
-		bool set(const XML::Node &node);
+		void parse(const XML::Node &node) override;
 
 		inline void rename(const char *name) {
 			objectName = name;
 		}
 
-		typedef NamedObject Super;
+		typedef Abstract::Object Super;
 
 	public:
 
@@ -111,6 +111,8 @@
 	class UDJAT_API Object : public NamedObject {
 	protected:
 
+		typedef NamedObject Super;
+
 		struct Properties {
 
 			/// @brief Object label.
@@ -127,9 +129,12 @@
 
 		} properties;
 
-		Object(const char *name, const XML::Node &node);
-		Object(const XML::Node &node);
-		
+		Object(const XML::Node &node) : NamedObject(node) {
+		}
+
+		Object(const char *name, const XML::Node &node) : NamedObject(name, node) {
+		}
+
 		void parse(const XML::Node &node) override;
 
 	public:

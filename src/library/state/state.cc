@@ -85,9 +85,9 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const XML::Node &node) : Object(node) {
+	Abstract::State::State(const XML::Node &node) : Object{node} {
 
-		set(node);
+		parse(node);
 
 		if(!(Object::properties.icon && *Object::properties.icon)) {
 			Object::properties.icon = IconNameFactory(properties.level);
