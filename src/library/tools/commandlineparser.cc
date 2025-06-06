@@ -237,7 +237,7 @@
 				extract(ix,argc,argv);
 
 #ifdef _WIN32
-				if(!SetEnvironmentVariable(name,value)) {
+				if(!SetEnvironmentVariable(name.c_str(),value.c_str())) {
 					Logger::String{"Unable to set property '",name.c_str(),"' to '",value.c_str(),"'"}.error();
 				} else {
 					Logger::String{"Property '",name.c_str(),"' set to '",value.c_str(),"'"}.trace();
