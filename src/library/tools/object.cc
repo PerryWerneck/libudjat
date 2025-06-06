@@ -30,6 +30,9 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
+ #include <udjat/module/abstract.h>
+ #include <udjat/tools/actions/abstract.h>
+ #include <udjat/tools/interface.h>
 
  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   
@@ -178,6 +181,62 @@
 			return true; // Ignore reserved nodes.
 		}
 
+		// It's a module?
+		if(strcasecmp(node.name(),"module") == 0) {
+			Module::load(node);
+			return true; // Handled by module.
+		}
+
+		// It's an interface?
+		if(strcasecmp(node.name(),"interface") == 0) {
+			Interface::Factory::build(node);
+			return true; // Handled by interface.
+		}
+
+		if(strcasecmp(node.name(),"init") == 0) {
+			try {
+				auto action = Action::Factory::build(node,true);
+				if(action) {
+					action->call(node);
+				}
+			} catch(const std::exception &e) {
+				Logger::String{"Initialization failure: ",e.what()}.error(node.attribute("name").as_string("action"));
+			} catch(...) {
+				Logger::String{"Initialization failure: Unexpected error"}.error(node.attribute("name").as_string("action"));
+			}
+			return true; // Handled by action.
+		}
+
+		// Run node based factories.
+		if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
+
+			if(factory.NodeFactory(*this,node)) {
+				return true;
+			}
+
+			return factory.NodeFactory(node);
+
+		})) {
+
+			return true; // Handled by factory.
+
+		}
+
+		// Run factories.
+		if(Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
+
+			if(factory == node.attribute("type").as_string("default") && factory.CustomFactory(*this,node)) {
+				return true;
+			}
+
+			return false;
+
+		})) {
+
+			return true; // Handled by factory.
+
+		}
+
 		return false;	// Not handled, maybe the caller can handle it.
 	}
 
@@ -191,7 +250,7 @@
 
 			const char *type = child.attribute("type").as_string("default");
 
-			Factory::for_each([this,type,&child](Udjat::Factory &factory){
+			if(Factory::for_each([this,type,&child](Udjat::Factory &factory){
 
 				if(factory == child.name()) {
 
@@ -217,7 +276,13 @@
 
 				return false;
 
-			});
+			})) {
+				continue; // Handled by factory.
+			};
+
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Ignoring node <",node.name(),">"}.write(Logger::Debug,PACKAGE_NAME);
+			}
 
 		}
 

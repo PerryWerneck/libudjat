@@ -226,6 +226,12 @@
 
 			virtual ~Agent();
 
+			/// @brief Load agent children, states, alerts, etc. from node.
+			/// @param node The xml node with agent children to build.
+			void parse(const XML::Node &node) override;
+
+			bool parse_child(const XML::Node &node) override;
+
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
 
@@ -265,10 +271,6 @@
 			inline std::list<std::shared_ptr<Abstract::Object>> & objects() noexcept {
 				return children.objects;
 			}
-
-			/// @brief Load agent children, states, alerts, etc. from node.
-			/// @param node The xml node with agent children to build.
-			void setup(const XML::Node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();

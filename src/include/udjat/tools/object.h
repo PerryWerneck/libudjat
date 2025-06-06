@@ -129,6 +129,7 @@
 
 		Object(const char *name, const XML::Node &node);
 		Object(const XML::Node &node);
+		
 		void parse(const XML::Node &node) override;
 
 	public:

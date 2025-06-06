@@ -29,7 +29,6 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/agent/abstract.h>
- #include <udjat/module/abstract.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/actions/abstract.h>
@@ -37,152 +36,91 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/actions/abstract.h>
- #include <udjat/tools/interface.h>
  #include <udjat/alert.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
-	void Abstract::Agent::setup(const XML::Node &root) {
+	void Abstract::Agent::parse(const XML::Node &node) {
+		Controller::setup_properties(*this,node);
+		super::parse(node);
+	}
 
-		Controller::setup_properties(*this,root);
+	bool Abstract::Agent::parse_child(const XML::Node &node) {
 
-		// Load children.
-		for(const XML::Node &node : root) {
+		if(super::parse_child(node)) {
+			return true;
+		}
 
-			// It's an attribute?
-			if(is_reserved(node) || !is_allowed(node)) {
-				continue;
-			}
+		// It's a state?
+		if(strcasecmp(node.name(),"state") == 0) {
 
-			// It's a state?
-			if(strcasecmp(node.name(),"state") == 0) {
+			try {
 
-				try {
-
-					auto state = StateFactory(node);
-					if(state) {
-						for(XML::Node child : node) {
-
-							if(is_reserved(node) || !is_allowed(node)) {
-								continue;
-							}
-							state->push_back(child);
+				auto state = StateFactory(node);
+				if(state) {
+					for(XML::Node child : node) {
+						if(is_reserved(node) || !is_allowed(node)) {
+							continue;
 						}
-					} else {
-						Logger::String{"Unable to create agent state"}.error(name());
+						state->push_back(child);
 					}
-
-				} catch(const std::exception &e) {
-
-					Logger::String{"Cant parse <",node.name(),">: ",e.what()}.error(name());
-
-				} catch(...) {
-
-					Logger::String{"Unexpected error parsing <",node.name(),">"}.error(name());
-
+				} else {
+					Logger::String{"Unable to create agent state"}.error(name());
 				}
 
-				continue;
-			}
+			} catch(const std::exception &e) {
 
-			// It's a module?
-			if(strcasecmp(node.name(),"module") == 0) {
-				Module::load(node);
-				continue;
-			}
+				Logger::String{"Cant parse <",node.name(),">: ",e.what()}.error(name());
 
-			// It's an agent?
-			if(strcasecmp(node.name(),"agent") == 0) {
+			} catch(...) {
 
-				auto agent = Abstract::Agent::Factory::build(*this,node);
-				if(agent) {
-					agent->Object::set(node);
-					agent->setup(node);
-					push_back(agent);
-					continue;
-				}
+				Logger::String{"Unexpected error parsing <",node.name(),">"}.error(name());
 
 			}
 
-			// It's an alert?
-			if(strcasecmp(node.name(),"alert") == 0) {
-				try {
-					push_back(node,Alert::Factory::build(*this,node));
-				} catch(const std::exception &e) {
-					Logger::String{"Alert creation failure: ",e.what()}.error(node.attribute("name").as_string(name()));
-				}
-				continue;
-			}
-
-			// It's an action?
-			if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-				try {
-					push_back(node,Action::Factory::build(node,true));
-				} catch(const std::exception &e) {
-					Logger::String{"Action creation failure: ",e.what()}.error(name());
-				}
-				continue;
-			}
-
-			// It's an interface?
-			if(strcasecmp(node.name(),"interface") == 0) {
-				Interface::Factory::build(node);
-				continue;
-			}
-
-			if(strcasecmp(node.name(),"init") == 0) {
-				try {
-					auto action = Action::Factory::build(node,true);
-					if(action) {
-						action->call(node);
-					}
-				} catch(const std::exception &e) {
-					Logger::String{"Initialization failure: ",e.what()}.error(node.attribute("name").as_string("action"));
-				} catch(...) {
-					Logger::String{"Initialization failure: Unexpected error"}.error(node.attribute("name").as_string("action"));
-				}
-				continue;
-			}
-
-			// Run node based factories.
-			if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
-
-				if(factory.NodeFactory(*this,node)) {
-					return true;
-				}
-
-				return factory.NodeFactory(node);
-
-			})) {
-
-				continue;
-
-			}
+			return true;
+		}
 
 
-			// Run factories.
-			if(Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
+		// It's an agent?
+		if(strcasecmp(node.name(),"agent") == 0) {
 
-				if(factory == node.attribute("type").as_string("default") && factory.CustomFactory(*this,node)) {
-					return true;
-				}
+			auto agent = Abstract::Agent::Factory::build(*this,node);
+			if(agent) {
+				agent->Object::set(node);
+				agent->parse(node);
 
-				return false;
+				// TODO: Check agent-path attribute and change parent if needed.
+				push_back(agent);
 
-			})) {
-
-				continue;
-
-			}
-
-			if(Logger::enabled(Logger::Debug)) {
-				Logger::String{"Ignoring node <",node.name(),">"}.write(Logger::Debug,PACKAGE_NAME);
+				return true; // Handled by agent.
 			}
 
 		}
 
+		// It's an alert?
+		if(strcasecmp(node.name(),"alert") == 0) {
+			try {
+				push_back(node,Alert::Factory::build(*this,node));
+			} catch(const std::exception &e) {
+				Logger::String{"Alert creation failure: ",e.what()}.error(node.attribute("name").as_string(name()));
+			}
+			return true; // Handled by alert.
+		}
+
+		// It's an action?
+		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
+			try {
+				push_back(node,Action::Factory::build(node,true));
+			} catch(const std::exception &e) {
+				Logger::String{"Action creation failure: ",e.what()}.error(name());
+			}
+			return true; // Handled by action.
+		}
+
+		return false;
 	}
 
 }
