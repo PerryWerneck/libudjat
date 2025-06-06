@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-31 11:45-0300\n"
-"PO-Revision-Date: 2025-05-31 11:45-0300\n"
+"POT-Creation-Date: 2025-06-05 21:50-0300\n"
+"PO-Revision-Date: 2025-06-05 21:52-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -60,12 +60,12 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/module/module.cc:114
+#: src/library/module/module.cc:118
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:130
+#: src/library/module/module.cc:134
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
@@ -90,18 +90,6 @@ msgstr "desligado"
 #: src/library/tools/application/run.cc:69
 msgid "Unable to set environment variable"
 msgstr "Incapaz de setar variável de ambiente"
-
-#: src/library/tools/application/run.cc:97
-#: src/library/tools/os/windows/systemservice.cc:163
-#: src/library/tools/commandlineparser.cc:196
-msgid "Usage:"
-msgstr "Uso:"
-
-#: src/library/tools/application/run.cc:98
-#: src/library/tools/os/windows/systemservice.cc:164
-#: src/library/tools/commandlineparser.cc:197
-msgid "[OPTION..]"
-msgstr "[OPÇÕES..]"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -453,29 +441,33 @@ msgstr ""
 "Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
 "pôde ser encontrado nas bases de dados consultadas."
 
-#: src/library/tools/os/windows/systemservice.cc:45
-msgid "\t\tStart service"
-msgstr "\t\tIniciar serviço"
+#: src/library/tools/os/windows/systemservice.cc:53
+msgid "Run in foreground (as application)"
+msgstr ""
 
-#: src/library/tools/os/windows/systemservice.cc:46
-msgid "\t\tStop service"
-msgstr "\t\tParar serviço"
+#: src/library/tools/os/windows/systemservice.cc:54
+msgid "Start service"
+msgstr "Iniciar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:47
-msgid "\t\tInstall service"
-msgstr "\t\tInstalar serviço"
+#: src/library/tools/os/windows/systemservice.cc:55
+msgid "Stop service"
+msgstr "Parar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:48
-msgid "\t\tUninstall service"
-msgstr "\t\tDesinstalar serviço"
+#: src/library/tools/os/windows/systemservice.cc:56
+msgid "Install service"
+msgstr "Instalar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:49
-msgid "\t\tReinstall service"
-msgstr "\t\tReinstalar serviço"
+#: src/library/tools/os/windows/systemservice.cc:57
+msgid "Uninstall service"
+msgstr "Desinstalar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:50
-msgid "\t\tBlock access to 'net stop' on this request"
-msgstr "\t\tBloquear acesso a 'net stop' no serviço"
+#: src/library/tools/os/windows/systemservice.cc:58
+msgid "Reinstall service"
+msgstr "Reinstalar serviço"
+
+#: src/library/tools/os/windows/systemservice.cc:59
+msgid "Block access to 'net stop' on this service"
+msgstr "Bloquear acesso a 'net stop' no serviço"
 
 #: src/library/tools/report.cc:220
 msgid "Yes"
@@ -626,7 +618,7 @@ msgstr "estado"
 
 #: src/library/tools/value/type.cc:45
 msgid "int"
-msgstr ""
+msgstr "inteiro"
 
 #: src/library/tools/value/type.cc:46
 msgid "integer"
@@ -634,7 +626,7 @@ msgstr "inteiro"
 
 #: src/library/tools/value/type.cc:47
 msgid "number"
-msgstr "numérico"
+msgstr "numero"
 
 #: src/library/tools/value/type.cc:93
 msgid "Unknown"
@@ -681,7 +673,17 @@ msgstr "Mostra essa mensagem de help"
 msgid "Application options:\n"
 msgstr "Opções da aplicação\n"
 
-#: src/library/tools/commandlineparser.cc:178
+#: src/library/tools/commandlineparser.cc:175
+#: src/library/tools/commandlineparser.cc:266
+msgid "Usage:"
+msgstr "Uso:"
+
+#: src/library/tools/commandlineparser.cc:176
+#: src/library/tools/commandlineparser.cc:267
+msgid "[OPTION..]"
+msgstr "[OPÇÕES..]"
+
+#: src/library/tools/commandlineparser.cc:181
 msgid "Quit after \"seconds\""
 msgstr "Encerra após \"seconds\""
 
