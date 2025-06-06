@@ -164,6 +164,13 @@
 	Abstract::Object::~Object() {
 	}
 
+	bool Abstract::Object::push_back(const XML::Node &node) {
+		if(!(is_reserved(node) || !is_allowed(node))) {
+			Logger::String{"<",node.name(),"> is not supported here, ignoring it"}.trace(name());
+		}
+		return false;
+	}
+
 	void Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {
 		throw logic_error("Object is unable to handle children");
 	}

@@ -39,6 +39,9 @@
 			/// @param node The XML node with the object definitions.
 			virtual void setup(const XML::Node &node);
 
+			/// @brief Build and add child object.
+			virtual bool push_back(const XML::Node &node);
+
 			/// @brief Add child object (if supported).
 			virtual void push_back(std::shared_ptr<Abstract::Object> child);
 
