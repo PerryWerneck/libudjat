@@ -39,10 +39,6 @@
 
   namespace Udjat {
 
-	int SystemService::setup(const char *definitions) {
-		return Application::setup(definitions);
-	}
-
 	/// @brief Show help text to stream.
 	/// @param out The stream for help.
 	void SystemService::help(size_t width) const noexcept {

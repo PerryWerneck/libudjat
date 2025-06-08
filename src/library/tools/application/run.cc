@@ -73,23 +73,6 @@
 		return true;
 	}
 
-	int Application::setup(const char *) {
-
-		debug("---> Running ",__FUNCTION__);
-
-		string argvalue;
-
-		if(CommandLineParser::get_argument(argc,argv,'T',"timer",argvalue)) {
-			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
-				MainLoop::getInstance().quit("Timer expired, exiting");
-				return false;
-			});
-		}
-				
-		return 0;
-
-	}
-
 	int Application::run(const char *definitions) {
 
 		if(has_argument('h',"help",true)) {
@@ -99,12 +82,25 @@
 			return 0;
 		}
 
+		// Parse command line arguments.
 		CommandLineParser::setup(argc,argv);
 
-		// Parse command line arguments.
-		if(setup(definitions)) {
-			return -1;
+		{
+			string argvalue;
+
+			if(get_argument(argc,argv,'T',"timer",argvalue)) {
+				MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
+					MainLoop::getInstance().quit("Timer expired, exiting");
+					return false;
+				});
+			}
+
 		}
+
+		// Parse command line arguments.
+		//if(setup(definitions)) {
+		//	return -1;
+		//}
 
 		if(!MainLoop::getInstance()) {
 			return 0;
@@ -113,11 +109,6 @@
 		int rc = -1;
 
 		try {
-
-			rc = init(definitions);
-			if(rc) {
-				return rc;
-			}
 
 #ifdef _WIN32
 			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
@@ -136,13 +127,9 @@
 			});
 #endif // _WIN32
 
+			debug("----> Starting mainloop");
 			rc = MainLoop::getInstance().run();
-
-			if(deinit(definitions)) {
-				rc = -1;
-			}
-
-			finalize();
+			debug("----> MainLoop exited with code ",rc);
 
 		} catch(const std::exception &e) {
 

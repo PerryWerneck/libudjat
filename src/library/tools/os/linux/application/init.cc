@@ -43,6 +43,10 @@
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
+		if(!Module::preload()) {
+			throw runtime_error("Module preload has failed");
+		}
+
 
 	}
 

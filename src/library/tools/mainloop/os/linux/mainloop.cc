@@ -67,13 +67,12 @@
 
 	void Linux::MainLoop::wakeup() noexcept {
 		if(efd != -1) {
-			static uint64_t evNum = 0;
 			if(write(efd, &evNum, sizeof(evNum)) != sizeof(evNum)) {
-				cerr << "MainLoop\tError '" << strerror(errno) << "' writing to event loop using fd " << efd << endl;
-			}
+				Logger::String{"Error '",strerror(errno),"' writing to event loop using fd ",efd,}.error();
+			}	
 			evNum++;
 		} else {
-			clog << "MainLoop\tUnexpected call with efd=" << efd << endl;
+			Logger::String{"Unexpected call with efd=",efd}.error();
 		}
 	}
 

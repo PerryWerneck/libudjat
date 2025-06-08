@@ -55,11 +55,11 @@
 
 		/// @brief Initialize application.
 		/// @return 0 if ok, errno if not.
-		virtual int init(const char *definitions);
+		// virtual int init();
 
 		/// @brief Deinitialize application.
 		/// @return 0 if ok, errno if not.
-		virtual int deinit(const char *definitions);
+		// virtual int deinit();
 
 		/// @brief Set property from command-line argument.
 		/// @param name Property name.
@@ -85,15 +85,15 @@
 
 		/// @brief Initialize application, load configuration, setup root agent.
 		/// @return seconds for next update.
-		static time_t initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup = true);
+		// static time_t initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup = true);
 
 		/// @brief Deinitialize application.
-		static void finalize();
+		// static void finalize();
 
 		/// @brief Parse command line options
 		/// @param definitions Path to a single xml file or a folder with xml files.
 		/// @return 0 if ok, error code if not.
-		virtual int setup(const char *definitions = nullptr);
+		// virtual int setup(const char *definitions = nullptr);
 
 		/// @brief Parse command line options, run application.
 		/// @param definitions Path to a single xml file or a folder with xml files.
@@ -102,7 +102,7 @@
 		/// @brief Load XML application definitions.
 		/// @param definitions Path to a single xml file or a folder with xml files.
 		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
-		virtual void setup(const char *definitions, bool startup);
+		// virtual void setup(const char *definitions, bool startup);
 
 		/// @brief Install application.
 		/// @param name Application name.

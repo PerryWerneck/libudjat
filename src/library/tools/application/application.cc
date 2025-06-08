@@ -22,6 +22,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/tools/threadpool.h>
  #include <iostream>
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -42,9 +43,28 @@
 	}
 
 	Application::~Application() {
+
 		if(timer) {
 			delete timer;
+			timer = nullptr;
 		}
+
+		ThreadPool::getInstance().wait();
+
+		Service::for_each([](const Service &service){
+			if(service.active()) {
+				const_cast<Service *>(&service)->stop();
+			}
+			return true;
+		});
+
+		Module::for_each([](Module &module){
+			module.finalize();
+			return false;
+		});
+
+		ThreadPool::getInstance().wait();
+
 		Udjat::Module::unload();
 	}
 

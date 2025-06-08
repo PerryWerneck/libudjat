@@ -45,6 +45,7 @@ namespace Udjat {
 
 			/// @brief Event FD.
 			int efd = -1;
+			uint64_t evNum = 0;
 
 			/// @brief Active timers.
 			Timers timers;
