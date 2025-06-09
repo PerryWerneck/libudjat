@@ -78,23 +78,28 @@
 		}
 
 		// Check for update.
-
-		// TODO: Check file's last write and and update-timer attribute to see if an url check is required.
-
-		URL url{document_element()};
+		const XML::Node &node = document_element();
+		URL url{node};
 		url.expand();
 
-		if(!url.empty()) {
+		if(!url.empty() && File::outdated(filename,TimeStamp{node,"update-timer"})) {
 
-			bool updated = url.handler()->set(MimeType::xml).get(filename);
+			try {
+				
+				bool updated = url.handler()->set(MimeType::xml).get(filename);
 
-			if(updated) {
-				Logger::String{filename," was updated from ",url.c_str()}.info("xml");
-				reset();
-				Udjat::load(this,filename);
+				if(updated) {
+					Logger::String{filename," was updated from ",url.c_str()}.info("xml");
+					reset();
+					Udjat::load(this,filename);
+					File::mtime(filename,time(0)); // Mark file as updated.
+				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning("xml");
+
 			}
-
-			document_element().append_attribute("updated").set_value(updated);
 
 		}
 

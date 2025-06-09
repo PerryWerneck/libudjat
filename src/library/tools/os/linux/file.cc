@@ -26,8 +26,12 @@
  #include <udjat/tools/file.h>
  #include <unistd.h>
  #include <sys/types.h>
+ #include <sys/stat.h>
  #include <utime.h>
  #include <udjat/tools/logger.h>
+ #include <system_error>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -50,5 +54,33 @@
 		return 0;
 
 	}
+
+	bool File::outdated(const char *filename, time_t max_age) {
+
+		if(!max_age) {
+			return true; // No max age, so its allways outdated.
+		}
+
+		struct stat st;
+
+		if(stat(filename,&st) == -1) {
+			if(errno == ENOENT) {
+				debug(filename," does not exist, so it's outdated");
+				return true; // File does not exist, so it's outdated.
+			}
+			throw system_error(errno,system_category(),filename);
+		}
+
+		time_t age = time(0) - st.st_mtime;
+		if(age > max_age) {
+			debug(filename," is outdated, age: ",age," seconds");
+			return true; // File is outdated.
+		}
+
+		debug(filename," is not outdated, age: ",age," seconds");
+		return false; // File is not outdated.
+
+	}	
+
 
  }
