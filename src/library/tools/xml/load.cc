@@ -64,10 +64,16 @@
 					parse(node);
 				}
 
-//				if(result && (result < next || next == 0)) {
-//					next = result;
-//				}
+				time_t expires = TimeStamp{root,"update-timer"};
+				if(expires) {
+					expires += time(0);
+					if(expires < next || next == 0) {
+						next = expires;
+					}
+				}
+
 				return false;
+
 			});
 
 		} else {
@@ -78,6 +84,10 @@
 			XML::Document document{path.c_str()};
 
 			const auto &root = document.document_element();
+			next = TimeStamp{root,"update-timer"};
+			if(next) {
+				next += time(0);
+			}
 
 			for(const XML::Node &node : root) {
 				parse(node);

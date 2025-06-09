@@ -60,6 +60,9 @@ namespace Udjat {
 		/// @return 0 if ok, non zero if not (sets errno).
 		UDJAT_API int mtime(const char *filename, time_t time);
 
+		/// @brief Get file modification time.
+		UDJAT_API time_t mtime(const char *filename);
+
 		/// @brief Check file modification time.
 		/// @param filename The file name to check.
 		/// @param max_age The maximum age in seconds.

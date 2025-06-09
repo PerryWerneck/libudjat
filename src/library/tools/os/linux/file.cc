@@ -55,6 +55,22 @@
 
 	}
 
+	time_t File::mtime(const char *filename) {
+
+		struct stat st;
+
+		if(stat(filename,&st) == -1) {
+			if(errno == ENOENT) {
+				debug(filename," does not exist, so it's outdated");
+				return 0; 
+			}
+			throw system_error(errno,system_category(),filename);
+		}
+
+		return st.st_mtime;
+
+	}
+
 	bool File::outdated(const char *filename, time_t max_age) {
 
 		if(!max_age) {
