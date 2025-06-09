@@ -47,6 +47,8 @@
 	#include <private/event.h>
  #else
 	#include <sys/resource.h>
+	#include <csignal>
+	#include <udjat/tools/event.h>
  #endif // _WIN32
 
  using namespace std;
@@ -148,7 +150,23 @@
 		try {
 
 			if(definitions && *definitions) {
-				parse(String{definitions}.expand(true).as_quark());
+
+				const char *path = String{definitions}.expand(true).as_quark();
+				
+#ifndef _WIN32
+				// Sighup force reconfiguration.
+				Event::SignalHandler(this,SIGHUP,[this,path]() -> bool {
+					Logger::String{"Catched SIGHUP, reloading ",path}.info(name());
+					this->parse(path);
+					return true;
+				});
+
+				Logger::String{
+					"Signal '",(const char *) strsignal(SIGHUP),"' (SIGHUP) will reload settings from ",path
+				}.info(name());
+#endif
+
+				parse(path);
 			}
 
 			// Start the main loop.

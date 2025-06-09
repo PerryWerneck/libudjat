@@ -95,6 +95,14 @@
 
 		}
 
+#ifdef DEBUG 
+		if(next) {
+			debug("Next update in ",TimeStamp{next}.to_string());
+		} else {
+			debug("No next update defined");
+		}
+#endif // DEBUG		
+
 		return next;
 
 	}
