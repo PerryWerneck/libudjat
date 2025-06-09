@@ -82,7 +82,8 @@
 				Logger::String{"Loading ",path}.trace();
 
 				// TODO: Load XML definitions.
-				
+				auto root = RootFactory();
+				time_t refresh = root->Abstract::Object::parse(path);
 
 			} catch(const std::exception &e) {
 

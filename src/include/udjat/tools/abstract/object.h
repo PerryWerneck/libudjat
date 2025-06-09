@@ -38,6 +38,11 @@
 
 			virtual ~Object();
 
+			/// @brief Parse XML file(s), build children.
+			/// @param path The path for a folder or a XML file.
+			/// @return timestamp for next refresh.
+			time_t parse(const char *path);
+
 			/// @brief Parse object, build children.
 			/// @param node The XML node with the object definitions.
 			virtual void parse(const XML::Node &node);

@@ -33,6 +33,7 @@
  #include <udjat/tools/intl.h>
  #include <string>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/abstract/object.h>
  #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
@@ -42,6 +43,51 @@
  using namespace std;
 
  namespace Udjat {
+
+	time_t Abstract::Object::parse(const char *p) {
+
+		time_t next = 0;
+
+		File::Path path{p};
+		if(path.dir()) {
+
+			// Is a directory, scan for files
+			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
+
+			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
+
+				XML::Document document{path.c_str()};
+
+				const auto &root = document.document_element();
+
+				for(const XML::Node &node : root) {
+					parse(node);
+				}
+
+//				if(result && (result < next || next == 0)) {
+//					next = result;
+//				}
+				return false;
+			});
+
+		} else {
+
+			// Is a file, load it
+			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.trace();
+
+			XML::Document document{path.c_str()};
+
+			const auto &root = document.document_element();
+
+			for(const XML::Node &node : root) {
+				parse(node);
+			}
+
+		}
+
+		return next;
+
+	}
 
 	time_t XML::parse(const char *p) {
 
