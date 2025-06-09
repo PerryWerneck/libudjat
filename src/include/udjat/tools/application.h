@@ -42,6 +42,8 @@
 		int &argc;
 		char **argv;				///< @brief Command line arguments.
 
+		void parse(const char *path);
+
 	protected:
 
 		typedef Udjat::Application super;

@@ -30,7 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/module/abstract.h>
  #include <udjat/ui/console.h>
- #include <private/updater.h>
+// #include <private/updater.h>
  #include <string>
  #include <getopt.h>
 
@@ -73,6 +73,32 @@
 		return true;
 	}
 
+	void Application::parse(const char *path) {
+
+		ThreadPool::getInstance().push([this,path](){
+
+			try {
+
+				Logger::String{"Loading ",path}.trace();
+
+				// TODO: Load XML definitions.
+				
+
+			} catch(const std::exception &e) {
+
+				MainLoop::getInstance().quit(e.what());
+
+			} catch(...) {
+
+				MainLoop::getInstance().quit("Unexpected error");
+			}
+
+
+		});
+
+
+	}
+
 	int Application::run(const char *definitions) {
 
 		if(has_argument('h',"help",true)) {
@@ -97,18 +123,9 @@
 
 		}
 
-		// Parse command line arguments.
-		//if(setup(definitions)) {
-		//	return -1;
-		//}
-
 		if(!MainLoop::getInstance()) {
-			return 0;
+			return -1;
 		}
-
-		int rc = -1;
-
-		try {
 
 #ifdef _WIN32
 			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
@@ -127,18 +144,30 @@
 			});
 #endif // _WIN32
 
+		try {
+
+			if(definitions && *definitions) {
+				parse(String{definitions}.expand(true).as_quark());
+			}
+
+			// Start the main loop.
 			debug("----> Starting mainloop");
-			rc = MainLoop::getInstance().run();
+			int rc = MainLoop::getInstance().run();
 			debug("----> MainLoop exited with code ",rc);
+
+			return rc;
 
 		} catch(const std::exception &e) {
 
 			error() << e.what() << endl;
-			rc = -1;
+
+		} catch(...) {
+
+			error() << "Unexpected error" << endl;
 
 		}
 
-		return rc;
+		return -1;
 
 	}
 
