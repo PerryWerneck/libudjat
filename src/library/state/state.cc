@@ -27,7 +27,6 @@
  */
 
  #include <config.h>
- #include <private/state.h>
  #include <udjat/agent/state.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
@@ -87,7 +86,7 @@ namespace Udjat {
 
 	Abstract::State::State(const XML::Node &node) : Object{node} {
 
-		parse(node);
+		// parse(node);
 
 		if(!(Object::properties.icon && *Object::properties.icon)) {
 			Object::properties.icon = IconNameFactory(properties.level);
@@ -105,7 +104,22 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::State::parse_child(const XML::Node &node) {
+	bool Abstract::State::parse(const XML::Node &node) {
+
+		if(Udjat::Object::parse(node)) {
+			return true; // Handled by object.
+		}
+
+
+
+#ifdef DEBUG
+		Logger::String{"Unexpected node <State::",node.name(),">"}.warning(name());
+#endif
+		return false;
+	}
+
+	/*
+	bool Abstract::State::parse(const XML::Node &node) {
 
 		if(strcasecmp(node.name(),"alert") == 0) {
 			listeners.push_back(Alert::Factory::build(*this,node));
@@ -121,6 +135,7 @@ namespace Udjat {
 
 		return false;
 	}
+	*/
 
 	std::string Abstract::State::value() const {
 		return "";

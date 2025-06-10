@@ -105,25 +105,10 @@
 				continue;
 			}
 
-			try {
-
-				auto agent = factory->AgentFactory(parent,node);
-				if(agent) {
-					debug("Got agent '",type,"'")
-					return agent;
-				}
-
-				Logger::String{"Empty response from module while building agent '",type,"', ignoring"}.warning();
-
-			} catch(const std::exception &e) {
-
-				Logger::String{
-					"Error building '",type,"' agent: ",e.what()}.error(node.attribute("name").as_string(PACKAGE_NAME));
-
-			} catch(...) {
-
-				Logger::String{"Unexpected error building agent '",type,"'"}.error(node.attribute("name").as_string(PACKAGE_NAME));
-
+			auto agent = factory->AgentFactory(parent,node);
+			if(agent) {
+				debug("Got agent '",type,"'")
+				return agent;
 			}
 
 		}
@@ -286,10 +271,9 @@
 
 		}
 
-		Logger::String{"Cant find a valid factory for agent type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
-
-		// Return empty agent, for legacy compatibility.
-		return std::shared_ptr<Abstract::Agent>();
+		throw runtime_error(
+			String{"Cant find a valid factory for agent type '",type,"'"}
+		);
 
 	}
 

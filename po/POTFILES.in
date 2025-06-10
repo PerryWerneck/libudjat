@@ -231,7 +231,6 @@ src/include/private/linux/subprocess.h
 src/include/private/misc.h
 src/include/private/request.h
 src/include/private/service.h
-src/include/private/state.h
 src/include/private/win32.h
 src/include/private/win32/subprocess.h
 src/include/private/win32/handler.h

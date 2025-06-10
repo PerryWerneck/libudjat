@@ -33,12 +33,26 @@
  #include <udjat/module/abstract.h>
  #include <udjat/tools/actions/abstract.h>
  #include <udjat/tools/interface.h>
+ #include <udjat/tools/container.h>
 
  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   
  using namespace std;
 
  namespace Udjat {
+
+	static Container<Abstract::Object::Factory> & Factories() {
+		static Container<Abstract::Object::Factory> instance;
+		return instance;
+	}
+
+	Abstract::Object::Factory::Factory(const char *n) : name{n} {
+		Factories().push_back(this);
+	}
+
+	Abstract::Object::Factory::~Factory() {
+		Factories().remove(this);
+	}
 
 	static const char * NameFactory(const XML::Node &node) noexcept {
 
@@ -114,6 +128,7 @@
 		return cerr << objectName << "\t";
 	}
 
+	/*
 	std::shared_ptr<Abstract::Object> Abstract::Object::Factory(const Object *object, ...) noexcept {
 
 		class Object : public Udjat::NamedObject {
@@ -153,6 +168,7 @@
 		return obj;
 		
 	}
+	*/
 
 	Abstract::Object::~Object() {
 	}
@@ -165,7 +181,7 @@
 		push_back(child);
 	}
 
-	bool Abstract::Object::parse_child(const XML::Node &node) {
+	bool Abstract::Object::parse(const XML::Node &node) {
 		
 		if(is_reserved(node) || !is_allowed(node)) {
 			return true; // Ignore reserved nodes.
@@ -190,6 +206,26 @@
 			}
 			return true; // Handled by action.
 		}
+
+		// It's a factory?
+		{
+			const char *name = node.name();
+
+			for(const auto factory : Factories()) {
+
+				if(*factory == name) {
+#ifdef DEBUG 
+					Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
+#endif // DEBUG
+					// auto object = factory->build(*this,node);
+					return true; // Handled by factory.
+				}
+
+			}
+
+		}
+
+		/*
 
 		// Run node based factories.
 		if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
@@ -220,11 +256,17 @@
 			return true; // Handled by factory.
 
 		}
+		*/
+
+#ifdef DEBUG 
+		Logger::String{"Unexpected node <Abstract::Object::",node.name(),">"}.warning(name());
+#endif // DEBUG
 
 		return false;	// Not handled, maybe the caller can handle it.
 	}
 
-	bool Abstract::Object::parse(const XML::Node &node) {
+	/*
+	void Abstract::Object::parse(const XML::Node &node) {
 
 		for(XML::Node child : node) {
 
@@ -271,6 +313,7 @@
 		return true; // Handled by object.
 
 	}
+	*/
 
 	bool Object::parse(const XML::Node &node) {
 

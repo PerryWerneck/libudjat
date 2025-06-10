@@ -34,7 +34,24 @@
 			typedef Object Super;
 
 		public:
-			static std::shared_ptr<Object> Factory(const Object *object, ...) noexcept __attribute__ ((sentinel));
+
+			class UDJAT_API Factory {
+			private:
+				const char *name;
+
+			public:
+				Factory(const char *name);
+				virtual ~Factory();
+
+				inline bool operator==(const char *n) const noexcept {
+					return strcasecmp(n,name) == 0;
+				}
+
+				virtual std::shared_ptr<Abstract::Object> build(const Abstract::Object &parent, const XML::Node &node) = 0;
+
+			};
+
+			// static std::shared_ptr<Object> Factory(const Object *object, ...) noexcept __attribute__ ((sentinel));
 
 			virtual ~Object();
 
@@ -44,15 +61,10 @@
 			time_t parse(const char *path);
 
 			/// @brief Parse object, build children.
-			/// @param node The XML node with the object definitions.
-			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool parse(const XML::Node &node);
-
-			/// @brief Build and setup child object.
 			/// @details This method is called by parse() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool parse_child(const XML::Node &node);
+			virtual bool parse(const XML::Node &node);
 
 			/// @brief Add child object (if supported).
 			virtual void push_back(std::shared_ptr<Abstract::Object> child);

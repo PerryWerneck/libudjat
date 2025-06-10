@@ -29,6 +29,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/agent/abstract.h>
+ #include <udjat/agent/state.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/actions/abstract.h>
@@ -43,15 +44,25 @@
 namespace Udjat {
 
 	bool Abstract::Agent::parse(const XML::Node &node) {
-		Controller::setup_properties(*this,node);
-		return Udjat::Object::parse(node);
-	}
 
-	bool Abstract::Agent::parse_child(const XML::Node &node) {
-
-		if(Udjat::Object::parse_child(node)) {
+		if(Udjat::Object::parse(node)) {
 			return true;
 		}
+
+		/*
+		// It's an agent?
+		if(strcasecmp(node.name(),"agent") == 0) {
+
+			debug("--------------------- Agent::parse: Found agent node: ",node.attribute("name").as_string());
+			auto agent = Abstract::Agent::Factory::build(*this,node);
+
+			return true; // Handled by agent.
+
+		}
+		*/
+
+		/*
+		Controller::setup_properties(*this,node);
 
 		// It's a state?
 		if(strcasecmp(node.name(),"state") == 0) {
@@ -62,7 +73,7 @@ namespace Udjat {
 					if(is_reserved(node) || !is_allowed(node)) {
 						continue;
 					}
-					state->parse_child(child);
+					state->parse(child);
 				}
 			} else {
 				Logger::String{"Unable to create agent state"}.error(name());
@@ -74,6 +85,7 @@ namespace Udjat {
 		// It's an agent?
 		if(strcasecmp(node.name(),"agent") == 0) {
 
+			debug("--------------------- Agent::parse: Found agent node: ",node.attribute("name").as_string());
 			auto agent = Abstract::Agent::Factory::build(*this,node);
 			if(agent) {
 
@@ -84,6 +96,7 @@ namespace Udjat {
 				push_back(agent);
 
 				return true; // Handled by agent.
+
 			}
 
 			return false; // Unable to create agent.
@@ -100,6 +113,11 @@ namespace Udjat {
 			push_back(node,Action::Factory::build(node,true));
 			return true; // Handled by action.
 		}
+		*/
+
+#ifdef DEBUG 
+		Logger::String{"Unexpected node <Agent::",node.name(),">"}.warning(name());
+#endif // DEBUG
 
 		return false;
 	}

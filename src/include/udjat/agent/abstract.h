@@ -234,8 +234,6 @@
 				return Udjat::Object::parse(path);
 			}
 
-			bool parse_child(const XML::Node &node) override;
-
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
 

@@ -62,9 +62,7 @@
 				const auto &root = document.document_element();
 
 				// Parse nodes first to load and initialize modules...
-				for(const XML::Node &node : root) {
-					parse(node);
-				}
+				parse(root);
 
 				// ... then call loaded modules to parse the document.
 				Module::for_each([&document](Module &module) -> bool {

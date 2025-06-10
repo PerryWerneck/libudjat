@@ -121,7 +121,6 @@
 		}
 
 		// Wait for event.
-		debug("------------------------->",nfds);
 		evNum++;
 		int nSocks = poll(fds, nfds, wait);
 		if(nSocks == 0) {

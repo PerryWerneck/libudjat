@@ -94,7 +94,7 @@
 			/// @brief Parse XML node, append child.
 			/// @param node The XML definition.
 			/// @return true if the child was appended.
-			virtual bool parse_child(const XML::Node &node);
+			virtual bool parse(const XML::Node &node) override;
 
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
