@@ -107,14 +107,14 @@
 				// Activate the new root agent.
 				state( _("Activating new configuration") );
 
+				this->root(root);
+
 				Abstract::Agent::Controller::getInstance().set(root);
 
                 Module::for_each([root](const Module &module){
 					const_cast<Module &>(module).set(root);
 					return false;
                 });
-
-				this->root(root);
 
 				state( _("Starting services") );
 				Service::Controller::getInstance().start();
@@ -198,6 +198,12 @@
 #endif
 
 				parse(path);
+
+			} else {
+
+				state( _("Starting services") );
+				Service::Controller::getInstance().start();
+
 			}
 
 			// Start the main loop.
