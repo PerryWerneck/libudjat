@@ -128,9 +128,9 @@
 		/// @brief Unload modules.
 		static void unload();
 
-		/// @brief Set XML document
+		/// @brief Parse XML document
 		/// Called when a XML document is loaded.
-		virtual void set(const pugi::xml_document &document);
+		virtual void parse(const pugi::xml_document &document);
 
 		/// @brief Called when application is finishing to cleanup module data after unloading.
 		virtual void finalize();
@@ -171,7 +171,7 @@
 		std::ostream & error() const;
 
 		/// @brief Set new root agent.
-		virtual void set(std::shared_ptr<Abstract::Agent> agent) noexcept;
+		virtual void set(std::shared_ptr<Abstract::Agent> agent);
 
 	};
 

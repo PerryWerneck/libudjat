@@ -157,8 +157,8 @@
 				Abstract::Agent::Controller::getInstance().set(root);
 
 				// Inform the modules about the new root agent.
-                Module::for_each([root](const Module &module){
-					const_cast<Module &>(module).set(root);
+                Module::for_each([root](Module &module) -> bool {
+					module.set(root);
 					return false;
                 });
 

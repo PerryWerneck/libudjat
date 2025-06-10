@@ -34,6 +34,7 @@
  #include <string>
  #include <udjat/tools/string.h>
  #include <udjat/tools/abstract/object.h>
+ #include <udjat/module/abstract.h>
  #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
@@ -60,9 +61,16 @@
 
 				const auto &root = document.document_element();
 
+				// Parse nodes first to load and initialize modules...
 				for(const XML::Node &node : root) {
 					parse(node);
 				}
+
+				// ... then call loaded modules to parse the document.
+				Module::for_each([&document](Module &module) -> bool {
+					module.parse(document);
+					return false;
+				});
 
 				time_t expires = TimeStamp{root,"update-timer"};
 				if(expires) {
