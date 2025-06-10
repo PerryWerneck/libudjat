@@ -87,7 +87,7 @@
 			agent->summary()
 		}.write((Logger::Level) (Logger::Debug+1),agent->name());
 
-		for(const auto child : *agent) {
+		for(const auto &child : *agent) {
 			dump(child, level + 1);
 		}
 
@@ -131,12 +131,12 @@
 			} catch(const std::exception &e) {
 
 				Logger::String{"Error while loading ",path,": ",e.what()}.error(name());
-				return;
+				return;	// Ignore the error, keep the old configuration.
 
 			} catch(...) {
 
 				Logger::String{"Unexpected error while loading ",path}.error(name());
-				return;
+				return;	// Ignore the error, keep the old configuration.
 
 			}
 
