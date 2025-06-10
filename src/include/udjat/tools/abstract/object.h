@@ -47,7 +47,7 @@
 					return strcasecmp(n,name) == 0;
 				}
 
-				virtual std::shared_ptr<Abstract::Object> build(const Abstract::Object &parent, const XML::Node &node) = 0;
+				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const = 0;
 
 			};
 

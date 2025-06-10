@@ -50,9 +50,9 @@
 
 				/// @brief Create an agent from XML node.
 				/// @param node XML definition for the new agent.
-				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const;
+				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const = 0;
 
-				static std::shared_ptr<Abstract::Agent> build(const Abstract::Object &parent, const XML::Node &node);
+				static std::shared_ptr<Abstract::Agent> build(const Abstract::Agent &parent, const XML::Node &node);
 
 			};
 
