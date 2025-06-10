@@ -137,6 +137,10 @@
 
 		void parse(const XML::Node &node) override;
 
+		inline time_t parse(const char *path) {
+			return Abstract::Object::parse(path);
+		}
+
 	public:
 
 		constexpr Object(const char *name) : NamedObject(name) {

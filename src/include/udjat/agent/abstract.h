@@ -230,6 +230,10 @@
 			/// @param node The xml node with agent children to build.
 			void parse(const XML::Node &node) override;
 
+			inline time_t parse(const char *path) {
+				return Udjat::Object::parse(path);
+			}
+
 			bool parse_child(const XML::Node &node) override;
 
 			/// @brief Insert child node.

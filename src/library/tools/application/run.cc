@@ -80,10 +80,8 @@
 
 	static void dump(std::shared_ptr<Abstract::Agent> agent, size_t level = 0) {
 
-		string indent(level*2, ' ');
-
 		Logger::String{
-			indent.c_str(),
+			string(level*2, ' ').c_str(),
 			agent->label(),
 			" - ",
 			agent->summary()
@@ -100,16 +98,20 @@
 		// XML parse will run in a thread.
 		ThreadPool::getInstance().push([this,path](){
 
+			// Load new configuration, if it fails, the old configuration will be kept.
+			shared_ptr<Abstract::Agent> root;
+
 			try {
 
 				Logger::String{"Loading ",path}.trace();
 				state( _("Loading configuration") );
 
 				// TODO: Load XML definitions.
-				auto root = RootFactory();
-				time_t refresh = root->Abstract::Object::parse(path);
+				root = RootFactory();
+				time_t refresh = root->parse(path);
 
 				if(refresh) {
+
 					time_t seconds = refresh - time(0);
 					Logger::String{"Update of ",path," scheduled to ",TimeStamp{refresh}.to_string().c_str()," (",seconds," seconds from now)"}.info(name());
 
@@ -120,7 +122,26 @@
 						return false;
 					});
 
+				} else {
+
+					Logger::String{"Automatic update of ",path," disabled"}.trace(name());
+
 				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{"Error while loading ",path,": ",e.what()}.error(name());
+				return;
+
+			} catch(...) {
+
+				Logger::String{"Unexpected error while loading ",path}.error(name());
+				return;
+
+			}
+
+			// New root agent is ready, activate it.
+			try {
 
 				// Activate the new root agent.
 				state( _("Activating new configuration") );
@@ -129,10 +150,13 @@
 					dump(root);
 				}
 
+				// Set the root agent for application.
 				this->root(root);
 
+				// Set the root agent on controller.
 				Abstract::Agent::Controller::getInstance().set(root);
 
+				// Inform the modules about the new root agent.
                 Module::for_each([root](const Module &module){
 					const_cast<Module &>(module).set(root);
 					return false;
@@ -143,15 +167,16 @@
 
 			} catch(const std::exception &e) {
 
+				state(e.what());
 				MainLoop::getInstance().quit(e.what());
 
 			} catch(...) {
 
+				state(_("Unexpected error while activating new configuration"));
 				MainLoop::getInstance().quit("Unexpected error");
 			}
 
 		});
-
 
 	}
 
@@ -167,6 +192,10 @@
 		// Parse command line arguments.
 		CommandLineParser::setup(argc,argv);
 
+		if(!MainLoop::getInstance()) {
+			return -1;
+		}
+
 		{
 			string argvalue;
 
@@ -177,10 +206,6 @@
 				});
 			}
 
-		}
-
-		if(!MainLoop::getInstance()) {
-			return -1;
 		}
 
 #ifdef _WIN32
@@ -210,14 +235,14 @@
 				// Sighup force reconfiguration.
 				Event::SignalHandler(this,SIGHUP,[this,path]() -> bool {
 					Logger::String{"Catched SIGHUP, reloading ",path}.info(name());
-					this->parse(path);
+					parse(path);
 					return true;
 				});
 
 				Logger::String{
 					"Signal '",(const char *) strsignal(SIGHUP),"' (SIGHUP) will reload settings from ",path
 				}.info(name());
-#endif
+#endif // _WIN32
 
 				parse(path);
 
