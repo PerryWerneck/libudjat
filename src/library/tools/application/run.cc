@@ -33,6 +33,7 @@
  #include <udjat/tools/intl.h>
  #include <udjat/ui/status.h>
  #include <string>
+ #include <udjat/agent/abstract.h>
  #include <private/agent.h>
  #include <private/service.h>
 
@@ -77,6 +78,23 @@
 		return true;
 	}
 
+	static void dump(std::shared_ptr<Abstract::Agent> agent, size_t level = 0) {
+
+		string indent(level*2, ' ');
+
+		Logger::String{
+			indent.c_str(),
+			agent->label(),
+			" - ",
+			agent->summary()
+		}.write((Logger::Level) (Logger::Debug+1),agent->name());
+
+		for(const auto child : *agent) {
+			dump(child, level + 1);
+		}
+
+	}
+
 	void Application::parse(const char *path) {
 
 		// XML parse will run in a thread.
@@ -106,6 +124,10 @@
 
 				// Activate the new root agent.
 				state( _("Activating new configuration") );
+
+				if(Logger::enabled(Logger::Trace)) {
+					dump(root);
+				}
 
 				this->root(root);
 
