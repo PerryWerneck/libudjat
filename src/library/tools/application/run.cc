@@ -30,9 +30,10 @@
  #include <udjat/tools/intl.h>
  #include <udjat/module/abstract.h>
  #include <udjat/ui/console.h>
-// #include <private/updater.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/ui/status.h>
  #include <string>
- #include <getopt.h>
+ #include <private/agent.h>
 
  #undef LOG_DOMAIN
  #define LOG_DOMAIN Application::Name();
@@ -77,15 +78,42 @@
 
 	void Application::parse(const char *path) {
 
+		// XML parse will run in a thread.
 		ThreadPool::getInstance().push([this,path](){
 
 			try {
 
 				Logger::String{"Loading ",path}.trace();
+				state( _("Loading configuration") );
 
 				// TODO: Load XML definitions.
 				auto root = RootFactory();
 				time_t refresh = root->Abstract::Object::parse(path);
+
+				if(refresh) {
+					time_t seconds = refresh - time(0);
+					Logger::String{"Update of ",path," scheduled to ",TimeStamp{refresh}.to_string().c_str()," (",seconds," seconds from now)"}.info(name());
+
+					reload_timer = MainLoop::getInstance().TimerFactory(seconds * 1000,[this,path]() -> bool {
+						Logger::String{"Reloading ",path," by timer action"}.info(name());
+						reload_timer = nullptr;
+						this->parse(path);
+						return false;
+					});
+
+				}
+
+				// Activate the new root agent.
+				state( _("Activating new configuration") );
+
+				Abstract::Agent::Controller::getInstance().set(root);
+
+                Module::for_each([root](const Module &module){
+					const_cast<Module &>(module).set(root);
+					return false;
+                });
+
+				this->root(root);
 
 			} catch(const std::exception &e) {
 
@@ -95,7 +123,6 @@
 
 				MainLoop::getInstance().quit("Unexpected error");
 			}
-
 
 		});
 

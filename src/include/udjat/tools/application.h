@@ -38,7 +38,7 @@
 	/// @brief Base class for applications.
 	class UDJAT_API Application : public Dialog::Status {
 	private:
-		Timer *timer = nullptr;		///< @brief Auto update timer.
+		Timer *reload_timer = nullptr;		///< @brief Auto update timer.
 		int &argc;
 		char **argv;				///< @brief Command line arguments.
 
@@ -54,14 +54,6 @@
 
 		/// @brief Factory for the application root.
 		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
-
-		/// @brief Initialize application.
-		/// @return 0 if ok, errno if not.
-		// virtual int init();
-
-		/// @brief Deinitialize application.
-		/// @return 0 if ok, errno if not.
-		// virtual int deinit();
 
 		/// @brief Set property from command-line argument.
 		/// @param name Property name.
@@ -81,30 +73,15 @@
 
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
+		Dialog::Status & state(const char *text) noexcept override;
+
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
-		/// @brief Initialize application, load configuration, setup root agent.
-		/// @return seconds for next update.
-		// static time_t initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup = true);
-
-		/// @brief Deinitialize application.
-		// static void finalize();
-
-		/// @brief Parse command line options
-		/// @param definitions Path to a single xml file or a folder with xml files.
-		/// @return 0 if ok, error code if not.
-		// virtual int setup(const char *definitions = nullptr);
-
 		/// @brief Parse command line options, run application.
 		/// @param definitions Path to a single xml file or a folder with xml files.
 		int run(const char *definitions = nullptr);
-
-		/// @brief Load XML application definitions.
-		/// @param definitions Path to a single xml file or a folder with xml files.
-		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
-		// virtual void setup(const char *definitions, bool startup);
 
 		/// @brief Install application.
 		/// @param name Application name.
