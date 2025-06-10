@@ -34,6 +34,7 @@
  #include <udjat/ui/status.h>
  #include <string>
  #include <private/agent.h>
+ #include <private/service.h>
 
  #undef LOG_DOMAIN
  #define LOG_DOMAIN Application::Name();
@@ -114,6 +115,9 @@
                 });
 
 				this->root(root);
+
+				state( _("Starting services") );
+				Service::Controller::getInstance().start();
 
 			} catch(const std::exception &e) {
 
@@ -200,6 +204,8 @@
 			debug("----> Starting mainloop");
 			int rc = MainLoop::getInstance().run();
 			debug("----> MainLoop exited with code ",rc);
+	
+			Service::Controller::getInstance().stop();
 
 			return rc;
 
@@ -212,6 +218,8 @@
 			error() << "Unexpected error" << endl;
 
 		}
+
+		Service::Controller::getInstance().stop();
 
 		return -1;
 

@@ -51,8 +51,6 @@
 
  int Udjat::Linux::MainLoop::run() {
 
-	Service::Controller::getInstance().start();
-
 	//
 	// Capture signals
 	//
@@ -196,11 +194,6 @@
  	// Restore signals
  	//
 	Udjat::Event::remove(this);
-
-	//
- 	// Stop services
- 	//
-	Service::Controller::getInstance().stop();
 
 	return 0;
 
