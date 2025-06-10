@@ -228,7 +228,7 @@
 
 			/// @brief Load agent children, states, alerts, etc. from node.
 			/// @param node The xml node with agent children to build.
-			void parse(const XML::Node &node) override;
+			bool parse(const XML::Node &node) override;
 
 			inline time_t parse(const char *path) {
 				return Udjat::Object::parse(path);

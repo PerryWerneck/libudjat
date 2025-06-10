@@ -44,7 +44,7 @@
 		/// @brief Set object properties from XML node.
 		/// @param node XML node for the object properties
 		/// @return true if the value was updated.
-		void parse(const XML::Node &node) override;
+		bool parse(const XML::Node &node) override;
 
 		inline void rename(const char *name) {
 			objectName = name;
@@ -135,7 +135,7 @@
 		Object(const char *name, const XML::Node &node) : NamedObject(name, node) {
 		}
 
-		void parse(const XML::Node &node) override;
+		bool parse(const XML::Node &node) override;
 
 		inline time_t parse(const char *path) {
 			return Abstract::Object::parse(path);

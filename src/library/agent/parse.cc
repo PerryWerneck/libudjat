@@ -42,9 +42,9 @@
 
 namespace Udjat {
 
-	void Abstract::Agent::parse(const XML::Node &node) {
+	bool Abstract::Agent::parse(const XML::Node &node) {
 		Controller::setup_properties(*this,node);
-		Udjat::Object::parse(node);
+		return Udjat::Object::parse(node);
 	}
 
 	bool Abstract::Agent::parse_child(const XML::Node &node) {

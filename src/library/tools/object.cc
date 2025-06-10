@@ -62,11 +62,11 @@
 		return objectName;
 	}
 
-	void NamedObject::parse(const XML::Node &node) {
+	bool NamedObject::parse(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
 		}
-		Abstract::Object::parse(node);
+		return Abstract::Object::parse(node);
 	}
 
 	const char * NamedObject::c_str() const noexcept {
@@ -224,7 +224,7 @@
 		return false;	// Not handled, maybe the caller can handle it.
 	}
 
-	void Abstract::Object::parse(const XML::Node &node) {
+	bool Abstract::Object::parse(const XML::Node &node) {
 
 		for(XML::Node child : node) {
 
@@ -264,22 +264,22 @@
 				continue; // Handled by factory.
 			};
 
-			if(Logger::enabled(Logger::Debug)) {
-				Logger::String{"Ignoring node <",node.name(),">"}.write(Logger::Debug,PACKAGE_NAME);
-			}
+			Logger::String{"Ignoring node <",node.name(),">"}.write(Logger::Debug,name());
 
 		}
 
+		return true; // Handled by object.
+
 	}
 
-	void Object::parse(const XML::Node &node) {
+	bool Object::parse(const XML::Node &node) {
 
 		properties.label = String{node,"label",properties.label}.as_quark();
 		properties.summary = String{node,"summary",properties.summary}.as_quark();
 		properties.url = String{node,"url",properties.url}.as_quark();
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
 
-		NamedObject::parse(node);
+		return NamedObject::parse(node);
 
 	}
 

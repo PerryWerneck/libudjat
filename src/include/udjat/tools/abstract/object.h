@@ -45,7 +45,8 @@
 
 			/// @brief Parse object, build children.
 			/// @param node The XML node with the object definitions.
-			virtual void parse(const XML::Node &node);
+			/// @return true if the node was parsed and should be ignored by the caller.
+			virtual bool parse(const XML::Node &node);
 
 			/// @brief Build and setup child object.
 			/// @details This method is called by parse() for every child node.
