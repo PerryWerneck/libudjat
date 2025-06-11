@@ -75,6 +75,8 @@
 		Application(int &argc, char **argv);
 		virtual ~Application();
 
+		static void show_command_line_help(size_t width = 20) noexcept;
+
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
 		Dialog::Status & state(const char *text) noexcept override;

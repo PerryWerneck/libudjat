@@ -50,16 +50,37 @@
 
 	// Check for help
 	static const Udjat::CommandLineParser::Argument options[] = {
-		{ 'A', "application", 		"Run as application" },
-		{ 'S', "service", 			"Run as system service" },
-		{ 'm', "module=<module>",	"Load module by name or path" },
+		{ 'h', "help",				"Show this help message"		},
+		{ 'A', "application", 		"Run as application"			},
+		{ 'S', "service", 			"Run as system service"			},
+		{ 'm', "module=<module>",	"Load module by name or path"	},
 		{ 'c', "config=<path>",		"Load XML configuration from file or directory" },
-		{ }
 	};
 
-	if(Udjat::CommandLineParser::options(argc,argv,options)) {
+	if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
+
+		cout	<< "Usage:" << "\n  " << argv[0]
+				<< " " << "[OPTION..]" << "\n\n";
+
+		cout << "Common options:\n";
+		for(const auto &option : options) {
+			option.print(cout);
+			cout << "\n";
+		};
+		Application::show_command_line_help();
+
+		cout << "\nService options:\n";
+		SystemService::show_command_line_help();
+
+		cout << "\n";
+		Logger::help();
+
 		return 0;
 	}
+
+//	if(Udjat::CommandLineParser::options(argc,argv,options)) {
+//		return 0;
+//	}
 
 	Logger::redirect();
 
