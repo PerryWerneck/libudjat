@@ -110,11 +110,6 @@ namespace Udjat {
 			return true; // Handled by object.
 		}
 
-
-
-#ifdef DEBUG
-		Logger::String{"Unexpected node <State::",node.name(),">"}.warning(name());
-#endif
 		return false;
 	}
 

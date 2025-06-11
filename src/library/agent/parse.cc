@@ -45,50 +45,23 @@ namespace Udjat {
 
 	bool Abstract::Agent::parse(const XML::Node &node) {
 
-		// Controller::setup_properties(*this,node);
-
 		if(Udjat::Object::parse(node)) {
 			return true;
 		}
-
-		/*
 
 		// It's a state?
 		if(strcasecmp(node.name(),"state") == 0) {
 
 			auto state = StateFactory(node);
 			if(state) {
-				for(XML::Node child : node) {
-					if(is_reserved(node) || !is_allowed(node)) {
-						continue;
-					}
+				for(const XML::Node &child : node) {
 					state->parse(child);
 				}
 			} else {
 				Logger::String{"Unable to create agent state"}.error(name());
 			}
-
+			
 			return true;
-		}
-
-		// It's an agent?
-		if(strcasecmp(node.name(),"agent") == 0) {
-
-			debug("--------------------- Agent::parse: Found agent node: ",node.attribute("name").as_string());
-			auto agent = Abstract::Agent::Factory::build(*this,node);
-			if(agent) {
-
-				// TODO: Check agent-path attribute and change parent if needed.
-
-				// Parse children, insert into child list.
-				agent->parse(node);
-				push_back(agent);
-
-				return true; // Handled by agent.
-
-			}
-
-			return false; // Unable to create agent.
 		}
 
 		// It's an alert?
@@ -102,7 +75,6 @@ namespace Udjat {
 			push_back(node,Action::Factory::build(node,true));
 			return true; // Handled by action.
 		}
-		*/
 
 #ifdef DEBUG 
 		Logger::String{"Unexpected node <Agent::",node.name(),">"}.warning(name());
