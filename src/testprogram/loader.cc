@@ -44,22 +44,24 @@
 
  int main(int argc, char **argv) {
 
+	Logger::verbosity(9);
+	Logger::console(true);
+	Config::allow_user_homedir(true);
+
 	// Check for help
-	if(CommandLineParser::has_argument(argc,argv,'h',"help")) {
-		static const string help_text = 
-			"\t-m, --module <module>        Load module\n"
-			"\t-c, --config <file or path>  XML definitions\n"
-			"\t-S, --service                Run as system service\n"
-			"\t-h, --help                   Show this help message\n";
-		
-		cout << "Usage: " << argv[0] << " [options]" << endl << endl << help_text;
+	static const Udjat::CommandLineParser::Argument options[] = {
+		{ 'A', "application", 			"Run as application" },
+		{ 'S', "service", 				"Run as system service" },
+		{ 'm', "module=<module>",		"Load module by name or path" },
+		{ 'c', "config=<file or path>",	"Load configuration file or path" },
+		{ }
+	};
+
+	if(Udjat::CommandLineParser::options(argc,argv,options)) {
 		return 0;
 	}
 
-	Config::allow_user_homedir(true);
-	Logger::verbosity(9);
 	Logger::redirect();
-	Logger::console(true);
 
 	// Configuration file (or path)
 	string config_file = "./test.xml";
