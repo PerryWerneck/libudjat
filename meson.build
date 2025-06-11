@@ -349,11 +349,9 @@ lib_src += [
 ]
 
 test_src = [
+  'src/testprogram/loader.cc',
   'src/testprogram/randomfactory.cc',
-  'src/testprogram/service.cc',
-  'src/testprogram/application.cc',
-  'src/testprogram/run.cc',
-]
+ ]
 
 #
 # SDK
@@ -667,7 +665,8 @@ static_library(
 
 executable(
   meson.project_name(),
-  config_h + [ 'src/testprogram/testprogram.cc' ],
+  config_h + test_src,
+  cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],
   dependencies: lib_deps,
@@ -720,7 +719,6 @@ install_headers(
   'src/include/udjat/agent.h',
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
-  'src/include/udjat/factory.h',
   'src/include/udjat/module.h',
   'src/include/udjat/moduleinfo.h',
   'src/include/udjat/tests.h',

@@ -29,6 +29,8 @@
  #include <vector>
  #include <libgen.h>
 
+ #include <private/randomfactory.h>
+
  #ifdef HAVE_FILESYSTEM_H
 	 #include <filesystem>
  #endif
@@ -59,12 +61,6 @@
 	Logger::redirect();
 	Logger::console(true);
 
-	// Test mode
-	enum Mode {
-		Application,	// Run as application
-		Service,		// Run as service
-	} mode = Application;
-
 	// Configuration file (or path)
 	string config_file = "./test.xml";
 
@@ -89,53 +85,46 @@
 			config_file = argvalue;
 		}
 
-		if(CommandLineParser::get_argument(argc,argv,'S',"service",argvalue)) {
-			mode = Service;
-		}
 	}
 
 	Logger::String{"Loading definitions from '" + config_file + "'"}.info();
 
-#ifdef HAVE_FILESYSTEM_H
-	{
-		string testmodule{".build/testmodule" LIBEXT};
+	RandomFactory rfactory;
+	string testmodule{".build/testmodule" LIBEXT};
+	
+	if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
 
-		if(access(testmodule.c_str(),R_OK) == 0) {
-			Logger::String{"Loading test module from '" + testmodule + "'"}.info();
-			modules.push_back(Module::factory(testmodule.c_str()));
-			if(modules.back() == nullptr) {
-				Logger::String{"Module '" + testmodule + "' not found"}.error();
-				return -1;
-			}
-			modules.back()->test_mode();
-		}
-	}
-#endif
+		// Run as service
+		int rc = Udjat::SystemService{argc,argv}.run(config_file.c_str());
+		if(rc != 0) {
+			Logger::String{"Service failed with error '",strerror(rc),"' (",rc,")"}.error();
+			return rc;
+		}	
 
-	switch(mode) {
-	case Application:
-		{
-			// Run as application
-			Udjat::Application app{argc,argv};
-			int rc = app.run(config_file.c_str());
-			if(rc != 0) {
-				Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
-				return rc;
-			}	
-		}
-		break;
+	} else if(CommandLineParser::has_argument(argc,argv,'A',"application")) {
 
-	case Service:
-		{
-			// Run as service
-			Udjat::SystemService srvc{argc,argv};
-			int rc = srvc.run(config_file.c_str());
-			if(rc != 0) {
-				Logger::String{"Service failed with error '",strerror(rc),"' (",rc,")"}.error();
-				return rc;
-			}	
+		// Run as application
+		int rc = Udjat::Application{argc,argv}.run(config_file.c_str());
+		if(rc != 0) {
+			Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
+			return rc;
+		}	
+
+	} else if(access(testmodule.c_str(),R_OK) == 0) {
+		Logger::String{"Loading test module from '" + testmodule + "'"}.info();
+		modules.push_back(Module::factory(testmodule.c_str()));
+		if(modules.back() == nullptr) {
+			Logger::String{"Module '" + testmodule + "' not found"}.error();
+			return -1;
 		}
-		break;
+		modules.back()->test_mode();
+
+	} else {
+
+		Logger::String{"No service or application mode, and no filesystem support to load test module"}.warning();
+		Logger::String{"Run with '--service' or '--application' option to run as service or application"}.warning();
+		return -1;			
+
 	}
 
 	return 0;
