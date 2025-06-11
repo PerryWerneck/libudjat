@@ -27,7 +27,6 @@
 #pragma once
 
 #include <udjat/defs.h>
-#include <udjat/tools/factory.h>
 #include <udjat/tools/systemservice.h>
 #include <udjat/tools/application.h>
 #include <functional>
@@ -40,10 +39,10 @@ namespace Udjat {
 		int run(int argc, char **argv, const Udjat::ModuleInfo &info, const std::function<void(Udjat::Application &app)> &initialize, const char *xml = "./test.xml");
 
 		/// @brief Test agent, reports a random unsignet int value
-		class UDJAT_PRIVATE RandomFactory : public Udjat::Factory {
+		class UDJAT_PRIVATE RandomFactory : public Udjat::Abstract::Agent::Factory {
 		public:
 			RandomFactory(const Udjat::ModuleInfo &info);
-			std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object UDJAT_UNUSED(&parent), const XML::Node &node) const override;
+			std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const = 0;
 
 		};
 

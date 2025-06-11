@@ -51,7 +51,13 @@
 
 			};
 
-			// static std::shared_ptr<Object> Factory(const Object *object, ...) noexcept __attribute__ ((sentinel));
+			/// @brief Merge several objects propertie into a single one.
+			/// @details This method is used to merge the properties several objects into a single one.
+			/// @param object first object to merge.
+			/// @param  ... The other objects to merge.
+			/// @return Pointer to new object combining all properties.
+			/// @note The first object is used as the name for the new object.
+			static std::shared_ptr<Object> merge(const Object *object, ...) noexcept __attribute__ ((sentinel));
 
 			virtual ~Object();
 

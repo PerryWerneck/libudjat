@@ -20,7 +20,6 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tests.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/xml.h>
  #include <udjat/agent.h>
  #include <udjat/agent/abstract.h>
@@ -30,12 +29,12 @@
 
  namespace Udjat {
 
-	Testing::RandomFactory::RandomFactory(const Udjat::ModuleInfo &info) : Udjat::Factory("random",info) {
+	Testing::RandomFactory::RandomFactory(const Udjat::ModuleInfo &info) : Abstract::Agent::Factory{"random"} {
 		cout << "random agent factory was created" << endl;
 		srand(time(NULL));
 	}
 
-	std::shared_ptr<Abstract::Agent> Testing::RandomFactory::AgentFactory(const Abstract::Object &, const XML::Node &node) const {
+	std::shared_ptr<Abstract::Agent> Testing::RandomFactory::AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const {
 
 		class RandomAgent : public Agent<unsigned int> {
 		private:

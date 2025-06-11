@@ -32,7 +32,6 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/url/handler.h>
  #include <stdexcept>
  #include <private/logger.h>
@@ -139,12 +138,14 @@
 
 		}
 	
+		/*
 		debug("Processing node <",node.name(),">");
 		if(Factory::for_each(name,[&node](Factory &factory) -> bool {
 			return factory.parse(node);
 		})) {
 			return true; // Handled by factory.
 		}
+		*/
 
 		return false; // Not handled.
 

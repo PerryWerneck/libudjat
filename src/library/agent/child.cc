@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <private/agent.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/logger.h>
 
  namespace Udjat {

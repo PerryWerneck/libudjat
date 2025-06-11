@@ -26,7 +26,6 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
@@ -128,8 +127,7 @@
 		return cerr << objectName << "\t";
 	}
 
-	/*
-	std::shared_ptr<Abstract::Object> Abstract::Object::Factory(const Object *object, ...) noexcept {
+	std::shared_ptr<Abstract::Object> Abstract::Object::merge(const Object *object, ...) noexcept {
 
 		class Object : public Udjat::NamedObject {
 		public:
@@ -168,7 +166,6 @@
 		return obj;
 		
 	}
-	*/
 
 	Abstract::Object::~Object() {
 	}

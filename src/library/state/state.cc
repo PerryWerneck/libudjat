@@ -32,9 +32,9 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/expander.h>
  #include <udjat/alert.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/actions/abstract.h>
  #include <udjat/tools/activatable.h>
  #include <iostream>
@@ -110,12 +110,6 @@ namespace Udjat {
 			return true; // Handled by object.
 		}
 
-		return false;
-	}
-
-	/*
-	bool Abstract::State::parse(const XML::Node &node) {
-
 		if(strcasecmp(node.name(),"alert") == 0) {
 			listeners.push_back(Alert::Factory::build(*this,node));
 			return true;
@@ -130,7 +124,6 @@ namespace Udjat {
 
 		return false;
 	}
-	*/
 
 	std::string Abstract::State::value() const {
 		return "";
