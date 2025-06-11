@@ -53,7 +53,7 @@
 		{ 'A', "application", 			"Run as application" },
 		{ 'S', "service", 				"Run as system service" },
 		{ 'm', "module=<module>",		"Load module by name or path" },
-		{ 'c', "config=<file or path>",	"Load configuration file or path" },
+//		{ 'c', "config=<file or path>",	"Load configuration file or path" },
 		{ }
 	};
 
