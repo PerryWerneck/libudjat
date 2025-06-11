@@ -42,7 +42,11 @@
 		int &argc;
 		char **argv;				///< @brief Command line arguments.
 
-		void parse(const char *path);
+		/// @brief Parse XML definitions from a file or directory.
+		/// @param path Path to file or directory with XML definitions.
+		/// @param startup true if this is the first time the application is started (no previous configuration).
+		/// @details If 'path' is a directory, all XML files in the directory will be parsed.
+		void parse(const char *path, bool startup);
 
 	protected:
 

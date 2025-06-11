@@ -93,10 +93,10 @@
 
 	}
 
-	void Application::parse(const char *path) {
+	void Application::parse(const char *path, bool startup) {
 
 		// XML parse will run in a thread.
-		ThreadPool::getInstance().push([this,path](){
+		ThreadPool::getInstance().push([this,path,startup](){
 
 			// Load new configuration, if it fails, the old configuration will be kept.
 			shared_ptr<Abstract::Agent> root;
@@ -118,7 +118,7 @@
 					reload_timer = MainLoop::getInstance().TimerFactory(seconds * 1000,[this,path]() -> bool {
 						Logger::String{"Reloading ",path," by timer action"}.info(name());
 						reload_timer = nullptr;
-						this->parse(path);
+						this->parse(path,false);
 						return false;
 					});
 
@@ -130,12 +130,20 @@
 
 			} catch(const std::exception &e) {
 
-				Logger::String{"Error while loading ",path,": ",e.what()}.error(name());
+				Logger::String{"Error loading ",path,": ",e.what()}.error(name());
+				if(startup) {
+					// If this is the first time the application is started, we should quit.
+					MainLoop::getInstance().quit(e.what());
+				}
 				return;	// Ignore the error, keep the old configuration.
 
 			} catch(...) {
 
 				Logger::String{"Unexpected error while loading ",path}.error(name());
+				if(startup) {
+					// If this is the first time the application is started, we should quit.
+					MainLoop::getInstance().quit("Unexpected error while loading configuration");
+				}
 				return;	// Ignore the error, keep the old configuration.
 
 			}
@@ -235,7 +243,7 @@
 				// Sighup force reconfiguration.
 				Event::SignalHandler(this,SIGHUP,[this,path]() -> bool {
 					Logger::String{"Catched SIGHUP, reloading ",path}.info(name());
-					parse(path);
+					parse(path,false);
 					return true;
 				});
 
@@ -244,7 +252,7 @@
 				}.info(name());
 #endif // _WIN32
 
-				parse(path);
+				parse(path,true);
 
 			} else {
 
