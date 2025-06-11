@@ -78,10 +78,6 @@
 		return 0;
 	}
 
-//	if(Udjat::CommandLineParser::options(argc,argv,options)) {
-//		return 0;
-//	}
-
 	Logger::redirect();
 
 	// Configuration file (or path)
