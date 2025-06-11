@@ -177,7 +177,9 @@
 		throw logic_error("Object is unable to handle children");
 	}
 
-	void Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
+	void Abstract::Object::push_back(const 					// 
+
+XML::Node &, std::shared_ptr<Abstract::Object> child) {
 		push_back(child);
 	}
 
@@ -222,6 +224,12 @@
 #ifdef DEBUG 
 					Logger::String{"Parsing object children"}.info(object->name());
 #endif // DEBUG
+
+					for(const auto &child : node) {
+						if(!object->parse(child)) {
+							Logger::String{"Ignoring unexpected child <",child.name(),">"}.warning(object->name());
+						}
+					}
 
 					return true; // Handled by factory.
 				}
