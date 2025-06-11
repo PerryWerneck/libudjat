@@ -20,7 +20,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tests.h>
+// #include <udjat/tests.h>
  #include <udjat/tools/system.h>
  #include <udjat/tools/interface.h>
  #include <udjat/tools/response.h>
@@ -36,7 +36,9 @@
  #include <udjat/ui/progress.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/net/interface.h>
-
+ #include <udjat/module/info.h>
+ #include <udjat/tools/application.h>
+ 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H

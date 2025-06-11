@@ -42,7 +42,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory {
+	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory, private Abstract::Object::Factory {
 	private:
 
 		time_t updating = 0;
@@ -78,6 +78,8 @@ namespace Udjat {
 
 		// ActionFactory
 		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;
+
+		std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const override;
 
 	};
 

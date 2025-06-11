@@ -217,7 +217,12 @@
 #ifdef DEBUG 
 					Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
 #endif // DEBUG
-					// auto object = factory->build(*this,node);
+					auto object = factory->ObjectFactory(*this,node);
+
+#ifdef DEBUG 
+					Logger::String{"Parsing object children"}.info(object->name());
+#endif // DEBUG
+
 					return true; // Handled by factory.
 				}
 

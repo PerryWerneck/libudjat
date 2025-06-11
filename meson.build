@@ -656,32 +656,32 @@ static_library(
   include_directories: includes_dir
 )
 
-tests = static_library(
-  meson.project_name() + '-testing', 
-  config_h + test_src,
-  cpp_args: [ '-fno-lto' ],
-  install: true,
-  dependencies: lib_deps + [ iconv ],
-  include_directories: includes_dir
-)
+#tests = static_library(
+#  meson.project_name() + '-testing', 
+#  config_h + test_src,
+#  cpp_args: [ '-fno-lto' ],
+#  install: true,
+#  dependencies: lib_deps + [ iconv ],
+#  include_directories: includes_dir
+#)
 
 executable(
   meson.project_name(),
   config_h + [ 'src/testprogram/testprogram.cc' ],
   install: false,
-  link_with : [ tests, dynamic ],
+  link_with : [ dynamic ],
   dependencies: lib_deps,
   include_directories: includes_dir
 )
 
-executable(
-  meson.project_name() + '-loader',
-  config_h + [ 'src/testprogram/loader.cc' ],
-  install: true,
-  link_with : [ tests, dynamic ],
-  dependencies: lib_deps,
-  include_directories: includes_dir
-)
+#executable(
+#  meson.project_name() + '-loader',
+#  config_h + [ 'src/testprogram/loader.cc' ],
+#  install: true,
+#  link_with : [ tests, dynamic ],
+#  dependencies: lib_deps,
+#  include_directories: includes_dir
+#)
 
 version_file = configure_file(
   input : 'src/include/udjat/version.h.in',
