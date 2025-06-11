@@ -184,15 +184,9 @@ XML::Node &, std::shared_ptr<Abstract::Object> child) {
 	}
 
 	bool Abstract::Object::parse(const XML::Node &node) {
-		
-		if(is_reserved(node) || !is_allowed(node)) {
-			return true; // Ignore reserved nodes.
-		}
 
-		// It's a module?
-		if(strcasecmp(node.name(),"module") == 0) {
-			Module::load(node);
-			return true; // Handled by module.
+		if(XML::parse(node)) {
+			return true; // Ignore reserved nodes.
 		}
 
 		// It's an interface?

@@ -119,18 +119,18 @@
 		return 0;
 	}
 
-	bool XML::parse(const XML::Node &node, bool recursive) {
+	bool XML::parse(const XML::Node &node) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
-			return false;
+			return true; // Ignore reserved nodes.
 		}
 
 		const char *name = node.name();
 		if(!strcasecmp(name,"module")) {
 
 			if(node.attribute("preload").as_bool(false)) {
-				return false;
+				return true; // Preload modules are handled by Document constructor.
 			}
 
 			Logger::String{"Loading module '",node.attribute("name").as_string(),"'"}.trace();
@@ -140,23 +140,14 @@
 		}
 	
 		debug("Processing node <",node.name(),">");
-		bool rc = Factory::for_each(name,[&node](Factory &factory) -> bool {
+		if(Factory::for_each(name,[&node](Factory &factory) -> bool {
 			return factory.parse(node);
-		});
-
-		if(!rc) {
-			Logger::String{"No factory for node <",node.name(),">, ignoring it"}.write(Logger::Debug);
-			return false;
+		})) {
+			return true; // Handled by factory.
 		}
 
-		if(recursive) {
-			// Parse children.
-			for(const XML::Node &child : node) {
-				parse(child,recursive);
-			}
-		}
+		return false; // Not handled.
 
-		return true;
 	}
 
  }
