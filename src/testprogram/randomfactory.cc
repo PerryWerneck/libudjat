@@ -45,6 +45,16 @@
 			RandomAgent(const XML::Node &node) : Agent<unsigned int>(node) {
 			}
 
+			std::shared_ptr<Abstract::State> computeState() override {
+
+				debug("--------------- Computing state for agent '",name(),"' (",states.size()," state(s) available)");
+				for(auto state : states) {
+					if(state->compare(get()))
+						return state;
+				}
+				return Abstract::Agent::computeState();
+			}
+
 			bool refresh() override {
 				debug("Updating agent '",name(),"'");
 				unsigned int value = ((unsigned int) rand()) % limit;
@@ -52,7 +62,7 @@
 					Logger::String{"Agent '",name(),"' updated to ",value}.info();
 					return true;
 				}
-				Logger::String{"Agent '",name(),"' keep value ",value}.info();
+				Logger::String{"Agent '",name(),"' kept value ",value}.info();
 				return false;
 			}
 
