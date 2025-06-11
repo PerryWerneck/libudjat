@@ -76,6 +76,8 @@
 
 		static SystemService & getInstance();
 
+		static void show_command_line_help(size_t width = 20) noexcept;
+
 		SystemService(int argc, char **argv);
 		virtual ~SystemService();
 

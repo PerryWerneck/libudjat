@@ -40,11 +40,7 @@
 
  namespace Udjat {
 
-	/// @brief Show help text to stream.
-	/// @param out The stream for help.
-	void SystemService::help(size_t width) const noexcept {
-
-		Application::help(width);
+	void SystemService::show_command_line_help(size_t width) noexcept {
 
 		static const CommandLineParser::Argument values[] = {
 			{ 'd', "daemon", _("Run in the background") },
@@ -55,6 +51,13 @@
 			cout << "\n";
 		};
 
+	}
+
+	/// @brief Show help text to stream.
+	/// @param out The stream for help.
+	void SystemService::help(size_t width) const noexcept {
+		Application::help(width);
+		show_command_line_help(width);
 	}
 
 	int SystemService::run(const char *definitions) {
