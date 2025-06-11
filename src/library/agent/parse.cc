@@ -45,24 +45,13 @@ namespace Udjat {
 
 	bool Abstract::Agent::parse(const XML::Node &node) {
 
+		// Controller::setup_properties(*this,node);
+
 		if(Udjat::Object::parse(node)) {
 			return true;
 		}
 
 		/*
-		// It's an agent?
-		if(strcasecmp(node.name(),"agent") == 0) {
-
-			debug("--------------------- Agent::parse: Found agent node: ",node.attribute("name").as_string());
-			auto agent = Abstract::Agent::Factory::build(*this,node);
-
-			return true; // Handled by agent.
-
-		}
-		*/
-
-		/*
-		Controller::setup_properties(*this,node);
 
 		// It's a state?
 		if(strcasecmp(node.name(),"state") == 0) {

@@ -74,7 +74,7 @@ namespace Udjat {
 		void stop() noexcept override;
 
 		/// @brief Load agent properties from XML node.
-		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
+		//static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
 
 		// ActionFactory
 		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;

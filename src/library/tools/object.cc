@@ -190,6 +190,7 @@ XML::Node &, std::shared_ptr<Abstract::Object> child) {
 		}
 
 		// It's an interface?
+		// TODO: Rewrite interface to use XML::Factory.
 		if(strcasecmp(node.name(),"interface") == 0) {
 			Interface::Factory::build(node);
 			return true; // Handled by interface.
@@ -232,95 +233,12 @@ XML::Node &, std::shared_ptr<Abstract::Object> child) {
 
 		}
 
-		/*
-
-		// Run node based factories.
-		if(Udjat::Factory::for_each(node,[this,&node](Udjat::Factory &factory) {
-
-			if(factory.NodeFactory(*this,node)) {
-				return true;
-			}
-
-			return factory.NodeFactory(node);
-
-		})) {
-
-			return true; // Handled by factory.
-
-		}
-
-		// Run factories.
-		if(Udjat::Factory::for_each([this,&node](Udjat::Factory &factory) {
-
-			if(factory == node.attribute("type").as_string("default") && factory.CustomFactory(*this,node)) {
-				return true;
-			}
-
-			return false;
-
-		})) {
-
-			return true; // Handled by factory.
-
-		}
-		*/
-
 #ifdef DEBUG 
 		Logger::String{"Unexpected node <Abstract::Object::",node.name(),">"}.warning(name());
 #endif // DEBUG
 
 		return false;	// Not handled, maybe the caller can handle it.
 	}
-
-	/*
-	void Abstract::Object::parse(const XML::Node &node) {
-
-		for(XML::Node child : node) {
-
-			if(parse_child(child)) {
-				continue; // Child was handled.
-			}
-
-			const char *type = child.attribute("type").as_string("default");
-
-			if(Factory::for_each([this,type,&child](Udjat::Factory &factory){
-
-				if(factory == child.name()) {
-
-					auto object = factory.ObjectFactory(*this,child);
-					if(object) {
-						push_back(child,object);
-						return true;
-					}
-
-					if(factory.NodeFactory(*this,child)) {
-						return true;
-					}
-
-					if(factory.NodeFactory(child)) {
-						return true;
-					}
-
-				}
-
-				if(factory == type && factory.CustomFactory(child)) {
-					return true;
-				}
-
-				return false;
-
-			})) {
-				continue; // Handled by factory.
-			};
-
-			Logger::String{"Ignoring node <",node.name(),">"}.write(Logger::Debug,name());
-
-		}
-
-		return true; // Handled by object.
-
-	}
-	*/
 
 	bool Object::parse(const XML::Node &node) {
 
