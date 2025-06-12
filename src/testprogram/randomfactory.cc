@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tests.h>
  #include <udjat/tools/xml.h>
  #include <udjat/agent.h>
  #include <udjat/agent/abstract.h>

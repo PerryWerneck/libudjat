@@ -17,9 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /*
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tests.h>
  #include <udjat/tools/xml.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
@@ -72,3 +72,4 @@
 
  }
 
+ */
