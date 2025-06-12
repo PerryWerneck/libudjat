@@ -28,6 +28,10 @@
 
 #include <udjat/defs.h>
 
+extern "C" {
+	int UDJAT_API run_tests();
+}
+
 namespace Udjat {
 
 	/// @brief Helper library to test and develop Udjat modules.

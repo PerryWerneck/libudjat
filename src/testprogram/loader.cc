@@ -33,6 +33,10 @@
 
  #include <private/randomfactory.h>
 
+ #ifndef _WIN32
+	#include <dlfcn.h>
+ #endif // !_WIN32
+
  #ifdef HAVE_FILESYSTEM_H
 	 #include <filesystem>
  #endif
@@ -46,7 +50,7 @@
 
  int Udjat::loader(int argc, char **argv, const char *definitions) {
 
-	bool app = (argc=1);
+	bool app = (argc==1);
 
 	Logger::verbosity(9);
 	Logger::console(true);
@@ -59,6 +63,7 @@
 		{ 'S', "service", 			"Run as system service"			},
 		{ 'm', "module=<module>",	"Load module by name or path"	},
 		{ 'c', "config=<path>",		"Load XML configuration from file or directory" },
+		{ 't', "run-tests",			"Run test method (if available)" },
 	};
 
 	if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
@@ -110,12 +115,31 @@
 
 	}
 
-	Logger::String{"Loading definitions from '" + config_file + "'"}.info();
-
 	RandomFactory rfactory;
 	string testmodule{".build/testmodule" LIBEXT};
 	
-	if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
+	if(CommandLineParser::has_argument(argc,argv,'t',"run-tests")) {
+
+		// Run tests
+#ifdef _WIN32
+		Logger::String{"Running tests is not supported on Windows"}.error();
+		return -1;
+#else
+
+		dlerror(); // Clear previous errors
+		int (*run_tests)() = (int (*)())dlsym(RTLD_DEFAULT, "run_tests");
+
+		const char *error = dlerror();
+		if(error) {
+			Logger::String{"Failed to load test module: ", error}.error();
+			return -1;
+		}
+
+		return run_tests();
+
+#endif
+
+	} else if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
 
 		// Run as service
 		int rc = Udjat::SystemService{argc,argv}.run(config_file.c_str());

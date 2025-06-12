@@ -21,8 +21,10 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/loader.h>
+ #include <iostream>
 
  using namespace Udjat;
+ using namespace std;
 
  int main(int argc, char **argv) {
 
