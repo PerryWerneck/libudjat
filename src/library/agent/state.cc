@@ -165,7 +165,7 @@ namespace Udjat {
 				<< "\t"
 				<< Logger::Message{
 						message,
-						this->state()->to_string(),
+						this->state()->summary(),
 						std::to_string(level),
 					}
 				<< endl;

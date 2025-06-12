@@ -129,11 +129,7 @@
 
 		} properties;
 
-		Object(const XML::Node &node) : NamedObject(node) {
-		}
-
-		Object(const char *name, const XML::Node &node) : NamedObject(name, node) {
-		}
+		Object(const XML::Node &node);
 
 		bool parse(const XML::Node &node) override;
 

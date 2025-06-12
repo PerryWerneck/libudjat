@@ -237,15 +237,15 @@ XML::Node &, std::shared_ptr<Abstract::Object> child) {
 		return false;	// Not handled, maybe the caller can handle it.
 	}
 
-	bool Object::parse(const XML::Node &node) {
-
+	Object::Object(const XML::Node &node) : NamedObject{node} {
 		properties.label = String{node,"label",properties.label}.as_quark();
 		properties.summary = String{node,"summary",properties.summary}.as_quark();
 		properties.url = String{node,"url",properties.url}.as_quark();
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
+	}
 
+	bool Object::parse(const XML::Node &node) {
 		return NamedObject::parse(node);
-
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {
