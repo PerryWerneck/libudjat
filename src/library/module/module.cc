@@ -52,8 +52,19 @@ namespace Udjat {
 	void Module::finalize() {
 	}
 
-	void Module::test_mode() {
-		// Do nothing
+	int Module::run_unit_test() const {
+
+		try {
+
+			int (*symbol)() = (int(*)()) Controller::getInstance().getSymbol(handle,"run_unit_test",true);
+			return symbol();
+			
+		} catch(const std::exception &e) {
+			error() << "Error running unit test: " << e.what() << endl;
+			return -1;
+		}
+
+		return 0;
 	}
 
 	void Module::parse(const pugi::xml_document &) {

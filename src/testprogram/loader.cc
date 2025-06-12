@@ -106,7 +106,6 @@
 				Logger::String{"Module '" + argvalue + "' not found"}.error();
 				return -1;
 			}
-			modules.back()->test_mode();
 		}
 	
 		if(CommandLineParser::get_argument(argc,argv,'c',"config",argvalue)) {
@@ -126,8 +125,16 @@
 		return -1;
 #else
 
+		for(auto module : modules) {
+			int rc = module->run_unit_test();
+			if(rc) {
+				return rc;
+			}
+		}
+
+		/*
 		dlerror(); // Clear previous errors
-		int (*run_tests)() = (int (*)())dlsym(RTLD_DEFAULT, "run_tests");
+		int (*run_tests)() = (int (*)())dlsym(RTLD_DEFAULT, "run_unit_test");
 
 		const char *error = dlerror();
 		if(error) {
@@ -136,6 +143,9 @@
 		}
 
 		return run_tests();
+		*/
+
+		return 0;
 
 #endif
 
@@ -164,7 +174,7 @@
 			Logger::String{"Module '" + testmodule + "' not found"}.error();
 			return -1;
 		}
-		modules.back()->test_mode();
+		modules.back()->run_unit_test();
 
 	} else {
 
