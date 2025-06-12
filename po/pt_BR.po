@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-11 14:59-0300\n"
+"POT-Creation-Date: 2025-06-12 07:19-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -32,18 +32,6 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/controller.cc:52
-msgid "Agent controller"
-msgstr "Controlador de agentes"
-
-#: src/library/agent/controller.cc:99
-msgid "Agent controller was not initialized"
-msgstr "Controlador de agentes não foi inicializado"
-
-#: src/library/agent/controller.cc:404
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
 #: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:140
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
@@ -59,6 +47,18 @@ msgstr "Erro ao ativar estado"
 #: src/library/agent/state.cc:144
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/agent/controller.cc:52
+msgid "Agent controller"
+msgstr "Controlador de agentes"
+
+#: src/library/agent/controller.cc:99
+msgid "Agent controller was not initialized"
+msgstr "Controlador de agentes não foi inicializado"
+
+#: src/library/agent/controller.cc:404
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
 
 #: src/library/module/module.cc:118
 #, c++-format
@@ -78,11 +78,11 @@ msgstr "Erro de sistema"
 msgid "Operation failed"
 msgstr "Operação falhou"
 
-#: src/library/state/state.cc:261 src/library/tools/converters.cc:42
+#: src/library/state/state.cc:259 src/library/tools/converters.cc:42
 msgid "on"
 msgstr "ligado"
 
-#: src/library/state/state.cc:261 src/library/tools/converters.cc:49
+#: src/library/state/state.cc:259 src/library/tools/converters.cc:49
 msgid "off"
 msgstr "desligado"
 

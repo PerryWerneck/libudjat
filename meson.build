@@ -654,18 +654,18 @@ static_library(
   include_directories: includes_dir
 )
 
-#tests = static_library(
-#  meson.project_name() + '-testing', 
-#  config_h + test_src,
-#  cpp_args: [ '-fno-lto' ],
-#  install: true,
-#  dependencies: lib_deps + [ iconv ],
-#  include_directories: includes_dir
-#)
+ static_library(
+  meson.project_name() + '-loader', 
+  config_h + test_src,
+  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+  install: true,
+  dependencies: lib_deps,
+  include_directories: includes_dir
+)
 
 executable(
   meson.project_name(),
-  config_h + test_src,
+  config_h + test_src + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],
@@ -675,7 +675,7 @@ executable(
 
 executable(
   meson.project_name() + '-loader',
-  config_h + test_src,
+  config_h + test_src + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DSDK_APP' ],
   install: true,
   link_with : [ dynamic ],
@@ -722,7 +722,7 @@ install_headers(
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
   'src/include/udjat/moduleinfo.h',
-  'src/include/udjat/tests.h',
+  'src/include/udjat/loader.h',
   version_file,
   subdir: 'udjat'  
 )

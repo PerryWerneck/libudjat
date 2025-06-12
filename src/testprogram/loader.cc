@@ -19,6 +19,8 @@
 
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/loader.h>
  #include <udjat/tools/commandlineparser.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
@@ -42,7 +44,9 @@
  using namespace std;
  using namespace Udjat;
 
- int main(int argc, char **argv) {
+ int Udjat::loader(int argc, char **argv, const char *definitions) {
+
+	bool app = (argc=1);
 
 	Logger::verbosity(9);
 	Logger::console(true);
@@ -81,7 +85,7 @@
 	Logger::redirect();
 
 	// Configuration file (or path)
-	string config_file = "./test.xml";
+	string config_file{definitions};
 
 	// Loaded modules
 	vector<Module *> modules;
@@ -120,9 +124,9 @@
 			return rc;
 		}	
 
-	} else if(CommandLineParser::has_argument(argc,argv,'A',"application")) {
+	} else if(CommandLineParser::has_argument(argc,argv,'A',"application") || app) {
 
-		// Run as application
+		// Run as application (default if called without arguments)
 		int rc = Udjat::Application{argc,argv}.run(config_file.c_str());
 		if(rc != 0) {
 			Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
