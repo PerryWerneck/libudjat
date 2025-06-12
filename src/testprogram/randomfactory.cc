@@ -49,21 +49,29 @@
 
 				debug("--------------- Computing state for agent '",name(),"' (",states.size()," state(s) available)");
 				for(auto state : states) {
-					if(state->compare(get()))
+					debug("Checking state '",state->name(),"' with value ",state->value(),"...");
+					if(state->compare(get())) {
+						debug("State '",state->name(),"' matched with value ",get());
 						return state;
+					}
+					debug("State '",state->name(),"' not matched with value ",get());
 				}
+				debug("No state matched for agent '",name(),"' with value ",get());
 				return Abstract::Agent::computeState();
 			}
 
 			bool refresh() override {
+
 				debug("Updating agent '",name(),"'");
+				unsigned int last = get();
 				unsigned int value = ((unsigned int) rand()) % limit;
-				if(set(value)) {
-					Logger::String{"Agent '",name(),"' updated to ",value}.info();
-					return true;
+				if(value == last) {
+					Logger::String{"Current value stayed the same: ",value}.info(name());
+					return false;
 				}
-				Logger::String{"Agent '",name(),"' kept value ",value}.info();
-				return false;
+
+				Logger::String{"Value changed from ",last," to ",value}.info(name());
+				return set(value);
 			}
 
 			void start() override {

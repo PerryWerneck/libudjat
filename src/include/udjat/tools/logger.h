@@ -267,5 +267,9 @@
 		return os << to_string(level);
 	}
 
+	inline ostream & operator<< (ostream& os, const Udjat::Logger::Message &message) {
+		return os << message.c_str();
+	}
+
  }
 
