@@ -27,13 +27,31 @@
  #include <udjat/tools/container.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/xml.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	static Container<Interface::Factory> & Factories() {
-		static Container<Interface::Factory> instance;
+	class UDJAT_PRIVATE InterfaceFactories : public Container<Interface::Factory>, public XML::Parser {
+	public:
+		InterfaceFactories() : XML::Parser{"interface"} {
+			debug("Interface factories initialized");
+		}
+
+		~InterfaceFactories() {
+			debug("Interface factories destroyed");
+		}
+
+		bool parse(const XML::Node &node) override {
+			Interface::Factory::build(node);
+			return true; // Node was parsed.
+		}
+
+	};
+
+	static InterfaceFactories & Factories() {
+		static InterfaceFactories instance;
 		return instance;
 	}
 

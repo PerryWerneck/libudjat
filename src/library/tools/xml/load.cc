@@ -33,6 +33,8 @@
  #include <udjat/tools/intl.h>
  #include <string>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/abstract/object.h>
+ #include <udjat/module/abstract.h>
  #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
@@ -42,6 +44,74 @@
  using namespace std;
 
  namespace Udjat {
+
+	time_t Abstract::Object::parse(const char *p) {
+
+		time_t next = 0;
+
+		File::Path path{p};
+		if(path.dir()) {
+
+			// Is a directory, scan for files
+			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
+
+			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
+
+				XML::Document document{path.c_str()};
+
+				const auto &root = document.document_element();
+
+				// Parse nodes first to load and initialize modules...
+				parse(root);
+
+				// ... then call loaded modules to parse the document.
+				Module::for_each([&document](Module &module) -> bool {
+					module.parse(document);
+					return false;
+				});
+
+				time_t expires = TimeStamp{root,"update-timer"};
+				if(expires) {
+					expires += time(0);
+					if(expires < next || next == 0) {
+						next = expires;
+					}
+				}
+
+				return false;
+
+			});
+
+		} else {
+
+			// Is a file, load it
+			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.trace();
+
+			XML::Document document{path.c_str()};
+
+			const auto &root = document.document_element();
+			next = TimeStamp{root,"update-timer"};
+			if(next) {
+				next += time(0);
+			}
+
+			for(const XML::Node &node : root) {
+				parse(node);
+			}
+
+		}
+
+#ifdef DEBUG 
+		if(next) {
+			debug("Next update in ",TimeStamp{next}.to_string());
+		} else {
+			debug("No next update defined");
+		}
+#endif // DEBUG		
+
+		return next;
+
+	}
 
 	time_t XML::parse(const char *p) {
 

@@ -60,6 +60,16 @@ namespace Udjat {
 		/// @return 0 if ok, non zero if not (sets errno).
 		UDJAT_API int mtime(const char *filename, time_t time);
 
+		/// @brief Get file modification time.
+		UDJAT_API time_t mtime(const char *filename);
+
+		/// @brief Check file modification time.
+		/// @param filename The file name to check.
+		/// @param max_age The maximum age in seconds.
+		/// @return true if file is outdated, false otherwise.
+		/// @note If file does not exist, it is considered outdated.
+		UDJAT_API bool outdated(const char *filename, time_t max_age);
+
 #ifdef _WIN32
 
 		UDJAT_API int move(const char *from, const char *to, bool replace = false);

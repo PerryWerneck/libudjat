@@ -19,6 +19,8 @@
 
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/loader.h>
  #include <udjat/tools/commandlineparser.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
@@ -28,6 +30,12 @@
  #include <udjat/tools/logger.h>
  #include <vector>
  #include <libgen.h>
+
+ #include <private/randomfactory.h>
+
+ #ifndef _WIN32
+	#include <dlfcn.h>
+ #endif // !_WIN32
 
  #ifdef HAVE_FILESYSTEM_H
 	 #include <filesystem>
@@ -40,33 +48,49 @@
  using namespace std;
  using namespace Udjat;
 
- int main(int argc, char **argv) {
+ int Udjat::loader(int argc, char **argv, const char *definitions) {
+
+	bool app = (argc==1);
+
+	Logger::verbosity(9);
+	Logger::console(true);
+	Config::allow_user_homedir(true);
 
 	// Check for help
-	if(CommandLineParser::has_argument(argc,argv,'h',"help")) {
-		static const string help_text = 
-			"\t-m, --module <module>        Load module\n"
-			"\t-c, --config <file or path>  XML definitions\n"
-			"\t-S, --service                Run as system service\n"
-			"\t-h, --help                   Show this help message\n";
-		
-		cout << "Usage: " << argv[0] << " [options]" << endl << endl << help_text;
+	static const Udjat::CommandLineParser::Argument options[] = {
+		{ 'h', "help",				"Show this help message"		},
+		{ 'A', "application", 		"Run as application"			},
+		{ 'S', "service", 			"Run as system service"			},
+		{ 'm', "module=<module>",	"Load module by name or path"	},
+		{ 'c', "config=<path>",		"Load XML configuration from file or directory" },
+		{ 't', "run-tests",			"Run test method (if available)" },
+	};
+
+	if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
+
+		cout	<< "Usage:" << "\n  " << argv[0]
+				<< " " << "[OPTION..]" << "\n\n";
+
+		cout << "Common options:\n";
+		for(const auto &option : options) {
+			option.print(cout);
+			cout << "\n";
+		};
+		Application::show_command_line_help();
+
+		cout << "\nService options:\n";
+		SystemService::show_command_line_help();
+
+		cout << "\n";
+		Logger::help();
+
 		return 0;
 	}
 
-	Config::allow_user_homedir(true);
-	Logger::verbosity(9);
 	Logger::redirect();
-	Logger::console(true);
-
-	// Test mode
-	enum Mode {
-		Application,	// Run as application
-		Service,		// Run as service
-	} mode = Application;
 
 	// Configuration file (or path)
-	string config_file = "./test.xml";
+	string config_file{definitions};
 
 	// Loaded modules
 	vector<Module *> modules;
@@ -82,60 +106,82 @@
 				Logger::String{"Module '" + argvalue + "' not found"}.error();
 				return -1;
 			}
-			modules.back()->test_mode();
 		}
 	
 		if(CommandLineParser::get_argument(argc,argv,'c',"config",argvalue)) {
 			config_file = argvalue;
 		}
 
-		if(CommandLineParser::get_argument(argc,argv,'S',"service",argvalue)) {
-			mode = Service;
-		}
 	}
 
-	Logger::String{"Loading definitions from '" + config_file + "'"}.info();
+	RandomFactory rfactory;
+	string testmodule{".build/testmodule" LIBEXT};
+	
+	if(CommandLineParser::has_argument(argc,argv,'t',"run-tests")) {
 
-#ifdef HAVE_FILESYSTEM_H
-	{
-		string testmodule{".build/testmodule" LIBEXT};
+		// Run tests
+#ifdef _WIN32
+		Logger::String{"Running tests is not supported on Windows"}.error();
+		return -1;
+#else
 
-		if(access(testmodule.c_str(),R_OK) == 0) {
-			Logger::String{"Loading test module from '" + testmodule + "'"}.info();
-			modules.push_back(Module::factory(testmodule.c_str()));
-			if(modules.back() == nullptr) {
-				Logger::String{"Module '" + testmodule + "' not found"}.error();
-				return -1;
+		for(auto module : modules) {
+			int rc = module->run_unit_test();
+			if(rc) {
+				return rc;
 			}
-			modules.back()->test_mode();
 		}
-	}
+
+		/*
+		dlerror(); // Clear previous errors
+		int (*run_tests)() = (int (*)())dlsym(RTLD_DEFAULT, "run_unit_test");
+
+		const char *error = dlerror();
+		if(error) {
+			Logger::String{"Failed to load test module: ", error}.error();
+			return -1;
+		}
+
+		return run_tests();
+		*/
+
+		return 0;
+
 #endif
 
-	switch(mode) {
-	case Application:
-		{
-			// Run as application
-			Udjat::Application app{argc,argv};
-			int rc = app.run(config_file.c_str());
-			if(rc != 0) {
-				Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
-				return rc;
-			}	
-		}
-		break;
+	} else if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
 
-	case Service:
-		{
-			// Run as service
-			Udjat::SystemService srvc{argc,argv};
-			int rc = srvc.run(config_file.c_str());
-			if(rc != 0) {
-				Logger::String{"Service failed with error '",strerror(rc),"' (",rc,")"}.error();
-				return rc;
-			}	
+		// Run as service
+		int rc = Udjat::SystemService{argc,argv}.run(config_file.c_str());
+		if(rc != 0) {
+			Logger::String{"Service failed with error '",strerror(rc),"' (",rc,")"}.error();
+			return rc;
+		}	
+
+	} else if(CommandLineParser::has_argument(argc,argv,'A',"application") || app) {
+
+		// Run as application (default if called without arguments)
+		int rc = Udjat::Application{argc,argv}.run(config_file.c_str());
+		if(rc != 0) {
+			Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
+			return rc;
+		}	
+
+	} else if(access(testmodule.c_str(),R_OK) == 0) {
+		Logger::String{"Loading test module from '" + testmodule + "'"}.info();
+		modules.push_back(Module::factory(testmodule.c_str()));
+		if(modules.back() == nullptr) {
+			Logger::String{"Module '" + testmodule + "' not found"}.error();
+			return -1;
 		}
-		break;
+		modules.back()->run_unit_test();
+
+	} else {
+
+		Logger::String{"No service or application mode, and no filesystem support to load test module"}.warning();
+		Logger::String{"Run with '--service' or '--application' option to run as service or application"}.warning();
+		return -1;			
+
 	}
 
 	return 0;

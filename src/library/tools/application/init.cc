@@ -31,13 +31,8 @@
 
  namespace Udjat {
 
-	int Application::init(const char *definitions) {
-		setup(definitions,true);
-		return 0;
-	}
-
-	void Application::finalize() {
-
+	/*
+	int Application::deinit() {
 		ThreadPool::getInstance().wait();
 
 		Service::for_each([](const Service &service){
@@ -55,11 +50,10 @@
 		ThreadPool::getInstance().wait();
 
 		Module::unload();
-	}
 
-	int Application::deinit(const char *) {
 		return 0;
 	}
+	*/
 
  }
 

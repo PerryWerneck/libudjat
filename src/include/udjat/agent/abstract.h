@@ -50,9 +50,9 @@
 
 				/// @brief Create an agent from XML node.
 				/// @param node XML definition for the new agent.
-				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Object &parent, const XML::Node &node) const;
+				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const = 0;
 
-				static std::shared_ptr<Abstract::Agent> build(const Abstract::Object &parent, const XML::Node &node);
+				static std::shared_ptr<Abstract::Agent> build(const Abstract::Agent &parent, const XML::Node &node);
 
 			};
 
@@ -221,10 +221,17 @@
 			Agent & operator=(Agent &&) = delete;
 
 			Agent(const char *name = "", const char *label = "", const char *summary = "");
-			Agent(const char *name, const XML::Node &node);
 			Agent(const XML::Node &node);
 
 			virtual ~Agent();
+
+			/// @brief Load agent children, states, alerts, etc. from node.
+			/// @param node The xml node with agent children to build.
+			bool parse(const XML::Node &node) override;
+
+			inline time_t parse(const char *path) {
+				return Udjat::Object::parse(path);
+			}
 
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
@@ -265,10 +272,6 @@
 			inline std::list<std::shared_ptr<Abstract::Object>> & objects() noexcept {
 				return children.objects;
 			}
-
-			/// @brief Load agent children, states, alerts, etc. from node.
-			/// @param node The xml node with agent children to build.
-			void setup(const XML::Node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();

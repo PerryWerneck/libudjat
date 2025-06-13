@@ -26,6 +26,7 @@
  */
 
  #include <config.h>
+ #include <udjat/agent/abstract.h>
  #include <private/agent.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
@@ -40,7 +41,7 @@ namespace Udjat {
 
 	std::recursive_mutex Abstract::Agent::guard;
 
-	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Object( (name && *name) ? name : "unnamed") {
+	Abstract::Agent::Agent(const char *name, const char *label, const char *summary) : Object{(name && *name) ? name : "unnamed"} {
 
 		if(label && *label) {
 			Object::properties.label = label;
@@ -68,12 +69,46 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Agent(const char *name, const XML::Node &node) : Object(name, node) {
-		Controller::setup_properties(*this,node);
-	}
+	Abstract::Agent::Agent(const XML::Node &node) : Object{node} {
 
-	Abstract::Agent::Agent(const XML::Node &node) : Object(node) {
-		Controller::setup_properties(*this,node);
+		update.timer = XML::AttributeFactory(node,"update-timer").as_uint((unsigned int) update.timer);
+		update.on_demand = XML::AttributeFactory(node,"update-on-demand").as_bool(update.timer == 0);
+
+		time_t delay = XML::AttributeFactory(node,"delay-on-startup").as_uint((unsigned int) (update.timer ? 1 : 0));
+		if(delay)
+			update.next = time(nullptr) + delay;
+
+#ifndef _WIN32
+		{
+			// Check for signal based update.
+			const char *signame = XML::AttributeFactory(node,"update-signal").as_string();
+			if(*signame && strcasecmp(signame,"none")) {
+
+				// Agent has signal based update.
+				update.sigdelay = (short) XML::AttributeFactory(node,"update-signal-delay").as_uint(0);
+
+				Udjat::Event &event = Udjat::Event::SignalHandler(this, signame, [this](){
+					sched_update(update.sigdelay);
+					return true;
+				});
+
+				if(update.sigdelay) {
+					info()	<< "An agent update with a "
+							<< update.sigdelay
+							<< " second(s) delay will be triggered by signal '"
+							<< event.to_string() << "'"
+							<< endl;
+				} else {
+					info() << signame << " (" << event.to_string() << ") will trigger an agent update" << endl;
+				}
+
+			} else {
+				update.sigdelay = -1;
+			}
+
+		}
+#endif // !_WIN32
+
 	}
 
 	Abstract::Agent::~Agent() {

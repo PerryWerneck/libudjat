@@ -51,16 +51,14 @@ namespace Udjat {
 
 	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
 
-	Abstract::Agent::Controller::Controller() : Service{"agents",moduleinfo}, Action::Factory{"agent"} {
-		Logger::String{
-			"Initializing controller"
-		}.trace("agent");
+	Abstract::Agent::Controller::Controller() 
+		: Service{"agents",moduleinfo}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"} {
+
+		Logger::String{"Initializing controller"}.trace("agent");
 	}
 
 	Abstract::Agent::Controller::~Controller() {
-		Logger::String{
-			"Deinitializing controller"
-		}.trace("agent");
+		Logger::String{"Deinitializing controller"}.trace("agent");
 	}
 
 	void Abstract::Agent::Controller::set(std::shared_ptr<Abstract::Agent> root) {
@@ -96,12 +94,9 @@ namespace Udjat {
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::get() const {
-
 		if(this->root)
 			return this->root;
-
-		throw runtime_error(_("Core/Module subsystem failed to initialize"));
-
+		throw logic_error(_("Agent controller was not initialized"));
 	}
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Controller::find(const char *path, bool required) const {
@@ -296,8 +291,6 @@ namespace Udjat {
 		}
 	}
 
-
-
 	/*
 
 	void Abstract::Agent::Controller::call(Request &request, Response &response) noexcept {
@@ -382,6 +375,23 @@ namespace Udjat {
 		});
 
 
+	}
+
+	std::shared_ptr<Abstract::Object> Abstract::Agent::Controller::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
+
+		Abstract::Agent *agent = dynamic_cast<Abstract::Agent *>(&parent);
+		if(!agent) {
+			throw logic_error("Parent object is not an agent");
+		}
+
+#ifdef DEBUG 
+		Logger::String{"Building child agent '",node.attribute("name").as_string(),"' from XML node: "}.info(agent->name());
+#endif // DEBUG		
+
+		auto child = Abstract::Agent::Factory::build(*agent,node);
+		agent->push_back(child);
+
+		return child;
 	}
 
 	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const XML::Node &) const {

@@ -39,7 +39,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>
- #include <private/updater.h>
+// #include <private/updater.h>
  #include <list>
 
  #ifdef HAVE_SYSTEMD
@@ -58,6 +58,7 @@
 		return ENOTSUP;
 	}
 
+	/*
 	time_t Application::initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup) {
 
 		if(startup && !Module::preload()) {
@@ -78,7 +79,9 @@
 
 		return updater.wait();
 	}
+	*/
 
+	/*
 	void Application::setup(const char *pathname, bool startup) {
 
 		auto root = RootFactory();
@@ -106,5 +109,6 @@
 		});
 
 	}
+	*/
 
  }

@@ -61,7 +61,7 @@
 		return nullptr;
 
 	}
-
+	
 	void * Module::Controller::getSymbol(void *handle, const char *name	, bool required) {
 
 		void * symbol = dlsym(handle,name);

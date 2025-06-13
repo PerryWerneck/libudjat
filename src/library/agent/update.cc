@@ -83,6 +83,7 @@ namespace Udjat {
 		}
 
 		if(!changed) {
+			debug("Value of agent '",name(),"' not changed");
 			notify(VALUE_NOT_CHANGED);
 			return false;
 		}

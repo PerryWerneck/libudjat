@@ -240,7 +240,7 @@ lib_src += [
   'src/library/agent/state.cc',
   'src/library/agent/update.cc',
   'src/library/agent/root.cc',
-  'src/library/agent/setup.cc',
+  'src/library/agent/parse.cc',
   'src/library/alert/construct.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
@@ -258,7 +258,6 @@ lib_src += [
   'src/library/request/response.cc',
   'src/library/request/responseobject.cc',
   'src/library/request/request.cc',
-  'src/library/state/child.cc',
   'src/library/state/level.cc',
   'src/library/state/parse.cc',
   'src/library/state/state.cc',
@@ -350,11 +349,9 @@ lib_src += [
 ]
 
 test_src = [
+  'src/testprogram/loader.cc',
   'src/testprogram/randomfactory.cc',
-  'src/testprogram/service.cc',
-  'src/testprogram/application.cc',
-  'src/testprogram/run.cc',
-]
+ ]
 
 #
 # SDK
@@ -657,29 +654,31 @@ static_library(
   include_directories: includes_dir
 )
 
-tests = static_library(
-  meson.project_name() + '-testing', 
+ static_library(
+  meson.project_name() + '-loader', 
   config_h + test_src,
-  cpp_args: [ '-fno-lto' ],
+  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
   install: true,
-  dependencies: lib_deps + [ iconv ],
+  dependencies: lib_deps,
   include_directories: includes_dir
 )
 
 executable(
   meson.project_name(),
-  config_h + [ 'src/testprogram/testprogram.cc' ],
+  config_h + test_src + [ 'src/testprogram/main.cc' ],
+  cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
-  link_with : [ tests, dynamic ],
+  link_with : [ dynamic ],
   dependencies: lib_deps,
   include_directories: includes_dir
 )
 
 executable(
   meson.project_name() + '-loader',
-  config_h + [ 'src/testprogram/loader.cc' ],
+  config_h + test_src + [ 'src/testprogram/main.cc' ],
+  cpp_args: [ '-DSDK_APP' ],
   install: true,
-  link_with : [ tests, dynamic ],
+  link_with : [ dynamic ],
   dependencies: lib_deps,
   include_directories: includes_dir
 )
@@ -721,10 +720,9 @@ install_headers(
   'src/include/udjat/agent.h',
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
-  'src/include/udjat/factory.h',
   'src/include/udjat/module.h',
   'src/include/udjat/moduleinfo.h',
-  'src/include/udjat/tests.h',
+  'src/include/udjat/loader.h',
   version_file,
   subdir: 'udjat'  
 )

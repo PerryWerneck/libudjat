@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,6 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #pragma once
- #include <udjat/tools/factory.h>
+/**
+ * @brief Testing/development helpers.
+ *
+ * @author Perry Werneck <perry.werneck@gmail.com>
+ *
+ */
 
+#pragma once
+
+#include <udjat/defs.h>
+
+extern "C" {
+	int UDJAT_API run_tests();
+}
+
+namespace Udjat {
+
+	/// @brief Helper library to test and develop Udjat modules.
+	/// @param argc Number of command line arguments.
+	/// @param argv The command line arguments.
+	/// @return 0 on success, non-zero on failure.
+	int UDJAT_API loader(int argc, char *argv[], const char *definitions = "test.xml");
+
+}

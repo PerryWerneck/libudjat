@@ -30,9 +30,12 @@
  #include <udjat/tools/intl.h>
  #include <udjat/module/abstract.h>
  #include <udjat/ui/console.h>
- #include <private/updater.h>
+ #include <udjat/tools/intl.h>
+ #include <udjat/ui/status.h>
  #include <string>
- #include <getopt.h>
+ #include <udjat/agent/abstract.h>
+ #include <private/agent.h>
+ #include <private/service.h>
 
  #undef LOG_DOMAIN
  #define LOG_DOMAIN Application::Name();
@@ -47,6 +50,8 @@
 	#include <private/event.h>
  #else
 	#include <sys/resource.h>
+	#include <csignal>
+	#include <udjat/tools/event.h>
  #endif // _WIN32
 
  using namespace std;
@@ -73,20 +78,113 @@
 		return true;
 	}
 
-	int Application::setup(const char *) {
+	static void dump(std::shared_ptr<Abstract::Agent> agent, size_t level = 0) {
 
-		debug("---> Running ",__FUNCTION__);
+		Logger::String{
+			string(level*2, ' ').c_str(),
+			agent->label(),
+			" - ",
+			agent->summary()
+		}.write((Logger::Level) (Logger::Debug+1),agent->name());
 
-		string argvalue;
-
-		if(CommandLineParser::get_argument(argc,argv,'T',"timer",argvalue)) {
-			MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
-				MainLoop::getInstance().quit("Timer expired, exiting");
-				return false;
-			});
+		for(const auto &child : *agent) {
+			dump(child, level + 1);
 		}
-				
-		return 0;
+
+	}
+
+	void Application::parse(const char *path, bool startup) {
+
+		// XML parse will run in a thread.
+		ThreadPool::getInstance().push([this,path,startup](){
+
+			// Load new configuration, if it fails, the old configuration will be kept.
+			shared_ptr<Abstract::Agent> root;
+
+			try {
+
+				Logger::String{"Loading ",path}.trace();
+				state( _("Loading configuration") );
+
+				// TODO: Load XML definitions.
+				root = RootFactory();
+				time_t refresh = root->parse(path);
+
+				if(refresh) {
+
+					time_t seconds = refresh - time(0);
+					Logger::String{"Update of ",path," scheduled to ",TimeStamp{refresh}.to_string().c_str()," (",seconds," seconds from now)"}.info(name());
+
+					reload_timer = MainLoop::getInstance().TimerFactory(seconds * 1000,[this,path]() -> bool {
+						Logger::String{"Reloading ",path," by timer action"}.info(name());
+						reload_timer = nullptr;
+						this->parse(path,false);
+						return false;
+					});
+
+				} else {
+
+					Logger::String{"Automatic update of ",path," disabled"}.trace(name());
+
+				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{"Error loading ",path,": ",e.what()}.error(name());
+				if(startup) {
+					// If this is the first time the application is started, we should quit.
+					MainLoop::getInstance().quit(e.what());
+				}
+				return;	// Ignore the error, keep the old configuration.
+
+			} catch(...) {
+
+				Logger::String{"Unexpected error while loading ",path}.error(name());
+				if(startup) {
+					// If this is the first time the application is started, we should quit.
+					MainLoop::getInstance().quit("Unexpected error while loading configuration");
+				}
+				return;	// Ignore the error, keep the old configuration.
+
+			}
+
+			// New root agent is ready, activate it.
+			try {
+
+				// Activate the new root agent.
+				state( _("Activating new configuration") );
+
+				if(Logger::enabled(Logger::Trace)) {
+					dump(root);
+				}
+
+				// Set the root agent for application.
+				this->root(root);
+
+				// Set the root agent on controller.
+				Abstract::Agent::Controller::getInstance().set(root);
+
+				// Inform the modules about the new root agent.
+                Module::for_each([root](Module &module) -> bool {
+					module.set(root);
+					return false;
+                });
+
+				state( _("Starting services") );
+				Service::Controller::getInstance().start();
+
+			} catch(const std::exception &e) {
+
+				state(e.what());
+				MainLoop::getInstance().quit(e.what());
+
+			} catch(...) {
+
+				state(_("Unexpected error while activating new configuration"));
+				MainLoop::getInstance().quit("Unexpected error");
+			}
+
+		});
 
 	}
 
@@ -99,25 +197,24 @@
 			return 0;
 		}
 
+		// Parse command line arguments.
 		CommandLineParser::setup(argc,argv);
 
-		// Parse command line arguments.
-		if(setup(definitions)) {
+		if(!MainLoop::getInstance()) {
 			return -1;
 		}
 
-		if(!MainLoop::getInstance()) {
-			return 0;
-		}
+		{
+			string argvalue;
 
-		int rc = -1;
-
-		try {
-
-			rc = init(definitions);
-			if(rc) {
-				return rc;
+			if(get_argument(argc,argv,'T',"timer",argvalue)) {
+				MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
+					MainLoop::getInstance().quit("Timer expired, exiting");
+					return false;
+				});
 			}
+
+		}
 
 #ifdef _WIN32
 			Udjat::Event::ConsoleHandler(this,CTRL_C_EVENT,[](){
@@ -136,22 +233,56 @@
 			});
 #endif // _WIN32
 
-			rc = MainLoop::getInstance().run();
+		try {
 
-			if(deinit(definitions)) {
-				rc = -1;
+			if(definitions && *definitions) {
+
+				const char *path = String{definitions}.expand(true).as_quark();
+				
+#ifndef _WIN32
+				// Sighup force reconfiguration.
+				Event::SignalHandler(this,SIGHUP,[this,path]() -> bool {
+					Logger::String{"Catched SIGHUP, reloading ",path}.info(name());
+					parse(path,false);
+					return true;
+				});
+
+				Logger::String{
+					"Signal '",(const char *) strsignal(SIGHUP),"' (SIGHUP) will reload settings from ",path
+				}.info(name());
+#endif // _WIN32
+
+				parse(path,true);
+
+			} else {
+
+				state( _("Starting services") );
+				Service::Controller::getInstance().start();
+
 			}
 
-			finalize();
+			// Start the main loop.
+			debug("----> Starting mainloop");
+			int rc = MainLoop::getInstance().run();
+			debug("----> MainLoop exited with code ",rc);
+	
+			Service::Controller::getInstance().stop();
+
+			return rc;
 
 		} catch(const std::exception &e) {
 
 			error() << e.what() << endl;
-			rc = -1;
+
+		} catch(...) {
+
+			error() << "Unexpected error" << endl;
 
 		}
 
-		return rc;
+		Service::Controller::getInstance().stop();
+
+		return -1;
 
 	}
 

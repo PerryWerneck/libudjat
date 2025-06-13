@@ -18,7 +18,10 @@
  */
 
  #include <config.h>
- #include <private/state.h>
+ #include <udjat/defs.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/agent/level.h>
+ #include <cstring>
 
  using namespace std;
 

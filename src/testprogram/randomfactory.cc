@@ -19,23 +19,22 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tests.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/xml.h>
  #include <udjat/agent.h>
  #include <udjat/agent/abstract.h>
+ #include <private/randomfactory.h>
  #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-	Testing::RandomFactory::RandomFactory(const Udjat::ModuleInfo &info) : Udjat::Factory("random",info) {
+	RandomFactory::RandomFactory() : Abstract::Agent::Factory{"random"} {
 		cout << "random agent factory was created" << endl;
 		srand(time(NULL));
 	}
 
-	std::shared_ptr<Abstract::Agent> Testing::RandomFactory::AgentFactory(const Abstract::Object &, const XML::Node &node) const {
+	std::shared_ptr<Abstract::Agent> RandomFactory::AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const {
 
 		class RandomAgent : public Agent<unsigned int> {
 		private:
@@ -45,15 +44,33 @@
 			RandomAgent(const XML::Node &node) : Agent<unsigned int>(node) {
 			}
 
-			bool refresh() override {
-				debug("Updating agent '",name(),"'");
-				unsigned int value = ((unsigned int) rand()) % limit;
-				if(set(value)) {
-					Logger::String{"Agent '",name(),"' updated to ",value}.info();
-					return true;
+			std::shared_ptr<Abstract::State> computeState() override {
+
+				debug("--------------- Computing state for agent '",name(),"' (",states.size()," state(s) available)");
+				for(auto state : states) {
+					debug("Checking state '",state->name(),"' with value ",state->value(),"...");
+					if(state->compare(get())) {
+						debug("State '",state->name(),"' matched with value ",get());
+						return state;
+					}
+					debug("State '",state->name(),"' not matched with value ",get());
 				}
-				Logger::String{"Agent '",name(),"' keep value ",value}.info();
-				return false;
+				debug("No state matched for agent '",name(),"' with value ",get());
+				return Abstract::Agent::computeState();
+			}
+
+			bool refresh() override {
+
+				debug("Updating agent '",name(),"'");
+				unsigned int last = get();
+				unsigned int value = ((unsigned int) rand()) % limit;
+				if(value == last) {
+					Logger::String{"Current value stayed the same: ",value}.info(name());
+					return false;
+				}
+
+				Logger::String{"Value changed from ",last," to ",value}.info(name());
+				return set(value);
 			}
 
 			void start() override {

@@ -66,6 +66,7 @@
 	}
 #else
 	void Linux::MainLoop::quit() {
+		debug("Linux::MainLoop::quit() called, stopping main loop");
 		running = false;
 		wakeup();
 	}

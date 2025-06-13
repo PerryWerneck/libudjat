@@ -92,6 +92,10 @@
 		Agent(const char *name, const T v) : Abstract::Agent{name}, value{v} {
 		}
 
+		friend std::ostream& operator<<(std::ostream& out, const Agent &a) {
+			return out << a.value;
+		}
+
 		bool set(const T &value) {
 
 			if(value == this->value)
@@ -170,6 +174,10 @@
 		}
 
 		Agent(const char *name, const char *v) : Abstract::Agent(name), value(v) {
+		}
+
+		friend std::ostream& operator<<(std::ostream& out, const Agent &a) {
+			return out << a.value.c_str();
 		}
 
 		bool set(const std::string &value) {

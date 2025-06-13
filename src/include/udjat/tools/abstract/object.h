@@ -30,19 +30,47 @@
 
 		/// @brief Abstract object with properties.
 		class UDJAT_API Object {
+		protected:
+			typedef Object Super;
+
 		public:
-			static std::shared_ptr<Object> Factory(const Object *object, ...) noexcept __attribute__ ((sentinel));
+
+			class UDJAT_API Factory {
+			private:
+				const char *name;
+
+			public:
+				Factory(const char *name);
+				virtual ~Factory();
+
+				inline bool operator==(const char *n) const noexcept {
+					return strcasecmp(n,name) == 0;
+				}
+				/// @brief Create an object from XML node.
+				virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const = 0;
+
+			};
+
+			/// @brief Merge several objects propertie into a single one.
+			/// @details This method is used to merge the properties several objects into a single one.
+			/// @param object first object to merge.
+			/// @param  ... The other objects to merge.
+			/// @return Pointer to new object combining all properties.
+			/// @note The first object is used as the name for the new object.
+			static std::shared_ptr<Object> merge(const Object *object, ...) noexcept __attribute__ ((sentinel));
 
 			virtual ~Object();
 
-			/// @brief Setup object.
-			/// @param node The XML node with the object definitions.
-			virtual void setup(const XML::Node &node);
+			/// @brief Parse XML file(s), build children.
+			/// @param path The path for a folder or a XML file.
+			/// @return timestamp for next refresh.
+			time_t parse(const char *path);
 
-			/// @brief Build and add child object.
+			/// @brief Parse object, build children.
+			/// @details This method is called by parse() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool push_back(const XML::Node &node);
+			virtual bool parse(const XML::Node &node);
 
 			/// @brief Add child object (if supported).
 			virtual void push_back(std::shared_ptr<Abstract::Object> child);

@@ -69,7 +69,7 @@ namespace Udjat {
 
 		if(state.get() == this->current_state.selected.get()) {
 			// It's the same state, just return.
-			debug("Changing '",name(),"' to same state (",state->summary(),"), ignored");
+			debug("Changing '",name(),"' to same state (",state->name(),"), ignored");
 			return false;
 		}
 
@@ -82,7 +82,7 @@ namespace Udjat {
 
 			// Current state was activated, deactivate it
 
-			debug("Agent '",name(),"' is deactivating state '",this->state()->summary(),"'");
+			debug("Agent '",name(),"' is deactivating state '",this->state()->name(),"'");
 
 			try {
 
@@ -130,7 +130,7 @@ namespace Udjat {
 			try {
 
 				current_state.activate(state);
-				debug("Agent '",name(),"' is activating state '",this->state()->to_string().c_str(),"'");
+				debug("Agent '",name(),"' is activating state '",this->state()->name(),"'");
 				this->state()->activate(*this);
 
 			} catch(const std::exception &e) {
@@ -153,7 +153,7 @@ namespace Udjat {
 
 		}
 
-		debug("New state on '",name(),"' is '",this->state()->summary(),"'");
+		debug("New state on '",name(),"' is '",this->state()->name(),"'");
 
 		// Notify listeners.
 		notify(STATE_CHANGED);
@@ -165,8 +165,8 @@ namespace Udjat {
 				<< "\t"
 				<< Logger::Message{
 						message,
-						this->state()->to_string(),
-						level
+						this->state()->summary(),
+						std::to_string(level),
 					}
 				<< endl;
 

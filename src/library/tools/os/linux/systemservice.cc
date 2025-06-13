@@ -40,16 +40,7 @@
 
  namespace Udjat {
 
-	int SystemService::setup(const char *definitions) {
-
-		return Application::setup(definitions);
-	}
-
-	/// @brief Show help text to stream.
-	/// @param out The stream for help.
-	void SystemService::help(size_t width) const noexcept {
-
-		Application::help(width);
+	void SystemService::show_command_line_help(size_t width) noexcept {
 
 		static const CommandLineParser::Argument values[] = {
 			{ 'd', "daemon", _("Run in the background") },
@@ -60,6 +51,13 @@
 			cout << "\n";
 		};
 
+	}
+
+	/// @brief Show help text to stream.
+	/// @param out The stream for help.
+	void SystemService::help(size_t width) const noexcept {
+		Application::help(width);
+		show_command_line_help(width);
 	}
 
 	int SystemService::run(const char *definitions) {
@@ -75,49 +73,7 @@
 
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"MAINPID=%lu",(unsigned long) getpid());
-#endif // HAVE_SYSTEMD
 
-		return Application::run(definitions);
-
-	}
-
-	/// @brief Initialize service.
-	int SystemService::init(const char *definitions) {
-
-#ifdef HAVE_SYSTEMD
-		sd_notifyf(0,"STATUS=Starting");
-#endif // HAVE_SYSTEMD
-
-		// Install unhandled exception manager.
-		// https://en.cppreference.com/w/cpp/error/set_terminate
-		std::set_terminate([]() {
-#ifdef HAVE_SYSTEMD
-			sd_notify(0,"STATUS=Unhandled exception");
-			sd_notify(0,"STOPPING=1");
-#endif // HAVE_SYSTEMD
-			Logger::String{"Unhandled exception"}.error(PACKAGE_NAME);
-			std::abort();
-		});
-
-		int rc = Application::init(definitions);
-		if(rc) {
-			debug("Application init rc was ",rc);
-			return rc;
-		}
-
-		Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
-		if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
-
-			Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
-				ThreadPool::getInstance().push([this,definitions](){
-					setup(definitions,false);
-				});
-				return true;
-			});
-			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
-		}
-
-#ifdef HAVE_SYSTEMD
 		{
 			uint64_t watchdog_timer = 0;
 			int status = sd_watchdog_enabled(0,&watchdog_timer);
@@ -147,9 +103,40 @@
 
 		}
 #endif // HAVE_SYSTEMD
+
+		return Application::run(definitions);
+
+	}
+
+	/*
+	/// @brief Initialize service.
+	int SystemService::init(const char *definitions) {
+
+
+		int rc = Application::init(definitions);
+		if(rc) {
+			debug("Application init rc was ",rc);
+			return rc;
+		}
+
+		Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
+		if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
+
+			Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
+				ThreadPool::getInstance().push([this,definitions](){
+					setup(definitions,false);
+				});
+				return true;
+			});
+			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
+		}
+
+#ifdef HAVE_SYSTEMD
+#endif // HAVE_SYSTEMD
 		
 		return rc;
 	}
+	*/
 
 	void SystemService::on_timer() {
 

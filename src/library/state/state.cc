@@ -27,15 +27,14 @@
  */
 
  #include <config.h>
- #include <private/state.h>
  #include <udjat/agent/state.h>
  #include <cstring>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/expander.h>
  #include <udjat/alert.h>
+ #include <udjat/agent/abstract.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/actions/abstract.h>
  #include <udjat/tools/activatable.h>
  #include <iostream>
@@ -85,9 +84,7 @@ namespace Udjat {
 
 	}
 
-	Abstract::State::State(const XML::Node &node) : Object(node) {
-
-		set(node);
+	Abstract::State::State(const XML::Node &node) : Object{node} {
 
 		if(!(Object::properties.icon && *Object::properties.icon)) {
 			Object::properties.icon = IconNameFactory(properties.level);
@@ -105,7 +102,11 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::State::push_back(const XML::Node &node) {
+	bool Abstract::State::parse(const XML::Node &node) {
+
+		if(Udjat::Object::parse(node)) {
+			return true; // Handled by object.
+		}
 
 		if(strcasecmp(node.name(),"alert") == 0) {
 			listeners.push_back(Alert::Factory::build(*this,node));

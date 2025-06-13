@@ -17,6 +17,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ /*
  #include <config.h>
  #include <private/updater.h>
  #include <udjat/tools/configuration.h>
@@ -308,12 +309,12 @@
 				if(path && *path) {
 
 					// Has defined root path, find agent.
-					root->find(path,true,true)->setup(node);
+					root->find(path,true,true)->parse(node);
 
 				} else {
 
 					// No path, load here.
-					root->setup(node);
+					root->parse(node);
 
 				}
 
@@ -341,3 +342,4 @@
 	}
 
  }
+*/

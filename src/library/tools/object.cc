@@ -26,16 +26,32 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
+ #include <udjat/module/abstract.h>
+ #include <udjat/tools/actions/abstract.h>
+ #include <udjat/tools/interface.h>
+ #include <udjat/tools/container.h>
 
  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   
  using namespace std;
 
  namespace Udjat {
+
+	static Container<Abstract::Object::Factory> & Factories() {
+		static Container<Abstract::Object::Factory> instance;
+		return instance;
+	}
+
+	Abstract::Object::Factory::Factory(const char *n) : name{n} {
+		Factories().push_back(this);
+	}
+
+	Abstract::Object::Factory::~Factory() {
+		Factories().remove(this);
+	}
 
 	static const char * NameFactory(const XML::Node &node) noexcept {
 
@@ -59,12 +75,11 @@
 		return objectName;
 	}
 
-	bool NamedObject::set(const XML::Node &node) {
+	bool NamedObject::parse(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
-			return true;
 		}
-		return false;
+		return Abstract::Object::parse(node);
 	}
 
 	const char * NamedObject::c_str() const noexcept {
@@ -112,16 +127,7 @@
 		return cerr << objectName << "\t";
 	}
 
-
-	Object::Object(const XML::Node &node) : NamedObject(node) {
-		set(node);
-	}
-
-	Object::Object(const char *name, const XML::Node &node) : NamedObject(name, node) {
-		set(node);
-	}
-
-	std::shared_ptr<Abstract::Object> Abstract::Object::Factory(const Object *object, ...) noexcept {
+	std::shared_ptr<Abstract::Object> Abstract::Object::merge(const Object *object, ...) noexcept {
 
 		class Object : public Udjat::NamedObject {
 		public:
@@ -164,74 +170,83 @@
 	Abstract::Object::~Object() {
 	}
 
-	bool Abstract::Object::push_back(const XML::Node &node) {
-		
-		if(is_reserved(node) || !is_allowed(node)) {
-			return true; // Ignore reserved nodes.
-		}
-
-		return false;	// Not handled, maybe the caller can handle it.
-	}
-
 	void Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {
 		throw logic_error("Object is unable to handle children");
 	}
 
-	void Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
+	void Abstract::Object::push_back(const 					// 
+
+XML::Node &, std::shared_ptr<Abstract::Object> child) {
 		push_back(child);
 	}
 
-	void Abstract::Object::setup(const XML::Node &node) {
+	bool Abstract::Object::parse(const XML::Node &node) {
 
-		for(XML::Node child : node) {
+		if(XML::parse(node)) {
+			return true; // Ignore reserved nodes.
+		}
 
-			if(is_reserved(node) || !is_allowed(node)) {
-				continue;
+		// It's an interface?
+		// TODO: Rewrite interface to use XML::Factory.
+		//if(strcasecmp(node.name(),"interface") == 0) {
+		//	Interface::Factory::build(node);
+		//	return true; // Handled by interface.
+		//}
+
+		// TODO: Rewrite init actions to use Object::Factory.
+		if(strcasecmp(node.name(),"init") == 0) {
+			auto action = Action::Factory::build(node,true);
+			if(action) {
+				action->call(node);
 			}
+			return true; // Handled by action.
+		}
 
-			const char *type = child.attribute("type").as_string("default");
+		// It's a factory?
+		{
+			const char *name = node.name();
 
-			Factory::for_each([this,type,&child](Udjat::Factory &factory){
+			for(const auto factory : Factories()) {
 
-				if(factory == child.name()) {
+				if(*factory == name) {
+#ifdef DEBUG 
+					Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
+#endif // DEBUG
+					auto object = factory->ObjectFactory(*this,node);
 
-					auto object = factory.ObjectFactory(*this,child);
-					if(object) {
-						push_back(child,object);
-						return true;
+#ifdef DEBUG 
+					Logger::String{"Parsing object children"}.info(object->name());
+#endif // DEBUG
+
+					for(const auto &child : node) {
+						if(!object->parse(child)) {
+							Logger::String{"Ignoring unexpected child <",child.name(),">"}.warning(object->name());
+						}
 					}
 
-					if(factory.NodeFactory(*this,child)) {
-						return true;
-					}
-
-					if(factory.NodeFactory(child)) {
-						return true;
-					}
-
+					return true; // Handled by factory.
 				}
 
-				if(factory == type && factory.CustomFactory(child)) {
-					return true;
-				}
-
-				return false;
-
-			});
+			}
 
 		}
 
+#ifdef DEBUG 
+		Logger::String{"Unexpected node <Abstract::Object::",node.name(),">"}.warning(name());
+#endif // DEBUG
+
+		return false;	// Not handled, maybe the caller can handle it.
 	}
 
-	void Object::set(const XML::Node &node) {
-
-		NamedObject::set(node);
-
+	Object::Object(const XML::Node &node) : NamedObject{node} {
 		properties.label = String{node,"label",properties.label}.as_quark();
 		properties.summary = String{node,"summary",properties.summary}.as_quark();
 		properties.url = String{node,"url",properties.url}.as_quark();
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
+	}
 
+	bool Object::parse(const XML::Node &node) {
+		return NamedObject::parse(node);
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {

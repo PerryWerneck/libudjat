@@ -22,6 +22,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/agent.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/tools/threadpool.h>
  #include <iostream>
  #include <sys/stat.h>
  #include <sys/types.h>
@@ -42,13 +43,37 @@
 	}
 
 	Application::~Application() {
-		if(timer) {
-			delete timer;
+
+		if(reload_timer) {
+			delete reload_timer;
+			reload_timer = nullptr;
 		}
-		Udjat::Module::unload();
+
+		ThreadPool::getInstance().wait();
+
+		Service::for_each([](const Service &service){
+			if(service.active()) {
+				const_cast<Service *>(&service)->stop();
+			}
+			return true;
+		});
+
+		Module::for_each([](Module &module){
+			module.finalize();
+			return false;
+		});
+
+		ThreadPool::getInstance().wait();
+
+		Module::unload();
 	}
 
 	Dialog::Status & Application::state(const Level, const char *message) noexcept {
+		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+		return *this;
+	}
+
+	Dialog::Status & Application::state(const char *message) noexcept {
 		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
 		return *this;
 	}

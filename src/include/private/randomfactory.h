@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,37 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <udjat/defs.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/quark.h>
- #include <udjat/module/abstract.h>
- #include <udjat/tools/logger.h>
- #include <stdexcept>
+/**
+ * @brief Declares randomic value agent.
+ *
+ * @author Perry Werneck <perry.werneck@gmail.com>
+ *
+ */
 
- using namespace std;
+#pragma once
 
- namespace Udjat {
+#include <config.h>
+#include <udjat/defs.h>
+#include <udjat/module/abstract.h>
+#include <udjat/agent/abstract.h>
 
-	Application::Application(int &c, char **v) : argc{c}, argv{v} {
+namespace Udjat {
 
-		Quark::init();
+	class UDJAT_API RandomFactory : public Udjat::Abstract::Agent::Factory {
+	public:
+		RandomFactory();
+		std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const;
 
-#ifdef DEBUG 
-		Logger::console(true);
-#endif
+	};
 
-#ifdef GETTEXT_PACKAGE
-		set_gettext_package(GETTEXT_PACKAGE);
-		setlocale( LC_ALL, "" );
-#endif // GETTEXT_PACKAGE
-
-		if(!Module::preload()) {
-			throw runtime_error("Module preload has failed");
-		}
-
-
-	}
-
- }
+}

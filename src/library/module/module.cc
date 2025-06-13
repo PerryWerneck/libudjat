@@ -52,11 +52,22 @@ namespace Udjat {
 	void Module::finalize() {
 	}
 
-	void Module::test_mode() {
-		// Do nothing
+	int Module::run_unit_test() const {
+
+		try {
+
+			int (*symbol)() = (int(*)()) Controller::getInstance().getSymbol(handle,"run_unit_test",true);
+			return symbol();
+			
+		} catch(const std::exception &e) {
+			error() << "Error running unit test: " << e.what() << endl;
+			return -1;
+		}
+
+		return 0;
 	}
 
-	void Module::set(const pugi::xml_document UDJAT_UNUSED(&document)) {
+	void Module::parse(const pugi::xml_document &) {
 	}
 
 	Value & Module::getProperties(Value &properties) const {
@@ -78,7 +89,7 @@ namespace Udjat {
 		return false;
 	}
 
-	void Module::set(std::shared_ptr<Abstract::Agent> UDJAT_UNUSED(agent)) noexcept {
+	void Module::set(std::shared_ptr<Abstract::Agent>) {
 	}
 
 	bool Module::getProperty(const char *key, std::string &value) const {

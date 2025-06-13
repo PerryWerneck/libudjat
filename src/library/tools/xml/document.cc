@@ -32,15 +32,28 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/factory.h>
  #include <udjat/tools/url/handler.h>
  #include <stdexcept>
  #include <private/logger.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/tools/container.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	static Container<XML::Parser> & Factories() {
+		static Container<XML::Parser> instance;
+		return instance;
+	}
+
+	XML::Parser::Parser(const char *n) : name{n} {
+		Factories().push_back(this);
+	}
+
+	XML::Parser::~Parser() {
+		Factories().remove(this);
+	}
 
 	/// @brief Load XML file, check if it's valid.
  	static void load(XML::Document *document, const char *filename) {
@@ -78,23 +91,28 @@
 		}
 
 		// Check for update.
-
-		// TODO: Check file's last write and and update-timer attribute to see if an url check is required.
-
-		URL url{document_element()};
+		const XML::Node &node = document_element();
+		URL url{node};
 		url.expand();
 
-		if(!url.empty()) {
+		if(!url.empty() && File::outdated(filename,TimeStamp{node,"update-timer"})) {
 
-			bool updated = url.handler()->set(MimeType::xml).get(filename);
+			try {
+				
+				bool updated = url.handler()->set(MimeType::xml).get(filename);
 
-			if(updated) {
-				Logger::String{filename," was updated from ",url.c_str()}.info("xml");
-				reset();
-				Udjat::load(this,filename);
+				if(updated) {
+					Logger::String{filename," was updated from ",url.c_str()}.info("xml");
+					reset();
+					Udjat::load(this,filename);
+					File::mtime(filename,time(0)); // Mark file as updated.
+				}
+
+			} catch(const std::exception &e) {
+
+				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning("xml");
+
 			}
-
-			document_element().append_attribute("updated").set_value(updated);
 
 		}
 
@@ -114,18 +132,18 @@
 		return 0;
 	}
 
-	bool XML::parse(const XML::Node &node, bool recursive) {
+	bool XML::parse(const XML::Node &node) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
-			return false;
+			return true; // Ignore reserved nodes.
 		}
 
 		const char *name = node.name();
 		if(!strcasecmp(name,"module")) {
 
 			if(node.attribute("preload").as_bool(false)) {
-				return false;
+				return true; // Preload modules are handled by Document constructor.
 			}
 
 			Logger::String{"Loading module '",node.attribute("name").as_string(),"'"}.trace();
@@ -134,24 +152,14 @@
 
 		}
 	
-		debug("Processing node <",node.name(),">");
-		bool rc = Factory::for_each(name,[&node](Factory &factory) -> bool {
-			return factory.parse(node);
-		});
-
-		if(!rc) {
-			Logger::String{"No factory for node <",node.name(),">, ignoring it"}.write(Logger::Debug);
-			return false;
-		}
-
-		if(recursive) {
-			// Parse children.
-			for(const XML::Node &child : node) {
-				parse(child,recursive);
+		for(const auto factory : Factories()) {
+			if(*factory == name) {
+				return factory->parse(node); // Handled by factory.
 			}
 		}
 
-		return true;
+		return false; // Not handled.
+
 	}
 
  }

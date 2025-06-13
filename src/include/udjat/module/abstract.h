@@ -80,8 +80,10 @@
 		/// @brief Build module from filename.
 		static Module * factory(const char *filename);
 
-		/// @brief Called when module is loaded by test application.
-		virtual void test_mode();
+		/// @brief Run module unit test (if available).
+		/// @details This method will try to find a function named 'run_unit_test' in the module.
+		/// @return 0 if success, -1 on error.
+		int run_unit_test() const;
 
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->name,name) == 0;
@@ -128,9 +130,9 @@
 		/// @brief Unload modules.
 		static void unload();
 
-		/// @brief Set XML document
+		/// @brief Parse XML document
 		/// Called when a XML document is loaded.
-		virtual void set(const pugi::xml_document &document);
+		virtual void parse(const pugi::xml_document &document);
 
 		/// @brief Called when application is finishing to cleanup module data after unloading.
 		virtual void finalize();
@@ -171,7 +173,7 @@
 		std::ostream & error() const;
 
 		/// @brief Set new root agent.
-		virtual void set(std::shared_ptr<Abstract::Agent> agent) noexcept;
+		virtual void set(std::shared_ptr<Abstract::Agent> agent);
 
 	};
 
@@ -185,6 +187,9 @@
 	/// @brief Initialize module.
 	/// @return Module controller.
 	UDJAT_API Udjat::Module * udjat_module_init();
+
+	/// @brief Run module unit test.
+	UDJAT_API int udjat_module_run_unit_test();
 
 	/// @brief Initialize module from XML node.
 	/// @return Module controller.

@@ -29,6 +29,10 @@
 	#include <udjat/win32/registry.h>
  #endif // _WIN32
 
+ #ifdef HAVE_SYSTEMD
+	#include <systemd/sd-daemon.h>
+ #endif // HAVE_SYSTEMD
+
  using namespace std;
 
  namespace Udjat {
@@ -48,6 +52,22 @@
 		}
 		instance = this;
 		Logger::console(false);
+
+#ifdef HAVE_SYSTEMD
+		sd_notifyf(0,"STATUS=Starting");
+#endif // HAVE_SYSTEMD
+
+		// Install unhandled exception manager.
+		// https://en.cppreference.com/w/cpp/error/set_terminate
+		std::set_terminate([]() {
+#ifdef HAVE_SYSTEMD
+			sd_notify(0,"STATUS=Unhandled exception");
+			sd_notify(0,"STOPPING=1");
+#endif // HAVE_SYSTEMD
+			Logger::String{"Unhandled exception"}.error(PACKAGE_NAME);
+			std::abort();
+		});
+
 	}
 
 	SystemService::~SystemService() {
@@ -70,6 +90,7 @@
 #endif // _WIN32
 	}
 
+	/*
 	int SystemService::deinit(const char *definitions) {
 		Udjat::Event::remove(this);
 		return Application::deinit(definitions);
@@ -88,6 +109,7 @@
 		}
 
 	}
+	*/
 
 	void SystemService::root(std::shared_ptr<Abstract::Agent> agent) {
 

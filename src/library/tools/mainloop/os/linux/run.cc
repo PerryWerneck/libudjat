@@ -51,8 +51,6 @@
 
  int Udjat::Linux::MainLoop::run() {
 
-	Service::Controller::getInstance().start();
-
 	//
 	// Capture signals
 	//
@@ -64,13 +62,14 @@
 
 			Udjat::Event::SignalHandler(this,signals[signal],[this](){
 
-				std::thread{[](){
+				std::thread{[this](){
 
+					debug("Stopping main loop by signal");
 #ifdef HAVE_SYSTEMD
 					sd_notify(0,"STATUS=Interrupting by signal");
 #endif // HAVE_SYSTEMD
 
-					Udjat::MainLoop::getInstance().quit();
+					quit();
 
 				}}.detach();
 
@@ -122,6 +121,7 @@
 		}
 
 		// Wait for event.
+		evNum++;
 		int nSocks = poll(fds, nfds, wait);
 		if(nSocks == 0) {
 			continue;
@@ -193,11 +193,6 @@
  	// Restore signals
  	//
 	Udjat::Event::remove(this);
-
-	//
- 	// Stop services
- 	//
-	Service::Controller::getInstance().stop();
 
 	return 0;
 

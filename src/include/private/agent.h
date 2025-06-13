@@ -27,7 +27,6 @@
 #include <udjat/tools/quark.h>
 #include <udjat/tools/xml.h>
 #include <udjat/module/abstract.h>
-#include <udjat/tools/factory.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
@@ -42,7 +41,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory {
+	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory, private Abstract::Object::Factory {
 	private:
 
 		time_t updating = 0;
@@ -74,10 +73,12 @@ namespace Udjat {
 		void stop() noexcept override;
 
 		/// @brief Load agent properties from XML node.
-		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
+		//static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
 
 		// ActionFactory
 		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;
+
+		std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const override;
 
 	};
 

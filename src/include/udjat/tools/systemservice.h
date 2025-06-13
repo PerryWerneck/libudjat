@@ -61,12 +61,12 @@
 		void root(std::shared_ptr<Abstract::Agent> agent) override;
 
 		/// @brief Reconfigure service.
-		void setup(const char *pathname, bool startup) noexcept override;
+		//void setup(const char *pathname, bool startup) noexcept override;
 
 		/// @brief Show help text to stdout.
 		void help(size_t width = 20) const noexcept override;
 
-		int setup(const char *definitions = nullptr) override;
+		//int setup(const char *definitions = nullptr) override;
 
 	public:
 		SystemService(const SystemService&) = delete;
@@ -75,6 +75,8 @@
 		SystemService & operator=(SystemService &&) = delete;
 
 		static SystemService & getInstance();
+
+		static void show_command_line_help(size_t width = 20) noexcept;
 
 		SystemService(int argc, char **argv);
 		virtual ~SystemService();
@@ -90,10 +92,10 @@
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
 		/// @brief Initialize service.
-		int init(const char *definitions = nullptr) override;
+		//int init(const char *definitions = nullptr) override;
 
 		/// @brief Deinitialize service.
-		int deinit(const char *definitions = nullptr) override;
+		//int deinit(const char *definitions = nullptr) override;
 
 		/// @brief Install service.
 		/// @return 0 when success, errno if failed.
