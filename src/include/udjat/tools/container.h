@@ -33,6 +33,7 @@
 	/// @tparam T The class for container.
 	/// @tparam P The pointer type (T *).
 	/// @tparam L The standard container.
+ #if __cplusplus >= 201703L
 	template <class T, class P = T *, class L = std::list<P>>
 	class Container : public std::mutex {
 	protected:
@@ -123,6 +124,28 @@
 
 	
 	};
+#else
+	template <class T>
+	class Container : public std::list<T *> {
+	private:
+		std::mutex guard;
+		
+	public:
+		Container() {
+		}
+
+		inline void push_back(T *object) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			std::list<T *>::push_back(object);
+		}
+
+		inline void remove(T *object) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			std::list<T *>::remove(object);
+		}
+	  
+	};
+#endif
 
  }
 
