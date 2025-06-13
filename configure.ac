@@ -22,8 +22,7 @@ AC_PREREQ([2.69])
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat],[1.2],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
-app_vrs_patch=1
+AC_INIT([libudjat],[2.0.0],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -60,9 +59,10 @@ dnl ---------------------------------------------------------------------------
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
+app_cv_domain="br.com.bb"
+app_vrs_patch=0
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
-AC_ARG_WITH([product-id], [AS_HELP_STRING([--with-product-domain], [Set product domain])], [ app_cv_domain="$withval" ],[ app_cv_domain="br.eti.werneck" ])
 
 AC_ARG_WITH([module-debug-path], [AS_HELP_STRING([--with-module-debug-path], [Setup module-debug-path])], [ app_cv_module_debug_path="$withval" ],[ app_cv_module_debug_path="$ac_pwd/.bin/Debug/modules/" ])
 AC_SUBST(MODULE_DEBUG_PATH,$app_cv_module_debug_path)
@@ -84,16 +84,24 @@ AC_DEFINE_UNQUOTED(PACKAGE_PATCH_LEVEL, $app_vrs_patch, [The patch level])
 AC_SUBST(PACKAGE_MAJOR_VERSION,$app_vrs_major)
 AC_SUBST(PACKAGE_MINOR_VERSION,$app_vrs_minor)
 AC_SUBST(PACKAGE_PATCH_LEVEL,$app_vrs_patch)
+AC_SUBST(PRODUCT_VERSION,$VERSION)
+
+AC_SUBST(PRODUCT_VERSION_MAJOR,$app_vrs_major)
+AC_SUBST(PRODUCT_VERSION_MINOR,$app_vrs_minor)
+AC_SUBST(PACKAGE_VERSION_MAJOR,$app_vrs_major)
+AC_SUBST(PACKAGE_VERSION_MINOR,$app_vrs_minor)
+AC_SUBST(PACKAGE_VERSION_MICRO,$app_vrs_patch)
 
 AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor",[The gettext package name.])
 AC_SUBST(GETTEXT_PACKAGE,"libudjat-$app_vrs_major.$app_vrs_minor")
 
-AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20240725 ])
+AC_ARG_WITH([minimal-build], [AS_HELP_STRING([--with-minimal-build], [Set minimal build for modules])], [ app_cv_minbuild="$withval" ],[ app_cv_minbuild=20240612 ])
 AC_DEFINE_UNQUOTED(MINIMAL_MODULE_BUILD,$app_cv_minbuild,["The required build for modules"])
 AC_SUBST(MINIMAL_MODULE_BUILD,$app_cv_minbuild)
 
 core_build_id=$(date +%y%m%d%H)
 AC_SUBST(CORE_BUILD_ID,$core_build_id)
+AC_SUBST(PACKAGE_CORE_BUILD,$core_build_id)
 
 dnl ---------------------------------------------------------------------------
 dnl Check for OS specifics
@@ -118,7 +126,6 @@ case "$host" in
 		AC_CONFIG_FILES(src/main/os/windows/app-manifest.xml)
 		AC_CONFIG_FILES(src/testprogram/windows/resources.rc)
 		AC_CONFIG_FILES(src/testprogram/windows/app-manifest.xml)
-		
 		;;
 
  	*)
@@ -129,10 +136,6 @@ case "$host" in
 		AC_SUBST(EXEEXT)
 		AC_SUBST(SONAME,libudjat.so.$app_vrs_major.$app_vrs_minor)
 		AC_SUBST(OSNAME,linux)
-		AC_CONFIG_FILES(sdk/linux/static.pc)
-		AC_CONFIG_FILES(sdk/linux/dynamic.pc)
-		AC_CHECK_HEADER(poll.h, [AC_DEFINE(HAVE_POLL_H, 1, [poll.h is available])], [AC_MSG_ERROR([Can't find required header poll.h])])
-
 esac
 
 AC_DEFINE_UNQUOTED(LIBEXT, "$LIBEXT", [Library extension])
@@ -202,7 +205,7 @@ AC_PATH_TOOL([MSGINIT], [msginit], [true])
 AC_PATH_TOOL([MSGMERGE], [msgmerge], [true])
 AC_PATH_TOOL([MSGFMT], [msgfmt], [true])
 
-AC_CHECK_HEADER(libintl.h, [AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])], [AC_MSG_ERROR([Can't find required file libintl.h])])
+AC_CHECK_HEADER(libintl.h, [AC_DEFINE(HAVE_LIBINTL, 1, [Libintl is available])], [AC_MSG_NOTICE([Can't find required file libintl.h])])
 
 dnl ---------------------------------------------------------------------------
 dnl Check for C++ 2011 support
@@ -285,6 +288,14 @@ AC_SUBST(ECONF_LIBS)
 AC_SUBST(ECONF_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
+dnl Check for uriparser
+dnl ---------------------------------------------------------------------------
+PKG_CHECK_MODULES( [URIPARSER], [liburiparser], AC_DEFINE(HAVE_URIPARSER,[],[Do we have uriparser?]), AC_MSG_ERROR([liburiparser not present.]) )
+
+AC_SUBST(URIPARSER_LIBS)
+AC_SUBST(URIPARSER_CFLAGS)
+
+dnl ---------------------------------------------------------------------------
 dnl systemd integration
 dnl ---------------------------------------------------------------------------
 
@@ -302,36 +313,26 @@ AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
+dnl test for iniparser
+dnl ---------------------------------------------------------------------------
+
+AC_CHECK_HEADER(iniparser.h, [app_cv_iniparser="yes"], [app_cv_iniparser="no"])
+
+if test "$app_cv_iniparser" == "yes"; then
+	AC_DEFINE(HAVE_INIPARSER,[],[Do we have libiniparser?])
+	AC_SUBST(ECONF_LIBS,-liniparser)
+else
+	AC_MSG_NOTICE(libiniparser is not available)
+fi
+
+dnl ---------------------------------------------------------------------------
 dnl test for vmdetect
 dnl ---------------------------------------------------------------------------
 
-case "$host" in
-	*-mingw32|*-pc-msys)
-		PKG_CHECK_MODULES(VMDETECT, vmdetect-static, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
-	;;
-
-	*)
-		PKG_CHECK_MODULES(VMDETECT, vmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
-esac
+PKG_CHECK_MODULES(VMDETECT, vmdetect, AC_DEFINE(HAVE_VMDETECT,[],[Do we have libvmdetect?]),AC_MSG_NOTICE(No vmdetect))
 
 AC_SUBST(VMDETECT_LIBS)
 AC_SUBST(VMDETECT_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
-dnl test for dmiget
-dnl ---------------------------------------------------------------------------
-
-case "$host" in
-	*-mingw32|*-pc-msys)
-		PKG_CHECK_MODULES(SMBIOS, dmiget-static, AC_DEFINE(HAVE_SMBIOS,[],[Do we have libdmiget?]),AC_MSG_NOTICE(No smbios library))
-	;;
-
-	*)
-		PKG_CHECK_MODULES(SMBIOS, dmiget, AC_DEFINE(HAVE_SMBIOS,[],[Do we have libdmiget?]),AC_MSG_NOTICE(No smbios library))
-esac
-
-AC_SUBST(SMBIOS_LIBS)
-AC_SUBST(SMBIOS_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
 dnl Output config
@@ -356,12 +357,9 @@ dnl AC_CONFIG_SUBDIRS([sample])
 AC_CONFIG_FILES(src/include/udjat/version.h)
 AC_CONFIG_FILES(doc/doxyfile)
 AC_CONFIG_FILES(Makefile)
-AC_CONFIG_FILES(locale/Makefile)
-AC_CONFIG_FILES(debian/shlibs)
-
-dnl AC_CONFIG_FILES(debian/libudjat.dsc)
-dnl AC_CONFIG_FILES(debian/changelog)
-dnl AC_CONFIG_FILES(debian/control)
+AC_CONFIG_FILES(dynamic.pc)
+AC_CONFIG_FILES(static.pc)
+AC_CONFIG_FILES(rpm/macros)
 
 dnl ---------------------------------------------------------------------------
 dnl Output the generated config.status script.
