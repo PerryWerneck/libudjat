@@ -146,7 +146,7 @@
 
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
-				return strcasecmp(name,this->name);
+				return strcasecmp(name,factory_name);
 			}
 #else
 			inline bool operator==(const char *name) const noexcept {

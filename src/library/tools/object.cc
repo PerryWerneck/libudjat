@@ -188,11 +188,12 @@ XML::Node &, std::shared_ptr<Abstract::Object> child) {
 
 		// It's an interface?
 		// TODO: Rewrite interface to use XML::Factory.
-		if(strcasecmp(node.name(),"interface") == 0) {
-			Interface::Factory::build(node);
-			return true; // Handled by interface.
-		}
+		//if(strcasecmp(node.name(),"interface") == 0) {
+		//	Interface::Factory::build(node);
+		//	return true; // Handled by interface.
+		//}
 
+		// TODO: Rewrite init actions to use Object::Factory.
 		if(strcasecmp(node.name(),"init") == 0) {
 			auto action = Action::Factory::build(node,true);
 			if(action) {

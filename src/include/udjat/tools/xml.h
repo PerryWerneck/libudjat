@@ -33,6 +33,7 @@
  #include <udjat/defs.h>
  #include <functional>
  #include <cstdint>
+ #include <cstring>
 
  namespace Udjat {
 
@@ -55,6 +56,34 @@
 
 		};
 
+		
+		/// @brief XML parser, used to parse XML nodes.
+		/// @details This class is used to parse XML nodes and build objects from them.
+		class UDJAT_API Parser {
+		private:
+			const char *name = nullptr;
+
+		public:
+			Parser(const char *name);
+			virtual ~Parser();
+
+#if __cplusplus >= 202002L
+			inline auto operator <=>(const char *name) const noexcept {
+				return strcasecmp(name,this->name);
+			}
+#else
+			inline bool operator==(const char *name) const noexcept {
+				return strcasecmp(name,this->name) == 0;
+			}
+#endif
+
+			/// @brief Parse XML node.
+			/// @param node XML node to parse.
+			/// @return true if the node was parsed and should be ignored by the caller.
+			virtual bool parse(const XML::Node &node) = 0;
+
+		};
+		
 		/// @brief Test if attribute is 'true', parse URL is necessary.
 		/// @param node Start node.
 		/// @param attrname Attribute name.

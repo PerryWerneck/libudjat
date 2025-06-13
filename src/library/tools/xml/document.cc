@@ -36,10 +36,24 @@
  #include <stdexcept>
  #include <private/logger.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/tools/container.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	static Container<XML::Parser> & Factories() {
+		static Container<XML::Parser> instance;
+		return instance;
+	}
+
+	XML::Parser::Parser(const char *n) : name{n} {
+		Factories().push_back(this);
+	}
+
+	XML::Parser::~Parser() {
+		Factories().remove(this);
+	}
 
 	/// @brief Load XML file, check if it's valid.
  	static void load(XML::Document *document, const char *filename) {
@@ -138,14 +152,11 @@
 
 		}
 	
-		/*
-		debug("Processing node <",node.name(),">");
-		if(Factory::for_each(name,[&node](Factory &factory) -> bool {
-			return factory.parse(node);
-		})) {
-			return true; // Handled by factory.
+		for(const auto factory : Factories()) {
+			if(*factory == name) {
+				return factory->parse(node); // Handled by factory.
+			}
 		}
-		*/
 
 		return false; // Not handled.
 
