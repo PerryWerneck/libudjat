@@ -228,12 +228,23 @@
 
 			const char *next = strstr(ptr,delim);
 			if(!next || (max > 0 && strings.size() >= ((size_t) max))) {
+  #if __cplusplus >= 201703L
 				strings.emplace_back(ptr).strip();
+  #else
+				strings.emplace_back(ptr);
+				strings.back().strip();
+  #endif
 				break;
 			}
 
 			next++;
+
+#if __cplusplus >= 201703L
 			strings.emplace_back(ptr,(size_t) ((next-ptr)-1)).strip();
+#else
+			strings.emplace_back(ptr,(size_t) ((next-ptr)-1));
+			strings.back().strip();
+#endif
 
 			next += szdelim;
 			while(*next && isspace(*next))

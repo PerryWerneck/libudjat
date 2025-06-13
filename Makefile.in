@@ -48,47 +48,118 @@ PACKAGE_NAME=@PACKAGE_NAME@
 PRODUCT_NAME=@PRODUCT_NAME@
 
 SOURCES= \
-	$(wildcard $(srcdir)/src/library/tools/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/mainloop/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/subprocess/*.cc) \
 	$(wildcard $(srcdir)/src/library/*.cc) \
 	$(wildcard $(srcdir)/src/library/load/*.cc) \
-	$(wildcard $(srcdir)/src/library/agent/*.cc) \
-	$(wildcard $(srcdir)/src/library/agent/setup/*.cc) \
-	$(wildcard $(srcdir)/src/library/state/*.cc) \
 	$(wildcard $(srcdir)/src/library/request/*.cc) \
 	$(wildcard $(srcdir)/src/library/worker/*.cc) \
 	$(wildcard $(srcdir)/src/library/module/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/xml/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/url/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/url/handlers/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/url/protocols/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/http/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/abstract/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/string/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/application/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/file/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
-	$(wildcard $(srcdir)/src/library/ui/*.cc) \
-	$(wildcard $(srcdir)/src/library/factory/*.cc) \
-	$(wildcard $(srcdir)/src/library/alert/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/configuration/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/application/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/service/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/mainloop/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/module/os/linux/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/file/*.cc) \
-	$(wildcard $(srcdir)/src/library/tools/os/linux/subprocess/*.cc) \
 	$(wildcard $(srcdir)/src/library/os/linux/*.cc) \
-	$(wildcard $(srcdir)/src/library/os/linux/*.rc)
+	src/library/tools/activatable.cc \
+	src/library/tools/application/application.cc \
+	src/library/tools/application/init.cc \
+	src/library/tools/application/run.cc \
+	src/library/tools/application/setup.cc \
+	src/library/tools/arguments.cc \
+	src/library/tools/base64.cc \
+	src/library/tools/cache.cc \
+	src/library/tools/commandlineparser.cc \
+	src/library/tools/config.cc \
+	src/library/tools/configuration.cc \
+	src/library/tools/converters.cc \
+	src/library/tools/event.cc \
+	src/library/tools/eventcontroller.cc \
+	src/library/tools/exception.cc \
+	src/library/tools/expand.cc \
+	src/library/tools/file/file.cc \
+	src/library/tools/file/handler.cc \
+	src/library/tools/file/path.cc \
+	src/library/tools/file/watcher.cc \
+	src/library/tools/http/client.cc \
+	src/library/tools/http/error.cc \
+	src/library/tools/http/exception.cc \
+	src/library/tools/http/mimetype.cc \
+	src/library/tools/http/timestamp.cc \
+	src/library/tools/logger.cc \
+	src/library/tools/mainloop/handler.cc \
+	src/library/tools/mainloop/mainloop.cc \
+	src/library/tools/mainloop/os/linux/glib.cc \
+	src/library/tools/mainloop/os/linux/handler.cc \
+	src/library/tools/mainloop/os/linux/instance.cc \
+	src/library/tools/mainloop/os/linux/mainloop.cc \
+	src/library/tools/mainloop/os/linux/run.cc \
+	src/library/tools/mainloop/os/linux/service.cc \
+	src/library/tools/mainloop/os/linux/timer.cc \
+	src/library/tools/mainloop/service.cc \
+	src/library/tools/message.cc \
+	src/library/tools/os/linux/application/application.cc \
+	src/library/tools/os/linux/application/cache.cc \
+	src/library/tools/os/linux/application/init.cc \
+	src/library/tools/os/linux/arguments.cc \
+	src/library/tools/os/linux/configfile.cc \
+	src/library/tools/os/linux/console.cc \
+	src/library/tools/os/linux/event.cc \
+	src/library/tools/os/linux/eventcontroller.cc \
+	src/library/tools/os/linux/file.cc \
+	src/library/tools/os/linux/file/copy.cc \
+	src/library/tools/os/linux/file/list.cc \
+	src/library/tools/os/linux/file/move.cc \
+	src/library/tools/os/linux/file/path.cc \
+	src/library/tools/os/linux/file/sysconfig.cc \
+	src/library/tools/os/linux/file/sysconfig_value.cc \
+	src/library/tools/os/linux/file/temporary.cc \
+	src/library/tools/os/linux/file/text.cc \
+	src/library/tools/os/linux/hostname.cc \
+	src/library/tools/os/linux/logger.cc \
+	src/library/tools/os/linux/netlink_routes.cc \
+	src/library/tools/os/linux/protocol.cc \
+	src/library/tools/os/linux/shortcut.cc \
+	src/library/tools/os/linux/socket.cc \
+	src/library/tools/os/linux/system.cc \
+	src/library/tools/os/linux/systemservice.cc \
+	src/library/tools/os/linux/threadpool.cc \
+	src/library/tools/os/linux/urlconnect.cc \
+	src/library/tools/quark.cc \
+	src/library/tools/requestpath.cc \
+	src/library/tools/script.cc \
+	src/library/tools/shortcut.cc \
+	src/library/tools/string/expand.cc \
+	src/library/tools/string/string.cc \
+	src/library/tools/string/xml.cc \
+	src/library/tools/subprocess.cc \
+	src/library/tools/systemservice.cc \
+	src/library/tools/timestamp.cc \
+	src/library/tools/url/controller.cc \
+	src/library/tools/url/handler.cc \
+	src/library/tools/url/handlers/file.cc \
+	src/library/tools/url/handlers/script.cc \
+	src/library/tools/url/header.cc \
+	src/library/tools/url/methodfactory.cc \
+	src/library/tools/url/protocol.cc \
+	src/library/tools/url/unescape.cc \
+	src/library/tools/url/url.cc \
+	src/library/tools/url/watcher.cc \
+	src/library/tools/url/worker.cc \
+	src/library/tools/value/abstract.cc \
+	src/library/tools/value/construct.cc \
+	src/library/tools/value/csv.cc \
+	src/library/tools/value/get.cc \
+	src/library/tools/value/html.cc \
+	src/library/tools/value/json.cc \
+	src/library/tools/value/report.cc \
+	src/library/tools/value/set.cc \
+	src/library/tools/value/sh.cc \
+	src/library/tools/value/type.cc \
+	src/library/tools/value/xml.cc \
+	src/library/tools/value/yaml.cc \
+	src/library/tools/xml/attribute.cc \
+	src/library/tools/xml/document.cc \
+	src/library/tools/xml/load.cc \
+	src/library/tools/xml/misc.cc
 
 TEST_SOURCES= \
-	src/testprogram/application.cc \
-	src/testprogram/randomfactory.cc \
-	src/testprogram/run.cc \
-	src/testprogram/service.cc \
-	src/testprogram/testprogram.cc
+	src/testprogram/loader.cc \
+	src/testprogram/randomfactory.cc
 	
 TARGETS=@OSNAME@-lib devel @OPTIONAL_MODULES@
 
