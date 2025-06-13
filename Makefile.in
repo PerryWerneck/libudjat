@@ -1,0 +1,634 @@
+# Maintainer: Perry Werneck <perry.werneck@gmail.com>
+# References: https://www.msys2.org/wiki/Creating-Packages/
+
+# SPDX-License-Identifier: LGPL-3.0-or-later 
+
+# Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published
+# by the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+#---[ Paths ]----------------------------------------------------------------------------
+
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bindir=@bindir@
+sbindir=@sbindir@
+libdir=@libdir@
+includedir=@includedir@
+datarootdir=@datarootdir@
+localedir=@localedir@
+docdir=@docdir@
+sysconfdir=/etc
+srcdir=@srcdir@
+
+OBJDIR=.obj/@OSNAME@
+OBJDBG=$(OBJDIR)/Debug
+OBJRLS=$(OBJDIR)/Release
+
+BINDIR=.bin
+BINDBG=$(BINDIR)/Debug
+BINRLS=$(BINDIR)/Release
+
+POTDIR=.pot
+
+#---[ Library configuration ]------------------------------------------------------------
+
+PACKAGE_NAME=@PACKAGE_NAME@
+PRODUCT_NAME=@PRODUCT_NAME@
+
+COMMON_SOURCES= \
+	$(wildcard $(srcdir)/src/tools/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/*.cc) \
+	$(wildcard $(srcdir)/src/tools/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/*.cc) \
+	$(wildcard $(srcdir)/src/main/agent/*.cc) \
+	$(wildcard $(srcdir)/src/main/agent/setup/*.cc) \
+	$(wildcard $(srcdir)/src/main/load/*.cc) \
+	$(wildcard $(srcdir)/src/main/state/*.cc) \
+	$(wildcard $(srcdir)/src/main/request/*.cc) \
+	$(wildcard $(srcdir)/src/main/worker/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/*.cc) \
+	$(wildcard $(srcdir)/src/tools/url/*.cc) \
+	$(wildcard $(srcdir)/src/tools/xml/*.cc) \
+	$(wildcard $(srcdir)/src/tools/url/protocols/*.cc) \
+	$(wildcard $(srcdir)/src/tools/http/*.cc) \
+	$(wildcard $(srcdir)/src/tools/abstract/*.cc) \
+	$(wildcard $(srcdir)/src/tools/string/*.cc) \
+	$(wildcard $(srcdir)/src/tools/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/value/*.cc) \
+	$(wildcard $(srcdir)/src/main/factory/*.cc) \
+	$(wildcard $(srcdir)/src/main/alert/*.cc)
+
+MAIN_SOURCES= \
+	$(COMMON_SOURCES) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/configuration/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/service/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/@OSNAME@/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/@OSNAME@/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/@OSNAME@/*.rc)
+
+LOCALE_SOURCES= \
+	$(COMMON_SOURCES) \
+	$(wildcard $(srcdir)/src/tools/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/configuration/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/linux/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/linux/*.rc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/configuration/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/application/*.cc) \
+	$(wildcard $(srcdir)/src/tools/mainloop/os/windows/*.cc) \
+	$(wildcard $(srcdir)/src/main/module/os/windows/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/file/*.cc) \
+	$(wildcard $(srcdir)/src/tools/os/windows/subprocess/*.cc) \
+	$(wildcard $(srcdir)/src/main/os/windows/*.cc)
+
+TEST_SOURCES= \
+	$(wildcard $(srcdir)/src/testprogram/*.cc) \
+	$(wildcard $(srcdir)/src/testprogram/@OSNAME@/*.rc)
+	
+TARGETS=@OSNAME@-lib devel conf @OPTIONAL_MODULES@ locale
+
+#---[ Tools ]----------------------------------------------------------------------------
+
+CXX=@CXX@
+LD=@CXX@
+LN_S=@LN_S@
+MKDIR=@MKDIR_P@
+INSTALL=@INSTALL@
+INSTALL_DATA=@INSTALL_DATA@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+XGETTEXT=@XGETTEXT@
+MSGCAT=@MSGCAT@
+WINDRES=@WINDRES@
+AR=@AR@
+VALGRIND=@VALGRIND@
+DLLTOOL=@DLLTOOL@
+
+#---[ Rules ]----------------------------------------------------------------------------
+
+CFLAGS= \
+	@CPPFLAGS@ \
+	-Isrc/include \
+	-I$(srcdir)/src/include \
+	-DBUILD_DATE=`date +%Y%m%d` \
+	-DLIBDIR=$(libdir) \
+	-DLOCALEDIR=$(localedir) \
+	@ECONF_CFLAGS@ \
+	@PUGIXML_CFLAGS@ \
+	@SYSTEMD_CFLAGS@ \
+	@VMDETECT_CFLAGS@
+
+LDFLAGS=\
+	@LDFLAGS@
+
+LIBS= \
+	@LIBS@ \
+	@LIBICONV@ \
+	@ECONF_LIBS@ \
+	@PUGIXML_LIBS@ \
+	@SYSTEMD_LIBS@ \
+	@VMDETECT_LIBS@
+
+#---[ Debug Rules ]----------------------------------------------------------------------
+
+$(OBJDBG)/%.o: \
+	%.cc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-ggdb -DDEBUG=1 \
+		-MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-Wall -Wextra -fstack-check \
+		-ggdb -DDEBUG=1 \
+		-DMODULES_DIR=@MODULE_DEBUG_PATH@ \
+		-o $@ \
+		-c $<
+
+$(OBJDBG)/%.o: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@$(WINDRES) \
+		$< \
+		-O coff \
+		-o $@
+
+#---[ Release Rules ]--------------------------------------------------------------------
+
+$(OBJRLS)/%.o: \
+	%.cc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-DNDEBUG=1 \
+		-MM -MT $@ -MF $(patsubst %.o,%.d,$@) $<
+
+	@$(CXX) \
+		$(CFLAGS) \
+		-DNDEBUG=1 \
+		-o $@ \
+		-c $<
+
+$(OBJRLS)/%.o: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(@D)
+	@$(WINDRES) $< -O coff -o $@
+
+#---[ Misc Rules ]-----------------------------------------------------------------------
+
+$(POTDIR)/%.pot: \
+	%.cc
+
+	@echo $(notdir $@) ...
+	@$(MKDIR) $(dir $@)
+	@$(XGETTEXT) \
+		--from-code=UTF-8 \
+		--language=C \
+		--keyword=_ \
+		--keyword=N_ \
+		--keyword=MSG_:2 \
+		--output=$@ \
+		$<
+	@touch $@
+
+$(POTDIR)/%.pot: \
+	%.rc
+
+	@echo $< ...
+	@$(MKDIR) $(dir $@)
+	@touch $@
+
+install-%: \
+	%/Makefile
+
+	@$(MAKE) -C `dirname $<` DESTDIR=$(DESTDIR) install
+
+#---[ Release Targets ]------------------------------------------------------------------
+
+all: \
+	$(BINRLS)/@SONAME@ \
+	$(BINRLS)/$(PACKAGE_NAME).a \
+	locale/$(PACKAGE_NAME).pot
+
+Release: \
+	$(BINRLS)/@SONAME@
+
+$(BINRLS)/@SONAME@: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o) \
+	$(foreach SRC, $(basename $(wildcard $(srcdir)/src/main/os/@OSNAME@/*.rc)), $(OBJRLS)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-shared \
+		-Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+static: \
+	$(BINRLS)/$(PACKAGE_NAME).a
+
+$(BINRLS)/$(PACKAGE_NAME).a: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJRLS)/$(SRC).o)
+
+	@echo $@ ...
+	@$(MKDIR) $(dir $@)
+	@$(AR) rcs $@ $^
+
+locale/$(PACKAGE_NAME).pot: \
+	$(foreach SRC, $(basename $(LOCALE_SOURCES)), $(POTDIR)/$(SRC).pot)
+
+	@rm -f $@
+	@$(MKDIR) $(dir $@)
+	@$(MSGCAT) --sort-output $^ > $@
+
+locale: \
+	locale/$(PACKAGE_NAME).pot
+
+#---[ Install Targets ]------------------------------------------------------------------
+
+install: \
+       $(foreach TARGET, $(TARGETS), install-$(TARGET)) \
+       locale/$(PACKAGE_NAME).pot
+
+install-debug: \
+	install-@OSNAME@-debug
+
+doc: \
+	doc/html/index.html
+
+doc/html/index.html:
+	
+	@echo doc/html/index.html ...
+
+	@$(MKDIR) $(dir $@)
+	@DOXYGEN@ doc/doxyfile
+
+install-doc: \
+	doc/html/index.html
+
+	@$(MKDIR) \
+		$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html
+
+	cp -rv ${srcdir}/doc/html/* "$(DESTDIR)${docdir}/@PACKAGE_TARNAME@/reference/html"
+
+install-linux-lib: \
+	$(BINRLS)/@SONAME@ \
+	install-conf
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/modules
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/@PRODUCT_NAME@/@PACKAGE_MAJOR_VERSION@.@PACKAGE_MINOR_VERSION@/lib
+
+	@$(MKDIR) \
+		$(DESTDIR)/var/log/@PRODUCT_NAME@
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/@SONAME@ \
+		$(DESTDIR)$(libdir)/@SONAME@
+		
+	@$(LN_S) \
+		@SONAME@ \
+		$(DESTDIR)$(libdir)/$(PACKAGE_NAME)@LIBEXT@
+
+install-linux-debug: \
+	$(BINDBG)/@SONAME@
+
+	@$(INSTALL_PROGRAM) \
+		$(BINDBG)/@SONAME@ \
+		$(DESTDIR)$(libdir)/@SONAME@
+
+install-windows-lib: \
+	$(BINRLS)/@SONAME@ \
+	$(BINRLS)/$(PACKAGE_NAME).a
+
+	@$(MKDIR) \
+		$(DESTDIR)$(bindir)
+
+	@$(INSTALL_PROGRAM) \
+		$(BINRLS)/@SONAME@ \
+		$(DESTDIR)$(bindir)/$(PACKAGE_NAME)@LIBEXT@
+		
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/udjat-modules
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/$(PACKAGE_NAME).a \
+		$(DESTDIR)$(libdir)/$(PACKAGE_NAME).a
+
+	@$(DLLTOOL) \
+		--input-def $(BINRLS)/$(PACKAGE_NAME).def \
+		--dllname @SONAME@ \
+		--output-lib $(DESTDIR)$(libdir)/$(PACKAGE_NAME).dll.a
+
+install-windows-debug: \
+	$(BINDBG)/@SONAME@
+
+	@$(INSTALL_PROGRAM) \
+		$(BINDBG)/@SONAME@ \
+		$(DESTDIR)$(bindir)/$(PACKAGE_NAME)@LIBEXT@
+
+install-devel: \
+	install-devel-@OSNAME@
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/*.h \
+		$(DESTDIR)$(includedir)/udjat
+
+	@$(INSTALL_DATA) \
+		src/include/udjat/*.h \
+		$(DESTDIR)$(includedir)/udjat
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/tools/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/abstract
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/tools/abstract/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/abstract
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/response
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/tools/response/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/response
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/http
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/tools/http/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/http
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/module
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/module/*.h \
+		$(DESTDIR)$(includedir)/udjat/module
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/tools/file
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/tools/file/*.h \
+		$(DESTDIR)$(includedir)/udjat/tools/file
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/net/*.h \
+		$(DESTDIR)$(includedir)/udjat/net
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/net/ip/*.h \
+		$(DESTDIR)$(includedir)/udjat/net/ip
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/agent
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/agent/*.h \
+		$(DESTDIR)$(includedir)/udjat/agent
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/alert
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/alert/*.h \
+		$(DESTDIR)$(includedir)/udjat/alert
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/ui
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/ui/*.h \
+		$(DESTDIR)$(includedir)/udjat/ui
+
+	# Install PKG-CONFIG files
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)/pkgconfig
+
+	@$(INSTALL_DATA) \
+		sdk/@OSNAME@/dynamic.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
+	@$(INSTALL_DATA) \
+		sdk/@OSNAME@/static.pc \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@-static.pc
+
+install-devel-linux: \
+	$(BINRLS)/$(PACKAGE_NAME).a
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/linux
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/linux/*.h \
+		$(DESTDIR)$(includedir)/udjat/linux
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/$(PACKAGE_NAME).a \
+		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.a
+		
+install-devel-windows: \
+	$(BINRLS)/$(PACKAGE_NAME).a
+
+	@$(MKDIR) \
+		$(DESTDIR)$(includedir)/udjat/win32
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/src/include/udjat/win32/*.h \
+		$(DESTDIR)$(includedir)/udjat/win32
+
+	@$(MKDIR) \
+		$(DESTDIR)$(libdir)
+
+	@$(INSTALL_DATA) \
+		$(BINRLS)/$(PACKAGE_NAME).a \
+		$(DESTDIR)$(libdir)/@PACKAGE_NAME@.a
+
+install-conf:
+
+	@$(MKDIR) \
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).conf.d
+
+	@$(INSTALL_DATA) \
+		$(srcdir)/conf.d/00-defaults.conf \
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).conf.d/00-$(PACKAGE_NAME)-defaults.conf
+
+#---[ Uninstall Targets ]----------------------------------------------------------------
+
+uninstall: \
+       $(foreach TARGET, $(TARGETS), uninstall-$(TARGET))
+
+uninstall-linux-lib:
+
+	@rm -f \
+		$(DESTDIR)$(libdir)/@SONAME@
+		
+	@rm -f \
+		$(DESTDIR)$(libdir)/lib$(PACKAGE_NAME)@LIBEXT@
+
+uninstall-windows-lib:
+
+	@rm -f \
+		$(DESTDIR)$(bindir)/@SONAME@
+		
+	@rm -f \
+		$(DESTDIR)$(libdir)/@SONAME@.a
+
+uninstall-devel:
+
+	@rm -fr \
+		$(DESTDIR)$(includedir)/udjat
+
+	@rm -f \
+		$(DESTDIR)$(includedir)/udjat.h
+
+	# Uninstall PKG-CONFIG files
+	@rm -f \
+		$(DESTDIR)$(libdir)/pkgconfig/@PACKAGE_NAME@.pc
+
+uninstall-conf:
+
+	@rm -f \
+		$(DESTDIR)$(sysconfdir)/$(PRODUCT_NAME).d/00-$(PACKAGE_NAME)-defaults.conf
+
+#---[ Debug Targets ]--------------------------------------------------------------------
+
+Debug: \
+	$(BINDBG)/udjat@EXEEXT@
+
+$(BINDBG)/udjat@EXEEXT@: \
+	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINDBG)/@SONAME@
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-o $@ \
+		$^ \
+		-L$(BINDBG) \
+		-Wl,-rpath,$(BINDBG) \
+		$(LDFLAGS) \
+		$(LIBS)
+
+
+$(BINDBG)/@SONAME@: \
+	$(foreach SRC, $(basename $(MAIN_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(foreach SRC, $(basename $(wildcard $(srcdir)/src/main/os/@OSNAME@/*.rc)), $(OBJDBG)/$(SRC).o)
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-shared \
+		-Wl,-soname,$(@F) \
+		-o $@ \
+		$(LDFLAGS) \
+		$^ \
+		$(LIBS)
+
+
+run: \
+	$(BINDBG)/udjat@EXEEXT@
+
+	cp *.xml $(BINDBG)
+	
+ifeq ($(VALGRIND),no)
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(BINDBG)/udjat@EXEEXT@ -f
+
+else
+	@touch valgrind.suppression
+
+	@LD_LIBRARY_PATH=$(BINDBG) \
+		$(VALGRIND) --leak-check=full --track-origins=yes --gen-suppressions=all --suppressions=valgrind.suppression \
+		$(BINDBG)/udjat@EXEEXT@ -f
+endif
+
+#---[ Clean Targets ]--------------------------------------------------------------------
+
+clean: \
+	cleanDebug \
+	cleanRelease
+
+	@rm -fr doc/html
+
+cleanDebug:
+
+	@rm -fr $(OBJDBG)
+	@rm -fr $(BINDBG)
+
+cleanRelease:
+
+	@rm -fr $(OBJRLS)
+	@rm -fr $(BINRLS)
+
+clean: \
+	cleanDebug \
+	cleanRelease
+
+
+-include $(foreach SRC, $(basename $(MAIN_SOURCES) $(TEST_SOURCES)), $(OBJDBG)/$(SRC).d)
+-include $(foreach SRC, $(basename $(MAIN_SOURCES) $(TEST_SOURCES)), $(OBJRLS)/$(SRC).d)
+
+
