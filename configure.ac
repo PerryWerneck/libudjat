@@ -226,7 +226,11 @@ AS_IF([test x"AS_VAR_GET(CACHEVAR)" = xyes],
 AS_VAR_POPDEF([CACHEVAR])dnl
 ])dnl AX_CHECK_COMPILE_FLAGS
 
-AX_CHECK_COMPILE_FLAG([-std=c++1z], [CPPFLAGS="$CPPFLAGS -std=c++1z"], [AC_MSG_ERROR(["C++ 17 is required"])])
+AX_CHECK_COMPILE_FLAG([-std=c++1z], [CPPFLAGS="$CPPFLAGS -std=c++1z"], [app_cv_c17=no])
+
+if test "$app_cv_iniparser" == ""; then
+	AX_CHECK_COMPILE_FLAG([-std=c++11], [CPPFLAGS="$CPPFLAGS -std=c++11 -DLIBUDJAT_LEGACY=1"], [app_cv_c11=no])
+fi
 
 dnl ---------------------------------------------------------------------------
 dnl Set the ELF symbol visibility support
@@ -290,7 +294,7 @@ AC_SUBST(ECONF_CFLAGS)
 dnl ---------------------------------------------------------------------------
 dnl Check for uriparser
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES( [URIPARSER], [liburiparser], AC_DEFINE(HAVE_URIPARSER,[],[Do we have uriparser?]), AC_MSG_ERROR([liburiparser not present.]) )
+PKG_CHECK_MODULES( [URIPARSER], [liburiparser], AC_DEFINE(HAVE_URIPARSER,[],[Do we have uriparser?]), AC_MSG_NOTICE([liburiparser not present.]) )
 
 AC_SUBST(URIPARSER_LIBS)
 AC_SUBST(URIPARSER_CFLAGS)
