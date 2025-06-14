@@ -140,18 +140,6 @@ SOURCES= \
 	src/library/tools/url/url.cc \
 	src/library/tools/url/watcher.cc \
 	src/library/tools/url/worker.cc \
-	src/library/tools/value/abstract.cc \
-	src/library/tools/value/construct.cc \
-	src/library/tools/value/csv.cc \
-	src/library/tools/value/get.cc \
-	src/library/tools/value/html.cc \
-	src/library/tools/value/json.cc \
-	src/library/tools/value/report.cc \
-	src/library/tools/value/set.cc \
-	src/library/tools/value/sh.cc \
-	src/library/tools/value/type.cc \
-	src/library/tools/value/xml.cc \
-	src/library/tools/value/yaml.cc \
 	src/library/tools/xml/attribute.cc \
 	src/library/tools/xml/document.cc \
 	src/library/tools/xml/load.cc \
