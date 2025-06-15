@@ -355,7 +355,21 @@
 				return children.agents.end();
 			}
 #else
+			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
+				return children.agents.begin();
+			}
 
+			inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
+				return children.agents.end();
+			}
+
+			inline std::vector<std::shared_ptr<Agent>>::const_iterator begin() const noexcept {
+				return children.agents.begin();
+			}
+
+			inline std::vector<std::shared_ptr<Agent>>::const_iterator end() const noexcept {
+				return children.agents.end();
+			}
 #endif
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
