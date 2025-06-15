@@ -109,6 +109,7 @@ SOURCES= \
 	src/library/tools/os/linux/file/sysconfig_value.cc \
 	src/library/tools/os/linux/file/temporary.cc \
 	src/library/tools/os/linux/file/text.cc \
+	src/library/tools/os/linux/file/watcher.cc \
 	src/library/tools/os/linux/hostname.cc \
 	src/library/tools/os/linux/logger.cc \
 	src/library/tools/os/linux/netlink_routes.cc \
