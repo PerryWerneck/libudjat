@@ -59,6 +59,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
 	$(wildcard $(srcdir)/src/library/state/*.cc) \
 	$(wildcard $(srcdir)/src/library/state/*.cc) \
+	$(wildcard $(srcdir)/src/library/ui/*.cc) \
 	src/library/tools/activatable.cc \
 	src/library/tools/report.cc \
 	src/library/tools/application/application.cc \

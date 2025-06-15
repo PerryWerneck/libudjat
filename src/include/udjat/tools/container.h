@@ -143,6 +143,16 @@
 			std::lock_guard<std::mutex> lock(guard);
 			std::list<T *>::remove(object);
 		}
+
+		inline bool for_each(const std::function<bool(T &object)> &method) {
+			std::lock_guard<std::mutex> lock(guard);
+			for(auto object : *this) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
+		}
 	  
 	};
 #endif

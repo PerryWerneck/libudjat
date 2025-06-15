@@ -68,14 +68,12 @@
 	
  public:
 	ProgressBar(Controller *cntrl) : controller{cntrl} {
-
 		*controller << "\n";
 		controller->push_back(this);
 		controller->for_each([this](ProgressBar &object) -> bool {
 			object.line++;
 			return false;
 		});
-
 	}
 
 	~ProgressBar() override {
