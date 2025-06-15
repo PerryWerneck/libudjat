@@ -57,7 +57,10 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/module/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
+	$(wildcard $(srcdir)/src/library/state/*.cc) \
+	$(wildcard $(srcdir)/src/library/state/*.cc) \
 	src/library/tools/activatable.cc \
+	src/library/tools/report.cc \
 	src/library/tools/application/application.cc \
 	src/library/tools/application/init.cc \
 	src/library/tools/application/run.cc \
@@ -73,6 +76,8 @@ SOURCES= \
 	src/library/tools/eventcontroller.cc \
 	src/library/tools/exception.cc \
 	src/library/tools/expand.cc \
+	src/library/tools/object.cc \
+	src/library/tools/action.cc \
 	src/library/tools/file/file.cc \
 	src/library/tools/file/handler.cc \
 	src/library/tools/file/path.cc \

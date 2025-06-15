@@ -78,7 +78,21 @@
 			std::string caption;
 		} field;
 
+#if __cplusplus >= 201703L
 		std::list<Cell> cells;
+#else
+                class Cells : public std::list<Cell> {
+                public:
+                  Cells() : std::list<Cell>() {
+                  }
+
+		  inline Cell & emplace_back() {
+		    std::list<Cell>::emplace_back();
+		    return std::list<Cell>::back();
+		  }
+                  
+                } cells;
+#endif
 		std::vector<std::string> headers;
 
 		void set_headers(const char *column_name, va_list args);
@@ -107,12 +121,7 @@
 
 		template <typename T>
 		Report & push_back(const T &value) {
-#if __cplusplus >= 201703L
 			cells.emplace_back().set(value);
-#else
-			cells.emplace_back();
-			cells.back().set(value);
-#endif
 			return *this;
 		}
 
