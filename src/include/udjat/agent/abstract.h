@@ -338,6 +338,7 @@
 
 			virtual void for_each(const std::function<void(const Abstract::State &state)> &method) const;
 
+#if __cplusplus >= 201703L
 			inline auto begin() noexcept {
 				return children.agents.begin();
 			}
@@ -353,7 +354,9 @@
 			inline auto end() const noexcept {
 				return children.agents.end();
 			}
+#else
 
+#endif
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
 

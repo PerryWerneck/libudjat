@@ -49,6 +49,7 @@ PRODUCT_NAME=@PRODUCT_NAME@
 
 SOURCES= \
 	$(wildcard $(srcdir)/src/library/*.cc) \
+	$(wildcard $(srcdir)/src/library/agent/*.cc) \
 	$(wildcard $(srcdir)/src/library/load/*.cc) \
 	$(wildcard $(srcdir)/src/library/request/*.cc) \
 	$(wildcard $(srcdir)/src/library/worker/*.cc) \
