@@ -56,6 +56,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/module/*.cc) \
 	$(wildcard $(srcdir)/src/library/module/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/value/*.cc) \
 	src/library/tools/activatable.cc \
 	src/library/tools/application/application.cc \
 	src/library/tools/application/init.cc \

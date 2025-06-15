@@ -107,7 +107,12 @@
 
 		template <typename T>
 		Report & push_back(const T &value) {
+#if __cplusplus >= 201703L
 			cells.emplace_back().set(value);
+#else
+			cells.emplace_back();
+			cells.back().set(value);
+#endif
 			return *this;
 		}
 
