@@ -153,10 +153,13 @@
 
 #if __cplusplus >= 201703L	
 		const Value &src;
-
 		constexpr Getter(const Value &value) : src{value} {
 		}
-
+#else
+		Value &src;
+		Getter(Value &value) : src{value} {
+		}
+#endif
 		template <typename T>
 		inline const Value & get(T &dst) const {
 
@@ -201,60 +204,6 @@
 
 			return src;
 		}
-
-#else
-		const Value *src;
-
-		Getter(const Value &value) : src{&value} {
-		}
-
-		template <typename T>
-		inline const Value & get(T &dst) const {
-
-			switch((Value::Type) *src) {
-			case Value::Undefined:
-				throw logic_error("The value is undefined");
-				break;
-
-			case Value::Array:
-			case Value::Object:
-				throw logic_error("Unable to convert value");
-				break;
-
-			case Value::Icon:
-			case Value::Url:
-			case Value::String:
-				dst = (T) stoi((const char *) src->content.ptr);
-				break;
-
-			case Value::Timestamp:
-				dst = (T) src->content.timestamp;
-				break;
-
-			case Value::Signed:
-			case Value::Boolean:
-				dst = (T) src->content.sig;
-				break;
-
-			case Value::Unsigned:
-			case Value::State:
-				dst = (T) src->content.unsig;
-				break;
-
-			case Value::Real:
-			case Value::Fraction:
-				dst = (T) src->content.dbl;
-				break;
-
-			default:
-				throw logic_error("The value type to get is unexpected or invalid");
-			}
-
-			return *src;
-		}
-
-#endif
-
 	};
 
 	const Value & Value::get(short &value) const {
