@@ -60,6 +60,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/state/*.cc) \
 	$(wildcard $(srcdir)/src/library/alert/*.cc) \
 	$(wildcard $(srcdir)/src/library/ui/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/os/linux/subprocess/*.cc) \
 	src/library/tools/activatable.cc \
 	src/library/tools/report.cc \
 	src/library/tools/application/application.cc \
@@ -155,6 +156,7 @@ SOURCES= \
 	src/library/tools/xml/misc.cc
 
 TEST_SOURCES= \
+	src/testprogram/main.cc \
 	src/testprogram/loader.cc \
 	src/testprogram/randomfactory.cc
 	
