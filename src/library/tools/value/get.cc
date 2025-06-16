@@ -250,7 +250,7 @@
 				throw logic_error("The value type to get is unexpected or invalid");
 			}
 
-			return src;
+			return *src;
 		}
 
 #endif
