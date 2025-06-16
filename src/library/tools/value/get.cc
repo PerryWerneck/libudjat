@@ -152,8 +152,13 @@
 	public:
 		const Value &src;
 
+#if __cplusplus >= 201703L	
 		constexpr Getter(const Value &value) : src{value} {
 		}
+#else
+		Getter(const Value &value) : src{value} {
+		}
+#endif
 
 		template <typename T>
 		inline const Value & get(T &dst) const {
