@@ -157,7 +157,7 @@
 		}
 #else
 		Value &src;
-		Getter(Value &value) : src{value} {
+		Getter(const Value &value) : src{*(const_cast<Value *>(&value))} {
 		}
 #endif
 		template <typename T>

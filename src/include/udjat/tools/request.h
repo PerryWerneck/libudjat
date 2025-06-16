@@ -56,8 +56,13 @@
 
 	public:
 
+#if __cplusplus >= 201703L
 		constexpr Request(const char *path = "") : argptr{path}, reqpath{path} {
 		}
+#else
+		Request(const char *path = "") : argptr{path}, reqpath{path} {
+		}
+#endif
 
 		virtual ~Request();
 
