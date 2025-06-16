@@ -26,6 +26,7 @@
  #include <sys/inotify.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/threadpool.h>
+ #include <udjat/tools/handler.h>
  #include <sys/types.h>
  #include <sys/stat.h>
  #include <stdexcept>
@@ -46,12 +47,12 @@
 
 		Logger::String{"Starting service"}.trace("file-watcher");
 
-		MainLoop::Handler::values.fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
-		if(MainLoop::Handler::values.fd == -1) {
+		int fd = inotify_init1(IN_NONBLOCK|IN_CLOEXEC);
+		if(fd == -1) {
 			throw system_error(errno,system_category(),"Can't initialize inotify");
 		}
-
-		MainLoop::Handler::values.events = MainLoop::Handler::oninput;
+		MainLoop::Handler::set(fd);
+		MainLoop::Handler::set(MainLoop::Handler::oninput);
 		MainLoop::Handler::enable();
 
 	}
@@ -61,14 +62,15 @@
 		std::lock_guard<std::mutex> lock(guard);
 		handlers.remove_if([this](Handler &handler) {
 			if(handler.wd != -1) {
-				inotify_rm_watch(MainLoop::Handler::values.fd, handler.wd);
+				inotify_rm_watch(MainLoop::Handler::fd(), handler.wd);
 				handler.wd = -1;
 			}
 			return true;
 		});
 
 		MainLoop::Handler::disable();
-		::close(MainLoop::Handler::values.fd);
+		::close(MainLoop::Handler::fd());
+		MainLoop::Handler::fd(-1);
 
 	}
 
@@ -128,7 +130,7 @@
 		Handler handler;
 		handler.files.push_back(watcher);
 
-		handler.wd = inotify_add_watch(MainLoop::Handler::values.fd,watcher->pathname,IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
+		handler.wd = inotify_add_watch(MainLoop::Handler::fd(),watcher->pathname,IN_CLOSE_WRITE|IN_DELETE_SELF|IN_MOVE_SELF);
 		if(handler.wd == -1) {
 			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->pathname + "'");
 		}
@@ -153,7 +155,7 @@
 		Handler handler;
 		handler.files.push_back(watcher);
 
-		handler.wd = inotify_add_watch(MainLoop::Handler::values.fd,watcher->pathname,IN_CREATE|IN_DELETE|IN_DELETE_SELF|IN_MOVE_SELF|IN_MOVED_TO);
+		handler.wd = inotify_add_watch(MainLoop::Handler::fd(),watcher->pathname,IN_CREATE|IN_DELETE|IN_DELETE_SELF|IN_MOVE_SELF|IN_MOVED_TO);
 		if(handler.wd == -1) {
 			throw system_error(errno,system_category(),string{"Can't add watch for '"} + watcher->pathname + "'");
 		}
@@ -174,7 +176,7 @@
 
 			// Remove handler if empty.
 			if(handler.files.empty() && handler.wd != -1) {
-				inotify_rm_watch(MainLoop::Handler::values.fd, handler.wd);
+				inotify_rm_watch(MainLoop::Handler::fd(), handler.wd);
 				handler.wd = -1;
 			}
 			return handler.wd == -1;
@@ -279,7 +281,7 @@
 			std::lock_guard<std::mutex> lock(guard);
 			handlers.remove_if([this](Handler &handler) {
 				if(handler.files.empty() && handler.wd != -1) {
-					inotify_rm_watch(MainLoop::Handler::values.fd, handler.wd);
+					inotify_rm_watch(MainLoop::Handler::fd(), handler.wd);
 					handler.wd = -1;
 				}
 				return handler.wd == -1;

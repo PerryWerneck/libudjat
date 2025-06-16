@@ -65,7 +65,17 @@
 	private:
 		Controller();
 
+#if __cplusplus >= 201703L
 		Container<Entry,Entry> entries;
+#else
+		class Entries : public std::list<Entry>, public std::mutex {
+		public:
+			Entries() {
+			}
+		
+
+		} entries;
+#endif
 
 		static void handle_signal(int sig) noexcept;
 

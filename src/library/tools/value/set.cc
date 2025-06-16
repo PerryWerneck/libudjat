@@ -132,9 +132,13 @@
 			);
 		}
 
-		for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{
+#if __cplusplus >= 201703L
+                for(const auto & [key, value] : *(( map<std::string,Value> *) src.content.ptr))	{
 			(*this)[key.c_str()].set(value);
 		}
+#else
+                throw system_error(ENOTSUP,system_category(),"Unable to merge values");
+#endif
 
 		return *this;
 	}

@@ -313,12 +313,16 @@
 
 		} else if(type == Object) {
 
+#if __cplusplus >= 201703L
 			for(auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(ix-- <= 0) {
 					return value;
 				}
 			}
 			throw out_of_range("out of range");
+#else
+			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
+#endif
 
 		} else if(ix == 0) {
 
@@ -337,13 +341,16 @@
 			return ((const vector<Value> *) content.ptr)->at(ix);
 
 		} else if(type == Object) {
-
+#if __cplusplus >= 201703L
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(ix-- <= 0) {
 					return value;
 				}
 			}
 			throw out_of_range("out of range");
+#else
+			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
+#endif
 
 		} else if(ix == 0) {
 
@@ -431,11 +438,15 @@
 			if(!content.ptr) {
 				return *this;
 			}
+#if __cplusplus >= 201703L
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(call(key.c_str(),value)) {
-                	return true;
-                }
+					return true;
+	                	}
 			}
+#else
+			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
+#endif
 		} else if(type != Undefined) {
 			return call("",*this);
 		}
@@ -459,11 +470,15 @@
 			if(!content.ptr) {
 				return *this;
 			}
+#if __cplusplus >= 201703L
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(call(value)) {
-                	return true;
-                }
+                			return true;
+                		}
 			}
+#else
+			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
+#endif
 		} else if(type != Undefined) {
 			return call(*this);
 		}

@@ -20,7 +20,7 @@
  #include <config.h>
  #include <udjat/tools/url.h>
  #include <list>
- #include <udjat/tools/container.h>
+
  #include <sstream>
  #include <udjat/tools/file.h>
  #include <udjat/tools/file/handler.h>
@@ -32,12 +32,13 @@
  #include <private/url.h>
  #include <uriparser/Uri.h>
  #include <private/urlparser.h>
+ #include <udjat/tools/container.h>
 
  using namespace std;
 
  namespace  Udjat {
 
-	Container<URL::Handler::Factory> & factories() {
+ 	Container<URL::Handler::Factory> & factories() {
 		static Container<URL::Handler::Factory> factories;
 		return factories;
 	}

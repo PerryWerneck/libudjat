@@ -22,6 +22,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/http/method.h>
  #include <stdexcept>
+ #include <system_error>
 
  using namespace std;
 
