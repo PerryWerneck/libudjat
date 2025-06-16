@@ -80,8 +80,13 @@
 
 	public:
 
+#if __cplusplus >= 201703L	
 		constexpr Value() : type{Undefined} {
 		}
+#else
+		Value() : type{Undefined} {
+		}
+#endif
 		
 		Value(const Value *value) : Value{*value} {
 		}
@@ -90,7 +95,7 @@
 
 		Value(Type type);
 		
-		~Value();
+		virtual ~Value();
 
 		bool as_bool() const;
 
