@@ -228,7 +228,7 @@ AS_VAR_POPDEF([CACHEVAR])dnl
 
 AX_CHECK_COMPILE_FLAG([-std=c++1z], [CPPFLAGS="$CPPFLAGS -std=c++1z"], [app_cv_c17=no])
 
-if test "$app_cv_iniparser" == ""; then
+if test "$app_cv_c17" == "no"; then
 	AX_CHECK_COMPILE_FLAG([-std=c++11], [CPPFLAGS="$CPPFLAGS -std=c++11 -DLIBUDJAT_LEGACY=1"], [app_cv_c11=no])
 fi
 
@@ -294,6 +294,7 @@ AC_SUBST(ECONF_CFLAGS)
 dnl ---------------------------------------------------------------------------
 dnl Check for uriparser
 dnl ---------------------------------------------------------------------------
+PKG_CHECK_MODULES( [URIPARSER], [liburiparser], AC_DEFINE(HAVE_URIPARSER,[],[Do we have uriparser?]), AC_MSG_NOTICE([liburiparser not present.]) )
 PKG_CHECK_MODULES( [URIPARSER], [liburiparser], AC_DEFINE(HAVE_URIPARSER,[],[Do we have uriparser?]), AC_MSG_NOTICE([liburiparser not present.]) )
 
 AC_SUBST(URIPARSER_LIBS)
@@ -370,4 +371,3 @@ dnl Output the generated config.status script.
 dnl ---------------------------------------------------------------------------
 
 AC_OUTPUT
-
