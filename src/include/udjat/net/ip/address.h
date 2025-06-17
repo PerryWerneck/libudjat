@@ -49,11 +49,6 @@
 #if __cplusplus >= 201703L
 			Address(const char *ip) : sockaddr_storage{IP::Factory(ip)} {
 			}
-#else
-			Address(const char *ip) {
-				*((sockaddr_storage *) this) = IP::Factory(ip);
-			}
-#endif
 
 			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
 			}
@@ -64,6 +59,23 @@
 			template <typename T>
 			Address(const T *addr) : sockaddr_storage{IP::Factory(addr)} {
 			}
+#else
+			Address(const char *ip) {
+				*((sockaddr_storage *) this) = IP::Factory(ip);
+			}
+
+			Address(const sockaddr_storage &a) {
+				*((sockaddr_storage *) this) = a;
+			}
+
+			Address() {
+			}
+
+			template <typename T>
+			Address(const T *addr) {
+				*((sockaddr_storage *) this) = IP::Factory(addr);
+			}
+#endif
 
 			/// @brief Compare 2 IP Addresses
 			/// @param a First IP address to compare.
