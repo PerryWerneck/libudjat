@@ -45,8 +45,15 @@
 		private:
 
 		public:
+
+#if __cplusplus >= 201703L
 			Address(const char *ip) : sockaddr_storage{IP::Factory(ip)} {
 			}
+#else
+			Address(const char *ip) {
+				*((sockaddr_storage *) this) = IP::Factory(ip);
+			}
+#endif
 
 			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
 			}
