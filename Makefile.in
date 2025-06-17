@@ -129,9 +129,13 @@ SOURCES= \
 	src/library/tools/os/linux/systemservice.cc \
 	src/library/tools/os/linux/threadpool.cc \
 	src/library/tools/os/linux/urlconnect.cc \
+	src/library/tools/os/linux/nic.cc \
+	src/library/tools/os/linux/ip.cc \
 	src/library/tools/quark.cc \
 	src/library/tools/requestpath.cc \
 	src/library/tools/script.cc \
+	src/library/tools/ip.cc \
+	src/library/tools/nic.cc \
 	src/library/tools/shortcut.cc \
 	src/library/tools/string/expand.cc \
 	src/library/tools/string/string.cc \
