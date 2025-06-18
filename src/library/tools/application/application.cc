@@ -78,7 +78,7 @@
 		return *this;
 	}
 
-	std::shared_ptr<Abstract::Agent> Application::RootFactory() const {
+	std::shared_ptr<Abstract::Agent> Application::RootFactory() {
 		return Abstract::Agent::RootFactory();
 	}
 

@@ -48,7 +48,12 @@
  using namespace std;
  using namespace Udjat;
 
- int Udjat::loader(int argc, char **argv, const char *definitions) {
+ int Udjat::loader(int argc, char **argv) {
+	return Udjat::loader(argc,argv,[](Application &app) {
+	});
+ }
+
+ int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<void(Application &app)> &init) {
 
 	bool app = (argc==1);
 
@@ -62,7 +67,7 @@
 		{ 'A', "application", 		"Run as application"			},
 		{ 'S', "service", 			"Run as system service"			},
 		{ 'm', "module=<module>",	"Load module by name or path"	},
-		{ 'c', "config=<path>",		"Load XML configuration from file or directory" },
+		{ 'c', "config=<path>",		"Load XML configuration from file or directory (default is test.xml)" },
 		{ 't', "run-tests",			"Run test method (if available)" },
 	};
 
@@ -90,7 +95,7 @@
 	Logger::redirect();
 
 	// Configuration file (or path)
-	string config_file{definitions};
+	string config_file{"test.xml"};
 
 	// Loaded modules
 	vector<Module *> modules;
@@ -152,7 +157,26 @@
 	} else if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
 
 		// Run as service
-		int rc = Udjat::SystemService{argc,argv}.run(config_file.c_str());
+		class TestSrvc : public Udjat::SystemService {
+		private:
+			const std::function<void(Application &app)> &init_callback;
+
+		public:
+			TestSrvc(int &argc, char **argv,const std::function<void(Application &app)> &init) 
+				: Udjat::SystemService(argc,argv), init_callback{init} {
+			}
+
+			~TestSrvc() override {
+			}
+
+			std::shared_ptr<Abstract::Agent> RootFactory() override {
+				init_callback(*this);
+				return Udjat::Application::RootFactory();
+			}
+
+		};
+
+		int rc = TestSrvc{argc,argv,init}.run(config_file.c_str());
 		if(rc != 0) {
 			Logger::String{"Service failed with error '",strerror(rc),"' (",rc,")"}.error();
 			return rc;
@@ -161,7 +185,26 @@
 	} else if(CommandLineParser::has_argument(argc,argv,'A',"application") || app) {
 
 		// Run as application (default if called without arguments)
-		int rc = Udjat::Application{argc,argv}.run(config_file.c_str());
+		class TestApp : public Udjat::Application {
+		private:
+			const std::function<void(Application &app)> &init_callback;
+
+		public:
+			TestApp(int &argc, char **argv,const std::function<void(Application &app)> &init) 
+				: Udjat::Application(argc,argv), init_callback{init} {
+			}
+
+			~TestApp() override {
+			}
+
+			std::shared_ptr<Abstract::Agent> RootFactory() override {
+				init_callback(*this);
+				return Udjat::Application::RootFactory();
+			}
+
+		};
+
+		int rc = TestApp{argc,argv,init}.run(config_file.c_str());
 		if(rc != 0) {
 			Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
 			return rc;

@@ -27,6 +27,8 @@
 #pragma once
 
 #include <udjat/defs.h>
+#include <functional>
+#include <udjat/tools/application.h>
 
 extern "C" {
 	int UDJAT_API run_tests();
@@ -38,6 +40,13 @@ namespace Udjat {
 	/// @param argc Number of command line arguments.
 	/// @param argv The command line arguments.
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(int argc, char *argv[], const char *definitions = "test.xml");
+	int UDJAT_API loader(int argc, char *argv[]);
+
+	/// @brief Helper library to test and develop Udjat modules.
+	/// @param argc Number of command line arguments.
+	/// @param argv The command line arguments.
+	/// @param init A function to initialize the application with custom settings.
+	/// @return 0 on success, non-zero on failure.
+	int UDJAT_API loader(int argc, char *argv[], const std::function<void(Application &app)> &init);
 
 }

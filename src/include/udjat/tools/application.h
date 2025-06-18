@@ -57,7 +57,7 @@
 		virtual void root(std::shared_ptr<Abstract::Agent> agent);
 
 		/// @brief Factory for the application root.
-		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
+		virtual std::shared_ptr<Abstract::Agent> RootFactory();
 
 		/// @brief Set property from command-line argument.
 		/// @param name Property name.
