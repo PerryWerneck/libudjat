@@ -48,12 +48,11 @@
  using namespace std;
  using namespace Udjat;
 
- int Udjat::loader(int argc, char **argv) {
-	return Udjat::loader(argc,argv,[](Application &app) {
-	});
+ int Udjat::loader(int argc, char **argv, const char *path) {
+	return Udjat::loader(argc,argv,[](Application &app) {},path);
  }
 
- int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<void(Application &app)> &init) {
+ int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<void(Application &app)> &init, const char *path) {
 
 	bool app = (argc==1);
 
@@ -95,7 +94,7 @@
 	Logger::redirect();
 
 	// Configuration file (or path)
-	string config_file{"test.xml"};
+	string config_file{path};
 
 	// Loaded modules
 	vector<Module *> modules;
@@ -121,15 +120,10 @@
 
 	RandomFactory rfactory;
 	string testmodule{".build/testmodule" LIBEXT};
-	
+
 	if(CommandLineParser::has_argument(argc,argv,'t',"run-tests")) {
 
 		// Run tests
-#ifdef _WIN32
-		Logger::String{"Running tests is not supported on Windows"}.error();
-		return -1;
-#else
-
 		for(auto module : modules) {
 			int rc = module->run_unit_test();
 			if(rc) {
@@ -137,22 +131,7 @@
 			}
 		}
 
-		/*
-		dlerror(); // Clear previous errors
-		int (*run_tests)() = (int (*)())dlsym(RTLD_DEFAULT, "run_unit_test");
-
-		const char *error = dlerror();
-		if(error) {
-			Logger::String{"Failed to load test module: ", error}.error();
-			return -1;
-		}
-
-		return run_tests();
-		*/
-
 		return 0;
-
-#endif
 
 	} else if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
 
