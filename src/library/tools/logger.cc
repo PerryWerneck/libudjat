@@ -129,7 +129,11 @@
 			{ "log-trace",		"Trace messages are "	},	// Trace message.
 		};
 
+#if __cplusplus >= 201703L		
 		Logger::Options &options{Logger::Options::getInstance()};
+#else
+		Logger::Options &options = Logger::Options::getInstance();
+#endif
 
 		for(size_t ix = 0; ix < N_ELEMENTS(attributes); ix++) {
 
@@ -534,7 +538,11 @@
 		domain[14] = 0;
 
 		// Log options.
+#if __cplusplus >= 201703L		
 		Logger::Options &options{Options::getInstance()};
+#else
+		Logger::Options &options = Options::getInstance();
+#endif
 
 		// Serialize
 		static mutex mtx;
