@@ -156,8 +156,9 @@
 		constexpr Getter(const Value &value) : src{value} {
 		}
 #else
-		Value &src;
-		Getter(const Value &value) : src{*(const_cast<Value *>(&value))} {
+		Value src;
+		Getter(const Value &value) : src{value} {
+			src = value;
 		}
 #endif
 		template <typename T>
