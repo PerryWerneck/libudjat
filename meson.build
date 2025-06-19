@@ -63,14 +63,13 @@ lib_deps = [
 # Compiler flags
 #
 cxx = meson.get_compiler('cpp')
-enable_debug = get_option('debug') or get_option('buildtype').contains('debug')
 
 time_epoch = run_command('sh', '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
 if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
 endif
 
-compiler_flags = [
+add_project_arguments(cxx.get_supported_arguments([
   '-ggdb3',
   '-fvisibility=hidden',
   '-pthread',
@@ -78,19 +77,8 @@ compiler_flags = [
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
   '-DBUILD_DATE='+time_epoch,
-]
-
-if enable_debug
-  compiler_flags += [
-	  '-DDEBUG=1'
-  ]
-else
-  compiler_flags += [
-	'-DNDEBUG=1'
-  ]
-endif
-
-add_project_arguments(cxx.get_supported_arguments(compiler_flags), language: 'cpp')
+  get_option('buildtype').contains('debug') ? '-DDEBUG=1' : '-DNDEBUG=1',
+]), language: 'cpp')
 
 #
 # Configuration
