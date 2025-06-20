@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-12 08:04-0300\n"
+"POT-Creation-Date: 2025-06-19 00:08-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -19,6 +19,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.5\n"
+
+#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:140
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:99
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
 
 #: src/library/agent/agent.cc:193
 msgid "default"
@@ -32,22 +40,6 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:140
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
-
-#: src/library/agent/root.cc:99
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/state.cc:139
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:144
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
 #: src/library/agent/controller.cc:52
 msgid "Agent controller"
 msgstr "Controlador de agentes"
@@ -60,12 +52,20 @@ msgstr "Controlador de agentes não foi inicializado"
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 
-#: src/library/module/module.cc:118
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/module/module.cc:129
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:134
+#: src/library/module/module.cc:145
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
@@ -482,14 +482,6 @@ msgstr "Reinstalar serviço"
 msgid "Block access to 'net stop' on this service"
 msgstr "Bloquear acesso a 'net stop' no serviço"
 
-#: src/library/tools/report.cc:220
-msgid "Yes"
-msgstr "Sim"
-
-#: src/library/tools/report.cc:220
-msgid "No"
-msgstr "Não"
-
 #: src/library/tools/script.cc:54 src/library/tools/script.cc:140
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
@@ -501,10 +493,6 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 #: src/library/tools/script.cc:165
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
-
-#: src/library/tools/systemservice.cc:144
-msgid "System is not ready"
-msgstr "Sistema não está em funcionamento"
 
 #: src/library/tools/timestamp.cc:105
 msgid "Less than one minute"
@@ -654,27 +642,27 @@ msgstr "Atributo necessário '{}' não foi encontrado"
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
 
-#: src/library/tools/logger.cc:342
+#: src/library/tools/logger.cc:346
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger.cc:343
+#: src/library/tools/logger.cc:347
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger.cc:344
+#: src/library/tools/logger.cc:348
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger.cc:345
+#: src/library/tools/logger.cc:349
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger.cc:347
+#: src/library/tools/logger.cc:351
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger.cc:351
+#: src/library/tools/logger.cc:355
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
@@ -700,10 +688,22 @@ msgstr "Uso:"
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#: src/library/tools/object.cc:292
+#: src/library/tools/object.cc:293
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#: src/library/tools/systemservice.cc:144
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
+#: src/library/tools/report.cc:221
+msgid "Yes"
+msgstr "Sim"
+
+#: src/library/tools/report.cc:221
+msgid "No"
+msgstr "Não"
 
 #: src/library/worker/worker.cc:54
 msgid "Invalid response type"

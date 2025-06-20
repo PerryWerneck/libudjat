@@ -179,6 +179,10 @@
 	}
 
 	void Logger::file(const char *filename) {
+		debug("Logfile set to '",filename,"'");
+		auto &options = Options::getInstance();
+		options.filename = String{filename}.as_quark();
+		options.file = file_writer;
 	}
 
 	void Logger::file(bool enable) {

@@ -69,36 +69,50 @@ namespace Udjat {
 
 		try {
 
-			string filename{Application::LogDir::getInstance().c_str()};
-
-			if(format.empty()) {
-
-				try {
-
-					keep = Config::Value<unsigned int>("logfile","max-age",86400).get();
-					format = Config::Value<std::string>("logfile","name-format", (Application::Name() + "-%d.log").c_str()).c_str();
-
-				} catch(...) {
-
-					// On error assume defaults.
-					keep = 86400;
-					format = (Application::Name() + "-%d.log");
-
-				}
-
-			}
+			auto &options = Options::getInstance();
 
 			// Current timestamp.
 			TimeStamp timestamp;
 
-			// Get logfile path.
+			string filename;
 
-			filename.append(timestamp.to_string(format.c_str()));
+			if(options.filename && *options.filename) {
 
-			struct stat st;
-			if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
-				// More than one day, remove it
-				remove(filename.c_str());
+				// Use custom log file name.
+				filename = options.filename;
+
+			} else {
+
+				// Use default log file name.
+				filename = Application::LogDir::getInstance().c_str();
+
+				if(format.empty()) {
+
+					try {
+
+						keep = Config::Value<unsigned int>("logfile","max-age",86400).get();
+						format = Config::Value<std::string>("logfile","name-format", (Application::Name() + "-%d.log").c_str()).c_str();
+
+					} catch(...) {
+
+						// On error assume defaults.
+						keep = 86400;
+						format = (Application::Name() + "-%d.log");
+
+					}
+
+				}
+
+				// Get logfile path.
+
+				filename.append(timestamp.to_string(format.c_str()));
+
+				struct stat st;
+				if(!stat(filename.c_str(),&st) && (time(nullptr) - st.st_mtime) > keep) {
+					// More than one day, remove it
+					remove(filename.c_str());
+				}
+
 			}
 
 			// Open file
