@@ -19,6 +19,7 @@
 
  #pragma once
 
+ #error deprecated
  #include <udjat/defs.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/object.h>
