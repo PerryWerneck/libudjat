@@ -598,7 +598,7 @@
 				if(!ini) {
 					return false;
 				}
-				return (iniparser_getsecnkeys(ini,group) != 0);
+				return (iniparser_getsecnkeys(ini,(char *)group) != 0);
 			}
 	
 			bool hasKey(const char *, const char *) {
@@ -613,7 +613,7 @@
 				if(!ini) {
 					return Udjat::String{def};
 				}
-				String str{iniparser_getstring(ini,key(group,name).c_str(),def)};
+				String str{iniparser_getstring(ini,key(group,name).c_str(),(char *) def)};
 
 				debug(group,":",name,"='",str.c_str(),"'");
 				return str;
@@ -680,29 +680,24 @@
 			}
 		
 			bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
-
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				if(ini) {
-					size_t items = iniparser_getsecnkeys(ini,group);
-					if(items) {
-						const char *k[items];
-						if(iniparser_getseckeys(ini,group,k)) {
-							for(size_t ix = 0; ix < items; ix++) {
-								const char *ptr = strchr(k[ix],':');
-								if(ptr) {
-									ptr++;
-									if(call(ptr,Config::get(group,ptr,"").c_str())) {
-										return true;
-									}
-								}
-							}
-						} else {
-							Logger::String {"Error getting keys from section '",group,"'"}.error("iniparser");
-						}
+				  size_t items = iniparser_getsecnkeys(ini,(char *) group);
+				  if(items) {
+				    char **k = iniparser_getseckeys(ini, (char *) group);
+				    if(k) {
+				      for(size_t ix = 0; ix < items; ix++) {
+					const char *ptr = strchr(k[ix],':');
+					  if(ptr) {
+					  ptr++;
+					  if(call(ptr,Config::get(group,ptr,"").c_str())) {
+					    return true;
+					  }
 					}
-
+				      }
+				    }
+				  }
 				}
-
 				return false;
 			}
 	
