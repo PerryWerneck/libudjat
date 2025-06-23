@@ -35,31 +35,29 @@
 		debug("-------[ Beginning test of network methods]--------------");
 		
 		{
-			auto nic = String{Network::Interface::Default()->name()};
-			if(nic.empty()) {
-				throw logic_error("No default network interface found.");
-			} else {
-				app.info() << "Default network interface address: " << nic.c_str() << endl;
-			}	
-		}
+			auto nic = Udjat::Network::Interface::Default();
 
-		{
-			auto addr = Network::Interface::Default()->address().to_string();
+			auto name = nic->name();
+			if(name && *name) {
+				app.info() << "Default network interface address: " << name << endl;
+			} else {
+				throw logic_error("No default network interface found.");
+			}	
+
+			auto addr = nic->address().to_string();
 			if(addr.empty()) {
 				throw logic_error("No default network interface found.");
 			} else {
 				app.info() << "Default network interface address: " << addr.c_str() << endl;
 			}	
 
-		}
-
-		{
-			auto mask = Network::Interface::Default()->netmask().to_string();
+			auto mask = nic->netmask().to_string();
 			if(mask.empty()) {
 				throw logic_error("No default network interface netmask found.");
 			} else {
 				app.info() << "Default network interface netmask: " << mask.c_str() << endl;
 			}
+
 		}
 
 		debug("---------------------------------------------------------");
