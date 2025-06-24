@@ -18,7 +18,8 @@
  */
 
  #pragma once
-
+ #error deprecated
+ 
  #include <config.h>
  #include <udjat/defs.h>
 

@@ -21,6 +21,8 @@
   * @brief Implements Request::exec.
   */
 
+ #error deprecated
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
@@ -29,8 +31,7 @@
  #include <udjat/tools/response.h>
  #include <udjat/tools/intl.h>
  #include <stdexcept>
- // #include <private/worker.h>
-
+ 
  using namespace std;
 
  namespace Udjat {
