@@ -33,7 +33,9 @@
  namespace Udjat {
 
 	FileAlert::FileAlert(const XML::Node &node) : Alert{node},
+
 		filename{String{node,"filename"}.as_quark()}, maxage{node.attribute("maxage").as_uint(86400)}, 
+	
 		payload{Activatable::payload(node)} {
 
 		if(!(filename && *filename)) {
@@ -44,7 +46,9 @@
 			throw runtime_error(String{"Required payload is empty on alert '",name(),"'"});
 		}
 
-		debug("Alert file set to '",filename,"'");
+#ifdef DEBUG 
+		Logger::String{"Alert filename set to '",filename,"'"}.info(name());
+#endif
 
 	}
 
@@ -91,6 +95,7 @@
 		std::ofstream ofs;
 		ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
 
+		debug("Writing alert to file '",name.c_str(),"'");
 		ofs.open(name, ofstream::out | ofstream::app);
 		ofs << payload.value << endl;
 		ofs.close();

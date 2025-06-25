@@ -37,7 +37,7 @@
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert>
 		
-	<agent name='random1' type='random' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
+	<agent name='random1' type='random' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random1-%d.alerts'>
 
 		<alert name='changed' type='file' strip-payload='yes' trigger-event='value-change'>
 			${timestamp(%Y/%m/%d %H:%M:%S)},${summary},${value}
