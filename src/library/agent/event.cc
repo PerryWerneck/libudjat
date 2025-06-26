@@ -61,6 +61,7 @@ namespace Udjat {
 			{ Event::STATE_CHANGED,		"state-changed" },
 			{ Event::UPDATE_TIMER,		"update-timer" },
 			{ Event::VALUE_CHANGED,		"value-changed" },
+			{ Event::VALUE_CHANGED,		"value-change" },
 			{ Event::VALUE_CHANGED,		"changed" },
 			{ Event::VALUE_NOT_CHANGED,	"value-not-changed" },
 			{ Event::UPDATED,			"updated" },

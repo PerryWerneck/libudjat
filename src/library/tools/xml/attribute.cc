@@ -60,23 +60,39 @@
 			}
 		}
 
-		// Search parents from <attribute name='${node.name()}-${attrname}' value= />
+		// Search parents
 		{
 			String key{node.name(),"-",attrname};
+			debug("Searching for '",key,"' in parents of node '",node.name(),"'");
 			for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
+
+				// Search on parent node attributes
+				{
+					XML::Attribute attribute{node.attribute(attrname)};
+					if(attribute) {
+						debug("Found '",attrname,"' in node '",node.name(),"'");
+						return attribute;
+					}
+				}
+
+				{
+					XML::Attribute attribute{node.attribute(key.c_str())};
+					if(attribute) {
+						debug("Found '",attrname,"' in node '",node.name(),"'");
+						return attribute;
+					}
+				}
+
+				// Search on <attribute> nodes.
 				for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+					
 					if(!strcasecmp(child.attribute("name").as_string(""),key.c_str()) && is_allowed(child)) {
 						return child.attribute("value");
 					}
-				}
-			}
-		}
 
-		// Search parents for <attribute name='${attrname}' value= />
-		for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
-			for(XML::Node child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
-				if(!strcasecmp(child.attribute("name").as_string(""),attrname) && is_allowed(child)) {
-					return child.attribute("value");
+					if(!strcasecmp(child.attribute("name").as_string(""),attrname) && is_allowed(child)) {
+						return child.attribute("value");
+					}
 				}
 			}
 		}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-19 00:08-0300\n"
+"POT-Creation-Date: 2025-06-26 10:30-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -633,7 +633,7 @@ msgstr "numero"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: src/library/tools/xml/attribute.cc:96
+#: src/library/tools/xml/attribute.cc:112
 #, c++-format
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
@@ -642,27 +642,27 @@ msgstr "Atributo necessário '{}' não foi encontrado"
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
 
-#: src/library/tools/logger.cc:346
+#: src/library/tools/logger.cc:350
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger.cc:347
+#: src/library/tools/logger.cc:351
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger.cc:348
+#: src/library/tools/logger.cc:352
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger.cc:349
+#: src/library/tools/logger.cc:353
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger.cc:351
+#: src/library/tools/logger.cc:355
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger.cc:355
+#: src/library/tools/logger.cc:359
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
@@ -705,7 +705,7 @@ msgstr "Sim"
 msgid "No"
 msgstr "Não"
 
-#: src/library/worker/worker.cc:54
+#: src/library/worker/worker.cc:56
 msgid "Invalid response type"
 msgstr "Resposta de tipo inválido"
 

@@ -18,6 +18,8 @@
  */
 
  #pragma once
+ #error deprecated
+ 
 
  #include <config.h>
  #include <udjat/tools/quark.h>

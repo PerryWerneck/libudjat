@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #error deprecated
+ 
  #include <config.h>
  #include <private/worker.h>
  #include <udjat/tools/worker.h>
