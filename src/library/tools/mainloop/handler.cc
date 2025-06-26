@@ -50,7 +50,11 @@
 
 	bool MainLoop::Handler::enable() noexcept {
 
+#if __cplusplus >= 201703L
 		MainLoop &mainloop{MainLoop::getInstance()};
+#else
+		MainLoop &mainloop = MainLoop::getInstance();
+#endif
 
 		if(mainloop.enabled(this)) {
 			return false;
