@@ -188,7 +188,6 @@ src/library/tools/url/controller.cc
 src/library/tools/url/handlers/file.cc
 src/library/tools/url/handlers/script.cc
 src/library/tools/url/header.cc
-src/library/tools/url/protocol.cc
 src/library/tools/url/unescape.cc
 src/library/tools/url/url.cc
 src/library/tools/url/watcher.cc
@@ -243,7 +242,6 @@ src/include/private/url.h
 src/include/private/urlparser.h
 src/include/private/worker.h
 src/include/private/agent.h
-src/include/private/alert.h
 src/include/private/module.h
 src/include/private/randomfactory.h
 src/include/private/state.h
