@@ -122,7 +122,6 @@ SOURCES= \
 	src/library/tools/os/linux/hostname.cc \
 	src/library/tools/os/linux/logger.cc \
 	src/library/tools/os/linux/netlink_routes.cc \
-	src/library/tools/os/linux/protocol.cc \
 	src/library/tools/os/linux/shortcut.cc \
 	src/library/tools/os/linux/socket.cc \
 	src/library/tools/os/linux/system.cc \
@@ -149,7 +148,6 @@ SOURCES= \
 	src/library/tools/url/handlers/script.cc \
 	src/library/tools/url/header.cc \
 	src/library/tools/url/methodfactory.cc \
-	src/library/tools/url/protocol.cc \
 	src/library/tools/url/unescape.cc \
 	src/library/tools/url/url.cc \
 	src/library/tools/url/watcher.cc \
