@@ -89,6 +89,7 @@
 		File::Path::replace(filename,contents);
 	}
 
+#if __cplusplus >= 201703L
 	File::Text & File::Text::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
 		return expand('$',expander,dynamic,cleanup);
 	}
@@ -117,6 +118,18 @@
 
 		return set(text.c_str());
 	}
+#else
+	File::Text & File::Text::expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic, bool cleanup) {
+		if(!(contents && *contents)) {
+			return *this;
+		}
+
+		String text{contents};
+		text.expand(expander,dynamic,cleanup);
+
+		return set(text.c_str());
+	}
+#endif // __cplusplus >= 201703L
 
 	File::Text & File::Text::set(const char *contents) {
 

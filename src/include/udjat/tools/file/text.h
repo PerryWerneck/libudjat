@@ -120,6 +120,7 @@ namespace Udjat {
 			/// @param cleanup if true remove the non existent values from string.
 			Text & expand(const std::function<bool(const char *key, std::string &str)> &expander, bool dynamic = false, bool cleanup = false);
 
+#if __cplusplus >= 201703L
 			/// @brief Expand using customized marker.
 			/// @param expander value expander method.
 			/// @param marker The marker.
@@ -132,7 +133,7 @@ namespace Udjat {
 			inline Text & expand(bool dynamic = true, bool cleanup = true) {
 				return expand('$',dynamic,cleanup);
 			}
-
+#endif // __cplusplus >= 201703L
 			
 			/// @brief Save file contents.
 			void save() const;
