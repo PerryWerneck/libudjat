@@ -94,15 +94,17 @@
 		try {
 
 			service.set(SERVICE_START_PENDING, Config::Value<unsigned int>("service","start-timer",30000));
-			if(service.init(service.definitions)) {
-				throw runtime_error("Error initializing service");
-			}
+			
+			//if(service.init(service.definitions)) {
+			//	throw runtime_error("Error initializing service");
+			//}
 
 			service.set(SERVICE_RUNNING, 0);
 			MainLoop::getInstance().run();
 
 			service.set(SERVICE_STOP_PENDING, Config::Value<unsigned int>("service","stop-timer",30000));
-			service.deinit(service.definitions);
+			
+			//service.deinit(service.definitions);
 
 		} catch(const std::exception &e) {
 

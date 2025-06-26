@@ -36,8 +36,8 @@ namespace Udjat {
 
 		/// @brief Command line argument.
 		/// @details This structure is used to define command line options for 'help' output.
-		struct Argument {
-
+		class UDJAT_API Argument {
+		public:
 			const char shortname;		///< @brief Short name of the option.
 			const char *longname;		///< @brief Long name of the option.
 			const char *description;	///< @brief Description of the option.

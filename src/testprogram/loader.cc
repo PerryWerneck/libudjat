@@ -63,8 +63,8 @@
 	// Check for help
 	static const Udjat::CommandLineParser::Argument options[] = {
 		{ 'h', "help",				"Show this help message"		},
-		{ 'A', "application", 		"Run as application"			},
-		{ 'S', "service", 			"Run as system service"			},
+		{ 'a', "application", 		"Run as application"			},
+		{ 's', "service", 			"Run as system service"			},
 		{ 'm', "module=<module>",	"Load module by name or path"	},
 		{ 'c', "config=<path>",		"Load XML configuration from file or directory (default is test.xml)" },
 		{ 't', "run-tests",			"Run test method (if available)" },
@@ -133,7 +133,7 @@
 
 		return 0;
 
-	} else if(CommandLineParser::has_argument(argc,argv,'S',"service")) {
+	} else if(CommandLineParser::has_argument(argc,argv,'s',"service")) {
 
 		// Run as service
 		class TestSrvc : public Udjat::SystemService {
@@ -161,7 +161,7 @@
 			return rc;
 		}	
 
-	} else if(CommandLineParser::has_argument(argc,argv,'A',"application") || app) {
+	} else if(CommandLineParser::has_argument(argc,argv,'a',"application") || app) {
 
 		// Run as application (default if called without arguments)
 		class TestApp : public Udjat::Application {

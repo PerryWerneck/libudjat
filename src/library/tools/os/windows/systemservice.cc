@@ -39,14 +39,9 @@
 
   namespace Udjat {
 
-	/// @brief Show help text to stream.
-	/// @param out The stream for help.
-	void SystemService::help(size_t width) const noexcept {
-
-		Application::help(width);
+	void SystemService::show_command_line_help(size_t width) noexcept {
 
 		static const CommandLineParser::Argument values[] = {
-			{ 'f',	"foreground",	_("Run in foreground (as application)")				},
 			{ 'S',	"start",		_("Start service")									},
 			{ 'Q',	"stop",			_("Stop service")									},
 			{ 'I',	"install",		_("Install service")								},
@@ -62,10 +57,17 @@
 
 	}
 
-	/// @brief Initialize service.
-	int SystemService::init(const char *definitions) {
-		return Application::init(definitions);
+	/// @brief Show help text to stream.
+	/// @param out The stream for help.
+	void SystemService::help(size_t width) const noexcept {
+		Application::help(width);
+		show_command_line_help(width);
 	}
+
+	/// @brief Initialize service.
+	//int SystemService::init(const char *definitions) {
+	//	return Application::init(definitions);
+	//}
 
 	void SystemService::on_timer() {
 	}

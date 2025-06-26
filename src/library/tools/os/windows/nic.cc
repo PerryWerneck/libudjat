@@ -204,4 +204,8 @@
 
 	}
 
+	std::shared_ptr<Network::Interface> Network::Interface::Default() {
+		throw system_error(ENOTSUP,system_category(),"Default interface detection is not available on windows");
+	}
+
  }
