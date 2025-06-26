@@ -98,7 +98,7 @@
 		return expand(marker,[&object,dynamic,cleanup](const char *key, std::string &str){
 			if(object.getProperty(key,str))
 				return true;
-			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
+			return false;
 		},dynamic,cleanup);
 	}
 
@@ -112,7 +112,7 @@
 
 	String & String::expand(char marker, bool dynamic, bool cleanup) {
 		return expand(marker,[dynamic,cleanup](const char *key, std::string &str){
-			return Expanders::getInstance().expand(key,str,dynamic,cleanup);
+			return false;
 		},dynamic,cleanup);
 	}
 
@@ -276,6 +276,13 @@
 			return true;
 		}
 #endif // _WIN32
+
+		//
+		// Apply custom expanders.
+		//
+		if(Expanders::getInstance().expand(key,value,dynamic,cleanup)) {
+			return true;
+		}
 
 		//
 		// If cleanup is set, replace with an empty string, otherwise keep the marker.
