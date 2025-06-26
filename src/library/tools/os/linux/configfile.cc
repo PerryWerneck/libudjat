@@ -680,6 +680,10 @@
 			}
 		
 			bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+
+				throw system_error(ENOTSUP,system_category(),"Cant enumerate iniparser keys on legacy mode");
+
+				/*
 				std::lock_guard<std::recursive_mutex> lock(guard);
 				if(ini) {
 				  size_t items = iniparser_getsecnkeys(ini,(char *) group);
@@ -698,6 +702,8 @@
 				    }
 				  }
 				}
+*/
+
 				return false;
 			}
 	
