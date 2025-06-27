@@ -147,7 +147,7 @@ includes_dir = include_directories('src/include')
 #
 # VMDetect (optional)
 #
-vmdetect_dep = dependency('vmdetect', fallback: [ 'vmdetect', 'static_library' ])
+vmdetect_dep = dependency('vmdetect', required: false, method : 'pkg-config')
 if vmdetect_dep.found()
   app_conf.set('HAVE_VMDETECT', 1)
   lib_deps += vmdetect_dep
@@ -156,7 +156,7 @@ endif
 #
 # DMIGet (optional)
 #
-dmiget_dep = dependency('dmiget', fallback: [ 'dmiget', 'static_library' ])
+dmiget_dep = dependency('dmiget', required: false, method : 'pkg-config')
 if dmiget_dep.found()
   app_conf.set('HAVE_SMBIOS', 1)
   lib_deps += dmiget_dep
