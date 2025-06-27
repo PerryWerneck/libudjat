@@ -88,8 +88,11 @@ pugixml = dependency(
     required: true,
   )
 
+#Intl
+intl = dependency('intl', required: false)
+
 lib_deps = [
-  dependency('intl', required: false),
+  intl,
   pugixml,
   uriparser,
   vmdetect,
@@ -171,7 +174,10 @@ app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
 app_conf.set('HAVE_LOCALTIME_R', cxx.has_function('localtime_r'))
 
 app_conf.set('HAVE_PUGIXML', 1)
-app_conf.set('HAVE_LIBINTL', 1)
+
+if intl.found()
+  app_conf.set('HAVE_LIBINTL', 1)
+endif 
 
 app_conf.set('PRODUCT_TITLE', product_title)
 app_conf.set('PRODUCT_NAME',product_name)
