@@ -81,6 +81,14 @@ dmiget = dependency(
   fallback: [ 'dmiget', 'static_library' ]
 )
 
+# ECONF(optional)
+econf = dependency(
+  'libeconf', 
+  method : 'pkg-config',
+  static: false,
+  required: false,
+)
+
 # PUGIXML
 pugixml = dependency(
     'pugixml',
@@ -194,14 +202,9 @@ if dmiget.found()
 endif
 
 #
-# Configuration library (optional)
+# Check for alternative configuration libraries
 #
-conf_dep = dependency('libeconf-static', required: false, method : 'pkg-config')
-if not conf_dep.found()
-  conf_dep = dependency('libeconf', required: false, method : 'pkg-config')
-endif
-
-if conf_dep.found() 
+if econf.found() 
 
   app_conf.set('HAVE_ECONF', 1)
   if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
@@ -210,14 +213,19 @@ if conf_dep.found()
 
 else 
 
-  conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
-  if conf_dep.found()
+  econf = dependency(
+    'iniparser', 
+    required: false, 
+    method : 'pkg-config'
+  )
+  
+  if econf.found()
     app_conf.set('HAVE_INIPARSER', 1)
   endif
 
 endif
 
-lib_deps += conf_dep
+lib_deps += econf
 
 #
 # SystemD  (optional)
