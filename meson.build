@@ -58,6 +58,7 @@ uriparser = dependency('liburiparser', method : 'pkg-config')
 # VMDETECT (optional)
 vmdetect = dependency(
   'vmdetect', 
+  static: true,
   required: false,
   fallback: [ 'vmdetect', 'static_library' ]
 )
@@ -65,6 +66,7 @@ vmdetect = dependency(
 # DMIGET (optional)
 dmiget = dependency(
   'dmiget', 
+  static: true,
   required: false,
   fallback: [ 'dmiget', 'static_library' ]
 )
