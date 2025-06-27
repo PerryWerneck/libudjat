@@ -1,0 +1,5 @@
+[wrap-git]
+url = https://github.com/PerryWerneck/dmiget.git
+revision = HEAD
+depth = 1
+
