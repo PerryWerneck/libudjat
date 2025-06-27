@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.0.1',
+	version: '2.0.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -54,9 +54,26 @@ subdir('po')
 #
 iconv = dependency('iconv')
 uriparser = dependency('liburiparser', method : 'pkg-config')
+
+# VMDETECT (optional)
+vmdetect = dependency(
+  'vmdetect', 
+  required: false,
+  fallback: [ 'vmdetect', 'static_library' ]
+)
+
+# DMIGET (optional)
+dmiget = dependency(
+  'dmiget', 
+  required: false,
+  fallback: [ 'dmiget', 'static_library' ]
+)
+
 lib_deps = [
   dependency('pugixml'),  
   uriparser,
+  vmdetect,
+  dmiget,
 ]
 
 #
@@ -144,34 +161,12 @@ app_conf.set_quoted('LOG_DOMAIN','lib' + product_name)
 
 includes_dir = include_directories('src/include')
 
-#
-# VMDetect (optional)
-#
-vmdetect_dep = dependency('vmdetect-static', required: false)
-if vmdetect_dep.found()
-  app_conf.set('HAVE_VMDETECT', 2)
-  lib_deps += vmdetect_dep
-else
-  vmdetect_dep = dependency('vmdetect', required: false)
-  if vmdetect_dep.found()
-    app_conf.set('HAVE_VMDETECT', 1)
-    lib_deps += vmdetect_dep
-  endif
+if vmdetect.found()
+  app_conf.set('HAVE_VMDETECT', 1)
 endif
 
-#
-# DMIGet (optional)
-#
-dmiget_dep = dependency('dmiget-static', required: false)
-if dmiget_dep.found()
-  app_conf.set('HAVE_SMBIOS', 2)
-  lib_deps += dmiget_dep
-else
-  dmiget_dep = dependency('dmiget', required: false)
-  if dmiget_dep.found()
-    app_conf.set('HAVE_SMBIOS', 1)
-    lib_deps += dmiget_dep
-  endif
+if dmiget.found()
+  app_conf.set('HAVE_SMBIOS', 1)
 endif
 
 #
@@ -385,22 +380,6 @@ if host_machine.system() == 'windows'
     libraries: [ '-l' + meson.project_name() + '.dll' ]
   )
 
-  # https://mesonbuild.com/Pkgconfig-module.html
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    variables: pkg_variables,
-    requires: [ lib_deps ],
-    extra_cflags: [
-      '-DUDJAT_STATIC',
-      '-pthread',
-    ],
-    libraries: [ 
-      '-l' + meson.project_name(),
-      '-pthread',
-    ] + winlibs
-  )
-
 else
 
   pkg.generate(
@@ -408,25 +387,9 @@ else
     description: project_description,
     variables: pkg_variables,
     requires: [ 'pugixml' ],
-    requires_private: [ lib_deps ],
-    libraries_private: [ lib_deps ],
-    libraries: [ '-l' + meson.project_name() ]
-  )
-
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    variables: pkg_variables,
-    requires: [ lib_deps ],
-    extra_cflags: [
-      '-DUDJAT_STATIC',
-      '-pthread',
-    ],
-    libraries: [ 
-      '-l:lib' + meson.project_name() + '.a', 
-      '-ldl',
-      '-pthread',
-    ]
+    libraries: [ '-l' + meson.project_name() ],
+#    requires_private: [ lib_deps ],
+#    libraries_private: [ lib_deps ],
   )
 
 endif
@@ -625,16 +588,26 @@ else
     ]
   )
 
-endif
+ endif
 
-static_library(
+ static = static_library(
   meson.project_name(), 
   config_h + lib_src,
   install: true,
   cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
   dependencies: lib_deps + [ iconv ],
   include_directories: includes_dir
-)
+ )
+
+ static_library = declare_dependency(
+  link_with : static,
+  include_directories : includes_dir,
+ ) 
+
+ dynamic_library = declare_dependency(
+  link_with : dynamic,
+  include_directories : includes_dir,
+ ) 
 
  static_library(
   meson.project_name() + '-loader', 
