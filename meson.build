@@ -53,12 +53,21 @@ subdir('po')
 # Dependencies
 #
 iconv = dependency('iconv')
-uriparser = dependency('liburiparser', method : 'pkg-config')
+
+private_libs = [ ]
+
+# URIPARSER
+uriparser = dependency(
+  'liburiparser', 
+  static: false,
+  required: true,
+)
 
 # VMDETECT (optional)
 vmdetect = dependency(
   'vmdetect', 
-  static: true,
+  method : 'pkg-config',
+  static: false,
   required: false,
   fallback: [ 'vmdetect', 'static_library' ]
 )
@@ -66,13 +75,22 @@ vmdetect = dependency(
 # DMIGET (optional)
 dmiget = dependency(
   'dmiget', 
-  static: true,
+  method : 'pkg-config',
+  static: false,
   required: false,
   fallback: [ 'dmiget', 'static_library' ]
 )
 
+# PUGIXML
+pugixml = dependency(
+    'pugixml',
+    static: false,
+    required: true,
+  )
+
 lib_deps = [
-  dependency('pugixml'),  
+  dependency('intl', required: false),
+  pugixml,
   uriparser,
   vmdetect,
   dmiget,
@@ -378,8 +396,9 @@ if host_machine.system() == 'windows'
     name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
-    requires: [ 'pugixml' ],
-    libraries: [ '-l' + meson.project_name() + '.dll' ]
+    requires: [ pugixml, uriparser ],
+    libraries: [ '-l' + meson.project_name() + '.dll' ],
+    requires_private: private_libs,
   )
 
 else
@@ -388,10 +407,9 @@ else
     name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
-    requires: [ 'pugixml' ],
+    requires: [ pugixml, uriparser ],
     libraries: [ '-l' + meson.project_name() ],
-#    requires_private: [ lib_deps ],
-#    libraries_private: [ lib_deps ],
+    requires_private: private_libs,
   )
 
 endif
