@@ -147,31 +147,19 @@ includes_dir = include_directories('src/include')
 #
 # VMDetect (optional)
 #
-vmdetect_dep = dependency('vmdetect-static', required: false)
+vmdetect_dep = dependency('vmdetect', fallback: [ 'vmdetect', 'static_library' ])
 if vmdetect_dep.found()
-  app_conf.set('HAVE_VMDETECT', 2)
+  app_conf.set('HAVE_VMDETECT', 1)
   lib_deps += vmdetect_dep
-else
-  vmdetect_dep = dependency('vmdetect', required: false)
-  if vmdetect_dep.found()
-    app_conf.set('HAVE_VMDETECT', 1)
-    lib_deps += vmdetect_dep
-  endif
 endif
 
 #
 # DMIGet (optional)
 #
-dmiget_dep = dependency('dmiget-static', required: false)
+dmiget_dep = dependency('dmiget', fallback: [ 'dmiget', 'static_library' ])
 if dmiget_dep.found()
-  app_conf.set('HAVE_SMBIOS', 2)
+  app_conf.set('HAVE_SMBIOS', 1)
   lib_deps += dmiget_dep
-else
-  dmiget_dep = dependency('dmiget', required: false)
-  if dmiget_dep.found()
-    app_conf.set('HAVE_SMBIOS', 1)
-    lib_deps += dmiget_dep
-  endif
 endif
 
 #

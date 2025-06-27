@@ -36,7 +36,6 @@ src/library/module/unload.cc
 src/library/module/module.cc
 src/library/os/linux/icon.cc
 src/library/os/windows/icon.cc
-src/library/request/exec.cc
 src/library/request/report.cc
 src/library/request/request.cc
 src/library/request/response.cc
@@ -96,7 +95,6 @@ src/library/tools/os/linux/application/application.cc
 src/library/tools/os/linux/application/cache.cc
 src/library/tools/os/linux/application/init.cc
 src/library/tools/os/linux/arguments.cc
-src/library/tools/os/linux/configfile.cc
 src/library/tools/os/linux/event.cc
 src/library/tools/os/linux/eventcontroller.cc
 src/library/tools/os/linux/file/copy.cc
@@ -128,6 +126,7 @@ src/library/tools/os/linux/urlconnect.cc
 src/library/tools/os/linux/console.cc
 src/library/tools/os/linux/file.cc
 src/library/tools/os/linux/systemservice.cc
+src/library/tools/os/linux/configfile.cc
 src/library/tools/os/windows/adapter.cc
 src/library/tools/os/windows/application/application.cc
 src/library/tools/os/windows/application/description.cc
@@ -142,7 +141,6 @@ src/library/tools/os/windows/configvalue.cc
 src/library/tools/os/windows/event.cc
 src/library/tools/os/windows/eventcontroller.cc
 src/library/tools/os/windows/exception.cc
-src/library/tools/os/windows/file.cc
 src/library/tools/os/windows/file/copy.cc
 src/library/tools/os/windows/file/list.cc
 src/library/tools/os/windows/file/path.cc
@@ -152,7 +150,6 @@ src/library/tools/os/windows/file/watcher.cc
 src/library/tools/os/windows/hostname.cc
 src/library/tools/os/windows/ip.cc
 src/library/tools/os/windows/logger.cc
-src/library/tools/os/windows/nic.cc
 src/library/tools/os/windows/protocol.cc
 src/library/tools/os/windows/registry.cc
 src/library/tools/os/windows/securityidentifier.cc
@@ -172,9 +169,11 @@ src/library/tools/os/windows/system.cc
 src/library/tools/os/windows/threadpool.cc
 src/library/tools/os/windows/urlconnect.cc
 src/library/tools/os/windows/utils.cc
-src/library/tools/os/windows/win32service.cc
 src/library/tools/os/windows/console.cc
+src/library/tools/os/windows/file.cc
+src/library/tools/os/windows/nic.cc
 src/library/tools/os/windows/systemservice.cc
+src/library/tools/os/windows/win32service.cc
 src/library/tools/quark.cc
 src/library/tools/requestpath.cc
 src/library/tools/script.cc
@@ -218,8 +217,6 @@ src/library/tools/systemservice.cc
 src/library/tools/report.cc
 src/library/ui/status.cc
 src/library/ui/progress.cc
-src/library/worker/controller.cc
-src/library/worker/worker.cc
 src/include/private/event.h
 src/include/private/factory.h
 src/include/private/filewatcher.h
@@ -240,7 +237,6 @@ src/include/private/logger.h
 src/include/private/protocol.h
 src/include/private/url.h
 src/include/private/urlparser.h
-src/include/private/worker.h
 src/include/private/agent.h
 src/include/private/module.h
 src/include/private/randomfactory.h
@@ -308,7 +304,6 @@ src/include/udjat/tools/url.h
 src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/worker.h
-src/include/udjat/tools/commandlineparser.h
 src/include/udjat/tools/file.h
 src/include/udjat/tools/interface.h
 src/include/udjat/tools/logger.h
@@ -319,6 +314,7 @@ src/include/udjat/tools/container.h
 src/include/udjat/tools/report.h
 src/include/udjat/tools/request.h
 src/include/udjat/tools/application.h
+src/include/udjat/tools/commandlineparser.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/progress.h
@@ -335,9 +331,9 @@ src/include/udjat/win32/registry.h
 src/include/udjat/win32/security.h
 src/include/udjat/win32/service.h
 src/include/udjat/alert.h
-src/include/udjat/defs.h
 src/include/udjat/agent.h
 src/include/udjat/loader.h
+src/include/udjat/defs.h
 src/library/private.h
 src/library/tools/mainloop/os/windows/private.h
 src/library/tools/os/linux/file/private.h

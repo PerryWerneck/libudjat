@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 10:30-0300\n"
+"POT-Creation-Date: 2025-06-26 20:49-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -454,31 +454,27 @@ msgstr ""
 "Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
 "pôde ser encontrado nas bases de dados consultadas."
 
-#: src/library/tools/os/windows/systemservice.cc:49
-msgid "Run in foreground (as application)"
-msgstr "Executar em primeiro plano (como aplicação)"
-
-#: src/library/tools/os/windows/systemservice.cc:50
+#: src/library/tools/os/windows/systemservice.cc:45
 msgid "Start service"
 msgstr "Iniciar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:51
+#: src/library/tools/os/windows/systemservice.cc:46
 msgid "Stop service"
 msgstr "Parar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:52
+#: src/library/tools/os/windows/systemservice.cc:47
 msgid "Install service"
 msgstr "Instalar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:53
+#: src/library/tools/os/windows/systemservice.cc:48
 msgid "Uninstall service"
 msgstr "Desinstalar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:54
+#: src/library/tools/os/windows/systemservice.cc:49
 msgid "Reinstall service"
 msgstr "Reinstalar serviço"
 
-#: src/library/tools/os/windows/systemservice.cc:55
+#: src/library/tools/os/windows/systemservice.cc:50
 msgid "Block access to 'net stop' on this service"
 msgstr "Bloquear acesso a 'net stop' no serviço"
 
@@ -705,9 +701,11 @@ msgstr "Sim"
 msgid "No"
 msgstr "Não"
 
-#: src/library/worker/worker.cc:56
-msgid "Invalid response type"
-msgstr "Resposta de tipo inválido"
+#~ msgid "Run in foreground (as application)"
+#~ msgstr "Executar em primeiro plano (como aplicação)"
+
+#~ msgid "Invalid response type"
+#~ msgstr "Resposta de tipo inválido"
 
 #~ msgid "Core/Module subsystem failed to initialize"
 #~ msgstr "Inicialização do módulo principal falhou"
