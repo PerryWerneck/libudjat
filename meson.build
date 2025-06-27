@@ -18,7 +18,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 project(
-	'udjat', 
+	'libudjat', 
 	['cpp'],
 	version: '2.0.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
