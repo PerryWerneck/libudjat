@@ -602,11 +602,13 @@ else
  static_library = declare_dependency(
   link_with : static,
   include_directories : includes_dir,
+  variables: pkg_variables,
  ) 
 
  dynamic_library = declare_dependency(
   link_with : dynamic,
   include_directories : includes_dir,
+  variables: pkg_variables,
  ) 
 
  static_library(
