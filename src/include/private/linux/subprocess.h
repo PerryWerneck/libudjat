@@ -65,18 +65,17 @@
 	private:
 		Controller();
 
-		class Entries : public Container<Entry,Entry> {
+#if __cplusplus >= 201703L
+		Container<Entry,Entry> entries;
+#else
+		class Entries : public std::list<Entry>, public std::mutex {
 		public:
-			Entries() : Container<Entry,Entry>{} {
+			Entries() {
 			}
-
-			inline void remove_if(const std::function<bool(const Entry &object)> &method) {
-				std::lock_guard<std::mutex> lock(guard);
-				objects.remove_if(method);
-			}
+		
 
 		} entries;
-
+#endif
 
 		static void handle_signal(int sig) noexcept;
 

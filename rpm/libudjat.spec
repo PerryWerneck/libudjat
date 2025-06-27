@@ -1,8 +1,7 @@
 #
 # spec file for package libudjat
 #
-# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
-# Copyright (C) <2008> <Banco do Brasil S.A.>
+# Copyright (c) <2024> Perry Werneck <perry.werneck@gmail.com>.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -13,33 +12,31 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://github.com/PerryWerneck/libudjat/issues
 #
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version:		1.1
+Version: 2.0.1
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
 
-URL:			https://github.com/PerryWerneck/udjat
+URL:			https://github.com/PerryWerneck/libudjat
 
 Group:			Development/Libraries/C and C++
 BuildRoot:		/var/tmp/%{name}-%{version}
 
-BuildRequires:	autoconf >= 2.61
-BuildRequires:	automake
-BuildRequires:	libtool
 BuildRequires:	binutils
 BuildRequires:	coreutils
 BuildRequires:	gcc-c++
-
 BuildRequires:	pkgconfig(libeconf)
 BuildRequires:	pkgconfig(pugixml)
-BuildRequires:	pkgconfig(vmdetect) >= 1.3
+BuildRequires:	pkgconfig(dmiget)
 BuildRequires:	pkgconfig(libsystemd)
-BuildRequires:	glibc-devel
+BuildRequires:	pkgconfig(liburiparser)
+BuildRequires:	pkgconfig(vmdetect) >= 1.3
+BuildRequires:	meson >= 0.61.4
 
 %description
 UDJat core library
@@ -54,6 +51,7 @@ Main library for udjat modules.
 
 %package -n %{name}%{_libvrs}
 Summary: UDJat core library
+Provides:	%{name}%{MAJOR_VERSION}_%{MINOR_VERSION} = %{version}
 
 %description -n %{name}%{_libvrs}
 UDJat core library
@@ -62,22 +60,16 @@ Main library for udjat modules.
 
 #---[ Development ]---------------------------------------------------------------------------------------------------
 
-%package -n udjat-devel
-Summary: Development files for %{name}
-Requires: %{name}%{_libvrs} = %{version}
-Requires: pkgconfig(pugixml)
-Requires: gcc-c++
+%package devel
+Summary:	Development files for %{name}
+Requires:	%{name}%{_libvrs} = %{version}
 
-# The http exporter helps debugging of modules.
-Recommends: udjat-module-httpd
+Provides:	libudjat%{MAJOR_VERSION}-devel = %{version}
+Provides:	libudjat%{_libvrs}-devel = %{version}
+Provides:	udjat-devel = %{version}
+Provides:	udjat-rpm-macros = %{version}
 
-# The information module helps too.
-Recommends: udjat-module-information
-
-# Branding for test pages
-Recommends: udjat-branding
-
-%description -n udjat-devel
+%description devel
 
 Development files for Udjat main library.
 
@@ -86,41 +78,37 @@ Development files for Udjat main library.
 #---[ Build & Install ]-----------------------------------------------------------------------------------------------
 
 %prep
-%setup
-
-NOCONFIGURE=1 \
-	./autogen.sh
-
-%configure
+%autosetup
+%meson
 
 %build
-make all
+%meson_build
 
 %install
-%makeinstall
-%find_lang %{name}-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
+%meson_install
+
+mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
+mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
+
+%find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
-%{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
-
 %dir %{_libdir}/udjat
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
-%dir /var/log/udjat
-
-%dir %{_sysconfdir}/udjat.conf.d
-%config(noreplace) %{_sysconfdir}/udjat.conf.d/*.conf
+%{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
 %files -n %{name}%{_libvrs}-lang -f langfiles
 
-%files -n udjat-devel
+%files devel
 %defattr(-,root,root)
 
 %{_libdir}/*.so
 %{_libdir}/*.a
 %{_libdir}/pkgconfig/*.pc
+%{_rpmmacrodir}/macros.*
 
 %dir %{_includedir}/udjat
 %{_includedir}/udjat/*.h
@@ -131,14 +119,14 @@ make all
 %dir %{_includedir}/udjat/tools/abstract
 %{_includedir}/udjat/tools/abstract/*.h
 
+%dir %{_includedir}/udjat/tools/actions
+%{_includedir}/udjat/tools/actions/*.h
+
 %dir %{_includedir}/udjat/tools/file
 %{_includedir}/udjat/tools/file/*.h
 
 %dir %{_includedir}/udjat/tools/http
 %{_includedir}/udjat/tools/http/*.h
-
-%dir %{_includedir}/udjat/tools/response
-%{_includedir}/udjat/tools/response/*.h
 
 %dir %{_includedir}/udjat/alert
 %{_includedir}/udjat/alert/*.h
@@ -157,6 +145,9 @@ make all
 
 %dir %{_includedir}/udjat/ui
 %{_includedir}/udjat/ui/*
+
+%dir %{_includedir}/udjat/tools/url
+%{_includedir}/udjat/tools/url/*
 
 %pre -n %{name}%{_libvrs} -p /sbin/ldconfig
 

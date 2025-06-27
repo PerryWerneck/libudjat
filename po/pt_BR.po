@@ -1,0 +1,795 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Perry Werneck <perry.werneck@gmail.com>, 2022-2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: libudjat 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-06-26 20:49-0300\n"
+"PO-Revision-Date: 2025-06-11 15:10-0300\n"
+"Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
+"Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
+"Language: pt_BR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 3.5\n"
+
+#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:140
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:99
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
+
+#: src/library/agent/agent.cc:193
+msgid "default"
+msgstr "padrão"
+
+#: src/library/agent/agent.cc:195
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:196
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/controller.cc:52
+msgid "Agent controller"
+msgstr "Controlador de agentes"
+
+#: src/library/agent/controller.cc:99
+msgid "Agent controller was not initialized"
+msgstr "Controlador de agentes não foi inicializado"
+
+#: src/library/agent/controller.cc:404
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
+
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/module/module.cc:129
+#, c++-format
+msgid "Module '{}' is not loaded"
+msgstr "Modulo '{}' não foi carregado"
+
+#: src/library/module/module.cc:145
+#, c++-format
+msgid "I dont know how to execute '{}'"
+msgstr "Não sei como executar '{}'"
+
+#: src/library/request/response.cc:127
+msgid "System error"
+msgstr "Erro de sistema"
+
+#: src/library/request/response.cc:189
+msgid "Operation failed"
+msgstr "Operação falhou"
+
+#: src/library/state/state.cc:259 src/library/tools/converters.cc:42
+msgid "on"
+msgstr "ligado"
+
+#: src/library/state/state.cc:259 src/library/tools/converters.cc:49
+msgid "off"
+msgstr "desligado"
+
+#: src/library/tools/application/run.cc:70
+#: src/library/tools/application/run.cc:74
+msgid "Unable to set environment variable"
+msgstr "Incapaz de setar variável de ambiente"
+
+#: src/library/tools/application/run.cc:107
+msgid "Loading configuration"
+msgstr "Carregando configuração"
+
+#. Activate the new root agent.
+#: src/library/tools/application/run.cc:155
+msgid "Activating new configuration"
+msgstr "Ativando nova configuração"
+
+#: src/library/tools/application/run.cc:173
+#: src/library/tools/application/run.cc:259
+msgid "Starting services"
+msgstr "Iniciando serviços"
+
+#: src/library/tools/application/run.cc:183
+msgid "Unexpected error while activating new configuration"
+msgstr "Erro inesperado durante a configuração"
+
+#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
+msgid "yes"
+msgstr "sim"
+
+#: src/library/tools/converters.cc:41
+msgid "true"
+msgstr "verdadeiro"
+
+#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:69
+msgid "no"
+msgstr "não"
+
+#: src/library/tools/converters.cc:48
+msgid "false"
+msgstr "falso"
+
+#: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
+#: src/library/tools/exception.cc:53
+msgid "Operation has failed"
+msgstr "Operação falhou"
+
+#: src/library/tools/exception.cc:61
+msgid "System Error"
+msgstr "Erro de sistema"
+
+#: src/library/tools/file/handler.cc:185 src/library/tools/file/handler.cc:210
+#: src/library/tools/file/handler.cc:215 src/library/tools/file/handler.cc:365
+msgid "Cant set file offset"
+msgstr "Não foi possível posicionar arquivo"
+
+#: src/library/tools/file/handler.cc:195 src/library/tools/file/handler.cc:228
+#: src/library/tools/file/handler.cc:269
+msgid "Cant write to file"
+msgstr "Não foi possível escrever no arquivo"
+
+#: src/library/tools/file/handler.cc:224 src/library/tools/file/handler.cc:246
+#: src/library/tools/file/handler.cc:304 src/library/tools/file/handler.cc:372
+msgid "Cant read from file"
+msgstr "Não foi possível ler do arquivo"
+
+#: src/library/tools/file/handler.cc:323 src/library/tools/file/handler.cc:351
+msgid "Cant get file length"
+msgstr "Não foi possível obter o tamanho do arquivo"
+
+#: src/library/tools/file/handler.cc:339
+msgid "Cant get block size"
+msgstr "Não foi possível obter o tamanho de bloco"
+
+#: src/library/tools/file/handler.cc:374
+msgid "Unexpected EOF reading from file"
+msgstr "Fim de arquivo inesperado lendo arquivo"
+
+#: src/library/tools/http/error.cc:58
+msgid "Information"
+msgstr "Informação"
+
+#: src/library/tools/http/error.cc:69
+msgid "Ok"
+msgstr "Ok"
+
+#: src/library/tools/http/error.cc:70
+msgid "The request succeeded."
+msgstr "Requisição concluída com sucesso."
+
+#: src/library/tools/http/error.cc:80
+msgid "Redirected"
+msgstr "Redirecionado"
+
+#: src/library/tools/http/error.cc:81
+msgid "The request was redirected to another URL."
+msgstr "Requisição foi redirecionada para outra URL."
+
+#: src/library/tools/http/error.cc:91
+msgid "Bad Request"
+msgstr "Requisição inválida"
+
+#: src/library/tools/http/error.cc:92
+msgid ""
+"The server cannot or will not process the request due to an apparent client "
+"error (e.g., malformed request syntax, size too large, invalid request "
+"message framing, or deceptive request routing)."
+msgstr ""
+"O servidor não pode ou não processará o pedido devido a um possível erro do "
+"cliente, por exemplo, requisição com sintaxe errada, resultado muito grande, "
+"enquadramento inválido or problema de rota."
+
+#: src/library/tools/http/error.cc:98
+msgid "Unauthorized"
+msgstr "Não autorizado"
+
+#: src/library/tools/http/error.cc:99
+msgid "Authentication is required and has failed or has not yet been provided."
+msgstr "Autenticação falhou ou não foi fornecida."
+
+#: src/library/tools/http/error.cc:105
+msgid "Forbidden"
+msgstr "Proibido"
+
+#: src/library/tools/http/error.cc:106
+msgid ""
+"The request contained valid data and was understood by the server, but the "
+"server is refusing action."
+msgstr ""
+"A requisição contem dados válidos e foi reconhecida pelo servidor, porem, o "
+"servidor se recusou a atuar."
+
+#: src/library/tools/http/error.cc:112
+msgid "Not found"
+msgstr "Não encontrado"
+
+#: src/library/tools/http/error.cc:113
+msgid ""
+"The requested resource could not be found but may be available in the future."
+msgstr ""
+"O recurso pedido não foi encontrado mas pode ficar disponível no futuro."
+
+#: src/library/tools/http/error.cc:119
+msgid "Proxy Authentication Required"
+msgstr "Proxy exige autenticação"
+
+#: src/library/tools/http/error.cc:120
+msgid "The client must first authenticate itself with the proxy."
+msgstr "O cliente deve primeiro autenticar no proxy."
+
+#: src/library/tools/http/error.cc:126
+msgid "Request Timeout"
+msgstr "Tempo da requisição esgotado"
+
+#: src/library/tools/http/error.cc:127
+msgid ""
+"The client did not produce a request within the time that the server was "
+"prepared to wait."
+msgstr ""
+"O cliente não gerou uma requisição no tempo que o servidor estava preparado "
+"para esperar."
+
+#: src/library/tools/http/error.cc:133
+msgid "Gone"
+msgstr "Gone"
+
+#: src/library/tools/http/error.cc:134
+msgid ""
+"The resource requested was previously in use but is no longer available and "
+"will not be available again."
+msgstr "O recurso pedido foi usado antes mas não estão mais disponívei."
+
+#: src/library/tools/http/error.cc:140
+msgid "Too many requests"
+msgstr "Muitas requisições"
+
+#: src/library/tools/http/error.cc:141
+msgid ""
+"Something is making your server work too hard, and it just can’t keep up"
+msgstr "Algo está fazendo seu servidor trabalhar além do limite"
+
+#: src/library/tools/http/error.cc:147
+msgid "Client error"
+msgstr "Erro de cliente"
+
+#: src/library/tools/http/error.cc:158
+msgid "Internal error"
+msgstr "Erro interno"
+
+#: src/library/tools/http/error.cc:159
+msgid "The server has encountered a situation it does not know how to handle."
+msgstr "O servidor encontrou uma situação que ele não sabe como resolver."
+
+#: src/library/tools/http/error.cc:165
+msgid "Not Implemented"
+msgstr "Não implementado"
+
+#: src/library/tools/http/error.cc:166
+msgid ""
+"The request method is not supported by the server and cannot be handled."
+msgstr ""
+"O método usado na requisição não é suportado pelo servidor e não pode ser "
+"atendido."
+
+#: src/library/tools/http/error.cc:172
+msgid "Bad gateway"
+msgstr "Gateway inválido"
+
+#: src/library/tools/http/error.cc:173
+msgid ""
+"The server, while working as a gateway to get a response needed to handle "
+"the request, got an invalid response."
+msgstr "O servidor está atuando como proxy e recebeu uma resposta inválida."
+
+#: src/library/tools/http/error.cc:179
+msgid "Service Unavailable"
+msgstr "Serviço indisponível"
+
+#: src/library/tools/http/error.cc:180
+msgid ""
+"The server is not ready to handle the request. Common causes are a server "
+"that is down for maintenance or that is overloaded."
+msgstr ""
+"O servidor não está pronto para atender à requisição. Pode estar inativo "
+"para manutenção ou sobrecarregado."
+
+#: src/library/tools/http/error.cc:186
+msgid "Gateway timeout"
+msgstr "Timeout no acesso ao gateway"
+
+#: src/library/tools/http/error.cc:187
+msgid "The server is acting as a gateway and cannot get a response in time."
+msgstr ""
+"O servidor está atuando como proxy e não conseguiu obter uma resposta no "
+"tempo esperado."
+
+#: src/library/tools/http/error.cc:193
+msgid "HTTP Version Not Supported"
+msgstr "Versão HTTP não suportada"
+
+#: src/library/tools/http/error.cc:194
+msgid "The HTTP version used in the request is not supported by the server."
+msgstr "A versão HTTP usada na requisição não é suportada pelo servidor."
+
+#: src/library/tools/http/error.cc:200
+msgid "Server error"
+msgstr "Erro de servidor"
+
+#: src/library/tools/http/error.cc:207
+msgid "Request canceled"
+msgstr "Requisição cancelada"
+
+#: src/library/tools/http/error.cc:208
+msgid "The request was canceled by the user"
+msgstr "A operação foi cancelada pelo usuário"
+
+#: src/library/tools/http/error.cc:229
+msgid "Unexpected HTTP error code"
+msgstr "Código de erro HTTP inesperado"
+
+#: src/library/tools/http/error.cc:229
+msgid "The HTTP error code is unknown"
+msgstr "Código de erro HTTP desconhecido"
+
+#: src/library/tools/http/error.cc:271
+#, c++-format
+msgid "System error {} ({}) acessing {}"
+msgstr "Essoe de sistem {} ({}) acessando {}"
+
+#: src/library/tools/http/error.cc:280
+#, c++-format
+msgid "System error {} acessing {}"
+msgstr "Erro de sistema {} acessando {}"
+
+#: src/library/tools/http/error.cc:305
+#, c++-format
+msgid "HTTP error code {}"
+msgstr "Erro HTTP {}"
+
+#: src/library/tools/http/error.cc:306
+#, c++-format
+msgid "Unexpected error {} acessing {}"
+msgstr "Erro inesperado {} acessando {}"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:158
+#: src/library/tools/mainloop/os/windows/timer.cc:158
+msgid "one second"
+msgstr "um segundo"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:164
+#: src/library/tools/mainloop/os/windows/timer.cc:164
+msgid "one hour"
+msgstr "uma hora"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:167
+#: src/library/tools/mainloop/os/windows/timer.cc:167
+#, c++-format
+msgid "{} hours"
+msgstr "{} horas"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:173
+#: src/library/tools/mainloop/os/windows/timer.cc:173
+msgid "one minute"
+msgstr "um minuto"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:176
+#: src/library/tools/mainloop/os/windows/timer.cc:176
+#, c++-format
+msgid "{} minutes"
+msgstr "{} minutos"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:179
+#: src/library/tools/mainloop/os/windows/timer.cc:179
+#, c++-format
+msgid " {} seconds"
+msgstr " {} segundos"
+
+#: src/library/tools/mainloop/os/linux/timer.cc:182
+#: src/library/tools/mainloop/os/windows/timer.cc:182
+#, c++-format
+msgid " {} milliseconds"
+msgstr " {} millisegundos"
+
+#: src/library/tools/message.cc:48
+msgid "The message template is invalid"
+msgstr "O template de mensagem não é válido"
+
+#: src/library/tools/os/linux/ip.cc:96
+msgid "Invalid size on RTA_GATEWAY"
+msgstr "Tamanho inválido em RTA_GATEWAY"
+
+#: src/library/tools/os/linux/netlink_routes.cc:68
+msgid "Cant send netlink message"
+msgstr "Não consegui enviar mensagem 'netlink'"
+
+#: src/library/tools/os/linux/netlink_routes.cc:80
+msgid "Cant receive netlink response"
+msgstr "Não consegui receber mensagem 'netlink'"
+
+#: src/library/tools/os/linux/netlink_routes.cc:87
+msgid "Error in received packet"
+msgstr "Erro no pacote recebido"
+
+#: src/library/tools/os/linux/systemservice.cc:46
+msgid "Run in the background"
+msgstr "Rodar no background"
+
+#. Try translated version
+#: src/library/tools/os/windows/application/description.cc:72
+msgid "\\StringFileInfo\\080904B0\\FileDescription"
+msgstr "\\StringFileInfo\\041604B0\\FileDescription"
+
+#. /usr/x86_64-w64-mingw32/sys-root/mingw/include/wininet.h
+#: src/library/tools/os/windows/exception.cc:44
+msgid ""
+"The request has timed out. Possible causes are slow or intermittent internet "
+"connection, Antivirus software, Firewall, and Proxy settings."
+msgstr ""
+"Timeout na requisição. As causas possíveis são conexão de internet lenta ou "
+"falhando, software antivírus ou configurações de firewall e proxy."
+
+#. http://s.web.umkc.edu/szb53/cs423_sp16/wsock_errors.html
+#. /usr/x86_64-w64-mingw32/sys-root/mingw/include/winerror.h
+#: src/library/tools/os/windows/exception.cc:48
+msgid ""
+"No such host is known. The name is not an official host name or alias, or it "
+"cannot be found in the database(s) being queried."
+msgstr ""
+"Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
+"pôde ser encontrado nas bases de dados consultadas."
+
+#: src/library/tools/os/windows/systemservice.cc:45
+msgid "Start service"
+msgstr "Iniciar serviço"
+
+#: src/library/tools/os/windows/systemservice.cc:46
+msgid "Stop service"
+msgstr "Parar serviço"
+
+#: src/library/tools/os/windows/systemservice.cc:47
+msgid "Install service"
+msgstr "Instalar serviço"
+
+#: src/library/tools/os/windows/systemservice.cc:48
+msgid "Uninstall service"
+msgstr "Desinstalar serviço"
+
+#: src/library/tools/os/windows/systemservice.cc:49
+msgid "Reinstall service"
+msgstr "Reinstalar serviço"
+
+#: src/library/tools/os/windows/systemservice.cc:50
+msgid "Block access to 'net stop' on this service"
+msgstr "Bloquear acesso a 'net stop' no serviço"
+
+#: src/library/tools/script.cc:54 src/library/tools/script.cc:140
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
+
+#: src/library/tools/script.cc:159
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/script.cc:165
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/timestamp.cc:105
+msgid "Less than one minute"
+msgstr "Menos de um minuto"
+
+#: src/library/tools/timestamp.cc:118
+msgid "{d} {D}"
+msgstr "{d} {D}"
+
+#. Only days.
+#: src/library/tools/timestamp.cc:119
+msgid "{h} {H}"
+msgstr "{h} {H}"
+
+#. Only hours.
+#: src/library/tools/timestamp.cc:120
+msgid "{d} {D} and {h} {H}"
+msgstr "{d} {D} e {h} {H}"
+
+#. Days and hours.
+#: src/library/tools/timestamp.cc:121
+msgid "{m} {M}"
+msgstr "{m} {M}"
+
+#. Only minutes.
+#: src/library/tools/timestamp.cc:122
+msgid "{d} {D} and {m} {M}"
+msgstr "{d} {D} e {m} {M}"
+
+#. Days and minutes.
+#: src/library/tools/timestamp.cc:123
+msgid "{h} {H} and {m} {M}"
+msgstr "{h} {H} e {m} {M}"
+
+#. Hours and minutes.
+#: src/library/tools/timestamp.cc:124
+msgid "{d} {D}, {h} {H} and {m} {M}"
+msgstr "{d} {D}, {h} {H} e {m} {M}"
+
+#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
+msgid "days"
+msgstr "dias"
+
+#: src/library/tools/timestamp.cc:132 src/library/tools/timestamp.cc:251
+msgid "day"
+msgstr "dia"
+
+#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
+msgid "hours"
+msgstr "horas"
+
+#: src/library/tools/timestamp.cc:134 src/library/tools/timestamp.cc:250
+msgid "hour"
+msgstr "hora"
+
+#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
+msgid "minutes"
+msgstr "minutos"
+
+#: src/library/tools/timestamp.cc:136 src/library/tools/timestamp.cc:249
+msgid "minute"
+msgstr "minuto"
+
+#: src/library/tools/timestamp.cc:248
+msgid "second"
+msgstr "segundo"
+
+#: src/library/tools/timestamp.cc:248
+msgid "seconds"
+msgstr "segundos"
+
+#: src/library/tools/value/type.cc:31
+msgid "undefined"
+msgstr "indefinido"
+
+#. Allways the first one
+#: src/library/tools/value/type.cc:32
+msgid "array"
+msgstr ""
+
+#: src/library/tools/value/type.cc:33
+msgid "object"
+msgstr "objeto"
+
+#: src/library/tools/value/type.cc:34
+msgid "string"
+msgstr "texto"
+
+#: src/library/tools/value/type.cc:35
+msgid "timestamp"
+msgstr ""
+
+#: src/library/tools/value/type.cc:36
+msgid "signed"
+msgstr "com sinal"
+
+#: src/library/tools/value/type.cc:37
+msgid "unsigned"
+msgstr "sem sinal"
+
+#: src/library/tools/value/type.cc:38
+msgid "real"
+msgstr "ponto flutuante"
+
+#: src/library/tools/value/type.cc:39
+msgid "boolean"
+msgstr "condicional"
+
+#: src/library/tools/value/type.cc:40
+msgid "fraction"
+msgstr "fração"
+
+#: src/library/tools/value/type.cc:41
+msgid "icon"
+msgstr "ícone"
+
+#: src/library/tools/value/type.cc:42
+msgid "url"
+msgstr ""
+
+#: src/library/tools/value/type.cc:43
+msgid "state"
+msgstr "estado"
+
+#: src/library/tools/value/type.cc:45
+msgid "int"
+msgstr "inteiro"
+
+#: src/library/tools/value/type.cc:46
+msgid "integer"
+msgstr "inteiro"
+
+#: src/library/tools/value/type.cc:47
+msgid "number"
+msgstr "numero"
+
+#: src/library/tools/value/type.cc:93
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#: src/library/tools/xml/attribute.cc:112
+#, c++-format
+msgid "Required attribute '{}' is missing"
+msgstr "Atributo necessário '{}' não foi encontrado"
+
+#: src/library/tools/xml/load.cc:164
+msgid "Configuration file not found"
+msgstr "Arquivo de configuração não encontrado"
+
+#: src/library/tools/logger.cc:350
+msgid "Save log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger.cc:351
+msgid "Send log to console"
+msgstr "Envia log para o console"
+
+#: src/library/tools/logger.cc:352
+msgid "Set log level to 'verbosity'"
+msgstr "Define nível de log para 'verbosity'"
+
+#: src/library/tools/logger.cc:353
+msgid "Quiet output"
+msgstr "Inibe saídas para console"
+
+#: src/library/tools/logger.cc:355
+msgid "Enable coredump"
+msgstr "Habilita coredump"
+
+#: src/library/tools/logger.cc:359
+msgid "Log/Debug options:\n"
+msgstr "Opções de log/debug:\n"
+
+#: src/library/tools/commandlineparser.cc:163
+msgid "Show this help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/commandlineparser.cc:166
+msgid "Application options:\n"
+msgstr "Opções da aplicação\n"
+
+#: src/library/tools/commandlineparser.cc:177
+msgid "Quit after \"seconds\""
+msgstr "Encerra após \"seconds\""
+
+#: src/library/tools/commandlineparser.cc:189
+#: src/library/tools/commandlineparser.cc:272
+msgid "Usage:"
+msgstr "Uso:"
+
+#: src/library/tools/commandlineparser.cc:190
+#: src/library/tools/commandlineparser.cc:273
+msgid "[OPTION..]"
+msgstr "[OPÇÕES..]"
+
+#: src/library/tools/object.cc:293
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
+
+#: src/library/tools/systemservice.cc:144
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
+#: src/library/tools/report.cc:221
+msgid "Yes"
+msgstr "Sim"
+
+#: src/library/tools/report.cc:221
+msgid "No"
+msgstr "Não"
+
+#~ msgid "Run in foreground (as application)"
+#~ msgstr "Executar em primeiro plano (como aplicação)"
+
+#~ msgid "Invalid response type"
+#~ msgstr "Resposta de tipo inválido"
+
+#~ msgid "Core/Module subsystem failed to initialize"
+#~ msgstr "Inicialização do módulo principal falhou"
+
+#, c++-format
+#~ msgid "Usage:\t{} [options]"
+#~ msgstr "Usage:\t{} [opções]"
+
+#~ msgid "Invalid property"
+#~ msgstr "Propriedade inválida"
+
+#~ msgid "The request has timed out"
+#~ msgstr "Tempo da requisição esgotado"
+
+#~ msgid "Cant resolve hostname"
+#~ msgstr "Não foi possivel resolver nome do host"
+
+#~ msgid "File protocol"
+#~ msgstr "Protocolo de arquivo"
+
+#~ msgid "Subprocess/Script protocol"
+#~ msgstr "Protocolo para subprocesso ou script"
+
+#~ msgid "Alert controller"
+#~ msgstr "Controlador de alertas"
+
+#, c++-format
+#~ msgid "Unable to determine internal alert type for node <{}>"
+#~ msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
+
+#, c++-format
+#~ msgid "Unable to create alert for node <{}>"
+#~ msgstr "Incapaz de criar alerta para o nó <{}>"
+
+#~ msgid "Abstract value is unable to handle items"
+#~ msgstr "Valor abstrato não consegue manipular items"
+
+#, c++-format
+#~ msgid "Cant find child '{}'"
+#~ msgstr "Não encontrei elemento '{}'"
+
+#, c++-format
+#~ msgid "Unable to append '{}' on abstract value"
+#~ msgstr "Incapaz de adicionar '{}' em um valor abstrato"
+
+#, c++-format
+#~ msgid "Unable to set '{}' as '{}' on abstract value"
+#~ msgstr "Incapaz de setar '{}' como '{}' em um valor abstrato"
+
+#~ msgid "Agent subsystem is inactive"
+#~ msgstr "Subsistema de agentes está inativo"
+
+#~ msgid "B"
+#~ msgstr "B"
+
+#~ msgid "GB"
+#~ msgstr "GB"
+
+#~ msgid "Gb"
+#~ msgstr "Gb"
+
+#~ msgid "Invalid timer value"
+#~ msgstr "Valor de timer inválido"
+
+#~ msgid "Kb"
+#~ msgstr "Kb"
+
+#~ msgid "Mb"
+#~ msgstr "Mb"
+
+#~ msgid "No reports on this path"
+#~ msgstr "Nenhum relatório no caminho informado"
+
+#~ msgid "System is configured"
+#~ msgstr "Sistema está configurado"
+
+#~ msgid "Tb"
+#~ msgstr "Tb"
+
+#~ msgid "This request has no arguments"
+#~ msgstr "A requisição não tem argumentos"
+
+#~ msgid "Unable to determine alert type for node <{}>"
+#~ msgstr "Incapaz de determinar o tipo de alerta para o nó <{}>"
+
+#~ msgid "b"
+#~ msgstr "b"

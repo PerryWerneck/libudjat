@@ -49,7 +49,7 @@
 			/// @brief Build a watcher from XML definition.
 			Watcher(const XML::Node &node, const char *attrname = "path");
 
-			~Watcher();
+			virtual ~Watcher();
 
 			/// @brief Start file watching.
 			Watcher & watch();

@@ -55,7 +55,6 @@ ABOUT-NLS
 intl
 m4
 *.tmp
-po
 doc/html
 
 # CodeBlocks
@@ -77,3 +76,5 @@ config.h.in
 test.xml
 
 
+*.mo
+*.pot

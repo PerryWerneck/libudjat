@@ -2,23 +2,23 @@ Source: libudjat
 Section: unknown
 Priority: optional
 Maintainer: Perry Werneck <perry.werneck@gmail.com>
-Build-Depends: debhelper (>= 7), autotools-dev, autoconf, automake, pkg-config, gettext, libsystemd-dev, libvmdetect-dev, libpugixml-dev
+Build-Depends: debhelper (>= 7), meson, pkg-config, liburiparser-dev, libeconf-dev, libpugixml-dev, libsystemd-dev, libdmiget-dev, libvmdetect-dev
 
 Package: libudjat
 Architecture: any
 Section: libs
 Depends: ${misc:Depends}, ${shlibs:Depends}
-Provides: libudjat (= ${binary:Version}), libudjat (= 1.1)
+Provides: libudjat (= ${binary:Version}), libudjat2 (= ${binary:Version})
 Description: Udjat core library.
  Udjat core library.
 
 Package: libudjat-dev
 Architecture: any
-Provides: libudjat-dev (= ${binary:Version})
+Provides: libudjat-dev (= ${binary:Version}), libudjat2-dev (= ${binary:Version})
 Section: libdevel
-Depends: ${misc:Depends}, pkg-config, libpugixml-dev, libudjat (= ${binary:Version})
-Description: libudjat development files.
- Development files for virtual machine detection library
+Depends: ${misc:Depends}, libudjat (= ${binary:Version}), pkg-config, libpugixml-dev, libdmiget-dev, libvmdetect-dev, liburiparser-dev, libeconf-dev, libsystemd-dev 
+Description: Libudjat development files.
+ Development headers for libudjat
 
 Package: libudjat-dbg
 Architecture: any

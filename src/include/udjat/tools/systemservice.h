@@ -29,7 +29,7 @@
 
  namespace Udjat {
 
-	class UDJAT_API SystemService : public Udjat::Application {
+	class UDJAT_API SystemService : public Udjat::Application, private MainLoop::Timer {
 	private:
 
 		static SystemService *instance;
@@ -49,42 +49,24 @@
 
 #endif // _WIN32
 
-		enum Mode : uint8_t {
-			Default,		///< @brief Standard service mode based on OS.
-			None,			///< @brief Quit after parameter parsing.
-			Foreground,		///< @brief Run in foreground as an application.
-			Daemon			///< @brief Run as daemon.
-		} mode = Default;
-
 	protected:
 
 		typedef Udjat::SystemService super;
+
+		/// @brief Watchdog timer.
+		void on_timer() override;
 
 		/// @brief Set root agent.
 		/// @param agent The new root agent.
 		void root(std::shared_ptr<Abstract::Agent> agent) override;
 
-		/// @brief Set service status.
-		/// @param status The current status.
-		void status(const char *status) noexcept;
-
 		/// @brief Reconfigure service.
-		void setup(const char *pathname, bool startup) noexcept override;
-
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		bool argument(const char *name, const char *value = nullptr) override;
-
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		bool argument(const char name, const char *value = nullptr) override;
+		//void setup(const char *pathname, bool startup) noexcept override;
 
 		/// @brief Show help text to stdout.
-		void help(std::ostream &out) const noexcept override;
+		void help(size_t width = 20) const noexcept override;
+
+		//int setup(const char *definitions = nullptr) override;
 
 	public:
 		SystemService(const SystemService&) = delete;
@@ -94,14 +76,26 @@
 
 		static SystemService & getInstance();
 
-		SystemService();
+		static void show_command_line_help(size_t width = 20) noexcept;
+
+		SystemService(int argc, char **argv);
 		virtual ~SystemService();
 
+		/// @brief Parse command line options, run service.
+		/// @param definitions Path to a single xml file or a folder with xml files.
+		int run(const char *definitions = nullptr);
+
+		/// @brief Set service state.
+		/// @param level The current service level.
+		/// @param message The message to be shown.
+		/// @return Dialog status.
+		Dialog::Status & state(const Level level, const char *message) noexcept override;
+
 		/// @brief Initialize service.
-		int init(const char *definitions = nullptr) override;
+		//int init(const char *definitions = nullptr) override;
 
 		/// @brief Deinitialize service.
-		int deinit(const char *definitions = nullptr) override;
+		//int deinit(const char *definitions = nullptr) override;
 
 		/// @brief Install service.
 		/// @return 0 when success, errno if failed.
@@ -118,15 +112,6 @@
 
 		/// @brief Stop service.
 		virtual int stop();
-
-		/// @brief Parse command line options, run application.
-		virtual int run(int argc, char **argv, const char *definitions);
-
-		/// @brief Parse command line options, run application with default definitions.
-		virtual int run(int argc, char **argv);
-
-		/// @brief Run application.
-		virtual int run(const char *definitions = nullptr);
 
 	};
 

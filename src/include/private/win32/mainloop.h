@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -20,20 +20,14 @@
  #pragma once
 
  #include <config.h>
+ #include <winsock2.h>
+ #include <windows.h>
+
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
  #include <list>
 
- #define WM_CHECK_TIMERS		WM_USER+101
- #define WM_START				WM_USER+102
- #define WM_STOP				WM_USER+103
- #define WM_STOP_WITH_MESSAGE	WM_USER+104	// Terminate by console event or timer
- #define WM_ADD_TIMER			WM_USER+105
- #define WM_REMOVE_TIMER		WM_USER+106
-
  #define IDT_CHECK_TIMERS	1
-
- using namespace std;
 
  namespace Udjat {
 
@@ -41,6 +35,22 @@
 
 		class UDJAT_PRIVATE MainLoop : public Udjat::MainLoop {
 		private:
+
+			enum MessageTypes : UINT {
+				WM_CHECK_TIMERS				= WM_USER+101,
+				WM_START					= WM_USER+102,
+				WM_STOP						= WM_USER+103,
+				WM_STOP_WITH_MESSAGE		= WM_USER+104,	///< @brief Terminate by console event or timer.
+				WM_ADD_TIMER				= WM_USER+105,
+				WM_REMOVE_TIMER				= WM_USER+106,
+				WM_ADD_SOCKET				= WM_USER+107,
+				WM_REMOVE_SOCKET			= WM_USER+108,
+				WM_PROCESS_POSTED_MESSAGE	= WM_USER+109,
+
+			};
+
+			/// @brief A class atom that uniquely identifies the class being registered.
+			::ATOM identifier;
 
 			class UDJAT_PRIVATE Timers {
 			public:
@@ -54,7 +64,7 @@
 			};
 
 			/// @brief Mutex
-			static std::mutex guard;
+			std::mutex guard;
 
 			/// @brief Process windows messages.
 			static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -79,7 +89,6 @@
 			unsigned long compute_poll_timeout() noexcept;
 
 		public:
-
 			MainLoop();
 			virtual ~MainLoop();
 
@@ -101,6 +110,8 @@
 
 			BOOL post(UINT uMsg, WPARAM wParam, LPARAM lParam) noexcept;
 
+			void post(Message *message) noexcept override;
+
 			/// @brief Terminate with message
 			/// @param message Message to show (Should be a constant to avoid 'out of scope' on message processing)
 			void quit(const char *message) override;
@@ -118,8 +129,9 @@
 
 			bool for_each(const std::function<bool(Timer &timer)> &func);
 
-		};
+			void run(const std::function<void()> &method) override;
 
+		};
 
 	}
 

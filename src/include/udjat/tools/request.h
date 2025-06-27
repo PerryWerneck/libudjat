@@ -20,54 +20,73 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/method.h>
+ #include <udjat/tools/http/method.h>
  #include <udjat/tools/abstract/object.h>
- #include <udjat/tools/request.h>
- #include <udjat/tools/response/value.h>
- #include <udjat/tools/response/table.h>
+ #include <udjat/tools/value.h>
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/string.h>
 
  namespace Udjat {
 
-	class UDJAT_API Request : public Abstract::Object {
+	/// @brief Base API request.
+	class UDJAT_API Request : public Udjat::Value {
 	private:
 
-		/// @brief Request method.
-		const HTTP::Method method;
-
 		/// @brief Current argument.
-		const char *argptr = nullptr;
-
-		const char * chk_prefix(const char *arg) const noexcept;
-
-	protected:
+		const char *argptr = "";
 
 		/// @brief The processed request path.
 		const char *reqpath = "";
+
+		/// @brief Looks whether the request path begins with prefix.
+		/// @param prefix to check.
+		/// @return true if the request path begins with the argument.
+		bool has_prefix(const char *prefix) const noexcept;
+
+	protected:
+
+		/// @brief Set request path.
+		/// @param path The new request path.
+		inline void reset(const char *path = "") noexcept {
+			argptr = reqpath = path;
+		}
 
 		/// @brief The requested API version.
 		unsigned int apiver = 0;
 
 	public:
 
-		constexpr Request(const char *path, HTTP::Method m = HTTP::Get) : method{m}, reqpath{path} {
+#if __cplusplus >= 201703L
+		constexpr Request(const char *path = "") : argptr{path}, reqpath{path} {
 		}
+#else
+		Request(const char *path = "") : argptr{path}, reqpath{path} {
+		}
+#endif
 
-		Request(const char *path, const char *method) : Request{path,HTTP::MethodFactory(method)} {
-		}
+		virtual ~Request();
 
 		inline unsigned int version() const noexcept {
 			return apiver;
 		}
 
-		UDJAT_DEPRECATED(const char * getPath() const noexcept);
+		/// @brief Get request header.
+		/// @param name Name of the header.
+		/// @return The header value of "" if not found.
+		virtual const char * header(const char *name) const noexcept;
+
+		/// @brief Enumerate all request properties.
+		/// @param call Method to call in every request property.
+		/// @return True if the enumeration was interrupt with return 'true' from call();
+		virtual bool for_each(const std::function<bool(const char *name, const char *value)> &call) const;
 
 		/// @brief Is the request empty?
 		/// @return True if the request path is empty.
 		inline bool empty() const noexcept {
 			return !(reqpath && *reqpath);
 		}
+
+		bool getProperty(const char *key, std::string &value) const override;
 
 		/// @brief Is this request authenticated?
 		/// @return True if the request has user credentials.
@@ -81,35 +100,9 @@
 		virtual bool cached(const TimeStamp &timestamp) const;
 
 		/// @brief Get query.
-		/// @param def The value to return if the string don have query.
+		/// @param def The value to return if the string dont have query.
 		/// @return The query value or 'def'.
 		virtual const char * query(const char *def = "") const;
-
-		/// @brief Navigate from all arguments and properties until 'call' returns true.
-		/// @return true if 'call' has returned true, false if not.
-		virtual bool for_each(const std::function<bool(const char *name, const Value &value)> &call) const;
-
-		/// @brief Navigate from all arguments and properties until 'call' returns true.
-		/// @return true if 'call' has returned true, false if not.
-		virtual bool for_each(const std::function<bool(const char *name, const char *value)> &call) const;
-
-		/// @brief Get property/argument value.
-		/// @param key The property name or index.
-		/// @param value String to update with the property value.
-		/// @return true if the property is valid.
-		bool getProperty(const char *key, std::string &value) const override;
-		virtual bool getProperty(size_t ix, std::string &value) const;
-
-		/// @brief Get property value.
-		/// @param key The property name.
-		/// @param value Object to receive the value.
-		/// @return true if the property is valid and value was updated.
-		bool getProperty(const char *key, Udjat::Value &value) const override;
-
-		/// @brief Get property value.
-		/// @param key The property name.
-		/// @return String with property value or empty if not found.
-		virtual String operator[](const char *key) const;
 
 		/// @brief Reset argument parser, next pop() will return the first element from path.
 		/// @see pop
@@ -119,22 +112,10 @@
 		}
 
 		/// @brief Get original request path.
-		virtual const char *c_str() const noexcept;
+		const char *c_str() const noexcept;
 
 		inline operator const char *() const noexcept {
 			return c_str();
-		}
-
-		inline operator HTTP::Method() const noexcept {
-			return this->method;
-		}
-
-		inline HTTP::Method verb() const noexcept {
-			return this->method;
-		}
-
-		UDJAT_DEPRECATED(inline HTTP::Method as_type() const noexcept) {
-			return this->method;
 		}
 
 		/// @brief Get current request path (after 'pop()').
@@ -142,18 +123,14 @@
 		/// @return The path remaining after 'pop()' calls.
 		const char * path() const noexcept;
 
-		inline bool operator==(HTTP::Method method) const noexcept {
-			return this->method == method;
-		}
-
 		/// @brief Test if the request can handle the path.
 		/// @param prefix The path being searched.
 		/// @return true if the request path starts with prefix.
 		inline bool operator==(const char *prefix) const noexcept {
-			return chk_prefix(prefix) != nullptr;
+			return has_prefix(prefix);
 		}
 
-		/// @brief pop() first element from path select it from list.
+		/// @brief pop() first element from path, select it from list.
 		/// @return Index of the selected action or negative if not found.
 		/// @retval -ENODATA The request is empty.
 		/// @retval -ENOENT The action is not in the list.
@@ -162,13 +139,13 @@
 
 		/// @brief Test and extract request path.
 		/// @param path The path to check.
-		/// @return true if the request path was equal and it was removed, request is now at first parameter.
+		/// @return true if the request path was equal and it was removed, request is now at next parameter.
 		bool pop(const char *path) noexcept;
 
 		/// @brief Pop one element from path.
 		/// @return The first element from current path.
 		/// @see path()
-		String pop();
+		Udjat::String pop();
 
 		Request & pop(std::string &value);
 		Request & pop(int &value);

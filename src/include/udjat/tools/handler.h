@@ -23,7 +23,7 @@
  #include <udjat/tools/mainloop.h>
 
  #ifndef _WIN32
-	#include <poll.h>
+	#include <sys/poll.h>
  #endif // _WIN32
 
  namespace Udjat {
@@ -134,7 +134,7 @@
 
 		ssize_t read(void *buf, size_t count);
 
-		void close();
+		virtual void close();
 
 		/// @brief Process handlers.
 		/// @param handlers	List of handlers to poll.

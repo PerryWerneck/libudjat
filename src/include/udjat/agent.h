@@ -83,10 +83,17 @@
 		Agent(const XML::Node &node, const T v = 0) : Abstract::Agent{node}, value{from_xml<T>(node, v)} {
 		}
 
+		Agent(const char *name, const XML::Node &node, const T v = 0) : Abstract::Agent{name,node}, value{from_xml<T>(node, v)} {
+		}
+
 		Agent(const char *name = "") : Abstract::Agent{name}, value{0} {
 		}
 
 		Agent(const char *name, const T v) : Abstract::Agent{name}, value{v} {
+		}
+
+		friend std::ostream& operator<<(std::ostream& out, const Agent &a) {
+			return out << a.value;
 		}
 
 		bool set(const T &value) {
@@ -167,6 +174,10 @@
 		}
 
 		Agent(const char *name, const char *v) : Abstract::Agent(name), value(v) {
+		}
+
+		friend std::ostream& operator<<(std::ostream& out, const Agent &a) {
+			return out << a.value.c_str();
 		}
 
 		bool set(const std::string &value) {

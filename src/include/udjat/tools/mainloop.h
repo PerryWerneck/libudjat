@@ -76,6 +76,9 @@ namespace Udjat {
 		virtual void push_back(MainLoop::Timer *timer) = 0;
 		virtual void remove(MainLoop::Timer *timer) = 0;
 
+		/// @brief Run task in the main thread, wait for it to finish.
+		virtual void run(const std::function<void()> &method) = 0;
+
 		/// @brief Timer has changed.
 		/// @param timer The updated timer.
 		/// @param from The original interval in milliseconds.
@@ -94,6 +97,39 @@ namespace Udjat {
 
 		/// @brief Is the mainloop active?
 		virtual bool active() const noexcept = 0;
+
+		class Message {
+		public:
+			Message();
+			virtual ~Message();
+			virtual void execute() = 0;
+
+			/// @brief Called by mainloop when the message is posted.
+			/// @param message The message to execute.
+			static void on_posted(Message *message) noexcept;
+		};
+		
+		/// @brief Post message to mainloop.
+		/// @param message Message to be posted, will be deleted after processing.
+		virtual void post(Message *message) noexcept = 0;
+
+		template <class T>
+		inline void post(const T &value, const std::function<void(T &msg)> &call) {
+			class Msg : public Message, private T {
+			private:
+				std::function<void(T &msg)> cbk;
+			public:
+				Msg(const T &value, const std::function<void(T &msg)> &call) : T{value}, cbk{call} {}
+				virtual ~Msg() {
+				}
+				void execute() override {
+					cbk(*this);
+				}
+			};
+
+			post(new Msg{value,call});
+
+		}
 
 		inline operator bool() const noexcept {
 			return active();

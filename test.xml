@@ -6,8 +6,8 @@
 	<module name='information' required='no' preload='no' />
 	<module name='dmi' required='no' preload='no' />
 
-	<!-- module name='http' preload='yes' / -->
-	<module name='civetweb' required='no' preload='yes' />
+	<module name='http' preload='yes' required='no' />
+	<!-- module name='civetweb' required='no' preload='yes' / -->
 
 	<attribute name='alert-type' value='file' />
 	<attribute name='alert-filename' value='/tmp/netwatcher-%d.log' />
@@ -33,11 +33,15 @@
 
 	</agent>
 
-	<alert name='orphaned' type='file' strip-payload='yes'>
+	<alert name='orphaned' type='file' strip-payload='yes' trigger-event='start'>
 		${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 	</alert>
 		
-	<!-- random name='random1' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random600-%d.alerts'>
+	<agent name='random1' type='random' update-timer='10' update-signal='reload' alert-type='file' alert-filename='/tmp/random1-%d.alerts'>
+
+		<alert name='changed' type='file' strip-payload='yes' trigger-event='value-change'>
+			${timestamp(%Y/%m/%d %H:%M:%S)},${summary},${value}
+		</alert>
 
 		<state name='s0' value='0' summary='Random 0'>
 			<alert name='r0.0' type='file' strip-payload='yes'>
@@ -65,9 +69,9 @@
 			${timestamp(%Y/%m/%d %H:%M:%S)},${summary}
 		</state>	
 		
-	</random -->
+	</agent>
 	
-	<!-- random name='random10' update-timer='10'>
+	<!-- agent name='random10' type='random' update-timer='10'>
 
 		<alert type='d-bus'>
 		
@@ -86,6 +90,6 @@
 		<state name='s4' value='4' summary='Random 4' />
 		<state name='s5' value='5' summary='Random 5' />
 
-	</random -->
+	</agent -->
 	
 </udjat>

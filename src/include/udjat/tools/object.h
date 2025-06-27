@@ -38,21 +38,23 @@
 
 	protected:
 
-		constexpr NamedObject(const char *name = "") : objectName(name) {}
+		NamedObject(const char *name, const XML::Node &node);
 		NamedObject(const XML::Node &node);
 
 		/// @brief Set object properties from XML node.
 		/// @param node XML node for the object properties
 		/// @return true if the value was updated.
-		bool set(const XML::Node &node);
+		bool parse(const XML::Node &node) override;
 
 		inline void rename(const char *name) {
 			objectName = name;
 		}
 
-		typedef NamedObject Super;
+		typedef Abstract::Object Super;
 
 	public:
+
+		constexpr NamedObject(const char *name = "") : objectName(name) {}
 
 		bool getProperty(const char *key, std::string &value) const override;
 
@@ -109,6 +111,8 @@
 	class UDJAT_API Object : public NamedObject {
 	protected:
 
+		typedef NamedObject Super;
+
 		struct Properties {
 
 			/// @brief Object label.
@@ -125,13 +129,18 @@
 
 		} properties;
 
-		constexpr Object(const char *name) : NamedObject(name) {
+		Object(const XML::Node &node);
+
+		bool parse(const XML::Node &node) override;
+
+		inline time_t parse(const char *path) {
+			return Abstract::Object::parse(path);
 		}
 
-		Object(const XML::Node &node);
-		void set(const XML::Node &node);
-
 	public:
+
+		constexpr Object(const char *name) : NamedObject(name) {
+		}
 
 		bool getProperty(const char *key, std::string &value) const override;
 

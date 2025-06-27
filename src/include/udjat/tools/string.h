@@ -87,8 +87,8 @@
 		//
 		// Construct
 		//
-		inline String() : std::string() {
-		}
+		String() = default;
+		virtual ~String() = default;
 
 		inline String(const char *str) : std::string{str} {
 		}
@@ -105,11 +105,14 @@
 		inline String(std::string &str) : std::string{str} {
 		}
 
-		inline String(const Udjat::String &str) : std::string{str} {
+		inline String(const Udjat::String &str) : std::string{str.c_str()} {
 		}
 
-		inline String(Udjat::String &str) : std::string{str} {
+		inline String(Udjat::String &str) : std::string{str.c_str()} {
 		}
+
+		String(float value, int precision = 2);
+		String(double value, int precision = 2);
 
 		template<typename T> inline String(const T &str) : std::string{std::to_string(str)} {
 		}
@@ -251,7 +254,19 @@
 		//
 		// Others.
 		//
+		inline operator bool() const noexcept {
+			return !empty();
+		}
 
+#if __cplusplus >= 202002L
+		inline int operator <=>(const char *str) const noexcept {
+			return strcasecmp(c_str(),str);
+		}
+
+		inline int operator <=>(const std::string &str) const noexcept {
+			return strcasecmp(c_str(),str.c_str());
+		}
+#else
 		/// @brief Test if string is equal value (case insensitive).
 		/// @param str string to compare.
 		/// @return true if the string is equal str (case insensitive).
@@ -265,6 +280,7 @@
 		inline bool operator ==(const std::string & str) const noexcept {
 			return strcasecmp(c_str(),str.c_str()) == 0;
 		}
+#endif
 
 		/// @brief Test if the string contains one of the elements of a list.
 		/// @return Index of the matched content (negative if not found).
@@ -281,6 +297,14 @@
 		/// @brief Insert global expander.
 		/// @param method String expander method (returns 'true' if the value was parsed).
 		static void push_back(const std::function<bool(const char *key, std::string &value, bool dynamic, bool cleanup)> &method);
+
+		/// @brief Remove contents.
+		String & erase(const char *str);
+
+		inline String & erase(size_t pos = 0, size_t len = npos) {
+			std::string::erase(pos,len);
+			return *this;
+		}
 
 		/// @brief Expand ${} macros.
 		/// @param expander value expander method.
@@ -338,7 +362,7 @@
 
 		/// @brief Splits string using the given delimiter.
 		/// @param delim string which specifies the places at which to split the string. The delimiter is not included in any of the resulting strings.
-		std::vector<String> split(const char *delim);
+		std::vector<String> split(const char *delim, int max = -1) const;
 
 		/// @brief Scan string elements until method return 'true'.
 		/// @return true if any call has returned 'true'.
@@ -346,7 +370,7 @@
 
 		/// @brief Scan string elements until method return 'true'.
 		/// @return true if any call has returned 'true'.
-		bool for_each(const char *delimiter, const std::function<bool(const String &value)> &func);
+		bool for_each(const char *delimiter, const std::function<bool(const String &value)> &func) const;
 
 		/// @brief Removes leading and trailing white spaces from the string.
 		/// @see chomp()
@@ -369,6 +393,10 @@
 		/// @brief Looks whether the string begins with prefix.
 		inline bool has_prefix(const char *prefix, bool ignore_case = false) const noexcept {
 			return Udjat::has_prefix(c_str(),prefix,ignore_case);
+		}
+
+		inline bool isnumber() const {
+			return Udjat::isnumber(c_str());
 		}
 
 		/// @brief Removes trailing white spaces from the string.
@@ -397,6 +425,18 @@
  }
 
  namespace std {
+
+	inline const char * to_string(Udjat::String &str) {
+		return str.c_str();
+	}
+
+	inline const char * to_string(const Udjat::String &str) {
+		return str.c_str();
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::String str) {
+		return os << str.c_str();
+	}
 
 	template<typename T>
 	inline Udjat::String & operator<< (Udjat::String &str, const T msg) {

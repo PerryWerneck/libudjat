@@ -32,7 +32,11 @@
 
 	// https://learn.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
 	#define WINVER 0x0A00
-	#define _WIN32_WINNT 0x0A00
+
+	#ifndef _WIN32_WINNT
+		#define _WIN32_WINNT 0x0A00
+	#endif // _WIN32_WINNT
+	
 	#define NTDDI_VERSION NTDDI_VISTA
 
 	#include <winsock2.h>
@@ -60,10 +64,12 @@
 	#define unlikely(x)     (x)
 #endif
 
+
+
 #if defined(__GNUC__)
 
 	#define UDJAT_UNUSED(x) __attribute__((unused)) x
-	#define UDJAT_DEPRECATED(func) func __attribute__ ((deprecated))
+	#define UDJAT_DEPRECATED(func) func [[deprecated]]
 
 #elif defined(_WIN32)
 
@@ -72,7 +78,7 @@
 
 #elif defined(__LCLINT__)
 
-	#define UDJAT_UNUSED(x) /*@unused@*/ x
+	#define UDJAT_UNUSED(x)
 	#define UDJAT_DEPRECATED(func) func
 
 #else
@@ -128,12 +134,11 @@ namespace Udjat {
 		class Object;
 		class Agent;
 		class State;
-		class Alert;
 
 	}
 
+	class Alert;
 	class Value;
-	class Activatable;
 	class TimeStamp;
 	struct ModuleInfo;
 

@@ -17,6 +17,9 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #error deprecated
+
+ /*
  #pragma once
 
  #include <config.h>
@@ -24,6 +27,7 @@
  #include <iostream>
  #include <udjat/tools/application.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/url.h>
  #include <memory>
  #include <list>
 
@@ -37,14 +41,14 @@
 
 		struct Settings {
 			std::string filename;	///< @brief The file name.
-			std::string url;		///< @brief The URL for file update.
+			URL url;				///< @brief The URL for file update.
 			time_t ifsuccess;		///< @brief Time to refresh the file when updated
 			time_t iffailed;		///< @brief Time to refresh the file if the update fails.
 			bool cache;
 
 			Settings(const std::string &f, const XML::Node &node) :
 				filename{f},
-				url{node.attribute("src").as_string()},
+				url{node,"src",false},
 				ifsuccess{node.attribute("update-timer").as_uint(0)},
 				iffailed{node.attribute("update-when-failed").as_uint(ifsuccess)},
 				cache{node.attribute("cache").as_bool(true)} {
@@ -105,3 +109,4 @@
  	};
 
  }
+ */

@@ -25,17 +25,13 @@
 #include <udjat/agent.h>
 #include <unordered_map>
 #include <udjat/tools/quark.h>
-#include <pugixml.hpp>
-#include <udjat/tools/worker.h>
+#include <udjat/tools/xml.h>
 #include <udjat/module/abstract.h>
-#include <udjat/tools/factory.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
-#include <udjat/tools/response/value.h>
-#include <udjat/tools/response/table.h>
-#include <udjat/tools/worker.h>
-#include <udjat/tools/abstract/response.h>
+#include <udjat/tools/actions/abstract.h>
+#include <memory>
 
 #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -45,7 +41,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Abstract::Agent::Controller : private Worker, private Service, public MainLoop::Timer {
+	class Abstract::Agent::Controller : private Service, public MainLoop::Timer, private Action::Factory, private Abstract::Object::Factory {
 	private:
 
 		time_t updating = 0;
@@ -71,21 +67,19 @@ namespace Udjat {
 		void set(std::shared_ptr<Abstract::Agent> root);
 
 		std::shared_ptr<Abstract::Agent> get() const;
-
 		std::shared_ptr<Abstract::Agent> find(const char *path, bool required = false) const;
 
 		void start() noexcept override;
 		void stop() noexcept override;
 
 		/// @brief Load agent properties from XML node.
-		static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
+		//static void setup_properties(Abstract::Agent &agent, const XML::Node &node) noexcept;
 
-		// Worker
-		bool get(Request &request, Udjat::Response::Value &response) const override;
-		bool get(Request &request, Udjat::Response::Table &response) const override;
-		Worker::ResponseType probe(const Request &request) const noexcept override;
+		// ActionFactory
+		std::shared_ptr<Action> ActionFactory(const XML::Node &node) const override;
+
+		std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const override;
 
 	};
-
 
 }

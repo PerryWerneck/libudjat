@@ -35,57 +35,28 @@
  #include <stdexcept>
  #include <system_error>
  #include <functional>
- #include <udjat/tools/method.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/http/method.h>
+ #include <udjat/tools/http/mimetype.h>
+ #include <udjat/tools/file/handler.h>
+ #include <udjat/tools/xml.h>
+ #include <memory>
 
  namespace Udjat {
 
 	class UDJAT_API URL : public Udjat::String {
 	public:
 
-		class UDJAT_API Scheme : public std::string {
-		public:
-			Scheme() : std::string() {
-			}
-
-			Scheme(const char *value) : std::string(value) {
-			};
-
-			Scheme(const char *value, size_t len) : std::string(value,len) {
-			};
-
-			bool operator==(const char *scheme) const noexcept {
-				return strcasecmp(c_str(),scheme) == 0;
-			}
-
-		};
-
-		/// @brief URL Components.
-		struct UDJAT_API Components {
-			Scheme scheme;			///< @brief The scheme name.
-			String hostname;		///< @brief The host name.
-			String srvcname;		///< @brief The service name or port number.
-			String path;			///< @brief The request path.
-			String query;			///< @brief Query data.
-
-			/// @brief Get the port number from srvcname.
-			int portnumber() const;
-
-			/// @brief True if the hostname is not empty.
-			inline bool remote() const noexcept {
-				return !hostname.empty();
-			}
-
-		};
+		class Handler;
 
 		URL() = default;
-		URL(const char *str) : Udjat::String{unescape(str)} {
+
+		URL(const char *str) : Udjat::String{str} {
 		}
 
-		URL(const std::string &str) : URL{str.c_str()} {
+		URL(const std::string &str) : String{str} {
 		}
 
-		URL(const XML::Node &node) : URL{node.attribute("src").as_string()} {
+		URL(const XML::Node &node, const char *attrname = "src", bool required = false) : String{node,attrname,required} {
 		}
 
 		template<typename... Targs>
@@ -103,110 +74,123 @@
 			String::append(Fargs...);
 		}
 
+		String scheme() const;
+		String hostname() const;
+		String servicename() const;
+		String path() const;
+		String name() const;
+		String dirname() const;
+
+		/// @brief Extract mimetype from URL path.
+		/// @return The mimetype, 'none' if URL has no extension.
+		MimeType mimetype() const;
+		
+		int port(const char *proto = "tcp") const;
+
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
 
-		/// @brief Get URL scheme.
-		Scheme scheme() const;
-
-		/// @brief Get URL argument.
-		String argument(const char *name) const;
-
-		String operator[](const char *name) const {
-			return argument(name);
-		}
-
-		inline const char& operator[] (size_t pos) const {
-			return std::string::operator[](pos);
-		}
-
-		inline char& operator[] (size_t pos) {
-			return std::string::operator[](pos);
-		}
-
-		/// @brief Get URL components.
-		Components ComponentsFactory() const;
-
-		/// @brief Unescape URL
-		static std::string unescape(const char *src);
-
-		/// @brief Unescape.
-		URL & unescape();
+		/// @brief Connect to host
+		/// @return A non-blocking, connected socket.
+		int connect(unsigned int seconds = 0);
 
 		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
 		bool local() const;
 
-		/// @brief Test if URL is relative (starts with '/' or '.')
-		inline bool relative() const noexcept {
-			return (c_str()[0] == '/' || c_str()[0] == '.');
+		/// @brief Iterate over query
+		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
+
+		String argument(const char *name) const;
+
+		inline String operator[](const char *name) const {
+			return argument(name);
 		}
+
+		/// @brief Build state object for this URL based on HTTP code.
+		/// @param code The http/system error code.
+		/// @param msg The error summary.
+		/// @return New state based on URL & code.
+		std::shared_ptr<Abstract::State> StateFactory(int code, const char *summary = "");
+
+		/// @brief Retrieves a shared pointer to a Handler object for this URL.
+		/// @param allow_default A boolean flag indicating whether to allow use of default handler.
+		/// @param autoload A boolean flat indicating whether to try load a module using the handler name.
+		/// @return std::shared_ptr<Handler> A shared pointer to the Handler object.
+		std::shared_ptr<Handler> handler(bool allow_default = true, bool autoload = false) const;
+
+		/// @brief Get value from host.
+		/// @param Value the response.
+		/// @param method The HTTP method to use.
+		/// @param payload The payload to send.
+		/// @return true if value was updated.
+		bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") const;
 
 		/// @brief Test file access (do a 'head' on http[s], check if file exists in file://)
 		/// @return Test result.
 		/// @retval 200 Got response.
 		/// @retval 401 Access denied.
 		/// @retval 404 Not found.
-		/// @retval EINVAL Invalid method.
-		/// @retval ENODATA Empty URL.
-		/// @retval ENOTSUP No support for test in protocol handler.
-		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const noexcept;
+		/// @retval -EINVAL Invalid method.
+		/// @retval -ENODATA Empty URL.
+		/// @retval -ENOTSUP No support for test in protocol handler.
+		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") const;
 
-		/// @brief Do a 'get' request.
-		/// @return Server response.
-		std::string get() const;
-
-		/// @brief Get value.
-		/// @param Value the response.
-		/// @return true if value was updated.
-		bool get(Udjat::Value &value) const;
+		String call(const HTTP::Method method = HTTP::Get, const char *payload = "", const bool console = false) const;
 
 		/// @brief Do a 'get' request.
 		/// @param progress progress callback.
 		/// @return Server response.
-		std::string get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
+		String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
-		/// @brief Do a 'get', save response using custom writer.
-		/// @param writer The custom writer.
-		void get(const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer);
+		String post(const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
 
-		/// @brief Do a 'post' request.
-		/// @param payload Post payload.
-		/// @return Server response.
-		std::string post(const char *payload) const;
+		String get(const bool console = false) const;
 
-		/// @brief Download/update a file.
-		/// @param filename The fullpath for the file.
-		/// @return true if the file was updated.
-		bool get(const char *filename) const;
+		int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
-		/// @brief Download/update a file with progress callback.
-		/// @param filename The fullpath for the file.
-		/// @param progress progress. callback.
-		/// @return true if the file was updated.
-		bool get(const char *filename,const std::function<bool(uint64_t current, uint64_t total)> &progress) const;
+		inline String post(const char *payload, const bool console = false) const {
+			return call(HTTP::Post,payload,console);
+		}
 
-		/// @brief Download/update a file with secondary writer.
+		/// @brief Download/update a file with progress.
 		/// @param filename The fullpath for the file.
 		/// @param writer The secondary writer.
 		/// @return true if the file was updated.
-		bool get(const char *filename,const std::function<bool(unsigned long long current, unsigned long long total, const void *buf, size_t length)> &writer);
+		bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
+
+		bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "");
+		
+		/// @brief Get URL, save response to cache file.
+		/// @param progress The download progress notifier (return true to abort transfer).
+		/// @return The cached filename.
+		std::string cache(const std::function<bool(double current, double total)> &progress);
 
 		/// @brief Get URL, save response to cache file.
-		/// @param progress The download progress notifier.
+		/// @param progress The download progress notifier (return true to abort transfer).
 		/// @return The cached filename.
-		std::string filename(const std::function<bool(double current, double total)> &progress);
+		std::string tempfile(const std::function<bool(double current, double total)> &progress);
 
-		/// @brief Get URL, save response to cache file.
+		/// @brief Get URL, save contents to cache file, update it if necessary.
 		/// @return The cached filename.
-		std::string filename();
+		std::string cache();
 
+		/// @brief Get URL, save contents to temporary file.
+		/// @return The temporary filename.
+		std::string tempfile();
+
+		/// @brief Convenience method for progress feedback on console apps.
+		static bool progress_to_console(const char *url,uint64_t current, uint64_t total) noexcept;
+
+		static bool progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	};
 
  }
 
  namespace std {
 
-	UDJAT_API string to_string(const Udjat::URL &url);
+ 	inline const char * to_string(const Udjat::URL &url) {
+		return url.c_str();
+ 	}
 
 	inline ostream& operator<< (ostream& os, const Udjat::URL &url) {
 		return os << to_string(url);

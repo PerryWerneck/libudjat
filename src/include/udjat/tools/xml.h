@@ -28,10 +28,12 @@
 
  #pragma once
 
+ #include <udjat/defs.h>
  #include <pugixml.hpp>
  #include <udjat/defs.h>
  #include <functional>
  #include <cstdint>
+ #include <cstring>
 
  namespace Udjat {
 
@@ -48,14 +50,49 @@
 		public:
 			Document(const char *filename);
 
+			/// @brief Load document, build objects.
+			/// @return Timestamp for the next reload.
+			time_t parse() const;
+
 		};
 
+		
+		/// @brief XML parser, used to parse XML nodes.
+		/// @details This class is used to parse XML nodes and build objects from them.
+		class UDJAT_API Parser {
+		private:
+			const char *name = nullptr;
+
+		public:
+			Parser(const char *name);
+			virtual ~Parser();
+
+#if __cplusplus >= 202002L
+			inline auto operator <=>(const char *name) const noexcept {
+				return strcasecmp(name,this->name);
+			}
+#else
+			inline bool operator==(const char *name) const noexcept {
+				return strcasecmp(name,this->name) == 0;
+			}
+#endif
+
+			/// @brief Parse XML node.
+			/// @param node XML node to parse.
+			/// @return true if the node was parsed and should be ignored by the caller.
+			virtual bool parse(const XML::Node &node) = 0;
+
+		};
+		
 		/// @brief Test if attribute is 'true', parse URL is necessary.
 		/// @param node Start node.
 		/// @param attrname Attribute name.
 		/// @param defvalue The default value.
 		/// @return The attribute parsed as boolean.
 		UDJAT_API bool test(const XML::Node &node, const char *attrname, bool defvalue = false);
+
+		/// @brief Navigate on node options.
+		UDJAT_API void options(const XML::Node &node, const std::function<void(const char *name, const char *value)> &call);
 
 		/// @brief Search 'node' and up stream for 'attrname'.
 		/// @param node Start node.
@@ -85,6 +122,16 @@
 		/// @retval true if test function returned true.
 		UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const XML::Node &node)> &test);
 
+		/// @brief Load default XML files.
+		/// @param path Path for configuration file or directory.
+		/// @return Timestamp for the next reload.
+		/// @retval 0 if no reload is required.
+		UDJAT_API time_t parse(const char *path = nullptr);
+
+		/// @brief Load xml options below node.
+		/// @return true if the node was parsed and should be ignored by the caller.
+		UDJAT_API bool parse(const XML::Node &node);
+	
 	}
 
 	/// @brief Test common filter options.

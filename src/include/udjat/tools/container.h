@@ -33,11 +33,11 @@
 	/// @tparam T The class for container.
 	/// @tparam P The pointer type (T *).
 	/// @tparam L The standard container.
+ #if __cplusplus >= 201703L
 	template <class T, class P = T *, class L = std::list<P>>
-	class Container {
+	class Container : public std::mutex {
 	protected:
 		L objects;
-		std::mutex guard;
 
 	public:
 		Container(const Container&) = delete;
@@ -47,37 +47,47 @@
 		Container() { }
 
 		P back() {
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
 			return objects.back();
 		}
 
 		P front() {
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
 			return objects.front();
 		}
 
 		inline size_t size() noexcept {
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
 			return objects.size();
 		}
 
 		inline bool empty() noexcept {
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
 			return objects.empty();
 		}
 
 		inline void push_back(P object) noexcept {
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
+			objects.push_back(object);
+		}
+
+		inline void add(P object) noexcept {
+			std::lock_guard<std::mutex> lock(*this);
 			objects.push_back(object);
 		}
 
 		inline void remove(P object) noexcept {
-			std::lock_guard<std::mutex> lock(guard);
+			std::lock_guard<std::mutex> lock(*this);
 			objects.remove(object);
 		}
 
+		inline void remove_if(const std::function<bool(const T &object)> &method) {
+			std::lock_guard<std::mutex> lock(*this);
+			objects.remove_if(method);
+		}
+
 		inline bool for_each(const std::function<bool(const T &object)> &method) const {
-			std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(&guard)));
+			std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(this)));
 			for(auto object : objects) {
 				if(method(*object)) {
 					return true;
@@ -86,23 +96,68 @@
 			return false;
 		}
 
-		inline typename L::iterator begin() {
+		inline bool for_each(const std::function<bool(T &object)> &method) {
+			std::lock_guard<std::mutex> lock(*this);
+			for(auto object : objects) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		inline auto begin() {
 			return objects.begin();
 		}
 
-		inline typename L::iterator end() {
+		inline auto end() {
 			return objects.end();
 		}
 
-		inline typename L::const_iterator begin() const {
+		inline auto begin() const {
 			return objects.begin();
 		}
 
-		inline typename L::const_iterator end() const {
+		inline auto end() const {
 			return objects.end();
 		}
 
+	
 	};
+#else
+	template <class T>
+	class Container : public std::list<T *>, public std::mutex {
+	public:
+		Container() {
+		}
+
+		inline void add(T *object) noexcept {
+			std::lock_guard<std::mutex> lock(*this);
+			std::list<T *>::push_back(object);
+		}
+
+		inline void push_back(T *object) noexcept {
+			std::lock_guard<std::mutex> lock(*this);
+			std::list<T *>::push_back(object);
+		}
+
+		inline void remove(T *object) noexcept {
+			std::lock_guard<std::mutex> lock(*this);
+			std::list<T *>::remove(object);
+		}
+
+		inline bool for_each(const std::function<bool(T &object)> &method) {
+			std::lock_guard<std::mutex> lock(*this);
+			for(T *object : *this) {
+				if(method(*object)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	  
+	};
+#endif
 
  }
 

@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/mainloop.h>
+ #include <udjat/tools/xml.h>
 
  namespace Udjat {
 
@@ -72,11 +73,17 @@
 		bool enabled() const;
 
 		/// @brief Enable timer.
-		void enable();
+		/// @return true if the timer was enabled.
+		/// @retval true The timer was enabled.
+		/// @retval false The timer was already enabled.
+		bool enable();
 
 		/// @brief Enable timer.
 		/// @param interval Timer value in milliseconds.
-		void enable(unsigned long milliseconds);
+		/// @return true if the timer was enabled.
+		/// @retval true The timer was enabled.
+		/// @retval false The timer was already enabled.
+		bool enable(unsigned long milliseconds);
 
 		/// @brief Disable timer
 		void disable();
@@ -89,6 +96,11 @@
 
 		/// @brief Get current timer.
 		static unsigned long getCurrentTime();
+
+		/// @brief Set new interval timer from XML definition.
+		/// @param xml XML node with timer definition.
+		/// @return true if the interval was changed.
+		bool set(const XML::Node &xml, const char *attrname = "timer-interval");
 
 		/// @brief Set new interval timer.
 		/// @param milliseconds The new timer value.

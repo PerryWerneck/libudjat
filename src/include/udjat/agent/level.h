@@ -19,7 +19,7 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/xml.h>
  #include <cstdint>
 
  namespace Udjat {
@@ -47,9 +47,5 @@
  namespace std {
 
 	UDJAT_API const char * to_string(const Udjat::Level level);
-
-	inline ostream& operator<< (ostream& os, const Udjat::Level level) {
-		return os << to_string(level);
-	}
 
  }

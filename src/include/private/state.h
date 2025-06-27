@@ -18,6 +18,7 @@
  */
 
  #pragma once
+ #error deprecated
 
  #include <config.h>
  #include <udjat/agent.h>

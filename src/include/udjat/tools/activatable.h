@@ -20,36 +20,59 @@
  #pragma once
 
  #include <udjat/defs.h>
- #include <udjat/tools/object.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/abstract/object.h>
  #include <memory>
 
  namespace Udjat {
 
-	class UDJAT_API Activatable : public NamedObject {
+	class UDJAT_API Activatable {
+	private:
+		const char *object_name;
+
+	protected:
+
+		typedef Activatable super;
+
+		constexpr Activatable(const char *name = "") : object_name{name} {
+		}
+	
+		Activatable(const XML::Node &node);
+		virtual ~Activatable();
+
+		/// @brief Convenience method to get payload from xml
+		static const char * payload(const XML::Node &node);
+
+		/// @brief Convenience method to capture and translate exceptions.
+		int exec(Udjat::Value &response, bool except, const std::function<int()> &func);
+
 	public:
 
-		constexpr Activatable(const char *name = "") : NamedObject{name} {
+		inline const char *name() const noexcept {
+			return object_name;
 		}
 
-		Activatable(const XML::Node &node) : NamedObject{node} {
+		inline const char *c_str() const noexcept {
+			return object_name;
 		}
 
-		static std::shared_ptr<Activatable> Factory(const Abstract::Object &parent, const XML::Node &node);
+		/// @brief Activate/deactivate by parameter.
+		/// @param value true to activate, false to deactivate.
+		/// @return true if the state was changed.
+		bool active(bool value) noexcept;
 
-		/// @brief Activate object, apply values.
-		virtual void activate(const std::function<bool(const char *key, std::string &value)> &expander) = 0;
+		/// @brief Activate object.
+		/// @return true if the object was activated, false if already active.
+		virtual bool activate() noexcept = 0;
 
-		/// @brief Activate object, expand properties.
-		void activate(const Abstract::Object &object);
+		/// @brief Activate object with properties.
+		/// @param object Object with properties.
+		/// @return true if the object was activated, false if already active.
+		virtual bool activate(const Udjat::Abstract::Object &object) noexcept;
 
-		virtual void deactivate();
-
-		/// @brief Is the object activated?
-		virtual bool activated() const noexcept = 0;
-
-		/// @brief Trigger (deactivate/activate).
-		void trigger(const Abstract::Object &object);
-
+		/// @brief Deactivate object.
+		/// @return true if the object was deactivated, false if already inactive.
+		virtual bool deactivate() noexcept;
 
 	};
 

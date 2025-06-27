@@ -22,11 +22,8 @@
  #include <udjat/tools/parse.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/value.h>
- #include <udjat/tools/response/table.h>
  #include <udjat/agent/level.h>
  #include <udjat/agent/state.h>
- #include <udjat/tools/activatable.h>
- #include <udjat/tools/response/table.h>
  #include <mutex>
  #include <list>
  #include <cstdint>
@@ -37,6 +34,27 @@
 
 		class UDJAT_API Agent : public Udjat::Object {
 		public:
+
+			/// @brief Agent factory
+			class UDJAT_API Factory {
+			private:
+				const char *name;
+
+			public:
+				Factory(const char *name);
+				virtual ~Factory();
+
+				inline bool operator==(const char *n) const noexcept {
+					return strcasecmp(n,name) == 0;
+				}
+
+				/// @brief Create an agent from XML node.
+				/// @param node XML definition for the new agent.
+				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const = 0;
+
+				static std::shared_ptr<Abstract::Agent> build(const Abstract::Agent &parent, const XML::Node &node);
+
+			};
 
 			enum Event : uint16_t {
 				STARTED				= 0x0001,		///< @brief Agent was started.
@@ -54,6 +72,9 @@
 
 				ALL 				= 0x011F		///< @brief All events.
 			};
+
+			static Event EventFactory(const XML::Node &node, const char *attrname = "event");
+			static Event EventFactory(const char *name);
 
 		private:
 
@@ -157,9 +178,6 @@
 			/// @return true if the state has changed.
 			virtual bool set(std::shared_ptr<State> state);
 
-			/// @brief Activate an alert.
-			void activate(std::shared_ptr<Abstract::Alert> alert) const;
-
 			/// @brief Set failed state from exception.
 			void failed(const char *summary, const std::exception &e) noexcept;
 
@@ -186,6 +204,13 @@
 				return (update.timer = value);
 			}
 
+			/// @brief Convenience method to build custom state.
+			/// @param name	State name (should be constant).
+			/// @param level The state level.
+			/// @param summary State summary, will be expanded with agent properties.
+			/// @param summary State body, will be expanded with agent properties.
+			std::shared_ptr<Abstract::State> StateFactory(const char *name, const Udjat::Level level, const char *summary = "", const char *body = "");
+
 		public:
 			class Controller;
 			friend class Controller;
@@ -200,14 +225,19 @@
 
 			virtual ~Agent();
 
+			/// @brief Load agent children, states, alerts, etc. from node.
+			/// @param node The xml node with agent children to build.
+			bool parse(const XML::Node &node) override;
+
+			inline time_t parse(const char *path) {
+				return Udjat::Object::parse(path);
+			}
+
 			/// @brief Insert child node.
 			void push_back(std::shared_ptr<Abstract::Agent> child);
 
 			/// @brief Insert object.
 			void push_back(std::shared_ptr<Abstract::Object> object);
-
-			/// @brief Insert Activatable.
-			virtual void push_back(std::shared_ptr<Activatable> alert);
 
 			/// @brief Insert activatable based on xml attributes.
 			/// @param node with activation attribute.
@@ -229,12 +259,6 @@
 			/// @brief Factory for the default root agent.
 			static std::shared_ptr<Agent> RootFactory();
 
-			/// @brief Build and agent from type & xml node.
-			//static std::shared_ptr<Agent> Factory(const char *type, const Abstract::Object &parent, const XML::Node &node);
-
-			/// @brief Build and agent from node.
-			static std::shared_ptr<Agent> Factory(const Abstract::Object &parent, const XML::Node &node);
-
 			/// @brief Remove object.
 			void remove(std::shared_ptr<Abstract::Object> object);
 
@@ -248,10 +272,6 @@
 			inline std::list<std::shared_ptr<Abstract::Object>> & objects() noexcept {
 				return children.objects;
 			}
-
-			/// @brief Load agent children, states, alerts, etc. from node.
-			/// @param node The xml node with agent children to build.
-			void setup(const XML::Node &node) override;
 
 			/// @brief Deinitialize agent subsystem.
 			static void deinit();
@@ -306,9 +326,6 @@
 			/// @param value Value to receive the properties.
 			Value & getProperties(Value &value) const override;
 
-			bool get(Udjat::Response::Value &value) const;
-			bool get(Udjat::Response::Table &value) const;
-
 			/// @brief Get child properties by path.
 			/// @param path	Child path.
 			/// @param value Object for child properties.
@@ -316,26 +333,12 @@
 			/// @retval false if the child was not found.
 			virtual bool getProperties(const char *path, Value &value) const;
 
-			/// @brief Get child properties by path.
-			/// @param path	Child path.
-			/// @param report The report output.
-			/// @retval true if the child was found.
-			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Udjat::Response::Value &value) const;
-
-			/// @brief Get child report by path.
-			/// @param path	Child path.
-			/// @param report The report output.
-			/// @retval true if the child was found.
-			/// @retval false if the child was not found.
-			virtual bool getProperties(const char *path, Udjat::Response::Table &report) const;
-
-			void getStates(Udjat::Response::Table &report) const;
-
 			void for_each(std::function<void(Agent &agent)> method);
 			void for_each(std::function<void(std::shared_ptr<Agent> agent)> method);
+
 			virtual void for_each(const std::function<void(const Abstract::State &state)> &method) const;
 
+#if __cplusplus >= 201703L
 			inline auto begin() noexcept {
 				return children.agents.begin();
 			}
@@ -351,7 +354,23 @@
 			inline auto end() const noexcept {
 				return children.agents.end();
 			}
+#else
+			inline std::vector<std::shared_ptr<Agent>>::iterator begin() noexcept {
+				return children.agents.begin();
+			}
 
+			inline std::vector<std::shared_ptr<Agent>>::iterator end() noexcept {
+				return children.agents.end();
+			}
+
+			inline std::vector<std::shared_ptr<Agent>>::const_iterator begin() const noexcept {
+				return children.agents.begin();
+			}
+
+			inline std::vector<std::shared_ptr<Agent>>::const_iterator end() const noexcept {
+				return children.agents.end();
+			}
+#endif
 			/// @brief Get agent value.
 			virtual Value & get(Value &value) const;
 
@@ -388,9 +407,6 @@
 
 			/// @brief Create and insert State.
 			virtual std::shared_ptr<Abstract::State> StateFactory(const XML::Node &node);
-
-			/// @brief Insert Alert.
-			virtual std::shared_ptr<Abstract::Alert> AlertFactory(const XML::Node &node);
 
 			/// @brief Get agent property.
 			/// @param key The property name.

@@ -1,45 +1,53 @@
-name: Publish
+name: publish
 on:
   push:
-    branches: [ "win" ]
-    tags: [ "*" ]
-  
+    branches: 
+      - "publisher"
+    tags:
+      - "*"
 jobs:
-  mingw-publish:
+  Win64Pkg:
     runs-on: windows-latest
     defaults:
       run:
         shell: msys2 {0}
     steps:
-      - uses: actions/checkout@v3
+      - name: Fetch Sources
+        uses: actions/checkout@v3
       - uses: oprypin/find-latest-tag@v1
         id: gettag
         with:
-          repository: PerryWerneck/libudjat
+          repository: PerryWerneck/dmiget
           releases-only: true
-      - uses: msys2/setup-msys2@v2
+      - name: Setup MSys
+        uses: msys2/setup-msys2@v2
         with:
           msystem: mingw64
           update: true
-          install: dos2unix xz mingw-w64-x86_64-gcc automake autoconf make git pkgconf mingw-w64-x86_64-gettext gettext-devel libtool mingw-w64-x86_64-pugixml
+          install: dos2unix xz mingw-w64-x86_64-gcc pkgconf mingw-w64-x86_64-gettext mingw-w64-x86_64-meson mingw-w64-x86_64-pugixml gettext-devel
       - uses: robinraju/release-downloader@v1.7
         with:
           repository: "PerryWerneck/vmdetect"
           latest: true
-          fileName: "mingw-w64-x86_64-vmdetect-1.3-0-x86_64.pkg.tar.zst"
-      - name: CI-Build
+          fileName: "mingw-w64-x86_64-vmdetect-1.3.3-0-x86_64.pkg.tar.zst"
+      - uses: robinraju/release-downloader@v1.7
+        with:
+          repository: "PerryWerneck/dmiget"
+          latest: true
+          fileName: "mingw-w64-x86_64-dmiget-1.2.6-0-x86_64.pkg.tar.zst"
+      - name: Run Build
         run: |
           pacman -U --noconfirm *.pkg.tar.zst
+          rm -f *.pkg.tar.zst
           dos2unix PKGBUILD.mingw
           makepkg BUILDDIR=/tmp/pkg -p PKGBUILD.mingw
       - uses: ncipollo/release-action@v1
         with:
           tag: ${{ steps.gettag.outputs.tag }}
-          artifacts: "*udjat*.pkg.tar.zst"
+          artifacts: "*.pkg.tar.zst"
           allowUpdates: true
           draft: false
           makeLatest: true
           omitBody: true
           omitPrereleaseDuringUpdate: true
           replacesArtifacts: true
-

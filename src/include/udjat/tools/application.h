@@ -21,9 +21,11 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
- #include <udjat/tools/file.h>
+ #include <udjat/tools/file/path.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/timer.h>
+ #include <udjat/tools/commandlineparser.h>
+ #include <udjat/ui/status.h>
  #include <udjat/agent/abstract.h>
  #include <list>
  #include <string>
@@ -34,14 +36,17 @@
  namespace Udjat {
 
 	/// @brief Base class for applications.
-	class UDJAT_API Application {
+	class UDJAT_API Application : public Dialog::Status {
 	private:
-		Timer *timer = nullptr;	///< @brief Auto update timer.
+		Timer *reload_timer = nullptr;		///< @brief Auto update timer.
+		int &argc;
+		char **argv;				///< @brief Command line arguments.
 
-		struct {
-			int count = 0;
-			const char **value = nullptr;
-		} args;
+		/// @brief Parse XML definitions from a file or directory.
+		/// @param path Path to file or directory with XML definitions.
+		/// @param startup true if this is the first time the application is started (no previous configuration).
+		/// @details If 'path' is a directory, all XML files in the directory will be parsed.
+		void parse(const char *path, bool startup);
 
 	protected:
 
@@ -52,27 +57,7 @@
 		virtual void root(std::shared_ptr<Abstract::Agent> agent);
 
 		/// @brief Factory for the application root.
-		virtual std::shared_ptr<Abstract::Agent> RootFactory() const;
-
-		/// @brief Initialize application.
-		/// @return 0 if ok, errno if not.
-		virtual int init(const char *definitions);
-
-		/// @brief Deinitialize application.
-		/// @return 0 if ok, errno if not.
-		virtual int deinit(const char *definitions);
-
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		virtual bool argument(const char *name, const char *value = nullptr);
-
-		/// @brief Set command-line argument.
-		/// @param name argument name.
-		/// @param value argument value.
-		/// @return true if the argument was parsed.
-		virtual bool argument(const char name, const char *value = nullptr);
+		virtual std::shared_ptr<Abstract::Agent> RootFactory();
 
 		/// @brief Set property from command-line argument.
 		/// @param name Property name.
@@ -80,53 +65,29 @@
 		/// @return true if the property was set.
 		virtual bool setProperty(const char *name, const char *value);
 
-		/// @brief Show help text to stdout.
-		virtual void help(std::ostream &out) const noexcept;
+		/// @brief Show help messages.
+		/// @param width The width of the left part of the help text.
+		/// @details This method is called when the application is started with the '--help' option.
+		virtual void help(size_t width = 20) const noexcept;
 
 	public:
-		Application();
+
+		Application(int &argc, char **argv);
 		virtual ~Application();
 
-		/// @brief Get application property.
-		virtual const char * getProperty(const char *name, const char *def = "") const noexcept;
+		static void show_command_line_help(size_t width = 20) noexcept;
 
-		inline const char * operator[](const char *property_name) const noexcept {
-			return getProperty(property_name);
-		}
+		Dialog::Status & state(const Level level, const char *message) noexcept override;
+
+		Dialog::Status & state(const char *text) noexcept override;
 
 		/// @brief Setup locale.
 		/// @param gettext_package The gettext package name.
 		static void UDJAT_API set_gettext_package(const char *gettext_package);
 
-		/// @brief Initialize application, load configuration, setup root agent.
-		/// @return seconds for next update.
-		static time_t initialize(std::shared_ptr<Abstract::Agent> root, const char *pathname, bool startup = true);
-
-		/// @brief Deinitialize application.
-		static void finalize();
-
-		/// @brief Parse command line options
-		/// @param definitions Path to a single xml file or a folder with xml files.
-		/// @return 0 if ok, error code if not.
-		/// @retval ECANCELED cancelled by command line argument (--help or other informational options).
-		virtual int setup(int argc, char **argv, const char *definitions = nullptr);
-
 		/// @brief Parse command line options, run application.
 		/// @param definitions Path to a single xml file or a folder with xml files.
-		virtual int run(int argc, char **argv, const char *definitions);
-
-		/// @brief Parse command line options, run application with default definitions.
-		virtual int run(int argc, char **argv);
-
-		/// @brief Run application.
-		/// @param definitions Path to a single xml file or a folder with xml files.
-		virtual int run(const char *definitions = nullptr);
-
-		/// @brief Load XML application definitions.
-		/// @param pathname Path to a single xml file or a folder with xml files.
-		/// @param start True if it's the application/service startup, false if it's a reconfiguration.
-		/// @return Seconds for reonfiguration.
-		virtual void setup(const char *pathname = nullptr, bool startup = false);
+		int run(const char *definitions = nullptr);
 
 		/// @brief Install application.
 		/// @param name Application name.
@@ -139,20 +100,25 @@
 		/// @retval ENOTSUP No support for this method.
 		virtual int uninstall();
 
-		/// @brief Finalize application.
-		// static int UDJAT_API finalize();
-
-		/// @brief Write to the 'information' stream.
+		/// @brief The 'information' stream.
 		static std::ostream & info();
 
-		/// @brief Write to the 'warning' stream.
+		/// @brief The 'warning' stream.
 		static std::ostream & warning();
 
-		/// @brief Write to the 'error' stream.
+		/// @brief The 'error' stream.
 		static std::ostream & error();
 
-		/// @brief Write to the 'trace' stream.
+		/// @brief The 'trace' stream.
 		static std::ostream & trace();
+
+		inline bool has_argument(char shortname, const char *longname, bool extract=true) noexcept {
+			return CommandLineParser::has_argument(argc, argv, shortname, longname, extract);
+		}
+
+		inline bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept {
+			return CommandLineParser::get_argument(argc, argv, shortname, longname, value, extract);
+		}
 
 		/// @brief Application Shortcut.
 		class UDJAT_API ShortCut {

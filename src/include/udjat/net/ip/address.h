@@ -45,6 +45,11 @@
 		private:
 
 		public:
+
+#if __cplusplus >= 201703L
+			Address(const char *ip) : sockaddr_storage{IP::Factory(ip)} {
+			}
+
 			constexpr Address(const sockaddr_storage &a) : sockaddr_storage{a} {
 			}
 
@@ -54,6 +59,23 @@
 			template <typename T>
 			Address(const T *addr) : sockaddr_storage{IP::Factory(addr)} {
 			}
+#else
+			Address(const char *ip) {
+				*((sockaddr_storage *) this) = IP::Factory(ip);
+			}
+
+			Address(const sockaddr_storage &a) {
+				*((sockaddr_storage *) this) = a;
+			}
+
+			Address() {
+			}
+
+			template <typename T>
+			Address(const T *addr) {
+				*((sockaddr_storage *) this) = IP::Factory(addr);
+			}
+#endif
 
 			/// @brief Compare 2 IP Addresses
 			/// @param a First IP address to compare.
@@ -111,6 +133,9 @@
 
 			std::string to_string() const noexcept;
 
+			std::string nic() const;
+			std::string macaddress() const;
+
 		};
 
 		struct Addresses {
@@ -121,6 +146,10 @@
 
 		/// @brief Enumerate local IP addresses and interfaces.
 		UDJAT_API bool for_each(const std::function<bool(const Addresses &addr)> &func);
+
+		/// @brief Get default gateway.
+		/// @return The default gateway address.
+		UDJAT_API IP::Address gateway();
 
 	}
 

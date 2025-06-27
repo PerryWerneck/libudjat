@@ -25,6 +25,7 @@
  #include <vector>
  #include <functional>
  #include <cstdint>
+ #include <udjat/tools/string.h>
 
  namespace Udjat {
 
@@ -36,9 +37,13 @@
 		UDJAT_API uint64_t get(const std::string &group, const std::string &name, const uint64_t def);
 		UDJAT_API float get(const std::string &group, const std::string &name, const float def);
 		UDJAT_API double get(const std::string &group, const std::string &name, const double def);
-		UDJAT_API std::string get(const std::string &group, const std::string &name, const char *def);
-		UDJAT_API std::string get(const std::string &group, const std::string &name, const std::string &def);
+		UDJAT_API Udjat::String get(const std::string &group, const std::string &name, const char *def);
+		UDJAT_API Udjat::String get(const std::string &group, const std::string &name, const std::string &def);
 		UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
+
+		/// @brief Enable loading of configuration from user's home dir.
+		///	This method should be called BEFORE any other one, it doesnt work if file was already loaded.
+		UDJAT_API void allow_user_homedir(bool allow = false) noexcept;
 
 		/// @brief Navigate from all group keys.
 		/// @param group Group name.
@@ -76,14 +81,18 @@
 		};
 
 		template <>
-		class UDJAT_API Value<std::string> : public std::string {
-		private:
-			std::string group;
-			std::string name;
-
+		class UDJAT_API Value<Udjat::String> : public Udjat::String {
 		public:
-			Value(const char *g, const char *n, const char *d)
-				: std::string(Config::get(g,n,d)),group(g),name(n) {
+			Value(const char *g, const char *n, const char *d = "")
+				: Udjat::String{Config::get(g,n,d).c_str()} {
+			}
+		};
+
+		template <>
+		class UDJAT_API Value<std::string> : public std::string {
+		public:
+			Value(const char *g, const char *n, const char *d = "")
+				: std::string{Config::get(g,n,d).c_str()} {
 			}
 
 			/// @brief Translate block ${name} in the string to *value.

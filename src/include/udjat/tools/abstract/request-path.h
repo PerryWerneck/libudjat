@@ -24,7 +24,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
- #include <udjat/tools/method.h>
+ #include <udjat/tools/http/method.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/abstract/response.h>
  #include <string>

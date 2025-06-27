@@ -24,6 +24,7 @@
  #include <ctime>
  #include <string>
  #include <cstdint>
+ #include <time.h>
 
  namespace Udjat {
 
@@ -37,6 +38,8 @@
 	public:
 
 		constexpr TimeStamp(time_t t = time(nullptr)) : value(t) { }
+
+		explicit TimeStamp(struct ::tm &tm) : value{mktime(&tm)} { }
 
 		explicit TimeStamp(const char *time, const char *format = nullptr);
 
@@ -59,6 +62,8 @@
 		inline operator bool() const noexcept {
 			return value != 0;
 		}
+
+		operator struct tm() const noexcept;
 
 		/// @brief Set a time delay.
 		/// @param seconds	Seconds after current timestamp to set.

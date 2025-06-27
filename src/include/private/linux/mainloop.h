@@ -45,6 +45,7 @@ namespace Udjat {
 
 			/// @brief Event FD.
 			int efd = -1;
+			uint64_t evNum = 0;
 
 			/// @brief Active timers.
 			Timers timers;
@@ -81,7 +82,11 @@ namespace Udjat {
 			/// @brief Run mainloop.
 			int run() override;
 
+			void run(const std::function<void()> &method) override;
+
 			bool active() const noexcept override;
+
+			void post(Message *message) noexcept override;
 
 			/// @brief Wakeup main loop.
 			void wakeup() noexcept override;

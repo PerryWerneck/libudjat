@@ -26,28 +26,28 @@
  *
  */
 
-#pragma once
+ #pragma once
 
-#include <string>
-#include <pugixml.hpp>
-#include <memory>
-#include <vector>
-#include <mutex>
-#include <functional>
-#include <udjat/defs.h>
-#include <udjat/tools/quark.h>
-#include <udjat/tools/xml.h>
-#include <udjat/tools/request.h>
-#include <udjat/tools/activatable.h>
-#include <udjat/tools/value.h>
-#include <udjat/tools/object.h>
-#include <udjat/tools/parse.h>
-#include <cstring>
-#include <ostream>
-#include <udjat/agent/level.h>
-#include <udjat/tools/converters.h>
+ #include <string>
+ #include <udjat/tools/xml.h>
+ #include <memory>
+ #include <vector>
+ #include <mutex>
+ #include <functional>
+ #include <iostream>
+ #include <udjat/defs.h>
+ #include <udjat/tools/quark.h>
+ #include <udjat/tools/xml.h>
+ #include <udjat/tools/activatable.h>
+ #include <udjat/tools/value.h>
+ #include <udjat/tools/object.h>
+ #include <udjat/tools/parse.h>
+ #include <cstring>
+ #include <ostream>
+ #include <udjat/agent/level.h>
+ #include <udjat/tools/converters.h>
 
-namespace Udjat {
+ namespace Udjat {
 
 	/// @brief Get OStream from level.
 	UDJAT_API std::ostream & LogFactory(Udjat::Level level);
@@ -62,16 +62,13 @@ namespace Udjat {
 
 		private:
 
-			/// @brief Parse XML node
-			void set(const XML::Node &node);
-
-			/// @brief State alerts.
-			std::vector<std::shared_ptr<Activatable>> listeners;
-
 			/// @brief State agents.
 			std::vector<std::shared_ptr<Abstract::Agent>> agents;
 
 		protected:
+
+			/// @brief State alerts.
+			std::vector<std::shared_ptr<Udjat::Activatable>> listeners;
 
 			struct Properties {
 
@@ -93,6 +90,11 @@ namespace Udjat {
 			State& operator=(const State &) = delete;
 			State(State &&) = delete;
 			State & operator=(State &&) = delete;
+
+			/// @brief Parse XML node, append child.
+			/// @param node The XML definition.
+			/// @return true if the child was appended.
+			virtual bool parse(const XML::Node &node) override;
 
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
@@ -128,6 +130,17 @@ namespace Udjat {
 				return properties.level;
 			}
 
+#if __cplusplus >= 202002L
+
+			inline int operator <=>(const Level level) const noexcept {
+				return properties.level - level;
+			}
+
+			inline int operator <=>(const Abstract::State &state) const noexcept {
+				return properties.level - state.properties.level;
+			}
+
+#else
 			inline bool operator ==(const Level level) const noexcept {
 				return properties.level == level;
 			}
@@ -147,6 +160,7 @@ namespace Udjat {
 			inline bool operator<=(const Abstract::State &state) {
 				return properties.level <= state.properties.level;
 			}
+#endif
 
 			/// @brief Is this state a critical one?
 			/// @return true if the state is critical.
@@ -177,28 +191,14 @@ namespace Udjat {
 			/// @return Pointer to value.
 			Value & getProperties(Value &value) const override;
 
-			/// @brief Get state properties by path.
-			/// @param path	Agent path.
-			/// @param value Object for child properties.
-			/// @retval true if the agent was found.
-			/// @retval false if the agent was not found.
-			static bool getProperties(const char *path, Value &value);
-
-			/// @brief Insert alert.
-			inline void push_back(std::shared_ptr<Activatable> listener) {
-				listeners.push_back(listener);
-			}
-
-			/// @brief Create and insert child from XML definition.
-			/// @param node XML agent definitions.
-			/// @return true if the child was created.
-			bool push_back(const XML::Node &node);
-
 			/// @brief Create an state from exception.
 			/// @param except The exception.
 			/// @param summary State summary (for message).
 			/// @return A new state object based on the exception type and message.
 			static std::shared_ptr<Abstract::State> Factory(const std::exception &except, const char *summary);
+
+			/// @brief Create an state.
+			static std::shared_ptr<Abstract::State> Factory(const char *name, const Udjat::Level level, int code = 0, const char *summary = "", const char *body = "");
 
 		};
 
@@ -277,6 +277,18 @@ namespace Udjat {
 			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
 		}
 
+#if __cplusplus >= 202002L
+
+			inline int operator <=>(const std::string &value) const noexcept {
+				return strcasecmp(this->std::string::c_str(),value.c_str());
+			}
+
+			inline int operator <=>(const char *value) const noexcept {
+				return strcasecmp(this->std::string::c_str(),value);
+			}
+
+#else
+
 		inline bool operator==(const std::string &value) {
 			return strcasecmp(this->std::string::c_str(),value.c_str()) == 0;
 		}
@@ -284,6 +296,8 @@ namespace Udjat {
 		inline bool operator==(const char *value) {
 			return strcasecmp(this->std::string::c_str(),value) == 0;
 		}
+
+#endif
 
 		std::string value() const override {
 			return *this;
@@ -318,4 +332,16 @@ namespace Udjat {
 
 	};
 
-}
+ }
+
+ namespace std {
+
+	inline std::string to_string(const Udjat::Abstract::State &state) noexcept {
+		return state.to_string();
+	}
+
+	inline ostream& operator<< (ostream& os, Udjat::Abstract::State state) noexcept {
+			return os << to_string(state);
+	}
+
+ }
