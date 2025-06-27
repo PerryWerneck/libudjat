@@ -183,8 +183,6 @@ app_conf.set('PRODUCT_TITLE', product_title)
 app_conf.set('PRODUCT_NAME',product_name)
 app_conf.set('PRODUCT_DOMAIN',product_domain)
 
-app_conf.set_quoted('LOG_DOMAIN','lib' + product_name)
-
 includes_dir = include_directories('src/include')
 
 if vmdetect.found()
