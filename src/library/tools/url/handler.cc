@@ -92,6 +92,12 @@
 			return make_shared<FileURLHandler>(*this);
 		}
 
+#ifdef HAVE_SMBIOS
+		if(!(strcasecmp(scheme.c_str(),"dmi") && strcasecmp(scheme.c_str(),"smbios"))) {
+			return make_shared<SMBiosURLHandler>(*this);
+		}
+#endif // HAVE_SMBIOS
+
 		if(!strcasecmp(scheme.c_str(),"script")) {
 			return make_shared<ScriptURLHandler>(*this);
 		}

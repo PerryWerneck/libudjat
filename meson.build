@@ -345,6 +345,7 @@ lib_src += [
   'src/library/tools/os/' + host_machine.system() + '/console.cc',
   'src/library/tools/url/handlers/file.cc',
   'src/library/tools/url/handlers/script.cc',
+  'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
 ]

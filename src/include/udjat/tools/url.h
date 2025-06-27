@@ -77,7 +77,11 @@
 		String scheme() const;
 		String hostname() const;
 		String servicename() const;
-		String path() const;
+
+		/// @brief Get URL path.
+		/// @param strip If true remove the leading slash.
+		/// @return The url PATH.
+		String path(bool strip = false) const;
 		String name() const;
 		String dirname() const;
 
