@@ -2,4 +2,5 @@
 url = https://github.com/PerryWerneck/vmdetect.git
 revision = HEAD
 depth = 1
+clone-recursive = true
 
