@@ -53,6 +53,7 @@ subdir('po')
 # Dependencies
 #
 iconv = dependency('iconv')
+intl = dependency('intl', required: false)
 
 # URIPARSER
 uriparser = dependency(
@@ -81,8 +82,6 @@ pugixml = dependency(
   required: true,
 )
 
-#Intl
-intl = dependency('intl', required: false)
 
 required_libs = [
   pugixml,
@@ -421,7 +420,7 @@ if host_machine.system() == 'windows'
   ]
 
   pkg.generate(
-    name: meson.project_name(),
+    name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
     requires: required_libs,
@@ -432,7 +431,7 @@ if host_machine.system() == 'windows'
 else
 
   pkg.generate(
-    name: meson.project_name(),
+    name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
     requires: required_libs,
