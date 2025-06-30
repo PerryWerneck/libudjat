@@ -18,7 +18,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 project(
-	'libudjat', 
+	'udjat', 
 	['cpp'],
 	version: '2.0.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
@@ -54,12 +54,9 @@ subdir('po')
 #
 iconv = dependency('iconv')
 
-private_libs = [ ]
-
 # URIPARSER
 uriparser = dependency(
   'liburiparser', 
-  static: false,
   required: true,
 )
 
@@ -67,45 +64,57 @@ uriparser = dependency(
 vmdetect = dependency(
   'vmdetect', 
   method : 'pkg-config',
-  static: false,
   required: false,
-  fallback: [ 'vmdetect', 'static_library' ]
 )
 
 # DMIGET (optional)
 dmiget = dependency(
   'dmiget', 
   method : 'pkg-config',
-  static: false,
-  required: false,
-  fallback: [ 'dmiget', 'static_library' ]
-)
-
-# ECONF(optional)
-econf = dependency(
-  'libeconf', 
-  method : 'pkg-config',
-  static: false,
   required: false,
 )
 
 # PUGIXML
 pugixml = dependency(
-    'pugixml',
-    static: false,
-    required: true,
-  )
+  'pugixml',
+  method : 'pkg-config',
+  required: true,
+)
 
 #Intl
 intl = dependency('intl', required: false)
 
-lib_deps = [
-  intl,
+required_libs = [
   pugixml,
-  uriparser,
+  uriparser
+]
+
+private_libs = [
   vmdetect,
   dmiget,
 ]
+
+extra_libs = [
+  intl,
+  iconv,
+  dependency('threads')
+] 
+
+if not vmdetect.found()
+  vmdetect = dependency(
+      'libvmdetect',
+      fallback: [ 'vmdetect', 'static_library' ]    
+  ) 
+  extra_libs += [ vmdetect ]
+endif
+
+if not dmiget.found()
+  dmiget = dependency(
+      'libdmiget',
+      fallback: [ 'dmiget', 'static_library' ]    
+  ) 
+  extra_libs += [ dmiget ]
+endif
 
 #
 # Compiler flags
@@ -202,8 +211,14 @@ if dmiget.found()
 endif
 
 #
-# Check for alternative configuration libraries
+# Check for available options for configuration libraries
 #
+econf = dependency(
+  'libeconf', 
+  method : 'pkg-config',
+  required: false,
+)
+
 if econf.found() 
 
   app_conf.set('HAVE_ECONF', 1)
@@ -225,7 +240,7 @@ else
 
 endif
 
-lib_deps += econf
+private_libs += econf
 
 #
 # SystemD  (optional)
@@ -233,7 +248,7 @@ lib_deps += econf
 systemd_dep = dependency('libsystemd', required: false  )
 if systemd_dep.found()
   app_conf.set('HAVE_SYSTEMD', 1)
-  lib_deps += systemd_dep
+  required_libs += systemd_dep
 endif 
 
 #
@@ -406,10 +421,10 @@ if host_machine.system() == 'windows'
   ]
 
   pkg.generate(
-    name: 'lib' + meson.project_name(),
+    name: meson.project_name(),
     description: project_description,
     variables: pkg_variables,
-    requires: [ pugixml, uriparser ],
+    requires: required_libs,
     libraries: [ '-l' + meson.project_name() + '.dll' ],
     requires_private: private_libs,
   )
@@ -417,10 +432,10 @@ if host_machine.system() == 'windows'
 else
 
   pkg.generate(
-    name: 'lib' + meson.project_name(),
+    name: meson.project_name(),
     description: project_description,
     variables: pkg_variables,
-    requires: [ pugixml, uriparser ],
+    requires: required_libs,
     libraries: [ '-l' + meson.project_name() ],
     requires_private: private_libs,
   )
@@ -599,7 +614,7 @@ if host_machine.system() == 'windows'
     config_h + lib_src + resources,
     install: true,
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps + [ iconv ],
+    dependencies: required_libs + private_libs + extra_libs,
     include_directories: includes_dir,
     link_args: winlibs,
   )
@@ -614,7 +629,7 @@ else
     soversion : libversion,
     cpp_args: [ '-ffat-lto-objects' ],
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps + [ dependency('threads'), iconv ],
+    dependencies: required_libs + private_libs + extra_libs,
     include_directories: includes_dir,
     link_args: [
       '-ldl'
@@ -628,7 +643,7 @@ else
   config_h + lib_src,
   install: true,
   cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  dependencies: lib_deps + [ iconv ],
+  dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
  )
 
@@ -649,7 +664,7 @@ else
   config_h + test_src,
   cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
   install: true,
-  dependencies: lib_deps,
+  dependencies: required_libs,
   include_directories: includes_dir
 )
 
@@ -659,7 +674,7 @@ executable(
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],
-  dependencies: lib_deps,
+  dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
 
@@ -669,7 +684,7 @@ executable(
   cpp_args: [ '-DSDK_APP' ],
   install: true,
   link_with : [ dynamic ],
-  dependencies: lib_deps,
+  dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
 
