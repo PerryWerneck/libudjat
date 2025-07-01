@@ -101,7 +101,7 @@ extra_libs = [
 
 if not vmdetect.found()
   vmdetect = dependency(
-      'libvmdetect',
+      'vmdetect',
       fallback: [ 'vmdetect', 'static_library' ]    
   ) 
   extra_libs += [ vmdetect ]
@@ -109,7 +109,7 @@ endif
 
 if not dmiget.found()
   dmiget = dependency(
-      'libdmiget',
+      'dmiget',
       fallback: [ 'dmiget', 'static_library' ]    
   ) 
   extra_libs += [ dmiget ]
