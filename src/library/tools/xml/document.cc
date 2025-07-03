@@ -47,7 +47,7 @@
 		return instance;
 	}
 
-	XML::Parser::Parser(const char *n) : name{n} {
+	XML::Parser::Parser(const char *n) : parser_name{n} {
 		Factories().push_back(this);
 	}
 
