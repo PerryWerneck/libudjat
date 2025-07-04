@@ -136,10 +136,13 @@
 		/// @retval 0 if no reload is required.
 		UDJAT_API time_t parse(const char *path = nullptr);
 
-		/// @brief Load xml options below node.
+		/// @brief Load xml options for node.
 		/// @return true if the node was parsed and should be ignored by the caller.
 		UDJAT_API bool parse(const XML::Node &node);
-	
+
+		/// @brief Load options for node children.
+		void parse_children(const XML::Node &node);
+		
 	}
 
 	/// @brief Test common filter options.

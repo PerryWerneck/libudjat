@@ -132,6 +132,14 @@
 		return 0;
 	}
 
+	void XML::parse_children(const XML::Node &node) {
+		for(const auto &child : node) {
+			if(XML::parse(child)) {
+				parse_children(child); // Child was handled, parse its children.
+			}
+		}	
+	}
+
 	bool XML::parse(const XML::Node &node) {
 
 		// It's an attribute?
