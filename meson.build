@@ -390,7 +390,7 @@ pkg_variables = [
   'version_micro=@0@'.format(pkg_micro_version),
 
   'product_name=@0@'.format(product_name),
-  'product_id=@0@.@1@'.format(product_domain,product_name),
+  'product_domain=@0@'.format(product_domain),
   'product_title=@0@'.format(product_title),
   'build_id=@0@'.format(time_epoch),
 
