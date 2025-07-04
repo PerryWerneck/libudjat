@@ -234,6 +234,50 @@
 			}
 		}
 
+		if(strcasecmp(type,"random") == 0 || strcasecmp(type,"randomvalue") == 0) {
+
+			/// @brief Agent generating a random value.
+			class RandomValue : public Udjat::Agent<unsigned int> {
+			public:
+			private:
+				unsigned int limit = 5;
+
+			public:
+				RandomValue(const XML::Node &node) : Agent<unsigned int>(node) {
+				}
+
+				std::shared_ptr<Abstract::State> computeState() override {
+					for(auto state : states) {
+						if(state->compare(get())) {
+							return state;
+						}
+					}
+					Logger::String{"No state matched with value ",get()}.trace(name());
+					return Abstract::Agent::computeState();
+				}
+
+				bool refresh() override {
+					unsigned int last = get();
+					unsigned int value = ((unsigned int) rand()) % limit;
+					if(value == last) {
+						Logger::String{"Current value stayed the same: ",value}.info(name());
+						return false;
+					}
+					Logger::String{"Value changed from ",last," to ",value}.info(name());
+					return set(value);
+				}
+
+				void start() override {
+					Agent<unsigned int>::start( ((unsigned int) rand()) % limit );
+				}
+				
+			};
+
+			Logger::String{"Building random value agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
+			return make_shared<RandomValue>(node);
+
+		}
+
 		// Try actions
 		{
 			std::shared_ptr<Action> action = Action::Factory::build(node,false);

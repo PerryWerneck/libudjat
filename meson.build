@@ -274,7 +274,6 @@ lib_src += [
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
   'src/library/alert/url.cc',
-  'src/library/load/updater.cc',
   'src/library/module/controller.cc',
   'src/library/module/info.cc',
   'src/library/module/module.cc',
@@ -293,6 +292,7 @@ lib_src += [
   'src/library/tools/commandlineparser.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',
+  'src/library/tools/application/loader.cc',
   'src/library/tools/arguments.cc',
   'src/library/tools/base64.cc',
   'src/library/tools/cache.cc',
@@ -371,11 +371,6 @@ lib_src += [
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
 ]
-
-test_src = [
-  'src/testprogram/loader.cc',
-  'src/testprogram/randomfactory.cc',
- ]
 
 #
 # SDK
@@ -658,18 +653,9 @@ else
   variables: pkg_variables,
  ) 
 
- static_library(
-  meson.project_name() + '-loader', 
-  config_h + test_src,
-  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  install: true,
-  dependencies: required_libs,
-  include_directories: includes_dir
-)
-
 executable(
   meson.project_name(),
-  config_h + test_src + [ 'src/testprogram/main.cc' ],
+  config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],
@@ -679,7 +665,7 @@ executable(
 
 executable(
   meson.project_name() + '-loader',
-  config_h + test_src + [ 'src/testprogram/main.cc' ],
+  config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DSDK_APP' ],
   install: true,
   link_with : [ dynamic ],
@@ -687,11 +673,11 @@ executable(
   include_directories: includes_dir
 )
 
-version_file = configure_file(
-  input : 'src/include/udjat/version.h.in',
-  output : 'version.h',
-  configuration : app_conf
-)
+#version_file = configure_file(
+#  input : 'src/include/udjat/version.h.in',
+#  output : 'version.h',
+#  configuration : app_conf
+#)
 
 #
 # RPM Macros
@@ -727,7 +713,6 @@ install_headers(
   'src/include/udjat/module.h',
   'src/include/udjat/moduleinfo.h',
   'src/include/udjat/loader.h',
-  version_file,
   subdir: 'udjat'  
 )
 
