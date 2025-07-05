@@ -19,18 +19,21 @@
 
  #pragma once
 
- #if defined(GETTEXT_PACKAGE)
+ #if ! defined(__G_I18N_H__)
 
-	#include <locale.h>
-	#include <libintl.h>
+	#if defined(GETTEXT_PACKAGE)
 
-	#define _( x )                  dgettext(GETTEXT_PACKAGE,x)
-	#define N_( x )                 x
+		#include <locale.h>
+		#include <libintl.h>
 
- #else
+		#define _( x )                  dgettext(GETTEXT_PACKAGE,x)
+		#define N_( x )                 x
 
-	#define _( x )                  x
-	#define N_( x )                 x
+	#else
 
- #endif // HAVE_LIBINTL
+		#define _( x )                  x
+		#define N_( x )                 x
 
+	#endif // HAVE_LIBINTL
+	
+ #endif // __G_I18N_H__

@@ -25,6 +25,7 @@
 #include <udjat/tools/string.h>
 #include <mutex>
 #include <unordered_set>
+#include <udjat/tools/quark.h>
 
 #ifdef DEBUG
 	#undef DEBUG // Disable debug messages
