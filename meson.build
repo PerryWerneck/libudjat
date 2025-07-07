@@ -111,6 +111,7 @@ endif
 if not dmiget.found()
   dmiget = dependency(
       'dmiget',
+      required: false,
       fallback: [ 'dmiget', 'static_library' ]    
   ) 
   extra_libs += [ dmiget ]
