@@ -102,6 +102,7 @@ extra_libs = [
 if not vmdetect.found()
   vmdetect = dependency(
       'vmdetect',
+      required: false,
       fallback: [ 'vmdetect', 'static_library' ]    
   ) 
   extra_libs += [ vmdetect ]
