@@ -31,6 +31,8 @@ product_name = 'udjat'
 product_domain = 'br.eti.werneck'
 product_title = 'The eye of horus'
 
+cxx = meson.get_compiler('cpp')
+
 lib_src = []
 
 #
@@ -82,7 +84,6 @@ pugixml = dependency(
   required: true,
 )
 
-
 required_libs = [
   pugixml,
   uriparser
@@ -96,6 +97,7 @@ private_libs = [
 extra_libs = [
   intl,
   iconv,
+  cxx.find_library('dl', required: true),
   dependency('threads')
 ] 
 
@@ -122,8 +124,6 @@ endif
 #
 # Compiler flags
 #
-cxx = meson.get_compiler('cpp')
-
 time_epoch = run_command('sh', '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
 if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
