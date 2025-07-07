@@ -103,7 +103,8 @@ if not vmdetect.found()
   vmdetect = dependency(
       'vmdetect',
       required: false,
-      fallback: [ 'vmdetect', 'static_library' ]    
+      fallback: [ 'vmdetect', 'static_library' ],
+      default_options: ['default_library=static']  
   ) 
   extra_libs += [ vmdetect ]
 endif
@@ -112,7 +113,8 @@ if not dmiget.found()
   dmiget = dependency(
       'dmiget',
       required: false,
-      fallback: [ 'dmiget', 'static_library' ]    
+      fallback: [ 'dmiget', 'static_library' ],
+      default_options: ['default_library=static']    
   ) 
   extra_libs += [ dmiget ]
 endif
