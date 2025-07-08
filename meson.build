@@ -97,7 +97,7 @@ private_libs = [
 extra_libs = [
   intl,
   iconv,
-  cxx.find_library('dl', required: true),
+  cxx.find_library('dl', required: false),
   dependency('threads')
 ] 
 
