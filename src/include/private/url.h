@@ -23,6 +23,11 @@
 #include <udjat/defs.h>
 #include <udjat/tools/url.h>
 #include <udjat/tools/url/handler.h>
+#include <string>
+
+#ifdef HAVE_SMBIOS
+	#include <smbios/value.h>
+#endif // HAVE_SMBIOS
 
 namespace Udjat {
 
@@ -61,5 +66,30 @@ namespace Udjat {
 
 
 	};
+
+#ifdef HAVE_SMBIOS
+	/// @brief Handle dmi:// URL or smbios:// URL.
+	/// @details This handler is used to access DMI information on the system
+	class UDJAT_PRIVATE SMBiosURLHandler : public URL::Handler {	
+	private:
+		URL url;
+		MimeType mimetype = MimeType::json; ///< @brief The requested mimetype, default is 'application/json'.
+
+	public:
+
+		SMBiosURLHandler(const URL &url);
+
+		const char *c_str() const noexcept override;
+
+		bool get(Udjat::Value &value, const HTTP::Method method = HTTP::Get, const char *payload = "") override;
+
+		int perform(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total, const void *data, size_t len)> &progress) override;
+
+		int test(const HTTP::Method method = HTTP::Head, const char *payload = "") override;
+
+		Handler & set(const MimeType mimetype) override;
+
+	};
+#endif
 
 }

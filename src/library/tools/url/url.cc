@@ -107,7 +107,7 @@
 		}
 	}
 
-	String URL::path() const {
+	String URL::path(bool strip) const {
 
 		ParsedUri uri{*this};
 
@@ -115,8 +115,10 @@
 
 		if (uri.pathHead) {
 			for(UriPathSegmentA *pathSegment = uri.pathHead; pathSegment; pathSegment = pathSegment->next) {
-				result += '/';
-				size_t len =  (size_t) (pathSegment->text.afterLast - pathSegment->text.first);
+				if(!strip) {
+					result += '/';
+				}
+				size_t len = (size_t) (pathSegment->text.afterLast - pathSegment->text.first);
 				result += string{pathSegment->text.first,len};
 			}
 		}

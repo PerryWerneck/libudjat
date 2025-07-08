@@ -47,7 +47,7 @@
 		return instance;
 	}
 
-	XML::Parser::Parser(const char *n) : name{n} {
+	XML::Parser::Parser(const char *n) : parser_name{n} {
 		Factories().push_back(this);
 	}
 
@@ -130,6 +130,14 @@
 		}
 
 		return 0;
+	}
+
+	void XML::parse_children(const XML::Node &node) {
+		for(const auto &child : node) {
+			if(XML::parse(child)) {
+				parse_children(child); // Child was handled, parse its children.
+			}
+		}	
 	}
 
 	bool XML::parse(const XML::Node &node) {

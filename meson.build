@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.0.1',
+	version: '2.0.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -30,6 +30,8 @@ project_description = 'UDJat core library'
 product_name = 'udjat'
 product_domain = 'br.eti.werneck'
 product_title = 'The eye of horus'
+
+cxx = meson.get_compiler('cpp')
 
 lib_src = []
 
@@ -53,17 +55,75 @@ subdir('po')
 # Dependencies
 #
 iconv = dependency('iconv')
-uriparser = dependency('liburiparser', method : 'pkg-config')
-lib_deps = [
-  dependency('pugixml'),  
-  uriparser,
+intl = dependency('intl', required: false)
+
+# URIPARSER
+uriparser = dependency(
+  'liburiparser', 
+  required: true,
+)
+
+# VMDETECT (optional)
+vmdetect = dependency(
+  'vmdetect', 
+  method : 'pkg-config',
+  required: false,
+)
+
+# DMIGET (optional)
+dmiget = dependency(
+  'dmiget', 
+  method : 'pkg-config',
+  required: false,
+)
+
+# PUGIXML
+pugixml = dependency(
+  'pugixml',
+  method : 'pkg-config',
+  required: true,
+)
+
+required_libs = [
+  pugixml,
+  uriparser
 ]
+
+private_libs = [
+  vmdetect,
+  dmiget,
+]
+
+extra_libs = [
+  intl,
+  iconv,
+  cxx.find_library('dl', required: false),
+  dependency('threads')
+] 
+
+if not vmdetect.found()
+  vmdetect = dependency(
+      'vmdetect',
+      required: false,
+      fallback: [ 'vmdetect', 'static_library' ],
+      default_options: ['default_library=static']  
+  ) 
+  extra_libs += [ vmdetect ]
+endif
+
+if not dmiget.found()
+  dmiget = dependency(
+      'dmiget',
+      required: false,
+      fallback: [ 'dmiget', 'static_library' ],
+      default_options: ['default_library=static']    
+  ) 
+  extra_libs += [ dmiget ]
+endif
 
 #
 # Compiler flags
 #
-cxx = meson.get_compiler('cpp')
-
 time_epoch = run_command('sh', '-c', 'echo "$SOURCE_DATE_EPOCH"', check : true).stdout().strip()
 if time_epoch == ''
   time_epoch = run_command('date','+%Y%m%d', check: true).stdout().strip()
@@ -134,55 +194,35 @@ app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
 app_conf.set('HAVE_LOCALTIME_R', cxx.has_function('localtime_r'))
 
 app_conf.set('HAVE_PUGIXML', 1)
-app_conf.set('HAVE_LIBINTL', 1)
+
+if intl.found()
+  app_conf.set('HAVE_LIBINTL', 1)
+endif 
 
 app_conf.set('PRODUCT_TITLE', product_title)
 app_conf.set('PRODUCT_NAME',product_name)
 app_conf.set('PRODUCT_DOMAIN',product_domain)
 
-app_conf.set_quoted('LOG_DOMAIN','lib' + product_name)
-
 includes_dir = include_directories('src/include')
 
-#
-# VMDetect (optional)
-#
-vmdetect_dep = dependency('vmdetect-static', required: false)
-if vmdetect_dep.found()
-  app_conf.set('HAVE_VMDETECT', 2)
-  lib_deps += vmdetect_dep
-else
-  vmdetect_dep = dependency('vmdetect', required: false)
-  if vmdetect_dep.found()
-    app_conf.set('HAVE_VMDETECT', 1)
-    lib_deps += vmdetect_dep
-  endif
+if vmdetect.found()
+  app_conf.set('HAVE_VMDETECT', 1)
+endif
+
+if dmiget.found()
+  app_conf.set('HAVE_SMBIOS', 1)
 endif
 
 #
-# DMIGet (optional)
+# Check for available options for configuration libraries
 #
-dmiget_dep = dependency('dmiget-static', required: false)
-if dmiget_dep.found()
-  app_conf.set('HAVE_SMBIOS', 2)
-  lib_deps += dmiget_dep
-else
-  dmiget_dep = dependency('dmiget', required: false)
-  if dmiget_dep.found()
-    app_conf.set('HAVE_SMBIOS', 1)
-    lib_deps += dmiget_dep
-  endif
-endif
+econf = dependency(
+  'libeconf', 
+  method : 'pkg-config',
+  required: false,
+)
 
-#
-# Configuration library (optional)
-#
-conf_dep = dependency('libeconf-static', required: false, method : 'pkg-config')
-if not conf_dep.found()
-  conf_dep = dependency('libeconf', required: false, method : 'pkg-config')
-endif
-
-if conf_dep.found() 
+if econf.found() 
 
   app_conf.set('HAVE_ECONF', 1)
   if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
@@ -191,14 +231,19 @@ if conf_dep.found()
 
 else 
 
-  conf_dep = dependency('iniparser', required: false, method : 'pkg-config')
-  if conf_dep.found()
+  econf = dependency(
+    'iniparser', 
+    required: false, 
+    method : 'pkg-config'
+  )
+  
+  if econf.found()
     app_conf.set('HAVE_INIPARSER', 1)
   endif
 
 endif
 
-lib_deps += conf_dep
+private_libs += econf
 
 #
 # SystemD  (optional)
@@ -206,7 +251,7 @@ lib_deps += conf_dep
 systemd_dep = dependency('libsystemd', required: false  )
 if systemd_dep.found()
   app_conf.set('HAVE_SYSTEMD', 1)
-  lib_deps += systemd_dep
+  required_libs += systemd_dep
 endif 
 
 #
@@ -233,7 +278,6 @@ lib_src += [
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
   'src/library/alert/url.cc',
-  'src/library/load/updater.cc',
   'src/library/module/controller.cc',
   'src/library/module/info.cc',
   'src/library/module/module.cc',
@@ -252,6 +296,7 @@ lib_src += [
   'src/library/tools/commandlineparser.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',
+  'src/library/tools/application/loader.cc',
   'src/library/tools/arguments.cc',
   'src/library/tools/base64.cc',
   'src/library/tools/cache.cc',
@@ -326,14 +371,10 @@ lib_src += [
   'src/library/tools/os/' + host_machine.system() + '/console.cc',
   'src/library/tools/url/handlers/file.cc',
   'src/library/tools/url/handlers/script.cc',
+  'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
 ]
-
-test_src = [
-  'src/testprogram/loader.cc',
-  'src/testprogram/randomfactory.cc',
- ]
 
 #
 # SDK
@@ -348,7 +389,7 @@ pkg_variables = [
   'version_micro=@0@'.format(pkg_micro_version),
 
   'product_name=@0@'.format(product_name),
-  'product_id=@0@.@1@'.format(product_domain,product_name),
+  'product_domain=@0@'.format(product_domain),
   'product_title=@0@'.format(product_title),
   'build_id=@0@'.format(time_epoch),
 
@@ -381,24 +422,9 @@ if host_machine.system() == 'windows'
     name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
-    requires: [ 'pugixml' ],
-    libraries: [ '-l' + meson.project_name() + '.dll' ]
-  )
-
-  # https://mesonbuild.com/Pkgconfig-module.html
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    variables: pkg_variables,
-    requires: [ lib_deps ],
-    extra_cflags: [
-      '-DUDJAT_STATIC',
-      '-pthread',
-    ],
-    libraries: [ 
-      '-l' + meson.project_name(),
-      '-pthread',
-    ] + winlibs
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() + '.dll' ],
+    requires_private: private_libs,
   )
 
 else
@@ -407,26 +433,9 @@ else
     name: 'lib' + meson.project_name(),
     description: project_description,
     variables: pkg_variables,
-    requires: [ 'pugixml' ],
-    requires_private: [ lib_deps ],
-    libraries_private: [ lib_deps ],
-    libraries: [ '-l' + meson.project_name() ]
-  )
-
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    variables: pkg_variables,
-    requires: [ lib_deps ],
-    extra_cflags: [
-      '-DUDJAT_STATIC',
-      '-pthread',
-    ],
-    libraries: [ 
-      '-l:lib' + meson.project_name() + '.a', 
-      '-ldl',
-      '-pthread',
-    ]
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() ],
+    requires_private: private_libs,
   )
 
 endif
@@ -603,7 +612,7 @@ if host_machine.system() == 'windows'
     config_h + lib_src + resources,
     install: true,
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps + [ iconv ],
+    dependencies: required_libs + private_libs + extra_libs,
     include_directories: includes_dir,
     link_args: winlibs,
   )
@@ -618,58 +627,61 @@ else
     soversion : libversion,
     cpp_args: [ '-ffat-lto-objects' ],
     gnu_symbol_visibility: 'hidden',
-    dependencies: lib_deps + [ dependency('threads'), iconv ],
+    dependencies: required_libs + private_libs + extra_libs,
     include_directories: includes_dir,
     link_args: [
       '-ldl'
     ]
   )
 
-endif
+ endif
 
-static_library(
+ static = static_library(
   meson.project_name(), 
   config_h + lib_src,
   install: true,
   cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  dependencies: lib_deps + [ iconv ],
+  dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
-)
+ )
 
- static_library(
-  meson.project_name() + '-loader', 
-  config_h + test_src,
-  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  install: true,
-  dependencies: lib_deps,
-  include_directories: includes_dir
-)
+ static_library = declare_dependency(
+  link_with : static,
+  include_directories : includes_dir,
+  variables: pkg_variables,
+ ) 
+
+ dynamic_library = declare_dependency(
+  link_with : dynamic,
+  include_directories : includes_dir,
+  variables: pkg_variables,
+ ) 
 
 executable(
   meson.project_name(),
-  config_h + test_src + [ 'src/testprogram/main.cc' ],
+  config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],
-  dependencies: lib_deps,
+  dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
 
 executable(
   meson.project_name() + '-loader',
-  config_h + test_src + [ 'src/testprogram/main.cc' ],
+  config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DSDK_APP' ],
   install: true,
   link_with : [ dynamic ],
-  dependencies: lib_deps,
+  dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
 
-version_file = configure_file(
-  input : 'src/include/udjat/version.h.in',
-  output : 'version.h',
-  configuration : app_conf
-)
+#version_file = configure_file(
+#  input : 'src/include/udjat/version.h.in',
+#  output : 'version.h',
+#  configuration : app_conf
+#)
 
 #
 # RPM Macros
@@ -705,7 +717,6 @@ install_headers(
   'src/include/udjat/module.h',
   'src/include/udjat/moduleinfo.h',
   'src/include/udjat/loader.h',
-  version_file,
   subdir: 'udjat'  
 )
 

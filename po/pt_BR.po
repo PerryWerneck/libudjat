@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-06-26 20:49-0300\n"
+"POT-Creation-Date: 2025-06-27 13:12-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,71 +20,13 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.5\n"
 
-#: src/library/agent/root.cc:99 src/library/tools/systemservice.cc:140
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
+#: src/library/tools/string/string.cc:69 src/library/tools/converters.cc:40
+msgid "yes"
+msgstr "sim"
 
-#: src/library/agent/root.cc:99
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/agent.cc:193
-msgid "default"
-msgstr "padrão"
-
-#: src/library/agent/agent.cc:195
-msgid "Normal"
-msgstr "Normal"
-
-#: src/library/agent/agent.cc:196
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:52
-msgid "Agent controller"
-msgstr "Controlador de agentes"
-
-#: src/library/agent/controller.cc:99
-msgid "Agent controller was not initialized"
-msgstr "Controlador de agentes não foi inicializado"
-
-#: src/library/agent/controller.cc:404
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
-#: src/library/agent/state.cc:139
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:144
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/module/module.cc:129
-#, c++-format
-msgid "Module '{}' is not loaded"
-msgstr "Modulo '{}' não foi carregado"
-
-#: src/library/module/module.cc:145
-#, c++-format
-msgid "I dont know how to execute '{}'"
-msgstr "Não sei como executar '{}'"
-
-#: src/library/request/response.cc:127
-msgid "System error"
-msgstr "Erro de sistema"
-
-#: src/library/request/response.cc:189
-msgid "Operation failed"
-msgstr "Operação falhou"
-
-#: src/library/state/state.cc:259 src/library/tools/converters.cc:42
-msgid "on"
-msgstr "ligado"
-
-#: src/library/state/state.cc:259 src/library/tools/converters.cc:49
-msgid "off"
-msgstr "desligado"
+#: src/library/tools/string/string.cc:69 src/library/tools/converters.cc:47
+msgid "no"
+msgstr "não"
 
 #: src/library/tools/application/run.cc:70
 #: src/library/tools/application/run.cc:74
@@ -109,21 +51,43 @@ msgstr "Iniciando serviços"
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
 
-#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
-msgid "yes"
-msgstr "sim"
+#: src/library/tools/commandlineparser.cc:163
+msgid "Show this help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/commandlineparser.cc:166
+msgid "Application options:\n"
+msgstr "Opções da aplicação\n"
+
+#: src/library/tools/commandlineparser.cc:177
+msgid "Quit after \"seconds\""
+msgstr "Encerra após \"seconds\""
+
+#: src/library/tools/commandlineparser.cc:189
+#: src/library/tools/commandlineparser.cc:272
+msgid "Usage:"
+msgstr "Uso:"
+
+#: src/library/tools/commandlineparser.cc:190
+#: src/library/tools/commandlineparser.cc:273
+msgid "[OPTION..]"
+msgstr "[OPÇÕES..]"
 
 #: src/library/tools/converters.cc:41
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:69
-msgid "no"
-msgstr "não"
+#: src/library/tools/converters.cc:42 src/library/state/state.cc:259
+msgid "on"
+msgstr "ligado"
 
 #: src/library/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
+
+#: src/library/tools/converters.cc:49 src/library/state/state.cc:259
+msgid "off"
+msgstr "desligado"
 
 #: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
 #: src/library/tools/exception.cc:53
@@ -367,6 +331,30 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
+#: src/library/tools/logger.cc:350
+msgid "Save log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger.cc:351
+msgid "Send log to console"
+msgstr "Envia log para o console"
+
+#: src/library/tools/logger.cc:352
+msgid "Set log level to 'verbosity'"
+msgstr "Define nível de log para 'verbosity'"
+
+#: src/library/tools/logger.cc:353
+msgid "Quiet output"
+msgstr "Inibe saídas para console"
+
+#: src/library/tools/logger.cc:355
+msgid "Enable coredump"
+msgstr "Habilita coredump"
+
+#: src/library/tools/logger.cc:359
+msgid "Log/Debug options:\n"
+msgstr "Opções de log/debug:\n"
+
 #: src/library/tools/mainloop/os/linux/timer.cc:158
 #: src/library/tools/mainloop/os/windows/timer.cc:158
 msgid "one second"
@@ -409,6 +397,11 @@ msgstr " {} millisegundos"
 #: src/library/tools/message.cc:48
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
+
+#: src/library/tools/object.cc:293
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/tools/os/linux/ip.cc:96
 msgid "Invalid size on RTA_GATEWAY"
@@ -478,6 +471,14 @@ msgstr "Reinstalar serviço"
 msgid "Block access to 'net stop' on this service"
 msgstr "Bloquear acesso a 'net stop' no serviço"
 
+#: src/library/tools/report.cc:221
+msgid "Yes"
+msgstr "Sim"
+
+#: src/library/tools/report.cc:221
+msgid "No"
+msgstr "Não"
+
 #: src/library/tools/script.cc:54 src/library/tools/script.cc:140
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
@@ -489,6 +490,14 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 #: src/library/tools/script.cc:165
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/systemservice.cc:140 src/library/agent/root.cc:99
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/tools/systemservice.cc:144
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
 
 #: src/library/tools/timestamp.cc:105
 msgid "Less than one minute"
@@ -638,68 +647,59 @@ msgstr "Atributo necessário '{}' não foi encontrado"
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
 
-#: src/library/tools/logger.cc:350
-msgid "Save log to file"
-msgstr "Envia log para arquivo"
+#: src/library/agent/agent.cc:193
+msgid "default"
+msgstr "padrão"
 
-#: src/library/tools/logger.cc:351
-msgid "Send log to console"
-msgstr "Envia log para o console"
+#: src/library/agent/agent.cc:195
+msgid "Normal"
+msgstr "Normal"
 
-#: src/library/tools/logger.cc:352
-msgid "Set log level to 'verbosity'"
-msgstr "Define nível de log para 'verbosity'"
+#: src/library/agent/agent.cc:196
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
 
-#: src/library/tools/logger.cc:353
-msgid "Quiet output"
-msgstr "Inibe saídas para console"
+#: src/library/agent/controller.cc:52
+msgid "Agent controller"
+msgstr "Controlador de agentes"
 
-#: src/library/tools/logger.cc:355
-msgid "Enable coredump"
-msgstr "Habilita coredump"
+#: src/library/agent/controller.cc:99
+msgid "Agent controller was not initialized"
+msgstr "Controlador de agentes não foi inicializado"
 
-#: src/library/tools/logger.cc:359
-msgid "Log/Debug options:\n"
-msgstr "Opções de log/debug:\n"
+#: src/library/agent/controller.cc:404
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
 
-#: src/library/tools/commandlineparser.cc:163
-msgid "Show this help message"
-msgstr "Mostra essa mensagem de help"
+#: src/library/agent/root.cc:99
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
 
-#: src/library/tools/commandlineparser.cc:166
-msgid "Application options:\n"
-msgstr "Opções da aplicação\n"
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
 
-#: src/library/tools/commandlineparser.cc:177
-msgid "Quit after \"seconds\""
-msgstr "Encerra após \"seconds\""
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/tools/commandlineparser.cc:189
-#: src/library/tools/commandlineparser.cc:272
-msgid "Usage:"
-msgstr "Uso:"
-
-#: src/library/tools/commandlineparser.cc:190
-#: src/library/tools/commandlineparser.cc:273
-msgid "[OPTION..]"
-msgstr "[OPÇÕES..]"
-
-#: src/library/tools/object.cc:293
+#: src/library/module/module.cc:129
 #, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
+msgid "Module '{}' is not loaded"
+msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/tools/systemservice.cc:144
-msgid "System is not ready"
-msgstr "Sistema não está em funcionamento"
+#: src/library/module/module.cc:145
+#, c++-format
+msgid "I dont know how to execute '{}'"
+msgstr "Não sei como executar '{}'"
 
-#: src/library/tools/report.cc:221
-msgid "Yes"
-msgstr "Sim"
+#: src/library/request/response.cc:127
+msgid "System error"
+msgstr "Erro de sistema"
 
-#: src/library/tools/report.cc:221
-msgid "No"
-msgstr "Não"
+#: src/library/request/response.cc:189
+msgid "Operation failed"
+msgstr "Operação falhou"
 
 #~ msgid "Run in foreground (as application)"
 #~ msgstr "Executar em primeiro plano (como aplicação)"

@@ -31,8 +31,6 @@
  #include <vector>
  #include <libgen.h>
 
- #include <private/randomfactory.h>
-
  #ifndef _WIN32
 	#include <dlfcn.h>
  #endif // !_WIN32
@@ -118,7 +116,6 @@
 
 	}
 
-	RandomFactory rfactory;
 	string testmodule{".build/testmodule" LIBEXT};
 
 	if(CommandLineParser::has_argument(argc,argv,'t',"run-tests")) {

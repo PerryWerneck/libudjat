@@ -78,3 +78,5 @@ test.xml
 
 *.mo
 *.pot
+vmdetect
+dmiget

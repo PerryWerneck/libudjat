@@ -61,7 +61,7 @@
 		/// @details This class is used to parse XML nodes and build objects from them.
 		class UDJAT_API Parser {
 		private:
-			const char *name = nullptr;
+			const char *parser_name = nullptr;
 
 		public:
 			Parser(const char *name);
@@ -69,11 +69,11 @@
 
 #if __cplusplus >= 202002L
 			inline auto operator <=>(const char *name) const noexcept {
-				return strcasecmp(name,this->name);
+				return strcasecmp(name,parser_name);
 			}
 #else
 			inline bool operator==(const char *name) const noexcept {
-				return strcasecmp(name,this->name) == 0;
+				return strcasecmp(name,parser_name) == 0;
 			}
 #endif
 
@@ -81,6 +81,14 @@
 			/// @param node XML node to parse.
 			/// @return true if the node was parsed and should be ignored by the caller.
 			virtual bool parse(const XML::Node &node) = 0;
+
+			inline const char *c_str() const noexcept {
+				return parser_name;
+			}
+
+			inline const char *name() const noexcept {
+				return parser_name;
+			}
 
 		};
 		
@@ -128,10 +136,13 @@
 		/// @retval 0 if no reload is required.
 		UDJAT_API time_t parse(const char *path = nullptr);
 
-		/// @brief Load xml options below node.
+		/// @brief Load xml options for node.
 		/// @return true if the node was parsed and should be ignored by the caller.
 		UDJAT_API bool parse(const XML::Node &node);
-	
+
+		/// @brief Load options for node children.
+		void parse_children(const XML::Node &node);
+		
 	}
 
 	/// @brief Test common filter options.

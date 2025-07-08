@@ -23,6 +23,8 @@
  #include <udjat/loader.h>
  #include <iostream>
  #include <udjat/net/interface.h>
+ #include <udjat/tools/url.h>
+ #include <udjat/tools/logger.h>
 
  using namespace Udjat;
  using namespace std;
@@ -57,6 +59,17 @@
 			} else {
 				app.info() << "Default network interface netmask: " << mask.c_str() << endl;
 			}
+
+#ifdef HAVE_SMBIOS
+			try {
+				string smbios = URL{"dmi:///BIOS"}.get();
+				app.info() << "SMBIOS information: " << smbios.c_str() << endl;
+			} catch(const std::exception &e) {
+				app.error() << "Error getting SMBIOS information: " << e.what() << endl;
+			}	
+
+			throw runtime_error("This is a test error to check the error handling in the application.");
+#endif // HAVE_SMBIOS
 
 		}
 
