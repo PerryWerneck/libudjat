@@ -17,7 +17,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.0.2
+Version:		2.0
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -105,8 +105,11 @@ mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 %files devel
 %defattr(-,root,root)
 
+%{_bindir}/udjat-loader
+
 %{_libdir}/*.so
 %{_libdir}/*.a
+
 %{_libdir}/pkgconfig/*.pc
 %{_rpmmacrodir}/macros.*
 
