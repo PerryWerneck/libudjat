@@ -49,7 +49,7 @@
 			///
 			struct UDJAT_API Status : SERVICE_STATUS {
 
-				constexpr Status() {
+				Status() {
 
 					/// @brief The type of service.
 					dwServiceType				= SERVICE_WIN32;
