@@ -68,7 +68,7 @@
 				app.error() << "Error getting SMBIOS information: " << e.what() << endl;
 			}	
 
-			throw runtime_error("This is a test error to check the error handling in the application.");
+			// throw runtime_error("This is a test error to check the error handling in the application.");
 #endif // HAVE_SMBIOS
 
 		}
