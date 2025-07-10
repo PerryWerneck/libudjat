@@ -5,9 +5,9 @@ src/library/tools/action.cc
 src/library/tools/activatable.cc
 src/library/tools/application/application.cc
 src/library/tools/application/init.cc
+src/library/tools/application/loader.cc
 src/library/tools/application/run.cc
 src/library/tools/application/setup.cc
-src/library/tools/application/loader.cc
 src/library/tools/arguments.cc
 src/library/tools/base64.cc
 src/library/tools/cache.cc
@@ -136,6 +136,7 @@ src/library/tools/os/windows/threadpool.cc
 src/library/tools/os/windows/urlconnect.cc
 src/library/tools/os/windows/utils.cc
 src/library/tools/os/windows/win32service.cc
+src/library/tools/quark.cc
 src/library/tools/report.cc
 src/library/tools/requestpath.cc
 src/library/tools/script.cc
@@ -167,10 +168,9 @@ src/library/tools/value/type.cc
 src/library/tools/value/xml.cc
 src/library/tools/value/yaml.cc
 src/library/tools/xml/attribute.cc
+src/library/tools/xml/document.cc
 src/library/tools/xml/load.cc
 src/library/tools/xml/misc.cc
-src/library/tools/xml/document.cc
-src/library/tools/quark.cc
 src/library/agent/agent.cc
 src/library/agent/child.cc
 src/library/agent/controller.cc
@@ -287,6 +287,7 @@ src/include/udjat/tools/converters.h
 src/include/udjat/tools/file.h
 src/include/udjat/tools/handler.h
 src/include/udjat/tools/interface.h
+src/include/udjat/tools/intl.h
 src/include/udjat/tools/logger.h
 src/include/udjat/tools/mainloop.h
 src/include/udjat/tools/object.h
@@ -307,7 +308,6 @@ src/include/udjat/tools/url.h
 src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/worker.h
-src/include/udjat/tools/intl.h
 src/include/udjat/tools/xml.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
