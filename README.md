@@ -1,6 +1,8 @@
 # The Eye of Horus - Core library
 
-Udjat core library. Implements tool, module loading, agent management, xml parsing and operating system abstraction layer used by service [udjat](../../../udjat), agent modules and others.
+A foundational software component designed for system monitoring or management purposes. The name "Udjat" likely references the ancient Egyptian symbol of protection and royal power.
+
+This cross-platform core library provides essential functionality for the [udjat service](../../../udjat), agent modules, and other components. It implements tool utilities, dynamic module loading, agent management, XML parsing capabilities, and an operating system abstraction layer that enables seamless operation across different platforms.
 
 ![Platform: Linux/Windows](https://img.shields.io/badge/Platform-Linux/Windows-blue.svg)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
