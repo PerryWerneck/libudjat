@@ -322,7 +322,6 @@ lib_src += [
   'src/library/state/state.cc',
   'src/library/tools/activatable.cc',
   'src/library/tools/application/application.cc',
-  'src/library/tools/application/init.cc',
   'src/library/tools/commandlineparser.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',

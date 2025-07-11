@@ -35,8 +35,9 @@
 	/// @tparam L The standard container.
  #if __cplusplus >= 201703L
 	template <class T, class P = T *, class L = std::list<P>>
-	class Container : public std::mutex {
+	class Container {
 	protected:
+		mutable std::mutex guard;
 		L objects;
 
 	public:
@@ -47,47 +48,47 @@
 		Container() { }
 
 		P back() {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			return objects.back();
 		}
 
 		P front() {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			return objects.front();
 		}
 
-		inline size_t size() noexcept {
-			std::lock_guard<std::mutex> lock(*this);
+		inline size_t size() const noexcept {
+			std::lock_guard<std::mutex> lock(guard);
 			return objects.size();
 		}
 
-		inline bool empty() noexcept {
-			std::lock_guard<std::mutex> lock(*this);
+		inline bool empty() const noexcept {
+			std::lock_guard<std::mutex> lock(guard);
 			return objects.empty();
 		}
 
 		inline void push_back(P object) noexcept {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			objects.push_back(object);
 		}
 
 		inline void add(P object) noexcept {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			objects.push_back(object);
 		}
 
 		inline void remove(P object) noexcept {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			objects.remove(object);
 		}
 
 		inline void remove_if(const std::function<bool(const T &object)> &method) {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			objects.remove_if(method);
 		}
 
 		inline bool for_each(const std::function<bool(const T &object)> &method) const {
-			std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(this)));
+			std::lock_guard<std::mutex> lock(guard);
 			for(auto object : objects) {
 				if(method(*object)) {
 					return true;
@@ -97,7 +98,7 @@
 		}
 
 		inline bool for_each(const std::function<bool(T &object)> &method) {
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			for(auto object : objects) {
 				if(method(*object)) {
 					return true;
