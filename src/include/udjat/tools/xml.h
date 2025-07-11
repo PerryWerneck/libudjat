@@ -141,7 +141,7 @@
 		UDJAT_API bool parse(const XML::Node &node);
 
 		/// @brief Load options for node children.
-		void parse_children(const XML::Node &node);
+		UDJAT_API void parse_children(const XML::Node &node);
 		
 	}
 
