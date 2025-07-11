@@ -313,6 +313,14 @@ namespace Udjat {
 		return *this;
 
 	}
+#else // HAVE_PUGIXML
+	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate) {
+		throw runtime_error("XML support not available");
+	}
+
+	const Quark & Quark::set(const XML::Node &node, const char *xml_attribute, bool upsearch) {
+		throw runtime_error("XML support not available");
+	}
 #endif // HAVE_PUGIXML
 
 }

@@ -56,6 +56,7 @@ subdir('po')
 #
 iconv = dependency('iconv')
 intl = dependency('intl', required: false)
+dbus = dependency('dbus-1', required: false, static: false)
 
 # URIPARSER
 uriparser = dependency(
@@ -152,6 +153,10 @@ app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
+
+if dbus.found()
+  app_conf.set('HAVE_DBUS', 1)
+endif
 
 if uriparser.found()
   app_conf.set('HAVE_URIPARSER', 1)
