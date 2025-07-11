@@ -273,7 +273,12 @@ endif
 #
 # SystemD  (optional)
 #
-systemd_dep = dependency('libsystemd', required: false  )
+systemd_dep = dependency(
+  'libsystemd', 
+  required: false,
+  static: false,
+)
+
 if systemd_dep.found()
   app_conf.set('HAVE_SYSTEMD', 1)
   required_libs += systemd_dep
