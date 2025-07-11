@@ -229,7 +229,7 @@ econf = dependency(
 
 if econf.found() 
 
-  app_conf.set('HAVE_ECONF', 1)
+  private_libs += econf
   if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
     app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
   endif
@@ -237,18 +237,38 @@ if econf.found()
 else 
 
   econf = dependency(
+      'libeconf',
+      required: false,
+      fallback: [ 'libeconf', 'libeconf_dep' ],
+      default_options: ['default_library=static']    
+  ) 
+  app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+  extra_libs += [ econf ]
+
+endif
+
+if econf.found() 
+
+  app_conf.set('HAVE_ECONF', 1)
+
+else
+
+  # Fallback to INIPARSER if libeconf is not found
+
+  iniparser = dependency(
     'iniparser', 
     required: false, 
     method : 'pkg-config'
   )
   
-  if econf.found()
+  if iniparser.found()
     app_conf.set('HAVE_INIPARSER', 1)
   endif
 
+  private_libs += [ iniparser ]
+
 endif
 
-private_libs += econf
 
 #
 # SystemD  (optional)
