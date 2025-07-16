@@ -128,6 +128,9 @@
 #else
 	template <class T>
 	class Container : public std::list<T *>, public std::mutex {
+	protected:
+		mutable std::mutex guard;
+
 	public:
 		Container() {
 		}
