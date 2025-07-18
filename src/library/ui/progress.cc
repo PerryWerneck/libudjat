@@ -60,7 +60,6 @@
 	uint64_t total = 0;
 
 	void update(const Udjat::UI::Console::Foreground color = Udjat::UI::Console::White) const noexcept {
-		lock_guard<mutex> lock((std::mutex &) *controller);
 		controller->up(line).set(color);
 		controller->progress(prefix.c_str(), text.c_str(), current, total);
 		controller->set(Udjat::UI::Console::White).down(line);
