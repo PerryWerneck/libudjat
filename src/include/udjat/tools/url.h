@@ -78,6 +78,10 @@
 		String hostname() const;
 		String servicename() const;
 
+		/// @brief Set the hostname.
+		/// @param name The hostname.
+		URL & hostname(const char *name);
+
 		/// @brief Get URL path.
 		/// @param strip If true remove the leading slash.
 		/// @return The url PATH.
@@ -93,6 +97,16 @@
 
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
+
+		inline URL & operator = (const char *path) {
+			String::operator=(path);
+			return *this;
+		}
+
+		inline URL & operator = (const std::string &path) {
+			String::operator=(path.c_str());
+			return *this;
+		}
 
 		/// @brief Connect to host
 		/// @return A non-blocking, connected socket.
