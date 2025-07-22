@@ -25,6 +25,7 @@
  #include <udjat/tools/url.h>
  #include <string>
  #include <udjat/net/interface.h>
+ #include <udjat/tools/configuration.h>
 
  using namespace Udjat;
  using namespace std;
@@ -67,6 +68,30 @@
 	return 0;
  }
 
+ static int config_test() {
+
+	// This test requires a configuration file with this entries:
+	//
+	// [enum_test]
+	//   value1 = 1
+	//   value2 = 2
+	//   value3 = 3
+	//   value4 = 4
+	auto rc = Config::for_each("enum_test",[](const char *key, const char *value) -> bool {
+		Logger::String{"Configuration key: ",key," = ",value}.info();
+		return false; // Continue iterating
+	});
+
+	if(!rc) {
+		Logger::String{"Configuration test passed."}.info();
+	} else {
+		throw runtime_error{"Configuration test failed."};
+	}
+	return 0;
+
+ }
+
+
  UDJAT_API int run_unit_test(const char *name) {
 
 	static const struct {
@@ -77,6 +102,7 @@
 		{"smbios", smbios_test},
  #endif // HAVE_SMBIOS
 		{"network", network_test},
+		{"config", config_test},
 	};
 
 	if(!name) {

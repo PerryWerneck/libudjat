@@ -508,8 +508,8 @@
 
 			}
 
-			bool next = true;
-			for(size_t ix = 0;ix < length && next; ix++) {
+			bool found = false;
+			for(size_t ix = 0;ix < length && !found; ix++) {
 
 				char *value = nullptr;
 				err = econf_getStringValueDef(
@@ -522,17 +522,15 @@
 
 				if(err == ECONF_SUCCESS) {
 					try {
-
-						next = call(keys[ix],value);
-
+						found = call(keys[ix],value);
+						debug("group='",group,"' key='",keys[ix],"' value='",value,"' found=",found);
 					} catch(const std::exception &e) {
 						cerr << "config\tError '" << e.what() << "' navigating from configuration" << endl;
-						next = false;
+						found = true; // Stop iterating.
 					} catch(...) {
 						cerr << "config\tUnexpected error navigating from configuration" << endl;
-						next = false;
+						found = true; // Stop iterating.
 					}
-
 				}
 
 				if(value) {
@@ -542,7 +540,8 @@
 			}
 			econf_freeArray(keys);
 
-			return next;
+			debug("for_each group='",group,"' found=",found);
+			return found;
 
 		}
 
