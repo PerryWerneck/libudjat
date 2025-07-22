@@ -65,7 +65,7 @@
 		{ 's', "service", 			"Run as system service"			},
 		{ 'm', "module=<module>",	"Load module by name or path"	},
 		{ 'c', "config=<path>",		"Load XML configuration from file or directory (default is test.xml)" },
-		{ 't', "run-tests",			"Run test method (if available)" },
+		{ 't', "test[=test]",		"Run test method 'test'(empty for all tests)" },
 	};
 
 	if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
@@ -114,19 +114,41 @@
 			config_file = argvalue;
 		}
 
+		if(CommandLineParser::get_argument(argc,argv,'t',"test",argvalue)) {
+
+#ifndef _WIN32
+			try {
+				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
+				while(symbol) {
+					symbol(argvalue.c_str());
+					symbol = (int(*)(const char *)) dlsym(RTLD_NEXT,"run_unit_test");
+				}
+			} catch(const std::exception &e) {
+				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
+				return -1;
+			}
+#endif
+			return 0;
+		}
+
 	}
 
 	string testmodule{".build/testmodule" LIBEXT};
 
-	if(CommandLineParser::has_argument(argc,argv,'t',"run-tests")) {
+	if(CommandLineParser::has_argument(argc,argv,'t',"test")) {
 
-		// Run tests
-		for(auto module : modules) {
-			int rc = module->run_unit_test();
-			if(rc) {
-				return rc;
+#ifndef _WIN32
+		try {
+			int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
+			while(symbol) {
+				symbol(nullptr);
+				symbol = (int(*)(const char *)) dlsym(RTLD_NEXT,"run_unit_test");
 			}
+		} catch(const std::exception &e) {
+			Logger::String{"Error running unit tests: ",e.what()}.error();
+			return -1;
 		}
+#endif
 
 		return 0;
 
@@ -193,7 +215,6 @@
 			Logger::String{"Module '" + testmodule + "' not found"}.error();
 			return -1;
 		}
-		modules.back()->run_unit_test();
 
 	} else {
 

@@ -80,11 +80,6 @@
 		/// @brief Build module from filename.
 		static Module * factory(const char *filename);
 
-		/// @brief Run module unit test (if available).
-		/// @details This method will try to find a function named 'run_unit_test' in the module.
-		/// @return 0 if success, -1 on error.
-		int run_unit_test() const;
-
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->name,name) == 0;
 		}
@@ -181,15 +176,19 @@
 
  extern "C" {
 
+	/// @brief Run unit test.
+	/// @details This function is used to run unit tests from the command line.
+	/// @note This function is used by the test program and should not be used in production code.
+	/// @param name The test name to run. If null, all tests are run.
+	/// @return 0 if success, -1 on error.
+	UDJAT_API int run_unit_test(const char *name);
+
 	/// @brief Module information data.
 	extern UDJAT_API const Udjat::ModuleInfo udjat_module_info;
 
 	/// @brief Initialize module.
 	/// @return Module controller.
 	UDJAT_API Udjat::Module * udjat_module_init();
-
-	/// @brief Run module unit test.
-	UDJAT_API int udjat_module_run_unit_test();
 
 	/// @brief Initialize module from XML node.
 	/// @return Module controller.
