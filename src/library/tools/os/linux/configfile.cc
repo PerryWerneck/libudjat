@@ -26,6 +26,7 @@
  #include <private/configuration.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/quark.h>
+ #include <cstdarg>
 
  #ifdef LOG_DOMAIN
 	#undef LOG_DOMAIN
@@ -557,12 +558,30 @@
 		private:
 			dictionary  *ini;
 
-			Controller() : ini{iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str())} {
+			static int error_callback(const char *format, ...) {
+				va_list args;
+				va_start(args, format);
+				char *message = NULL;
+				vasprintf(&message, format, args);
+				va_end(args);
+				if(message) {
+					Logger::String{message}.error("iniparser");
+					free(message);
+				}
+				return 0; // Return 0 to continue processing.
+			}
+
+			Controller() {
+
+				iniparser_set_error_callback(error_callback);
+
+				ini = iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str());
 				if(!ini) {
 					Logger::String{"Cant load /etc/",program_invocation_short_name,".conf, using default configuration"}.warning("iniparser");
 				} else if(Logger::enabled(Logger::Trace)) {
 					Logger::String{"Got configuration from /etc/",program_invocation_short_name,".conf'"}.trace("iniparser");
 				}
+
 			}
 
 			Udjat::String key(const char *group, const char *key) const {
@@ -575,6 +594,7 @@
 					iniparser_freedict(ini);
 					ini = nullptr;
 				}
+				iniparser_set_error_callback(NULL);
 			}
 	
 			static Controller & getInstance() {
@@ -680,30 +700,42 @@
 		
 			bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
 
-				throw system_error(ENOTSUP,system_category(),"Cant enumerate iniparser keys on legacy mode");
-
-				/*
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(ini) {
-				  size_t items = iniparser_getsecnkeys(ini,(char *) group);
-				  if(items) {
-				    char **k = iniparser_getseckeys(ini, (char *) group);
-				    if(k) {
-				      for(size_t ix = 0; ix < items; ix++) {
-					const char *ptr = strchr(k[ix],':');
-					  if(ptr) {
-					  ptr++;
-					  if(call(ptr,Config::get(group,ptr,"").c_str())) {
-					    return true;
-					  }
-					}
-				      }
-				    }
-				  }
+				if(!ini) {
+					return false;
 				}
-*/
 
-				return false;
+				std::lock_guard<std::recursive_mutex> lock(guard);
+				size_t items = iniparser_getsecnkeys(ini,(char *) group);
+				if(!items) {
+					debug("No items in group '",group,"'");
+					return false;
+				}
+
+				char **keys = new char *[items];
+
+				if(!iniparser_getseckeys(ini, (char *) group, (const char **) keys)) {
+					debug("Failed to get keys for group '",group,"'");
+					delete[] keys;
+					return false;
+				}
+
+				bool found = false;
+				for(size_t ix = 0;ix < items && !found; ix++) {
+					const char *value = iniparser_getstring(ini,keys[ix],"");
+					if(value) {
+						try {
+							const char *ptr = strchr(keys[ix],':');
+							found = call((ptr ? (ptr+1) : keys[ix]),value);
+						} catch(const std::exception &e) {
+							debug("Error processing key='",keys[ix],"': ",e.what());
+							break; // Stop iterating.
+						}
+					}
+				}
+
+				delete[] keys;
+				return found;
+
 			}
 	
 		};
