@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-10 21:14-0300\n"
+"POT-Creation-Date: 2025-07-22 12:16-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -683,12 +683,12 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/module/module.cc:129
+#: src/library/module/module.cc:114
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:145
+#: src/library/module/module.cc:130
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"

@@ -221,10 +221,25 @@ $(OBJRLS)/%.o: \
 #---[ Release Targets ]------------------------------------------------------------------
 
 all: \
-	$(BINRLS)/@SONAME@
+	$(BINRLS)/@SONAME@ \
+	$(BINRLS)/udjat@EXEEXT@
 
 Release: \
 	$(BINRLS)/@SONAME@
+
+$(BINRLS)/udjat@EXEEXT@: \
+	$(foreach SRC, $(basename $(TEST_SOURCES)), $(OBJDBG)/$(SRC).o) \
+	$(BINRLS)/@SONAME@
+
+	@$(MKDIR) $(@D)
+	@echo $< ...
+	@$(LD) \
+		-o $@ \
+		$^ \
+		-L$(BINDBG) \
+		-Wl,-rpath,$(BINRLS) \
+		$(LDFLAGS) \
+		$(LIBS)
 
 $(BINRLS)/@SONAME@: \
 	$(foreach SRC, $(basename $(SOURCES)), $(OBJRLS)/$(SRC).o)

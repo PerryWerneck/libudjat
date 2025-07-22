@@ -4,7 +4,6 @@ src/library/tools/string/xml.cc
 src/library/tools/action.cc
 src/library/tools/activatable.cc
 src/library/tools/application/application.cc
-src/library/tools/application/init.cc
 src/library/tools/application/run.cc
 src/library/tools/application/setup.cc
 src/library/tools/application/loader.cc
@@ -154,7 +153,6 @@ src/library/tools/url/watcher.cc
 src/library/tools/url/worker.cc
 src/library/tools/url/handler.cc
 src/library/tools/url/url.cc
-src/library/tools/value/abstract.cc
 src/library/tools/value/construct.cc
 src/library/tools/value/csv.cc
 src/library/tools/value/get.cc
@@ -171,6 +169,7 @@ src/library/tools/xml/load.cc
 src/library/tools/xml/misc.cc
 src/library/tools/xml/document.cc
 src/library/tools/quark.cc
+src/library/tools/tests.cc
 src/library/agent/agent.cc
 src/library/agent/child.cc
 src/library/agent/controller.cc
@@ -214,8 +213,8 @@ src/library/request/responsevalue.cc
 src/library/state/level.cc
 src/library/state/parse.cc
 src/library/state/state.cc
-src/library/ui/progress.cc
 src/library/ui/status.cc
+src/library/ui/progress.cc
 src/include/private/event.h
 src/include/private/filewatcher.h
 src/include/private/linux/mainloop.h
@@ -307,8 +306,8 @@ src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/worker.h
 src/include/udjat/tools/intl.h
-src/include/udjat/tools/url.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/url.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/progress.h
