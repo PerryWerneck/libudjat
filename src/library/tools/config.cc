@@ -35,13 +35,25 @@
 
 	namespace Config {
 
+		bool Controller::allow_user_config = false;
+
 #ifdef _WIN32
 		Controller & Controller::getInstance() {
 			static Config::Controller instance;
 			return instance;
 		}
+
+		bool Controller::allow_user_homedir(bool allow);
+			HKEY hNew = allow ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
+			if(hNew == hParent) {
+				return false;
+			}
+			hParent = hNew;
+			Logger::String{"Configuration from user homedir is ",string(allow ? "enabled" : "disabled")}.trace();
+			return true;
+		}
+
 #else
-		bool Controller::allow_user_config = false;
 
 		Controller & Controller::getInstance() {
 			std::lock_guard<std::recursive_mutex> lock(guard);
@@ -49,14 +61,13 @@
 			return instance;
 		}
 
-		void Controller::allow_user_homedir(bool allow) {
-			if(allow != allow_user_config) {
-				allow_user_config = allow;
-				if(*this) {
-					close();
-					open();
-				}
+		bool Controller::allow_user_homedir(bool allow) {
+			if(allow == allow_user_config) {
+				return false;
 			}
+			allow_user_config = allow;
+			Logger::String{"Configuration from user homedir is ",string(allow ? "enabled" : "disabled")}.trace();
+			return true;
 		}
 #endif
 
@@ -93,7 +104,7 @@
 		}
 
 		UDJAT_API void allow_user_homedir(bool allow) noexcept {
-			Controller::getInstance().allow_user_homedir(allow);
+			Controller::allow_user_homedir(allow);
 		}
 
 		UDJAT_API bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {

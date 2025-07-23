@@ -44,7 +44,7 @@
 		// Controller with win32 registry as backend.
 		class UDJAT_PRIVATE Controller {
 		private:
-			HKEY hParent = HKEY_LOCAL_MACHINE;
+			static HKEY hParent = HKEY_LOCAL_MACHINE;
 			Controller() = default;
 
 		public:
@@ -62,9 +62,7 @@
 			inline void reload() {
 			}
 
-			inline void allow_user_homedir(bool allow) {
-				hParent = (allow ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE);
-			}
+			static bool allow_user_homedir(bool allow);
 
 			inline bool hasGroup(const char *group) {
 				return Win32::Registry{hParent,false}.hasKey(group);
@@ -78,38 +76,6 @@
 			inline T get(const char *group, const char *key, const T def) const {
 				return Win32::Registry{hParent,group,false}.get(key,def);
 			}
-
-			/*
-			inline int32_t get(const char *group, const char *name, const int32_t def) const {
-				return (int32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
-			}
-
-			inline int64_t get(const char *group, const char *name, const int64_t def) const {
-				return (int64_t) (Win32::Registry{hParent,group}.get(name,(UINT64) def));
-			}
-
-			inline uint32_t get(const char *group, const char *name, const uint32_t def) const {
-				return (uint32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
-			}
-
-			inline uint64_t get(const char *group, const char *name, const uint64_t def) const {
-				return (Win32::Registry{hParent,group}.get(name,(UINT64) def));
-			}
-
-			inline float get(const char *group, const char *name, const float def) const {
-				// FIXME: Implement.
-				return def;
-			}
-
-			inline double get(const char *group, const char *name, const double def) const {
-				// FIXME: Implement.
-				return def;
-			}
-
-			inline bool get(const char *group, const char *name, const bool def) const {
-				return (int32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
-			}
-			*/
 
 			inline Udjat::String get_string(const char *group, const char *name, const char *def) const {
 				return Win32::Registry{hParent,group}.get(name,def);
@@ -146,7 +112,10 @@
 				return (bool) hFile;
 			}
 
-			void allow_user_homedir(bool allow);
+			/// @brief Set if user homedir is allowed to be used for configuration.
+			/// @param allow If true, the configuration can be loaded from the user's home directory. 
+			/// @return true if value has changed.
+			static bool allow_user_homedir(bool allow);
 
 			~Controller();
 
@@ -199,7 +168,11 @@
 
 			~Controller();
 
-			void allow_user_homedir(bool allow);
+			/// @brief Set if user homedir is allowed to be used for configuration.
+			/// @param allow If true, the configuration can be loaded from the user's home directory. 
+			/// @return true if value has changed.
+			static bool allow_user_homedir(bool allow);
+
 			void open();
 			void close();
 
@@ -233,7 +206,7 @@
 		// Controller without backend.
 		class UDJAT_PRIVATE Controller {
 		private:
-			bool allow_user_config = false;
+			static bool allow_user_config;
 
 		public:
 
