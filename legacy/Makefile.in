@@ -69,46 +69,11 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/os/linux/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/os/linux/application/*.cc) \
-	src/library/tools/os/linux/arguments.cc \
-	src/library/tools/os/linux/configfile.cc \
-	src/library/tools/os/linux/console.cc \
-	src/library/tools/os/linux/event.cc \
-	src/library/tools/os/linux/eventcontroller.cc \
-	src/library/tools/os/linux/file.cc \
-	src/library/tools/os/linux/file/copy.cc \
-	src/library/tools/os/linux/file/list.cc \
-	src/library/tools/os/linux/file/move.cc \
-	src/library/tools/os/linux/file/path.cc \
-	src/library/tools/os/linux/file/sysconfig.cc \
-	src/library/tools/os/linux/file/sysconfig_value.cc \
-	src/library/tools/os/linux/file/temporary.cc \
-	src/library/tools/os/linux/file/text.cc \
-	src/library/tools/os/linux/file/watcher.cc \
-	src/library/tools/os/linux/hostname.cc \
-	src/library/tools/os/linux/logger.cc \
-	src/library/tools/os/linux/netlink_routes.cc \
-	src/library/tools/os/linux/shortcut.cc \
-	src/library/tools/os/linux/socket.cc \
-	src/library/tools/os/linux/system.cc \
-	src/library/tools/os/linux/systemservice.cc \
-	src/library/tools/os/linux/threadpool.cc \
-	src/library/tools/os/linux/urlconnect.cc \
-	src/library/tools/os/linux/nic.cc \
-	src/library/tools/os/linux/ip.cc \
-	src/library/tools/url/controller.cc \
-	src/library/tools/url/handler.cc \
-	src/library/tools/url/handlers/file.cc \
-	src/library/tools/url/handlers/script.cc \
-	src/library/tools/url/header.cc \
-	src/library/tools/url/methodfactory.cc \
-	src/library/tools/url/unescape.cc \
-	src/library/tools/url/url.cc \
-	src/library/tools/url/watcher.cc \
-	src/library/tools/url/worker.cc \
-	src/library/tools/xml/attribute.cc \
-	src/library/tools/xml/document.cc \
-	src/library/tools/xml/load.cc \
-	src/library/tools/xml/misc.cc
+	$(wildcard $(srcdir)/src/library/tools/os/linux/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/os/linux/file/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/url/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/url/handlers/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/xml/*.cc)
 
 TEST_SOURCES= \
 	src/testprogram/main.cc
