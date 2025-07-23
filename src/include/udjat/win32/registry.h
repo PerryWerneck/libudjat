@@ -84,8 +84,51 @@
 			void remove(const char *keyname);
 
 			Udjat::String get(const char *name, const char *def) const;
-			DWORD get(const char *name, DWORD def) const;
-			UINT64 get(const char *name, UINT64 def) const;
+
+			/// @brief Get value as int32_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			int32_t get(const char *name, int32_t def) const;
+			
+			/// @brief Get value as int64_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			int64_t get(const char *name, int64_t def) const;
+
+			/// @brief Get value as uint32_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			uint32_t get(const char *name, uint32_t def) const;
+
+			/// @brief Get value as uint64_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			uint64_t get(const char *name, uint64_t def) const;
+
+			/// @brief Get value as float.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			float get(const char *name, float def) const;
+
+			/// @brief Get value as double.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			double get(const char *name, double def) const;
+			
+			/// @brief Get value as boolean.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			bool get(const char *name, bool def) const;
+
+			// DWORD get(const char *name, DWORD def) const;
+			// UINT64 get(const char *name, UINT64 def) const;
 
 			/// @brief Get binary data from registry.
 			/// @param name The value name.

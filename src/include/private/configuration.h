@@ -71,9 +71,15 @@
 			}
 
 			inline bool hasKey(const char *group, const char *key) {
-				return Win32::Registry{hParent,group}.hasValue(key);
+				return Win32::Registry{hParent,group,false}.hasValue(key);
 			}
 
+			template <typename T>
+			inline T get(const char *group, const char *key, const T def) const {
+				return Win32::Registry{hParent,group,false}.get(key,def);
+			}
+
+			/*
 			inline int32_t get(const char *group, const char *name, const int32_t def) const {
 				return (int32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
 			}
@@ -103,6 +109,7 @@
 			inline bool get(const char *group, const char *name, const bool def) const {
 				return (int32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
 			}
+			*/
 
 			inline Udjat::String get_string(const char *group, const char *name, const char *def) const {
 				return Win32::Registry{hParent,group}.get(name,def);
@@ -270,7 +277,7 @@
 				return def;
 			}
 
-			inline Udjat::String get(const char *, const char *, const char *def) const noexcept {
+			inline Udjat::String get_string(const char *, const char *, const char *def) const noexcept {
 				return Udjat::String{def};
 			}
 
