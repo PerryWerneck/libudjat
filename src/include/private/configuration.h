@@ -18,7 +18,6 @@
  */
 
 #pragma once
-
 #include <config.h>
 #include <udjat/defs.h>
 #include <udjat/tools/logger.h>
@@ -26,7 +25,7 @@
 #include <mutex>
 #include <functional>
 
- // https://github.com/openSUSE/libeconf
+// https://github.com/openSUSE/libeconf
 #if defined(HAVE_ECONF)
  extern "C" {
 	#include <libeconf.h>
@@ -100,6 +99,8 @@
 				return (bool) hFile;
 			}
 
+			void allow_user_homedir(bool allow);
+
 			~Controller();
 
 			void open();
@@ -155,6 +156,7 @@
 
 			~Controller();
 
+			void allow_user_homedir(bool allow) noexcept;
 			void open();
 			void close();
 
@@ -188,6 +190,7 @@
 		// Controller without backend.
 		class UDJAT_PRIVATE Controller {
 		private:
+			bool allow_user_config = false;
 
 		public:
 
@@ -206,33 +209,36 @@
 			~Controller() {				
 			}
 
-			inline void open() {
+			inline void allow_user_homedir(bool allow) const noexcept {
 			}
 
-			inline void close() {
+			inline void open() const noexcept {
 			}
 
-			inline void reload() {
+			inline void close() const noexcept {
 			}
 
-			inline bool hasGroup(const char *) {
+			inline void reload() const noexcept {
+			}
+
+			inline bool hasGroup(const char *) const noexcept {
 				return false;
 			}
 
-			inline bool hasKey(const char *, const char *) {
+			inline bool hasKey(const char *, const char *) const noexcept {
 				return false;
 			}
 
 			template <typename T>
-			inline T get(const char *, const char *, const T def) const {
+			inline T get(const char *, const char *, const T def) const noexcept {
 				return def;
 			}
 
-			inline Udjat::String get(const char *, const char *, const char *def) const {
+			inline Udjat::String get(const char *, const char *, const char *def) const noexcept {
 				return Udjat::String{def};
 			}
 
-			inline  bool for_each(const char *,const std::function<bool(const char *, const char *)> &) {
+			inline  bool for_each(const char *,const std::function<bool(const char *, const char *)> &) const noexcept {
 				return false;
 			}
 

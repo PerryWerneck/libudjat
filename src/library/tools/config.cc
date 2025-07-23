@@ -43,6 +43,16 @@
 			return instance;
 		}
 
+		void Controller::allow_user_homedir(bool allow) {
+			if(allow != allow_user_config) {
+				allow_user_config = allow;
+				if(*this) {
+					close();
+					open();
+				}
+			}
+		}
+
 		int Value<string>::select(const char *value, va_list args) const noexcept {
 
 			if(empty()) {
@@ -73,6 +83,10 @@
 
 			return rc;
 
+		}
+
+		UDJAT_API void allow_user_homedir(bool allow) noexcept {
+			Controller::getInstance().allow_user_homedir(allow);
 		}
 
 		UDJAT_API bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
