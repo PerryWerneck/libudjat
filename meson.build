@@ -236,14 +236,14 @@ if econf.found()
 
 else 
 
-#  econf = dependency(
-#      'libeconf',
-#      required: false,
-#      fallback: [ 'libeconf', 'libeconf_dep' ],
-#      default_options: ['default_library=static']    
-#  ) 
-#  app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-#  extra_libs += [ econf ]
+  econf = dependency(
+      'libeconf',
+      required: false,
+      fallback: [ 'libeconf', 'libeconf_dep' ],
+      default_options: ['default_library=static']    
+  ) 
+  app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+  extra_libs += [ econf ]
 
 endif
 
