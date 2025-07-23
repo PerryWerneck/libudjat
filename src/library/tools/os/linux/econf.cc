@@ -20,6 +20,9 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <signal.h>
+ #include <stdexcept>
+
+ using namespace std;
 
  #ifdef HAVE_ECONF
 
@@ -96,8 +99,11 @@
 			NULL
 		);
 
-		debug("err=",err);
+		debug("err=",err," allow_user_config=",allow_user_config);
 		if(err == ECONF_NOFILE && allow_user_config) {
+
+			debug("Trying user configuration directory");
+
 			const char *homedir = getenv("HOME");
 			if(homedir) {
 				if(hFile) {
@@ -133,7 +139,9 @@
 				econf_freeFile(hFile);
 				hFile = nullptr;
 			}
-			Logger::String{"Cant load configuration (",econf_errString(err),"), using defaults"}.warning("econf");
+			throw runtime_error(Logger::String{"Error loading configuration file: ", econf_errString(err)});
+
+			// Logger::String{"Cant load configuration (",econf_errString(err),"), using defaults"}.warning("econf");
 		}
 
 	}
