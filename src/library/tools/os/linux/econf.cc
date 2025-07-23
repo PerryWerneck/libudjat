@@ -139,9 +139,7 @@
 				econf_freeFile(hFile);
 				hFile = nullptr;
 			}
-			throw runtime_error(Logger::String{"Error loading configuration file: ", econf_errString(err)});
-
-			// Logger::String{"Cant load configuration (",econf_errString(err),"), using defaults"}.warning("econf");
+			Logger::String{"Cant load configuration (",econf_errString(err),"), using defaults"}.warning();
 		}
 
 	}
@@ -219,6 +217,10 @@
 
 	int32_t Config::Controller::get(const char *group, const char *name, const int32_t def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
+
+		if(!hFile) {
+			return def;
+		}
 
 		int32_t result;
 		econf_err err = econf_getIntValueDef(
