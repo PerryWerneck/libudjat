@@ -132,6 +132,13 @@
 		return 0;
 	}
 
+	XML::Node & XML::Document::copy_to(XML::Node &node) const {
+		for(auto &child : document_element()) {
+			node.append_copy(child);			
+		}
+		return node;
+	}
+
 	void XML::parse_children(const XML::Node &node) {
 		for(const auto &child : node) {
 			if(XML::parse(child)) {

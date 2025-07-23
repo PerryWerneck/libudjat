@@ -46,9 +46,13 @@
 		using Attribute = pugi::xml_attribute;
 
 		/// @brief XML document
-		class Document : public pugi::xml_document {
+		class UDJAT_API Document : public pugi::xml_document {
 		public:
 			Document(const char *filename);
+
+			/// Copy document node to the given node.
+			/// @param node Node to copy the document root.
+			Node & copy_to(Node &node) const;
 
 			/// @brief Load document, build objects.
 			/// @return Timestamp for the next reload.
