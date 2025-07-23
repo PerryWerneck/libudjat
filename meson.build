@@ -218,57 +218,58 @@ if dmiget.found()
   app_conf.set('HAVE_SMBIOS', 1)
 endif
 
-#
-# Check for available options for configuration libraries
-#
-econf = dependency(
-  'libeconf', 
-  method : 'pkg-config',
-  required: false,
-)
-
-if econf.found() 
-
-  private_libs += econf
-  if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
-    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-  endif
-
-else 
-
+if host_machine.system() != 'windows'
+  #
+  # Check available engines for configuration
+  #
   econf = dependency(
-      'libeconf',
-      required: false,
-      fallback: [ 'libeconf', 'libeconf_dep' ],
-      default_options: ['default_library=static']    
-  ) 
-  app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-  extra_libs += [ econf ]
-
-endif
-
-if econf.found() 
-
-  app_conf.set('HAVE_ECONF', 1)
-
-else
-
-  # Fallback to INIPARSER if libeconf is not found
-
-  iniparser = dependency(
-    'iniparser', 
-    required: false, 
-    method : 'pkg-config'
+    'libeconf', 
+    method : 'pkg-config',
+    required: false,
   )
-  
-  if iniparser.found()
-    app_conf.set('HAVE_INIPARSER', 1)
+
+  if econf.found() 
+
+    private_libs += econf
+    if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
+      app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+    endif
+
+  else 
+
+    econf = dependency(
+        'libeconf',
+        required: false,
+        fallback: [ 'libeconf', 'libeconf_dep' ],
+        default_options: ['default_library=static']    
+    ) 
+    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+    extra_libs += [ econf ]
+
   endif
 
-  private_libs += [ iniparser ]
+  if econf.found() 
 
+    app_conf.set('HAVE_ECONF', 1)
+
+  else
+
+    # Fallback to INIPARSER if libeconf is not found
+
+    iniparser = dependency(
+      'iniparser', 
+      required: false, 
+      method : 'pkg-config'
+    )
+    
+    if iniparser.found()
+      app_conf.set('HAVE_INIPARSER', 1)
+    endif
+
+    private_libs += [ iniparser ]
+
+  endif
 endif
-
 
 #
 # SystemD  (optional)
@@ -512,7 +513,6 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/arguments.cc',
     'src/library/tools/os/windows/charset.cc',
     'src/library/tools/os/windows/com.cc',
-    'src/library/tools/os/windows/configvalue.cc',
     'src/library/tools/os/windows/event.cc',
     'src/library/tools/os/windows/eventcontroller.cc',
     'src/library/tools/os/windows/exception.cc',

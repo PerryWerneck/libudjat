@@ -25,8 +25,10 @@
 #include <mutex>
 #include <functional>
 
-// https://github.com/openSUSE/libeconf
-#if defined(HAVE_ECONF)
+#if defined(_WIN32)
+	#include <udjat/win32/registry.h>
+#elif defined(HAVE_ECONF)
+ // https://github.com/openSUSE/libeconf
  extern "C" {
 	#include <libeconf.h>
  }
@@ -42,35 +44,73 @@
 		// Controller with win32 registry as backend.
 		class UDJAT_PRIVATE Controller {
 		private:
-			static std::recursive_mutex guard;
-
-			Controller();
+			HKEY hParent = HKEY_LOCAL_MACHINE;
+			Controller() = default;
 
 		public:
 
 			static Controller & getInstance();
 
-			~Controller();
+			~Controller() = default;
 
-			void open();
-			void close();
+			inline void open() {
+			}
 
-			void reload();
+			inline void close() {
+			}
 
-			bool hasGroup(const char *group);
-			bool hasKey(const char *group, const char *key);
+			inline void reload() {
+			}
 
-			int32_t get(const char *group, const char *name, const int32_t def) const;
-			int64_t get(const char *group, const char *name, const int64_t def) const;
-			uint32_t get(const char *group, const char *name, const uint32_t def) const;
-			uint64_t get(const char *group, const char *name, const uint64_t def) const;
-			float get(const char *group, const char *name, const float def) const;
-			double get(const char *group, const char *name, const double def) const;
-			bool get(const char *group, const char *name, const bool def) const;
+			inline void allow_user_homedir(bool allow) {
+				hParent = (allow ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE);
+			}
 
-			Udjat::String get_string(const char *group, const char *name, const char *def) const;
+			inline bool hasGroup(const char *group) {
+				return Win32::Registry{hParent,false}.hasKey(group);
+			}
 
-			bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call);
+			inline bool hasKey(const char *group, const char *key) {
+				return Win32::Registry{hParent,group}.hasValue(key);
+			}
+
+			inline int32_t get(const char *group, const char *name, const int32_t def) const {
+				return (int32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
+			}
+
+			inline int64_t get(const char *group, const char *name, const int64_t def) const {
+				return (int64_t) (Win32::Registry{hParent,group}.get(name,(UINT64) def));
+			}
+
+			inline uint32_t get(const char *group, const char *name, const uint32_t def) const {
+				return (uint32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
+			}
+
+			inline uint64_t get(const char *group, const char *name, const uint64_t def) const {
+				return (Win32::Registry{hParent,group}.get(name,(UINT64) def));
+			}
+
+			inline float get(const char *group, const char *name, const float def) const {
+				// FIXME: Implement.
+				return def;
+			}
+
+			inline double get(const char *group, const char *name, const double def) const {
+				// FIXME: Implement.
+				return def;
+			}
+
+			inline bool get(const char *group, const char *name, const bool def) const {
+				return (int32_t) Win32::Registry{hParent,group}.get(name,(DWORD) def);
+			}
+
+			inline Udjat::String get_string(const char *group, const char *name, const char *def) const {
+				return Win32::Registry{hParent,group}.get(name,def);
+			}
+
+			inline bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
+				return Win32::Registry{hParent,false}.for_each(group,call);
+			}
 
 		};
 

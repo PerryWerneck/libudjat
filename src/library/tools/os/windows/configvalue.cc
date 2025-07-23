@@ -26,8 +26,11 @@
  *
  */
 
+ #error deprecated
+ 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <private/configuration.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/quark.h>
@@ -40,8 +43,12 @@
 
  using namespace std;
 
-/*---[ Implement ]----------------------------------------------------------------------------------*/
+ namespace Udjat {
 
+
+ }
+
+ /*
  namespace Udjat {
 
 	UDJAT_API void Config::allow_user_homedir(bool) noexcept {
@@ -101,6 +108,7 @@
 
 
  }
-
+*/
+ 
 
 

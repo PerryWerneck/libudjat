@@ -112,6 +112,12 @@
 
 	}
 
+	Win32::Registry::Registry(HKEY hParent, const char *path, bool write) : hKey(Win32::Registry::open(hParent,path,write)) {
+	}
+
+	Win32::Registry::Registry(HKEY hParent,bool write) : hKey(Win32::Registry::open(hParent,nullptr,write)) {
+	}
+
 	Win32::Registry::Registry(bool write) : hKey(Win32::Registry::open(HKEY_LOCAL_MACHINE,nullptr,write)) {
 	}
 
@@ -191,7 +197,7 @@
 		return get(hKey,name,ptr,len);
 	}
 
-	string Win32::Registry::get(HKEY hK, const char *name, const char *def) {
+	Udjat::String Win32::Registry::get(HKEY hK, const char *name, const char *def) {
 
 		if(!hK)
 			return def;
@@ -217,7 +223,7 @@
 			dwRet = RegQueryValueEx( hK, name, NULL, NULL, (LPBYTE) data, &cbData );
 		}
 
-		string rc;
+		Udjat::String rc;
 		if(dwRet == ERROR_SUCCESS) {
 			rc.assign(data);
 		} else {
@@ -293,7 +299,7 @@
 
 	}
 
-	std::string Win32::Registry::get(const char *name, const char *def) const {
+	Udjat::String Win32::Registry::get(const char *name, const char *def) const {
 		return get(hKey, name, def);
 	}
 
@@ -352,8 +358,8 @@
 		TCHAR achkey[1024];		// buffer for subkey name
 		DWORD cbName = 1024;	// size of name string
 
-		bool rc = true;
-		for(DWORD index = 0;RegEnumValue(hGroup,index,achkey,&cbName,NULL,NULL,NULL,NULL) == ERROR_SUCCESS && rc; index++) {
+		bool rc = false;
+		for(DWORD index = 0;RegEnumValue(hGroup,index,achkey,&cbName,NULL,NULL,NULL,NULL) == ERROR_SUCCESS && !rc; index++) {
 			string keyname(achkey,cbName);
 			string value = get(hGroup,keyname.c_str(),"");
 
@@ -361,7 +367,7 @@
 			cout << "key='" << keyname << "' value='" << value << "'" << endl;
 #endif // DEBUG
 
-			call(keyname.c_str(),value.c_str());
+			rc = call(keyname.c_str(),value.c_str());
 
 			cbName = 1024;
 		}

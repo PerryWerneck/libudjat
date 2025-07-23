@@ -35,6 +35,12 @@
 
 	namespace Config {
 
+#ifdef _WIN32
+		Controller & Controller::getInstance() {
+			static Config::Controller instance;
+			return instance;
+		}
+#else
 		bool Controller::allow_user_config = false;
 
 		Controller & Controller::getInstance() {
@@ -52,6 +58,7 @@
 				}
 			}
 		}
+#endif
 
 		int Value<string>::select(const char *value, va_list args) const noexcept {
 
