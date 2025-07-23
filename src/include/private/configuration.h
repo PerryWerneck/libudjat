@@ -140,10 +140,6 @@
 			static bool allow_user_config;
 			dictionary  *ini;
 
-			static int error_callback(const char *format, ...);
-
-			static Udjat::String key(const char *group, const char *key);
-
 			Controller();
 
 		public:
@@ -156,7 +152,7 @@
 
 			~Controller();
 
-			void allow_user_homedir(bool allow) noexcept;
+			void allow_user_homedir(bool allow);
 			void open();
 			void close();
 

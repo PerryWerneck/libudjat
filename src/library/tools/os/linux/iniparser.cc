@@ -20,6 +20,7 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <signal.h>
+ #include <cstdarg>
 
  #ifdef HAVE_INIPARSER
 
@@ -32,111 +33,172 @@
 
  namespace Udjat {
 
-	static void handle_reload(int sig) noexcept {
-
-		Logger::String{"Reloading configuration by signal '",(const char *) strsignal(sig),"'"}.write(Logger::Trace);
-
-		try {
-
-			Config::Controller::getInstance().reload();
-
-		} catch(const std::exception &e) {
-
-			Logger::String{"Error '", e.what(), "' reloading configuration"}.error();
-
-		} catch(...) {
-
-			Logger::String{"Unexpected error reloading configuration"}.error();
-
+	static int error_callback(const char *format, ...) {
+		va_list args;
+		va_start(args, format);
+		char *message = NULL;
+		vasprintf(&message, format, args);
+		va_end(args);
+		if(message) {
+			Logger::String{message}.error("iniparser");
+			free(message);
 		}
+		return 0; // Return 0 to continue processing.
+	}
 
+	static inline Udjat::String key(const char *group, const char *key) {
+		return Udjat::String{group,":",key};
 	}
 
 	std::recursive_mutex Config::Controller::guard;
 
 	Config::Controller::Controller() {
-		open();
-		signal(SIGHUP,handle_reload);
+
+		iniparser_set_error_callback(error_callback);
+
+		ini = iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str());
+		if(!ini) {
+			Logger::String{"Cant load /etc/",program_invocation_short_name,".conf, using default configuration"}.warning("iniparser");
+		} else if(Logger::enabled(Logger::Trace)) {
+			Logger::String{"Got configuration from /etc/",program_invocation_short_name,".conf'"}.trace("iniparser");
+		}
 	}
 
 	Config::Controller::~Controller() {
-		signal(SIGHUP,SIG_DFL);
-		close();
+		if(ini) {
+			iniparser_freedict(ini);
+			ini = nullptr;
+		}
+		iniparser_set_error_callback(NULL);
 	}
 
 	void Config::Controller::open() {
-		std::lock_guard<std::recursive_mutex> lock(guard);
-
-
 	}
 
 	void Config::Controller::close() {
-		std::lock_guard<std::recursive_mutex> lock(guard);
-
 	}
 
 	void Config::Controller::reload() {
-		close();
-		open();
 	}
 
 	bool Config::Controller::hasGroup(const char *group) {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
-
+		if(!ini) {
+			return false;
+		}
+		return (iniparser_getsecnkeys(ini,(char *)group) != 0);
 	}
 
 	bool Config::Controller::hasKey(const char *group, const char *key) {
-
+		std::lock_guard<std::recursive_mutex> lock(guard);
+		return true;
 	}
 
 	int32_t Config::Controller::get(const char *group, const char *name, const int32_t def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
+		if(!ini) {
+			return def;
+		}
+		return iniparser_getint(ini,key(group,name).c_str(),def);
 	}
 
 	int64_t Config::Controller::get(const char *group, const char *name, const int64_t def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
+		if(!ini) {
+			return def;
+		}
+		return iniparser_getint(ini,key(group,name).c_str(),def);
 	}
 
 	uint32_t Config::Controller::get(const char *group, const char *name, const uint32_t def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
+		if(!ini) {
+			return def;
+		}
+		return iniparser_getint(ini,key(group,name).c_str(),def);
 	}
 
 	uint64_t Config::Controller::get(const char *group, const char *name, const uint64_t def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
-
+		if(!ini) {
+			return def;
+		}
+		return (unsigned int) iniparser_getint(ini,key(group,name).c_str(),def);
 	}
 
 	float Config::Controller::get(const char *group, const char *name, const float def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
+		if(!ini) {
+			return def;
+		}
+		return iniparser_getdouble(ini,key(group,name).c_str(),def);
 	}
 
 	double Config::Controller::get(const char *group, const char *name, const double def) const {
-
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
+		if(!ini) {
+			return def;
+		}
+		return iniparser_getdouble(ini,key(group,name).c_str(),def);
 	}
 
 	bool Config::Controller::get(const char *group, const char *name, const bool def) const {
-
 		std::lock_guard<std::recursive_mutex> lock(guard);
-
+		if(!ini) {
+			return def;
+		}
+		return iniparser_getboolean(ini,key(group,name).c_str(),def);
 	}
 
 	Udjat::String Config::Controller::get_string(const char *group, const char *name, const char *def) const {
 		std::lock_guard<std::recursive_mutex> lock(guard);
+		debug("group='",group,"' name='",name,"'");
+		if(!ini) {
+			return Udjat::String{def};
+		}
+		String str{iniparser_getstring(ini,key(group,name).c_str(),(char *) def)};
 
-
+		debug(group,":",name,"='",str.c_str(),"'");
+		return str;
 	}
 
 	bool Config::Controller::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
-		std::lock_guard<std::recursive_mutex> lock(guard);
 
+		if(!ini) {
+			return false;
+		}
+
+		std::lock_guard<std::recursive_mutex> lock(guard);
+		size_t items = iniparser_getsecnkeys(ini,(char *) group);
+		if(!items) {
+			debug("No items in group '",group,"'");
+			return false;
+		}
+
+		char **keys = new char *[items];
+
+		if(!iniparser_getseckeys(ini, (char *) group, (const char **) keys)) {
+			debug("Failed to get keys for group '",group,"'");
+			delete[] keys;
+			return false;
+		}
+
+		bool found = false;
+		for(size_t ix = 0;ix < items && !found; ix++) {
+			const char *value = iniparser_getstring(ini,keys[ix],"");
+			if(value) {
+				try {
+					const char *ptr = strchr(keys[ix],':');
+					found = call((ptr ? (ptr+1) : keys[ix]),value);
+				} catch(const std::exception &e) {
+					debug("Error processing key='",keys[ix],"': ",e.what());
+					break; // Stop iterating.
+				}
+			}
+		}
+
+		delete[] keys;
+		return found;
 
 	}
 
@@ -146,211 +208,19 @@
 
 /*
 
-#if defined(HAVE_ECONF)
-
-	//
-	// Use libeconf as back-end
-	//
-	class Controller {
-
-#ifdef ECONF_HAVE_READ_CONFIG_WITH_CALLBACK
-#endif
-
-
-		bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
-
-		}
-
-	};
-
-
-#elif defined(HAVE_INIPARSER)
 
 	//
 	// Use iniparser as back-end
 	//
 	class Controller {
-		private:
-			dictionary  *ini;
-
-			static int error_callback(const char *format, ...) {
-				va_list args;
-				va_start(args, format);
-				char *message = NULL;
-				vasprintf(&message, format, args);
-				va_end(args);
-				if(message) {
-					Logger::String{message}.error("iniparser");
-					free(message);
-				}
-				return 0; // Return 0 to continue processing.
-			}
-
-			Controller() {
-
-				iniparser_set_error_callback(error_callback);
-
-				ini = iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str());
-				if(!ini) {
-					Logger::String{"Cant load /etc/",program_invocation_short_name,".conf, using default configuration"}.warning("iniparser");
-				} else if(Logger::enabled(Logger::Trace)) {
-					Logger::String{"Got configuration from /etc/",program_invocation_short_name,".conf'"}.trace("iniparser");
-				}
-
-			}
-
-			Udjat::String key(const char *group, const char *key) const {
-				return Udjat::String{group,":",key};
-			}
-
-		public:
-			~Controller() {
-				if(ini) {
-					iniparser_freedict(ini);
-					ini = nullptr;
-				}
-				iniparser_set_error_callback(NULL);
-			}
-	
-			static Controller & getInstance() {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				static Controller instance;
-				return instance;
-			}
-	
-			void reload() {
-			}
-	
-			void open() {
-			}
-	
-			void close() {
-			}
-	
-			bool hasGroup(const char *group) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return false;
-				}
-				return (iniparser_getsecnkeys(ini,(char *)group) != 0);
-			}
-	
-			bool hasKey(const char *, const char *) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				return true;
-			}
-
 			Udjat::String get_string(const char *group, const char *name, const char *def) const {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-
-				debug("group='",group,"' name='",name,"'");
-				if(!ini) {
-					return Udjat::String{def};
-				}
-				String str{iniparser_getstring(ini,key(group,name).c_str(),(char *) def)};
-
-				debug(group,":",name,"='",str.c_str(),"'");
-				return str;
 			}
 			
 			Udjat::String get_string(const char *group, const char *name, const std::string &def) const {
 				return get_string(group,name,def.c_str());
 			}
-	
-			int32_t get(const char *group, const char *name, const int32_t def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return iniparser_getint(ini,key(group,name).c_str(),def);
-			}
-		
-			int64_t get(const char *group, const char *name, const int64_t def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return iniparser_getint(ini,key(group,name).c_str(),def);
-			}
-		
-			uint32_t get(const char *group, const char *name, const uint32_t def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return iniparser_getint(ini,key(group,name).c_str(),def);
-			}
-		
-			uint64_t get(const char *group, const char *name, const uint64_t def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return (unsigned int) iniparser_getint(ini,key(group,name).c_str(),def);
-			}
-		
-			bool get(const char *group, const char *name, const bool def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return iniparser_getboolean(ini,key(group,name).c_str(),def);
-			}
 			
-			float get(const char *group, const char *name, const float def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return iniparser_getdouble(ini,key(group,name).c_str(),def);
-			}
-		
-			double get(const char *group, const char *name, const double def) {
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				if(!ini) {
-					return def;
-				}
-				return iniparser_getdouble(ini,key(group,name).c_str(),def);
-			}
-		
 			bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
-
-				if(!ini) {
-					return false;
-				}
-
-				std::lock_guard<std::recursive_mutex> lock(guard);
-				size_t items = iniparser_getsecnkeys(ini,(char *) group);
-				if(!items) {
-					debug("No items in group '",group,"'");
-					return false;
-				}
-
-				char **keys = new char *[items];
-
-				if(!iniparser_getseckeys(ini, (char *) group, (const char **) keys)) {
-					debug("Failed to get keys for group '",group,"'");
-					delete[] keys;
-					return false;
-				}
-
-				bool found = false;
-				for(size_t ix = 0;ix < items && !found; ix++) {
-					const char *value = iniparser_getstring(ini,keys[ix],"");
-					if(value) {
-						try {
-							const char *ptr = strchr(keys[ix],':');
-							found = call((ptr ? (ptr+1) : keys[ix]),value);
-						} catch(const std::exception &e) {
-							debug("Error processing key='",keys[ix],"': ",e.what());
-							break; // Stop iterating.
-						}
-					}
-				}
-
-				delete[] keys;
-				return found;
-
 			}
 	
 		};
