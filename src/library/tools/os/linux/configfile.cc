@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#error deprecated
+
 #ifndef _GNU_SOURCE
 	#define _GNU_SOURCE
 #endif // !_GNU_SOURCE
@@ -48,7 +50,6 @@
 	#include <libeconf.h>
  }
  #elif defined(HAVE_INIPARSER)
-	#include <iniparser.h>
  #endif // HAVE_ECONF
 
  using namespace std;
@@ -56,7 +57,7 @@
  namespace Udjat {
 
 	static recursive_mutex guard;
-	static bool allow_user_config = false;
+	// static bool allow_user_config = false;
 
 	void Config::allow_user_homedir(bool allow) noexcept {
 		allow_user_config = allow;
@@ -800,6 +801,7 @@
 	};
 #endif // HAVE_ECONF
 
+/*
 	bool Config::for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call) {
 		return Controller::getInstance().for_each(group,call);
 	}
@@ -841,7 +843,7 @@
 		return str.expand(true,false);
 	}
 
-	Udjat::String Config::get(const std::string &group, const std::string &name, const std::string &def) {
+	Udjat::String Config::get_string(const std::string &group, const std::string &name, const std::string &def) {
 		String str = Controller::getInstance().get_string(group.c_str(),name.c_str(),def);
 		return str.expand(true,false);
 	}
@@ -851,6 +853,7 @@
 	}
 
  }
+*/
 
 
 
