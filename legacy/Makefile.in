@@ -32,7 +32,7 @@ docdir=@docdir@
 sysconfdir=/etc
 srcdir=@srcdir@
 
-OBJDIR=.obj/@OSNAME@
+OBJDIR=.obj
 OBJDBG=$(OBJDIR)/Debug
 OBJRLS=$(OBJDIR)/Release
 
