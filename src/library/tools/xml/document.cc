@@ -131,8 +131,6 @@
 
 		}
 
-		// TODO: Parse <include> nodes.
-
 	}
 
 	time_t XML::Document::parse() const {
@@ -146,7 +144,12 @@
 			}
 		}
 
-		return 0;
+		time_t next = TimeStamp{root,"update-timer"};
+		if(next) {
+			next += time(0);
+		}
+
+		return next;
 	}
 
 	XML::Node & XML::Document::copy_to(XML::Node &node) const {

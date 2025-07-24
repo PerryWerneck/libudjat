@@ -56,13 +56,8 @@
 
 			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
 
-				XML::Document document{path.c_str()};
-				const auto &root = document.document_element();
-
-				// Parse child nodes
-				parse(root);
-
-				time_t expires = TimeStamp{root,"update-timer"};
+				// Recursive call to parse document.
+				time_t expires = parse(path.c_str());
 				if(expires) {
 					expires += time(0);
 					if(expires < next || next == 0) {
@@ -77,7 +72,7 @@
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.trace();
+			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.info();
 
 			XML::Document document{path.c_str()};
 
@@ -87,8 +82,11 @@
 				next += time(0);
 			}
 
+			// Parse the document, create the children.
 			for(const XML::Node &node : root) {
-				parse(node);
+				if(!node.attribute("preload").as_bool(false)) {
+					parse(node);
+				}
 			}
 
 		}
@@ -162,6 +160,8 @@
 
 			// Is a directory, scan for files
 			path.for_each("*.xml",[&next](const File::Path &path) -> bool {
+
+				// Recursive call to parse document.
 				time_t result = XML::parse(path.c_str());
 				if(result && (result < next || next == 0)) {
 					next = result;
@@ -172,7 +172,7 @@
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace();
+			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.info();
 			next = Document{path.c_str()}.parse();
 
 		}
