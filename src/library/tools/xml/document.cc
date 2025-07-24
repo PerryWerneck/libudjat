@@ -88,7 +88,7 @@
 			Logger::setup(root);
 			for(const XML::Node &node : root) {
 				if(node.attribute("preload").as_bool(false)) {
-					Logger::String{"Preloading module '",node.attribute("name").as_string(),"'"}.trace();
+					Logger::String{"Preloading ",node.name()," '",node.attribute("name").as_string(),"'"}.trace();
 					XML::parse(node);
 				}
 			}
@@ -175,6 +175,8 @@
 		}
 
 		const char *name = node.name();
+
+		/*
 		if(!strcasecmp(name,"module")) {
 
 			if(node.attribute("preload").as_bool(false)) {
@@ -186,6 +188,7 @@
 			return true;
 
 		}
+		*/
 	
 		for(const auto factory : Factories()) {
 			if(*factory == name) {

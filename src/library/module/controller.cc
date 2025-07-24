@@ -21,27 +21,33 @@
 #include <private/module.h>
 #include <iostream>
 
+#define LOG_DOMAIN "module"
+#include <udjat/tools/logger.h>
+
 using namespace std;
 
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
-	Module::Controller::Controller() {
-		Logger::String{
-			"Starting controller"
-		}.trace("modules");
+	Module::Controller & Module::Controller::getInstance() {
+		static Controller instance;
+		return instance;
+	}
+
+	Module::Controller::Controller() : XML::Parser{"module"} {
+		Logger::String{"Starting controller"}.trace();
 	}
 
 	Module::Controller::~Controller() {
 
 		if(objects.size()) {
-			Logger::String{"The controller was destroyed without deactivation"}.error("modules");
+			Logger::String{"The controller was destroyed without deactivation"}.error();
 			for(auto object : objects) {
-				Logger::String{"Module ",object->name," is still active"}.error("modules");
+				Logger::String{"Module ",object->name," is still active"}.error();
 			}
 		} else {
-			Logger::String{"Stopping clean controller"}.trace("modules");
+			Logger::String{"Stopping clean controller"}.trace();
 		}
 
 		clear();
