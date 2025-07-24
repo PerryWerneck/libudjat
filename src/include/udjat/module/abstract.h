@@ -97,8 +97,7 @@
 		}
 
 		/// @brief Preload modules from configuration file.
-		/// @return true if success.
-		static bool preload() noexcept;
+		static void preload() noexcept;
 
 		/// @brief Call method on every modules.
 		static bool for_each(const std::function<bool(Module &module)> &method);

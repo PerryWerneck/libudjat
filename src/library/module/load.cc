@@ -109,11 +109,9 @@ namespace Udjat {
 		return true;
 	}
 
-	bool Module::preload() noexcept {
+	void Module::preload() noexcept {
 
-		bool rc = true;
-
-		Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
+		Config::Value<std::vector<std::string>> modules{"modules","preload",""};
 
 		if(modules.size()) {
 
@@ -121,32 +119,13 @@ namespace Udjat {
 
 			for(std::string &module : modules) {
 
-				try {
-
-					Logger::String("Preloading ",module," from configuration file").trace("module");
-					load(File::Path{module});
-
-				} catch(const std::exception &e) {
-
-					Logger::String{module.c_str(),": ",e.what()}.error("module");
-					rc = false;
-
-				} catch(...) {
-
-					Logger::String{"Unexpected errror loading '",module.c_str(),"'"}.error("module");
-					rc = false;
-
-				}
+				Logger::String("Preloading ",module," from configuration file").trace("module");
+				load(File::Path{module});
 
 			}
 
-		} else {
-
-			Logger::String("Preload list is empty").trace("module");
-
 		}
 
-		return rc;
 	}
 
 	void Module::load(const XML::Node &node) {
