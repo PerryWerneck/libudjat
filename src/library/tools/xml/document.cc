@@ -82,6 +82,20 @@
 
 		Udjat::load(this,filename);
 
+		// Preload
+		{
+			auto root = document_element();
+			Logger::setup(root);
+			for(const XML::Node &node : root) {
+				if(node.attribute("preload").as_bool(false)) {
+					Logger::String{"Preloading module '",node.attribute("name").as_string(),"'"}.trace();
+					XML::parse(node);
+				}
+			}
+
+		}
+
+		/*
 		// Preload modules
 		for(XML::Node child = document_element().child("module"); child; child = child.next_sibling("module")) {
 			if(child.attribute("preload").as_bool(false)) {
@@ -89,6 +103,7 @@
 				Module::load(child);
 			}		
 		}
+		*/
 
 		// Check for update.
 		const XML::Node &node = document_element();
@@ -126,7 +141,9 @@
 		Logger::setup(root);
 
 		for(const XML::Node &node : root) {
-			XML::parse(node);
+			if(!node.attribute("preload").as_bool(false)) {
+				XML::parse(node);
+			}
 		}
 
 		return 0;
