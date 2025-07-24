@@ -125,10 +125,6 @@
 		/// @brief Unload modules.
 		static void unload();
 
-		/// @brief Parse XML document
-		/// Called when a XML document is loaded.
-		virtual void parse(const pugi::xml_document &document);
-
 		/// @brief Called when application is finishing to cleanup module data after unloading.
 		virtual void finalize();
 

@@ -52,9 +52,6 @@ namespace Udjat {
 	void Module::finalize() {
 	}
 
-	void Module::parse(const pugi::xml_document &) {
-	}
-
 	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = name;
 		properties["filename"] = filename();
