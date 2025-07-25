@@ -275,15 +275,15 @@ endif
 #
 # SystemD  (optional)
 #
-systemd_dep = dependency(
+systemd = dependency(
   'libsystemd', 
   required: false,
   static: false,
 )
 
-if systemd_dep.found()
+if systemd.found()
   app_conf.set('HAVE_SYSTEMD', 1)
-  required_libs += systemd_dep
+  required_libs += systemd
 endif 
 
 #
@@ -474,7 +474,11 @@ else
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    requires: [ econf, pugixml, uriparser ],
+    extra_cflags: [
+      '-DUDJAT_STATIC',
+      '-pthread',
+    ],
+    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
     libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
   )
 
