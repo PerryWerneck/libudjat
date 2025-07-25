@@ -238,38 +238,38 @@ if host_machine.system() != 'windows'
 
   else 
 
-    econf = dependency(
+    econf_sub = dependency(
         'libeconf',
         required: false,
         fallback: [ 'libeconf', 'libeconf_dep' ],
         default_options: ['default_library=static']    
     ) 
-    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-    extra_libs += [ econf ]
 
-  endif
+    if econf_sub.found() 
 
-  if econf.found() 
+      app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+      extra_libs += [ econf_sub ]
+      app_conf.set('HAVE_ECONF', 1)
 
-    app_conf.set('HAVE_ECONF', 1)
+    else
 
-  else
+      # Fallback to INIPARSER if libeconf is not found
+      econf = dependency(
+        'iniparser', 
+        required: false, 
+        method : 'pkg-config'
+      )
+      
+      if econf.found()
+        app_conf.set('HAVE_INIPARSER', 1)
+      endif
 
-    # Fallback to INIPARSER if libeconf is not found
+      private_libs += [ econf ]
 
-    iniparser = dependency(
-      'iniparser', 
-      required: false, 
-      method : 'pkg-config'
-    )
-    
-    if iniparser.found()
-      app_conf.set('HAVE_INIPARSER', 1)
     endif
 
-    private_libs += [ iniparser ]
-
   endif
+
 endif
 
 #
@@ -474,7 +474,8 @@ else
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    libraries: [ '-l:lib' + meson.project_name() + '.a' ],
+    requires: [ econf, pugixml, uriparser ],
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
   )
 
 endif
