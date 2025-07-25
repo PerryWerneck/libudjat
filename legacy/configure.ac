@@ -22,7 +22,7 @@ AC_PREREQ([2.69])
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat],[2.0.1],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
+AC_INIT([libudjat],[@VERSION@],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
