@@ -284,14 +284,6 @@ dnl ---------------------------------------------------------------------------
 PKG_CHECK_EXISTS
 
 dnl ---------------------------------------------------------------------------
-dnl Check for econf
-dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES( [ECONF], [libeconf], AC_DEFINE(HAVE_ECONF,[],[Do we have econf?]), AC_MSG_NOTICE([libeconf not present.]) )
-
-AC_SUBST(ECONF_LIBS)
-AC_SUBST(ECONF_CFLAGS)
-
-dnl ---------------------------------------------------------------------------
 dnl Check for uriparser
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES( [URIPARSER], [liburiparser], AC_DEFINE(HAVE_URIPARSER,[],[Do we have uriparser?]), AC_MSG_NOTICE([liburiparser not present.]) )
@@ -317,16 +309,29 @@ AC_SUBST(PUGIXML_LIBS)
 AC_SUBST(PUGIXML_CFLAGS)
 
 dnl ---------------------------------------------------------------------------
-dnl test for iniparser
+dnl test for configuration backend
 dnl ---------------------------------------------------------------------------
 
+PKG_CHECK_MODULES( [ECONF], [libeconf], [app_cv_econf="yes"], [app_cv_econf="no"] )
 AC_CHECK_HEADER(iniparser.h, [app_cv_iniparser="yes"], [app_cv_iniparser="no"])
 
-if test "$app_cv_iniparser" == "yes"; then
+if test "$app_cv_econf" == "yes"; then
+
+	AC_MSG_NOTICE([ Using econf as configuration backend ])
+	AC_DEFINE(HAVE_ECONF,[],[Do we have libeconf?])
+	AC_SUBST(ECONF_LIBS)
+	AC_SUBST(ECONF_CFLAGS)
+
+elif test "$app_cv_iniparser" == "yes"; then
+
+	AC_MSG_NOTICE([ Using iniparser as configuration backend ])
 	AC_DEFINE(HAVE_INIPARSER,[],[Do we have libiniparser?])
 	AC_SUBST(ECONF_LIBS,-liniparser)
-else
-	AC_MSG_NOTICE(libiniparser is not available)
+
+else 
+
+	AC_MSG_NOTICE([ No configuration backend, using only default config ])
+
 fi
 
 dnl ---------------------------------------------------------------------------
