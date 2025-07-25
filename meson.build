@@ -231,6 +231,8 @@ if host_machine.system() != 'windows'
 
   if econf.found() 
 
+    app_conf.set('HAVE_ECONF', 1)
+
     private_libs += econf
     if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
       app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
