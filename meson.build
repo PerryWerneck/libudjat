@@ -57,6 +57,8 @@ subdir('po')
 iconv = dependency('iconv')
 intl = dependency('intl', required: false)
 dbus = dependency('dbus-1', required: false, static: false)
+dl = cxx.find_library('dl', required: false)
+threads = dependency('threads')
 
 # URIPARSER
 uriparser = dependency(
@@ -98,8 +100,8 @@ private_libs = [
 extra_libs = [
   intl,
   iconv,
-  cxx.find_library('dl', required: false),
-  dependency('threads')
+  dl,
+  threads,
 ] 
 
 if not vmdetect.found()
@@ -472,7 +474,6 @@ else
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    requires: ['vmdetect-static', 'dmiget-static'] + required_libs + private_libs,
     libraries: [ '-l:lib' + meson.project_name() + '.a' ],
   )
 
