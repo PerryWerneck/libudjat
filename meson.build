@@ -473,7 +473,7 @@ else
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    requires: ['vmdetect-static', 'dmiget-static'] + required_libs,
+    requires: ['vmdetect-static', 'dmiget-static'] + required_libs + private_libs,
     libraries: [ '-l:lib' + meson.project_name() + '.a' ],
   )
 
