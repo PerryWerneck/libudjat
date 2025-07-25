@@ -59,7 +59,7 @@ dnl ---------------------------------------------------------------------------
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
-app_cv_domain="br.com.bb"
+app_cv_domain="br.eti.werneck"
 app_vrs_patch=0
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
