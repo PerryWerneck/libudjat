@@ -133,7 +133,6 @@ endif
 add_project_arguments(cxx.get_supported_arguments([
   '-ggdb3',
   '-fvisibility=hidden',
-  '-pthread',
   '-fPIC',
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
