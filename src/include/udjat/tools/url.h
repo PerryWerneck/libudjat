@@ -115,6 +115,9 @@
 		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
 		bool local() const;
 
+		/// @brief Test if URL refers to a remote file (starts with *://, and not file://)
+		bool remote() const;
+
 		/// @brief Iterate over query
 		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
 

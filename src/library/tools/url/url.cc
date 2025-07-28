@@ -327,13 +327,28 @@
 
 	bool URL::local() const {
 
-		ParsedUri uri{*this};
-		String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+		if(!empty()) {
 
-		if(scheme.empty() || strcasecmp(scheme.c_str(),"file") == 0) {
-			return true;
+			ParsedUri uri{*this};
+			String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+
+			if(scheme.empty() || strcasecmp(scheme.c_str(),"file") == 0) {
+				return true;
+			}
+
 		}
 	
+		return false;
+	}
+
+	bool URL::remote() const {
+
+		if(!empty()) {
+			ParsedUri uri{*this};
+			String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+			return !scheme.empty() && strcasecmp(scheme.c_str(),"file") != 0; 
+		}
+
 		return false;
 	}
 

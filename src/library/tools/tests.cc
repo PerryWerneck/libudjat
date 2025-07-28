@@ -91,6 +91,26 @@
 
  }
 
+ static int url_test() {
+
+	if(URL{"/tmp/xx"}.remote()) {
+		throw logic_error{"URL test failed: /tmp/xx should be local. (A)"};
+	}
+
+	if(!URL{"/tmp/xx"}.local()) {
+		throw logic_error{"URL test failed: /tmp/xx should be local. (B)"};
+	}
+
+	if(URL{"http://example.com"}.local()) {
+		throw logic_error{"URL test failed: http://example.com should be remote. (A)"};
+	}
+
+	if(!URL{"http://example.com"}.remote()) {
+		throw logic_error{"URL test failed: http://example.com should be remote. (B)"};
+	}
+
+	return 0;
+ }
 
  UDJAT_API int run_unit_test(const char *name) {
 
@@ -98,6 +118,7 @@
 		const char *name;
 		int (*test)();
 	} tests[] = {
+		{"url",url_test},
  #ifdef HAVE_SMBIOS
 		{"smbios", smbios_test},
  #endif // HAVE_SMBIOS
