@@ -109,6 +109,8 @@
 		throw logic_error{"URL test failed: http://example.com should be remote. (B)"};
 	}
 
+	Logger::String{"Scheme for empty url is '",URL{}.scheme().c_str(),"'"}.info();
+
 	return 0;
  }
 

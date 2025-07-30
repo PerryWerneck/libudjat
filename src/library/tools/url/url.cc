@@ -136,6 +136,10 @@
 
 	String URL::scheme() const {
 
+		if(empty()) {
+			return String{};
+		}
+
 		ParsedUri uri{*this};
 		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
 	}
