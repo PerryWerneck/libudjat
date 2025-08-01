@@ -47,10 +47,10 @@
  using namespace Udjat;
 
  int Udjat::loader(int argc, char **argv, const char *path) {
-	return Udjat::loader(argc,argv,[](Application &app) {},path);
+	return Udjat::loader(argc,argv,[](Application &app) {return 0;},path);
  }
 
- int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<void(Application &app)> &init, const char *path) {
+ int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<int(Application &app)> &init, const char *path) {
 
 	bool app = (argc==1);
 
@@ -157,10 +157,10 @@
 		// Run as service
 		class TestSrvc : public Udjat::SystemService {
 		private:
-			const std::function<void(Application &app)> &init_callback;
+			const std::function<int(Application &app)> &init_callback;
 
 		public:
-			TestSrvc(int &argc, char **argv,const std::function<void(Application &app)> &init) 
+			TestSrvc(int &argc, char **argv,const std::function<int(Application &app)> &init) 
 				: Udjat::SystemService(argc,argv), init_callback{init} {
 			}
 
@@ -168,7 +168,9 @@
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				init_callback(*this);
+				if(init_callback(*this)) {
+					throw runtime_error{"Initialization failed"};
+				}
 				return Udjat::Application::RootFactory();
 			}
 
@@ -185,10 +187,10 @@
 		// Run as application (default if called without arguments)
 		class TestApp : public Udjat::Application {
 		private:
-			const std::function<void(Application &app)> &init_callback;
+			const std::function<int(Application &app)> &init_callback;
 
 		public:
-			TestApp(int &argc, char **argv,const std::function<void(Application &app)> &init) 
+			TestApp(int &argc, char **argv,const std::function<int(Application &app)> &init) 
 				: Udjat::Application(argc,argv), init_callback{init} {
 			}
 
@@ -196,7 +198,9 @@
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				init_callback(*this);
+				if(init_callback(*this)) {
+					throw runtime_error{"Initialization failed"};
+				}
 				return Udjat::Application::RootFactory();
 			}
 

@@ -25,16 +25,18 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module/abstract.h>
+ #include <udjat/tools/commandlineparser.h>
+ #include <string>
 
  using namespace Udjat;
  using namespace std;
 
  int main(int argc, char **argv) {
 
-	 // Call the loader function with command line arguments
-	 return loader(argc, argv,[](Application &app) {
+	// Call the loader function with command line arguments
+	return loader(argc, argv,[](Application &app) -> int {
 #ifdef TEST_PROGRAM
-		run_unit_test(nullptr);
+		return run_unit_test(nullptr);
 #endif // TEST_PROGRAM
 	}, "test.xml");
 
