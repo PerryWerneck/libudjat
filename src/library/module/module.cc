@@ -62,6 +62,10 @@ namespace Udjat {
 		return Controller::getInstance().find(name);
 	}
 
+	void * Module::dlsym(const char *symbol, bool required) const {
+		return Controller::getSymbol(handle, symbol, required);
+	}
+
 	bool Module::for_each(const std::function<bool(Module &module)> &method) {
 		for(auto &module : Controller::getInstance()) {
 			if(method(*module)) {

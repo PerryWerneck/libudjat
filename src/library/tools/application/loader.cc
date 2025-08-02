@@ -128,6 +128,15 @@
 				return -1;
 			}
 #endif
+
+			Module::for_each([&argvalue](Module &module) -> bool {
+				int (*symbol)(const char *) = (int(*)(const char *)) module.dlsym("run_unit_test");
+				if(symbol) {
+					symbol(argvalue.c_str());
+				}
+				return false;
+			});
+
 			return 0;
 		}
 

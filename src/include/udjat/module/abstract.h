@@ -99,7 +99,18 @@
 		/// @brief Preload modules from configuration file.
 		static void preload() noexcept;
 
+		/// @brief Get symbol from module.
+		/// @details This method is used to get a symbol from the module.
+		/// @param symbol The symbol name to get.
+		/// @return The symbol address or nullptr if not found.
+		void *dlsym(const char *symbol, bool required = false) const;
+
 		/// @brief Call method on every modules.
+		/// @param method The method to call on every module.
+		/// @return true if the method has returned true for any module.
+		/// @note This method is used to call a method on every module.
+		/// @note The method should return true if the scan should be stopped.
+		/// @note The method should return false if the scan should continue.
 		static bool for_each(const std::function<bool(Module &module)> &method);
 
 		/// @brief Get module by name.
