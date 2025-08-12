@@ -44,7 +44,7 @@
 		// Controller with win32 registry as backend.
 		class UDJAT_PRIVATE Controller {
 		private:
-			static HKEY hParent = HKEY_LOCAL_MACHINE;
+			static HKEY hParent;
 			Controller() = default;
 
 		public:

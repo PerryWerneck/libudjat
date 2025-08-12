@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-22 12:16-0300\n"
+"POT-Creation-Date: 2025-08-12 19:29-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -331,30 +331,6 @@ msgstr "Erro HTTP {}"
 msgid "Unexpected error {} acessing {}"
 msgstr "Erro inesperado {} acessando {}"
 
-#: src/library/tools/logger.cc:350
-msgid "Save log to file"
-msgstr "Envia log para arquivo"
-
-#: src/library/tools/logger.cc:351
-msgid "Send log to console"
-msgstr "Envia log para o console"
-
-#: src/library/tools/logger.cc:352
-msgid "Set log level to 'verbosity'"
-msgstr "Define nível de log para 'verbosity'"
-
-#: src/library/tools/logger.cc:353
-msgid "Quiet output"
-msgstr "Inibe saídas para console"
-
-#: src/library/tools/logger.cc:355
-msgid "Enable coredump"
-msgstr "Habilita coredump"
-
-#: src/library/tools/logger.cc:359
-msgid "Log/Debug options:\n"
-msgstr "Opções de log/debug:\n"
-
 #: src/library/tools/mainloop/os/linux/timer.cc:158
 #: src/library/tools/mainloop/os/windows/timer.cc:158
 msgid "one second"
@@ -393,10 +369,6 @@ msgstr " {} segundos"
 #, c++-format
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
-
-#: src/library/tools/message.cc:48
-msgid "The message template is invalid"
-msgstr "O template de mensagem não é válido"
 
 #: src/library/tools/object.cc:293
 #, c++-format
@@ -638,14 +610,42 @@ msgstr "numero"
 msgid "Unknown"
 msgstr "Desconhecido"
 
-#: src/library/tools/xml/attribute.cc:112
+#: src/library/tools/xml/attribute.cc:113
 #, c++-format
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/tools/xml/load.cc:164
+#: src/library/tools/xml/load.cc:154
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
+
+#: src/library/tools/logger.cc:350
+msgid "Save log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger.cc:351
+msgid "Send log to console"
+msgstr "Envia log para o console"
+
+#: src/library/tools/logger.cc:352
+msgid "Set log level to 'verbosity'"
+msgstr "Define nível de log para 'verbosity'"
+
+#: src/library/tools/logger.cc:353
+msgid "Quiet output"
+msgstr "Inibe saídas para console"
+
+#: src/library/tools/logger.cc:355
+msgid "Enable coredump"
+msgstr "Habilita coredump"
+
+#: src/library/tools/logger.cc:359
+msgid "Log/Debug options:\n"
+msgstr "Opções de log/debug:\n"
+
+#: src/library/tools/message.cc:48
+msgid "The message template is invalid"
+msgstr "O template de mensagem não é válido"
 
 #: src/library/agent/agent.cc:193
 msgid "default"
@@ -683,12 +683,12 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/module/module.cc:114
+#: src/library/module/module.cc:115
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:130
+#: src/library/module/module.cc:131
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"

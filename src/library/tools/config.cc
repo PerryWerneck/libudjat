@@ -35,15 +35,16 @@
 
 	namespace Config {
 
-		bool Controller::allow_user_config = false;
-
 #ifdef _WIN32
+
+		HKEY Controller::hParent = HKEY_LOCAL_MACHINE;
+
 		Controller & Controller::getInstance() {
 			static Config::Controller instance;
 			return instance;
 		}
 
-		bool Controller::allow_user_homedir(bool allow);
+		bool Controller::allow_user_homedir(bool allow) {
 			HKEY hNew = allow ? HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
 			if(hNew == hParent) {
 				return false;
@@ -54,6 +55,8 @@
 		}
 
 #else
+
+		bool Controller::allow_user_config = false;
 
 		Controller & Controller::getInstance() {
 			std::lock_guard<std::recursive_mutex> lock(guard);
