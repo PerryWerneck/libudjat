@@ -167,6 +167,9 @@
 
 		String get(const bool console = false) const;
 
+		/// @brief Do a get request using a writer callback.
+		/// @param writer The writer callback to receive the data, return true to cancel operation.
+		/// @return The get result.
 		int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
 		inline String post(const char *payload, const bool console = false) const {
@@ -179,6 +182,11 @@
 		/// @return true if the file was updated.
 		bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
+		/// @brief Get URL, save response to file.
+		/// @param filename the filename to save or update. 
+		/// @param method The http method to use.
+		/// @param payload The payload to send if any.
+		/// @return true if the file was updated.
 		bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "");
 		
 		/// @brief Get URL, save response to cache file.
