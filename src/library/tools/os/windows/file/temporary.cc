@@ -56,17 +56,17 @@
 		std::string tempdir{lpTempPathBuffer};
 		tempdir += "\\";
 		tempdir += Application::Name();
-		tempdir += "\\";
 		if(subdir && *subdir) {
-			tempdir += subdir;
 			tempdir += "\\";
+			tempdir += subdir;
 		}
+		File::Path::mkdir(tempdir.c_str(),true);
+		tempdir += "\\";
 
 		return tempdir;
 	}
 
 	Application::TmpDir::TmpDir(const char *subdir) : File::Path{TmpDirFactory(subdir)} {
-
 	}
 
 	String File::Temporary::create() {
