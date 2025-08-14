@@ -180,7 +180,7 @@
 				if(result && (result < next || next == 0)) {
 					next = result;
 				}
-				return false;
+				
 			}
 
 		} else {
