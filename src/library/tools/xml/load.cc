@@ -54,6 +54,28 @@
 			// Is a directory, scan for files
 			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
 
+			std::vector<Udjat::String> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path);
+				return false;
+			});
+
+			std::sort(files.begin(), files.end());
+
+			for(const Udjat::String &file : files) {
+
+				// Recursive call to parse document.
+				time_t expires = parse(file.c_str());
+				if(expires) {
+					expires += time(0);
+					if(expires < next || next == 0) {
+						next = expires;
+					}
+				}
+
+			}
+
+			/*
 			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
 
 				// Recursive call to parse document.
@@ -68,6 +90,7 @@
 				return false;
 
 			});
+			*/
 
 		} else {
 
