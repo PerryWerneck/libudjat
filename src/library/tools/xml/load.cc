@@ -54,15 +54,15 @@
 			// Is a directory, scan for files
 			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
 
-			std::vector<Udjat::String> files;
+			std::vector<std::string> files;
 			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
-				files.emplace_back(path);
+				files.emplace_back(path.c_str());
 				return false;
 			});
 
 			std::sort(files.begin(), files.end());
 
-			for(const Udjat::String &file : files) {
+			for(const auto &file : files) {
 
 				// Recursive call to parse document.
 				time_t expires = parse(file.c_str());
@@ -74,23 +74,6 @@
 				}
 
 			}
-
-			/*
-			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
-
-				// Recursive call to parse document.
-				time_t expires = parse(path.c_str());
-				if(expires) {
-					expires += time(0);
-					if(expires < next || next == 0) {
-						next = expires;
-					}
-				}
-
-				return false;
-
-			});
-			*/
 
 		} else {
 
@@ -182,15 +165,15 @@
 		if(path.dir()) {
 
 			// Is a directory, scan for files
-			std::vector<Udjat::String> files;
+			std::vector<std::string> files;
 			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
-				files.emplace_back(path);
+				files.emplace_back(path.c_str());
 				return false;
 			});
 
 			std::sort(files.begin(), files.end());
 
-			for(const Udjat::String &file : files) {
+			for(const auto &file : files) {
 
 				// Recursive call to parse document.
 				time_t result = XML::parse(file.c_str());
