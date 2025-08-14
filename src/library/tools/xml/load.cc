@@ -182,15 +182,23 @@
 		if(path.dir()) {
 
 			// Is a directory, scan for files
-			path.for_each("*.xml",[&next](const File::Path &path) -> bool {
+			std::vector<Udjat::String> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path);
+				return false;
+			});
+
+			std::sort(files.begin(), files.end());
+
+			for(const Udjat::String &file : files) {
 
 				// Recursive call to parse document.
-				time_t result = XML::parse(path.c_str());
+				time_t result = XML::parse(file.c_str());
 				if(result && (result < next || next == 0)) {
 					next = result;
 				}
 				return false;
-			});
+			}
 
 		} else {
 
