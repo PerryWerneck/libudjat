@@ -174,9 +174,7 @@
 		throw logic_error("Object is unable to handle children");
 	}
 
-	void Abstract::Object::push_back(const 					// 
-
-XML::Node &, std::shared_ptr<Abstract::Object> child) {
+	void Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
 		push_back(child);
 	}
 
