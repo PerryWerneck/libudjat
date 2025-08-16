@@ -68,8 +68,8 @@
 
 			/// @brief Try to build an action from XML definition.
 			/// @param node Action definition.
-			/// @return Pointer to new action (empty if not found).
-			// static std::shared_ptr<Action> build(const XML::Node &node, bool except = false);
+			/// @return Pointer to new action.
+			static std::shared_ptr<Action> build(const XML::Node &node);
 
 			static const std::list<Action::Factory *>::const_iterator begin();
 			static const std::list<Action::Factory *>::const_iterator end();

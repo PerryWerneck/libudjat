@@ -106,7 +106,7 @@
  				std::vector<std::shared_ptr<Action>> actions;
 
 			public:
-				ActionContainer(Controller *cntrl, Abstract::Object &parent, const XML::Node &node) : Action{node} {
+				ActionContainer(const Controller *cntrl, Abstract::Object &parent, const XML::Node &node) : Action{node} {
 					for(const char *nodename : { "action", "script" }) {
 						for(auto action = node.child(nodename); action; action = action.next_sibling(nodename)) {
 							actions.push_back(

@@ -279,39 +279,41 @@
 		}
 
 		// Try actions
-		{
-			std::shared_ptr<Action> action = Action::Factory::build(node,false);
-			if(action) {
+		try {
 
-				Logger::String{"Building action based agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
+			std::shared_ptr<Action> action = Action::Factory::build(node);
 
-				switch(Value::TypeFactory(node,"value-type","int")) {
-				case Value::String:
-					return make_shared<ActionAgent<string>>(node,action);
+			Logger::String{"Building action based agent"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
 
-				case Value::Signed:
-					return make_shared<ActionAgent<int>>(node,action);
+			switch(Value::TypeFactory(node,"value-type","int")) {
+			case Value::String:
+				return make_shared<ActionAgent<string>>(node,action);
 
-				case Value::Unsigned:
-					return make_shared<ActionAgent<unsigned int>>(node,action);
+			case Value::Signed:
+				return make_shared<ActionAgent<int>>(node,action);
 
-				case Value::Real:
-				case Value::Fraction:
-					return make_shared<ActionAgent<double>>(node,action);
+			case Value::Unsigned:
+				return make_shared<ActionAgent<unsigned int>>(node,action);
 
-				case Value::Boolean:
-					return make_shared<ActionAgent<bool>>(node,action);
+			case Value::Real:
+			case Value::Fraction:
+				return make_shared<ActionAgent<double>>(node,action);
 
-				default:
-					throw logic_error("Invalid attribute: value-type");
-				}
+			case Value::Boolean:
+				return make_shared<ActionAgent<bool>>(node,action);
 
+			default:
+				throw logic_error("Invalid attribute: value-type");
 			}
+ 
+		} catch(...) {
+
+			// Ignore exceptions from action factory
 
 		}
 
 		throw runtime_error(
-			String{"Cant find a valid factory for agent type '",type,"'"}
+			String{"Cant find a valid factory for agent at ",node.path()}
 		);
 
 	}

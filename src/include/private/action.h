@@ -34,7 +34,7 @@ namespace Udjat {
 		
 		static Controller & getInstance();
 
-		std::shared_ptr<Action> build_action(const XML::Node &node, const char *type, bool except) const;
+		// std::shared_ptr<Action> build_action(const XML::Node &node, const char *type, bool except) const;
 
 		std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const override;
 
