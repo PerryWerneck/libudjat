@@ -46,6 +46,7 @@
 				inline bool operator==(const char *n) const noexcept {
 					return strcasecmp(n,name) == 0;
 				}
+
 				/// @brief Create an object from XML node.
 				virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const = 0;
 

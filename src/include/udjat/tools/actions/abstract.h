@@ -37,6 +37,9 @@
  namespace Udjat {
 
 	class UDJAT_API Action : public Activatable {
+	private:
+		class Controller;
+		
 	protected:
 		const char *title;
 
@@ -66,7 +69,7 @@
 			/// @brief Try to build an action from XML definition.
 			/// @param node Action definition.
 			/// @return Pointer to new action (empty if not found).
-			static std::shared_ptr<Action> build(const XML::Node &node, bool except = false);
+			// static std::shared_ptr<Action> build(const XML::Node &node, bool except = false);
 
 			static const std::list<Action::Factory *>::const_iterator begin();
 			static const std::list<Action::Factory *>::const_iterator end();

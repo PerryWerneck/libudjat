@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,8 +18,10 @@
  */
 
  /**
-  * @brief Implements the abstract action.
+  * @brief Implements the action factory.
   */
+
+ #define LOG_DOMAIN "action"
 
  #include <config.h>
  #include <udjat/defs.h>
@@ -33,39 +35,36 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/http/exception.h>
+ #include <udjat/tools/abstract/object.h>
  #include <list>
  #include <sys/stat.h>
  #include <fstream>
  #include <stdexcept>
+ #include <private/action.h>
 
  using namespace std;
 
  namespace Udjat {
 
-	static Container<Action::Factory> & Factories() {
-		static Container<Action::Factory> instance;
-		return instance;
-	}
-
 	Action::Factory::Factory(const char *n) : name{n} {
-		Factories().push_back(this);
+		Controller::getInstance().push_back(this);
 	}
 
 	Action::Factory::~Factory() {
-		Factories().remove(this);
+		Controller::getInstance().remove(this);
 	}
 
 	const std::list<Action::Factory *>::const_iterator Action::Factory::begin() {
-		return Factories().begin();
+		return Controller::getInstance().begin();
 	}
 
 	const std::list<Action::Factory *>::const_iterator Action::Factory::end() {
-		return Factories().end();
+		return Controller::getInstance().end();
 	}
 
 	bool Action::Factory::for_each(const std::function<bool(Action::Factory &factory)> &func) noexcept {
 
-		for(auto factory : Factories()) {
+		for(auto factory : Controller::getInstance()) {
 
 			try {
 
@@ -89,6 +88,7 @@
 		return false;
 	}
 
+	/*
 	static std::shared_ptr<Action> build_action(const XML::Node &node, const char *type, bool except) {
 
 		try {
@@ -100,7 +100,7 @@
 			//
 			// Check for factories
 			//
-			for(const auto factory : Factories()) {
+			for(const auto factory : Factories::getInstance()) {
 				
 				if(*factory == type) {
 
@@ -279,7 +279,9 @@
 		return std::shared_ptr<Action>();
 
 	}
+	*/
 
+	/*
 	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node, bool except) {
 
 		// Check for action/script children
@@ -396,79 +398,7 @@
 		return build_action(node,type,except);
 
 	}
+	*/
 
-	Action::Action(const XML::Node &node)
-		: Activatable{node}, title{String{node,"title"}.as_quark()} {
-	}
-	
-	Action::~Action() {
-	}
-
-	int Action::call(bool except) {
-		Udjat::Request request;
-		Udjat::Response response;
-		return call(request,response,except);
-	}
-
-	bool Action::activate(const Udjat::Abstract::Object &object) noexcept {
-
-		try {
-
-			Udjat::Request request;
-			object.getProperties(request);
-
-			Udjat::Response response;
-			int rc = call(request,response,true);
-			if(rc) {
-				Logger::String{"Action failed with code ",rc}.error(name());
-				return false;
-			}
-
-		} catch(const std::exception &e) {
-
-			Logger::String{e.what()}.error(name());
-			return false;
-
-		} catch(...) {
-
-			Logger::String{"Unexpected error"}.error(name());
-			return false;
-
-		}
-
-		return true;
-
-	}
-
-	bool Action::activate() noexcept {
-
-		try {
-
-			Udjat::Request request;
-			Udjat::Response response;
-			int rc = call(request,response,true);
-			if(rc) {
-				Logger::String{"Action failed with code ",rc}.error(name());
-				return false;
-			}
-
-		} catch(const std::exception &e) {
-
-			Logger::String{e.what()}.error(name());
-			return false;
-
-		} catch(...) {
-
-			Logger::String{"Unexpected error"}.error(name());
-			return false;
-
-		}
-
-		return true;
-
-	}
-
-	void Action::introspect(const std::function<void(const char *name, const Value::Type type, bool in)> &) const {
-	}
 
  }
