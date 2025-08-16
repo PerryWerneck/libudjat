@@ -25,6 +25,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/activatable.h>
  #include <udjat/tools/actions/abstract.h>
  #include <udjat/tools/script.h>
@@ -52,7 +53,11 @@
 
 	static String TypeFactory(const XML::Node &node) {
 
-		static const char *attributes[] = { "action-type", "action-name", "action", "type" }; 
+		static const char *attributes[] = { "action-type", "action-name", "action", "type", "container", "multiple" }; 
+
+		if(node.child("script") || node.child("action")) {
+			return "multiple";
+		}
 
 		for(const char *attribute : attributes) {
 
@@ -94,56 +99,6 @@
 
 	std::shared_ptr<Abstract::Object> Action::Controller::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
 
-		//
-		// Does this action has children?
-		//
-		if(node.child("script") || node.child("action")) {
-
-			/// @brief Container with multiple actions.
-			// TODO: Use standard 'Object::push_back() to insert children.
-			class ActionContainer : public Action {
-			private:
- 				std::vector<std::shared_ptr<Action>> actions;
-
-			public:
-				ActionContainer(const Controller *cntrl, Abstract::Object &parent, const XML::Node &node) : Action{node} {
-					for(const char *nodename : { "action", "script" }) {
-						for(auto action = node.child(nodename); action; action = action.next_sibling(nodename)) {
-							actions.push_back(
-								std::dynamic_pointer_cast<Action>(cntrl->ObjectFactory(parent,action))
-							);
-
-						}
-					}
-				}
-
-				int call(bool except) override {
-					for(auto action : actions) {
-						int rc = action->call(except);
-						if(rc) {
-							return rc;
-						}
-					}
-					return 0;
-				}
-
-				int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
-					for(auto action : actions) {
-						int rc = action->call(request,response,except);
-						if(rc) {
-							return rc;
-						}
-					}
-					return 0;
-				}
-
-			};
-
-			return make_shared<ActionContainer>(this,parent,node);
-
-		}
-
-
 		// Get action type
 		auto type = TypeFactory(node);
 
@@ -160,7 +115,7 @@
 		}
 
 		// Check for internal actions.
-		switch(type.select("url","shell","shell-script","file",nullptr)) {
+		switch(type.select("url","shell","shell-script","file","multiple",nullptr)) {
 		case 0: // URL
 			{
 				/// @brief Call URL when activated.
@@ -211,10 +166,9 @@
 					}
 
 				};
-				return make_shared<URLAction>(node);
 
+				return make_shared<URLAction>(node);
 			}
-			break;
 
 		case 1: // shell
 		case 2: // shell-script
@@ -222,7 +176,6 @@
 				// Script action.
 				return make_shared<Script>(node);
 			}
-			break;
 
 		case 3: // File
 			{
@@ -286,10 +239,63 @@
 					}
 
 				};
+
 				return make_shared<FileAction>(node);
 
 			}
-			break;
+
+		case 4: // multiple
+			{
+				/// @brief Container with multiple actions.
+				class ActionContainer : public Action {
+				private:
+					std::vector<std::shared_ptr<Action>> actions;
+
+				public:
+					ActionContainer(const Controller *cntrl, Abstract::Object &parent, const XML::Node &node) : Action{node} {
+						
+						// Parse standard children
+						parse(node);
+
+						// Legacy support for <script> children
+						for(auto action = node.child("script"); action; action = action.next_sibling("script")) {
+							push_back(cntrl->ObjectFactory(parent,action));
+						}
+					}
+
+					void push_back(std::shared_ptr<Abstract::Object> child) override {
+						auto action = std::dynamic_pointer_cast<Action>(child);
+						if(action) {
+							actions.push_back(action);
+						} else {
+							throw runtime_error("Action container only accepts action children");
+						}
+					}
+
+					int call(bool except) override {
+						for(auto action : actions) {
+							int rc = action->call(except);
+							if(rc) {
+								return rc;
+							}
+						}
+						return 0;
+					}
+
+					int call(Udjat::Request &request, Udjat::Response &response, bool except) override {
+						for(auto action : actions) {
+							int rc = action->call(request,response,except);
+							if(rc) {
+								return rc;
+							}
+						}
+						return 0;
+					}
+
+				};
+
+				return make_shared<ActionContainer>(this,parent,node);
+			}
 
 		default:
 			throw runtime_error(Logger::String{"Unexpected or invalid type at ",node.path()});
