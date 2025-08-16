@@ -28,7 +28,7 @@
  namespace Udjat {
 
 	bool Module::Controller::deinit(void *handle) {
-		bool (*udjat_module_deinit)(void) = (bool (*)(void)) dlsym(handle,"udjat_module_deinit");
+		bool (*udjat_module_deinit)(void) = (bool (*)(void)) ::dlsym(handle,"udjat_module_deinit");
 		auto err = dlerror();
 		if(!err) {
 			debug("Calling udjat_module_deinit");

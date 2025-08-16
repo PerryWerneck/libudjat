@@ -64,7 +64,7 @@
 			};
 
 			/// @brief Mutex
-			std::mutex guard;
+			mutable std::mutex guard;
 
 			/// @brief Process windows messages.
 			static LRESULT WINAPI hwndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

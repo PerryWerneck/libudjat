@@ -6,6 +6,8 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/singleton.h>
+#include <udjat/tools/xml.h>
+
 #include <list>
 #include <vector>
 
@@ -13,7 +15,7 @@ using namespace std;
 
 namespace Udjat {
 
-	class Module::Controller : public Singleton::Container<Module> {
+	class Module::Controller : public Singleton::Container<Module>, private XML::Parser {
 	private:
 		friend class MainLoop;
 
@@ -54,17 +56,14 @@ namespace Udjat {
 		static Module * init(void *handle, const XML::Node &node);
 #endif
 
-		static Controller & getInstance() {
-			static Controller instance;
-			return instance;
-		}
+		static Controller & getInstance();
 
 		void clear() override;
 
 		/// @brief Load module by xml definition.
 		/// @param node Module definitions.
-		/// @return true if the module was already loaded.
-		bool load(const XML::Node &node);
+		/// @return true if the node was parsed and should be ignored by the caller.
+		bool parse(const XML::Node &node) override;
 
 		/// @brief Load module by filename.
 		/// @param filename The module filename.

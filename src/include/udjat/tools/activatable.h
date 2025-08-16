@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	class UDJAT_API Activatable {
+	class UDJAT_API Activatable : public Abstract::Object {
 	private:
 		const char *object_name;
 
@@ -48,9 +48,7 @@
 
 	public:
 
-		inline const char *name() const noexcept {
-			return object_name;
-		}
+		const char * name() const noexcept override;
 
 		inline const char *c_str() const noexcept {
 			return object_name;

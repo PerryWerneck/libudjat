@@ -242,6 +242,11 @@
 			return true;
 		}
 
+		if(!strcasecmp(key,"tmpdir")) {
+			value = Application::TmpDir();
+			return true;
+		}
+
 		if(!strcasecmp(key,"cachedir")) {
 			value = Application::CacheDir();
 			return true;

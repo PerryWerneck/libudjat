@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,34 +17,27 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <udjat/defs.h>
- #include <udjat/tools/application.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/quark.h>
- #include <udjat/module/abstract.h>
- #include <udjat/tools/logger.h>
- #include <stdexcept>
+#pragma once
 
- using namespace std;
+#include <config.h>
+#include <udjat/defs.h>
+#include <udjat/tools/actions/abstract.h>
+#include <udjat/tools/container.h>
 
- namespace Udjat {
+using namespace std;
 
-	Application::Application(int &c, char **v) : argc{c}, argv{v} {
+namespace Udjat {
 
-		Quark::init();
+	class UDJAT_PRIVATE Action::Controller : public Container<Action::Factory>, private Abstract::Object::Factory {
+	public:
+		Controller();
+		
+		static Controller & getInstance();
 
-#ifdef DEBUG 
-		Logger::console(true);
-#endif
+		// std::shared_ptr<Action> build_action(const XML::Node &node, const char *type, bool except) const;
 
-#ifdef GETTEXT_PACKAGE
-		set_gettext_package(GETTEXT_PACKAGE);
-		setlocale( LC_ALL, "" );
-#endif // GETTEXT_PACKAGE
+		std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const override;
 
-		Module::preload();
+	};
 
-	}
-
- }
+}

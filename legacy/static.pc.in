@@ -16,5 +16,5 @@ Name: udjat
 Description: The Eye of Horus core library
 Version: @PACKAGE_VERSION@
 Requires: pugixml liburiparser
-Libs: -l:libudjat.a -ldl -pthread -liniparser
+Libs: -l:libudjat.a -ldl -pthread @ECONF_LIBS@
 Cflags: -I${prefix}/include -pthread -DLIBUDJAT_LEGACY=1

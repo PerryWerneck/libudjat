@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 _realname="libudjat"
-pkgver="2.0.2"
+pkgver="2.1.0"
 pkgrel=0
 
 pkgname=${MINGW_PACKAGE_PREFIX}-${_realname}

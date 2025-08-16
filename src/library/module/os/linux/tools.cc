@@ -64,7 +64,7 @@
 	
 	void * Module::Controller::getSymbol(void *handle, const char *name	, bool required) {
 
-		void * symbol = dlsym(handle,name);
+		void * symbol = ::dlsym(handle,name);
 
 		if(required) {
 			auto err = dlerror();
@@ -74,7 +74,7 @@
 
 		return symbol;
 	}
-
+	
 	std::string Module::filename() const {
 		Dl_info info;
 		memset(&info,0,sizeof(info));

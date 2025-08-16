@@ -114,7 +114,7 @@
 
 	}
 
-	std::string File::Temporary::mkdir() {
+	Udjat::String File::Temporary::mkdir() {
 
 		Application::TmpDir basename;
 		basename += Application::Name();
@@ -128,7 +128,7 @@
 
 		for(size_t f = 0; f < 1000; f++) {
 
-			string filename = basename + "." + std::to_string(rand()) + ".tmp";
+			Udjat::String filename{basename.c_str(),".",std::to_string(rand()).c_str(),".tmp"};
 
 			if(::mkdir(filename.c_str(), 0700) == 0) {
 				return filename;
@@ -144,11 +144,11 @@
 
 	}
 
-	std::string File::Temporary::create() {
+	Udjat::String File::Temporary::create() {
 		return create(0);
 	}
 
-	std::string File::Temporary::create(unsigned long long len) {
+	Udjat::String File::Temporary::create(unsigned long long len) {
 
 		Application::TmpDir basename;
 
@@ -161,7 +161,7 @@
 
 		for(size_t f = 0; f < 1000; f++) {
 
-			string filename = basename + "." + std::to_string(rand()) + ".tmp";
+			Udjat::String filename{basename.c_str(),".",std::to_string(rand()).c_str(),".tmp"};
 			int fd = open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR,0600);
 			if(fd > 0) {
 				if(len && fallocate(fd, 0, 0, len) != 0) {

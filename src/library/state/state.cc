@@ -97,7 +97,7 @@ namespace Udjat {
 		if(node.attribute("alert").as_bool(false) || node.attribute("alert-type")) {
 			listeners.push_back(Alert::Factory::build(*this, node));
 		} else if(node.attribute("action-type")) {
-			listeners.push_back(Action::Factory::build(node,true));
+			listeners.push_back(Action::Factory::build(node));
 		}
 
 	}

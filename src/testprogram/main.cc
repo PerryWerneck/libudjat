@@ -22,59 +22,24 @@
  #include <udjat/defs.h>
  #include <udjat/loader.h>
  #include <iostream>
- #include <udjat/net/interface.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/module/abstract.h>
+ #include <udjat/tools/commandlineparser.h>
+ #include <string>
 
  using namespace Udjat;
  using namespace std;
 
  int main(int argc, char **argv) {
 
-	 // Call the loader function with command line arguments
-	 return loader(argc, argv,[](Application &app) {
-
-		debug("-------[ Beginning test of network methods]--------------");
-		
-		{
-			auto nic = Udjat::Network::Interface::Default();
-
-			auto name = nic->name();
-			if(name && *name) {
-				app.info() << "Default network interface address: " << name << endl;
-			} else {
-				throw logic_error("No default network interface found.");
-			}	
-
-			auto addr = nic->address().to_string();
-			if(addr.empty()) {
-				throw logic_error("No default network interface found.");
-			} else {
-				app.info() << "Default network interface address: " << addr.c_str() << endl;
-			}	
-
-			auto mask = nic->netmask().to_string();
-			if(mask.empty()) {
-				throw logic_error("No default network interface netmask found.");
-			} else {
-				app.info() << "Default network interface netmask: " << mask.c_str() << endl;
-			}
-
-#ifdef HAVE_SMBIOS
-			try {
-				string smbios = URL{"dmi:///BIOS"}.get();
-				app.info() << "SMBIOS information: " << smbios.c_str() << endl;
-			} catch(const std::exception &e) {
-				app.error() << "Error getting SMBIOS information: " << e.what() << endl;
-			}	
-
-			// throw runtime_error("This is a test error to check the error handling in the application.");
-#endif // HAVE_SMBIOS
-
-		}
-
-		debug("---------------------------------------------------------");
-
+	// Call the loader function with command line arguments
+	return loader(argc, argv,[](Application &app) -> int {
+#ifdef TEST_PROGRAM
+		return run_unit_test(nullptr);
+#else
+		return 0;
+#endif // TEST_PROGRAM
 	}, "test.xml");
 
  }
