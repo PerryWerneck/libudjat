@@ -45,6 +45,9 @@
 
 	public:
 
+		/// @brief Register pre-defined action factories.
+		static void register_factories();
+
 		/// @brief The action factory.
 		class Factory {
 		private:

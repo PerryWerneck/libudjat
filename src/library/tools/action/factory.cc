@@ -46,6 +46,10 @@
 
  namespace Udjat {
 
+	void Action::register_factories() {
+		Controller::getInstance();
+	}
+
 	Action::Factory::Factory(const char *n) : name{n} {
 		Controller::getInstance().push_back(this);
 	}
