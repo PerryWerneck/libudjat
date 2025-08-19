@@ -72,7 +72,7 @@
 
 		}
 
-		virtual EVP_PKEY * generate(size_t mbits = 2048);
+		virtual EVP_PKEY * generate(size_t mbits = 2048) = 0;
 	};
 
 	static std::shared_ptr<SSL::BackEnd> BackEndFactory(const Udjat::String &name) {
@@ -202,7 +202,7 @@
 
 		if(autogenerate) {
 
-			String mode{Config::Value<string>{"ssl","genkey","auto"}};
+			String mode{Config::Value<string>{"ssl","genkey","auto"}.c_str()};
 
 			if(strcasecmp(mode.c_str(),"auto") == 0) {
 				// Check if tpm is available
@@ -251,7 +251,7 @@
 		for(const char *tpm_tag : tpm2_tags) {
 			if(strstr(text.c_str(),tpm_tag)) {
 				Logger::String{"Found TPM2 key on ",filename}.trace();
-				mode = Config::Value<string>{"ssl","tpm-mode","engine"};
+				mode = Config::Value<string>{"ssl","tpm-mode","engine"}.c_str();
 				break;
 			}
 		}

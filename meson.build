@@ -427,6 +427,7 @@ lib_src += [
 if openssl.found()
   lib_src += [
     'src/library/tools/ssl/privatekey.cc',
+    'src/library/tools/ssl/exception.cc',
   ]
 endif
 
