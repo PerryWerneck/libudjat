@@ -43,7 +43,7 @@
 			return false;
 		}
 
-		debug("Argc=",argc);
+		//debug("Argc=",argc);
 		size_t szlong = 0;
 		if(longname && *longname) {
 			szlong = strlen(longname);
@@ -51,7 +51,7 @@
 
 		for(int ix = 1; ix < argc; ix++) {
 
-			debug("ix=",ix," arg='",argv[ix],"'");
+			//debug("ix=",ix," arg='",argv[ix],"'");
 
 			if(argv[ix][0] != '-') {
 				continue;
