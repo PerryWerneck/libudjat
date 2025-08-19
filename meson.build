@@ -60,6 +60,12 @@ dbus = dependency('dbus-1', required: false, static: false)
 dl = cxx.find_library('dl', required: false)
 threads = dependency('threads')
 
+# OpenSSL
+openssl = dependency('OpenSSL', required: false)
+if not openssl.found()
+  openssl = dependency('openssl', required: false)
+endif
+
 # URIPARSER
 uriparser = dependency(
   'liburiparser', 
@@ -89,12 +95,13 @@ pugixml = dependency(
 
 required_libs = [
   pugixml,
-  uriparser
+  uriparser,
 ]
 
 private_libs = [
   vmdetect,
   dmiget,
+  openssl
 ]
 
 extra_libs = [
@@ -157,6 +164,12 @@ app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
 if dbus.found()
   app_conf.set('HAVE_DBUS', 1)
+endif
+
+if openssl.found()
+  app_conf.set('HAVE_OPENSSL', 1)
+  app_conf.set('ENABLE_OPENSSL_ENGINES', 1)
+  app_conf.set('ENABLE_OPENSSL_PROVIDER', 1)
 endif
 
 if uriparser.found()
@@ -410,6 +423,12 @@ lib_src += [
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
 ]
+
+if openssl.found()
+  lib_src += [
+    'src/library/tools/ssl/privatekey.cc',
+  ]
+endif
 
 #
 # SDK
