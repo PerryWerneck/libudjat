@@ -51,9 +51,15 @@ namespace Udjat {
 
 			public:
 
-				constexpr Private() {
+				/// @brief Build an empty private key.
+				Private() {
 				}
 
+				Private(const Private &) = delete;
+				Private & operator=(const Private &) = delete;
+				Private(Private &&) = delete;
+				Private & operator=(Private &&) = delete;
+								
 				/// @brief Loads or generates a private key.
 				/// @param filename The file where the private key is stored.
 				/// If the file does not exist, it will be created.
