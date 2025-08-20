@@ -65,6 +65,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/application/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/string/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/file/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/action/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/http/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/mainloop/os/linux/*.cc) \
