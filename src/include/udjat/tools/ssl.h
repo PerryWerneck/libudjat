@@ -29,8 +29,6 @@ namespace Udjat {
 
 	namespace SSL {
 
-		class BackEnd;
-
 		class Exception : public Udjat::Exception {
 		public:
 			Exception(const char *msg);
@@ -39,76 +37,74 @@ namespace Udjat {
 			}
 		};
 
-		namespace Key {
+		class UDJAT_API Key {
+		private:
 
-			class UDJAT_API Private {
-			private:
-				std::string filename;
-				EVP_PKEY *pkey = NULL;
+			std::string filename;
+			EVP_PKEY *pkey = NULL;
 
-				class Engine;
-				std::shared_ptr<BackEnd> backend;
+			class BackEnd;
+			std::shared_ptr<BackEnd> backend;
 
-			public:
+		public:
 
-				/// @brief Build an empty private key.
-				Private() {
-				}
+			/// @brief Build an empty private key.
+			Key() {
+			}
 
-				Private(const Private &) = delete;
-				Private & operator=(const Private &) = delete;
-				Private(Private &&) = delete;
-				Private & operator=(Private &&) = delete;
-								
-				/// @brief Loads or generates a private key.
-				/// @param filename The file where the private key is stored.
-				/// If the file does not exist, it will be created.
-				/// If the file exists, it will be loaded.	
-				/// @param password The password to protect the private key.
-				/// If the file does not exist, this password will be used to encrypt the private
-				/// key when it is generated.
-				/// If the file exists, this password will be used to decrypt the private key.
-				/// If the password is empty, the private key will not be encrypted.
-				/// If the file exists and the password is empty, the private key will be loaded
-				/// without decryption.
-				/// @param autogenerate If true, the private key will be generated if the file does not exist. 
-				Private(const char *filename, const char *password, bool autogenerate = false);
-				virtual ~Private();
+			Key(const Key &) = delete;
+			Key & operator=(const Key &) = delete;
+			Key(Key &&) = delete;
+			Key & operator=(Key &&) = delete;
+							
+			/// @brief Loads or generates a private key.
+			/// @param filename The file where the private key is stored.
+			/// If the file does not exist, it will be created.
+			/// If the file exists, it will be loaded.	
+			/// @param password The password to protect the private key.
+			/// If the file does not exist, this password will be used to encrypt the private
+			/// key when it is generated.
+			/// If the file exists, this password will be used to decrypt the private key.
+			/// If the password is empty, the private key will not be encrypted.
+			/// If the file exists and the password is empty, the private key will be loaded
+			/// without decryption.
+			/// @param autogenerate If true, the private key will be generated if the file does not exist. 
+			Key(const char *filename, const char *password, bool autogenerate = false);
+			~Key();
 
-				inline operator bool() const noexcept {
-					return (bool) pkey;
-				}
+			inline operator bool() const noexcept {
+				return (bool) pkey;
+			}
 
-				inline operator EVP_PKEY *() const noexcept {
-					return pkey;
-				} 
+			inline operator EVP_PKEY *() const noexcept {
+				return pkey;
+			} 
 
-				/// @brief Generates a new private key.
-				/// @param mbits The size of the key in bits. Default is 2048 bits.
-				/// @param mode The mode to generate the key, legacy, engine, provider or auto.
-				/// If not specified, the mode will be taken from the configuration file.
-				void generate(const char *filename, const char *passwd, size_t mbits = 2048, const char *mode = nullptr);
+			/// @brief Generates a new private key.
+			/// @param mbits The size of the key in bits. Default is 2048 bits.
+			/// @param mode The mode to generate the key, legacy, engine, provider or auto.
+			/// If not specified, the mode will be taken from the configuration file.
+			void generate(const char *filename, const char *passwd, size_t mbits = 2048, const char *mode = nullptr);
 
-				/// @brief Loads private key from file.
-				/// @param filename The file where the private key is stored.
-				/// @param password The password to protect the private key.
-				void load(const char *filename, const char *passwd = NULL);
+			/// @brief Loads private key from file.
+			/// @param filename The file where the private key is stored.
+			/// @param password The password to protect the private key.
+			void load(const char *filename, const char *passwd = NULL);
 
-				/// @brief Save private key from file.
-				/// @param filename The file where the private key will be stored.
-				/// @param password The password to protect the private key.
-				void save(const char *filename, const char *passwd = NULL);
+			/// @brief Save private key to file.
+			/// @param filename The file where the private key will be stored.
+			/// @param password The password to protect the private key.
+			void save_private(const char *filename, const char *passwd = NULL);
 
-				/// @brief Get singleton instance of the private key.
-				// Private & getInstance();
+			/// @brief Save public key to file.
+			/// @param filename The file where the public key will be stored.
+			void save_public(const char *filename);
 
-				/// @brief Get string representation of the private key.
-				/// @return The private key in PEM format.
-				std::string to_string() const;
+			/// @brief Get string representation of the private key.
+			/// @return The private key in PEM format.
+			std::string to_string() const;
 
-			};
-
-		}
+		};
 
 	}
 
@@ -116,11 +112,11 @@ namespace Udjat {
 
 namespace std {
 
-	inline std::string to_string(const Udjat::SSL::Key::Private &key) {
+	inline std::string to_string(const Udjat::SSL::Key &key) {
 		return key.to_string();
 	}
 
-	inline ostream& operator<< (ostream& os, const Udjat::SSL::Key::Private &key) {
+	inline ostream& operator<< (ostream& os, const Udjat::SSL::Key &key) {
 		return os << to_string(key);
 	}
 

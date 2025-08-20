@@ -52,14 +52,16 @@
 
  #ifdef HAVE_OPENSSL
  static int ssl_test() {
-	Udjat::SSL::Key::Private pkey;
+	Udjat::SSL::Key pkey;
 
 	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
 	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
+	pkey.save_public("/tmp/test-legacy.pub");
 
 #if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H)
 	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
 	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
+	pkey.save_public("/tmp/test-engine.pub");
 #endif // HAVE_OPENSSL_ENGINE
 
 #ifdef HAVE_OPENSSL_PROVIDER
@@ -68,6 +70,7 @@
 	} else {
 		pkey.generate("/tmp/test-provider.key","password",2048,"provider");
 		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
+		pkey.save_public("/tmp/test-provider.pub");
 	}
 #endif // HAVE_OPENSSL_PROVIDER
 
