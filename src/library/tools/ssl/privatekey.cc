@@ -66,6 +66,30 @@
 		virtual ~BackEnd() {
 		}
 
+		virtual void save(EVP_PKEY *pkey, const char *filename, const char *password) {
+
+			FILE *priv_key_file = fopen(filename, "w");
+			if(!priv_key_file) {
+				throw system_error(errno,system_category(),filename);
+			}
+
+			if(PEM_write_PrivateKey(
+				priv_key_file, 
+				pkey, 
+				EVP_des_ede3_cbc(), 
+				(unsigned char *) password, 
+				(password ? strlen(password) : 0), 
+				NULL, 
+				NULL
+			) != 1) {
+				fclose(priv_key_file);
+				throw SSL::Exception("PEM_write_PrivateKey failed");
+			}
+
+			fclose(priv_key_file);
+
+		}
+
 		virtual EVP_PKEY * load(const File::Text &file) {
 
 			debug("Loading \n",file.c_str());
@@ -80,7 +104,7 @@
 
 		}
 
-		virtual EVP_PKEY * generate(size_t mbits = 2048) = 0;
+		virtual EVP_PKEY * generate(const char *filename, const char *password, size_t mbits = 2048) = 0;
 	};
 
 	static std::shared_ptr<SSL::BackEnd> BackEndFactory(Udjat::String name) {
@@ -112,8 +136,14 @@
 					Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
 				};
 
-				EVP_PKEY * generate(size_t mbits) override {
-					return EVP_RSA_gen(mbits);
+				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
+					EVP_PKEY *key = EVP_RSA_gen(mbits);
+					if(key && filename && *filename) {
+						save(key, filename, password);
+					} else if(!key) {
+						throw SSL::Exception("EVP_RSA_gen failed");
+					}
+					return key;
 				}
 
 			};
@@ -147,9 +177,13 @@
 					ENGINE_finish(engine);
 				}
 
-				EVP_PKEY * generate(size_t mbits) override {
+				EVP_PKEY * generate(const char *filename, const char *, size_t mbits) override {
 
 #if defined(HAVE_TPM2_TSS_ENGINE_H)
+
+					if(!(filename && *filename)) {
+						throw runtime_error("Filename is required for TPM2TSS engine key generation.");
+					}
 
 					// Reference: https://github.com/tpm2-software/tpm2-tss-engine/blob/master/src/tpm2tss-genkey.c
 					auto bignum = BIGNUM_PTR(BN_new(),BN_free);
@@ -173,33 +207,12 @@
 					TPM2_DATA tpm2Data;
 					memcpy(&tpm2Data, RSA_get_app_data(rsa.get()), sizeof(tpm2Data));
 
-					// TODO: Do we really need to write this to a file?
-					auto filename = File::Temporary::create();
-					debug("Tempfile set to '",filename.c_str());
-
-					EVP_PKEY *pkey;
-					try {
-
-						if (!tpm2tss_tpm2data_write(&tpm2Data, filename.c_str())) {
-							throw runtime_error("Error writing TPM2 data to file.");
-						}
-
-						pkey = ENGINE_load_private_key(engine,filename.c_str(),NULL,NULL);
-
-					} catch(...) {
-
-#ifdef DEBUG
-						debug("Error loading '",filename.c_str());
-#else
-						unlink(filename.c_str());
-#endif
-						throw;
-	
+					if (!tpm2tss_tpm2data_write(&tpm2Data, filename)) {
+						throw runtime_error("Error writing TPM2 data to file.");
 					}
 
-					unlink(filename.c_str());
+					return ENGINE_load_private_key(engine,filename,NULL,NULL);
 
-					return pkey;
 #else
 
 					auto ctx = CTX_PTR(EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, engine),EVP_PKEY_CTX_free);
@@ -261,8 +274,12 @@
 					OSSL_PROVIDER_unload(provider);
 				}
 
-				EVP_PKEY * generate(size_t mbits) override {
-					return EVP_PKEY_Q_keygen(NULL, String{"provider=",name}.c_str(), "RSA", mbits);
+				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
+					EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, String{"provider=",name}.c_str(), "RSA", mbits);
+					if(pkey && filename && *filename) {
+						save(pkey, filename, password);
+					}
+					return pkey;
 				}
 
 			};
@@ -281,20 +298,25 @@
 
 	SSL::Key::Private::Private(const char *filename, const char *password, bool autogenerate) {
 
-		if(filename && *filename && access(filename,R_OK) == 0) {
-			// File exists, load it.
-			load(filename,password);	
-			return;
+		if(filename && *filename) {
+			this->filename = filename;
+
+			if(access(filename,R_OK) == 0) {
+				// File exists, load it.
+				load(filename,password);	
+				return;
+			}
 		}
 
 		if(autogenerate) {
-
-
+			generate(filename, password, (size_t) Config::Value<unsigned int>{"ssl","mbits",2048}.get());
 		}
 
 		if(filename && *filename) {
-			save(filename,password);
+			throw system_error(errno,system_category(),filename);
 		}
+
+		throw system_error(EINVAL,system_category(),"filename is required to load private key");
 
 	}
 
@@ -307,11 +329,17 @@
 
 	}
 
-	void SSL::Key::Private::generate(size_t mbits, const char *defmode) {
+	void SSL::Key::Private::generate(const char *filename, const char *passwd, size_t mbits, const char *defmode) {
 
 		if(pkey) {
 			EVP_PKEY_free(pkey);
 			pkey = NULL;
+		}
+
+		if(filename && *filename) {
+			this->filename = filename;
+		} else {
+			this->filename.clear();
 		}
 
 		String mode;
@@ -322,7 +350,7 @@
 		}
 
 		backend = BackEndFactory(mode);
-		pkey = backend->generate((size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
+		pkey = backend->generate(filename, passwd, (size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
 		if(!pkey) {
 			throw SSL::Exception("Error generating private key");
 		}

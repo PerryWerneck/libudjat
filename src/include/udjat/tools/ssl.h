@@ -43,6 +43,7 @@ namespace Udjat {
 
 			class UDJAT_API Private {
 			private:
+				std::string filename;
 				EVP_PKEY *pkey = NULL;
 
 				class Engine;
@@ -80,7 +81,7 @@ namespace Udjat {
 				/// @param mbits The size of the key in bits. Default is 2048 bits.
 				/// @param mode The mode to generate the key, legacy, engine, provider or auto.
 				/// If not specified, the mode will be taken from the configuration file.
-				void generate(size_t mbits = 2048, const char *mode = nullptr);
+				void generate(const char *filename, const char *passwd, size_t mbits = 2048, const char *mode = nullptr);
 
 				/// @brief Loads private key from file.
 				/// @param filename The file where the private key is stored.

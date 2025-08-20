@@ -54,11 +54,11 @@
  static int ssl_test() {
 	Udjat::SSL::Key::Private pkey;
 
-	pkey.generate(2048,"legacy");
+	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
 	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
 
 #if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H)
-	pkey.generate(2048,"engine");
+	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
 	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
 #endif // HAVE_OPENSSL_ENGINE
 
@@ -67,7 +67,7 @@
 	if(access("/usr/lib64/ossl-modules/tpm2.so", R_OK) != 0) {
 		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
 	} else {
-		pkey.generate(2048,"provider");
+		pkey.generate("/tmp/test-provider.key","password",2048,"provider");
 		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
 	}
 #endif // HAVE_OPENSSL_PROVIDER
