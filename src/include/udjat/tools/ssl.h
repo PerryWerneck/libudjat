@@ -76,6 +76,12 @@ namespace Udjat {
 					return pkey;
 				} 
 
+				/// @brief Generates a new private key.
+				/// @param mbits The size of the key in bits. Default is 2048 bits.
+				/// @param mode The mode to generate the key, legacy, engine, provider or auto.
+				/// If not specified, the mode will be taken from the configuration file.
+				void generate(size_t mbits = 2048, const char *mode = nullptr);
+
 				/// @brief Loads private key from file.
 				/// @param filename The file where the private key is stored.
 				/// @param password The password to protect the private key.
@@ -87,7 +93,7 @@ namespace Udjat {
 				void save(const char *filename, const char *passwd = NULL);
 
 				/// @brief Get singleton instance of the private key.
-				Private & getInstance();
+				// Private & getInstance();
 
 				/// @brief Get string representation of the private key.
 				/// @return The private key in PEM format.

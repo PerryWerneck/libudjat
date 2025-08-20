@@ -82,6 +82,7 @@
 			class LegacyBackEnd : public SSL::BackEnd {
 			public:
 				LegacyBackEnd() {
+					Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
 				};
 
 				EVP_PKEY * generate(size_t mbits) override {
@@ -102,12 +103,14 @@
 					ENGINE_load_builtin_engines();
 					engine = ENGINE_by_id(Config::Value<string>("ssl","tpm-engine","tpm2tss").c_str());
 					if(!engine) {
-						throw runtime_error("Could not find the TPM engine");
+						throw runtime_error("Could not load OpenSSL engine");
 					}
 
 					if(ENGINE_init(engine) == 0) {
-						throw runtime_error("Could not initialize the TPM engine");
+						throw runtime_error("Could not initialize OpenSSL engine");
 					}
+
+					Logger::String{"Using OpenSSL engine backend for private key"}.trace();
 				}
 
 				~EngineBackEnd() override {
@@ -168,6 +171,10 @@
 
 				ProviderBackEnd() {
 					provider = OSSL_PROVIDER_load(NULL, Config::Value<string>("ssl","provider-engine","tpm2").c_str());
+					if(!provider) {
+						throw runtime_error("Could not load OpenSSL provider");
+					}
+					Logger::String{"Using OpenSSL provider backend for private key"}.trace();
 				}
 
 				~ProviderBackEnd() override {
@@ -202,18 +209,6 @@
 
 		if(autogenerate) {
 
-			String mode{Config::Value<string>{"ssl","genkey","auto"}.c_str()};
-
-			if(strcasecmp(mode.c_str(),"auto") == 0) {
-				// Check if tpm is available
-
-			}
-
-			backend = BackEndFactory(mode);
-			pkey = backend->generate((size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
-			if(!pkey) {
-				throw SSL::Exception("Error generating private key");
-			}
 
 		}
 
@@ -228,6 +223,44 @@
 		if(pkey) {
 			EVP_PKEY_free(pkey);
 			pkey = NULL;
+		}
+
+	}
+
+	void SSL::Key::Private::generate(size_t mbits, const char *defmode) {
+
+		if(pkey) {
+			EVP_PKEY_free(pkey);
+			pkey = NULL;
+		}
+
+		String mode;
+		if(defmode && *defmode) {
+			mode = defmode;
+		} else {
+			mode = Config::Value<string>{"ssl","genkey","auto"}.c_str();
+		}
+
+		if(strcasecmp(mode.c_str(),"auto") == 0) {
+
+			// Check if tpm is available
+			if(access("/dev/tpm0",F_OK) == 0) {
+#if defined(ENABLE_OPENSSL_ENGINES)
+				mode = "engine";
+#elif defined(ENABLE_OPENSSL_PROVIDER)
+				mode = "provider";
+#else
+				mode = "legacy";
+#endif // ENABLE_OPENSSL_ENGINES
+			} else {
+				mode = "legacy";
+			}
+		}
+
+		backend = BackEndFactory(mode);
+		pkey = backend->generate((size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
+		if(!pkey) {
+			throw SSL::Exception("Error generating private key");
 		}
 
 	}
@@ -283,6 +316,26 @@
 
 		fclose(priv_key_file);
 
+	}
+
+	std::string SSL::Key::Private::to_string() const {
+
+		if(!pkey) {
+			throw SSL::Exception("Private key is not loaded");
+		}
+
+		BIO_PTR bio(BIO_new(BIO_s_mem()), BIO_free_all);
+		if(!bio) {
+			throw SSL::Exception("BIO_new failed");
+		}
+
+		if(PEM_write_bio_PrivateKey(bio.get(), pkey, NULL, NULL, 0, NULL, NULL) != 1) {
+			throw SSL::Exception("PEM_write_bio_PrivateKey failed");
+		}
+
+		char *data;
+		long len = BIO_get_mem_data(bio.get(), &data);
+		return std::string(data, len);
 	}
 
  }
