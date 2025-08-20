@@ -239,6 +239,14 @@
 					return ENGINE_load_private_key(engine,filename,NULL,NULL);
 
 #else
+					auto bignum = BIGNUM_PTR(BN_new(),BN_free);
+					if (!bignum) {
+						throw runtime_error("Error creating BIGNUM.");
+					}
+
+					if(BN_set_word(bignum.get(), RSA_F4) <= 0) {
+						throw runtime_error("Error setting public exponent.");
+					}
 
 					auto ctx = CTX_PTR(EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, engine),EVP_PKEY_CTX_free);
 					if(!ctx) {
