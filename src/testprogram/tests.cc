@@ -27,6 +27,10 @@
  #include <udjat/net/interface.h>
  #include <udjat/tools/configuration.h>
 
+ #ifdef HAVE_OPENSSL
+ #include <udjat/tools/ssl.h>
+ #endif // HAVE_OPENSSL
+
  using namespace Udjat;
  using namespace std;
 
@@ -41,6 +45,22 @@
 	return 0;
  }
  #endif // HAVE_SMBIOS
+
+ #ifdef HAVE_OPENSSL
+ static int ssl_test() {
+	Udjat::SSL::Key::Private pkey;
+
+	pkey.generate(2048,"legacy");
+	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
+
+#ifdef ENABLE_OPENSSL_PROVIDER
+	pkey.generate(2048,"provider");
+	Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
+#endif // ENABLE_OPENSSL_PROVIDER
+
+	return 0;
+ }
+ #endif // HAVE_OPENSSL
 
  static int network_test() {
 	auto nic = Udjat::Network::Interface::Default();
@@ -121,6 +141,9 @@
 		int (*test)();
 	} tests[] = {
 		{"url",url_test},
+ #ifdef HAVE_OPENSSL
+		{"ssl", ssl_test},
+ #endif // HAVE_OPENSSL
  #ifdef HAVE_SMBIOS
 		{"smbios", smbios_test},
  #endif // HAVE_SMBIOS

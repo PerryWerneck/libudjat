@@ -75,7 +75,24 @@
 		virtual EVP_PKEY * generate(size_t mbits = 2048) = 0;
 	};
 
-	static std::shared_ptr<SSL::BackEnd> BackEndFactory(const Udjat::String &name) {
+	static std::shared_ptr<SSL::BackEnd> BackEndFactory(Udjat::String name) {
+
+		if(strcasecmp(name.c_str(),"auto") == 0) {
+
+			// Check if tpm is available
+			if(access("/dev/tpm0",F_OK) == 0) {
+#if defined(ENABLE_OPENSSL_ENGINES)
+				name = Config::Value<string>{"ssl","tpm2-backend","engine"}.c_str();
+#elif defined(ENABLE_OPENSSL_PROVIDER)
+				// /usr/lib64/ossl-modules/tpm2.so
+				name = Config::Value<string>{"ssl","tpm2-backend","provider"}.c_str();
+#else
+				name = "legacy";
+#endif // ENABLE_OPENSSL_ENGINES
+			} else {
+				name = "legacy";
+			}
+		}
 
 		switch(name.select("legacy","engine","provider",NULL)) {
 		case 0: // Legacy
@@ -95,6 +112,9 @@
 
 		case 1: // engine
 #ifdef ENABLE_OPENSSL_ENGINES
+
+			// Requires package openssl_tpm2_engine
+
 			class EngineBackEnd : public SSL::BackEnd {
 			public:
 				ENGINE *engine;
@@ -165,16 +185,21 @@
 
 		case 2: // provider
 #ifdef ENABLE_OPENSSL_PROVIDER
+
+			// Require package tpm2-openssl
+
 			class ProviderBackEnd : public SSL::BackEnd {
 			public:
+				string name;
 				OSSL_PROVIDER *provider;
 
-				ProviderBackEnd() {
-					provider = OSSL_PROVIDER_load(NULL, Config::Value<string>("ssl","provider-engine","tpm2").c_str());
+				ProviderBackEnd() : name{Config::Value<string>{"ssl","provider-engine","tpm2"}.c_str()} {
+
+					provider = OSSL_PROVIDER_load(NULL, name.c_str());
 					if(!provider) {
-						throw runtime_error("Could not load OpenSSL provider");
+						throw runtime_error(String{"Could not load OpenSSL provider '",name.c_str(),"'"});
 					}
-					Logger::String{"Using OpenSSL provider backend for private key"}.trace();
+					Logger::String{"Using OpenSSL provider '",name.c_str(),"' for private key"}.trace();
 				}
 
 				~ProviderBackEnd() override {
@@ -182,7 +207,7 @@
 				}
 
 				EVP_PKEY * generate(size_t mbits) override {
-					return EVP_PKEY_Q_keygen(NULL, "provider=tpm2", "RSA", mbits);
+					return EVP_PKEY_Q_keygen(NULL, String{"provider=",name}.c_str(), "RSA", mbits);
 				}
 
 			};
@@ -241,14 +266,17 @@
 			mode = Config::Value<string>{"ssl","genkey","auto"}.c_str();
 		}
 
+		/*
 		if(strcasecmp(mode.c_str(),"auto") == 0) {
 
 			// Check if tpm is available
 			if(access("/dev/tpm0",F_OK) == 0) {
+
 #if defined(ENABLE_OPENSSL_ENGINES)
-				mode = "engine";
+				mode = Config::Value<string>{"ssl","tpm2-backend","engine"}.c_str();
 #elif defined(ENABLE_OPENSSL_PROVIDER)
-				mode = "provider";
+				// /usr/lib64/ossl-modules/tpm2.so
+				mode = Config::Value<string>{"ssl","tpm2-backend","provider"}.c_str();
 #else
 				mode = "legacy";
 #endif // ENABLE_OPENSSL_ENGINES
@@ -256,6 +284,7 @@
 				mode = "legacy";
 			}
 		}
+		*/
 
 		backend = BackEndFactory(mode);
 		pkey = backend->generate((size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
