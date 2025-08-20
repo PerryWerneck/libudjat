@@ -57,6 +57,7 @@
 	SSL::Key::Key(const char *filename, const char *password, bool autogenerate) {
 
 		if(filename && *filename) {
+
 			this->filename = filename;
 
 			if(access(filename,R_OK) == 0) {
@@ -64,14 +65,14 @@
 				load(filename,password);	
 				return;
 			}
+
+			debug("File ",filename," does not exist or is not readable");
 		}
 
 		if(autogenerate) {
+			Logger::String{"Generating new private key in ",filename}.trace();
 			generate(filename, password, (size_t) Config::Value<unsigned int>{"ssl","mbits",2048}.get());
-		}
-
-		if(filename && *filename) {
-			throw system_error(errno,system_category(),filename);
+			return;
 		}
 
 		throw system_error(EINVAL,system_category(),"filename is required to load private key");
