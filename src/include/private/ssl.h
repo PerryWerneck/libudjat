@@ -57,10 +57,11 @@
 	/// @see SSL::Key::BackEnd::Factory
 	class UDJAT_PRIVATE SSL::Key::BackEnd {
 	public:
+		const char *type; ///< The type of the backend for configuration purposes.
 
 		static std::shared_ptr<SSL::Key::BackEnd> Factory(Udjat::String name);
 
-		constexpr BackEnd() {
+		constexpr BackEnd(const char *t) : type{t} {
 		}
 
 		virtual ~BackEnd() {

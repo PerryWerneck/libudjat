@@ -179,7 +179,7 @@
 		case 0: // Legacy
 			class LegacyBackEnd : public BackEnd {
 			public:
-				LegacyBackEnd() {
+				LegacyBackEnd() : BackEnd{"legacy"} {
 					Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
 				};
 
@@ -206,7 +206,7 @@
 			public:
 				ENGINE *engine;
 
-				EngineBackEnd() {
+				EngineBackEnd() : BackEnd{"tpm2"} {
 					ENGINE_load_builtin_engines();
 					engine = ENGINE_by_id(Config::Value<string>("ssl","tpm-engine","tpm2tss").c_str());
 					if(!engine) {
@@ -341,7 +341,7 @@
 				string name;
 				OSSL_PROVIDER *provider;
 
-				ProviderBackEnd() : name{Config::Value<string>{"ssl","provider-engine","tpm2"}.c_str()} {
+				ProviderBackEnd() : BackEnd{"tpm2"}, name{Config::Value<string>{"ssl","provider-engine","tpm2"}.c_str()} {
 
 					provider = OSSL_PROVIDER_load(NULL, name.c_str());
 					if(!provider) {

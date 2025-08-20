@@ -25,6 +25,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file/temporary.h>
+ #include <udjat/tools/subprocess.h>
  #include <cstdio>
 
  #ifdef HAVE_UNISTD_H
@@ -109,9 +110,59 @@
 		}
 
 		backend = BackEnd::Factory(mode);
-		pkey = backend->generate(filename, passwd, (size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
-		if(!pkey) {
-			throw SSL::Exception("Error generating private key");
+
+		Config::Value<String> subproc{"ssl",String{backend->type,"-genkey"}.c_str()};
+
+		debug("subproc: '",subproc.c_str(),"'");
+
+		if(subproc.empty()) {
+
+			// No sub-process defined, use the backend to generate the key.
+			pkey = backend->generate(filename, passwd, (size_t) Config::Value<unsigned int>{"ssl","mbits",2048});
+			if(!pkey) {
+				throw SSL::Exception("Error generating private key");
+			}
+
+		} else {
+
+			// Have subprocess to generate the key, use it.
+			string tempfilename = File::Temporary::create();
+			subproc.expand([&](const char *key, std::string &str) {
+				if(strcasecmp(key,"keyfile") == 0) {
+					str = tempfilename;
+				} else if(strcasecmp(key,"keysize") == 0) {
+					str = std::to_string(mbits);
+				} else if(strcasecmp(key,"password") == 0) {
+					str = passwd ? passwd : "";
+				}
+				return true;
+			}, true, true);
+
+			debug("Running subprocess to generate private key: ",subproc.c_str());
+
+			int rc = SubProcess{
+				"keygen",
+				subproc.c_str(),
+				Logger::Info,
+				Logger::Error
+			}.run();
+
+			if(rc) {
+				throw runtime_error(String{"Error generating private key, subprocess returned ",rc});
+			}
+
+			File::Text text{tempfilename.c_str()};
+			text.save(filename);
+
+			pkey = backend->load(text, filename, passwd);
+			if(!pkey) {
+				throw SSL::Exception(String{"Error loading generated key from ",filename});
+			}
+
+#ifndef DEBUG 
+			unlink(tempfilename.c_str());
+#endif // DEBUG
+
 		}
 
 	}

@@ -54,6 +54,13 @@
  static int ssl_test() {
 	Udjat::SSL::Key pkey;
 
+	unlink("/tmp/test-legacy.key");
+	unlink("/tmp/test-legacy.pub");
+	unlink("/tmp/test-engine.key");
+	unlink("/tmp/test-engine.pub");
+	unlink("/tmp/test-provider.key");	
+	unlink("/tmp/test-provider.pub");
+	
 	/*
 	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
 	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
