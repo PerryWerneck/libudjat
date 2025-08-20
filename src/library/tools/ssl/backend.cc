@@ -343,38 +343,7 @@
 
 #else
 
-					auto bignum = BIGNUM_PTR(BN_new(),BN_free);
-					if (!bignum) {
-						throw runtime_error("Error creating BIGNUM.");
-					}
-
-					if(BN_set_word(bignum.get(), RSA_F4) <= 0) {
-						throw runtime_error("Error setting public exponent.");
-					}
-
-					auto ctx = CTX_PTR(EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, engine),EVP_PKEY_CTX_free);
-					if(!ctx) {
-						throw SSL::Exception("EVP_PKEY_CTX_new_id");
-					}
-
-					if(EVP_PKEY_keygen_init(ctx.get()) <= 0) {
-						throw SSL::Exception("EVP_PKEY_keygen_init");
-					}
-		
-					if(EVP_PKEY_CTX_set_rsa_keygen_bits(ctx.get(), mbits) <= 0) {
-						throw SSL::Exception("EVP_PKEY_CTX_set_rsa_keygen_bits");
-					}
-
-					if(EVP_PKEY_CTX_set_rsa_keygen_pubexp(ctx.get(), bignum.get()) <= 0) {
-						throw runtime_error("Error setting RSA keygen public exponent.");
-					}					
-
-					EVP_PKEY *pkey;
-					if(EVP_PKEY_keygen(ctx.get(), &pkey) <= 0) {
-						throw SSL::Exception("EVP_PKEY_keygen");
-					}
-
-					return pkey;
+					#error Not implemented
 #endif // HAVE_TPM2_TSS_ENGINE_H
 						
 				}
