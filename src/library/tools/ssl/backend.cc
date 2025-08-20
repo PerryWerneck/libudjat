@@ -56,6 +56,43 @@
 
  namespace Udjat {
 
+#if defined(HAVE_TPM2_TSS_ENGINE_H)
+
+ static void tpm2_tss_genkey(const char *filename, const char *password, size_t mbits) {
+
+	if(!(filename && *filename)) {
+		throw runtime_error("Filename is required for TPM2TSS engine key generation.");
+	}
+
+	// Reference: https://github.com/tpm2-software/tpm2-tss-engine/blob/master/src/tpm2tss-genkey.c
+	auto bignum = BIGNUM_PTR(BN_new(),BN_free);
+	if (!bignum) {
+		throw runtime_error("Error creating BIGNUM.");
+	}
+
+	if(BN_set_word(bignum.get(), RSA_F4) <= 0) {
+		throw runtime_error("Error setting public exponent.");
+	}
+
+	auto rsa = RSA_PTR(RSA_new(),RSA_free);
+	if (!bignum) {
+		throw runtime_error("Error creating RSA.");
+	}
+
+	if(!tpm2tss_rsa_genkey(rsa.get(), mbits, bignum.get(), NULL, 0)) {
+		throw runtime_error("Error generating tpm2tss RSA key.");
+	}
+
+	TPM2_DATA tpm2Data;
+	memcpy(&tpm2Data, RSA_get_app_data(rsa.get()), sizeof(tpm2Data));
+
+	if (!tpm2tss_tpm2data_write(&tpm2Data, filename)) {
+		throw runtime_error("Error writing TPM2 data to file.");
+	}
+ 
+}
+#endif // HAVE_TPM2_TSS_ENGINE_H
+
 	void SSL::Key::BackEnd::save_private(EVP_PKEY *pkey, const char *filename, const char *password) {
 
 		FILE *file = fopen(filename, "w");
@@ -175,26 +212,66 @@
 			}
 		}
 
-		switch(name.select("legacy","engine","provider",NULL)) {
-		case 0: // Legacy
-			class LegacyBackEnd : public BackEnd {
-			public:
-				LegacyBackEnd() : BackEnd{"legacy"} {
-					Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
-				};
-
-				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
-					EVP_PKEY *key = EVP_RSA_gen(mbits);
-					if(key && filename && *filename) {
-						save_private(key, filename, password);
-					} else if(!key) {
-						throw SSL::Exception("EVP_RSA_gen failed");
-					}
-					return key;
-				}
-
+		/// @brief Legacy backend for OpenSSL.
+		/// This backend uses the legacy OpenSSL API to generate and manage keys.
+		class LegacyBackEnd : public BackEnd {
+		public:
+			LegacyBackEnd() : BackEnd{"legacy"} {
+				Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
 			};
 
+			EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
+				EVP_PKEY *key = EVP_RSA_gen(mbits);
+				if(key && filename && *filename) {
+					save_private(key, filename, password);
+				} else if(!key) {
+					throw SSL::Exception("EVP_RSA_gen failed");
+				}
+				return key;
+			}
+
+		};
+
+#ifdef HAVE_OPENSSL_PROVIDER
+
+		/// @brief Provider backend for OpenSSL.
+		/// This backend uses the OpenSSL provider API to generate and manage keys.
+		/// It is used for TPM2 keys and other provider-based keys.
+		/// Requires OpenSSL 3.0 or later.
+
+		class ProviderBackEnd : public BackEnd {
+		public:
+			string name;
+			OSSL_PROVIDER *provider;
+
+			ProviderBackEnd() : BackEnd{"tpm2"}, name{Config::Value<string>{"ssl","provider-engine","tpm2"}.c_str()} {
+
+				provider = OSSL_PROVIDER_load(NULL, name.c_str());
+				if(!provider) {
+					throw runtime_error(String{"Could not load OpenSSL provider '",name.c_str(),"'"});
+				}
+				Logger::String{"Using OpenSSL provider '",name.c_str(),"' for private key"}.trace();
+			}
+
+			~ProviderBackEnd() override {
+				OSSL_PROVIDER_unload(provider);
+			}
+
+			EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
+				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
+				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_genpkey_decrypt.c
+				EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, "provider=tpm2", "RSA", mbits);;
+				if(pkey && filename && *filename) {
+					save_private(pkey, filename, password);
+				}
+				return pkey;
+			}
+
+		};
+#endif // HAVE_OPENSSL_PROVIDER
+
+		switch(name.select("legacy","engine","provider","mixed",NULL)) {
+		case 0: // Legacy
 			return make_shared<LegacyBackEnd>();
 
 		case 1: // engine
@@ -249,43 +326,23 @@
 				}
 #endif // HAVE_TPM2_TSS_ENGINE_H
 
-				EVP_PKEY * generate(const char *filename, const char *, size_t mbits) override {
+				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
 
 #if defined(HAVE_TPM2_TSS_ENGINE_H)
 
-					if(!(filename && *filename)) {
-						throw runtime_error("Filename is required for TPM2TSS engine key generation.");
-					}
+					tpm2_tss_genkey(filename, password, mbits);
 
-					// Reference: https://github.com/tpm2-software/tpm2-tss-engine/blob/master/src/tpm2tss-genkey.c
-					auto bignum = BIGNUM_PTR(BN_new(),BN_free);
-					if (!bignum) {
-						throw runtime_error("Error creating BIGNUM.");
-					}
+					struct {
+                        const void *password;
+                        const char *prompt_info;
+                	} key_cb = { (void *) password, NULL };
 
-					if(BN_set_word(bignum.get(), RSA_F4) <= 0) {
-						throw runtime_error("Error setting public exponent.");
-					}
+					debug("Loading \n",filename);
 
-					auto rsa = RSA_PTR(RSA_new(),RSA_free);
-					if (!bignum) {
-						throw runtime_error("Error creating RSA.");
-					}
-
- 					if(!tpm2tss_rsa_genkey(rsa.get(), mbits, bignum.get(), NULL, 0)) {
-						throw runtime_error("Error generating tpm2tss RSA key.");
-					}
-
-					TPM2_DATA tpm2Data;
-					memcpy(&tpm2Data, RSA_get_app_data(rsa.get()), sizeof(tpm2Data));
-
-					if (!tpm2tss_tpm2data_write(&tpm2Data, filename)) {
-						throw runtime_error("Error writing TPM2 data to file.");
-					}
-
-					return ENGINE_load_private_key(engine,filename,NULL,NULL);
+					return ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 
 #else
+
 					auto bignum = BIGNUM_PTR(BN_new(),BN_free);
 					if (!bignum) {
 						throw runtime_error("Error creating BIGNUM.");
@@ -333,44 +390,34 @@
 
 		case 2: // provider
 #ifdef HAVE_OPENSSL_PROVIDER
-
 			// Require package tpm2-openssl
-
-			class ProviderBackEnd : public BackEnd {
-			public:
-				string name;
-				OSSL_PROVIDER *provider;
-
-				ProviderBackEnd() : BackEnd{"tpm2"}, name{Config::Value<string>{"ssl","provider-engine","tpm2"}.c_str()} {
-
-					provider = OSSL_PROVIDER_load(NULL, name.c_str());
-					if(!provider) {
-						throw runtime_error(String{"Could not load OpenSSL provider '",name.c_str(),"'"});
-					}
-					Logger::String{"Using OpenSSL provider '",name.c_str(),"' for private key"}.trace();
-				}
-
-				~ProviderBackEnd() override {
-					OSSL_PROVIDER_unload(provider);
-				}
-
-				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
-					// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
-					// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_genpkey_decrypt.c
-					EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, "provider=tpm2", "RSA", mbits);;
-					if(pkey && filename && *filename) {
-						save_private(pkey, filename, password);
-					}
-					return pkey;
-				}
-
-			};
-
 			return make_shared<ProviderBackEnd>();
 #else
 			throw runtime_error("Unable to use OpenSSL providers");
 			break;
 #endif // HAVE_OPENSSL_PROVIDER
+
+		case 3: // mixed
+			// Use tpm2-tss for key generation and provider for management
+#ifdef HAVE_TPM2_TSS_ENGINE_H
+			class MixedBackEnd : public ProviderBackEnd {
+			public:
+				MixedBackEnd() : ProviderBackEnd() {
+				}
+
+				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
+
+					Logger::String{"Using tp2-tss instead of provider for private key generation"}.trace();
+					tpm2_tss_genkey(filename, password, mbits);
+
+					debug("Loading \n",filename);
+					return this->load(File::Text{filename}, filename, password);
+				}
+			};
+			return make_shared<MixedBackEnd>();
+#else
+			throw runtime_error("Unable to use mixed keys providers");
+#endif
 
 		}
 
