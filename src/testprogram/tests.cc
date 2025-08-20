@@ -62,7 +62,6 @@
 	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
 #endif // HAVE_OPENSSL_ENGINE
 
-/*
 #ifdef HAVE_OPENSSL_PROVIDER
 	if(access("/usr/lib64/ossl-modules/tpm2.so", R_OK) != 0) {
 		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
@@ -71,7 +70,6 @@
 		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
 	}
 #endif // HAVE_OPENSSL_PROVIDER
-*/
 
 	return 0;
  }

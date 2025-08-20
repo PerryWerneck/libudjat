@@ -194,7 +194,7 @@
 				}
 
 #if defined(HAVE_TPM2_TSS_ENGINE_H)
-				std::string toString(EVP_PKEY *pkey, const char *filename) override {
+				std::string toString(EVP_PKEY *, const char *filename) override {
 					if(!(filename && *filename)) {
 						throw runtime_error("Filename is required to extract key from TPM2TSS engine.");
 					}
