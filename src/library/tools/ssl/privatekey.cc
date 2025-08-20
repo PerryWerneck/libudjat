@@ -104,6 +104,22 @@
 
 		}
 
+		virtual std::string toString(EVP_PKEY *pkey, const char *) {
+
+			BIO_PTR bio(BIO_new(BIO_s_mem()), BIO_free_all);
+			if(!bio) {
+				throw SSL::Exception("BIO_new failed");
+			}
+
+			if(PEM_write_bio_PrivateKey(bio.get(), pkey, NULL, NULL, 0, NULL, NULL) != 1) {
+				throw SSL::Exception("PEM_write_bio_PrivateKey failed");
+			}
+
+			char *data;
+			long len = BIO_get_mem_data(bio.get(), &data);
+			return std::string(data, len);
+		}
+		
 		virtual EVP_PKEY * generate(const char *filename, const char *password, size_t mbits = 2048) = 0;
 	};
 
@@ -176,6 +192,15 @@
 				~EngineBackEnd() override {
 					ENGINE_finish(engine);
 				}
+
+#if defined(HAVE_TPM2_TSS_ENGINE_H)
+				std::string toString(EVP_PKEY *pkey, const char *filename) override {
+					if(!(filename && *filename)) {
+						throw runtime_error("Filename is required to extract key from TPM2TSS engine.");
+					}
+					return File::Text{filename}.c_str();
+				}
+#endif // HAVE_TPM2_TSS_ENGINE_H
 
 				EVP_PKEY * generate(const char *filename, const char *, size_t mbits) override {
 
@@ -416,18 +441,8 @@
 			throw SSL::Exception("Private key is not loaded");
 		}
 
-		BIO_PTR bio(BIO_new(BIO_s_mem()), BIO_free_all);
-		if(!bio) {
-			throw SSL::Exception("BIO_new failed");
-		}
+		return backend->toString(pkey,filename.c_str());
 
-		if(PEM_write_bio_PrivateKey(bio.get(), pkey, NULL, NULL, 0, NULL, NULL) != 1) {
-			throw SSL::Exception("PEM_write_bio_PrivateKey failed");
-		}
-
-		char *data;
-		long len = BIO_get_mem_data(bio.get(), &data);
-		return std::string(data, len);
 	}
 
  }
