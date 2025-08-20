@@ -184,7 +184,7 @@
 							throw runtime_error("Error writing TPM2 data to file.");
 						}
 
-						throw runtime_error("incomplete");
+						pkey = ENGINE_load_private_key(engine,filename.c_str(),NULL,NULL);
 
 					} catch(...) {
 
