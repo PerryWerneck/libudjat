@@ -48,6 +48,13 @@
 
  namespace Udjat {
 
+	/// @brief Abstract base class for SSL key backends.
+	/// This class provides a common interface for different SSL key backends,
+	/// such as legacy, engine, and provider.
+	/// It allows for loading, saving, and generating SSL keys in a uniform way.
+	/// @note This class is not intended to be used directly, but rather through its derived
+	/// classes that implement the specific backend logic.
+	/// @see SSL::Key::BackEnd::Factory
 	class UDJAT_PRIVATE SSL::Key::BackEnd {
 	public:
 
@@ -67,5 +74,7 @@
 		virtual EVP_PKEY * generate(const char *filename, const char *password, size_t mbits = 2048) = 0;
 
 	};
+
+	
 
  }

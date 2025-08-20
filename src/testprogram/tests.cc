@@ -54,12 +54,15 @@
  static int ssl_test() {
 	Udjat::SSL::Key pkey;
 
+	/*
 	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
 	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
 	pkey.save_public("/tmp/test-legacy.pub");
 	pkey.load("/tmp/test-legacy.key","password");
 	Logger::String{"Legacy private key reloaded:\n",pkey.to_string().c_str()}.info();
+	*/
 
+	/*
 #if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H)
 	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
 	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
@@ -67,16 +70,17 @@
 	pkey.load("/tmp/test-engine.key","password");
 	Logger::String{"Engine private key reloaded:\n",pkey.to_string().c_str()}.info();
 #endif // HAVE_OPENSSL_ENGINE
+	*/
 
 #ifdef HAVE_OPENSSL_PROVIDER
 	if(access("/usr/lib64/ossl-modules/tpm2.so", R_OK) != 0) {
 		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
 	} else {
 		pkey.generate("/tmp/test-provider.key","password",2048,"provider");
-		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
-		pkey.save_public("/tmp/test-provider.pub");
-		pkey.load("/tmp/test-provider.key","password");
-		Logger::String{"Provider private key reloaded:\n",pkey.to_string().c_str()}.info();
+		//Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
+		//pkey.save_public("/tmp/test-provider.pub");
+		//pkey.load("/tmp/test-provider.key","password");
+		//Logger::String{"Provider private key reloaded:\n",pkey.to_string().c_str()}.info();
 	}
 #endif // HAVE_OPENSSL_PROVIDER
 

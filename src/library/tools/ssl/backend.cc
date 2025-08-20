@@ -355,7 +355,9 @@
 				}
 
 				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
-					EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, String{"provider=",name}.c_str(), "RSA", mbits);
+					// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
+					// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_genpkey_decrypt.c
+					EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, "provider=tpm2", "RSA", mbits);;
 					if(pkey && filename && *filename) {
 						save_private(pkey, filename, password);
 					}
