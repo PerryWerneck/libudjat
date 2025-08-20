@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-13 06:41-0300\n"
+"POT-Creation-Date: 2025-08-20 11:00-0300\n"
 "PO-Revision-Date: 2025-06-11 15:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -370,7 +370,7 @@ msgstr " {} segundos"
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
 
-#: src/library/tools/object.cc:293
+#: src/library/tools/object.cc:281
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
@@ -615,7 +615,7 @@ msgstr "Desconhecido"
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/tools/xml/load.cc:154
+#: src/library/tools/xml/load.cc:160
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
 

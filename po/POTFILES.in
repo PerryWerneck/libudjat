@@ -1,7 +1,6 @@
 src/library/tools/string/string.cc
 src/library/tools/string/xml.cc
 src/library/tools/string/expand.cc
-src/library/tools/action.cc
 src/library/tools/activatable.cc
 src/library/tools/application/application.cc
 src/library/tools/application/run.cc
@@ -169,6 +168,12 @@ src/library/tools/config.cc
 src/library/tools/quark.cc
 src/library/tools/logger.cc
 src/library/tools/message.cc
+src/library/tools/action/controller.cc
+src/library/tools/action/factory.cc
+src/library/tools/action/abstract.cc
+src/library/tools/ssl/exception.cc
+src/library/tools/ssl/key.cc
+src/library/tools/ssl/backend.cc
 src/library/agent/agent.cc
 src/library/agent/child.cc
 src/library/agent/controller.cc
@@ -235,6 +240,8 @@ src/include/private/urlparser.h
 src/include/private/url.h
 src/include/private/configuration.h
 src/include/private/module.h
+src/include/private/action.h
+src/include/private/ssl.h
 src/include/udjat.h
 src/include/udjat/agent/abstract.h
 src/include/udjat/agent/level.h
@@ -307,6 +314,7 @@ src/include/udjat/tools/quark.h
 src/include/udjat/tools/singleton.h
 src/include/udjat/tools/xml.h
 src/include/udjat/tools/url.h
+src/include/udjat/tools/ssl.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/progress.h

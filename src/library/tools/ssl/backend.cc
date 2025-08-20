@@ -105,7 +105,7 @@
 		return len;
 	}
 
-	EVP_PKEY * SSL::Key::BackEnd::load(const File::Text &file, const char *password) {
+	EVP_PKEY * SSL::Key::BackEnd::load(const File::Text &file, const char *, const char *password) {
 
 		debug("Loading \n",file.c_str());
 
@@ -225,6 +225,22 @@
 				}
 
 #if defined(HAVE_TPM2_TSS_ENGINE_H)
+				EVP_PKEY * load(const File::Text &, const char *filename, const char *password) override {
+
+					if(!(filename && *filename)) {
+						throw runtime_error("Filename is required to load key from TPM2TSS engine.");
+					}
+
+					struct {
+                        const void *password;
+                        const char *prompt_info;
+                	} key_cb = { (void *) password, NULL };
+
+					debug("Loading \n",filename);
+					return ENGINE_load_private_key(engine, filename, NULL, &key_cb);
+
+				}
+
 				std::string get_private(EVP_PKEY *, const char *filename) override {
 					if(!(filename && *filename)) {
 						throw runtime_error("Filename is required to extract key from TPM2TSS engine.");

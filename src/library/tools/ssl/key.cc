@@ -120,7 +120,6 @@
         static const char *tpm2_tags[] = {
                 "-----BEGIN TSS2 PRIVATE KEY-----",
                 "-----BEGIN TSS2 KEY BLOB-----",
-                NULL
         };
 
 		if(pkey) {
@@ -134,13 +133,22 @@
 		for(const char *tpm_tag : tpm2_tags) {
 			if(strstr(text.c_str(),tpm_tag)) {
 				Logger::String{"Found TPM2 key on ",filename}.trace();
+#if defined(HAVE_OPENSSL_ENGINE)
 				mode = Config::Value<string>{"ssl","tpm-mode","engine"}.c_str();
+#elif defined(HAVE_OPENSSL_PROVIDER)
+				mode = Config::Value<string>{"ssl","tpm-mode","provider"}.c_str();
+#else
+				throw runtime_error("No OpenSSL backend available for TPM2 key");
+#endif
 				break;
 			}
 		}
 
 		backend = BackEnd::Factory(mode);
-		pkey = backend->load(text,passwd);
+		pkey = backend->load(text,filename,passwd);
+		if(!pkey) {
+			throw SSL::Exception(String{"Error loading private key from ",filename});
+		}
 
 	}
 
