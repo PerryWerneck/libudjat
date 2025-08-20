@@ -167,9 +167,41 @@ if dbus.found()
 endif
 
 if openssl.found()
+
   app_conf.set('HAVE_OPENSSL', 1)
-  app_conf.set('ENABLE_OPENSSL_ENGINES', 1)
-  app_conf.set('ENABLE_OPENSSL_PROVIDER', 1)
+
+  if cxx.compiles('#include <openssl/engine.h>', name : 'openssl-engine.h')
+
+    app_conf.set('HAVE_OPENSSL_ENGINE', 1)
+
+    if cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
+
+      app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
+
+      # ENGINE-DIR = pkg-config --variable=enginesdir libcrypto
+
+      extra_libs += [
+        cxx.find_library(
+          'tpm2tss',
+          required: true,
+          dirs: [
+            dependency(
+              'libcrypto', 
+              method : 'pkg-config',
+              required: true,
+            ).get_variable('enginesdir'),
+          ]
+        )
+      ]
+
+    endif
+
+    if cxx.compiles('#include <openssl/provider.h>', name : 'openssl-provider.h')
+      app_conf.set('HAVE_OPENSSL_PROVIDER', 1)
+    endif
+  
+  endif
+
 endif
 
 if uriparser.found()
@@ -694,11 +726,8 @@ else
     soversion : libversion,
     cpp_args: [ '-ffat-lto-objects' ],
     gnu_symbol_visibility: 'hidden',
-    dependencies: required_libs + private_libs + extra_libs,
+    dependencies: required_libs + private_libs + extra_libs + [ cxx.find_library('dl')],
     include_directories: includes_dir,
-    link_args: [
-      '-ldl'
-    ]
   )
 
  endif

@@ -23,20 +23,25 @@
  #include <udjat/tools/file/text.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/file/temporary.h>
  #include <cstdio>
 
  #ifdef HAVE_UNISTD_H
-	#include <unistd.h>
+ #include <unistd.h>
  #endif // HAVE_UNISTD_H
 
- #ifdef ENABLE_OPENSSL_ENGINES
+ #ifdef HAVE_OPENSSL_ENGINE
  #define OPENSSL_SUPPRESS_DEPRECATED
  #include <openssl/engine.h>
- #endif // ENABLE_OPENSSL_ENGINES
+ #endif // HAVE_OPENSSL_ENGINE
 
- #ifdef ENABLE_OPENSSL_PROVIDER
+ #ifdef HAVE_TPM2_TSS_ENGINE_H
+ #include <tpm2-tss-engine.h>
+ #endif // HAVE_TPM2_TSS_ENGINE_H
+
+ #ifdef HAVE_OPENSSL_PROVIDER
  #include <openssl/provider.h>
- #endif // ENABLE_OPENSSL_PROVIDER
+ #endif // HAVE_OPENSSL_PROVIDER
 
  #include <openssl/bio.h>
 
@@ -49,6 +54,7 @@
  using BIO_PTR = std::unique_ptr<BIO, decltype(&BIO_free_all)>;
  using CTX_PTR = std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)>;
  using BIGNUM_PTR = std::unique_ptr<BIGNUM, decltype(&BN_free)>;
+ using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
 
  namespace Udjat {
 
@@ -61,6 +67,8 @@
 		}
 
 		virtual EVP_PKEY * load(const File::Text &file) {
+
+			debug("Loading \n",file.c_str());
 
 			auto bio = BIO_PTR(BIO_new_mem_buf((void*)file.c_str(), -1),BIO_free_all);
 			if(!bio) {
@@ -80,17 +88,19 @@
 		if(strcasecmp(name.c_str(),"auto") == 0) {
 
 			// Check if tpm is available
-			if(access("/dev/tpm0",F_OK) == 0) {
-#if defined(ENABLE_OPENSSL_ENGINES)
+			if(access("/dev/tpm0",F_OK) != 0) {
+				name = "legacy";
+			} else {
+#if defined(HAVE_OPENSSL_ENGINE)
+				// /usr/lib64/engines-3/tpm2.so
 				name = Config::Value<string>{"ssl","tpm2-backend","engine"}.c_str();
-#elif defined(ENABLE_OPENSSL_PROVIDER)
+#elif defined(HAVE_OPENSSL_PROVIDER)
 				// /usr/lib64/ossl-modules/tpm2.so
 				name = Config::Value<string>{"ssl","tpm2-backend","provider"}.c_str();
 #else
+				Logger::String{"No OpenSSL backend available, using legacy mode"}.warning();
 				name = "legacy";
-#endif // ENABLE_OPENSSL_ENGINES
-			} else {
-				name = "legacy";
+#endif
 			}
 		}
 
@@ -111,7 +121,7 @@
 			return make_shared<LegacyBackEnd>();
 
 		case 1: // engine
-#ifdef ENABLE_OPENSSL_ENGINES
+#ifdef HAVE_OPENSSL_ENGINE
 
 			// Requires package openssl_tpm2_engine
 
@@ -139,9 +149,62 @@
 
 				EVP_PKEY * generate(size_t mbits) override {
 
+#if defined(HAVE_TPM2_TSS_ENGINE_H)
+
+					// Reference: https://github.com/tpm2-software/tpm2-tss-engine/blob/master/src/tpm2tss-genkey.c
+					auto bignum = BIGNUM_PTR(BN_new(),BN_free);
+					if (!bignum) {
+						throw runtime_error("Error creating BIGNUM.");
+					}
+
+					if(BN_set_word(bignum.get(), RSA_F4) <= 0) {
+						throw runtime_error("Error setting public exponent.");
+					}
+
+					auto rsa = RSA_PTR(RSA_new(),RSA_free);
+					if (!bignum) {
+						throw runtime_error("Error creating RSA.");
+					}
+
+ 					if(!tpm2tss_rsa_genkey(rsa.get(), mbits, bignum.get(), NULL, 0)) {
+						throw runtime_error("Error generating tpm2tss RSA key.");
+					}
+
+					TPM2_DATA tpm2Data;
+					memcpy(&tpm2Data, RSA_get_app_data(rsa.get()), sizeof(tpm2Data));
+
+					// TODO: Do we really need to write this to a file?
+					auto filename = File::Temporary::create();
+					debug("Tempfile set to '",filename.c_str());
+
+					EVP_PKEY *pkey;
+					try {
+
+						if (!tpm2tss_tpm2data_write(&tpm2Data, filename.c_str())) {
+							throw runtime_error("Error writing TPM2 data to file.");
+						}
+
+						throw runtime_error("incomplete");
+
+					} catch(...) {
+
+#ifdef DEBUG
+						debug("Error loading '",filename.c_str());
+#else
+						unlink(filename.c_str());
+#endif
+						throw;
+	
+					}
+
+					unlink(filename.c_str());
+
+					return pkey;
+#else
+
 					auto ctx = CTX_PTR(EVP_PKEY_CTX_new_id(EVP_PKEY_RSA, engine),EVP_PKEY_CTX_free);
 					if(!ctx) {
-						throw SSL::Exception("EVP_PKEY_CTX_new_from_name");
+						throw SSL::Exception("EVP_PKEY_CTX_new_id");
 					}
 
 					if(EVP_PKEY_keygen_init(ctx.get()) <= 0) {
@@ -152,16 +215,7 @@
 						throw SSL::Exception("EVP_PKEY_CTX_set_rsa_keygen_bits");
 					}
 
-					auto bn = BIGNUM_PTR(BN_new(),BN_free);
-					if (!bn) {
-						throw runtime_error("Error creating BIGNUM for public exponent.");
-					}
-
-					if(BN_set_word(bn.get(), RSA_F4) <= 0) {
-						throw runtime_error("Error setting public exponent.");
-					}
-					
-					if(EVP_PKEY_CTX_set_rsa_keygen_pubexp(ctx.get(), bn.get()) <= 0) {
+					if(EVP_PKEY_CTX_set_rsa_keygen_pubexp(ctx.get(), bignum.get()) <= 0) {
 						throw runtime_error("Error setting RSA keygen public exponent.");
 					}					
 
@@ -171,6 +225,7 @@
 					}
 
 					return pkey;
+#endif // HAVE_TPM2_TSS_ENGINE_H
 						
 				}
 
@@ -181,10 +236,10 @@
 #else
 			throw runtime_error("Unable to use OpenSSL engine");
 			break;
-#endif // ENABLE_OPENSSL_ENGINES
+#endif // HAVE_OPENSSL_ENGINE
 
 		case 2: // provider
-#ifdef ENABLE_OPENSSL_PROVIDER
+#ifdef HAVE_OPENSSL_PROVIDER
 
 			// Require package tpm2-openssl
 
@@ -216,7 +271,7 @@
 #else
 			throw runtime_error("Unable to use OpenSSL providers");
 			break;
-#endif // ENABLE_OPENSSL_PROVIDER
+#endif // HAVE_OPENSSL_PROVIDER
 
 		}
 
@@ -265,26 +320,6 @@
 		} else {
 			mode = Config::Value<string>{"ssl","genkey","auto"}.c_str();
 		}
-
-		/*
-		if(strcasecmp(mode.c_str(),"auto") == 0) {
-
-			// Check if tpm is available
-			if(access("/dev/tpm0",F_OK) == 0) {
-
-#if defined(ENABLE_OPENSSL_ENGINES)
-				mode = Config::Value<string>{"ssl","tpm2-backend","engine"}.c_str();
-#elif defined(ENABLE_OPENSSL_PROVIDER)
-				// /usr/lib64/ossl-modules/tpm2.so
-				mode = Config::Value<string>{"ssl","tpm2-backend","provider"}.c_str();
-#else
-				mode = "legacy";
-#endif // ENABLE_OPENSSL_ENGINES
-			} else {
-				mode = "legacy";
-			}
-		}
-		*/
 
 		backend = BackEndFactory(mode);
 		pkey = backend->generate((size_t) Config::Value<unsigned int>{"ssl","mbits",2048});

@@ -27,6 +27,10 @@
  #include <udjat/net/interface.h>
  #include <udjat/tools/configuration.h>
 
+ #ifdef HAVE_UNISTD_H
+ #include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
  #ifdef HAVE_OPENSSL
  #include <udjat/tools/ssl.h>
  #endif // HAVE_OPENSSL
@@ -53,10 +57,21 @@
 	pkey.generate(2048,"legacy");
 	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
 
-#ifdef ENABLE_OPENSSL_PROVIDER
-	pkey.generate(2048,"provider");
-	Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
-#endif // ENABLE_OPENSSL_PROVIDER
+#if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H)
+	pkey.generate(2048,"engine");
+	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
+#endif // HAVE_OPENSSL_ENGINE
+
+/*
+#ifdef HAVE_OPENSSL_PROVIDER
+	if(access("/usr/lib64/ossl-modules/tpm2.so", R_OK) != 0) {
+		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
+	} else {
+		pkey.generate(2048,"provider");
+		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
+	}
+#endif // HAVE_OPENSSL_PROVIDER
+*/
 
 	return 0;
  }
