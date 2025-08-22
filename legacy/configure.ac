@@ -196,6 +196,16 @@ dnl ---------------------------------------------------------------------------
 AC_CHECK_FUNCS(sendfile poll eventfd signal strptime)
 
 dnl ---------------------------------------------------------------------------
+dnl Check for openssl
+dnl ---------------------------------------------------------------------------
+
+PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], AC_DEFINE(HAVE_LIBSSL,[],[Do we have libssl?]), AC_MSG_ERROR([libssl not present.]) )
+
+AC_SUBST(LIBSSL_LIBS)
+AC_SUBST(LIBSSL_CFLAGS)
+AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have libssl?])
+
+dnl ---------------------------------------------------------------------------
 dnl Check for libintl
 dnl ---------------------------------------------------------------------------
 
