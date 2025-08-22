@@ -78,7 +78,8 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/xml/*.cc)
 
 TEST_SOURCES= \
-	src/testprogram/main.cc
+	src/testprogram/main.cc \
+	src/testprogram/tests.cc
 	
 TARGETS=@OSNAME@-lib devel @OPTIONAL_MODULES@
 
@@ -109,7 +110,7 @@ CFLAGS= \
 	-DLOCALEDIR=$(localedir) \
     -DBUILD_LEGACY=1 \
 	@ECONF_CFLAGS@ \
-	@SSL_CFLAGS@ \
+	@LIBSSL_CFLAGS@ \
 	@PUGIXML_CFLAGS@ \
 	@SYSTEMD_CFLAGS@ \
 	@VMDETECT_CFLAGS@ \
@@ -121,7 +122,7 @@ LDFLAGS=\
 LIBS= \
 	@LIBS@ \
 	@LIBICONV@ \
-	@SSL_LIBS@ \
+	@LIBSSL_LIBS@ \
 	@ECONF_LIBS@ \
 	@PUGIXML_LIBS@ \
 	@SYSTEMD_LIBS@ \

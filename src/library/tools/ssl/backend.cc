@@ -343,7 +343,8 @@
 
 #else
 
-					#error Not implemented
+					throw system_error(ENOTSUP,system_category(),"Internal engine genkey is not implemented");;
+
 #endif // HAVE_TPM2_TSS_ENGINE_H
 						
 				}
