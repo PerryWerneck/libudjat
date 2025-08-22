@@ -22,7 +22,7 @@ AC_PREREQ([2.69])
 
 dnl Initialise automake with the package name, version and
 dnl bug-reporting address.
-AC_INIT([libudjat],[2.0.1],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
+AC_INIT([libudjat],[2.1.0],[perry.werneck@gmail.com],[libudjat],[https://github.com/PerryWerneck/libudjat.git])
 
 dnl Place auxilliary scripts here.
 AC_CONFIG_AUX_DIR([scripts])
@@ -59,7 +59,7 @@ dnl ---------------------------------------------------------------------------
 
 app_vrs_major=$(echo $VERSION | cut -d. -f1)
 app_vrs_minor=$(echo $VERSION | cut -d. -f2)
-app_cv_domain="br.com.bb"
+app_cv_domain="br.eti.werneck"
 app_vrs_patch=0
 
 AC_ARG_WITH([product-name], [AS_HELP_STRING([--with-product-name], [Set product name])], [ app_cv_product="$withval" ],[ app_cv_product="udjat" ])
@@ -196,6 +196,16 @@ dnl ---------------------------------------------------------------------------
 AC_CHECK_FUNCS(sendfile poll eventfd signal strptime)
 
 dnl ---------------------------------------------------------------------------
+dnl Check for openssl
+dnl ---------------------------------------------------------------------------
+
+PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], AC_DEFINE(HAVE_LIBSSL,[],[Do we have libssl?]), AC_MSG_ERROR([libssl not present.]) )
+
+AC_SUBST(LIBSSL_LIBS)
+AC_SUBST(LIBSSL_CFLAGS)
+AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have libssl?])
+
+dnl ---------------------------------------------------------------------------
 dnl Check for libintl
 dnl ---------------------------------------------------------------------------
 
@@ -228,7 +238,7 @@ AS_VAR_POPDEF([CACHEVAR])dnl
 
 AX_CHECK_COMPILE_FLAG([-std=c++1z], [CPPFLAGS="$CPPFLAGS -std=c++1z"], [app_cv_c17=no])
 
-if test "$app_cv_iniparser" == ""; then
+if test "$app_cv_c17" == "no"; then
 	AX_CHECK_COMPILE_FLAG([-std=c++11], [CPPFLAGS="$CPPFLAGS -std=c++11 -DLIBUDJAT_LEGACY=1"], [app_cv_c11=no])
 fi
 

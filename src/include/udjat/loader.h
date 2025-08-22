@@ -46,9 +46,9 @@ namespace Udjat {
 	/// @brief Helper library to test and develop Udjat modules.
 	/// @param argc Number of command line arguments.
 	/// @param argv The command line arguments.
-	/// @param init A function to initialize the application with custom settings.
+	/// @param init A function to initialize the application with custom settings, non-zero return aborts loading.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(int argc, char *argv[], const std::function<void(Application &app)> &init, const char *path = "test.xml");
+	int UDJAT_API loader(int argc, char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
 
 }

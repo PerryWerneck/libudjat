@@ -174,9 +174,7 @@
 		throw logic_error("Object is unable to handle children");
 	}
 
-	void Abstract::Object::push_back(const 					// 
-
-XML::Node &, std::shared_ptr<Abstract::Object> child) {
+	void Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
 		push_back(child);
 	}
 
@@ -186,19 +184,9 @@ XML::Node &, std::shared_ptr<Abstract::Object> child) {
 			return true; // Ignore reserved nodes.
 		}
 
-		// It's an interface?
-		// TODO: Rewrite interface to use XML::Factory.
-		//if(strcasecmp(node.name(),"interface") == 0) {
-		//	Interface::Factory::build(node);
-		//	return true; // Handled by interface.
-		//}
-
 		// TODO: Rewrite init actions to use Object::Factory.
 		if(strcasecmp(node.name(),"init") == 0) {
-			auto action = Action::Factory::build(node,true);
-			if(action) {
-				action->call(node);
-			}
+			Action::Factory::build(node)->call(node);
 			return true; // Handled by action.
 		}
 

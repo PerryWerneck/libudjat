@@ -34,7 +34,6 @@
  #include <string>
  #include <udjat/tools/string.h>
  #include <udjat/tools/abstract/object.h>
- #include <udjat/module/abstract.h>
  #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
@@ -55,22 +54,18 @@
 			// Is a directory, scan for files
 			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
 
-			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
+			std::vector<std::string> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path.c_str());
+				return false;
+			});
 
-				XML::Document document{path.c_str()};
+			std::sort(files.begin(), files.end());
 
-				const auto &root = document.document_element();
+			for(const auto &file : files) {
 
-				// Parse nodes first to load and initialize modules...
-				parse(root);
-
-				// ... then call loaded modules to parse the document.
-				Module::for_each([&document](Module &module) -> bool {
-					module.parse(document);
-					return false;
-				});
-
-				time_t expires = TimeStamp{root,"update-timer"};
+				// Recursive call to parse document.
+				time_t expires = parse(file.c_str());
 				if(expires) {
 					expires += time(0);
 					if(expires < next || next == 0) {
@@ -78,14 +73,12 @@
 					}
 				}
 
-				return false;
-
-			});
+			}
 
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.trace();
+			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.info();
 
 			XML::Document document{path.c_str()};
 
@@ -95,8 +88,11 @@
 				next += time(0);
 			}
 
+			// Parse the document, create the children.
 			for(const XML::Node &node : root) {
-				parse(node);
+				if(!node.attribute("preload").as_bool(false)) {
+					parse(node);
+				}
 			}
 
 		}
@@ -169,18 +165,28 @@
 		if(path.dir()) {
 
 			// Is a directory, scan for files
-			path.for_each("*.xml",[&next](const File::Path &path) -> bool {
-				time_t result = XML::parse(path.c_str());
+			std::vector<std::string> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path.c_str());
+				return false;
+			});
+
+			std::sort(files.begin(), files.end());
+
+			for(const auto &file : files) {
+
+				// Recursive call to parse document.
+				time_t result = XML::parse(file.c_str());
 				if(result && (result < next || next == 0)) {
 					next = result;
 				}
-				return false;
-			});
+				
+			}
 
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace();
+			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.info();
 			next = Document{path.c_str()}.parse();
 
 		}

@@ -78,6 +78,10 @@
 		String hostname() const;
 		String servicename() const;
 
+		/// @brief Set the hostname.
+		/// @param name The hostname.
+		URL & hostname(const char *name);
+
 		/// @brief Get URL path.
 		/// @param strip If true remove the leading slash.
 		/// @return The url PATH.
@@ -94,12 +98,25 @@
 		URL operator + (const char *path);
 		URL & operator += (const char *path);
 
+		inline URL & operator = (const char *path) {
+			String::operator=(path);
+			return *this;
+		}
+
+		inline URL & operator = (const std::string &path) {
+			String::operator=(path.c_str());
+			return *this;
+		}
+
 		/// @brief Connect to host
 		/// @return A non-blocking, connected socket.
 		int connect(unsigned int seconds = 0);
 
 		/// @brief Test if URL refers to a local file (starts with file://, '/' or '.')
 		bool local() const;
+
+		/// @brief Test if URL refers to a remote file (starts with *://, and not file://)
+		bool remote() const;
 
 		/// @brief Iterate over query
 		bool for_each(const std::function<bool(const char *name, const char *value)> &func) const;
@@ -150,6 +167,9 @@
 
 		String get(const bool console = false) const;
 
+		/// @brief Do a get request using a writer callback.
+		/// @param writer The writer callback to receive the data, return true to cancel operation.
+		/// @return The get result.
 		int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer);
 
 		inline String post(const char *payload, const bool console = false) const {
@@ -162,6 +182,11 @@
 		/// @return true if the file was updated.
 		bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
+		/// @brief Get URL, save response to file.
+		/// @param filename the filename to save or update. 
+		/// @param method The http method to use.
+		/// @param payload The payload to send if any.
+		/// @return true if the file was updated.
 		bool get(const char *filename,const HTTP::Method method = HTTP::Get, const char *payload = "");
 		
 		/// @brief Get URL, save response to cache file.

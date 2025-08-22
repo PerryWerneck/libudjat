@@ -45,7 +45,7 @@
 			return inst;
 		}
 
-		debug("Returning existing ", ((int) instance->type() == MainLoop::GLib ? "glib" : "linux"), " main loop");
+		// debug("Returning existing ", ((int) instance->type() == MainLoop::GLib ? "glib" : "linux"), " main loop");
 		return *instance;
 	}
 

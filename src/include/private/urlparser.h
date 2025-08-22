@@ -55,7 +55,7 @@
 
 			state.uri = this;
 
-			if(uriParseUriA(&state, str.c_str()) != URI_SUCCESS) {
+			if(str.empty() || uriParseUriA(&state, str.c_str()) != URI_SUCCESS) {
 				uriFreeUriMembersA(state.uri);
 				throw std::invalid_argument(Logger::String{"Invalid URL: ",str.c_str()});
 			}

@@ -91,7 +91,54 @@
 
 	}
 
+	URL & URL::hostname(const char *name) {
+
+		if (!name || !*name) {
+			throw invalid_argument("Hostname cannot be empty");
+		}
+
+		ParsedUri uri{*this};
+
+		string newUri;
+		
+		// Scheme
+		if (uri.scheme.first) {
+			newUri.append(uri.scheme.first, uri.scheme.afterLast - uri.scheme.first);
+			newUri.append("://");
+		}
+
+		// Hostname
+		newUri.append(name);
+
+		if (uri.portText.first) {
+			newUri.append(":");
+			newUri.append(uri.portText.first, uri.portText.afterLast - uri.portText.first);
+		}
+
+		// Path
+		if (uri.pathHead) {
+			for(UriPathSegmentA *pathSegment = uri.pathHead; pathSegment; pathSegment = pathSegment->next) {
+				newUri += "/";
+				newUri.append(pathSegment->text.first, pathSegment->text.afterLast - pathSegment->text.first);
+			}
+		}
+
+		if(uri.query.first) {
+			newUri.append("?");
+			newUri.append(uri.query.first, uri.query.afterLast - uri.query.first);
+		}
+	
+		*this = newUri;
+
+		return *this;
+
+	}
+
 	String URL::scheme() const {
+
+		if(empty()) {
+			return String{};
+		}
 
 		ParsedUri uri{*this};
 		return String{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
@@ -284,13 +331,28 @@
 
 	bool URL::local() const {
 
-		ParsedUri uri{*this};
-		String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+		if(!empty()) {
 
-		if(scheme.empty() || strcasecmp(scheme.c_str(),"file") == 0) {
-			return true;
+			ParsedUri uri{*this};
+			String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+
+			if(scheme.empty() || strcasecmp(scheme.c_str(),"file") == 0) {
+				return true;
+			}
+
 		}
 	
+		return false;
+	}
+
+	bool URL::remote() const {
+
+		if(!empty()) {
+			ParsedUri uri{*this};
+			String scheme{uri.scheme.first, (size_t) (uri.scheme.afterLast - uri.scheme.first)};
+			return !scheme.empty() && strcasecmp(scheme.c_str(),"file") != 0; 
+		}
+
 		return false;
 	}
 

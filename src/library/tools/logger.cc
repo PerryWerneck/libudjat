@@ -538,7 +538,9 @@
 
 		char domain[15];
 		memset(domain,' ',15);
-		memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		if(d && *d) {
+			memcpy(domain,d,std::min(sizeof(domain),strlen(d)));
+		}
 		domain[14] = 0;
 
 		// Log options.

@@ -26,7 +26,10 @@
 #include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
 #include <udjat/tools/object.h>
+
+#define LOG_DOMAIN "module"
 #include <udjat/tools/logger.h>
+
 #include <udjat/tools/xml.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -57,7 +60,7 @@ namespace Udjat {
 
 	}
 
-	bool Module::Controller::load(const XML::Node &node) {
+	bool Module::Controller::parse(const XML::Node &node) {
 
 		static const char * attributes[] = {
 			"name",
@@ -76,7 +79,7 @@ namespace Udjat {
 			}
 
 			if(find_by_name(name)) {
-				debug("module '",name,"' is already loaded");
+				Logger::String{"Module is already loaded"}.write(Logger::Debug,name);
 				return true;
 			}
 
@@ -85,12 +88,12 @@ namespace Udjat {
 			if(!filename.empty()) {
 
 				if(find_by_filename(filename.c_str())) {
-					debug("module '",filename,"' is already loaded");
+					Logger::String{"Module '",filename,"' is already loaded"}.trace();
 					return true;
 				}
 
 				init(filename, node);
-				return false;
+				return true;
 
 			}
 
@@ -99,16 +102,16 @@ namespace Udjat {
 		// Not found.
 		if(node.attribute("required").as_bool(true)) {
 			throw runtime_error(string{"Cant load required module '"} + node.attribute(attributes[0]).as_string() + "'");
+		} else {
+			Logger::String{"Cant load module '",node.attribute(attributes[0]).as_string(),"', ignoring"}.warning();
 		}
 
-		return false;
+		return true;
 	}
 
-	bool Module::preload() noexcept {
+	void Module::preload() noexcept {
 
-		bool rc = true;
-
-		Config::Value<std::vector<std::string>> modules{"modules","load-at-startup",""};
+		Config::Value<std::vector<std::string>> modules{"modules","preload",""};
 
 		if(modules.size()) {
 
@@ -116,36 +119,17 @@ namespace Udjat {
 
 			for(std::string &module : modules) {
 
-				try {
-
-					Logger::String("Preloading ",module," from configuration file").trace("module");
-					load(File::Path{module});
-
-				} catch(const std::exception &e) {
-
-					Logger::String{module.c_str(),": ",e.what()}.error("module");
-					rc = false;
-
-				} catch(...) {
-
-					Logger::String{"Unexpected errror loading '",module.c_str(),"'"}.error("module");
-					rc = false;
-
-				}
+				Logger::String("Preloading ",module," from configuration file").trace("module");
+				load(File::Path{module});
 
 			}
 
-		} else {
-
-			Logger::String("Preload list is empty").trace("module");
-
 		}
 
-		return rc;
 	}
 
 	void Module::load(const XML::Node &node) {
-		Controller::getInstance().load(node);
+		Controller::getInstance().parse(node);
 	}
 
 	bool Module::Controller::load(const std::string &filename, bool required) {

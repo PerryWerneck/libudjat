@@ -20,9 +20,18 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/string.h>
  #include <udjat/win32/registry.h>
  #include <udjat/win32/exception.h>
+
+ #define LOG_DOMAIN "registry"
+ #include <udjat/tools/logger.h>
+
  #include <iostream>
+
+ #ifndef QWORD
+	typedef ULONGLONG QWORD;
+ #endif // QWORD
 
  using namespace std;
 
@@ -112,6 +121,12 @@
 
 	}
 
+	Win32::Registry::Registry(HKEY hParent, const char *path, bool write) : hKey(Win32::Registry::open(hParent,path,write)) {
+	}
+
+	Win32::Registry::Registry(HKEY hParent,bool write) : hKey(Win32::Registry::open(hParent,nullptr,write)) {
+	}
+
 	Win32::Registry::Registry(bool write) : hKey(Win32::Registry::open(HKEY_LOCAL_MACHINE,nullptr,write)) {
 	}
 
@@ -136,7 +151,8 @@
 		}
 	}
 
-	DWORD Win32::Registry::get(const char *name, DWORD def) const {
+	template <typename T>
+	static inline T get_dword(HKEY hKey, const char *name, T def) {
 
 		if(!hKey) {
 			return def;
@@ -152,46 +168,76 @@
 
 		} else if(datatype != REG_DWORD) {
 
+			Logger::String{"Registry key '",name,"' is not a DWORD, using default value"}.warning();
 			value = def;
 
 		}
 
-		return value;
+		return (T) value;
+		
 	}
 
-	UINT64 Win32::Registry::get(const char *name, UINT64 def) const {
+	int32_t Win32::Registry::get(const char *name, int32_t def) const {
+		return get_dword<int32_t>(hKey, name, def);
+	}
+
+	uint32_t Win32::Registry::get(const char *name, uint32_t def) const {
+		return get_dword<uint32_t>(hKey, name, def);
+	}
+
+	bool Win32::Registry::get(const char *name, bool def) const {
+		return get_dword<uint32_t>(hKey, name, def) != 0;
+	}
+
+	template <typename T>
+	static inline T get_qword(HKEY hKey, const char *name, T def) {
 
 		if(!hKey) {
 			return def;
 		}
 
-		UINT64 value = 0;
+		QWORD value = def;
 		unsigned long datatype;
-		unsigned long datalen = sizeof(UINT64);
+		unsigned long datalen = sizeof(QWORD);
 
 		if(RegQueryValueEx(hKey,name,NULL,&datatype,(LPBYTE) &value,&datalen) != ERROR_SUCCESS) {
 
 			value = def;
 
-		} else if(datatype == REG_DWORD) {
-
-			const DWORD *dw = ((DWORD *) &def);
-			return (UINT64) *dw;
-
 		} else if(datatype != REG_QWORD) {
 
+			Logger::String{"Registry key '",name,"' is not a QWORD, using default value"}.warning();
 			value = def;
 
 		}
 
-		return value;
+		return (T) value;
+		
 	}
+
+	int64_t Win32::Registry::get(const char *name, int64_t def) const {
+		return get_qword<int64_t>(hKey, name, def);
+	}
+
+	uint64_t Win32::Registry::get(const char *name, uint64_t def) const {
+		return get_qword<uint64_t>(hKey, name, def);
+	}
+
+	float Win32::Registry::get(const char *name, float def) const {
+		Logger::String{"Registry key '",name,"' is not implemented for float, using default value"}.warning();
+		return def; // FIXME: Implement float registry values.
+	}
+
+	double Win32::Registry::get(const char *name, double def) const {
+		Logger::String{"Registry key '",name,"' is not implemented for double, using default value"}.warning();
+		return def; // FIXME: Implement double registry values.
+	}	
 
 	void * Win32::Registry::get(const char *name, void *ptr, size_t len) {
 		return get(hKey,name,ptr,len);
 	}
 
-	string Win32::Registry::get(HKEY hK, const char *name, const char *def) {
+	Udjat::String Win32::Registry::get(HKEY hK, const char *name, const char *def) {
 
 		if(!hK)
 			return def;
@@ -217,7 +263,7 @@
 			dwRet = RegQueryValueEx( hK, name, NULL, NULL, (LPBYTE) data, &cbData );
 		}
 
-		string rc;
+		Udjat::String rc;
 		if(dwRet == ERROR_SUCCESS) {
 			rc.assign(data);
 		} else {
@@ -293,7 +339,7 @@
 
 	}
 
-	std::string Win32::Registry::get(const char *name, const char *def) const {
+	Udjat::String Win32::Registry::get(const char *name, const char *def) const {
 		return get(hKey, name, def);
 	}
 
@@ -352,8 +398,8 @@
 		TCHAR achkey[1024];		// buffer for subkey name
 		DWORD cbName = 1024;	// size of name string
 
-		bool rc = true;
-		for(DWORD index = 0;RegEnumValue(hGroup,index,achkey,&cbName,NULL,NULL,NULL,NULL) == ERROR_SUCCESS && rc; index++) {
+		bool rc = false;
+		for(DWORD index = 0;RegEnumValue(hGroup,index,achkey,&cbName,NULL,NULL,NULL,NULL) == ERROR_SUCCESS && !rc; index++) {
 			string keyname(achkey,cbName);
 			string value = get(hGroup,keyname.c_str(),"");
 
@@ -361,7 +407,7 @@
 			cout << "key='" << keyname << "' value='" << value << "'" << endl;
 #endif // DEBUG
 
-			call(keyname.c_str(),value.c_str());
+			rc = call(keyname.c_str(),value.c_str());
 
 			cbName = 1024;
 		}

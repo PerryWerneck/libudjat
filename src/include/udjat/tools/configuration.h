@@ -47,8 +47,8 @@
 
 		/// @brief Navigate from all group keys.
 		/// @param group Group name.
-		/// @param call function to call on every group key until it returns 'false'.
-		/// @return true if the lambda returns 'true' for all keys.
+		/// @param call function to call on every group key until it returns 'true'.
+		/// @return false if the lambda returns 'false' for all keys.
 		UDJAT_API bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call);
 
 		UDJAT_API bool hasGroup(const std::string &group);

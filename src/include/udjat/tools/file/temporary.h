@@ -21,6 +21,7 @@
 
 #include <udjat/defs.h>
 #include <udjat/tools/file/handler.h>
+#include <udjat/tools/string.h>
 
 namespace Udjat {
 
@@ -60,13 +61,13 @@ namespace Udjat {
 
 			/// @brief Create an empty temporary file.
 			/// @param len Required file size.
-			static std::string create(unsigned long long len);
+			static Udjat::String create(unsigned long long len);
 
 			/// @brief Create an empty temporary file.
-			static std::string create();
+			static Udjat::String create();
 
 			/// @brief Create an empty temporary dir.
-			static std::string mkdir();
+			static Udjat::String mkdir();
 
 #ifdef _WIN32
 

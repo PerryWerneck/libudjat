@@ -63,7 +63,8 @@
 		// Search parents
 		{
 			String key{node.name(),"-",attrname};
-			debug("Searching for '",key,"' in parents of node '",node.name(),"'");
+			// debug("Searching for '",key,"' in parents of node '",node.name(),"'");
+			
 			for(XML::Node parent = node.parent();parent;parent = parent.parent()) {
 
 				// Search on parent node attributes

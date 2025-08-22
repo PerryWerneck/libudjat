@@ -2,6 +2,10 @@
 
 builddir=${PWD}
 
+if [ "$(grep '@VERSION@' configure.ac | grep -c AC_INIT)" -ne 0 ]; then
+	echo "Please fix @VERSION@ in configure.ac with the correct version."
+	exit 1
+fi
 test -n "$srcdir" || srcdir=$(readlink -f $(dirname "$0"))
 test -n "$srcdir" || srcdir=$(readlink -f .)
 

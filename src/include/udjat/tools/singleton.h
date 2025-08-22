@@ -42,7 +42,7 @@
 		protected:
 
 			L objects;
-			std::mutex guard;
+			mutable std::mutex guard;
 
 		public:
 
@@ -97,7 +97,7 @@
 			}
 
 			T & operator[](const char *name) const {
-				std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(&guard)));
+				std::lock_guard<std::mutex> lock(guard);
 				for(auto object : objects) {
 					if(*object == name) {
 						return *object;
@@ -107,7 +107,7 @@
 			}
 
 			virtual P find(const char *name) const noexcept {
-				std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(&guard)));
+				std::lock_guard<std::mutex> lock(guard);
 				for(auto object : objects) {
 					if(*object == name) {
 						return object;
@@ -117,7 +117,7 @@
 			}
 
 			inline bool for_each(const std::function<bool(const T &object)> &method) const {
-				std::lock_guard<std::mutex> lock(*(const_cast<std::mutex *>(&guard)));
+				std::lock_guard<std::mutex> lock(guard);
 				for(auto object : objects) {
 					if(method(*object)) {
 						return true;

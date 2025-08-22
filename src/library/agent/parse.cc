@@ -72,7 +72,7 @@ namespace Udjat {
 
 		// It's an action?
 		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-			push_back(node,Action::Factory::build(node,true));
+			push_back(node,Action::Factory::build(node));
 			return true; // Handled by action.
 		}
 

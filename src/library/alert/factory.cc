@@ -99,9 +99,6 @@
 
 		public:
 			ActionAlert(const XML::Node &node) : Alert{node}, action{Action::Factory::build(node)} {
-				if(!action) {
-					throw runtime_error("Action alert requires an action");
-				}
 			}
 
 			int emit() override {
