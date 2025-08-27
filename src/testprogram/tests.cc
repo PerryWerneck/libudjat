@@ -69,7 +69,7 @@
 	pkey.load("/tmp/test-legacy.key","password");
 	Logger::String{"Legacy private key reloaded:\n",pkey.to_string().c_str()}.info();
 
-#if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H)
+#if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H) && !defined(_WIN32)
 	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
 	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
 	pkey.save_public("/tmp/test-engine.pub");
@@ -77,7 +77,7 @@
 	Logger::String{"Engine private key reloaded:\n",pkey.to_string().c_str()}.info();
 #endif // HAVE_OPENSSL_ENGINE
 
-#ifdef HAVE_OPENSSL_PROVIDER
+#if defined(HAVE_OPENSSL_PROVIDER) && !defined(_WIN32)
 	if(access("/usr/lib64/ossl-modules/tpm2.so", R_OK) != 0) {
 		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
 	} else {
@@ -102,6 +102,8 @@
  #endif // HAVE_OPENSSL
 
  static int network_test() {
+
+#ifndef _WIN32
 	auto nic = Udjat::Network::Interface::Default();
 
 	auto name = nic->name();
@@ -124,6 +126,8 @@
 	} else {
 		Logger::String{"Default network interface netmask: ",mask.c_str()}.info();
 	}
+ #endif // !_WIN32
+ 
 	return 0;
  }
 
