@@ -133,7 +133,8 @@
 			title{String{node,"title",""}.as_quark()},
 			uid{getuid(node)},
 			gid{getgid(node)},
-			shell{node.attribute("shell").as_bool(false)} {
+			shell{node.attribute("shell").as_bool(false)},
+			sudo{node.attribute("sudo").as_bool(false)} {
 
 		if(!(cmdline && *cmdline)) {
 			Logger::String{"Missing cmdline attribute on node <",node.name(),">"}.error(node.attribute("name").as_string());
@@ -176,6 +177,20 @@
 
 		if(title && *title) {
 			Logger::String{title}.info(name());
+		}
+
+		if(sudo) {
+			return SubProcess{
+				uid,
+				gid,
+				name(),
+				String{
+					"/usr/bin/env -S /usr/bin/sudo --login -- ",
+					cmdline
+				}.c_str(),
+				out,
+				err
+			}.run();
 		}
 
 		return SubProcess{uid,gid,name(),cmdline,out,err}.run();

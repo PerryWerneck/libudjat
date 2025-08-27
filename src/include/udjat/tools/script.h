@@ -39,7 +39,8 @@
 #ifndef _WIN32
 		int uid = -1;
 		int gid = -1;
-		bool shell = false;
+		bool shell = false;	/// @brief Use shell to run script.
+		bool sudo = false;	/// @brief Use env + sudo to run script.
 #endif // !_WIN32
 
 	protected:
