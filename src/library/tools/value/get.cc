@@ -320,11 +320,14 @@
 		} else if(type == Object) {
 
 #if __cplusplus >= 201703L
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wunused-variable"
 			for(auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(ix-- <= 0) {
 					return value;
 				}
 			}
+			#pragma GCC diagnostic pop
 			throw out_of_range("out of range");
 #else
 			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
@@ -348,11 +351,14 @@
 
 		} else if(type == Object) {
 #if __cplusplus >= 201703L
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wunused-variable"
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(ix-- <= 0) {
 					return value;
 				}
 			}
+			#pragma GCC diagnostic pop
 			throw out_of_range("out of range");
 #else
 			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
@@ -448,7 +454,7 @@
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(call(key.c_str(),value)) {
 					return true;
-	                	}
+	            }
 			}
 #else
 			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
@@ -477,11 +483,14 @@
 				return *this;
 			}
 #if __cplusplus >= 201703L
+			#pragma GCC diagnostic push
+			#pragma GCC diagnostic ignored "-Wunused-variable"
 			for(const auto & [key, value] : *((map<std::string,Value> *) content.ptr)) {
 				if(call(value)) {
-                			return true;
-                		}
+					return true;
+				}
 			}
+			#pragma GCC diagnostic pop
 #else
 			throw system_error(ENOTSUP,system_category(),"Not implemented in legacy mode");
 #endif
