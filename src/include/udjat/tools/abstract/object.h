@@ -74,10 +74,16 @@
 			virtual bool parse(const XML::Node &node);
 
 			/// @brief Add child object (if supported).
-			virtual void push_back(std::shared_ptr<Abstract::Object> child);
+			/// @return True if the object was inserted.
+			/// @retval true The object was inserted.
+			/// @retval false The object type is not supported.	
+			virtual bool push_back(std::shared_ptr<Abstract::Object> child);
 
 			/// @brief Add child object with XML definitions (if supported).
-			virtual void push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> child);
+			/// @return True if the object was inserted.
+			/// @retval true The object was inserted.
+			/// @retval false The object type is not supported.	
+			virtual bool push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> child);
 
 			/// @brief Get configuration file group.
 			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");

@@ -35,7 +35,7 @@
 
  namespace Udjat {
 
-	class Alert::Controller : private Container<Alert> {
+	class Alert::Controller : private Udjat::Container<Alert> {
 	private:
 
 		Timer *timer;

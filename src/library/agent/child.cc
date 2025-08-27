@@ -24,7 +24,7 @@
  namespace Udjat {
 
 		/// @brief Insert object.
-	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
+	bool Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
 
@@ -42,11 +42,15 @@
 			}
 
 			children.agents.push_back(agent);
-			return;
+
+		} else {
+
+			// No specialization, just insert the object.
+			children.objects.push_back(object);
+
 		}
 
-		// No specialization, just insert the object.
-		children.objects.push_back(object);
+		return true;	
 	}
 
 

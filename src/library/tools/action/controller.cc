@@ -263,13 +263,13 @@
 						}
 					}
 
-					void push_back(std::shared_ptr<Abstract::Object> child) override {
+					bool push_back(std::shared_ptr<Abstract::Object> child) override {
 						auto action = std::dynamic_pointer_cast<Action>(child);
 						if(action) {
 							actions.push_back(action);
-						} else {
-							throw runtime_error("Action container only accepts action children");
+							return true;
 						}
+						return false;
 					}
 
 					int call(bool except) override {

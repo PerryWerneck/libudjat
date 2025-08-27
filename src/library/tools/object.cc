@@ -170,12 +170,12 @@
 	Abstract::Object::~Object() {
 	}
 
-	void Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {
-		throw logic_error("Object is unable to handle children");
+	bool Abstract::Object::push_back(std::shared_ptr<Abstract::Object>) {
+		return false;
 	}
 
-	void Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
-		push_back(child);
+	bool Abstract::Object::push_back(const XML::Node &, std::shared_ptr<Abstract::Object> child) {
+		return push_back(child);
 	}
 
 	bool Abstract::Object::parse(const XML::Node &node) {
