@@ -111,26 +111,6 @@ extra_libs = [
   threads,
 ] 
 
-if not vmdetect.found()
-  vmdetect = dependency(
-      'vmdetect',
-      required: false,
-      fallback: [ 'vmdetect', 'static_library' ],
-      default_options: ['default_library=static']  
-  ) 
-  extra_libs += [ vmdetect ]
-endif
-
-if not dmiget.found()
-  dmiget = dependency(
-      'dmiget',
-      required: false,
-      fallback: [ 'dmiget', 'static_library' ],
-      default_options: ['default_library=static']    
-  ) 
-  extra_libs += [ dmiget ]
-endif
-
 #
 # Compiler flags
 #
@@ -258,11 +238,35 @@ includes_dir = include_directories('src/include')
 
 if vmdetect.found()
   app_conf.set('HAVE_VMDETECT', 1)
+else
+  vmdetect_s = dependency(
+      'vmdetect',
+      required: false,
+      fallback: [ 'vmdetect', 'static_library' ],
+      default_options: ['default_library=static']  
+  ) 
+  if vmdetect_s.found()
+    app_conf.set('HAVE_VMDETECT', 1)
+    extra_libs += [ vmdetect_s ]
+  endif
 endif
 
 if dmiget.found()
   app_conf.set('HAVE_SMBIOS', 1)
+else
+  dmiget_s = dependency(
+      'dmiget',
+      required: false,
+      fallback: [ 'dmiget', 'static_library' ],
+      default_options: ['default_library=static']    
+  ) 
+  if dmiget_s.found()
+    app_conf.set('HAVE_SMBIOS', 1)
+    extra_libs += [ dmiget_s ]  
+  endif
 endif
+
+
 
 if host_machine.system() != 'windows'
   #

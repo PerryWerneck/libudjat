@@ -63,9 +63,9 @@
 			virtual ~Object();
 
 			/// @brief Parse XML file(s), build children.
-			/// @param path The path for a folder or a XML file.
+			/// @param path The path for a folder or a XML file, nullptr for default.
 			/// @return timestamp for next refresh.
-			time_t parse(const char *path);
+			time_t parse(const char *path = nullptr);
 
 			/// @brief Parse object, build children.
 			/// @details This method is called by parse() for every child node.

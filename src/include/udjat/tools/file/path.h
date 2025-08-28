@@ -159,4 +159,10 @@ namespace Udjat {
 
 	}
 
+	namespace XML {
+
+		File::Path UDJAT_API PathFactory(const char *p);
+
+	}
+
 }

@@ -48,7 +48,7 @@
 
 		time_t next = 0;
 
-		File::Path path{p};
+		File::Path path{XML::PathFactory(p)};
 		if(path.dir()) {
 
 			// Is a directory, scan for files
@@ -109,56 +109,44 @@
 
 	}
 
-	time_t XML::parse(const char *p) {
-
-		File::Path path;
+	File::Path XML::PathFactory(const char *p) {
 
 		if(p && *p) {
+			return File::Path{p};
+		}	
 
-			// Use requested path
-			debug("------------------> Using path '",p,"'");
-			path.assign(p);
+		Config::Value<string> cfg{"application","definitions",""};
+		if(!cfg.empty()) {
+			return File::Path{cfg.c_str()};
+		}
 
-		} else {
+		Application::Name name;
+		Application::DataDir datadir{nullptr,false};
 
-			// No path, search for one.
-			Config::Value<string> cfg{"application","definitions",""};
-			if(!cfg.empty()) {
-
-				path.assign(cfg);
-
-			} else {
-
-				Application::Name name;
-				Application::DataDir datadir{nullptr,false};
-
-				String options[] = {
+		String options[] = {
 #ifndef _WIN32
-					String{"/etc/",name.c_str(),"/xml"},
-					String{"/etc/",name.c_str(),".xml.d"},
+			String{"/etc/",name.c_str(),"/xml"},
+			String{"/etc/",name.c_str(),".xml.d"},
 #endif // _WIN32
-					String{datadir.c_str(),"settings.xml"},
-					String{datadir.c_str(),"xml.d"},
-				};
+			String{datadir.c_str(),"settings.xml"},
+			String{datadir.c_str(),"xml.d"},
+		};
 
-				for(const String &option : options) {
-					debug("Checking '",option.c_str(),"'");
-					if(access(option.c_str(),R_OK) == 0) {
-						debug("Found '",option.c_str(),"'");
-						path.assign(option.c_str());
-						if(path) {
-							break;
-						}
-					}
-				}
-
+		for(const String &option : options) {
+			debug("Checking '",option.c_str(),"'");
+			if(access(option.c_str(),R_OK) == 0) {
+				debug("Found '",option.c_str(),"'");
+				return File::Path{option.c_str()};
 			}
-
 		}
 
-		if(!path) {
-			throw std::system_error(ENOENT,std::system_category(), _("Configuration file not found"));
-		}
+		throw std::system_error(ENOENT,std::system_category(), _("Configuration file not found"));
+
+	}
+
+	time_t XML::parse(const char *p) {
+
+		File::Path path{XML::PathFactory(p)};
 
 		time_t next = 0;
 
