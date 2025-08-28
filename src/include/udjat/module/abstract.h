@@ -204,4 +204,10 @@
 	/// @return true if the module can be unloaded.
 	UDJAT_API bool udjat_module_deinit();
 
+	/// @brief Get symbol from application.
+	/// @details This method is used to get a symbol from the module.
+	/// @param symbol The symbol name to get.
+	/// @return The symbol address or nullptr if not found.
+	void * symbol(const char *symbol, bool required = true);
+
  }

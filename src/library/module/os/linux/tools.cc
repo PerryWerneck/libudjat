@@ -86,3 +86,16 @@
 
  }
 
+ UDJAT_API void * symbol(const char *name, bool required) {
+
+	void * symbol = ::dlsym(RTLD_DEFAULT,name);
+
+	if(required) {
+		auto err = dlerror();
+		if(err)
+			throw runtime_error(err);
+	}
+
+	return symbol;
+ }
+

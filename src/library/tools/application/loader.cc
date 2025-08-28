@@ -120,10 +120,8 @@
 #ifndef _WIN32	
 			try {
 				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
-				while(symbol) {
-					debug("Found symbol 'run_unit_test' in app");
+				if(symbol) {
 					symbol(argvalue.c_str());
-					symbol = (int(*)(const char *)) dlsym(RTLD_NEXT,"run_unit_test");
 				}
 			} catch(const std::exception &e) {
 				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
