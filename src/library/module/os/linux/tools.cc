@@ -76,12 +76,16 @@
 	}
 	
 	std::string Module::filename() const {
+		return filename((const void *) &this->_info, name);
+	}
+
+	std::string Module::filename(const void *ptr, const char *def) {
 		Dl_info info;
 		memset(&info,0,sizeof(info));
-		if(dladdr(&this->_info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
+		if(dladdr(ptr, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
 			return info.dli_fname;
 		}
-		return name;
+		return def;
 	}
 
  }

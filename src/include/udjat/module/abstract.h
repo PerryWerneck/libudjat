@@ -144,6 +144,9 @@
 		/// @param url_prefix Prefix for URL (built by server module);
 		virtual void trace_paths(const char *url_prefix) const noexcept;
 
+		/// @brief Get filename for pointer
+		static std::string filename(const void *ptr, const char *def = nullptr);
+
 		/// @brief Get module filename.
 		std::string filename() const;
 
