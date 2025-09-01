@@ -180,14 +180,36 @@
 
 	void Abstract::Object::parse_children(const XML::Node &node) {
 
-#ifdef DEBUG 
-		Logger::String{"Parsing object children at ",node.path()}.info(name());
-#endif // DEBUG
+		bool trace = Logger::enabled(Logger::Debug);
+
+		if(trace) {
+			Logger::String{"Parsing object children at ",node.path()}.trace(name());
+		}
 
 		for(const auto &child : node) {
-			if(!parse(child)) {
-				Logger::String{"Ignoring unexpected child <",child.name(),"> at ",child.path()}.warning(name());
+
+			if(XML::parse(node)) {
+				continue; // Ignore reserved nodes.
 			}
+
+			const char *name = node.name();
+
+			// Is it a factory?
+			for(const auto factory : Factories()) {
+
+				if(*factory == name) {
+	
+					if(trace) {
+						Logger::String{"Got factory for ",child.path()}.info(this->name());
+					}
+
+					auto object = factory->ObjectFactory(*this,child);
+					object->parse_children(child);
+					push_back(object);
+					break; 
+				}
+			}
+
 		}
 
 	}
