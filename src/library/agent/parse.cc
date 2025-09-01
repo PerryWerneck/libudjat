@@ -43,6 +43,7 @@
 
 namespace Udjat {
 
+	/*
 	bool Abstract::Agent::parse(const XML::Node &node) {
 
 		if(Udjat::Object::parse(node)) {
@@ -82,5 +83,6 @@ namespace Udjat {
 
 		return false;
 	}
+	*/
 
 }

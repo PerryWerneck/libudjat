@@ -93,16 +93,6 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::Agent::push_back(const XML::Node &node, std::shared_ptr<Activatable> alert) {
-		push_back(EventFactory(node,"trigger-event"),alert);
-		return true;
-	}
-
-	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
-		lock_guard<std::recursive_mutex> lock(guard);
-		listeners.emplace_back(event,activatable);
-	}
-
 	void Abstract::Agent::remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.remove_if([event,activatable](Listener &ev){

@@ -131,15 +131,15 @@
 
 		Object(const XML::Node &node);
 
+	public:
+
+		constexpr Object(const char *name) : NamedObject(name) {
+		}
+
 		bool parse(const XML::Node &node) override;
 
 		inline time_t parse(const char *path) {
 			return Abstract::Object::parse(path);
-		}
-
-	public:
-
-		constexpr Object(const char *name) : NamedObject(name) {
 		}
 
 		bool getProperty(const char *key, std::string &value) const override;

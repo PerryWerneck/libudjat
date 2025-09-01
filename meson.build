@@ -345,6 +345,7 @@ lib_src += [
   'src/library/agent/factory.cc',
   'src/library/agent/event.cc',
   'src/library/agent/child.cc',
+  'src/library/agent/push_back.cc',
   'src/library/agent/controller.cc',
   'src/library/agent/get.cc',
   'src/library/agent/path.cc',

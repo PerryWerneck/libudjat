@@ -23,55 +23,6 @@
 
  namespace Udjat {
 
-		/// @brief Insert object.
-	bool Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		// Is it an agent?
-		std::shared_ptr<Abstract::Agent> agent = std::dynamic_pointer_cast<Abstract::Agent>(object);
-		if(agent) {
-			if(agent->parent) {
-				throw runtime_error(Logger::Message{"Agent {} is child of {}",agent->name(),agent->parent->name()});
-			}
-
-			agent->parent = this;
-
-			if(!agent->current_state.selected) {
-				agent->current_state.set(agent->computeState());
-			}
-
-			children.agents.push_back(agent);
-
-		} else {
-
-			// No specialization, just insert the object.
-			children.objects.push_back(object);
-
-		}
-
-		return true;	
-	}
-
-
-	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
-
-		lock_guard<std::recursive_mutex> lock(guard);
-
-		if(child->parent) {
-			throw runtime_error(Logger::Message{"Agent {} is child of {}",child->name(),child->parent->name()});
-		}
-
-		child->parent = this;
-
-		if(!child->current_state.selected) {
-			child->current_state.set(child->computeState());
-		}
-
-		children.agents.push_back(child);
-
-	}
-
 	/// @brief Remove object.
 	void Abstract::Agent::remove(std::shared_ptr<Abstract::Object> object) {
 		lock_guard<std::recursive_mutex> lock(guard);
@@ -118,9 +69,11 @@
 		}
 
 		if(autoins) {
+			
 			string name{path,length};
 			auto child = make_shared<Abstract::Agent>(Quark(string(path,length)).c_str());
-			push_back(child);
+			
+			push_back((std::shared_ptr<Abstract::Object>)child);
 
 			if(ptr && ptr[1]) {
 				return child->find(ptr+1,required,autoins);
