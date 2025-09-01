@@ -237,7 +237,6 @@
 #endif // DEBUG
 				auto object = factory->ObjectFactory(*this,node);
 				object->parse_children(node);
-				push_back(object);
 				return true; // Handled by factory.
 			}
 
