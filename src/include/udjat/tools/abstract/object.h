@@ -52,7 +52,9 @@
 				}
 
 				/// @brief Create an object from XML node.
-				virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const = 0;
+				[[deprecated("Use new version")]] virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const;
+
+				virtual std::shared_ptr<Abstract::Object> ObjectFactory(const XML::Node &node) const = 0;
 
 			};
 

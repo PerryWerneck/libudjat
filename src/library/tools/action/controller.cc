@@ -91,13 +91,16 @@
 				return type;
 			}
 
+		} else if(node.child("action")) {
+			return "multiple";
+			
 		}
 
 		throw runtime_error(Logger::String{"Required attribute 'type' is missing at ",node.path()});
 
 	}
 
-	std::shared_ptr<Abstract::Object> Action::Controller::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
+	std::shared_ptr<Abstract::Object> Action::Controller::ObjectFactory(const XML::Node &node) const {
 
 		// Get action type
 		auto type = TypeFactory(node);
@@ -252,14 +255,14 @@
 					std::vector<std::shared_ptr<Action>> actions;
 
 				public:
-					ActionContainer(const Controller *cntrl, Abstract::Object &parent, const XML::Node &node) : Action{node} {
+					ActionContainer(const Controller *cntrl, const XML::Node &node) : Action{node} {
 						
 						// Parse standard children
 						parse(node);
 
 						// Legacy support for <script> children
 						for(auto action = node.child("script"); action; action = action.next_sibling("script")) {
-							push_back(cntrl->ObjectFactory(parent,action));
+							push_back(cntrl->ObjectFactory(action));
 						}
 					}
 
@@ -269,7 +272,7 @@
 							actions.push_back(action);
 							return true;
 						}
-						return false;
+						return Action::push_back(child);
 					}
 
 					int call(bool except) override {
@@ -294,7 +297,7 @@
 
 				};
 
-				return make_shared<ActionContainer>(this,parent,node);
+				return make_shared<ActionContainer>(this,node);
 			}
 
 		default:
