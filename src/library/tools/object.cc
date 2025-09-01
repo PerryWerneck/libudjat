@@ -188,11 +188,12 @@
 
 		for(const auto &child : node) {
 
-			if(XML::parse(node)) {
+			if(XML::parse(child)) {
 				continue; // Ignore reserved nodes.
 			}
 
-			const char *name = node.name();
+			const char *name = child.name();
+			debug("Node name for '",node.path()," is '",name,"'");
 
 			// Is it a factory?
 			for(const auto factory : Factories()) {
@@ -200,7 +201,7 @@
 				if(*factory == name) {
 	
 					if(trace) {
-						Logger::String{"Got factory for ",child.path()}.info(this->name());
+						Logger::String{"Got factory '", factory->c_str(), "' for ",child.path()}.info(this->name());
 					}
 
 					auto object = factory->ObjectFactory(*this,child);
@@ -237,6 +238,7 @@
 #endif // DEBUG
 				auto object = factory->ObjectFactory(*this,node);
 				object->parse_children(node);
+				push_back(object);
 				return true; // Handled by factory.
 			}
 

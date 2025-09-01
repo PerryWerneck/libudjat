@@ -47,6 +47,10 @@
 					return strcasecmp(n,name) == 0;
 				}
 
+				inline const char *c_str() const noexcept {
+					return name;
+				}
+
 				/// @brief Create an object from XML node.
 				virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const = 0;
 

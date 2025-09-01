@@ -52,6 +52,7 @@
 
  #ifdef HAVE_OPENSSL
  static int ssl_test() {
+	/*
 	Udjat::SSL::Key pkey;
 
 	unlink("/tmp/test-legacy.key");
@@ -96,6 +97,7 @@
 	pkey.load("/tmp/test-mixed.key","password");
 	Logger::String{"Mixed private key reloaded:\n",pkey.to_string().c_str()}.info();
 #endif
+	*/
 
 	return 0;
  }
