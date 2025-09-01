@@ -48,10 +48,12 @@
 	}
 
 	XML::Parser::Parser(const char *n) : parser_name{n} {
+		debug("Registering parser for '",n,"'");
 		Factories().push_back(this);
 	}
 
 	XML::Parser::~Parser() {
+		debug("Unregistering parser for '",parser_name,"'");
 		Factories().remove(this);
 	}
 
