@@ -227,11 +227,12 @@
 
 			/// @brief Load agent children, states, alerts, etc. from node.
 			/// @param node The xml node with agent children to build.
-			// bool parse(const XML::Node &node) override;
+			/// @see Abstract::Object::parse
+			bool parse(const XML::Node &node) override;
 
-			// inline time_t parse(const char *path) {
-			//	return Udjat::Object::parse(path);
-			//}
+			inline time_t parse(const char *path) {
+				return Udjat::Object::parse(path);
+			}
 
 			/// @brief Insert object.
 			bool push_back(std::shared_ptr<Abstract::Object> object) override;

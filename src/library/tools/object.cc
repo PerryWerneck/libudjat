@@ -194,8 +194,8 @@
 
 		for(const auto &child : node) {
 
-			if(XML::parse(child)) {
-				continue; // Ignore reserved nodes.
+			if(this->parse(child)) {
+				continue; // Ignore reserved and already handled nodes.
 			}
 
 			const char *name = child.name();
@@ -227,32 +227,11 @@
 			return true; // Ignore reserved nodes.
 		}
 
-		const char *name = node.name();
-
 		// TODO: Rewrite init actions to use Object::Factory.
-		if(strcasecmp(name,"init") == 0) {
+		if(strcasecmp(node.name(),"init") == 0) {
 			Action::Factory::build(node)->call(node);
 			return true; // Handled by action.
 		}
-
-		// Is it a factory?
-		for(const auto factory : Factories()) {
-
-			if(*factory == name) {
-#ifdef DEBUG 
-				Logger::String{"Found factory for <",node.name(),">"}.info(this->name());
-#endif // DEBUG
-				auto object = factory->ObjectFactory(node);
-				object->parse_children(node);
-				push_back(object);
-				return true; // Handled by factory.
-			}
-
-		}
-
-#ifdef DEBUG 
-		Logger::String{"Unexpected node <Abstract::Object::",node.name(),"> at ",node.path()}.warning(this->name());
-#endif // DEBUG
 
 		return false;	// Not handled, maybe the caller can handle it.
 	}

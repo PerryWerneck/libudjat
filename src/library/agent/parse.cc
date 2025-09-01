@@ -43,7 +43,6 @@
 
 namespace Udjat {
 
-	/*
 	bool Abstract::Agent::parse(const XML::Node &node) {
 
 		if(Udjat::Object::parse(node)) {
@@ -55,16 +54,13 @@ namespace Udjat {
 
 			auto state = StateFactory(node);
 			if(state) {
-				for(const XML::Node &child : node) {
-					state->parse(child);
-				}
-			} else {
-				Logger::String{"Unable to create agent state"}.error(name());
+				state->parse_children(node);
+				return true; // Handled by state.
 			}
 			
-			return true;
 		}
 
+		/*
 		// It's an alert?
 		if(strcasecmp(node.name(),"alert") == 0) {
 			push_back(node,Alert::Factory::build(*this,node));
@@ -80,9 +76,9 @@ namespace Udjat {
 #ifdef DEBUG 
 		Logger::String{"Unexpected node <Agent::",node.name(),">"}.warning(name());
 #endif // DEBUG
+		*/
 
 		return false;
 	}
-	*/
 
 }
