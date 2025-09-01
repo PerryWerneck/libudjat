@@ -53,13 +53,11 @@
 		Factories().remove(this);
 	}
 
-	/*
 	std::shared_ptr<Abstract::Object> Abstract::Object::Factory::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
 		auto obj = ObjectFactory(node);
 		parent.push_back(obj);
 		return obj;
 	}
-	*/
 
 	static const char * NameFactory(const XML::Node &node) noexcept {
 
