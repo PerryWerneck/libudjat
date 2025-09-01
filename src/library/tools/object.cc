@@ -178,49 +178,48 @@
 		return push_back(child);
 	}
 
+	void Abstract::Object::parse_children(const XML::Node &node) {
+
+#ifdef DEBUG 
+		Logger::String{"Parsing object children at ",node.path()}.info(name());
+#endif // DEBUG
+
+		for(const auto &child : node) {
+			if(!parse(child)) {
+				Logger::String{"Ignoring unexpected child <",child.name(),"> at ",child.path()}.warning(name());
+			}
+		}
+
+	}
 	bool Abstract::Object::parse(const XML::Node &node) {
 
 		if(XML::parse(node)) {
 			return true; // Ignore reserved nodes.
 		}
 
+		const char *name = node.name();
+
 		// TODO: Rewrite init actions to use Object::Factory.
-		if(strcasecmp(node.name(),"init") == 0) {
+		if(strcasecmp(name,"init") == 0) {
 			Action::Factory::build(node)->call(node);
 			return true; // Handled by action.
 		}
 
-		// It's a factory?
-		{
-			const char *name = node.name();
+		// Is it a factory?
+		for(const auto factory : Factories()) {
 
-			for(const auto factory : Factories()) {
-
-				if(*factory == name) {
+			if(*factory == name) {
 #ifdef DEBUG 
-					Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
+				Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
 #endif // DEBUG
-					auto object = factory->ObjectFactory(*this,node);
-
-#ifdef DEBUG 
-					Logger::String{"Parsing object children"}.info(object->name());
-#endif // DEBUG
-
-					for(const auto &child : node) {
-						if(!object->parse(child)) {
-							Logger::String{"Ignoring unexpected child <",child.name(),">"}.warning(object->name());
-						}
-					}
-
-					return true; // Handled by factory.
-				}
-
+				factory->ObjectFactory(*this,node)->parse_children(node);
+				return true; // Handled by factory.
 			}
 
 		}
 
 #ifdef DEBUG 
-		Logger::String{"Unexpected node <Abstract::Object::",node.name(),">"}.warning(name());
+		Logger::String{"Unexpected node <Abstract::Object::",node.name(),"> at ",node.path()}.warning(this->name());
 #endif // DEBUG
 
 		return false;	// Not handled, maybe the caller can handle it.

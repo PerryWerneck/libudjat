@@ -67,11 +67,13 @@
 			/// @return timestamp for next refresh.
 			time_t parse(const char *path = nullptr);
 
-			/// @brief Parse object, build children.
-			/// @details This method is called by parse() for every child node.
+			/// @brief Parse XML, build children.
+			/// @details This method is called by parse_children() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
 			virtual bool parse(const XML::Node &node);
+
+			virtual void parse_children(const XML::Node &node);
 
 			/// @brief Add child object (if supported).
 			/// @return True if the object was inserted.

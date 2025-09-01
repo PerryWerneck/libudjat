@@ -95,16 +95,6 @@
 
 		}
 
-		/*
-		// Preload modules
-		for(XML::Node child = document_element().child("module"); child; child = child.next_sibling("module")) {
-			if(child.attribute("preload").as_bool(false)) {
-				Logger::String{"Preloading module '",child.attribute("name").as_string(),"'"}.trace();
-				Module::load(child);
-			}		
-		}
-		*/
-
 		// Check for update.
 		const XML::Node &node = document_element();
 		URL url{node};
@@ -175,20 +165,6 @@
 		}
 
 		const char *name = node.name();
-
-		/*
-		if(!strcasecmp(name,"module")) {
-
-			if(node.attribute("preload").as_bool(false)) {
-				return true; // Preload modules are handled by Document constructor.
-			}
-
-			Logger::String{"Loading module '",node.attribute("name").as_string(),"'"}.trace();
-			Module::load(node);
-			return true;
-
-		}
-		*/
 	
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
