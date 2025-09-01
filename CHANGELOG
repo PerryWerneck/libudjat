@@ -4,641 +4,130 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
 - Update to version 2.0.2+git20250708:
   * Updating package control files.
   * Adding dependency for libdl.
-  * Using static libraries as default
-  * Making dmiget optional.
-  * making vmdetect optional.
+  * Making dmiget & vmdetect optional.
   * Better integration with gi18n, fizing quark include.
   * Adding XML::parse_children, for convenience.
-  * Cleaning unused code, including randomvalue agent in the main library.
   * Adding product-domain on pkg-config info.
   * Adding methods to get XML::Parser name.
-  * Updating gitignore.
-  * Fixing subprojects.
-  * Fixing pkg-config filename.
   * Better handling of static builds.
   * Better handling of libeconf.
-  * vmdetect has submodules, fixing wrap file.
-  * Adding wrap files.
   * Handling SMBIOS urls.
-  * Removing default log domain.
-  * Better handling log domain.
-  * Better handling of dependencies.
   * Enhancing meson dependencies.
-  * Prefer static versions of dmiget and vmdetect.
-  * Debugging use as subproject.
-  * Updating release, moving from static libraries to subprojects.
   * Updating i18n files.
-  * Restoring vmdetect and dmiget.
-  * Working with dependencies.
-  * Working on win32 build.
-  * Debugging windows package.
   * Allways apply custom expanders.
-  * Debugging legacy builds.
-  * Fixing legacy build.
-  * Disabling key enumeration in legacy mode.
-  * Fixing legacy builds.
-  * Updating release.
   * Debugging attribute parser.
   * Fixing build of legacy modules.
-  * Cleaning deprecated code.
-  * Removing old factories from source code.
-  * Better debugging of network interface detector.
-  * Debugging iniparser.
-  * Debugging network info.
-  * Updating translation fixing log-to-file.
-  * Archiving legacy control files, updating meson.build.
-  * Debugging legacy builds.
-  * Debugging legacy version.
-  * Fixing test program.
   * Implementing callback on test app initialization.
   * Adding network info tools.
-  * Debugging on legacy systems.
-  * Debugging legacy builds.
-  * Debugging legacy build.
-  * Debugging legacy build
-  * Fixing legacy build.
-  * Debugging legacy.
-  * Debugging legacy builds.
-  * Debugging legacy builds.
-  * Backporting to legacy systems.
-  * Fixing legacy container.
-  * Fixing legacy build.
-  * Working on legacy builds.
-  * Fixing legacy builds.
-  * Debugging legacy builds.
-  * Debugging legacy builds.
-  * Legacy build.
-  * Working in legacy build.
-  * Backporting to C++11
-  * Backporting to C++11
-  * Working on legacy build.
-  * Implementing legacy build.
-  * Adding legacy files.
-  * Updating legacy build.
-  * Adding legacy autoconf.
+  * Backporting to legacy C++11 systems.
   * Adding parser for <interface>
   * Adding stream << operator on agent templates.
-  * Adding method to run module unit test.
-  * Fixing package build.
-  * Debugging application loader.
-  * Adding static library with the test program to help module tests.
-  * Debugging state changes.
-  * Debugging state changes.
-  * Debugging loader.
-  * Updating install.
-  * Removing unused code.
-  * Fixing loader command line options.
   * Adding commandline options list on SystemService.
-  * Fixing help.
-  * Commenting unused option.
-  * Implementing test application.
-  * Implementing test application.
   * Abending in case of first configuration fails.
-  * Renaming object merge.
-  * Working on new factories.
-  * Working on new factory engine.
-  * Refactoring 'factories'.
-  * Refactoring object factories.
-  * Refactoring object factories.
-  * Refactoring factories.
-  * Refactoring factories.
-  * Fixing warning.
-  * Refactoring XML parsers.
-  * Refactoring XML parser.
   * Better handling of xml loading failures.
   * Tracing agent tree.
-  * Refactoring application start/stop.
-  * Refactoring application main loop.
-  * Refactoring agent loader.
   * SIGHUP on linux will reload XML definitions.
   * Refactoring xml parser.
-  * Refactoring xml auto update engine.
-  * Refactoring xml parser.
-  * Refactoring XML parser.
-  * Refactoring application start/stop
-  * Refactoring state child parser.
-  * Refactoring xml parser.
-  * Moving common factories to Abstract::Object
   * Refactoring url parser.
-  * Working on the new xml parser.
-  * Working on new xml parser.
-  * Updating translation.
-  * Fixing win32 package.
-  * Implementing parser for command line options.
+  * Refactoring command-line option parser.
   * Better logging for url handlers.
-  * Fixing win64 build.
-  * Fixing system service.
-  * Fixing system service.
-  * Fixing win32 builds.
-  * Working on win32 build.
   * Setting default options for standard help.
-  * Working on command-line parser.
-  * Updating translation.
-  * Removing debug stop.
-  * Debugging argument parser.
-  * Debugging argument parser.
-  * Stripping CommandLineParser out of application.
-  * Debugging TUI.
-  * Debugging progress bar.
-  * Debugging TUI.
-  * Debugging TUI.
-  * Debugging progress dialog.
-  * Debugging TUI progress.
-  * Debugging progress dialog.
-  * Adding status 'busy' indicator.
-  * Better handling of text progress bars.
   * Fixing String::erase()
   * Working on console UI.
-  * Application is now a status dialog.
   * Implementing convenience 'erase' method on Udjat::String.
-  * Working on UI abstraction.
-  * Adding icon to status dialog.
-  * Adding abstraction for application status dialog.
-  * Adding method to run task in mainloop (for GUI apps).
-  * Fixing new XML parser.
-  * Updating translation.
-  * Fixing after rebase.
-  * Debugging iniparser.
-  * Fixing e-conf based config after iniparser changes.
-  * Debugging iniparser.
-  * Better name for the xml parser.
-  * Reenabling libeconf.
-  * Debugging iniparser.
-  * Fixing e-conf based config after iniparser changes.
-  * Fixing ini parser.
-  * Debugging iniparser.
-  * Fixing ini parser.
-  * Debugging iniparser.
-  * Better name for the xml parser.
-  * Reenabling libeconf.
-  * Debugging iniparser for legacy systems.
-  * Fixing iniparser.
-  * Fixing legacy builds.
-  * Fixing legacy builds.
-  * Fixing legacy build.
-  * Adjustments in progress dialog.
-  * Removing unused header.
-  * Better handling of debug mode.
-  * Debugging XML loader.
+  * Using iniparser as fallback when econf is not available.
   * Refactoring XML loader.
-  * Fixing application help.
-  * Fixing legacy builds.
-  * Fixing debug message.
-  * Fixing locale path.
-  * Small refactor on linux system service.
-  * Debugging log command line options.
-  * Enhancing logging options.
-  * Better parsing of command line options.
-  * Updating translation.
-  * Debugging command-line parser.
-  * Refactoring command line parser.
-  * Refactoring command line parser.
-  * Refactoring command line parser.
-  * Adding log options.
-  * Handling command line options.
-  * Better handling of help options.
-  * Implementing help option.
-  * Adding option to identify static library.
-  * Debugging lto.
-  * Fixing product title definition.
-  * Fixing legacy builds.
-  * Implementing module tester.
-  * Implementing simple test application.
-  * Debugging 'lto' error on tumbleweed.
-  * Fixing product domain.
-  * Debugging rpm macros.
-  * Debugging rpm macros.
-  * Fixing rpm macros.
-  * Fixing legacy builds.
-  * Fixing legacy build & warnings.
-  * Debugging econf library.
-  * Reactivating libeconf as default one.
-  * Implementing fallback to iniparser.
+  * Enhancing logger options.
+  * Fixing 'lto' error on tumbleweed.
   * Adding standard expander in File::Text
   * Adding convenience method to get default interface.
   * Refactoring default gateway method.
-  * Adding convenience method to get get default gateway.
-  * Adding convenience methods to hide/show progress dialog.
-  * Adding 'title' property on abstract dialog progress.
-  * Debugging text-mode progress.
-  * Debugging progress dialog.
-  * Debugging progress dialog.
-  * Fixing warning, debugging package build.
-  * Fixing package build.
-  * Adding win32 method to get console width.
-  * Debugging package.
-  * Fixing glib mainloop build.
-  * Debugging use of glib mainloop.
-  * Fixing sdk.
-  * Fixing progress bar mutex.
   * Implementing text based progress dialog.
-  * Working on text-mode dialogs.
-  * Implementing abstract progress dialog.
   * Whatching unexpected exception when running in service mode.
   * Refactoring application startup/setup.
-  * Refactoring command line parser.
-  * Beginning refactor of argument parser.
-  * Fixing deprecation warning.
-  * Updating UI sdk.
-  * show/hide cursor in console mode.
-  * Implementing more console styles.
-  * Adding some colors/styles on console output.
-  * Implementing console UI for linux.
-  * Better error message on expansion failure.
-  * Adding method to save text file.
-  * Adding expander for text file.
-  * Debugging configuration strings.
-  * Debugging legacy builds.
-  * Debugging legacy build.
-  * Fixing deprecated declarations.
-  * Fixing build without libeconf.
   * Fixing deprecated declarations, expanding strings from configuration file.
-  * Fixing expansion of app based values.
   * Adding ${appname} expander.
-  * Debugging console progress bar.
   * Better options for console applications.
   * Adding convenience method for progress bars on console.
   * Logging tempfile name on download failure.
-  * Fixing linux build.
-  * Working on windows package.
-  * Debugging win32 package.
   * Sanitizing URL path, better 'connecting' message.
-  * Updating pt_BR translation, fixing legacy builds.
-  * Updating translations, better URL messages.
-  * Allowing build of empty objects for convenience.
-  * Updating pt_BR translation.
   * Publishing updated version 2.0.0
   * Adding option to expand only part of the results in strings, example: "The value 1:6 is '${value[1:6]}'"
-  * Debugging module cleanup.
-  * Fixing URL download.
-  * Debugging file copy.
-  * Improving URL writers.
-  * Reimplementing legacy method 'get()' on URL.
-  * Working on mainloop.
-  * glib will be used only in linux, better windows error messages.
-  * Removing temfile on download failure.
   * Adding convenience method to save URL to temporary file.
-  * Small adjustment.
   * Reimplementing 'save-to-cache' feature on URLs.
-  * Working on glib mainloop.
-  * Better MainLoop::Post() method.
-  * Working on win32 mainloop (still incomplete).
+  * Using on glib mainloop, if available, only in linux.
+  * Working on win32 mainloop
   * Adding convenience method to post messages using glib mainloop.
   * Splitting file.h by class.
   * Updating win32 mainloop, removing old codeblocks control files.
-  * Working on windows build.
-  * Updating windows version.
-  * Adding static config on default pkg-config control file.
   * Better handling of sysid urls.
   * Better logging of root agent summary.
-  * Debuggin string split.
-  * Disabling glib mainloop in release code.
-  * glib mainloop is only available on debug builds, for now.
-  * Working on glib mainloop.
   * Starting bind to glib mainloop.
   * Capturing glib message if available.
   * Better handling of connection status.
   * Fixing connection error handler.
-  * Testing connection errors.
   * Getting morde NIC infos.
-  * Putting URL handler in his own header.
-  * Adding convenience methods to append on file::handler.
-  * Debugging file handler.
-  * Fixing package build.
-  * Fixing Url::cal()
-  * Better testing form URL extension.
-  * Enhancing ULR()
-  * Enhancing File::Path()
-  * Implementing url handler autoload.
-  * Debugging URL.
-  * Debugging string()
-  * Debugging error messages.
-  * Debugging auto-update of xml file.
-  * Debugging url handler.
-  * Debugging alert factory, removing legacy module search paths.
-  * Better error message on invalid URI.
   * Checking liburiparser version.
-  * Backporting to old liburiparser.
   * Working with string operators.
   * Removing unused scripts, better event factories.
-  * Debugging alert activation.
-  * Fixing damaged config.
-  * Handling combined schemas.
-  * Adding convenience method for post.
-  * Debugging url handler.
-  * Debugging URL handler.
-  * Debugging URLs.
   * Adding method URL::port().
-  * Debugging socket connection.
   * Adding convenience method to get agent state from URL.
-  * Debugging default url agent.
-  * Reactivating default URL agent.
-  * Better return code with script is terminated.
-  * Refactoring script:// URL handler.
-  * Refactoring handler for file://
-  * Debugging URL handler.
-  * Debugging http handler.
-  * Adding option to disable use of default handler.
-  * Debugging URL handlers.
-  * Renaming actions.
-  * Debugging URL handler.
-  * Handling length callback.
-  * Debugging URL handler.
-  * Debugging URL handler.
+  * Refactoring handlers for URL schemes script & file.
   * Adding convenience Socket::close()
   * Adding convenience method to wait for connection to stablish.
-  * Adding socket() method in URL::Handler() (To allow getting of connection info).
-  * Adding convenience method 'blocking()' on Socket::
-  * Default mimetype setting is send it to header.
-  * Adding placeholders for URL headers.
   * Better URL handlers.
-  * Debugging codeql action.
   * Adding convenience component 'Socket'.
-  * Working on new URL.
-  * Implementing async connect (incomplete).
-  * Refactoring URL.
-  * Fixing build after url changes.
-  * Refactoring URL.
-  * Refactoring url handler.
-  * Refactoring url
-  * Refactoring URL.
-  * Refactoring URL engine.
-  * Refactoring url.
-  * Starting refactor.
   * Detecting rpm and the right path for rpm macros installation.
-  * Debugging rpm macros.
-  * Build rpm macros dynamically.
-  * Debugging codeql workflow.
-  * Adding dmiget-dev on codeql workflow.
-  * Debugging rpm macros.
-  * Debugging package.
-  * Debugging packages.
-  * Publishing updated version 2.0.0
-  * Publishing updated version 2.0.0
-  * Debugging rpm macros.
-  * Updating package control files.
-  * Testing rpm macros.
-  * Better sdk versions.
-  * Fixing public method.
-  * Publishing updated version 2.0.0
-  * Updating translation.
-  * Publishing updated version 2.0.0
-  * Allowing override of Value::ReportFactory.
   * Fixing report <<
   * Adding convenience method to build string from floating values.
   * Implementing xml parser on timer().
   * Timer::enable() now returns true/false depending on the previous state.
   * Implementing stream operator for reports.
   * Expanding ${} while opening a file handler.
-  * Debugging percent agent.
-  * Debugging object with fixed names.
-  * Adding converters for unsigned short values.
-  * Adding convenience method for agent custom states.
-  * Better icon conversion.
-  * Removing unnecessary debug messages.
-  * Fixing dynamic state names.
   * Implementing factory for custom states.
-  * Fixing percentage class.
-  * Small fixes.
-  * Refactoring percentage agent as template.
   * Adding convenience 'percent' agent.
   * Fixing last change.
   * Moving singleton constructor to public.
-  * Debugging alerts.
-  * Moving action headers.
-  * Updating CodeQL badge.
-  * Adding convenience method to conver integer to hex strings.
-  * Implementing option to load modules from command line parameter.
-  * Small fixes.
+  * Adding convenience method to convert integer to hex strings.
   * Detecting action type from attributes when 'type=' is undefined.
   * Fixing alert definitions.
   * Publishing updated version 2.0.0
-  * Refactoring URL alert.
-  * Refactoring URL alert.
-  * Removing unused code, refactoring file alerts.
-  * Debugging new alert engine.
-  * Debugging new alert engine.
-  * Debugging new alert engine.
-  * Debugging new alert engine.
-  * Debugging new alert engine.
-  * Refactoring alerts.
-  * Refactoring alerts.
-  * Refactoring alerts.
-  * Refactoring alerts.
-  * Refactoring alert.
   * Refactoring alert engine.
-  * Refactoring alerts.
-  * Refactoring alert engine.
-  * Debugging static library.
-  * Adding -pthread and define for static build.
   * Adjustments on String::split().
   * Adding agent introspection.
   * Handling introspection.
-  * Better interface.
   * Better interface handling.
-  * Debugging deb package.
-  * Fixing 'deb' packages.
-  * Fixing ambiguity errors.
-  * Debugging new version.
-  * Documenting code.
-  * Debugging interface modules.
-  * Debugging agent action.
   * Using a singleton for agent actions.
-  * Debugging responses.
-  * Better error message.
-  * Debugging interface handlers.
-  * Fixing log message.
-  * Debugging interfaces.
-  * Debugging win32 package.
-  * Debugging interfaces.
-  * Debugging interface.
-  * Debugging interfaces.
   * Working on simple action interfaces, removing unused methods from agent controller.
   * Implementing agent action.
-  * Debugging module load.
-  * Fixing legacy package build, deprecating some object methods.
   * Removing http related fields from Request()
   * Interface::Handler is now public.
-  * Better request/response.
-  * Publishing updated version 2.0.0
-  * Updating potfiles
-  * Debugging request/response.
-  * Tracing request/response.
-  * Debugging interfaces.
-  * Debugging interfaces.
-  * Debugging interfaces.
   * Better formatting for html output.
   * Fixing stack overflow caused by Response::to_string() calling Response::serialize() who calls Response::to_string() ...
-  * Debugging interface requests.
-  * Debugging actions.
-  * Implementing action calls.
-  * Improving interface handler.
   * Adding method to get handler name.
   * Allowing customization of Interface::Handler name, adding 'errno' based failure on response.
-  * Adding interface builder.
   * Allowing script with multiple actions.
-  * Debugging agent builder.
-  * Debugging http action.
   * Fixing segfault on Value::merge.
-  * Fixing windows builds.
-  * Adding 'struct tm' constructor for TimeStamp().
+  * Adding 'struct tm' constructor and parser for TimeStamp().
   * Debugging value merge().
   * Allowing merge on undefined values.
   * Search for type on parent nodes when building an action.
   * Fixing legacy factories.
-  * Agents now have their own factories.
-  * Better action agent.
-  * Debugging file action.
-  * Debugging action builder.
-  * Better initialization.
   * XML tag <init> now can call actions.
-  * Adding 'struct tm' parser for TimeStamp().
-  * Debugging reports.
-  * Debugging value().
-  * Better report handling, adding merge values.
-  * Spliting action parameters in request/response parts.
-  * Adding const [] operator on value.
-  * Debugging new engine.
-  * Using script action for 'script' agents.
-  * Implementing action based agent.
-  * Implementing internal actions.
-  * Implementing script action.
-  * Implementing 'action'.
   * Accepting only 'get' requests on interface.
   * Implementing abstract action.
-  * Working on interface.
-  * Working on interface class.
-  * Adding interface enumerator.
   * Fixing deprecation definitions.
-  * Disabling deprecation macro.
-  * Deprecating old api.
-  * Interface instrospection is now optional.
-  * Removing unused header.
   * Better logging when using internal agent types.
   * Refactoring agent factory.
   * Renaming base class Method -> Interface.
-  * Publishing updated version 2.0.0
-  * Publishing updated version 2.0.0
-  * Refactoring report.
-  * Refactoring reports.
-  * Implementing reports.
-  * Publishing updated version 2.0.0
-  * Debugging value.
-  * Publishing updated version 2.0.0
-  * Debugging request/response.
-  * Adding missing function.
-  * Adding convenience methods to value.
-  * Cleaning value contents on type change.
-  * Debugging value.
-  * Refactoring value.
-  * Refactoring value;
-  * Refactoring value.
-  * Refactoring Value().
-  * Publishing updated version 2.0.0
-  * Removing unused include.
-  * Debugging response.
   * Better handling of agent responses.
-  * Debugging failed responses.
-  * Debugging standard response.
   * Adding more failed() options on response.
   * Updating response & package control file.
   * Refactoring request/response engine.
-  * Debugging response outputs.
-  * Debugging XML output.
-  * Refactoring response engine.
-  * Refactoring request/response engine.
-  * Refactoring response.
-  * Refactoring request/response engine.
-  * Fixing package build.
-  * Publishing updated version 2.0.0
-  * Publishing updated version 2.0.0
-  * Publishing updated version 2.0
-  * Refactoring request/response engine.
-  * Refactoring request/response engine.
-  * Working on new request/response engine.
-  * Installing new include.
   * Refactoring sysconfig reader.
-  * Publishing updated version 1.2.0
-  * Fixing win32 build.
-  * Publishing updated version 1.2.0
-  * Updating workflows.
-  * Fixing data paths.
-  * Changing codeql to Ubuntu 24.04
-  * Better handling of winlibs.
-  * Fixing windows static library.
-  * Publishing updated version 1.2.0
-  * Fixing windows resource.
-  * Testing SOURCE_DATE_EPOCH
-  * Adding windows resources.
-  * Passing application to test callback.
-  * Cleaning unused files, adding convenience module factory.
-  * Publishing updated version 1.2.0
-  * Finishing publish action refactor
-  * Fixing mingw package.
-  * Debugging publisher.
-  * Publishing updated version 1.2.0
-  * Fixing publisher
-  * Fixing win32 publisher
-  * Refactoring publisher.
-  * Fixing windows build.
-  * Debugging wincheck.
-  * Tagging version 1.2.0
-  * Tagging version 1.2.0
-  * Version 1.2.0
-  * Updating translation.
-  * Installing dynamic header version.h
-  * Fixing sdk.
-  * Fixing pkgconfig files.
-  * Better pkgconfig files, removing unused locale.
-  * Debugging windows package.
-  * Debugging wincheck action.
-  * Debugging wincheck action.
-  * Fixing pkgconfig files.
-  * Fixing test method.
-  * Fixing test library.
-  * Adding more 'test-mode' configurations.
-  * Adding method to enable/disable load of configuration from user home dir.
-  * Implementing fallback to user home dir.
-  * Updating configuration file loader.
-  * Fixing requirements for static library.
-  * Fixing sdk
-  * Debugging optional libraries.
-  * Making systemd, dmiget and vmdetect libraries optional.
-  * Refactoring workflows.
-  * Refactoring workflows, fixing optional libraries.
-  * Adding translations.
-  * Adding potfiles.
-  * Adding test header on sdk.
-  * Better testing methods.
-  * Implementing test objects.
-  * Debugging package
-  * Debugging package.
-  * Adding translation.
-  * Debugging meson build.
-  * Version 1.2.0
+  * Adding method to enable/disable fallback to user home dir when searching for configuration files.
   * Changing build system to meson.
-  * Removing warnings, reorganizing sources.
-  * Version 1.2
-  * Fixing 'deb' control files.
-  * Fixing convenience method.
-  * Moving usefull method module::options to xml::options
-  * Adding convenience operator to get module info.
-  * Adding convenience methods for introspection.
-  * Adding 'call()' method on workers.
-  * Adding missing class 'UserDataDir'
-  * Adding cacert mimetype.
-  * Fixing win32 build.
-  * Fixing messages when configuration file is missing.
-  * Fixing 'publish' action.
-  * Updating msys action.
-  * Fixing static library
-  * Fixing win32 build.
-  * Fixing win32 build.
-  * Better static library.
-  * Using static vmdetect on libudjat-static sdk.
   * Adding 'logging' method on Udjat::Exception.
-  * Removing debug message.
-  * Using configuration from $HOME only if there's no system config.
   * Betting log when the configuration file is missing.
   * Fixing abend on startup.
   * Allowing customized console & file log writers.
@@ -649,76 +138,20 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * use of default name for NamedObject shouldnt be a warning.
   * Adding default log domain.
   * Adding convenience method to navigate on XML nodes.
-  * Adjusting static library build.
-  * Adding build id on linux sdk.
-  * Adding convenience methods on file handler.
-  * Add optional SMBIOS library.
-  * Implementing URL download with cache on file.
-  * Fixing attribute filters.
-  * Update vmdetect version.
-  * Fixing win32 builds.
-  * Fixing load of optional modules.
-  * Small adjustment in logs.
-  * Fixing build.
-  * Better xml attributes.
+  * Adding optional SMBIOS library.
   * Adding convenience method to get boolean attributes from xml.
-  * Adding more convenience operators.
   * Convenience methods for hash() and equal()
   * Adding string expansion based on xml + custom marker.
   * Updating package control files.
-  * Fixing legacy builds.
-  * Fixing missing export.
-  * Fixing URL concatenation.
-  * Fixing build of legacy application.
-  * Adding command-line option to enable coredump (for legacy compatibility)
-  * Adding placeholder to append object with settings.
-  * Working on abstract object setup.
-  * Debugging node factory.
-  * Fixing factory controller.
-  * Allowing multiple factories in the same object.
-  * Adding convenience handler method.
-  * Refactoring I/O handler abstraction.
-  * Fixing win32 build.
-  * Updating module build requirement.
   * Small refactor on timer controller.
-  * Adding mainloop type.
   * Adding convenience method for file/directory enumeration.
   * Setting 'minimal build' version for modules.
   * Adjustments in abstract mainloop.
   * Removing unnecessary methods from abstract mainloop.
-  * Removing internal method from abstract mainloop.
-  * Delaying test for virtual machine.
-  * Updating libvmdetect to enable verbose mode when debug log is enabled.
   * Fixing win64 build.
   * Adding placeholder and method to get http status code of last operation.
-  * Reimplementing XML::QuarkFactory
   * Fixing build of legacy applications.
-  * When running as user scan configuration from $HOME/.local/etc
   * Fixing abend on log folder permissions.
-  * Implementing missing win32 function.
-  * Fixing undefine symbol in win32
-  * Fixing exception on bad ip addr.
-  * Corrigindo empacotamento
-  * CodeQL workflow should run on master branch pushes.
-  * Fixing publish action.
-  * Debugging workflows.
-  * Update msys2.yml
-  * Update publish.yml
-  * Update msys2.yml
-  * Renaming msys build.
-  * Debugging codeql workflow.
-  * Updating CodeQL workflow, adding msys/mingw package.
-  * Debugging windows package.
-  * Working on mingw build.
-  * Updating autogen
-  * Updating mingw package.
-  * Fixing warnings, cleaning code.
-  * Create codeql.yml
-  * Create codeql.yml
-  * removing old codeql workflow.
-  * Removing old codeql workflow.
-  * Fix codeql.yml
-  * Updating codeql workflow.
   * Fixing agent startup.
   * Fixing composed protocol names.
   * Fixing url scheme search.
@@ -755,13 +188,11 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Enhancing Report::Table.
   * Better logging when message parser fails.
   * Fixing unexpected exception on protocol information.
-  * Debugging request-path.
   * Implementing convenience class for customized api calls.
   * Refactoring factories.
   * Fixing legacy builds.
   * Refactoring 'factory' engine.
   * Refactoring factories.
-  * Debugging request changes.
   * Better handling of request paths.
   * Fixing segfault on request test.
   * Implementing convenience method to extract path from request.
@@ -773,21 +204,16 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Using numeric names for path based arguments on Request::';
   * Better documentation on expires.
   * Better Method and TimeStamp builders.
-  * Fixing package.
   * Adding trace method placeholder on Module::
   * Implement response type factories.
   * Using symbols for boolean values on html output.
   * Better cache headers, allowing extra customized headers on response.
   * Better response serialization.
-  * Better response formatting.
-  * Working on cache options.
   * Better exception handling.
   * Better error output.
   * Adding cache headers in abstract response.
   * Adding placeholders for count & range headers on abstract::response.
   * Fixing orphaned alert activation.
-  * Fixing worker::work
-  * Debugging worker::exec
   * Adding convenience method.
   * Fixing attribute search.
   * Better log message when alert build fails.
@@ -801,21 +227,14 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Refactoring xml parser.
   * Better string from XML.
   * Using alias to xml node.
-  * Debugging state changes.
   * Allowing enabling/disabling file watchers.
   * Implementing win32 file watcher.
   * Cleaning code, adding some docs.
   * Refactoring file watcher.
-  * Refactoring file watcher.
-  * Refactoring file watcher.
-  * Refactoring inotify.
-  * Refactoring file watcher.
   * Fixing get properties.
   * Enhancing agent query by path.
-  * Debugging getproperties by path.
   * Adding path to get only the agent state.
   * Fixing 'response::table' query.
-  * Debugging response.
   * Refactoring table response.
   * Letting the application handle exceptions in exec(request,response).
   * Implementing templates for simple html response.
@@ -841,19 +260,10 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Using jsend for json responses. (Reference: https://github.com/omniti-labs/jsend)
   * Fixing getproperties.
   * Better detection of 'last-modified' header.
-  * Debugging request/response engine.
   * Better XML converters.
   * Implementing sockaddr_in to_string.
-  * Fixing segfault.
-  * Fixing converters.
-  * Better converters.
   * Fixing file basename()
-  * Better converters.
-  * Better converters.
-  * Better conversions.
   * Refactoring report.
-  * Better Response:: serialization.
-  * Better response.
   * Implementing convenience method to serialize  values to strings.
   * Implementing CSV exporter.
   * Implementing value serialization.
@@ -869,8 +279,6 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Updating win32 port.
   * Implementing toString() with default value in Udjat::Value.
   * Adding method to get generic properties from worker.
-  * Debugging request
-  * Debugging new request.
   * Adjustments in the new Worker class methods.
   * Better request/response engine.
   * Better error messages.
@@ -880,7 +288,6 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Fixing request.h
   * Working on agent list.
   * Reactivating report output.
-  * Debugging request parameters.
   * Refactoring report.
   * Implementing argument parser for Request.
   * Fixing module build.
@@ -909,38 +316,13 @@ Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
   * Implementing missing mimetype factory.
   * Small fix in mimetypes.
   * Fixing agent data request.
-  * Refactoring request.
-  * Refactoring request.
-  * Refactoring request.
-  * Refactoring request.
-  * Refactoring request.
-  * Refactoring request.
-  * Refactoring request class.
-  * Refactoring Request class.
-  * Fixing package build.
   * Adding compatility header.
-  * Reactivating Worker::find().
   * Restoring version.
   * Small refactor in worker engine.
   * Adding Value::isNumber() method.
   * Implementing generic object.
   * Fixing String::split().
   * Fixing package build.
-  * Adjustments in 'Udjat::Module'.
-  * Fixing worker identification.
-  * Allowing multiple paths on worker.
-  * Adding const string splitter.
-  * Adjustments in script runner.
-  * Fixing string compatibility.
-  * Adding URL query parser.
-  * Fixing node parser.
-  * Debugging xml based scripts.
-  * Implementing script helper.
-  * Update README.md
-  * Better windows command line parser.
-  * Better windows service management.
-  * Better message on initialization failure.
-  * Sorting XMLs before loading.
 
 -------------------------------------------------------------------
 Mon Feb  5 18:57:16 UTC 2024 - Perry Werneck <perry.werneck@gmail.com>

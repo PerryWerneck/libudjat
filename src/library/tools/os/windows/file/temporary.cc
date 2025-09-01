@@ -44,7 +44,32 @@
 
  namespace Udjat {
 
-	std::string File::Temporary::create() {
+	static std::string TmpDirFactory(const char *subdir) {
+
+		TCHAR lpTempPathBuffer[MAX_PATH];
+
+		DWORD dwRetVal = GetTempPath(MAX_PATH,lpTempPathBuffer);
+		if(dwRetVal > MAX_PATH || (dwRetVal == 0)) {
+			throw Win32::Exception("GetTempPath has failed");
+		}
+
+		std::string tempdir{lpTempPathBuffer};
+		tempdir += "\\";
+		tempdir += Application::Name();
+		if(subdir && *subdir) {
+			tempdir += "\\";
+			tempdir += subdir;
+		}
+		File::Path::mkdir(tempdir.c_str(),true);
+		tempdir += "\\";
+
+		return tempdir;
+	}
+
+	Application::TmpDir::TmpDir(const char *subdir) : File::Path{TmpDirFactory(subdir)} {
+	}
+
+	String File::Temporary::create() {
 
 		std::string tempname;
 
@@ -69,7 +94,7 @@
 				cout << "Tempname: '" << tempname << "'" << endl;
 #endif // DEBUG
 				::close(fd);
-				return szTempFileName;
+				return String{szTempFileName};
 			}
 
 		}

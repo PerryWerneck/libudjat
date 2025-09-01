@@ -34,7 +34,6 @@
  #include <string>
  #include <udjat/tools/string.h>
  #include <udjat/tools/abstract/object.h>
- #include <udjat/module/abstract.h>
  #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
@@ -49,28 +48,24 @@
 
 		time_t next = 0;
 
-		File::Path path{p};
+		File::Path path{XML::PathFactory(p)};
 		if(path.dir()) {
 
 			// Is a directory, scan for files
 			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
 
-			path.for_each("*.xml",[this,&next](const File::Path &path) -> bool {
+			std::vector<std::string> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path.c_str());
+				return false;
+			});
 
-				XML::Document document{path.c_str()};
+			std::sort(files.begin(), files.end());
 
-				const auto &root = document.document_element();
+			for(const auto &file : files) {
 
-				// Parse nodes first to load and initialize modules...
-				parse(root);
-
-				// ... then call loaded modules to parse the document.
-				Module::for_each([&document](Module &module) -> bool {
-					module.parse(document);
-					return false;
-				});
-
-				time_t expires = TimeStamp{root,"update-timer"};
+				// Recursive call to parse document.
+				time_t expires = parse(file.c_str());
 				if(expires) {
 					expires += time(0);
 					if(expires < next || next == 0) {
@@ -78,14 +73,12 @@
 					}
 				}
 
-				return false;
-
-			});
+			}
 
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.trace();
+			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.info();
 
 			XML::Document document{path.c_str()};
 
@@ -95,8 +88,11 @@
 				next += time(0);
 			}
 
+			// Parse the document, create the children.
 			for(const XML::Node &node : root) {
-				parse(node);
+				if(!node.attribute("preload").as_bool(false)) {
+					parse(node);
+				}
 			}
 
 		}
@@ -113,74 +109,72 @@
 
 	}
 
-	time_t XML::parse(const char *p) {
-
-		File::Path path;
+	File::Path XML::PathFactory(const char *p) {
 
 		if(p && *p) {
+			return File::Path{p};
+		}	
 
-			// Use requested path
-			debug("------------------> Using path '",p,"'");
-			path.assign(p);
+		Config::Value<string> cfg{"application","definitions",""};
+		if(!cfg.empty()) {
+			return File::Path{cfg.c_str()};
+		}
 
-		} else {
+		Application::Name name;
+		Application::DataDir datadir{nullptr,false};
 
-			// No path, search for one.
-			Config::Value<string> cfg{"application","definitions",""};
-			if(!cfg.empty()) {
-
-				path.assign(cfg);
-
-			} else {
-
-				Application::Name name;
-				Application::DataDir datadir{nullptr,false};
-
-				String options[] = {
+		String options[] = {
 #ifndef _WIN32
-					String{"/etc/",name.c_str(),"/xml"},
-					String{"/etc/",name.c_str(),".xml.d"},
+			String{"/etc/",name.c_str(),"/xml"},
+			String{"/etc/",name.c_str(),".xml.d"},
 #endif // _WIN32
-					String{datadir.c_str(),"settings.xml"},
-					String{datadir.c_str(),"xml.d"},
-				};
+			String{datadir.c_str(),"settings.xml"},
+			String{datadir.c_str(),"xml.d"},
+		};
 
-				for(const String &option : options) {
-					debug("Checking '",option.c_str(),"'");
-					if(access(option.c_str(),R_OK) == 0) {
-						debug("Found '",option.c_str(),"'");
-						path.assign(option.c_str());
-						if(path) {
-							break;
-						}
-					}
-				}
-
+		for(const String &option : options) {
+			debug("Checking '",option.c_str(),"'");
+			if(access(option.c_str(),R_OK) == 0) {
+				debug("Found '",option.c_str(),"'");
+				return File::Path{option.c_str()};
 			}
-
 		}
 
-		if(!path) {
-			throw std::system_error(ENOENT,std::system_category(), _("Configuration file not found"));
-		}
+		throw std::system_error(ENOENT,std::system_category(), _("Configuration file not found"));
+
+	}
+
+	time_t XML::parse(const char *p) {
+
+		File::Path path{XML::PathFactory(p)};
 
 		time_t next = 0;
 
 		if(path.dir()) {
 
 			// Is a directory, scan for files
-			path.for_each("*.xml",[&next](const File::Path &path) -> bool {
-				time_t result = XML::parse(path.c_str());
+			std::vector<std::string> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path.c_str());
+				return false;
+			});
+
+			std::sort(files.begin(), files.end());
+
+			for(const auto &file : files) {
+
+				// Recursive call to parse document.
+				time_t result = XML::parse(file.c_str());
 				if(result && (result < next || next == 0)) {
 					next = result;
 				}
-				return false;
-			});
+				
+			}
 
 		} else {
 
 			// Is a file, load it
-			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.trace();
+			Logger::String{"Loading xml definitions from '",path.c_str(),"'"}.info();
 			next = Document{path.c_str()}.parse();
 
 		}

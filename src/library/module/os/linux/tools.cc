@@ -64,7 +64,7 @@
 	
 	void * Module::Controller::getSymbol(void *handle, const char *name	, bool required) {
 
-		void * symbol = dlsym(handle,name);
+		void * symbol = ::dlsym(handle,name);
 
 		if(required) {
 			auto err = dlerror();
@@ -74,15 +74,32 @@
 
 		return symbol;
 	}
-
+	
 	std::string Module::filename() const {
-		Dl_info info;
-		memset(&info,0,sizeof(info));
-		if(dladdr(&this->_info, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
-			return info.dli_fname;
-		}
-		return name;
+		return filename((const void *) &this->_info, name);
 	}
 
+	std::string Module::filename(const void *ptr, const char *def) {
+		Dl_info info;
+		memset(&info,0,sizeof(info));
+		if(dladdr(ptr, &info) != 0 && info.dli_fname && info.dli_fname[0]) {
+			return info.dli_fname;
+		}
+		return def;
+	}
+
+ }
+
+ UDJAT_API void * symbol(const char *name, bool required) {
+
+	void * symbol = ::dlsym(RTLD_DEFAULT,name);
+
+	if(required) {
+		auto err = dlerror();
+		if(err)
+			throw runtime_error(err);
+	}
+
+	return symbol;
  }
 

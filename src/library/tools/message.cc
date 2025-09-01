@@ -33,7 +33,7 @@
 		key += std::to_string(++index);
 		key += "}";
 
-		debug("Key=",key," value=",str);
+		// debug("Key=",key," value=",str);
 
 		size_t from = find(key);
 		if(from != std::string::npos) {

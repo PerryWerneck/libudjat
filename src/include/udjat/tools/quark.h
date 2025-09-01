@@ -96,10 +96,8 @@
 			const Quark & set(const char *str);
 			const Quark & set(const char *str, const std::function<const char * (const char *key)> translate);
 
-#ifdef HAVE_PUGIXML
 			const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch = false);
 			const Quark & set(const XML::Node &node, const char *xml_attribute, bool upsearch, const std::function<const char * (const char *key)> translate);
-#endif // HAVE_PUGIXML
 
 		};
 	}

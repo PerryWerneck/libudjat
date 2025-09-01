@@ -237,7 +237,7 @@
 			void push_back(std::shared_ptr<Abstract::Agent> child);
 
 			/// @brief Insert object.
-			void push_back(std::shared_ptr<Abstract::Object> object);
+			bool push_back(std::shared_ptr<Abstract::Object> object) override;
 
 			/// @brief Insert activatable based on xml attributes.
 			/// @param node with activation attribute.

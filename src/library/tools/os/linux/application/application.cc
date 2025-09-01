@@ -46,9 +46,11 @@
 
 #if defined(HAVE_LIBINTL) and defined(LOCALEDIR)
 
+		setlocale(LC_ALL, "");
 		bindtextdomain(gettext_package, STRINGIZE_VALUE_OF(LOCALEDIR));
 		bind_textdomain_codeset(gettext_package, "UTF-8");
-		debug("Locale set to ",STRINGIZE_VALUE_OF(LOCALEDIR)," - ",gettext_package);
+		textdomain(gettext_package);
+		Logger::String{"Getting translations from ",STRINGIZE_VALUE_OF(LOCALEDIR)}.trace(gettext_package);
 
 #endif // HAVE_LIBINTL
 

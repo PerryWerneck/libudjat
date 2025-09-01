@@ -46,6 +46,7 @@
 				inline bool operator==(const char *n) const noexcept {
 					return strcasecmp(n,name) == 0;
 				}
+
 				/// @brief Create an object from XML node.
 				virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const = 0;
 
@@ -62,21 +63,29 @@
 			virtual ~Object();
 
 			/// @brief Parse XML file(s), build children.
-			/// @param path The path for a folder or a XML file.
+			/// @param path The path for a folder or a XML file, nullptr for default.
 			/// @return timestamp for next refresh.
-			time_t parse(const char *path);
+			time_t parse(const char *path = nullptr);
 
-			/// @brief Parse object, build children.
-			/// @details This method is called by parse() for every child node.
+			/// @brief Parse XML, build children.
+			/// @details This method is called by parse_children() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
 			virtual bool parse(const XML::Node &node);
 
+			virtual void parse_children(const XML::Node &node);
+
 			/// @brief Add child object (if supported).
-			virtual void push_back(std::shared_ptr<Abstract::Object> child);
+			/// @return True if the object was inserted.
+			/// @retval true The object was inserted.
+			/// @retval false The object type is not supported.	
+			virtual bool push_back(std::shared_ptr<Abstract::Object> child);
 
 			/// @brief Add child object with XML definitions (if supported).
-			virtual void push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> child);
+			/// @return True if the object was inserted.
+			/// @retval true The object was inserted.
+			/// @retval false The object type is not supported.	
+			virtual bool push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> child);
 
 			/// @brief Get configuration file group.
 			static const char * settings_from(const XML::Node &node,bool upstream = true,const char *def = "");

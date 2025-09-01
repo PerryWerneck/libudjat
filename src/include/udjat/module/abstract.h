@@ -80,11 +80,6 @@
 		/// @brief Build module from filename.
 		static Module * factory(const char *filename);
 
-		/// @brief Run module unit test (if available).
-		/// @details This method will try to find a function named 'run_unit_test' in the module.
-		/// @return 0 if success, -1 on error.
-		int run_unit_test() const;
-
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->name,name) == 0;
 		}
@@ -102,10 +97,20 @@
 		}
 
 		/// @brief Preload modules from configuration file.
-		/// @return true if success.
-		static bool preload() noexcept;
+		static void preload() noexcept;
+
+		/// @brief Get symbol from module.
+		/// @details This method is used to get a symbol from the module.
+		/// @param symbol The symbol name to get.
+		/// @return The symbol address or nullptr if not found.
+		void *dlsym(const char *symbol, bool required = false) const;
 
 		/// @brief Call method on every modules.
+		/// @param method The method to call on every module.
+		/// @return true if the method has returned true for any module.
+		/// @note This method is used to call a method on every module.
+		/// @note The method should return true if the scan should be stopped.
+		/// @note The method should return false if the scan should continue.
 		static bool for_each(const std::function<bool(Module &module)> &method);
 
 		/// @brief Get module by name.
@@ -130,10 +135,6 @@
 		/// @brief Unload modules.
 		static void unload();
 
-		/// @brief Parse XML document
-		/// Called when a XML document is loaded.
-		virtual void parse(const pugi::xml_document &document);
-
 		/// @brief Called when application is finishing to cleanup module data after unloading.
 		virtual void finalize();
 
@@ -142,6 +143,9 @@
 		/// @brief Write Module paths on trace file.
 		/// @param url_prefix Prefix for URL (built by server module);
 		virtual void trace_paths(const char *url_prefix) const noexcept;
+
+		/// @brief Get filename for pointer
+		static std::string filename(const void *ptr, const char *def = nullptr);
 
 		/// @brief Get module filename.
 		std::string filename() const;
@@ -181,15 +185,19 @@
 
  extern "C" {
 
+	/// @brief Run unit test.
+	/// @details This function is used to run unit tests from the command line.
+	/// @note This function is used by the test program and should not be used in production code.
+	/// @param name The test name to run. If null, all tests are run.
+	/// @return 0 if success, -1 on error.
+	UDJAT_API int run_unit_test(const char *name);
+
 	/// @brief Module information data.
 	extern UDJAT_API const Udjat::ModuleInfo udjat_module_info;
 
 	/// @brief Initialize module.
 	/// @return Module controller.
 	UDJAT_API Udjat::Module * udjat_module_init();
-
-	/// @brief Run module unit test.
-	UDJAT_API int udjat_module_run_unit_test();
 
 	/// @brief Initialize module from XML node.
 	/// @return Module controller.
@@ -198,5 +206,11 @@
 	/// @brief Deinitialize the module.
 	/// @return true if the module can be unloaded.
 	UDJAT_API bool udjat_module_deinit();
+
+	/// @brief Get symbol from application.
+	/// @details This method is used to get a symbol from the module.
+	/// @param symbol The symbol name to get.
+	/// @return The symbol address or nullptr if not found.
+	void * symbol(const char *symbol, bool required = true);
 
  }

@@ -71,9 +71,7 @@
 			}
 		}
 
-		if(!Module::preload()) {
-			throw runtime_error("Module preload has failed");
-		}
+		Module::preload();
 
 	}
 

@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.0.2',
+	version: '2.1.0',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -56,6 +56,15 @@ subdir('po')
 #
 iconv = dependency('iconv')
 intl = dependency('intl', required: false)
+dbus = dependency('dbus-1', required: false, static: false)
+dl = cxx.find_library('dl', required: false)
+threads = dependency('threads')
+
+# OpenSSL
+openssl = dependency('OpenSSL', required: false)
+if not openssl.found()
+  openssl = dependency('openssl', required: false)
+endif
 
 # URIPARSER
 uriparser = dependency(
@@ -86,40 +95,21 @@ pugixml = dependency(
 
 required_libs = [
   pugixml,
-  uriparser
+  uriparser,
 ]
 
 private_libs = [
   vmdetect,
   dmiget,
+  openssl
 ]
 
 extra_libs = [
   intl,
   iconv,
-  cxx.find_library('dl', required: false),
-  dependency('threads')
+  dl,
+  threads,
 ] 
-
-if not vmdetect.found()
-  vmdetect = dependency(
-      'vmdetect',
-      required: false,
-      fallback: [ 'vmdetect', 'static_library' ],
-      default_options: ['default_library=static']  
-  ) 
-  extra_libs += [ vmdetect ]
-endif
-
-if not dmiget.found()
-  dmiget = dependency(
-      'dmiget',
-      required: false,
-      fallback: [ 'dmiget', 'static_library' ],
-      default_options: ['default_library=static']    
-  ) 
-  extra_libs += [ dmiget ]
-endif
 
 #
 # Compiler flags
@@ -132,7 +122,6 @@ endif
 add_project_arguments(cxx.get_supported_arguments([
   '-ggdb3',
   '-fvisibility=hidden',
-  '-pthread',
   '-fPIC',
   '-DHAVE_CONFIG_H=1',
   '-Wno-overloaded-virtual',
@@ -152,6 +141,48 @@ app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
+
+if dbus.found()
+  app_conf.set('HAVE_DBUS', 1)
+endif
+
+if openssl.found()
+
+  app_conf.set('HAVE_OPENSSL', 1)
+
+  if cxx.compiles('#include <openssl/engine.h>', name : 'openssl-engine.h')
+
+    app_conf.set('HAVE_OPENSSL_ENGINE', 1)
+
+    if cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
+
+      app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
+
+      # ENGINE-DIR = pkg-config --variable=enginesdir libcrypto
+
+      extra_libs += [
+        cxx.find_library(
+          'tpm2tss',
+          required: true,
+          dirs: [
+            dependency(
+              'libcrypto', 
+              method : 'pkg-config',
+              required: true,
+            ).get_variable('enginesdir'),
+          ]
+        )
+      ]
+
+    endif
+
+    if cxx.compiles('#include <openssl/provider.h>', name : 'openssl-provider.h')
+      app_conf.set('HAVE_OPENSSL_PROVIDER', 1)
+    endif
+  
+  endif
+
+endif
 
 if uriparser.found()
   app_conf.set('HAVE_URIPARSER', 1)
@@ -207,51 +238,103 @@ includes_dir = include_directories('src/include')
 
 if vmdetect.found()
   app_conf.set('HAVE_VMDETECT', 1)
+else
+  vmdetect_s = dependency(
+      'vmdetect',
+      required: false,
+      fallback: [ 'vmdetect', 'static_library' ],
+      default_options: ['default_library=static']  
+  ) 
+  if vmdetect_s.found()
+    app_conf.set('HAVE_VMDETECT', 1)
+    extra_libs += [ vmdetect_s ]
+  endif
 endif
 
 if dmiget.found()
   app_conf.set('HAVE_SMBIOS', 1)
+else
+  dmiget_s = dependency(
+      'dmiget',
+      required: false,
+      fallback: [ 'dmiget', 'static_library' ],
+      default_options: ['default_library=static']    
+  ) 
+  if dmiget_s.found()
+    app_conf.set('HAVE_SMBIOS', 1)
+    extra_libs += [ dmiget_s ]  
+  endif
 endif
 
-#
-# Check for available options for configuration libraries
-#
-econf = dependency(
-  'libeconf', 
-  method : 'pkg-config',
-  required: false,
-)
 
-if econf.found() 
 
-  app_conf.set('HAVE_ECONF', 1)
-  if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
-    app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
-  endif
-
-else 
-
+if host_machine.system() != 'windows'
+  #
+  # Check available engines for configuration
+  #
   econf = dependency(
-    'iniparser', 
-    required: false, 
-    method : 'pkg-config'
+    'libeconf', 
+    method : 'pkg-config',
+    required: false,
   )
-  
-  if econf.found()
-    app_conf.set('HAVE_INIPARSER', 1)
+
+  if econf.found() 
+
+    app_conf.set('HAVE_ECONF', 1)
+
+    private_libs += econf
+    if cxx.has_header_symbol('libeconf.h','econf_readConfigWithCallback')
+      app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+    endif
+
+  else 
+
+    econf_sub = dependency(
+        'libeconf',
+        required: false,
+        fallback: [ 'libeconf', 'libeconf_dep' ],
+        default_options: ['default_library=static']    
+    ) 
+
+    if econf_sub.found() 
+
+      app_conf.set('ECONF_HAVE_READ_CONFIG_WITH_CALLBACK', 1)
+      extra_libs += [ econf_sub ]
+      app_conf.set('HAVE_ECONF', 1)
+
+    else
+
+      # Fallback to INIPARSER if libeconf is not found
+      econf = dependency(
+        'iniparser', 
+        required: false, 
+        method : 'pkg-config'
+      )
+      
+      if econf.found()
+        app_conf.set('HAVE_INIPARSER', 1)
+      endif
+
+      private_libs += [ econf ]
+
+    endif
+
   endif
 
 endif
-
-private_libs += econf
 
 #
 # SystemD  (optional)
 #
-systemd_dep = dependency('libsystemd', required: false  )
-if systemd_dep.found()
+systemd = dependency(
+  'libsystemd', 
+  required: false,
+  static: false,
+)
+
+if systemd.found()
   app_conf.set('HAVE_SYSTEMD', 1)
-  required_libs += systemd_dep
+  required_libs += systemd
 endif 
 
 #
@@ -292,7 +375,6 @@ lib_src += [
   'src/library/state/state.cc',
   'src/library/tools/activatable.cc',
   'src/library/tools/application/application.cc',
-  'src/library/tools/application/init.cc',
   'src/library/tools/commandlineparser.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',
@@ -360,7 +442,9 @@ lib_src += [
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',
-  'src/library/tools/action.cc',
+  'src/library/tools/action/abstract.cc',
+  'src/library/tools/action/controller.cc',
+  'src/library/tools/action/factory.cc',
   'src/library/request/responsevalue.cc',
   'src/library/module/os/' + host_machine.system() + '/close.cc',
   'src/library/module/os/' + host_machine.system() + '/init.cc',
@@ -375,6 +459,14 @@ lib_src += [
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
 ]
+
+if openssl.found()
+  lib_src += [
+    'src/library/tools/ssl/key.cc',
+    'src/library/tools/ssl/backend.cc',
+    'src/library/tools/ssl/exception.cc',
+  ]
+endif
 
 #
 # SDK
@@ -438,6 +530,18 @@ else
     requires_private: private_libs,
   )
 
+  pkg.generate(
+    name: 'lib' + meson.project_name() + '-static',
+    description: project_description,
+    variables: pkg_variables,
+    extra_cflags: [
+      '-DUDJAT_STATIC',
+      '-pthread',
+    ],
+    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
+  )
+
 endif
 
 if host_machine.system() == 'windows'
@@ -482,7 +586,6 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/arguments.cc',
     'src/library/tools/os/windows/charset.cc',
     'src/library/tools/os/windows/com.cc',
-    'src/library/tools/os/windows/configvalue.cc',
     'src/library/tools/os/windows/event.cc',
     'src/library/tools/os/windows/eventcontroller.cc',
     'src/library/tools/os/windows/exception.cc',
@@ -571,7 +674,8 @@ else
     'src/library/tools/os/linux/subprocess/subprocess.cc',
     'src/library/tools/os/linux/systemservice.cc',
     'src/library/tools/os/linux/threadpool.cc',
-    'src/library/tools/os/linux/configfile.cc',
+    'src/library/tools/os/linux/econf.cc',
+    'src/library/tools/os/linux/iniparser.cc',
     'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
@@ -627,11 +731,8 @@ else
     soversion : libversion,
     cpp_args: [ '-ffat-lto-objects' ],
     gnu_symbol_visibility: 'hidden',
-    dependencies: required_libs + private_libs + extra_libs,
+    dependencies: required_libs + private_libs + extra_libs + [ cxx.find_library('dl')],
     include_directories: includes_dir,
-    link_args: [
-      '-ldl'
-    ]
   )
 
  endif
@@ -659,7 +760,7 @@ else
 
 executable(
   meson.project_name(),
-  config_h + [ 'src/testprogram/main.cc' ],
+  config_h + [ 'src/testprogram/main.cc', 'src/testprogram/tests.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],

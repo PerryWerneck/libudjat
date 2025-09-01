@@ -23,10 +23,11 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/abstract/object.h>
  #include <memory>
+ #include <vector>
 
  namespace Udjat {
 
-	class UDJAT_API Activatable {
+	class UDJAT_API Activatable : public Abstract::Object {
 	private:
 		const char *object_name;
 
@@ -48,9 +49,7 @@
 
 	public:
 
-		inline const char *name() const noexcept {
-			return object_name;
-		}
+		const char * name() const noexcept override;
 
 		inline const char *c_str() const noexcept {
 			return object_name;
@@ -74,6 +73,63 @@
 		/// @return true if the object was deactivated, false if already inactive.
 		virtual bool deactivate() noexcept;
 
+		/// @brief Template for activatable containers.
+		template <typename T>
+		class Container {
+		protected:
+			struct Entry{
+				T type;
+				std::shared_ptr<Activatable> activatable;
+			};
+			std::vector<Entry> entries;
+
+		public:
+			Container() = default;
+			Container(const Container&) = delete;
+			Container& operator=(const Container &) = delete;
+			Container(Container &&) = delete;
+			Container & operator=(Container &&) = delete;
+
+			bool push_back(const T type, std::shared_ptr<Abstract::Object> child) {
+				auto obj = std::dynamic_pointer_cast<T>(child);
+				if(obj) {
+					entries.push_back(Entry{type,obj});
+					return true;
+				}
+				return false;
+			}
+
+			/// @brief Navigate from activatables until 'func' returns true.
+			bool for_each(const std::function<bool(const T type, std::shared_ptr<Activatable> activatable)> &func) const {
+				for(auto &entry : entries) {
+					if(func(entry.type,entry.activatable)) {
+						return true;
+					}
+				}
+				return false;
+			}
+
+			size_t activate(const T type, const Udjat::Abstract::Object &object) const {
+				size_t count = 0;
+				for(auto &entry : entries) {
+					if(entry.type == type && entry.activatable->activate(object)) {
+						count++;
+					}
+				}
+				return count;
+			}
+
+			size_t activate(const T type) const {
+				size_t count = 0;
+				for(auto &entry : entries) {
+					if(entry.type == type && entry.activatable->activate()) {
+						count++;
+					}
+				}
+				return count;
+			}
+			
+		};
 	};
 
  }

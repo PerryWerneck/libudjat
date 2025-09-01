@@ -38,6 +38,10 @@
 	Activatable::~Activatable() {
 	}
 
+	const char * Activatable::name() const noexcept {
+		return object_name;
+	}
+
 	bool Activatable::active(bool value) noexcept {
 		if(value) {
 			return activate();

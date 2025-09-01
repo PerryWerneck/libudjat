@@ -35,7 +35,7 @@
 
  namespace Udjat {
 
-	class Alert::Controller : private Container<Alert> {
+	class Alert::Controller : private Udjat::Container<Alert> {
 	private:
 
 		Timer *timer;
@@ -75,7 +75,7 @@
 		/// @brief Check for active alerts, emit if necessary, reset timer for next alert.
 		void wakeup() {
 
-			std::lock_guard<std::mutex> lock(*this);
+			std::lock_guard<std::mutex> lock(guard);
 			debug("Waking up alert controller");
 
 			time_t now = time(0);

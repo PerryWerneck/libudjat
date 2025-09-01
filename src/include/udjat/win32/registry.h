@@ -20,6 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <functional>
+ #include <udjat/tools/string.h>
 
  #ifndef _WIN32
 	#error Registry objects requires win32
@@ -33,7 +34,7 @@
 		protected:
 			HKEY hKey = 0;
 
-			static std::string get(HKEY hK, const char *name, const char *def);
+			static Udjat::String get(HKEY hK, const char *name, const char *def);
 
 			/// @brief Get binary data from registry.
 			/// @param hK the registry key.
@@ -53,6 +54,10 @@
 			/// @brief Set registry application root.
 			/// @param path The new registry path for application (should be a quark or static string)
 			static void setRoot(const char *path = "SOFTWARE");
+
+			Registry(HKEY k, bool write = false);
+
+			Registry(HKEY k, const char *path, bool write = false);
 
 			/// @brief  Open default registry.
 			/// @param write true if not read-only.
@@ -78,9 +83,52 @@
 			/// @param Name Key name.
 			void remove(const char *keyname);
 
-			std::string get(const char *name, const char *def) const;
-			DWORD get(const char *name, DWORD def) const;
-			UINT64 get(const char *name, UINT64 def) const;
+			Udjat::String get(const char *name, const char *def) const;
+
+			/// @brief Get value as int32_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			int32_t get(const char *name, int32_t def) const;
+			
+			/// @brief Get value as int64_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			int64_t get(const char *name, int64_t def) const;
+
+			/// @brief Get value as uint32_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			uint32_t get(const char *name, uint32_t def) const;
+
+			/// @brief Get value as uint64_t.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			uint64_t get(const char *name, uint64_t def) const;
+
+			/// @brief Get value as float.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			float get(const char *name, float def) const;
+
+			/// @brief Get value as double.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			double get(const char *name, double def) const;
+			
+			/// @brief Get value as boolean.
+			/// @param name The value name.
+			/// @param def Default value if not found.
+			/// @return The value or def if not found.
+			bool get(const char *name, bool def) const;
+
+			// DWORD get(const char *name, DWORD def) const;
+			// UINT64 get(const char *name, UINT64 def) const;
 
 			/// @brief Get binary data from registry.
 			/// @param name The value name.
@@ -101,6 +149,10 @@
 				return set(std::to_string(value).c_str());
 			}
 
+			/// @brief Navigate from all group keys.
+			/// @param group Group name.
+			/// @param call function to call on every group key until it returns 'true'.
+			/// @return false if call() returns 'false' for all keys.
 			bool for_each(const char *group, const std::function<bool(const char *key, const char *value)> &call);
 
 		};

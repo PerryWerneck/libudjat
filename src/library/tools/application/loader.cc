@@ -47,10 +47,10 @@
  using namespace Udjat;
 
  int Udjat::loader(int argc, char **argv, const char *path) {
-	return Udjat::loader(argc,argv,[](Application &app) {},path);
+	return Udjat::loader(argc,argv,[](Application &app) {return 0;},path);
  }
 
- int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<void(Application &app)> &init, const char *path) {
+ int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<int(Application &app)> &init, const char *path) {
 
 	bool app = (argc==1);
 
@@ -65,7 +65,7 @@
 		{ 's', "service", 			"Run as system service"			},
 		{ 'm', "module=<module>",	"Load module by name or path"	},
 		{ 'c', "config=<path>",		"Load XML configuration from file or directory (default is test.xml)" },
-		{ 't', "run-tests",			"Run test method (if available)" },
+		{ 't', "test[=test]",		"Run test method 'test'(empty for all tests)" },
 	};
 
 	if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
@@ -114,19 +114,50 @@
 			config_file = argvalue;
 		}
 
+		if(CommandLineParser::get_argument(argc,argv,'t',"test",argvalue)) {
+
+			debug("Running unit test '",argvalue,"'");
+#ifndef _WIN32	
+			try {
+				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
+				if(symbol) {
+					symbol(argvalue.c_str());
+				}
+			} catch(const std::exception &e) {
+				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
+				return -1;
+			}
+#endif
+
+			Module::for_each([&argvalue](Module &module) -> bool {
+				int (*symbol)(const char *) = (int(*)(const char *)) module.dlsym("run_unit_test");
+				if(symbol) {
+					symbol(argvalue.c_str());
+				}
+				return false;
+			});
+
+			return 0;
+		}
+
 	}
 
 	string testmodule{".build/testmodule" LIBEXT};
 
-	if(CommandLineParser::has_argument(argc,argv,'t',"run-tests")) {
+	if(CommandLineParser::has_argument(argc,argv,'t',"test")) {
 
-		// Run tests
-		for(auto module : modules) {
-			int rc = module->run_unit_test();
-			if(rc) {
-				return rc;
+#ifndef _WIN32
+		try {
+			int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
+			while(symbol) {
+				symbol(nullptr);
+				symbol = (int(*)(const char *)) dlsym(RTLD_NEXT,"run_unit_test");
 			}
+		} catch(const std::exception &e) {
+			Logger::String{"Error running unit tests: ",e.what()}.error();
+			return -1;
 		}
+#endif
 
 		return 0;
 
@@ -135,10 +166,10 @@
 		// Run as service
 		class TestSrvc : public Udjat::SystemService {
 		private:
-			const std::function<void(Application &app)> &init_callback;
+			const std::function<int(Application &app)> &init_callback;
 
 		public:
-			TestSrvc(int &argc, char **argv,const std::function<void(Application &app)> &init) 
+			TestSrvc(int &argc, char **argv,const std::function<int(Application &app)> &init) 
 				: Udjat::SystemService(argc,argv), init_callback{init} {
 			}
 
@@ -146,7 +177,9 @@
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				init_callback(*this);
+				if(init_callback(*this)) {
+					throw runtime_error{"Initialization failed"};
+				}
 				return Udjat::Application::RootFactory();
 			}
 
@@ -163,10 +196,10 @@
 		// Run as application (default if called without arguments)
 		class TestApp : public Udjat::Application {
 		private:
-			const std::function<void(Application &app)> &init_callback;
+			const std::function<int(Application &app)> &init_callback;
 
 		public:
-			TestApp(int &argc, char **argv,const std::function<void(Application &app)> &init) 
+			TestApp(int &argc, char **argv,const std::function<int(Application &app)> &init) 
 				: Udjat::Application(argc,argv), init_callback{init} {
 			}
 
@@ -174,7 +207,9 @@
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				init_callback(*this);
+				if(init_callback(*this)) {
+					throw runtime_error{"Initialization failed"};
+				}
 				return Udjat::Application::RootFactory();
 			}
 
@@ -193,7 +228,6 @@
 			Logger::String{"Module '" + testmodule + "' not found"}.error();
 			return -1;
 		}
-		modules.back()->run_unit_test();
 
 	} else {
 

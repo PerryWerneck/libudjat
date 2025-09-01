@@ -23,6 +23,37 @@
 
  namespace Udjat {
 
+		/// @brief Insert object.
+	bool Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
+
+		lock_guard<std::recursive_mutex> lock(guard);
+
+		// Is it an agent?
+		std::shared_ptr<Abstract::Agent> agent = std::dynamic_pointer_cast<Abstract::Agent>(object);
+		if(agent) {
+			if(agent->parent) {
+				throw runtime_error(Logger::Message{"Agent {} is child of {}",agent->name(),agent->parent->name()});
+			}
+
+			agent->parent = this;
+
+			if(!agent->current_state.selected) {
+				agent->current_state.set(agent->computeState());
+			}
+
+			children.agents.push_back(agent);
+
+		} else {
+
+			// No specialization, just insert the object.
+			children.objects.push_back(object);
+
+		}
+
+		return true;	
+	}
+
+
 	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
 
 		lock_guard<std::recursive_mutex> lock(guard);
@@ -39,12 +70,6 @@
 
 		children.agents.push_back(child);
 
-	}
-
-	/// @brief Insert object.
-	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Object> object) {
-		lock_guard<std::recursive_mutex> lock(guard);
-		children.objects.push_back(object);
 	}
 
 	/// @brief Remove object.

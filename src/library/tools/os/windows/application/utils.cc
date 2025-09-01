@@ -61,7 +61,7 @@
 				);
 
 			if(rc == ERROR_SUCCESS) {
-				Win32::Registry registry{hKey};
+				Win32::Registry registry{hKey,false};
 				if(registry.hasValue("InstallLocation")) {
 					assign(registry.get("InstallLocation",""));
 

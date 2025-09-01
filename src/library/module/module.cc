@@ -52,24 +52,6 @@ namespace Udjat {
 	void Module::finalize() {
 	}
 
-	int Module::run_unit_test() const {
-
-		try {
-
-			int (*symbol)() = (int(*)()) Controller::getInstance().getSymbol(handle,"run_unit_test",true);
-			return symbol();
-			
-		} catch(const std::exception &e) {
-			error() << "Error running unit test: " << e.what() << endl;
-			return -1;
-		}
-
-		return 0;
-	}
-
-	void Module::parse(const pugi::xml_document &) {
-	}
-
 	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = name;
 		properties["filename"] = filename();
@@ -78,6 +60,10 @@ namespace Udjat {
 
 	const Module * Module::find(const char *name) noexcept {
 		return Controller::getInstance().find(name);
+	}
+
+	void * Module::dlsym(const char *symbol, bool required) const {
+		return Controller::getSymbol(handle, symbol, required);
 	}
 
 	bool Module::for_each(const std::function<bool(Module &module)> &method) {

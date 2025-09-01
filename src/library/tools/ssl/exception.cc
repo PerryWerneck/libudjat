@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2023 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,44 +17,35 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
- #include <config.h>
- #include <udjat/defs.h>
- #include <udjat/tools/logger.h>
- #include <udjat/tools/application.h>
- #include <private/event.h>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/service.h>
- #include <udjat/module/abstract.h>
- #include <udjat/module/abstract.h>
+ #define LOG_DOMAIN "ssl"
 
+ #include <config.h>
+
+ #include <openssl/err.h>
+ #include <openssl/x509.h>
+ #include <openssl/bio.h>
+ #include <openssl/pem.h>
+ #include <string>
+ #include <libgen.h>
+ #include <udjat/tools/ssl.h>
+ #include <udjat/tools/exception.h>
+ #include <udjat/tools/logger.h>
+
+ using namespace Udjat;
  using namespace std;
 
  namespace Udjat {
 
-	/*
-	int Application::deinit() {
-		ThreadPool::getInstance().wait();
-
-		Service::for_each([](const Service &service){
-			if(service.active()) {
-				const_cast<Service *>(&service)->stop();
-			}
-			return true;
-		});
-
-		Module::for_each([](Module &module){
-			module.finalize();
-			return false;
-		});
-
-		ThreadPool::getInstance().wait();
-
-		Module::unload();
-
-		return 0;
+	static int error_cb(const char *str, size_t len, void *u) {
+		string line{str,len};
+		Logger::String{line.c_str()}.error();
+		return 1;
 	}
-	*/
+
+	Udjat::SSL::Exception::Exception(const char *msg) : Udjat::Exception{ msg } {
+		Logger::String{msg}.error("ssl");
+		ERR_print_errors_cb(error_cb,&info.body);
+	}
 
  }
-
 

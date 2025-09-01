@@ -73,8 +73,13 @@
 		}
 
 		// Setup owners and permitions of destination file.
-		fchmod(to,st.st_mode);
-		fchown(to,st.st_uid,st.st_gid);
+		if(fchmod(to,st.st_mode)) {
+			Logger::String{"Error '",strerror(errno),"' changing mode of copied file"}.warning();
+		}
+		
+		if(fchown(to,st.st_uid,st.st_gid)) {
+			Logger::String{"Error '",strerror(errno),"' changing owner of copied file"}.warning();
+		}
 
 		if(progress((double) st.st_size,(double) st.st_size)) {
 			throw system_error(ECANCELED,system_category());

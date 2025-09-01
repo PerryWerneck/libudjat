@@ -82,12 +82,17 @@
 
 		Udjat::load(this,filename);
 
-		// Preload modules
-		for(XML::Node child = document_element().child("module"); child; child = child.next_sibling("module")) {
-			if(child.attribute("preload").as_bool(false)) {
-				Logger::String{"Preloading module '",child.attribute("name").as_string(),"'"}.trace();
-				Module::load(child);
-			}		
+		// Preload
+		{
+			auto root = document_element();
+			Logger::setup(root);
+			for(const XML::Node &node : root) {
+				if(node.attribute("preload").as_bool(false)) {
+					Logger::String{"Preloading ",node.name()," '",node.attribute("name").as_string(),"'"}.trace();
+					XML::parse(node);
+				}
+			}
+
 		}
 
 		// Check for update.
@@ -116,8 +121,6 @@
 
 		}
 
-		// TODO: Parse <include> nodes.
-
 	}
 
 	time_t XML::Document::parse() const {
@@ -126,10 +129,24 @@
 		Logger::setup(root);
 
 		for(const XML::Node &node : root) {
-			XML::parse(node);
+			if(!node.attribute("preload").as_bool(false)) {
+				XML::parse(node);
+			}
 		}
 
-		return 0;
+		time_t next = TimeStamp{root,"update-timer"};
+		if(next) {
+			next += time(0);
+		}
+
+		return next;
+	}
+
+	XML::Node & XML::Document::copy_to(XML::Node &node) const {
+		for(auto &child : document_element()) {
+			node.append_copy(child);			
+		}
+		return node;
 	}
 
 	void XML::parse_children(const XML::Node &node) {
@@ -148,17 +165,6 @@
 		}
 
 		const char *name = node.name();
-		if(!strcasecmp(name,"module")) {
-
-			if(node.attribute("preload").as_bool(false)) {
-				return true; // Preload modules are handled by Document constructor.
-			}
-
-			Logger::String{"Loading module '",node.attribute("name").as_string(),"'"}.trace();
-			Module::load(node);
-			return true;
-
-		}
 	
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
