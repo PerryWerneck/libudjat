@@ -213,6 +213,7 @@
 		}
 
 	}
+	
 	bool Abstract::Object::parse(const XML::Node &node) {
 
 		if(XML::parse(node)) {
@@ -232,9 +233,11 @@
 
 			if(*factory == name) {
 #ifdef DEBUG 
-				Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
+				Logger::String{"Found factory for <",node.name(),">"}.info(this->name());
 #endif // DEBUG
-				factory->ObjectFactory(*this,node)->parse_children(node);
+				auto object = factory->ObjectFactory(*this,node);
+				object->parse_children(node);
+				push_back(object);
 				return true; // Handled by factory.
 			}
 
