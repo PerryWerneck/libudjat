@@ -53,11 +53,13 @@
 		Factories().remove(this);
 	}
 
+	/*
 	std::shared_ptr<Abstract::Object> Abstract::Object::Factory::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
 		auto obj = ObjectFactory(node);
 		parent.push_back(obj);
 		return obj;
 	}
+	*/
 
 	static const char * NameFactory(const XML::Node &node) noexcept {
 
@@ -210,7 +212,7 @@
 						Logger::String{"Got factory '", factory->c_str(), "' for ",child.path()}.info(this->name());
 					}
 
-					auto object = factory->ObjectFactory(*this,child);
+					auto object = factory->ObjectFactory(child);
 					object->parse_children(child);
 					push_back(object);
 					break; 
@@ -242,7 +244,7 @@
 #ifdef DEBUG 
 				Logger::String{"Found factory for <",node.name(),">"}.info(this->name());
 #endif // DEBUG
-				auto object = factory->ObjectFactory(*this,node);
+				auto object = factory->ObjectFactory(node);
 				object->parse_children(node);
 				push_back(object);
 				return true; // Handled by factory.
@@ -642,7 +644,7 @@
 							Logger::String{"Got factory '", factory->c_str(), "' for ",node.path()}.info(this->name());
 						}
 
-						auto object = factory->ObjectFactory(*this,node);
+						auto object = factory->ObjectFactory(node);
 						object->parse_children(node);
 						push_back(object);
 						break; 

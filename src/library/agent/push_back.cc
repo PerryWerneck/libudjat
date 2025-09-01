@@ -18,6 +18,8 @@
  */
 
  #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/agent/abstract.h>
  #include <private/agent.h>
  #include <udjat/tools/logger.h>
 
@@ -30,6 +32,7 @@
 			auto agent = std::dynamic_pointer_cast<Abstract::Agent>(object);
 			if(agent) {
 
+				debug("Pushing agent ",object->name()," into agent ",name());
 				lock_guard<std::recursive_mutex> lock(guard);
 
 				if(agent->parent) {
@@ -53,6 +56,7 @@
 		{
 			auto activatable = std::dynamic_pointer_cast<Activatable>(object);
 			if(activatable) {
+				debug("Pushing activatable ",object->name()," into agent ",name());
 				lock_guard<std::recursive_mutex> lock(guard);
 
 
@@ -62,6 +66,7 @@
 		*/
 
 		{
+			debug("Pushing generic object ",object->name()," into agent ",name());
 			lock_guard<std::recursive_mutex> lock(guard);
 			children.objects.push_back(object);
 			return true;
@@ -76,6 +81,7 @@
 		{
 			auto activatable = std::dynamic_pointer_cast<Activatable>(object);
 			if(activatable) {
+				debug("Pushing activatable ",object->name()," into agent ",name()," from path ",node.path());
 				lock_guard<std::recursive_mutex> lock(guard);
 				listeners.emplace_back(EventFactory(node,"trigger-event"),activatable);
 				return true;
