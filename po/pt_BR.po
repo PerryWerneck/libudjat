@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-01 11:56-0300\n"
+"POT-Creation-Date: 2025-09-01 15:34-0300\n"
 "PO-Revision-Date: 2025-09-01 11:54-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -630,11 +630,6 @@ msgstr "Opções de log/debug:\n"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/object.cc:280
-#, c++-format
-msgid "Unable to get value of '{}'"
-msgstr "Incapaz de obter valor para '{}'"
-
 #: src/library/tools/script.cc:54 src/library/tools/script.cc:141
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
@@ -646,6 +641,11 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 #: src/library/tools/script.cc:166
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
+
+#: src/library/tools/object.cc:312
+#, c++-format
+msgid "Unable to get value of '{}'"
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/agent/agent.cc:193
 msgid "default"
@@ -667,7 +667,7 @@ msgstr "Controlador de agentes"
 msgid "Agent controller was not initialized"
 msgstr "Controlador de agentes não foi inicializado"
 
-#: src/library/agent/controller.cc:404
+#: src/library/agent/controller.cc:373
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 

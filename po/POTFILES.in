@@ -168,12 +168,12 @@ src/library/tools/config.cc
 src/library/tools/interface.cc
 src/library/tools/logger.cc
 src/library/tools/message.cc
-src/library/tools/object.cc
 src/library/tools/quark.cc
 src/library/tools/script.cc
 src/library/tools/ssl/backend.cc
 src/library/tools/ssl/exception.cc
 src/library/tools/ssl/key.cc
+src/library/tools/object.cc
 src/library/agent/agent.cc
 src/library/agent/controller.cc
 src/library/agent/event.cc
