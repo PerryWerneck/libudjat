@@ -623,7 +623,7 @@
 
 						auto object = factory->ObjectFactory(node);
 						object->parse_children(node);
-						push_back(object);
+						push_back(node,object);
 						break; 
 					}
 				}
