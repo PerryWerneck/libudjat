@@ -91,9 +91,6 @@
 				return type;
 			}
 
-		} else if(node.child("action")) {
-			return "multiple";
-			
 		}
 
 		throw runtime_error(Logger::String{"Required attribute 'type' is missing at ",node.path()});
@@ -301,7 +298,7 @@
 			}
 
 		default:
-			throw runtime_error(Logger::String{"Unexpected or invalid type at ",node.path()});
+			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"' at ",node.path()});
 		}
 
 
