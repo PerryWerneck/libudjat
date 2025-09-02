@@ -60,23 +60,35 @@ namespace Udjat {
 			
 		}
 
-		/*
-		// It's an alert?
+		// It's an alert? Push it as an activatable.
 		if(strcasecmp(node.name(),"alert") == 0) {
-			push_back(node,Alert::Factory::build(*this,node));
+			// push_back(node,Alert::Factory::build(*this,node));
+
+			auto object = Alert::Factory::build(*this,node);
+			debug("Pushing alert ",object->name()," into agent ",name()," from path ",node.path());
+			
+			lock_guard<std::recursive_mutex> lock(guard);
+			listeners.emplace_back(EventFactory(node,"trigger-event"),object);
+
 			return true; // Handled by alert.
 		}
 
-		// It's an action?
+		// It's an action? Push it as an activatable.
 		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-			push_back(node,Action::Factory::build(node));
+			// push_back(node,Action::Factory::build(node));
+
+			auto object = Action::Factory::build(node);
+			debug("Pushing action ",object->name()," into agent ",name()," from path ",node.path());
+			
+			lock_guard<std::recursive_mutex> lock(guard);
+			listeners.emplace_back(EventFactory(node,"trigger-event"),object);
+
 			return true; // Handled by action.
 		}
 
 #ifdef DEBUG 
 		Logger::String{"Unexpected node <Agent::",node.name(),">"}.warning(name());
 #endif // DEBUG
-		*/
 
 		return false;
 	}

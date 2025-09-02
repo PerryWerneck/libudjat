@@ -52,7 +52,6 @@
 		}
 
 		// Is this an activatable object? 
-		/*
 		{
 			auto activatable = std::dynamic_pointer_cast<Activatable>(object);
 			if(activatable) {
@@ -63,8 +62,8 @@
 				return true;
 			}
 		}
-		*/
-
+		
+		// Generic object.
 		{
 			debug("Pushing generic object ",object->name()," into agent ",name());
 			lock_guard<std::recursive_mutex> lock(guard);

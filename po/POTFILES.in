@@ -190,6 +190,7 @@ src/library/agent/update.cc
 src/library/agent/child.cc
 src/library/agent/factory.cc
 src/library/agent/parse.cc
+src/library/agent/push_back.cc
 src/library/alert/file.cc
 src/library/alert/url.cc
 src/library/alert/construct.cc

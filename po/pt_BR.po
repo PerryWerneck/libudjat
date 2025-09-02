@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-09-01 15:34-0300\n"
+"POT-Creation-Date: 2025-09-01 19:57-0300\n"
 "PO-Revision-Date: 2025-09-01 11:54-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -576,7 +576,7 @@ msgstr "Desconhecido"
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
-#: src/library/tools/xml/load.cc:143
+#: src/library/tools/xml/load.cc:79
 msgid "Configuration file not found"
 msgstr "Arquivo de configuração não encontrado"
 
@@ -642,7 +642,7 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
-#: src/library/tools/object.cc:312
+#: src/library/tools/object.cc:291
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
