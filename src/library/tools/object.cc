@@ -212,7 +212,7 @@
 
 					auto object = factory->ObjectFactory(child);
 					object->parse_children(child);
-					push_back(object);
+					push_back(child,object);
 					break; 
 				}
 			}
