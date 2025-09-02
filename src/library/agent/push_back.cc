@@ -62,7 +62,7 @@
 				return true;
 			}
 		}
-		
+
 		// Generic object.
 		{
 			debug("Pushing generic object ",object->name()," into agent ",name());
@@ -71,6 +71,7 @@
 			return true;
 		}
 
+		return false;
 	}
 
 
