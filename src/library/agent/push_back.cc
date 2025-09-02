@@ -101,5 +101,8 @@
 		return push_back(node, std::static_pointer_cast<Abstract::Object>(alert));
 	}
 
+	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
+		push_back(std::static_pointer_cast<Abstract::Object>(child));
+	}
 
  }
