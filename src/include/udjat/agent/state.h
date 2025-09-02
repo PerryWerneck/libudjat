@@ -91,10 +91,10 @@
 			State(State &&) = delete;
 			State & operator=(State &&) = delete;
 
-			/// @brief Parse XML node, append child.
+			/// @brief Setup state from XML definition.
 			/// @param node The XML definition.
 			/// @return true if the child was appended.
-			virtual bool parse(const XML::Node &node) override;
+			virtual bool setup(const XML::Node &node) override;
 
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");

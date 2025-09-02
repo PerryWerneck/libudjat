@@ -81,11 +81,11 @@
 		return objectName;
 	}
 
-	bool NamedObject::parse(const XML::Node &node) {
+	bool NamedObject::setup(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
 		}
-		return Abstract::Object::parse(node);
+		return Abstract::Object::setup(node);
 	}
 
 	const char * NamedObject::c_str() const noexcept {
@@ -194,7 +194,7 @@
 
 		for(const auto &child : node) {
 
-			if(this->parse(child)) {
+			if(this->setup(child)) {
 				continue; // Ignore reserved and already handled nodes.
 			}
 
@@ -211,8 +211,8 @@
 					}
 
 					auto object = factory->ObjectFactory(child);
-					object->parse_children(child);
 					push_back(child,object);
+					object->parse_children(child);
 					break; 
 				}
 			}
@@ -221,7 +221,7 @@
 
 	}
 	
-	bool Abstract::Object::parse(const XML::Node &node) {
+	bool Abstract::Object::setup(const XML::Node &node) {
 
 		if(XML::parse(node)) {
 			return true; // Ignore reserved nodes.
@@ -243,8 +243,8 @@
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
 	}
 
-	bool Object::parse(const XML::Node &node) {
-		return NamedObject::parse(node);
+	bool Object::setup(const XML::Node &node) {
+		return NamedObject::setup(node);
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {
@@ -622,8 +622,8 @@
 						}
 
 						auto object = factory->ObjectFactory(node);
-						object->parse_children(node);
 						push_back(node,object);
+						object->parse_children(node);
 						break; 
 					}
 				}

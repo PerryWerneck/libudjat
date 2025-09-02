@@ -43,9 +43,9 @@
 
 namespace Udjat {
 
-	bool Abstract::Agent::parse(const XML::Node &node) {
+	bool Abstract::Agent::setup(const XML::Node &node) {
 
-		if(Udjat::Object::parse(node)) {
+		if(Udjat::Object::setup(node)) {
 			return true;
 		}
 

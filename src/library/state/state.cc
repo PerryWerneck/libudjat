@@ -102,9 +102,9 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::State::parse(const XML::Node &node) {
+	bool Abstract::State::setup(const XML::Node &node) {
 
-		if(Udjat::Object::parse(node)) {
+		if(Udjat::Object::setup(node)) {
 			return true; // Handled by object.
 		}
 

@@ -225,10 +225,10 @@
 
 			virtual ~Agent();
 
-			/// @brief Load agent children, states, alerts, etc. from node.
-			/// @param node The xml node with agent children to build.
+			/// @brief Setup agent from XML node.
+			/// @param node The xml node with agent properties.
 			/// @see Abstract::Object::parse
-			bool parse(const XML::Node &node) override;
+			bool setup(const XML::Node &node) override;
 
 			inline time_t parse(const char *path) {
 				return Udjat::Object::parse(path);
