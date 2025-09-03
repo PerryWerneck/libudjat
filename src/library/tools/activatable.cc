@@ -42,6 +42,10 @@
 		return object_name;
 	}
 
+	bool Activatable::available() const noexcept {
+		return true;
+	}
+
 	bool Activatable::active(bool value) noexcept {
 		if(value) {
 			return activate();

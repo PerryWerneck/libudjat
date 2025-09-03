@@ -64,6 +64,10 @@
 		/// @return true if the object was activated, false if already active.
 		virtual bool activate() noexcept = 0;
 
+		/// @brief Check if object can be activated.
+		/// @return true if object can be activated.
+		virtual bool available() const noexcept;
+
 		/// @brief Activate object with properties.
 		/// @param object Object with properties.
 		/// @return true if the object was activated, false if already active.
@@ -107,6 +111,15 @@
 					}
 				}
 				return false;
+			}
+
+			bool available(const T type) const noexcept {
+				for(auto &entry : entries) {
+					if(entry.type == type && !entry.activatable->available()) {
+						return false;
+					}
+				}
+				return true;
 			}
 
 			size_t activate(const T type, const Udjat::Abstract::Object &object) const {
