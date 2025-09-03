@@ -132,7 +132,9 @@
 
 		for(const XML::Node &node : root) {
 			if(!node.attribute("preload").as_bool(false)) {
-				XML::parse(node);
+				if(XML::parse(node)) {
+					XML::parse_children(node); // Node was handled, parse its children.
+				}
 			}
 		}
 
