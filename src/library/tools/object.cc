@@ -601,8 +601,8 @@
 			// Parse the document, create the children.
 			for(const XML::Node &node : root) {
 
-				if(node.attribute("preload").as_bool(false) || XML::parse(node)) {
-					continue; // Ignore reserved and preloaded nodes.
+				if(node.attribute("preload").as_bool(false) || XML::parse(node,true)) {
+					continue; // Ignore reserved, parsed and preloaded nodes.
 				}
 
 				const char *name = node.name();

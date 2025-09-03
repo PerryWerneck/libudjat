@@ -141,11 +141,18 @@
 		UDJAT_API time_t parse(const char *path = nullptr);
 
 		/// @brief Load xml options for node.
-		/// @return true if the node was parsed and should be ignored by the caller.
-		UDJAT_API bool parse(const XML::Node &node);
+		/// @param node XML node to parse.
+		/// @param recursive If true, parse children nodes too.
+		/// @return true if the node was parsed or should be ignored by the caller.
+		UDJAT_API bool parse(const XML::Node &node, bool recursive = false);
 
-		/// @brief Load options for node children.
-		UDJAT_API void parse_children(const XML::Node &node);
+		/// @brief Load options for node children, doesn't parse the node itself.
+		/// @details This function is used to parse the children of a node, it doesn't parse or even check the node itself.
+		/// @param node root XML node.
+		/// @param recursive If true, parse children nodes too.
+		/// @return true if any child node was parsed.
+		/// @retval false if no child node was parsed
+		UDJAT_API bool parse_children(const XML::Node &node, bool recursive = false);
 		
 	}
 

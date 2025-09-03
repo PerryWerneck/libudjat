@@ -132,9 +132,7 @@
 
 		for(const XML::Node &node : root) {
 			if(!node.attribute("preload").as_bool(false)) {
-				if(XML::parse(node)) {
-					XML::parse_children(node); // Node was handled, parse its children.
-				}
+				XML::parse(node);
 			}
 		}
 
@@ -153,15 +151,19 @@
 		return node;
 	}
 
-	void XML::parse_children(const XML::Node &node) {
+	bool XML::parse_children(const XML::Node &node, bool recursive) {
+
+		bool rc = false;
 		for(const auto &child : node) {
-			if(XML::parse(child)) {
-				parse_children(child); // Child was handled, parse its children.
+			if(XML::parse(child,false)) {
+				parse_children(child,recursive); // Child was handled, parse its children.
+				rc = true;
 			}
-		}	
+		}
+		return rc;
 	}
 
-	bool XML::parse(const XML::Node &node) {
+	bool XML::parse(const XML::Node &node, bool recursive) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
@@ -172,7 +174,17 @@
 	
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
-				return factory->parse(node); // Handled by factory.
+
+				if(!factory->parse(node)) {
+					continue; // Not handled.
+				}
+
+				// Handled, parse children too?
+				if(recursive) {
+					parse_children(node,recursive);
+				}
+
+				return true; // Handled.
 			}
 		}
 
