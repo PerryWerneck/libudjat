@@ -35,6 +35,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/abstract/object.h>
  #include <stdexcept>
+ #include <udjat/tools/actions/abstract.h>
 
  #ifdef HAVE_UNISTD_H
  	#include <unistd.h>
@@ -43,71 +44,6 @@
  using namespace std;
 
  namespace Udjat {
-
-	time_t Abstract::Object::parse(const char *p) {
-
-		time_t next = 0;
-
-		File::Path path{XML::PathFactory(p)};
-		if(path.dir()) {
-
-			// Is a directory, scan for files
-			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace();
-
-			std::vector<std::string> files;
-			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
-				files.emplace_back(path.c_str());
-				return false;
-			});
-
-			std::sort(files.begin(), files.end());
-
-			for(const auto &file : files) {
-
-				// Recursive call to parse document.
-				time_t expires = parse(file.c_str());
-				if(expires) {
-					expires += time(0);
-					if(expires < next || next == 0) {
-						next = expires;
-					}
-				}
-
-			}
-
-		} else {
-
-			// Is a file, load it
-			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.info();
-
-			XML::Document document{path.c_str()};
-
-			const auto &root = document.document_element();
-			next = TimeStamp{root,"update-timer"};
-			if(next) {
-				next += time(0);
-			}
-
-			// Parse the document, create the children.
-			for(const XML::Node &node : root) {
-				if(!node.attribute("preload").as_bool(false)) {
-					parse(node);
-				}
-			}
-
-		}
-
-#ifdef DEBUG 
-		if(next) {
-			debug("Next update in ",TimeStamp{next}.to_string());
-		} else {
-			debug("No next update defined");
-		}
-#endif // DEBUG		
-
-		return next;
-
-	}
 
 	File::Path XML::PathFactory(const char *p) {
 

@@ -90,7 +90,7 @@
 		Factories().remove(this);
 	}
 
-	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const Abstract::Agent &parent, const XML::Node &node) {
+	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const XML::Node &node) {
 
 		const char *type = node.attribute("type").as_string("default");
 
@@ -100,7 +100,7 @@
 				continue;
 			}
 
-			auto agent = factory->AgentFactory(parent,node);
+			auto agent = factory->AgentFactory(node);
 			if(agent) {
 				debug("Got agent '",type,"'")
 				return agent;

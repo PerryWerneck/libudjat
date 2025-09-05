@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.1.0',
+	version: '2.2.0',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -345,6 +345,7 @@ lib_src += [
   'src/library/agent/factory.cc',
   'src/library/agent/event.cc',
   'src/library/agent/child.cc',
+  'src/library/agent/push_back.cc',
   'src/library/agent/controller.cc',
   'src/library/agent/get.cc',
   'src/library/agent/path.cc',

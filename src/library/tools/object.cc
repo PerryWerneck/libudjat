@@ -53,6 +53,12 @@
 		Factories().remove(this);
 	}
 
+	std::shared_ptr<Abstract::Object> Abstract::Object::Factory::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
+		auto obj = ObjectFactory(node);
+		parent.push_back(obj);
+		return obj;
+	}
+
 	static const char * NameFactory(const XML::Node &node) noexcept {
 
 		const char *name = node.attribute("name").as_string();
@@ -75,11 +81,11 @@
 		return objectName;
 	}
 
-	bool NamedObject::parse(const XML::Node &node) {
+	bool NamedObject::setup(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
 		}
-		return Abstract::Object::parse(node);
+		return Abstract::Object::setup(node);
 	}
 
 	const char * NamedObject::c_str() const noexcept {
@@ -180,47 +186,52 @@
 
 	void Abstract::Object::parse_children(const XML::Node &node) {
 
-#ifdef DEBUG 
-		Logger::String{"Parsing object children at ",node.path()}.info(name());
-#endif // DEBUG
+		bool trace = Logger::enabled(Logger::Debug);
+
+		if(trace) {
+			Logger::String{"Parsing object children at ",node.path()}.info(name());
+		}
 
 		for(const auto &child : node) {
-			if(!parse(child)) {
-				Logger::String{"Ignoring unexpected child <",child.name(),"> at ",child.path()}.warning(name());
+
+			if(this->setup(child)) {
+				continue; // Ignore reserved and already handled nodes.
 			}
+
+			const char *name = child.name();
+			debug("Node name for '",node.path()," is '",name,"'");
+
+			// Is it a factory?
+			for(const auto factory : Factories()) {
+
+				if(*factory == name) {
+	
+					if(trace) {
+						Logger::String{"Got factory '", factory->c_str(), "' for ",child.path()}.info(this->name());
+					}
+
+					auto object = factory->ObjectFactory(child);
+					push_back(child,object);
+					object->parse_children(child);
+					break; 
+				}
+			}
+
 		}
 
 	}
-	bool Abstract::Object::parse(const XML::Node &node) {
+	
+	bool Abstract::Object::setup(const XML::Node &node) {
 
 		if(XML::parse(node)) {
 			return true; // Ignore reserved nodes.
 		}
 
-		const char *name = node.name();
-
 		// TODO: Rewrite init actions to use Object::Factory.
-		if(strcasecmp(name,"init") == 0) {
+		if(strcasecmp(node.name(),"init") == 0) {
 			Action::Factory::build(node)->call(node);
 			return true; // Handled by action.
 		}
-
-		// Is it a factory?
-		for(const auto factory : Factories()) {
-
-			if(*factory == name) {
-#ifdef DEBUG 
-				Logger::String{"Found factory for <Abstract::Object::",node.name(),">"}.info(this->name());
-#endif // DEBUG
-				factory->ObjectFactory(*this,node)->parse_children(node);
-				return true; // Handled by factory.
-			}
-
-		}
-
-#ifdef DEBUG 
-		Logger::String{"Unexpected node <Abstract::Object::",node.name(),"> at ",node.path()}.warning(this->name());
-#endif // DEBUG
 
 		return false;	// Not handled, maybe the caller can handle it.
 	}
@@ -232,8 +243,8 @@
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
 	}
 
-	bool Object::parse(const XML::Node &node) {
-		return NamedObject::parse(node);
+	bool Object::setup(const XML::Node &node) {
+		return NamedObject::setup(node);
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {
@@ -540,6 +551,96 @@
 		}
 
 		return false;
+
+	}
+
+	time_t Abstract::Object::parse(const char *p) {
+
+		time_t next = 0;
+
+		File::Path path{XML::PathFactory(p)};
+		if(path.dir()) {
+
+			// Is a directory, scan for files
+			Logger::String{"Loading xml definitions from directory '",path.c_str(),"'"}.trace(name());
+
+			std::vector<std::string> files;
+			path.for_each("*.xml",[&files](const File::Path &path) -> bool {
+				files.emplace_back(path.c_str());
+				return false;
+			});
+
+			std::sort(files.begin(), files.end());
+
+			for(const auto &file : files) {
+
+				// Recursive call to parse document.
+				time_t expires = parse(file.c_str());
+				if(expires) {
+					expires += time(0);
+					if(expires < next || next == 0) {
+						next = expires;
+					}
+				}
+
+			}
+
+		} else {
+
+			// Is a file, load it
+			Logger::String{"Loading xml definitions from file '",path.c_str(),"'"}.info(name());
+
+			XML::Document document{path.c_str()};
+
+			const auto &root = document.document_element();
+			next = TimeStamp{root,"update-timer"};
+			if(next) {
+				next += time(0);
+			}
+
+			// Parse the document, create the children.
+			for(const XML::Node &node : root) {
+
+				if(node.attribute("preload").as_bool(false) || XML::parse(node,true)) {
+					continue; // Ignore reserved, parsed and preloaded nodes.
+				}
+
+				const char *name = node.name();
+
+				// TODO: Rewrite init actions to use Object::Factory.
+				if(strcasecmp(name,"init") == 0) {
+					Action::Factory::build(node)->call(node);
+					continue; // Handled by action.
+				}
+
+				for(const auto factory : Factories()) {
+
+					if(*factory == name) {
+		
+						if(Logger::enabled(Logger::Debug)) {
+							Logger::String{"Got factory '", factory->c_str(), "' for ",node.path()}.info(this->name());
+						}
+
+						auto object = factory->ObjectFactory(node);
+						push_back(node,object);
+						object->parse_children(node);
+						break; 
+					}
+				}
+
+			}
+
+		}
+
+#ifdef DEBUG 
+		if(next) {
+			debug("Next update in ",TimeStamp{next}.to_string());
+		} else {
+			debug("No next update defined");
+		}
+#endif // DEBUG		
+
+		return next;
 
 	}
 

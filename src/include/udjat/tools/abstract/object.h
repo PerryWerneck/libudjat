@@ -47,8 +47,14 @@
 					return strcasecmp(n,name) == 0;
 				}
 
+				inline const char *c_str() const noexcept {
+					return name;
+				}
+
 				/// @brief Create an object from XML node.
-				virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const = 0;
+				[[deprecated("Use ObjectFactory(node)")]] virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const;
+
+				virtual std::shared_ptr<Abstract::Object> ObjectFactory(const XML::Node &node) const = 0;
 
 			};
 
@@ -67,11 +73,11 @@
 			/// @return timestamp for next refresh.
 			time_t parse(const char *path = nullptr);
 
-			/// @brief Parse XML, build children.
+			/// @brief Setup object from XML.
 			/// @details This method is called by parse_children() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool parse(const XML::Node &node);
+			virtual bool setup(const XML::Node &node);
 
 			virtual void parse_children(const XML::Node &node);
 

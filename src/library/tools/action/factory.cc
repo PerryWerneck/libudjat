@@ -94,7 +94,7 @@
 
 	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node) {		
 		Abstract::Object object;
-		return std::dynamic_pointer_cast<Action>(Controller::getInstance().ObjectFactory(object,node));
+		return std::dynamic_pointer_cast<Action>(Controller::getInstance().ObjectFactory(node));
 	}
 
  }

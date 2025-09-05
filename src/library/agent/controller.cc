@@ -291,45 +291,6 @@ namespace Udjat {
 		}
 	}
 
-	/*
-
-	void Abstract::Agent::Controller::call(Request &request, Response &response) noexcept {
-		
-		try {
-
-			auto agent = find(request.path(),true);
-
-			time_t timestamp = agent->last_modified();
-			if(timestamp) {
-				if(request.cached(timestamp)) {
-					return;
-				}
-				response.last_modified(timestamp);
-			}
-
-			agent->getProperties(response);
-
-			if(agent->update.next) {
-				response.expires(agent->update.next);
-			}
-
-			response.message(agent->state()->to_string().c_str());
-
-		} catch(const std::exception &e) {
-
-			response.failed(e);
-
-		}
-
-	}
-	*/
-
-	/*
-	void Abstract::Agent::Controller::call(const char *path, Udjat::Value &values) {
-		find(path,true)->getProperties(values);
-	}
-	*/
-
 	void Abstract::Agent::Controller::on_timer() {
 
 		if(!root) {
@@ -377,6 +338,13 @@ namespace Udjat {
 
 	}
 
+	std::shared_ptr<Abstract::Object> Abstract::Agent::Controller::ObjectFactory(const XML::Node &node) const {
+
+		auto child = Abstract::Agent::Factory::build(node);
+		return child;
+	}
+
+	/*
 	std::shared_ptr<Abstract::Object> Abstract::Agent::Controller::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
 
 		Abstract::Agent *agent = dynamic_cast<Abstract::Agent *>(&parent);
@@ -393,6 +361,7 @@ namespace Udjat {
 
 		return child;
 	}
+	*/
 
 	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const XML::Node &) const {
 

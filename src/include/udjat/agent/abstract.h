@@ -50,9 +50,9 @@
 
 				/// @brief Create an agent from XML node.
 				/// @param node XML definition for the new agent.
-				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const Abstract::Agent &parent, const XML::Node &node) const = 0;
+				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const = 0;
 
-				static std::shared_ptr<Abstract::Agent> build(const Abstract::Agent &parent, const XML::Node &node);
+				static std::shared_ptr<Abstract::Agent> build(const XML::Node &node);
 
 			};
 
@@ -225,19 +225,23 @@
 
 			virtual ~Agent();
 
-			/// @brief Load agent children, states, alerts, etc. from node.
-			/// @param node The xml node with agent children to build.
-			bool parse(const XML::Node &node) override;
+			/// @brief Setup agent from XML node.
+			/// @param node The xml node with agent properties.
+			/// @see Abstract::Object::parse
+			bool setup(const XML::Node &node) override;
 
 			inline time_t parse(const char *path) {
 				return Udjat::Object::parse(path);
 			}
 
-			/// @brief Insert child node.
-			void push_back(std::shared_ptr<Abstract::Agent> child);
-
 			/// @brief Insert object.
 			bool push_back(std::shared_ptr<Abstract::Object> object) override;
+
+			/// @brief Insert object with attributes.
+			bool push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> object) override;
+
+			/// @brief Insert child node.
+			[[deprecated("push_back(std::shared_ptr<Abstract::Object>)")]] void push_back(std::shared_ptr<Abstract::Agent> child);
 
 			/// @brief Insert activatable based on xml attributes.
 			/// @param node with activation attribute.
@@ -245,16 +249,16 @@
 			/// @return True if the activatable was inserted.
 			/// @retval true The activatable was inserted as an event listener.
 			/// @retval false The activatable is not event based, insert it using default method.
-			virtual bool push_back(const XML::Node &node, std::shared_ptr<Activatable> activatable);
+			[[deprecated("push_back(std::shared_ptr<Abstract::Object>)")]] bool push_back(const XML::Node &node, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Remove listener.
-			void remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
+			void remove(std::shared_ptr<Activatable> activatable);
 
 			/// @brief Remove listener.
-			void remove(std::shared_ptr<Activatable> activatable);
+			void remove(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
 
 			/// @brief Factory for the default root agent.
 			static std::shared_ptr<Agent> RootFactory();

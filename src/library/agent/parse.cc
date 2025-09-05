@@ -43,9 +43,9 @@
 
 namespace Udjat {
 
-	bool Abstract::Agent::parse(const XML::Node &node) {
+	bool Abstract::Agent::setup(const XML::Node &node) {
 
-		if(Udjat::Object::parse(node)) {
+		if(Udjat::Object::setup(node)) {
 			return true;
 		}
 
@@ -54,25 +54,35 @@ namespace Udjat {
 
 			auto state = StateFactory(node);
 			if(state) {
-				for(const XML::Node &child : node) {
-					state->parse(child);
-				}
-			} else {
-				Logger::String{"Unable to create agent state"}.error(name());
+				state->parse_children(node);
+				return true; // Handled by state.
 			}
 			
-			return true;
 		}
 
-		// It's an alert?
+		// It's an alert? Push it as an activatable.
 		if(strcasecmp(node.name(),"alert") == 0) {
-			push_back(node,Alert::Factory::build(*this,node));
+			// push_back(node,Alert::Factory::build(*this,node));
+
+			auto object = Alert::Factory::build(*this,node);
+			debug("Pushing alert ",object->name()," into agent ",name()," from path ",node.path());
+			
+			lock_guard<std::recursive_mutex> lock(guard);
+			listeners.emplace_back(EventFactory(node,"trigger-event"),object);
+
 			return true; // Handled by alert.
 		}
 
-		// It's an action?
+		// It's an action? Push it as an activatable.
 		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-			push_back(node,Action::Factory::build(node));
+			// push_back(node,Action::Factory::build(node));
+
+			auto object = Action::Factory::build(node);
+			debug("Pushing action ",object->name()," into agent ",name()," from path ",node.path());
+			
+			lock_guard<std::recursive_mutex> lock(guard);
+			listeners.emplace_back(EventFactory(node,"trigger-event"),object);
+
 			return true; // Handled by action.
 		}
 

@@ -49,7 +49,7 @@
 
 		XML::Attribute attribute{node.attribute(attrname)};
 		if(attribute) {
-			debug("Found '",attrname,"' in node '",node.name(),"'");
+//			debug("Found '",attrname,"' in node '",node.name(),"'");
 			return attribute;
 		}
 
@@ -71,7 +71,7 @@
 				{
 					XML::Attribute attribute{node.attribute(attrname)};
 					if(attribute) {
-						debug("Found '",attrname,"' in node '",node.name(),"'");
+//						debug("Found '",attrname,"' in node '",node.name(),"'");
 						return attribute;
 					}
 				}
@@ -79,7 +79,7 @@
 				{
 					XML::Attribute attribute{node.attribute(key.c_str())};
 					if(attribute) {
-						debug("Found '",attrname,"' in node '",node.name(),"'");
+//						debug("Found '",attrname,"' in node '",node.name(),"'");
 						return attribute;
 					}
 				}
