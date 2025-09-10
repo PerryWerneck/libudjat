@@ -182,6 +182,11 @@ if openssl.found()
   
   endif
 
+  install_headers(
+    'src/include/udjat/tools/ssl.h',
+    subdir: 'udjat/tools'  
+  )
+
 endif
 
 if uriparser.found()
