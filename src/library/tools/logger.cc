@@ -28,6 +28,7 @@
  #include <cstring>
  #include <list>
  #include <ostream>
+ #include <iostream>
  #include <vector>
  #include <fstream>      // std::filebuf
 
@@ -311,7 +312,9 @@
 			Logger::console(true);
 		}
 
-		if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
+		if(CommandLineParser::get_argument(argc,argv,'l',"logfile",optarg,extract)) {
+			Logger::file(optarg.c_str());
+		} else if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
 			Logger::file(true);
 		}
 
@@ -322,10 +325,6 @@
 		if(CommandLineParser::get_argument(argc,argv,'v',"verbose",optarg,extract)) {
 			Logger::console(true);
 			Logger::verbosity(optarg.c_str());
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'l',"logfile",optarg,extract)) {
-			Logger::file(optarg.c_str());
 		}
 
 		if(CommandLineParser::get_argument(argc,argv,'L',"loglevel",optarg,extract)) {
@@ -340,7 +339,7 @@
 			setup_coredump(optarg.c_str());			
 			Logger::String{"Coredump enabled using pattern '",optarg.c_str(),"'"}.info();
 		}
-#endif // !_WIN32
+#endif // !_WIN32	
 
 	}
 
@@ -478,10 +477,14 @@
 	void Logger::redirect() {
 
 		static const Level levels[] = { Info,Warning,Error };
+		
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
 		if(Logger::file()) {
-			Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+			auto &options = Options::getInstance();
+			if(options.filename && *options.filename && *options.filename != '/') {
+				Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+			}
 		}
 
 		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
