@@ -60,11 +60,13 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 	}
 
 	debug("Name: ",info->dlpi_name);
-	void *hModule = dlopen(info->dlpi_name, RTLD_NOW);
+	void *hModule = dlopen(info->dlpi_name, RTLD_NOW|RTLD_LOCAL);
 	if(hModule) {
 		size_t *count = (size_t *) data;
+		dlerror(); // Clear any existing error
 		int (*symbol)(const char *) = (int(*)(const char *)) dlsym(hModule,"run_udjat_unit_test");
-		if(symbol) {
+		auto error = dlerror();
+		if(symbol && !error) {
 			(*count)++;
 			Logger::String{"------------- Running unit tests from module '",info->dlpi_name,"' -------------"}.info();
 			try {
@@ -79,7 +81,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 				return -1;
 			}
 		} else {
-			debug("No unit tests found in module");
+			debug(error ? error : "No unit tests found in module");
 		}
 		dlclose(hModule);
 	} else {
@@ -158,6 +160,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 			debug("Running unit test '",argvalue,"'");
 #ifndef _WIN32	
 			dl_iterate_phdr(phdr_item, nullptr);
+			/*
 			try {
 				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
 				if(symbol) {
@@ -167,6 +170,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
 				return -1;
 			}
+			*/
 #endif
 
 			Module::for_each([&argvalue](Module &module) -> bool {
@@ -194,7 +198,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		if(!count) {
 			Logger::String{"Searching application for unit tests"}.info();
 			try {
-				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
+				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_udjat_unit_test");
 				if(symbol) {
 					count++;
 					Logger::String{"Running unit tests from main program"}.info();
