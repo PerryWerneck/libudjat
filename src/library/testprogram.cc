@@ -18,6 +18,9 @@
  */
 
  #include <config.h>
+
+ #ifdef DEBUG 
+
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/logger.h>
@@ -179,7 +182,7 @@
 	return 0;
  }
 
- UDJAT_API int run_unit_test(const char *name) {
+ UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
 		const char *name;
@@ -213,5 +216,6 @@
 	return 0;
  }
 
+ #endif // DEBUG
  
  

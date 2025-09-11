@@ -464,6 +464,7 @@ lib_src += [
   'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
+  'src/library/testprogram.cc',
 ]
 
 if openssl.found()
@@ -766,7 +767,7 @@ else
 
 executable(
   meson.project_name(),
-  config_h + [ 'src/testprogram/main.cc', 'src/testprogram/tests.cc' ],
+  config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],

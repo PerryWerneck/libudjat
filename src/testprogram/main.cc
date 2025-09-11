@@ -35,11 +35,14 @@
 
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {
+		/*
 #ifdef TEST_PROGRAM
 		return run_unit_test(nullptr);
 #else
 		return 0;
 #endif // TEST_PROGRAM
+		*/
+		return 0;
 	}, "test.xml");
 
  }

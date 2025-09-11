@@ -192,6 +192,13 @@
 	/// @return 0 if success, -1 on error.
 	UDJAT_API int run_unit_test(const char *name);
 
+	/// @brief Run unit test.
+	/// @details This function is used to run unit tests from the command line.
+	/// @note This function is used by the test program and should not be used in production code.
+	/// @param name The test name to run. If null, all tests are run.
+	/// @return 0 if success, -1 on error.
+	UDJAT_API int run_udjat_unit_test(const char *name);
+
 	/// @brief Module information data.
 	extern UDJAT_API const Udjat::ModuleInfo udjat_module_info;
 
