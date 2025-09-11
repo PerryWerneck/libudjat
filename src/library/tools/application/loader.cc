@@ -53,6 +53,12 @@
 
 #ifndef _WIN32
 static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
+
+	if(!info->dlpi_name || !*info->dlpi_name) {
+		debug("Skipping main program");
+		return 0;
+	}
+
 	debug("Name: ",info->dlpi_name);
 	void *hModule = dlopen(info->dlpi_name, RTLD_NOW);
 	if(hModule) {
@@ -60,11 +66,17 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		int (*symbol)(const char *) = (int(*)(const char *)) dlsym(hModule,"run_udjat_unit_test");
 		if(symbol) {
 			(*count)++;
-			Logger::String{"Running unit tests from module '",info->dlpi_name,"'"}.info();
+			Logger::String{"------------- Running unit tests from module '",info->dlpi_name,"' -------------"}.info();
 			try {
-				symbol(nullptr);
+				int rc = symbol(nullptr);
+				if(rc) {
+					dlclose(hModule);
+					return rc;	
+				}
 			} catch(const std::exception &e) {
 				Logger::String{"Error running unit tests from module '",info->dlpi_name,"': ",e.what()}.error();
+				dlclose(hModule);
+				return -1;
 			}
 		} else {
 			debug("No unit tests found in module");

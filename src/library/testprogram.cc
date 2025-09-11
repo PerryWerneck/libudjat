@@ -19,7 +19,7 @@
 
  #include <config.h>
 
- #ifdef DEBUG 
+ #if defined(DEBUG) and ! defined(STATIC_LIBRARY) 
 
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
@@ -217,5 +217,5 @@
  }
 
  #endif // DEBUG
- 
+
  
