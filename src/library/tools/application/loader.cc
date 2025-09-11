@@ -33,6 +33,7 @@
 
  #ifndef _WIN32
 	#include <dlfcn.h>
+	#include <link.h>
  #endif // !_WIN32
 
  #ifdef HAVE_FILESYSTEM_H
@@ -49,6 +50,13 @@
  int Udjat::loader(int argc, char **argv, const char *path) {
 	return Udjat::loader(argc,argv,[](Application &app) {return 0;},path);
  }
+
+#ifndef _WIN32
+static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
+	debug("Name: ",info->dlpi_name);
+	return 0;
+}
+#endif // !_WIN32
 
  int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<int(Application &app)> &init, const char *path) {
 
@@ -118,6 +126,7 @@
 
 			debug("Running unit test '",argvalue,"'");
 #ifndef _WIN32	
+			dl_iterate_phdr(phdr_item, nullptr);
 			try {
 				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
 				if(symbol) {
@@ -146,12 +155,17 @@
 
 	if(CommandLineParser::has_argument(argc,argv,'t',"test")) {
 
+		debug("Running all unit tests");
+
 #ifndef _WIN32
+		dl_iterate_phdr(phdr_item, nullptr);
 		try {
 			int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
-			while(symbol) {
+			if(symbol) {
+				Logger::String{"Running unit tests from main program"}.info();
 				symbol(nullptr);
-				symbol = (int(*)(const char *)) dlsym(RTLD_NEXT,"run_unit_test");
+			} else {
+				Logger::String{"No unit tests found in main program"}.error();
 			}
 		} catch(const std::exception &e) {
 			Logger::String{"Error running unit tests: ",e.what()}.error();
