@@ -47,7 +47,7 @@ namespace Udjat {
 				if(!names.empty()) {
 					names += " ";
 				}
-				names += module->name;
+				names += module->module_name;
 			}
 			debug("----> Modules to remove: ",names.c_str());
 		}
@@ -66,7 +66,7 @@ namespace Udjat {
 			}
 
 			// Save module name.
-			string name{module->name};
+			string name{module->module_name};
 			string description{module->description()};
 
 			auto handle = module->handle;

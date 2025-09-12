@@ -37,7 +37,7 @@
 	private:
 
 		/// @brief The module name.
-		const char *name;
+		const char *module_name;
 
 		/// @brief When true the module is never unloaded.
 		bool keep_loaded = false;
@@ -81,9 +81,13 @@
 		static Module * factory(const char *filename);
 
 		bool operator==(const char *name) const noexcept {
-			return strcasecmp(this->name,name) == 0;
+			return strcasecmp(this->module_name,name) == 0;
 		}
 
+		inline const char * name() const noexcept {
+			return module_name;
+		}
+		
 		inline const char * description() const noexcept {
 			return _info.description;
 		}
