@@ -260,7 +260,10 @@
 			EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
 				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
 				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_genpkey_decrypt.c
-				EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, "provider=tpm2", "RSA", mbits);;
+				EVP_PKEY *pkey = EVP_PKEY_Q_keygen(NULL, String{"provider=",name.c_str()}.c_str(), "RSA", mbits);;
+				if(!pkey) {
+					Logger::String{"EVP_PKEY_Q_keygen failed for provider '",name.c_str(),"'"}.error();
+				}
 				if(pkey && filename && *filename) {
 					save_private(pkey, filename, password);
 				}
@@ -342,8 +345,13 @@
 					return ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 
 #else
+					Logger::String{"Internal engine genkey is not implemented, using subprocess"}.write(Logger::Debug,"sslkey");
 
-					throw system_error(ENOTSUP,system_category(),"Internal engine genkey is not implemented");;
+					if(!subproc(filename, password, mbits, "tpm2tss")) {
+						throw runtime_error("Unable to generate key using tpm2tss-genkey subprocess.");
+					}
+
+					return ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 
 #endif // HAVE_TPM2_TSS_ENGINE_H
 						
@@ -377,7 +385,7 @@
 
 				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
 
-					Logger::String{"Using tp2-tss instead of provider for private key generation"}.trace();
+					Logger::String{"Using tpm2-tss instead of provider for private key generation"}.trace();
 					tpm2_tss_genkey(filename, password, mbits);
 
 					debug("Loading \n",filename);

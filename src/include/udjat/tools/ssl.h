@@ -46,6 +46,14 @@ namespace Udjat {
 			class BackEnd;
 			std::shared_ptr<BackEnd> backend;
 
+			/// @brief Generate key using subprocess.
+			/// @param filename The file where the private key will be stored.
+			/// @param passwd The password to protect the private key.
+			/// @param mbits The size of the key in bits.
+			/// @param type The type of key to generate, used to select the subprocess name (e.g. tpm2tss for tpm2tss-genkey).
+			/// @return true if the subprocess was run, false if no subprocess is defined.
+			static bool subproc(const char *filename, const char *passwd, size_t mbits, const char *type = "tpm2tss");
+
 		public:
 
 			/// @brief Build an empty private key.

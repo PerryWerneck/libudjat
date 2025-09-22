@@ -55,7 +55,7 @@
 
  #ifdef HAVE_OPENSSL
  static int ssl_test() {
-	/*
+
 	Udjat::SSL::Key pkey;
 
 	unlink("/tmp/test-legacy.key");
@@ -67,6 +67,7 @@
 	unlink("/tmp/test-mixed.key");	
 	unlink("/tmp/test-mixed.pub");
 
+	debug("---[ Legacy key test ]------------------------------------------------------------");
 	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
 	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
 	pkey.save_public("/tmp/test-legacy.pub");
@@ -74,6 +75,7 @@
 	Logger::String{"Legacy private key reloaded:\n",pkey.to_string().c_str()}.info();
 
 #if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H) && !defined(_WIN32)
+	debug("---[ Engine based TPM test ]------------------------------------------------------");
 	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
 	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
 	pkey.save_public("/tmp/test-engine.pub");
@@ -82,9 +84,10 @@
 #endif // HAVE_OPENSSL_ENGINE
 
 #if defined(HAVE_OPENSSL_PROVIDER) && !defined(_WIN32)
-	if(access("/usr/lib64/ossl-modules/tpm2.so", R_OK) != 0) {
+	if(access(STRINGIZE_VALUE_OF(LIBDIR) "/ossl-modules/tpm2.so", R_OK) != 0) {
 		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
 	} else {
+		debug("---[ Provider based TPM test ]----------------------------------------------------");
 		pkey.generate("/tmp/test-provider.key","password",2048,"provider");
 		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
 		pkey.save_public("/tmp/test-provider.pub");
@@ -94,13 +97,13 @@
 #endif // HAVE_OPENSSL_PROVIDER
 
 #if defined(HAVE_OPENSSL_PROVIDER) && defined(HAVE_TPM2_TSS_ENGINE_H)
+	debug("---[ Mixed based TPM test ]-------------------------------------------------------");
 	pkey.generate("/tmp/test-mixed.key","password",2048,"mixed");
 	Logger::String{"Mixed private key:\n",pkey.to_string().c_str()}.info();
 	pkey.save_public("/tmp/test-mixed.pub");
 	pkey.load("/tmp/test-mixed.key","password");
 	Logger::String{"Mixed private key reloaded:\n",pkey.to_string().c_str()}.info();
 #endif
-	*/
 
 	return 0;
  }
