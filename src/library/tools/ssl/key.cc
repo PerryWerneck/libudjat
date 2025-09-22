@@ -93,6 +93,7 @@
 
 		Config::Value<String> subproc{"ssl",String{type,"-genkey"}.c_str()};
 		if(subproc.empty()) {
+			Logger::String{"No subprocess defined to generate private key of type '",type,"'"}.write(Logger::Debug);
 			return false;
 		}
 
@@ -108,7 +109,7 @@
 			return true;
 		}, true, true);
 
-		debug("Running subprocess to generate private key: ",subproc.c_str());
+		Logger::String{"Running '",subproc.c_str(),"' to generate private key"}.trace();
 
 		int rc = SubProcess{
 			"keygen",
