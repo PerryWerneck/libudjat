@@ -110,7 +110,7 @@
 					econf_freeFile(hFile);
 					hFile = nullptr;
 				}
-				debug("Trying user's home dir");
+				debug("Trying user's home dir '",homedir,"'/.local/etc/",program_invocation_short_name,".conf.d");
 				err = econf_readConfigWithCallback(
 					&hFile,
 					NULL,

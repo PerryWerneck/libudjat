@@ -142,9 +142,10 @@
 		return len;
 	}
 
-	EVP_PKEY * SSL::Key::BackEnd::load(const File::Text &file, const char *, const char *password) {
+	EVP_PKEY * SSL::Key::BackEnd::load(const char *filename, const char *password) {
 
-		debug("Loading \n",file.c_str());
+		debug("Loading '",filename,"'");
+		File::Text file{filename};
 
 		auto bio = BIO_PTR(BIO_new_mem_buf((void*)file.c_str(), -1),BIO_free_all);
 		if(!bio) {
@@ -305,7 +306,7 @@
 				}
 
 #if defined(HAVE_TPM2_TSS_ENGINE_H)
-				EVP_PKEY * load(const File::Text &, const char *filename, const char *password) override {
+				EVP_PKEY * load(const char *filename, const char *password) override {
 
 					if(!(filename && *filename)) {
 						throw runtime_error("Filename is required to load key from TPM2TSS engine.");
@@ -394,7 +395,7 @@
 					tpm2_tss_genkey(filename, password, mbits);
 
 					debug("Loading \n",filename);
-					return this->load(File::Text{filename}, filename, password);
+					return this->load(filename, password);
 				}
 			};
 			return make_shared<MixedBackEnd>();

@@ -69,7 +69,7 @@
 
 		virtual void save_private(EVP_PKEY *pkey, const char *filename, const char *password);
 		virtual void save_public(EVP_PKEY *pkey, const char *filename);
-		virtual EVP_PKEY * load(const File::Text &file, const char *filename, const char *password);
+		virtual EVP_PKEY * load(const char *filename, const char *password);
 		virtual std::string get_private(EVP_PKEY *pkey, const char *);
 		virtual std::string get_public(EVP_PKEY *pkey);
 		virtual EVP_PKEY * generate(const char *filename, const char *password, size_t mbits = 2048) = 0;

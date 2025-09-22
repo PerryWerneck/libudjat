@@ -163,7 +163,8 @@
 		} else {
 
 			// Key was generated using subprocess, load it.
-			pkey = backend->load(text, filename, passwd);
+			debug("Loading '",filename,"'");
+			pkey = backend->load(filename, passwd);
 			if(!pkey) {
 				throw SSL::Exception(String{"Error loading generated key from ",filename});
 			}
@@ -202,7 +203,7 @@
 		}
 
 		backend = BackEnd::Factory(mode);
-		pkey = backend->load(text,filename,passwd);
+		pkey = backend->load(filename,passwd);
 		if(!pkey) {
 			throw SSL::Exception(String{"Error loading private key from ",filename});
 		}
