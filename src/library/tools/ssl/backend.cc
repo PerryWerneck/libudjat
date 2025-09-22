@@ -258,6 +258,14 @@
 				OSSL_PROVIDER_unload(provider);
 			}
 
+/*
+			TODO: Implement it.
+			EVP_PKEY * load(const char *filename, const char *password) override {
+
+
+			}
+*/
+
 			EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
 				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
 				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_genpkey_decrypt.c
@@ -305,7 +313,6 @@
 					ENGINE_finish(engine);
 				}
 
-#if defined(HAVE_TPM2_TSS_ENGINE_H)
 				EVP_PKEY * load(const char *filename, const char *password) override {
 
 					if(!(filename && *filename)) {
@@ -317,7 +324,7 @@
                         const char *prompt_info;
                 	} key_cb = { (void *) password, NULL };
 
-					debug("Loading \n",filename);
+					Logger::String("Loading' '",filename,"' using openssl engine").trace();
 					return ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 
 				}
@@ -328,7 +335,6 @@
 					}
 					return File::Text{filename}.c_str();
 				}
-#endif // HAVE_TPM2_TSS_ENGINE_H
 
 				EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
 
