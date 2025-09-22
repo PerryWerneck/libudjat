@@ -351,6 +351,11 @@
 						throw runtime_error("Unable to generate key using tpm2tss-genkey subprocess.");
 					}
 
+					struct {
+                        const void *password;
+                        const char *prompt_info;
+                	} key_cb = { (void *) password, NULL };
+
 					return ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 
 #endif // HAVE_TPM2_TSS_ENGINE_H
