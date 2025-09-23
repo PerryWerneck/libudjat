@@ -42,7 +42,10 @@
  #endif // HAVE_TPM2_TSS_ENGINE_H
 
  #ifdef HAVE_OPENSSL_PROVIDER
+ #include <openssl/store.h>
  #include <openssl/provider.h>
+ #include <openssl/ui.h>
+ using OSSL_STORE_ptr = std::unique_ptr<OSSL_STORE_CTX, decltype(&OSSL_STORE_close)>;
  #endif // HAVE_OPENSSL_PROVIDER
 
  #include <openssl/bio.h>
@@ -247,6 +250,8 @@
 
 			ProviderBackEnd() : BackEnd{"tpm2"}, name{Config::Value<string>{"ssl","provider-engine","tpm2"}.c_str()} {
 
+				Logger::String{"Loading provider backend '",name.c_str(),"'"}.trace();
+
 				provider = OSSL_PROVIDER_load(NULL, name.c_str());
 				if(!provider) {
 					throw runtime_error(String{"Could not load OpenSSL provider '",name.c_str(),"'"});
@@ -258,13 +263,32 @@
 				OSSL_PROVIDER_unload(provider);
 			}
 
-/*
-			TODO: Implement it.
 			EVP_PKEY * load(const char *filename, const char *password) override {
 
+				Logger::String("Loading' '",filename,"' using openssl OSSL_STORE").trace();
+
+				OSSL_STORE_ptr ctx{
+					OSSL_STORE_open(filename, NULL, NULL, NULL, NULL),
+					OSSL_STORE_close
+				};
+
+				if(!ctx) {
+					throw runtime_error(String{"Could not open key file '",filename,"' using provider '",name.c_str(),"'"});
+				}
+
+				OSSL_STORE_INFO *info = NULL;
+ 				while ((info = OSSL_STORE_load(ctx.get())) != NULL) {
+					if(OSSL_STORE_INFO_get_type(info) == OSSL_STORE_INFO_PKEY) {
+						EVP_PKEY *pkey = OSSL_STORE_INFO_get1_PKEY(info);
+						OSSL_STORE_INFO_free(info);
+						return pkey;
+					}
+					OSSL_STORE_INFO_free(info);
+				}
+
+				throw runtime_error("Provider backend was unable to find a private key on file.");
 
 			}
-*/
 
 			EVP_PKEY * generate(const char *filename, const char *password, size_t mbits) override {
 				// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
@@ -292,12 +316,18 @@
 			// Requires package openssl_tpm2_engine
 
 			class EngineBackEnd : public BackEnd {
+			private:
+				string name;
+
 			public:
 				ENGINE *engine;
 
-				EngineBackEnd() : BackEnd{"tpm2"} {
+				EngineBackEnd() : BackEnd{"tpm2"}, name{Config::Value<string>("ssl","tpm-engine","tpm2tss").c_str()} {
+
+					Logger::String{"Loading engine backend '",name.c_str(),"'"}.trace();
+
 					ENGINE_load_builtin_engines();
-					engine = ENGINE_by_id(Config::Value<string>("ssl","tpm-engine","tpm2tss").c_str());
+					engine = ENGINE_by_id(name.c_str());
 					if(!engine) {
 						throw runtime_error("Could not load OpenSSL engine");
 					}
