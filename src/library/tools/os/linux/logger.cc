@@ -157,7 +157,7 @@ namespace Udjat {
 	void Logger::console_writer(Logger::Level level, const char *domain, const char *text) noexcept {
 
 		// Write to console.
-		static bool decorated = (getenv("TERM") != NULL);
+		static bool decorated = isatty(1) && (getenv("TERM") != NULL);
 
 		if(decorated) {
 			Logger::write(1,decoration(level));
