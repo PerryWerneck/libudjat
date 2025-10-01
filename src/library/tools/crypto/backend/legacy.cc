@@ -66,18 +66,6 @@
 				}
 			}
 
-			void load(const char *filename, const char *password) override {
-				File::Text file{filename};
-				BIO_PTR bio(BIO_new_mem_buf((void *) file.c_str(), -1), BIO_free_all);
-				if(!bio) {
-					throw system_error(errno,system_category(),filename);
-				}
-				pkey = PEM_read_bio_PrivateKey(bio.get(), NULL, NULL, (void *) password);
-				if(!pkey) {
-					throw Crypto::Exception("PEM_read_bio_PrivateKey failed");
-				}
-			}
-
 		};
 		
 		return make_shared<Legacy>();

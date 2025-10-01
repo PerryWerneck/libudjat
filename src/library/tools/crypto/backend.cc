@@ -53,6 +53,37 @@
 		unload();
 	}
 
+	static int pcb(char *buf, int size, int rwflag, const char *password) {
+		size_t len = strlen(password);
+		if(len > (size_t) size) {
+			len = size;
+		}
+		memcpy(buf, password, len);
+		return (int) len;
+	}
+
+	void Crypto::BackEnd::load(const char *filename, const char *password) {
+
+		debug("Loading ",filename);
+
+		File::Text file{filename};
+		BIO_PTR bio(BIO_new_mem_buf((void *) file.c_str(), -1), BIO_free_all);
+		if(!bio) {
+			throw system_error(errno,system_category(),filename);
+		}
+
+		if(password && *password) {
+			pkey = PEM_read_bio_PrivateKey(bio.get(), NULL, (pem_password_cb *) pcb, (void *) password);
+		} else {
+			pkey = PEM_read_bio_PrivateKey(bio.get(), NULL, NULL, (void *) password);
+		}
+
+		if(!pkey) {
+			throw Crypto::Exception("PEM_read_bio_PrivateKey failed");
+		}
+		
+	}
+
 	bool Crypto::BackEnd::subproc(const char *filename, const char *passwd, size_t mbits) {
 
 		Config::Value<String> cmdline{"crypto",String{type.c_str(),"-genkey"}.c_str()};

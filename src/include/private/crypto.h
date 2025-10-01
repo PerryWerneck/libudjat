@@ -67,7 +67,7 @@
 
 		virtual void save_private(const char *filename, const char *password);
 		virtual void save_public(const char *filename);
-		virtual void load(const char *filename, const char *password) = 0;
+		virtual void load(const char *filename, const char *password);
 		
 		inline void unload() {
 			if(pkey) {

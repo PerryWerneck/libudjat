@@ -54,7 +54,7 @@
 		~SSLProvider() override;
 		// void load(const char *filename, const char *password) override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
-		void load(const char *filename, const char *password) override;
+		//void load(const char *filename, const char *password) override;
 
 	};
 	
@@ -84,31 +84,6 @@
 		if(filename && *filename) {
 			save_private(filename, password);
 		}
-	}
-
-	void SSLProvider::load(const char *filename, const char *password) {
-
-		OSSL_STORE_ptr ctx{
-			OSSL_STORE_open(filename, NULL, NULL, NULL, NULL),
-			OSSL_STORE_close
-		};
-
-		if(!ctx) {
-			throw runtime_error(String{"Could not open key file '",filename,"' using provider '",type.c_str(),"'"});
-		}
-
-		OSSL_STORE_INFO *info = NULL;
-		while ((info = OSSL_STORE_load(ctx.get())) != NULL) {
-			if(OSSL_STORE_INFO_get_type(info) == OSSL_STORE_INFO_PKEY) {
-				pkey = OSSL_STORE_INFO_get1_PKEY(info);
-				OSSL_STORE_INFO_free(info);
-				return;
-			}
-			OSSL_STORE_INFO_free(info);
-		}
-
-		throw runtime_error("Provider backend was unable to find a private key on file.");
-
 	}
 
  } 
