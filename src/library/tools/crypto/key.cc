@@ -54,6 +54,10 @@
 	}
 
 	Crypto::Key::Key(const char *filename, const char *password, bool autogenerate) {
+		initialize(filename,password,autogenerate);
+	}
+
+	void Crypto::Key::initialize(const char *filename, const char *password, bool autogenerate) {
 
 		if(filename && *filename) {
 
