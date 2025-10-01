@@ -129,7 +129,7 @@
 
 	}
 #else
-	EVP_PKEY * SSLEngine::generate(const char *filename, const char *password, size_t mbits) {
+	void SSLEngine::generate(const char *filename, const char *password, size_t mbits) {
 		throw system_error(ENOTSUP,system_category(),"Internal engine genkey is not implemented");;
 	}
 #endif // HAVE_TPM2_TSS_ENGINE_H
