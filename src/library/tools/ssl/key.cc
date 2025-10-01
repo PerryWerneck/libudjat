@@ -56,6 +56,10 @@
  namespace Udjat {
 
 	SSL::Key::Key(const char *filename, const char *password, bool autogenerate) {
+		initialize(filename,password,autogenerate);
+	}
+
+	void SSL::Key::initialize(const char *filename, const char *password, bool autogenerate) {
 
 		if(filename && *filename) {
 

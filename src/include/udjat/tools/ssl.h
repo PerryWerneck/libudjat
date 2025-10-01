@@ -54,6 +54,22 @@ namespace Udjat {
 			/// @return true if the subprocess was run, false if no subprocess is defined.
 			static bool subproc(const char *filename, const char *passwd, size_t mbits, const char *type = "tpm2tss");
 
+		protected:
+
+			/// @brief Loads or generates a private key.
+			/// @param filename The file where the private key is stored.
+			/// If the file does not exist, it will be created.
+			/// If the file exists, it will be loaded.	
+			/// @param password The password to protect the private key.
+			/// If the file does not exist, this password will be used to encrypt the private
+			/// key when it is generated.
+			/// If the file exists, this password will be used to decrypt the private key.
+			/// If the password is empty, the private key will not be encrypted.
+			/// If the file exists and the password is empty, the private key will be loaded
+			/// without decryption.
+			/// @param autogenerate If true, the private key will be generated if the file does not exist. 
+			void initialize(const char *filename, const char *password, bool autogenerate = false);
+		
 		public:
 
 			/// @brief Build an empty private key.
