@@ -29,7 +29,7 @@ namespace Udjat {
 
 	namespace Crypto {
 
-		class Exception : public Udjat::Exception {
+		class UDJAT_API Exception : public Udjat::Exception {
 		public:
 			Exception(const char *msg);
 			
