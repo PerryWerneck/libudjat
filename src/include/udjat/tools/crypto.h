@@ -27,7 +27,7 @@
 
 namespace Udjat {
 
-	namespace SSL {
+	namespace Crypto {
 
 		class Exception : public Udjat::Exception {
 		public:
@@ -37,22 +37,13 @@ namespace Udjat {
 			}
 		};
 
+		class BackEnd;
+		
 		class UDJAT_API Key {
 		private:
 
 			std::string filename;
-			EVP_PKEY *pkey = NULL;
-
-			class BackEnd;
 			std::shared_ptr<BackEnd> backend;
-
-			/// @brief Generate key using subprocess.
-			/// @param filename The file where the private key will be stored.
-			/// @param passwd The password to protect the private key.
-			/// @param mbits The size of the key in bits.
-			/// @param type The type of key to generate, used to select the subprocess name (e.g. tpm2tss for tpm2tss-genkey).
-			/// @return true if the subprocess was run, false if no subprocess is defined.
-			static bool subproc(const char *filename, const char *passwd, size_t mbits, const char *type = "tpm2tss");
 
 		protected:
 
@@ -96,13 +87,9 @@ namespace Udjat {
 			Key(const char *filename, const char *password, bool autogenerate = false);
 			~Key();
 
-			inline operator bool() const noexcept {
-				return (bool) pkey;
-			}
+			operator bool() const noexcept;
 
-			inline operator EVP_PKEY *() const noexcept {
-				return pkey;
-			} 
+			operator EVP_PKEY *() const;
 
 			/// @brief Generates a new private key.
 			/// @param mbits The size of the key in bits. Default is 2048 bits.
@@ -136,11 +123,11 @@ namespace Udjat {
 
 namespace std {
 
-	inline std::string to_string(const Udjat::SSL::Key &key) {
+	inline std::string to_string(const Udjat::Crypto::Key &key) {
 		return key.to_string();
 	}
 
-	inline ostream& operator<< (ostream& os, const Udjat::SSL::Key &key) {
+	inline ostream& operator<< (ostream& os, const Udjat::Crypto::Key &key) {
 		return os << to_string(key);
 	}
 

@@ -153,7 +153,10 @@ if openssl.found()
   if cxx.compiles('#include <openssl/engine.h>', name : 'openssl-engine.h')
 
     app_conf.set('HAVE_OPENSSL_ENGINE', 1)
-
+    lib_src += [
+      'src/library/tools/crypto/backend/engine.cc',
+    ]
+ 
     if cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
 
       app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
@@ -178,12 +181,15 @@ if openssl.found()
 
     if cxx.compiles('#include <openssl/provider.h>', name : 'openssl-provider.h')
       app_conf.set('HAVE_OPENSSL_PROVIDER', 1)
+      lib_src += [
+        'src/library/tools/crypto/backend/provider.cc',
+      ]
     endif
   
   endif
 
   install_headers(
-    'src/include/udjat/tools/ssl.h',
+    'src/include/udjat/tools/crypto.h',
     subdir: 'udjat/tools'  
   )
 
@@ -469,9 +475,10 @@ lib_src += [
 
 if openssl.found()
   lib_src += [
-    'src/library/tools/ssl/key.cc',
-    'src/library/tools/ssl/backend.cc',
-    'src/library/tools/ssl/exception.cc',
+    'src/library/tools/crypto/key.cc',
+    'src/library/tools/crypto/backend.cc',
+    'src/library/tools/crypto/backend/legacy.cc',
+    'src/library/tools/crypto/exception.cc',
   ]
 endif
 

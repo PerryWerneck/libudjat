@@ -27,7 +27,7 @@
  #include <openssl/pem.h>
  #include <string>
  #include <libgen.h>
- #include <udjat/tools/ssl.h>
+ #include <udjat/tools/crypto.h>
  #include <udjat/tools/exception.h>
  #include <udjat/tools/logger.h>
 
@@ -42,7 +42,7 @@
 		return 1;
 	}
 
-	Udjat::SSL::Exception::Exception(const char *msg) : Udjat::Exception{ msg } {
+	Udjat::Crypto::Exception::Exception(const char *msg) : Udjat::Exception{ msg } {
 		Logger::String{msg}.error("ssl");
 		ERR_print_errors_cb(error_cb,&info.body);
 	}
