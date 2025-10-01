@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.2.1',
+	version: '2.2.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )

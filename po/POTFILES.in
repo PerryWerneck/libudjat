@@ -170,10 +170,13 @@ src/library/tools/logger.cc
 src/library/tools/message.cc
 src/library/tools/quark.cc
 src/library/tools/script.cc
-src/library/tools/ssl/backend.cc
-src/library/tools/ssl/exception.cc
-src/library/tools/ssl/key.cc
 src/library/tools/object.cc
+src/library/tools/crypto/exception.cc
+src/library/tools/crypto/key.cc
+src/library/tools/crypto/backend/legacy.cc
+src/library/tools/crypto/backend/provider.cc
+src/library/tools/crypto/backend/engine.cc
+src/library/tools/crypto/backend.cc
 src/library/agent/agent.cc
 src/library/agent/controller.cc
 src/library/agent/event.cc
@@ -241,8 +244,8 @@ src/include/private/url.h
 src/include/private/action.h
 src/include/private/configuration.h
 src/include/private/module.h
-src/include/private/ssl.h
 src/include/private/urlparser.h
+src/include/private/crypto.h
 src/include/udjat.h
 src/include/udjat/agent/level.h
 src/include/udjat/agent/percentage.h
@@ -313,9 +316,9 @@ src/include/udjat/tools/container.h
 src/include/udjat/tools/quark.h
 src/include/udjat/tools/script.h
 src/include/udjat/tools/singleton.h
-src/include/udjat/tools/ssl.h
 src/include/udjat/tools/url.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/crypto.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/progress.h
