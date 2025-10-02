@@ -21,3 +21,11 @@
    ...
    fun:initable_init
 }
+
+{
+   dlopen
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:dlopen_implementation
+}

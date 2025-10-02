@@ -85,7 +85,13 @@
 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
 
 			// Test key loading
+			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
 
+			Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
+
+			if(strcmp(loaded.c_str(),pkeystr.c_str()) != 0) {
+				throw logic_error("Reloaded key does not match generated key.");
+			}
 
 		} catch(const std::exception &e) {
 			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();

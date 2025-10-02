@@ -100,7 +100,9 @@ namespace Udjat {
 			/// @brief Loads private key from file.
 			/// @param filename The file where the private key is stored.
 			/// @param password The password to protect the private key.
-			void load(const char *filename, const char *passwd = NULL);
+			/// @param defmode The backend mode to use, legacy, engine or provider.
+			/// If not specified, the mode will be taken from the configuration file.
+			Key & load(const char *filename, const char *passwd = nullptr, const char *defmode = nullptr);
 
 			/// @brief Save private key to file.
 			/// @param filename The file where the private key will be stored.

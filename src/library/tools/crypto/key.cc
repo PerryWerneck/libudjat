@@ -109,39 +109,39 @@
 
 	}
 
-	void Crypto::Key::load(const char *filename, const char *passwd) {
-
-		throw runtime_error("TPM2 key loading not implemented yet");
-		
-		/*
-
-        static const char *tpm2_tags[] = {
-                "-----BEGIN TSS2 PRIVATE KEY-----",
-                "-----BEGIN TSS2 KEY BLOB-----",
-        };
-
+	Crypto::Key & Crypto::Key::load(const char *filename, const char *passwd, const char *defmode) {
 
 		File::Text text{filename};
-		String mode{"legacy"};
+		String mode{defmode && *defmode ? defmode : "legacy"};
 
-		for(const char *tpm_tag : tpm2_tags) {
-			if(strstr(text.c_str(),tpm_tag)) {
-				Logger::String{"Found TPM2 key on ",filename}.trace();
-#if defined(HAVE_OPENSSL_PROVIDER)
-				mode = Config::Value<string>{"crypto","tpm-engine","provider"}.c_str();
-#elif defined(HAVE_OPENSSL_ENGINE)
-				mode = Config::Value<string>{"crypto","tpm-engine","engine"}.c_str();
-#else
-				throw runtime_error("No OpenSSL backend available for TPM2 key");
-#endif
-				break;
+		if(!(defmode && *defmode)) {
+
+			static const char *tpm2_tags[] = {
+					"-----BEGIN TSS2 PRIVATE KEY-----",
+					"-----BEGIN TSS2 KEY BLOB-----",
+			};
+
+			for(const char *tpm_tag : tpm2_tags) {
+				if(strstr(text.c_str(),tpm_tag)) {
+					Logger::String{"Found TPM2 key on ",filename}.trace();
+	#if defined(HAVE_OPENSSL_PROVIDER)
+					mode = Config::Value<string>{"crypto","tpm-backend","provider"}.c_str();
+	#elif defined(HAVE_OPENSSL_ENGINE)
+					mode = Config::Value<string>{"crypto","tpm-backend","engine"}.c_str();
+	#else
+					throw runtime_error("No OpenSSL backend available for TPM2 key");
+	#endif
+					break;
+				}
 			}
-		}
 
+		}
+			
+		Logger::String{"Loading private key from ",filename," using ",mode," backend"}.trace();
 		backend = BackEnd::Factory(mode);
 		backend->load(filename,passwd);
-		*/
-
+		
+		return *this;
 	}
 
 	void Crypto::Key::save_private(const char *filename, const char *password) {
