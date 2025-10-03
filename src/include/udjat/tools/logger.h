@@ -57,6 +57,7 @@
 		UDJAT_API unsigned short verbosity() noexcept;
 		UDJAT_API void verbosity(unsigned short level) noexcept;
 		UDJAT_API void verbosity(const char *level);
+		UDJAT_API bool decorated() noexcept;
 
 		UDJAT_API std::ostream & info();
 		UDJAT_API std::ostream & warning();
