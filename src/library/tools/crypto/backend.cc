@@ -53,6 +53,14 @@
 		unload();
 	}
 
+	void Crypto::BackEnd::unload() {
+		if(pkey) {
+			debug("Unloading private key");
+			EVP_PKEY_free(pkey);
+			pkey = NULL;
+		}
+	}
+
 	static int pcb(char *buf, int size, int rwflag, const char *password) {
 		size_t len = strlen(password);
 		if(len > (size_t) size) {

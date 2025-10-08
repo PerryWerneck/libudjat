@@ -85,6 +85,7 @@
 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
 
 			// Test key loading
+			Logger::String{"Reloading private key for ",backend," from file."}.info();
 			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();
 
 			Logger::String{"Reloaded private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",loaded.c_str()}.info();
@@ -97,6 +98,7 @@
 			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
 		}
 
+		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.info();
 	}
 
 

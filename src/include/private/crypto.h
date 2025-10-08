@@ -43,7 +43,7 @@
 	/// @see SSL::Key::BackEnd::Factory
 	class UDJAT_PRIVATE Crypto::BackEnd {
 	protected:
-		EVP_PKEY *pkey = nullptr;
+		EVP_PKEY *pkey = NULL;
 
 		/// @brief The type of the backend.
 		/// On the provider and engine backends this is the name of the provider/engine loaded, usually tpm2tss.
@@ -52,6 +52,11 @@
 		BackEnd(const char *name, const char *type);
 
 	public:
+
+		BackEnd(BackEnd &) = delete;
+		BackEnd(BackEnd *) = delete;
+		BackEnd(const BackEnd &) = delete;
+		BackEnd(const BackEnd *) = delete;
 
 		static std::shared_ptr<Crypto::BackEnd> Factory(Udjat::String name);
 
@@ -69,12 +74,7 @@
 		virtual void save_public(const char *filename);
 		virtual void load(const char *filename, const char *password);
 		
-		inline void unload() {
-			if(pkey) {
-				EVP_PKEY_free(pkey);
-				pkey = nullptr;
-			}
-		}
+		void unload();
 
 		virtual std::string get_private();
 		virtual std::string get_public();
