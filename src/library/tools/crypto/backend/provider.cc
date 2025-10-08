@@ -63,6 +63,29 @@
 	}
 
 	SSLProvider::SSLProvider() : Crypto::BackEnd{"provider","tpm2"} {
+
+		class UDJAT_PRIVATE DefaultSSLProvider {
+		private:
+			OSSL_PROVIDER *provider = nullptr;
+
+		public:
+
+			DefaultSSLProvider() : provider{OSSL_PROVIDER_load(NULL, "default")}{
+				if(!provider) {
+					throw runtime_error("Could not load OpenSSL default provider");
+				}
+				Logger::String{"Loaded OpenSSL default provider"}.trace();
+			}
+
+			~DefaultSSLProvider() {
+				OSSL_PROVIDER_unload(provider);
+				Logger::String{"Unloaded OpenSSL default provider"}.trace();
+			}
+
+		};
+
+		static DefaultSSLProvider default_provider;
+
 		provider = OSSL_PROVIDER_load(NULL, type.c_str());
 		if(!provider) {
 			throw runtime_error(String{"Could not load OpenSSL provider '",type.c_str(),"'"});
