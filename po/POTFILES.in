@@ -319,6 +319,7 @@ src/include/udjat/tools/singleton.h
 src/include/udjat/tools/url.h
 src/include/udjat/tools/xml.h
 src/include/udjat/tools/crypto.h
+src/include/udjat/tools/memory.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/progress.h
