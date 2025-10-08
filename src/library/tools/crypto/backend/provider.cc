@@ -36,10 +36,11 @@
  #include <openssl/evp.h>
  #include <openssl/pem.h>
  #include <udjat/tools/crypto.h>
+ #include <udjat/tools/memory.h>
  #include <memory>
  #include <openssl/store.h>
 
- using OSSL_STORE_ptr = std::unique_ptr<OSSL_STORE_CTX, decltype(&OSSL_STORE_close)>;
+ // using OSSL_STORE_ptr = std::unique_ptr<OSSL_STORE_CTX, decltype(&OSSL_STORE_close)>;
  
  using namespace std;
 

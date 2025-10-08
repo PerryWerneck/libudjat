@@ -25,6 +25,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file/temporary.h>
+ #include <udjat/tools/memory.h>
  #include <cstdio>
  #include <memory>
 
@@ -38,7 +39,7 @@
 
  #ifdef HAVE_TPM2_TSS_ENGINE_H
  #include <tpm2-tss-engine.h>
- using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
+ // using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
  #endif // HAVE_TPM2_TSS_ENGINE_H
 
  using namespace std;
@@ -96,7 +97,7 @@
 	void SSLEngine::generate(const char *filename, const char *password, size_t mbits) {
 
 		// Reference: https://github.com/tpm2-software/tpm2-tss-engine/blob/master/src/tpm2tss-genkey.c
-		auto bignum = BIGNUM_PTR(BN_new(),BN_free);
+		auto bignum = make_handle(BN_new(),BN_free);
 		if (!bignum) {
 			throw runtime_error("Error creating BIGNUM.");
 		}
@@ -105,8 +106,9 @@
 			throw runtime_error("Error setting public exponent.");
 		}
 
-		auto rsa = RSA_PTR(RSA_new(),RSA_free);
-		if (!bignum) {
+		// auto rsa = RSA_PTR(RSA_new(),RSA_free);
+		auto rsa = make_handle(RSA_new(),RSA_free);
+		if (!rsa) {
 			throw runtime_error("Error creating RSA.");
 		}
 

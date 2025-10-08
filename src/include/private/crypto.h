@@ -28,9 +28,9 @@
  #include <openssl/bio.h>
  #include <openssl/evp.h>
 
- using BIO_PTR = std::unique_ptr<BIO, decltype(&BIO_free_all)>;
- using CTX_PTR = std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)>;
- using BIGNUM_PTR = std::unique_ptr<BIGNUM, decltype(&BN_free)>;
+ // using BIO_PTR = std::unique_ptr<BIO, decltype(&BIO_free_all)>;
+ // using CTX_PTR = std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)>;
+ // using BIGNUM_PTR = std::unique_ptr<BIGNUM, decltype(&BN_free)>;
 
  namespace Udjat {
 

@@ -25,6 +25,7 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file/temporary.h>
+ #include <udjat/tools/memory.h>
  #include <cstdio>
  #include <udjat/tools/subprocess.h>
 
@@ -73,7 +74,7 @@
 		debug("Loading ",filename);
 
 		File::Text file{filename};
-		BIO_PTR bio(BIO_new_mem_buf((void *) file.c_str(), -1), BIO_free_all);
+		auto bio = make_handle(BIO_new_mem_buf((void *) file.c_str(), -1), BIO_free_all);
 		if(!bio) {
 			throw system_error(errno,system_category(),filename);
 		}
@@ -179,7 +180,7 @@
 
 	std::string Crypto::BackEnd::get_private() {
 
-		BIO_PTR bio(BIO_new(BIO_s_mem()), BIO_free_all);
+		auto bio = make_handle(BIO_new(BIO_s_mem()), BIO_free_all);
 		if(!bio) {
 			throw Crypto::Exception("BIO_new failed");
 		}
@@ -195,7 +196,7 @@
 
 	std::string Crypto::BackEnd::get_public() {
 
-		BIO_PTR bio(BIO_new(BIO_s_mem()), BIO_free_all);
+		auto bio = make_handle(BIO_new(BIO_s_mem()), BIO_free_all);
 		if(!bio) {
 			throw Crypto::Exception("BIO_new failed");
 		}
