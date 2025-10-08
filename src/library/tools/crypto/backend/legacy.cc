@@ -43,8 +43,6 @@
 
  using namespace std;
 
- using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
-
  namespace Udjat {
 
 	std::shared_ptr<Crypto::BackEnd> Crypto::BackEnd::LegacyFactory() {
