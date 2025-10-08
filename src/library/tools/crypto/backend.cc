@@ -140,25 +140,31 @@
 
 	void Crypto::BackEnd::save_private(const char *filename, const char *password) {
 
-		FILE *file = fopen(filename, "w");
+		auto file = make_handle(fopen(filename, "w"),fclose);
 		if(!file) {
 			throw system_error(errno,system_category(),filename);
 		}
 
+		Config::Value<string> ciphername{"crypto","cipher","aes-256-cbc"};
+		debug("Using cipher ",ciphername.c_str()," to protect private key");
+
+		auto cipher = EVP_get_cipherbyname(ciphername.c_str());
+
+		if(!cipher) {
+			throw Crypto::Exception(String{"Unable to get cipher '",ciphername.c_str(),"'"});
+		}
+
 		if(PEM_write_PrivateKey(
-			file, 
+			file.get(), 
 			pkey, 
-			EVP_des_ede3_cbc(), 
+			cipher, 
 			(unsigned char *) password, 
 			(password ? strlen(password) : 0), 
 			NULL, 
 			NULL
 		) != 1) {
-			fclose(file);
 			throw Crypto::Exception("PEM_write_PrivateKey failed");
 		}
-
-		fclose(file);
 
 	}
 
