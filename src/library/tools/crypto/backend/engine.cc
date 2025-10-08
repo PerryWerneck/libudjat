@@ -38,11 +38,10 @@
 
  #ifdef HAVE_TPM2_TSS_ENGINE_H
  #include <tpm2-tss-engine.h>
+ using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
  #endif // HAVE_TPM2_TSS_ENGINE_H
 
  using namespace std;
-
- using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
 
  namespace Udjat {
 
