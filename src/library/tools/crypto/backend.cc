@@ -42,8 +42,6 @@
 
  using namespace std;
 
- // using RSA_PTR = std::unique_ptr<RSA, decltype(&RSA_free)>;
-
  namespace Udjat {
 
 	Crypto::BackEnd::BackEnd(const char *name, const char *t) : type{Config::Value<string>{"crypto","type",t}.c_str()} {
