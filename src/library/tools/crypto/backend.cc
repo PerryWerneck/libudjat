@@ -33,6 +33,7 @@
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
 
+ #include <openssl/opensslv.h>
  #include <openssl/bio.h>
  #include <openssl/evp.h>
  #include <udjat/tools/crypto.h>
@@ -73,6 +74,8 @@
 
 		debug("Loading ",filename);
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+
 		File::Text file{filename};
 		auto bio = make_handle(BIO_new_mem_buf((void *) file.c_str(), -1), BIO_free_all);
 		if(!bio) {
@@ -88,7 +91,20 @@
 		if(!pkey) {
 			throw Crypto::Exception("PEM_read_bio_PrivateKey failed");
 		}
-		
+
+#else
+
+		auto file = make_handle(fopen(filename, "rb"), fclose);
+		if(!file) {
+			throw system_error(errno,system_category(),filename);
+		}	
+
+		pkey = PEM_read_PrivateKey(file.get(), NULL, (pem_password_cb *) pcb, (void *) password);
+		if(!pkey) {
+			throw Crypto::Exception("PEM_read_PrivateKey failed");
+		}
+
+#endif
 	}
 
 	bool Crypto::BackEnd::subproc(const char *filename, const char *passwd, size_t mbits) {
@@ -145,6 +161,8 @@
 			throw system_error(errno,system_category(),filename);
 		}
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+
 		Config::Value<string> ciphername{"crypto","cipher","aes-256-cbc"};
 		debug("Using cipher ",ciphername.c_str()," to protect private key");
 
@@ -165,22 +183,35 @@
 		) != 1) {
 			throw Crypto::Exception("PEM_write_PrivateKey failed");
 		}
+		
+#else
+
+		if(PEM_write_PrivateKey(
+			file.get(), 
+			pkey, 
+			EVP_des_ede3_cbc(), 
+			(unsigned char *) password, 
+			(password ? strlen(password) : 0), 
+			NULL, 
+			NULL
+		) != 1) {
+			throw Crypto::Exception("PEM_write_PrivateKey failed");
+		}
+
+#endif
 
 	}
 
 	void Crypto::BackEnd::save_public(const char *filename) {
 
-		FILE *file = fopen(filename, "w");
-		if(!file) {
-			throw system_error(errno,system_category(),filename);
+		auto bio = make_handle(BIO_new_file(filename, "w"), BIO_free_all);
+		if(!bio) {
+			throw Crypto::Exception("BIO_new_file failed");
 		}
 
-		if(PEM_write_PUBKEY(file,pkey) != 1) {
-			fclose(file);
-			throw Crypto::Exception("PEM_write_PUBKEY failed");
+		if(PEM_write_bio_PUBKEY(bio.get(), pkey) != 1) {
+			throw Crypto::Exception("PEM_write_bio_PUBKEY failed");
 		}
-
-		fclose(file);
 
 	}
 
@@ -198,6 +229,7 @@
 		char *data;
 		long len = BIO_get_mem_data(bio.get(), &data);
 		return std::string(data, len);
+
 	}
 
 	std::string Crypto::BackEnd::get_public() {
@@ -214,6 +246,7 @@
 		char *data;
 		long len = BIO_get_mem_data(bio.get(), &data);
 		return std::string(data, len);
+
 	}
 
 	std::shared_ptr<Crypto::BackEnd> Crypto::BackEnd::Factory(Udjat::String name) {
@@ -224,12 +257,12 @@
 			if(access("/dev/tpm0",F_OK) != 0) {
 				name = "legacy";
 			} else {
-#if defined(HAVE_OPENSSL_ENGINE)
-				// /usr/lib64/engines-3/tpm2.so
-				name = Config::Value<string>{"crypto","tpm2-backend","engine"}.c_str();
-#elif defined(HAVE_OPENSSL_PROVIDER)
+#if defined(HAVE_OPENSSL_PROVIDER)
 				// /usr/lib64/ossl-modules/tpm2.so
 				name = Config::Value<string>{"crypto","tpm2-backend","provider"}.c_str();
+#elif defined(HAVE_OPENSSL_ENGINE)
+				// /usr/lib64/engines-3/tpm2.so
+				name = Config::Value<string>{"crypto","tpm2-backend","engine"}.c_str();
 #else
 				name = Config::Value<string>{"crypto","tpm2-backend","legacy"}.c_str();
 #endif
