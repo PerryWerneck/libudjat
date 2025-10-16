@@ -78,8 +78,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/xml/*.cc)
 
 TEST_SOURCES= \
-	src/testprogram/main.cc \
-	src/testprogram/tests.cc
+	src/testprogram/main.cc
 	
 TARGETS=@OSNAME@-lib devel @OPTIONAL_MODULES@
 

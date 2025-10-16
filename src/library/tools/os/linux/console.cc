@@ -106,6 +106,10 @@ namespace Udjat {
 
 	bool UI::Console::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
 
+		if(!Logger::decorated()) {
+			return false;
+		}
+
 		unsigned short width = this->width();
 		
 		char line[width+1];
@@ -195,27 +199,37 @@ namespace Udjat {
 	}
 
 	UI::Console & UI::Console::set(const Foreground color) {
-		*this << "\x1B[" << (int) color << "m";
+		if(Logger::decorated()) {
+			*this << "\x1B[" << (int) color << "m";
+		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::bold(bool on) {
-		*this << "\x1B[" << (on ? "1" : "22") << "m";
+		if(Logger::decorated()) {
+			*this << "\x1B[" << (on ? "1" : "22") << "m";
+		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::faint(bool on) {
-		*this << "\x1B[" << (on ? "2" : "22") << "m";
+		if(Logger::decorated()) {
+			*this << "\x1B[" << (on ? "2" : "22") << "m";
+		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::italic(bool on) {
-		*this << "\x1B[" << (on ? "3" : "23") << "m";
+		if(Logger::decorated()) {
+			*this << "\x1B[" << (on ? "3" : "23") << "m";
+		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::cursor(bool on) {
-		*this << "\x1B[" << (on ? "?25h" : "?25l");
+		if(Logger::decorated()) {
+			*this << "\x1B[" << (on ? "?25h" : "?25l");
+		}
 		return *this;
 	}
 

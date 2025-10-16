@@ -76,7 +76,7 @@
 	}
 	
 	std::string Module::filename() const {
-		return filename((const void *) &this->_info, name);
+		return filename((const void *) &this->_info, module_name);
 	}
 
 	std::string Module::filename(const void *ptr, const char *def) {

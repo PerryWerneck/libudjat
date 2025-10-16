@@ -17,7 +17,7 @@
 #
 Summary:		UDJat core library for mingw64
 Name:			mingw64-libudjat
-Version: 2.2.0
+Version: 2.2.2
 Release:		0
 License:		LGPL-3.0
 Source:			libudjat-%{version}.tar.xz

@@ -28,6 +28,7 @@
  #include <cstring>
  #include <list>
  #include <ostream>
+ #include <iostream>
  #include <vector>
  #include <fstream>      // std::filebuf
 
@@ -70,19 +71,17 @@
 			return;
 		}
 
-		/*
-		auto levels = String{level}.split(",");
-
-		for(auto &level : levels) {
-			if(!level.strip().empty()) {
-				for(uint8_t ix = 0; ix < (sizeof(typenames)/sizeof(typenames[0])); ix++) {
-					if(!strcasecmp(typenames[ix],name)) {
-						enable(Logger::Level) ix;
-					}
-				}		
+		for(auto &lvl : String{level}.split(",")) {
+			lvl.strip();
+			if(!lvl.empty()) {
+				continue;
+			}
+			for(uint8_t ix = 0; ix < (sizeof(typenames)/sizeof(typenames[0])); ix++) {
+				if(!strcasecmp(typenames[ix],lvl.c_str())) {
+					enable((Level) ix,true);
+				}
 			}
 		}
-		*/
 
 	}
 
@@ -159,6 +158,17 @@
 				true
 			);
 
+		}
+
+		// Check for logfile
+		{
+			auto attribute = node.attribute("log-file");
+			if(attribute) {
+				const char *filename = attribute.as_string();
+				if(filename && *filename) {
+					file(filename);
+				}
+			}
 		}
 
 	}
@@ -295,6 +305,10 @@
 #endif // !_WIN32
 
 	void Logger::setup(int &argc, char **argv, bool extract, bool dbg) {
+		return setup(argc, argv, extract, nullptr, dbg);
+	}
+
+	void Logger::setup(int &argc, char **argv, bool extract, const char *filename, bool dbg) {
 
 		String optarg;
 
@@ -311,8 +325,12 @@
 			Logger::console(true);
 		}
 
-		if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
+		if(CommandLineParser::get_argument(argc,argv,'l',"logfile",optarg,extract)) {
+			Logger::file(optarg.c_str());
+		} else if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
 			Logger::file(true);
+		} else if(filename && *filename) {
+			Logger::file(filename);
 		}
 
 		if(CommandLineParser::has_argument(argc,argv,'L',"loglevel",extract)) {
@@ -322,10 +340,6 @@
 		if(CommandLineParser::get_argument(argc,argv,'v',"verbose",optarg,extract)) {
 			Logger::console(true);
 			Logger::verbosity(optarg.c_str());
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'l',"logfile",optarg,extract)) {
-			Logger::file(optarg.c_str());
 		}
 
 		if(CommandLineParser::get_argument(argc,argv,'L',"loglevel",optarg,extract)) {
@@ -340,7 +354,7 @@
 			setup_coredump(optarg.c_str());			
 			Logger::String{"Coredump enabled using pattern '",optarg.c_str(),"'"}.info();
 		}
-#endif // !_WIN32
+#endif // !_WIN32	
 
 	}
 
@@ -478,10 +492,14 @@
 	void Logger::redirect() {
 
 		static const Level levels[] = { Info,Warning,Error };
+		
 		std::ostream *streams[] = {&std::cout, &std::clog, &std::cerr};
 
 		if(Logger::file()) {
-			Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+			auto &options = Options::getInstance();
+			if(options.filename && *options.filename && *options.filename != '/') {
+				Application::LogDir::getInstance();	// Get log path, mkdir if necessary.
+			}
 		}
 
 		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {

@@ -27,9 +27,9 @@
 
 namespace Udjat {
 
-	namespace SSL {
+	namespace Crypto {
 
-		class Exception : public Udjat::Exception {
+		class UDJAT_API Exception : public Udjat::Exception {
 		public:
 			Exception(const char *msg);
 			
@@ -37,15 +37,30 @@ namespace Udjat {
 			}
 		};
 
+		class BackEnd;
+		
 		class UDJAT_API Key {
 		private:
 
 			std::string filename;
-			EVP_PKEY *pkey = NULL;
-
-			class BackEnd;
 			std::shared_ptr<BackEnd> backend;
 
+		protected:
+
+			/// @brief Loads or generates a private key.
+			/// @param filename The file where the private key is stored.
+			/// If the file does not exist, it will be created.
+			/// If the file exists, it will be loaded.	
+			/// @param password The password to protect the private key.
+			/// If the file does not exist, this password will be used to encrypt the private
+			/// key when it is generated.
+			/// If the file exists, this password will be used to decrypt the private key.
+			/// If the password is empty, the private key will not be encrypted.
+			/// If the file exists and the password is empty, the private key will be loaded
+			/// without decryption.
+			/// @param autogenerate If true, the private key will be generated if the file does not exist. 
+			void initialize(const char *filename, const char *password, bool autogenerate = false);
+		
 		public:
 
 			/// @brief Build an empty private key.
@@ -72,13 +87,9 @@ namespace Udjat {
 			Key(const char *filename, const char *password, bool autogenerate = false);
 			~Key();
 
-			inline operator bool() const noexcept {
-				return (bool) pkey;
-			}
+			operator bool() const noexcept;
 
-			inline operator EVP_PKEY *() const noexcept {
-				return pkey;
-			} 
+			operator EVP_PKEY *() const;
 
 			/// @brief Generates a new private key.
 			/// @param mbits The size of the key in bits. Default is 2048 bits.
@@ -89,7 +100,9 @@ namespace Udjat {
 			/// @brief Loads private key from file.
 			/// @param filename The file where the private key is stored.
 			/// @param password The password to protect the private key.
-			void load(const char *filename, const char *passwd = NULL);
+			/// @param defmode The backend mode to use, legacy, engine or provider.
+			/// If not specified, the mode will be taken from the configuration file.
+			Key & load(const char *filename, const char *passwd = nullptr, const char *defmode = nullptr);
 
 			/// @brief Save private key to file.
 			/// @param filename The file where the private key will be stored.
@@ -112,11 +125,11 @@ namespace Udjat {
 
 namespace std {
 
-	inline std::string to_string(const Udjat::SSL::Key &key) {
+	inline std::string to_string(const Udjat::Crypto::Key &key) {
 		return key.to_string();
 	}
 
-	inline ostream& operator<< (ostream& os, const Udjat::SSL::Key &key) {
+	inline ostream& operator<< (ostream& os, const Udjat::Crypto::Key &key) {
 		return os << to_string(key);
 	}
 

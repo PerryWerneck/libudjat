@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2024 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,31 +18,17 @@
  */
 
 
- #include <config.h>
+ #pragma once
+
  #include <udjat/defs.h>
- #include <udjat/loader.h>
- #include <iostream>
- #include <udjat/tools/url.h>
- #include <udjat/tools/logger.h>
- #include <udjat/module/abstract.h>
- #include <udjat/tools/commandlineparser.h>
- #include <string>
+ #include <memory>
 
- using namespace Udjat;
- using namespace std;
+ namespace Udjat {
 
- int main(int argc, char **argv) {
-
-	// Call the loader function with command line arguments
-	return loader(argc, argv,[](Application &app) -> int {
-		/*
-#ifdef TEST_PROGRAM
-		return run_unit_test(nullptr);
-#else
-		return 0;
-#endif // TEST_PROGRAM
-		*/
-		return 0;
-	}, "test.xml");
+	template<typename T, typename D>
+	std::unique_ptr<T, D> make_handle(T* handle, D deleter) {
+		return std::unique_ptr<T, D>{handle, deleter};
+	}
 
  }
+

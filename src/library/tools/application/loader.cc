@@ -33,6 +33,7 @@
 
  #ifndef _WIN32
 	#include <dlfcn.h>
+	#include <link.h>
  #endif // !_WIN32
 
  #ifdef HAVE_FILESYSTEM_H
@@ -49,6 +50,46 @@
  int Udjat::loader(int argc, char **argv, const char *path) {
 	return Udjat::loader(argc,argv,[](Application &app) {return 0;},path);
  }
+
+#ifndef _WIN32
+static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
+
+	if(!info->dlpi_name || !*info->dlpi_name) {
+		debug("Skipping main program");
+		return 0;
+	}
+
+	debug("Name: ",info->dlpi_name);
+	void *hModule = dlopen(info->dlpi_name, RTLD_NOW|RTLD_LOCAL);
+	if(hModule) {
+		size_t *count = (size_t *) data;
+		dlerror(); // Clear any existing error
+		int (*symbol)(const char *) = (int(*)(const char *)) dlsym(hModule,"run_udjat_unit_test");
+		auto error = dlerror();
+		if(symbol && !error) {
+			(*count)++;
+			Logger::String{"------------- Running unit tests from module '",info->dlpi_name,"' -------------"}.info();
+			try {
+				int rc = symbol(nullptr);
+				if(rc) {
+					dlclose(hModule);
+					return rc;	
+				}
+			} catch(const std::exception &e) {
+				Logger::String{"Error running unit tests from module '",info->dlpi_name,"': ",e.what()}.error();
+				dlclose(hModule);
+				return -1;
+			}
+		} else {
+			debug(error ? error : "No unit tests found in module");
+		}
+		dlclose(hModule);
+	} else {
+		Logger::String{"Error opening '",info->dlpi_name,"': ",dlerror()}.error();
+	}
+	return 0;
+}
+#endif // !_WIN32
 
  int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<int(Application &app)> &init, const char *path) {
 
@@ -118,6 +159,8 @@
 
 			debug("Running unit test '",argvalue,"'");
 #ifndef _WIN32	
+			dl_iterate_phdr(phdr_item, nullptr);
+			/*
 			try {
 				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
 				if(symbol) {
@@ -127,6 +170,7 @@
 				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
 				return -1;
 			}
+			*/
 #endif
 
 			Module::for_each([&argvalue](Module &module) -> bool {
@@ -146,16 +190,31 @@
 
 	if(CommandLineParser::has_argument(argc,argv,'t',"test")) {
 
+		debug("Running all unit tests");
+
 #ifndef _WIN32
-		try {
-			int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
-			while(symbol) {
-				symbol(nullptr);
-				symbol = (int(*)(const char *)) dlsym(RTLD_NEXT,"run_unit_test");
+		size_t count = 0;
+		dl_iterate_phdr(phdr_item, &count);
+		if(!count) {
+			Logger::String{"Searching application for unit tests"}.info();
+			try {
+				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_udjat_unit_test");
+				if(symbol) {
+					count++;
+					Logger::String{"Running unit tests from main program"}.info();
+					symbol(nullptr);
+				} else {
+					Logger::String{"No unit tests found in main program"}.info();
+				}
+			} catch(const std::exception &e) {
+				Logger::String{"Error running unit tests: ",e.what()}.error();
+				return -1;
 			}
-		} catch(const std::exception &e) {
-			Logger::String{"Error running unit tests: ",e.what()}.error();
-			return -1;
+		}
+		if(count == 0) {
+			Logger::String{"No loaded modules with tests found"}.error();
+		} else {
+			Logger::String{"Loaded ",count," modules with tests"}.info();
 		}
 #endif
 

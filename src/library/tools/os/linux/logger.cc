@@ -153,13 +153,17 @@ namespace Udjat {
 
 	}
 
+	bool Logger::decorated() noexcept {
+		static bool flag = isatty(1) && (getenv("TERM") != NULL);
+		return flag;
+	}
+
 	/// @brief Default console writer.
 	void Logger::console_writer(Logger::Level level, const char *domain, const char *text) noexcept {
 
 		// Write to console.
-		static bool decorated = (getenv("TERM") != NULL);
 
-		if(decorated) {
+		if(decorated()) {
 			Logger::write(1,decoration(level));
 		}
 
@@ -169,7 +173,7 @@ namespace Udjat {
 		Logger::write(1," ");
 		Logger::write(1,text);
 
-		if(decorated) {
+		if(decorated()) {
 			Logger::write(1,"\x1b[0m");
 		}
 

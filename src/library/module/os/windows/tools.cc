@@ -79,11 +79,12 @@
 	}
 
 	std::string Module::filename() const {
-		TCHAR path[MAX_PATH];
+		TCHAR path[MAX_PATH +1];
+		memset(path,0,MAX_PATH +1);
 		if(GetModuleFileName(this->handle, path, MAX_PATH) ) {
 			return (const char *) path;
 		}
-		return name;
+		throw Win32::Exception();
 	}
 
 	void * Module::Controller::getSymbol(HMODULE hModule, const char *name, bool required) {

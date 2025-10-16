@@ -194,28 +194,10 @@
 
 	}
 
-	/*
-	static void setProperty(const char *name, const char *value) {
-
-		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
-
-#ifdef _WIN32
-		if(!SetEnvironmentVariable(name,value)) {
-			throw Win32::Exception(_("Unable to set environment variable"));
-		}
-#else
-		if(setenv(name, value, 1)) {
-			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
-		}
-#endif // _WIN32
-
-	}
-	*/
-
 	void CommandLineParser::setup(int &argc, char **argv, bool dbg) noexcept {
 
 		// Setup logger
-		Logger::setup(argc,argv,dbg);
+		Logger::setup(argc,argv,"",dbg);
 		Logger::redirect();	
 
 		if(dbg) {

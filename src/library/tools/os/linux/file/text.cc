@@ -40,8 +40,10 @@
 
 	File::Text::Text(const char *filename) : Path(filename) {
 
+		debug("Opening text file '",filename,"'");
 		int fd = open(filename,O_RDONLY);
 		if(fd < 0) {
+			
 			throw system_error(errno, system_category(), filename);
 		}
 

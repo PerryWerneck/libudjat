@@ -57,6 +57,7 @@
 		UDJAT_API unsigned short verbosity() noexcept;
 		UDJAT_API void verbosity(unsigned short level) noexcept;
 		UDJAT_API void verbosity(const char *level);
+		UDJAT_API bool decorated() noexcept;
 
 		UDJAT_API std::ostream & info();
 		UDJAT_API std::ostream & warning();
@@ -74,8 +75,10 @@
 		/// @param dbg True to use debug mode defaults.
 #ifdef DEBUG
 		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = true);
+		UDJAT_API void setup(int &argc, char **argv, bool extract = true, const char *filename = nullptr, bool dbg = true);
 #else
 		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = false);
+		UDJAT_API void setup(int &argc, char **argv, bool extract = true, const char *filename = nullptr, bool dbg = false);
 #endif // DEBUG
 
 		/// @brief Enable/Disable write to file.

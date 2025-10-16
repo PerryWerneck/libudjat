@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.2.0',
+	version: '2.2.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -153,7 +153,10 @@ if openssl.found()
   if cxx.compiles('#include <openssl/engine.h>', name : 'openssl-engine.h')
 
     app_conf.set('HAVE_OPENSSL_ENGINE', 1)
-
+    lib_src += [
+      'src/library/tools/crypto/backend/engine.cc',
+    ]
+ 
     if cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
 
       app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
@@ -178,9 +181,17 @@ if openssl.found()
 
     if cxx.compiles('#include <openssl/provider.h>', name : 'openssl-provider.h')
       app_conf.set('HAVE_OPENSSL_PROVIDER', 1)
+      lib_src += [
+        'src/library/tools/crypto/backend/provider.cc',
+      ]
     endif
   
   endif
+
+  install_headers(
+    'src/include/udjat/tools/crypto.h',
+    subdir: 'udjat/tools'  
+  )
 
 endif
 
@@ -459,13 +470,15 @@ lib_src += [
   'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
+  'src/library/testprogram.cc',
 ]
 
 if openssl.found()
   lib_src += [
-    'src/library/tools/ssl/key.cc',
-    'src/library/tools/ssl/backend.cc',
-    'src/library/tools/ssl/exception.cc',
+    'src/library/tools/crypto/key.cc',
+    'src/library/tools/crypto/backend.cc',
+    'src/library/tools/crypto/backend/legacy.cc',
+    'src/library/tools/crypto/exception.cc',
   ]
 endif
 
@@ -761,7 +774,7 @@ else
 
 executable(
   meson.project_name(),
-  config_h + [ 'src/testprogram/main.cc', 'src/testprogram/tests.cc' ],
+  config_h + [ 'src/testprogram/main.cc' ],
   cpp_args: [ '-DTEST_PROGRAM' ],
   install: false,
   link_with : [ dynamic ],
@@ -906,6 +919,7 @@ install_headers(
   'src/include/udjat/tools/report.h',
   'src/include/udjat/tools/percentage.h',
   'src/include/udjat/tools/socket.h',
+  'src/include/udjat/tools/memory.h',
   subdir: 'udjat/tools'  
 )
 

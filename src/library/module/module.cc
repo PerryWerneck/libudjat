@@ -31,9 +31,9 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const ModuleInfo &i) : name(n),handle(nullptr),_info(i) {
+	Module::Module(const char *n, const ModuleInfo &i) : module_name(n),handle(nullptr),_info(i) {
 
-		if(!(name && *name)) {
+		if(!(module_name && *module_name)) {
 			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
 		}
 
@@ -53,7 +53,7 @@ namespace Udjat {
 	}
 
 	Value & Module::getProperties(Value &properties) const {
-		properties["name"] = name;
+		properties["name"] = module_name;
 		properties["filename"] = filename();
 		return _info.getProperties(properties);
 	}
@@ -136,15 +136,15 @@ namespace Udjat {
 	}
 
 	std::ostream & Module::info() const {
-		return cout << name << "\t";
+		return cout << module_name << "\t";
 	}
 
 	std::ostream & Module::warning() const {
-		return clog << name << "\t";
+		return clog << module_name << "\t";
 	}
 
 	std::ostream & Module::error() const {
-		return cerr << name << "\t";
+		return cerr << module_name << "\t";
 	}
 
 }
