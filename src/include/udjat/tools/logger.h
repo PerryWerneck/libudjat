@@ -75,8 +75,10 @@
 		/// @param dbg True to use debug mode defaults.
 #ifdef DEBUG
 		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = true);
+		UDJAT_API void setup(int &argc, char **argv, bool extract = true, const char *filename = nullptr, bool dbg = true);
 #else
 		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = false);
+		UDJAT_API void setup(int &argc, char **argv, bool extract = true, const char *filename = nullptr, bool dbg = false;
 #endif // DEBUG
 
 		/// @brief Enable/Disable write to file.
