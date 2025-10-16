@@ -1,6 +1,6 @@
 Format: 1.0
 Source: libudjat
-Version: 2.0.2+git20250708
+Version: 2.2.2+git20251016
 Binary: libudjat
 Maintainer: Perry Werneck <perry.werneck@gmail.com>
 Architecture: any

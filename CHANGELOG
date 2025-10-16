@@ -1,4 +1,70 @@
 -------------------------------------------------------------------
+Thu Oct 16 21:07:24 UTC 2025 - perry.werneck@gmail.com
+
+- Update to version 2.2.2+git20251016:
+  * Adding option to set default log filename.
+  * Better handling of legacy versions.
+  * Updating private key cipher, setting it to configurable.
+  * Fixing win32 package.
+  * Adding template make_handle to generate shared_ptrs from standard C handlers.
+  * Implementing singleton with the default openssl provider.
+  * rsa_ptr is required only if HAVE_TPM2_TSS_ENGINE_H
+  * Adding public method to check for log decoration.
+  * Refactoring cryptographic engine.
+  * Disabling log decoration when output is a file.
+  * Debugging TPM2TSS OpenSSL engine.
+  * Fixing package build.
+  * Using subprocess to generate engine based crypto key (for now).
+  * Adding Module::name() method.
+  * Listing loaded module when running unit tests in debug mode.
+  * Fixing log file path outside the standard directory.
+  * Adding Activatable::available() to check if an action can be activated.
+  * Renaming Object::parse() to Object::setup to avoid conflicts with parser objects.
+  * Refactoring object factories.
+  * Refactoring agent parser.
+  * Reenabling deprecated call.
+  * Refactoring object parser.
+  * Refactoring agent factories.
+  * Debugging object factories.
+  * Fixing deprecation message.
+  * Refactoring object factories.
+  * Debugging XML parsers.
+  * Appending child object after factory.
+  * Auto inserting object children.
+  * Adding 'parse-children' method on Abstract::Object
+  * Adding convenience method to get module path from ptr.
+  * Adding convenience method to get symbols from current app.
+  * Supressing valgrind warns from system libs, Implementing XML::PathFactory to sanitize/defaults XML definitions path.
+  * Adding xml option to enable run script thru an env+sudo shell.
+  * Adding convenience container for activatables.
+  * Debugging legacy builds.
+  * Removing bugged code.
+  * Adding method to register pre-defined actions.
+  * Refactoring action controller.
+  * Refactoring action factory.
+  * Better parsing of objects.
+  * Debugging win32 tmpdir.
+  * Fixing win32 builds.
+  * Removing debug message.
+  * Showing locale path on trace output.
+  * Fixing segfault on empty logger domain.
+  * Adding 'tmpdir' macro.
+  * Fixing segfault on scheme for empty url.
+  * Debugging url local()/remote() methods.
+  * Debugging static pkgconfig for legacy.
+  * Adding convenience method do copy a xml document to another document node.
+  * Using Udjat::String for tempfilenames.
+  * Better handling of win32 registry.
+  * Fixing for_each for iniparser (legacy) config handler.
+  * Changing 'config::for_each' to the same results of other for_each methods, implementing test case for it.
+  * Fixing dead-lock on console dialog.
+  * Adding convenience method to replace url hostname.
+  * Fixing legacy builds.
+  * Debugging legacy builds.
+  * Removing unused sources, changing lock guards to 'mutable'.
+  * Closing release 2.0.2
+
+-------------------------------------------------------------------
 Tue Jul 08 10:35:05 UTC 2025 - perry.werneck@gmail.com
 
 - Update to version 2.0.2+git20250708:

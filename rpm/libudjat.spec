@@ -17,7 +17,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.2.2
+Version: 2.2.2+git20251016
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz

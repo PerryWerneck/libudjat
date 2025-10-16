@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-15 13:26-0300\n"
+"POT-Creation-Date: 2025-10-16 16:11-0300\n"
 "PO-Revision-Date: 2025-09-01 11:54-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -593,36 +593,36 @@ msgid "Quit after \"seconds\""
 msgstr "Encerra após \"seconds\""
 
 #: src/library/tools/commandlineparser.cc:189
-#: src/library/tools/commandlineparser.cc:272
+#: src/library/tools/commandlineparser.cc:254
 msgid "Usage:"
 msgstr "Uso:"
 
 #: src/library/tools/commandlineparser.cc:190
-#: src/library/tools/commandlineparser.cc:273
+#: src/library/tools/commandlineparser.cc:255
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#: src/library/tools/logger.cc:349
+#: src/library/tools/logger.cc:364
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger.cc:350
+#: src/library/tools/logger.cc:365
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger.cc:351
+#: src/library/tools/logger.cc:366
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger.cc:352
+#: src/library/tools/logger.cc:367
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger.cc:354
+#: src/library/tools/logger.cc:369
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger.cc:358
+#: src/library/tools/logger.cc:373
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
