@@ -35,7 +35,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/abstract/object.h>
  #include <stdexcept>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
 
  #ifdef HAVE_UNISTD_H
  	#include <unistd.h>

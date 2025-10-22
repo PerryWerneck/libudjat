@@ -30,7 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <udjat/module/abstract.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/tools/interface.h>
  #include <udjat/tools/container.h>
 

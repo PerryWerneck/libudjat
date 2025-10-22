@@ -32,11 +32,11 @@
  #include <udjat/agent/state.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/alert.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------

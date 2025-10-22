@@ -30,7 +30,7 @@
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/service.h>
 #include <udjat/tools/timer.h>
-#include <udjat/tools/actions/abstract.h>
+#include <udjat/action.h>
 #include <memory>
 
 #ifdef HAVE_UNISTD_H

@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.2.2',
+	version: '2.2.3',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -827,6 +827,7 @@ endif
 install_headers(
   'src/include/udjat.h',
   'src/include/udjat/agent.h',
+  'src/include/udjat/action.h',
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
@@ -955,3 +956,5 @@ install_headers(
   'src/include/udjat/tools/actions/abstract.h',
   subdir: 'udjat/tools/actions'  
 )
+
+
