@@ -26,7 +26,9 @@
  #include <udjat/tools/quark.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/subprocess.h>
+ #include <udjat/tools/file/temporary.h>
  #include <system_error>
+ #include <sys/stat.h>
 
  #ifndef _WIN32
 	#include <pwd.h>
@@ -137,8 +139,38 @@
 			sudo{node.attribute("sudo").as_bool(false)} {
 
 		if(!(cmdline && *cmdline)) {
-			Logger::String{"Missing cmdline attribute on node <",node.name(),">"}.error(node.attribute("name").as_string());
-			throw runtime_error(_("The required attribute 'cmdline' is missing"));
+
+			String text{node.child_value()};
+			text.strip();
+
+			if(!text.empty()) {
+                
+				if(text[0] != '#' && text[1] != '!') {
+					throw runtime_error(Logger::Message{_("Missing shebang attribute on {}"),node.path()});
+				}
+
+				Logger::String{"Using script from XML node"}.trace(name());
+				if(node.attribute("strip-lines").as_bool(true)) {
+					String stripped;
+					text.for_each("\n",[&stripped](const String &value) {
+						stripped += const_cast<String &>(value).strip();
+						stripped += "\n";
+						return false;
+					});
+
+					cmdline = stripped.as_quark();
+
+				} else {
+
+					cmdline = text.as_quark();
+				}
+
+			} else {
+
+				throw runtime_error(Logger::Message{_("Required attribute 'cmdline' missing on {}"),node.path()});
+			
+			}
+
 		}
 	}
 
@@ -177,6 +209,49 @@
 
 		if(title && *title) {
 			Logger::String{title}.info(name());
+		}
+
+		if(cmdline[0] == '#' && cmdline[1] == '!') {
+
+			// Has shebang, create temporary file
+			int rc = -1;
+
+			auto filename = File::Temporary::create(strlen(cmdline));
+
+			try {
+
+				File::Handler{filename.c_str(),true}.write(cmdline,strlen(cmdline));
+				chmod(filename.c_str(),0755);
+
+				if(sudo) {
+
+					rc = SubProcess{
+						uid,
+						gid,
+						name(),
+						String{
+							"/usr/bin/env -S /usr/bin/sudo --login -- ",
+							filename.c_str()
+						}.c_str(),
+						out,
+						err
+					}.run();
+
+				} else {
+
+					rc = SubProcess{uid,gid,name(),filename.c_str(),out,err}.run();
+
+				}
+
+
+			} catch(...) {
+				unlink(filename.c_str());
+				throw;
+			}
+
+			unlink(filename.c_str());
+
+			return rc;
 		}
 
 		if(sudo) {

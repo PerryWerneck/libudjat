@@ -19,6 +19,11 @@
 
 	</attribute-list>
 		
+	<action name='check' type='shell' success-value='0' timeout='5' trigger-event='start'>
+		#!/bin/bash
+		ls -l
+	</action>
+
 	<!-- alert name='startup' url='${default-url}/hello' / -->	
 	<!-- alert name='sscritps' cmdline='ls -l' stdout='error' / -->	
 	
