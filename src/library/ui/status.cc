@@ -84,6 +84,9 @@
 	}
 
 	Dialog::Status & Dialog::Status::busy(const char *text) noexcept {
+		if(text && *text) {
+			state(text);
+		}
 		return busy((text && *text));
 	}
 
