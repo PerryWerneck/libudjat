@@ -45,6 +45,19 @@
 		using Node = pugi::xml_node;
 		using Attribute = pugi::xml_attribute;
 
+		/// @brief Load multiple child nodes into a container.
+		/// @details This function loads all child nodes with the given name into the provided container.
+		/// @tparam C 
+		/// @param node Parent node.
+		/// @param attrname XML attribute name for child nodes.
+		/// @param container The container to load nodes into.
+		template <class C>
+		inline void load(const Node &node, const char *attrname, C &container) {
+			for(Node child = node.child(attrname); child; child = child.next_sibling(attrname)) {
+				container.emplace_back(child);
+			}
+		}
+
 		/// @brief XML document
 		class UDJAT_API Document : public pugi::xml_document {
 		public:
