@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -66,10 +67,9 @@ namespace Udjat {
 
 		static string format;
 		static unsigned int keep = 0;
+		auto &options = Options::getInstance();
 
 		try {
-
-			auto &options = Options::getInstance();
 
 			// Current timestamp.
 			TimeStamp timestamp;
@@ -115,6 +115,23 @@ namespace Udjat {
 
 			}
 
+			int fd = ::open(filename.c_str(),O_APPEND|O_CREAT,0664);
+
+			if(fd < 0) {
+				// Error opening file, fallback to syslog.
+				throw system_error(errno,system_category(),filename);
+			}
+
+			String line{timestamp.to_string().c_str()," ",domain," ",text,"\n"};
+		
+			if(::write(fd,line.c_str(),line.size()) != line.size()) {
+				::close(fd);
+				throw system_error(errno,system_category(),"Error writing log file");
+			}
+
+			::close(fd);
+
+			/*
 			// Open file
 			std::ofstream ofs;
 			ofs.exceptions(std::ofstream::failbit | std::ofstream::badbit);
@@ -122,16 +139,23 @@ namespace Udjat {
 			ofs.open(filename, ofstream::out | ofstream::app);
 			ofs << timestamp << " " << domain << " " << text << endl;
 			ofs.close();
+			*/
 
 		} catch(const std::exception &e) {
 
-			console_writer(Logger::Error,"logger",e.what());
-			std::abort();
+			// Error writing file, fallback to syslog
+			Logger::syslog(true);
+			Logger::file(false);
+			::syslog(LOG_ERR,"%s",e.what());
+			::syslog(LOG_ERR,"%s",text);
 
 		} catch(...) {
 
-			console_writer(Logger::Error,"logger","Unexpected error");
-			std::abort();
+			// Error writing file, fallback to syslog
+			Logger::syslog(true);
+			Logger::file(false);
+			::syslog(LOG_ERR,"%s","Unexpected error writing log file");
+			::syslog(LOG_ERR,"%s",text);
 
 		}
 
