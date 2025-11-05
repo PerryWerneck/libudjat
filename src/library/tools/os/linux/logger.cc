@@ -124,7 +124,7 @@ namespace Udjat {
 
 			String line{timestamp.to_string().c_str()," ",domain," ",text,"\n"};
 		
-			if(::write(fd,line.c_str(),line.size()) != line.size()) {
+			if(::write(fd,line.c_str(),line.size()) != (ssize_t) line.size()) {
 				::close(fd);
 				throw system_error(errno,system_category(),"Error writing log file");
 			}

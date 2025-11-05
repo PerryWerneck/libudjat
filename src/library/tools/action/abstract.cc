@@ -59,6 +59,47 @@
 		return call(request,response,except);
 	}
 
+	int Action::call(const Udjat::Abstract::Object &object, bool except) {
+
+		try {
+
+			Udjat::Request request;
+			Udjat::Response response;
+
+			object.getProperties(request);
+			return call(request,response,except);
+
+		} catch(const std::system_error &e) {
+
+			if(except) {
+				throw;
+			}
+
+			Logger::String{"Action failed: ",e.what()}.error(name());
+			return e.code().value();
+
+		} catch(const std::exception &e) {
+
+			if(except) {
+				throw;
+			}
+
+			Logger::String{e.what()}.error(name());
+
+		} catch(...) {
+
+			if(except) {
+				throw;
+			}
+
+			Logger::String{"Unexpected error running action"}.error(name());
+
+		}
+
+		return EFAULT;
+
+	}
+
 	bool Action::activate(const Udjat::Abstract::Object &object) noexcept {
 
 		try {
@@ -107,46 +148,6 @@
 		}
 
 		return true;
-
-	}
-
-	int Action::call(const Udjat::Abstract::Object &, bool except) {
-		return call(except);
-	}
-
-	int Action::call(bool except) {
-		
-		try {
-
-			Udjat::Request request;
-			Udjat::Response response;
-			return call(request,response,except);
-
-		} catch(const std::system_error &e) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{"System error running action: ",e.what()}.error();
-			return e.code().value();
-
-		} catch(const std::exception &e) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{"Unexpected error running action: ",e.what()}.error();
-
-		} catch(...) {
-
-			if(except) {
-				throw;
-			}
-			Logger::String{"Unknown error running action"}.error();
-
-		}
-
-		return EFAULT;
 
 	}
 
