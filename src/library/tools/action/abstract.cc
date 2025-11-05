@@ -90,16 +90,9 @@
 	}
 
 	bool Action::activate() noexcept {
-
 		try {
 
-			Udjat::Request request;
-			Udjat::Response response;
-			int rc = call(request,response,true);
-			if(rc) {
-				Logger::String{"Action failed with code ",rc}.error(name());
-				return false;
-			}
+			call(true);
 
 		} catch(const std::exception &e) {
 
@@ -114,6 +107,46 @@
 		}
 
 		return true;
+
+	}
+
+	int Action::call(const Udjat::Abstract::Object &, bool except) {
+		return call(except);
+	}
+
+	int Action::call(bool except) {
+		
+		try {
+
+			Udjat::Request request;
+			Udjat::Response response;
+			return call(request,response,except);
+
+		} catch(const std::system_error &e) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{"System error running action: ",e.what()}.error();
+			return e.code().value();
+
+		} catch(const std::exception &e) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{"Unexpected error running action: ",e.what()}.error();
+
+		} catch(...) {
+
+			if(except) {
+				throw;
+			}
+			Logger::String{"Unknown error running action"}.error();
+
+		}
+
+		return EFAULT;
 
 	}
 

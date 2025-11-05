@@ -99,11 +99,24 @@
 		/// @retval 0 Success.
 		virtual int call(Udjat::Request &request, Udjat::Response &response, bool except = true) = 0;
 
-		/// @brief Run action from XML node, usually called by XML tag <init type='action-name'>
+		/// @brief Call action using already set parameters.
+		/// @param except true to launch exceptions on errors.
+		/// @return 0 if ok, error code otherwise.
 		virtual int call(bool except = true);
 
-		bool activate(const Udjat::Abstract::Object &object) noexcept override;
-		bool activate() noexcept override;
+		/// @brief Call action with object parameters.
+		/// @param object The object with parameters.
+		/// @return 0 if ok, error code otherwise.
+		virtual int call(const Udjat::Abstract::Object &object, bool except = true);
+
+		/// @brief Compatibility method for Activatable interface.
+		/// @param object Object with parameters.
+		/// @return true if the action was activated, false otherwise.
+		bool activate(const Udjat::Abstract::Object &object) noexcept override final;
+
+		/// @brief Compatibility method for Activatable interface.
+		/// @return true if the action was activated, false otherwise.
+		bool activate() noexcept override final;
 
 	};
 
