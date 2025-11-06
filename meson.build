@@ -510,56 +510,6 @@ pkg_variables = [
 
 if host_machine.system() == 'windows'
 
-  winlibs = [
-      '-lintl', 
-      '-lshlwapi', 
-      '-lws2_32',
-      '-lwtsapi32', 
-      '-lole32', 
-      '-loleaut32', 
-      '-luuid', 
-      '-liphlpapi', 
-      '-lversion', 
-      '-lnetshell', 
-      '-lpathcch',
-  ]
-
-  pkg.generate(
-    name: 'lib' + meson.project_name(),
-    description: project_description,
-    variables: pkg_variables,
-    requires: required_libs,
-    libraries: [ '-l' + meson.project_name() + '.dll' ],
-    requires_private: private_libs,
-  )
-
-else
-
-  pkg.generate(
-    name: 'lib' + meson.project_name(),
-    description: project_description,
-    variables: pkg_variables,
-    requires: required_libs,
-    libraries: [ '-l' + meson.project_name() ],
-    requires_private: private_libs,
-  )
-
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    variables: pkg_variables,
-    extra_cflags: [
-      '-DUDJAT_STATIC',
-      '-pthread',
-    ],
-    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
-    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
-  )
-
-endif
-
-if host_machine.system() == 'windows'
-
   # Supplied by win_iconv-devel-static
   app_conf.set('HAVE_ICONV',1)
 
@@ -634,22 +584,43 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/system.cc',
   ]
 
-else
+  winlibs = [
+      '-lintl', 
+      '-lshlwapi', 
+      '-lws2_32',
+      '-lwtsapi32', 
+      '-lole32', 
+      '-loleaut32', 
+      '-luuid', 
+      '-liphlpapi', 
+      '-lversion', 
+      '-lnetshell', 
+      '-lpathcch',
+  ]
 
-  if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
-    app_conf.set('HAVE_UNISTD_H', 1)
-  endif
-
-  if cxx.compiles('#include <filesystem>', name : 'filesystem')
-    app_conf.set('HAVE_FILESYSTEM_H', 1)
-  endif
-
-  app_conf.set_quoted('LIBEXT', '.so')
-
-  install_headers(
-    'src/include/udjat/linux/network.h',
-    subdir: 'udjat/linux'  
+  pkg.generate(
+    name: 'lib' + meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() + '.dll' ],
+    requires_private: private_libs,
   )
+
+elif host_machine.system() == 'darwin'
+
+  pkg.generate(
+    name: 'lib' + meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() ],
+    requires_private: private_libs,
+  )
+
+  app_conf.set_quoted('LIBEXT', '.dlsym')
+
+else
 
   lib_src += [
     'src/library/os/linux/icon.cc',
@@ -695,6 +666,43 @@ else
     'src/library/tools/os/linux/netlink_routes.cc',
   ]
 
+  pkg.generate(
+    name: 'lib' + meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() ],
+    requires_private: private_libs,
+  )
+
+  pkg.generate(
+    name: 'lib' + meson.project_name() + '-static',
+    description: project_description,
+    variables: pkg_variables,
+    extra_cflags: [
+      '-DUDJAT_STATIC',
+      '-pthread',
+    ],
+    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
+  )
+
+  if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
+    app_conf.set('HAVE_UNISTD_H', 1)
+  endif
+
+  if cxx.compiles('#include <filesystem>', name : 'filesystem')
+    app_conf.set('HAVE_FILESYSTEM_H', 1)
+  endif
+
+  app_conf.set_quoted('LIBEXT', '.so')
+
+  install_headers(
+    'src/include/udjat/linux/network.h',
+    subdir: 'udjat/linux'  
+  )
+
+
 endif
 
 #
@@ -735,6 +743,19 @@ if host_machine.system() == 'windows'
     link_args: winlibs,
   )
 
+elif host_machine.system() == 'darwin'
+
+  dynamic = shared_library(
+    meson.project_name(), 
+    config_h + lib_src,
+    install: true,
+    version : libversion,
+    soversion : libversion,
+    gnu_symbol_visibility: 'hidden',
+    dependencies: required_libs + private_libs + extra_libs + [ cxx.find_library('dl')],
+    include_directories: includes_dir,
+  )
+
 else
 
   dynamic = shared_library(
@@ -749,28 +770,26 @@ else
     include_directories: includes_dir,
   )
 
- endif
+endif
 
- static = static_library(
-  meson.project_name(), 
-  config_h + lib_src,
-  install: true,
-  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  dependencies: required_libs + private_libs + extra_libs,
-  include_directories: includes_dir
- )
-
- static_library = declare_dependency(
-  link_with : static,
+static_library = declare_dependency(
+  link_with : static_library(
+    meson.project_name(), 
+    config_h + lib_src,
+    install: true,
+    cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+    dependencies: required_libs + private_libs + extra_libs,
+    include_directories: includes_dir
+  ),
   include_directories : includes_dir,
   variables: pkg_variables,
- ) 
+) 
 
- dynamic_library = declare_dependency(
+dynamic_library = declare_dependency(
   link_with : dynamic,
   include_directories : includes_dir,
   variables: pkg_variables,
- ) 
+) 
 
 executable(
   meson.project_name(),
@@ -791,12 +810,6 @@ executable(
   dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
-
-#version_file = configure_file(
-#  input : 'src/include/udjat/version.h.in',
-#  output : 'version.h',
-#  configuration : app_conf
-#)
 
 #
 # RPM Macros
