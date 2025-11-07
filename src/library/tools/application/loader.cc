@@ -95,7 +95,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 
 	bool app = (argc==1);
 
-	Logger::verbosity(9);
+	//Logger::verbosity(9);
 	Logger::console(true);
 	Config::allow_user_homedir(true);
 
@@ -130,6 +130,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		return 0;
 	}
 
+	Logger::setup(argc,argv,true);
 	Logger::redirect();
 
 	// Configuration file (or path)

@@ -22,7 +22,6 @@
  #include <private/logger.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/commandlineparser.h>
- #include <private/logger.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/intl.h>
  #include <cstring>
@@ -66,6 +65,10 @@
 
 	void Logger::verbosity(const char *level) {
 		
+#ifdef DEBUG
+		printf("\n----> Setting verbosity to '%s'\n",level);
+#endif // DEBUG
+
 		if(*level >= '0' && *level <= '9') {
 			verbosity((unsigned short) atoi(level));
 			return;
@@ -305,10 +308,6 @@
 #endif // !_WIN32
 
 	void Logger::setup(int &argc, char **argv, bool extract, bool dbg) {
-		return setup(argc, argv, extract, nullptr, dbg);
-	}
-
-	void Logger::setup(int &argc, char **argv, bool extract, const char *filename, bool dbg) {
 
 		String optarg;
 
@@ -317,11 +316,20 @@
 			console(true);
 		}
 
-		if(CommandLineParser::has_argument(argc,argv,'q',"quiet",extract)) {
+		if(CommandLineParser::get_argument(argc,argv,'q',"quiet",optarg,extract)) {
+			Logger::console(false);
+			Logger::verbosity(optarg.c_str());
+		} else if(CommandLineParser::has_argument(argc,argv,'q',"quiet",extract)) {
 			Logger::console(false);
 		} 
 		
-		if(CommandLineParser::has_argument(argc,argv,'v',"verbose",extract)) {
+		if(CommandLineParser::get_argument(argc,argv,'v',"verbose",optarg,extract)) {
+			Logger::console(true);
+			Logger::verbosity(optarg.c_str());
+		} else if(CommandLineParser::has_argument(argc,argv,'v',"verbose",extract)) {
+#ifdef DEBUG
+			printf("----> Enabling verbose log\n");
+#endif // DEBUG
 			Logger::console(true);
 		}
 
@@ -329,21 +337,12 @@
 			Logger::file(optarg.c_str());
 		} else if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
 			Logger::file(true);
-		} else if(filename && *filename) {
-			Logger::file(filename);
-		}
-
-		if(CommandLineParser::has_argument(argc,argv,'L',"loglevel",extract)) {
-			Logger::verbosity(Logger::Debug);
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'v',"verbose",optarg,extract)) {
-			Logger::console(true);
-			Logger::verbosity(optarg.c_str());
 		}
 
 		if(CommandLineParser::get_argument(argc,argv,'L',"loglevel",optarg,extract)) {
 			Logger::verbosity(optarg.c_str());
+		} else if(CommandLineParser::has_argument(argc,argv,'L',"loglevel",extract)) {
+			Logger::verbosity(Logger::Debug);
 		}
 
 #ifndef _WIN32		
