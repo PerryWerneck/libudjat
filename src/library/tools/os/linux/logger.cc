@@ -115,7 +115,7 @@ namespace Udjat {
 
 			}
 
-			int fd = ::open(filename.c_str(),O_APPEND|O_CREAT,0664);
+			int fd = ::open(filename.c_str(),O_WRONLY|O_APPEND|O_CREAT,0664);
 
 			if(fd < 0) {
 				// Error opening file, fallback to syslog.
@@ -144,6 +144,10 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			// Error writing file, fallback to syslog
+#ifdef DEBUG
+			printf("----> Error writing log file: %s\n",e.what());
+#endif // DEBUG
+
 			Logger::syslog(true);
 			Logger::file(false);
 			::syslog(LOG_ERR,"%s",e.what());
@@ -152,6 +156,10 @@ namespace Udjat {
 		} catch(...) {
 
 			// Error writing file, fallback to syslog
+#ifdef DEBUG
+			printf("----> Error writing log file: %s\n","Unexpected error");
+#endif // DEBUG
+
 			Logger::syslog(true);
 			Logger::file(false);
 			::syslog(LOG_ERR,"%s","Unexpected error writing log file");
