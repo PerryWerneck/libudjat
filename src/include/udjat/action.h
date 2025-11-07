@@ -112,11 +112,11 @@
 		/// @brief Compatibility method for Activatable interface.
 		/// @param object Object with parameters.
 		/// @return true if the action was activated, false otherwise.
-		bool activate(const Udjat::Abstract::Object &object) noexcept override final;
+		bool activate(const Udjat::Abstract::Object &object) noexcept override;
 
 		/// @brief Compatibility method for Activatable interface.
 		/// @return true if the action was activated, false otherwise.
-		bool activate() noexcept override final;
+		bool activate() noexcept override;
 
 	};
 
