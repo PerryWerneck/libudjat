@@ -405,7 +405,13 @@
 		/// @return The string.
 		String & chomp() noexcept;
 
-		bool as_bool(bool def = false);
+		bool as_bool(bool def = false) const;
+		int as_int(int def = 0) const;
+		unsigned int as_uint(unsigned int def = 0) const;
+		long as_long(long def = 0) const;
+		unsigned long as_ulong(unsigned long def = 0) const;
+		float as_float(float def = 0.0f) const;
+		double as_double(double def = 0.0) const;
 
 		/// @brief Convert string to unsigned long long processing 'kb','gb,tb, etc.
 		/// @return Unsigned long long value of string contents.
