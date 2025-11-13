@@ -21,6 +21,9 @@
  #include <udjat/defs.h>
  #include <signal.h>
  #include <cstdarg>
+ #include <stdexcept>
+
+ using namespace std;
 
  #ifdef HAVE_INIPARSER
 
@@ -54,7 +57,9 @@
 
 	Config::Controller::Controller() {
 
+#ifndef #ifdef HAVE_OLD_INIPARSER_API
 		iniparser_set_error_callback(error_callback);
+#endif // HAVE_OLD_INIPARSER_API		
 
 		ini = iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str());
 		if(!ini) {
@@ -69,7 +74,9 @@
 			iniparser_freedict(ini);
 			ini = nullptr;
 		}
+#ifndef HAVE_OLD_INIPARSER_API
 		iniparser_set_error_callback(NULL);
+#endif // HAVE_OLD_INIPARSER_API		
 	}
 
 	void Config::Controller::open() {
@@ -179,6 +186,7 @@
 
 		throw system_error(ENOTSUP,system_category(),"iniparser version is too old");
 
+		return false;
 #else
 		char **keys = new char *[items];
 
