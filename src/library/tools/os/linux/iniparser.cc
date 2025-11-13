@@ -175,6 +175,11 @@
 			return false;
 		}
 
+#ifdef HAVE_OLD_INIPARSER_API
+
+		throw system_error(ENOTSUP,system_category(),"iniparser version is too old");
+
+#else
 		char **keys = new char *[items];
 
 		if(!iniparser_getseckeys(ini, (char *) group, (const char **) keys)) {
@@ -199,6 +204,7 @@
 
 		delete[] keys;
 		return found;
+#endif // HAVE_OLD_INIPARSER_API
 
 	}
 
