@@ -57,7 +57,7 @@
 
 	Config::Controller::Controller() {
 
-#ifndef #ifdef HAVE_OLD_INIPARSER_API
+#ifndef HAVE_OLD_INIPARSER_API
 		iniparser_set_error_callback(error_callback);
 #endif // HAVE_OLD_INIPARSER_API		
 
