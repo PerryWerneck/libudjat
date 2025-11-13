@@ -48,7 +48,7 @@
 
 	int FileURLHandler::perform(const HTTP::Method, const char *, const std::function<bool(uint64_t current, uint64_t total, const void *data, size_t len)> &progress) {
 
-		debug("-----------> Loading '",path.c_str(),"'");
+		debug("-----------> FileURLHandler is Loading '",path.c_str(),"'");
 
 		File::Handler file{path.c_str()};
 
