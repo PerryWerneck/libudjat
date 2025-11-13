@@ -347,9 +347,8 @@ elif test "$app_cv_iniparser" == "yes"; then
 		int main() {
 			dictionary *ini = dictionary_new(0);
 			if (ini == NULL) return 1;
-			int n;
-			/* The old function takes a pointer to int to return the count */
-			char **keys = iniparser_getseckeys(ini, &n);
+			char *section = "test"; 
+			char **keys = iniparser_getseckeys(ini, section);
 			if (keys != NULL) free(keys);
 			iniparser_freedict(ini);
 			return 0;
