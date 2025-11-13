@@ -76,7 +76,7 @@
 			}
 		}
 
-		throw std::system_error(ENOENT,std::system_category(), _("Configuration file not found"));
+		throw std::system_error(ENOENT,std::system_category(), _("Unable to find XML definitions"));
 
 	}
 
