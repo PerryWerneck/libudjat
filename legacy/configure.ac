@@ -203,14 +203,16 @@ PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], [app_cv_libssl="yes"], [app_cv_
 
 if test "$app_cv_libssl" == "yes"; then
 
-	AC_DEFINE(HAVE_LIBSSL,[],[Do we have libssl?]), AC_MSG_ERROR([libssl not present.]) )
+	AC_MSG_NOTICE([ libssl is available ])
+
+	AC_DEFINE(HAVE_LIBSSL,[],[Do we have libssl?])
 	AC_SUBST(LIBSSL_LIBS)
 	AC_SUBST(LIBSSL_CFLAGS)
 	AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have libssl?])
 
 else
 
-	AC_MSG_NOTICE([ libssl is not available ])
+	AC_MSG_NOTICE([ libssl is NOT available ])
 
 fi
 
