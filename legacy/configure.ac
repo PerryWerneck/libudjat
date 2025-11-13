@@ -338,6 +338,13 @@ elif test "$app_cv_iniparser" == "yes"; then
 	AC_DEFINE(HAVE_INIPARSER,[],[Do we have libiniparser?])
 	AC_SUBST(ECONF_LIBS,-liniparser)
 
+	dnl Save current CFLAGS and LIBS variables
+	saved_CFLAGS="$CFLAGS"
+	saved_LIBS="$LIBS"
+
+	dnl Add iniparser flags to the temporary CFLAGS and LIBS for the test compile
+	LIBS="$LIBS -liniparser"
+
 	AC_MSG_CHECKING([if iniparser uses old API for iniparser_getseckeys])
 	AC_RUN_IFELSE([AC_LANG_SOURCE([[
 		#include <stdio.h>
@@ -347,21 +354,26 @@ elif test "$app_cv_iniparser" == "yes"; then
 		int main() {
 			dictionary *ini = dictionary_new(0);
 			if (ini == NULL) return 1;
-			char *section = "test"; 
+			char *section = strdup("test"); 
 			char **keys = iniparser_getseckeys(ini, section);
 			if (keys != NULL) free(keys);
 			iniparser_freedict(ini);
+			free(section);
 			return 0;
 		}
 	]])], [
 		AC_MSG_RESULT([yes])
-		AC_DEFINE([HAVE_OLD_INIPARSER_API], [1], [Define if using the old iniparser_getseckeys API (version < 4.0)])
+		AC_DEFINE([HAVE_OLD_INIPARSER_API], [1], [Define if using the old iniparser_getseckeys API])
 	], [
 		AC_MSG_RESULT([no, using new API])
 	], [
 		dnl Cannot run test program (cross-compiling), assume new API for safety or prompt user
 		AC_MSG_RESULT([cannot run test program, assuming new API])
 	])
+
+	dnl Restore original CFLAGS and LIBS after the test
+	CFLAGS="$saved_CFLAGS"
+	LIBS="$saved_LIBS"
 
 else 
 
