@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 16:22-0300\n"
+"POT-Creation-Date: 2025-11-12 15:14-0300\n"
 "PO-Revision-Date: 2025-09-01 11:54-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -584,15 +584,25 @@ msgstr "Arquivo de configuração não encontrado"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/script.cc:54 src/library/tools/script.cc:141
+#: src/library/tools/script.cc:56
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
 
-#: src/library/tools/script.cc:160
+#: src/library/tools/script.cc:149
+#, c++-format
+msgid "Missing shebang attribute on {}"
+msgstr ""
+
+#: src/library/tools/script.cc:170
+#, fuzzy, c++-format
+msgid "Required attribute 'cmdline' missing on {}"
+msgstr "Atributo necessário 'cmdline' não está disponível"
+
+#: src/library/tools/script.cc:192
 msgid "Cant set subprocess user id"
 msgstr "Incapaz de definir o usuário do subprocesso"
 
-#: src/library/tools/script.cc:166
+#: src/library/tools/script.cc:198
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
@@ -618,27 +628,27 @@ msgstr "Uso:"
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#: src/library/tools/logger.cc:364
+#: src/library/tools/logger.cc:363
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger.cc:365
+#: src/library/tools/logger.cc:364
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger.cc:366
+#: src/library/tools/logger.cc:365
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger.cc:367
+#: src/library/tools/logger.cc:366
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger.cc:369
+#: src/library/tools/logger.cc:368
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger.cc:373
+#: src/library/tools/logger.cc:372
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 

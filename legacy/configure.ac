@@ -338,6 +338,32 @@ elif test "$app_cv_iniparser" == "yes"; then
 	AC_DEFINE(HAVE_INIPARSER,[],[Do we have libiniparser?])
 	AC_SUBST(ECONF_LIBS,-liniparser)
 
+	AC_MSG_CHECKING([if iniparser uses old API for iniparser_getseckeys])
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[
+		#include <stdio.h>
+		#include <stdlib.h>
+		#include <iniparser.h>
+
+		int main() {
+			dictionary *ini = dictionary_new(0);
+			if (ini == NULL) return 1;
+			int n;
+			/* The old function takes a pointer to int to return the count */
+			char **keys = iniparser_getseckeys(ini, &n);
+			if (keys != NULL) free(keys);
+			iniparser_freedict(ini);
+			return 0;
+		}
+	]])], [
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([HAVE_OLD_INIPARSER_API], [1], [Define if using the old iniparser_getseckeys API (version < 4.0)])
+	], [
+		AC_MSG_RESULT([no, using new API])
+	], [
+		dnl Cannot run test program (cross-compiling), assume new API for safety or prompt user
+		AC_MSG_RESULT([cannot run test program, assuming new API])
+	])
+
 else 
 
 	AC_MSG_NOTICE([ No configuration backend, using only default config ])
