@@ -188,6 +188,7 @@
 
 			if(group && Config::hasKey(group,key)) {
 				// Get from the configuration file.
+				debug("Getting '",key,"' from group '",group,"' in configuration");
 				value = Config::get(group, key, "");
 				return true;
 			}

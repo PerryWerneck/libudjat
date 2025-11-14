@@ -96,9 +96,9 @@
 		return (iniparser_getsecnkeys(ini,(char *)group) != 0);
 	}
 
-	bool Config::Controller::hasKey(const char *group, const char *key) {
+	bool Config::Controller::hasKey(const char *group, const char *name) {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-		return true;
+		return iniparser_find_entry(ini, key(group,name).c_str()) ;
 	}
 
 	int32_t Config::Controller::get(const char *group, const char *name, const int32_t def) const {
