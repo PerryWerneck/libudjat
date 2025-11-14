@@ -232,6 +232,31 @@ return 0;
 	return 0;
  }
 
+ static int string_test() {
+
+	static const char *xml = {
+		"<root>"
+		"<template name='isolinux.cfg' url='file://${template-dir}/isolinux.cfg' escape-control-characters='no' />"
+		"</root>"
+	};
+
+	pugi::xml_document doc;
+	pugi::xml_parse_result result = doc.load_string(xml);
+	if(!result) {
+		throw runtime_error{String{"Error parsing XML string: ",result.description()}};
+	}
+	auto root = XML::Node{doc}.child("root");
+	auto template_node = root.child("template");
+
+	String str{template_node, "url", true};
+	Logger::String{"Extracted string from XML: '",str.c_str(),"'."}.info();
+	if(strcmp(str.c_str(),"file://${template-dir}/isolinux.cfg") != 0) {
+		throw logic_error{"String test failed: extracted string does not match expected value."};
+	}	
+
+	return 0;
+ }
+
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
@@ -247,6 +272,7 @@ return 0;
  #endif // HAVE_SMBIOS
 		{"network", network_test},
 		{"config", config_test},
+		{"string", string_test},
 	};
 
 	if(!name) {

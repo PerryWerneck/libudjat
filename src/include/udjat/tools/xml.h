@@ -62,6 +62,7 @@
 		class UDJAT_API Document : public pugi::xml_document {
 		public:
 			Document(const char *filename);
+			Document(const char *data, size_t size);
 
 			/// Copy document node to the given node.
 			/// @param node Node to copy the document root.
