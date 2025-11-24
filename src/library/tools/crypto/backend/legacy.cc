@@ -38,7 +38,9 @@
  #include <openssl/evp.h>
  #include <openssl/rsa.h> 
  #include <openssl/pem.h>
+ #include <openssl/opensslv.h>
  #include <udjat/tools/crypto.h>
+ #include <udjat/tools/memory.h>
  #include <memory>
 
  using namespace std;
@@ -52,14 +54,51 @@
 		class Legacy : public Crypto::BackEnd {
 		public:
 			Legacy() : BackEnd{"legacy","legacy"} {
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
+				Logger::String{"Using legacy OpenSSL V3 backend for private key"}.trace();
+#else
 				Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
+#endif
 			};
 
 			void generate(const char *filename, const char *password, size_t mbits) override {
+
+#if OPENSSL_VERSION_NUMBER >= 0x30000000L
 				pkey = EVP_RSA_gen(mbits);
 				if(!pkey) {
 					throw Crypto::Exception("EVP_RSA_gen failed");
-				} else if(filename && *filename) {
+				}  
+#else
+				auto rsa = make_handle(RSA_new(),RSA_free)	;
+				if(!rsa.get()) {
+					throw Crypto::Exception("RSA_new failed");
+				}	
+
+				auto bignum = make_handle(BN_new,BN_free);
+				if(!bignum.get()) {
+					throw Crypto::Exception("BN_new failed");
+				}
+				if(BN_set_word(bignum.get(), RSA_F4) != 1) {
+					throw Crypto::Exception("BN_set_word failed");
+				}
+
+				if(RSA_generate_key_ex(rsa.get(), mbits, bignum.get(), NULL) != 1) {
+					throw Crypto::Exception("RSA_generate_key_ex failed");
+				}
+
+				pkey = EVP_PKEY_new();
+				if(!pkey) {
+					throw Crypto::Exception("EVP_PKEY_new failed");
+				}
+
+				if(EVP_PKEY_assign_RSA(pkey, rsa.get()) != 1) {
+					EVP_PKEY_free(pkey);
+					throw Crypto::Exception("EVP_PKEY_assign_RSA failed");
+				}
+
+#endif // OPENSSL_VERSION_NUMBER
+				
+				if(filename && *filename) {
 					save_private(filename, password);
 				}
 			}
