@@ -20,6 +20,8 @@
  #define LOG_DOMAIN "sslkey"
 
  #include <config.h>
+
+ #ifdef HAVE_OPENSSL_PROVIDER
  #include <private/crypto.h>
  #include <udjat/tools/file/text.h>
  #include <udjat/tools/configuration.h>
@@ -40,8 +42,6 @@
  #include <memory>
  #include <openssl/store.h>
 
- // using OSSL_STORE_ptr = std::unique_ptr<OSSL_STORE_CTX, decltype(&OSSL_STORE_close)>;
- 
  using namespace std;
 
  namespace Udjat{
@@ -111,4 +111,5 @@
 	}
 
  } 
+ #endif // HAVE_OPENSSL_PROVIDER
  
