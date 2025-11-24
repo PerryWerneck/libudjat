@@ -33,9 +33,11 @@
 
  #define OPENSSL_SUPPRESS_DEPRECATED
  
+ #if OPENSSL_VERSION_NUMBER >= 0x30000000L
+ #include <openssl/evp.h>
+ #endif // OPENSSL_VERSION_NUMBER
 
  #include <openssl/bio.h>
- #include <openssl/evp.h>
  #include <openssl/rsa.h> 
  #include <openssl/pem.h>
  #include <openssl/opensslv.h>
