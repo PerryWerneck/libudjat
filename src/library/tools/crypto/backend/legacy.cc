@@ -71,12 +71,12 @@
 					throw Crypto::Exception("EVP_RSA_gen failed");
 				}  
 #else
-				auto rsa = make_handle(RSA_new(),RSA_free)	;
+				auto rsa = make_handle<RSA>(RSA_new(),RSA_free)	;
 				if(!rsa.get()) {
 					throw Crypto::Exception("RSA_new failed");
 				}	
 
-				auto bignum = make_handle(BN_new,BN_free);
+				auto bignum = make_handle<BIGNUM>((BIGNUM *) BN_new,BN_free);
 				if(!bignum.get()) {
 					throw Crypto::Exception("BN_new failed");
 				}
