@@ -21,7 +21,7 @@
 
 #include <udjat/defs.h>
 #include <string>
-#include <openssl/evp.h>
+#include <openssl/x509.h>
 #include <udjat/tools/exception.h>
 #include <memory>
 
