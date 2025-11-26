@@ -94,7 +94,7 @@
 		}
 
 #ifdef BUILD_LEGACY
-		throw runtime_error(_("The required attribute 'type' is missing"));
+		throw runtime_error("The required attribute 'type' is missing");
 #else
 		throw runtime_error(Logger::String{"Required attribute 'type' is missing at ",node.path()});
 #endif
