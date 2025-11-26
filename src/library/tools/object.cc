@@ -186,11 +186,12 @@
 
 	void Abstract::Object::parse_children(const XML::Node &node) {
 
+#ifndef BUILD_LEGACY
 		bool trace = Logger::enabled(Logger::Debug);
-
 		if(trace) {
 			Logger::String{"Parsing object children at ",node.path()}.info(name());
 		}
+#endif
 
 		for(const auto &child : node) {
 
@@ -617,9 +618,11 @@
 
 					if(*factory == name) {
 		
+#ifndef BUILD_LEGACY
 						if(Logger::enabled(Logger::Debug)) {
 							Logger::String{"Got factory '", factory->c_str(), "' for ",node.path()}.info(this->name());
 						}
+#endif
 
 						auto object = factory->ObjectFactory(node);
 						push_back(node,object);

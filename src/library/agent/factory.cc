@@ -313,7 +313,11 @@
 		}
 
 		throw runtime_error(
+#ifdef BUILD_LEGACY
+			String{"Cant find a valid factory for agent"}
+#else
 			String{"Cant find a valid factory for agent at ",node.path()}
+#endif // BUILD_LEGACY
 		);
 
 	}

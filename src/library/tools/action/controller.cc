@@ -93,7 +93,11 @@
 
 		}
 
+#ifdef BUILD_LEGACY
+		throw runtime_error(_("The required attribute 'type' is missing"));
+#else
 		throw runtime_error(Logger::String{"Required attribute 'type' is missing at ",node.path()});
+#endif
 
 	}
 
@@ -298,7 +302,11 @@
 			}
 
 		default:
+#ifdef BUILD_LEGACY
+			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"'"});
+#else	
 			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"' at ",node.path()});
+#endif
 		}
 
 

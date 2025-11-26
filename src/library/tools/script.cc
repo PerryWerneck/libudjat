@@ -146,7 +146,11 @@
 			if(!text.empty()) {
                 
 				if(text[0] != '#' && text[1] != '!') {
+#ifdef BUILD_LEGACY
+					throw runtime_error(_("Missing shebang attribute"));
+#else	
 					throw runtime_error(Logger::Message{_("Missing shebang attribute on {}"),node.path()});
+#endif 
 				}
 
 				Logger::String{"Using script from XML node"}.trace(name());
@@ -167,8 +171,11 @@
 
 			} else {
 
+#ifdef BUILD_LEGACY
+				throw runtime_error(_("Required attribute 'cmdline' missing"));
+#else		
 				throw runtime_error(Logger::Message{_("Required attribute 'cmdline' missing on {}"),node.path()});
-			
+#endif 			
 			}
 
 		}
