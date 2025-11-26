@@ -207,9 +207,11 @@
 
 				if(*factory == name) {
 	
+#ifndef BUILD_LEGACY
 					if(trace) {
 						Logger::String{"Got factory '", factory->c_str(), "' for ",child.path()}.info(this->name());
 					}
+#endif
 
 					auto object = factory->ObjectFactory(child);
 					push_back(child,object);
