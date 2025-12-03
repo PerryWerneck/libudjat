@@ -76,10 +76,14 @@
 					throw Crypto::Exception("RSA_new failed");
 				}	
 
-				auto bignum = make_handle<BIGNUM>((BIGNUM *) BN_new,BN_free);
-				if(!bignum.get()) {
+				// Fixing unexpected behavior on some systems
+				BIGNUM *bn = BN_new();
+				if(!bn) {
 					throw Crypto::Exception("BN_new failed");
 				}
+
+				auto bignum = make_handle(bn,BN_free);
+
 				if(BN_set_word(bignum.get(), RSA_F4) != 1) {
 					throw Crypto::Exception("BN_set_word failed");
 				}
