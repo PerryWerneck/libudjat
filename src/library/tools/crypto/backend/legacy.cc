@@ -54,36 +54,14 @@
 		/// @brief Legacy backend for OpenSSL.
 		/// This backend uses the legacy OpenSSL API to generate and manage keys.
 		class Legacy : public Crypto::BackEnd {
-		private:
-#if OPENSSL_VERSION_NUMBER < 0x30000000L
-			BIGNUM *bn;
-#endif
-
 		public:
 			Legacy() : BackEnd{"legacy","legacy"} {
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
 				Logger::String{"Using legacy OpenSSL V3 backend for private key"}.trace();
 #else
 				Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
-				bn = BN_new();
-				if(!bn) {
-					throw Crypto::Exception("BN_new failed");
-				}
-				if(BN_set_word(bn, RSA_F4) != 1) {
-					throw Crypto::Exception("BN_set_word failed");
-				}
-
 #endif
 			};
-
-			~Legacy() override {
-#if OPENSSL_VERSION_NUMBER < 0x30000000L
-				if(bn) {
-					BN_free(bn);
-					bn = NULL;
-				}
-#endif
-			}
 
 			void generate(const char *filename, const char *password, size_t mbits) override {
 
@@ -93,6 +71,18 @@
 					throw Crypto::Exception("EVP_RSA_gen failed");
 				}  
 #else
+				std::shared_ptr<BIGNUM> bignum;
+				{
+					bn = BN_new();
+					if(!bn) {
+						throw Crypto::Exception("BN_new failed");
+					}
+					if(BN_set_word(bn, RSA_F4) != 1) {
+						throw Crypto::Exception("BN_set_word failed");
+					}
+					bignum = make_handle(bn, BN_free);
+				}
+
 				auto rsa = make_handle<RSA>(RSA_new(),RSA_free)	;
 				if(!rsa.get()) {
 					throw Crypto::Exception("RSA_new failed");
