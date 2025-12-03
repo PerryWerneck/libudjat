@@ -73,7 +73,7 @@
 #else
 				std::shared_ptr<BIGNUM> bignum;
 				{
-					bn = BN_new();
+					auto bn = BN_new();
 					if(!bn) {
 						throw Crypto::Exception("BN_new failed");
 					}
@@ -83,12 +83,12 @@
 					bignum = make_handle(bn, BN_free);
 				}
 
-				auto rsa = make_handle<RSA>(RSA_new(),RSA_free)	;
-				if(!rsa.get()) {
+				auto rsa = RSA_new();
+				if(!rsa) {
 					throw Crypto::Exception("RSA_new failed");
 				}	
 
-				if(RSA_generate_key_ex(rsa.get(), mbits, bn, NULL) != 1) {
+				if(RSA_generate_key_ex(rsa, mbits, bignum.get(), NULL) != 1) {
 					throw Crypto::Exception("RSA_generate_key_ex failed");
 				}
 
@@ -97,7 +97,7 @@
 					throw Crypto::Exception("EVP_PKEY_new failed");
 				}
 
-				if(EVP_PKEY_assign_RSA(pkey, rsa.get()) != 1) {
+				if(EVP_PKEY_assign_RSA(pkey, rsa) != 1) {
 					EVP_PKEY_free(pkey);
 					throw Crypto::Exception("EVP_PKEY_assign_RSA failed");
 				}
