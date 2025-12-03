@@ -199,7 +199,7 @@ dnl ---------------------------------------------------------------------------
 dnl Check for openssl
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], [app_cv_libssl="yes"], [app_cv_libssl="no"] )
+PKG_CHECK_MODULES( [OPENSSL], [libssl libcrypto], [app_cv_libssl="yes"], [app_cv_libssl="no"] )
 
 if test "$app_cv_libssl" == "yes"; then
 
