@@ -199,16 +199,16 @@ dnl ---------------------------------------------------------------------------
 dnl Check for openssl
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES( [OPENSSL], [libssl libcrypto], [app_cv_libssl="yes"], [app_cv_libssl="no"] )
+PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], [app_cv_libssl="yes"], [app_cv_libssl="no"] )
 
 if test "$app_cv_libssl" == "yes"; then
 
 	AC_MSG_NOTICE([ libssl is available ])
 
-	AC_DEFINE(HAVE_LIBSSL,[],[Do we have libssl?])
+	AC_DEFINE(HAVE_OPENSSL,[],[Do we have libssl?])
 	AC_SUBST(LIBSSL_LIBS)
 	AC_SUBST(LIBSSL_CFLAGS)
-	AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have libssl?])
+	AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have openssl engine?])
 
 else
 
