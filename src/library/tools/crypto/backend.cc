@@ -204,13 +204,13 @@
 
 	void Crypto::BackEnd::save_public(const char *filename) {
 
-		auto bio = make_handle(BIO_new_file(filename, "w"), BIO_free_all);
-		if(!bio) {
-			throw Crypto::Exception("BIO_new_file failed");
+		auto file = make_handle(fopen(filename, "w"),fclose);
+		if(!file) {
+			throw system_error(errno,system_category(),filename);
 		}
 
-		if(PEM_write_bio_PUBKEY(bio.get(), pkey) != 1) {
-			throw Crypto::Exception("PEM_write_bio_PUBKEY failed");
+		if(!PEM_write_PUBKEY(file.get(), pkey)) {
+			throw Crypto::Exception(filename);
 		}
 
 	}

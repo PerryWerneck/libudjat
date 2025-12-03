@@ -54,14 +54,36 @@
 		/// @brief Legacy backend for OpenSSL.
 		/// This backend uses the legacy OpenSSL API to generate and manage keys.
 		class Legacy : public Crypto::BackEnd {
+		private:
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+			BIGNUM *bn;
+#endif
+
 		public:
 			Legacy() : BackEnd{"legacy","legacy"} {
 #if OPENSSL_VERSION_NUMBER >= 0x30000000L
 				Logger::String{"Using legacy OpenSSL V3 backend for private key"}.trace();
 #else
 				Logger::String{"Using legacy OpenSSL backend for private key"}.trace();
+				bn = BN_new();
+				if(!bn) {
+					throw Crypto::Exception("BN_new failed");
+				}
+				if(BN_set_word(bn, RSA_F4) != 1) {
+					throw Crypto::Exception("BN_set_word failed");
+				}
+
 #endif
 			};
+
+			~Legacy() override {
+#if OPENSSL_VERSION_NUMBER < 0x30000000L
+				if(bn) {
+					BN_free(bn);
+					bn = NULL;
+				}
+#endif
+			}
 
 			void generate(const char *filename, const char *password, size_t mbits) override {
 
@@ -76,19 +98,7 @@
 					throw Crypto::Exception("RSA_new failed");
 				}	
 
-				// Fixing unexpected behavior on some systems
-				BIGNUM *bn = BN_new();
-				if(!bn) {
-					throw Crypto::Exception("BN_new failed");
-				}
-
-				auto bignum = make_handle(bn,BN_free);
-
-				if(BN_set_word(bignum.get(), RSA_F4) != 1) {
-					throw Crypto::Exception("BN_set_word failed");
-				}
-
-				if(RSA_generate_key_ex(rsa.get(), mbits, bignum.get(), NULL) != 1) {
+				if(RSA_generate_key_ex(rsa.get(), mbits, bn, NULL) != 1) {
 					throw Crypto::Exception("RSA_generate_key_ex failed");
 				}
 
