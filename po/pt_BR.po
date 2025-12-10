@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-11-12 15:14-0300\n"
-"PO-Revision-Date: 2025-09-01 11:54-0300\n"
+"POT-Creation-Date: 2025-12-03 13:56-0300\n"
+"PO-Revision-Date: 2025-12-10 19:22-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
 #: src/library/tools/string/string.cc:69 src/library/tools/converters.cc:40
 msgid "yes"
@@ -577,8 +577,8 @@ msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
 #: src/library/tools/xml/load.cc:79
-msgid "Configuration file not found"
-msgstr "Arquivo de configuração não encontrado"
+msgid "Unable to find XML definitions"
+msgstr "Definições XML não foram encontradas"
 
 #: src/library/tools/message.cc:48
 msgid "The message template is invalid"
@@ -588,21 +588,29 @@ msgstr "O template de mensagem não é válido"
 msgid "The required attribute 'cmdline' is missing"
 msgstr "Atributo necessário 'cmdline' não está disponível"
 
-#: src/library/tools/script.cc:149
+#: src/library/tools/script.cc:150
+msgid "Missing shebang attribute"
+msgstr "'shebang' não encontrado no início do script"
+
+#: src/library/tools/script.cc:152
 #, c++-format
 msgid "Missing shebang attribute on {}"
-msgstr ""
+msgstr "'shebang' não encontrado em {}"
 
-#: src/library/tools/script.cc:170
-#, fuzzy, c++-format
+#: src/library/tools/script.cc:175
+msgid "Required attribute 'cmdline' missing"
+msgstr "Atributo necessário 'cmdline' não encontrado"
+
+#: src/library/tools/script.cc:177
+#, c++-format
 msgid "Required attribute 'cmdline' missing on {}"
-msgstr "Atributo necessário 'cmdline' não está disponível"
+msgstr "Atributo necessário 'cmdline' não encontrado em {}"
 
-#: src/library/tools/script.cc:192
+#: src/library/tools/script.cc:199
 msgid "Cant set subprocess user id"
 msgstr "Incapaz de definir o usuário do subprocesso"
 
-#: src/library/tools/script.cc:198
+#: src/library/tools/script.cc:205
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
 
@@ -652,7 +660,7 @@ msgstr "Habilita coredump"
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
-#: src/library/tools/object.cc:291
+#: src/library/tools/object.cc:294
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
@@ -710,6 +718,9 @@ msgstr "Erro de sistema"
 #: src/library/request/response.cc:189
 msgid "Operation failed"
 msgstr "Operação falhou"
+
+#~ msgid "Configuration file not found"
+#~ msgstr "Arquivo de configuração não encontrado"
 
 #~ msgid "Run in foreground (as application)"
 #~ msgstr "Executar em primeiro plano (como aplicação)"
