@@ -129,10 +129,10 @@
 
  	}
 
-	Script::Script(const XML::Node &node, const char *title)
+	Script::Script(const XML::Node &node, const char *t)
 		: 	Action{node},
 			cmdline{String{node,"cmdline",""}.as_quark()},
-			title{String{node,"title",""}.as_quark()},
+			title{String{node,"title",t}.as_quark()},
 			uid{getuid(node)},
 			gid{getgid(node)},
 			shell{node.attribute("shell").as_bool(false)},
