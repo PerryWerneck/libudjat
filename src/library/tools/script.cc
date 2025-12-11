@@ -218,6 +218,8 @@
 			Logger::String{title}.info(name());
 		}
 
+		debug("Running script:\n", cmdline, "\n");
+
 		if(cmdline[0] == '#' && cmdline[1] == '!') {
 
 			// Has shebang, create temporary file
@@ -296,6 +298,9 @@
 	}
 
 	int Script::run(const Udjat::NamedObject &object, bool except) const {
+
+		debug("Script template for object is:\n", cmdline, "\n");
+
 		int rc = run(String{cmdline}.expand(object).c_str());
 		if(rc && except) {
 			throw runtime_error(Logger::Message{"Script failed with rc {}",rc});
@@ -304,6 +309,9 @@
 	}
 
 	int Script::call(Udjat::Request &request, Udjat::Response &response, bool except) {
+
+		debug("Script template for request is:\n", cmdline, "\n");
+
 		int rc = run(String{cmdline}.expand(request).c_str());
 		response[name()] = rc;
 		if(rc) {
