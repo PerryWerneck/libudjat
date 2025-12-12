@@ -18,13 +18,19 @@
  */
 
  /**
-  * @brief Implements the abstract application status.
+  * @brief Implements status dialog.
   */
 
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/ui/status.h>
+ #include <udjat/tools/logger.h>
  #include <stdexcept>
+ #include <private/logger.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif
 
  using namespace std;
 
@@ -37,14 +43,43 @@
 	}
 
 	Dialog::Status::~Status() {
-		instance = nullptr;
+		if(instance == this) {
+			instance = nullptr;
+		}
 	}
 
+	Dialog::Status &Dialog::Status::getConsole() {
+
+		class Status : public Dialog::Status {
+		public:
+			Status() : Dialog::Status() {}
+			~Status() override {}
+
+			Status & state(const char *text) noexcept override {
+				Logger::String{text}.write((Logger::Level) (Logger::Debug+1),"state");
+#ifndef _WIN32
+				if(Logger::decorated()) {
+					Logger::write(1,String{"\x1B]0;",text,"\x07"}.c_str());
+					fsync(1);
+				}
+#endif // !_WIN32
+				return *this;
+			}
+		};
+
+		static Status default_instance;
+		return default_instance;
+
+	}
+	
 	Dialog::Status &Dialog::Status::getInstance() {
-		if (!instance) {
-			throw logic_error("Status instance not initialized");
+
+		if(instance) {
+			return *instance;
 		}
-		return *instance;
+
+		return getConsole();
+
 	}
 
 	Dialog::Status & Dialog::Status::title(const char *) noexcept {

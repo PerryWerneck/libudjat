@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-12 15:17-0300\n"
+"POT-Creation-Date: 2025-12-12 16:19-0300\n"
 "PO-Revision-Date: 2025-12-10 19:22-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -76,30 +76,30 @@ msgstr "Operação falhou"
 msgid "System Error"
 msgstr "Erro de sistema"
 
-#: src/library/tools/file/handler.cc:185 src/library/tools/file/handler.cc:210
-#: src/library/tools/file/handler.cc:215 src/library/tools/file/handler.cc:365
+#: src/library/tools/file/handler.cc:184 src/library/tools/file/handler.cc:209
+#: src/library/tools/file/handler.cc:214 src/library/tools/file/handler.cc:364
 msgid "Cant set file offset"
 msgstr "Não foi possível posicionar arquivo"
 
-#: src/library/tools/file/handler.cc:195 src/library/tools/file/handler.cc:228
-#: src/library/tools/file/handler.cc:269
+#: src/library/tools/file/handler.cc:194 src/library/tools/file/handler.cc:227
+#: src/library/tools/file/handler.cc:268
 msgid "Cant write to file"
 msgstr "Não foi possível escrever no arquivo"
 
-#: src/library/tools/file/handler.cc:224 src/library/tools/file/handler.cc:246
-#: src/library/tools/file/handler.cc:304 src/library/tools/file/handler.cc:372
+#: src/library/tools/file/handler.cc:223 src/library/tools/file/handler.cc:245
+#: src/library/tools/file/handler.cc:303 src/library/tools/file/handler.cc:371
 msgid "Cant read from file"
 msgstr "Não foi possível ler do arquivo"
 
-#: src/library/tools/file/handler.cc:323 src/library/tools/file/handler.cc:351
+#: src/library/tools/file/handler.cc:322 src/library/tools/file/handler.cc:350
 msgid "Cant get file length"
 msgstr "Não foi possível obter o tamanho do arquivo"
 
-#: src/library/tools/file/handler.cc:339
+#: src/library/tools/file/handler.cc:338
 msgid "Cant get block size"
 msgstr "Não foi possível obter o tamanho de bloco"
 
-#: src/library/tools/file/handler.cc:374
+#: src/library/tools/file/handler.cc:373
 msgid "Unexpected EOF reading from file"
 msgstr "Fim de arquivo inesperado lendo arquivo"
 
@@ -424,7 +424,7 @@ msgstr "Sim"
 msgid "No"
 msgstr "Não"
 
-#: src/library/tools/systemservice.cc:140 src/library/agent/root.cc:99
+#: src/library/tools/systemservice.cc:140 src/library/agent/root.cc:98
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -677,7 +677,7 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/root.cc:99
+#: src/library/agent/root.cc:98
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
@@ -689,15 +689,11 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/agent/controller.cc:52
-msgid "Agent controller"
-msgstr "Controlador de agentes"
-
-#: src/library/agent/controller.cc:99
+#: src/library/agent/controller.cc:97
 msgid "Agent controller was not initialized"
 msgstr "Controlador de agentes não foi inicializado"
 
-#: src/library/agent/controller.cc:373
+#: src/library/agent/controller.cc:371
 msgid "Get agent properties"
 msgstr "Obtém propriedades do agente"
 
@@ -718,6 +714,9 @@ msgstr "Erro de sistema"
 #: src/library/request/response.cc:189
 msgid "Operation failed"
 msgstr "Operação falhou"
+
+#~ msgid "Agent controller"
+#~ msgstr "Controlador de agentes"
 
 #~ msgid "Configuration file not found"
 #~ msgstr "Arquivo de configuração não encontrado"
