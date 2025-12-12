@@ -22,7 +22,6 @@
  #include <udjat/tools/file/handler.h>
  #include <iostream>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/protocol.h>
  #include <udjat/tools/intl.h>
  #include <sys/types.h>
  #include <sys/stat.h>

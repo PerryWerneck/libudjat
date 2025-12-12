@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.2.4',
+	version: '2.3.0',
 	default_options : ['c_std=c11', 'cpp_std=c++17'],
 	license: 'GPL-3.0-or-later',
 )
@@ -372,9 +372,7 @@ lib_src += [
   'src/library/alert/construct.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
-  'src/library/alert/url.cc',
   'src/library/module/controller.cc',
-  'src/library/module/info.cc',
   'src/library/module/module.cc',
   'src/library/module/unload.cc',
   'src/library/module/load.cc',
@@ -407,7 +405,6 @@ lib_src += [
   'src/library/tools/http/error.cc',
   'src/library/tools/http/exception.cc',
   'src/library/tools/http/timestamp.cc',
-  'src/library/tools/http/client.cc',
   'src/library/tools/http/mimetype.cc',
   'src/library/tools/ip.cc',
   'src/library/tools/mainloop/service.cc',
@@ -428,12 +425,9 @@ lib_src += [
   'src/library/tools/timestamp.cc',
   'src/library/tools/url/methodfactory.cc',
   'src/library/tools/url/handler.cc',
-  'src/library/tools/url/controller.cc',
   'src/library/tools/url/header.cc',
   'src/library/tools/url/unescape.cc',
-  'src/library/tools/url/watcher.cc',
   'src/library/tools/url/url.cc',
-  'src/library/tools/url/worker.cc',
   'src/library/tools/value/construct.cc',
   'src/library/tools/value/set.cc',
   'src/library/tools/value/get.cc',
@@ -649,7 +643,6 @@ else
     'src/library/tools/os/linux/hostname.cc',
     'src/library/tools/os/linux/ip.cc',
     'src/library/tools/os/linux/nic.cc',
-    'src/library/tools/os/linux/protocol.cc',
     'src/library/tools/os/linux/shortcut.cc',
     'src/library/tools/os/linux/subprocess/controller.cc',
     'src/library/tools/os/linux/subprocess/handler.cc',
@@ -844,7 +837,6 @@ install_headers(
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
-  'src/include/udjat/moduleinfo.h',
   'src/include/udjat/loader.h',
   subdir: 'udjat'  
 )
@@ -864,7 +856,6 @@ install_headers(
 )
 
 install_headers(
-  'src/include/udjat/module/info.h',
   'src/include/udjat/module/abstract.h',
   subdir: 'udjat/module'  
 )
@@ -922,7 +913,6 @@ install_headers(
   'src/include/udjat/tools/handler.h',
   'src/include/udjat/tools/logger.h',
   'src/include/udjat/tools/mainloop.h',
-  'src/include/udjat/tools/protocol.h',
   'src/include/udjat/tools/request.h',
   'src/include/udjat/tools/string.h',
   'src/include/udjat/tools/timer.h',
@@ -952,7 +942,6 @@ install_headers(
   'src/include/udjat/tools/http/exception.h',
   'src/include/udjat/tools/http/method.h',
   'src/include/udjat/tools/http/timestamp.h',
-  'src/include/udjat/tools/http/client.h',
   'src/include/udjat/tools/http/mimetype.h',
   subdir: 'udjat/tools/http'  
 )

@@ -28,7 +28,6 @@
 
  #include <udjat/tools/xml.h>
  #include <udjat/tools/application.h>
- #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/url.h>

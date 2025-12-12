@@ -140,7 +140,6 @@ namespace Udjat {
 	class Alert;
 	class Value;
 	class TimeStamp;
-	struct ModuleInfo;
 
 }
 

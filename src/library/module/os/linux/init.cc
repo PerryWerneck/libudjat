@@ -69,17 +69,15 @@
 				throw runtime_error("Can't initialize module");
 			}
 
-			if(node.attribute("verbose").as_bool(true)) {
-				module->info()
-						<< module->description()
-						<< " build " << module->build() << " initialized" << endl;
+			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
+				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
 			}
 
 			module->handle = handle;
 			module->keep_loaded = node.attribute("keep-loaded").as_bool(false) || Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
 
-			if(module->_info.gettext_package && *module->_info.gettext_package) {
-				Application::set_gettext_package(module->_info.gettext_package);
+			if(module->info.gettext_package && *module->info.gettext_package) {
+				Application::set_gettext_package(module->info.gettext_package);
 			}
 
 			return module;

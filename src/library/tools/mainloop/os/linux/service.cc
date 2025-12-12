@@ -33,23 +33,22 @@
 
 		ThreadPool::getInstance();
 
-		{
-			lock_guard<mutex> lock(guard);
-			cout << "mainloop\tStarting " << objects.size() << " service(s)" << endl;
-			for(auto service : objects) {
-				if(!service->state.active) {
-					try {
-						cout << "services\tStarting '" << service->name() << "' (" << service->description() << " " << service->version() << ")" << endl;
-						service->start();
-						service->state.active = true;
-					} catch(const std::exception &e) {
-						service->error() << "Error '" << e.what() << "' starting service" << endl;
-					} catch(...) {
-						service->error() << "Unexpected error starting service" << endl;
-					}
+		lock_guard<mutex> lock(guard);
+		Logger::String{"Starting ", objects.size(), " service(s)"}.trace("services");
+		for(auto service : objects) {
+			if(!service->state.active) {
+				try {
+					Logger::String{"Starting '", service->description(), " ", service->version(), ")"}.info(service->name());
+					service->start();
+					service->state.active = true;
+				} catch(const std::exception &e) {
+					Logger::String{"Error '", e.what(), "' starting service"}.error(service->name());
+				} catch(...) {
+					Logger::String{"Unexpected error starting service"}.error(service->name());
 				}
 			}
 		}
+
 	}
 
 	void Service::Controller::stop() noexcept {
@@ -57,7 +56,7 @@
 		{
 			lock_guard<mutex> lock(guard);
 
-			Logger::String("Stopping ",objects.size()," service(s)").write(Logger::Trace,"mainloop");
+			Logger::String{"Stopping ",objects.size()," service(s)"}.trace("services");
 
 			// Stop services in reverse order.
 			size_t count = 0;
@@ -65,17 +64,17 @@
 				Service *service = *srvc;
 				if(service->state.active) {
 					try {
-						Logger::String("Stopping '",service->name(),"' (",(++count),"/",objects.size(),")").write(Logger::Trace,"mainloop");
+						Logger::String{"Stopping '",service->name(),"' (",(++count),"/",objects.size(),")"}.trace("services");
 						service->stop();
 					} catch(const std::exception &e) {
-						service->error() << "Error '" << e.what() << "' stopping service" << endl;
+						Logger::String{"Error '",e.what(),"' stopping service"}.error(service->name());
 					} catch(...) {
-						service->error() << "Unexpected error stopping service" << endl;
+						Logger::String{"Unexpected error stopping service"}.error(service->name());
 					}
 					service->state.active = false;
 				}
 				else {
-					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",objects.size(),")").write(Logger::Trace,"mainloop");
+					Logger::String("Service '",service->name(),"' is already stopped (",(++count),"/",objects.size(),")").trace("services");
 				}
 			}
 		}

@@ -166,7 +166,6 @@ src/library/tools/config.cc
 src/library/tools/interface.cc
 src/library/tools/message.cc
 src/library/tools/quark.cc
-src/library/tools/script.cc
 src/library/tools/crypto/backend.cc
 src/library/tools/crypto/backend/engine.cc
 src/library/tools/crypto/backend/legacy.cc
@@ -177,6 +176,7 @@ src/library/tools/commandlineparser.cc
 src/library/tools/logger.cc
 src/library/tools/object.cc
 src/library/tools/activatable.cc
+src/library/tools/script.cc
 src/library/agent/agent.cc
 src/library/agent/get.cc
 src/library/agent/path.cc
@@ -310,11 +310,11 @@ src/include/udjat/tools/intl.h
 src/include/udjat/tools/crypto.h
 src/include/udjat/tools/memory.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/script.h
 src/include/udjat/tools/subprocess.h
 src/include/udjat/tools/configuration.h
 src/include/udjat/tools/container.h
 src/include/udjat/tools/quark.h
-src/include/udjat/tools/script.h
 src/include/udjat/tools/singleton.h
 src/include/udjat/tools/url.h
 src/include/udjat/tools/logger.h

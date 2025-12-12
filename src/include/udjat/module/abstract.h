@@ -23,7 +23,6 @@
  #include <udjat/tools/xml.h>
  #include <udjat/tools/quark.h>
  #include <udjat/tools/value.h>
- #include <udjat/module/info.h>
  #include <udjat/agent.h>
  #include <udjat/tools/request.h>
  #include <udjat/tools/file/path.h>
@@ -53,27 +52,69 @@
 		void *handle;
 #endif // _WIN32
 
-		/// @brief Information about the module.
-		const ModuleInfo &_info;
-
 	protected:
 
 		typedef Udjat::Module super;
 
-		Module(const char *name, const ModuleInfo &info);
+		struct Info {
+ 
+			/// @brief Module build.
+#ifdef BUILD_DATE
+			const int build = BUILD_DATE;
+#else
+			const int build = 0;
+#endif // BUILD_DATE
 
-		Module(const ModuleInfo &info) : Module(info.name,info) {
-		}
+			/// @brief The module package.
+#ifdef PACKAGE_NAME
+			const char *name = PACKAGE_NAME;
+#else
+			const char *name = "";
+#endif // PACKAGE_NAME
 
-		Module(const char *name, const ModuleInfo *info) : Module(name,*info) {
-		}
+			/// @brief The module description.
+#ifdef PACKAGE_DESCRIPTION
+			const char *description = PACKAGE_DESCRIPTION;
+#else
+			const char *description = "";
+#endif // PACKAGE_DESCRIPTION
 
-		inline operator	const ModuleInfo &() const noexcept {
-			return _info;
-		}
+		/// @brief The module version.
+#ifdef PACKAGE_VERSION
+			const char *version = PACKAGE_VERSION;
+#else
+			const char *version = "";
+#endif // PACKAGE_VERSION
 
-		/// @brief Navigate on module options DEPRECATED, use XML::options
-		[[deprecated("Use XML::options")]] static void options(const XML::Node &node, std::function<void(const char *name, const char *value)> call);
+		/// @brief The bugreport address.
+#ifdef PACKAGE_BUGREPORT
+			const char *bugreport = PACKAGE_BUGREPORT;
+#else
+			const char *bugreport = "";
+#endif // PACKAGE_BUGREPORT
+
+		/// @brief The package URL.
+#ifdef PACKAGE_URL
+			const char *url = PACKAGE_URL;
+#else
+			const char *url = "";
+#endif // PACKAGE_URL
+
+#ifdef GETTEXT_PACKAGE
+			const char * gettext_package = GETTEXT_PACKAGE;
+#else
+			const char * gettext_package = nullptr;
+#endif // GETTEXT_PACKAGE
+
+		} info;
+
+#if defined(PACKAGE_NAME) && defined(PACKAGE_DESCRIPTION)
+		Module(const char *name = PACKAGE_NAME, const char *description = PACKAGE_DESCRIPTION);
+#elif defined(PACKAGE_NAME)
+		Module(const char *name = PACKAGE_NAME, const char *description = "");
+#else
+		Module(const char *name, const char *description);
+#endif
 
 	public:
 
@@ -89,15 +130,15 @@
 		}
 		
 		inline const char * description() const noexcept {
-			return _info.description;
+			return info.description;
 		}
 
 		inline int build() const noexcept {
-			return _info.build;
+			return info.build;
 		}
 
 		inline const char * gettext_package() const noexcept {
-			return _info.gettext_package;
+			return info.gettext_package;
 		}
 
 		/// @brief Preload modules from configuration file.
@@ -176,10 +217,6 @@
 		/// @brief Execute command.
 		virtual void exec(Udjat::Value &response, const char *name, va_list args) const;
 
-		std::ostream & info() const;
-		std::ostream & warning() const;
-		std::ostream & error() const;
-
 		/// @brief Set new root agent.
 		virtual void set(std::shared_ptr<Abstract::Agent> agent);
 
@@ -202,9 +239,6 @@
 	/// @param name The test name to run. If null, all tests are run.
 	/// @return 0 if success, -1 on error.
 	UDJAT_API int run_udjat_unit_test(const char *name);
-
-	/// @brief Module information data.
-	extern UDJAT_API const Udjat::ModuleInfo udjat_module_info;
 
 	/// @brief Initialize module.
 	/// @return Module controller.

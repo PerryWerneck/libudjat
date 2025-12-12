@@ -22,7 +22,6 @@
  #include <config.h>
 
  #include <udjat/defs.h>
- #include <udjat/tools/protocol.h>
  #include <udjat/net/ip/address.h>
  #include <udjat/win32/ip.h>
  #include <udjat/tools/logger.h>

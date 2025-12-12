@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-03 13:56-0300\n"
+"POT-Creation-Date: 2025-12-12 15:17-0300\n"
 "PO-Revision-Date: 2025-12-10 19:22-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -584,36 +584,6 @@ msgstr "Definições XML não foram encontradas"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/script.cc:56
-msgid "The required attribute 'cmdline' is missing"
-msgstr "Atributo necessário 'cmdline' não está disponível"
-
-#: src/library/tools/script.cc:150
-msgid "Missing shebang attribute"
-msgstr "'shebang' não encontrado no início do script"
-
-#: src/library/tools/script.cc:152
-#, c++-format
-msgid "Missing shebang attribute on {}"
-msgstr "'shebang' não encontrado em {}"
-
-#: src/library/tools/script.cc:175
-msgid "Required attribute 'cmdline' missing"
-msgstr "Atributo necessário 'cmdline' não encontrado"
-
-#: src/library/tools/script.cc:177
-#, c++-format
-msgid "Required attribute 'cmdline' missing on {}"
-msgstr "Atributo necessário 'cmdline' não encontrado em {}"
-
-#: src/library/tools/script.cc:199
-msgid "Cant set subprocess user id"
-msgstr "Incapaz de definir o usuário do subprocesso"
-
-#: src/library/tools/script.cc:205
-msgid "Cant set subprocess group id"
-msgstr "Incapaz de definir o grupo do subprocesso"
-
 #: src/library/tools/commandlineparser.cc:163
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
@@ -660,10 +630,40 @@ msgstr "Habilita coredump"
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
-#: src/library/tools/object.cc:294
+#: src/library/tools/object.cc:297
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#: src/library/tools/script.cc:56
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
+
+#: src/library/tools/script.cc:150
+msgid "Missing shebang attribute"
+msgstr "'shebang' não encontrado no início do script"
+
+#: src/library/tools/script.cc:152
+#, c++-format
+msgid "Missing shebang attribute on {}"
+msgstr "'shebang' não encontrado em {}"
+
+#: src/library/tools/script.cc:175
+msgid "Required attribute 'cmdline' missing"
+msgstr "Atributo necessário 'cmdline' não encontrado"
+
+#: src/library/tools/script.cc:177
+#, c++-format
+msgid "Required attribute 'cmdline' missing on {}"
+msgstr "Atributo necessário 'cmdline' não encontrado em {}"
+
+#: src/library/tools/script.cc:199
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
+
+#: src/library/tools/script.cc:205
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
 
 #: src/library/agent/agent.cc:193
 msgid "default"
