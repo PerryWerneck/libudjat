@@ -55,11 +55,12 @@
 		{
 			auto activatable = std::dynamic_pointer_cast<Activatable>(object);
 			if(activatable) {
-				debug("Pushing activatable ",object->name()," into agent ",name());
-				lock_guard<std::recursive_mutex> lock(guard);
+				//debug("Pushing activatable ",object->name()," into agent ",name());
+				//lock_guard<std::recursive_mutex> lock(guard);
 
+				throw runtime_error(Logger::Message{"Activatable {} must be pushed with event trigger",object->name()});
 
-				return true;
+				//return true;
 			}
 		}
 
@@ -95,14 +96,6 @@
 	void Abstract::Agent::push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable) {
 		lock_guard<std::recursive_mutex> lock(guard);
 		listeners.emplace_back(event,activatable);
-	}
-
-	bool Abstract::Agent::push_back(const XML::Node &node, std::shared_ptr<Activatable> alert) {
-		return push_back(node, std::static_pointer_cast<Abstract::Object>(alert));
-	}
-
-	void Abstract::Agent::push_back(std::shared_ptr<Abstract::Agent> child) {
-		push_back(std::static_pointer_cast<Abstract::Object>(child));
 	}
 
  }
