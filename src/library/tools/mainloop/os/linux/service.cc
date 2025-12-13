@@ -38,7 +38,7 @@
 		for(auto service : objects) {
 			if(!service->state.active) {
 				try {
-					Logger::String{"Starting '", service->description(), " ", service->version(), ")"}.info(service->name());
+					Logger::String{"Starting ", service->description(), " ", service->version()}.info(service->name());
 					service->start();
 					service->state.active = true;
 				} catch(const std::exception &e) {
