@@ -39,7 +39,7 @@
 		for (UINT i = 0; i < iface->AddressLength; i++) {
 			char buffer[4];
 			snprintf(buffer,3,"%02X",(int) iface->Address[i]);
-			buffer[4] = 0;
+			buffer[3] = 0;
 			rc += buffer;
 		}
 		return rc;
