@@ -90,7 +90,7 @@
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::state(const Level level, const char *text) noexcept {
+	Dialog::Status & Dialog::Status::state(const Level, const char *text) noexcept {
 		return sub_title(text);
 	}
 
