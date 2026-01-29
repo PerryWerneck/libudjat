@@ -20,7 +20,8 @@
  #pragma once
  #include <udjat/defs.h>
  #include <cstring>
-
+ #include <functional>
+ 
  namespace Udjat {
 
 	/// @brief Service who can be started/stopped.
@@ -37,7 +38,7 @@
 		/// @brief Service name.
 		const char *service_name = "service";
 
-#ifdef PACKAGE_DESCRIPTION
+#if defined(PACKAGE_DESCRIPTION)
 		const char *service_description = PACKAGE_DESCRIPTION;
 #else
 		const char *service_description = "Udjat Service";
@@ -50,10 +51,12 @@
 		Service(const Service &src) = delete;
 		Service(const Service *src) = delete;
 
-#ifdef PACKAGE_DESCRIPTION
+#if defined(PACKAGE_DESCRIPTION)
 		Service(const char *name, const char *description = PACKAGE_DESCRIPTION);
-#else
+#elif defined(PACKAGE_NAME)
 		Service(const char *name, const char *description = PACKAGE_NAME);
+#else
+		Service(const char *name, const char *description);
 #endif
 
 		virtual ~Service();

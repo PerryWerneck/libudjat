@@ -40,7 +40,7 @@
 	private:
 		Timer *reload_timer = nullptr;		///< @brief Auto update timer.
 		int &argc;
-		char **argv;				///< @brief Command line arguments.
+		char **argv;						///< @brief Command line arguments.
 
 		/// @brief Parse XML definitions from a file or directory.
 		/// @param path Path to file or directory with XML definitions.

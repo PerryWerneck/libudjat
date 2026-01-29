@@ -86,7 +86,7 @@
 		return *this;
 	}
 
-	Dialog::Status & Dialog::Status::sub_title(const char *) noexcept{
+	Dialog::Status & Dialog::Status::sub_title(const char *) noexcept {
 		return *this;
 	}
 
