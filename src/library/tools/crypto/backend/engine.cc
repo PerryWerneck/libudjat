@@ -54,8 +54,8 @@
 		~SSLEngine();
 		void load(const char *filename, const char *password) override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
-		void * encrypt(const void *data, size_t size, size_t *outsize) override;
-		void * decrypt(const void *data, size_t size, size_t *outsize) override;
+		void * encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) override;
+		void * decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) override;
 
 	};
 
@@ -95,7 +95,7 @@
 		pkey = ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 	}
 
-	void * SSLEngine::encrypt(const void *data, size_t size, size_t *outsize) {
+	void * SSLEngine::encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
 
 		// Reference: https://docs.openssl.org/3.0/man3/EVP_PKEY_encrypt/
 
@@ -130,7 +130,7 @@
 
 	}
 
-	void * SSLEngine::decrypt(const void *data, size_t size, size_t *outsize) {
+	void * SSLEngine::decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
 
 		// Reference: https://docs.openssl.org/3.0/man3/EVP_PKEY_decrypt/
 

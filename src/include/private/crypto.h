@@ -75,19 +75,21 @@
 		virtual void load(const char *filename, const char *password);
 
 		/// @brief Encrypt data.
+		/// @param pkey The private key to use for encryption.
 		/// @param data The data to encrypt.
 		/// @param size The size of the input data.
 		/// @param outsize The size of output data.
 		/// @return A pointer to the encrypted data, release it with free().
-		virtual void * encrypt(const void *data, size_t size, size_t *outsize);
+		virtual void * encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize);
 
 		/// @brief Decrypt data.
+		/// @param pkey The private key to use for decryption.
 		/// @param data The data to decrypt.
 		/// @param size The size of the input data.
 		/// @param outsize The size of output data.
 		/// @return A pointer to the decrypted data, release it with free().
-		virtual void * decrypt(const void *data, size_t size, size_t *outsize);
-		
+		virtual void * decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize);
+
 		void unload();
 
 		virtual std::string get_private();

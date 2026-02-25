@@ -53,12 +53,12 @@
 		unload();
 	}
 
-	void * Crypto::BackEnd::encrypt(const void *data, size_t size, size_t *outsize) {
-		throw system_error(ENOTSUP,system_category(),"Selected backend cant suport data encrypt");;
+	void * Crypto::BackEnd::encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
+		throw system_error(ENOTSUP,system_category(),"Selected backend cant suport data encrypt");
 	}
 
-	void * Crypto::BackEnd::decrypt(const void *data, size_t size, size_t *outsize) {
-		throw system_error(ENOTSUP,system_category(),"Selected backend cant suport data decrypt");;
+	void * Crypto::BackEnd::decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
+		throw system_error(ENOTSUP,system_category(),"Selected backend cant suport data decrypt");
 	}
 
 	void Crypto::BackEnd::unload() {
