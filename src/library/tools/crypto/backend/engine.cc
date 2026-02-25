@@ -54,6 +54,8 @@
 		~SSLEngine();
 		void load(const char *filename, const char *password) override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
+		void * encrypt(const void *data, size_t size, size_t *outsize) override;
+		void * decrypt(const void *data, size_t size, size_t *outsize) override;
 
 	};
 
@@ -92,6 +94,77 @@
 		debug("Loading \n",filename);
 		pkey = ENGINE_load_private_key(engine, filename, NULL, &key_cb);
 	}
+
+	void * SSLEngine::encrypt(const void *data, size_t size, size_t *outsize) {
+
+		// Reference: https://docs.openssl.org/3.0/man3/EVP_PKEY_encrypt/
+
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, engine), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if(EVP_PKEY_encrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+			
+		if(EVP_PKEY_encrypt(ctx.get(), NULL, outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		auto out = malloc(*outsize);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_encrypt(ctx.get(), (unsigned char *) out, outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		return out;
+
+	}
+
+	void * SSLEngine::decrypt(const void *data, size_t size, size_t *outsize) {
+
+		// Reference: https://docs.openssl.org/3.0/man3/EVP_PKEY_decrypt/
+
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, engine), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if(EVP_PKEY_decrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+
+		if(EVP_PKEY_decrypt(ctx.get(), NULL, outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		auto out = malloc(*outsize);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_decrypt(ctx.get(), (unsigned char *) out, outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		return out;
+
+	}
+
 
 #if defined(HAVE_TPM2_TSS_ENGINE_H)
 	void SSLEngine::generate(const char *filename, const char *password, size_t mbits) {
