@@ -75,7 +75,7 @@
 			throw Crypto::Exception("EVP_PKEY_encrypt failed");
 		}
 
-		auto out = malloc(outsize);
+		auto out = malloc(outsize + 1);
 		if(!out) {
 			throw runtime_error("malloc failed");
 		}
@@ -85,6 +85,7 @@
 			throw Crypto::Exception("EVP_PKEY_encrypt failed");
 		}
 
+		((uint8_t *) out)[outsize] = 0;
 		return out;
 	}
 
@@ -110,7 +111,7 @@
 			throw Crypto::Exception("EVP_PKEY_decrypt failed");
 		}
 
-		auto out = malloc(outsize);
+		auto out = malloc(outsize+1);
 		if(!out) {
 			throw runtime_error("malloc failed");
 		}
@@ -120,6 +121,7 @@
 			throw Crypto::Exception("EVP_PKEY_decrypt failed");
 		}
 
+		((uint8_t *) out)[outsize] = 0;
 		return out;
 	}
 
@@ -147,7 +149,7 @@
 			throw Crypto::Exception("EVP_PKEY_verify_init failed");
 		}
 
-		auto out = malloc(outsize);
+		auto out = malloc(outsize+1);
 		if(!out) {
 			throw runtime_error("malloc failed");
 		}
@@ -156,6 +158,7 @@
 			throw Crypto::Exception("EVP_PKEY_verify_init failed");
 		}
 
+		((uint8_t *) out)[outsize] = 0;
 		return out;
 		
 	}
@@ -181,6 +184,8 @@
 		}
 
 		ret = EVP_PKEY_verify(ctx, sig, siglen, md, mdlen);		
+
+
 		*/
 
 	}

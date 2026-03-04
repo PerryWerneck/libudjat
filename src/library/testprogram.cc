@@ -89,14 +89,26 @@
 			size_t encripted_len = 0;
 			size_t decripted_len = 0;
 
-			const char *buffer = "Simple string to test crypto functions";
+			{
+				const char *buffer = "Simple string to test crypto functions";
 
-			void *encripted = pkey.sign(buffer,encripted_len);
-			Logger::String{"The signature block has ",encripted_len," bytes"}.info();
+				void *encripted = pkey.encrypt(buffer,encripted_len);
 
-			void *signature = pkey.verify(encripted,encripted_len,decripted_len);
+				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
 
-			free(encripted);
+				void *decrypted = pkey.decrypt(encripted,encripted_len,decripted_len);
+
+				debug("Decrypted string: '",((char *) decrypted),"'");
+
+				if(strcmp(buffer,(const char *) decrypted)) {
+					throw runtime_error("Error decripting data block");
+				} else {
+					Logger::String{"Decripted block is ok"}.info();
+				}
+
+				free(encripted);
+				free(decrypted);
+			}
 
 			// Test key loading
 			Logger::String{"Reloading private key for ",backend," from file."}.info();
