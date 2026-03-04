@@ -165,6 +165,8 @@
 
 	void * Crypto::BackEnd::verify(const void *data, size_t size, size_t &outsize) {
 
+		throw system_error(ENOTSUP,system_category(),"Signature validation was not implemented");;
+
 		/*
 		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
 		if(!ctx) {

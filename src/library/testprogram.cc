@@ -86,10 +86,10 @@
 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
 
 			// Test encription/decription
-			size_t encripted_len = 0;
-			size_t decripted_len = 0;
-
 			{
+				size_t encripted_len = 0;
+				size_t decripted_len = 0;
+
 				const char *buffer = "Simple string to test crypto functions";
 
 				void *encripted = pkey.encrypt(buffer,encripted_len);
@@ -108,6 +108,28 @@
 
 				free(encripted);
 				free(decrypted);
+			}
+
+			// Test sign/verify
+			{
+				size_t signed_len;
+				size_t verify_len;
+
+				const char *buffer = "Simple string to test crypto functions";
+
+				void *sig= pkey.sign(buffer,signed_len);
+
+				Logger::String{"The signed block has ",signed_len," bytes"}.info();
+
+				void *verify = pkey.verify(sig,signed_len,verify_len);
+
+				debug("Verification string: '",((char *) verify),"'");
+
+				if(strcmp(buffer,(const char *) verify)) {
+					throw runtime_error("Error sigining data block");
+				} else {
+					Logger::String{"Signed block is ok"}.info();
+				}
 			}
 
 			// Test key loading
