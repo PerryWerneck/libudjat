@@ -54,44 +54,41 @@
 		char path[PATH_MAX];
 		strncpy(path,name,PATH_MAX-1);
 
-		fd = open(dirname(path),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR);
+		string dir{dirname(path)};
+
+		fd = ::open(dir.c_str(),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR);
 		if(fd > 0) {
 			return;
 		}
 
 		if(errno != ENOTSUP) {
-			throw system_error(errno,system_category(),Logger::Message("Can't create '{}'",filename));
+			throw system_error(errno,system_category(),Logger::Message("Can't create temporary file for '{}'",filename));
 		}
 
-		strncpy(path,name,PATH_MAX-1); // Dirname change buffer, copy it again.
-		Udjat::File::Path directory{dirname(path)};
-		if(!directory.dir()) {
-			throw system_error(ENOTDIR,system_category(),directory);
-		}
+		dir += "/";
 
-		directory += '/';
-
+		// Try building a temporary file.
 		unsigned long seq = (unsigned long) time(0);
 
 		for(size_t retry = 0; retry < 1000; retry++) {
 
-			string filename{directory.c_str()};
+			string filename{dir.c_str()};
 			filename += std::to_string(seq--);
 
 			debug("Trying ",filename);
 
-			fd = open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR, S_IRUSR | S_IWUSR);
+			fd = ::open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR, S_IRUSR | S_IWUSR);
 			if(fd > 0) {
-				return;
+			return;
 			}
 
 			if(errno != EEXIST) {
 				throw system_error(errno,system_category(),Logger::Message("Can't create '{}'",filename));
 			}
-
 		}
 
-		throw runtime_error(Logger::Message("Can't create temporary file on '{}'",directory.c_str()));
+		// Failed.
+		throw runtime_error(Logger::Message("Can't create temporary file for '{}'",name));
 
 	}
 
@@ -144,25 +141,87 @@
 
 	}
 
-	Udjat::String File::Temporary::create() {
-		return create(0);
+	Udjat::String File::Temporary::path() {
+
+		static const char *envvars[] = { "TEMP", "TMP", "TMPDIR" };
+
+		for(const char *env : envvars) {
+
+			const char *ptr = getenv(env);
+			if(ptr && *ptr && access(ptr, W_OK) == 0) {
+				debug("Got access to '",ptr,"'");
+				return String{ptr};
+			}
+
+		}
+
+		const char *homedir = getenv("HOME");
+		if(homedir && *homedir) {
+
+			static const char *paths[] = { "/tmp", "/.tmp", "/.var/tmp" };
+			for(const char *path : paths) {
+				String str{homedir,path};
+				if(access(str.c_str(), W_OK) == 0) {
+					debug("Got access to '",str.c_str(),"'");
+					return str;
+				}
+			}
+
+		}
+
+		return "/tmp";
+
+	}
+
+	static String get_temporary_path() {
+
+		String dir = File::Temporary::path();
+
+		// Check application tmpdir.
+		{
+			string appdir = dir.c_str();
+			appdir +=  '/';
+			appdir += program_invocation_short_name;
+			::mkdir(appdir.c_str(),0777);
+			if(!access(appdir.c_str(),W_OK)) {
+				debug("Tempdir is '",dir.c_str(),"'");
+				return appdir;
+			}
+		}
+
+		debug("Tempdir is '",dir.c_str(),"'");
+		return dir;
+
+	}
+
+	int File::Temporary::open(unsigned long long len) {
+
+		int fd = ::open(get_temporary_path().c_str(),O_TMPFILE|O_RDWR, S_IRUSR | S_IWUSR);
+		if(fd > 0) {
+			if(len && fallocate(fd, 0, 0, len) != 0) {
+				int err = errno;
+				::close(fd);
+				throw system_error(err,system_category(),"Can't allocate temporary file");
+			}
+			return fd;
+		}
+
+		return File::Temporary::create(len);
 	}
 
 	Udjat::String File::Temporary::create(unsigned long long len) {
 
-		Application::TmpDir basename;
+		String dir = get_temporary_path();
 
-		if(::mkdir(basename.c_str(),0777) && errno != EEXIST) {
-			throw system_error(errno,system_category(),string{"Can't create '"} + basename + "'");
-		}
+		debug("Temporary dir set to '",dir.c_str(),"'");
 
-		basename += "/";
-		basename += TimeStamp().to_string("%Y%m%d%H%M%s");
+		dir += "/";
+		dir += TimeStamp().to_string("%Y%m%d%H%M%s");
 
 		for(size_t f = 0; f < 1000; f++) {
 
-			Udjat::String filename{basename.c_str(),".",std::to_string(rand()).c_str(),".tmp"};
-			int fd = open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR,0600);
+			Udjat::String filename{dir.c_str(),".",std::to_string(rand()).c_str(),".tmp"};
+			int fd = ::open(filename.c_str(),O_CREAT|O_EXCL|O_RDWR,0600);
 			if(fd > 0) {
 				if(len && fallocate(fd, 0, 0, len) != 0) {
 					int err = errno;
@@ -179,8 +238,8 @@
 
 		}
 
-		throw runtime_error(String{"Too many files in '",Application::TmpDir{}.c_str(),"'"});
-
+		throw runtime_error(String{"Too many files in '",dir.c_str(),"'"});
+	
 	}
 
 	void File::Temporary::save(const char *filename, bool replace) {

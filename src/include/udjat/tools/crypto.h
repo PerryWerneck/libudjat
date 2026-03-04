@@ -117,6 +117,20 @@ namespace Udjat {
 			/// @return The private key in PEM format.
 			std::string to_string() const;
 
+			/// @brief signs the size bytes at data (usually a message digest with an algorithm identifier) using the private key.
+			/// @param data The data to sign.
+			/// @param size The size of the input data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the signed data, release it with free().
+			void * sign(const void *data, size_t size, size_t *outsize);
+
+			/// @brief Decrypt data using the private key.
+			/// @param data The data to decrypt.
+			/// @param size The size of the input data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the decrypted data, release it with free().
+			void * decrypt(const void *data, size_t size, size_t *outsize);
+
 		};
 
 	}

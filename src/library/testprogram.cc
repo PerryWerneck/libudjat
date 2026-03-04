@@ -29,6 +29,7 @@
  #include <string>
  #include <udjat/net/interface.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/file/temporary.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -257,22 +258,39 @@ return 0;
 	return 0;
  }
 
+ static int tmpfile_test() {
+
+	{
+		String filename = File::Temporary::create(100);
+		Logger::String{"Temporary file '",filename,"' created"}.info();
+	}
+
+	{
+		int fd = File::Temporary::open(100);
+		Logger::String{"Temporary file '",fd,"' open"}.info();
+		::close(fd);
+	}
+
+	return 0;
+ }
+
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
 		const char *name;
 		int (*test)();
 	} tests[] = {
-		{"url",url_test},
+		{"tmpfile",	tmpfile_test},
+		{"url",		url_test},
  #ifdef HAVE_OPENSSL
-		{"ssl", ssl_test},
+		{"ssl",		ssl_test},
  #endif // HAVE_OPENSSL
  #ifdef HAVE_SMBIOS
-		{"smbios", smbios_test},
+		{"smbios",	smbios_test},
  #endif // HAVE_SMBIOS
-		{"network", network_test},
-		{"config", config_test},
-		{"string", string_test},
+		{"network",	network_test},
+		{"config",	config_test},
+		{"string",	string_test},
 	};
 
 	if(!name) {
