@@ -54,8 +54,8 @@
 		SSLProvider();
 		~SSLProvider() override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
-		void * encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) override;
-		void * decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) override;
+		// void * encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t &outsize) override;
+		// void * decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t &outsize) override;
 
 	};
 	
@@ -110,6 +110,7 @@
 		}
 	}
 
+	/*
 	void * SSLProvider::encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
 		
 		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
@@ -177,6 +178,7 @@
 
 		return out;
 	}
+	*/
 
  } 
  #endif // HAVE_OPENSSL_PROVIDER

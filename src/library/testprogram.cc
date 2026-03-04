@@ -85,6 +85,19 @@
 			Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
 
+			// Test encription/decription
+			size_t encripted_len = 0;
+			size_t decripted_len = 0;
+
+			const char *buffer = "Simple string to test crypto functions";
+
+			void *encripted = pkey.sign(buffer,encripted_len);
+			Logger::String{"The signature block has ",encripted_len," bytes"}.info();
+
+			void *signature = pkey.verify(encripted,encripted_len,decripted_len);
+
+			free(encripted);
+
 			// Test key loading
 			Logger::String{"Reloading private key for ",backend," from file."}.info();
 			String loaded = Udjat::Crypto::Key{}.load(filename.c_str(),"password",backend).to_string();

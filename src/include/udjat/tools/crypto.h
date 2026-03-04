@@ -122,14 +122,37 @@ namespace Udjat {
 			/// @param size The size of the input data.
 			/// @param outsize The size of output data.
 			/// @return A pointer to the signed data, release it with free().
-			void * sign(const void *data, size_t size, size_t *outsize);
+			void * sign(const void *data, size_t size, size_t &outsize);
+
+			inline void * sign(const char *data, size_t &outsize) {
+				return sign((const void *) data, strlen(data), outsize);
+			}
+
+			/// @brief Verify signed data.
+			/// @param indata The signed data.
+			/// @param insize The size of signed data.
+			/// @param outsize The size of decripted signature. 
+			/// @return A pointer to the decripted signature, release it with free().
+			/// @return 
+			void * verify(const void *indata, size_t insize, size_t &outsize);
+
+			/// @brief Encrypt data using the public key.
+			/// @param data The data to encrypt.
+			/// @param size The size of the input data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the encrypted data, release it with free().
+			void * encrypt(const void *data, size_t size, size_t &outsize);
+
+			inline void * encrypt(const char *data, size_t &outsize) {
+				return encrypt((const void *) data, strlen(data), outsize);
+			}
 
 			/// @brief Decrypt data using the private key.
 			/// @param data The data to decrypt.
 			/// @param size The size of the input data.
 			/// @param outsize The size of output data.
 			/// @return A pointer to the decrypted data, release it with free().
-			void * decrypt(const void *data, size_t size, size_t *outsize);
+			void * decrypt(const void *data, size_t size, size_t &outsize);
 
 		};
 

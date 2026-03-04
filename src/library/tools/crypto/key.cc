@@ -159,6 +159,25 @@
 		return "";
 	}
 
+	void * Crypto::Key::sign(const void *data, size_t size, size_t &outsize) {
+		outsize = 0; // Just in case
+		return backend->encrypt(data,size,outsize);
+	}
+
+	void * Crypto::Key::verify(const void *indata, size_t insize, size_t &outsize) {
+		outsize = 0; // Just in case
+		throw system_error(ENOTSUP,system_category(),"Not implemented");
+	}
+
+	void * Crypto::Key::encrypt(const void *data, size_t size, size_t &outsize) {
+		outsize = 0; // Just in case
+		throw system_error(ENOTSUP,system_category(),"Not implemented");
+	}
+
+	void * Crypto::Key::decrypt(const void *data, size_t size, size_t &outsize) {
+		outsize = 0; // Just in case
+		return backend->decrypt(data,size,outsize);
+	}
 
  }
 

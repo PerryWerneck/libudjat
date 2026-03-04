@@ -53,12 +53,74 @@
 		unload();
 	}
 
-	void * Crypto::BackEnd::encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
-		throw system_error(ENOTSUP,system_category(),"Selected backend cant suport data encrypt");
+	void * Crypto::BackEnd::encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t &outsize) {
+
+		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
+		debug("Using default encript()");
+
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if(EVP_PKEY_encrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+			
+		if(EVP_PKEY_encrypt(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		auto out = malloc(outsize);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_encrypt(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		return out;
 	}
 
-	void * Crypto::BackEnd::decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t *outsize) {
-		throw system_error(ENOTSUP,system_category(),"Selected backend cant suport data decrypt");
+	void * Crypto::BackEnd::decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t &outsize) {
+
+		// Reference: https://linux.die.net/man/3/evp_pkey_decrypt
+		debug("Using default decript()");
+
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if(EVP_PKEY_decrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+			
+		if(EVP_PKEY_decrypt(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		auto out = malloc(outsize);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_decrypt(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		return out;
 	}
 
 	void Crypto::BackEnd::unload() {
