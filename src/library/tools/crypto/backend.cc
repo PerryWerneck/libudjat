@@ -53,7 +53,7 @@
 		unload();
 	}
 
-	void * Crypto::BackEnd::encrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t &outsize) {
+	void * Crypto::BackEnd::encrypt(const void *data, size_t size, size_t &outsize) {
 
 		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
 		debug("Using default encript()");
@@ -88,7 +88,7 @@
 		return out;
 	}
 
-	void * Crypto::BackEnd::decrypt(EVP_PKEY *pkey, const void *data, size_t size, size_t &outsize) {
+	void * Crypto::BackEnd::decrypt(const void *data, size_t size, size_t &outsize) {
 
 		// Reference: https://linux.die.net/man/3/evp_pkey_decrypt
 		debug("Using default decript()");
@@ -121,6 +121,68 @@
 		}
 
 		return out;
+	}
+
+	void * Crypto::BackEnd::sign(const void *data, size_t size, size_t &outsize) {
+
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if (EVP_PKEY_sign_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+
+		if (EVP_PKEY_CTX_set_signature_md(ctx.get(), EVP_sha256()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_signature_md failed");
+		}
+
+		// Determine buffer length
+		if (EVP_PKEY_sign(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		auto out = malloc(outsize);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if (EVP_PKEY_sign(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		return out;
+		
+	}
+
+	void * Crypto::BackEnd::verify(const void *data, size_t size, size_t &outsize) {
+
+		/*
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if (EVP_PKEY_verify_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+
+		if (EVP_PKEY_CTX_set_signature_md(ctx.get(), EVP_sha256()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_signature_md failed");
+		}
+
+		ret = EVP_PKEY_verify(ctx, sig, siglen, md, mdlen);		
+		*/
+
 	}
 
 	void Crypto::BackEnd::unload() {
