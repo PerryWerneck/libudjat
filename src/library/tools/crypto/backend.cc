@@ -53,12 +53,16 @@
 		unload();
 	}
 
+	EVP_PKEY * Crypto::BackEnd::get_pubkey() {
+		return pkey;
+	}
+
 	void * Crypto::BackEnd::encrypt(const void *data, size_t size, size_t &outsize) {
 
 		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
 		debug("Using default encript()");
 
-		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		auto ctx = make_handle(EVP_PKEY_CTX_new(get_pubkey(), NULL), EVP_PKEY_CTX_free);
 		if(!ctx) {
 			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
 		}

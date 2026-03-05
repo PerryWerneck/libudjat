@@ -47,6 +47,10 @@
 
 		BackEnd(const char *name, const char *type);
 
+		/// @brief Get the public key, necessary because the provider backend does not expose the public key.
+		/// @return A pointer to the public key (doesn't free the pointer, it's internal to the backend)
+		virtual EVP_PKEY * get_pubkey();
+
 	public:
 
 		BackEnd(BackEnd &) = delete;

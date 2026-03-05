@@ -49,13 +49,80 @@
 	class UDJAT_PRIVATE SSLProvider : public Crypto::BackEnd {
 	private:
 		OSSL_PROVIDER *provider = nullptr;
+		EVP_PKEY *pubkey = nullptr;
+
+		/*
+		/// @brief Create a new context for the provider, check sanity of the key first.
+		/// @return A shared pointer to the context.
+		/// @throw Crypto::Exception If the context could not be created.
+		/// @throw std::logic_error If the key is not an RSA key or has no modulus/bits.	
+		std::shared_ptr<EVP_PKEY_CTX> make_context() {
+
+			if (EVP_PKEY_get_id(pkey) != EVP_PKEY_RSA) {
+				throw logic_error("Not an RSA key");
+			}
+
+			if (EVP_PKEY_get_bits(pkey) <= 0) {
+				throw logic_error("Key has no modulus/bits (uninitialized key)");
+			}		
+
+			if(!pubkey) {
+				// 1. Get the public key bits from the TPM-backed pkey
+				unsigned char* pub_buf = nullptr;
+				int pub_len = i2d_PUBKEY(pkey, &pub_buf); // Export to DER format
+
+				if (pub_len <= 0) {
+					throw Crypto::Exception("Failed to export TPM public key");
+				}
+
+				// 2. Re-import into a "clean" EVP_PKEY (owned by the Default Provider)
+				const unsigned char* p = pub_buf;
+				pubkey = d2i_PUBKEY(nullptr, &p, pub_len);
+				OPENSSL_free(pub_buf);
+
+				if (!pubkey) {
+					throw Crypto::Exception("Failed to re-import public key");
+				}
+			}
+
+			if (!EVP_PKEY_get0_RSA(pkey)) {
+				throw logic_error("Internal RSA structure is missing!");
+			}		
+
+			auto ctx = make_handle(
+				EVP_PKEY_CTX_new_from_pkey(NULL, pkey, String{"provider=",type.c_str()}.c_str()), 
+				EVP_PKEY_CTX_free
+			);
+
+			if(!ctx) {
+				throw Crypto::Exception("EVP_PKEY_CTX_new_from_pkey failed");
+			}
+
+			return ctx;
+		}
+		*/
+
+		/*
+		void sanity_check() {
+
+			if (EVP_PKEY_get_id(pkey) != EVP_PKEY_RSA) {
+				throw logic_error("Not an RSA key");
+			}
+
+			if (EVP_PKEY_get_bits(pkey) <= 0) {
+				throw logic_error("Key has no modulus/bits (uninitialized key)");
+			}		
+
+		}
+		*/
+
+		EVP_PKEY * get_pubkey() override;
 
 	public:
 		SSLProvider();
 		~SSLProvider() override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
 
-		void * encrypt(const void *data, size_t size, size_t &outsize) override;
 		void * decrypt(const void *data, size_t size, size_t &outsize) override;
 		void * digest(const void *data, size_t size, unsigned int &outsize) override;
 		void * sign(const void *data, size_t size, size_t &outsize) override;
@@ -99,7 +166,39 @@
 	}
 
 	SSLProvider::~SSLProvider() {
+		if(pubkey) {
+			debug("Unloading public key");
+			EVP_PKEY_free(pubkey);
+			pubkey = NULL;
+		}
 		OSSL_PROVIDER_unload(provider);
+	}
+
+	EVP_PKEY * SSLProvider::get_pubkey() {
+
+		if(!pubkey) {
+
+			debug("Getting pubkey from TPM")
+
+			// 1. Get the public key bits from the TPM-backed pkey
+			unsigned char* pub_buf = nullptr;
+			int pub_len = i2d_PUBKEY(pkey, &pub_buf); // Export to DER format
+
+			if (pub_len <= 0) {
+				throw Crypto::Exception("Failed to export TPM public key");
+			}
+
+			// 2. Re-import into a "clean" EVP_PKEY (owned by the Default Provider)
+			const unsigned char* p = pub_buf;
+			pubkey = d2i_PUBKEY(nullptr, &p, pub_len);
+			OPENSSL_free(pub_buf);
+
+			if (!pubkey) {
+				throw Crypto::Exception("Failed to re-import public key");
+			}
+		}
+
+		return pubkey;
 	}
 
 	void SSLProvider::generate(const char *filename, const char *password, size_t mbits) {
@@ -114,9 +213,45 @@
 		}
 	}
 
+	/*
 	void * SSLProvider::encrypt(const void *data, size_t size, size_t &outsize) {
-		throw system_error(ENOTSUP,system_category(),"Operation is not supported by the provider backend");
+
+		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
+
+		debug("Using provider encript()");
+		debug("keysize=", EVP_PKEY_get_size(pkey), " bits=", EVP_PKEY_get_bits(pkey), " data size=", size);
+
+		auto ctx = make_handle(EVP_PKEY_CTX_new(get_pubkey(), NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+
+		if(EVP_PKEY_encrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+			
+		if(EVP_PKEY_encrypt(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		auto out = malloc(outsize + 1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_encrypt(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		((uint8_t *) out)[outsize] = 0;
+		return out;
 	}
+	*/
 
 	void * SSLProvider::decrypt(const void *data, size_t size, size_t &outsize) {
 		throw system_error(ENOTSUP,system_category(),"Operation is not supported by the provider backend");
