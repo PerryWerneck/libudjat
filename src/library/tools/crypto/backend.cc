@@ -54,23 +54,32 @@
 	}
 
 	std::shared_ptr<EVP_PKEY_CTX> Crypto::BackEnd::get_private_key_context() {
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
 		if(!ctx) {
 			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
 		}
 		return ctx;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
 	}
 
 	std::shared_ptr<EVP_PKEY_CTX> Crypto::BackEnd::get_public_key_context() {
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
 		if(!ctx) {
 			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
 		}
 		return ctx;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
 	}
 
 	void * Crypto::BackEnd::encrypt(const void *data, size_t size, size_t &outsize) {
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
 		debug("Using default encript()");
 
@@ -100,10 +109,14 @@
 
 		((uint8_t *) out)[outsize] = 0;
 		return out;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
 	}
 
 	void * Crypto::BackEnd::decrypt(const void *data, size_t size, size_t &outsize) {
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		// Reference: https://linux.die.net/man/3/evp_pkey_decrypt
 		debug("Using default decript()");
 
@@ -133,9 +146,14 @@
 
 		((uint8_t *) out)[outsize] = 0;
 		return out;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
 	}
 
 	void * Crypto::BackEnd::digest(const void *data, size_t size, unsigned int &md_len) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 
 		debug("Using default digest()");
 
@@ -173,9 +191,17 @@
 		((uint8_t *) out)[md_len] = 0;
 		return out;	
 
+#else
+
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+
+#endif // OpenSSL V3
+
 	}
 
 	void * Crypto::BackEnd::sign(const void *data, size_t size, size_t &outsize) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 
 		auto ctx = get_private_key_context();
 
@@ -207,11 +233,16 @@
 
 		((uint8_t *) out)[outsize] = 0;
 		return out;
-		
+
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+
 	}
 
 	bool Crypto::BackEnd::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
 
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
 		auto ctx = get_public_key_context();
 
 		if (EVP_PKEY_verify_init(ctx.get()) <= 0) {
@@ -240,6 +271,10 @@
 		}
 
 		throw Crypto::Exception("EVP_PKEY_verify failed");
+
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
 
 	}
 
