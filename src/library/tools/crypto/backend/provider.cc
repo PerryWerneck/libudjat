@@ -125,7 +125,9 @@
 	public:
 		SSLProvider();
 		~SSLProvider() override;
+		void load(const char *filename, const char *password) override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
+		void * decrypt(const void *data, size_t size, size_t &outsize) override;
 
 	};
 	
@@ -175,6 +177,8 @@
 
 	std::shared_ptr<EVP_PKEY_CTX> SSLProvider::get_private_key_context() {
 
+		debug("Getting private key context for ",String{"provider=",type.c_str()}.c_str());
+
 		auto ctx = make_handle(
 			EVP_PKEY_CTX_new_from_pkey(NULL, pkey, String{"provider=",type.c_str()}.c_str()), 
 			EVP_PKEY_CTX_free
@@ -189,6 +193,8 @@
 	}
 
 	std::shared_ptr<EVP_PKEY_CTX> SSLProvider::get_public_key_context() {
+
+		debug("Getting public key context for ",String{"provider=",type.c_str()}.c_str());
 
 		if(!pubkey) {
 
@@ -225,6 +231,42 @@
 		return ctx;
 	}
 
+	void SSLProvider::load(const char *filename, const char *) {
+
+		debug("Loading ",filename," using provider ",type.c_str());
+
+		File::Text file{filename};
+		auto bio = make_handle(BIO_new_mem_buf((void *) file.c_str(), -1), BIO_free_all);
+		if(!bio) {
+			throw system_error(errno,system_category(),filename);
+		}
+
+		pkey = PEM_read_bio_PrivateKey_ex(
+			bio.get(), 
+			NULL,										// EVP_PKEY **
+			NULL,										// pem_password_cb *
+			NULL,										// u (?)
+			NULL,										// OSSL_LIB_CTX *
+			String{"provider=",type.c_str()}.c_str()	// propq
+		);
+
+		if(!pkey) {
+			throw Crypto::Exception("PEM_read_bio_PrivateKey failed");
+		}
+
+		const OSSL_PROVIDER* prov = EVP_PKEY_get0_provider(pkey);
+		if (prov) {
+			const char* name = OSSL_PROVIDER_get0_name(prov);
+			if(!(name && *name) || strcmp(name,type.c_str())) {
+				throw logic_error(String{"The loaded key does not have a '",type.c_str(),"' provider as it should be"});
+			}
+			debug("The loaded key has provider '",name,"', as expected");			
+		} else {
+			throw logic_error("The loaded key does not have a provider as it should be");
+		}
+
+	}	
+
 	void SSLProvider::generate(const char *filename, const char *password, size_t mbits) {
 		// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/ec_genpkey_store_load.c
 		// https://github.com/tpm2-software/tpm2-openssl/blob/master/test/rsa_genpkey_decrypt.c
@@ -232,6 +274,17 @@
 		if(!pkey) {
 			throw Crypto::Exception("EVP_PKEY_Q_keygen failed");
 		}
+
+		/*
+		const OSSL_PROVIDER* prov = EVP_PKEY_get0_provider(pkey);
+		if (prov) {
+			const char* name = OSSL_PROVIDER_get0_name(prov);
+			debug("Key provider: %s", name ? name : "unknown");
+		} else {
+			debug("Key has NO provider (Legacy/Software)");
+		}
+		*/
+
 		if(filename && *filename) {
 			save_private(filename, password);
 		}
@@ -277,11 +330,59 @@
 	}
 	*/
 
-	/*
 	void * SSLProvider::decrypt(const void *data, size_t size, size_t &outsize) {
+
 		throw system_error(ENOTSUP,system_category(),"Operation is not supported by the provider backend");
+
+		/*
+		// Reference: https://linux.die.net/man/3/evp_pkey_decrypt
+		debug("Using provider based decript()");
+
+		auto ctx = make_handle(
+			EVP_PKEY_CTX_new_from_pkey(NULL, pkey, "provider=tpm2"), 
+			EVP_PKEY_CTX_free
+		);
+
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new_from_pkey failed");
+		}
+
+		if(EVP_PKEY_decrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_oaep_md(ctx.get(), EVP_sha256()) <= 0) {
+			throw Crypto::Exception("Failed to set OAEP digest");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_mgf1_md(ctx.get(), EVP_sha256()) <= 0) {
+			throw Crypto::Exception("Failed to set MGF1 digest");
+		}		
+			
+		if(EVP_PKEY_decrypt(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		auto out = malloc(outsize+1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_decrypt(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		((uint8_t *) out)[outsize] = 0;
+		return out;
+		*/
 	}
 
+	/*
 	void * SSLProvider::digest(const void *data, size_t size, unsigned int &outsize) {
 		throw system_error(ENOTSUP,system_category(),"Operation is not supported by the provider backend");
 	}
