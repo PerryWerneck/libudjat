@@ -92,11 +92,15 @@
 		virtual void * sign(const void *data, size_t size, size_t &outsize);
 
 		/// @brief Verify data.
-		/// @param data The signature to verify.
-		/// @param size The size of the input data.
-		/// @param outsize The size of output data.
-		/// @return A pointer to the output data, release it with free().
-		virtual void * verify(const void *data, size_t size, size_t &outsize);
+		/// @param sig The signature to verify.
+		/// @param siglen The signature length.
+		/// @param tbs The data to verify.
+		/// @param tbslen The data length.
+		/// @retval true If the signature is valid.
+		/// @retval false If the signature is invalid.
+		/// @throw Crypto::Exception If the verification fails.
+		/// @throw std::runtime_error If the verification is not supported by the public key algorithm.
+		virtual bool verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen);
 
 		void unload();
 

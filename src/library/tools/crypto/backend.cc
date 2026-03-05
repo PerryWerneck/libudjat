@@ -155,7 +155,7 @@
 		}
 
 		if (EVP_PKEY_sign(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
-			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+			throw Crypto::Exception("EVP_PKEY_sign failed");
 		}
 
 		((uint8_t *) out)[outsize] = 0;
@@ -163,11 +163,8 @@
 		
 	}
 
-	void * Crypto::BackEnd::verify(const void *data, size_t size, size_t &outsize) {
+	bool Crypto::BackEnd::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
 
-		throw system_error(ENOTSUP,system_category(),"Signature validation was not implemented");;
-
-		/*
 		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
 		if(!ctx) {
 			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
@@ -185,10 +182,20 @@
 			throw Crypto::Exception("EVP_PKEY_CTX_set_signature_md failed");
 		}
 
-		ret = EVP_PKEY_verify(ctx, sig, siglen, md, mdlen);		
+		int result = EVP_PKEY_verify(ctx.get(), (unsigned char *) sig, siglen, (const unsigned char *) tbs, tbslen);
+	
+		switch(result) {
+		case 0:	// Signature is invalid
+			return false;
 
+		case 1:	// Signature is valid
+			return true;
 
-		*/
+		case -2:	// Operation is not supported by the public key algorithm
+			throw system_error(ENOTSUP,system_category(),"Operation is not supported by the public key algorithm");
+		}
+
+		throw Crypto::Exception("EVP_PKEY_verify failed");
 
 	}
 

@@ -174,11 +174,9 @@
 		return backend->sign(data,size,outsize);	
 	}
 
-	void * Crypto::Key::verify(const void *data, size_t size, size_t &outsize) {
-		outsize = 0;
-		return backend->verify(data,size,outsize);	
+	bool Crypto::Key::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
+		return backend->verify(sig,siglen,tbs,tbslen);
 	}
-
 
  }
 

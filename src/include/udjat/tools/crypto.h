@@ -147,11 +147,19 @@ namespace Udjat {
 			}
 
 			/// @brief Verify data.
-			/// @param data The signature to verify.
-			/// @param size The size of the input data.
-			/// @param outsize The size of output data.
+			/// @param sig The signature to verify.
+			/// @param siglen The signature length.
+			/// @param tbs The data to verify.
+			/// @param tbslen The data length.
 			/// @return A pointer to the output data, release it with free().
-			void * verify(const void *data, size_t size, size_t &outsize);
+			/// @retval nullptr If the signature is invalid.
+			/// @throw Crypto::Exception If the verification fails.
+			/// @throw std::runtime_error If the verification is not supported by the public key algorithm.
+			bool verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen);
+
+			inline bool verify(const void *sig, size_t siglen, const char *data) {
+				return verify(sig, siglen, (const void *) data, strlen(data));
+			}
 
 		};
 

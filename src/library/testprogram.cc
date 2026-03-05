@@ -112,23 +112,18 @@
 
 			// Test sign/verify
 			{
-				size_t signed_len;
-				size_t verify_len;
+				size_t siglen;
 
 				const char *buffer = "Simple string to test crypto functions";
 
-				void *sig= pkey.sign(buffer,signed_len);
+				void *sig= pkey.sign(buffer,siglen);
 
-				Logger::String{"The signed block has ",signed_len," bytes"}.info();
+				Logger::String{"The signed block has ",siglen," bytes"}.info();
 
-				void *verify = pkey.verify(sig,signed_len,verify_len);
-
-				debug("Verification string: '",((char *) verify),"'");
-
-				if(strcmp(buffer,(const char *) verify)) {
-					throw runtime_error("Error sigining data block");
-				} else {
+				if(pkey.verify(sig,siglen,buffer)) {
 					Logger::String{"Signed block is ok"}.info();
+				} else {
+					throw runtime_error("Error sigining data block");
 				}
 			}
 
