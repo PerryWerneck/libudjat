@@ -102,7 +102,6 @@
 		}
 		*/
 
-		/*
 		void sanity_check() {
 
 			if (EVP_PKEY_get_id(pkey) != EVP_PKEY_RSA) {
@@ -114,19 +113,19 @@
 			}		
 
 		}
-		*/
 
-		EVP_PKEY * get_pubkey() override;
+		/// @brief Get context for private key operations.
+		/// @return A shared pointer to the private key context.
+		std::shared_ptr<EVP_PKEY_CTX> get_private_key_context() override;	
+
+		/// @brief Get context for public key operations.
+		/// @return A shared pointer to the public key context.
+		std::shared_ptr<EVP_PKEY_CTX> get_public_key_context() override;	
 
 	public:
 		SSLProvider();
 		~SSLProvider() override;
 		void generate(const char *filename, const char *password, size_t mbits) override;
-
-		void * decrypt(const void *data, size_t size, size_t &outsize) override;
-		void * digest(const void *data, size_t size, unsigned int &outsize) override;
-		void * sign(const void *data, size_t size, size_t &outsize) override;
-		bool verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) override;
 
 	};
 	
@@ -174,11 +173,27 @@
 		OSSL_PROVIDER_unload(provider);
 	}
 
-	EVP_PKEY * SSLProvider::get_pubkey() {
+	std::shared_ptr<EVP_PKEY_CTX> SSLProvider::get_private_key_context() {
+
+		auto ctx = make_handle(
+			EVP_PKEY_CTX_new_from_pkey(NULL, pkey, String{"provider=",type.c_str()}.c_str()), 
+			EVP_PKEY_CTX_free
+		);
+
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new_from_pkey failed");
+		}
+
+		return ctx;
+
+	}
+
+	std::shared_ptr<EVP_PKEY_CTX> SSLProvider::get_public_key_context() {
 
 		if(!pubkey) {
 
 			debug("Getting pubkey from TPM")
+			sanity_check();
 
 			// 1. Get the public key bits from the TPM-backed pkey
 			unsigned char* pub_buf = nullptr;
@@ -198,7 +213,16 @@
 			}
 		}
 
-		return pubkey;
+		auto ctx = make_handle(
+			EVP_PKEY_CTX_new_from_pkey(NULL, pubkey, String{"provider=",type.c_str()}.c_str()), 
+			EVP_PKEY_CTX_free
+		);
+
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new_from_pkey failed");
+		}
+
+		return ctx;
 	}
 
 	void SSLProvider::generate(const char *filename, const char *password, size_t mbits) {
@@ -253,6 +277,7 @@
 	}
 	*/
 
+	/*
 	void * SSLProvider::decrypt(const void *data, size_t size, size_t &outsize) {
 		throw system_error(ENOTSUP,system_category(),"Operation is not supported by the provider backend");
 	}
@@ -268,6 +293,7 @@
 	bool SSLProvider::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
 		throw system_error(ENOTSUP,system_category(),"Operation is not supported by the provider backend");
 	}
+	*/
 
  } 
  #endif // HAVE_OPENSSL_PROVIDER

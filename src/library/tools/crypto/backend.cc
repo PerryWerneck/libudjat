@@ -53,8 +53,20 @@
 		unload();
 	}
 
-	EVP_PKEY * Crypto::BackEnd::get_pubkey() {
-		return pkey;
+	std::shared_ptr<EVP_PKEY_CTX> Crypto::BackEnd::get_private_key_context() {
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+		return ctx;
+	}
+
+	std::shared_ptr<EVP_PKEY_CTX> Crypto::BackEnd::get_public_key_context() {
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+		return ctx;
 	}
 
 	void * Crypto::BackEnd::encrypt(const void *data, size_t size, size_t &outsize) {
@@ -62,10 +74,7 @@
 		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
 		debug("Using default encript()");
 
-		auto ctx = make_handle(EVP_PKEY_CTX_new(get_pubkey(), NULL), EVP_PKEY_CTX_free);
-		if(!ctx) {
-			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
-		}
+		auto ctx = get_public_key_context();
 
 		if(EVP_PKEY_encrypt_init(ctx.get()) <= 0) {
 			throw Crypto::Exception("EVP_PKEY_encrypt_init failed");
@@ -98,10 +107,7 @@
 		// Reference: https://linux.die.net/man/3/evp_pkey_decrypt
 		debug("Using default decript()");
 
-		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
-		if(!ctx) {
-			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
-		}
+		auto ctx = get_private_key_context();
 
 		if(EVP_PKEY_decrypt_init(ctx.get()) <= 0) {
 			throw Crypto::Exception("EVP_PKEY_decrypt_init failed");
@@ -171,10 +177,7 @@
 
 	void * Crypto::BackEnd::sign(const void *data, size_t size, size_t &outsize) {
 
-		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
-		if(!ctx) {
-			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
-		}
+		auto ctx = get_private_key_context();
 
 		if (EVP_PKEY_sign_init(ctx.get()) <= 0) {
 			throw Crypto::Exception("EVP_PKEY_verify_init failed");
@@ -209,10 +212,7 @@
 
 	bool Crypto::BackEnd::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
 
-		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
-		if(!ctx) {
-			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
-		}
+		auto ctx = get_public_key_context();
 
 		if (EVP_PKEY_verify_init(ctx.get()) <= 0) {
 			throw Crypto::Exception("EVP_PKEY_verify_init failed");
