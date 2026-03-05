@@ -113,18 +113,27 @@
 			// Test sign/verify
 			{
 				size_t siglen;
+				unsigned int diglen;
 
 				const char *buffer = "Simple string to test crypto functions";
+				void *digest = pkey.digest(buffer,diglen);
 
-				void *sig= pkey.sign(buffer,siglen);
+				Logger::String{"The digest block has ",diglen," bytes"}.info();
+
+				void *sig = pkey.sign(digest,diglen,siglen);
 
 				Logger::String{"The signed block has ",siglen," bytes"}.info();
 
-				if(pkey.verify(sig,siglen,buffer)) {
+				if(pkey.verify(sig,siglen,digest,diglen)) {
 					Logger::String{"Signed block is ok"}.info();
 				} else {
+					free(digest);
+					free(sig);
 					throw runtime_error("Error sigining data block");
 				}
+
+				free(digest);
+				free(sig);
 			}
 
 			// Test key loading

@@ -125,6 +125,46 @@
 		return out;
 	}
 
+	void * Crypto::BackEnd::digest(const void *data, size_t size, unsigned int &md_len) {
+
+		debug("Using default digest()");
+
+		unsigned char md[EVP_MAX_MD_SIZE];
+
+		// 1. Create and initialize the message digest context
+		auto ctx = make_handle(EVP_MD_CTX_new(), EVP_MD_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_MD_CTX_new failed");
+		}
+
+		// 2. Initialize the digest operation with SHA-256
+		// Note: For OpenSSL 3.0+, EVP_MD_fetch is preferred over EVP_sha256()
+		if (EVP_DigestInit_ex(ctx.get(), EVP_sha256(), NULL) != 1) {
+			throw Crypto::Exception("EVP_DigestInit_ex failed");
+		}
+
+		// 3. Provide the message to be hashed
+		if (EVP_DigestUpdate(ctx.get(), data, size) != 1) {
+			throw Crypto::Exception("EVP_DigestUpdate failed");
+		}
+
+		// 4. Calculate the final digest
+		if (EVP_DigestFinal_ex(ctx.get(), md, &md_len) != 1) {
+			throw Crypto::Exception("EVP_DigestFinal_ex failed");
+		}
+
+		// Success: 'md' now contains the 32-byte SHA-256 hash
+		void *out = malloc(md_len + 1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		memcpy(out, md, md_len);
+		((uint8_t *) out)[md_len] = 0;
+		return out;	
+
+	}
+
 	void * Crypto::BackEnd::sign(const void *data, size_t size, size_t &outsize) {
 
 		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);

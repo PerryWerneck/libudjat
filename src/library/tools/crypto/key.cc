@@ -169,6 +169,11 @@
 		return backend->decrypt(data,size,outsize);
 	}
 
+	void * Crypto::Key::digest(const void *data, size_t size, unsigned int &outsize) {
+		outsize = 0;
+		return backend->digest(data,size,outsize);	
+	}
+
 	void * Crypto::Key::sign(const void *data, size_t size, size_t &outsize) {
 		outsize = 0;
 		return backend->sign(data,size,outsize);	

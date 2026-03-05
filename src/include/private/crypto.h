@@ -84,6 +84,13 @@
 		/// @return A pointer to the decrypted data, release it with free().
 		virtual void * decrypt(const void *data, size_t size, size_t &outsize);
 
+		/// @brief Generate a digest for data.
+		/// @param data The data to digest.
+		/// @param size The size of the input data.
+		/// @param outsize The size of output data.
+		/// @return A pointer to the digest, release it with free().
+		virtual void * digest(const void *data, size_t size, unsigned int &outsize);
+
 		/// @brief Sign data.
 		/// @param data The data to sign.
 		/// @param size The size of the input data.

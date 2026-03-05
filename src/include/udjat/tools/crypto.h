@@ -135,31 +135,34 @@ namespace Udjat {
 			/// @return A pointer to the decrypted data, release it with free().
 			void * decrypt(const void *data, size_t size, size_t &outsize);
 
-			/// @brief Sign data.
-			/// @param data The data to sign.
+			/// @brief Generate a digest for data.
+			/// @param data The data to digest.
 			/// @param size The size of the input data.
 			/// @param outsize The size of output data.
-			/// @return A pointer to the output data, release it with free().
-			void * sign(const void *data, size_t size, size_t &outsize);
+			/// @return A pointer to the digest, release it with free().
+			void * digest(const void *data, size_t size, unsigned int &outsize);
 
-			inline void * sign(const char *data, size_t &outsize) {
-				return sign((const void *) data, strlen(data), outsize);
+			inline void * digest(const char *data, unsigned int &outsize) {
+				return digest((const void *) data, strlen(data), outsize);
 			}
+
+			/// @brief Sign data.
+			/// @param data The digest to sign.
+			/// @param size The size of the digest data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the signature, release it with free().
+			void * sign(const void *data, size_t size, size_t &outsize);
 
 			/// @brief Verify data.
 			/// @param sig The signature to verify.
 			/// @param siglen The signature length.
-			/// @param tbs The data to verify.
-			/// @param tbslen The data length.
-			/// @return A pointer to the output data, release it with free().
-			/// @retval nullptr If the signature is invalid.
+			/// @param tbs The digest to verify.
+			/// @param tbslen The digest length.
+			/// @retval true If the signature is valid.
+			/// @retval false If the signature is invalid.
 			/// @throw Crypto::Exception If the verification fails.
 			/// @throw std::runtime_error If the verification is not supported by the public key algorithm.
 			bool verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen);
-
-			inline bool verify(const void *sig, size_t siglen, const char *data) {
-				return verify(sig, siglen, (const void *) data, strlen(data));
-			}
 
 		};
 
