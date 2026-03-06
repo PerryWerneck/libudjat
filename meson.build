@@ -481,6 +481,11 @@ endif
 # https://mesonbuild.com/Pkgconfig-module.html
 #
 pkg = import('pkgconfig')
+pkg_extra_cflags = []
+
+if openssl.found()
+  pkg_extra_cflags += ['-DHAVE_UDJAT_CRYPTO=1']
+endif
 
 pkg_variables = [
 
@@ -599,6 +604,7 @@ if host_machine.system() == 'windows'
     requires: required_libs,
     libraries: [ '-l' + meson.project_name() + '.dll' ],
     requires_private: private_libs,
+    extra_cflags: pkg_extra_cflags,
   )
 
 elif host_machine.system() == 'darwin'
@@ -610,6 +616,7 @@ elif host_machine.system() == 'darwin'
     requires: required_libs,
     libraries: [ '-l' + meson.project_name() ],
     requires_private: private_libs,
+    extra_cflags: pkg_extra_cflags,
   )
 
   app_conf.set_quoted('LIBEXT', '.dlsym')
@@ -666,13 +673,14 @@ else
     requires: required_libs,
     libraries: [ '-l' + meson.project_name() ],
     requires_private: private_libs,
-  )
+    extra_cflags: pkg_extra_cflags,
+ )
 
   pkg.generate(
     name: 'lib' + meson.project_name() + '-static',
     description: project_description,
     variables: pkg_variables,
-    extra_cflags: [
+    extra_cflags: pkg_extra_cflags + [
       '-DUDJAT_STATIC',
       '-pthread',
     ],
