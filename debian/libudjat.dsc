@@ -1,4 +1,4 @@
-Format: 1.0
+Format: 3.0 (native)
 Source: libudjat
 Version: 2.2.2+git20251016
 Binary: libudjat
