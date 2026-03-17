@@ -1,4 +1,37 @@
 -------------------------------------------------------------------
+Fri Mar 13 15:10:22 UTC 2026 - perry.werneck@gmail.com
+
+- Update to version 2.3.1+git20260313:
+  * Exporting parse_byte_range method.
+  * Updating package control files
+  * Adding convenience method to check named object.
+  * Adding define to indicate availability of crypto objects.
+  * Debugging TPM provider.
+  * Provider backend is segfaulting on encrypt. Disabling encription for now.
+  * Fixing windows build.
+  * Implementing encrypt/decrypt methods.
+  * Implementing sign/verify methods.
+  * Updating release due to changes on temporary files.
+  * Adjustments in temporary file generators.
+  * Adding engine and provider based encript/decrypt methods
+  * Fixing activatables on agent.
+  * Using console as default status dialog.
+  * Starting new version, removing deprecated, refactoring module info, removing unused methods.
+  * Removing settings.json
+  * Fixing detection of openssl in legacy code.
+  * Adding string expansion test.
+  * Increasing release due to new methods on String.
+  * Fixing log file.
+  * Fixing log setup.
+  * Debugging activatable.
+  * Adjusting actions.
+  * Fallback to syslog on logfile write error.
+  * Adding convenience method xml::load to load child notes into containers.
+  * Changing state on 'busy()' call.
+  * Allowing script text from xml node.
+  * Moving actions header.
+
+-------------------------------------------------------------------
 Thu Oct 16 21:07:24 UTC 2025 - perry.werneck@gmail.com
 
 - Update to version 2.2.2+git20251016:
