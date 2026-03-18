@@ -21,7 +21,7 @@
 
 #include <config.h>
 #include <udjat/defs.h>
-#include <udjat/tools/actions/abstract.h>
+#include <udjat/action.h>
 #include <udjat/tools/container.h>
 
 using namespace std;

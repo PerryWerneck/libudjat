@@ -27,7 +27,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/abstract/object.h>
  #include <udjat/tools/activatable.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/tools/script.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
@@ -93,7 +93,11 @@
 
 		}
 
+#ifdef BUILD_LEGACY
+		throw runtime_error("The required attribute 'type' is missing");
+#else
 		throw runtime_error(Logger::String{"Required attribute 'type' is missing at ",node.path()});
+#endif
 
 	}
 
@@ -298,7 +302,11 @@
 			}
 
 		default:
+#ifdef BUILD_LEGACY
+			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"'"});
+#else	
 			throw runtime_error(Logger::String{"Unexpected or invalid action type '",type.c_str(),"' at ",node.path()});
+#endif
 		}
 
 

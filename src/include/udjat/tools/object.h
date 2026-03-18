@@ -58,6 +58,12 @@
 
 		bool getProperty(const char *key, std::string &value) const override;
 
+		/// @brief This object has a name?
+		/// @return true if the object is named.
+		inline bool named() const noexcept {
+			return objectName && *objectName;
+		}
+
 		/// @brief Push a background task.
 		/// @param callback Task method.
 		size_t push(std::function<void()> callback);

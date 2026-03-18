@@ -240,17 +240,6 @@
 			/// @brief Insert object with attributes.
 			bool push_back(const XML::Node &node, std::shared_ptr<Abstract::Object> object) override;
 
-			/// @brief Insert child node.
-			[[deprecated("push_back(std::shared_ptr<Abstract::Object>)")]] void push_back(std::shared_ptr<Abstract::Agent> child);
-
-			/// @brief Insert activatable based on xml attributes.
-			/// @param node with activation attribute.
-			/// @param activatable The activatable object.
-			/// @return True if the activatable was inserted.
-			/// @retval true The activatable was inserted as an event listener.
-			/// @retval false The activatable is not event based, insert it using default method.
-			[[deprecated("push_back(std::shared_ptr<Abstract::Object>)")]] bool push_back(const XML::Node &node, std::shared_ptr<Activatable> activatable);
-
 			/// @brief Insert listener.
 			void push_back(const Abstract::Agent::Event event, std::shared_ptr<Activatable> activatable);
 

@@ -50,8 +50,7 @@
 	/// @param node		XML node to extract values.
 	/// @param from		Minor value in bytes.
 	/// @param to 		Major value in bytes.
-	void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to);
-
+	UDJAT_API void parse_byte_range(const XML::Node &node, unsigned long long &from, unsigned long long &to);
 
  }
 

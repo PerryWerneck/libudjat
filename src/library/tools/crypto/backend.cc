@@ -53,6 +53,231 @@
 		unload();
 	}
 
+	std::shared_ptr<EVP_PKEY_CTX> Crypto::BackEnd::get_private_key_context() {
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+		return ctx;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+	}
+
+	std::shared_ptr<EVP_PKEY_CTX> Crypto::BackEnd::get_public_key_context() {
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+		auto ctx = make_handle(EVP_PKEY_CTX_new(pkey, NULL), EVP_PKEY_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_PKEY_CTX_new failed");
+		}
+		return ctx;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+	}
+
+	void * Crypto::BackEnd::encrypt(const void *data, size_t size, size_t &outsize) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+		// Reference: https://linux.die.net/man/3/evp_pkey_encrypt
+		debug("Using default encript()");
+
+		auto ctx = get_public_key_context();
+
+		if(EVP_PKEY_encrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+			
+		if(EVP_PKEY_encrypt(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		auto out = malloc(outsize + 1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_encrypt(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_encrypt failed");
+		}
+
+		((uint8_t *) out)[outsize] = 0;
+		return out;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+	}
+
+	void * Crypto::BackEnd::decrypt(const void *data, size_t size, size_t &outsize) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+		// Reference: https://linux.die.net/man/3/evp_pkey_decrypt
+		debug("Using default decript()");
+
+		auto ctx = get_private_key_context();
+
+		if(EVP_PKEY_decrypt_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_OAEP_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+			
+		if(EVP_PKEY_decrypt(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		auto out = malloc(outsize+1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if(EVP_PKEY_decrypt(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			free(out);
+			throw Crypto::Exception("EVP_PKEY_decrypt failed");
+		}
+
+		((uint8_t *) out)[outsize] = 0;
+		return out;
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+	}
+
+	void * Crypto::BackEnd::digest(const void *data, size_t size, unsigned int &md_len) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+
+		debug("Using default digest()");
+
+		unsigned char md[EVP_MAX_MD_SIZE];
+
+		// 1. Create and initialize the message digest context
+		auto ctx = make_handle(EVP_MD_CTX_new(), EVP_MD_CTX_free);
+		if(!ctx) {
+			throw Crypto::Exception("EVP_MD_CTX_new failed");
+		}
+
+		// 2. Initialize the digest operation with SHA-256
+		// Note: For OpenSSL 3.0+, EVP_MD_fetch is preferred over EVP_sha256()
+		if (EVP_DigestInit_ex(ctx.get(), EVP_sha256(), NULL) != 1) {
+			throw Crypto::Exception("EVP_DigestInit_ex failed");
+		}
+
+		// 3. Provide the message to be hashed
+		if (EVP_DigestUpdate(ctx.get(), data, size) != 1) {
+			throw Crypto::Exception("EVP_DigestUpdate failed");
+		}
+
+		// 4. Calculate the final digest
+		if (EVP_DigestFinal_ex(ctx.get(), md, &md_len) != 1) {
+			throw Crypto::Exception("EVP_DigestFinal_ex failed");
+		}
+
+		// Success: 'md' now contains the 32-byte SHA-256 hash
+		void *out = malloc(md_len + 1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		memcpy(out, md, md_len);
+		((uint8_t *) out)[md_len] = 0;
+		return out;	
+
+#else
+
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+
+#endif // OpenSSL V3
+
+	}
+
+	void * Crypto::BackEnd::sign(const void *data, size_t size, size_t &outsize) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+
+		auto ctx = get_private_key_context();
+
+		if (EVP_PKEY_sign_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+
+		if (EVP_PKEY_CTX_set_signature_md(ctx.get(), EVP_sha256()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_signature_md failed");
+		}
+
+		// Determine buffer length
+		if (EVP_PKEY_sign(ctx.get(), NULL, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		auto out = malloc(outsize+1);
+		if(!out) {
+			throw runtime_error("malloc failed");
+		}
+
+		if (EVP_PKEY_sign(ctx.get(), (unsigned char *) out, &outsize, (const unsigned char *) data, size) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_sign failed");
+		}
+
+		((uint8_t *) out)[outsize] = 0;
+		return out;
+
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+
+	}
+
+	bool Crypto::BackEnd::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
+
+#if defined(OPENSSL_VERSION_MAJOR) && OPENSSL_VERSION_MAJOR >= 3
+		auto ctx = get_public_key_context();
+
+		if (EVP_PKEY_verify_init(ctx.get()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_verify_init failed");
+		}
+
+		if (EVP_PKEY_CTX_set_rsa_padding(ctx.get(), RSA_PKCS1_PADDING) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_rsa_padding failed");
+		}
+
+		if (EVP_PKEY_CTX_set_signature_md(ctx.get(), EVP_sha256()) <= 0) {
+			throw Crypto::Exception("EVP_PKEY_CTX_set_signature_md failed");
+		}
+
+		int result = EVP_PKEY_verify(ctx.get(), (unsigned char *) sig, siglen, (const unsigned char *) tbs, tbslen);
+	
+		switch(result) {
+		case 0:	// Signature is invalid
+			return false;
+
+		case 1:	// Signature is valid
+			return true;
+
+		case -2:	// Operation is not supported by the public key algorithm
+			throw system_error(ENOTSUP,system_category(),"Operation is not supported by the public key algorithm");
+		}
+
+		throw Crypto::Exception("EVP_PKEY_verify failed");
+
+#else
+		throw system_error(ENOTSUP,system_category(),"OpenSSL version not supported");
+#endif // OpenSSL V3
+
+	}
+
 	void Crypto::BackEnd::unload() {
 		if(pkey) {
 			debug("Unloading private key");
@@ -204,13 +429,13 @@
 
 	void Crypto::BackEnd::save_public(const char *filename) {
 
-		auto bio = make_handle(BIO_new_file(filename, "w"), BIO_free_all);
-		if(!bio) {
-			throw Crypto::Exception("BIO_new_file failed");
+		auto file = make_handle(fopen(filename, "w"),fclose);
+		if(!file) {
+			throw system_error(errno,system_category(),filename);
 		}
 
-		if(PEM_write_bio_PUBKEY(bio.get(), pkey) != 1) {
-			throw Crypto::Exception("PEM_write_bio_PUBKEY failed");
+		if(!PEM_write_PUBKEY(file.get(), pkey)) {
+			throw Crypto::Exception(filename);
 		}
 
 	}

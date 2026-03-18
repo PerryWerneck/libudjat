@@ -28,10 +28,6 @@
  #include <openssl/bio.h>
  #include <openssl/evp.h>
 
- // using BIO_PTR = std::unique_ptr<BIO, decltype(&BIO_free_all)>;
- // using CTX_PTR = std::unique_ptr<EVP_PKEY_CTX, decltype(&EVP_PKEY_CTX_free)>;
- // using BIGNUM_PTR = std::unique_ptr<BIGNUM, decltype(&BN_free)>;
-
  namespace Udjat {
 
 	/// @brief Abstract base class for SSL key backends.
@@ -50,6 +46,14 @@
 		String type;
 
 		BackEnd(const char *name, const char *type);
+
+		/// @brief Get context for private key operations.
+		/// @return A shared pointer to the private key context.
+		virtual std::shared_ptr<EVP_PKEY_CTX> get_private_key_context();	
+
+		/// @brief Get context for public key operations.
+		/// @return A shared pointer to the public key context.
+		virtual std::shared_ptr<EVP_PKEY_CTX> get_public_key_context();	
 
 	public:
 
@@ -73,7 +77,46 @@
 		virtual void save_private(const char *filename, const char *password);
 		virtual void save_public(const char *filename);
 		virtual void load(const char *filename, const char *password);
-		
+
+		/// @brief Encrypt data.
+		/// @param data The data to encrypt.
+		/// @param size The size of the input data.
+		/// @param outsize The size of output data.
+		/// @return A pointer to the encrypted data, release it with free().
+		virtual void * encrypt(const void *data, size_t size, size_t &outsize);
+
+		/// @brief Decrypt data.
+		/// @param data The data to decrypt.
+		/// @param size The size of the input data.
+		/// @param outsize The size of output data.
+		/// @return A pointer to the decrypted data, release it with free().
+		virtual void * decrypt(const void *data, size_t size, size_t &outsize);
+
+		/// @brief Generate a digest for data.
+		/// @param data The data to digest.
+		/// @param size The size of the input data.
+		/// @param outsize The size of output data.
+		/// @return A pointer to the digest, release it with free().
+		virtual void * digest(const void *data, size_t size, unsigned int &outsize);
+
+		/// @brief Sign data.
+		/// @param data The data to sign.
+		/// @param size The size of the input data.
+		/// @param outsize The size of output data.
+		/// @return A pointer to the output data, release it with free().
+		virtual void * sign(const void *data, size_t size, size_t &outsize);
+
+		/// @brief Verify data.
+		/// @param sig The signature to verify.
+		/// @param siglen The signature length.
+		/// @param tbs The data to verify.
+		/// @param tbslen The data length.
+		/// @retval true If the signature is valid.
+		/// @retval false If the signature is invalid.
+		/// @throw Crypto::Exception If the verification fails.
+		/// @throw std::runtime_error If the verification is not supported by the public key algorithm.
+		virtual bool verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen);
+
 		void unload();
 
 		virtual std::string get_private();

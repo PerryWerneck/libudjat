@@ -365,11 +365,53 @@
 
 	}
 
-	bool String::as_bool(bool def) {
+	bool String::as_bool(bool def) const {
 		if(empty()) {
 			return def;
 		}
 		return from_string<bool>(c_str());
+	}
+
+	int String::as_int(int def) const {
+		if(empty()) {
+			return def;
+		}
+		return from_string<int>(c_str());
+	}
+
+	unsigned int String::as_uint(unsigned int def) const {
+		if(empty()) {
+			return def;
+		}
+		return from_string<unsigned int>(c_str());
+	}
+
+	long String::as_long(long def) const {
+		if(empty()) {
+			return def;
+		}
+		return from_string<long>(c_str());
+	}
+
+	unsigned long String::as_ulong(unsigned long def) const {
+		if(empty()) {
+			return def;
+		}
+		return from_string<unsigned long>(c_str());
+	}
+	
+	float String::as_float(float def) const {
+		if(empty()) {
+			return def;
+		}
+		return from_string<float>(c_str());
+	}
+
+	double String::as_double(double def) const {
+		if(empty()) {
+			return def;
+		}
+		return from_string<double>(c_str());
 	}
 
 	template<typename T>

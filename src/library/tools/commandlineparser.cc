@@ -58,7 +58,7 @@
 			}
 
 			if(shortname && argv[ix][1] == shortname && !argv[ix][2]) {
-				debug("Found short arg '",argv[ix],"'");
+				//debug("Found short arg '",argv[ix],"'");
 				if(remove) {
 					extract(ix,argc,argv);
 				}
@@ -70,7 +70,7 @@
 			}
 
 			if(argv[ix][1] == '-' && !strcmp(longname,(argv[ix]+2)) && argv[ix][szlong+2] == 0) {
-				debug("Found long arg '",(argv[ix]+2),"'");
+				//debug("Found long arg '",(argv[ix]+2),"'");
 				if(remove) {
 					extract(ix,argc,argv);
 				}
@@ -125,14 +125,14 @@
 				continue;
 			}
 
-			debug("Found short arg '",argv[ix],"'");
+			//debug("Found short arg '",argv[ix],"'");
 
 			if(argv[ix][2] != 0) {
 				value.assign(argv[ix]+2);
 				if(remove) {
 					extract(ix,argc,argv);
 				}
-				debug("Found short arg '",shortname,"'='",value,"'");
+				//debug("Found short arg '",shortname,"'='",value,"'");
 				return true;
 			}
 
@@ -147,7 +147,7 @@
 				extract(ix,argc,argv);
 			}
 
-			debug("Found short arg '",shortname,"'='",value,"'");
+			//debug("Found short arg '",shortname,"'='",value,"'");
 			return true;
 
 		}

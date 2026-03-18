@@ -33,7 +33,6 @@
  #include <udjat/tools/url.h>
  #include <udjat/tools/intl.h>
  #include <private/misc.h>
- #include <udjat/tools/protocol.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/network.h>

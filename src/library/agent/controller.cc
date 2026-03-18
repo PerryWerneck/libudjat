@@ -49,10 +49,8 @@
 
 namespace Udjat {
 
-	static const Udjat::ModuleInfo moduleinfo{ N_( "Agent controller" ) };
-
 	Abstract::Agent::Controller::Controller() 
-		: Service{"agents",moduleinfo}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"} {
+		: Service{"agents"}, Action::Factory{"agent"}, Abstract::Object::Factory{"agent"} {
 
 		Logger::String{"Initializing controller"}.trace("agent");
 	}

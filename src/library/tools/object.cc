@@ -30,7 +30,7 @@
  #include <udjat/tools/intl.h>
  #include <cstdarg>
  #include <udjat/module/abstract.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/tools/interface.h>
  #include <udjat/tools/container.h>
 
@@ -186,11 +186,14 @@
 
 	void Abstract::Object::parse_children(const XML::Node &node) {
 
+		/*
+#ifndef BUILD_LEGACY
 		bool trace = Logger::enabled(Logger::Debug);
-
 		if(trace) {
 			Logger::String{"Parsing object children at ",node.path()}.info(name());
 		}
+#endif
+		*/
 
 		for(const auto &child : node) {
 
@@ -205,10 +208,13 @@
 			for(const auto factory : Factories()) {
 
 				if(*factory == name) {
-	
+/*
+#ifndef BUILD_LEGACY
 					if(trace) {
 						Logger::String{"Got factory '", factory->c_str(), "' for ",child.path()}.info(this->name());
 					}
+#endif
+*/
 
 					auto object = factory->ObjectFactory(child);
 					push_back(child,object);
@@ -617,9 +623,11 @@
 
 					if(*factory == name) {
 		
+#ifndef BUILD_LEGACY
 						if(Logger::enabled(Logger::Debug)) {
 							Logger::String{"Got factory '", factory->c_str(), "' for ",node.path()}.info(this->name());
 						}
+#endif
 
 						auto object = factory->ObjectFactory(node);
 						push_back(node,object);

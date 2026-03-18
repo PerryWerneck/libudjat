@@ -159,6 +159,29 @@
 		return "";
 	}
 
+	void * Crypto::Key::encrypt(const void *data, size_t size, size_t &outsize) {
+		outsize = 0;
+		return backend->encrypt(data,size,outsize);
+	}
+
+	void * Crypto::Key::decrypt(const void *data, size_t size, size_t &outsize) {
+		outsize = 0;
+		return backend->decrypt(data,size,outsize);
+	}
+
+	void * Crypto::Key::digest(const void *data, size_t size, unsigned int &outsize) {
+		outsize = 0;
+		return backend->digest(data,size,outsize);	
+	}
+
+	void * Crypto::Key::sign(const void *data, size_t size, size_t &outsize) {
+		outsize = 0;
+		return backend->sign(data,size,outsize);	
+	}
+
+	bool Crypto::Key::verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen) {
+		return backend->verify(sig,siglen,tbs,tbslen);
+	}
 
  }
 

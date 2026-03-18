@@ -37,8 +37,7 @@ namespace Udjat {
 		String path;
 
 	public:
-		FileURLHandler(const URL &url) : path{url.path().c_str()} {
-		}
+		FileURLHandler(const URL &url);
 
 		const char *c_str() const noexcept override;
 

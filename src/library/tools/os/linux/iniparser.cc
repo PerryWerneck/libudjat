@@ -21,6 +21,9 @@
  #include <udjat/defs.h>
  #include <signal.h>
  #include <cstdarg>
+ #include <stdexcept>
+
+ using namespace std;
 
  #ifdef HAVE_INIPARSER
 
@@ -54,7 +57,9 @@
 
 	Config::Controller::Controller() {
 
+#ifndef HAVE_OLD_INIPARSER_API
 		iniparser_set_error_callback(error_callback);
+#endif // HAVE_OLD_INIPARSER_API		
 
 		ini = iniparser_load(String{"/etc/",program_invocation_short_name,".conf"}.c_str());
 		if(!ini) {
@@ -69,7 +74,9 @@
 			iniparser_freedict(ini);
 			ini = nullptr;
 		}
+#ifndef HAVE_OLD_INIPARSER_API
 		iniparser_set_error_callback(NULL);
+#endif // HAVE_OLD_INIPARSER_API		
 	}
 
 	void Config::Controller::open() {
@@ -89,9 +96,9 @@
 		return (iniparser_getsecnkeys(ini,(char *)group) != 0);
 	}
 
-	bool Config::Controller::hasKey(const char *group, const char *key) {
+	bool Config::Controller::hasKey(const char *group, const char *name) {
 		std::lock_guard<std::recursive_mutex> lock(guard);
-		return true;
+		return iniparser_find_entry(ini, key(group,name).c_str()) ;
 	}
 
 	int32_t Config::Controller::get(const char *group, const char *name, const int32_t def) const {
@@ -175,6 +182,12 @@
 			return false;
 		}
 
+#ifdef HAVE_OLD_INIPARSER_API
+
+		throw system_error(ENOTSUP,system_category(),"iniparser version is too old");
+
+		return false;
+#else
 		char **keys = new char *[items];
 
 		if(!iniparser_getseckeys(ini, (char *) group, (const char **) keys)) {
@@ -199,6 +212,7 @@
 
 		delete[] keys;
 		return found;
+#endif // HAVE_OLD_INIPARSER_API
 
 	}
 

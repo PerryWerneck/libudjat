@@ -106,7 +106,7 @@
 		for(const char *env : envvars) {
 
 			const char *ptr = getenv(env);
-			if(ptr) {
+			if(ptr && *ptr && access(ptr, W_OK) == 0) {
 				return ptr;
 			}
 

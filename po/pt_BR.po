@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-16 16:11-0300\n"
-"PO-Revision-Date: 2025-09-01 11:54-0300\n"
+"POT-Creation-Date: 2026-03-11 20:58-0300\n"
+"PO-Revision-Date: 2025-12-10 19:22-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -18,15 +18,69 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Poedit 3.8\n"
 
-#: src/library/tools/string/string.cc:69 src/library/tools/converters.cc:40
-msgid "yes"
-msgstr "sim"
+#: src/library/agent/agent.cc:193
+msgid "default"
+msgstr "padrão"
 
-#: src/library/tools/string/string.cc:69 src/library/tools/converters.cc:47
-msgid "no"
-msgstr "não"
+#: src/library/agent/agent.cc:195
+msgid "Normal"
+msgstr "Normal"
+
+#: src/library/agent/agent.cc:196
+msgid "Agent has nothing to report"
+msgstr "Agente não tem nada a informar"
+
+#: src/library/agent/state.cc:139
+msgid "Error activating state"
+msgstr "Erro ao ativar estado"
+
+#: src/library/agent/state.cc:144
+msgid "Unexpected error activating state"
+msgstr "Erro inesperado ao ativar estado"
+
+#: src/library/agent/controller.cc:97
+msgid "Agent controller was not initialized"
+msgstr "Controlador de agentes não foi inicializado"
+
+#: src/library/agent/controller.cc:371
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
+
+#: src/library/agent/root.cc:98 src/library/tools/systemservice.cc:140
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:98
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
+
+#: src/library/module/module.cc:115
+#, c++-format
+msgid "Module '{}' is not loaded"
+msgstr "Modulo '{}' não foi carregado"
+
+#: src/library/module/module.cc:131
+#, c++-format
+msgid "I dont know how to execute '{}'"
+msgstr "Não sei como executar '{}'"
+
+#: src/library/request/response.cc:127
+msgid "System error"
+msgstr "Erro de sistema"
+
+#: src/library/request/response.cc:189
+msgid "Operation failed"
+msgstr "Operação falhou"
+
+#: src/library/state/state.cc:259 src/library/tools/converters.cc:42
+msgid "on"
+msgstr "ligado"
+
+#: src/library/state/state.cc:259 src/library/tools/converters.cc:49
+msgid "off"
+msgstr "desligado"
 
 #: src/library/tools/application/run.cc:70
 #: src/library/tools/application/run.cc:74
@@ -51,21 +105,21 @@ msgstr "Iniciando serviços"
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
 
+#: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
+msgid "yes"
+msgstr "sim"
+
 #: src/library/tools/converters.cc:41
 msgid "true"
 msgstr "verdadeiro"
 
-#: src/library/tools/converters.cc:42 src/library/state/state.cc:259
-msgid "on"
-msgstr "ligado"
+#: src/library/tools/converters.cc:47 src/library/tools/string/string.cc:69
+msgid "no"
+msgstr "não"
 
 #: src/library/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
-
-#: src/library/tools/converters.cc:49 src/library/state/state.cc:259
-msgid "off"
-msgstr "desligado"
 
 #: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
 #: src/library/tools/exception.cc:53
@@ -76,30 +130,30 @@ msgstr "Operação falhou"
 msgid "System Error"
 msgstr "Erro de sistema"
 
-#: src/library/tools/file/handler.cc:185 src/library/tools/file/handler.cc:210
-#: src/library/tools/file/handler.cc:215 src/library/tools/file/handler.cc:365
+#: src/library/tools/file/handler.cc:184 src/library/tools/file/handler.cc:209
+#: src/library/tools/file/handler.cc:214 src/library/tools/file/handler.cc:364
 msgid "Cant set file offset"
 msgstr "Não foi possível posicionar arquivo"
 
-#: src/library/tools/file/handler.cc:195 src/library/tools/file/handler.cc:228
-#: src/library/tools/file/handler.cc:269
+#: src/library/tools/file/handler.cc:194 src/library/tools/file/handler.cc:227
+#: src/library/tools/file/handler.cc:268
 msgid "Cant write to file"
 msgstr "Não foi possível escrever no arquivo"
 
-#: src/library/tools/file/handler.cc:224 src/library/tools/file/handler.cc:246
-#: src/library/tools/file/handler.cc:304 src/library/tools/file/handler.cc:372
+#: src/library/tools/file/handler.cc:223 src/library/tools/file/handler.cc:245
+#: src/library/tools/file/handler.cc:303 src/library/tools/file/handler.cc:371
 msgid "Cant read from file"
 msgstr "Não foi possível ler do arquivo"
 
-#: src/library/tools/file/handler.cc:323 src/library/tools/file/handler.cc:351
+#: src/library/tools/file/handler.cc:322 src/library/tools/file/handler.cc:350
 msgid "Cant get file length"
 msgstr "Não foi possível obter o tamanho do arquivo"
 
-#: src/library/tools/file/handler.cc:339
+#: src/library/tools/file/handler.cc:338
 msgid "Cant get block size"
 msgstr "Não foi possível obter o tamanho de bloco"
 
-#: src/library/tools/file/handler.cc:374
+#: src/library/tools/file/handler.cc:373
 msgid "Unexpected EOF reading from file"
 msgstr "Fim de arquivo inesperado lendo arquivo"
 
@@ -348,6 +402,10 @@ msgstr " {} segundos"
 msgid " {} milliseconds"
 msgstr " {} millisegundos"
 
+#: src/library/tools/message.cc:48
+msgid "The message template is invalid"
+msgstr "O template de mensagem não é válido"
+
 #: src/library/tools/os/linux/ip.cc:96
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
@@ -423,10 +481,6 @@ msgstr "Sim"
 #: src/library/tools/report.cc:221
 msgid "No"
 msgstr "Não"
-
-#: src/library/tools/systemservice.cc:140 src/library/agent/root.cc:99
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
 
 #: src/library/tools/systemservice.cc:144
 msgid "System is not ready"
@@ -577,8 +631,8 @@ msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
 #: src/library/tools/xml/load.cc:79
-msgid "Configuration file not found"
-msgstr "Arquivo de configuração não encontrado"
+msgid "Unable to find XML definitions"
+msgstr "Definições XML não foram encontradas"
 
 #: src/library/tools/commandlineparser.cc:163
 msgid "Show this help message"
@@ -602,104 +656,70 @@ msgstr "Uso:"
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#: src/library/tools/logger.cc:364
+#: src/library/tools/logger.cc:363
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger.cc:365
+#: src/library/tools/logger.cc:364
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger.cc:366
+#: src/library/tools/logger.cc:365
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger.cc:367
+#: src/library/tools/logger.cc:366
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger.cc:369
+#: src/library/tools/logger.cc:368
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger.cc:373
+#: src/library/tools/logger.cc:372
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
-#: src/library/tools/message.cc:48
-msgid "The message template is invalid"
-msgstr "O template de mensagem não é válido"
-
-#: src/library/tools/script.cc:54 src/library/tools/script.cc:141
-msgid "The required attribute 'cmdline' is missing"
-msgstr "Atributo necessário 'cmdline' não está disponível"
-
-#: src/library/tools/script.cc:160
-msgid "Cant set subprocess user id"
-msgstr "Incapaz de definir o usuário do subprocesso"
-
-#: src/library/tools/script.cc:166
-msgid "Cant set subprocess group id"
-msgstr "Incapaz de definir o grupo do subprocesso"
-
-#: src/library/tools/object.cc:291
+#: src/library/tools/object.cc:297
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
-#: src/library/agent/agent.cc:193
-msgid "default"
-msgstr "padrão"
+#: src/library/tools/script.cc:56
+msgid "The required attribute 'cmdline' is missing"
+msgstr "Atributo necessário 'cmdline' não está disponível"
 
-#: src/library/agent/agent.cc:195
-msgid "Normal"
-msgstr "Normal"
+#: src/library/tools/script.cc:150
+msgid "Missing shebang attribute"
+msgstr "'shebang' não encontrado no início do script"
 
-#: src/library/agent/agent.cc:196
-msgid "Agent has nothing to report"
-msgstr "Agente não tem nada a informar"
-
-#: src/library/agent/controller.cc:52
-msgid "Agent controller"
-msgstr "Controlador de agentes"
-
-#: src/library/agent/controller.cc:99
-msgid "Agent controller was not initialized"
-msgstr "Controlador de agentes não foi inicializado"
-
-#: src/library/agent/controller.cc:373
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
-
-#: src/library/agent/root.cc:99
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
-
-#: src/library/agent/state.cc:139
-msgid "Error activating state"
-msgstr "Erro ao ativar estado"
-
-#: src/library/agent/state.cc:144
-msgid "Unexpected error activating state"
-msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/module/module.cc:115
+#: src/library/tools/script.cc:152
 #, c++-format
-msgid "Module '{}' is not loaded"
-msgstr "Modulo '{}' não foi carregado"
+msgid "Missing shebang attribute on {}"
+msgstr "'shebang' não encontrado em {}"
 
-#: src/library/module/module.cc:131
+#: src/library/tools/script.cc:175
+msgid "Required attribute 'cmdline' missing"
+msgstr "Atributo necessário 'cmdline' não encontrado"
+
+#: src/library/tools/script.cc:177
 #, c++-format
-msgid "I dont know how to execute '{}'"
-msgstr "Não sei como executar '{}'"
+msgid "Required attribute 'cmdline' missing on {}"
+msgstr "Atributo necessário 'cmdline' não encontrado em {}"
 
-#: src/library/request/response.cc:127
-msgid "System error"
-msgstr "Erro de sistema"
+#: src/library/tools/script.cc:199
+msgid "Cant set subprocess user id"
+msgstr "Incapaz de definir o usuário do subprocesso"
 
-#: src/library/request/response.cc:189
-msgid "Operation failed"
-msgstr "Operação falhou"
+#: src/library/tools/script.cc:205
+msgid "Cant set subprocess group id"
+msgstr "Incapaz de definir o grupo do subprocesso"
+
+#~ msgid "Agent controller"
+#~ msgstr "Controlador de agentes"
+
+#~ msgid "Configuration file not found"
+#~ msgstr "Arquivo de configuração não encontrado"
 
 #~ msgid "Run in foreground (as application)"
 #~ msgstr "Executar em primeiro plano (como aplicação)"

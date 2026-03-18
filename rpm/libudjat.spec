@@ -17,7 +17,7 @@
 
 Summary:		UDJat core library 
 Name:			libudjat
-Version: 2.2.2+git20251016
+Version:		2.3.1+git20260313
 Release:		0
 License:		LGPL-3.0
 Source:			%{name}-%{version}.tar.xz
@@ -29,14 +29,31 @@ BuildRoot:		/var/tmp/%{name}-%{version}
 
 BuildRequires:	binutils
 BuildRequires:	coreutils
-BuildRequires:	gcc-c++
+
+%if 0%{?suse_version} >= 1504
 BuildRequires:	pkgconfig(libeconf)
-BuildRequires:	pkgconfig(pugixml)
 BuildRequires:	pkgconfig(dmiget)
 BuildRequires:	pkgconfig(libsystemd)
-BuildRequires:	pkgconfig(liburiparser)
 BuildRequires:	pkgconfig(vmdetect) >= 1.3
+BuildRequires:	pkgconfig(openssl) >= 3.0.0
 BuildRequires:	meson >= 0.61.4
+%else
+BuildRequires:	pkgconfig(libssl)
+BuildRequires:	autoconf >= 2.61
+BuildRequires:	automake
+BuildRequires:	libtool
+BuildRequires:	libiniparser-devel
+%endif
+
+%if 0%{?suse_version} >= 1500
+BuildRequires:	gcc-c++ 
+%else
+BuildRequires:	gcc48-c++
+%endif
+
+BuildRequires:	pkgconfig(liburiparser)
+BuildRequires:	pkgconfig(pugixml)
+BuildRequires:	gettext-devel
 
 %description
 UDJat core library
@@ -79,18 +96,50 @@ Development files for Udjat main library.
 
 %prep
 %autosetup
+
+%if 0%{?suse_version} < 1500
+export CC=gcc-4.8
+export CXX=g++-4.8
+%endif
+
+%if 0%{?suse_version} >= 1504
+
 %meson
 
+%else
+
+# Remove c++ 17 'sugars'
+find src -type f -iname *.h -exec sed -i 's@\[\[deprecated.*\]\]@@g' {} \;
+find src -type f -iname *.cc -exec sed -i 's@-> .* {@{@g' {} \;
+
+ln -f legacy/* .
+
+export CFLAGS="-Wno-deprecated-declarations %{optflags}"
+NOCONFIGURE=1 ./autogen.sh
+%configure
+
+%endif
+
 %build
+%if 0%{?suse_version} >= 1504
 %meson_build
+%else
+make all
+%endif
 
 %install
+%if 0%{?suse_version} >= 1504
 %meson_install
+%else
+%makeinstall
+%endif
 
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/modules
 mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 
+%if 0%{?suse_version} >= 1504
 %find_lang libudjat-%{MAJOR_VERSION}.%{MINOR_VERSION} langfiles
+%endif
 
 %files -n %{name}%{_libvrs}
 %defattr(-,root,root)
@@ -100,18 +149,27 @@ mkdir -p %{buildroot}%{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 %dir %{_libdir}/udjat/%{MAJOR_VERSION}.%{MINOR_VERSION}/lib
 %{_libdir}/%{name}.so.%{MAJOR_VERSION}.%{MINOR_VERSION}
 
-%files -n %{name}%{_libvrs}-lang -f langfiles
+%if 0%{?suse_version} >= 1504
+%files -n libudjat%{_libvrs}-lang -f langfiles
+%endif
 
 %files devel
 %defattr(-,root,root)
 
+%if 0%{?suse_version} >= 1504
 %{_bindir}/udjat-loader
+%endif
 
 %{_libdir}/*.so
 %{_libdir}/*.a
 
 %{_libdir}/pkgconfig/*.pc
+
+%if 0%{?suse_version} >= 1504
 %{_rpmmacrodir}/macros.*
+%else
+/usr/lib/rpm/macros.d/macros.*
+%endif
 
 %dir %{_includedir}/udjat
 %{_includedir}/udjat/*.h

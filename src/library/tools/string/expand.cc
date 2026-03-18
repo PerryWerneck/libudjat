@@ -21,7 +21,6 @@
  #include <udjat/defs.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/timestamp.h>
- #include <udjat/tools/http/client.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/xml.h>
@@ -188,6 +187,7 @@
 
 			if(group && Config::hasKey(group,key)) {
 				// Get from the configuration file.
+				debug("Getting '",key,"' from group '",group,"' in configuration");
 				value = Config::get(group, key, "");
 				return true;
 			}

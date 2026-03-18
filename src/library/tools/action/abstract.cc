@@ -25,7 +25,7 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/value.h>
@@ -59,6 +59,47 @@
 		return call(request,response,except);
 	}
 
+	int Action::call(const Udjat::Abstract::Object &object, bool except) {
+
+		try {
+
+			Udjat::Request request;
+			Udjat::Response response;
+
+			object.getProperties(request);
+			return call(request,response,except);
+
+		} catch(const std::system_error &e) {
+
+			if(except) {
+				throw;
+			}
+
+			Logger::String{"Action failed: ",e.what()}.error(name());
+			return e.code().value();
+
+		} catch(const std::exception &e) {
+
+			if(except) {
+				throw;
+			}
+
+			Logger::String{e.what()}.error(name());
+
+		} catch(...) {
+
+			if(except) {
+				throw;
+			}
+
+			Logger::String{"Unexpected error running action"}.error(name());
+
+		}
+
+		return EFAULT;
+
+	}
+
 	bool Action::activate(const Udjat::Abstract::Object &object) noexcept {
 
 		try {
@@ -90,16 +131,9 @@
 	}
 
 	bool Action::activate() noexcept {
-
 		try {
 
-			Udjat::Request request;
-			Udjat::Response response;
-			int rc = call(request,response,true);
-			if(rc) {
-				Logger::String{"Action failed with code ",rc}.error(name());
-				return false;
-			}
+			call(true);
 
 		} catch(const std::exception &e) {
 

@@ -35,7 +35,6 @@
  #include <udjat/module/abstract.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/file.h>
- #include <udjat/tools/http/client.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/systemservice.h>
  #include <udjat/tools/configuration.h>

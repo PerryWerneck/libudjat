@@ -30,6 +30,7 @@
 	class UDJAT_API Activatable : public Abstract::Object {
 	private:
 		const char *object_name;
+		bool active = false;
 
 	protected:
 
@@ -58,11 +59,11 @@
 		/// @brief Activate/deactivate by parameter.
 		/// @param value true to activate, false to deactivate.
 		/// @return true if the state was changed.
-		bool active(bool value) noexcept;
+		bool activate(bool value) noexcept;
 
 		/// @brief Activate object.
 		/// @return true if the object was activated, false if already active.
-		virtual bool activate() noexcept = 0;
+		virtual bool activate() noexcept;
 
 		/// @brief Check if object can be activated.
 		/// @return true if object can be activated.

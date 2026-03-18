@@ -21,7 +21,7 @@
 
 #include <udjat/defs.h>
 #include <string>
-#include <openssl/evp.h>
+#include <openssl/x509.h>
 #include <udjat/tools/exception.h>
 #include <memory>
 
@@ -116,6 +116,53 @@ namespace Udjat {
 			/// @brief Get string representation of the private key.
 			/// @return The private key in PEM format.
 			std::string to_string() const;
+
+			/// @brief Encrypt data.
+			/// @param data The data to encrypt.
+			/// @param size The size of the input data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the encrypted data, release it with free().
+			void * encrypt(const void *data, size_t size, size_t &outsize);
+
+			inline void * encrypt(const char *data, size_t &outsize) {
+				return encrypt((const void *) data, strlen(data), outsize);
+			}
+
+			/// @brief Decrypt data.
+			/// @param data The data to decrypt.
+			/// @param size The size of the input data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the decrypted data, release it with free().
+			void * decrypt(const void *data, size_t size, size_t &outsize);
+
+			/// @brief Generate a digest for data.
+			/// @param data The data to digest.
+			/// @param size The size of the input data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the digest, release it with free().
+			void * digest(const void *data, size_t size, unsigned int &outsize);
+
+			inline void * digest(const char *data, unsigned int &outsize) {
+				return digest((const void *) data, strlen(data), outsize);
+			}
+
+			/// @brief Sign data.
+			/// @param data The digest to sign.
+			/// @param size The size of the digest data.
+			/// @param outsize The size of output data.
+			/// @return A pointer to the signature, release it with free().
+			void * sign(const void *data, size_t size, size_t &outsize);
+
+			/// @brief Verify data.
+			/// @param sig The signature to verify.
+			/// @param siglen The signature length.
+			/// @param tbs The digest to verify.
+			/// @param tbslen The digest length.
+			/// @retval true If the signature is valid.
+			/// @retval false If the signature is invalid.
+			/// @throw Crypto::Exception If the verification fails.
+			/// @throw std::runtime_error If the verification is not supported by the public key algorithm.
+			bool verify(const void *sig, size_t siglen, const void *tbs, size_t tbslen);
 
 		};
 

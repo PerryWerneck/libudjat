@@ -46,7 +46,7 @@
 		return true;
 	}
 
-	bool Activatable::active(bool value) noexcept {
+	bool Activatable::activate(bool value) noexcept {
 		if(value) {
 			return activate();
 		} else {
@@ -54,12 +54,24 @@
 		}
 	}
 
+	bool Activatable::activate() noexcept {
+		if(active) {
+			return false;
+		}
+		active = true;
+		return true;
+	}
+
 	bool Activatable::activate(const Udjat::Abstract::Object &) noexcept {
 		return activate();
 	}
 
 	bool Activatable::deactivate() noexcept {
-		return false;	// Allways return false if the object cant be deactivated.
+		if(!active) {
+			return false;
+		}
+		active = false;
+		return true;
 	}
 
 	const char * Activatable::payload(const XML::Node &node) {

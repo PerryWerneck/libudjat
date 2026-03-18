@@ -19,9 +19,9 @@
 
  #pragma once
  #include <udjat/defs.h>
- #include <udjat/module/info.h>
  #include <cstring>
-
+ #include <functional>
+ 
  namespace Udjat {
 
 	/// @brief Service who can be started/stopped.
@@ -34,12 +34,15 @@
 			bool active = false;
 		} state;
 
-		/// @brief Service module.
-		const ModuleInfo &module;
-
 	protected:
 		/// @brief Service name.
 		const char *service_name = "service";
+
+#if defined(PACKAGE_DESCRIPTION)
+		const char *service_description = PACKAGE_DESCRIPTION;
+#else
+		const char *service_description = "Udjat Service";
+#endif // PACKAGE_DESCRIPTION
 
 	public:
 		class Controller;
@@ -48,24 +51,34 @@
 		Service(const Service &src) = delete;
 		Service(const Service *src) = delete;
 
-		Service(const char *name, const ModuleInfo &module);
-		Service(const ModuleInfo &module);
+#if defined(PACKAGE_DESCRIPTION)
+		Service(const char *name, const char *description = PACKAGE_DESCRIPTION);
+#elif defined(PACKAGE_NAME)
+		Service(const char *name, const char *description = PACKAGE_NAME);
+#else
+		Service(const char *name, const char *description);
+#endif
+
 		virtual ~Service();
 
 		const char * name() const noexcept {
 			return service_name;
 		}
 
-		inline bool operator==(const char *name) const noexcept {
-			return strcasecmp(name,service_name) == 0;
-		}
-
 		inline const char * description() const noexcept {
-			return module.description;
+			return service_description;
 		}
 
 		inline const char * version() const noexcept {
-			return module.version;
+#ifdef PACKAGE_VERSION
+			return PACKAGE_VERSION;
+#else
+			return "";
+#endif
+		}
+
+		inline bool operator==(const char *name) const noexcept {
+			return strcasecmp(name,service_name) == 0;
 		}
 
 		inline bool isActive() const noexcept {
@@ -85,10 +98,6 @@
 
 		virtual void start();
 		virtual void stop();
-
-		std::ostream & info() const;
-		std::ostream & warning() const;
-		std::ostream & error() const;
 
 		static bool for_each(const std::function<bool(const Service &service)> &method);
 

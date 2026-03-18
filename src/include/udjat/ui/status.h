@@ -44,6 +44,12 @@
 			Status(Status *other) = delete;
 			virtual ~Status();
 
+			/// @brief Get the singleton instance of the status dialog for console applications.
+			/// @return The instance for console applications.
+			static Status & getConsole();
+
+			/// @brief Get the current instance of the status dialog, return console if there's no active instance.
+			/// @return The instance of the status dialog.
 			static Status & getInstance();
 
 			virtual Status & title(const char *text) noexcept;

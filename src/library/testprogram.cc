@@ -29,6 +29,7 @@
  #include <string>
  #include <udjat/net/interface.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/file/temporary.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -83,6 +84,57 @@
 
 			Logger::String{"Generated private key for ",backend," (",(tss ? "tss" : "legacy"),"):\n",pkeystr.c_str()}.info();
 			pkey.save_public(String{"/tmp/test-",backend,".pub"}.c_str());
+
+			// Test encription/decription
+			{
+				size_t encripted_len = 0;
+				size_t decripted_len = 0;
+
+				const char *buffer = "Simple string to test crypto functions";
+
+				void *encripted = pkey.encrypt(buffer,encripted_len);
+
+				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
+
+				void *decrypted = pkey.decrypt(encripted,encripted_len,decripted_len);
+
+				debug("Decrypted string: '",((char *) decrypted),"'");
+
+				if(strcmp(buffer,(const char *) decrypted)) {
+					throw runtime_error("Error decripting data block");
+				} else {
+					Logger::String{"Decripted block is ok"}.info();
+				}
+
+				free(encripted);
+				free(decrypted);
+			}
+
+			// Test sign/verify
+			{
+				size_t siglen;
+				unsigned int diglen;
+
+				const char *buffer = "Simple string to test crypto functions";
+				void *digest = pkey.digest(buffer,diglen);
+
+				Logger::String{"The digest block has ",diglen," bytes"}.info();
+
+				void *sig = pkey.sign(digest,diglen,siglen);
+
+				Logger::String{"The signed block has ",siglen," bytes"}.info();
+
+				if(pkey.verify(sig,siglen,digest,diglen)) {
+					Logger::String{"Signed block is ok"}.info();
+				} else {
+					free(digest);
+					free(sig);
+					throw runtime_error("Error sigining data block");
+				}
+
+				free(digest);
+				free(sig);
+			}
 
 			// Test key loading
 			Logger::String{"Reloading private key for ",backend," from file."}.info();
@@ -232,21 +284,64 @@ return 0;
 	return 0;
  }
 
+ static int string_test() {
+
+	static const char *xml = {
+		"<root>"
+		"<template name='isolinux.cfg' url='file://${template-dir}/isolinux.cfg' escape-control-characters='no' />"
+		"</root>"
+	};
+
+	pugi::xml_document doc;
+	pugi::xml_parse_result result = doc.load_string(xml);
+	if(!result) {
+		throw runtime_error{String{"Error parsing XML string: ",result.description()}};
+	}
+	auto root = XML::Node{doc}.child("root");
+	auto template_node = root.child("template");
+
+	String str{template_node, "url", true};
+	Logger::String{"Extracted string from XML: '",str.c_str(),"'."}.info();
+	if(strcmp(str.c_str(),"file://${template-dir}/isolinux.cfg") != 0) {
+		throw logic_error{"String test failed: extracted string does not match expected value."};
+	}	
+
+	return 0;
+ }
+
+ static int tmpfile_test() {
+
+	{
+		String filename = File::Temporary::create(100);
+		Logger::String{"Temporary file '",filename,"' created"}.info();
+	}
+
+	{
+		int fd = File::Temporary::open(100);
+		Logger::String{"Temporary file '",fd,"' open"}.info();
+		::close(fd);
+	}
+
+	return 0;
+ }
+
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
 		const char *name;
 		int (*test)();
 	} tests[] = {
-		{"url",url_test},
+		{"tmpfile",	tmpfile_test},
+		{"url",		url_test},
  #ifdef HAVE_OPENSSL
-		{"ssl", ssl_test},
+		{"ssl",		ssl_test},
  #endif // HAVE_OPENSSL
  #ifdef HAVE_SMBIOS
-		{"smbios", smbios_test},
+		{"smbios",	smbios_test},
  #endif // HAVE_SMBIOS
-		{"network", network_test},
-		{"config", config_test},
+		{"network",	network_test},
+		{"config",	config_test},
+		{"string",	string_test},
 	};
 
 	if(!name) {

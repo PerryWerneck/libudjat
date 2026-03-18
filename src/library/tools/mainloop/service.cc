@@ -38,21 +38,11 @@
 
  namespace Udjat {
 
-	Service::Service(const char *name, const ModuleInfo &i) : module(i), service_name(name) {
-		if(!service_name) {
-			service_name = strrchr(module.name,'-');
-			if(service_name) {
-				service_name++;
-			} else {
-				service_name = module.name;
-			}
+	Service::Service(const char *name, const char *description) : service_name{name}, service_description{description} {
+		if(!(service_name && *service_name)) {
+			throw system_error(EINVAL,system_category(),"Cant create unnamed service");
 		}
-
 		Service::Controller::getInstance().push_back(this);
-
-	}
-
-	Service::Service(const ModuleInfo &module) : Service(nullptr,module) {
 	}
 
 	Service::~Service() {
@@ -71,25 +61,10 @@
 		state.active = false;
 	}
 
-	std::ostream & Service::info() const {
-		cout << name() << "\t";
-		return cout;
-	}
-
-	std::ostream & Service::warning() const {
-		clog << name() << "\t";
-		return clog;
-	}
-
-	std::ostream & Service::error() const {
-		cerr << name() << "\t";
-		return cerr;
-	}
-
 	Value & Service::getProperties(Value &properties) const {
 		properties["name"] = service_name;
 		properties["active"] = state.active;
-		return module.getProperties(properties);
+		return properties;
 	}
 
 	const Service * Service::find(const char *name) noexcept {

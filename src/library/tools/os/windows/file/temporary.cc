@@ -69,7 +69,7 @@
 	Application::TmpDir::TmpDir(const char *subdir) : File::Path{TmpDirFactory(subdir)} {
 	}
 
-	String File::Temporary::create() {
+	String File::Temporary::create(unsigned long long) {
 
 		std::string tempname;
 
@@ -87,7 +87,7 @@
 				throw Win32::Exception("GetTempFileName has failed");
 			}
 
-			int fd = open(szTempFileName,O_CREAT|O_EXCL,0600);
+			int fd = ::open(szTempFileName,O_CREAT|O_EXCL,0600);
 
 			if(fd > 0) {
 #ifdef DEBUG
@@ -121,7 +121,7 @@
 
 		debug("Tempname: '",tempname,"'");
 
-		fd = open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
+		fd = ::open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),"Unable to create and open temporary file");
@@ -150,7 +150,7 @@
 
 		tempname = szTempFileName;
 
-		fd = open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
+		fd = ::open(tempname.c_str(),O_TRUNC|O_RDWR|O_CREAT,0644);
 
 		if(fd < 0) {
 			throw system_error(errno,system_category(),"Unable to create and open temporary file");

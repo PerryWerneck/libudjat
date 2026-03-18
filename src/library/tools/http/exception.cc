@@ -20,7 +20,6 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/protocol.h>
  #include <udjat/tools/exception.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/error.h>

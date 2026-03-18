@@ -20,8 +20,8 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.2.2',
-	default_options : ['c_std=c11', 'cpp_std=c++17'],
+	version: '2.3.1',
+	default_options : ['c_std=c11', 'cpp_std=c++17', 'buildtype=release'],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -372,9 +372,7 @@ lib_src += [
   'src/library/alert/construct.cc',
   'src/library/alert/factory.cc',
   'src/library/alert/file.cc',
-  'src/library/alert/url.cc',
   'src/library/module/controller.cc',
-  'src/library/module/info.cc',
   'src/library/module/module.cc',
   'src/library/module/unload.cc',
   'src/library/module/load.cc',
@@ -407,7 +405,6 @@ lib_src += [
   'src/library/tools/http/error.cc',
   'src/library/tools/http/exception.cc',
   'src/library/tools/http/timestamp.cc',
-  'src/library/tools/http/client.cc',
   'src/library/tools/http/mimetype.cc',
   'src/library/tools/ip.cc',
   'src/library/tools/mainloop/service.cc',
@@ -428,12 +425,9 @@ lib_src += [
   'src/library/tools/timestamp.cc',
   'src/library/tools/url/methodfactory.cc',
   'src/library/tools/url/handler.cc',
-  'src/library/tools/url/controller.cc',
   'src/library/tools/url/header.cc',
   'src/library/tools/url/unescape.cc',
-  'src/library/tools/url/watcher.cc',
   'src/library/tools/url/url.cc',
-  'src/library/tools/url/worker.cc',
   'src/library/tools/value/construct.cc',
   'src/library/tools/value/set.cc',
   'src/library/tools/value/get.cc',
@@ -487,6 +481,11 @@ endif
 # https://mesonbuild.com/Pkgconfig-module.html
 #
 pkg = import('pkgconfig')
+pkg_extra_cflags = []
+
+if openssl.found()
+  pkg_extra_cflags += ['-DHAVE_UDJAT_CRYPTO=1']
+endif
 
 pkg_variables = [
 
@@ -507,56 +506,6 @@ pkg_variables = [
   'module_version=@0@_@1@'.format(pkg_major_version,pkg_minor_version),
 
 ]
-
-if host_machine.system() == 'windows'
-
-  winlibs = [
-      '-lintl', 
-      '-lshlwapi', 
-      '-lws2_32',
-      '-lwtsapi32', 
-      '-lole32', 
-      '-loleaut32', 
-      '-luuid', 
-      '-liphlpapi', 
-      '-lversion', 
-      '-lnetshell', 
-      '-lpathcch',
-  ]
-
-  pkg.generate(
-    name: 'lib' + meson.project_name(),
-    description: project_description,
-    variables: pkg_variables,
-    requires: required_libs,
-    libraries: [ '-l' + meson.project_name() + '.dll' ],
-    requires_private: private_libs,
-  )
-
-else
-
-  pkg.generate(
-    name: 'lib' + meson.project_name(),
-    description: project_description,
-    variables: pkg_variables,
-    requires: required_libs,
-    libraries: [ '-l' + meson.project_name() ],
-    requires_private: private_libs,
-  )
-
-  pkg.generate(
-    name: 'lib' + meson.project_name() + '-static',
-    description: project_description,
-    variables: pkg_variables,
-    extra_cflags: [
-      '-DUDJAT_STATIC',
-      '-pthread',
-    ],
-    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
-    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
-  )
-
-endif
 
 if host_machine.system() == 'windows'
 
@@ -634,22 +583,45 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/system.cc',
   ]
 
-else
+  winlibs = [
+      '-lintl', 
+      '-lshlwapi', 
+      '-lws2_32',
+      '-lwtsapi32', 
+      '-lole32', 
+      '-loleaut32', 
+      '-luuid', 
+      '-liphlpapi', 
+      '-lversion', 
+      '-lnetshell', 
+      '-lpathcch',
+  ]
 
-  if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
-    app_conf.set('HAVE_UNISTD_H', 1)
-  endif
-
-  if cxx.compiles('#include <filesystem>', name : 'filesystem')
-    app_conf.set('HAVE_FILESYSTEM_H', 1)
-  endif
-
-  app_conf.set_quoted('LIBEXT', '.so')
-
-  install_headers(
-    'src/include/udjat/linux/network.h',
-    subdir: 'udjat/linux'  
+  pkg.generate(
+    name: 'lib' + meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() + '.dll' ],
+    requires_private: private_libs,
+    extra_cflags: pkg_extra_cflags,
   )
+
+elif host_machine.system() == 'darwin'
+
+  pkg.generate(
+    name: 'lib' + meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() ],
+    requires_private: private_libs,
+    extra_cflags: pkg_extra_cflags,
+  )
+
+  app_conf.set_quoted('LIBEXT', '.dlsym')
+
+else
 
   lib_src += [
     'src/library/os/linux/icon.cc',
@@ -678,7 +650,6 @@ else
     'src/library/tools/os/linux/hostname.cc',
     'src/library/tools/os/linux/ip.cc',
     'src/library/tools/os/linux/nic.cc',
-    'src/library/tools/os/linux/protocol.cc',
     'src/library/tools/os/linux/shortcut.cc',
     'src/library/tools/os/linux/subprocess/controller.cc',
     'src/library/tools/os/linux/subprocess/handler.cc',
@@ -694,6 +665,44 @@ else
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
   ]
+
+  pkg.generate(
+    name: 'lib' + meson.project_name(),
+    description: project_description,
+    variables: pkg_variables,
+    requires: required_libs,
+    libraries: [ '-l' + meson.project_name() ],
+    requires_private: private_libs,
+    extra_cflags: pkg_extra_cflags,
+ )
+
+  pkg.generate(
+    name: 'lib' + meson.project_name() + '-static',
+    description: project_description,
+    variables: pkg_variables,
+    extra_cflags: pkg_extra_cflags + [
+      '-DUDJAT_STATIC',
+      '-pthread',
+    ],
+    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
+  )
+
+  if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
+    app_conf.set('HAVE_UNISTD_H', 1)
+  endif
+
+  if cxx.compiles('#include <filesystem>', name : 'filesystem')
+    app_conf.set('HAVE_FILESYSTEM_H', 1)
+  endif
+
+  app_conf.set_quoted('LIBEXT', '.so')
+
+  install_headers(
+    'src/include/udjat/linux/network.h',
+    subdir: 'udjat/linux'  
+  )
+
 
 endif
 
@@ -735,6 +744,19 @@ if host_machine.system() == 'windows'
     link_args: winlibs,
   )
 
+elif host_machine.system() == 'darwin'
+
+  dynamic = shared_library(
+    meson.project_name(), 
+    config_h + lib_src,
+    install: true,
+    version : libversion,
+    soversion : libversion,
+    gnu_symbol_visibility: 'hidden',
+    dependencies: required_libs + private_libs + extra_libs + [ cxx.find_library('dl')],
+    include_directories: includes_dir,
+  )
+
 else
 
   dynamic = shared_library(
@@ -749,28 +771,26 @@ else
     include_directories: includes_dir,
   )
 
- endif
+endif
 
- static = static_library(
-  meson.project_name(), 
-  config_h + lib_src,
-  install: true,
-  cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
-  dependencies: required_libs + private_libs + extra_libs,
-  include_directories: includes_dir
- )
-
- static_library = declare_dependency(
-  link_with : static,
+static_library = declare_dependency(
+  link_with : static_library(
+    meson.project_name(), 
+    config_h + lib_src,
+    install: true,
+    cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+    dependencies: required_libs + private_libs + extra_libs,
+    include_directories: includes_dir
+  ),
   include_directories : includes_dir,
   variables: pkg_variables,
- ) 
+) 
 
- dynamic_library = declare_dependency(
+dynamic_library = declare_dependency(
   link_with : dynamic,
   include_directories : includes_dir,
   variables: pkg_variables,
- ) 
+) 
 
 executable(
   meson.project_name(),
@@ -791,12 +811,6 @@ executable(
   dependencies: required_libs + private_libs + extra_libs,
   include_directories: includes_dir
 )
-
-#version_file = configure_file(
-#  input : 'src/include/udjat/version.h.in',
-#  output : 'version.h',
-#  configuration : app_conf
-#)
 
 #
 # RPM Macros
@@ -827,10 +841,10 @@ endif
 install_headers(
   'src/include/udjat.h',
   'src/include/udjat/agent.h',
+  'src/include/udjat/action.h',
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
-  'src/include/udjat/moduleinfo.h',
   'src/include/udjat/loader.h',
   subdir: 'udjat'  
 )
@@ -850,7 +864,6 @@ install_headers(
 )
 
 install_headers(
-  'src/include/udjat/module/info.h',
   'src/include/udjat/module/abstract.h',
   subdir: 'udjat/module'  
 )
@@ -908,7 +921,6 @@ install_headers(
   'src/include/udjat/tools/handler.h',
   'src/include/udjat/tools/logger.h',
   'src/include/udjat/tools/mainloop.h',
-  'src/include/udjat/tools/protocol.h',
   'src/include/udjat/tools/request.h',
   'src/include/udjat/tools/string.h',
   'src/include/udjat/tools/timer.h',
@@ -938,7 +950,6 @@ install_headers(
   'src/include/udjat/tools/http/exception.h',
   'src/include/udjat/tools/http/method.h',
   'src/include/udjat/tools/http/timestamp.h',
-  'src/include/udjat/tools/http/client.h',
   'src/include/udjat/tools/http/mimetype.h',
   subdir: 'udjat/tools/http'  
 )
@@ -955,3 +966,5 @@ install_headers(
   'src/include/udjat/tools/actions/abstract.h',
   subdir: 'udjat/tools/actions'  
 )
+
+

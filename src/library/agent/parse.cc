@@ -32,11 +32,11 @@
  #include <udjat/agent/state.h>
  #include <udjat/tools/object.h>
  #include <udjat/tools/configuration.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/tools/event.h>
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/actions/abstract.h>
+ #include <udjat/action.h>
  #include <udjat/alert.h>
 
 //---[ Implement ]------------------------------------------------------------------------------------------
@@ -62,27 +62,13 @@ namespace Udjat {
 
 		// It's an alert? Push it as an activatable.
 		if(strcasecmp(node.name(),"alert") == 0) {
-			// push_back(node,Alert::Factory::build(*this,node));
-
-			auto object = Alert::Factory::build(*this,node);
-			debug("Pushing alert ",object->name()," into agent ",name()," from path ",node.path());
-			
-			lock_guard<std::recursive_mutex> lock(guard);
-			listeners.emplace_back(EventFactory(node,"trigger-event"),object);
-
+			push_back(node,Alert::Factory::build(*this,node));
 			return true; // Handled by alert.
 		}
 
 		// It's an action? Push it as an activatable.
 		if(strcasecmp(node.name(),"action") == 0 || strcasecmp(node.name(),"script") == 0) {
-			// push_back(node,Action::Factory::build(node));
-
-			auto object = Action::Factory::build(node);
-			debug("Pushing action ",object->name()," into agent ",name()," from path ",node.path());
-			
-			lock_guard<std::recursive_mutex> lock(guard);
-			listeners.emplace_back(EventFactory(node,"trigger-event"),object);
-
+			push_back(node,Action::Factory::build(node));
 			return true; // Handled by action.
 		}
 

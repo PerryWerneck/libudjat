@@ -31,15 +31,16 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const ModuleInfo &i) : module_name(n),handle(nullptr),_info(i) {
+	Module::Module(const char *n, const char *d) : module_name{n}, handle{nullptr} {
 
 		if(!(module_name && *module_name)) {
 			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
 		}
 
-		if(i.build < MINIMAL_MODULE_BUILD) {
-			error()<< "The module build date " << i.build << " is lower than the expected " << MINIMAL_MODULE_BUILD << endl;
-			throw system_error(EINVAL,system_category(),"Invalid module build date");
+		if(info.build && info.build < MINIMAL_MODULE_BUILD) {
+			Logger::String message{"The module build date ",info.build," is lower than the expected ",MINIMAL_MODULE_BUILD};
+			message.error(module_name);
+			throw system_error(EINVAL,system_category(),message);
 		}
 
 		Controller::getInstance().push_back(this);
@@ -55,7 +56,7 @@ namespace Udjat {
 	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = module_name;
 		properties["filename"] = filename();
-		return _info.getProperties(properties);
+		return properties;
 	}
 
 	const Module * Module::find(const char *name) noexcept {
@@ -84,8 +85,7 @@ namespace Udjat {
 			value = filename();
 			return true;
 		}
-
-		return _info.getProperty(key,value);
+		return false;
 	}
 
 	std::string Module::operator[](const char *property_name) const noexcept {
@@ -129,22 +129,6 @@ namespace Udjat {
 
 	void Module::exec(Udjat::Value UDJAT_UNUSED(&response), const char *name, va_list UDJAT_UNUSED(args)) const {
 		throw system_error(ENOTSUP,system_category(),Logger::Message(_("I dont know how to execute '{}'"),name));
-	}
-
-	void Module::options(const XML::Node &node, std::function<void(const char *name, const char *value)> call) {
-		XML::options(node,call);
-	}
-
-	std::ostream & Module::info() const {
-		return cout << module_name << "\t";
-	}
-
-	std::ostream & Module::warning() const {
-		return clog << module_name << "\t";
-	}
-
-	std::ostream & Module::error() const {
-		return cerr << module_name << "\t";
 	}
 
 }

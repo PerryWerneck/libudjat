@@ -199,11 +199,22 @@ dnl ---------------------------------------------------------------------------
 dnl Check for openssl
 dnl ---------------------------------------------------------------------------
 
-PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], AC_DEFINE(HAVE_LIBSSL,[],[Do we have libssl?]), AC_MSG_ERROR([libssl not present.]) )
+PKG_CHECK_MODULES( [LIBSSL], [libssl libcrypto], [app_cv_libssl="yes"], [app_cv_libssl="no"] )
 
-AC_SUBST(LIBSSL_LIBS)
-AC_SUBST(LIBSSL_CFLAGS)
-AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have libssl?])
+if test "$app_cv_libssl" == "yes"; then
+
+	AC_MSG_NOTICE([ libssl is available ])
+
+	AC_DEFINE(HAVE_OPENSSL,[],[Do we have libssl?])
+	AC_SUBST(LIBSSL_LIBS)
+	AC_SUBST(LIBSSL_CFLAGS)
+	AC_DEFINE(HAVE_OPENSSL_ENGINE,[],[Do we have openssl engine?])
+
+else
+
+	AC_MSG_NOTICE([ libssl is NOT available ])
+
+fi
 
 dnl ---------------------------------------------------------------------------
 dnl Check for libintl
@@ -337,6 +348,43 @@ elif test "$app_cv_iniparser" == "yes"; then
 	AC_MSG_NOTICE([ Using iniparser as configuration backend ])
 	AC_DEFINE(HAVE_INIPARSER,[],[Do we have libiniparser?])
 	AC_SUBST(ECONF_LIBS,-liniparser)
+
+	dnl Save current CFLAGS and LIBS variables
+	saved_CFLAGS="$CFLAGS"
+	saved_LIBS="$LIBS"
+
+	dnl Add iniparser flags to the temporary CFLAGS and LIBS for the test compile
+	LIBS="$LIBS -liniparser"
+
+	AC_MSG_CHECKING([if iniparser uses old API for iniparser_getseckeys])
+	AC_RUN_IFELSE([AC_LANG_SOURCE([[
+		#include <stdio.h>
+		#include <stdlib.h>
+		#include <iniparser.h>
+
+		int main() {
+			dictionary *ini = dictionary_new(0);
+			if (ini == NULL) return 1;
+			char *section = strdup("test"); 
+			char **keys = iniparser_getseckeys(ini, section);
+			if (keys != NULL) free(keys);
+			iniparser_freedict(ini);
+			free(section);
+			return 0;
+		}
+	]])], [
+		AC_MSG_RESULT([yes])
+		AC_DEFINE([HAVE_OLD_INIPARSER_API], [1], [Define if using the old iniparser_getseckeys API])
+	], [
+		AC_MSG_RESULT([no, using new API])
+	], [
+		dnl Cannot run test program (cross-compiling), assume new API for safety or prompt user
+		AC_MSG_RESULT([cannot run test program, assuming new API])
+	])
+
+	dnl Restore original CFLAGS and LIBS after the test
+	CFLAGS="$saved_CFLAGS"
+	LIBS="$saved_LIBS"
 
 else 
 

@@ -59,12 +59,15 @@ namespace Udjat {
 			/// @return 0 if file is empty or not found.
 			time_t mtime() const override;
 
-			/// @brief Create an empty temporary file.
-			/// @param len Required file size.
-			static Udjat::String create(unsigned long long len);
+			/// @brief Get temporary path
+			static String path();
+
+			/// @brief Create and open temporary file.
+			static int open(unsigned long long len = 0);
 
 			/// @brief Create an empty temporary file.
-			static Udjat::String create();
+			/// @param len Required file size.
+			static Udjat::String create(unsigned long long len = 0);
 
 			/// @brief Create an empty temporary dir.
 			static Udjat::String mkdir();
