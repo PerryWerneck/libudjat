@@ -479,7 +479,7 @@
 		if(strcasecmp(name.c_str(),"auto") == 0) {
 
 			// Check if tpm is available
-			if(access("/dev/tpm0",F_OK) != 0) {
+			if(!TPM::probe(false)) {
 				name = "legacy";
 			} else {
 #if defined(HAVE_OPENSSL_PROVIDER)
