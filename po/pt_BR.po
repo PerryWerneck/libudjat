@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 20:58-0300\n"
+"POT-Creation-Date: 2026-03-26 10:54-0300\n"
 "PO-Revision-Date: 2025-12-10 19:22-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -120,6 +120,15 @@ msgstr "não"
 #: src/library/tools/converters.cc:48
 msgid "false"
 msgstr "falso"
+
+#: src/library/tools/crypto/tpm.cc:67
+msgid "Unable to initialize IBM TSS context"
+msgstr ""
+
+#: src/library/tools/crypto/tpm.cc:111
+#, fuzzy
+msgid "Unable to get current TPM state"
+msgstr "Incapaz de obter valor para '{}'"
 
 #: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
 #: src/library/tools/exception.cc:53

@@ -61,6 +61,7 @@
 		TPM_RC rc = 0;
 
 		// 1. Create the TSS Context
+		debug("Creating context");
 		rc = TSS_Create(&tssContext);
 		if (rc != 0) {
 
@@ -68,6 +69,56 @@
 
 		} else {
 
+			static const struct {
+				unsigned int id;
+				const char *name;
+			} capabilities[] {
+				 { 0x0000020D, "phEnable" },
+			};
+
+			for(auto capability : capabilities) {
+
+				GetCapability_In in;
+				GetCapability_Out out;
+
+				in.capability = TPM_CAP_TPM_PROPERTIES;
+				in.property = capability.id;	// Specific ID for required capability
+				in.propertyCount = 1;     		// We only need this one
+
+				rc = TSS_Execute(tssContext,
+								(RESPONSE_PARAMETERS *)&out,
+								(COMMAND_PARAMETERS *)&in,
+								NULL,
+								TPM_CC_GetCapability,
+								TPM_RH_NULL, NULL, 0);
+				if(rc) {
+
+					const char *msg, *submsg, *num;
+					TSS_ResponseCode_toString(&msg,&submsg,&num,rc);
+
+					Logger::String {
+						"IBMTSS error getting ",capability.name,": ",msg," ",submsg
+					}.error();
+
+					failed = _("Unable to get current TPM state");
+					break;
+
+				} else {
+
+					uint32_t phEnableVal = out.capabilityData.data.tpmProperties.tpmProperty[0].value;
+
+					if(!phEnableVal) {
+						Logger::String{"TPM option '",capability.name,"' is disabled"}.error();
+						failed = _("TPM is disabled");
+						break;
+					} else {
+						Logger::String{"TPM option '",capability.name,"' is enabled"}.info();
+					}
+				}
+
+			}
+
+			/*
 			// 2. Set up Input (Request) Structure
 			GetCapability_In in;
 			GetCapability_Out out;
@@ -81,6 +132,7 @@
 
 			// 3. Execute the Command
 			// NULL handles indicate no specific sessions/auth required for this
+			debug("Getting capabilities");
 			rc = TSS_Execute(tssContext,
 								(RESPONSE_PARAMETERS *)&out,
 								(COMMAND_PARAMETERS *)&in,
@@ -111,6 +163,7 @@
 				failed = _("Unable to get current TPM state");
 
 			}
+			*/
 
 			TSS_Delete(tssContext);
 		}

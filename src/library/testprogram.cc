@@ -325,12 +325,22 @@ return 0;
 	return 0;
  }
 
+#if defined(HAVE_IBMTSS) && defined(HAVE_OPENSSL)
+ 	static int tpm_test() {
+		TPM::probe();
+		return 0;
+	}
+#endif 		
+
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
 		const char *name;
 		int (*test)();
 	} tests[] = {
+#if defined(HAVE_IBMTSS) && defined(HAVE_OPENSSL)
+		{"tpm",	tpm_test},
+#endif 		
 		{"tmpfile",	tmpfile_test},
 		{"url",		url_test},
  #ifdef HAVE_OPENSSL
