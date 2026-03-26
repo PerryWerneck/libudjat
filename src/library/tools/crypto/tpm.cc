@@ -73,7 +73,10 @@
 				unsigned int id;
 				const char *name;
 			} capabilities[] {
-				 { 0x0000020D, "phEnable" },
+				 { 0x0000020D, "phEnable"   },	// Platform Hierarchy
+//				 { 0x0000020E, "shEnable"   }, 	// Storage Hierarchy Enable (Owner hierarchy)
+				 { 0x0000020F, "ehEnable"   },	// Endorsement Hierarchy Enable (Privacy hierarchy)
+//				 { 0x00000210, "phEnableNV" },	// Platform NV Enable
 			};
 
 			for(auto capability : capabilities) {
