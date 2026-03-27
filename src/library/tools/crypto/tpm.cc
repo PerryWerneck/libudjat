@@ -124,7 +124,7 @@
 							if(props->tpmProperty[0].value & property.mask) {
 								Logger::String{"Property '",property.name,"' is ok"}.info();	
 							} else {
-								Logger::String{"Propery '",property.name,"' is disabled"}.error();	
+								Logger::String{"Property '",property.name,"' is disabled"}.error();	
 								failed = _("TPM is disabled");
 							}
 						}
