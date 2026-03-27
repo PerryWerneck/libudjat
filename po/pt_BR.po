@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-27 04:08-0300\n"
-"PO-Revision-Date: 2025-12-10 19:22-0300\n"
+"POT-Creation-Date: 2026-03-27 04:09-0300\n"
+"PO-Revision-Date: 2026-03-27 04:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -123,22 +123,20 @@ msgstr "falso"
 
 #: src/library/tools/crypto/tpm.cc:75
 msgid "Unable to initialize IBM TSS context"
-msgstr ""
+msgstr "Não foi possível inicializar o contexto IBM TSS"
 
 #. Found property, split contents
 #: src/library/tools/crypto/tpm.cc:108
-#, fuzzy
 msgid "Unexpected response asking for tpm properties"
-msgstr "Fim de arquivo inesperado lendo arquivo"
+msgstr "Resposta inesperada ao perguntar pelas propriedades da TPM"
 
 #: src/library/tools/crypto/tpm.cc:128
 msgid "TPM is disabled"
-msgstr ""
+msgstr "TPM está desabilitada"
 
 #: src/library/tools/crypto/tpm.cc:143
-#, fuzzy
 msgid "Unable to get current TPM state"
-msgstr "Incapaz de obter valor para '{}'"
+msgstr "Não foi possível obter o estado da TPM"
 
 #: src/library/tools/exception.cc:45 src/library/tools/exception.cc:49
 #: src/library/tools/exception.cc:53
