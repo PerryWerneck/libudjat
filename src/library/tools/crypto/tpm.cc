@@ -39,6 +39,13 @@
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
 
+ #define TPMA_STARTUP_CLEAR_PHENABLE		0x00000001
+ #define TPMA_STARTUP_CLEAR_SHENABLE		0x00000002
+ #define TPMA_STARTUP_CLEAR_EHENABLE		0x00000004
+ #define TPMA_STARTUP_CLEAR_PHENABLENV		0x00000008
+ #define TPMA_STARTUP_CLEAR_RESERVED		0x7ffffff0
+ #define TPMA_STARTUP_CLEAR_ORDERLY			0x80000000
+
  using namespace std;
 
  namespace Udjat {
@@ -69,69 +76,16 @@
 
 		} else {
 
-			static const struct {
-				unsigned int id;
-				const char *name;
-			} capabilities[] {
-				 { 0x0000020D, "phEnable"   },	// Platform Hierarchy
-//				 { 0x0000020E, "shEnable"   }, 	// Storage Hierarchy Enable (Owner hierarchy)
-				 { 0x0000020F, "ehEnable"   },	// Endorsement Hierarchy Enable (Privacy hierarchy)
-//				 { 0x00000210, "phEnableNV" },	// Platform NV Enable
-			};
-
-			for(auto capability : capabilities) {
-
-				GetCapability_In in;
-				GetCapability_Out out;
-
-				in.capability = TPM_CAP_TPM_PROPERTIES;
-				in.property = capability.id;	// Specific ID for required capability
-				in.propertyCount = 1;     		// We only need this one
-
-				rc = TSS_Execute(tssContext,
-								(RESPONSE_PARAMETERS *)&out,
-								(COMMAND_PARAMETERS *)&in,
-								NULL,
-								TPM_CC_GetCapability,
-								TPM_RH_NULL, NULL, 0);
-				if(rc) {
-
-					const char *msg, *submsg, *num;
-					TSS_ResponseCode_toString(&msg,&submsg,&num,rc);
-
-					Logger::String {
-						"IBMTSS error getting ",capability.name,": ",msg," ",submsg
-					}.error();
-
-					failed = _("Unable to get current TPM state");
-					break;
-
-				} else {
-
-					uint32_t phEnableVal = out.capabilityData.data.tpmProperties.tpmProperty[0].value;
-
-					if(!phEnableVal) {
-						Logger::String{"TPM option '",capability.name,"' is disabled"}.error();
-						failed = _("TPM is disabled");
-						break;
-					} else {
-						Logger::String{"TPM option '",capability.name,"' is enabled"}.info();
-					}
-				}
-
-			}
-
-			/*
 			// 2. Set up Input (Request) Structure
 			GetCapability_In in;
 			GetCapability_Out out;
 
 			// We want TPM Properties
 			in.capability = TPM_CAP_TPM_PROPERTIES;
-			// Starting point: the first variable property (0x200)
-			in.property = PT_VAR; 
+			// Starting point: the first variable property
+			in.property = TPM_PT_STARTUP_CLEAR; 
 			// How many properties to return in one call
-			in.propertyCount = 10; 
+			in.propertyCount = 1; 
 
 			// 3. Execute the Command
 			// NULL handles indicate no specific sessions/auth required for this
@@ -147,13 +101,36 @@
 				// 4. Parse the output union
 				// The data is inside the tpmProperties member of the capabilityData union
 				TPML_TAGGED_TPM_PROPERTY *props = &out.capabilityData.data.tpmProperties;
-				
-				printf("Found %u variable properties:\n", props->count);
-				for (uint32_t i = 0; i < props->count; i++) {
-					printf("Property: 0x%08x | Value: %u\n", 
-							props->tpmProperty[i].property, 
-							props->tpmProperty[i].value);
-				}
+
+					if(props->tpmProperty[0].property != TPM_PT_STARTUP_CLEAR) {
+						
+						// Found property, split contents
+						failed = _("Unexpected response asking for tpm properties");
+
+					} else {
+						
+						// Check properties.
+						static const struct {
+							unsigned int mask;
+							const char *name;
+						} properties[] = {
+							{ TPMA_STARTUP_CLEAR_PHENABLE,		"phEnable"		},
+							{ TPMA_STARTUP_CLEAR_SHENABLE,		"shEnable"		},
+							{ TPMA_STARTUP_CLEAR_EHENABLE,		"ehEnable"		},
+							{ TPMA_STARTUP_CLEAR_PHENABLENV,	"phEnableNV"	},
+						};
+
+						for(const auto property : properties) {
+							if(props->tpmProperty[0].value & property.mask) {
+								Logger::String{"Property '",property.name,"' is ok"}.info();	
+							} else {
+								Logger::String{"Propery '",property.name,"' is disabled"}.error();	
+								failed = _("TPM is disabled");
+							}
+						}
+
+					}
+
 			} else {
 
 				const char *msg, *submsg, *num;
@@ -166,54 +143,13 @@
 				failed = _("Unable to get current TPM state");
 
 			}
-			*/
 
 			TSS_Delete(tssContext);
+
 		}
 
 
  #endif // HAVE_IBMTSS
-
-
-		// TPM2_PT_STARTUP_CLEAR:
-  		// phEnable:                  1
-  		// shEnable:                  1
-  		// ehEnable:                  1
-		// phEnableNV                 1
-
-		/*
-		ESYS_CONTEXT *ctx = nullptr;
-		Esys_Initialize(&ctx, nullptr, nullptr);
-
-		TPMS_CAPABILITY_DATA *capabilityData = nullptr;
-		TPMI_YES_NO moreData;
-
-		// We request CAP_TPM_PROPERTIES starting from the first VARIABLE property
-		TSS2_RC rc = Esys_GetCapability(ctx,
-									ESYS_TR_NONE, ESYS_TR_NONE, ESYS_TR_NONE,
-									TPM2_CAP_TPM_PROPERTIES, 
-									TPM2_PT_VAR_PROPERTIES_FIRST, 
-									TPM2_MAX_TPM_PROPERTIES, // Get up to 20 variable properties
-									&moreData, 
-									&capabilityData);
-
-		if (rc == TSS2_RC_SUCCESS) {
-			auto props = capabilityData->data.tpmProperties;
-			for (uint32_t i = 0; i < props.count; i++) {
-				printProp(props.tpmProperty[i].property, props.tpmProperty[i].value);
-			}
-			Esys_Free(capabilityData);
-		}
-
-		Esys_Finalize(&ctx);
-		*/
-
-		/*
-		capability_string = "properties-variable",
-        .capability        = TPM2_CAP_TPM_PROPERTIES,
-        .property          = TPM2_PT_VAR,
-        .count             = TPM2_MAX_TPM_PROPERTIES,		
-		*/
 
 		if(failed.empty()) {
 			return true;
