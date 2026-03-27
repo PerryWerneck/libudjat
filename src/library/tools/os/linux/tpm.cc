@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -65,7 +65,7 @@
  
 		// Use IBMTSS
 
-		// TODO: Check if access("/dev/tpm0",R_OK) ou access("/dev/tpm0",W_OK) works.
+		// TODO: Check if access("/dev/tpm0",R_OK) or access("/dev/tpm0",W_OK) works.
 		if(!getuid()) {
 		
 			// Root user, check TPM state

@@ -485,7 +485,6 @@ if openssl.found()
     'src/library/tools/crypto/backend.cc',
     'src/library/tools/crypto/backend/legacy.cc',
     'src/library/tools/crypto/exception.cc',
-    'src/library/tools/crypto/tpm.cc',
   ]
 endif
 
@@ -596,6 +595,12 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/system.cc',
   ]
 
+  if openssl.found()
+    lib_src += [
+      'src/library/tools/os/windows/tpm.cc',
+    ]
+  endif
+
   winlibs = [
       '-lintl', 
       '-lshlwapi', 
@@ -678,6 +683,12 @@ else
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
   ]
+
+  if openssl.found()
+    lib_src += [
+      'src/library/tools/os/linux/tpm.cc',
+    ]
+  endif
 
   pkg.generate(
     name: 'lib' + meson.project_name(),
