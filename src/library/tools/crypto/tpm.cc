@@ -63,88 +63,100 @@
 
  #if defined(HAVE_IBMTSS)
  
-		// Check it using IBMTSS
-		TSS_CONTEXT *tssContext = NULL;
-		TPM_RC rc = 0;
+		// Use IBMTSS
 
-		// 1. Create the TSS Context
-		debug("Creating context");
-		rc = TSS_Create(&tssContext);
-		if (rc != 0) {
+		// TODO: Check if access("/dev/tpm0",R_OK) ou access("/dev/tpm0",W_OK) works.
+		if(!getuid()) {
+		
+			// Root user, check TPM state
+			// Check it using IBMTSS
+			TSS_CONTEXT *tssContext = NULL;
+			TPM_RC rc = 0;
 
-			failed = _("Unable to initialize IBM TSS context");
+			// 1. Create the TSS Context
+			debug("Creating context");
+			rc = TSS_Create(&tssContext);
+			if (rc != 0) {
 
-		} else {
-
-			// 2. Set up Input (Request) Structure
-			GetCapability_In in;
-			GetCapability_Out out;
-
-			// We want TPM Properties
-			in.capability = TPM_CAP_TPM_PROPERTIES;
-			// Starting point: the first variable property
-			in.property = TPM_PT_STARTUP_CLEAR; 
-			// How many properties to return in one call
-			in.propertyCount = 1; 
-
-			// 3. Execute the Command
-			// NULL handles indicate no specific sessions/auth required for this
-			debug("Getting capabilities");
-			rc = TSS_Execute(tssContext,
-								(RESPONSE_PARAMETERS *)&out,
-								(COMMAND_PARAMETERS *)&in,
-								NULL,
-								TPM_CC_GetCapability,
-								TPM_RH_NULL, NULL, 0);
-
-			if (rc == 0) {
-				// 4. Parse the output union
-				// The data is inside the tpmProperties member of the capabilityData union
-				TPML_TAGGED_TPM_PROPERTY *props = &out.capabilityData.data.tpmProperties;
-
-					if(props->tpmProperty[0].property != TPM_PT_STARTUP_CLEAR) {
-						
-						// Found property, split contents
-						failed = _("Unexpected response asking for tpm properties");
-
-					} else {
-						
-						// Check properties.
-						static const struct {
-							unsigned int mask;
-							const char *name;
-						} properties[] = {
-							{ TPMA_STARTUP_CLEAR_PHENABLE,		"phEnable"		},
-							{ TPMA_STARTUP_CLEAR_SHENABLE,		"shEnable"		},
-							{ TPMA_STARTUP_CLEAR_EHENABLE,		"ehEnable"		},
-							{ TPMA_STARTUP_CLEAR_PHENABLENV,	"phEnableNV"	},
-						};
-
-						for(const auto property : properties) {
-							if(props->tpmProperty[0].value & property.mask) {
-								Logger::String{"Property '",property.name,"' is ok"}.info();	
-							} else {
-								Logger::String{"Property '",property.name,"' is disabled"}.error();	
-								failed = _("TPM is disabled");
-							}
-						}
-
-					}
+				failed = _("Unable to initialize IBM TSS context");
 
 			} else {
 
-				const char *msg, *submsg, *num;
-				TSS_ResponseCode_toString(&msg,&submsg,&num,rc);
+				// 2. Set up Input (Request) Structure
+				GetCapability_In in;
+				GetCapability_Out out;
 
-				Logger::String {
-					"IBMTSS error: ",msg," ",submsg
-				}.error();
+				// We want TPM Properties
+				in.capability = TPM_CAP_TPM_PROPERTIES;
+				// Starting point: the first variable property
+				in.property = TPM_PT_STARTUP_CLEAR; 
+				// How many properties to return in one call
+				in.propertyCount = 1; 
 
-				failed = _("Unable to get current TPM state");
+				// 3. Execute the Command
+				// NULL handles indicate no specific sessions/auth required for this
+				debug("Getting capabilities");
+				rc = TSS_Execute(tssContext,
+									(RESPONSE_PARAMETERS *)&out,
+									(COMMAND_PARAMETERS *)&in,
+									NULL,
+									TPM_CC_GetCapability,
+									TPM_RH_NULL, NULL, 0);
+
+				if (rc == 0) {
+					// 4. Parse the output union
+					// The data is inside the tpmProperties member of the capabilityData union
+					TPML_TAGGED_TPM_PROPERTY *props = &out.capabilityData.data.tpmProperties;
+
+						if(props->tpmProperty[0].property != TPM_PT_STARTUP_CLEAR) {
+							
+							// Found property, split contents
+							failed = _("Unexpected response asking for tpm properties");
+
+						} else {
+							
+							// Check properties.
+							static const struct {
+								unsigned int mask;
+								const char *name;
+							} properties[] = {
+								{ TPMA_STARTUP_CLEAR_PHENABLE,		"phEnable"		},
+								{ TPMA_STARTUP_CLEAR_SHENABLE,		"shEnable"		},
+								{ TPMA_STARTUP_CLEAR_EHENABLE,		"ehEnable"		},
+								{ TPMA_STARTUP_CLEAR_PHENABLENV,	"phEnableNV"	},
+							};
+
+							for(const auto property : properties) {
+								if(props->tpmProperty[0].value & property.mask) {
+									Logger::String{"Property '",property.name,"' is ok"}.info();	
+								} else {
+									Logger::String{"Property '",property.name,"' is disabled"}.error();	
+									failed = _("TPM is disabled");
+								}
+							}
+
+						}
+
+				} else {
+
+					const char *msg, *submsg, *num;
+					TSS_ResponseCode_toString(&msg,&submsg,&num,rc);
+
+					Logger::String {
+						"IBMTSS error: ",msg," ",submsg
+					}.error();
+
+					failed = _("Unable to get current TPM state");
+
+				}
+
+				TSS_Delete(tssContext);
 
 			}
 
-			TSS_Delete(tssContext);
+		} else {
+
+			Logger::String{"Non root user, ignoring TPM state checks"}.warning();
 
 		}
 
