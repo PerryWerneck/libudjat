@@ -17,11 +17,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #include <config.h>
  #include <iostream>
  #include <udjat/tools/string.h>
  #include <udjat/tools/system.h>
  #include <udjat/tools/file/text.h>
  #include <udjat/tools/string.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -162,6 +164,79 @@
 		return *this;
 
 	}
+
+	void System::Config::File::replace(const char *filename, const char *name, const char *value) {
+
+		Udjat::File::Text file{filename};
+		String text{file.c_str()};
+#ifdef DEBUG
+		Logger::String{"Sysconfig file:\n",text.c_str()}.write(Logger::Debug,"sysconfig");
+#else
+		file.set(text.c_str()).save();
+#endif
+
+	}
+
+	static ssize_t next(const String &text, ssize_t pos) {
+		while(isspace(text[pos])) {
+			if(pos >= (ssize_t) text.size()) {
+				throw system_error(EINVAL,system_category(),"Unexpected EOF in sysconfig file");
+			}
+			if(text[pos] == '\n') {
+				return pos;
+			}
+			pos++;
+		}
+		return pos;
+	}
+
+	void System::Config::File::replace(String &text, const char *name, const char *value) {
+
+		String prefix{"\n",name};
+
+		auto from = text.find(prefix.c_str());
+		if(from == std::string::npos) {
+			throw runtime_error(String{"Cant find '",name,"' in sysconfig file"});
+		}
+		from += prefix.size();
+
+		// debug("from=",from,"\n",(text.c_str()+from));
+
+		from  = next(text,from);
+		if(text[from] != '=') {
+			throw runtime_error("Unexpected format in sysconfig file");
+		}
+
+		// Skip '='
+		from  = next(text,++from);
+
+		char delimiter = '\n';
+		if(text[from] == '\"') {
+			delimiter = '\"';
+			from++;
+		}
+		
+		if(text[from] == '\'') {
+			delimiter = '\'';
+			from++;
+		}
+
+		auto to = text.find(delimiter, from);
+		if(to == std::string::npos) {
+			if(Logger::enabled(Logger::Debug)) {
+				Logger::String{"Sysconfig contents:\n",text.c_str()}.write(Logger::Debug,"sysconfig");
+			}
+			throw runtime_error(String{"Malformed string '",name,"' in sysconfig file"});
+		}
+
+		if(value && *value) {
+			text.replace(from,(to-from),value);
+		} else {
+			text.erase(from,(to-from));
+		}
+
+	}
+
 
  }
 

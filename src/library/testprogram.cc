@@ -35,6 +35,10 @@
  #include <unistd.h>
  #endif // HAVE_UNISTD_H
 
+ #ifndef _WIN32
+  #include <udjat/tools/system.h>
+ #endif // !_WIN32
+
  #ifdef HAVE_OPENSSL
  #include <udjat/tools/crypto.h>
  #endif // HAVE_OPENSSL
@@ -332,12 +336,67 @@ return 0;
 	}
 #endif 		
 
+#ifndef _WIN32
+ static int sysconfig_test() {
+
+	static const struct {
+		const char *source;
+		const char *expected;
+	} test_data[] = {
+		{
+		"\nTEST_VALUE=old-value\n",
+		"\nTEST_VALUE=new\n",
+		},
+		{
+		"\nTEST_VALUE=\"old-value\"\n",
+		"\nTEST_VALUE=\"new\"\n",
+		},
+		{
+		"\nTEST_VALUE=\'old-value\'\n",
+		"\nTEST_VALUE=\'new\'\n",
+		},
+		{
+		"\nTEST_VALUE = old-value\n",
+		"\nTEST_VALUE = new\n",
+		},
+		{
+		"\nTEST_VALUE = \"old-value\"\n",
+		"\nTEST_VALUE = \"new\"\n",
+		},
+		{
+		"\nTEST_VALUE = \'old-value\'\n",
+		"\nTEST_VALUE = \'new\'\n",
+		},
+
+	};
+
+	for(const auto &data : test_data) {
+		String text{data.source};
+
+		System::Config::File::replace(text,"TEST_VALUE","new");
+
+		if(strcmp(text.c_str(),data.expected)) {
+			Logger::String{"Result:\n",text.c_str(),"\n"}.error();
+			Logger::String{"Expected:\n",data.expected,"\n"}.info();
+			return EINVAL;
+		}
+	}
+
+	Logger::String{"Sysconfig manipulation seens ok"}.info();
+	return 0;
+
+ }
+#endif // !_WIN32
+
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
 		const char *name;
 		int (*test)();
 	} tests[] = {
+#ifndef _WIN32
+		{"sysconfig",	sysconfig_test},
+#endif
 #if defined(HAVE_IBMTSS) && defined(HAVE_OPENSSL)
 		{"tpm",	tpm_test},
 #endif 		
