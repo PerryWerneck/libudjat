@@ -27,6 +27,17 @@
 
 namespace Udjat {
 
+	namespace TPM {
+
+		/// @brief Probe fi TPM exist and is available.
+		/// @param except Launch exception if tpm exists but is not functional
+		/// @return true if TPM is available.
+		/// @retval true The TPM exists and is available.
+		/// @retval false No TPM device or it's not available.
+		UDJAT_API bool probe(const bool except = true);
+
+	}
+
 	namespace Crypto {
 
 		class UDJAT_API Exception : public Udjat::Exception {

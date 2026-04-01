@@ -123,6 +123,9 @@ namespace Udjat {
 					return values.end();
 				}
 
+				static void replace(const char *filename, const char *name, const char *value);
+				static void replace(String &text, const char *name, const char *value);
+
 			};
 
 		}

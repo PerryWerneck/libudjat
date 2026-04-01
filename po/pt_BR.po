@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-11 20:58-0300\n"
-"PO-Revision-Date: 2025-12-10 19:22-0300\n"
+"POT-Creation-Date: 2026-03-27 18:19-0300\n"
+"PO-Revision-Date: 2026-03-27 04:10-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -425,6 +425,23 @@ msgstr "Erro no pacote recebido"
 #: src/library/tools/os/linux/systemservice.cc:46
 msgid "Run in the background"
 msgstr "Rodar no background"
+
+#: src/library/tools/os/linux/tpm.cc:81
+msgid "Unable to initialize IBM TSS context"
+msgstr "Não foi possível inicializar o contexto IBM TSS"
+
+#. Found property, split contents
+#: src/library/tools/os/linux/tpm.cc:114
+msgid "Unexpected response asking for tpm properties"
+msgstr "Resposta inesperada ao perguntar pelas propriedades da TPM"
+
+#: src/library/tools/os/linux/tpm.cc:134
+msgid "TPM is disabled"
+msgstr "TPM está desabilitada"
+
+#: src/library/tools/os/linux/tpm.cc:149
+msgid "Unable to get current TPM state"
+msgstr "Não foi possível obter o estado da TPM"
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72

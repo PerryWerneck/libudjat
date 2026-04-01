@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.3.1',
+	version: '2.3.2',
 	default_options : ['c_std=c11', 'cpp_std=c++17', 'buildtype=release'],
 	license: 'GPL-3.0-or-later',
 )
@@ -156,7 +156,19 @@ if openssl.found()
     lib_src += [
       'src/library/tools/crypto/backend/engine.cc',
     ]
- 
+
+    if cxx.has_header('ibmtss/tss.h')
+      app_conf.set('HAVE_IBMTSS', 1)
+
+      extra_libs += [
+        cxx.find_library(
+          'ibmtss',
+          required: true,
+        )
+      ]
+
+    endif
+
     if cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
 
       app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
@@ -583,6 +595,12 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/system.cc',
   ]
 
+  if openssl.found()
+    lib_src += [
+      'src/library/tools/os/windows/tpm.cc',
+    ]
+  endif
+
   winlibs = [
       '-lintl', 
       '-lshlwapi', 
@@ -665,6 +683,12 @@ else
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
   ]
+
+  if openssl.found()
+    lib_src += [
+      'src/library/tools/os/linux/tpm.cc',
+    ]
+  endif
 
   pkg.generate(
     name: 'lib' + meson.project_name(),

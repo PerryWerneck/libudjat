@@ -130,6 +130,7 @@ src/library/tools/os/linux/threadpool.cc
 src/library/tools/os/linux/urlconnect.cc
 src/library/tools/os/linux/iniparser.cc
 src/library/tools/os/linux/logger.cc
+src/library/tools/os/linux/tpm.cc
 src/library/tools/os/windows/adapter.cc
 src/library/tools/os/windows/application/application.cc
 src/library/tools/os/windows/application/description.cc
@@ -148,9 +149,9 @@ src/library/tools/os/windows/file.cc
 src/library/tools/os/windows/file/copy.cc
 src/library/tools/os/windows/file/list.cc
 src/library/tools/os/windows/file/path.cc
-src/library/tools/os/windows/file/temporary.cc
 src/library/tools/os/windows/file/text.cc
 src/library/tools/os/windows/file/watcher.cc
+src/library/tools/os/windows/file/temporary.cc
 src/library/tools/os/windows/hostname.cc
 src/library/tools/os/windows/ip.cc
 src/library/tools/os/windows/logger.cc
@@ -176,6 +177,7 @@ src/library/tools/os/windows/utils.cc
 src/library/tools/os/windows/win32service.cc
 src/library/tools/os/windows/nic.cc
 src/library/tools/os/windows/protocol.cc
+src/library/tools/os/windows/tpm.cc
 src/library/tools/quark.cc
 src/library/tools/report.cc
 src/library/tools/requestpath.cc
@@ -282,8 +284,6 @@ src/include/udjat/tools/mainloop.h
 src/include/udjat/tools/memory.h
 src/include/udjat/tools/message.h
 src/include/udjat/tools/network.h
-src/include/udjat/tools/object.h
-src/include/udjat/tools/parse.h
 src/include/udjat/tools/percentage.h
 src/include/udjat/tools/quark.h
 src/include/udjat/tools/report.h
@@ -300,16 +300,18 @@ src/include/udjat/tools/timestamp.h
 src/include/udjat/tools/url.h
 src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/value.h
-src/include/udjat/tools/activatable.h
-src/include/udjat/tools/application.h
-src/include/udjat/tools/crypto.h
 src/include/udjat/tools/handler.h
 src/include/udjat/tools/interface.h
 src/include/udjat/tools/logger.h
+src/include/udjat/tools/object.h
+src/include/udjat/tools/parse.h
 src/include/udjat/tools/script.h
 src/include/udjat/tools/service.h
 src/include/udjat/tools/string.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/activatable.h
+src/include/udjat/tools/application.h
+src/include/udjat/tools/crypto.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
