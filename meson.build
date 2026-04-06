@@ -104,6 +104,9 @@ private_libs = [
   openssl
 ]
 
+pkg_libraries_private = [
+]
+
 extra_libs = [
   intl,
   iconv,
@@ -167,9 +170,9 @@ if openssl.found()
         )
       ]
 
-    endif
+      pkg_libraries_private += [ '-libmtss']
 
-    if cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
+    elif cxx.compiles('#include <tpm2-tss-engine.h>', name : 'tpm2-tss-engine.h')
 
       app_conf.set('HAVE_TPM2_TSS_ENGINE_H', 1)
 
@@ -188,6 +191,8 @@ if openssl.found()
           ]
         )
       ]
+
+      pkg_libraries_private += [ '-ltpm2tss']
 
     endif
 
@@ -623,6 +628,7 @@ if host_machine.system() == 'windows'
     libraries: [ '-l' + meson.project_name() + '.dll' ],
     requires_private: private_libs,
     extra_cflags: pkg_extra_cflags,
+    libraries_private: pkg_libraries_private,
   )
 
 elif host_machine.system() == 'darwin'
@@ -635,6 +641,7 @@ elif host_machine.system() == 'darwin'
     libraries: [ '-l' + meson.project_name() ],
     requires_private: private_libs,
     extra_cflags: pkg_extra_cflags,
+    libraries_private: pkg_libraries_private,
   )
 
   app_conf.set_quoted('LIBEXT', '.dlsym')
@@ -698,6 +705,7 @@ else
     libraries: [ '-l' + meson.project_name() ],
     requires_private: private_libs,
     extra_cflags: pkg_extra_cflags,
+    libraries_private: pkg_libraries_private,
  )
 
   pkg.generate(
@@ -709,7 +717,7 @@ else
       '-pthread',
     ],
     requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
-    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ],
+    libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ] + pkg_libraries_private,
   )
 
   if cxx.compiles('#include <unistd.h>', name : 'unistd.h')
