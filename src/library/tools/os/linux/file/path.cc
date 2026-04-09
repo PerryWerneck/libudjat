@@ -27,6 +27,7 @@
  #include <iostream>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/intl.h>
 
  using namespace std;
 
@@ -114,7 +115,7 @@
 	bool File::Path::mkdir(const char *dirname, bool required, int mode) {
 
 		if(!(dirname && *dirname)) {
-			throw system_error(EINVAL,system_category(),"Unable to create an empty dirname");
+			throw system_error(EINVAL,system_category(),_("Unable to create an empty dirname"));
 		}
 
 		// Try to create the full path first.
@@ -230,7 +231,7 @@
 			delete[] buffer;
 
 			if(fd < 0) {
-				throw system_error(e, system_category(), string{"Can't create output file when saving '"} + filename + "'");
+				throw system_error(e, system_category(), Logger::Message{_("Error creating output file when saving '{}'"),filename});
 			}
 
 		}
@@ -263,7 +264,7 @@
 
 			::remove(filename);
 			if(link(tempfile.c_str(),filename) == -1) {
-				throw system_error(errno, system_category(), string{"Error saving '"} + filename + "'");
+				throw system_error(errno, system_category(), Logger::Message{_("Error linking output file when saving '{}'"),filename});
 			}
 
 			// Set permissions.
@@ -271,7 +272,7 @@
 
 			// Set owner and group.
 			if(chown(filename, st.st_uid, st.st_gid) == -1) {
-				throw system_error(errno, system_category(), string{"Error setting owner & group on '"} + filename + "'");
+				throw system_error(errno, system_category(), Logger::Message{_("Error setting owner & group on '{}'"),filename});
 			}
 
 			::remove(tempfile.c_str());

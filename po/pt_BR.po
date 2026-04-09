@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-06 13:50-0300\n"
-"PO-Revision-Date: 2026-03-27 04:10-0300\n"
+"POT-Creation-Date: 2026-04-08 22:51-0300\n"
+"PO-Revision-Date: 2026-04-08 22:53-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -406,6 +406,25 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
+#: src/library/tools/os/linux/file/path.cc:118
+msgid "Unable to create an empty dirname"
+msgstr "Incapaz de criar diretório sem nome"
+
+#: src/library/tools/os/linux/file/path.cc:234
+#, c++-format
+msgid "Error creating output file when saving '{}'"
+msgstr "Erro ao criar arquivo de saída salvando '{}'"
+
+#: src/library/tools/os/linux/file/path.cc:267
+#, c++-format
+msgid "Error linking output file when saving '{}'"
+msgstr "Erro ao renomear arquivo de saída para '{}'"
+
+#: src/library/tools/os/linux/file/path.cc:275
+#, c++-format
+msgid "Error setting owner & group on '{}'"
+msgstr "Erro ao setar dono e grupo para '{}'"
+
 #: src/library/tools/os/linux/ip.cc:96
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
@@ -772,10 +791,6 @@ msgstr "Incapaz de definir o grupo do subprocesso"
 #, c++-format
 #~ msgid "Unable to determine internal alert type for node <{}>"
 #~ msgstr "Incapaz de determinar o tipo de alerta interno para o nó <{}>"
-
-#, c++-format
-#~ msgid "Unable to create alert for node <{}>"
-#~ msgstr "Incapaz de criar alerta para o nó <{}>"
 
 #~ msgid "Abstract value is unable to handle items"
 #~ msgstr "Valor abstrato não consegue manipular items"
