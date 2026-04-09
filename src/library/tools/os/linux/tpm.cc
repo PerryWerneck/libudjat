@@ -50,7 +50,7 @@
 
  namespace Udjat {
 
-	UDJAT_API bool TPM::probe(const bool except) {
+	UDJAT_API bool TPM::probe(const bool except, bool force) {
 
 		if(access("/dev/tpm0",F_OK) != 0) {
 			// No TPM device, just return false.
@@ -66,7 +66,7 @@
 		// Use IBMTSS
 
 		// TODO: Check if access("/dev/tpm0",R_OK) or access("/dev/tpm0",W_OK) works.
-		if(!getuid()) {
+		if(!getuid() || force) {
 		
 			// Root user, check TPM state
 			// Check it using IBMTSS

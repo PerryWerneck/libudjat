@@ -29,12 +29,12 @@ namespace Udjat {
 
 	namespace TPM {
 
-		/// @brief Probe fi TPM exist and is available.
-		/// @param except Launch exception if tpm exists but is not functional
-		/// @return true if TPM is available.
-		/// @retval true The TPM exists and is available.
-		/// @retval false No TPM device or it's not available.
-		UDJAT_API bool probe(const bool except = true);
+		/// @brief Probes if a TPM exists and is available.
+		/// @param except If true, throws an exception if a TPM device is found but is not functional or accessible.
+		/// @param force If true, forces the TPM state checks even if the current user is not root.
+		/// @retval true A TPM device is found and is functional.
+		/// @retval false No TPM device is found, or it is not functional/accessible (and 'except' is false).
+		UDJAT_API bool probe(const bool except = true, bool force = false);
 
 	}
 
