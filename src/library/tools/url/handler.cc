@@ -218,7 +218,7 @@
 
 	bool URL::Handler::get(File::Handler &file, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 
-		{
+		if(keep_downloaded) {
 			time_t mtime = file.mtime();
 			if(mtime) {
 				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());
@@ -260,7 +260,7 @@
 		// Download to temporary file.
 		File::Temporary file{filename};
 
-		{
+		if(keep_downloaded) {
 			time_t mtime = file.mtime();
 			if(mtime) {
 				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());

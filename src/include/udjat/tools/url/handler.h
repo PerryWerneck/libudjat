@@ -53,9 +53,19 @@
 			String message;	///< @brief HTTP status message;
 		} status;
 
+		/// @brief If true and the local file already exists set the 'If-Modified-Since' header to prevent downloading an already downloaded file.
+		bool keep_downloaded = true;
+
 	public:
 
 		virtual ~Handler();
+
+		/// @brief Set whether to skip re-downloading the file if the local copy is already up-to-date.
+		/// @details If enabled, the handler uses conditional request headers (e.g., If-Modified-Since) to avoid data transfer when the remote resource has not changed.
+		/// @param value True to enable conditional downloads; false to always perform a full download.
+		inline void update_if_exists(bool value = true) noexcept {
+			keep_downloaded = value;
+		}
 
 		/// @brief Get handler description, usually the URL
 		virtual const char * c_str() const noexcept = 0;
