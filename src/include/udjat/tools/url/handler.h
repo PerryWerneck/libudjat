@@ -58,6 +58,19 @@
 
 	public:
 
+		/// @brief HTTP header codes.
+		/// @details These represent common HTTP header fields used in requests and responses.
+		enum Header {
+			/// @brief Request header: Makes a request conditional. The server sends the resource only if it has been modified after the specified date.
+			IF_MODIFIED_SINCE,
+			/// @brief Response header: Indicates the date and time the resource was last modified.
+			LAST_MODIFIED,
+			/// @brief Request header: Specifies the media types that are acceptable for the response.
+			ACCEPT,
+		};
+
+		static const char * to_string(const Header hdr);
+
 		virtual ~Handler();
 
 		/// @brief Set whether to skip re-downloading the file if the local copy is already up-to-date.
@@ -71,10 +84,21 @@
 		virtual const char * c_str() const noexcept = 0;
 
 		/// @brief Set output header.
+		/// @param id The header identifier.
+		/// @param value The header value.
+		/// @return This handler.
+		virtual Handler & header(const Header id, const char *value);
+
+		/// @brief Set output header.
 		/// @param name The header name.
 		/// @param value The header value.
 		/// @return This handler.
 		virtual Handler & header(const char *name, const char *value);
+
+		/// @brief Get input header.
+		/// @param name The header id.
+		/// @return The header value, "" if not found.
+		virtual const char * header(const Header id) const;
 
 		/// @brief Get input header.
 		/// @param name The header name.
@@ -162,3 +186,14 @@
 	
  }
 
+ namespace std {
+
+	inline const char * to_string(const Udjat::URL::Handler::Header header) {
+		return Udjat::URL::Handler::to_string(header);
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::URL::Handler::Header header) {
+		return os << to_string(header);
+	}
+
+ }

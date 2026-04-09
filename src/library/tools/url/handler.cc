@@ -143,6 +143,14 @@
 	URL::Handler::~Handler() {
 	}
 
+	URL::Handler & URL::Handler::header(const URL::Handler::Header id, const char *value) {
+		return header(to_string(id),value);
+	}
+
+	const char * URL::Handler::header(const Header id) const {
+		return header(to_string(id));
+	}
+
 	URL::Handler & URL::Handler::header(const char *, const char *) {
 		return *this;
 	}
@@ -153,7 +161,7 @@
 
 	URL::Handler & URL::Handler::set(const MimeType mimetype) {
 		// https://www.rfc-editor.org/rfc/rfc7231#section-5.3.2
-		header("Accept",std::to_string(mimetype));
+		header(ACCEPT,std::to_string(mimetype));
 		return *this;
 	}
 
@@ -221,7 +229,7 @@
 		if(keep_downloaded) {
 			time_t mtime = file.mtime();
 			if(mtime) {
-				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());
+				header(IF_MODIFIED_SINCE,HTTP::TimeStamp(mtime).to_string().c_str());
 			}
 		}
 
@@ -255,6 +263,21 @@
 		return get(file,method,payload,[](uint64_t,uint64_t){ return false; });
 	}
 
+	const char * URL::Handler::to_string(const URL::Handler::Header hdr) {
+
+		static const char *strings[] = {
+			"If-Modified-Since",
+			"Last-Modified",
+			"Accept",
+		};
+
+		if( ((size_t) hdr) >= (sizeof(strings)/sizeof(strings[0]))) {
+			throw std::invalid_argument("Unexpected HTTP handler identifier");
+		}
+
+		return strings[hdr];
+	}
+
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		
 		// Download to temporary file.
@@ -263,7 +286,7 @@
 		if(keep_downloaded) {
 			time_t mtime = file.mtime();
 			if(mtime) {
-				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());
+				header(IF_MODIFIED_SINCE,HTTP::TimeStamp(mtime).to_string().c_str());
 			}
 		}
 
@@ -298,7 +321,7 @@
 			file.save(filename,true);
 
 			// Set file modification time.
-			HTTP::TimeStamp timestamp{header("Last-Modified")};
+			HTTP::TimeStamp timestamp{header(LAST_MODIFIED)};
 			debug("timestamp=",timestamp.to_string());
 			if(timestamp) {
 				Logger::String{"Timestamp of ",filename," set to ",timestamp.to_string()}.trace();
