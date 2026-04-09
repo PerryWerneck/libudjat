@@ -56,6 +56,17 @@
 		/// @brief If true and the local file already exists set the 'If-Modified-Since' header to prevent downloading an already downloaded file.
 		bool keep_downloaded = true;
 
+		/// @brief Set output header.
+		/// @param name The header name.
+		/// @param value The header value.
+		/// @return This handler.
+		virtual Handler & header(const char *name, const char *value);
+
+		/// @brief Get input header.
+		/// @param name The header name.
+		/// @return The header value, "" if not found.
+		virtual const char * header(const char *name) const;
+
 	public:
 
 		/// @brief HTTP header codes.
@@ -89,21 +100,10 @@
 		/// @return This handler.
 		virtual Handler & header(const Header id, const char *value);
 
-		/// @brief Set output header.
-		/// @param name The header name.
-		/// @param value The header value.
-		/// @return This handler.
-		virtual Handler & header(const char *name, const char *value);
-
 		/// @brief Get input header.
 		/// @param name The header id.
 		/// @return The header value, "" if not found.
 		virtual const char * header(const Header id) const;
-
-		/// @brief Get input header.
-		/// @param name The header name.
-		/// @return The header value, "" if not found.
-		virtual const char * header(const char *name) const;
 
 		/// @brief Set requested mime-type.
 		/// @param mimetype The mimetype to set.
