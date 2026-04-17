@@ -163,6 +163,10 @@
 		/// @return Server response.
 		String get(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
+		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) {
+			return get(HTTP::Get,"",progress);
+		}
+
 		String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		/// @brief Download/update a file with progress.
