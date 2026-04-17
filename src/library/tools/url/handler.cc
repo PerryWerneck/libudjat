@@ -23,6 +23,7 @@
 
  #include <sstream>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/file/handler.h>
  #include <udjat/tools/file/temporary.h>
  #include <udjat/tools/logger.h>
@@ -33,6 +34,7 @@
  #include <uriparser/Uri.h>
  #include <private/urlparser.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/url/handler.h>
 
  using namespace std;
 
@@ -41,6 +43,10 @@
  	Container<URL::Handler::Factory> & factories() {
 		static Container<URL::Handler::Factory> factories;
 		return factories;
+	}
+
+	URL::Handler::Handler() : keep_downloaded{Config::Value<bool>{"url-handler","allow-cache",true}} {
+
 	}
 
 	URL::Handler::Factory::Factory(const char *n, const char *description) : name{n} {

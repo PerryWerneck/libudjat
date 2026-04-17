@@ -46,15 +46,15 @@
 
 	class UDJAT_API URL::Handler {
 	protected:
-		Handler() = default;
+		Handler();
+
+		/// @brief If true and the local file already exists set the 'If-Modified-Since' header to prevent downloading an already downloaded file.
+		bool keep_downloaded = true;
 
 		struct {
 			int code = 0;	///< @brief HTTP status code;
 			String message;	///< @brief HTTP status message;
 		} status;
-
-		/// @brief If true and the local file already exists set the 'If-Modified-Since' header to prevent downloading an already downloaded file.
-		bool keep_downloaded = true;
 
 		/// @brief Set output header.
 		/// @param name The header name.
