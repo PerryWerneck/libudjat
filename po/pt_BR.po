@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-20 13:48-0300\n"
+"POT-Creation-Date: 2026-04-20 16:06-0300\n"
 "PO-Revision-Date: 2026-04-20 13:39-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -441,9 +441,9 @@ msgstr "Não consegui receber mensagem 'netlink'"
 msgid "Error in received packet"
 msgstr "Erro no pacote recebido"
 
-#: src/library/tools/os/linux/socket.cc:111
-#: src/library/tools/os/linux/socket.cc:113
-#: src/library/tools/os/linux/socket.cc:121
+#: src/library/tools/os/linux/socket.cc:112
+#: src/library/tools/os/linux/socket.cc:114
+#: src/library/tools/os/linux/socket.cc:122
 #, c++-format
 msgid "Failed to connect to '{}'"
 msgstr "Falha ao conectar '{}'"

@@ -252,7 +252,11 @@
 	}
 
 	void Socket::send(int sock, const void *buf, size_t len, int timeout) {
+
 		time_t end = (time_t) -1;
+		if(timeout < 0) {
+			timeout = Config::Value<int>("network","timeout",-1).get();
+		}
 		if(timeout > 0) {
 			end = time(0) + timeout;
 		}
@@ -307,7 +311,11 @@
 	}
 
 	void Socket::recv(int sock, void *buf, size_t len, int timeout) {
+		
 		time_t end = (time_t) -1;
+		if(timeout < 0) {
+			timeout = Config::Value<int>("network","timeout",-1).get();
+		}
 		if(timeout > 0) {
 			end = time(0) + timeout;
 		}
