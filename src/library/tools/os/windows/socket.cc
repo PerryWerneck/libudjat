@@ -21,11 +21,34 @@
  #include <udjat/defs.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/socket.h>
+ #include <udjat/win32/exception.h>
+ #include <winsock.h>
 
  using namespace std;
 
  namespace Udjat {
 
+	void Socket::set_blocking(int sock, bool blocking) {
+
+		u_long mode = (blocking ? 1 : 0); 
+		if(ioctlsocket(my_socket, FIONBIO, &mode) != 0) {
+			throw Win32::Exception();
+		}
+
+	}
+
+	void Socket::set_timeout(int sock, unsigned int seconds) {
+
+		// Reference: https://stackoverflow.com/questions/2876024/linux-is-there-a-read-or-recv-from-socket-with-timeout
+
+		// WINDOWS
+		DWORD timeout = timeout_in_seconds * 1000;
+
+		setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof timeout);
+		setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof timeout);
+
+	}
 
  }
 
