@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define LOG_DOMAIN "socket"
+
  #include <config.h>
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
@@ -28,6 +30,9 @@
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/exception.h>
  #include <udjat/tools/socket.h>
+ #include <udjat/tools/memory.h>
+ #include <sys/poll.h>
+ #include <sys/socket.h>
  
  #include <netdb.h>
  #include <stdio.h>
@@ -43,6 +48,133 @@
  using namespace std;
 
  namespace Udjat {
+
+	int Socket::connect(const URL &url, int seconds, bool check_for_mainloop) {
+
+		if(Logger::enabled(Logger::Trace)) {
+			Logger::String{"Resolving ",url.c_str()}.trace();
+		}
+
+		// Resolve hostname
+		std::shared_ptr<addrinfo> addrinfo;
+		{
+			struct addrinfo   hints;
+			memset(&hints,0,sizeof(hints));
+
+			hints.ai_family         = AF_UNSPEC;    // Allow IPv4 or IPv6
+			hints.ai_socktype       = SOCK_STREAM;  // Stream socket
+			hints.ai_flags          = AI_PASSIVE;   // For wildcard IP address
+			hints.ai_protocol       = 0;            // Any protocol
+
+	        struct addrinfo * result = NULL;
+			int rc = getaddrinfo(url.hostname().c_str(), url.servicename().c_str(), &hints, &result);
+			if(rc) {
+				throw Exception(rc, Logger::String{"Failed to resolve '",url.c_str(),"'"},gai_strerror(rc));
+			}
+			addrinfo = make_handle(result,freeaddrinfo);
+		}
+
+		if(Logger::enabled(Logger::Trace)) {
+			Logger::String{"Connecting to ",url.c_str()}.trace();
+		}
+
+		// Start connection
+		int sock = -1;
+		{
+			int error = 0;
+			for(struct addrinfo *rp = addrinfo.get(); rp; rp = rp->ai_next) {
+
+				sock = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
+				if(sock < 0) {
+					continue;
+				}
+
+				try {
+					set_blocking(sock,false);
+				} catch(...) {
+					Logger::String{"Unable to set socket ",sock," to non-blocking mode: ",strerror(errno)}.error();
+					continue;
+				}
+
+				if(::connect(sock,rp->ai_addr, rp->ai_addrlen) && errno != EINPROGRESS) {
+					error = errno;
+					::close(sock);
+					sock = -1;
+					continue;
+				}
+
+				break;
+			}
+
+			if(sock < 0) {
+				if(error > 0) {
+					throw system_error(error,system_category(),Logger::Message{_("Failed to connect to '{}'"),url.c_str()});
+				}
+				throw runtime_error(Logger::Message{_("Failed to connect to '{}'"),url.c_str()});
+			}
+
+		}
+
+		// Connected, wait for negotiation
+		if(wait_for_connection(sock,seconds,check_for_mainloop) < 0) {
+			::close(sock);
+			throw system_error(errno,system_category(),Logger::Message{_("Failed to connect to '{}'"),url.c_str()});
+		}
+
+		try {
+
+			// Set blocking
+			set_blocking(sock,true);
+
+			// Setup timeouts
+			set_timeout(sock, seconds);
+
+		} catch(...) {
+
+			::close(sock);
+			throw;
+
+		}
+		
+		return sock;
+		
+	}
+
+	void Socket::set_timeout(int sock, unsigned int seconds) {
+
+		struct timeval tv;
+		tv.tv_sec = seconds;
+		tv.tv_usec = 0;
+
+		if(setsockopt(sock,SOL_SOCKET,SO_RCVTIMEO,(char *)&tv,sizeof(tv)) < 0) {	
+			throw system_error(errno,system_category(),"Failed to set socket receive timeout");
+		}
+
+		if(setsockopt(sock,SOL_SOCKET,SO_SNDTIMEO,(char *)&tv,sizeof(tv)) < 0) {	
+			throw system_error(errno,system_category(),"Failed to set socket send timeout");
+		}
+
+	}
+
+	void Socket::set_blocking(int sock, bool blocking) {
+
+		int flags = fcntl(sock, F_GETFL, 0);
+		
+		if(flags < 0) {
+			throw system_error(errno,system_category(),"Failed to get socket flags");
+		}
+
+		if(blocking) {
+			flags &= ~O_NDELAY;
+		} else {
+			flags |= O_NDELAY;
+		}
+
+		if(fcntl(sock, F_SETFL, flags) < 0) {
+			throw system_error(errno,system_category(),"Failed to set socket flags");
+		}
+
+	}
 
 	Socket::Socket(const URL &url, unsigned int seconds) {
 
@@ -102,7 +234,7 @@
 
 		freeaddrinfo(result);
 
-		if(sock < 0 && error > 0) {
+		if(sock < 0) {
 
 			if(error > 0) {
 				throw system_error(error,system_category(),Logger::String{"Failed to connect to '",url.c_str(),"'"});
@@ -152,36 +284,22 @@
 		}
 	}
 
-	void Socket::blocking(int sock, bool enable) {
-		
-		int flags = fcntl(sock, F_GETFL, 0);
-		
-		if(flags < 0) {
-			throw system_error(errno,system_category(),"Failed to get socket flags");
-		}
-
-		if(enable) {
-			flags &= ~O_NDELAY;
-		} else {
-			flags |= O_NDELAY;
-		}
-
-		if(fcntl(sock, F_SETFL, flags) < 0) {
-			throw system_error(errno,system_category(),"Failed to set socket flags");
-		}
-
-	}
-
-	int Socket::wait_for_connection(int sock, unsigned int seconds) {
+	int Socket::wait_for_connection(int sock, unsigned int seconds, bool check_for_mainloop) {
 
 		if(seconds < 1) {
 			seconds = Config::Value<unsigned int>("network","timeout",10).get();
 		}
 
-		debug("Will wait for ",seconds," seconds to connect to ",sock);
+		if(Logger::enabled(Logger::Trace)) {
+			Logger::String{"Will wait for ",seconds," seconds for connection on socket ",sock}.trace();
+		}
 		
 		time_t timeout = time(0) + seconds;
-		MainLoop &mainloop = MainLoop::getInstance();
+
+		MainLoop *mainloop = nullptr;
+		if(check_for_mainloop) {
+			mainloop = &MainLoop::getInstance();
+		}
 
 		struct pollfd pfd;
 		while(time(0) < timeout) {
@@ -256,11 +374,10 @@
 					return sock;
 				}
 
-			} else if(!mainloop) {
+			} else if(mainloop && !mainloop->active()) {
 				::close(sock);
 				errno = ECONNABORTED;
 				return -1;
-
 			}
 
 			debug("Wait for ",(timeout - time(0))," seconds to connect to ",sock);	

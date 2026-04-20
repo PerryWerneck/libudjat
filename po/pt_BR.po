@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-08 23:01-0300\n"
-"PO-Revision-Date: 2026-04-08 22:53-0300\n"
+"POT-Creation-Date: 2026-04-20 13:39-0300\n"
+"PO-Revision-Date: 2026-04-20 13:39-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -440,6 +440,13 @@ msgstr "Não consegui receber mensagem 'netlink'"
 #: src/library/tools/os/linux/netlink_routes.cc:87
 msgid "Error in received packet"
 msgstr "Erro no pacote recebido"
+
+#: src/library/tools/os/linux/socket.cc:111
+#: src/library/tools/os/linux/socket.cc:113
+#: src/library/tools/os/linux/socket.cc:121
+#, c++-format
+msgid "Failed to connect to '{}'"
+msgstr "Falha ao conectar '{}'"
 
 #: src/library/tools/os/linux/systemservice.cc:46
 msgid "Run in the background"

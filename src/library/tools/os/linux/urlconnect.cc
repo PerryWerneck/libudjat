@@ -42,61 +42,7 @@
  namespace Udjat {
 
 	int URL::connect(unsigned int seconds) {
-
-		int rc;
-		int sock = -1;
-
-        struct addrinfo   hints;
-        struct addrinfo * result        = NULL;
-        memset(&hints,0,sizeof(hints));
-
-        hints.ai_family         = AF_UNSPEC;    // Allow IPv4 or IPv6
-        hints.ai_socktype       = SOCK_STREAM;  // Stream socket
-        hints.ai_flags          = AI_PASSIVE;   // For wildcard IP address
-        hints.ai_protocol       = 0;                    // Any protocol
-
-		// TODO: Use getaddrinfo_a to resolve in parallel
-        rc = getaddrinfo(hostname().c_str(), servicename().c_str(), &hints, &result);
-        if(rc) {
-			throw Exception(rc, Logger::String{"Failed to resolve '",c_str(),"'"},gai_strerror(rc));
-		}
-
-		int error = 0;
-		for(struct addrinfo *rp = result; rp; rp = rp->ai_next) {
-
-			sock = socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
-			if(sock < 0) {
-				continue;
-			}
-
-			Socket::blocking(sock,false);
-
-			if(::connect(sock,rp->ai_addr, rp->ai_addrlen) && errno != EINPROGRESS) {
-				error = errno;
-				close(sock);
-				sock = -1;
-				continue;
-			}
-
-			break;
-		}
-
-		freeaddrinfo(result);
-
-		if(sock < 0 && error > 0) {
-
-			if(error > 0) {
-				throw system_error(error,system_category(),Logger::String{"Failed to connect to '",c_str(),"'"});
-			}
-	
-			throw runtime_error(Logger::String{"Failed to connect to '",c_str(),"'"});
-		}
-
-		if(Socket::wait_for_connection(sock,seconds) < 0) {
-			throw system_error(error,system_category(),Logger::String{"Failed to connect to '",c_str(),"'"});
-		}
-
-		return sock;
+		return Socket::connect(*this,seconds);
 	}
 
 
