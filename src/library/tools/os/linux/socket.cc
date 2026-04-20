@@ -33,6 +33,7 @@
  #include <udjat/tools/memory.h>
  #include <sys/poll.h>
  #include <sys/socket.h>
+ #include <stdexcept>
  
  #include <netdb.h>
  #include <stdio.h>
@@ -247,6 +248,117 @@
 		set(sock);
 		set(Handler::onoutput);
 		enable();
+
+	}
+
+	void Socket::send(int sock, const void *buf, size_t len, int timeout) {
+		time_t end = (time_t) -1;
+		if(timeout > 0) {
+			end = time(0) + timeout;
+		}
+
+		const uint8_t *ptr = ((const uint8_t *) buf);
+		while(len > 0) {
+
+			struct pollfd pfd;
+			pfd.fd = sock;
+			pfd.revents = 0;
+			pfd.events = POLLOUT|POLLERR|POLLHUP;
+			auto rc = ::poll(&pfd,1,1000);
+
+			if(rc == -1) {
+
+				throw system_error(errno,system_category(),"Error sending data to socket");
+				
+			} else if(rc == 0) {
+
+				if(timeout > 0 && time(0) >= end) {
+					throw system_error(ETIMEDOUT,system_category(),"Timeout sending data to socket");
+				}
+
+			} else if(pfd.revents & POLLERR) {
+
+				int error = EINVAL;
+				socklen_t errlen = sizeof(error);
+				if(getsockopt(sock, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+					error = errno;
+				}
+				throw system_error(error,system_category(),"Error sending data to socket");
+
+			} else if(pfd.revents & POLLHUP) {
+
+				throw system_error(ECONNRESET,system_category(),"Error sending data to socket");
+
+			} else if (pfd.revents & POLLOUT) {
+
+				auto bytes = ::send(sock,ptr,len,MSG_DONTWAIT);
+				if(bytes < 0) {
+					if(errno != EAGAIN && errno != EWOULDBLOCK) {
+						throw system_error(errno,system_category(),"Error sending data to socket");
+					}
+				} else {
+					ptr += bytes;
+					len -= bytes;
+				}
+
+			}
+		}
+
+	}
+
+	void Socket::recv(int sock, void *buf, size_t len, int timeout) {
+		time_t end = (time_t) -1;
+		if(timeout > 0) {
+			end = time(0) + timeout;
+		}
+
+		const uint8_t *ptr = ((const uint8_t *) buf);
+		while(len > 0) {
+
+			struct pollfd pfd;
+			pfd.fd = sock;
+			pfd.revents = 0;
+			pfd.events = POLLIN|POLLERR|POLLHUP;
+			auto rc = ::poll(&pfd,1,1000);
+
+			if(rc == -1) {
+
+				throw system_error(errno,system_category(),"Error receiving data from socket");
+				
+			} else if(rc == 0) {
+
+				if(timeout > 0 && time(0) >= end) {
+					throw system_error(ETIMEDOUT,system_category(),"Timeout receiving data from socket");
+				}
+
+			} else if(pfd.revents & POLLERR) {
+
+				int error = EINVAL;
+				socklen_t errlen = sizeof(error);
+				if(getsockopt(sock, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) < 0) {
+					error = errno;
+				}
+				throw system_error(error,system_category(),"Error receiving data from socket");
+
+			} else if(pfd.revents & POLLHUP) {
+
+				throw system_error(ECONNRESET,system_category(),"Error receiving data from socket");
+
+			} else if (pfd.revents & POLLIN) {
+
+				auto bytes = ::recv(sock,(void *) ptr,len,MSG_DONTWAIT);
+				if(bytes < 0) {
+					throw system_error(errno,system_category(),"Error receiving data from socket");
+				} else if(bytes == 0) {
+					throw system_error(ENOTCONN,system_category(),"Error receiving data from socket");
+				} else {
+					ptr += bytes;
+					len -= bytes;
+				}
+
+			}
+
+		}
 
 	}
 

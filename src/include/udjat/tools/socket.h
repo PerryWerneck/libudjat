@@ -57,6 +57,9 @@
 
 		static void set_blocking(int sock, bool blocking);
 
+		static void send(int sock, const void *buf, size_t len, int timeout = -1);
+		static void recv(int sock, void *buf, size_t len, int timeout = -1);
+
 		/// @brief Connect to URL
 		/// @param url URL to connect
 		Socket(const URL &url, unsigned int seconds = 0);
