@@ -32,7 +32,7 @@
 	void Socket::set_blocking(int sock, bool blocking) {
 
 		u_long mode = (blocking ? 1 : 0); 
-		if(ioctlsocket(my_socket, FIONBIO, &mode) != 0) {
+		if(ioctlsocket(sock, FIONBIO, &mode) != 0) {
 			throw Win32::Exception();
 		}
 
@@ -43,10 +43,10 @@
 		// Reference: https://stackoverflow.com/questions/2876024/linux-is-there-a-read-or-recv-from-socket-with-timeout
 
 		// WINDOWS
-		DWORD timeout = timeout_in_seconds * 1000;
+		DWORD timeout = seconds * 1000;
 
-		setsockopt(socket, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof timeout);
-		setsockopt(socket, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof timeout);
+		setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&timeout, sizeof timeout);
+		setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, (const char*)&timeout, sizeof timeout);
 
 	}
 

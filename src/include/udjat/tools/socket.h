@@ -23,8 +23,11 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
  #include <udjat/tools/url.h>
- #include <sys/ioctl.h>
  #include <system_error>
+
+ #ifndef _WIN32
+	#include <sys/ioctl.h>
+ #endif
 
  namespace Udjat {
 
@@ -97,12 +100,14 @@
 			return wait_for_connection(values.fd, seconds);
 		}
 
+#ifndef _WIN32
 		template <typename T>
 		inline void ioctl(unsigned long op, T &val) const {
 			if(::ioctl(fd(), op, (caddr_t)&val) < 0) {
 				throw std::system_error(errno,std::system_category(),"ioctl error");
 			}
 		}
+#endif
 
 
 	};
