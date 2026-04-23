@@ -106,14 +106,32 @@
 		// Get action type
 		auto type = TypeFactory(node);
 
-		// Check factories
-		for(const auto factory : *this) {
-			
-			if(*factory == type.c_str()) {
-				auto action = factory->ActionFactory(node);
-				if(action) {
-					return action;
+		if(type.empty()) {
+
+			// No type, use probe.
+			for(const auto factory : *this) {
+				
+				if(factory->probe(node)) {
+					auto action = factory->ActionFactory(node);
+					if(action) {
+						return action;
+					}
 				}
+
+			}
+
+		} else {
+
+			// Has type, use it.
+			for(const auto factory : *this) {
+				
+				if(*factory == type.c_str()) {
+					auto action = factory->ActionFactory(node);
+					if(action) {
+						return action;
+					}
+				}
+
 			}
 
 		}

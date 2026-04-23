@@ -47,6 +47,10 @@
 		Factories().remove(this);
 	}
 
+	bool Alert::Factory::probe(const XML::Node &node) const noexcept {
+		return false;
+	}
+
 	std::shared_ptr<Alert> Alert::Factory::AlertFactory(const Abstract::Object &parent, const XML::Node &node) const {
 		return std::shared_ptr<Alert>();
 	}
@@ -54,7 +58,36 @@
 	std::shared_ptr<Alert> Alert::Factory::build(const Abstract::Object &parent, const XML::Node &node) {
 
 		String type{node,"type"};
-		if(!type.empty()) {
+
+		if(type.empty()) {
+
+			// No type, probe all factories.
+			for(Alert::Factory *factory : Factories()) {
+
+				try {
+
+					if(factory->probe(node)) {
+						auto alert = factory->AlertFactory(parent,node);
+						if(alert) {
+							return alert;
+						}
+					}
+
+				} catch(const std::exception &e) {
+
+					Logger::String{e.what()}.error(factory->name());
+
+				} catch(...) {
+
+					Logger::String{"Unexpected error building alert"}.error(factory->name());
+
+				}
+
+			}
+
+		} else {
+
+			// Has type definition, check factories.
 
 			for(Alert::Factory *factory : Factories()) {
 
@@ -85,10 +118,6 @@
 			if(!strcasecmp(type.c_str(),"file")) {
 				return make_shared<FileAlert>(node);
 			}
-
-			//if(!strcasecmp(type.c_str(),"url")) {
-			//	return make_shared<URLAlert>(node);
-			//}
 
 		}
 

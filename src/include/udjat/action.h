@@ -65,6 +65,11 @@
 				return name;
 			}
 
+			/// @brief Verify if this factory can handle the definition.
+			/// @param node XML definition for the new alert.
+			/// @return true if this factory can handle the alert.
+			virtual bool probe(const XML::Node &node) const noexcept;
+
 			/// @brief Build an action from XML node.
 			/// @param node XML definition for the new action.
 			virtual std::shared_ptr<Action> ActionFactory(const XML::Node &node) const = 0;
