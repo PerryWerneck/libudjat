@@ -481,6 +481,7 @@ lib_src += [
   'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
+  'src/library/ui/animation.cc',
   'src/library/testprogram.cc',
 ]
 

@@ -26,10 +26,40 @@
  #include <string>
  #include <cstdint>
  #include <ostream>
+ #include <memory>
 
  namespace Udjat {
 
 	namespace UI {
+
+		class UDJAT_API Animation {
+		protected:
+			size_t current = 0;
+			constexpr Animation() = default;
+
+		public:
+			/// The animation styles
+			enum Style : uint8_t {
+				PlainText,
+				Simple,
+				Braille,
+				Circle,
+
+				Default
+			};
+
+			/// @brief  Set default animation style.
+			static void set(Animation::Style style = Animation::Style::Default);
+
+			static std::shared_ptr<Animation> Factory(Animation::Style style = Animation::Style::Default);
+
+			virtual const char * get() noexcept = 0;
+
+		private:
+			static Style style;
+
+		};
+
 
 		/// @brief Console writer.
 		/// @details Write messages to the console with different colors bypassing logger redirection.
