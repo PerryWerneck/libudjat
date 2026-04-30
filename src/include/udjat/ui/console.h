@@ -142,4 +142,8 @@
 		return os;
 	}
 
+	inline ostream & operator<< (ostream& os, Udjat::UI::Animation &animation) {
+		return os << animation.get();
+	}
+
  }

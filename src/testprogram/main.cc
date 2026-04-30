@@ -48,7 +48,7 @@
 	for(size_t count = 0; count < 100; count++) {
 		cout << '\r';
 		for(size_t ix = 0; ix < sizeof(animations)/sizeof(animations[0]); ix++) {
-			cout << animations[ix]->get() << " ";
+			cout << *animations[ix] << " ";
 		}
 		cout << " " << count << flush;
 		usleep(500000);
