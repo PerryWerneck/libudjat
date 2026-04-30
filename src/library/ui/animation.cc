@@ -40,7 +40,7 @@ namespace Udjat {
 
 		class PlainTextAnimation : public UI::Animation {
 		private:
-			const char *animation[5] = { "|", "/", "-", "\\", "-" };
+			const char *animation[4] = { "|", "/", "-", "\\" };
 
 		public:
 			constexpr PlainTextAnimation() = default;
@@ -72,7 +72,7 @@ namespace Udjat {
 
 		class BrailleAnimation : public UI::Animation {
 		private:
-			const char *animation[11] = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
+			const char *animation[10] = { "⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏" };
 
 		public:
 			constexpr BrailleAnimation() = default;
