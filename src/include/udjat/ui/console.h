@@ -55,6 +55,18 @@
 
 			virtual const char * get() noexcept = 0;
 
+			inline operator const char *() noexcept {
+				return get();
+			}
+
+			inline const char * c_str() noexcept {
+				return get();
+			}
+
+			inline operator int() const noexcept {
+				return current;
+			}
+
 		private:
 			static Style style;
 

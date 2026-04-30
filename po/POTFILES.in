@@ -218,6 +218,7 @@ src/library/tools/object.cc
 src/library/tools/script.cc
 src/library/ui/progress.cc
 src/library/ui/status.cc
+src/library/ui/animation.cc
 src/include/private/configuration.h
 src/include/private/dialog.h
 src/include/private/event.h
