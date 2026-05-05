@@ -283,6 +283,10 @@
 		return name();
 	}
 
+	bool Abstract::Object::setProperty(const char *, const char *) {
+		throw logic_error("Unable to set property on read-only object");
+	}
+
 	String Abstract::Object::getProperty(const char *key, const char *def) const {
 
 		String value;

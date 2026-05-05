@@ -214,6 +214,11 @@
 
 			virtual std::string to_string() const noexcept;
 
+			/// @brief Set property
+			/// @param key The property name.
+			/// @param value The property value.
+			virtual bool setProperty(const char *key, const char *value);
+
 			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
