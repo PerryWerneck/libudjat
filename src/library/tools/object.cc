@@ -284,7 +284,7 @@
 	}
 
 	bool Abstract::Object::setProperty(const char *, const char *) {
-		throw logic_error("Unable to set property on read-only object");
+		return false;
 	}
 
 	String Abstract::Object::getProperty(const char *key, const char *def) const {
@@ -331,7 +331,7 @@
 
 		if(NamedObject::getProperty(key,value)) {
 			return true;
-		}
+		} 
 
 		if(!strcasecmp(key,"label")) {
 			value = properties.label;

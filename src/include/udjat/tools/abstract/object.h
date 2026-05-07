@@ -217,6 +217,9 @@
 			/// @brief Set property
 			/// @param key The property name.
 			/// @param value The property value.
+			/// @return true if the property is valid.
+			/// @retval true The property is valid and was updated.
+			/// @retval false The property was not found.
 			virtual bool setProperty(const char *key, const char *value);
 
 			/// @brief Get property value.
