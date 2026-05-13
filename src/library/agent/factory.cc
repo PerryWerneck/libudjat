@@ -57,7 +57,7 @@
 		: Udjat::Agent<T>{node}, action{a}, valuename{String{node,"value-from","value"}.as_quark()} {
 		}
 
-		bool refresh() override {
+		bool refresh(bool) override {
 			
 			Request request;
 			Response response;
@@ -117,7 +117,7 @@
 				Script(const XML::Node &node) : Udjat::Script{node} {
 				}
 
-				bool refresh(bool) {
+				bool refresh(bool) override {
 					return Udjat::Agent<int32_t>::set(
 						(int32_t) Udjat::Script::run(*((Udjat::Agent<int32_t> *)this),false)
 					);
@@ -215,7 +215,7 @@
 
 						}
 
-						bool refresh(bool) {
+						bool refresh(bool) override {
 							return set((int32_t) Udjat::URL{this->url}.test(method));
 						};
 
@@ -256,7 +256,7 @@
 					return Abstract::Agent::computeState();
 				}
 
-				bool refresh() override {
+				bool refresh(bool) override {
 					unsigned int last = get();
 					unsigned int value = ((unsigned int) rand()) % limit;
 					if(value == last) {

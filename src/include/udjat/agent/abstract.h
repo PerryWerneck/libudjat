@@ -297,13 +297,9 @@
 			virtual void start();
 
 			/// @brief Update agent.
-			/// @param ondemand true if the update was requested by user query.
+			/// @param ondemand true if the update was requested by user.
 			/// @return true if the data was updated.
-			virtual bool refresh(bool ondemand);
-
-			/// @brief Update agent.
-			/// @return true if the data was changed and the state should be recomputed.
-			virtual bool refresh();
+			virtual bool refresh(bool ondemand = false);
 
 			/// @brief Stop agent.
 			virtual void stop();
