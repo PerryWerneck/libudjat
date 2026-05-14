@@ -67,6 +67,8 @@
 
 		protected:
 
+			typedef State super;
+
 			/// @brief State alerts.
 			std::vector<std::shared_ptr<Udjat::Activatable>> listeners;
 

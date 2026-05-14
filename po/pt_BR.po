@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-13 06:41-0300\n"
+"POT-Creation-Date: 2026-05-14 07:37-0300\n"
 "PO-Revision-Date: 2026-04-20 13:39-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -74,11 +74,11 @@ msgstr "Erro de sistema"
 msgid "Operation failed"
 msgstr "Operação falhou"
 
-#: src/library/state/state.cc:259 src/library/tools/converters.cc:42
+#: src/library/state/state.cc:262 src/library/tools/converters.cc:42
 msgid "on"
 msgstr "ligado"
 
-#: src/library/state/state.cc:259 src/library/tools/converters.cc:49
+#: src/library/state/state.cc:262 src/library/tools/converters.cc:49
 msgid "off"
 msgstr "desligado"
 
