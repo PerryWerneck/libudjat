@@ -98,6 +98,7 @@
 
 			/// @brief Create state using the strings without conversion.
 			State(const char *name, const Level level = Level::unimportant, const char *summary = "", const char *body = "");
+			State(const char *name, const char *level, const char *summary = "", const char *body = "");
 
 			/// @brief Create state from xml node
 			State(const XML::Node &node);
