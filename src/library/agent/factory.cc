@@ -90,9 +90,45 @@
 		Factories().remove(this);
 	}
 
+	bool Abstract::Agent::Factory::probe(const XML::Node &node) const noexcept {
+		return false;
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const XML::Node &node) {
 
-		const char *type = node.attribute("type").as_string("default");
+		const char *type = node.attribute("type").as_string("");
+
+		if(!(type && *type)) {
+
+			// No type, try probing the factories.
+
+			for(const auto factory : Factories()) {
+
+				if(!factory->probe(node)) {
+					continue;
+				}
+
+				auto agent = factory->AgentFactory(node);
+				if(agent) {
+					return agent;
+				}
+			}
+
+			// No factory recognize the node and I have no type, then, cant do anything.
+			
+			throw runtime_error(
+#ifdef BUILD_LEGACY
+				String{"Cant find a valid factory for agent"}
+#else
+				String{"Cant find a valid factory for agent at ",node.path()}
+#endif // BUILD_LEGACY
+			);
+
+		}
+
+		//
+		// Have type, use it
+		//
 
 		for(const auto factory : Factories()) {
 

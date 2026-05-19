@@ -48,6 +48,11 @@
 					return strcasecmp(n,name) == 0;
 				}
 
+				/// @brief Probe if this factory can be used with the XML node.
+				/// @param node The xml node.
+				/// @return true if the factory recognizes the XML node.
+				virtual bool probe(const XML::Node &node) const noexcept;
+
 				/// @brief Create an agent from XML node.
 				/// @param node XML definition for the new agent.
 				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const = 0;
