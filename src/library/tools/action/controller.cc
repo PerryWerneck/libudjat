@@ -277,7 +277,9 @@
 					ActionContainer(const Controller *cntrl, const XML::Node &node) : Action{node} {
 						
 						// Parse standard children
-						setup(node);
+						for(auto action = node.child("action"); action; action = action.next_sibling("action")) {
+							push_back(cntrl->ObjectFactory(action));
+						}
 
 						// Legacy support for <script> children
 						for(auto action = node.child("script"); action; action = action.next_sibling("script")) {

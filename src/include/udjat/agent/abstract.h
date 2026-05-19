@@ -230,10 +230,11 @@
 
 			virtual ~Agent();
 
-			/// @brief Setup agent from XML node.
-			/// @param node The xml node with agent properties.
-			/// @see Abstract::Object::parse
-			bool setup(const XML::Node &node) override;
+			/// @brief Append child object from XML definition.
+			/// @details This method is called by parse_children() for every child node.
+			/// @param node The XML node with the child definitions.
+			/// @return true if the node was parsed and should be ignored by the caller.
+			bool append_child(const XML::Node &node) override;
 
 			inline time_t parse(const char *path) {
 				return Udjat::Object::parse(path);

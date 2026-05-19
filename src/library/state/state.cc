@@ -105,9 +105,9 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::State::setup(const XML::Node &node) {
+	bool Abstract::State::append_child(const XML::Node &node) {
 
-		if(Udjat::Object::setup(node)) {
+		if(Udjat::Object::append_child(node)) {
 			return true; // Handled by object.
 		}
 

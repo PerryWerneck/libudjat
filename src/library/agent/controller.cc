@@ -342,25 +342,6 @@ namespace Udjat {
 		return child;
 	}
 
-	/*
-	std::shared_ptr<Abstract::Object> Abstract::Agent::Controller::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
-
-		Abstract::Agent *agent = dynamic_cast<Abstract::Agent *>(&parent);
-		if(!agent) {
-			throw logic_error("Parent object is not an agent");
-		}
-
-#ifdef DEBUG 
-		Logger::String{"Building child agent '",node.attribute("name").as_string(),"' from XML node: "}.info(agent->name());
-#endif // DEBUG		
-
-		auto child = Abstract::Agent::Factory::build(*agent,node);
-		agent->push_back(child);
-
-		return child;
-	}
-	*/
-
 	std::shared_ptr<Action> Abstract::Agent::Controller::ActionFactory(const XML::Node &) const {
 
 		debug("Build agent action");
