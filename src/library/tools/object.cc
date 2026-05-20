@@ -242,6 +242,11 @@
 		return value;
 	}
 
+	int Abstract::Object::call(const Request &, Response &response) {
+		getProperties(response);
+		return 0;
+	}
+
 	const char * Object::label() const noexcept {
 		if(properties.label && *properties.label) {
 			return properties.label;

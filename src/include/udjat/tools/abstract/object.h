@@ -267,6 +267,8 @@
 			/// @brief Add object properties to the value.
 			virtual Value & getProperties(Value &value) const;
 
+			virtual int call(const Request &request, Response &response);
+
 			std::ostream & info() const;
 			std::ostream & warning() const;
 			std::ostream & error() const;

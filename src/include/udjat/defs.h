@@ -139,6 +139,8 @@ namespace Udjat {
 	class Alert;
 	class Value;
 	class TimeStamp;
+	class Request;
+	class Response;
 
 }
 #endif // __cplusplus
