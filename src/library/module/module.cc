@@ -31,10 +31,14 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const char *d) : module_name{n}, handle{nullptr} {
+	Module::Module(const char *n, const char *description) : module_name{n}, handle{nullptr} {
 
 		if(!(module_name && *module_name)) {
 			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
+		}
+
+		if(description && *description) {
+			info.description = description;
 		}
 
 		if(info.build && info.build < MINIMAL_MODULE_BUILD) {
