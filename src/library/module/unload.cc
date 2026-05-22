@@ -70,12 +70,6 @@ namespace Udjat {
 			string description{module->description()};
 
 			auto handle = module->handle;
-
-			if(!handle) {
-				Logger::String{"Keeping static module '",description,"'"}.trace(name);
-				continue;
-			}
-
 			auto keep_loaded = module->keep_loaded;
 
 			Logger::String{(keep_loaded ? "Deactivating" : "Unloading")," '",description,"'"}.trace(name);
