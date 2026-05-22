@@ -253,7 +253,7 @@
 	};
 
 	#if defined(DEBUG)
-		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Debug,"debug");
+		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Udjat::Logger::Debug,"debug");
 	#else
 		#define debug( ... )           // __VA_ARGS__
 	#endif // DEBUG
