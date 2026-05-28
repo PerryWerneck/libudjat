@@ -71,8 +71,6 @@
 			}
 		}
 
-		Module::preload();
-
 	}
 
  }

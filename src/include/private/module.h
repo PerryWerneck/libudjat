@@ -20,11 +20,6 @@ namespace Udjat {
 		/// @brief The loaded modules.
 		Container<Module> modules;
 
-		/// @brief Find path from module name.
-		/// @param name Module name.
-		/// @return Module path or empty string if not found.
-		static std::string locate(const char *name,const std::vector<std::string> &paths) noexcept;
-
 #ifdef _WIN32
 
 		void close(HMODULE module);
@@ -73,6 +68,11 @@ namespace Udjat {
 		Module * find_by_name(const char *name);
 
 		static Controller & getInstance();
+
+		/// @brief Find path from module name.
+		/// @param name Module name.
+		/// @return Module path or empty string if not found.
+		static std::string locate(const char *name,const std::vector<std::string> &paths = Module::search_paths()) noexcept;
 
 		/// @brief Unload all modules.
 		void unload();

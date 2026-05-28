@@ -35,6 +35,7 @@
  #include <private/urlparser.h>
  #include <udjat/tools/container.h>
  #include <udjat/tools/url/handler.h>
+ #include <private/module.h>
 
  using namespace std;
 
@@ -113,18 +114,18 @@
 			// Try to load a module using the handler name.
 			try {
 
-				if(Module::load(scheme.c_str(),false)) {
+				auto filename = Module::locate(scheme.c_str());
 
-					Logger::String{"Module for ",scheme.c_str()," handler loaded"}.trace();
-
+				if(!filename.empty()) {
+					Logger::String{"Autoloading ",filename.c_str()," for ",scheme.c_str()," handler"}.trace();
+					Module::load(filename.c_str());
 					for(const auto factory : factories()) {
 						if(*factory == scheme.c_str()) {
 							return factory->HandlerFactory(*this);
 						}
 					}
-
 				}
-
+				
 			} catch(const std::exception &e) {
 
 				Logger::String{"Failed to load module for ",scheme.c_str()," handler: ",e.what()}.trace();

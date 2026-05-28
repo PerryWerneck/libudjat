@@ -121,6 +121,11 @@
 		/// @param filename Path to the .so ou .dll file with module.
 		static bool load(const char *filename, const XML::Node &node = XML::Node{});
 
+		/// @brief Find path from module name.
+		/// @param name Module name.
+		/// @return Module path or empty string if not found.
+		static std::string locate(const char *name) noexcept;
+
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->module_name,name) == 0;
 		}

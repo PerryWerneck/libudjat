@@ -120,5 +120,9 @@ namespace Udjat {
 		throw system_error(ENOTSUP,system_category(),Logger::Message(_("I dont know how to execute '{}'"),name));
 	}
 
+	std::string Module::locate(const char *name) noexcept {
+		return Controller::getInstance().locate(name);
+	}
+
 }
 

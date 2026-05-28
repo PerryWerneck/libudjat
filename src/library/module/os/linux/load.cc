@@ -36,7 +36,7 @@
 
 	bool Module::Controller::load(const std::string &filename, const XML::Node &node) {
 
-		if(find_by_filename(filename.c_str())) {
+		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
 			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
 			return true;
 		}
