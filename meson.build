@@ -252,6 +252,10 @@ app_conf.set('HAVE_STRPTIME', cxx.has_function('strptime'))
 app_conf.set('HAVE_STRCASESTR', cxx.has_function('strcasestr'))
 app_conf.set('HAVE_LOCALTIME_R', cxx.has_function('localtime_r'))
 
+if cxx.has_function('syslog', prefix: '#include <syslog.h>')
+  app_conf.set('HAVE_SYSLOG', 1)
+endif
+
 app_conf.set('HAVE_PUGIXML', 1)
 
 if intl.found()

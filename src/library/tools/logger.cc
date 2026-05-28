@@ -577,23 +577,23 @@
 			// Write to console
 			options.console(level,domain,text);
 
-#ifndef _WIN32
+#ifdef HAVE_SYSLOG
 			if(options.syslog) {
 				//
 				// Write to syslog.
 				//
-				static const int priority[] = {
+				static const int priority[Level::Count] = {
 					LOG_ERR,		// Error
 					LOG_WARNING,	// Warning
 					LOG_INFO,		// Info
 					LOG_DEBUG,		// Trace
 					LOG_DEBUG,		// Debug
-					LOG_NOTICE		// Debug+1
+					LOG_NOTICE		// Status
 				};
 
-				::syslog(priority[ ((size_t) level) % (sizeof(priority)/sizeof(priority[0])) ],"%s %s",domain,text);
+				::syslog(priority[ level % Level::Count ],"%s %s",domain,text);
 			}
-#endif // _WIN32
+#endif // HAVE_SYSLOG
 
 			if(options.file) {
 
@@ -602,9 +602,18 @@
 					// Write to file
 					options.file(level,domain,text);
 
+				} catch(const std::exception &e) {
+
+#ifdef HAVE_SYSLOG
+					::syslog(LOG_ERR,"Unexpected error '%s' writing log",e.what());
+#endif // HAVE_SYSLOG
+
 				} catch(...) {
 
 					// Ignore errors.
+#ifdef HAVE_SYSLOG
+					::syslog(LOG_ERR,"Unexpected error writing log");
+#endif // HAVE_SYSLOG
 
 				}
 			}

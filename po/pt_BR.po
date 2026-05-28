@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-20 16:51-0300\n"
+"POT-Creation-Date: 2026-05-22 16:34-0300\n"
 "PO-Revision-Date: 2026-04-20 13:39-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -56,12 +56,12 @@ msgstr "Sistema em funcionamento"
 msgid "No abnormal state was detected"
 msgstr "Nenhum estado anormal foi reportado"
 
-#: src/library/module/module.cc:115
+#: src/library/module/module.cc:119
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:131
+#: src/library/module/module.cc:135
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"

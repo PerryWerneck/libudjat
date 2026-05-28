@@ -50,14 +50,14 @@
 		MSG msg;
 		memset(&msg,0,sizeof(msg));
 
-		Logger::String("Running message loop").write((Logger::Level) (Logger::Debug+1),"win32");
+		Logger::String("Running message loop").write((Logger::Level) (Logger::Notice),"win32");
 
 		while( (rc = GetMessage(&msg, NULL, 0, 0)) > 0) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}
 
-		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Debug+1),"win32");
+		Logger::String("Message loop ends with rc=",rc).write((Logger::Level) (Logger::Notice),"win32");
 	}
 
 	return rc;

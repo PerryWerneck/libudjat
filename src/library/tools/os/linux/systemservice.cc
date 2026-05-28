@@ -97,7 +97,7 @@
 
 				reset(watchdog_timer/3000L);
 				MainLoop::Timer::enable();
-				Logger::String{"Watchdog set to ",MainLoop::Timer::to_string()}.write((Logger::Level) (Logger::Debug+1),"systemd");
+				Logger::String{"Watchdog set to ",MainLoop::Timer::to_string()}.write((Logger::Level) (Logger::Notice),"systemd");
 
 			}
 
