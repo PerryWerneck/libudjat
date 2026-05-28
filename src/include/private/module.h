@@ -54,13 +54,13 @@ namespace Udjat {
 
 		template <typename ret, typename... args>
 		inline ret call(void *handle, const char *name, args... a) noexcept {
-			ret (*func)(args...) = (ret (*)(args...)) get_symbol(handle,name);
+			ret (*func)(args...) = (ret (*)(args...)) get_symbol(handle,name,true);
 			return func(a...);
 		}
  
 		template <typename ret, typename... args>
-		inline auto getfunc(void *handle, const char *name, bool required = true) noexcept {
-			return reinterpret_cast<ret(*)(args...)>(handle,get_symbol(handle, name, required));
+		inline auto getfunc(void *handle,const char *name,bool required = true) noexcept {
+			return reinterpret_cast<ret(*)(args...)>(get_symbol(handle,name,required));
 		}
 #endif
 
@@ -84,8 +84,8 @@ namespace Udjat {
 
 		/// @brief Load module by filename.
 		/// @param filename The module filename.
-		/// @return true if the module was already loaded.
 		/// @retval true The module was already loaded.
+		/// @retval false The module was loaded.
 		bool load(const std::string &filename, const XML::Node &node);
 		
 		bool for_each(const std::function<bool(Module &module)> &method);

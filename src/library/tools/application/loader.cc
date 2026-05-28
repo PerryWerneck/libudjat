@@ -156,9 +156,10 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		if(CommandLineParser::get_argument(argc,argv,'t',"test",argvalue)) {
 
 			debug("Running unit test '",argvalue,"'");
+
+/*
 #ifndef _WIN32	
 			dl_iterate_phdr(phdr_item, nullptr);
-			/*
 			try {
 				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
 				if(symbol) {
@@ -168,11 +169,11 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
 				return -1;
 			}
-			*/
 #endif
+*/
 
 			Module::for_each([&argvalue](Module &module) -> bool {
-				int (*symbol)(const char *) = (int(*)(const char *)) module.dlsym("run_unit_test");
+				int (*symbol)(const char *) = module.getfunc<int,const char *>("run_unit_test",false);
 				if(symbol) {
 					symbol(argvalue.c_str());
 				}

@@ -124,5 +124,8 @@ namespace Udjat {
 		return Controller::getInstance().locate(name);
 	}
 
+	void set(std::shared_ptr<Udjat::Abstract::Agent>) {
+	}
+
 }
 

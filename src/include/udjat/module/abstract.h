@@ -146,12 +146,6 @@
 			return info.gettext_package;
 		}
 
-		/// @brief Get symbol from module.
-		/// @details This method is used to get a symbol from the module.
-		/// @param symbol The symbol name to get.
-		/// @return The symbol address or nullptr if not found.
-		void *dlsym(const char *symbol, bool required = false) const;
-
 		/// @brief Call method on every modules.
 		/// @param method The method to call on every module.
 		/// @return true if the method has returned true for any module.
@@ -210,9 +204,14 @@
 		/// @brief Execute command.
 		virtual void exec(Udjat::Value &response, const char *name, va_list args) const;
 
-		/// @brief Set new root agent.
+		/// @brief Set root agent, called every time the root agent changes.
+		/// @param agent The new root agent.
 		virtual void set(std::shared_ptr<Abstract::Agent> agent);
 
+		/// @brief Get symbol from module.
+		/// @details This method is used to get a symbol from the module.
+		/// @param symbol The symbol name to get.
+		/// @return The symbol address or nullptr if not found.
 		void * get_symbol(const char *symbol_name, bool required = true);
 
 		template <typename ret, typename... args>
@@ -222,8 +221,8 @@
 		}
  
 		template <typename ret, typename... args>
-		inline auto getfunc(const char *name) noexcept {
-			return reinterpret_cast<ret(*)(args...)>(get_symbol(name));
+		inline auto getfunc(const char *name, bool required = true) noexcept {
+			return reinterpret_cast<ret(*)(args...)>(get_symbol(name,required));
 		}
  		
 	};
