@@ -31,7 +31,7 @@
 		FreeLibrary(module);
 	}
 
-	bool Module::Controller::deinit(void *handle) {
+	bool Module::Controller::deinit(HMODULE handle) {
 
 		auto deinit = getfunc<bool>(handle,"udjat_module_deinit",false);
 

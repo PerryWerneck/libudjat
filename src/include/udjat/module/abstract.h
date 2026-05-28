@@ -39,7 +39,7 @@
 		const char *module_name;
 
 #ifdef _WIN32
-		HMODULE handle = NULLHANDLE;
+		HMODULE handle = NULL;
 #else
 		void * handle = NULL;
 #endif

@@ -27,6 +27,59 @@
 
  namespace Udjat {
 
+	bool Module::Controller::load(const std::string &filename, const XML::Node &node) {
+
+		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
+			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
+			return true;
+		}
+
+		Logger::String{"Loading '",filename.c_str(),"'"}.trace();
+
+		// Load module.
+		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
+		HMODULE handle = LoadLibrary(filename.c_str());
+		if(!handle) {
+			throw Win32::Exception();
+		}
+
+		try {
+
+			auto init = getfunc<Module *,const XML::Node &>(handle,"udjat_module_init",false);
+
+			if(!init) {
+				throw runtime_error(String{filename.c_str()," is not a valid module"});
+			}
+
+			auto module = init(node);
+			if(!module) {
+				throw runtime_error(String{"Initialization of ",filename.c_str()," has failed"});
+			}
+
+			module->handle = handle;
+			module->keep_loaded = node.attribute("keep-loaded").as_bool(false);
+			module->keep_active = node.attribute("keep-active").as_bool(false);
+
+			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
+				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
+			}
+
+			if(module->info.gettext_package && *module->info.gettext_package) {
+				Application::set_gettext_package(module->info.gettext_package);
+			}
+
+		} catch(...) {
+
+			CloseHandle(handle);
+			throw;
+
+		}
+
+		return false;
+
+	}
+
+		/*
 	void Module::Controller::init(const std::string &filename, const XML::Node &node) {
 
 		Logger::String{"Loading '",filename,"'"}.trace("module");
@@ -112,6 +165,7 @@
 		return module;
 
 	}
+		*/
 
  }
 

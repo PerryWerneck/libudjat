@@ -26,8 +26,8 @@
 
  namespace Udjat {
 
-	Module * Module::factory(const char *filename) {
-		
+	bool Module::load(const char *filename, const XML::Node &node) {
+
 		TCHAR path[MAX_PATH+1];
 		memset(path,0,MAX_PATH+1);
 
@@ -36,23 +36,7 @@
 			strncpy(path,filename,MAX_PATH);
 		}
 
-		HMODULE handle = LoadLibraryEx(path,NULL,LOAD_WITH_ALTERED_SEARCH_PATH);
-		if(!handle) {
-			throw Win32::Exception(string{"Can't load module '"} + filename + "'");
-		}
-
-		try {
-
-			return Controller::init(handle);
-
-		} catch(...) {
-
-			FreeLibrary(handle);
-			throw;
-
-		}
-
-
+		return Controller::getInstance().load(path,node);
 	}
 
 	Module * Module::Controller::find_by_filename(const char *filename) {
@@ -65,15 +49,11 @@
 			strncpy(path,filename,MAX_PATH);
 		}
 
-		for(auto module : objects) {
-
-			// Check if the module is already loaded.
-			if(!strcasecmp(module->filename().c_str(),path)) {
+		for(auto &module : modules) {
+			if(module->handle && !strcasecmp(module->filename().c_str(),path)) {
 				return module;
 			}
-
 		}
-
 		return nullptr;
 
 	}
@@ -85,6 +65,16 @@
 			return (const char *) path;
 		}
 		throw Win32::Exception();
+	}
+
+	void * Module::get_symbol(const char *name, bool required) {
+		void * symbol = (void *) GetProcAddress(handle,name);
+
+		if(required && !symbol) {
+			throw Win32::Exception(string{"Can't find symbol '"} + name + "'");
+		}
+
+		return symbol;
 	}
 
 	void * Module::Controller::get_symbol(HMODULE hModule, const char *name, bool required) {
