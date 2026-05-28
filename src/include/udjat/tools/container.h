@@ -72,6 +72,12 @@
 			objects.push_back(object);
 		}
 
+		template<typename... Args>
+		inline void emplace_back(Args&&... args) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			objects.emplace_back(std::forward<Args>(args)...);
+		}
+
 		inline void add(P object) noexcept {
 			std::lock_guard<std::mutex> lock(guard);
 			objects.push_back(object);
@@ -143,6 +149,12 @@
 		inline void push_back(T *object) noexcept {
 			std::lock_guard<std::mutex> lock(*this);
 			std::list<T *>::push_back(object);
+		}
+
+		template<typename... Args>
+		inline void emplace_back(Args&&... args) noexcept {
+			std::lock_guard<std::mutex> lock(guard);
+			std::list<T *>::emplace_back(std::forward<Args>(args)...);
 		}
 
 		inline void remove(T *object) noexcept {

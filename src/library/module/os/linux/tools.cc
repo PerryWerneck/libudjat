@@ -26,7 +26,7 @@
 
  namespace Udjat {
 
-	Module * Module::factory(const char *filename) {
+	Module * Module::factory(const char *filename, const XML::Node &node) {
 
 		dlerror();
 		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
@@ -36,7 +36,7 @@
 
 		try {
 
-			return Controller::init(handle);
+			return Controller::init(handle,node);
 
 		} catch(...) {
 
@@ -49,11 +49,13 @@
 
 	Module * Module::Controller::find_by_filename(const char *path) {
 
-		for(auto module : objects) {
+		lock_guard<mutex> lock(guard);
+
+		for(auto &handler : handlers) {
 
 			// Check if the module is already loaded.
-			if(!strcasecmp(module->filename().c_str(),path)) {
-				return module;
+			if(handler.module && !strcasecmp(handler.module->filename().c_str(),path)) {
+				return handler.module;
 			}
 
 		}

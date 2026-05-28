@@ -18,6 +18,8 @@
  */
 
 #define GNU_SOURCE
+#define LOG_DOMAIN "module"
+
 #include <config.h>
 #include <private/module.h>
 #include <sys/types.h>
@@ -26,35 +28,46 @@
 #include <udjat/tools/application.h>
 #include <udjat/tools/configuration.h>
 #include <udjat/tools/object.h>
-
-#define LOG_DOMAIN "module"
 #include <udjat/tools/logger.h>
 
 #include <udjat/tools/xml.h>
-
-//---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 
 	Module * Module::Controller::find_by_name(const char *name) {
 
+		for(const auto &handler : handlers) {
+
+			if(!handler.module) {
+				continue;
+			}
+
+			if(handler.module->module_name && strcasecmp(handler.module->module_name,name)) {
+				return handler.module;
+			}
+
+#ifdef _WIN32
+			if(String{handler.module->filename()}.has_suffix((string{name} + LIBEXT).c_str(),true)) {
+				return handler.module;
+			}
+#else
+			if(!strcasecmp((string{name} + LIBEXT).c_str(),basename(handler.module->filename().c_str()))) {
+				return handler.module;
+			}
+#endif // _WIN32
+
+		}
+
+		/*
 		for(auto module : objects) {
 
 			if(*module == name) {
 				return module;
 			}
 
-#ifdef _WIN32
-			if(String{module->filename()}.has_suffix((string{name} + LIBEXT).c_str(),true)) {
-				return module;
-			}
-#else
-			if(!strcasecmp((string{name} + LIBEXT).c_str(),basename(module->filename().c_str()))) {
-				return module;
-			}
-#endif // _WIN32
 
 		}
+		*/
 
 		return nullptr;
 
@@ -65,6 +78,7 @@ namespace Udjat {
 		static const char * attributes[] = {
 			"name",
 			"altname",
+			"path",
 			"fallback-to"
 		};
 
@@ -78,23 +92,15 @@ namespace Udjat {
 				continue;
 			}
 
-			if(find_by_name(name)) {
-				Logger::String{"Module is already loaded"}.write(Logger::Debug,name);
+			if(*name == '.' || *name == '/') {
+				load(name, node);
 				return true;
 			}
 
-			string filename = locate(name,paths);
-			
+			string filename = locate(name,paths);			
 			if(!filename.empty()) {
-
-				if(find_by_filename(filename.c_str())) {
-					Logger::String{"Module '",filename,"' is already loaded"}.trace();
-					return true;
-				}
-
-				init(filename, node);
+				load(filename, node);
 				return true;
-
 			}
 
 		}
@@ -109,64 +115,19 @@ namespace Udjat {
 		return true;
 	}
 
-	void Module::preload() noexcept {
-
-		Config::Value<std::vector<std::string>> modules{"modules","preload",""};
-
-		if(modules.size()) {
-
-			Logger::String("Preloading ",modules.size()," module(s) from configuration file").trace("module");
-
-			for(std::string &module : modules) {
-
-				Logger::String("Preloading ",module," from configuration file").trace("module");
-				load(File::Path{module});
-
-			}
-
-		}
-
+	bool Module::load(const std::string &filename, const XML::Node &node) {
+		return Controller::getInstance().load(filename,node);
 	}
 
-	void Module::load(const XML::Node &node) {
-		Controller::getInstance().parse(node);
-	}
+	/*
+	bool Module::Controller::load(const char *name, bool required) {
 
-	bool Module::Controller::load(const std::string &filename, bool required) {
-
-		for(auto module : this->objects) {
-			if(!strcasecmp(module->filename().c_str(),filename.c_str())) {
+		if(*name == '.' || *name == '/') {
+			if(load(name,required)) {
+				Logger::String{"Module '",name,"' was already loaded"}.trace();
 				return true;
 			}
 		}
-
-		if(required) {
-
-			init(filename,XML::Node{});
-
-		} else {
-
-			try {
-
-				init(filename,XML::Node{});
-
-			} catch(const std::exception &e) {
-
-				Logger::String{filename.c_str(),": ",e.what()}.error(PACKAGE_NAME);
-
-			}
-
-		}
-
-		return false;
-
-	}
-
-	bool Module::load(const char *name, bool required) {
-		return Controller::getInstance().load(name,required);
-	}
-
-	bool Module::Controller::load(const char *name, bool required) {
 
 		string filename = locate(name,Module::search_paths());
 		if(filename.empty()) {
@@ -184,20 +145,7 @@ namespace Udjat {
 		return false;
 
 	}
-
-	void Module::load(const File::Path &path, bool required) {
-
-		path.for_each("*" LIBEXT, [required](const File::Path &path){
-
-			if(Controller::getInstance().load(path,required)) {
-				cout << "Module '" << path.c_str() << "' is already loaded" << endl;
-			}
-
-			return false;
-
-		},true);
-
-	}
+	*/
 
 }
 

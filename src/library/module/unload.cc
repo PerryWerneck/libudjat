@@ -39,6 +39,7 @@ namespace Udjat {
 
 	void Module::Controller::clear() {
 
+		/*
 		debug("Unloading ",objects.size()," modules");
 #ifdef DEBUG
 		{
@@ -108,6 +109,7 @@ namespace Udjat {
 
 		}
 		debug("Module unloading complete");
+		*/
 
 	}
 

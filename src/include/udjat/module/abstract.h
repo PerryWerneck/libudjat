@@ -38,19 +38,9 @@
 		/// @brief The module name.
 		const char *module_name;
 
-		/// @brief When true the module is never unloaded.
-		bool keep_loaded = false;
-
 		/// @brief The module controller.
 		class Controller;
 		friend class Controller;
-
-		/// @brief The module handle.
-#ifdef _WIN32
-		HMODULE handle;
-#else
-		void *handle;
-#endif // _WIN32
 
 	protected:
 
@@ -119,7 +109,8 @@
 	public:
 
 		/// @brief Build module from filename.
-		static Module * factory(const char *filename);
+		/// @param filename Path to the .so ou .dll file with module.
+		static Module * factory(const char *filename, const XML::Node &node = XML::Node{});
 
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->module_name,name) == 0;
@@ -140,9 +131,6 @@
 		inline const char * gettext_package() const noexcept {
 			return info.gettext_package;
 		}
-
-		/// @brief Preload modules from configuration file.
-		static void preload() noexcept;
 
 		/// @brief Get symbol from module.
 		/// @details This method is used to get a symbol from the module.
@@ -169,19 +157,10 @@
 		/// @brief Load module by path.
 		/// @param name path to module filename or directory.
 		/// @param required true if the module is required.
-		static void load(const File::Path &path, bool required = true);
-
-		/// @brief Load module by name.
-		static bool load(const char *name, bool required = true);
-
-		/// @brief Load module by XML node.
-		static void load(const XML::Node &node);
+		static bool load(const std::string &name, const XML::Node &node = XML::Node{});
 
 		/// @brief Unload modules.
 		static void unload();
-
-		/// @brief Called when application is finishing to cleanup module data after unloading.
-		virtual void finalize();
 
 		virtual ~Module();
 
@@ -240,13 +219,9 @@
 	/// @return 0 if success, -1 on error.
 	UDJAT_API int run_udjat_unit_test(const char *name);
 
-	/// @brief Initialize module.
-	/// @return Module controller.
-	UDJAT_API Udjat::Module * udjat_module_init();
-
 	/// @brief Initialize module from XML node.
 	/// @return Module controller.
-	UDJAT_API Udjat::Module * udjat_module_init_from_xml(const Udjat::XML::Node &node);
+	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::XML::Node &node);
 
 	/// @brief Deinitialize the module.
 	/// @return true if the module can be unloaded.

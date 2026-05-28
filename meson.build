@@ -474,7 +474,7 @@ lib_src += [
   'src/library/tools/action/factory.cc',
   'src/library/request/responsevalue.cc',
   'src/library/module/os/' + host_machine.system() + '/close.cc',
-  'src/library/module/os/' + host_machine.system() + '/init.cc',
+  'src/library/module/os/' + host_machine.system() + '/load.cc',
   'src/library/module/os/' + host_machine.system() + '/locate.cc',
   'src/library/module/os/' + host_machine.system() + '/tools.cc',
   'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',

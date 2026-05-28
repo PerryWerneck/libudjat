@@ -31,7 +31,7 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const char *description) : module_name{n}, handle{nullptr} {
+	Module::Module(const char *n, const char *description) : module_name{n} {
 
 		if(!(module_name && *module_name)) {
 			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
@@ -54,9 +54,6 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
-	void Module::finalize() {
-	}
-
 	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = module_name;
 		properties["filename"] = filename();
@@ -64,23 +61,11 @@ namespace Udjat {
 	}
 
 	const Module * Module::find(const char *name) noexcept {
-		return Controller::getInstance().find(name);
-	}
-
-	void * Module::dlsym(const char *symbol, bool required) const {
-		return Controller::getSymbol(handle, symbol, required);
+		return Controller::getInstance().find_by_name(name);
 	}
 
 	bool Module::for_each(const std::function<bool(Module &module)> &method) {
-		for(auto &module : Controller::getInstance()) {
-			if(method(*module)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void Module::set(std::shared_ptr<Abstract::Agent>) {
+		return Controller::getInstance().for_each(method);
 	}
 
 	bool Module::getProperty(const char *key, std::string &value) const {
