@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include <private/module.h>
+#include <udjat/tools/container.h>
 #include <iostream>
 
 #define LOG_DOMAIN "module"
@@ -42,6 +43,10 @@ namespace Udjat {
 	Module::Controller::~Controller() {
 		Logger::String{"Stopping controller"}.trace();
 		unload();
+	}
+
+	bool Module::Controller::for_each(const std::function<bool(Module &module)> &method) {
+		return modules.for_each(method);
 	}
 
 }
