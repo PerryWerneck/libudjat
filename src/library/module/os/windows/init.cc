@@ -58,9 +58,12 @@
 
 		Module * module = nullptr;
 
+		#error Refactor
+
 		//
 		// First try from xml
 		//
+
 		Module * (*init_from_xml)(const XML::Node &node)
 				= (Module * (*)(const XML::Node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
 
@@ -92,6 +95,8 @@
 
 	Module * Module::Controller::init(HMODULE handle) {
 
+		#error Refactor
+		
 		Module * (*init)(void) = (Module * (*)(void)) getSymbol(handle,"udjat_module_init");
 
 		Module * module = init();

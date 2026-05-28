@@ -144,12 +144,9 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		string argvalue;
 
 		if(CommandLineParser::get_argument(argc,argv,'m',"module",argvalue)) {
+
 			Logger::String{"Loading module '" + argvalue + "'"}.info();
-			modules.push_back(Module::factory(argvalue.c_str()));
-			if(modules.back() == nullptr) {
-				Logger::String{"Module '" + argvalue + "' not found"}.error();
-				return -1;
-			}
+			Module::load(argvalue.c_str());
 		}
 	
 		if(CommandLineParser::get_argument(argc,argv,'c',"config",argvalue)) {
@@ -283,11 +280,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 
 	} else if(access(testmodule.c_str(),R_OK) == 0) {
 		Logger::String{"Loading test module from '" + testmodule + "'"}.info();
-		modules.push_back(Module::factory(testmodule.c_str()));
-		if(modules.back() == nullptr) {
-			Logger::String{"Module '" + testmodule + "' not found"}.error();
-			return -1;
-		}
+		Module::load(testmodule.c_str());
 
 	} else {
 

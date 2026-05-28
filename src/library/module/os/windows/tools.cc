@@ -87,7 +87,7 @@
 		throw Win32::Exception();
 	}
 
-	void * Module::Controller::getSymbol(HMODULE hModule, const char *name, bool required) {
+	void * Module::Controller::get_symbol(HMODULE hModule, const char *name, bool required) {
 
 		void * symbol = (void *) GetProcAddress(hModule,name);
 

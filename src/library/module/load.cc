@@ -36,38 +36,13 @@ namespace Udjat {
 
 	Module * Module::Controller::find_by_name(const char *name) {
 
-		for(const auto &handler : handlers) {
+		for(const auto module : modules) {
 
-			if(!handler.module) {
-				continue;
-			}
-
-			if(handler.module->module_name && strcasecmp(handler.module->module_name,name)) {
-				return handler.module;
-			}
-
-#ifdef _WIN32
-			if(String{handler.module->filename()}.has_suffix((string{name} + LIBEXT).c_str(),true)) {
-				return handler.module;
-			}
-#else
-			if(!strcasecmp((string{name} + LIBEXT).c_str(),basename(handler.module->filename().c_str()))) {
-				return handler.module;
-			}
-#endif // _WIN32
-
-		}
-
-		/*
-		for(auto module : objects) {
-
-			if(*module == name) {
+			if(module->module_name && *module->module_name && strcasecmp(module->module_name,name)) {
 				return module;
 			}
 
-
 		}
-		*/
 
 		return nullptr;
 

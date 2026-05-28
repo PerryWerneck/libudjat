@@ -40,32 +40,8 @@ namespace Udjat {
 	}
 
 	Module::Controller::~Controller() {
-		clear();
-	}
-
-	void Module::Controller::push_back(Module *module) {
-		lock_guard<mutex> lock(guard);
-		handlers.emplace_back(module);
-	}
-
-	void Module::Controller::remove(Module *module) {
-		lock_guard<mutex> lock(guard);
-		for(auto handler : handlers) {
-			if(handler.module == module) {
-				handlers.remove(handler);
-				return;
-			}
-		}
-	}
-
-	Module::Controller::Handler & Module::Controller::handler(Module *module) {
-		lock_guard<mutex> lock(guard);
-		for(auto &handler : handlers) {
-			if(handler.module == module) {
-				return handler;
-			}
-		}
-		throw logic_error("Unexpected error: The requested module was not found");
+		Logger::String{"Stopping controller"}.trace();
+		unload();
 	}
 
 }

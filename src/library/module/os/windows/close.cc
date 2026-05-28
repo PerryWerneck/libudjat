@@ -31,19 +31,15 @@
 		FreeLibrary(module);
 	}
 
-	bool Module::Controller::deinit(HMODULE handle) {
+	bool Module::Controller::deinit(void *handle) {
 
-		#pragma GCC diagnostic push
-		#pragma GCC diagnostic ignored "-Wcast-function-type"
-		bool (*udjat_module_deinit)(void) = (bool (*)(void)) GetProcAddress(handle,"udjat_module_deinit");
-		#pragma GCC diagnostic pop
+		auto deinit = getfunc<bool>(handle,"udjat_module_deinit",false);
 
-		if(udjat_module_deinit) {
+		if(deinit) {
 			debug("Calling udjat_module_deinit");
-			bool rc = udjat_module_deinit();
-			debug("(udjat_module_deinit returns ",rc);
-			return rc;
+			return deinit();
 		}
+
 		debug("No udjat_module_deinit method, just returning true");
 		return true;
 	}

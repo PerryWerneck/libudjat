@@ -17,32 +17,8 @@ namespace Udjat {
 	private:
 		friend class MainLoop;
 
-		mutable std::mutex guard;
-
-		struct Handler {
-#ifdef _WIN32
-			HMODULE handle = NULLHANDLE;
-#else
-			void * handle = NULL;
-#endif
-
-			/// @brief Unload module on service/application stop?
-			bool unload = false;
-
-			/// @brief Delete module on service/application stop?
-			bool cleanup = false;
-
-			/// @brief Pointer to the module object.
-			Module * module = nullptr;
-
-			constexpr Handler(Module *m) noexcept : module{m} {
-			}
-
-		};
-
-		Handler & handler(Module *module);
-
-		std::list<Handler> handlers;
+		/// @brief The loaded modules.
+		Container<Module> modules;
 
 		/// @brief Find path from module name.
 		/// @param name Module name.
@@ -66,9 +42,31 @@ namespace Udjat {
 		~Controller();
 
 #ifdef _WIN32
-		static void * getSymbol(HMODULE hModule, const char *name, bool required = true);
+		static void * get_symbol(HMODULE hModule, const char *name, bool required = true);
+
+		template <typename ret, typename... args>
+		inline ret call(HMODULE hModule, const char *name, args... a) noexcept {
+			ret (*func)(args...) = (ret (*)(args...)) get_symbol(hModule, name);
+			return func(a...);
+		}
+ 
+		template <typename ret, typename... args>
+		inline auto getfunc(HMODULE hModule, const char *name,bool required = true) noexcept {
+			return reinterpret_cast<ret(*)(args...)>(get_symbol(hModule, name, required));
+		}
 #else
-		static void * getSymbol(void *handle, const char *name, bool required = true);
+		static void * get_symbol(void *handle, const char *name, bool required = true);
+
+		template <typename ret, typename... args>
+		inline ret call(void *handle, const char *name, args... a) noexcept {
+			ret (*func)(args...) = (ret (*)(args...)) get_symbol(handle,name);
+			return func(a...);
+		}
+ 
+		template <typename ret, typename... args>
+		inline auto getfunc(void *handle, const char *name, bool required = true) noexcept {
+			return reinterpret_cast<ret(*)(args...)>(handle,get_symbol(handle, name, required));
+		}
 #endif
 
 		Module * find_by_filename(const char *filename);
@@ -76,10 +74,8 @@ namespace Udjat {
 
 		static Controller & getInstance();
 
-		void clear();
-
-		void push_back(Module *module);
-		void remove(Module *module);
+		/// @brief Unload all modules.
+		void unload();
 
 		/// @brief Load module by xml definition.
 		/// @param node Module definitions.
@@ -90,9 +86,17 @@ namespace Udjat {
 		/// @param filename The module filename.
 		/// @return true if the module was already loaded.
 		/// @retval true The module was already loaded.
-		static bool load(const std::string &filename, const XML::Node &node);
+		bool load(const std::string &filename, const XML::Node &node);
 		
 		bool for_each(const std::function<bool(Module &module)> &method);
+
+		inline void push_back(Module *module) {
+			modules.push_back(module);
+		}
+
+		inline void remove(Module *module) {
+			modules.remove(module);
+		}
 
 	};
 

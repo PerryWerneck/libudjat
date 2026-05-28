@@ -20,51 +20,40 @@
  #include <config.h>
  #include <private/module.h>
  #include <dlfcn.h>
+ #include <udjat/module/abstract.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/container.h>
  #include <unistd.h>
 
  namespace Udjat {
 
-	Module * Module::factory(const char *filename, const XML::Node &node) {
-
-		dlerror();
-		void * handle = dlopen(filename,RTLD_NOW|RTLD_LOCAL);
-		if(!handle) {
-			throw runtime_error(dlerror());
-		}
-
-		try {
-
-			return Controller::init(handle,node);
-
-		} catch(...) {
-
-			dlclose(handle);
-			throw;
-
-		}
-
+	bool Module::load(const char *filename, const XML::Node &node) {
+		return Controller::getInstance().load(filename,node);
 	}
 
 	Module * Module::Controller::find_by_filename(const char *path) {
-
-		lock_guard<mutex> lock(guard);
-
-		for(auto &handler : handlers) {
-
-			// Check if the module is already loaded.
-			if(handler.module && !strcasecmp(handler.module->filename().c_str(),path)) {
-				return handler.module;
+		for(auto &module : modules) {
+			if(module->handle && !strcasecmp(module->filename().c_str(),path)) {
+				return module;
 			}
-
 		}
-
 		return nullptr;
-
 	}
 	
-	void * Module::Controller::getSymbol(void *handle, const char *name	, bool required) {
+	void * Module::get_symbol(const char *name, bool required) {
+		void * symbol = ::dlsym(handle,name);
+
+		if(required) {
+			auto err = dlerror();
+			if(err)
+				throw runtime_error(err);
+		}
+
+		return symbol;
+	}
+
+	void * Module::Controller::get_symbol(void *handle, const char *name, bool required) {
 
 		void * symbol = ::dlsym(handle,name);
 

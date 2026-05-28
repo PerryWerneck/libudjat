@@ -29,6 +29,7 @@
  #include <udjat/tools/quark.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
+ #include <private/module.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -56,11 +57,6 @@
 				const_cast<Service *>(&service)->stop();
 			}
 			return true;
-		});
-
-		Module::for_each([](Module &module){
-			module.finalize();
-			return false;
 		});
 
 		ThreadPool::getInstance().wait();

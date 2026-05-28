@@ -32,9 +32,12 @@
 
 		return std::vector<string>{
 			Config::Value<string>("modules","path",Application::LibDir(MODULE_VERSION "/modules",false).c_str()),
-#ifdef LIBDIR
+#if defined(LIBDIR)
 			Config::Value<string>("modules","common-path",STRINGIZE_VALUE_OF(LIBDIR) "/" PACKAGE_NAME "/" MODULE_VERSION "/modules/").c_str(),
 #endif //LIBDIR
+#if defined(LIBDIR) && defined(PRODUCT_NAME)
+			Config::Value<string>("modules","product-path",STRINGIZE_VALUE_OF(LIBDIR) "/" STRINGIZE_VALUE_OF(PRODUCT_NAME) "/" MODULE_VERSION "/modules/").c_str(),
+#endif			
 		};
 
 	}

@@ -38,13 +38,22 @@
 		/// @brief The module name.
 		const char *module_name;
 
-		/// @brief The module controller.
-		class Controller;
-		friend class Controller;
+#ifdef _WIN32
+		HMODULE handle = NULLHANDLE;
+#else
+		void * handle = NULL;
+#endif
+
+		bool keep_loaded = true;
+		bool keep_active = true;
 
 	protected:
 
 		typedef Udjat::Module super;
+
+		/// @brief The module controller.
+		class Controller;
+		friend class Controller;
 
 		struct Info {
  
@@ -110,7 +119,7 @@
 
 		/// @brief Build module from filename.
 		/// @param filename Path to the .so ou .dll file with module.
-		static Module * factory(const char *filename, const XML::Node &node = XML::Node{});
+		static bool load(const char *filename, const XML::Node &node = XML::Node{});
 
 		bool operator==(const char *name) const noexcept {
 			return strcasecmp(this->module_name,name) == 0;
@@ -199,6 +208,19 @@
 		/// @brief Set new root agent.
 		virtual void set(std::shared_ptr<Abstract::Agent> agent);
 
+		void * get_symbol(const char *symbol_name, bool required = true);
+
+		template <typename ret, typename... args>
+		inline ret call(const char *name, args... a) noexcept {
+			ret (*func)(args...) = (ret (*)(args...)) get_symbol(name);
+			return func(a...);
+		}
+ 
+		template <typename ret, typename... args>
+		inline auto getfunc(const char *name) noexcept {
+			return reinterpret_cast<ret(*)(args...)>(get_symbol(name));
+		}
+ 		
 	};
 
  }

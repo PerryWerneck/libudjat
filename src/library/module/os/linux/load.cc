@@ -52,22 +52,20 @@
 
 		try {
 
-			Module * (*init)(const XML::Node &node)
-					= (Module * (*)(const XML::Node &node)) getSymbol(handle,"udjat_module_init",false);
+			auto init = getfunc<Module *,const XML::Node &>(handle,"udjat_module_init",false);
 
 			if(!init) {
-				throw runtime_error("Module has no initialization method");
+				throw runtime_error(String{filename.c_str()," is not a valid module"});
 			}
 
 			auto module = init(node);
 			if(!module) {
-				throw runtime_error("Module initialization has failed");
+				throw runtime_error(String{"Initialization of ",filename.c_str()," has failed"});
 			}
 
-			auto hdl = handler(module);
-			hdl.handle = handle;
-			hdl.unload = !node.attribute("keep-loaded").as_bool(false);
-			hdl.cleanup = !node.attribute("keep-active").as_bool(false);
+			module->handle = handle;
+			module->keep_loaded = node.attribute("keep-loaded").as_bool(false);
+			module->keep_active = node.attribute("keep-active").as_bool(false);
 
 			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
 				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
