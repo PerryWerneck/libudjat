@@ -124,6 +124,12 @@
 		/// @param filename Path to the .so ou .dll file with module.
 		static bool load(const char *filename, const XML::Node &node = XML::Node{});
 
+		/// @brief Enable auto cleanup of the module at exit.
+		inline void autoclean(bool enabled = true) noexcept {
+			keep_loaded = !enabled;
+			keep_active = !enabled;
+		}
+
 		/// @brief Find path from module name.
 		/// @param name Module name.
 		/// @return Module path or empty string if not found.
@@ -250,7 +256,7 @@
 
 	/// @brief Initialize module from XML node.
 	/// @return Module controller.
-	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::XML::Node &node);
+	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::XML::Node &node = Udjat::XML::Node{});
 
 	/// @brief Deinitialize the module.
 	/// @return true if the module can be unloaded.
