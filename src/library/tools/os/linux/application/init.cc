@@ -43,6 +43,8 @@
 		setlocale( LC_ALL, "" );
 #endif // GETTEXT_PACKAGE
 
+		Module::initialize();
+		
 	}
 
  }

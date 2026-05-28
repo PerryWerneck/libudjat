@@ -132,6 +132,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 
 	Logger::setup(argc,argv,true);
 	Logger::redirect();
+	Module::initialize();
 
 	// Configuration file (or path)
 	string config_file{path};

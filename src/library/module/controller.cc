@@ -17,12 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define LOG_DOMAIN "module"
 #include <config.h>
 #include <private/module.h>
 #include <udjat/tools/container.h>
 #include <iostream>
-
-#define LOG_DOMAIN "module"
 #include <udjat/tools/logger.h>
 
 using namespace std;
@@ -30,6 +29,10 @@ using namespace std;
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
+
+	void Module::initialize() noexcept {
+		Controller::getInstance();
+	}
 
 	Module::Controller & Module::Controller::getInstance() {
 		static Controller instance;

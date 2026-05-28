@@ -57,6 +57,8 @@ namespace Udjat {
 			"fallback-to"
 		};
 
+		debug("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+		
 		std::vector<std::string> paths{Module::search_paths()};
 
 		for(const char *attribute : attributes) {

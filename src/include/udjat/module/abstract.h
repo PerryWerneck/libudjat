@@ -117,6 +117,9 @@
 
 	public:
 
+		/// @brief Initialize module engine.
+		static void initialize() noexcept;
+
 		/// @brief Build module from filename.
 		/// @param filename Path to the .so ou .dll file with module.
 		static bool load(const char *filename, const XML::Node &node = XML::Node{});
