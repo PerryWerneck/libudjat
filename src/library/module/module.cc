@@ -31,10 +31,14 @@ using namespace std;
 
 namespace Udjat {
 
-	Module::Module(const char *n, const char *d) : module_name{n}, handle{nullptr} {
+	Module::Module(const char *n, const char *description) : module_name{n} {
 
 		if(!(module_name && *module_name)) {
 			throw system_error(EINVAL,system_category(),"Cant create unnamed module");
+		}
+
+		if(description && *description) {
+			info.description = description;
 		}
 
 		if(info.build && info.build < MINIMAL_MODULE_BUILD) {
@@ -50,9 +54,6 @@ namespace Udjat {
 		Controller::getInstance().remove(this);
 	}
 
-	void Module::finalize() {
-	}
-
 	Value & Module::getProperties(Value &properties) const {
 		properties["name"] = module_name;
 		properties["filename"] = filename();
@@ -60,23 +61,11 @@ namespace Udjat {
 	}
 
 	const Module * Module::find(const char *name) noexcept {
-		return Controller::getInstance().find(name);
-	}
-
-	void * Module::dlsym(const char *symbol, bool required) const {
-		return Controller::getSymbol(handle, symbol, required);
+		return Controller::getInstance().find_by_name(name);
 	}
 
 	bool Module::for_each(const std::function<bool(Module &module)> &method) {
-		for(auto &module : Controller::getInstance()) {
-			if(method(*module)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	void Module::set(std::shared_ptr<Abstract::Agent>) {
+		return Controller::getInstance().for_each(method);
 	}
 
 	bool Module::getProperty(const char *key, std::string &value) const {
@@ -129,6 +118,13 @@ namespace Udjat {
 
 	void Module::exec(Udjat::Value UDJAT_UNUSED(&response), const char *name, va_list UDJAT_UNUSED(args)) const {
 		throw system_error(ENOTSUP,system_category(),Logger::Message(_("I dont know how to execute '{}'"),name));
+	}
+
+	std::string Module::locate(const char *name) noexcept {
+		return Controller::getInstance().locate(name);
+	}
+
+	void Module::set(std::shared_ptr<Udjat::Abstract::Agent>) {
 	}
 
 }

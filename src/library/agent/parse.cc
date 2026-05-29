@@ -43,9 +43,9 @@
 
 namespace Udjat {
 
-	bool Abstract::Agent::setup(const XML::Node &node) {
+	bool Abstract::Agent::append_child(const XML::Node &node) {
 
-		if(Udjat::Object::setup(node)) {
+		if(Udjat::Object::append_child(node)) {
 			return true;
 		}
 

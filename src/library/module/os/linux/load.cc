@@ -17,12 +17,16 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #define LOG_DOMAIN "module"
+
  #include <config.h>
  #include <private/module.h>
+ #include <udjat/module/abstract.h>
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/object.h>
+ #include <udjat/tools/logger.h>
  #include <unistd.h>
  #include <iostream>
 
@@ -30,9 +34,14 @@
 
  namespace Udjat {
 
-	void Module::Controller::init(const std::string &filename, const XML::Node &node) {
+	bool Module::Controller::load(const std::string &filename, const XML::Node &node) {
 
-		Logger::String{"Loading '",filename,"'"}.trace("module");
+		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
+			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
+			return true;
+		}
+
+		Logger::String{"Loading '",filename.c_str(),"'"}.trace();
 
 		// Load module.
 		dlerror();
@@ -43,9 +52,27 @@
 
 		try {
 
-			auto module = init(handle,node);
+			auto init = getfunc<Module *,const XML::Node &>(handle,"udjat_module_init",false);
+
+			if(!init) {
+				throw runtime_error(String{filename.c_str()," is not a valid module"});
+			}
+
+			auto module = init(node);
 			if(!module) {
-				throw runtime_error("Module initialization has failed");
+				throw runtime_error(String{"Initialization of ",filename.c_str()," has failed"});
+			}
+
+			module->handle = handle;
+			module->keep_loaded = node.attribute("keep-loaded").as_bool(false);
+			module->keep_active = node.attribute("keep-active").as_bool(false);
+
+			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
+				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
+			}
+
+			if(module->info.gettext_package && *module->info.gettext_package) {
+				Application::set_gettext_package(module->info.gettext_package);
 			}
 
 		} catch(...) {
@@ -55,55 +82,8 @@
 
 		}
 
-	}
+		return false;
 
-	Module * Module::Controller::init(void *handle, const XML::Node &node) {
-
-		Module * (*init_from_xml)(const XML::Node &node)
-				= (Module * (*)(const XML::Node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
-
-		if(init_from_xml) {
-
-			Module * module = init_from_xml(node);
-			if(!module) {
-				throw runtime_error("Can't initialize module");
-			}
-
-			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
-				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
-			}
-
-			module->handle = handle;
-			module->keep_loaded = node.attribute("keep-loaded").as_bool(false) || Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
-
-			if(module->info.gettext_package && *module->info.gettext_package) {
-				Application::set_gettext_package(module->info.gettext_package);
-			}
-
-			return module;
-
-		}
-
-		return init(handle);
-
-	}
-
-	Module * Module::Controller::init(void * handle) {
-
-		Module * (*init)(void) = (Module * (*)(void)) getSymbol(handle,"udjat_module_init");
-
-		Module * module = init();
-		if(!module) {
-			throw runtime_error("Can't initialize module");
-		}
-
-		module->handle = handle;
-
-		if(module->gettext_package() && *module->gettext_package()) {
-			Application::set_gettext_package(module->gettext_package());
-		}
-
-		return module;
 	}
 
  }

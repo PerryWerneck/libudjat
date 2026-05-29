@@ -23,6 +23,7 @@
 
  #include <sstream>
  #include <udjat/tools/file.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/file/handler.h>
  #include <udjat/tools/file/temporary.h>
  #include <udjat/tools/logger.h>
@@ -33,6 +34,8 @@
  #include <uriparser/Uri.h>
  #include <private/urlparser.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/url/handler.h>
+ #include <private/module.h>
 
  using namespace std;
 
@@ -41,6 +44,10 @@
  	Container<URL::Handler::Factory> & factories() {
 		static Container<URL::Handler::Factory> factories;
 		return factories;
+	}
+
+	URL::Handler::Handler() : keep_downloaded{Config::Value<bool>{"url-handler","allow-cache",true}} {
+
 	}
 
 	URL::Handler::Factory::Factory(const char *n, const char *description) : name{n} {
@@ -107,18 +114,18 @@
 			// Try to load a module using the handler name.
 			try {
 
-				if(Module::load(scheme.c_str(),false)) {
+				auto filename = Module::locate(scheme.c_str());
 
-					Logger::String{"Module for ",scheme.c_str()," handler loaded"}.trace();
-
+				if(!filename.empty()) {
+					Logger::String{"Autoloading ",filename.c_str()," for ",scheme.c_str()," handler"}.trace();
+					Module::load(filename.c_str());
 					for(const auto factory : factories()) {
 						if(*factory == scheme.c_str()) {
 							return factory->HandlerFactory(*this);
 						}
 					}
-
 				}
-
+				
 			} catch(const std::exception &e) {
 
 				Logger::String{"Failed to load module for ",scheme.c_str()," handler: ",e.what()}.trace();
@@ -143,6 +150,14 @@
 	URL::Handler::~Handler() {
 	}
 
+	URL::Handler & URL::Handler::header(const URL::Handler::Header id, const char *value) {
+		return header(to_string(id),value);
+	}
+
+	const char * URL::Handler::header(const Header id) const {
+		return header(to_string(id));
+	}
+
 	URL::Handler & URL::Handler::header(const char *, const char *) {
 		return *this;
 	}
@@ -153,7 +168,7 @@
 
 	URL::Handler & URL::Handler::set(const MimeType mimetype) {
 		// https://www.rfc-editor.org/rfc/rfc7231#section-5.3.2
-		header("Accept",std::to_string(mimetype));
+		header(ACCEPT,std::to_string(mimetype));
 		return *this;
 	}
 
@@ -218,10 +233,10 @@
 
 	bool URL::Handler::get(File::Handler &file, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 
-		{
+		if(keep_downloaded) {
 			time_t mtime = file.mtime();
 			if(mtime) {
-				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());
+				header(IF_MODIFIED_SINCE,HTTP::TimeStamp(mtime).to_string().c_str());
 			}
 		}
 
@@ -255,15 +270,30 @@
 		return get(file,method,payload,[](uint64_t,uint64_t){ return false; });
 	}
 
+	const char * URL::Handler::to_string(const URL::Handler::Header hdr) {
+
+		static const char *strings[] = {
+			"If-Modified-Since",
+			"Last-Modified",
+			"Accept",
+		};
+
+		if( ((size_t) hdr) >= (sizeof(strings)/sizeof(strings[0]))) {
+			throw std::invalid_argument("Unexpected HTTP handler identifier");
+		}
+
+		return strings[hdr];
+	}
+
 	bool URL::Handler::get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
 		
 		// Download to temporary file.
 		File::Temporary file{filename};
 
-		{
+		if(keep_downloaded) {
 			time_t mtime = file.mtime();
 			if(mtime) {
-				header("If-Modified-Since",HTTP::TimeStamp(mtime).to_string().c_str());
+				header(IF_MODIFIED_SINCE,HTTP::TimeStamp(mtime).to_string().c_str());
 			}
 		}
 
@@ -298,7 +328,7 @@
 			file.save(filename,true);
 
 			// Set file modification time.
-			HTTP::TimeStamp timestamp{header("Last-Modified")};
+			HTTP::TimeStamp timestamp{header(LAST_MODIFIED)};
 			debug("timestamp=",timestamp.to_string());
 			if(timestamp) {
 				Logger::String{"Timestamp of ",filename," set to ",timestamp.to_string()}.trace();

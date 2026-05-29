@@ -23,8 +23,11 @@
  #include <udjat/tools/mainloop.h>
  #include <udjat/tools/handler.h>
  #include <udjat/tools/url.h>
- #include <sys/ioctl.h>
  #include <system_error>
+
+ #ifndef _WIN32
+	#include <sys/ioctl.h>
+ #endif
 
  namespace Udjat {
 
@@ -46,6 +49,20 @@
 
 	public:
 
+		/// @brief Connect to host, return socket.
+		/// @param url URL to connect.
+		/// @param seconds Seconds to wait for connection, if -1 uses the default.
+		/// @param check_for_mainloop If true stop the connection when the internal mainloop stops
+		/// @return The connected socket
+		static int connect(const URL &url, int seconds = -1, bool check_for_mainloop = true);
+
+		static void set_timeout(int sock, unsigned int seconds);
+
+		static void set_blocking(int sock, bool blocking);
+
+		static void send(int sock, const void *buf, size_t len, int timeout = -1);
+		static void recv(int sock, void *buf, size_t len, int timeout = -1);
+
 		/// @brief Connect to URL
 		/// @param url URL to connect
 		Socket(const URL &url, unsigned int seconds = 0);
@@ -62,10 +79,12 @@
 
 		virtual ~Socket();
 
-		static void blocking(int sock, bool enable = true);
+		inline void blocking(int sock, bool enable = true) {
+			set_blocking(sock,enable);
+		}
 
 		inline void blocking(bool enable) {
-			blocking(values.fd,enable);
+			set_blocking(values.fd,enable);
 		}
 
 		static void close(int sock) noexcept;
@@ -75,18 +94,20 @@
 		/// @brief Wait for the connection to establish.
 		/// @param timeout Timeout in milliseconds.
 		/// @return sock if the connection is established, -1 otherwise (set errno).
-		static int wait_for_connection(int sock, unsigned int seconds = 0);
+		static int wait_for_connection(int sock, unsigned int seconds = 0, bool check_for_mainloop = true);
 
 		inline int wait_for_connection(unsigned int seconds = 0) {
 			return wait_for_connection(values.fd, seconds);
 		}
 
+#ifndef _WIN32
 		template <typename T>
 		inline void ioctl(unsigned long op, T &val) const {
 			if(::ioctl(fd(), op, (caddr_t)&val) < 0) {
 				throw std::system_error(errno,std::system_category(),"ioctl error");
 			}
 		}
+#endif
 
 
 	};

@@ -66,6 +66,9 @@ namespace Udjat {
 		return names[level];
 	}
 
+	Abstract::State::State(const char *name, const char *level, const char *summary, const char *body) : Abstract::State{name,LevelFactory(level),summary,body} {
+	}
+
 	Abstract::State::State(const char *name, const Level level, const char *summary, const char *body) : Object((name && *name) ? name : "unnamed") {
 
 		if(summary && *summary) {
@@ -102,9 +105,9 @@ namespace Udjat {
 
 	}
 
-	bool Abstract::State::setup(const XML::Node &node) {
+	bool Abstract::State::append_child(const XML::Node &node) {
 
-		if(Udjat::Object::setup(node)) {
+		if(Udjat::Object::append_child(node)) {
 			return true; // Handled by object.
 		}
 

@@ -73,6 +73,12 @@ namespace Udjat {
 			return false;
 		}
 
+		if(!current_state.selected.get()) {
+			// The current state is empty, create a blank one.
+			current_state.selected = make_shared<Abstract::State>("undefined",Level::unimportant);
+			current_state.activation = current_state.StateWasSet;
+		}
+
 		// Save current values.
 		auto saved_level = level();
 		auto saved_ready = ready();

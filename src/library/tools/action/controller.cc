@@ -106,14 +106,32 @@
 		// Get action type
 		auto type = TypeFactory(node);
 
-		// Check factories
-		for(const auto factory : *this) {
-			
-			if(*factory == type.c_str()) {
-				auto action = factory->ActionFactory(node);
-				if(action) {
-					return action;
+		if(type.empty()) {
+
+			// No type, use probe.
+			for(const auto factory : *this) {
+				
+				if(factory->probe(node)) {
+					auto action = factory->ActionFactory(node);
+					if(action) {
+						return action;
+					}
 				}
+
+			}
+
+		} else {
+
+			// Has type, use it.
+			for(const auto factory : *this) {
+				
+				if(*factory == type.c_str()) {
+					auto action = factory->ActionFactory(node);
+					if(action) {
+						return action;
+					}
+				}
+
 			}
 
 		}
@@ -259,7 +277,9 @@
 					ActionContainer(const Controller *cntrl, const XML::Node &node) : Action{node} {
 						
 						// Parse standard children
-						setup(node);
+						for(auto action = node.child("action"); action; action = action.next_sibling("action")) {
+							push_back(cntrl->ObjectFactory(action));
+						}
 
 						// Legacy support for <script> children
 						for(auto action = node.child("script"); action; action = action.next_sibling("script")) {

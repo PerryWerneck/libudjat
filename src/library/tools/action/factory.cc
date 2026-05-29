@@ -58,6 +58,10 @@
 		Controller::getInstance().remove(this);
 	}
 
+	bool Action::Factory::probe(const XML::Node &node) const noexcept {
+		return false;
+	}
+
 	const std::list<Action::Factory *>::const_iterator Action::Factory::begin() {
 		return Controller::getInstance().begin();
 	}
@@ -93,7 +97,7 @@
 	}
 
 	std::shared_ptr<Action> Action::Factory::build(const XML::Node &node) {		
-		Abstract::Object object;
+		// Abstract::Object object;
 		return std::dynamic_pointer_cast<Action>(Controller::getInstance().ObjectFactory(node));
 	}
 

@@ -17,11 +17,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+#define LOG_DOMAIN "module"
 #include <config.h>
 #include <private/module.h>
+#include <udjat/tools/container.h>
 #include <iostream>
-
-#define LOG_DOMAIN "module"
 #include <udjat/tools/logger.h>
 
 using namespace std;
@@ -29,6 +29,10 @@ using namespace std;
 //---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
+
+	void Module::initialize() noexcept {
+		Controller::getInstance();
+	}
 
 	Module::Controller & Module::Controller::getInstance() {
 		static Controller instance;
@@ -40,18 +44,12 @@ namespace Udjat {
 	}
 
 	Module::Controller::~Controller() {
+		Logger::String{"Stopping controller"}.trace();
+		unload();
+	}
 
-		if(objects.size()) {
-			Logger::String{"The controller was destroyed without deactivation"}.error();
-			for(auto object : objects) {
-				Logger::String{"Module ",object->module_name," is still active"}.error();
-			}
-		} else {
-			Logger::String{"Stopping clean controller"}.trace();
-		}
-
-		clear();
-
+	bool Module::Controller::for_each(const std::function<bool(Module &module)> &method) {
+		return modules.for_each(method);
 	}
 
 }

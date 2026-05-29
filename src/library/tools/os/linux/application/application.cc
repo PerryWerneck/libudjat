@@ -56,8 +56,30 @@
 
 	}
 
+	Application::Name::Name(bool with_path) {
+
+		if(!with_path) {
+			assign(program_invocation_short_name);
+			return;
+		}
+
+		// With path, get complete path for the program name.
+
+		char exename[PATH_MAX+1];
+		memset(exename,0,PATH_MAX+1);
+
+		if(readlink(program_invocation_name,exename,PATH_MAX) < 0) {
+			strncpy(exename,program_invocation_name,PATH_MAX);
+		}
+
+		assign(exename);
+		
+	}
+
+	/*
 	Application::Name::Name(bool with_path) : string{with_path ? program_invocation_name : program_invocation_short_name} {
 	}
+	*/
 
 	static std::string PathFactory(const char *path, const char *subdir, bool required) {
 

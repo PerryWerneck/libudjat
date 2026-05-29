@@ -81,12 +81,14 @@
 		return objectName;
 	}
 
+	/*
 	bool NamedObject::setup(const XML::Node &node) {
 		if(!(objectName && *objectName)) {
 			objectName = NameFactory(node);
 		}
 		return Abstract::Object::setup(node);
 	}
+	*/
 
 	const char * NamedObject::c_str() const noexcept {
 		return (this->objectName ? this->objectName : "" );
@@ -186,18 +188,9 @@
 
 	void Abstract::Object::parse_children(const XML::Node &node) {
 
-		/*
-#ifndef BUILD_LEGACY
-		bool trace = Logger::enabled(Logger::Debug);
-		if(trace) {
-			Logger::String{"Parsing object children at ",node.path()}.info(name());
-		}
-#endif
-		*/
-
 		for(const auto &child : node) {
 
-			if(this->setup(child)) {
+			if(this->append_child(child)) {
 				continue; // Ignore reserved and already handled nodes.
 			}
 
@@ -208,14 +201,6 @@
 			for(const auto factory : Factories()) {
 
 				if(*factory == name) {
-/*
-#ifndef BUILD_LEGACY
-					if(trace) {
-						Logger::String{"Got factory '", factory->c_str(), "' for ",child.path()}.info(this->name());
-					}
-#endif
-*/
-
 					auto object = factory->ObjectFactory(child);
 					push_back(child,object);
 					object->parse_children(child);
@@ -227,7 +212,7 @@
 
 	}
 	
-	bool Abstract::Object::setup(const XML::Node &node) {
+	bool Abstract::Object::append_child(const XML::Node &node) {
 
 		if(XML::parse(node)) {
 			return true; // Ignore reserved nodes.
@@ -249,12 +234,17 @@
 		properties.icon = String{node,"icon",properties.icon}.as_quark();
 	}
 
-	bool Object::setup(const XML::Node &node) {
-		return NamedObject::setup(node);
+	bool Object::append_child(const XML::Node &node) {
+		return NamedObject::append_child(node);
 	}
 
 	Value & Abstract::Object::getProperties(Value &value) const {
 		return value;
+	}
+
+	int Abstract::Object::call(const Request &, Response &response) {
+		getProperties(response);
+		return 0;
 	}
 
 	const char * Object::label() const noexcept {
@@ -281,6 +271,10 @@
 
 	std::string Abstract::Object::to_string() const noexcept {
 		return name();
+	}
+
+	bool Abstract::Object::setProperty(const char *, const char *) {
+		return false;
 	}
 
 	String Abstract::Object::getProperty(const char *key, const char *def) const {
@@ -327,7 +321,7 @@
 
 		if(NamedObject::getProperty(key,value)) {
 			return true;
-		}
+		} 
 
 		if(!strcasecmp(key,"label")) {
 			value = properties.label;

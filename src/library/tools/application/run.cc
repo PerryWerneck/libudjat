@@ -85,7 +85,7 @@
 			agent->label(),
 			" - ",
 			agent->summary()
-		}.write((Logger::Level) (Logger::Debug+1),agent->name());
+		}.write((Logger::Level) (Logger::Notice),agent->name());
 
 		for(const auto &child : *agent) {
 			dump(child, level + 1);

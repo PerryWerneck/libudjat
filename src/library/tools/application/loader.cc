@@ -132,6 +132,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 
 	Logger::setup(argc,argv,true);
 	Logger::redirect();
+	Module::initialize();
 
 	// Configuration file (or path)
 	string config_file{path};
@@ -144,12 +145,9 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		string argvalue;
 
 		if(CommandLineParser::get_argument(argc,argv,'m',"module",argvalue)) {
+
 			Logger::String{"Loading module '" + argvalue + "'"}.info();
-			modules.push_back(Module::factory(argvalue.c_str()));
-			if(modules.back() == nullptr) {
-				Logger::String{"Module '" + argvalue + "' not found"}.error();
-				return -1;
-			}
+			Module::load(argvalue.c_str());
 		}
 	
 		if(CommandLineParser::get_argument(argc,argv,'c',"config",argvalue)) {
@@ -159,9 +157,10 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 		if(CommandLineParser::get_argument(argc,argv,'t',"test",argvalue)) {
 
 			debug("Running unit test '",argvalue,"'");
+
+/*
 #ifndef _WIN32	
 			dl_iterate_phdr(phdr_item, nullptr);
-			/*
 			try {
 				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
 				if(symbol) {
@@ -171,11 +170,11 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
 				return -1;
 			}
-			*/
 #endif
+*/
 
 			Module::for_each([&argvalue](Module &module) -> bool {
-				int (*symbol)(const char *) = (int(*)(const char *)) module.dlsym("run_unit_test");
+				int (*symbol)(const char *) = module.getfunc<int,const char *>("run_unit_test",false);
 				if(symbol) {
 					symbol(argvalue.c_str());
 				}
@@ -283,11 +282,7 @@ static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
 
 	} else if(access(testmodule.c_str(),R_OK) == 0) {
 		Logger::String{"Loading test module from '" + testmodule + "'"}.info();
-		modules.push_back(Module::factory(testmodule.c_str()));
-		if(modules.back() == nullptr) {
-			Logger::String{"Module '" + testmodule + "' not found"}.error();
-			return -1;
-		}
+		Module::load(testmodule.c_str());
 
 	} else {
 

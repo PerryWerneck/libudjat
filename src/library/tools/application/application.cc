@@ -29,6 +29,7 @@
  #include <udjat/tools/quark.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
+ #include <private/module.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -58,23 +59,18 @@
 			return true;
 		});
 
-		Module::for_each([](Module &module){
-			module.finalize();
-			return false;
-		});
-
 		ThreadPool::getInstance().wait();
 
 		Module::unload();
 	}
 
 	Dialog::Status & Application::state(const Level, const char *message) noexcept {
-		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+		Logger::String{message}.write((Logger::Level) (Logger::Notice),Name().c_str());
 		return *this;
 	}
 
 	Dialog::Status & Application::state(const char *message) noexcept {
-		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),Name().c_str());
+		Logger::String{message}.write((Logger::Level) (Logger::Notice),Name().c_str());
 		return *this;
 	}
 

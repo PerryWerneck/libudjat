@@ -57,8 +57,8 @@ src/library/tools/crypto/backend/engine.cc
 src/library/tools/crypto/backend/legacy.cc
 src/library/tools/crypto/backend/provider.cc
 src/library/tools/crypto/exception.cc
-src/library/tools/crypto/backend.cc
 src/library/tools/crypto/key.cc
+src/library/tools/crypto/backend.cc
 src/library/tools/event.cc
 src/library/tools/eventcontroller.cc
 src/library/tools/exception.cc
@@ -107,11 +107,11 @@ src/library/tools/os/linux/file/copy.cc
 src/library/tools/os/linux/file/list.cc
 src/library/tools/os/linux/file/move.cc
 src/library/tools/os/linux/file/path.cc
-src/library/tools/os/linux/file/sysconfig.cc
 src/library/tools/os/linux/file/sysconfig_value.cc
 src/library/tools/os/linux/file/text.cc
 src/library/tools/os/linux/file/watcher.cc
 src/library/tools/os/linux/file/temporary.cc
+src/library/tools/os/linux/file/sysconfig.cc
 src/library/tools/os/linux/hostname.cc
 src/library/tools/os/linux/ip.cc
 src/library/tools/os/linux/netlink_routes.cc
@@ -214,10 +214,11 @@ src/library/tools/xml/load.cc
 src/library/tools/activatable.cc
 src/library/tools/commandlineparser.cc
 src/library/tools/logger.cc
-src/library/tools/object.cc
 src/library/tools/script.cc
+src/library/tools/object.cc
 src/library/ui/progress.cc
 src/library/ui/status.cc
+src/library/ui/animation.cc
 src/include/private/configuration.h
 src/include/private/dialog.h
 src/include/private/event.h
@@ -255,8 +256,8 @@ src/include/udjat/module.h
 src/include/udjat/module/abstract.h
 src/include/udjat/net/interface.h
 src/include/udjat/net/ip/address.h
-src/include/udjat/tools/abstract/object.h
 src/include/udjat/tools/abstract/request-path.h
+src/include/udjat/tools/abstract/object.h
 src/include/udjat/tools/actions/abstract.h
 src/include/udjat/tools/base64.h
 src/include/udjat/tools/cleanup.h
@@ -292,7 +293,6 @@ src/include/udjat/tools/response.h
 src/include/udjat/tools/singleton.h
 src/include/udjat/tools/socket.h
 src/include/udjat/tools/subprocess.h
-src/include/udjat/tools/system.h
 src/include/udjat/tools/systemservice.h
 src/include/udjat/tools/threadpool.h
 src/include/udjat/tools/timer.h
@@ -309,6 +309,7 @@ src/include/udjat/tools/script.h
 src/include/udjat/tools/service.h
 src/include/udjat/tools/string.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/system.h
 src/include/udjat/tools/activatable.h
 src/include/udjat/tools/application.h
 src/include/udjat/tools/crypto.h

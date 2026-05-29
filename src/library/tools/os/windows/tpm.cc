@@ -28,7 +28,7 @@
 
  namespace Udjat {
 
-	UDJAT_API bool TPM::probe(const bool except) {
+	UDJAT_API bool TPM::probe(const bool except, bool) {
 
 		if(except) {
 			throw system_error(ENOTSUP,system_category(),"TPM engine is not supported on windows");

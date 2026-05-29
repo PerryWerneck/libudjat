@@ -28,14 +28,14 @@
  namespace Udjat {
 
 	bool Module::Controller::deinit(void *handle) {
-		bool (*udjat_module_deinit)(void) = (bool (*)(void)) ::dlsym(handle,"udjat_module_deinit");
-		auto err = dlerror();
-		if(!err) {
+
+		auto deinit = getfunc<bool>(handle,"udjat_module_deinit",false);
+
+		if(deinit) {
 			debug("Calling udjat_module_deinit");
-			bool rc = udjat_module_deinit();
-			debug("(udjat_module_deinit returns ",rc);
-			return rc;
+			return deinit();
 		}
+
 		debug("No udjat_module_deinit method, just returning true");
 		return true;
 	}

@@ -60,7 +60,7 @@
 	}
 
 	void Win32::MainLoop::quit(const char *message) {
-		if(!PostMessage(hwnd,WM_STOP_WITH_MESSAGE,(WPARAM) (Logger::Debug+1),(LPARAM)(LPCTSTR)message)) {
+		if(!PostMessage(hwnd,WM_STOP_WITH_MESSAGE,(WPARAM) (Logger::Notice),(LPARAM)(LPCTSTR)message)) {
 			cerr << "win32\tError posting WM_STOP message('" << message << "') to " << hex << hwnd << dec << " : " << Win32::Exception::format() << endl;
 		}
 	}
@@ -77,7 +77,7 @@
 #ifdef HAVE_SYSTEMD
 		sd_notifyf(0,"STOPPING=1\nSTATUS=%s",message);
 #endif // HAVE_SYSTEMD
-		Logger::String{message}.write((Logger::Level) (Logger::Debug+1),"MainLoop");
+		Logger::String{message}.write((Logger::Level) (Logger::Notice),"MainLoop");
 		quit();
 	}
 

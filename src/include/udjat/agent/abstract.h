@@ -48,6 +48,11 @@
 					return strcasecmp(n,name) == 0;
 				}
 
+				/// @brief Probe if this factory can be used with the XML node.
+				/// @param node The xml node.
+				/// @return true if the factory recognizes the XML node.
+				virtual bool probe(const XML::Node &node) const noexcept;
+
 				/// @brief Create an agent from XML node.
 				/// @param node XML definition for the new agent.
 				virtual std::shared_ptr<Abstract::Agent> AgentFactory(const XML::Node &node) const = 0;
@@ -225,10 +230,11 @@
 
 			virtual ~Agent();
 
-			/// @brief Setup agent from XML node.
-			/// @param node The xml node with agent properties.
-			/// @see Abstract::Object::parse
-			bool setup(const XML::Node &node) override;
+			/// @brief Append child object from XML definition.
+			/// @details This method is called by parse_children() for every child node.
+			/// @param node The XML node with the child definitions.
+			/// @return true if the node was parsed and should be ignored by the caller.
+			bool append_child(const XML::Node &node) override;
 
 			inline time_t parse(const char *path) {
 				return Udjat::Object::parse(path);
@@ -297,13 +303,9 @@
 			virtual void start();
 
 			/// @brief Update agent.
-			/// @param ondemand true if the update was requested by user query.
+			/// @param ondemand true if the update was requested by user.
 			/// @return true if the data was updated.
-			virtual bool refresh(bool ondemand);
-
-			/// @brief Update agent.
-			/// @return true if the data was changed and the state should be recomputed.
-			virtual bool refresh();
+			virtual bool refresh(bool ondemand = false);
 
 			/// @brief Stop agent.
 			virtual void stop();

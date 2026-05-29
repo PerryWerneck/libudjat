@@ -57,7 +57,7 @@
 		: Udjat::Agent<T>{node}, action{a}, valuename{String{node,"value-from","value"}.as_quark()} {
 		}
 
-		bool refresh() override {
+		bool refresh(bool) override {
 			
 			Request request;
 			Response response;
@@ -90,9 +90,45 @@
 		Factories().remove(this);
 	}
 
+	bool Abstract::Agent::Factory::probe(const XML::Node &node) const noexcept {
+		return false;
+	}
+
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const XML::Node &node) {
 
-		const char *type = node.attribute("type").as_string("default");
+		const char *type = node.attribute("type").as_string("");
+
+		if(!(type && *type)) {
+
+			// No type, try probing the factories.
+
+			for(const auto factory : Factories()) {
+
+				if(!factory->probe(node)) {
+					continue;
+				}
+
+				auto agent = factory->AgentFactory(node);
+				if(agent) {
+					return agent;
+				}
+			}
+
+			// No factory recognize the node and I have no type, then, cant do anything.
+			
+			throw runtime_error(
+#ifdef BUILD_LEGACY
+				String{"Cant find a valid factory for agent"}
+#else
+				String{"Cant find a valid factory for agent at ",node.path()}
+#endif // BUILD_LEGACY
+			);
+
+		}
+
+		//
+		// Have type, use it
+		//
 
 		for(const auto factory : Factories()) {
 
@@ -117,7 +153,7 @@
 				Script(const XML::Node &node) : Udjat::Script{node} {
 				}
 
-				bool refresh(bool) {
+				bool refresh(bool) override {
 					return Udjat::Agent<int32_t>::set(
 						(int32_t) Udjat::Script::run(*((Udjat::Agent<int32_t> *)this),false)
 					);
@@ -215,7 +251,7 @@
 
 						}
 
-						bool refresh(bool) {
+						bool refresh(bool) override {
 							return set((int32_t) Udjat::URL{this->url}.test(method));
 						};
 
@@ -256,7 +292,7 @@
 					return Abstract::Agent::computeState();
 				}
 
-				bool refresh() override {
+				bool refresh(bool) override {
 					unsigned int last = get();
 					unsigned int value = ((unsigned int) rand()) % limit;
 					if(value == last) {

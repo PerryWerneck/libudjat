@@ -27,11 +27,36 @@
  #include <udjat/module/abstract.h>
  #include <udjat/tools/commandlineparser.h>
  #include <string>
+ #include <udjat/ui/console.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif
 
  using namespace Udjat;
  using namespace std;
 
  int main(int argc, char **argv) {
+
+	/*
+#ifndef _WIN32
+	static std::shared_ptr<UI::Animation> animations[] = {
+		UI::Animation::Factory(UI::Animation::Style::PlainText),
+		UI::Animation::Factory(UI::Animation::Style::Simple),
+		UI::Animation::Factory(UI::Animation::Style::Braille),
+		UI::Animation::Factory(UI::Animation::Style::Circle),
+	};
+
+	for(size_t count = 0; count < 100; count++) {
+		cout << '\r';
+		for(size_t ix = 0; ix < sizeof(animations)/sizeof(animations[0]); ix++) {
+			cout << *animations[ix] << " ";
+		}
+		cout << " " << count << flush;
+		usleep(500000);
+	}
+#endif
+	*/
 
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {

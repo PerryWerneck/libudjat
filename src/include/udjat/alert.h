@@ -91,6 +91,11 @@
 				return factory_name;
 			}
 			
+			/// @brief Verify if this factory can handle the definition.
+			/// @param node XML definition for the new alert.
+			/// @return true if this factory can handle the alert.
+			virtual bool probe(const XML::Node &node) const noexcept;
+
 			/// @brief Create an agent from XML node.
 			/// @param node XML definition for the new alert.
 			virtual std::shared_ptr<Alert> AlertFactory(const Abstract::Object &parent, const XML::Node &node) const;

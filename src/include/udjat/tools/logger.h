@@ -47,11 +47,12 @@
 		enum Level : uint8_t {
 			Error,		///< @brief Error conditions (std::cerr).
 			Warning,	///< @brief Warning conditions (std::clog).
-			Info,		///< @brief Informational message (std::cout>.
+			Info,		///< @brief Informational message (std::cout).
 			Trace,		///< @brief Debug message.
+			Debug,		///< @brief Trace message
+			Notice,		///< @brief System Status
 
-			// Debug should be the last one.
-			Debug		///< @brief Trace message
+			Count		///< @brief Count of available log levels
 		};
 
 		UDJAT_API unsigned short verbosity() noexcept;
@@ -253,7 +254,7 @@
 	};
 
 	#if defined(DEBUG)
-		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Logger::Debug,"debug");
+		#define debug( ... ) Udjat::Logger::String(__FILE__,"(",__LINE__,"): ",__VA_ARGS__).write(Udjat::Logger::Debug,"debug");
 	#else
 		#define debug( ... )           // __VA_ARGS__
 	#endif // DEBUG

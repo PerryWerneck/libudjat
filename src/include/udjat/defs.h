@@ -64,8 +64,6 @@
 	#define unlikely(x)     (x)
 #endif
 
-
-
 #if defined(__GNUC__)
 
 	#define UDJAT_UNUSED(x) __attribute__((unused)) x
@@ -125,6 +123,7 @@
 #define UDJAT_GNUC_FORMAT(s,f) __attribute__ ((__format__ (__printf__, s, f)))
 #define UDJAT_GNUC_NULL_TERMINATED __attribute__((__sentinel__))
 
+#ifdef __cplusplus
 namespace Udjat {
 
 
@@ -140,6 +139,9 @@ namespace Udjat {
 	class Alert;
 	class Value;
 	class TimeStamp;
+	class Request;
+	class Response;
 
 }
+#endif // __cplusplus
 

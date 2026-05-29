@@ -34,16 +34,17 @@
 namespace Udjat {
 
 	void Module::unload() {
-		Module::Controller::getInstance().clear();
+		Module::Controller::getInstance().unload();
 	}
 
-	void Module::Controller::clear() {
+	void Module::Controller::unload() {
 
-		debug("Unloading ",objects.size()," modules");
+		debug("Unloading ",modules.size()," modules");
+
 #ifdef DEBUG
 		{
 			string names;
-			for(auto module : objects) {
+			for(auto module : modules) {
 				if(!names.empty()) {
 					names += " ";
 				}
@@ -53,17 +54,10 @@ namespace Udjat {
 		}
 #endif
 
-		while(objects.size()) {
+		while(modules.size()) {
 
-			Module * module;
-			{
-				lock_guard<mutex> lock(guard);
-				if(objects.empty()) {
-					break;
-				}
-				module = objects.back();
-				objects.pop_back();
-			}
+			auto module = modules.back();
+			modules.remove(module);
 
 			// Save module name.
 			string name{module->module_name};
@@ -71,6 +65,7 @@ namespace Udjat {
 
 			auto handle = module->handle;
 			auto keep_loaded = module->keep_loaded;
+			auto keep_active = module->keep_active;
 
 			Logger::String{(keep_loaded ? "Deactivating" : "Unloading")," '",description,"'"}.trace(name);
 
@@ -78,27 +73,25 @@ namespace Udjat {
 
 				// First delete module
 
-				debug("Deleting module '",name,"'");
-				delete module;
-				debug("Module '",name,"' deleted");
+				if(!keep_active) {
 
-				if(handle) {
+					Logger::String{"Deactivating module '",description,"'"}.write(Logger::Debug,name.c_str());
+					delete module;
 
-					debug("Deinitializing module '",name,"'");
-					if(!deinit(handle)) {
-						clog << name << "\tKeeping module loaded by deinit() request" << endl;
-						continue;
-					}
+					if(handle && !keep_loaded) {
 
-					if(keep_loaded) {
-						clog << name << "\tKeeping module loaded by configuration request" << endl;
-					} else {
-						debug("Unloading module '",name,"'");
+						if(!deinit(handle)) {
+							Logger::String{"Keeping module loaded by deinit() request"}.trace(name.c_str());
+							continue;
+						}
+
+						Logger::String{"Unloading module '",description,"'"}.write(Logger::Debug,name.c_str());
 						unload(handle,name,description);
-						debug("Module '",name,"' unloaded");
+
 					}
 
 				}
+
 
 			} catch(const exception &e) {
 				cerr << name << "\tError '" << e.what() << "' deinitializing module" << endl;

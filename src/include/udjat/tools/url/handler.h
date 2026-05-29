@@ -46,19 +46,15 @@
 
 	class UDJAT_API URL::Handler {
 	protected:
-		Handler() = default;
+		Handler();
+
+		/// @brief If true and the local file already exists set the 'If-Modified-Since' header to prevent downloading an already downloaded file.
+		bool keep_downloaded = true;
 
 		struct {
 			int code = 0;	///< @brief HTTP status code;
 			String message;	///< @brief HTTP status message;
 		} status;
-
-	public:
-
-		virtual ~Handler();
-
-		/// @brief Get handler description, usually the URL
-		virtual const char * c_str() const noexcept = 0;
 
 		/// @brief Set output header.
 		/// @param name The header name.
@@ -70,6 +66,44 @@
 		/// @param name The header name.
 		/// @return The header value, "" if not found.
 		virtual const char * header(const char *name) const;
+
+	public:
+
+		/// @brief HTTP header codes.
+		/// @details These represent common HTTP header fields used in requests and responses.
+		enum Header {
+			/// @brief Request header: Makes a request conditional. The server sends the resource only if it has been modified after the specified date.
+			IF_MODIFIED_SINCE,
+			/// @brief Response header: Indicates the date and time the resource was last modified.
+			LAST_MODIFIED,
+			/// @brief Request header: Specifies the media types that are acceptable for the response.
+			ACCEPT,
+		};
+
+		static const char * to_string(const Header hdr);
+
+		virtual ~Handler();
+
+		/// @brief Set whether to skip re-downloading the file if the local copy is already up-to-date.
+		/// @details If enabled, the handler uses conditional request headers (e.g., If-Modified-Since) to avoid data transfer when the remote resource has not changed.
+		/// @param value True to enable conditional downloads; false to always perform a full download.
+		inline void update_if_exists(bool value = true) noexcept {
+			keep_downloaded = value;
+		}
+
+		/// @brief Get handler description, usually the URL
+		virtual const char * c_str() const noexcept = 0;
+
+		/// @brief Set output header.
+		/// @param id The header identifier.
+		/// @param value The header value.
+		/// @return This handler.
+		virtual Handler & header(const Header id, const char *value);
+
+		/// @brief Get input header.
+		/// @param name The header id.
+		/// @return The header value, "" if not found.
+		virtual const char * header(const Header id) const;
 
 		/// @brief Set requested mime-type.
 		/// @param mimetype The mimetype to set.
@@ -129,6 +163,10 @@
 		/// @return Server response.
 		String get(const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
+		inline String get(const std::function<bool(uint64_t current, uint64_t total)> &progress) {
+			return get(HTTP::Get,"",progress);
+		}
+
 		String get(const HTTP::Method method = HTTP::Get, const char *payload = "");
 
 		/// @brief Download/update a file with progress.
@@ -143,12 +181,35 @@
 		/// @param filename The fullpath for the file.
 		/// @param progress The progress callback.
 		/// @return true if the file was updated.
+		inline bool get(const char *filename, const std::function<bool(uint64_t current, uint64_t total)> &progress) {
+			return get(filename,HTTP::Get,"",progress);
+		}
+
+		/// @brief Download or update a file with progress, setting the last modified time to the value sent by the host.
+		/// @param filename The fullpath for the file.
+		/// @param progress The progress callback.
+		/// @return true if the file was updated.
 		bool get(const char *filename, const HTTP::Method method, const char *payload, const std::function<bool(uint64_t current, uint64_t total)> &progress);
 
 		/// @brief Download or update a file with progress, setting the last modified time to the value sent by the host.
 		bool get(const char *filename, const HTTP::Method method = HTTP::Get, const char *payload = "");
 
+		inline int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
+			return perform(HTTP::Get,"",writer);      
+		}
+
 	};
 	
  }
 
+ namespace std {
+
+	inline const char * to_string(const Udjat::URL::Handler::Header header) {
+		return Udjat::URL::Handler::to_string(header);
+	}
+
+	inline ostream& operator<< (ostream& os, const Udjat::URL::Handler::Header header) {
+		return os << to_string(header);
+	}
+
+ }

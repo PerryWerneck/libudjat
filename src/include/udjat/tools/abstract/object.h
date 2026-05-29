@@ -73,11 +73,11 @@
 			/// @return timestamp for next refresh.
 			time_t parse(const char *path = nullptr);
 
-			/// @brief Setup object from XML.
+			/// @brief Append child object from XML definition.
 			/// @details This method is called by parse_children() for every child node.
 			/// @param node The XML node with the child definitions.
 			/// @return true if the node was parsed and should be ignored by the caller.
-			virtual bool setup(const XML::Node &node);
+			virtual bool append_child(const XML::Node &node);
 
 			virtual void parse_children(const XML::Node &node);
 
@@ -214,6 +214,14 @@
 
 			virtual std::string to_string() const noexcept;
 
+			/// @brief Set property
+			/// @param key The property name.
+			/// @param value The property value.
+			/// @return true if the property is valid.
+			/// @retval true The property is valid and was updated.
+			/// @retval false The property was not found.
+			virtual bool setProperty(const char *key, const char *value);
+
 			/// @brief Get property value.
 			/// @param key The property name.
 			/// @param value String to update with the property value.
@@ -258,6 +266,8 @@
 
 			/// @brief Add object properties to the value.
 			virtual Value & getProperties(Value &value) const;
+
+			virtual int call(const Request &request, Response &response);
 
 			std::ostream & info() const;
 			std::ostream & warning() const;

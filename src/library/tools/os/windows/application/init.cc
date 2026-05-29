@@ -71,7 +71,7 @@
 			}
 		}
 
-		Module::preload();
+		Module::initialize();
 
 	}
 
