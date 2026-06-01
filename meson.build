@@ -486,6 +486,7 @@ lib_src += [
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
   'src/library/ui/animation.cc',
+  'src/library/ui/menu.cc',
   'src/library/testprogram.cc',
 ]
 

@@ -27,6 +27,7 @@
  #include <cstdint>
  #include <ostream>
  #include <memory>
+ #include <udjat/ui/menu.h>
 
  namespace Udjat {
 
@@ -129,6 +130,11 @@
 			/// @return Allways false.
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	
+			/// @brief Get console menu.
+			/// @param title The menu title;
+			/// @return Pointer to console based menu class.
+			std::shared_ptr<Dialog::Menu> menu(const char *title);
+
 		};
 
 	}

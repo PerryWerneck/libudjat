@@ -29,6 +29,8 @@
 #include <udjat/ui/console.h>
 #include <udjat/tools/logger.h>
 #include <cstdio>
+#include <udjat/tools/intl.h>
+#include <udjat/tools/string.h>
 
 #ifndef _WIN32
 	#include <sys/ioctl.h>
@@ -246,6 +248,68 @@ namespace Udjat {
 	UI::Console & UI::Console::erase_line() {
 		*this << "\x1B[2K";
 		return *this;
+	}
+
+	std::shared_ptr<Dialog::Menu> UI::Console::menu(const char *title) {
+
+		class Menu : public Dialog::Menu {
+		private:
+			Console &console;
+
+		public:
+			Menu(Console *c, const char *t) : Dialog::Menu{t}, console{*c} {}
+
+			size_t select(const std::vector<Option> &options) override {	
+
+				while(1) {
+
+					console << endl;
+					console.bold(true);
+					console << title << endl;
+					console.bold(false);
+					console << endl;
+
+					char item[] = "A";
+					for(size_t ix = 0; ix < options.size();ix++) {
+						console << "\t";
+						console.bold(true);
+						console << item;
+						console.bold(false);
+						console << " - " << options[ix].text << endl;
+						item[0]++;				
+					}
+
+					console << endl << _("Select option (Enter to quit): ");
+					console.cursor(true).flush();
+					cin.sync();
+
+					String choice;
+					getline(cin,choice);
+					choice.strip();
+
+					for(size_t line = 0; line < options.size()+5;line++) {
+						console.erase_line().up();
+					}
+
+					if(empty(choice)) {
+						throw system_error(ECANCELED,system_category());
+					}
+
+					int selected = choice[0] - 'A';
+					if(selected < 0 || selected >= (int) options.size()) {
+						continue;
+					}
+
+					return (size_t) selected;
+
+				}
+
+			}
+
+		};
+
+		return make_shared<Menu>(this,title);
+
 	}
 
 }
