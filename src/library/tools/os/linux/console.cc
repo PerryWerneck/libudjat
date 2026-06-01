@@ -301,15 +301,23 @@ namespace Udjat {
 
 					}
 
-					if(next) {
+					if(next || page) {
+
 						lines++;
-						item[0] = '>';
 						console << "\t";
-						console.bold(true);
-						console << item;
-						console.bold(false);
-						console << " - " << _("Next page") << endl;
+						console.faint(true);
+						if(page) {
+							console << "< " << _("Previous page") << "   ";
+						}
+						if(next) {
+							console << "> "<< _("Next page");
+						}
+						console.faint(false);
+
+						console << endl;
+
 					}
+
 
 					console << endl << _("Select option (Enter to quit): ");
 					console.cursor(true).flush();
@@ -324,10 +332,6 @@ namespace Udjat {
 					}
 
 					if(choice.empty()) {
-						if(page > 0) {
-							page--;
-							continue;
-						}
 						throw system_error(ECANCELED,system_category());
 					}
 
@@ -335,6 +339,11 @@ namespace Udjat {
 
 					if(next && choice[0] == '>') {
 						page++;
+						continue;
+					}
+
+					if(page && choice[0] == '<') {
+						page--;
 						continue;
 					}
 
