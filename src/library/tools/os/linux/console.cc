@@ -259,7 +259,7 @@ namespace Udjat {
 		public:
 			Menu(Console *c, const char *t) : Dialog::Menu{t}, console{*c} {}
 
-			size_t select(const std::vector<Option> &options) override {	
+			size_t select(const std::vector<const char *> &options) override {	
 
 				while(1) {
 
@@ -275,7 +275,7 @@ namespace Udjat {
 						console.bold(true);
 						console << item;
 						console.bold(false);
-						console << " - " << options[ix].text << endl;
+						console << " - " << options[ix] << endl;
 						item[0]++;				
 					}
 

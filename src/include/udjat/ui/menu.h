@@ -51,11 +51,11 @@
 			/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
 			/// @param options The options to select.
 			/// @return The index of the selected option.
-			virtual size_t select(const std::vector<Option> &options) = 0;
+			virtual size_t select(const std::vector<const char *> &options) = 0;
 			
 			size_t select(const Option *options, size_t count);
 			size_t select(const Option *options);
-
+			size_t select(const std::vector<Option *> &options);
 
 		};
 

@@ -43,17 +43,25 @@
 	}
 
 	size_t Dialog::Menu::select(const Option *options, size_t count) {
-		vector<Option> opt;
+		vector<const char *> opt;
 		for(size_t ix = 0; ix < count;ix++) {
-			opt.push_back(Option{options[ix].text});
+			opt.push_back(options[ix].text);
 		}
 		return select(opt);
 	}
 
 	size_t Dialog::Menu::select(const Option *options) {
-		vector<Option> opt;
+		vector<const char *> opt;
 		for(size_t ix = 0; options[ix].text;ix++) {
-			opt.push_back(Option{options[ix].text});
+			opt.push_back(options[ix].text);
+		}
+		return select(opt);
+	}
+
+	size_t Dialog::Menu::select(const std::vector<Option *> &options) {
+		vector<const char *> opt;
+		for(const Option *o : options) {
+			opt.push_back(o->text);
 		}
 		return select(opt);
 	}
