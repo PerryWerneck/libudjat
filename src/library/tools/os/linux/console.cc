@@ -334,7 +334,7 @@ namespace Udjat {
 						continue;
 					}
 
-					int selected = choice[0] - first;
+					int selected = (choice[0] - first) + (page * lpp);
 					if(selected < 0 || selected >= (int) size()) {
 						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
 						continue;

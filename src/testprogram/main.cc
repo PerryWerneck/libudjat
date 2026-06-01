@@ -72,15 +72,30 @@
 			"Option I",			
 		};
 
-		UI::Console console;
-		auto menu = console.menu("Title");
-		menu->lines_per_page(5);
+		size_t selected = (size_t) -1;
+		{
+			UI::Console console;
+			auto menu = console.menu("Title");
+			menu->lines_per_page(5);
 
-		for(const char *option : options) {
-			menu->append(option);
+			for(const char *option : options) {
+				menu->append(option);
+			}
+
+			try {
+
+				selected = menu->select();
+
+			} catch(const std::exception &e) {
+
+				Logger::String{e.what()}.info();
+
+			}
 		}
 
-		auto selected = menu->select();
+		if(selected != (size_t) -1) {
+			Logger::String{"Selected option: '",options[selected],"'"}.info();
+		}
 
 	}
 	
