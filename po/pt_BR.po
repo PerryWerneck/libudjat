@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-01 15:09-0300\n"
-"PO-Revision-Date: 2026-04-20 13:39-0300\n"
+"POT-Creation-Date: 2026-06-01 17:46-0300\n"
+"PO-Revision-Date: 2026-06-01 17:48-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -441,14 +441,6 @@ msgstr "Não consegui receber mensagem 'netlink'"
 msgid "Error in received packet"
 msgstr "Erro no pacote recebido"
 
-#: src/library/tools/os/linux/console.cc:311
-msgid "Next page"
-msgstr ""
-
-#: src/library/tools/os/linux/console.cc:314
-msgid "Select option (Enter to quit): "
-msgstr ""
-
 #: src/library/tools/os/linux/socket.cc:112
 #: src/library/tools/os/linux/socket.cc:114
 #: src/library/tools/os/linux/socket.cc:122
@@ -476,6 +468,18 @@ msgstr "TPM está desabilitada"
 #: src/library/tools/os/linux/tpm.cc:149
 msgid "Unable to get current TPM state"
 msgstr "Não foi possível obter o estado da TPM"
+
+#: src/library/tools/os/linux/console.cc:312
+msgid "Previous page"
+msgstr "Página anterior"
+
+#: src/library/tools/os/linux/console.cc:315
+msgid "Next page"
+msgstr "Página seguinte"
+
+#: src/library/tools/os/linux/console.cc:324
+msgid "Select option (Enter to quit): "
+msgstr "Selecione opção (Enter para sair): "
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72

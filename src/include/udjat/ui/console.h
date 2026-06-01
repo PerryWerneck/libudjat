@@ -33,46 +33,6 @@
 
 	namespace UI {
 
-		class UDJAT_API Animation {
-		protected:
-			size_t current = 0;
-			constexpr Animation() = default;
-
-		public:
-			/// The animation styles
-			enum Style : uint8_t {
-				PlainText,
-				Simple,
-				Braille,
-				Circle,
-
-				Default
-			};
-
-			/// @brief  Set default animation style.
-			static void set(Animation::Style style = Animation::Style::Default);
-
-			static std::shared_ptr<Animation> Factory(Animation::Style style = Animation::Style::Default);
-
-			virtual const char * get() noexcept = 0;
-
-			inline operator const char *() noexcept {
-				return get();
-			}
-
-			inline const char * c_str() noexcept {
-				return get();
-			}
-
-			inline operator int() const noexcept {
-				return current;
-			}
-
-		private:
-			static Style style;
-
-		};
-
 
 		/// @brief Console writer.
 		/// @details Write messages to the console with different colors bypassing logger redirection.
@@ -146,10 +106,6 @@
 	inline Udjat::UI::Console & operator<< (Udjat::UI::Console &os, const Udjat::UI::Console::Foreground fg) {
 		os.set(fg);
 		return os;
-	}
-
-	inline ostream & operator<< (ostream& os, Udjat::UI::Animation &animation) {
-		return os << animation.get();
 	}
 
  }

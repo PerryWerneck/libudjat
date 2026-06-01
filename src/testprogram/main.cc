@@ -28,6 +28,7 @@
  #include <udjat/tools/commandlineparser.h>
  #include <string>
  #include <udjat/ui/console.h>
+ #include <udjat/ui/animation.h>
  #include <udjat/ui/menu.h>
 
  #ifdef HAVE_UNISTD_H
@@ -39,7 +40,6 @@
 
  int main(int argc, char **argv) {
 
-	/*
 #ifndef _WIN32
 	static std::shared_ptr<UI::Animation> animations[] = {
 		UI::Animation::Factory(UI::Animation::Style::PlainText),
@@ -56,9 +56,11 @@
 		cout << " " << count << flush;
 		usleep(500000);
 	}
-#endif
-	*/
 
+	exit(0);
+#endif
+
+	/*
 	{
 		static const char *options[] = {
 			"Option A",
@@ -98,9 +100,8 @@
 		}
 
 	}
+	*/
 	
-	exit(0);
-
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {
 		/*

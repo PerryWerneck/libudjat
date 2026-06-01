@@ -997,6 +997,8 @@ install_headers(
   'src/include/udjat/ui/console.h',
   'src/include/udjat/ui/progress.h',
   'src/include/udjat/ui/status.h',
+  'src/include/udjat/ui/menu.h',
+  'src/include/udjat/ui/animation.h',
   subdir: 'udjat/ui'  
 )
 
