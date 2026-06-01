@@ -28,6 +28,7 @@
  #include <udjat/tools/commandlineparser.h>
  #include <string>
  #include <udjat/ui/console.h>
+ #include <udjat/ui/menu.h>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -57,6 +58,26 @@
 	}
 #endif
 	*/
+
+	{
+		static const char *options[] = {
+			"Option 1",
+			"Option 2",
+			"Option 3",			
+		};
+
+		UI::Console console;
+		auto menu = console.menu("Title");
+
+		for(const char *option : options) {
+			menu->append(option);
+		}
+
+		auto selected = menu->select();
+
+	}
+	
+	exit(0);
 
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {

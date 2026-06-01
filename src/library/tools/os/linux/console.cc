@@ -75,7 +75,7 @@ namespace Udjat {
 	};
 
 	UI::Console::Console() : enabled{Logger::console()} {
-		debug("Console was build logging=%s", enabled ? "true" : "false");
+		debug("Console was build logging=", enabled ? "true" : "false");
 		static ConsoleWriter writer;
 		this->rdbuf(&writer);
 		Logger::console(false);
@@ -259,7 +259,11 @@ namespace Udjat {
 		public:
 			Menu(Console *c, const char *t) : Dialog::Menu{t}, console{*c} {}
 
-			size_t select(const std::vector<const char *> &options) override {	
+			size_t select() override {	
+
+				if(size() == 0) {
+					throw system_error(ENODATA,system_category());
+				}
 
 				while(1) {
 
@@ -270,12 +274,12 @@ namespace Udjat {
 					console << endl;
 
 					char item[] = "A";
-					for(size_t ix = 0; ix < options.size();ix++) {
+					for(const auto &option : *this) {
 						console << "\t";
 						console.bold(true);
 						console << item;
 						console.bold(false);
-						console << " - " << options[ix] << endl;
+						console << " - " << option.c_str() << endl;
 						item[0]++;				
 					}
 
@@ -286,20 +290,22 @@ namespace Udjat {
 					String choice;
 					getline(cin,choice);
 					choice.strip();
-
-					for(size_t line = 0; line < options.size()+5;line++) {
+					
+					for(size_t line = 0; line < size()+5;line++) {
 						console.erase_line().up();
 					}
 
-					if(empty(choice)) {
+					if(choice.empty()) {
 						throw system_error(ECANCELED,system_category());
 					}
 
-					int selected = choice[0] - 'A';
-					if(selected < 0 || selected >= (int) options.size()) {
+					int selected = toupper(choice[0]) - 'A';
+					if(selected < 0 || selected >= (int) size()) {
+						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
 						continue;
 					}
 
+					Logger::String{"Option '",(*this)[selected],"' was selected"}.info("menu");
 					return (size_t) selected;
 
 				}

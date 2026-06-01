@@ -32,30 +32,26 @@
 	namespace Dialog {
 
 		/// @brief Simple popup menu with options.
-		class UDJAT_API Menu {
+		class UDJAT_API Menu : public std::vector<std::string> {
 		protected:
 			Menu(const char *title);
 			std::string title;
 
 		public:
-			class UDJAT_API Option {
-			public:
-				const char *text;
-				constexpr Option(const char *t) : text{t} {}
-				Option(const std::string &t) : text{t.c_str()} {}
-
-			};
 
 			virtual ~Menu();
 
 			/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
 			/// @param options The options to select.
 			/// @return The index of the selected option.
-			virtual size_t select(const std::vector<const char *> &options) = 0;
+			virtual size_t select() = 0;
 			
-			size_t select(const Option *options, size_t count);
-			size_t select(const Option *options);
-			size_t select(const std::vector<Option *> &options);
+			inline void append(const char *option) {
+				this->emplace_back(option);
+			}
+			
+			void append(const char **options, size_t count);
+			void append(const char **options);
 
 		};
 

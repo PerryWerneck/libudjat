@@ -42,30 +42,17 @@
 	Dialog::Menu::~Menu() {
 	}
 
-	size_t Dialog::Menu::select(const Option *options, size_t count) {
-		vector<const char *> opt;
+	void Dialog::Menu::append(const char **options, size_t count) {
 		for(size_t ix = 0; ix < count;ix++) {
-			opt.push_back(options[ix].text);
+			this->emplace_back(options[ix]);
 		}
-		return select(opt);
 	}
 
-	size_t Dialog::Menu::select(const Option *options) {
-		vector<const char *> opt;
-		for(size_t ix = 0; options[ix].text;ix++) {
-			opt.push_back(options[ix].text);
+	void Dialog::Menu::append(const char **options) {
+		for(size_t ix = 0; options[ix];ix++) {
+			this->emplace_back(options[ix]);
 		}
-		return select(opt);
 	}
-
-	size_t Dialog::Menu::select(const std::vector<Option *> &options) {
-		vector<const char *> opt;
-		for(const Option *o : options) {
-			opt.push_back(o->text);
-		}
-		return select(opt);
-	}
-
 
 }
 
