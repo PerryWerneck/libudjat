@@ -324,6 +324,10 @@ namespace Udjat {
 					}
 
 					if(choice.empty()) {
+						if(page > 0) {
+							page--;
+							continue;
+						}
 						throw system_error(ECANCELED,system_category());
 					}
 
