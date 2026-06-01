@@ -278,7 +278,7 @@ namespace Udjat {
 
 					char first = 'A';
 
-					char next = first+lpp;
+					bool next = true;
 					char item[] = { first, '\0'};
 					size_t lines = 5;
 
@@ -286,7 +286,7 @@ namespace Udjat {
 						auto line = page*lpp+ix;
 
 						if(line >= size()) {
-							next = 0;
+							next = false;
 							break;
 						}
 
@@ -303,7 +303,7 @@ namespace Udjat {
 
 					if(next) {
 						lines++;
-						item[0] = next;
+						item[0] = '>';
 						console << "\t";
 						console.bold(true);
 						console << item;
@@ -329,13 +329,19 @@ namespace Udjat {
 
 					choice[0] = toupper(choice[0]);
 
-					if(next && choice[0] == next) {
+					if(next && choice[0] == '>') {
 						page++;
 						continue;
 					}
 
-					int selected = (choice[0] - first) + (page * lpp);
-					if(selected < 0 || selected >= (int) size()) {
+					int selected = (choice[0] - first);
+					if(selected < 0 || selected >= (int) lpp) {
+						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+						continue;
+					}
+					
+					selected += (page * lpp);
+					if(selected >= (int) size()) {
 						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
 						continue;
 					}
