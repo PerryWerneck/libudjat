@@ -257,7 +257,9 @@ namespace Udjat {
 			Console &console;
 
 		public:
-			Menu(Console *c, const char *t) : Dialog::Menu{t}, console{*c} {}
+			Menu(Console *c, const char *t) : Dialog::Menu{t}, console{*c} {
+				lpp = 15;
+			}
 
 			size_t select() override {	
 
@@ -265,6 +267,7 @@ namespace Udjat {
 					throw system_error(ENODATA,system_category());
 				}
 
+				size_t page = 0;
 				while(1) {
 
 					console << endl;
@@ -273,14 +276,39 @@ namespace Udjat {
 					console.bold(false);
 					console << endl;
 
-					char item[] = "A";
-					for(const auto &option : *this) {
+					char first = 'A';
+
+					char next = first+lpp;
+					char item[] = { first, '\0'};
+					size_t lines = 5;
+
+					for(size_t ix = 0; ix < lpp; ix++) {
+						auto line = page*lpp+ix;
+
+						if(line >= size()) {
+							next = 0;
+							break;
+						}
+
+						lines++;
+						auto &option = (*this)[line];
 						console << "\t";
 						console.bold(true);
 						console << item;
 						console.bold(false);
 						console << " - " << option.c_str() << endl;
 						item[0]++;				
+
+					}
+
+					if(next) {
+						lines++;
+						item[0] = next;
+						console << "\t";
+						console.bold(true);
+						console << item;
+						console.bold(false);
+						console << " - " << _("Next page") << endl;
 					}
 
 					console << endl << _("Select option (Enter to quit): ");
@@ -291,7 +319,7 @@ namespace Udjat {
 					getline(cin,choice);
 					choice.strip();
 					
-					for(size_t line = 0; line < size()+5;line++) {
+					for(size_t line = 0; line < lines;line++) {
 						console.erase_line().up();
 					}
 
@@ -299,7 +327,14 @@ namespace Udjat {
 						throw system_error(ECANCELED,system_category());
 					}
 
-					int selected = toupper(choice[0]) - 'A';
+					choice[0] = toupper(choice[0]);
+
+					if(next && choice[0] == next) {
+						page++;
+						continue;
+					}
+
+					int selected = choice[0] - first;
 					if(selected < 0 || selected >= (int) size()) {
 						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
 						continue;

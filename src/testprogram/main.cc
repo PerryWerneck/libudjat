@@ -61,13 +61,20 @@
 
 	{
 		static const char *options[] = {
-			"Option 1",
-			"Option 2",
-			"Option 3",			
+			"Option A",
+			"Option B",
+			"Option C",			
+			"Option D",			
+			"Option E",			
+			"Option F",			
+			"Option G",			
+			"Option H",			
+			"Option I",			
 		};
 
 		UI::Console console;
 		auto menu = console.menu("Title");
+		menu->lines_per_page(5);
 
 		for(const char *option : options) {
 			menu->append(option);

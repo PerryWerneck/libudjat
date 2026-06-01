@@ -219,6 +219,7 @@ src/library/tools/object.cc
 src/library/ui/progress.cc
 src/library/ui/animation.cc
 src/library/ui/status.cc
+src/library/ui/menu.cc
 src/include/private/configuration.h
 src/include/private/dialog.h
 src/include/private/event.h
@@ -315,6 +316,7 @@ src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
 src/include/udjat/ui/status.h
 src/include/udjat/ui/console.h
+src/include/udjat/ui/menu.h
 src/include/udjat/win32/charset.h
 src/include/udjat/win32/cleanup.h
 src/include/udjat/win32/com.h

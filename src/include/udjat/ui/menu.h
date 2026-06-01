@@ -36,6 +36,7 @@
 		protected:
 			Menu(const char *title);
 			std::string title;
+			size_t lpp = 26;
 
 		public:
 
@@ -49,7 +50,15 @@
 			inline void append(const char *option) {
 				this->emplace_back(option);
 			}
-			
+
+			inline void lines_per_page(size_t value) noexcept {
+				lpp = value;
+			}
+
+			size_t lines_per_page(void) noexcept {
+				return lpp;
+			}
+
 			void append(const char **options, size_t count);
 			void append(const char **options);
 
