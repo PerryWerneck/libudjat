@@ -254,14 +254,16 @@ namespace Udjat {
 
 		class Menu : public Dialog::Menu {
 		private:
-			Console &console;
+			Console *cntl;
 
 		public:
-			Menu(Console *c, const char *t) : Dialog::Menu{t}, console{*c} {
+			Menu(Console *c, const char *t) : Dialog::Menu{t}, cntl{c} {
 				lpp = 15;
 			}
 
 			size_t select() override {	
+
+				Console &console = *cntl;
 
 				if(size() == 0) {
 					throw system_error(ENODATA,system_category());
