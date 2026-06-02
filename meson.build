@@ -460,6 +460,7 @@ lib_src += [
   'src/library/tools/value/xml.cc',
   'src/library/tools/value/report.cc',
   'src/library/tools/value/yaml.cc',
+  'src/library/tools/value/text.cc',
   'src/library/tools/xml/document.cc',
   'src/library/tools/xml/attribute.cc',
   'src/library/tools/xml/misc.cc',

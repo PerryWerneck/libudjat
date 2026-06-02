@@ -40,6 +40,7 @@
 
  int main(int argc, char **argv) {
 
+	/*
 #ifndef _WIN32
 	static std::shared_ptr<UI::Animation> animations[] = {
 		UI::Animation::Factory(UI::Animation::Style::PlainText),
@@ -59,6 +60,24 @@
 
 	exit(0);
 #endif
+	*/
+
+	{
+		Value array;
+
+		for(size_t ix = 0; ix < 10;ix++) {
+			auto &row = array.append(Value::Object);
+			row["id"] = ix;
+			row["name"] = "name";
+			row["description"] = "description";
+		}
+
+		cout << endl;
+		array.to_text(cout);
+		cout << endl;
+
+		exit(0);
+	}
 
 	/*
 	{
