@@ -59,9 +59,10 @@
 		cacert,					///> @brief application/x-x509-ca-cert
 
 		form_urlencoded,		///> @brief application/x-www-form-urlencoded
+		markdown,				///> @brief text/markdown
 
-
-	
+		// Allways the last
+		count					///> @brief Count of known mimetypes
 	};
 
 	/// @brief Create mimetype from string.
