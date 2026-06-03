@@ -223,6 +223,7 @@
 		Value & set(const bool value);
 		Value & set(const float value);
 		Value & set(const double value);
+		Value & set(const Abstract::Object &value);
 
 		/// @brief Load tags <value name='name' value='value' type='type' /> into value.
 		Value & set(const XML::Node &node);

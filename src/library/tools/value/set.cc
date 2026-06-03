@@ -244,4 +244,10 @@
 		return *this;
 	}
 
+	Value & Value::set(const Abstract::Object &value) {
+		reset(Object);
+		value.getProperties(*this);
+		return *this;
+	}
+
  }
