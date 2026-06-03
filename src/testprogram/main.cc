@@ -70,6 +70,7 @@
 			row["id"] = ix;
 			row["name"] = "name";
 			row["description"] = "description";
+			row["valid"] = true;
 		}
 
 		cout << endl;

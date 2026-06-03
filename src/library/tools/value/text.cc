@@ -67,9 +67,16 @@
 		case Udjat::Value::Signed:
 		case Udjat::Value::Unsigned:
 		case Udjat::Value::Real:
-		case Udjat::Value::Boolean:
 		case Udjat::Value::Fraction:
 			ss << " " << to_string() << endl;
+			break;
+
+		case Udjat::Value::Boolean:
+			{
+				bool val;
+				get(val);
+				ss << " " << (val ? _("Yes") : _("No")) << endl;
+			}
 			break;
 
 		case Udjat::Value::Report:
