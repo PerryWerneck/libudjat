@@ -28,6 +28,7 @@
  #include <config.h>
  #include <private/agent.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/string.h>
  #include <mutex>
 
 namespace Udjat {

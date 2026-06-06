@@ -34,6 +34,10 @@
 		return String{def};
 	}
 	
+	String Property::operator[](const char *attrname) const {
+		return get(attrname);
+	}
+
 	String Property::child_value() const {
 		return "";
 	}

@@ -34,6 +34,7 @@
  #include <functional>
  #include <cstdint>
  #include <cstring>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 
@@ -42,7 +43,33 @@
 
 	namespace XML {
 
-		using Node = pugi::xml_node;
+		class UDJAT_API Node : public pugi::xml_node, public Property {
+		public:
+			Node() = default;
+
+			Node(pugi::xml_node &node) : pugi::xml_node(node) {
+			}
+
+			~Node() override;
+
+			Node parent() const;
+
+			Node child(const char *name) const;
+
+			Node next_sibling(const char *name) const;	
+
+			const char *name() const noexcept override;
+
+			const String get(const char *attrname, const char *def = "") const override;
+			
+			String child_value() const override;
+
+			bool for_each(const char *name, const std::function<bool(const Property &property)> &call) const override;
+
+			bool for_each(const std::function<bool(const Property &property)> &call) const override;
+
+		};
+
 		using Attribute = pugi::xml_attribute;
 
 		/// @brief Load multiple child nodes into a container.
@@ -52,8 +79,8 @@
 		/// @param attrname XML attribute name for child nodes.
 		/// @param container The container to load nodes into.
 		template <class C>
-		inline void load(const Node &node, const char *attrname, C &container) {
-			for(Node child = node.child(attrname); child; child = child.next_sibling(attrname)) {
+		inline void load(const pugi::xml_node &node, const char *attrname, C &container) {
+			for(auto child = node.child(attrname); child; child = child.next_sibling(attrname)) {
 				container.emplace_back(child);
 			}
 		}

@@ -21,7 +21,6 @@
 
  #include <udjat/defs.h>
  #include <functional>
- #include <udjat/tools/string.h>
 
  namespace Udjat {
 
@@ -41,11 +40,9 @@
 		
 		/// @brief On XML property get the text inside the node.
 		/// @return The child value.
-		String child_value() const;
+		virtual String child_value() const;
 
-		inline String operator[](const char *attrname) const {
-			return get(attrname);
-		}
+		String operator[](const char *attrname) const;
 
 		/// @brief Enumerate children by name.
 		/// @param attrname The children name.
@@ -53,7 +50,7 @@
 		/// @return Test result.
 		/// @retval false if callback function returned false in all children.
 		/// @retval true if callback function returned true.
-		bool for_each(const char *name, const std::function<bool(const Property &property)> &call) const;
+		virtual bool for_each(const char *name, const std::function<bool(const Property &property)> &call) const;
 
 		/// @brief Enumerate children by attribute name.
 		/// @param attrname The attribute name.
