@@ -98,7 +98,7 @@
 
 	}
 
-	Attribute::Attribute(const xml_node &node, const char *name, bool upsearch) : Attribute(node,name,(upsearch ? name : nullptr)) {
+	Attribute::Attribute(const XML::Node &node, const char *name, bool upsearch) : Attribute(node,name,(upsearch ? name : nullptr)) {
 	}
 
 	Attribute::Attribute(const XML::Node &node, const char *name) : Attribute(node,name,node.attribute("allow-upsearch").as_bool(true)) {

@@ -26,7 +26,6 @@
  #include <iostream>
  #include <mutex>
  #include <pthread.h>
- #include <pugixml.hpp>
  #include <cstdint>
 
  namespace Udjat {
@@ -114,7 +113,7 @@
 		UDJAT_API void write(const Level level, const std::string &message) noexcept;
 
 		UDJAT_API Level LevelFactory(const char *name) noexcept;
-		UDJAT_API Level LevelFactory(const pugi::xml_node &node, const char *attr, const char *def);
+		UDJAT_API Level LevelFactory(const XML::Node &node, const char *attr, const char *def);
 
 		/// @brief Unformatted Log message.
 		class UDJAT_API String : public Udjat::String {
