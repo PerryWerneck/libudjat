@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-02 09:59-0300\n"
+"POT-Creation-Date: 2026-06-08 16:46-0300\n"
 "PO-Revision-Date: 2026-06-01 17:48-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -529,11 +529,11 @@ msgstr "Reinstalar serviço"
 msgid "Block access to 'net stop' on this service"
 msgstr "Bloquear acesso a 'net stop' no serviço"
 
-#: src/library/tools/report.cc:221
+#: src/library/tools/report.cc:221 src/library/tools/value/text.cc:78
 msgid "Yes"
 msgstr "Sim"
 
-#: src/library/tools/report.cc:221
+#: src/library/tools/report.cc:221 src/library/tools/value/text.cc:78
 msgid "No"
 msgstr "Não"
 
@@ -679,6 +679,10 @@ msgstr "numero"
 #: src/library/tools/value/type.cc:93
 msgid "Unknown"
 msgstr "Desconhecido"
+
+#: src/library/tools/value/text.cc:48
+msgid "Item "
+msgstr ""
 
 #: src/library/tools/xml/attribute.cc:113
 #, c++-format

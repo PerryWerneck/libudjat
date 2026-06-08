@@ -973,6 +973,7 @@ install_headers(
   'src/include/udjat/tools/percentage.h',
   'src/include/udjat/tools/socket.h',
   'src/include/udjat/tools/memory.h',
+  'src/include/udjat/tools/properties.h',
   subdir: 'udjat/tools'  
 )
 
