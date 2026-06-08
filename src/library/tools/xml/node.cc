@@ -34,18 +34,18 @@
 	}
 
 	XML::Node XML::Node::parent() const {
-		return Node{parent()};
+		return Node{pugi::xml_node::parent()};
 	}
 
 	XML::Node XML::Node::child(const char *name) const {
-		return Node{child(name)};
+		return Node{pugi::xml_node::child(name)};
 	}
 
 	XML::Node XML::Node::next_sibling(const char *name) const {
-		return Node{next_sibling(name)};
+		return Node{pugi::xml_node::next_sibling(name)};
 	}
 
-	const String XML::Node::get(const char *attrname, const char *def = "") const {
+	const String XML::Node::get(const char *attrname, const char *def) const {
 		return XML::AttributeFactory(*this,attrname).as_string(def);
 	}
 	
@@ -68,6 +68,7 @@
 				return true;
 			}
 		}
+		return false;
 	}
 
  }
