@@ -87,7 +87,7 @@
 		{
 			auto root = document_element();
 			Logger::setup(root);
-			for(const XML::Node &node : root) {
+			for(const auto &node : root) {
 				if(node.attribute("preload").as_bool(false)) {
 					Logger::String{"Preloading ",node.name()," '",node.attribute("name").as_string(),"'"}.trace();
 					XML::parse(node);
@@ -129,7 +129,7 @@
 		auto root = document_element();
 		Logger::setup(root);
 
-		for(const XML::Node &node : root) {
+		for(const auto &node : root) {
 			if(!node.attribute("preload").as_bool(false)) {
 				XML::parse(node);
 			}
@@ -150,7 +150,7 @@
 		return node;
 	}
 
-	bool XML::parse_children(const XML::Node &node, bool recursive) {
+	bool XML::parse_children(const pugi::xml_node &node, bool recursive) {
 
 		bool rc = false;
 		for(const auto &child : node) {
@@ -162,7 +162,7 @@
 		return rc;
 	}
 
-	bool XML::parse(const XML::Node &node, bool recursive) {
+	bool XML::parse(const pugi::xml_node &node, bool recursive) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
@@ -174,7 +174,7 @@
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
 
-				if(!factory->parse(node)) {
+				if(!factory->parse(XML::Node{node})) {
 					continue; // Not handled.
 				}
 
