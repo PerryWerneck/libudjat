@@ -43,7 +43,7 @@
 
 	namespace XML {
 
-		class UDJAT_API Node : public pugi::xml_node, public Property {
+		class UDJAT_API Node : public pugi::xml_node, public Properties {
 		public:
 			Node() = default;
 
@@ -64,9 +64,9 @@
 			
 			String child_value() const override;
 
-			bool for_each(const char *name, const std::function<bool(const Property &property)> &call) const override;
+			bool for_each(const char *name, const std::function<bool(const Properties &property)> &call) const override;
 
-			bool for_each(const std::function<bool(const Property &property)> &call) const override;
+			bool for_each(const std::function<bool(const Properties &property)> &call) const override;
 
 		};
 

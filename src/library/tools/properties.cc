@@ -26,24 +26,24 @@
  namespace Udjat {
 
 
-	const char *Property::name() const noexcept {
+	const char *Properties::name() const noexcept {
 		return "unnamed";
 	}
 
-	const String Property::get(const char *attrname, const char *def) const {
+	const String Properties::get(const char *attrname, const char *def) const {
 		return String{def};
 	}
 	
-	String Property::operator[](const char *attrname) const {
+	String Properties::operator[](const char *attrname) const {
 		return get(attrname);
 	}
 
-	String Property::child_value() const {
+	String Properties::child_value() const {
 		return "";
 	}
 
-	bool Property::for_each(const char *name, const std::function<bool(const Property &property)> &call) const {
-		return for_each([&name,&call](const Property &property) {
+	bool Properties::for_each(const char *name, const std::function<bool(const Properties &property)> &call) const {
+		return for_each([&name,&call](const Properties &property) {
 			if(!strcasecmp(name,property.name())) {
 				return call(property);
 			}
@@ -51,7 +51,7 @@
 		});
 	}
 
-	bool Property::for_each(const std::function<bool(const Property &property)> &call) const {
+	bool Properties::for_each(const std::function<bool(const Properties &property)> &call) const {
 		return false;
 	}
 

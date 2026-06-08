@@ -599,7 +599,7 @@
 			}
 
 			// Parse the document, create the children.
-			for(const XML::Node &node : root) {
+			for(const auto &node : root) {
 
 				if(node.attribute("preload").as_bool(false) || XML::parse(node,true)) {
 					continue; // Ignore reserved, parsed and preloaded nodes.

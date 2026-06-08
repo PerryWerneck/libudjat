@@ -53,7 +53,7 @@
 		return pugi::xml_node::child_value();
 	}
 
-	bool XML::Node::for_each(const char *name, const std::function<bool(const Property &property)> &call) const {		
+	bool XML::Node::for_each(const char *name, const std::function<bool(const Properties &property)> &call) const {		
 		for(auto child = this->child(name); child; child = child.next_sibling(name)) {
 			if(call(XML::Node{child})) {
 				return true;
@@ -62,7 +62,7 @@
 		return false;
 	}
 
-	bool XML::Node::for_each(const std::function<bool(const Property &property)> &call) const {
+	bool XML::Node::for_each(const std::function<bool(const Properties &property)> &call) const {
 		for(auto child : *this) {
 			if(call(XML::Node{child})) {
 				return true;

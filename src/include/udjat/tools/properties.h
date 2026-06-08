@@ -25,10 +25,10 @@
  namespace Udjat {
 
 	/// @brief Abstract class for object property parser.
-	class UDJAT_API Property {
+	class UDJAT_API Properties {
 	public:
-		Property() = default;
-		virtual ~Property() = default;
+		Properties() = default;
+		virtual ~Properties() = default;
 
 		virtual const char *name() const noexcept;
 
@@ -50,7 +50,7 @@
 		/// @return Test result.
 		/// @retval false if callback function returned false in all children.
 		/// @retval true if callback function returned true.
-		virtual bool for_each(const char *name, const std::function<bool(const Property &property)> &call) const;
+		virtual bool for_each(const char *name, const std::function<bool(const Properties &property)> &call) const;
 
 		/// @brief Enumerate children by attribute name.
 		/// @param attrname The attribute name.
@@ -58,7 +58,7 @@
 		/// @return Test result.
 		/// @retval false if callback function returned false in all children.
 		/// @retval true if callback function returned true.
-		virtual bool for_each(const std::function<bool(const Property &property)> &call) const;
+		virtual bool for_each(const std::function<bool(const Properties &property)> &call) const;
 
 	};
 
