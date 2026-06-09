@@ -50,6 +50,12 @@
 		/// @param def default value if nullptr the attribute is required.
 		/// @return The property value of def if not found.
 		virtual const String get(const char *attrname, const char *def = "") const;
+	
+		virtual bool get(const char *attrname, const bool def) const;
+		virtual double get(const char *attrname, const double def) const;
+		virtual float get(const char *attrname, const float def) const;
+		virtual int get(const char *attrname, const int def) const;
+		virtual unsigned int get(const char *attrname, const unsigned int def) const;
 		
 		/// @brief On XML property get the text inside the node.
 		/// @return The child value.
@@ -87,7 +93,7 @@
 		/// @retval false if test function returned false in all nodes.
 		/// @retval true if test function returned true.
 		virtual bool for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const;
-	
+			
 	};
 
  }

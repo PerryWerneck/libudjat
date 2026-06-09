@@ -65,6 +65,11 @@
 			const char *node_name() const noexcept override;
 
 			const String get(const char *attrname, const char *def = "") const override;
+			bool get(const char *attrname, const bool def) const override;
+			double get(const char *attrname, const double def) const override;
+			float get(const char *attrname, const float def) const override;
+			int get(const char *attrname, const int def) const override;
+			unsigned int get(const char *attrname, const unsigned int def) const override;
 			
 			String child_value() const override;
 

@@ -200,6 +200,26 @@
 		return def;
 
 	}
+
+	bool XML::Node::get(const char *attrname, const bool def) const {
+		return xml_attribute(*this,attrname).as_bool(def);
+	}
+
+	double XML::Node::get(const char *attrname, const double def) const {
+		return xml_attribute(*this,attrname).as_double(def);
+	}
+
+	float XML::Node::get(const char *attrname, const float def) const {
+		return xml_attribute(*this,attrname).as_float(def);
+	}
+
+	int XML::Node::get(const char *attrname, const int def) const {
+		return xml_attribute(*this,attrname).as_int(def);
+	}
+
+	unsigned int XML::Node::get(const char *attrname, const unsigned int def) const {
+		return xml_attribute(*this,attrname).as_uint(def);
+	}
 	
 	String XML::Node::child_value() const {
 		return pugi::xml_node::child_value();

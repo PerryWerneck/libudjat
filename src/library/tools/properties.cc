@@ -52,10 +52,30 @@
 		return "unnamed";
 	}
 
-	const String Properties::get(const char *attrname, const char *def) const {
+	const String Properties::get(const char *, const char *def) const {
 		return String{def ? def : ""}; // No requred attributes check in default properties.
 	}
 	
+	bool Properties::get(const char *, const bool def) const {
+		return def;
+	}
+
+	double Properties::get(const char *, const double def) const {
+		return def;
+	}
+
+	float Properties::get(const char *, const float def) const {
+		return def;
+	}
+
+	int Properties::get(const char *, const int def) const {
+		return def;
+	}
+
+	unsigned int Properties::get(const char *, const unsigned int def) const {
+		return def;
+	}
+
 	String Properties::operator[](const char *attrname) const {
 		return get(attrname);
 	}
