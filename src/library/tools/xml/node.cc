@@ -23,6 +23,8 @@
  #include <udjat/tools/properties.h>
  #include <pugixml.hpp>
  #include <udjat/tools/string.h>
+ #include <stdexcept>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -46,15 +48,23 @@
 	}
 
 	const String XML::Node::get(const char *attrname, const char *def) const {
-		return XML::AttributeFactory(*this,attrname).as_string(def);
+		auto attr = XML::AttributeFactory(*this,attrname);
+		if(attr) {
+			return attr.as_string(def);
+		}
+		if(!def) {
+			throw std::logic_error(Logger::String{"The required attribute '",attrname,"' is missing"});
+		}
+		return def;
+
 	}
 	
 	String XML::Node::child_value() const {
 		return pugi::xml_node::child_value();
 	}
 
-	bool XML::Node::for_each(const char *name, const std::function<bool(const Properties &property)> &call) const {		
-		for(auto child = this->child(name); child; child = child.next_sibling(name)) {
+	bool XML::Node::for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const {		
+		for(auto child = this->child(tagname); child; child = child.next_sibling(tagname)) {
 			if(call(XML::Node{child})) {
 				return true;
 			}
@@ -62,10 +72,21 @@
 		return false;
 	}
 
-	bool XML::Node::for_each(const std::function<bool(const Properties &property)> &call) const {
+	bool XML::Node::for_each_child(const std::function<bool(const Properties &property)> &call) const {
 		for(auto child : *this) {
 			if(call(XML::Node{child})) {
 				return true;
+			}
+		}
+		return false;
+	}
+
+	bool XML::Node::for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const {
+		for(XML::Node nd = *this; nd; nd = nd.parent()) {
+			for(XML::Node child = nd.child(attrname); child; child = child.next_sibling(attrname)) {
+				if(is_allowed(child) && test(child)) {
+					return true;
+				}
 			}
 		}
 		return false;

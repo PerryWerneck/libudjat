@@ -39,18 +39,14 @@
 
  namespace Udjat {
 
-	bool XML::for_each(const XML::Node &node, const char *attrname, const std::function<bool(const XML::Node &node)> &test) {
-
-		for(XML::Node nd = node; nd; nd = nd.parent()) {
-			for(XML::Node child = nd.child(attrname); child; child = child.next_sibling(attrname)) {
-				if(is_allowed(child) && test(child)) {
-					return true;
-				}
-			}
-		}
-		return false;
-
+	bool XML::for_each_attribute(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) {
+		return node.for_each_attribute(attrname,test);
 	}
+
+	bool XML::for_each(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) {
+		return node.for_each_attribute(attrname,test);
+	}
+
 
 	static XML::Attribute find(const XML::Node &n, const char *name, const char *upsearch) {
 

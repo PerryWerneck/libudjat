@@ -34,7 +34,7 @@
 
 		/// @brief Build a string from attrname.
 		/// @param attrname The attribute name.
-		/// @param def Default value if the attribute wasnt found;
+		/// @param def default value if nullptr the attribute is required.
 		/// @return The property value of def if not found.
 		virtual const String get(const char *attrname, const char *def = "") const;
 		
@@ -44,22 +44,30 @@
 
 		String operator[](const char *attrname) const;
 
-		/// @brief Enumerate children by name.
-		/// @param attrname The children name.
-		/// @param call Method to callback.
-		/// @return Test result.
-		/// @retval false if callback function returned false in all children.
-		/// @retval true if callback function returned true.
-		virtual bool for_each(const char *name, const std::function<bool(const Properties &property)> &call) const;
-
 		/// @brief Enumerate children by attribute name.
 		/// @param attrname The attribute name.
 		/// @param call Method to callback.
 		/// @return Test result.
 		/// @retval false if callback function returned false in all children.
 		/// @retval true if callback function returned true.
-		virtual bool for_each(const std::function<bool(const Properties &property)> &call) const;
+		virtual bool for_each_child(const std::function<bool(const Properties &property)> &call) const;
 
+		/// @brief Enumerate children by name.
+		/// @param attrname The children name (usually the XML tag).
+		/// @param call Method to callback.
+		/// @return Test result.
+		/// @retval false if callback function returned false in all children.
+		/// @retval true if callback function returned true.
+		virtual bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const;
+
+		/// @brief Navigate from document until callback returns true.
+		/// @param node Start node.
+		/// @param attrname Attribute name.
+		/// @return Test result.
+		/// @retval false if test function returned false in all nodes.
+		/// @retval true if test function returned true.
+		virtual bool for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const;
+	
 	};
 
  }

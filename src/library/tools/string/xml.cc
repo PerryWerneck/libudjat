@@ -34,12 +34,12 @@
  namespace Udjat {
 
 	String::String(const XML::Node &node, const char *attrname, bool required)
-		: String{XML::StringFactory(node,attrname,required ? nullptr : "")} {
+		: String{node.get(attrname,required ? nullptr : "")} {
 		expand(node);
 	}
 
 	String::String(const XML::Node &node, const char *attrname, const char *def)
-		: String{XML::StringFactory(node,attrname,def)} {
+		: String{node.get(attrname,def)} {
 		expand(node);
 	}
 

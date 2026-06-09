@@ -64,9 +64,11 @@
 			
 			String child_value() const override;
 
-			bool for_each(const char *name, const std::function<bool(const Properties &property)> &call) const override;
+			bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
 
-			bool for_each(const std::function<bool(const Properties &property)> &call) const override;
+			bool for_each_child(const std::function<bool(const Properties &property)> &call) const override;
+
+			bool for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const override;
 
 		};
 
@@ -158,22 +160,18 @@
 		/// @param attrname Attribute name.
 		/// @param def default value if nullptr the attribute is required.
 		/// @return The attribute value (def if not found).
-		UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
+		[[deprecated("Use node.get(attrname,def) or node[\"attrname\"]")]] UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
 		/// @brief Search 'node' and up stream for 'attrname'.
 		/// @param node Start node.
 		/// @param attrname Attribute name.
 		/// @param def default value if nullptr the attribute is required.
 		/// @return Quark with attribute value or 'def' if not found.
-		UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
+		[[deprecated("Use node.get(attrname,def].as_quark()")]] UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
-		/// @brief Navigate from document until callback returns true.
-		/// @param node Start node.
-		/// @param attrname Attribute name.
-		/// @return Test result.
-		/// @retval false if test function returned false in all nodes.
-		/// @retval true if test function returned true.
-		UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const XML::Node &node)> &test);
+		[[deprecated("Use node.for_each_attribute")]] UDJAT_API bool for_each_attribute(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test);
+
+		[[deprecated("Use node.for_each_attribute")]] UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test);
 
 		/// @brief Load default XML files.
 		/// @param path Path for configuration file or directory.

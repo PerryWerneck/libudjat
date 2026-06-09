@@ -31,7 +31,7 @@
 	}
 
 	const String Properties::get(const char *attrname, const char *def) const {
-		return String{def};
+		return String{def ? def : ""}; // No requred attributes check in default properties.
 	}
 	
 	String Properties::operator[](const char *attrname) const {
@@ -42,8 +42,13 @@
 		return "";
 	}
 
-	bool Properties::for_each(const char *name, const std::function<bool(const Properties &property)> &call) const {
-		return for_each([&name,&call](const Properties &property) {
+	bool Properties::for_each_child(const std::function<bool(const Properties &property)> &call) const {
+		// The default properties have no children.
+		return false;
+	}
+
+	bool Properties::for_each_child(const char *name, const std::function<bool(const Properties &property)> &call) const {
+		return for_each_child([&name,&call](const Properties &property) {
 			if(!strcasecmp(name,property.name())) {
 				return call(property);
 			}
@@ -51,7 +56,7 @@
 		});
 	}
 
-	bool Properties::for_each(const std::function<bool(const Properties &property)> &call) const {
+	bool Properties::for_each_attribute(const char *, const std::function<bool(const Udjat::Properties &props)> &) const {
 		return false;
 	}
 
