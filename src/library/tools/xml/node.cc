@@ -136,13 +136,66 @@
 		return true;
 	}
 
+	/// @brief Scan XML node and parents for attribute.
+	/// @param node The starting point.
+	/// @param attrname The required attribute name.
+	/// @return The attribute (empty if not found).
+	static const pugi::xml_attribute xml_attribute(const XML::Node &node, const char *attrname) {
+
+		debug("Searching for attribute '",attrname,"' in node '",node.node_name(),"'");
+
+		// Check for standard attribute.
+		{
+			auto attr = node.attribute(attrname);
+			if(attr) {
+				return attr;
+			}
+		}
+
+		// Check children.
+		for(auto child = node.pugi::xml_node::child("attribute"); child; child = child.next_sibling("attribute")) {
+			if(!strcasecmp(child.attribute("name").as_string("*"),attrname)) {
+				return child.attribute("value");
+			}
+		}
+
+		// Check parents.
+		String parent_name{node.pugi::xml_node::name(),"-",attrname};
+		for(auto parent = node.pugi::xml_node::parent(); parent; parent = parent.parent()) {
+
+			{
+				auto attr = parent.attribute(parent_name.c_str());
+				if(attr) {
+					return attr;
+				}
+			}
+
+			for(auto child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+				const char *name = child.attribute("name").as_string("*");
+				if(!(strcasecmp(name,attrname) && strcasecmp(name,parent_name.c_str()))) {
+					return child.attribute("value");
+				}
+			}
+		}
+
+		debug("Cant find attribute '",attrname,"'");
+		return pugi::xml_attribute();
+	}
+
 	const String XML::Node::get(const char *attrname, const char *def) const {
-		auto attr = XML::AttributeFactory(*this,attrname);
+
+		auto attr = xml_attribute(*this,attrname);
 		if(attr) {
+			debug("Found attribute '",attrname,"' for node '",node_name(),"'");
 			return attr.as_string(def);
 		}
+
 		if(!def) {
-			throw std::logic_error(Logger::String{"The required attribute '",attrname,"' is missing"});
+#ifdef BUILD_LEGACY
+			throw logic_error(Logger::String{"The required attribute '",attrname,"' is missing"});
+#else
+			throw logic_error(Logger::String{"Required attribute '",attrname,"' is missing at ",pugi::xml_node::path()});
+#endif
 		}
 		return def;
 
@@ -183,6 +236,7 @@
 
 	bool XML::Node::for_each_child(const char *tagname, const char *group, const std::function<bool(const Properties &property)> &call) const {
 
+		// Scan for nodes.
 		for(auto node = pugi::xml_node::child(tagname); node; node = node.pugi::xml_node::next_sibling(tagname)) {
 			if(call(XML::Node{node})) {
 				return true;
@@ -198,6 +252,8 @@
 			string node_name{pugi::xml_node::name()};
 			node_name += '-';
 			node_name += tagname;
+
+			debug("nome_name=",node_name.c_str()," group_name=",group_name.c_str());
 
 			for(auto parent = pugi::xml_node::parent(); parent; parent = parent.parent()) {
 
