@@ -24,6 +24,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
  #include <udjat/tools/logger.h>
@@ -61,22 +62,10 @@
 	}
 	*/
 
-	static const char * NameFactory(const XML::Node &node) noexcept {
-
-		const char *name = node.attribute("name").as_string();
-
-		if(!(name && *name)) {
-			name = node.name();
-			Logger::String{"<",node.name(),"> doesn't have the required attribute 'name', using default '",name,"'"}.trace("xml");
-		}
-
-		return Quark(name).c_str();
+	NamedObject::NamedObject(const Properties &props) : NamedObject{props.NameFactory()} {
 	}
 
-	NamedObject::NamedObject(const XML::Node &node) : NamedObject{NameFactory(node)} {
-	}
-
-	NamedObject::NamedObject(const char *name, const XML::Node &) : NamedObject{name} {
+	NamedObject::NamedObject(const char *name, const Properties &) : NamedObject{name} {
 	}
 
 	const char * NamedObject::name() const noexcept {
@@ -108,8 +97,8 @@
 		return strcasecmp(c_str(), name) == 0;
 	}
 
-	bool NamedObject::operator==(const XML::Node &node) const noexcept {
-		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
+	bool NamedObject::operator==(const Properties &node) const noexcept {
+		return strcasecmp(c_str(),node["name"].c_str()) == 0;
 	}
 
 	Value & NamedObject::getProperties(Value &value) const {
@@ -229,11 +218,11 @@
 		return false;	// Not handled, maybe the caller can handle it.
 	}
 
-	Object::Object(const XML::Node &node) : NamedObject{node} {
-		properties.label = String{node,"label",properties.label}.as_quark();
-		properties.summary = String{node,"summary",properties.summary}.as_quark();
-		properties.url = String{node,"url",properties.url}.as_quark();
-		properties.icon = String{node,"icon",properties.icon}.as_quark();
+	Object::Object(const Udjat::Properties &props) : NamedObject{props} {
+		properties.label = props.get("label",properties.label).as_quark();
+		properties.summary = props.get("summary",properties.summary).as_quark();
+		properties.url = props.get("url",properties.url).as_quark();
+		properties.icon = props.get("icon",properties.icon).as_quark();
 	}
 
 	bool Object::append_child(const XML::Node &node) {

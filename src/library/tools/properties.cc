@@ -22,11 +22,25 @@
  #include <functional>
  #include <udjat/tools/string.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
 
-	const char *Properties::name() const noexcept {
+	const char * Properties::NameFactory() const noexcept {
+
+		String name{get("name")};
+
+		if(name.empty()) {
+			Logger::String{"<",node_name(),"> doesn't have the required attribute 'name', using default '",name,"'"}.trace("properties");
+			name.assign(node_name());
+		}
+
+		return name.as_quark();
+
+	}
+
+	const char *Properties::node_name() const noexcept {
 		return "unnamed";
 	}
 
@@ -49,7 +63,7 @@
 
 	bool Properties::for_each_child(const char *name, const std::function<bool(const Properties &property)> &call) const {
 		return for_each_child([&name,&call](const Properties &property) {
-			if(!strcasecmp(name,property.name())) {
+			if(!strcasecmp(name,property.node_name())) {
 				return call(property);
 			}
 			return false;

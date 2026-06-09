@@ -58,7 +58,7 @@
 
 			Node next_sibling(const char *name) const;	
 
-			const char *name() const noexcept override;
+			const char *node_name() const noexcept override;
 
 			const String get(const char *attrname, const char *def = "") const override;
 			

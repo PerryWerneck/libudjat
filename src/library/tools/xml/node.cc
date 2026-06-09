@@ -34,7 +34,7 @@
 	XML::Node::~Node() {
 	}
 
-	const char * XML::Node::name() const noexcept {
+	const char * XML::Node::node_name() const noexcept {
 		return pugi::xml_node::name();
 	}
 

@@ -30,7 +30,13 @@
 		Properties() = default;
 		virtual ~Properties() = default;
 
-		virtual const char *name() const noexcept;
+		/// @brief Get the property node name, usually the value from XML.
+		/// @return The property node name.
+		virtual const char * node_name() const noexcept;
+
+		/// @brief Build constant from 'name' attribute, fallback to node_name() if cant find the attribute.
+		/// @return The property name as constant string.
+		const char * NameFactory() const noexcept;
 
 		/// @brief Build a string from attrname.
 		/// @param attrname The attribute name.
