@@ -68,6 +68,8 @@
 
 			bool for_each_child(const std::function<bool(const Properties &property)> &call) const override;
 
+			bool for_each_child(const char *tagname, const char *group, const std::function<bool(const Udjat::Properties &property)> &call) const override;
+
 			bool for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const override;
 
 		};

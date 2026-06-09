@@ -56,6 +56,12 @@
 		});
 	}
 
+	bool Properties::for_each_child(const char *tagname, const char *, const std::function<bool(const Udjat::Properties &property)> &call) const {
+		return for_each_child(tagname,[&call](const Properties &property) {
+			return call(property);
+		});
+	}
+
 	bool Properties::for_each_attribute(const char *, const std::function<bool(const Udjat::Properties &props)> &) const {
 		return false;
 	}

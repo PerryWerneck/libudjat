@@ -25,6 +25,9 @@
  #include <udjat/tools/string.h>
  #include <stdexcept>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/string.h>
+
+ using namespace std;
 
  namespace Udjat {
 
@@ -90,6 +93,52 @@
 			}
 		}
 		return false;
+	}
+
+	bool XML::Node::for_each_child(const char *tagname, const char *group, const std::function<bool(const Properties &property)> &call) const {
+
+		for(auto node = pugi::xml_node::child(tagname); node; node = node.pugi::xml_node::next_sibling(tagname)) {
+			if(call(XML::Node{node})) {
+				return true;
+			}
+		}
+
+		if(group && *group) {
+
+			string group_name{pugi::xml_node::name()};
+			group_name += '-';
+			group_name += group;
+
+			string node_name{pugi::xml_node::name()};
+			node_name += '-';
+			node_name += tagname;
+
+			for(auto parent = pugi::xml_node::parent(); parent; parent = parent.parent()) {
+
+				// Scan for nodes.
+				for(auto node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
+					if(call(XML::Node{node})) {
+						return true;
+					}
+				}
+
+				// Scan for groups.
+				for(auto grp = parent.pugi::xml_node::child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
+
+					for(auto node = grp.pugi::xml_node::child(tagname); node; node = node.next_sibling(tagname)) {
+						if(call(XML::Node{node})) {
+							return true;
+						}
+					}
+
+				}
+
+			}
+
+		}
+
+		return false;
+
 	}
 
  }

@@ -53,11 +53,13 @@
 		Factories().remove(this);
 	}
 
+	/*
 	std::shared_ptr<Abstract::Object> Abstract::Object::Factory::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
 		auto obj = ObjectFactory(node);
 		parent.push_back(obj);
 		return obj;
 	}
+	*/
 
 	static const char * NameFactory(const XML::Node &node) noexcept {
 
@@ -371,34 +373,34 @@
 		return Logger::trace() << name() << "\t";
 	}
 
-	void Abstract::Object::for_each(const XML::Node &root, const char *name, const char *group, const std::function<void(const XML::Node &node)> &handler) {
+	void Abstract::Object::for_each(const XML::Node &root, const char *tagname, const char *group, const std::function<void(const XML::Node &node)> &call) {
 
-		for(XML::Node node = root.child(name); node; node = node.next_sibling(name)) {
-			handler(node);
+		for(auto node = root.pugi::xml_node::child(tagname); node; node = node.pugi::xml_node::next_sibling(tagname)) {
+			call(XML::Node{node});
 		}
 
 		if(group && *group) {
 
-			string group_name{root.name()};
+			string group_name{root.pugi::xml_node::name()};
 			group_name += '-';
 			group_name += group;
 
-			string node_name{root.name()};
+			string node_name{root.pugi::xml_node::name()};
 			node_name += '-';
-			node_name += name;
+			node_name += tagname;
 
-			for(XML::Node parent = root.parent(); parent; parent = parent.parent()) {
+			for(auto parent = root.pugi::xml_node::parent(); parent; parent = parent.parent()) {
 
 				// Scan for nodes.
-				for(XML::Node node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
-					handler(node);
+				for(auto node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
+					call(XML::Node{node});
 				}
 
 				// Scan for groups.
-				for(XML::Node grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
+				for(auto grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
 
-					for(XML::Node node = grp.child(name); node; node = node.next_sibling(name)) {
-						handler(node);
+					for(auto node = grp.child(tagname); node; node = node.next_sibling(tagname)) {
+						call(XML::Node{node});
 					}
 
 				}
@@ -464,6 +466,10 @@
 
 	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const char *name, unsigned int def) {
 		return getAttribute(node,name).as_uint(def);
+	}
+
+	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const std::string &group, const char *name, unsigned int def) {
+		return getAttribute(node,group.c_str(),name,def);
 	}
 
 	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const char *group, const char *name, unsigned int def) {

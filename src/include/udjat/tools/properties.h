@@ -44,7 +44,7 @@
 
 		String operator[](const char *attrname) const;
 
-		/// @brief Enumerate children by attribute name.
+		/// @brief Enumerate children by attribute name.https://x.com/evandroratho/status/2064074016793481270
 		/// @param attrname The attribute name.
 		/// @param call Method to callback.
 		/// @return Test result.
@@ -59,6 +59,13 @@
 		/// @retval false if callback function returned false in all children.
 		/// @retval true if callback function returned true.
 		virtual bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const;
+
+		/// @brief Navigate thru XML nodes, including groups.
+		/// @param node The XML node to start search.
+		/// @param tagname The child node name.
+		/// @param group The child group node name, usually the plural of name (optional).
+		/// @param handler The handler for children.
+		virtual bool for_each_child(const char *tagname, const char *group, const std::function<bool(const Udjat::Properties &property)> &call) const;
 
 		/// @brief Navigate from document until callback returns true.
 		/// @param node Start node.
