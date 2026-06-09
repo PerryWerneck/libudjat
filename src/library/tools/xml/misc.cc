@@ -30,10 +30,6 @@
  #include <iostream>
  #include <cstdarg>
 
- #ifdef HAVE_VMDETECT
-	#include <vmdetect/virtualmachine.h>
- #endif // HAVE_VMDETECT
-
  using namespace std;
  using namespace pugi;
 
@@ -112,85 +108,15 @@
 	}
 
 	bool is_reserved(const XML::Node &node) {
+		return node.reserved();
 
-		if(!(strncasecmp(node.name(),"attribute",9))) {
-			return true;
-		}
-
-		return false;
 	}
 
 	bool is_allowed(const XML::Node &node) {
+		return node.allowed();
 
-#ifdef _WIN32
-
-		if(!node.attribute("allowed-in-windows").as_bool(true)) {
-			return false;
-		}
-
-#else
-
-		if(!node.attribute("allowed-in-linux").as_bool(true)) {
-			return false;
-		}
-
-#endif // _WIN32
-
-#ifdef HAVE_VMDETECT
-
-		if(!(node.attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
-			return false;
-		}
-
-#else
-
-		if(!node.attribute("allowed-in-virtual-machine").as_bool(true)) {
-			cerr << PACKAGE_NAME "\tLibrary built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute" << endl;
-		}
-
-#endif // HAVE_VMDETECT
-
-		if(XML::test(node, "valid-if", false) || (XML::test(node, "allow-if", false))) {
-			return true;
-		}
-
-		/*
-		// Test if the attribute requirement is valid.
-		str = node.attribute("valid-if").as_string();
-		if(str && *str && URL{str}.test() != 200) {
-			return false;
-		}
-
-		str = node.attribute("allow-if").as_string();
-		if(str && *str && URL{str}.test() != 200) {
-			return false;
-		}
-
-		// Test if the attribute requirement is not valid.
-		str = node.attribute("not-valid-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-
-		str = node.attribute("invalid-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-
-		str = node.attribute("ignore-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-
-		str = node.attribute("deny-if").as_string();
-		if(str && *str && URL{str}.test() == 200) {
-			return false;
-		}
-		*/
-
-		return true;
 	}
-
+	
 	std::string expand(const XML::Node &node, const pugi::xml_attribute &attribute, const char *def) {
 		return Udjat::String(attribute.as_string(def)).expand(node);
 	}

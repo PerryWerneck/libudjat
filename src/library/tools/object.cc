@@ -205,15 +205,17 @@
 	
 	bool Abstract::Object::append_child(const XML::Node &node) {
 
-		if(XML::parse(node)) {
+		if(!node.allowed()) {
 			return true; // Ignore reserved nodes.
 		}
 
 		// TODO: Rewrite init actions to use Object::Factory.
-		if(strcasecmp(node.name(),"init") == 0) {
+		if(strcasecmp(node.node_name(),"init") == 0) {
 			Action::Factory::build(node)->call(node);
 			return true; // Handled by action.
 		}
+
+		// TODO: Search object factories, if found, build object and append it.
 
 		return false;	// Not handled, maybe the caller can handle it.
 	}

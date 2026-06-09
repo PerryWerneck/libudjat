@@ -27,6 +27,10 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/string.h>
 
+ #ifdef HAVE_VMDETECT
+	#include <vmdetect/virtualmachine.h>
+ #endif // HAVE_VMDETECT
+
  using namespace std;
 
  namespace Udjat {
@@ -48,6 +52,88 @@
 
 	XML::Node XML::Node::next_sibling(const char *name) const {
 		return Node{pugi::xml_node::next_sibling(name)};
+	}
+
+	bool XML::Node::reserved() const noexcept {
+		if(!(strncasecmp(node_name(),"attribute",9))) {
+			return true;
+		}
+		return false;
+	}
+
+	bool XML::Node::allowed() const noexcept {
+
+		if(reserved()) {
+			return false;
+		}
+
+#ifdef _WIN32
+
+		if(!attribute("allowed-in-windows").as_bool(true)) {
+			return false;
+		}
+
+#else
+
+		if(!attribute("allowed-in-linux").as_bool(true)) {
+			return false;
+		}
+
+#endif // _WIN32
+
+#ifdef HAVE_VMDETECT
+
+		if(!(attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
+			return false;
+		}
+
+#else
+
+		if(!node.attribute("allowed-in-virtual-machine").as_bool(true)) {
+			cerr << PACKAGE_NAME "\tLibrary built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute" << endl;
+		}
+
+#endif // HAVE_VMDETECT
+
+		if(XML::test(*this, "valid-if", false) || (XML::test(*this, "allow-if", false))) {
+			return true;
+		}
+
+		/*
+		// Test if the attribute requirement is valid.
+		str = node.attribute("valid-if").as_string();
+		if(str && *str && URL{str}.test() != 200) {
+			return false;
+		}
+
+		str = node.attribute("allow-if").as_string();
+		if(str && *str && URL{str}.test() != 200) {
+			return false;
+		}
+
+		// Test if the attribute requirement is not valid.
+		str = node.attribute("not-valid-if").as_string();
+		if(str && *str && URL{str}.test() == 200) {
+			return false;
+		}
+
+		str = node.attribute("invalid-if").as_string();
+		if(str && *str && URL{str}.test() == 200) {
+			return false;
+		}
+
+		str = node.attribute("ignore-if").as_string();
+		if(str && *str && URL{str}.test() == 200) {
+			return false;
+		}
+
+		str = node.attribute("deny-if").as_string();
+		if(str && *str && URL{str}.test() == 200) {
+			return false;
+		}
+		*/
+
+		return true;
 	}
 
 	const String XML::Node::get(const char *attrname, const char *def) const {

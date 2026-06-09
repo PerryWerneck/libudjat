@@ -40,6 +40,14 @@
 
 	}
 
+	bool Properties::reserved() const noexcept {
+		return false;
+	}
+
+	bool Properties::allowed() const noexcept {
+		return !reserved();
+	}
+
 	const char *Properties::node_name() const noexcept {
 		return "unnamed";
 	}

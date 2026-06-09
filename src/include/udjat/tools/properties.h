@@ -30,6 +30,13 @@
 		Properties() = default;
 		virtual ~Properties() = default;
 
+		/// @brief Check if it's a reserved tag.
+		/// @return true if this is a reserved tag and should be ignored by factories.
+		virtual bool reserved() const noexcept;
+
+		/// @brief Check if this property is allowed
+		virtual bool allowed() const noexcept;
+
 		/// @brief Get the property node name, usually the value from XML.
 		/// @return The property node name.
 		virtual const char * node_name() const noexcept;
