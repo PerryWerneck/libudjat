@@ -25,6 +25,7 @@
  #include <iostream>
  #include <vector>
  #include <functional>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/xml.h>
 
  namespace Udjat {
@@ -136,6 +137,19 @@
 		/// @param args null terminate list of elements.
 		/// @param delimiter the delimiter.
 		String(const char **args, char delimiter = ',');
+
+		/// @brief Construct string from xml definition.
+		/// @param node XML node with string definitions.
+		/// @param attrname XML attribute name for the string value.
+		/// @param def Default value if not found.
+		/// @param upsearch Search upper levels for attribute.
+		String(const Properties &props, const char *attrname, const char *def);
+
+		/// @brief Construct string from xml definition.
+		/// @param node XML node with string definitions.
+		/// @param attrname XML attribute name for the string value.
+		/// @param required if true will throw exception if the attribute is not found.
+		String(const Properties &props, const char *attrname = "value", bool required = false);
 
 		/// @brief Construct string from xml definition.
 		/// @param node XML node with string definitions.
@@ -341,12 +355,12 @@
 		/// @param marker The marker.
 		/// @param node XML node from the begin of the value search.
 		/// @param group Group from configuration file to search.
-		String & expand(char marker, const XML::Node &node, const char *group = "default-attributes");
+		String & expand(char marker, const Properties &props, const char *group = "default-attributes");
 
 		/// @brief Expand ${} macros.
 		/// @param node XML node from the begin of the value search.
 		/// @param group Group from configuration file to search.
-		String & expand(const XML::Node &node, const char *group = "default-attributes");
+		String & expand(const Properties &props, const char *group = "default-attributes");
 
 		/// @brief Find first occurrence of substring (case insensitive);
 		/// @return Pointer to first occurrence or NULL if not found.
@@ -406,25 +420,57 @@
 		String & chomp() noexcept;
 
 		bool as_bool(bool def = false) const;
+
+		/// @brief Convert string to int.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		int as_int(int def = 0) const;
+
+		/// @brief Convert string to unsigned int.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		unsigned int as_uint(unsigned int def = 0) const;
+
+		/// @brief Convert string to long.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		long as_long(long def = 0) const;
+
+		/// @brief Convert string to unsigned long.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		unsigned long as_ulong(unsigned long def = 0) const;
+
+		/// @brief Convert string to float.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		float as_float(float def = 0.0f) const;
+
+		/// @brief Convert string to double.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		double as_double(double def = 0.0) const;
+
+		/// @brief Convert string to quark
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
+		const char * as_quark(const char *def = nullptr) const;
 
 		/// @brief Convert string to unsigned long long processing 'kb','gb,tb, etc.
 		/// @return Unsigned long long value of string contents.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		unsigned long long as_ull() const;
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		String & set_byte(unsigned long long value, int precision = 1);
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
+		/// @param def The default value, used if string is empty.
+		/// @return Numeric value from string.
 		String & set_byte(double value, int precision = 1);
-
-		/// @brief Return 'quark' string from value.
-		const char * as_quark() const;
 
 	};
 

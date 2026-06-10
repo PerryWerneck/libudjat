@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
@@ -75,7 +77,7 @@
 
 #else
 
-		if(!attribute("allowed-in-linux").as_bool(true)) {
+		if(!pugi::xml_node::attribute("allowed-in-linux").as_bool(true)) {
 			return false;
 		}
 
@@ -83,7 +85,7 @@
 
 #ifdef HAVE_VMDETECT
 
-		if(!(attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
+		if(!(pugi::xml_node::attribute("allowed-in-virtual-machine").as_bool(true) || VirtualMachine{Logger::enabled(Logger::Debug)}) ) {
 			return false;
 		}
 
@@ -146,7 +148,7 @@
 
 		// Check for standard attribute.
 		{
-			auto attr = node.attribute(attrname);
+			auto attr = node.pugi::xml_node::attribute(attrname);
 			if(attr) {
 				return attr;
 			}
@@ -199,6 +201,13 @@
 		}
 		return def;
 
+	}
+
+	bool XML::Node::contains(const char *name) const noexcept {
+		if(xml_attribute(*this,name)) {
+			return true;
+		}
+		return false;
 	}
 
 	bool XML::Node::get(const char *attrname, const bool def) const {

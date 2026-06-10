@@ -52,28 +52,33 @@
 		return "unnamed";
 	}
 
+	bool Properties::contains(const char *) const noexcept {
+		return false;
+	}
+
 	const String Properties::get(const char *, const char *def) const {
 		return String{def ? def : ""}; // No requred attributes check in default properties.
 	}
 	
-	bool Properties::get(const char *, const bool def) const {
-		return def;
+	bool Properties::get(const char *attrname, const bool def) const {
+		return get(attrname,"").as_bool(def);
 	}
 
-	double Properties::get(const char *, const double def) const {
-		return def;
+	double Properties::get(const char *attrname, const double def) const {
+		return get(attrname,"").as_double(def);
 	}
 
-	float Properties::get(const char *, const float def) const {
-		return def;
+	float Properties::get(const char *attrname, const float def) const {
+		return get(attrname,"").as_float(def);
+	
 	}
 
-	int Properties::get(const char *, const int def) const {
-		return def;
+	int Properties::get(const char *attrname, const int def) const {
+		return get(attrname,"").as_int(def);
 	}
 
-	unsigned int Properties::get(const char *, const unsigned int def) const {
-		return def;
+	unsigned int Properties::get(const char *attrname, const unsigned int def) const {
+		return get(attrname,"").as_uint(def);
 	}
 
 	String Properties::operator[](const char *attrname) const {

@@ -34,6 +34,11 @@
 		/// @return true if this is a reserved tag and should be ignored by factories.
 		virtual bool reserved() const noexcept;
 
+		/// @brief Check if property contains a value.
+		/// @param name The value name.
+		/// @return true if the properties has the named value.
+		virtual bool contains(const char *name) const noexcept;
+
 		/// @brief Check if this property is allowed
 		virtual bool allowed() const noexcept;
 
@@ -50,7 +55,7 @@
 		/// @param def default value if nullptr the attribute is required.
 		/// @return The property value of def if not found.
 		virtual const String get(const char *attrname, const char *def = "") const;
-	
+
 		virtual bool get(const char *attrname, const bool def) const;
 		virtual double get(const char *attrname, const double def) const;
 		virtual float get(const char *attrname, const float def) const;

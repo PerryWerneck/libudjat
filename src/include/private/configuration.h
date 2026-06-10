@@ -64,6 +64,14 @@
 
 			static bool allow_user_homedir(bool allow);
 
+			inline bool contains(const char *group) {
+				return Win32::Registry{hParent,false}.hasKey(group);
+			}
+
+			inline bool contains(const char *group, const char *key) {
+				return Win32::Registry{hParent,group,false}.hasValue(key);
+			}
+
 			inline bool hasGroup(const char *group) {
 				return Win32::Registry{hParent,false}.hasKey(group);
 			}
@@ -124,8 +132,16 @@
 
 			void reload();
 
-			bool hasGroup(const char *group);
-			bool hasKey(const char *group, const char *key);
+			bool contains(const char *group);
+			bool contains(const char *group, const char *key);
+
+			inline bool hasGroup(const char *group) {
+				return contains(group);
+			}
+
+			inline bool hasKey(const char *group, const char *key) {
+				return contains(group,key);
+			}
 
 			int32_t get(const char *group, const char *name, const int32_t def) const;
 			int64_t get(const char *group, const char *name, const int64_t def) const;
@@ -178,8 +194,16 @@
 
 			void reload();
 
-			bool hasGroup(const char *group);
-			bool hasKey(const char *group, const char *key);
+			bool contains(const char *group);
+			bool contains(const char *group, const char *key);
+
+			inline bool hasGroup(const char *group) {
+				return contains(group);
+			}
+
+			inline bool hasKey(const char *group, const char *key) {
+				return contains(group,key);
+			}
 
 			int32_t get(const char *group, const char *name, const int32_t def) const;
 			int64_t get(const char *group, const char *name, const int64_t def) const;
@@ -237,12 +261,20 @@
 			inline void reload() const noexcept {
 			}
 
-			inline bool hasGroup(const char *) const noexcept {
+			inline bool contains(const char *group) {
 				return false;
 			}
 
-			inline bool hasKey(const char *, const char *) const noexcept {
+			bool contains(const char *group, const char *key) {
 				return false;
+			}
+
+			inline bool hasGroup(const char *group) {
+				return false;
+			}
+
+			inline bool hasKey(const char *group, const char *key) {
+				return false);
 			}
 
 			template <typename T>

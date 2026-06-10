@@ -221,10 +221,10 @@
 	}
 
 	Object::Object(const Udjat::Properties &props) : NamedObject{props} {
-		properties.label = props.get("label",properties.label).as_quark();
-		properties.summary = props.get("summary",properties.summary).as_quark();
-		properties.url = props.get("url",properties.url).as_quark();
-		properties.icon = props.get("icon",properties.icon).as_quark();
+		properties.label = props["label"].as_quark(properties.label);
+		properties.summary = props["summary"].as_quark(properties.summary);
+		properties.url = props["url"].as_quark(properties.url);
+		properties.icon = props["icon"].as_quark(properties.icon);
 	}
 
 	bool Object::append_child(const XML::Node &node) {
@@ -404,21 +404,21 @@
 
 	const char * Abstract::Object::settings_from(const XML::Node &node, bool upstream, const char *def) {
 
-		auto attribute = node.attribute("settings-from");
+		auto attribute = node.pugi::xml_node::attribute("settings-from");
 		if(attribute) {
 			return attribute.as_string(def);
 		}
 
 		string attrname{node.name()};
 		attrname += "-defaults-from";
-		attribute = node.attribute(attrname.c_str());
+		attribute = node.pugi::xml_node::attribute(attrname.c_str());
 		if(attribute) {
 			return attribute.as_string(def);
 		}
 
 		if(upstream) {
 			for(XML::Node parent = node.parent(); parent; parent = parent.parent()) {
-				attribute = parent.attribute(attrname.c_str());
+				attribute = parent.pugi::xml_node::attribute(attrname.c_str());
 				if(attribute) {
 					return attribute.as_string(def);
 				}
@@ -494,38 +494,12 @@
 			return Quark(Udjat::String(attribute.as_string(def)).expand(node)).c_str();
 		}
 
-		if(Config::hasKey(group,name)) {
+		if(Config::contains(group,name)) {
 			return Quark(Udjat::String(Config::get(group,name,def)).expand(node)).c_str();
 		}
 
 		return def;
 	}
-
-	/*
-	const char * Abstract::Object::expand(const XML::Node &node, const char *group, const char *value) {
-
-		String text{value};
-		text.expand([node,group](const char *key, string &value) {
-
-			auto attribute = getAttribute(node,key);
-			if(attribute) {
-				value = Udjat::expand(node,attribute,"");
-				return true;
-			}
-
-			if(Config::hasKey(group,key)) {
-				value = Config::Value<string>(group,key,"");
-				return true;
-			}
-
-			return false;
-
-		});
-
-		return Quark(text).c_str();
-
-	}
-	*/
 
 	const char * Abstract::Object::getChildValue(const XML::Node &node, const char *group) {
 		String text{node.child_value()};

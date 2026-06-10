@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
  #include <config.h>
  #include <udjat/defs.h>
 

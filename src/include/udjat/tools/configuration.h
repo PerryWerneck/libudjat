@@ -51,8 +51,16 @@
 		/// @return false if the lambda returns 'false' for all keys.
 		UDJAT_API bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call);
 
-		UDJAT_API bool hasGroup(const std::string &group);
-		UDJAT_API bool hasKey(const char *group, const char *key);
+		UDJAT_API bool contains(const std::string &group);
+		UDJAT_API bool contains(const char *group, const char *key);
+
+		inline bool hasGroup(const std::string &group) {
+			return contains(group);
+		}
+
+		inline bool hasKey(const char *group, const char *key) {
+			return contains(group,key);
+		}
 
 		template <typename T>
 		class UDJAT_API Value {

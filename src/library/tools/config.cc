@@ -114,12 +114,12 @@
 			return Controller::getInstance().for_each(group,call);
 		}
 
-		UDJAT_API bool hasGroup(const std::string &group) {
-			return Controller::getInstance().hasGroup(group.c_str());
+		UDJAT_API bool contains(const std::string &group) {
+			return Controller::getInstance().contains(group.c_str());
 		}
 
-		UDJAT_API bool hasKey(const char *group, const char *key) {
-			return Controller::getInstance().hasKey(group,key);
+		UDJAT_API bool contains(const char *group, const char *key) {
+			return Controller::getInstance().contains(group,key);
 		}
 
 		UDJAT_API int32_t get(const std::string &group, const std::string &name, const int32_t def) {
