@@ -469,6 +469,10 @@ lib_src += [
   'src/library/tools/xml/node.cc',
   'src/library/tools/exception.cc',
   'src/library/tools/logger.cc',
+  'src/library/tools/logger/controller.cc',
+  'src/library/tools/logger/misc.cc',
+  'src/library/tools/logger/string.cc',
+  'src/library/tools/logger/message.cc',
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',
@@ -695,7 +699,6 @@ else
     'src/library/tools/os/linux/threadpool.cc',
     'src/library/tools/os/linux/econf.cc',
     'src/library/tools/os/linux/iniparser.cc',
-    'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
   ]

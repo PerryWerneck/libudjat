@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -22,9 +22,11 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
- #include <pugixml.hpp>
- #include <list>
+ #include <udjat/tools/properties.h>
  #include <mutex>
+ #include <functional>
+ #include <list>
+ #include <string>
 
  #ifdef DEBUG
 	#define DEBUG_ENABLED true
@@ -36,6 +38,121 @@
 
 	namespace Logger {
 
+		class UDJAT_PRIVATE Stream : public std::basic_streambuf<char, std::char_traits<char> > {
+			private:
+				Level level;
+
+			public:
+				class Buffer : public std::string {
+				private:
+					Level level;
+					Buffer(Level level);
+
+				public:
+					static Buffer & getInstance(Level l);
+					~Buffer();
+
+					Buffer(const Buffer &src) = delete;
+					Buffer(const Buffer *src) = delete;
+
+					bool push_back(int c);
+
+					void sync();
+
+				};
+
+				Stream(Level l) : level(l) {
+				}
+
+				~Stream();
+
+				/// @brief Writes characters to the associated file from the put area
+				int sync() override;
+
+				/// @brief Writes characters to the associated output sequence from the put area.
+				int overflow(int c) override;
+
+		};
+
+		class UDJAT_PRIVATE Controller {
+			private:
+				std::recursive_mutex guard;
+				Controller();
+
+				/// @brief Enabled/disabled log types
+				bool levels[Level::Count] = {
+					true,	// Error conditions (std::cerr).
+					true,	// Warning conditions (std::clog).
+					true,	// Informational message (std::cout).
+					false,	// Debug message.
+					false,	// Trace message
+					true,	// System Status
+				};
+
+				/// @brief Log writer callback.
+				struct Writer {
+					const char *name;
+					bool enabled = true;
+					std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> call;
+					Writer(const char *n,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &c) : name(n), call(c) { }
+				};
+
+				std::list<Writer> writers;
+
+#ifndef _WIN32
+
+				typedef enum {
+					// log flags
+					G_LOG_FLAG_RECURSION	= 1 << 0,
+					G_LOG_FLAG_FATAL		= 1 << 1,
+
+					// GLib log levels
+					G_LOG_LEVEL_ERROR		= 1 << 2,       /* always fatal */
+					G_LOG_LEVEL_CRITICAL	= 1 << 3,
+					G_LOG_LEVEL_WARNING		= 1 << 4,
+					G_LOG_LEVEL_MESSAGE		= 1 << 5,
+					G_LOG_LEVEL_INFO		= 1 << 6,
+					G_LOG_LEVEL_DEBUG		= 1 << 7,
+
+					G_LOG_LEVEL_MASK		= ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL)
+				} GLogLevelFlags;
+
+				/// @brief Handler for glib/gtk log messages.
+				static void g_logger(const char *domain, GLogLevelFlags level, const char *message, void *userdata);
+
+#endif // !_WIN32
+
+			public:
+				Controller(const Controller &src) = delete;
+				Controller(const Controller *src) = delete;
+
+				static Controller & getInstance();
+				~Controller();
+			
+				void insert(const char *name,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &call);
+				void remove(const char *name);				
+
+				void write(Level level, const char *domain, const char *text);
+
+				void setup(const Properties &props);
+
+				/// @brief Enable/disable log messages.
+				/// @param level The message type to enable/disable.
+				/// @param enable The new state for the message type.
+				inline void enable(Level level, bool enable = true) noexcept {
+					levels[level] = enable;
+				}
+					
+				inline bool enabled(Level level) const noexcept {
+					return levels[level % Level::Count];
+				}
+
+				void console(bool enable = true) noexcept;
+				void file(const char *filename = nullptr, time_t max_age = 86400) noexcept;
+
+		};
+
+		/*
 #ifndef _WIN32
 		bool write(int fd, const char *text);
 		void timestamp(int fd);
@@ -147,6 +264,8 @@
 
 
 		};
+
+*/
 
 	}
 
