@@ -39,7 +39,6 @@
 	Logger::Controller::Controller() {
 
 #ifdef HAVE_SYSLOG
-
 		// Have syslog, allways enable it.
 		{
 			::openlog(NULL, LOG_PID, LOG_DAEMON);
@@ -59,7 +58,7 @@
 		}
 #endif // HAVE_SYSLOG
 
-#ifndef _WIN32
+		// Check for GLib (possible GUI app).
 		{
 
 			typedef void (*GLogFunc)(const char *log_domain, GLogLevelFlags log_level, const char *message, void *user_data);
@@ -70,12 +69,15 @@
 					= (void (*)(GLogFunc,void *)) dlsym(RTLD_DEFAULT, "g_log_set_default_handler");
 
 			if(!dlerror()) {
-				// GLib is present, capture logs.
+				// GLib is present, capture logs, disable console output
 				g_log_set_default_handler(g_logger,this);
+				console(false);
+			} else {
+				// GLib is not present, enable console output.
+				console(true);
 			}
 
 		}
-#endif // !_WIN32
 
 	}
 
