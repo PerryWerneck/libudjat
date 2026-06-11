@@ -41,6 +41,9 @@
 		UDJAT_API Udjat::String get(const std::string &group, const std::string &name, const std::string &def);
 		UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
 
+		/// @brief Call method with Properties containing a config file group.
+		UDJAT_API bool call(const char *group, const std::function<bool(const Properties &properties)> &call);
+
 		/// @brief Enable loading of configuration from user's home dir.
 		///	This method should be called BEFORE any other one, it doesnt work if file was already loaded.
 		UDJAT_API void allow_user_homedir(bool allow = false) noexcept;

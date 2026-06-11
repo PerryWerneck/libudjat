@@ -19,7 +19,10 @@
 
  #include <config.h>
  #include <udjat/defs.h>
+ #include <private/configuration.h>
  #include <udjat/tools/configuration.h>
+ #include <udjat/tools/properties.h>
+ #include <udjat/tools/logger.h>
  #include <cstring>
  #include <ctype.h>
 
@@ -75,8 +78,51 @@
 			return set(name, Value<std::string>(group,key,def).c_str());
 		}
 
-	}
+		bool call(const char *group, const std::function<bool(const Properties &properties)> &method) {
 
+			class Properties : public Udjat::Properties {
+				private:
+					const char *group;
+
+				public:
+					constexpr Properties(const char *g) : group{g} {
+					}
+
+					bool contains(const char *key) const noexcept override {
+						return Controller::getInstance().contains(group,key);
+					}
+
+					const String get(const char *attrname, const char *def) const override {
+						return Controller::getInstance().get(group,attrname,def);
+					}
+
+					bool get(const char *attrname, const bool def) const override {
+						return Controller::getInstance().get(group,attrname,def);
+					}
+
+					double get(const char *attrname, const double def) const override {
+						return Controller::getInstance().get(group,attrname,def);
+					}
+
+					float get(const char *attrname, const float def) const override {
+						return Controller::getInstance().get(group,attrname,def);
+					}
+
+					int get(const char *attrname, const int def) const override {
+						return Controller::getInstance().get(group,attrname,def);
+					}
+
+					unsigned int get(const char *attrname, const unsigned int def) const override {
+						return Controller::getInstance().get(group,attrname,def);
+					}
+
+			};
+
+			return method(Properties{group});
+
+		}
+
+	}
 
  }
 
