@@ -38,6 +38,7 @@ using namespace std;
 
 namespace Udjat {
 
+	/*
 	void Logger::write(Level level, const char *domain, const char *text) noexcept {
 		write(level,domain,text,false);
 	}
@@ -163,6 +164,7 @@ namespace Udjat {
 		}
 
 	}
+	*/
 
 }
 

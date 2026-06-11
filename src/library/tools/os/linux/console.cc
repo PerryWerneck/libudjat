@@ -27,6 +27,7 @@
 #include <private/misc.h>
 #include <cstring>
 #include <udjat/ui/console.h>
+#include <private/logger.h>
 #include <udjat/tools/logger.h>
 #include <cstdio>
 #include <udjat/tools/intl.h>
@@ -75,7 +76,6 @@ namespace Udjat {
 	};
 
 	UI::Console::Console() : enabled{Logger::console()} {
-		debug("Console was build logging=", enabled ? "true" : "false");
 		static ConsoleWriter writer;
 		this->rdbuf(&writer);
 		Logger::console(false);
@@ -86,7 +86,6 @@ namespace Udjat {
 		*this << "\x1B[0m";
 		cursor(true);
 		Logger::console(enabled);
-//		debug("Console was deleted");
 	}
 
 	unsigned short UI::Console::width() const noexcept {

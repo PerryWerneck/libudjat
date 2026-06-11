@@ -74,7 +74,7 @@
 
 	Dialog::Status & SystemService::state(const Level level, const char *message) noexcept {
 
-		Logger::write((Logger::Level) (Logger::Trace+1),name().c_str(),message);
+		Logger::String{message}.write(Logger::Notice,name().c_str());
 
 		try {
 

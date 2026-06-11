@@ -20,7 +20,7 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.6.1',
+	version: '2.7.0',
 	default_options : ['c_std=c11', 'cpp_std=c++17', 'buildtype=release'],
 	license: 'GPL-3.0-or-later',
 )
@@ -468,7 +468,15 @@ lib_src += [
   'src/library/tools/xml/load.cc',
   'src/library/tools/xml/node.cc',
   'src/library/tools/exception.cc',
-  'src/library/tools/logger.cc',
+  'src/library/tools/logger/commandline.cc',
+  'src/library/tools/logger/controller.cc',
+  'src/library/tools/logger/file.cc',
+  'src/library/tools/logger/level.cc',
+  'src/library/tools/logger/misc.cc',
+  'src/library/tools/logger/string.cc',
+  'src/library/tools/logger/message.cc',
+  'src/library/tools/logger/console.cc',
+  'src/library/tools/logger/stream.cc',
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',
@@ -695,7 +703,6 @@ else
     'src/library/tools/os/linux/threadpool.cc',
     'src/library/tools/os/linux/econf.cc',
     'src/library/tools/os/linux/iniparser.cc',
-    'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
   ]

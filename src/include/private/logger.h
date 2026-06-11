@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -22,9 +22,13 @@
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
- #include <pugixml.hpp>
- #include <list>
+ #include <udjat/tools/properties.h>
+ #include <udjat/tools/string.h>
  #include <mutex>
+ #include <functional>
+ #include <list>
+ #include <string>
+ #include <thread>
 
  #ifdef DEBUG
 	#define DEBUG_ENABLED true
@@ -36,115 +40,131 @@
 
 	namespace Logger {
 
-#ifndef _WIN32
-		bool write(int fd, const char *text);
-		void timestamp(int fd);
-#endif // !WIN32
+		UDJAT_PRIVATE bool write(int fd, const char *text) noexcept;
 
-		UDJAT_PRIVATE void setup(const XML::Node &node) noexcept;
+		/// @brief Log writer callback.
+		class UDJAT_PRIVATE BackEnd {
+			public:
+				const char *name;
 
-		UDJAT_PRIVATE void dummy_writer(Level level, const char *domain, const char *text) noexcept;
-		UDJAT_PRIVATE void file_writer(Level level, const char *domain, const char *text) noexcept;
-		UDJAT_PRIVATE void console_writer(Level level, const char *domain, const char *text) noexcept;
+				enum Type : uint8_t {
+					Custom,
+					Console,
+					File,
+					SysLog,
 
-#ifndef _WIN32
-		UDJAT_PRIVATE const char * decoration(Level level) noexcept;
-#endif // _WIN32
+					Count
+				};
+				
+				Type type = Custom;
 
-		struct UDJAT_PRIVATE Options {
-
-			/// @brief Console writer.
-			void (*console)(Level level, const char *domain, const char *text) = console_writer;
-
-			/// @brief File writer (disabled by default).
-			void (*file)(Level level, const char *domain, const char *text) = nullptr;
-
-			/// @brief Custom log file name.
-			const char *filename = nullptr;
-
-#ifndef _WIN32
-			bool syslog = true;
-#endif // !_WIN32
-
-			bool enabled[Logger::Debug+2] = {
-				true,				// Informational message.
-				true,				// Warning conditions.
-				true,				// Error conditions.
-				DEBUG_ENABLED,		// Trace message.
-
-				// Allways the last ones.
-				DEBUG_ENABLED,		// Debug message.
-				true,				// Notify message.
-			};
-
-			static Options & getInstance();
-
+				std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> call;
+				BackEnd(const char *n, const Type t,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &c) : name{n}, type{t}, call{c} { }
 		};
 
-		class UDJAT_PRIVATE Buffer : public std::string {
-		public:
-			pthread_t thread;
-			Level level;
-			Buffer(pthread_t t, Level l) : thread(t), level(l) {
-			}
+		class UDJAT_PRIVATE Stream : public std::basic_streambuf<char, std::char_traits<char> > {
+			private:
+				Level level;
 
-			~Buffer();
+			public:
+				class Buffer : public String {
+				public:
+					Level level;
+					pthread_t thread;
 
-			Buffer(const Buffer &src) = delete;
-			Buffer(const Buffer *src) = delete;
+					Buffer(Level level);
+					~Buffer();
 
-			bool push_back(int c);
+					static Buffer & getInstance(Level l);
 
-		};
+					bool push_back(int c);
 
-		class UDJAT_PRIVATE Writer : public std::basic_streambuf<char, std::char_traits<char> > {
-		private:
+					void sync();
 
-			/// @brief The Log level.
-			Level id = Info;
+				};
 
-			/// @brief Send output to console?
-			bool console = true;
+				Stream(Level l) : level{l} {
+				}
 
-#ifndef _WIN32
-			void write(int fd, const std::string &str);
-#endif // !WIN32
+				~Stream();
 
-			void write(Buffer &buffer);
+				/// @brief Writes characters to the associated file from the put area
+				int sync() override;
 
-		protected:
-
-			/// @brief Writes characters to the associated file from the put area
-			int sync() override;
-
-			/// @brief Writes characters to the associated output sequence from the put area.
-			int overflow(int c) override;
-
-		public:
-			Writer(Logger::Level i) : id(i) {
-			}
+				/// @brief Writes characters to the associated output sequence from the put area.
+				int overflow(int c) override;
 
 		};
 
 		class UDJAT_PRIVATE Controller {
-		private:
-			std::mutex guard;
-			std::list<Buffer *> buffers;
+			private:
+				std::recursive_mutex guard;
+				Controller();
 
-		public:
+				/// @brief Enabled/disabled log types
+				bool levels[Level::Count] = {
+					true,	// Error conditions (std::cerr).
+					true,	// Warning conditions (std::clog).
+					true,	// Informational message (std::cout).
+					false,	// Debug message.
+					false,	// Trace message
+					true,	// System Status
+				};
 
-			Controller(const Controller &src) = delete;
-			Controller(const Controller *src) = delete;
+				std::list<BackEnd> backends;
 
-			Controller();
+#ifndef _WIN32
 
-			~Controller();
+				typedef enum {
+					// log flags
+					G_LOG_FLAG_RECURSION	= 1 << 0,
+					G_LOG_FLAG_FATAL		= 1 << 1,
 
-			Buffer * BufferFactory(Level id);
-			void remove(Buffer *buffer) noexcept;
+					// GLib log levels
+					G_LOG_LEVEL_ERROR		= 1 << 2,       /* always fatal */
+					G_LOG_LEVEL_CRITICAL	= 1 << 3,
+					G_LOG_LEVEL_WARNING		= 1 << 4,
+					G_LOG_LEVEL_MESSAGE		= 1 << 5,
+					G_LOG_LEVEL_INFO		= 1 << 6,
+					G_LOG_LEVEL_DEBUG		= 1 << 7,
 
-			static Controller & getInstance();
+					G_LOG_LEVEL_MASK		= ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL)
+				} GLogLevelFlags;
 
+				/// @brief Handler for glib/gtk log messages.
+				static void g_logger(const char *domain, GLogLevelFlags level, const char *message, void *userdata);
+
+#endif // !_WIN32
+
+			public:
+				Controller(const Controller &src) = delete;
+				Controller(const Controller *src) = delete;
+
+				static Controller & getInstance();
+				~Controller();
+			
+				void insert(const char *name,const BackEnd::Type type,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &call);
+				void remove(const char *name);				
+
+				void write(Level level, const char *domain, const char *text);
+
+				void setup(const Properties &props);
+
+				bool enabled(BackEnd::Type type) const noexcept;
+					
+				/// @brief Enable/disable log messages.
+				/// @param level The message type to enable/disable.
+				/// @param enable The new state for the message type.
+				inline void enable(Level level, bool enable = true) noexcept {
+					levels[level] = enable;
+				}
+					
+				inline bool enabled(Level level) const noexcept {
+					return levels[level % Level::Count];
+				}
+
+				void file(const char *filename = nullptr, time_t max_age = 86400) noexcept;
+				void console(bool enable);
 
 		};
 

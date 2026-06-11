@@ -88,7 +88,7 @@
 		// Preload
 		{
 			auto root = document_element();
-			Logger::setup(root);
+			Logger::setup(XML::Node{root});
 			for(const auto &node : root) {
 				if(node.attribute("preload").as_bool(false)) {
 					Logger::String{"Preloading ",node.name()," '",node.attribute("name").as_string(),"'"}.trace();
@@ -118,7 +118,7 @@
 
 			} catch(const std::exception &e) {
 
-				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning("xml");
+				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning();
 
 			}
 
@@ -129,7 +129,7 @@
 	time_t XML::Document::parse() const {
 
 		auto root = document_element();
-		Logger::setup(root);
+		Logger::setup(XML::Node{root});
 
 		for(const auto &node : root) {
 			if(!node.attribute("preload").as_bool(false)) {
