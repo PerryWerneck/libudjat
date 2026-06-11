@@ -67,8 +67,14 @@
 
 		UDJAT_API void enable(Logger::Level level, bool enabled = true) noexcept;
 
-		/// @brief Enable/Disable default console writer.
-		UDJAT_API void console(bool enable = true);
+		/// @brief Enable/Disable default console backend.
+		UDJAT_API void console(bool enable);
+
+		/// @brief Get state of console backend.
+		/// @return The current state.
+		/// @retval true The console backend is enabled.
+		/// @retval false The console backend is disabled.
+		UDJAT_API bool console();
 
 		/// @brief Enable/Disable default file writer.
 		/// @param filename The log filename (nullptr to disable file).
@@ -247,7 +253,6 @@
 		UDJAT_API unsigned short verbosity() noexcept;
 		UDJAT_API void verbosity(unsigned short level) noexcept;
 		UDJAT_API void verbosity(const char *level);
-		UDJAT_API bool decorated() noexcept;
 
 
 

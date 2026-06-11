@@ -39,6 +39,14 @@
 
  namespace Udjat {
 
+	bool Logger::enabled(Logger::Level level) noexcept {
+		return Logger::Controller::getInstance().enabled(level);
+	}
+
+	void Logger::enable(Logger::Level level, bool enabled) noexcept {
+		Logger::Controller::getInstance().enable(level);
+	}
+
 	void Logger::verbosity(unsigned short level) {
 		for(unsigned short ix = 0; ix < Logger::Level::Count; ix++) {
 			enable((Level) ix,level > ix);
@@ -77,14 +85,6 @@
 			}
 		}
 		throw logic_error(String{"Unexpected log level '",name,"'"});
-	}
-
-	bool Logger::enabled(Logger::Level level) noexcept {
-		return Logger::Controller::getInstance().enabled(level);
-	}
-
-	void Logger::enable(Logger::Level level, bool enabled) noexcept {
-		Logger::Controller::getInstance().enable(level);
 	}
 
  }

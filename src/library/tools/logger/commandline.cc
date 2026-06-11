@@ -38,15 +38,6 @@
 
  namespace Udjat {
 
-	bool Logger::decorated() noexcept {
-#ifdef _WIN32
-		return false;
-#else
-		static bool flag = isatty(1) && (getenv("TERM") != NULL);
-		return flag;
-#endif // _WIN32
-	}
-
 #ifndef _WIN32
 	static void setup_coredump(const char *pattern = nullptr) {
 		// Reference script:

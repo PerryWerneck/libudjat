@@ -40,6 +40,26 @@
 
 		UDJAT_PRIVATE bool write(int fd, const char *text) noexcept;
 
+		/// @brief Log writer callback.
+		class UDJAT_PRIVATE BackEnd {
+			public:
+				const char *name;
+
+				enum Type : uint8_t {
+					Custom,
+					Console,
+					File,
+					SysLog,
+
+					Count
+				};
+				
+				Type type = Custom;
+
+				std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> call;
+				BackEnd(const char *n, const Type t,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &c) : name{n}, type{t}, call{c} { }
+		};
+
 		class UDJAT_PRIVATE Stream : public std::basic_streambuf<char, std::char_traits<char> > {
 			private:
 				Level level;
@@ -48,14 +68,12 @@
 				class Buffer : public std::string {
 				private:
 					Level level;
-					Buffer(Level level);
 
 				public:
-					static Buffer & getInstance(Level l);
+					Buffer(Level level);
 					~Buffer();
 
-					Buffer(const Buffer &src) = delete;
-					Buffer(const Buffer *src) = delete;
+					static Buffer & getInstance(Level l);
 
 					bool push_back(int c);
 
@@ -91,14 +109,7 @@
 					true,	// System Status
 				};
 
-				/// @brief Log writer callback.
-				struct Writer {
-					const char *name;
-					std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> call;
-					Writer(const char *n,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &c) : name(n), call(c) { }
-				};
-
-				std::list<Writer> writers;
+				std::list<BackEnd> backends;
 
 #ifndef _WIN32
 
@@ -130,13 +141,15 @@
 				static Controller & getInstance();
 				~Controller();
 			
-				void insert(const char *name,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &call);
+				void insert(const char *name,const BackEnd::Type type,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &call);
 				void remove(const char *name);				
 
 				void write(Level level, const char *domain, const char *text);
 
 				void setup(const Properties &props);
 
+				bool enabled(BackEnd::Type type) const noexcept;
+					
 				/// @brief Enable/disable log messages.
 				/// @param level The message type to enable/disable.
 				/// @param enable The new state for the message type.
@@ -148,125 +161,10 @@
 					return levels[level % Level::Count];
 				}
 
-				void console(bool enable = true) noexcept;
 				void file(const char *filename = nullptr, time_t max_age = 86400) noexcept;
+				void console(bool enable);
 
 		};
-
-		/*
-#ifndef _WIN32
-		bool write(int fd, const char *text);
-		void timestamp(int fd);
-#endif // !WIN32
-
-		UDJAT_PRIVATE void setup(const XML::Node &node) noexcept;
-
-		UDJAT_PRIVATE void dummy_writer(Level level, const char *domain, const char *text) noexcept;
-		UDJAT_PRIVATE void file_writer(Level level, const char *domain, const char *text) noexcept;
-		UDJAT_PRIVATE void console_writer(Level level, const char *domain, const char *text) noexcept;
-
-#ifndef _WIN32
-		UDJAT_PRIVATE const char * decoration(Level level) noexcept;
-#endif // _WIN32
-
-		struct UDJAT_PRIVATE Options {
-
-			/// @brief Console writer.
-			void (*console)(Level level, const char *domain, const char *text) = console_writer;
-
-			/// @brief File writer (disabled by default).
-			void (*file)(Level level, const char *domain, const char *text) = nullptr;
-
-			/// @brief Custom log file name.
-			const char *filename = nullptr;
-
-#ifndef _WIN32
-			bool syslog = true;
-#endif // !_WIN32
-
-			bool enabled[Logger::Debug+2] = {
-				true,				// Informational message.
-				true,				// Warning conditions.
-				true,				// Error conditions.
-				DEBUG_ENABLED,		// Trace message.
-
-				// Allways the last ones.
-				DEBUG_ENABLED,		// Debug message.
-				true,				// Notify message.
-			};
-
-			static Options & getInstance();
-
-		};
-
-		class UDJAT_PRIVATE Buffer : public std::string {
-		public:
-			pthread_t thread;
-			Level level;
-			Buffer(pthread_t t, Level l) : thread(t), level(l) {
-			}
-
-			~Buffer();
-
-			Buffer(const Buffer &src) = delete;
-			Buffer(const Buffer *src) = delete;
-
-			bool push_back(int c);
-
-		};
-
-		class UDJAT_PRIVATE Writer : public std::basic_streambuf<char, std::char_traits<char> > {
-		private:
-
-			/// @brief The Log level.
-			Level id = Info;
-
-			/// @brief Send output to console?
-			bool console = true;
-
-#ifndef _WIN32
-			void write(int fd, const std::string &str);
-#endif // !WIN32
-
-			void write(Buffer &buffer);
-
-		protected:
-
-			/// @brief Writes characters to the associated file from the put area
-			int sync() override;
-
-			/// @brief Writes characters to the associated output sequence from the put area.
-			int overflow(int c) override;
-
-		public:
-			Writer(Logger::Level i) : id(i) {
-			}
-
-		};
-
-		class UDJAT_PRIVATE Controller {
-		private:
-			std::mutex guard;
-			std::list<Buffer *> buffers;
-
-		public:
-
-			Controller(const Controller &src) = delete;
-			Controller(const Controller *src) = delete;
-
-			Controller();
-
-			~Controller();
-
-			Buffer * BufferFactory(Level id);
-			void remove(Buffer *buffer) noexcept;
-
-			static Controller & getInstance();
-
-
-		};
-
-*/
 
 	}
 

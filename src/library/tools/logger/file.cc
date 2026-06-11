@@ -72,7 +72,7 @@
 		},false,false);
 
 		// Insert file writer.
-		insert("file",[tmplt,max_age](Level, const char *timestamp, const char *domain, const char *text) {
+		insert("file",BackEnd::File,[tmplt,max_age](Level, const char *timestamp, const char *domain, const char *text) {
 
 			String filename{TimeStamp{}.to_string(tmplt)};
 			filename.expand();

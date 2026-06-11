@@ -43,7 +43,7 @@
 		// Have syslog, allways enable it.
 		{
 			::openlog(NULL, LOG_PID, LOG_DAEMON);
-			insert("syslog",[](Logger::Level level, const char *, const char *domain, const char *text){
+			insert("syslog",BackEnd::SysLog,[](Logger::Level level, const char *, const char *domain, const char *text){
 
 				static const int priority[Level::Count] = {
 					LOG_ERR,		// Error
@@ -92,16 +92,25 @@
 		return instance;	
 	}
 
-	void Logger::Controller::insert(const char *name,const std::function<void(Logger::Level level, const char *timestamp, const char *domain, const char *text)> &call) {
+	bool Logger::Controller::enabled(BackEnd::Type type) const noexcept {
+		for(const auto &backend : backends) {
+			if(backend.type == type) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void Logger::Controller::insert(const char *name, const BackEnd::Type type,const std::function<void(Logger::Level level, const char *timestamp, const char *domain, const char *text)> &call) {
 		lock_guard<recursive_mutex> lock(guard);
 		remove(name);
-		writers.emplace_back(name,call);
+		backends.emplace_back(name,type,call);
 	}
 
 	void Logger::Controller::remove(const char *name) {
 		lock_guard<recursive_mutex> lock(guard);
-		writers.remove_if([name](Writer &writer){
-			return strcasecmp(name,writer.name) == 0;
+		backends.remove_if([name](BackEnd &backend){
+			return strcasecmp(name,backend.name) == 0;
 		});
 	}
 
@@ -121,9 +130,9 @@
 		domain = domain_buffer;
 		
 		lock_guard<recursive_mutex> lock(guard);
-		for(const auto &writer : writers) {
+		for(const auto &backend : backends) {
 			try {
-				writer.call(level,timestamp.c_str(),domain,text);
+				backend.call(level,timestamp.c_str(),domain,text);
 			} catch(const std::exception &e) {
 #ifdef HAVE_SYSLOG
 				::syslog(LOG_ERR,"Error write log: %s",e.what());

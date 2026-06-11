@@ -31,93 +31,10 @@
 
  namespace Udjat {
 
-	void Logger::verbosity(unsigned short level) {
-		for(unsigned short ix = 0; ix < Logger::Level::Count; ix++) {
-			enable((Level) ix,level > ix);
-		}
-	}
-
-	void Logger::verbosity(const char *level) {
-
-		if(*level >= '0' && *level <= '9') {
-			verbosity((unsigned short) atoi(level));
-			return;
-		}
-
-		for(auto &lvl : String{level}.split(",")) {
-			lvl.strip();
-			if(!lvl.empty()) {
-				continue;
-			}
-			for(uint8_t ix = 0; ix < Logger::Level::Count; ix++) {
-				if(!strcasecmp(levelnames[ix],lvl.c_str())) {
-					enable((Level) ix,true);
-				}
-			}
-		}
-
-	}
-
-	bool Logger::enabled(Logger::Level level) noexcept {
-		return Logger::Controller::getInstance().enabled(level);
-	}
-
-	void Logger::enable(Logger::Level level, bool enabled = true) noexcept {
-		Logger::Controller::getInstance().enable(level);
-	}
-
-	bool Logger::decorated() noexcept {
-#ifdef _WIN32
-		return false;
-#else
-		static bool flag = isatty(1) && (getenv("TERM") != NULL);
-		return flag;
-#endif // _WIN32
-	}
-
-	void Logger::setup(const Properties &properties, const char *prefix) noexcept {
-
-		auto &controller = Controller::getInstance();
-
-		for(const auto &name : levelnames) {
-			String attribute{prefix,name};
-			if(properties.contains(attribute.c_str())) {
-				controller.enable(LevelFactory(name),properties.get(attribute.c_str(),true));
-			}
-		}
-
-		{
-			String console{prefix,"console"};
-			if(properties.contains(console.c_str())) {
-				controller.console(properties.get(console.c_str(),true));
-			}
-		}
-
-		{
-			String file{prefix,"file"};
-			if(properties.contains(file.c_str())) {
-				controller.file(
-					properties.get(file.c_str(),"").c_str(),
-					properties.get(String{prefix,"max-age"}.c_str(),86400)
-				);
-			}
-		}
-
-		{
-			String vb{prefix,"verbosity"};
-			if(properties.contains(vb.c_str())) {
-				verbosity(properties.get(vb.c_str(),"error").c_str());
-			}
-		}
-
-	}
 
  }
 
  namespace std {
 
-	UDJAT_API const char * to_string(const Udjat::Logger::Level level) {
-		return levelnames[((size_t) level) % Udjat::Logger::Level::Count];
-	}
 
  }

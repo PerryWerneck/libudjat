@@ -59,11 +59,24 @@
 
 #endif // !_WIN32
 
+	UDJAT_API bool Logger::decorated() noexcept {
+#ifdef _WIN32
+		return false;
+#else
+		static bool flag = isatty(1) && (getenv("TERM") != NULL);
+		return flag;
+#endif // _WIN32
+	}
+
 	UDJAT_API void Logger::console(bool enable) {
 		Controller::getInstance().console(enable);
 	}
 
-	void Logger::Controller::console(bool enable) noexcept {
+	UDJAT_API bool Logger::console() {
+		return Controller::getInstance().enabled(BackEnd::Console);
+	}
+
+	void Logger::Controller::console(bool enable) {
 
 		if(!enable) {
 			remove("console");
@@ -71,12 +84,12 @@
 		}
 
 #ifdef _WIN32		
-		// Insert win32 console writer
+		// Insert win32 console backend
 		#error TODO
 
 #else
-		// Insert linux console writer
-		insert("console",[](Level level, const char *timestamp, const char *domain, const char *text) {
+		// Insert linux console backend
+		insert("console",BackEnd::Console,[](Level level, const char *timestamp, const char *domain, const char *text) {
 
 			bool dec = decorated();
 
