@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 04:42-0300\n"
+"POT-Creation-Date: 2026-06-11 13:58-0300\n"
 "PO-Revision-Date: 2026-06-01 17:48-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -750,27 +750,27 @@ msgstr "Atributo necessário '{}' não foi encontrado"
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
-#: src/library/tools/logger/commandline.cc:155
+#: src/library/tools/logger/commandline.cc:163
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger/commandline.cc:156
+#: src/library/tools/logger/commandline.cc:164
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger/commandline.cc:157
+#: src/library/tools/logger/commandline.cc:165
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger/commandline.cc:158
+#: src/library/tools/logger/commandline.cc:166
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger/commandline.cc:160
+#: src/library/tools/logger/commandline.cc:168
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger/commandline.cc:164
+#: src/library/tools/logger/commandline.cc:172
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 

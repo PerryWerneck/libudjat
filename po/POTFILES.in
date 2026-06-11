@@ -128,9 +128,9 @@ src/library/tools/os/linux/systemservice.cc
 src/library/tools/os/linux/threadpool.cc
 src/library/tools/os/linux/tpm.cc
 src/library/tools/os/linux/urlconnect.cc
-src/library/tools/os/linux/econf.cc
 src/library/tools/os/linux/iniparser.cc
 src/library/tools/os/linux/console.cc
+src/library/tools/os/linux/econf.cc
 src/library/tools/os/windows/adapter.cc
 src/library/tools/os/windows/application/application.cc
 src/library/tools/os/windows/application/description.cc
@@ -249,8 +249,8 @@ src/include/private/win32.h
 src/include/private/win32/handler.h
 src/include/private/win32/mainloop.h
 src/include/private/win32/subprocess.h
-src/include/private/configuration.h
 src/include/private/logger.h
+src/include/private/configuration.h
 src/include/udjat.h
 src/include/udjat/action.h
 src/include/udjat/agent.h

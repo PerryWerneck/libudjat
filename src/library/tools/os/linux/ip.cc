@@ -72,6 +72,35 @@
 
 	}
 
+	UDJAT_API IP::Address IP::active() {
+
+		IP::Address result;
+
+		IP::for_each([&result](const ifaddrs &ifa){
+
+			if (!(ifa.ifa_flags & IFF_LOOPBACK) && (ifa.ifa_flags & IFF_UP) && (ifa.ifa_flags & IFF_RUNNING)) {
+				
+				// This is an active, connected, non-loopback interface
+				
+				auto ip = IP::Factory((struct sockaddr_in *)ifa.ifa_addr);
+				if(ip.ss_family != AF_INET) {
+					return false;
+				}
+
+				result.set(ip);
+				
+				return true;
+
+			}
+
+			return false;
+
+		});
+
+		return result;
+
+	}
+
 	UDJAT_API IP::Address IP::gateway() {
 
 		struct sockaddr_in gateway;
@@ -105,8 +134,11 @@
 			}
 			
 			return false;
+
 		})) {
+
 			throw runtime_error("Unable to find default gateway");
+
 		}
 
 		return IP::Address{&gateway};

@@ -151,6 +151,13 @@
 		/// @return The default gateway address.
 		UDJAT_API IP::Address gateway();
 
+#ifndef _WIN32
+
+		/// @brief Get address of the first active interface.
+		UDJAT_API IP::Address active();
+
+#endif
+
 	}
 
  }

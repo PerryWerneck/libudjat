@@ -83,6 +83,10 @@
 
 		UDJAT_API bool decorated() noexcept;
 	
+		/// @brief Setup logger engine from configuration file.
+		/// @param group The group from configuration file with logger engine options.
+		UDJAT_API void setup(const char *group = "logger") noexcept;
+
 		/// @brief Setup log options from properties.
 		/// @param properties The properties for logger.
 		/// @param prefix The optional prefix for the attributes on properties.

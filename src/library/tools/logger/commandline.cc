@@ -23,6 +23,7 @@
  #include <udjat/tools/properties.h>
  #include <stdexcept>
  #include <udjat/tools/commandlineparser.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/tools/intl.h>
  #include <fstream>      // std::filebuf
 
@@ -64,6 +65,13 @@
 		}
 	}
 #endif // !_WIN32
+
+	void Logger::setup(const char *group) noexcept {
+		Config::call(group,[](const Properties &props){
+			Logger::setup(props);
+			return false;
+		});
+	}
 
 	void Logger::setup(const Properties &properties, const char *prefix) noexcept {
 
