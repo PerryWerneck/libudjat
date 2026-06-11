@@ -38,6 +38,10 @@
 
  namespace Udjat {
 
+	UDJAT_API void Logger::file(const char *filename, time_t max_age) {
+		Controller::getInstance().file(filename,max_age);
+	}
+
 	static bool write_text(int fd, const char *text) {
 		size_t bytes = strlen(text);
 		while(bytes) {
@@ -57,7 +61,7 @@
 			return;
 		}
 
-		// Store filename template.
+		// Filename template.
 		String tmplt{filename};
 
 		tmplt.expand([](const char *key, std::string &value){

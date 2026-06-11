@@ -470,6 +470,7 @@ lib_src += [
   'src/library/tools/exception.cc',
   'src/library/tools/logger.cc',
   'src/library/tools/logger/controller.cc',
+  'src/library/tools/logger/level.cc',
   'src/library/tools/logger/misc.cc',
   'src/library/tools/logger/string.cc',
   'src/library/tools/logger/message.cc',

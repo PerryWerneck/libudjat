@@ -67,12 +67,30 @@
 
 		UDJAT_API void enable(Logger::Level level, bool enabled = true) noexcept;
 
+		/// @brief Enable/Disable default console writer.
+		UDJAT_API void console(bool enable = true);
+
+		/// @brief Enable/Disable default file writer.
+		/// @param filename The log filename (nullptr to disable file).
+		/// @param max_age Max age for the file, in seconds.
+		UDJAT_API void file(const char *filename = "%Y-%m-%d.log", time_t max_age = 86400);
+
 		UDJAT_API bool decorated() noexcept;
 	
 		/// @brief Setup log options from properties.
 		/// @param properties The properties for logger.
 		/// @param prefix The optional prefix for the attributes on properties.
 		UDJAT_API void setup(const Properties &properties, const char *prefix = "") noexcept;
+
+		/// @brief Setup logger from command line.
+		/// @param argc	 The number of arguments. 
+		/// @param argv  The command line arguments.
+		/// @param dbg True to use debug mode defaults.
+#ifdef DEBUG
+		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = true);
+#else
+		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = false);
+#endif // DEBUG
 
 		/// @brief Unformatted Log message.
 		class UDJAT_API String : public Udjat::String {
@@ -236,15 +254,6 @@
 		/// @details This method is called when the application is started with the '--help' option.
 		UDJAT_API void help(size_t width = 20) noexcept;
 
-		/// @brief Setup logger from command line.
-		/// @param argc	 The number of arguments. 
-		/// @param argv  The command line arguments.
-		/// @param dbg True to use debug mode defaults.
-#ifdef DEBUG
-		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = true);
-#else
-		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = false);
-#endif // DEBUG
 
 		/// @brief Enable/Disable write to file.
 		/// @param Log level.

@@ -123,9 +123,7 @@
 		lock_guard<recursive_mutex> lock(guard);
 		for(const auto &writer : writers) {
 			try {
-				if(writer.enabled) {
-					writer.call(level,timestamp.c_str(),domain,text);
-				}
+				writer.call(level,timestamp.c_str(),domain,text);
 			} catch(const std::exception &e) {
 #ifdef HAVE_SYSLOG
 				::syslog(LOG_ERR,"Error write log: %s",e.what());

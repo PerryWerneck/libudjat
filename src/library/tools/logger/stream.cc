@@ -19,7 +19,6 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <thread>
  #include <mutex>
@@ -29,22 +28,6 @@
  using namespace std;
 
  namespace Udjat {
-
-	void Logger::redirect() {
-
-		static const Level levels[] = { Info, Warning, Error };		
-		std::ostream *streams[] = { &std::cout, &std::clog, &std::cerr };
-
-		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
-
-			auto *stream = dynamic_cast<Stream *>(streams[ix]->rdbuf());
-			if(!stream) {
-				streams[ix]->rdbuf(new Stream(levels[ix]));
-			}
-
-		}
-
-	}
 
 	static thread_local std::vector<Logger::Stream::Buffer> streams;
 
@@ -123,6 +106,22 @@
 		}
 
 		return c;
+
+	}
+
+	void Logger::redirect() {
+
+		static const Level levels[] = { Info, Warning, Error };		
+		std::ostream *streams[] = { &std::cout, &std::clog, &std::cerr };
+
+		for(size_t ix = 0; ix < (sizeof(streams)/sizeof(streams[0])); ix++) {
+
+			auto *stream = dynamic_cast<Stream *>(streams[ix]->rdbuf());
+			if(!stream) {
+				streams[ix]->rdbuf(new Stream(levels[ix]));
+			}
+
+		}
 
 	}
 

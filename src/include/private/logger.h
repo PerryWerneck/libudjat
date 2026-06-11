@@ -92,7 +92,6 @@
 				/// @brief Log writer callback.
 				struct Writer {
 					const char *name;
-					bool enabled = true;
 					std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> call;
 					Writer(const char *n,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &c) : name(n), call(c) { }
 				};

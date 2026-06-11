@@ -29,7 +29,6 @@
  #include <ostream>
  #include <iostream>
  #include <vector>
- #include <fstream>      // std::filebuf
 
  #ifdef _WIN32
 	#include <sys/types.h>
@@ -47,84 +46,7 @@
  namespace Udjat {
 
 
-#ifndef _WIN32
-	static void setup_coredump(const char *pattern = nullptr) {
-		// Reference script:
-		//
-		// ulimit -c unlimited
-		// install -m 1777 -d /var/local/dumps
-		// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
-		// rcapparmor stop
-		// sysctl -w kernel.suid_dumpable=2
-		//
-		struct rlimit core_limits;
-		memset(&core_limits,0,sizeof(core_limits));
 
-		core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
-		setrlimit(RLIMIT_CORE, &core_limits);
-
-		if(pattern && *pattern) {
-			// Set corepattern
-			std::filebuf fb;
-			fb.open ("/proc/sys/kernel/core_pattern",std::ios::out);
-			std::ostream os(&fb);
-			os << pattern << "\n";
-			fb.close();
-		}
-	}
-#endif // !_WIN32
-
-	void Logger::setup(int &argc, char **argv, bool extract, bool dbg) {
-
-		/*
-		String optarg;
-
-		if(dbg) {
-			verbosity(9);
-			console(true);
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'q',"quiet",optarg,extract)) {
-			Logger::console(false);
-			Logger::verbosity(optarg.c_str());
-		} else if(CommandLineParser::has_argument(argc,argv,'q',"quiet",extract)) {
-			Logger::console(false);
-		} 
-		
-		if(CommandLineParser::get_argument(argc,argv,'v',"verbose",optarg,extract)) {
-			Logger::console(true);
-			Logger::verbosity(optarg.c_str());
-		} else if(CommandLineParser::has_argument(argc,argv,'v',"verbose",extract)) {
-#ifdef DEBUG
-			printf("----> Enabling verbose log\n");
-#endif // DEBUG
-			Logger::console(true);
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'l',"logfile",optarg,extract)) {
-			Logger::file(optarg.c_str());
-		} else if(CommandLineParser::has_argument(argc,argv,'l',"logfile",extract)) {
-			Logger::file(true);
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'L',"loglevel",optarg,extract)) {
-			Logger::verbosity(optarg.c_str());
-		} else if(CommandLineParser::has_argument(argc,argv,'L',"loglevel",extract)) {
-			Logger::verbosity(Logger::Debug);
-		}
-
-#ifndef _WIN32		
-		if(CommandLineParser::has_argument(argc,argv,'C',"coredump",extract)) {
-			setup_coredump();			
-			Logger::String{"Coredump enabled using default pattern"}.info();
-		} else if(CommandLineParser::get_argument(argc,argv,'C',"coredump",optarg,extract)) {
-			setup_coredump(optarg.c_str());			
-			Logger::String{"Coredump enabled using pattern '",optarg.c_str(),"'"}.info();
-		}
-#endif // !_WIN32	
-		*/
-
-	}
 
 	void Logger::help(size_t width) noexcept {
 

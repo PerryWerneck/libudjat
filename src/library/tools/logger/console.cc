@@ -59,6 +59,10 @@
 
 #endif // !_WIN32
 
+	UDJAT_API void Logger::console(bool enable) {
+		Controller::getInstance().console(enable);
+	}
+
 	void Logger::Controller::console(bool enable) noexcept {
 
 		if(!enable) {
