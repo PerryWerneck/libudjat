@@ -42,10 +42,10 @@
 		Controller::getInstance().file(filename,max_age);
 	}
 
-	static bool write_text(int fd, const char *text) {
+	bool Logger::write(int fd, const char *text) noexcept {
 		size_t bytes = strlen(text);
 		while(bytes) {
-			ssize_t sz = write(fd,text,bytes);
+			ssize_t sz = ::write(fd,text,bytes);
 			if(sz < 0)
 				return false;
 			bytes -= sz;
@@ -91,12 +91,12 @@
 				throw system_error(errno,system_category(),filename);
 			}
 
-			write_text(fd,timestamp);
-			write_text(fd,"\t");
-			write_text(fd,domain);
-			write_text(fd,"\t");
-			write_text(fd,text);
-			write_text(fd,"\n");
+			Logger::write(fd,timestamp);
+			Logger::write(fd,"\t");
+			Logger::write(fd,domain);
+			Logger::write(fd,"\t");
+			Logger::write(fd,text);
+			Logger::write(fd,"\n");
 
 			::close(fd);
 

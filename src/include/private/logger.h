@@ -38,6 +38,8 @@
 
 	namespace Logger {
 
+		UDJAT_PRIVATE bool write(int fd, const char *text) noexcept;
+
 		class UDJAT_PRIVATE Stream : public std::basic_streambuf<char, std::char_traits<char> > {
 			private:
 				Level level;

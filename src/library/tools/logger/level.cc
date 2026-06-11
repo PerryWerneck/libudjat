@@ -70,7 +70,7 @@
 		return LevelFactory(props.get(attr,def).c_str());
 	}
 
-	Logger::Level Logger::LevelFactory(const char *name) noexcept {
+	Logger::Level Logger::LevelFactory(const char *name) {
 		for(uint8_t ix = 0; ix < Logger::Level::Count; ix++) {
 			if(!strcasecmp(levelnames[ix],name)) {
 				return (Logger::Level) ix;
@@ -83,7 +83,7 @@
 		return Logger::Controller::getInstance().enabled(level);
 	}
 
-	void Logger::enable(Logger::Level level, bool enabled = true) noexcept {
+	void Logger::enable(Logger::Level level, bool enabled) noexcept {
 		Logger::Controller::getInstance().enable(level);
 	}
 

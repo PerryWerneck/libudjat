@@ -29,15 +29,6 @@
 
  using namespace std;
 
- static const char * levelnames[Udjat::Logger::Level::Count] = {
-	"error",
-	"warning",
-	"info",
-	"trace",
-	"debug",
-	"notice",
- };
-
  namespace Udjat {
 
 	void Logger::verbosity(unsigned short level) {
@@ -67,19 +58,6 @@
 
 	}
 
-	Logger::Level Logger::LevelFactory(const Properties &props, const char *attr, const char *def) {
-		return LevelFactory(props.get(attr,def).c_str());
-	}
-
-	Logger::Level Logger::LevelFactory(const char *name) noexcept {
-		for(uint8_t ix = 0; ix < Logger::Level::Count; ix++) {
-			if(!strcasecmp(levelnames[ix],name)) {
-				return (Logger::Level) ix;
-			}
-		}
-		throw logic_error(String{"Unexpected log level '",name,"'"});
-	}
-
 	bool Logger::enabled(Logger::Level level) noexcept {
 		return Logger::Controller::getInstance().enabled(level);
 	}
@@ -87,7 +65,6 @@
 	void Logger::enable(Logger::Level level, bool enabled = true) noexcept {
 		Logger::Controller::getInstance().enable(level);
 	}
-
 
 	bool Logger::decorated() noexcept {
 #ifdef _WIN32

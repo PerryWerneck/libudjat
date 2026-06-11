@@ -45,7 +45,7 @@
 		};
 
 		Logger::Level UDJAT_API LevelFactory(const Properties &props, const char *attr, const char *def);
-		Logger::Level UDJAT_API LevelFactory(const char *name) noexcept;
+		Logger::Level UDJAT_API LevelFactory(const char *name);
 
 		/// @brief Redirect std::cout, std::cerr & std::clog to log system.
 		void redirect();
@@ -206,6 +206,11 @@
 
 		};
 
+		UDJAT_API std::ostream & info();
+		UDJAT_API std::ostream & warning();
+		UDJAT_API std::ostream & error();
+		UDJAT_API std::ostream & trace();
+
 	}
 
 	#if defined(DEBUG)
@@ -244,15 +249,6 @@
 		UDJAT_API void verbosity(const char *level);
 		UDJAT_API bool decorated() noexcept;
 
-		UDJAT_API std::ostream & info();
-		UDJAT_API std::ostream & warning();
-		UDJAT_API std::ostream & error();
-		UDJAT_API std::ostream & trace();
-
-		/// @brief Show help messages.
-		/// @param width The width of the left part of the help text.
-		/// @details This method is called when the application is started with the '--help' option.
-		UDJAT_API void help(size_t width = 20) noexcept;
 
 
 		/// @brief Enable/Disable write to file.
