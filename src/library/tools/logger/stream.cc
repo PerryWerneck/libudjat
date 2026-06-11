@@ -22,14 +22,14 @@
  #include <private/logger.h>
  #include <thread>
  #include <mutex>
- #include <vector>
+ #include <list>
  #include <iostream>
 
  using namespace std;
 
  namespace Udjat {
 
-	static std::vector<Logger::Stream::Buffer> streams;
+	static std::list<Logger::Stream::Buffer> streams;
 
 	UDJAT_API std::ostream & Logger::trace() {
 		static thread_local std::ostream ctrace{new Logger::Stream(Logger::Trace)};
