@@ -27,6 +27,7 @@
  #include <functional>
  #include <list>
  #include <string>
+ #include <thread>
 
  #ifdef DEBUG
 	#define DEBUG_ENABLED true
@@ -66,10 +67,10 @@
 
 			public:
 				class Buffer : public std::string {
-				private:
-					Level level;
-
 				public:
+					Level level;
+					pthread_t thread;
+
 					Buffer(Level level);
 					~Buffer();
 
@@ -81,7 +82,7 @@
 
 				};
 
-				Stream(Level l) : level(l) {
+				Stream(Level l) : level{l} {
 				}
 
 				~Stream();

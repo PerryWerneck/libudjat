@@ -29,12 +29,19 @@
 
  namespace Udjat {
 
-	static thread_local std::vector<Logger::Stream::Buffer> streams;
+	static std::vector<Logger::Stream::Buffer> streams;
+
+	UDJAT_API std::ostream & Logger::trace() {
+		static thread_local std::ostream ctrace{new Logger::Stream(Logger::Trace)};
+		return ctrace;
+	}
 
 	Logger::Stream::Buffer & Logger::Stream::Buffer::getInstance(Level level) {
 
+		pthread_t thread = pthread_self();
+
 		for(auto &stream : streams) {
-			if(stream.level == level) {
+			if(stream.level == level && stream.thread == thread) {
 				return stream;
 			}
 		}
@@ -44,7 +51,7 @@
 
 	}
 
-	Logger::Stream::Buffer::Buffer(Level l) : level{l} {
+	Logger::Stream::Buffer::Buffer(Level l) : level{l}, thread{pthread_self()} {
 	}
 
 	Logger::Stream::Buffer::~Buffer() {
@@ -86,14 +93,23 @@
 
 		Controller::getInstance().write(level,domain,text);
 
-		clear();
 	}
 
 	Logger::Stream::~Stream() {
 	}
 
 	int Logger::Stream::sync() {
-		Buffer::getInstance(level).sync();
+
+		pthread_t thread = pthread_self();
+
+		for(auto it = streams.begin(); it != streams.end(); it++) {
+			if(it->level == level && it->thread == thread) {
+				it->sync();
+				streams.erase(it);
+				break;
+			}
+		}
+	
 		return 0;
 	}
 
