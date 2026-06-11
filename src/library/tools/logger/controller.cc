@@ -125,7 +125,7 @@
 		
 		char domain_buffer[11];
 		memset(domain_buffer,' ',sizeof(domain_buffer));
-		strncpy(domain_buffer,domain,sizeof(domain_buffer)-1);
+		memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
 		domain_buffer[sizeof(domain_buffer)-1] = 0;
 		domain = domain_buffer;
 		

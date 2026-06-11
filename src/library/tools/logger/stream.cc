@@ -76,6 +76,7 @@
 
 	void Logger::Stream::Buffer::sync() {
 
+		strip();
 		if(empty()) {
 			return;
 		}

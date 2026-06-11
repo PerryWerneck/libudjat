@@ -23,6 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/string.h>
  #include <mutex>
  #include <functional>
  #include <list>
@@ -66,7 +67,7 @@
 				Level level;
 
 			public:
-				class Buffer : public std::string {
+				class Buffer : public String {
 				public:
 					Level level;
 					pthread_t thread;
