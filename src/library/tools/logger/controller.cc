@@ -53,7 +53,7 @@
 					LOG_DEBUG,		// Debug
 					LOG_NOTICE		// Status
 				};
-				::syslog(priority[level % Level::Count],"%s %s",domain,text);
+				::syslog(priority[level % Level::Count],"%s: %s",domain,text);
 
 			});	
 		}
@@ -122,12 +122,6 @@
 		}
 
 		auto timestamp = TimeStamp{}.to_string();
-		
-		char domain_buffer[11];
-		memset(domain_buffer,' ',sizeof(domain_buffer));
-		memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
-		domain_buffer[sizeof(domain_buffer)-1] = 0;
-		domain = domain_buffer;
 		
 		lock_guard<recursive_mutex> lock(guard);
 		for(const auto &backend : backends) {

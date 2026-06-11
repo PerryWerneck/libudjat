@@ -99,7 +99,13 @@
 
 			write_text(timestamp);
 			write_text(" ");
-			write_text(domain);
+
+			char domain_buffer[11];
+			memset(domain_buffer,' ',sizeof(domain_buffer));
+			memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
+			domain_buffer[sizeof(domain_buffer)-1] = 0;
+			
+			write_text(domain_buffer);
 			write_text(" ");
 			write_text(text);
 

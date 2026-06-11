@@ -40,6 +40,8 @@
 
  int main(int argc, char **argv) {
 
+	Logger::file("/tmp/test.log");
+	
 	/*
 #ifndef _WIN32
 	static std::shared_ptr<UI::Animation> animations[] = {

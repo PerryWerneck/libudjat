@@ -55,9 +55,6 @@
 	}
 
 	Logger::Stream::Buffer::~Buffer() {
-		if(!empty()) {
-			sync();
-		}
 	}
 
 	bool Logger::Stream::Buffer::push_back(int c) {

@@ -93,7 +93,13 @@
 
 			Logger::write(fd,timestamp);
 			Logger::write(fd,"\t");
-			Logger::write(fd,domain);
+
+			char domain_buffer[11];
+			memset(domain_buffer,' ',sizeof(domain_buffer));
+			memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
+			domain_buffer[sizeof(domain_buffer)-1] = 0;
+
+			Logger::write(fd,domain_buffer);
 			Logger::write(fd,"\t");
 			Logger::write(fd,text);
 			Logger::write(fd,"\n");
