@@ -54,6 +54,7 @@
 			}
 
 			constexpr Address() : sockaddr_storage{} {
+				ss_family = AF_UNSPEC;
 			}
 
 			template <typename T>
