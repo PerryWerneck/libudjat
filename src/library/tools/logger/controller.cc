@@ -81,7 +81,7 @@
 
 	Logger::Controller::~Controller() {
 
-#ifndef HAVE_SYSLOG
+#ifdef HAVE_SYSLOG
 		closelog();
 #endif
 

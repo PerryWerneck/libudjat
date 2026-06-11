@@ -32,8 +32,23 @@
 	static std::list<Logger::Stream::Buffer> streams;
 
 	UDJAT_API std::ostream & Logger::trace() {
-		static thread_local std::ostream ctrace{new Logger::Stream(Logger::Trace)};
-		return ctrace;
+		static thread_local std::ostream stream{new Logger::Stream(Logger::Trace)};
+		return stream;
+	}
+
+	UDJAT_API std::ostream & Logger::error() {
+		static thread_local std::ostream stream{new Logger::Stream(Logger::Error)};
+		return stream;
+	}
+
+	UDJAT_API std::ostream & Logger::warning() {
+		static thread_local std::ostream stream{new Logger::Stream(Logger::Warning)};
+		return stream;
+	}
+
+	UDJAT_API std::ostream & Logger::info() {
+		static thread_local std::ostream stream{new Logger::Stream(Logger::Info)};
+		return stream;
 	}
 
 	Logger::Stream::Buffer & Logger::Stream::Buffer::getInstance(Level level) {

@@ -118,7 +118,7 @@
 
 			} catch(const std::exception &e) {
 
-				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning("xml");
+				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning();
 
 			}
 
