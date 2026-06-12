@@ -40,6 +40,7 @@
  #include <cstring>
  #include <list>
  #include <memory>
+ #include <stdexcept>
  
  using namespace std;
 
