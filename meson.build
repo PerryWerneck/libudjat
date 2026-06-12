@@ -145,6 +145,10 @@ app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
+if find_program('dot', required: false).found()
+  app_conf.set('HAVE_DOT', 'YES')
+endif
+
 if dbus.found()
   app_conf.set('HAVE_DBUS', 1)
 endif
@@ -763,6 +767,27 @@ config_h = [
       configuration : app_conf
   )
 ]
+
+doxygen = find_program('doxygen', required: false)
+
+if doxygen.found()
+
+  doxyfile = configure_file(
+    input: 'doc/Doxyfile.in',
+    output: 'Doxyfile',
+    configuration: app_conf
+  )
+
+  # Create a custom build target for the documentation
+  custom_target('doc',
+    input: doxyfile,
+    output: 'doc_output',
+    command: [doxygen, '@INPUT@'],
+    build_by_default: false,
+    console: true
+  )
+
+endif
 
 if host_machine.system() == 'windows'
 
