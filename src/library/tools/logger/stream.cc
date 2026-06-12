@@ -72,7 +72,7 @@
 
 	}
 
-	void Logger::Stream::Buffer::sync() {
+	void Logger::Stream::Buffer::send() {
 
 		strip();
 		if(empty()) {
@@ -115,7 +115,7 @@
 	Logger::Stream::~Stream() {
 	}
 
-	int Logger::Stream::sync() {
+	void Logger::Stream::send() {
 
 		lock_guard<mutex> lock{guard};
 
@@ -123,18 +123,21 @@
 
 		for(auto it = buffers.begin(); it != buffers.end(); it++) {
 			if(it->level == level && it->thread == thread) {
-				it->sync();
+				it->send();
 				buffers.erase(it);
 				break;
 			}
 		}
 	
+	}
+
+	int Logger::Stream::sync() {
 		return 0;
 	}
 
 	int Logger::Stream::overflow(int c) {
 		if(getBuffer(level).push_back(c)) {
-			sync();
+			send();
 		}
 		return c;
 	}

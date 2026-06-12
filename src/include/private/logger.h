@@ -76,7 +76,8 @@
 
 					bool push_back(int c);
 
-					void sync();
+					/// @brief Send contents to logger, clear string.
+					void send();
 
 				};
 
@@ -86,6 +87,9 @@
 				static std::list<Buffer> buffers;
 
 				Buffer & getBuffer(Level level);
+
+				/// @brief Send contents to logger, remove buffer.
+				void send();
 
 			public:
 
