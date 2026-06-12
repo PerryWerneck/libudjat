@@ -132,19 +132,17 @@ namespace Udjat {
 				});
 
 			} catch(const std::exception &e) {
-				cerr << root->name() << "\tError '" << e.what() << "' starting agents" << endl;
+				Logger::String{"Error '",e.what(),"' starting agents"}.error(root->name());
 				return;
 			}
 
 		} else {
 
-			clog << "agent\tStarting controller without root agent" << endl;
+			Logger::String{"Starting controller without root agent"}.warning("agent");
 
 		}
 
-		Logger::String{
-			"Starting controller"
-		}.trace("agent");
+		Logger::String{"Starting controller"}.trace("agent");
 
 		MainLoop::Timer::reset(1000);
 		MainLoop::Timer::enable();
@@ -304,7 +302,7 @@ namespace Udjat {
 				lock_guard<std::recursive_mutex> lock(Abstract::Agent::guard);
 				if(updating) {
 					if(updating < now) {
-						cerr << "agents\tUpdating since " << TimeStamp(updating) << endl;
+						Logger::String{"Updating since ",TimeStamp(updating).to_string().c_str()}.error("agent");
 					}
 					reset(500);
 					return;
@@ -318,11 +316,11 @@ namespace Udjat {
 
 			} catch(const std::exception &e) {
 
-				cerr << "Error updating agents: " << e.what() << endl;
+				Logger::String{"Error '",e.what(),"' updating agents"}.error("agent");
 
 			} catch(...) {
 
-				cerr << "Unexpected error updating agents" << endl;
+				Logger::String{"Unexpected error updating agents"}.error("agent");
 
 			}
 

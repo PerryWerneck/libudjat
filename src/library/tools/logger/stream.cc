@@ -29,7 +29,8 @@
 
  namespace Udjat {
 
-	static std::list<Logger::Stream::Buffer> streams;
+	mutex Logger::Stream::guard;
+	std::list<Logger::Stream::Buffer> Logger::Stream::buffers;
 
 	UDJAT_API std::ostream & Logger::trace() {
 		static thread_local std::ostream stream{new Logger::Stream(Logger::Trace)};
@@ -49,21 +50,6 @@
 	UDJAT_API std::ostream & Logger::info() {
 		static thread_local std::ostream stream{new Logger::Stream(Logger::Info)};
 		return stream;
-	}
-
-	Logger::Stream::Buffer & Logger::Stream::Buffer::getInstance(Level level) {
-
-		pthread_t thread = pthread_self();
-
-		for(auto &stream : streams) {
-			if(stream.level == level && stream.thread == thread) {
-				return stream;
-			}
-		}
-
-		streams.emplace_back(level);
-		return streams.back();
-
 	}
 
 	Logger::Stream::Buffer::Buffer(Level l) : level{l}, thread{pthread_self()} {
@@ -105,6 +91,24 @@
 		}
 
 		Controller::getInstance().write(level,domain,text);
+		clear();
+
+	}
+
+	Logger::Stream::Buffer & Logger::Stream::getBuffer(Level level) {
+
+		lock_guard<mutex> lock{guard};
+
+		pthread_t thread = pthread_self();
+
+		for(auto &buffer : buffers) {
+			if(buffer.level == level && buffer.thread == thread) {
+				return buffer;
+			}
+		}
+
+		buffers.emplace_back(level);
+		return buffers.back();
 
 	}
 
@@ -113,12 +117,14 @@
 
 	int Logger::Stream::sync() {
 
+		lock_guard<mutex> lock{guard};
+
 		pthread_t thread = pthread_self();
 
-		for(auto it = streams.begin(); it != streams.end(); it++) {
+		for(auto it = buffers.begin(); it != buffers.end(); it++) {
 			if(it->level == level && it->thread == thread) {
 				it->sync();
-				streams.erase(it);
+				buffers.erase(it);
 				break;
 			}
 		}
@@ -127,15 +133,10 @@
 	}
 
 	int Logger::Stream::overflow(int c) {
-
-		auto &buffer = Buffer::getInstance(level);
-
-		if(buffer.push_back(c)) {
+		if(getBuffer(level).push_back(c)) {
 			sync();
 		}
-
 		return c;
-
 	}
 
 	void Logger::redirect() {

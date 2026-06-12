@@ -48,10 +48,10 @@
 		Logger::Level UDJAT_API LevelFactory(const char *name);
 
 		/// @brief Redirect std::cout, std::cerr & std::clog to log system.
-		void redirect();
+		UDJAT_API void redirect();
 
-		void verbosity(const char *level);
-		void verbosity(unsigned short level = 9);
+		UDJAT_API void verbosity(const char *level);
+		UDJAT_API void verbosity(unsigned short level = 9);
 
 		/// @brief Show help messages.
 		/// @param width The width of the left part of the help text.

@@ -63,7 +63,7 @@ namespace Udjat {
 		} catch(const std::exception &e) {
 
 			update.next	= time(nullptr) + update.timer;
-			cerr << "Agent\tError '" << e.what() << "' loading defaults" << endl;
+			Logger::String{"Error '",e.what(),"' loading defaults"}.error(name);
 
 		}
 

@@ -30,6 +30,7 @@
  #include <udjat/ui/console.h>
  #include <udjat/ui/animation.h>
  #include <udjat/ui/menu.h>
+ #include <thread>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
@@ -41,7 +42,21 @@
  int main(int argc, char **argv) {
 
 	Logger::file("/tmp/test.log");
-	
+	Logger::console(true);
+	Logger::redirect();
+
+	cout << "teste\tChecking log redirections" << endl;
+
+	for(size_t ix = 0; ix < 5; ix++) {
+		thread([ix](){
+			for(size_t a = 0; a < (6-ix); a++) {
+				cout << "teste" << ix << "\tChecking thread " << ix << "." << a<< endl;
+			}
+		}).detach();
+	}
+
+	sleep(5);
+
 	/*
 #ifndef _WIN32
 	static std::shared_ptr<UI::Animation> animations[] = {
@@ -126,16 +141,16 @@
 	}
 	*/
 	
+	/*
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {
-		/*
-#ifdef TEST_PROGRAM
-		return run_unit_test(nullptr);
-#else
-		return 0;
-#endif // TEST_PROGRAM
-		*/
+// #ifdef TEST_PROGRAM
+// 		return run_unit_test(nullptr);
+//#else
+//		return 0;
+//#endif // TEST_PROGRAM
 		return 0;
 	}, "test.xml");
+	*/
 
  }

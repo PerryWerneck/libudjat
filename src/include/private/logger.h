@@ -63,9 +63,6 @@
 		};
 
 		class UDJAT_PRIVATE Stream : public std::basic_streambuf<char, std::char_traits<char> > {
-			private:
-				Level level;
-
 			public:
 				class Buffer : public String {
 				public:
@@ -82,6 +79,15 @@
 					void sync();
 
 				};
+
+			private:
+				Level level;
+				static std::mutex guard;	
+				static std::list<Buffer> buffers;
+
+				Buffer & getBuffer(Level level);
+
+			public:
 
 				Stream(Level l) : level{l} {
 				}
