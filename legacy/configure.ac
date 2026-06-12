@@ -422,7 +422,7 @@ dnl ac_configure_args="UDJAT_CFLAGS=-I$ac_pwd/src/include UDJAT_LIBS=-L$ac_pwd/.
 dnl AC_CONFIG_SUBDIRS([sample])
 
 AC_CONFIG_FILES(src/include/udjat/version.h)
-AC_CONFIG_FILES(doc/doxyfile)
+AC_CONFIG_FILES(doc/Doxyfile)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(dynamic.pc)
 AC_CONFIG_FILES(static.pc)

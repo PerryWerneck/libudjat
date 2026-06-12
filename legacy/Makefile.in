@@ -251,7 +251,7 @@ doc/html/index.html:
 	@echo doc/html/index.html ...
 
 	@$(MKDIR) $(dir $@)
-	@DOXYGEN@ doc/doxyfile
+	@DOXYGEN@ doc/Doxyfile
 
 install-doc: \
 	doc/html/index.html

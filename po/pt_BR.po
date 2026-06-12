@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-11 23:59-0300\n"
+"POT-Creation-Date: 2026-06-12 11:45-0300\n"
 "PO-Revision-Date: 2026-06-01 17:48-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -19,6 +19,14 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.8\n"
+
+#: src/library/agent/root.cc:98 src/library/tools/systemservice.cc:140
+msgid "System is ready"
+msgstr "Sistema em funcionamento"
+
+#: src/library/agent/root.cc:98
+msgid "No abnormal state was detected"
+msgstr "Nenhum estado anormal foi reportado"
 
 #: src/library/agent/agent.cc:193
 msgid "default"
@@ -32,13 +40,13 @@ msgstr "Normal"
 msgid "Agent has nothing to report"
 msgstr "Agente não tem nada a informar"
 
-#: src/library/agent/root.cc:98 src/library/tools/systemservice.cc:140
-msgid "System is ready"
-msgstr "Sistema em funcionamento"
+#: src/library/agent/controller.cc:97
+msgid "Agent controller was not initialized"
+msgstr "Controlador de agentes não foi inicializado"
 
-#: src/library/agent/root.cc:98
-msgid "No abnormal state was detected"
-msgstr "Nenhum estado anormal foi reportado"
+#: src/library/agent/controller.cc:350
+msgid "Get agent properties"
+msgstr "Obtém propriedades do agente"
 
 #: src/library/agent/state.cc:145
 msgid "Error activating state"
@@ -47,14 +55,6 @@ msgstr "Erro ao ativar estado"
 #: src/library/agent/state.cc:150
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
-
-#: src/library/agent/controller.cc:97
-msgid "Agent controller was not initialized"
-msgstr "Controlador de agentes não foi inicializado"
-
-#: src/library/agent/controller.cc:352
-msgid "Get agent properties"
-msgstr "Obtém propriedades do agente"
 
 #: src/library/module/module.cc:104
 #, c++-format
@@ -447,10 +447,6 @@ msgstr "Erro ao renomear arquivo de saída para '{}'"
 msgid "Error setting owner & group on '{}'"
 msgstr "Erro ao setar dono e grupo para '{}'"
 
-#: src/library/tools/os/linux/ip.cc:125
-msgid "Invalid size on RTA_GATEWAY"
-msgstr "Tamanho inválido em RTA_GATEWAY"
-
 #: src/library/tools/os/linux/netlink_routes.cc:68
 msgid "Cant send netlink message"
 msgstr "Não consegui enviar mensagem 'netlink'"
@@ -502,6 +498,10 @@ msgstr "Página seguinte"
 #: src/library/tools/os/linux/console.cc:323
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
+
+#: src/library/tools/os/linux/ip.cc:125
+msgid "Invalid size on RTA_GATEWAY"
+msgstr "Tamanho inválido em RTA_GATEWAY"
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72
@@ -663,6 +663,10 @@ msgstr "segundo"
 msgid "seconds"
 msgstr "segundos"
 
+#: src/library/tools/value/text.cc:48
+msgid "Item "
+msgstr ""
+
 #: src/library/tools/value/type.cc:31
 msgid "undefined"
 msgstr "indefinido"
@@ -731,10 +735,6 @@ msgstr "numero"
 #: src/library/tools/value/type.cc:93
 msgid "Unknown"
 msgstr "Desconhecido"
-
-#: src/library/tools/value/text.cc:48
-msgid "Item "
-msgstr ""
 
 #: src/library/tools/xml/load.cc:79
 msgid "Unable to find XML definitions"
