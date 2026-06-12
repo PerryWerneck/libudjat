@@ -432,6 +432,15 @@
 
  namespace std {
 
+	template <typename I> 
+	inline Udjat::String to_hex_string(I w, size_t hex_len = sizeof(I)<<1) {
+		static const char* digits = "0123456789ABCDEF";
+		Udjat::String hexvalue(hex_len,'0');
+		for (size_t i=0, j=(hex_len-1)*4 ; i<hex_len; ++i,j-=4)
+			hexvalue[i] = digits[(w>>j) & 0x0f];
+		return hexvalue;
+	}
+
 	inline const char * to_string(Udjat::String &str) {
 		return str.c_str();
 	}
