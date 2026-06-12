@@ -96,6 +96,10 @@
 				return true;
 			}
 
+			bool running() const override {
+				return true;
+			}
+
 			bool loopback() const override {
 				return iface->Type == MIB_IF_TYPE_LOOPBACK;
 			}

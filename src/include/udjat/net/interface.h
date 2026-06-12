@@ -51,8 +51,17 @@
 			virtual Value & getProperties(Value &value) const;
 
 			virtual bool found() const = 0;
+
+			/// @brief Check if interface is enabled.
+			/// @return true if the interface is enabled.
 			virtual bool up() const = 0;
+
+			/// @brief Check if the interface physical link is detected.
+			/// @return true if the interface physical link is detected.
+			virtual bool running() const = 0;
+
 			virtual bool loopback() const = 0;
+			
 			virtual std::string macaddress() const = 0;
 			virtual IP::Address address() const = 0;			///< @brief Interface address.
 			virtual IP::Address netmask() const = 0;			///< @brief Interface netmask.

@@ -78,6 +78,10 @@ public:
 		return nicname.c_str();
 	}
 
+	bool running() const override {
+		return flags() & IFF_RUNNING;
+	}
+
 	bool up() const override {
 		return flags() & IFF_UP;
 	}
