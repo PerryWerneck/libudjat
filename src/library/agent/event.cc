@@ -82,9 +82,9 @@ namespace Udjat {
 
 	}
 
-	Abstract::Agent::Event Abstract::Agent::EventFactory(const XML::Node &node, const char *attrname) {
+	Abstract::Agent::Event Abstract::Agent::EventFactory(const Udjat::Properties &props, const char *attrname) {
 
-		String name{node,attrname,""};
+		String name{props[attrname]};
 
 		if(name.empty()) {
 			throw runtime_error(Logger::String{"Required attribute '",attrname,"' is missing or empty"});

@@ -78,7 +78,7 @@
 				ALL 				= 0x011F		///< @brief All events.
 			};
 
-			static Event EventFactory(const XML::Node &node, const char *attrname = "event");
+			static Event EventFactory(const Udjat::Properties &props, const char *attrname = "event");
 			static Event EventFactory(const char *name);
 
 		private:

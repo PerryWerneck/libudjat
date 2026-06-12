@@ -49,16 +49,16 @@
 		throw system_error(EINVAL,system_category(),string{"The method '"} + name + "' is invalid");
 	}
 
-	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *attrname, const char *def) {
-		return MethodFactory(String{node,attrname,def}.c_str());
+	HTTP::Method HTTP::MethodFactory(const Properties &props, const char *attrname, const char *def) {
+		return MethodFactory(props.get(attrname,def).c_str());
 	}
 
-	HTTP::Method HTTP::MethodFactory(const XML::Node &node, const char *def) {
-		return MethodFactory(node,"http-method",def);
+	HTTP::Method HTTP::MethodFactory(const Properties &props, const char *def) {
+		return MethodFactory(props.get("http-method",def).c_str());
 	}
 
-	HTTP::Method HTTP::MethodFactory(const XML::Node &node) {
-		return MethodFactory(node,"http-method","get");
+	HTTP::Method HTTP::MethodFactory(const Properties &props) {
+		return MethodFactory(props.get("http-method","get").c_str());
 	}
 
  }
