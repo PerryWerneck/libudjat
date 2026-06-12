@@ -254,9 +254,9 @@
 	/// @return 0 if success, -1 on error.
 	UDJAT_API int run_udjat_unit_test(const char *name);
 
-	/// @brief Initialize module from XML node.
+	/// @brief Initialize module from properties.
 	/// @return Module controller.
-	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::XML::Node &node = Udjat::XML::Node{});
+	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::Properties &props = Udjat::Properties{});
 
 	/// @brief Deinitialize the module.
 	/// @return true if the module can be unloaded.

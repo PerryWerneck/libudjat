@@ -34,7 +34,7 @@
 
  namespace Udjat {
 
-	bool Module::Controller::load(const std::string &filename, const XML::Node &node) {
+	bool Module::Controller::load(const std::string &filename, const Udjat::Properties &props) {
 
 		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
 			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
@@ -52,22 +52,22 @@
 
 		try {
 
-			auto init = getfunc<Module *,const XML::Node &>(handle,"udjat_module_init",false);
+			auto init = getfunc<Module *,const Udjat::Properties &>(handle,"udjat_module_init",false);
 
 			if(!init) {
 				throw runtime_error(String{filename.c_str()," is not a valid module"});
 			}
 
-			auto module = init(node);
+			auto module = init(props);
 			if(!module) {
 				throw runtime_error(String{"Initialization of ",filename.c_str()," has failed"});
 			}
 
 			module->handle = handle;
-			module->keep_loaded = node.attribute("keep-loaded").as_bool(false);
-			module->keep_active = node.attribute("keep-active").as_bool(false);
+			module->keep_loaded = props.get("keep-loaded",false);
+			module->keep_active = props.get("keep-active",false);
 
-			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
+			if(props.get("verbose",true) && module->info.description && *module->info.description) {
 				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
 			}
 

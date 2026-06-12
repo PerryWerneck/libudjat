@@ -27,7 +27,7 @@
 
  namespace Udjat {
 
-	bool Module::Controller::load(const std::string &filename, const XML::Node &node) {
+	bool Module::Controller::load(const std::string &filename, const Udjat::Properties &props) {
 
 		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
 			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
@@ -45,22 +45,22 @@
 
 		try {
 
-			auto init = getfunc<Module *,const XML::Node &>(handle,"udjat_module_init",false);
+			auto init = getfunc<Module *,const Udjat::Properties &>(handle,"udjat_module_init",false);
 
 			if(!init) {
 				throw runtime_error(String{filename.c_str()," is not a valid module"});
 			}
 
-			auto module = init(node);
+			auto module = init(props);
 			if(!module) {
 				throw runtime_error(String{"Initialization of ",filename.c_str()," has failed"});
 			}
 
 			module->handle = handle;
-			module->keep_loaded = node.attribute("keep-loaded").as_bool(false);
-			module->keep_active = node.attribute("keep-active").as_bool(false);
+			module->keep_loaded = props.get("keep-loaded",false);
+			module->keep_active = props.get("keep-active",false);
 
-			if(node.attribute("verbose").as_bool(true) && module->info.description && *module->info.description) {
+			if(props.get("verbose",true) && module->info.description && *module->info.description) {
 				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
 			}
 
@@ -78,94 +78,6 @@
 		return false;
 
 	}
-
-		/*
-	void Module::Controller::init(const std::string &filename, const XML::Node &node) {
-
-		Logger::String{"Loading '",filename,"'"}.trace("module");
-
-		// https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-loadlibrarya
-		HMODULE handle = LoadLibrary(filename.c_str());
-
-		if(!handle) {
-			throw Win32::Exception();
-		}
-
-		try {
-
-			auto module = init(handle,node);
-			if(!module) {
-				throw runtime_error("Module initialization has failed");
-			}
-
-		} catch(...) {
-
-			CloseHandle(handle);
-			throw;
-		}
-
-
-	}
-
-	Module * Module::Controller::init(HMODULE handle, const XML::Node &node) {
-
-		Module * module = nullptr;
-
-		#error Refactor
-
-		//
-		// First try from xml
-		//
-
-		Module * (*init_from_xml)(const XML::Node &node)
-				= (Module * (*)(const XML::Node &node)) getSymbol(handle,"udjat_module_init_from_xml",false);
-
-		if(init_from_xml) {
-
-			module = init_from_xml(node);
-			if(!module) {
-				throw runtime_error("Can't initialize module from XML");
-			}
-
-			module->handle = handle;
-			if(module->gettext_package() && *module->gettext_package()) {
-				Application::set_gettext_package(module->gettext_package());
-			}
-
-		} else {
-
-			//
-			// Not found, try non xml version.
-			//
-			module = init(handle);
-
-		}
-
-		module->keep_loaded = Object::getAttribute(node, "modules", "keep-loaded", module->keep_loaded);
-
-		return module;
-	}
-
-	Module * Module::Controller::init(HMODULE handle) {
-
-		#error Refactor
-		
-		Module * (*init)(void) = (Module * (*)(void)) getSymbol(handle,"udjat_module_init");
-
-		Module * module = init();
-		if(!module) {
-			throw runtime_error("Can't initialize module");
-		}
-
-		module->handle = handle;
-		if(module->gettext_package() && *module->gettext_package()) {
-			Application::set_gettext_package(module->gettext_package());
-		}
-
-		return module;
-
-	}
-		*/
 
  }
 

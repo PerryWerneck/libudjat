@@ -94,33 +94,5 @@ namespace Udjat {
 		return Controller::getInstance().load(filename,node);
 	}
 
-	/*
-	bool Module::Controller::load(const char *name, bool required) {
-
-		if(*name == '.' || *name == '/') {
-			if(load(name,required)) {
-				Logger::String{"Module '",name,"' was already loaded"}.trace();
-				return true;
-			}
-		}
-
-		string filename = locate(name,Module::search_paths());
-		if(filename.empty()) {
-			if(required) {
-				throw std::system_error(ENOENT,std::system_category(),Logger::Message("Cant find module '{}'",name));
-			}
-			return false;
-		}
-
-		if(load(filename,required)) {
-			Logger::String{"Module '",filename.c_str(),"' was already loaded"}.trace("module");
-			return true;
-		}
-
-		return false;
-
-	}
-	*/
-
 }
 
