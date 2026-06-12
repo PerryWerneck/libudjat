@@ -113,6 +113,7 @@
 	}
 
 	Logger::Stream::~Stream() {
+		send();
 	}
 
 	void Logger::Stream::send() {
