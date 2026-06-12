@@ -25,7 +25,7 @@ project(
 	license: 'GPL-3.0-or-later',
 )
 
-module_build=20240725
+module_build=20260611
 project_description = 'UDJat core library'
 product_name = 'udjat'
 product_domain = 'br.eti.werneck'

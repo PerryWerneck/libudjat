@@ -1,6 +1,5 @@
 src/library/agent/agent.cc
 src/library/agent/child.cc
-src/library/agent/controller.cc
 src/library/agent/factory.cc
 src/library/agent/get.cc
 src/library/agent/parse.cc
@@ -15,6 +14,7 @@ src/library/agent/start.cc
 src/library/agent/state.cc
 src/library/agent/update.cc
 src/library/agent/event.cc
+src/library/agent/controller.cc
 src/library/alert/construct.cc
 src/library/alert/factory.cc
 src/library/alert/file.cc
@@ -41,9 +41,8 @@ src/library/state/level.cc
 src/library/state/parse.cc
 src/library/state/state.cc
 src/library/tools/action/abstract.cc
-src/library/tools/action/controller.cc
 src/library/tools/action/factory.cc
-src/library/tools/activatable.cc
+src/library/tools/action/controller.cc
 src/library/tools/application/application.cc
 src/library/tools/application/loader.cc
 src/library/tools/application/run.cc
@@ -211,11 +210,9 @@ src/library/tools/value/text.cc
 src/library/tools/xml/load.cc
 src/library/tools/xml/attribute.cc
 src/library/tools/xml/misc.cc
-src/library/tools/xml/node.cc
 src/library/tools/xml/document.cc
+src/library/tools/xml/node.cc
 src/library/tools/config.cc
-src/library/tools/object.cc
-src/library/tools/properties.cc
 src/library/tools/logger/commandline.cc
 src/library/tools/logger/console.cc
 src/library/tools/logger/controller.cc
@@ -225,12 +222,13 @@ src/library/tools/logger/message.cc
 src/library/tools/logger/misc.cc
 src/library/tools/logger/stream.cc
 src/library/tools/logger/string.cc
+src/library/tools/activatable.cc
+src/library/tools/properties.cc
+src/library/tools/object.cc
 src/library/ui/progress.cc
 src/library/ui/status.cc
 src/library/ui/animation.cc
 src/library/ui/menu.cc
-src/include/private/action.h
-src/include/private/agent.h
 src/include/private/crypto.h
 src/include/private/dialog.h
 src/include/private/event.h
@@ -251,8 +249,9 @@ src/include/private/win32/mainloop.h
 src/include/private/win32/subprocess.h
 src/include/private/logger.h
 src/include/private/configuration.h
+src/include/private/action.h
+src/include/private/agent.h
 src/include/udjat.h
-src/include/udjat/action.h
 src/include/udjat/agent.h
 src/include/udjat/agent/abstract.h
 src/include/udjat/agent/level.h
@@ -270,7 +269,6 @@ src/include/udjat/net/ip/address.h
 src/include/udjat/tools/abstract/request-path.h
 src/include/udjat/tools/abstract/object.h
 src/include/udjat/tools/actions/abstract.h
-src/include/udjat/tools/activatable.h
 src/include/udjat/tools/application.h
 src/include/udjat/tools/base64.h
 src/include/udjat/tools/cleanup.h
@@ -320,11 +318,12 @@ src/include/udjat/tools/url/handler.h
 src/include/udjat/tools/configuration.h
 src/include/udjat/tools/converters.h
 src/include/udjat/tools/object.h
-src/include/udjat/tools/properties.h
 src/include/udjat/tools/string.h
 src/include/udjat/tools/value.h
-src/include/udjat/tools/xml.h
 src/include/udjat/tools/logger.h
+src/include/udjat/tools/activatable.h
+src/include/udjat/tools/properties.h
+src/include/udjat/tools/xml.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
 src/include/udjat/ui/status.h
@@ -343,6 +342,7 @@ src/include/udjat/win32/security.h
 src/include/udjat/win32/service.h
 src/include/udjat/win32/registry.h
 src/include/udjat/defs.h
+src/include/udjat/action.h
 src/library/private.h
 src/library/tools/mainloop/os/windows/private.h
 src/library/tools/os/linux/file/private.h
