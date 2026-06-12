@@ -52,13 +52,15 @@
 
 		try {
 
-			auto init = getfunc<Module *,const Udjat::Properties &>(handle,"udjat_module_init",false);
+			auto init = getfunc<Module *,const Udjat::Properties &>(handle,"udjat_module_init",true);
 
 			if(!init) {
 				throw runtime_error(String{filename.c_str()," is not a valid module"});
 			}
 
+			debug("Calling init...");
 			auto module = init(props);
+			debug("Init has returned");
 			if(!module) {
 				throw runtime_error(String{"Initialization of ",filename.c_str()," has failed"});
 			}
