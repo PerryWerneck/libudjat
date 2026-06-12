@@ -39,12 +39,18 @@
 		/// @return true if the properties has the named value.
 		virtual bool contains(const char *name) const noexcept;
 
+		virtual bool has_child(const char *name) const noexcept;
+
 		/// @brief Check if this property is allowed
 		virtual bool allowed() const noexcept;
 
 		/// @brief Get the property node name, usually the value from XML.
 		/// @return The property node name.
 		virtual const char * node_name() const noexcept;
+
+		/// @brief Get properties path (for messages)
+		/// @return The properties path or 'properties' if object doesnt have a path.
+		virtual String path() const noexcept;
 
 		/// @brief Build constant from 'name' attribute, fallback to node_name() if cant find the attribute.
 		/// @return The property name as constant string.

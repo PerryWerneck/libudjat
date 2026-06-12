@@ -210,6 +210,18 @@
 		return false;
 	}
 
+	bool XML::Node::has_child(const char *name) const noexcept {
+		return pugi::xml_node::child(name);
+	}
+
+	String XML::Node::path() const noexcept {
+#ifdef BUILD_LEGACY
+		return Properties::path();
+#else
+		return pugi::xml_node::path();
+#endif
+	}
+
 	bool XML::Node::get(const char *attrname, const bool def) const {
 		return xml_attribute(*this,attrname).as_bool(def);
 	}

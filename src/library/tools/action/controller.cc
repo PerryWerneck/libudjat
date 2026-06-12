@@ -31,6 +31,7 @@
  #include <udjat/tools/script.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <private/action.h>
  #include <udjat/tools/url.h>
  #include <memory>
@@ -51,53 +52,52 @@
 		return instance;
 	}
 
-	static String TypeFactory(const XML::Node &node) {
+	static String TypeFactory(const Udjat::Properties &props) {
 
-		static const char *attributes[] = { "action-type", "action-name", "action", "type", "container", "multiple" }; 
+		static const char *attributes[] = { 
+			"action-type", 
+			"action-name", 
+			"action", 
+			"type", 
+			"container", 
+			"multiple" 
+		}; 
 
-		if(node.child("script") || node.child("action")) {
+		if(props.has_child("script") || props.has_child("action")) {
 			return "multiple";
 		}
 
 		for(const char *attribute : attributes) {
-
-			const char *type = node.attribute(attribute).as_string();
-			if(type && *type) {
-				return type;
-			}
-
-		}
-
-		for(const char *attribute : attributes) {
-			String type{node,attribute};
+			String type = props[attribute];
 			if(!type.empty()) {
 				return type;
 			}
 		}
 
 		// Convenience attributes
-		if(node.attribute("url")) {
-			return "url";
+		static const struct {
+			const char *name;
+			const char *type;
+		} attrs[] = {
+			{ "url", "url" },
+			{ "cmdline", "shell" },
+			{ "filename", "file" }
+		};
 
-		} else if(node.attribute("cmdline")) {
-			return "shell";
+		for(const auto &attr : attrs) {
+			if(props.contains(attr.name)) {
+				return attr.type;
+			}
+		}
 
-		} else if(node.attribute("filename")) {
-			return "file";
-
-		} else if(!strcasecmp(node.name(),"action")) {
-			String type{node,"name"};
+		if(!strcasecmp(props.node_name(),"action")) {
+			String type{props["name"]};
 			if(!type.empty()) {
 				return type;
 			}
-
 		}
 
-#ifdef BUILD_LEGACY
-		throw runtime_error("The required attribute 'type' is missing");
-#else
-		throw runtime_error(Logger::String{"Required attribute 'type' is missing at ",node.path()});
-#endif
+		throw runtime_error(Logger::String{"Required attribute 'type' is missing at '",props.path(),"'"});
 
 	}
 

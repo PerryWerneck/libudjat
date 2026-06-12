@@ -64,7 +64,11 @@
 
 			const char *node_name() const noexcept override;
 
+			String path() const noexcept override;
+
 			bool contains(const char *name) const noexcept override;
+
+			bool has_child(const char *name) const noexcept override;
 
 			const String get(const char *attrname, const char *def = "") const override;
 			bool get(const char *attrname, const bool def) const override;

@@ -52,6 +52,15 @@
 		return "unnamed";
 	}
 
+	bool Properties::has_child(const char *) const noexcept {
+		return false;
+	}
+
+	/// @brief Get properties path (for messages)
+	String Properties::path() const noexcept {
+		return "properties";
+	}
+
 	bool Properties::contains(const char *) const noexcept {
 		return false;
 	}
