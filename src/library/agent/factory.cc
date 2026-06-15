@@ -118,11 +118,7 @@
 			// No factory recognize the node and I have no type, then, cant do anything.
 			
 			throw runtime_error(
-#ifdef BUILD_LEGACY
-				String{"Cant determine factory for agent '",node.attribute("name").as_string(),"'"};
-#else
 				String{"Cant determine factory for agent '",node.attribute("name").as_string(),"' at ",node.path()}
-#endif // BUILD_LEGACY
 			);
 
 		}
@@ -354,11 +350,7 @@
 		}
 
 		throw runtime_error(
-#ifdef BUILD_LEGACY
-			String{"Cant find a valid factory for agent '",node.attribute("name").as_string(),"' type '",type,"'"};
-#else
 			String{"Cant find a valid factory for agent '",node.attribute("name").as_string(),"' type '",type,"' at ",node.path()}
-#endif // BUILD_LEGACY
 		);
 
 	}
