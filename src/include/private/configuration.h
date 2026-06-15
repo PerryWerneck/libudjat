@@ -85,6 +85,10 @@
 				return Win32::Registry{hParent,group,false}.get(key,def);
 			}
 
+			inline String get(const char *group, const char *key, const char *def) const {
+				return Win32::Registry{hParent,group,false}.get(key,def);
+			}
+
 			inline Udjat::String get_string(const char *group, const char *name, const char *def) const {
 				return Win32::Registry{hParent,group}.get(name,def);
 			}
@@ -229,9 +233,6 @@
 
 		// Controller without backend.
 		class UDJAT_PRIVATE Controller {
-		private:
-			static bool allow_user_config;
-
 		public:
 
 			static Controller & getInstance() {
@@ -274,7 +275,7 @@
 			}
 
 			inline bool hasKey(const char *group, const char *key) {
-				return false);
+				return false;
 			}
 
 			template <typename T>

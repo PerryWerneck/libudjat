@@ -162,6 +162,10 @@
 				return true;
 			}
 
+			bool running() const override {
+				return true;
+			}
+
 			std::string macaddress() const override {
 				Interfaces interfaces;
 				for(const IP_ADAPTER_INFO * iface = interfaces.get();iface;iface = iface->Next) {

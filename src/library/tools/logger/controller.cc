@@ -58,12 +58,14 @@
 		}
 #endif // HAVE_SYSLOG
 
+#ifndef _WIN32
 		// Check for GLib (possible GUI app).
 		{
 
 			typedef void (*GLogFunc)(const char *log_domain, GLogLevelFlags log_level, const char *message, void *user_data);
 
 			dlerror();
+
 
 			void (*g_log_set_default_handler)(GLogFunc, void *)
 					= (void (*)(GLogFunc,void *)) dlsym(RTLD_DEFAULT, "g_log_set_default_handler");
@@ -78,6 +80,9 @@
 			}
 
 		}
+#else
+
+#endif // !_WIN32
 
 	}
 

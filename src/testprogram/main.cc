@@ -41,6 +41,7 @@
 
  int main(int argc, char **argv) {
 
+#ifndef _WIN32
 	Logger::file("/tmp/test.log");
 	Logger::console(true);
 	Logger::redirect();
@@ -56,6 +57,7 @@
 	}
 
 	sleep(5);
+#endif
 
 	/*
 #ifndef _WIN32
@@ -141,7 +143,6 @@
 	}
 	*/
 	
-	/*
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {
 // #ifdef TEST_PROGRAM
@@ -151,6 +152,5 @@
 //#endif // TEST_PROGRAM
 		return 0;
 	}, "test.xml");
-	*/
 
  }

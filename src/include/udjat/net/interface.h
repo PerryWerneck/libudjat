@@ -46,6 +46,10 @@
 				return strcasecmp(name(),str) == 0;
 			}
 
+			inline operator bool() const {
+				return found() && up() && running();
+			}
+
 			virtual const char * name() const = 0;
 
 			virtual Value & getProperties(Value &value) const;
@@ -69,7 +73,7 @@
 			/// @brief Build interface from nic name.
 			static std::shared_ptr<Interface> Factory(const char *name);
 
-			/// @brief Builde default interface.
+			/// @brief Build default interface.
 			static std::shared_ptr<Interface> Default();
 
 			/// @brief Enumerate all interface names.
