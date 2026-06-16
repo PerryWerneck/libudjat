@@ -87,6 +87,19 @@ namespace Udjat {
 //		debug("Console was deleted");
 	}
 
+	bool UI::Console::write(const char *text) noexcept {
+		size_t bytes = strlen(text);
+		while(bytes) {
+			ssize_t sz = ::write(STDOUT_FILENO,text,bytes);
+			if(sz < 0)
+				return false;
+			bytes -= sz;
+			text += sz;
+		}
+		fsync(1);
+		return true;
+	}
+
 	unsigned short UI::Console::width() const noexcept {
 		// https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 		CONSOLE_SCREEN_BUFFER_INFO csbi;

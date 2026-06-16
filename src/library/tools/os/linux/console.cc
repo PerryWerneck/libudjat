@@ -88,6 +88,19 @@ namespace Udjat {
 		Logger::console(enabled);
 	}
 
+	bool UI::Console::write(const char *text) noexcept {
+		size_t bytes = strlen(text);
+		while(bytes) {
+			ssize_t sz = ::write(1,text,bytes);
+			if(sz < 0)
+				return false;
+			bytes -= sz;
+			text += sz;
+		}
+		fsync(1);
+		return true;
+	}
+
 	unsigned short UI::Console::width() const noexcept {
 #ifdef _WIN32
 

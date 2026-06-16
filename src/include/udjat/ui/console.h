@@ -57,6 +57,11 @@
 			Console();
 			~Console();
 
+			/// @brief Write text to console.
+			/// @param text The text to write.
+			/// @return true if suceeded.
+			static bool write(const char *text) noexcept;
+
 			Console & set(const Foreground color);
 
 			/// @brief set bold mode.
