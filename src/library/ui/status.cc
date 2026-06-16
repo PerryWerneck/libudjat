@@ -56,7 +56,7 @@
 			~Status() override {}
 
 			Status & state(const char *text) noexcept override {
-				Logger::String{text}.write((Logger::Level) (Logger::Notice),"state");
+				Logger::String{text}.write(Logger::Notice,"state");
 #ifndef _WIN32
 				if(Logger::decorated()) {
 					Logger::write(1,String{"\x1B]0;",text,"\x07"}.c_str());
