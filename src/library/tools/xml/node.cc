@@ -91,8 +91,8 @@
 
 #else
 
-		if(!node.attribute("allowed-in-virtual-machine").as_bool(true)) {
-			cerr << PACKAGE_NAME "\tLibrary built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute" << endl;
+		if(!pugi::xml_node::attribute("allowed-in-virtual-machine").as_bool(true)) {
+			Logger::String{"Library built without virtual machine support, ignoring 'allowed-in-virtual-machine' attribute"}.error();
 		}
 
 #endif // HAVE_VMDETECT
