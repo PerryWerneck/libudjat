@@ -99,13 +99,16 @@ namespace Udjat {
 		ArgumentParser(const Argument &arg);
 		~ArgumentParser();
 
-		/*
 		template<typename... Targs>
 		ArgumentParser(const char *str, Targs... Fargs) : ArgumentParser{str} {
 			ArgumentParser::append(Fargs...);
 		}
 
-		template<typename T>
+		template<typename... Targs>
+		ArgumentParser(const Argument &arg, Targs... Fargs) : ArgumentParser{arg} {
+			ArgumentParser::append(Fargs...);
+		}
+
 		template<typename... Targs>
 		void append(const char *str, Targs... Fargs) {
 			append(str);
@@ -117,7 +120,6 @@ namespace Udjat {
 			append(str.c_str());
 			append(Fargs...);
 		}
-		*/
 
 		/// @brief Add argument in the application group.
 		/// @param argument The argument to add.
