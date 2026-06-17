@@ -100,6 +100,11 @@ namespace Udjat {
 		~ArgumentParser();
 
 		template<typename... Targs>
+		ArgumentParser(const char *str, Targs... Fargs) : ArgumentParser{str} {
+			ArgumentParser::append(Fargs...);
+		}
+
+		template<typename... Targs>
 		ArgumentParser(const Argument &argument, Targs... Fargs) : ArgumentParser{} {
 			ArgumentParser::append(argument, Fargs...);
 		}
@@ -107,6 +112,12 @@ namespace Udjat {
 		template<typename... Targs>
 		inline void append(const Argument &argument, Targs... Fargs) {
 			append(argument);
+			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		inline void append(const char *str, Targs... Fargs) {
+			groups.emplace_back(str);
 			append(Fargs...);
 		}
 
@@ -184,6 +195,8 @@ namespace Udjat {
 
 		/// @brief The optional argument groups.
 		std::list<Group> groups;
+
+		void append_help();
 
 		bool show_help() const;
 		bool parse_short(const char *argument, const char **argv) const;

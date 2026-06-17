@@ -32,7 +32,24 @@
 
 		// The first group is allways the application options
 		groups.emplace_back(_("Application options"));
+		append_help();
 
+	}
+
+	ArgumentParser::ArgumentParser(const char *str) {
+		groups.emplace_back(str);
+		append_help();
+	}
+
+	ArgumentParser::ArgumentParser(const Argument &arg) : ArgumentParser{} {
+		groups.front().push_back(arg);	
+	}
+
+	ArgumentParser::~ArgumentParser() {
+
+	}
+
+	void ArgumentParser::append_help() {
 		groups.front().emplace_back(
 			'h', 
 			"help", 
@@ -42,19 +59,6 @@
 				return true;
 			}
 		);
-
-	}
-
-	ArgumentParser::ArgumentParser(const char *str) : ArgumentParser{} {
-		groups.emplace_back(str);
-	}
-
-	ArgumentParser::ArgumentParser(const Argument &arg) : ArgumentParser{} {
-		groups.front().push_back(arg);	
-	}
-
-	ArgumentParser::~ArgumentParser() {
-
 	}
 
 	bool ArgumentParser::parse(int &argc, const char **argv, const Argument *arguments) {

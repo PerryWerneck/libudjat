@@ -47,44 +47,36 @@
 		Logger::console(true);
 
 		ArgumentParser argparser{
-			ArgumentParser::Argument{
-				'a',
-				"opta",
-				"Argument 'A'",
-				[](const char *argument) {
-					cout << "Argument A called" << endl;
-					return false;
+			"First group of options",
+				ArgumentParser::Argument{
+					'a',
+					"opta",
+					"Argument 'A'",
+					[](const char *argument) {
+						cout << "Argument A called" << endl;
+						return false;
+					}
+				},
+			
+			"Second group of options",
+				ArgumentParser::Argument{
+					'b',
+					"optb",
+					"Argument 'B'",
+					[](const char *argument) {
+						cout << "Argument B called" << endl;
+						return false;
+					}
+				},
+				ArgumentParser::Argument{
+					'c',
+					"oc",
+					"Argument 'C'",
+					[](const char *argument) {
+						cout << "Argument C called" << endl;
+						return false;
+					}
 				}
-			},
-			ArgumentParser::Argument{
-				'b',
-				"optb",
-				"Argument 'B'",
-				[](const char *argument) {
-					cout << "Argument B called" << endl;
-					return false;
-				}
-			},
-			ArgumentParser::Argument{
-				'c',
-				"oc",
-				"Argument 'C'",
-				[](const char *argument) {
-					cout << "Argument C called" << endl;
-					return false;
-				}
-			}
-			/*
-			ArgumentParser::Argument{
-				'd',
-				"od",
-				"Argument 'D'",
-				[](const char *argument) {
-					cout << "Argument D called" << endl;
-					return false;
-				}
-			}
-			*/
 		};
 
 		try {
