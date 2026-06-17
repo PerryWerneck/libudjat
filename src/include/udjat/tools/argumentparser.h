@@ -100,12 +100,23 @@ namespace Udjat {
 		~ArgumentParser();
 
 		template<typename... Targs>
-		ArgumentParser(const char *str, Targs... Fargs) : ArgumentParser{str} {
-			ArgumentParser::append(Fargs...);
+		ArgumentParser(const Argument &argument, Targs... Fargs) : ArgumentParser{} {
+			ArgumentParser::append(argument, Fargs...);
 		}
 
 		template<typename... Targs>
-		ArgumentParser(const Argument &arg, Targs... Fargs) : ArgumentParser{arg} {
+		inline void append(const Argument &argument, Targs... Fargs) {
+			append(argument);
+			append(Fargs...);
+		}
+
+		inline void append(const Argument &argument) {
+			groups.back().push_back(argument);
+		}
+		
+		/*
+		template<typename... Targs>
+		ArgumentParser(const char *str, Targs... Fargs) : ArgumentParser{str} {
 			ArgumentParser::append(Fargs...);
 		}
 
@@ -120,6 +131,7 @@ namespace Udjat {
 			append(str.c_str());
 			append(Fargs...);
 		}
+		*/
 
 		/// @brief Add argument in the application group.
 		/// @param argument The argument to add.
@@ -134,14 +146,14 @@ namespace Udjat {
 		
 		/// @brief Add argument in the last group.
 		/// @param argument 
-		void append(const Argument &argument);
+		// void append(const Argument &argument);
 
 		/// @brief Add group.
 		/// @param text The group title.
 		/// @return The new group.
-		inline void append(const char *text) {
-			add_group(text);
-		}
+		//inline void append(const char *text) {
+		//	add_group(text);
+		//}
 
 		/// @brief Add group.
 		/// @param text The group title.

@@ -64,7 +64,27 @@
 					cout << "Argument B called" << endl;
 					return false;
 				}
+			},
+			ArgumentParser::Argument{
+				'c',
+				"oc",
+				"Argument 'C'",
+				[](const char *argument) {
+					cout << "Argument C called" << endl;
+					return false;
+				}
 			}
+			/*
+			ArgumentParser::Argument{
+				'd',
+				"od",
+				"Argument 'D'",
+				[](const char *argument) {
+					cout << "Argument D called" << endl;
+					return false;
+				}
+			}
+			*/
 		};
 
 		try {

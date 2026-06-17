@@ -115,9 +115,11 @@
 		groups.front().emplace_back(shortname,longname,description,call);
 	}
 
+	/*
 	void ArgumentParser::append(const Argument &argument) {
 		groups.back().push_back(argument);
 	}
+	*/
 
 	ArgumentParser::Group & ArgumentParser::add_group(const char *text) {
 		groups.emplace_back(text);
