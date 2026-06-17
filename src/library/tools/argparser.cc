@@ -34,6 +34,10 @@
 
 	}
 
+	ArgumentParser::ArgumentParser(const char *str) : ArgumentParser{} {
+		groups.emplace_back(str);
+	}
+
 	ArgumentParser::~ArgumentParser() {
 
 	}
@@ -43,7 +47,7 @@
 		ArgumentParser parser;
 
 		for(const Argument *arg = arguments; *arg; arg++) {
-			parser.add_argument(*arg);
+			parser.add_application_argument(*arg);
 		}
 
 		return parser.parse(argc,argv);
@@ -55,7 +59,6 @@
 		for(int ix = 0; ix < argc; ix++) {
 
 			const char *arg = argv[ix];
-
 
 			if(*arg != '-') {
 				continue;
@@ -89,12 +92,16 @@
 		return true;
 	}
 
-	void ArgumentParser::add_argument(const ArgumentParser::Argument &argument) {
+	void ArgumentParser::add_application_argument(const ArgumentParser::Argument &argument) {
 		groups.front().push_back(argument);
 	}
 
-	void ArgumentParser::add_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument)> &call) {
+	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument)> &call) {
 		groups.front().emplace_back(shortname,longname,description,call);
+	}
+
+	void ArgumentParser::append(const Argument &argument) {
+		groups.back().push_back(argument);
 	}
 
 	ArgumentParser::Group & ArgumentParser::add_group(const char *text) {

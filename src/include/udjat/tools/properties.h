@@ -72,6 +72,12 @@
 		/// @return The child value.
 		virtual String child_value() const;
 
+		/// @brief Get the text insid an attribute.
+		/// @param attrname The attribute name.
+		/// @param def The default value if not found.
+		/// @return The contents of the attribute or 'def' if not found.
+		virtual String child_value(const char *attrname, const char *def) const;
+
 		String operator[](const char *attrname) const;
 
 		/// @brief Enumerate children by attribute name.https://x.com/evandroratho/status/2064074016793481270

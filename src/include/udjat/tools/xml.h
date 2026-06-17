@@ -78,6 +78,7 @@
 			unsigned int get(const char *attrname, const unsigned int def) const override;
 			
 			String child_value() const override;
+			String child_value(const char *attrname, const char *def) const override;
 
 			bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
 

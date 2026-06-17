@@ -138,6 +138,34 @@
 		return true;
 	}
 
+	/// @brief Scan XML node and parents from node 'attribute'
+	/// @param node The starting point.
+	/// @param attrname The required attribute name.
+	/// @return The node (empty if not found).
+	static const pugi::xml_node xml_attribute_node(const XML::Node &node, const char *attrname) {
+
+		// Check children.
+		for(auto child = node.pugi::xml_node::child("attribute"); child; child = child.next_sibling("attribute")) {
+			if(!strcasecmp(child.attribute("name").as_string("*"),attrname)) {
+				return child;
+			}
+		}
+
+		// Check parents.
+		String parent_name{node.pugi::xml_node::name(),"-",attrname};
+		for(auto parent = node.pugi::xml_node::parent(); parent; parent = parent.parent()) {
+
+			for(auto child = parent.child("attribute"); child; child = child.next_sibling("attribute")) {
+				const char *name = child.attribute("name").as_string("*");
+				if(!(strcasecmp(name,attrname) && strcasecmp(name,parent_name.c_str()))) {
+					return child;
+				}
+			}
+		}
+
+		return pugi::xml_node();
+	}
+
 	/// @brief Scan XML node and parents for attribute.
 	/// @param node The starting point.
 	/// @param attrname The required attribute name.
@@ -244,6 +272,14 @@
 	
 	String XML::Node::child_value() const {
 		return pugi::xml_node::child_value();
+	}
+
+	String XML::Node::child_value(const char *attrname, const char *def) const {
+		String response = xml_attribute_node(*this,attrname).child_value();
+		if(!response.empty()) {
+			return response;
+		}
+		return def;
 	}
 
 	bool XML::Node::for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const {		

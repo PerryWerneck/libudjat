@@ -34,7 +34,7 @@ namespace Udjat {
 
 		class Argument {
 		private:
-		
+
 			friend class ArgumentParser;
 
 			const char shortname = 0;			///< @brief Short name of the option.
@@ -90,19 +90,58 @@ namespace Udjat {
 		};
 
 		ArgumentParser();
+		ArgumentParser(const char *str);
 		~ArgumentParser();
 
-		/// @brief Add argument into the application group.
+		/*
+		template<typename... Targs>
+		ArgumentParser(const char *str, Targs... Fargs) : ArgumentParser{str} {
+			ArgumentParser::append(Fargs...);
+		}
+
+		template<typename T>
+		template<typename... Targs>
+		void append(const char *str, Targs... Fargs) {
+			append(str);
+			append(Fargs...);
+		}
+
+		template<typename... Targs>
+		void append(const std::string &str, Targs... Fargs) {
+			append(str.c_str());
+			append(Fargs...);
+		}
+		*/
+
+		/// @brief Add argument in the application group.
 		/// @param argument The argument to add.
-		void add_argument(const Argument &argument);
+		void add_application_argument(const Argument &argument);
 
 		/// @brief Add argument into the application group.
 		/// @param shortname The argument short name.
 		/// @param longname The argument long name.
 		/// @param help The help text.
 		/// @param call Callback to process this argument.
-		void add_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument)> &call);
+		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument)> &call);
 		
+		/// @brief Add argument in the last group.
+		/// @param argument 
+		void append(const Argument &argument);
+
+		/// @brief Add group.
+		/// @param text The group title.
+		/// @return The new group.
+		inline void append(const char *text) {
+			add_group(text);
+		}
+
+		/// @brief Add group.
+		/// @param text The group title.
+		/// @return The new group.
+		inline Group & add_group(const std::string &text) {
+			return add_group(text.c_str());
+		}
+
 		/// @brief Add group.
 		/// @param text The group title.
 		/// @return The new group.
