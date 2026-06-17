@@ -23,9 +23,43 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/properties.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/container.h>
 
  namespace Udjat {
 
+	static Container<Properties::Parser> & Factories() {
+		static Container<Properties::Parser> instance;
+		return instance;
+	}
+
+	bool Properties::parse(const Properties &props) {
+
+		const char *name = props.node_name();
+	
+		for(const auto factory : Factories()) {
+			if(*factory == name) {
+
+				if(!factory->parse(props)) {
+					continue; // Not handled.
+				}
+
+				return true; // Handled.
+			}
+		}
+
+		return false; // Not handled.
+
+	}
+
+	Properties::Parser::Parser(const char *name) {
+		Logger::String{"Registering parser for Properties::",parser_name}.trace();
+		Factories().push_back(this);
+	}
+
+	Properties::Parser::~Parser() {
+		Logger::String{"Unregistering parser for Properties::",parser_name}.trace();
+		Factories().remove(this);
+	}
 
 	const char * Properties::NameFactory() const noexcept {
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-15 10:11-0300\n"
+"POT-Creation-Date: 2026-06-17 15:19-0300\n"
 "PO-Revision-Date: 2026-06-01 17:48-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -105,25 +105,25 @@ msgstr "Iniciando serviços"
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
 
-#: src/library/tools/commandlineparser.cc:163
+#: src/library/tools/commandlineparser.cc:166
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
 
-#: src/library/tools/commandlineparser.cc:166
+#: src/library/tools/commandlineparser.cc:169
 msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
 
-#: src/library/tools/commandlineparser.cc:177
+#: src/library/tools/commandlineparser.cc:180
 msgid "Quit after \"seconds\""
 msgstr "Encerra após \"seconds\""
 
-#: src/library/tools/commandlineparser.cc:189
-#: src/library/tools/commandlineparser.cc:254
+#: src/library/tools/commandlineparser.cc:192
+#: src/library/tools/commandlineparser.cc:257
 msgid "Usage:"
 msgstr "Uso:"
 
-#: src/library/tools/commandlineparser.cc:190
-#: src/library/tools/commandlineparser.cc:255
+#: src/library/tools/commandlineparser.cc:193
+#: src/library/tools/commandlineparser.cc:258
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
@@ -487,15 +487,15 @@ msgstr "TPM está desabilitada"
 msgid "Unable to get current TPM state"
 msgstr "Não foi possível obter o estado da TPM"
 
-#: src/library/tools/os/linux/console.cc:311
+#: src/library/tools/os/linux/console.cc:324
 msgid "Previous page"
 msgstr "Página anterior"
 
-#: src/library/tools/os/linux/console.cc:314
+#: src/library/tools/os/linux/console.cc:327
 msgid "Next page"
 msgstr "Página seguinte"
 
-#: src/library/tools/os/linux/console.cc:323
+#: src/library/tools/os/linux/console.cc:336
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
@@ -773,6 +773,21 @@ msgstr "Opções de log/debug:\n"
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
+
+#. The first group is allways the application options
+#: src/library/tools/argparser.cc:33
+#, fuzzy
+msgid "Application options"
+msgstr "Opções da aplicação:\n"
+
+#: src/library/tools/argparser.cc:113
+#, fuzzy
+msgid "This help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/argparser.cc:176
+msgid "help"
+msgstr ""
 
 #~ msgid "Agent controller"
 #~ msgstr "Controlador de agentes"

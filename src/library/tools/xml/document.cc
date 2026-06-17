@@ -171,12 +171,17 @@
 			return true; // Ignore reserved nodes.
 		}
 
+		XML::Node props{node};
+		if(Properties::parse(props)) {
+			return true; // Handled.
+		}
+
 		const char *name = node.name();
 	
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
 
-				if(!factory->parse(XML::Node{node})) {
+				if(!factory->parse(props)) {
 					continue; // Not handled.
 				}
 

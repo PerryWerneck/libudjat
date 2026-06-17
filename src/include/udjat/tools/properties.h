@@ -20,6 +20,7 @@
  #pragma once
 
  #include <udjat/defs.h>
+ #include <cstring>
  #include <functional>
 
  namespace Udjat {
@@ -27,8 +28,47 @@
 	/// @brief Abstract class for object property parser.
 	class UDJAT_API Properties {
 	public:
+
+		/// @brief Properties parser, used to parse Properties.
+		/// @details This class is used to parse property definitions and build objects from them.
+		class UDJAT_API Parser {
+		private:
+			const char *parser_name = nullptr;
+
+		public:
+			Parser(const char *name);
+			virtual ~Parser();
+
+#if __cplusplus >= 202002L
+			inline auto operator <=>(const char *name) const noexcept {
+				return strcasecmp(name,parser_name);
+			}
+#else
+			inline bool operator==(const char *name) const noexcept {
+				return strcasecmp(name,parser_name) == 0;
+			}
+#endif
+
+			/// @brief Parse definition from properties.
+			/// @param props The property definitions to parse.
+			/// @return true if the properties were parsed and should be ignored by the caller.
+			virtual bool parse(const Properties &props) = 0;
+
+			inline const char *c_str() const noexcept {
+				return parser_name;
+			}
+
+			inline const char *name() const noexcept {
+				return parser_name;
+			}
+
+		};
+
 		Properties() = default;
 		virtual ~Properties() = default;
+
+		/// @brief Parse properties, build objects.
+		static bool parse(const Properties &props);
 
 		/// @brief Check if it's a reserved tag.
 		/// @return true if this is a reserved tag and should be ignored by factories.

@@ -225,6 +225,7 @@ src/library/tools/logger/stream.cc
 src/library/tools/logger/string.cc
 src/library/tools/object.cc
 src/library/tools/properties.cc
+src/library/tools/argparser.cc
 src/library/ui/progress.cc
 src/library/ui/status.cc
 src/library/ui/animation.cc
@@ -324,6 +325,7 @@ src/include/udjat/tools/properties.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/xml.h
 src/include/udjat/tools/string.h
+src/include/udjat/tools/argumentparser.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
 src/include/udjat/ui/status.h

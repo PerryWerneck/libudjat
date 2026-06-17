@@ -41,6 +41,7 @@
 
  int main(int argc, char **argv) {
 
+	/*
 #ifndef _WIN32
 	Logger::file("/tmp/test.log");
 	Logger::console(true);
@@ -58,6 +59,7 @@
 
 	sleep(5);
 #endif
+	*/
 
 	/*
 #ifndef _WIN32
