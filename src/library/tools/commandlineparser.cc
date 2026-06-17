@@ -18,6 +18,9 @@
  */
 
  #include <config.h>
+
+ #ifdef LEGACY_CMDLINE_PARSER
+
  #include <udjat/defs.h>
  #include <udjat/tools/commandlineparser.h>
  #include <udjat/tools/application.h>
@@ -281,4 +284,4 @@
 
  }
 
-
+#endif // LEGACY_CMDLINE_PARSER

@@ -145,6 +145,8 @@ app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
 
+app_conf.set('LEGACY_CMDLINE_PARSER', 1)
+
 if find_program('dot', required: false).found()
   app_conf.set('HAVE_DOT', 'YES')
 endif
@@ -411,6 +413,7 @@ lib_src += [
   'src/library/tools/activatable.cc',
   'src/library/tools/application/application.cc',
   'src/library/tools/commandlineparser.cc',
+  'src/library/tools/argparser.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',
   'src/library/tools/application/loader.cc',
