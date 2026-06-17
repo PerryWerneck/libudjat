@@ -119,24 +119,24 @@
 		for(const auto &group : groups) {
 			cout << group.c_str() << "\n";	
 			for(const auto &arg : group) {
-				cout << "  ";
-				if(arg.shortname) {
-					cout << "-" << arg.shortname;
-				} else {
-					cout << "  ";
-				}
-				cout << " ";
 
-				char buffer[len+1];
-				memset(buffer,' ',len+1);
-				if(arg.longname && *arg.longname) {
-					cout << "--";
-					strncpy(buffer,arg.longname,strlen(arg.longname));
-				} else {
-					cout << "  ";
+				char buffer[len+7];
+				memset(buffer,' ',len+7);
+
+				if(arg.shortname) {
+					buffer[2] = '-';
+					buffer[3] = arg.shortname;
 				}
-				buffer[len] = 0;
-				cout << buffer << " ";
+
+				if(arg.longname && *arg.longname) {
+					buffer[4] = '-';
+					buffer[5] = '-';
+					strncpy(buffer+6,arg.longname,strlen(arg.longname));
+				}
+				
+				buffer[len+7] = 0;
+				cout << buffer;
+
 				if(arg.help && *arg.help) {
 					cout << arg.help;
 				}
