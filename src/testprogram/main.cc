@@ -30,6 +30,7 @@
  #include <udjat/ui/console.h>
  #include <udjat/ui/animation.h>
  #include <udjat/ui/menu.h>
+ #include <udjat/tools/argumentparser.h>
  #include <thread>
 
  #ifdef HAVE_UNISTD_H
@@ -39,7 +40,33 @@
  using namespace Udjat;
  using namespace std;
 
- int main(int argc, char **argv) {
+ int main(int argc, const char **argv) {
+
+	{
+		Logger::verbosity(9);
+		Logger::console(true);
+
+		ArgumentParser argparser{
+			ArgumentParser::Argument{
+				'a',
+				"opta",
+				"Argument 'A'",
+				[](const char *argument) {
+					cout << "Argument A called" << endl;
+					return false;
+				}
+			}
+		};
+
+		try {
+			argparser.parse(argc,argv);
+		} catch(const std::exception &e) {
+			cerr << e.what() << endl;
+			return 1;
+		}
+		return 0;
+	}
+
 
 	/*
 #ifndef _WIN32
@@ -145,6 +172,7 @@
 	}
 	*/
 	
+	/*
 	// Call the loader function with command line arguments
 	return loader(argc, argv,[](Application &app) -> int {
 // #ifdef TEST_PROGRAM
@@ -154,5 +182,6 @@
 //#endif // TEST_PROGRAM
 		return 0;
 	}, "test.xml");
+	*/
 
  }

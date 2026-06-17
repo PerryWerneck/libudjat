@@ -26,6 +26,7 @@
 #include <functional>
 #include <list>
 #include <cstring>
+#include <udjat/tools/logger.h>
 
 namespace Udjat {
 
@@ -40,7 +41,7 @@ namespace Udjat {
 			const char shortname = 0;			///< @brief Short name of the option.
 			const char *longname = nullptr;		///< @brief Long name of the option.
 			const char *help = nullptr;			///< @brief Description of the option///< @brief Description of the option.
-			const std::function<bool(const char *argument)> &call = nullptr;
+			const std::function<bool(const char *argument)> call = nullptr;
 
 		public:
 			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument)> &c) :
@@ -50,8 +51,12 @@ namespace Udjat {
 			Argument() { 
 			}
 
+			inline const char short_option() const noexcept {
+				return shortname;
+			}
+
 			inline bool operator ==(const char value) const noexcept {
-				return shortname == value && shortname;
+				return shortname && shortname == value;
 			}
 
 			inline bool operator ==(const char *value) const noexcept {
@@ -91,6 +96,7 @@ namespace Udjat {
 
 		ArgumentParser();
 		ArgumentParser(const char *str);
+		ArgumentParser(const Argument &arg);
 		~ArgumentParser();
 
 		/*
@@ -166,7 +172,7 @@ namespace Udjat {
 		std::list<Group> groups;
 
 		bool show_help() const;
-		bool parse_short(const char **argument, const char **argv) const;
+		bool parse_short(const char *argument, const char **argv) const;
 		bool parse_long(const char *argument, const char **argv) const;
 
 	};

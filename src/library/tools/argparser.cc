@@ -22,6 +22,7 @@
  #include <string>
  #include <udjat/tools/argumentparser.h>
  #include <udjat/tools/intl.h>
+ #include <udjat/tools/logger.h>
 
  using namespace std;
 
@@ -32,10 +33,24 @@
 		// The first group is allways the application options
 		groups.emplace_back(_("Application options"));
 
+		groups.front().emplace_back(
+			'h', 
+			"help", 
+			_("Show this help message"),
+			[this](const char *argument) {
+				show_help();
+				return true;
+			}
+		);
+
 	}
 
 	ArgumentParser::ArgumentParser(const char *str) : ArgumentParser{} {
 		groups.emplace_back(str);
+	}
+
+	ArgumentParser::ArgumentParser(const Argument &arg) : ArgumentParser{} {
+		groups.front().push_back(arg);	
 	}
 
 	ArgumentParser::~ArgumentParser() {
@@ -81,7 +96,7 @@
 
 			// Parse short arguments
 			while(*arg) {
-				if(parse_short(&arg,argv+ix+1)) {
+				if(parse_short(arg,argv+ix+1)) {
 					return true;
 				}
 				arg++;
@@ -110,82 +125,117 @@
 	}
 
 	bool ArgumentParser::show_help() const {
-		const char *message = _("This help message");
-		size_t len = strlen(message);
+
+		debug("Running ",__FUNCTION__);
+
+		size_t len = 0;
+		bool decorated = Logger::decorated();
 
 		// Get option width.
 		for(const auto &group : groups) {
 			for(const auto &arg : group) {
 				if(arg.longname) {
+					debug("longname='",arg.longname,"' len=",strlen(arg.longname));
 					len = std::max(len,strlen(arg.longname));
 				}
 			}
 		}
 
-		// Show options.
+		debug("---> Max long option length is ",len);
+
 		for(const auto &group : groups) {
-			cout << group.c_str() << "\n";	
+			cout << group.c_str() << ":\n";	
 			for(const auto &arg : group) {
 
-				char buffer[len+7];
-				memset(buffer,' ',len+7);
+				cout << "  ";
 
 				if(arg.shortname) {
-					buffer[2] = '-';
-					buffer[3] = arg.shortname;
+					cout << '-' << arg.shortname;
+				} else {
+					cout << "  ";
 				}
+				cout << " ";
 
-				if(arg.longname && *arg.longname) {
-					buffer[4] = '-';
-					buffer[5] = '-';
-					strncpy(buffer+6,arg.longname,strlen(arg.longname));
+				{
+					char buffer[len+1];
+					memset(buffer,' ',len);
+
+					if(arg.longname && *arg.longname) {
+						cout << "--";
+						strncpy(buffer,arg.longname,strlen(arg.longname));
+					} else {
+						cout << "  ";
+					}
+
+					buffer[len] = 0;
+					cout << buffer;
+
 				}
-				
-				buffer[len+7] = 0;
-				cout << buffer;
 
 				if(arg.help && *arg.help) {
-					cout << arg.help;
+					cout << " " << arg.help;
 				}
 				cout << "\n";
 			}
+			cout << "\n";
 		}
 
 		return true; // End application
 	}
 
-	bool ArgumentParser::parse_short(const char **argument, const char **argv) const {
+	bool ArgumentParser::parse_short(const char *argument, const char **argv) const {
 
-		if(**argument == 'h') {
-			return show_help();
-		}
+		debug(__FUNCTION__,"(",argument,")");
 
 		// Get optional parameters.
-		const char *arg = *argv;
-		if(!arg || arg[0] == '-') {
-			arg = nullptr;
+		const char *value = nullptr;
+		
+		if(argv && *argv) {
+			value = *argv;
+			if(!value || value[0] == '-') {
+				value = nullptr;
+			}
 		}
 
-		// TODO: Parse 'argument'
+		// Parse 'argument'
+		for(const auto &group : groups) {
+			for(const auto &arg : group) {
+				if(arg == *argument) {
+					return arg.exec(value);
+				}
+			}
+		}
 
-		return false;
+		char str[] = {argument[0],0};
+		throw runtime_error(Logger::Message{_("Invalid option: -{}"),str});
+
 	}
 
 	bool ArgumentParser::parse_long(const char *argument, const char **argv) const {
 
-		if(!(strcmp(argument,"help") && strcmp(argument,_("help")))) {
-			return show_help();
-		}
+		debug(__FUNCTION__,"(",argument,")");
 
 		// Get optional parameters.
-		const char *arg = *argv;
-		if(!arg || arg[0] == '-') {
-			arg = nullptr;
+		const char *value = nullptr;
+		
+		if(argv && *argv) {
+			value = *argv;
+			if(!value || value[0] == '-') {
+				value = nullptr;
+			}
 		}
 
-		// TODO: Parse 'argument'
+		// Parse 'argument'
+		for(const auto &group : groups) {
+			for(const auto &arg : group) {
+				if(arg == argument) {
+					return arg.exec(value);
+				}
+			}
+		}
 
-		return false;
+		throw runtime_error(Logger::Message{_("Invalid option: --{}"),argument});
+
 	}
 
  }
