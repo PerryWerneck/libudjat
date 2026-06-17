@@ -46,41 +46,34 @@
 		Logger::verbosity(9);
 		Logger::console(true);
 
-		ArgumentParser argparser{
-			"First group of options",
-				ArgumentParser::Argument{
-					'a',
-					"opta",
-					"Argument 'A'",
-					[](const char *argument) {
-						cout << "Argument A called" << endl;
-						return false;
-					}
-				},
-			
-			"Second group of options",
-				ArgumentParser::Argument{
-					'b',
-					"optb",
-					"Argument 'B'",
-					[](const char *argument) {
-						cout << "Argument B called" << endl;
-						return false;
-					}
-				},
-				ArgumentParser::Argument{
-					'c',
-					"oc",
-					"Argument 'C'",
-					[](const char *argument) {
-						cout << "Argument C called" << endl;
-						return false;
-					}
-				}
-		};
-
 		try {
-			argparser.parse(argc,argv);
+			ArgumentParser{
+				"First group of options",
+					ArgumentParser::Argument{
+						'a', "opta", "Argument 'A'",
+						[](const char *argument) {
+							cout << "Argument A called" << endl;
+							return false;
+						}
+					},
+				
+				"Second group of options",
+					ArgumentParser::Argument{
+						'b', "optb", "Argument 'B'",
+						[](const char *argument) {
+							cout << "Argument B called" << endl;
+							return false;
+						}
+					},
+					ArgumentParser::Argument{
+						'c', "oc", "Argument 'C'",
+						[](const char *argument) {
+							cout << "Argument C called" << endl;
+							return false;
+						}
+					}
+			}.parse(argc,argv);
+			
 		} catch(const std::exception &e) {
 			cerr << e.what() << endl;
 			return 1;
