@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 15:22-0300\n"
-"PO-Revision-Date: 2026-06-17 21:03-0300\n"
+"POT-Creation-Date: 2026-06-18 15:36-0300\n"
+"PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -777,32 +777,28 @@ msgid "debug"
 msgstr ""
 
 #: src/library/tools/logger/argparser.cc:44
-#, fuzzy
 msgid "Logger options"
-msgstr "Opções de log/debug:\n"
+msgstr "Opções de log"
 
 #: src/library/tools/logger/argparser.cc:46
-#, fuzzy
 msgid "Enable console output"
-msgstr "Habilita coredump"
+msgstr "Habilita saída para console"
 
 #: src/library/tools/logger/argparser.cc:52
 msgid "Disable console output"
-msgstr ""
+msgstr "Desativa saída para console"
 
 #: src/library/tools/logger/argparser.cc:59
-#, fuzzy
 msgid "Enable log to file"
-msgstr "Envia log para arquivo"
+msgstr "Habilita log em arquivo"
 
 #: src/library/tools/logger/argparser.cc:62
 msgid "Log to file requires a filename"
-msgstr ""
+msgstr "Log para file existe um nome de arquivo"
 
 #: src/library/tools/logger/argparser.cc:69
-#, fuzzy
 msgid "Set the log verbosity level"
-msgstr "Define nível de log para 'verbosity'"
+msgstr "Defíne o nível de detalhes do log"
 
 #: src/library/tools/object.cc:284
 #, c++-format
@@ -838,9 +834,8 @@ msgid "Application options"
 msgstr "Opções da aplicação"
 
 #: src/library/tools/argparser.cc:202
-#, fuzzy
 msgid "[OPTIONS]"
-msgstr "[OPÇÕES..]"
+msgstr "[OPÇÕES]"
 
 #: src/library/tools/argparser.cc:276
 #, c++-format
