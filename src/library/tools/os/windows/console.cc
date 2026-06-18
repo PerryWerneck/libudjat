@@ -88,6 +88,24 @@ namespace Udjat {
 	}
 
 	bool UI::Console::write(const char *text) noexcept {
+
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		
+		if (hConsole == INVALID_HANDLE_VALUE || hConsole == NULL) {
+        	return false;
+    	}		
+		
+		size_t bytes = strlen(text);
+		while(bytes) {
+			DWORD bytesWritten = 0;
+			WriteConsole(hConsole, text, bytes, &bytesWritten, NULL);
+			bytes -= bytesWritten;
+			text += bytesWritten;	
+		}
+		
+		/*
+		// FIXME: Use win32 console API to write characters.
+
 		size_t bytes = strlen(text);
 		while(bytes) {
 			ssize_t sz = ::write(STDOUT_FILENO,text,bytes);
@@ -96,7 +114,7 @@ namespace Udjat {
 			bytes -= sz;
 			text += sz;
 		}
-		fsync(1);
+		*/
 		return true;
 	}
 

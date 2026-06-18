@@ -21,6 +21,7 @@
  #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/configuration.h>
  #include <udjat/ui/console.h>
  #include <stdexcept>
 
@@ -74,46 +75,40 @@
 		}
 
 #ifdef _WIN32		
-		// Is the win32 console available?
+		// Is the win32 console available? If not just return with no action.
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 		if(hOut == INVALID_HANDLE_VALUE) {
+
+			// FIXME: Test if AllocConsole() can be used to spawn a console window.
+
 			return;
 		}
 
-		// Yes, insert handle.
-		insert("console",BackEnd::Console,[hOut](Level level, const char *timestamp, const char *domain, const char *text) {
+		static bool initialized = false;
+		if(!initialized) {
 
-			auto dec = Console::decorated(hOut);
+			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+			SetConsoleOutputCP(CP_UTF8);
+			SetConsoleCP(CP_UTF8);
 
-			if(dec) {
-				Console::write(hOut,decoration(level));
+			if(Config::Value<bool>("application","virtual-terminal-processing",true)) {
+				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+				DWORD dwMode = 0;
+				if(GetConsoleMode(hOut, &dwMode)) {
+					dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+					SetConsoleMode(hOut,dwMode);
+				}
 			}
 
-			Console::write(hOut,timestamp);
-			Console::write(hOut," ");
+		}
+#endif // _WIN32
 
-			char domain_buffer[11];
-			memset(domain_buffer,' ',sizeof(domain_buffer));
-			memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
-			domain_buffer[sizeof(domain_buffer)-1] = 0;
-			
-			Console::write(domain_buffer);
-			Console::write(hOut," ");
-			Console::write(hOut,text);
+		// Insert console backend
+		bool decorated = Console::decorated();
+		
+		insert("console",BackEnd::Console,[decorated](Level level, const char *timestamp, const char *domain, const char *text) {
 
-			if(dec) {
-				Console::write(hOut,"\x1b[0m");
-			}
-
-			Console::write(hOut,"\r\n");
-		});
-#else
-		// Insert linux console backend
-		insert("console",BackEnd::Console,[](Level level, const char *timestamp, const char *domain, const char *text) {
-
-			bool dec = Console::decorated();
-
-			if(dec) {
+			if(decorated) {
 				Console::write(decoration(level));
 			}
 
@@ -129,16 +124,17 @@
 			Console::write(" ");
 			Console::write(text);
 
-			if(dec) {
+			if(decorated) {
 				Console::write("\x1b[0m");
 			}
 
 			Console::write("\r\n");
+
+#ifndef _WIN32
 			fsync(1);
+#endif // !_WIN32
 
 		});
-
-#endif // _WIN32
 	}
 
  }
