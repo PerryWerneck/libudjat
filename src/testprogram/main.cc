@@ -80,21 +80,8 @@
 							cout << "Argument C called" << endl;
 							return false;
 						}
-					},
-					ArgumentParser::Argument{
-						'v', "verbose", "Set verbosity level",
-						[](const char *argument, char mode) {
-
-							if(isdigit(mode)) {
-								char level[] = {mode,0};
-								cout << "Set verbosity to level '" << level << "'" << endl;
-							} else {
-								cout << "Enable console output" << endl;
-							}
-							return false;
-						}
 					}
-			}.parse(argc,argv);
+			}.add_logger_group().parse(argc,argv);
 			
 		} catch(const std::exception &e) {
 			cerr << e.what() << endl;

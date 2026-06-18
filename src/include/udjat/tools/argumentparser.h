@@ -188,7 +188,7 @@ namespace Udjat {
 		/// @return The new group.
 		Group & add_group(const char *text);
 
-		/// @brief Convenience method to parse simple argument list.
+		/// @brief Convenience method to parse a single argument list.
 		/// @brief arguments The null terminated argument list to parse.
 		/// @throw std::exception on failure.
 		/// @return The parse result.
@@ -200,6 +200,10 @@ namespace Udjat {
 		/// @throw std::exception on failure.
 		/// @return true if the application can continue, false if it should exit.
 		bool parse(int &argc, const char **argv) const;
+
+		/// @brief Add options from Logger subsystem in a separate group options.
+		/// @return The same object (for chaining).
+		ArgumentParser & add_logger_group();
 
 	private:
 

@@ -484,6 +484,7 @@ lib_src += [
   'src/library/tools/logger/message.cc',
   'src/library/tools/logger/console.cc',
   'src/library/tools/logger/stream.cc',
+  'src/library/tools/logger/argparser.cc',
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',

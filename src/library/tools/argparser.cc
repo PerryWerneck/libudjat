@@ -23,11 +23,14 @@
  #include <udjat/tools/argumentparser.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/ui/console.h>
  #include <ctype.h>
 
  using namespace std;
 
  namespace Udjat {
+
+	using Console = UI::Console;
 
 	ArgumentParser::ArgumentParser() {
 
@@ -153,7 +156,7 @@
 		debug("Running ",__FUNCTION__);
 
 		size_t len = 0;
-		// bool decorated = Console::decorated();
+		bool decorated = Console::decorated();
 
 		// Get option width.
 		for(const auto &group : groups) {
@@ -168,7 +171,15 @@
 		debug("---> Max long option length is ",len);
 
 		for(const auto &group : groups) {
-			cout << group.c_str() << ":\n";	
+			if(decorated) {
+
+				cout << "\x1B[1m" << group.c_str() << ":" << "\x1B[22m" << "\n";	
+
+			} else {
+	
+				cout << group.c_str() << ":\n";	
+
+			}
 			for(const auto &arg : group) {
 
 				cout << "  ";
@@ -181,18 +192,18 @@
 				cout << " ";
 
 				{
-					char buffer[len+1];
-					memset(buffer,' ',len);
+					size_t sz = 0;
 
 					if(arg.longname && *arg.longname) {
-						cout << "--";
-						strncpy(buffer,arg.longname,strlen(arg.longname));
+						cout << "--" << arg.longname;
+						sz = strlen(arg.longname);
 					} else {
 						cout << "  ";
 					}
 
-					buffer[len] = 0;
-					cout << buffer;
+					while(sz++ < len) {
+						cout << " ";
+					}
 
 				}
 
