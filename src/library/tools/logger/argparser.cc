@@ -82,6 +82,8 @@
 				'C', "coredump", _( "Enable coredump" ),
 				[](const char *pattern, char) {
 
+					debug("Enabling coredump");
+
 					// Reference script:
 					//
 					// ulimit -c unlimited
@@ -94,17 +96,41 @@
 					memset(&core_limits,0,sizeof(core_limits));
 
 					core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
-					setrlimit(RLIMIT_CORE, &core_limits);
+					if(setrlimit(RLIMIT_CORE, &core_limits)) {
+						throw system_error(errno,system_category(),"Unable to activate coredump");			
+					}
 
 					if(pattern && *pattern) {
 						// Set corepattern
 						std::filebuf fb;
 						fb.open("/proc/sys/kernel/core_pattern",std::ios::out);
-						std::ostream os(&fb);
-						os << pattern << "\n";
-						fb.close();
+						if(fb.is_open()) {
+							std::ostream os{&fb};
+							os << pattern << "\n";
+							fb.close();
+							Logger::String{"Coredump enabled using pattern '",pattern,"'"}.info("debug");
+						} else {
+							Logger::String{"Unable to set coredump pattern"}.error("debug");
+						}
+					} else {
+
+						std::ifstream file("/proc/sys/kernel/core_pattern");
+						if(file.is_open()) {
+
+							string line;
+							getline(file,line,'\0');
+							file.close();
+							Logger::String{"Coredump enabled using pattern '",line.c_str(),"'"}.info("debug");
+
+						} else {
+
+							Logger::String{"Coredump enabled, no pattern info"}.warning("debug");
+
+						}
+
 					}
 
+					debug("Coredump enabled!");
 					return false;
 				}
 			}

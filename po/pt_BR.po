@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 21:12-0300\n"
+"POT-Creation-Date: 2026-06-18 15:22-0300\n"
 "PO-Revision-Date: 2026-06-17 21:03-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -104,28 +104,6 @@ msgstr "Iniciando serviços"
 #: src/library/tools/application/run.cc:183
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
-
-#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:56
-msgid "Show this help message"
-msgstr "Mostra essa mensagem de help"
-
-#: src/library/tools/commandlineparser.cc:169
-msgid "Application options:\n"
-msgstr "Opções da aplicação:\n"
-
-#: src/library/tools/commandlineparser.cc:180
-msgid "Quit after \"seconds\""
-msgstr "Encerra após \"seconds\""
-
-#: src/library/tools/commandlineparser.cc:192
-#: src/library/tools/commandlineparser.cc:257
-msgid "Usage:"
-msgstr "Uso:"
-
-#: src/library/tools/commandlineparser.cc:193
-#: src/library/tools/commandlineparser.cc:258
-msgid "[OPTION..]"
-msgstr "[OPÇÕES..]"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -487,21 +465,21 @@ msgstr "TPM está desabilitada"
 msgid "Unable to get current TPM state"
 msgstr "Não foi possível obter o estado da TPM"
 
-#: src/library/tools/os/linux/console.cc:324
-msgid "Previous page"
-msgstr "Página anterior"
-
-#: src/library/tools/os/linux/console.cc:327
-msgid "Next page"
-msgstr "Página seguinte"
-
-#: src/library/tools/os/linux/console.cc:336
-msgid "Select option (Enter to quit): "
-msgstr "Selecione opção (Enter para sair): "
-
 #: src/library/tools/os/linux/ip.cc:125
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
+
+#: src/library/tools/os/linux/console.cc:329
+msgid "Previous page"
+msgstr "Página anterior"
+
+#: src/library/tools/os/linux/console.cc:332
+msgid "Next page"
+msgstr "Página seguinte"
+
+#: src/library/tools/os/linux/console.cc:341
+msgid "Select option (Enter to quit): "
+msgstr "Selecione opção (Enter para sair): "
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72
@@ -762,6 +740,7 @@ msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
 #: src/library/tools/logger/commandline.cc:168
+#: src/library/tools/logger/argparser.cc:82
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
@@ -769,22 +748,106 @@ msgstr "Habilita coredump"
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 
+#: src/library/tools/logger/level.cc:36
+msgid "none"
+msgstr ""
+
+#: src/library/tools/logger/level.cc:37
+msgid "notice"
+msgstr ""
+
+#: src/library/tools/logger/level.cc:38
+msgid "error"
+msgstr ""
+
+#: src/library/tools/logger/level.cc:39
+msgid "warning"
+msgstr ""
+
+#: src/library/tools/logger/level.cc:40
+msgid "info"
+msgstr ""
+
+#: src/library/tools/logger/level.cc:41
+msgid "trace"
+msgstr ""
+
+#: src/library/tools/logger/level.cc:42
+msgid "debug"
+msgstr ""
+
+#: src/library/tools/logger/argparser.cc:44
+#, fuzzy
+msgid "Logger options"
+msgstr "Opções de log/debug:\n"
+
+#: src/library/tools/logger/argparser.cc:46
+#, fuzzy
+msgid "Enable console output"
+msgstr "Habilita coredump"
+
+#: src/library/tools/logger/argparser.cc:52
+msgid "Disable console output"
+msgstr ""
+
+#: src/library/tools/logger/argparser.cc:59
+#, fuzzy
+msgid "Enable log to file"
+msgstr "Envia log para arquivo"
+
+#: src/library/tools/logger/argparser.cc:62
+msgid "Log to file requires a filename"
+msgstr ""
+
+#: src/library/tools/logger/argparser.cc:69
+#, fuzzy
+msgid "Set the log verbosity level"
+msgstr "Define nível de log para 'verbosity'"
+
 #: src/library/tools/object.cc:284
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
+#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:62
+msgid "Show this help message"
+msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/commandlineparser.cc:169
+msgid "Application options:\n"
+msgstr "Opções da aplicação:\n"
+
+#: src/library/tools/commandlineparser.cc:180
+msgid "Quit after \"seconds\""
+msgstr "Encerra após \"seconds\""
+
+#: src/library/tools/commandlineparser.cc:192
+#: src/library/tools/commandlineparser.cc:257
+#: src/library/tools/argparser.cc:175
+msgid "Usage:"
+msgstr "Uso:"
+
+#: src/library/tools/commandlineparser.cc:193
+#: src/library/tools/commandlineparser.cc:258
+msgid "[OPTION..]"
+msgstr "[OPÇÕES..]"
+
 #. The first group is allways the application options
-#: src/library/tools/argparser.cc:34
+#: src/library/tools/argparser.cc:40
 msgid "Application options"
 msgstr "Opções da aplicação"
 
-#: src/library/tools/argparser.cc:216
+#: src/library/tools/argparser.cc:202
+#, fuzzy
+msgid "[OPTIONS]"
+msgstr "[OPÇÕES..]"
+
+#: src/library/tools/argparser.cc:276
 #, c++-format
 msgid "Invalid option: -{}"
 msgstr "Opção inválida: -{}"
 
-#: src/library/tools/argparser.cc:243
+#: src/library/tools/argparser.cc:293
 #, c++-format
 msgid "Invalid option: --{}"
 msgstr "Opção inválid: --{}"
