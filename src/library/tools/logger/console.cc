@@ -21,6 +21,8 @@
  #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/configuration.h>
+ #include <udjat/ui/console.h>
  #include <stdexcept>
 
  #ifdef HAVE_UNISTD_H
@@ -31,69 +33,31 @@
 
  namespace Udjat {
 
+	using Console = UI::Console;
+
 	static const char * decoration(Logger::Level level) noexcept {
-		static const char *decorations[Logger::Level::Count] = {
-			"\x1b[91m",	// Error
-			"\x1b[93m",	// Warning
-			"\x1b[92m",	// Info
-			"\x1b[94m",	// Trace
-			"\x1b[95m",	// Debug
-			"\x1b[96m",	// Notice
+
+		static const struct {
+			Logger::Level level;
+			const char *decoration;
+		} decorations[] = {
+			{ Logger::Level::Error, 	"\x1b[91m" },
+			{ Logger::Level::Notice, 	"\x1b[96m" },
+			{ Logger::Level::Warning,	"\x1b[93m" },
+			{ Logger::Level::Info, 		"\x1b[92m" },
+			{ Logger::Level::Trace, 	"\x1b[94m" },
+			{ Logger::Level::Debug, 	"\x1b[95m" },
 		};
-		return decorations[((size_t) level) % Udjat::Logger::Level::Count];
-	}
 
-#ifdef _WIN32
-
-	static bool decorated(HANDLE hOut) noexcept {
-		DWORD mode = 0;
-		if(GetConsoleMode(hOut, &mode)) {
-			return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
-		}
-		return false;	
-	}
-
-	static bool write_text(HANDLE hOut,const char *text) {
-		DWORD bytes = strlen(text);
-		while(bytes) {
-			DWORD sz = 0;
-			if(!WriteFile(hOut,text,bytes,&sz,NULL)) {
-				return false;
+		for(const auto &decoration : decorations) {
+			if(decoration.level & level) {
+				return decoration.decoration;
 			}
-			bytes -= sz;
-			text += sz;
 		}
-		return true;
+
+		return "";
 	}
 
-#else
-
-	static bool write_text(const char *text) {
-		size_t bytes = strlen(text);
-		while(bytes) {
-			ssize_t sz = write(1,text,bytes);
-			if(sz < 0)
-				return false;
-			bytes -= sz;
-			text += sz;
-		}
-		return true;
-	}
-
-#endif // !_WIN32
-
-	UDJAT_API bool Logger::decorated() noexcept {
-#ifdef _WIN32
-		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-		if(hOut != INVALID_HANDLE_VALUE) {
-			return Udjat::decorated(hOut);
-		}
-		return false;	
-#else
-		static bool flag = isatty(1) && (getenv("TERM") != NULL);
-		return flag;
-#endif // _WIN32
-	}
 
 	UDJAT_API void Logger::console(bool enable) {
 		Controller::getInstance().console(enable);
@@ -111,71 +75,66 @@
 		}
 
 #ifdef _WIN32		
-		// Is the win32 console available?
+		// Is the win32 console available? If not just return with no action.
 		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
 		if(hOut == INVALID_HANDLE_VALUE) {
+
+			// FIXME: Test if AllocConsole() can be used to spawn a console window.
+
 			return;
 		}
 
-		// Yes, insert handle.
-		insert("console",BackEnd::Console,[hOut](Level level, const char *timestamp, const char *domain, const char *text) {
+		static bool initialized = false;
+		if(!initialized) {
 
-			auto dec = Udjat::decorated(hOut);
+			// https://github.com/alf-p-steinbach/Windows-GUI-stuff-in-C-tutorial-/blob/master/docs/part-04.md
+			SetConsoleOutputCP(CP_UTF8);
+			SetConsoleCP(CP_UTF8);
 
-			if(dec) {
-				write_text(hOut,decoration(level));
+			if(Config::Value<bool>("application","virtual-terminal-processing",true)) {
+				// https://learn.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
+				DWORD dwMode = 0;
+				if(GetConsoleMode(hOut, &dwMode)) {
+					dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+					SetConsoleMode(hOut,dwMode);
+				}
 			}
 
-			write_text(hOut,timestamp);
-			write_text(hOut," ");
-
-			char domain_buffer[11];
-			memset(domain_buffer,' ',sizeof(domain_buffer));
-			memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
-			domain_buffer[sizeof(domain_buffer)-1] = 0;
-			
-			write_text(hOut,domain_buffer);
-			write_text(hOut," ");
-			write_text(hOut,text);
-
-			if(dec) {
-				write_text(hOut,"\x1b[0m");
-			}
-
-			write_text(hOut,"\r\n");
-		});
-#else
-		// Insert linux console backend
-		insert("console",BackEnd::Console,[](Level level, const char *timestamp, const char *domain, const char *text) {
-
-			bool dec = decorated();
-
-			if(dec) {
-				write_text(decoration(level));
-			}
-
-			write_text(timestamp);
-			write_text(" ");
-
-			char domain_buffer[11];
-			memset(domain_buffer,' ',sizeof(domain_buffer));
-			memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
-			domain_buffer[sizeof(domain_buffer)-1] = 0;
-			
-			write_text(domain_buffer);
-			write_text(" ");
-			write_text(text);
-
-			if(dec) {
-				write_text("\x1b[0m");
-			}
-
-			write_text("\r\n");
-			fsync(1);
-
-		});
-
+		}
 #endif // _WIN32
+
+		// Insert console backend
+		bool decorated = Console::decorated();
+		
+		insert("console",BackEnd::Console,[decorated](Level level, const char *timestamp, const char *domain, const char *text) {
+
+			if(decorated) {
+				Console::write(decoration(level));
+			}
+
+			Console::write(timestamp);
+			Console::write(" ");
+
+			char domain_buffer[11];
+			memset(domain_buffer,' ',sizeof(domain_buffer));
+			memcpy(domain_buffer,domain,std::min(sizeof(domain_buffer)-1,strlen(domain)));
+			domain_buffer[sizeof(domain_buffer)-1] = 0;
+			
+			Console::write(domain_buffer);
+			Console::write(" ");
+			Console::write(text);
+
+			if(decorated) {
+				Console::write("\x1b[0m");
+			}
+
+			Console::write("\r\n");
+
+#ifndef _WIN32
+			fsync(1);
+#endif // !_WIN32
+
+		});
 	}
 
  }

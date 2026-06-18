@@ -62,6 +62,8 @@
 			/// @return true if suceeded.
 			static bool write(const char *text) noexcept;
 
+			static bool decorated() noexcept;
+
 			Console & set(const Foreground color);
 
 			/// @brief set bold mode.

@@ -88,6 +88,24 @@ namespace Udjat {
 	}
 
 	bool UI::Console::write(const char *text) noexcept {
+
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		
+		if (hConsole == INVALID_HANDLE_VALUE || hConsole == NULL) {
+        	return false;
+    	}		
+		
+		size_t bytes = strlen(text);
+		while(bytes) {
+			DWORD bytesWritten = 0;
+			WriteConsole(hConsole, text, bytes, &bytesWritten, NULL);
+			bytes -= bytesWritten;
+			text += bytesWritten;	
+		}
+		
+		/*
+		// FIXME: Use win32 console API to write characters.
+
 		size_t bytes = strlen(text);
 		while(bytes) {
 			ssize_t sz = ::write(STDOUT_FILENO,text,bytes);
@@ -96,8 +114,19 @@ namespace Udjat {
 			bytes -= sz;
 			text += sz;
 		}
-		fsync(1);
+		*/
 		return true;
+	}
+
+	bool UI::Console::decorated() noexcept {
+		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		if(hOut != INVALID_HANDLE_VALUE) {
+			DWORD mode = 0;
+			if(GetConsoleMode(hOut, &mode)) {
+				return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+			}
+		}
+		return false;	
 	}
 
 	unsigned short UI::Console::width() const noexcept {

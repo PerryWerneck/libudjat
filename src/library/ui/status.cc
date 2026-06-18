@@ -25,6 +25,7 @@
  #include <udjat/defs.h>
  #include <udjat/ui/status.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/ui/console.h>
  #include <stdexcept>
  #include <private/logger.h>
 
@@ -35,6 +36,8 @@
  using namespace std;
 
  namespace Udjat {
+
+	using Console = UI::Console;
 
 	Dialog::Status *Dialog::Status::instance = nullptr;
 
@@ -57,12 +60,10 @@
 
 			Status & state(const char *text) noexcept override {
 				Logger::String{text}.write(Logger::Notice,"state");
-#ifndef _WIN32
-				if(Logger::decorated()) {
-					Logger::write(1,String{"\x1B]0;",text,"\x07"}.c_str());
-					fsync(1);
-				}
-#endif // !_WIN32
+				// if(Console::decorated()) {
+				// 	Console::write(String{"\x1B]0;",text,"\x07"}.c_str());
+				// 	fsync(1);
+				// }
 				return *this;
 			}
 		};

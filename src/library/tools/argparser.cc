@@ -153,7 +153,7 @@
 		debug("Running ",__FUNCTION__);
 
 		size_t len = 0;
-		// bool decorated = Logger::decorated();
+		// bool decorated = Console::decorated();
 
 		// Get option width.
 		for(const auto &group : groups) {

@@ -40,6 +40,13 @@
 
 	namespace Logger {
 
+		#define LOGGER_MAX_VERBOSITY 7
+
+		extern UDJAT_PRIVATE const struct Levels {
+			Logger::Level level;
+			const char *name;
+		} levels[LOGGER_MAX_VERBOSITY];
+
 		UDJAT_PRIVATE bool write(int fd, const char *text) noexcept;
 
 		/// @brief Log writer callback.
@@ -111,15 +118,8 @@
 				std::recursive_mutex guard;
 				Controller();
 
-				/// @brief Enabled/disabled log types
-				bool levels[Level::Count] = {
-					true,	// Error conditions (std::cerr).
-					true,	// Warning conditions (std::clog).
-					true,	// Informational message (std::cout).
-					false,	// Debug message.
-					false,	// Trace message
-					true,	// System Status
-				};
+				/// @brief Bitmask with the enabled log types.
+				Level enabled_levels = (Level) (Level::Notice|Level::Error);
 
 				std::list<BackEnd> backends;
 
@@ -152,7 +152,11 @@
 
 				static Controller & getInstance();
 				~Controller();
-			
+
+				int verbosity() const noexcept;
+				void verbosity(int level) noexcept;
+				void verbosity(const char *level);
+
 				void insert(const char *name,const BackEnd::Type type,const std::function<void(Level level, const char *timestamp, const char *domain, const char *text)> &call);
 				void remove(const char *name);				
 
@@ -166,11 +170,15 @@
 				/// @param level The message type to enable/disable.
 				/// @param enable The new state for the message type.
 				inline void enable(Level level, bool enable = true) noexcept {
-					levels[level] = enable;
+					if(enable) {
+						enabled_levels = (Level) (enabled_levels|level);
+					} else {
+						enabled_levels = (Level) (enabled_levels&~level);
+					}
 				}
 					
 				inline bool enabled(Level level) const noexcept {
-					return levels[level % Level::Count];
+					return (enabled_levels&level);
 				}
 
 				void file(const char *filename = nullptr, time_t max_age = 86400) noexcept;

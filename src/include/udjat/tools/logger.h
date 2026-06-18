@@ -34,14 +34,13 @@
 	namespace Logger {
 
 		enum Level : uint8_t {
-			Error,		///< @brief Error conditions (std::cerr).
-			Warning,	///< @brief Warning conditions (std::clog).
-			Info,		///< @brief Informational message (std::cout).
-			Trace,		///< @brief Debug message.
-			Debug,		///< @brief Trace message
-			Notice,		///< @brief System Status
-
-			Count		///< @brief Count of available log levels
+			None		= 0x00,		///< @brief No log messages.
+			Notice		= 0x01,		///< @brief System Status
+			Error		= 0x02,		///< @brief Error conditions (std::cerr).
+			Warning		= 0x04,		///< @brief Warning conditions (std::clog).
+			Info		= 0x08,		///< @brief Informational message (std::cout).
+			Trace		= 0x10,		///< @brief Debug message.
+			Debug		= 0x20,		///< @brief Trace message
 		};
 
 		Logger::Level UDJAT_API LevelFactory(const Properties &props, const char *attr, const char *def);
@@ -50,8 +49,9 @@
 		/// @brief Redirect std::cout, std::cerr & std::clog to log system.
 		UDJAT_API void redirect();
 
-		UDJAT_API void verbosity(const char *level);
-		UDJAT_API void verbosity(unsigned short level = 9);
+		UDJAT_API void verbosity(const char *level) noexcept;
+		UDJAT_API void verbosity(int level) noexcept;
+		UDJAT_API int verbosity() noexcept;
 
 		/// @brief Show help messages.
 		/// @param width The width of the left part of the help text.
@@ -81,8 +81,6 @@
 		/// @param max_age Max age for the file, in seconds.
 		UDJAT_API void file(const char *filename = "%Y-%m-%d.log", time_t max_age = 86400);
 
-		UDJAT_API bool decorated() noexcept;
-	
 		/// @brief Setup logger engine from configuration file.
 		/// @param group The group from configuration file with logger engine options.
 		UDJAT_API void setup(const char *group = "logger") noexcept;
@@ -130,6 +128,10 @@
 				write(Logger::Error,domain);
 			}
 
+			inline void notice(const char *domain = LOG_DOMAIN) const {
+				write(Logger::Notice,domain);
+			}
+
 #elif defined(PACKAGE_NAME)
 			void write(const Logger::Level level, const char *domain = PACKAGE_NAME) const;
 
@@ -147,6 +149,10 @@
 
 			inline void error(const char *domain = PACKAGE_NAME) const {
 				write(Logger::Error,domain);
+			}
+
+			inline void notice(const char *domain = PACKAGE_NAME) const {
+				write(Logger::Notice,domain);
 			}
 
 #else
@@ -168,6 +174,9 @@
 				write(Logger::Error,domain);
 			}
 
+			inline void notice(const char *domain = "") const {
+				write(Logger::Notice,domain);
+			}
 #endif
 
 			inline void trace(const std::string &domain) const {
