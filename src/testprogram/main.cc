@@ -20,12 +20,11 @@
 
  #include <config.h>
  #include <udjat/defs.h>
- #include <udjat/loader.h>
+ #include <udjat/tools/loader.h>
  #include <iostream>
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
  #include <udjat/module/abstract.h>
- #include <udjat/tools/commandlineparser.h>
  #include <string>
  #include <udjat/ui/console.h>
  #include <udjat/ui/animation.h>
@@ -44,6 +43,7 @@
 
  int main(int argc, const char **argv) {
 
+	/*
 	{
 		Logger::verbosity(9);
 		Logger::console(true);
@@ -89,6 +89,7 @@
 		}
 		return 0;
 	}
+	*/
 
 	// {
 	// 	Logger::console(true);
@@ -228,5 +229,11 @@
 		return 0;
 	}, "test.xml");
 	*/
+
+	return loader(argc,argv, [](const LoaderMode mode, Application &app, const char *arg){
+
+
+		return 0;
+	});
 
  }

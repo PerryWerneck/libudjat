@@ -67,7 +67,7 @@
 		);
 	}
 
-	bool ArgumentParser::parse(int &argc, const char **argv, const Argument *arguments) {
+	bool ArgumentParser::parse(const int argc, const char **argv, const Argument *arguments) {
 
 		ArgumentParser parser;
 
@@ -79,7 +79,7 @@
 
 	}
 
-	bool ArgumentParser::parse(int &argc, const char **argv) const {
+	bool ArgumentParser::parse(const int argc, const char **argv) const {
 
 		for(int ix = 0; ix < argc; ix++) {
 

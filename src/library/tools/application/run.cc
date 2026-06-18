@@ -25,7 +25,7 @@
  #include <udjat/tools/timer.h>
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/timestamp.h>
- #include <udjat/tools/commandlineparser.h>
+ #include <udjat/tools/argumentparser.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
  #include <udjat/module/abstract.h>
@@ -60,23 +60,23 @@
 
 	void Application::root(std::shared_ptr<Abstract::Agent>) {
 	}
+	
+// 	bool Application::setProperty(const char *name, const char *value) {
 
-	bool Application::setProperty(const char *name, const char *value) {
+// 		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
 
-		debug("Property: '",name,"'('",(value ? value : "NULL"),"')");
+// #ifdef _WIN32
+// 		if(!SetEnvironmentVariable(name,value)) {
+// 			throw Win32::Exception(_("Unable to set environment variable"));
+// 		}
+// #else
+// 		if(setenv(name, value, 1)) {
+// 			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
+// 		}
+// #endif // _WIN32
 
-#ifdef _WIN32
-		if(!SetEnvironmentVariable(name,value)) {
-			throw Win32::Exception(_("Unable to set environment variable"));
-		}
-#else
-		if(setenv(name, value, 1)) {
-			throw std::system_error(errno,std::system_category(),_("Unable to set environment variable"));
-		}
-#endif // _WIN32
-
-		return true;
-	}
+// 		return true;
+// 	}
 
 	static void dump(std::shared_ptr<Abstract::Agent> agent, size_t level = 0) {
 
@@ -188,32 +188,36 @@
 
 	}
 
+	bool Application::parse_arguments() {
+
+		try {
+
+			ArgumentParser parser;
+			load(parser);
+			parser.add_logger_group();
+			return parser.parse(argc,argv);
+
+		} catch(const std::exception &e) {
+
+			Logger::String{e.what()}.error(name());
+
+		} catch(...) {
+
+			Logger::String{"Unexpected error parsing command line arguments"}.error(name());
+		}
+
+		return true;
+	}
+
 	int Application::run(const char *definitions) {
 
-		if(has_argument('h',"help",true)) {
-			help();
-			cout << "\n";
-			Logger::help();
+		// Parse command line arguments.
+		if(parse_arguments()) {
 			return 0;
 		}
 
-		// Parse command line arguments.
-		CommandLineParser::setup(argc,argv);
-
 		if(!MainLoop::getInstance()) {
 			return -1;
-		}
-
-		{
-			string argvalue;
-
-			if(get_argument(argc,argv,'T',"timer",argvalue)) {
-				MainLoop::getInstance().TimerFactory(((time_t) TimeStamp{argvalue.c_str()}) * 1000,[](){
-					MainLoop::getInstance().quit("Timer expired, exiting");
-					return false;
-				});
-			}
-
 		}
 
 #ifdef _WIN32

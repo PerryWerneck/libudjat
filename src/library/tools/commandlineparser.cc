@@ -174,28 +174,28 @@
 
 	}
 
-	void Application::show_command_line_help(size_t width) noexcept {
+	// void Application::show_command_line_help(size_t width) noexcept {
 
-		static const CommandLineParser::Argument values[] = {
-			{ 'T', "timer=seconds", _("Quit after \"seconds\"") },
-		};
+	// 	static const CommandLineParser::Argument values[] = {
+	// 		{ 'T', "timer=seconds", _("Quit after \"seconds\"") },
+	// 	};
 		
-		for(const auto &value : values) {
-			value.print(cout,20);
-			cout << "\n";
-		};
+	// 	for(const auto &value : values) {
+	// 		value.print(cout,20);
+	// 		cout << "\n";
+	// 	};
 
-	}
+	// }
 
-	void Application::help(size_t width) const noexcept {
+	// void Application::help(size_t width) const noexcept {
 
-		cout 	<< _("Usage:") << "\n  " << argv[0]
-				<< " " << _("[OPTION..]") << "\n\n";
+	// 	cout 	<< _("Usage:") << "\n  " << argv[0]
+	// 			<< " " << _("[OPTION..]") << "\n\n";
 
-		apphelp(width);
-		show_command_line_help(width);
+	// 	apphelp(width);
+	// 	show_command_line_help(width);
 
-	}
+	// }
 
 	void CommandLineParser::setup(int &argc, char **argv, bool dbg) noexcept {
 

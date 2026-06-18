@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -18,280 +18,135 @@
  */
 
 
- #include <config.h>
- #include <udjat/defs.h>
- #include <udjat/loader.h>
- #include <udjat/tools/commandlineparser.h>
- #include <udjat/tools/systemservice.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/module/abstract.h>
- #include <string>
- #include <iostream>
- #include <udjat/tools/logger.h>
- #include <vector>
- #include <libgen.h>
+#include <config.h>
+#include <udjat/defs.h>
+#include <udjat/tools/loader.h>
+#include <udjat/tools/argumentparser.h>
+#include <udjat/tools/application.h>
+#include <udjat/tools/intl.h>
+#include <stdexcept>
 
- #ifndef _WIN32
-	#include <dlfcn.h>
-	#include <link.h>
- #endif // !_WIN32
+using namespace std;
 
- #ifdef HAVE_FILESYSTEM_H
-	 #include <filesystem>
- #endif
+namespace Udjat {
 
- #ifdef HAVE_UNISTD_H
-	#include <unistd.h>
- #endif
-
- using namespace std;
- using namespace Udjat;
-
- int Udjat::loader(int argc, char **argv, const char *path) {
-	return Udjat::loader(argc,argv,[](Application &app) {return 0;},path);
- }
-
-#ifndef _WIN32
-static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
-
-	if(!info->dlpi_name || !*info->dlpi_name) {
-		debug("Skipping main program");
-		return 0;
+	int UDJAT_API loader(const int argc, const char *argv[], const char *path) {
+		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return 0;},path);
 	}
 
-	debug("Name: ",info->dlpi_name);
-	void *hModule = dlopen(info->dlpi_name, RTLD_NOW|RTLD_LOCAL);
-	if(hModule) {
-		size_t *count = (size_t *) data;
-		dlerror(); // Clear any existing error
-		int (*symbol)(const char *) = (int(*)(const char *)) dlsym(hModule,"run_udjat_unit_test");
-		auto error = dlerror();
-		if(symbol && !error) {
-			(*count)++;
-			Logger::String{"------------- Running unit tests from module '",info->dlpi_name,"' -------------"}.info();
-			try {
-				int rc = symbol(nullptr);
-				if(rc) {
-					dlclose(hModule);
-					return rc;	
-				}
-			} catch(const std::exception &e) {
-				Logger::String{"Error running unit tests from module '",info->dlpi_name,"': ",e.what()}.error();
-				dlclose(hModule);
-				return -1;
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &init, const char *path) {
+
+		class Loader : public Udjat::Application {
+		private:
+			const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &callback;
+
+		protected:
+			ArgumentParser & load(ArgumentParser &parser) noexcept override {
+
+				parser.append(
+					ArgumentParser::Argument{
+						't', "run-unit-tests", _("Run unit tests"),
+						[this](const char *arg, char) {
+
+							// TODO: Implement
+							callback(LOADER_MODE_RUN_TESTS,*this,arg);
+
+							return true;
+						}
+					},
+					ArgumentParser::Argument{
+						'M', "load-module", _("Load module file"), _("path"),
+						[](const char *path, char) {
+
+							if(!(path && *path)) {
+								throw runtime_error("Load module requires the module path as argument");
+							}
+
+							// TODO: Implement
+
+							return false;
+						}
+					}
+				);
+
+				return parser;
 			}
-		} else {
-			debug(error ? error : "No unit tests found in module");
-		}
-		dlclose(hModule);
-	} else {
-		Logger::String{"Error opening '",info->dlpi_name,"': ",dlerror()}.error();
+
+		public:
+			Loader(const int argc, const char *argv[], const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application(argc,argv), callback(cbk) {
+			}
+
+			std::shared_ptr<Abstract::Agent> RootFactory() override {
+				if(callback(LOADER_MODE_INIT,*this,"")) {
+					throw runtime_error{"Initialization failed"};
+				}
+				return Udjat::Application::RootFactory();
+			}
+
+		};
+
+		Logger::verbosity(9);
+		Logger::console(true);
+
+		return Loader{argc,argv,init}.run(path);
+
 	}
-	return 0;
+
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path) {
+
+		class Loader : public Udjat::Application {
+		private:
+			const std::function<int(Application &app)> &callback;
+
+		protected:
+			ArgumentParser & load(ArgumentParser &parser) noexcept override {
+
+				parser.append(
+					ArgumentParser::Argument{
+						't', "run-unit-tests", _("Run unit tests"),
+						[this](const char *arg, char) {
+
+							// TODO: Implement
+
+							return true;
+						}
+					},
+					ArgumentParser::Argument{
+						'M', "load-module", _("Load module file"), _("path"),
+						[](const char *path, char) {
+
+							if(!(path && *path)) {
+								throw runtime_error("Load module requires the module path as argument");
+							}
+
+							// TODO: Implement
+
+							return false;
+						}
+					}
+				);
+
+				return parser;
+			}
+
+		public:
+			Loader(const int argc, const char *argv[], const std::function<int(Application &app)> &cbk) : Udjat::Application(argc,argv), callback(cbk) {
+			}
+
+			std::shared_ptr<Abstract::Agent> RootFactory() override {
+				if(callback(*this)) {
+					throw runtime_error{"Initialization failed"};
+				}
+				return Udjat::Application::RootFactory();
+			}
+
+		};
+
+		Logger::verbosity(9);
+		Logger::console(true);
+
+		return Loader{argc,argv,init}.run(path);
+
+	}
+
 }
-#endif // !_WIN32
-
- int UDJAT_API Udjat::loader(int argc, char **argv, const std::function<int(Application &app)> &init, const char *path) {
-
-	bool app = (argc==1);
-
-	//Logger::verbosity(9);
-	Logger::console(true);
-	Config::allow_user_homedir(true);
-
-	// Check for help
-	static const Udjat::CommandLineParser::Argument options[] = {
-		{ 'h', "help",				"Show this help message"		},
-		{ 'a', "application", 		"Run as application"			},
-		{ 's', "service", 			"Run as system service"			},
-		{ 'm', "module=<module>",	"Load module by name or path"	},
-		{ 'c', "config=<path>",		"Load XML configuration from file or directory (default is test.xml)" },
-		{ 't', "test[=test]",		"Run test method 'test'(empty for all tests)" },
-	};
-
-	if(CommandLineParser::has_argument(argc,argv,'h',"help",true)) {
-
-		cout	<< "Usage:" << "\n  " << argv[0]
-				<< " " << "[OPTION..]" << "\n\n";
-
-		cout << "Common options:\n";
-		for(const auto &option : options) {
-			option.print(cout);
-			cout << "\n";
-		};
-		Application::show_command_line_help();
-
-		cout << "\nService options:\n";
-		SystemService::show_command_line_help();
-
-		cout << "\n";
-		Logger::help();
-
-		return 0;
-	}
-
-	Logger::setup(argc,argv,true);
-	Logger::redirect();
-	Module::initialize();
-
-	// Configuration file (or path)
-	string config_file{path};
-
-	// Loaded modules
-	vector<Module *> modules;
-
-	// Check arguments
-	{
-		string argvalue;
-
-		if(CommandLineParser::get_argument(argc,argv,'m',"module",argvalue)) {
-
-			Logger::String{"Loading module '" + argvalue + "'"}.info();
-			Module::load(argvalue.c_str());
-		}
-	
-		if(CommandLineParser::get_argument(argc,argv,'c',"config",argvalue)) {
-			config_file = argvalue;
-		}
-
-		if(CommandLineParser::get_argument(argc,argv,'t',"test",argvalue)) {
-
-			debug("Running unit test '",argvalue,"'");
-
-/*
-#ifndef _WIN32	
-			dl_iterate_phdr(phdr_item, nullptr);
-			try {
-				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_unit_test");
-				if(symbol) {
-					symbol(argvalue.c_str());
-				}
-			} catch(const std::exception &e) {
-				Logger::String{"Error running unit test '",argvalue.c_str(),"': ",e.what()}.error();
-				return -1;
-			}
-#endif
-*/
-
-			Module::for_each([&argvalue](Module &module) -> bool {
-				int (*symbol)(const char *) = module.getfunc<int,const char *>("run_unit_test",false);
-				if(symbol) {
-					symbol(argvalue.c_str());
-				}
-				return false;
-			});
-
-			return 0;
-		}
-
-	}
-
-	string testmodule{".build/testmodule" LIBEXT};
-
-	if(CommandLineParser::has_argument(argc,argv,'t',"test")) {
-
-		debug("Running all unit tests");
-
-#ifndef _WIN32
-		size_t count = 0;
-		dl_iterate_phdr(phdr_item, &count);
-		if(!count) {
-			Logger::String{"Searching application for unit tests"}.info();
-			try {
-				int (*symbol)(const char *) = (int(*)(const char *)) dlsym(RTLD_DEFAULT,"run_udjat_unit_test");
-				if(symbol) {
-					count++;
-					Logger::String{"Running unit tests from main program"}.info();
-					symbol(nullptr);
-				} else {
-					Logger::String{"No unit tests found in main program"}.info();
-				}
-			} catch(const std::exception &e) {
-				Logger::String{"Error running unit tests: ",e.what()}.error();
-				return -1;
-			}
-		}
-		if(count == 0) {
-			Logger::String{"No loaded modules with tests found"}.error();
-		} else {
-			Logger::String{"Loaded ",count," modules with tests"}.info();
-		}
-#endif
-
-		return 0;
-
-	} else if(CommandLineParser::has_argument(argc,argv,'s',"service")) {
-
-		// Run as service
-		class TestSrvc : public Udjat::SystemService {
-		private:
-			const std::function<int(Application &app)> &init_callback;
-
-		public:
-			TestSrvc(int &argc, char **argv,const std::function<int(Application &app)> &init) 
-				: Udjat::SystemService(argc,argv), init_callback{init} {
-			}
-
-			~TestSrvc() override {
-			}
-
-			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				if(init_callback(*this)) {
-					throw runtime_error{"Initialization failed"};
-				}
-				return Udjat::Application::RootFactory();
-			}
-
-		};
-
-		int rc = TestSrvc{argc,argv,init}.run(config_file.c_str());
-		if(rc != 0) {
-			Logger::String{"Service failed with error '",strerror(rc),"' (",rc,")"}.error();
-			return rc;
-		}	
-
-	} else if(CommandLineParser::has_argument(argc,argv,'a',"application") || app) {
-
-		// Run as application (default if called without arguments)
-		class TestApp : public Udjat::Application {
-		private:
-			const std::function<int(Application &app)> &init_callback;
-
-		public:
-			TestApp(int &argc, char **argv,const std::function<int(Application &app)> &init) 
-				: Udjat::Application(argc,argv), init_callback{init} {
-			}
-
-			~TestApp() override {
-			}
-
-			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				if(init_callback(*this)) {
-					throw runtime_error{"Initialization failed"};
-				}
-				return Udjat::Application::RootFactory();
-			}
-
-		};
-
-		int rc = TestApp{argc,argv,init}.run(config_file.c_str());
-		if(rc != 0) {
-			Logger::String{"Application failed with error '",strerror(rc),"' (",rc,")"}.error();
-			return rc;
-		}	
-
-	} else if(access(testmodule.c_str(),R_OK) == 0) {
-		Logger::String{"Loading test module from '" + testmodule + "'"}.info();
-		Module::load(testmodule.c_str());
-
-	} else {
-
-		Logger::String{"No service or application mode, and no filesystem support to load test module"}.warning();
-		Logger::String{"Run with '--service' or '--application' option to run as service or application"}.warning();
-		return -1;			
-
-	}
-
-	return 0;
-
- }

@@ -42,7 +42,6 @@ namespace Udjat {
 			const char *longname = nullptr;		///< @brief Long name of the option.
 			const char *help = nullptr;			///< @brief Description of the option
 			const char *example = nullptr;		///< @brief Example of the option.
-			bool argument_required = false;		///< @brief True if the argument is required.
 			const std::function<bool(const char *argument, const char mode)> call = nullptr;
 
 		public:
@@ -52,10 +51,6 @@ namespace Udjat {
 
 			Argument(char s, const char *l, const char *h, const char *e, const std::function<bool(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, example{e}, call{c} {
-			}
-
-			Argument(char s, const char *l, const char *h, const char *e, bool r, const std::function<bool(const char *argument, const char mode)> &c) :
-				shortname{s}, longname{l}, help{h}, example{e}, argument_required{r}, call{c} {
 			}
 
 			Argument() { 
@@ -194,12 +189,12 @@ namespace Udjat {
 		/// @return The parse result.
 		/// @retval false All the callback have returned false, the application can continue.
 		/// @retval true Some callback have returned true, the application should stop with rc = 0.
-		static bool parse(int &argc, const char **argv, const Argument *arguments);
+		static bool parse(const int argc, const char **argv, const Argument *arguments);
 
 		/// @brief Parse arguments.
 		/// @throw std::exception on failure.
 		/// @return true if the application can continue, false if it should exit.
-		bool parse(int &argc, const char **argv) const;
+		bool parse(const int argc, const char **argv) const;
 
 		/// @brief Add options from Logger subsystem in a separate group options.
 		/// @return The same object (for chaining).
