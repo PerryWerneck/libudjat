@@ -923,7 +923,6 @@ install_headers(
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
-  'src/include/udjat/loader.h',
   subdir: 'udjat'  
 )
 
@@ -1012,6 +1011,7 @@ install_headers(
   'src/include/udjat/tools/socket.h',
   'src/include/udjat/tools/memory.h',
   'src/include/udjat/tools/properties.h',
+  'src/include/udjat/tools/loader.h',
   subdir: 'udjat/tools'  
 )
 

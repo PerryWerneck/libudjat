@@ -23,6 +23,7 @@
  #include <udjat/tools/argumentparser.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
+ #include <udjat/tools/application.h>
  #include <udjat/ui/console.h>
  #include <ctype.h>
  #include <iostream>
@@ -199,6 +200,7 @@
 #ifdef _WIN32
 
 		// TODO: Get path of windows app.
+		cout << Application::Name() << " ";
 
 #else
 		// Linux. Get my name from /proc/cmdline
@@ -217,21 +219,21 @@
 
 			cout << " ";
 			
-			if(decorated) {
-				cout << "\x1B[2m";
-			}
-
-			cout << _("[OPTIONS]");
-			
-			if(decorated) {
-				cout << "\x1B[22m";
-			}
-
-			cout << "\n\n";
-
 		}
 
 #endif
+
+		if(decorated) {
+			cout << "\x1B[2m";
+		}
+
+		cout << _("[OPTIONS]");
+		
+		if(decorated) {
+			cout << "\x1B[22m";
+		}
+
+		cout << "\n\n";
 
 		for(const auto &group : groups) {
 			if(decorated) {
