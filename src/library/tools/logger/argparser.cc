@@ -117,8 +117,9 @@
 						std::ifstream file("/proc/sys/kernel/core_pattern");
 						if(file.is_open()) {
 
-							string line;
+							String line;
 							getline(file,line,'\0');
+							line.strip();
 							file.close();
 							Logger::String{"Coredump enabled using pattern '",line.c_str(),"'"}.info("debug");
 
