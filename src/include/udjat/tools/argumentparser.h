@@ -40,12 +40,22 @@ namespace Udjat {
 
 			const char shortname = 0;			///< @brief Short name of the option.
 			const char *longname = nullptr;		///< @brief Long name of the option.
-			const char *help = nullptr;			///< @brief Description of the option///< @brief Description of the option.
+			const char *help = nullptr;			///< @brief Description of the option
+			const char *example = nullptr;		///< @brief Example of the option.
+			bool argument_required = false;		///< @brief True if the argument is required.
 			const std::function<bool(const char *argument, bool reserved)> call = nullptr;
 
 		public:
 			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument, bool reserved)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c} {
+			}
+
+			Argument(char s, const char *l, const char *h, const char *e, const std::function<bool(const char *argument, bool reserved)> &c) :
+				shortname{s}, longname{l}, help{h}, example{e}, call{c} {
+			}
+
+			Argument(char s, const char *l, const char *h, const char *e, bool r, const std::function<bool(const char *argument, bool reserved)> &c) :
+				shortname{s}, longname{l}, help{h}, example{e}, argument_required{r}, call{c} {
 			}
 
 			Argument() { 
