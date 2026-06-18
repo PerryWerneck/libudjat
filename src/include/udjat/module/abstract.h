@@ -176,6 +176,8 @@
 		/// @param required true if the module is required.
 		static bool load(const std::string &name, const XML::Node &node = XML::Node{});
 
+		static bool load(const XML::Node &node);
+		
 		/// @brief Unload modules.
 		static void unload();
 

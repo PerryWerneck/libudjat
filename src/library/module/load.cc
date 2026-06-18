@@ -94,5 +94,9 @@ namespace Udjat {
 		return Controller::getInstance().load(filename,node);
 	}
 
+	bool Module::load(const XML::Node &node) {
+		return Controller::getInstance().parse(node);
+	}
+
 }
 

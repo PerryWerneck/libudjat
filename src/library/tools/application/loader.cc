@@ -25,6 +25,13 @@
 #include <udjat/tools/application.h>
 #include <udjat/tools/intl.h>
 #include <stdexcept>
+#include <udjat/module.h>
+#include <private/module.h>
+
+#ifdef HAVE_PUGIXML
+	#include <pugixml.hpp>
+	#include <udjat/tools/xml.h>
+#endif // HAVE_PUGIXML
 
 #ifndef _WIN32
 	#include <dlfcn.h>
@@ -34,6 +41,15 @@
 using namespace std;
 
 namespace Udjat {
+
+#ifdef HAVE_PUGIXML
+	static void load_modules(const char *filename) {
+		XML::Document document{filename};
+		for(auto child = document.child("module"); child; child = child.next_sibling("module")) {
+			Module::load(child);
+		}
+	}
+#endif // HAVE_PUGIXML
 
 #ifndef _WIN32
 	static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
@@ -92,6 +108,7 @@ namespace Udjat {
 
 		class Loader : public Udjat::Application {
 		private:
+			const std::string filename;
 			const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &callback;
 
 		protected:
@@ -101,6 +118,9 @@ namespace Udjat {
 					ArgumentParser::Argument{
 						't', "run-unit-tests", _("Run unit tests"),
 						[this](const char *arg, char) {
+#ifdef HAVE_PUGIXML
+							load_modules(filename.c_str());
+#endif // HAVE_PUGIXML							
 							if(callback(LOADER_MODE_RUN_TESTS,*this,arg)) {
 								return true;
 							}
@@ -127,7 +147,7 @@ namespace Udjat {
 			}
 
 		public:
-			Loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application(argc,argv), callback(cbk) {
+			Loader(const int argc, const char *argv[], const char *path, const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application{argc,argv}, filename{path}, callback{cbk} {
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
@@ -135,12 +155,16 @@ namespace Udjat {
 				return Udjat::Application::RootFactory();
 			}
 
+			int run() {
+				return Application::run(filename.c_str());
+			}
+
 		};
 
 		Logger::verbosity(9);
 		Logger::console(true);
 
-		return Loader{argc,argv,init}.run(path);
+		return Loader{argc,argv,path,init}.run();
 
 	}
 
@@ -148,6 +172,7 @@ namespace Udjat {
 
 		class Loader : public Udjat::Application {
 		private:
+			const std::string filename;
 			const std::function<int(Application &app)> &callback;
 
 		protected:
@@ -157,6 +182,9 @@ namespace Udjat {
 					ArgumentParser::Argument{
 						't', "run-unit-tests", _("Run unit tests"),
 						[this](const char *arg, char) {
+#ifdef HAVE_PUGIXML
+							load_modules(filename.c_str());
+#endif // HAVE_PUGIXML							
 							run_unit_tests(arg);
 							return true;
 						}
@@ -180,7 +208,7 @@ namespace Udjat {
 			}
 
 		public:
-			Loader(const int argc, const char *argv[], const std::function<int(Application &app)> &cbk) : Udjat::Application(argc,argv), callback(cbk) {
+			Loader(const int argc, const char *argv[], const char *path, const std::function<int(Application &app)> &cbk) : Udjat::Application{argc,argv}, filename{path}, callback{cbk} {
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
@@ -190,12 +218,16 @@ namespace Udjat {
 				return Udjat::Application::RootFactory();
 			}
 
+			int run() {
+				return Application::run(filename.c_str());
+			}
+
 		};
 
 		Logger::verbosity(9);
 		Logger::console(true);
 
-		return Loader{argc,argv,init}.run(path);
+		return Loader{argc,argv,path,init}.run();
 
 	}
 
