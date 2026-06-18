@@ -42,6 +42,11 @@
 
 		#define LOGGER_MAX_VERBOSITY 7
 
+		extern UDJAT_PRIVATE const struct Levels {
+			Logger::Level level;
+			const char *name;
+		} levels[LOGGER_MAX_VERBOSITY];
+
 		UDJAT_PRIVATE bool write(int fd, const char *text) noexcept;
 
 		/// @brief Log writer callback.
@@ -114,7 +119,7 @@
 				Controller();
 
 				/// @brief Bitmask with the enabled log types.
-				Level enabled_levels = (Level) (Level::Error|Level::Notice|Level::Warning);
+				Level enabled_levels = (Level) (Level::Notice|Level::Error);
 
 				std::list<BackEnd> backends;
 

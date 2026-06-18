@@ -35,9 +35,9 @@
 
 		enum Level : uint8_t {
 			None		= 0x00,		///< @brief No log messages.
-			Error		= 0x01,		///< @brief Error conditions (std::cerr).
-			Warning		= 0x02,		///< @brief Warning conditions (std::clog).
-			Notice		= 0x04,		///< @brief System Status
+			Notice		= 0x01,		///< @brief System Status
+			Error		= 0x02,		///< @brief Error conditions (std::cerr).
+			Warning		= 0x04,		///< @brief Warning conditions (std::clog).
 			Info		= 0x08,		///< @brief Informational message (std::cout).
 			Trace		= 0x10,		///< @brief Debug message.
 			Debug		= 0x20,		///< @brief Trace message

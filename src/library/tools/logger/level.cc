@@ -32,14 +32,11 @@
 
  namespace Udjat {
 
-	static const struct {
-		Logger::Level level;
-		const char *name;
-	} levels[LOGGER_MAX_VERBOSITY] = {
+	const Logger::Levels Logger::levels[LOGGER_MAX_VERBOSITY] = {
 		{ Logger::Level::None,		N_("none")		},
+		{ Logger::Level::Notice,	N_("notice")	},
 		{ Logger::Level::Error,		N_("error")		},
 		{ Logger::Level::Warning,	N_("warning")	},
-		{ Logger::Level::Notice,	N_("notice")	},
 		{ Logger::Level::Info,		N_("info")		},
 		{ Logger::Level::Trace,		N_("trace")		},
 		{ Logger::Level::Debug,		N_("debug")		},
@@ -139,12 +136,12 @@
 
 	UDJAT_API const char * to_string(const Udjat::Logger::Level level) {
 
-		const char *name = Udjat::levels[0].name;
+		const char *name = Udjat::Logger::levels[0].name;
 
 		if(level) {
 			for(size_t ix=0; ix < LOGGER_MAX_VERBOSITY; ix++) {
-				if(Udjat::levels[ix].level & level) {
-					name = Udjat::levels[ix].name;
+				if(Udjat::Logger::levels[ix].level & level) {
+					name = Udjat::Logger::levels[ix].name;
 				}
 			}
 		}
