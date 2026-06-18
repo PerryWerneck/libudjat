@@ -100,6 +100,17 @@ namespace Udjat {
 		return true;
 	}
 
+	bool UI::Console::decorated() noexcept {
+		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		if(hOut != INVALID_HANDLE_VALUE) {
+			DWORD mode = 0;
+			if(GetConsoleMode(hOut, &mode)) {
+				return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+			}
+		}
+		return false;	
+	}
+
 	unsigned short UI::Console::width() const noexcept {
 		// https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 		CONSOLE_SCREEN_BUFFER_INFO csbi;

@@ -42,17 +42,17 @@
 		// Have syslog, allways enable it.
 		{
 			::openlog(NULL, LOG_PID, LOG_DAEMON);
-			insert("syslog",BackEnd::SysLog,[](Logger::Level level, const char *, const char *domain, const char *text){
+			insert("syslog",BackEnd::SysLog,[this](Logger::Level level, const char *, const char *domain, const char *text){
 
-				static const int priority[Level::Count] = {
+				static const int priority[] = {
 					LOG_ERR,		// Error
 					LOG_WARNING,	// Warning
+					LOG_NOTICE,		// Notice
 					LOG_INFO,		// Info
 					LOG_DEBUG,		// Trace
 					LOG_DEBUG,		// Debug
-					LOG_NOTICE		// Status
 				};
-				::syslog(priority[level % Level::Count],"%s: %s",domain,text);
+				::syslog(priority[verbosity()],"%s: %s",domain,text);
 
 			});	
 		}
@@ -123,8 +123,7 @@
 
 	void Logger::Controller::write(Level level, const char *domain, const char *text) {
 
-		// Is this log enabled?
-		if(!levels[level % Level::Count]) {
+		if(!(level & enabled_levels)) {
 			return;
 		}
 

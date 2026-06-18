@@ -33,6 +33,8 @@
  #include <udjat/tools/argumentparser.h>
  #include <thread>
 
+ #include <private/logger.h>
+
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>
  #endif
@@ -45,6 +47,13 @@
 	{
 		Logger::verbosity(9);
 		Logger::console(true);
+
+		Logger::String{"Info Entry for level "}.info();
+		Logger::String{"Warning Entry for level "}.warning();
+		Logger::String{"Error Entry for level "}.error();
+		Logger::String{"Notice Entry for level "}.notice();
+		Logger::String{"Trace Entry for level "}.trace();
+		Logger::String{"Debug Entry for level "}.write(Logger::Debug);
 
 		try {
 			ArgumentParser{
@@ -81,6 +90,28 @@
 		return 0;
 	}
 
+	// {
+	// 	Logger::console(true);
+	// 	for(int ix = 0; ix < LOGGER_MAX_VERBOSITY; ix++) {
+
+	// 		cout << "--- Setting verbosity to " << ix << endl;
+	// 		Logger::verbosity(ix);
+	// 		cout << "Verbosity set to " << Logger::verbosity() << endl;
+
+	// 		if(Logger::verbosity() != ix) {
+	// 			throw logic_error("Log verbosity handler failed");
+	// 		}
+
+	// 		Logger::String{"Info Entry for level ",ix}.info();
+	// 		Logger::String{"Warning Entry for level ",ix}.warning();
+	// 		Logger::String{"Error Entry for level ",ix}.error();
+	// 		Logger::String{"Notice Entry for level ",ix}.notice();
+	// 		Logger::String{"Trace Entry for level ",ix}.trace();
+	// 		Logger::String{"Debug Entry for level ",ix}.write(Logger::Debug);
+
+	// 	}
+
+	// }
 
 	/*
 #ifndef _WIN32

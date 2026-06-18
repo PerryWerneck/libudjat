@@ -23,7 +23,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/logger.h>
+ #include <private/logger.h>
  #include <udjat/module/abstract.h>
  #include <udjat/tools/url.h>
  #include <string>
@@ -388,6 +388,17 @@ return 0;
  }
 #endif // !_WIN32
 
+ static int logger_test() {
+	for(int ix = 0; ix < LOGGER_MAX_VERBOSITY; ix++) {
+		Logger::verbosity(ix);
+		if(Logger::verbosity() != ix) {
+			throw logic_error("Log verbosity handler failed");
+		}
+	}
+
+	return 0;
+ }
+
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
@@ -411,6 +422,7 @@ return 0;
 		{"network",	network_test},
 		{"config",	config_test},
 		{"string",	string_test},
+		{"logger",	logger_test},
 	};
 
 	if(!name) {

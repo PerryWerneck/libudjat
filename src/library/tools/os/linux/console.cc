@@ -101,6 +101,11 @@ namespace Udjat {
 		return true;
 	}
 
+	bool UI::Console::decorated() noexcept {
+		static bool flag = isatty(1) && (getenv("TERM") != NULL);
+		return flag;
+	}
+
 	unsigned short UI::Console::width() const noexcept {
 #ifdef _WIN32
 
@@ -120,7 +125,7 @@ namespace Udjat {
 
 	bool UI::Console::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
 
-		if(!Logger::decorated()) {
+		if(!Console::decorated()) {
 			return false;
 		}
 
@@ -213,35 +218,35 @@ namespace Udjat {
 	}
 
 	UI::Console & UI::Console::set(const Foreground color) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (int) color << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::bold(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "1" : "22") << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::faint(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "2" : "22") << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::italic(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "3" : "23") << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::cursor(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "?25h" : "?25l");
 		}
 		return *this;

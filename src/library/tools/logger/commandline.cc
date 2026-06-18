@@ -77,7 +77,7 @@
 
 		auto &controller = Controller::getInstance();
 
-		for(size_t ix = 0; ix < Level::Count; ix++) {
+		for(size_t ix = 0; ix < LOGGER_MAX_VERBOSITY; ix++) {
 			String attribute{prefix,to_string((Level) ix)};
 			if(properties.contains(attribute.c_str())) {
 				controller.enable((Level) ix,properties.get(attribute.c_str(),true));

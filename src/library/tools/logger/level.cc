@@ -18,9 +18,11 @@
  */
 
  #include <config.h>
+ #include <udjat/tools/logger.h>
  #include <private/logger.h>
  #include <udjat/tools/properties.h>
  #include <stdexcept>
+ #include <udjat/tools/intl.h>
  
  #ifdef HAVE_UNISTD_H
  	#include <unistd.h>
@@ -28,16 +30,20 @@
 
  using namespace std;
 
- static const char * levelnames[Udjat::Logger::Level::Count] = {
-	"error",
-	"warning",
-	"info",
-	"trace",
-	"debug",
-	"notice",
- };
-
  namespace Udjat {
+
+	static const struct {
+		Logger::Level level;
+		const char *name;
+	} levels[LOGGER_MAX_VERBOSITY] = {
+		{ Logger::Level::None,		N_("none")		},
+		{ Logger::Level::Error,		N_("error")		},
+		{ Logger::Level::Warning,	N_("warning")	},
+		{ Logger::Level::Notice,	N_("notice")	},
+		{ Logger::Level::Info,		N_("info")		},
+		{ Logger::Level::Trace,		N_("trace")		},
+		{ Logger::Level::Debug,		N_("debug")		},
+	};
 
 	bool Logger::enabled(Logger::Level level) noexcept {
 		return Logger::Controller::getInstance().enabled(level);
@@ -47,27 +53,67 @@
 		Logger::Controller::getInstance().enable(level);
 	}
 
-	void Logger::verbosity(unsigned short level) {
-		for(unsigned short ix = 0; ix < Logger::Level::Count; ix++) {
-			enable((Level) ix,level > ix);
-		}
+	int Logger::verbosity() noexcept {
+		return (int) Logger::Controller::getInstance().verbosity();
 	}
 
-	void Logger::verbosity(const char *level) {
+	int Logger::Controller::verbosity() const noexcept {
+		int rc = Logger::Level::None;
+		for(int ix=0; ix < LOGGER_MAX_VERBOSITY; ix++) {
+			if(enabled_levels&levels[ix].level) {
+				rc = ix;
+			}
+		}
+		return rc;
+	}
 
-		if(*level >= '0' && *level <= '9') {
-			verbosity((unsigned short) atoi(level));
-			return;
+	void Logger::verbosity(int level) noexcept {
+		Logger::Controller::getInstance().verbosity((size_t) level);
+	}
+
+	void Logger::Controller::verbosity(int level) noexcept {
+		lock_guard<recursive_mutex> lock(guard);
+
+		if(level > LOGGER_MAX_VERBOSITY) {
+			level = LOGGER_MAX_VERBOSITY;
 		}
 
+#ifdef DEBUG
+		cout << "Selected level:" << level << endl;
+#endif // DEBUG
+
+		enabled_levels = Logger::Level::None;
+		for(int ix=0; ix < level; ix++) {
+#ifdef DEBUG
+			cout << "Enabling log level '" << levels[ix].name << "' value=" << levels[ix].level << endl;
+#endif // DEBUG
+			enabled_levels = (Logger::Level) (enabled_levels|levels[ix].level);
+		}
+
+#ifdef DEBUG
+		cout <<  "Current log level is " << enabled_levels << endl;
+#endif // DEBUG
+
+	}
+
+	void Logger::verbosity(const char *level) noexcept {
+		Logger::Controller::getInstance().verbosity(level);
+	}
+
+	void Logger::Controller::verbosity(const char *level) {
+
+		lock_guard<recursive_mutex> lock(guard);
+
+		if(*level >= '0' && *level <= '9') {
+			Logger::Controller::getInstance().verbosity(atoi(level));
+			return;
+		}
+		
+		enabled_levels = Logger::Level::None;
 		for(auto &lvl : String{level}.split(",")) {
-			lvl.strip();
-			if(!lvl.empty()) {
-				continue;
-			}
-			for(uint8_t ix = 0; ix < Logger::Level::Count; ix++) {
-				if(!strcasecmp(levelnames[ix],lvl.c_str())) {
-					enable((Level) ix,true);
+			for(size_t ix=0; ix < LOGGER_MAX_VERBOSITY; ix++) {
+				if(!strcasecmp(levels[ix].name,lvl.c_str())) {
+					enabled_levels = (Level) (levels[ix].level|enabled_levels);
 				}
 			}
 		}
@@ -79,9 +125,9 @@
 	}
 
 	Logger::Level Logger::LevelFactory(const char *name) {
-		for(uint8_t ix = 0; ix < Logger::Level::Count; ix++) {
-			if(!strcasecmp(levelnames[ix],name)) {
-				return (Logger::Level) ix;
+		for(size_t ix=0; ix < LOGGER_MAX_VERBOSITY; ix++) {
+			if(!strcasecmp(levels[ix].name,name)) {
+				return levels[ix].level;
 			}
 		}
 		throw logic_error(String{"Unexpected log level '",name,"'"});
@@ -92,7 +138,18 @@
  namespace std {
 
 	UDJAT_API const char * to_string(const Udjat::Logger::Level level) {
-		return levelnames[((size_t) level) % Udjat::Logger::Level::Count];
+
+		const char *name = Udjat::levels[0].name;
+
+		if(level) {
+			for(size_t ix=0; ix < LOGGER_MAX_VERBOSITY; ix++) {
+				if(Udjat::levels[ix].level & level) {
+					name = Udjat::levels[ix].name;
+				}
+			}
+		}
+
+		return dgettext(GETTEXT_PACKAGE,name);
 	}
 
  }
