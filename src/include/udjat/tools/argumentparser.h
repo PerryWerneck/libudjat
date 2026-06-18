@@ -43,18 +43,18 @@ namespace Udjat {
 			const char *help = nullptr;			///< @brief Description of the option
 			const char *example = nullptr;		///< @brief Example of the option.
 			bool argument_required = false;		///< @brief True if the argument is required.
-			const std::function<bool(const char *argument, bool reserved)> call = nullptr;
+			const std::function<bool(const char *argument, const char mode)> call = nullptr;
 
 		public:
-			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument, bool reserved)> &c) :
+			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c} {
 			}
 
-			Argument(char s, const char *l, const char *h, const char *e, const std::function<bool(const char *argument, bool reserved)> &c) :
+			Argument(char s, const char *l, const char *h, const char *e, const std::function<bool(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, example{e}, call{c} {
 			}
 
-			Argument(char s, const char *l, const char *h, const char *e, bool r, const std::function<bool(const char *argument, bool reserved)> &c) :
+			Argument(char s, const char *l, const char *h, const char *e, bool r, const std::function<bool(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, example{e}, argument_required{r}, call{c} {
 			}
 
@@ -77,8 +77,8 @@ namespace Udjat {
 				return (bool) (shortname || longname);
 			}
 
-			inline bool exec(const char *argument = nullptr) const {
-				return call(argument,false);
+			inline bool exec(const char *argument = nullptr, const char mode = 0) const {
+				return call(argument,mode);
 			}
 
 		};
@@ -163,7 +163,7 @@ namespace Udjat {
 		/// @param longname The argument long name.
 		/// @param help The help text.
 		/// @param call Callback to process this argument.
-		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument, bool reserved)> &call);
+		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument, const char mode)> &call);
 		
 		/// @brief Add argument in the last group.
 		/// @param argument 
@@ -209,8 +209,8 @@ namespace Udjat {
 		void append_help();
 
 		bool show_help() const;
-		bool parse_short(const char *argument, const char *value) const;
-		bool parse_long(const char *argument, const char *value) const;
+		bool parse_short(const char *argument, const char *value, const char mode) const;
+		bool parse_long(const char *argument, const char *value, const char mode) const;
 
 	};
 

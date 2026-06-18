@@ -23,6 +23,7 @@
  #include <udjat/tools/argumentparser.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
+ #include <ctype.h>
 
  using namespace std;
 
@@ -96,7 +97,7 @@
 					ptr++;
 				}
 
-				if(parse_long(arg,ptr)) {
+				if(parse_long(arg,ptr,'L')) {
 					return true;
 				}
 
@@ -112,20 +113,18 @@
 
 			while(*arg) {
 
-				if(arg[1] >= '1' && arg[1] <= '9') {
+				if(isdigit(arg[1])) {
 
 					// Repeat 'arg[1]' times.
-					for(int ix=0;ix < arg[1]-'0';ix++) {
-						if(parse_short(arg,value)) {
+					for(int ix='0';ix < arg[1];ix++) {
+						if(parse_short(arg,value,ix)) {
 							return true;
 						}
 					}
 					arg++;
 
-				} else if(parse_short(arg,value)) {
-					
+				} else if(parse_short(arg,value,'S')) {
 					return true;
-
 				}
 				arg++;
 				
@@ -140,15 +139,9 @@
 		groups.front().push_back(argument);
 	}
 
-	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument, bool reserved)> &call) {
+	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument, const char mode)> &call) {
 		groups.front().emplace_back(shortname,longname,description,call);
 	}
-
-	/*
-	void ArgumentParser::append(const Argument &argument) {
-		groups.back().push_back(argument);
-	}
-	*/
 
 	ArgumentParser::Group & ArgumentParser::add_group(const char *text) {
 		groups.emplace_back(text);
@@ -214,7 +207,7 @@
 		return true; // End application
 	}
 
-	bool ArgumentParser::parse_short(const char *argument, const char *value) const {
+	bool ArgumentParser::parse_short(const char *argument, const char *value, const char mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
@@ -222,7 +215,7 @@
 		for(const auto &group : groups) {
 			for(const auto &arg : group) {
 				if(arg == *argument) {
-					return arg.exec(value);
+					return arg.exec(value,mode);
 				}
 			}
 		}
@@ -232,7 +225,7 @@
 
 	}
 
-	bool ArgumentParser::parse_long(const char *argument, const char *value) const {
+	bool ArgumentParser::parse_long(const char *argument, const char *value, const char mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
@@ -240,7 +233,7 @@
 		for(const auto &group : groups) {
 			for(const auto &arg : group) {
 				if(arg == argument) {
-					return arg.exec(value);
+					return arg.exec(value,mode);
 				}
 			}
 		}
