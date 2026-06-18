@@ -209,8 +209,8 @@ namespace Udjat {
 		void append_help();
 
 		bool show_help() const;
-		bool parse_short(const char *argument, const char **argv) const;
-		bool parse_long(const char *argument, const char **argv) const;
+		bool parse_short(const char *argument, const char *value) const;
+		bool parse_long(const char *argument, const char *value) const;
 
 	};
 
