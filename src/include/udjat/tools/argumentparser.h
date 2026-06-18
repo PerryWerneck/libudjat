@@ -41,10 +41,10 @@ namespace Udjat {
 			const char shortname = 0;			///< @brief Short name of the option.
 			const char *longname = nullptr;		///< @brief Long name of the option.
 			const char *help = nullptr;			///< @brief Description of the option///< @brief Description of the option.
-			const std::function<bool(const char *argument)> call = nullptr;
+			const std::function<bool(const char *argument, bool reserved)> call = nullptr;
 
 		public:
-			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument)> &c) :
+			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument, bool reserved)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c} {
 			}
 
@@ -68,7 +68,7 @@ namespace Udjat {
 			}
 
 			inline bool exec(const char *argument = nullptr) const {
-				return call(argument);
+				return call(argument,false);
 			}
 
 		};
@@ -153,7 +153,7 @@ namespace Udjat {
 		/// @param longname The argument long name.
 		/// @param help The help text.
 		/// @param call Callback to process this argument.
-		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument)> &call);
+		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument, bool reserved)> &call);
 		
 		/// @brief Add argument in the last group.
 		/// @param argument 

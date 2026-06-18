@@ -51,7 +51,7 @@
 				"First group of options",
 					ArgumentParser::Argument{
 						'a', "opta", "Argument 'A'",
-						[](const char *argument) {
+						[](const char *argument, bool) {
 							cout << "Argument A called" << endl;
 							return false;
 						}
@@ -60,14 +60,14 @@
 				"Second group of options",
 					ArgumentParser::Argument{
 						'b', "optb", "Argument 'B'",
-						[](const char *argument) {
+						[](const char *argument, bool) {
 							cout << "Argument B called" << endl;
 							return false;
 						}
 					},
 					ArgumentParser::Argument{
 						'c', "oc", "Argument 'C'",
-						[](const char *argument) {
+						[](const char *argument, bool) {
 							cout << "Argument C called" << endl;
 							return false;
 						}

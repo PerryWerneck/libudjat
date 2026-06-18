@@ -54,7 +54,7 @@
 			'h', 
 			"help", 
 			_("Show this help message"),
-			[this](const char *argument) {
+			[this](const char *argument, bool) {
 				show_help();
 				return true;
 			}
@@ -115,7 +115,7 @@
 		groups.front().push_back(argument);
 	}
 
-	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument)> &call) {
+	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument, bool reserved)> &call) {
 		groups.front().emplace_back(shortname,longname,description,call);
 	}
 
