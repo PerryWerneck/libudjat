@@ -85,12 +85,18 @@
 
 			arg++;
 
+			// Check for long argument
 			if(*arg == '-') {
 
 				// Parse long argument.
 				arg++;
 
-				if(parse_long(arg,argv+ix+1)) {
+				const char *ptr = strchr(arg,'=');
+				if(ptr) {
+					ptr++;
+				}
+
+				if(parse_long(arg,ptr)) {
 					return true;
 				}
 
@@ -98,12 +104,31 @@
 
 			}
 
-			// Parse short arguments
+			// Check for short argument
+			const char *value = nullptr;
+			if(ix < (argc-1) && argv[ix+1][0] != '-') {
+				value = argv[ix+1];
+			}
+
 			while(*arg) {
-				if(parse_short(arg,argv+ix+1)) {
+
+				if(arg[1] >= '1' && arg[1] <= '9') {
+
+					// Repeat 'arg[1]' times.
+					for(int ix=0;ix < arg[1]-'0';ix++) {
+						if(parse_short(arg,value)) {
+							return true;
+						}
+					}
+					arg++;
+
+				} else if(parse_short(arg,value)) {
+					
 					return true;
+
 				}
 				arg++;
+				
 			}
 
 		}
@@ -189,19 +214,9 @@
 		return true; // End application
 	}
 
-	bool ArgumentParser::parse_short(const char *argument, const char **argv) const {
+	bool ArgumentParser::parse_short(const char *argument, const char *value) const {
 
 		debug(__FUNCTION__,"(",argument,")");
-
-		// Get optional parameters.
-		const char *value = nullptr;
-		
-		if(argv && *argv) {
-			value = *argv;
-			if(!value || value[0] == '-') {
-				value = nullptr;
-			}
-		}
 
 		// Parse 'argument'
 		for(const auto &group : groups) {
@@ -217,19 +232,9 @@
 
 	}
 
-	bool ArgumentParser::parse_long(const char *argument, const char **argv) const {
+	bool ArgumentParser::parse_long(const char *argument, const char *value) const {
 
 		debug(__FUNCTION__,"(",argument,")");
-
-		// Get optional parameters.
-		const char *value = nullptr;
-		
-		if(argv && *argv) {
-			value = *argv;
-			if(!value || value[0] == '-') {
-				value = nullptr;
-			}
-		}
 
 		// Parse 'argument'
 		for(const auto &group : groups) {
