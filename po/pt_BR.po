@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-17 15:19-0300\n"
-"PO-Revision-Date: 2026-06-01 17:48-0300\n"
+"POT-Creation-Date: 2026-06-17 20:59-0300\n"
+"PO-Revision-Date: 2026-06-17 21:03-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
 "Language: pt_BR\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Poedit-SourceCharset: utf-8\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 
 #: src/library/agent/root.cc:98 src/library/tools/systemservice.cc:140
 msgid "System is ready"
@@ -105,7 +105,7 @@ msgstr "Iniciando serviços"
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
 
-#: src/library/tools/commandlineparser.cc:166
+#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:56
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
 
@@ -775,19 +775,23 @@ msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
 #. The first group is allways the application options
-#: src/library/tools/argparser.cc:33
-#, fuzzy
+#: src/library/tools/argparser.cc:34
 msgid "Application options"
-msgstr "Opções da aplicação:\n"
+msgstr "Opções da aplicação"
 
-#: src/library/tools/argparser.cc:113
+#: src/library/tools/argparser.cc:216
+#, c++-format
+msgid "Invalid option: -{}"
+msgstr "Opção inválida: -{}"
+
+#: src/library/tools/argparser.cc:243
+#, c++-format
+msgid "Invalid option: --{}"
+msgstr "Opção inválid: --{}"
+
 #, fuzzy
-msgid "This help message"
-msgstr "Mostra essa mensagem de help"
-
-#: src/library/tools/argparser.cc:176
-msgid "help"
-msgstr ""
+#~ msgid "This help message"
+#~ msgstr "Mostra essa mensagem de help"
 
 #~ msgid "Agent controller"
 #~ msgstr "Controlador de agentes"
@@ -807,9 +811,6 @@ msgstr ""
 #, c++-format
 #~ msgid "Usage:\t{} [options]"
 #~ msgstr "Usage:\t{} [opções]"
-
-#~ msgid "Invalid property"
-#~ msgstr "Propriedade inválida"
 
 #~ msgid "The request has timed out"
 #~ msgstr "Tempo da requisição esgotado"
