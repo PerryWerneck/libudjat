@@ -26,19 +26,73 @@
 #include <udjat/tools/intl.h>
 #include <stdexcept>
 
+#ifndef _WIN32
+	#include <dlfcn.h>
+	#include <link.h>
+#endif // !_WIN32
+
 using namespace std;
 
 namespace Udjat {
 
-	int UDJAT_API loader(const int argc, const char *argv[], const char *path) {
-		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return 0;},path);
+#ifndef _WIN32
+	static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
+
+		if(!info->dlpi_name || !*info->dlpi_name) {
+			debug("Skipping main program");
+			return 0;
+		}
+
+		debug("Name: ",info->dlpi_name);
+		void *hModule = dlopen(info->dlpi_name, RTLD_NOW|RTLD_LOCAL);
+		if(hModule) {
+			size_t *count = (size_t *) data;
+			dlerror(); // Clear any existing error
+			int (*symbol)(const char *) = (int(*)(const char *)) dlsym(hModule,"run_udjat_unit_test");
+			auto error = dlerror();
+			if(symbol && !error) {
+				(*count)++;
+				Logger::String{"------------- Running unit tests from module '",info->dlpi_name,"' -------------"}.notice("debug");
+				try {
+					int rc = symbol(nullptr);
+					if(rc) {
+						dlclose(hModule);
+						return rc;	
+					}
+				} catch(const std::exception &e) {
+					Logger::String{"Error running unit tests from module '",info->dlpi_name,"': ",e.what()}.error();
+					dlclose(hModule);
+					return -1;
+				}
+			} else {
+				debug(error ? error : "No unit tests found in module");
+			}
+			dlclose(hModule);
+		} else {
+			Logger::String{"Error opening '",info->dlpi_name,"': ",dlerror()}.error("debug");
+		}
+	return 0;
+}
+#endif // !_WIN32
+
+	/// @brief Detect and run unit tests from modules.
+	/// @param name The test name
+	static void run_unit_tests(const char *name) {
+#ifndef _WIN32
+		size_t count = 0;
+		dl_iterate_phdr(phdr_item, &count);
+#endif // !_WIN32
 	}
 
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &init, const char *path) {
+	int UDJAT_API loader(const int argc, const char *argv[], const char *path) {
+		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return false;},path);
+	}
+
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &init, const char *path) {
 
 		class Loader : public Udjat::Application {
 		private:
-			const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &callback;
+			const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &callback;
 
 		protected:
 			ArgumentParser & load(ArgumentParser &parser) noexcept override {
@@ -47,10 +101,10 @@ namespace Udjat {
 					ArgumentParser::Argument{
 						't', "run-unit-tests", _("Run unit tests"),
 						[this](const char *arg, char) {
-
-							// TODO: Implement
-							callback(LOADER_MODE_RUN_TESTS,*this,arg);
-
+							if(callback(LOADER_MODE_RUN_TESTS,*this,arg)) {
+								return true;
+							}
+							run_unit_tests(arg);
 							return true;
 						}
 					},
@@ -73,13 +127,11 @@ namespace Udjat {
 			}
 
 		public:
-			Loader(const int argc, const char *argv[], const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application(argc,argv), callback(cbk) {
+			Loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application(argc,argv), callback(cbk) {
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				if(callback(LOADER_MODE_INIT,*this,"")) {
-					throw runtime_error{"Initialization failed"};
-				}
+				callback(LOADER_MODE_INIT,*this,"");
 				return Udjat::Application::RootFactory();
 			}
 
@@ -105,14 +157,12 @@ namespace Udjat {
 					ArgumentParser::Argument{
 						't', "run-unit-tests", _("Run unit tests"),
 						[this](const char *arg, char) {
-
-							// TODO: Implement
-
+							run_unit_tests(arg);
 							return true;
 						}
 					},
 					ArgumentParser::Argument{
-						'M', "load-module", _("Load module file"), _("path"),
+						'M', "load-module", _("Load module from file"), _("path"),
 						[](const char *path, char) {
 
 							if(!(path && *path)) {

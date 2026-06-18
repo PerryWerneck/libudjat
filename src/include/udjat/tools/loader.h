@@ -51,10 +51,10 @@ namespace Udjat {
 	/// @brief Helper library to test and develop Udjat modules.
 	/// @param argc Number of command line arguments.
 	/// @param argv The command line arguments.
-	/// @param callback Callback method to run tests on initialize app.
+	/// @param callback Callback method to run tests on initialize app, return true if the mode was processed.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(const LoaderMode mode, Application &app, const char *arg)> &callback, const char *path = "test.xml");
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &callback, const char *path = "test.xml");
 
 	/// @brief Helper library to test and develop Udjat modules.
 	/// @param argc Number of command line arguments.

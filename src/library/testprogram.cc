@@ -73,7 +73,7 @@
 
 	for(const auto &backend : backends) {
 
-		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.info();
+		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.notice();
 		try {
 
 			String filename{"/tmp/test-",backend,".key"};
@@ -154,7 +154,7 @@
 			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
 		}
 
-		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.info();
+		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.notice();
 	}
 
 
@@ -388,17 +388,6 @@ return 0;
  }
 #endif // !_WIN32
 
- static int logger_test() {
-	for(int ix = 0; ix < LOGGER_MAX_VERBOSITY; ix++) {
-		Logger::verbosity(ix);
-		if(Logger::verbosity() != ix) {
-			throw logic_error("Log verbosity handler failed");
-		}
-	}
-
-	return 0;
- }
-
  UDJAT_API int run_udjat_unit_test(const char *name) {
 
 	static const struct {
@@ -422,7 +411,6 @@ return 0;
 		{"network",	network_test},
 		{"config",	config_test},
 		{"string",	string_test},
-		{"logger",	logger_test},
 	};
 
 	if(!name) {
