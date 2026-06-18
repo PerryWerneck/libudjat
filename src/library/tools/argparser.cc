@@ -116,6 +116,8 @@
 				value = argv[ix+1];
 			}
 
+			char last = 0;
+			char index = '0';
 			while(*arg) {
 
 				if(isdigit(arg[1])) {
@@ -128,8 +130,28 @@
 					}
 					arg++;
 
-				} else if(parse_short(arg,value,'S')) {
-					return true;
+				} else if(arg[0] == last) {
+
+					// It's repeating argument
+					if(parse_short(arg,value,index++)) {
+						return true;
+					}
+
+				} else if(arg[0] == arg[1]) {
+					
+					// It's the first one of a repetittion
+					last = arg[1];
+					index = '0';
+					if(parse_short(arg,value,index++)) {
+						return true;
+					}
+				} else {
+
+					// It's not repeating
+					if(parse_short(arg,value,'S')) {
+						return true;
+					}
+
 				}
 				arg++;
 				

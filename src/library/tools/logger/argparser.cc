@@ -45,6 +45,37 @@
 				ArgumentParser::Argument{
 					'v', "verbose", _( "Enable console output" ),
 					[](const char *argument, char mode) {
+
+						auto &controller = Logger::Controller::getInstance();
+						if(argument && *argument) {
+							controller.console(true);
+							controller.verbosity(argument);
+						} else {
+							switch(mode) {
+								case 'S':
+								case 'L':
+								case '0':
+#ifdef DEBUG
+									{
+										char m[] = {mode,0};
+										debug("Consule output was enabled (mode=",m,")");
+									}
+#endif
+									controller.console(true);
+									break;
+
+								default:
+									if(mode >= '1' && mode <= '9') {
+										int value =  ((int) (mode-'0'))+3;
+										debug("Setting console output to level ",value);
+										controller.verbosity(value);
+									} else {
+										throw logic_error("Unexpected argument parser mode");
+									}
+							}
+
+						}
+
 						return false;
 					}
 				},
