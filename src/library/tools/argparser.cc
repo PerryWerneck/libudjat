@@ -25,6 +25,8 @@
  #include <udjat/tools/logger.h>
  #include <udjat/ui/console.h>
  #include <ctype.h>
+ #include <iostream>
+ #include <fstream>
 
  using namespace std;
 
@@ -169,6 +171,45 @@
 		}
 
 		debug("---> Max long option length is ",len);
+
+		cout << _("Usage:") << "\n  ";
+
+#ifdef _WIN32
+
+		// TODO: Get path of windows app.
+
+#else
+		// Linux. Get my name from /proc/cmdline
+		{
+			std::ifstream file("/proc/self/cmdline");
+
+			if(file.is_open()) {
+				string line;
+				getline(file,line,'\0');
+				file.close();
+				cout << line;
+
+			} else {
+				cout << "application";
+			}
+
+			cout << " ";
+			
+			if(decorated) {
+				cout << "\x1B[2m";
+			}
+
+			cout << _("[OPTIONS]");
+			
+			if(decorated) {
+				cout << "\x1B[22m";
+			}
+
+			cout << "\n\n";
+
+		}
+
+#endif
 
 		for(const auto &group : groups) {
 			if(decorated) {

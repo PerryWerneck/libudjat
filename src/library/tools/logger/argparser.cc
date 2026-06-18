@@ -24,6 +24,15 @@
  #include <udjat/tools/intl.h>
  #include <udjat/tools/logger.h>
  #include <private/logger.h>
+ #include <fstream> // std::filebuf
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
+
+ #ifndef _WIN32
+	#include <sys/resource.h>
+ #endif // _WIN32
 
  using namespace std;
 
@@ -71,7 +80,31 @@
 		add_application_argument(
 			ArgumentParser::Argument{
 				'C', "coredump", _( "Enable coredump" ),
-				[](const char *argument, char) {
+				[](const char *pattern, char) {
+
+					// Reference script:
+					//
+					// ulimit -c unlimited
+					// install -m 1777 -d /var/local/dumps
+					// echo "/var/local/dumps/core.%e.%p"> /proc/sys/kernel/core_pattern
+					// rcapparmor stop
+					// sysctl -w kernel.suid_dumpable=2
+					//
+					struct rlimit core_limits;
+					memset(&core_limits,0,sizeof(core_limits));
+
+					core_limits.rlim_cur = core_limits.rlim_max = RLIM_INFINITY;
+					setrlimit(RLIMIT_CORE, &core_limits);
+
+					if(pattern && *pattern) {
+						// Set corepattern
+						std::filebuf fb;
+						fb.open("/proc/sys/kernel/core_pattern",std::ios::out);
+						std::ostream os(&fb);
+						os << pattern << "\n";
+						fb.close();
+					}
+
 					return false;
 				}
 			}
