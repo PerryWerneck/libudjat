@@ -69,8 +69,8 @@
 
 	void Logger::Controller::console(bool enable) {
 
+		remove("console");
 		if(!enable) {
-			remove("console");
 			return;
 		}
 
