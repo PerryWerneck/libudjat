@@ -206,6 +206,7 @@
 			Logger::String{"Unexpected error parsing command line arguments"}.error(name());
 		}
 
+		debug("Cancelling application by errors on argument parse");
 		return true;
 	}
 
@@ -213,6 +214,7 @@
 
 		// Parse command line arguments.
 		if(parse_arguments()) {
+			debug("Stopping by parse-arguments request");
 			return 0;
 		}
 

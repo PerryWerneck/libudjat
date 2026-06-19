@@ -160,7 +160,8 @@
 
 		}
 
-		return true;
+		/// Complete without errors
+		return false;
 	}
 
 	void ArgumentParser::add_application_argument(const ArgumentParser::Argument &argument) {

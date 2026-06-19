@@ -193,7 +193,9 @@ namespace Udjat {
 
 		/// @brief Parse arguments.
 		/// @throw std::exception on failure.
-		/// @return true if the application can continue, false if it should exit.
+		/// @return Status of the argument parser.
+		/// @retval false if the application can continue
+		/// @retval true all required processing was done, the application could exit with rc=0.
 		bool parse(const int argc, const char **argv) const;
 
 		/// @brief Add options from Logger subsystem in a separate group options.
