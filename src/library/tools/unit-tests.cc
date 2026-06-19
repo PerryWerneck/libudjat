@@ -19,6 +19,10 @@
 
  #define LOG_DOMAIN "test"
 
+ #ifndef _GNU_SOURCE
+        #define _GNU_SOURCE             /* See feature_test_macros(7) */
+ #endif // _GNU_SOURCE
+
  #include <config.h>
  #include <udjat/defs.h>
  #include <udjat/tools/unit-test.h>
@@ -38,6 +42,8 @@
  #else
 	#include <dlfcn.h>
 	#include <link.h>
+	#include <fcntl.h>
+	#include <sys/param.h>
  #endif // !_WIN32
 
  using namespace std;
@@ -60,8 +66,16 @@
 			void (*symbol)(UnitTests &) = (void(*)(UnitTests &)) dlsym(hModule,"enum_udjat_unit_tests");
 			auto error = dlerror();
 			if(symbol && !error) {
-				Logger::String{"Loading ",info->dlpi_name}.info();
-				container->append_module(hModule,info->dlpi_name);
+
+				char filename[PATH_MAX+1];
+				memset(filename,0,sizeof(filename));
+				if (realpath(info->dlpi_name, filename) == NULL)  {
+					Logger::String{info->dlpi_name,": ",strerror(errno)}.error();
+				} else {
+					debug("Found '",filename,"'");
+					container->append_module(hModule,filename);
+				}
+
 			} else {
 				dlclose(hModule);
 			}

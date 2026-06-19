@@ -28,6 +28,7 @@
 #include <udjat/module.h>
 #include <private/module.h>
 #include <udjat/tools/unit-test.h>
+#include <udjat/tools/logger.h>
 
 #ifdef HAVE_PUGIXML
 	#include <pugixml.hpp>
@@ -45,13 +46,15 @@ namespace Udjat {
 
 #ifdef HAVE_PUGIXML
 	static void load_modules(const char *filename) {
+		debug("Loading ",filename);
 		XML::Document document{filename};
-		for(auto child = document.child("module"); child; child = child.next_sibling("module")) {
-			Module::load(child);
+		for(const auto &node : document) {
+			for(auto child = node.child("module"); child; child = child.next_sibling("module")) {
+				Module::load(child);
+			}
 		}
 	}
 #endif // HAVE_PUGIXML
-
 
 	int UDJAT_API loader(const int argc, const char *argv[], const char *path) {
 		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return false;},path);
@@ -80,6 +83,9 @@ namespace Udjat {
 							UnitTests tests;
 							tests.load();
 							tests.run_all();
+#ifdef HAVE_PUGIXML
+							Module::unload();
+#endif // HAVE_PUGIXML							
 							return true;
 						}
 					},
@@ -92,6 +98,9 @@ namespace Udjat {
 							UnitTests tests;
 							tests.load();
 							tests.interactive();
+#ifdef HAVE_PUGIXML
+							Module::unload();
+#endif // HAVE_PUGIXML							
 							return true;
 						}
 					},
