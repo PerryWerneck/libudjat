@@ -73,6 +73,9 @@
 					Logger::String{info->dlpi_name,": ",strerror(errno)}.error();
 				} else {
 					debug("Found '",filename,"'");
+
+					// TODO: Check if already loaded
+
 					container->append_module(hModule,filename);
 				}
 
