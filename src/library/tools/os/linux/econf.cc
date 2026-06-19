@@ -157,7 +157,7 @@
 		open();
 	}
 
-	bool Config::Controller::hasGroup(const char *group) {
+	bool Config::Controller::contains(const char *group) {
 		std::lock_guard<std::recursive_mutex> lock(guard);
 
 		if(!hFile) {
@@ -185,7 +185,7 @@
 
 	}
 
-	bool Config::Controller::hasKey(const char *group, const char *key) {
+	bool Config::Controller::contains(const char *group, const char *key) {
 
 		if(!hasGroup(group)) {
 			return false;

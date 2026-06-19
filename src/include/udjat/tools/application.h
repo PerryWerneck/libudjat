@@ -24,7 +24,7 @@
  #include <udjat/tools/file/path.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/timer.h>
- #include <udjat/tools/commandlineparser.h>
+ #include <udjat/tools/argumentparser.h>
  #include <udjat/ui/status.h>
  #include <udjat/agent/abstract.h>
  #include <list>
@@ -39,8 +39,8 @@
 	class UDJAT_API Application : public Dialog::Status {
 	private:
 		Timer *reload_timer = nullptr;		///< @brief Auto update timer.
-		int &argc;
-		char **argv;						///< @brief Command line arguments.
+		const int argc;
+		const char **argv;						///< @brief Command line arguments.
 
 		/// @brief Parse XML definitions from a file or directory.
 		/// @param path Path to file or directory with XML definitions.
@@ -59,23 +59,21 @@
 		/// @brief Factory for the application root.
 		virtual std::shared_ptr<Abstract::Agent> RootFactory();
 
-		/// @brief Set property from command-line argument.
-		/// @param name Property name.
-		/// @param value Property value.
-		/// @return true if the property was set.
-		virtual bool setProperty(const char *name, const char *value);
+		/// @brief Load command-line arguments.
+		/// @param parser The command line parser (for chaining).
+		virtual ArgumentParser & load(ArgumentParser &parser) noexcept;
 
-		/// @brief Show help messages.
-		/// @param width The width of the left part of the help text.
-		/// @details This method is called when the application is started with the '--help' option.
-		virtual void help(size_t width = 20) const noexcept;
+		/// @brief Parse command-line arguments.
+		bool parse_arguments();
 
 	public:
+		Application(const Application&) = delete;
+		Application& operator=(const Application &) = delete;
+		Application(Application &&) = delete;
+		Application & operator=(Application &&) = delete;
 
-		Application(int &argc, char **argv);
+		Application(const int argc, const char **argv);
 		virtual ~Application();
-
-		static void show_command_line_help(size_t width = 20) noexcept;
 
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
 
@@ -111,14 +109,6 @@
 
 		/// @brief The 'trace' stream.
 		static std::ostream & trace();
-
-		inline bool has_argument(char shortname, const char *longname, bool extract=true) noexcept {
-			return CommandLineParser::has_argument(argc, argv, shortname, longname, extract);
-		}
-
-		inline bool get_argument(int &argc, char **argv, char shortname, const char *longname, std::string &value, bool extract=true) noexcept {
-			return CommandLineParser::get_argument(argc, argv, shortname, longname, value, extract);
-		}
 
 		/// @brief Application Shortcut.
 		class UDJAT_API ShortCut {

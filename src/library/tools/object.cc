@@ -24,6 +24,7 @@
  #include <udjat/tools/threadpool.h>
  #include <udjat/tools/string.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/expander.h>
  #include <udjat/tools/logger.h>
@@ -53,28 +54,18 @@
 		Factories().remove(this);
 	}
 
+	/*
 	std::shared_ptr<Abstract::Object> Abstract::Object::Factory::ObjectFactory(Abstract::Object &parent, const XML::Node &node) const {
 		auto obj = ObjectFactory(node);
 		parent.push_back(obj);
 		return obj;
 	}
+	*/
 
-	static const char * NameFactory(const XML::Node &node) noexcept {
-
-		const char *name = node.attribute("name").as_string();
-
-		if(!(name && *name)) {
-			name = node.name();
-			Logger::String{"<",node.name(),"> doesn't have the required attribute 'name', using default '",name,"'"}.trace("xml");
-		}
-
-		return Quark(name).c_str();
+	NamedObject::NamedObject(const Properties &props) : NamedObject{props.NameFactory()} {
 	}
 
-	NamedObject::NamedObject(const XML::Node &node) : NamedObject{NameFactory(node)} {
-	}
-
-	NamedObject::NamedObject(const char *name, const XML::Node &) : NamedObject{name} {
+	NamedObject::NamedObject(const char *name, const Properties &) : NamedObject{name} {
 	}
 
 	const char * NamedObject::name() const noexcept {
@@ -106,8 +97,8 @@
 		return strcasecmp(c_str(), name) == 0;
 	}
 
-	bool NamedObject::operator==(const XML::Node &node) const noexcept {
-		return strcasecmp(c_str(),node.attribute("name").as_string()) == 0;
+	bool NamedObject::operator==(const Properties &node) const noexcept {
+		return strcasecmp(c_str(),node["name"].c_str()) == 0;
 	}
 
 	Value & NamedObject::getProperties(Value &value) const {
@@ -214,24 +205,26 @@
 	
 	bool Abstract::Object::append_child(const XML::Node &node) {
 
-		if(XML::parse(node)) {
+		if(!node.allowed()) {
 			return true; // Ignore reserved nodes.
 		}
 
 		// TODO: Rewrite init actions to use Object::Factory.
-		if(strcasecmp(node.name(),"init") == 0) {
+		if(strcasecmp(node.node_name(),"init") == 0) {
 			Action::Factory::build(node)->call(node);
 			return true; // Handled by action.
 		}
 
+		// TODO: Search object factories, if found, build object and append it.
+
 		return false;	// Not handled, maybe the caller can handle it.
 	}
 
-	Object::Object(const XML::Node &node) : NamedObject{node} {
-		properties.label = String{node,"label",properties.label}.as_quark();
-		properties.summary = String{node,"summary",properties.summary}.as_quark();
-		properties.url = String{node,"url",properties.url}.as_quark();
-		properties.icon = String{node,"icon",properties.icon}.as_quark();
+	Object::Object(const Udjat::Properties &props) : NamedObject{props} {
+		properties.label = props["label"].as_quark(properties.label);
+		properties.summary = props["summary"].as_quark(properties.summary);
+		properties.url = props["url"].as_quark(properties.url);
+		properties.icon = props["icon"].as_quark(properties.icon);
 	}
 
 	bool Object::append_child(const XML::Node &node) {
@@ -371,34 +364,34 @@
 		return Logger::trace() << name() << "\t";
 	}
 
-	void Abstract::Object::for_each(const XML::Node &root, const char *name, const char *group, const std::function<void(const XML::Node &node)> &handler) {
+	void Abstract::Object::for_each(const XML::Node &root, const char *tagname, const char *group, const std::function<void(const XML::Node &node)> &call) {
 
-		for(XML::Node node = root.child(name); node; node = node.next_sibling(name)) {
-			handler(node);
+		for(auto node = root.pugi::xml_node::child(tagname); node; node = node.pugi::xml_node::next_sibling(tagname)) {
+			call(XML::Node{node});
 		}
 
 		if(group && *group) {
 
-			string group_name{root.name()};
+			string group_name{root.pugi::xml_node::name()};
 			group_name += '-';
 			group_name += group;
 
-			string node_name{root.name()};
+			string node_name{root.pugi::xml_node::name()};
 			node_name += '-';
-			node_name += name;
+			node_name += tagname;
 
-			for(XML::Node parent = root.parent(); parent; parent = parent.parent()) {
+			for(auto parent = root.pugi::xml_node::parent(); parent; parent = parent.parent()) {
 
 				// Scan for nodes.
-				for(XML::Node node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
-					handler(node);
+				for(auto node = parent.child(node_name.c_str()); node; node = node.next_sibling(node_name.c_str())) {
+					call(XML::Node{node});
 				}
 
 				// Scan for groups.
-				for(XML::Node grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
+				for(auto grp = parent.child(group_name.c_str()); grp; grp = grp.next_sibling(group_name.c_str())) {
 
-					for(XML::Node node = grp.child(name); node; node = node.next_sibling(name)) {
-						handler(node);
+					for(auto node = grp.child(tagname); node; node = node.next_sibling(tagname)) {
+						call(XML::Node{node});
 					}
 
 				}
@@ -411,21 +404,21 @@
 
 	const char * Abstract::Object::settings_from(const XML::Node &node, bool upstream, const char *def) {
 
-		auto attribute = node.attribute("settings-from");
+		auto attribute = node.pugi::xml_node::attribute("settings-from");
 		if(attribute) {
 			return attribute.as_string(def);
 		}
 
 		string attrname{node.name()};
 		attrname += "-defaults-from";
-		attribute = node.attribute(attrname.c_str());
+		attribute = node.pugi::xml_node::attribute(attrname.c_str());
 		if(attribute) {
 			return attribute.as_string(def);
 		}
 
 		if(upstream) {
 			for(XML::Node parent = node.parent(); parent; parent = parent.parent()) {
-				attribute = parent.attribute(attrname.c_str());
+				attribute = parent.pugi::xml_node::attribute(attrname.c_str());
 				if(attribute) {
 					return attribute.as_string(def);
 				}
@@ -466,6 +459,10 @@
 		return getAttribute(node,name).as_uint(def);
 	}
 
+	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const std::string &group, const char *name, unsigned int def) {
+		return getAttribute(node,group.c_str(),name,def);
+	}
+
 	unsigned int Abstract::Object::getAttribute(const XML::Node &node, const char *group, const char *name, unsigned int def) {
 		auto attribute = getAttribute(node,name);
 		if(attribute) {
@@ -497,38 +494,12 @@
 			return Quark(Udjat::String(attribute.as_string(def)).expand(node)).c_str();
 		}
 
-		if(Config::hasKey(group,name)) {
+		if(Config::contains(group,name)) {
 			return Quark(Udjat::String(Config::get(group,name,def)).expand(node)).c_str();
 		}
 
 		return def;
 	}
-
-	/*
-	const char * Abstract::Object::expand(const XML::Node &node, const char *group, const char *value) {
-
-		String text{value};
-		text.expand([node,group](const char *key, string &value) {
-
-			auto attribute = getAttribute(node,key);
-			if(attribute) {
-				value = Udjat::expand(node,attribute,"");
-				return true;
-			}
-
-			if(Config::hasKey(group,key)) {
-				value = Config::Value<string>(group,key,"");
-				return true;
-			}
-
-			return false;
-
-		});
-
-		return Quark(text).c_str();
-
-	}
-	*/
 
 	const char * Abstract::Object::getChildValue(const XML::Node &node, const char *group) {
 		String text{node.child_value()};
@@ -599,7 +570,7 @@
 			}
 
 			// Parse the document, create the children.
-			for(const XML::Node &node : root) {
+			for(const auto &node : root) {
 
 				if(node.attribute("preload").as_bool(false) || XML::parse(node,true)) {
 					continue; // Ignore reserved, parsed and preloaded nodes.

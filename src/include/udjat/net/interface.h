@@ -46,13 +46,26 @@
 				return strcasecmp(name(),str) == 0;
 			}
 
+			inline operator bool() const {
+				return found() && up() && running();
+			}
+
 			virtual const char * name() const = 0;
 
 			virtual Value & getProperties(Value &value) const;
 
 			virtual bool found() const = 0;
+
+			/// @brief Check if interface is enabled.
+			/// @return true if the interface is enabled.
 			virtual bool up() const = 0;
+
+			/// @brief Check if the interface physical link is detected.
+			/// @return true if the interface physical link is detected.
+			virtual bool running() const = 0;
+
 			virtual bool loopback() const = 0;
+			
 			virtual std::string macaddress() const = 0;
 			virtual IP::Address address() const = 0;			///< @brief Interface address.
 			virtual IP::Address netmask() const = 0;			///< @brief Interface netmask.
@@ -60,7 +73,7 @@
 			/// @brief Build interface from nic name.
 			static std::shared_ptr<Interface> Factory(const char *name);
 
-			/// @brief Builde default interface.
+			/// @brief Build default interface.
 			static std::shared_ptr<Interface> Default();
 
 			/// @brief Enumerate all interface names.
@@ -72,8 +85,5 @@
 		};
 
  	}
-
-	/// @return true if 'func' has returned true.
-	//UDJAT_API bool for_each(const std::function<bool(const Network::Interface &intf)> &func);
 
  }

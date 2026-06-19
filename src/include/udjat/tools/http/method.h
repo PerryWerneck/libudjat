@@ -20,7 +20,7 @@
  #pragma once
  #include <udjat/defs.h>
  #include <ostream>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <cstdint>
 
  namespace Udjat {
@@ -42,9 +42,9 @@
 		};
 
 		UDJAT_API Method MethodFactory(const char *name);
-		UDJAT_API Method MethodFactory(const XML::Node &node, const char *attrname, const char *def);
-		UDJAT_API Method MethodFactory(const XML::Node &node, const char *def);
-		UDJAT_API Method MethodFactory(const XML::Node &node);
+		UDJAT_API Method MethodFactory(const Properties &props, const char *attrname, const char *def);
+		UDJAT_API Method MethodFactory(const Properties &props, const char *def);
+		UDJAT_API Method MethodFactory(const Properties &props);
 
 	}
 

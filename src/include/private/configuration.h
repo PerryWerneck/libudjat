@@ -64,6 +64,14 @@
 
 			static bool allow_user_homedir(bool allow);
 
+			inline bool contains(const char *group) {
+				return Win32::Registry{hParent,false}.hasKey(group);
+			}
+
+			inline bool contains(const char *group, const char *key) {
+				return Win32::Registry{hParent,group,false}.hasValue(key);
+			}
+
 			inline bool hasGroup(const char *group) {
 				return Win32::Registry{hParent,false}.hasKey(group);
 			}
@@ -74,6 +82,10 @@
 
 			template <typename T>
 			inline T get(const char *group, const char *key, const T def) const {
+				return Win32::Registry{hParent,group,false}.get(key,def);
+			}
+
+			inline String get(const char *group, const char *key, const char *def) const {
 				return Win32::Registry{hParent,group,false}.get(key,def);
 			}
 
@@ -124,8 +136,16 @@
 
 			void reload();
 
-			bool hasGroup(const char *group);
-			bool hasKey(const char *group, const char *key);
+			bool contains(const char *group);
+			bool contains(const char *group, const char *key);
+
+			inline bool hasGroup(const char *group) {
+				return contains(group);
+			}
+
+			inline bool hasKey(const char *group, const char *key) {
+				return contains(group,key);
+			}
 
 			int32_t get(const char *group, const char *name, const int32_t def) const;
 			int64_t get(const char *group, const char *name, const int64_t def) const;
@@ -178,8 +198,16 @@
 
 			void reload();
 
-			bool hasGroup(const char *group);
-			bool hasKey(const char *group, const char *key);
+			bool contains(const char *group);
+			bool contains(const char *group, const char *key);
+
+			inline bool hasGroup(const char *group) {
+				return contains(group);
+			}
+
+			inline bool hasKey(const char *group, const char *key) {
+				return contains(group,key);
+			}
 
 			int32_t get(const char *group, const char *name, const int32_t def) const;
 			int64_t get(const char *group, const char *name, const int64_t def) const;
@@ -205,9 +233,6 @@
 
 		// Controller without backend.
 		class UDJAT_PRIVATE Controller {
-		private:
-			static bool allow_user_config;
-
 		public:
 
 			static Controller & getInstance() {
@@ -237,11 +262,19 @@
 			inline void reload() const noexcept {
 			}
 
-			inline bool hasGroup(const char *) const noexcept {
+			inline bool contains(const char *group) {
 				return false;
 			}
 
-			inline bool hasKey(const char *, const char *) const noexcept {
+			bool contains(const char *group, const char *key) {
+				return false;
+			}
+
+			inline bool hasGroup(const char *group) {
+				return false;
+			}
+
+			inline bool hasKey(const char *group, const char *key) {
 				return false;
 			}
 

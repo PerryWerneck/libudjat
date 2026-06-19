@@ -34,6 +34,7 @@
  #include <functional>
  #include <cstdint>
  #include <cstring>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 
@@ -42,7 +43,53 @@
 
 	namespace XML {
 
-		using Node = pugi::xml_node;
+		class UDJAT_API Node : public pugi::xml_node, public Properties {
+		public:
+			Node() = default;
+
+			Node(const pugi::xml_node &node) : pugi::xml_node{node} {
+			}
+
+			~Node() override;
+
+			Node parent() const;
+
+			Node child(const char *name) const;
+
+			Node next_sibling(const char *name) const;	
+
+			bool reserved() const noexcept override;
+
+			bool allowed() const noexcept override;
+
+			const char *node_name() const noexcept override;
+
+			String path() const noexcept override;
+
+			bool contains(const char *name) const noexcept override;
+
+			bool has_child(const char *name) const noexcept override;
+
+			const String get(const char *attrname, const char *def = "") const override;
+			bool get(const char *attrname, const bool def) const override;
+			double get(const char *attrname, const double def) const override;
+			float get(const char *attrname, const float def) const override;
+			int get(const char *attrname, const int def) const override;
+			unsigned int get(const char *attrname, const unsigned int def) const override;
+			
+			String child_value() const override;
+			String child_value(const char *attrname, const char *def) const override;
+
+			bool for_each_child(const char *tagname, const std::function<bool(const Properties &property)> &call) const override;
+
+			bool for_each_child(const std::function<bool(const Properties &property)> &call) const override;
+
+			bool for_each_child(const char *tagname, const char *group, const std::function<bool(const Udjat::Properties &property)> &call) const override;
+
+			bool for_each_attribute(const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test) const override;
+
+		};
+
 		using Attribute = pugi::xml_attribute;
 
 		/// @brief Load multiple child nodes into a container.
@@ -52,8 +99,8 @@
 		/// @param attrname XML attribute name for child nodes.
 		/// @param container The container to load nodes into.
 		template <class C>
-		inline void load(const Node &node, const char *attrname, C &container) {
-			for(Node child = node.child(attrname); child; child = child.next_sibling(attrname)) {
+		inline void load(const pugi::xml_node &node, const char *attrname, C &container) {
+			for(auto child = node.child(attrname); child; child = child.next_sibling(attrname)) {
 				container.emplace_back(child);
 			}
 		}
@@ -131,22 +178,18 @@
 		/// @param attrname Attribute name.
 		/// @param def default value if nullptr the attribute is required.
 		/// @return The attribute value (def if not found).
-		UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
+		[[deprecated("Use node.get(attrname,def) or node[\"attrname\"]")]] UDJAT_API const char * StringFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
 		/// @brief Search 'node' and up stream for 'attrname'.
 		/// @param node Start node.
 		/// @param attrname Attribute name.
 		/// @param def default value if nullptr the attribute is required.
 		/// @return Quark with attribute value or 'def' if not found.
-		UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
+		[[deprecated("Use node.get(attrname,def].as_quark()")]] UDJAT_API const char * QuarkFactory(const XML::Node &node, const char *attrname, const char *def = "");
 
-		/// @brief Navigate from document until callback returns true.
-		/// @param node Start node.
-		/// @param attrname Attribute name.
-		/// @return Test result.
-		/// @retval false if test function returned false in all nodes.
-		/// @retval true if test function returned true.
-		UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const XML::Node &node)> &test);
+		[[deprecated("Use node.for_each_attribute")]] UDJAT_API bool for_each_attribute(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test);
+
+		[[deprecated("Use node.for_each_attribute")]] UDJAT_API bool for_each(const XML::Node &node, const char *attrname, const std::function<bool(const Udjat::Properties &props)> &test);
 
 		/// @brief Load default XML files.
 		/// @param path Path for configuration file or directory.
@@ -158,7 +201,7 @@
 		/// @param node XML node to parse.
 		/// @param recursive If true, parse children nodes too.
 		/// @return true if the node was parsed or should be ignored by the caller.
-		UDJAT_API bool parse(const XML::Node &node, bool recursive = false);
+		UDJAT_API bool parse(const pugi::xml_node &node, bool recursive = false);
 
 		/// @brief Load options for node children, doesn't parse the node itself.
 		/// @details This function is used to parse the children of a node, it doesn't parse or even check the node itself.
@@ -166,17 +209,17 @@
 		/// @param recursive If true, parse children nodes too.
 		/// @return true if any child node was parsed.
 		/// @retval false if no child node was parsed
-		UDJAT_API bool parse_children(const XML::Node &node, bool recursive = false);
+		UDJAT_API bool parse_children(const pugi::xml_node &node, bool recursive = false);
 		
 	}
 
 	/// @brief Test common filter options.
 	/// @return true if the node is valid.
-	UDJAT_API bool is_allowed(const XML::Node &node);
+	[[deprecated]] UDJAT_API bool is_allowed(const XML::Node &node);
 
 	/// @brief Test reserved node names.
 	/// @return true if the node is valid.
-	UDJAT_API bool is_reserved(const XML::Node &node);
+	[[deprecated]] UDJAT_API bool is_reserved(const XML::Node &node);
 
 	/// @brief Expand, if possible, values ${} from attribute.
 	UDJAT_API std::string expand(const XML::Node &node, const XML::Attribute &attribute, const char *def);
@@ -219,6 +262,51 @@
 		/// @param vname The tag on <attribute> to get attribute value.
 		/// @return The value tag from <attribute name=${aname} ${vname}=value /> or <node ${aname}=value /> or other standard searches.
 	};
+
+	template <typename T>
+	inline T from_xml(const XML::Node &node, const T def, const char *attrname = "value") {
+		throw std::logic_error("No XML converter for this data format");
+	}
+
+	template <>
+	inline int from_xml<int>(const XML::Node &node, const int def, const char *attrname) {
+		return node.pugi::xml_node::attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline unsigned int from_xml<unsigned int>(const XML::Node &node, const unsigned int def, const char *attrname) {
+		return node.pugi::xml_node::attribute(attrname).as_uint(def);
+	}
+
+	template <>
+	inline short from_xml<short>(const XML::Node &node, const short def, const char *attrname) {
+		return (short) node.pugi::xml_node::attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline unsigned short from_xml<unsigned short>(const XML::Node &node, const unsigned short def, const char *attrname) {
+		return (unsigned short) node.pugi::xml_node::attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline long from_xml<long>(const XML::Node &node, const long def, const char *attrname) {
+		return (long) node.pugi::xml_node::attribute(attrname).as_int(def);
+	}
+
+	template <>
+	inline unsigned long from_xml<unsigned long>(const XML::Node &node, const unsigned long def, const char *attrname) {
+		return (unsigned long) node.pugi::xml_node::attribute(attrname).as_uint(def);
+	}
+
+	template <>
+	inline float from_xml<float>(const XML::Node &node, const float def, const char *attrname) {
+		return node.pugi::xml_node::attribute(attrname).as_float(def);
+	}
+
+	template <>
+	inline double from_xml<double>(const XML::Node &node, const double def, const char *attrname) {
+		return node.pugi::xml_node::attribute(attrname).as_double(def);
+	}
 
  }
 

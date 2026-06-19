@@ -68,8 +68,12 @@
 			/// @param write true if not read-only.
 			Registry(const char *path, bool write = false);
 
-			bool hasKey(const char *name) const noexcept;
 			bool hasValue(const char *name) const noexcept;
+			bool hasKey(const char *name) const noexcept;
+
+			inline bool contains(const char *name) const noexcept {
+				return hasValue(name);
+			}
 
 			inline operator bool() const noexcept {
 				return hKey != 0;

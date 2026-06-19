@@ -21,16 +21,20 @@
  #include <udjat/defs.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/systemservice.h>
- #include <udjat/tools/configuration.h>
- #include <udjat/tools/logger.h>
- #include <udjat/agent/abstract.h>
- #include <stdexcept>
- #include <udjat/tools/event.h>
- #include <udjat/tools/threadpool.h>
- #include <udjat/tools/timer.h>
- #include <udjat/tools/intl.h>
- #include <udjat/ui/console.h>
- #include <unistd.h>
+//  #include <udjat/tools/configuration.h>
+//  #include <udjat/tools/logger.h>
+//  #include <udjat/agent/abstract.h>
+//  #include <stdexcept>
+//  #include <udjat/tools/event.h>
+//  #include <udjat/tools/threadpool.h>
+//  #include <udjat/tools/timer.h>
+//  #include <udjat/tools/intl.h>
+//  #include <udjat/ui/console.h>
+//  #include <unistd.h>
+
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif // HAVE_UNISTD_H
 
  #ifdef HAVE_SYSTEMD
 	#include <systemd/sd-daemon.h>
@@ -40,35 +44,15 @@
 
  namespace Udjat {
 
-	void SystemService::show_command_line_help(size_t width) noexcept {
-
-		static const CommandLineParser::Argument values[] = {
-			{ 'd', "daemon", _("Run in the background") },
-		};
-		
-		for(const auto &value : values) {
-			value.print(cout,20);
-			cout << "\n";
-		};
-
-	}
-
-	/// @brief Show help text to stream.
-	/// @param out The stream for help.
-	void SystemService::help(size_t width) const noexcept {
-		Application::help(width);
-		show_command_line_help(width);
-	}
-
 	int SystemService::run(const char *definitions) {
 
-		if(has_argument('d',"daemon")) {
-			if(daemon(0,0)) {
-				int err = errno;
-				Logger::String{"Error activating daemon mode: ",strerror(err)," (rc=",err,")"}.error("service");
-				return err;
-			}
-			Logger::console(false);
+		// Parse command line arguments.
+		if(parse_arguments()) {
+			return 0;
+		}
+
+		if(!MainLoop::getInstance()) {
+			return -1;
 		}
 
 #ifdef HAVE_SYSTEMD
@@ -108,36 +92,6 @@
 
 	}
 
-	/*
-	/// @brief Initialize service.
-	int SystemService::init(const char *definitions) {
-
-
-		int rc = Application::init(definitions);
-		if(rc) {
-			debug("Application init rc was ",rc);
-			return rc;
-		}
-
-		Config::Value<string> signame("service","signal-reconfigure","SIGHUP");
-		if(!signame.empty() && strcasecmp(signame.c_str(),"none")) {
-
-			Udjat::Event &reconfig = Udjat::Event::SignalHandler(this,signame.c_str(),[this,definitions](){
-				ThreadPool::getInstance().push([this,definitions](){
-					setup(definitions,false);
-				});
-				return true;
-			});
-			info() << signame << " (" << reconfig.to_string() << ") triggers a conditional reload" << endl;
-		}
-
-#ifdef HAVE_SYSTEMD
-#endif // HAVE_SYSTEMD
-		
-		return rc;
-	}
-	*/
-
 	void SystemService::on_timer() {
 
 		debug("Watchdog timer expired");
@@ -156,27 +110,6 @@
 #endif // HAVE_SYSTEMD
 		return Application::state(level,message);
 	}
-
-	int SystemService::install(const char *) {
-		error() << "Not supported on linux, use systemd" << endl;
-		return 0;
-	}
-
-	int SystemService::uninstall() {
-		error() << "Not supported on linux, use systemd" << endl;
-		return 0;
-	}
-
-	int SystemService::start() {
-		error() << "Not supported on linux, use systemd" << endl;
-		return 0;
-	}
-
-	int SystemService::stop() {
-		error() << "Not supported on linux, use systemd" << endl;
-		return 0;
-	}
-
 
  }
 

@@ -88,7 +88,7 @@
 	void Config::Controller::reload() {
 	}
 
-	bool Config::Controller::hasGroup(const char *group) {
+	bool Config::Controller::contains(const char *group) {
 		std::lock_guard<std::recursive_mutex> lock(guard);
 		if(!ini) {
 			return false;
@@ -96,7 +96,7 @@
 		return (iniparser_getsecnkeys(ini,(char *)group) != 0);
 	}
 
-	bool Config::Controller::hasKey(const char *group, const char *name) {
+	bool Config::Controller::contains(const char *group, const char *name) {
 		std::lock_guard<std::recursive_mutex> lock(guard);
 		return iniparser_find_entry(ini, key(group,name).c_str()) ;
 	}

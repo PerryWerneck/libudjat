@@ -353,7 +353,7 @@
 
 
 	bool Win32::Registry::hasKey(const char *name) const noexcept {
-
+		
 		if(!this->hKey) {
 			return false;
 		}

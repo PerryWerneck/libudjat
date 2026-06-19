@@ -41,6 +41,9 @@
 		UDJAT_API Udjat::String get(const std::string &group, const std::string &name, const std::string &def);
 		UDJAT_API bool get(const std::string &group, const std::string &name, const bool def);
 
+		/// @brief Call method with Properties containing a config file group.
+		UDJAT_API bool call(const char *group, const std::function<bool(const Properties &properties)> &call);
+
 		/// @brief Enable loading of configuration from user's home dir.
 		///	This method should be called BEFORE any other one, it doesnt work if file was already loaded.
 		UDJAT_API void allow_user_homedir(bool allow = false) noexcept;
@@ -51,8 +54,16 @@
 		/// @return false if the lambda returns 'false' for all keys.
 		UDJAT_API bool for_each(const char *group,const std::function<bool(const char *key, const char *value)> &call);
 
-		UDJAT_API bool hasGroup(const std::string &group);
-		UDJAT_API bool hasKey(const char *group, const char *key);
+		UDJAT_API bool contains(const std::string &group);
+		UDJAT_API bool contains(const char *group, const char *key);
+
+		inline bool hasGroup(const std::string &group) {
+			return contains(group);
+		}
+
+		inline bool hasKey(const char *group, const char *key) {
+			return contains(group,key);
+		}
 
 		template <typename T>
 		class UDJAT_API Value {

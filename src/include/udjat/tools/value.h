@@ -25,7 +25,7 @@
  #include <udjat/tools/http/mimetype.h>
  #include <udjat/tools/abstract/object.h>
  #include <ostream>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <functional>
  #include <memory>
  #include <cstdint>
@@ -100,7 +100,7 @@
 		bool as_bool() const;
 
 		/// @brief Type factory.
-		static Type TypeFactory(const XML::Node &node, const char *attrname = "value-type", const char *def = "Undefined");
+		static Type TypeFactory(const Udjat::Properties &props, const char *attrname = "value-type", const char *def = "Undefined");
 		static Type TypeFactory(const char *name);
 
 		/// @brief Get stored value type.
@@ -223,9 +223,10 @@
 		Value & set(const bool value);
 		Value & set(const float value);
 		Value & set(const double value);
+		Value & set(const Abstract::Object &value);
 
 		/// @brief Load tags <value name='name' value='value' type='type' /> into value.
-		Value & set(const XML::Node &node);
+		Value & set(const Udjat::Properties &props);
 
 		template <typename T>
 		Value & set(const T value) {
@@ -268,6 +269,7 @@
 		void to_html(std::ostream &out) const;
 		void to_yaml(std::ostream &out, size_t left_margin = 0) const;
 		void to_sh(std::ostream &stream) const;
+		void to_text(std::ostream &stream, size_t left_margin = 0) const;
 
 		/// @brief Serialize arrays to csv
 		void to_csv(std::ostream &out, char delimiter = ',') const;

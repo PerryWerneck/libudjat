@@ -24,6 +24,7 @@
  #include <udjat/tools/abstract/object.h>
  #include <ostream>
  #include <string>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/logger.h>
  #include <cstring>
@@ -38,8 +39,8 @@
 
 	protected:
 
-		NamedObject(const char *name, const XML::Node &node);
-		NamedObject(const XML::Node &node);
+		NamedObject(const char *name, const Properties &props);
+		NamedObject(const Udjat::Properties &props);
 
 		inline void rename(const char *name) {
 			objectName = name;
@@ -72,7 +73,7 @@
 		const char * name() const noexcept override;
 
 		bool operator==(const char *name) const noexcept;
-		bool operator==(const XML::Node &node) const noexcept;
+		bool operator==(const Properties &props) const noexcept;
 		size_t hash() const noexcept;
 
 		const char * c_str() const noexcept;
@@ -130,7 +131,7 @@
 
 		} properties;
 
-		Object(const XML::Node &node);
+		Object(const Udjat::Properties &props);
 
 	public:
 

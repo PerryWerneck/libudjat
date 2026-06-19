@@ -22,6 +22,7 @@
  #include <udjat/defs.h>
  #include <cstdint>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/argumentparser.h>
 
  #ifdef _WIN32
 	#include <udjat/win32/service.h>
@@ -60,13 +61,9 @@
 		/// @param agent The new root agent.
 		void root(std::shared_ptr<Abstract::Agent> agent) override;
 
-		/// @brief Reconfigure service.
-		//void setup(const char *pathname, bool startup) noexcept override;
-
-		/// @brief Show help text to stdout.
-		void help(size_t width = 20) const noexcept override;
-
-		//int setup(const char *definitions = nullptr) override;
+		/// @brief Load command-line arguments.
+		/// @param parser The command line parser (for chaining).
+		ArgumentParser & load(ArgumentParser &parser) noexcept override;
 
 	public:
 		SystemService(const SystemService&) = delete;
@@ -78,7 +75,7 @@
 
 		static void show_command_line_help(size_t width = 20) noexcept;
 
-		SystemService(int argc, char **argv);
+		SystemService(const int argc, const char **argv);
 		virtual ~SystemService();
 
 		/// @brief Parse command line options, run service.

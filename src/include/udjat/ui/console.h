@@ -27,50 +27,11 @@
  #include <cstdint>
  #include <ostream>
  #include <memory>
+ #include <udjat/ui/menu.h>
 
  namespace Udjat {
 
 	namespace UI {
-
-		class UDJAT_API Animation {
-		protected:
-			size_t current = 0;
-			constexpr Animation() = default;
-
-		public:
-			/// The animation styles
-			enum Style : uint8_t {
-				PlainText,
-				Simple,
-				Braille,
-				Circle,
-
-				Default
-			};
-
-			/// @brief  Set default animation style.
-			static void set(Animation::Style style = Animation::Style::Default);
-
-			static std::shared_ptr<Animation> Factory(Animation::Style style = Animation::Style::Default);
-
-			virtual const char * get() noexcept = 0;
-
-			inline operator const char *() noexcept {
-				return get();
-			}
-
-			inline const char * c_str() noexcept {
-				return get();
-			}
-
-			inline operator int() const noexcept {
-				return current;
-			}
-
-		private:
-			static Style style;
-
-		};
 
 
 		/// @brief Console writer.
@@ -95,6 +56,13 @@
 
 			Console();
 			~Console();
+
+			/// @brief Write text to console.
+			/// @param text The text to write.
+			/// @return true if suceeded.
+			static bool write(const char *text) noexcept;
+
+			static bool decorated() noexcept;
 
 			Console & set(const Foreground color);
 
@@ -129,6 +97,11 @@
 			/// @return Allways false.
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	
+			/// @brief Get console menu.
+			/// @param title The menu title;
+			/// @return Pointer to console based menu class.
+			std::shared_ptr<Dialog::Menu> menu(const char *title);
+
 		};
 
 	}
@@ -140,10 +113,6 @@
 	inline Udjat::UI::Console & operator<< (Udjat::UI::Console &os, const Udjat::UI::Console::Foreground fg) {
 		os.set(fg);
 		return os;
-	}
-
-	inline ostream & operator<< (ostream& os, Udjat::UI::Animation &animation) {
-		return os << animation.get();
 	}
 
  }

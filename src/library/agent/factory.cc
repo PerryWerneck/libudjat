@@ -40,6 +40,7 @@
  #include <cstring>
  #include <list>
  #include <memory>
+ #include <stdexcept>
  
  using namespace std;
 
@@ -96,9 +97,9 @@
 
 	std::shared_ptr<Abstract::Agent> Abstract::Agent::Factory::build(const XML::Node &node) {
 
-		const char *type = node.attribute("type").as_string("");
+		auto type = node["type"];
 
-		if(!(type && *type)) {
+		if(type.empty()) {
 
 			// No type, try probing the factories.
 
@@ -117,11 +118,7 @@
 			// No factory recognize the node and I have no type, then, cant do anything.
 			
 			throw runtime_error(
-#ifdef BUILD_LEGACY
-				String{"Cant find a valid factory for agent"}
-#else
-				String{"Cant find a valid factory for agent at ",node.path()}
-#endif // BUILD_LEGACY
+				String{"Cant determine factory for agent '",node.attribute("name").as_string(),"' at ",node.path()}
 			);
 
 		}
@@ -130,22 +127,26 @@
 		// Have type, use it
 		//
 
+		debug(Factories().size()," available factories");
 		for(const auto factory : Factories()) {
 
-			if(strcasecmp(type,factory->name)) {
+			debug("Checking for type '",type.c_str(),"' on factory '",factory->name,"'");
+			if(strcasecmp(type.c_str(),factory->name)) {
 				continue;
 			}
 
 			auto agent = factory->AgentFactory(node);
 			if(agent) {
-				debug("Got agent '",type,"'")
+				debug("Got agent '",type.c_str(),"'")
 				return agent;
 			}
+
+			Logger::String{"Agent '",node["name"].c_str()," rejected by factory '",factory->name,"'"}.trace();
 
 		}
 
 		// Try internal types
-		if(strcasecmp(type,"shell") == 0 || strcasecmp(type,"script") == 0 || strcasecmp(type,"shell-script") == 0) {
+		if(strcasecmp(type.c_str(),"shell") == 0 || strcasecmp(type.c_str(),"script") == 0 || strcasecmp(type.c_str(),"shell-script") == 0) {
 
 			/// @brief Agent keeping the value of script return code.
 			class Script : public Udjat::Agent<int32_t>, private Udjat::Script {
@@ -264,13 +265,13 @@
 		};
 
 		for(auto builder : builders) {
-			if(!strcasecmp(type,builder.type)) {
+			if(!strcasecmp(type.c_str(),builder.type)) {
 				Logger::String{"Building agent using internal type '",type,"'"}.trace(node.attribute("name").as_string(PACKAGE_NAME));
 				return builder.build(node);
 			}
 		}
 
-		if(strcasecmp(type,"random") == 0 || strcasecmp(type,"randomvalue") == 0) {
+		if(strcasecmp(type.c_str(),"random") == 0 || strcasecmp(type.c_str(),"randomvalue") == 0) {
 
 			/// @brief Agent generating a random value.
 			class RandomValue : public Udjat::Agent<unsigned int> {
@@ -349,11 +350,7 @@
 		}
 
 		throw runtime_error(
-#ifdef BUILD_LEGACY
-			String{"Cant find a valid factory for agent"}
-#else
-			String{"Cant find a valid factory for agent at ",node.path()}
-#endif // BUILD_LEGACY
+			String{"Cant find a valid factory for agent '",node.attribute("name").as_string(),"' type '",type,"' at ",node.path()}
 		);
 
 	}

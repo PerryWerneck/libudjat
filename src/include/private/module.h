@@ -7,6 +7,7 @@
 #include <udjat/tools/value.h>
 #include <udjat/tools/container.h>
 #include <udjat/tools/xml.h>
+#include <udjat/tools/properties.h>
 #include <mutex>
 
 using namespace std;
@@ -84,9 +85,10 @@ namespace Udjat {
 
 		/// @brief Load module by filename.
 		/// @param filename The module filename.
+		/// @param props The module properties.
 		/// @retval true The module was already loaded.
 		/// @retval false The module was loaded.
-		bool load(const std::string &filename, const XML::Node &node);
+		bool load(const std::string &filename, const Udjat::Properties &props);
 		
 		bool for_each(const std::function<bool(Module &module)> &method);
 

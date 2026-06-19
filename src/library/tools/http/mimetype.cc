@@ -28,7 +28,7 @@
  static const struct {
 	const char *ext;
 	const char *str;
- } types[] = {
+ } types[Udjat::MimeType::count] = {
 
 	{ "bin",	"application/octet-stream" },
 
@@ -75,6 +75,9 @@
 
 	// Form parser
 	{ "form-urlencoded",	"x-www-form-urlencoded" },
+
+	// Markdown
+	{ "md",					"text/markdown; charset=UTF-8" },
 
  };
 

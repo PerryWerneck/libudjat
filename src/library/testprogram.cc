@@ -23,7 +23,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
- #include <udjat/tools/logger.h>
+ #include <private/logger.h>
  #include <udjat/module/abstract.h>
  #include <udjat/tools/url.h>
  #include <string>
@@ -73,7 +73,7 @@
 
 	for(const auto &backend : backends) {
 
-		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.info();
+		Logger::String{"-----[ Testing backend '",backend,"' ]------------------------------------------------------"}.notice();
 		try {
 
 			String filename{"/tmp/test-",backend,".key"};
@@ -154,7 +154,7 @@
 			Logger::String{"Error testing backend '",backend,"': ",e.what()}.error();
 		}
 
-		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.info();
+		Logger::String{"-----[ Finished test of backend '",backend,"' ]---------------------------------------------"}.notice();
 	}
 
 

@@ -23,7 +23,7 @@
  #include <string>
  #include <cstdlib>
  #include <stdexcept>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
 
  namespace Udjat {
 
@@ -85,50 +85,6 @@
 		return std::stod(str);
 	}
 
-	template <typename T>
-	inline T from_xml(const XML::Node &node, const T def, const char *attrname = "value") {
-		throw std::logic_error("No XML converter for this data format");
-	}
-
-	template <>
-	inline int from_xml<int>(const XML::Node &node, const int def, const char *attrname) {
-		return node.attribute(attrname).as_int(def);
-	}
-
-	template <>
-	inline unsigned int from_xml<unsigned int>(const XML::Node &node, const unsigned int def, const char *attrname) {
-		return node.attribute(attrname).as_uint(def);
-	}
-
-	template <>
-	inline short from_xml<short>(const XML::Node &node, const short def, const char *attrname) {
-		return (short) node.attribute(attrname).as_int(def);
-	}
-
-	template <>
-	inline unsigned short from_xml<unsigned short>(const XML::Node &node, const unsigned short def, const char *attrname) {
-		return (unsigned short) node.attribute(attrname).as_int(def);
-	}
-
-	template <>
-	inline long from_xml<long>(const XML::Node &node, const long def, const char *attrname) {
-		return (long) node.attribute(attrname).as_int(def);
-	}
-
-	template <>
-	inline unsigned long from_xml<unsigned long>(const XML::Node &node, const unsigned long def, const char *attrname) {
-		return (unsigned long) node.attribute(attrname).as_uint(def);
-	}
-
-	template <>
-	inline float from_xml<float>(const XML::Node &node, const float def, const char *attrname) {
-		return node.attribute(attrname).as_float(def);
-	}
-
-	template <>
-	inline double from_xml<double>(const XML::Node &node, const double def, const char *attrname) {
-		return node.attribute(attrname).as_double(def);
-	}
 
  }
 

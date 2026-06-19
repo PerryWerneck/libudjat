@@ -21,7 +21,7 @@ namespace Udjat {
 	/// @brief Activate an error state.
 	void Abstract::Agent::failed(const char *summary, const std::exception &e) noexcept {
 
-		error() << summary << ": " << e.what() << endl;
+		Logger::String{summary,": ",e.what()}.error(name());
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
@@ -33,7 +33,7 @@ namespace Udjat {
 
 	void Abstract::Agent::failed(const char *summary, int code) noexcept {
 
-		cerr << name() << "\t" << summary << ": " << strerror(code) << endl;
+		Logger::String{summary,": ",strerror(code)}.error(name());
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;
@@ -46,7 +46,7 @@ namespace Udjat {
 	/// @brief Set failed state from known exception
 	void Abstract::Agent::failed(const char *summary, const char *body) noexcept {
 
-		cerr << name() << "\t" << summary << endl;
+		Logger::String{summary}.error(name());
 
 		if(update.failed) {
 			this->update.next = time(nullptr) + update.failed;

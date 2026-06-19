@@ -30,13 +30,9 @@
 
  namespace Udjat {
 
-	Application::Application(int &c, char **v) : argc{c}, argv{v} {
+	Application::Application(int c, const char **v) : argc{c}, argv{v} {
 
 		Quark::init();
-
-#ifdef DEBUG 
-		Logger::console(true);
-#endif
 
 #ifdef GETTEXT_PACKAGE
 		set_gettext_package(GETTEXT_PACKAGE);

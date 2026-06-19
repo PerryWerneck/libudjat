@@ -77,6 +77,7 @@ SOURCES= \
 	$(wildcard $(srcdir)/src/library/tools/url/handlers/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/xml/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/crypto/*.cc) \
+	$(wildcard $(srcdir)/src/library/tools/logger/*.cc) \
 	$(wildcard $(srcdir)/src/library/tools/crypto/backend/*.cc)
 
 TEST_SOURCES= \
@@ -251,7 +252,7 @@ doc/html/index.html:
 	@echo doc/html/index.html ...
 
 	@$(MKDIR) $(dir $@)
-	@DOXYGEN@ doc/doxyfile
+	@DOXYGEN@ doc/Doxyfile
 
 install-doc: \
 	doc/html/index.html

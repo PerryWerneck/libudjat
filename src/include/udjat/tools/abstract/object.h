@@ -21,6 +21,7 @@
 
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/string.h>
  #include <memory>
 
@@ -50,9 +51,6 @@
 				inline const char *c_str() const noexcept {
 					return name;
 				}
-
-				/// @brief Create an object from XML node.
-				[[deprecated("Use ObjectFactory(node)")]] virtual std::shared_ptr<Abstract::Object> ObjectFactory(Abstract::Object &parent, const XML::Node &node) const;
 
 				virtual std::shared_ptr<Abstract::Object> ObjectFactory(const XML::Node &node) const = 0;
 
@@ -100,21 +98,21 @@
 			/// @param node The xml node.
 			/// @param tagname The tagname.
 			/// @return true if method has returned 'true'.
-			static bool for_each(const XML::Node &node, const char *tagname, const std::function<bool (const XML::Node &node)> &call);
+			[[deprecated("Use node.for_each_child(attrname)")]] static bool for_each(const XML::Node &node, const char *tagname, const std::function<bool (const XML::Node &node)> &call);
 
 			/// @brief Navigate thru XML nodes, including groups.
 			/// @param node The XML node to start search.
-			/// @param name The child node name.
+			/// @param tagname The child node name.
 			/// @param group The child group node name, usually the plural of name (optional).
 			/// @param handler The handler for children.
-			static void for_each(const XML::Node &node, const char *name, const char *group, const std::function<void(const XML::Node &node)> &handler);
+			[[deprecated("Use node.for_each_child(tagname,group)")]] static void for_each(const XML::Node &node, const char *tagname, const char *group, const std::function<void(const XML::Node &node)> &handler);
 
 			/// @brief Navigate thru <tagname> nodes on current and parent nodes until lambda returns 'true'.
 			/// @param node The starting point.
 			/// @param tagname the xml tag to scan.
 			/// @param call lambda to be called on every node.
 			/// @return true if the lambda has returned true.
-			static bool search(const XML::Node &node, const char *tagname, const std::function<bool(const XML::Node &node)> &call);
+			[[deprecated]] static bool search(const XML::Node &node, const char *tagname, const std::function<bool(const XML::Node &node)> &call);
 
 			/// @brief Get property from xml node and convert to const string.
 			/// @param node The xml node.
@@ -134,7 +132,7 @@
 			/// @param node The xml node.
 			/// @param group The configuration group name.
 			/// @return child value converted to quark.
-			static const char * getChildValue(const XML::Node &node, const char *group);
+			[[deprecated]] static const char * getChildValue(const XML::Node &node, const char *group);
 
 			/// @brief Get property from xml node with fallback to configuration file.
 			/// @param node The xml node.
@@ -142,14 +140,14 @@
 			/// @param name The property name.
 			/// @param def The default value (should be constant).
 			/// @return Attribute value converted to quark or def
-			static const char * getAttribute(const XML::Node &node, const char *group, const char *name, const char *def);
+			[[deprecated]] static const char * getAttribute(const XML::Node &node, const char *group, const char *name, const char *def);
 
 			/// @brief Get property from xml node.
 			/// @param node The xml node.
 			/// @param name The property name.
 			/// @param def The default value.
 			/// @return Attribute value.
-			static unsigned int getAttribute(const XML::Node &node, const char *name, unsigned int def);
+			[[deprecated]] static unsigned int getAttribute(const XML::Node &node, const char *name, unsigned int def);
 
 			/// @brief Get property from xml node with fallback to configuration file.
 			/// @param node The xml node.
@@ -157,12 +155,9 @@
 			/// @param name The property name.
 			/// @param def The default value.
 			/// @return Attribute value.
-			static unsigned int getAttribute(const XML::Node &node, const char *group, const char *name, unsigned int def);
-			static bool getAttribute(const XML::Node &node, const char *group, const char *name, bool def);
-
-			static inline unsigned int getAttribute(const XML::Node &node, const std::string &group, const char *name, unsigned int def) {
-				return getAttribute(node,group.c_str(),name,def);
-			}
+			[[deprecated]] static unsigned int getAttribute(const XML::Node &node, const char *group, const char *name, unsigned int def);
+			[[deprecated]] static bool getAttribute(const XML::Node &node, const char *group, const char *name, bool def);
+			[[deprecated]] static unsigned int getAttribute(const XML::Node &node, const std::string &group, const char *name, unsigned int def);
 
 			virtual const char * name() const noexcept;
 

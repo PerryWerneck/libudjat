@@ -21,6 +21,7 @@
 #include <config.h>
 #include <cstring>
 #include <udjat/ui/console.h>
+#include <udjat/ui/animation.h>
 #include <memory>
 
 using namespace std;

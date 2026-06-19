@@ -20,12 +20,12 @@
 project(
 	'udjat', 
 	['cpp'],
-	version: '2.6.0',
+	version: '2.7.0',
 	default_options : ['c_std=c11', 'cpp_std=c++17', 'buildtype=release'],
 	license: 'GPL-3.0-or-later',
 )
 
-module_build=20240725
+module_build=20260611
 project_description = 'UDJat core library'
 product_name = 'udjat'
 product_domain = 'br.eti.werneck'
@@ -144,6 +144,12 @@ app_conf.set('PACKAGE_VERSION_MINOR', pkg_minor_version)
 app_conf.set('PACKAGE_VERSION_MICRO', pkg_micro_version)
 app_conf.set('MINIMAL_MODULE_BUILD', module_build)
 app_conf.set('PACKAGE_CORE_BUILD', time_epoch)
+
+app_conf.set('LEGACY_CMDLINE_PARSER', 1)
+
+if find_program('dot', required: false).found()
+  app_conf.set('HAVE_DOT', 'YES')
+endif
 
 if dbus.found()
   app_conf.set('HAVE_DBUS', 1)
@@ -405,11 +411,13 @@ lib_src += [
   'src/library/state/parse.cc',
   'src/library/state/state.cc',
   'src/library/tools/activatable.cc',
+  'src/library/tools/argparser.cc',
   'src/library/tools/application/application.cc',
   'src/library/tools/commandlineparser.cc',
   'src/library/tools/application/run.cc',
   'src/library/tools/application/setup.cc',
   'src/library/tools/application/loader.cc',
+  'src/library/tools/application/argparser.cc',
   'src/library/tools/arguments.cc',
   'src/library/tools/base64.cc',
   'src/library/tools/cache.cc',
@@ -442,8 +450,11 @@ lib_src += [
   'src/library/tools/string/expand.cc',
   'src/library/tools/string/string.cc',
   'src/library/tools/subprocess.cc',
-  'src/library/tools/systemservice.cc',
+  'src/library/tools/systemservice/systemservice.cc',
+  'src/library/tools/systemservice/args_' + host_machine.system() + '.cc',
+  'src/library/tools/systemservice/tools_' + host_machine.system() + '.cc',
   'src/library/tools/timestamp.cc',
+  'src/library/tools/properties.cc',
   'src/library/tools/url/methodfactory.cc',
   'src/library/tools/url/handler.cc',
   'src/library/tools/url/header.cc',
@@ -460,12 +471,23 @@ lib_src += [
   'src/library/tools/value/xml.cc',
   'src/library/tools/value/report.cc',
   'src/library/tools/value/yaml.cc',
+  'src/library/tools/value/text.cc',
   'src/library/tools/xml/document.cc',
   'src/library/tools/xml/attribute.cc',
   'src/library/tools/xml/misc.cc',
   'src/library/tools/xml/load.cc',
+  'src/library/tools/xml/node.cc',
   'src/library/tools/exception.cc',
-  'src/library/tools/logger.cc',
+  'src/library/tools/logger/commandline.cc',
+  'src/library/tools/logger/controller.cc',
+  'src/library/tools/logger/file.cc',
+  'src/library/tools/logger/level.cc',
+  'src/library/tools/logger/misc.cc',
+  'src/library/tools/logger/string.cc',
+  'src/library/tools/logger/message.cc',
+  'src/library/tools/logger/console.cc',
+  'src/library/tools/logger/stream.cc',
+  'src/library/tools/logger/argparser.cc',
   'src/library/tools/object.cc',
   'src/library/tools/report.cc',
   'src/library/tools/interface.cc',
@@ -486,6 +508,7 @@ lib_src += [
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
   'src/library/ui/animation.cc',
+  'src/library/ui/menu.cc',
   'src/library/testprogram.cc',
 ]
 
@@ -596,7 +619,6 @@ if host_machine.system() == 'windows'
     'src/library/tools/os/windows/subprocess/start.cc',
     'src/library/tools/os/windows/subprocess/subprocess.cc',
     'src/library/tools/os/windows/subprocess/watcher.cc',
-    'src/library/tools/os/windows/systemservice.cc',
     'src/library/tools/os/windows/threadpool.cc',
     'src/library/tools/os/windows/utils.cc',
     'src/library/tools/os/windows/win32service.cc',
@@ -687,11 +709,9 @@ else
     'src/library/tools/os/linux/subprocess/run.cc',
     'src/library/tools/os/linux/subprocess/start.cc',
     'src/library/tools/os/linux/subprocess/subprocess.cc',
-    'src/library/tools/os/linux/systemservice.cc',
     'src/library/tools/os/linux/threadpool.cc',
     'src/library/tools/os/linux/econf.cc',
     'src/library/tools/os/linux/iniparser.cc',
-    'src/library/tools/os/linux/logger.cc',
     'src/library/tools/os/linux/system.cc',
     'src/library/tools/os/linux/netlink_routes.cc',
   ]
@@ -752,6 +772,27 @@ config_h = [
       configuration : app_conf
   )
 ]
+
+doxygen = find_program('doxygen', required: false)
+
+if doxygen.found()
+
+  doxyfile = configure_file(
+    input: 'doc/Doxyfile.in',
+    output: 'Doxyfile',
+    configuration: app_conf
+  )
+
+  # Create a custom build target for the documentation
+  custom_target('doc',
+    input: doxyfile,
+    output: 'doc_output',
+    command: [doxygen, '@INPUT@'],
+    build_by_default: false,
+    console: true
+  )
+
+endif
 
 if host_machine.system() == 'windows'
 
@@ -882,7 +923,6 @@ install_headers(
   'src/include/udjat/alert.h',
   'src/include/udjat/defs.h',
   'src/include/udjat/module.h',
-  'src/include/udjat/loader.h',
   subdir: 'udjat'  
 )
 
@@ -953,6 +993,7 @@ install_headers(
   'src/include/udjat/tools/value.h',
   'src/include/udjat/tools/application.h',
   'src/include/udjat/tools/commandlineparser.h',
+  'src/include/udjat/tools/argumentparser.h',
   'src/include/udjat/tools/exception.h',
   'src/include/udjat/tools/file.h',
   'src/include/udjat/tools/handler.h',
@@ -969,6 +1010,8 @@ install_headers(
   'src/include/udjat/tools/percentage.h',
   'src/include/udjat/tools/socket.h',
   'src/include/udjat/tools/memory.h',
+  'src/include/udjat/tools/properties.h',
+  'src/include/udjat/tools/loader.h',
   subdir: 'udjat/tools'  
 )
 
@@ -996,6 +1039,8 @@ install_headers(
   'src/include/udjat/ui/console.h',
   'src/include/udjat/ui/progress.h',
   'src/include/udjat/ui/status.h',
+  'src/include/udjat/ui/menu.h',
+  'src/include/udjat/ui/animation.h',
   subdir: 'udjat/ui'  
 )
 

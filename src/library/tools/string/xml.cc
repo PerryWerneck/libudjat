@@ -23,6 +23,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <cstdarg>
  #include <udjat/tools/quark.h>
  #include <sstream>
@@ -33,13 +34,23 @@
 
  namespace Udjat {
 
+	String::String(const Properties &props, const char *attrname, bool required)
+		: String{props.get(attrname,required ? nullptr : "")} {
+		expand(props);
+	}
+
+	String::String(const Properties &props, const char *attrname, const char *def)
+		: String{props.get(attrname,def)} {
+		expand(props);
+	}
+
 	String::String(const XML::Node &node, const char *attrname, bool required)
-		: String{XML::StringFactory(node,attrname,required ? nullptr : "")} {
+		: String{node.get(attrname,required ? nullptr : "")} {
 		expand(node);
 	}
 
 	String::String(const XML::Node &node, const char *attrname, const char *def)
-		: String{XML::StringFactory(node,attrname,def)} {
+		: String{node.get(attrname,def)} {
 		expand(node);
 	}
 

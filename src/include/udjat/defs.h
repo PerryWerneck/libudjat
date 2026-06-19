@@ -136,6 +136,7 @@ namespace Udjat {
 
 	}
 
+	class String;
 	class Alert;
 	class Value;
 	class TimeStamp;

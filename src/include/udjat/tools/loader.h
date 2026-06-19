@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2025 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -36,19 +36,32 @@ extern "C" {
 
 namespace Udjat {
 
-	/// @brief Helper library to test and develop Udjat modules.
-	/// @param argc Number of command line arguments.
-	/// @param argv The command line arguments.
-	/// @param path Path to the XML configuration file or directory (default is "test.xml").
-	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(int argc, char *argv[], const char *path = "test.xml");
+	enum LoaderMode {
+		LOADER_MODE_INIT,		///< @brief Initialize application.
+		LOADER_MODE_RUN_TESTS,	///< @brief Run unit tests.
+	};
 
 	/// @brief Helper library to test and develop Udjat modules.
 	/// @param argc Number of command line arguments.
 	/// @param argv The command line arguments.
-	/// @param init A function to initialize the application with custom settings, non-zero return aborts loading.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(int argc, char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
+	int UDJAT_API loader(const int argc, const char *argv[], const char *path = "test.xml");
+
+	/// @brief Helper library to test and develop Udjat modules.
+	/// @param argc Number of command line arguments.
+	/// @param argv The command line arguments.
+	/// @param callback Callback method to run tests on initialize app, return true if the mode was processed.
+	/// @param path Path to the XML configuration file or directory (default is "test.xml").
+	/// @return 0 on success, non-zero on failure.
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &callback, const char *path = "test.xml");
+
+	/// @brief Helper library to test and develop Udjat modules.
+	/// @param argc Number of command line arguments.
+	/// @param argv The command line arguments.
+	/// @param callback Callback method to initialize app.
+	/// @param path Path to the XML configuration file or directory (default is "test.xml").
+	/// @return 0 on success, non-zero on failure.
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
 
 }

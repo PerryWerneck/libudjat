@@ -497,10 +497,12 @@
 
 	}
 
-	const char * String::as_quark() const {
-		return Quark(*this).c_str();
+	const char * String::as_quark(const char *def) const {
+		if(def && *def && empty()) {
+			return Quark{def}.c_str();
+		}
+		return Quark{*this}.c_str();
 	}
-
 
  }
 

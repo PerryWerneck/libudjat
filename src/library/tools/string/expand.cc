@@ -23,7 +23,7 @@
  #include <udjat/tools/timestamp.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/url.h>
- #include <udjat/tools/xml.h>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/object.h>
 
@@ -115,80 +115,35 @@
 		},dynamic,cleanup);
 	}
 
-	static bool check_node(XML::Node &xml, const char *key, std::string &value) {
-
-		for(auto child = xml.child("attribute"); child; child = child.next_sibling("attribute")) {
-
-			// Check the attribute name.
-			if(!strcasecmp(key,child.attribute("name").as_string("*"))) {
-
-				if(is_allowed(child)) {
-					value = child.attribute("value").as_string();
-					return true;
-				}
-
-			}
-		}
-
-		return false;
+	String & String::expand(const Properties &props, const char *group) {
+		return expand('$',props,group);
 	}
 
-	String & String::expand(const XML::Node &node, const char *group) {
-		return expand('$',node,group);
-	}
+	String & String::expand(char mrk, const Properties &props, const char *group) {
 
-	String & String::expand(char mrk, const XML::Node &node, const char *group) {
-
-		bool dynamic = node.attribute("expand-dynamic").as_bool(false);
-		bool cleanup = node.attribute("clear-undefined").as_bool(false);
+		bool dynamic = props.get("expand-dynamic",false);
+		bool cleanup = props.get("clear-undefined",false);
 
 		char defmarker[2] = {mrk,'\0'};
-		const char *marker = node.attribute("variable-marker").as_string(defmarker);
+		String marker = props.get("variable-marker",defmarker);
 
-		if(!(marker && *marker)) {
+		if(marker.empty()) {
 			throw system_error(EINVAL,system_category(),"Required attribute 'variable-marker' is empty or invalid");
 		}
 
-		group = node.attribute("settings-from").as_string(group);
+		String settings_from = props.get("settings-from",(group && *group) ? group : "default-attributes");
 
-		return expand(marker[0],[node,dynamic,cleanup,group](const char *key, std::string &value) {
+		return expand(marker[0],[&props,dynamic,cleanup,&settings_from](const char *key, std::string &value) {
 
-			// Check node attributes
-			{
-				pugi::xml_attribute attribute = node.attribute(key);
-				if(attribute) {
-					value = attribute.as_string();
-					return true;
-				}
+			if(props.contains(key)) {
+				value = props.get(key);
+				return true;
 			}
 
-			// Search the XML tree for an attribute with the required name.
-			for(XML::Node xml = node;xml;xml = xml.parent()) {
-
-				if(is_allowed(xml)) {
-
-					// Search attributes.
-					if(check_node(xml,key,value)) {
-						return true;
-					}
-
-					// Search attribute lists.
-					for(auto lst = xml.child("attribute-list"); lst; lst = lst.next_sibling("attribute-list")) {
-
-						if(is_allowed(lst) && check_node(lst,key,value)) {
-							return true;
-						}
-
-					}
-
-				}
-
-			}
-
-			if(group && Config::hasKey(group,key)) {
+			if(!settings_from.empty() && Config::contains(settings_from.c_str(),key)) {
 				// Get from the configuration file.
-				debug("Getting '",key,"' from group '",group,"' in configuration");
-				value = Config::get(group, key, "");
+				debug("Getting '",key,"' from group '",settings_from.c_str(),"' in configuration");
+				value = Config::get(settings_from.c_str(), key, "");
 				return true;
 			}
 

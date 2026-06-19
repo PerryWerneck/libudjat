@@ -94,8 +94,8 @@
 
 	}
 
-	UDJAT_API sockaddr_storage IP::Factory(const XML::Node &node) {
-		return Factory((const char *) node.attribute("ip").as_string());
+	UDJAT_API sockaddr_storage IP::Factory(const Properties &props) {
+		return Factory(props["ip"].c_str());
 	}
 
 	IP::Address & IP::Address::set(const sockaddr_storage & value) {

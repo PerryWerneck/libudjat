@@ -17,6 +17,8 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
+ #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+
  #include <config.h>
  #include <udjat/defs.h>
 
@@ -86,8 +88,8 @@
 		// Preload
 		{
 			auto root = document_element();
-			Logger::setup(root);
-			for(const XML::Node &node : root) {
+			Logger::setup(XML::Node{root});
+			for(const auto &node : root) {
 				if(node.attribute("preload").as_bool(false)) {
 					Logger::String{"Preloading ",node.name()," '",node.attribute("name").as_string(),"'"}.trace();
 					XML::parse(node);
@@ -116,7 +118,7 @@
 
 			} catch(const std::exception &e) {
 
-				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning("xml");
+				Logger::String{"Error updating '",filename,"' from '",url.c_str(),"' - ",e.what()}.warning();
 
 			}
 
@@ -127,9 +129,9 @@
 	time_t XML::Document::parse() const {
 
 		auto root = document_element();
-		Logger::setup(root);
+		Logger::setup(XML::Node{root});
 
-		for(const XML::Node &node : root) {
+		for(const auto &node : root) {
 			if(!node.attribute("preload").as_bool(false)) {
 				XML::parse(node);
 			}
@@ -150,7 +152,7 @@
 		return node;
 	}
 
-	bool XML::parse_children(const XML::Node &node, bool recursive) {
+	bool XML::parse_children(const pugi::xml_node &node, bool recursive) {
 
 		bool rc = false;
 		for(const auto &child : node) {
@@ -162,11 +164,16 @@
 		return rc;
 	}
 
-	bool XML::parse(const XML::Node &node, bool recursive) {
+	bool XML::parse(const pugi::xml_node &node, bool recursive) {
 
 		// It's an attribute?
 		if(is_reserved(node) || !is_allowed(node)) {
 			return true; // Ignore reserved nodes.
+		}
+
+		XML::Node props{node};
+		if(Properties::parse(props)) {
+			return true; // Handled.
 		}
 
 		const char *name = node.name();
@@ -174,7 +181,7 @@
 		for(const auto factory : Factories()) {
 			if(*factory == name) {
 
-				if(!factory->parse(node)) {
+				if(!factory->parse(props)) {
 					continue; // Not handled.
 				}
 

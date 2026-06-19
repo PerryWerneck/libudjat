@@ -27,8 +27,11 @@
 #include <private/misc.h>
 #include <cstring>
 #include <udjat/ui/console.h>
+#include <private/logger.h>
 #include <udjat/tools/logger.h>
 #include <cstdio>
+#include <udjat/tools/intl.h>
+#include <udjat/tools/string.h>
 
 #ifndef _WIN32
 	#include <sys/ioctl.h>
@@ -73,7 +76,6 @@ namespace Udjat {
 	};
 
 	UI::Console::Console() : enabled{Logger::console()} {
-		debug("Console was build logging=%s", enabled ? "true" : "false");
 		static ConsoleWriter writer;
 		this->rdbuf(&writer);
 		Logger::console(false);
@@ -84,7 +86,24 @@ namespace Udjat {
 		*this << "\x1B[0m";
 		cursor(true);
 		Logger::console(enabled);
-//		debug("Console was deleted");
+	}
+
+	bool UI::Console::write(const char *text) noexcept {
+		size_t bytes = strlen(text);
+		while(bytes) {
+			ssize_t sz = ::write(1,text,bytes);
+			if(sz < 0)
+				return false;
+			bytes -= sz;
+			text += sz;
+		}
+		fsync(1);
+		return true;
+	}
+
+	bool UI::Console::decorated() noexcept {
+		static bool flag = isatty(1) && (getenv("TERM") != NULL);
+		return flag;
 	}
 
 	unsigned short UI::Console::width() const noexcept {
@@ -106,7 +125,7 @@ namespace Udjat {
 
 	bool UI::Console::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
 
-		if(!Logger::decorated()) {
+		if(!Console::decorated()) {
 			return false;
 		}
 
@@ -199,35 +218,35 @@ namespace Udjat {
 	}
 
 	UI::Console & UI::Console::set(const Foreground color) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (int) color << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::bold(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "1" : "22") << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::faint(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "2" : "22") << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::italic(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "3" : "23") << "m";
 		}
 		return *this;
 	}
 
 	UI::Console & UI::Console::cursor(bool on) {
-		if(Logger::decorated()) {
+		if(Console::decorated()) {
 			*this << "\x1B[" << (on ? "?25h" : "?25l");
 		}
 		return *this;
@@ -246,6 +265,130 @@ namespace Udjat {
 	UI::Console & UI::Console::erase_line() {
 		*this << "\x1B[2K";
 		return *this;
+	}
+
+	std::shared_ptr<Dialog::Menu> UI::Console::menu(const char *title) {
+
+		class Menu : public Dialog::Menu {
+		private:
+			Console *cntl;
+
+		public:
+			Menu(Console *c, const char *t) : Dialog::Menu{t}, cntl{c} {
+				lpp = 15;
+			}
+
+			size_t select() override {	
+
+				Console &console = *cntl;
+
+				if(size() == 0) {
+					throw system_error(ENODATA,system_category());
+				}
+
+				size_t page = 0;
+				while(1) {
+
+					console << endl;
+					console.bold(true);
+					console << title << endl;
+					console.bold(false);
+					console << endl;
+
+					char first = 'A';
+
+					bool next = true;
+					char item[] = { first, '\0'};
+					size_t lines = 5;
+
+					for(size_t ix = 0; ix < lpp; ix++) {
+						auto line = page*lpp+ix;
+
+						if(line >= size()) {
+							next = false;
+							break;
+						}
+
+						lines++;
+						auto &option = (*this)[line];
+						console << "\t";
+						console.bold(true);
+						console << item;
+						console.bold(false);
+						console << " - " << option.c_str() << endl;
+						item[0]++;				
+
+					}
+
+					if(next || page) {
+
+						lines++;
+						console << "\t";
+						console.faint(true);
+						if(page) {
+							console << "< " << _("Previous page") << "   ";
+						}
+						if(next) {
+							console << "> "<< _("Next page");
+						}
+						console.faint(false);
+
+						console << endl;
+
+					}
+
+
+					console << endl << _("Select option (Enter to quit): ");
+					console.cursor(true).flush();
+					cin.sync();
+
+					String choice;
+					getline(cin,choice);
+					choice.strip();
+					
+					for(size_t line = 0; line < lines;line++) {
+						console.erase_line().up();
+					}
+
+					if(choice.empty()) {
+						throw system_error(ECANCELED,system_category());
+					}
+
+					choice[0] = toupper(choice[0]);
+
+					if(next && choice[0] == '>') {
+						page++;
+						continue;
+					}
+
+					if(page && choice[0] == '<') {
+						page--;
+						continue;
+					}
+
+					int selected = (choice[0] - first);
+					if(selected < 0 || selected >= (int) lpp) {
+						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+						continue;
+					}
+					
+					selected += (page * lpp);
+					if(selected >= (int) size()) {
+						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+						continue;
+					}
+
+					Logger::String{"Option '",(*this)[selected],"' was selected"}.info("menu");
+					return (size_t) selected;
+
+				}
+
+			}
+
+		};
+
+		return make_shared<Menu>(this,title);
+
 	}
 
 }

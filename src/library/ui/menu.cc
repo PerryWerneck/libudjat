@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 
 /*
- * Copyright (C) 2021 Perry Werneck <perry.werneck@gmail.com>
+ * Copyright (C) 2026 Perry Werneck <perry.werneck@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Lesser General Public License as published
@@ -17,24 +17,44 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-#error deprecated
+ /**
+  * @brief Implements menu dialog.
+  */
 
-#pragma once
+ #include <config.h>
+ #include <udjat/defs.h>
+ #include <udjat/ui/menu.h>
+ #include <udjat/tools/logger.h>
+ #include <stdexcept>
+ #include <vector>
 
-#include <config.h>
-#include <udjat/defs.h>
-#include <udjat/module/abstract.h>
-#include <udjat/tools/file.h>
-#include <udjat/tools/quark.h>
-#include <list>
+ #ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+ #endif
 
-using namespace std;
+ using namespace std;
 
-namespace Udjat {
+ namespace Udjat {
 
-	namespace File {
+	Dialog::Menu::Menu(const char *t) : title{t} {
+	}
 
+	Dialog::Menu::~Menu() {
+	}
 
+	void Dialog::Menu::append(const char **options, size_t count) {
+		for(size_t ix = 0; ix < count;ix++) {
+			this->emplace_back(options[ix]);
+		}
+	}
+
+	void Dialog::Menu::append(const char **options) {
+		for(size_t ix = 0; options[ix];ix++) {
+			this->emplace_back(options[ix]);
+		}
 	}
 
 }
+
+
+
