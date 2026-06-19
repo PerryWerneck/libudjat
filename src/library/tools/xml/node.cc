@@ -172,7 +172,7 @@
 	/// @return The attribute (empty if not found).
 	static const pugi::xml_attribute xml_attribute(const XML::Node &node, const char *attrname) {
 
-		debug("Searching for attribute '",attrname,"' in node '",node.node_name(),"'");
+		// debug("Searching for attribute '",attrname,"' in node '",node.node_name(),"'");
 
 		// Check for standard attribute.
 		{
@@ -208,7 +208,7 @@
 			}
 		}
 
-		debug("Cant find attribute '",attrname,"'");
+		// debug("Cant find attribute '",attrname,"'");
 		return pugi::xml_attribute();
 	}
 

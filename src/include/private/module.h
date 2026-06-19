@@ -37,6 +37,10 @@ namespace Udjat {
 		Controller();
 		~Controller();
 
+		inline size_t size() const noexcept {
+			return modules.size();
+		}
+
 #ifdef _WIN32
 		static void * get_symbol(HMODULE hModule, const char *name, bool required = true);
 

@@ -70,7 +70,7 @@
 			module->keep_active = props.get("keep-active",false);
 
 			if(props.get("verbose",true) && module->info.description && *module->info.description) {
-				Logger::String{module->info.description," version ",module->info.version," initialized"}.info(module->name());
+				Logger::String{module->info.description," version ",module->info.version," initialized (",size()," module(s) loaded)"}.info(module->name());
 			}
 
 			if(module->info.gettext_package && *module->info.gettext_package) {

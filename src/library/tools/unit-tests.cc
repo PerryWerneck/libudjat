@@ -116,18 +116,29 @@
 	}
 
 	void UnitTests::load() noexcept {
+		/*
 #ifndef _WIN32
 		Logger::String{"Scanning loaded modules"}.info();
 		dl_iterate_phdr(phdr_item, this);
 		Logger::String{"Found ",modules.size()," modules with unit tests"}.info();
 #endif // !_WIN32
+		*/
 
-		// Load tests.
+		// Load tests for libraries
 		for(auto &module : modules) {
 			debug("Calling ",module->c_str(),"...");
 			module->getfunc<void,UnitTests &>("enum_udjat_unit_tests")(*this);
 			debug("--> ",size());
 		} 
+
+		// Load tests from modules.
+		debug("--- Analizing modules");
+		Udjat::Module::for_each([this](Udjat::Module &module){
+			debug("Checking ",module.name());
+			module.getfunc<void,UnitTests &>("enum_udjat_unit_tests")(*this);
+			debug("--> ",size());
+			return false;
+		});
 
 		Logger::String{"Found ",size()," tests to run"}.info();
 
