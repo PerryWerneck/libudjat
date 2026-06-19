@@ -494,6 +494,7 @@ lib_src += [
   'src/library/tools/action/abstract.cc',
   'src/library/tools/action/controller.cc',
   'src/library/tools/action/factory.cc',
+  'src/library/tools/unit-tests.cc',
   'src/library/request/responsevalue.cc',
   'src/library/module/os/' + host_machine.system() + '/close.cc',
   'src/library/module/os/' + host_machine.system() + '/load.cc',
@@ -1012,6 +1013,7 @@ install_headers(
   'src/include/udjat/tools/memory.h',
   'src/include/udjat/tools/properties.h',
   'src/include/udjat/tools/loader.h',
+  'src/include/udjat/tools/unit-test.h',
   subdir: 'udjat/tools'  
 )
 

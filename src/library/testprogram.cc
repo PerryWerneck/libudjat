@@ -30,6 +30,8 @@
  #include <udjat/net/interface.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/file/temporary.h>
+ #include <udjat/tools/unit-test.h>
+ #include <udjat/tools/memory.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -96,22 +98,20 @@
 
 				const char *buffer = "Simple string to test crypto functions";
 
-				void *encripted = pkey.encrypt(buffer,encripted_len);
+				auto encripted = make_handle<void>(pkey.encrypt(buffer,encripted_len),free);
 
 				Logger::String{"The encripted block has ",encripted_len," bytes"}.info();
 
-				void *decrypted = pkey.decrypt(encripted,encripted_len,decripted_len);
+				auto decrypted = make_handle<void>(pkey.decrypt(encripted.get(),encripted_len,decripted_len),free);
 
-				debug("Decrypted string: '",((char *) decrypted),"'");
+				debug("Decrypted string: '",((char *) decrypted.get()),"'");
 
-				if(strcmp(buffer,(const char *) decrypted)) {
+				if(strcmp(buffer,(const char *) decrypted.get())) {
 					throw runtime_error("Error decripting data block");
 				} else {
 					Logger::String{"Decripted block is ok"}.info();
 				}
 
-				free(encripted);
-				free(decrypted);
 			}
 
 			// Test sign/verify
@@ -158,57 +158,7 @@
 	}
 
 
-	/*
-	unlink("/tmp/test-legacy.key");
-	unlink("/tmp/test-legacy.pub");
-	unlink("/tmp/test-engine.key");
-	unlink("/tmp/test-engine.pub");
-	unlink("/tmp/test-provider.key");	
-	unlink("/tmp/test-provider.pub");
-	unlink("/tmp/test-mixed.key");	
-	unlink("/tmp/test-mixed.pub");
-
-	debug("---[ Legacy key test ]------------------------------------------------------------");
-	pkey.generate("/tmp/test-legacy.key","password",2048,"legacy");
-	Logger::String{"Legacy private key:\n",pkey.to_string().c_str()}.info();
-	pkey.save_public("/tmp/test-legacy.pub");
-	pkey.load("/tmp/test-legacy.key","password");
-	Logger::String{"Legacy private key reloaded:\n",pkey.to_string().c_str()}.info();
-
-#if defined(HAVE_OPENSSL_ENGINE) && defined(HAVE_TPM2_TSS_ENGINE_H) && !defined(_WIN32)
-	debug("---[ Engine based TPM test ]------------------------------------------------------");
-	pkey.generate("/tmp/test-engine.key","password",2048,"engine");
-	Logger::String{"Engine private key:\n",pkey.to_string().c_str()}.info();
-	pkey.save_public("/tmp/test-engine.pub");
-	pkey.load("/tmp/test-engine.key","password");
-	Logger::String{"Engine private key reloaded:\n",pkey.to_string().c_str()}.info();
-
-	if(strstr("TSS2 PRIVATE KEY",pkey.to_string().c_str()) == nullptr) {
-		throw logic_error("Engine key does not look like a TPM key.");
-	}
-
-#endif // HAVE_OPENSSL_ENGINE
-
-#if defined(HAVE_OPENSSL_PROVIDER) && !defined(_WIN32)
-	if(access(STRINGIZE_VALUE_OF(LIBDIR) "/ossl-modules/tpm2.so", R_OK) != 0) {
-		Logger::String{"TPM2 provider not found, skipping provider test."}.warning();
-	} else {
-		debug("---[ Provider based TPM test ]----------------------------------------------------");
-		pkey.generate("/tmp/test-provider.key","password",2048,"provider");
-		Logger::String{"Provider private key:\n",pkey.to_string().c_str()}.info();
-		pkey.save_public("/tmp/test-provider.pub");
-		pkey.load("/tmp/test-provider.key","password");
-		Logger::String{"Provider private key reloaded:\n",pkey.to_string().c_str()}.info();
-
-		if(strstr("TSS2 PRIVATE KEY",pkey.to_string().c_str()) == nullptr) {
-			throw logic_error("Provider key does not look like a TPM key.");
-		}
-
-	}
-#endif // HAVE_OPENSSL_PROVIDER
-	*/
-
-return 0;
+	return 0;
  }
  #endif // HAVE_OPENSSL
 
@@ -388,47 +338,87 @@ return 0;
  }
 #endif // !_WIN32
 
- UDJAT_API int run_udjat_unit_test(const char *name) {
+ UDJAT_API void enum_udjat_unit_tests(Udjat::UnitTests &tests) noexcept {
 
-	static const struct {
-		const char *name;
-		int (*test)();
-	} tests[] = {
+		debug(__FUNCTION__," begin -> ",tests.size());
+
 #ifndef _WIN32
-		{"sysconfig",	sysconfig_test},
-#endif
+		tests.append(
+			UnitTests::Worker{
+				"Test sysconfig",
+				[]() {
+					sysconfig_test();
+					return true;
+				}
+			},
+#endif // !_WIN32
+
 #if defined(HAVE_IBMTSS) && defined(HAVE_OPENSSL)
-		{"tpm",	tpm_test},
+			UnitTests::Worker{
+				"Test TPM access",
+				[]() {
+					tpm_test();
+					return true;
+				}
+			},
 #endif 		
-		{"tmpfile",	tmpfile_test},
-		{"url",		url_test},
- #ifdef HAVE_OPENSSL
-		{"ssl",		ssl_test},
- #endif // HAVE_OPENSSL
- #ifdef HAVE_SMBIOS
-		{"smbios",	smbios_test},
- #endif // HAVE_SMBIOS
-		{"network",	network_test},
-		{"config",	config_test},
-		{"string",	string_test},
-	};
-
-	if(!name) {
-		for(const auto &test : tests) {
-			Logger::String{"Running unit test: ",test.name}.info();
-			test.test();
-		}
-	} else {
-		for(const auto &test : tests) {
-			if(strcasecmp(test.name, name) == 0) {
-				Logger::String{"Running unit test: ",test.name}.info();
-				return test.test();
+			UnitTests::Worker{
+				"Test tempfile handler",
+				[]() {
+					tmpfile_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"Test URL engine",
+				[]() {
+					url_test();
+					return true;
+				}
+			},
+#ifdef HAVE_OPENSSL
+			UnitTests::Worker{
+				"Test SSL engine",
+				[]() {
+					ssl_test();
+					return true;
+				}
+			},
+#endif // HAVE_OPENSSL
+#ifdef HAVE_SMBIOS
+			UnitTests::Worker{
+				"Test SMBIOS Access",
+				[]() {
+					smbios_test();
+					return true;
+				}
+			},
+#endif // HAVE_SMBIOS
+			UnitTests::Worker{
+				"Test configuration file access",
+				[]() {
+					config_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"Test String manipulation engine",
+				[]() {
+					string_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"Network test",
+				[]() {
+					network_test();
+					return true;
+				}
 			}
-		}
-	}
+		);
 
-	return 0;
- }
+ 		debug(__FUNCTION__," end -> ",tests.size());
+}
 
  #endif // DEBUG
 

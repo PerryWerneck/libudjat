@@ -27,6 +27,7 @@
 #include <stdexcept>
 #include <udjat/module.h>
 #include <private/module.h>
+#include <udjat/tools/unit-test.h>
 
 #ifdef HAVE_PUGIXML
 	#include <pugixml.hpp>
@@ -51,54 +52,6 @@ namespace Udjat {
 	}
 #endif // HAVE_PUGIXML
 
-#ifndef _WIN32
-	static int phdr_item(struct dl_phdr_info *info, size_t size, void *data) {
-
-		if(!info->dlpi_name || !*info->dlpi_name) {
-			debug("Skipping main program");
-			return 0;
-		}
-
-		debug("Name: ",info->dlpi_name);
-		void *hModule = dlopen(info->dlpi_name, RTLD_NOW|RTLD_LOCAL);
-		if(hModule) {
-			size_t *count = (size_t *) data;
-			dlerror(); // Clear any existing error
-			int (*symbol)(const char *) = (int(*)(const char *)) dlsym(hModule,"run_udjat_unit_test");
-			auto error = dlerror();
-			if(symbol && !error) {
-				(*count)++;
-				Logger::String{"------------- Running unit tests from module '",info->dlpi_name,"' -------------"}.notice("debug");
-				try {
-					int rc = symbol(nullptr);
-					if(rc) {
-						dlclose(hModule);
-						return rc;	
-					}
-				} catch(const std::exception &e) {
-					Logger::String{"Error running unit tests from module '",info->dlpi_name,"': ",e.what()}.error();
-					dlclose(hModule);
-					return -1;
-				}
-			} else {
-				debug(error ? error : "No unit tests found in module");
-			}
-			dlclose(hModule);
-		} else {
-			Logger::String{"Error opening '",info->dlpi_name,"': ",dlerror()}.error("debug");
-		}
-	return 0;
-}
-#endif // !_WIN32
-
-	/// @brief Detect and run unit tests from modules.
-	/// @param name The test name
-	static void run_unit_tests(const char *name) {
-#ifndef _WIN32
-		size_t count = 0;
-		dl_iterate_phdr(phdr_item, &count);
-#endif // !_WIN32
-	}
 
 	int UDJAT_API loader(const int argc, const char *argv[], const char *path) {
 		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return false;},path);
@@ -116,7 +69,7 @@ namespace Udjat {
 
 				parser.append(
 					ArgumentParser::Argument{
-						't', "run-unit-tests", _("Run unit tests"),
+						'r', "run-unit-tests", _("Run all unit tests"),
 						[this](const char *arg, char) {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
@@ -124,7 +77,21 @@ namespace Udjat {
 							if(callback(LOADER_MODE_RUN_TESTS,*this,arg)) {
 								return true;
 							}
-							run_unit_tests(arg);
+							UnitTests tests;
+							tests.load();
+							tests.run_all();
+							return true;
+						}
+					},
+					ArgumentParser::Argument{
+						'i', "interactive", _("Interactive mode"),
+						[this](const char *arg, char) {
+#ifdef HAVE_PUGIXML
+							load_modules(filename.c_str());
+#endif // HAVE_PUGIXML							
+							UnitTests tests;
+							tests.load();
+							tests.interactive();
 							return true;
 						}
 					},
@@ -180,12 +147,26 @@ namespace Udjat {
 
 				parser.append(
 					ArgumentParser::Argument{
-						't', "run-unit-tests", _("Run unit tests"),
+						'r', "run-unit-tests", _("Run all unit tests"),
 						[this](const char *arg, char) {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
 #endif // HAVE_PUGIXML							
-							run_unit_tests(arg);
+							UnitTests tests;
+							tests.load();
+							tests.run_all();
+							return true;
+						}
+					},
+					ArgumentParser::Argument{
+						'i', "interactive", _("Interactive mode"),
+						[this](const char *arg, char) {
+#ifdef HAVE_PUGIXML
+							load_modules(filename.c_str());
+#endif // HAVE_PUGIXML							
+							UnitTests tests;
+							tests.load();
+							tests.interactive();
 							return true;
 						}
 					},
