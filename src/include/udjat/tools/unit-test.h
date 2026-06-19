@@ -38,7 +38,9 @@ namespace Udjat {
 		/// @brief Loaded module.
 		class Module : public std::string {
 		private:
-#ifndef _WIN32
+#ifdef _WIN32
+			HMODULE handle;
+#else
 			void *handle;
 #endif	
 		public:

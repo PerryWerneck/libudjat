@@ -33,7 +33,9 @@
 	#include <unistd.h>
  #endif // HAVE_UNISTD_H
 
- #ifndef _WIN32
+ #ifdef _WIN32
+	#include <udjat/win32/exception.h>
+ #else
 	#include <dlfcn.h>
 	#include <link.h>
  #endif // !_WIN32
@@ -80,7 +82,11 @@
 
 	void * UnitTests::Module::get_symbol(const char *symbol_name) {
 #ifdef _WIN32
-		throw runtime_error("Incomplete");
+		void * symbol = (void *) GetProcAddress(handle,symbol_name);
+		if(!symbol) {
+			throw Win32::Exception(string{"Can't find symbol '"} + symbol_name + "'");
+		}
+		return symbol;
 #else
 		dlerror();
 		void *symbol = dlsym(handle,symbol_name);
@@ -99,10 +105,10 @@
 		Logger::String{"Found ",modules.size()," modules with unit tests"}.info();
 #endif // !_WIN32
 
+		// Load tests.
 		for(auto &module : modules) {
 			debug("Calling ",module->c_str(),"...");
-			auto func = module->getfunc<void,UnitTests &>("enum_udjat_unit_tests");
-			func(*this);
+			module->getfunc<void,UnitTests &>("enum_udjat_unit_tests")(*this);
 			debug("--> ",size());
 		} 
 

@@ -495,6 +495,7 @@ lib_src += [
   'src/library/tools/action/controller.cc',
   'src/library/tools/action/factory.cc',
   'src/library/tools/unit-tests.cc',
+  'src/library/tools/console.cc',
   'src/library/request/responsevalue.cc',
   'src/library/module/os/' + host_machine.system() + '/close.cc',
   'src/library/module/os/' + host_machine.system() + '/load.cc',
