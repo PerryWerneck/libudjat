@@ -226,13 +226,7 @@
 		void * get_symbol(const char *symbol_name, bool required = true);
 
 		template <typename ret, typename... args>
-		inline ret call(const char *name, args... a) noexcept {
-			ret (*func)(args...) = (ret (*)(args...)) get_symbol(name);
-			return func(a...);
-		}
- 
-		template <typename ret, typename... args>
-		inline auto getfunc(const char *name, bool required = true) noexcept {
+		inline auto getfunc(const char *name, bool required = true) {
 			return reinterpret_cast<ret(*)(args...)>(get_symbol(name,required));
 		}
  		
@@ -247,14 +241,14 @@
 	/// @note This function is used by the test program and should not be used in production code.
 	/// @param name The test name to run. If null, all tests are run.
 	/// @return 0 if success, -1 on error.
-	UDJAT_API int run_unit_test(const char *name);
+	[[deprecated("Use UnitTest")]] UDJAT_API int run_unit_test(const char *name);
 
 	/// @brief Run unit test.
 	/// @details This function is used to run unit tests from the command line.
 	/// @note This function is used by the test program and should not be used in production code.
 	/// @param name The test name to run. If null, all tests are run.
 	/// @return 0 if success, -1 on error.
-	UDJAT_API int run_udjat_unit_test(const char *name);
+	[[deprecated("Use UnitTest")]] UDJAT_API int run_udjat_unit_test(const char *name);
 
 	/// @brief Initialize module from properties.
 	/// @return Module controller.
