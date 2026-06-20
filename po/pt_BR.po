@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-20 04:11-0300\n"
+"POT-Creation-Date: 2026-06-20 05:57-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -884,7 +884,7 @@ msgstr "Página seguinte"
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
-#: src/library/tools/unit-tests.cc:183
+#: src/library/tools/unit-tests.cc:204
 msgid "Available tests"
 msgstr ""
 

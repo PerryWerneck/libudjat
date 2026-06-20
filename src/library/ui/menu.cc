@@ -54,6 +54,13 @@
 		}
 	}
 
+	Dialog::Item::~Item() {		
+	}
+
+	std::string Dialog::Item::get(const char *, bool) const noexcept {
+		return *this;
+	}
+
 }
 
 

@@ -31,14 +31,30 @@
 
 	namespace Dialog {
 
+		/// @brief Menu Item.
+		class Item : public std::string {
+			public:
+				Item(const char *opt) : std::string{opt} {
+				}
+
+				virtual ~Item();
+
+				/// @brief Get string with formatted menu option.
+				/// @param optname The option name.
+				/// @param decorated true to set string as a decorated console string.
+				/// @return The string with the formatted menu option.
+				virtual std::string get(const char *name, bool decorated = false) const noexcept;
+		};
+
 		/// @brief Simple popup menu with options.
-		class UDJAT_API Menu : public std::vector<std::string> {
+		class UDJAT_API Menu : public std::vector<Item> {
 		protected:
 			Menu(const char *title);
 			std::string title;
 			size_t lpp = 26;
 
 		public:
+
 
 			virtual ~Menu();
 
@@ -50,6 +66,8 @@
 			inline void append(const char *option) {
 				this->emplace_back(option);
 			}
+
+			void append(Item &item);
 
 			inline void lines_per_page(size_t value) noexcept {
 				lpp = value;
@@ -68,4 +86,11 @@
 
  }
 
+ namespace std {
+
+	inline const char * to_string(const Udjat::Dialog::Item &item) {
+		return item.c_str();
+	}
+
+ }
 
