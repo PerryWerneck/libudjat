@@ -82,7 +82,7 @@ namespace Udjat {
 							}
 							UnitTests tests;
 							tests.load();
-							tests.run_all();
+							tests.run(arg);
 #ifdef HAVE_PUGIXML
 							Module::unload();
 #endif // HAVE_PUGIXML							
@@ -163,7 +163,7 @@ namespace Udjat {
 #endif // HAVE_PUGIXML							
 							UnitTests tests;
 							tests.load();
-							tests.run_all();
+							tests.run(arg);
 							return true;
 						}
 					},

@@ -70,8 +70,11 @@
 				char filename[PATH_MAX+1];
 				memset(filename,0,sizeof(filename));
 				if (realpath(info->dlpi_name, filename) == NULL)  {
+
 					Logger::String{info->dlpi_name,": ",strerror(errno)}.error();
+
 				} else {
+
 					debug("Found '",filename,"'");
 
 					// TODO: Check if already loaded
@@ -97,50 +100,66 @@
 #endif		
 	}
 
-	void * UnitTests::Module::get_symbol(const char *symbol_name) {
-#ifdef _WIN32
-		void * symbol = (void *) GetProcAddress(handle,symbol_name);
-		if(!symbol) {
-			throw Win32::Exception(string{"Can't find symbol '"} + symbol_name + "'");
+#ifndef _WIN32
+	void * UnitTests::Module::dlsym(const char *name) const noexcept {
+		return ::dlsym(handle,name);
+	}
+#endif // !_WIN32
+
+	bool UnitTests::Worker::operator==(const char *opt) const {
+
+		if(option && *option && strcasecmp(option,opt) == 0) {
+			return true;
 		}
-		return symbol;
-#else
-		dlerror();
-		void *symbol = dlsym(handle,symbol_name);
-		const char *error = dlerror();
-		if(error) {
-			throw runtime_error(error);
+
+		if(label && *label && strcasecmp(label,opt) == 0) {
+			return true;
 		}
-		return symbol;
-#endif		
+
+		return false;
 	}
 
 	void UnitTests::load() noexcept {
-		/*
-#ifndef _WIN32
-		Logger::String{"Scanning loaded modules"}.info();
-		dl_iterate_phdr(phdr_item, this);
-		Logger::String{"Found ",modules.size()," modules with unit tests"}.info();
-#endif // !_WIN32
-		*/
 
-		// Load tests for libraries
-		for(auto &module : modules) {
-			debug("Calling ",module->c_str(),"...");
-			module->getfunc<void,UnitTests &>("enum_udjat_unit_tests")(*this);
-			debug("--> ",size());
-		} 
+#ifdef _WIN32
 
 		// Load tests from modules.
-		debug("--- Analizing modules");
+		debug("--- Analizing ",modules.size()," modules");
 		Udjat::Module::for_each([this](Udjat::Module &module){
-			debug("Checking ",module.name());
-			module.getfunc<void,UnitTests &>("enum_udjat_unit_tests")(*this);
-			debug("--> ",size());
+			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module.get_symbol("enum_udjat_unit_tests",false));
+			if(symbol) {
+				symbol(*this);
+			}
 			return false;
 		});
 
-		Logger::String{"Found ",size()," tests to run"}.info();
+#else
+
+		Logger::String{"Scanning loaded modules"}.info();
+		dl_iterate_phdr(phdr_item, this);
+		Logger::String{"Found ",modules.size()," modules with unit tests"}.info();
+
+		for(auto module : modules) {
+			dlerror();
+			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module->dlsym("enum_udjat_unit_tests"));
+			if(!dlerror()) {
+				debug("Found tests in ",module->c_str());
+				symbol(*this);
+			}
+		}
+
+#endif // _WIN32
+
+		// Sort options
+		std::sort(workers.begin(), workers.end(), [](const Worker& a, const Worker& b) {
+			return strcasecmp(a.label,b.label) < 0;
+		});
+
+		// Remove duplicate
+		auto it = std::unique(workers.begin(), workers.end(), [](const Worker& a, const Worker& b) {
+			return strcasecmp(a.label, b.label) == 0; // Note: == 0 checks for equality
+		});
+		workers.erase(it, workers.end());		
 
 	}
 
@@ -151,13 +170,15 @@
 	UnitTests::~UnitTests() {
 	}
 
-	void UnitTests::run_all() noexcept {
+	void UnitTests::run(const char *name) noexcept {
 
 		for(const auto &worker : workers ) {
 			try {
 
-				Logger::String{"--- ",worker.c_str()," ---"}.notice();
-				worker.call();
+				if(!(name && *name) || worker == name) {
+					Logger::String{"--- ",worker.c_str()," ---"}.notice();
+					worker.call();
+				}
 
 			} catch(const std::exception &e) {
 

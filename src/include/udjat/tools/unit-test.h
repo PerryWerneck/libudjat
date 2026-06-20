@@ -47,19 +47,10 @@ namespace Udjat {
 #ifndef _WIN32
 			Module(void *h, const char *f) : std::string{f}, handle{h} {				
 			}
+
+			void *dlsym(const char *name) const noexcept;
 #endif	
 			~Module();
-
-			/// @brief Get symbol from module.
-			/// @details This method is used to get a symbol from the module.
-			/// @param symbol The symbol name to get.
-			/// @return The symbol address or nullptr if not found.
-			void * get_symbol(const char *symbol_name);
-
-			template <typename ret, typename... args>
-			inline auto getfunc(const char *name) {
-				return reinterpret_cast<ret(*)(args...)>(get_symbol(name));
-			}
 
 		};
 
@@ -73,7 +64,7 @@ namespace Udjat {
 			const char *option = nullptr;		///< @brief The test option (for command line).
 			
 			/// @brief The callback to run test, return true if the test was ok.
-			const std::function<bool(void)> call = nullptr;
+			std::function<bool(void)> call = nullptr;
 
 		public:
 			Worker(const char *o, const char *l, const std::function<bool(void)> &c) :
@@ -84,6 +75,16 @@ namespace Udjat {
 				label{l}, call{c} {
 			}
 
+			bool operator<(const Worker& other) const {
+				return strcasecmp(label,other.label) < 0;
+			}
+
+			bool inline operator==(const Worker& other) const {
+				return strcasecmp(label,other.label) == 0;
+			}
+
+			bool operator==(const char *opt) const;
+			
 			inline bool exec() const {
 				return call();
 			}
@@ -103,8 +104,9 @@ namespace Udjat {
 		/// @brief Interactive mode.
 		void interactive() noexcept;
 
-		/// @brief Run all loaded tests.
-		void run_all() noexcept;
+		/// @brief Run test.
+		/// @param name Test name to run, nullptr to run all.
+		void run(const char *name = nullptr) noexcept;
 
 		template<typename... Targs>
 		inline void append(const Worker &worker, Targs... Fargs) {

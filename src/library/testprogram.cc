@@ -409,7 +409,7 @@
 				}
 			},
 			UnitTests::Worker{
-				"Network test",
+				"network", "Network test",
 				[]() {
 					network_test();
 					return true;
