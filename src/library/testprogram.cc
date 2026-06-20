@@ -387,7 +387,7 @@
 #endif // HAVE_OPENSSL
 #ifdef HAVE_SMBIOS
 			UnitTests::Worker{
-				"Test SMBIOS Access",
+				"smbios","Test SMBIOS Access",
 				[]() {
 					smbios_test();
 					return true;
@@ -395,21 +395,21 @@
 			},
 #endif // HAVE_SMBIOS
 			UnitTests::Worker{
-				"Test configuration file access",
+				"conffile","Test configuration file access",
 				[]() {
 					config_test();
 					return true;
 				}
 			},
 			UnitTests::Worker{
-				"Test String manipulation engine",
+				"string","Test String manipulation engine",
 				[]() {
 					string_test();
 					return true;
 				}
 			},
 			UnitTests::Worker{
-				"network", "Network test",
+				"netinfo", "Obtain NIC info",
 				[]() {
 					network_test();
 					return true;

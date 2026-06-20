@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 15:36-0300\n"
+"POT-Creation-Date: 2026-06-20 04:11-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -20,7 +20,8 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 3.9\n"
 
-#: src/library/agent/root.cc:98 src/library/tools/systemservice.cc:140
+#: src/library/agent/root.cc:98
+#: src/library/tools/systemservice/systemservice.cc:141
 msgid "System is ready"
 msgstr "Sistema em funcionamento"
 
@@ -82,10 +83,18 @@ msgstr "ligado"
 msgid "off"
 msgstr "desligado"
 
-#: src/library/tools/application/run.cc:70
-#: src/library/tools/application/run.cc:74
-msgid "Unable to set environment variable"
-msgstr "Incapaz de setar variável de ambiente"
+#: src/library/tools/application/argparser.cc:35
+msgid "Enable auto exit timer in seconds"
+msgstr ""
+
+#: src/library/tools/application/argparser.cc:35
+#: src/library/tools/timestamp.cc:248
+msgid "seconds"
+msgstr "segundos"
+
+#: src/library/tools/application/argparser.cc:39
+msgid "Timer option requires a value in seconds"
+msgstr ""
 
 #: src/library/tools/application/run.cc:107
 msgid "Loading configuration"
@@ -97,13 +106,37 @@ msgid "Activating new configuration"
 msgstr "Ativando nova configuração"
 
 #: src/library/tools/application/run.cc:173
-#: src/library/tools/application/run.cc:259
+#: src/library/tools/application/run.cc:265
 msgid "Starting services"
 msgstr "Iniciando serviços"
 
 #: src/library/tools/application/run.cc:183
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
+
+#: src/library/tools/application/loader.cc:75
+#: src/library/tools/application/loader.cc:159
+msgid "Run all unit tests"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:93
+#: src/library/tools/application/loader.cc:171
+msgid "Interactive mode"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:108
+msgid "Load module file"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:108
+#: src/library/tools/application/loader.cc:183
+msgid "path"
+msgstr ""
+
+#: src/library/tools/application/loader.cc:183
+#, fuzzy
+msgid "Load module from file"
+msgstr "Não foi possível ler do arquivo"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -444,10 +477,6 @@ msgstr "Erro no pacote recebido"
 msgid "Failed to connect to '{}'"
 msgstr "Falha ao conectar '{}'"
 
-#: src/library/tools/os/linux/systemservice.cc:46
-msgid "Run in the background"
-msgstr "Rodar no background"
-
 #: src/library/tools/os/linux/tpm.cc:81
 msgid "Unable to initialize IBM TSS context"
 msgstr "Não foi possível inicializar o contexto IBM TSS"
@@ -468,18 +497,6 @@ msgstr "Não foi possível obter o estado da TPM"
 #: src/library/tools/os/linux/ip.cc:125
 msgid "Invalid size on RTA_GATEWAY"
 msgstr "Tamanho inválido em RTA_GATEWAY"
-
-#: src/library/tools/os/linux/console.cc:329
-msgid "Previous page"
-msgstr "Página anterior"
-
-#: src/library/tools/os/linux/console.cc:332
-msgid "Next page"
-msgstr "Página seguinte"
-
-#: src/library/tools/os/linux/console.cc:341
-msgid "Select option (Enter to quit): "
-msgstr "Selecione opção (Enter para sair): "
 
 #. Try translated version
 #: src/library/tools/os/windows/application/description.cc:72
@@ -504,30 +521,6 @@ msgid ""
 msgstr ""
 "Endereço desconhecido. O nome não é um endereço ou apelido oficial, ou não "
 "pôde ser encontrado nas bases de dados consultadas."
-
-#: src/library/tools/os/windows/systemservice.cc:45
-msgid "Start service"
-msgstr "Iniciar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:46
-msgid "Stop service"
-msgstr "Parar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:47
-msgid "Install service"
-msgstr "Instalar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:48
-msgid "Uninstall service"
-msgstr "Desinstalar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:49
-msgid "Reinstall service"
-msgstr "Reinstalar serviço"
-
-#: src/library/tools/os/windows/systemservice.cc:50
-msgid "Block access to 'net stop' on this service"
-msgstr "Bloquear acesso a 'net stop' no serviço"
 
 #: src/library/tools/report.cc:221 src/library/tools/value/text.cc:78
 msgid "Yes"
@@ -566,10 +559,6 @@ msgstr "Incapaz de definir o usuário do subprocesso"
 #: src/library/tools/script.cc:205
 msgid "Cant set subprocess group id"
 msgstr "Incapaz de definir o grupo do subprocesso"
-
-#: src/library/tools/systemservice.cc:144
-msgid "System is not ready"
-msgstr "Sistema não está em funcionamento"
 
 #: src/library/tools/timestamp.cc:105
 msgid "Less than one minute"
@@ -636,10 +625,6 @@ msgstr "minuto"
 #: src/library/tools/timestamp.cc:248
 msgid "second"
 msgstr "segundo"
-
-#: src/library/tools/timestamp.cc:248
-msgid "seconds"
-msgstr "segundos"
 
 #: src/library/tools/value/text.cc:48
 msgid "Item "
@@ -723,6 +708,35 @@ msgstr "Definições XML não foram encontradas"
 msgid "Required attribute '{}' is missing"
 msgstr "Atributo necessário '{}' não foi encontrado"
 
+#: src/library/tools/logger/argparser.cc:44
+msgid "Logger options"
+msgstr "Opções de log"
+
+#: src/library/tools/logger/argparser.cc:46
+msgid "Enable console output"
+msgstr "Habilita saída para console"
+
+#: src/library/tools/logger/argparser.cc:83
+msgid "Disable console output"
+msgstr "Desativa saída para console"
+
+#: src/library/tools/logger/argparser.cc:90
+msgid "Enable log to file"
+msgstr "Habilita log em arquivo"
+
+#: src/library/tools/logger/argparser.cc:93
+msgid "Log to file requires a filename"
+msgstr "Log para file existe um nome de arquivo"
+
+#: src/library/tools/logger/argparser.cc:100
+msgid "Set the log verbosity level"
+msgstr "Defíne o nível de detalhes do log"
+
+#: src/library/tools/logger/argparser.cc:113
+#: src/library/tools/logger/commandline.cc:168
+msgid "Enable coredump"
+msgstr "Habilita coredump"
+
 #: src/library/tools/logger/commandline.cc:163
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
@@ -738,11 +752,6 @@ msgstr "Define nível de log para 'verbosity'"
 #: src/library/tools/logger/commandline.cc:166
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
-
-#: src/library/tools/logger/commandline.cc:168
-#: src/library/tools/logger/argparser.cc:82
-msgid "Enable coredump"
-msgstr "Habilita coredump"
 
 #: src/library/tools/logger/commandline.cc:172
 msgid "Log/Debug options:\n"
@@ -776,76 +785,114 @@ msgstr ""
 msgid "debug"
 msgstr ""
 
-#: src/library/tools/logger/argparser.cc:44
-msgid "Logger options"
-msgstr "Opções de log"
-
-#: src/library/tools/logger/argparser.cc:46
-msgid "Enable console output"
-msgstr "Habilita saída para console"
-
-#: src/library/tools/logger/argparser.cc:52
-msgid "Disable console output"
-msgstr "Desativa saída para console"
-
-#: src/library/tools/logger/argparser.cc:59
-msgid "Enable log to file"
-msgstr "Habilita log em arquivo"
-
-#: src/library/tools/logger/argparser.cc:62
-msgid "Log to file requires a filename"
-msgstr "Log para file existe um nome de arquivo"
-
-#: src/library/tools/logger/argparser.cc:69
-msgid "Set the log verbosity level"
-msgstr "Defíne o nível de detalhes do log"
-
 #: src/library/tools/object.cc:284
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
-#: src/library/tools/commandlineparser.cc:166 src/library/tools/argparser.cc:62
+#. The first group is allways the application options
+#: src/library/tools/argparser.cc:41
+msgid "Application options"
+msgstr "Opções da aplicação"
+
+#: src/library/tools/argparser.cc:63 src/library/tools/commandlineparser.cc:166
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
+
+#: src/library/tools/argparser.cc:199
+#: src/library/tools/commandlineparser.cc:257
+msgid "Usage:"
+msgstr "Uso:"
+
+#: src/library/tools/argparser.cc:231
+msgid "[OPTIONS]"
+msgstr "[OPÇÕES]"
+
+#: src/library/tools/argparser.cc:301
+#, c++-format
+msgid "Invalid option: -{}"
+msgstr "Opção inválida: -{}"
+
+#: src/library/tools/argparser.cc:318
+#, c++-format
+msgid "Invalid option: --{}"
+msgstr "Opção inválid: --{}"
 
 #: src/library/tools/commandlineparser.cc:169
 msgid "Application options:\n"
 msgstr "Opções da aplicação:\n"
 
-#: src/library/tools/commandlineparser.cc:180
-msgid "Quit after \"seconds\""
-msgstr "Encerra após \"seconds\""
-
-#: src/library/tools/commandlineparser.cc:192
-#: src/library/tools/commandlineparser.cc:257
-#: src/library/tools/argparser.cc:175
-msgid "Usage:"
-msgstr "Uso:"
-
-#: src/library/tools/commandlineparser.cc:193
 #: src/library/tools/commandlineparser.cc:258
 msgid "[OPTION..]"
 msgstr "[OPÇÕES..]"
 
-#. The first group is allways the application options
-#: src/library/tools/argparser.cc:40
-msgid "Application options"
-msgstr "Opções da aplicação"
+#: src/library/tools/systemservice/args_linux.cc:43
+msgid "Run in the background"
+msgstr "Rodar no background"
 
-#: src/library/tools/argparser.cc:202
-msgid "[OPTIONS]"
-msgstr "[OPÇÕES]"
+#: src/library/tools/systemservice/args_windows.cc:34
+#, fuzzy
+msgid "Service options"
+msgstr "Opções de log"
 
-#: src/library/tools/argparser.cc:276
-#, c++-format
-msgid "Invalid option: -{}"
-msgstr "Opção inválida: -{}"
+#: src/library/tools/systemservice/args_windows.cc:36
+#, fuzzy
+msgid "Run in foreground, as application"
+msgstr "Executar em primeiro plano (como aplicação)"
 
-#: src/library/tools/argparser.cc:293
-#, c++-format
-msgid "Invalid option: --{}"
-msgstr "Opção inválid: --{}"
+#: src/library/tools/systemservice/args_windows.cc:43
+msgid "Start service"
+msgstr "Iniciar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:50
+msgid "Stop service"
+msgstr "Parar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:57
+msgid "Install service"
+msgstr "Instalar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:57
+msgid "description"
+msgstr ""
+
+#: src/library/tools/systemservice/args_windows.cc:64
+msgid "Uninstall service"
+msgstr "Desinstalar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:71
+msgid "Reinstall service"
+msgstr "Reinstalar serviço"
+
+#: src/library/tools/systemservice/args_windows.cc:81
+msgid "Block access to 'net stop' on this service"
+msgstr "Bloquear acesso a 'net stop' no serviço"
+
+#: src/library/tools/systemservice/systemservice.cc:145
+msgid "System is not ready"
+msgstr "Sistema não está em funcionamento"
+
+#: src/library/tools/console.cc:98
+msgid "Previous page"
+msgstr "Página anterior"
+
+#: src/library/tools/console.cc:101
+msgid "Next page"
+msgstr "Página seguinte"
+
+#: src/library/tools/console.cc:110
+msgid "Select option (Enter to quit): "
+msgstr "Selecione opção (Enter para sair): "
+
+#: src/library/tools/unit-tests.cc:183
+msgid "Available tests"
+msgstr ""
+
+#~ msgid "Unable to set environment variable"
+#~ msgstr "Incapaz de setar variável de ambiente"
+
+#~ msgid "Quit after \"seconds\""
+#~ msgstr "Encerra após \"seconds\""
 
 #, fuzzy
 #~ msgid "This help message"
@@ -856,9 +903,6 @@ msgstr "Opção inválid: --{}"
 
 #~ msgid "Configuration file not found"
 #~ msgstr "Arquivo de configuração não encontrado"
-
-#~ msgid "Run in foreground (as application)"
-#~ msgstr "Executar em primeiro plano (como aplicação)"
 
 #~ msgid "Invalid response type"
 #~ msgstr "Resposta de tipo inválido"
