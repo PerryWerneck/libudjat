@@ -37,6 +37,7 @@
 		}
 
 		return Controller::getInstance().load(path,node);
+
 	}
 
 	Module * Module::Controller::find_by_filename(const char *filename) {
