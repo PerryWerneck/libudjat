@@ -33,8 +33,6 @@
 
  namespace Udjat {
 
-	using Console = UI::Console;
-
 	static const char * decoration(Logger::Level level) noexcept {
 
 		static const struct {

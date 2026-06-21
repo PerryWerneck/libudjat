@@ -37,8 +37,6 @@
 
  namespace Udjat {
 
-	using Console = UI::Console;
-
 	Dialog::Status *Dialog::Status::instance = nullptr;
 
 	Dialog::Status::Status() {
@@ -60,10 +58,9 @@
 
 			Status & state(const char *text) noexcept override {
 				Logger::String{text}.write(Logger::Notice,"state");
-				// if(Console::decorated()) {
-				// 	Console::write(String{"\x1B]0;",text,"\x07"}.c_str());
-				// 	fsync(1);
-				// }
+				if(Console::decorated()) {
+					Console::write(String{"\x1B]0;",text,"\x07"}.c_str());
+				}
 				return *this;
 			}
 		};

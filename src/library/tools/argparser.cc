@@ -33,8 +33,6 @@
 
  namespace Udjat {
 
-	using Console = UI::Console;
-
 	ArgumentParser::ArgumentParser() {
 
 		// The first group is allways the application options

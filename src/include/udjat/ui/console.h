@@ -27,65 +27,68 @@
  #include <cstdint>
  #include <ostream>
  #include <memory>
- #include <udjat/ui/menu.h>
 
  namespace Udjat {
 
-	namespace UI {
+	namespace Console {
 
+		/// @brief Write text to console.
+		/// @param text The text to write.
+		/// @return true if suceeded.
+		UDJAT_API bool write(const char *text) noexcept;
 
-		/// @brief Console writer.
+		/// @brief The current console stream accepts ANSI decoration?
+		/// @return true if the current console stream allows ANSI decoration.
+		UDJAT_API bool decorated() noexcept;
+
+		enum Foreground : uint8_t {
+			Default = 39,
+			Black = 30,
+			Red = 31,
+			Green = 32,
+			Yellow = 33,
+			Blue = 34,
+			Magenta = 35,
+			Cyan = 36,
+			White = 37
+		};
+
+		/// @brief  screen.
 		/// @details Write messages to the console with different colors bypassing logger redirection.
-		class UDJAT_API Console : public std::ostream {
+		class UDJAT_API Screen : public std::ostream {
 		private:
-			bool enabled;
+			bool enabled;	///< @brief Store the original Logger::console status.
 			
 		public:
 
-			enum Foreground : uint8_t {
-				Default = 39,
-				Black = 30,
-				Red = 31,
-				Green = 32,
-				Yellow = 33,
-				Blue = 34,
-				Magenta = 35,
-				Cyan = 36,
-				White = 37
-			};
+			/// @brief Build console screen, disable console logger.
+			Screen();
 
-			Console();
-			~Console();
+			/// @brief Destroy console screen, reenable console logger.
+			~Screen();
 
-			/// @brief Write text to console.
-			/// @param text The text to write.
-			/// @return true if suceeded.
-			static bool write(const char *text) noexcept;
-
-			static bool decorated() noexcept;
-
-			Console & set(const Foreground color);
+			Screen & set(const Foreground color);
 
 			/// @brief set bold mode.
-			Console & bold(bool on);
+			Screen & bold(bool on);
 
 			/// @brief set dim/faint mode.
-			Console & faint(bool on);
+			Screen & faint(bool on);
 
 			/// @brief set italic mode.
-			Console & italic(bool on);
+			Screen & italic(bool on);
 
 			/// @brief Show/Hide cursor.
-			Console & cursor(bool on);
+			Screen & cursor(bool on);
 
 			/// @brief Moves cursor up.
-			Console & up(size_t lines = 1);
+			Screen & up(size_t lines = 1);
 
 			/// @brief Moves cursor down.
-			Console & down(size_t lines = 1);
+			Screen & down(size_t lines = 1);
 
 			/// @brief Erase the entire line
-			Console & erase_line();
+			Screen & erase_line();
 
 			unsigned short width() const noexcept;
 
@@ -97,11 +100,6 @@
 			/// @return Allways false.
 			bool progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept;
 	
-			/// @brief Get console menu.
-			/// @param title The menu title;
-			/// @return Pointer to console based menu class.
-			std::shared_ptr<Dialog::Menu> menu(const char *title);
-
 		};
 
 	}
@@ -110,7 +108,7 @@
 
  namespace std {
 
-	inline Udjat::UI::Console & operator<< (Udjat::UI::Console &os, const Udjat::UI::Console::Foreground fg) {
+	inline Udjat::Console::Screen & operator<< (Udjat::Console::Screen &os, const Udjat::Console::Foreground fg) {
 		os.set(fg);
 		return os;
 	}

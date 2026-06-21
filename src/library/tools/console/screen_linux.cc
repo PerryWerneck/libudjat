@@ -24,88 +24,75 @@
  //
 
 #include <config.h>
-#include <udjat/defs.h>
 #include <private/misc.h>
 #include <cstring>
 #include <udjat/ui/console.h>
+#include <private/logger.h>
 #include <udjat/tools/logger.h>
 #include <cstdio>
-#include <windows.h>
+#include <udjat/tools/intl.h>
+#include <udjat/tools/string.h>
+
+#ifndef _WIN32
+	#include <sys/ioctl.h>
+#endif // !_WIN32
+
+#ifdef HAVE_UNISTD_H
+	#include <unistd.h>
+#endif 
 
 using namespace std;
 
 namespace Udjat {
 
-	class UDJAT_PRIVATE ConsoleWriter : public std::basic_streambuf<char, std::char_traits<char> > {
-	protected:
+	namespace Console {
 
-		/// @brief Writes characters to the associated file from the put area
-		int sync() override {
-			return 0;
-		}
+		class UDJAT_PRIVATE Writer : public std::basic_streambuf<char, std::char_traits<char> > {
+		protected:
 
-		/// @brief Writes characters to the associated output sequence from the put area.
-		int overflow(int c) override {
-
-			// FIXME: Use win32 console API to write characters.
-
-			/*
-			if(c && c != EOF) {
-				char chr = (char) c;
-				if(write(STDOUT_FILENO,&chr,1) != 1) {
-					return EOF;
-				}
+			/// @brief Writes characters to the associated file from the put area
+			int sync() override {
+				return 0;
 			}
 
-			return c;
-			*/
+			/// @brief Writes characters to the associated output sequence from the put area.
+			int overflow(int c) override {
 
-			return EOF;
-		}
+				if(c && c != EOF) {
+					char chr = (char) c;
+					if(::write(STDOUT_FILENO,&chr,1) != 1) {
+						return EOF;
+					}
+				}
 
-	public:
-		ConsoleWriter() {
-		}
+				return c;
+			}
 
-		virtual ~ConsoleWriter() {			
-		}
+		public:
+			Writer() {
+			}
 
-	};
+			virtual ~Writer() {			
+			}
 
-	UI::Console::Console() : enabled{Logger::console()} {
-		debug("Console was build logging=%s", enabled ? "true" : "false");
-		static ConsoleWriter writer;
+		};
+
+	}
+
+	Console::Screen::Screen() : enabled{Logger::console()} {
+		static Writer writer;
 		this->rdbuf(&writer);
 		Logger::console(false);
 		cursor(false);
 	}
 
-	UI::Console::~Console() {
+	Console::Screen::~Screen() {
 		*this << "\x1B[0m";
 		cursor(true);
 		Logger::console(enabled);
-//		debug("Console was deleted");
 	}
 
-	bool UI::Console::write(const char *text) noexcept {
-
-		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-		
-		if (hConsole == INVALID_HANDLE_VALUE || hConsole == NULL) {
-        	return false;
-    	}		
-		
-		size_t bytes = strlen(text);
-		while(bytes) {
-			DWORD bytesWritten = 0;
-			WriteConsole(hConsole, text, bytes, &bytesWritten, NULL);
-			bytes -= bytesWritten;
-			text += bytesWritten;	
-		}
-		
-		/*
-		// FIXME: Use win32 console API to write characters.
-
+	bool Console::write(const char *text) noexcept {
 		size_t bytes = strlen(text);
 		while(bytes) {
 			ssize_t sz = ::write(STDOUT_FILENO,text,bytes);
@@ -114,29 +101,32 @@ namespace Udjat {
 			bytes -= sz;
 			text += sz;
 		}
-		*/
+		fsync(STDOUT_FILENO);
 		return true;
 	}
 
-	bool UI::Console::decorated() noexcept {
-		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
-		if(hOut != INVALID_HANDLE_VALUE) {
-			DWORD mode = 0;
-			if(GetConsoleMode(hOut, &mode)) {
-				return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
-			}
+	bool Console::decorated() noexcept {
+		static bool flag = isatty(1) && (getenv("TERM") != NULL);
+		return flag;
+	}
+
+	unsigned short Console::Screen::width() const noexcept {
+
+		// // https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
+		// CONSOLE_SCREEN_BUFFER_INFO csbi;
+		// GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+		// return (csbi.srWindow.Right - csbi.srWindow.Left + 1);		
+
+		struct winsize w;
+		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+		return w.ws_col;
+	}
+
+	bool Console::Screen::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
+
+		if(!decorated()) {
+			return false;
 		}
-		return false;	
-	}
-
-	unsigned short UI::Console::width() const noexcept {
-		// https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
-		CONSOLE_SCREEN_BUFFER_INFO csbi;
-		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-		return (csbi.srWindow.Right - csbi.srWindow.Left + 1);		
-	}
-
-	bool UI::Console::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
 
 		unsigned short width = this->width();
 		
@@ -146,7 +136,7 @@ namespace Udjat {
 
 		// 000000000011111111112222222222333333333344444444445555555555666666666677777777778
 		// 012345678901234567890123456789012345678901234567890123456789012345678901234567890
-		// URL.................................... [################################] 100.0%
+		// * URL.................................. [################################] 100.0%
 
 		size_t plen = strlen(prefix ? prefix : "");
 		size_t ulen = strlen(url);
@@ -226,44 +216,55 @@ namespace Udjat {
 
 	}
 
-	UI::Console & UI::Console::set(const Foreground color) {
-		*this << "\x1B[" << (int) color << "m";
+	Console::Screen & Console::Screen::set(const Foreground color) {
+		if(Console::decorated()) {
+			*this << "\x1B[" << (int) color << "m";
+		}
 		return *this;
 	}
 
-	UI::Console & UI::Console::bold(bool on) {
-		*this << "\x1B[" << (on ? "1" : "22") << "m";
+	Console::Screen & Console::Screen::bold(bool on) {
+		if(Console::decorated()) {
+			*this << "\x1B[" << (on ? "1" : "22") << "m";
+		}
 		return *this;
 	}
 
-	UI::Console & UI::Console::faint(bool on) {
-		*this << "\x1B[" << (on ? "2" : "22") << "m";
+	Console::Screen & Console::Screen::faint(bool on) {
+		if(Console::decorated()) {
+			*this << "\x1B[" << (on ? "2" : "22") << "m";
+		}
 		return *this;
 	}
 
-	UI::Console & UI::Console::italic(bool on) {
-		*this << "\x1B[" << (on ? "3" : "23") << "m";
+	Console::Screen & Console::Screen::italic(bool on) {
+		if(Console::decorated()) {
+			*this << "\x1B[" << (on ? "3" : "23") << "m";
+		}
 		return *this;
 	}
 
-	UI::Console & UI::Console::cursor(bool on) {
-		*this << "\x1B[" << (on ? "?25h" : "?25l");
+	Console::Screen & Console::Screen::cursor(bool on) {
+		if(Console::decorated()) {
+			*this << "\x1B[" << (on ? "?25h" : "?25l");
+		}
 		return *this;
 	}
 
-	UI::Console & UI::Console::up(size_t lines) {
+	Console::Screen & Console::Screen::up(size_t lines) {
 		*this << "\x1B[" << lines << "F";
 		return *this;
 	}
 
-	UI::Console & UI::Console::down(size_t lines) {
+	Console::Screen & Console::Screen::down(size_t lines) {
 		*this << "\x1B[" << lines << "E";
 		return *this;
 	}
 
-	UI::Console & UI::Console::erase_line() {
+	Console::Screen & Console::Screen::erase_line() {
 		*this << "\x1B[2K";
 		return *this;
 	}
+
 
 }

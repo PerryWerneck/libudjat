@@ -458,7 +458,7 @@
 	}
 
 	bool URL::progress_to_console(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
-		return UI::Console{}.progress(prefix,url,current,total);
+		return Console::Screen{}.progress(prefix,url,current,total);
 	}
 
  }

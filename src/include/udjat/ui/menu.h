@@ -29,68 +29,63 @@
 
  namespace Udjat {
 
-	namespace Dialog {
+	/// @brief Simple popup menu with options.
+	template <class T>
+	class UDJAT_API Menu : public std::vector<T> {
+	protected:
+		std::string title;
+		size_t lpp = 20;
 
-		/// @brief Menu Item.
-		class Item : public std::string {
-			public:
-				Item(const char *opt) : std::string{opt} {
-				}
+	public:
 
-				virtual ~Item();
-
-				/// @brief Get string with formatted menu option.
-				/// @param optname The option name.
-				/// @param decorated true to set string as a decorated console string.
-				/// @return The string with the formatted menu option.
-				virtual std::string get(const char *name, bool decorated = false) const noexcept;
+		Menu(const char *t) : title{t} {			
 		};
 
-		/// @brief Simple popup menu with options.
-		class UDJAT_API Menu : public std::vector<Item> {
-		protected:
-			Menu(const char *title);
-			std::string title;
-			size_t lpp = 26;
+		template<typename... Targs>
+		Menu(const char *title, Targs... Fargs) : Menu{title} {
+			append(Fargs...);
+		}
 
-		public:
+		inline Menu & lines_per_page(size_t value) noexcept {
+			lpp = value;
+			return *this;
+		}
 
+		inline size_t lines_per_page(void) const noexcept {
+			return lpp;
+		}
 
-			virtual ~Menu();
+		/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
+		/// @param options The options to select.
+		/// @return The index of the selected option.
+		virtual size_t select() const = 0;
 
-			/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
-			/// @param options The options to select.
-			/// @return The index of the selected option.
-			virtual size_t select() = 0;
-			
-			inline void append(const char *option) {
-				this->emplace_back(option);
-			}
+		template<typename... Targs>
+		inline void append(T &option, Targs... Fargs) {
+			this->push_back(option);
+			append(Fargs...);
+		}
 
-			void append(Item &item);
+		inline Menu & append(T &option) {
+			this->push_back(option);
+			return *this;
+		}
 
-			inline void lines_per_page(size_t value) noexcept {
-				lpp = value;
-			}
+		// virtual std::string get_menu_label(size_t ix, bool decorated = false) const {
+		// 	return std::vector<T>::at(ix).get_menu_label(decorated);
+		// }
 
-			size_t lines_per_page(void) noexcept {
-				return lpp;
-			}
+	};
 
-			void append(const char **options, size_t count);
-			void append(const char **options);
+	namespace Console {
 
-		};
+		/// @brief Get a string based console menu.
+		/// @param title Title for the menu.
+		/// @return Pointer to abstract menu
+		UDJAT_API std::shared_ptr<Udjat::Menu<::std::string>> menu(const char *title);
 
 	}
 
  }
 
- namespace std {
-
-	inline const char * to_string(const Udjat::Dialog::Item &item) {
-		return item.c_str();
-	}
-
- }
 

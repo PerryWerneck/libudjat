@@ -18,27 +18,17 @@
  */
 
  /**
-  * @brief Implements menu dialog.
+  * @brief Declare application status dialog.
   */
 
- #include <config.h>
+ #pragma once
  #include <udjat/defs.h>
  #include <udjat/ui/menu.h>
- #include <udjat/tools/logger.h>
- #include <stdexcept>
- #include <vector>
-
- #ifdef HAVE_UNISTD_H
-	#include <unistd.h>
- #endif
-
- using namespace std;
-
+ #include <udjat/ui/console.h>
+ 
  namespace Udjat {
 
-	// TODO: Implement console menu.
-
+		
  }
-
 
 

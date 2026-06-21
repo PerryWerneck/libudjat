@@ -503,7 +503,7 @@ lib_src += [
   'src/library/module/os/' + host_machine.system() + '/tools.cc',
   'src/library/tools/os/' + host_machine.system() + '/urlconnect.cc',
   'src/library/tools/os/' + host_machine.system() + '/socket.cc',
-  'src/library/tools/os/' + host_machine.system() + '/console.cc',
+  'src/library/tools/console/screen_' + host_machine.system() + '.cc',
   'src/library/tools/url/handlers/file.cc',
   'src/library/tools/url/handlers/script.cc',
   'src/library/tools/url/handlers/smbios.cc',

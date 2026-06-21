@@ -24,22 +24,13 @@
  //
 
 #include <config.h>
+#include <udjat/defs.h>
 #include <private/misc.h>
 #include <cstring>
 #include <udjat/ui/console.h>
-#include <private/logger.h>
 #include <udjat/tools/logger.h>
 #include <cstdio>
-#include <udjat/tools/intl.h>
-#include <udjat/tools/string.h>
-
-#ifndef _WIN32
-	#include <sys/ioctl.h>
-#endif // !_WIN32
-
-#ifdef HAVE_UNISTD_H
-	#include <unistd.h>
-#endif 
+#include <windows.h>
 
 using namespace std;
 
@@ -56,6 +47,9 @@ namespace Udjat {
 		/// @brief Writes characters to the associated output sequence from the put area.
 		int overflow(int c) override {
 
+			// FIXME: Use win32 console API to write characters.
+
+			/*
 			if(c && c != EOF) {
 				char chr = (char) c;
 				if(write(STDOUT_FILENO,&chr,1) != 1) {
@@ -64,6 +58,9 @@ namespace Udjat {
 			}
 
 			return c;
+			*/
+
+			return EOF;
 		}
 
 	public:
@@ -76,6 +73,7 @@ namespace Udjat {
 	};
 
 	UI::Console::Console() : enabled{Logger::console()} {
+		debug("Console was build logging=%s", enabled ? "true" : "false");
 		static ConsoleWriter writer;
 		this->rdbuf(&writer);
 		Logger::console(false);
@@ -86,48 +84,59 @@ namespace Udjat {
 		*this << "\x1B[0m";
 		cursor(true);
 		Logger::console(enabled);
+//		debug("Console was deleted");
 	}
 
 	bool UI::Console::write(const char *text) noexcept {
+
+		HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+		
+		if (hConsole == INVALID_HANDLE_VALUE || hConsole == NULL) {
+        	return false;
+    	}		
+		
 		size_t bytes = strlen(text);
 		while(bytes) {
-			ssize_t sz = ::write(1,text,bytes);
+			DWORD bytesWritten = 0;
+			WriteConsole(hConsole, text, bytes, &bytesWritten, NULL);
+			bytes -= bytesWritten;
+			text += bytesWritten;	
+		}
+		
+		/*
+		// FIXME: Use win32 console API to write characters.
+
+		size_t bytes = strlen(text);
+		while(bytes) {
+			ssize_t sz = ::write(STDOUT_FILENO,text,bytes);
 			if(sz < 0)
 				return false;
 			bytes -= sz;
 			text += sz;
 		}
-		fsync(1);
+		*/
 		return true;
 	}
 
-	bool UI::Console::decorated() noexcept {
-		static bool flag = isatty(1) && (getenv("TERM") != NULL);
-		return flag;
+	bool Console::decorated() noexcept {
+		HANDLE hOut = GetStdHandle(STD_OUTPUT_HANDLE);
+		if(hOut != INVALID_HANDLE_VALUE) {
+			DWORD mode = 0;
+			if(GetConsoleMode(hOut, &mode)) {
+				return (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+			}
+		}
+		return false;	
 	}
 
 	unsigned short UI::Console::width() const noexcept {
-#ifdef _WIN32
-
 		// https://stackoverflow.com/questions/6812224/getting-terminal-size-in-c-for-windows
 		CONSOLE_SCREEN_BUFFER_INFO csbi;
 		GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
 		return (csbi.srWindow.Right - csbi.srWindow.Left + 1);		
-
-#else
-
-		struct winsize w;
-		ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-		return w.ws_col;
-
-#endif // _WIN32
 	}
 
 	bool UI::Console::progress(const char *prefix, const char *url, uint64_t current, uint64_t total) noexcept {
-
-		if(!Console::decorated()) {
-			return false;
-		}
 
 		unsigned short width = this->width();
 		
@@ -137,7 +146,7 @@ namespace Udjat {
 
 		// 000000000011111111112222222222333333333344444444445555555555666666666677777777778
 		// 012345678901234567890123456789012345678901234567890123456789012345678901234567890
-		// * URL.................................. [################################] 100.0%
+		// URL.................................... [################################] 100.0%
 
 		size_t plen = strlen(prefix ? prefix : "");
 		size_t ulen = strlen(url);
@@ -218,37 +227,27 @@ namespace Udjat {
 	}
 
 	UI::Console & UI::Console::set(const Foreground color) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (int) color << "m";
-		}
+		*this << "\x1B[" << (int) color << "m";
 		return *this;
 	}
 
 	UI::Console & UI::Console::bold(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "1" : "22") << "m";
-		}
+		*this << "\x1B[" << (on ? "1" : "22") << "m";
 		return *this;
 	}
 
 	UI::Console & UI::Console::faint(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "2" : "22") << "m";
-		}
+		*this << "\x1B[" << (on ? "2" : "22") << "m";
 		return *this;
 	}
 
 	UI::Console & UI::Console::italic(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "3" : "23") << "m";
-		}
+		*this << "\x1B[" << (on ? "3" : "23") << "m";
 		return *this;
 	}
 
 	UI::Console & UI::Console::cursor(bool on) {
-		if(Console::decorated()) {
-			*this << "\x1B[" << (on ? "?25h" : "?25l");
-		}
+		*this << "\x1B[" << (on ? "?25h" : "?25l");
 		return *this;
 	}
 
@@ -266,6 +265,5 @@ namespace Udjat {
 		*this << "\x1B[2K";
 		return *this;
 	}
-
 
 }
