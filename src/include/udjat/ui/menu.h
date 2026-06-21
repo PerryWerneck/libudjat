@@ -39,7 +39,7 @@
 	public:
 
 		Menu(const char *t) : title{t} {			
-		};
+		}
 
 		template<typename... Targs>
 		Menu(const char *title, Targs... Fargs) : Menu{title} {
@@ -61,12 +61,12 @@
 		virtual size_t select() const = 0;
 
 		template<typename... Targs>
-		inline void append(T &option, Targs... Fargs) {
+		inline void append(const T &option, Targs... Fargs) {
 			this->push_back(option);
 			append(Fargs...);
 		}
 
-		inline Menu & append(T &option) {
+		inline Menu & append(const T &option) {
 			this->push_back(option);
 			return *this;
 		}

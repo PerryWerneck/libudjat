@@ -193,38 +193,38 @@
 
 	void UnitTests::interactive() noexcept {
 
-		// // Run interactive mode.
-		// while(1) {
+		// Run interactive mode.
+		auto menu = Console::menu(_("Available tests"));
+		for(const auto &test : *this) {
+			menu->append(test.c_str());	
+		}
+
+		while(1) {
 			
-		// 	size_t selected = (size_t) -1;
-		// 	try {
+			size_t selected = (size_t) -1;
+			try {
 
-		// 		Console console;
-		// 		auto menu = console.menu(_("Available tests"));
-		// 		for(const auto &test : *this) {
-		// 			menu->append(test.c_str());	
-		// 		}
-		// 		selected = menu->select();
+				selected = menu->select();
 
-		// 	} catch(const std::exception &e) {
-		// 		Logger::String{e.what()}.error();
-		// 		return;
-		// 	}
+			} catch(const std::exception &e) {
+				Logger::String{e.what()}.error();
+				return;
+			}
 
-		// 	debug("selected options '",selected,"'");
+			debug("selected options '",selected,"'");
 
-		// 	auto &worker = workers[selected];
-		// 	Logger::String{"--- ",worker.c_str()," ---"}.notice();
+			auto &worker = workers[selected];
+			Logger::String{"--- ",worker.c_str()," ---"}.notice();
 
-		// 	try {
+			try {
 
-		// 		worker.call();
+				worker.call();
 
-		// 	} catch(const std::exception &e) {
-		// 		Logger::String{e.what()}.error();
-		// 	}
+			} catch(const std::exception &e) {
+				Logger::String{e.what()}.error();
+			}
 
-		// }
+		}
 
 	}
 
