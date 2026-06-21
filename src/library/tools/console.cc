@@ -36,16 +36,12 @@ using namespace std;
 
 namespace Udjat {
 
-	std::shared_ptr<Menu<::std::string>> Console::menu(const char *title) {
+	std::shared_ptr<Menu<::std::string>> Console::MenuFactory(const char *title) {
 
 		class Menu : public Udjat::Menu<std::string> {
 		public:
 			Menu(const char *title) : Udjat::Menu<std::string>{title} {
 			}
-
-			// std::string get_menu_label(size_t ix, bool) const override {
-			// 	return at(ix);
-			// }
 
 			size_t select() const override {
 
@@ -79,12 +75,11 @@ namespace Udjat {
 						}
 
 						lines++;
-						auto &option = (*this)[line];
 						console << "\t";
 						console.bold(true);
 						console << item;
 						console.bold(false);
-						console << " - " << option.c_str() << endl;
+						console << " - " << get_label(line,true).c_str() << endl;
 						item[0]++;				
 
 					}

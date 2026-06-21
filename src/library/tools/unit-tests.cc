@@ -194,7 +194,7 @@
 	void UnitTests::interactive() noexcept {
 
 		// Run interactive mode.
-		auto menu = Console::menu(_("Available tests"));
+		auto menu = Console::MenuFactory(_("Available tests"));
 		for(const auto &test : *this) {
 			menu->append(test.c_str());	
 		}

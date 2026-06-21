@@ -38,6 +38,8 @@
 
 	public:
 
+		typedef Menu<T> super;
+
 		Menu(const char *t) : title{t} {			
 		}
 
@@ -71,18 +73,26 @@
 			return *this;
 		}
 
-		// virtual std::string get_menu_label(size_t ix, bool decorated = false) const {
-		// 	return std::vector<T>::at(ix).get_menu_label(decorated);
-		// }
+		const std::string get_label(size_t ix, bool decorated = false) const;
 
 	};
+
+	template <class T>
+    inline const std::string Menu<T>::get_label(size_t ix, bool decorated) const {
+        return std::to_string(this->at(ix)); 
+    }
+
+	template <>
+	inline const std::string Menu<std::string>::get_label(size_t ix, bool decorated) const {
+		return this->at(ix);
+	}
 
 	namespace Console {
 
 		/// @brief Get a string based console menu.
 		/// @param title Title for the menu.
 		/// @return Pointer to abstract menu
-		UDJAT_API std::shared_ptr<Udjat::Menu<::std::string>> menu(const char *title);
+		UDJAT_API std::shared_ptr<Udjat::Menu<::std::string>> MenuFactory(const char *title);
 
 	}
 
