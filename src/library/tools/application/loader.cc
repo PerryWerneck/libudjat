@@ -60,6 +60,21 @@ namespace Udjat {
 		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return false;},path);
 	}
 
+	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path) {
+
+		// Call new method replacing callback.
+		return loader(argc,argv,[init](const LoaderMode mode, Application &app, const char *){
+			
+			if(mode != LOADER_MODE_INIT) {
+				return false;
+			}
+
+			return init(app) != 0;
+
+		});
+
+	}
+
 	int UDJAT_API loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &init, const char *path) {
 
 		class Loader : public Udjat::Application {
@@ -120,30 +135,29 @@ namespace Udjat {
 				);
 
 				// Load unit-tests
-				{
-					UnitTests tests;
-					tests.load();
+				// {
+				// 	UnitTests tests;
+				// 	tests.load();
 
-					auto &group = parser.add_group(_("Test options"));
+				// 	auto &group = parser.add_group(_("Test options"));
+				// 	tests.for_each([&group](const char *option, const char *label){
 
-					tests.for_each([&group](const char *option, const char *label){
+				// 		if(option && *option) {
+				// 			group.emplace_back(
+				// 				option, label,
+				// 				[option](const char *, char) {
+				// 					debug("Calling option '",option,"'");
+				// 					UnitTests tests;
+				// 					tests.load();
+				// 					tests.run(option);
+				// 					return true;
+				// 				}
+				// 			);
+				// 		}
 
-						if(option && *option) {
-							group.emplace_back(
-								option, label,
-								[option](const char *, char) {
-									debug("Calling option '",option,"'");
-									UnitTests tests;
-									tests.load();
-									tests.run(option);
-									return true;
-								}
-							);
-						}
+				// 	});
 
-					});
-
-				}
+				// }
 
 				return parser;
 			}
@@ -170,81 +184,5 @@ namespace Udjat {
 
 	}
 
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path) {
-
-		class Loader : public Udjat::Application {
-		private:
-			const std::string filename;
-			const std::function<int(Application &app)> &callback;
-
-		protected:
-			ArgumentParser & load(ArgumentParser &parser) noexcept override {
-
-				parser.append(
-					ArgumentParser::Argument{
-						'r', "run-tests", _("Run all unit tests"),
-						[this](const char *arg, char) {
-#ifdef HAVE_PUGIXML
-							load_modules(filename.c_str());
-#endif // HAVE_PUGIXML							
-							UnitTests tests;
-							tests.load();
-							tests.run(arg);
-							return true;
-						}
-					},
-					ArgumentParser::Argument{
-						'i', "interactive", _("Interactive mode"),
-						[this](const char *arg, char) {
-#ifdef HAVE_PUGIXML
-							load_modules(filename.c_str());
-#endif // HAVE_PUGIXML							
-							UnitTests tests;
-							tests.load();
-							tests.interactive();
-							return true;
-						}
-					},
-					ArgumentParser::Argument{
-						'M', "load-module", _("Load module from file"), _("path"),
-						[](const char *path, char) {
-
-							if(!(path && *path)) {
-								throw runtime_error("Load module requires the module path as argument");
-							}
-
-							// TODO: Implement
-
-							return false;
-						}
-					}
-				);
-
-				return parser;
-			}
-
-		public:
-			Loader(const int argc, const char *argv[], const char *path, const std::function<int(Application &app)> &cbk) : Udjat::Application{argc,argv}, filename{path}, callback{cbk} {
-			}
-
-			std::shared_ptr<Abstract::Agent> RootFactory() override {
-				if(callback(*this)) {
-					throw runtime_error{"Initialization failed"};
-				}
-				return Udjat::Application::RootFactory();
-			}
-
-			int run() {
-				return Application::run(filename.c_str());
-			}
-
-		};
-
-		Logger::verbosity(9);
-		Logger::console(true);
-
-		return Loader{argc,argv,path,init}.run();
-
-	}
 
 }

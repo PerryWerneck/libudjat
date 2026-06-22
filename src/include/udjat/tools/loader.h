@@ -62,6 +62,6 @@ namespace Udjat {
 	/// @param callback Callback method to initialize app.
 	/// @param path Path to the XML configuration file or directory (default is "test.xml").
 	/// @return 0 on success, non-zero on failure.
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
+	[[deprecated]] int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path = "test.xml");
 
 }
