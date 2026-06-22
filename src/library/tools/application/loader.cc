@@ -31,7 +31,7 @@
 #include <udjat/tools/logger.h>
 
 #ifdef HAVE_PUGIXML
-	#include <pugixml.hpp>
+	#include <udjat/tools/properties.h>
 	#include <udjat/tools/xml.h>
 #endif // HAVE_PUGIXML
 

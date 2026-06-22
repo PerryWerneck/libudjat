@@ -23,7 +23,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
  #include <udjat/tools/properties.h>
- #include <pugixml.hpp>
+ #include <udjat/tools/properties.h>
  #include <udjat/tools/string.h>
  #include <stdexcept>
  #include <udjat/tools/logger.h>

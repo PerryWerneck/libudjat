@@ -30,6 +30,7 @@
 
  #include <udjat/defs.h>
  #include <pugixml.hpp>
+ #include <udjat/tools/properties.h>
  #include <udjat/defs.h>
  #include <functional>
  #include <cstdint>
