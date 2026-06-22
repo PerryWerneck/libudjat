@@ -26,41 +26,63 @@
  #include <memory>
  #include <string>
  #include <vector>
+ #include <functional>
 
  namespace Udjat {
 
+	namespace Abstract {
+
+		class UDJAT_API Menu {
+		private:
+			std::string title;
+
+		protected:
+			size_t lpp = 20;
+
+		public:
+			Menu(const char *t) : title{t} {			
+			}
+
+			inline Menu & lines_per_page(size_t value) noexcept {
+				lpp = value;
+				return *this;
+			}
+
+			inline size_t lines_per_page(void) const noexcept {
+				return lpp;
+			}
+
+			inline const char *c_str() const noexcept {
+				return title.c_str();
+			}
+
+			virtual size_t size() const noexcept = 0;
+
+			/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
+			/// @param options The options to select.
+			/// @return The index of the selected option.
+			virtual size_t select() const = 0;
+
+			virtual const std::string label(size_t ix, bool decorated = false) const = 0;
+
+		};
+
+	}
+
 	/// @brief Simple popup menu with options.
 	template <class T>
-	class UDJAT_API Menu : public std::vector<T> {
-	protected:
-		std::string title;
-		size_t lpp = 20;
-
+	class UDJAT_API Menu : public Abstract::Menu, public std::vector<T> {
 	public:
 
 		typedef Menu<T> super;
 
-		Menu(const char *t) : title{t} {			
+		Menu(const char *t) : Abstract::Menu{t} {			
 		}
 
 		template<typename... Targs>
 		Menu(const char *title, Targs... Fargs) : Menu{title} {
 			append(Fargs...);
 		}
-
-		inline Menu & lines_per_page(size_t value) noexcept {
-			lpp = value;
-			return *this;
-		}
-
-		inline size_t lines_per_page(void) const noexcept {
-			return lpp;
-		}
-
-		/// @brief Select option, return index or throw system_error(ECANCELLED) if user cancel.
-		/// @param options The options to select.
-		/// @return The index of the selected option.
-		virtual size_t select() const = 0;
 
 		template<typename... Targs>
 		inline void append(const T &option, Targs... Fargs) {
@@ -73,28 +95,24 @@
 			return *this;
 		}
 
-		const std::string get_label(size_t ix, bool decorated = false) const;
+		const std::string label(size_t ix, bool decorated = false) const override;
+
+		size_t size() const noexcept override {
+			return std::vector<T>::size();
+		}
 
 	};
 
 	template <class T>
-    inline const std::string Menu<T>::get_label(size_t ix, bool decorated) const {
+    inline const std::string Menu<T>::label(size_t ix, bool decorated) const {
         return std::to_string(this->at(ix)); 
     }
 
 	template <>
-	inline const std::string Menu<std::string>::get_label(size_t ix, bool decorated) const {
+	inline const std::string Menu<std::string>::label(size_t ix, bool decorated) const {
 		return this->at(ix);
 	}
 
-	namespace Console {
-
-		/// @brief Get a string based console menu.
-		/// @param title Title for the menu.
-		/// @return Pointer to abstract menu
-		UDJAT_API std::shared_ptr<Udjat::Menu<::std::string>> MenuFactory(const char *title);
-
-	}
 
  }
 

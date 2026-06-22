@@ -24,10 +24,31 @@
  #pragma once
  #include <udjat/defs.h>
  #include <udjat/ui/menu.h>
- #include <udjat/ui/console.h>
  
  namespace Udjat {
 
+	namespace Console {
+
+		/// @brief Get a string based console menu.
+		/// @param title Title for the menu.
+		/// @return Pointer to abstract menu
+		UDJAT_API std::shared_ptr<Udjat::Menu<::std::string>> MenuFactory(const char *title);
+       
+        size_t UDJAT_API select(const Udjat::Abstract::Menu &menu);
+
+        template <class T>
+	    class UDJAT_API Menu : public Udjat::Menu<T> {
+        public:
+            Menu(const char *t) : Udjat::Menu<T>{t} {			
+            }
+
+		    size_t select() const override {
+                return Udjat::Console::select(*this);
+            }
+
+        };
+
+    }
 		
  }
 

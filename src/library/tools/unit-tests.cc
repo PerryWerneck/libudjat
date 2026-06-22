@@ -30,6 +30,7 @@
  #include <udjat/module.h>
  #include <iostream>
  #include <udjat/ui/menu.h>
+ #include <udjat/ui/console/menu.h>
  #include <udjat/ui/console.h>
  #include <udjat/tools/intl.h>
 
@@ -191,7 +192,16 @@
 		}
 	}
 
+	// template <>
+	// inline const std::string Menu<UnitTests::Worker &>::get_label(size_t ix, bool decorated) const {
+	// 	auto &worker = this->at(ix);
+	// 	String label{worker.c_str()};
+
+	// 	return label;
+	// }
+
 	void UnitTests::interactive() noexcept {
+
 
 		// Run interactive mode.
 		auto menu = Console::MenuFactory(_("Available tests"));

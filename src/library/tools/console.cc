@@ -26,6 +26,7 @@
 #include <config.h>
 #include <udjat/ui/console.h>
 #include <udjat/ui/menu.h>
+#include <udjat/ui/console/menu.h>
 #include <stdexcept>
 #include <errno.h>
 #include <udjat/tools/string.h>
@@ -36,249 +37,231 @@ using namespace std;
 
 namespace Udjat {
 
+    size_t UDJAT_API Console::select(const Udjat::Abstract::Menu &menu) {
+		
+		if(!decorated()) {
+			throw runtime_error("Use of menu requires a decorated console");
+		}
+
+		Console::Screen console;
+
+		size_t page = 0;
+		size_t lpp = menu.lines_per_page();
+		while(1) {
+
+			console << endl;
+			console.bold(true);
+			console << menu.c_str() << endl;
+			console.bold(false);
+			console << endl;
+
+			char first = 'A';
+
+			bool next = true;
+			char item[] = { first, '\0'};
+			size_t lines = 5;
+
+			for(size_t ix = 0; ix < lpp; ix++) {
+				auto line = page*lpp+ix;
+
+				if(line >= menu.size()) {
+					next = false;
+					break;
+				}
+
+				lines++;
+				console << "\t";
+				console.bold(true);
+				console << item;
+				console.bold(false);
+				console << " - " << menu.label(line,true).c_str() << endl;
+				item[0]++;				
+
+			}
+
+			if(next || page) {
+
+				lines++;
+				console << "\t";
+				console.faint(true);
+				if(page) {
+					console << "< " << _("Previous page") << "   ";
+				}
+				if(next) {
+					console << "> "<< _("Next page");
+				}
+				console.faint(false);
+
+				console << endl;
+
+			}
+
+			console << endl << _("Select option (Enter to quit): ");
+			console.cursor(true).flush();
+			cin.sync();
+
+			String choice;
+			getline(cin,choice);
+			choice.strip();
+			
+			for(size_t line = 0; line < lines;line++) {
+				console.erase_line().up();
+			}
+
+			if(choice.empty()) {
+				throw system_error(ECANCELED,system_category());
+			}
+
+			choice[0] = toupper(choice[0]);
+
+			if(next && choice[0] == '>') {
+				page++;
+				continue;
+			}
+
+			if(page && choice[0] == '<') {
+				page--;
+				continue;
+			}
+
+			int selected = (choice[0] - first);
+			if(selected < 0 || selected >= (int) lpp) {
+				Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+				continue;
+			}
+			
+			selected += (page * lpp);
+			if(selected >= (int) menu.size()) {
+				Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+				continue;
+			}
+
+			Logger::String{"Option '",menu.label(selected).c_str(),"' was selected"}.info("menu");
+			return (size_t) selected;
+
+		}
+	}
+
 	std::shared_ptr<Menu<::std::string>> Console::MenuFactory(const char *title) {
 
-		class Menu : public Udjat::Menu<std::string> {
-		public:
-			Menu(const char *title) : Udjat::Menu<std::string>{title} {
-			}
+		// class Menu : public Udjat::Menu<std::string> {
+		// public:
+		// 	Menu(const char *title) : Udjat::Menu<std::string>{title} {
+		// 	}
 
-			size_t select() const override {
+		// 	size_t select() const override {
 
-				if(size() == 0) {
-					throw system_error(ENODATA,system_category());
-				}
+		// 		if(size() == 0) {
+		// 			throw system_error(ENODATA,system_category());
+		// 		}
 
-				Console::Screen console;
+		// 		Console::Screen console;
 
-				size_t page = 0;
-				while(1) {
+		// 		size_t page = 0;
+		// 		while(1) {
 
-					console << endl;
-					console.bold(true);
-					console << title << endl;
-					console.bold(false);
-					console << endl;
+		// 			console << endl;
+		// 			console.bold(true);
+		// 			console << title << endl;
+		// 			console.bold(false);
+		// 			console << endl;
 
-					char first = 'A';
+		// 			char first = 'A';
 
-					bool next = true;
-					char item[] = { first, '\0'};
-					size_t lines = 5;
+		// 			bool next = true;
+		// 			char item[] = { first, '\0'};
+		// 			size_t lines = 5;
 
-					for(size_t ix = 0; ix < lpp; ix++) {
-						auto line = page*lpp+ix;
+		// 			for(size_t ix = 0; ix < lpp; ix++) {
+		// 				auto line = page*lpp+ix;
 
-						if(line >= size()) {
-							next = false;
-							break;
-						}
+		// 				if(line >= size()) {
+		// 					next = false;
+		// 					break;
+		// 				}
 
-						lines++;
-						console << "\t";
-						console.bold(true);
-						console << item;
-						console.bold(false);
-						console << " - " << get_label(line,true).c_str() << endl;
-						item[0]++;				
+		// 				lines++;
+		// 				console << "\t";
+		// 				console.bold(true);
+		// 				console << item;
+		// 				console.bold(false);
+		// 				console << " - " << get_label(line,true).c_str() << endl;
+		// 				item[0]++;				
 
-					}
+		// 			}
 
-					if(next || page) {
+		// 			if(next || page) {
 
-						lines++;
-						console << "\t";
-						console.faint(true);
-						if(page) {
-							console << "< " << _("Previous page") << "   ";
-						}
-						if(next) {
-							console << "> "<< _("Next page");
-						}
-						console.faint(false);
+		// 				lines++;
+		// 				console << "\t";
+		// 				console.faint(true);
+		// 				if(page) {
+		// 					console << "< " << _("Previous page") << "   ";
+		// 				}
+		// 				if(next) {
+		// 					console << "> "<< _("Next page");
+		// 				}
+		// 				console.faint(false);
 
-						console << endl;
+		// 				console << endl;
 
-					}
+		// 			}
 
-					console << endl << _("Select option (Enter to quit): ");
-					console.cursor(true).flush();
-					cin.sync();
+		// 			console << endl << _("Select option (Enter to quit): ");
+		// 			console.cursor(true).flush();
+		// 			cin.sync();
 
-					String choice;
-					getline(cin,choice);
-					choice.strip();
+		// 			String choice;
+		// 			getline(cin,choice);
+		// 			choice.strip();
 					
-					for(size_t line = 0; line < lines;line++) {
-						console.erase_line().up();
-					}
+		// 			for(size_t line = 0; line < lines;line++) {
+		// 				console.erase_line().up();
+		// 			}
 
-					if(choice.empty()) {
-						throw system_error(ECANCELED,system_category());
-					}
+		// 			if(choice.empty()) {
+		// 				throw system_error(ECANCELED,system_category());
+		// 			}
 
-					choice[0] = toupper(choice[0]);
+		// 			choice[0] = toupper(choice[0]);
 
-					if(next && choice[0] == '>') {
-						page++;
-						continue;
-					}
+		// 			if(next && choice[0] == '>') {
+		// 				page++;
+		// 				continue;
+		// 			}
 
-					if(page && choice[0] == '<') {
-						page--;
-						continue;
-					}
+		// 			if(page && choice[0] == '<') {
+		// 				page--;
+		// 				continue;
+		// 			}
 
-					int selected = (choice[0] - first);
-					if(selected < 0 || selected >= (int) lpp) {
-						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
-						continue;
-					}
+		// 			int selected = (choice[0] - first);
+		// 			if(selected < 0 || selected >= (int) lpp) {
+		// 				Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+		// 				continue;
+		// 			}
 					
-					selected += (page * lpp);
-					if(selected >= (int) size()) {
-						Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
-						continue;
-					}
+		// 			selected += (page * lpp);
+		// 			if(selected >= (int) size()) {
+		// 				Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
+		// 				continue;
+		// 			}
 
-					Logger::String{"Option '",(*this)[selected],"' was selected"}.info("menu");
-					return (size_t) selected;
+		// 			Logger::String{"Option '",(*this)[selected],"' was selected"}.info("menu");
+		// 			return (size_t) selected;
 
-				}
-			}
+		// 		}
+		// 	}
 
-		};
+		// };
 
 		if(!Console::decorated()) {
 			throw runtime_error("Cant use menus on undecorated console");
 		}
 
-		return make_shared<Menu>(title);
+		return make_shared<Console::Menu<std::string>>(title);
 
 	}
 
-	// std::shared_ptr<Dialog::Menu> UI::Console::menu(const char *title) {
-
-	// 	class Menu : public Dialog::Menu {
-	// 	private:
-	// 		Console *cntl;
-
-	// 	public:
-	// 		Menu(Console *c, const char *t) : Dialog::Menu{t}, cntl{c} {
-	// 			lpp = 15;
-	// 		}
-
-	// 		size_t select() override {	
-
-	// 			Console &console = *cntl;
-
-	// 			if(size() == 0) {
-	// 				throw system_error(ENODATA,system_category());
-	// 			}
-
-	// 			size_t page = 0;
-	// 			while(1) {
-
-	// 				console << endl;
-	// 				console.bold(true);
-	// 				console << title << endl;
-	// 				console.bold(false);
-	// 				console << endl;
-
-	// 				char first = 'A';
-
-	// 				bool next = true;
-	// 				char item[] = { first, '\0'};
-	// 				size_t lines = 5;
-
-	// 				for(size_t ix = 0; ix < lpp; ix++) {
-	// 					auto line = page*lpp+ix;
-
-	// 					if(line >= size()) {
-	// 						next = false;
-	// 						break;
-	// 					}
-
-	// 					lines++;
-	// 					auto &option = (*this)[line];
-	// 					console << "\t";
-	// 					console.bold(true);
-	// 					console << item;
-	// 					console.bold(false);
-	// 					console << " - " << option.c_str() << endl;
-	// 					item[0]++;				
-
-	// 				}
-
-	// 				if(next || page) {
-
-	// 					lines++;
-	// 					console << "\t";
-	// 					console.faint(true);
-	// 					if(page) {
-	// 						console << "< " << _("Previous page") << "   ";
-	// 					}
-	// 					if(next) {
-	// 						console << "> "<< _("Next page");
-	// 					}
-	// 					console.faint(false);
-
-	// 					console << endl;
-
-	// 				}
-
-
-	// 				console << endl << _("Select option (Enter to quit): ");
-	// 				console.cursor(true).flush();
-	// 				cin.sync();
-
-	// 				String choice;
-	// 				getline(cin,choice);
-	// 				choice.strip();
-					
-	// 				for(size_t line = 0; line < lines;line++) {
-	// 					console.erase_line().up();
-	// 				}
-
-	// 				if(choice.empty()) {
-	// 					throw system_error(ECANCELED,system_category());
-	// 				}
-
-	// 				choice[0] = toupper(choice[0]);
-
-	// 				if(next && choice[0] == '>') {
-	// 					page++;
-	// 					continue;
-	// 				}
-
-	// 				if(page && choice[0] == '<') {
-	// 					page--;
-	// 					continue;
-	// 				}
-
-	// 				int selected = (choice[0] - first);
-	// 				if(selected < 0 || selected >= (int) lpp) {
-	// 					Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
-	// 					continue;
-	// 				}
-					
-	// 				selected += (page * lpp);
-	// 				if(selected >= (int) size()) {
-	// 					Logger::String{"Invalid option: '",choice,"'"}.warning("menu");
-	// 					continue;
-	// 				}
-
-	// 				Logger::String{"Option '",(*this)[selected],"' was selected"}.info("menu");
-	// 				return (size_t) selected;
-
-	// 			}
-
-	// 		}
-
-	// 	};
-
-	// 	return make_shared<Menu>(this,title);
-
-	// }
 
 }
