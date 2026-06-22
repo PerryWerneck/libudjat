@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-20 05:57-0300\n"
+"POT-Creation-Date: 2026-06-22 11:20-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -791,29 +791,29 @@ msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
 
 #. The first group is allways the application options
-#: src/library/tools/argparser.cc:41
+#: src/library/tools/argparser.cc:39
 msgid "Application options"
 msgstr "Opções da aplicação"
 
-#: src/library/tools/argparser.cc:63 src/library/tools/commandlineparser.cc:166
+#: src/library/tools/argparser.cc:61 src/library/tools/commandlineparser.cc:166
 msgid "Show this help message"
 msgstr "Mostra essa mensagem de help"
 
-#: src/library/tools/argparser.cc:199
+#: src/library/tools/argparser.cc:197
 #: src/library/tools/commandlineparser.cc:257
 msgid "Usage:"
 msgstr "Uso:"
 
-#: src/library/tools/argparser.cc:231
+#: src/library/tools/argparser.cc:229
 msgid "[OPTIONS]"
 msgstr "[OPÇÕES]"
 
-#: src/library/tools/argparser.cc:301
+#: src/library/tools/argparser.cc:299
 #, c++-format
 msgid "Invalid option: -{}"
 msgstr "Opção inválida: -{}"
 
-#: src/library/tools/argparser.cc:318
+#: src/library/tools/argparser.cc:316
 #, c++-format
 msgid "Invalid option: --{}"
 msgstr "Opção inválid: --{}"
@@ -872,19 +872,20 @@ msgstr "Bloquear acesso a 'net stop' no serviço"
 msgid "System is not ready"
 msgstr "Sistema não está em funcionamento"
 
-#: src/library/tools/console.cc:98
+#: src/library/tools/console.cc:88
 msgid "Previous page"
 msgstr "Página anterior"
 
-#: src/library/tools/console.cc:101
+#: src/library/tools/console.cc:91
 msgid "Next page"
 msgstr "Página seguinte"
 
-#: src/library/tools/console.cc:110
+#: src/library/tools/console.cc:99
 msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
-#: src/library/tools/unit-tests.cc:204
+#. Run interactive mode.
+#: src/library/tools/unit-tests.cc:198
 msgid "Available tests"
 msgstr ""
 
