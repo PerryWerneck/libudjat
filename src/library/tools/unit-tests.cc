@@ -216,7 +216,7 @@
 					}
 					opt.append(
 						"  \x1B[2m",
-						"( --",worker.option," )",
+						"(",worker.option,")",
 						"\x1B[22m"
 					);
 				}
