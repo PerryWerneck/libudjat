@@ -192,21 +192,34 @@
 		}
 	}
 
-	// template <>
-	// inline const std::string Menu<UnitTests::Worker &>::get_label(size_t ix, bool decorated) const {
-	// 	auto &worker = this->at(ix);
-	// 	String label{worker.c_str()};
-
-	// 	return label;
-	// }
-
 	void UnitTests::interactive() noexcept {
 
-
 		// Run interactive mode.
-		auto menu = Console::MenuFactory(_("Available tests"));
-		for(const auto &test : *this) {
-			menu->append(test.c_str());	
+		Console::Menu<string> menu{_("Available tests")};
+		{
+			// Get widht
+			size_t width = 0;
+			for(const auto &worker : workers) {
+				width = max(width,worker.size());
+			}
+
+			//
+			for(const auto &worker : workers) {
+				String opt{worker.c_str()};
+
+				if(worker.option && *worker.option) {
+					for(size_t ix = worker.size();ix < width;ix++) {
+						opt.append(" ");
+					}
+					opt.append(
+						"  \x1B[2m",
+						"( -r ",worker.option," )",
+						"\x1B[22m"
+					);
+				}
+
+				menu.push_back(opt);	
+			}
 		}
 
 		while(1) {
@@ -214,7 +227,7 @@
 			size_t selected = (size_t) -1;
 			try {
 
-				selected = menu->select();
+				selected = menu.select();
 
 			} catch(const std::exception &e) {
 				Logger::String{e.what()}.error();

@@ -25,6 +25,7 @@
 #include <vector>
 #include <udjat/tools/container.h>
 #include <string>
+#include <cstring>
 #include <set>
 #include <udjat/module/abstract.h>
 #include <memory>
@@ -91,6 +92,10 @@ namespace Udjat {
 
 			inline const char *c_str() const noexcept {
 				return label;
+			}
+
+			inline const size_t size() const noexcept {
+				return strlen(label);
 			}
 
 		};

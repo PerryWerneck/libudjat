@@ -103,10 +103,10 @@
 
 	};
 
-	template <class T>
-    inline const std::string Menu<T>::label(size_t ix, bool decorated) const {
-        return std::to_string(this->at(ix)); 
-    }
+	// template <class T>
+    // inline const std::string Menu<T>::label(size_t ix, bool decorated) const {
+    //     return std::to_string(this->at(ix)); 
+    // }
 
 	template <>
 	inline const std::string Menu<std::string>::label(size_t ix, bool decorated) const {
