@@ -135,10 +135,7 @@
 
 #else
 
-		Logger::String{"Scanning loaded modules"}.info();
 		dl_iterate_phdr(phdr_item, this);
-		Logger::String{"Found ",modules.size()," modules with unit tests"}.info();
-
 		for(auto module : modules) {
 			dlerror();
 			auto *symbol = reinterpret_cast<void(*)(UnitTests &)>(module->dlsym("enum_udjat_unit_tests"));
@@ -192,6 +189,12 @@
 		}
 	}
 
+	void UnitTests::for_each(const std::function<void(const char *option, const char *label)> &func) const {
+		for(const auto &worker : workers) {
+			func(worker.option,worker.label);
+		}
+	}
+
 	void UnitTests::interactive() noexcept {
 
 		// Run interactive mode.
@@ -213,7 +216,7 @@
 					}
 					opt.append(
 						"  \x1B[2m",
-						"( -r ",worker.option," )",
+						"( --",worker.option," )",
 						"\x1B[22m"
 					);
 				}

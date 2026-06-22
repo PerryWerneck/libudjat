@@ -53,6 +53,10 @@ namespace Udjat {
 				shortname{s}, longname{l}, help{h}, example{e}, call{c} {
 			}
 
+			Argument(const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+				longname{l}, help{h}, call{c} {
+			}
+
 			Argument() { 
 			}
 
@@ -201,6 +205,10 @@ namespace Udjat {
 		/// @brief Add options from Logger subsystem in a separate group options.
 		/// @return The same object (for chaining).
 		ArgumentParser & add_logger_group();
+
+		/// @brief Run option.
+		/// @param option The name of the option to run.
+		void call(const char *option);
 
 	private:
 

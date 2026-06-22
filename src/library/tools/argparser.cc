@@ -317,5 +317,17 @@
 
 	}
 
+	void ArgumentParser::call(const char *option) {
+		for(const auto &group : groups) {
+			for(const auto &arg : group) {
+				if(arg == option) {
+					arg.exec();
+					return;
+				}
+			}
+		}
+	}
+
+
  }
 

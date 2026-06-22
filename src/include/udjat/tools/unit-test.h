@@ -142,6 +142,8 @@ namespace Udjat {
 		}
 #endif
 
+		void for_each(const std::function<void(const char *option, const char *label)> &func) const;
+
 	private:
 
 		struct ModuleCompare {

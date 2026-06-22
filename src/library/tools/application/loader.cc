@@ -72,7 +72,7 @@ namespace Udjat {
 
 				parser.append(
 					ArgumentParser::Argument{
-						'r', "run-unit-tests", _("Run all unit tests"),
+						't', "run-tests", _("Run all unit tests"),
 						[this](const char *arg, char) {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
@@ -119,6 +119,32 @@ namespace Udjat {
 					}
 				);
 
+				// Load unit-tests
+				{
+					UnitTests tests;
+					tests.load();
+
+					auto &group = parser.add_group(_("Test options"));
+
+					tests.for_each([&group](const char *option, const char *label){
+
+						if(option && *option) {
+							group.emplace_back(
+								option, label,
+								[option](const char *, char) {
+									debug("Calling option '",option,"'");
+									UnitTests tests;
+									tests.load();
+									tests.run(option);
+									return true;
+								}
+							);
+						}
+
+					});
+
+				}
+
 				return parser;
 			}
 
@@ -156,7 +182,7 @@ namespace Udjat {
 
 				parser.append(
 					ArgumentParser::Argument{
-						'r', "run-unit-tests", _("Run all unit tests"),
+						'r', "run-tests", _("Run all unit tests"),
 						[this](const char *arg, char) {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
