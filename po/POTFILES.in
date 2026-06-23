@@ -13,8 +13,8 @@ src/library/agent/update.cc
 src/library/agent/agent.cc
 src/library/agent/controller.cc
 src/library/agent/event.cc
-src/library/agent/factory.cc
 src/library/agent/state.cc
+src/library/agent/factory.cc
 src/library/alert/construct.cc
 src/library/alert/factory.cc
 src/library/alert/file.cc
@@ -176,8 +176,8 @@ src/library/tools/requestpath.cc
 src/library/tools/script.cc
 src/library/tools/shortcut.cc
 src/library/tools/string/expand.cc
-src/library/tools/string/string.cc
 src/library/tools/string/xml.cc
+src/library/tools/string/string.cc
 src/library/tools/subprocess.cc
 src/library/tools/timestamp.cc
 src/library/tools/url/handler.cc
@@ -322,7 +322,6 @@ src/include/udjat/tools/activatable.h
 src/include/udjat/tools/script.h
 src/include/udjat/tools/configuration.h
 src/include/udjat/tools/object.h
-src/include/udjat/tools/string.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/argumentparser.h
 src/include/udjat/tools/systemservice.h
@@ -333,6 +332,7 @@ src/include/udjat/tools/logger.h
 src/include/udjat/tools/application.h
 src/include/udjat/tools/unit-test.h
 src/include/udjat/tools/xml.h
+src/include/udjat/tools/string.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
 src/include/udjat/ui/status.h

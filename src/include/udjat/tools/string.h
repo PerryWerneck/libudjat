@@ -463,12 +463,14 @@
 		unsigned long long as_ull() const;
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
-		/// @param def The default value, used if string is empty.
+		/// @param value The value to set;
+		/// @param precision The number of digits after the decimal point.
 		/// @return Numeric value from string.
 		String & set_byte(unsigned long long value, int precision = 1);
 
 		/// @brief Set byte value, add 'kb', 'gb', 'tb'.
-		/// @param def The default value, used if string is empty.
+		/// @param value The value to set;
+		/// @param precision The number of digits after the decimal point.
 		/// @return Numeric value from string.
 		String & set_byte(double value, int precision = 1);
 
