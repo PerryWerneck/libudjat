@@ -50,7 +50,7 @@ namespace Udjat {
 		XML::Document document{filename};
 		for(const auto &node : document) {
 			for(auto child = node.child("module"); child; child = child.next_sibling("module")) {
-				Module::load(child);
+				Module::load(XML::Node{child});
 			}
 		}
 	}

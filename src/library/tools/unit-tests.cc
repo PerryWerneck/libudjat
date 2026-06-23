@@ -33,6 +33,7 @@
  #include <udjat/ui/console/menu.h>
  #include <udjat/ui/console.h>
  #include <udjat/tools/intl.h>
+ #include <algorithm>
 
  #ifdef HAVE_UNISTD_H
 	#include <unistd.h>

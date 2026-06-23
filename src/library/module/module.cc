@@ -19,15 +19,14 @@
 
 #include <config.h>
 #include <private/module.h>
-#include <udjat/module/abstract.h>
+#include <udjat/module.h>
 #include <udjat/tools/string.h>
 #include <udjat/tools/logger.h>
 #include <udjat/tools/intl.h>
 #include <iostream>
+#include <cstdarg>
 
 using namespace std;
-
-//---[ Implement ]------------------------------------------------------------------------------------------
 
 namespace Udjat {
 

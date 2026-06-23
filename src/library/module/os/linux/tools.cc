@@ -20,16 +20,26 @@
  #include <config.h>
  #include <private/module.h>
  #include <dlfcn.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
  #include <udjat/tools/container.h>
  #include <unistd.h>
+ #include <limits.h>
 
  namespace Udjat {
 
-	bool Module::load(const char *filename, const XML::Node &node) {
-		return Controller::getInstance().load(filename,node);
+	bool Module::load(const char *filename, const Udjat::Properties &props) {
+		
+		char path[PATH_MAX+1];
+
+		memset(path,0,sizeof(path));
+		if (realpath(filename,path) == NULL)  {
+			return Controller::getInstance().load(filename,props);
+		}
+
+		return Controller::getInstance().load(path,props);
+		
 	}
 
 	Module * Module::Controller::find_by_filename(const char *path) {

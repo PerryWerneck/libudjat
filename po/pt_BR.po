@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-22 15:18-0300\n"
+"POT-Creation-Date: 2026-06-22 19:34-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -114,34 +114,21 @@ msgstr "Iniciando serviços"
 msgid "Unexpected error while activating new configuration"
 msgstr "Erro inesperado durante a configuração"
 
-#: src/library/tools/application/loader.cc:75
-#: src/library/tools/application/loader.cc:185
+#: src/library/tools/application/loader.cc:90
 msgid "Run all unit tests"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:93
-#: src/library/tools/application/loader.cc:197
+#: src/library/tools/application/loader.cc:108
 msgid "Interactive mode"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:108
+#: src/library/tools/application/loader.cc:123
 msgid "Load module file"
 msgstr ""
 
-#: src/library/tools/application/loader.cc:108
-#: src/library/tools/application/loader.cc:209
+#: src/library/tools/application/loader.cc:123
 msgid "path"
 msgstr ""
-
-#: src/library/tools/application/loader.cc:127
-#, fuzzy
-msgid "Test options"
-msgstr "Opções de log"
-
-#: src/library/tools/application/loader.cc:209
-#, fuzzy
-msgid "Load module from file"
-msgstr "Não foi possível ler do arquivo"
 
 #: src/library/tools/converters.cc:40 src/library/tools/string/string.cc:69
 msgid "yes"
@@ -893,6 +880,14 @@ msgstr "Selecione opção (Enter para sair): "
 #: src/library/tools/unit-tests.cc:201
 msgid "Available tests"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Test options"
+#~ msgstr "Opções de log"
+
+#, fuzzy
+#~ msgid "Load module from file"
+#~ msgstr "Não foi possível ler do arquivo"
 
 #~ msgid "Unable to set environment variable"
 #~ msgstr "Incapaz de setar variável de ambiente"

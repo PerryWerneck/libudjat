@@ -36,7 +36,7 @@
  #include <udjat/tools/url/handler.h>
  #include <stdexcept>
  #include <private/logger.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/tools/container.h>
 
  using namespace std;

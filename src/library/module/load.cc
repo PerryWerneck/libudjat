@@ -49,6 +49,10 @@ namespace Udjat {
 	}
 
 	bool Module::Controller::parse(const XML::Node &node) {
+		return load(node);
+	}
+
+	bool Module::Controller::load(const Properties &props) {
 
 		static const char * attributes[] = {
 			"name",
@@ -61,41 +65,37 @@ namespace Udjat {
 
 		for(const char *attribute : attributes) {
 
-			const char *name = node.attribute(attribute).as_string();
+			const auto name = props[attribute];
 
-			if(!(name && *name)) {
+			if(name.empty()) {
 				continue;
 			}
 
-			if(*name == '.' || *name == '/') {
-				load(name, node);
+			if(name[0] == '.' || name[0] == '/') {
+				load(name.c_str(), props);
 				return true;
 			}
 
-			string filename = locate(name,paths);			
+			string filename = locate(name.c_str(),paths);			
 			if(!filename.empty()) {
-				load(filename, node);
+				load(filename, props);
 				return true;
 			}
 
 		}
 
 		// Not found.
-		if(node.attribute("required").as_bool(true)) {
-			throw runtime_error(string{"Cant load required module '"} + node.attribute(attributes[0]).as_string() + "'");
+		if(props.get("required",true)) {
+			throw runtime_error(string{"Cant load required module '"} + props[attributes[0]].c_str() + "'");
 		} else {
-			Logger::String{"Cant load module '",node.attribute(attributes[0]).as_string(),"', ignoring"}.warning();
+			Logger::String{"Cant load module '",props[attributes[0]].c_str(),"', ignoring"}.warning();
 		}
 
 		return true;
 	}
 
-	bool Module::load(const std::string &filename, const XML::Node &node) {
-		return Controller::getInstance().load(filename,node);
-	}
-
-	bool Module::load(const XML::Node &node) {
-		return Controller::getInstance().parse(node);
+	bool Module::load(const Properties &props) {
+		return Controller::getInstance().load(props);
 	}
 
 }

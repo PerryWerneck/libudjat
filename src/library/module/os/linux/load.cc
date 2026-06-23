@@ -21,7 +21,7 @@
 
  #include <config.h>
  #include <private/module.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <dlfcn.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>

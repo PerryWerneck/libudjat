@@ -27,6 +27,7 @@
  #include <unistd.h>
  #include <libgen.h>
  #include <iostream>
+ #include <udjat/tools/logger.h>
 
  #include "private.h"
 

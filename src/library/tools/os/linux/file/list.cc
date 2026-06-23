@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <sys/types.h>
  #include <udjat/tools/file/list.h>
+ #include <udjat/tools/file/path.h>
 
  #include "private.h"
 

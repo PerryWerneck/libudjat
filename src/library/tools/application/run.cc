@@ -28,7 +28,7 @@
  #include <udjat/tools/argumentparser.h>
  #include <udjat/agent/abstract.h>
  #include <udjat/tools/intl.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/ui/console.h>
  #include <udjat/tools/intl.h>
  #include <udjat/ui/status.h>

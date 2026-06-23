@@ -22,11 +22,12 @@
  #include <udjat/win32/exception.h>
  #include <udjat/tools/configuration.h>
  #include <udjat/tools/application.h>
+ #include <udjat/tools/properties.h>
  #include <fcntl.h>
 
  namespace Udjat {
 
-	bool Module::load(const char *filename, const XML::Node &node) {
+	bool Module::load(const char *filename, const Properties &props) {
 
 		TCHAR path[MAX_PATH+1];
 		memset(path,0,MAX_PATH+1);
@@ -36,7 +37,7 @@
 			strncpy(path,filename,MAX_PATH);
 		}
 
-		return Controller::getInstance().load(path,node);
+		return Controller::getInstance().load(path,props);
 
 	}
 

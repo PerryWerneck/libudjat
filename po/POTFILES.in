@@ -229,9 +229,9 @@ src/library/tools/systemservice/systemservice.cc
 src/library/tools/systemservice/tools_linux.cc
 src/library/tools/systemservice/tools_windows.cc
 src/library/tools/console.cc
-src/library/tools/unit-tests.cc
 src/library/tools/console/screen_linux.cc
 src/library/tools/console/screen_windows.cc
+src/library/tools/unit-tests.cc
 src/library/ui/progress.cc
 src/library/ui/animation.cc
 src/library/ui/menu.cc
@@ -326,13 +326,13 @@ src/include/udjat/tools/string.h
 src/include/udjat/tools/value.h
 src/include/udjat/tools/argumentparser.h
 src/include/udjat/tools/systemservice.h
+src/include/udjat/tools/loader.h
 src/include/udjat/tools/converters.h
 src/include/udjat/tools/logger.h
 src/include/udjat/tools/properties.h
-src/include/udjat/tools/xml.h
 src/include/udjat/tools/application.h
-src/include/udjat/tools/loader.h
 src/include/udjat/tools/unit-test.h
+src/include/udjat/tools/xml.h
 src/include/udjat/ui/icon.h
 src/include/udjat/ui/progress.h
 src/include/udjat/ui/status.h

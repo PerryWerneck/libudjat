@@ -24,7 +24,7 @@
  #include <iostream>
  #include <udjat/tools/url.h>
  #include <udjat/tools/logger.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <string>
  #include <udjat/ui/console.h>
  #include <udjat/ui/animation.h>

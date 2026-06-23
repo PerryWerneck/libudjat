@@ -30,10 +30,11 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/intl.h>
  #include <cstdarg>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/action.h>
  #include <udjat/tools/interface.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/file/path.h>
 
  #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
   

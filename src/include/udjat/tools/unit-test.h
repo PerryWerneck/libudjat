@@ -27,7 +27,7 @@
 #include <string>
 #include <cstring>
 #include <set>
-#include <udjat/module/abstract.h>
+#include <udjat/module.h>
 #include <memory>
 
 namespace Udjat {

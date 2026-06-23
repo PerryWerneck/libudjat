@@ -24,7 +24,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/logger.h>
  #include <private/logger.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <udjat/tools/url.h>
  #include <string>
  #include <udjat/net/interface.h>

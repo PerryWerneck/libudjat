@@ -29,7 +29,7 @@
  #include <udjat/tools/logger.h>
  #include <udjat/tools/http/exception.h>
  #include <udjat/tools/http/timestamp.h>
- #include <udjat/module/abstract.h>
+ #include <udjat/module.h>
  #include <private/url.h>
  #include <uriparser/Uri.h>
  #include <private/urlparser.h>

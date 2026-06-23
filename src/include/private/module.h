@@ -2,7 +2,7 @@
 #pragma once
 
 #include <config.h>
-#include <udjat/module/abstract.h>
+#include <udjat/module.h>
 #include <udjat/tools/mainloop.h>
 #include <udjat/tools/value.h>
 #include <udjat/tools/container.h>
@@ -93,6 +93,12 @@ namespace Udjat {
 		/// @retval true The module was already loaded.
 		/// @retval false The module was loaded.
 		bool load(const std::string &filename, const Udjat::Properties &props);
+
+		/// @brief Load module by properties.
+		/// @param props The module properties, including name or filename.
+		/// @retval true The module was already loaded.
+		/// @retval false The module was loaded.
+		bool load(const Udjat::Properties &props);
 		
 		bool for_each(const std::function<bool(Module &module)> &method);
 
