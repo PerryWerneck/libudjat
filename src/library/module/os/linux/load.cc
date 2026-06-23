@@ -36,10 +36,12 @@
 
 	bool Module::Controller::load(const std::string &filename, const Udjat::Properties &props) {
 
-#ifdef UDJAT_STATIC
-		throw logic_error("Cant use dynamic modules on static libudjat");
-#else
+#ifdef LIBUDJAT_STATIC
 
+		throw logic_error("Cant use dynamic modules on static libudjat");
+
+#else
+		
 		if(find_by_filename(filename.c_str()) || find_by_name(filename.c_str())) {
 			Logger::String{"Module '",filename.c_str(),"' is already loaded"}.trace();
 			return true;
@@ -90,7 +92,8 @@
 
 		return false;
 
+#endif // LIBUDJAT_STATIC
 	}
-#endif // UDJAT_STATIC
- }
+
+}
 

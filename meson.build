@@ -740,7 +740,7 @@ else
     description: project_description,
     variables: pkg_variables,
     extra_cflags: pkg_extra_cflags + [
-      '-DUDJAT_STATIC',
+      '-DLIBUDJAT_STATIC',
       '-pthread',
     ],
     requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
@@ -858,7 +858,7 @@ static_library = declare_dependency(
     meson.project_name(), 
     config_h + lib_src,
     install: true,
-    cpp_args: [ '-DSTATIC_LIBRARY', '-fno-lto' ],
+    cpp_args: [ '-DLIBUDJAT_STATIC', '-fno-lto' ],
     dependencies: required_libs + private_libs + extra_libs,
     include_directories: includes_dir
   ),
