@@ -61,6 +61,8 @@ namespace Udjat {
 			"fallback-to"
 		};
 
+		string detected_name;
+
 		std::vector<std::string> paths{Module::search_paths()};
 
 		for(const char *attribute : attributes) {
@@ -71,6 +73,12 @@ namespace Udjat {
 				continue;
 			}
 
+			detected_name = name;
+			if(find_by_name(name.c_str())) {
+				return true;
+			}
+
+#ifndef LIBUDJAT_STATIC
 			if(name[0] == '.' || name[0] == '/') {
 				load(name.c_str(), props);
 				return true;
@@ -81,14 +89,24 @@ namespace Udjat {
 				load(filename, props);
 				return true;
 			}
+#endif // !LIBUDJAT_STATIC
 
+		}
+
+		// Invalid
+		if(detected_name.empty()) {
+			throw runtime_error(String{"Required attribute 'name' is missing or invalid at '",props.path().c_str(),"'"});
 		}
 
 		// Not found.
 		if(props.get("required",true)) {
-			throw runtime_error(string{"Cant load required module '"} + props[attributes[0]].c_str() + "'");
+#ifdef LIBUDJAT_STATIC
+			throw logic_error(String{"Required module '",detected_name,"' is unavailable"});
+#else
+			throw runtime_error(String{"Cant load required module '",detected_name.c_str(),"'"});
+#endif
 		} else {
-			Logger::String{"Cant load module '",props[attributes[0]].c_str(),"', ignoring"}.warning();
+			Logger::String{"Cant load module '",detected_name.c_str(),"', ignoring"}.warning();
 		}
 
 		return true;
