@@ -21,7 +21,12 @@ project(
 	'udjat', 
 	['cpp'],
 	version: '2.7.0',
-	default_options : ['c_std=c11', 'cpp_std=c++17', 'buildtype=release'],
+	default_options : [
+    'c_std=c11', 
+    'cpp_std=c++17', 
+    'buildtype=release', 
+    'default_library=shared'
+  ],
 	license: 'GPL-3.0-or-later',
 )
 
@@ -280,7 +285,7 @@ else
   vmdetect_s = dependency(
       'vmdetect',
       required: false,
-      fallback: [ 'vmdetect', 'static_library' ],
+      fallback: [ 'vmdetect' ],
       default_options: ['default_library=static']  
   ) 
   if vmdetect_s.found()
@@ -295,7 +300,7 @@ else
   dmiget_s = dependency(
       'dmiget',
       required: false,
-      fallback: [ 'dmiget', 'static_library' ],
+      fallback: [ 'dmiget' ],
       default_options: ['default_library=static']    
   ) 
   if dmiget_s.found()
@@ -314,6 +319,7 @@ if host_machine.system() != 'windows'
     'libeconf', 
     method : 'pkg-config',
     required: false,
+    default_options: ['default_library=static']    
   )
 
   if econf.found() 
