@@ -220,7 +220,6 @@ src/library/tools/logger/misc.cc
 src/library/tools/logger/stream.cc
 src/library/tools/logger/string.cc
 src/library/tools/object.cc
-src/library/tools/properties.cc
 src/library/tools/argparser.cc
 src/library/tools/commandlineparser.cc
 src/library/tools/systemservice/args_linux.cc
@@ -232,6 +231,7 @@ src/library/tools/console.cc
 src/library/tools/console/screen_linux.cc
 src/library/tools/console/screen_windows.cc
 src/library/tools/unit-tests.cc
+src/library/tools/properties.cc
 src/library/ui/progress.cc
 src/library/ui/animation.cc
 src/library/ui/menu.cc
@@ -327,9 +327,9 @@ src/include/udjat/tools/value.h
 src/include/udjat/tools/argumentparser.h
 src/include/udjat/tools/systemservice.h
 src/include/udjat/tools/loader.h
+src/include/udjat/tools/properties.h
 src/include/udjat/tools/converters.h
 src/include/udjat/tools/logger.h
-src/include/udjat/tools/properties.h
 src/include/udjat/tools/application.h
 src/include/udjat/tools/unit-test.h
 src/include/udjat/tools/xml.h

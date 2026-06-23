@@ -104,6 +104,13 @@
 
 	}
 
+	// Just for the legacy.
+	namespace UI {
+
+		using Console = Udjat::Console::Screen;
+
+	}
+
  }
 
  namespace std {

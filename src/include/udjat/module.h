@@ -245,7 +245,7 @@
 
 	/// @brief Initialize module from properties.
 	/// @return Module controller.
-	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::XML::Node &node);
+	UDJAT_API Udjat::Module * udjat_module_init(const Udjat::Properties &props);
 
 	/// @brief Deinitialize the module.
 	/// @return true if the module can be unloaded.

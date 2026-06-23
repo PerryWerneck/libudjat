@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-22 19:34-0300\n"
+"POT-Creation-Date: 2026-06-23 04:37-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -57,12 +57,12 @@ msgstr "Erro ao ativar estado"
 msgid "Unexpected error activating state"
 msgstr "Erro inesperado ao ativar estado"
 
-#: src/library/module/module.cc:104
+#: src/library/module/module.cc:103
 #, c++-format
 msgid "Module '{}' is not loaded"
 msgstr "Modulo '{}' não foi carregado"
 
-#: src/library/module/module.cc:120
+#: src/library/module/module.cc:119
 #, c++-format
 msgid "I dont know how to execute '{}'"
 msgstr "Não sei como executar '{}'"
@@ -431,21 +431,21 @@ msgstr " {} millisegundos"
 msgid "The message template is invalid"
 msgstr "O template de mensagem não é válido"
 
-#: src/library/tools/os/linux/file/path.cc:118
+#: src/library/tools/os/linux/file/path.cc:119
 msgid "Unable to create an empty dirname"
 msgstr "Incapaz de criar diretório sem nome"
 
-#: src/library/tools/os/linux/file/path.cc:234
+#: src/library/tools/os/linux/file/path.cc:235
 #, c++-format
 msgid "Error creating output file when saving '{}'"
 msgstr "Erro ao criar arquivo de saída salvando '{}'"
 
-#: src/library/tools/os/linux/file/path.cc:267
+#: src/library/tools/os/linux/file/path.cc:268
 #, c++-format
 msgid "Error linking output file when saving '{}'"
 msgstr "Erro ao renomear arquivo de saída para '{}'"
 
-#: src/library/tools/os/linux/file/path.cc:275
+#: src/library/tools/os/linux/file/path.cc:276
 #, c++-format
 msgid "Error setting owner & group on '{}'"
 msgstr "Erro ao setar dono e grupo para '{}'"
@@ -777,7 +777,7 @@ msgstr ""
 msgid "debug"
 msgstr ""
 
-#: src/library/tools/object.cc:284
+#: src/library/tools/object.cc:285
 #, c++-format
 msgid "Unable to get value of '{}'"
 msgstr "Incapaz de obter valor para '{}'"
@@ -877,7 +877,7 @@ msgid "Select option (Enter to quit): "
 msgstr "Selecione opção (Enter para sair): "
 
 #. Run interactive mode.
-#: src/library/tools/unit-tests.cc:201
+#: src/library/tools/unit-tests.cc:202
 msgid "Available tests"
 msgstr ""
 
