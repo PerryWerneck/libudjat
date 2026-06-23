@@ -353,6 +353,18 @@
 			},
 #endif // !_WIN32
 
+			UnitTests::Worker{
+				"hexstring", "Test to hex string",
+				[]() {
+					cout << endl;
+					for(size_t ix = 0; ix < 10; ix++) {
+						cout << ix << "=" << to_hex_string(ix) << endl;
+					}
+					cout << endl;
+					return true;
+				}
+			},
+
 #if defined(HAVE_IBMTSS) && defined(HAVE_OPENSSL)
 			UnitTests::Worker{
 				"Test TPM access",
