@@ -24,6 +24,7 @@
  #include <udjat/tools/properties.h>
  #include <udjat/tools/logger.h>
  #include <udjat/tools/container.h>
+ #include <udjat/tools/configuration.h>
 
  namespace Udjat {
 
@@ -122,6 +123,48 @@
 
 	unsigned int Properties::get(const char *attrname, const unsigned int def) const {
 		return get(attrname,"").as_uint(def);
+	}
+
+	String Properties::get(const char *groupname, const char *attrname, const char * def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
+	}
+
+	bool Properties::get(const char *groupname, const char *attrname, const bool def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
+	}
+
+	double Properties::get(const char *groupname, const char *attrname, const double def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
+	}
+
+	float Properties::get(const char *groupname, const char *attrname, const float def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
+	}
+
+	int Properties::get(const char *groupname, const char *attrname, const int def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
+	}
+
+	unsigned int Properties::get(const char *groupname, const char *attrname, const unsigned int def) const {
+		if(contains(attrname)) {
+			return get(attrname,def);
+		}
+		return Config::get(groupname,attrname,def);
 	}
 
 	String Properties::operator[](const char *attrname) const {
