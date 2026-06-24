@@ -1,6 +1,7 @@
 vmdetect
 dmiget
 libeconf
+uriparser
 *.pot
 *.[0-9]
 .vscode

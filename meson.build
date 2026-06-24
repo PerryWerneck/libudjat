@@ -71,12 +71,6 @@ if not openssl.found()
   openssl = dependency('openssl', required: false)
 endif
 
-# URIPARSER
-uriparser = dependency(
-  'liburiparser', 
-  required: true,
-)
-
 # VMDETECT (optional)
 vmdetect = dependency(
   'vmdetect', 
@@ -100,7 +94,6 @@ pugixml = dependency(
 
 required_libs = [
   pugixml,
-  uriparser,
 ]
 
 private_libs = [
@@ -108,6 +101,12 @@ private_libs = [
   dmiget,
   openssl
 ]
+
+# URIPARSER
+uriparser = dependency(
+  'liburiparser', 
+  required: false,
+)
 
 pkg_libraries_private = [
 ]
@@ -118,6 +117,38 @@ extra_libs = [
   dl,
   threads,
 ] 
+
+
+if uriparser.found()
+
+  required_libs += uriparser
+
+else
+
+  # Import Meson's CMake interpreter
+  cmake = import('cmake')
+
+  # Configure the CMake project with explicit build options
+  uriparser_opts = cmake.subproject_options()
+  uriparser_opts.add_cmake_defines({
+    'URIPARSER_BUILD_TESTS': 'OFF',
+    'URIPARSER_BUILD_DOCS': 'OFF',
+    'URIPARSER_SHARED_LIBS': 'OFF',
+    'URIPARSER_BUILD_TOOLS': 'OFF',
+    'CMAKE_POSITION_INDEPENDENT_CODE': 'ON',
+  })
+
+  # Initialize subproject and pull the target
+  uriparser_sub = cmake.subproject(
+    'uriparser', 
+    options: uriparser_opts
+  )
+  
+  uriparser = uriparser_sub.dependency('uriparser')
+
+  extra_libs += uriparser
+
+endif
 
 #
 # Compiler flags
@@ -751,7 +782,7 @@ else
       '-DLIBUDJAT_STATIC',
       '-pthread',
     ],
-    requires: [ pugixml, uriparser, vmdetect, dmiget, econf, systemd ],
+    requires: private_libs + required_libs,
     libraries: [ '-l:lib' + meson.project_name() + '.a', '-ldl', '-pthread' ] + pkg_libraries_private,
   )
 
