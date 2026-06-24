@@ -32,6 +32,7 @@
  #include <udjat/tools/file/temporary.h>
  #include <udjat/tools/unit-test.h>
  #include <udjat/tools/memory.h>
+ #include <udjat/ui/console/progress.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -424,6 +425,41 @@
 				"netinfo", "Obtain NIC info",
 				[]() {
 					network_test();
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"progress", "Test console progress bar",
+				[]() {
+					Console::Progress progress;
+
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"animation", "Test console animations",
+				[]() {
+
+					Console::Animation animations[] = {
+						Console::Animation::Style::PlainText,
+						Console::Animation::Style::Simple,
+						Console::Animation::Style::Braille,
+						Console::Animation::Style::Circle
+					};
+
+					cout << "\n\n" << flush;
+					
+					for(size_t count = 0; count < 100; count++) {
+						cout << '\r';
+						for(auto &animation : animations) {
+							cout << animation << " ";
+						}
+						cout << " " << count << flush;
+						usleep(500000);
+					}
+
+					cout << "\n\n" << flush;
+
 					return true;
 				}
 			}

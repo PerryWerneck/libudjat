@@ -502,6 +502,7 @@ lib_src += [
   'src/library/tools/action/factory.cc',
   'src/library/tools/unit-tests.cc',
   'src/library/tools/console.cc',
+  'src/library/tools/console/progress.cc',
   'src/library/request/responsevalue.cc',
   'src/library/module/os/' + host_machine.system() + '/close.cc',
   'src/library/module/os/' + host_machine.system() + '/load.cc',
@@ -515,7 +516,7 @@ lib_src += [
   'src/library/tools/url/handlers/smbios.cc',
   'src/library/ui/progress.cc',
   'src/library/ui/status.cc',
-  'src/library/ui/animation.cc',
+  'src/library/tools/console/animation.cc',
   'src/library/ui/menu.cc',
   'src/library/testprogram.cc',
 ]

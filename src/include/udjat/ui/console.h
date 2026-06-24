@@ -90,7 +90,7 @@
 			/// @brief Erase the entire line
 			Screen & erase_line();
 
-			unsigned short width() const noexcept;
+			static unsigned short width() noexcept;
 
 			/// @brief Show progress bar at cursor line.
 			/// @param prefix Small text on the left.

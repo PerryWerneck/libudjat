@@ -30,12 +30,11 @@
 
  namespace Udjat {
 
-	namespace UI {
+	namespace Console {
 
 		class UDJAT_API Animation {
 		protected:
 			size_t current = 0;
-			constexpr Animation() = default;
 
 		public:
 			/// The animation styles
@@ -48,12 +47,12 @@
 				Default
 			};
 
+			Animation(Animation::Style style = Animation::Style::Default);
+
 			/// @brief  Set default animation style.
 			static void set(Animation::Style style = Animation::Style::Default);
 
-			static std::shared_ptr<Animation> Factory(Animation::Style style = Animation::Style::Default);
-
-			virtual const char * get() noexcept = 0;
+			const char * get() noexcept;
 
 			inline operator const char *() noexcept {
 				return get();
@@ -69,6 +68,9 @@
 
 		private:
 			static Style style;
+			const char **model;
+
+			static const char **get_model(Animation::Style style);
 
 		};
 
@@ -79,7 +81,7 @@
 
  namespace std {
 
-	inline ostream & operator<< (ostream& os, Udjat::UI::Animation &animation) {
+	inline ostream & operator<< (ostream& os, Udjat::Console::Animation &animation) {
 		return os << animation.get();
 	}
 
