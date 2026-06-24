@@ -56,11 +56,11 @@ namespace Udjat {
 	}
 #endif // HAVE_PUGIXML
 
-	int UDJAT_API loader(const int argc, const char *argv[], const char *path) {
+	int UDJAT_API loader(int argc, char *argv[], const char *path) {
 		return Udjat::loader(argc,argv,[](const LoaderMode, Application &, const char *) {return false;},path);
 	}
 
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<int(Application &app)> &init, const char *path) {
+	int UDJAT_API loader(int argc, char *argv[], const std::function<int(Application &app)> &init, const char *path) {
 
 		// Call new method replacing callback.
 		return loader(argc,argv,[init](const LoaderMode mode, Application &app, const char *){
@@ -75,7 +75,7 @@ namespace Udjat {
 
 	}
 
-	int UDJAT_API loader(const int argc, const char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &init, const char *path) {
+	int UDJAT_API loader(int argc, char *argv[], const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &init, const char *path) {
 
 		class Loader : public Udjat::Application {
 		private:
@@ -163,7 +163,7 @@ namespace Udjat {
 			}
 
 		public:
-			Loader(const int argc, const char *argv[], const char *path, const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application{argc,argv}, filename{path}, callback{cbk} {
+			Loader(int argc, char *argv[], const char *path, const std::function<bool(const LoaderMode mode, Application &app, const char *arg)> &cbk) : Udjat::Application{argc,argv}, filename{path}, callback{cbk} {
 			}
 
 			std::shared_ptr<Abstract::Agent> RootFactory() override {

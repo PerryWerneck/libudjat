@@ -208,14 +208,14 @@ namespace Udjat {
 		/// @return The parse result.
 		/// @retval false All the callback have returned false, the application can continue.
 		/// @retval true Some callback have returned true, the application should stop with rc = 0.
-		static bool parse(const int argc, const char **argv, const Argument *arguments);
+		static bool parse(int argc, char **argv, const Argument *arguments);
 
 		/// @brief Parse arguments.
 		/// @throw std::exception on failure.
 		/// @return Status of the argument parser.
 		/// @retval false if the application can continue
 		/// @retval true all required processing was done, the application could exit with rc=0.
-		bool parse(const int argc, const char **argv) const;
+		bool parse(int argc, char **argv) const;
 
 		/// @brief Add options from Logger subsystem in a separate group options.
 		/// @return The same object (for chaining).

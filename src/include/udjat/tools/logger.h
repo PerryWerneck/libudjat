@@ -24,6 +24,7 @@
  #include <udjat/tools/string.h>
  #include <udjat/tools/message.h>
  #include <udjat/tools/properties.h>
+ #include <udjat/tools/argumentparser.h>
  #include <iostream>
  #include <mutex>
  #include <pthread.h>
@@ -88,7 +89,11 @@
 		/// @brief Setup log options from properties.
 		/// @param properties The properties for logger.
 		/// @param prefix The optional prefix for the attributes on properties.
-		UDJAT_API void setup(const Properties &properties, const char *prefix = "") noexcept;
+#ifdef DEBUG
+		UDJAT_API void setup(const Properties &properties, const char *prefix = "", bool dbg = true) noexcept;
+#else
+		UDJAT_API void setup(const Properties &properties, const char *prefix = "", bool dbg = false) noexcept;
+#endif // DEBUG
 
 		/// @brief Setup logger from command line.
 		/// @param argc	 The number of arguments. 
@@ -96,8 +101,10 @@
 		/// @param dbg True to use debug mode defaults.
 #ifdef DEBUG
 		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = true);
+		UDJAT_API void setup(int argc, char **argv, bool dbg = true);
 #else
 		UDJAT_API void setup(int &argc, char **argv, bool extract = true, bool dbg = false);
+		UDJAT_API void setup(int argc, char **argv, bool dbg = false);
 #endif // DEBUG
 
 		/// @brief Unformatted Log message.

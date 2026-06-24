@@ -46,7 +46,7 @@
 		throw std::system_error(EINVAL,std::system_category(),"System service is not active");
 	}
 
-	SystemService::SystemService(const int argc, const char **argv) : Application(argc,argv) {
+	SystemService::SystemService(int argc, char **argv) : Application(argc,argv) {
 		if(instance) {
 			throw std::system_error(EBUSY,std::system_category(),"System service already active");
 		}

@@ -39,8 +39,8 @@
 	class UDJAT_API Application : public Dialog::Status {
 	private:
 		Timer *reload_timer = nullptr;		///< @brief Auto update timer.
-		const int argc;
-		const char **argv;						///< @brief Command line arguments.
+		int argc;
+		char **argv;						///< @brief Command line arguments.
 
 		/// @brief Parse XML definitions from a file or directory.
 		/// @param path Path to file or directory with XML definitions.
@@ -72,7 +72,7 @@
 		Application(Application &&) = delete;
 		Application & operator=(Application &&) = delete;
 
-		Application(const int argc, const char **argv);
+		Application(int argc, char **argv);
 		virtual ~Application();
 
 		Dialog::Status & state(const Level level, const char *message) noexcept override;
