@@ -45,6 +45,12 @@
  namespace Udjat {
 
 	class UDJAT_API URL::Handler {
+	private:
+
+		/// @brief Default progress callback.
+		/// @return true to cancel operation, false to keep running.
+		static std::function<bool(uint64_t current, uint64_t total)> default_progress;
+
 	protected:
 		Handler();
 
@@ -197,6 +203,17 @@
 		inline int get(const std::function<bool(uint64_t current, uint64_t total, const void *buf, size_t length)> &writer) {
 			return perform(HTTP::Get,"",writer);      
 		}
+
+		/// @brief Get progress callback.
+		/// @return The current progress callback.
+		const static std::function<bool(uint64_t current, uint64_t total)> & get_progress() noexcept;
+
+		/// @brief Set progress callback.
+		/// @param progress The new callback to set.
+		static void set_progress(std::function<bool(uint64_t current, uint64_t total)> &progress) noexcept;
+		
+		/// @brief Set progress callback to internal default.
+		static void set_progress();
 
 	};
 	

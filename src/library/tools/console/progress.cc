@@ -114,7 +114,9 @@ namespace Udjat {
 			{
 				size_t szline = (width-(pos+8));
 				char line[szline+1];
-				memset(line,'x',szline);
+#ifdef DEBUG
+				memset(line,'-',szline);
+#endif // DEBUG
 				line[0] = '[';
 				line[szline-1] = ']';
 				line[szline] = 0;
