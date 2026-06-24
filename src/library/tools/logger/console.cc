@@ -107,6 +107,8 @@
 		insert("console",BackEnd::Console,[decorated](Level level, const char *timestamp, const char *domain, const char *text) {
 
 			if(decorated) {
+				// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+				Console::write("\r\x1b[2K");
 				Console::write(decoration(level));
 			}
 

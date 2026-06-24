@@ -230,10 +230,11 @@ src/library/tools/systemservice/tools_windows.cc
 src/library/tools/console.cc
 src/library/tools/console/screen_linux.cc
 src/library/tools/console/screen_windows.cc
+src/library/tools/console/progress.cc
+src/library/tools/console/animation.cc
 src/library/tools/unit-tests.cc
 src/library/tools/properties.cc
 src/library/ui/progress.cc
-src/library/ui/animation.cc
 src/library/ui/menu.cc
 src/library/ui/status.cc
 src/include/private/crypto.h
@@ -340,6 +341,7 @@ src/include/udjat/ui/animation.h
 src/include/udjat/ui/console.h
 src/include/udjat/ui/menu.h
 src/include/udjat/ui/console/menu.h
+src/include/udjat/ui/console/progress.h
 src/include/udjat/win32/charset.h
 src/include/udjat/win32/cleanup.h
 src/include/udjat/win32/com.h
