@@ -429,14 +429,6 @@
 				}
 			},
 			UnitTests::Worker{
-				"progress", "Test console progress bar",
-				[]() {
-					Console::Progress progress;
-
-					return true;
-				}
-			},
-			UnitTests::Worker{
 				"animation", "Test console animations",
 				[]() {
 
@@ -456,6 +448,30 @@
 						}
 						cout << " " << count << flush;
 						usleep(500000);
+					}
+
+					cout << "\n\n" << flush;
+
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"progress", "Test console progress bar",
+				[]() {
+
+					cout << "\n\n" << flush;
+					
+					{
+						Console::Progress progress{"Testing progress bar"};
+
+						progress.set(10,10,false);
+						sleep(5);
+
+						for(size_t ix = 0; ix < 400;ix++) {
+							progress.set(ix/4,100,false);
+							usleep(50000);
+						}
+						progress.set(10,10,false);
 					}
 
 					cout << "\n\n" << flush;
