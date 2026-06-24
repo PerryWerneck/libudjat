@@ -33,6 +33,7 @@
  #include <udjat/tools/unit-test.h>
  #include <udjat/tools/memory.h>
  #include <udjat/ui/console/progress.h>
+ #include <udjat/ui/console.h>
 
  #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -473,6 +474,24 @@
 						}
 						progress.set(10,10,false);
 					}
+
+					cout << "\n\n" << flush;
+
+					return true;
+				}
+			},
+			UnitTests::Worker{
+				"Test console status message",
+				[]() {
+
+					cout << "\n\n" << flush;
+					
+					Console::status(Logger::Notice,"test","Notification message");
+					Console::status(Logger::Info,"test","Successs message");
+					Console::status(Logger::Warning,"test","Warning message");
+					Console::status(Logger::Error,"test","Error message");
+					Console::status(Logger::Trace,"test","Trace message");
+					Console::status(Logger::Debug,"test","Debug message");
 
 					cout << "\n\n" << flush;
 

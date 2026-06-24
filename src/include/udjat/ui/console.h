@@ -27,6 +27,7 @@
  #include <cstdint>
  #include <ostream>
  #include <memory>
+ #include <udjat/tools/logger.h>
 
  namespace Udjat {
 
@@ -40,6 +41,9 @@
 		/// @brief The current console stream accepts ANSI decoration?
 		/// @return true if the current console stream allows ANSI decoration.
 		UDJAT_API bool decorated() noexcept;
+
+		/// @brief Show a status message
+		UDJAT_API void status(Logger::Level, const char *domain, const char *message) noexcept;
 
 		enum Foreground : uint8_t {
 			Default = 39,

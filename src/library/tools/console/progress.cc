@@ -32,7 +32,7 @@ using namespace std;
 namespace Udjat {
 
 	Console::Progress::Progress(const char *title) : std::string{title}, url_text{title} {
-		Console::write("\x1b[?25l");
+		Console::write("\r\x1b[?25l");
 
 	}
 
