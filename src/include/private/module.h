@@ -9,6 +9,7 @@
 #include <udjat/tools/xml.h>
 #include <udjat/tools/properties.h>
 #include <mutex>
+#include <vector>
 
 using namespace std;
 

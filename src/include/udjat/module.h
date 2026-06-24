@@ -21,6 +21,7 @@
  #include <udjat/defs.h>
  #include <udjat/tools/xml.h>
  #include <memory>
+ #include <vector>
 
  namespace Udjat {
 

@@ -34,6 +34,12 @@ namespace Udjat {
 	public:
 
 		class Argument {
+		public:
+			enum Flag : uint8_t {
+				None = 0x00,
+				AllowInteractive	= 0x01
+			};
+
 		private:
 
 			friend class ArgumentParser;
@@ -43,8 +49,17 @@ namespace Udjat {
 			const char *help = nullptr;			///< @brief Description of the option
 			const char *example = nullptr;		///< @brief Example of the option.
 			const std::function<bool(const char *argument, const char mode)> call = nullptr;
+			const Flag flags = None;
 
 		public:
+			Argument(Flag f, char s, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+				shortname{s}, longname{l}, help{h}, call{c}, flags{f} {
+			}
+
+			Argument(Flag f, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+				longname{l}, help{h}, call{c}, flags{f} {
+			}
+
 			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c} {
 			}
