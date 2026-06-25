@@ -23,6 +23,7 @@
 
  #pragma once
  #include <udjat/defs.h>
+ #include <udjat/ui/console.h>
  #include <udjat/ui/progress.h>
  #include <udjat/ui/animation.h>
  #include <string>
@@ -39,16 +40,23 @@
         class UDJAT_API Progress : public Dialog::Progress, public std::string {
         private:
             Console::Animation animation;
+            Console::Color color = nullptr;   ///< @brief Console setup string.
+            uint64_t current = 0;
+            uint64_t total = 0;
 
         protected:
             std::string url_text;
+
+            /// @brief Present progress bar at current console line.
+            void present();
 
         public:
             Progress(const char *title = "");
             ~Progress() override;
 
-			Dialog::Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true) noexcept override;
+            Dialog::Progress & set(const Console::Color color) noexcept;
 
+			Dialog::Progress & set(uint64_t current = 0, uint64_t total = 0, bool is_file_size = true) noexcept override;
             Dialog::Progress & url(const char *url) noexcept override;
     
         };

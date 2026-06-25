@@ -70,7 +70,7 @@
 			static Style style;
 			const char **model;
 
-			static const char **get_model(Animation::Style style);
+			static const char **get_model(Animation::Style style) noexcept;
 
 		};
 

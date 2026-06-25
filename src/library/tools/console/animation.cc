@@ -37,7 +37,7 @@ namespace Udjat {
 		style = st;	
 	}
 
-	const char ** Console::Animation::get_model(Animation::Style style) {
+	const char ** Console::Animation::get_model(Animation::Style style) noexcept {
 
 		static const char *plaintext[] = { "|", "/", "-", "\\", nullptr }; 
 		static const char *simple[] = { "◴","◷","◶","◵", nullptr };

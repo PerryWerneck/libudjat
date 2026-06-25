@@ -30,6 +30,9 @@ namespace Udjat {
 
 	UDJAT_API const char * Console::color(Logger::Level level) {
 
+		// https://alligatr.co.uk/ansi-codes/
+		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+
 		static const struct {
 			Logger::Level level;
 			const char *decoration;

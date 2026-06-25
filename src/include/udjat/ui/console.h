@@ -51,24 +51,37 @@
 		/// @brief Get color based on logger level
 		UDJAT_API const char * color(Logger::Level level);
 
-		using Type = const char *;
+		using Decorator = const char *;
 
-		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
-		constexpr Type Reset = "\x1B[0m";
-		constexpr Type Bold = "\x1B[1m";
-		constexpr Type Faint = "\x1B[2m";
-		constexpr Type DefaultForeground = "\x1B[39m";
-		constexpr Type BlackForeground = "\x1B[30m";
-		constexpr Type RedForeground = "\x1B[31m";
-		constexpr Type GreenForeground = "\x1B[32m";
-		constexpr Type YellowForeground = "\x1B[33m";
-		constexpr Type BlueForeground = "\x1B[34m";
-		constexpr Type MagentaForeground = "\x1B[35m";
-		constexpr Type CyanForeground = "\x1B[36m";
-		constexpr Type WhiteForeground = "\x1B[37m";
-		constexpr Type CursorInvisible = "\x1b[?25l";
-		constexpr Type CursorVisible = "\x1b[?25h";
-		constexpr Type ClearEOL = "\x1b[0K";
+		constexpr Decorator Reset = "\x1B[0m";
+		constexpr Decorator Bold = "\x1B[1m";
+		constexpr Decorator Faint = "\x1B[2m";
+		
+		constexpr Decorator CursorInvisible = "\x1b[?25l";
+		constexpr Decorator CursorVisible = "\x1b[?25h";
+		constexpr Decorator ClearEOL = "\x1b[0K";
+		constexpr Decorator EraseLine = "\x1b[2K";
+
+		using Color = const char *;
+
+		constexpr Color DefaultForeground = "\x1B[39m";
+		constexpr Color BlackForeground = "\x1B[30m";
+	
+		constexpr Color RedForeground = "\x1B[31m";
+		constexpr Color GreenForeground = "\x1B[32m";
+		constexpr Color YellowForeground = "\x1B[33m";
+		constexpr Color BlueForeground = "\x1B[34m";
+		constexpr Color MagentaForeground = "\x1B[35m";
+		constexpr Color CyanForeground = "\x1B[36m";
+		constexpr Color WhiteForeground = "\x1B[37m";
+
+		constexpr Color BrightRedForeground = "\x1B[91m";
+		constexpr Color BrightGreenForeground = "\x1B[92m";
+		constexpr Color BrightYellowForeground = "\x1B[93m";
+		constexpr Color BrightBlueForeground = "\x1B[94m";
+		constexpr Color BrightMagentaForeground = "\x1B[95m";
+		constexpr Color BrightCyanForeground = "\x1B[96m";
+		constexpr Color BrightWhiteForeground = "\x1B[97m";
 
 		enum Foreground : uint8_t {
 			Default = 39,

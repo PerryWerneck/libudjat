@@ -26,18 +26,25 @@
 #include <udjat/tools/intl.h>
 #include <udjat/tools/logger.h>
 #include <cstring>
+#include <sstream>
 
 using namespace std;
 
 namespace Udjat {
 
-	Console::Progress::Progress(const char *title) : std::string{title}, url_text{title} {
-		Console::write("\r\x1b[?25l");
+	// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
+	Console::Progress::Progress(const char *title) : std::string{title}, url_text{title} {
+		write("\r");
+		write(ClearEOL);
+		write(CursorInvisible);
+		present();
 	}
 
 	Console::Progress::~Progress() {
-		Console::write("\r\x1b[2K\x1b[?25h");
+		write("\r");
+		write(EraseLine);
+		write(CursorVisible);
 	}
 
     Dialog::Progress & Console::Progress::url(const char *u) noexcept {
@@ -45,21 +52,31 @@ namespace Udjat {
 		return *this;
 	}
 
-	Dialog::Progress & Console::Progress::set(uint64_t current, uint64_t total, bool is_file_size) noexcept {
+	Dialog::Progress & Console::Progress::set(uint64_t current, uint64_t total, bool) noexcept {
+		this->current = current;
+		this->total = total;
+		present();
+		return *this;
+	}
+
+    Dialog::Progress & Console::Progress::set(const Console::Color color) noexcept {
+		this->color = color;
+		present();
+		return *this;
+	}
+
+    void Console::Progress::present() {
+
+		stringstream buffer;
 
 		int width = (int) Screen::width();
+		size_t column = 0;	///< @brief The current screen column; not the same of buffer length.
 
-		size_t len = (width*4);
-		char buffer[len+1];
-		char *dst = buffer;
+		buffer << "\r" << EraseLine;
 
-		memset(buffer,' ',len);
-		buffer[len] = 0; // Just in case.
-
-		strcpy(dst,"\r\x1b[2K");
-		dst += strlen(dst);
-
-		int pos = 0;
+		if(color && *color) {
+			buffer << color;
+		}
 
 		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 
@@ -67,26 +84,19 @@ namespace Udjat {
 		// 012345678901234567890123456789012345678901234567890123456789012345678901234567890
 		// * URL.................................. [################################] 100.0%
 
-		{
-			const char *str = animation.get();
-			size_t slen = strlen(str);
-			strncpy(dst,str,slen);
-			dst += slen;
-			pos++;
-		}
+		buffer << animation.get();
+		column++;
 
 		if(width >= 40) {
 
-			{
-				*(dst++) = ' ';
-				pos++;
-			}
+			buffer << " ";
+			column++;
 
 			// Show URL
 			{
 				string line{url_text};
 				size_t szline = line.size();
-				size_t window = ((width/2)-pos);
+				size_t window = ((width/2)-column);
 
 				if(window < szline) {
 					
@@ -99,20 +109,17 @@ namespace Udjat {
 
 				}
 
-				memcpy(dst,line.c_str(),window);
-				dst += window;
-				pos += window; 
+				buffer << line;
+				column += window;
 
 			}
 
-			{
-				*(dst++) = ' ';
-				pos++;
-			}
+			buffer << " ";
+			column++;
 
 			// Show percent
 			{
-				size_t szline = (width-(pos+8));
+				size_t szline = (width-(column+8));
 				char line[szline+1];
 #ifdef DEBUG
 				memset(line,'-',szline);
@@ -136,31 +143,30 @@ namespace Udjat {
 					memset(line+1,'#',p);
 				}
 
-				memcpy(dst,line,szline);
-				dst += szline;
-				pos += szline;
+				buffer << line;
+				column += szline;
 
 				{
-					size_t spc = 7-strlen(text);
-					dst += spc;
-					pos += spc;
+					int spc = 7-strlen(text);
+					if(spc > 0) {
+						string spaces;
+						spaces.resize(spc,' ');
+						buffer << spaces;
+						column += spc;
+					}
 				}
 				
-				memcpy(dst,text,strlen(text));
-				dst += strlen(text);
-				pos += strlen(text);
+				buffer << text;
+				column += strlen(text);
 				
 			}
 
 		}
 
+		buffer << '\r';
 
-		// Write to console.
-		*(dst++) = '\r';
-		*dst = 0;
-		Console::write(buffer);
+		Console::write(buffer.str().c_str());
 
-		return *this;
 	}
 
 }
