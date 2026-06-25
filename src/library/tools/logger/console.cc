@@ -33,30 +33,6 @@
 
  namespace Udjat {
 
-	static const char * decoration(Logger::Level level) noexcept {
-
-		static const struct {
-			Logger::Level level;
-			const char *decoration;
-		} decorations[] = {
-			{ Logger::Level::Error, 	"\x1b[91m" },
-			{ Logger::Level::Notice, 	"\x1b[96m" },
-			{ Logger::Level::Warning,	"\x1b[93m" },
-			{ Logger::Level::Info, 		"\x1b[92m" },
-			{ Logger::Level::Trace, 	"\x1b[94m" },
-			{ Logger::Level::Debug, 	"\x1b[95m" },
-		};
-
-		for(const auto &decoration : decorations) {
-			if(decoration.level & level) {
-				return decoration.decoration;
-			}
-		}
-
-		return "";
-	}
-
-
 	UDJAT_API void Logger::console(bool enable) {
 		Controller::getInstance().console(enable);
 	}
@@ -109,7 +85,7 @@
 			if(decorated) {
 				// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 				Console::write("\r\x1b[2K");
-				Console::write(decoration(level));
+				Console::write(Console::color(level));
 			}
 
 			Console::write(timestamp);

@@ -216,9 +216,9 @@
 						opt.append(" ");
 					}
 					opt.append(
-						"  \x1B[2m",
+						"  ",Console::Faint,
 						"(",worker.option,")",
-						"\x1B[22m"
+						Console::Reset
 					);
 				}
 

@@ -268,13 +268,13 @@
 #endif
 
 		if(decorated) {
-			cout << "\x1B[2m";
+			cout << Console::Faint;
 		}
 
 		cout << _("[OPTIONS]");
 		
 		if(decorated) {
-			cout << "\x1B[22m";
+			cout << Console::Reset;
 		}
 
 		cout << "\n\n";
@@ -282,7 +282,7 @@
 		for(const auto &group : groups) {
 			if(decorated) {
 
-				cout << "\x1B[1m" << group.c_str() << ":" << "\x1B[22m" << "\n";	
+				cout << Console::Bold << group.c_str() << ":" << Console::Reset << "\n";	
 
 			} else {
 	

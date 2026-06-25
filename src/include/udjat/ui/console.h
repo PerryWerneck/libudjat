@@ -45,6 +45,31 @@
 		/// @brief Show a status message
 		UDJAT_API void status(Logger::Level, const char *domain, const char *message) noexcept;
 
+		/// @brief Get icon based on logger level
+		UDJAT_API const char * icon(Logger::Level level);
+
+		/// @brief Get color based on logger level
+		UDJAT_API const char * color(Logger::Level level);
+
+		using Type = const char *;
+
+		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+		constexpr Type Reset = "\x1B[0m";
+		constexpr Type Bold = "\x1B[1m";
+		constexpr Type Faint = "\x1B[2m";
+		constexpr Type DefaultForeground = "\x1B[39m";
+		constexpr Type BlackForeground = "\x1B[30m";
+		constexpr Type RedForeground = "\x1B[31m";
+		constexpr Type GreenForeground = "\x1B[32m";
+		constexpr Type YellowForeground = "\x1B[33m";
+		constexpr Type BlueForeground = "\x1B[34m";
+		constexpr Type MagentaForeground = "\x1B[35m";
+		constexpr Type CyanForeground = "\x1B[36m";
+		constexpr Type WhiteForeground = "\x1B[37m";
+		constexpr Type CursorInvisible = "\x1b[?25l";
+		constexpr Type CursorVisible = "\x1b[?25h";
+		constexpr Type ClearEOL = "\x1b[0K";
+
 		enum Foreground : uint8_t {
 			Default = 39,
 			Black = 30,

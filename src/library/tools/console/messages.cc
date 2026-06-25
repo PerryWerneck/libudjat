@@ -28,18 +28,42 @@ using namespace std;
 
 namespace Udjat {
 
-	const char * prefix(Logger::Level level) {
+	UDJAT_API const char * Console::color(Logger::Level level) {
+
+		static const struct {
+			Logger::Level level;
+			const char *decoration;
+		} decorations[] = {
+			{ Logger::Level::Error, 	"\x1b[91m" },
+			{ Logger::Level::Notice, 	"\x1b[96m" },
+			{ Logger::Level::Warning,	"\x1b[93m" },
+			{ Logger::Level::Info, 		"\x1b[92m" },
+			{ Logger::Level::Trace, 	"\x1b[94m" },
+			{ Logger::Level::Debug, 	"\x1b[95m" },
+		};
+
+		for(const auto &decoration : decorations) {
+			if(decoration.level & level) {
+				return decoration.decoration;
+			}
+		}
+
+		return "";
+
+	}
+
+	UDJAT_API const char * Console::icon(Logger::Level level) {
 
 		static const struct {
 			Logger::Level level;
 			const char *prefix;
 		} prefixes[] = {
-			{ Logger::Notice, 	"\x1B[32m🪧"	},
-			{ Logger::Error, 	"\x1B[31m❌"		},
-			{ Logger::Warning, 	"\x1B[33m⚠️"	},
-			{ Logger::Info, 	"\x1B[32m✅"		},
-			{ Logger::Trace, 	"\x1B[34m⚙️"	},
-			{ Logger::Debug, 	"\x1B[34m🪲"	},
+			{ Logger::Notice, 	"🪧"	},
+			{ Logger::Error, 	"❌"		},
+			{ Logger::Warning, 	"⚠️"	},
+			{ Logger::Info, 	"✅"		},
+			{ Logger::Trace, 	"⚙️"	},
+			{ Logger::Debug, 	"🪲"	},
 
 		};
 
@@ -49,7 +73,7 @@ namespace Udjat {
 			}
 		}
 
-		return "\x1B[32m🪧";
+		return "🪧";
 	}
 
 	UDJAT_API void Console::status(Logger::Level level, const char *domain, const char *message) noexcept {
@@ -66,11 +90,15 @@ namespace Udjat {
 
 		// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
 		Console::write(String{
-			"\r\x1b[?25l\x1B[1m",
-			prefix(level),
-			"\x1B[39m ",
+			"\r",
+			Console::ClearEOL,
+			Console::color(level),
+			icon(level),
+			"\t",
+			Console::Bold,
 			message,
-			"\x1B[22m\n"
+			Console::Reset,
+			"\n"
 		}.c_str());
 
 
