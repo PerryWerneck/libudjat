@@ -48,8 +48,11 @@
 
 						auto &controller = Logger::Controller::getInstance();
 						if(argument && *argument) {
+
 							controller.console(true);
 							controller.verbosity(argument);
+							return ArgumentParser::Handled;
+
 						} else {
 							switch(mode) {
 								case 'S':
@@ -76,14 +79,14 @@
 
 						}
 
-						return false;
+						return ArgumentParser::Handled;
 					}
 				},
 				ArgumentParser::Argument{
 					'q', "quiet", _( "Disable console output" ),
 					[](const char *, char) {
 						Logger::Controller::getInstance().console(false);
-						return false;
+						return ArgumentParser::NotHandled;
 					}
 				},
 				ArgumentParser::Argument{
@@ -93,7 +96,7 @@
 							throw runtime_error(_( "Log to file requires a filename" ));
 						}
 						Logger::Controller::getInstance().file(argument);
-						return false;
+						return ArgumentParser::Handled;
 					}
 				},
 				ArgumentParser::Argument{
@@ -102,7 +105,7 @@
 						if(argument && *argument) {
 							Logger::Controller::getInstance().verbosity(argument);
 						}
-						return false;
+						return ArgumentParser::Handled;
 					}
 				}
 		);
@@ -131,6 +134,7 @@
 						throw system_error(errno,system_category(),"Unable to activate coredump");			
 					}
 
+					ArgumentParser::Result rc = ArgumentParser::NotHandled;
 					if(pattern && *pattern) {
 						// Set corepattern
 						std::filebuf fb;
@@ -143,6 +147,7 @@
 						} else {
 							Logger::String{"Unable to set coredump pattern"}.error("debug");
 						}
+						rc = ArgumentParser::Handled;
 					} else {
 
 						std::ifstream file("/proc/sys/kernel/core_pattern");
@@ -163,7 +168,7 @@
 					}
 
 					debug("Coredump enabled!");
-					return false;
+					return rc;
 				}
 			}
 		);

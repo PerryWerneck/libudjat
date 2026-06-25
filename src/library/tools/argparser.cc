@@ -61,7 +61,7 @@
 			_("Show this help message"),
 			[this](const char *argument, bool) {
 				show_help();
-				return true;
+				return ArgumentParser::ExitNow;
 			}
 		);
 	}
@@ -78,11 +78,41 @@
 
 	}
 
-	bool ArgumentParser::parse(int argc, char **argv) const {
+	struct ArgumentParser::Context {
+		int ix = 0;
+		int argc;
+		char **argv;
+		bool exit = false;
 
-		for(int ix = 0; ix < argc; ix++) {
+		constexpr Context(int c, char **v) : argc{c}, argv{v} {			
+		}
 
-			const char *arg = argv[ix];
+	};
+
+	bool ArgumentParser::check_result(Context &context, const ArgumentParser::Result result) {
+
+		if( (result & 0x8000) == 0) {
+			return true;
+		}
+
+		if( (result & 0x0001) && context.ix < context.argc) {
+			context.ix++;
+		}
+
+		if( (result & 0x0002) != 0) {
+			context.exit = true;
+		}
+
+		return false;
+	}
+
+	bool ArgumentParser::parse(int argc, char **argv) {
+
+		Context context{argc,argv};
+
+		for(context.ix = 0; context.ix < argc; context.ix++) {
+
+			const char *arg = argv[context.ix];
 
 			if(*arg != '-') {
 				continue;
@@ -101,7 +131,7 @@
 					ptr++;
 				}
 
-				if(parse_long(arg,ptr,'L')) {
+				if(check_result(context,parse_long(arg,ptr,'L'))) {
 					return true;
 				}
 
@@ -111,8 +141,8 @@
 
 			// Check for short argument
 			const char *value = nullptr;
-			if(ix < (argc-1) && argv[ix+1][0] != '-') {
-				value = argv[ix+1];
+			if(context.ix < (argc-1) && argv[context.ix+1][0] != '-') {
+				value = argv[context.ix+1];
 			}
 
 			char last = 0;
@@ -121,9 +151,13 @@
 
 				if(isdigit(arg[1])) {
 
+					if(value) {
+						throw runtime_error(_("Invalid use of repeated argument"));
+					}
+
 					// Repeat 'arg[1]' times.
 					for(int ix='0';ix < arg[1];ix++) {
-						if(parse_short(arg,value,ix)) {
+						if(parse_short(arg,nullptr,ix) == ExitNow) {
 							return true;
 						}
 					}
@@ -132,7 +166,12 @@
 				} else if(arg[0] == last) {
 
 					// It's repeating argument
-					if(parse_short(arg,value,index++)) {
+
+					if(value) {
+						throw runtime_error(_("Invalid use of repeated argument"));
+					}
+					
+					if(parse_short(arg,nullptr,index++) == ExitNow) {
 						return true;
 					}
 
@@ -141,13 +180,19 @@
 					// It's the first one of a repetittion
 					last = arg[1];
 					index = '0';
-					if(parse_short(arg,value,index++)) {
+
+					if(value) {
+						throw runtime_error(_("Invalid use of repeated argument"));
+					}
+
+					if(parse_short(arg,nullptr,index++) == ExitNow) {
 						return true;
 					}
+
 				} else {
 
 					// It's not repeating
-					if(parse_short(arg,value,'S')) {
+					if(check_result(context,parse_short(arg,value,index))) {
 						return true;
 					}
 
@@ -159,14 +204,14 @@
 		}
 
 		/// Complete without errors
-		return false;
+		return context.exit;
 	}
 
 	void ArgumentParser::add_application_argument(const ArgumentParser::Argument &argument) {
 		groups.front().push_back(argument);
 	}
 
-	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<bool(const char *argument, const char mode)> &call) {
+	void ArgumentParser::add_application_argument(const char shortname, const char *longname, const char *description, const std::function<Result(const char *argument, const char mode)> &call) {
 		groups.front().emplace_back(shortname,longname,description,call);
 	}
 
@@ -282,7 +327,7 @@
 		return true; // End application
 	}
 
-	bool ArgumentParser::parse_short(const char *argument, const char *value, const char mode) const {
+	ArgumentParser::Result ArgumentParser::parse_short(const char *argument, const char *value, const char mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
@@ -300,7 +345,7 @@
 
 	}
 
-	bool ArgumentParser::parse_long(const char *argument, const char *value, const char mode) const {
+	ArgumentParser::Result ArgumentParser::parse_long(const char *argument, const char *value, const char mode) const {
 
 		debug(__FUNCTION__,"(",argument,")");
 
@@ -317,15 +362,15 @@
 
 	}
 
-	void ArgumentParser::call(const char *option) {
+	ArgumentParser::Result ArgumentParser::call(const char *option) {
 		for(const auto &group : groups) {
 			for(const auto &arg : group) {
 				if(arg == option) {
-					arg.exec();
-					return;
+					return arg.exec();
 				}
 			}
 		}
+		return ArgumentParser::NotFound;
 	}
 
 

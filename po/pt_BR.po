@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: libudjat 1.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-24 10:38-0300\n"
+"POT-Creation-Date: 2026-06-24 17:09-0300\n"
 "PO-Revision-Date: 2026-06-18 15:37-0300\n"
 "Last-Translator: Perry Werneck <perry.werneck@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <perry.werneck@gmail.com>\n"
@@ -725,27 +725,27 @@ msgid "Set the log verbosity level"
 msgstr "Defíne o nível de detalhes do log"
 
 #: src/library/tools/logger/argparser.cc:113
-#: src/library/tools/logger/commandline.cc:168
+#: src/library/tools/logger/commandline.cc:191
 msgid "Enable coredump"
 msgstr "Habilita coredump"
 
-#: src/library/tools/logger/commandline.cc:163
+#: src/library/tools/logger/commandline.cc:186
 msgid "Save log to file"
 msgstr "Envia log para arquivo"
 
-#: src/library/tools/logger/commandline.cc:164
+#: src/library/tools/logger/commandline.cc:187
 msgid "Send log to console"
 msgstr "Envia log para o console"
 
-#: src/library/tools/logger/commandline.cc:165
+#: src/library/tools/logger/commandline.cc:188
 msgid "Set log level to 'verbosity'"
 msgstr "Define nível de log para 'verbosity'"
 
-#: src/library/tools/logger/commandline.cc:166
+#: src/library/tools/logger/commandline.cc:189
 msgid "Quiet output"
 msgstr "Inibe saídas para console"
 
-#: src/library/tools/logger/commandline.cc:172
+#: src/library/tools/logger/commandline.cc:195
 msgid "Log/Debug options:\n"
 msgstr "Opções de log/debug:\n"
 

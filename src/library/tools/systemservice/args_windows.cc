@@ -36,35 +36,35 @@
 					'F', "foreground", _("Run in foreground, as application"),
 					[this](const char *, char) {
 						Application::run();
-						return true;
+						return ArgumentParser::NotHandled;
 					}
 				},
 				ArgumentParser::Argument{
 					'S', "start", _("Start service"),
 					[this](const char *, char) {
 						start();
-						return true;
+						return ArgumentParser::NotHandled;
 					}
 				},
 				ArgumentParser::Argument{
 					'Q', "stop", _("Stop service"),
 					[this](const char *, char) {
 						stop();
-						return true;
+						return ArgumentParser::NotHandled;
 					}
 				},
 				ArgumentParser::Argument{
 					'I', "install", _("Install service"), _("description"),
 					[this](const char *description, char) {
 						install(description);
-						return true;
+						return ArgumentParser::Handled;
 					}
 				},
 				ArgumentParser::Argument{
 					'U', "uninstall", _("Uninstall service"),
 					[this](const char *, char) {
 						uninstall();
-						return true;
+						return ArgumentParser::NotHandled;
 					}
 				},
 				ArgumentParser::Argument{
@@ -74,7 +74,7 @@
 						uninstall();
 						install();
 						start();
-						return true;
+						return ArgumentParser::NotHandled;
 					}
 				},
 				ArgumentParser::Argument{
@@ -82,7 +82,7 @@
 					[this](const char *, char) {
 						Application::Name appname;
 						Win32::Service::Manager{}.setUnStoppable(appname.c_str());
-						return true;
+						return ArgumentParser::Handled;
 					}
 				}
 		);

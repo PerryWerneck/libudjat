@@ -33,8 +33,20 @@ namespace Udjat {
 	class UDJAT_API ArgumentParser {
 	public:
 
+		/// @brief Return codes for argument parser, every non-zero return will stop parsing.
+		enum Result : uint16_t {
+
+			NotHandled		= 0x8000,		///< @brief The optional argument was not handled.
+			Handled			= 0x8001,		///< @brief The optional argument was handled and should be ignored by caller.
+			ExitAfterParse	= 0x8002,		///< @brief Exit with rc=0 after parsing all options.
+			NotFound 		= 0x8004,		///< @brief Argument not found.
+
+			ExitNow			= 0x0000,		///< @brief Exit now with rc = 0.
+		};
+
 		class Argument {
 		public:
+
 			enum Flag : uint8_t {
 				None = 0x00,
 				AllowInteractive	= 0x01
@@ -48,27 +60,27 @@ namespace Udjat {
 			const char *longname = nullptr;		///< @brief Long name of the option.
 			const char *help = nullptr;			///< @brief Description of the option
 			const char *example = nullptr;		///< @brief Example of the option.
-			const std::function<bool(const char *argument, const char mode)> call = nullptr;
+			const std::function<Result(const char *argument, const char mode)> call = nullptr;
 			const Flag flags = None;
 
 		public:
-			Argument(Flag f, char s, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+			Argument(Flag f, char s, const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c}, flags{f} {
 			}
 
-			Argument(Flag f, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+			Argument(Flag f, const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
 				longname{l}, help{h}, call{c}, flags{f} {
 			}
 
-			Argument(char s, const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+			Argument(char s, const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, call{c} {
 			}
 
-			Argument(char s, const char *l, const char *h, const char *e, const std::function<bool(const char *argument, const char mode)> &c) :
+			Argument(char s, const char *l, const char *h, const char *e, const std::function<Result(const char *argument, const char mode)> &c) :
 				shortname{s}, longname{l}, help{h}, example{e}, call{c} {
 			}
 
-			Argument(const char *l, const char *h, const std::function<bool(const char *argument, const char mode)> &c) :
+			Argument(const char *l, const char *h, const std::function<Result(const char *argument, const char mode)> &c) :
 				longname{l}, help{h}, call{c} {
 			}
 
@@ -91,7 +103,7 @@ namespace Udjat {
 				return (bool) (shortname || longname);
 			}
 
-			inline bool exec(const char *argument = nullptr, const char mode = 0) const {
+			inline Result exec(const char *argument = nullptr, const char mode = 0) const {
 				return call(argument,mode);
 			}
 
@@ -177,7 +189,7 @@ namespace Udjat {
 		/// @param longname The argument long name.
 		/// @param help The help text.
 		/// @param call Callback to process this argument.
-		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<bool(const char *argument, const char mode)> &call);
+		void add_application_argument(const char shortname, const char *longname, const char *help, const std::function<Result(const char *argument, const char mode)> &call);
 		
 		/// @brief Add argument in the last group.
 		/// @param argument 
@@ -215,7 +227,7 @@ namespace Udjat {
 		/// @return Status of the argument parser.
 		/// @retval false if the application can continue
 		/// @retval true all required processing was done, the application could exit with rc=0.
-		bool parse(int argc, char **argv) const;
+		bool parse(int argc, char **argv);
 
 		/// @brief Add options from Logger subsystem in a separate group options.
 		/// @return The same object (for chaining).
@@ -223,9 +235,12 @@ namespace Udjat {
 
 		/// @brief Run option.
 		/// @param option The name of the option to run.
-		void call(const char *option);
+		/// @retval NotFound The option was not found.
+		Result call(const char *option);
 
 	private:
+
+		struct Context;
 
 		/// @brief The optional argument groups.
 		std::list<Group> groups;
@@ -233,8 +248,9 @@ namespace Udjat {
 		void append_help();
 
 		bool show_help() const;
-		bool parse_short(const char *argument, const char *value, const char mode) const;
-		bool parse_long(const char *argument, const char *value, const char mode) const;
+		Result parse_short(const char *argument, const char *value, const char mode) const;
+		Result parse_long(const char *argument, const char *value, const char mode) const;
+		bool check_result(Context &context, const Result result);
 
 	};
 

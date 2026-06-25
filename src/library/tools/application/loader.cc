@@ -92,16 +92,13 @@ namespace Udjat {
 #ifdef HAVE_PUGIXML
 							load_modules(filename.c_str());
 #endif // HAVE_PUGIXML							
-							if(callback(LOADER_MODE_RUN_TESTS,*this,arg)) {
-								return true;
-							}
 							UnitTests tests;
 							tests.load();
 							tests.run(arg);
 #ifdef HAVE_PUGIXML
 							Module::unload();
 #endif // HAVE_PUGIXML							
-							return true;
+							return (ArgumentParser::Result) (ArgumentParser::ExitAfterParse|ArgumentParser::Handled);
 						}
 					},
 					ArgumentParser::Argument{
@@ -116,7 +113,7 @@ namespace Udjat {
 #ifdef HAVE_PUGIXML
 							Module::unload();
 #endif // HAVE_PUGIXML							
-							return true;
+							return ArgumentParser::ExitAfterParse;
 						}
 					},
 					ArgumentParser::Argument{
@@ -129,35 +126,10 @@ namespace Udjat {
 
 							// TODO: Implement
 
-							return false;
+							return (ArgumentParser::Result) (ArgumentParser::ExitAfterParse|ArgumentParser::Handled);
 						}
 					}
 				);
-
-				// Load unit-tests
-				// {
-				// 	UnitTests tests;
-				// 	tests.load();
-
-				// 	auto &group = parser.add_group(_("Test options"));
-				// 	tests.for_each([&group](const char *option, const char *label){
-
-				// 		if(option && *option) {
-				// 			group.emplace_back(
-				// 				option, label,
-				// 				[option](const char *, char) {
-				// 					debug("Calling option '",option,"'");
-				// 					UnitTests tests;
-				// 					tests.load();
-				// 					tests.run(option);
-				// 					return true;
-				// 				}
-				// 			);
-				// 		}
-
-				// 	});
-
-				// }
 
 				return parser;
 			}
