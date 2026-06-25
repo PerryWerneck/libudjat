@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <config.h>
 #include <udjat/defs.h>
 #include <string>
 #include <iostream>
